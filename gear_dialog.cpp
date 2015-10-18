@@ -1009,6 +1009,13 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
     DoConnectCamera();
 }
 
+bool GearDialog::ReconnectCamera()
+{
+    DoConnectCamera();
+    bool err = !m_pCamera || !m_pCamera->Connected;
+    return err;
+}
+
 void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
 {
     try

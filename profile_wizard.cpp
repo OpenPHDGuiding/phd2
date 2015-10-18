@@ -245,8 +245,14 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     }
 
-    m_pHelpText->SetLabel(hText);
+    // Need to do it this way to handle 125% font scaling in Windows accessibility
+    m_pHelpText = new wxStaticText(this, wxID_ANY, hText, wxDefaultPosition, wxSize(DialogWidth, -1));
     m_pHelpText->Wrap(TextWrapPoint);
+    m_pHelpGroup->Clear(true);
+    m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10).Expand());
+    m_pHelpGroup->Layout();
+    SetSizerAndFit(m_pvSizer);
+
 }
 
 void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
@@ -369,7 +375,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             else
             {
-                SetTitle(TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
+                SetTitle(TitlePrefix + _("Choose an Auxiliary Mount Connection (optional)"));
                 m_pGearLabel->SetLabel(_("Aux Mount:"));
                 m_pGearChoice->Clear();
                 m_pGearChoice->Append(Scope::AuxMountList());

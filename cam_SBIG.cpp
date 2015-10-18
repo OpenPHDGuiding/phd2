@@ -438,7 +438,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     short err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR)
     {
-        DisconnectWithAlert(_("Cannot start exposure"));
+        DisconnectWithAlert(_("Cannot start exposure"), NO_RECONNECT);
         return true;
     }
 
@@ -462,7 +462,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR)
         {
-            DisconnectWithAlert(_("Cannot poll exposure"));
+            DisconnectWithAlert(_("Cannot poll exposure"), NO_RECONNECT);
             return true;
         }
         if (UseTrackingCCD)
@@ -485,7 +485,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     // End exposure
     if (!StopExposure(&eep))
     {
-        DisconnectWithAlert(_("Cannot stop exposure"));
+        DisconnectWithAlert(_("Cannot stop exposure"), NO_RECONNECT);
         return true;
     }
 
@@ -514,7 +514,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR)
             {
-                DisconnectWithAlert(_("Error downloading data"));
+                DisconnectWithAlert(_("Error downloading data"), NO_RECONNECT);
                 return true;
             }
         }
@@ -530,7 +530,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR)
             {
-                DisconnectWithAlert(_("Error downloading data"));
+                DisconnectWithAlert(_("Error downloading data"), NO_RECONNECT);
                 return true;
             }
         }

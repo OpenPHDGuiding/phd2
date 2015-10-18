@@ -272,6 +272,7 @@ public:
     void OnImportCamCal(wxCommandEvent& evt);
 
     void OnExposeComplete(wxThreadEvent& evt);
+    void OnExposeComplete(usImage *image, bool err);
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
@@ -374,6 +375,7 @@ public:
     wxString GetSettingsSummary();
     wxString ExposureDurationSummary(void) const;
     wxString PixelScaleSummary(void) const;
+    void TryReconnect(void);
 
     double TimeSinceGuidingStarted(void) const;
 
@@ -392,12 +394,15 @@ private:
     alert_fn *m_alertFn;
     long m_alertFnArg;
 
+    std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
+
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
     bool StopWorkerThread(WorkerThread*& pWorkerThread);
     void OnSetStatusText(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
+    void OnReconnectCameraFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
     void OnMessageBoxProxy(wxCommandEvent& evt);
     void SetupMenuBar(void);
@@ -408,6 +413,7 @@ private:
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
     void FinishStop(void);
+    void DoTryReconnect(void);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()

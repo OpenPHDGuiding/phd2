@@ -141,59 +141,59 @@ struct SlitPropertiesDlg : public wxDialog
 SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
-    SetSizeHints(wxDefaultSize, wxDefaultSize);
-
-    wxBoxSizer *bSizer1 = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer *bSizer2 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticBoxSizer *sbSizer1 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Position (Center)")), wxVERTICAL);
-    wxBoxSizer *bSizer4 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText *staticText2 = new wxStaticText(this, wxID_ANY, _("X"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText2->Wrap(-1);
-    bSizer4->Add(staticText2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticBoxSizer *szPosition = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Position (Center)")), wxVERTICAL);
+    wxStaticBoxSizer *szSlitSize = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Size")), wxVERTICAL);
+    // Position controls
+    wxBoxSizer *hXSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *xLabel = new wxStaticText(this, wxID_ANY, _("X"), wxDefaultPosition, wxDefaultSize, 0);
+    hXSizer->Add(xLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_x = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
-    bSizer4->Add(m_x, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    sbSizer1->Add(bSizer4, 0, wxEXPAND, 5);
-    wxBoxSizer *bSizer41 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* staticText21 = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText21->Wrap(-1);
-    bSizer41->Add(staticText21, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    hXSizer->Add(m_x, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    szPosition->Add(hXSizer, 0, wxEXPAND, 5);
+
+    wxBoxSizer *hYSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* yLabel = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
+    hYSizer->Add(yLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_y = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
-    bSizer41->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    sbSizer1->Add(bSizer41, 1, wxEXPAND, 5);
-    bSizer2->Add(sbSizer1, 1, 0, 5);
-    wxStaticBoxSizer *sbSizer2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Size")), wxVERTICAL);
-    wxBoxSizer* bSizer42 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* staticText22 = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxSize(40, -1), 0);
-    staticText22->Wrap(-1);
-    bSizer42->Add(staticText22, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    hYSizer->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    szPosition->Add(hYSizer, 1, wxEXPAND, 5);
+    hSizer->Add(szPosition, 1, 0, 5);
+
+    // Size controls
+    wxBoxSizer* hWidthSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* widthLabel = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxSize(40, -1), 0);
+    hWidthSizer->Add(widthLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_width = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
-    bSizer42->Add(m_width, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    sbSizer2->Add(bSizer42, 1, wxEXPAND, 5);
-    wxBoxSizer* bSizer43 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* staticText23 = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxSize(40, -1), 0);
-    staticText23->Wrap(-1);
-    bSizer43->Add(staticText23, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    hWidthSizer->Add(m_width, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    szSlitSize->Add(hWidthSizer, 1, wxEXPAND, 5);
+
+    wxBoxSizer* hHeightSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* heightLabel = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxSize(40, -1), 0);
+    hHeightSizer->Add(heightLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_height = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
-    bSizer43->Add(m_height, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    sbSizer2->Add(bSizer43, 1, wxEXPAND, 5);
-    bSizer2->Add(sbSizer2, 1, 0, 5);
-    bSizer1->Add(bSizer2, 0, wxEXPAND, 5);
-    wxBoxSizer* bSizer3 = new wxBoxSizer(wxHORIZONTAL);
+    hHeightSizer->Add(m_height, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    szSlitSize->Add(hHeightSizer, 1, wxEXPAND, 5);
+    hSizer->Add(szSlitSize, 1, 0, 5);
+
+    vSizer->Add(hSizer, 0, wxEXPAND, 5);
+    // Angle controls
+    wxBoxSizer* hAngleSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* staticText1 = new wxStaticText(this, wxID_ANY, _("Angle (degrees)"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText1->Wrap(-1);
-    bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    //staticText1->Wrap(-1);
+    hAngleSizer->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_angle = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, -90, 90, 0);
-    bSizer3->Add(m_angle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    bSizer1->Add(bSizer3, 0, wxEXPAND, 5);
-    wxStdDialogButtonSizer *sdbSizer1 = new wxStdDialogButtonSizer();
-    wxButton *sdbSizer1OK = new wxButton(this, wxID_OK);
-    sdbSizer1->AddButton(sdbSizer1OK);
-    wxButton *sdbSizer1Cancel = new wxButton(this, wxID_CANCEL);
-    sdbSizer1->AddButton(sdbSizer1Cancel);
-    sdbSizer1->Realize();
-    bSizer1->Add(sdbSizer1, 0, wxEXPAND, 5);
-    SetSizer(bSizer1);
-    Layout();
+    hAngleSizer->Add(m_angle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+    vSizer->Add(hAngleSizer, 0, wxEXPAND, 5);
+
+    // ok/cancel buttons
+    vSizer->Add(
+        CreateButtonSizer(wxOK | wxCANCEL),
+        wxSizerFlags(0).Expand().Border(wxALL, 10));
+
+    SetSizerAndFit(vSizer);
 }
 
 struct SlitPosCtx : public wxObject
@@ -336,24 +336,22 @@ static void WarnRawImageMode(void)
  * - schedules another exposure if CaptureActive is stil true
  *
  */
-void MyFrame::OnExposeComplete(wxThreadEvent& event)
+void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 {
     try
     {
-        Debug.AddLine("Processing an image");
+        Debug.Write("Processing an image\n");
 
         m_exposurePending = false;
-
-        usImage *pNewFrame = event.GetPayload<usImage *>();
 
         if (pGuider->GetPauseType() == PAUSE_FULL)
         {
             delete pNewFrame;
-            Debug.AddLine("guider is paused, ignoring frame, not scheduling exposure");
+            Debug.Write("guider is paused, ignoring frame, not scheduling exposure\n");
             return;
         }
 
-        if (event.GetInt())
+        if (err)
         {
             delete pNewFrame;
 
@@ -396,7 +394,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         PhdController::UpdateControllerState();
 
-        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d",
+        Debug.Write(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d\n",
             CaptureActive, m_continueCapturing));
 
         CaptureActive = m_continueCapturing;
@@ -417,6 +415,13 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     }
 }
 
+void MyFrame::OnExposeComplete(wxThreadEvent& event)
+{
+    usImage *image = event.GetPayload<usImage *>();
+    bool err = event.GetInt() != 0;
+    OnExposeComplete(image, err);
+}
+
 void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
@@ -430,7 +435,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         {
             if (moveResult == Mount::MOVE_STOP_GUIDING)
             {
-                Debug.AddLine("mount move error indicates guiding should stop");
+                Debug.Write("mount move error indicates guiding should stop\n");
                 pGuider->StopGuiding();
             }
 
@@ -751,7 +756,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
 
     if (pAdvancedDialog->ShowModal() == wxID_OK)
     {
-        Debug.AddLine("User exited setup dialog with 'ok'");
+        Debug.Write("User exited setup dialog with 'ok'\n");
         pAdvancedDialog->UnloadValues();
         pGraphLog->UpdateControls();
         TestGuide::ManualGuideUpdateControls();
@@ -759,7 +764,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     else
     {
         // Cancel event may require non-trivial undos
-        Debug.AddLine("User exited setup dialog with 'cancel'");
+        Debug.Write("User exited setup dialog with 'cancel'\n");
         pAdvancedDialog->Undo();
     }
 }

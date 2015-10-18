@@ -124,6 +124,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     int idx = binning - 1;
     m_binningChoice->Select(idx);
     AddTableEntry(m_pInputTableSizer, _("Camera binning"), m_binningChoice, _("Guide camera pixel binning"));
+    m_binningChoice->Enable(m_binningChoice->GetCount() > 1);
 
     // Guide speed
     m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);

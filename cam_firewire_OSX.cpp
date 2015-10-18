@@ -358,7 +358,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
 
     // grab the next frame
     if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe) != DC1394_SUCCESS) {
-        DisconnectWithAlert(_("Cannot get a frame from the queue"));
+        DisconnectWithAlert(_("Cannot get a frame from the queue"), NO_RECONNECT);
         return true;
     }
     imgptr = vframe->image;
