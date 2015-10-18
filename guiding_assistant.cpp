@@ -265,9 +265,9 @@ GuidingAsstWin::GuidingAsstWin()
     m_vResultsSizer = new wxBoxSizer(wxVERTICAL);
     m_hResultsSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 70), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
     MakeBold(m_instructions);
-    m_vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8).Center());
+    m_vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8));
 
     // Grids have either 3 or 4 columns, so compute width of largest label as scaling term for column widths
     double minCol = StringWidth(this, 
@@ -555,6 +555,8 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
         break;
     }
     m_instructions->SetLabel(instr);
+    m_instructions->Wrap(500);
+    m_instructions->Layout();
 }
 
 void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
