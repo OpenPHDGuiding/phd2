@@ -688,14 +688,6 @@ if(APPLE)
   #include_directories(${fcCamFramework})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dsiMeadeLibrary})
 
-  find_library( sxMac
-                NAMES SXMacLib
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
-  if(NOT sxMac)
-    message(FATAL_ERROR "Cannot find the sxMac drivers")
-  endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sxMac})
-
   find_library( asiCamera2
                 NAMES ASICamera2
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/mac)
