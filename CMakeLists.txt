@@ -223,9 +223,6 @@ set(cam_SRC
   ${phd_src_dir}/camera.cpp
   ${phd_src_dir}/camera.h
   ${phd_src_dir}/cameras.h
-
-  ${phd_src_dir}/cameras/SXMacLib.h
-  ${phd_src_dir}/cameras/SXMacLib.c
 )
 
 # windows specific cameras
@@ -263,6 +260,12 @@ elseif(UNIX AND (NOT APPLE))
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
      )
+elseif(APPLE)
+  set(cam_SRC
+      ${cam_SRC}
+      ${phd_src_dir}/cameras/SXMacLib.h
+      ${phd_src_dir}/cameras/SXMacLib.c
+  )
 endif()
 
 source_group(Cameras FILES ${cam_SRC})
