@@ -130,7 +130,6 @@ Camera_SXVClass::Camera_SXVClass()
 {
     Connected = false;
     Name = _T("Starlight Xpress SXV");
-    FullSize = m_darkFrameSize = wxSize(1280, 1024);
     HasGainControl = false;
     m_hasGuideOutput = true;
     Interlaced = false;
