@@ -102,7 +102,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_bitmap = new wxStaticBitmap(this, wxID_ANY, *m_bitmaps[STATE_GREETINGS], wxDefaultPosition, wxSize(55, 55));
     instrSizer->Add(m_bitmap, 0, wxALIGN_CENTER_VERTICAL | wxFIXED_MINSIZE, 5);
 
-    m_pInstructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    m_pInstructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 75), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
     wxFont font = m_pInstructions->GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pInstructions->SetFont(font);
