@@ -212,6 +212,22 @@ public:
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(Calibration_Issues etype, bool val);
 
+    double GetDefGuidingDeclination(void);
+    virtual double GetGuidingDeclination(void);
+    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
+    virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    virtual bool GetSiteLatLong(double *latitude, double *longitude);
+    virtual bool CanSlew(void);
+    virtual bool CanSlewAsync(void);
+    virtual bool SlewToCoordinates(double ra, double dec);
+    virtual bool SlewToCoordinatesAsync(double ra, double dec);
+    virtual void AbortSlew(void);
+    virtual bool CanCheckSlewing(void);
+    virtual bool Slewing(void);
+    virtual PierSide SideOfPier(void);
+    virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
+    virtual bool CanPulseGuide();                       // For ASCOM mounts
+
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
     virtual bool IsDecDrifting(void) const;

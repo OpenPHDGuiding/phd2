@@ -443,9 +443,9 @@ double ScopeINDI::GetGuidingDeclination(void)
 bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     const double dSiderealSecondPerSec = 0.9973;
-    bool ok;
+    bool err;
     double gra,gdec;
-    ok = true;
+    err = true;
     if (GuideRate_prop) {
 	INumber *ratera = IUFindNumber(GuideRate_prop,"GUIDE_RATE_WE");
 	INumber *ratedec = IUFindNumber(GuideRate_prop,"GUIDE_RATE_NS");
@@ -456,23 +456,22 @@ bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 	    gdec = gdec * (15.0 * dSiderealSecondPerSec)/3600;  // Degrees/sec
 	    *pRAGuideRate =  gra;
 	    *pDecGuideRate = gdec;
-	    ok = false;
+	    err = false;
 	}
     }
-    return ok;
+    return err;
 }
 
 bool   ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
-    bool ok;
-    ok = true;
+    bool err = true;
     if (coord_prop) {
 	INumber *raprop = IUFindNumber(coord_prop,"RA");
 	INumber *decprop = IUFindNumber(coord_prop,"DEC");
 	if (raprop && decprop) {
 	    *ra = raprop->value;   // hours
 	    *dec = decprop->value; // degrees
-	    ok = false;
+	    err = false;
 	}
 	if (SiderealTime_prop) {   // LX200 only
 	    INumber *stprop = IUFindNumber(coord_prop,"LST"); 
@@ -492,29 +491,33 @@ bool   ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 	   #endif
 	}
     }
-    return ok;
+    return err;
 }
 
 bool   ScopeINDI::GetSiteLatLong(double *latitude, double *longitude)
 {
-    bool ok;
-    ok = true;
+    bool err = true;
     if (GeographicCoord_prop) {
        INumber *latprop = IUFindNumber(GeographicCoord_prop,"LAT");
        INumber *lonprop = IUFindNumber(GeographicCoord_prop,"LONG");
 	if (latprop && lonprop) {
 	    *latitude = latprop->value;
 	    *longitude = lonprop->value;
-	    ok = false;
+	    err = false;
 	}
     }
-    return ok;	
+    return err;
+}
+
+bool   ScopeINDI::CanSlewAsync()
+{
+    // TODO: implement CanSlewAsync
+    return false;
 }
 
 bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
 {
-    bool ok;
-    ok = true;
+    bool err = true;
     if (coord_prop && oncoordset_prop) {
 	setslew_prop->s = ISS_ON;
 	settrack_prop->s = ISS_OFF;
@@ -525,19 +528,25 @@ bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
 	raprop->value = ra;
 	decprop->value = dec;
 	sendNewNumber(coord_prop);
-	ok = false;
+	err = false;
     }
-    return ok;
+    return err;
+}
+
+bool   ScopeINDI::SlewToCoordinatesAsync(double ra, double dec)
+{
+    // TODO: implement SlewToCoordinatesAsync
+    return true; // error
+}
+
+void   ScopeINDI::AbortSlew(void)
+{
+    // TODO: implement AbortSlew
 }
 
 bool   ScopeINDI::Slewing(void)
 {
-    bool ok;
-    ok = true;
-    if (coord_prop) {
-	ok = !(coord_prop->s == IPS_BUSY);
-    }
-    return ok;
+    return coord_prop && coord_prop->s == IPS_BUSY;
 }
 
 #endif /* GUIDE_INDI */

@@ -528,24 +528,67 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
         return;
     }
 
-    wxBusyCursor busy;
-
     double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
     if (slew_ra >= 24.0)
         slew_ra -= 24.0;
     else if (slew_ra < 0.0)
         slew_ra += 24.0;
-    Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f", cur_ra, cur_dec, slew_ra, decSlew));
-    m_slewing = true;
-    m_slew->Enable(false);
-    GetStatusBar()->PushStatusText(_("Slewing ..."));
-    if (pPointingSource->SlewToCoordinates(slew_ra, decSlew))
+
+    Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f",
+        cur_ra, cur_dec, slew_ra, decSlew));
+
+    if (pPointingSource->CanSlewAsync())
     {
-        GetStatusBar()->PopStatusText();
-        m_slewing = false;
-        m_slew->Enable(true);
-        Debug.AddLine("Drift tool: slew failed");
+        struct SlewInBg : public RunInBg
+        {
+            double ra, dec;
+            SlewInBg(wxWindow *parent, double ra_, double dec_)
+                : RunInBg(parent, _("Slew"), _("Slewing...")), ra(ra_), dec(dec_)
+            {
+                SetPopupDelay(100);
+            }
+            bool Entry()
+            {
+                bool err = pPointingSource->SlewToCoordinatesAsync(ra, dec);
+                if (err)
+                {
+                    SetErrorMsg(_("Slew failed!"));
+                    return true;
+                }
+                while (pPointingSource->Slewing())
+                {
+                    wxMilliSleep(500);
+                    if (IsCanceled())
+                    {
+                        pPointingSource->AbortSlew();
+                        SetErrorMsg(_("Slew was canceled"));
+                        break;
+                    }
+                }
+                return false;
+            }
+        };
+        SlewInBg bg(this, slew_ra, decSlew);
+        if (bg.Run())
+        {
+            SetStatusText(bg.GetErrorMsg());
+        }
     }
+    else
+    {
+        wxBusyCursor busy;
+        m_slewing = true;
+        m_slew->Enable(false);
+        GetStatusBar()->PushStatusText(_("Slewing ..."));
+        if (pPointingSource->SlewToCoordinates(slew_ra, decSlew))
+        {
+            GetStatusBar()->PopStatusText();
+            m_slewing = false;
+            m_slew->Enable(true);
+            Debug.AddLine("Drift tool: slew failed");
+        }
+    }
+
     SaveRADec(m_phase, raSlew, decSlew);
 }
 

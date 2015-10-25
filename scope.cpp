@@ -1368,6 +1368,89 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
     return bError;
 }
 
+// Return a default guiding declination that will "do no harm" in terms of RA rate adjustments - either the Dec
+// where the calibration was done or zero
+double Scope::GetDefGuidingDeclination()
+{
+    return MountIsCalibrated() ? MountCal().declination : 0.0;
+}
+
+// Get a value of declination, in radians, that can be used for adjusting the RA guide rate.  Normally, this will be gotten
+// from the ASCOM scope subclass, but it could also come from the 'aux' mount connection.  If this method in the base class is
+// called, we don't have any pointing info, so return a default that will do no harm.
+// Don't force clients to catch exceptions.  Callers who want the traditional ASCOM
+// dec value should use GetCoordinates().
+double Scope::GetGuidingDeclination(void)
+{
+    return GetDefGuidingDeclination();
+}
+
+// Baseline implementations for non-ASCOM subclasses.  Methods will
+// return a sensible default or an error (true)
+bool Scope::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
+{
+    return true; // error, not implemented
+}
+
+bool Scope::GetCoordinates(double *ra, double *dec, double *siderealTime)
+{
+    return true; // error
+}
+
+bool Scope::GetSiteLatLong(double *latitude, double *longitude)
+{
+    return true; // error
+}
+
+bool Scope::CanSlew(void)
+{
+    return false;
+}
+
+bool Scope::CanSlewAsync(void)
+{
+    return false;
+}
+
+bool Scope::CanReportPosition()
+{
+    return false;
+}
+
+bool Scope::CanPulseGuide()
+{
+    return false;
+}
+
+bool Scope::SlewToCoordinates(double ra, double dec)
+{
+    return true; // error
+}
+
+bool Scope::SlewToCoordinatesAsync(double ra, double dec)
+{
+    return true; // error
+}
+
+void Scope::AbortSlew(void)
+{
+}
+
+bool Scope::CanCheckSlewing(void)
+{
+    return false;
+}
+
+bool Scope::Slewing(void)
+{
+    return false;
+}
+
+PierSide Scope::SideOfPier(void)
+{
+    return PIER_SIDE_UNKNOWN;
+}
+
 wxString Scope::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
