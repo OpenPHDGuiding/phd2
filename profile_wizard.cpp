@@ -42,6 +42,7 @@ EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
 EVT_BUTTON(ID_DETECT_PIXELSIZE, ProfileWizard::OnDetectPixelSize)
 wxEND_EVENT_TABLE()
 
@@ -126,7 +127,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Control for pixel-size and focal length
-    m_pUserProperties = new wxFlexGridSizer(2, 2, 5, 15);
+    m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
                                           wxDefaultSize, wxSP_ARROW_KEYS, 1.0, 20.0, 5.0, 0.1);
     m_pPixelSize->SetDigits(2);
@@ -148,6 +149,14 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
+    m_pGuideSpeed = new wxSpinCtrlDouble(this, ID_GUIDESPEED, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxSP_ARROW_KEYS, 0.2, 1.0, 0.5, 0.1);
+    m_pGuideSpeed->SetValue(0.5);
+    m_GuideSpeed = 0.5;
+    m_pGuideSpeed->SetDigits(2);
+    m_pGuideSpeed->SetToolTip(_("The mount guide speed you will use for calibration and guiding, expressed as a multiple of the sidereal rate. If you "
+        "don't know, leave the setting at the default value (0.5X)"));
+    AddTableEntryPair(this, m_pUserProperties, _("Mount guide speed (n.n x sidereal)"), m_pGuideSpeed);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Wrapup panel
@@ -220,8 +229,8 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
-            "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the pixel size of the camera and "
-            "the focal length of your guide scope so that PHD2 can compute the correct image scale.");
+            "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the camera pixel size, "
+            "guide scope focal length, and mount guide speed so PHD2 can compute reasonable default settings for you.");
         break;
     case STATE_MOUNT:
         hText = _("Select your mount interface from the list.  This determines how PHD2 will move the telescope and get pointing information. For most modern "
@@ -417,11 +426,11 @@ void ProfileWizard::UpdateState(const int change)
     ShowHelp(m_State);
 }
 
-static int GetCalibrationStepSize(int focalLength, double pixelSize, int binning)
+static int GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int binning)
 {
     int calibrationStep;
     double const declination = 0.0;
-    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, CalstepDialog::DEFAULT_GUIDESPEED,
+    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeed,
         CalstepDialog::DEFAULT_STEPS, declination, 0, &calibrationStep);
     return calibrationStep;
 }
@@ -446,7 +455,7 @@ void ProfileWizard::WrapUp()
 
     int binning = 1; // assume starting with 1x1 binning
 
-    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, binning);
+    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning);
 
     Debug.AddLine(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d",
                                    m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks));
@@ -466,6 +475,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+    pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
 
     GuideLog.EnableLogging();               // Especially for newbies
 
@@ -555,6 +565,10 @@ void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
     m_pFocalLength->SetValue(m_FocalLength);                        // Rounding
 }
 
+void ProfileWizard::OnGuideSpeedChange(wxSpinDoubleEvent& evt)
+{
+    m_GuideSpeed = m_pGuideSpeed->GetValue();
+}
 void ProfileWizard::OnNext(wxCommandEvent& evt)
 {
     UpdateState(1);
