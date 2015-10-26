@@ -416,7 +416,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY exp single frame ret %d\n", ret));
-        DisconnectWithAlert(_("QHY exposure failed"));
+        DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
 
@@ -425,7 +425,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY get single frame ret %d\n", ret));
-        DisconnectWithAlert(_("QHY get frame failed"));
+        DisconnectWithAlert(_("QHY get frame failed"), NO_RECONNECT);
         return true;
     }
 
