@@ -164,7 +164,17 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
-    int ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
+Debug.Write(wxString::Format("QHY: call InitQHYCCD handle = %p\n", m_camhandle));
+    int ret = InitQHYCCD(m_camhandle);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Init camera failed"));
+        return true;
+    }
+
+    ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
@@ -225,6 +235,7 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
     if (Binning > MaxBinning)
         Binning = MaxBinning;
 
+Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
     ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -244,19 +255,11 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
 
     PixelSize = sqrt(pixelw * pixelh);
 
-    ret = InitQHYCCD(m_camhandle);
-    if (ret != QHYCCD_SUCCESS)
-    {
-        CloseQHYCCD(m_camhandle);
-        m_camhandle = 0;
-        wxMessageBox(_("Init camera failed"));
-        return true;
-    }
-
     m_curGain = -1;
     m_curExposure = -1;
     m_roi = wxRect(0, 0, FullSize.GetWidth() * Binning, FullSize.GetHeight() * Binning);  // un-binned coordinates
 
+Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
     ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
     if (ret != QHYCCD_SUCCESS)
     {
@@ -266,6 +269,7 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
+Debug.Write(wxString::Format("QHY: connect done\n"));
     Connected = true;
     return false;
 }
@@ -325,17 +329,35 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
         img.Clear();
 
     // convert frame to un-binned coordinates
-    wxRect unbinnedFrame = Binning > 1 ? wxRect(frame.x * Binning, frame.y * Binning, frame.width * Binning, frame.height * Binning) : frame;
+    // transfer width must be a multiple of 4
+    wxRect unbinnedFrame;
+    if (Binning > 1)
+    {
+        unbinnedFrame = wxRect(frame.x * Binning, frame.y * Binning, frame.width * Binning, frame.height * Binning);
+        int m = 4 * Binning;
+        unbinnedFrame.width = ((unbinnedFrame.width + m - 1) / m) * m;
+        unbinnedFrame.height = ((unbinnedFrame.height + m - 1) / m) * m;
+    }
+    else
+    {
+        unbinnedFrame = frame;
+        unbinnedFrame.width = ((unbinnedFrame.width + 3) / 4) * 4;
+        unbinnedFrame.height = ((unbinnedFrame.height + 3) / 4) * 4;
+    }
 
-    // lzr from QHY says un-binned width must be a multiple of 4
-    int uw = ((unbinnedFrame.width + 3) / 4) * 4;
-    unbinnedFrame.width = uw;
     int xofs = 0;
     if (unbinnedFrame.GetRight() >= m_maxSize.GetWidth())
     {
         int d = unbinnedFrame.GetRight() + 1 - m_maxSize.GetWidth();
         unbinnedFrame.x -= d;
         xofs = d;
+    }
+    int yofs = 0;
+    if (unbinnedFrame.GetBottom() >= m_maxSize.GetHeight())
+    {
+        int d = unbinnedFrame.GetBottom() + 1 - m_maxSize.GetHeight();
+        unbinnedFrame.y -= d;
+        yofs = d;
     }
 
     if (m_roi != unbinnedFrame)
@@ -347,7 +369,8 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
         }
         else
         {
-            Debug.Write(wxString::Format("SetQHYCCDResolution failed! ret = %d\n", ret));
+            Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n",
+                unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight(), ret));
         }
     }
 
@@ -410,15 +433,18 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     {
         img.Subframe = frame;
 
-        int dx = xofs / Binning; // binned-coordinate x-offset
-        const unsigned char *src = RawBuffer;
+        int dy = yofs / Binning;
+        int dxl = xofs / Binning; // binned-coordinate x-offset
+        int dxr = w - frame.width - dxl;
+        const unsigned char *src = RawBuffer + dy * w;
         unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-        for (int y = 0; y < frame.height; y++)
+        for (int y = dy; y < frame.height; y++)
         {
             unsigned short *d = dst;
-            src += dx;
+            src += dxl;
             for (int x = 0; x < frame.width; x++)
                 *d++ = (unsigned short) *src++;
+            src += dxr;
             dst += FullSize.GetWidth();
         }
     }
@@ -434,21 +460,6 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
             }
         }
     }
-
-#if 0 // for testing subframes on the bench
-    static int dx = 0;
-    int ypos = 200;
-    int xpos = FullSize.GetWidth() - 15 + dx;
-if (xpos + 0 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 0] = 22000;
-if (xpos + 1 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 1] = 32000;
-if (xpos + 2 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 2] = 35000;
-if (xpos + 3 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 3] = 35000;
-if (xpos + 4 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 4] = 32000;
-if (xpos + 5 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 5] = 22000;
-
-    if (++dx > 15)
-        dx = 0;
-#endif
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
