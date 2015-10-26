@@ -186,12 +186,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_OSPL130.h
   ${phd_src_dir}/cam_QGuide.cpp
   ${phd_src_dir}/cam_QGuide.h
-
-  ${phd_src_dir}/cam_QHY5II.cpp
-  ${phd_src_dir}/cam_QHY5II.h
-  ${phd_src_dir}/cam_QHY5LII.cpp
-  ${phd_src_dir}/cam_QHY5LII.h
-
+  ${phd_src_dir}/cam_qhy.cpp
+  ${phd_src_dir}/cam_qhy.h
   ${phd_src_dir}/cam_SAC42.cpp
   ${phd_src_dir}/cam_SAC42.h
   ${phd_src_dir}/cam_SACGuide.cpp
@@ -242,9 +238,6 @@ if(WIN32)
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
 
-    ${phd_src_dir}/cam_QHY5IIbase.cpp
-    ${phd_src_dir}/cam_QHY5IIbase.h
-
     # ascom, not there in the sln project -> commented for now 
     # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
     #${phd_src_dir}/cam_ascom.cpp
@@ -256,7 +249,7 @@ elseif(UNIX AND (NOT APPLE))
       ${cam_SRC}
       #${phd_src_dir}/cam_simulator.h
       #${phd_src_dir}/cam_simulator.cpp
-      
+
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
      )

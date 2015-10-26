@@ -1,9 +1,9 @@
 /*
- *  cam_QHY5IIbase.cpp
- *  PHD Guiding
+ *  cam_qhy.cpp
+ *  Open PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2012 Craig Stark.
+ *  Created by Andy Galasso.
+ *  Copyright (c) 2015 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -34,9 +34,9 @@
 
 #include "phd.h"
 
-#if defined(QHY5II) || defined(QHY5LII)
+#if defined(QHY_CAMERA)
 
-#include "cam_QHY5II.h"
+#include "cam_qhy.h"
 
 static bool s_qhySdkInitDone = false;
 
@@ -88,7 +88,7 @@ static void QHYSDKUninit()
     }
 }
 
-Camera_QHY5IIBase::Camera_QHY5IIBase()
+Camera_QHY::Camera_QHY()
 {
     Connected = false;
     m_hasGuideOutput = true;
@@ -99,18 +99,18 @@ Camera_QHY5IIBase::Camera_QHY5IIBase()
     m_camhandle = 0;
 }
 
-Camera_QHY5IIBase::~Camera_QHY5IIBase()
+Camera_QHY::~Camera_QHY()
 {
     delete[] RawBuffer;
     QHYSDKUninit();
 }
 
-wxByte Camera_QHY5IIBase::BitsPerPixel()
+wxByte Camera_QHY::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_QHY5IIBase::Connect(const wxString& camId)
+bool Camera_QHY::Connect(const wxString& camId)
 {
     if (QHYSDKInit())
     {
@@ -164,7 +164,6 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
-Debug.Write(wxString::Format("QHY: call InitQHYCCD handle = %p\n", m_camhandle));
     int ret = InitQHYCCD(m_camhandle);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -235,7 +234,7 @@ Debug.Write(wxString::Format("QHY: call InitQHYCCD handle = %p\n", m_camhandle))
     if (Binning > MaxBinning)
         Binning = MaxBinning;
 
-Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
+    Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
     ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -259,7 +258,7 @@ Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
     m_curExposure = -1;
     m_roi = wxRect(0, 0, FullSize.GetWidth() * Binning, FullSize.GetHeight() * Binning);  // un-binned coordinates
 
-Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
+    Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
     ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
     if (ret != QHYCCD_SUCCESS)
     {
@@ -269,12 +268,12 @@ Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_ro
         return true;
     }
 
-Debug.Write(wxString::Format("QHY: connect done\n"));
+    Debug.Write(wxString::Format("QHY: connect done\n"));
     Connected = true;
     return false;
 }
 
-bool Camera_QHY5IIBase::Disconnect()
+bool Camera_QHY::Disconnect()
 {
     StopQHYCCDLive(m_camhandle);
     CloseQHYCCD(m_camhandle);
@@ -285,7 +284,7 @@ bool Camera_QHY5IIBase::Disconnect()
     return false;
 }
 
-bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration)
+bool Camera_QHY::ST4PulseGuideScope(int direction, int duration)
 {
     int qdir;
 
@@ -309,7 +308,7 @@ static bool StopExposure()
     return true;
 }
 
-bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (Binning != m_curBin)
     {

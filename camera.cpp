@@ -76,8 +76,8 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_qhy5.h"
 #endif
 
-#if defined (QHY5II)
- #include "cam_QHY5II.h"
+#if defined (QHY_CAMERA)
+ #include "cam_qhy.h"
 #endif
 
 #if defined (ZWO_ASI)
@@ -86,10 +86,6 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
 #if defined (ALTAIR)
 #include "cam_Altair.h"
-#endif
-
-#if defined (QHY5LII)
- #include "cam_QHY5LII.h"
 #endif
 
 #if defined (ORION_DSCI)
@@ -270,12 +266,8 @@ wxArrayString GuideCamera::List(void)
 #if defined (CAM_QHY5)
     CameraList.Add(_T("QHY 5"));
 #endif
-#if defined (QHY5II)
-    CameraList.Add(_T("QHY 5-II"));
-#endif
-#if defined (QHY5LII)
-    CameraList.Add(_T("QHY 5L-II Mono"));
-    CameraList.Add(_T("QHY 5L-II Color"));
+#if defined (QHY_CAMERA)
+    CameraList.Add(_T("QHY Camera"));
 #endif
 #if defined (ALTAIR)
 	CameraList.Add(_T("Altair Camera"));
@@ -402,16 +394,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn->Name = _T("MagZero MZ-5");
         }
 #endif
-#if defined (QHY5II)
-        else if (choice.Find(_T("QHY 5-II")) + 1) {
-            pReturn = new Camera_QHY5IIClass();
+#if defined (QHY_CAMERA)
+        else if (choice.Find(_T("QHY Camera")) != wxNOT_FOUND) {
+            pReturn = new Camera_QHY();
         }
-#endif
-#if defined (QHY5LII)
-        else if (choice.Find(_T("QHY 5L-II Mono")) != wxNOT_FOUND)
-            pReturn = new Camera_QHY5LIIM();
-        else if (choice.Find(_T("QHY 5L-II Color")) != wxNOT_FOUND)
-            pReturn = new Camera_QHY5LIIC();
 #endif
 #if defined(ALTAIR)
 		else if (choice.Find(_T("Altair Camera")) + 1)

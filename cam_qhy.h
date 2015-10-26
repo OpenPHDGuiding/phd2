@@ -1,9 +1,9 @@
 /*
- *  cam_QHY5II.cpp
- *  PHD Guiding
+ *  cam_qhy.h
+ *  Open PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2012 Craig Stark.
+ *  Created by Andy Galasso
+ *  Copyright (c) 2015 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,16 +32,40 @@
  *
  */
 
+#ifndef CAM_QHY_INCLUDED
+#define CAM_QHY_INCLUDED
 
-#include "phd.h"
-#if defined (QHY5II)
-#include "cam_QHY5II.h"
+#include "camera.h"
+#include "qhyccd.h"
 
-Camera_QHY5IIClass::Camera_QHY5IIClass()
+class Camera_QHY : public GuideCamera
 {
-    m_cameraDLLName = _T("qhy5IIdll");
-    Name = _T("QHY 5-II");
-    FullSize = wxSize(1280, 1024);
-}
+    qhyccd_handle *m_camhandle;
+    double m_gainMin;
+    double m_gainMax;
+    double m_gainStep;
+    unsigned char *RawBuffer;
+    wxSize m_maxSize;
+    int m_curGain;
+    int m_curExposure;
+    unsigned short m_curBin;
+    wxRect m_roi;
+    bool Color;
 
-#endif
+public:
+
+    Camera_QHY();
+    ~Camera_QHY();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+
+    bool    ST4PulseGuideScope(int direction, int duration);
+
+    bool HasNonGuiCapture() { return true; }
+    bool ST4HasNonGuiMove() { return true; }
+    wxByte BitsPerPixel();
+};
+
+#endif // QHY5IIBASE_H_INCLUDED

@@ -68,8 +68,7 @@
 # define ASCOM_LATECAMERA
 # define SBIG
 # define SBIGROTATOR_CAMERA // must follow SBIG
-# define QHY5II
-# define QHY5LII
+# define QHY_CAMERA
 # define OPENCV_CAMERA
 # define LE_CAMERA
 # define LE_SERIAL_CAMERA
