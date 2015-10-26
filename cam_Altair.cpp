@@ -48,14 +48,54 @@
 # include <DelayImp.h>
 #endif
 
+class AltairCameraDlg : public wxDialog
+{
+public:
+
+	wxCheckBox* m_reduceRes;
+	AltairCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Altair Camera Settings"),
+		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
+	~AltairCameraDlg() { }
+};
+
+AltairCameraDlg::AltairCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+	: wxDialog(parent, id, title, pos, size, style)
+{
+
+
+	SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+	wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
+	wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxHORIZONTAL);
+
+	m_reduceRes = new wxCheckBox(this, wxID_ANY, wxT("Reduced Resolution (by ~20%)"), wxDefaultPosition, wxDefaultSize, 0);
+	sbSizer3->Add(m_reduceRes, 0, wxALL, 5);
+	bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+	wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
+	wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
+	wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+	sdbSizer2->AddButton(sdbSizer2OK);
+	sdbSizer2->AddButton(sdbSizer2Cancel);
+	sdbSizer2->Realize();
+	bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+
+	SetSizer(bSizer12);
+	Layout();
+
+	Centre(wxBOTH);
+}
+
 Camera_Altair::Camera_Altair()
     : m_buffer(0),
     m_capturing(false)
 {
+	PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
+
     Name = _T("Altair Camera");
     Connected = false;
     m_hasGuideOutput = true;
-    HasSubframes = true;
+    HasSubframes = false;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will frash if we start false then change to true later when the camera is connected
 }
 
@@ -115,12 +155,14 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     }
 
     Connected = true;
+	bool hasROI = false;
 
     for (int i = 0; i < numCameras; i++)
     {
         if (ai[i].id == camId)
         {
             Name = ai[i].displayname;
+			hasROI = (ai[i].model->flag & ALTAIR_FLAG_ROI_HARDWARE) != 0;
             break;
         }
     }
@@ -133,14 +175,23 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 		return true;
 	}
 
+	ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+	if (hasROI && ReduceResolution)
+	{
+		width *= 0.8;
+		height *= 0.8;
+	}
+
     FullSize.x = width;
     FullSize.y = height;
+
+
 
     delete[] m_buffer;
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
 	//TODO
-//    PixelSize = info.PixelSize;
+    PixelSize = 3.75; // for all cameras so far....
 
     wxYield();
 
@@ -162,9 +213,10 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     m_frame = wxRect(FullSize);
     Debug.AddLine("Altair: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
 
-	/// TODO ?
-    //ASISetStartPos(m_handle, m_frame.GetLeft(), m_frame.GetTop());
-    //ASISetROIFormat(m_handle, m_frame.GetWidth(), m_frame.GetHeight(), 1, ASI_IMG_Y8);
+	if (hasROI && ReduceResolution)
+	{
+		Altair_put_Roi(m_handle, 0, 0, width, height);
+	}
 
     return false;
 }
@@ -183,6 +235,18 @@ bool Camera_Altair::StopCapture(void)
 void Camera_Altair::FrameReady(void)
 {
 	m_frameReady = true;
+}
+
+void Camera_Altair::ShowPropertyDialog()
+{
+	AltairCameraDlg dlg(wxGetApp().GetTopWindow());
+	bool value = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+	dlg.m_reduceRes->SetValue(value);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		ReduceResolution = dlg.m_reduceRes->GetValue();
+		pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", ReduceResolution);
+	}
 }
 
 bool Camera_Altair::Disconnect()
@@ -242,29 +306,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     }
 
     wxRect frame;
-    wxPoint subframePos; // position of subframe within frame
-
-    //bool useSubframe = UseSubframes;
-
-    //if (subframe.width <= 0 || subframe.height <= 0)
-    //    useSubframe = false;
-
-    //if (useSubframe)
-    //{
-    //    // ensure transfer size is a multiple of 1024
-    //    //  moving the sub-frame or resizing it is somewhat costly (stopCapture / startCapture)
-
-    //    frame.SetLeft(round_down(subframe.GetLeft(), 32));
-    //    frame.SetRight(round_up(subframe.GetRight() + 1, 32) - 1);
-    //    frame.SetTop(round_down(subframe.GetTop(), 32));
-    //    frame.SetBottom(round_up(subframe.GetBottom() + 1, 32) - 1);
-
-    //    subframePos = subframe.GetLeftTop() - frame.GetLeftTop();
-    //}
-    //else
-    //{
-        frame = wxRect(FullSize);
-//    }
+    frame = wxRect(FullSize);
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;
@@ -284,41 +326,23 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         Altair_put_ExpoAGain(m_handle, new_gain);
     }
 
-  /*  bool size_change = frame.GetSize() != m_frame.GetSize();
-    bool pos_change = frame.GetLeftTop() != m_frame.GetLeftTop();
-
-    if (size_change || pos_change)
-    {
-        m_frame = frame;
-        Debug.AddLine("Altair: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
-    }
-
-    if (size_change)
-    {
-        StopCapture();
-
-        ASI_ERROR_CODE status = ASISetROIFormat(m_handle, frame.GetWidth(), frame.GetHeight(), 1, ASI_IMG_Y8);
-        if (status != ASI_SUCCESS)
-            Debug.AddLine("Altair: setImageFormat(%d,%d) => %d", frame.GetWidth(), frame.GetHeight(), status);
-    }
-
-    if (pos_change)
-    {
-        ASI_ERROR_CODE status = ASISetStartPos(m_handle, frame.GetLeft(), frame.GetTop());
-        if (status != ASI_SUCCESS)
-            Debug.AddLine("Altair: setStartPos(%d,%d) => %d", frame.GetLeft(), frame.GetTop(), status);
-    }*/
 
     // the camera and/or driver will buffer frames and return the oldest frame,
     // which could be quite stale. read out all buffered frames so the frame we
     // get is current
 
     //flush_buffered_image(m_handle, img);
+	unsigned int width, height;
+	while (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
+	{
+		
+	}
 
-    if (!m_capturing)
+
+	m_frameReady = false;
+	if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-		m_frameReady = false;
 		Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
         m_capturing = true;
     }
@@ -340,7 +364,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 		if (m_frameReady)
 		{
 			m_frameReady = false;
-			unsigned int width, height;
+			
 			if (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
 				break;
 		}
@@ -359,26 +383,8 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         }
     }
 
-    //if (useSubframe)
-    //{
-    //    img.Subframe = subframe;
-
-    //    // Clear out the image
-    //    img.Clear();
-
-    //    for (int y = 0; y < subframe.height; y++)
-    //    {
-    //        const unsigned char *src = m_buffer + (y + subframePos.y) * frame.width + subframePos.x;
-    //        unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
-    //        for (int x = 0; x < subframe.width; x++)
-    //            *dst++ = *src++;
-    //    }
-    //}
-    //else
-    {
-        for (int i = 0; i < img.NPixels; i++)
-            img.ImageData[i] = m_buffer[i];
-    }
+    for (int i = 0; i < img.NPixels; i++)
+        img.ImageData[i] = m_buffer[i];
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 

@@ -181,7 +181,7 @@ class wxSingleInstanceChecker;
 
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
-extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
+extern Scope *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
 
 inline static Scope *TheScope(void)

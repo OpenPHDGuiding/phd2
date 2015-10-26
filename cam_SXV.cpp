@@ -42,6 +42,12 @@
 
 #include <wx/choicdlg.h>
 
+#if defined(__WINDOWS__)
+typedef HANDLE SXHandle;
+#else
+typedef void* SXHandle;
+#endif
+
 extern Camera_SXVClass Camera_SXV;
 
 enum {
@@ -61,7 +67,7 @@ static wxString NameFromModel(int model)
     {
         case 0x05: m = "SX-H5"; break;
         case 0x85: m = "SX-H5C"; break;
-        case 0x09: m = "SX-H9"; break;
+        case 0x09: m = "SX-H9"; break; // this is almost certainly a Superstar
         case 0x89: m = "SX-H9C"; break;
         case 0x39: m = "SX-LS9"; break;
         case 0x19: m = "SX-SX9"; break;
@@ -108,12 +114,14 @@ static wxString NameFromModel(int model)
         default: m = wxString::Format("SX Camera Model %d", model); break;
     }
 
-    if (model == 70)
-        m = _T("SXV-Lodestar");
+    if (model == 0x46)
+        m = _T("SX Lodestar");
     else if (model == SX_CMOS_GUIDER)
-        m = _T("SX CMOS Guider");
-    else if (model == 0x39)
-        m = _T("SX Superstar guider");
+        m = _T("SX CoStar");
+    else if (model == 0x3A || model == 0x19)
+        m = _T("SX Superstar");
+    else if (model == 0x3C || model == 0xBC)
+        m = _T("SX Ultrastar");
 
     return m;
 }
@@ -122,7 +130,6 @@ Camera_SXVClass::Camera_SXVClass()
 {
     Connected = false;
     Name = _T("Starlight Xpress SXV");
-    FullSize = m_darkFrameSize = wxSize(1280, 1024);
     HasGainControl = false;
     m_hasGuideOutput = true;
     Interlaced = false;
@@ -185,30 +192,10 @@ void Camera_SXVClass::ShowPropertyDialog()
     }
 }
 
-#if defined (__APPLE__)
-
-int SXCamAttached (void *cam)
-{
-    // This should return 1 if the cam passed in here is considered opened, 0 otherwise
-    //wxMessageBox(wxString::Format("Found SX cam model %d", (int) sxGetCameraModel(cam)));
-    //SXVCamera.hCam = cam;
-    return 0;
-}
-
-void SXCamRemoved (void *cam)
-{
-    //  CameraPresent = false;
-    //SXVCamera.hCam = NULL;
-}
-
-#endif
-
 bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-#if defined(__WINDOWS__)
-
-    HANDLE hCams[SXCCD_MAX_CAMS];
-
+    SXHandle hCams[SXCCD_MAX_CAMS];
+    
     int ncams = sxOpen(hCams);
 
     for (int i = 0; i < ncams; i++)
@@ -221,24 +208,6 @@ bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
     // close handles
     for (int j = 0; j < ncams; j++)
         sxClose(hCams[j]);
-
-#else  // OSX
-
-    int ncams = sx2EnumDevices();
-
-    for (int i = 0; i < ncams; i++)
-    {
-        int model = (int)sx2GetID(i);
-        if (model)
-        {
-            char devname[32];
-            sx2GetName(i, devname);
-            names.Add(wxString::Format("%d: %s", i + 1, devname));
-            ids.Add(wxString::Format("%d", i));
-        }
-    }
-
-#endif // OSX
 
     return false;
 }
@@ -280,9 +249,7 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     else
         camId.ToLong(&idx);
 
-#if defined(__WINDOWS__)
-
-    HANDLE hCams[SXCCD_MAX_CAMS];
+    SXHandle hCams[SXCCD_MAX_CAMS];
 
     int ncams = sxOpen(hCams);
     if (ncams == 0)
@@ -303,22 +270,6 @@ bool Camera_SXVClass::Connect(const wxString& camId)
             sxClose(hCams[i]);
 
     hCam = hCams[idx];
-
-#else  // OSX
-
-    int ncams = sx2EnumDevices();
-    if (idx < 0 || idx >= ncams)
-    {
-        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, ncams));
-        return true;
-    }
-
-    hCam = sx2Open((int) idx);
-
-    if (hCam == NULL)
-        return true;
-
-#endif
 
     bool err = false;
 
@@ -416,12 +367,7 @@ bool Camera_SXVClass::Disconnect()
     RawDataSize = 0;
     Connected = false;
     sxReset(hCam);
-
-#ifdef __APPLE__
-    sx2Close(hCam);
-#else
     sxClose(hCam);
-#endif
 
     hCam = NULL;
 
@@ -651,11 +597,7 @@ static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned
 {
     int ret;
 
-#if defined(__WINDOWS__)
     ret = sxReadPixels(sxHandle, pixels, count);
-#else
-    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short));
-#endif
 
     if (ret != count * sizeof(unsigned short))
     {

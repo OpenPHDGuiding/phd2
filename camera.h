@@ -133,7 +133,7 @@ public:
     GuideCamera(void);
     virtual ~GuideCamera(void);
 
-    virtual bool HasNonGuiCapture(void);
+    virtual bool HasNonGuiCapture(void) = 0;
     virtual wxByte BitsPerPixel(void) = 0;
 
     static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
@@ -189,8 +189,12 @@ protected:
         CAPT_FAIL_MEMORY,
         CAPT_FAIL_TIMEOUT,
     };
+    enum ReconnectType {
+        NO_RECONNECT,
+        RECONNECT,
+    };
     void DisconnectWithAlert(CaptureFailType type);
-    void DisconnectWithAlert(const wxString& msg);
+    void DisconnectWithAlert(const wxString& msg, ReconnectType reconnect);
 };
 
 inline int GuideCamera::GetTimeoutMs(void) const

@@ -104,6 +104,7 @@ public:
     bool   CanPulseGuide() { return (pulseGuideNS_prop && pulseGuideEW_prop);}
     bool   CanReportPosition(void) { return (coord_prop); }
     bool   CanSlew(void) { return (coord_prop);}
+    bool   CanSlewAsync(void);
     bool   CanCheckSlewing(void) { return (coord_prop); }
 
     double GetGuidingDeclination(void);
@@ -111,6 +112,8 @@ public:
     bool   GetCoordinates(double *ra, double *dec, double *siderealTime);
     bool   GetSiteLatLong(double *latitude, double *longitude);
     bool   SlewToCoordinates(double ra, double dec);
+    bool   SlewToCoordinatesAsync(double ra, double dec);
+    void   AbortSlew(void);
     bool   Slewing(void);
 };
 

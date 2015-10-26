@@ -55,6 +55,7 @@ public:
         ID_PIXELSIZE,
         ID_DETECT_PIXELSIZE,
         ID_FOCALLENGTH,
+        ID_GUIDESPEED,
         ID_PREV,
         ID_NEXT
     };
@@ -69,6 +70,7 @@ private:
     wxSpinCtrlDouble *m_pPixelSize;
     wxButton *m_detectPixelSizeBtn;
     wxSpinCtrlDouble *m_pFocalLength;
+    wxSpinCtrlDouble *m_pGuideSpeed;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
     wxStaticBoxSizer *m_pHelpGroup;
@@ -86,6 +88,7 @@ private:
     wxString m_SelectedAuxMount;
     wxString m_SelectedAO;
     int m_FocalLength;
+    double m_GuideSpeed;
     double m_PixelSize;
     wxString m_ProfileName;
     wxBitmap *m_bitmaps[NUM_PAGES];
@@ -96,6 +99,7 @@ private:
     void OnDetectPixelSize(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
+    void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
     void ShowStatus(const wxString& msg, bool appending = false);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);

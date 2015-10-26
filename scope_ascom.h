@@ -65,11 +65,12 @@ class ScopeASCOM : public Scope
     DISPID dispid_abortslew;
 
     // other private varialbles
-    bool m_bCanCheckPulseGuiding;
-    bool m_bCanGetCoordinates;
-    bool m_bCanGetGuideRates;
-    bool m_bCanSlew;
-    bool m_bCanPulseGuide;
+    bool m_canCheckPulseGuiding;
+    bool m_canGetCoordinates;
+    bool m_canGetGuideRates;
+    bool m_canSlew;
+    bool m_canSlewAsync;
+    bool m_canPulseGuide;
 
     bool m_abortSlewWhenGuidingStuck;
 
@@ -86,27 +87,30 @@ public:
     virtual ~ScopeASCOM(void);
     static wxArrayString EnumAscomScopes(void);
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    bool Connect(void);
+    bool Disconnect(void);
 
-    virtual bool HasSetupDialog(void) const;
-    virtual void SetupDialog(void);
+    bool HasSetupDialog(void) const;
+    void SetupDialog(void);
 
-    virtual bool HasNonGuiMove(void);
+    bool HasNonGuiMove(void);
 
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
-    virtual double GetGuidingDeclination(void);
-    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
-    virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
-    virtual bool GetSiteLatLong(double *latitude, double *longitude);
-    virtual bool CanSlew(void);
-    virtual bool CanReportPosition(void);
-    virtual bool CanPulseGuide(void);
-    virtual bool SlewToCoordinates(double ra, double dec);
-    virtual bool CanCheckSlewing(void);
-    virtual bool Slewing(void);
-    virtual PierSide SideOfPier(void);
+    double GetGuidingDeclination(void);
+    bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
+    bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    bool GetSiteLatLong(double *latitude, double *longitude);
+    bool CanSlew(void);
+    bool CanSlewAsync(void);
+    bool CanReportPosition(void);
+    bool CanPulseGuide(void);
+    bool SlewToCoordinates(double ra, double dec);
+    bool SlewToCoordinatesAsync(double ra, double dec);
+    void AbortSlew(void);
+    bool CanCheckSlewing(void);
+    bool Slewing(void);
+    PierSide SideOfPier(void);
 };
 
 #endif // GUIDE_ASCOM

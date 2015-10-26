@@ -54,7 +54,7 @@
 ScopeASCOM::ScopeASCOM(const wxString& choice)
 {
     m_choice = choice;
-    m_bCanPulseGuide = false;                           // will get updated in Connect()
+    m_canPulseGuide = false;                           // will get updated in Connect()
 
     dispid_connected = DISPID_UNKNOWN;
     dispid_ispulseguiding = DISPID_UNKNOWN;
@@ -285,10 +285,10 @@ bool ScopeASCOM::Connect(void)
         }
 
         // ... get the dispatch ID for the "IsPulseGuiding" property ....
-        m_bCanCheckPulseGuiding = true;
+        m_canCheckPulseGuiding = true;
         if (!pScopeDriver.GetDispatchId(&dispid_ispulseguiding, L"IsPulseGuiding"))
         {
-            m_bCanCheckPulseGuiding = false;
+            m_canCheckPulseGuiding = false;
             Debug.AddLine("cannot get dispid_ispulseguiding");
             // don't fail if we can't get the status on this - can live without it as it's really a safety net for us
         }
@@ -308,21 +308,21 @@ bool ScopeASCOM::Connect(void)
         }
 
         // ... get the dispatch ID for the "Declination" property ....
-        m_bCanGetCoordinates = true;
+        m_canGetCoordinates = true;
         if (!pScopeDriver.GetDispatchId(&dispid_declination, L"Declination"))
         {
-            m_bCanGetCoordinates = false;
+            m_canGetCoordinates = false;
             Debug.AddLine("cannot get dispid_declination");
         }
         else if (!pScopeDriver.GetDispatchId(&dispid_rightascension, L"RightAscension"))
         {
             Debug.AddLine("cannot get dispid_rightascension");
-            m_bCanGetCoordinates = false;
+            m_canGetCoordinates = false;
         }
         else if (!pScopeDriver.GetDispatchId(&dispid_siderealtime, L"SiderealTime"))
         {
             Debug.AddLine("cannot get dispid_siderealtime");
-            m_bCanGetCoordinates = false;
+            m_canGetCoordinates = false;
         }
 
         if (!pScopeDriver.GetDispatchId(&dispid_sitelatitude, L"SiteLatitude"))
@@ -334,26 +334,26 @@ bool ScopeASCOM::Connect(void)
             Debug.AddLine("cannot get dispid_sitelongitude");
         }
 
-        m_bCanSlew = true;
+        m_canSlew = true;
         if (!pScopeDriver.GetDispatchId(&dispid_slewtocoordinates, L"SlewToCoordinates"))
         {
-            m_bCanSlew = false;
+            m_canSlew = false;
             Debug.AddLine("cannot get dispid_slewtocoordinates");
         }
 
         // ... get the dispatch IDs for the two guide rate properties - if we can't get them, no sweat, doesn't matter for actual guiding
         // Used for things like calibration sanity checking, backlash clearing, etc.
-        m_bCanGetGuideRates = true;         // Likely case, required for any ASCOM driver at V2 or later
+        m_canGetGuideRates = true;         // Likely case, required for any ASCOM driver at V2 or later
         if (!pScopeDriver.GetDispatchId(&dispid_decguiderate, L"GuideRateDeclination"))
         {
             Debug.AddLine("cannot get dispid_decguiderate");
-            m_bCanGetGuideRates = false;
+            m_canGetGuideRates = false;
             // don't throw if we can't get this one
         }
         else if (!pScopeDriver.GetDispatchId(&dispid_raguiderate, L"GuideRateRightAscension"))
         {
             Debug.AddLine("cannot get dispid_raguiderate");
-            m_bCanGetGuideRates = false;
+            m_canGetGuideRates = false;
             // don't throw if we can't get this one
         }
 
@@ -420,26 +420,30 @@ bool ScopeASCOM::Connect(void)
         }
 
         // see if we can pulse guide
-        m_bCanPulseGuide = true;
-        if (!pScopeDriver.GetProp(&vRes, L"CanPulseGuide") || !vRes.boolVal)
+        m_canPulseGuide = true;
+        if (!pScopeDriver.GetProp(&vRes, L"CanPulseGuide") || vRes.boolVal != VARIANT_TRUE)
         {
             Debug.AddLine("Connecting to ASCOM scope that does not support PulseGuide");
-            m_bCanPulseGuide = false;
+            m_canPulseGuide = false;
         }
 
-        // see if we can slew
-        if (m_bCanSlew)
+        // see if scope can slew
+        m_canSlewAsync = false;
+        if (m_canSlew)
         {
             if (!pScopeDriver.GetProp(&vRes, L"CanSlew"))
             {
                 Debug.AddLine("ASCOM scope got error invoking CanSlew: " + ExcepMsg(pScopeDriver.Excep()));
-                m_bCanSlew = false;
+                m_canSlew = false;
             }
-            else if (!vRes.boolVal)
+            else if (vRes.boolVal != VARIANT_TRUE)
             {
                 Debug.AddLine("ASCOM scope reports CanSlew = false");
-                m_bCanSlew = false;
+                m_canSlew = false;
             }
+
+            m_canSlewAsync = pScopeDriver.GetProp(&vRes, L"CanSlewAsync") && vRes.boolVal == VARIANT_TRUE;
+            Debug.AddLine(wxString::Format("ASCOM scope CanSlewAsync is %s", m_canSlewAsync ? "true" : "false"));
         }
 
         pFrame->SetStatusText(Name()+_(" connected"));
@@ -447,7 +451,7 @@ bool ScopeASCOM::Connect(void)
 
         Debug.AddLine("Connect success");
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -532,7 +536,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             throw ERROR_INFO("ASCOM Scope: attempt to guide when not connected");
         }
 
-        if (!m_bCanPulseGuide)
+        if (!m_canPulseGuide)
         {
             // Could happen if move command is issued on the Aux mount or CanPulseGuide property got changed on the fly
             pFrame->Alert(_("ASCOM driver does not support PulseGuide"));
@@ -597,11 +601,11 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             Debug.AddLine(wxString::Format("pulseguide: [%x] %s", hr, _com_error(hr).ErrorMessage()));
 
             // Make sure nothing got by us and the mount can really handle pulse guide - HIGHLY unlikely
-            if (scope.GetProp(&vRes, L"CanPulseGuide") && !vRes.boolVal)
+            if (scope.GetProp(&vRes, L"CanPulseGuide") && vRes.boolVal != VARIANT_TRUE)
             {
                 Debug.AddLine("Tried to guide mount that has no PulseGuide support");
                 // This will trigger a nice alert the next time through Guide
-                m_bCanPulseGuide = false;
+                m_canPulseGuide = false;
             }
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed: " + ExcepMsg(excep));
         }
@@ -701,11 +705,11 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
 
     try
     {
-        if (!m_bCanCheckPulseGuiding)
+        if (!m_canCheckPulseGuiding)
         {
             // Assume all is good - best we can do as this is really a fail-safe check.  If we can't call this property (lame driver) guides will have to
             // enforce the wait.  But, enough don't support this that we can't throw an error.
-            throw ERROR_INFO("ASCOM Scope: IsGuiding - !m_bCanCheckPulseGuiding");
+            throw ERROR_INFO("ASCOM Scope: IsGuiding - !m_canCheckPulseGuiding");
         }
 
         // First, check to see if already moving
@@ -718,7 +722,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
 
         bReturn = vRes.boolVal == VARIANT_TRUE;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bReturn = false;
@@ -775,7 +779,7 @@ bool ScopeASCOM::Slewing(void)
         GITObjRef scope(m_gitEntry);
         bReturn = IsSlewing(&scope);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bReturn = false;
@@ -802,9 +806,9 @@ double ScopeASCOM::GetGuidingDeclination(void)
             throw ERROR_INFO("ASCOM Scope: cannot get Declination when not connected to mount");
         }
 
-        if (!m_bCanGetCoordinates)
+        if (!m_canGetCoordinates)
         {
-            throw THROW_INFO("!m_bCanGetCoordinates");
+            throw THROW_INFO("!m_canGetCoordinates");
         }
 
         GITObjRef scope(m_gitEntry);
@@ -817,10 +821,10 @@ double ScopeASCOM::GetGuidingDeclination(void)
 
         dReturn = radians(vRes.dblVal);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        m_bCanGetCoordinates = false;
+        m_canGetCoordinates = false;
     }
 
     Debug.AddLine("ScopeASCOM::GetDeclination() returns %.1f", degrees(dReturn));
@@ -841,7 +845,7 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
             throw ERROR_INFO("ASCOM Scope: cannot get guide rates when not connected");
         }
 
-        if (!m_bCanGetGuideRates)
+        if (!m_canGetGuideRates)
         {
             throw THROW_INFO("ASCOM Scope: not capable of getting guide rates");
         }
@@ -864,7 +868,7 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 
         *pRAGuideRate = vRes.dblVal;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         bError = true;
         POSSIBLY_UNUSED(Msg);
@@ -887,7 +891,7 @@ bool ScopeASCOM::GetCoordinates(double *ra, double *dec, double *siderealTime)
             throw ERROR_INFO("ASCOM Scope: cannot get coordinates when not connected");
         }
 
-        if (!m_bCanGetCoordinates)
+        if (!m_canGetCoordinates)
         {
             throw THROW_INFO("ASCOM Scope: not capable of getting coordinates");
         }
@@ -919,7 +923,7 @@ bool ScopeASCOM::GetCoordinates(double *ra, double *dec, double *siderealTime)
         *dec = vDec.dblVal;
         *siderealTime = vST.dblVal;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         bError = true;
         POSSIBLY_UNUSED(Msg);
@@ -961,7 +965,7 @@ bool ScopeASCOM::GetSiteLatLong(double *latitude, double *longitude)
         *latitude = vLat.dblVal;
         *longitude = vLong.dblVal;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         bError = true;
         POSSIBLY_UNUSED(Msg);
@@ -979,9 +983,27 @@ bool ScopeASCOM::CanSlew(void)
             throw ERROR_INFO("ASCOM Scope: cannot get CanSlew property when not connected to mount");
         }
 
-        return m_bCanSlew;
+        return m_canSlew;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        return false;
+    }
+}
+
+bool ScopeASCOM::CanSlewAsync(void)
+{
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: cannot get CanSlewAsync property when not connected to mount");
+        }
+
+        return m_canSlewAsync;
+    }
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         return false;
@@ -995,7 +1017,7 @@ bool ScopeASCOM::CanReportPosition(void)
 
 bool ScopeASCOM::CanPulseGuide(void)
 {
-    return m_bCanPulseGuide;
+    return m_canPulseGuide;
 }
 
 bool ScopeASCOM::SlewToCoordinates(double ra, double dec)
@@ -1009,7 +1031,7 @@ bool ScopeASCOM::SlewToCoordinates(double ra, double dec)
             throw ERROR_INFO("ASCOM Scope: cannot slew when not connected");
         }
 
-        if (!m_bCanSlew)
+        if (!m_canSlew)
         {
             throw THROW_INFO("ASCOM Scope: not capable of slewing");
         }
@@ -1023,13 +1045,54 @@ bool ScopeASCOM::SlewToCoordinates(double ra, double dec)
             throw ERROR_INFO("ASCOM Scope: slew to coordinates failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
     return bError;
+}
+
+bool ScopeASCOM::SlewToCoordinatesAsync(double ra, double dec)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: cannot slew when not connected");
+        }
+
+        if (!m_canSlewAsync)
+        {
+            throw THROW_INFO("ASCOM Scope: not capable of async slewing");
+        }
+
+        GITObjRef scope(m_gitEntry);
+
+        Variant vRes;
+
+        if (!scope.InvokeMethod(&vRes, L"SlewToCoordinatesAsync", ra, dec))
+        {
+            throw ERROR_INFO("ASCOM Scope: async slew to coordinates failed");
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+void ScopeASCOM::AbortSlew(void)
+{
+    GITObjRef scope(m_gitEntry);
+    Variant vRes;
+    scope.InvokeMethod(&vRes, L"AbortSlew");
 }
 
 PierSide ScopeASCOM::SideOfPier(void)
@@ -1062,7 +1125,7 @@ PierSide ScopeASCOM::SideOfPier(void)
         case 1: pierSide = PIER_SIDE_WEST; break;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

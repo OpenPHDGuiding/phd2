@@ -48,7 +48,7 @@
 PhdConfig *pConfig=NULL;
 Mount *pMount = NULL;
 Mount *pSecondaryMount = NULL;
-Mount *pPointingSource = NULL;
+Scope *pPointingSource = NULL;
 MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 
@@ -162,6 +162,9 @@ bool PhdApp::OnInit()
     }
     wxSetlocale(LC_NUMERIC, "C");
 
+    Debug.RemoveOldFiles();
+    GuideLog.RemoveOldFiles();
+
     pConfig->InitializeProfile();
 
     PhdController::OnAppInit();
@@ -188,9 +191,6 @@ int PhdApp::OnExit(void)
     assert(pCamera == NULL);
 
     PhdController::OnAppExit();
-
-    Debug.RemoveOldFiles();
-    GuideLog.RemoveOldFiles();
 
     delete pConfig;
     pConfig = NULL;

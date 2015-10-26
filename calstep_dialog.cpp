@@ -47,7 +47,7 @@
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
 
-const double CalstepDialog::DEFAULT_GUIDESPEED = 1.0;       // 100% sidereal rate, help insure we don't end up with too few steps
+const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;       // 50% sidereal rate, apparently a common mount default value
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
@@ -124,6 +124,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     int idx = binning - 1;
     m_binningChoice->Select(idx);
     AddTableEntry(m_pInputTableSizer, _("Camera binning"), m_binningChoice, _("Guide camera pixel binning"));
+    m_binningChoice->Enable(m_binningChoice->GetCount() > 1);
 
     // Guide speed
     m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);

@@ -46,7 +46,7 @@ class Camera_Altair : public GuideCamera
     int m_maxGain;
     HAltair m_handle;
     volatile bool m_frameReady;
-
+	bool ReduceResolution;
 public:
     Camera_Altair();
     ~Camera_Altair();
@@ -60,6 +60,7 @@ public:
     void    ClearGuidePort();
 
     void    FrameReady();
+	void 	ShowPropertyDialog();
 
     bool HasNonGuiCapture() { return true; }
     bool ST4HasNonGuiMove() { return true; }

@@ -56,6 +56,7 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
     volatile bool m_canceled;
     wxDateTime m_showTime;
     wxString m_errorMsg;
+    unsigned int m_popupDelayMillis;
 
     RunInBgImpl(RunInBg *bg, wxWindow *parent, const wxString& title, const wxString& message)
         : m_bg(bg),
@@ -65,7 +66,8 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         m_win(0),
         m_shown(false),
         m_done(false),
-        m_canceled(false)
+        m_canceled(false),
+        m_popupDelayMillis(2500)
     {
     }
 
@@ -84,7 +86,7 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         CreateThread();
         wxThread *thread = GetThread();
         thread->Run();
-        m_showTime = wxDateTime::UNow() + wxTimeSpan(0, 0, 2, 500);
+        m_showTime = wxDateTime::UNow() + wxTimeSpan(0, 0, m_popupDelayMillis / 1000, m_popupDelayMillis % 1000);
         Start(250); // start timer
         while (!m_done && !m_canceled)
         {
@@ -160,6 +162,11 @@ RunInBg::RunInBg(wxWindow *parent, const wxString& title, const wxString& messag
 RunInBg::~RunInBg(void)
 {
     delete m_impl;
+}
+
+void RunInBg::SetPopupDelay(unsigned int millis)
+{
+    m_impl->m_popupDelayMillis = millis;
 }
 
 bool RunInBg::Run(void)

@@ -94,6 +94,7 @@ class WorkerThread : public wxThread
     wxMessageQueue<bool> m_wakeupQueue;
     wxMessageQueue<WORKER_THREAD_REQUEST> m_highPriorityQueue;
     wxMessageQueue<WORKER_THREAD_REQUEST> m_lowPriorityQueue;
+    bool m_skipSendExposeComplete;
 
 public:
 
@@ -156,6 +157,7 @@ protected:
     /*************      Expose      **************************/
 public:
     void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe);
+    void SetSkipExposeComplete();
 protected:
     bool HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);

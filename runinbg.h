@@ -48,6 +48,7 @@ public:
 
     RunInBg(wxWindow *parent, const wxString& title, const wxString& message);
     virtual ~RunInBg(void);
+    void SetPopupDelay(unsigned int millis);
     bool Run();
 
     // sub-classes implement the background activity in Entry()

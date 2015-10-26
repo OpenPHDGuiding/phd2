@@ -277,6 +277,14 @@ bool DispatchObj::InvokeMethod(Variant *res, DISPID dispid, double arg1, double 
     return SUCCEEDED(hr);
 }
 
+bool DispatchObj::InvokeMethod(Variant *res, OLECHAR *name, double arg1, double arg2)
+{
+    DISPID dispid;
+    if (!GetDispatchId(&dispid, name))
+        return false;
+    return InvokeMethod(res, dispid, arg1, arg2);
+}
+
 bool DispatchObj::InvokeMethod(Variant *res, DISPID dispid)
 {
     DISPPARAMS dispParms;
