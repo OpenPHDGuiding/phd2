@@ -34,6 +34,10 @@
 #if defined (__APPLE__)
 
 //#include <MacTypes.h>
+typedef unsigned short UInt16;
+typedef unsigned char Boolean;
+typedef unsigned long UInt32;
+typedef unsigned char UInt8;
 
 /***************************************************************************\
  *                                                                           *

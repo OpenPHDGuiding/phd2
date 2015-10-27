@@ -46,6 +46,7 @@
 #include <libusb.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 /*
  * Control request fields.
@@ -796,7 +797,7 @@ int sxOpen2(void** sxHandles,const int sxHandlesCount)
         if (isSXCamera(&desc)) {
             
             // check to see if we've already got this device in the array
-            bool found = false;
+            Boolean found = false;
             int j;
             const uint8_t bus = libusb_get_bus_number(device[i]);
             const uint8_t address = libusb_get_device_address(device[i]);
