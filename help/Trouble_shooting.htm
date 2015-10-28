@@ -105,7 +105,55 @@ sanity-checking used by PHD2 works well for a wide range of equipment,
 and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;">Declination Backlash</span><span style="font-weight: bold;"></span><br>One
 of the more common sources of calibration problems, assuming the guide
 commands are working at all, is excessive backlash in declination.
-&nbsp;This is discussed in the <a href="Tools.htm#Declination_Backlash">Tools and Utilities</a> section, along with options for either fixing or side-stepping the problem.<br><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+&nbsp;This is discussed in the <a href="Tools.htm#Declination_Backlash">Tools and Utilities</a> section, along with options for either fixing or side-stepping the problem.<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
+problems getting calibration to complete without alert messages, you
+should run a very simple test to see if the mount is responding to
+guide commands. &nbsp;This test basically mimics what is done during
+calibration, but it is more direct and can give you a better feel for
+what's going on. &nbsp;We'll call it the "star-cross" test. &nbsp;The
+idea is to open the shutter on the main imaging camera, then send guide
+commands that should cause the stars in the field to trace out a
+distinctive cross pattern. &nbsp;In other words, you want to get an
+image that looks something like this: <br><br><img style="width: 360px; height: 382px;" alt="" src="Star_cross_1.png"><br><br>The angular orientation doesn't matter, that's just a function of how you
+have the guide camera rotated. &nbsp;What is important is that the
+lines in the cross are perpendicular and have roughly equal lengths in
+each of the four directions relative to the starting point in the
+center. &nbsp;If the image you get doesn't have this approximate
+appearance, guiding will either be impaired or perhaps impossible.
+&nbsp;For example, consider the following poor result:<br><br><img style="width: 360px; height: 347px;" alt="" src="Bad_Star_Cross_1.png"><br><br>You
+can see the star has moved along only one axis&nbsp; -&nbsp;only
+in right ascension in this example. &nbsp;The declination guide
+commands sent to the mount did nothing at all. &nbsp;Until this is
+fixed in the mount, you won't be able to guide in declination at all
+and will have to disable declination guiding to even complete a
+calibration. &nbsp;There are&nbsp; many other permutations of bad
+results, each suggesting a particular problem in the mount, the guide
+cable, or much less likely, the ASCOM driver for the mount. &nbsp;You
+can safely assume it has nothing to do with PHD2.<br><br>Here are the steps for running the test: <br>
+
+<ol><li>Set the mount guide speed to 1X sidereal.&nbsp; Bring up
+the 'Manual Guide' tool in PHD2 and choose an initial pulse size - start with,
+say, 5 seconds.</li><li>Start a 60 second exposure on the main camera.</li><li>Send
+a 5-second pulse west, then two 5-second pulses east, then a final
+5-second pulse west. &nbsp;This should return the star to its
+approximate starting position. &nbsp;You should&nbsp;wait about 5
+seconds after sending each guide pulse to give the command time to
+complete before sending the next pulse. <span style="font-family: Arial;"></span></li><li>Now send a 5 second pulse north, then two 5-second pulses south, then a final
+5-second pulse north. &nbsp;This should again return the star to its starting position.<br></li><li><span style="font-size: 10pt; font-family: Arial;">
+Wait for the main camera image to download and see what you get.</span></li></ol>You
+can use different pulse lengths if you want, perhaps using smaller
+values to confirm the mount will respond to them. &nbsp;Just be sure
+the total exposure time on the main imaging camera is longer than the
+total&nbsp; of guide durations plus a margin for error. On most mounts,
+the star will not return to its exact center because of some
+declination backlash - you can see that in the first example&nbsp;image. &nbsp;But
+it should be fairly close or you'll need to look more carefully at how
+much declination backlash you have in the mount.<br><br>One benefit to
+using this test is that it reduces things to the absolute basics: will
+the mount move as directed or not. &nbsp;It has nothing to do with PHD2
+guide settings because they aren't involved in the test. &nbsp;You may
+find it helpful to use the test results to communicate with the mount
+manufacturer or other users who understand that specific mount and its typical&nbsp; problems..<br><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
 that the image displayed in the main window is extremely noisy or is
 almost all-white or all-black. &nbsp;Assuming the camera is
 functioning and actually downloading images, the display issues are

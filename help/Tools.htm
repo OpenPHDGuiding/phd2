@@ -22,23 +22,24 @@ experiment with manual dithering. &nbsp;In the 'Tools' menu, click on
 'Manual
 Guide'&nbsp;<span style="font-weight: bold;"><span style="font-weight: bold;"></span></span>and
 a dialog will appear to let you move the mount at guide speed in any
-direction. Each time you press the button, a pulse of the&nbsp;duration
+direction. If you have an
+adaptive optics device attached, you'll see separate move buttons for
+both the AO and the secondary mount. &nbsp;Each time you press the button, a pulse of the&nbsp;duration
 specified in the 'Guide Pulse Duration' field will
 be sent. &nbsp;The default value is the 'calibration step-sze' set in
-the Advanced Options dialog. &nbsp;If you are debugging calibration
-problems, listen to (rather than watch) your mount to determine if the
-mount is getting
+the Advanced Options dialog. &nbsp;If you are debugging mount/calibration
+problems in the daytime, listen to (rather than watch) your mount to determine if it is getting
 the commands from <span style="font-style: italic;">PHD2</span>. The idea here is just to figure out if the
 mount is responding
 to <span style="font-style: italic;">PHD2</span>'s
 signals. You won't be able to see the mount move (it's moving
 at guide speed)
-but you may be able to hear it. Other options include watching the
-motors themselves or
+but you may be able to hear the motors. Other options include watching
+the
+motors and gears or
 attaching a laser pointer to your scope and aiming it at something
-fairly far away (to amplify your motions). &nbsp;If you have an
-adaptive optics device attached, you'll see separate move buttons for
-both the AO and the secondary mount. &nbsp;<br>
+fairly far away (to amplify your motions). &nbsp;A better&nbsp;approach
+for nighttime testing is to run the "star-cross" test described <a href="Trouble_shooting.htm#Star_cross_test">here</a>.&nbsp; &nbsp;<br>
 <br>
 <a name="Dithering"></a>Dithering
 is used primarily with image capture or automation applications,
@@ -228,12 +229,17 @@ of these image files is controlled from the 'Global' tab of the
 problem you're having, you should choose the 'Raw Fits' format for
 maximum flexibility.<br>
 <h3><a name="Drift_Align"></a>Drift Align</h3>
-Drift alignment is a well-known technique for achieving polar alignment and
+Drift alignment is a well-known technique for achieving polar alignment
+and
 is considered by many to be the "gold standard". &nbsp;The Drift
 Alignment tool is a&nbsp;wizard-like sequence of dialogs that can help
 you work through the drift alignment process and get quantifiable
-results. &nbsp;Once you've calibrated your guider, click on 'Drift
-Align' under the 'Tools' menu. &nbsp;The first Drift Align dialog will
+results. &nbsp;Once you've calibrated your guider and have started
+guiding, click on 'Drift
+Align' under the 'Tools' menu. &nbsp;The Drift Alignment tool will
+disable and re-enable declination guiding as necessary, so don't worry
+about that. &nbsp;It will also keep RA guiding active so&nbsp;uncorrected periodic error in the mount doesn't interfere with the
+measurements. &nbsp;The first Drift Align dialog will
 appear to help you adjust the azimuth on your mount. &nbsp;If you are
 using an ASCOM mount, you'll have the option of slewing to an area
 near the celestial equator and the celestial meridian. &nbsp;If you're
@@ -265,7 +271,7 @@ can use the 'notes' field to record which way the drift line moves
 depending on how you make the adjustment. &nbsp;For example, you might
 note that a counter-clockwise turn of the mount azimuth knob moves the
 drift line "up." &nbsp;Since these notes are retained across <span style="font-style: italic;">PHD2</span>
-sessions, subsequent drift alignments will probably proceed more
+sessions, subsequent drift alignments will probably go more
 quickly.<br>
 <br>
 Until you are experienced with drift aligning your particular mount, the
@@ -287,7 +293,12 @@ clear view of how the adjustment has moved the star on the guide frame.<br>
 <br>
 Next, click on the 'Altitude' button.
 &nbsp;Then slew the scope to a position near the celestial equator and
-25-30 degrees above the horizon. &nbsp;Click on the 'drift' button to
+25-30 degrees above the east or west horizon. &nbsp;If you have
+obstructions in both directions and can't slew this low, don't worry
+about it - just get as close as you can. &nbsp;Using higher elevations
+on the east or west horizon will still work, but it may take a bit
+longer to converge on your final polar alignment. &nbsp;Click on the
+'drift' button to
 begin collecting data for the altitude part of the alignment process.
 &nbsp;As before, you will iterate between making adjustments and
 measuring your alignment until you are satisfied with the result,
@@ -297,14 +308,19 @@ of the declination drift line.
 go back to the 'azimuth' measurement and repeat that procedure.
 &nbsp;If you work through these procedures systematically, you'll
 converge on a good polar alignment with a known degree of accuracy.
-&nbsp;A good polar alignment will&nbsp;help your guiding performance,
-especially in declination.<br><br>The
+&nbsp;A good polar alignment will&nbsp;help your guiding performance
+and will avoid field rotation in your images..<br><br>The
 drift alignment tool is easiest to use when you are using an ASCOM
 connection to your mount (including an 'Aux' connection). &nbsp;Even if
 you subsequently want to use
 ST-4 style guiding, you should use the ASCOM connection for drift
-alignment. &nbsp;If you can't do that for some reason, the following
-features will be impaired:<br><ul><li>Scope position data and slewing functions will not be available - you'll have to slew the scope yourself</li><li>The
+alignment to make things easier. &nbsp;If you can't do that for some reason, the following
+features will be impaired:<br><ul><li>Scope
+position data and slewing functions will not be available - you'll have
+to slew the scope yourself. &nbsp;Keep in mind, the target
+altitude/azimuth positions are only approximate - you don't need to be
+particularly concerned about accuracy - just get reasonably close with
+a good guide star available in the field of view.</li><li>The
 magenta circle that identifies the&nbsp;target for moving the star will be
 inaccurate and will be displayed as a dashed line. &nbsp;This dashed
 circle will identify only an upper bound to the adjustment, so you will
