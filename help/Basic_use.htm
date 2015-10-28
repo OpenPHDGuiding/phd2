@@ -52,7 +52,28 @@ that are already installed on your system, if any.<br><br>The
 list of supported cameras at the time of writing is shown below - but
 you can contact the <a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> to inquire about your specific camera or mount.<br>
 <br>
-Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
+Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG dual-chip cameras</h4>Many
+cameras from the Santa Barbara Instrument Group (SBIG) have
+two&nbsp;sensors - a primary one for imaging and a second, smaller one
+for guiding. &nbsp;While the two sensors are physically separate, they
+share&nbsp;electronics inside the camera and more importantly, share a
+single USB data link to the computer. &nbsp;This means that&nbsp;
+downloading of data from the two sensors must be coordinated - you
+can't retrieve a guider image while an image from the main sensor is
+being downloaded. &nbsp;Beyond that, Windows will only allow one
+application at a time to connect to the camera over the single USB
+link. &nbsp;These are physical and architectural restrictions that
+can't be circumvented by PHD2. &nbsp;However, it is possible for the
+camera-controlling (image capture) application to implement an
+interface for PHD2&nbsp;to get data from the guide chip - essentially,
+a "side door" mechanism that won't violate any of the above rules.
+&nbsp;With this arrangement, the image capture application is acting as
+a traffic cop to coordinate access to the two camera sensors. &nbsp;At
+the time of this writing (October 2015), the only imaging
+application that does this is Sequence Guider Pro (SGP). &nbsp;If you
+use SGP as your main imaging application, you can also use their "SGP
+API Guider" module, which allows PHD2 to access the guide chip on the
+SBIG camera.
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -113,8 +134,9 @@ Windows users, the "aux" mount can use any of the ASCOM-compatible
 mount drivers, while Linux users can take advantage of INDI drivers.
 &nbsp;The "aux" mount choice will be used only if the primary mount
 interface cannot return pointing information - it will otherwise be
-ignored.
- <h4><a name="AO_Selection"></a>Adaptive Optics and <a name="Rotator_Selection"></a>Rotator Selections</h4>
+ignored. &nbsp;Note: some mounts (e.g. Celestron and iOptron) have a
+separate hardware port also labeled 'Aux' - DO NOT USE THIS&nbsp; for
+guiding - it is completely unrelated to the 'Aux' connection in PHD2. <h4><a name="AO_Selection"></a>Adaptive Optics and <a name="Rotator_Selection"></a>Rotator Selections</h4>
 With
 <span style="font-style: italic;">PHD2</span>, you
 now have the option of controlling the Starlight Xpress
@@ -144,7 +166,14 @@ when device simulators are used. &nbsp;You will even
 see fairly realistic guiding performance to give you some idea of what
 to expect in the field. &nbsp;To get started using the simulators,
 choose 'Simulator' for the camera type and 'On-camera' for the Mount
-type.<br>
+type.<br><br>That said, the simulators are <span style="font-weight: bold;">not</span>
+useful for trouble-shooting any problems you encounter with your real
+mount. &nbsp;Both the camera and the mount must be&nbsp;real devices in
+order to diagnose problems or otherwise get your gear calibrated and
+working. &nbsp;In that sense, what you see when using the simulators is
+realistic but "fake" behavior. &nbsp;The simulators can be useful in some cases
+for reproducing PHD2 application problems, but not for anything having
+to do with your actual guiding equipment.<br>
 <h4><a name="Equipment_Profile"></a>Equipment Profile</h4>
 At the top of
 the 'Connect Equipment' dialog are some additional controls for
@@ -157,7 +186,7 @@ profile; and you can just use the default profile. &nbsp;But you
 may
 have multiple equipment configurations - for example, an
 off-axis-guiding arrangement for a long focal length scope and a
-separate guide scope/camera configuration for s shorter focal length
+separate guide scope/camera configuration for a shorter focal length
 imaging scope. &nbsp;The <span style="font-style: italic;">PHD2</span>
 guide settings for those configurations
 are likely to be different, so you would want to use separate equipment

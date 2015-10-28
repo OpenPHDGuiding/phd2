@@ -40,7 +40,7 @@ RA only' - for companion apps that use the <span style="font-style: italic;">PHD
 specifies that dithering should be done only on the RA axis</li>
 <li>'<a name="Dither_scale"></a>Dither scale' - controls the magnitude of the dithering
 operation&nbsp;</li><li>'<a name="Log_File_Location"></a>Log File Location' - specifies a file directory where PHD2 guide and debug log files will be stored.</li></ul><br><h3><a name="Camera_Tab"></a>Camera Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 604px; height: 469px;" alt="" src="Advanced_camera.png"><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 605px; height: 480px;" alt="" src="Advanced_camera.png"><br>
 <br>
 The controls on the 'Camera' tab are used as follows: <br>
 <ul><li>'<a name="Noise_reduction"></a>Noise
@@ -114,7 +114,10 @@ the&nbsp;SBIG driver that is packaged with Sequence Generator Pro.
 &nbsp;Regardless of whether PHD2 is able to handle the situation
 gracefully, the underlying problem is almost certainly in&nbsp;the
 hardware or the camera driver and will need to be resolved before
-guiding is continued.</li><li>'<a name="Use_subframes"></a>Use subframes' - For&nbsp;cameras that support this
+guiding is continued.</li><li><a name="Binning_setting"></a>Binning
+- for those cameras that support on-chip (hardware) binning, you can
+specify the binning that will be used while taking guide exposures.
+&nbsp;See below for a more detailed discussion.&nbsp;</li><li>'<a name="Use_subframes"></a>Use subframes' - For&nbsp;cameras that support this
 feature, <span style="font-style: italic;">PHD2</span>
 will download only a 100x100 subframe of each guide
 exposure.&nbsp;This is very useful for cameras with slow download
@@ -124,7 +127,44 @@ This feature applies to both calibration and guiding.
 frame is downloaded, but once a star is selected, only this small
 subframe is downloaded. &nbsp; If you are using subframes but want to
 see the full frame to select a different star, just click anywhere
-outside the subframe.</li></ul><h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 567px;" alt="" src="Advanced_guiding.png"><br><br>The
+outside the subframe.</li></ul><span style="font-weight: bold;"><a name="Binning_usage"></a>Use of Binning</span><br>Some
+of the guide cameras available in PHD2 support hardware-level binning,
+and this may be helpful in&nbsp;situations where you are guiding at
+long focal lengths or have a guide camera with very small pixels. These
+scenarios often result in having to use&nbsp;faint guide stars, and the
+guider images may be substantially over-sampled. &nbsp;Over-sampling
+provides no real benefit, and the projection of a faint star disk onto
+many small pixels can result in a low signal-to-noise ratio (SNR).
+&nbsp;By binning the image, you can reduce the impact of camera read
+noise and thus improve the SNR; and if you are over-sampled, &nbsp;you
+won't degrade the accuracy of computing the&nbsp;guide star location.
+&nbsp;Choosing a binning factor greater than one will have the
+following effects:<br><ol><li>Star images will have a higher SNR and
+will be easier to detect above the background noise level. &nbsp;This
+is only beneficial if you are limited to a choice among faint stars
+(i.e. with SNR values near the threshold of 3).</li><li>The amount of
+data downloaded from the camera will&nbsp;be reduced by the square of
+the binning factor. &nbsp;This can be helpful if you are using a camera
+that&nbsp;makes heavy use of USB resources even if star brightness and
+SNR are already reasonable with un-binned images. &nbsp;Of course,
+using sub-frames can achieve the same result once a star has been
+selected.</li><li>The resolution (image scale) of your guider image
+will be reduced by the binning factor. &nbsp;This is not likely to be a
+problem if the un-binned image scale is below 1 arc-sec/pixel, but your
+guiding results may suffer if the un-binned image scale is well above 1
+arc-sec/pixel. &nbsp;You may need to experiment because the results
+will also depend on the image scale of your main camera system.</li><li>Each
+binning level requires its own&nbsp;dark frames and bad-pixel map -
+they are not interchangeable, nor can a transform be done
+automatically. &nbsp;If you foresee the need to switch back and forth
+between binning settings, you should create separate profiles for each
+setting. &nbsp;Then build&nbsp;a dark library and a bad-pixel map for
+each of those profiles. &nbsp;When you want to change binning factors,
+just switch to the profile that has the setting you want, and a dark
+library and/or bad-pixel map will be available.</li></ol>Most PHD2
+users probably won't need to use binning, and you should probably avoid
+doing so unless you have a clear understanding of the implications and
+an equally clear idea of what you are trying to accomplish.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 567px;" alt="" src="Advanced_guiding.png"><br><br>The
 guiding tab shows the&nbsp; parameters used for calibration,
 star-tracking, and guiding behavior shared by all of the guide algorithms..<br><br>Guide Star Tracking<br><ul><li>'<a name="Search_region"></a>Search
 region' - specifies the size of the "tracking rectangle", in units of
