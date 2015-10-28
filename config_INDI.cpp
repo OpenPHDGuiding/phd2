@@ -58,8 +58,16 @@
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
 
-INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
+INDIConfig::INDIConfig(wxWindow *parent, int devtype) :
+    wxDialog(parent, wxID_ANY, _("INDI Configuration"),
+    wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    auto sizerLabelFlags  = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL;
+    auto sizerButtonFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
+    auto sizerSectionFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
+    auto sizerTextFlags = wxALIGN_LEFT | wxALL | wxEXPAND;
+    int border = 2;
+
     dev_type = devtype;
     gui = NULL;
     
@@ -68,64 +76,70 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_AN
     wxBoxSizer *sizer;
 
     pos = 0;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Hostname:")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
-    host = new wxTextCtrl(this, wxID_ANY);
-    gbs->Add(host, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("INDI Server")),
+	     POS(pos, 0), SPAN(1, 1), sizerSectionFlags, border);
 
     pos ++;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Hostname")),
+	     POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    host = new wxTextCtrl(this, wxID_ANY);
+    gbs->Add(host, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
+
+    pos ++;
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Port")),
+	     POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     port = new wxTextCtrl(this, wxID_ANY);
-    gbs->Add(port, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(port, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
     
     pos ++;
-    connect_status = new wxStaticText(this, wxID_ANY, _T("Disconnected"));
-    gbs->Add(connect_status,POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
-    gbs->Add(new wxButton(this, MCONNECT, _T("Connect")), POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    connect_status = new wxStaticText(this, wxID_ANY, _("Disconnected"));
+    gbs->Add(connect_status,POS(pos, 0), SPAN(1, 1), wxALIGN_RIGHT | wxALL | wxALIGN_CENTER_VERTICAL, border);
+    gbs->Add(new wxButton(this, MCONNECT, _("Connect")), POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
     
     pos ++;
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("========")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    devlabel = new wxStaticText(this, wxID_ANY, _T("Device"));
-    gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
+    devlabel = new wxStaticText(this, wxID_ANY, _("Device"));
     if (devtype == TYPE_CAMERA) {
-	devlabel->SetLabel(_T("Camera"));
+	devlabel->SetLabel(_("Camera"));
     }
     else if (devtype == TYPE_MOUNT) {
-	devlabel->SetLabel(_T("Mount"));
+	devlabel->SetLabel(_("Mount"));
     }
+    gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
     
     pos ++;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Driver:")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Driver")),
+	     POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     dev =  new wxComboBox(this, wxID_ANY, _T(""));
-    gbs->Add(dev, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(dev, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     if (devtype == TYPE_CAMERA) {
 	pos ++;
-	gbs->Add(new wxStaticText(this, wxID_ANY, _T("CCD:")),
-		 POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+	gbs->Add(new wxStaticText(this, wxID_ANY, _("CCD")),
+		 POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
 	ccd =  new wxComboBox(this, wxID_ANY, _T(""));
-	gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-	ccd->Append(_T("Main imager"));
-	ccd->Append(_T("Guider"));
+	ccd->Append(_("Main imager"));
+	ccd->Append(_("Guider"));
+	gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
     }
     
     pos ++;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Port")),
+	     POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     devport = new wxTextCtrl(this, wxID_ANY);
-    gbs->Add(devport, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     pos ++;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Other options")),
-	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
-    gbs->Add(new wxButton(this, MINDIGUI, _T("INDI")), POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Other options")),
+	     POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    gbs->Add(new wxButton(this, MINDIGUI, _("INDI")), POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
+    sizer->AddSpacer(10);
     sizer->Add(CreateButtonSizer(wxOK | wxCANCEL));
+    sizer->AddSpacer(10);
     SetSizer(sizer);
     sizer->SetSizeHints(this) ;
     sizer->Fit(this) ;
@@ -167,14 +181,14 @@ void INDIConfig::Connect()
     port->GetLineText(0).ToLong(&INDIport);
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     if (connectServer()) {
-	connect_status->SetLabel(_T("Connected"));
+	connect_status->SetLabel(_("Connected"));
     }
 }
 
 void INDIConfig::Disconnect() 
 {
    disconnectServer();
-   connect_status->SetLabel(_T("Disconnected"));
+   connect_status->SetLabel(_("Disconnected"));
    gui = NULL;
 }
 
