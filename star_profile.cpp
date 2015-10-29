@@ -151,7 +151,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     int i;
     int *profptr;
-    string profileLabel;
+    wxString profileLabel;
     switch (this->mode) {  // Figure which profile to use
     case 0: // mid-row
     default:
