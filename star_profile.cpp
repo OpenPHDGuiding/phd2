@@ -156,15 +156,15 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     case 0: // mid-row
     default:
         profptr = midrow_profile;
-        profileLabel = "Mid row";
+        profileLabel = _("Mid row");
         break;
     case 1: // avg row
         profptr = horiz_profile;
-        profileLabel = "Avg row";
+        profileLabel = _("Avg row");
         break;
     case 2:
         profptr = vert_profile;
-        profileLabel = "Avg col";
+        profileLabel = _("Avg col");
         break;
     }
 
