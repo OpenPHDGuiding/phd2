@@ -378,6 +378,7 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     bool optimize_sigma = pConfig->Profile.GetBoolean(configPath + "/gp_optimize_sigma", DefaultOptimizeNoise);
     SetBoolOptimizeSigma(optimize_sigma);
 
+
     // set masking, so that we only optimize the period length. The rest is fixed or estimated otherwise.
     Eigen::VectorXi mask(8);
     mask << 0, 0, 1, 0, 0, 0, 0, 0;
@@ -912,34 +913,34 @@ double GuideGaussianProcess::result(double input)
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(parameters->control_signal_);
 
-//     // optimize the hyperparameters if we have enough points already
-//     if (parameters->min_points_for_optimisation > 0
-//         && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
-//     {
-// //         // performing the optimisation
-// //         Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
-// //         parameters->gp_.setHyperParameters(optim);
-//     }
+    // optimize the hyperparameters if we have enough points already
+    if (parameters->min_points_for_optimisation > 0
+        && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+    {
+        // performing the optimisation
+        Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
+        parameters->gp_.setHyperParameters(optim);
+    }
 
-//     // estimate the standard deviation in a simple way (no optimization)
-//     if (parameters->min_points_for_optimisation > 0
-//         && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
-//     {    // TODO: implement condition with some checkbox
-//         Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
-//
-//         int N = parameters->get_number_of_measurements();
-//         Eigen::VectorXd measurements(N);
-//
-//         for(size_t i = 0; i < N; i++)
-//         {
-//             measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-//         }
-//
-//         double mean = measurements.mean();
-//         // Eigen doesn't have var() yet, we have to compute it ourselves
-//         gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
-//         parameters->gp_.setHyperParameters(gp_parameters);
-//     }
+    // estimate the standard deviation in a simple way (no optimization)
+    if (parameters->min_points_for_optimisation > 0
+        && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+    {    // TODO: implement condition with some checkbox
+        Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
+
+        int N = parameters->get_number_of_measurements();
+        Eigen::VectorXd measurements(N);
+
+        for(size_t i = 0; i < N; i++)
+        {
+            measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        }
+
+        double mean = measurements.mean();
+        // Eigen doesn't have var() yet, we have to compute it ourselves
+        gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
+        parameters->gp_.setHyperParameters(gp_parameters);
+    }
 
 // send the GP output to matlab for plotting
 #if GP_DEBUG_MATLAB_
@@ -966,6 +967,21 @@ double GuideGaussianProcess::result(double input)
         }
     }
     gear_error = sum_controls + measurements; // for each time step, add the residual error
+
+    // linear least squares regression for offset and drift
+    Eigen::MatrixXd feature_matrix(2, N - 1);
+    feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
+    feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
+
+    // this is the inference for linear regression
+    Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
+        + 1e-3*Eigen::Matrix<double, 2, 2>::Identity()).ldlt().solve(feature_matrix*gear_error);
+
+    // calculate the linear regression for all datapoints
+    linear_fit = weights.transpose()*feature_matrix;
+
+    // correct the datapoints by the polynomial fit
+    gear_error -= linear_fit;
 
     // inference of the GP with these new points
     parameters->gp_.infer(timestamps, gear_error);
