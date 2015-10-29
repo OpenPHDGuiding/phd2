@@ -120,6 +120,30 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xsize = this->GetSize().GetX();
     const int ysize = this->GetSize().GetY();
 
+#if defined (__APPLE__)
+    dc.SetFont(*wxSMALL_FONT);
+#else
+    dc.SetFont(*wxSWISS_FONT);
+#endif
+
+    int screenSizeY = wxSystemSettings::GetMetric ( wxSYS_SCREEN_Y );
+    bool inFocusingMode = (ysize > screenSizeY / 2 );
+
+    wxFont fwhmNumberFont = dc.GetFont();
+    int fwhmTextHeight = 20;
+    int fwhmGroupHeight = fwhmTextHeight;
+    if (inFocusingMode) {
+        //todo: Tuning the scaling factor
+    	int scale = ysize / 80;
+    	fwhmNumberFont = fwhmNumberFont.Scaled(scale);
+
+        //wxCoord x,y;
+        //this->GetTextExtent(&x,&y);
+    	//todo: Get the real pixel height using this font
+        fwhmTextHeight = 20 * scale;
+        fwhmGroupHeight = 20 * (1 + scale);
+    }
+
     wxPen RedPen;
     //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
     //  BluePen = wxPen(wxColour(100,100,255));
@@ -127,20 +151,20 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     int i;
     int *profptr;
-    wxString label;
+    wxString profileLabel;
     switch (this->mode) {  // Figure which profile to use
     case 0: // mid-row
     default:
         profptr = midrow_profile;
-        label = _("Mid row");
+        profileLabel = _("Mid row");
         break;
     case 1: // avg row
         profptr = horiz_profile;
-        label = _("Avg row");
+        profileLabel = _("Avg row");
         break;
     case 2:
         profptr = vert_profile;
-        label = _("Avg col");
+        profileLabel = _("Avg col");
         break;
     }
 
@@ -160,12 +184,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
         // Figure the actual points in the window
-        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize-30);
+        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize - fwhmGroupHeight*1.5);
         if (!Prof_Range) Prof_Range = 1;
         int wprof = (xsize - 15) / 2 - 5;
         wprof /= 20;
         for (i = 0; i < FULLW; i++)
-            Prof[i]=wxPoint(5+i*wprof,ysize-25-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
+            Prof[i]=wxPoint(5+i*wprof,ysize-fwhmGroupHeight*1.2-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
 
         // fwhm
         int x1 = 0;
@@ -196,16 +220,18 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
-#if defined (__APPLE__)
-    dc.SetFont(*wxSMALL_FONT);
-#else
-    dc.SetFont(*wxSWISS_FONT);
-#endif
-    dc.DrawText(label,5,ysize - 20);
-    if (fwhm != 0)
-        dc.DrawText(wxString::Format(_("FWHM: %.2f"), fwhm),50,ysize - 20);
 
-    // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
+	if (fwhm != 0) {
+		if (inFocusingMode) {
+			dc.DrawText(wxString::Format(_("%s FWHM:"), profileLabel), 5, ysize - fwhmGroupHeight);
+			dc.SetFont(fwhmNumberFont);
+			dc.DrawText(wxString::Format(_("%.2f"), fwhm), 5, ysize - fwhmTextHeight);
+		} else {
+			dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - fwhmGroupHeight);
+		}
+	}
+
+	// JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
     if (img) {
