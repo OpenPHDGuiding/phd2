@@ -36,7 +36,10 @@
  */
 
 #include "phd.h"
-#include <algortithm>
+
+#if !defined(__APPLE__)
+# include <algortithm>
+#endif
 
 Star::Star(void)
 {
