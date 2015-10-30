@@ -97,13 +97,6 @@ struct OverlaySlitCoords
     wxPoint corners[5];
 };
 
-enum MOVE_LOCK_RESULT
-{
-    MOVE_LOCK_OK,
-    MOVE_LOCK_REJECTED,
-    MOVE_LOCK_ERROR,
-};
-
 enum PauseType
 {
     PAUSE_NONE,     // not paused
@@ -224,7 +217,7 @@ public:
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
 
-    MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
+    bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
     bool ShiftLockPosition(void);
@@ -293,6 +286,7 @@ public:
     virtual int GetMaxMovePixels(void) = 0;
     virtual double StarMass(void) = 0;
     virtual double SNR(void) = 0;
+    virtual double HFD(void) = 0;
     virtual int StarError(void) = 0;
 
     usImage *CurrentImage(void);

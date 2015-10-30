@@ -36,6 +36,7 @@
  */
 
 #include "phd.h"
+#include <algorithm>
 
 Star::Star(void)
 {
@@ -70,6 +71,7 @@ void Star::Invalidate(void)
 {
     Mass = 0.0;
     SNR = 0.0;
+    HFD = 0.0;
     m_lastFindResult = STAR_ERROR;
     PHD_Point::Invalidate();
 }
@@ -77,6 +79,60 @@ void Star::Invalidate(void)
 void Star::SetError(FindResult error)
 {
     m_lastFindResult = error;
+}
+
+// helper struct for HFR calculation
+struct R2M
+{
+    double r2;
+    wxPoint p;
+    double m;
+    R2M() { }
+    R2M(int x, int y, double m_) : p(x, y), m(m_) { }
+    bool operator<(const R2M& rhs) const { return r2 < rhs.r2; }
+};
+
+static double hfr(std::vector<R2M>& vec, double cx, double cy, double mass)
+{
+    if (vec.size() == 1) // hot pixel?
+        return 0.25;
+
+    // compute Half Flux Radius (HFR)
+    for (auto it = vec.begin(); it != vec.end(); ++it)
+    {
+        double dx = (double) it->p.x - cx;
+        double dy = (double) it->p.y - cy;
+        it->r2 = dx * dx + dy * dy;
+    }
+    std::sort(vec.begin(), vec.end()); // sort by ascending radius^2
+
+    // find radius of half-mass
+    double r20, r21, m0, m1;
+    r20 = r21 = m0 = m1 = 0.0;
+    double halfm = 0.5 * mass;
+    for (auto it = vec.begin(); it != vec.end(); ++it)
+    {
+        const R2M& rm = *it;
+        r20 = r21;
+        m0 = m1;
+        r21 = rm.r2;
+        m1 += rm.m;
+        if (m1 > halfm)
+            break;
+    }
+
+    // interpolate
+    double hfr;
+    if (m1 > m0)
+    {
+        double r0 = sqrt(r20), r1 = sqrt(r21);
+        double s = (r1 - r0) / (m1 - m0);
+        hfr = r0 + s * (halfm - m0);
+    }
+    else
+        hfr = 0.25;
+
+    return hfr;
 }
 
 bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode)
@@ -223,6 +279,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         double cy = 0.0;
         double mass = 0.0;
 
+        std::vector<R2M> hfrvec;
+
         if (mode == FIND_PEAK)
         {
             mass = peak_val;
@@ -268,6 +326,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                     cy += dy * d;
                     mass += d;
                     ++n;
+
+                    hfrvec.push_back(R2M(x, y, d));
                 }
             }
         }
@@ -285,6 +345,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         {
             newX = peak_x + cx / mass;
             newY = peak_y + cy / mass;
+
+            HFD = 2.0 * hfr(hfrvec, newX, newY, mass);
 
             // even at saturation, the max values may vary a bit due to noise
             // Call it saturated if the the top three values are within 32 parts per 65535 of max for 16-bit cameras,
@@ -323,10 +385,11 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
     {
         Mass = 0.0;
         SNR = 0.0;
+        HFD = 0.0;
     }
 
-    Debug.AddLine(wxString::Format("Star::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu",
-        wasFound, Result, newX, newY, Mass, SNR, PeakVal));
+    Debug.AddLine(wxString::Format("Star::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f",
+        wasFound, Result, newX, newY, Mass, SNR, PeakVal, HFD));
 
     return wasFound;
 }

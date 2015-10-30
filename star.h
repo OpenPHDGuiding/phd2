@@ -62,6 +62,7 @@ public:
 
     double Mass;
     double SNR;
+    double HFD;
     unsigned short PeakVal;
 
     Star(void);
