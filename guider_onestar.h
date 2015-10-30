@@ -107,6 +107,7 @@ public:
     int GetMaxMovePixels(void);
     double StarMass(void);
     double SNR(void);
+    double HFD(void);
     int StarError(void);
     wxString GetSettingsSummary();
 

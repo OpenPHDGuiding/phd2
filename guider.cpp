@@ -711,13 +711,19 @@ bool Guider::SetLockPosToStarAtPosition(const PHD_Point& starPosHint)
     return error;
 }
 
-MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
+// distance to nearest edge
+static double edgeDist(const PHD_Point& pt, const wxSize& size)
 {
-    MOVE_LOCK_RESULT result = MOVE_LOCK_OK;
+    return wxMin(pt.X, wxMin(size.GetWidth() - pt.X, wxMin(pt.Y, size.GetHeight() - pt.Y)));
+}
+
+bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
+{
+    bool err = false;
 
     try
     {
-        if (!mountDelta.IsValid())
+        if (!mountDeltaArg.IsValid())
         {
             throw ERROR_INFO("Point is not valid");
         }
@@ -727,20 +733,54 @@ MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
             throw ERROR_INFO("No mount");
         }
 
-        PHD_Point cameraDelta;
-
-        if (pMount->TransformMountCoordinatesToCameraCoordinates(mountDelta, cameraDelta))
+        const usImage *image = CurrentImage();
+        if (!image)
         {
-            throw ERROR_INFO("Transform failed");
+            throw ERROR_INFO("cannot move lock pos without an image");
+        }
+
+        // This loop is to handle dithers when the star is near the edge of the frame. The strategy
+        // is to try reflecting the requested dither in 4 directions along the RA/Dec axes; if any
+        // of the projections results in a valid lock position, use it. Otherwise, choose the
+        // direction that moves farthest from the edge of the frame.
+
+        PHD_Point cameraDelta, mountDelta;
+        double dbest;
+
+        for (int q = 0; q < 4; q++)
+        {
+            int sx = 1 - ((q & 1) << 1);
+            int sy = 1 - (q & 2);
+
+            PHD_Point tmpMount(mountDeltaArg.X * sx, mountDeltaArg.Y * sy);
+            PHD_Point tmpCamera;
+
+            if (pMount->TransformMountCoordinatesToCameraCoordinates(tmpMount, tmpCamera))
+            {
+                throw ERROR_INFO("Transform failed");
+            }
+
+            PHD_Point tmpLockPosition = m_lockPosition + tmpCamera;
+
+            if (IsValidLockPosition(tmpLockPosition))
+            {
+                cameraDelta = tmpCamera;
+                mountDelta = tmpMount;
+                break;
+            }
+
+            Debug.Write("dither produces an invalid lock position, try a variation\n");
+
+            double d = edgeDist(tmpLockPosition, image->Size);
+            if (q == 0 || d > dbest)
+            {
+                cameraDelta = tmpCamera;
+                mountDelta = tmpMount;
+                dbest = d;
+            }
         }
 
         PHD_Point newLockPosition = m_lockPosition + cameraDelta;
-
-        if (!IsValidLockPosition(newLockPosition))
-        {
-            return MOVE_LOCK_REJECTED;
-        }
-
         if (SetLockPosition(newLockPosition))
         {
             throw ERROR_INFO("SetLockPosition failed");
@@ -761,10 +801,10 @@ MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        result = MOVE_LOCK_ERROR;
+        err = true;
     }
 
-    return result;
+    return err;
 }
 
 void Guider::SetState(GUIDER_STATE newState)
