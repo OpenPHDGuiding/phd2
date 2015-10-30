@@ -36,6 +36,7 @@
  */
 
 #include "phd.h"
+#include <algortithm>
 
 Star::Star(void)
 {
