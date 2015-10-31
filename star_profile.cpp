@@ -129,7 +129,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     bool inFocusingMode = (ysize > xsize/2);
 
     wxFont hfdNumberFont = dc.GetFont();
-    int hfdTextHeight = 20;
+    int hfdNormalTextHeight = 20;
+    int hfdTextHeight = hfdNormalTextHeight;
     int hfdGroupHeight = hfdTextHeight;
     if (inFocusingMode) {
         //todo: Tuning the scaling factor
@@ -224,11 +225,11 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
 	if (hfdArcSec != 0) {
 		if (inFocusingMode) {
-			dc.DrawText(wxString::Format(_("HFD [arcsec]:") ), 5, ysize - hfdGroupHeight);
+			dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD [arcsec]:"), profileLabel, fwhm ), 5, ysize - hfdGroupHeight);
 			dc.SetFont(hfdNumberFont);
 			dc.DrawText(wxString::Format(_("%.2f"), hfdArcSec), 5, ysize - hfdTextHeight);
 		} else {
-			dc.DrawText(wxString::Format(_("HFD [arcsec]: %.2f"), hfdArcSec), 5, ysize - hfdGroupHeight);
+			dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD [arcsec]: %.2f"), profileLabel, fwhm, hfdArcSec), 5, ysize - hfdGroupHeight);
 		}
 	}
 
