@@ -121,27 +121,31 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int ysize = this->GetSize().GetY();
 
 #if defined (__APPLE__)
-    dc.SetFont(*wxSMALL_FONT);
+    const wxFont& smallFont = *wxSMALL_FONT;
 #else
-    dc.SetFont(*wxSWISS_FONT);
+    const wxFont& smallFont = *wxSWISS_FONT;
 #endif
+    dc.SetFont(smallFont);
+    int smallFontHeight = dc.GetTextExtent("0").GetHeight();
 
-    int screenSizeY = wxSystemSettings::GetMetric ( wxSYS_SCREEN_Y );
-    bool inFocusingMode = (ysize > screenSizeY / 2 );
+    bool inFocusingMode = (ysize > xsize/2 + 20);
 
-    wxFont fwhmNumberFont = dc.GetFont();
-    int fwhmTextHeight = 20;
-    int fwhmGroupHeight = fwhmTextHeight;
+    wxFont largeFont;
+    int largeFontHeight;
+    int labelTextHeight;
+
     if (inFocusingMode) {
         //todo: Tuning the scaling factor
-    	int scale = ysize / 80;
-    	fwhmNumberFont = fwhmNumberFont.Scaled(scale);
+    	int scale = ysize / 50;
+        largeFont = smallFont.Scaled(scale);
 
-        //wxCoord x,y;
-        //this->GetTextExtent(&x,&y);
-    	//todo: Get the real pixel height using this font
-        fwhmTextHeight = 20 * scale;
-        fwhmGroupHeight = 20 * (1 + scale);
+        dc.SetFont(largeFont);
+        largeFontHeight = dc.GetTextExtent("0").GetHeight();
+        dc.SetFont(smallFont);
+        labelTextHeight = 5 + smallFontHeight + largeFontHeight + 5;
+    }
+    else {
+        labelTextHeight = 5 + smallFontHeight + 5;
     }
 
     wxPen RedPen;
@@ -184,12 +188,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
         // Figure the actual points in the window
-        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize - fwhmGroupHeight*1.5);
+        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize - labelTextHeight - 5);
         if (!Prof_Range) Prof_Range = 1;
         int wprof = (xsize - 15) / 2 - 5;
         wprof /= 20;
         for (i = 0; i < FULLW; i++)
-            Prof[i]=wxPoint(5+i*wprof,ysize-fwhmGroupHeight*1.2-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
+            Prof[i] = wxPoint(5 + i * wprof, ysize - labelTextHeight - ((float)(*(profptr + i) - Prof_Min) / Prof_Range));
 
         // fwhm
         int x1 = 0;
@@ -221,15 +225,32 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 
-	if (fwhm != 0) {
-		if (inFocusingMode) {
-			dc.DrawText(wxString::Format(_("%s FWHM:"), profileLabel), 5, ysize - fwhmGroupHeight);
-			dc.SetFont(fwhmNumberFont);
-			dc.DrawText(wxString::Format(_("%.2f"), fwhm), 5, ysize - fwhmTextHeight);
-		} else {
-			dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - fwhmGroupHeight);
+    float hfd = pFrame->pGuider->HFD();
+	if (hfd != 0.f) {
+        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
+        if (inFocusingMode) {
+            dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - labelTextHeight + 5);
+            int x = 5;
+            wxString s(_("HFD: "));
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(largeFont);
+            s = wxString::Format(_T("%.2f"), hfd);
+			dc.DrawText(s, x, ysize - largeFontHeight);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(smallFont);
+            s = wxString::Format(_T("  %.2f\""), hfdArcSec);
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+        }
+        else {
+			dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
 		}
-	}
+    }
+    else {
+        dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
+    }
 
 	// JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
