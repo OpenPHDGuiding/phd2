@@ -784,6 +784,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
     {
         wxString alertMsg;
 
+        FlagCalibrationIssue(newDetails, m_lastCalibrationIssue);
         switch (m_lastCalibrationIssue)
         {
         case CI_Steps:
@@ -843,6 +844,7 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
         m_calibrationState = CALIBRATION_STATE_GO_WEST;
         m_calibrationDetails.raSteps.clear();
         m_calibrationDetails.decSteps.clear();
+        m_calibrationDetails.lastIssue = CI_None;
     }
     catch (wxString Msg)
     {
@@ -875,6 +877,14 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
     m_calibrationDetails.origBinning = binning;
+    m_calibrationDetails.origTimestamp = wxDateTime::Now().Format();
+    Mount::SetCalibrationDetails(m_calibrationDetails);
+}
+
+void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, Calibration_Issues issue)
+{
+    m_calibrationDetails = calDetails;
+    m_calibrationDetails.lastIssue = issue;
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
@@ -1453,14 +1463,32 @@ PierSide Scope::SideOfPier(void)
 
 wxString Scope::GetSettingsSummary()
 {
+    wxString rtnVal;
+    Calibration calInfo;
+    CalibrationDetails calDetails;
+    GetLastCalibrationParams(&calInfo);
+    GetCalibrationDetails(&calDetails);
+
     // return a loggable summary of current mount settings
-    return Mount::GetSettingsSummary() +
-        wxString::Format("Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
+    rtnVal = Mount::GetSettingsSummary() +
+        wxString::Format
+            ("Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetMaxRaDuration(),
             GetMaxDecDuration(),
             GetDecGuideMode() == DEC_NONE ? "Off" : GetDecGuideMode() == DEC_AUTO ? "Auto" :
             GetDecGuideMode() == DEC_NORTH ? "North" : "South"
-        );
+            );
+    if (calDetails.raGuideSpeed != -1.0)
+    {
+        rtnVal += wxString::Format
+            (
+            "RA Guide Speed = %0.1f a-s/s, Dec Guide Speed = %0.1f a-s/s, ", 3600.0*calDetails.raGuideSpeed, 3600.0*calDetails.decGuideSpeed
+            );
+    }
+    else
+        rtnVal += "RA Guide Speed = Unknown, Dec Guide Speed = Unknown, ";
+    rtnVal += wxString::Format("Cal Dec = %0.1f, Last Cal Issue = %s, Timestamp = %s\n", degrees(calInfo.declination), Mount::GetIssueString(calDetails.lastIssue), calDetails.origTimestamp);
+    return rtnVal;
 }
 
 wxString Scope::CalibrationSettingsSummary()

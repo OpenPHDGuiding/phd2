@@ -289,7 +289,9 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     row++;
     col = 0;
     calGrid->SetCellValue(_("Binning:"), row, col++);
-    calGrid->SetCellValue(wxString::Format("%d", (int)calBaseline.binning), row, col);
+    calGrid->SetCellValue(wxString::Format("%d", (int)calBaseline.binning), row, col++);
+    calGrid->SetCellValue(_("Created:"), row, col++);
+    calGrid->SetCellValue(validDetails ? calDetails.origTimestamp : _("Unknown"), row, col);
 
     calGrid->AutoSize();
     calibFrame->Add(calGrid, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
@@ -309,7 +311,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         cfgGrid->CreateGrid(4, 4);
         cfgGrid->EnableEditing(false);
 
-        cfgGrid->SetCellValue(_("Timestamp:"), row, col++);
+        cfgGrid->SetCellValue(_("Modified:"), row, col++);
         cfgGrid->SetCellValue(calBaseline.timestamp, row, col++);
         cfgGrid->SetCellValue(_("Focal length:"), row, col++);
         if (validDetails)

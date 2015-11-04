@@ -467,6 +467,7 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
         m_calibrationStartingLocation.Invalidate();
         m_calibrationDetails.raSteps.clear();
         m_calibrationDetails.decSteps.clear();
+        m_calibrationDetails.lastIssue = CI_None;
     }
     catch (const wxString& Msg)
     {
@@ -495,6 +496,7 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, dou
     m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
     m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
     m_calibrationDetails.origBinning = binning;
+    m_calibrationDetails.origTimestamp = wxDateTime::Now().Format();
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
@@ -1109,11 +1111,14 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
 
 wxString StepGuider::GetSettingsSummary()
 {
+    CalibrationDetails calDetail;
+    GetCalibrationDetails(&calDetail);
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-        wxString::Format("Bump percentage = %d, Bump step = %.2f\n",
+        wxString::Format("Bump percentage = %d, Bump step = %.2f, Timestamp = %s\n",
             GetBumpPercentage(),
-            GetBumpMaxStepsPerCycle()
+            GetBumpMaxStepsPerCycle(),
+            calDetail.origTimestamp
         );
 }
 

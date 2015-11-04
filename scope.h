@@ -36,14 +36,14 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
-enum Calibration_Issues
-{
-    CI_None,
-    CI_Steps,
-    CI_Angle,
-    CI_Rates,
-    CI_Different
-};
+//enum Calibration_Issues
+//{
+//    CI_None,
+//    CI_Steps,
+//    CI_Angle,
+//    CI_Rates,
+//    CI_Different
+//};
 
 #define CALIBRATION_RATE_UNCALIBRATED 123e4
 
@@ -195,6 +195,7 @@ public:
 
     virtual void SetCalibration(const Calibration& cal);
     virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
+    virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, Calibration_Issues issue);
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
