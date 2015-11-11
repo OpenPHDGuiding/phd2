@@ -183,7 +183,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
 
     double chipw, chiph, pixelw, pixelh;
-    int imagew, imageh, bpp;
+    uint32_t imagew, imageh, bpp;
     ret = GetQHYCCDChipInfo(m_camhandle, &chipw, &chiph, &imagew, &imageh, &pixelw, &pixelh, &bpp);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -419,7 +419,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         return true;
     }
 
-    int w, h, bpp, channels;
+    uint32_t w, h, bpp, channels;
     ret = GetQHYCCDSingleFrame(m_camhandle, &w, &h, &bpp, &channels, RawBuffer);
     if (ret != QHYCCD_SUCCESS)
     {

@@ -31,6 +31,7 @@
 #define LINUX
 #endif
 
+
 #ifdef LINUX
 #include <libusb-1.0/libusb.h>
 #endif
@@ -58,6 +59,8 @@
  #define EXPORTC
 #endif
 
+#include "stdint.h"
+
 /**
  * usb vendor request command
  */
@@ -68,6 +71,10 @@
  */
 #define QHYCCD_REQUEST_WRITE 0x40
 
+#define MACHANICALSHUTTER_OPEN  0
+#define MACHANICALSHUTTER_CLOSE 1
+#define MACHANICALSHUTTER_FREE  2
+
 /**
  * @brief CCDREG struct define
  *
@@ -75,49 +82,49 @@
  */
 typedef struct ccdreg
 {
-    unsigned char Gain;                //!< ccd gain
-    unsigned char Offset;              //!< ccd offset
-    unsigned long Exptime;             //!< expose time
-    unsigned char HBIN;                //!< width bin
-    unsigned char VBIN;                //!< height bin
-    unsigned short LineSize;           //!< almost match image width
-    unsigned short VerticalSize;       //!< almost match image height
-    unsigned short SKIP_TOP;           //!< Reserved
-    unsigned short SKIP_BOTTOM;        //!< Reserved
-    unsigned short LiveVideo_BeginLine;//!< Reserved
-    unsigned short AnitInterlace;      //!< Reserved
-    unsigned char MultiFieldBIN;       //!< Reserved
-    unsigned char AMPVOLTAGE;          //!< Reserved
-    unsigned char DownloadSpeed;       //!< transfer speed
-    unsigned char TgateMode;           //!< Reserved
-    unsigned char ShortExposure;       //!< Reserved
-    unsigned char VSUB;                //!< Reserved
-    unsigned char CLAMP;               //!< Reserved
-    unsigned char TransferBIT;         //!< Reserved
-    unsigned char TopSkipNull;         //!< Reserved
-    unsigned short TopSkipPix;         //!< Reserved
-    unsigned char MechanicalShutterMode;//!< Reserved
-    unsigned char DownloadCloseTEC;    //!< Reserved
-    unsigned char SDRAM_MAXSIZE;       //!< Reserved
-    unsigned short ClockADJ;           //!< Reserved
-    unsigned char Trig;                //!< Reserved
-    unsigned char MotorHeating;        //!< Reserved
-    unsigned char WindowHeater;        //!< Reserved
-    unsigned char ADCSEL;              //!< Reserved
+    uint8_t Gain;                //!< ccd gain
+    uint8_t Offset;              //!< ccd offset
+    uint32_t Exptime;             //!< expose time
+    uint8_t HBIN;                //!< width bin
+    uint8_t VBIN;                //!< height bin
+    uint16_t LineSize;           //!< almost match image width
+    uint16_t VerticalSize;       //!< almost match image height
+    uint16_t SKIP_TOP;           //!< Reserved
+    uint16_t SKIP_BOTTOM;        //!< Reserved
+    uint16_t LiveVideo_BeginLine;//!< Reserved
+    uint16_t AnitInterlace;      //!< Reserved
+    uint8_t MultiFieldBIN;       //!< Reserved
+    uint8_t AMPVOLTAGE;          //!< Reserved
+    uint8_t DownloadSpeed;       //!< transfer speed
+    uint8_t TgateMode;           //!< Reserved
+    uint8_t ShortExposure;       //!< Reserved
+    uint8_t VSUB;                //!< Reserved
+    uint8_t CLAMP;               //!< Reserved
+    uint8_t TransferBIT;         //!< Reserved
+    uint8_t TopSkipNull;         //!< Reserved
+    uint16_t TopSkipPix;         //!< Reserved
+    uint8_t MechanicalShutterMode;//!< Reserved
+    uint8_t DownloadCloseTEC;    //!< Reserved
+    uint8_t SDRAM_MAXSIZE;       //!< Reserved
+    uint16_t ClockADJ;           //!< Reserved
+    uint8_t Trig;                //!< Reserved
+    uint8_t MotorHeating;        //!< Reserved
+    uint8_t WindowHeater;        //!< Reserved
+    uint8_t ADCSEL;              //!< Reserved
 }CCDREG;
 
 struct BIOREG
 {
-	unsigned short LineSize;
-	unsigned short PatchNumber;
-	unsigned char  AMPVOLTAGE;
-	unsigned char  ShortExposure;
-	unsigned char  SDRAM_MAXSIZE;
-	unsigned char  DownloadSpeed;
-	unsigned char  TransferBIT;
-    unsigned char  BIOCCD_Mode;
-    unsigned char  BIOCCD_Video;
-	unsigned char  SDRAM_Bypass;
+	uint16_t LineSize;
+	uint16_t PatchNumber;
+	uint8_t  AMPVOLTAGE;
+	uint8_t  ShortExposure;
+	uint8_t  SDRAM_MAXSIZE;
+	uint8_t  DownloadSpeed;
+	uint8_t  TransferBIT;
+    uint8_t  BIOCCD_Mode;
+    uint8_t  BIOCCD_Video;
+	uint8_t  SDRAM_Bypass;
 };
 
 /**
@@ -135,7 +142,7 @@ enum CONTROL_ID
     CONTROL_GAMMA,          /* screen gamma */
     CONTROL_GAIN,           /* camera gain */
     CONTROL_OFFSET,         /* camera offset */
-    CONTROL_EXPOSURE,       /* expose time */
+    CONTROL_EXPOSURE,       /* expose time (us)*/
     CONTROL_SPEED,          /* transfer speed */
     CONTROL_TRANSFERBIT,    /* image depth bits */
     CONTROL_CHANNELS,       /* image channels */
@@ -151,7 +158,19 @@ enum CONTROL_ID
     CAM_BIN1X1MODE,         /* check if camera has bin1x1 mode */
     CAM_BIN2X2MODE,         /* check if camera has bin2x2 mode */
     CAM_BIN3X3MODE,         /* check if camera has bin3x3 mode */
-    CAM_BIN4X4MODE          /* check if camera has bin4x4 mode */
+    CAM_BIN4X4MODE,         /* check if camera has bin4x4 mode */
+
+    CAM_MECHANICALSHUTTER,
+    CAM_TRIGER_INTERFACE,
+    CAM_TECOVERPROTECT_INTERFACE,
+    CAM_SINGNALCLAMP_INTERFACE,
+    CAM_FINETONE_INTERFACE,
+    CAM_SHUTTERMOTORHEATING_INTERFACE,
+    CAM_CALIBRATEFPN_INTERFACE,
+    CAM_CHIPTEMPERATURESENSOR_INTERFACE,
+    CAM_USBREADOUTSLOWEST_INTERFACE,
+	CAM_8BITS,
+	CAM_16BITS
 };
 
 /**
@@ -166,8 +185,8 @@ enum BAYER_ID
 
 enum CodecID
 {
-	NONE_CODEC,
-	H261_CODEC
+    NONE_CODEC,
+    H261_CODEC
 };
 
 #endif
