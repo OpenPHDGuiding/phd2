@@ -76,6 +76,17 @@ struct Calibration
     wxString timestamp;
 };
 
+enum Calibration_Issues
+{
+    CI_None,
+    CI_Steps,
+    CI_Angle,
+    CI_Rates,
+    CI_Different
+};
+
+static const wxString EnumStrings[] = { "None", "Steps", "Orthogonality", "Rates", "Difference" };
+
 struct CalibrationDetails
 {
     int focalLength;
@@ -88,6 +99,8 @@ struct CalibrationDetails
     std::vector <wxRealPoint> decSteps;
     int raStepCount;
     int decStepCount;
+    Calibration_Issues lastIssue;
+    wxString origTimestamp;
 };
 
 enum MountMoveType
@@ -199,6 +212,7 @@ public:
     virtual ~Mount(void);
 
     static const double DEC_COMP_LIMIT; // declination compensation limit
+    static const wxString GetIssueString(Calibration_Issues issue) { return EnumStrings[(int)issue]; };
 
     double yAngle(void);
     double yRate(void);

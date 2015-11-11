@@ -120,6 +120,34 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xsize = this->GetSize().GetX();
     const int ysize = this->GetSize().GetY();
 
+#if defined (__APPLE__)
+    const wxFont& smallFont = *wxSMALL_FONT;
+#else
+    const wxFont& smallFont = *wxSWISS_FONT;
+#endif
+    dc.SetFont(smallFont);
+    int smallFontHeight = dc.GetTextExtent("0").GetHeight();
+
+    bool inFocusingMode = (ysize > xsize/2 + 20);
+
+    wxFont largeFont;
+    int largeFontHeight;
+    int labelTextHeight;
+
+    if (inFocusingMode) {
+        //todo: Tuning the scaling factor
+    	int scale = ysize / 50;
+        largeFont = smallFont.Scaled(scale);
+
+        dc.SetFont(largeFont);
+        largeFontHeight = dc.GetTextExtent("0").GetHeight();
+        dc.SetFont(smallFont);
+        labelTextHeight = 5 + smallFontHeight + largeFontHeight + 5;
+    }
+    else {
+        labelTextHeight = 5 + smallFontHeight + 5;
+    }
+
     wxPen RedPen;
     //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
     //  BluePen = wxPen(wxColour(100,100,255));
@@ -127,20 +155,20 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     int i;
     int *profptr;
-    wxString label;
+    wxString profileLabel;
     switch (this->mode) {  // Figure which profile to use
     case 0: // mid-row
     default:
         profptr = midrow_profile;
-        label = _("Mid row");
+        profileLabel = _("Mid row");
         break;
     case 1: // avg row
         profptr = horiz_profile;
-        label = _("Avg row");
+        profileLabel = _("Avg row");
         break;
     case 2:
         profptr = vert_profile;
-        label = _("Avg col");
+        profileLabel = _("Avg col");
         break;
     }
 
@@ -160,12 +188,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
         // Figure the actual points in the window
-        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize-30);
+        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize - labelTextHeight - 5);
         if (!Prof_Range) Prof_Range = 1;
         int wprof = (xsize - 15) / 2 - 5;
         wprof /= 20;
         for (i = 0; i < FULLW; i++)
-            Prof[i]=wxPoint(5+i*wprof,ysize-25-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
+            Prof[i] = wxPoint(5 + i * wprof, ysize - labelTextHeight - ((float)(*(profptr + i) - Prof_Min) / Prof_Range));
 
         // fwhm
         int x1 = 0;
@@ -196,16 +224,35 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
-#if defined (__APPLE__)
-    dc.SetFont(*wxSMALL_FONT);
-#else
-    dc.SetFont(*wxSWISS_FONT);
-#endif
-    dc.DrawText(label,5,ysize - 20);
-    if (fwhm != 0)
-        dc.DrawText(wxString::Format(_("FWHM: %.2f"), fwhm),50,ysize - 20);
 
-    // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
+    float hfd = pFrame->pGuider->HFD();
+	if (hfd != 0.f) {
+        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
+        if (inFocusingMode) {
+            dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - labelTextHeight + 5);
+            int x = 5;
+            wxString s(_("HFD: "));
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(largeFont);
+            s = wxString::Format(_T("%.2f"), hfd);
+			dc.DrawText(s, x, ysize - largeFontHeight);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(smallFont);
+            s = wxString::Format(_T("  %.2f\""), hfdArcSec);
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+        }
+        else {
+			dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
+		}
+    }
+    else {
+        dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
+    }
+
+	// JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
     if (img) {

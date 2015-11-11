@@ -968,6 +968,11 @@ bool GearDialog::DoConnectCamera(void)
             throw THROW_INFO("DoConnectCamera: connect failed");
         }
 
+        // force re-build of camera tab in case Connect updated any of
+        // the camera properties that influence the camera tab. For
+        // example, binning options.
+        m_cameraUpdated = true;
+
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
         Debug.AddLine("BitsPerPixel=%u", m_pCamera->BitsPerPixel());
@@ -1984,6 +1989,7 @@ void GearDialog::UpdateAdvancedDialog(bool preLoad)
         frame->pAdvancedDialog->UpdateRotatorPage();
         m_rotatorUpdated = false;
     }
+
     if (preLoad)
         frame->pAdvancedDialog->Preload();
 }

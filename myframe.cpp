@@ -1522,27 +1522,15 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
         amount *= m_ditherScaleFactor;
 
-        double dRa, dDec;
+        double dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+        double dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
 
-        while (true)
+        Debug.Write(wxString::Format("dither: size=%.2f, dRA=%.2f dDec=%.2f\n", amount, dRa, dDec));
+
+        bool err = pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
+        if (err)
         {
-            dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-            dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-
-            Debug.Write(wxString::Format("dither: size=%.2f, dRA=%.2f dDec=%.2f\n", amount, dRa, dDec));
-
-            MOVE_LOCK_RESULT result = pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
-            if (result == MOVE_LOCK_OK)
-            {
-                break;
-            }
-            else if (result == MOVE_LOCK_ERROR)
-            {
-                throw ERROR_INFO("move lock failed");
-            }
-
-            // lock pos was rejected (too close to the edge), try again
-            Debug.Write("dither lock pos rejected, try again\n");
+            throw ERROR_INFO("move lock failed");
         }
 
         // Reset guide algorithm history.

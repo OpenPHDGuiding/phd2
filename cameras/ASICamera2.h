@@ -331,7 +331,7 @@ set the ROI area before capture.
 you must stop capture before call it.
 the width and height is the value after binning.
 ie. you need to set width to 640 and height to 480 if you want to run at 640X480@BIN2
-
+ASI120's data size must be times of 1024 which means width*height%1024=0
 Paras£º		
 int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int iWidth,  the width of the ROI area    please make sure that width*height%1024=0

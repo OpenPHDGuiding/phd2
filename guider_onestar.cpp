@@ -485,6 +485,11 @@ double GuiderOneStar::SNR(void)
     return m_star.SNR;
 }
 
+double GuiderOneStar::HFD(void)
+{
+    return m_star.HFD;
+}
+
 int GuiderOneStar::StarError(void)
 {
     return m_star.GetError();

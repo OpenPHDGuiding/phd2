@@ -159,7 +159,10 @@ bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
         ASI_CAMERA_INFO info;
         if (ASIGetCameraProperty(&info, i) == ASI_SUCCESS)
         {
-            names.Add(info.Name);
+            if (numCameras > 1)
+                names.Add(wxString::Format("%d: %s", i + 1, info.Name));
+            else
+                names.Add(info.Name);
             ids.Add(wxString::Format("%d"), i);
         }
     }

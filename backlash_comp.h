@@ -49,6 +49,8 @@ class BacklashTool
     double m_lastClearRslt;
     double m_lastDecGuideRate;
     double m_backlashResultPx;                // units of pixels
+    double m_cumClearingDistance;
+    bool m_backlashExemption;
     int m_backlashResultMs;
     double m_northRate;
     PHD_Point m_lastMountLocation;
@@ -78,6 +80,7 @@ public:
     {
         BACKLASH_MIN_COUNT = 3,
         BACKLASH_EXPECTED_DISTANCE = 4,
+        BACKLASH_EXEMPTION_DISTANCE = 40,
         MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
         MAX_NORTH_PULSES = 8000,    
@@ -103,6 +106,7 @@ public:
     MeasurementResults GetMeasurementQuality() const { return m_Rslt; }
     double GetBacklashResultPx() const { return m_backlashResultPx; }
     int GetBacklashResultMs() const { return m_backlashResultMs; }
+    bool GetBacklashExempted() const { return m_backlashExemption; }
     wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt) { m_pulseWidth = amt; }
     void ShowGraph(wxDialog *pGA);
