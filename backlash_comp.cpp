@@ -262,6 +262,8 @@ BacklashTool::BacklashTool()
 
     m_backlashResultPx = 0;
     m_backlashResultMs = 0;
+    m_cumClearingDistance = 0;
+    m_backlashExemption = false;
 }
 
 void BacklashTool::StartMeasurement()
@@ -299,7 +301,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
         if (m_bltState != BLT_STATE_INITIALIZE)
         {
             decDelta = currMountLocation.Y - m_markerPoint.Y;
-            //if (m_bltState == BLT_STATE_CLEAR_NORTH)                            // GET THIS OUT OF HERE
+            m_cumClearingDistance += decDelta;                                    // use signed value
+            //if (m_bltState == BLT_STATE_CLEAR_NORTH)                            // DEBUG ONLY
             //    decDelta = fakeDeltas[wxMin(m_stepCount, 7)];
         }
         switch (m_bltState)
@@ -312,6 +315,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             m_pulseWidth = BACKLASH_EXPECTED_DISTANCE * 1.25 / m_lastDecGuideRate;      // px/px_per_ms, bump it to sidestep near misses
             m_acceptedMoves = 0;
             m_lastClearRslt = 0;
+            m_cumClearingDistance = 0;
+            m_backlashExemption = false;
             m_Rslt = MEASUREMENT_VALID;
             // Get this state machine in synch with the guider state machine - let it drive us, starting with backlash clearing step
             m_bltState = BLT_STATE_CLEAR_NORTH;
@@ -350,13 +355,26 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             {
                 if (m_stepCount < MAX_CLEARING_STEPS)
                 {
-                    pFrame->ScheduleCalibrationMove(m_scope, NORTH, m_pulseWidth);
-                    m_stepCount++;
-                    m_markerPoint = currMountLocation;
-                    m_lastClearRslt = decDelta;
-                    m_lastStatus = wxString::Format("Clearing North backlash, step %d", m_stepCount);
-                    Debug.AddLine(wxString::Format("BLT: %s, LastDecDelta = %0.2f px", m_lastStatus, decDelta));
-                    break;
+                    if (fabs(m_cumClearingDistance) > BACKLASH_EXEMPTION_DISTANCE)
+                    {
+                        // We moved the mount a substantial distance north but the individual moves were too small - probably a bad calibration,
+                        // so let the user proceed with backlash measurement before we push the star too far
+                        Debug.AddLine(wxString::Format("BLT: Cum backlash of %0.2f px is at least half of expected, continue with backlash measurement", m_cumClearingDistance));
+                        m_backlashExemption = true;
+                    }
+                    else
+                    {
+                        if (!OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))
+                        {
+                            pFrame->ScheduleCalibrationMove(m_scope, NORTH, m_pulseWidth);
+                            m_stepCount++;
+                            m_markerPoint = currMountLocation;
+                            m_lastClearRslt = decDelta;
+                            m_lastStatus = wxString::Format("Clearing North backlash, step %d (up to limit of %d)", m_stepCount, MAX_CLEARING_STEPS);
+                            Debug.AddLine(wxString::Format("BLT: %s, LastDecDelta = %0.2f px", m_lastStatus, decDelta));
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -365,7 +383,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     throw ERROR_INFO("BLT: Could not clear N backlash");
                 }
             }
-            else                                        // Got our 3 consecutive moves - press ahead
+            if (m_acceptedMoves >= BACKLASH_MIN_COUNT || m_backlashExemption || OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))    // Ok to go ahead with actual backlash measurement
             {
                 m_markerPoint = currMountLocation;            // Marker point at start of big Dec move North
                 m_bltState = BLT_STATE_STEP_NORTH;
