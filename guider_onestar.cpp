@@ -209,7 +209,7 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
 
         m_massChangeThreshold = massChangeThreshold;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
 
@@ -240,7 +240,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
         }
         m_searchRegion = searchRegion;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -280,7 +280,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         m_massChecker->Reset();
         bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode());
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -336,6 +336,41 @@ static void SaveAutoSelectFailedImg(usImage *pImage)
     pImage->Save(wxFileName(Debug.GetLogDir(), filename).GetFullPath());
 }
 
+static wxString StarStatusStr(const Star& star)
+{
+    if (!star.IsValid())
+        return _("No star selected");
+
+    switch (star.GetError())
+    {
+    case Star::STAR_LOWSNR:        return _("Star lost - low SNR");
+    case Star::STAR_LOWMASS:       return _("Star lost - low mass");
+    case Star::STAR_TOO_NEAR_EDGE: return _("Star too near edge");
+    case Star::STAR_MASSCHANGE:    return _("Star lost - mass changed");
+    default:                       return _("No star found");
+    }
+}
+
+static wxString StarStatus(const Star& star)
+{
+    int exp;
+    bool auto_exp;
+    pFrame->GetExposureInfo(&exp, &auto_exp);
+
+    wxString status;
+    if (auto_exp)
+    {
+        if (exp >= 1)
+            status.Printf(_("m=%.0f SNR=%.1f Exp=%0.1f s"), star.Mass, star.SNR, (double)exp / 1000.);
+        else
+            status.Printf(_("m=%.0f SNR=%.1f Exp=%d ms"), star.Mass, star.SNR, exp);
+    }
+    else
+        status.Printf(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
+
+    return status;
+}
+
 bool GuiderOneStar::AutoSelect(void)
 {
     bool bError = false;
@@ -388,9 +423,11 @@ bool GuiderOneStar::AutoSelect(void)
         }
 
         UpdateImageDisplay();
+        pFrame->SetStatusText(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
+        pFrame->SetStatusText(StarStatus(m_star));
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         if (pImage && pImage->ImageData)
         {
@@ -503,41 +540,6 @@ void GuiderOneStar::InvalidateCurrentPosition(bool fullReset)
     {
         m_star.X = m_star.Y = 0.0;
     }
-}
-
-static wxString StarStatusStr(const Star& star)
-{
-    if (!star.IsValid())
-        return _("No star selected");
-
-    switch (star.GetError())
-    {
-    case Star::STAR_LOWSNR:        return _("Star lost - low SNR");
-    case Star::STAR_LOWMASS:       return _("Star lost - low mass");
-    case Star::STAR_TOO_NEAR_EDGE: return _("Star too near edge");
-    case Star::STAR_MASSCHANGE:    return _("Star lost - mass changed");
-    default:                       return _("No star found");
-    }
-}
-
-static wxString StarStatus(const Star& star)
-{
-    int exp;
-    bool auto_exp;
-    pFrame->GetExposureInfo(&exp, &auto_exp);
-
-    wxString status;
-    if (auto_exp)
-    {
-        if (exp >= 1)
-            status.Printf(_("m=%.0f SNR=%.1f Exp=%0.1f s"), star.Mass, star.SNR, (double) exp / 1000.);
-        else
-            status.Printf(_("m=%.0f SNR=%.1f Exp=%d ms"), star.Mass, star.SNR, exp);
-    }
-    else
-        status.Printf(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
-
-    return status;
 }
 
 bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo)
@@ -695,7 +697,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             Update();
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -808,7 +810,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
