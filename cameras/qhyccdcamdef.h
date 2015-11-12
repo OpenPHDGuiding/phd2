@@ -30,7 +30,7 @@
 #ifndef __QHYCCDCAMDEF_H__
 #define __QHYCCDCAMDEF_H__
 
-#define GIGAESUPPORT
+//#define GIGAESUPPORT
 
 /**
  * Type define for IMG0S */
@@ -244,11 +244,15 @@
 
 /**
  * Type define for QHY5III174 */
-#define DEVICETYPE_QHY174       913
+#define DEVICETYPE_QHY5III174M  913
 
 /**
  * Type define for QHY5III178C*/
-#define DEVICETYPE_QHY178C      914
+#define DEVICETYPE_QHY5III178C  914
+
+/**
+ * Type define for QHY5III236C*/
+#define DEVICETYPE_QHY5III236C  915
 
 /**
  * Type define for QHY15GIGAE */
