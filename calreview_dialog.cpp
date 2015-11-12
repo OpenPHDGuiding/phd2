@@ -547,7 +547,7 @@ void CalRestoreDialog::OnRestore(wxCommandEvent& event)
 
 // CalSanity dialog may get launched as part of an 'alert' if the last calibration looked wonky - this one is non-modal
 CalSanityDialog::CalSanityDialog(wxFrame *parent, const Calibration& oldParams, const CalibrationDetails& oldDetails,
-    Calibration_Issues issue)
+    CalibrationIssueType issue)
 {
     m_pScope = TheScope();
     m_pScope->GetLastCalibrationParams(&m_newParams);
@@ -574,7 +574,7 @@ static void HighlightCell(wxGrid *pGrid, int row, int col)
 }
 
 // Build the verbose message based on the type of issue
-void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype)
+void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType etype)
 {
     wxString msg;
 
