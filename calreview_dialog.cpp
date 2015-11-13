@@ -767,7 +767,10 @@ void CalSanityDialog::OnIgnore(wxCommandEvent& evt)
 void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write("CalSanityDialog::OnRecal stops capturing\n");
         pFrame->StopCapturing();
+    }
     Debug.AddLine("Calibration sanity check: user discarded bad calibration");
     pMount->ClearCalibration();
     ShutDown();
@@ -776,7 +779,10 @@ void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 void CalSanityDialog::OnRestore(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write("CalSanityDialog::OnRestore stops capturing\n");
         pFrame->StopCapturing();
+    }
 
     m_pScope->SetCalibration(m_oldParams);
     m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle, m_oldDetails.origBinning);
