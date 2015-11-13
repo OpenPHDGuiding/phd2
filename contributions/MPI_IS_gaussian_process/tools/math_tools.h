@@ -2,33 +2,33 @@
  * Copyright 2014-2015, Max Planck Society.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*!@file
  * @author Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
  * @author Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
@@ -67,7 +67,7 @@ namespace math_tools {
   a Matrix of size nxm containing all pairwise squared distances
 */
 Eigen::MatrixXd squareDistance(
-    const Eigen::MatrixXd& a, 
+    const Eigen::MatrixXd& a,
     const Eigen::MatrixXd& b);
 
 /*!
@@ -79,7 +79,7 @@ Eigen::MatrixXd squareDistance(const Eigen::MatrixXd& a);
 
 Eigen::MatrixXd generate_random_sequence(int d, int n);
 Eigen::MatrixXd generate_random_sequence(
-    int n, 
+    int n,
     Eigen::VectorXd x,
     Eigen::VectorXd t);
 
@@ -117,7 +117,7 @@ double generate_uniform_random_double();
 /*!
  * Checks if a value is NaN by comparing it with itself.
  *
- * The rationale is that NaN is the only value that does not evaluate to true 
+ * The rationale is that NaN is the only value that does not evaluate to true
  * when comparing it with itself.
  * Taken from:
  * http://stackoverflow.com/questions/3437085/check-nan-number
@@ -137,6 +137,31 @@ inline bool isInf(double x) {
   return x == std::numeric_limits<double>::infinity() ||
          x == -std::numeric_limits<double>::infinity();
 }
+
+/*!
+ * Calculates the spectrum of a data vector.
+ *
+ * Does pre-and postprocessing:
+ * - The data is zero-padded until the desired resolution is reached.
+ * - ditfft2 is called to compute the FFT.
+ * - The frequencies from the padding are removed.
+ * - The constant coefficient is removed.
+ * - A list of frequencies is generated.
+ */
+std::pair< Eigen::VectorXd, Eigen::VectorXd > compute_spectrum(Eigen::VectorXd& data, int N = 0);
+
+/*!
+ * Calculates the complex DFT with the FFT algorithm.
+ *
+ * Implemented according to:
+ * https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+ */
+Eigen::VectorXcd ditfft2(Eigen::VectorXd data, int N, int S);
+
+/*!
+ * Computes a Hamming window (used to reduce spectral leakage of subsequent DFT).
+ */
+Eigen::VectorXd hamming_window(int N);
 
 }  // namespace math_tools
 

@@ -2,33 +2,33 @@
  * Copyright 2014-2015, Max Planck Society.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and
  * Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
  */
@@ -38,6 +38,7 @@
 #include "math_tools.h"
 #include <Eigen/Dense>
 #include <Eigen/Core>
+#include <unsupported/Eigen/FFT>
 #include <stdexcept>
 #include <cmath>
 #include <cstdint>
@@ -241,6 +242,69 @@ double generate_normal_random_double() {
 double generate_uniform_random_double() {
   Eigen::MatrixXd randomMatrix = generate_uniform_random_matrix_0_1(1, 1);
   return randomMatrix(0,0);
+}
+
+std::pair<Eigen::VectorXd, Eigen::VectorXd> compute_spectrum(Eigen::VectorXd &data, int N) {
+
+  int N_data = data.rows();
+
+  if(N<N_data) {
+    N = N_data;
+  }
+  N = std::pow(2,std::ceil(std::log(N)/std::log(2)));
+
+  Eigen::VectorXd padded_data = Eigen::VectorXd::Zero(N);
+  padded_data.head(N_data) = data;
+
+  Eigen::FFT<double> fft;
+
+  std::vector<double> vec_data(padded_data.data(), padded_data.data() + padded_data.rows() * padded_data.cols());
+  std::vector<std::complex<double>> vec_result;
+  fft.fwd(vec_result, vec_data);
+
+  Eigen::VectorXcd result = Eigen::Map<Eigen::VectorXcd>(&vec_result[0], vec_result.size());
+
+//   Eigen::VectorXcd result = ditfft2(padded_data, N, 1);
+
+  int low_index = std::ceil(static_cast<double>(N)/static_cast<double>(N_data));
+
+  Eigen::VectorXd spectrum = result.segment(low_index,N/2 - low_index + 1).array().abs().pow(2);
+
+  Eigen::VectorXd frequencies = Eigen::VectorXd::LinSpaced(N/2 - low_index + 1, low_index, N/2);
+  frequencies /= N;
+
+  return std::make_pair(spectrum, frequencies);
+}
+
+Eigen::VectorXcd ditfft2(Eigen::VectorXd data, int N, int S) {
+
+  Eigen::VectorXcd result(N);
+
+  if(N==1) {
+    result(0) = data(0);
+  } else {
+    result.head(N/2) = ditfft2(data, N/2, 2*S);
+    result.tail(N/2) = ditfft2(data.segment(S,data.rows()-S), N/2, 2*S);
+    for(int k=0; k<N/2; ++k) {
+      std::complex<double> t = result(k);
+      std::complex<double> i(0, 1);
+      std::complex<double> twid = std::exp(-2*M_PI*i*static_cast<double>(k)/static_cast<double>(N));
+      result(k) = t + twid*result(k+N/2);
+      result(k+N/2) = t - twid*result(k+N/2);
+    }
+  }
+
+  return result;
+}
+
+Eigen::VectorXd hamming_window(int N) {
+  double alpha = 0.54;
+  double beta = 0.46;
+
+  Eigen::VectorXd range = Eigen::VectorXd::LinSpaced(N,0,1);
+  Eigen::VectorXd window = alpha - beta*std::cos(2*M_PI*range.array());
+
+  return window;
 }
 
 }  // namespace math_tools

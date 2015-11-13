@@ -2,33 +2,33 @@
  * Copyright 2014-2015, Max Planck Society.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /* Created by Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
  *
  * This file tests the math tools.
@@ -169,11 +169,70 @@ TEST(MathToolsTest, IsNaNTest) {
 TEST(MathToolsTest, IsInfTest) {
   double log_0 = std::log(0);
   double negative_log_0 = -std::log(0);
-    
+
   // negative infinity
   EXPECT_TRUE(math_tools::isInf(log_0));
   // positive infinity
   EXPECT_TRUE(math_tools::isInf(negative_log_0));
+}
+
+TEST(MathToolsTest, FFTTest) {
+  Eigen::VectorXd y(8);
+  y << 0, 1, 0, 1, 0, 1, 1, 1;
+
+  Eigen::VectorXd expected_result_real(8), expected_result_imag(8);
+
+  expected_result_real << 5, 0, -1, 0, -3, 0, -1, 0;
+  expected_result_imag << 0, 1, 0, -1, 0, 1, 0, -1;
+
+  Eigen::VectorXcd result(8);
+  result = math_tools::ditfft2(y, 8, 1);
+
+  Eigen::VectorXd result_real(8), result_imag(8);
+
+  result_real = result.real();
+  result_imag = result.imag();
+
+  double eps = 1E-6;
+
+  for(int i=0; i < result.rows(); ++i) {
+    EXPECT_NEAR(result_real(i), expected_result_real(i), eps);
+    EXPECT_NEAR(result_imag(i), expected_result_imag(i), eps);
+  }
+}
+
+TEST(MathToolsTest, SpectrumTest) {
+  Eigen::VectorXd y(8);
+  y << 1, 2, 1, 2, 1, 2, 1, 2;
+
+  Eigen::VectorXd expected_amplitudes(4), expected_frequencies(4);
+
+  expected_amplitudes << 0, 0, 0, 16;
+  expected_frequencies << 0.1250,    0.2500,    0.3750,    0.5000;
+
+  std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(y, 8);
+  Eigen::VectorXd amplitudes = result.first;
+  Eigen::VectorXd frequencies = result.second;
+
+  double eps = 1E-6;
+
+  for(int i=0; i < expected_amplitudes.rows(); ++i) {
+    EXPECT_NEAR(amplitudes(i), expected_amplitudes(i), eps);
+    EXPECT_NEAR(frequencies(i), expected_frequencies(i), eps);
+  }
+}
+
+TEST(MathToolsTest, HammingTest) {
+  Eigen::VectorXd expected_window(8);
+  expected_window << 0.0800, 0.2532, 0.6424, 0.9544, 0.9544, 0.6424, 0.2532, 0.0800;
+
+  Eigen::VectorXd window = math_tools::hamming_window(8);
+
+  double eps = 1E-4;
+
+  for(int i=0; i < expected_window.rows(); ++i) {
+    EXPECT_NEAR(window(i), expected_window(i), eps);
+  }
 }
 
 int main(int argc, char **argv)
