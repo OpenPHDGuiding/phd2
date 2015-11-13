@@ -353,20 +353,23 @@ static wxString StarStatusStr(const Star& star)
 
 static wxString StarStatus(const Star& star)
 {
+    wxString status = wxString::Format(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
+
+    if (star.GetError() == Star::STAR_SATURATED)
+        status += _T(" ") + _("Saturated");
+
     int exp;
     bool auto_exp;
     pFrame->GetExposureInfo(&exp, &auto_exp);
 
-    wxString status;
     if (auto_exp)
     {
+        status += _T(" ");
         if (exp >= 1)
-            status.Printf(_("m=%.0f SNR=%.1f Exp=%0.1f s"), star.Mass, star.SNR, (double)exp / 1000.);
+            status += wxString::Format(_("Exp=%0.1f s"), (double) exp / 1000.);
         else
-            status.Printf(_("m=%.0f SNR=%.1f Exp=%d ms"), star.Mass, star.SNR, exp);
+            status += wxString::Format(_("Exp=%d ms"), exp);
     }
-    else
-        status.Printf(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
 
     return status;
 }
