@@ -1269,7 +1269,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
     details->origBinning = pConfig->Profile.GetDouble(prefix + "orig_binning", 1.0);
-    details->lastIssue = (Calibration_Issues)pConfig->Profile.GetInt(prefix + "last_issue", 0);
+    details->lastIssue = (CalibrationIssueType) pConfig->Profile.GetInt(prefix + "last_issue", 0);
     details->origTimestamp = pConfig->Profile.GetString(prefix + "orig_timestamp", "Unknown");
     // Populate raSteps
     stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");

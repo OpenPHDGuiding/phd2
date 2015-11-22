@@ -1579,6 +1579,8 @@ void MyFrame::OnClose(wxCloseEvent& event)
         }
     }
 
+    Debug.Write("MyFrame::OnClose proceeding\n");
+
     StopCapturing();
 
     bool killed = StopWorkerThread(m_pPrimaryWorkerThread);
