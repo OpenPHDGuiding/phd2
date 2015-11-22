@@ -266,11 +266,12 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
 
     m_file.Write(wxString::Format("%s\n", PointingInfo()));
 
-    m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
+    m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y));
+                pFrame->pGuider->CurrentPosition().Y, 
+                pFrame->pGuider->HFD()));
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
     Flush();
 
@@ -379,11 +380,12 @@ void GuidingLog::GuidingHeader(void)
 
     m_file.Write(wxString::Format("%s\n", PointingInfo()));
 
-    m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
+    m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y));
+                pFrame->pGuider->CurrentPosition().Y,
+                pFrame->pGuider->HFD()));
 
     m_file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 
