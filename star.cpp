@@ -210,11 +210,15 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                 {
                     unsigned short p = imgdata[y * rowsize + x];
                     unsigned int val =
-                        2 * (unsigned int) p +
-                        imgdata[(y - 1) * rowsize + (x + 0)] +
-                        imgdata[(y + 0) * rowsize + (x - 1)] +
-                        imgdata[(y + 0) * rowsize + (x + 1)] +
-                        imgdata[(y + 1) * rowsize + (x + 0)];
+                        4 * (unsigned int) p +
+                        imgdata[(y - 1) * rowsize + (x - 1)] +
+                        imgdata[(y - 1) * rowsize + (x + 1)] +
+                        imgdata[(y + 1) * rowsize + (x - 1)] +
+                        imgdata[(y + 1) * rowsize + (x + 1)] +
+                        2 * imgdata[(y - 1) * rowsize + (x + 0)] +
+                        2 * imgdata[(y + 0) * rowsize + (x - 1)] +
+                        2 * imgdata[(y + 0) * rowsize + (x + 1)] +
+                        2 * imgdata[(y + 1) * rowsize + (x + 0)];
 
                     if (val > peak_val)
                     {
@@ -233,7 +237,7 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
             }
 
             PeakVal = max3[0];   // raw peak val
-            peak_val /= 6; // smoothed peak value
+            peak_val /= 16; // smoothed peak value
         }
 
         // meaure noise in the annulus with inner radius A and outer radius B
@@ -299,7 +303,7 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
         else
         {
-            thresh = (unsigned short)(mean_bg + 2.0 * sigma_bg + 0.5);
+            thresh = (unsigned short)(mean_bg + 3.0 * sigma_bg + 0.5);
 
             // find pixels over threshold within aperture; compute mass and centroid
 
@@ -344,9 +348,21 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
 
         Mass = mass;
-        SNR = n > 0 && sigma_bg > 0.0 ? mass / (sigma_bg * n) : 0.0;
+
+        // SNR estimate from: Measuring the Signal-to-Noise Ratio S/N of the CCD Image of a Star or Nebula, J.H.Simonetti, 2004 January 8
+        //     http://www.phys.vt.edu/~jhs/phys3154/snr20040108.pdf
+        double const gain = .5; // electrons per ADU, nominal
+        SNR = n > 0 ? mass / sqrt(mass / gain + sigma2_bg * (double) n * (1.0 + 1.0 / (double) nbg)) : 0.0;
 
         double const LOW_SNR = 3.0;
+
+        // a few scattered pixels over threshold can give a false positive
+        // avoid this by requiring the smoothed peak value to be above the threshold
+        if (peak_val <= thresh && SNR >= LOW_SNR)
+        {
+            Debug.Write(wxString::Format("Star::Find false star n=%u nbg=%u bg=%.1f sigma=%.1f thresh=%u peak=%u\n", n, nbg, mean_bg, sigma_bg, thresh, peak_val));
+            SNR = LOW_SNR - 0.1;
+        }
 
         if (mass < 10.0)
             Result = STAR_LOWMASS;
