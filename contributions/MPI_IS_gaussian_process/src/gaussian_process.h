@@ -68,6 +68,11 @@ private:
   double log_noise_sd_;
   Eigen::VectorXi optimization_mask_;
   std::vector<parameter_priors::ParameterPrior*> prior_vector_;
+  bool use_explicit_trend_;
+  Eigen::MatrixXd feature_vectors_;
+  Eigen::MatrixXd feature_matrix_;
+  Eigen::LDLT<Eigen::MatrixXd> chol_feature_matrix_;
+  Eigen::VectorXd beta_;
 
 public:
   typedef std::pair<Eigen::VectorXd, Eigen::MatrixXd> VectorMatrixPair;
@@ -138,7 +143,8 @@ public:
    * already.
    */
   VectorMatrixPair predict(const Eigen::MatrixXd& prior_cov,
-                           const Eigen::MatrixXd& mixed_cov) const;
+                           const Eigen::MatrixXd& mixed_cov,
+                           const Eigen::MatrixXd& phi = Eigen::MatrixXd()) const;
 
   /*!
    * Combines the likelihood and the prior to obtain the posterior.
@@ -228,7 +234,15 @@ public:
    */
   void clearHyperPrior(int index);
 
+  /*!
+   * Enables the use of a explicit linear basis function.
+   */
+  void enableExplicitTrend();
 
+  /*!
+   * Disables the use of a explicit linear basis function.
+   */
+  void disableExplicitTrend();
 
 };
 

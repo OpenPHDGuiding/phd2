@@ -968,21 +968,6 @@ double GuideGaussianProcess::result(double input)
     }
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
-    // linear least squares regression for offset and drift
-    Eigen::MatrixXd feature_matrix(2, N - 1);
-    feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
-    feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
-
-    // this is the inference for linear regression
-    Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
-        + 1e-3*Eigen::Matrix<double, 2, 2>::Identity()).ldlt().solve(feature_matrix*gear_error);
-
-    // calculate the linear regression for all datapoints
-    linear_fit = weights.transpose()*feature_matrix;
-
-    // correct the datapoints by the polynomial fit
-    gear_error -= linear_fit;
-
     // inference of the GP with these new points
     parameters->gp_.infer(timestamps, gear_error);
 

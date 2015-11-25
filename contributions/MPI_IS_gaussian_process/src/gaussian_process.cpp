@@ -54,9 +54,14 @@ GP::GP() : covFunc_(0), // initialize pointer to null
   gram_matrix_(Eigen::MatrixXd()),
   alpha_(Eigen::VectorXd()),
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
-  log_noise_sd_(-1E20), 
+  log_noise_sd_(-1E20),
   optimization_mask_(Eigen::VectorXi()),
-  prior_vector_(1, 0)
+  prior_vector_(1, 0),
+  use_explicit_trend_(false),
+  feature_vectors_(Eigen::MatrixXd()),
+  feature_matrix_(Eigen::MatrixXd()),
+  chol_feature_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
+  beta_(Eigen::VectorXd())
 { }
 
 GP::GP(const covariance_functions::CovFunc& covFunc) :
@@ -66,9 +71,14 @@ GP::GP(const covariance_functions::CovFunc& covFunc) :
   gram_matrix_(Eigen::MatrixXd()),
   alpha_(Eigen::VectorXd()),
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
-  log_noise_sd_(-1E20), 
+  log_noise_sd_(-1E20),
   optimization_mask_(Eigen::VectorXi()),
-  prior_vector_(covFunc.getParameterCount() + 1, 0)
+  prior_vector_(covFunc.getParameterCount() + 1, 0),
+  use_explicit_trend_(false),
+  feature_vectors_(Eigen::MatrixXd()),
+  feature_matrix_(Eigen::MatrixXd()),
+  chol_feature_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
+  beta_(Eigen::VectorXd())
 { }
 
 GP::GP(const double noise_variance,
@@ -81,7 +91,12 @@ GP::GP(const double noise_variance,
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
   log_noise_sd_(std::log(noise_variance)),
   optimization_mask_(Eigen::VectorXi()),
-  prior_vector_(covFunc.getParameterCount() + 1, 0) 
+  prior_vector_(covFunc.getParameterCount() + 1, 0),
+  use_explicit_trend_(false),
+  feature_vectors_(Eigen::MatrixXd()),
+  feature_matrix_(Eigen::MatrixXd()),
+  chol_feature_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
+  beta_(Eigen::VectorXd())
 { }
 
 GP::~GP() {
@@ -102,7 +117,12 @@ GP::GP(const GP& that) :
   alpha_(that.alpha_),
   chol_gram_matrix_(that.chol_gram_matrix_),
   log_noise_sd_(that.log_noise_sd_),
-  optimization_mask_(that.optimization_mask_) 
+  optimization_mask_(that.optimization_mask_),
+  use_explicit_trend_(that.use_explicit_trend_),
+  feature_vectors_(that.feature_vectors_),
+  feature_matrix_(that.feature_matrix_),
+  chol_feature_matrix_(that.chol_feature_matrix_),
+  beta_(that.beta_)
 {
   covFunc_ = that.covFunc_->clone();
   for(size_t i = 0; i < that.prior_vector_.size(); ++i) {
@@ -225,6 +245,18 @@ void GP::infer() {
 
   // pre-compute the alpha, which is the solution of the chol to the data.
   alpha_ = chol_gram_matrix_.solve(data_out_);
+
+  if(use_explicit_trend_) {
+    feature_vectors_ = Eigen::MatrixXd(2,data_loc_.rows());
+    // precompute necessary matrices for the explicit trend function
+    feature_vectors_.row(0) = data_loc_.array().pow(0);
+    feature_vectors_.row(1) = data_loc_.array().pow(1);
+
+    feature_matrix_ = feature_vectors_*chol_gram_matrix_.solve(feature_vectors_.transpose());
+    chol_feature_matrix_ = feature_matrix_.ldlt();
+
+    beta_ = chol_feature_matrix_.solve(feature_vectors_)*alpha_;
+  }
 }
 
 void GP::infer(const Eigen::VectorXd& data_loc,
@@ -255,17 +287,34 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const {
     Eigen::MatrixXd mixed_cov = this->covFunc_->evaluate(
                                   locations, data_loc_).first;
 
+    Eigen::MatrixXd phi(2,locations.rows());
+    if(use_explicit_trend_) {
+      phi.row(0) = locations.array().pow(0);
+      phi.row(1) = locations.array().pow(1);
+
+      return predict(prior_cov, mixed_cov, phi);
+    }
+
     return predict(prior_cov, mixed_cov);
   }
 }
 
 GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
-                                 const Eigen::MatrixXd& mixed_cov) const {
+                                 const Eigen::MatrixXd& mixed_cov,
+                                 const Eigen::MatrixXd& phi) const {
 
   Eigen::VectorXd m = mixed_cov * alpha_;
 
   Eigen::MatrixXd v = prior_cov - mixed_cov *
                       (chol_gram_matrix_.solve(mixed_cov.transpose()));
+
+  if(use_explicit_trend_) {
+    Eigen::MatrixXd R = phi - feature_vectors_*chol_gram_matrix_.solve(mixed_cov.transpose());
+    Eigen::MatrixXd B = R.transpose()*chol_feature_matrix_.solve(R);
+
+    m += R.transpose()*beta_;
+    v += B;
+  }
 
   return std::make_pair(m, v);
 }
@@ -482,10 +531,15 @@ void GP::setHyperPrior(const parameter_priors::ParameterPrior& prior, const
   prior_vector_[index] = prior.clone();
 }
 
-/*!
- * Removes a hyperprior for a given parameter index.
- */
 void GP::clearHyperPrior(int index) {
   delete prior_vector_[index];
   prior_vector_[index] = 0;
+}
+
+void GP::enableExplicitTrend() {
+  use_explicit_trend_ = true;
+}
+
+void GP::disableExplicitTrend() {
+  use_explicit_trend_ = false;
 }

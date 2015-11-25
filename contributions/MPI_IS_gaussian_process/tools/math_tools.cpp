@@ -294,6 +294,15 @@ Eigen::VectorXcd ditfft2(Eigen::VectorXd data, int N, int S) {
     }
   }
 
+//   std::complex<double> i(0, 1);
+//   for(int k=0; k<N; ++k) {
+//     std::complex<double> Xk(0, 0);
+//     for(int n=0; n<N; ++n) {
+//       Xk += data(n)*std::exp(-2*M_PI*i*static_cast<double>(k)*static_cast<double>(n)/static_cast<double>(N));
+//     }
+//     result(k) = Xk;
+//   }
+
   return result;
 }
 
