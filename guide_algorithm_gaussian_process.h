@@ -80,7 +80,6 @@ protected:
     bool GetBoolOptimizeSigma() const;
     bool SetBoolOptimizeSigma(bool );
 
-
     bool SetGPHyperparameters(std::vector<double> const& hyperparameters);
     std::vector<double> GetGPHyperparameters() const;
 
