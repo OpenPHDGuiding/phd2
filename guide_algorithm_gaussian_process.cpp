@@ -37,6 +37,7 @@
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
+#include <ctime>
 
 #include "math_tools.h"
 
@@ -93,10 +94,10 @@ public:
                                                  wxSP_ARROW_KEYS, 0.0, 50, 5, 0.1);
         m_pSE0KLengthScale->SetDigits(2);
 
-        m_pSE1KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+        m_pSE0KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                     wxDefaultPosition,wxSize(width+30, -1),
                                                     wxSP_ARROW_KEYS, 0.0, 10, 1, 0.1);
-        m_pSE1KSignalVariance->SetDigits(2);
+        m_pSE0KSignalVariance->SetDigits(2);
 
 
         m_pPKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
@@ -198,7 +199,7 @@ public:
       m_pNbPointsOptimisation->SetValue(m_pGuideAlgorithm->GetNbPointsBetweenOptimisation());
 
       std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
-      assert(hyperparameters.size() == 6);
+      assert(hyperparameters.size() == 8);
 
       m_pHyperDiracNoise->SetValue(hyperparameters[0]);
       m_pSE0KLengthScale->SetValue(hyperparameters[1]);
@@ -377,7 +378,6 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 
     bool optimize_sigma = pConfig->Profile.GetBoolean(configPath + "/gp_optimize_sigma", DefaultOptimizeNoise);
     SetBoolOptimizeSigma(optimize_sigma);
-
 
     // set masking, so that we only optimize the period length. The rest is fixed or estimated otherwise.
     Eigen::VectorXi mask(8);
@@ -785,6 +785,8 @@ void GuideGaussianProcess::HandleControls(double control_input)
 
 double GuideGaussianProcess::PredictGearError()
 {
+    clock_t begin = std::clock();
+
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
     int N = parameters->get_number_of_measurements();
@@ -809,6 +811,10 @@ double GuideGaussianProcess::PredictGearError()
     }
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
+    clock_t end = std::clock();
+    double time_init = double(end - begin) / CLOCKS_PER_SEC;
+    begin = std::clock();
+
     // linear least squares regression for offset and drift
     Eigen::MatrixXd feature_matrix(2, N-1);
     feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
@@ -824,6 +830,11 @@ double GuideGaussianProcess::PredictGearError()
     // correct the datapoints by the polynomial fit
     Eigen::VectorXd gear_error_detrend = gear_error - linear_fit;
 
+    end = std::clock();
+    double time_detrend = double(end - begin) / CLOCKS_PER_SEC;
+    begin = std::clock();
+
+    double time_fft = 0;
     // optimize the hyperparameters if we have enough points already
     if (parameters->min_points_for_optimisation > 0
       && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
@@ -834,7 +845,7 @@ double GuideGaussianProcess::PredictGearError()
       Eigen::VectorXd windowed_gear_error = gear_error_detrend.array() * math_tools::hamming_window(gear_error_detrend.rows()).array();
 
       // compute the spectrum
-      int N_fft = 4096;
+      int N_fft = 2048;
       std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(windowed_gear_error, N_fft);
 
       Eigen::ArrayXd amplitudes = result.first;
@@ -843,7 +854,8 @@ double GuideGaussianProcess::PredictGearError()
       double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/timestamps.rows();
       frequencies /= dt; // correct for the average time step width
 
-      Eigen::VectorXd periods = 1/frequencies.array();
+      Eigen::ArrayXd periods = 1/frequencies.array();
+      amplitudes = (periods > 1500.0).select(0,amplitudes); // set amplitudes to zero for too large periods
 
       assert(amplitudes.size() == frequencies.size());
 
@@ -852,9 +864,14 @@ double GuideGaussianProcess::PredictGearError()
       double period_length = 1 / frequencies(maxIndex);
 
       Eigen::VectorXd optim = parameters->gp_.getHyperParameters();
-      optim[2] = std::log(period_length); // parameters are stored in log space
+      optim[4] = std::log(period_length); // parameters are stored in log space
       parameters->gp_.setHyperParameters(optim);
 
+      end = std::clock();
+      time_fft = double(end - begin) / CLOCKS_PER_SEC;
+      
+
+#if GP_DEBUG_FILE_
       std::ofstream outfile;
       outfile.open("spectrum_data.csv", std::ios_base::out);
       if (outfile.is_open()) {
@@ -867,8 +884,10 @@ double GuideGaussianProcess::PredictGearError()
           std::cout << "unable to write to file" << std::endl;
       }
       outfile.close();
+#endif
     }
 
+    begin = std::clock();
     // inference of the GP with this new points
     parameters->gp_.infer(timestamps, gear_error);
 
@@ -878,6 +897,10 @@ double GuideGaussianProcess::PredictGearError()
     next_location << current_time / 1000.0,
     (current_time + delta_controller_time_ms) / 1000.0;
     Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
+
+    end = std::clock();
+    double time_gp = double(end - begin) / CLOCKS_PER_SEC;
+    Debug.AddLine("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp);
 
     // the prediction is consisting of GP prediction and the linear drift
     return (prediction(1) - prediction(0)) + (delta_controller_time_ms / 1000.0)*weights(1);
@@ -913,34 +936,34 @@ double GuideGaussianProcess::result(double input)
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(parameters->control_signal_);
 
-    // optimize the hyperparameters if we have enough points already
-    if (parameters->min_points_for_optimisation > 0
-        && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
-    {
-        // performing the optimisation
-        Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
-        parameters->gp_.setHyperParameters(optim);
-    }
+//     // optimize the hyperparameters if we have enough points already
+//     if (parameters->min_points_for_optimisation > 0
+//         && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+//     {
+// //         // performing the optimisation
+// //         Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
+// //         parameters->gp_.setHyperParameters(optim);
+//     }
 
-    // estimate the standard deviation in a simple way (no optimization)
-    if (parameters->min_points_for_optimisation > 0
-        && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
-    {    // TODO: implement condition with some checkbox
-        Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
-
-        int N = parameters->get_number_of_measurements();
-        Eigen::VectorXd measurements(N);
-
-        for(size_t i = 0; i < N; i++)
-        {
-            measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        }
-
-        double mean = measurements.mean();
-        // Eigen doesn't have var() yet, we have to compute it ourselves
-        gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
-        parameters->gp_.setHyperParameters(gp_parameters);
-    }
+//     // estimate the standard deviation in a simple way (no optimization)
+//     if (parameters->min_points_for_optimisation > 0
+//         && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+//     {    // TODO: implement condition with some checkbox
+//         Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
+//
+//         int N = parameters->get_number_of_measurements();
+//         Eigen::VectorXd measurements(N);
+//
+//         for(size_t i = 0; i < N; i++)
+//         {
+//             measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+//         }
+//
+//         double mean = measurements.mean();
+//         // Eigen doesn't have var() yet, we have to compute it ourselves
+//         gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
+//         parameters->gp_.setHyperParameters(gp_parameters);
+//     }
 
 // send the GP output to matlab for plotting
 #if GP_DEBUG_MATLAB_
@@ -977,7 +1000,7 @@ double GuideGaussianProcess::result(double input)
     std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
 
     Eigen::VectorXd means = predictions.first;
-    Eigen::VectorXd stds = predictions.second.diagonal();
+    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
 
     std::ofstream outfile;
     outfile.open("measurement_data.csv", std::ios_base::out);
@@ -1008,16 +1031,82 @@ double GuideGaussianProcess::result(double input)
 
 double GuideGaussianProcess::deduceResult()
 {
+    //HandleMeasurements(0);
+    //HandleTimestamps();
+
     parameters->control_signal_ = 0;
     // check if we are allowed to use the GP
     if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-        parameters->control_signal_ += PredictGearError();
+        parameters->control_signal_ += PredictGearError(); // control completely upon prediction
     }
 
-    parameters->add_one_point(); // add new point here, since the applied control is important as well
-    HandleControls(parameters->control_signal_);
+    //parameters->add_one_point(); // add new point here, since the applied control is important as well
+    //HandleControls(parameters->control_signal_);
+
+    // write the GP output to a file for easy analyzation
+#if GP_DEBUG_FILE_
+    int N = parameters->get_number_of_measurements();
+
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd timestamps(N - 1);
+    Eigen::VectorXd measurements(N - 1);
+    Eigen::VectorXd controls(N - 1);
+    Eigen::VectorXd sum_controls(N - 1);
+    Eigen::VectorXd gear_error(N - 1);
+    Eigen::VectorXd linear_fit(N - 1);
+
+    // transfer the data from the circular buffer to the Eigen::Vectors
+    for (size_t i = 0; i < N - 1; i++)
+    {
+        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        controls(i) = parameters->circular_buffer_parameters[i].control;
+        sum_controls(i) = parameters->circular_buffer_parameters[i].control;
+        if (i > 0)
+        {
+            sum_controls(i) += sum_controls(i - 1); // sum over the control signals
+        }
+    }
+    gear_error = sum_controls + measurements; // for each time step, add the residual error
+
+    // inference of the GP with these new points
+    parameters->gp_.inferSD(timestamps, gear_error, 256); // TODO: make magic number configurable
+
+    int M = 512; // number of prediction points
+    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
+
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
+
+    Eigen::VectorXd means = predictions.first;
+    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
+
+    std::ofstream outfile;
+    outfile.open("measurement_data.csv", std::ios_base::out);
+    if (outfile.is_open()) {
+        outfile << "location, output\n";
+        for (int i = 0; i < timestamps.size(); ++i) {
+            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
+        }
+    }
+    else {
+        std::cout << "unable to write to file" << std::endl;
+    }
+    outfile.close();
+
+    outfile.open("gp_data.csv", std::ios_base::out);
+    if (outfile.is_open()) {
+        outfile << "location, mean, std\n";
+        for (int i = 0; i < locations.size(); ++i) {
+            outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
+        }
+    }
+    else {
+        std::cout << "unable to write to file" << std::endl;
+    }
+    outfile.close();
+#endif
 
     return parameters->control_signal_;
 }

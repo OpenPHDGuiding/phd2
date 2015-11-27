@@ -40,10 +40,6 @@ set(gaussian_process_root_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(gp_tools_SRC
     ${gaussian_process_root_dir}/tools/math_tools.cpp
     ${gaussian_process_root_dir}/tools/math_tools.h
-    ${gaussian_process_root_dir}/tools/bfgs_optimizer.cpp
-    ${gaussian_process_root_dir}/tools/bfgs_optimizer.h
-    ${gaussian_process_root_dir}/tools/objective_function.cpp
-    ${gaussian_process_root_dir}/tools/objective_function.h
    )
 add_library(MPIIS_GP_TOOLS STATIC ${gp_tools_SRC})
 target_include_directories(MPIIS_GP_TOOLS PRIVATE ${EIGEN_SRC} ${gaussian_process_root_dir}/src)
@@ -55,8 +51,6 @@ set(gp_SRC
     ${gaussian_process_root_dir}/src/gaussian_process.h
     ${gaussian_process_root_dir}/src/covariance_functions.cpp
     ${gaussian_process_root_dir}/src/covariance_functions.h
-    ${gaussian_process_root_dir}/src/parameter_priors.cpp
-    ${gaussian_process_root_dir}/src/parameter_priors.h
     )
 add_library(MPIIS_GP STATIC ${gp_SRC})
 target_link_libraries(MPIIS_GP PUBLIC MPIIS_GP_TOOLS)
