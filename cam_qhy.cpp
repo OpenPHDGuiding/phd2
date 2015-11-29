@@ -424,7 +424,9 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY get single frame ret %d\n", ret));
-        DisconnectWithAlert(_("QHY get frame failed"), NO_RECONNECT);
+        // users report that reconnecting the camera after this failure allows
+        // them to resume guiding so we'll try to reconnect automatically
+        DisconnectWithAlert(_("QHY get frame failed"), RECONNECT);
         return true;
     }
 
