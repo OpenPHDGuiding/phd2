@@ -867,7 +867,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     //   pass 1: find brightest star with peak value < 90% saturation AND SNR > 6
     //       this pass will reject saturated and nearly-saturated stars
     //   pass 2: find brightest non-saturated star
-    //   pass 3: find brigtest star, even if saturated
+    //   pass 3: find brightest star, even if saturated
 
     for (int pass = 1; pass <= 3; pass++)
     {
