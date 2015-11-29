@@ -547,7 +547,7 @@ void CalRestoreDialog::OnRestore(wxCommandEvent& event)
 
 // CalSanity dialog may get launched as part of an 'alert' if the last calibration looked wonky - this one is non-modal
 CalSanityDialog::CalSanityDialog(wxFrame *parent, const Calibration& oldParams, const CalibrationDetails& oldDetails,
-    Calibration_Issues issue)
+    CalibrationIssueType issue)
 {
     m_pScope = TheScope();
     m_pScope->GetLastCalibrationParams(&m_newParams);
@@ -574,7 +574,7 @@ static void HighlightCell(wxGrid *pGrid, int row, int col)
 }
 
 // Build the verbose message based on the type of issue
-void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype)
+void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType etype)
 {
     wxString msg;
 
@@ -767,7 +767,10 @@ void CalSanityDialog::OnIgnore(wxCommandEvent& evt)
 void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write("CalSanityDialog::OnRecal stops capturing\n");
         pFrame->StopCapturing();
+    }
     Debug.AddLine("Calibration sanity check: user discarded bad calibration");
     pMount->ClearCalibration();
     ShutDown();
@@ -776,7 +779,10 @@ void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 void CalSanityDialog::OnRestore(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write("CalSanityDialog::OnRestore stops capturing\n");
         pFrame->StopCapturing();
+    }
 
     m_pScope->SetCalibration(m_oldParams);
     m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle, m_oldDetails.origBinning);

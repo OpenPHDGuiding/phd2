@@ -97,7 +97,9 @@ extern "C" {
 #define ALTAIR_FLAG_FAN                0x00010000  /* cooling fan */
 #define ALTAIR_FLAG_TECONOFF        0x00020000  /* cooler can be turn on or off */
 #define ALTAIR_FLAG_ISP                0x00040000  /* image signal processing supported */
-#define ALTAIR_FLAG_TRIGGER            0x00080000  /* support the trigger mode */
+#define ALTAIR_FLAG_TRIGGER_SOFTWARE   0x00080000  /* support software trigger */
+#define ALTAIR_FLAG_TRIGGER_EXTERNAL   0x00100000  /* support external trigger */
+#define ALTAIR_FLAG_TRIGGER_SINGLE     0x00200000  /* only support trigger single: one trigger, one image */
 
 #define ALTAIR_TEMP_DEF                6503
 #define ALTAIR_TEMP_MIN                2000
@@ -355,6 +357,9 @@ extern "C" {
 	altair_ports(HRESULT)  Altair_get_Speed(HAltair h, unsigned short* pSpeed);
 	altair_ports(HRESULT)  Altair_get_MaxSpeed(HAltair h); /* get the maximum speed, see "Frame Speed Level", the speed range = [0, max], closed interval */
 
+	altair_ports(HRESULT)  Altair_get_FanMaxSpeed(HAltair h); /* get the maximum fan speed, the fan speed range = [0, max], closed interval */
+
+
 	altair_ports(HRESULT)  Altair_get_MaxBitDepth(HAltair h); /* get the max bit depth of this camera, such as 8, 10, 12, 14, 16 */
 	/* power supply:
 	0 -> 60HZ AC
@@ -417,6 +422,12 @@ extern "C" {
 	*/
 	altair_ports(HRESULT)  Altair_get_ProductionDate(HAltair h, char pdate[10]);
 
+	/*
+	get the sensor pixel size, such as: 2.4um
+	*/
+	altair_ports(HRESULT)  Altair_get_PixelSize(HAltair h, unsigned nResolutionIndex, float* x, float* y);
+
+
 	altair_ports(HRESULT)  Altair_put_LevelRange(HAltair h, unsigned short aLow[4], unsigned short aHigh[4]);
 	altair_ports(HRESULT)  Altair_get_LevelRange(HAltair h, unsigned short aLow[4], unsigned short aHigh[4]);
 
@@ -438,6 +449,10 @@ extern "C" {
 
 	altair_ports(HRESULT)  Altair_write_EEPROM(HAltair h, unsigned addr, const unsigned char* pData, unsigned nDataLen);
 	altair_ports(HRESULT)  Altair_read_EEPROM(HAltair h, unsigned addr, unsigned char* pBuffer, unsigned nBufferLen);
+
+#define ALTAIR_TEC_TARGET_MIN      -300
+#define ALTAIR_TEC_TARGET_DEF      -100
+#define ALTAIR_TEC_TARGET_MAX      300
 
 #define ALTAIR_OPTION_NOFRAME_TIMEOUT      0x01    /* iValue: 1 = enable; 0 = disable. default: enable */
 #define ALTAIR_OPTION_THREAD_PRIORITY      0x02    /* set the priority of the internal thread which grab data from the usb device. iValue: 0 = THREAD_PRIORITY_NORMAL; 1 = THREAD_PRIORITY_ABOVE_NORMAL; 2 = THREAD_PRIORITY_HIGHEST; default: 0; see: msdn SetThreadPriority */
@@ -535,5 +550,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif

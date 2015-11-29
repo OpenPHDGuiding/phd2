@@ -83,7 +83,7 @@ class CalSanityDialog : public CalReviewDialog
 {
 public:
     CalSanityDialog(wxFrame* parent, const Calibration& oldParams, const CalibrationDetails& oldDetails,
-        Calibration_Issues issue);
+        CalibrationIssueType issue);
 
     ~CalSanityDialog();
 private:
@@ -94,12 +94,12 @@ private:
     void OnRecal(wxCommandEvent& evt);
     void OnRestore(wxCommandEvent& evt);
     void SaveBlockingOptions();
-    void BuildMessage(wxStaticText* pText, Calibration_Issues etype);
+    void BuildMessage(wxStaticText *pText, CalibrationIssueType etype);
     void ShutDown();
     wxCheckBox *m_pBlockThis;
     Calibration m_newParams;
     Calibration m_oldParams;
-    Calibration_Issues m_issue;
+    CalibrationIssueType m_issue;
     CalibrationDetails m_calDetails;
     CalibrationDetails m_oldDetails;
     wxString m_newAngleDelta;

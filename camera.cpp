@@ -1230,6 +1230,7 @@ bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int c
 {
     img.InitImgStartTime();
     img.BitsPerPixel = camera->BitsPerPixel();
+    img.ImgExpDur = duration;
     bool err = camera->Capture(duration, img, captureOptions, subframe);
     return err;
 }

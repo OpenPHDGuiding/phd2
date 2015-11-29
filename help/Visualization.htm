@@ -104,18 +104,42 @@ graph window open, you can click on&nbsp; the "Stats" menu item.
 &nbsp;That will display the salient statistics with controls for
 clearing the data or changing the number of guide exposures used to
 compute the statistics.
-<h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 395px; height: 247px;" alt="" src="Star_profile.png"><br><br>The
+<h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 297px; height: 305px;" alt="" src="Star_profile.png"><br><br>The
 star profile display shows the cross-section of the guide star along
-with a measurement of its full-width-half-maximum (<a name="FWHM"></a>FWHM).
-&nbsp;If you
-see substantial fluctuations in this parameter, it may be an indication
+with measurements for its full-width-half-maximum (<a name="FWHM"></a>FWHM)
+and half-flux-diameter (HFD).
+&nbsp;HFD is generaly a more stable measure of the star size since
+it doesn't require curve fitting or any assumption about the overall
+shape of the star image. &nbsp;That's why automated focusing
+applications like FocusMax use it. &nbsp;If you
+see substantial fluctuations in this parameter or wildly varying star
+profiles, it may be an indication
 that the star is too faint or the exposure time is too short.
-&nbsp;This tool can also help with focusing the guide camera, a
+&nbsp;<a name="Focusing"></a>This tool can also help with focusing the
+guide camera, a
 procedure that can be a bit tedious if you're using an off-axis-guider
-at a fairly long focal length. &nbsp;An out-of-focus star will not have
-the sharply pointed profile you want for guiding. &nbsp;If the profile
-is flat at the top, the star is over-exposed, &nbsp;so you'll need to
-find a fainter star or reduce the exposure time to refine the focus.<br><br><img style="width: 622px; height: 489px;" alt="" src="Target_display.png"><br><br>The
+at a fairly long focal length. &nbsp;For that purpose, the HFD number
+is shown in a large font so you can see it from a distance while
+focusing your guide scope/camera. &nbsp;Just un-dock the Star Profile
+window and expand it until you can see the HFD number easily. &nbsp;If
+you are starting well out-of-focus, you'll probably see only a few
+fuzzy stars in the frame, so just choose the smallest one that is
+clearly visible. &nbsp;Use exposure times of at least 2 seconds if
+possible so you don't chase the seeing. &nbsp;At the same time, don't
+let the star become saturated, showing a distinctive flat top.
+&nbsp;Now adjust the focus so the HFD gets consistently
+smaller - but stop as soon as HFD reverses direction or seems to
+plateau. &nbsp;At that point, the star may be saturated, so move to a
+dimmer star in the field. &nbsp;Since you have already improved the
+focus, you can hopefully see a dimmer star. &nbsp;Continue in this way
+until you've reached a focus point that shows a minimum level of HFD
+for the faintest star you can use. &nbsp;At each point in the focusing
+process, you'll probably want to watch the HFD values for a few frames
+so&nbsp;you can mentally average out the effects of seeing. &nbsp;Bad
+focus is a common issue for beginners, leading to problems in
+calibration or generally poor guiding results. &nbsp;Use the Star
+Profile tool to be sure the star doesn't have a flat top (saturation)
+and shows a tapered shape like the example shown above.<br><br><br><img style="width: 622px; height: 489px;" alt="" src="Target_display.png"><br><br>The
 target display is another useful way to visualize overall guider
 performance. &nbsp;The red 'X' shows the star displacement for the most
 recent guide exposure, while the blue dots show the recent history.

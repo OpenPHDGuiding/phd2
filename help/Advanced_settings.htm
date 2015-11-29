@@ -36,10 +36,9 @@ initial values as if <span style="font-style: italic;">PHD2</span> had been fres
 <li>'<a name="Image_format"></a>Image logging format' - specifies the file format&nbsp;if
 star-image logging is enabled. If you are doing this for the purpose of documenting a problem, use Raw FITS</li>
 <li>'<a name="Dither_RA_only"></a>Dither
-RA only' - for companion apps that use the <span style="font-style: italic;">PHD2</span> server interface,
+RA only' - for imaging apps that use the <span style="font-style: italic;">PHD2</span> server interface,
 specifies that dithering should be done only on the RA axis</li>
-<li>'<a name="Dither_scale"></a>Dither scale' - controls the magnitude of the dithering
-operation&nbsp;</li><li>'<a name="Log_File_Location"></a>Log File Location' - specifies a file directory where PHD2 guide and debug log files will be stored.</li></ul><br><h3><a name="Camera_Tab"></a>Camera Tab</h3>
+<li>'<a name="Dither_scale"></a>Dither scale' - an optional multiplier used to adjust the maximum-dither amount specified by the image application. See <a href="Tools.htm#Dithering_Ops">Dithering Operations</a>&nbsp;</li><li>'<a name="Log_File_Location"></a>Log File Location' - specifies a file directory where PHD2 guide and debug log files will be stored.</li></ul><br><h3><a name="Camera_Tab"></a>Camera Tab</h3>
 <span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 605px; height: 480px;" alt="" src="Advanced_camera.png"><br>
 <br>
 The controls on the 'Camera' tab are used as follows: <br>
@@ -81,13 +80,19 @@ the SNR to
 go below 3.0. &nbsp;As mentioned in the 'Basic Use' section, SNR is
 similar but not identical to the signal-to-noise ratio used in
 photometry.</li></ul><li>'<a name="Pixel_size"></a>Pixel
-size' - The guide camera pixel size in microns. This is the second of two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the
+size' - The guide camera pixel size in microns. This is the second of two parameters needed by <span style="font-style: italic;">PHD2</span>
+to compute the
 guider image scale and thus report guider statistics in units of
 arc-seconds. &nbsp;The other
-parameter required for this is the guide scope focal length, located on the
+parameter required for this is the guide scope focal length, located on
+the
 'Guiding' tab. Refer to your camera documentation to determine
 the
-correct value for pixel size.</li><li>'<a name="Camera_gain"></a>Camera
+correct value for pixel size. &nbsp;If your camera has non-square
+pixels, just choose one of the dimensions or input the average of the
+two. &nbsp;The pixel size has no effect on guiding accuracy, so a small
+amount of imprecision in the user interface won't &nbsp;cause any
+problems.</li><li>'<a name="Camera_gain"></a>Camera
 gain' - Sets the gain level for the many cameras
 that support this feature. &nbsp;Reducing this parameter can help to
 reduce the noise level or may allow use of a bright star without

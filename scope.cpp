@@ -663,7 +663,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
     return result;
 }
 
-static wxString CalibrationWarningKey(Calibration_Issues etype)
+static wxString CalibrationWarningKey(CalibrationIssueType etype)
 {
     wxString qual;
     switch (etype)
@@ -688,7 +688,8 @@ static wxString CalibrationWarningKey(Calibration_Issues etype)
     wxString rtn = wxString::Format("/Confirm/%d/CalWarning_%s", pConfig->GetCurrentProfileId(), qual);
     return rtn;
 }
-void Scope::SetCalibrationWarning(Calibration_Issues etype, bool val)
+
+void Scope::SetCalibrationWarning(CalibrationIssueType etype, bool val)
 {
     pConfig->Global.SetBoolean(CalibrationWarningKey(etype), val);
 }
@@ -881,7 +882,7 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
-void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, Calibration_Issues issue)
+void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue)
 {
     m_calibrationDetails = calDetails;
     m_calibrationDetails.lastIssue = issue;

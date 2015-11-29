@@ -508,10 +508,11 @@ static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString
         case 301: *s = _("Maximum sample-sample deflection seen in declination."); break;
         case 302: *s = _("Maximum peak-peak deflection seen in right ascension during sampling period."); break;
         case 303: *s = _("Estimated overall drift rate in right ascension."); break;
-        case 304: *s = _("Maximum drift rate in right ascension during sampling period; may be useful for setting exposure time."); break;
-        case 305: *s = _("Estimated overall drift rate in declination."); break;
-        case 306: *s = _("Estimate of declination backlash if backlash testing was completed successfully"); break;
-        case 307: *s = _("Estimate of polar alignment error. If the scope declination is unknown, the value displayed is a lower bound and the actual error may be larger."); break;
+        case 304: *s = _("Maximum drift rate in right ascension during sampling period."); break;
+        case 305: *s = _("Exposure time to keep maximum RA drift below the recommended min-move level."); break;
+        case 306: *s = _("Estimated overall drift rate in declination."); break;
+        case 307: *s = _("Estimate of declination backlash if backlash testing was completed successfully"); break;
+        case 308: *s = _("Estimate of polar alignment error. If the scope declination is unknown, the value displayed is a lower bound and the actual error may be larger."); break;
 
         default: return false;
     }
@@ -1162,7 +1163,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     FillResultCell(m_othergrid, m_ra_drift_loc, raDriftRate, raDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
     FillResultCell(m_othergrid, m_ra_peak_drift_loc, maxRateRA, maxRateRA * pxscale, PXPERSEC, ARCSECPERSEC);
     m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? " " : 
-        wxString::Format("%6.1f %s ",  rarms / maxRateRA, SEC));
+        wxString::Format("%6.1f %s ",  1.3 * rarms / maxRateRA, SEC));
     FillResultCell(m_othergrid, m_dec_drift_loc, decDriftRate, decDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
     m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == 0.0 ? "> " : "", alignmentError, ARCMIN));
 }

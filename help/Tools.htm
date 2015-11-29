@@ -4,7 +4,7 @@
   <h2>Tools and Utilities</h2><a href="#Manual_Guide">Manual Guide</a><br>
   <a href="#Auto-Select_Star">Auto-Select Star</a><br>
   <a href="#Calibration_Details">Calibration Details</a><br>
-  <a href="#PHD2_Server">PHD2 Server</a><br><a href="#Logging_and_Debug_Output">Logging and Debug Output</a><br>
+  <a href="#PHD2_Server">PHD2 Server</a><br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Logging_and_Debug_Output">Logging and Debug Output</a><br>
   <a href="#Drift_Align">Drift Alignment</a><br>
   <a href="#Lock_Positions">Lock Positions</a><br>
   <a href="#Comet_Tracking">Comet Tracking</a><br><a href="#Guiding_Assistant">Guiding Assistant</a><br>
@@ -41,9 +41,8 @@ attaching a laser pointer to your scope and aiming it at something
 fairly far away (to amplify your motions). &nbsp;A better&nbsp;approach
 for nighttime testing is to run the "star-cross" test described <a href="Trouble_shooting.htm#Star_cross_test">here</a>.&nbsp; &nbsp;<br>
 <br>
-<a name="Dithering"></a>Dithering
-is used primarily with image capture or automation applications,
-usually through the PHD2 server interface. &nbsp;However, you can do
+<a name="Dithering_Manual"></a>Dithering
+is used primarily with image capture or automation applications through the PHD2 server interface. &nbsp;However, you can do
 manual dithering or experiment with dither settings using the controls
 at the bottom of the dialog. &nbsp;The 'dither' amount field at the
 left controls the&nbsp;amount the mount will be moved , in units of
@@ -180,7 +179,70 @@ for an application to control most aspects of <span style="font-style: italic;">
 server API is available on
 the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
 Wiki</a>.<br>
-<br><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
+<br><h3><a name="Dithering_Ops"></a>Dithering</h3><big></big><p>The primary purpose of dithering&nbsp;is
+to make post-processing easier by removing some kinds of fixed-pattern
+noise in the images, especially hot pixels.&nbsp; This is almost purely
+a function of the camera you're using and to a lesser extent, the
+sophistication of the post-processing software.&nbsp; For imagers
+with&nbsp;temperature-regulated, low-noise cameras, dithering is mostly
+a convenient way to eliminate&nbsp;hot pixels that aren't getting
+removed by the dark frames.&nbsp; Hot pixel positions change as sensors
+age, so dark libraries don't usually correct for all of them. Those hot
+pixels can also be also removed in post-processing, but that becomes
+tedious if there are lots of them.&nbsp; It's also possible that
+dithering can help with some other kinds of sensor behavior such as
+column defects, and it's particularly helpful if there is no
+temperature regulation on the sensor and therefore no good way to use a
+dark library.&nbsp; DSLR imagers often use aggressive dithering for
+those reasons.&nbsp;In the PHD2 implementation, &nbsp; automated
+dithering is accomplished through the server interface, so make sure
+you have 'Enable Server' checked under the 'Tools' menu. &nbsp;You
+first specify a maximum dither size you want to use during the
+guiding session - this will be set in your imaging application.. Then,
+when that application issues a dither command, PHD2
+uses a random number generator to decide how large the dither will
+actually be for that command.&nbsp; The actual dither mount will be
+&gt; 0
+and &lt;= the maximum amount allowed. You want to use pseudo-random
+dither amounts like this to be sure that dithering doesn't follow a
+consistent pattern or shift the frame back to a location where it has
+previously been.&nbsp; But for some of the applications that do PHD2
+dithering, you
+can't specify the maximum amount directly - you are perhaps limited to
+choices like small/medium/large and the max dither amounts will have
+preset values.&nbsp; For that reason, PHD2 has a dither scaling
+parameter in the 'Global' tab of the Brain dialog.&nbsp; It is
+basically a multiplier term that lets you adjust the range of dither
+amounts that are possible.&nbsp; So a scale factor of 1 doesn't change
+the
+preset value at all, a value of 10 multiplies it by 10X, etc.&nbsp; If
+you're using an app that lets you specify the maximum amount directly
+(e.g. PHD_Dither), you should leave the dither scale set to 1.0.&nbsp;
+Otherwise, you can adjust the scale factor if you aren't
+happy with the overall range of dithering you're getting with one of
+the small/medium/large type imaging apps.</p><p>There are typically
+two costs associated with dithering: 1) the extra time and uncertainty
+required for "settling" and 2) the need to crop the final stacked frame
+in order to remove the low-signal margins. &nbsp;Settling is the term
+used for a period of stabilization after the mount has been moved by a
+dither command. &nbsp; The imaging app that starts the dither will also
+decide when the guiding has stabilized enough to continue
+imaging.&nbsp; The app can let PHD2 determine this by specifying the
+settling parameters or the app can do the calculations itself.&nbsp;
+You'll need to look at your imaging/dithering app to see what control
+you have over this process.&nbsp; If the app uses the latest PHD2
+server interfaces, it can specify a settling requirement that might
+look like "guiding errors must be less than 1.5 pixels for a period of
+at least 10 seconds."&nbsp; This is a process that can consume some
+time, depending on how tight the requirements are for settling.&nbsp;
+It is likely to take more time if you are dithering in declination and
+the dither forces a change in direction.&nbsp; Most mounts have some
+declination backlash, so it can take a number of guide commands to get
+the mount moving in the right direction, and then more time for the
+process to converge on the new target location for the guide
+star.&nbsp; That's why PHD2 also offers the option to dither only in
+right ascension. &nbsp;Again, this is an option on the 'Global' tab,
+right next to the dither scaling parameter.</p><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
 <span style="font-style: italic;">PHD2</span> automatically creates two types of log files: a debug log and a
 guiding log. &nbsp;Both are very useful for different reasons.
 &nbsp;The guiding log is similar to the one produced by PHD, but
