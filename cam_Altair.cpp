@@ -190,8 +190,12 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     delete[] m_buffer;
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
-	//TODO
+	float xSize, ySize;
     PixelSize = 3.75; // for all cameras so far....
+	if (Altair_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
+	{
+		PixelSize = xSize;
+	}
 
     wxYield();
 
