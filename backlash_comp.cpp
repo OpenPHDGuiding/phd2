@@ -55,6 +55,8 @@ BacklashComp::BacklashComp(Mount *theMount)
 
 void BacklashComp::SetBacklashPulse(int ms)
 {
+    if (m_pulseWidth != ms)
+        GuideLog.SetGuidingParam("Backlash comp amount", ms);
     m_pulseWidth = wxMax(0, ms);
     pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
     Debug.AddLine(wxString::Format("BLC: Comp pulse set to %d ms", m_pulseWidth));
@@ -62,6 +64,8 @@ void BacklashComp::SetBacklashPulse(int ms)
 
 void BacklashComp::EnableBacklashComp(bool enable)
 {
+    if (m_compActive != enable)
+        GuideLog.SetGuidingParam("Backlash comp enabled", enable ? "true" : "false");
     m_compActive = enable;
     pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.AddLine(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms", m_compActive ? "enabled" : "disabled", m_pulseWidth));
