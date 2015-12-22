@@ -1,64 +1,276 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><title>Diagnostic des pannes</title></head>
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Diagnostic des pannes</title></head>
 <body>
-<h2>Diagnostic des pannes</h2><h3>Calibration et probl�mes � la premi�re utilisation</h3>Si vous d�butez avec
- <span style="font-style: italic;">PHD2</span> ou si vous connectez un mat�riel pour la premi�re fois,
-vous rencontrerez peut-�tre des probl�mes pour calibrer l'autoguidage.&nbsp;
-Deux causes sont possibles, chacune demande une correction diff�rente:
-<br><ol><li>L'�toile bouge lors de la calibration mais "trop peu" ou "trop loin".
-&nbsp;La solution est simple - ajujstez simplement le param�tre '�tape de calibration' dans l'onglet 'Monture' des 
-<a href="Advanced_settings.htm">Param�tres avanc�s</a>. 
-Cette page d'aide d�crit l'usage de ce param�tre, ce qui vous aidera � rem�dier au probl�me.</li></ol>
-<ol><li>L'�toile ne bouge pas ou alors presque pas et de fa�on al�atoire.
-&nbsp;Ces petits mouvements sont en r�alit� caus�s par la turbulence et la monture ne bouge pas vraiment.
- &nbsp;La r�solution de ce probl�me est expliqu�e ci-dessous.</li></ol>
-Dans la majorit� des cas, l'absence de mouvement est caus�e par un probl�me d'�quipement, par exemple dans le c�blage ou les connections.
+<h2>Diagnostic des pannes</h2><a name="Problems-_Mount_Control"></a><h3>Calibration et problèmes à la première utilisation</h3>Si vous débutez avec
+ <span style="font-style: italic;">PHD2</span> ou si vous connectez un matériel pour la première fois,
+vous rencontrerez peut-être des problèmes pour calibrer l'autoguidage.&nbsp;
+Deux causes sont possibles, chacune demande une correction différente:
+<br><ol><li>L'étoile bouge lors de la calibration mais "trop peu" ou "trop loin".
+&nbsp;La solution est simple - ajustez simplement le paramètre 'étape de calibration' dans l'onglet 'Monture' des 
+<a href="Advanced_settings.htm">Paramètres avancés</a>. 
+Cette page d'aide décrit l'usage de ce paramètre, ce qui vous aidera à remédier au problème.</li></ol>
+<ol><li>L'étoile ne bouge pas ou alors presque pas et de façon aléatoire. Ces problèmes sont renseignés par des messages d'alerte en haut de fenêtre. 
+&nbsp;Ces petits mouvements sont en réalité causés par la turbulence et la monture ne bouge pas vraiment.
+ &nbsp;La résolution de ce problème est expliquée ci-dessous.</li></ol>
+Dans la majorité des cas, l'absence de mouvement est causée par un problème d'équipement, par exemple dans le câblage ou les connections.
 &nbsp;Le meilleur outil pour diagnostiquer cette panne est l'option 'Guidage manuel' du menu 'Outils'. Voyez la page <a href="Tools.htm">Outils</a>
-pour son utilisation d�taill�e. &nbsp;
+pour son utilisation détaillée. &nbsp;
 
-Appuyez sur les contr�les directionnels de la fen�tre 'Guidage manuel' pour envoyer des ordres directement � la monture.
-&nbsp;Si celle-ci ne r�pond pas, c'est le signe d'un probl�me de mat�riel ou de connectivit� qui n'est pas li� � <span style="font-style: italic;">PHD2</span>.
-&nbsp;Si vous employez un appareil Shoestring pour commander la monture, v�rifiez les LED de contr�le pour voir si les ordres arrivent bien jusque l�.
-&nbsp;De m�me, votre cam�ra compatible ST4 poss�de peut-�tre un indicateur pouvant vous renseigner sur les commandes en cours.
+Appuyez sur les contrôles directionnels de la fenêtre 'Guidage manuel' pour envoyer des ordres directement à la monture.
+&nbsp;Si celle-ci ne répond pas, c'est le signe d'un problème de matériel ou de connectivité qui n'est pas lié à <span style="font-style: italic;">PHD2</span>.
+&nbsp;Si vous employez un appareil Shoestring pour commander la monture, vérifiez les LED de contrôle pour voir si les ordres arrivent bien jusque là.
+&nbsp;De même, votre caméra compatible ST4 possède peut-être un indicateur pouvant vous renseigner sur les commandes en cours.
 &nbsp;
-Si vous utilisez une connection ASCOM vers la monture, v�rifiez les param�tres du port COM.
-Vous pouvez aussi faire appel aux outils de diagnotic des pilotes ASCOM, par exemple POTH.
+Si vous utilisez une connexion ASCOM vers la monture, vérifiez les paramètres du port COM.
+Vous pouvez aussi faire appel aux outils de diagnostic des pilotes ASCOM, par exemple POTH.
+Il vaut mieux utiliser les dernières versions d'ASCOM car les versions plus anciennes sont moins performantes en autoguidage par impulsions.
+&nbsp;<br>
 
-&nbsp;<br><h3>Plantage du programme ou probl�mes de chargement des images</h3>
-Dans certains cas l'image de la cam�ra n'est pas affich�e ou charg�e correctement.
-&nbsp;Ceci peut m�me causer un plantage de&nbsp;
-<span style="font-style: italic;">PHD2</span> ou d'autres applications li�es � la cam�ra.
-&nbsp;L'origine doit �tre cherch�e dans les pilotes du mat�riel ou les connections. V�rifiez particuli�rement les c�bles ou appareils USB.
-&nbsp;Il est peu probable qu'un programme comme <span style="font-style: italic;">PHD2</span> 
-cause ce genre de plantage, il faut donc investiguer dans les couches les plus basses du syst�me.
-Commencez par confirmer que la cam�ra fonctionne correctement.
-Utilisez un c�ble court et direct entre la cam�ra et le PC et connectez-vous avec le programme fourni par le fabriquant.
-&nbsp;Si la cam�ra fonctionne, remontez vers la source du probl�me en v�rifiant les r�partiteurs ('Hub') USB et les c�bles.
-Changez-les un � un pour isoler la cause du probl�me.
-Pensez que le mat�riel est utilis� dans un environnement extr�me pour lequel il n'est pas con�u: en ext�rieur, dans le froid et l'humidit�.
-Quelque-chose qui fonctionnait la semaine pass�e n'est peut-�tre plus fiable. 
-
-<h3>Autoguidage m�diocre</h3>
-Quand tout fonctionne, l'autoguidage donne normalement de bons r�sultats d�s le d�part. 
-Vous devez d�cider si les performances sont suffisantes pour vous; chacun a ses propres crit�res en la mati�re...
-Si vous trouvez que les r�sultats sont inacceptables, parce que les �toiles sont allong�es ou d�form�es sur les images, le mieux � faire
-est d'aborder le probl�me de fa�on syst�matique.
-Cette t�che est complexe et ne peut pas �tre expliqu�e de d�tail ici. Vous pouvez vous faire aider en consultant de nombreuses sources 'en ligne'.
-Ce document de Craig Stark est un bon point de d�part: &nbsp;<br><a href="http://www.cloudynights.com/item.php?item_id=2755">What to do When PHD Guiding isn't Push Here Dummy</a>
-<h3>Signaler un probl�me</h3>
-Si vous rencontrez un probl�me sp�cifique � <span style="font-style: italic;">PHD2</span>, vous
-pouvez le signaler sur cette page: <a href="https://code.google.com/p/open-phd-guiding/issues/list">PHD2 Issue Tracking</a>.
-Plus vous donnerez d'informations d�taill�es, plus grandes sont les chances que votre probl�me puisse �tre r�solu.
-&nbsp;Basez-vous sur les directives suivantes:
-<br><ol><li>Comment reproduire le probl�me - si vous donnez clairement les �tapes qui m�nent au probl�me, nous avons plus de chances de trouver la solution.
-&nbsp;Si vous ne pouvez pas reproduire le probl�me, essayez de r�duire les �tapes non relevantes pour mieux isoler la cause.
-&nbsp;N'oubliez pas que nous n'avons pas le m�me environnement en termes de PC et de mat�riel pour reproduire la panne.
+<br><br><a name="Calibration_sanity_check"></a><span style="font-weight: bold;">Diagnostiques de calibration</span> <span style="font-weight: bold;"> et alertes</span><br>
+Il est possible que la calibration réussisse mais que PHD2 affiche un avertissement concernant des données anormales.&nbsp;
+Ce dialogue de diagnostique donne une explication des problèmes: <br><br><img style="width: 779px; height: 426px;" alt="" src="Calib_Sanity.png">
+<br><br>
+A partir de la version 2.4.0, quatre paramètres sont contrôlés par PHD2:<br>
+<ul><li>
+Nombre insuffisant de pas (ci-dessus). Résoudre cette situation est simple, il suffit de diminuer le pas de calibration jusqu'à obtenir au moins 8 pas dans les deux directions.
+Si vous avez utilisé l'assistant de nouveau profil de matériel, une valeur par défaut calculée a déjà été introduite.
+Une valeur très différente en AD et en DEC indique un problème de monture, à moins que la vitesse de correction soit différente sur les deux axes.
 </li>
-<li>D�taillez votre configuration - syst�me d'exploitation, mat�riel, version de <span style="font-style: italic;">PHD2</span>, etc.</li>
-<li>Attachez le journal de d�bogage de <span style="font-style: italic;">PHD2</span>
-r�cup�r� lors d'une session pendant laquelle la panne s'est produite. 
+<li>
+Axes de caméra non perpendiculaires. Les axes de la caméra sont calculés de façon indépendante, même s'ils sont supposés être perpendiculaires.
+Ces calculs n'exigent pas une grande précision mais si l'erreur est très importante, vous devrez peut-être recommencer la calibration.
+Si les alertes persistent, c'est que quelque-chose ne va pas avec les connexions de la monture (câbles). 
+Examinez attentivement le graphique pour déterminer la cause.
+Dans certains cas la monture ne bouge pas du tout et les mouvements détectés sont causés par la turbulence.
+Si l'erreur est faible et que le matériel fonctionne correctement, 
+vous pouvez désactiver les alertes en cochant 'Considérer les axes orthogonaux' dans l'onglet 'monture' des 'paramètres avancés'.
+Ne faites cela que si l'erreur est faible, sans quoi vous cacherez de sérieux problèmes.
+Le graphique à gauche montre les orientations des axes AD et DEC mesurées par PHD2.
+</li>
+<li>Taux AD/DEC suspects. Le taux d'autoguidage en AD devrait être lié au taux en DEC selon un rapport du cosinus de la déclinaison.
+En d'autres termes, le taux de guidage en AD diminue quand on s'éloigne de l'équateur céleste (DEC =0).
+PHD2 n'essaie pas d'identifier le taux incorrect. Il vous alerte simplement que les valeurs sont suspectes.
+Vous pouvez diagnostiquez ces taux vous-même facilement.
+Si vous guidez avec une vitesse de correction standard (1x), le taux en DEC devrait être de ±15 arcsec/sec.
+avec une vitesse de 0,5x le taux serait de ±7,5 arcsec/sec.
+Un taux en DEC significativement plus bas qu'en AD est souvent le signe d'un backlash important en DEC.
+</li>
+<li>Résultats inconsistants. Un message apparaît si les valeurs de calibration sont très différentes des précédentes.
+La cause peut être un changement dans la configuration matérielle, il ne s'agit pas forcément d'un vrai problème. 
+Peut-être auriez-vous intérêt à créer un profil de matériel différent pour chaque configuration? 
+De cette façon, PHD2 ne compare que des données relevantes, ce qui diminue le risque de fausse alerte.
+</li>
+</ul>
+Chacune de ces alertes sera accompagnée d'une mise en évidence des champs relevants.
+vous pouvez ignorer l'alerte en cliquant sur 'accepter la calibration', recommencer la calibration  ('ignorer la calibration') ou réutiliser les dernières bonnes valeurs connues ('Restaurer...').
+
+Cette troisième option vous permet de postposer la calibration et de commencer à autoguider sur de bonnes bases.
+Si vous recevez des alertes selon vous injustifiées, cochez la case 'ne pas montrer' pour bloquer ces messages.
+Cependant, les alertes de PHD2 sont généralement judicieuses et devraient être prises en compte. La grande majorité des utilisateurs ne voit jamais d'alerte.
+<br><br>
+<span style="font-weight: bold;">Backlash en DEC</span><span style="font-weight: bold;"></span><br>
+Le jeu mécanique en DEC (backlash) est une des causes courantes de problèmes à la calibration.
+Voyez la section <a href="Tools.htm#Declination_Backlash">Outils et utilitaires</a> pour des conseils à ce sujet.
+<br><br>
+<span style="font-weight: bold;"><a name="Star_cross_test"></a>Valider les mouvements de la monture - le test de la croix<br></span>
+Si vous constatez des échecs de calibration sans messages d'alerte, vous devriez effectuer ce test très simple pour voir si la monture réagit aux ordres de PHD2. 
+Ce test imite en fait une calibration mais de façon manuelle.
+L'idée est de faire bouger la monture pendant une longue pose de l'imageur de façon à révéler sur la photo les mouvements de la monture.
+Après ce test, doit obtenir une image comme celle-ci: <br><br><img style="width: 360px; height: 382px;" alt="" src="Star_cross_1.png">
+<br><br>
+L'angle de la croix importe peu mais les lignes devraient être perpendiculaires et de longueur comparable, formant une croix bien symétrique.
+Si ce n'est pas le cas, le guidage sera médiocre ou même impossible.
+Par exemple, si vous obtenez ce résultat:<br><br><img style="width: 360px; height: 347px;" alt="" src="Bad_Star_Cross_1.png">
+<br><br>
+On voit que l'étoile n'a bougé que dans un axe, l'AD dans cet exemple. Les commandes de mouvement en DEC n'ont rien donné du tout.
+Cela signifie que l'autoguidage en DEC ne fonctionnera pas tant que le problème n'est pas résolu. La calibration ne sera possible que si le guidage en DEC est désactivé.
+Chaque figure différente sur l'image indique un autre problème: un câble défectueux, un faux contact ou (moins courant) un souci de pilotes ASCOM.
+En principe la faute est externe à PHD2.
+<br><br>
+Procédure de test: <br>
+
+<ol>
+<li>Mettez la monture en vitesse de correction 1x.
+Ouvrez l'outil de guidage manuel dans PHD2 et choisissez une durée d'impulsion de 5 secondes.
+</li>
+<li> Démarrez une pose de 60 sec sur votre imageur.</li>
+<li>Appuyez sur Ouest puis deux fois sur Est et enfin une nouvelle fois sur Ouest.
+L'étoile devrait être de retour à sa position approximative de départ.
+Pensez à attendre au moins 5 sec après chaque clic de bouton pour laisser le temps à la monture de bouger. 
+</li>
+<li>Maintenant, appuyez sur Nord, puis 2x sur Sud et encore une fois sur Nord.
+L'étoile devrait être de retour à sa position approximative de départ.
+<br></li>
+<li>Attendez que la caméra termine sa pose et observez l'image.</li></ol>
+Vous pouvez changer la durée des impulsions; peut-être tester des durées plus courtes pour voir si la monture les prend en compte.
+La durée de la pose sur l'imageur doit cependant être suffisante pour réaliser toute la procédure.
+Dans la majorité des cas, les jeux mécaniques de la monture ne permettront pas à l'étoile de revenir exactement à sa position de départ, comme c'est visible dans le premier exemple.
+Une erreur trop importante indique cependant un souci de backlash en DEC.
+<br><br>
+Ce test revient à utiliser PHD2 uniquement pour 'appuyer' sur les boutons de la monture. Toutes les autres fonctions de PHD2 sont désactivées et ne peuvent donc pas 'contaminer' les résultats.
+C'est le diagnostic idéal à communiquer sur les forums d'aide ou à envoyer au service après-vente de la monture. 
+<br>
+
+
+<h3><a name="Problems-_Display_Window"></a>Problèmes d'affichage</h3>
+Les nouveaux utilisateurs de PHD2 se plaignent souvent d'obtenir une image très bruitée, toute noire ou toute blanche.
+Si la caméra fonctionne, que le couvercle est retiré et que les images parviennent à PHD2, ce genre de situation est souvent causé par l'absence d'étoiles identifiables.
+Par exemple, tester la configuration de jour ou à l'intérieur produira des images irrelevantes.
+PHD2 utilise une fonction d'ajustement automatique de l'image qui ne fonctionne que si de vraies images sont détectées dans le ciel nocturne.
+Quand aucune étoile n'est présente, PHD2 se base sur les pixels les plus sombres et les plus clairs de l'image. C'est ce qui cause les résultats cités plus hauts.
+Vous aurez aussi des problèmes similaires si l'optique d'autoguidage n'est pas mise au point.
+Faire la MAP de l'optique d'autoguidage peut être ardu et frustrant car souvent ce matériel n'est pas muni d'un porte-oculaire précis.
+Cependant, une image bien nette est très importante pour obtenir de bons résultats en autoguidage.
+Il est recommandé de commencer par une étoile brillante mais pas saturée pour essayer d'obtenir une image nette. On passe ensuite à des étoiles plus faibles pour affiner la MAP.&nbsp; 
+
+
+<h3><a name="Problems-_Camera_Timeouts"></a>Problèmes de 'timeout' ou de téléchargement</h3>
+Dans certains cas l'image de la caméra n'est pas affichée ou chargée correctement.
+&nbsp;Ceci peut même causer un plantage de&nbsp;
+<span style="font-style: italic;">PHD2</span> ou d'autres applications liées à la caméra.
+&nbsp;L'origine doit être cherchée dans les pilotes du matériel ou les connections. Vérifiez particulièrement les câbles ou appareils USB.
+&nbsp;Il est peu probable qu'un programme comme <span style="font-style: italic;">PHD2</span> 
+cause ce genre de plantage, il faut donc investiguer dans les couches les plus basses du système.
+Commencez par confirmer que la caméra fonctionne correctement.
+Utilisez un câble court et direct entre la caméra et le PC et connectez-vous avec le programme fourni par le fabriquant.
+&nbsp;Si la caméra fonctionne, remontez vers la source du problème en vérifiant les répartiteurs ('Hub') USB et les câbles.
+Changez-les un à un pour isoler la cause du problème.
+Pensez que le matériel est utilisé dans un environnement extrême pour lequel il n'est pas conçu: en extérieur, dans le froid et l'humidité.
+Quelque-chose qui fonctionnait la semaine passée n'est peut-être plus fiable. 
+<br><br>
+A partir de la version 2.3.0, PHD2 introduit une valeur de 'timeout' dans l'onglet caméra des paramètres avancés pour éviter certains plantages.
+La valeur pas défaut est de 15 secondes. PHD2 va donc attendre 15 secondes après la fin de la pose pour recevoir l'image de la caméra.
+Cette durée est fort longue et suffit pour la grande majorité des caméras.
+Certaines caméras sont cependant connues pour causer des problèmes de bande passante trop large ou de fort trafic sur le port USB. 
+Si vous pensez que c'est le cas de la votre, vous pouvez allonger le délai. Essayez une valeur très élevée, 1000secondes par exemple.
+Sachez cependant que dans ce cas, vous n'avez pas de protection contre les plantages ou un comportement erratique de l'autoguidage.
+Une valeur élevée n'empêche pas un fonctionnement normal. Le délai est annulé dès qu'une image est reçue et l'autoguidage se poursuit immédiatement.
+
+
+<h3>Autoguidage médiocre</h3>
+Quand tout fonctionne, l'autoguidage donne normalement de bons résultats dès le départ. 
+Vous devez décider si les performances sont suffisantes pour vous; chacun a ses propres critères en la matière...
+Si vous trouvez que les résultats sont inacceptables, parce que les étoiles sont allongées ou déformées sur les images, le mieux à faire
+est d'aborder le problème de façon systématique.
+Cette tâche est complexe et ne peut pas être expliquée de détail ici. 
+Les bons réglages dépendent entièrement de votre configuration de matériel, de la qualité du ciel, etc. 
+Il n'y a pas de valeurs 'magiques' et copier les paramètres d'autres utilisateurs n'est pas forcément correct pour votre situation.
+Si vous avez démarré en parcourant l'assistant, vous devriez obtenir des valeurs de base déjà bien adaptées.
+Utilisez l'assistant de guidage ou l'outil de guidage manuel pour obtenir des informations relevantes.
+Vous pouvez vous faire aider en consultant de nombreuses sources 'en ligne'.
+Ce document de Craig Stark est un bon point de départ: &nbsp;<br><a href="http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677">What to do When PHD Guiding isn't Push Here Dummy</a>
+
+<h3><a name="Problems-_Alerts"></a>Messages d'alerte</h3>
+PHD2 affiche parfois des messages d'alerte en haut de la fenêtre principale.
+Il s'agit généralement d'avertissements concernant des erreurs ou des données de diagnostic.
+Pendant un usage normal vous ne verrez probablement pas ce type de message.
+Si cela arrivait malgré tout, cette section vous aidera à y voir un peu plus clair.<br><br>
+
+<span style="font-weight: bold;">Alertes de librairies de darks et de matrices de pixels morts</span>
+<br><br>
+<span style="font-weight: bold;">"Utilisez une librairie de darks ou une matrice de pixels morts"</span>
+- Utiliser une librairie de darks ou une matrice de pixels morts permet à PHD2 de ne pas accidentellement autoguider sur un pixel chaud au lieu d'une étoile.
+Ignorer ce message vous expose à des problèmes potentiels pendant le guidage.
+<br><br>
+<span style="font-weight: bold;">Incompatibilité de format ou de géométrie</span>
+- les darks ou matrices de pixels morts doivent respecter le même format que le capteur d'autoguidage.
+Si vous avez changé de caméra, les librairies ne correspondront plus et ce message apparaîtra. 
+Créez un nouveau profil et générez de nouveaux fichiers. De cette façon, vous conserverez les anciens pour votre vieille caméra.
+Dans des cas très rares, une nouvelle version de PHD2 ou un changement de pilotes de caméra peut aussi provoquer cette alerte.
+<br><br>
+
+Dans cas cas, vous devrez régénérer les fichiers de darks ou de matrice. Voyez l'explication ici: &nbsp;
+<span style="font-weight: bold;"></span><a href="Darks_BadPixel_Maps.htm">Darks et matrices de pixels morts</a><br>
+
+<span style="font-weight: bold;"><br>Alertes ASCOM</span><br>
+Lors de la première connexion à une monture, une caméra ou un autre accessoire piloté par ASCOM, 
+une alerte pourrait survenir annonçant qu'une fonctionnalité n'est pas supportée par le pilote.
+Un exemple pourrait être l'incompatibilité d'un pilote de monture avec l'autoguidage par impulsions.
+Ce n'est cependant le cas que pour des versions obsolètes. La solution est de mettre à jour les pilotes ASCOM.
+Certains sont disponibles sur le site ASCOM, d'autres auprès du fabricant.
+De façon générale, il est recommandé de toujours utiliser les pilotes les plus récents.
+
+<br>
+<span style="font-weight: bold;"><br>Alertes de 'timeout' de caméra<br></span>
+Ces messages d'alerte sont expliqués plus haut: 
+<a href="#Problems-_Camera_Timeouts">Problèmes de 'timeout' ou de téléchargement</a><br>
+
+<br><span style="font-weight: bold;">Alertes de calibration<br></span>
+Plusieurs messages peuvent apparaître pendant la calibration. Ils sont décrits ici: 
+<a href="#Problems-_Mount_Control">Alertes de calibration</a><br>
+
+<span style="font-weight: bold;"><br>Alertes de dépassement de durée<br></span>
+Pendant l'autoguidage vous pouvez être averti que la durée limite en AD ou DEC est insuffisante pour garantir un suivi correct.
+Si vous avez réduit ces paramètres, vous pouvez alors les augmenter. Cependant, si ces valeurs sont largement au-delà d'une seconde, 
+la cause est plus probablement mécanique, par exemple, un câble est coincé, il y a eu un coup de vent ou vous avez accidentellement cogné la monture. 
+Corrigez le problème et reprennez l'autoguidage.
+Une autre cause possible est une dérive qui n'est tout simplement pas corrigée.
+Par exemple, si le moteur ne tourne pas malgré les ordres de PHD2, la dérive de l'étoile-guide finira par causer une alerte.
+Augmenter la durée maximum n'aide pas pour ce type de problème, il faut intervenir sur le matériel.
+
+<br><h3><a name="Log_analysis"></a>Analyse des journaux</h3>
+Les journaux de PHD2 ('log') sont incontournables pour résoudre un problème ou améliorer le guidage.
+Les deux fichiers sont formatés pour une lecture aisée; le journal de guidage peut en outre être ouvert par de nombreuses applications externes.
+PHDLogViewer ou Excel peuvent être avantageusement employés pour visualiser les performances de PHD2.
+Spécifiez simplement que le journal emploie la virgule comme délimiteur de champs.
+
+<br><h4>Contenu du journal de guidage</h4>
+Le contenu de ce journal continuera à évoluer en même temps que de nouvelles options sont disponibles dans PHD2.
+Le noyau est cependant stable et l'équipe de développement veille à sa compatibilité future.
+Si vous désirez analyser le journal vous-même, voici quelques informations utiles.
+<br><br>
+
+<p class="MsoNormal">Le journal de guidage de PHD2 contient zéro ou 'x' séquences de calibration et zéro ou 'x' séquences de guidage.
+Chaque section commence par un en-tête qui résume les algorithmes et paramètres utilisés.
+Au début de chaque calibration ou guidage, l'en-tête définit les noms de colonnes. En voici la signification:</p>
+<p class="MsoNormal"><b style=""><o:p>&nbsp;</o:p>Colonnes de calibration:<o:p></o:p></b></p>
+<ul>
+<li>dx, dy sont les décalages de la position initiale, en pixels dans le référentiel de la caméra.</li>
+<li>x, y sont les coordonnées caméra de l'étoile-guide à  la fin de chaque pas de calibration.</li>
+<li>Dist est la distance totale du déplacement (dist = sqrt(dx*dx + dy*dy)).
+C'est la valeur utilisée par PHD2 pour calculer la calibration.<o:p></o:p></li>
+</ul>
+<o:p>&nbsp;</o:p><b style="">Colonnes de guidage:<o:p></o:p></b>
+<ul>
+<li>dx, dy  sont les décalages de la position de verrouillage, en pixels dans le référentiel de la caméra.
+</li>
+<li>RARawDistance et DECRawDistance -  Ce sont les transformations des dx et dy dans les coordonnées de la monture. 
+L'angle arbitraire de la caméra est utilisé pour changer les x/y de la caméra en AD/DEC de la monture.
+</li>
+<li>RAGuideDistance et DECGuideDistance - Ce sont les résultats des algorithmes de guidage.
+Ceux-ci opèrent sur base des distances 'brutes' de décalage et décident si une correction est nécessaire, et son amplitude.
+Par exemple, si un mouvement minimum est indiqué, les distances de guidage peuvent êtres nulles alors que les distances brutes ne le sont pas.
+</li>
+<li>RADuration, RADirection, DECDuration, DECDirection
+- ce sont les valeurs déterminées sur base des deux distances de guidage ci-dessus. Les durées sont les longueurs des impulsions de guidage, en millisecondes.
+</li>
+<li>XStep, YStep - ces sont les pas d'ajustement de l'optique active si celle-ci est utilisée.</li>
+<li>StarMass - la mesure de l'intensité de l'étoile-guide.</li>
+<li>SNR - un rapport signal/bruit calculé par PHD2 pour l'étoile-guide, qui quantifie sa 'visibilité' par rapport au fond de ciel.
+</li>
+<li>ErrorCode - une indication qu'une erreur s'est produite. Par exemple, une perte d'étoile-guide.
+</li>
+</ul>
+
+<p class="MsoNormal">
+Toutes les valeurs de distance sont en unités de pixels. L'en-tête de la section de guidage montre l'échelle de l'image connue par PHD2, 
+qui peut être utilisée pour transformer les valeurs en arcsec.
+</p>
+
+<h3>Signaler un problème</h3>
+Si vous rencontrez un problème spécifique à <span style="font-style: italic;">PHD2</span>, vous
+pouvez le signaler sur le groupe Google de PHD2: <a href="https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding"></a>.
+Plus vous donnerez d'informations détaillées, plus grandes sont les chances que votre problème puisse être résolu.
+&nbsp;Basez-vous sur les directives suivantes:
+<br><ol><li>Comment reproduire le problème - si vous donnez clairement les étapes qui mènent au problème, nous avons plus de chances de trouver la solution.
+&nbsp;Si vous ne pouvez pas reproduire le problème, essayez de réduire les étapes non relevantes pour mieux isoler la cause.
+&nbsp;N'oubliez pas que nous n'avons pas le même environnement en termes de PC et de matériel pour reproduire la panne.
+</li>
+<li>Détaillez votre configuration - système d'exploitation, matériel, version de <span style="font-style: italic;">PHD2</span>, etc.</li>
+<li>Attachez le journal de débogage de <span style="font-style: italic;">PHD2</span>
+récupéré lors d'une session pendant laquelle la panne s'est produite. 
 &nbsp;Vous trouverez ce journal dans votre dossier de documents.
-&nbsp;Si vous ne pouvez reproduire le probl�me, essayez d'estimer quand il s'est produit la premi�re fois - cela peut nous aider � identifier les parties relevantes du journal
+&nbsp;Si vous ne pouvez reproduire le problème, essayez d'estimer quand il s'est produit la première fois - cela peut nous aider à identifier les parties relevantes du journal
 sans devoir parcourir des milliers de lignes.</li></ol>
 <br>
 &nbsp;&nbsp;
