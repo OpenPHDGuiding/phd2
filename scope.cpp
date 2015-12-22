@@ -45,10 +45,6 @@ static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
 static const int DefaultMaxRaDuration = 2500;
 enum { MAX_DURATION_MIN = 50, MAX_DURATION_MAX = 5000, };
-static wxString dec_modes[] = 
-{
-    _("Off"), _("Auto"), _("North"), _("South")
-};
 
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
@@ -235,14 +231,21 @@ bool Scope::SetDecGuideMode(int decGuideMode)
         }
 
         if (m_decGuideMode != decGuideMode)
+        {
+            const char *dec_modes[] = {
+              "Off", "Auto", "North", "South"
+            };
+
             GuideLog.SetGuidingParam("Dec Guide Mode", dec_modes[decGuideMode]);
-        m_decGuideMode = (DEC_GUIDE_MODE)decGuideMode;
+        }
+
+        m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
+        m_decGuideMode = (DEC_GUIDE_MODE) DefaultDecGuideMode;
     }
 
     pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
@@ -1615,9 +1618,12 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
         AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
-        width = StringArrayWidth(dec_modes, WXSIZEOF(dec_modes));
+        wxString dec_choices[] = {
+          _("Off"), _("Auto"), _("North"), _("South")
+        };
+        width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
         m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(dec_modes), dec_modes);
+            wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
         AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
     }
 }
