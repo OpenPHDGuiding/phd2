@@ -1080,8 +1080,8 @@ void GuidingAsstWin::FillResultCell(wxGrid *pGrid, wxGridCellCoords loc, double 
 
 void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
-    double ra = info.mountOffset->X;
-    double dec = info.mountOffset->Y;
+    double ra = info.mountOffset.X;
+    double dec = info.mountOffset.Y;
     double prevRAlpf = m_statsRA.lpf;
 
     m_statsRA.AddSample(ra);
@@ -1090,7 +1090,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     if (m_statsRA.n == 1)
     {
         minRA = maxRA = ra;
-        m_startPos = *info.mountOffset;
+        m_startPos = info.mountOffset;
         maxRateRA = 0.0;
     }
     else

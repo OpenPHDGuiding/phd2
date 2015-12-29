@@ -69,7 +69,7 @@ struct S_HISTORY
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
-        dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
+        dx(step.cameraOffset.X), dy(step.cameraOffset.Y), ra(step.mountOffset.X), dec(step.mountOffset.Y),
         raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass),
         raLimited(step.raLimited), decLimited(step.decLimited) { }
 };

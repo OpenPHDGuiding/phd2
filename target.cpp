@@ -253,8 +253,8 @@ void TargetClient::AppendData(const GuideStepInfo& step)
 {
     memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
 
-    m_history[m_maxHistorySize-1].ra = step.mountOffset->X;
-    m_history[m_maxHistorySize-1].dec = step.mountOffset->Y;
+    m_history[m_maxHistorySize-1].ra = step.mountOffset.X;
+    m_history[m_maxHistorySize-1].dec = step.mountOffset.Y;
 
     if (m_nItems < m_maxHistorySize)
     {

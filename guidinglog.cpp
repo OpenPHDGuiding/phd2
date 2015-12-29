@@ -402,8 +402,8 @@ void GuidingLog::GuideStep(const GuideStepInfo& step)
     m_file.Write(wxString::Format("%d,%.3f,\"%s\",%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
         step.frameNumber, step.time,
         step.mount->IsStepGuider() ? "AO" : "Mount",
-        step.cameraOffset->X, step.cameraOffset->Y,
-        step.mountOffset->X, step.mountOffset->Y,
+        step.cameraOffset.X, step.cameraOffset.Y,
+        step.mountOffset.X, step.mountOffset.Y,
         step.guideDistanceRA, step.guideDistanceDec));
 
     if (step.mount->IsStepGuider())

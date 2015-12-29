@@ -151,8 +151,8 @@ protected:
     GuideAlgorithm *m_pYGuideAlgorithm;
 
     wxString m_Name;
-
     BacklashComp *m_backlashComp;
+    GuideStepInfo m_lastStep;
 
     // Things related to the Advanced Config Dialog
 public:
@@ -231,6 +231,8 @@ public:
 
     bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
                                                      PHD_Point& cameraVectorEndpoint);
+
+    void LogGuideStepInfo(void);
 
     GraphControlPane *GetXGuideAlgorithmControlPane(wxWindow *pParent);
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);

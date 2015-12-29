@@ -569,6 +569,8 @@ Mount::Mount(void)
     m_guidingEnabled = true;
 
     m_backlashComp = 0;
+    m_lastStep.mount = this;
+    m_lastStep.frameNumber = -1; // invalidate
 
     ClearCalibration();
 
@@ -676,6 +678,24 @@ void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
         m_backlashComp->HandleOverShoot((int) (pixelAmount / m_cal.yRate));
 }
 
+void Mount::LogGuideStepInfo()
+{
+    if (m_lastStep.frameNumber < 0)
+        return;
+
+    GuideLog.GuideStep(m_lastStep);
+    EvtServer.NotifyGuideStep(m_lastStep);
+
+    if (m_lastStep.moveType != MOVETYPE_DIRECT)
+    {
+        pFrame->pGraphLog->AppendData(m_lastStep);
+        pFrame->pTarget->AppendData(m_lastStep);
+        GuidingAssistant::NotifyGuideStep(m_lastStep);
+    }
+
+    m_lastStep.frameNumber = -1; // invalidate
+}
+
 Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -766,12 +786,17 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
             Debug.AddLine(msg);
         }
 
-        GuideStepInfo info;
-        info.mount = this;
+        // Record the info about the guide step. The info will be picked up back in the main UI thread.
+        // We don't want to do anything with the info here in the worker thread since UI operations are
+        // not allowed outside the main UI thread.
+
+        GuideStepInfo& info = m_lastStep;
+
+        info.moveType = moveType;
         info.frameNumber = pFrame->m_frameCounter;
         info.time = pFrame->TimeSinceGuidingStarted();
-        info.cameraOffset = &cameraVectorEndpoint;
-        info.mountOffset = &mountVectorEndpoint;
+        info.cameraOffset = cameraVectorEndpoint;
+        info.mountOffset = mountVectorEndpoint;
         info.guideDistanceRA = xDistance;
         info.guideDistanceDec = yDistance;
         info.durationRA = xMoveResult.amountMoved;
@@ -785,16 +810,6 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         info.starSNR = pFrame->pGuider->SNR();
         info.avgDist = pFrame->pGuider->CurrentError();
         info.starError = pFrame->pGuider->StarError();
-
-        GuideLog.GuideStep(info);
-        EvtServer.NotifyGuideStep(info);
-
-        if (moveType != MOVETYPE_DIRECT)
-        {
-            pFrame->pGraphLog->AppendData(info);
-            pFrame->pTarget->AppendData(info);
-            GuidingAssistant::NotifyGuideStep(info);
-        }
     }
     catch (const wxString& errMsg)
     {

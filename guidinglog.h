@@ -45,10 +45,11 @@ struct LockPosShiftParams;
 struct GuideStepInfo
 {
     Mount *mount;
+    int moveType;
     int frameNumber;
     double time;
-    const PHD_Point *cameraOffset;
-    const PHD_Point *mountOffset;
+    PHD_Point cameraOffset;
+    PHD_Point mountOffset;
     double guideDistanceRA;
     double guideDistanceDec;
     int durationRA;

@@ -431,6 +431,9 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         pThisMount->DecrementRequestCount();
 
         Mount::MOVE_RESULT moveResult = static_cast<Mount::MOVE_RESULT>(event.GetInt());
+
+        pMount->LogGuideStepInfo();
+
         if (moveResult != Mount::MOVE_OK)
         {
             if (moveResult == Mount::MOVE_STOP_GUIDING)

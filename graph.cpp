@@ -980,15 +980,15 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     S_HISTORY oldest;
     if (m_history.size() > 0)
         oldest = m_history[oldest_idx];
-    update_trend(trend_items, m_length, step.cameraOffset->X, oldest.dx, &m_trendLineAccum[0]);
-    update_trend(trend_items, m_length, step.cameraOffset->Y, oldest.dy, &m_trendLineAccum[1]);
-    update_trend(trend_items, m_length, step.mountOffset->X, oldest.ra, &m_trendLineAccum[2]);
-    update_trend(trend_items, m_length, step.mountOffset->Y, oldest.dec, &m_trendLineAccum[3]);
+    update_trend(trend_items, m_length, step.cameraOffset.X, oldest.dx, &m_trendLineAccum[0]);
+    update_trend(trend_items, m_length, step.cameraOffset.Y, oldest.dy, &m_trendLineAccum[1]);
+    update_trend(trend_items, m_length, step.mountOffset.X, oldest.ra, &m_trendLineAccum[2]);
+    update_trend(trend_items, m_length, step.mountOffset.Y, oldest.dec, &m_trendLineAccum[3]);
 
     // update counter for osc index
     if (trend_items >= 1)
     {
-        if (step.mountOffset->X * m_history[m_history.size() - 1].ra > 0.0)
+        if (step.mountOffset.X * m_history[m_history.size() - 1].ra > 0.0)
             ++m_raSameSides;
         if (trend_items >= m_length)
         {
@@ -1017,13 +1017,13 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     unsigned int new_nr = GetItemCount();
     UpdateStats(new_nr, &cur);
 
-    double ax = fabs(step.mountOffset->X);
+    double ax = fabs(step.mountOffset.X);
     if (ax > m_stats.ra_peak)
         m_stats.ra_peak = ax;
     else if (fabs(oldest.ra) == m_stats.ra_peak)
         m_stats.ra_peak = peak_ra(m_history, new_nr);
 
-    double ay = fabs(step.mountOffset->Y);
+    double ay = fabs(step.mountOffset.Y);
     if (ay > m_stats.dec_peak)
         m_stats.dec_peak = ay;
     else if (fabs(oldest.dec) == m_stats.dec_peak)
