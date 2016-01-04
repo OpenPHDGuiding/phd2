@@ -336,6 +336,7 @@ void GP::setHyperParameters(const Eigen::VectorXd& hyperParameters)
     }
 }
 
+
 Eigen::VectorXd GP::getHyperParameters() const
 {
     Eigen::VectorXd hyperParameters(covFunc_->getParameterCount() + covFunc_->getExtraParameterCount() + 1);

@@ -37,10 +37,9 @@
 
 #include "guide_algorithm.h"
 
-#define GP_DEBUG_MATLAB_ 1
-#define GP_DEBUG_STATUS_ 0
+#define GP_DEBUG_FILE_ 1
 
-#if GP_DEBUG_MATLAB_
+#if GP_DEBUG_FILE_
 #include <iostream>
 #include <iomanip>
 #include <fstream>

@@ -74,25 +74,12 @@ target_include_directories(GaussianProcessTest  PRIVATE ${gaussian_process_root_
 set_property(TARGET GaussianProcessTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPTest-1 COMMAND GaussianProcessTest)
 
-
-
 # Test for the math tools
 add_executable(MathToolboxTest ${gaussian_process_root_dir}/tests/gaussian_process/math_tools_test.cpp)
 target_link_libraries(MathToolboxTest MPIIS_GP_TOOLS gtest)
 target_include_directories(MathToolboxTest  PRIVATE ${gaussian_process_root_dir}/src ${GTEST_HEADERS} ${EIGEN_SRC})
 set_property(TARGET MathToolboxTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPTest-2 COMMAND MathToolboxTest)
-
-
-
-# Test for the BFGS implementation
-add_executable(BFGSTest ${gaussian_process_root_dir}/tests/gaussian_process/bfgs_test.cpp)
-target_link_libraries(BFGSTest MPIIS_GP gtest)
-target_include_directories(BFGSTest PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS})
-set_property(TARGET BFGSTest PROPERTY FOLDER "Unit tests/Contribution")
-add_test(NAME BFGS-1 COMMAND BFGSTest)
-
-
 
 # Sandbox
 add_executable(Sandbox ${gaussian_process_root_dir}/tests/gaussian_process/sandbox.cpp)
