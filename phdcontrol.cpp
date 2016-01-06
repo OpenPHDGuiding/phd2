@@ -177,7 +177,7 @@ static void do_notify(void)
     }
     else
     {
-        Debug.AddLine(wxString::Format("PHDController complete: fail: %s", ctrl.errorMsg));
+        Debug.AddLine(wxString::Format("PhdController complete: fail: %s", ctrl.errorMsg));
         EvtServer.NotifySettleDone(ctrl.errorMsg);
         GuideLog.NotifySettlingStateChange("Settling failed");
     }
@@ -398,6 +398,13 @@ void PhdController::UpdateControllerState(void)
             {
                 if (!ctrl.settlePriorFrameInRange)
                 {
+                    // first frame
+                    if (ctrl.settle.settleTimeSec <= 0)
+                    {
+                        ctrl.succeeded = true;
+                        SETSTATE(STATE_FINISH);
+                        break;
+                    }
                     ctrl.settleInRange->Start();
                 }
                 else if (((timeInRange = ctrl.settleInRange->Time()) / 1000) >= ctrl.settle.settleTimeSec && !aoBumpInProgress)
