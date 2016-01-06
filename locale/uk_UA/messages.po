@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-24 17:25-0500\n"
+"POT-Creation-Date: 2016-01-06 02:59-0500\n"
 "PO-Revision-Date: 2014-12-23 17:30+0100\n"
 "Last-Translator: Oleh Malyi <astroclubzp@gmail.com>\n"
 "Language-Team: UA\n"
@@ -78,59 +78,59 @@ msgstr "Монтування"
 msgid "No mount specified"
 msgstr ""
 
-#: backlash_comp.cpp:116
+#: backlash_comp.cpp:120
 msgid "Backlash Results"
 msgstr ""
 
-#: backlash_comp.cpp:199
+#: backlash_comp.cpp:203
 msgid "Ideal"
 msgstr ""
 
-#: backlash_comp.cpp:201
+#: backlash_comp.cpp:205
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:202 mount.cpp:758 scope.cpp:1607 scope.cpp:1711
-#: scope.cpp:1745 testguide.cpp:152
+#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
+#: scope.cpp:1760 testguide.cpp:152
 msgid "North"
 msgstr "Північ"
 
-#: backlash_comp.cpp:203 mount.cpp:758 scope.cpp:1607 scope.cpp:1711
-#: scope.cpp:1745 testguide.cpp:152
+#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
+#: scope.cpp:1760 testguide.cpp:152
 msgid "South"
 msgstr "Південь"
 
-#: backlash_comp.cpp:259
+#: backlash_comp.cpp:263
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 
-#: backlash_comp.cpp:381
+#: backlash_comp.cpp:385
 msgid "Could not clear North backlash - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:424
+#: backlash_comp.cpp:428
 msgid "Star too close to edge for accurate measurement of backlash"
 msgstr ""
 
-#: backlash_comp.cpp:469
+#: backlash_comp.cpp:473
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr ""
 
-#: backlash_comp.cpp:528
+#: backlash_comp.cpp:532
 msgid "Restoring star position"
 msgstr ""
 
-#: backlash_comp.cpp:536
+#: backlash_comp.cpp:540
 msgid "Measurement complete"
 msgstr ""
 
-#: backlash_comp.cpp:545
+#: backlash_comp.cpp:549
 msgid "Measurement halted"
 msgstr ""
 
-#: backlash_comp.cpp:555
+#: backlash_comp.cpp:559
 msgid "Measurement encountered an error: "
 msgstr ""
 
@@ -191,7 +191,7 @@ msgstr ""
 msgid "a-s/sec"
 msgstr ""
 
-#: calreview_dialog.cpp:238 guiding_assistant.cpp:1143
+#: calreview_dialog.cpp:238 guiding_assistant.cpp:1144
 msgid "px/sec"
 msgstr ""
 
@@ -270,12 +270,12 @@ msgid "Side-of-pier:"
 msgstr "Сторона колони:"
 
 #: calreview_dialog.cpp:332 cam_simulator.cpp:1587 guidinglog.cpp:201
-#: mount.cpp:55 mount.cpp:739 testguide.cpp:152
+#: mount.cpp:55 mount.cpp:759 testguide.cpp:152
 msgid "East"
 msgstr "Схід"
 
 #: calreview_dialog.cpp:333 cam_simulator.cpp:1587 guidinglog.cpp:202
-#: mount.cpp:56 mount.cpp:739 testguide.cpp:152
+#: mount.cpp:56 mount.cpp:759 testguide.cpp:152
 msgid "West"
 msgstr "Захід"
 
@@ -1191,11 +1191,11 @@ msgstr ""
 #: camera.cpp:363 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
 #: gear_dialog.cpp:937 gear_dialog.cpp:1591 gear_dialog.cpp:1592
-#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:610
+#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:612
 #: myframe.cpp:2291 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
-#: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
-#: scope.cpp:294 scope.cpp:332 stepguider.cpp:92 stepguider.cpp:116
+#: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:267
+#: scope.cpp:309 scope.cpp:347 stepguider.cpp:92 stepguider.cpp:116
 msgid "None"
 msgstr "Нічого"
 
@@ -1460,11 +1460,11 @@ msgid ""
 msgstr ""
 
 #: comet_tool.cpp:320 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:542 statswindow.cpp:66 target.cpp:339
+#: guide_algorithm.cpp:48 scope.cpp:557 statswindow.cpp:66 target.cpp:339
 msgid "RA"
 msgstr "RA"
 
-#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:542
+#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:557
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr "DE"
@@ -1866,7 +1866,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr ""
 
-#: eegg.cpp:56 myframe_events.cpp:856
+#: eegg.cpp:56 myframe_events.cpp:859
 msgid "Please connect a mount first."
 msgstr ""
 
@@ -2900,148 +2900,151 @@ msgid "Estimated overall drift rate in right ascension."
 msgstr ""
 
 #: guiding_assistant.cpp:511
-msgid ""
-"Maximum drift rate in right ascension during sampling period; may be useful "
-"for setting exposure time."
+msgid "Maximum drift rate in right ascension during sampling period."
 msgstr ""
 
 #: guiding_assistant.cpp:512
-msgid "Estimated overall drift rate in declination."
+msgid ""
+"Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 
 #: guiding_assistant.cpp:513
+msgid "Estimated overall drift rate in declination."
+msgstr ""
+
+#: guiding_assistant.cpp:514
 msgid ""
 "Estimate of declination backlash if backlash testing was completed "
 "successfully"
 msgstr ""
 
-#: guiding_assistant.cpp:514
+#: guiding_assistant.cpp:515
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
 msgstr ""
 
-#: guiding_assistant.cpp:545
+#: guiding_assistant.cpp:546
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 
-#: guiding_assistant.cpp:549
+#: guiding_assistant.cpp:550
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
 msgstr ""
 
-#: guiding_assistant.cpp:554
+#: guiding_assistant.cpp:555
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 1 minute)."
 msgstr ""
 
-#: guiding_assistant.cpp:557
+#: guiding_assistant.cpp:558
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
 "continue guiding."
 msgstr ""
 
-#: guiding_assistant.cpp:568 guiding_assistant.cpp:573
+#: guiding_assistant.cpp:569 guiding_assistant.cpp:574
 msgid "Measuring backlash: "
 msgstr ""
 
-#: guiding_assistant.cpp:582 guiding_assistant.cpp:1139
+#: guiding_assistant.cpp:583 guiding_assistant.cpp:1140
 msgid "px"
 msgstr ""
 
-#: guiding_assistant.cpp:582
+#: guiding_assistant.cpp:583
 msgid "ms"
 msgstr ""
 
-#: guiding_assistant.cpp:673 guiding_assistant.cpp:674
+#: guiding_assistant.cpp:674 guiding_assistant.cpp:675
 #, fuzzy
 msgid "Apply"
 msgstr "Додати PE"
 
-#: guiding_assistant.cpp:790
+#: guiding_assistant.cpp:791
 msgid "Consider re-doing your calibration "
 msgstr ""
 
-#: guiding_assistant.cpp:792
+#: guiding_assistant.cpp:793
 msgid "(Prior alert)"
 msgstr ""
 
-#: guiding_assistant.cpp:794
+#: guiding_assistant.cpp:795
 msgid "(Backlash clearing)"
 msgstr ""
 
-#: guiding_assistant.cpp:804
+#: guiding_assistant.cpp:805
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 
-#: guiding_assistant.cpp:820
+#: guiding_assistant.cpp:821
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr ""
 
-#: guiding_assistant.cpp:821
+#: guiding_assistant.cpp:822
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr ""
 
-#: guiding_assistant.cpp:841 guiding_assistant.cpp:846
+#: guiding_assistant.cpp:842 guiding_assistant.cpp:847
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr ""
 
-#: guiding_assistant.cpp:856 guiding_assistant.cpp:861
+#: guiding_assistant.cpp:857 guiding_assistant.cpp:862
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr ""
 
-#: guiding_assistant.cpp:872
+#: guiding_assistant.cpp:873
 #, c-format
 msgid "Try setting a Dec backlash value of %d ms"
 msgstr ""
 
-#: guiding_assistant.cpp:874
+#: guiding_assistant.cpp:875
 #, c-format
 msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
 msgstr ""
 
-#: guiding_assistant.cpp:981
+#: guiding_assistant.cpp:982
 msgid "Backlash test aborted..."
 msgstr ""
 
-#: guiding_assistant.cpp:1015 guiding_assistant.cpp:1022
+#: guiding_assistant.cpp:1016 guiding_assistant.cpp:1023
 msgid "Measuring backlash... "
 msgstr ""
 
-#: guiding_assistant.cpp:1044
+#: guiding_assistant.cpp:1045
 #, fuzzy
 msgid "Guiding stopped"
 msgstr "Стеження"
 
-#: guiding_assistant.cpp:1138
+#: guiding_assistant.cpp:1139
 msgid "s"
 msgstr ""
 
-#: guiding_assistant.cpp:1140
+#: guiding_assistant.cpp:1141
 msgid "arc-sec"
 msgstr ""
 
-#: guiding_assistant.cpp:1141
+#: guiding_assistant.cpp:1142
 msgid "arc-min"
 msgstr ""
 
-#: guiding_assistant.cpp:1142
+#: guiding_assistant.cpp:1143
 msgid "px/min"
 msgstr ""
 
-#: guiding_assistant.cpp:1144
+#: guiding_assistant.cpp:1145
 msgid "arc-sec/min"
 msgstr ""
 
-#: guiding_assistant.cpp:1145
+#: guiding_assistant.cpp:1146
 msgid "arc-sec/sec"
 msgstr ""
 
@@ -3127,30 +3130,30 @@ msgid ""
 "and allow the mount to run un-guided"
 msgstr ""
 
-#: mount.cpp:660
+#: mount.cpp:662
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr ""
 
-#: mount.cpp:739
+#: mount.cpp:759
 #, c-format
 msgid "%s %5.2f px %3d ms"
 msgstr ""
 
-#: mount.cpp:756
+#: mount.cpp:776
 #, c-format
 msgid "%s%*s%s %.2f px %d ms"
 msgstr ""
 
-#: mount.cpp:942
+#: mount.cpp:957
 msgid "RA:"
 msgstr "RA:"
 
-#: mount.cpp:947
+#: mount.cpp:962
 msgid "DEC:"
 msgstr "DE:"
 
-#: mount.cpp:1024
+#: mount.cpp:1039
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 
@@ -3564,7 +3567,7 @@ msgstr ""
 msgid "&Help"
 msgstr "&Поміч"
 
-#: myframe.cpp:795 scope.cpp:1607 scope.cpp:1711 scope.cpp:1745
+#: myframe.cpp:795 scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
 msgid "Auto"
 msgstr "Авто"
 
@@ -3653,11 +3656,11 @@ msgstr ""
 msgid "Confirm Exit"
 msgstr ""
 
-#: myframe.cpp:1814 usImage.cpp:365
+#: myframe.cpp:1814 usImage.cpp:428
 msgid "FITS file is not of an image: "
 msgstr "FITS файл не містить зображення:"
 
-#: myframe.cpp:1822 usImage.cpp:377
+#: myframe.cpp:1822 usImage.cpp:440
 msgid "Unsupported type or read error loading FITS file "
 msgstr ""
 
@@ -3675,7 +3678,7 @@ msgstr ""
 msgid "Error reading data from "
 msgstr ""
 
-#: myframe.cpp:1879 usImage.cpp:409
+#: myframe.cpp:1879 usImage.cpp:472
 msgid "Error opening FITS file "
 msgstr "Помилка відкриття FITS файла"
 
@@ -3885,8 +3888,8 @@ msgstr ""
 msgid "You must restart PHD2 for the language change to take effect."
 msgstr ""
 
-#: myframe.cpp:2465 myframe_events.cpp:276 myframe_events.cpp:469
-#: myframe_events.cpp:570
+#: myframe.cpp:2465 myframe_events.cpp:276 myframe_events.cpp:472
+#: myframe_events.cpp:573
 msgid "Info"
 msgstr "Інфо"
 
@@ -3960,7 +3963,7 @@ msgstr ""
 msgid "%s saved"
 msgstr ""
 
-#: myframe_events.cpp:276 myframe_events.cpp:469 myframe_events.cpp:570
+#: myframe_events.cpp:276 myframe_events.cpp:472 myframe_events.cpp:573
 msgid "Please connect to a camera first"
 msgstr ""
 
@@ -3975,57 +3978,57 @@ msgid ""
 "camera."
 msgstr ""
 
-#: myframe_events.cpp:322 myframe_events.cpp:793 scope.cpp:538 scope.cpp:545
+#: myframe_events.cpp:322 myframe_events.cpp:796 scope.cpp:553 scope.cpp:560
 #: scope_ascom.cpp:695 stepguider.cpp:1007
 msgid ""
 "Don't show\n"
 "this again"
 msgstr ""
 
-#: myframe_events.cpp:484
+#: myframe_events.cpp:487
 msgid "You must connect a camera before loading a dark library"
 msgstr ""
 
-#: myframe_events.cpp:511
+#: myframe_events.cpp:514
 msgid "Dark library unloaded"
 msgstr ""
 
-#: myframe_events.cpp:526
+#: myframe_events.cpp:529
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr ""
 
-#: myframe_events.cpp:541
+#: myframe_events.cpp:544
 msgid "Defect map loaded"
 msgstr ""
 
-#: myframe_events.cpp:545
+#: myframe_events.cpp:548
 msgid "Defect map not loaded"
 msgstr ""
 
-#: myframe_events.cpp:557
+#: myframe_events.cpp:560
 msgid "Bad-pixel map unloaded"
 msgstr ""
 
-#: myframe_events.cpp:790
+#: myframe_events.cpp:793
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
 
-#: myframe_events.cpp:831
+#: myframe_events.cpp:834
 msgid "Are you sure you want force recalibration?"
 msgstr ""
 
-#: myframe_events.cpp:832
+#: myframe_events.cpp:835
 msgid "Force Recalibration"
 msgstr ""
 
-#: myframe_events.cpp:856 testguide.cpp:146
+#: myframe_events.cpp:859 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "Посібник користувача"
 
-#: myframe_events.cpp:912
+#: myframe_events.cpp:915
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4034,15 +4037,15 @@ msgid ""
 "Would you like to use the Setup Wizard now?"
 msgstr ""
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "Yes"
 msgstr ""
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "No"
 msgstr ""
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "Setup Wizard Recommendation"
 msgstr ""
 
@@ -4606,15 +4609,15 @@ msgstr ""
 msgid "The operation was canceled"
 msgstr ""
 
-#: scope.cpp:535
+#: scope.cpp:550
 msgid "Max RA Duration setting"
 msgstr ""
 
-#: scope.cpp:535
+#: scope.cpp:550
 msgid "Max Dec Duration setting"
 msgstr ""
 
-#: scope.cpp:536
+#: scope.cpp:551
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
@@ -4622,7 +4625,7 @@ msgid ""
 "corrections."
 msgstr ""
 
-#: scope.cpp:543
+#: scope.cpp:558
 #, c-format
 msgid ""
 "Even using the maximum moves, PHD2 can't properly correct for the large "
@@ -4630,205 +4633,205 @@ msgid ""
 "the source of these problems."
 msgstr ""
 
-#: scope.cpp:792
+#: scope.cpp:807
 msgid "Calibration is based on very few steps, so accuracy is questionable"
 msgstr ""
 
-#: scope.cpp:795
+#: scope.cpp:810
 msgid "Calibration computed RA/Dec axis angles that are questionable"
 msgstr ""
 
-#: scope.cpp:798
+#: scope.cpp:813
 msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
 msgstr ""
 
-#: scope.cpp:801
+#: scope.cpp:816
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr ""
 
-#: scope.cpp:808
+#: scope.cpp:823
 #, fuzzy
 msgid "Details..."
 msgstr "Налаштування..."
 
-#: scope.cpp:984
+#: scope.cpp:999
 msgid "RA Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:991
+#: scope.cpp:1006
 #, c-format
 msgid "West step %3d"
 msgstr ""
 
-#: scope.cpp:1000 scope.cpp:1221
+#: scope.cpp:1015 scope.cpp:1236
 #, c-format
 msgid "angle=%.1f rate=%.3f"
 msgstr ""
 
-#: scope.cpp:1037
+#: scope.cpp:1052
 #, c-format
 msgid "East step %3d"
 msgstr ""
 
-#: scope.cpp:1094
+#: scope.cpp:1109
 msgid "Clearing backlash step 1"
 msgstr ""
 
-#: scope.cpp:1129
+#: scope.cpp:1144
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr ""
 
-#: scope.cpp:1148
+#: scope.cpp:1163
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:1185
+#: scope.cpp:1200
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:1192
+#: scope.cpp:1207
 #, c-format
 msgid "North step %3d"
 msgstr ""
 
-#: scope.cpp:1257
+#: scope.cpp:1272
 #, c-format
 msgid "South step %3d"
 msgstr ""
 
-#: scope.cpp:1311
+#: scope.cpp:1326
 #, c-format
 msgid "Nudge South %3d"
 msgstr ""
 
-#: scope.cpp:1341
+#: scope.cpp:1356
 msgid "calibration complete"
 msgstr ""
 
-#: scope.cpp:1356
+#: scope.cpp:1371
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1512
+#: scope.cpp:1527
 msgid "Mount Guide Algorithms"
 msgstr ""
 
-#: scope.cpp:1550
+#: scope.cpp:1565
 msgid "Calibration step (ms)"
 msgstr "Крок калібрування (мс)"
 
-#: scope.cpp:1551
+#: scope.cpp:1566
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 
-#: scope.cpp:1555
+#: scope.cpp:1570
 msgid "Calculate..."
 msgstr "Обчислити..."
 
-#: scope.cpp:1556
+#: scope.cpp:1571
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
 
-#: scope.cpp:1563
+#: scope.cpp:1578
 msgid "Reverse Dec output after meridian flip"
 msgstr ""
 
-#: scope.cpp:1565
+#: scope.cpp:1580
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 
-#: scope.cpp:1572
+#: scope.cpp:1587
 msgid "Stop guiding when mount slews"
 msgstr ""
 
-#: scope.cpp:1574
+#: scope.cpp:1589
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 
-#: scope.cpp:1580
+#: scope.cpp:1595
 msgid "Assume Dec orthogonal to RA"
 msgstr ""
 
-#: scope.cpp:1583
+#: scope.cpp:1598
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
 
-#: scope.cpp:1587
+#: scope.cpp:1602
 msgid "Use backlash comp"
 msgstr ""
 
-#: scope.cpp:1588
+#: scope.cpp:1603
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr ""
 
-#: scope.cpp:1591
+#: scope.cpp:1606
 msgid "Amount"
 msgstr ""
 
-#: scope.cpp:1591
+#: scope.cpp:1606
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
 
-#: scope.cpp:1593
+#: scope.cpp:1608
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1595
+#: scope.cpp:1610
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1600
+#: scope.cpp:1615
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1600
+#: scope.cpp:1615
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1604
+#: scope.cpp:1619
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1604
+#: scope.cpp:1619
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1607 scope.cpp:1711 scope.cpp:1745
+#: scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
 msgid "Off"
 msgstr ""
 
-#: scope.cpp:1612
+#: scope.cpp:1627
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:1612
+#: scope.cpp:1627
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1703
+#: scope.cpp:1718
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:1709
+#: scope.cpp:1724
 msgid "Mx DEC"
 msgstr ""
 
@@ -5201,15 +5204,15 @@ msgid ""
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
 
-#: usImage.cpp:354
+#: usImage.cpp:417
 msgid "File does not exist - cannot load "
 msgstr "Файл не існує: неможливо завантажити"
 
-#: usImage.cpp:382
+#: usImage.cpp:445
 msgid "Memory allocation error loading FITS file "
 msgstr "Помилка виділення пам’яті для завантаження FITS файлу"
 
-#: usImage.cpp:387
+#: usImage.cpp:450
 msgid "Error reading data from FITS file "
 msgstr "Помилка читання даних із FITS файлу"
 
