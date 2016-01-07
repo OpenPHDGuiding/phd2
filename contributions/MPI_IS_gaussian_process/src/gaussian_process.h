@@ -47,6 +47,7 @@
 #include <memory>
 #include <utility>
 #include <cstdint>
+#include <cmath>
 #include "covariance_functions.h"
 
 // Constants
@@ -120,6 +121,17 @@ public:
      */
     void infer(const Eigen::VectorXd& data_loc,
                const Eigen::VectorXd& data_out);
+
+    /*!
+     * Calculates the GP based on a subset of data (SD) approximation. The data
+     * vector for the GP consists of a subset of n most important data points,
+     * where the importance is defined as covariance to the prediction point. If
+     * no prediction point is given, the last data point is used (extrapolation
+     * mode).
+     */
+    void inferSD(const Eigen::VectorXd& data_loc,
+                 const Eigen::VectorXd& data_out,
+                 const int n, const double pred_loc = std::numeric_limits<double>::quiet_NaN());
 
     /*!
      * Sets the GP back to the prior:

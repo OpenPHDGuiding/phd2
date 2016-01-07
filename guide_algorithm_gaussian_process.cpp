@@ -276,7 +276,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     GP gp_;
 
     gp_guide_parameters() :
-      circular_buffer_parameters(512),
+      circular_buffer_parameters(512), // TODO: make this magic number configurable
       timer_(),
       control_signal_(0.0),
       last_timestamp_(0.0),
@@ -832,7 +832,12 @@ double GuideGaussianProcess::PredictGearError()
       Eigen::ArrayXd amplitudes = result.first;
       Eigen::ArrayXd frequencies = result.second;
 
-      double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/timestamps.rows();
+      double dt = (timestamps(timestamps.rows()-1) - timestamps(1))/timestamps.rows();
+      if (dt < 0)
+      {
+          Debug.AddLine("timestamps: last: %f, first: %f, rows: %f", timestamps(timestamps.rows() - 1), timestamps(1), timestamps.rows());
+      }
+      assert(dt >= 0);
       frequencies /= dt; // correct for the average time step width
 
       Eigen::ArrayXd periods = 1/frequencies.array();
@@ -870,7 +875,7 @@ double GuideGaussianProcess::PredictGearError()
 
     begin = std::clock();
     // inference of the GP with this new points
-    parameters->gp_.infer(timestamps, gear_error);
+    parameters->gp_.inferSD(timestamps, gear_error, 128); // TODO: make magic number configurable
 
     // prediction for the next location
     Eigen::VectorXd next_location(2);
@@ -905,14 +910,6 @@ double GuideGaussianProcess::result(double input)
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(parameters->control_signal_);
 
-    // optimize the hyperparameters if we have enough points already
-    if (parameters->min_points_for_optimisation > 0
-        && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
-    {
-        // performing the optimisation
-        // TODO: implement Newton optimization in the GP framework
-    }
-
 // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
     int N = parameters->get_number_of_measurements();
@@ -940,7 +937,7 @@ double GuideGaussianProcess::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.infer(timestamps, gear_error);
+    parameters->gp_.inferSD(timestamps, gear_error,256); // TODO: make magic number configurable
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
