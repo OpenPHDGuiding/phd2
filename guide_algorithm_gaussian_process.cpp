@@ -91,7 +91,7 @@ public:
 
         m_pSE0KLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0.0, 50, 5, 0.1);
+                                                 wxSP_ARROW_KEYS, 0.0, 5000.0, 500.0, 1.0);
         m_pSE0KLengthScale->SetDigits(2);
 
         m_pSE0KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
@@ -118,7 +118,7 @@ public:
 
         m_pSE1KLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0.0, 5000, 500, 10);
+                                                 wxSP_ARROW_KEYS, 0.0, 10.0, 5.0, 0.1);
         m_pSE1KLengthScale->SetDigits(2);
 
         m_pSE1KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
@@ -156,10 +156,10 @@ public:
                 "If the measurement noise is too low, the Gaussian process might be too rigid. Try to upper bound your "
                 "measurement uncertainty. Default = 1.0"));
         DoAdd(_("Length scale [SE]"), m_pSE0KLengthScale,
-              _("The length scale of the short range non-periodic parts of the gear error. This is essentially a low-pass "
-                "filter and the length scale defines the corner frequency. Default = 5"));
+              _("The length scale of the large non-periodic structure in the error. This is essentially a high-pass "
+                "filter and the length scale defines the corner frequency. Default = 500"));
         DoAdd(_("Signal Variance [SE]"), m_pSE0KSignalVariance,
-              _("Signal Variance of the small variations. Default = 1"));
+              _("Signal Variance of the long-term variations. Default = 1"));
         DoAdd(_("Length scale [PER]"), m_pPKLengthScale,
               _("The length scale defines the \"wigglyness\" of the function. The smaller the length scale, the more "
                 "structure can be learned. If chosen too small, some non-periodic structure might be picked up as well. "
@@ -171,10 +171,10 @@ public:
               _("The width of the periodic error. Should be around the amplitude of the PE curve, but is not a critical parameter. "
                 "Default = 30"));
         DoAdd(_("Length scale [SE]"), m_pSE1KLengthScale,
-              _("The length scale of the large non-periodic structure in the error. This is essentially a high-pass "
-                "filter and the length scale defines the corner frequency. Default = 500"));
+              _("The length scale of the short range non-periodic parts of the gear error. This is essentially a low-pass "
+                "filter and the length scale defines the corner frequency. Default = 5"));
         DoAdd(_("Signal Variance [SE]"), m_pSE1KSignalVariance,
-              _("Signal Variance of the long-term variations. Default = 1"));
+              _("Signal Variance of the short-term variations. Default = 1"));
         DoAdd(_("Mixing"), m_pMixingParameter,
               _("The mixing defines how much control signal is generated from the prediction and how much. Default = 0.5"));
 
@@ -329,13 +329,13 @@ static const int    DefaultNbMinPointsForInference       = 25; // minimal number
 
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
-static const double DefaultLengthScaleSE0Ker             = 5.0; // length-scale of the short-range SE-kernel
-static const double DefaultSignalVarianceSE0Ker          = 1.0; // signal variance of the short-range SE-kernel
+static const double DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
+static const double DefaultSignalVarianceSE0Ker          = 1.0; // signal variance of the long-range SE-kernel
 static const double DefaultLengthScalePerKer             = 0.3; // length-scale of the periodic kernel
-static const double DefaultPeriodLengthPerKer            = 400; // P_p, period-length of the periodic kernel
+static const double DefaultPeriodLengthPerKer            = 500; // P_p, period-length of the periodic kernel
 static const double DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
-static const double DefaultLengthScaleSE1Ker             = 500.0; // length-scale of the long-range SE-kernel
-static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the long range SE-kernel
+static const double DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
+static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
 
 static const int    DefaultNbMinPointsForOptimisation    = 100; // minimal number of points for doing the period identification
 static const double DefaultMixing                        = 0.5; // amount of GP prediction to blend in
