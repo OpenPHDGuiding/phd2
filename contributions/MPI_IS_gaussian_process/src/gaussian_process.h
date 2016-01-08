@@ -60,6 +60,7 @@ class GP
 {
 private:
     covariance_functions::CovFunc* covFunc_;
+    covariance_functions::CovFunc* covFuncProj_;
     Eigen::VectorXd data_loc_;
     Eigen::VectorXd data_out_;
     Eigen::MatrixXd gram_matrix_;
@@ -92,6 +93,15 @@ public:
      */
     bool setCovarianceFunction(const covariance_functions::CovFunc& covFunc);
 
+    /*!
+     * Sets the output projection covariance function.
+     */
+    void enableOutputProjection(const covariance_functions::CovFunc& covFunc);
+
+    /*!
+     * Removes the output projection covariance function.
+     */
+    void disableOutputProjection();
 
     /*!
      * Returns a GP sample for the given locations.
@@ -201,6 +211,7 @@ public:
      * Disables the use of a explicit linear basis function.
      */
     void disableExplicitTrend();
+
 
 };
 

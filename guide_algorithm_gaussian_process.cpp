@@ -273,6 +273,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     bool optimize_sigma;
 
     covariance_functions::PeriodicSquareExponential2 covariance_function_;
+    covariance_functions::PeriodicSquareExponential output_covariance_function_;
     GP gp_;
 
     gp_guide_parameters() :
@@ -289,6 +290,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     {
         circular_buffer_parameters.push_front(data_points()); // add first point
         circular_buffer_parameters[0].control = 0; // set first control to zero
+        gp_.enableOutputProjection(output_covariance_function_);
     }
 
     data_points& get_last_point()
@@ -855,7 +857,7 @@ double GuideGaussianProcess::PredictGearError()
 
       end = std::clock();
       time_fft = double(end - begin) / CLOCKS_PER_SEC;
-      
+
 
 #if GP_DEBUG_FILE_
       std::ofstream outfile;
