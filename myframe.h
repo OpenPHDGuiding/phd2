@@ -41,6 +41,7 @@ class WorkerThread;
 class MyFrame;
 class RefineDefMap;
 struct alert_params;
+class PHDStatusBar;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
@@ -319,6 +320,7 @@ public:
     bool LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
     void CheckDarkFrameGeometry();
+    void UpdateStateLabels();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
@@ -386,6 +388,7 @@ private:
 
     wxSocketServer *SocketServer;
 
+    PHDStatusBar *m_statusbar;
     wxTimer m_statusbarTimer;
 
     int m_exposureDuration;

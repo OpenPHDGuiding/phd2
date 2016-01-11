@@ -45,6 +45,7 @@
 #include <wx/artprov.h>
 #include <wx/dirdlg.h>
 #include <wx/textwrapper.h>
+#include "phd_statusbar.h"
 
 #include <memory>
 
@@ -821,53 +822,22 @@ void MyFrame::SetupToolBar()
 
 void MyFrame::UpdateCalibrationStatus(void)
 {
-    bool cal = pMount || pSecondaryMount;
-    if (pMount && !pMount->IsCalibrated())
-        cal = false;
-    if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
-        cal = false;
-
-    bool deccomp = (pMount && pMount->DecCompensationActive()) ||
-        (pSecondaryMount && pSecondaryMount->DecCompensationActive());
-
-    SetStatusText(cal ? deccomp ? _("Cal +") : _("Cal") : _("No cal"), 5);
+    m_statusbar->UpdateStates();
 
     if (pStatsWin)
         pStatsWin->UpdateScopePointing();
 }
 
+void MyFrame::UpdateStateLabels()
+{
+    m_statusbar->UpdateStates();
+}
+
 void MyFrame::SetupStatusBar(void)
 {
-    const int statusBarFields = 6;
-
-    CreateStatusBar(statusBarFields);
-    wxControl *pControl = (wxControl*)GetStatusBar();
-
-    int statusWidths[statusBarFields] = {
-        -3,
-        -5,
-        GetTextWidth(pControl, _("Camera")),
-        GetTextWidth(pControl, _("Mount")),
-        GetTextWidth(pControl, _("AO")),
-        wxMax(GetTextWidth(pControl, _("No cal")),  GetTextWidth(pControl, _("Cal +"))),
-    };
-
-    // This code really bothers me, but it needs to be here because on Mac it
-    // truncates the status bar text even though we calculated the sizes above.
-    for(int i=0;i<statusBarFields;i++)
-    {
-        if (statusWidths[i] > 0)
-        {
-            statusWidths[i] = (120*statusWidths[i])/100;
-        }
-    }
-
-    SetStatusWidths(6, statusWidths);
-
-    SetStatusText(wxEmptyString, 2);
-    SetStatusText(wxEmptyString, 3);
-    SetStatusText(wxEmptyString, 4);
-
+    m_statusbar = new PHDStatusBar(this, wxSTB_DEFAULT_STYLE);
+    SetStatusBar(m_statusbar);
+    PositionStatusBar();
     UpdateCalibrationStatus();
 }
 
@@ -1032,7 +1002,7 @@ void MyFrame::DoAlert(const alert_params& params)
     }
 
     m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
-
+    m_statusbar->UpdateStates();        // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
 
@@ -1139,7 +1109,8 @@ void MyFrame::SetStatusText(const wxString& text, int number)
 
     if (wxThread::IsMain() && number != 1)
     {
-        wxFrame::SetStatusText(text, number);
+        //wxFrame::SetStatusText(text, number);
+        m_statusbar->SetStatusText(text, number);
     }
     else
     {
@@ -1159,12 +1130,14 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
     {
         // display message for 2.5s, or until the next message is displayed
         const int DISPLAY_MS = 2500;
-        wxFrame::SetStatusText(msg, pane);
+        //wxFrame::SetStatusText(msg, pane);
+        m_statusbar->SetStatusText(msg, pane);
         m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
     }
     else
     {
-        wxFrame::SetStatusText(msg, pane);
+        //wxFrame::SetStatusText(msg, pane);
+        m_statusbar->SetStatusText(msg, pane);
     }
 }
 
@@ -1283,7 +1256,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    wxFrame::SetStatusText(wxEmptyString, 1);
+    m_statusbar->SetStatusText(wxEmptyString, 1);
 }
 
 void MyFrame::ScheduleExposure(void)
@@ -1994,6 +1967,7 @@ void MyFrame::CheckDarkFrameGeometry()
     }
 
     m_prevDarkFrameSize = pCamera->DarkFrameSize();
+    m_statusbar->UpdateStates();
 }
 
 void MyFrame::SetDarkMenuState()

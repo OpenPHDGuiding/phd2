@@ -519,6 +519,7 @@ bool MyFrame::LoadDarkHandler(bool checkIt)
 void MyFrame::OnLoadDark(wxCommandEvent& evt)
 {
     LoadDarkHandler(evt.IsChecked());
+    pFrame->UpdateStateLabels();
 }
 
 // Outside event handler because loading a defect map will automatically unload a dark library
@@ -564,6 +565,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
 void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
     LoadDefectMapHandler(evt.IsChecked());
+    pFrame->UpdateStateLabels();
 }
 
 void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
