@@ -49,8 +49,9 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
 {
     GuideGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
-    wxSpinCtrl       *m_pNbMeasurementMin;
+    wxSpinCtrl       *m_pNbPointsInference;
     wxSpinCtrl       *m_pNbPointsOptimisation;
+    wxSpinCtrl       *m_pNbPointsApproximation;
 
     wxSpinCtrlDouble *m_pHyperDiracNoise;
     wxSpinCtrlDouble *m_pSE0KLengthScale;
@@ -63,7 +64,7 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
     wxSpinCtrlDouble *m_pMixingParameter;
 
     wxCheckBox       *m_checkboxOptimization;
-    wxCheckBox       *m_checkboxOptimizationNoise;
+    wxCheckBox       *m_checkboxComputePeriod;
 
 public:
     GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
@@ -78,10 +79,25 @@ public:
                                               _T("Control Gain"));
         m_pControlGain->SetDigits(2);
 
-        // nb elements before starting the inference
-        m_pNbMeasurementMin = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+        m_pMixingParameter = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                                  wxDefaultPosition,wxSize(width+30, -1),
+                                                  wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
+        m_pMixingParameter->SetDigits(2);
+
+        // number of elements before starting the inference
+        m_pNbPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                              wxDefaultPosition,wxSize(width+30, -1),
-                                             wxSP_ARROW_KEYS, 0, 100, 25);
+                                             wxSP_ARROW_KEYS, 0, 1000, 10);
+
+        // number of elements before starting the optimization
+        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0, 1000, 10);
+
+        // number of points used for the approximate GP inference (subset of data)
+        m_pNbPointsApproximation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0, 2000, 10);
 
         // hyperparameters
         m_pHyperDiracNoise = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
@@ -126,29 +142,25 @@ public:
                                                  wxSP_ARROW_KEYS, 0.0, 10, 1, 0.1);
         m_pSE1KSignalVariance->SetDigits(2);
 
-        // nb points between consecutive calls to the optimisation
-        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
-                                                 wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0, 200, 50);
-
-        m_pMixingParameter = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
-                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                  wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
 
         m_checkboxOptimization = new wxCheckBox(pParent, wxID_ANY, _T(""));
-        m_checkboxOptimizationNoise = new wxCheckBox(pParent, wxID_ANY, _T(""));
+        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T(""));
 
         DoAdd(_("Control Gain"), m_pControlGain,
               _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
                 "fed back to the system. Default = 0.8"));
 
-        DoAdd(_("Min data points (inference)"), m_pNbMeasurementMin,
+        DoAdd(_("Minimum data points (inference)"), m_pNbPointsInference,
               _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
                 "the result might be poor. Default = 25"));
 
-        DoAdd(_("Min data points (optimization)"), m_pNbPointsOptimisation,
+        DoAdd(_("Minimum data points (optimization)"), m_pNbPointsOptimisation,
               _("Minimal number of measurements to start estimating the periodicity. If there are too little data points, "
                 "the estimation might not work. Default = 100"));
+
+        DoAdd(_("Used data points (approximation)"), m_pNbPointsApproximation,
+              _("Number of data points used in the approximation. Both prediction accuracy as well as runtime rise with "
+                "the number of datapoints. Default = 100"));
 
         // hyperparameters
         DoAdd(_("Measurement noise"), m_pHyperDiracNoise,
@@ -178,10 +190,10 @@ public:
         DoAdd(_("Mixing"), m_pMixingParameter,
               _("The mixing defines how much control signal is generated from the prediction and how much. Default = 0.5"));
 
-        DoAdd(_("Optimize"), m_checkboxOptimization,
-              _("Optimize hyperparameters"));
-        DoAdd(_("Compute sigma"), m_checkboxOptimizationNoise,
-              _("Compute sigma"));
+        DoAdd(_("Compute period"), m_checkboxComputePeriod,
+              _("Compute period length with FFT"));
+        DoAdd(_("Optimize parameters"), m_checkboxOptimization,
+              _("Optimize parameters with Newton steps"));
     }
 
     virtual ~GuideGaussianProcessDialogPane(void)
@@ -190,66 +202,66 @@ public:
     }
 
     /* Fill the GUI with the parameters that are currently chosen in the
-      * guiding algorithm
-      */
+     * guiding algorithm.
+     */
     virtual void LoadValues(void)
     {
-      m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
-      m_pNbMeasurementMin->SetValue(m_pGuideAlgorithm->GetNbMeasurementsMin());
-      m_pNbPointsOptimisation->SetValue(m_pGuideAlgorithm->GetNbPointsBetweenOptimisation());
+        m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
+        m_pNbPointsInference->SetValue(m_pGuideAlgorithm->GetNbMeasurementsMin());
+        m_pNbPointsOptimisation->SetValue(m_pGuideAlgorithm->GetNbPointsBetweenOptimisation());
+        m_pNbPointsApproximation->SetValue(m_pGuideAlgorithm->GetNbPointsForApproximation());
 
-      std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
-      assert(hyperparameters.size() == 8);
+        std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
+        assert(hyperparameters.size() == 8);
 
-      m_pHyperDiracNoise->SetValue(hyperparameters[0]);
-      m_pSE0KLengthScale->SetValue(hyperparameters[1]);
-      m_pSE0KSignalVariance->SetValue(hyperparameters[2]);
-      m_pPKLengthScale->SetValue(hyperparameters[3]);
-      m_pPKSignalVariance->SetValue(hyperparameters[4]);
-      m_pSE1KLengthScale->SetValue(hyperparameters[5]);
-      m_pSE1KSignalVariance->SetValue(hyperparameters[6]);
-      m_pPKPeriodLength->SetValue(hyperparameters[7]);
+        m_pHyperDiracNoise->SetValue(hyperparameters[0]);
+        m_pSE0KLengthScale->SetValue(hyperparameters[1]);
+        m_pSE0KSignalVariance->SetValue(hyperparameters[2]);
+        m_pPKLengthScale->SetValue(hyperparameters[3]);
+        m_pPKSignalVariance->SetValue(hyperparameters[4]);
+        m_pSE1KLengthScale->SetValue(hyperparameters[5]);
+        m_pSE1KSignalVariance->SetValue(hyperparameters[6]);
+        m_pPKPeriodLength->SetValue(hyperparameters[7]);
 
-      m_pMixingParameter->SetValue(m_pGuideAlgorithm->GetMixingParameter());
+        m_pMixingParameter->SetValue(m_pGuideAlgorithm->GetMixingParameter());
 
-      m_checkboxOptimization->SetValue(m_pGuideAlgorithm->GetBoolOptimizeHyperparameters());
-      m_checkboxOptimizationNoise->SetValue(m_pGuideAlgorithm->GetBoolOptimizeSigma());
+        m_checkboxOptimization->SetValue(m_pGuideAlgorithm->GetBoolOptimizeHyperparameters());
+        m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
     virtual void UnloadValues(void)
     {
-      m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
-      m_pGuideAlgorithm->SetNbElementForInference(m_pNbMeasurementMin->GetValue());
-      m_pGuideAlgorithm->SetNbPointsBetweenOptimisation(m_pNbPointsOptimisation->GetValue());
+        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
+        m_pGuideAlgorithm->SetNbElementForInference(m_pNbPointsInference->GetValue());
+        m_pGuideAlgorithm->SetNbPointsOptimisation(m_pNbPointsOptimisation->GetValue());
+        m_pGuideAlgorithm->SetNbPointsForApproximation(m_pNbPointsApproximation->GetValue());
 
-      std::vector<double> hyperparameters(8);
+        std::vector<double> hyperparameters(8);
 
-      hyperparameters[0] = m_pHyperDiracNoise->GetValue();
-      hyperparameters[1] = m_pSE0KLengthScale->GetValue();
-      hyperparameters[2] = m_pSE0KSignalVariance->GetValue();
-      hyperparameters[3] = m_pPKLengthScale->GetValue();
-      hyperparameters[4] = m_pPKSignalVariance->GetValue();
-      hyperparameters[5] = m_pSE1KLengthScale->GetValue();
-      hyperparameters[6] = m_pSE1KSignalVariance->GetValue();
-      hyperparameters[7] = m_pPKPeriodLength->GetValue();
+        hyperparameters[0] = m_pHyperDiracNoise->GetValue();
+        hyperparameters[1] = m_pSE0KLengthScale->GetValue();
+        hyperparameters[2] = m_pSE0KSignalVariance->GetValue();
+        hyperparameters[3] = m_pPKLengthScale->GetValue();
+        hyperparameters[4] = m_pPKSignalVariance->GetValue();
+        hyperparameters[5] = m_pSE1KLengthScale->GetValue();
+        hyperparameters[6] = m_pSE1KSignalVariance->GetValue();
+        hyperparameters[7] = m_pPKPeriodLength->GetValue();
 
-      m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
-      m_pGuideAlgorithm->SetMixingParameter(m_pMixingParameter->GetValue());
-      m_pGuideAlgorithm->SetBoolOptimizeHyperparameters(m_checkboxOptimization->GetValue());
-      m_pGuideAlgorithm->SetBoolOptimizeSigma(m_checkboxOptimizationNoise->GetValue());
-
+        m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
+        m_pGuideAlgorithm->SetMixingParameter(m_pMixingParameter->GetValue());
+        m_pGuideAlgorithm->SetBoolOptimizeHyperparameters(m_checkboxOptimization->GetValue());
+        m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
     }
-
 };
 
 
 struct gp_guiding_circular_datapoints
 {
-  double timestamp;
-  double measurement;
-  double modified_measurement;
-  double control;
+    double timestamp;
+    double measurement;
+    double modified_measurement;
+    double control;
 };
 
 
@@ -268,24 +280,26 @@ struct GuideGaussianProcess::gp_guide_parameters
 
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
+    int points_for_approximation;
 
     bool optimize_hyperparameters;
-    bool optimize_sigma;
+    bool compute_period;
 
     covariance_functions::PeriodicSquareExponential2 covariance_function_;
     covariance_functions::PeriodicSquareExponential output_covariance_function_;
     GP gp_;
 
     gp_guide_parameters() :
-      circular_buffer_parameters(512), // TODO: make this magic number configurable
+      circular_buffer_parameters(CIRCULAR_BUFFER_SIZE),
       timer_(),
       control_signal_(0.0),
       last_timestamp_(0.0),
       filtered_signal_(0.0),
       min_nb_element_for_inference(0),
       min_points_for_optimisation(0),
+      points_for_approximation(0),
       optimize_hyperparameters(false),
-      optimize_sigma(false),
+      compute_period(false),
       gp_(covariance_function_)
     {
         circular_buffer_parameters.push_front(data_points()); // add first point
@@ -295,30 +309,30 @@ struct GuideGaussianProcess::gp_guide_parameters
 
     data_points& get_last_point()
     {
-      return circular_buffer_parameters[circular_buffer_parameters.size() - 1];
+        return circular_buffer_parameters[circular_buffer_parameters.size() - 1];
     }
 
     data_points& get_second_last_point()
     {
-      return circular_buffer_parameters[circular_buffer_parameters.size() - 2];
+        return circular_buffer_parameters[circular_buffer_parameters.size() - 2];
     }
 
     size_t get_number_of_measurements() const
     {
-      return circular_buffer_parameters.size();
+        return circular_buffer_parameters.size();
     }
 
     void add_one_point()
     {
-      circular_buffer_parameters.push_front(data_points());
+        circular_buffer_parameters.push_front(data_points());
     }
 
     void clear()
     {
-      circular_buffer_parameters.clear();
-      circular_buffer_parameters.push_front(data_points()); // add first point
-      circular_buffer_parameters[0].control = 0; // set first control to zero
-      gp_.clear();
+        circular_buffer_parameters.clear();
+        circular_buffer_parameters.push_front(data_points()); // add first point
+        circular_buffer_parameters[0].control = 0; // set first control to zero
+        gp_.clear();
     }
 
 };
@@ -338,11 +352,12 @@ static const double DefaultLengthScaleSE1Ker             = 5.0; // length-scale 
 static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
 
 static const int    DefaultNbMinPointsForOptimisation    = 100; // minimal number of points for doing the period identification
+static const int    DefaultNbPointsForApproximation      = 100; // number of points used in the GP approximation
 static const double DefaultMixing                        = 0.5; // amount of GP prediction to blend in
 
 // by default optimization turned off
 static const bool   DefaultOptimize                      = false;
-static const bool   DefaultOptimizeNoise                 = false;
+static const bool   DefaultComputePeriod                 = true;
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
@@ -351,14 +366,17 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     parameters = new gp_guide_parameters();
     wxString configPath = GetConfigPath();
 
-    double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_controlGain", DefaultControlGain);
+    double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
 
-    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforinference", DefaultNbMinPointsForInference);
+    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
-    int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforoptimization", DefaultNbMinPointsForOptimisation);
-    SetNbPointsBetweenOptimisation(nb_points_between_optimisation);
+    int nb_points_optimisation = pConfig->Profile.GetInt(configPath + "/gp_min_points_optimization", DefaultNbMinPointsForOptimisation);
+    SetNbPointsOptimisation(nb_points_optimisation);
+
+    int nb_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNbPointsForApproximation);
+    SetNbPointsForApproximation(nb_points_approximation);
 
     double mixing_parameter = pConfig->Profile.GetDouble(configPath + "/gp_mixing_parameter", DefaultMixing);
     SetMixingParameter(mixing_parameter);
@@ -378,8 +396,8 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     bool optimize = pConfig->Profile.GetBoolean(configPath + "/gp_optimize_hyperparameters", DefaultOptimize);
     SetBoolOptimizeHyperparameters(optimize);
 
-    bool optimize_sigma = pConfig->Profile.GetBoolean(configPath + "/gp_optimize_sigma", DefaultOptimizeNoise);
-    SetBoolOptimizeSigma(optimize_sigma);
+    bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
+    SetBoolComputePeriod(compute_period);
 
     // enable the explicit basis function for the linear drift
     parameters->gp_.enableExplicitTrend();
@@ -397,7 +415,6 @@ ConfigDialogPane *GuideGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuideGaussianProcessDialogPane(pParent, this);
 }
-
 
 bool GuideGaussianProcess::SetControlGain(double control_gain)
 {
@@ -419,7 +436,7 @@ bool GuideGaussianProcess::SetControlGain(double control_gain)
         parameters->control_gain_ = DefaultControlGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_controlGain", parameters->control_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_control_gain", parameters->control_gain_);
 
     return error;
 }
@@ -444,12 +461,12 @@ bool GuideGaussianProcess::SetNbElementForInference(int nb_elements)
         parameters->min_nb_element_for_inference = DefaultNbMinPointsForInference;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbminelementforinference", parameters->min_nb_element_for_inference);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_inference", parameters->min_nb_element_for_inference);
 
     return error;
 }
 
-bool GuideGaussianProcess::SetNbPointsBetweenOptimisation(int nb_points)
+bool GuideGaussianProcess::SetNbPointsOptimisation(int nb_points)
 {
     bool error = false;
 
@@ -469,7 +486,32 @@ bool GuideGaussianProcess::SetNbPointsBetweenOptimisation(int nb_points)
         parameters->min_points_for_optimisation = DefaultNbMinPointsForOptimisation;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbminelementforoptimization", parameters->min_points_for_optimisation);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_optimization", parameters->min_points_for_optimisation);
+
+    return error;
+}
+
+bool GuideGaussianProcess::SetNbPointsForApproximation(int nb_points)
+{
+    bool error = false;
+
+    try
+    {
+        if (nb_points < 0)
+        {
+            throw ERROR_INFO("invalid number of points");
+        }
+
+        parameters->points_for_approximation = nb_points;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->points_for_approximation = DefaultNbPointsForApproximation;
+    }
+
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_points_approximation", parameters->points_for_approximation);
 
     return error;
 }
@@ -659,10 +701,10 @@ bool GuideGaussianProcess::SetBoolOptimizeHyperparameters(bool active)
 }
 
 
-bool GuideGaussianProcess::SetBoolOptimizeSigma(bool active)
+bool GuideGaussianProcess::SetBoolComputePeriod(bool active)
 {
-  parameters->optimize_sigma = active;
-  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_optimize_sigma", parameters->optimize_sigma);
+  parameters->compute_period = active;
+  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", parameters->compute_period);
   return true;
 }
 
@@ -681,6 +723,10 @@ int GuideGaussianProcess::GetNbPointsBetweenOptimisation() const
     return parameters->min_points_for_optimisation;
 }
 
+int GuideGaussianProcess::GetNbPointsForApproximation() const
+{
+    return parameters->points_for_approximation;
+}
 
 std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
 {
@@ -702,9 +748,9 @@ bool GuideGaussianProcess::GetBoolOptimizeHyperparameters() const
     return parameters->optimize_hyperparameters;
 }
 
-bool GuideGaussianProcess::GetBoolOptimizeSigma() const
+bool GuideGaussianProcess::GetBoolComputePeriod() const
 {
-    return parameters->optimize_sigma;
+    return parameters->compute_period;
 }
 
 wxString GuideGaussianProcess::GetSettingsSummary()
@@ -877,7 +923,7 @@ double GuideGaussianProcess::PredictGearError()
 
     begin = std::clock();
     // inference of the GP with this new points
-    parameters->gp_.inferSD(timestamps, gear_error, 128); // TODO: make magic number configurable
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
 
     // prediction for the next location
     Eigen::VectorXd next_location(2);
@@ -893,7 +939,6 @@ double GuideGaussianProcess::PredictGearError()
     // the prediction is consisting of GP prediction and the linear drift
     return (prediction(1) - prediction(0)) + (delta_controller_time_ms / 1000.0)*weights(1);
 }
-
 
 double GuideGaussianProcess::result(double input)
 {
@@ -939,7 +984,7 @@ double GuideGaussianProcess::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error,256); // TODO: make magic number configurable
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1019,7 +1064,7 @@ double GuideGaussianProcess::deduceResult()
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, 256); // TODO: make magic number configurable
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);

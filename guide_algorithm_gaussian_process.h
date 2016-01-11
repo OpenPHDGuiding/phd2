@@ -45,6 +45,8 @@
 #include <fstream>
 #endif
 
+#define CIRCULAR_BUFFER_SIZE 2048
+
 class wxStopWatch;
 
 class GuideGaussianProcess : public GuideAlgorithm
@@ -61,7 +63,6 @@ private:
     double PredictGearError();
 
 protected:
-
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
@@ -71,13 +72,16 @@ protected:
 
     // minimum amount of points between consecutive calls to the optimisation
     int GetNbPointsBetweenOptimisation() const;
-    bool SetNbPointsBetweenOptimisation(int );
+    bool SetNbPointsOptimisation(int);
+
+    int GetNbPointsForApproximation() const;
+    bool SetNbPointsForApproximation(int);
 
     bool GetBoolOptimizeHyperparameters() const;
-    bool SetBoolOptimizeHyperparameters(bool );
+    bool SetBoolOptimizeHyperparameters(bool);
 
-    bool GetBoolOptimizeSigma() const;
-    bool SetBoolOptimizeSigma(bool );
+    bool GetBoolComputePeriod() const;
+    bool SetBoolComputePeriod(bool);
 
     bool SetGPHyperparameters(std::vector<double> const& hyperparameters);
     std::vector<double> GetGPHyperparameters() const;
