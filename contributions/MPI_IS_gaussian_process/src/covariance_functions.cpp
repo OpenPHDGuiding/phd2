@@ -46,9 +46,7 @@ namespace covariance_functions
     PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd& hyperParameters_) :
     hyperParameters(hyperParameters_), extraParameters(Eigen::VectorXd::Ones(1)*std::numeric_limits<double>::max()) { }
 
-    MatrixStdVecPair PeriodicSquareExponential::evaluate(
-        const Eigen::VectorXd& x,
-        const Eigen::VectorXd& y)
+    Eigen::MatrixXd PeriodicSquareExponential::evaluate(const Eigen::VectorXd& x, const Eigen::VectorXd& y)
     {
 
         double lsSE0 = exp(hyperParameters(0));
@@ -62,32 +60,20 @@ namespace covariance_functions
         // This is because all the operations act elementwise.
 
         // Compute Distances
-        Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance(
-            x.transpose(), y.transpose());
-        Eigen::ArrayXXd distanceXY = squareDistanceXY.sqrt();
+        Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
 
         // Square Exponential Kernel
-        Eigen::ArrayXXd E0 = squareDistanceXY / pow(lsSE0, 2);
-        Eigen::ArrayXXd K0 = svSE0 * (-0.5 * E0).exp();
+        Eigen::ArrayXXd K0 = squareDistanceXY / pow(lsSE0, 2);
+        K0 = svSE0 * (-0.5 * K0).exp();
 
         // Periodic Kernel
-        Eigen::ArrayXXd P1 = (M_PI * distanceXY / plP);
-        Eigen::ArrayXXd S1 = P1.sin() / lsP;
-        Eigen::ArrayXXd Q1 = S1.square();
-        Eigen::ArrayXXd K1 = svP * (-2 * Q1).exp();
+        Eigen::ArrayXXd K1 = (M_PI * squareDistanceXY.sqrt() / plP);
+        K1 = K1.sin() / lsP;
+        K1 = K1.square();
+        K1 = svP * (-2 * K1).exp();
 
         // Combined Kernel
-        Eigen::MatrixXd K = K0 + K1;
-
-        // Derivatives
-        std::vector<Eigen::MatrixXd> derivatives(4);
-
-        derivatives[0] = K0 * E0;
-        derivatives[1] = 2 * K0;
-        derivatives[2] = 4 * K1 * Q1;
-        derivatives[3] = 2 * K1;
-
-        return std::make_pair(K, derivatives);
+        return K0 + K1;
     }
 
     void PeriodicSquareExponential::setParameters(const Eigen::VectorXd& params)
@@ -128,9 +114,7 @@ namespace covariance_functions
     PeriodicSquareExponential2::PeriodicSquareExponential2(const Eigen::VectorXd& hyperParameters_) :
         hyperParameters(hyperParameters_), extraParameters(Eigen::VectorXd::Ones(1)*std::numeric_limits<double>::max()) { }
 
-    MatrixStdVecPair PeriodicSquareExponential2::evaluate(
-        const Eigen::VectorXd& x,
-        const Eigen::VectorXd& y)
+    Eigen::MatrixXd PeriodicSquareExponential2::evaluate(const Eigen::VectorXd& x, const Eigen::VectorXd& y)
     {
 
         double lsSE0 = exp(hyperParameters(0));
@@ -146,38 +130,24 @@ namespace covariance_functions
         // This is because all the operations act elementwise.
 
         // Compute Distances
-        Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance(
-                                               x.transpose(), y.transpose());
-        Eigen::ArrayXXd distanceXY = squareDistanceXY.sqrt();
+        Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
 
         // Square Exponential Kernel
-        Eigen::ArrayXXd E0 = squareDistanceXY / pow(lsSE0, 2);
-        Eigen::ArrayXXd K0 = svSE0 * (-0.5 * E0).exp();
+        Eigen::ArrayXXd K0 = squareDistanceXY / pow(lsSE0, 2);
+        K0 = svSE0 * (-0.5 * K0).exp();
 
         // Periodic Kernel
-        Eigen::ArrayXXd P1 = (M_PI * distanceXY / plP);
-        Eigen::ArrayXXd S1 = P1.sin() / lsP;
-        Eigen::ArrayXXd Q1 = S1.square();
-        Eigen::ArrayXXd K1 = svP * (-2 * Q1).exp();
+        Eigen::ArrayXXd K1 = (M_PI * squareDistanceXY.sqrt() / plP);
+        K1 = K1.sin() / lsP;
+        K1 = K1.square();
+        K1 = svP * (-2 * K1).exp();
 
         // Square Exponential Kernel
-        Eigen::ArrayXXd E2 = squareDistanceXY / pow(lsSE1, 2);
-        Eigen::ArrayXXd K2 = svSE1 * (-0.5 * E2).exp();
+        Eigen::ArrayXXd K2 = squareDistanceXY / pow(lsSE1, 2);
+        K2 = svSE1 * (-0.5 * K2).exp();
 
         // Combined Kernel
-        Eigen::MatrixXd K = K0 + K1 + K2;
-
-        // Derivatives
-        std::vector<Eigen::MatrixXd> derivatives(6);
-
-        derivatives[0] = K0 * E0;
-        derivatives[1] = 2 * K0;
-        derivatives[2] = 4 * K1 * Q1;
-        derivatives[3] = 2 * K1;
-        derivatives[4] = K2 * E2;
-        derivatives[5] = 2 * K2;
-
-        return std::make_pair(K, derivatives);
+        return K0 + K1 + K2;
     }
 
     void PeriodicSquareExponential2::setParameters(const Eigen::VectorXd& params)

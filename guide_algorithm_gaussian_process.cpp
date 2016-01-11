@@ -393,9 +393,6 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 
     SetGPHyperparameters(v_hyperparameters);
 
-    bool optimize = pConfig->Profile.GetBoolean(configPath + "/gp_optimize_hyperparameters", DefaultOptimize);
-    SetBoolOptimizeHyperparameters(optimize);
-
     bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
     SetBoolComputePeriod(compute_period);
 
@@ -693,21 +690,6 @@ bool GuideGaussianProcess::SetMixingParameter(double mixing)
     return error;
 }
 
-bool GuideGaussianProcess::SetBoolOptimizeHyperparameters(bool active)
-{
-  parameters->optimize_hyperparameters = active;
-  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_optimize_hyperparameters", parameters->optimize_hyperparameters);
-  return true;
-}
-
-
-bool GuideGaussianProcess::SetBoolComputePeriod(bool active)
-{
-  parameters->compute_period = active;
-  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", parameters->compute_period);
-  return true;
-}
-
 double GuideGaussianProcess::GetControlGain() const
 {
     return parameters->control_gain_;
@@ -741,11 +723,6 @@ std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
 double GuideGaussianProcess::GetMixingParameter() const
 {
     return parameters->mixing_parameter_;
-}
-
-bool GuideGaussianProcess::GetBoolOptimizeHyperparameters() const
-{
-    return parameters->optimize_hyperparameters;
 }
 
 bool GuideGaussianProcess::GetBoolComputePeriod() const

@@ -68,10 +68,11 @@ namespace covariance_functions
         CovFunc() {}
         virtual ~CovFunc() {}
 
-        //! The evaluation returns the kernel matrix from two input vectors.
-        virtual covariance_functions::MatrixStdVecPair evaluate(
-            const Eigen::VectorXd& x1,
-            const Eigen::VectorXd& x2) = 0;
+        /*!
+         * Evaluates the covariance function, caches the quantities that are needed
+         * to calculate gradient and Hessian.
+         */
+        virtual Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2) = 0;
 
         //! Method to set the hyper-parameters.
         virtual void setParameters(const Eigen::VectorXd& params) = 0;
@@ -139,9 +140,11 @@ namespace covariance_functions
          PeriodicSquareExponential();
          explicit PeriodicSquareExponential(const Eigen::VectorXd& hyperParameters);
 
-         covariance_functions::MatrixStdVecPair evaluate(
-             const Eigen::VectorXd& x1,
-             const Eigen::VectorXd& x2);
+         /*!
+          * Evaluates the covariance function, caches the quantities that are needed
+          * to calculate gradient and Hessian.
+          */
+         Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
 
          //! Method to set the hyper-parameters.
          void setParameters(const Eigen::VectorXd& params);
@@ -176,9 +179,7 @@ namespace covariance_functions
         PeriodicSquareExponential2();
         explicit PeriodicSquareExponential2(const Eigen::VectorXd& hyperParameters);
 
-        covariance_functions::MatrixStdVecPair evaluate(
-            const Eigen::VectorXd& x1,
-            const Eigen::VectorXd& x2);
+        Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
 
         //! Method to set the hyper-parameters.
         void setParameters(const Eigen::VectorXd& params);

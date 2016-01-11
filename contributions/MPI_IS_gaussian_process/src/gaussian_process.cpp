@@ -112,7 +112,6 @@ GP::GP(const GP& that) :
     data_loc_(that.data_loc_),
     data_out_(that.data_out_),
     gram_matrix_(that.gram_matrix_),
-    gram_matrix_derivatives_(that.gram_matrix_derivatives_),
     alpha_(that.alpha_),
     chol_gram_matrix_(that.chol_gram_matrix_),
     log_noise_sd_(that.log_noise_sd_),
@@ -160,7 +159,6 @@ GP& GP::operator=(const GP& that)
         data_loc_ = that.data_loc_;
         data_out_ = that.data_out_;
         gram_matrix_ = that.gram_matrix_;
-        gram_matrix_derivatives_ = that.gram_matrix_derivatives_;
         alpha_ = that.alpha_;
         chol_gram_matrix_ = that.chol_gram_matrix_;
         log_noise_sd_ = that.log_noise_sd_;
@@ -183,7 +181,7 @@ Eigen::VectorXd GP::drawSample(const Eigen::VectorXd& locations,
     Eigen::MatrixXd samples;
 
     // we need the prior covariance for both, prior and posterior samples.
-    prior_covariance = covFunc_->evaluate(locations, locations).first;
+    prior_covariance = covFunc_->evaluate(locations, locations);
     kernel_matrix = prior_covariance;
 
     if (gram_matrix_.cols() == 0)   // i.e. only a prior
@@ -194,7 +192,7 @@ Eigen::VectorXd GP::drawSample(const Eigen::VectorXd& locations,
     else
     {
         Eigen::MatrixXd mixed_covariance;
-        mixed_covariance = covFunc_->evaluate(locations, data_loc_).first;
+        mixed_covariance = covFunc_->evaluate(locations, data_loc_);
         Eigen::MatrixXd posterior_covariance;
         posterior_covariance = prior_covariance - mixed_covariance *
                                (chol_gram_matrix_.solve(mixed_covariance.transpose()));
@@ -215,18 +213,7 @@ void GP::infer()
     assert(data_loc_.rows() > 0 && "Error: the GP is not yet initialized!");
 
     // The data covariance matrix
-    covariance_functions::MatrixStdVecPair cov_result =
-        covFunc_->evaluate(data_loc_, data_loc_);
-    Eigen::MatrixXd& data_cov = cov_result.first;
-
-    gram_matrix_derivatives_.resize(cov_result.second.size() + 1);
-    for (size_t i = 0; i < cov_result.second.size(); i++)
-    {
-        gram_matrix_derivatives_[i + 1].swap(cov_result.second[i]);
-    }
-    // noise derivative first
-    gram_matrix_derivatives_[0] = 2 * std::exp(2 * log_noise_sd_) *
-                                  Eigen::MatrixXd::Identity(data_cov.rows(), data_cov.cols());
+    Eigen::MatrixXd data_cov = covFunc_->evaluate(data_loc_, data_loc_);
 
     // compute and store the Gram matrix
     gram_matrix_.swap(data_cov);
@@ -266,21 +253,18 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
              const int n, const double pred_loc /*= std::numeric_limits<double>::quiet_NaN()*/)
 {
     Eigen::VectorXd covariance;
-    covariance_functions::MatrixStdVecPair cov_result;
 
     // use the last datapoint as prediction reference, if noone is given.
     if (math_tools::isNaN(pred_loc))
     {
-        cov_result = covFunc_->evaluate(data_loc, data_loc.tail(1));
+        covariance = covFunc_->evaluate(data_loc, data_loc.tail(1));
     }
     else
     {
         Eigen::VectorXd pred_vec(1);
         pred_vec << pred_loc;
-        cov_result = covFunc_->evaluate(data_loc, pred_vec);
+        covariance = covFunc_->evaluate(data_loc, pred_vec);
     }
-
-    covariance = cov_result.first;
 
     std::vector<int> index(covariance.size(), 0);
     for (int i = 0 ; i != index.size() ; i++) {
@@ -337,8 +321,7 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
     assert(covFunc != 0);
 
     // The prior covariance matrix (evaluated on test points)
-    Eigen::MatrixXd prior_cov = covFunc->evaluate(
-                                    locations, locations).first;
+    Eigen::MatrixXd prior_cov = covFunc->evaluate(locations, locations);
 
     if (data_loc_.rows() == 0)  // check if the data is empty
     {
@@ -348,8 +331,7 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
     {
 
         // The mixed covariance matrix (test and data points)
-        Eigen::MatrixXd mixed_cov = covFunc->evaluate(
-                                        locations, data_loc_).first;
+        Eigen::MatrixXd mixed_cov = covFunc->evaluate(locations, data_loc_);
 
         Eigen::MatrixXd phi(2, locations.rows());
         if (use_explicit_trend_)
@@ -386,36 +368,6 @@ GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
     return std::make_pair(m, v);
 }
 
-double GP::neg_log_likelihood() const
-{
-    double result = 0;
-    if (gram_matrix_.rows() > 0)
-    {
-        // Implmented according to Equation (5.8) in Rasmussen & Williams, 2006
-        Eigen::MatrixXd Z = chol_gram_matrix_.matrixL();
-        result = data_out_.transpose() * chol_gram_matrix_.solve(data_out_);
-        result += chol_gram_matrix_.vectorD().array().log().sum();
-        result += data_out_.rows() * std::log(2 * M_PI);
-    }
-    return 0.5 * result;
-}
-
-Eigen::VectorXd GP::neg_log_likelihood_gradient() const
-{
-    Eigen::VectorXd result;
-    result = Eigen::VectorXd(gram_matrix_derivatives_.size());
-
-    Eigen::MatrixXd beta(gram_matrix_.rows(), gram_matrix_.cols());
-    // Implmented according to Equation (5.9) in Rasmussen & Williams, 2006
-    for (size_t i = 0; i < gram_matrix_derivatives_.size(); ++i)
-    {
-        beta = chol_gram_matrix_.solve(gram_matrix_derivatives_[i]);
-        result[i] = -0.5 * (alpha_.transpose() * gram_matrix_derivatives_[i] * alpha_ -
-                            beta.trace());
-    }
-    return result;
-}
-
 void GP::setHyperParameters(const Eigen::VectorXd& hyperParameters)
 {
     assert(hyperParameters.rows() == covFunc_->getParameterCount() + covFunc_->getExtraParameterCount() + 1 &&
@@ -435,7 +387,6 @@ void GP::setHyperParameters(const Eigen::VectorXd& hyperParameters)
         covFuncProj_->setExtraParameters(hyperParameters.tail(covFunc_->getExtraParameterCount()));
     }
 }
-
 
 Eigen::VectorXd GP::getHyperParameters() const
 {
