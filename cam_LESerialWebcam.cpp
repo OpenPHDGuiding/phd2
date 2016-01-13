@@ -315,7 +315,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
     wxFlexGridSizer *pSignalSizer = new wxFlexGridSizer(6, 3, 5, 15);
     pSignalSizer->Add(new wxStaticText(this, wxID_ANY, _("Port pins")));
     pSignalSizer->Add(new wxStaticText(this, wxID_ANY, _T("DTR")));
-    pSignalSizer->Add(new wxStaticText(this, wxID_ANY, _T("CTS")));
+    pSignalSizer->Add(new wxStaticText(this, wxID_ANY, _T("RTS")));
 
     pSignalSizer->Add(new wxStaticText(this, wxID_ANY, _T("LE Mask")));
     m_pLEMaskDTR = new wxCheckBox(this, wxID_ANY, _T(""));
