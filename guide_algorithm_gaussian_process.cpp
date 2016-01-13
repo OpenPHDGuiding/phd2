@@ -262,6 +262,7 @@ struct gp_guiding_circular_datapoints
     double measurement;
     double modified_measurement;
     double control;
+    double variance;
 };
 
 
@@ -789,6 +790,15 @@ void GuideGaussianProcess::HandleControls(double control_input)
     parameters->get_last_point().control = control_input;
 }
 
+void GuideGaussianProcess::HandleSNR(double SNR)
+{
+    SNR = std::max(SNR, 3.4); // limit the minimal SNR
+
+    // this was determined by simulated experiments
+    double standard_deviation = 2.1752 * 1 / (SNR - 3.3) - 0.0212;
+    parameters->get_last_point().variance = standard_deviation * standard_deviation;
+}
+
 double GuideGaussianProcess::PredictGearError()
 {
     clock_t begin = std::clock();
@@ -800,6 +810,7 @@ double GuideGaussianProcess::PredictGearError()
     // initialize the different vectors needed for the GP
     Eigen::VectorXd timestamps(N-1);
     Eigen::VectorXd measurements(N-1);
+    Eigen::VectorXd variances(N-1);
     Eigen::VectorXd sum_controls(N-1);
     Eigen::VectorXd gear_error(N-1);
     Eigen::VectorXd linear_fit(N-1);
@@ -809,6 +820,7 @@ double GuideGaussianProcess::PredictGearError()
     {
         timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
         measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        variances(i) = parameters->circular_buffer_parameters[i].variance;
         sum_controls(i) = parameters->circular_buffer_parameters[i].control;
         if(i > 0)
         {
@@ -900,7 +912,7 @@ double GuideGaussianProcess::PredictGearError()
 
     begin = std::clock();
     // inference of the GP with this new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances);
 
     // prediction for the next location
     Eigen::VectorXd next_location(2);
@@ -933,6 +945,7 @@ double GuideGaussianProcess::result(double input)
 
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(parameters->control_signal_);
+    HandleSNR(pFrame->pGuider->SNR());
 
 // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -941,6 +954,7 @@ double GuideGaussianProcess::result(double input)
     // initialize the different vectors needed for the GP
     Eigen::VectorXd timestamps(N - 1);
     Eigen::VectorXd measurements(N - 1);
+    Eigen::VectorXd variances(N - 1);
     Eigen::VectorXd controls(N - 1);
     Eigen::VectorXd sum_controls(N - 1);
     Eigen::VectorXd gear_error(N - 1);
@@ -951,6 +965,7 @@ double GuideGaussianProcess::result(double input)
     {
         timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
         measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        variances(i) = parameters->circular_buffer_parameters[i].variance;
         controls(i) = parameters->circular_buffer_parameters[i].control;
         sum_controls(i) = parameters->circular_buffer_parameters[i].control;
         if(i > 0)
@@ -961,7 +976,7 @@ double GuideGaussianProcess::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1021,6 +1036,7 @@ double GuideGaussianProcess::deduceResult()
     // initialize the different vectors needed for the GP
     Eigen::VectorXd timestamps(N - 1);
     Eigen::VectorXd measurements(N - 1);
+    Eigen::VectorXd variances(N - 1);
     Eigen::VectorXd controls(N - 1);
     Eigen::VectorXd sum_controls(N - 1);
     Eigen::VectorXd gear_error(N - 1);
@@ -1031,6 +1047,7 @@ double GuideGaussianProcess::deduceResult()
     {
         timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
         measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        variances(i) = parameters->circular_buffer_parameters[i].variance;
         controls(i) = parameters->circular_buffer_parameters[i].control;
         sum_controls(i) = parameters->circular_buffer_parameters[i].control;
         if (i > 0)
@@ -1041,7 +1058,7 @@ double GuideGaussianProcess::deduceResult()
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation);
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);

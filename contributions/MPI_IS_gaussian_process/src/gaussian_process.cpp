@@ -56,6 +56,7 @@ GP::GP() : covFunc_(0), // initialize pointer to null
     covFuncProj_(0), // initialize pointer to null
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
+    data_var_(Eigen::VectorXd()),
     gram_matrix_(Eigen::MatrixXd()),
     alpha_(Eigen::VectorXd()),
     chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
@@ -72,6 +73,7 @@ GP::GP(const covariance_functions::CovFunc& covFunc) :
     covFuncProj_(0),
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
+    data_var_(Eigen::VectorXd()),
     gram_matrix_(Eigen::MatrixXd()),
     alpha_(Eigen::VectorXd()),
     chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
@@ -89,6 +91,7 @@ GP::GP(const double noise_variance,
     covFuncProj_(0),
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
+    data_var_(Eigen::VectorXd()),
     gram_matrix_(Eigen::MatrixXd()),
     alpha_(Eigen::VectorXd()),
     chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
@@ -111,6 +114,7 @@ GP::GP(const GP& that) :
     covFuncProj_(0),
     data_loc_(that.data_loc_),
     data_out_(that.data_out_),
+    data_var_(that.data_var_),
     gram_matrix_(that.gram_matrix_),
     alpha_(that.alpha_),
     chol_gram_matrix_(that.chol_gram_matrix_),
@@ -158,6 +162,7 @@ GP& GP::operator=(const GP& that)
         // copy the rest
         data_loc_ = that.data_loc_;
         data_out_ = that.data_out_;
+        data_var_ = that.data_var_;
         gram_matrix_ = that.gram_matrix_;
         alpha_ = that.alpha_;
         chol_gram_matrix_ = that.chol_gram_matrix_;
@@ -217,8 +222,15 @@ void GP::infer()
 
     // compute and store the Gram matrix
     gram_matrix_.swap(data_cov);
-    gram_matrix_ += (std::exp(2 * log_noise_sd_) + JITTER) *
+    if (data_var_.rows() == 0) // homoscedastic
+    {
+        gram_matrix_ += (std::exp(2 * log_noise_sd_) + JITTER) *
                     Eigen::MatrixXd::Identity(gram_matrix_.rows(), gram_matrix_.cols());
+    }
+    else // heteroscedastic
+    {
+        gram_matrix_ += data_var_.asDiagonal();
+    }
 
     // compute the Cholesky decomposition of the Gram matrix
     chol_gram_matrix_ = gram_matrix_.ldlt();
@@ -241,30 +253,26 @@ void GP::infer()
 }
 
 void GP::infer(const Eigen::VectorXd& data_loc,
-               const Eigen::VectorXd& data_out)
+               const Eigen::VectorXd& data_out,
+               const Eigen::VectorXd& data_var /* = EigenVectorXd() */)
 {
     data_loc_ = data_loc;
     data_out_ = data_out;
+    if (data_var.rows() > 0)
+    {
+        data_var_ = data_var;
+    }
     infer(); // updates the Gram matrix and its Cholesky decomposition
 }
 
 void GP::inferSD(const Eigen::VectorXd& data_loc,
              const Eigen::VectorXd& data_out,
-             const int n, const double pred_loc /*= std::numeric_limits<double>::quiet_NaN()*/)
+             const int n, const Eigen::VectorXd& data_var /* = EigenVectorXd() */)
 {
     Eigen::VectorXd covariance;
 
-    // use the last datapoint as prediction reference, if noone is given.
-    if (math_tools::isNaN(pred_loc))
-    {
-        covariance = covFunc_->evaluate(data_loc, data_loc.tail(1));
-    }
-    else
-    {
-        Eigen::VectorXd pred_vec(1);
-        pred_vec << pred_loc;
-        covariance = covFunc_->evaluate(data_loc, pred_vec);
-    }
+    // use the last datapoint as prediction reference
+    covariance = covFunc_->evaluate(data_loc, data_loc.tail(1));
 
     std::vector<int> index(covariance.size(), 0);
     for (int i = 0 ; i != index.size() ; i++) {
@@ -276,22 +284,38 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
          covariance_ordering(covariance)
     );
 
+    bool use_var = data_var.rows() > 0; // heteroscedastic noise, if true
+
     if (n < data_loc.rows()) {
         std::vector<double> loc_arr(n);
         std::vector<double> out_arr(n);
+        std::vector<double> var_arr(n);
+
         for (int i = 0; i < n; ++i)
         {
             loc_arr[i] = data_loc[index[i]];
             out_arr[i] = data_out[index[i]];
+            if (use_var)
+            {
+                var_arr[i] = data_var[index[i]];
+            }
         }
 
         data_loc_ = Eigen::Map<Eigen::VectorXd>(loc_arr.data(),n,1);
         data_out_ = Eigen::Map<Eigen::VectorXd>(out_arr.data(),n,1);
+        if (use_var)
+        {
+            data_var_ = Eigen::Map<Eigen::VectorXd>(var_arr.data(),n,1);
+        }
     }
     else
     {
         data_loc_ = data_loc;
         data_out_ = data_out;
+        if (use_var)
+        {
+            data_var_ = data_var;
+        }
     }
     infer();
 }

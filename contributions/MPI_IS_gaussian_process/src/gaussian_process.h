@@ -63,6 +63,7 @@ private:
     covariance_functions::CovFunc* covFuncProj_;
     Eigen::VectorXd data_loc_;
     Eigen::VectorXd data_out_;
+    Eigen::VectorXd data_var_;
     Eigen::MatrixXd gram_matrix_;
     Eigen::VectorXd alpha_;
     Eigen::LDLT<Eigen::MatrixXd> chol_gram_matrix_;
@@ -124,12 +125,14 @@ public:
     void infer();
 
     /*!
-     * Stores the given datapoints in the form of data location \a data_loc and
-     * the output values \a data_out. Calls infer() everytime so that the Gram
-     * matrix is rebuild and the Cholesky decomposition is computed.
+     * Stores the given datapoints in the form of data location \a data_loc,
+     * the output values \a data_out and noise vector \a data_sig.
+     * Calls infer() everytime so that the Gram matrix is rebuild and the
+     * Cholesky decomposition is computed.
      */
     void infer(const Eigen::VectorXd& data_loc,
-               const Eigen::VectorXd& data_out);
+               const Eigen::VectorXd& data_out,
+               const Eigen::VectorXd& data_var = Eigen::VectorXd());
 
     /*!
      * Calculates the GP based on a subset of data (SD) approximation. The data
@@ -140,7 +143,8 @@ public:
      */
     void inferSD(const Eigen::VectorXd& data_loc,
                  const Eigen::VectorXd& data_out,
-                 const int n, const double pred_loc = std::numeric_limits<double>::quiet_NaN());
+                 const int n,
+                 const Eigen::VectorXd& data_var = Eigen::VectorXd());
 
     /*!
      * Sets the GP back to the prior:
