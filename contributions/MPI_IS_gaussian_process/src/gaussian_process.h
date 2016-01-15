@@ -144,7 +144,8 @@ public:
     void inferSD(const Eigen::VectorXd& data_loc,
                  const Eigen::VectorXd& data_out,
                  const int n,
-                 const Eigen::VectorXd& data_var = Eigen::VectorXd());
+                 const Eigen::VectorXd& data_var = Eigen::VectorXd(),
+                 const double prediction_point = std::numeric_limits<double>::quiet_NaN());
 
     /*!
      * Sets the GP back to the prior:

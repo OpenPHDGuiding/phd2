@@ -266,13 +266,24 @@ void GP::infer(const Eigen::VectorXd& data_loc,
 }
 
 void GP::inferSD(const Eigen::VectorXd& data_loc,
-             const Eigen::VectorXd& data_out,
-             const int n, const Eigen::VectorXd& data_var /* = EigenVectorXd() */)
+            const Eigen::VectorXd& data_out,
+            const int n, const Eigen::VectorXd& data_var /* = EigenVectorXd() */,
+            const double prediction_point /*= std::numeric_limits<double>::quiet_NaN()*/)
 {
     Eigen::VectorXd covariance;
 
+    Eigen::VectorXd prediction_loc(1);
+    if ( math_tools::isNaN(prediction_point) )
+    {
+        prediction_loc = data_loc.tail(1);
+    }
+    else
+    {
+        prediction_loc << prediction_point;
+    }
+
     // use the last datapoint as prediction reference
-    covariance = covFunc_->evaluate(data_loc, data_loc.tail(1));
+    covariance = covFunc_->evaluate(data_loc, prediction_loc);
 
     std::vector<int> index(covariance.size(), 0);
     for (int i = 0 ; i != index.size() ; i++) {
