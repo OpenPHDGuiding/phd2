@@ -66,6 +66,9 @@ wxDEFINE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(SET_STATUS_STAR_INFO, wxThreadEvent);
+wxDEFINE_EVENT(SET_STATUS_STATE_INDICATORS, wxThreadEvent);
+wxDEFINE_EVENT(SET_STATUS_GUIDE_INFO, wxThreadEvent);
 wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 
@@ -144,6 +147,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, WXMESSAGEBOX_PROXY_EVENT, MyFrame::OnMessageBoxProxy)
 
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
+    EVT_THREAD(SET_STATUS_GUIDE_INFO, MyFrame::OnUpdateGuideInfo)
+    EVT_THREAD(SET_STATUS_STAR_INFO, MyFrame::OnUpdateStarInfo)
+    EVT_THREAD(SET_STATUS_STATE_INDICATORS, MyFrame::OnUpdateStateIndicators)
     EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
     EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
@@ -828,11 +834,6 @@ void MyFrame::UpdateCalibrationStatus(void)
         pStatsWin->UpdateScopePointing();
 }
 
-void MyFrame::UpdateStateLabels()
-{
-    m_statusbar->UpdateStates();
-}
-
 void MyFrame::SetupStatusBar(void)
 {
     m_statusbar = new PHDStatusBar(this, wxSTB_DEFAULT_STYLE);
@@ -840,6 +841,75 @@ void MyFrame::SetupStatusBar(void)
     PositionStatusBar();
     UpdateCalibrationStatus();
 }
+
+void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
+{
+    if (wxThread::IsMain)
+        m_statusbar->UpdateStarInfo(SNR, Saturated);
+    else
+    {
+        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_STAR_INFO);
+        STAR_PROPERTIES info;
+        info.SNR = SNR;
+        info.Saturated = Saturated;
+        evt->SetPayload <STAR_PROPERTIES>(info);
+        wxQueueEvent(this, evt);
+    }
+}
+
+void MyFrame::OnUpdateStarInfo(wxThreadEvent& event)
+{
+    STAR_PROPERTIES info = event.GetPayload <STAR_PROPERTIES>();
+    UpdateStarInfo(info.SNR, info.Saturated);
+}
+
+void MyFrame::UpdateStateLabels()
+{
+    if (wxThread::IsMain())
+        m_statusbar->UpdateStates();
+    else
+    {
+        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_STATE_INDICATORS);
+        wxQueueEvent(this, evt);
+    }
+}
+
+void MyFrame::OnUpdateStateIndicators(wxThreadEvent& event)
+{
+    UpdateStateLabels();
+}
+
+void MyFrame::UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse)
+{
+    if (wxThread::IsMain())
+        m_statusbar->UpdateGuiderInfo(raDirection, decDirection, raPx, raPulse, decPx, decPulse);
+    else
+    {
+        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_GUIDE_INFO);
+        GUIDE_COMMANDS_INFO info;
+        info.raDir = raDirection;
+        info.decDir = decDirection;
+        info.raPx = raPx;
+        info.raPulse = raPulse;
+        info.decPx = decPx;
+        info.decPulse = decPulse;
+        evt->SetPayload <GUIDE_COMMANDS_INFO> (info);
+        wxQueueEvent(this, evt);
+    }
+}
+
+void MyFrame::OnUpdateGuideInfo(wxThreadEvent& event)
+{
+    GUIDE_COMMANDS_INFO info = event.GetPayload <GUIDE_COMMANDS_INFO>();
+    UpdateGuiderInfo(info.raDir, info.decDir, info.raPx, info.raPulse, info.decPx, info.decPulse);
+}
+
+void MyFrame::ClearGuiderInfo()
+{
+    m_statusbar->ClearGuiderInfo();
+}
+
+
 
 void MyFrame::SetupKeyboardShortcuts(void)
 {
@@ -949,6 +1019,10 @@ void MyFrame::UpdateButtonsStatus(void)
 
     if (need_update)
     {
+        if (!CaptureActive)
+            m_statusbar->ClearStarInfo();
+        if (!guiding_active)
+            m_statusbar->ClearGuiderInfo();
         Update();
         Refresh();
     }
@@ -1256,7 +1330,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    m_statusbar->SetStatusText(wxEmptyString, 1);
+    //m_statusbar->SetStatusText(wxEmptyString, 1);
 }
 
 void MyFrame::ScheduleExposure(void)
@@ -1340,7 +1414,7 @@ void MyFrame::StartCapturing()
 
         CheckDarkFrameGeometry();
         UpdateButtonsStatus();
-        SetStatusText(wxEmptyString);
+        //SetStatusText(wxEmptyString);
 
         // m_exposurePending should always be false here since CaptureActive is cleared on exposure
         // completion, but be paranoid and check it anyway
@@ -1431,7 +1505,7 @@ bool MyFrame::StartLooping(void)
                 throw ERROR_INFO("cannot start looping when capture active");
             }
         }
-
+        SetStatusText(_("Looping..."));
         StartCapturing();
     }
     catch (wxString Msg)

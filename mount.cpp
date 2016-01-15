@@ -782,9 +782,12 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
 
         if (!msg.IsEmpty())
         {
-            pFrame->SetStatusText(msg, 1);
+            //pFrame->SetStatusText(msg, 1);
+            pFrame->UpdateGuiderInfo(xDirection, yDirection, fabs(xDistance), xMoveResult.amountMoved, fabs(yDistance), yMoveResult.amountMoved);
             Debug.AddLine(msg);
         }
+        else
+            pFrame->ClearGuiderInfo();
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
         // We don't want to do anything with the info here in the worker thread since UI operations are

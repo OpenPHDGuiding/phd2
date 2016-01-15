@@ -1051,6 +1051,7 @@ void Guider::Reset(bool fullReset)
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 {
     wxString statusMessage;
+    bool someException = false;
 
     try
     {
@@ -1091,7 +1092,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         FrameDroppedInfo info;
 
-        if (UpdateCurrentPosition(pImage, &info))
+        if (UpdateCurrentPosition(pImage, &info))           // true means error
         {
             info.frameNumber = pFrame->m_frameCounter;
             info.time = pFrame->TimeSinceGuidingStarted();
@@ -1141,7 +1142,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             statusMessage = info.status;
             throw THROW_INFO("unable to update current position");
         }
-        statusMessage = info.status;
+        else
+            statusMessage = info.status;
 
         // we have a star selected, so re-enable subframes
         if (m_forceFullFrame)
@@ -1300,10 +1302,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        someException = true;
     }
 
     // during calibration, the mount is responsible for updating the status message
-    if (m_state != STATE_CALIBRATING_PRIMARY && m_state != STATE_CALIBRATING_SECONDARY)
+    if (someException && m_state != STATE_CALIBRATING_PRIMARY && m_state != STATE_CALIBRATING_SECONDARY)
     {
         pFrame->SetStatusText(statusMessage);
     }

@@ -427,7 +427,8 @@ bool GuiderOneStar::AutoSelect(void)
 
         UpdateImageDisplay();
         pFrame->SetStatusText(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
-        pFrame->SetStatusText(StarStatus(m_star));
+        //pFrame->SetStatusText(StarStatus(m_star));
+        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
     }
     catch (const wxString& Msg)
@@ -606,7 +607,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
         pFrame->AdjustAutoExposure(m_star.SNR);
-
+        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         errorInfo->status = StarStatus(m_star);
     }
     catch (const wxString& Msg)

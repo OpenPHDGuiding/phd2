@@ -1,0 +1,38 @@
+/* XPM */
+static char *guide_arrow_up_16_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 16 1",
+"  c Black",
+"X c #C8CDD0",
+"O c #FFFFFF",
+"o c #1F2224",
+"% c #464C4E",
+"; c #676869",
+": c #999999",
+"@ c #DDE6EA",
+"+ c #1D2123",
+"- c #D8D9DA",
+". c #A4AEB4",
+"= c #AFB7BC",
+"* c #76797B",
+"& c #777A7B",
+"# c #E5EAED",
+"$ c #484D4F",
+/* pixels */
+"                ",
+"       .X       ",
+"      oOO+      ",
+"      @OO#      ",
+"     $OOOO%     ",
+"     OOOOOO     ",
+"    &OOOOOO*    ",
+"    OOOOOOOO    ",
+"   =OOOOOOOO-   ",
+"      OOOO      ",
+"      OOOO      ",
+"      OOOO    ; ",
+"      OOOO      ",
+"      OOOO     :",
+"      OOOO      ",
+"      OOOO      "
+};

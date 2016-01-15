@@ -161,6 +161,7 @@ private:
     int m_instanceNumber;
 
     wxAuiManager m_mgr;
+    PHDStatusBar *m_statusbar;
     bool m_continueCapturing; // should another image be captured?
 
 public:
@@ -321,7 +322,11 @@ public:
     void LoadDefectMapHandler(bool checkIt);
     void CheckDarkFrameGeometry();
     void UpdateStateLabels();
+    void UpdateStarInfo(double SNR, bool Saturated);
+    void UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void ClearGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
+
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -349,6 +354,23 @@ public:
         wxSemaphore       *pSemaphore;
     };
     void OnRequestMountMove(wxCommandEvent& evt);
+
+    struct GUIDE_COMMANDS_INFO
+    {
+        GUIDE_DIRECTION raDir;
+        GUIDE_DIRECTION decDir;
+        double raPx;
+        double raPulse;
+        double decPx;
+        double decPulse;
+    };
+
+    struct STAR_PROPERTIES
+    {
+        double SNR;
+        double Mass;
+        bool Saturated;
+    };
 
     void ScheduleExposure(void);
 
@@ -387,8 +409,6 @@ private:
     WorkerThread *m_pSecondaryWorkerThread;
 
     wxSocketServer *SocketServer;
-
-    PHDStatusBar *m_statusbar;
     wxTimer m_statusbarTimer;
 
     int m_exposureDuration;
@@ -402,6 +422,9 @@ private:
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
     bool StopWorkerThread(WorkerThread*& pWorkerThread);
     void OnSetStatusText(wxThreadEvent& event);
+    void OnUpdateGuideInfo(wxThreadEvent& event);
+    void OnUpdateStateIndicators(wxThreadEvent& event);
+    void OnUpdateStarInfo(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);

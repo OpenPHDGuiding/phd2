@@ -40,35 +40,101 @@
 enum SBFieldTypes
 {
     Field_Msg1,
-    Field_Msg2,
+    //Field_Mass,
+    Field_Sat,
+    Field_SNR,
+    //Field_RADir,
+    //Field_RAAmount,
+    Field_RAInfo,
+    //Field_DecDir,
+    //Field_DownArrow,
+    Field_DecInfo,
     Field_Darks,
     Field_Calib,
-    Field_Cam,
-    Field_Mount,
-    Field_AO,
-    Field_Rot,
+    Field_Gear,
+    //Field_Mount,
+    //Field_AO,
+    //Field_Rot,
     Field_Max
 };
 
 class PHDStatusBar;
 
 // Class for color-coded state indicators
-class SBStateIndicator
+class SBStateIndicatorItem
 {
 public:
     SBFieldTypes type;
-    wxString label;
     int txtHeight;
     int txtWidth;
     int fieldId;
     int lastState;
     PHDStatusBar* parentSB;
     wxStaticText* ctrl;
+    wxStaticBitmap* pic;
+    wxString otherInfo;
 
 public:
-    SBStateIndicator(PHDStatusBar* parent, int indField, const wxString &indLabel, SBFieldTypes indType);
+    SBStateIndicatorItem(PHDStatusBar* parent, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
+    void PositionControl();
     void UpdateState();
     wxString IndicatorToolTip(SBFieldTypes indType, int triState);
+};
+
+class SBStateIndicators
+{
+    SBStateIndicatorItem* stateItems[Field_Max - Field_Darks];
+    int numItems = Field_Max - Field_Darks;
+    PHDStatusBar* parentSB;
+
+
+public:
+    SBStateIndicators(PHDStatusBar* parent, std::vector <int> &fldWidths);
+    ~SBStateIndicators();
+    void PositionControls();
+    void UpdateState();
+
+};
+
+class SBGuideIndicators
+{
+    wxStaticBitmap* bitmapRA;
+    wxStaticBitmap* bitmapDec;
+    wxStaticText* txtRaAmounts;
+    wxStaticText* txtDecAmounts;
+    wxIcon icoLeft;
+    wxIcon icoRight;
+    wxIcon icoUp;
+    wxIcon icoDown;
+    PHDStatusBar* parentSB;
+
+public:
+    SBGuideIndicators(PHDStatusBar* parent, std::vector <int> &fldWidths);
+    void PositionControls();
+    void UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void ClearState() { UpdateState(LEFT, UP, 0, 0, 0, 0); }
+
+};
+
+class SBStarIndicators
+{
+    wxStaticText* txtMassPct;
+    wxStaticText* txtSNR;
+    wxStaticText* txtSaturated;
+    const wxString massStr = _("Mass");
+    const wxString SNRStr = _("SNR");
+    const wxString satStr = _("SAT");
+    int massWidth;
+    int snrWidth;
+    int satWidth;
+    int txtHeight;
+    PHDStatusBar* parentSB;
+
+public:
+    SBStarIndicators(PHDStatusBar *parent, std::vector <int> &fldWidths);
+    void PositionControls();
+    void UpdateState(double MassPct, double SNR, bool Saturated);
+
 };
 
 // Child of normal status bar - used for status bar with color-coded messages and state indicators
@@ -78,23 +144,26 @@ public:
     PHDStatusBar(wxWindow *parent, long style = wxSTB_DEFAULT_STYLE);
     virtual ~PHDStatusBar();
 
+    wxIcon yellowLight;
+    wxIcon redLight;
+    wxIcon greenLight;
     wxPoint FieldLoc(int fieldNum, int crtlWidth, int ctrlHeight);
     void SetStatusText(const wxString &text, int number = 0);
     void UpdateStates();
+    void UpdateStarInfo(double SNR, bool Saturated);
+    void ClearStarInfo() { UpdateStarInfo(-1, 0); }
+    void UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void ClearGuiderInfo();
 
     // event handlers
     void OnSize(wxSizeEvent& event);
 
-#if wxUSE_TIMER
-    wxTimer m_timer;
-#endif
-
 private:
-    SBStateIndicator* m_StateIndicators[Field_Max];
+    SBStateIndicators* m_StateIndicators;
+    SBStarIndicators* m_StarIndicators;
+    SBGuideIndicators* m_GuideIndicators;
     wxStaticText* m_Msg1;
-    wxStaticText* m_Msg2;
     int m_NumIndicators;
-    bool m_even = true;
 
     wxDECLARE_EVENT_TABLE();
 };
