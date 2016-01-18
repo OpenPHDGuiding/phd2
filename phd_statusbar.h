@@ -3,7 +3,7 @@
 *  PHD Guiding
 *
 *  Created by Bruce Waddington
-*  Copyright (c) 2016 Bruce Waddington
+*  Copyright (c) 2016 Bruce Waddington and Andy Galasso
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -39,26 +39,34 @@
 // Types of fields in the statusbar
 enum SBFieldTypes
 {
-    Field_Msg1,
-    //Field_Mass,
+    Field_StatusMsg,
     Field_Sat,
     Field_SNR,
-    //Field_RADir,
-    //Field_RAAmount,
     Field_RAInfo,
-    //Field_DecDir,
-    //Field_DownArrow,
     Field_DecInfo,
     Field_Darks,
     Field_Calib,
     Field_Gear,
-    //Field_Mount,
-    //Field_AO,
-    //Field_Rot,
     Field_Max
 };
 
 class PHDStatusBar;
+
+// Self-drawn panel for hosting controls in the wxStatusBar
+class SBPanel : public wxPanel
+{
+    std::vector <int> fieldOffsets;
+
+public:
+    SBPanel(wxStatusBar* parent, wxSize panelSize);
+
+    void OnPaint(wxPaintEvent& evt);
+    void BuildFieldOffsets(std::vector <int> &fldWidths);
+    wxPoint FieldLoc(int fieldId);
+    int emWidth;
+
+    wxDECLARE_EVENT_TABLE();
+};
 
 // Class for color-coded state indicators
 class SBStateIndicatorItem
@@ -69,13 +77,13 @@ public:
     int txtWidth;
     int fieldId;
     int lastState;
-    PHDStatusBar* parentSB;
+    SBPanel* parentPanel;
     wxStaticText* ctrl;
     wxStaticBitmap* pic;
     wxString otherInfo;
 
 public:
-    SBStateIndicatorItem(PHDStatusBar* parent, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
+    SBStateIndicatorItem(SBPanel* parent, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
     void PositionControl();
     void UpdateState();
     wxString IndicatorToolTip(SBFieldTypes indType, int triState);
@@ -85,11 +93,11 @@ class SBStateIndicators
 {
     SBStateIndicatorItem* stateItems[Field_Max - Field_Darks];
     int numItems = Field_Max - Field_Darks;
-    PHDStatusBar* parentSB;
+    SBPanel* parentPanel;
 
 
 public:
-    SBStateIndicators(PHDStatusBar* parent, std::vector <int> &fldWidths);
+    SBStateIndicators(SBPanel* parent, std::vector <int> &fldWidths);
     ~SBStateIndicators();
     void PositionControls();
     void UpdateState();
@@ -106,10 +114,10 @@ class SBGuideIndicators
     wxIcon icoRight;
     wxIcon icoUp;
     wxIcon icoDown;
-    PHDStatusBar* parentSB;
+    SBPanel* parentPanel;
 
 public:
-    SBGuideIndicators(PHDStatusBar* parent, std::vector <int> &fldWidths);
+    SBGuideIndicators(SBPanel* parent, std::vector <int> &fldWidths);
     void PositionControls();
     void UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
     void ClearState() { UpdateState(LEFT, UP, 0, 0, 0, 0); }
@@ -119,19 +127,18 @@ public:
 class SBStarIndicators
 {
     wxStaticText* txtMassPct;
-    wxStaticText* txtSNR;
+    wxStaticText* txtSNRLabel;
+    wxStaticText* txtSNRValue;
     wxStaticText* txtSaturated;
     const wxString massStr = _("Mass");
     const wxString SNRStr = _("SNR");
     const wxString satStr = _("SAT");
-    int massWidth;
-    int snrWidth;
-    int satWidth;
     int txtHeight;
-    PHDStatusBar* parentSB;
+    int snrLabelWidth;
+    SBPanel* parentPanel;
 
 public:
-    SBStarIndicators(PHDStatusBar *parent, std::vector <int> &fldWidths);
+    SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths);
     void PositionControls();
     void UpdateState(double MassPct, double SNR, bool Saturated);
 
@@ -147,7 +154,6 @@ public:
     wxIcon yellowLight;
     wxIcon redLight;
     wxIcon greenLight;
-    wxPoint FieldLoc(int fieldNum, int crtlWidth, int ctrlHeight);
     void SetStatusText(const wxString &text, int number = 0);
     void UpdateStates();
     void UpdateStarInfo(double SNR, bool Saturated);
@@ -159,6 +165,7 @@ public:
     void OnSize(wxSizeEvent& event);
 
 private:
+    SBPanel *m_ctrlPanel;
     SBStateIndicators* m_StateIndicators;
     SBStarIndicators* m_StarIndicators;
     SBGuideIndicators* m_GuideIndicators;

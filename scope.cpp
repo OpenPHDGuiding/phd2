@@ -1003,7 +1003,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("RA calibration failed");
                     }
-                    pFrame->SetStatusText(wxString::Format(_("West step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    //pFrame->SetStatusText(wxString::Format(_("West step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    pFrame->SetStatusText(wxString::Format(_("West step %3d, dist=%4.1f"), m_calibrationSteps, dist));
                     pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
                     break;
                 }
@@ -1049,7 +1050,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
-                    pFrame->SetStatusText(wxString::Format(_("East step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    // pFrame->SetStatusText(wxString::Format(_("East step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    pFrame->SetStatusText(wxString::Format(_("East step %3d, dist=%4.1f"), m_calibrationSteps, dist));
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
@@ -1204,7 +1206,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("Dec calibration failed");
                     }
-                    pFrame->SetStatusText(wxString::Format(_("North step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    // pFrame->SetStatusText(wxString::Format(_("North step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    pFrame->SetStatusText(wxString::Format(_("North step %3d, dist=%4.1f"), m_calibrationSteps, dist));
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
@@ -1269,7 +1272,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
-                    pFrame->SetStatusText(wxString::Format(_("South step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    //pFrame->SetStatusText(wxString::Format(_("South step %3d, dx=%4.1f dy=%4.1f dist=%4.1f"), m_calibrationSteps, dX, dY, dist));
+                    pFrame->SetStatusText(wxString::Format(_("South step %3d, dist=%4.1f"), m_calibrationSteps, dist));
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;

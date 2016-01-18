@@ -1248,7 +1248,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_CALIBRATED:
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
-                pFrame->SetStatusText(_("Guiding..."), 1);
+                pFrame->SetStatusText(_("Guiding"), 1);
                 pFrame->m_guidingStarted = wxDateTime::UNow();
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();

@@ -339,6 +339,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     CaptureActive     = false;
     m_exposurePending = false;
 
+    m_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, *wxBLACK);
@@ -1162,6 +1163,7 @@ void MyFrame::DoTryReconnect()
     else
     {
         Debug.Write("Camera Re-connect succeeded, resume exposures\n");
+        UpdateStateLabels();
         m_exposurePending = false; // exposure no longer pending
         ScheduleExposure();
     }
@@ -1505,7 +1507,7 @@ bool MyFrame::StartLooping(void)
                 throw ERROR_INFO("cannot start looping when capture active");
             }
         }
-        SetStatusText(_("Looping..."));
+        SetStatusText(_("Looping"));
         StartCapturing();
     }
     catch (wxString Msg)
@@ -2054,6 +2056,7 @@ void MyFrame::SetDarkMenuState()
     m_useDefectMapMenuItem->Enable(haveDefectMap);
     if (!haveDefectMap)
         m_useDefectMapMenuItem->Check(false);
+    m_statusbar->UpdateStates();
 }
 
 bool MyFrame::LoadDarkLibrary()
