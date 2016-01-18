@@ -161,6 +161,15 @@ public:
     VectorMatrixPair predict(const Eigen::VectorXd& locations) const;
 
     /*!
+     * Predicts the mean and covariance for a vector of locations based on
+     * the output projection.
+     *
+     * This function just builds the prior and mixed covariance matrices and
+     * calls the other predict afterwards.
+     */
+    VectorMatrixPair predictProjected(const Eigen::VectorXd& locations) const;
+
+    /*!
      * Does the real work for predict. Solves the Cholesky decomposition for the
      * given matrices. The Gram matrix and measurements need to be cached
      * already.

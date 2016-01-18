@@ -799,11 +799,9 @@ void GuideGaussianProcess::HandleSNR(double SNR)
     parameters->get_last_point().variance = standard_deviation * standard_deviation;
 }
 
-double GuideGaussianProcess::PredictGearError()
+void GuideGaussianProcess::UpdateGP()
 {
     clock_t begin = std::clock();
-
-    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
     int N = parameters->get_number_of_measurements();
 
@@ -914,19 +912,35 @@ double GuideGaussianProcess::PredictGearError()
     // inference of the GP with this new points
     parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances);
 
+    end = std::clock();
+    double time_gp = double(end - begin) / CLOCKS_PER_SEC;
+    Debug.AddLine("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp);
+}
+
+double GuideGaussianProcess::FilterState()
+{
+    // prediction for the current location
+    Eigen::VectorXd location(1);
+    long current_time = parameters->timer_.Time();
+    location << parameters->get_last_point().timestamp;
+    Eigen::VectorXd prediction = parameters->gp_.predict(location).first;
+
+    return prediction(1);
+}
+
+double GuideGaussianProcess::PredictGearError()
+{
+    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
+
     // prediction for the next location
     Eigen::VectorXd next_location(2);
     long current_time = parameters->timer_.Time();
     next_location << current_time / 1000.0,
     (current_time + delta_controller_time_ms) / 1000.0;
-    Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
-
-    end = std::clock();
-    double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-    Debug.AddLine("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp);
+    Eigen::VectorXd prediction = parameters->gp_.predictProjected(next_location).first;
 
     // the prediction is consisting of GP prediction and the linear drift
-    return (prediction(1) - prediction(0)) + (delta_controller_time_ms / 1000.0)*weights(1);
+    return (prediction(1) - prediction(0));
 }
 
 double GuideGaussianProcess::result(double input)
@@ -940,6 +954,8 @@ double GuideGaussianProcess::result(double input)
     if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
+        UpdateGP(); // update the GP based on the new measurements
+        parameters->control_signal_ = parameters->control_gain_*FilterState(); // filter the state based on the GP
         parameters->control_signal_ += parameters->mixing_parameter_*PredictGearError(); // mix in the prediction
     }
 

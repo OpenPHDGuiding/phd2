@@ -330,6 +330,32 @@ void GP::clear()
 
 GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
 {
+    // The prior covariance matrix (evaluated on test points)
+    Eigen::MatrixXd prior_cov = covFunc_->evaluate(locations, locations);
+
+    if (data_loc_.rows() == 0)  // check if the data is empty
+    {
+        return std::make_pair(Eigen::VectorXd::Zero(locations.size()), prior_cov);
+    }
+    else
+    {
+        // The mixed covariance matrix (test and data points)
+        Eigen::MatrixXd mixed_cov = covFunc_->evaluate(locations, data_loc_);
+
+        Eigen::MatrixXd phi(2, locations.rows());
+        if (use_explicit_trend_)
+        {
+            phi.row(0) = locations.array().pow(0);
+            phi.row(1) = locations.array().pow(1);
+
+            return predict(prior_cov, mixed_cov, phi);
+        }
+        return predict(prior_cov, mixed_cov);
+    }
+}
+
+GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) const
+{
     // use the suitable covariance function, depending on wheter an
     // output projection is used or not.
     covariance_functions::CovFunc* covFunc = 0;
@@ -353,7 +379,6 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
     }
     else
     {
-
         // The mixed covariance matrix (test and data points)
         Eigen::MatrixXd mixed_cov = covFunc->evaluate(locations, data_loc_);
 
@@ -365,7 +390,6 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
 
             return predict(prior_cov, mixed_cov, phi);
         }
-
         return predict(prior_cov, mixed_cov);
     }
 }
