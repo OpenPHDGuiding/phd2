@@ -1,5 +1,5 @@
 //
-//  guide_linear_regression.cpp
+//  guide_algorithm_median_window.cpp
 //  PHD2 Guiding
 //
 //  Created by Edgar Klenske.
@@ -33,21 +33,17 @@
 */
 
 #include "phd.h"
+#include "guide_algorithm_median_window.h"
 
-#include "guide_algorithm_linear_regression.h"
-#include <wx/stopwatch.h>
-
-#include "math_tools.h"
-
-class GuideLinearRegression::GuideLinearRegressionDialogPane : public ConfigDialogPane
+class GuideAlgorithmMedianWindow::GuideAlgorithmMedianWindowDialogPane : public ConfigDialogPane
 {
-    GuideLinearRegression *m_pGuideAlgorithm;
+    GuideAlgorithmMedianWindow *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
     wxSpinCtrl       *m_pNbMeasurementMin;
 
 public:
-    GuideLinearRegressionDialogPane(wxWindow *pParent, GuideLinearRegression *pGuideAlgorithm)
-      : ConfigDialogPane(_("Linear Regression Guide Algorithm"),pParent)
+    GuideAlgorithmMedianWindowDialogPane(wxWindow *pParent, GuideAlgorithmMedianWindow *pGuideAlgorithm)
+      : ConfigDialogPane(_("Median Window Guide Algorithm"),pParent)
     {
         m_pGuideAlgorithm = pGuideAlgorithm;
 
@@ -67,12 +63,12 @@ public:
                 "fed back to the system. Default = 0.8"));
 
         DoAdd(_("Min data points (inference)"), m_pNbMeasurementMin,
-              _("Minimal number of measurements to start using the Linear Regression. If there are too little data points, "
+              _("Minimal number of measurements to start using the Median Window. If there are too little data points, "
                 "the result might be poor. Default = 25"));
 
     }
 
-    virtual ~GuideLinearRegressionDialogPane(void)
+    virtual ~GuideAlgorithmMedianWindowDialogPane(void)
     {
       // no need to destroy the widgets, this is done by the parent...
     }
@@ -106,7 +102,7 @@ struct lr_guiding_circular_datapoints
 
 
 // parameters of the LR guiding algorithm
-struct GuideLinearRegression::lr_guide_parameters
+struct GuideAlgorithmMedianWindow::lr_guide_parameters
 {
     typedef lr_guiding_circular_datapoints data_points;
     circular_buffer<data_points> circular_buffer_parameters;
@@ -165,7 +161,7 @@ struct GuideLinearRegression::lr_guide_parameters
 static const double DefaultControlGain = 1.0;           // control gain
 static const int    DefaultNbMinPointsForInference = 25; // minimal number of points for doing the inference
 
-GuideLinearRegression::GuideLinearRegression(Mount *pMount, GuideAxis axis)
+GuideAlgorithmMedianWindow::GuideAlgorithmMedianWindow(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
       parameters(0)
 {
@@ -181,19 +177,19 @@ GuideLinearRegression::GuideLinearRegression(Mount *pMount, GuideAxis axis)
     reset();
 }
 
-GuideLinearRegression::~GuideLinearRegression(void)
+GuideAlgorithmMedianWindow::~GuideAlgorithmMedianWindow(void)
 {
     delete parameters;
 }
 
 
-ConfigDialogPane *GuideLinearRegression::GetConfigDialogPane(wxWindow *pParent)
+ConfigDialogPane *GuideAlgorithmMedianWindow::GetConfigDialogPane(wxWindow *pParent)
 {
-    return new GuideLinearRegressionDialogPane(pParent, this);
+    return new GuideAlgorithmMedianWindowDialogPane(pParent, this);
 }
 
 
-bool GuideLinearRegression::SetControlGain(double control_gain)
+bool GuideAlgorithmMedianWindow::SetControlGain(double control_gain)
 {
     bool error = false;
 
@@ -218,7 +214,7 @@ bool GuideLinearRegression::SetControlGain(double control_gain)
     return error;
 }
 
-bool GuideLinearRegression::SetNbElementForInference(int nb_elements)
+bool GuideAlgorithmMedianWindow::SetNbElementForInference(int nb_elements)
 {
     bool error = false;
 
@@ -243,17 +239,17 @@ bool GuideLinearRegression::SetNbElementForInference(int nb_elements)
     return error;
 }
 
-double GuideLinearRegression::GetControlGain() const
+double GuideAlgorithmMedianWindow::GetControlGain() const
 {
     return parameters->control_gain_;
 }
 
-int GuideLinearRegression::GetNbMeasurementsMin() const
+int GuideAlgorithmMedianWindow::GetNbMeasurementsMin() const
 {
     return parameters->min_nb_element_for_inference;
 }
 
-wxString GuideLinearRegression::GetSettingsSummary()
+wxString GuideAlgorithmMedianWindow::GetSettingsSummary()
 {
     static const char* format =
       "Control Gain = %.3f\n";
@@ -264,12 +260,12 @@ wxString GuideLinearRegression::GetSettingsSummary()
 }
 
 
-GUIDE_ALGORITHM GuideLinearRegression::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmMedianWindow::Algorithm(void)
 {
-    return GUIDE_ALGORITHM_LINEAR_REGRESSION;
+    return GUIDE_ALGORITHM_MEDIAN_WINDOW;
 }
 
-void GuideLinearRegression::HandleTimestamps()
+void GuideAlgorithmMedianWindow::HandleTimestamps()
 {
     if (parameters->get_number_of_measurements() == 0)
     {
@@ -282,17 +278,17 @@ void GuideLinearRegression::HandleTimestamps()
 }
 
 // adds a new measurement to the circular buffer that holds the data.
-void GuideLinearRegression::HandleMeasurements(double input)
+void GuideAlgorithmMedianWindow::HandleMeasurements(double input)
 {
     parameters->get_last_point().measurement = input;
 }
 
-void GuideLinearRegression::HandleControls(double control_input)
+void GuideAlgorithmMedianWindow::HandleControls(double control_input)
 {
     parameters->get_last_point().control = control_input;
 }
 
-double GuideLinearRegression::PredictDriftError()
+double GuideAlgorithmMedianWindow::PredictDriftError()
 {
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
@@ -331,13 +327,13 @@ double GuideLinearRegression::PredictDriftError()
     return (delta_controller_time_ms / 1000.0)*weights(1);
 }
 
-double GuideLinearRegression::result(double input)
+double GuideAlgorithmMedianWindow::result(double input)
 {
     HandleMeasurements(input);
     HandleTimestamps();
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
-    
+
 	if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
@@ -350,7 +346,7 @@ double GuideLinearRegression::result(double input)
     return parameters->control_signal_;
 }
 
-double GuideLinearRegression::deduceResult()
+double GuideAlgorithmMedianWindow::deduceResult()
 {
     parameters->control_signal_ = 0;
 	if (parameters->min_nb_element_for_inference > 0 &&
@@ -365,7 +361,7 @@ double GuideLinearRegression::deduceResult()
     return parameters->control_signal_;
 }
 
-void GuideLinearRegression::reset()
+void GuideAlgorithmMedianWindow::reset()
 {
     parameters->clear();
     return;

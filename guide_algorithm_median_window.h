@@ -1,5 +1,5 @@
 //
-//  guide_linear_regression.h
+//  guide_algorithm_median_window.h
 //  PHD2 Guiding
 //
 //  Created by Edgar Klenske.
@@ -32,18 +32,19 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUIDE_LINEAR_REGRESSION
-#define GUIDE_LINEAR_REGRESSION
+#ifndef GUIDE_ALGORITHM_MEDIAN_WINDOW_H
+#define GUIDE_ALGORITHM_MEDIAN_WINDOW_H
 
+#include <Eigen/Dense>
 #include "guide_algorithm.h"
 
 class wxStopWatch;
 
-class GuideLinearRegression : public GuideAlgorithm
+class GuideAlgorithmMedianWindow : public GuideAlgorithm
 {
 private:
     struct lr_guide_parameters;
-    class GuideLinearRegressionDialogPane;
+    class GuideAlgorithmMedianWindowDialogPane;
 
     lr_guide_parameters* parameters;
 
@@ -62,8 +63,8 @@ protected:
     int GetNbMeasurementsMin() const;
 
 public:
-    GuideLinearRegression(Mount *pMount, GuideAxis axis);
-    virtual ~GuideLinearRegression(void);
+    GuideAlgorithmMedianWindow(Mount *pMount, GuideAxis axis);
+    virtual ~GuideAlgorithmMedianWindow(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
@@ -71,8 +72,8 @@ public:
     virtual double deduceResult(void);
     virtual void reset();
     virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Linear Regression"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Median Window"; }
 
 };
 
-#endif  // GUIDE_LINEAR_REGRESSION
+#endif  // GUIDE_ALGORITHM_MEDIAN_WINDOW_H
