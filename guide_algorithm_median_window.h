@@ -43,10 +43,10 @@ class wxStopWatch;
 class GuideAlgorithmMedianWindow : public GuideAlgorithm
 {
 private:
-    struct lr_guide_parameters;
+    struct mw_guide_parameters;
     class GuideAlgorithmMedianWindowDialogPane;
 
-    lr_guide_parameters* parameters;
+    mw_guide_parameters* parameters;
 
     void HandleTimestamps();
     void HandleMeasurements(double input);

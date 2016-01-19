@@ -35,6 +35,17 @@
 #include "phd.h"
 #include "guide_algorithm_median_window.h"
 
+// A functor for special orderings
+struct value_index_ordering
+{
+    value_index_ordering(Eigen::VectorXd const& val) : values_(val){}
+    bool operator()(int a, int b) const
+    {
+        return (values_[a] > values_[b]);
+    }
+    Eigen::VectorXd const& values_;
+};
+
 class GuideAlgorithmMedianWindow::GuideAlgorithmMedianWindowDialogPane : public ConfigDialogPane
 {
     GuideAlgorithmMedianWindow *m_pGuideAlgorithm;
@@ -92,7 +103,7 @@ public:
 };
 
 
-struct lr_guiding_circular_datapoints
+struct mw_guiding_circular_datapoints
 {
   double timestamp;
   double measurement;
@@ -102,9 +113,9 @@ struct lr_guiding_circular_datapoints
 
 
 // parameters of the LR guiding algorithm
-struct GuideAlgorithmMedianWindow::lr_guide_parameters
+struct GuideAlgorithmMedianWindow::mw_guide_parameters
 {
-    typedef lr_guiding_circular_datapoints data_points;
+    typedef mw_guiding_circular_datapoints data_points;
     circular_buffer<data_points> circular_buffer_parameters;
 
     wxStopWatch timer_;
@@ -116,7 +127,7 @@ struct GuideAlgorithmMedianWindow::lr_guide_parameters
 
     int min_nb_element_for_inference;
 
-    lr_guide_parameters() :
+    mw_guide_parameters() :
       circular_buffer_parameters(200),
       timer_(),
       control_signal_(0.0),
@@ -158,20 +169,20 @@ struct GuideAlgorithmMedianWindow::lr_guide_parameters
 };
 
 
-static const double DefaultControlGain = 1.0;           // control gain
+static const double DefaultControlGain = 0.5;           // control gain
 static const int    DefaultNbMinPointsForInference = 25; // minimal number of points for doing the inference
 
 GuideAlgorithmMedianWindow::GuideAlgorithmMedianWindow(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
       parameters(0)
 {
-    parameters = new lr_guide_parameters();
+    parameters = new mw_guide_parameters();
     wxString configPath = GetConfigPath();
 
-    double control_gain = pConfig->Profile.GetDouble(configPath + "/lr_controlGain", DefaultControlGain);
+    double control_gain = pConfig->Profile.GetDouble(configPath + "/mw_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
 
-    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/lr_nbminelementforinference", DefaultNbMinPointsForInference);
+    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/mw_nb_elements_for_prediction", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
     reset();
@@ -209,7 +220,7 @@ bool GuideAlgorithmMedianWindow::SetControlGain(double control_gain)
         parameters->control_gain_ = DefaultControlGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/lr_controlGain", parameters->control_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/mw_control_gain", parameters->control_gain_);
 
     return error;
 }
@@ -234,7 +245,7 @@ bool GuideAlgorithmMedianWindow::SetNbElementForInference(int nb_elements)
         parameters->min_nb_element_for_inference = DefaultNbMinPointsForInference;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/lr_nbminelementforinference", parameters->min_nb_element_for_inference);
+    pConfig->Profile.SetInt(GetConfigPath() + "/mw_nb_elements_for_prediction", parameters->min_nb_element_for_inference);
 
     return error;
 }
@@ -314,17 +325,34 @@ double GuideAlgorithmMedianWindow::PredictDriftError()
     }
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
-    // linear least squares regression for offset and drift
-    Eigen::MatrixXd feature_matrix(2, N-1);
-    feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
-    feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
+    Eigen::VectorXd diff_gear_error = gear_error.bottomRows(gear_error.rows()-1) - gear_error.topRows(gear_error.rows()-1);
+    Eigen::ArrayXd diff_timestamps = timestamps.bottomRows(timestamps.rows()-1) - timestamps.topRows(timestamps.rows()-1);
 
-    // this is the inference for linear regression
-    Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
-    + 1e-3*Eigen::Matrix<double, 2, 2>::Identity()).ldlt().solve(feature_matrix*gear_error);
+    std::vector<int> index(diff_gear_error.size(), 0);
+    for (int i = 0; i != index.size(); i++) {
+        index[i] = i;
+    }
+
+    // sort indices with respect to covariance value
+    std::sort(index.begin(), index.end(), value_index_ordering(diff_gear_error));
+
+    int exclude = std::floor(N/4);
+
+    double mean_slope = 0;
+
+    Eigen::ArrayXd diff_gear_error_window(diff_gear_error.size() - 2 * exclude);
+
+    for (int i = exclude; i < index.size() - exclude; ++i)
+    {
+        diff_gear_error_window[i - exclude] = diff_gear_error[i];
+    }
+
+    mean_slope = diff_gear_error_window.mean() / diff_timestamps.mean();
+
+    Debug.AddLine("The mean slope from the median window guider is: %d", mean_slope);
 
     // the prediction is consisting of GP prediction and the linear drift
-    return (delta_controller_time_ms / 1000.0)*weights(1);
+    return (delta_controller_time_ms / 1000.0)*mean_slope;
 }
 
 double GuideAlgorithmMedianWindow::result(double input)
