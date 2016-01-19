@@ -128,7 +128,7 @@ struct GuideAlgorithmMedianWindow::mw_guide_parameters
     int min_nb_element_for_inference;
 
     mw_guide_parameters() :
-      circular_buffer_parameters(200),
+      circular_buffer_parameters(1024),
       timer_(),
       control_signal_(0.0),
       last_timestamp_(0.0),
@@ -349,8 +349,6 @@ double GuideAlgorithmMedianWindow::PredictDriftError()
 
     mean_slope = diff_gear_error_window.mean() / diff_timestamps.mean();
 
-    Debug.AddLine("The mean slope from the median window guider is: %d", mean_slope);
-
     // the prediction is consisting of GP prediction and the linear drift
     return (delta_controller_time_ms / 1000.0)*mean_slope;
 }
@@ -362,29 +360,50 @@ double GuideAlgorithmMedianWindow::result(double input)
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
 
+    double drift_prediction = 0;
 	if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-		parameters->control_signal_ += PredictDriftError(); // add in the prediction
+        drift_prediction = PredictDriftError();
+		parameters->control_signal_ += drift_prediction; // add in the prediction
+        if (parameters->control_signal_ * drift_prediction < 0) // check if the input points in the wrong direction
+        {
+            parameters->control_signal_ = 0; // prevent backlash overshooting
+        }
 	}
+    else
+    {
+        parameters->control_signal_ *= 0.1; // scale down if no prediction is available
+    }
 
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
+
+    Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f", 
+        input, parameters->control_gain_, drift_prediction, parameters->control_signal_);
 
     return parameters->control_signal_;
 }
 
 double GuideAlgorithmMedianWindow::deduceResult()
 {
+    HandleMeasurements(0);
+    HandleTimestamps();
+
+    double drift_prediction = 0;
     parameters->control_signal_ = 0;
 	if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-    	parameters->control_signal_ += PredictDriftError(); // add in the prediction
+        drift_prediction = PredictDriftError();
+        parameters->control_signal_ += drift_prediction; // add in the prediction
 	}
 
     parameters->add_one_point(); // add new point here, since the applied control is important as well
     HandleControls(parameters->control_signal_);
+
+    Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f",
+        0, parameters->control_gain_, drift_prediction, parameters->control_signal_);
 
     return parameters->control_signal_;
 }

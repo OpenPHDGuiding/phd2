@@ -282,6 +282,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     // Kalman filter state and variance
     double mean_kf_;
     double var_kf_;
+    double prediction_;
 
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
@@ -304,6 +305,7 @@ struct GuideGaussianProcess::gp_guide_parameters
       mixing_parameter_(0.0),
       mean_kf_(0.0),
       var_kf_(0.0),
+      prediction_(0.0),
       min_nb_element_for_inference(0),
       min_points_for_optimisation(0),
       points_for_approximation(0),
@@ -800,10 +802,15 @@ void GuideGaussianProcess::HandleControls(double control_input)
 
 void GuideGaussianProcess::HandleSNR(double SNR)
 {
-    SNR = std::max(SNR, 3.4); // limit the minimal SNR
+    double standard_deviation = 1e6; // some large number
+    if (SNR > 0.1)
+    {
+        SNR = std::max(SNR, 3.4); // limit the minimal SNR
 
-    // this was determined by simulated experiments
-    double standard_deviation = 2.1752 * 1 / (SNR - 3.3) - 0.0212;
+        // this was determined by simulated experiments
+        standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;// -0.0212;
+    }
+
     parameters->get_last_point().variance = standard_deviation * standard_deviation;
 }
 
@@ -818,21 +825,32 @@ void GuideGaussianProcess::UpdateGP()
     Eigen::VectorXd measurements(N-1);
     Eigen::VectorXd variances(N-1);
     Eigen::VectorXd sum_controls(N-1);
-    Eigen::VectorXd gear_error(N-1);
-    Eigen::VectorXd linear_fit(N-1);
+
+
+    double sum_control = 0;
 
     // transfer the data from the circular buffer to the Eigen::Vectors
+    int j = 0;
     for(size_t i = 0; i < N-1; i++)
     {
-        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        variances(i) = parameters->circular_buffer_parameters[i].variance;
-        sum_controls(i) = parameters->circular_buffer_parameters[i].control;
-        if(i > 0)
+        sum_control += parameters->circular_buffer_parameters[i].control; // sum over the control signals
+        if (parameters->circular_buffer_parameters[i].variance < 10000.0) // discard very uncertain measurements
         {
-            sum_controls(i) += sum_controls(i-1); // sum over the control signals
+            timestamps(j) = parameters->circular_buffer_parameters[i].timestamp;
+            measurements(j) = parameters->circular_buffer_parameters[i].measurement;
+            variances(j) = parameters->circular_buffer_parameters[i].variance;
+            sum_controls(j) = sum_control;
+            ++j;
         }
     }
+    timestamps.conservativeResize(j);
+    measurements.conservativeResize(j);
+    variances.conservativeResize(j);
+    sum_controls.conservativeResize(j);
+
+    Eigen::VectorXd gear_error(j);
+    Eigen::VectorXd linear_fit(j);
+
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     clock_t end = std::clock();
@@ -840,7 +858,7 @@ void GuideGaussianProcess::UpdateGP()
     begin = std::clock();
 
     // linear least squares regression for offset and drift
-    Eigen::MatrixXd feature_matrix(2, N-1);
+    Eigen::MatrixXd feature_matrix(2, timestamps.rows());
     feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
     feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
 
@@ -927,7 +945,7 @@ void GuideGaussianProcess::UpdateGP()
 
 double GuideGaussianProcess::FilterState(double input, double noise)
 {
-    double drift_variance = 0.5;
+    double drift_variance = 1.0;
 
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
@@ -936,7 +954,7 @@ double GuideGaussianProcess::FilterState(double input, double noise)
     long time = parameters->get_last_point().timestamp;
     old_location << time / 1000.0,
     (time + delta_controller_time_ms) / 1000.0;
-    GP::VectorMatrixPair prediction = parameters->gp_.predictProjected(old_location).first;
+    GP::VectorMatrixPair prediction = parameters->gp_.predictProjected(old_location);
 
     Eigen::VectorXd mean = prediction.first;
     Eigen::MatrixXd var  = prediction.second;
@@ -948,17 +966,18 @@ double GuideGaussianProcess::FilterState(double input, double noise)
     double predictive_mean = parameters->mean_kf_ - parameters->get_last_point().control + gp_prediction;
     double predictive_var = parameters->var_kf_ + gp_variance + drift_variance;
 
-    double residual = predictive_mean - input;
+    double residual = input - predictive_mean;
 
     double updated_mean = predictive_mean + predictive_var / ( predictive_var + noise) * residual;
     double updated_var = predictive_var - predictive_var / ( predictive_var + noise) * predictive_var;
 
-    Debug.AddLine("Kalman filter info: old mean: %f, pred mean: %f, measurement: %f, residual: %f, new mean: %f", parameters->mean_kf_, predictive_mean, input, residual, updated_mean);
+    Debug.AddLine("KF info: old mean: %f, pred mean: %f, measurement: %f, residual: %f, new mean: %f", parameters->mean_kf_, predictive_mean, input, residual, updated_mean);
+    Debug.AddLine("KF info: old var: %f, pred var: %f, noise: %f, gp_var %f, new var: %f", parameters->var_kf_, predictive_var, noise, gp_variance, updated_var);
 
     parameters->mean_kf_ = updated_mean;
     parameters->var_kf_ = updated_var;
 
-    return prediction(1);
+    return updated_mean;
 }
 
 double GuideGaussianProcess::PredictGearError()
@@ -972,14 +991,19 @@ double GuideGaussianProcess::PredictGearError()
     (current_time + delta_controller_time_ms) / 1000.0;
     Eigen::VectorXd prediction = parameters->gp_.predictProjected(next_location).first;
 
+    double p1 = prediction(1);
+    double p0 = prediction(0);
+    assert(!math_tools::isNaN(p1 - p0));
+
     // the prediction is consisting of GP prediction and the linear drift
-    return (prediction(1) - prediction(0));
+    return (p1 - p0);
 }
 
 double GuideGaussianProcess::result(double input)
 {
     HandleMeasurements(input);
     HandleTimestamps();
+    HandleSNR(pFrame->pGuider->SNR());
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
 
@@ -988,13 +1012,13 @@ double GuideGaussianProcess::result(double input)
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
         UpdateGP(); // update the GP based on the new measurements
-        parameters->control_signal_ = parameters->control_gain_*FilterState(input, pFrame->pGuider->SNR()); // filter the state based on the GP
-        parameters->control_signal_ += parameters->mixing_parameter_*PredictGearError(); // mix in the prediction
+        parameters->control_signal_ = parameters->control_gain_*FilterState(input, parameters->get_last_point().variance); // filter the state based on the GP
+        parameters->prediction_ = PredictGearError();
+        parameters->control_signal_ += parameters->mixing_parameter_*parameters->prediction_; // mix in the prediction
     }
 
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(parameters->control_signal_);
-    HandleSNR(pFrame->pGuider->SNR());
 
 // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -1030,7 +1054,7 @@ double GuideGaussianProcess::result(double input)
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
 
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predictProjected(locations);
 
     Eigen::VectorXd means = predictions.first;
     Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
@@ -1059,24 +1083,28 @@ double GuideGaussianProcess::result(double input)
     outfile.close();
 #endif
 
+    assert(!math_tools::isNaN(parameters->control_signal_));
     return parameters->control_signal_;
 }
 
 double GuideGaussianProcess::deduceResult()
 {
-    //HandleMeasurements(0);
-    //HandleTimestamps();
+    HandleMeasurements(0);
+    HandleTimestamps();
+    HandleSNR(0);
 
     parameters->control_signal_ = 0;
     // check if we are allowed to use the GP
     if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-        parameters->control_signal_ += PredictGearError(); // control completely upon prediction
+        parameters->control_signal_ = parameters->control_gain_*FilterState(0, 1e6); // filter the state based on the GP
+        parameters->prediction_ = PredictGearError();
+        parameters->control_signal_ += parameters->prediction_; // control based on prediction
     }
 
-    //parameters->add_one_point(); // add new point here, since the applied control is important as well
-    //HandleControls(parameters->control_signal_);
+    parameters->add_one_point(); // add new point here, since the applied control is important as well
+    HandleControls(parameters->control_signal_);
 
     // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -1112,7 +1140,7 @@ double GuideGaussianProcess::deduceResult()
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
 
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predictProjected(locations);
 
     Eigen::VectorXd means = predictions.first;
     Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
@@ -1143,6 +1171,7 @@ double GuideGaussianProcess::deduceResult()
     outfile.close();
 #endif
 
+    assert(!math_tools::isNaN(parameters->control_signal_));
     return parameters->control_signal_;
 }
 
