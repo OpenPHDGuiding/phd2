@@ -1,5 +1,5 @@
 /*
-*  phd_statusbar.cpp
+*  aui_controls.cpp
 *  PHD Guiding
 *
 *  Created by Bruce Waddington
@@ -34,7 +34,7 @@
 */
 
 #include "phd.h"
-#include "phd_statusbar.h"
+#include "aui_controls.h"
 
 #include "icons/Ball_Green.xpm"
 #include "icons/Ball_Yellow.xpm"

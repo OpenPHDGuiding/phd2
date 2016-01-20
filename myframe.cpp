@@ -45,7 +45,7 @@
 #include <wx/artprov.h>
 #include <wx/dirdlg.h>
 #include <wx/textwrapper.h>
-#include "phd_statusbar.h"
+#include "aui_controls.h"
 
 #include <memory>
 

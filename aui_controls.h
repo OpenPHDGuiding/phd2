@@ -1,5 +1,5 @@
 /*
-*  phd_statusbar.h
+*  aui_controls.h
 *  PHD Guiding
 *
 *  Created by Bruce Waddington
@@ -33,8 +33,8 @@
 *
 */
 
-#ifndef _PHD_STATUSBAR_H_
-#define _PHD_STATUSBAR_H_
+#ifndef _AUI_CONTROLS_H_
+#define _AUI_CONTROLS_H_
 
 // Types of fields in the statusbar
 enum SBFieldTypes
@@ -181,4 +181,4 @@ private:
 
     wxDECLARE_EVENT_TABLE();
 };
-#endif      // PHD_STATUS_H
+#endif      // AUI_CONTROLS_H
