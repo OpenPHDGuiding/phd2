@@ -344,8 +344,8 @@ if(${GUIDING_GAUSSIAN_PROCESS})
       ${guiding_SRC}
       ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
       ${phd_src_dir}/guide_algorithm_gaussian_process.h
-      ${phd_src_dir}/guide_algorithm_median_window.cpp
-      ${phd_src_dir}/guide_algorithm_median_window.h)
+      ${phd_src_dir}/guide_algorithm_trimmed_mean.cpp
+      ${phd_src_dir}/guide_algorithm_trimmed_mean.h)
 endif()
 
 source_group(Guiding FILES ${guiding_SRC})

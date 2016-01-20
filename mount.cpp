@@ -132,7 +132,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _("Gaussian Process"), _("Linear Regression"),
+            _("Gaussian Process"),
 #endif
         };
 
@@ -366,7 +366,7 @@ MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount
     return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
 }
 
-// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in 
+// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in
 // ConfigDialogPane
 MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
@@ -499,7 +499,7 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = new GuideGaussianProcess(mount, axis);
                 break;
-			case GUIDE_ALGORITHM_LINEAR_REGRESSION:
+			case GUIDE_ALGORITHM_TRIMMED_MEAN:
             	*ppAlgorithm = new GuideLinearRegression(mount, axis);
             	break;
     #endif
@@ -1501,7 +1501,7 @@ wxString Mount::GetSettingsSummary()
     wxString algorithms[] = {
         _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _T("Gaussian Process"), _("Linear Regression")
+        _T("Gaussian Process"), _("Trimmed Mean")
 #endif
     };
     wxString auxMountStr = wxEmptyString;

@@ -1,9 +1,9 @@
 //
-//  guide_algorithm_median_window.h
+//  guide_algorithm_trimmed_mean.h
 //  PHD2 Guiding
 //
 //  Created by Edgar Klenske.
-//  Copyright 2015, Max Planck Society.
+//  Copyright 2015-2016, Max Planck Society.
 
 /*
  *  This source code is distributed under the following "BSD" license
@@ -32,8 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUIDE_ALGORITHM_MEDIAN_WINDOW_H
-#define GUIDE_ALGORITHM_MEDIAN_WINDOW_H
+#ifndef GUIDE_ALGORITHM_TRIMMED_MEAN_H
+#define GUIDE_ALGORITHM_TRIMMED_MEAN_H
 
 #define MW_DEBUG_FILE_ 1
 
@@ -44,11 +44,11 @@
 
 class wxStopWatch;
 
-class GuideAlgorithmMedianWindow : public GuideAlgorithm
+class GuideAlgorithmTrimmedMean : public GuideAlgorithm
 {
 private:
     struct mw_guide_parameters;
-    class GuideAlgorithmMedianWindowDialogPane;
+    class GuideAlgorithmTrimmedMeanDialogPane;
 
     mw_guide_parameters* parameters;
 
@@ -61,15 +61,19 @@ private:
 protected:
 
     double GetControlGain() const;
+    double GetPredictionGain() const;
+    double GetDifferentialGain() const;
     bool SetControlGain(double control_gain);
+    bool SetPredictionGain(double prediction_gain);
+    bool SetDifferentialGain(double differential_gain);
 
     // minimum amount of points for starting the inference
     bool SetNbElementForInference(int nb_elements);
     int GetNbMeasurementsMin() const;
 
 public:
-    GuideAlgorithmMedianWindow(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmMedianWindow(void);
+    GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis axis);
+    virtual ~GuideAlgorithmTrimmedMean(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
@@ -77,8 +81,8 @@ public:
     virtual double deduceResult(void);
     virtual void reset();
     virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Median Window"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Trimmed Mean"; }
 
 };
 
-#endif  // GUIDE_ALGORITHM_MEDIAN_WINDOW_H
+#endif  // GUIDE_ALGORITHM_TRIMMED_MEAN_H
