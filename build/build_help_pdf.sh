@@ -53,7 +53,7 @@ case $(uname -o) in
         s=""
         for f in $files; do
             d=$(cygpath -d "$f")
-            s="$s '$d'"
+            s="$s $d"
         done
         files=$s
 
