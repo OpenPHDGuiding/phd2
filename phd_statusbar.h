@@ -52,6 +52,13 @@ enum SBFieldTypes
 
 class PHDStatusBar;
 
+class PHDToolBarArt:public wxAuiDefaultToolBarArt
+{
+    virtual void DrawPlainBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
+    virtual void DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
+    virtual wxAuiToolBarArt* Close() { return new PHDToolBarArt(*this); }
+};
+
 // Self-drawn panel for hosting controls in the wxStatusBar
 class SBPanel : public wxPanel
 {

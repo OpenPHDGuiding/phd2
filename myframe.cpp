@@ -274,6 +274,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("Guider")).Caption(_T("Guider")).
         CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
 
+
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().
         Name(_T("GraphLog")).Caption(_("History")).
@@ -356,6 +357,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         m_mgr.GetPane(_T("AOPosition")).Caption(_("AO Position"));
         m_mgr.GetPane(_T("Profile")).Caption(_("Star Profile"));
         m_mgr.GetPane(_T("Target")).Caption(_("Target"));
+        m_mgr.GetPane(_T("Guider")).PaneBorder(false);
     }
 
     bool panel_state;
@@ -808,6 +810,7 @@ void MyFrame::SetupToolBar()
     SetComboBoxWidth(Dur_Choice, 40);
 
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
+    Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
 
     MainToolbar->AddTool(BUTTON_GEAR, connect_bmp, connect_bmp_disabled, false, 0, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
@@ -825,6 +828,8 @@ void MyFrame::SetupToolBar()
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
     MainToolbar->EnableTool(BUTTON_STOP, false);
+
+    MainToolbar->SetArtProvider(new PHDToolBarArt);
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
@@ -845,7 +850,7 @@ void MyFrame::SetupStatusBar(void)
 
 void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
 {
-    if (wxThread::IsMain)
+    if (wxThread::IsMain())
         m_statusbar->UpdateStarInfo(SNR, Saturated);
     else
     {

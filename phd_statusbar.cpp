@@ -90,7 +90,7 @@ wxPoint SBPanel::FieldLoc(int fieldId)
 {
     wxSize panelSize = GetClientSize();
     int x = panelSize.x - fieldOffsets.at(fieldId);
-    return (wxPoint(x, 1));
+    return (wxPoint(x, 3));
 }
 
 void SBPanel::OnPaint(wxPaintEvent& evt)
@@ -131,8 +131,8 @@ SBStarIndicators::SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths
     txtSaturated->SetForegroundColour("RED");
     txtSaturated->Show(false);
     // Label and value fields separated to allow different foreground colors for each
-    txtSNRLabel = new wxStaticText(parent, wxID_ANY, _("SNR"), wxDefaultPosition, wxSize(snrLabelWidth, -1));
-    txtSNRValue = new wxStaticText(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, -1));
+    txtSNRLabel = new wxStaticText(parent, wxID_ANY, _("SNR"), wxPoint(1,3), wxSize(snrLabelWidth, -1));
+    txtSNRValue = new wxStaticText(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, 3));
     txtSNRLabel->SetBackgroundColour("BLACK");
     txtSNRLabel->SetForegroundColour("WHITE");
     txtSNRLabel->Show(false);
@@ -603,7 +603,7 @@ void PHDStatusBar::OnSize(wxSizeEvent& event)
     GetFieldRect(0, fldRect);
     fldWidth = fldRect.GetWidth();
     m_ctrlPanel->SetSize(fldWidth - 1, fldRect.GetHeight());
-    m_Msg1->SetPosition(wxPoint(2, 1));
+    m_Msg1->SetPosition(wxPoint(2, 3));
     m_StarIndicators->PositionControls();
     m_GuideIndicators->PositionControls();
     m_StateIndicators->PositionControls();
@@ -637,4 +637,15 @@ void PHDStatusBar::ClearGuiderInfo()
 void PHDStatusBar::SetStatusText(const wxString &text, int number)
 {
     m_Msg1->SetLabelText(text);
+}
+
+void PHDToolBarArt::DrawPlainBackground(wxDC& dc, wxWindow* parent, const wxRect& rect)
+{
+
+}
+
+void PHDToolBarArt::DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect)
+{
+    dc.SetBrush(wxColour(100, 100, 100));
+    dc.DrawRectangle(rect);
 }

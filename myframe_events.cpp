@@ -700,6 +700,8 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
     for (int i = 0; i < lim; i++)
     {
         panes.Item(i).Dock();                       // Already docked, shown or not, doesn't matter
+        if (panes.Item(i).name == _("Guider"))
+            panes.Item(i).Show(true);
     }
     m_mgr.Update();
 
