@@ -60,6 +60,7 @@ private:
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleControls(double control_input);
+    void StoreControls(double control_input);
     void HandleSNR(double noise);
     void UpdateGP();
     double FilterState(double input, double noise);

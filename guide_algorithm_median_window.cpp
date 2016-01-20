@@ -124,6 +124,7 @@ struct GuideAlgorithmMedianWindow::mw_guide_parameters
     double last_timestamp_;
     double filtered_signal_;
     double mixing_parameter_;
+    double stored_control_;
 
     int min_nb_element_for_inference;
 
@@ -131,8 +132,11 @@ struct GuideAlgorithmMedianWindow::mw_guide_parameters
       circular_buffer_parameters(1024),
       timer_(),
       control_signal_(0.0),
+      control_gain_(0.0),
       last_timestamp_(0.0),
       filtered_signal_(0.0),
+      mixing_parameter_(0.0),
+      stored_control_(0.0),
       min_nb_element_for_inference(0)
     {
         circular_buffer_parameters.push_front(data_points());
@@ -296,7 +300,15 @@ void GuideAlgorithmMedianWindow::HandleMeasurements(double input)
 
 void GuideAlgorithmMedianWindow::HandleControls(double control_input)
 {
-    parameters->get_last_point().control = control_input;
+    // don't forget to apply the stored control signals from the dark period
+    parameters->get_last_point().control = control_input + parameters->stored_control_;
+    parameters->stored_control_ = 0; // reset stored control since we applied it
+}
+
+void GuideAlgorithmMedianWindow::StoreControls(double control_input)
+{
+    // sum up control inputs over the dark period
+    parameters->stored_control_ += control_input;
 }
 
 double GuideAlgorithmMedianWindow::PredictDriftError()
@@ -341,13 +353,15 @@ double GuideAlgorithmMedianWindow::PredictDriftError()
     double mean_slope = 0;
 
     Eigen::ArrayXd diff_gear_error_window(diff_gear_error.size() - 2 * exclude);
+    Eigen::ArrayXd diff_timestamps_window(diff_gear_error.size() - 2 * exclude);
 
     for (int i = exclude; i < index.size() - exclude; ++i)
     {
         diff_gear_error_window[i - exclude] = diff_gear_error[i];
+        diff_timestamps_window[i - exclude] = diff_timestamps[i];
     }
 
-    mean_slope = diff_gear_error_window.mean() / diff_timestamps.mean();
+    mean_slope = (diff_gear_error_window / diff_timestamps_window).mean();
 
     // the prediction is consisting of GP prediction and the linear drift
     return (delta_controller_time_ms / 1000.0)*mean_slope;
@@ -379,7 +393,7 @@ double GuideAlgorithmMedianWindow::result(double input)
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
 
-    Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f", 
+    Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f",
         input, parameters->control_gain_, drift_prediction, parameters->control_signal_);
 
     return parameters->control_signal_;
@@ -387,9 +401,6 @@ double GuideAlgorithmMedianWindow::result(double input)
 
 double GuideAlgorithmMedianWindow::deduceResult()
 {
-    HandleMeasurements(0);
-    HandleTimestamps();
-
     double drift_prediction = 0;
     parameters->control_signal_ = 0;
 	if (parameters->min_nb_element_for_inference > 0 &&
@@ -399,8 +410,7 @@ double GuideAlgorithmMedianWindow::deduceResult()
         parameters->control_signal_ += drift_prediction; // add in the prediction
 	}
 
-    parameters->add_one_point(); // add new point here, since the applied control is important as well
-    HandleControls(parameters->control_signal_);
+    StoreControls(parameters->control_signal_);
 
     Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f",
         0, parameters->control_gain_, drift_prediction, parameters->control_signal_);

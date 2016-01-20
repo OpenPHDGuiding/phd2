@@ -278,6 +278,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     double last_timestamp_;
     double filtered_signal_;
     double mixing_parameter_;
+    double stored_control_;
 
     // Kalman filter state and variance
     double mean_kf_;
@@ -303,6 +304,7 @@ struct GuideGaussianProcess::gp_guide_parameters
       last_timestamp_(0.0),
       filtered_signal_(0.0),
       mixing_parameter_(0.0),
+      stored_control_(0.0),
       mean_kf_(0.0),
       var_kf_(0.0),
       prediction_(0.0),
@@ -797,19 +799,23 @@ void GuideGaussianProcess::HandleMeasurements(double input)
 
 void GuideGaussianProcess::HandleControls(double control_input)
 {
-    parameters->get_last_point().control = control_input;
+    // don't forget to apply the stored control signals from the dark period
+    parameters->get_last_point().control = control_input + parameters->stored_control_;
+    parameters->stored_control_ = 0; // reset stored control since we applied it
+}
+
+void GuideGaussianProcess::StoreControls(double control_input)
+{
+    // sum up control inputs over the dark period
+    parameters->stored_control_ += control_input;
 }
 
 void GuideGaussianProcess::HandleSNR(double SNR)
 {
-    double standard_deviation = 1e6; // some large number
-    if (SNR > 0.1)
-    {
-        SNR = std::max(SNR, 3.4); // limit the minimal SNR
+    SNR = std::max(SNR, 3.4); // limit the minimal SNR
 
-        // this was determined by simulated experiments
-        standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;// -0.0212;
-    }
+    // this was determined by simulated experiments
+    double standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;// -0.0212;
 
     parameters->get_last_point().variance = standard_deviation * standard_deviation;
 }
@@ -826,30 +832,20 @@ void GuideGaussianProcess::UpdateGP()
     Eigen::VectorXd variances(N-1);
     Eigen::VectorXd sum_controls(N-1);
 
-
     double sum_control = 0;
 
     // transfer the data from the circular buffer to the Eigen::Vectors
-    int j = 0;
     for(size_t i = 0; i < N-1; i++)
     {
         sum_control += parameters->circular_buffer_parameters[i].control; // sum over the control signals
-        if (parameters->circular_buffer_parameters[i].variance < 10000.0) // discard very uncertain measurements
-        {
-            timestamps(j) = parameters->circular_buffer_parameters[i].timestamp;
-            measurements(j) = parameters->circular_buffer_parameters[i].measurement;
-            variances(j) = parameters->circular_buffer_parameters[i].variance;
-            sum_controls(j) = sum_control;
-            ++j;
-        }
+        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        variances(i) = parameters->circular_buffer_parameters[i].variance;
+        sum_controls(i) = sum_control;
     }
-    timestamps.conservativeResize(j);
-    measurements.conservativeResize(j);
-    variances.conservativeResize(j);
-    sum_controls.conservativeResize(j);
 
-    Eigen::VectorXd gear_error(j);
-    Eigen::VectorXd linear_fit(j);
+    Eigen::VectorXd gear_error(N-1);
+    Eigen::VectorXd linear_fit(N-1);
 
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
@@ -963,7 +959,7 @@ double GuideGaussianProcess::FilterState(double input, double noise)
     double gp_prediction = mean(1) - mean(0);
     double gp_variance = var(0,0) + var(1,1) - var(0,1);
 
-    double predictive_mean = parameters->mean_kf_ - parameters->get_last_point().control + gp_prediction;
+    double predictive_mean = parameters->mean_kf_ - parameters->control_signal_ + gp_prediction;
     double predictive_var = parameters->var_kf_ + gp_variance + drift_variance;
 
     double residual = input - predictive_mean;
@@ -993,6 +989,7 @@ double GuideGaussianProcess::PredictGearError()
 
     double p1 = prediction(1);
     double p0 = prediction(0);
+    assert(std::abs(p1 - p0) < 10000);
     assert(!math_tools::isNaN(p1 - p0));
 
     // the prediction is consisting of GP prediction and the linear drift
@@ -1082,17 +1079,15 @@ double GuideGaussianProcess::result(double input)
     }
     outfile.close();
 #endif
+    Debug.AddLine("GP Guider generated %f from input %f.", parameters->control_signal_, input);
 
+    assert(std::abs(parameters->control_signal_) < 100);
     assert(!math_tools::isNaN(parameters->control_signal_));
     return parameters->control_signal_;
 }
 
 double GuideGaussianProcess::deduceResult()
 {
-    HandleMeasurements(0);
-    HandleTimestamps();
-    HandleSNR(0);
-
     parameters->control_signal_ = 0;
     // check if we are allowed to use the GP
     if (parameters->min_nb_element_for_inference > 0 &&
@@ -1103,8 +1098,7 @@ double GuideGaussianProcess::deduceResult()
         parameters->control_signal_ += parameters->prediction_; // control based on prediction
     }
 
-    parameters->add_one_point(); // add new point here, since the applied control is important as well
-    HandleControls(parameters->control_signal_);
+    StoreControls(parameters->control_signal_); // store the applied control for later
 
     // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_

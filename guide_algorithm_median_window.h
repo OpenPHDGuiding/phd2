@@ -51,6 +51,7 @@ private:
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleControls(double control_input);
+    void StoreControls(double control_input);
     double PredictDriftError();
 
 protected:
