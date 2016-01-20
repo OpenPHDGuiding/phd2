@@ -35,6 +35,10 @@
 #ifndef GUIDE_ALGORITHM_MEDIAN_WINDOW_H
 #define GUIDE_ALGORITHM_MEDIAN_WINDOW_H
 
+#define MW_DEBUG_FILE_ 1
+
+#define MW_BUFFER_SIZE 256
+
 #include <Eigen/Dense>
 #include "guide_algorithm.h"
 

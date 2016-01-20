@@ -129,7 +129,7 @@ struct GuideAlgorithmMedianWindow::mw_guide_parameters
     int min_nb_element_for_inference;
 
     mw_guide_parameters() :
-      circular_buffer_parameters(1024),
+      circular_buffer_parameters(MW_BUFFER_SIZE),
       timer_(),
       control_signal_(0.0),
       control_gain_(0.0),
@@ -374,27 +374,78 @@ double GuideAlgorithmMedianWindow::result(double input)
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
 
+    double difference = 0;
+    
+    if (parameters->get_number_of_measurements() > 1)
+    {
+        difference = (parameters->get_last_point().measurement - parameters->get_second_last_point().measurement)
+            / (parameters->get_last_point().timestamp - parameters->get_second_last_point().timestamp);
+    }
+
     double drift_prediction = 0;
 	if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
         drift_prediction = PredictDriftError();
 		parameters->control_signal_ += drift_prediction; // add in the prediction
-        if (parameters->control_signal_ * drift_prediction < 0) // check if the input points in the wrong direction
+        parameters->control_signal_ += 10 * difference; // D-component of PD controller
+
+        // check if the input points in the wrong direction, but only if the error isn't too big
+        if (std::abs(input) < 40.0 && parameters->control_signal_ * drift_prediction < 0) 
         {
             parameters->control_signal_ = 0; // prevent backlash overshooting
         }
 	}
     else
     {
-        parameters->control_signal_ *= 0.1; // scale down if no prediction is available
+        parameters->control_signal_ += 10 * difference; // D-component of PD controller
+        parameters->control_signal_ *= 0.5; // scale down if no prediction is available
     }
 
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
 
-    Debug.AddLine("Median window guider: input: %f, gain: %f, prediction: %f, control: %f",
-        input, parameters->control_gain_, drift_prediction, parameters->control_signal_);
+    Debug.AddLine("Median window guider: input: %f, diff: %f, prediction: %f, control: %f",
+        input, difference, drift_prediction, parameters->control_signal_);
+
+    // write the GP output to a file for easy analyzation
+#if MW_DEBUG_FILE_
+    int N = parameters->get_number_of_measurements();
+
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd timestamps(N - 1);
+    Eigen::VectorXd measurements(N - 1);
+    Eigen::VectorXd controls(N - 1);
+    Eigen::VectorXd sum_controls(N - 1);
+    Eigen::VectorXd gear_error(N - 1);
+
+    // transfer the data from the circular buffer to the Eigen::Vectors
+    for (size_t i = 0; i < N - 1; i++)
+    {
+        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        controls(i) = parameters->circular_buffer_parameters[i].control;
+        sum_controls(i) = parameters->circular_buffer_parameters[i].control;
+        if (i > 0)
+        {
+            sum_controls(i) += sum_controls(i - 1); // sum over the control signals
+        }
+    }
+    gear_error = sum_controls + measurements; // for each time step, add the residual error
+
+    std::ofstream outfile;
+    outfile.open("mw_data.csv", std::ios_base::out);
+    if (outfile.is_open()) {
+        outfile << "location, output\n";
+        for (int i = 0; i < timestamps.size(); ++i) {
+            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
+        }
+    }
+    else {
+        std::cout << "unable to write to file" << std::endl;
+    }
+    outfile.close();
+#endif
 
     return parameters->control_signal_;
 }
