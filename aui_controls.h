@@ -52,13 +52,6 @@ enum SBFieldTypes
 
 class PHDStatusBar;
 
-class PHDToolBarArt:public wxAuiDefaultToolBarArt
-{
-    virtual void DrawPlainBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
-    virtual void DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
-    virtual wxAuiToolBarArt* Close() { return new PHDToolBarArt(*this); }
-};
-
 // Self-drawn panel for hosting controls in the wxStatusBar
 class SBPanel : public wxPanel
 {
@@ -68,6 +61,7 @@ public:
     SBPanel(wxStatusBar* parent, wxSize panelSize);
 
     void OnPaint(wxPaintEvent& evt);
+    //void OnEraseBkgrnd(wxEraseEvent& evt);
     void BuildFieldOffsets(std::vector <int> &fldWidths);
     wxPoint FieldLoc(int fieldId);
     int emWidth;
@@ -154,13 +148,16 @@ public:
 // Child of normal status bar - used for status bar with color-coded messages and state indicators
 class PHDStatusBar : public wxStatusBar
 {
-public:
+private:
     PHDStatusBar(wxWindow *parent, long style = wxSTB_DEFAULT_STYLE);
+
     virtual ~PHDStatusBar();
 
     wxIcon yellowLight;
     wxIcon redLight;
     wxIcon greenLight;
+public:
+    static PHDStatusBar* CreateInstance(wxWindow* parent, long style = wxSTB_DEFAULT_STYLE);
     void SetStatusText(const wxString &text, int number = 0);
     void UpdateStates();
     void UpdateStarInfo(double SNR, bool Saturated);
@@ -170,6 +167,7 @@ public:
 
     // event handlers
     void OnSize(wxSizeEvent& event);
+
 
 private:
     SBPanel *m_ctrlPanel;
@@ -181,4 +179,12 @@ private:
 
     wxDECLARE_EVENT_TABLE();
 };
+
+// Minor subclass to force the toolbar background to be what we want
+class PHDToolBarArt :public wxAuiDefaultToolBarArt
+{
+    virtual void DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
+    virtual wxAuiToolBarArt* Clone() { return new PHDToolBarArt(*this); }
+};
+
 #endif      // AUI_CONTROLS_H

@@ -51,6 +51,7 @@ wxEND_EVENT_TABLE()
 
 wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
 EVT_PAINT(SBPanel::OnPaint)
+//EVT_ERASE_BACKGROUND(SBPanel::OnEraseBkgrnd)
 
 wxEND_EVENT_TABLE()
 
@@ -71,6 +72,8 @@ SBPanel::SBPanel(wxStatusBar* parent, wxSize panelSize)
 
     fieldOffsets.reserve(12);
     parent->GetTextExtent("M", &emWidth, &txtHeight);       // Horizontal spacer used by various controls
+    //SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    SetDoubleBuffered(true);
 }
 
 // We want a vector with the integer offset of each field relative to the righthand end of the panel
@@ -93,8 +96,14 @@ wxPoint SBPanel::FieldLoc(int fieldId)
     return (wxPoint(x, 3));
 }
 
+//void SBPanel::OnEraseBkgrnd(wxEraseEvent& evt)
+//{
+//
+//}
+
 void SBPanel::OnPaint(wxPaintEvent& evt)
 {
+    //wxAutoBufferedPaintDC dc(this);
     wxPaintDC dc(this);
     wxPen pen(*wxWHITE, 1);
     wxSize panelSize = GetClientSize();
@@ -120,7 +129,7 @@ SBStarIndicators::SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths
     int satWidth;
 
     parent->GetTextExtent(_("SNR "), &snrLabelWidth, &txtHeight);
-    parent->GetTextExtent("500", &snrValueWidth, &txtHeight);
+    parent->GetTextExtent("999.9", &snrValueWidth, &txtHeight);
     parent->GetTextExtent(_("SAT"), &satWidth, &txtHeight);
     fldWidths.push_back(satWidth + 1 * parent->emWidth);
     fldWidths.push_back(snrLabelWidth + snrValueWidth + 2 * parent->emWidth);
@@ -210,8 +219,8 @@ SBGuideIndicators::SBGuideIndicators(SBPanel* parent, std::vector <int> &fldWidt
     parentPanel = parent;
     // Since we don't want separators between the arrows and the text info, we lump the two together and treat them as one field for the purpose
     // of positioning
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 1 * parent->emWidth);          // RA info
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 1 * parent->emWidth);          // Dec info
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * parent->emWidth);          // RA info
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * parent->emWidth);          // Dec info
 }
 
 void SBGuideIndicators::PositionControls()
@@ -219,8 +228,10 @@ void SBGuideIndicators::PositionControls()
     int fieldNum = (int)Field_RAInfo;
     int txtWidth;
     int txtHeight;
+    wxPoint loc;
 
-    bitmapRA->SetPosition(parentPanel->FieldLoc(fieldNum));
+    loc = parentPanel->FieldLoc(fieldNum);
+    bitmapRA->SetPosition(wxPoint(loc.x, loc.y - 1));
     wxString txtSizer = "38 ms, 0.45 px";
     parentPanel->GetTextExtent(txtSizer, &txtWidth, &txtHeight);
     wxPoint raPosition = parentPanel->FieldLoc(fieldNum);
@@ -234,6 +245,7 @@ void SBGuideIndicators::PositionControls()
     txtDecAmounts->SetPosition(decPosition);
 
     decPosition.x += txtWidth + 8;
+    decPosition.y -= 2;
     bitmapDec->SetPosition(decPosition);
 }
 
@@ -290,8 +302,8 @@ SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* parent, int indField, const 
     parentPanel->GetTextExtent(indLabel, &txtWidth, &txtHeight);
     if (indType != Field_Gear)
     {
-        ctrl = new wxStaticText(parentPanel, wxID_ANY, indLabel, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-        fldWidths.push_back(txtWidth + 1 * parent->emWidth);
+        ctrl = new wxStaticText(parentPanel, wxID_ANY, indLabel, wxDefaultPosition, wxSize(txtWidth + parent->emWidth, -1), wxALIGN_CENTER);
+        fldWidths.push_back(txtWidth + 2 * parent->emWidth);
     }
     else
     {
@@ -551,14 +563,14 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
 
     m_NumIndicators = 6;
 
+
     redLight = wxIcon("Ball_Red_xpm");
     yellowLight = wxIcon("Ball_Yellow_xpm");
     greenLight = wxIcon("Ball_Green_xpm");
 
     // Set up the only field the wxStatusBar base class will know about
-    int widths[] = { -1};
+    int widths[] = {-1};
 
-    SetMinHeight(16);
     SetFieldsCount(1);
     SetStatusWidths(1, widths);
     this->SetBackgroundColour("BLACK");
@@ -583,7 +595,14 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
     m_StateIndicators = new SBStateIndicators(m_ctrlPanel, fieldWidths);
 
     m_ctrlPanel->BuildFieldOffsets(fieldWidths);
+}
 
+// Helper function - not safe to call SetMinHeight in the constructor
+PHDStatusBar* PHDStatusBar::CreateInstance(wxWindow *parent, long style)
+{
+    PHDStatusBar* sb = new PHDStatusBar(parent, style);
+    sb->SetMinHeight(16);
+    return sb;
 }
 
 // Destructor
@@ -636,14 +655,12 @@ void PHDStatusBar::ClearGuiderInfo()
 // Override function to be sure status text updates actually go to static text field
 void PHDStatusBar::SetStatusText(const wxString &text, int number)
 {
-    m_Msg1->SetLabelText(text);
+    wxString lastMsg = m_Msg1->GetLabelText();
+    //if (lastMsg != text) // && text != wxEmptyString)
+        m_Msg1->SetLabelText(text);
 }
 
-void PHDToolBarArt::DrawPlainBackground(wxDC& dc, wxWindow* parent, const wxRect& rect)
-{
-
-}
-
+// Trivial class to handle the background color on the toolbar control
 void PHDToolBarArt::DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect)
 {
     dc.SetBrush(wxColour(100, 100, 100));

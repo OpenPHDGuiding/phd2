@@ -209,7 +209,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     // Setup Status bar
     SetupStatusBar();
-
+    //m_statusbar->SetMinHeight(16);      // Can't safely call this in constructor
     LoadProfileSettings();
 
     // Setup container window for alert message info bar and guider window
@@ -810,7 +810,7 @@ void MyFrame::SetupToolBar()
     SetComboBoxWidth(Dur_Choice, 40);
 
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
-    Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60));
+    Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60));         // Slightly darker than toolbar background
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
 
     MainToolbar->AddTool(BUTTON_GEAR, connect_bmp, connect_bmp_disabled, false, 0, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
@@ -829,7 +829,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
     MainToolbar->EnableTool(BUTTON_STOP, false);
 
-    MainToolbar->SetArtProvider(new PHDToolBarArt);
+    MainToolbar->SetArtProvider(new PHDToolBarArt);             // Get the custom background we want
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
@@ -842,7 +842,7 @@ void MyFrame::UpdateCalibrationStatus(void)
 
 void MyFrame::SetupStatusBar(void)
 {
-    m_statusbar = new PHDStatusBar(this, wxSTB_DEFAULT_STYLE);
+    m_statusbar = PHDStatusBar::CreateInstance(this, wxSTB_DEFAULT_STYLE);
     SetStatusBar(m_statusbar);
     PositionStatusBar();
     UpdateCalibrationStatus();
