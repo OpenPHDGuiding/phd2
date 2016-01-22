@@ -51,7 +51,6 @@ wxEND_EVENT_TABLE()
 
 wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
 EVT_PAINT(SBPanel::OnPaint)
-//EVT_ERASE_BACKGROUND(SBPanel::OnEraseBkgrnd)
 
 wxEND_EVENT_TABLE()
 
@@ -72,8 +71,30 @@ SBPanel::SBPanel(wxStatusBar* parent, wxSize panelSize)
 
     fieldOffsets.reserve(12);
     parent->GetTextExtent("M", &emWidth, &txtHeight);       // Horizontal spacer used by various controls
-    //SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
     SetDoubleBuffered(true);
+}
+
+void SBPanel::OnPaint(wxPaintEvent& evt)
+{
+    wxAutoBufferedPaintDC dc(this);
+    dc.SetBackground(*wxBLACK_BRUSH);
+    dc.Clear();
+
+    wxPen pen(*wxWHITE, 1);
+    wxSize panelSize = GetClientSize();
+    int x;
+
+    dc.SetPen(pen);
+    // Draw vertical white lines slightly in front of each field
+    for (std::vector<int>::iterator it = fieldOffsets.begin() + 1; it != fieldOffsets.end(); it++)
+    {
+        x = panelSize.x - *it - 4;
+        dc.DrawLine(wxPoint(x, 0), wxPoint(x, panelSize.y));
+    }
+    // Put a border on the top of the panel
+    dc.DrawLine(wxPoint(0, 0), wxPoint(panelSize.x, 0));
+    dc.SetPen(wxNullPen);
 }
 
 // We want a vector with the integer offset of each field relative to the righthand end of the panel
@@ -94,30 +115,6 @@ wxPoint SBPanel::FieldLoc(int fieldId)
     wxSize panelSize = GetClientSize();
     int x = panelSize.x - fieldOffsets.at(fieldId);
     return (wxPoint(x, 3));
-}
-
-//void SBPanel::OnEraseBkgrnd(wxEraseEvent& evt)
-//{
-//
-//}
-
-void SBPanel::OnPaint(wxPaintEvent& evt)
-{
-    //wxAutoBufferedPaintDC dc(this);
-    wxPaintDC dc(this);
-    wxPen pen(*wxWHITE, 1);
-    wxSize panelSize = GetClientSize();
-    int x;
-
-    dc.SetPen(pen);
-    // Draw vertical white lines slightly in front of each field
-    for (std::vector<int>::iterator it = fieldOffsets.begin() + 1; it != fieldOffsets.end(); it++)
-    {
-        x = panelSize.x - *it - 4;
-        dc.DrawLine(wxPoint(x, 0), wxPoint(x, panelSize.y));
-    }
-    dc.DrawLine(wxPoint(0, 0), wxPoint(panelSize.x, 0));
-    dc.SetPen(wxNullPen);
 }
 
 //-----------------------------------------------------------------------------
@@ -630,7 +627,7 @@ void PHDStatusBar::OnSize(wxSizeEvent& event)
     event.Skip();
 }
 
-// Let client force update to various statusbar components
+// Let client force updates to various statusbar components
 void PHDStatusBar::UpdateStates()
 {
     m_StateIndicators->UpdateState();
@@ -655,9 +652,7 @@ void PHDStatusBar::ClearGuiderInfo()
 // Override function to be sure status text updates actually go to static text field
 void PHDStatusBar::SetStatusText(const wxString &text, int number)
 {
-    wxString lastMsg = m_Msg1->GetLabelText();
-    //if (lastMsg != text) // && text != wxEmptyString)
-        m_Msg1->SetLabelText(text);
+    m_Msg1->SetLabelText(text);
 }
 
 // Trivial class to handle the background color on the toolbar control
