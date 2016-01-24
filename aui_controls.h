@@ -69,7 +69,27 @@ public:
     wxDECLARE_EVENT_TABLE();
 };
 
-// Class for color-coded state indicators
+// Classes for color-coded state indicators
+class SBStateIndicatorItem; 
+
+class SBStateIndicators
+{
+    SBStateIndicatorItem* stateItems[Field_Max - Field_Darks];
+    int numItems = Field_Max - Field_Darks;
+    SBPanel* parentPanel;
+
+public:
+    wxIcon icoGreenBall;
+    wxIcon icoYellowBall;
+    wxIcon icoRedBall;
+
+    SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidths);
+    ~SBStateIndicators();
+    void PositionControls();
+    void UpdateState();
+
+};
+
 class SBStateIndicatorItem
 {
 public:
@@ -79,32 +99,18 @@ public:
     int fieldId;
     int lastState;
     SBPanel* parentPanel;
+    SBStateIndicators* container;
     wxStaticText* ctrl;
     wxStaticBitmap* pic;
     wxString otherInfo;
 
 public:
-    SBStateIndicatorItem(SBPanel* parent, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
+    SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* container,
+        int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
     void PositionControl();
     void UpdateState();
     wxString IndicatorToolTip(SBFieldTypes indType, int triState);
 };
-
-class SBStateIndicators
-{
-    SBStateIndicatorItem* stateItems[Field_Max - Field_Darks];
-    int numItems = Field_Max - Field_Darks;
-    SBPanel* parentPanel;
-
-
-public:
-    SBStateIndicators(SBPanel* parent, std::vector <int> &fldWidths);
-    ~SBStateIndicators();
-    void PositionControls();
-    void UpdateState();
-
-};
-
 class SBGuideIndicators
 {
     wxStaticBitmap* bitmapRA;
@@ -118,7 +124,7 @@ class SBGuideIndicators
     SBPanel* parentPanel;
 
 public:
-    SBGuideIndicators(SBPanel* parent, std::vector <int> &fldWidths);
+    SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidths);
     void PositionControls();
     void UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
     void ClearState() { UpdateState(LEFT, UP, 0, 0, 0, 0); }
@@ -139,7 +145,7 @@ class SBStarIndicators
     SBPanel* parentPanel;
 
 public:
-    SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths);
+    SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths);
     void PositionControls();
     void UpdateState(double MassPct, double SNR, bool Saturated);
 

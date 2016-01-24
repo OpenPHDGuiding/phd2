@@ -35,7 +35,8 @@
 
 #include "phd.h"
 #include "aui_controls.h"
-
+#define Dylan
+#ifndef Dylan
 #include "icons/Ball_Green.xpm"
 #include "icons/Ball_Yellow.xpm"
 #include "icons/Ball_Red.xpm"
@@ -43,6 +44,7 @@
 #include "icons/guide_arrow_right_16.xpm"
 #include "icons/guide_arrow_up_16.xpm"
 #include "icons/guide_arrow_down_16.xpm"
+#endif
 
 wxBEGIN_EVENT_TABLE(PHDStatusBar, wxStatusBar)
 EVT_SIZE(PHDStatusBar::OnSize)
@@ -120,25 +122,25 @@ wxPoint SBPanel::FieldLoc(int fieldId)
 //-----------------------------------------------------------------------------
 // SBStarIndicators - properties of the guide star
 //
-SBStarIndicators::SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths)
+SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths)
 {
     int snrValueWidth;
     int satWidth;
 
-    parent->GetTextExtent(_("SNR "), &snrLabelWidth, &txtHeight);
-    parent->GetTextExtent("999.9", &snrValueWidth, &txtHeight);
-    parent->GetTextExtent(_("SAT"), &satWidth, &txtHeight);
-    fldWidths.push_back(satWidth + 1 * parent->emWidth);
-    fldWidths.push_back(snrLabelWidth + snrValueWidth + 2 * parent->emWidth);
+    panel->GetTextExtent(_("SNR "), &snrLabelWidth, &txtHeight);
+    panel->GetTextExtent("999.9", &snrValueWidth, &txtHeight);
+    panel->GetTextExtent(_("SAT"), &satWidth, &txtHeight);
+    fldWidths.push_back(satWidth + 1 * panel->emWidth);
+    fldWidths.push_back(snrLabelWidth + snrValueWidth + 2 * panel->emWidth);
 
 
-    txtSaturated = new wxStaticText(parent, wxID_ANY, satStr, wxDefaultPosition, wxSize(satWidth, -1));
+    txtSaturated = new wxStaticText(panel, wxID_ANY, satStr, wxDefaultPosition, wxSize(satWidth, -1));
     txtSaturated->SetBackgroundColour("BLACK");
     txtSaturated->SetForegroundColour("RED");
     txtSaturated->Show(false);
     // Label and value fields separated to allow different foreground colors for each
-    txtSNRLabel = new wxStaticText(parent, wxID_ANY, _("SNR"), wxPoint(1,3), wxSize(snrLabelWidth, -1));
-    txtSNRValue = new wxStaticText(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, 3));
+    txtSNRLabel = new wxStaticText(panel, wxID_ANY, _("SNR"), wxPoint(1, 3), wxSize(snrLabelWidth, -1));
+    txtSNRValue = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, 3));
     txtSNRLabel->SetBackgroundColour("BLACK");
     txtSNRLabel->SetForegroundColour("WHITE");
     txtSNRLabel->Show(false);
@@ -146,7 +148,7 @@ SBStarIndicators::SBStarIndicators(SBPanel *parent, std::vector <int> &fldWidths
     txtSNRValue->SetForegroundColour("GREEN");
     txtSNRValue->SetToolTip(_("Signal-to-noise ratio of guide star\nGreen means SNR >= 10\nYellow means  4 <= SNR < 10\nRed means SNR < 4"));
 
-    parentPanel = parent;
+    parentPanel = panel;
 }
 
 void SBStarIndicators::PositionControls()
@@ -189,35 +191,42 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
 //-----------------------------------------------------------------------------
 // SBGuideIndicators - info about the most recent guide commands
 //
-SBGuideIndicators::SBGuideIndicators(SBPanel* parent, std::vector <int> &fldWidths)
+SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidths)
 {
+#ifdef Dylan
+    icoLeft = wxIcon("arrow_left_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoRight = wxIcon("arrow_right_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoUp = wxIcon("arrow_up_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoDown = wxIcon("arrow_down_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
+#else
     icoLeft = wxIcon(guide_arrow_left_16_xpm);
     icoRight = wxIcon(guide_arrow_right_16_xpm);
     icoUp = wxIcon(guide_arrow_up_16_xpm);
     icoDown = wxIcon(guide_arrow_down_16_xpm);
+#endif
     int guideAmtWidth;
     int txtHeight;
     wxSize bitmapSize;
 
     wxColor fgColor = wxColor(200, 200, 200);           // reduced brightness
-    parent->GetTextExtent("5555 ms, 555 px", &guideAmtWidth, &txtHeight);
+    panel->GetTextExtent("5555 ms, 555 px", &guideAmtWidth, &txtHeight);
 
-    bitmapRA = new wxStaticBitmap(parent, wxID_ANY, icoLeft);
+    bitmapRA = new wxStaticBitmap(panel, wxID_ANY, icoLeft);
     bitmapSize = bitmapRA->GetSize();
     bitmapRA->Show(false);
-    txtRaAmounts = new wxStaticText(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_CENTER);
+    txtRaAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_CENTER);
     txtRaAmounts->SetBackgroundColour("BLACK");
     txtRaAmounts->SetForegroundColour(fgColor);
-    txtDecAmounts = new wxStaticText(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
+    txtDecAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
     txtDecAmounts->SetBackgroundColour("Black");
     txtDecAmounts->SetForegroundColour(fgColor);
-    bitmapDec = new wxStaticBitmap(parent, wxID_ANY, icoUp);
+    bitmapDec = new wxStaticBitmap(panel, wxID_ANY, icoUp);
     bitmapDec->Show(false);
-    parentPanel = parent;
+    parentPanel = panel;
     // Since we don't want separators between the arrows and the text info, we lump the two together and treat them as one field for the purpose
     // of positioning
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * parent->emWidth);          // RA info
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * parent->emWidth);          // Dec info
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth);          // RA info
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth);          // Dec info
 }
 
 void SBGuideIndicators::PositionControls()
@@ -289,23 +298,25 @@ void SBGuideIndicators::UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION
 //------------------------------------------------------------------------------------------
 // ---SBStateIndicatorItem - individual state indicators
 //
-SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* parent, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths)
+SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* host, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths)
 {
     type = indType;
     lastState = -2;
-    parentPanel = parent;
+    parentPanel = panel;
+    container = host;
     fieldId = indField;
     otherInfo = wxEmptyString;
     parentPanel->GetTextExtent(indLabel, &txtWidth, &txtHeight);
     if (indType != Field_Gear)
     {
-        ctrl = new wxStaticText(parentPanel, wxID_ANY, indLabel, wxDefaultPosition, wxSize(txtWidth + parent->emWidth, -1), wxALIGN_CENTER);
-        fldWidths.push_back(txtWidth + 2 * parent->emWidth);
+        ctrl = new wxStaticText(parentPanel, wxID_ANY, indLabel, wxDefaultPosition, wxSize(txtWidth + parentPanel->emWidth, -1), wxALIGN_CENTER);
+        fldWidths.push_back(txtWidth + 2 * parentPanel->emWidth);
     }
     else
     {
-        pic = new wxStaticBitmap(parentPanel, wxID_ANY, wxIcon(Ball_Green_xpm), wxDefaultPosition, wxSize(16, 16));
-        fldWidths.push_back(20 + 1 * parent->emWidth);
+        /*pic = new wxStaticBitmap(parentPanel, wxID_ANY, wxIcon(Ball_Green_xpm), wxDefaultPosition, wxSize(16, 16))*/;
+        pic = new wxStaticBitmap(parentPanel, wxID_ANY, container->icoGreenBall, wxDefaultPosition, wxSize(16, 16));
+        fldWidths.push_back(20 + 1 * parentPanel->emWidth);
     }
 }
 
@@ -378,13 +389,13 @@ void SBStateIndicatorItem::UpdateState()
         {
             if (!problems)
             {
-                pic->SetIcon(wxIcon(Ball_Green_xpm));
+                pic->SetIcon(wxIcon(container->icoGreenBall));
                 quadState = 1;
                 otherInfo = "";
             }
             else
             {
-                pic->SetIcon(wxIcon(Ball_Yellow_xpm));
+                pic->SetIcon(wxIcon(container->icoYellowBall));
                 quadState = 0;
                 otherInfo = MIAs.Mid(0, MIAs.Length() - 2);
                 pic->SetToolTip(IndicatorToolTip(type, quadState));
@@ -392,7 +403,7 @@ void SBStateIndicatorItem::UpdateState()
         }
         else
         {
-            pic->SetIcon(wxIcon(Ball_Red_xpm));
+            pic->SetIcon(container->icoRedBall);
             quadState = -1;
         }
             
@@ -509,14 +520,23 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
 //--------------------------------------------------------------------------------------
 // ---SBStateIndicators - the group of all app/session state controls, a mix of static text and bitmap controls
 //
-SBStateIndicators::SBStateIndicators(SBPanel* parent, std::vector <int> &fldWidths)
+SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidths)
 {
-    parentPanel = parent;
+    parentPanel = panel;
     wxString labels[] = { _("Dark"), _("Cal"), wxEmptyString};
 
+#ifdef Dylan
+    icoGreenBall = wxIcon("ball_green.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoYellowBall = wxIcon("ball_yellow.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoRedBall = wxIcon("ball_red.ico", wxBITMAP_TYPE_ICO, 16, 16);
+#else
+    icoGreenBall = wxIcon(Ball_Green_xpm);
+    icoYellowBall = wxIcon(Ball_Yellow_xpm);
+    icoRedBall = wxIcon(Ball_Red_xpm);
+#endif
     for (int inx = 0; inx < numItems; inx++)
     {
-        stateItems[inx] = new SBStateIndicatorItem(parent, Field_Darks + inx, labels[inx], (SBFieldTypes)(Field_Darks + inx), fldWidths);
+        stateItems[inx] = new SBStateIndicatorItem(parentPanel, this, Field_Darks + inx, labels[inx], (SBFieldTypes)(Field_Darks + inx), fldWidths);
         stateItems[inx]->UpdateState();
     }
 }
