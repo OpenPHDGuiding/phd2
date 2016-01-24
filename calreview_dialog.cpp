@@ -587,8 +587,8 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
         break;
     case CI_Angle:
         msg = wxString::Format(_("The RA and Declination angles computed in the calibration are questionable.  Normally, "
-            "these angles will be nearly perpendicular, having an 'orthogonality error' of less than 10 degrees.  In this calibration, your error was %s degrees. This "
-            "could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."), m_newAngleDelta);
+            "these angles will be nearly perpendicular, having an 'orthogonality error' of less than 10 degrees.  In this calibration, your error was %s degrees, which "
+            "is often caused by poor polar alignment or a large periodic error in RA."), m_newAngleDelta);
         break;
     case CI_Different:
         msg = wxString::Format(_("The most recent calibration produced results that are %s%% different from the previous calibration.  If this is because "
@@ -598,7 +598,7 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
     case CI_Rates:
         msg = wxString::Format(_("The RA and Declination guiding rates differ by an unexpected amount.  For your declination of %0.0f degrees, "
             "the RA rate should be about %0.0f%% of the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  "
-            "This could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."),
+            "This often means one of the axis calibrations is inaccurate, which may result in poor guiding."),
             degrees(m_newParams.declination), cos(m_newParams.declination) * 100.0, m_newParams.xRate / m_newParams.yRate * 100.0);
         break;
     default:

@@ -779,7 +779,7 @@ void GuidingAsstWin::MakeRecommendations()
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
     // Always make a recommendation on exposure times
-    wxString msg = SizedMsg(wxString::Format("Try using exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
+    wxString msg = SizedMsg(wxString::Format("Try to keep your exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
     if (!m_exposure_msg)
         m_exposure_msg = AddRecommendationEntry(msg);
     else
