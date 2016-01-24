@@ -236,21 +236,21 @@ bool Scope::SetDecGuideMode(int decGuideMode)
               "Off", "Auto", "North", "South"
             };
 
+            Debug.AddLine(wxString::Format("DecGuideMode set to %s (%d)", dec_modes[decGuideMode], decGuideMode));
             GuideLog.SetGuidingParam("Dec Guide Mode", dec_modes[decGuideMode]);
-        }
 
-        m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
+            m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
+
+            pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
+            if (pFrame)
+                pFrame->UpdateCalibrationStatus();
+        }
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_decGuideMode = (DEC_GUIDE_MODE) DefaultDecGuideMode;
     }
-
-    pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
-    if (pFrame)
-        pFrame->UpdateCalibrationStatus();
 
     return bError;
 }

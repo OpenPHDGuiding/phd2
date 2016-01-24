@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-01-06 02:59-0500\n"
-"PO-Revision-Date: 2015-09-07 14:04+0800\n"
+"PO-Revision-Date: 2016-01-18 15:30+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.8.5\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -226,11 +226,11 @@ msgstr "預期赤緯速率:"
 
 #: calreview_dialog.cpp:291
 msgid "Binning:"
-msgstr ""
+msgstr "影像併合:"
 
 #: calreview_dialog.cpp:293
 msgid "Created:"
-msgstr ""
+msgstr "已建立:"
 
 #: calreview_dialog.cpp:294 guidinglog.cpp:197 guidinglog.cpp:203 mount.cpp:52
 #: statswindow.cpp:216
@@ -243,7 +243,7 @@ msgstr "赤道儀組態"
 
 #: calreview_dialog.cpp:314
 msgid "Modified:"
-msgstr ""
+msgstr "已修改:"
 
 #: calreview_dialog.cpp:316
 msgid "Focal length:"
@@ -256,7 +256,7 @@ msgstr "影像解析度："
 #: calreview_dialog.cpp:326
 #, c-format
 msgid "Binning: %d"
-msgstr ""
+msgstr "影像併合: %d"
 
 #: calreview_dialog.cpp:331
 msgid "Side-of-pier:"
@@ -443,11 +443,11 @@ msgstr "導星相機像素尺寸"
 
 #: calstep_dialog.cpp:126 statswindow.cpp:104
 msgid "Camera binning"
-msgstr ""
+msgstr "相機影像併合"
 
 #: calstep_dialog.cpp:126
 msgid "Guide camera pixel binning"
-msgstr ""
+msgstr "導星相機像素併合"
 
 #: calstep_dialog.cpp:132
 msgid "Guide speed, n.nn x sidereal"
@@ -510,7 +510,7 @@ msgstr "像素大小需大於 0"
 
 #: cam_Altair.cpp:56
 msgid "Altair Camera Settings"
-msgstr ""
+msgstr "Altair 相機設定"
 
 #: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
 msgid "Settings"
@@ -620,7 +620,7 @@ msgstr "ASCOM 驅動程式缺少 PixelSizeY 屬性"
 
 #: cam_ascomlate.cpp:717 cam_ascomlate.cpp:829
 msgid "The ASCOM camera failed to set binning."
-msgstr ""
+msgstr "ASCOM 相機無法設定影像併合"
 
 #: cam_ascomlate.cpp:744
 msgid "ASCOM driver problem -- cannot disconnect"
@@ -783,7 +783,7 @@ msgstr "Webcam 設定"
 
 #: cam_openssag.cpp:97 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
-msgstr ""
+msgstr "無法啟用 USB 程式庫"
 
 #: cam_OSPL130.cpp:85 cam_SBIG.cpp:441
 msgid "Cannot start exposure"
@@ -1293,11 +1293,11 @@ msgstr ""
 
 #: camera.cpp:829
 msgid "Binning"
-msgstr ""
+msgstr "影像併合"
 
 #: camera.cpp:829
 msgid "Camera pixel binning"
-msgstr ""
+msgstr "相機像素併合"
 
 #: camera.cpp:837
 msgid "Delay"
@@ -1340,10 +1340,13 @@ msgid ""
 "working correctly, you can increase the timeout period on the Camera tab of "
 "the Advanced Settings Dialog."
 msgstr ""
+"在 %.1f 秒後, 相機無法完成 %.1f 秒的曝光, 因此將相機連線切斷以避免產生其他問"
+"題。如果你認為相機沒有問題, 可以增加進階設定交談框中 [相機] 項目的逾時時間來"
+"解決這個問題。"
 
 #: camera.cpp:1230
 msgid "PHD will make several attempts to re-connect the camera."
-msgstr ""
+msgstr "PHD 將嘗試重新連接相機。"
 
 #: camera.cpp:1235
 msgid ""
@@ -1472,23 +1475,23 @@ msgstr "赤緯"
 
 #: config_INDI.cpp:62
 msgid "INDI Configuration"
-msgstr ""
+msgstr "INDI 組態設定"
 
 #: config_INDI.cpp:79
 msgid "INDI Server"
-msgstr ""
+msgstr "INDI 伺服器"
 
 #: config_INDI.cpp:83
 msgid "Hostname"
-msgstr ""
+msgstr "主機名稱"
 
 #: config_INDI.cpp:89 config_INDI.cpp:128
 msgid "Port"
-msgstr ""
+msgstr "通訊埠"
 
 #: config_INDI.cpp:95 config_INDI.cpp:191
 msgid "Disconnected"
-msgstr ""
+msgstr "斷開連線"
 
 #: config_INDI.cpp:97 gear_dialog.cpp:486 gear_dialog.cpp:512
 #: gear_dialog.cpp:528 gear_dialog.cpp:549 gear_dialog.cpp:593
@@ -1500,35 +1503,35 @@ msgstr "連接"
 
 #: config_INDI.cpp:102
 msgid "Device"
-msgstr ""
+msgstr "設備"
 
 #: config_INDI.cpp:112
 msgid "Driver"
-msgstr ""
+msgstr "驅動程式"
 
 #: config_INDI.cpp:119
 msgid "CCD"
-msgstr ""
+msgstr "CCD"
 
 #: config_INDI.cpp:122
 msgid "Main imager"
-msgstr ""
+msgstr "主要影像設備"
 
 #: config_INDI.cpp:123
 msgid "Guider"
-msgstr ""
+msgstr "導星設定"
 
 #: config_INDI.cpp:134
 msgid "Other options"
-msgstr ""
+msgstr "其他選項"
 
 #: config_INDI.cpp:136
 msgid "INDI"
-msgstr ""
+msgstr "INDI"
 
 #: config_INDI.cpp:184
 msgid "Connected"
-msgstr ""
+msgstr "已連接"
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -1852,15 +1855,15 @@ msgstr "調整仰角後, 點擊\"飄移\""
 
 #: drift_tool.cpp:546
 msgid "Slewing..."
-msgstr ""
+msgstr "轉向中..."
 
 #: drift_tool.cpp:555
 msgid "Slew failed!"
-msgstr ""
+msgstr "轉向失敗"
 
 #: drift_tool.cpp:564
 msgid "Slew was canceled"
-msgstr ""
+msgstr "轉向被中斷"
 
 #: drift_tool.cpp:582
 msgid "Slewing ..."
@@ -2705,26 +2708,26 @@ msgstr "未找到可用星點"
 #: guider_onestar.cpp:356
 #, c-format
 msgid "m=%.0f SNR=%.1f"
-msgstr ""
+msgstr "m=%.0f SNR=%.1f"
 
 #: guider_onestar.cpp:359
 msgid "Saturated"
-msgstr ""
+msgstr "亮度太高"
 
 #: guider_onestar.cpp:369
 #, c-format
 msgid "Exp=%0.1f s"
-msgstr ""
+msgstr "曝光=%0.1f s"
 
 #: guider_onestar.cpp:371
 #, c-format
 msgid "Exp=%d ms"
-msgstr ""
+msgstr "曝光=%d ms"
 
 #: guider_onestar.cpp:429
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
-msgstr ""
+msgstr "自動選擇在 (%.1f, %.1f) 的星體"
 
 #: guider_onestar.cpp:589
 #, c-format
@@ -2781,7 +2784,7 @@ msgstr "導星小幫手"
 
 #: guiding_assistant.cpp:276
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
-msgstr ""
+msgstr " -999.99 像素/分 (-999.99 秒弧/分 )"
 
 #: guiding_assistant.cpp:278
 msgid "Measurement Status"
@@ -2849,7 +2852,7 @@ msgstr "赤經最大飄移率"
 
 #: guiding_assistant.cpp:373
 msgid "Drift-limiting exposure"
-msgstr ""
+msgstr "飄移限制曝光"
 
 #: guiding_assistant.cpp:377
 msgid "Declination Drift Rate"
@@ -2948,12 +2951,12 @@ msgstr "評估在赤經方向的總飄移量"
 
 #: guiding_assistant.cpp:511
 msgid "Maximum drift rate in right ascension during sampling period."
-msgstr ""
+msgstr "在取樣週期內, 赤經方向的最大飄移量。此數值對設定曝光時間會有所幫助。"
 
 #: guiding_assistant.cpp:512
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
-msgstr ""
+msgstr "曝光時間維持在建議最小移動層度以下的最大 RA 飄移值。"
 
 #: guiding_assistant.cpp:513
 msgid "Estimated overall drift rate in declination."
@@ -3018,24 +3021,24 @@ msgstr "套用"
 
 #: guiding_assistant.cpp:791
 msgid "Consider re-doing your calibration "
-msgstr ""
+msgstr "請考慮重作校準"
 
 #: guiding_assistant.cpp:793
 msgid "(Prior alert)"
-msgstr ""
+msgstr "(之前的告警)"
 
 #: guiding_assistant.cpp:795
 msgid "(Backlash clearing)"
-msgstr ""
+msgstr "(清除回差當中)"
 
 #: guiding_assistant.cpp:805
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
-msgstr ""
+msgstr "請選用一顆較亮的星體來做測試, 或者延長曝光時間"
 
 #: guiding_assistant.cpp:821
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
-msgstr ""
+msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
 
 #: guiding_assistant.cpp:822
 msgid ""
@@ -3115,7 +3118,7 @@ msgstr "手動校準"
 
 #: manualcal_dialog.cpp:46
 msgid "Camera binning:"
-msgstr ""
+msgstr "相機影像併合:"
 
 #: manualcal_dialog.cpp:54
 msgid "RA rate, px/sec (e.g. 5.0):"
@@ -4265,10 +4268,12 @@ msgid ""
 "a multiple of the sidereal rate. If you don't know, leave the setting at the "
 "default value (0.5X)"
 msgstr ""
+"用來進行校準及導星的赤道儀導星速率以恆星時乘以某個數值來表示, 如果你不清楚的"
+"話, 採用預設值 (0.5X) 即可。"
 
 #: profile_wizard.cpp:159
 msgid "Mount guide speed (n.n x sidereal)"
-msgstr ""
+msgstr "赤道儀導星速率 (n.n x 恆星時)"
 
 #: profile_wizard.cpp:165
 msgid "Build dark library"
@@ -4330,6 +4335,10 @@ msgid ""
 "also specify the camera pixel size, guide scope focal length, and mount "
 "guide speed so PHD2 can compute reasonable default settings for you."
 msgstr ""
+"由列表中選取你所使用的導星相機, PHD2 所內建支援及透過 ASCOM 驅動程式所支援的"
+"相機都顯示在其中。如果你所用的導星相機沒在裡頭, 可能是因為 PHD2 跟本不支援或"
+"你沒有安裝適當的相機驅動程式。你需設定導星相機的像素大小, 導星鏡的焦長及赤道"
+"儀導星速率等數值, 這樣 PHD2 才能夠計算出導星所需的參數值。"
 
 #: profile_wizard.cpp:236
 msgid ""
@@ -4433,7 +4442,7 @@ msgstr "選擇您的赤道儀連接 -- 這將會決定導星訊號如何傳送�
 
 #: profile_wizard.cpp:387
 msgid "Choose an Auxiliary Mount Connection (optional)"
-msgstr ""
+msgstr "請選擇輔助赤道儀 (選項)"
 
 #: profile_wizard.cpp:388
 msgid "Aux Mount:"
@@ -5024,16 +5033,16 @@ msgstr "Avg col"
 #: star_profile.cpp:232 star_profile.cpp:252
 #, c-format
 msgid "%s FWHM: %.2f"
-msgstr ""
+msgstr "%s FWHM: %.2f"
 
 #: star_profile.cpp:234
 msgid "HFD: "
-msgstr ""
+msgstr "HFD:"
 
 #: star_profile.cpp:248
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
-msgstr ""
+msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f”)"
 
 #: statswindow.cpp:63
 msgid "RMS"
