@@ -1172,6 +1172,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 else        //Got our 3 moves, move ahead
                 {
                     // We know the last backlash clearing move was big enough - include that as a north calibration move
+
+                    // log the starting point
+                    GuideLog.CalibrationStep(this, "North", 0, 0.0, 0.0, m_blMarkerPoint, 0.0);
+                    m_calibrationDetails.decSteps.push_back(wxRealPoint(0.0, 0.0));
+
                     m_calibrationSteps = 1;
                     m_calibrationStartingLocation = m_blMarkerPoint;
                     dX = m_blMarkerPoint.dX(currentLocation);
@@ -1179,10 +1184,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     dist = m_blMarkerPoint.Distance(currentLocation);
                     Debug.AddLine("Backlash: Got 3 acceptable moves, using last move as step 1 of N calibration");
                 }
+
                 m_blDistanceMoved = m_blMarkerPoint.Distance(m_calibrationInitialLocation);     // Need this to set nudging limit
+
                 Debug.AddLine(wxString::Format("Backlash: North calibration moves starting at {%0.1f,%0.1f}, Offset = %0.1f px", 
                     m_blMarkerPoint.X, m_blMarkerPoint.Y, m_blDistanceMoved));
-                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f", currentLocation.Distance(m_calibrationInitialLocation)));
+                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f",
+                    currentLocation.Distance(m_calibrationInitialLocation)));
 
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
                 // falling through to start moving north
