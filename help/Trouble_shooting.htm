@@ -56,19 +56,25 @@ though they&nbsp;<span style="font-style: italic;">should</span>
 be perpendicular. &nbsp;The angle calculations do not require
 great precision, but if they are signfiicantly non-orthogonal, you
 should repeat the calibration. &nbsp;If you see repetitive alerts of
-this type and the axes are significantly non-orthogonal, there is
-something wrong with the mount or the cable connections. &nbsp;You
-should examine the graph closely to determine what is wrong. &nbsp;In
-some cases, the mount may not be moving at all, and the measured
-displacements of the star could be caused only by seeing effects.
-&nbsp;If the axis error is relatively small and you are convinced the
+this type and the axes are significantly non-orthogonal, you'll need to
+identify the&nbsp;problem and fix it. &nbsp;The most common causes are
+bad polar alignment or large periodic error in RA. &nbsp;Either of
+these problems can cause the guide star to move significantly on one
+axis while PHD2 is trying to measure its motion on the other axis. If
+you suspect these problems, go ahead and accept the calibration, then
+run the Guiding Assistant to measure both your polar alignment error
+and the size of the RA periodic error. &nbsp;In other cases, the mount
+may not be moving at all, and the measured
+displacements of the star are just caused by seeing effects.
+&nbsp;This sort of problem should be obvious in the calibration graph
+at the left of the dialog. &nbsp;If the axis error is relatively small
+and you are convinced the
 hardware is working properly, you can avoid further alerts of this type
 by setting the
-option to 'Assume Dec orthogonal to RA' in the 'Mount' tab of the
+option to 'Assume Dec orthogonal to RA' in the 'Guiding' tab of the
 Advanced Setup dialog. But you should do this only if the error is
 fairly small - otherwise, you are simply ignoring a serious problem.
-The graph at the left shows the RA and Dec axis
-orientation as measured by PHD2.. &nbsp; </li><li>Suspicious
+&nbsp; </li><li>Suspicious
 RA and Dec rates - the guide rate for right ascension should be related
 to the declination guiding rate by approximately a factor
 of&nbsp;cosine (Declination). &nbsp;In other words, the RA rate gets
@@ -268,7 +274,29 @@ generally available from the ASCOM web site or, in some cases, from the
 device manufacturer. <span style="font-weight: bold;">&nbsp;</span>As
 a rule, the best practice is to use the latest versions of these
 drivers so you don't encounter problems that have already been
-identified and fixed.<br><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
+identified and fixed.<br><br>You might also see other alert messages associated with the ASCOM driver for the mount: <br><div style="margin-left: 40px;">1.
+"PulseGuide command to mount has failed - guiding is likely to be
+ineffective." &nbsp;This is usually caused by a bug or timing
+sensitivity in the ASCOM mount driver, and there is generally no way to
+know if the guide command was executed properly or not. &nbsp;If
+you&nbsp;rarely see the alert and your guiding results are acceptable,
+you can probably ignore it. &nbsp;Despite the alert condition, PHD2
+will continue to issue guide commands, so you don't need to take any
+immediate action. &nbsp;If you see the alert frequently, you should
+send us your debug log so we can understand the details of the problem
+and possibly help you describe it to the author of the ASCOM driver.<br>2.
+"Guiding stopped: the scope started slewing." &nbsp;This is pretty
+self-explanatory, but the determination that the scope was slewing is
+something reported to PHD2 by the ASCOM mount driver. &nbsp;Whether it
+was actually slewing isn't known to PHD2. &nbsp;Assuming you didn't
+mistakenly slew the scope with guiding active, there is probably a
+timing problem in the driver. &nbsp;If you want to sidestep the problem
+temporarily, you can disable the logic to check for slewing - go into
+the 'Guiding' tab of the brain dialog, and un-check the box that says
+"Stop guiding when mount slews." &nbsp;This will let you continue
+guiding, but the results might be suspect. &nbsp;The debug log should
+provide the details needed to describe the problem to the author of the
+ASCOM driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
 normal guiding, you may see an alert message saying that your settings
 for maximum-duration limits in RA or Dec&nbsp;are preventing
 PHD2 from keeping the guide star locked. &nbsp;If you've decreased
@@ -362,8 +390,7 @@ adaptive optics device if one is being used</li><li><span style="font-family: Sy
 star image</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>SNR
 - an internal "star-detection ratio"&nbsp;used by PHD2 - essentially a
 measure of how well the star can be distinguished from the sky
-background</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an indication that some error
-occurred, typically a "guide star faded" error</li></ul>
+background</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an integer value representing the quality of the guide star measurement:</li><ul><li>0 - no error</li><li>1 - star is saturated</li><li>2 - star has low SNR</li><li>3 - star mass is too low for accurate measurement</li><li>4 - star has drifted too near the edge of the frame</li><li>5 - star mass has changed beyond the specified amount</li><li>6 - unexpected error</li></ul></ul>
 
 
 

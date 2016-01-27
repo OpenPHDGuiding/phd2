@@ -322,8 +322,36 @@ static Ev ev_settle_done(const wxString& errorMsg)
     return ev;
 }
 
+struct ClientReadBuf
+{
+    enum { SIZE = 1024 };
+    char buf[SIZE];
+    char *dest;
+
+    ClientReadBuf() { reset(); }
+    size_t avail() const { return &buf[SIZE] - dest; }
+    void reset() { dest = &buf[0]; }
+};
+
+struct ClientData
+{
+    ClientReadBuf rdbuf;
+    wxMutex wrlock;
+};
+
+inline static ClientReadBuf *client_rdbuf(wxSocketClient *cli)
+{
+    return &((ClientData *) cli->GetClientData())->rdbuf;
+}
+
+inline static wxMutex *client_wrlock(wxSocketClient *cli)
+{
+    return &((ClientData *) cli->GetClientData())->wrlock;
+}
+
 static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
 {
+    wxMutexLocker lock(*client_wrlock(client));
     client->Write(buf.data(), buf.length());
     client->Write("\r\n", 2);
 }
@@ -401,22 +429,6 @@ static void send_catchup_events(wxSocketClient *cli)
     }
 
     do_notify1(cli, ev_app_state());
-}
-
-struct ClientReadBuf
-{
-    enum { SIZE = 1024 };
-    char buf[SIZE];
-    char *dest;
-
-    ClientReadBuf() { reset(); }
-    size_t avail() const { return &buf[SIZE] - dest; }
-    void reset() { dest = &buf[0]; }
-};
-
-inline static ClientReadBuf *client_rdbuf(wxSocketClient *cli)
-{
-    return (ClientReadBuf *) cli->GetClientData();
 }
 
 static void destroy_client(wxSocketClient *cli)
@@ -1596,7 +1608,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
     client->SetFlags(wxSOCKET_NOWAIT);
     client->Notify(true);
-    client->SetClientData(new ClientReadBuf());
+    client->SetClientData(new ClientData());
 
     send_catchup_events(client);
 
@@ -1735,10 +1747,10 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     ev << NV("Frame", step.frameNumber)
        << NV("Time", step.time, 3)
        << NVMount(step.mount)
-       << NV("dx", step.cameraOffset->X, 3)
-       << NV("dy", step.cameraOffset->Y, 3)
-       << NV("RADistanceRaw", step.mountOffset->X, 3)
-       << NV("DECDistanceRaw", step.mountOffset->Y, 3)
+       << NV("dx", step.cameraOffset.X, 3)
+       << NV("dy", step.cameraOffset.Y, 3)
+       << NV("RADistanceRaw", step.mountOffset.X, 3)
+       << NV("DECDistanceRaw", step.mountOffset.Y, 3)
        << NV("RADistanceGuide", step.guideDistanceRA, 3)
        << NV("DECDistanceGuide", step.guideDistanceDec, 3);
 

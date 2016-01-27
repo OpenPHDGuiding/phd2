@@ -55,3 +55,9 @@ for help in "$top/help" "$top"/locale/*/help; do
 
     rm -rf "$TMP"
 done
+
+if [ -n "$do_web" ]; then
+    echo "building PDF user manual..."
+    "$build"/build_help_pdf.sh
+    echo "done"
+fi

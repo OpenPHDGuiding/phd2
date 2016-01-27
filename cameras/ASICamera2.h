@@ -114,7 +114,11 @@ typedef struct _ASI_CAMERA_INFO
 	ASI_BOOL IsCoolerCam;
 	ASI_BOOL IsUSB3Host;
 	ASI_BOOL IsUSB3Camera;
-	char Unused[28];
+	float ElecPerADU;
+	int OffsetLGain;
+	int OffsetHGain;
+
+	char Unused[16];
 } ASI_CAMERA_INFO;
 
 typedef enum ASI_CONTROL_TYPE{ //Control type//

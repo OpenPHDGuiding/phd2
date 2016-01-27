@@ -235,7 +235,7 @@ guiding is restarted. &nbsp;You might do this for a variety of
 reasons
 - you might have rotated the guide camera or slewed&nbsp;to a target close to the celestial pole, etc.
 &nbsp;You can also accomplish the same result by doing a Shift-Click on
-the guiding icon on the main page, which will force a re-calibration.</li><li>'<a name="Declination_compensation"></a>Use
+the PHD2/guiding icon on the main page, which will force a re-calibration.</li><li>'<a name="Declination_compensation"></a>Use
 Declination Compensation' - if PHD2 can get pointing information from
 the mount via an ASCOM connection ('Mount' or 'Aux'), it will
 automatically adjust the RA guide rate based on the current declination.
@@ -246,9 +246,14 @@ re-center after calibration or dither' - during calibration or
 dithering, the mount may be moved a significant distance from the
 initial "lock" position. &nbsp;If you click this checkbox, PHD2 will
 move the mount&nbsp;back to the lock position as quickly as possible,
-using the largest guide commands permitted by the 'Max Duration' settings of
+using the largest guide commands permitted by the 'Max Duration'
+settings of
 your guide algorithms. &nbsp;This is only an optimization, so the use
-of this checkbox is completely optional.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
+of this checkbox is completely optional. &nbsp;If you find that
+calibration fails because the star is lost during the fast re-center,
+you should disable this option. &nbsp;That sort of problem probably
+indicates you have a large polar alignment error or excessive periodic
+error in RA.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
 output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data after a meridian flip. &nbsp;Some
 mounts track their 'side of pier' state and automatically reverse the

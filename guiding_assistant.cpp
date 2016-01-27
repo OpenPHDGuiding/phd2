@@ -779,7 +779,7 @@ void GuidingAsstWin::MakeRecommendations()
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
     // Always make a recommendation on exposure times
-    wxString msg = SizedMsg(wxString::Format("Try using exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
+    wxString msg = SizedMsg(wxString::Format("Try to keep your exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
     if (!m_exposure_msg)
         m_exposure_msg = AddRecommendationEntry(msg);
     else
@@ -1080,8 +1080,8 @@ void GuidingAsstWin::FillResultCell(wxGrid *pGrid, wxGridCellCoords loc, double 
 
 void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
-    double ra = info.mountOffset->X;
-    double dec = info.mountOffset->Y;
+    double ra = info.mountOffset.X;
+    double dec = info.mountOffset.Y;
     double prevRAlpf = m_statsRA.lpf;
 
     m_statsRA.AddSample(ra);
@@ -1090,7 +1090,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     if (m_statsRA.n == 1)
     {
         minRA = maxRA = ra;
-        m_startPos = *info.mountOffset;
+        m_startPos = info.mountOffset;
         maxRateRA = 0.0;
     }
     else

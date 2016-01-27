@@ -34,15 +34,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-24 17:25-0500\n"
-"PO-Revision-Date: 2015-09-07 14:04+0800\n"
+"POT-Creation-Date: 2016-01-26 20:02-0500\n"
+"PO-Revision-Date: 2016-01-18 15:30+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.8.5\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -56,7 +56,7 @@ msgstr "整體"
 
 #: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1432
 #: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
-#: gear_dialog.cpp:999 myframe.cpp:849
+#: gear_dialog.cpp:1000 myframe.cpp:849
 msgid "Camera"
 msgstr "相機"
 
@@ -74,7 +74,7 @@ msgstr "其他裝置"
 
 #: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1443
 #: config_INDI.cpp:107 eegg.cpp:112 gear_dialog.cpp:251 gear_dialog.cpp:253
-#: gear_dialog.cpp:1177 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
+#: gear_dialog.cpp:1178 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "赤道儀"
 
@@ -82,59 +82,59 @@ msgstr "赤道儀"
 msgid "No mount specified"
 msgstr "沒有指定赤道儀"
 
-#: backlash_comp.cpp:116
+#: backlash_comp.cpp:120
 msgid "Backlash Results"
 msgstr "回差結果"
 
-#: backlash_comp.cpp:199
+#: backlash_comp.cpp:203
 msgid "Ideal"
 msgstr "理想值"
 
-#: backlash_comp.cpp:201
+#: backlash_comp.cpp:205
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:202 mount.cpp:758 scope.cpp:1607 scope.cpp:1711
-#: scope.cpp:1745 testguide.cpp:152
+#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:203 mount.cpp:758 scope.cpp:1607 scope.cpp:1711
-#: scope.cpp:1745 testguide.cpp:152
+#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "South"
 msgstr "南向"
 
-#: backlash_comp.cpp:259
+#: backlash_comp.cpp:263
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "無法執行回差測量, 請重新校准赤道儀"
 
-#: backlash_comp.cpp:381
+#: backlash_comp.cpp:385
 msgid "Could not clear North backlash - test failed"
 msgstr "無法清除北向回差, 測試失敗"
 
-#: backlash_comp.cpp:424
+#: backlash_comp.cpp:428
 msgid "Star too close to edge for accurate measurement of backlash"
 msgstr "星點太靠近影像邊緣, 無法精準地測量回差"
 
-#: backlash_comp.cpp:469
+#: backlash_comp.cpp:473
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "開始測試 %d ms 的回差修正"
 
-#: backlash_comp.cpp:528
+#: backlash_comp.cpp:532
 msgid "Restoring star position"
 msgstr "回復星點位置"
 
-#: backlash_comp.cpp:536
+#: backlash_comp.cpp:540
 msgid "Measurement complete"
 msgstr "測量完成"
 
-#: backlash_comp.cpp:545
+#: backlash_comp.cpp:549
 msgid "Measurement halted"
 msgstr "測量中斷"
 
-#: backlash_comp.cpp:555
+#: backlash_comp.cpp:559
 msgid "Measurement encountered an error: "
 msgstr "測量時發生錯誤:"
 
@@ -192,7 +192,7 @@ msgstr "垂直誤差:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:238 guiding_assistant.cpp:1143
+#: calreview_dialog.cpp:238 guiding_assistant.cpp:1144
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -226,11 +226,11 @@ msgstr "預期赤緯速率:"
 
 #: calreview_dialog.cpp:291
 msgid "Binning:"
-msgstr ""
+msgstr "影像併合:"
 
 #: calreview_dialog.cpp:293
 msgid "Created:"
-msgstr ""
+msgstr "已建立:"
 
 #: calreview_dialog.cpp:294 guidinglog.cpp:197 guidinglog.cpp:203 mount.cpp:52
 #: statswindow.cpp:216
@@ -243,7 +243,7 @@ msgstr "赤道儀組態"
 
 #: calreview_dialog.cpp:314
 msgid "Modified:"
-msgstr ""
+msgstr "已修改:"
 
 #: calreview_dialog.cpp:316
 msgid "Focal length:"
@@ -256,19 +256,19 @@ msgstr "影像解析度："
 #: calreview_dialog.cpp:326
 #, c-format
 msgid "Binning: %d"
-msgstr ""
+msgstr "影像併合: %d"
 
 #: calreview_dialog.cpp:331
 msgid "Side-of-pier:"
 msgstr "赤道儀方向"
 
 #: calreview_dialog.cpp:332 cam_simulator.cpp:1587 guidinglog.cpp:201
-#: mount.cpp:55 mount.cpp:739 testguide.cpp:152
+#: mount.cpp:55 mount.cpp:759 testguide.cpp:152
 msgid "East"
 msgstr "東"
 
 #: calreview_dialog.cpp:333 cam_simulator.cpp:1587 guidinglog.cpp:202
-#: mount.cpp:56 mount.cpp:739 testguide.cpp:152
+#: mount.cpp:56 mount.cpp:759 testguide.cpp:152
 msgid "West"
 msgstr "西"
 
@@ -316,12 +316,9 @@ msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
 "Normally, these angles will be nearly perpendicular, having an "
 "'orthogonality error' of less than 10 degrees.  In this calibration, your "
-"error was %s degrees. This could mean the calibration is inaccurate, perhaps "
-"because of small or erratic star movement during the calibration."
+"error was %s degrees, which is often caused by poor polar alignment or a "
+"large periodic error in RA."
 msgstr ""
-"校準所計算出的赤經及赤緯角度有問題，通常這個角度需接近垂直, 正直誤差"
-"(Aothogonality Error)需小於 10 度，而此校準過程所或的的正值誤差為 %s 度，也就"
-"是說此次校準並不正確，可能是校準過程中星點位移異常所造成的。"
 
 #: calreview_dialog.cpp:594
 #, c-format
@@ -341,13 +338,10 @@ msgstr ""
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
 "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
-"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could mean "
-"the calibration is inaccurate, perhaps because of small or erratic star "
-"movement during the calibration."
+"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This often "
+"means one of the axis calibrations is inaccurate, which may result in poor "
+"guiding."
 msgstr ""
-"赤經及赤緯導星速率因赤道儀異常而導致不同，赤緯速率為 %0.0f 的話，赤經速率需約"
-"為赤緯速率的 %0.0f%%，但是目前你的赤經速率為赤緯速率的 %0.0f%%，可能是因為星"
-"點異常移動或微量誤導致校準不正確所致。"
 
 #: calreview_dialog.cpp:641
 msgid "Explanation"
@@ -443,11 +437,11 @@ msgstr "導星相機像素尺寸"
 
 #: calstep_dialog.cpp:126 statswindow.cpp:104
 msgid "Camera binning"
-msgstr ""
+msgstr "相機影像併合"
 
 #: calstep_dialog.cpp:126
 msgid "Guide camera pixel binning"
-msgstr ""
+msgstr "導星相機像素併合"
 
 #: calstep_dialog.cpp:132
 msgid "Guide speed, n.nn x sidereal"
@@ -510,7 +504,7 @@ msgstr "像素大小需大於 0"
 
 #: cam_Altair.cpp:56
 msgid "Altair Camera Settings"
-msgstr ""
+msgstr "Altair 相機設定"
 
 #: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
 msgid "Settings"
@@ -537,10 +531,10 @@ msgstr "設定"
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
 #: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:257 cam_wdm.cpp:132 cam_wdm.cpp:141
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:178
-#: cam_ZWO.cpp:193 cam_ZWO.cpp:208 cam_ZWO.cpp:214 cam_ZWO.cpp:255
-#: gear_dialog.cpp:1172 gear_dialog.cpp:1830 gear_dialog.cpp:1839
-#: gear_dialog.cpp:1846 gear_dialog.cpp:1891 gear_dialog.cpp:1897
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:254
+#: gear_dialog.cpp:1173 gear_dialog.cpp:1831 gear_dialog.cpp:1840
+#: gear_dialog.cpp:1847 gear_dialog.cpp:1892 gear_dialog.cpp:1898
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
 #: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
 #: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
@@ -620,7 +614,7 @@ msgstr "ASCOM 驅動程式缺少 PixelSizeY 屬性"
 
 #: cam_ascomlate.cpp:717 cam_ascomlate.cpp:829
 msgid "The ASCOM camera failed to set binning."
-msgstr ""
+msgstr "ASCOM 相機無法設定影像併合"
 
 #: cam_ascomlate.cpp:744
 msgid "ASCOM driver problem -- cannot disconnect"
@@ -783,7 +777,7 @@ msgstr "Webcam 設定"
 
 #: cam_openssag.cpp:97 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
-msgstr ""
+msgstr "無法啟用 USB 程式庫"
 
 #: cam_OSPL130.cpp:85 cam_SBIG.cpp:441
 msgid "Cannot start exposure"
@@ -1157,11 +1151,11 @@ msgstr ""
 "ASI 相機程式庫需要 Microsoft Visual C++ 2008 可轉發套件 (x86), 此套件可以由 "
 "http://www.microsoft.com/en-us/download/details.aspx?id=29 取得"
 
-#: cam_ZWO.cpp:208 cam_ZWO.cpp:255
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:254
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "無法取得供 ZWO ASI 相機的屬性"
 
-#: cam_ZWO.cpp:214
+#: cam_ZWO.cpp:213
 msgid "Failed to open ZWO ASI Camera."
 msgstr "無法開啟 ZWO ASI 相機"
 
@@ -1183,12 +1177,12 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔"
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:222
 #: camera.cpp:363 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
-#: gear_dialog.cpp:937 gear_dialog.cpp:1591 gear_dialog.cpp:1592
-#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:610
+#: gear_dialog.cpp:937 gear_dialog.cpp:1592 gear_dialog.cpp:1593
+#: gear_dialog.cpp:1594 mount.cpp:113 mount.cpp:142 mount.cpp:612
 #: myframe.cpp:2291 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
-#: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
-#: scope.cpp:294 scope.cpp:332 stepguider.cpp:92 stepguider.cpp:116
+#: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:267
+#: scope.cpp:309 scope.cpp:347 stepguider.cpp:92 stepguider.cpp:116
 msgid "None"
 msgstr "無"
 
@@ -1293,11 +1287,11 @@ msgstr ""
 
 #: camera.cpp:829
 msgid "Binning"
-msgstr ""
+msgstr "影像併合"
 
 #: camera.cpp:829
 msgid "Camera pixel binning"
-msgstr ""
+msgstr "相機像素併合"
 
 #: camera.cpp:837
 msgid "Delay"
@@ -1340,10 +1334,13 @@ msgid ""
 "working correctly, you can increase the timeout period on the Camera tab of "
 "the Advanced Settings Dialog."
 msgstr ""
+"在 %.1f 秒後, 相機無法完成 %.1f 秒的曝光, 因此將相機連線切斷以避免產生其他問"
+"題。如果你認為相機沒有問題, 可以增加進階設定交談框中 [相機] 項目的逾時時間來"
+"解決這個問題。"
 
 #: camera.cpp:1230
 msgid "PHD will make several attempts to re-connect the camera."
-msgstr ""
+msgstr "PHD 將嘗試重新連接相機。"
 
 #: camera.cpp:1235
 msgid ""
@@ -1461,34 +1458,34 @@ msgstr ""
 "然後, 點選【開始】按鈕開始調校。"
 
 #: comet_tool.cpp:320 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:542 statswindow.cpp:66 target.cpp:339
+#: guide_algorithm.cpp:48 scope.cpp:557 statswindow.cpp:66 target.cpp:339
 msgid "RA"
 msgstr "赤經"
 
-#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:542
+#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:557
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr "赤緯"
 
 #: config_INDI.cpp:62
 msgid "INDI Configuration"
-msgstr ""
+msgstr "INDI 組態設定"
 
 #: config_INDI.cpp:79
 msgid "INDI Server"
-msgstr ""
+msgstr "INDI 伺服器"
 
 #: config_INDI.cpp:83
 msgid "Hostname"
-msgstr ""
+msgstr "主機名稱"
 
 #: config_INDI.cpp:89 config_INDI.cpp:128
 msgid "Port"
-msgstr ""
+msgstr "通訊埠"
 
 #: config_INDI.cpp:95 config_INDI.cpp:191
 msgid "Disconnected"
-msgstr ""
+msgstr "斷開連線"
 
 #: config_INDI.cpp:97 gear_dialog.cpp:486 gear_dialog.cpp:512
 #: gear_dialog.cpp:528 gear_dialog.cpp:549 gear_dialog.cpp:593
@@ -1500,35 +1497,35 @@ msgstr "連接"
 
 #: config_INDI.cpp:102
 msgid "Device"
-msgstr ""
+msgstr "設備"
 
 #: config_INDI.cpp:112
 msgid "Driver"
-msgstr ""
+msgstr "驅動程式"
 
 #: config_INDI.cpp:119
 msgid "CCD"
-msgstr ""
+msgstr "CCD"
 
 #: config_INDI.cpp:122
 msgid "Main imager"
-msgstr ""
+msgstr "主要影像設備"
 
 #: config_INDI.cpp:123
 msgid "Guider"
-msgstr ""
+msgstr "導星設定"
 
 #: config_INDI.cpp:134
 msgid "Other options"
-msgstr ""
+msgstr "其他選項"
 
 #: config_INDI.cpp:136
 msgid "INDI"
-msgstr ""
+msgstr "INDI"
 
 #: config_INDI.cpp:184
 msgid "Connected"
-msgstr ""
+msgstr "已連接"
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -1852,15 +1849,15 @@ msgstr "調整仰角後, 點擊\"飄移\""
 
 #: drift_tool.cpp:546
 msgid "Slewing..."
-msgstr ""
+msgstr "轉向中..."
 
 #: drift_tool.cpp:555
 msgid "Slew failed!"
-msgstr ""
+msgstr "轉向失敗"
 
 #: drift_tool.cpp:564
 msgid "Slew was canceled"
-msgstr ""
+msgstr "轉向被中斷"
 
 #: drift_tool.cpp:582
 msgid "Slewing ..."
@@ -1892,7 +1889,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "無校準資料"
 
-#: eegg.cpp:56 myframe_events.cpp:856
+#: eegg.cpp:56 myframe_events.cpp:859
 msgid "Please connect a mount first."
 msgstr "請連接赤道儀"
 
@@ -2163,115 +2160,115 @@ msgstr "警告: 更改相機"
 msgid "Connecting to Camera ..."
 msgstr "正在連接相機..."
 
-#: gear_dialog.cpp:998
+#: gear_dialog.cpp:999
 msgid "Camera Connected"
 msgstr "相機連接成功"
 
-#: gear_dialog.cpp:1005
+#: gear_dialog.cpp:1006
 msgid "Camera Connect Failed"
 msgstr "相機連接失敗"
 
-#: gear_dialog.cpp:1046
+#: gear_dialog.cpp:1047
 msgid "Camera Disconnected"
 msgstr "相機已中斷"
 
-#: gear_dialog.cpp:1162
+#: gear_dialog.cpp:1163
 msgid "Connecting to Mount ..."
 msgstr "正在連接赤道儀..."
 
-#: gear_dialog.cpp:1172
+#: gear_dialog.cpp:1173
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "赤道儀不具備所需的 PulaseGuide 介面"
 
-#: gear_dialog.cpp:1176
+#: gear_dialog.cpp:1177
 msgid "Mount Connected"
 msgstr "赤道儀連接成功"
 
-#: gear_dialog.cpp:1189
+#: gear_dialog.cpp:1190
 msgid "Mount Connect Failed"
 msgstr "赤道儀連接失敗"
 
-#: gear_dialog.cpp:1208
+#: gear_dialog.cpp:1209
 msgid "Connecting to Aux Mount ..."
 msgstr "正在連接 AUX 赤道儀..."
 
-#: gear_dialog.cpp:1215
+#: gear_dialog.cpp:1216
 msgid "Aux Mount Connected"
 msgstr "AUX 赤道儀連接成功"
 
-#: gear_dialog.cpp:1223
+#: gear_dialog.cpp:1224
 msgid "Aux Mount Connect Failed"
 msgstr "AUX 赤道儀連接失敗"
 
-#: gear_dialog.cpp:1244
+#: gear_dialog.cpp:1245
 msgid "Mount Disconnected"
 msgstr "赤道儀已切斷"
 
-#: gear_dialog.cpp:1275
+#: gear_dialog.cpp:1276
 msgid "Aux Mount Disconnected"
 msgstr "AUX 赤道儀已中斷"
 
-#: gear_dialog.cpp:1291
+#: gear_dialog.cpp:1292
 msgid "Hide"
 msgstr "隱藏"
 
-#: gear_dialog.cpp:1297
+#: gear_dialog.cpp:1298
 msgid "More Equipment ..."
 msgstr "其他裝置"
 
-#: gear_dialog.cpp:1357
+#: gear_dialog.cpp:1358
 msgid "Connecting to AO ..."
 msgstr "正在連接 AO ..."
 
-#: gear_dialog.cpp:1367
+#: gear_dialog.cpp:1368
 msgid "AO Connected"
 msgstr "AO 連接成功"
 
-#: gear_dialog.cpp:1380
+#: gear_dialog.cpp:1381
 msgid "AO Connect Failed"
 msgstr "AO 連接失敗"
 
-#: gear_dialog.cpp:1407
+#: gear_dialog.cpp:1408
 msgid "AO Disconnected"
 msgstr "AO 已中斷"
 
-#: gear_dialog.cpp:1471
+#: gear_dialog.cpp:1472
 msgid "Connecting to Rotator ..."
 msgstr "正在連接相場旋轉器..."
 
-#: gear_dialog.cpp:1481
+#: gear_dialog.cpp:1482
 msgid "Rotator Connected"
 msgstr "相場旋轉器連接成功"
 
-#: gear_dialog.cpp:1494
+#: gear_dialog.cpp:1495
 msgid "Rotator Connect Failed"
 msgstr "相場旋轉器連接失敗"
 
-#: gear_dialog.cpp:1516
+#: gear_dialog.cpp:1517
 msgid "Rotator Disconnected"
 msgstr "相場旋轉器已切斷"
 
-#: gear_dialog.cpp:1785
+#: gear_dialog.cpp:1786
 msgid "New Equipment Profile"
 msgstr "新建設備配置檔案"
 
-#: gear_dialog.cpp:1792
+#: gear_dialog.cpp:1793
 msgid "Name"
 msgstr "檔名"
 
-#: gear_dialog.cpp:1796
+#: gear_dialog.cpp:1797
 msgid "Enter the name of the new equipment profile"
 msgstr "輸入新建設備配置檔案檔名"
 
-#: gear_dialog.cpp:1800
+#: gear_dialog.cpp:1801
 msgid "PHD Defaults"
 msgstr "PHD 預設"
 
-#: gear_dialog.cpp:1803
+#: gear_dialog.cpp:1804
 msgid "Profile initial settings"
 msgstr "設備配置檔案初始設定"
 
-#: gear_dialog.cpp:1806
+#: gear_dialog.cpp:1807
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2279,48 +2276,48 @@ msgstr ""
 "選擇【PHD預設值】，以建立包含 PHD預設值的設備配置檔案, 或者選擇已存在的設備配"
 "置檔案並拷貝其內容到新建的設備配置檔案。"
 
-#: gear_dialog.cpp:1830
+#: gear_dialog.cpp:1831
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "無法建立設備配置檔案 %s，已存在相同檔名的配置檔。"
 
-#: gear_dialog.cpp:1839
+#: gear_dialog.cpp:1840
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "無法建立設備配置檔案 %s，來源檔案 %s"
 
-#: gear_dialog.cpp:1846 profile_wizard.cpp:466
+#: gear_dialog.cpp:1847 profile_wizard.cpp:466
 #, c-format
 msgid "Could not create profile %s"
 msgstr "無法建立設備配置檔案 %s。"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 #, c-format
 msgid "Delete profile %s?"
 msgstr "刪除設備配置檔案 %s ?"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 msgid "Delete Equipment Profile"
 msgstr "删除配置文件"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 #, c-format
 msgid "Rename %s"
 msgstr "重新命名  %s"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 msgid "Rename Equipment Profile"
 msgstr "重新命名設備配置檔案"
 
-#: gear_dialog.cpp:1897
+#: gear_dialog.cpp:1898
 msgid "Could not rename profile"
 msgstr "無法重新命名設備配置檔案"
 
-#: gear_dialog.cpp:1911
+#: gear_dialog.cpp:1912
 msgid "Import PHD Equipment Profiles"
 msgstr "匯入 PHD 設備配置檔案"
 
-#: gear_dialog.cpp:1944
+#: gear_dialog.cpp:1945
 msgid "Export PHD Equipment Profile"
 msgstr "匯出 PHD 設備配置檔案"
 
@@ -2705,26 +2702,26 @@ msgstr "未找到可用星點"
 #: guider_onestar.cpp:356
 #, c-format
 msgid "m=%.0f SNR=%.1f"
-msgstr ""
+msgstr "m=%.0f SNR=%.1f"
 
 #: guider_onestar.cpp:359
 msgid "Saturated"
-msgstr ""
+msgstr "亮度太高"
 
 #: guider_onestar.cpp:369
 #, c-format
 msgid "Exp=%0.1f s"
-msgstr ""
+msgstr "曝光=%0.1f s"
 
 #: guider_onestar.cpp:371
 #, c-format
 msgid "Exp=%d ms"
-msgstr ""
+msgstr "曝光=%d ms"
 
 #: guider_onestar.cpp:429
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
-msgstr ""
+msgstr "自動選擇在 (%.1f, %.1f) 的星體"
 
 #: guider_onestar.cpp:589
 #, c-format
@@ -2781,7 +2778,7 @@ msgstr "導星小幫手"
 
 #: guiding_assistant.cpp:276
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
-msgstr ""
+msgstr " -999.99 像素/分 (-999.99 秒弧/分 )"
 
 #: guiding_assistant.cpp:278
 msgid "Measurement Status"
@@ -2849,7 +2846,7 @@ msgstr "赤經最大飄移率"
 
 #: guiding_assistant.cpp:373
 msgid "Drift-limiting exposure"
-msgstr ""
+msgstr "飄移限制曝光"
 
 #: guiding_assistant.cpp:377
 msgid "Declination Drift Rate"
@@ -2947,22 +2944,25 @@ msgid "Estimated overall drift rate in right ascension."
 msgstr "評估在赤經方向的總飄移量"
 
 #: guiding_assistant.cpp:511
-msgid ""
-"Maximum drift rate in right ascension during sampling period; may be useful "
-"for setting exposure time."
+msgid "Maximum drift rate in right ascension during sampling period."
 msgstr "在取樣週期內, 赤經方向的最大飄移量。此數值對設定曝光時間會有所幫助。"
 
 #: guiding_assistant.cpp:512
+msgid ""
+"Exposure time to keep maximum RA drift below the recommended min-move level."
+msgstr "曝光時間維持在建議最小移動層度以下的最大 RA 飄移值。"
+
+#: guiding_assistant.cpp:513
 msgid "Estimated overall drift rate in declination."
 msgstr "評估在赤緯方向的總飄移量"
 
-#: guiding_assistant.cpp:513
+#: guiding_assistant.cpp:514
 msgid ""
 "Estimate of declination backlash if backlash testing was completed "
 "successfully"
 msgstr "回差測試完成後所估得的赤緯軸回差"
 
-#: guiding_assistant.cpp:514
+#: guiding_assistant.cpp:515
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -2970,17 +2970,17 @@ msgstr ""
 "評估極軸校準誤差, 如果不知道赤道儀偏差值的話, 所顯示的數值只是下限值而已, 實"
 "際的誤差可能更大。"
 
-#: guiding_assistant.cpp:545
+#: guiding_assistant.cpp:546
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並開始進行導星"
 
-#: guiding_assistant.cpp:549
+#: guiding_assistant.cpp:550
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
 msgstr "點擊【開始】進行評量，這段時間導星動作會暫停，因此星體會發生偏移。"
 
-#: guiding_assistant.cpp:554
+#: guiding_assistant.cpp:555
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 1 minute)."
@@ -2988,7 +2988,7 @@ msgstr ""
 "導星訊號關閉並開始評估星點的位移量，當 RMS 數值漸趨穩定(至少需一分鐘以上的時"
 "間)後點擊【停止】按鈕"
 
-#: guiding_assistant.cpp:557
+#: guiding_assistant.cpp:558
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -2997,102 +2997,102 @@ msgstr ""
 "重新開始導星，請檢視建議值並依你的需求更改數值。點擊【開始】以重複評量動作或"
 "者關閉本視窗繼續導星動作。"
 
-#: guiding_assistant.cpp:568 guiding_assistant.cpp:573
+#: guiding_assistant.cpp:569 guiding_assistant.cpp:574
 msgid "Measuring backlash: "
 msgstr "測量回差當中:"
 
-#: guiding_assistant.cpp:582 guiding_assistant.cpp:1139
+#: guiding_assistant.cpp:583 guiding_assistant.cpp:1140
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:582
+#: guiding_assistant.cpp:583
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:673 guiding_assistant.cpp:674
+#: guiding_assistant.cpp:674 guiding_assistant.cpp:675
 msgid "Apply"
 msgstr "套用"
 
-#: guiding_assistant.cpp:790
+#: guiding_assistant.cpp:791
 msgid "Consider re-doing your calibration "
-msgstr ""
+msgstr "請考慮重作校準"
 
-#: guiding_assistant.cpp:792
+#: guiding_assistant.cpp:793
 msgid "(Prior alert)"
-msgstr ""
+msgstr "(之前的告警)"
 
-#: guiding_assistant.cpp:794
+#: guiding_assistant.cpp:795
 msgid "(Backlash clearing)"
-msgstr ""
+msgstr "(清除回差當中)"
 
-#: guiding_assistant.cpp:804
+#: guiding_assistant.cpp:805
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
-msgstr ""
-
-#: guiding_assistant.cpp:820
-msgid "Polar alignment error > 5 arc-min; that could probably be improved."
-msgstr ""
+msgstr "請選用一顆較亮的星體來做測試, 或者延長曝光時間"
 
 #: guiding_assistant.cpp:821
+msgid "Polar alignment error > 5 arc-min; that could probably be improved."
+msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
+
+#: guiding_assistant.cpp:822
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準。"
 
-#: guiding_assistant.cpp:841 guiding_assistant.cpp:846
+#: guiding_assistant.cpp:842 guiding_assistant.cpp:847
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "嘗試設定 RA min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:856 guiding_assistant.cpp:861
+#: guiding_assistant.cpp:857 guiding_assistant.cpp:862
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:872
+#: guiding_assistant.cpp:873
 #, c-format
 msgid "Try setting a Dec backlash value of %d ms"
 msgstr "請嘗試設定一個 %d ms 的赤緯軸回差值。"
 
-#: guiding_assistant.cpp:874
+#: guiding_assistant.cpp:875
 #, c-format
 msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
 msgstr "回差為 %0.1f 像素; 你可能僅需要單一赤緯方向的導星。"
 
-#: guiding_assistant.cpp:981
+#: guiding_assistant.cpp:982
 msgid "Backlash test aborted..."
 msgstr "回差測試終止..."
 
-#: guiding_assistant.cpp:1015 guiding_assistant.cpp:1022
+#: guiding_assistant.cpp:1016 guiding_assistant.cpp:1023
 msgid "Measuring backlash... "
 msgstr "回差測量當中..."
 
-#: guiding_assistant.cpp:1044
+#: guiding_assistant.cpp:1045
 msgid "Guiding stopped"
 msgstr "導星終止"
 
-#: guiding_assistant.cpp:1138
+#: guiding_assistant.cpp:1139
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1140
+#: guiding_assistant.cpp:1141
 msgid "arc-sec"
 msgstr "角秒"
 
-#: guiding_assistant.cpp:1141
+#: guiding_assistant.cpp:1142
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1142
+#: guiding_assistant.cpp:1143
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1144
+#: guiding_assistant.cpp:1145
 msgid "arc-sec/min"
 msgstr "角秒/分鐘"
 
-#: guiding_assistant.cpp:1145
+#: guiding_assistant.cpp:1146
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
@@ -3112,7 +3112,7 @@ msgstr "手動校準"
 
 #: manualcal_dialog.cpp:46
 msgid "Camera binning:"
-msgstr ""
+msgstr "相機影像併合:"
 
 #: manualcal_dialog.cpp:54
 msgid "RA rate, px/sec (e.g. 5.0):"
@@ -3180,30 +3180,30 @@ msgstr ""
 "點選此撿核項來進行導星, 解除該檢核項可以關閉所有對赤道儀的導星命令讓赤道儀在"
 "自由追蹤狀況下運行"
 
-#: mount.cpp:660
+#: mount.cpp:662
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:739
+#: mount.cpp:759
 #, c-format
 msgid "%s %5.2f px %3d ms"
 msgstr "%s %5.2f px %3d ms"
 
-#: mount.cpp:756
+#: mount.cpp:776
 #, c-format
 msgid "%s%*s%s %.2f px %d ms"
 msgstr "%s%*s%s %.2f px %d ms"
 
-#: mount.cpp:942
+#: mount.cpp:957
 msgid "RA:"
 msgstr "赤經:"
 
-#: mount.cpp:947
+#: mount.cpp:962
 msgid "DEC:"
 msgstr "赤緯:"
 
-#: mount.cpp:1024
+#: mount.cpp:1039
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "因為相場旋轉器位置改變, 必須要重新校準。"
 
@@ -3604,7 +3604,7 @@ msgstr "標記"
 msgid "&Help"
 msgstr "輔助"
 
-#: myframe.cpp:795 scope.cpp:1607 scope.cpp:1711 scope.cpp:1745
+#: myframe.cpp:795 scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Auto"
 msgstr "自動"
 
@@ -3693,11 +3693,11 @@ msgstr "確定要在影像拍攝進行當中關閉程式?"
 msgid "Confirm Exit"
 msgstr "確認關閉"
 
-#: myframe.cpp:1814 usImage.cpp:365
+#: myframe.cpp:1814 usImage.cpp:428
 msgid "FITS file is not of an image: "
 msgstr "該 FITS 檔案不是一個影像檔"
 
-#: myframe.cpp:1822 usImage.cpp:377
+#: myframe.cpp:1822 usImage.cpp:440
 msgid "Unsupported type or read error loading FITS file "
 msgstr "載入 FITS 黨時發生錯誤或不支援該檔案格式"
 
@@ -3715,7 +3715,7 @@ msgstr "讀取 FITS 檔案時發生記憶體配置錯誤"
 msgid "Error reading data from "
 msgstr "讀取資料發生錯誤"
 
-#: myframe.cpp:1879 usImage.cpp:409
+#: myframe.cpp:1879 usImage.cpp:472
 msgid "Error opening FITS file "
 msgstr "打開 FITS 檔案發生錯誤"
 
@@ -3928,8 +3928,8 @@ msgstr "確認"
 msgid "You must restart PHD2 for the language change to take effect."
 msgstr "更改介面語言需重新啟動 PHD2 後才會生效"
 
-#: myframe.cpp:2465 myframe_events.cpp:276 myframe_events.cpp:469
-#: myframe_events.cpp:570
+#: myframe.cpp:2465 myframe_events.cpp:276 myframe_events.cpp:472
+#: myframe_events.cpp:573
 msgid "Info"
 msgstr "提示"
 
@@ -4017,7 +4017,7 @@ msgstr "該影像無法儲存 %s"
 msgid "%s saved"
 msgstr "%s 已儲存"
 
-#: myframe_events.cpp:276 myframe_events.cpp:469 myframe_events.cpp:570
+#: myframe_events.cpp:276 myframe_events.cpp:472 myframe_events.cpp:573
 msgid "Please connect to a camera first"
 msgstr "請先連接相機"
 
@@ -4034,38 +4034,38 @@ msgstr ""
 "為優化壞點影像, PHD2 現顯示相機的基礎影像檔, 此檔案與此相機平常作為導星用的影"
 "像大小不同。"
 
-#: myframe_events.cpp:322 myframe_events.cpp:793 scope.cpp:538 scope.cpp:545
+#: myframe_events.cpp:322 myframe_events.cpp:796 scope.cpp:553 scope.cpp:560
 #: scope_ascom.cpp:695 stepguider.cpp:1007
 msgid ""
 "Don't show\n"
 "this again"
 msgstr "不要再顯示"
 
-#: myframe_events.cpp:484
+#: myframe_events.cpp:487
 msgid "You must connect a camera before loading a dark library"
 msgstr "載入暗場影像前你必需要連接到相機"
 
-#: myframe_events.cpp:511
+#: myframe_events.cpp:514
 msgid "Dark library unloaded"
 msgstr "無法卸載暗場影像庫"
 
-#: myframe_events.cpp:526
+#: myframe_events.cpp:529
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr "載入壞點影像前你必需要連接到相機"
 
-#: myframe_events.cpp:541
+#: myframe_events.cpp:544
 msgid "Defect map loaded"
 msgstr "載入壞點影像"
 
-#: myframe_events.cpp:545
+#: myframe_events.cpp:548
 msgid "Defect map not loaded"
 msgstr "壞點影像未能載入"
 
-#: myframe_events.cpp:557
+#: myframe_events.cpp:560
 msgid "Bad-pixel map unloaded"
 msgstr "壞點影像已經卸載"
 
-#: myframe_events.cpp:790
+#: myframe_events.cpp:793
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
@@ -4074,19 +4074,19 @@ msgstr ""
 "位取得最佳的結果，建議在導星時使用暗場影像或壞點影像庫，如此可以避免 PHD 選到"
 "熱噪點當導星星體，請利用【暗場】功能表項來建立暗場或壞點影像庫"
 
-#: myframe_events.cpp:831
+#: myframe_events.cpp:834
 msgid "Are you sure you want force recalibration?"
 msgstr "是否希望強制重新校準？"
 
-#: myframe_events.cpp:832
+#: myframe_events.cpp:835
 msgid "Force Recalibration"
 msgstr "強制重新校準"
 
-#: myframe_events.cpp:856 testguide.cpp:146
+#: myframe_events.cpp:859 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "手動導星"
 
-#: myframe_events.cpp:912
+#: myframe_events.cpp:915
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4097,15 +4097,15 @@ msgstr ""
 "似乎這是第一次連接到你的相機和赤道儀, 設定精靈將會幫助你為你所使用設備\n"
 "設定導星所需的基本參數。是否要使用設定精靈呢?"
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "No"
 msgstr "否"
 
-#: myframe_events.cpp:915
+#: myframe_events.cpp:918
 msgid "Setup Wizard Recommendation"
 msgstr "設定精靈建議值"
 
@@ -4262,10 +4262,12 @@ msgid ""
 "a multiple of the sidereal rate. If you don't know, leave the setting at the "
 "default value (0.5X)"
 msgstr ""
+"用來進行校準及導星的赤道儀導星速率以恆星時乘以某個數值來表示, 如果你不清楚的"
+"話, 採用預設值 (0.5X) 即可。"
 
 #: profile_wizard.cpp:159
 msgid "Mount guide speed (n.n x sidereal)"
-msgstr ""
+msgstr "赤道儀導星速率 (n.n x 恆星時)"
 
 #: profile_wizard.cpp:165
 msgid "Build dark library"
@@ -4327,6 +4329,10 @@ msgid ""
 "also specify the camera pixel size, guide scope focal length, and mount "
 "guide speed so PHD2 can compute reasonable default settings for you."
 msgstr ""
+"由列表中選取你所使用的導星相機, PHD2 所內建支援及透過 ASCOM 驅動程式所支援的"
+"相機都顯示在其中。如果你所用的導星相機沒在裡頭, 可能是因為 PHD2 跟本不支援或"
+"你沒有安裝適當的相機驅動程式。你需設定導星相機的像素大小, 導星鏡的焦長及赤道"
+"儀導星速率等數值, 這樣 PHD2 才能夠計算出導星所需的參數值。"
 
 #: profile_wizard.cpp:236
 msgid ""
@@ -4430,7 +4436,7 @@ msgstr "選擇您的赤道儀連接 -- 這將會決定導星訊號如何傳送�
 
 #: profile_wizard.cpp:387
 msgid "Choose an Auxiliary Mount Connection (optional)"
-msgstr ""
+msgstr "請選擇輔助赤道儀 (選項)"
 
 #: profile_wizard.cpp:388
 msgid "Aux Mount:"
@@ -4704,15 +4710,15 @@ msgstr "ASCOM 驅動程式異常: 無法取得相場旋轉器位置"
 msgid "The operation was canceled"
 msgstr "此動作已被取消"
 
-#: scope.cpp:535
+#: scope.cpp:550
 msgid "Max RA Duration setting"
 msgstr "最大赤經週期設定"
 
-#: scope.cpp:535
+#: scope.cpp:550
 msgid "Max Dec Duration setting"
 msgstr "最大赤緯週期設定"
 
-#: scope.cpp:536
+#: scope.cpp:551
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
@@ -4722,7 +4728,7 @@ msgstr ""
 "因為 %s 問題讓 PHD2 無法進行修正以鎖定導星星體, 請增加 %s 讓 PHD2 進行所需要"
 "的修正工作。"
 
-#: scope.cpp:543
+#: scope.cpp:558
 #, c-format
 msgid ""
 "Even using the maximum moves, PHD2 can't properly correct for the large "
@@ -4732,135 +4738,135 @@ msgstr ""
 "即使使用最大位移量, PHD2 仍然無法在 %s 時間內讓導星星體得到適合進行修正所需要"
 "的位移量, 除非你找到問題發生真正原因, 否則導星將無法進行。"
 
-#: scope.cpp:792
+#: scope.cpp:807
 msgid "Calibration is based on very few steps, so accuracy is questionable"
 msgstr "校準步數太少, 準確性有問題"
 
-#: scope.cpp:795
+#: scope.cpp:810
 msgid "Calibration computed RA/Dec axis angles that are questionable"
 msgstr "校準所計算出的赤經/赤緯軸角度有問題"
 
-#: scope.cpp:798
+#: scope.cpp:813
 msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
 msgstr "這次校準與前次的結果有差異, 您是否有改變組態設定?"
 
-#: scope.cpp:801
+#: scope.cpp:816
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr "因為赤道儀無法預期的因素造成赤經/赤緯速率有異常變動"
 
-#: scope.cpp:808
+#: scope.cpp:823
 msgid "Details..."
 msgstr "詳細..."
 
-#: scope.cpp:984
+#: scope.cpp:999
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "赤經校準失敗: 星點移動距離不足。"
 
-#: scope.cpp:991
+#: scope.cpp:1006
 #, c-format
 msgid "West step %3d"
 msgstr "西 %3d"
 
-#: scope.cpp:1000 scope.cpp:1221
+#: scope.cpp:1015 scope.cpp:1244
 #, c-format
 msgid "angle=%.1f rate=%.3f"
 msgstr "角度=%.1f 速率=%.3f"
 
-#: scope.cpp:1037
+#: scope.cpp:1052
 #, c-format
 msgid "East step %3d"
 msgstr "東 %3d"
 
-#: scope.cpp:1094
+#: scope.cpp:1109
 msgid "Clearing backlash step 1"
 msgstr "清除回差步數1"
 
-#: scope.cpp:1129
+#: scope.cpp:1144
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "清除回差步數 %3d"
 
-#: scope.cpp:1148
+#: scope.cpp:1163
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "回差消除失敗: 星點移動距離不足。"
 
-#: scope.cpp:1185
+#: scope.cpp:1208
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤緯校準失敗: 星點移動距離不足。"
 
-#: scope.cpp:1192
+#: scope.cpp:1215
 #, c-format
 msgid "North step %3d"
 msgstr "北 %3d"
 
-#: scope.cpp:1257
+#: scope.cpp:1280
 #, c-format
 msgid "South step %3d"
 msgstr "南 %3d"
 
-#: scope.cpp:1311
+#: scope.cpp:1334
 #, c-format
 msgid "Nudge South %3d"
 msgstr "南向微調 %3d"
 
-#: scope.cpp:1341
+#: scope.cpp:1364
 msgid "calibration complete"
 msgstr "校準完畢"
 
-#: scope.cpp:1356
+#: scope.cpp:1379
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1512
+#: scope.cpp:1535
 msgid "Mount Guide Algorithms"
 msgstr "赤道儀導星演算法"
 
-#: scope.cpp:1550
+#: scope.cpp:1573
 msgid "Calibration step (ms)"
 msgstr "校準步數 (ms)"
 
-#: scope.cpp:1551
+#: scope.cpp:1574
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 "導星校準過程中導星訊號送出的週期長度為何? 點擊【計算】來計算出恰當的數值。"
 
-#: scope.cpp:1555
+#: scope.cpp:1578
 msgid "Calculate..."
 msgstr "計算機"
 
-#: scope.cpp:1556
+#: scope.cpp:1579
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
 "點擊以開啟校準步數計算器來依據你所使用的硬體設備估算出適當的校準步數大小"
 
-#: scope.cpp:1563
+#: scope.cpp:1586
 msgid "Reverse Dec output after meridian flip"
 msgstr "過中天翻轉後同時反轉赤緯輸出"
 
-#: scope.cpp:1565
+#: scope.cpp:1588
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr "過中天時, 如要讓赤道儀反轉赤緯方向的導星訊號輸出, 請核選這個選項。"
 
-#: scope.cpp:1572
+#: scope.cpp:1595
 msgid "Stop guiding when mount slews"
 msgstr "赤道儀轉動時停止導星"
 
-#: scope.cpp:1574
+#: scope.cpp:1597
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "當選用時, 假如赤道儀開始轉動, PHD 將會停止導星動作。"
 
-#: scope.cpp:1580
+#: scope.cpp:1603
 msgid "Assume Dec orthogonal to RA"
 msgstr "假設赤緯軸與赤經軸完全垂直"
 
-#: scope.cpp:1583
+#: scope.cpp:1606
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -4869,21 +4875,21 @@ msgstr ""
 "假設赤緯軸正直於赤經軸，想避免赤經軸的週期性誤差影響赤緯校準，在校準赤委實可"
 "以檢核該選項"
 
-#: scope.cpp:1587
+#: scope.cpp:1610
 msgid "Use backlash comp"
 msgstr "使用回差補償"
 
-#: scope.cpp:1588
+#: scope.cpp:1611
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr "如果你想在赤緯軸方向翻轉時發送出回差補償導星訊號時, 請核選此選項。"
 
-#: scope.cpp:1591
+#: scope.cpp:1614
 msgid "Amount"
 msgstr "數量"
 
-#: scope.cpp:1591
+#: scope.cpp:1614
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
@@ -4891,19 +4897,19 @@ msgstr ""
 "回差修正訊號長度(mSec), 如果訊號長度太長, 程式會自動降低該訊號發送長度-觀察到"
 "拍攝修正。"
 
-#: scope.cpp:1593
+#: scope.cpp:1616
 msgid "Use Dec compensation"
 msgstr "使用赤緯補償"
 
-#: scope.cpp:1595
+#: scope.cpp:1618
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr "依據赤道儀所指向的赤緯值自動調整赤經軸導星速率"
 
-#: scope.cpp:1600
+#: scope.cpp:1623
 msgid "Max RA duration"
 msgstr "最長的赤經週期時間"
 
-#: scope.cpp:1600
+#: scope.cpp:1623
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -4911,11 +4917,11 @@ msgstr ""
 "赤經方向送出導星訊號的最長時間\n"
 "預設 = 2500ms。"
 
-#: scope.cpp:1604
+#: scope.cpp:1627
 msgid "Max Dec duration"
 msgstr "最大赤緯週期"
 
-#: scope.cpp:1604
+#: scope.cpp:1627
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -4923,23 +4929,23 @@ msgstr ""
 "赤緯方向導星訊號傳送的最長時間\n"
 "預設值 = 2500ms, 如果偏移量過大, 請增加該數值。"
 
-#: scope.cpp:1607 scope.cpp:1711 scope.cpp:1745
+#: scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Off"
 msgstr "關"
 
-#: scope.cpp:1612
+#: scope.cpp:1635
 msgid "Dec guide mode"
 msgstr "赤緯導星模式"
 
-#: scope.cpp:1612
+#: scope.cpp:1635
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "送出赤緯導星命令的方向"
 
-#: scope.cpp:1703
+#: scope.cpp:1726
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1709
+#: scope.cpp:1732
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -5021,16 +5027,16 @@ msgstr "Avg col"
 #: star_profile.cpp:232 star_profile.cpp:252
 #, c-format
 msgid "%s FWHM: %.2f"
-msgstr ""
+msgstr "%s FWHM: %.2f"
 
 #: star_profile.cpp:234
 msgid "HFD: "
-msgstr ""
+msgstr "HFD:"
 
 #: star_profile.cpp:248
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
-msgstr ""
+msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f”)"
 
 #: statswindow.cpp:63
 msgid "RMS"
@@ -5128,11 +5134,7 @@ msgstr "AO 導星演算法"
 msgid "AO Settings"
 msgstr "AO 設定"
 
-#: stepguider.cpp:1267
-msgid "Cal steps"
-msgstr "計算步數"
-
-#: stepguider.cpp:1267
+#: stepguider.cpp:1265
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -5140,11 +5142,11 @@ msgid ""
 msgstr ""
 "執行校準時會發出多少步數，預設值 = %d，導星較焦長越短，此數值越大，反之亦然"
 
-#: stepguider.cpp:1272
-msgid "Samples to average"
-msgstr "平均值取樣"
+#: stepguider.cpp:1268
+msgid "Cal steps"
+msgstr "計算步數"
 
-#: stepguider.cpp:1272
+#: stepguider.cpp:1271
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -5153,9 +5155,9 @@ msgstr ""
 "執行校準時要平均多少個取樣，預設值為 = %d，視寧度差或者使用較小影像時增加此數"
 "值"
 
-#: stepguider.cpp:1277
-msgid "Bump percentage"
-msgstr "跳動百分比"
+#: stepguider.cpp:1274
+msgid "Samples to average"
+msgstr "平均值取樣"
 
 #: stepguider.cpp:1277
 #, c-format
@@ -5164,9 +5166,9 @@ msgid ""
 "Default = %d"
 msgstr "在赤道儀跳動前有使用多少百分比的 AO travel，預設值為 %d"
 
-#: stepguider.cpp:1282
-msgid "Bump steps"
-msgstr "跳動步數"
+#: stepguider.cpp:1280
+msgid "Bump percentage"
+msgstr "跳動百分比"
 
 #: stepguider.cpp:1283
 #, c-format
@@ -5177,29 +5179,33 @@ msgstr ""
 "單次赤道儀跳動(bump) 需在影像間移動赤道儀距離值，預設值為 (AO在影像中 %.2f, "
 "如果因為赤道儀跳動而導致影像發生閃爍的現象，請降低該數值。"
 
-#: stepguider.cpp:1285
+#: stepguider.cpp:1286
+msgid "Bump steps"
+msgstr "跳動步數"
+
+#: stepguider.cpp:1288
 msgid "Bump on dither"
 msgstr "在 Dither 時跳動"
 
-#: stepguider.cpp:1286
+#: stepguider.cpp:1289
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr "於每次 dither 時跳轉赤道儀讓 AO 回到中心位置"
 
-#: stepguider.cpp:1288
+#: stepguider.cpp:1291
 msgid "Clear AO calibration"
 msgstr "清除 AO 校準"
 
-#: stepguider.cpp:1291
+#: stepguider.cpp:1294
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr "清除目前 AO 校準資料 — 導星開始時會重新進行校準動作"
 
-#: stepguider.cpp:1292
+#: stepguider.cpp:1295
 msgid "Enable AO corrections"
 msgstr "啟用 AO 修正"
 
-#: stepguider.cpp:1294
+#: stepguider.cpp:1297
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -5329,15 +5335,15 @@ msgstr ""
 "隨機移動每個軸向的導星鏡鎖定位置一段距離到達由抖動型態和大小參數所決定出的一"
 "段距離"
 
-#: usImage.cpp:354
+#: usImage.cpp:417
 msgid "File does not exist - cannot load "
 msgstr "檔案不存在 - 無法載入"
 
-#: usImage.cpp:382
+#: usImage.cpp:445
 msgid "Memory allocation error loading FITS file "
 msgstr "載入 FTIS 檔案時發生記憶體配置錯誤"
 
-#: usImage.cpp:387
+#: usImage.cpp:450
 msgid "Error reading data from FITS file "
 msgstr "載入 FTIS 檔案時發生錯誤"
 
@@ -5364,6 +5370,35 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid ""
+#~ "The RA and Declination angles computed in the calibration are "
+#~ "questionable.  Normally, these angles will be nearly perpendicular, "
+#~ "having an 'orthogonality error' of less than 10 degrees.  In this "
+#~ "calibration, your error was %s degrees. This could mean the calibration "
+#~ "is inaccurate, perhaps because of small or erratic star movement during "
+#~ "the calibration."
+#~ msgstr ""
+#~ "校準所計算出的赤經及赤緯角度有問題，通常這個角度需接近垂直, 正直誤差"
+#~ "(Aothogonality Error)需小於 10 度，而此校準過程所或的的正值誤差為 %s 度，"
+#~ "也就是說此次校準並不正確，可能是校準過程中星點位移異常所造成的。"
+
+#~ msgid ""
+#~ "The RA and Declination guiding rates differ by an unexpected amount.  For "
+#~ "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
+#~ "the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could "
+#~ "mean the calibration is inaccurate, perhaps because of small or erratic "
+#~ "star movement during the calibration."
+#~ msgstr ""
+#~ "赤經及赤緯導星速率因赤道儀異常而導致不同，赤緯速率為 %0.0f 的話，赤經速率"
+#~ "需約為赤緯速率的 %0.0f%%，但是目前你的赤經速率為赤緯速率的 %0.0f%%，可能是"
+#~ "因為星點異常移動或微量誤導致校準不正確所致。"
+
+#~ msgid ""
+#~ "Maximum drift rate in right ascension during sampling period; may be "
+#~ "useful for setting exposure time."
+#~ msgstr ""
+#~ "在取樣週期內, 赤經方向的最大飄移量。此數值對設定曝光時間會有所幫助。"
 
 #~ msgid "Timestamp:"
 #~ msgstr "時間戳記:"

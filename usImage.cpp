@@ -296,13 +296,13 @@ struct FITSHdrWriter
     int *status;
     FITSHdrWriter(fitsfile *fptr_, int *status_) : fptr(fptr_), status(status_) { }
     void write(const char *key, float val, const char *comment) {
-        fits_write_key(fptr, TFLOAT, key, &val, comment, status);
+        fits_write_key(fptr, TFLOAT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
     }
     void write(const char *key, unsigned int val, const char *comment) {
-        fits_write_key(fptr, TUINT, key, &val, comment, status);
+        fits_write_key(fptr, TUINT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
     }
     void write(const char *key, const char *val, const char *comment) {
-        fits_write_key(fptr, TSTRING, key, const_cast<char *>(val), comment, status);
+        fits_write_key(fptr, TSTRING, const_cast<char *>(key), const_cast<char *>(val), const_cast<char *>(comment), status);
     }
 };
 

@@ -153,7 +153,6 @@ bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
     // Find available cameras
     int numCameras = ASIGetNumOfConnectedCameras();
 
-    wxArrayString USBNames;
     for (int i = 0; i < numCameras; i++)
     {
         ASI_CAMERA_INFO info;
@@ -163,7 +162,7 @@ bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
                 names.Add(wxString::Format("%d: %s", i + 1, info.Name));
             else
                 names.Add(info.Name);
-            ids.Add(wxString::Format("%d"), i);
+            ids.Add(wxString::Format("%d", i));
         }
     }
 
@@ -196,7 +195,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     if (idx < 0 || idx >= numCameras)
     {
-        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, numCameras));
+        Debug.AddLine(wxString::Format("ZWO: invalid camera id: '%s', ncams = %d", camId, numCameras));
         return true;
     }
 

@@ -963,6 +963,7 @@ bool GearDialog::DoConnectCamera(void)
         pFrame->SetStatusText(_("Connecting to Camera ..."));
 
         wxString cameraId = SelectedCameraId(m_pCamera);
+        Debug.Write(wxString::Format("Connecting to camera id = [%s]\n", cameraId));
         if (m_pCamera->Connect(cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");

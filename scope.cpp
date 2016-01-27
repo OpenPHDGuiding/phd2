@@ -157,7 +157,10 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
             throw ERROR_INFO("maxDecDuration < 0");
         }
 
+        if (m_maxDecDuration != maxDecDuration)
+            GuideLog.SetGuidingParam("Dec Max Duration", maxDecDuration);
         m_maxDecDuration = maxDecDuration;
+
     }
     catch (const wxString& Msg)
     {
@@ -187,7 +190,10 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
             throw ERROR_INFO("maxRaDuration < 0");
         }
 
+        if (m_maxRaDuration != maxRaDuration)
+            GuideLog.SetGuidingParam("RA Max Duration", maxRaDuration);
         m_maxRaDuration =  maxRaDuration;
+
     }
     catch (const wxString& Msg)
     {
@@ -224,18 +230,27 @@ bool Scope::SetDecGuideMode(int decGuideMode)
                 break;
         }
 
-        m_decGuideMode = (DEC_GUIDE_MODE)decGuideMode;
+        if (m_decGuideMode != decGuideMode)
+        {
+            const char *dec_modes[] = {
+              "Off", "Auto", "North", "South"
+            };
+
+            Debug.AddLine(wxString::Format("DecGuideMode set to %s (%d)", dec_modes[decGuideMode], decGuideMode));
+            GuideLog.SetGuidingParam("Dec Guide Mode", dec_modes[decGuideMode]);
+
+            m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
+
+            pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
+            if (pFrame)
+                pFrame->UpdateCalibrationStatus();
+        }
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
     }
-
-    pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
-    if (pFrame)
-        pFrame->UpdateCalibrationStatus();
 
     return bError;
 }
@@ -1157,6 +1172,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 else        //Got our 3 moves, move ahead
                 {
                     // We know the last backlash clearing move was big enough - include that as a north calibration move
+
+                    // log the starting point
+                    GuideLog.CalibrationStep(this, "North", 0, 0.0, 0.0, m_blMarkerPoint, 0.0);
+                    m_calibrationDetails.decSteps.push_back(wxRealPoint(0.0, 0.0));
+
                     m_calibrationSteps = 1;
                     m_calibrationStartingLocation = m_blMarkerPoint;
                     dX = m_blMarkerPoint.dX(currentLocation);
@@ -1164,10 +1184,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     dist = m_blMarkerPoint.Distance(currentLocation);
                     Debug.AddLine("Backlash: Got 3 acceptable moves, using last move as step 1 of N calibration");
                 }
+
                 m_blDistanceMoved = m_blMarkerPoint.Distance(m_calibrationInitialLocation);     // Need this to set nudging limit
+
                 Debug.AddLine(wxString::Format("Backlash: North calibration moves starting at {%0.1f,%0.1f}, Offset = %0.1f px", 
                     m_blMarkerPoint.X, m_blMarkerPoint.Y, m_blDistanceMoved));
-                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f", currentLocation.Distance(m_calibrationInitialLocation)));
+                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f",
+                    currentLocation.Distance(m_calibrationInitialLocation)));
 
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
                 // falling through to start moving north
@@ -1604,7 +1627,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
         wxString dec_choices[] = {
-            _("Off"), _("Auto"), _("North"), _("South")
+          _("Off"), _("Auto"), _("North"), _("South")
         };
         width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
         m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxPoint(-1, -1),

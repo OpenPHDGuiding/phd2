@@ -1,125 +1,95 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><title>Guide Algorithms</title></head>
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Algorithmes</title></head>
 <body>
-<h2>Guide Algorithms</h2><a href="#Guiding_Theory">Guiding Theory</a><br><a href="#Guide_Algorithm_Parameters">Guide Algorithm Parameters</a><br><br><h3><a name="Guiding_Theory"></a>Guiding Theory</h3>The default guiding
-algorithms in <span style="font-style: italic;">PHD2</span> are well-established and should work well for most
-users. &nbsp;Unless you already have some experience with guiding and
-understand the basics, you should probably be cautious about changing
-algorithms. &nbsp;However, you may have some special circumstances that
-require changes or you may simply want to experiment with the different
-algorithm choices. &nbsp;The Advanced Dialog settings in <span style="font-style: italic;">PHD2</span> make it
-easy to do that. &nbsp;Each algorithm has a set of parameters that
-controls how observed changes in guide star position (star deflections)
-are translated into guiding commands that are "most likely" to restore
-the star to its initial position. <br><br>Before
-discussing the
-details of these parameters, it is worth reviewing a little guiding
-theory and looking at what these algorithms are trying to accomplish.
-&nbsp;Setting aside
-adaptive optics devices, which are entirely different, conventional
-guiding faces enormous challenges. &nbsp;The problem at hand is how to
-move machinery that weighs tens or even hundreds of pounds with a level
-of precision that will not cause streaked or oblong stars. &nbsp;This
-type of guiding can only hope to deal with tracking errors that are
-"slow and steady", not "fast and random." &nbsp;Sources of slow and
-steady (correctable) errors include the following: <br><ul><li>Certain kinds of mechanical imperfections in right ascension gears, including those that cause "periodic error."</li><li>Atmospheric refraction - stars appear to "move more slowly" as they near the horizon</li><li>Limited kinds of mechanical deflection and flexure - but <span style="font-weight: bold;">not </span>differential flexure</li><li>Mis-alignment of the right ascension axis on the celestial pole</li></ul>So
-what isn't included in the above and isn't correctable by conventional
-guiding? &nbsp;Unfortunately, it's a very long list, of which a few
-are: <br><ul><li>Atmospheric seeing ("turbulence")</li><li>Gear "noise", roughness, and vibration</li><li>Differential flexure - relative movement between the imaging scope and the guide scope</li><li>Wind gusts, cable snags, grit in the drive gears</li><li>And lots more...</li></ul>The
-common denominator shared by the guide algorithms is the need to
-somehow react to the slow and steady deflections while ignoring the
-rest. &nbsp;This is a difficult problem at best because any given guide
-star
-deflection is likely to have contributions from many of these sources.
-&nbsp;And if that isn't hard enough, remember that real-world&nbsp;
-mounts are never perfect - so the move you ask for will not be exactly
-the move you get. &nbsp;Usually, the most important requirement
-for&nbsp;any algorithm is
-to avoid over-correcting, wherein the mount is being pushed back and
-forth and the guiding never stabilizes. &nbsp;A typical
-approach in these algorithms is to apply "inertia" or "impedance" to
-the guiding
-corrections. &nbsp;That means making corrections that follow a pattern
-and are generally consistent with corrections that have been made
-before, while being "reluctant" to make corrections that require a big
-change in direction or amplitude. &nbsp;Resistance to changes in
-direction is particularly important in declination, where gear backlash
-is a common problem. &nbsp;Hopefully, this background will give you
-enough insight into the basics of guiding so that the various guiding
-parameters used in <span style="font-style: italic;">PHD2</span> will make sense.<br><h3><a name="Guide_Algorithm_Parameters"></a>Guide Algorithm Parameters</h3>In
-<span style="font-style: italic;">PHD2</span>, the various guide algorithms can be applied to either the right
-ascension or declination axes. &nbsp;Most of these&nbsp;algorithms
-include a&nbsp;<span style="font-weight: bold;"><a name="minimum_move"></a>minimum move</span>
-parameter. &nbsp;This is used to avoid making guide corrections that
-are overly small, are unlikely to have any effect on star shape, and
-are mostly due to transient seeing effects. &nbsp;These values are
-entered in units of pixels, so you need to think about them in the
-context of how large your star images are. &nbsp;The default values
-work well for short-to-medium focal length&nbsp;systems, but you may
-need to increase them if you are working at long focal lengths and
-expect stars&nbsp;to have larger diameters.<br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
-algorithms keep a "memory" of the guiding corrections that have been
-made in the recent past, and these are used to help compute the next
-guide correction. &nbsp;The <span style="font-weight: bold;">hysteresis</span>
-parameter, expressed as a percentage, specifies the "weight" that
-should be given to this history as opposed to&nbsp; looking only at the
-star deflection in the current guide frame. &nbsp;Consider an example
-where the hysteresis parameter is 10%. &nbsp;In that case, the next
-guiding correction will be 90% influenced by the star movement seen in
-the current guide frame and 10% by the corrections that have been made
-in the recent past. &nbsp;Increasing the hysteresis value will smooth
-out the corrections at the risk of being too slow to react to a
-legitimate change in direction. &nbsp;The hysteresis algorithms also
-include an <a name="aggressiveness"></a><span style="font-weight: bold;">aggressiveness </span>parameter,
-again expressed as a percentage,&nbsp; that is&nbsp;used to reduce
-over-correcting. &nbsp; On each frame, <span style="font-style: italic;">PHD2</span> computes how far it thinks the mount
-should move and in what direction(s) it should move. The aggressivness
-parameter scales this. For example, take a case where the star deflection
-has been evaluated and a corrective move of 0.5 pixels is warranted.
-&nbsp;If the aggressiveness is set to 100%, a guider command will be
-issued to move the mount the full 0.5 pixels. &nbsp;But if the
-aggressiveness is set to 60%, the mount will be asked to move only 60%
-of that amount, or 0.3 pixels. If you find your mount is always overshooting
-the star, decrease this value slightly (say, by 10% steps). If you find <span style="font-style: italic;">PHD2</span> always seems to be lagging
-behind the star's motion, increase this by a little bit. A little can
-go a long way here. &nbsp;<br><br>The&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">ResistSwitch</span>
-algorithm behaves much as its name implies. &nbsp;Like the hysteresis algorithms, it also maintains a
-history of past guide corrections, and any change of direction must be
-"compelling" in order to issue a reversing guide command. &nbsp;This
-is&nbsp;appropriate for declination guiding, where reversals in
-direction are both "suspect" and&nbsp;likely to trigger&nbsp;backlash
-in the gears. &nbsp;For that reason, ResistSwitch is the default
-algorithm for declination but not for right ascension, where valid
-direction reversals are expected.<br><br>The <a name="LowPass"></a><span style="font-weight: bold;">LowPass </span>algorithms
-also employ a history of recent guiding corrections in order to compute
-the "next" correction. &nbsp;The starting point for the computed move
-is the median value of the guide star deflections&nbsp;that have
-occurred in recent history. &nbsp;This means that the star deflection
-seen in the current guide frame has relatively little impact on
-calculating the next move and the algorithm is very resistant to quick changes. &nbsp;But the history accumulation also
-includes a calculation to determine if deflections are moving in a
-consistent direction or "getting worse." &nbsp;The <span style="font-weight: bold;"><a name="slope_weight_"></a>slope weight</span>
-parameter, expressed as a percentage, determines how much influence
-this should have in calculating the actual guider movement - it is
-there to keep the algorithm from being overly sluggish. &nbsp;Because
-the low-pass algorithm is so resistant to quick changes, it is probably
-most applicable to declination guiding.<br><br>The
-declination guide mode gives you additional control for declination
-guiding. &nbsp;Declination guiding is not like RA guiding because the
-errors are not caused
-by imperfections in your mount's gears. &nbsp;Instead, deflections in
-declination are primarily the result of imperfect polar alignment.
-&nbsp;The result is an error that should be smooth and should be
-in only one direction, assuming there is no "over-shoot" from an
-earlier correction. &nbsp;The default value of 'auto' tells <span style="font-style: italic;">PHD2</span> that
-some reversals in direction are acceptable, subject to the behavior of
-the various guiding algorithms. &nbsp;However, if your mount has severe
-declination backlash, you may want to prevent&nbsp;direction reversal
-altogether. &nbsp;If so, you can select either 'north' or 'south' to
-restrict corrections to one direction only. &nbsp;Keep in mind,
-however, that an "over-shoot" in correction with one of these modes
-will leave the star positoned off-target for an extended period of
-time. So you'll probably want to use conservative parameters for
-aggressiveness if you are disallowing direction reversals.
-&nbsp;Finally, a choice of 'none' here disables declination guiding
-altogether.<br>&nbsp;&nbsp;</body></html>
+<h2>Algorithmes de guidage</h2>
+<a href="#Guiding_Theory">Théorie de l'autoguidage</a>
+<br>
+<a href="#Guide_Algorithm_Parameters">Paramètres des algorithmes</a>
+<br><br>
+<h3><a name="Guiding_Theory"></a>Théorie de l'autoguidage</h3>
+Les algorithmes par défaut dans PHD2 sont éprouvés et fonctionnent pour la grand majorité des utilisateurs.
+A moins de posséder une bonne expérience du guidage et une compréhension des principes de base, il vaut mieux ne pas changer les algorithmes.
+Cependant, certaines circonstances propres à votre matériel justifient un changement, ou alors vous êtes aventureux et désirez expérimenter.
+Les dialogues avancés de PHD2 facilitent la tâche.
+Chaque algorithme possède un jeu de paramètres qui contrôle comment les mouvements détectés sont traduits en ordres d'autoguidage adéquats pour la monture.
+<br><br>
+Avant d'examiner en détail ces paramètres, il est intéressant de se plonger dans la théorie de l'autoguidage et ce que les algorithmes tente d'accomplir.
+A part les optiques actives (OA), qui sont totalement différentes, le matériel d'autoguidage classique fait face à d'énormes défis.
+Il faut arriver à déplacer un matériel qui peut peser jusqu'à des centaines de kilos avec une précision telle que les étoiles sur les images en longue pose restent ponctuelles.
+Ce genre d'autoguidage ne peut corriger que des erreurs 'lentes et progressives', pas des erreurs 'rapides et erratiques'.
+Les sources d'erreurs 'corrigeables' sont par exemple:
+<br><ul>
+<li>Certaines imperfections mécaniques dans les engrenages, principalement celles qui causent des 'erreurs périodiques' (EP).</li>
+<li>La réfraction atmosphérique - les étoiles qui semblent bouger 'plus lentement' quand elles sont proches de l'horizon.</li>
+<li>Des flexions mécaniques d'amplitude limitée (un trépied qui s'enfonce lentement dans la boue par exemple), mais <span style="font-weight: bold;">pas</span> les flexions différentielles </li>
+<li>Une mise en station (MES) dont l'alignement polaire est imprécis.</li>
+</ul>
+Malheureusement, la liste de ce que l'autoguidage ne peut pas corriger est bien plus longue.
+En voici un aperçu:<br>
+<ul>
+<li>La turbulence atmosphérique ('Seeing').</li>
+<li>Les vibrations, mouvements d'engrenages, frictions.</li>
+<li>Les flexions différentielles - Un mouvement relatif entre l'optique d'autoguidage et celle d'imagerie.</li>
+<li>Les rafales de vent, câbles bloqués dans la monture, poussière dans les engrenages.</li>
+<li>Et bien d'autres encore...</li>
+</ul>
+Le point commun des algorithmes est de réagir à des déplacements lents et progressifs, mais en ignorant le reste.
+Ce problème est extrêmement complexe à résoudre car le mouvement d'une étoile-guide peut provenir d'une multitude de raisons, pas seulement celles qui peuvent être corrigées.
+Pour compliquer les choses, dans la pratique les montures et le matériel ne sont pas 'parfaits', ce qui fait que la correction ordonnée n'est pas forcément celle qui est effectuée.
+Souvent, la caractéristique principale recherchée est de ne pas sur-corriger, suite à quoi la monture entre en 'résonance' et se met à osciller sans pouvoir se stabiliser.
+Une approche typique pour y arriver est d'appliquer de "l'inertie" ou de "l'impédance" aux corrections.
+
+Cela consiste à appliquer des corrections qui suivent une tendance observée plus tôt, en évitant des valeurs anormalement grandes, que ce soit en direction ou en amplitude.
+Cette 'résistance au changement' est particulièrement importante pour l'axe DEC, à cause du jeu mécanique (backlash).
+Espérons que cette introduction vous donnera une meilleure image du fonctionnement interne de PHD2.
+
+<br>
+<h3><a name="Guide_Algorithm_Parameters"></a>Paramètres des algorithmes</h3>
+Les algorithmes de PHD2 peuvent être appliqués à l'axe AD ou DEC.
+La majorité emploie une notion de &nbsp;<span style="font-weight: bold;"><a name="minimum_move"></a>mouvement minimum</span>.
+Ce paramètre est utilisé pour éviter des mouvements faibles et temporaires, qui n'auraient de toute façon aucun effet néfaste sur la qualité des images.
+Ce type de mouvement est souvent causé par la turbulence.
+Ces valeurs sont introduites en unités de pixels; vous devez les envisager dans le contexte de l'échantillonnage de votre imageur.
+Par exemple, le même mouvement de l'autoguideur peut causer un défaut important sur un imageur à longue focale et petit pixels alors qu'il 
+sera négligeable pour un imageur à faible focale et gros pixels. Dans le premier cas, la photo sera floue.
+Les valeurs par défaut conviennent aux autoguideurs à échantillonnage élevé ou moyen mais il peut être nécessaire de les agrandir pour les autoguideurs à faible échantillonnage.
+Par exemple si vous utilisez un guideur hors axe ('DO') sur un télescope de type SC.
+<br><br>Les algorithmes d'&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
+conservent la 'mémoire' des corrections passées et s'en servent pour extrapoler la correction à venir.
+Le paramètre <span style="font-weight: bold;">hysteresis</span> est exprimé en pourcentage. 
+Il exprime le 'poids' qui devrait être donné à l'historique par rapport au mouvement observé.
+Pour une valeur de 10% par exemple, la correction basée uniquement sur le mouvement de l'étoile-guide sera 'majorée' de 10% dans le sens moyen des corrections de l'historique.
+L'hystérésis peut tempérer ou amplifier la correction prévue.&nbsp;
+Augmenter l'hystérésis va 'aplatir' la courbe des corrections, au risque de réagir trop tard à un changement légitime.
+L'algorithme d'hystérésis inclut aussi un paramètre d'<a name="aggressiveness"></a><span style="font-weight: bold;">agressivité</span>.
+Il est destiné à contrer les sur-corrections et est également exprimé en pourcentage.
+Il tempère l'amplitude des corrections calculées par PHD2. Par exemple, si une correction de 0,5 pixel a été calculée, 
+un ordre de correction de seulement 0,3 pixels sera appliqué si l'agressivité est fixée à 60%.
+Si vous constatez que votre monture sur-corrige les mouvements de l'étoile-guide, diminuez ce paramètre petit à petit, par incréments de 10%.
+Si au contraire PHD2 manque de réactivité, vous pouvez augmenter le paramètre. Souvent, un changement modeste suffit.
+<br><br>
+L'algorithme de&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">Résistance au changement de sens</span>
+freine comme son nom l'indique un changement impromptu. 
+Comme l'hystérésis, il garde un historique des corrections passées et en tient compte lors de la décision de changer le sens des corrections.
+C'est particulièrement utile pour l'axe DEC dont les changements de sens sont à la fois 'suspects' et susceptibles de causer du jeu mécanique (backlash) dans la monture.
+Pour cette raison, c'est l'algorithme par défaut pour l'axe DEC mais pas pour l'axe AD, où des changements de direction valides sont attendus.
+<br><br>
+Les algorithmes <a name="LowPass"></a><span style="font-weight: bold;">Passe-bas </span>
+utilisent aussi un historique des corrections récentes.
+La base de la correction calculée est une médiane des valeurs précédentes.
+Cela signifie que l'erreur observée a relativement peu d'impact sur la correction appliquée et 
+que l'algorithme est très réfractaire aux changements brusques de direction.
+L'historique comporte également un calcul pour savoir si les déplacements sont consistants ou s'ils 'empirent'.
+Le paramètre <span style="font-weight: bold;"><a name="slope_weight_"></a>Poids de tendance</span>
+, exprimé en pourcentage, détermine l'importance de l'historique dans les corrections à appliquer.
+Il permet à l'algorithme de conserver une certaine assertivité.
+Comme cet algorithme est particulièrement résistant aux changements de sens, il convient bien pour l'axe DEC.
+
+<br><br>L'algorithme <span style="font-weight: bold;"><a name="LowPass2"></a>Passe-bas 2</span>
+ est une variante du précédent.
+Ici, la correction est une extension linéaire des commandes précédentes (calcul de tendance).
+Celle-ci est appliquée jusqu'à ce qu'un changement significatif de direction soit observé, ce qui efface l'historique.
+Cet algorithme possède deux paramètres: agressivité et mouvement minimum.
+Le mouvement minimum est similaire à celui des autres algorithmes et l'agressivité est une façon de tempérer l'amplitude des corrections.
+Passe-bas 2 est un algorithme très conservateur qui convient particulièrement aux utilisateurs de montures très précises 
+avec un minimum de jeu mécanique et sous un ciel peu turbulent.<br><br>&nbsp;&nbsp;</body></html>

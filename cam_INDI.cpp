@@ -544,7 +544,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
       
       // we can set the exposure time directly in the camera
       if (expose_prop) {
-          if (Binning != m_curBinning)
+          if (binning_prop && (Binning != m_curBinning))
           {
               FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
               binning_x->value = Binning;
@@ -553,7 +553,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
               m_curBinning = Binning;
           }
 
-	  if (subframe.width <= 0 || subframe.height <= 0)
+          if (! frame_prop || subframe.width <= 0 || subframe.height <= 0)
 	  {
 	      takeSubframe = false;
 	  }
@@ -564,7 +564,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
               subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
 	  }
 	  
-	  if (subframe != m_roi)
+	  if (frame_prop && (subframe != m_roi))
 	  {
              frame_x->value = subframe.x*Binning;
              frame_y->value = subframe.y*Binning;
