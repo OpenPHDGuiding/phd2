@@ -378,8 +378,15 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
             // even at saturation, the max values may vary a bit due to noise
             // Call it saturated if the the top three values are within 32 parts per 65535 of max for 16-bit cameras,
             // or within 1 part per 191 for 8-bit cameras
-            unsigned int d = (unsigned int)(max3[0] - max3[2]);
+            unsigned int d = (unsigned int) (max3[0] - max3[2]);
             unsigned int mx = (unsigned int) max3[0];
+
+            // remove pedestal
+            if (mx >= pImg->Pedestal)
+                mx -= pImg->Pedestal;
+            else
+                mx = 0; // unlikely
+
             if (pImg->BitsPerPixel < 12)
             {
                 if (d * 191U < 1U * mx)
@@ -839,7 +846,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
             maxVal = image.ImageData[i];
 
     // next see if any of the stars has a flat-top
-    unsigned short sat_level = (unsigned short)((1U << image.BitsPerPixel) - 1);
+    bool foundSaturated = false;
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         Star tmp;
@@ -854,14 +861,36 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
             else
             {
                 // a saturated star was found
-                Debug.Write(wxString::Format("AutoSelect: using saturation level = %hu\n", maxVal));
-                sat_level = maxVal;
+                foundSaturated = true;
                 break;
             }
         }
     }
-    unsigned short sat_thresh = (unsigned short)((unsigned int) sat_level * 9 / 10);
-    Debug.Write(wxString::Format("AutoSelect: BPP = %u, saturation at %hu, thresh = %hu\n", image.BitsPerPixel, sat_level, sat_thresh));
+
+    unsigned int sat_level; // saturation level, including pedestal
+    if (foundSaturated)
+    {
+        // use the peak overall pixel value as the saturation limit
+        Debug.Write(wxString::Format("AutoSelect: using saturation level peakVal = %hu\n", maxVal));
+        sat_level = maxVal; // includes pedestal
+    }
+    else
+    {
+        // no staurated stars found, can't make any assumption about whether the max val is saturated
+
+        Debug.Write(wxString::Format("AutoSelect: using saturation level from BPP %u and pedestal %hu\n",
+            image.BitsPerPixel, image.Pedestal));
+
+        sat_level = ((1U << image.BitsPerPixel) - 1) + image.Pedestal;
+        if (sat_level > 65535)
+            sat_level = 65535;
+    }
+    unsigned int diff = sat_level > image.Pedestal ? sat_level - image.Pedestal : 0U;
+    // "near-saturation" threshold at 90% saturation
+    unsigned short sat_thresh = (unsigned short)((unsigned int) image.Pedestal + 9 * diff / 10);
+
+    Debug.Write(wxString::Format("AutoSelect: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
+        image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
 
     // Final star selection
     //   pass 1: find brightest star with peak value < 90% saturation AND SNR > 6

@@ -612,7 +612,10 @@ bool Subtract(usImage& light, const usImage& dark)
 
     int offset = 0;
     if (mindiff < 0) // dark was lighter than light
+    {
         offset = -mindiff;
+        light.Pedestal = (unsigned short) offset;
+    }
 
     pl0 = &light.Pixel(left, top);
     pd0 = &dark.Pixel(left, top);
