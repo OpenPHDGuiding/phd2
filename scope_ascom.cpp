@@ -523,6 +523,17 @@ static void SuppressSlewAlert(long)
     pConfig->Global.SetBoolean(SlewWarningEnabledKey(), false);
 }
 
+static wxString PulseGuideFailedAlertEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/PulseGuideFailedAlertEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressPulseGuideFailedAlert(long)
+{
+    pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
+}
+
 Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -682,7 +693,11 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
             if (!WorkerThread::InterruptRequested())
             {
-                pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+                if (pConfig->Global.GetBoolean(PulseGuideFailedAlertEnabledKey(), true))
+                {
+                    pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
+                        _("Don't show\nthis again"), SuppressPulseGuideFailedAlert, 0);
+                }
             }
         }
     }
