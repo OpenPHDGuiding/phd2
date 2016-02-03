@@ -79,9 +79,9 @@ class SBStateIndicators
     SBPanel* parentPanel;
 
 public:
-    wxIcon icoGreenBall;
-    wxIcon icoYellowBall;
-    wxIcon icoRedBall;
+    wxIcon icoGreenLed;
+    wxIcon icoYellowLed;
+    wxIcon icoRedLed;
 
     SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidths);
     ~SBStateIndicators();
@@ -117,10 +117,10 @@ class SBGuideIndicators
     wxStaticBitmap* bitmapDec;
     wxStaticText* txtRaAmounts;
     wxStaticText* txtDecAmounts;
-    wxIcon icoLeft;
-    wxIcon icoRight;
-    wxIcon icoUp;
-    wxIcon icoDown;
+    wxBitmap arrowLeft;
+    wxBitmap arrowRight;
+    wxBitmap arrowUp;
+    wxBitmap arrowDown;
     SBPanel* parentPanel;
 
 public:
@@ -159,9 +159,6 @@ private:
 
     virtual ~PHDStatusBar();
 
-    wxIcon yellowLight;
-    wxIcon redLight;
-    wxIcon greenLight;
 public:
     static PHDStatusBar* CreateInstance(wxWindow* parent, long style = wxSTB_DEFAULT_STYLE);
     void SetStatusText(const wxString &text, int number = 0);
@@ -181,7 +178,6 @@ private:
     SBStarIndicators* m_StarIndicators;
     SBGuideIndicators* m_GuideIndicators;
     wxStaticText* m_Msg1;
-    int m_NumIndicators;
 
     wxDECLARE_EVENT_TABLE();
 };

@@ -64,7 +64,7 @@ wxEND_EVENT_TABLE()
 // the borders and field separators the way we want.
 
 // ----------------------------------------------------------------------------
-// SBPanel - parent control used for all the status bar items
+// SBPanel - parent control is the parent for all the status bar items
 //
 SBPanel::SBPanel(wxStatusBar* parent, wxSize panelSize)
 : wxPanel(parent, wxID_ANY, wxDefaultPosition, panelSize)
@@ -103,12 +103,13 @@ void SBPanel::OnPaint(wxPaintEvent& evt)
 void SBPanel::BuildFieldOffsets(std::vector <int> &fldWidths)
 {
     int cum = 0;
-
+    // Add up field widths starting at right end of panel
     for (std::vector<int>::reverse_iterator it = fldWidths.rbegin(); it != fldWidths.rend(); it++)
     {
         cum += *it;
         fieldOffsets.push_back(cum);
     }
+    // Reverse it because the fields are indexed from left to right
     std::reverse(fieldOffsets.begin(), fieldOffsets.end());
 }
 
@@ -181,7 +182,7 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
         txtSNRLabel->Show(true);
         txtSNRValue->SetLabelText(wxString::Format("%3.1f", SNR));
         txtSNRValue->Show(true);
-        txtSaturated->Show(true);
+        txtSaturated->Show(Saturated);
     }
     else
     {
@@ -197,21 +198,19 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
 SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidths)
 {
 #ifdef ICON_DEV
-    icoLeft = wxIcon("SB_arrow_left_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
-    icoRight = wxIcon("SB_arrow_right_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
-    icoUp = wxIcon("SB_arrow_up_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
-    icoDown = wxIcon("SB_arrow_down_16.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    wxIcon arrow = wxIcon("SB_arrow_left_16.png", wxBITMAP_TYPE_PNG, 16, 16);
+    arrowLeft.CopyFromIcon(arrow);
+    arrow = wxIcon("SB_arrow_right_16.png", wxBITMAP_TYPE_PNG, 16, 16);
+    arrowRight.CopyFromIcon(arrow);
+    arrow = wxIcon("SB_arrow_up_16.png", wxBITMAP_TYPE_PNG, 16, 16);
+    arrowUp.CopyFromIcon(arrow);
+    arrow = wxIcon("SB_arrow_down_16.png", wxBITMAP_TYPE_PNG, 16, 16);
+    arrowDown.CopyFromIcon(arrow);
 #else
-    //wxBitmap led(wxBITMAP_PNG_FROM_DATA(sb_led_green));
-    //icoGreenBall.CopyFromBitmap(led);
-    wxBitmap arrow(wxBITMAP_PNG_FROM_DATA(sb_arrow_left_16));
-    icoLeft.CopyFromBitmap(arrow);
-    arrow = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_right_16));
-    icoRight.CopyFromBitmap(arrow);
-    arrow = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_up_16));
-    icoUp.CopyFromBitmap(arrow);
-    arrow = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_down_16));
-    icoDown.CopyFromBitmap(arrow);
+    arrowLeft = (wxBITMAP_PNG_FROM_DATA(sb_arrow_left_16));
+    arrowRight = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_right_16));
+    arrowUp = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_up_16));
+    arrowDown = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_down_16));
 #endif
     int guideAmtWidth;
     int txtHeight;
@@ -221,7 +220,7 @@ SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidth
     panel->GetTextExtent("5555 ms, 555 px", &guideAmtWidth, &txtHeight);
 
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
-    bitmapRA = new wxStaticBitmap(panel, wxID_ANY, icoLeft);
+    bitmapRA = new wxStaticBitmap(panel, wxID_ANY, arrowLeft);
     bitmapSize = bitmapRA->GetSize();
     bitmapRA->Show(false);
     txtRaAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_CENTER);
@@ -230,7 +229,7 @@ SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidth
     txtDecAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
     txtDecAmounts->SetBackgroundColour("Black");
     txtDecAmounts->SetForegroundColour(fgColor);
-    bitmapDec = new wxStaticBitmap(panel, wxID_ANY, icoUp);
+    bitmapDec = new wxStaticBitmap(panel, wxID_ANY, arrowUp);
     bitmapDec->Show(false);
     parentPanel = panel;
     // Since we don't want separators between the arrows and the text info, we lump the two together and treat them as one field for the purpose
@@ -272,9 +271,9 @@ void SBGuideIndicators::UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION
     if (raPx > 0)
     {
         if (raDirection == RIGHT)
-            bitmapRA->SetIcon(icoRight);
+            bitmapRA->SetBitmap(arrowRight);
         else
-            bitmapRA->SetIcon(icoLeft);
+            bitmapRA->SetBitmap(arrowLeft);
 
         bitmapRA->Show(true);
         raInfo = wxString::Format("%0.0f ms, %0.1f px", raPulse, raPx);
@@ -287,9 +286,9 @@ void SBGuideIndicators::UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION
     if (decPx > 0)
     {
         if (decDirection == UP)
-            bitmapDec->SetIcon(icoUp);
+            bitmapDec->SetBitmap(arrowUp);
         else
-            bitmapDec->SetIcon(icoDown);
+            bitmapDec->SetBitmap(arrowDown);
         bitmapDec->Show(true);
         decInfo = wxString::Format("%0.0f ms, %0.1f px", decPulse, decPx);
     }
@@ -323,7 +322,7 @@ SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* ho
     }
     else
     {
-        pic = new wxStaticBitmap(parentPanel, wxID_ANY, container->icoGreenBall, wxDefaultPosition, wxSize(16, 16));
+        pic = new wxStaticBitmap(parentPanel, wxID_ANY, container->icoGreenLed, wxDefaultPosition, wxSize(16, 16));
         fldWidths.push_back(20 + 1 * parentPanel->emWidth);
     }
 }
@@ -397,13 +396,13 @@ void SBStateIndicatorItem::UpdateState()
         {
             if (!problems)
             {
-                pic->SetIcon(wxIcon(container->icoGreenBall));
+                pic->SetIcon(wxIcon(container->icoGreenLed));
                 quadState = 1;
                 otherInfo = "";
             }
             else
             {
-                pic->SetIcon(container->icoYellowBall);
+                pic->SetIcon(container->icoYellowLed);
                 quadState = 0;
                 otherInfo = MIAs.Mid(0, MIAs.Length() - 2);
                 pic->SetToolTip(IndicatorToolTip(type, quadState));
@@ -411,7 +410,7 @@ void SBStateIndicatorItem::UpdateState()
         }
         else
         {
-            pic->SetIcon(container->icoRedBall);
+            pic->SetIcon(container->icoRedLed);
             quadState = -1;
         }
             
@@ -534,16 +533,16 @@ SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidth
     wxString labels[] = { _("Dark"), _("Cal"), wxEmptyString};
 
 #ifdef ICON_DEV
-    icoGreenBall = wxIcon("SB_led_green.ico", wxBITMAP_TYPE_ICO, 16, 16);
-    icoYellowBall = wxIcon("SB_led_yellow.ico", wxBITMAP_TYPE_ICO, 16, 16);
-    icoRedBall = wxIcon("SB_led_red.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoGreenLed = wxIcon("SB_led_green.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoYellowLed = wxIcon("SB_led_yellow.ico", wxBITMAP_TYPE_ICO, 16, 16);
+    icoRedLed = wxIcon("SB_led_red.ico", wxBITMAP_TYPE_ICO, 16, 16);
 #else
     wxBitmap led(wxBITMAP_PNG_FROM_DATA(sb_led_green));
-    icoGreenBall.CopyFromBitmap(led);
+    icoGreenLed.CopyFromBitmap(led);
     led = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_led_yellow));
-    icoYellowBall.CopyFromBitmap(led);
+    icoYellowLed.CopyFromBitmap(led);
     led = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_led_red));
-    icoRedBall.CopyFromBitmap(led);
+    icoRedLed.CopyFromBitmap(led);
 #endif
     for (int inx = 0; inx < numItems; inx++)
     {
@@ -588,13 +587,6 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
 
     std::vector <int> fieldWidths;
     const int bitmapSize = 16;
-
-    m_NumIndicators = 6;
-
-
-    redLight = wxIcon("Ball_Red_xpm");
-    yellowLight = wxIcon("Ball_Yellow_xpm");
-    greenLight = wxIcon("Ball_Green_xpm");
 
     // Set up the only field the wxStatusBar base class will know about
     int widths[] = {-1};
