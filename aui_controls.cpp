@@ -113,6 +113,11 @@ void SBPanel::BuildFieldOffsets(std::vector <int> &fldWidths)
     std::reverse(fieldOffsets.begin(), fieldOffsets.end());
 }
 
+int SBPanel::GetMinPanelWidth()
+{
+    return fieldOffsets.at(0);
+}
+
 wxPoint SBPanel::FieldLoc(int fieldId)
 {
     wxSize panelSize = GetClientSize();
@@ -329,8 +334,12 @@ SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* ho
 
 void SBStateIndicatorItem::PositionControl()
 {
+    wxPoint loc;
     if (type == Field_Gear)
-        pic->SetPosition(parentPanel->FieldLoc(fieldId));
+    {
+        loc = parentPanel->FieldLoc(fieldId);
+        pic->SetPosition(wxPoint(loc.x, loc.y - 1));
+    }
     else
         ctrl->SetPosition(parentPanel->FieldLoc(fieldId));
 }
@@ -338,6 +347,7 @@ void SBStateIndicatorItem::PositionControl()
 void SBStateIndicatorItem::UpdateState()
 {
     int quadState = -1;
+    bool cameraOk = true;
     bool problems = false;
     bool partials = false; 
     wxString currLabel;
@@ -351,6 +361,7 @@ void SBStateIndicatorItem::UpdateState()
         else
         {
             MIAs += _("Camera, ");
+            cameraOk = false;
             problems = true;
         }
 
@@ -402,7 +413,10 @@ void SBStateIndicatorItem::UpdateState()
             }
             else
             {
-                pic->SetIcon(container->icoYellowLed);
+                if (cameraOk)
+                    pic->SetIcon(container->icoYellowLed);
+                else
+                    pic->SetIcon(container->icoRedLed);     // What good are we without a camera
                 quadState = 0;
                 otherInfo = MIAs.Mid(0, MIAs.Length() - 2);
                 pic->SetToolTip(IndicatorToolTip(type, quadState));
@@ -544,32 +558,33 @@ SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidth
     led = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_led_red));
     icoRedLed.CopyFromBitmap(led);
 #endif
-    for (int inx = 0; inx < numItems; inx++)
+    for (int inx = (int)Field_Darks; inx <= (int)Field_Gear; inx++)
     {
-        stateItems[inx] = new SBStateIndicatorItem(parentPanel, this, Field_Darks + inx, labels[inx], (SBFieldTypes)(Field_Darks + inx), fldWidths);
-        stateItems[inx]->UpdateState();
+        SBStateIndicatorItem* item = new SBStateIndicatorItem(parentPanel, this, inx, labels[inx - Field_Darks], (SBFieldTypes)(inx), fldWidths);
+        stateItems.push_back(item);
+        item->UpdateState();
     }
 }
 
 SBStateIndicators::~SBStateIndicators()
 {
-    for (int inx = 0; inx < numItems; inx++)
-        delete stateItems[inx];
+    for (int inx = 0; inx < stateItems.size(); inx++)
+        delete stateItems.at(inx);
 }
 
 void SBStateIndicators::PositionControls()
 {
-    for (int inx = 0; inx < numItems; inx++)
+    for (std::vector<SBStateIndicatorItem*>::iterator it = stateItems.begin(); it != stateItems.end(); it++)
     {
-        stateItems[inx]->PositionControl();
+        (*it)->PositionControl();
     }
 }
 
 void SBStateIndicators::UpdateState()
 {
-    for (int inx = 0; inx < numItems; inx++)
+    for (std::vector<SBStateIndicatorItem*>::iterator it = stateItems.begin(); it != stateItems.end(); it++)
     {
-        stateItems[inx]->UpdateState();
+        (*it)->UpdateState();
     }
 }
 
@@ -600,7 +615,7 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
 
     // Build the leftmost text status field, the only field managed at this level
     m_Msg1 = new wxStaticText(m_ctrlPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(150, -1));
-    GetTextExtent("Sample message", &txtWidth, &txtHeight);         // only care about the height
+    GetTextExtent(_("Selected star at (999.9, 999.9)"), &txtWidth, &txtHeight);         // only care about the width
     m_Msg1->SetBackgroundColour("BLACK");
     m_Msg1->SetForegroundColour("WHITE");
     fieldWidths.push_back(txtWidth);                    // Doesn't matter but we need to occupy the position in fieldWidths
@@ -670,6 +685,11 @@ void PHDStatusBar::UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION
 void PHDStatusBar::ClearGuiderInfo()
 {
     m_GuideIndicators->ClearState();
+}
+
+int PHDStatusBar::GetMinSBWidth()
+{
+    return m_ctrlPanel->GetMinPanelWidth();
 }
 
 // Override function to be sure status text updates actually go to static text field

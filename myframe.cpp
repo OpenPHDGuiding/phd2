@@ -209,7 +209,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     // Setup Status bar
     SetupStatusBar();
-    //m_statusbar->SetMinHeight(16);      // Can't safely call this in constructor
     LoadProfileSettings();
 
     // Setup container window for alert message info bar and guider window
@@ -235,7 +234,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGuider->SetLockPosIsSticky(sticky);
     tools_menu->Check(EEGG_STICKY_LOCK, sticky);
 
-    SetMinSize(wxSize(400,300));
+    SetMinSize(wxSize(wxMax(400, m_statusbar->GetMinSBWidth()), 300));
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)

@@ -61,10 +61,10 @@ public:
     SBPanel(wxStatusBar* parent, wxSize panelSize);
 
     void OnPaint(wxPaintEvent& evt);
-    //void OnEraseBkgrnd(wxEraseEvent& evt);
     void BuildFieldOffsets(std::vector <int> &fldWidths);
     wxPoint FieldLoc(int fieldId);
     int emWidth;
+    int GetMinPanelWidth();
 
     wxDECLARE_EVENT_TABLE();
 };
@@ -74,8 +74,7 @@ class SBStateIndicatorItem;
 
 class SBStateIndicators
 {
-    SBStateIndicatorItem* stateItems[Field_Max - Field_Darks];
-    int numItems = Field_Max - Field_Darks;
+    std::vector <SBStateIndicatorItem*> stateItems;
     SBPanel* parentPanel;
 
 public:
@@ -167,6 +166,7 @@ public:
     void ClearStarInfo() { UpdateStarInfo(-1, 0); }
     void UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
     void ClearGuiderInfo();
+    int GetMinSBWidth();
 
     // event handlers
     void OnSize(wxSizeEvent& event);
