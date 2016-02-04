@@ -59,6 +59,7 @@ private:
 
     void HandleTimestamps();
     void HandleMeasurements(double input);
+    void HandleDarkGuiding();
     void HandleControls(double control_input);
     void HandleSNR(double noise);
     void UpdateGP();
