@@ -295,7 +295,7 @@ wxArrayString Scope::List(void)
     ScopeList.Add(_T("GC USB ST4"));
 #endif
 #ifdef GUIDE_INDI
-    ScopeList.Add(_T("INDI Mount"));
+    ScopeList.Add(_("INDI Mount"));
 #endif
 
     ScopeList.Sort(&CompareNoCase);
@@ -316,7 +316,7 @@ wxArrayString Scope::AuxMountList()
 #endif
 
 #ifdef GUIDE_INDI
-    scopeList.Add(_T("INDI Mount"));
+    scopeList.Add(_("INDI Mount"));
 #endif
 
     return scopeList;
@@ -549,7 +549,7 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
             {
                 wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
                 pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                    "Increasing the %s will allow PHD2 to make the needed corrections."), s, s),
+                    "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
                     _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
             }
             else

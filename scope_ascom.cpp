@@ -483,7 +483,7 @@ bool ScopeASCOM::Disconnect(void)
             // Set the Connected property to false
             if (!scope.PutProp(dispid_connected, false))
             {
-                pFrame->Alert(_("ASCOM driver problem during disconnect"));
+                pFrame->Alert(_("ASCOM driver problem during disconnect, check the debug log for more information"));
                 throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false: " + ExcepMsg(scope.Excep()));
             }
         }
@@ -550,7 +550,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         if (!m_canPulseGuide)
         {
             // Could happen if move command is issued on the Aux mount or CanPulseGuide property got changed on the fly
-            pFrame->Alert(_("ASCOM driver does not support PulseGuide"));
+            pFrame->Alert(_("ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."));
             throw ERROR_INFO("ASCOM scope: guide command issued but PulseGuide not supported");
         }
 
@@ -731,7 +731,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
         Variant vRes;
         if (!scope->GetProp(&vRes, dispid_ispulseguiding))
         {
-            pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding"));
+            pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."));
             throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed: " + ExcepMsg(scope->Excep()));
         }
 
@@ -754,7 +754,7 @@ bool ScopeASCOM::IsSlewing(DispatchObj *scope)
     if (!scope->GetProp(&vRes, dispid_isslewing))
     {
         Debug.AddLine("ScopeASCOM::IsSlewing failed: " + ExcepMsg(scope->Excep()));
-        pFrame->Alert(_("ASCOM driver failed checking Slewing"));
+        pFrame->Alert(_("ASCOM driver failed checking for slewing, see the debug log for more information."));
         return false;
     }
 
@@ -771,7 +771,7 @@ void ScopeASCOM::AbortSlew(DispatchObj *scope)
     Variant vRes;
     if (!scope->InvokeMethod(&vRes, dispid_abortslew))
     {
-        pFrame->Alert(_("ASCOM driver failed calling AbortSlew"));
+        pFrame->Alert(_("ASCOM driver failed calling AbortSlew, see the debug log for more information."));
     }
 }
 

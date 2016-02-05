@@ -425,7 +425,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 {
                     if (m_stepCount < 0.5 * m_northPulseCount)
                     {
-                        pFrame->Alert(_("Star too close to edge for accurate measurement of backlash"));
+                        pFrame->Alert(_("Star too close to edge for accurate measurement of backlash. Choose a star farther from the edge."));
                         m_Rslt = MEASUREMENT_INVALID;
                     }
                     Debug.AddLine("BLT: North pulses truncated, too close to frame edge");

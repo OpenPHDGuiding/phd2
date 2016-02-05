@@ -335,7 +335,7 @@ static bool ASCOM_IsMoving(IDispatch *cam)
     if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
     {
         LogExcep(hr, "invoke ispulseguiding", excep);
-        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep));
+        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."), excep));
         return false;
     }
 
@@ -527,7 +527,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     // create the COM object
     if (!Create(&driver, &driver_class))
     {
-        pFrame->Alert(_("Could not create ASCOM camera object"));
+        pFrame->Alert(_("Could not create ASCOM camera object. See the debug log for more information."));
         return true;
     }
 
@@ -567,7 +567,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
         Debug.AddLine(ExcepMsg("CanPulseGuide", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanPulseGuide property"));
+        pFrame->Alert(_("ASCOM driver missing the CanPulseGuide property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
@@ -575,7 +575,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CanAbortExposure"))
     {
         Debug.AddLine(ExcepMsg("CanAbortExposure", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanAbortExposure property"));
+        pFrame->Alert(_("ASCOM driver missing the CanAbortExposure property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     m_canAbortExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
@@ -583,7 +583,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CanStopExposure"))
     {
         Debug.AddLine(ExcepMsg("CanStopExposure", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanStopExposure property"));
+        pFrame->Alert(_("ASCOM driver missing the CanStopExposure property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     m_canStopExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
@@ -599,7 +599,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
         Debug.AddLine(ExcepMsg("CameraXSize", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CameraXSize property"));
+        pFrame->Alert(_("ASCOM driver missing the CameraXSize property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     m_maxSize.SetWidth((int) vRes.lVal);
@@ -607,7 +607,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
         Debug.AddLine(ExcepMsg("CameraYSize", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CameraYSize property"));
+        pFrame->Alert(_("ASCOM driver missing the CameraYSize property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     m_maxSize.SetHeight((int) vRes.lVal);
@@ -642,7 +642,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeX", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the PixelSizeX property"));
+        pFrame->Alert(_("ASCOM driver missing the PixelSizeX property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     PixelSize = (double) vRes.dblVal;
@@ -650,7 +650,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeY", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the PixelSizeY property"));
+        pFrame->Alert(_("ASCOM driver missing the PixelSizeY property. Please report this error to your ASCOM driver provider."));
         return true;
     }
     if ((double) vRes.dblVal > PixelSize)
@@ -714,7 +714,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         // only make this error fatal if the camera supports binning > 1
         if (MaxBinning > 1)
         {
-            pFrame->Alert(_("The ASCOM camera failed to set binning."));
+            pFrame->Alert(_("The ASCOM camera failed to set binning. See the debug log for more information."));
             return true;
         }
     }
@@ -826,7 +826,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
     {
         if (ASCOM_SetBin(cam.IDisp(), Binning, &excep))
         {
-            pFrame->Alert(_("The ASCOM camera failed to set binning."));
+            pFrame->Alert(_("The ASCOM camera failed to set binning. See the debug log for more information."));
             return true;
         }
         m_curBin = Binning;
