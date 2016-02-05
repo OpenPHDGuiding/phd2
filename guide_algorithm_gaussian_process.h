@@ -90,7 +90,8 @@ protected:
     double GetMixingParameter() const;
     bool SetMixingParameter(double);
 
-
+    bool GetDarkTracking();
+    bool SetDarkTracking(bool value);
 public:
     GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmGaussianProcess(void);

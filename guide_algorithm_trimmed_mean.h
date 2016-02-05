@@ -71,6 +71,9 @@ protected:
     bool SetNbElementForInference(int nb_elements);
     int GetNbMeasurementsMin() const;
 
+    bool GetDarkTracking();
+    bool SetDarkTracking(bool value);
+
 public:
     GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmTrimmedMean(void);
