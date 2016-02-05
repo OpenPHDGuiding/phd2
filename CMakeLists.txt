@@ -67,7 +67,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
 # options
-option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" OFF)
+option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" ON)
 
 
 

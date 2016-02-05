@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015, Max Planck Society.
+ * Copyright 2014-2016, Max Planck Society.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,8 +29,16 @@
  *
  */
 
-/* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and
- * Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
+/**
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
+ *
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
+ *
+ * @brief     Provides mathematical tools needed for the Gaussian process toolbox.
  */
 
 #include "math_tools.h"
@@ -171,7 +179,7 @@ namespace math_tools
         Eigen::FFT<double> fft;
 
         std::vector<double> vec_data(padded_data.data(), padded_data.data() + padded_data.rows() * padded_data.cols());
-        std::vector<std::complex<double>> vec_result;
+        std::vector<std::complex<double> > vec_result;
         fft.fwd(vec_result, vec_data);
 
         Eigen::VectorXcd result = Eigen::Map<Eigen::VectorXcd>(&vec_result[0], vec_result.size());

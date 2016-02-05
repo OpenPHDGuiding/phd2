@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015, Max Planck Society.
+ * Copyright 2014-2016, Max Planck Society.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,13 +29,16 @@
  *
  */
 
-/*!@file
- * @author  Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
- * @author  Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+/**
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
  *
- * @brief
- * The GP class implements the Gaussian Process functionality.
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
  *
+ * @brief     The GP class implements the Gaussian Process functionality.
  */
 
 #ifndef GAUSSIAN_PROCESS_H
@@ -151,7 +154,7 @@ public:
      * Sets the GP back to the prior:
      * Removes datapoints, empties the Gram matrix.
      */
-    void clear();
+    void clearData();
 
     /*!
      * Predicts the mean and covariance for a vector of locations.
@@ -188,11 +191,6 @@ public:
      * Returns the hyperparameters to the given vector.
      */
     Eigen::VectorXd getHyperParameters() const;
-
-    /*!
-     * Sets the covariance hyperparameters to the given vector.
-     */
-    void setCovarianceHyperParameters(const Eigen::VectorXd& hyperParameters);
 
     /*!
      * Enables the use of a explicit linear basis function.

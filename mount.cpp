@@ -267,6 +267,8 @@ void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
 {
+    if (m_pMount->m_pXGuideAlgorithm->Algorithm() == evt.GetSelection())
+        return;
     ConfigDialogPane *oldpane = m_pXGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
     m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
@@ -274,15 +276,18 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     m_pRABox->Replace(oldpane, newpane);
     m_pXGuideAlgorithmConfigDialogPane = newpane;
     m_pXGuideAlgorithmConfigDialogPane->LoadValues();
-    m_pRABox->Layout();
-    m_pAlgoBox->Layout();
     m_pParent->Layout();
-    m_pParent->Update();
-    m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 {
+    if (m_pMount->m_pYGuideAlgorithm->Algorithm() == evt.GetSelection())
+        return;
+
     ConfigDialogPane *oldpane = m_pYGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
     m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
@@ -290,11 +295,11 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     m_pDecBox->Replace(oldpane, newpane);
     m_pYGuideAlgorithmConfigDialogPane = newpane;
     m_pYGuideAlgorithmConfigDialogPane->LoadValues();
-    m_pDecBox->Layout();
-    m_pAlgoBox->Layout();
     m_pParent->Layout();
-    m_pParent->Update();
-    m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::LoadValues(void)

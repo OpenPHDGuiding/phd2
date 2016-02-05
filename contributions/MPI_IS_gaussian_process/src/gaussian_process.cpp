@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015, Max Planck Society.
+ * Copyright 2014-2016, Max Planck Society.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,10 +29,16 @@
  *
  */
 
-/*!@file
- * @author  Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
- * @author  Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+/**
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
  *
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
+ *
+ * @brief     The GP class implements the Gaussian Process functionality.
  */
 
 #include <cstdint>
@@ -331,7 +337,7 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
     infer();
 }
 
-void GP::clear()
+void GP::clearData()
 {
     gram_matrix_ = Eigen::MatrixXd();
     chol_gram_matrix_ = Eigen::LDLT<Eigen::MatrixXd>();
@@ -396,8 +402,9 @@ GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) cons
         Eigen::MatrixXd phi(2, locations.rows());
         if (use_explicit_trend_)
         {
-            phi.row(0) = locations.array().pow(0);
-            phi.row(1) = locations.array().pow(1);
+            // calculate the feature vectors for linear regression
+            phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // locations.pow(0)
+            phi.row(1) = locations.array(); // locations.pow(1)
 
             return predict(prior_cov, mixed_cov, phi);
         }
@@ -452,15 +459,6 @@ Eigen::VectorXd GP::getHyperParameters() const
     Eigen::VectorXd hyperParameters(covFunc_->getParameterCount() + covFunc_->getExtraParameterCount() + 1);
     hyperParameters << log_noise_sd_, covFunc_->getParameters(), covFunc_->getExtraParameters();
     return hyperParameters;
-}
-
-void GP::setCovarianceHyperParameters(const Eigen::VectorXd& hyperParameters)
-{
-    assert(hyperParameters.rows() == covFunc_->getParameterCount() &&
-           "Wrong number of hyperparameters supplied to"
-           "setCovarianceHyperParameters()!");
-    covFunc_->setParameters(hyperParameters);
-    infer();
 }
 
 void GP::enableExplicitTrend()

@@ -1,9 +1,15 @@
-//
-//  guide_algorithm_trimmed_mean.cpp
-//  PHD2 Guiding
-//
-//  Created by Edgar Klenske.
-//  Copyright 2015-2016, Max Planck Society.
+/**
+ * PHD2 Guiding
+ *
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
+ *
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
+ *
+ * @brief     Provides a simple guider for declination based on a trimmed mean
+ */
 
 /*
 *  This source code is distributed under the following "BSD" license
@@ -147,7 +153,7 @@ struct mw_guiding_circular_datapoints
 };
 
 
-struct GuideAlgorithmTrimmedMean::mw_guide_parameters
+struct GuideAlgorithmTrimmedMean::tm_guide_parameters
 {
     typedef mw_guiding_circular_datapoints data_points;
     circular_buffer<data_points> circular_buffer_parameters;
@@ -166,7 +172,7 @@ struct GuideAlgorithmTrimmedMean::mw_guide_parameters
 
     int min_nb_element_for_inference_;
 
-    mw_guide_parameters() :
+    tm_guide_parameters() :
       circular_buffer_parameters(MW_BUFFER_SIZE),
       timer_(),
       control_signal_(0.0),
@@ -221,7 +227,7 @@ GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis ax
     : GuideAlgorithm(pMount, axis),
       parameters(0)
 {
-    parameters = new mw_guide_parameters();
+    parameters = new tm_guide_parameters();
     wxString configPath = GetConfigPath();
 
     double control_gain = pConfig->Profile.GetDouble(configPath + "/mw_control_gain", DefaultControlGain);
@@ -485,19 +491,19 @@ double GuideAlgorithmTrimmedMean::PredictDriftError()
 
     if ( parameters->last_prediction_end_ < 1.0 )
     {
-        parameters->last_prediction_end_ = parameters->timer_.Time();
+        parameters->last_prediction_end_ = parameters->timer_.Time() / 1000.0;
     }
 
     // prediction from the last endpoint to the prediction point
-    double prediction_length = (parameters->timer_.Time() + delta_controller_time_ms - parameters->last_prediction_end_) / 1000.0;
+    double prediction_length = (parameters->timer_.Time() + delta_controller_time_ms) / 1000.0 - parameters->last_prediction_end_;
 
-    parameters->last_prediction_end_ = parameters->timer_.Time() + delta_controller_time_ms; // store current endpoint
+    parameters->last_prediction_end_ = (parameters->timer_.Time() + delta_controller_time_ms) / 1000.0; // store current endpoint
 
     assert(prediction_length < 100);
     assert(parameters->control_gain_ < 10);
 
     // the prediction is consisting of GP prediction and the linear drift
-    return (prediction_length / 1000.0) * mean_slope;
+    return prediction_length * mean_slope;
 }
 
 double GuideAlgorithmTrimmedMean::result(double input)
@@ -521,19 +527,19 @@ double GuideAlgorithmTrimmedMean::result(double input)
     }
 
     double drift_prediction = 0;
-	if (parameters->min_nb_element_for_inference_ > 0 &&
+    if (parameters->min_nb_element_for_inference_ > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference_)
     {
         drift_prediction = PredictDriftError();
-		parameters->control_signal_ += parameters->prediction_gain_ * drift_prediction; // add in the prediction
-		parameters->control_signal_ += parameters->differential_gain_ * difference; // D-component of PD controller
+        parameters->control_signal_ += parameters->prediction_gain_ * drift_prediction; // add in the prediction
+        parameters->control_signal_ += parameters->differential_gain_ * difference; // D-component of PD controller
 
         // check if the input points in the wrong direction, but only if the error isn't too big
         if (std::abs(input) < 10.0 && parameters->control_signal_ * drift_prediction < 0)
         {
             parameters->control_signal_ = 0; // prevent backlash overshooting
         }
-	}
+    }
     else
     {
         parameters->control_signal_ += parameters->differential_gain_ * difference; // D-component of PD controller
@@ -543,8 +549,8 @@ double GuideAlgorithmTrimmedMean::result(double input)
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
 
-    Debug.AddLine("Trimmed mean guider: input: %f, diff: %f, prediction: %f, control: %f",
-        input, difference, drift_prediction, parameters->control_signal_);
+    Debug.AddLine(wxString::Format("Trimmed mean guider: input: %f, diff: %f, prediction: %f, control: %f",
+        input, difference, drift_prediction, parameters->control_signal_));
 
     // write the data to a file for easy debugging
 #if MW_DEBUG_FILE_
@@ -592,17 +598,19 @@ double GuideAlgorithmTrimmedMean::deduceResult()
 {
     double drift_prediction = 0;
     parameters->control_signal_ = 0;
-	if (parameters->min_nb_element_for_inference_ > 0 &&
+    if (parameters->min_nb_element_for_inference_ > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference_)
     {
         drift_prediction = PredictDriftError();
         parameters->control_signal_ += drift_prediction; // add in the prediction
-	}
+    }
 
     StoreControls(parameters->control_signal_);
 
-    Debug.AddLine("Trimmed mean guider: input: %f, gain: %f, prediction: %f, control: %f",
-        0, parameters->control_gain_, drift_prediction, parameters->control_signal_);
+    Debug.AddLine(wxString::Format("Median window guider (deduced): gain: %f, prediction: %f, control: %f",
+        parameters->control_gain_, drift_prediction, parameters->control_signal_));
+
+    assert(parameters->control_gain_ < 10);
 
     return parameters->control_signal_;
 }

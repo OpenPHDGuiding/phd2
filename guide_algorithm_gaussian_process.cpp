@@ -1,9 +1,16 @@
-//
-//  guide_gaussian_process.cpp
-//  PHD2 Guiding
-//
-//  Created by Stephan Wenninger and Edgar Klenske.
-//  Copyright 2014-2015, Max Planck Society.
+/**
+ * PHD2 Guiding
+ *
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
+ *
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
+ *
+ * @brief     Provides a Gaussian process based guiding algorithm
+ */
 
 /*
 *  This source code is distributed under the following "BSD" license
@@ -45,15 +52,14 @@
 #include "gaussian_process.h"
 #include "covariance_functions.h"
 
-class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialogPane
+class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public ConfigDialogPane
 {
-    GuideGaussianProcess *m_pGuideAlgorithm;
+    GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
     wxSpinCtrl       *m_pNbPointsInference;
-    wxSpinCtrl       *m_pNbPointsOptimisation;
+    wxSpinCtrl       *m_pNbPointsPeriodComputation;
     wxSpinCtrl       *m_pNbPointsApproximation;
 
-    wxSpinCtrlDouble *m_pHyperDiracNoise;
     wxSpinCtrlDouble *m_pSE0KLengthScale;
     wxSpinCtrlDouble *m_pSE0KSignalVariance;
     wxSpinCtrlDouble *m_pPKLengthScale;
@@ -61,13 +67,14 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
     wxSpinCtrlDouble *m_pPKSignalVariance;
     wxSpinCtrlDouble *m_pSE1KLengthScale;
     wxSpinCtrlDouble *m_pSE1KSignalVariance;
-    wxSpinCtrlDouble *m_pMixingParameter;
+    wxSpinCtrlDouble *m_pPredictionGain;
 
-    wxCheckBox       *m_checkboxOptimization;
     wxCheckBox       *m_checkboxComputePeriod;
 
+    wxCheckBox       *m_checkboxDarkMode;
+
 public:
-    GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
+    GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
       : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
     {
         m_pGuideAlgorithm = pGuideAlgorithm;
@@ -79,18 +86,17 @@ public:
                                               _T("Control Gain"));
         m_pControlGain->SetDigits(2);
 
-        m_pMixingParameter = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+        m_pPredictionGain = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                   wxDefaultPosition,wxSize(width+30, -1),
                                                   wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
-        m_pMixingParameter->SetDigits(2);
+        m_pPredictionGain->SetDigits(2);
 
         // number of elements before starting the inference
         m_pNbPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                              wxDefaultPosition,wxSize(width+30, -1),
                                              wxSP_ARROW_KEYS, 0, 1000, 10);
 
-        // number of elements before starting the optimization
-        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+        m_pNbPointsPeriodComputation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0, 1000, 10);
 
@@ -100,11 +106,6 @@ public:
                                                  wxSP_ARROW_KEYS, 0, 2000, 10);
 
         // hyperparameters
-        m_pHyperDiracNoise = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
-                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                  wxSP_ARROW_KEYS, 0.0, 10.0, 1.0, 0.1);
-        m_pHyperDiracNoise->SetDigits(2);
-
         m_pSE0KLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0.0, 5000.0, 500.0, 1.0);
@@ -143,18 +144,22 @@ public:
         m_pSE1KSignalVariance->SetDigits(2);
 
 
-        m_checkboxOptimization = new wxCheckBox(pParent, wxID_ANY, _T(""));
         m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T(""));
+
+        m_checkboxDarkMode = new wxCheckBox(pParent, wxID_ANY, _T(""));
 
         DoAdd(_("Control Gain"), m_pControlGain,
               _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
                 "fed back to the system. Default = 0.8"));
 
+        DoAdd(_("Prediction gain"), m_pPredictionGain,
+              _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0"));
+
         DoAdd(_("Minimum data points (inference)"), m_pNbPointsInference,
               _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
                 "the result might be poor. Default = 25"));
 
-        DoAdd(_("Minimum data points (optimization)"), m_pNbPointsOptimisation,
+        DoAdd(_("Minimum data points (period)"), m_pNbPointsPeriodComputation,
               _("Minimal number of measurements to start estimating the periodicity. If there are too little data points, "
                 "the estimation might not work. Default = 100"));
 
@@ -163,40 +168,34 @@ public:
                 "the number of datapoints. Default = 100"));
 
         // hyperparameters
-        DoAdd(_("Measurement noise"), m_pHyperDiracNoise,
-              _("The measurement noise is the expected uncertainty due to seeing and camera noise. "
-                "If the measurement noise is too low, the Gaussian process might be too rigid. Try to upper bound your "
-                "measurement uncertainty. Default = 1.0"));
-        DoAdd(_("Length scale [SE]"), m_pSE0KLengthScale,
+        DoAdd(_("Length scale [long range]"), m_pSE0KLengthScale,
               _("The length scale of the large non-periodic structure in the error. This is essentially a high-pass "
-                "filter and the length scale defines the corner frequency. Default = 500"));
-        DoAdd(_("Signal Variance [SE]"), m_pSE0KSignalVariance,
-              _("Signal Variance of the long-term variations. Default = 1"));
-        DoAdd(_("Length scale [PER]"), m_pPKLengthScale,
+                "filter and the length scale defines the corner frequency. Default = 500.0"));
+        DoAdd(_("Signal Variance [long range]"), m_pSE0KSignalVariance,
+              _("Signal Variance of the long-term variations. Default = 10.0"));
+        DoAdd(_("Length scale [periodic]"), m_pPKLengthScale,
               _("The length scale defines the \"wigglyness\" of the function. The smaller the length scale, the more "
                 "structure can be learned. If chosen too small, some non-periodic structure might be picked up as well. "
-                "Default = 5.0"));
-        DoAdd(_("Period length [PER]"), m_pPKPeriodLength,
+                "Default = 0.5"));
+        DoAdd(_("Period length [periodic]"), m_pPKPeriodLength,
               _("The period length of the periodic error component that should be corrected. It turned out that the shorter "
-                "period is more important for the performance than the long one, if a telescope mount shows both. Default = 200"));
-        DoAdd(_("Signal variance [PER]"), m_pPKSignalVariance,
+                "period is more important for the performance than the long one, if a telescope mount shows both. Default = 500.0"));
+        DoAdd(_("Signal variance [periodic]"), m_pPKSignalVariance,
               _("The width of the periodic error. Should be around the amplitude of the PE curve, but is not a critical parameter. "
-                "Default = 30"));
-        DoAdd(_("Length scale [SE]"), m_pSE1KLengthScale,
+                "Default = 10.0"));
+        DoAdd(_("Length scale [short range]"), m_pSE1KLengthScale,
               _("The length scale of the short range non-periodic parts of the gear error. This is essentially a low-pass "
-                "filter and the length scale defines the corner frequency. Default = 5"));
-        DoAdd(_("Signal Variance [SE]"), m_pSE1KSignalVariance,
-              _("Signal Variance of the short-term variations. Default = 1"));
-        DoAdd(_("Mixing"), m_pMixingParameter,
-              _("The mixing defines how much control signal is generated from the prediction and how much. Default = 0.5"));
+                "filter and the length scale defines the corner frequency. Default = 5.0"));
+        DoAdd(_("Signal Variance [short range]"), m_pSE1KSignalVariance,
+              _("Signal Variance of the short-term variations. Default = 1.0"));
 
         DoAdd(_("Compute period"), m_checkboxComputePeriod,
-              _("Compute period length with FFT"));
-        DoAdd(_("Optimize parameters"), m_checkboxOptimization,
-              _("Optimize parameters with Newton steps"));
+              _("Compute period length with FFT. Default  = on"));
+
+        DoAdd(_("Force dark tracking"), m_checkboxDarkMode, _("This is just for debugging and disabled by default"));
     }
 
-    virtual ~GuideGaussianProcessDialogPane(void)
+    virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
     {
       // no need to destroy the widgets, this is done by the parent...
     }
@@ -207,14 +206,13 @@ public:
     virtual void LoadValues(void)
     {
         m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
-        m_pNbPointsInference->SetValue(m_pGuideAlgorithm->GetNbMeasurementsMin());
-        m_pNbPointsOptimisation->SetValue(m_pGuideAlgorithm->GetNbPointsBetweenOptimisation());
+        m_pNbPointsInference->SetValue(m_pGuideAlgorithm->GetNbPointsInference());
+        m_pNbPointsPeriodComputation->SetValue(m_pGuideAlgorithm->GetNbPointsPeriodComputation());
         m_pNbPointsApproximation->SetValue(m_pGuideAlgorithm->GetNbPointsForApproximation());
 
         std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
         assert(hyperparameters.size() == 8);
 
-        m_pHyperDiracNoise->SetValue(hyperparameters[0]);
         m_pSE0KLengthScale->SetValue(hyperparameters[1]);
         m_pSE0KSignalVariance->SetValue(hyperparameters[2]);
         m_pPKLengthScale->SetValue(hyperparameters[3]);
@@ -223,9 +221,8 @@ public:
         m_pSE1KSignalVariance->SetValue(hyperparameters[6]);
         m_pPKPeriodLength->SetValue(hyperparameters[7]);
 
-        m_pMixingParameter->SetValue(m_pGuideAlgorithm->GetMixingParameter());
+        m_pPredictionGain->SetValue(m_pGuideAlgorithm->GetPredictionGain());
 
-        m_checkboxOptimization->SetValue(m_pGuideAlgorithm->GetBoolOptimizeHyperparameters());
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
     }
 
@@ -233,13 +230,12 @@ public:
     virtual void UnloadValues(void)
     {
         m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
-        m_pGuideAlgorithm->SetNbElementForInference(m_pNbPointsInference->GetValue());
-        m_pGuideAlgorithm->SetNbPointsOptimisation(m_pNbPointsOptimisation->GetValue());
+        m_pGuideAlgorithm->SetNbPointsInference(m_pNbPointsInference->GetValue());
+        m_pGuideAlgorithm->SetNbPointsPeriodComputation(m_pNbPointsPeriodComputation->GetValue());
         m_pGuideAlgorithm->SetNbPointsForApproximation(m_pNbPointsApproximation->GetValue());
 
         std::vector<double> hyperparameters(8);
 
-        hyperparameters[0] = m_pHyperDiracNoise->GetValue();
         hyperparameters[1] = m_pSE0KLengthScale->GetValue();
         hyperparameters[2] = m_pSE0KSignalVariance->GetValue();
         hyperparameters[3] = m_pPKLengthScale->GetValue();
@@ -249,8 +245,7 @@ public:
         hyperparameters[7] = m_pPKPeriodLength->GetValue();
 
         m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
-        m_pGuideAlgorithm->SetMixingParameter(m_pMixingParameter->GetValue());
-        m_pGuideAlgorithm->SetBoolOptimizeHyperparameters(m_checkboxOptimization->GetValue());
+        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue());
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
     }
 };
@@ -267,7 +262,7 @@ struct gp_guiding_circular_datapoints
 
 
 // parameters of the GP guiding algorithm
-struct GuideGaussianProcess::gp_guide_parameters
+struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 {
     typedef gp_guiding_circular_datapoints data_points;
     circular_buffer<data_points> circular_buffer_parameters;
@@ -276,21 +271,17 @@ struct GuideGaussianProcess::gp_guide_parameters
     double control_signal_;
     double control_gain_;
     double last_timestamp_;
-    double filtered_signal_;
-    double mixing_parameter_;
-    double stored_control_;
-
-    // Kalman filter state and variance
-    double mean_kf_;
-    double var_kf_;
+    double prediction_gain_;
     double prediction_;
+    double last_prediction_end_;
 
     int min_nb_element_for_inference;
-    int min_points_for_optimisation;
+    int min_points_for_period_computation;
     int points_for_approximation;
 
-    bool optimize_hyperparameters;
     bool compute_period;
+
+    bool dark_tracking_mode_;
 
     covariance_functions::PeriodicSquareExponential2 covariance_function_;
     covariance_functions::PeriodicSquareExponential output_covariance_function_;
@@ -302,16 +293,12 @@ struct GuideGaussianProcess::gp_guide_parameters
       control_signal_(0.0),
       control_gain_(0.0),
       last_timestamp_(0.0),
-      filtered_signal_(0.0),
-      mixing_parameter_(0.0),
-      stored_control_(0.0),
-      mean_kf_(0.0),
-      var_kf_(0.0),
+      prediction_gain_(0.0),
       prediction_(0.0),
+      last_prediction_end_(0.0),
       min_nb_element_for_inference(0),
-      min_points_for_optimisation(0),
+      min_points_for_period_computation(0),
       points_for_approximation(0),
-      optimize_hyperparameters(false),
       compute_period(false),
       gp_(covariance_function_)
     {
@@ -345,7 +332,8 @@ struct GuideGaussianProcess::gp_guide_parameters
         circular_buffer_parameters.clear();
         circular_buffer_parameters.push_front(data_points()); // add first point
         circular_buffer_parameters[0].control = 0; // set first control to zero
-        gp_.clear();
+        last_prediction_end_ = 0;
+        gp_.clearData();
     }
 
 };
@@ -357,22 +345,20 @@ static const int    DefaultNbMinPointsForInference       = 25; // minimal number
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 static const double DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-static const double DefaultSignalVarianceSE0Ker          = 1.0; // signal variance of the long-range SE-kernel
-static const double DefaultLengthScalePerKer             = 0.3; // length-scale of the periodic kernel
+static const double DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
+static const double DefaultLengthScalePerKer             = 0.5; // length-scale of the periodic kernel
 static const double DefaultPeriodLengthPerKer            = 500; // P_p, period-length of the periodic kernel
 static const double DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
 static const double DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
 static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
 
-static const int    DefaultNbMinPointsForOptimisation    = 100; // minimal number of points for doing the period identification
-static const int    DefaultNbPointsForApproximation      = 100; // number of points used in the GP approximation
-static const double DefaultMixing                        = 0.5; // amount of GP prediction to blend in
+static const int    DefaultNbMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
+static const int    DefaultNbPointsForApproximation        = 100; // number of points used in the GP approximation
+static const double DefaultPredictionGain                  = 1.0; // amount of GP prediction to blend in
 
-// by default optimization turned off
-static const bool   DefaultOptimize                      = false;
 static const bool   DefaultComputePeriod                 = true;
 
-GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
+GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
       parameters(0)
 {
@@ -383,16 +369,16 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     SetControlGain(control_gain);
 
     int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNbMinPointsForInference);
-    SetNbElementForInference(nb_element_for_inference);
+    SetNbPointsInference(nb_element_for_inference);
 
-    int nb_points_optimisation = pConfig->Profile.GetInt(configPath + "/gp_min_points_optimization", DefaultNbMinPointsForOptimisation);
-    SetNbPointsOptimisation(nb_points_optimisation);
+    int nb_points_period_computation = pConfig->Profile.GetInt(configPath + "/gp_min_points_period_computation", DefaultNbMinPointsForPeriodComputation);
+    SetNbPointsPeriodComputation(nb_points_period_computation);
 
     int nb_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNbPointsForApproximation);
     SetNbPointsForApproximation(nb_points_approximation);
 
-    double mixing_parameter = pConfig->Profile.GetDouble(configPath + "/gp_mixing_parameter", DefaultMixing);
-    SetMixingParameter(mixing_parameter);
+    double prediction_gain = pConfig->Profile.GetDouble(configPath + "/gp_prediction_gain", DefaultPredictionGain);
+    SetPredictionGain(prediction_gain);
 
     std::vector<double> v_hyperparameters(8);
     v_hyperparameters[0] = pConfig->Profile.GetDouble(configPath + "/gp_gaussian_noise",         DefaultGaussianNoiseHyperparameter);
@@ -412,21 +398,23 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     // enable the explicit basis function for the linear drift
     parameters->gp_.enableExplicitTrend();
 
+    parameters->dark_tracking_mode_ = false;
+
     reset();
 }
 
-GuideGaussianProcess::~GuideGaussianProcess(void)
+GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
 {
     delete parameters;
 }
 
 
-ConfigDialogPane *GuideGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
+ConfigDialogPane *GuideAlgorithmGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
 {
-    return new GuideGaussianProcessDialogPane(pParent, this);
+    return new GuideAlgorithmGaussianProcessDialogPane(pParent, this);
 }
 
-bool GuideGaussianProcess::SetControlGain(double control_gain)
+bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
 {
     bool error = false;
 
@@ -451,7 +439,7 @@ bool GuideGaussianProcess::SetControlGain(double control_gain)
     return error;
 }
 
-bool GuideGaussianProcess::SetNbElementForInference(int nb_elements)
+bool GuideAlgorithmGaussianProcess::SetNbPointsInference(int nb_elements)
 {
     bool error = false;
 
@@ -476,7 +464,7 @@ bool GuideGaussianProcess::SetNbElementForInference(int nb_elements)
     return error;
 }
 
-bool GuideGaussianProcess::SetNbPointsOptimisation(int nb_points)
+bool GuideAlgorithmGaussianProcess::SetNbPointsPeriodComputation(int nb_points)
 {
     bool error = false;
 
@@ -487,21 +475,21 @@ bool GuideGaussianProcess::SetNbPointsOptimisation(int nb_points)
             throw ERROR_INFO("invalid number of points");
         }
 
-        parameters->min_points_for_optimisation = nb_points;
+        parameters->min_points_for_period_computation = nb_points;
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->min_points_for_optimisation = DefaultNbMinPointsForOptimisation;
+        parameters->min_points_for_period_computation = DefaultNbMinPointsForPeriodComputation;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_optimization", parameters->min_points_for_optimisation);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_period_computation", parameters->min_points_for_period_computation);
 
     return error;
 }
 
-bool GuideGaussianProcess::SetNbPointsForApproximation(int nb_points)
+bool GuideAlgorithmGaussianProcess::SetNbPointsForApproximation(int nb_points)
 {
     bool error = false;
 
@@ -526,7 +514,7 @@ bool GuideGaussianProcess::SetNbPointsForApproximation(int nb_points)
     return error;
 }
 
-bool GuideGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyperparameters)
+bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyperparameters)
 {
     if(hyperparameters.size() != 8)
         return false;
@@ -678,52 +666,59 @@ bool GuideGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyper
     return error;
 }
 
-bool GuideGaussianProcess::SetMixingParameter(double mixing)
+bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
 {
     bool error = false;
 
     try
     {
-        if (mixing < 0)
+        if (prediction_gain < 0)
         {
-            throw ERROR_INFO("invalid mixing parameter");
+            throw ERROR_INFO("invalid prediction gain");
         }
 
-        parameters->mixing_parameter_ = mixing;
+        parameters->prediction_gain_ = prediction_gain;
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->mixing_parameter_ = DefaultMixing;
+        parameters->prediction_gain_ = DefaultPredictionGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_mixing_parameter", parameters->mixing_parameter_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_prediction_gain", parameters->prediction_gain_);
 
     return error;
 }
 
-double GuideGaussianProcess::GetControlGain() const
+bool GuideAlgorithmGaussianProcess::SetBoolComputePeriod(bool active)
+{
+  parameters->compute_period = active;
+  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", parameters->compute_period);
+  return true;
+}
+
+double GuideAlgorithmGaussianProcess::GetControlGain() const
 {
     return parameters->control_gain_;
 }
 
-int GuideGaussianProcess::GetNbMeasurementsMin() const
+int GuideAlgorithmGaussianProcess::GetNbPointsInference() const
 {
     return parameters->min_nb_element_for_inference;
 }
 
-int GuideGaussianProcess::GetNbPointsBetweenOptimisation() const
+int GuideAlgorithmGaussianProcess::GetNbPointsPeriodComputation() const
 {
-    return parameters->min_points_for_optimisation;
+    return parameters->min_points_for_period_computation;
 }
 
-int GuideGaussianProcess::GetNbPointsForApproximation() const
+int GuideAlgorithmGaussianProcess::GetNbPointsForApproximation() const
 {
     return parameters->points_for_approximation;
 }
 
-std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
+std::vector<double> GuideAlgorithmGaussianProcess::GetGPHyperparameters() const
 {
     // since the GP class works in log space, we have to exp() the parameters first.
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters().array().exp();
@@ -733,31 +728,41 @@ std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
                                hyperparameters.data() + 8); // 8 parameters, therefore the last is at position 7
 }
 
-double GuideGaussianProcess::GetMixingParameter() const
+double GuideAlgorithmGaussianProcess::GetPredictionGain() const
 {
-    return parameters->mixing_parameter_;
+    return parameters->prediction_gain_;
 }
 
-bool GuideGaussianProcess::GetBoolComputePeriod() const
+bool GuideAlgorithmGaussianProcess::GetBoolComputePeriod() const
 {
     return parameters->compute_period;
 }
 
-wxString GuideGaussianProcess::GetSettingsSummary()
+bool GuideAlgorithmGaussianProcess::GetDarkTracking()
+{
+    return parameters->dark_tracking_mode_;
+}
+
+bool GuideAlgorithmGaussianProcess::SetDarkTracking(bool value)
+{
+    parameters->dark_tracking_mode_ = value;
+    return false;
+}
+
+wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
 {
     static const char* format =
       "Control Gain = %.3f\n"
+      "Prediction gain = %.3f\n"
       "Hyperparameters\n"
-      "\tGP noise = %.3f\n"
-      "\tLength scale short SE kernel = %.3f\n"
-      "\tSignal variance short SE kernel = %.3f\n"
+      "\tLength scale long range SE kernel = %.3f\n"
+      "\tSignal variance long range SE kernel = %.3f\n"
       "\tLength scale periodic kernel = %.3f\n"
-      "\tPeriod Length periodic kernel = %.3f\n"
       "\tSignal variance periodic kernel = %.3f\n"
-      "\tLength scale long SE kernel = %.3f\n"
-      "\tSignal variance long SE kernel = %.3f\n"
-      "Optimisation called every = %.3d points\n"
-      "Mixing parameter = %.3d\n"
+      "\tLength scale short range SE kernel = %.3f\n"
+      "\tSignal variance short range SE kernel = %.3f\n"
+      "\tPeriod length periodic kernel = %.3f\n"
+      "FFT called every = %.3d points\n"
     ;
 
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
@@ -765,21 +770,21 @@ wxString GuideGaussianProcess::GetSettingsSummary()
     return wxString::Format(
       format,
       GetControlGain(),
-      hyperparameters(0), hyperparameters(1),
-      hyperparameters(2), hyperparameters(3),
-      hyperparameters(4), hyperparameters(5),
-      hyperparameters(6), hyperparameters(7),
-      parameters->min_points_for_optimisation,
-      parameters->mixing_parameter_);
+      parameters->prediction_gain_,
+      std::exp(hyperparameters(0)), std::exp(hyperparameters(1)),
+      std::exp(hyperparameters(2)), std::exp(hyperparameters(3)),
+      std::exp(hyperparameters(4)), std::exp(hyperparameters(5)),
+      std::exp(hyperparameters(6)), std::exp(hyperparameters(7)),
+      parameters->min_points_for_period_computation);
 }
 
 
-GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm(void)
 {
     return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
 }
 
-void GuideGaussianProcess::HandleTimestamps()
+void GuideAlgorithmGaussianProcess::HandleTimestamps()
 {
     if (parameters->get_number_of_measurements() == 0)
     {
@@ -792,25 +797,23 @@ void GuideGaussianProcess::HandleTimestamps()
 }
 
 // adds a new measurement to the circular buffer that holds the data.
-void GuideGaussianProcess::HandleMeasurements(double input)
+void GuideAlgorithmGaussianProcess::HandleMeasurements(double input)
 {
     parameters->get_last_point().measurement = input;
 }
 
-void GuideGaussianProcess::HandleControls(double control_input)
+void GuideAlgorithmGaussianProcess::HandleDarkGuiding()
 {
-    // don't forget to apply the stored control signals from the dark period
-    parameters->get_last_point().control = control_input + parameters->stored_control_;
-    parameters->stored_control_ = 0; // reset stored control since we applied it
+    parameters->get_last_point().measurement = 0; // we didn't actually measure
+    parameters->get_last_point().variance = 1e4; // add really high noise
 }
 
-void GuideGaussianProcess::StoreControls(double control_input)
+void GuideAlgorithmGaussianProcess::HandleControls(double control_input)
 {
-    // sum up control inputs over the dark period
-    parameters->stored_control_ += control_input;
+    parameters->get_last_point().control = control_input;
 }
 
-void GuideGaussianProcess::HandleSNR(double SNR)
+void GuideAlgorithmGaussianProcess::HandleSNR(double SNR)
 {
     SNR = std::max(SNR, 3.4); // limit the minimal SNR
 
@@ -820,7 +823,7 @@ void GuideGaussianProcess::HandleSNR(double SNR)
     parameters->get_last_point().variance = standard_deviation * standard_deviation;
 }
 
-void GuideGaussianProcess::UpdateGP()
+void GuideAlgorithmGaussianProcess::UpdateGP()
 {
     clock_t begin = std::clock();
 
@@ -855,8 +858,8 @@ void GuideGaussianProcess::UpdateGP()
 
     // linear least squares regression for offset and drift
     Eigen::MatrixXd feature_matrix(2, timestamps.rows());
-    feature_matrix.row(0) = timestamps.array().pow(0); // easier to understand than ones
-    feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
+    feature_matrix.row(0) = Eigen::MatrixXd::Ones(1, timestamps.rows()); // timestamps.pow(0)
+    feature_matrix.row(1) = timestamps.array(); // timestamps.pow(1)
 
     // this is the inference for linear regression
     Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
@@ -873,9 +876,9 @@ void GuideGaussianProcess::UpdateGP()
     begin = std::clock();
 
     double time_fft = 0;
-    // optimize the hyperparameters if we have enough points already
-    if (parameters->min_points_for_optimisation > 0
-      && parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+    // calculate period length if we have enough points already
+    if (parameters->compute_period && parameters->min_points_for_period_computation > 0
+      && parameters->get_number_of_measurements() > parameters->min_points_for_period_computation)
     {
       // find periodicity parameter with FFT
 
@@ -892,9 +895,11 @@ void GuideGaussianProcess::UpdateGP()
       double dt = (timestamps(timestamps.rows()-1) - timestamps(1))/timestamps.rows();
       if (dt < 0)
       {
-          Debug.AddLine("timestamps: last: %f, first: %f, rows: %f", timestamps(timestamps.rows() - 1), timestamps(1), timestamps.rows());
+          Debug.AddLine("Something is wrong: The average time step length is is negative!");
+          Debug.AddLine(wxString::Format("timestamps: last: %f, first: %f, rows: %f", timestamps(timestamps.rows() - 1), timestamps(1), timestamps.rows()));
+          return;
       }
-      assert(dt >= 0);
+
       frequencies /= dt; // correct for the average time step width
 
       Eigen::ArrayXd periods = 1/frequencies.array();
@@ -931,73 +936,47 @@ void GuideGaussianProcess::UpdateGP()
     }
 
     begin = std::clock();
-    // inference of the GP with this new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances);
+    // inference of the GP with this new points, maximum accuracy should be reached around current time
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-    Debug.AddLine("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp);
+    Debug.AddLine(wxString::Format("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp));
 }
 
-double GuideGaussianProcess::FilterState(double input, double noise)
-{
-    double drift_variance = 1.0;
-
-    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
-
-    // prediction for the next location
-    Eigen::VectorXd old_location(2);
-    long time = parameters->get_last_point().timestamp;
-    old_location << time / 1000.0,
-    (time + delta_controller_time_ms) / 1000.0;
-    GP::VectorMatrixPair prediction = parameters->gp_.predictProjected(old_location);
-
-    Eigen::VectorXd mean = prediction.first;
-    Eigen::MatrixXd var  = prediction.second;
-
-    // the prediction is consisting of GP prediction and the linear drift
-    double gp_prediction = mean(1) - mean(0);
-    double gp_variance = var(0,0) + var(1,1) - var(0,1);
-
-    double predictive_mean = parameters->mean_kf_ - parameters->control_signal_ + gp_prediction;
-    double predictive_var = parameters->var_kf_ + gp_variance + drift_variance;
-
-    double residual = input - predictive_mean;
-
-    double updated_mean = predictive_mean + predictive_var / ( predictive_var + noise) * residual;
-    double updated_var = predictive_var - predictive_var / ( predictive_var + noise) * predictive_var;
-
-    Debug.AddLine("KF info: old mean: %f, pred mean: %f, measurement: %f, residual: %f, new mean: %f", parameters->mean_kf_, predictive_mean, input, residual, updated_mean);
-    Debug.AddLine("KF info: old var: %f, pred var: %f, noise: %f, gp_var %f, new var: %f", parameters->var_kf_, predictive_var, noise, gp_variance, updated_var);
-
-    parameters->mean_kf_ = updated_mean;
-    parameters->var_kf_ = updated_var;
-
-    return updated_mean;
-}
-
-double GuideGaussianProcess::PredictGearError()
+double GuideAlgorithmGaussianProcess::PredictGearError()
 {
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
-    // prediction for the next location
+    if ( parameters->last_prediction_end_ < 1.0 ) // check if this is near zero
+    {
+        parameters->last_prediction_end_ = parameters->timer_.Time() / 1000.0;
+    }
+
+    // prediction from the last endpoint to the prediction point
     Eigen::VectorXd next_location(2);
-    long current_time = parameters->timer_.Time();
-    next_location << current_time / 1000.0,
-    (current_time + delta_controller_time_ms) / 1000.0;
+    next_location << parameters->last_prediction_end_,
+    (parameters->timer_.Time() + delta_controller_time_ms) / 1000.0;
     Eigen::VectorXd prediction = parameters->gp_.predictProjected(next_location).first;
 
     double p1 = prediction(1);
     double p0 = prediction(0);
-    assert(std::abs(p1 - p0) < 10000);
+    assert(std::abs(p1 - p0) < 100);
     assert(!math_tools::isNaN(p1 - p0));
+
+    parameters->last_prediction_end_ = next_location(1); // store current endpoint
 
     // the prediction is consisting of GP prediction and the linear drift
     return (p1 - p0);
 }
 
-double GuideGaussianProcess::result(double input)
+double GuideAlgorithmGaussianProcess::result(double input)
 {
+    if (parameters->dark_tracking_mode_ == true)
+    {
+        return deduceResult();
+    }
+
     HandleMeasurements(input);
     HandleTimestamps();
     HandleSNR(pFrame->pGuider->SNR());
@@ -1009,9 +988,9 @@ double GuideGaussianProcess::result(double input)
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
         UpdateGP(); // update the GP based on the new measurements
-        parameters->control_signal_ = parameters->control_gain_*FilterState(input, parameters->get_last_point().variance); // filter the state based on the GP
+        parameters->control_signal_ = parameters->control_gain_*input;
         parameters->prediction_ = PredictGearError();
-        parameters->control_signal_ += parameters->mixing_parameter_*parameters->prediction_; // mix in the prediction
+        parameters->control_signal_ += parameters->prediction_gain_*parameters->prediction_; // mix in the prediction
     }
 
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
@@ -1046,7 +1025,7 @@ double GuideGaussianProcess::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time());
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1079,26 +1058,30 @@ double GuideGaussianProcess::result(double input)
     }
     outfile.close();
 #endif
-    Debug.AddLine("GP Guider generated %f from input %f.", parameters->control_signal_, input);
+    Debug.AddLine(wxString::Format("GP Guider generated %f from input %f.", parameters->control_signal_, input));
 
     assert(std::abs(parameters->control_signal_) < 100);
     assert(!math_tools::isNaN(parameters->control_signal_));
     return parameters->control_signal_;
 }
 
-double GuideGaussianProcess::deduceResult()
+double GuideAlgorithmGaussianProcess::deduceResult()
 {
+    HandleDarkGuiding();
+    HandleTimestamps();
+
     parameters->control_signal_ = 0;
     // check if we are allowed to use the GP
     if (parameters->min_nb_element_for_inference > 0 &&
         parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-        parameters->control_signal_ = parameters->control_gain_*FilterState(0, 1e6); // filter the state based on the GP
+        UpdateGP(); // update the GP to update the SD approximation
         parameters->prediction_ = PredictGearError();
         parameters->control_signal_ += parameters->prediction_; // control based on prediction
     }
 
-    StoreControls(parameters->control_signal_); // store the applied control for later
+    parameters->add_one_point(); // add new point here, since the control is for the next point in time
+    HandleControls(parameters->control_signal_);
 
     // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -1129,7 +1112,7 @@ double GuideGaussianProcess::deduceResult()
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time());
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1169,8 +1152,28 @@ double GuideGaussianProcess::deduceResult()
     return parameters->control_signal_;
 }
 
-void GuideGaussianProcess::reset()
+void GuideAlgorithmGaussianProcess::reset()
 {
     parameters->clear();
-    return;
+}
+
+void GuideAlgorithmGaussianProcess::GuidingStopped(void)
+{
+    reset(); // reset is only done on a complete stop
+}
+
+void GuideAlgorithmGaussianProcess::GuidingPaused(void)
+{
+}
+
+void GuideAlgorithmGaussianProcess::GuidingResumed(void)
+{
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
+{
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(void)
+{
 }

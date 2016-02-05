@@ -212,7 +212,7 @@ TEST_F(GPTest, infer_prediction_clear_test)
     EXPECT_NEAR(prediction(0), 1, 1e-6);
     EXPECT_FALSE(std::abs(prediction(1) - 1) < 1e-6);
 
-    gp_.clear();
+    gp_.clearData();
 
     prediction = gp_.predict(prediction_location).first;
 

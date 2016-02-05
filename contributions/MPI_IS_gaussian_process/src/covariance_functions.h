@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015, Max Planck Society.
+ * Copyright 2014-2016, Max Planck Society.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,13 +29,16 @@
  *
  */
 
-/*!@file
- * @author  Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
- * @author  Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+/**
+ * @file
+ * @date      2014-2016
+ * @copyright Max Planck Society
  *
- * @brief
- * The file holds the covariance functions that can be used with the GP class.
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
  *
+ * @brief     The file holds the covariance functions that can be used with the GP class.
  */
 
 #ifndef COVARIANCE_FUNCTIONS_H
@@ -49,17 +52,6 @@
 
 namespace covariance_functions
 {
-
-    typedef std::pair< Eigen::MatrixXd, std::vector< Eigen::MatrixXd> > MatrixStdVecPair;
-
-    enum paramIndices { LengthScalePIndex,
-                        PeriodLengthPIndex,
-                        SignalVariancePIndex,
-                        LengthScaleSEIndex,
-                        SignalVarianceSEIndex,
-                        TauIndex
-                      };
-
     /*!@brief Base class definition for covariance functions
      */
     class CovFunc
@@ -91,45 +83,35 @@ namespace covariance_functions
     };
 
     /*!
-     * The function computes the combined Kernel k_p * k_se and their derivatives.
+     * The function computes a combined covariance function. It is a periodic
+     * covariance function with an additional square exponential. This
+     * combination makes it possible to learn a signal that consists of both
+     * periodic and aperiodic parts.
      *
-     * The following equations show how the kernel is computed and which
-     * abbreviations are used to compute subexpressions and the derivatives.
-     * Periodic Kernel
+     * Square Exponential Component:
      * @f[
-     * k_p = svP * \exp( -2 * (\sin^2(\pi/periodLength * (t-t') / lengthScaleP^2)))
-     *     = svP * \exp( -2 * (\sin(\pi/periodLength * (t-t') / lengthScaleP))^2)
-     *     = svP * \exp( -2 * (\sin(P1) / lengthscaleP)^2)
-     *     = svP * \exp( -2 * S1^2)
-     *     = svP * \exp( -2 * Q1)
-     *     = K1
+     * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
+     * \theta_\textsc{se} \cdot
+     * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
      * @f]
      *
+     * Periodic Component:
      * @f[
-     * svP = signalVarianceP^2
+     * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
+     * \theta_\textsc{p} \cdot
+     * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
+     * (t-t')\right)}{\ell_\textsc{p}^2}\right)
      * @f]
      *
-     * Squared Exponential Kernel
+     * Kernel Combination:
      * @f[
-     * k_se = \exp ( -1 * (t- t')^2 / (2 * lengthScaleSE^2))
-     *      = \exp (-1/2 * (t-t')^2 / lengthScaleSE^2)
-     *      = \exp (-1/2 * E2)
-     *      = K2
+     * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
+     * \ell_\textsc{p},\lambda) =
+     * k_{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se})
+     * +
+     * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
      * @f]
-     *
-     * Derivatives (.* is elementwise multiplication of matrices)
-     * @f[
-     * D1 = 4 * K1 .* Q1 .* K2
-     * D2 = 4/lengthScaleP * K1 .* S1 .* cos(P1) .* P1 .* K2
-     * D3 = 2 * K1 .* K2
-     * D4 = K2 .* E2 .* K1
-     * @f]
-     *
-     * The Matlab implementation has different cases for y=="diag" and a case where
-     * y is not given. These cases are never reached, though. So they are left out
-     * at first.
-     *
-     * This is a combined SE + Per kernel function */
+     */
      class PeriodicSquareExponential : public CovFunc
      {
      private:
@@ -168,7 +150,38 @@ namespace covariance_functions
      };
 
 
-    /* This is a combined SE + Per + SE kernel function */
+     /*!
+      * The function computes a combined covariance function. It is a periodic
+      * covariance function with two additional square exponential components.
+      * This combination makes it possible to learn a signal that consists of
+      * periodic parts, long-range aperiodic parts and small-range deformations.
+      *
+      * Square Exponential Component:
+      * @f[
+      * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
+      * \theta_\textsc{se} \cdot
+      * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
+      * @f]
+      *
+      * Periodic Component:
+      * @f[
+      * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
+      * \theta_\textsc{p} \cdot
+      * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
+      * (t-t')\right)}{\ell_\textsc{p}^2}\right)
+      * @f]
+      *
+      * Kernel Combination:
+      * @f[
+      * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
+      * \ell_\textsc{p},\lambda) =
+      * k_{\textsc{se},1}(t,t';\theta_{\textsc{se},1},\ell_{\textsc{se},1})
+      * +
+      * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
+      * +
+      * k_{\textsc{se},2}(t,t';\theta_{\textsc{se},2},\ell_{\textsc{se},2})
+      * @f]
+      */
     class PeriodicSquareExponential2 : public CovFunc
     {
     private:
