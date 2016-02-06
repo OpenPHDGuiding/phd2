@@ -107,7 +107,7 @@ public:
     bool   CanSlewAsync(void);
     bool   CanCheckSlewing(void) { return (coord_prop); }
 
-    double GetGuidingDeclination(void);
+    double GetDeclination(void);
     bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     bool   GetCoordinates(double *ra, double *dec, double *siderealTime);
     bool   GetSiteLatLong(double *latitude, double *longitude);

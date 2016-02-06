@@ -798,7 +798,7 @@ static void ValidateDarksLoaded(void)
     }
 }
 
-void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+void MyFrame::GuideButtonClick(bool interactive)
 {
     try
     {
@@ -842,6 +842,13 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
             }
         }
 
+        if (interactive && pPointingSource && pPointingSource->IsConnected())
+        {
+            bool error = pPointingSource->PreparePositionInteractive();
+            if (error)
+                return;
+        }
+
         StartGuiding();
     }
     catch (const wxString& Msg)
@@ -849,7 +856,11 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
         POSSIBLY_UNUSED(Msg);
         pGuider->Reset(false);
     }
-    return;
+}
+
+void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+{
+    GuideButtonClick(true);
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))

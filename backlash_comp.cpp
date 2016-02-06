@@ -248,11 +248,12 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 // -------------------  BacklashTool Implementation
 BacklashTool::BacklashTool()
 {
-    Calibration lastCalibration;
-
     m_scope = TheScope();
 
-    if (m_scope->GetLastCalibrationParams(&lastCalibration))
+    Calibration lastCalibration;
+    m_scope->GetLastCalibration(&lastCalibration);
+
+    if (lastCalibration.isValid)
     {
         m_lastDecGuideRate = lastCalibration.yRate;
         m_bltState = BLT_STATE_INITIALIZE;

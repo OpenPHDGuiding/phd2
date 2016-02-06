@@ -61,7 +61,7 @@ enum PierSide
     PIER_SIDE_WEST = 1,
 };
 
-#define INVALID_DECLINATION  999.0
+#define UNKNOWN_DECLINATION 997.0
 
 struct Calibration
 {
@@ -69,11 +69,14 @@ struct Calibration
     double yRate;
     double xAngle;
     double yAngle;
-    double declination;
-    PierSide pierSide;
+    double declination; // radians, or UNKNOWN_DECLINATION
     double rotatorAngle;
     unsigned short binning;
+    PierSide pierSide;
+    bool isValid;
     wxString timestamp;
+
+    Calibration() : isValid(false) { }
 };
 
 enum CalibrationIssueType
@@ -95,8 +98,8 @@ struct CalibrationDetails
     double decGuideSpeed;
     double orthoError;
     double origBinning;
-    std::vector <wxRealPoint> raSteps;
-    std::vector <wxRealPoint> decSteps;
+    std::vector<wxRealPoint> raSteps;
+    std::vector<wxRealPoint> decSteps;
     int raStepCount;
     int decStepCount;
     CalibrationIssueType lastIssue;
@@ -141,11 +144,8 @@ class Mount : public wxMessageBoxProxy
     double m_xRate;         // rate adjusted for declination
     double m_yAngleError;
 
-    double m_currentDeclination;
-
 protected:
     bool m_guidingEnabled;
-    bool m_useDecCompensation;
 
     GuideAlgorithm *m_pXGuideAlgorithm;
     GuideAlgorithm *m_pYGuideAlgorithm;
@@ -211,15 +211,12 @@ public:
     Mount(void);
     virtual ~Mount(void);
 
-    static const double DEC_COMP_LIMIT; // declination compensation limit
     static const wxString& GetIssueString(CalibrationIssueType issue) { return CalibrationIssueString[issue]; };
 
-    double yAngle(void);
-    double yRate(void);
-    double xAngle(void);
-    double xRate(void);
-    bool DecCompensationActive(void) const;
-    bool DecCompensationEnabled();
+    double yAngle(void) const;
+    double yRate(void) const;
+    double xAngle(void) const;
+    double xRate(void) const;
 
     bool FlipCalibration(void);
     bool GetGuidingEnabled(void);
@@ -238,8 +235,10 @@ public:
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
+    virtual bool DecCompensationEnabled(void) const;
     virtual void AdjustCalibrationForScopePointing(void);
 
+    static wxString DeclinationStr(double dec, const wxString& numFormatStr = "%.1f");
     static wxString PierSideStr(PierSide side);
 
     // pure virtual functions -- these MUST be overridden by a subclass
@@ -264,7 +263,7 @@ public:
     GuideAlgorithm *GetXGuideAlgorithm(void) const;
     GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
-    bool GetLastCalibrationParams(Calibration *params);
+    void GetLastCalibration(Calibration *cal);
     BacklashComp *GetBacklashComp() { return m_backlashComp; }
     void FlagBacklashOverShoot(double pixelAmount, GuideAxis axis);
 
@@ -294,7 +293,7 @@ public:
     virtual void SetCalibrationDetails(const CalibrationDetails& calDetails);
     void GetCalibrationDetails(CalibrationDetails *calDetails);
 
-    virtual bool IsConnected(void);
+    virtual bool IsConnected(void) const;
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
@@ -314,11 +313,6 @@ protected:
     const Calibration& MountCal(void) const { return m_cal; }
 };
 
-inline bool Mount::DecCompensationActive(void) const
-{
-    return (m_currentDeclination != m_cal.declination && m_useDecCompensation);
-}
-
 inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
 {
     return m_pXGuideAlgorithm;
@@ -327,6 +321,11 @@ inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
 inline GuideAlgorithm *Mount::GetYGuideAlgorithm(void) const
 {
     return m_pYGuideAlgorithm;
+}
+
+inline bool Mount::IsConnected() const
+{
+    return m_connected;
 }
 
 #endif /* MOUNT_H_INCLUDED */

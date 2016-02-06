@@ -679,7 +679,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                                                 currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
-                m_calibration.declination = 0.;
+                m_calibration.declination = UNKNOWN_DECLINATION;
                 m_calibration.pierSide = PIER_SIDE_UNKNOWN;
                 m_calibration.rotatorAngle = Rotator::RotatorPosition();
                 m_calibration.binning = pCamera->Binning;
@@ -1164,7 +1164,6 @@ void StepGuider::AdjustCalibrationForScopePointing(void)
 
         SetCalibration(cal);
     }
-
 }
 
 wxPoint StepGuider::GetAoPos(void) const

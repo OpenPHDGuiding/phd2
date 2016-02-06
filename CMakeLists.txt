@@ -287,6 +287,8 @@ set(scopes_SRC
   ${phd_src_dir}/scope_gpint.h
   ${phd_src_dir}/scope_gpusb.cpp
   ${phd_src_dir}/scope_gpusb.h
+  ${phd_src_dir}/scope_manual_pointing.cpp
+  ${phd_src_dir}/scope_manual_pointing.h
   ${phd_src_dir}/scope_onboard_st4.cpp
   ${phd_src_dir}/scope_onboard_st4.h
   ${phd_src_dir}/scope_oncamera.cpp

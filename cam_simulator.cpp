@@ -73,7 +73,7 @@ struct SimCamParams
     static PierSide pier_side;
     static bool reverse_dec_pulse_on_west_side;
     static unsigned int clouds_inten;
-    static double inverse_imagescale;
+    static double image_scale; // arc-sec per pixel
     static bool use_pe;
     static bool use_default_pe_params;
     static double custom_pe_amp;
@@ -98,7 +98,7 @@ double SimCamParams::guide_rate;                 // guide rate, pixels per secon
 PierSide SimCamParams::pier_side;                // side of pier
 bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial mounts
 unsigned int SimCamParams::clouds_inten;         // clouds intensity blocking out stars
-double SimCamParams::inverse_imagescale;         // pixel per arc-sec
+double SimCamParams::image_scale;                // arc-sec per pixel
 bool SimCamParams::use_pe;
 bool SimCamParams::use_default_pe_params;
 double SimCamParams::custom_pe_amp;
@@ -144,7 +144,7 @@ static double range_check(double thisval, double minval, double maxval)
 
 static void load_sim_params()
 {
-    SimCamParams::inverse_imagescale = 1.0 / pFrame->GetCameraPixelScale();
+    SimCamParams::image_scale = pFrame->GetCameraPixelScale();
 
     SimCamParams::nr_stars = pConfig->Profile.GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
     SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
@@ -155,10 +155,10 @@ static void load_sim_params()
     SimCamParams::custom_pe_period = pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT);
 
     double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
-    SimCamParams::dec_drift_rate = range_check(dval, -DEC_DRIFT_MAX, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
+    SimCamParams::dec_drift_rate = range_check(dval, -DEC_DRIFT_MAX, DEC_DRIFT_MAX) / (SimCamParams::image_scale * 60.0);  //a-s per min is saved
     // backlash is in arc-secs in UI - map to px for internal use
     dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
-    SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) * SimCamParams::inverse_imagescale;
+    SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) / SimCamParams::image_scale;
     SimCamParams::pe_scale = range_check(pConfig->Profile.GetDouble("/SimCam/pe_scale", PE_SCALE_DEFAULT), 0, PE_SCALE_MAX);
 
     SimCamParams::seeing_scale = range_check(pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT), 0, SEEING_MAX);       // FWHM a-s
@@ -177,13 +177,13 @@ static void save_sim_params()
     pConfig->Profile.SetInt("/SimCam/nr_stars", SimCamParams::nr_stars);
     pConfig->Profile.SetInt("/SimCam/nr_hot_pixels", SimCamParams::nr_hot_pixels);
     pConfig->Profile.SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
-    pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash / SimCamParams::inverse_imagescale);
+    pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash * SimCamParams::image_scale);
     pConfig->Profile.SetBoolean("/SimCam/use_pe", SimCamParams::use_pe);
     pConfig->Profile.SetBoolean("/SimCam/use_default_pe", SimCamParams::use_default_pe_params);
     pConfig->Profile.SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
     pConfig->Profile.SetDouble("/SimCam/pe_cust_amp", SimCamParams::custom_pe_amp);
     pConfig->Profile.SetDouble("/SimCam/pe_cust_period", SimCamParams::custom_pe_period);
-    pConfig->Profile.SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate * 60.0 / SimCamParams::inverse_imagescale);
+    pConfig->Profile.SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate * 60.0 * SimCamParams::image_scale);
     pConfig->Profile.SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
     pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
@@ -760,7 +760,7 @@ void SimCamState::ReadDisplacements(double& incX, double& incY)
             if (tk.ToDouble(&realImageScale))
             {
                 // Will use this to scale subsequent raw star displacements to match simulator image scale
-                scaleConversion = realImageScale * SimCamParams::inverse_imagescale;
+                scaleConversion = realImageScale / SimCamParams::image_scale;
             }
             line = pText->ReadLine();
             line.Trim(false);
@@ -792,7 +792,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     if (CountUp == 0)
     {
         // Changes in the setup dialog are hard to track - just make sure we are using the params we think we are
-        Debug.AddLine (wxString::Format("SimDebug: img_scale: %.3f, seeing_scale: %.3f", 1.0/SimCamParams::inverse_imagescale, SimCamParams::seeing_scale));
+        Debug.AddLine (wxString::Format("SimDebug: img_scale: %.3f, seeing_scale: %.3f", SimCamParams::image_scale, SimCamParams::seeing_scale));
     }
     CountUp++;
 #endif
@@ -846,11 +846,11 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             for (unsigned int i = 0; i < WXSIZEOF(period); i++)
                 pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * M_PI);
 
-            pe *= (SimCamParams::pe_scale / max_amp * SimCamParams::inverse_imagescale);      // modulated PE in px
+            pe *= (SimCamParams::pe_scale / (max_amp * SimCamParams::image_scale));      // modulated PE in px
         }
         else
         {
-            pe = SimCamParams::custom_pe_amp * cos(now / SimCamParams::custom_pe_period * 2.0 * M_PI) * SimCamParams::inverse_imagescale;
+            pe = SimCamParams::custom_pe_amp * cos(now / SimCamParams::custom_pe_period * 2.0 * M_PI) / SimCamParams::image_scale;
         }
     }
 
@@ -868,7 +868,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     {
         rand_normal(seeing);
         static const double seeing_adjustment = (2.345 * 1.4 * 2.4);        //FWHM, geometry, empirical
-        double sigma = SimCamParams::seeing_scale / seeing_adjustment * SimCamParams::inverse_imagescale;
+        double sigma = SimCamParams::seeing_scale / (seeing_adjustment * SimCamParams::image_scale);
         seeing[0] *= sigma;
         seeing[1] *= sigma;
         total_shift_x += seeing[0];
@@ -895,12 +895,12 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif
 
     // check for pier-flip
-    if (pPointingSource && pPointingSource->IsConnected())
+    if (pPointingSource)
     {
-        if (pPointingSource->SideOfPier() != SimCamParams::pier_side)
+        PierSide new_side = pPointingSource->SideOfPier();
+        if (new_side != SimCamParams::pier_side)
         {
-            PierSide new_side = pPointingSource->SideOfPier();
-            Debug.AddLine("Cam simulator: pointing source flipped pier side from %d to %d\n", SimCamParams::pier_side, new_side);
+            Debug.AddLine("Cam simulator: pointing source pier side changed from %d to %d\n", SimCamParams::pier_side, new_side);
             SimCamParams::pier_side = new_side;
         }
     }
@@ -996,7 +996,11 @@ Camera_SimClass::Camera_SimClass()
 
 wxByte Camera_SimClass::BitsPerPixel()
 {
+#if 0
     return 16;
+#else
+    return 8;
+#endif
 }
 
 bool Camera_SimClass::Connect(const wxString& camId)
@@ -1164,7 +1168,16 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
 
 bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 {
-    double d = (SimCamParams::guide_rate * duration / 1000.0) * SimCamParams::inverse_imagescale;
+    double d = SimCamParams::guide_rate * duration / (1000.0 * SimCamParams::image_scale);
+
+    // simulate RA motion scaling according to declination
+    if (direction == WEST || direction == EAST)
+    {
+        double dec = pPointingSource->GetDeclination();
+        if (dec == UNKNOWN_DECLINATION)
+            dec = radians(25.0); // some arbitrary declination
+        d *= cos(dec);
+    }
 
     if (SimCamParams::pier_side == PIER_SIDE_WEST && SimCamParams::reverse_dec_pulse_on_west_side)
     {
@@ -1426,7 +1439,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
     double imageScale = pFrame->GetCameraPixelScale();
 
-    SimCamParams::inverse_imagescale = 1.0/imageScale;
+    SimCamParams::image_scale = imageScale;
 
     // Camera group controls
     wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera"));
@@ -1591,13 +1604,13 @@ void Camera_SimClass::ShowPropertyDialog()
 {
     SimCamDialog dlg(pFrame);
     double imageScale = pFrame->GetCameraPixelScale();              // arc-sec/pixel, defaults to 1.0 if no user specs
-    SimCamParams::inverse_imagescale = 1.0/imageScale;              // keep current - might have gotten changed in brain dialog
+    SimCamParams::image_scale = imageScale;                         // keep current - might have gotten changed in brain dialog
     if (dlg.ShowModal() == wxID_OK)
     {
         SimCamParams::nr_stars = dlg.pStarsSlider->GetValue();
         SimCamParams::nr_hot_pixels = dlg.pHotpxSlider->GetValue();
         SimCamParams::noise_multiplier = (double) dlg.pNoiseSlider->GetValue() * NOISE_MAX / 100.0;
-        SimCamParams::dec_backlash =     (double) dlg.pBacklashSpin->GetValue() * SimCamParams::inverse_imagescale;    // a-s -> px
+        SimCamParams::dec_backlash =     (double) dlg.pBacklashSpin->GetValue() / imageScale;    // a-s -> px
         sim->dec_ofs = BacklashVal(SimCamParams::dec_backlash);
 
         SimCamParams::use_pe = dlg.pUsePECbx->GetValue();

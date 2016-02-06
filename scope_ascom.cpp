@@ -808,11 +808,10 @@ bool ScopeASCOM::HasNonGuiMove(void)
     return true;
 }
 
-// Special purpose function to return the guiding declination (radians) - either the actual scope position or the
-// default values defined in mount.cpp.  Doesn't throw exceptions to callers.
-double ScopeASCOM::GetGuidingDeclination(void)
+// return the declination in radians, or UNKNOWN_DECLINATION
+double ScopeASCOM::GetDeclination(void)
 {
-    double dReturn = Scope::GetDefGuidingDeclination();
+    double dReturn = UNKNOWN_DECLINATION;
 
     try
     {
@@ -842,7 +841,7 @@ double ScopeASCOM::GetGuidingDeclination(void)
         m_canGetCoordinates = false;
     }
 
-    Debug.AddLine("ScopeASCOM::GetDeclination() returns %.1f", degrees(dReturn));
+    Debug.Write(wxString::Format("ScopeASCOM::GetDeclination() returns %s\n", DeclinationStr(dReturn)));
 
     return dReturn;
 }
@@ -889,8 +888,8 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
         POSSIBLY_UNUSED(Msg);
     }
 
-    Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bError,
-        bError ? 0.0 : *pDecGuideRate, bError ? 0.0 : *pRAGuideRate);
+    Debug.AddLine("ScopeASCOM::GetGuideRates returns %u %.3f %.3f a-s/sec", bError,
+        bError ? 0.0 : *pDecGuideRate * 3600., bError ? 0.0 : *pRAGuideRate * 3600.);
 
     return bError;
 }

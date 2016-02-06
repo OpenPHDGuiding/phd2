@@ -229,6 +229,7 @@ public:
     void OnDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
     void OnLoadDefectMap(wxCommandEvent& evt);
+    void GuideButtonClick(bool interactive);
     void OnGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);

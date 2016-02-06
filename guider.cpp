@@ -927,6 +927,8 @@ void Guider::SetState(GUIDER_STATE newState)
                     pSecondaryMount->AdjustCalibrationForScopePointing();
                 }
 
+                pFrame->UpdateCalibrationStatus();
+
                 if (m_lockPosition.IsValid() && m_lockPosIsSticky)
                 {
                     Debug.Write("keeping sticky lock position\n");
