@@ -352,6 +352,8 @@ set(phd2_SRC
   ${phd_src_dir}/about_dialog.h
   ${phd_src_dir}/advanced_dialog.cpp
   ${phd_src_dir}/advanced_dialog.h
+  ${phd_src_dir}/aui_controls.cpp
+  ${phd_src_dir}/aui_controls.h
 
   ${phd_src_dir}/calreview_dialog.cpp
   ${phd_src_dir}/calreview_dialog.h
