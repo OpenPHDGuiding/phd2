@@ -679,7 +679,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                                                 currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
-                m_calibration.declination = 0.;
+                m_calibration.declination = UNKNOWN_DECLINATION;
                 m_calibration.pierSide = PIER_SIDE_UNKNOWN;
                 m_calibration.rotatorAngle = Rotator::RotatorPosition();
                 m_calibration.binning = pCamera->Binning;
@@ -1169,7 +1169,6 @@ void StepGuider::AdjustCalibrationForScopePointing(void)
 
         SetCalibration(cal);
     }
-
 }
 
 wxPoint StepGuider::GetAoPos(void) const
@@ -1267,9 +1266,9 @@ AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuid
     m_pStepGuider = (StepGuider*) pStepGuider;
 
     width = StringWidth(_T("000"));
+    wxString tip = wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration);
     m_pCalibrationStepsPerIteration = new wxSpinCtrl(GetParentWindow(AD_szCalStepsPerIteration), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_T("Cal_Steps"));
-    wxString tip = wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration);
     AddGroup(CtrlMap, AD_szCalStepsPerIteration, MakeLabeledControl(AD_szCalStepsPerIteration, _("Cal steps"), m_pCalibrationStepsPerIteration, tip));
 
     width = StringWidth(_T("000"));

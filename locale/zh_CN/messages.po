@@ -1,10 +1,10 @@
 # fr\messages.po
 # PHD Guiding
-# 
+#
 # Created by Sylvain Girard
 # Copyright (c) 2013 Sylvain Girard
 # All rights reserved.
-# 
+#
 # This source code is distributed under the following "BSD" license
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 # Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,14 +28,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD2 2.3.1n\n"
+"Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 02:59-0500\n"
-"PO-Revision-Date: 2014-11-04 15:50+0800\n"
+"POT-Creation-Date: 2016-01-26 20:02-0500\n"
+"PO-Revision-Date: 2015-10-11 10:45+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
 "Language: zh_CN\n"
@@ -55,7 +55,7 @@ msgstr "全局"
 
 #: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1432
 #: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
-#: gear_dialog.cpp:999 myframe.cpp:849
+#: gear_dialog.cpp:1000 myframe.cpp:849
 msgid "Camera"
 msgstr "相机"
 
@@ -73,7 +73,7 @@ msgstr ""
 
 #: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1443
 #: config_INDI.cpp:107 eegg.cpp:112 gear_dialog.cpp:251 gear_dialog.cpp:253
-#: gear_dialog.cpp:1177 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
+#: gear_dialog.cpp:1178 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "赤道仪"
 
@@ -93,13 +93,13 @@ msgstr ""
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "South"
 msgstr "南向"
 
@@ -139,7 +139,7 @@ msgstr ""
 
 #: calreview_dialog.cpp:47 statswindow.cpp:213
 msgid "N/A"
-msgstr ""
+msgstr "无"
 
 #: calreview_dialog.cpp:99 eegg.cpp:110 gear_dialog.cpp:292 gear_dialog.cpp:294
 #: myframe.cpp:851 testguide.cpp:161
@@ -148,7 +148,7 @@ msgstr "AO"
 
 #: calreview_dialog.cpp:132 calreview_dialog.cpp:137 mount.cpp:105
 msgid "Right Ascension"
-msgstr ""
+msgstr "赤经"
 
 #: calreview_dialog.cpp:135 comet_tool.cpp:326 myframe_events.cpp:150
 msgid "X"
@@ -157,30 +157,27 @@ msgstr ""
 #: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:369
 #: mount.cpp:108 statswindow.cpp:97
 msgid "Declination"
-msgstr "*赤纬*"
+msgstr "赤纬"
 
 #: calreview_dialog.cpp:143 comet_tool.cpp:327 myframe_events.cpp:157
 msgid "Y"
 msgstr ""
 
 #: calreview_dialog.cpp:194
-#, fuzzy
 msgid "Last Mount Calibration"
-msgstr "手工校准"
+msgstr "上次校准数据"
 
 #: calreview_dialog.cpp:196
-#, fuzzy
 msgid "Last AO Calibration"
-msgstr "校准"
+msgstr "上次AO校准数据"
 
 #: calreview_dialog.cpp:206
 msgid "RA steps:"
-msgstr ""
+msgstr "赤经步数:"
 
 #: calreview_dialog.cpp:211
-#, fuzzy
 msgid "Dec steps:"
-msgstr "赤纬速率:"
+msgstr "赤纬步数:"
 
 #: calreview_dialog.cpp:218
 msgid "Camera angle:"
@@ -192,43 +189,39 @@ msgstr ""
 
 #: calreview_dialog.cpp:237
 msgid "a-s/sec"
-msgstr ""
+msgstr "角秒/秒"
 
 #: calreview_dialog.cpp:238 guiding_assistant.cpp:1144
 msgid "px/sec"
-msgstr ""
+msgstr "像素/秒"
 
 #: calreview_dialog.cpp:239
 msgid "a-s/px"
-msgstr ""
+msgstr "角秒/像素"
 
 #: calreview_dialog.cpp:243 calreview_dialog.cpp:704
 msgid "RA rate:"
 msgstr "赤经速率:"
 
 #: calreview_dialog.cpp:246
-#, fuzzy
 msgid "X rate:"
-msgstr "赤经速率:"
+msgstr "X轴速率:"
 
 #: calreview_dialog.cpp:253
 msgid "Dec rate:"
 msgstr "赤纬速率:"
 
 #: calreview_dialog.cpp:255
-#, fuzzy
 msgid "Y rate:"
-msgstr "赤经速率:"
+msgstr "Y轴速率:"
 
 #: calreview_dialog.cpp:273
-#, fuzzy
 msgid "Expected RA rate:"
-msgstr "赤经速率:"
+msgstr "预计赤经速率:"
 
 #: calreview_dialog.cpp:282
-#, fuzzy
 msgid "Expected Dec rate:"
-msgstr "赤纬速率:"
+msgstr "预计赤纬速率:"
 
 #: calreview_dialog.cpp:291
 msgid "Binning:"
@@ -244,23 +237,20 @@ msgid "Unknown"
 msgstr "未知"
 
 #: calreview_dialog.cpp:302
-#, fuzzy
 msgid "Mount Configuration"
-msgstr "重置所有设置"
+msgstr "赤道仪设置"
 
 #: calreview_dialog.cpp:314
 msgid "Modified:"
 msgstr ""
 
 #: calreview_dialog.cpp:316
-#, fuzzy
 msgid "Focal length:"
-msgstr "焦距, 毫米"
+msgstr "焦距："
 
 #: calreview_dialog.cpp:323
-#, fuzzy
 msgid "Image scale:"
-msgstr "分辨率, 角秒/像素"
+msgstr "分辨率："
 
 #: calreview_dialog.cpp:326
 #, c-format
@@ -268,7 +258,6 @@ msgid "Binning: %d"
 msgstr ""
 
 #: calreview_dialog.cpp:331
-#, fuzzy
 msgid "Side-of-pier:"
 msgstr "赤道仪方向:"
 
@@ -283,37 +272,32 @@ msgid "West"
 msgstr "西"
 
 #: calreview_dialog.cpp:339
-#, fuzzy
 msgid "RA Guide speed:"
-msgstr "导星相机尺寸:"
+msgstr "赤经导星速率:"
 
 #: calreview_dialog.cpp:346
-#, fuzzy
 msgid "Dec Guide speed:"
-msgstr "赤纬导星模式"
+msgstr "赤纬导星速率:"
 
 #: calreview_dialog.cpp:373
 msgid " (est)"
 msgstr ""
 
 #: calreview_dialog.cpp:375
-#, fuzzy
 msgid "Rotator position:"
-msgstr "恢复窗口位置"
+msgstr "Rotator位置:"
 
 #: calreview_dialog.cpp:528 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "恢复"
 
 #: calreview_dialog.cpp:543
-#, fuzzy
 msgid "Calibration restored"
-msgstr "校准步数"
+msgstr "校准数据已恢复"
 
 #: calreview_dialog.cpp:561
-#, fuzzy
 msgid "Calibration Sanity Check"
-msgstr "校准步数"
+msgstr "校准数据可用性检查"
 
 #: calreview_dialog.cpp:584
 msgid ""
@@ -329,8 +313,8 @@ msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
 "Normally, these angles will be nearly perpendicular, having an "
 "'orthogonality error' of less than 10 degrees.  In this calibration, your "
-"error was %s degrees. This could mean the calibration is inaccurate, perhaps "
-"because of small or erratic star movement during the calibration."
+"error was %s degrees, which is often caused by poor polar alignment or a "
+"large periodic error in RA."
 msgstr ""
 
 #: calreview_dialog.cpp:594
@@ -348,19 +332,18 @@ msgstr ""
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
 "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
-"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could mean "
-"the calibration is inaccurate, perhaps because of small or erratic star "
-"movement during the calibration."
+"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This often "
+"means one of the axis calibrations is inaccurate, which may result in poor "
+"guiding."
 msgstr ""
 
 #: calreview_dialog.cpp:641
-#, fuzzy
 msgid "Explanation"
-msgstr "*赤纬*"
+msgstr "说明"
 
 #: calreview_dialog.cpp:654
 msgid "Details"
-msgstr ""
+msgstr "详细设置"
 
 #: calreview_dialog.cpp:663
 msgid "Steps, RA:"
@@ -375,37 +358,32 @@ msgid "Previous orthogonality error:"
 msgstr ""
 
 #: calreview_dialog.cpp:689
-#, fuzzy
 msgid "This declination rate:"
-msgstr "*Guide in declination as well?"
+msgstr "本次赤纬速率:"
 
 #: calreview_dialog.cpp:694
-#, fuzzy
 msgid "Previous declination rate:"
-msgstr "校准星赤纬, 度"
+msgstr "上次赤纬速率:"
 
 #: calreview_dialog.cpp:706
-#, fuzzy
 msgid "Declination rate:"
-msgstr "*赤纬*"
+msgstr "赤纬速率:"
 
 #: calreview_dialog.cpp:724
 msgid "Don't show calibration alerts of this type"
-msgstr ""
+msgstr "不显示这种类型的校准告警"
 
 #: calreview_dialog.cpp:735
-#, fuzzy
 msgid "Accept calibration"
-msgstr "强制重新校准"
+msgstr "接受校准数据"
 
 #: calreview_dialog.cpp:736
 msgid "Accept the calibration as being valid and continue guiding"
-msgstr ""
+msgstr "接受有效的校准数据并开始导星"
 
 #: calreview_dialog.cpp:738
-#, fuzzy
 msgid "Discard calibration"
-msgstr "强制校准"
+msgstr "放弃校准数据"
 
 #: calreview_dialog.cpp:739
 msgid ""
@@ -414,9 +392,8 @@ msgid ""
 msgstr ""
 
 #: calreview_dialog.cpp:741
-#, fuzzy
 msgid "Restore old calibration"
-msgstr "恢复校准数据"
+msgstr "恢复上次校准数据"
 
 #: calreview_dialog.cpp:742
 msgid ""
@@ -425,9 +402,8 @@ msgid ""
 msgstr ""
 
 #: calreview_dialog.cpp:791
-#, fuzzy
 msgid "Previous calibration restored"
-msgstr "校准星赤纬, 度"
+msgstr "上次校准数据已恢复"
 
 #: calstep_dialog.cpp:61
 msgid "Calibration Step Calculator"
@@ -546,10 +522,10 @@ msgstr "设置"
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
 #: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:257 cam_wdm.cpp:132 cam_wdm.cpp:141
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:178
-#: cam_ZWO.cpp:193 cam_ZWO.cpp:208 cam_ZWO.cpp:214 cam_ZWO.cpp:255
-#: gear_dialog.cpp:1172 gear_dialog.cpp:1830 gear_dialog.cpp:1839
-#: gear_dialog.cpp:1846 gear_dialog.cpp:1891 gear_dialog.cpp:1897
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:254
+#: gear_dialog.cpp:1173 gear_dialog.cpp:1831 gear_dialog.cpp:1840
+#: gear_dialog.cpp:1847 gear_dialog.cpp:1892 gear_dialog.cpp:1898
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
 #: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
 #: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
@@ -581,12 +557,11 @@ msgstr "ASCOM Chooser查找失败，请确认正确安装ASCOM Platform."
 #: cam_ascomlate.cpp:449
 msgid ""
 "Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"
-msgstr "不能设置ASCOM相机。ASCOM发生错误。"
+msgstr "ASCOM平台发生错误，不能设置已选择的相机。"
 
 #: cam_ascomlate.cpp:460
-#, fuzzy
 msgid "Failed to run the Camera Chooser. Something is wrong with ASCOM"
-msgstr "不能运行赤道仪选择器.ASCOM发生错误。"
+msgstr "ASCOM平台发生错误，不能打开相机选择器。"
 
 #: cam_ascomlate.cpp:516
 msgid "ASCOM Camera Driver missing required property "
@@ -605,14 +580,12 @@ msgid "ASCOM driver missing the CanPulseGuide property"
 msgstr "ASCOM驱动丢失CanPulseGuide属性"
 
 #: cam_ascomlate.cpp:578
-#, fuzzy
 msgid "ASCOM driver missing the CanAbortExposure property"
-msgstr "ASCOM驱动丢失CanPulseGuide属性"
+msgstr "ASCOM驱动丢失CanAbortExposure属性"
 
 #: cam_ascomlate.cpp:586
-#, fuzzy
 msgid "ASCOM driver missing the CanStopExposure property"
-msgstr "ASCOM驱动丢失CanPulseGuide属性"
+msgstr "ASCOM驱动丢失CanStopExposure属性"
 
 #: cam_ascomlate.cpp:602
 msgid "ASCOM driver missing the CameraXSize property"
@@ -648,7 +621,7 @@ msgstr "ASCOM错误 -- 不能按照给定的参数曝光"
 
 #: cam_ascomlate.cpp:871
 msgid "Exception thrown polling camera"
-msgstr "*Exception thrown polling camera"
+msgstr "轮询相机异常"
 
 #: cam_ascomlate.cpp:892
 msgid "Error reading image"
@@ -699,16 +672,15 @@ msgid "Could not start video stream"
 msgstr "不能开启视频流"
 
 #: cam_firewire_IC.cpp:323
-#, fuzzy, c-format
+#, c-format
 msgid "Error capturing image: %d (%d) %s"
-msgstr "拍摄图像失败：%d (%d)"
+msgstr "拍摄图像失败：%d (%d) %s"
 
 #: cam_firewire_OSX.cpp:361
 msgid "Cannot get a frame from the queue"
-msgstr ""
+msgstr "不能从队列中获取图像"
 
 #: cam_INDI.cpp:334
-#, fuzzy
 msgid "Cannot connect to camera "
 msgstr "不能连接相机"
 
@@ -726,24 +698,20 @@ msgid "Error reading data"
 msgstr "读出数据失败"
 
 #: cam_INDI.cpp:509
-#, fuzzy
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "无法确定图像尺寸"
 
 #: cam_INDI.cpp:514
-#, fuzzy
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "无法确定图像尺寸"
 
 #: cam_INDI.cpp:520
-#, fuzzy
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "无法确定图像尺寸"
 
 #: cam_INDI.cpp:527
-#, fuzzy
 msgid "CCD stream: memory allocation error"
-msgstr "内存分配错误"
+msgstr "CCD流：内存分配错误"
 
 #: cam_INDI.cpp:644
 msgid "Unknown image format: "
@@ -784,7 +752,7 @@ msgstr "端口引脚"
 
 #: cam_LESerialWebcam.cpp:352
 msgid "Inverted logic"
-msgstr ""
+msgstr "逻辑反转"
 
 #: cam_LESerialWebcam.cpp:355
 msgid "Use Amp"
@@ -809,7 +777,7 @@ msgstr "不能开始曝光"
 #: cam_QHY5IIbase.cpp:107
 #, c-format
 msgid "Camera DLL missing entry %s"
-msgstr ""
+msgstr "Camera DLL missing entry %s"
 
 #: cam_QHY5IIbase.cpp:120
 #, c-format
@@ -964,7 +932,7 @@ msgstr "热燥"
 #: cam_simulator.cpp:1438
 #, c-format
 msgid "% Simulated noise"
-msgstr ""
+msgstr "% Simulated noise*"
 
 #: cam_simulator.cpp:1439
 msgid "Noise"
@@ -1019,13 +987,12 @@ msgid "Amplitude: "
 msgstr "振幅:"
 
 #: cam_simulator.cpp:1464
-#, fuzzy
 msgid "PE Amplitude, arc-secs"
-msgstr "振幅, 角秒"
+msgstr "PE振幅, 角秒"
 
 #: cam_simulator.cpp:1472
 msgid "Custom curve"
-msgstr ""
+msgstr "自定义曲线"
 
 #: cam_simulator.cpp:1474
 msgid ""
@@ -1113,9 +1080,9 @@ msgid "Cancel"
 msgstr "取消"
 
 #: cam_simulator.cpp:1587
-#, fuzzy, c-format
+#, c-format
 msgid "Side of pier: %s"
-msgstr "赤道仪方向:"
+msgstr "赤道仪方向: %s"
 
 #: cam_StarShootDSCI.cpp:152
 msgid "Problem sending register to StarShoot"
@@ -1126,9 +1093,8 @@ msgid "Error starting exposure"
 msgstr "开始曝光错误"
 
 #: cam_SXV.cpp:153
-#, fuzzy
 msgid "SX Camera Settings"
-msgstr "相机设置"
+msgstr "SX相机设置"
 
 #: cam_SXV.cpp:257
 msgid "No SX cameras found"
@@ -1136,7 +1102,7 @@ msgstr ""
 
 #: cam_SXV.cpp:281
 msgid "Connect failed: could not retrieve camera parameters."
-msgstr ""
+msgstr "连接失败：不能获取相机参数。"
 
 #: cam_VFW.cpp:88
 msgid "Select capture device"
@@ -1169,83 +1135,79 @@ msgid ""
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
 "download/details.aspx?id=29"
 msgstr ""
+"振旺ASI相机需要Microsoft Visual C++ 2008 Redistributable Package (x86), 请访"
+"问 http://www.microsoft.com/en-us/download/details.aspx?id=29 进行下载"
 
-#: cam_ZWO.cpp:208 cam_ZWO.cpp:255
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:254
 msgid "Failed to get camera properties for ZWO ASI Camera."
-msgstr ""
+msgstr "不能获取振旺ASI相机参数"
 
-#: cam_ZWO.cpp:214
+#: cam_ZWO.cpp:213
 msgid "Failed to open ZWO ASI Camera."
-msgstr ""
+msgstr "打开振旺ASI相机失败"
 
 #: camcal_import_dialog.cpp:57
 #, c-format
 msgid "Import Darks to Profile %s"
-msgstr ""
+msgstr "导入暗场文件到 %s"
 
 #: camcal_import_dialog.cpp:63 darks_dialog.cpp:113
 msgid "Dark Library"
-msgstr ""
+msgstr "暗场库"
 
 #: camcal_import_dialog.cpp:65
 msgid "Choose the profile with the dark library you want to use:"
-msgstr ""
+msgstr "选择你希望使用的暗场库文件:"
 
 #: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
 #: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:222
 #: camera.cpp:363 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
-#: gear_dialog.cpp:937 gear_dialog.cpp:1591 gear_dialog.cpp:1592
-#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:612
+#: gear_dialog.cpp:937 gear_dialog.cpp:1592 gear_dialog.cpp:1593
+#: gear_dialog.cpp:1594 mount.cpp:113 mount.cpp:142 mount.cpp:612
 #: myframe.cpp:2291 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
 #: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:267
 #: scope.cpp:309 scope.cpp:347 stepguider.cpp:92 stepguider.cpp:116
 msgid "None"
-msgstr "*无"
+msgstr "无"
 
 #: camcal_import_dialog.cpp:76
-#, fuzzy
 msgid "Darks Profiles"
-msgstr "星点图"
+msgstr "暗场列表"
 
 #: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
 msgid "Import from profile"
-msgstr ""
+msgstr "从配置文件导入"
 
 #: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
-#, fuzzy
 msgid "Camera in profile"
-msgstr "相机角度"
+msgstr "列表中的相机"
 
 #: camcal_import_dialog.cpp:85
-#, fuzzy
 msgid "There are no compatible dark libraries available"
-msgstr "无效的校准数据"
+msgstr "没有可用的暗场库文件"
 
 #: camcal_import_dialog.cpp:89
-#, fuzzy
 msgid "Bad-pixel Map"
 msgstr "坏点映射图"
 
 #: camcal_import_dialog.cpp:91
 msgid "Choose the profile with the bad-pixel map you want to use:"
-msgstr ""
+msgstr "选择你希望使用的坏点映射图："
 
 #: camcal_import_dialog.cpp:101
-#, fuzzy
 msgid "Bad-pix Map Profiles"
-msgstr "管理配置文件"
+msgstr "坏点映射图列表"
 
 #: camcal_import_dialog.cpp:111
-#, fuzzy
 msgid "There are no compatible bad-pixel maps available"
-msgstr "无效的校准数据"
+msgstr "没有可用的坏点图文件"
 
 #: camcal_import_dialog.cpp:216
 msgid "Bad-pixel map could not be imported because of errors in file/copy"
-msgstr ""
+msgstr "坏点映射图未能导入，复制文件错误。"
 
 #: camcal_import_dialog.cpp:235
 msgid "Dark library could not be imported because of errors in file/copy"
@@ -1320,7 +1282,7 @@ msgstr ""
 
 #: camera.cpp:837
 msgid "Delay"
-msgstr ""
+msgstr "延时"
 
 #: camera.cpp:837
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
@@ -1335,6 +1297,8 @@ msgid ""
 "Disconnect nonresponsive\n"
 "camera after (seconds)"
 msgstr ""
+"在xx秒后断开\n"
+"无响应的相机"
 
 #: camera.cpp:860
 #, c-format
@@ -1368,7 +1332,7 @@ msgstr ""
 
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
-msgstr ""
+msgstr "一个COM组件错误发生。在调试日志中可能有更多信息。"
 
 #: comet_tool.cpp:79
 msgid "Comet Tracking"
@@ -1379,9 +1343,8 @@ msgid "Comet Tracking - Training Active"
 msgstr "彗星跟踪 - 检测中"
 
 #: comet_tool.cpp:81
-#, fuzzy
 msgid "Comet Tracking - Active"
-msgstr "彗星跟踪 - 检测中"
+msgstr "彗星跟踪 - 开启"
 
 #: comet_tool.cpp:90 comet_tool.cpp:200 guider_onestar.cpp:951
 msgid "Enable"
@@ -1449,12 +1412,11 @@ msgstr "跟踪速率"
 
 #: comet_tool.cpp:150
 msgid "Rate Training"
-msgstr ""
+msgstr "速率训练"
 
 #: comet_tool.cpp:195
-#, fuzzy
 msgid "Disable"
-msgstr "启用"
+msgstr "关闭"
 
 #: comet_tool.cpp:295
 #, c-format
@@ -1558,7 +1520,7 @@ msgstr "创建暗场库"
 
 #: darks_dialog.cpp:104
 msgid "Acquire Master Dark Frames for Bad Pixel Map Calculation"
-msgstr ""
+msgstr "为计算坏点映射图获取主暗场文件"
 
 #: darks_dialog.cpp:119
 msgid "Min Exposure Time"
@@ -1582,7 +1544,7 @@ msgstr ""
 
 #: darks_dialog.cpp:130
 msgid "Number of dark frames for each exposure time"
-msgstr ""
+msgstr "每个曝光时间的暗场数量"
 
 #: darks_dialog.cpp:131
 msgid ""
@@ -1663,7 +1625,7 @@ msgstr "关闭导星镜镜头盖"
 #: darks_dialog.cpp:284
 #, c-format
 msgid "Building master dark at %.1f sec:"
-msgstr ""
+msgstr "创建主暗场文件在 %.1f 秒:"
 
 #: darks_dialog.cpp:286
 #, c-format
@@ -1688,18 +1650,15 @@ msgstr "操作已取消"
 
 #: darks_dialog.cpp:344
 msgid "Analyzing master dark..."
-msgstr ""
+msgstr "正在分析主暗场图像..."
 
 #: darks_dialog.cpp:354 darks_dialog.cpp:356
 msgid "Master dark data files built"
-msgstr ""
+msgstr "主暗场数据文件创建"
 
 #: darks_dialog.cpp:376
-#, fuzzy
 msgid "Uncover guide scope"
-msgstr ""
-"打开导星镜镜头盖\n"
-"\n"
+msgstr "打开导星镜镜头盖"
 
 #: darks_dialog.cpp:377
 #, c-format
@@ -1717,7 +1676,7 @@ msgstr "获取暗场文件"
 #: darks_dialog.cpp:447
 #, c-format
 msgid "%.1f s dark FAILED"
-msgstr ""
+msgstr "%.1f s 暗场失败"
 
 #: darks_dialog.cpp:475
 msgid "Dark frames complete"
@@ -1737,7 +1696,7 @@ msgstr "中天偏移量 (度)"
 
 #: drift_tool.cpp:179
 msgid "Declination (deg)"
-msgstr "*赤纬(度)"
+msgstr "赤纬(度)"
 
 #: drift_tool.cpp:183
 msgid "Current"
@@ -1906,7 +1865,7 @@ msgstr ", 赤道仪"
 msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
-msgstr ""
+msgstr "%s 校准数据被清除 - 下次导星开始时将重新校准。"
 
 #: eegg.cpp:121
 msgid "Clear Calibration"
@@ -1931,7 +1890,7 @@ msgstr ""
 
 #: eegg.cpp:219
 msgid "Confirm Disable Guiding"
-msgstr ""
+msgstr "停止导星时确认"
 
 #: gear_dialog.cpp:120
 msgid "Connect Equipment"
@@ -1964,7 +1923,7 @@ msgstr "使用向导新建配置文件..."
 
 #: gear_dialog.cpp:196
 msgid "Run the first-light wizard to create a new profile"
-msgstr ""
+msgstr "运行向导工具创建新配置文件"
 
 #: gear_dialog.cpp:197
 msgid "Delete"
@@ -2071,12 +2030,11 @@ msgstr "AO设置"
 
 #: gear_dialog.cpp:305 gear_dialog.cpp:306
 msgid "Rotator"
-msgstr ""
+msgstr "旋转器"
 
 #: gear_dialog.cpp:309
-#, fuzzy
 msgid "Rotator Setup"
-msgstr "赤道仪设置"
+msgstr "旋转器设置"
 
 #: gear_dialog.cpp:319
 msgid "Connect All"
@@ -2096,7 +2054,7 @@ msgstr "断开所有的设备"
 
 #: gear_dialog.cpp:327 myframe.cpp:1030
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: gear_dialog.cpp:488 gear_dialog.cpp:514
 msgid "Connect to camera"
@@ -2131,14 +2089,12 @@ msgid "Disconnect from AO"
 msgstr "断开AO"
 
 #: gear_dialog.cpp:671 gear_dialog.cpp:692
-#, fuzzy
 msgid "Connect to Rotator"
-msgstr "连接赤道仪"
+msgstr "连接旋转器"
 
 #: gear_dialog.cpp:683
-#, fuzzy
 msgid "Disconnect from Rotator"
-msgstr "断开赤道仪"
+msgstr "断开旋转器"
 
 #: gear_dialog.cpp:875
 msgid "No cameras found"
@@ -2159,120 +2115,115 @@ msgstr ""
 msgid "Connecting to Camera ..."
 msgstr "正在连接相机 ..."
 
-#: gear_dialog.cpp:998
+#: gear_dialog.cpp:999
 msgid "Camera Connected"
 msgstr "相机已连接"
 
-#: gear_dialog.cpp:1005
+#: gear_dialog.cpp:1006
 msgid "Camera Connect Failed"
 msgstr "相机连接失败"
 
-#: gear_dialog.cpp:1046
+#: gear_dialog.cpp:1047
 msgid "Camera Disconnected"
 msgstr "相机已连接"
 
-#: gear_dialog.cpp:1162
+#: gear_dialog.cpp:1163
 msgid "Connecting to Mount ..."
 msgstr "正在连接赤道仪 ..."
 
-#: gear_dialog.cpp:1172
+#: gear_dialog.cpp:1173
 msgid "Mount does not support the required PulseGuide interface"
-msgstr ""
+msgstr "赤道仪不支持PulseGuide导星方式"
 
-#: gear_dialog.cpp:1176
+#: gear_dialog.cpp:1177
 msgid "Mount Connected"
 msgstr "赤道仪已连接"
 
-#: gear_dialog.cpp:1189
+#: gear_dialog.cpp:1190
 msgid "Mount Connect Failed"
 msgstr "赤道仪连接失败"
 
-#: gear_dialog.cpp:1208
+#: gear_dialog.cpp:1209
 msgid "Connecting to Aux Mount ..."
 msgstr "正在连接Aux赤道仪 ..."
 
-#: gear_dialog.cpp:1215
+#: gear_dialog.cpp:1216
 msgid "Aux Mount Connected"
 msgstr "Aux赤道仪已连接"
 
-#: gear_dialog.cpp:1223
+#: gear_dialog.cpp:1224
 msgid "Aux Mount Connect Failed"
 msgstr "Aux赤道仪连接错误"
 
-#: gear_dialog.cpp:1244
+#: gear_dialog.cpp:1245
 msgid "Mount Disconnected"
 msgstr "赤道仪已断开"
 
-#: gear_dialog.cpp:1275
+#: gear_dialog.cpp:1276
 msgid "Aux Mount Disconnected"
 msgstr "Aux赤道仪已断开"
 
-#: gear_dialog.cpp:1291
+#: gear_dialog.cpp:1292
 msgid "Hide"
-msgstr ""
+msgstr "隐藏"
 
-#: gear_dialog.cpp:1297
-#, fuzzy
+#: gear_dialog.cpp:1298
 msgid "More Equipment ..."
-msgstr "我的设备"
+msgstr "更多设备..."
 
-#: gear_dialog.cpp:1357
+#: gear_dialog.cpp:1358
 msgid "Connecting to AO ..."
 msgstr "正在连接AO ..."
 
-#: gear_dialog.cpp:1367
+#: gear_dialog.cpp:1368
 msgid "AO Connected"
 msgstr "AO已连接"
 
-#: gear_dialog.cpp:1380
+#: gear_dialog.cpp:1381
 msgid "AO Connect Failed"
 msgstr "AO连接失败"
 
-#: gear_dialog.cpp:1407
+#: gear_dialog.cpp:1408
 msgid "AO Disconnected"
 msgstr "AO已断开"
 
-#: gear_dialog.cpp:1471
-#, fuzzy
+#: gear_dialog.cpp:1472
 msgid "Connecting to Rotator ..."
-msgstr "正在连接赤道仪 ..."
+msgstr "正在连接旋转器 ..."
 
-#: gear_dialog.cpp:1481
-#, fuzzy
+#: gear_dialog.cpp:1482
 msgid "Rotator Connected"
-msgstr "赤道仪已连接"
+msgstr "旋转器已连接"
 
-#: gear_dialog.cpp:1494
-#, fuzzy
+#: gear_dialog.cpp:1495
 msgid "Rotator Connect Failed"
-msgstr "赤道仪连接失败"
+msgstr "旋转器连接失败"
 
-#: gear_dialog.cpp:1516
-#, fuzzy
+#: gear_dialog.cpp:1517
 msgid "Rotator Disconnected"
-msgstr "赤道仪已断开"
+msgstr "旋转器已断开"
 
-#: gear_dialog.cpp:1785
+#: gear_dialog.cpp:1786
 msgid "New Equipment Profile"
 msgstr "新建设备配置文件"
 
-#: gear_dialog.cpp:1792
+#: gear_dialog.cpp:1793
 msgid "Name"
 msgstr "名称"
 
-#: gear_dialog.cpp:1796
+#: gear_dialog.cpp:1797
 msgid "Enter the name of the new equipment profile"
 msgstr "输入新建的设备配置文件名"
 
-#: gear_dialog.cpp:1800
+#: gear_dialog.cpp:1801
 msgid "PHD Defaults"
 msgstr "PHD缺省值"
 
-#: gear_dialog.cpp:1803
+#: gear_dialog.cpp:1804
 msgid "Profile initial settings"
 msgstr "配置初始设置"
 
-#: gear_dialog.cpp:1806
+#: gear_dialog.cpp:1807
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2280,48 +2231,48 @@ msgstr ""
 "选择\"PHD缺省值\"，创建一个包含PHD缺省设置的配置文件。或者从一个已经存在的配"
 "置文件创建你的新配置文件。"
 
-#: gear_dialog.cpp:1830
+#: gear_dialog.cpp:1831
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "不能创建配置文件 %s，已经存在同名配置文件。"
 
-#: gear_dialog.cpp:1839
+#: gear_dialog.cpp:1840
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "不能创建配置文件 %s，从 %s"
 
-#: gear_dialog.cpp:1846 profile_wizard.cpp:466
+#: gear_dialog.cpp:1847 profile_wizard.cpp:466
 #, c-format
 msgid "Could not create profile %s"
 msgstr "不能创建配置文件 %s"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 #, c-format
 msgid "Delete profile %s?"
 msgstr "是否删除配置文件 %s ?"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 msgid "Delete Equipment Profile"
 msgstr "删除配置文件"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 #, c-format
 msgid "Rename %s"
 msgstr "重命名 %s"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 msgid "Rename Equipment Profile"
 msgstr "重命名配置文件"
 
-#: gear_dialog.cpp:1897
+#: gear_dialog.cpp:1898
 msgid "Could not rename profile"
 msgstr "不能重命名配置文件"
 
-#: gear_dialog.cpp:1911
+#: gear_dialog.cpp:1912
 msgid "Import PHD Equipment Profiles"
 msgstr "导入PHD设备配置文件"
 
-#: gear_dialog.cpp:1944
+#: gear_dialog.cpp:1945
 msgid "Export PHD Equipment Profile"
 msgstr "导出PHD设备配置文件"
 
@@ -2365,7 +2316,7 @@ msgstr "显示赤道仪修正"
 
 #: graph.cpp:175
 msgid "RMS Error:"
-msgstr "RMS"
+msgstr "RMS误差:"
 
 #: graph.cpp:210
 msgid "Tot"
@@ -2492,13 +2443,13 @@ msgid "Hysteresis"
 msgstr "滞后"
 
 #: guide_algorithm_hysteresis.cpp:220
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "How much history of previous guide pulses should be applied\n"
 "Default = %.f%%, increase to smooth out guiding commands"
 msgstr ""
 "应用多少之前的历史导星脉冲数据。\n"
-"缺省值 = 10%，调整该参数，直到导星曲线平滑。"
+"缺省值 = %.f%%，调整该参数，直到导星曲线平滑。"
 
 #: guide_algorithm_hysteresis.cpp:227 guide_algorithm_lowpass2.cpp:215
 #: guide_algorithm_resistswitch.cpp:270 Refine_DefMap.cpp:159
@@ -2506,13 +2457,13 @@ msgid "Aggressiveness"
 msgstr "修正强度"
 
 #: guide_algorithm_hysteresis.cpp:228
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "What percent of the measured error should be applied? Default = %.f%%, "
 "adjust if responding too much or too slowly"
 msgstr ""
-"导星修正的百分比。缺省值 = 100%，可以根据需要调整该值大小，使曲线更加平滑。若"
-"曲线过于震荡，请减小该值。"
+"导星修正的百分比。缺省值 = %.f%%，可以根据需要调整该值大小，使曲线更加平滑。"
+"若曲线过于震荡，请减小该值。"
 
 #: guide_algorithm_hysteresis.cpp:235 guide_algorithm_lowpass.cpp:215
 #: guide_algorithm_lowpass2.cpp:223 guide_algorithm_resistswitch.cpp:278
@@ -2521,11 +2472,11 @@ msgstr "星点最小移动单位 (像素)"
 
 #: guide_algorithm_hysteresis.cpp:236 guide_algorithm_lowpass2.cpp:224
 #: guide_algorithm_resistswitch.cpp:279
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = %.2f"
-msgstr "触发导星脉冲的星点最小移动单位，缺省值 = 0.15像素。"
+msgstr "触发导星脉冲的星点最小移动单位，缺省值 = %.2f像素。"
 
 #: guide_algorithm_hysteresis.cpp:284
 msgid "Agr"
@@ -2538,7 +2489,7 @@ msgstr "滞"
 #: guide_algorithm_hysteresis.cpp:300 guide_algorithm_lowpass.cpp:268
 #: guide_algorithm_lowpass2.cpp:275
 msgid "MnMo"
-msgstr ""
+msgstr "侦"
 
 #: guide_algorithm_identity.cpp:77
 msgid "Guide Algorithm"
@@ -2568,7 +2519,7 @@ msgstr "触发导星脉冲的星点最小移动单位，缺省值 = 0.15像素�
 
 #: guide_algorithm_lowpass.cpp:261
 msgid "Sl W"
-msgstr "*Sl W*"
+msgstr "南| 西"
 
 #: guide_algorithm_lowpass2.cpp:202
 msgid "Lowpass2 Guide Algorithm"
@@ -2577,10 +2528,9 @@ msgstr "低通导星算法2"
 #: guide_algorithm_lowpass2.cpp:216 guide_algorithm_resistswitch.cpp:271
 #, c-format
 msgid "Aggressiveness factor, percent. Default = %.f%%"
-msgstr ""
+msgstr "修正强度百分比。缺省值 = %.f%%"
 
 #: guide_algorithm_lowpass2.cpp:268
-#, fuzzy
 msgid "Agg"
 msgstr "修"
 
@@ -2590,7 +2540,7 @@ msgstr "抵抗切换导星算法"
 
 #: guide_algorithm_resistswitch.cpp:281
 msgid "Fast switch for large deflections"
-msgstr ""
+msgstr "较大翻转时采用快速切换"
 
 #: guide_algorithm_resistswitch.cpp:282
 msgid ""
@@ -2655,7 +2605,7 @@ msgstr ""
 
 #: guider.cpp:1483
 msgid "Always scale images to fill window"
-msgstr "*Always scale images to fill window"
+msgstr "始终缩放图像充满窗口"
 
 #: guider.cpp:1485
 msgid "Fast recenter after calibration or dither"
@@ -2673,7 +2623,7 @@ msgstr ""
 
 #: guider.cpp:1583
 msgid "Are you sure you want to delete all Bookmarks?"
-msgstr "*Are you sure you want to delete all Bookmarks?"
+msgstr "是否确认删除所有的标记?"
 
 #: guider_onestar.cpp:342 guider_onestar.cpp:556
 msgid "No star selected"
@@ -2685,7 +2635,7 @@ msgstr "被导星丢失 - 低信噪比"
 
 #: guider_onestar.cpp:347
 msgid "Star lost - low mass"
-msgstr "*Star lost - low mass*"
+msgstr "被导星丢失 - 低质心"
 
 #: guider_onestar.cpp:348
 msgid "Star too near edge"
@@ -2771,9 +2721,8 @@ msgstr ""
 "If star mass change detection is not enabled then this setting is ignored."
 
 #: guiding_assistant.cpp:260
-#, fuzzy
 msgid "Guiding Assistant"
-msgstr "导星"
+msgstr "导星助手"
 
 #: guiding_assistant.cpp:276
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
@@ -2784,23 +2733,20 @@ msgid "Measurement Status"
 msgstr ""
 
 #: guiding_assistant.cpp:289
-#, fuzzy
 msgid "Start time"
-msgstr "开始"
+msgstr "开始时间"
 
 #: guiding_assistant.cpp:295
 msgid "SNR"
 msgstr ""
 
 #: guiding_assistant.cpp:297
-#, fuzzy
 msgid "Star mass"
-msgstr "星点"
+msgstr "星点质心"
 
 #: guiding_assistant.cpp:301
-#, fuzzy
 msgid "Elapsed time"
-msgstr "曝光时间"
+msgstr "已用时间"
 
 #: guiding_assistant.cpp:303
 msgid "Sample count"
@@ -2808,20 +2754,19 @@ msgstr ""
 
 #: guiding_assistant.cpp:315
 msgid "High-frequency Star Motion"
-msgstr ""
+msgstr "高频星点侦测"
 
 #: guiding_assistant.cpp:326
 msgid "Right ascension, RMS"
-msgstr ""
+msgstr "赤经，RMS"
 
 #: guiding_assistant.cpp:330
-#, fuzzy
 msgid "Declination, RMS"
-msgstr "*赤纬*"
+msgstr "赤纬，RMS"
 
 #: guiding_assistant.cpp:334
 msgid "Total, RMS"
-msgstr ""
+msgstr "累计, RMS"
 
 #: guiding_assistant.cpp:342
 msgid "Other Star Motion"
@@ -2829,33 +2774,31 @@ msgstr ""
 
 #: guiding_assistant.cpp:353
 msgid "Right ascension, Peak"
-msgstr ""
+msgstr "赤经，峰值"
 
 #: guiding_assistant.cpp:357
-#, fuzzy
 msgid "Declination, Peak"
-msgstr "*赤纬*"
+msgstr "赤纬，峰值"
 
 #: guiding_assistant.cpp:361
 msgid "Right ascension, Peak-Peak"
-msgstr ""
+msgstr "赤经，峰峰值"
 
 #: guiding_assistant.cpp:365
 msgid "Right ascension Drift Rate"
-msgstr ""
+msgstr "赤经漂移率"
 
 #: guiding_assistant.cpp:369
 msgid "Right ascension Max Drift Rate"
-msgstr ""
+msgstr "赤经最大漂移率"
 
 #: guiding_assistant.cpp:373
 msgid "Drift-limiting exposure"
 msgstr ""
 
 #: guiding_assistant.cpp:377
-#, fuzzy
 msgid "Declination Drift Rate"
-msgstr "*赤纬*"
+msgstr "赤纬漂移速率"
 
 #: guiding_assistant.cpp:381
 msgid "Declination Backlash"
@@ -2863,12 +2806,11 @@ msgstr ""
 
 #: guiding_assistant.cpp:385
 msgid "Polar Alignment Error"
-msgstr ""
+msgstr "极轴误差"
 
 #: guiding_assistant.cpp:393
-#, fuzzy
 msgid "Recommendations"
-msgstr "*赤纬*"
+msgstr "建议"
 
 #: guiding_assistant.cpp:414
 msgid "Dec Backlash"
@@ -2937,11 +2879,11 @@ msgstr ""
 #: guiding_assistant.cpp:509
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
-msgstr ""
+msgstr "赤经采样周期的峰峰值"
 
 #: guiding_assistant.cpp:510
 msgid "Estimated overall drift rate in right ascension."
-msgstr ""
+msgstr "预计赤经漂移速率。"
 
 #: guiding_assistant.cpp:511
 msgid "Maximum drift rate in right ascension during sampling period."
@@ -2954,7 +2896,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:513
 msgid "Estimated overall drift rate in declination."
-msgstr ""
+msgstr "预计赤纬漂移速率。"
 
 #: guiding_assistant.cpp:514
 msgid ""
@@ -2966,7 +2908,7 @@ msgstr ""
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
-msgstr ""
+msgstr "预计极轴误差。如果相机转角未知，这个值可能显示的很小但实际上偏差很大。"
 
 #: guiding_assistant.cpp:546
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
@@ -2997,16 +2939,15 @@ msgstr ""
 
 #: guiding_assistant.cpp:583 guiding_assistant.cpp:1140
 msgid "px"
-msgstr ""
+msgstr "像素"
 
 #: guiding_assistant.cpp:583
 msgid "ms"
 msgstr ""
 
 #: guiding_assistant.cpp:674 guiding_assistant.cpp:675
-#, fuzzy
 msgid "Apply"
-msgstr "应用周期误差"
+msgstr "应用"
 
 #: guiding_assistant.cpp:791
 msgid "Consider re-doing your calibration "
@@ -3064,46 +3005,42 @@ msgid "Measuring backlash... "
 msgstr ""
 
 #: guiding_assistant.cpp:1045
-#, fuzzy
 msgid "Guiding stopped"
-msgstr "导星"
+msgstr "导星停止"
 
 #: guiding_assistant.cpp:1139
 msgid "s"
 msgstr ""
 
 #: guiding_assistant.cpp:1141
-#, fuzzy
 msgid "arc-sec"
 msgstr "角秒"
 
 #: guiding_assistant.cpp:1142
 msgid "arc-min"
-msgstr ""
+msgstr "角分"
 
 #: guiding_assistant.cpp:1143
 msgid "px/min"
-msgstr ""
+msgstr "像素/分"
 
 #: guiding_assistant.cpp:1145
-#, fuzzy
 msgid "arc-sec/min"
-msgstr "赤纬漂移, 角秒/分钟"
+msgstr "角秒/分钟"
 
 #: guiding_assistant.cpp:1146
-#, fuzzy
 msgid "arc-sec/sec"
-msgstr "角秒"
+msgstr "角秒/秒"
 
 #: image_math.cpp:1143
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
 "replaced."
-msgstr ""
+msgstr "坏点映射图不能匹配该相机，需要重新生成。"
 
 #: indi_gui.cpp:711
 msgid "INDI Options"
-msgstr ""
+msgstr "INDI选项"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -3114,14 +3051,12 @@ msgid "Camera binning:"
 msgstr ""
 
 #: manualcal_dialog.cpp:54
-#, fuzzy
 msgid "RA rate, px/sec (e.g. 5.0):"
-msgstr "赤经速率 (例如：0.005)："
+msgstr "赤经速率，像素/秒 (例如：5.0)："
 
 #: manualcal_dialog.cpp:60
-#, fuzzy
 msgid "Dec rate, px/sec (e.g. 5.0):"
-msgstr "赤纬速率(例如：0.005)："
+msgstr "赤经速率，像素/秒 (例如：5.0)："
 
 #: manualcal_dialog.cpp:66
 msgid "RA angle (degrees):"
@@ -3133,7 +3068,7 @@ msgstr "赤纬角(度)："
 
 #: manualcal_dialog.cpp:78
 msgid "Declination (e.g. 2.1):"
-msgstr "*Declination (e.g. 2.1):"
+msgstr "赤纬 (例如 2.1):"
 
 #: mount.cpp:113 mount.cpp:142
 msgid "Lowpass"
@@ -3189,12 +3124,12 @@ msgstr "校: %s(%.f,%.f)->%s(%.f,%.f)"
 #: mount.cpp:759
 #, c-format
 msgid "%s %5.2f px %3d ms"
-msgstr ""
+msgstr "%s %5.2f 像素 %3d 毫秒"
 
 #: mount.cpp:776
 #, c-format
 msgid "%s%*s%s %.2f px %d ms"
-msgstr ""
+msgstr "%s%*s%s %.2f 像素 %d 毫秒"
 
 #: mount.cpp:957
 msgid "RA:"
@@ -3206,7 +3141,7 @@ msgstr "赤纬："
 
 #: mount.cpp:1039
 msgid "Rotator position has changed, recalibration is needed."
-msgstr ""
+msgstr "旋转器位置已改变，需要进行重新校准。"
 
 #: myframe.cpp:272 myframe.cpp:346
 msgid "History"
@@ -3214,7 +3149,7 @@ msgstr "历史"
 
 #: myframe.cpp:277 myframe.cpp:347
 msgid "Guide Stats"
-msgstr "被导星"
+msgstr "导星状态"
 
 #: myframe.cpp:287 myframe.cpp:349
 msgid "Star Profile"
@@ -3233,7 +3168,6 @@ msgid "Server started"
 msgstr "服务器模式已启动"
 
 #: myframe.cpp:422
-#, fuzzy
 msgid "&Save Image..."
 msgstr "保存图像..."
 
@@ -3258,7 +3192,6 @@ msgid "Manual / test guide dialog"
 msgstr "手动 / 测试导星对话框"
 
 #: myframe.cpp:427
-#, fuzzy
 msgid "&Auto-select Star\tAlt-S"
 msgstr "自动选星\tAlt-S"
 
@@ -3267,14 +3200,12 @@ msgid "Automatically select star"
 msgstr "自动选择被导星"
 
 #: myframe.cpp:428
-#, fuzzy
 msgid "&Review Calibration Data\tAlt-C"
-msgstr "翻转校准数据"
+msgstr "查看校准数据\tAlt-C"
 
 #: myframe.cpp:428
-#, fuzzy
 msgid "Review calibration data from last successful calibration"
-msgstr "恢复至从上一次成功的校准数据"
+msgstr "查看上一次成功的校准数据"
 
 #: myframe.cpp:431
 msgid "Restore Calibration Data..."
@@ -3309,21 +3240,18 @@ msgid "Clear calibration data currently in use"
 msgstr "清除当前的校准数据"
 
 #: myframe.cpp:435
-#, fuzzy
 msgid "Modify Calibration"
-msgstr "校准"
+msgstr "修改校准数据"
 
 #: myframe.cpp:438
-#, fuzzy
 msgid "Adjust &Lock Position"
-msgstr "调整锁定框"
+msgstr "调整锁定框位置"
 
 #: myframe.cpp:438
 msgid "Adjust the lock position"
 msgstr "调整锁定框"
 
 #: myframe.cpp:439
-#, fuzzy
 msgid "&Comet Tracking"
 msgstr "彗星跟踪"
 
@@ -3332,18 +3260,16 @@ msgid "Run the Comet Tracking tool"
 msgstr "运行彗星跟踪工具"
 
 #: myframe.cpp:440
-#, fuzzy
 msgid "&Guiding Assistant"
-msgstr "导星"
+msgstr "导星助手"
 
 #: myframe.cpp:440
 msgid "Run the Guiding Assistant"
-msgstr ""
+msgstr "运行导星助手"
 
 #: myframe.cpp:441
-#, fuzzy
 msgid "&Drift Align"
-msgstr "漂移校准"
+msgstr "漂移校准法"
 
 #: myframe.cpp:441
 msgid "Run the Drift Alignment tool"
@@ -3351,19 +3277,19 @@ msgstr "运行漂移校准工具"
 
 #: myframe.cpp:443
 msgid "Enable Star Image Logging"
-msgstr "开启图像日志"
+msgstr "开启记录图像日志"
 
 #: myframe.cpp:443
 msgid "Enable logging of star images"
-msgstr "开始记录图像日志"
+msgstr "启用图像日志记录"
 
 #: myframe.cpp:444
 msgid "Enable Server"
-msgstr "开启服务器模式"
+msgstr "启用服务器模式"
 
 #: myframe.cpp:444
 msgid "Enable PHD2 server capability"
-msgstr ""
+msgstr "启用PHD2服务器功能"
 
 #: myframe.cpp:445 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
@@ -3379,143 +3305,129 @@ msgstr "显示工具栏"
 
 #: myframe.cpp:448
 msgid "Enable / disable tool bar"
-msgstr "*Enable / disable tool bar"
+msgstr "启用 / 禁用 工具栏"
 
 #: myframe.cpp:449
-#, fuzzy
 msgid "Display &Graph"
 msgstr "显示图形"
 
 #: myframe.cpp:449
 msgid "Enable / disable graph"
-msgstr "*Enable / disable graph"
+msgstr "启用 / 禁用 历史图"
 
 #: myframe.cpp:450
-#, fuzzy
 msgid "Display &Stats"
-msgstr "显示散点图"
+msgstr "显示状态图"
 
 #: myframe.cpp:450
 msgid "Enable / disable guide stats"
 msgstr "启用 / 关闭 星点图"
 
 #: myframe.cpp:451
-#, fuzzy
 msgid "Display &AO Graph"
 msgstr "显示AO图形"
 
 #: myframe.cpp:451
 msgid "Enable / disable AO graph"
-msgstr "*Enable / disable AO graph"
+msgstr "启用 / 禁用 AO图"
 
 #: myframe.cpp:452
-#, fuzzy
 msgid "Display &Target"
 msgstr "显示散点图"
 
 #: myframe.cpp:452
 msgid "Enable / disable target"
-msgstr "*Enable / disable target"
+msgstr "启用 / 禁用 散点图"
 
 #: myframe.cpp:453
-#, fuzzy
 msgid "Display Star &Profile"
 msgstr "显示星点图"
 
 #: myframe.cpp:453
 msgid "Enable / disable star profile view"
-msgstr "*Enable / disable star profile view"
+msgstr "启用 / 禁用 星点图"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "&No Overlay"
 msgstr "无附加线"
 
 #: myframe.cpp:455
 msgid "No additional crosshairs"
-msgstr "*No additional crosshairs"
+msgstr "无额外交叉线"
 
 #: myframe.cpp:456
-#, fuzzy
 msgid "&Bullseye"
 msgstr "靶心线"
 
 #: myframe.cpp:456
 msgid "Centered bullseye overlay"
-msgstr "*Centered bullseye overlay"
+msgstr "在中心叠加靶心图"
 
 #: myframe.cpp:457
-#, fuzzy
 msgid "&Fine Grid"
 msgstr "细网格线"
 
 #: myframe.cpp:457 myframe.cpp:458
 msgid "Grid overlay"
-msgstr "*Grid overlay"
+msgstr "叠加网格线"
 
 #: myframe.cpp:458
-#, fuzzy
 msgid "&Coarse Grid"
 msgstr "粗网格线"
 
 #: myframe.cpp:459
-#, fuzzy
 msgid "&RA/Dec"
-msgstr "赤经赤纬线"
+msgstr "赤经/赤纬线"
 
 #: myframe.cpp:459
 msgid "RA and Dec overlay"
-msgstr "*RA and Dec overlay"
+msgstr "叠加赤经/赤纬线"
 
 #: myframe.cpp:460
 msgid "Spectrograph S&lit"
-msgstr ""
+msgstr "光谱仪狭长区块"
 
 #: myframe.cpp:460
 msgid "Spectrograph slit overlay"
-msgstr ""
+msgstr "叠加光谱仪狭长区块"
 
 #: myframe.cpp:462
-#, fuzzy
 msgid "Slit Position..."
-msgstr "AO位置"
+msgstr "Slit Position..."
 
 #: myframe.cpp:464
 msgid "Restore Window Positions"
-msgstr ""
+msgstr "存储窗口位置"
 
 #: myframe.cpp:464
 msgid "Restore all windows to their default/docked positions"
 msgstr "还原所有窗口的默认/停靠位置"
 
 #: myframe.cpp:467
-#, fuzzy
 msgid "Dark &Library..."
-msgstr "暗场库"
+msgstr "暗场库..."
 
 #: myframe.cpp:467
 msgid "Build a dark library for this profile"
 msgstr "为这个配置文件创建暗场库"
 
 #: myframe.cpp:468
-#, fuzzy
 msgid "Bad-pixel &Map..."
-msgstr "坏点映射图"
+msgstr "坏点映射图..."
 
 #: myframe.cpp:468
 msgid "Adjust parameters to create or modify the bad-pixel map"
-msgstr ""
+msgstr "调整参数，用来创建或修改坏点映射图"
 
 #: myframe.cpp:469
 msgid "Import From Profile..."
-msgstr ""
+msgstr "从配置文件导入..."
 
 #: myframe.cpp:469
 msgid "Import existing dark library/bad-pixel map from a different profile"
-msgstr ""
+msgstr "从另一个配置文件导入暗场库或坏点映射图"
 
 #: myframe.cpp:471
-#, fuzzy
 msgid "Use &Dark Library"
 msgstr "使用暗场库"
 
@@ -3524,7 +3436,6 @@ msgid "Use the the dark library for this profile"
 msgstr ""
 
 #: myframe.cpp:472
-#, fuzzy
 msgid "Use &Bad-pixel Map"
 msgstr "使用坏点映射图"
 
@@ -3549,16 +3460,14 @@ msgid "Restore camera settings"
 msgstr "*Restore camera settings"
 
 #: myframe.cpp:482
-#, fuzzy
 msgid "Show &Bookmarks\tb"
 msgstr "显示标记\tB"
 
 #: myframe.cpp:482
 msgid "Hide or show bookmarks"
-msgstr "*Hide or show bookmarks"
+msgstr "隐藏/显示标记"
 
 #: myframe.cpp:485
-#, fuzzy
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "标记锁定框\tShift-B"
 
@@ -3567,22 +3476,20 @@ msgid "Set a bookmark at the current lock position"
 msgstr "*Set a bookmark at the current lock position"
 
 #: myframe.cpp:487
-#, fuzzy
 msgid "Bookmark &Star Pos"
-msgstr "标记被导星"
+msgstr "标记被导星位置"
 
 #: myframe.cpp:487
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "*Set a bookmark at the position of the currently selected star"
 
 #: myframe.cpp:488
-#, fuzzy
 msgid "&Delete all\tCtrl-B"
 msgstr "删除全部标记\tCtrl-B"
 
 #: myframe.cpp:488
 msgid "Remove all bookmarks"
-msgstr "Remove all bookmarks"
+msgstr "移除所有标记"
 
 #: myframe.cpp:491
 msgid "&About...\tF1"
@@ -3594,9 +3501,8 @@ msgid "About %s"
 msgstr "关于 %s"
 
 #: myframe.cpp:492
-#, fuzzy
 msgid "&Contents"
-msgstr "帮助"
+msgstr "帮 助"
 
 #: myframe.cpp:492
 msgid "Full help"
@@ -3634,7 +3540,7 @@ msgstr "标记"
 msgid "&Help"
 msgstr "帮助"
 
-#: myframe.cpp:795 scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: myframe.cpp:795 scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Auto"
 msgstr "自动"
 
@@ -3650,17 +3556,15 @@ msgstr "显示灰度(亮度)"
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
-msgstr ""
-"*Connect to equipment. Shift-click to reconnect the same equipment last "
-"connected."
+msgstr "连接设备。按住Shift并点击，可以连接上次使用的设备。"
 
 #: myframe.cpp:806
 msgid "Begin looping exposures for frame and focus"
-msgstr "*Begin looping exposures for frame and focus"
+msgstr "开始进行连续曝光"
 
 #: myframe.cpp:807
 msgid "Begin guiding (PHD). Shift-click to force calibration."
-msgstr ""
+msgstr "开始导星。按住Shift并点击可进行强制校准。"
 
 #: myframe.cpp:808
 msgid "Stop looping and guiding"
@@ -3684,11 +3588,11 @@ msgstr ""
 
 #: myframe.cpp:833 myframe.cpp:852
 msgid "Cal +"
-msgstr ""
+msgstr "校 +"
 
 #: myframe.cpp:833
 msgid "Cal"
-msgstr ""
+msgstr "校"
 
 #: myframe.cpp:833 myframe.cpp:852
 msgid "No cal"
@@ -3710,7 +3614,7 @@ msgstr "挂起"
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
-msgstr ""
+msgstr "不能开始导星。请关闭生成坏点映射图窗口。"
 
 #: myframe.cpp:1541
 #, c-format
@@ -3719,11 +3623,11 @@ msgstr "抖动 %.2f,%.2f"
 
 #: myframe.cpp:1573
 msgid "Are you sure you want to exit while capturing is active?"
-msgstr "*Are you sure you want to exit while capturing is active?"
+msgstr "拍摄正在进行，是否确认退出?"
 
 #: myframe.cpp:1574
 msgid "Confirm Exit"
-msgstr "*Confirm Exit"
+msgstr "退出时确认"
 
 #: myframe.cpp:1814 usImage.cpp:428
 msgid "FITS file is not of an image: "
@@ -3761,7 +3665,7 @@ msgstr ""
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
-msgstr ""
+msgstr "暗场库和坏点映射图与当前相机不兼容，两者都需要重新生成。"
 
 #: myframe.cpp:2017
 msgid "You must connect a camera before loading dark frames"
@@ -3821,7 +3725,7 @@ msgstr "保存图像类型"
 
 #: myframe.cpp:2276
 msgid "File format of logged images"
-msgstr "*File format of logged images"
+msgstr "图像日志的文件类型"
 
 #: myframe.cpp:2279
 msgid "Dither RA only"
@@ -3905,9 +3809,7 @@ msgstr "日志文件位置"
 #: myframe.cpp:2361
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
-msgstr ""
-"*Folder for guide and debug logs; empty string to restore the default "
-"location"
+msgstr "存放导星和调试日志的文件目录。如果为空，将使用系统缺省目录。"
 
 #: myframe.cpp:2362
 msgid "Browse..."
@@ -3945,14 +3847,13 @@ msgstr "信噪比"
 
 #: myframe.cpp:2388
 msgid "Auto exposure target SNR value"
-msgstr ""
+msgstr "自动曝光SNR值"
 
 #: myframe.cpp:2389
 msgid "Auto Exposure"
 msgstr "自动曝光"
 
 #: myframe.cpp:2437
-#, fuzzy
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -3972,7 +3873,6 @@ msgid "Info"
 msgstr "提示"
 
 #: myframe_events.cpp:98
-#, fuzzy
 msgid ""
 "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
 "\n"
@@ -4020,11 +3920,11 @@ msgstr "说明"
 
 #: myframe_events.cpp:137
 msgid "Spectrograph Slit Overlay"
-msgstr ""
+msgstr "叠加光谱仪狭长区块"
 
 #: myframe_events.cpp:146
 msgid "Position (Center)"
-msgstr ""
+msgstr "位置(中心)"
 
 #: myframe_events.cpp:147
 msgid "Size"
@@ -4032,17 +3932,15 @@ msgstr ""
 
 #: myframe_events.cpp:166
 msgid "Width"
-msgstr ""
+msgstr "宽度"
 
 #: myframe_events.cpp:173
-#, fuzzy
 msgid "Height"
-msgstr "右"
+msgstr "高度"
 
 #: myframe_events.cpp:183
-#, fuzzy
 msgid "Angle (degrees)"
-msgstr "赤经角(度)"
+msgstr "转角(度)"
 
 #: myframe_events.cpp:244
 msgid "Save FITS Image"
@@ -4102,7 +4000,7 @@ msgstr "检测图未装载"
 
 #: myframe_events.cpp:560
 msgid "Bad-pixel map unloaded"
-msgstr ""
+msgstr "坏点映射图未能加载"
 
 #: myframe_events.cpp:793
 msgid ""
@@ -4134,15 +4032,15 @@ msgstr ""
 
 #: myframe_events.cpp:918
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: myframe_events.cpp:918
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: myframe_events.cpp:918
 msgid "Setup Wizard Recommendation"
-msgstr ""
+msgstr "设置向导建议"
 
 #: nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -4150,7 +4048,7 @@ msgstr "调整锁定框"
 
 #: nudge_lock.cpp:120
 msgid "Always on top"
-msgstr ""
+msgstr "总在最前面"
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -4190,19 +4088,19 @@ msgstr ""
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
-msgstr ""
+msgstr "锁定框位置:"
 
 #: nudge_lock.cpp:170
 msgid "Lock position X coordinate"
-msgstr "*Lock position X coordinate"
+msgstr "锁定框X轴坐标"
 
 #: nudge_lock.cpp:176
 msgid "Lock position Y coordinate"
-msgstr "*Lock position Y coordinate"
+msgstr "锁定框Y轴坐标"
 
 #: nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
-msgstr ""
+msgstr "设置"
 
 #: nudge_lock.cpp:187
 msgid "Set the lock position to the entered coordinates"
@@ -4238,7 +4136,7 @@ msgstr "自定义端口地址："
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
 "option to start a different instance."
-msgstr ""
+msgstr "PHD2实例%ld已经运行。在命令行使用-i INSTANCE_NUM来运行另外的实例。"
 
 #: phdconfig.cpp:44
 msgid "My Equipment"
@@ -4246,7 +4144,7 @@ msgstr "我的设备"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
-msgstr ""
+msgstr "配置文件新建向导"
 
 #: profile_wizard.cpp:75
 msgid "New Profile Wizard - "
@@ -4258,7 +4156,7 @@ msgstr "更多信息"
 
 #: profile_wizard.cpp:124
 msgid "Gear"
-msgstr "*蜗轮"
+msgstr "蜗轮"
 
 #: profile_wizard.cpp:135
 msgid ""
@@ -4285,6 +4183,8 @@ msgid ""
 "are using an off-axis-guider or an adaptive optics device.  You can use the "
 "up/down control or type in a value directly."
 msgstr ""
+"这里填写的是导星镜的焦距，如果您使用OAG或者AO设备进行导星，那么这里应该填写主"
+"镜的焦距。可以点击上下按钮进行调整，也可以直接输入数值。"
 
 #: profile_wizard.cpp:151
 msgid "Guide scope focal length (mm)"
@@ -4309,7 +4209,7 @@ msgstr "创建暗场库"
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
-msgstr ""
+msgstr "为本配置自动创建暗场库文件。"
 
 #: profile_wizard.cpp:168
 msgid "Profile Name"
@@ -4317,7 +4217,7 @@ msgstr "配置文件"
 
 #: profile_wizard.cpp:174
 msgid "< Back"
-msgstr ""
+msgstr "< 返回"
 
 #: profile_wizard.cpp:175
 msgid "Back up to the previous screen"
@@ -4325,7 +4225,7 @@ msgstr ""
 
 #: profile_wizard.cpp:177 profile_wizard.cpp:406
 msgid "Next >"
-msgstr ""
+msgstr "下一个 >"
 
 #: profile_wizard.cpp:178 profile_wizard.cpp:407
 msgid "Move forward to next screen"
@@ -4343,6 +4243,16 @@ msgid ""
 "please review the 'Impatient Instructions' under the 'Help' menu after the "
 "wizard dialog has finished."
 msgstr ""
+"这个简短的步骤顺序将帮助您确定要用于导星的设备，\n"
+"并将它与您选择的配置文件名称相关联。\n"
+"\n"
+"至少，您需要选择导星相机和赤道仪这两个内容。\n"
+"\n"
+"您可能还需要填写一些光学方面的内容。\n"
+"\n"
+"PHD2将使用它来创建一个良好的“初学者”的导星和校准的参数。\n"
+"\n"
+"如果您是新用户，请在完成后查看“帮助”菜单下的向导对话框。"
 
 #: profile_wizard.cpp:231
 msgid ""
@@ -4361,6 +4271,10 @@ msgid ""
 "interfaces are available for cases where ASCOM is not available or isn't "
 "well supported by mount firmware."
 msgstr ""
+"从列表中选择你的赤道仪接口方式。这将决定PHD2如何移动赤道仪\n"
+"并获得位置信息。针对大多数现代赤道仪，如果你使用的是微软\n"
+"Windows平台，那么ASCOM方式是一个不错的选择。如果你希望\n"
+"使用导星相机自带的ST4接口，请选择On-Camera方式。"
 
 #: profile_wizard.cpp:241
 msgid ""
@@ -4392,15 +4306,15 @@ msgstr ""
 #: profile_wizard.cpp:289
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
-msgstr ""
+msgstr "请指定相机类型，导星焦距以及导星相机的像素尺寸"
 
 #: profile_wizard.cpp:294
 msgid "Please select a mount type to handle guider commands"
-msgstr ""
+msgstr "请选择一个赤道仪类型，用来决定导星方式"
 
 #: profile_wizard.cpp:304
 msgid "Please specify a name for the profile."
-msgstr ""
+msgstr "请指定一个配置文件的名称"
 
 #: profile_wizard.cpp:308
 msgid ""
@@ -4409,11 +4323,11 @@ msgstr ""
 
 #: profile_wizard.cpp:348
 msgid "Welcome to the PHD2 'first light' wizard"
-msgstr ""
+msgstr "欢迎使用PHD2向导工具"
 
 #: profile_wizard.cpp:353
 msgid "Choose a Guide Camera"
-msgstr ""
+msgstr "选择一个导星相机"
 
 #: profile_wizard.cpp:355
 msgid "Guide Camera:"
@@ -4423,7 +4337,7 @@ msgstr "导星相机:"
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "set-up"
-msgstr ""
+msgstr "选择你的导星相机，并设置导星使用时的必要硬件参数。"
 
 #: profile_wizard.cpp:370
 msgid "Choose a Mount Connection"
@@ -4437,7 +4351,7 @@ msgstr "赤道仪:"
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
-msgstr ""
+msgstr "选择你的赤道仪连接类型 - 这将决定导星信号的方式"
 
 #: profile_wizard.cpp:387
 msgid "Choose an Auxiliary Mount Connection (optional)"
@@ -4455,7 +4369,7 @@ msgstr ""
 
 #: profile_wizard.cpp:396
 msgid "Choose an Adaptive Optics Device (optional)"
-msgstr ""
+msgstr "选择一个自适应光学设备(可选)"
 
 #: profile_wizard.cpp:397
 msgid "AO:"
@@ -4467,11 +4381,11 @@ msgstr ""
 
 #: profile_wizard.cpp:412
 msgid "Finish Creating Your New Profile"
-msgstr ""
+msgstr "你的新配置文件创建完毕"
 
 #: profile_wizard.cpp:415
 msgid "Finish"
-msgstr ""
+msgstr "完成"
 
 #: profile_wizard.cpp:416
 msgid "Finish creating the equipment profile"
@@ -4481,7 +4395,7 @@ msgstr "设备配置文件创建完毕"
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
-msgstr ""
+msgstr "为你的配置文件起个名字，并可选进行创建暗场库。"
 
 #: profile_wizard.cpp:533
 msgid "Could not initialize camera"
@@ -4497,7 +4411,7 @@ msgstr "不能连接相机"
 
 #: profile_wizard.cpp:545
 msgid "Detect Pixel Size"
-msgstr ""
+msgstr "检测像素尺寸"
 
 #: Refine_DefMap.cpp:66
 msgid "Refine Bad-pixel Map"
@@ -4529,11 +4443,11 @@ msgstr "*显示检测像素*"
 
 #: Refine_DefMap.cpp:86
 msgid "Check to show hot/cold pixels in the main image window."
-msgstr ""
+msgstr "选中会在图像窗口中显示热/冷像素"
 
 #: Refine_DefMap.cpp:91
 msgid "General Information"
-msgstr ""
+msgstr "概括信息"
 
 #: Refine_DefMap.cpp:101
 msgid "Time:"
@@ -4545,11 +4459,11 @@ msgstr "相机:"
 
 #: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
 msgid "Master Dark Exposure Time:"
-msgstr ""
+msgstr "主暗场曝光时间:"
 
 #: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
 msgid "Master Dark Exposure Count:"
-msgstr ""
+msgstr "主暗场曝光次数:"
 
 #: Refine_DefMap.cpp:116
 msgid "Aggressiveness, hot pixels:"
@@ -4561,7 +4475,7 @@ msgstr ""
 
 #: Refine_DefMap.cpp:122
 msgid "Mean:"
-msgstr ""
+msgstr "平均:"
 
 #: Refine_DefMap.cpp:124
 msgid "Standard Deviation:"
@@ -4569,15 +4483,15 @@ msgstr ""
 
 #: Refine_DefMap.cpp:128
 msgid "Median:"
-msgstr ""
+msgstr "中位数:"
 
 #: Refine_DefMap.cpp:130
 msgid "Median Absolute Deviation:"
-msgstr ""
+msgstr "中位数绝对误差："
 
 #: Refine_DefMap.cpp:137
 msgid "Results"
-msgstr "*结果*"
+msgstr "结果"
 
 #: Refine_DefMap.cpp:147
 msgid "Hot pixel count:"
@@ -4585,7 +4499,7 @@ msgstr "热燥统计:"
 
 #: Refine_DefMap.cpp:149
 msgid "Cold pixel count:"
-msgstr ""
+msgstr "冷像素合计:"
 
 #: Refine_DefMap.cpp:153
 msgid "Manually added pixels"
@@ -4614,9 +4528,8 @@ msgid "Reset parameters to starting point"
 msgstr ""
 
 #: Refine_DefMap.cpp:180
-#, fuzzy
 msgid "Generate"
-msgstr "导星速率"
+msgstr "生成"
 
 #: Refine_DefMap.cpp:182
 msgid ""
@@ -4626,7 +4539,7 @@ msgstr ""
 
 #: Refine_DefMap.cpp:184
 msgid "Add Bad Pixel"
-msgstr ""
+msgstr "增加坏点"
 
 #: Refine_DefMap.cpp:186
 msgid ""
@@ -4636,19 +4549,19 @@ msgstr ""
 
 #: Refine_DefMap.cpp:206
 msgid "Adjust sliders to increase/decrease pixels marked as bad"
-msgstr ""
+msgstr "移动滑块来调整坏点像素蒙版大小"
 
 #: Refine_DefMap.cpp:263
 msgid "Please wait while image statistics are being computed..."
-msgstr ""
+msgstr "请稍候，图像数据正在计算..."
 
 #: Refine_DefMap.cpp:338
 msgid "Building new bad-pixel map"
-msgstr ""
+msgstr "创建新的坏点映射图"
 
 #: Refine_DefMap.cpp:340
 msgid "Saving new bad-pixel map file"
-msgstr ""
+msgstr "保存新的坏点映射图文件"
 
 #: Refine_DefMap.cpp:342
 msgid "Loading new bad-pixel map"
@@ -4656,7 +4569,7 @@ msgstr ""
 
 #: Refine_DefMap.cpp:344
 msgid "New bad-pixel map now being used"
-msgstr ""
+msgstr "新坏点映射图被使用"
 
 #: Refine_DefMap.cpp:367
 msgid "Master dark frames NOT rebuilt"
@@ -4664,12 +4577,12 @@ msgstr "主暗场文件未重建"
 
 #: Refine_DefMap.cpp:451
 msgid "You must first load a bad-pixel map"
-msgstr ""
+msgstr "必须先载入一个坏点映射图"
 
 #: Refine_DefMap.cpp:456
 #, c-format
 msgid "Bad pixel marked at %d,%d"
-msgstr ""
+msgstr "坏点被屏蔽，位于 %d,%d"
 
 #: Refine_DefMap.cpp:462
 msgid "Pixel position not added - no star-like object recognized there"
@@ -4677,37 +4590,32 @@ msgstr ""
 
 #: Refine_DefMap.cpp:472
 msgid "Settings restored to original values"
-msgstr ""
+msgstr "设置恢复为原始值"
 
 #: rotator.cpp:144
-#, fuzzy
 msgid "Rotator Settings"
-msgstr "赤道仪设置"
+msgstr "旋转器设置"
 
 #: rotator.cpp:170
 msgid "Reverse sign of angle"
 msgstr ""
 
 #: rotator_ascom.cpp:135
-#, fuzzy
 msgid ""
 "Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"
-msgstr "不能设置ASCOM相机。ASCOM发生错误。"
+msgstr "ASCOM平台发生错误，不能设置已选择的旋转器。"
 
 #: rotator_ascom.cpp:146
-#, fuzzy
 msgid "Failed to run the Rotator Chooser. Something is wrong with ASCOM"
-msgstr "不能运行赤道仪选择器.ASCOM发生错误。"
+msgstr "ASCOM平台发生错误，不能打开旋转器选择器。"
 
 #: rotator_ascom.cpp:211
-#, fuzzy
 msgid "Could not create ASCOM rotator object"
-msgstr "不能创建ASCOM相机对象"
+msgstr "不能创建ASCOM旋转器对象"
 
 #: rotator_ascom.cpp:296
-#, fuzzy
 msgid "ASCOM driver problem -- cannot get rotator position"
-msgstr "ASCOM驱动问题 -- 不能断开连接"
+msgstr "ASCOM驱动问题 -- 不能获取旋转器位置"
 
 #: runinbg.cpp:112
 msgid "The operation was canceled"
@@ -4715,11 +4623,11 @@ msgstr ""
 
 #: scope.cpp:550
 msgid "Max RA Duration setting"
-msgstr ""
+msgstr "赤经脉冲最大时长设置"
 
 #: scope.cpp:550
 msgid "Max Dec Duration setting"
-msgstr ""
+msgstr "赤纬脉冲最大时长设置"
 
 #: scope.cpp:551
 #, c-format
@@ -4739,11 +4647,11 @@ msgstr ""
 
 #: scope.cpp:807
 msgid "Calibration is based on very few steps, so accuracy is questionable"
-msgstr ""
+msgstr "校准数据基于很少的步数，因此准确度是不可信的。"
 
 #: scope.cpp:810
 msgid "Calibration computed RA/Dec axis angles that are questionable"
-msgstr ""
+msgstr "校准计算出的赤经/赤纬轴转角是不可信的。"
 
 #: scope.cpp:813
 msgid ""
@@ -4753,12 +4661,11 @@ msgstr ""
 
 #: scope.cpp:816
 msgid "The RA and Dec rates vary by an unexpected amount"
-msgstr ""
+msgstr "出乎意料的赤经和赤纬速率"
 
 #: scope.cpp:823
-#, fuzzy
 msgid "Details..."
-msgstr "设置..."
+msgstr "详细设置..."
 
 #: scope.cpp:999
 msgid "RA Calibration Failed: star did not move enough"
@@ -4769,10 +4676,10 @@ msgstr "赤经校准失败：星点未能移动足够的距离"
 msgid "West step %3d"
 msgstr "西 %3d"
 
-#: scope.cpp:1015 scope.cpp:1236
-#, fuzzy, c-format
+#: scope.cpp:1015 scope.cpp:1244
+#, c-format
 msgid "angle=%.1f rate=%.3f"
-msgstr "角度=%.2f 速率=%.4f"
+msgstr "转角=%.1f 速率=%.3f"
 
 #: scope.cpp:1052
 #, c-format
@@ -4792,43 +4699,43 @@ msgstr ""
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "回差消除失败：星点未能移动足够的距离。"
 
-#: scope.cpp:1200
+#: scope.cpp:1208
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤纬校准失败：星点未能移动足够的距离"
 
-#: scope.cpp:1207
+#: scope.cpp:1215
 #, c-format
 msgid "North step %3d"
 msgstr "北 %3d"
 
-#: scope.cpp:1272
+#: scope.cpp:1280
 #, c-format
 msgid "South step %3d"
 msgstr "南 %3d"
 
-#: scope.cpp:1326
-#, fuzzy, c-format
+#: scope.cpp:1334
+#, c-format
 msgid "Nudge South %3d"
 msgstr "南 %3d"
 
-#: scope.cpp:1356
+#: scope.cpp:1364
 msgid "calibration complete"
 msgstr "校准成功"
 
-#: scope.cpp:1371
+#: scope.cpp:1379
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1527
+#: scope.cpp:1535
 msgid "Mount Guide Algorithms"
 msgstr ""
 
-#: scope.cpp:1565
+#: scope.cpp:1573
 msgid "Calibration step (ms)"
 msgstr "校准时长 (毫秒)"
 
-#: scope.cpp:1566
+#: scope.cpp:1574
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -4836,11 +4743,11 @@ msgstr ""
 "*How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 
-#: scope.cpp:1570
+#: scope.cpp:1578
 msgid "Calculate..."
 msgstr "计算器..."
 
-#: scope.cpp:1571
+#: scope.cpp:1579
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -4848,109 +4755,111 @@ msgstr ""
 "*Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 
-#: scope.cpp:1578
+#: scope.cpp:1586
 msgid "Reverse Dec output after meridian flip"
 msgstr "中天翻转后反转赤纬数据"
 
-#: scope.cpp:1580
+#: scope.cpp:1588
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 
-#: scope.cpp:1587
+#: scope.cpp:1595
 msgid "Stop guiding when mount slews"
 msgstr ""
 
-#: scope.cpp:1589
+#: scope.cpp:1597
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
-msgstr ""
+msgstr "选中该项，PHD2会在赤道仪Goto时停止导星。"
 
-#: scope.cpp:1595
+#: scope.cpp:1603
 msgid "Assume Dec orthogonal to RA"
-msgstr ""
+msgstr "假设赤纬正交于赤经"
 
-#: scope.cpp:1598
+#: scope.cpp:1606
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
+"假设赤纬轴垂直于赤经轴。可防止赤经周期误差影响赤纬校准。该选项在赤纬校准时生"
+"效。"
 
-#: scope.cpp:1602
+#: scope.cpp:1610
 msgid "Use backlash comp"
 msgstr ""
 
-#: scope.cpp:1603
+#: scope.cpp:1611
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid "Amount"
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
 
-#: scope.cpp:1608
+#: scope.cpp:1616
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1610
+#: scope.cpp:1618
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Off"
 msgstr "关"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Dec guide mode"
 msgstr "赤纬导星模式"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1718
+#: scope.cpp:1726
 msgid "Mx RA"
-msgstr ""
+msgstr "最大赤经"
 
-#: scope.cpp:1724
+#: scope.cpp:1732
 msgid "Mx DEC"
-msgstr ""
+msgstr "最大赤纬"
 
 #: scope_ascom.cpp:155
 msgid ""
 "Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"
-msgstr "不能设置ASCOM相机。ASCOM发生错误。"
+msgstr "ASCOM平台发生错误，不能设置已选择的赤道仪。"
 
 #: scope_ascom.cpp:166
 msgid "Failed to run the Telescope Chooser. Something is wrong with ASCOM"
-msgstr "*Failed to run the Telescope Chooser. Something is wrong with ASCOM"
+msgstr "ASCOM平台发生错误，不能打开赤道仪选择器。"
 
 #: scope_ascom.cpp:449
 msgid " connected"
@@ -4971,7 +4880,7 @@ msgstr ""
 
 #: scope_ascom.cpp:694
 msgid "Guiding stopped: the scope started slewing."
-msgstr ""
+msgstr "导星停止：赤道仪正在Goto。"
 
 #: scope_ascom.cpp:742
 msgid "ASCOM driver failed checking Slewing"
@@ -4987,7 +4896,7 @@ msgstr ""
 
 #: scope_eqmac.cpp:176 scope_equinox.cpp:181
 msgid " not running"
-msgstr ""
+msgstr "不能运行"
 
 #: scope_GC_USBST4.cpp:122
 #, c-format
@@ -5034,19 +4943,19 @@ msgstr ""
 
 #: statswindow.cpp:63
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: statswindow.cpp:64
 msgid "Peak"
-msgstr ""
+msgstr "峰值"
 
 #: statswindow.cpp:68
 msgid " 99.99 (99.99'')"
-msgstr ""
+msgstr " 99.99 (99.99'')"
 
 #: statswindow.cpp:72
 msgid "Total"
-msgstr ""
+msgstr "累计"
 
 #: statswindow.cpp:89
 msgid "RA Osc"
@@ -5054,7 +4963,7 @@ msgstr "赤经震荡"
 
 #: statswindow.cpp:91
 msgid "RA Limited"
-msgstr ""
+msgstr "赤经限位"
 
 #: statswindow.cpp:93
 msgid "Dec Limited"
@@ -5070,7 +4979,7 @@ msgstr "赤道仪方位"
 
 #: statswindow.cpp:102
 msgid "Rotator Pos"
-msgstr ""
+msgstr "旋转器位置"
 
 #: statswindow.cpp:113
 msgid "Clear graph data and stats"
@@ -5125,11 +5034,7 @@ msgstr ""
 msgid "AO Settings"
 msgstr "AO设置"
 
-#: stepguider.cpp:1267
-msgid "Cal steps"
-msgstr ""
-
-#: stepguider.cpp:1267
+#: stepguider.cpp:1265
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -5138,11 +5043,11 @@ msgstr ""
 "*How many steps should be issued per calibration cycle. Default = %d, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 
-#: stepguider.cpp:1272
-msgid "Samples to average"
+#: stepguider.cpp:1268
+msgid "Cal steps"
 msgstr ""
 
-#: stepguider.cpp:1272
+#: stepguider.cpp:1271
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -5151,8 +5056,8 @@ msgstr ""
 "*When calibrating, how many samples should be averaged. Default = %d, "
 "increase for worse seeing and small imaging scales"
 
-#: stepguider.cpp:1277
-msgid "Bump percentage"
+#: stepguider.cpp:1274
+msgid "Samples to average"
 msgstr ""
 
 #: stepguider.cpp:1277
@@ -5164,8 +5069,8 @@ msgstr ""
 "*What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
 
-#: stepguider.cpp:1282
-msgid "Bump steps"
+#: stepguider.cpp:1280
+msgid "Bump percentage"
 msgstr ""
 
 #: stepguider.cpp:1283
@@ -5177,29 +5082,33 @@ msgstr ""
 "*How far should a mount bump move the mount between images (in AO steps). "
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 
-#: stepguider.cpp:1285
-msgid "Bump on dither"
-msgstr ""
-
 #: stepguider.cpp:1286
-msgid "Bump the mount to return the AO to center at each dither"
+msgid "Bump steps"
 msgstr ""
 
 #: stepguider.cpp:1288
-msgid "Clear AO calibration"
+msgid "Bump on dither"
+msgstr ""
+
+#: stepguider.cpp:1289
+msgid "Bump the mount to return the AO to center at each dither"
 msgstr ""
 
 #: stepguider.cpp:1291
+msgid "Clear AO calibration"
+msgstr ""
+
+#: stepguider.cpp:1294
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: stepguider.cpp:1292
+#: stepguider.cpp:1295
 msgid "Enable AO corrections"
 msgstr ""
 
-#: stepguider.cpp:1294
+#: stepguider.cpp:1297
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -5219,7 +5128,7 @@ msgstr ""
 
 #: stepguider_sxao.cpp:107
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: stepguider_sxao.cpp:153
 msgid "Select serial port"
@@ -5243,7 +5152,7 @@ msgstr "参考圆"
 
 #: target.cpp:83
 msgid "Check to display a reference circle"
-msgstr ""
+msgstr "选择显示一个参考圆"
 
 #: target.cpp:91
 msgid "Radius:"
@@ -5320,8 +5229,7 @@ msgid ""
 "Dither on RA axis only. Changing the value here affects both manual "
 "dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"*Dither on RA axis only. Changing the value here affects both manual "
-"dithering and dithering from imaging applications connected to PHD."
+"仅在赤经轴抖动。修改此项会影响人工抖动，以及其他连接到PHD2的其他应用程序。"
 
 #: testguide.cpp:133
 msgid ""
@@ -5344,12 +5252,10 @@ msgid "Error reading data from FITS file "
 msgstr "从FITS文件中读取数据失败"
 
 #: calreview_dialog.h:48
-#, fuzzy
 msgid "Review Calibration"
-msgstr "校准"
+msgstr "查看校准数据"
 
 #: calreview_dialog.h:75
-#, fuzzy
 msgid "Restore Calibration"
 msgstr "恢复校准数据"
 
@@ -5366,15 +5272,8 @@ msgid "Connecting to Camera..."
 msgstr "正在连接相机 ..."
 
 #: runinbg.h:98
-#, fuzzy
 msgid "Connecting to Rotator..."
-msgstr "正在连接赤道仪 ..."
-
-#~ msgid "Timestamp:"
-#~ msgstr "时间戳:"
-
-#~ msgid "FWHM: %.2f"
-#~ msgstr "FWHM: %.2f"
+msgstr "正在连接旋转器 ..."
 
 #~ msgid "No Camera Selected"
 #~ msgstr "未选择相机"
@@ -5385,6 +5284,9 @@ msgstr "正在连接赤道仪 ..."
 #~ msgid "No Mount Selected"
 #~ msgstr "未选择赤道仪"
 
+#~ msgid "Timestamp:"
+#~ msgstr "时间戳:"
+
 #~ msgid "Select camera"
 #~ msgstr "选择相机"
 
@@ -5394,89 +5296,6 @@ msgstr "正在连接赤道仪 ..."
 #~ msgid "Select SX camera"
 #~ msgstr "选择SX相机"
 
-#~ msgid "Aggression"
-#~ msgstr "修正度"
-
-#~ msgid "Always Scale Images"
-#~ msgstr "自动缩放图像"
-
-#~ msgid "Star mass change detection"
-#~ msgstr "星点质心变化检测"
-
-#~ msgid ""
-#~ "Check to enable star mass change detection. When enabled, PHD skips "
-#~ "frames when the guide star mass changes by an amount greater than the "
-#~ "Star mass tolerance setting."
-#~ msgstr ""
-#~ "*Check to enable star mass change detection. When enabled, PHD skips "
-#~ "frames when the guide star mass changes by an amount greater than the "
-#~ "Star mass tolerance setting.*"
-
-#~ msgid "Star mass tolerance"
-#~ msgstr "质心容忍度"
-
-#~ msgid "Clear calibration"
-#~ msgstr "强制校准"
-
-#~ msgid "Enable Guide Output"
-#~ msgstr "允许导星输出"
-
-#~ msgid "RA Algorithm"
-#~ msgstr "赤经算法"
-
-#~ msgid "Declination Algorithm"
-#~ msgstr "赤纬算法"
-
-#~ msgid ""
-#~ "Reset all configuration to fresh install status -- Note: this closes PHD2"
-#~ msgstr ""
-#~ "*Reset all configuration to fresh install status -- Note: this closes PHD2"
-
-#~ msgid "Constrain dither to RA only?"
-#~ msgstr "*Constrain dither to RA only?"
-
-#~ msgid "Dither scale"
-#~ msgstr "抖动幅度"
-
-#~ msgid "You must restart PHD for the language change to take effect."
-#~ msgstr "修改语言必须重启PHD2后生效。"
-
-#, fuzzy
-#~ msgid "Max Duration"
-#~ msgstr "曝光时间"
-
-#~ msgid ""
-#~ "Longest length of pulse to send in RA\n"
-#~ "Default = 1000 ms."
-#~ msgstr ""
-#~ "*Longest length of pulse to send in RA\n"
-#~ "Default = 1000 ms."
-
-#, fuzzy
-#~ msgid ""
-#~ "Longest length of pulse to send in declination\n"
-#~ "Default = 1000 ms.  Increase if drift is fast."
-#~ msgstr ""
-#~ "*Longest length of pulse to send in declination\n"
-#~ "Default = 1000 ms. Increase if drift is fast."
-
-#~ msgid ""
-#~ "Check if your mount needs Dec output reversed after doing Flip "
-#~ "Calibration Data"
-#~ msgstr ""
-#~ "*Check if your mount needs Dec output reversed after doing Flip "
-#~ "Calibration Data"
-
-#~ msgid "Guide in declination as well?"
-#~ msgstr "*Guide in declination as well?"
-
-#~ msgid "Calibration Steps"
-#~ msgstr "校准步数"
-
-#~ msgid "Samples to Average"
-#~ msgstr "取样平均"
-
-#, fuzzy
 #~ msgid "Camera timeout during capture"
 #~ msgstr "相机反应超时"
 
@@ -5506,17 +5325,72 @@ msgstr "正在连接赤道仪 ..."
 #~ "重复\"漂移\"/\"调整\"，直到该项校准完成。\n"
 #~ "点击\"水平角\"按钮，重复水平角调整。"
 
+#~ msgid "Aggression"
+#~ msgstr "修正度"
+
+#~ msgid "Aggression factor, percent. Default = %.f%%"
+#~ msgstr "修正强度百分比。缺省值 = %.f%%"
+
+#~ msgid "Always Scale Images"
+#~ msgstr "自动缩放图像"
+
+#~ msgid "Star mass change detection"
+#~ msgstr "星点质心变化检测"
+
+#~ msgid ""
+#~ "Check to enable star mass change detection. When enabled, PHD skips "
+#~ "frames when the guide star mass changes by an amount greater than the "
+#~ "Star mass tolerance setting."
+#~ msgstr ""
+#~ "*Check to enable star mass change detection. When enabled, PHD skips "
+#~ "frames when the guide star mass changes by an amount greater than the "
+#~ "Star mass tolerance setting.*"
+
+#~ msgid "Star mass tolerance"
+#~ msgstr "质心容忍度"
+
+#~ msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
+#~ msgstr "选择一个较好信噪比(SNR>10)的不饱和星点并开始导星"
+
+#~ msgid ""
+#~ "Your polar alignment is pretty far off. You are likely to see field "
+#~ "rotation unless you keep your exposures very short."
+#~ msgstr "你的极轴误差太大。除非使用极短的曝光时间，否则会产生场旋。"
+
+#~ msgid "Consider using a brighter star or increasing the exposure time"
+#~ msgstr "建议使用一个更亮的星或者增加曝光时间"
+
+#~ msgid "Max Exp"
+#~ msgstr "最大曝光时间"
+
+#~ msgid "Clear calibration"
+#~ msgstr "强制校准"
+
+#~ msgid ""
+#~ "Clear the current calibration data - calibration will be re-done when "
+#~ "guiding is started"
+#~ msgstr "清除当前校准数据 - 下次开始导星时会重新校准"
+
+#~ msgid "Enable Guide Output"
+#~ msgstr "启用导星输出"
+
+#~ msgid "RA Algorithm"
+#~ msgstr "赤经算法"
+
+#~ msgid "Declination Algorithm"
+#~ msgstr "赤纬算法"
+
 #~ msgid " (log active)"
 #~ msgstr " (日志记录中)"
 
 #~ msgid "Enable Guide &Log\tAlt-L"
-#~ msgstr "开启导星日志\tAlt-L"
+#~ msgstr "启用导星日志\tAlt-L"
 
 #~ msgid "Enable guide log file"
 #~ msgstr "开始记录导星日志文件"
 
 #~ msgid "Enable Debug Log"
-#~ msgstr "开机调试模式"
+#~ msgstr "启用调试日志"
 
 #~ msgid "Enable debug log file"
 #~ msgstr "开始记录调试日志文件"
@@ -5533,8 +5407,75 @@ msgstr "正在连接赤道仪 ..."
 #~ msgid "Guide"
 #~ msgstr "导星"
 
+#~ msgid ""
+#~ "Reset all configuration to fresh install status -- Note: this closes PHD2"
+#~ msgstr ""
+#~ "*Reset all configuration to fresh install status -- Note: this closes PHD2"
+
+#~ msgid "Constrain dither to RA only?"
+#~ msgstr "是否只在赤经轴抖动？"
+
+#~ msgid "Dither scale"
+#~ msgstr "抖动幅度"
+
+#~ msgid "You must restart PHD for the language change to take effect."
+#~ msgstr "修改语言必须重启PHD2后生效。"
+
+#~ msgid ""
+#~ "Select your guide camera from the list.  All cameras supported by PHD2 "
+#~ "and all installed ASCOM cameras are shown. If your camera is not shown, "
+#~ "it is either not supported by PHD2 or its camera driver is not installed. "
+#~ "You must also specify the pixel size of the camera and the focal length "
+#~ "of your guide scope so that PHD2 can compute the correct image scale."
+#~ msgstr ""
+#~ "在列表中选择你的使用的导星相机。\n"
+#~ "表中会列出所有被PHD2支持或者已安装ASCOM驱动的相机。\n"
+#~ "如果你的导星相机没显示在列表中，它可能不被PHD2支持，\n"
+#~ "或者忘记安装相机ASCOM驱动了。\n"
+#~ "必须填写相机的像元尺寸以及所使用的导星镜焦距，用于让PHD2正确的计算图像分辨"
+#~ "率。"
+
+#~ msgid "Choose an Auxillary Mount Connection (optional)"
+#~ msgstr "选择一个AUX赤道仪(可选)"
+
 #~ msgid "Clear backlash step %3d"
 #~ msgstr "消除回差 %3d"
+
+#~ msgid "Max Duration"
+#~ msgstr "最大时长"
+
+#~ msgid ""
+#~ "Longest length of pulse to send in RA\n"
+#~ "Default = 1000 ms."
+#~ msgstr ""
+#~ "*Longest length of pulse to send in RA\n"
+#~ "Default = 1000 ms."
+
+#~ msgid ""
+#~ "Longest length of pulse to send in declination\n"
+#~ "Default = 1000 ms.  Increase if drift is fast."
+#~ msgstr ""
+#~ "赤纬导星脉冲最长时间\n"
+#~ "缺省值 = 1000 毫秒. 如果漂移太快，请增加此数值。"
+
+#~ msgid ""
+#~ "Check if your mount needs Dec output reversed after doing Flip "
+#~ "Calibration Data"
+#~ msgstr ""
+#~ "*Check if your mount needs Dec output reversed after doing Flip "
+#~ "Calibration Data"
+
+#~ msgid "Guide in declination as well?"
+#~ msgstr "*Guide in declination as well?"
+
+#~ msgid "FWHM: %.2f"
+#~ msgstr "FWHM: %.2f"
+
+#~ msgid "Calibration Steps"
+#~ msgstr "校准步数"
+
+#~ msgid "Samples to Average"
+#~ msgstr "取样平均"
 
 #, fuzzy
 #~ msgid "Import profile"

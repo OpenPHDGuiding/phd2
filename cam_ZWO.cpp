@@ -218,6 +218,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Connected = true;
     Name = info.Name;
     m_isColor = info.IsColorCam != ASI_FALSE;
+    Debug.AddLine("ZWO: IsColorCam = %d", m_isColor);
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)

@@ -1290,6 +1290,12 @@ static void guide(JObj& response, const json_value *params)
         recalibrate = p1->int_value ? true : false;
     }
 
+    if (recalibrate && !pConfig->Global.GetBoolean("/server/guide_allow_recalibrate", true))
+    {
+        Debug.AddLine("ignoring client recalibration request since guide_allow_recalibrate = false");
+        recalibrate = false;
+    }
+
     wxString err;
     if (PhdController::Guide(recalibrate, settle, &err))
         response << jrpc_result(0);

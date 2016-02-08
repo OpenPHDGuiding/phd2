@@ -284,7 +284,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         StartLooping();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -340,7 +340,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 {
     try
     {
-        Debug.Write("Processing an image\n");
+        Debug.Write("OnExposeComplete: enter\n");
 
         m_exposurePending = false;
 
@@ -353,7 +353,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
         if (err)
         {
-            Debug.Write("OnExposeComplete(): Capture Error reported\n");
+            Debug.Write("OnExposeComplete: Capture Error reported\n");
 
             delete pNewFrame;
 
@@ -394,7 +394,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
         PhdController::UpdateControllerState();
 
-        Debug.Write(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d\n",
+        Debug.Write(wxString::Format("OnExposeComplete: CaptureActive=%d m_continueCapturing=%d\n",
             CaptureActive, m_continueCapturing));
 
         CaptureActive = m_continueCapturing;
@@ -408,7 +408,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
             FinishStop();
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         UpdateButtonsStatus();
@@ -445,7 +445,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported moving");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -802,7 +802,7 @@ static void ValidateDarksLoaded(void)
     }
 }
 
-void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+void MyFrame::GuideButtonClick(bool interactive)
 {
     try
     {
@@ -846,14 +846,25 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
             }
         }
 
+        if (interactive && pPointingSource && pPointingSource->IsConnected())
+        {
+            bool error = pPointingSource->PreparePositionInteractive();
+            if (error)
+                return;
+        }
+
         StartGuiding();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         pGuider->Reset(false);
     }
-    return;
+}
+
+void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+{
+    GuideButtonClick(true);
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
@@ -928,7 +939,7 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
 
         pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

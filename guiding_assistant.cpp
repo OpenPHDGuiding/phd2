@@ -195,7 +195,6 @@ struct GuidingAsstWin : public wxDialog
     double m_lastTime;
     double maxRateRA; // arc-sec per second
     double alignmentError; // arc-minutes
-    double declination;
 
     bool m_guideOutputDisabled;
     bool m_savePrimaryMountEnabled;
@@ -779,7 +778,7 @@ void GuidingAsstWin::MakeRecommendations()
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
     // Always make a recommendation on exposure times
-    wxString msg = SizedMsg(wxString::Format("Try using exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
+    wxString msg = SizedMsg(wxString::Format("Try to keep your exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
     if (!m_exposure_msg)
         m_exposure_msg = AddRecommendationEntry(msg);
     else
@@ -1131,10 +1130,15 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
     double raDriftRate = driftRA / elapsed * 60.0;
     double decDriftRate = driftDec / elapsed * 60.0;
-    declination = pPointingSource->GetGuidingDeclination();
+    double declination = pPointingSource->GetDeclination();
+    double cosdec;
+    if (declination == UNKNOWN_DECLINATION)
+        cosdec = 1.0; // assume declination 0
+    else
+        cosdec = cos(declination);
     // polar alignment error from Barrett:
     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
-    alignmentError = 3.8197 * fabs(decDriftRate) * pxscale / cos(declination);
+    alignmentError = 3.8197 * fabs(decDriftRate) * pxscale / cosdec;
 
     wxString SEC(_("s"));
     wxString PX(_("px"));
@@ -1165,7 +1169,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? " " : 
         wxString::Format("%6.1f %s ",  1.3 * rarms / maxRateRA, SEC));
     FillResultCell(m_othergrid, m_dec_drift_loc, decDriftRate, decDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
-    m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == 0.0 ? "> " : "", alignmentError, ARCMIN));
+    m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()

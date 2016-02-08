@@ -120,6 +120,12 @@ bool PhdApp::OnInit()
 #endif
 
     SetVendorName(_T("StarkLabs"));
+    // use SetAppName() to ensure the local data directory is found even if the name of the executable is changed
+#ifdef __APPLE__
+    SetAppName(_T("PHD2"));
+#else
+    SetAppName(_T("phd2"));
+#endif
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
     Debug.Init("debug", true);

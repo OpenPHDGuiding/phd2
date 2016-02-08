@@ -77,7 +77,8 @@ ManualCalDialog::ManualCalDialog(const Calibration& cal)
 
     pLabel = new wxStaticText(this,wxID_ANY, _("Declination (e.g. 2.1):"));
     m_pDeclination = new wxTextCtrl(this,wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
-    m_pDeclination->SetValue(wxString::Format("%.3f", cal.declination));
+    double dec = cal.declination == UNKNOWN_DECLINATION ? 0.0 : cal.declination;
+    m_pDeclination->SetValue(wxString::Format("%.1f", dec));
     pGridSizer->Add(pLabel);
     pGridSizer->Add(m_pDeclination);
 

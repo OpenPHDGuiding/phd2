@@ -174,6 +174,12 @@ PauseType Guider::SetPaused(PauseType pause)
         m_avgDistanceNeedReset = true;
     }
 
+    if (pause != prev)
+    {
+        Refresh();
+        Update();
+    }
+
     return prev;
 }
 
@@ -612,6 +618,13 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
             dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
+
+        if (GetPauseType() != PAUSE_NONE)
+        {
+            dc.SetTextForeground(*wxYELLOW);
+            dc.DrawText(_("PAUSED"), 10, YWinSize - 20);
+        }
+
     }
     catch (const wxString& Msg)
     {
@@ -913,6 +926,8 @@ void Guider::SetState(GUIDER_STATE newState)
                 {
                     pSecondaryMount->AdjustCalibrationForScopePointing();
                 }
+
+                pFrame->UpdateCalibrationStatus();
 
                 if (m_lockPosition.IsValid() && m_lockPosIsSticky)
                 {

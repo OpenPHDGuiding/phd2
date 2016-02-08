@@ -833,8 +833,8 @@ void MyFrame::SetupToolBar()
 
 void MyFrame::UpdateCalibrationStatus(void)
 {
-    m_statusbar->UpdateStates();
 
+    m_statusbar->UpdateStates();
     if (pStatsWin)
         pStatsWin->UpdateScopePointing();
 }
@@ -1774,6 +1774,7 @@ static void load_calibration(Mount *mnt)
     cal.pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
         t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
     cal.rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
+    cal.isValid = true;
 
     mnt->SetCalibration(cal);
 }

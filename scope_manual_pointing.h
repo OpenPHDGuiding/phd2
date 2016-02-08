@@ -1,9 +1,9 @@
 /*
- *  cam_QHY5IIbase.h
+ *  scope_manual_pointing.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2012 Craig Stark.
+ *  Created by Andy Galasso.
+ *  Copyright (c) 2016 openphdguiding.org
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,32 +32,27 @@
  *
  */
 
-#ifndef QHY5IIBASE_H_INCLUDED
-#define QHY5IIBASE_H_INCLUDED
+#ifndef SCOPE_MANUAL_POINTING_INCLUDED
+#define SCOPE_MANUAL_POINTING_INCLUDED
 
-class Camera_QHY5IIBase : public GuideCamera
+class ScopeManualPointing : public Scope
 {
-    HINSTANCE CameraDLL;
-    unsigned char *RawBuffer;
-
-protected:
-    TCHAR *m_cameraDLLName;
-    bool Color;
-
-    Camera_QHY5IIBase();
+    double m_latitude; // degrees
+    double m_longitude; // degrees
+    double m_ra; // hours
+    double m_dec; // radians
+    PierSide m_sideOfPier;
 
 public:
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    void    InitCapture();
-
-    bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
+    static wxString GetDisplayName();
+    bool Connect();
+    MOVE_RESULT Guide(GUIDE_DIRECTION, int);
+    double GetDeclination();
+    bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    bool GetSiteLatLong(double *latitude, double *longitude);
+    PierSide SideOfPier();
+    bool PreparePositionInteractive();
+    bool CanReportPosition();
 };
 
-#endif // QHY5IIBASE_H_INCLUDED
+#endif

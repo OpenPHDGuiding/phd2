@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 02:59-0500\n"
+"POT-Creation-Date: 2016-01-26 20:02-0500\n"
 "PO-Revision-Date: 2015-04-15 20:53+0100\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team:  <LL@li.org>\n"
@@ -57,7 +57,7 @@ msgstr "Global"
 
 #: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1432
 #: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
-#: gear_dialog.cpp:999 myframe.cpp:849
+#: gear_dialog.cpp:1000 myframe.cpp:849
 msgid "Camera"
 msgstr "Cámara"
 
@@ -75,7 +75,7 @@ msgstr ""
 
 #: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1443
 #: config_INDI.cpp:107 eegg.cpp:112 gear_dialog.cpp:251 gear_dialog.cpp:253
-#: gear_dialog.cpp:1177 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
+#: gear_dialog.cpp:1178 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Montura"
 
@@ -95,13 +95,13 @@ msgstr ""
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "North"
 msgstr "Norte"
 
-#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "South"
 msgstr "Sur"
 
@@ -319,15 +319,9 @@ msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
 "Normally, these angles will be nearly perpendicular, having an "
 "'orthogonality error' of less than 10 degrees.  In this calibration, your "
-"error was %s degrees. This could mean the calibration is inaccurate, perhaps "
-"because of small or erratic star movement during the calibration."
+"error was %s degrees, which is often caused by poor polar alignment or a "
+"large periodic error in RA."
 msgstr ""
-"Los ángulos calculados de RA y Declinación en la calibración son poco "
-"precisos. Normalmente, estos ángulos serán casi perpendiculares, teniendo un "
-"'error de ortogonalidad' de menos de 10 grados. En esta calibración, su "
-"error fue de %s grados. Esto puede indicar que la calibración no es precisa, "
-"quizás pueda deberse a pequeños o erráticos movimientos de la estrella "
-"durante la calibración."
 
 #: calreview_dialog.cpp:594
 #, c-format
@@ -349,16 +343,10 @@ msgstr ""
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
 "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
-"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could mean "
-"the calibration is inaccurate, perhaps because of small or erratic star "
-"movement during the calibration."
+"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This often "
+"means one of the axis calibrations is inaccurate, which may result in poor "
+"guiding."
 msgstr ""
-"Las velocidades de guiado de RA y Declinación difieren de forma inesperada. "
-"Para su declinación de %0.0f grados, la velocidad de RA debería ser de unos "
-"%0.0f%% la velocidad de Dec. Pero su velocidad de RA es  %0.0f%% la "
-"velocidad de Dec. Eso puede indicar poca precisión en la calibración, quizás "
-"debido a pequeños o erráticos errores en el movimiento de la estrella "
-"durante la calibración."
 
 #: calreview_dialog.cpp:641
 msgid "Explanation"
@@ -553,10 +541,10 @@ msgstr "Configuraciones"
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
 #: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:257 cam_wdm.cpp:132 cam_wdm.cpp:141
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:178
-#: cam_ZWO.cpp:193 cam_ZWO.cpp:208 cam_ZWO.cpp:214 cam_ZWO.cpp:255
-#: gear_dialog.cpp:1172 gear_dialog.cpp:1830 gear_dialog.cpp:1839
-#: gear_dialog.cpp:1846 gear_dialog.cpp:1891 gear_dialog.cpp:1897
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:254
+#: gear_dialog.cpp:1173 gear_dialog.cpp:1831 gear_dialog.cpp:1840
+#: gear_dialog.cpp:1847 gear_dialog.cpp:1892 gear_dialog.cpp:1898
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
 #: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
 #: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
@@ -1192,11 +1180,11 @@ msgstr ""
 "Package (x86), disponible en http://www.microsoft.com/en-us/download/details."
 "aspx?id=29"
 
-#: cam_ZWO.cpp:208 cam_ZWO.cpp:255
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:254
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "Fallo la obtención de propiedades de la cámara ZWO ASI"
 
-#: cam_ZWO.cpp:214
+#: cam_ZWO.cpp:213
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Falló la apertura de la cámara ZWO ASI"
 
@@ -1218,8 +1206,8 @@ msgstr "Seleccionar el perfil con biblioteca de darks que quiere usar:"
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:222
 #: camera.cpp:363 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
-#: gear_dialog.cpp:937 gear_dialog.cpp:1591 gear_dialog.cpp:1592
-#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:612
+#: gear_dialog.cpp:937 gear_dialog.cpp:1592 gear_dialog.cpp:1593
+#: gear_dialog.cpp:1594 mount.cpp:113 mount.cpp:142 mount.cpp:612
 #: myframe.cpp:2291 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
 #: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:267
@@ -2200,115 +2188,115 @@ msgstr "Aviso de cambio de Cámara"
 msgid "Connecting to Camera ..."
 msgstr "Conectando a la cámara..."
 
-#: gear_dialog.cpp:998
+#: gear_dialog.cpp:999
 msgid "Camera Connected"
 msgstr "Cámara Conectada"
 
-#: gear_dialog.cpp:1005
+#: gear_dialog.cpp:1006
 msgid "Camera Connect Failed"
 msgstr "Falló la Conexión a la Cámara"
 
-#: gear_dialog.cpp:1046
+#: gear_dialog.cpp:1047
 msgid "Camera Disconnected"
 msgstr "Cámara desconectada"
 
-#: gear_dialog.cpp:1162
+#: gear_dialog.cpp:1163
 msgid "Connecting to Mount ..."
 msgstr "Conectando a la montura..."
 
-#: gear_dialog.cpp:1172
+#: gear_dialog.cpp:1173
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "La montura no soporta el interface de Guiado por Pulsos requerido"
 
-#: gear_dialog.cpp:1176
+#: gear_dialog.cpp:1177
 msgid "Mount Connected"
 msgstr "Montura Conectada"
 
-#: gear_dialog.cpp:1189
+#: gear_dialog.cpp:1190
 msgid "Mount Connect Failed"
 msgstr "Falló la Conexión a la Montura"
 
-#: gear_dialog.cpp:1208
+#: gear_dialog.cpp:1209
 msgid "Connecting to Aux Mount ..."
 msgstr "Conectando a Montura Aux..."
 
-#: gear_dialog.cpp:1215
+#: gear_dialog.cpp:1216
 msgid "Aux Mount Connected"
 msgstr "Montura Aux Conectada"
 
-#: gear_dialog.cpp:1223
+#: gear_dialog.cpp:1224
 msgid "Aux Mount Connect Failed"
 msgstr "Falló la Conexión a la Montura Aux"
 
-#: gear_dialog.cpp:1244
+#: gear_dialog.cpp:1245
 msgid "Mount Disconnected"
 msgstr "Montura Desconectada"
 
-#: gear_dialog.cpp:1275
+#: gear_dialog.cpp:1276
 msgid "Aux Mount Disconnected"
 msgstr "Montura Aux Desconectada"
 
-#: gear_dialog.cpp:1291
+#: gear_dialog.cpp:1292
 msgid "Hide"
 msgstr "Ocultar"
 
-#: gear_dialog.cpp:1297
+#: gear_dialog.cpp:1298
 msgid "More Equipment ..."
 msgstr "Más Equipo ..."
 
-#: gear_dialog.cpp:1357
+#: gear_dialog.cpp:1358
 msgid "Connecting to AO ..."
 msgstr "Conectando a la Óptica Adaptativa ..."
 
-#: gear_dialog.cpp:1367
+#: gear_dialog.cpp:1368
 msgid "AO Connected"
 msgstr "Óptica Adaptativa Conectada"
 
-#: gear_dialog.cpp:1380
+#: gear_dialog.cpp:1381
 msgid "AO Connect Failed"
 msgstr "Falló la Conexión de la Óptica Adaptativa"
 
-#: gear_dialog.cpp:1407
+#: gear_dialog.cpp:1408
 msgid "AO Disconnected"
 msgstr "Óptica Adaptativa Desconectada"
 
-#: gear_dialog.cpp:1471
+#: gear_dialog.cpp:1472
 msgid "Connecting to Rotator ..."
 msgstr "Conectando al Rotador ..."
 
-#: gear_dialog.cpp:1481
+#: gear_dialog.cpp:1482
 msgid "Rotator Connected"
 msgstr "Rotador Conectado"
 
-#: gear_dialog.cpp:1494
+#: gear_dialog.cpp:1495
 msgid "Rotator Connect Failed"
 msgstr "Falló la Conexión al Rotador"
 
-#: gear_dialog.cpp:1516
+#: gear_dialog.cpp:1517
 msgid "Rotator Disconnected"
 msgstr "Rotador Desconectado"
 
-#: gear_dialog.cpp:1785
+#: gear_dialog.cpp:1786
 msgid "New Equipment Profile"
 msgstr "Nuevo Perfil de Equipo"
 
-#: gear_dialog.cpp:1792
+#: gear_dialog.cpp:1793
 msgid "Name"
 msgstr "Nombre"
 
-#: gear_dialog.cpp:1796
+#: gear_dialog.cpp:1797
 msgid "Enter the name of the new equipment profile"
 msgstr "Introduzca el nombre del nuevo perfil de equipo"
 
-#: gear_dialog.cpp:1800
+#: gear_dialog.cpp:1801
 msgid "PHD Defaults"
 msgstr "PHD Por Defecto"
 
-#: gear_dialog.cpp:1803
+#: gear_dialog.cpp:1804
 msgid "Profile initial settings"
 msgstr "Configuración inicial de perfil"
 
-#: gear_dialog.cpp:1806
+#: gear_dialog.cpp:1807
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2317,48 +2305,48 @@ msgstr ""
 "por defecto, o seleccione un Perfil de Equipo existente para copiarsu "
 "configuración en el nuevo perfil."
 
-#: gear_dialog.cpp:1830
+#: gear_dialog.cpp:1831
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "No se puede crear el perfil %s, existe un perfil con ese nombre"
 
-#: gear_dialog.cpp:1839
+#: gear_dialog.cpp:1840
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "No se puede crear el perfil %s desde el perfil %s"
 
-#: gear_dialog.cpp:1846 profile_wizard.cpp:466
+#: gear_dialog.cpp:1847 profile_wizard.cpp:466
 #, c-format
 msgid "Could not create profile %s"
 msgstr "No se puede crear el perfil %s"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Borrar el perfil %s?"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 msgid "Delete Equipment Profile"
 msgstr "Borrar Perfil de Equipo"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 #, c-format
 msgid "Rename %s"
 msgstr "Renombrar %s"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 msgid "Rename Equipment Profile"
 msgstr "Renombrar perfil de Equipo"
 
-#: gear_dialog.cpp:1897
+#: gear_dialog.cpp:1898
 msgid "Could not rename profile"
 msgstr "No se puede renombrar el perfil"
 
-#: gear_dialog.cpp:1911
+#: gear_dialog.cpp:1912
 msgid "Import PHD Equipment Profiles"
 msgstr "Importar perfiles PHD de equipo"
 
-#: gear_dialog.cpp:1944
+#: gear_dialog.cpp:1945
 msgid "Export PHD Equipment Profile"
 msgstr "Exportar Perfil de Equipo PHD"
 
@@ -3668,7 +3656,7 @@ msgstr "&Marcadores"
 msgid "&Help"
 msgstr "&Ayuda"
 
-#: myframe.cpp:795 scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: myframe.cpp:795 scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Auto"
 msgstr "Auto"
 
@@ -4898,7 +4886,7 @@ msgstr "Falló la calibración de RA: La estrella no se movió lo suficiente"
 msgid "West step %3d"
 msgstr "Paso Oeste %3d"
 
-#: scope.cpp:1015 scope.cpp:1236
+#: scope.cpp:1015 scope.cpp:1244
 #, c-format
 msgid "angle=%.1f rate=%.3f"
 msgstr "ángulo=%.1f velocidad=%.3f"
@@ -4922,43 +4910,43 @@ msgid "Backlash Clearing Failed: star did not move enough"
 msgstr ""
 "Falló la compensación de Backslash: La estrella no se movió lo suficiente"
 
-#: scope.cpp:1200
+#: scope.cpp:1208
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "Falló la calibración de DEC: La estrella no se movió lo suficiente"
 
-#: scope.cpp:1207
+#: scope.cpp:1215
 #, c-format
 msgid "North step %3d"
 msgstr "Paso Norte %3d"
 
-#: scope.cpp:1272
+#: scope.cpp:1280
 #, c-format
 msgid "South step %3d"
 msgstr "Paso Sur %3d"
 
-#: scope.cpp:1326
+#: scope.cpp:1334
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Mover al Sur %3d"
 
-#: scope.cpp:1356
+#: scope.cpp:1364
 msgid "calibration complete"
 msgstr "calibración completa"
 
-#: scope.cpp:1371
+#: scope.cpp:1379
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1527
+#: scope.cpp:1535
 msgid "Mount Guide Algorithms"
 msgstr ""
 
-#: scope.cpp:1565
+#: scope.cpp:1573
 msgid "Calibration step (ms)"
 msgstr "Pasos de Calibración (ms)"
 
-#: scope.cpp:1566
+#: scope.cpp:1574
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -4966,11 +4954,11 @@ msgstr ""
 "Cómo debe usarse un pulso largo de guiado durante la calibración? Hacer "
 "click en \"Calcular\" para calcular un valor usable."
 
-#: scope.cpp:1570
+#: scope.cpp:1578
 msgid "Calculate..."
 msgstr "Calcular..."
 
-#: scope.cpp:1571
+#: scope.cpp:1579
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -4978,29 +4966,29 @@ msgstr ""
 "Haga click para abrir la Calculadora de Pasos de Calibración para obtener "
 "mejor eltamaño delos pasos de calibración"
 
-#: scope.cpp:1578
+#: scope.cpp:1586
 msgid "Reverse Dec output after meridian flip"
 msgstr "Dar la vuelta al valor de DEC después de un cambio de meridiano"
 
-#: scope.cpp:1580
+#: scope.cpp:1588
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 
-#: scope.cpp:1587
+#: scope.cpp:1595
 msgid "Stop guiding when mount slews"
 msgstr "Pararel guiado cuando la montura se desplaza"
 
-#: scope.cpp:1589
+#: scope.cpp:1597
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 "Cuando está seleccionado, PHD parará el guiado si la montura comienza a "
 "desplazarse"
 
-#: scope.cpp:1595
+#: scope.cpp:1603
 msgid "Assume Dec orthogonal to RA"
 msgstr "Asumir ortogonalidad de Dec frente a RA"
 
-#: scope.cpp:1598
+#: scope.cpp:1606
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -5010,71 +4998,71 @@ msgstr ""
 "Esto previene que el error periódico de RA afecte a la calibración de Dec. "
 "Esta opción tiene efecto cuando se calibra DEC."
 
-#: scope.cpp:1602
+#: scope.cpp:1610
 msgid "Use backlash comp"
 msgstr ""
 
-#: scope.cpp:1603
+#: scope.cpp:1611
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid "Amount"
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
 
-#: scope.cpp:1608
+#: scope.cpp:1616
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1610
+#: scope.cpp:1618
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Off"
 msgstr "Apagado"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Dec guide mode"
 msgstr "Modo de guiado en DEC"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1718
+#: scope.cpp:1726
 msgid "Mx RA"
 msgstr "RA Mx"
 
-#: scope.cpp:1724
+#: scope.cpp:1732
 msgid "Mx DEC"
 msgstr "DEC Mx"
 
@@ -5266,11 +5254,7 @@ msgstr ""
 msgid "AO Settings"
 msgstr "Configuración de Óptica Adaptativa"
 
-#: stepguider.cpp:1267
-msgid "Cal steps"
-msgstr ""
-
-#: stepguider.cpp:1267
+#: stepguider.cpp:1265
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -5280,11 +5264,11 @@ msgstr ""
 "incremetar en el caso de tubos cortos en f/l e incremente en tubos con "
 "relación focal más larga"
 
-#: stepguider.cpp:1272
-msgid "Samples to average"
+#: stepguider.cpp:1268
+msgid "Cal steps"
 msgstr ""
 
-#: stepguider.cpp:1272
+#: stepguider.cpp:1271
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -5294,8 +5278,8 @@ msgstr ""
 "media. Por defecto= %d, aumentar si hay mal seeing y si la escala de la "
 "imagen es pequeña"
 
-#: stepguider.cpp:1277
-msgid "Bump percentage"
+#: stepguider.cpp:1274
+msgid "Samples to average"
 msgstr ""
 
 #: stepguider.cpp:1277
@@ -5307,8 +5291,8 @@ msgstr ""
 "Qué porcentaje del recorrido de la OA puede realizarse antes de mover la "
 "montura. Por defecto = %d"
 
-#: stepguider.cpp:1282
-msgid "Bump steps"
+#: stepguider.cpp:1280
+msgid "Bump percentage"
 msgstr ""
 
 #: stepguider.cpp:1283
@@ -5321,31 +5305,35 @@ msgstr ""
 "OA). Por defecto= %.2f, disminuye si los movimientos causan picos en la "
 "gráfica"
 
-#: stepguider.cpp:1285
+#: stepguider.cpp:1286
+msgid "Bump steps"
+msgstr ""
+
+#: stepguider.cpp:1288
 msgid "Bump on dither"
 msgstr ""
 
-#: stepguider.cpp:1286
+#: stepguider.cpp:1289
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr ""
 "Mover la montura para devolver la AO al centro en cada movimiento de "
 "dithering"
 
-#: stepguider.cpp:1288
+#: stepguider.cpp:1291
 msgid "Clear AO calibration"
 msgstr ""
 
-#: stepguider.cpp:1291
+#: stepguider.cpp:1294
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: stepguider.cpp:1292
+#: stepguider.cpp:1295
 msgid "Enable AO corrections"
 msgstr ""
 
-#: stepguider.cpp:1294
+#: stepguider.cpp:1297
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -5518,6 +5506,35 @@ msgstr "Conectando con la Cámara..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "Conectando con el Rotador..."
+
+#~ msgid ""
+#~ "The RA and Declination angles computed in the calibration are "
+#~ "questionable.  Normally, these angles will be nearly perpendicular, "
+#~ "having an 'orthogonality error' of less than 10 degrees.  In this "
+#~ "calibration, your error was %s degrees. This could mean the calibration "
+#~ "is inaccurate, perhaps because of small or erratic star movement during "
+#~ "the calibration."
+#~ msgstr ""
+#~ "Los ángulos calculados de RA y Declinación en la calibración son poco "
+#~ "precisos. Normalmente, estos ángulos serán casi perpendiculares, teniendo "
+#~ "un 'error de ortogonalidad' de menos de 10 grados. En esta calibración, "
+#~ "su error fue de %s grados. Esto puede indicar que la calibración no es "
+#~ "precisa, quizás pueda deberse a pequeños o erráticos movimientos de la "
+#~ "estrella durante la calibración."
+
+#~ msgid ""
+#~ "The RA and Declination guiding rates differ by an unexpected amount.  For "
+#~ "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
+#~ "the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could "
+#~ "mean the calibration is inaccurate, perhaps because of small or erratic "
+#~ "star movement during the calibration."
+#~ msgstr ""
+#~ "Las velocidades de guiado de RA y Declinación difieren de forma "
+#~ "inesperada. Para su declinación de %0.0f grados, la velocidad de RA "
+#~ "debería ser de unos %0.0f%% la velocidad de Dec. Pero su velocidad de RA "
+#~ "es  %0.0f%% la velocidad de Dec. Eso puede indicar poca precisión en la "
+#~ "calibración, quizás debido a pequeños o erráticos errores en el "
+#~ "movimiento de la estrella durante la calibración."
 
 #~ msgid ""
 #~ "Maximum drift rate in right ascension during sampling period; may be "

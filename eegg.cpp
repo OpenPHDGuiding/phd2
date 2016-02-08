@@ -78,10 +78,11 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             cal.yRate  = pMount->yRate();
             cal.xAngle = pMount->xAngle();
             cal.yAngle = pMount->yAngle();
-            cal.declination = pPointingSource->GetGuidingDeclination();
+            cal.declination = pPointingSource->GetDeclination();
             cal.pierSide = pPointingSource->SideOfPier();
             cal.rotatorAngle = Rotator::RotatorPosition();
             cal.binning = pCamera->Binning;
+            cal.isValid = true;
 
             if (!pMount->IsCalibrated())
             {
@@ -89,7 +90,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                 cal.yRate       = 1.0;
                 cal.xAngle      = 0.0;
                 cal.yAngle      = M_PI / 2.;
-                cal.declination = 0.0;
+                cal.declination = UNKNOWN_DECLINATION;
             }
 
             ManualCalDialog manualcal(cal);

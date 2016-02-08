@@ -360,36 +360,40 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         if (pPointingSource)
         {
             double ra, dec, st;
-            pPointingSource->GetCoordinates(&ra, &dec, &st);
-            hdr.write("RA", (float) (ra * 360.0 / 24.0), "Object Right Ascension in degrees");
-            hdr.write("DEC", (float) dec, "Object Declination in degrees");
-
+            bool err = pPointingSource->GetCoordinates(&ra, &dec, &st);
+            if (!err)
             {
-                int h = (int) ra;
-                ra -= h;
-                ra *= 60.0;
-                int m = (int) ra;
-                ra -= m;
-                ra *= 60.0;
-                hdr.write("OBJCTRA", wxString::Format("%02d %02d %06.3f", h, m, ra).c_str(), "Object Right Ascension in hms");
-            }
+                hdr.write("RA", (float) (ra * 360.0 / 24.0), "Object Right Ascension in degrees");
+                hdr.write("DEC", (float) dec, "Object Declination in degrees");
 
-            {
-                int sign = dec < 0.0 ? -1 : +1;
-                dec *= sign;
-                int d = (int) dec;
-                dec -= d;
-                dec *= 60.0;
-                int m = (int) dec;
-                dec -= m;
-                dec *= 60.0;
-                hdr.write("OBJCTDEC", wxString::Format("%c%d %02d %06.3f", sign < 0 ? '-' : '+', d, m, dec).c_str(), "Object Declination in dms");
+                {
+                    int h = (int) ra;
+                    ra -= h;
+                    ra *= 60.0;
+                    int m = (int) ra;
+                    ra -= m;
+                    ra *= 60.0;
+                    hdr.write("OBJCTRA", wxString::Format("%02d %02d %06.3f", h, m, ra).c_str(), "Object Right Ascension in hms");
+                }
+
+                {
+                    int sign = dec < 0.0 ? -1 : +1;
+                    dec *= sign;
+                    int d = (int) dec;
+                    dec -= d;
+                    dec *= 60.0;
+                    int m = (int) dec;
+                    dec -= m;
+                    dec *= 60.0;
+                    hdr.write("OBJCTDEC", wxString::Format("%c%d %02d %06.3f", sign < 0 ? '-' : '+', d, m, dec).c_str(), "Object Declination in dms");
+                }
             }
         }
 
         float sc = (float) pFrame->GetCameraPixelScale();
         hdr.write("SCALE", sc, "Image scale (arcsec / pixel)");
         hdr.write("PIXSCALE", sc, "Image scale (arcsec / pixel)");
+        hdr.write("PEDESTAL", (unsigned int) Pedestal, "dark subtraction bias value");
 
         fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
 
@@ -397,7 +401,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
         bError = status ? true : false;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -473,7 +477,7 @@ bool usImage::Load(const wxString& fname)
             throw ERROR_INFO("error opening file");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

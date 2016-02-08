@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 02:59-0500\n"
+"POT-Creation-Date: 2016-01-26 20:02-0500\n"
 "PO-Revision-Date: 2015-08-27 22:56+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
@@ -55,7 +55,7 @@ msgstr "全体"
 
 #: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1432
 #: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
-#: gear_dialog.cpp:999 myframe.cpp:849
+#: gear_dialog.cpp:1000 myframe.cpp:849
 msgid "Camera"
 msgstr "カメラ"
 
@@ -73,7 +73,7 @@ msgstr ""
 
 #: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1443
 #: config_INDI.cpp:107 eegg.cpp:112 gear_dialog.cpp:251 gear_dialog.cpp:253
-#: gear_dialog.cpp:1177 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
+#: gear_dialog.cpp:1178 myframe.cpp:850 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "マウント"
 
@@ -93,13 +93,13 @@ msgstr ""
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:206 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "North"
 msgstr "North"
 
-#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1622 scope.cpp:1726
-#: scope.cpp:1760 testguide.cpp:152
+#: backlash_comp.cpp:207 mount.cpp:778 scope.cpp:1630 scope.cpp:1734
+#: scope.cpp:1768 testguide.cpp:152
 msgid "South"
 msgstr "South"
 
@@ -317,13 +317,9 @@ msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
 "Normally, these angles will be nearly perpendicular, having an "
 "'orthogonality error' of less than 10 degrees.  In this calibration, your "
-"error was %s degrees. This could mean the calibration is inaccurate, perhaps "
-"because of small or erratic star movement during the calibration."
+"error was %s degrees, which is often caused by poor polar alignment or a "
+"large periodic error in RA."
 msgstr ""
-"キャリブレーションで計算された赤経と赤緯の角度は疑わしいです。通常これらはほ"
-"ぼ直交し、誤差は10度未満です。今回のキャリブレーションにおいて、エラーは、%s "
-"度でした。 これはキャリブレーションが不正確なことを意味します。おそらくキャリ"
-"ブレーションの間、星の動きが小さいか、不規則だったためです。"
 
 #: calreview_dialog.cpp:594
 #, c-format
@@ -343,15 +339,10 @@ msgstr ""
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
 "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
-"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could mean "
-"the calibration is inaccurate, perhaps because of small or erratic star "
-"movement during the calibration."
+"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This often "
+"means one of the axis calibrations is inaccurate, which may result in poor "
+"guiding."
 msgstr ""
-"赤経と赤緯のガイディングレートが想定以上に異なります。赤緯 %0.0f 度では、赤経"
-"レートは赤緯レートのおよそ %0.0f%% でなければなりません。しかし、赤経レートは"
-"赤緯レートの %0.0f%% です。これはキャリブレーションが不正確なことを意味しま"
-"す。おそらくキャリブレーションの間、星の動きが小さいか、不規則だったためで"
-"す。"
 
 #: calreview_dialog.cpp:641
 msgid "Explanation"
@@ -545,10 +536,10 @@ msgstr "設定"
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
 #: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:257 cam_wdm.cpp:132 cam_wdm.cpp:141
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:178
-#: cam_ZWO.cpp:193 cam_ZWO.cpp:208 cam_ZWO.cpp:214 cam_ZWO.cpp:255
-#: gear_dialog.cpp:1172 gear_dialog.cpp:1830 gear_dialog.cpp:1839
-#: gear_dialog.cpp:1846 gear_dialog.cpp:1891 gear_dialog.cpp:1897
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:254
+#: gear_dialog.cpp:1173 gear_dialog.cpp:1831 gear_dialog.cpp:1840
+#: gear_dialog.cpp:1847 gear_dialog.cpp:1892 gear_dialog.cpp:1898
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
 #: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
 #: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
@@ -1170,11 +1161,11 @@ msgstr ""
 "パッケージ(x86)が http://www.microsoft.com/en-us/soft.com/en-us/から入手可能"
 "です。"
 
-#: cam_ZWO.cpp:208 cam_ZWO.cpp:255
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:254
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "ZWO ASIカメラのプロパティ取得に失敗"
 
-#: cam_ZWO.cpp:214
+#: cam_ZWO.cpp:213
 msgid "Failed to open ZWO ASI Camera."
 msgstr "ZWO ASIカメラのオープンに失敗"
 
@@ -1196,8 +1187,8 @@ msgstr "ダークライブラリをもつプロファイルを選んでくださ
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:222
 #: camera.cpp:363 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
-#: gear_dialog.cpp:937 gear_dialog.cpp:1591 gear_dialog.cpp:1592
-#: gear_dialog.cpp:1593 mount.cpp:113 mount.cpp:142 mount.cpp:612
+#: gear_dialog.cpp:937 gear_dialog.cpp:1592 gear_dialog.cpp:1593
+#: gear_dialog.cpp:1594 mount.cpp:113 mount.cpp:142 mount.cpp:612
 #: myframe.cpp:2291 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
 #: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:267
@@ -2179,115 +2170,115 @@ msgstr "カメラ変更の警告"
 msgid "Connecting to Camera ..."
 msgstr "カメラと接続中..."
 
-#: gear_dialog.cpp:998
+#: gear_dialog.cpp:999
 msgid "Camera Connected"
 msgstr "カメラと接続"
 
-#: gear_dialog.cpp:1005
+#: gear_dialog.cpp:1006
 msgid "Camera Connect Failed"
 msgstr "カメラとの接続失敗"
 
-#: gear_dialog.cpp:1046
+#: gear_dialog.cpp:1047
 msgid "Camera Disconnected"
 msgstr "カメラとの接続断"
 
-#: gear_dialog.cpp:1162
+#: gear_dialog.cpp:1163
 msgid "Connecting to Mount ..."
 msgstr "マウントと接続中..."
 
-#: gear_dialog.cpp:1172
+#: gear_dialog.cpp:1173
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "マウントがPulseGuideインターフェースをサポートしていません。"
 
-#: gear_dialog.cpp:1176
+#: gear_dialog.cpp:1177
 msgid "Mount Connected"
 msgstr "マウントと接続"
 
-#: gear_dialog.cpp:1189
+#: gear_dialog.cpp:1190
 msgid "Mount Connect Failed"
 msgstr "マウントとの接続失敗"
 
-#: gear_dialog.cpp:1208
+#: gear_dialog.cpp:1209
 msgid "Connecting to Aux Mount ..."
 msgstr "Auxマウントと接続中..."
 
-#: gear_dialog.cpp:1215
+#: gear_dialog.cpp:1216
 msgid "Aux Mount Connected"
 msgstr "Auxマウントと接続"
 
-#: gear_dialog.cpp:1223
+#: gear_dialog.cpp:1224
 msgid "Aux Mount Connect Failed"
 msgstr "Auxマウントとの接続失敗"
 
-#: gear_dialog.cpp:1244
+#: gear_dialog.cpp:1245
 msgid "Mount Disconnected"
 msgstr "マウントとの接続断"
 
-#: gear_dialog.cpp:1275
+#: gear_dialog.cpp:1276
 msgid "Aux Mount Disconnected"
 msgstr "Auxマウントとの接続断"
 
-#: gear_dialog.cpp:1291
+#: gear_dialog.cpp:1292
 msgid "Hide"
 msgstr ""
 
-#: gear_dialog.cpp:1297
+#: gear_dialog.cpp:1298
 msgid "More Equipment ..."
 msgstr "追加の機器 ..."
 
-#: gear_dialog.cpp:1357
+#: gear_dialog.cpp:1358
 msgid "Connecting to AO ..."
 msgstr "AOと接続中..."
 
-#: gear_dialog.cpp:1367
+#: gear_dialog.cpp:1368
 msgid "AO Connected"
 msgstr "AOと接続"
 
-#: gear_dialog.cpp:1380
+#: gear_dialog.cpp:1381
 msgid "AO Connect Failed"
 msgstr "AOとの接続失敗"
 
-#: gear_dialog.cpp:1407
+#: gear_dialog.cpp:1408
 msgid "AO Disconnected"
 msgstr "AOとの接続断"
 
-#: gear_dialog.cpp:1471
+#: gear_dialog.cpp:1472
 msgid "Connecting to Rotator ..."
 msgstr "ローテータと接続中..."
 
-#: gear_dialog.cpp:1481
+#: gear_dialog.cpp:1482
 msgid "Rotator Connected"
 msgstr "ローテータと接続"
 
-#: gear_dialog.cpp:1494
+#: gear_dialog.cpp:1495
 msgid "Rotator Connect Failed"
 msgstr "ローテータとの接続失敗"
 
-#: gear_dialog.cpp:1516
+#: gear_dialog.cpp:1517
 msgid "Rotator Disconnected"
 msgstr "ローテータとの接続断"
 
-#: gear_dialog.cpp:1785
+#: gear_dialog.cpp:1786
 msgid "New Equipment Profile"
 msgstr "新しい機器プロファイル"
 
-#: gear_dialog.cpp:1792
+#: gear_dialog.cpp:1793
 msgid "Name"
 msgstr "名前"
 
-#: gear_dialog.cpp:1796
+#: gear_dialog.cpp:1797
 msgid "Enter the name of the new equipment profile"
 msgstr "新しい機器プロファイルの名前を入力"
 
-#: gear_dialog.cpp:1800
+#: gear_dialog.cpp:1801
 msgid "PHD Defaults"
 msgstr "PHDデフォルト"
 
-#: gear_dialog.cpp:1803
+#: gear_dialog.cpp:1804
 msgid "Profile initial settings"
 msgstr "プロファイルの初期設定"
 
-#: gear_dialog.cpp:1806
+#: gear_dialog.cpp:1807
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2295,49 +2286,49 @@ msgstr ""
 "デフォルト設定のプロファイルを作成するためにPHDデフォルトを選択します。あるい"
 "は新規プロファイルに設定をコピーするために既存プロファイルを選択します。"
 
-#: gear_dialog.cpp:1830
+#: gear_dialog.cpp:1831
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr ""
 "プロファイル %sを作成できません。同じ名称のプロファイルがすでにあります。"
 
-#: gear_dialog.cpp:1839
+#: gear_dialog.cpp:1840
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "プロファイル %s からプロファイル %sを作成できません。"
 
-#: gear_dialog.cpp:1846 profile_wizard.cpp:466
+#: gear_dialog.cpp:1847 profile_wizard.cpp:466
 #, c-format
 msgid "Could not create profile %s"
 msgstr "プロファイル %sを作成できません。"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 #, c-format
 msgid "Delete profile %s?"
 msgstr "プロファイル %s を削除しますか？"
 
-#: gear_dialog.cpp:1862
+#: gear_dialog.cpp:1863
 msgid "Delete Equipment Profile"
 msgstr "機器プロファイルの削除"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 #, c-format
 msgid "Rename %s"
 msgstr "名称変更 %s"
 
-#: gear_dialog.cpp:1881
+#: gear_dialog.cpp:1882
 msgid "Rename Equipment Profile"
 msgstr "機器プロファイル名の変更"
 
-#: gear_dialog.cpp:1897
+#: gear_dialog.cpp:1898
 msgid "Could not rename profile"
 msgstr "プロファイル名を変更できません。"
 
-#: gear_dialog.cpp:1911
+#: gear_dialog.cpp:1912
 msgid "Import PHD Equipment Profiles"
 msgstr "PHD機器プロファイルの取込み"
 
-#: gear_dialog.cpp:1944
+#: gear_dialog.cpp:1945
 msgid "Export PHD Equipment Profile"
 msgstr "PHD機器プロファイルの書出し"
 
@@ -3630,7 +3621,7 @@ msgstr "&ブックマーク"
 msgid "&Help"
 msgstr "&ヘルプ"
 
-#: myframe.cpp:795 scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: myframe.cpp:795 scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Auto"
 msgstr "Auto"
 
@@ -4838,7 +4829,7 @@ msgstr "赤経(RA)キャリブレーション失敗: ガイド星が十分に動
 msgid "West step %3d"
 msgstr "West step %3d"
 
-#: scope.cpp:1015 scope.cpp:1236
+#: scope.cpp:1015 scope.cpp:1244
 #, fuzzy, c-format
 msgid "angle=%.1f rate=%.3f"
 msgstr "angle=%.1f rate=%.4f"
@@ -4861,43 +4852,43 @@ msgstr ""
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "バックラッシュクリア失敗: ガイド星が十分に動きません"
 
-#: scope.cpp:1200
+#: scope.cpp:1208
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤緯(DEC)キャリブレーション失敗: ガイド星が十分に動きません"
 
-#: scope.cpp:1207
+#: scope.cpp:1215
 #, c-format
 msgid "North step %3d"
 msgstr "North step %3d"
 
-#: scope.cpp:1272
+#: scope.cpp:1280
 #, c-format
 msgid "South step %3d"
 msgstr "South step %3d"
 
-#: scope.cpp:1326
+#: scope.cpp:1334
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Nudge South %3d"
 
-#: scope.cpp:1356
+#: scope.cpp:1364
 msgid "calibration complete"
 msgstr "キャリブレーション終了"
 
-#: scope.cpp:1371
+#: scope.cpp:1379
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1527
+#: scope.cpp:1535
 msgid "Mount Guide Algorithms"
 msgstr ""
 
-#: scope.cpp:1565
+#: scope.cpp:1573
 msgid "Calibration step (ms)"
 msgstr "キャリブレーションステップ(ms)"
 
-#: scope.cpp:1566
+#: scope.cpp:1574
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -4905,11 +4896,11 @@ msgstr ""
 "キャリブレーション時のガイドパルスの長さ \n"
 "[計算]をクリックすると最適値を計算します。"
 
-#: scope.cpp:1570
+#: scope.cpp:1578
 msgid "Calculate..."
 msgstr "計算..."
 
-#: scope.cpp:1571
+#: scope.cpp:1579
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -4917,27 +4908,27 @@ msgstr ""
 "適切なキャリブレーションステップサイズを見つけるのを支援する計算機能です。 ク"
 "リックして起動します。"
 
-#: scope.cpp:1578
+#: scope.cpp:1586
 msgid "Reverse Dec output after meridian flip"
 msgstr "子午線を超えたら赤緯(Dec)出力を逆転する"
 
-#: scope.cpp:1580
+#: scope.cpp:1588
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 
-#: scope.cpp:1587
+#: scope.cpp:1595
 msgid "Stop guiding when mount slews"
 msgstr "マウントが旋回したらガイド停止"
 
-#: scope.cpp:1589
+#: scope.cpp:1597
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "マウントが旋回を開始したらPHDはガイドを停止します。"
 
-#: scope.cpp:1595
+#: scope.cpp:1603
 msgid "Assume Dec orthogonal to RA"
 msgstr "赤経と赤緯が直交すると仮定"
 
-#: scope.cpp:1598
+#: scope.cpp:1606
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -4947,71 +4938,71 @@ msgstr ""
 "定します。これにより赤経のピリオデックエラーが赤緯のキャリブレーションに影響"
 "することを防止します。赤緯のキャリブレート時に効果が表れます。"
 
-#: scope.cpp:1602
+#: scope.cpp:1610
 msgid "Use backlash comp"
 msgstr ""
 
-#: scope.cpp:1603
+#: scope.cpp:1611
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid "Amount"
 msgstr ""
 
-#: scope.cpp:1606
+#: scope.cpp:1614
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
 
-#: scope.cpp:1608
+#: scope.cpp:1616
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1610
+#: scope.cpp:1618
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1615
+#: scope.cpp:1623
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1619
+#: scope.cpp:1627
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1622 scope.cpp:1726 scope.cpp:1760
+#: scope.cpp:1630 scope.cpp:1734 scope.cpp:1768
 msgid "Off"
 msgstr "Off"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Dec guide mode"
 msgstr "赤緯(Dec)ガイドモード"
 
-#: scope.cpp:1627
+#: scope.cpp:1635
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1718
+#: scope.cpp:1726
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1724
+#: scope.cpp:1732
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -5197,11 +5188,7 @@ msgstr ""
 msgid "AO Settings"
 msgstr "AO 設定"
 
-#: stepguider.cpp:1267
-msgid "Cal steps"
-msgstr ""
-
-#: stepguider.cpp:1267
+#: stepguider.cpp:1265
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -5210,11 +5197,11 @@ msgstr ""
 "キャリブレーションサイクル当たり何ステップ送信するか。デフォルト= %d　焦点距"
 "離が短い場合は増加、長い場合は減少させます。"
 
-#: stepguider.cpp:1272
-msgid "Samples to average"
+#: stepguider.cpp:1268
+msgid "Cal steps"
 msgstr ""
 
-#: stepguider.cpp:1272
+#: stepguider.cpp:1271
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -5224,8 +5211,8 @@ msgstr ""
 "ングが良くない時や画像スケールが小さい（＝拡大率が大きい）場合、増加させま"
 "す。"
 
-#: stepguider.cpp:1277
-msgid "Bump percentage"
+#: stepguider.cpp:1274
+msgid "Samples to average"
 msgstr ""
 
 #: stepguider.cpp:1277
@@ -5236,8 +5223,8 @@ msgid ""
 msgstr ""
 "マウントがbumpし始めるまでの、AOの移動範囲率を設定します。デフォルト= %d"
 
-#: stepguider.cpp:1282
-msgid "Bump steps"
+#: stepguider.cpp:1280
+msgid "Bump percentage"
 msgstr ""
 
 #: stepguider.cpp:1283
@@ -5249,29 +5236,33 @@ msgstr ""
 "AOの動作ステップの間に、bumpによりどの程度マウントが動くかを設定します。デ"
 "フォルト= %.2f　bumpがグラフ上でスパイクを引き起こすならば減少させます。"
 
-#: stepguider.cpp:1285
+#: stepguider.cpp:1286
+msgid "Bump steps"
+msgstr ""
+
+#: stepguider.cpp:1288
 msgid "Bump on dither"
 msgstr ""
 
-#: stepguider.cpp:1286
+#: stepguider.cpp:1289
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr "ディザリング時に、AOを中心に戻すのにマウントのbump動作を用います。"
 
-#: stepguider.cpp:1288
+#: stepguider.cpp:1291
 msgid "Clear AO calibration"
 msgstr ""
 
-#: stepguider.cpp:1291
+#: stepguider.cpp:1294
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: stepguider.cpp:1292
+#: stepguider.cpp:1295
 msgid "Enable AO corrections"
 msgstr ""
 
-#: stepguider.cpp:1294
+#: stepguider.cpp:1297
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -5445,6 +5436,32 @@ msgstr "カメラと接続中..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "ローテータと接続中..."
+
+#~ msgid ""
+#~ "The RA and Declination angles computed in the calibration are "
+#~ "questionable.  Normally, these angles will be nearly perpendicular, "
+#~ "having an 'orthogonality error' of less than 10 degrees.  In this "
+#~ "calibration, your error was %s degrees. This could mean the calibration "
+#~ "is inaccurate, perhaps because of small or erratic star movement during "
+#~ "the calibration."
+#~ msgstr ""
+#~ "キャリブレーションで計算された赤経と赤緯の角度は疑わしいです。通常これらは"
+#~ "ほぼ直交し、誤差は10度未満です。今回のキャリブレーションにおいて、エラー"
+#~ "は、%s 度でした。 これはキャリブレーションが不正確なことを意味します。おそ"
+#~ "らくキャリブレーションの間、星の動きが小さいか、不規則だったためです。"
+
+#~ msgid ""
+#~ "The RA and Declination guiding rates differ by an unexpected amount.  For "
+#~ "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
+#~ "the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could "
+#~ "mean the calibration is inaccurate, perhaps because of small or erratic "
+#~ "star movement during the calibration."
+#~ msgstr ""
+#~ "赤経と赤緯のガイディングレートが想定以上に異なります。赤緯 %0.0f 度では、"
+#~ "赤経レートは赤緯レートのおよそ %0.0f%% でなければなりません。しかし、赤経"
+#~ "レートは赤緯レートの %0.0f%% です。これはキャリブレーションが不正確なこと"
+#~ "を意味します。おそらくキャリブレーションの間、星の動きが小さいか、不規則"
+#~ "だったためです。"
 
 #~ msgid ""
 #~ "Maximum drift rate in right ascension during sampling period; may be "

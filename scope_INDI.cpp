@@ -424,20 +424,18 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
   else return MOVE_ERROR;
 }
 
-double ScopeINDI::GetGuidingDeclination(void)
+double ScopeINDI::GetDeclination(void)
 {
-    double dec;
-    dec = 0;
     if (coord_prop) {
-	INumber *decprop = IUFindNumber(coord_prop,"DEC");
-	if (decprop) {
-	    dec = decprop->value;     // Degrees
-	    if (dec>89) dec = 89;     // avoid crash when dividing by cos(dec) 
-	    if (dec<-89) dec = -89; 
-	    dec = dec * M_PI / 180;  // Radians
-	}
+        INumber *decprop = IUFindNumber(coord_prop,"DEC");
+        if (decprop) {
+            double dec = decprop->value;     // Degrees
+	        if (dec > 89.0) dec = 89.0;     // avoid crash when dividing by cos(dec) 
+            if (dec < -89.0) dec = -89.0; 
+            return radians(dec);
+        }
     }
-    return dec;
+    return UNKNOWN_DECLINATION;
 }
 
 bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)

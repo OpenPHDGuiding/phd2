@@ -793,11 +793,11 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 tmpMdc.SelectObject(SubBmp);
                 memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
                 memDC.DrawLine(0, LockY * m_scaleFactor, XWinSize, LockY * m_scaleFactor);
-                memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+                memDC.DrawLine(LockX * m_scaleFactor, 0, LockX * m_scaleFactor, YWinSize);
     #ifdef __APPLEX__
                 tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
     #else
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X * m_scaleFactor) - 30,ROUND(m_star.Y * m_scaleFactor) - 30,wxCOPY,false);
     #endif
                 //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
 
