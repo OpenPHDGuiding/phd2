@@ -35,11 +35,14 @@
 
 #include "phd.h"
 #include "aui_controls.h"
+
+#include <algorithm>
+
 //#define ICON_DEV
 #ifndef ICON_DEV
-#include "icons/SB_led_green.png.h"
-#include "icons/SB_led_yellow.png.h"
-#include "icons/SB_led_red.png.h"
+#include "icons/sb_led_green.png.h"
+#include "icons/sb_led_yellow.png.h"
+#include "icons/sb_led_red.png.h"
 #include "icons/sb_arrow_left_16.png.h"
 #include "icons/sb_arrow_right_16.png.h"
 #include "icons/sb_arrow_up_16.png.h"
