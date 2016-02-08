@@ -1183,14 +1183,20 @@ void MyFrame::DoTryReconnect()
  *
  */
 
+void MyFrame::SetStatusbarTimer()
+{
+    const int DISPLAY_MS = 10000;
+    m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
+}
+
 void MyFrame::SetStatusText(const wxString& text, int number)
 {
     Debug.Write(wxString::Format("Status Line %d: %s\n", number, text));
 
     if (wxThread::IsMain() && number != 1)
     {
-        //wxFrame::SetStatusText(text, number);
         m_statusbar->SetStatusText(text, number);
+        SetStatusbarTimer();
     }
     else
     {
@@ -1206,19 +1212,8 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
     int pane = event.GetInt();
     wxString msg(event.GetString());
 
-    if (pane == 1)
-    {
-        // display message for 2.5s, or until the next message is displayed
-        const int DISPLAY_MS = 2500;
-        //wxFrame::SetStatusText(msg, pane);
-        m_statusbar->SetStatusText(msg, pane);
-        m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
-    }
-    else
-    {
-        //wxFrame::SetStatusText(msg, pane);
-        m_statusbar->SetStatusText(msg, pane);
-    }
+    m_statusbar->SetStatusText(msg, pane);
+    SetStatusbarTimer();
 }
 
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
@@ -1337,6 +1332,13 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
     //m_statusbar->SetStatusText(wxEmptyString, 1);
+    if (pGuider->IsGuiding())
+        m_statusbar->SetStatusText(_("Guiding"));
+    else
+    if (CaptureActive)
+        m_statusbar->SetStatusText(_("Looping"));
+    else
+        m_statusbar->SetStatusText(wxEmptyString);
 }
 
 void MyFrame::ScheduleExposure(void)

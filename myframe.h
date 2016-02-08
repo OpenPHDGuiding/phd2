@@ -440,6 +440,7 @@ private:
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
     void FinishStop(void);
     void DoTryReconnect(void);
+    void SetStatusbarTimer();
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()

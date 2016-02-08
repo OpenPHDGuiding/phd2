@@ -414,8 +414,6 @@ set(phd2_SRC
   ${phd_src_dir}/optionsbutton.cpp
   ${phd_src_dir}/optionsbutton.h
   ${phd_src_dir}/PHD-Info.plist
-  ${phd_src_dir}/aui_controls.cpp
-  ${phd_src_dir}/aui_controls.h
   ${phd_src_dir}/phd.cpp
   ${phd_src_dir}/phd.h
   ${phd_src_dir}/PHD2GuideHelp.zip
