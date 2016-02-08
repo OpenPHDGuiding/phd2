@@ -460,7 +460,7 @@ void SBStateIndicatorItem::UpdateState()
         }
         break;
     }
-    // Don't flog the status bar unless something has changed
+    // Don't flog the status icons unless something has changed
     if (lastState != quadState)
     {
         if (type != Field_Gear)
