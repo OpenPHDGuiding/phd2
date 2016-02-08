@@ -101,6 +101,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PATHSEPSTR _T("/")
 #endif
 
+#define DEGREES_SYMBOL "\u00B0"
+
 //#define TEST_TRANSFORMS
 
 #define ROUND(x) (int) floor((x) + 0.5)

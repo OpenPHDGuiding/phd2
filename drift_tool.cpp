@@ -173,11 +173,11 @@ DriftToolWin::DriftToolWin()
 
     wxStaticText *txt;
 
-    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Declination (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Declination (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL, 5);
 

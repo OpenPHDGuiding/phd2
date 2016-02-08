@@ -227,7 +227,7 @@ void StatsWindow::UpdateScopePointing()
 
         m_grid2->BeginBatch();
         int row = 4, col = 1;
-        m_grid2->SetCellValue(Mount::DeclinationStr(declination, "% .1f deg"), row++, col);
+        m_grid2->SetCellValue(Mount::DeclinationStr(declination, "% .1f" DEGREES_SYMBOL), row++, col);
         m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
         m_grid2->SetCellValue(RotatorPosStr(), row++, col);
         m_grid2->SetCellValue(wxString::Format("%hu", pCamera->Binning), row++, col);
