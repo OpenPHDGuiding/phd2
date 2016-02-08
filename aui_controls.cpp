@@ -66,15 +66,18 @@ wxEND_EVENT_TABLE()
 // ----------------------------------------------------------------------------
 // SBPanel - parent control is the parent for all the status bar items
 //
-SBPanel::SBPanel(wxStatusBar* parent, wxSize panelSize)
-: wxPanel(parent, wxID_ANY, wxDefaultPosition, panelSize)
+SBPanel::SBPanel(wxStatusBar* parent, const wxSize& panelSize)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, panelSize)
 {
     int txtHeight;
 
     fieldOffsets.reserve(12);
     parent->GetTextExtent("M", &emWidth, &txtHeight);       // Horizontal spacer used by various controls
     SetBackgroundStyle(wxBG_STYLE_PAINT);
+
+#ifndef __APPLE__
     SetDoubleBuffered(true);
+#endif
 }
 
 void SBPanel::OnPaint(wxPaintEvent& evt)
@@ -89,7 +92,7 @@ void SBPanel::OnPaint(wxPaintEvent& evt)
 
     dc.SetPen(pen);
     // Draw vertical white lines slightly in front of each field
-    for (std::vector<int>::iterator it = fieldOffsets.begin() + 1; it != fieldOffsets.end(); it++)
+    for (auto it = fieldOffsets.begin() + 1; it != fieldOffsets.end(); it++)
     {
         x = panelSize.x - *it - 4;
         dc.DrawLine(wxPoint(x, 0), wxPoint(x, panelSize.y));
@@ -100,11 +103,11 @@ void SBPanel::OnPaint(wxPaintEvent& evt)
 }
 
 // We want a vector with the integer offset of each field relative to the righthand end of the panel
-void SBPanel::BuildFieldOffsets(std::vector <int> &fldWidths)
+void SBPanel::BuildFieldOffsets(const std::vector<int>& fldWidths)
 {
     int cum = 0;
     // Add up field widths starting at right end of panel
-    for (std::vector<int>::reverse_iterator it = fldWidths.rbegin(); it != fldWidths.rend(); it++)
+    for (auto it = fldWidths.rbegin(); it != fldWidths.rend(); it++)
     {
         cum += *it;
         fieldOffsets.push_back(cum);
@@ -138,7 +141,6 @@ SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths)
     panel->GetTextExtent(_("SAT"), &satWidth, &txtHeight);
     fldWidths.push_back(satWidth + 1 * panel->emWidth);
     fldWidths.push_back(snrLabelWidth + snrValueWidth + 2 * panel->emWidth);
-
 
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
     txtSaturated = new wxStaticText(panel, wxID_ANY, satStr, wxDefaultPosition, wxSize(satWidth, -1));
@@ -338,7 +340,7 @@ void SBStateIndicatorItem::PositionControl()
     if (type == Field_Gear)
     {
         loc = parentPanel->FieldLoc(fieldId);
-        pic->SetPosition(wxPoint(loc.x, loc.y - 1));
+        pic->SetPosition(wxPoint(loc.x + 7, loc.y));
     }
     else
         ctrl->SetPosition(parentPanel->FieldLoc(fieldId));
@@ -357,7 +359,9 @@ void SBStateIndicatorItem::UpdateState()
     {
     case Field_Gear:
         if (pCamera && pCamera->Connected)
+        {
             partials = true;
+        }
         else
         {
             MIAs += _("Camera, ");
@@ -365,7 +369,7 @@ void SBStateIndicatorItem::UpdateState()
             problems = true;
         }
 
-        if ((pMount && pMount->IsConnected()) || pSecondaryMount && pSecondaryMount->IsConnected())
+        if ((pMount && pMount->IsConnected()) || (pSecondaryMount && pSecondaryMount->IsConnected()))
             partials = true;
         else
         {
@@ -448,18 +452,22 @@ void SBStateIndicatorItem::UpdateState()
 
         break;
 
-    case Field_Calib:
+    case Field_Calib: {
         // For calib: -1 => no cal, 0 => cal but no pointing compensation, 1 => golden
-        bool uncal = (pMount && !pMount->IsCalibrated()) || (pSecondaryMount && !pSecondaryMount->IsCalibrated());
-        if (!uncal)
+        bool calibrated = (!pMount || pMount->IsCalibrated()) && (!pSecondaryMount || pSecondaryMount->IsCalibrated());
+        if (calibrated)
         {
-            if (pPointingSource && pPointingSource->IsConnected() && ((pMount && pMount->DecCompensationEnabled()) || (pSecondaryMount && pSecondaryMount->DecCompensationEnabled())))
-                quadState = 1;
-            else
-                quadState = 0;
+            Scope *scope = TheScope();
+            bool deccomp = scope && scope->DecCompensationActive();
+            quadState = deccomp ? 1 : 0;
         }
         break;
+      }
+
+    default:
+        break;
     }
+
     // Don't flog the status icons unless something has changed
     if (lastState != quadState)
     {
@@ -486,14 +494,12 @@ void SBStateIndicatorItem::UpdateState()
             if (quadState != -2)
                 ctrl->SetToolTip(IndicatorToolTip(type, quadState));
         }
-        else
-        if (quadState != -2)
+        else if (quadState != -2)
         {
             pic->SetToolTip(IndicatorToolTip(type, quadState));
         }
 
         lastState = quadState;
-
     }
 }
 
@@ -533,8 +539,10 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
             rslt += _("Completed, scope pointing info in-use");
             break;
         }
-
+    default:
+        break;
     }
+
     return rslt;
 }
 
@@ -574,7 +582,7 @@ SBStateIndicators::~SBStateIndicators()
 
 void SBStateIndicators::PositionControls()
 {
-    for (std::vector<SBStateIndicatorItem*>::iterator it = stateItems.begin(); it != stateItems.end(); it++)
+    for (auto it = stateItems.begin(); it != stateItems.end(); it++)
     {
         (*it)->PositionControl();
     }
@@ -582,26 +590,23 @@ void SBStateIndicators::PositionControls()
 
 void SBStateIndicators::UpdateState()
 {
-    for (std::vector<SBStateIndicatorItem*>::iterator it = stateItems.begin(); it != stateItems.end(); it++)
+    for (auto it = stateItems.begin(); it != stateItems.end(); it++)
     {
         (*it)->UpdateState();
     }
 }
 
 
+enum {
+    SB_HEIGHT = 16
+};
+
 // -----------  PHDStatusBar Class
 //
 PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
-: wxStatusBar(parent, wxID_ANY, wxSTB_SHOW_TIPS | wxSTB_ELLIPSIZE_END | wxFULL_REPAINT_ON_RESIZE, "PHDStatusBar")
-
-
+    : wxStatusBar(parent, wxID_ANY, wxSTB_SHOW_TIPS | wxSTB_ELLIPSIZE_END | wxFULL_REPAINT_ON_RESIZE, "PHDStatusBar")
 {
-    wxClientDC dc(this);
-    int txtWidth;
-    int txtHeight;
-
-    std::vector <int> fieldWidths;
-    const int bitmapSize = 16;
+    std::vector<int> fieldWidths;
 
     // Set up the only field the wxStatusBar base class will know about
     int widths[] = {-1};
@@ -610,11 +615,12 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
     SetStatusWidths(1, widths);
     this->SetBackgroundColour("BLACK");
 
-    m_ctrlPanel = new SBPanel(this, wxSize(500, 16));
+    m_ctrlPanel = new SBPanel(this, wxSize(500, SB_HEIGHT));
     m_ctrlPanel->SetPosition(wxPoint(1, 2));
 
     // Build the leftmost text status field, the only field managed at this level
     m_Msg1 = new wxStaticText(m_ctrlPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(150, -1));
+    int txtWidth, txtHeight;
     GetTextExtent(_("Selected star at (999.9, 999.9)"), &txtWidth, &txtHeight);         // only care about the width
     m_Msg1->SetBackgroundColour("BLACK");
     m_Msg1->SetForegroundColour("WHITE");
@@ -636,7 +642,7 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
 PHDStatusBar* PHDStatusBar::CreateInstance(wxWindow *parent, long style)
 {
     PHDStatusBar* sb = new PHDStatusBar(parent, style);
-    sb->SetMinHeight(16);
+    sb->SetMinHeight(SB_HEIGHT);
     return sb;
 }
 
@@ -651,11 +657,9 @@ PHDStatusBar::~PHDStatusBar()
 
 void PHDStatusBar::OnSize(wxSizeEvent& event)
 {
-    int fldWidth;
     wxRect fldRect;
-
     GetFieldRect(0, fldRect);
-    fldWidth = fldRect.GetWidth();
+    int fldWidth = fldRect.GetWidth();
     m_ctrlPanel->SetSize(fldWidth - 1, fldRect.GetHeight());
     m_Msg1->SetPosition(wxPoint(2, 3));
     m_StarIndicators->PositionControls();
@@ -669,7 +673,6 @@ void PHDStatusBar::OnSize(wxSizeEvent& event)
 void PHDStatusBar::UpdateStates()
 {
     m_StateIndicators->UpdateState();
-
 }
 
 void PHDStatusBar::UpdateStarInfo(double SNR, bool Saturated)

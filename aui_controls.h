@@ -55,15 +55,15 @@ class PHDStatusBar;
 // Self-drawn panel for hosting controls in the wxStatusBar
 class SBPanel : public wxPanel
 {
-    std::vector <int> fieldOffsets;
+    std::vector<int> fieldOffsets;
 
 public:
-    SBPanel(wxStatusBar* parent, wxSize panelSize);
-
-    void OnPaint(wxPaintEvent& evt);
-    void BuildFieldOffsets(std::vector <int> &fldWidths);
-    wxPoint FieldLoc(int fieldId);
     int emWidth;
+
+    SBPanel(wxStatusBar* parent, const wxSize& panelSize);
+    void OnPaint(wxPaintEvent& evt);
+    void BuildFieldOffsets(const std::vector<int>& fldWidths);
+    wxPoint FieldLoc(int fieldId);
     int GetMinPanelWidth();
 
     wxDECLARE_EVENT_TABLE();
@@ -86,7 +86,6 @@ public:
     ~SBStateIndicators();
     void PositionControls();
     void UpdateState();
-
 };
 
 class SBStateIndicatorItem
@@ -110,6 +109,7 @@ public:
     void UpdateState();
     wxString IndicatorToolTip(SBFieldTypes indType, int triState);
 };
+
 class SBGuideIndicators
 {
     wxStaticBitmap* bitmapRA;

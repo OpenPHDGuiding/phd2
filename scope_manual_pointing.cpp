@@ -32,7 +32,7 @@
  *
  */
 
-#include "scope_manual_pointing.h"
+#include "phd.h"
 
 #include <wx/valnum.h>
 
@@ -71,7 +71,7 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
     wxBoxSizer* bSizer3;
     bSizer3 = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *staticText1 = new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY, wxT("Declination (°)"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *staticText1 = new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY, wxT("Declination (\u00B0)"), wxDefaultPosition, wxDefaultSize, 0);
     staticText1->Wrap(-1);
     bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -149,7 +149,7 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
         wxBoxSizer* bSizer8;
         bSizer8 = new wxBoxSizer(wxHORIZONTAL);
 
-        wxStaticText *staticText13 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxT("Latitude (°)"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText13 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxT("Latitude (\u00B0)"), wxDefaultPosition, wxDefaultSize, 0);
         staticText13->Wrap(-1);
         bSizer8->Add(staticText13, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -161,7 +161,7 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
 
         bSizer8->Add(m_latitude, 0, wxALL, 5);
 
-        wxStaticText *staticText131 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxT("Longitude (°)"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText131 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxT("Longitude (\u00B0)"), wxDefaultPosition, wxDefaultSize, 0);
         staticText131->Wrap(-1);
         bSizer8->Add(staticText131, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
