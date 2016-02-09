@@ -396,7 +396,7 @@ public:
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
     void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
-    virtual void SetStatusText(const wxString& text, int number = 0);
+    virtual void SetStatusText(const wxString& text);
     wxString GetSettingsSummary();
     wxString ExposureDurationSummary(void) const;
     wxString PixelScaleSummary(void) const;

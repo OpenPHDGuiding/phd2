@@ -657,7 +657,7 @@ bool Mount::FlipCalibration(void)
 
         pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
             ::PierSideStr(priorPierSide, ""), degrees(origX), degrees(origY),
-            ::PierSideStr(newPierSide, ""), degrees(newX), degrees(newY)), 0);
+            ::PierSideStr(newPierSide, ""), degrees(newX), degrees(newY)));
     }
     catch (const wxString& Msg)
     {
@@ -778,7 +778,6 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
 
         if (!msg.IsEmpty())
         {
-            //pFrame->SetStatusText(msg, 1);
             pFrame->UpdateGuiderInfo(xDirection, yDirection, fabs(xDistance), xMoveResult.amountMoved, fabs(yDistance), yMoveResult.amountMoved);
             Debug.AddLine(msg);
         }

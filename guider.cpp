@@ -1128,7 +1128,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 case STATE_CALIBRATING_SECONDARY:
                     Debug.Write("Star lost during calibration... blundering on\n");
                     EvtServer.NotifyStarLost(info);
-                    pFrame->SetStatusText(_("star lost"), 1);
+                    pFrame->SetStatusText(_("star lost"));
                     break;
                 case STATE_GUIDING:
                 {
@@ -1263,7 +1263,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_CALIBRATED:
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
-                pFrame->SetStatusText(_("Guiding"), 1);
+                pFrame->SetStatusText(_("Guiding"));
                 pFrame->m_guidingStarted = wxDateTime::UNow();
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();

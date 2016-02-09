@@ -38,6 +38,7 @@
 #include "darks_dialog.h"
 #include "Refine_DefMap.h"
 #include "camcal_import_dialog.h"
+#include "aui_controls.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -371,7 +372,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
             // some camera drivers disconnect the camera on error
             if (!pCamera->Connected)
-                SetStatusText(wxEmptyString, 2);
+                m_statusbar->UpdateStates();
 
             throw ERROR_INFO("Error reported capturing image");
         }

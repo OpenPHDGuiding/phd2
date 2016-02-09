@@ -731,7 +731,6 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
         if (!status0.IsEmpty())
         {
-            pFrame->SetStatusText(status0, 0);
             if (!status1.IsEmpty())
                 status0 += ", " + status1;
             pFrame->SetStatusText(status0);

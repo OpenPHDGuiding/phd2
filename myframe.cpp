@@ -1024,7 +1024,7 @@ void MyFrame::UpdateButtonsStatus(void)
 
     if (need_update)
     {
-        if (!CaptureActive)
+        if (pGuider->GetState() < STATE_SELECTED)
             m_statusbar->ClearStarInfo();
         if (!guiding_active)
             m_statusbar->ClearGuiderInfo();
@@ -1183,36 +1183,35 @@ void MyFrame::DoTryReconnect()
  *
  */
 
+// Use a timer to show a status message for 10 seconds, then revert back to basic state info
 void MyFrame::SetStatusbarTimer()
 {
     const int DISPLAY_MS = 10000;
     m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
 }
 
-void MyFrame::SetStatusText(const wxString& text, int number)
+void MyFrame::SetStatusText(const wxString& text)
 {
-    Debug.Write(wxString::Format("Status Line %d: %s\n", number, text));
+    Debug.Write(wxString::Format("Status Line %s\n", text));
 
-    if (wxThread::IsMain() && number != 1)
+    if (wxThread::IsMain())
     {
-        m_statusbar->SetStatusText(text, number);
+        m_statusbar->SetStatusText(text);
         SetStatusbarTimer();
     }
     else
     {
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
         event->SetString(text);
-        event->SetInt(number);
         wxQueueEvent(this, event);
     }
 }
 
 void MyFrame::OnSetStatusText(wxThreadEvent& event)
 {
-    int pane = event.GetInt();
     wxString msg(event.GetString());
 
-    m_statusbar->SetStatusText(msg, pane);
+    m_statusbar->SetStatusText(msg);
     SetStatusbarTimer();
 }
 
@@ -1331,7 +1330,6 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    //m_statusbar->SetStatusText(wxEmptyString, 1);
     if (pGuider->IsGuiding())
         m_statusbar->SetStatusText(_("Guiding"));
     else
@@ -1422,7 +1420,6 @@ void MyFrame::StartCapturing()
 
         CheckDarkFrameGeometry();
         UpdateButtonsStatus();
-        //SetStatusText(wxEmptyString);
 
         // m_exposurePending should always be false here since CaptureActive is cleared on exposure
         // completion, but be paranoid and check it anyway
