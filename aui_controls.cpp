@@ -536,7 +536,7 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
             rslt += _("Not completed");
             break;
         case 0: 
-            rslt += _("Completed, but no scope pointing info available");
+            rslt += _("Completed, but scope pointing info not available/not in-use");
             break;
         case 1:
             rslt += _("Completed, scope pointing info in-use");
