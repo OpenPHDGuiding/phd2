@@ -494,35 +494,66 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         Debug.Write("No mount specified for View/RA_Dec overlay\n");        // Soft error
                     else
                     {
-                        double r=30.0;
-                        double xAngle = pMount->IsCalibrated() ? pMount->xAngle() : 0.0;
-                        double cos_angle = cos(xAngle);
-                        double sin_angle = sin(xAngle);
                         double StarX = CurrentPosition().X;
                         double StarY = CurrentPosition().Y;
 
-                        dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),2,wxPENSTYLE_DOT));
-                        r=15.0;
-                        dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
-                            ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
-                        dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),2,wxPENSTYLE_DOT));
-                        double yAngle = pMount->IsCalibrated() ? pMount->yAngle() : M_PI / 2.0;
-                        cos_angle = cos(yAngle);
-                        sin_angle = sin(yAngle);
-                        dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
-                            ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
+                        double r = 15.0;
+                        double rlabel = r + 9.0;
+
+                        double wAngle = pMount->IsCalibrated() ? pMount->xAngle() : 0.0;
+                        double eAngle = wAngle + M_PI;
+                        GuideParity raParity = pMount->RAParity();
+                        if (raParity == GUIDE_PARITY_ODD)
+                        {
+                            // odd parity => West calibration pulses move scope East
+                            //   => star moves West
+                            //   => East vector is opposite direction from X calibration vector (West calibration direction)
+                            eAngle += M_PI;
+                        }
+                        double cos_eangle = cos(eAngle);
+                        double sin_eangle = sin(eAngle);
+                        dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(), 2, wxPENSTYLE_DOT));
+                        dc.DrawLine(ROUND(StarX * m_scaleFactor + r * cos_eangle), ROUND(StarY * m_scaleFactor + r * sin_eangle),
+                            ROUND(StarX * m_scaleFactor - r * cos_eangle), ROUND(StarY * m_scaleFactor - r * sin_eangle));
+                        if (raParity != GUIDE_PARITY_UNKNOWN)
+                        {
+                            dc.SetTextForeground(pFrame->pGraphLog->GetRaOrDxColor());
+                            dc.DrawText(_("E"),
+                                ROUND(StarX * m_scaleFactor + rlabel * cos_eangle) - 4, ROUND(StarY * m_scaleFactor + rlabel * sin_eangle) - 6);
+                        }
+
+                        double nAngle = pMount->IsCalibrated() ? pMount->yAngle() : M_PI / 2.0;
+                        GuideParity decParity = pMount->DecParity();
+                        if (decParity == GUIDE_PARITY_EVEN)
+                        {
+                            // even parity => North calibration pulses move scope North
+                            //   => star moves South
+                            //   => North vector is opposite direction from Y calibration vector (North calibration direction)
+                            nAngle += M_PI;
+                        }
+                        double cos_nangle = cos(nAngle);
+                        double sin_nangle = sin(nAngle);
+                        dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(), 2, wxPENSTYLE_DOT));
+                        dc.DrawLine(ROUND(StarX * m_scaleFactor + r * cos_nangle), ROUND(StarY * m_scaleFactor + r * sin_nangle),
+                            ROUND(StarX * m_scaleFactor - r * cos_nangle), ROUND(StarY * m_scaleFactor - r * sin_nangle));
+                        if (decParity != GUIDE_PARITY_UNKNOWN)
+                        {
+                            dc.SetTextForeground(pFrame->pGraphLog->GetDecOrDyColor());
+                            dc.DrawText(_("N"),
+                                ROUND(StarX * m_scaleFactor + rlabel * cos_nangle) - 4, ROUND(StarY * m_scaleFactor + rlabel * sin_nangle) - 6);
+                        }
 
                         wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
-                        gc->SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
+                        gc->SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(), 1, wxPENSTYLE_DOT));
                         double step = (double) YImgSize / 10.0;
 
                         double MidX = (double) XImgSize / 2.0;
                         double MidY = (double) YImgSize / 2.0;
-                        gc->Rotate(xAngle);
+                        gc->Rotate(eAngle);
                         gc->GetTransform().TransformPoint(&MidX, &MidY);
-                        gc->Rotate(-xAngle);
+                        gc->Rotate(-eAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
-                        gc->Rotate(xAngle);
+                        gc->Rotate(eAngle);
                         for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
@@ -530,12 +561,12 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                         MidX = (double) XImgSize / 2.0;
                         MidY = (double) YImgSize / 2.0;
-                        gc->Rotate(-xAngle);
-                        gc->Rotate(yAngle);
+                        gc->Rotate(-eAngle);
+                        gc->Rotate(nAngle);
                         gc->GetTransform().TransformPoint(&MidX, &MidY);
-                        gc->Rotate(-yAngle);
+                        gc->Rotate(-nAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
-                        gc->Rotate(yAngle);
+                        gc->Rotate(nAngle);
                         gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT));
                         for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,

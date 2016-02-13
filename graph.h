@@ -244,8 +244,8 @@ public:
 
     wxStaticText *m_pLabel1, *m_pLabel2;
 
-    wxColor GetRaOrDxColor(void);
-    wxColor GetDecOrDyColor(void);
+    const wxColor& GetRaOrDxColor(void);
+    const wxColor& GetDecOrDyColor(void);
 
     const SummaryStats& Stats(void) const { return m_pClient->m_stats; }
 

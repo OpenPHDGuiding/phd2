@@ -61,6 +61,14 @@ enum PierSide
     PIER_SIDE_WEST = 1,
 };
 
+enum GuideParity
+{
+    GUIDE_PARITY_EVEN = 1,      // Guide(NORTH) moves scope north
+    GUIDE_PARITY_ODD = -1,      // Guide(NORTH) moves scope south
+    GUIDE_PARITY_UNKNOWN = 0,   // we don't know or care
+    GUIDE_PARITY_UNCHANGED = -5, // special case for SetCalibration, leave value unchanged
+};
+
 #define UNKNOWN_DECLINATION 997.0
 
 struct Calibration
@@ -73,6 +81,8 @@ struct Calibration
     double rotatorAngle;
     unsigned short binning;
     PierSide pierSide;
+    GuideParity raGuideParity;
+    GuideParity decGuideParity;
     bool isValid;
     wxString timestamp;
 
@@ -217,6 +227,8 @@ public:
     double yRate(void) const;
     double xAngle(void) const;
     double xRate(void) const;
+    GuideParity RAParity(void) const;
+    GuideParity DecParity(void) const;
 
     bool FlipCalibration(void);
     bool GetGuidingEnabled(void);
@@ -326,6 +338,16 @@ inline GuideAlgorithm *Mount::GetYGuideAlgorithm(void) const
 inline bool Mount::IsConnected() const
 {
     return m_connected;
+}
+
+inline GuideParity Mount::RAParity(void) const
+{
+    return m_calibrated ? m_cal.raGuideParity : GUIDE_PARITY_UNKNOWN;
+}
+
+inline GuideParity Mount::DecParity(void) const
+{
+    return m_calibrated ? m_cal.decGuideParity : GUIDE_PARITY_UNKNOWN;
 }
 
 #endif /* MOUNT_H_INCLUDED */

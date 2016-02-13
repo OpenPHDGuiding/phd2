@@ -239,12 +239,12 @@ GraphLogWindow::~GraphLogWindow()
     delete m_pClient;
 }
 
-wxColor GraphLogWindow::GetRaOrDxColor(void)
+const wxColor& GraphLogWindow::GetRaOrDxColor(void)
 {
     return m_pClient->m_raOrDxColor;
 }
 
-wxColor GraphLogWindow::GetDecOrDyColor(void)
+const wxColor& GraphLogWindow::GetDecOrDyColor(void)
 {
     return m_pClient->m_decOrDyColor;
 }

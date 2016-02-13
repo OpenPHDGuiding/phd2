@@ -54,7 +54,7 @@ inline static bool IsOppositeSide(PierSide a, PierSide b)
         (a == PIER_SIDE_WEST && b == PIER_SIDE_EAST);
 }
 
-inline static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
+inline static wxString PierSideStr(PierSide p, const wxString& unknown = _("Unknown"))
 {
     switch (p) {
     case PIER_SIDE_EAST: return _("East");
@@ -66,6 +66,25 @@ inline static const char *PierSideStr(PierSide p, const char *unknown = _("Unkno
 wxString Mount::PierSideStr(PierSide p)
 {
     return ::PierSideStr(p);
+}
+
+inline static const char *ParityStr(GuideParity par)
+{
+    switch (par) {
+    case GUIDE_PARITY_EVEN:      return "+";
+    case GUIDE_PARITY_ODD:       return "-";
+    case GUIDE_PARITY_UNKNOWN:   return "?";
+    default: case GUIDE_PARITY_UNCHANGED: return "x";
+    }
+}
+
+inline static GuideParity OppositeParity(GuideParity p)
+{
+    switch (p) {
+    case GUIDE_PARITY_EVEN: return GUIDE_PARITY_ODD;
+    case GUIDE_PARITY_ODD:  return GUIDE_PARITY_EVEN;
+    default:                return p;
+    }
 }
 
 wxString Mount::DeclinationStr(double dec, const wxString& numFormatStr)
@@ -599,7 +618,7 @@ double Mount::xAngle() const
 
 double Mount::yAngle() const
 {
-    return m_cal.xAngle - m_yAngleError + M_PI / 2.;
+    return norm_angle(m_cal.xAngle - m_yAngleError + M_PI / 2.);
 }
 
 static wxString RotAngleStr(double rotAngle)
@@ -625,8 +644,9 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.Write(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s rotAngle=%s\n",
-            degrees(origX), degrees(origY), decFlipRequired, ::PierSideStr(m_cal.pierSide), RotAngleStr(m_cal.rotatorAngle)));
+        Debug.Write(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s rotAngle=%s parity=%s/%s\n",
+            degrees(origX), degrees(origY), decFlipRequired, ::PierSideStr(m_cal.pierSide), RotAngleStr(m_cal.rotatorAngle),
+            ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -645,19 +665,25 @@ bool Mount::FlipCalibration(void)
         PierSide priorPierSide = m_cal.pierSide;
         PierSide newPierSide = OppositeSide(m_cal.pierSide);
 
-        Debug.Write(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s\n",
-            degrees(newX), degrees(newY), ::PierSideStr(newPierSide)));
+        // Dec polarity changes when pier side changes, i.e. if Guide(NORTH) moves the star north on one side,
+        // then Guide(NORTH) will move the star south on the other side of the pier.
+        // For mounts with CalibrationFlipRequiresDecFlip, the parity does not change after the flip.
+        GuideParity newDecParity = decFlipRequired ? m_cal.decGuideParity : OppositeParity(m_cal.decGuideParity);
+
+        Debug.Write(wxString::Format("FlipCalibration after: x=%.1f y=%.1f sideOfPier=%s parity=%s/%s\n",
+            degrees(newX), degrees(newY), ::PierSideStr(newPierSide), ParityStr(m_cal.raGuideParity), ParityStr(newDecParity)));
 
         Calibration cal(m_cal);
         cal.xAngle = newX;
         cal.yAngle = newY;
         cal.pierSide = newPierSide;
+        cal.decGuideParity = newDecParity;
 
         SetCalibration(cal);
 
         pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            ::PierSideStr(priorPierSide, ""), degrees(origX), degrees(origY),
-            ::PierSideStr(newPierSide, ""), degrees(newX), degrees(newY)));
+            ::PierSideStr(priorPierSide, wxEmptyString), degrees(origX), degrees(origY),
+            ::PierSideStr(newPierSide, wxEmptyString), degrees(newX), degrees(newY)));
     }
     catch (const wxString& Msg)
     {
@@ -1181,9 +1207,10 @@ void Mount::ClearCalibration(void)
 
 void Mount::SetCalibration(const Calibration& cal)
 {
-    Debug.Write(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f bin=%hu dec=%s pierSide=%d rotAng=%s\n",
+    Debug.Write(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f bin=%hu dec=%s pierSide=%d par=%s/%s rotAng=%s\n",
         GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.binning,
-        DeclinationStr(cal.declination), cal.pierSide, RotAngleStr(cal.rotatorAngle)));
+        DeclinationStr(cal.declination), cal.pierSide, ParityStr(cal.raGuideParity), ParityStr(cal.decGuideParity),
+        RotAngleStr(cal.rotatorAngle)));
 
     // we do the rates first, since they just get stored
     m_cal.xRate = cal.xRate;
@@ -1191,6 +1218,10 @@ void Mount::SetCalibration(const Calibration& cal)
     m_cal.binning = cal.binning;
     m_cal.declination = cal.declination;
     m_cal.pierSide = cal.pierSide;
+    if (cal.raGuideParity != GUIDE_PARITY_UNCHANGED)
+        m_cal.raGuideParity = cal.raGuideParity;
+    if (cal.decGuideParity != GUIDE_PARITY_UNCHANGED)
+        m_cal.decGuideParity = cal.decGuideParity;
     m_cal.rotatorAngle = cal.rotatorAngle;
     m_cal.isValid = true;
 
@@ -1218,6 +1249,8 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetInt(prefix + "binning", m_cal.binning);
     pConfig->Profile.SetDouble(prefix + "declination", m_cal.declination);
     pConfig->Profile.SetInt(prefix + "pierSide", m_cal.pierSide);
+    pConfig->Profile.SetInt(prefix + "raGuideParity", m_cal.raGuideParity);
+    pConfig->Profile.SetInt(prefix + "decGuideParity", m_cal.decGuideParity);
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
@@ -1260,6 +1293,15 @@ inline static PierSide pier_side(int val)
     return val == PIER_SIDE_EAST ? PIER_SIDE_EAST : val == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
 }
 
+inline static GuideParity guide_parity(int val)
+{
+    switch (val) {
+    case GUIDE_PARITY_EVEN: return GUIDE_PARITY_EVEN;
+    case GUIDE_PARITY_ODD: return GUIDE_PARITY_ODD;
+    default: return GUIDE_PARITY_UNKNOWN;
+    }
+}
+
 void Mount::GetLastCalibration(Calibration *cal)
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
@@ -1274,6 +1316,8 @@ void Mount::GetLastCalibration(Calibration *cal)
         cal->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
         cal->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
         cal->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
+        cal->raGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "raGuideParity", GUIDE_PARITY_UNKNOWN));
+        cal->decGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "decGuideParity", GUIDE_PARITY_UNKNOWN));
         cal->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
         cal->timestamp = sTimestamp;
         cal->isValid = true;
@@ -1384,8 +1428,11 @@ wxString Mount::GetSettingsSummary()
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f",
-                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0) : "not calibrated"
+        IsCalibrated() ?
+            wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f, parity = %s/%s",
+                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0,
+                ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)) :
+            "not calibrated"
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithmSelection()],
         m_pXGuideAlgorithm->GetSettingsSummary()
