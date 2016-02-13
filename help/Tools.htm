@@ -8,7 +8,7 @@
   <a href="#Drift_Align">Drift Alignment</a><br>
   <a href="#Lock_Positions">Lock Positions</a><br>
   <a href="#Comet_Tracking">Comet Tracking</a><br><a href="#Guiding_Assistant">Guiding Assistant</a><br>
-  <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
+  <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br><a href="#Ask_for_coordinates_aux_mount">Ask for Connections Aux Mount</a><br>
   <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br><a href="#Multiple_Executions">Multiple Program Instances</a><br><a href="#Keyboard_Shortcuts">Keyboard Shortcuts</a><br>
 
 <h3><a name="Manual_Guide"></a>Manual Guide</h3><br>
@@ -652,8 +652,41 @@ than profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span> session. &nbsp;Finally, you can import and export
 profiles for purposes of debugging, backup, or even exchange with other
 <span style="font-style: italic;">PHD2</span> users.<br>
-<br>
-<h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>
+<br><h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount Connection using "Ask for coordinates"</h3>If
+you can't connect to your mount using either ASCOM or INDI drivers, you
+still have a better-than-nothing alternative by using the&nbsp;"Ask for
+coordinates" aux-mount connection. &nbsp;With this option, you'll be asked
+to enter or confirm the scope position each time&nbsp;guiding is going
+to begin:: <br><br><img style="width: 212px; height: 248px;" alt="" src="Manual_mount.png"><br><br>If
+you enter your scope's current declination and side-of-pier values,
+&nbsp;PHD2 will automatically adjust the calibration to match&nbsp;that
+pointing position. &nbsp;You don't need to be&nbsp;precise, a
+Declination value that's within a few degrees will work. &nbsp;This
+means you won't need to recalibrate as you slew to different targets
+so long as you update these values each time. &nbsp;For
+example,&nbsp; you can do a calibration near Declination=0 then enter
+new position values when you've slewed to a high declination imaging
+target.
+&nbsp;This is likely to produce a better result than trying to
+calibrate at a near-pole position. &nbsp;This dialog will not be
+displayed if the start of guiding is the result of a dither operation
+or a server command from an imaging application. &nbsp;In order for the
+calibration adjustment to work correctly, your previous calibration <span style="font-weight: bold;">must </span>have been completed&nbsp;with correct positioning data available. &nbsp;<br><br>If you're using this option with the Drift Alignment tool, the dialog will look a bit different: <br><br><img style="width: 327px; height: 350px;" alt="" src="Manual_mount_drift.png"><br><br>If
+you enter the additional information for Right Ascension, latitude, and
+longitude, the Drift Alignment tool can more accurately adjust its
+magenta target circle. &nbsp;Otherwise, the circle will show only an
+upper-bound estimate of the pointing error during the 'adjustment'
+phases. &nbsp;<br><br>You
+can connect or disconnect&nbsp;the "Ask for
+coordinates" aux-mount&nbsp;without affecting the camera or mount
+connections. &nbsp;So you might decide to use the option for drift
+alignment or for an initial slew to your imaging target, then
+disconnect from it in order to avoid
+the repetitive dialog displays. &nbsp;Regardless of how you choose to
+use it, you're
+responsible for having the correct values in place, and you should
+remember that significantly wrong values can result in poor guiding
+results.<br><br><h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>
 The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
 section as useful tools&nbsp;for you to experiment with <span style="font-style: italic;">PHD2</span> and become
 famliar with its features. &nbsp;Remember that you must choose
