@@ -697,7 +697,7 @@ int PHDStatusBar::GetMinSBWidth()
 }
 
 // Override function to be sure status text updates actually go to static text field
-void PHDStatusBar::SetStatusText(const wxString &text, int number)
+void PHDStatusBar::SetStatusText(const wxString &text)
 {
     m_Msg1->SetLabelText(text);
     m_Msg1->Update();

@@ -1213,8 +1213,7 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
 {
     wxString msg(event.GetString());
     bool noTimeout = (bool) event.GetInt();
-    m_statusbar->SetStatusText(msg, noTimeout);
-    SetStatusbarTimer();
+    SetStatusText(msg, noTimeout);
 }
 
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
