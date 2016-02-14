@@ -971,7 +971,7 @@ static PHD_Point MountCoords(const PHD_Point& cameraVector, double xCalibAngle, 
     return PHD_Point(hyp * cos(xAngle), hyp * sin(yAngle));
 }
 
-static void GetCoordinates(PHD_Point *coords)
+static void GetRADecCoordinates(PHD_Point *coords)
 {
     double ra, dec, lst;
     bool err = pPointingSource->GetCoordinates(&ra, &dec, &lst);
@@ -990,7 +990,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         if (!m_calibrationStartingLocation.IsValid())
         {
             m_calibrationStartingLocation = currentLocation;
-            ::GetCoordinates(&m_calibrationStartingCoords);
+            GetRADecCoordinates(&m_calibrationStartingCoords);
 
             Debug.Write(wxString::Format("Scope::UpdateCalibrationstate: starting location = %.2f,%.2f coords = %s\n",
                 currentLocation.X, currentLocation.Y,
@@ -1047,7 +1047,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (m_calibrationStartingCoords.IsValid())
                 {
                     PHD_Point endingCoords;
-                    ::GetCoordinates(&endingCoords);
+                    GetRADecCoordinates(&endingCoords);
                     if (endingCoords.IsValid())
                     {
                         // true westward motion decreases RA
@@ -1129,7 +1129,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
                 m_blMarkerPoint = currentLocation;
-                ::GetCoordinates(&m_calibrationStartingCoords);
+                GetRADecCoordinates(&m_calibrationStartingCoords);
                 m_blExpectedBacklashStep = m_calibration.xRate * m_calibrationDuration * 0.6;
 
                 double RASpeed;
@@ -1196,7 +1196,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                         m_calibrationSteps++;
                         m_blMarkerPoint = currentLocation;
-                        ::GetCoordinates(&m_calibrationStartingCoords);
+                        GetRADecCoordinates(&m_calibrationStartingCoords);
                         m_blLastCumDistance = blCumDelta;
                         wxString msg = wxString::Format(_("Clearing backlash step %3d"), m_calibrationSteps);
                         pFrame->SetStatusText (msg);
@@ -1301,7 +1301,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (m_calibrationStartingCoords.IsValid())
                 {
                     PHD_Point endingCoords;
-                    ::GetCoordinates(&endingCoords);
+                    GetRADecCoordinates(&endingCoords);
                     if (endingCoords.IsValid())
                     {
                         // real Northward motion increases Dec
