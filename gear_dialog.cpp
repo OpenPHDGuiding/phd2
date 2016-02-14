@@ -960,7 +960,7 @@ bool GearDialog::DoConnectCamera(void)
                 }
             }
         }
-        pFrame->SetStatusText(_("Connecting to Camera ..."));
+        pFrame->SetStatusText(_("Connecting to Camera ..."), true);
 
         wxString cameraId = SelectedCameraId(m_pCamera);
         Debug.Write(wxString::Format("Connecting to camera id = [%s]\n", cameraId));
@@ -1162,7 +1162,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 
         if (m_pScope)
         {
-            pFrame->SetStatusText(_("Connecting to Mount ..."));
+            pFrame->SetStatusText(_("Connecting to Mount ..."), true);
 
             if (m_pScope->Connect())
             {
@@ -1209,7 +1209,7 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
 
         if (m_pAuxScope)
         {
-            pFrame->SetStatusText(_("Connecting to Aux Mount ..."));
+            pFrame->SetStatusText(_("Connecting to Aux Mount ..."), true);
 
             if (m_pAuxScope->Connect())
             {
@@ -1358,7 +1358,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 
         if (m_pStepGuider)
         {
-            pFrame->SetStatusText(_("Connecting to AO ..."));
+            pFrame->SetStatusText(_("Connecting to AO ..."), true);
 
             if (m_pStepGuider->Connect())
             {
@@ -1473,7 +1473,7 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 
         if (m_pRotator)
         {
-            pFrame->SetStatusText(_("Connecting to Rotator ..."));
+            pFrame->SetStatusText(_("Connecting to Rotator ..."), true);
 
             if (m_pRotator->Connect())
             {

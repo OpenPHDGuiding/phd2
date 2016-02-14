@@ -702,6 +702,7 @@ int PHDStatusBar::GetMinSBWidth()
 void PHDStatusBar::SetStatusText(const wxString &text, int number)
 {
     m_Msg1->SetLabelText(text);
+    m_Msg1->Update();
 }
 
 // Trivial class to handle the background color on the toolbar control

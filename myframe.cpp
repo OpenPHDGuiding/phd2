@@ -1190,19 +1190,21 @@ void MyFrame::SetStatusbarTimer()
     m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
 }
 
-void MyFrame::SetStatusText(const wxString& text)
+void MyFrame::SetStatusText(const wxString& text, bool noTimeout)
 {
     Debug.Write(wxString::Format("Status Line %s\n", text));
 
     if (wxThread::IsMain())
     {
         m_statusbar->SetStatusText(text);
-        SetStatusbarTimer();
+        if (!noTimeout)
+            SetStatusbarTimer();
     }
     else
     {
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
         event->SetString(text);
+        event->SetInt((int) noTimeout);
         wxQueueEvent(this, event);
     }
 }
@@ -1210,8 +1212,8 @@ void MyFrame::SetStatusText(const wxString& text)
 void MyFrame::OnSetStatusText(wxThreadEvent& event)
 {
     wxString msg(event.GetString());
-
-    m_statusbar->SetStatusText(msg);
+    bool noTimeout = (bool) event.GetInt();
+    m_statusbar->SetStatusText(msg, noTimeout);
     SetStatusbarTimer();
 }
 
