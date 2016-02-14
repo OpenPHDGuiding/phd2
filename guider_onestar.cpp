@@ -706,7 +706,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
     }
 }
 
-inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, double scale)
+inline static void DrawBox(wxDC& dc, const PHD_Point& star, int halfW, double scale)
 {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     double w = ROUND((halfW * 2 + 1) * scale);
@@ -716,8 +716,7 @@ inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, dou
 // Define the repainting behaviour
 void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
-    //wxAutoBufferedPaintDC dc(this);
-    wxClientDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
     wxMemoryDC memDC;
 
     try

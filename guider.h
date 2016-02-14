@@ -199,7 +199,7 @@ protected:
     Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider(void);
 
-    bool PaintHelper(wxClientDC &dc, wxMemoryDC &memDC);
+    bool PaintHelper(wxMemoryDC& dc, wxMemoryDC& memDC);
     void SetState(GUIDER_STATE newState);
     void UpdateCurrentDistance(double distance);
 

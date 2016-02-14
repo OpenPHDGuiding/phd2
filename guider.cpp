@@ -382,7 +382,7 @@ void Guider::OnClose(wxCloseEvent& evt)
     Destroy();
 }
 
-bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
+bool Guider::PaintHelper(wxMemoryDC& dc, wxMemoryDC& memDC)
 {
     bool bError = false;
 
