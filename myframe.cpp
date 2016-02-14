@@ -1756,6 +1756,15 @@ void MyFrame::SetAutoLoadCalibration(bool val)
     }
 }
 
+inline static GuideParity guide_parity(int p)
+{
+    switch (p) {
+    case GUIDE_PARITY_EVEN: return GUIDE_PARITY_EVEN;
+    case GUIDE_PARITY_ODD: return GUIDE_PARITY_ODD;
+    default: return GUIDE_PARITY_UNKNOWN;
+    }
+}
+
 static void load_calibration(Mount *mnt)
 {
     wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
@@ -1772,6 +1781,8 @@ static void load_calibration(Mount *mnt)
     int t = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
     cal.pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
         t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+    cal.raGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "raGuideParity", GUIDE_PARITY_UNKNOWN));
+    cal.decGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "decGuideParity", GUIDE_PARITY_UNKNOWN));
     cal.rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
     cal.isValid = true;
 

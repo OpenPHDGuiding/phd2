@@ -50,13 +50,11 @@
 #endif
 
 wxBEGIN_EVENT_TABLE(PHDStatusBar, wxStatusBar)
-EVT_SIZE(PHDStatusBar::OnSize)
-
+  EVT_SIZE(PHDStatusBar::OnSize)
 wxEND_EVENT_TABLE()
 
 wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
-EVT_PAINT(SBPanel::OnPaint)
-
+  EVT_PAINT(SBPanel::OnPaint)
 wxEND_EVENT_TABLE()
 
 // How this works: 

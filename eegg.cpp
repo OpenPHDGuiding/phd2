@@ -80,6 +80,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             cal.yAngle = pMount->yAngle();
             cal.declination = pPointingSource->GetDeclination();
             cal.pierSide = pPointingSource->SideOfPier();
+            cal.raGuideParity = cal.decGuideParity = GUIDE_PARITY_UNCHANGED;
             cal.rotatorAngle = Rotator::RotatorPosition();
             cal.binning = pCamera->Binning;
             cal.isValid = true;

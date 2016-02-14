@@ -103,7 +103,7 @@ public:
     void StartCalibration(Mount *pCalibrationMount);
     void CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
     void CalibrationStep(Mount *pCalibrationMount, const wxString& direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
-    void CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate);
+    void CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity);
     void CalibrationComplete(Mount *pCalibrationMount);
 
     void StartGuiding();
