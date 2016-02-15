@@ -702,11 +702,10 @@ void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
 
 void Mount::LogGuideStepInfo()
 {
-    pFrame->UpdateGuiderInfo(m_lastStep);
-
     if (m_lastStep.frameNumber < 0)
         return;
 
+    pFrame->UpdateGuiderInfo(m_lastStep);
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
