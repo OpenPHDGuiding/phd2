@@ -350,9 +350,8 @@ void SBStateIndicatorItem::UpdateState()
     int quadState = -1;
     bool cameraOk = true;
     bool problems = false;
-    bool partials = false; 
-    wxString currLabel;
-    wxString MIAs = "";
+    bool partials = false;
+    wxString MIAs;
 
     switch (type)
     {
@@ -436,11 +435,11 @@ void SBStateIndicatorItem::UpdateState()
     case Field_Darks:
         if (pFrame)
         {
-            wxString lastLabel = ctrl->GetLabelText();
             if (pFrame->m_useDarksMenuItem->IsChecked() || pFrame->m_useDefectMapMenuItem->IsChecked())
             {
                 quadState = 1;
-                currLabel = (pFrame->m_useDefectMapMenuItem->IsChecked() ? _("BPM") : _("Dark"));
+                wxString lastLabel = ctrl->GetLabelText();
+                wxString currLabel = (pFrame->m_useDefectMapMenuItem->IsChecked() ? _("BPM") : _("Dark"));
                 if (lastLabel != currLabel)
                 {
                     ctrl->SetLabelText(currLabel);
@@ -472,8 +471,6 @@ void SBStateIndicatorItem::UpdateState()
     {
         if (type != Field_Gear)
         {
-            currLabel = ctrl->GetLabelText();
-
             switch (quadState)
             {
             case -2:
@@ -489,7 +486,8 @@ void SBStateIndicatorItem::UpdateState()
                 ctrl->SetForegroundColour(*wxGREEN);
                 break;
             }
-            ctrl->SetLabelText(currLabel);
+            ctrl->Refresh();
+
             if (quadState != -2)
                 ctrl->SetToolTip(IndicatorToolTip(type, quadState));
         }
