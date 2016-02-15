@@ -1266,9 +1266,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             szN = dc.GetTextExtent(lblN);
             szE = dc.GetTextExtent(lblE);
         }
-        dc.SetTextForeground(m_decOrDyColor);
+        dc.SetTextForeground(m_decOrDyColor.ChangeLightness(75));
         dc.DrawText(lblN, rightEdge - szN.GetWidth() - 4, topEdge + 2);
-        dc.SetTextForeground(m_raOrDxColor);
+        dc.SetTextForeground(m_raOrDxColor.ChangeLightness(75));
         dc.DrawText(lblE, rightEdge - szE.GetWidth() - 4, bottomEdge - szE.GetHeight() - 2);
         dc.SetTextForeground(*wxLIGHT_GREY);
         dc.SetFont(SmallFont);
