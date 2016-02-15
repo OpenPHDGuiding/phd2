@@ -1225,7 +1225,9 @@ void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconnect)
 {
     Disconnect();
+
     pFrame->UpdateStateLabels();
+
     if (reconnect == RECONNECT)
     {
         pFrame->Alert(msg + "\n" + _("PHD will make several attempts to re-connect the camera."));
