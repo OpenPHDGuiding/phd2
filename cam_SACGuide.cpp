@@ -167,7 +167,7 @@ bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
         case EAST: reg = 0x10;  break;  // 0001 0000
         default: return true; // bad direction passed in
     }
-    pFrame->SetStatusText(wxString::Format("%s %x %x",DevName,reg,dur));
+    pFrame->StatusMsg(wxString::Format("%s %x %x",DevName,reg,dur));
     SendGuideCommand(DevName,reg,dur);
     return false;
 }

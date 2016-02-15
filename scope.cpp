@@ -1033,7 +1033,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("RA calibration failed");
                     }
-                    pFrame->SetStatusText(wxString::Format(_("West step %3d, dist=%4.1f"), m_calibrationSteps, dist));
+                    pFrame->StatusMsg(wxString::Format(_("West step %3d, dist=%4.1f"), m_calibrationSteps, dist));
                     pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
                     break;
                 }
@@ -1100,7 +1100,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
-                    pFrame->SetStatusText(wxString::Format(_("East step %3d, dist=%4.1f"), m_calibrationSteps, dist));
+                    pFrame->StatusMsg(wxString::Format(_("East step %3d, dist=%4.1f"), m_calibrationSteps, dist));
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
@@ -1161,7 +1161,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         m_calibrationDuration));
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     m_calibrationSteps = 1;
-                    pFrame->SetStatusText (_("Clearing backlash step 1"));
+                    pFrame->StatusMsg(_("Clearing backlash step 1"));
                     break;
                 }
 
@@ -1199,7 +1199,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         GetRADecCoordinates(&m_calibrationStartingCoords);
                         m_blLastCumDistance = blCumDelta;
                         wxString msg = wxString::Format(_("Clearing backlash step %3d"), m_calibrationSteps);
-                        pFrame->SetStatusText (msg);
+                        pFrame->StatusMsg(msg);
                         Debug.AddLine(wxString::Format("Backlash: %s, Last Delta = %0.2f px, CumDistance = %0.2f px", msg, blDelta, blCumDelta));
                         break;
                     }
@@ -1269,7 +1269,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("Dec calibration failed");
                     }
-                    pFrame->SetStatusText(wxString::Format(_("North step %3d, dist=%4.1f"), m_calibrationSteps, dist));
+                    pFrame->StatusMsg(wxString::Format(_("North step %3d, dist=%4.1f"), m_calibrationSteps, dist));
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
@@ -1353,7 +1353,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
-                    pFrame->SetStatusText(wxString::Format(_("South step %3d, dist=%4.1f"), m_calibrationSteps, dist));
+                    pFrame->StatusMsg(wxString::Format(_("South step %3d, dist=%4.1f"), m_calibrationSteps, dist));
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
@@ -1407,7 +1407,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                                 pulseAmt = m_calibrationDuration;               // Be conservative, use durations that pushed us north in the first place
                             Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
                             ++m_calibrationSteps;
-                            pFrame->SetStatusText (wxString::Format(_("Nudge South %3d"), m_calibrationSteps));
+                            pFrame->StatusMsg(wxString::Format(_("Nudge South %3d"), m_calibrationSteps));
                             pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
                             break;
                         }
@@ -1437,7 +1437,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
                 if (SANITY_CHECKING_ACTIVE)
                     SanityCheckCalibration(m_prevCalibration, m_prevCalibrationDetails);  // method gets "new" info itself
-                pFrame->SetStatusText(_("Calibration complete"));
+                pFrame->StatusMsg(_("Calibration complete"));
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");

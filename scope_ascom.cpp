@@ -446,7 +446,8 @@ bool ScopeASCOM::Connect(void)
             Debug.AddLine(wxString::Format("ASCOM scope CanSlewAsync is %s", m_canSlewAsync ? "true" : "false"));
         }
 
-        pFrame->SetStatusText(Name()+_(" connected"));
+        Debug.Write(wxString::Format("%s connected\n", Name()));
+
         Scope::Connect();
 
         Debug.AddLine("Connect success");

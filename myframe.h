@@ -324,7 +324,7 @@ public:
     void CheckDarkFrameGeometry();
     void UpdateStateLabels();
     void UpdateStarInfo(double SNR, bool Saturated);
-    void UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void UpdateGuiderInfo(const GuideStepInfo& info);
     void ClearGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
@@ -356,23 +356,6 @@ public:
     };
     void OnRequestMountMove(wxCommandEvent& evt);
 
-    struct GUIDE_COMMANDS_INFO
-    {
-        GUIDE_DIRECTION raDir;
-        GUIDE_DIRECTION decDir;
-        double raPx;
-        double raPulse;
-        double decPx;
-        double decPulse;
-    };
-
-    struct STAR_PROPERTIES
-    {
-        double SNR;
-        double Mass;
-        bool Saturated;
-    };
-
     void ScheduleExposure(void);
 
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
@@ -396,7 +379,8 @@ public:
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
     void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
-    virtual void SetStatusText(const wxString& text, bool noTimeout = false);
+    void StatusMsg(const wxString& text);
+    void StatusMsgNoTimeout(const wxString& text);
     wxString GetSettingsSummary();
     wxString ExposureDurationSummary(void) const;
     wxString PixelScaleSummary(void) const;
@@ -422,10 +406,7 @@ private:
 
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
     bool StopWorkerThread(WorkerThread*& pWorkerThread);
-    void OnSetStatusText(wxThreadEvent& event);
-    void OnUpdateGuideInfo(wxThreadEvent& event);
-    void OnUpdateStateIndicators(wxThreadEvent& event);
-    void OnUpdateStarInfo(wxThreadEvent& event);
+    void OnStatusMsg(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
@@ -441,7 +422,6 @@ private:
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
     void FinishStop(void);
     void DoTryReconnect(void);
-    void SetStatusbarTimer();
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()

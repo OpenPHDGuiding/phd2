@@ -320,7 +320,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
 
     /*
     while (vframe && vpFrame->frames_behind) {
-        pFrame->SetStatusText(wxString::Format("%d %d %d", (int) vpFrame->size[0], (int) vpFrame->image_bytes, (int) vpFrame->frames_behind));
+        pFrame->StatusMsg(wxString::Format("%d %d %d", (int) vpFrame->size[0], (int) vpFrame->image_bytes, (int) vpFrame->frames_behind));
         dc1394_capture_enqueue(camera, vframe);
         dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &vframe);
     }*/
@@ -362,11 +362,11 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
         return true;
     }
     imgptr = vframe->image;
-//  pFrame->SetStatusText(wxString::Format("%d %d %d",(int) vpFrame->frames_behind, (int) vpFrame->size[0], (int) vpFrame->size[1]));
+//  pFrame->StatusMsg(wxString::Format("%d %d %d",(int) vpFrame->frames_behind, (int) vpFrame->size[0], (int) vpFrame->size[1]));
     for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
         *dataptr = (unsigned short) *imgptr;
     dc1394_capture_enqueue(camera, vframe);  // release this frame
-//  pFrame->SetStatusText(wxString::Format("Behind: %lu Pos: %lu",vpFrame->frames_behind,vpFrame->id));
+//  pFrame->StatusMsg(wxString::Format("Behind: %lu Pos: %lu",vpFrame->frames_behind,vpFrame->id));
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     if (DCAM_start_stop_mode)

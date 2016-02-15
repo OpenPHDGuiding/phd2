@@ -132,7 +132,7 @@ wxPoint SBPanel::FieldLoc(int fieldId)
 //-----------------------------------------------------------------------------
 // SBStarIndicators - properties of the guide star
 //
-SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths)
+SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths)
 {
     int snrValueWidth;
     int satWidth;
@@ -145,17 +145,17 @@ SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths)
 
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
     txtSaturated = new wxStaticText(panel, wxID_ANY, satStr, wxDefaultPosition, wxSize(satWidth, -1));
-    txtSaturated->SetBackgroundColour("BLACK");
-    txtSaturated->SetForegroundColour("RED");
+    txtSaturated->SetBackgroundColour(*wxBLACK);
+    txtSaturated->SetForegroundColour(*wxRED);
     txtSaturated->Show(false);
     // Label and value fields separated to allow different foreground colors for each
     txtSNRLabel = new wxStaticText(panel, wxID_ANY, _("SNR"), wxDefaultPosition, wxDefaultSize);
     txtSNRValue = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, 3), wxALIGN_RIGHT);
-    txtSNRLabel->SetBackgroundColour("BLACK");
-    txtSNRLabel->SetForegroundColour("WHITE");
+    txtSNRLabel->SetBackgroundColour(*wxBLACK);
+    txtSNRLabel->SetForegroundColour(*wxWHITE);
     txtSNRLabel->Show(false);
-    txtSNRValue->SetBackgroundColour("BLACK");
-    txtSNRValue->SetForegroundColour("GREEN");
+    txtSNRValue->SetBackgroundColour(*wxBLACK);
+    txtSNRValue->SetForegroundColour(*wxGREEN);
     txtSNRValue->SetToolTip(_("Signal-to-noise ratio of guide star\nGreen means SNR >= 10\nYellow means  4 <= SNR < 10\nRed means SNR < 4"));
 
     parentPanel = panel;
@@ -179,13 +179,13 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
     if (SNR >= 0)
     {
         if (SNR >= 10.0)
-            txtSNRValue->SetForegroundColour("Green");
+            txtSNRValue->SetForegroundColour(*wxGREEN);
         else
         {
             if (SNR >= 4.0)
-                txtSNRValue->SetForegroundColour("Yellow");
+                txtSNRValue->SetForegroundColour(*wxYELLOW);
             else
-                txtSNRValue->SetForegroundColour("Red");
+                txtSNRValue->SetForegroundColour(*wxRED);
         }
         txtSNRLabel->Show(true);
         txtSNRValue->SetLabelText(wxString::Format("%3.1f", SNR));
@@ -203,7 +203,7 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
 //-----------------------------------------------------------------------------
 // SBGuideIndicators - info about the most recent guide commands
 //
-SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidths)
+SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector<int>& fldWidths)
 {
 #ifdef ICON_DEV
     wxIcon arrow = wxIcon("SB_arrow_left_16.png", wxBITMAP_TYPE_PNG, 16, 16);
@@ -224,7 +224,7 @@ SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidth
     int txtHeight;
     wxSize bitmapSize;
 
-    wxColor fgColor = wxColor(200, 200, 200);           // reduced brightness
+    wxColor fgColor(200, 200, 200);           // reduced brightness
     panel->GetTextExtent("5555 ms, 555 px", &guideAmtWidth, &txtHeight);
 
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
@@ -232,10 +232,10 @@ SBGuideIndicators::SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidth
     bitmapSize = bitmapRA->GetSize();
     bitmapRA->Show(false);
     txtRaAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_CENTER);
-    txtRaAmounts->SetBackgroundColour("BLACK");
+    txtRaAmounts->SetBackgroundColour(*wxBLACK);
     txtRaAmounts->SetForegroundColour(fgColor);
     txtDecAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
-    txtDecAmounts->SetBackgroundColour("Black");
+    txtDecAmounts->SetBackgroundColour(*wxBLACK);
     txtDecAmounts->SetForegroundColour(fgColor);
     bitmapDec = new wxStaticBitmap(panel, wxID_ANY, arrowUp);
     bitmapDec->Show(false);
@@ -270,13 +270,12 @@ void SBGuideIndicators::PositionControls()
     bitmapDec->SetPosition(decPosition);
 }
 
-void SBGuideIndicators::UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse)
+void SBGuideIndicators::UpdateState(int raDirection, int decDirection, double raPx, int raPulse, double decPx, int decPulse)
 {
-
     wxString raInfo;
     wxString decInfo;
 
-    if (raPx > 0)
+    if (raPulse > 0)
     {
         if (raDirection == RIGHT)
             bitmapRA->SetBitmap(arrowRight);
@@ -284,36 +283,35 @@ void SBGuideIndicators::UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION
             bitmapRA->SetBitmap(arrowLeft);
 
         bitmapRA->Show(true);
-        raInfo = wxString::Format("%0.0f ms, %0.1f px", raPulse, raPx);
+        raInfo = wxString::Format("%d ms, %0.1f px", raPulse, raPx);
     }
     else
     {
         bitmapRA->Show(false);
-        raInfo = wxEmptyString;
     }
-    if (decPx > 0)
+
+    if (decPulse > 0)
     {
         if (decDirection == UP)
             bitmapDec->SetBitmap(arrowUp);
         else
             bitmapDec->SetBitmap(arrowDown);
         bitmapDec->Show(true);
-        decInfo = wxString::Format("%0.0f ms, %0.1f px", decPulse, decPx);
+        decInfo = wxString::Format("%d ms, %0.1f px", decPulse, decPx);
     }
     else
     {
         bitmapDec->Show(false);
-        decInfo = wxEmptyString;
     }
 
     txtRaAmounts->SetLabelText(raInfo);
     txtDecAmounts->SetLabelText(decInfo);
-
 }
+
 //------------------------------------------------------------------------------------------
 // ---SBStateIndicatorItem - individual state indicators
 //
-SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* host, int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths)
+SBStateIndicatorItem::SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* host, int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths)
 {
     type = indType;
     lastState = -2;
@@ -479,16 +477,16 @@ void SBStateIndicatorItem::UpdateState()
             switch (quadState)
             {
             case -2:
-                ctrl->SetForegroundColour("Grey");
+                ctrl->SetForegroundColour(*wxLIGHT_GREY);
                 break;
             case -1:
-                ctrl->SetForegroundColour("Red");
+                ctrl->SetForegroundColour(*wxRED);
                 break;
             case 0:
-                ctrl->SetForegroundColour("Yellow");
+                ctrl->SetForegroundColour(*wxYELLOW);
                 break;
             case 1:
-                ctrl->SetForegroundColour("Green");
+                ctrl->SetForegroundColour(*wxGREEN);
                 break;
             }
             ctrl->SetLabelText(currLabel);
@@ -550,7 +548,7 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
 //--------------------------------------------------------------------------------------
 // ---SBStateIndicators - the group of all app/session state controls, a mix of static text and bitmap controls
 //
-SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidths)
+SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector<int>& fldWidths)
 {
     parentPanel = panel;
     wxString labels[] = { _("Dark"), _("Cal"), wxEmptyString};
@@ -614,7 +612,7 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
 
     SetFieldsCount(1);
     SetStatusWidths(1, widths);
-    this->SetBackgroundColour("BLACK");
+    this->SetBackgroundColour(*wxBLACK);
 
     m_ctrlPanel = new SBPanel(this, wxSize(500, SB_HEIGHT));
     m_ctrlPanel->SetPosition(wxPoint(1, 2));
@@ -623,8 +621,8 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
     m_Msg1 = new wxStaticText(m_ctrlPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(150, -1));
     int txtWidth, txtHeight;
     GetTextExtent(_("Selected star at (999.9, 999.9)"), &txtWidth, &txtHeight);         // only care about the width
-    m_Msg1->SetBackgroundColour("BLACK");
-    m_Msg1->SetForegroundColour("WHITE");
+    m_Msg1->SetBackgroundColour(*wxBLACK);
+    m_Msg1->SetForegroundColour(*wxWHITE);
     fieldWidths.push_back(txtWidth);                    // Doesn't matter but we need to occupy the position in fieldWidths
 
     // Build the star status fields
@@ -681,9 +679,10 @@ void PHDStatusBar::UpdateStarInfo(double SNR, bool Saturated)
     m_StarIndicators->UpdateState(0, SNR, Saturated);
 }
 
-void PHDStatusBar::UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse)
+void PHDStatusBar::UpdateGuiderInfo(const GuideStepInfo& info)
 {
-    m_GuideIndicators->UpdateState(raDirection, decDirection, raPx, raPulse, decPx, decPulse);
+    m_GuideIndicators->UpdateState(info.directionRA, info.directionDec, fabs(info.mountOffset.X),
+        info.durationRA, fabs(info.mountOffset.Y), info.durationDec);
 }
 
 void PHDStatusBar::ClearGuiderInfo()
@@ -696,8 +695,7 @@ int PHDStatusBar::GetMinSBWidth()
     return m_ctrlPanel->GetMinPanelWidth();
 }
 
-// Override function to be sure status text updates actually go to static text field
-void PHDStatusBar::SetStatusText(const wxString &text)
+void PHDStatusBar::StatusMsg(const wxString& text)
 {
     m_Msg1->SetLabelText(text);
     m_Msg1->Update();

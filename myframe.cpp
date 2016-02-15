@@ -66,9 +66,6 @@ wxDEFINE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
-wxDEFINE_EVENT(SET_STATUS_STAR_INFO, wxThreadEvent);
-wxDEFINE_EVENT(SET_STATUS_STATE_INDICATORS, wxThreadEvent);
-wxDEFINE_EVENT(SET_STATUS_GUIDE_INFO, wxThreadEvent);
 wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 
@@ -146,10 +143,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, REQUEST_EXPOSURE_EVENT, MyFrame::OnRequestExposure)
     EVT_COMMAND(wxID_ANY, WXMESSAGEBOX_PROXY_EVENT, MyFrame::OnMessageBoxProxy)
 
-    EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
-    EVT_THREAD(SET_STATUS_GUIDE_INFO, MyFrame::OnUpdateGuideInfo)
-    EVT_THREAD(SET_STATUS_STAR_INFO, MyFrame::OnUpdateStarInfo)
-    EVT_THREAD(SET_STATUS_STATE_INDICATORS, MyFrame::OnUpdateStateIndicators)
+    EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnStatusMsg)
     EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
     EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
@@ -323,10 +317,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     if (m_serverMode)
     {
         tools_menu->Check(MENU_SERVER,true);
-        if (StartServer(true))
-            SetStatusText(_("Server start failed"));
-        else
-            SetStatusText(_("Server started"));
+        StartServer(true);
     }
 
     #include "xhair.xpm"
@@ -849,72 +840,26 @@ void MyFrame::SetupStatusBar(void)
 
 void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
 {
-    if (wxThread::IsMain())
-        m_statusbar->UpdateStarInfo(SNR, Saturated);
-    else
-    {
-        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_STAR_INFO);
-        STAR_PROPERTIES info;
-        info.SNR = SNR;
-        info.Saturated = Saturated;
-        evt->SetPayload <STAR_PROPERTIES>(info);
-        wxQueueEvent(this, evt);
-    }
-}
-
-void MyFrame::OnUpdateStarInfo(wxThreadEvent& event)
-{
-    STAR_PROPERTIES info = event.GetPayload <STAR_PROPERTIES>();
-    UpdateStarInfo(info.SNR, info.Saturated);
+    m_statusbar->UpdateStarInfo(SNR, Saturated);
 }
 
 void MyFrame::UpdateStateLabels()
 {
-    if (wxThread::IsMain())
-        m_statusbar->UpdateStates();
-    else
-    {
-        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_STATE_INDICATORS);
-        wxQueueEvent(this, evt);
-    }
+    m_statusbar->UpdateStates();
 }
 
-void MyFrame::OnUpdateStateIndicators(wxThreadEvent& event)
+void MyFrame::UpdateGuiderInfo(const GuideStepInfo& info)
 {
-    UpdateStateLabels();
-}
+    Debug.Write(wxString::Format("GuideStep: %.1f px %d ms %s, %.1f px %d ms %s\n", info.mountOffset.X, info.durationRA, info.directionRA == EAST ? "EAST" : "WEST",
+        info.mountOffset.Y, info.durationDec, info.directionRA == NORTH ? "NORTH" : "SOUTH"));
 
-void MyFrame::UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse)
-{
-    if (wxThread::IsMain())
-        m_statusbar->UpdateGuiderInfo(raDirection, decDirection, raPx, raPulse, decPx, decPulse);
-    else
-    {
-        wxThreadEvent *evt = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_GUIDE_INFO);
-        GUIDE_COMMANDS_INFO info;
-        info.raDir = raDirection;
-        info.decDir = decDirection;
-        info.raPx = raPx;
-        info.raPulse = raPulse;
-        info.decPx = decPx;
-        info.decPulse = decPulse;
-        evt->SetPayload <GUIDE_COMMANDS_INFO> (info);
-        wxQueueEvent(this, evt);
-    }
-}
-
-void MyFrame::OnUpdateGuideInfo(wxThreadEvent& event)
-{
-    GUIDE_COMMANDS_INFO info = event.GetPayload <GUIDE_COMMANDS_INFO>();
-    UpdateGuiderInfo(info.raDir, info.decDir, info.raPx, info.raPulse, info.decPx, info.decPulse);
+    m_statusbar->UpdateGuiderInfo(info);
 }
 
 void MyFrame::ClearGuiderInfo()
 {
     m_statusbar->ClearGuiderInfo();
 }
-
-
 
 void MyFrame::SetupKeyboardShortcuts(void)
 {
@@ -1174,46 +1119,64 @@ void MyFrame::DoTryReconnect()
 }
 
 /*
- * The base class wxFrame::SetStatusText() is not
+ * The base class wxFrame::StatusMsg() is not
  * safe to call from worker threads.
  *
- * So, for non-main threads this routine queues the request
+ * For non-main threads this routine queues the request
  * to the frames event queue, and it gets displayed by the main
  * thread as part of event processing.
  *
  */
 
 // Use a timer to show a status message for 10 seconds, then revert back to basic state info
-void MyFrame::SetStatusbarTimer()
+static void StartStatusbarTimer(wxTimer& timer)
 {
     const int DISPLAY_MS = 10000;
-    m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
+    timer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
 }
 
-void MyFrame::SetStatusText(const wxString& text, bool noTimeout)
+static void SetStatusMsg(PHDStatusBar *statusbar, const wxString& text)
 {
-    Debug.Write(wxString::Format("Status Line %s\n", text));
+    Debug.Write(wxString::Format("Status Line: %s\n", text));
+    statusbar->StatusMsg(text);
+}
 
+static void QueueStatusMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
+{
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
+    event->SetString(text);
+    event->SetInt(withTimeout);
+    wxQueueEvent(frame, event);
+}
+
+void MyFrame::StatusMsg(const wxString& text)
+{
     if (wxThread::IsMain())
     {
-        m_statusbar->SetStatusText(text);
-        if (!noTimeout)
-            SetStatusbarTimer();
+        SetStatusMsg(m_statusbar, text);
+        StartStatusbarTimer(m_statusbarTimer);
     }
     else
-    {
-        wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
-        event->SetString(text);
-        event->SetInt((int) noTimeout);
-        wxQueueEvent(this, event);
-    }
+        QueueStatusMsg(this, text, true);
 }
 
-void MyFrame::OnSetStatusText(wxThreadEvent& event)
+void MyFrame::StatusMsgNoTimeout(const wxString& text)
+{
+    if (wxThread::IsMain())
+        SetStatusMsg(m_statusbar, text);
+    else
+        QueueStatusMsg(this, text, false);
+}
+
+void MyFrame::OnStatusMsg(wxThreadEvent& event)
 {
     wxString msg(event.GetString());
-    bool noTimeout = (bool) event.GetInt();
-    SetStatusText(msg, noTimeout);
+    bool withTimeout = event.GetInt() ? true : false;
+
+    SetStatusMsg(m_statusbar, msg);
+
+    if (withTimeout)
+        StartStatusbarTimer(m_statusbarTimer);
 }
 
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
@@ -1332,12 +1295,11 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
     if (pGuider->IsGuiding())
-        m_statusbar->SetStatusText(_("Guiding"));
+        m_statusbar->StatusMsg(_("Guiding"));
+    else if (CaptureActive)
+        m_statusbar->StatusMsg(_("Looping"));
     else
-    if (CaptureActive)
-        m_statusbar->SetStatusText(_("Looping"));
-    else
-        m_statusbar->SetStatusText(wxEmptyString);
+        m_statusbar->StatusMsg(wxEmptyString);
 }
 
 void MyFrame::ScheduleExposure(void)
@@ -1439,7 +1401,7 @@ void MyFrame::StopCapturing(void)
 
     if (m_continueCapturing)
     {
-        SetStatusText(_("Waiting for devices..."));
+        StatusMsg(_("Waiting for devices..."));
         m_continueCapturing = false;
 
         if (m_exposurePending)
@@ -1468,7 +1430,7 @@ void MyFrame::SetPaused(PauseType pause)
     if (pause != PAUSE_NONE && !isPaused)
     {
         pGuider->SetPaused(pause);
-        SetStatusText(_("Paused"));
+        StatusMsg(_("Paused"));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }
@@ -1482,7 +1444,7 @@ void MyFrame::SetPaused(PauseType pause)
         }
         if (m_continueCapturing && !m_exposurePending)
             ScheduleExposure();
-        SetStatusText(_("Resumed"));
+        StatusMsg(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
         EvtServer.NotifyResumed();
     }
@@ -1511,7 +1473,7 @@ bool MyFrame::StartLooping(void)
                 throw ERROR_INFO("cannot start looping when capture active");
             }
         }
-        SetStatusText(_("Looping"));
+        StatusMsg(_("Looping"));
         StartCapturing();
     }
     catch (wxString Msg)
@@ -1591,7 +1553,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
         Debug.Write("dither: clearing mount guide algorithm history\n");
         pMount->ClearHistory();
 
-        SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
+        StatusMsg(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);
         DitherInfo info;
@@ -2088,14 +2050,14 @@ bool MyFrame::LoadDarkLibrary()
     if (load_multi_darks(pCamera, filename))
     {
         Debug.Write(wxString::Format("failed to load dark frames from %s\n", filename));
-        SetStatusText(_("Darks not loaded"));
+        StatusMsg(_("Darks not loaded"));
         return false;
     }
     else
     {
         Debug.Write(wxString::Format("loaded dark library from %s\n", filename));
         pCamera->SelectDark(m_exposureDuration);
-        SetStatusText(_("Darks loaded"));
+        StatusMsg(_("Darks loaded"));
         return true;
     }
 }

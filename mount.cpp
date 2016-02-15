@@ -681,7 +681,7 @@ bool Mount::FlipCalibration(void)
 
         SetCalibration(cal);
 
-        pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
+        pFrame->StatusMsg(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
             ::PierSideStr(priorPierSide, wxEmptyString), degrees(origX), degrees(origY),
             ::PierSideStr(newPierSide, wxEmptyString), degrees(newX), degrees(newY)));
     }
@@ -702,6 +702,8 @@ void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
 
 void Mount::LogGuideStepInfo()
 {
+    pFrame->UpdateGuiderInfo(m_lastStep);
+
     if (m_lastStep.frameNumber < 0)
         return;
 
@@ -774,14 +776,6 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         MoveResultInfo xMoveResult;
         result = Move(xDirection, requestedXAmount, moveType, &xMoveResult);
 
-        wxString msg;
-
-        if (xMoveResult.amountMoved > 0)
-        {
-            msg = wxString::Format(_("%s %5.2f px %3d ms"), xDirection == EAST ? _("East") : _("West"),
-                fabs(xDistance), xMoveResult.amountMoved);
-        }
-
         MoveResultInfo yMoveResult;
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
@@ -792,23 +786,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
                 requestedYAmount += backlash_pulse;
             }
             result = Move(yDirection, requestedYAmount, moveType, &yMoveResult);
-
-            if (yMoveResult.amountMoved > 0)
-            {
-                msg = wxString::Format(_("%s%*s%s %.2f px %d ms"), msg,
-                    msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
-                    yDirection == SOUTH ? _("South") : _("North"),
-                    fabs(yDistance), yMoveResult.amountMoved);
-            }
         }
-
-        if (!msg.IsEmpty())
-        {
-            pFrame->UpdateGuiderInfo(xDirection, yDirection, fabs(xDistance), xMoveResult.amountMoved, fabs(yDistance), yMoveResult.amountMoved);
-            Debug.AddLine(msg);
-        }
-        else
-            pFrame->ClearGuiderInfo();
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
         // We don't want to do anything with the info here in the worker thread since UI operations are

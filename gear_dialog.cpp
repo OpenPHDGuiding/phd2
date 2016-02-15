@@ -818,7 +818,7 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
             throw THROW_INFO("OnChoiceCamera: m_pCamera == NULL");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -960,7 +960,7 @@ bool GearDialog::DoConnectCamera(void)
                 }
             }
         }
-        pFrame->SetStatusText(_("Connecting to Camera ..."), true);
+        pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
         wxString cameraId = SelectedCameraId(m_pCamera);
         Debug.Write(wxString::Format("Connecting to camera id = [%s]\n", cameraId));
@@ -996,15 +996,15 @@ bool GearDialog::DoConnectCamera(void)
         }
         pFrame->SetDarkMenuState();
 
-        pFrame->SetStatusText(_("Camera Connected"));
+        pFrame->StatusMsg(_("Camera Connected"));
         
         pFrame->UpdateStateLabels();
      }
 
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pFrame->SetStatusText(_("Camera Connect Failed"));
+        pFrame->StatusMsg(_("Camera Connect Failed"));
         pFrame->UpdateStateLabels();
     }
 
@@ -1046,10 +1046,10 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
             OnButtonDisconnectScope(event);
         }
 
-        pFrame->SetStatusText(_("Camera Disconnected"));
+        pFrame->StatusMsg(_("Camera Disconnected"));
         pFrame->UpdateStateLabels();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1100,7 +1100,7 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
 
         m_ascomScopeSelected = choice.Contains("ASCOM");
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1131,7 +1131,7 @@ void GearDialog::OnChoiceAuxScope(wxCommandEvent& event)
             throw THROW_INFO("OnAuxChoiceScope: m_pAuxScope == NULL");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1162,7 +1162,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 
         if (m_pScope)
         {
-            pFrame->SetStatusText(_("Connecting to Mount ..."), true);
+            pFrame->StatusMsgNoTimeout(_("Connecting to Mount ..."));
 
             if (m_pScope->Connect())
             {
@@ -1176,7 +1176,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
                 throw THROW_INFO("OnButtonConnectScope: PulseGuide commands not supported");
             }
 
-            pFrame->SetStatusText(_("Mount Connected"));
+            pFrame->StatusMsg(_("Mount Connected"));
             pFrame->UpdateStateLabels();
         }
         else
@@ -1186,10 +1186,10 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 
         Debug.AddLine("Connected Scope:" + (m_pScope ? m_pScope->Name() : "None"));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pFrame->SetStatusText(_("Mount Connect Failed"));
+        pFrame->StatusMsg(_("Mount Connect Failed"));
         pFrame->UpdateStateLabels();
     }
 
@@ -1209,22 +1209,22 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
 
         if (m_pAuxScope)
         {
-            pFrame->SetStatusText(_("Connecting to Aux Mount ..."), true);
+            pFrame->StatusMsgNoTimeout(_("Connecting to Aux Mount ..."));
 
             if (m_pAuxScope->Connect())
             {
                 throw THROW_INFO("OnButtonConnectAuxScope: connect failed");
             }
 
-            pFrame->SetStatusText(_("Aux Mount Connected"));
+            pFrame->StatusMsg(_("Aux Mount Connected"));
         }
 
         Debug.AddLine("Connected AuxScope:" + (m_pAuxScope ? m_pAuxScope->Name() : "None"));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pFrame->SetStatusText(_("Aux Mount Connect Failed"));
+        pFrame->StatusMsg(_("Aux Mount Connect Failed"));
     }
 
     UpdateButtonState();
@@ -1245,7 +1245,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
         }
 
         m_pScope->Disconnect();
-        pFrame->SetStatusText(_("Mount Disconnected"));
+        pFrame->StatusMsg(_("Mount Disconnected"));
         pFrame->UpdateStateLabels();
 
         if (pFrame->pManualGuide)
@@ -1253,7 +1253,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
             pFrame->pManualGuide->Destroy();
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1276,9 +1276,9 @@ void GearDialog::OnButtonDisconnectAuxScope(wxCommandEvent& event)
         }
 
         m_pAuxScope->Disconnect();
-        pFrame->SetStatusText(_("Aux Mount Disconnected"));
+        pFrame->StatusMsg(_("Aux Mount Disconnected"));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1330,7 +1330,7 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
             throw THROW_INFO("OnChoiceStepGuider: m_pStepGuider == NULL");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1358,7 +1358,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 
         if (m_pStepGuider)
         {
-            pFrame->SetStatusText(_("Connecting to AO ..."), true);
+            pFrame->StatusMsgNoTimeout(_("Connecting to AO ..."));
 
             if (m_pStepGuider->Connect())
             {
@@ -1368,7 +1368,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 
         if (m_pStepGuider)
         {
-            pFrame->SetStatusText(_("AO Connected"));
+            pFrame->StatusMsg(_("AO Connected"));
             pFrame->UpdateStateLabels();
         }
         else
@@ -1378,10 +1378,10 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 
         Debug.AddLine("Connected AO:" + (m_pStepGuider ? m_pStepGuider->Name() : "None"));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pFrame->SetStatusText(_("AO Connect Failed"));
+        pFrame->StatusMsg(_("AO Connect Failed"));
         pFrame->UpdateStateLabels();
     }
 
@@ -1409,7 +1409,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
             OnButtonDisconnectScope(event);
         }
 
-        pFrame->SetStatusText(_("AO Disconnected"));
+        pFrame->StatusMsg(_("AO Disconnected"));
         pFrame->UpdateStateLabels();
 
         if (pFrame->pManualGuide)
@@ -1417,7 +1417,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
             pFrame->pManualGuide->Destroy();
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1445,7 +1445,7 @@ void GearDialog::OnChoiceRotator(wxCommandEvent& event)
             throw THROW_INFO("OnChoiceRotator: m_pRotator == NULL");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1473,7 +1473,7 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 
         if (m_pRotator)
         {
-            pFrame->SetStatusText(_("Connecting to Rotator ..."), true);
+            pFrame->StatusMsgNoTimeout(_("Connecting to Rotator ..."));
 
             if (m_pRotator->Connect())
             {
@@ -1483,7 +1483,7 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 
         if (m_pRotator)
         {
-            pFrame->SetStatusText(_("Rotator Connected"));
+            pFrame->StatusMsg(_("Rotator Connected"));
             pFrame->UpdateStateLabels();
         }
         else
@@ -1493,10 +1493,10 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 
         Debug.AddLine("Connected Rotator:" + (m_pRotator ? m_pRotator->Name() : "None"));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pFrame->SetStatusText(_("Rotator Connect Failed"));
+        pFrame->StatusMsg(_("Rotator Connect Failed"));
         pFrame->UpdateStateLabels();
     }
 
@@ -1519,10 +1519,10 @@ void GearDialog::OnButtonDisconnectRotator(wxCommandEvent& event)
 
         m_pRotator->Disconnect();
 
-        pFrame->SetStatusText(_("Rotator Disconnected"));
+        pFrame->StatusMsg(_("Rotator Disconnected"));
         pFrame->UpdateStateLabels();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

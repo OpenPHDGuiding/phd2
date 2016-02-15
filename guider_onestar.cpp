@@ -426,7 +426,7 @@ bool GuiderOneStar::AutoSelect(void)
         }
 
         UpdateImageDisplay();
-        pFrame->SetStatusText(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
+        pFrame->StatusMsg(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
         pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
     }
@@ -586,7 +586,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
             errorInfo->starMass = newStar.Mass;
             errorInfo->starSNR = newStar.SNR;
             errorInfo->status = StarStatusStr(m_star);
-            pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]));
+            pFrame->StatusMsg(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]));
             Debug.Write(wxString::Format("UpdateGuideState(): star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100, limits[0], limits[2]));
             m_massChecker->AppendData(newStar.Mass);
             throw THROW_INFO("massChangeThreshold error");
@@ -683,12 +683,12 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 
             if (!m_star.IsValid())
             {
-                pFrame->SetStatusText(wxString::Format(_("No star found")));
+                pFrame->StatusMsg(wxString::Format(_("No star found")));
             }
             else
             {
                 SetLockPosition(m_star);
-                pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
+                pFrame->StatusMsg(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
                 pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);

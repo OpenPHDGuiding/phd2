@@ -82,7 +82,7 @@ public:
     wxIcon icoYellowLed;
     wxIcon icoRedLed;
 
-    SBStateIndicators(SBPanel* panel, std::vector <int> &fldWidths);
+    SBStateIndicators(SBPanel* panel, std::vector<int>& fldWidths);
     ~SBStateIndicators();
     void PositionControls();
     void UpdateState();
@@ -104,7 +104,7 @@ public:
 
 public:
     SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* container,
-        int indField, const wxString &indLabel, SBFieldTypes indType, std::vector <int> &fldWidths);
+        int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths);
     void PositionControl();
     void UpdateState();
     wxString IndicatorToolTip(SBFieldTypes indType, int triState);
@@ -123,11 +123,10 @@ class SBGuideIndicators
     SBPanel* parentPanel;
 
 public:
-    SBGuideIndicators(SBPanel* panel, std::vector <int> &fldWidths);
+    SBGuideIndicators(SBPanel* panel, std::vector<int>& fldWidths);
     void PositionControls();
-    void UpdateState(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void UpdateState(int raDirection, int decDirection, double raPx, int raPulse, double decPx, int decPulse);
     void ClearState() { UpdateState(LEFT, UP, 0, 0, 0, 0); }
-
 };
 
 class SBStarIndicators
@@ -144,7 +143,7 @@ class SBStarIndicators
     SBPanel* parentPanel;
 
 public:
-    SBStarIndicators(SBPanel *panel, std::vector <int> &fldWidths);
+    SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths);
     void PositionControls();
     void UpdateState(double MassPct, double SNR, bool Saturated);
 
@@ -160,11 +159,11 @@ private:
 
 public:
     static PHDStatusBar* CreateInstance(wxWindow* parent, long style = wxSTB_DEFAULT_STYLE);
-    void SetStatusText(const wxString &text);
+    void StatusMsg(const wxString& text);
     void UpdateStates();
     void UpdateStarInfo(double SNR, bool Saturated);
     void ClearStarInfo() { UpdateStarInfo(-1, 0); }
-    void UpdateGuiderInfo(GUIDE_DIRECTION raDirection, GUIDE_DIRECTION decDirection, double raPx, double raPulse, double decPx, double decPulse);
+    void UpdateGuiderInfo(const GuideStepInfo& step);
     void ClearGuiderInfo();
     int GetMinSBWidth();
 

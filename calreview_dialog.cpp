@@ -546,9 +546,8 @@ void CalRestoreDialog::OnRestore(wxCommandEvent& event)
 {
     Debug.AddLine("User-requested restore calibration");
     pFrame->LoadCalibration();
-    pFrame->SetStatusText(_("Calibration restored"));
+    pFrame->StatusMsg(_("Calibration restored"));
     EndModal(wxID_OK);
-
 }
 
 // CalSanity dialog may get launched as part of an 'alert' if the last calibration looked wonky - this one is non-modal
@@ -794,7 +793,7 @@ void CalSanityDialog::OnRestore(wxCommandEvent& evt)
     m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle, m_oldDetails.origBinning);
 
     pFrame->LoadCalibration();
-    pFrame->SetStatusText(_("Previous calibration restored"));
+    pFrame->StatusMsg(_("Previous calibration restored"));
     Debug.AddLine("Calibration sanity check: user chose to restore old calibration");
     ShutDown();
 }

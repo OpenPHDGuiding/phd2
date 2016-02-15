@@ -256,16 +256,12 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
     }
     else
     {
-        pFrame->SetStatusText(wxString::Format(_("%s saved"), wxFileName(fname).GetFullName()));
+        pFrame->StatusMsg(wxString::Format(_("%s saved"), wxFileName(fname).GetFullName()));
     }
 }
 
 void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event))
 {
-/*  if (ASCOM_IsMoving())
-        SetStatusText(_T("Moving"),2);
-    else
-        SetStatusText(_T("Still"),2);*/
 }
 
 void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
@@ -299,7 +295,7 @@ void MyFrame::FinishStop(void)
     pGuider->ForceFullFrame();
     ResetAutoExposure();
     UpdateButtonsStatus();
-    SetStatusText(_("Stopped."));
+    StatusMsg(_("Stopped."));
     PhdController::AbortController("Stopped capturing");
 }
 
@@ -368,7 +364,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
             PhdController::AbortController("Error reported capturing image");
-            SetStatusText(_("Stopped."));
+            StatusMsg(_("Stopped."));
 
             // some camera drivers disconnect the camera on error
             if (!pCamera->Connected)
@@ -512,7 +508,7 @@ bool MyFrame::LoadDarkHandler(bool checkIt)
         }
         pCamera->ClearDarks();
         m_useDarksMenuItem->Check(false);
-        SetStatusText(_("Dark library unloaded"));
+        StatusMsg(_("Dark library unloaded"));
         return true;
     }
 }
@@ -543,11 +539,11 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
             pCamera->SetDefectMap(defectMap);
             m_useDarksMenuItem->Check(false);
             m_useDefectMapMenuItem->Check(true);
-            SetStatusText(_("Defect map loaded"));
+            StatusMsg(_("Defect map loaded"));
         }
         else
         {
-            SetStatusText(_("Defect map not loaded"));
+            StatusMsg(_("Defect map not loaded"));
         }
     }
     else
@@ -559,7 +555,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
         }
         pCamera->ClearDefectMap();
         m_useDefectMapMenuItem->Check(false);
-        SetStatusText(_("Bad-pixel map unloaded"));
+        StatusMsg(_("Bad-pixel map unloaded"));
     }
 }
 

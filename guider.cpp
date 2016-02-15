@@ -1159,7 +1159,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 case STATE_CALIBRATING_SECONDARY:
                     Debug.Write("Star lost during calibration... blundering on\n");
                     EvtServer.NotifyStarLost(info);
-                    pFrame->SetStatusText(_("star lost"));
+                    pFrame->StatusMsg(_("star lost"));
                     break;
                 case STATE_GUIDING:
                 {
@@ -1294,7 +1294,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_CALIBRATED:
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
-                pFrame->SetStatusText(_("Guiding"));
+                pFrame->StatusMsg(_("Guiding"));
                 pFrame->m_guidingStarted = wxDateTime::UNow();
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
@@ -1354,7 +1354,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     // during calibration, the mount is responsible for updating the status message
     if (someException && m_state != STATE_CALIBRATING_PRIMARY && m_state != STATE_CALIBRATING_SECONDARY)
     {
-        pFrame->SetStatusText(statusMessage);
+        pFrame->StatusMsg(statusMessage);
     }
 
     if (m_measurementMode && m_state != STATE_GUIDING)
