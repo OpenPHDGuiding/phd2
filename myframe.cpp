@@ -824,6 +824,7 @@ void MyFrame::SetupToolBar()
 
 void MyFrame::UpdateCalibrationStatus(void)
 {
+    assert(wxThread::IsMain());
 
     m_statusbar->UpdateStates();
     if (pStatsWin)
@@ -836,29 +837,6 @@ void MyFrame::SetupStatusBar(void)
     SetStatusBar(m_statusbar);
     PositionStatusBar();
     UpdateCalibrationStatus();
-}
-
-void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
-{
-    m_statusbar->UpdateStarInfo(SNR, Saturated);
-}
-
-void MyFrame::UpdateStateLabels()
-{
-    m_statusbar->UpdateStates();
-}
-
-void MyFrame::UpdateGuiderInfo(const GuideStepInfo& info)
-{
-    Debug.Write(wxString::Format("GuideStep: %.1f px %d ms %s, %.1f px %d ms %s\n", info.mountOffset.X, info.durationRA, info.directionRA == EAST ? "EAST" : "WEST",
-        info.mountOffset.Y, info.durationDec, info.directionRA == NORTH ? "NORTH" : "SOUTH"));
-
-    m_statusbar->UpdateGuiderInfo(info);
-}
-
-void MyFrame::ClearGuiderInfo()
-{
-    m_statusbar->ClearGuiderInfo();
 }
 
 void MyFrame::SetupKeyboardShortcuts(void)
@@ -1141,11 +1119,25 @@ static void SetStatusMsg(PHDStatusBar *statusbar, const wxString& text)
     statusbar->StatusMsg(text);
 }
 
-static void QueueStatusMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
+enum StatusbarThreadMsgType
+{
+    THR_SB_MSG_TEXT,
+    THR_SB_STATE_LABELS,
+};
+
+static void QueueStatusbarTextMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
+    event->SetExtraLong(THR_SB_MSG_TEXT);
     event->SetString(text);
     event->SetInt(withTimeout);
+    wxQueueEvent(frame, event);
+}
+
+static void QueueStatusbarStateLabelsUpdateMsg(wxEvtHandler *frame)
+{
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
+    event->SetExtraLong(THR_SB_STATE_LABELS);
     wxQueueEvent(frame, event);
 }
 
@@ -1157,7 +1149,7 @@ void MyFrame::StatusMsg(const wxString& text)
         StartStatusbarTimer(m_statusbarTimer);
     }
     else
-        QueueStatusMsg(this, text, true);
+        QueueStatusbarTextMsg(this, text, true);
 }
 
 void MyFrame::StatusMsgNoTimeout(const wxString& text)
@@ -1165,18 +1157,55 @@ void MyFrame::StatusMsgNoTimeout(const wxString& text)
     if (wxThread::IsMain())
         SetStatusMsg(m_statusbar, text);
     else
-        QueueStatusMsg(this, text, false);
+        QueueStatusbarTextMsg(this, text, false);
 }
 
 void MyFrame::OnStatusMsg(wxThreadEvent& event)
 {
-    wxString msg(event.GetString());
-    bool withTimeout = event.GetInt() ? true : false;
+    switch (event.GetExtraLong()) {
+    case THR_SB_MSG_TEXT: {
+        wxString msg(event.GetString());
+        bool withTimeout = event.GetInt() ? true : false;
 
-    SetStatusMsg(m_statusbar, msg);
+        SetStatusMsg(m_statusbar, msg);
 
-    if (withTimeout)
-        StartStatusbarTimer(m_statusbarTimer);
+        if (withTimeout)
+            StartStatusbarTimer(m_statusbarTimer);
+        break;
+    }
+    case THR_SB_STATE_LABELS:
+        m_statusbar->UpdateStates();
+        break;
+    }
+}
+
+void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
+{
+    assert(wxThread::IsMain());
+    m_statusbar->UpdateStarInfo(SNR, Saturated);
+}
+
+void MyFrame::UpdateStateLabels()
+{
+    if (wxThread::IsMain())
+        m_statusbar->UpdateStates();
+    else
+        QueueStatusbarStateLabelsUpdateMsg(this);
+}
+
+void MyFrame::UpdateGuiderInfo(const GuideStepInfo& info)
+{
+    Debug.Write(wxString::Format("GuideStep: %.1f px %d ms %s, %.1f px %d ms %s\n", info.mountOffset.X, info.durationRA, info.directionRA == EAST ? "EAST" : "WEST",
+        info.mountOffset.Y, info.durationDec, info.directionRA == NORTH ? "NORTH" : "SOUTH"));
+
+    assert(wxThread::IsMain());
+    m_statusbar->UpdateGuiderInfo(info);
+}
+
+void MyFrame::ClearGuiderInfo()
+{
+    assert(wxThread::IsMain());
+    m_statusbar->ClearGuiderInfo();
 }
 
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
