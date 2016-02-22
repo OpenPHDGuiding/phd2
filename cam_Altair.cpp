@@ -156,6 +156,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 
     Connected = true;
 	bool hasROI = false;
+	bool hasSkip = false;
 
     for (int i = 0; i < numCameras; i++)
     {
@@ -163,6 +164,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         {
             Name = ai[i].displayname;
 			hasROI = (ai[i].model->flag & ALTAIR_FLAG_ROI_HARDWARE) != 0;
+			hasSkip = (ai[i].model->flag & ALTAIR_FLAG_BINSKIP_SUPPORTED) != 0;
             break;
         }
     }
@@ -221,6 +223,11 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 	{
 		Altair_put_Roi(m_handle, 0, 0, width, height);
 	}
+
+	if (hasSkip)
+		Altair_put_Mode(m_handle, 0);
+
+	Altair_put_Option(m_handle, ALTAIR_OPTION_RAW, 0);
 
     return false;
 }
@@ -347,7 +354,12 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 	if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-		Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
+		HRESULT result = Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
+		if (result != 0)
+		{
+			Debug.AddLine("Altair_StartPullModeWithCallback failed with code %d", result);
+			return true;
+		}
         m_capturing = true;
     }
 
