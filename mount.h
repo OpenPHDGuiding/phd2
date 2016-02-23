@@ -277,7 +277,7 @@ public:
 
     void GetLastCalibration(Calibration *cal);
     BacklashComp *GetBacklashComp() { return m_backlashComp; }
-    void FlagBacklashOverShoot(double pixelAmount, GuideAxis axis);
+    void ResetBLCBaseline();
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of

@@ -1720,7 +1720,9 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
         m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
         m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-        m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+        int oldVal = m_pScope->m_backlashComp->GetBacklashPulse();
+        if (oldVal != m_pBacklashPulse->GetValue())
+            m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
         m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
         m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
         if (pFrame)

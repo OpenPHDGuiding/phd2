@@ -108,7 +108,7 @@ public:
     int GetBacklashResultMs() const { return m_backlashResultMs; }
     bool GetBacklashExempted() const { return m_backlashExemption; }
     wxString GetLastStatus() const { return m_lastStatus; }
-    void SetBacklashPulse(int amt) { m_pulseWidth = amt; }
+    void SetBacklashPulse(int amt);
     void ShowGraph(wxDialog *pGA);
     const std::vector<double>& GetNorthSteps() const { return m_northBLSteps; }
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
@@ -116,22 +116,26 @@ public:
 
 class BacklashComp
 {
+    static const unsigned int HISTORY_SIZE = 10;
     bool m_compActive;
     int m_lastDirection;
     bool m_justCompensated;
+    int m_adjustmentCeiling;
     int m_pulseWidth;
+    ArrayOfDbl m_residualOffsets;
     Mount *m_pMount;
 
 public:
 
     BacklashComp(Mount *theMount);
     int GetBacklashPulse() const { return m_pulseWidth; }
+    bool WantsUpdates() { return m_justCompensated; }
     void SetBacklashPulse(int ms);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }
-    int GetBacklashComp(int dir, double yDist);
-    void HandleOverShoot(int pulseSize);
-    void Reset();
+    int ApplyBacklashComp(int dir, double yDist, int& yAmount);
+    void TrackBLCResults(double yDistance, double minMove, double yRate);
+    void ResetBaseline();
 };
 
 #endif
