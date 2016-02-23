@@ -759,16 +759,19 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
                 {
                     xDistance = m_pXGuideAlgorithm->result(xDistance);
                 }
+
                 // Let BLC track the raw offsets in Dec
-                if (m_backlashComp->WantsUpdates())
-                    m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+                m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+
                 if (m_pYGuideAlgorithm)
                 {
                     yDistance = m_pYGuideAlgorithm->result(yDistance);
                 }
             }
             else
+            {
                 m_backlashComp->ResetBaseline();
+            }
         }
 
         // Figure out the guide directions based on the (possibly) updated distances
@@ -785,7 +788,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
             int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
             if (requestedYAmount > 0 && !IsStepGuider() && moveType != MOVETYPE_DIRECT && GetGuidingEnabled())
             {
-                int backlash_pulse = m_backlashComp->ApplyBacklashComp(yDirection, yDistance, requestedYAmount);
+                m_backlashComp->ApplyBacklashComp(yDirection, yDistance, &requestedYAmount);
             }
             result = Move(yDirection, requestedYAmount, moveType, &yMoveResult);
         }

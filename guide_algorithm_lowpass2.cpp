@@ -107,9 +107,10 @@ double GuideAlgorithmLowpass2::result(double input)
     }
     else
         m_rejects = 0;
+
     if (fabs(input) < m_minMove)
         dReturn = 0.0;
-    
+
     Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() returns %.2f from input %.2f\n", dReturn, input));
     return dReturn;
 }

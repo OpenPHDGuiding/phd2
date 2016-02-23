@@ -36,11 +36,13 @@
 #include "phd.h"
 #include "backlash_comp.h"
 
+static const unsigned int HISTORY_SIZE = 10;
+
 BacklashComp::BacklashComp(Mount *theMount)
 {
     m_pMount = theMount;
     m_pulseWidth = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", 0);
-    m_adjustmentCeiling = m_pulseWidth * 2.0;
+    m_adjustmentCeiling = m_pulseWidth * 2;
     if (m_pulseWidth > 0)
         m_compActive = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", false);
     else
@@ -51,12 +53,10 @@ BacklashComp::BacklashComp(Mount *theMount)
         Debug.AddLine(wxString::Format("BLC: Backlash compensation is enabled with correction = %d ms", m_pulseWidth));
     else
         Debug.AddLine("BLC: Backlash compensation is disabled");
-
 }
 
 void BacklashComp::SetBacklashPulse(int ms)
 {
-
     if (m_pulseWidth != ms)
     {
         m_pulseWidth = wxMax(0, ms);
@@ -66,7 +66,6 @@ void BacklashComp::SetBacklashPulse(int ms)
     }
 
     pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
-
 }
 
 void BacklashComp::EnableBacklashComp(bool enable)
@@ -86,99 +85,93 @@ void BacklashComp::ResetBaseline()
     Debug.AddLine("BLC: Last direction was reset");
 }
 
-void BacklashComp::TrackBLCResults(double yDistance, double minMove, double yRate)
+void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRate)
 {
-    GUIDE_DIRECTION dir;
+    assert(m_justCompensated); // caller checks this
+        
+    // The previous Dec correction included a BLC
+
+    // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we 
+    // needed more correction (+) or less (-)
+    GUIDE_DIRECTION dir = yDistance > 0.0 ? DOWN : UP;
+    yDistance = fabs(yDistance);
     double miss;
-    double avgMiss = 0.;
-    int nominalBLC;
-    int newBLC;
-    int numPoints;
-
-    if (m_justCompensated)              // The previous Dec correction included a BLC
+    if (dir == m_lastDirection)
+        miss = yDistance;            // + => we needed more of the same, under-shoot
+    else
+        miss = -yDistance;           // over-shoot
+    minMove = fmax(minMove, 0);         // Algo w/ no min-move returns -1
+    if (m_residualOffsets.GetCount() == HISTORY_SIZE)
     {
-        // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we 
-        // needed more correction (+) or less (-)
-        dir = yDistance > 0.0 ? DOWN : UP;
-        yDistance = fabs(yDistance);
-        if (dir == m_lastDirection)
-            miss = yDistance;            // + => we needed more of the same, under-shoot
-        else
-            miss = -yDistance;           // over-shoot
-        minMove = fmax(minMove, 0);         // Algo w/ no min-move returns -1
-        if (m_residualOffsets.GetCount() == HISTORY_SIZE)
-        {
-            m_residualOffsets.RemoveAt(0);
-        }
-        m_residualOffsets.Add(miss);
-        numPoints = m_residualOffsets.GetCount();
+        m_residualOffsets.RemoveAt(0);
+    }
+    m_residualOffsets.Add(miss);
 
-        if (yDistance >= minMove)           // Don't adjust for a residual error < min_move_equivalent
-        {
-            // Compute the average residual error
-            for (int inx = 0; inx < numPoints; inx++)
-                avgMiss += m_residualOffsets.Item(inx);
-            avgMiss = avgMiss / numPoints;
+    if (yDistance >= minMove)           // Don't adjust for a residual error < min_move_equivalent
+    {
+        // Compute the average residual error
+        int numPoints = m_residualOffsets.GetCount();
+        double avgMiss = 0.;
+        for (int inx = 0; inx < numPoints; inx++)
+            avgMiss += m_residualOffsets.Item(inx);
+        avgMiss = avgMiss / numPoints;
 
-            if (abs(avgMiss) > minMove)                        // Don't make micro-adjustments
+        if (abs(avgMiss) > minMove)                        // Don't make micro-adjustments
+        {
+            double corr = (int)floor(fabs(avgMiss / yRate) + 0.5);
+            int nominalBLC;
+            int newBLC;
+            if (miss >= 0)                                  // We under-shot the target
             {
-                double corr = (int)floor(fabs(avgMiss / yRate) + 0.5);
-                if (miss >= 0)                                  // We under-shot the target
-                {
-                    if (avgMiss > 0)
-                        nominalBLC = m_pulseWidth + corr;
-                    else
-                        nominalBLC = m_pulseWidth;              // Need more evidence of under-shooting
-                    // Don't increase by more than 10% or go above 2X starting pulse size
-                    newBLC = ROUND(fmin(m_pulseWidth * 1.1, std::min(m_adjustmentCeiling, nominalBLC)));
-                }
+                if (avgMiss > 0)
+                    nominalBLC = m_pulseWidth + corr;
                 else
-                {                                              // we over-shot the target
-                    if (avgMiss < 0)
-                        nominalBLC = m_pulseWidth - corr;
-                    else
-                        nominalBLC = m_pulseWidth;            // Need more evidence of over-shooting
-                    // Don't decrease by more than 20% or go below zero
-                    newBLC = ROUND(fmax(0.8 * m_pulseWidth, std::max(0, nominalBLC)));
-                }
-
-                if (newBLC != m_pulseWidth && numPoints > 2)
-                    m_residualOffsets.RemoveAt(0);               // Don't let initial big deflection dominate adjustments
-                if (newBLC != m_pulseWidth)
-                {
-                    Debug.AddLine(wxString::Format("BLC: Adjustment from %d to %d based on avg residual of %.1f", m_pulseWidth, newBLC, avgMiss));
-                    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", newBLC);
-                }
-                m_pulseWidth = newBLC;
+                    nominalBLC = m_pulseWidth;              // Need more evidence of under-shooting
+                // Don't increase by more than 10% or go above 2X starting pulse size
+                newBLC = ROUND(fmin(m_pulseWidth * 1.1, std::min(m_adjustmentCeiling, nominalBLC)));
             }
+            else
+            {                                              // we over-shot the target
+                if (avgMiss < 0)
+                    nominalBLC = m_pulseWidth - corr;
+                else
+                    nominalBLC = m_pulseWidth;            // Need more evidence of over-shooting
+                // Don't decrease by more than 20% or go below zero
+                newBLC = ROUND(fmax(0.8 * m_pulseWidth, std::max(0, nominalBLC)));
+            }
+
+            if (newBLC != m_pulseWidth && numPoints > 2)
+                m_residualOffsets.RemoveAt(0);               // Don't let initial big deflection dominate adjustments
+            if (newBLC != m_pulseWidth)
+            {
+                Debug.AddLine(wxString::Format("BLC: Adjustment from %d to %d based on avg residual of %.1f", m_pulseWidth, newBLC, avgMiss));
+                pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", newBLC);
+            }
+            m_pulseWidth = newBLC;
         }
-        m_justCompensated = false;
     }
 
-
+    m_justCompensated = false;
 }
 
 // Possibly add the backlash comp to the pending guide pulse (yAmount)
-int BacklashComp::ApplyBacklashComp(int dir, double yDist, int& yAmount)
+void BacklashComp::ApplyBacklashComp(int dir, double yDist, int *yAmount)
 {
-    int rslt = 0;
-    if (m_compActive && m_pulseWidth > 0)
+    m_justCompensated = false;
+
+    if (!m_compActive || m_pulseWidth <= 0 || yDist == 0.0)
+        return;
+
+    if (m_lastDirection != NONE && dir != m_lastDirection)
     {
-        if (fabs(yDist) > 0)
-        {
-            if (m_lastDirection != NONE && dir != m_lastDirection)
-            {
-                rslt = (int) m_pulseWidth;
-                yAmount += rslt;
-                Debug.AddLine(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied", 
-                    m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", rslt));
-            }
-                
-            m_lastDirection = dir;
-        }
+        *yAmount += m_pulseWidth;
+        m_justCompensated = true;
+
+        Debug.AddLine(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied", 
+            m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
     }
-    m_justCompensated = (rslt != 0);
-    return rslt;
+                
+    m_lastDirection = dir;
 }
 
 // Class for implementing the backlash graph dialog
@@ -244,13 +237,13 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     // Find the max excursion from the origin in order to scale the points to fit the bitmap
     double maxDec = -9999.0;
     double minDec = 9999.0;
-    for (std::vector<double>::const_iterator it = northSteps.begin(); it != northSteps.end(); ++it)
+    for (auto it = northSteps.begin(); it != northSteps.end(); ++it)
     {
         maxDec = wxMax(maxDec, *it);
         minDec = wxMin(minDec, *it);
     }
 
-    for (std::vector<double>::const_iterator it = southSteps.begin(); it != southSteps.end(); ++it)
+    for (auto it = southSteps.begin(); it != southSteps.end(); ++it)
     {
         maxDec = wxMax(maxDec, *it);
         minDec = wxMin(minDec, *it);
@@ -316,7 +309,6 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 
     dc.SelectObject(wxNullBitmap);
     return bmp;
-
 }
 
 // -------------------  BacklashTool Implementation
