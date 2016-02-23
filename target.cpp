@@ -357,14 +357,16 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     // label sky coordinate directions
 
-    if (pMount->RAParity() == GUIDE_PARITY_EVEN)
+    GuideParity raParity = pMount ? pMount->RAParity() : GUIDE_PARITY_UNKNOWN;
+    if (raParity == GUIDE_PARITY_EVEN)
         dc.DrawText(_("SkyE"), size.x - 30, center.y + 5);  // sky E = mount E
-    else if (pMount->RAParity() == GUIDE_PARITY_ODD)
+    else if (raParity == GUIDE_PARITY_ODD)
         dc.DrawText(_("SkyE"), leftEdge, center.y + 5);     // sky E = mount W
 
-    if (pMount->DecParity() == GUIDE_PARITY_EVEN)
+    GuideParity decParity = pMount ? pMount->DecParity() : GUIDE_PARITY_UNKNOWN;
+    if (decParity == GUIDE_PARITY_EVEN)
         dc.DrawText(_("SkyN"), center.x + 5, topEdge - 3);  // sky N = mount N
-    else if (pMount->DecParity() == GUIDE_PARITY_ODD)
+    else if (decParity == GUIDE_PARITY_ODD)
         dc.DrawText(_("SkyN"), center.x + 5, size.y - 15);  // sky N = mount S
 
     dc.SetPen(wxPen(wxColour(127, 127, 255), 1, wxSOLID));
