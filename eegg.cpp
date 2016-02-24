@@ -202,10 +202,17 @@ void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
 
 void MyFrame::OnGuidingAssistant(wxCommandEvent& WXUNUSED(evt))
 {
-    if (pGuidingAssistant)
+    if (!pCamera)
     {
-        pGuidingAssistant->Show();
+        wxMessageBox(_("Please connect a camera first."));
+        return;
     }
+    if (!TheScope())
+    {
+        wxMessageBox(_("Please connect a mount first."));
+        return;
+    }
+
     if (!pGuidingAssistant)
     {
         bool ok = true;

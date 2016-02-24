@@ -591,6 +591,12 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
 
 void MyFrame::OnImportCamCal(wxCommandEvent& evt)
 {
+    if (!pCamera)
+    {
+        wxMessageBox(_("Please connect a camera first."));
+        return;
+    }
+
     CamCalImportDialog dlg(this);
 
     dlg.ShowModal();

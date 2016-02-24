@@ -793,6 +793,12 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
 
 wxWindow *DriftTool::CreateDriftToolWindow()
 {
+    if (!pCamera)
+    {
+        wxMessageBox(_("Please connect a camera first."));
+        return 0;
+    }
+
     // confirm that image scale is specified
 
     if (pFrame->GetCameraPixelScale() == 1.0)
