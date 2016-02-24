@@ -46,6 +46,9 @@ enum BRAIN_CTRL_IDS
     AD_szLogFileInfo,
     AD_szDitherRAOnly,
     AD_szDitherScale,
+    AD_szDitherSpiral,
+    AD_szEnableDitherSpiral,
+    AD_szResetDitherSpiral,
     AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
