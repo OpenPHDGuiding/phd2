@@ -114,6 +114,9 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxComboBox *m_autoExpDurationMax;
     wxSpinCtrlDouble *m_autoExpSNR;
     void OnDirSelect(wxCommandEvent& evt);
+    wxCheckBox *m_enableDitherSpiral;
+    wxButton *m_resetDitherSpiral;
+    void OnResetDitherSpiral(wxCommandEvent& evt);
 
 public:
     MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -163,6 +166,12 @@ private:
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
     bool m_continueCapturing; // should another image be captured?
+
+    bool m_ditherSpiral;
+    int  m_direction;
+    int  m_dirsCount;
+    int  m_straightMax;
+    int  m_straightCount;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -387,6 +396,10 @@ public:
     void TryReconnect(void);
 
     double TimeSinceGuidingStarted(void) const;
+
+    void ResetDitherSpiral(void);
+    bool SetDitherSpiral(bool ditherSpiral);
+    bool GetDitherSpiral(void);
 
 private:
     wxCriticalSection m_CSpWorkerThread;

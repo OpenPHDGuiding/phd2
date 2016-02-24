@@ -52,6 +52,7 @@
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
+static const bool DefaultDitherSpiral = false;
 static const bool DefaultServerMode = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
@@ -376,6 +377,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     Menubar->Check(MENU_TARGET, panel_state);
 
     m_mgr.Update();
+
+    ResetDitherSpiral();
 }
 
 MyFrame::~MyFrame()
@@ -725,6 +728,9 @@ void MyFrame::LoadProfileSettings(void)
 
     bool ditherRaOnly = pConfig->Profile.GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
     SetDitherRaOnly(ditherRaOnly);
+
+    bool ditherSpiral = pConfig->Profile.GetBoolean("/DitherSpiral", DefaultDitherSpiral);
+    SetDitherSpiral(ditherSpiral);
 
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
@@ -1537,6 +1543,31 @@ bool MyFrame::StartGuiding(void)
     return error;
 }
 
+void MyFrame::ResetDitherSpiral()
+{
+    Debug.Write(wxString::Format("reset dither spiral\n"));
+    m_direction = NORTH;
+    m_dirsCount = 0;
+    m_straightMax = 1;
+    m_straightCount = 0;
+}
+
+bool MyFrame::SetDitherSpiral(bool ditherSpiral)
+{
+    bool bError = false;
+
+    m_ditherSpiral = ditherSpiral;
+
+    pConfig->Profile.SetBoolean("/DitherSpiral", m_ditherSpiral);
+
+    return bError;
+}
+
+bool MyFrame::GetDitherSpiral(void)
+{
+    return m_ditherSpiral;
+}
+
 bool MyFrame::Dither(double amount, bool raOnly)
 {
     bool error = false;
@@ -1566,8 +1597,57 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
         amount *= m_ditherScaleFactor;
 
-        double dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-        double dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+        double dRa = 0.0;
+        double dDec = 0.0;
+        if (m_ditherSpiral) {
+            switch (m_direction)
+            {
+            case NORTH:
+                dDec = amount;
+                break;
+            case SOUTH:
+                dDec = -amount;
+                break;
+            case EAST:
+                dRa = amount;
+                break;
+            case WEST:
+                dRa = -amount;
+                break;
+            }
+            /*  9 10 11 12
+             *  8  1  2 13
+             *  7  0  3 14
+             *  6  5  4 15
+             * .. 18 17 16
+             */
+            if (++m_straightCount == m_straightMax) {
+                m_straightCount = 0;
+                switch (m_direction)
+                {
+                case NORTH:
+                    m_direction = WEST;
+                    break;
+                case WEST:
+                    m_direction = SOUTH;
+                    break;
+                case SOUTH:
+                    m_direction = EAST;
+                    break;
+                case EAST:
+                    m_direction = NORTH;
+                    break;
+                }
+                if (++m_dirsCount == 2) {
+                    m_dirsCount = 0;
+                    ++m_straightMax;
+                }
+            }
+	}
+        else {
+            dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+            dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+        }
 
         Debug.Write(wxString::Format("dither: size=%.2f, dRA=%.2f dDec=%.2f\n", amount, dRa, dDec));
 
@@ -2301,6 +2381,7 @@ void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
     pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_szDitherRAOnly));
     pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szDitherScale));
     this->Add(pTopGrid, sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szDitherSpiral), sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
     Layout();
 }
@@ -2411,6 +2492,20 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
         wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
+    // Spiral Dither
+    parent = GetParentWindow(AD_szDitherSpiral);
+    wxStaticBoxSizer *pDitherSpiralGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Dither Spiral"));
+
+    m_enableDitherSpiral = new wxCheckBox(GetParentWindow(AD_szDitherSpiral), AD_szEnableDitherSpiral, _("Enable"));
+    m_enableDitherSpiral->SetToolTip(_("Check to enable spiral pattern dither."));
+
+    m_resetDitherSpiral = new wxButton(GetParentWindow(AD_szDitherSpiral), AD_szResetDitherSpiral, _("Reset"));
+    GetParentWindow(AD_szDitherSpiral)->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogCtrlSet::OnResetDitherSpiral, this, AD_szResetDitherSpiral);
+
+    pDitherSpiralGroupBox->Add(m_enableDitherSpiral);
+    pDitherSpiralGroupBox->Add(m_resetDitherSpiral);
+    AddGroup(CtrlMap, AD_szDitherSpiral, pDitherSpiralGroupBox);
+
     // Log directory location - use a group box with a wide text edit control and a 'browse' button at the far right
     parent = GetParentWindow(AD_szLogFileInfo);
     wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Log File Location"));
@@ -2459,6 +2554,7 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_pNoiseReduction->SetSelection(pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
+    m_enableDitherSpiral->SetValue(m_pFrame->GetDitherSpiral());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
     SetFocalLength(m_pFrame->GetFocalLength());
     m_pFocalLength->Enable(!pFrame->CaptureActive);
@@ -2512,6 +2608,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
         m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
+        m_pFrame->SetDitherSpiral(m_enableDitherSpiral->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
 
         m_pFrame->SetFocalLength(GetFocalLength());
@@ -2572,6 +2669,12 @@ void MyFrameConfigDialogCtrlSet::OnDirSelect(wxCommandEvent& evt)
     if (sRtn.Len() > 0)
         m_pLogDir->SetValue(sRtn);
 }
+
+void MyFrameConfigDialogCtrlSet::OnResetDitherSpiral(wxCommandEvent& evt)
+{
+    pFrame->ResetDitherSpiral();
+}
+
 
 void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
 {
