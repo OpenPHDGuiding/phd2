@@ -611,7 +611,7 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
         break;
     }
     pText->SetLabel(msg);
-    pText->Wrap(380);
+    pText->Wrap(420);
 }
 
 // Overridden method for building the data grids - these are substantially different from the CalReview base but the overall appearance and graph presence are the same
@@ -646,9 +646,9 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         wxStaticBoxSizer *pMsgGrp = new wxStaticBoxSizer(wxVERTICAL, parentPanel, _("Explanation"));
 
         // Explanation area
-        wxStaticText *pMsgArea = new wxStaticText(parentPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400, -1), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+        wxStaticText *pMsgArea = new wxStaticText(parentPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(450, -1), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
         BuildMessage(pMsgArea, m_issue);
-        pMsgArea->SetSizeHints(wxSize(-1, MESSAGE_HEIGHT));
+        pMsgArea->SetSizeHints(wxSize(450, MESSAGE_HEIGHT));
         wxFont font = pMsgArea->GetFont();
         font.SetWeight(wxFONTWEIGHT_BOLD);
         pMsgArea->SetFont(font);
@@ -728,7 +728,7 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         // Checkboxes for being quiet
         m_pBlockThis = new wxCheckBox(parentPanel, wxID_ANY, _("Don't show calibration alerts of this type"));
         pVSizer->Add(m_pBlockThis, wxSizerFlags(0).Border(wxALL, 15));
-        parentHSizer->Add(pVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);             // parentHSizer->Add(panelGridVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+        parentHSizer->Add(pVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
     }
 
 }
