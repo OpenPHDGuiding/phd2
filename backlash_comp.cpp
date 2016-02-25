@@ -351,7 +351,7 @@ void BacklashTool::StopMeasurement()
     DecMeasurementStep(pFrame->pGuider->CurrentPosition());
 }
 
-static bool OutOfRoom(wxSize frameSize, double camX, double camY, int margin)
+static bool OutOfRoom(const wxSize& frameSize, double camX, double camY, int margin)
 {
     return camX < margin ||
         camY < margin ||
