@@ -79,10 +79,13 @@ void BacklashComp::EnableBacklashComp(bool enable)
 
 void BacklashComp::ResetBaseline()
 {
-    m_lastDirection = NONE;
-    m_justCompensated = false;
-    m_adjustmentCeiling = m_pulseWidth * 2;        // Adjust based on tuning that may have occurred so far
-    Debug.AddLine("BLC: Last direction was reset");
+    if (m_compActive)
+    {
+        m_lastDirection = NONE;
+        m_justCompensated = false;
+        m_adjustmentCeiling = m_pulseWidth * 2;        // Adjust based on tuning that may have occurred so far
+        Debug.AddLine("BLC: Last direction was reset");
+    }
 }
 
 void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRate)

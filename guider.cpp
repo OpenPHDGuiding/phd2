@@ -911,7 +911,8 @@ void Guider::SetState(GUIDER_STATE newState)
                 {
                     Debug.Write("Guider::SetState: clearing mount guide algorithm history\n");
                     pMount->ClearHistory();
-                    pMount->ResetBLCBaseline();
+                    if (!pMount->IsStepGuider())
+                        pMount->ResetBLCBaseline();
                 }
                 break;
             case STATE_CALIBRATING_PRIMARY:

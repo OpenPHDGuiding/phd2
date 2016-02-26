@@ -583,7 +583,7 @@ Mount::Mount(void)
     m_pXGuideAlgorithm = NULL;
     m_guidingEnabled = true;
 
-    m_backlashComp = 0;
+    m_backlashComp = NULL;
     m_lastStep.mount = this;
     m_lastStep.frameNumber = -1; // invalidate
 
@@ -715,7 +715,8 @@ void Mount::LogGuideStepInfo()
 
 void Mount::ResetBLCBaseline()
 {
-    m_backlashComp->ResetBaseline();
+    if (m_backlashComp)
+        m_backlashComp->ResetBaseline();
 }
 
 Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType)
@@ -761,7 +762,8 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
                 }
 
                 // Let BLC track the raw offsets in Dec
-                m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+                if (m_backlashComp)
+                    m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
 
                 if (m_pYGuideAlgorithm)
                 {
@@ -770,7 +772,8 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
             }
             else
             {
-                m_backlashComp->ResetBaseline();
+                if (m_backlashComp)
+                    m_backlashComp->ResetBaseline();
             }
         }
 
