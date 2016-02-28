@@ -1411,6 +1411,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             case MODE_RADEC:
                 trendRaOrDx = trendline(m_trendLineAccum[2], plot_length);
                 trendDecOrDy = trendline(m_trendLineAccum[3], plot_length);
+                // North offsets plotted downward
+                trendDecOrDy = std::make_pair(-trendDecOrDy.first, -trendDecOrDy.second);
                 break;
             case MODE_DXDY:
                 trendRaOrDx = trendline(m_trendLineAccum[0], plot_length);
