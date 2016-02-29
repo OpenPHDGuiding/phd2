@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-23 02:54-0500\n"
-"PO-Revision-Date: 2016-01-31 16:44+0300\n"
+"PO-Revision-Date: 2016-02-29 20:15+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: advanced_dialog.cpp:88
 msgid "Advanced setup"
@@ -99,14 +99,18 @@ msgid ""
 "Yellow means  4 <= SNR < 10\n"
 "Red means SNR < 4"
 msgstr ""
+"Сигнал/шум для гидируемой звезды\n"
+"Зелёный >= 10\n"
+"Жёлтый  от 4 до 10\n"
+"Красный < 4"
 
 #: aui_controls.cpp:365
 msgid "Camera, "
-msgstr ""
+msgstr "Камера,"
 
 #: aui_controls.cpp:374
 msgid "Mount, "
-msgstr ""
+msgstr "Монтировка,"
 
 #: aui_controls.cpp:382
 msgid "Aux Mount, "
@@ -114,11 +118,11 @@ msgstr ""
 
 #: aui_controls.cpp:392
 msgid "AO, "
-msgstr ""
+msgstr "АО"
 
 #: aui_controls.cpp:403
 msgid "Rotator, "
-msgstr ""
+msgstr "Поворотное устройство, "
 
 #: aui_controls.cpp:442
 msgid "BPM"
@@ -130,19 +134,19 @@ msgstr ""
 
 #: aui_controls.cpp:511
 msgid "All devices connected"
-msgstr ""
+msgstr "Все устройства подключены"
 
 #: aui_controls.cpp:514
 msgid "No devices connected"
-msgstr ""
+msgstr "Нет подключенных устройств"
 
 #: aui_controls.cpp:516
 msgid "Devices not connected: "
-msgstr ""
+msgstr "Не подключены устройства:"
 
 #: aui_controls.cpp:521
 msgid "Dark library: "
-msgstr ""
+msgstr "Темновая библиотека:"
 
 #: aui_controls.cpp:521 aui_controls.cpp:523
 msgid "In-use"
@@ -154,15 +158,15 @@ msgstr ""
 
 #: aui_controls.cpp:523
 msgid "Bad pixel map: "
-msgstr ""
+msgstr "Карта плохих пикселей:"
 
 #: aui_controls.cpp:526
 msgid "Calibration: "
-msgstr ""
+msgstr "Калибровка:"
 
 #: aui_controls.cpp:530
 msgid "Not completed"
-msgstr ""
+msgstr "Не завершено"
 
 #: aui_controls.cpp:533
 msgid "Completed, but scope pointing info not available/not in-use"
@@ -178,7 +182,7 @@ msgstr "Откалибровано"
 
 #: aui_controls.cpp:621
 msgid "Selected star at (999.9, 999.9)"
-msgstr ""
+msgstr "Выбранная звезда (999.9, 999.9)"
 
 #: backlash_comp.cpp:187
 msgid "Backlash Results"
@@ -216,6 +220,8 @@ msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr ""
+"Звезда слишком близка к краю для точного измерения люфта, выберите звезду "
+"подальше."
 
 #: backlash_comp.cpp:540
 #, c-format
@@ -228,7 +234,7 @@ msgstr "Восстановление позиции звезды"
 
 #: backlash_comp.cpp:607
 msgid "Measurement complete"
-msgstr ""
+msgstr "Измерение завершено"
 
 #: backlash_comp.cpp:616
 msgid "Measurement halted"
@@ -236,7 +242,7 @@ msgstr "Измерение остановлено"
 
 #: backlash_comp.cpp:626
 msgid "Measurement encountered an error: "
-msgstr ""
+msgstr "При измерении обнаружена ошибка:"
 
 #: calreview_dialog.cpp:47 statswindow.cpp:213
 msgid "N/A"
@@ -666,7 +672,7 @@ msgstr ""
 msgid ""
 "ASCOM driver failed checking IsPulseGuiding. See the debug log for more "
 "information."
-msgstr ""
+msgstr "Сбой драйвера ASCOM при проверке IsPulseGuiding, см. лог отладки."
 
 #: cam_ascomlate.cpp:443 rotator_ascom.cpp:129 scope_ascom.cpp:148
 msgid "Failed to find the ASCOM Chooser. Make sure it is installed"
@@ -688,7 +694,7 @@ msgstr "Отсутствует параметр, необходимый драй
 #: cam_ascomlate.cpp:530
 msgid ""
 "Could not create ASCOM camera object. See the debug log for more information."
-msgstr ""
+msgstr "Невозможно создать объект ASCOM camera, см. лог отладки"
 
 #: cam_ascomlate.cpp:554 rotator_ascom.cpp:235
 msgid "ASCOM driver problem: Connect"
@@ -699,42 +705,56 @@ msgid ""
 "ASCOM driver missing the CanPulseGuide property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр CanPulseGuide. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:578
 msgid ""
 "ASCOM driver missing the CanAbortExposure property. Please report this error "
 "to your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр CanAbortExposure. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:586
 msgid ""
 "ASCOM driver missing the CanStopExposure property. Please report this error "
 "to your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр CanStopExposure. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:602
 msgid ""
 "ASCOM driver missing the CameraXSize property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр CameraXSize. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:610
 msgid ""
 "ASCOM driver missing the CameraYSize property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр CameraYSize. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:645
 msgid ""
 "ASCOM driver missing the PixelSizeX property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр PixelSizeX. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:653
 msgid ""
 "ASCOM driver missing the PixelSizeY property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
+"Драйвер ASCOM не находит параметр PixelSizeY. Сообщите об ошибке "
+"производителю дрейвера."
 
 #: cam_ascomlate.cpp:717 cam_ascomlate.cpp:829
 msgid ""
@@ -1471,6 +1491,10 @@ msgid ""
 "working correctly, you can increase the timeout period on the Camera tab of "
 "the Advanced Settings Dialog."
 msgstr ""
+"За %.1f сек камера не завершила экспозицию длительностью  %.1f и была "
+"отключена во избежание возникновения других проблем. Если вы считаете, что "
+"оборудование работает корректно, можете увеличить таймаут в настройках во "
+"вкладке Камера. "
 
 #: camera.cpp:1233
 msgid "PHD will make several attempts to re-connect the camera."
@@ -1728,6 +1752,9 @@ msgid ""
 "If different exposure times are used, those darks will be added to the "
 "library."
 msgstr ""
+"Вновь созданные темновые кадры заменят старые с тем же временем экспозиции. "
+"Если длительность экспозиции отличаются, темновые кадры будут добавлены в "
+"библиотеку."
 
 #: darks_dialog.cpp:141
 msgid "Create entirely new dark library"
@@ -1854,11 +1881,11 @@ msgstr "Значения для телескопа"
 
 #: drift_tool.cpp:176
 msgid "Meridian Offset ("
-msgstr ""
+msgstr "Смещение меридиана ("
 
 #: drift_tool.cpp:180 scope_manual_pointing.cpp:74
 msgid "Declination ("
-msgstr ""
+msgstr "Склонение ("
 
 #: drift_tool.cpp:184
 msgid "Current"
@@ -1993,7 +2020,7 @@ msgstr "Наведение..."
 
 #: drift_tool.cpp:557
 msgid "Slew failed!"
-msgstr ""
+msgstr "Наведение прервано!"
 
 #: drift_tool.cpp:566
 msgid "Slew was canceled"
@@ -2770,7 +2797,7 @@ msgstr ""
 
 #: guider.cpp:656
 msgid "PAUSED"
-msgstr ""
+msgstr "ПРИОСТАНОВЛЕНО"
 
 #: guider.cpp:1074
 msgid "Calibration manually stopped"
@@ -2817,7 +2844,7 @@ msgstr "Калибровка"
 
 #: guider.cpp:1488
 msgid "Shared Parameters"
-msgstr ""
+msgstr "Совместные параметры"
 
 #: guider.cpp:1532
 msgid "Always scale images"
@@ -2947,7 +2974,7 @@ msgstr "Помощник гидирования"
 
 #: guiding_assistant.cpp:275
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
-msgstr ""
+msgstr " -999.99 пикс/мин (-999.99 угл. сек/мин )"
 
 #: guiding_assistant.cpp:277
 msgid "Measurement Status"
@@ -3035,7 +3062,7 @@ msgstr "Люфт Dec"
 
 #: guiding_assistant.cpp:414
 msgid "Measure Declination Backlash"
-msgstr ""
+msgstr "Измерение люфта склонения"
 
 #: guiding_assistant.cpp:416
 msgid ""
@@ -3051,7 +3078,7 @@ msgstr "Показать график"
 
 #: guiding_assistant.cpp:419
 msgid "Show graph of backlash measurement points"
-msgstr ""
+msgstr "Показать график измерения люфта"
 
 #: guiding_assistant.cpp:435
 msgid "Start measuring (disables guiding)"
@@ -5022,7 +5049,7 @@ msgstr "Толчок на юг %3d"
 
 #: scope.cpp:1440
 msgid "Calibration complete"
-msgstr ""
+msgstr "Калибровка завершена:"
 
 #: scope.cpp:1586
 msgid "Mount Guide Algorithms"
@@ -5091,13 +5118,15 @@ msgstr ""
 
 #: scope.cpp:1665
 msgid "Amount"
-msgstr ""
+msgstr "Количество"
 
 #: scope.cpp:1665
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
+"Длительность импульса поправки люфта (мсек). Может быть увеличена "
+"автоматически при избыточных поправках."
 
 #: scope.cpp:1667
 msgid "Use Dec compensation"
@@ -5106,6 +5135,8 @@ msgstr "Использовать компенсацию по Dec"
 #: scope.cpp:1669
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
+"Автоматический выбор скорости гидирования по прямому восхождению на основе "
+"склонения телескопа"
 
 #: scope.cpp:1674
 msgid "Max RA duration"
@@ -5126,6 +5157,8 @@ msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
+"Наибольшая длина импульса по склонению\n"
+"По умолчанию = 2500 ms.  Увеличьте при быстром дрейфеt."
 
 #: scope.cpp:1681 scope.cpp:1787 scope.cpp:1821
 msgid "Off"
@@ -5160,17 +5193,19 @@ msgstr "Сбой запуска выбора телескопа. Что-то н�
 msgid ""
 "ASCOM driver problem during disconnect, check the debug log for more "
 "information"
-msgstr ""
+msgstr "Проблема драйвера ASCOM при отключении, см. лог отладки"
 
 #: scope_ascom.cpp:554
 msgid ""
 "ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."
 msgstr ""
+"Драйвер ASCOM не поддерживает импульсное гидирование. Проверьте настройки "
+"драйвера."
 
 #: scope_ascom.cpp:699
 msgid ""
 "PulseGuide command to mount has failed - guiding is likely to be ineffective."
-msgstr ""
+msgstr "Сбой команды PulseGuide - гидирование, вероятно, не будет правильным."
 
 #: scope_ascom.cpp:710
 msgid "Guiding stopped: the scope started slewing."
@@ -5180,13 +5215,13 @@ msgstr "Гидирование остановлено из-за начавшег
 msgid ""
 "ASCOM driver failed checking for slewing, see the debug log for more "
 "information."
-msgstr ""
+msgstr "Сбой драйвера ASCOM при проверке наведения, см. лог отладки."
 
 #: scope_ascom.cpp:775
 msgid ""
 "ASCOM driver failed calling AbortSlew, see the debug log for more "
 "information."
-msgstr ""
+msgstr "Сбой драйвера ASCOM при вызове AbortSlew, см. лог отладки."
 
 #: scope_eqmac.cpp:172 scope_equinox.cpp:177
 msgid " responded it's not connected to a mount"
@@ -5203,7 +5238,7 @@ msgstr "Ошибка записи в GC USB ST4: %s(%d)"
 
 #: scope_manual_pointing.cpp:79
 msgid "Approximate telescope declination, degrees"
-msgstr ""
+msgstr "Примерное склонение телескопа в градусах"
 
 #: scope_manual_pointing.cpp:89
 msgid "Side of Pier"
@@ -5241,45 +5276,46 @@ msgstr ""
 
 #: scope_manual_pointing.cpp:116
 msgid "Drift Alignment"
-msgstr ""
+msgstr "Выравнивание дрейфом"
 
 #: scope_manual_pointing.cpp:125
 msgid "hr"
-msgstr ""
+msgstr "ч"
 
 #: scope_manual_pointing.cpp:130
 msgid "Telescope's Right Ascension, hours"
-msgstr ""
+msgstr "Прясое восхождение телескопа в часах"
 
 #: scope_manual_pointing.cpp:135
 msgid "min"
-msgstr ""
+msgstr "мин"
 
 #: scope_manual_pointing.cpp:140
 msgid "Telescope's Right Ascension, minutes"
-msgstr ""
+msgstr "Прямое восхождение телескопа в минутах"
 
 #: scope_manual_pointing.cpp:150
 msgid "Latitude ("
-msgstr ""
+msgstr "Широта ("
 
 #: scope_manual_pointing.cpp:157
 msgid "Site latitude"
-msgstr ""
+msgstr "Широта места"
 
 #: scope_manual_pointing.cpp:162
 msgid "Longitude ("
-msgstr ""
+msgstr "Долгота ("
 
 #: scope_manual_pointing.cpp:169
 msgid ""
 "Site longitude, degrees East of Greenwich.  Longitudes West of Greenwich are "
 "negative."
 msgstr ""
+"Долгота места, к востоку от Гринвича положительная, к западу отрицательная."
 
 #: scope_manual_pointing.cpp:202
 msgid "Ask for coordinates"
-msgstr ""
+msgstr "Запрос координат"
 
 #: scope_voyager.cpp:53
 msgid "Connection established"
@@ -5649,7 +5685,7 @@ msgstr "Ошибка чтения данных из файла FITS"
 
 #: aui_controls.h:138
 msgid "Mass"
-msgstr ""
+msgstr "Масса"
 
 #: calreview_dialog.h:48
 msgid "Review Calibration"
