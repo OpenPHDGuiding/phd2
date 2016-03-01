@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Andy Galasso
- *  Copyright (c) 2013 Andy Galasso
+ *  Copyright (c) 2013-2016 Andy Galasso
  *  All rights reserved.
  *
  *  Based upon work by Craig Stark and Bret McKee.
@@ -43,7 +43,27 @@ wxString GuideAlgorithm::GetConfigPath()
     return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
         (m_guideAxis == GUIDE_X ? "X/" : "Y/") + GetGuideAlgorithmClassName();
 }
+
 wxString GuideAlgorithm::GetAxis()
 {
     return (m_guideAxis == GUIDE_RA ? _("RA") : _("DEC"));
+}
+
+void GuideAlgorithm::GuidingStopped(void)
+{
+    reset();
+}
+
+void GuideAlgorithm::GuidingPaused(void)
+{
+}
+
+void GuideAlgorithm::GuidingResumed(void)
+{
+    reset();
+}
+
+void GuideAlgorithm::GuidingDithered(double amt)
+{
+    reset();
 }

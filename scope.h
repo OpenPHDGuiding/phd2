@@ -195,7 +195,6 @@ public:
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
-    virtual bool GuidingCeases(void);
 
     static const double DEC_COMP_LIMIT; // declination compensation limit
     void EnableDecCompensation(bool enable);

@@ -265,7 +265,10 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
 
-    virtual bool GuidingCeases(void) = 0;
+    virtual void NotifyGuidingStopped(void);
+    virtual void NotifyGuidingPaused(void);
+    virtual void NotifyGuidingResumed(void);
+    virtual void NotifyGuidingDithered(double dx, double dy);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
@@ -277,7 +280,6 @@ public:
 
     void GetLastCalibration(Calibration *cal);
     BacklashComp *GetBacklashComp() { return m_backlashComp; }
-    void ResetBLCBaseline();
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
@@ -308,8 +310,6 @@ public:
     virtual bool IsConnected(void) const;
     virtual bool Connect(void);
     virtual bool Disconnect(void);
-
-    virtual void ClearHistory(void);
 
     virtual wxString GetSettingsSummary();
     virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
