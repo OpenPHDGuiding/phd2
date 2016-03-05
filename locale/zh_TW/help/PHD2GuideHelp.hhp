@@ -5,7 +5,7 @@ Contents file=PHD2GuideHelp.hhc
 Default topic=Introduction.htm
 Display compile progress=No
 Index file=PHD2GuideHelp.hhk
-Language=0x404 Chinese (Traditional, Taiwan)
+Charset=utf-8
 Title=PHD2 Guiding
 
 
