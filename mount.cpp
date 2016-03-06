@@ -1408,8 +1408,10 @@ wxString Mount::GetSettingsSummary()
     wxString algorithms[] = {
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
-
-    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
+    wxString auxMountStr = wxEmptyString;
+    if (m_Name == _("On Camera") && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
+        auxMountStr = "AuxMount=" +  pPointingSource->Name();
+    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
@@ -1418,7 +1420,8 @@ wxString Mount::GetSettingsSummary()
             wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f, parity = %s/%s",
                 degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0,
                 ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)) :
-            "not calibrated"
+            "not calibrated",
+        auxMountStr
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithmSelection()],
         m_pXGuideAlgorithm->GetSettingsSummary()

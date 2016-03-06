@@ -207,7 +207,8 @@ GuideAlgorithmLowpass::
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
 
 }
 

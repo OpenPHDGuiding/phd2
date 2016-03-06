@@ -140,7 +140,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(m_pPixelSize, 1);
     sizer->Add(m_detectPixelSizeBtn, 0, wxLEFT, 10);
-    AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), sizer);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), sizer);
     m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);

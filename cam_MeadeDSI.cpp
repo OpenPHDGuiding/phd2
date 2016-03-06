@@ -130,7 +130,7 @@ bool Camera_DSIClass::Connect(const wxString& camId)
         // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image
         // is "squared up" by scaling to the smaller dimension
         if (MeadeCam->IsDsiIII)
-            PixelSize = 6.6;
+            PixelSize = 6.5;
         else
         if (MeadeCam->IsDsiII)
             PixelSize = 8.3;
