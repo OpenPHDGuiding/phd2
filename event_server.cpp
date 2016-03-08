@@ -1297,7 +1297,10 @@ static void guide(JObj& response, const json_value *params)
     }
 
     wxString err;
-    if (PhdController::Guide(recalibrate, settle, &err))
+
+    if (!PhdController::CanGuide(&err))
+        response << jrpc_error(1, err);
+    else if (PhdController::Guide(recalibrate, settle, &err))
         response << jrpc_result(0);
     else
         response << jrpc_error(1, err);
