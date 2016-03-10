@@ -826,15 +826,6 @@ void MyFrame::SetupToolBar()
     MainToolbar->SetArtProvider(new PHDToolBarArt);             // Get the custom background we want
 }
 
-void MyFrame::UpdateCalibrationStatus(void)
-{
-    assert(wxThread::IsMain());
-
-    m_statusbar->UpdateStates();
-    if (pStatsWin)
-        pStatsWin->UpdateScopePointing();
-}
-
 void MyFrame::SetupStatusBar(void)
 {
     m_statusbar = PHDStatusBar::CreateInstance(this, wxSTB_DEFAULT_STYLE);
@@ -1127,6 +1118,7 @@ enum StatusbarThreadMsgType
 {
     THR_SB_MSG_TEXT,
     THR_SB_STATE_LABELS,
+    THR_SB_CALIBRATION,
 };
 
 static void QueueStatusbarTextMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
@@ -1138,10 +1130,10 @@ static void QueueStatusbarTextMsg(wxEvtHandler *frame, const wxString& text, boo
     wxQueueEvent(frame, event);
 }
 
-static void QueueStatusbarStateLabelsUpdateMsg(wxEvtHandler *frame)
+static void QueueStatusbarUpdateMsg(wxEvtHandler *frame, StatusbarThreadMsgType type)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
-    event->SetExtraLong(THR_SB_STATE_LABELS);
+    event->SetExtraLong(type);
     wxQueueEvent(frame, event);
 }
 
@@ -1180,6 +1172,9 @@ void MyFrame::OnStatusMsg(wxThreadEvent& event)
     case THR_SB_STATE_LABELS:
         m_statusbar->UpdateStates();
         break;
+    case THR_SB_CALIBRATION:
+        UpdateCalibrationStatus();
+        break;
     }
 }
 
@@ -1194,7 +1189,21 @@ void MyFrame::UpdateStateLabels()
     if (wxThread::IsMain())
         m_statusbar->UpdateStates();
     else
-        QueueStatusbarStateLabelsUpdateMsg(this);
+        QueueStatusbarUpdateMsg(this, THR_SB_STATE_LABELS);
+}
+
+void MyFrame::UpdateCalibrationStatus(void)
+{
+    if (wxThread::IsMain())
+    {
+        m_statusbar->UpdateStates();
+        if (pStatsWin)
+            pStatsWin->UpdateScopePointing();
+    }
+    else
+    {
+        QueueStatusbarUpdateMsg(this, THR_SB_CALIBRATION);
+    }
 }
 
 void MyFrame::UpdateGuiderInfo(const GuideStepInfo& info)
@@ -1473,7 +1482,7 @@ void MyFrame::SetPaused(PauseType pause)
         if (pMount)
         {
             Debug.Write("un-pause: clearing mount guide algorithm history\n");
-            pMount->ClearHistory();
+            pMount->NotifyGuidingResumed();
         }
         if (m_continueCapturing && !m_exposurePending)
             ScheduleExposure();
@@ -1655,7 +1664,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
         // Reset guide algorithm history.
         // For algorithms like Resist Switch, the dither invalidates the state, so start again from scratch.
         Debug.Write("dither: clearing mount guide algorithm history\n");
-        pMount->ClearHistory();
+        pMount->NotifyGuidingDithered(dRa, dDec);
 
         StatusMsg(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);

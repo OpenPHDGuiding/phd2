@@ -754,10 +754,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
     return bError;
 }
 
-bool StepGuider::GuidingCeases(void)
+void StepGuider::NotifyGuidingStopped(void)
 {
-    bool bError = false;
-
     // We have stopped guiding.  Reset bump state and recenter the stepguider
 
     m_avgOffset.Invalidate();
@@ -768,25 +766,18 @@ bool StepGuider::GuidingCeases(void)
     // clear bump display in stepguider graph
     pFrame->pStepGuiderGraph->ShowBump(PHD_Point());
 
-    try
-    {
-        if (MoveToCenter())
-        {
-            throw ERROR_INFO("MoveToCenter() failed");
-        }
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
+    MoveToCenter(); // ignore failure
 }
 
-void StepGuider::ClearHistory(void)
+void StepGuider::NotifyGuidingResumed(void)
 {
-    Mount::ClearHistory();
+    Mount::NotifyGuidingResumed();
+    m_avgOffset.Invalidate();
+}
+
+void StepGuider::NotifyGuidingDithered(double dx, double dy)
+{
+    Mount::NotifyGuidingDithered(dx, dy);
     m_avgOffset.Invalidate();
 }
 

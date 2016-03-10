@@ -431,12 +431,6 @@ Scope *Scope::Factory(const wxString& choice)
     return pReturn;
 }
 
-bool Scope::GuidingCeases(void)
-{
-    // for scopes, we have nothing special to do when guiding stops
-    return false;
-}
-
 bool Scope::RequiresCamera(void)
 {
     return false;

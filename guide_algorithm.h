@@ -84,6 +84,11 @@ public:
     virtual double result(double input) = 0;
     virtual double deduceResult(void) { return 0.0; }
 
+    virtual void GuidingStopped(void);
+    virtual void GuidingPaused(void);
+    virtual void GuidingResumed(void);
+    virtual void GuidingDithered(double amt);
+
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return 0; };
     virtual wxString GetSettingsSummary() { return wxEmptyString; }

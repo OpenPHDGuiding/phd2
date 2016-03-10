@@ -883,10 +883,8 @@ void Guider::SetState(GUIDER_STATE newState)
                     break;
             }
 
-            if (pMount && pMount->GuidingCeases())
-            {
-                throw ERROR_INFO("GuidingCeases() failed");
-            }
+            if (pMount)
+	        pMount->NotifyGuidingStopped();
         }
 
         assert(newState != STATE_STOP);
@@ -907,13 +905,6 @@ void Guider::SetState(GUIDER_STATE newState)
                 newState = STATE_SELECTING;
                 break;
             case STATE_SELECTED:
-                if (pMount)
-                {
-                    Debug.Write("Guider::SetState: clearing mount guide algorithm history\n");
-                    pMount->ClearHistory();
-                    if (!pMount->IsStepGuider())
-                        pMount->ResetBLCBaseline();
-                }
                 break;
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())

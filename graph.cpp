@@ -1255,7 +1255,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
-    if (m_showCorrections)
+    if (m_showCorrections && !(pMount && pMount->IsStepGuider()))
     {
         wxString lblN(_("GuideNorth"));
         wxString lblE(_("GuideEast"));
