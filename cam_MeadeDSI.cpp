@@ -130,13 +130,12 @@ bool Camera_DSIClass::Connect(const wxString& camId)
         // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image
         // is "squared up" by scaling to the smaller dimension
         if (MeadeCam->IsDsiIII)
-            PixelSize = 6.5;
+            m_pixelSize = 6.5;
         else
         if (MeadeCam->IsDsiII)
-            PixelSize = 8.3;
+            m_pixelSize = 8.3;
         else
-            PixelSize = 7.5;
-
+            m_pixelSize = 7.5;
     }
 
     return retval;
@@ -151,6 +150,12 @@ bool Camera_DSIClass::Disconnect()
     Connected = false;
 
     return false;
+}
+
+bool Camera_DSIClass::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_pixelSize;
+    return false;                               // Pixel sizes are hard-coded
 }
 
 bool Camera_DSIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)

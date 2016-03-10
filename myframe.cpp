@@ -2282,10 +2282,10 @@ wxString MyFrame::GetDefaultFileDir()
 
 double MyFrame::GetCameraPixelScale(void) const
 {
-    if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
+    if (!pCamera || pCamera->GetCameraPixelSize() == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return GetPixelScale(pCamera->PixelSize, m_focalLength, pCamera->Binning);
+    return GetPixelScale(pCamera->GetCameraPixelSize(), m_focalLength, pCamera->Binning);
 }
 
 wxString MyFrame::PixelScaleSummary(void) const

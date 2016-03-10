@@ -102,6 +102,7 @@ class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 protected:
     bool            m_hasGuideOutput;
     int             m_timeoutMs;
+    double          m_pixelSize;
 
 public:
     int             GuideCameraGain;
@@ -120,7 +121,7 @@ public:
     int             ReadDelay;
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
-    double          PixelSize;
+
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage        *CurrentDarkFrame;
@@ -161,6 +162,8 @@ public:
     void GetBinningOpts(wxArrayString *opts);
 
     virtual void    ShowPropertyDialog() { return; }
+    double          GetCameraPixelSize(void);
+    virtual bool    GetDevicePixelSize(double* devPixelSize);           // Value from device/driver or error return
 
     virtual wxString GetSettingsSummary();
     void            AddDark(usImage *dark);
@@ -182,7 +185,6 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
-    virtual double GetCameraPixelSize(void);
     virtual bool SetCameraPixelSize(double pixel_size);
 
     enum CaptureFailType {
@@ -205,6 +207,11 @@ inline int GuideCamera::GetTimeoutMs(void) const
 inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
 {
     GetBinningOpts(MaxBinning, opts);
+}
+
+inline bool GuideCamera::GetDevicePixelSize(double* devPixelSize)
+{
+    return true;                // Return an error, the device/driver can't report pixel size
 }
 
 #endif /* CAMERA_H_INCLUDED */

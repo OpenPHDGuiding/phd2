@@ -65,6 +65,7 @@ public:
     bool HasNonGuiCapture() { return true; }
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
+    virtual bool    GetDevicePixelSize(double* devPixelSize);
 
 private:
     bool StopCapture();

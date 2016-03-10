@@ -244,7 +244,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     delete[] m_buffer;
     m_buffer = new unsigned char[info.MaxWidth * info.MaxHeight];
 
-    PixelSize = info.PixelSize;
+    m_devicePixelSize = info.PixelSize;
 
     wxYield();
 
@@ -323,6 +323,11 @@ bool Camera_ZWO::Disconnect()
     return false;
 }
 
+bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_devicePixelSize;
+    return (m_devicePixelSize == 0);
+}
 inline static int round_down(int v, int m)
 {
     return v & ~(m - 1);

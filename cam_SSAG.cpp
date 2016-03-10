@@ -278,7 +278,13 @@ Camera_SSAGClass::Camera_SSAGClass()
     FullSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
-    PixelSize = 5.2;
+    m_pixelSize = 5.2;
+}
+
+bool Camera_SSAGClass::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_pixelSize;
+    return false;                               // Pixel size is hard-coded
 }
 
 wxByte Camera_SSAGClass::BitsPerPixel()

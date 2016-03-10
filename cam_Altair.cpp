@@ -193,10 +193,10 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
 	float xSize, ySize;
-    PixelSize = 3.75; // for all cameras so far....
+    m_pixelSize = 3.75; // for all cameras so far....
 	if (Altair_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
 	{
-		PixelSize = xSize;
+		m_pixelSize = xSize;
 	}
 
     wxYield();
@@ -246,6 +246,12 @@ bool Camera_Altair::StopCapture(void)
 void Camera_Altair::FrameReady(void)
 {
 	m_frameReady = true;
+}
+
+bool Camera_Altair::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_pixelSize;
+    return false;                               // Pixel size is known in any case
 }
 
 void Camera_Altair::ShowPropertyDialog()

@@ -70,6 +70,7 @@ Camera_SBIGClass::Camera_SBIGClass()
     UseTrackingCCD = false;
     HasShutter = true;
     HasSubframes = true;
+    m_devicePixelSize = 0;
 }
 
 Camera_SBIGClass::~Camera_SBIGClass()
@@ -332,7 +333,8 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
             if (mode == RM_1X1)
             {
                 unsigned long bcd = wxMax(gcir0.readoutInfo[i].pixelWidth, gcir0.readoutInfo[i].pixelHeight);
-                PixelSize = (double) bcd2long(bcd) / 100.0;
+                m_devicePixelSize = (double) bcd2long(bcd) / 100.0;
+                m_pixelSize = m_devicePixelSize;                // overwrite whatever was hand-configured
             }
             else // RM_2x2
                 MaxBinning = 2;
@@ -358,6 +360,12 @@ bool Camera_SBIGClass::Disconnect()
     m_driverLoaded = false;
     Connected = false;
     return false;
+}
+
+bool Camera_SBIGClass::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_devicePixelSize;
+    return (m_devicePixelSize == 0);
 }
 
 void Camera_SBIGClass::InitCapture()

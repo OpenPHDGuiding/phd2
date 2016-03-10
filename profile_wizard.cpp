@@ -129,7 +129,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Control for pixel-size and focal length
     m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
-                                          wxDefaultSize, wxSP_ARROW_KEYS, 1.0, 20.0, 5.0, 0.1);
+                                          wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
     m_pPixelSize->SetToolTip(_("Click Detect to read the pixel size from the camera. Otherwise, you can get this value from your camera documentation or from an online source.  You can use the up/down control "
@@ -526,6 +526,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
 {
     GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
+    double devPixelSize = 0;
     try
     {
         wxBusyCursor busy;
@@ -536,13 +537,16 @@ void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
         ShowStatus(wxEmptyString);
         if (err)
             throw _("Could not connect to camera");
-        m_pPixelSize->SetValue(camera->PixelSize);
+        if (camera->GetDevicePixelSize(&devPixelSize) || devPixelSize == 0)
+            throw (_("Camera driver cannot report pixel size"));
+        m_pPixelSize->SetValue(devPixelSize);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
     }
     catch (const wxString& msg)
     {
-        wxMessageBox(msg, _("Detect Pixel Size"));
+        wxMessageBox(msg + _(". Please enter the correct un-binned pixel size from the camera documentation or vendor web site."), _("Detect Pixel Size"));
+        m_pPixelSize->SetValue(0.);
     }
 
     if (camera)

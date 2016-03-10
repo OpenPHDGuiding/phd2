@@ -352,7 +352,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             hdr.write("YBINNING", b, "Camera Y Bin");
             hdr.write("CCDXBIN", b, "Camera X Bin");
             hdr.write("CCDYBIN", b, "Camera Y Bin");
-            float sz = b * pCamera->PixelSize;
+            float sz = b * pCamera->GetCameraPixelSize();
             hdr.write("XPIXSZ", sz, "pixel size in microns (with binning)");
             hdr.write("YPIXSZ", sz, "pixel size in microns (with binning)");
         }

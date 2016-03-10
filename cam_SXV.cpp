@@ -313,12 +313,12 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     if (Interlaced)
     {
         if (SquarePixels)
-            PixelSize = CCDParams.pix_height / 2.0;
+            m_devicePixelSize = CCDParams.pix_height / 2.0;
         else
-            PixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height / 2.f);
+            m_devicePixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height / 2.f);
     }
     else
-        PixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height);
+        m_devicePixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height);
 
     if (!IsCMOSGuider(CameraModel))
     {
@@ -372,6 +372,12 @@ bool Camera_SXVClass::Disconnect()
     hCam = NULL;
 
     return false;
+}
+
+bool Camera_SXVClass::GetDevicePixelSize(double* devPixelSize)
+{
+    *devPixelSize = m_devicePixelSize;
+    return (m_devicePixelSize == 0);
 }
 
 static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsigned short *raw)
