@@ -181,6 +181,11 @@ extern "C" {
 
 const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
+static double GetProfilePixelSize(void)
+{
+    return pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
+}
+
 GuideCamera::GuideCamera(void)
 {
     Connected = false;
@@ -197,8 +202,7 @@ GuideCamera::GuideCamera(void)
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
-    m_pixelSize = DefaultPixelSize;
-    GetCameraPixelSize();
+    m_pixelSize = GetProfilePixelSize();
     MaxBinning = 1;
     Binning = pConfig->Profile.GetInt("/camera/binning", 1);
     CurrentDarkFrame = NULL;
@@ -586,7 +590,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             throw ERROR_INFO("CameraFactory: Unknown camera choice");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (pReturn)
@@ -631,7 +635,7 @@ bool GuideCamera::SetCameraGain(int cameraGain)
         }
         GuideCameraGain = cameraGain;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -667,20 +671,6 @@ void GuideCamera::SetTimeoutMs(int ms)
     pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
 }
 
-// Get the best-known pixel size for the camera - from the device/driver, from the profile, or DefaultPixelSize
-double GuideCamera::GetCameraPixelSize(void)
-{
-    if (m_pixelSize == DefaultPixelSize)
-    {
-        if (GetDevicePixelSize(&m_pixelSize))
-        {
-            m_pixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
-        }
-
-    }
-    return m_pixelSize;
-}
-
 bool GuideCamera::SetCameraPixelSize(double pixel_size)
 {
     bool bError = false;
@@ -691,9 +681,10 @@ bool GuideCamera::SetCameraPixelSize(double pixel_size)
         {
             throw ERROR_INFO("pixel_size <= 0");
         }
+
         m_pixelSize = pixel_size;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -966,6 +957,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
 
         m_pPortNum->Enable(!pFrame->CaptureActive);
     }
+
     double pxSize;
     if (m_pCamera->GetDevicePixelSize(&pxSize))         // true=>error
     {
@@ -974,6 +966,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
     }
     else
         m_pPixelSize->Enable(false);                // Got a device-level pixel size, disable the control
+
     m_pPixelSize->SetValue(pxSize);
 }
 
@@ -1034,9 +1027,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         }
     }
 
-    double pixel_size;
-    pixel_size = m_pPixelSize->GetValue();
-    m_pCamera->SetCameraPixelSize(pixel_size);
+    m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
 }
 
 double CameraConfigDialogCtrlSet::GetPixelSize()
@@ -1077,10 +1068,10 @@ wxString GuideCamera::GetSettingsSummary()
 
     // return a loggable summary of current camera settings
     wxString pixelSizeStr;
-    if (m_pixelSize == 0)
-        pixelSizeStr = "unspecified";
+    if (m_pixelSize == DefaultPixelSize)
+        pixelSizeStr = _("unspecified");
     else
-        pixelSizeStr = wxString::Format("%0.1f um", m_pixelSize);
+        pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
 
     return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
                             Name, GuideCameraGain,

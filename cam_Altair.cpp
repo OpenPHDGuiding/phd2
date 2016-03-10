@@ -52,45 +52,45 @@ class AltairCameraDlg : public wxDialog
 {
 public:
 
-	wxCheckBox* m_reduceRes;
-	AltairCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Altair Camera Settings"),
-		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
-	~AltairCameraDlg() { }
+    wxCheckBox* m_reduceRes;
+    AltairCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Altair Camera Settings"),
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
+    ~AltairCameraDlg() { }
 };
 
 AltairCameraDlg::AltairCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
-	: wxDialog(parent, id, title, pos, size, style)
+    : wxDialog(parent, id, title, pos, size, style)
 {
 
 
-	SetSizeHints(wxDefaultSize, wxDefaultSize);
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-	wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
-	wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxHORIZONTAL);
+    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxHORIZONTAL);
 
-	m_reduceRes = new wxCheckBox(this, wxID_ANY, wxT("Reduced Resolution (by ~20%)"), wxDefaultPosition, wxDefaultSize, 0);
-	sbSizer3->Add(m_reduceRes, 0, wxALL, 5);
-	bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+    m_reduceRes = new wxCheckBox(this, wxID_ANY, wxT("Reduced Resolution (by ~20%)"), wxDefaultPosition, wxDefaultSize, 0);
+    sbSizer3->Add(m_reduceRes, 0, wxALL, 5);
+    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
 
-	wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
-	wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-	wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
-	sdbSizer2->AddButton(sdbSizer2OK);
-	sdbSizer2->AddButton(sdbSizer2Cancel);
-	sdbSizer2->Realize();
-	bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+    wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
+    wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
+    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    sdbSizer2->AddButton(sdbSizer2OK);
+    sdbSizer2->AddButton(sdbSizer2Cancel);
+    sdbSizer2->Realize();
+    bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
 
-	SetSizer(bSizer12);
-	Layout();
+    SetSizer(bSizer12);
+    Layout();
 
-	Centre(wxBOTH);
+    Centre(wxBOTH);
 }
 
 Camera_Altair::Camera_Altair()
     : m_buffer(0),
     m_capturing(false)
 {
-	PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
 
     Name = _T("Altair Camera");
     Connected = false;
@@ -155,79 +155,77 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     }
 
     Connected = true;
-	bool hasROI = false;
-	bool hasSkip = false;
+    bool hasROI = false;
+    bool hasSkip = false;
 
     for (int i = 0; i < numCameras; i++)
     {
         if (ai[i].id == camId)
         {
             Name = ai[i].displayname;
-			hasROI = (ai[i].model->flag & ALTAIR_FLAG_ROI_HARDWARE) != 0;
-			hasSkip = (ai[i].model->flag & ALTAIR_FLAG_BINSKIP_SUPPORTED) != 0;
+            hasROI = (ai[i].model->flag & ALTAIR_FLAG_ROI_HARDWARE) != 0;
+            hasSkip = (ai[i].model->flag & ALTAIR_FLAG_BINSKIP_SUPPORTED) != 0;
             break;
         }
     }
 
-	int width, height;
-	if (FAILED(Altair_get_Resolution(m_handle, 0, &width, &height)))
-	{
-		Disconnect();
-		wxMessageBox(_("Failed to get camera resolution for Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
-		return true;
-	}
+    int width, height;
+    if (FAILED(Altair_get_Resolution(m_handle, 0, &width, &height)))
+    {
+        Disconnect();
+        wxMessageBox(_("Failed to get camera resolution for Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
 
-	ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
-	if (hasROI && ReduceResolution)
-	{
-		width *= 0.8;
-		height *= 0.8;
-	}
+    ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    if (hasROI && ReduceResolution)
+    {
+        width *= 0.8;
+        height *= 0.8;
+    }
 
     FullSize.x = width;
     FullSize.y = height;
 
-
-
     delete[] m_buffer;
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
-	float xSize, ySize;
-    m_pixelSize = 3.75; // for all cameras so far....
-	if (Altair_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
-	{
-		m_pixelSize = xSize;
-	}
+    float xSize, ySize;
+    m_devicePixelSize = 3.75; // for all cameras so far....
+    if (Altair_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
+    {
+        m_devicePixelSize = xSize;
+    }
 
     wxYield();
 
     HasGainControl = false;
 
-	unsigned short min, max, def;
-	if (SUCCEEDED(Altair_get_ExpoAGainRange(m_handle, &min, &max, &def)))
-	{
-		m_minGain = min;
-		m_maxGain = max;
-		HasGainControl = max > min;
-	}
+    unsigned short min, max, def;
+    if (SUCCEEDED(Altair_get_ExpoAGainRange(m_handle, &min, &max, &def)))
+    {
+        m_minGain = min;
+        m_maxGain = max;
+        HasGainControl = max > min;
+    }
 
-	Altair_put_Speed(m_handle, 0);
-	Altair_put_RealTime(m_handle, TRUE);
+    Altair_put_Speed(m_handle, 0);
+    Altair_put_RealTime(m_handle, TRUE);
 
     wxYield();
 
     m_frame = wxRect(FullSize);
     Debug.AddLine("Altair: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
 
-	if (hasROI && ReduceResolution)
-	{
-		Altair_put_Roi(m_handle, 0, 0, width, height);
-	}
+    if (hasROI && ReduceResolution)
+    {
+        Altair_put_Roi(m_handle, 0, 0, width, height);
+    }
 
-	if (hasSkip)
-		Altair_put_Mode(m_handle, 0);
+    if (hasSkip)
+        Altair_put_Mode(m_handle, 0);
 
-	Altair_put_Option(m_handle, ALTAIR_OPTION_RAW, 0);
+    Altair_put_Option(m_handle, ALTAIR_OPTION_RAW, 0);
 
     return false;
 }
@@ -237,7 +235,7 @@ bool Camera_Altair::StopCapture(void)
     if (m_capturing)
     {
         Debug.AddLine("Altair: stopcapture");
-		Altair_Stop(m_handle);
+        Altair_Stop(m_handle);
         m_capturing = false;
     }
     return true;
@@ -245,31 +243,34 @@ bool Camera_Altair::StopCapture(void)
 
 void Camera_Altair::FrameReady(void)
 {
-	m_frameReady = true;
+    m_frameReady = true;
 }
 
-bool Camera_Altair::GetDevicePixelSize(double* devPixelSize)
+bool Camera_Altair::GetDevicePixelSize(double *devPixelSize)
 {
-    *devPixelSize = m_pixelSize;
+    if (!Connected)
+        return true;
+
+    *devPixelSize = m_devicePixelSize;
     return false;                               // Pixel size is known in any case
 }
 
 void Camera_Altair::ShowPropertyDialog()
 {
-	AltairCameraDlg dlg(wxGetApp().GetTopWindow());
-	bool value = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
-	dlg.m_reduceRes->SetValue(value);
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		ReduceResolution = dlg.m_reduceRes->GetValue();
-		pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", ReduceResolution);
-	}
+    AltairCameraDlg dlg(wxGetApp().GetTopWindow());
+    bool value = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    dlg.m_reduceRes->SetValue(value);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        ReduceResolution = dlg.m_reduceRes->GetValue();
+        pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", ReduceResolution);
+    }
 }
 
 bool Camera_Altair::Disconnect()
 {
     StopCapture();
-	Altair_Close(m_handle);
+    Altair_Close(m_handle);
 
     Connected = false;
 
@@ -292,11 +293,11 @@ inline static int round_up(int v, int m)
 
 void __stdcall CameraCallback(unsigned nEvent, void* pCallbackCtx)
 {
-	if (nEvent == ALTAIR_EVENT_IMAGE)
-	{
-		Camera_Altair* pCam = (Camera_Altair*)pCallbackCtx;
-		pCam->FrameReady();
-	}
+    if (nEvent == ALTAIR_EVENT_IMAGE)
+    {
+        Camera_Altair* pCam = (Camera_Altair*)pCallbackCtx;
+        pCam->FrameReady();
+    }
 }
 //static void flush_buffered_image(int cameraId, usImage& img)
 //{
@@ -349,23 +350,23 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     // get is current
 
     //flush_buffered_image(m_handle, img);
-	unsigned int width, height;
-	while (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
-	{
-		
-	}
+    unsigned int width, height;
+    while (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
+    {
+        
+    }
 
 
-	m_frameReady = false;
-	if (!m_capturing)
+    m_frameReady = false;
+    if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-		HRESULT result = Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
-		if (result != 0)
-		{
-			Debug.AddLine("Altair_StartPullModeWithCallback failed with code %d", result);
-			return true;
-		}
+        HRESULT result = Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
+        if (result != 0)
+        {
+            Debug.AddLine("Altair_StartPullModeWithCallback failed with code %d", result);
+            return true;
+        }
         m_capturing = true;
     }
 
@@ -383,14 +384,14 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     while (true)
     {
-		if (m_frameReady)
-		{
-			m_frameReady = false;
-			
-			if (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
-				break;
-		}
-		WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
+        if (m_frameReady)
+        {
+            m_frameReady = false;
+            
+            if (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
+                break;
+        }
+        WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
         if (WorkerThread::InterruptRequested())
         {
             StopCapture();
@@ -431,7 +432,7 @@ inline static int GetAltairDirection(int direction)
 
 bool Camera_Altair::ST4PulseGuideScope(int direction, int duration)
 {
-	int d = GetAltairDirection(direction);
+    int d = GetAltairDirection(direction);
     Altair_ST4PlusGuide(m_handle, d, duration);
 
     return false;
@@ -439,7 +440,7 @@ bool Camera_Altair::ST4PulseGuideScope(int direction, int duration)
 
 void  Camera_Altair::ClearGuidePort()
 {
-	Altair_ST4PlusGuide(m_handle, 0,0);
+    Altair_ST4PlusGuide(m_handle, 0,0);
 }
 
 #endif // Altair_ASI

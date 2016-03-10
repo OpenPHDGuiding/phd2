@@ -361,7 +361,6 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
     Color = false;
     DriverVersion = 1;
     m_bitsPerPixel = 0;
-    m_driverPixelSize = 0;
 }
 
 Camera_ASCOMLateClass::~Camera_ASCOMLateClass()
@@ -646,7 +645,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         pFrame->Alert(_("ASCOM driver missing the PixelSizeX property. Please report this error to your ASCOM driver provider."));
         return true;
     }
-    m_driverPixelSize = (double)vRes.dblVal;
+    m_driverPixelSize = vRes.dblVal;
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
@@ -654,9 +653,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         pFrame->Alert(_("ASCOM driver missing the PixelSizeY property. Please report this error to your ASCOM driver provider."));
         return true;
     }
-    m_driverPixelSize = wxMax(m_driverPixelSize, (double)vRes.dblVal);
-    if (m_driverPixelSize != 0)
-        m_pixelSize = m_driverPixelSize;            // overwrite whatever was hand-configured
+    m_driverPixelSize = wxMax(m_driverPixelSize, vRes.dblVal);
 
     short maxBinX = 1, maxBinY = 1;
     if (driver.GetProp(&vRes, L"MaxBinX"))
@@ -754,10 +751,13 @@ bool Camera_ASCOMLateClass::Disconnect()
     return false;
 }
 
-bool Camera_ASCOMLateClass::GetDevicePixelSize(double* devPixelSize)
+bool Camera_ASCOMLateClass::GetDevicePixelSize(double *devPixelSize)
 {
+    if (!Connected)
+        return true;
+
     *devPixelSize = m_driverPixelSize;
-    return (m_driverPixelSize == 0);
+    return false;
 }
 
 void Camera_ASCOMLateClass::ShowPropertyDialog(void)

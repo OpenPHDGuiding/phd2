@@ -91,8 +91,7 @@ void Camera_INDIClass::ClearStatus()
     Connected = false;
     ready = false;
     m_hasGuideOutput = false;
-    PixSizeX = PixelSize;
-    PixSizeY = PixelSize;
+    PixSize = PixSizeX = PixSizeY = 0.0;
 }
 
 void Camera_INDIClass::CheckState() 
@@ -143,7 +142,7 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
     // we go here every time a Number value change
     //printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
     if (nvp == ccdinfo_prop) {
-        PixelSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
+        PixSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
         PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
         PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
         m_maxSize.x = IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value;
@@ -699,6 +698,14 @@ bool Camera_INDIClass::ST4PulseGuideScope(int direction, int duration)
     }
     else return true;
 }
-   
-    
+
+bool Camera_INDIClass::GetDevicePixelSize(double *devPixelSize)
+{
+    if (!Connected)
+        return true; // error
+
+    *devPixelSize = PixSize;
+    return false;
+}
+
 #endif

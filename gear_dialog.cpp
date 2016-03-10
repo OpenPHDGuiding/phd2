@@ -969,6 +969,12 @@ bool GearDialog::DoConnectCamera(void)
             throw THROW_INFO("DoConnectCamera: connect failed");
         }
 
+        // update camera pixel size from the driver
+        double pixelSize;
+        bool err = m_pCamera->GetDevicePixelSize(&pixelSize);
+        if (!err)
+            m_pCamera->SetCameraPixelSize(pixelSize);
+
         // force re-build of camera tab in case Connect updated any of
         // the camera properties that influence the camera tab. For
         // example, binning options.

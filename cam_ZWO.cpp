@@ -325,9 +325,13 @@ bool Camera_ZWO::Disconnect()
 
 bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
 {
+    if (!Connected)
+        return true;
+
     *devPixelSize = m_devicePixelSize;
-    return (m_devicePixelSize == 0);
+    return false;
 }
+
 inline static int round_down(int v, int m)
 {
     return v & ~(m - 1);

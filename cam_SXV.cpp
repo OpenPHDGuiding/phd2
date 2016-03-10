@@ -195,7 +195,7 @@ void Camera_SXVClass::ShowPropertyDialog()
 bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     SXHandle hCams[SXCCD_MAX_CAMS];
-    
+
     int ncams = sxOpen(hCams);
 
     for (int i = 0; i < ncams; i++)
@@ -374,10 +374,13 @@ bool Camera_SXVClass::Disconnect()
     return false;
 }
 
-bool Camera_SXVClass::GetDevicePixelSize(double* devPixelSize)
+bool Camera_SXVClass::GetDevicePixelSize(double *devPixelSize)
 {
+    if (!Connected)
+        return true;
+
     *devPixelSize = m_devicePixelSize;
-    return (m_devicePixelSize == 0);
+    return false;
 }
 
 static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsigned short *raw)

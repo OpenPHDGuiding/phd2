@@ -99,10 +99,11 @@ class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
     friend class CameraConfigDialogPane;
     friend class CameraConfigDialogCtrlSet;
 
+    double          m_pixelSize;
+
 protected:
     bool            m_hasGuideOutput;
     int             m_timeoutMs;
-    double          m_pixelSize;
 
 public:
     int             GuideCameraGain;
@@ -162,8 +163,9 @@ public:
     void GetBinningOpts(wxArrayString *opts);
 
     virtual void    ShowPropertyDialog() { return; }
-    double          GetCameraPixelSize(void);
-    virtual bool    GetDevicePixelSize(double* devPixelSize);           // Value from device/driver or error return
+    bool            SetCameraPixelSize(double pixel_size);
+    double          GetCameraPixelSize(void) const;
+    virtual bool    GetDevicePixelSize(double *devPixelSize);           // Value from device/driver or error return
 
     virtual wxString GetSettingsSummary();
     void            AddDark(usImage *dark);
@@ -185,7 +187,6 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
-    virtual bool SetCameraPixelSize(double pixel_size);
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,
@@ -209,7 +210,12 @@ inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
     GetBinningOpts(MaxBinning, opts);
 }
 
-inline bool GuideCamera::GetDevicePixelSize(double* devPixelSize)
+inline double GuideCamera::GetCameraPixelSize(void) const
+{
+    return m_pixelSize;
+}
+
+inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
     return true;                // Return an error, the device/driver can't report pixel size
 }

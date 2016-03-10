@@ -80,7 +80,7 @@ public:
     bool ST4HasNonGuiMove() { return true; }
     bool ST4PulseGuideScope(int direction, int duration);
     wxByte BitsPerPixel();
-    virtual bool    GetDevicePixelSize(double* devPixelSize);
+    bool GetDevicePixelSize(double *devPixelSize);
 
 private:
     void InitFrameSizes(void);
