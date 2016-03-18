@@ -1907,7 +1907,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!note.IsEmpty())
             {
                 char *USERNOTE = const_cast<char *>("USERNOTE");
-                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(note)), NULL, &status);
+                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, note.char_str(), NULL, &status);
             }
 
             if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);

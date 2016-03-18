@@ -80,17 +80,17 @@ public:
 
     void SelectProfile(int profileId);
 
-    bool     GetBoolean(const char *pName, bool defaultValue);
-    wxString GetString(const char *pName, const wxString& defaultValue);
-    double   GetDouble(const char *pName, double defaultValue);
-    long     GetLong(const char *pName, long defaultValue);
-    int      GetInt(const char *pName, int defaultValue);
+    bool     GetBoolean(const wxString& name, bool defaultValue);
+    wxString GetString(const wxString& name, const wxString& defaultValue);
+    double   GetDouble(const wxString& name, double defaultValue);
+    long     GetLong(const wxString& name, long defaultValue);
+    int      GetInt(const wxString& name, int defaultValue);
 
-    void SetBoolean(const char *pName, bool value);
-    void SetString(const char *pName, const wxString& value);
-    void SetDouble(const char *pName, double value);
-    void SetLong(const char *pName, long value);
-    void SetInt(const char *pName, int value);
+    void SetBoolean(const wxString& name, bool value);
+    void SetString(const wxString& name, const wxString& value);
+    void SetDouble(const wxString& name, double value);
+    void SetLong(const wxString& name, long value);
+    void SetInt(const wxString& name, int value);
 
     bool HasEntry(const wxString& name) const;
 
