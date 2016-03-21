@@ -1058,7 +1058,6 @@ void Guider::StopGuiding(void)
         case STATE_UNINITIALIZED:
         case STATE_SELECTING:
         case STATE_SELECTED:
-            EvtServer.NotifyLoopingStopped();
             break;
         case STATE_CALIBRATING_PRIMARY:
         case STATE_CALIBRATING_SECONDARY:
