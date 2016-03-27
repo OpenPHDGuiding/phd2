@@ -4351,8 +4351,9 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
-"Использование карты битых пикселей предотвратит попытку гидирования по "
-"горячему пикселю. Создайте её через меню \"Темновые кадры\"."
+"Использование темновой библиотеки или карты битых пикселей предотвратит "
+"попытку гидирования по горячему пикселю. Создайте её через меню \"Темновые "
+"кадры\"."
 
 #: myframe_events.cpp:841
 msgid "Are you sure you want force recalibration?"
