@@ -33,13 +33,10 @@
  *
  */
 
-#if defined (__WINDOWS__)
-#define STEPGUIDER_SXAO
-#endif
-
 #ifndef STEPGUIDERS_H_INCLUDED
 #define STEPGUIDERS_H_INCLUDED
 
+#define STEPGUIDER_SXAO
 #define STEPGUIDER_SIMULATOR
 
 #include "stepguider.h"

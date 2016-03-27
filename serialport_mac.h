@@ -36,15 +36,13 @@
 #if !defined(SERIALPORT_MAC_H_INCLUDED) && defined (__APPLE__)
 #define SERIALPORT_MAC_H_INCLUDED
 
-
-#include <IOKit/serial/IOSerialKeys.h>
-#include <IOKit/IOKitLib.h>
-
+#include <termios.h>
 
 class SerialPortMac : public SerialPort
 {
     int m_PortFID;
-
+    struct termios m_originalAttrs;
+    
 public:
 
     wxArrayString GetSerialPortList(void);
@@ -59,6 +57,9 @@ public:
 
     virtual bool SetReceiveTimeout(int timeoutMs);
     virtual bool Receive(unsigned char *pData, unsigned count);
+    
+    virtual bool SetRTS(bool asserted);
+    virtual bool SetDTR(bool asserted);
 };
 
 #endif  // SERIALPORT_MAC_H_INCLUDED

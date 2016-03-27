@@ -280,9 +280,12 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand invalid count");
         }
-
+#if defined (__WINDOWS__)
         int ret = _snprintf((char *)&cmdBuf[0], sizeof(cmdBuf), "%c%c%5.5d", command, parameter, count);
-
+#else
+        int ret = snprintf((char *)&cmdBuf[0], sizeof(cmdBuf), "%c%c%5.5d", command, parameter, count);
+#endif
+        
         if (ret < 0)
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand snprintf failed");
