@@ -36,30 +36,13 @@
 #if !defined(SERIALPORT_MAC_H_INCLUDED) && defined (__APPLE__)
 #define SERIALPORT_MAC_H_INCLUDED
 
-#include <termios.h>
+#include "serialport_posix.h"
 
-class SerialPortMac : public SerialPort
+class SerialPortMac : public SerialPortPosix
 {
-    int m_PortFID;
-    struct termios m_originalAttrs;
-    
 public:
 
     wxArrayString GetSerialPortList(void);
-
-    SerialPortMac(void);
-    virtual ~SerialPortMac(void);
-
-    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
-    virtual bool Disconnect(void);
-
-    virtual bool Send(const unsigned char *pData, unsigned count);
-
-    virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, unsigned count);
-    
-    virtual bool SetRTS(bool asserted);
-    virtual bool SetDTR(bool asserted);
 };
 
 #endif  // SERIALPORT_MAC_H_INCLUDED
