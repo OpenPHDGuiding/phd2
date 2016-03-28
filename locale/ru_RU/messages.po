@@ -1433,12 +1433,17 @@ msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
 msgstr ""
+"Проверять только загруженные подкадры. Размер подкадра равен размеру региона "
+"поиска."
 
 #: camera.cpp:810
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
+"Размер пикселя гидирующей камеры в микронах при выключенном биннинге. "
+"Используется вместе с фокусным расстоянием гидирующего телескопа для "
+"отображения ошибки гидирования в угловых секундах."
 
 #: camera.cpp:811
 msgid "Pixel size"
@@ -1453,6 +1458,8 @@ msgid ""
 "Camera gain, default = 95 % , lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
+"Чувствительность камеры, по умолчанию 95%, уменьшить при шумах или "
+"гидировании по очень яркой звезде. Доступно не для всех камер."
 
 #: camera.cpp:830
 msgid "Binning"
@@ -1492,12 +1499,12 @@ msgstr ""
 
 #: camera.cpp:1072
 msgid "unspecified"
-msgstr ""
+msgstr "не определено"
 
 #: camera.cpp:1074
 #, c-format
 msgid "%0.1f um"
-msgstr ""
+msgstr "%0.1f мк"
 
 #: camera.cpp:1214
 msgid "Memory allocation error during capture"
@@ -2059,7 +2066,7 @@ msgstr "Координаты сохранены."
 
 #: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:596
 msgid "Please connect a camera first."
-msgstr ""
+msgstr "Сначала подключите камеру"
 
 #: drift_tool.cpp:807
 msgid ""
@@ -2733,6 +2740,10 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
+"На сколько пикселей (дробная величина) должна переместиться звезда чтобы "
+"вызвать гидирующий импульс?\n"
+"При включенном биннинге это дробная величина от размера пикселя при "
+"биннинге. По умолчанию %.2f "
 
 #: guide_algorithm_hysteresis.cpp:285
 msgid "Agr"
@@ -3432,7 +3443,7 @@ msgstr ""
 
 #: mount.cpp:1440
 msgid "On Camera"
-msgstr ""
+msgstr "На камере"
 
 #: myframe.cpp:274 myframe.cpp:346
 msgid "History"
@@ -3989,13 +4000,14 @@ msgstr "Сброс конфигурации и настроек программ
 
 #: myframe.cpp:2405
 msgid "Reset \"Don't Show Again\" messages"
-msgstr ""
+msgstr "Сбросить сообщений \"Больше не показывать\""
 
 #: myframe.cpp:2406
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr ""
+"Показать сообщения, которые были скрыты при нажатии \"Больше не показывать\""
 
 #: myframe.cpp:2410
 msgid "Low Q JPEG"
@@ -4091,32 +4103,34 @@ msgstr "Просмотр..."
 
 #: myframe.cpp:2502
 msgid "Dither Settings"
-msgstr ""
+msgstr "Настройки подвижек"
 
 #: myframe.cpp:2503
 msgid "Random"
-msgstr ""
+msgstr "Случайно"
 
 #: myframe.cpp:2504
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr ""
+"Команды подвижки изменяют выбранное положение на случайную величину по "
+"каждой из осей"
 
 #: myframe.cpp:2505
 msgid "Spiral"
-msgstr ""
+msgstr "Спираль"
 
 #: myframe.cpp:2506
 msgid "Each dither command moves the lock position along a spiral path"
-msgstr ""
+msgstr "Команды подвижки изменяют выбранное положение по спиральному пути"
 
 #: myframe.cpp:2508
 msgid "Mode: "
-msgstr ""
+msgstr "Режим"
 
 #: myframe.cpp:2513
 msgid "RA only"
-msgstr ""
+msgstr "Только RA"
 
 #: myframe.cpp:2514
 msgid "Constrain dither to RA only"
@@ -4337,8 +4351,9 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
-"Использование карты битых пикселей предотвратит попытку гидирования по "
-"горячему пикселю. Создайте её через меню \"Темновые кадры\"."
+"Использование темновой библиотеки или карты битых пикселей предотвратит "
+"попытку гидирования по горячему пикселю. Создайте её через меню \"Темновые "
+"кадры\"."
 
 #: myframe_events.cpp:841
 msgid "Are you sure you want force recalibration?"
@@ -4517,7 +4532,7 @@ msgstr "Подключить камеру и определить размер �
 
 #: profile_wizard.cpp:143
 msgid "Guide camera un-binned pixel size (microns)"
-msgstr ""
+msgstr "Размер пикселя гидирующей камеры в микронах при выключенном биннинге"
 
 #: profile_wizard.cpp:148
 msgid ""
@@ -4776,13 +4791,15 @@ msgstr "Невозможно подключить камеру"
 
 #: profile_wizard.cpp:541
 msgid "Camera driver cannot report pixel size"
-msgstr ""
+msgstr "Драйвер камеры не может сообщить размер пикселя"
 
 #: profile_wizard.cpp:548
 msgid ""
 ". Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
 msgstr ""
+"Введите из документации камеры или сайта продавца корректный размер пикселя "
+"при выключенным биннинге."
 
 #: profile_wizard.cpp:548
 msgid "Detect Pixel Size"
