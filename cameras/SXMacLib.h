@@ -165,6 +165,8 @@ extern "C" {
     
     void* sxOpenByModel(UInt16 nModelNumber);
     
+    void sxSetTimeoutMS(UInt32 timeoutMS);
+    
 #ifdef __cplusplus
 }
 #endif
