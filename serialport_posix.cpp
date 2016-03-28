@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#if defined (__LINUX__)
+#if defined (__LINUX__) || defined (__APPLE__)
 
 #include <termios.h>
 #include <unistd.h>
@@ -85,6 +85,11 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
             throw ERROR_INFO("SerialPortPosix::Connect " + errorWxs);
         }
 
+#if defined (__APPLE__)
+        m_originalAttrs = attr;
+        cfmakeraw(&attr);
+#endif
+        
         attr.c_iflag = 0; // input modes
         attr.c_oflag = 0; // output modes
         attr.c_cflag = CLOCAL;  // CLOCAL == Ignore modem control lines.
@@ -182,7 +187,15 @@ bool SerialPortPosix::Disconnect(void)
     bool bError = false;
 
     try {
-        if ( ! close(m_fd)) {
+#if defined (__APPLE__)
+        if (tcdrain(m_fd) == -1){
+            fprintf(stderr,"Error waiting for drain - %s(%d).\n",strerror(errno), errno);
+        }
+        if (tcsetattr(m_fd, TCSANOW, &m_originalAttrs) == -1){
+            fprintf(stderr,"Error resetting tty attributes - %s(%d).\n",strerror(errno),errno);
+        }
+#endif
+        if (close(m_fd) == -1){
             throw ERROR_INFO("SerialPortPosix: close failed");
         }
     } catch (wxString Msg) {
@@ -249,18 +262,26 @@ bool SerialPortPosix::Receive(unsigned char *pData, unsigned count)
     bool bError = false;
 
     try {
-        int receiveCount;
-
-        if ((receiveCount = read(m_fd, pData, count)) < 0 ) {
-            throw ERROR_INFO("SerialPortPosix: read Failed");
+        
+        const unsigned int originalCount = count;
+        
+        do {
+            const ssize_t receiveCount = read(m_fd, pData, count);
+            if (receiveCount == -1){
+                throw ERROR_INFO("SerialPortPosix: read Failed");
+            }
+            if (receiveCount == 0){
+                break; // eof
+            }
+            Debug.AddBytes("SerialPortPosix::Receive", pData, receiveCount);
+            count -= receiveCount;
+            pData += receiveCount;
+        } while(count > 0);
+        
+        if (count > 0){
+            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"),count) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"),originalCount));
         }
-
-        if (receiveCount != count) {
-            throw ERROR_INFO("SerialPortPosix: recieveCount " + wxString::Format(wxT("%i"),receiveCount) + " != count " + wxString::Format(wxT("%i"),count) );
-        }
-
-        Debug.AddBytes("SerialPortPosix::Receive", pData, receiveCount);
-
+        
     } catch (wxString Msg) {
         POSSIBLY_UNUSED(Msg);
         bError = true;

@@ -32,13 +32,20 @@
  *
  */
 
-#if !defined(SERIALPORT_POSIX_H_INCLUDED) && defined (__LINUX__)
+#if !defined(SERIALPORT_POSIX_H_INCLUDED)
 #define SERIALPORT_POSIX_H_INCLUDED
+
+#if defined (__LINUX__) || defined (__APPLE__)
+
+#include <termios.h>
 
 class SerialPortPosix : public SerialPort
 {
     int m_fd;
-
+#if defined (__APPLE__)
+    struct termios m_originalAttrs;
+#endif 
+    
 public:
 
     wxArrayString GetSerialPortList(void);
@@ -57,5 +64,7 @@ public:
     virtual bool SetRTS(bool asserted);
     virtual bool SetDTR(bool asserted);
 };
+
+#endif // __LINUX__ || __APPLE__
 
 #endif // SERIALPORT_POSIX_H_INCLUDED
