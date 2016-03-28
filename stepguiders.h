@@ -37,6 +37,14 @@
 #define STEPGUIDER_SXAO
 #endif
 
+#if defined (__LINUX__)
+#define STEPGUIDER_SXAO
+#endif
+
+#if defined (GUIDE_INDI)
+#define STEPGUIDER_INDI
+#endif
+
 #ifndef STEPGUIDERS_H_INCLUDED
 #define STEPGUIDERS_H_INCLUDED
 
