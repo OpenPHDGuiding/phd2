@@ -263,6 +263,8 @@ bool SerialPortPosix::Receive(unsigned char *pData, unsigned count)
 
     try {
         
+        const unsigned int originalCount = count;
+        
         do {
             const ssize_t receiveCount = read(m_fd, pData, count);
             if (receiveCount == -1){
@@ -277,7 +279,7 @@ bool SerialPortPosix::Receive(unsigned char *pData, unsigned count)
         } while(count > 0);
         
         if (count > 0){
-            throw ERROR_INFO("SerialPortPosix: remaining bytes at eof " + wxString::Format(wxT("%i"),count) );
+            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"),count) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"),originalCount));
         }
         
     } catch (wxString Msg) {
