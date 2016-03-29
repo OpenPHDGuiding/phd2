@@ -411,7 +411,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 	}
 
 
-	//if (m_roi != unbinnedFrame)
+	if (m_roi != unbinnedFrame)
 	{
 		ret = SetQHYCCDResolution(m_camhandle, unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight());
 		if (ret == QHYCCD_SUCCESS)
@@ -426,7 +426,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 	}
 
 
-	//if (duration != m_curExposure)
+	if (duration != m_curExposure)
 	{
 		ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
 		if (ret == QHYCCD_SUCCESS)
@@ -440,7 +440,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 		}
 	}
 
-	//if (GuideCameraGain != m_curGain)
+	if (GuideCameraGain != m_curGain)
 	{
 		double gain = m_gainMin + GuideCameraGain * (m_gainMax - m_gainMin) / 100.0;
 		gain = floor(gain / m_gainStep) * m_gainStep;
