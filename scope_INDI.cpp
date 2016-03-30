@@ -136,30 +136,32 @@ void ScopeINDI::SetupDialog()
     delete indiDlg;
 }
 
-bool ScopeINDI::Connect() 
+bool ScopeINDI::Connect()
 {
-   // If not configured open the setup dialog
-   if (strcmp(INDIMountName,"INDI Mount")==0) SetupDialog();
+    // If not configured open the setup dialog
+    if (INDIMountName == wxT("INDI Mount")) {
+        SetupDialog();
+    }
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     // Receive messages only for our mount.
     watchDevice(INDIMountName.mb_str(wxConvUTF8));
     // Connect to server.
-   if (connectServer()) {
-      return !ready;
-   }
-   else {
-      // last chance to fix the setup
-      SetupDialog();
-      setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-      watchDevice(INDIMountName.mb_str(wxConvUTF8));
-      if (connectServer()) {
-	 return !ready; 
-      }
-      else {
-	 return true;
-      }
-   }
+    if (connectServer()) {
+        return !ready;
+    }
+    else {
+        // last chance to fix the setup
+        SetupDialog();
+        setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+        watchDevice(INDIMountName.mb_str(wxConvUTF8));
+        if (connectServer()) {
+            return !ready;
+        }
+        else {
+            return true;
+        }
+    }
 }
 
 bool ScopeINDI::Disconnect() 

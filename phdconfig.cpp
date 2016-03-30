@@ -59,116 +59,116 @@ void ConfigSection::SelectProfile(int profileId)
     m_prefix = wxString::Format("/profile/%d", profileId);
 }
 
-bool ConfigSection::GetBoolean(const char *pName, bool defaultValue=false)
+bool ConfigSection::GetBoolean(const wxString& name, bool defaultValue)
 {
     bool bReturn = defaultValue;
-    wxString name = m_prefix + pName;
+    wxString path = m_prefix + name;
 
     if (m_pConfig)
     {
-        m_pConfig->Read(name, &bReturn, defaultValue);
+        m_pConfig->Read(path, &bReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetBoolean(\"%s\", %d) returns %d", name, defaultValue, bReturn));
+    Debug.AddLine(wxString::Format("GetBoolean(\"%s\", %d) returns %d", path, defaultValue, bReturn));
 
     return bReturn;
 }
 
-wxString ConfigSection::GetString(const char *pName, const wxString& defaultValue)
+wxString ConfigSection::GetString(const wxString& name, const wxString& defaultValue)
 {
     wxString sReturn = defaultValue;
-    wxString name = m_prefix + pName;
+    wxString path = m_prefix + name;
 
     if (m_pConfig)
     {
-        m_pConfig->Read(name, &sReturn, defaultValue);
+        m_pConfig->Read(path, &sReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetString(\"%s\", \"%s\") returns \"%s\"", name, defaultValue, sReturn));
+    Debug.AddLine(wxString::Format("GetString(\"%s\", \"%s\") returns \"%s\"", path, defaultValue, sReturn));
 
     return sReturn;
 }
 
-double ConfigSection::GetDouble(const char *pName, double defaultValue)
+double ConfigSection::GetDouble(const wxString& name, double defaultValue)
 {
     double dReturn = defaultValue;
-    wxString name = m_prefix + pName;
+    wxString path = m_prefix + name;
 
     if (m_pConfig)
     {
-        m_pConfig->Read(name, &dReturn, defaultValue);
+        m_pConfig->Read(path, &dReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetDouble(\"%s\", %lf) returns %lf", name, defaultValue, dReturn));
+    Debug.AddLine(wxString::Format("GetDouble(\"%s\", %lf) returns %lf", path, defaultValue, dReturn));
 
     return dReturn;
 }
 
-long ConfigSection::GetLong(const char *pName, long defaultValue)
+long ConfigSection::GetLong(const wxString& name, long defaultValue)
 {
     long lReturn = defaultValue;
-    wxString name = m_prefix + pName;
+    wxString path = m_prefix + name;
 
     if (m_pConfig)
     {
-        m_pConfig->Read(name, &lReturn, defaultValue);
+        m_pConfig->Read(path, &lReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetLong(\"%s\", %ld) returns %ld", name, defaultValue, lReturn));
+    Debug.AddLine(wxString::Format("GetLong(\"%s\", %ld) returns %ld", path, defaultValue, lReturn));
 
     return lReturn;
 }
 
-int ConfigSection::GetInt(const char *pName, int defaultValue)
+int ConfigSection::GetInt(const wxString& name, int defaultValue)
 {
     long lReturn = defaultValue;
-    wxString name = m_prefix + pName;
+    wxString path = m_prefix + name;
 
     if (m_pConfig)
     {
-        m_pConfig->Read(name, &lReturn, defaultValue);
+        m_pConfig->Read(path, &lReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetInt(\"%s\", %d) returns %d", name, defaultValue, (int)lReturn));
+    Debug.AddLine(wxString::Format("GetInt(\"%s\", %d) returns %d", path, defaultValue, (int)lReturn));
 
     return (int)lReturn;
 }
 
-void ConfigSection::SetBoolean(const char *pName, bool value)
+void ConfigSection::SetBoolean(const wxString& name, bool value)
 {
     if (m_pConfig)
     {
-        m_pConfig->Write(m_prefix + pName, value);
+        m_pConfig->Write(m_prefix + name, value);
     }
 }
 
-void ConfigSection::SetString(const char *pName, const wxString& value)
+void ConfigSection::SetString(const wxString& name, const wxString& value)
 {
     if (m_pConfig)
     {
-        m_pConfig->Write(m_prefix + pName, value);
+        m_pConfig->Write(m_prefix + name, value);
     }
 }
 
-void ConfigSection::SetDouble(const char *pName, double value)
+void ConfigSection::SetDouble(const wxString& name, double value)
 {
     if (m_pConfig)
     {
-        m_pConfig->Write(m_prefix + pName, value);
+        m_pConfig->Write(m_prefix + name, value);
     }
 }
 
-void ConfigSection::SetLong(const char *pName, long value)
+void ConfigSection::SetLong(const wxString& name, long value)
 {
     if (m_pConfig)
     {
-        m_pConfig->Write(m_prefix + pName, value);
+        m_pConfig->Write(m_prefix + name, value);
     }
 }
 
-void ConfigSection::SetInt(const char *pName, int value)
+void ConfigSection::SetInt(const wxString& name, int value)
 {
-    SetLong(pName, value);
+    SetLong(name, value);
 }
 
 bool ConfigSection::HasEntry(const wxString& name) const

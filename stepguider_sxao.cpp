@@ -97,7 +97,17 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
-        if (version >= 102 && version != 111)
+        if (version == 0)
+        {
+            wxMessageBox(wxString::Format(
+                _("This AO device has firmware version %03u which means it needs to be flashed.\n"
+                  "It is recommended to load firmware version 101 or earlier.\n"
+                  "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                  "contains the v101 firmware."), version),
+                  _("Error"));
+            throw ERROR_INFO("StepGuiderSxAO::Connect: V000 means AO device needs a flash");
+        }
+        else if (version >= 102 && version != 111)
         {
             wxMessageBox(wxString::Format(
                 _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
@@ -203,9 +213,11 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char *rece
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
+        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive sent %c received %c", &sendChar, receivedChar));
     }
     catch (wxString Msg)
     {
+        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive send unsigned char %c", &sendChar));
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -228,8 +240,9 @@ bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int 
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
+        Debug.AddBytes(wxString::Format("StepGuiderSxAO::SendThenReceive received %c, sent", receivedChar), pBuffer, bufferSize);
 
-        if (*receivedChar == 'W')
+        if (*receivedChar == 'W') // TODO: meaning
         {
             if (m_pSerialPort->Receive(receivedChar, 1))
             {
@@ -239,6 +252,7 @@ bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int 
     }
     catch (wxString Msg)
     {
+        Debug.AddBytes("StepGuiderSxAO::SendThenReceive send", pBuffer, bufferSize);
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -280,15 +294,21 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand invalid count");
         }
-
-        int ret = _snprintf((char *)&cmdBuf[0], sizeof(cmdBuf), "%c%c%5.5d", command, parameter, count);
-
+        int bufsize = sizeof(cmdBuf);
+#if defined (__WINDOWS__)
+        // MSVC-ism _snprintf returns a negative number if there is not enough space in the buffer
+        int ret = _snprintf((char *)&cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
+#else
+        // C99 snprintf returns the number of characters that the formatted string takes whether there was enough space in the buffer or not
+        int ret = snprintf((char *)&cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
+#endif
+        
         if (ret < 0)
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand snprintf failed");
         }
 
-        if (ret >= sizeof(cmdBuf))
+        if (ret >= bufsize)
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand snprintf buffer to small");
         }
@@ -315,6 +335,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
 {
     bool bError = false;
 
+    Debug.AddLine("StepGuiderSxAO::Firmwareversion");
     try
     {
         *version = 0;
@@ -330,6 +351,8 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
         {
             throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: response != cmd");
         }
+
+        wxMilliSleep(200); // often read just V instead of V123 without this sleep
 
         unsigned char buf[3];
 
@@ -349,6 +372,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
             *version *= 10;
             *version += ch - '0';
         }
+        Debug.AddLine(wxString::Format("StepGuiderSxAO::Firmwareversion %u", *version));
     }
     catch (wxString Msg)
     {
@@ -363,6 +387,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
 {
     bool bError = false;
 
+    Debug.AddLine(wxString::Format("StepGuiderSxAO::Center using command %c", cmd));
     try
     {
         unsigned char response;
@@ -403,6 +428,7 @@ bool StepGuiderSxAO::Center()
 {
     bool bError = false;
 
+    Debug.AddLine("StepGuiderSxAO::Center (K)");
     try
     {
         if (Center('K'))

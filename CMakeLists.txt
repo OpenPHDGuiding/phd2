@@ -457,6 +457,8 @@ set(phd2_SRC
   ${phd_src_dir}/serialport_mac.h
   ${phd_src_dir}/serialport_win32.cpp
   ${phd_src_dir}/serialport_win32.h
+  ${phd_src_dir}/serialport_posix.cpp
+  ${phd_src_dir}/serialport_posix.h
   ${phd_src_dir}/serialports.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h

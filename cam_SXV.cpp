@@ -243,6 +243,10 @@ bool Camera_SXVClass::Connect(const wxString& camId)
 {
     // returns true on error
 
+#if defined (__APPLE__)
+    sxSetTimeoutMS(m_timeoutMs);
+#endif
+    
     long idx = -1;
     if (camId == DEFAULT_CAMERA_ID)
         idx = 0;
@@ -767,8 +771,12 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
     // if (WorkerThread::InterruptRequested())
     //    return true;
 
-    ReadPixels(hCam, RawData, nPixelsToRead);  // stop exposure and read but only the one frame
-
+    if (!ReadPixels(hCam, RawData, nPixelsToRead))  // stop exposure and read but only the one frame
+    {
+        DisconnectWithAlert(_("Lost connection to camera"),NO_RECONNECT);
+        return true;
+    }
+    
     if (HasShutter && ShutterClosed)
     {
         sxSetShutter(hCam, 0);  // Open it back up

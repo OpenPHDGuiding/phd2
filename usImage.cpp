@@ -334,7 +334,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             hdr.write("STACKCNT", (unsigned int) ImgStackCnt, "Stacked frame count");
 
         if (!hdrNote.IsEmpty())
-            hdr.write("USERNOTE", static_cast<const char *>(hdrNote), 0);
+            hdr.write("USERNOTE", hdrNote.utf8_str(), 0);
 
         time_t now = wxDateTime::GetTimeNow();
         struct tm *timestruct = gmtime(&now);

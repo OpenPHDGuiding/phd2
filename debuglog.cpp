@@ -49,11 +49,10 @@ DebugLog::DebugLog(void)
     InitVars();
 }
 
-DebugLog::DebugLog(const char *pName, bool bEnabled = true)
+DebugLog::DebugLog(const wxString& name, bool bEnabled = true)
 {
     InitVars();
-
-    Init(pName, bEnabled);
+    Init(name, bEnabled);
 }
 
 DebugLog::~DebugLog(void)
@@ -71,7 +70,7 @@ bool DebugLog::Enable(bool bEnabled)
     return prevState;
 }
 
-bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
+bool DebugLog::Init(const wxString& name, bool bEnable, bool bForceOpen)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
 
@@ -120,7 +119,7 @@ void DebugLog::RemoveOldFiles()
     Logger::RemoveMatchingFiles("PHD2_DebugLog*.txt", RetentionPeriod);
 }
 
-wxString DebugLog::AddLine(const char *format, ...)
+wxString DebugLog::AddLine(const wxString& format, ...)
 {
     va_list args;
     va_start(args, format);

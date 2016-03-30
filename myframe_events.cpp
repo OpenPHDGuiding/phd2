@@ -289,9 +289,10 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::FinishStop(void)
 {
+    assert(!CaptureActive);
+    EvtServer.NotifyLoopingStopped();
     // when looping resumes, start with at least one full frame. This enables applications
     // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
-    assert(!CaptureActive);
     pGuider->ForceFullFrame();
     ResetAutoExposure();
     UpdateButtonsStatus();
@@ -354,16 +355,18 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
             delete pNewFrame;
 
+            bool stopping = !m_continueCapturing;
             StopCapturing();
             if (pGuider->IsCalibratingOrGuiding())
             {
                 pGuider->StopGuiding();
                 pGuider->UpdateImageDisplay();
             }
+            EvtServer.NotifyLoopingStopped();
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
-            PhdController::AbortController("Error reported capturing image");
+            PhdController::AbortController(stopping ? "Image capture stopped" : "Error reported capturing image");
             StatusMsg(_("Stopped."));
 
             // some camera drivers disconnect the camera on error
