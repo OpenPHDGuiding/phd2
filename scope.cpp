@@ -822,6 +822,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
         }
         if (pConfig->Global.GetBoolean(CalibrationWarningKey(m_lastCalibrationIssue), true))        // User hasn't disabled this type of alert
         {
+            // Generate alert with 'Help' button that will lead to trouble-shooting section
             pFrame->Alert(alertMsg,
                 _("Details..."), ShowCalibrationIssues, (long)this, true);
         }
