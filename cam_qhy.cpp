@@ -164,7 +164,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         return true;
     }
 
-	//before do InitQHYCCD() must call SetQHYCCDStreamMode(camhandle,0 or 1)
+    //before do InitQHYCCD() must call SetQHYCCDStreamMode(camhandle,0 or 1)
     //0:single frame mode  
     //1:live frame mode 
     uint32_t ret = SetQHYCCDStreamMode(m_camhandle, 0);
