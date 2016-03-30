@@ -1047,7 +1047,7 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
 
 void MyFrame::Alert(const wxString& msg, int flags)
 {
-    Alert(msg, wxEmptyString, 0, 0, flags);
+    Alert(msg, wxEmptyString, 0, 0, false, flags);
 }
 
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
