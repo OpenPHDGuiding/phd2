@@ -215,6 +215,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
     m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+    m_infoBar->Connect(BUTTON_ALERT_HELP, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertHelp), NULL, this);
 
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
@@ -973,6 +975,7 @@ struct alert_params
     int flags;
     alert_fn *fn;
     long arg;
+    bool showHelp;
 };
 
 void MyFrame::OnAlertButton(wxCommandEvent& evt)
@@ -980,6 +983,12 @@ void MyFrame::OnAlertButton(wxCommandEvent& evt)
     if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
         (*m_alertFn)(m_alertFnArg);
     m_infoBar->Dismiss();
+}
+
+void MyFrame::OnAlertHelp(wxCommandEvent& evt)
+{
+    // Any open help window will be re-directed
+    help->Display(_("Trouble-shooting and Analysis"));
 }
 
 void MyFrame::DoAlert(const alert_params& params)
@@ -991,19 +1000,24 @@ void MyFrame::DoAlert(const alert_params& params)
     int buttonSpace = 80;
     m_infoBar->RemoveButton(BUTTON_ALERT_ACTION);
     m_infoBar->RemoveButton(BUTTON_ALERT_CLOSE);
+    m_infoBar->RemoveButton(BUTTON_ALERT_HELP);
     if (params.fn)
     {
         m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
         m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
         buttonSpace = 280;
     }
-
+    if (params.showHelp)
+    {
+        m_infoBar->AddButton(BUTTON_ALERT_HELP, _("Help"));
+        buttonSpace += 100;
+    }
     m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
     m_statusbar->UpdateStates();        // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
 
-void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags)
+void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton, int flags)
 {
     if (wxThread::IsMain())
     {
@@ -1013,6 +1027,7 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params.flags = flags;
         params.fn = fn;
         params.arg = arg;
+        params.showHelp = showHelpButton;
         DoAlert(params);
     }
     else
@@ -1023,6 +1038,7 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params->flags = flags;
         params->fn = fn;
         params->arg = arg;
+        params->showHelp = showHelpButton;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
         event->SetExtraLong((long) params);
         wxQueueEvent(this, event);
@@ -1730,8 +1746,10 @@ void MyFrame::OnClose(wxCloseEvent& event)
         this->GetPosition().x, this->GetPosition().y);
     pConfig->Global.SetString("/geometry", geometry);
 
-    help->Quit();
+    if (help->GetFrame())
+        help->GetFrame()->Close();
     delete help;
+    help = 0;
 
     Destroy();
 }
