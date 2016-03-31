@@ -248,8 +248,8 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_WRAPUP:
         hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it.  This is strongly "
-            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 camera "
-            "icon, selecting the profile name you just entered, and making your changes there.");
+            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 USB "
+            "icon, selecting the profile name you just entered, and making your changes there. If you are new to PHD2 or encounter problems, please use the 'Help' function for assistance.");
     case STATE_DONE:
         break;
     }
