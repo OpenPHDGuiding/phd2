@@ -346,7 +346,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 {
   // guide using timed pulse guide 
     if (pulseGuideNS_prop && pulseGuideEW_prop) {
-    // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
+    // despite what is said in INDI standard properties description, every telescope driver expect the guided time in msec.
     switch (direction) {
         case EAST:
 	    pulseE_prop->value = duration;

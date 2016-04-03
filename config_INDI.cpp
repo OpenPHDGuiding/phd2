@@ -106,6 +106,9 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) :
     else if (devtype == TYPE_MOUNT) {
         devlabel->SetLabel(_("Mount"));
     }
+    else if (devtype == TYPE_AO) {
+        devlabel->SetLabel(_("AO"));
+    }
     gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
 
     pos ++;

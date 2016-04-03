@@ -93,6 +93,9 @@ wxArrayString StepGuider::List(void)
 #ifdef STEPGUIDER_SXAO
     AoList.Add(_T("sxAO"));
 #endif
+#ifdef STEPGUIDER_SXAO_INDI
+    AoList.Add(_T("INDI sxAO"));
+#endif
 #ifdef STEPGUIDER_SIMULATOR
     AoList.Add(_T("Simulator"));
 #endif
@@ -113,15 +116,20 @@ StepGuider *StepGuider::Factory(const wxString& choice)
 
         Debug.AddLine(wxString::Format("StepGuiderFactory(%s)", choice));
 
-        if (choice.Find(_("None")) + 1) {
+        if (choice.CmpNoCase(_("None")) == 0) {
         }
 #ifdef STEPGUIDER_SXAO
-        else if (choice.Find(_T("sxAO")) + 1) {
+        else if (choice.CmpNoCase(_T("sxAO")) == 0) {
             pReturn = new StepGuiderSxAO();
         }
 #endif
+#ifdef STEPGUIDER_SXAO_INDI
+        else if (choice.CmpNoCase(_T("INDI sxAO")) == 0) {
+            pReturn = new StepGuiderSxAoINDI();
+        }
+#endif
 #ifdef STEPGUIDER_SIMULATOR
-        else if (choice.Find(_T("Simulator")) + 1) {
+        else if (choice.CmpNoCase(_T("Simulator")) == 0) {
             pReturn = new StepGuiderSimulator();
         }
 #endif

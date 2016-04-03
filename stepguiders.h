@@ -42,7 +42,7 @@
 #endif
 
 #if defined (GUIDE_INDI)
-#define STEPGUIDER_INDI
+#define STEPGUIDER_SXAO_INDI
 #endif
 
 #ifndef STEPGUIDERS_H_INCLUDED
@@ -52,6 +52,7 @@
 
 #include "stepguider.h"
 #include "stepguider_sxao.h"
+#include "stepguider_sxao_INDI.h"
 #include "stepguider_simulator.h"
 
 #endif /* STEPGUIDERS_H_INCLUDED */

@@ -303,6 +303,8 @@ set(scopes_SRC
   ${phd_src_dir}/stepguider_simulator.h
   ${phd_src_dir}/stepguider_sxao.cpp
   ${phd_src_dir}/stepguider_sxao.h
+  ${phd_src_dir}/stepguider_sxao_INDI.cpp
+  ${phd_src_dir}/stepguider_sxao_INDI.h
   ${phd_src_dir}/stepguider.cpp
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
