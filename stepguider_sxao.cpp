@@ -107,7 +107,7 @@ bool StepGuiderSxAO::Connect(void)
                   _("Error"));
             throw ERROR_INFO("StepGuiderSxAO::Connect: V000 means AO device needs a flash");
         }
-        else if (version >= 102 && version != 111)
+        else if (version >= 102 && version <= 107)
         {
             wxMessageBox(wxString::Format(
                 _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
