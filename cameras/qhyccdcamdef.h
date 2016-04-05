@@ -30,7 +30,7 @@
 #ifndef __QHYCCDCAMDEF_H__
 #define __QHYCCDCAMDEF_H__
 
-//#define GIGAESUPPORT
+#define GIGAESUPPORT
 
 /**
  * Type define for IMG0S */
@@ -193,7 +193,6 @@
  * Type define for QHY90A/IC90A */
 #define DEVICETYPE_90A          900
 
-
 /**
  * Type define for QHY16200A/IC16200A */
 #define DEVICETYPE_16200A       901
@@ -216,7 +215,7 @@
 
 /**
  * Type define for QHY9T */
-#define DEVICETYPE_IC16803      906
+#define DEVICETYPE_16803        906
 
 /**
  * Type define for QHY29 */
@@ -247,12 +246,116 @@
 #define DEVICETYPE_QHY5III174M  913
 
 /**
- * Type define for QHY5III178C*/
-#define DEVICETYPE_QHY5III178C  914
-
-/**
  * Type define for QHY5III236C*/
 #define DEVICETYPE_QHY5III236C  915
+
+/**
+ * Type define for 695A*/
+#define DEVICETYPE_695A         916
+
+/**
+ * Type define for GSENSE400*/
+#define DEVICETYPE_QHY5IIIG400M 917
+
+/**
+ * Type define for QHY174M*/
+#define DEVICETYPE_QHY174M      919
+
+/**
+ * Type define for QHY5III290*/
+#define DEVICETYPE_QHY5III290   920
+
+/**
+ * Type define for QHY5III290C*/
+#define DEVICETYPE_QHY5III290C  921
+
+/**
+ * Type define for QHY5III290M*/
+#define DEVICETYPE_QHY5III290M  922
+
+/**
+ * Type define for QHY5III224*/
+#define DEVICETYPE_QHY5III224   923
+
+/**
+ * Type define for QHY5III224C*/
+#define DEVICETYPE_QHY5III224C  924
+
+/**
+ * Type define for QHY5III224M*/
+#define DEVICETYPE_QHY5III224M  925
+
+/**
+ * Type define for QHY5III178*/
+#define DEVICETYPE_QHY5III178   926
+
+/**
+ * Type define for QHY5III178C*/
+#define DEVICETYPE_QHY5III178C  927
+
+/**
+ * Type define for QHY5III178M*/
+#define DEVICETYPE_QHY5III178M  928
+
+/**
+ * Type define for QHY5III174*/
+#define DEVICETYPE_QHY5III174   929
+
+/**
+ * Type define for QHY5III185*/
+#define DEVICETYPE_QHY5III185   930
+
+/**
+ * Type define for QHY5III185C*/
+#define DEVICETYPE_QHY5III185C  931
+
+/**
+ * Type define for QHY5III174C*/
+#define DEVICETYPE_QHY5III174C  932
+
+/**
+ * Type define for QHY174*/
+#define DEVICETYPE_QHY174       933
+
+/**
+ * Type define for QHY178*/
+#define DEVICETYPE_QHY178       934
+
+/**
+ * Type define for QHY178M*/
+#define DEVICETYPE_QHY178M      935
+
+/**
+ * Type define for QHY178C*/
+#define DEVICETYPE_QHY178C      936
+
+/**
+ * Type define for QHY174C*/
+#define DEVICETYPE_QHY174C      937
+
+/**
+ * Type define for QHY224*/
+#define DEVICETYPE_QHY224       938
+
+/**
+ * Type define for QHY224M*/
+#define DEVICETYPE_QHY224M      939
+
+/**
+ * Type define for QHY224C*/
+#define DEVICETYPE_QHY224C      940
+
+/**
+ * Type define for QHY290*/
+#define DEVICETYPE_QHY290       941
+
+/**
+ * Type define for QHY290M*/
+#define DEVICETYPE_QHY290M      942
+
+/**
+ * Type define for QHY290C*/
+#define DEVICETYPE_QHY290C      943
 
 /**
  * Type define for QHY15GIGAE */
@@ -273,6 +376,10 @@
 #define DEVICETYPE_QHY23G       9007
 
 #define DEVICETYPE_QHY16000G    9008
+
+#define DEVICETYPE_QHY160002AD  9009
+
+#define DEVICETYPE_QHY814G      9010
 
 /**
  * Type define for UNKNOW */
