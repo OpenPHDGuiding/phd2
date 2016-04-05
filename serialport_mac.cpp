@@ -35,9 +35,6 @@
 #ifdef __APPLE__
 
 #include "phd.h"
-
-#include <sys/ioctl.h>
-#include <termios.h>
 #include <IOKit/serial/IOSerialKeys.h>
 
 static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
@@ -45,28 +42,26 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
     kern_return_t   kernResult;
     mach_port_t     masterPort;
     CFMutableDictionaryRef  classesToMatch;
-
+    
     if ((kernResult = IOMasterPort(0, &masterPort)) != KERN_SUCCESS)
     {
         printf("IOMasterPort returned %d\n", kernResult);
         return kernResult;
     }
-
+    
     if ((classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue)) == NULL)
     {
         printf("IOServiceMatching returned NULL\n");
         return kernResult;
     }
-
-    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),
-                         CFSTR(kIOSerialBSDRS232Type));
-//                         CFSTR(kIOSerialBSDModemType));
+    
+    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),CFSTR(kIOSerialBSDAllTypes));
     kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, serialIterator);
     if (kernResult != KERN_SUCCESS)
     {
         printf("IOServiceGetMatchingServices returned %d\n", kernResult);
     }
-
+    
     return kernResult;
 }
 
@@ -87,175 +82,25 @@ static const char *getRegistryString(io_object_t sObj, const char *propName)
     return resultStr;
 }
 
-SerialPortMac::SerialPortMac(void)
-{
-    m_PortFID = 0;
-}
-
-SerialPortMac::~SerialPortMac(void)
-{
-    if (m_PortFID > 0) {
-        close(m_PortFID);
-        m_PortFID = 0;
-    }
-}
-
 wxArrayString SerialPortMac::GetSerialPortList(void)
 {
     wxArrayString ret;
+    
+    io_iterator_t iterator;
+    kern_return_t result = createSerialIterator(&iterator);
+    if (result == KERN_SUCCESS){
+        io_object_t port;
+        while ((port = IOIteratorNext(iterator)) != 0){
+            const char* name = getRegistryString(port,kIOCalloutDeviceKey);
+            if (name){
+                ret.Add(name);
+            }
+            IOObjectRelease(port);
+        }
+        IOObjectRelease(iterator);
+    }
+    
     return ret;
-}
-
-bool SerialPortMac::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
-{
-    bool bError = false;
- /*   try
-    {
-        m_handle = CreateFile(portName,
-                              GENERIC_READ | GENERIC_WRITE,
-                              0,    // must be opened with exclusive-access
-                              NULL, // no security attributes
-                              OPEN_EXISTING, // must use OPEN_EXISTING
-                              0,    // not overlapped I/O
-                              NULL  // hTemplate must be NULL for comm devices
-                              );
-        if (m_handle == INVALID_HANDLE_VALUE)
-        {
-            throw ERROR_INFO("SerialPortWin32: CreateFile failed");
-        }
-
-        DCB dcb;
-
-        if (!GetCommState(m_handle, &dcb))
-        {
-            throw ERROR_INFO("SerialPortWin32: GetCommState failed");
-        }
-
-        dcb.BaudRate = baud;
-        dcb.ByteSize = dataBits;
-
-        switch (stopBits)
-        {
-            case 1:
-                dcb.StopBits = ONESTOPBIT;
-                break;
-            case 2:
-                dcb.StopBits = TWOSTOPBITS;
-                break;
-            default:
-                throw ERROR_INFO("SerialPortWin32: invalid stopBits");
-                break;
-        }
-
-        // no need to map the parity enum --- ours matches theirs
-        dcb.Parity = Parity;
-
-        dcb.fDtrControl = useDTR ? DTR_CONTROL_HANDSHAKE : DTR_CONTROL_ENABLE;
-        dcb.fRtsControl = useRTS ? RTS_CONTROL_HANDSHAKE : RTS_CONTROL_ENABLE;
-
-        if (!SetCommState(m_handle, &dcb))
-        {
-            throw ERROR_INFO("SerialPortWin32: GetCommState failed");
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }*/
-
-    return bError;
-}
-
-bool SerialPortMac::Disconnect(void) {
-    bool bError = false;
-
-    if (m_PortFID > 0) {
-        if (close(m_PortFID))
-            bError = true;
-        m_PortFID = 0;
-    }
-    return bError;
-}
-
-bool SerialPortMac::SetReceiveTimeout(int timeoutMs) {
-    bool bError = false;
-
-    try {
-        struct termios  options;
-        if (tcgetattr(m_PortFID, &options) == -1) {
-            throw ERROR_INFO("SerialPortMac: Unable to get port attributes");
-        }
-        options.c_cc[VMIN] = 1;
-        options.c_cc[VTIME] = timeoutMs / 10;
-        if (tcsetattr(m_PortFID, TCSANOW, &options) == -1)
-            throw ERROR_INFO("SerialPortMac: Unable to set port attributes");
-    }
-    catch (wxString Msg) {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-bool SerialPortMac::Send(const unsigned char *pData, unsigned count)
-{
-    bool bError = false;
-    /*
-    try
-    {
-        DWORD nBytesWritten = 0;
-
-        Debug.AddBytes("Sending", pData, count);
-
-        if (!WriteFile(m_handle, pData, count, &nBytesWritten, NULL))
-        {
-            throw ERROR_INFO("SerialPortWin32: WriteFile failed");
-        }
-
-        if (nBytesWritten != count)
-        {
-            throw ERROR_INFO("SerialPortWin32: nBytesWritten != count");
-        }
-
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-    */
-    return bError;
-}
-
-bool SerialPortMac::Receive(unsigned char *pData, unsigned count)
-{
-    bool bError = false;
-    /*
-    try
-    {
-        DWORD receiveCount;
-
-        if (!ReadFile(m_handle, pData, count, &receiveCount, NULL))
-        {
-            throw ERROR_INFO("SerialPortWin32: Readfile Failed");
-        }
-
-        if (receiveCount != count)
-        {
-            throw ERROR_INFO("SerialPortWin32: recieveCount != count");
-        }
-
-        Debug.AddBytes("Received", pData, receiveCount);
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-    */
-    return bError;
 }
 
 #endif // _APPLE_

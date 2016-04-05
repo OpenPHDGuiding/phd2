@@ -97,7 +97,7 @@ public:
 
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
-    double GetGuidingDeclination(void);
+    double GetDeclination(void);
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     bool GetSiteLatLong(double *latitude, double *longitude);

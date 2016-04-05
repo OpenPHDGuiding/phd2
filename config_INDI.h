@@ -52,6 +52,7 @@
 enum {
     TYPE_CAMERA,
     TYPE_MOUNT,
+    TYPE_AO,
 };
 
 class INDIConfig : public wxDialog , public INDI::BaseClient {

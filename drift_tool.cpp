@@ -78,6 +78,7 @@ struct DriftToolWin : public wxFrame
     GraphLogClientWindow::GRAPH_MODE m_save_graph_mode;
     int m_save_graph_length;
     int m_save_graph_height;
+    bool m_location_prompt_done;
 
     bool m_can_slew;
     bool m_slewing;
@@ -172,11 +173,11 @@ DriftToolWin::DriftToolWin()
 
     wxStaticText *txt;
 
-    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Declination (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Declination (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL, 5);
 
@@ -311,6 +312,7 @@ DriftToolWin::DriftToolWin()
 
     m_phase = PHASE_ADJUST_AZ;
     m_mode = MODE_IDLE;
+    m_location_prompt_done = false;
     UpdatePhaseState();
     UpdateModeState();
 }
@@ -455,7 +457,7 @@ repeat:
                 return;
             case STATE_SELECTED:
                 SetStatusText(_("Start guiding..."));
-                pFrame->OnGuide(dummy);
+                pFrame->GuideButtonClick(false);
                 return;
             case STATE_GUIDING:
                 // turn of dec guiding
@@ -615,6 +617,17 @@ void DriftToolWin::OnNotesText(wxCommandEvent& evt)
 
 void DriftToolWin::OnDrift(wxCommandEvent& evt)
 {
+    if (!m_location_prompt_done)
+    {
+        if (pPointingSource && pPointingSource->IsConnected())
+        {
+            bool error = pPointingSource->PreparePositionInteractive();
+            if (error)
+                return;
+            m_location_prompt_done = true;
+        }
+    }
+
     m_mode = MODE_DRIFT;
     UpdateModeState();
 }
@@ -631,6 +644,8 @@ void DriftToolWin::OnPhase(wxCommandEvent& evt)
         m_phase = PHASE_ADJUST_AZ;
     else
         m_phase = PHASE_ADJUST_ALT;
+
+    m_location_prompt_done = false;
 
     UpdatePhaseState();
 
@@ -715,7 +730,7 @@ void DriftToolWin::UpdateScopeCoordinates(void)
         {
             // azimuth correction from "Star Offset Positioning for Polar Axis Alignment", Frank Barrett, 2/19/2010
             double dec_r = radians(dec_deg);
-            if (fabs(dec_r) < Mount::DEC_COMP_LIMIT)
+            if (fabs(dec_r) < Scope::DEC_COMP_LIMIT)
             {
                 double alt_r = radians(90.0 - m_siteLatLong.X + dec_deg);
                 correction = cos(alt_r) / cos(dec_r);
@@ -778,6 +793,12 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
 
 wxWindow *DriftTool::CreateDriftToolWindow()
 {
+    if (!pCamera)
+    {
+        wxMessageBox(_("Please connect a camera first."));
+        return 0;
+    }
+
     // confirm that image scale is specified
 
     if (pFrame->GetCameraPixelScale() == 1.0)

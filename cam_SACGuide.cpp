@@ -119,8 +119,6 @@ bool Camera_SACGuiderClass::Connect(const wxString& camId)
     wxMessageBox(_T("RA-"));  wxGetApp().Yield(); ST4PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
     wxMessageBox(_T("Done"));
 */
-    if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA)) {
-        pFrame->SetStatusText(_T("Scope"),3);
     }
     ClearGuidePort();
     Connected = true;
@@ -169,7 +167,7 @@ bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
         case EAST: reg = 0x10;  break;  // 0001 0000
         default: return true; // bad direction passed in
     }
-    pFrame->SetStatusText(wxString::Format("%s %x %x",DevName,reg,dur),1);
+    pFrame->StatusMsg(wxString::Format("%s %x %x",DevName,reg,dur));
     SendGuideCommand(DevName,reg,dur);
     return false;
 }

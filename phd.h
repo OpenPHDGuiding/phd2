@@ -69,7 +69,7 @@
 
 #define APPNAME _T("PHD2 Guiding")
 #define PHDVERSION _T("2.6.1")
-#define PHDSUBVER _T("")
+#define PHDSUBVER _T("dev6")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -100,6 +100,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PATHSEPCH '/'
 #define PATHSEPSTR _T("/")
 #endif
+
+#define DEGREES_SYMBOL "\u00B0"
 
 //#define TEST_TRANSFORMS
 

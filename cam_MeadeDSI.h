@@ -54,6 +54,7 @@ public:
     wxByte  BitsPerPixel();
     bool    Connect(const wxString& camId);
     bool    Disconnect();
+    virtual bool GetDevicePixelSize(double* devPixelSize);
 };
 
 #endif

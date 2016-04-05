@@ -50,13 +50,13 @@ private:
 
 public:
     DebugLog(void);
-    DebugLog(const char *pName, bool bEnabled);
+    DebugLog(const wxString& name, bool bEnabled);
     ~DebugLog(void);
 
     bool Enable(bool bEnabled);
     bool IsEnabled(void);
-    bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
-    wxString AddLine(const char *format, ...); // adds a newline
+    bool Init(const wxString& name, bool bEnable, bool bForceOpen = false);
+    wxString AddLine(const wxString& format, ...); // adds a newline
     wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
     wxString Write(const wxString& str);
     bool Flush(void);
@@ -65,7 +65,7 @@ public:
     void RemoveOldFiles();
 };
 
-extern DebugLog& operator<< (DebugLog& out, const wxString &str);
+extern DebugLog& operator<< (DebugLog& out, const wxString& str);
 extern DebugLog& operator<< (DebugLog& out, const char *str);
 extern DebugLog& operator<< (DebugLog& out, const int i);
 extern DebugLog& operator<< (DebugLog& out, const double d);

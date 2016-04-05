@@ -44,8 +44,7 @@ enum BRAIN_CTRL_IDS
     AD_szImageLoggingFormat,
     AD_szLanguage,
     AD_szLogFileInfo,
-    AD_szDitherRAOnly,
-    AD_szDitherScale,
+    AD_szDither,
     AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
@@ -86,7 +85,6 @@ enum BRAIN_CTRL_IDS
     AD_cbEnableAOGuiding,
     AD_cbRotatorReverse,
     AD_DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
-
 };
 
 struct BrainCtrlInfo

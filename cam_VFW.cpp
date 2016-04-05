@@ -106,7 +106,7 @@ bool Camera_VFWClass::Connect(const wxString& camId)
     capwin->GetVideoFormat( &w,&h, &bpp, &fourcc );
 //  capwin->SetVideoFormat(640,480,-1,-1);
     FullSize=wxSize(w,h);
-    pFrame->SetStatusText(wxString::Format("%d x %d mode activated",w,h),1);
+    pFrame->StatusMsg(wxString::Format("%d x %d mode activated",w,h));
     Connected = true;
     return false;
 }
@@ -154,7 +154,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, int options, const wxR
         NFrames++;
         if ((swatch.Time() >= duration) && (NFrames > 2)) still_going=false;
     }
-    pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
+    pFrame->StatusMsg(wxString::Format("%d frames",NFrames));
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     return false;
 }

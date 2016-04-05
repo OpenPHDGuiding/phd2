@@ -306,7 +306,7 @@ bool Camera_WDMClass::Connect(const wxString& camId)
             throw ERROR_INFO("StartImageCap() failed");
         }
 
-        pFrame->SetStatusText(wxString::Format("%d x %d mode activated",modeInfo.XRes, modeInfo.YRes),1);
+        pFrame->StatusMsg(wxString::Format("%d x %d mode activated", modeInfo.XRes, modeInfo.YRes));
 
         Connected = true;
     }
@@ -421,7 +421,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, int options, const wxR
 
         EndCapture();
 
-        pFrame->SetStatusText(wxString::Format("%d frames", m_nFrames),1);
+        pFrame->StatusMsg(wxString::Format("%d frames", m_nFrames));
 
         if (options & CAPTURE_SUBTRACT_DARK)
         {

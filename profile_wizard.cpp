@@ -129,7 +129,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Control for pixel-size and focal length
     m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
-                                          wxDefaultSize, wxSP_ARROW_KEYS, 1.0, 20.0, 5.0, 0.1);
+                                          wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
     m_pPixelSize->SetToolTip(_("Click Detect to read the pixel size from the camera. Otherwise, you can get this value from your camera documentation or from an online source.  You can use the up/down control "
@@ -140,7 +140,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(m_pPixelSize, 1);
     sizer->Add(m_detectPixelSizeBtn, 0, wxLEFT, 10);
-    AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), sizer);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), sizer);
     m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
@@ -248,8 +248,8 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_WRAPUP:
         hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it.  This is strongly "
-            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 camera "
-            "icon, selecting the profile name you just entered, and making your changes there.");
+            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 USB "
+            "icon, selecting the profile name you just entered, and making your changes there. If you are new to PHD2 or encounter problems, please use the 'Help' function for assistance.");
     case STATE_DONE:
         break;
     }
@@ -526,6 +526,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
 {
     GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
+    double devPixelSize = 0;
     try
     {
         wxBusyCursor busy;
@@ -536,13 +537,16 @@ void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
         ShowStatus(wxEmptyString);
         if (err)
             throw _("Could not connect to camera");
-        m_pPixelSize->SetValue(camera->PixelSize);
+        if (camera->GetDevicePixelSize(&devPixelSize) || devPixelSize == 0)
+            throw (_("Camera driver cannot report pixel size"));
+        m_pPixelSize->SetValue(devPixelSize);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
     }
     catch (const wxString& msg)
     {
-        wxMessageBox(msg, _("Detect Pixel Size"));
+        wxMessageBox(msg + _(". Please enter the correct un-binned pixel size from the camera documentation or vendor web site."), _("Detect Pixel Size"));
+        m_pPixelSize->SetValue(0.);
     }
 
     if (camera)

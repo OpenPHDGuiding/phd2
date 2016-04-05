@@ -44,9 +44,10 @@ class Camera_Altair : public GuideCamera
     bool m_capturing;
     int m_minGain;
     int m_maxGain;
+    double m_devicePixelSize;
     HAltair m_handle;
     volatile bool m_frameReady;
-	bool ReduceResolution;
+    bool ReduceResolution;
 public:
     Camera_Altair();
     ~Camera_Altair();
@@ -60,11 +61,12 @@ public:
     void    ClearGuidePort();
 
     void    FrameReady();
-	void 	ShowPropertyDialog();
+    void    ShowPropertyDialog();
 
     bool HasNonGuiCapture() { return true; }
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
+    bool GetDevicePixelSize(double *devPixelSize);
 
 private:
     bool StopCapture();

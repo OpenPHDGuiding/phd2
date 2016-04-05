@@ -123,9 +123,6 @@ double GuideAlgorithmResistSwitch::result(double input)
                     m_history[i] = input;
             }
         }
-        // Flag a direction reversal, might be a result of a backlash comp pulse
-        if (sign(input) != m_currentSide)
-            m_pMount->FlagBacklashOverShoot(fabs(input) - m_minMove, m_guideAxis);
 
         int decHistory = 0;
 
@@ -276,7 +273,8 @@ GuideAlgorithmResistSwitch::
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? Default = %.2f"), DefaultMinMove));
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
 
     m_pFastSwitch = new wxCheckBox(pParent, wxID_ANY, _("Fast switch for large deflections"));
     DoAdd(m_pFastSwitch, _("Ordinarily the Resist Switch algortithm waits several frames before switching direction. With Fast Switch enabled PHD2 will switch direction immediately if it sees a very large deflection. Enable this option if your mount has a substantial amount of backlash and PHD2 sometimes overcorrects."));

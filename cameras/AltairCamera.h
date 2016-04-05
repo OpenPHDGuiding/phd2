@@ -450,6 +450,10 @@ extern "C" {
 	altair_ports(HRESULT)  Altair_write_EEPROM(HAltair h, unsigned addr, const unsigned char* pData, unsigned nDataLen);
 	altair_ports(HRESULT)  Altair_read_EEPROM(HAltair h, unsigned addr, unsigned char* pBuffer, unsigned nBufferLen);
 
+	altair_ports(HRESULT)  Altair_write_UART(HAltair h, const unsigned char* pData, unsigned nDataLen);
+	altair_ports(HRESULT)  Altair_read_UART(HAltair h, unsigned char* pBuffer, unsigned nBufferLen);
+
+
 #define ALTAIR_TEC_TARGET_MIN      -300
 #define ALTAIR_TEC_TARGET_DEF      -100
 #define ALTAIR_TEC_TARGET_MAX      300
@@ -470,8 +474,8 @@ extern "C" {
 #define ALTAIR_OPTION_TECTARGET            0x0f    /* get or set the target temperature of the thermoelectric cooler, in degree Celsius */
 
 
-	altair_ports(HRESULT)  Altair_put_Option(HAltair h, unsigned iOption, unsigned iValue);
-	altair_ports(HRESULT)  Altair_get_Option(HAltair h, unsigned iOption, unsigned* piValue);
+	altair_ports(HRESULT)  Altair_put_Option(HAltair h, unsigned iOption, int iValue);
+	altair_ports(HRESULT)  Altair_get_Option(HAltair h, unsigned iOption, int* piValue);
 
 	altair_ports(HRESULT)  Altair_put_Roi(HAltair h, unsigned xOffset, unsigned yOffset, unsigned xWidth, unsigned yHeight);
 	altair_ports(HRESULT)  Altair_get_Roi(HAltair h, unsigned* pxOffset, unsigned* pyOffset, unsigned* pxWidth, unsigned* pyHeight);

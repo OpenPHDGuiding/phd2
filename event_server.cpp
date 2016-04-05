@@ -353,22 +353,26 @@ static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
 {
     wxMutexLocker lock(*client_wrlock(client));
     client->Write(buf.data(), buf.length());
-    client->Write("\r\n", 2);
+    if (client->LastWriteCount() != buf.length())
+    {
+        Debug.Write(wxString::Format("evsrv: cli %p short write %u/%u\n",
+            client, client->LastWriteCount(), (unsigned int) buf.length()));
+    }
 }
 
 static void do_notify1(wxSocketClient *client, const JAry& ary)
 {
-    send_buf(client, JAry(ary).str().ToUTF8());
+    send_buf(client, (JAry(ary).str() + "\r\n").ToUTF8());
 }
 
 static void do_notify1(wxSocketClient *client, const JObj& j)
 {
-    send_buf(client, JObj(j).str().ToUTF8());
+    send_buf(client, (JObj(j).str() + "\r\n").ToUTF8());
 }
 
 static void do_notify(const EventServer::CliSockSet& cli, const JObj& jj)
 {
-    wxCharBuffer buf = JObj(jj).str().ToUTF8();
+    wxCharBuffer buf = (JObj(jj).str() + "\r\n").ToUTF8();
 
     for (EventServer::CliSockSet::const_iterator it = cli.begin();
         it != cli.end(); ++it)
@@ -1290,8 +1294,17 @@ static void guide(JObj& response, const json_value *params)
         recalibrate = p1->int_value ? true : false;
     }
 
+    if (recalibrate && !pConfig->Global.GetBoolean("/server/guide_allow_recalibrate", true))
+    {
+        Debug.AddLine("ignoring client recalibration request since guide_allow_recalibrate = false");
+        recalibrate = false;
+    }
+
     wxString err;
-    if (PhdController::Guide(recalibrate, settle, &err))
+
+    if (!PhdController::CanGuide(&err))
+        response << jrpc_error(1, err);
+    else if (PhdController::Guide(recalibrate, settle, &err))
         response << jrpc_result(0);
     else
         response << jrpc_error(1, err);

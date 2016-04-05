@@ -82,11 +82,13 @@ class Scope : public Mount
     int m_recenterDuration;
     PHD_Point m_calibrationInitialLocation;   // initial position of guide star
     PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
+    PHD_Point m_calibrationStartingCoords;    // ra,dec coordinates at start of calibration measurement
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
     double m_northDirCosX;
     double m_northDirCosY;
+
     // backlash-related variables
     PHD_Point m_blMarkerPoint;
     double m_blExpectedBacklashStep;
@@ -104,9 +106,11 @@ class Scope : public Mount
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
-    Calibration m_prevCalibrationParams;
+    Calibration m_prevCalibration;
     CalibrationDetails m_prevCalibrationDetails;
     CalibrationIssueType m_lastCalibrationIssue;
+
+    bool m_useDecCompensation;
 
     enum CALIBRATION_STATE
     {
@@ -118,7 +122,8 @@ class Scope : public Mount
         CALIBRATION_STATE_GO_SOUTH,
         CALIBRATION_STATE_NUDGE_SOUTH,
         CALIBRATION_STATE_COMPLETE
-    } m_calibrationState;
+    };
+    CALIBRATION_STATE m_calibrationState;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -190,8 +195,11 @@ public:
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
-    virtual bool GuidingCeases(void);
+
+    static const double DEC_COMP_LIMIT; // declination compensation limit
     void EnableDecCompensation(bool enable);
+    bool DecCompensationEnabled() const;
+    bool DecCompensationActive(void) const;
 
     virtual bool RequiresCamera(void);
     virtual bool RequiresStepGuider(void);
@@ -204,8 +212,7 @@ public:
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
 
-    double GetDefGuidingDeclination(void);
-    virtual double GetGuidingDeclination(void);
+    virtual double GetDeclination(void); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
@@ -217,8 +224,11 @@ public:
     virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
-    virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
-    virtual bool CanPulseGuide();                       // For ASCOM mounts
+    virtual bool CanReportPosition(void);  // Can report RA, Dec, side-of-pier, etc.
+    // Will be called before guiding starts, before any call to GetCoordinates, GetDeclination, or SideOfPier.
+    // Does not get called unless guiding was started interactively (by clicking the guide button)
+    virtual bool PreparePositionInteractive(void);
+    virtual bool CanPulseGuide(void);
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -251,6 +261,11 @@ inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
 inline bool Scope::IsAssumeOrthogonal(void) const
 {
     return m_assumeOrthogonal;
+}
+
+inline bool Scope::DecCompensationEnabled() const
+{
+    return m_useDecCompensation;
 }
 
 #endif /* SCOPE_H_INCLUDED */

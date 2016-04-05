@@ -74,8 +74,9 @@ private:
     bool     modal;
     bool     ready;
     wxByte   m_bitsPerPixel;
-    double   PixSizeX; 
-    double   PixSizeY; 
+    double   PixSize;
+    double   PixSizeX;
+    double   PixSizeY;
     wxRect   m_maxSize;
     wxByte   m_curBinning;
     long     INDIport;
@@ -115,6 +116,7 @@ public:
     bool    Disconnect();
     bool    HasNonGuiCapture();
     wxByte  BitsPerPixel();
+    bool    GetDevicePixelSize(double *pixSize);
     void    ShowPropertyDialog();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);

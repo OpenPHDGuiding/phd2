@@ -239,12 +239,12 @@ GraphLogWindow::~GraphLogWindow()
     delete m_pClient;
 }
 
-wxColor GraphLogWindow::GetRaOrDxColor(void)
+const wxColor& GraphLogWindow::GetRaOrDxColor(void)
 {
     return m_pClient->m_raOrDxColor;
 }
 
-wxColor GraphLogWindow::GetDecOrDyColor(void)
+const wxColor& GraphLogWindow::GetDecOrDyColor(void)
 {
     return m_pClient->m_decOrDyColor;
 }
@@ -1225,11 +1225,13 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     // Draw horiz rule (scale is 1 pixel error per 25 pixels) + scale labels
     dc.SetPen(GreyDashPen);
     dc.SetTextForeground(*wxLIGHT_GREY);
+    const wxFont& SmallFont =
 #if defined(__WXOSX__)
-    dc.SetFont(*wxSMALL_FONT);
+        *wxSMALL_FONT;
 #else
-    dc.SetFont(*wxSWISS_FONT);
+        *wxSWISS_FONT;
 #endif
+    dc.SetFont(SmallFont);
 
     for (int i = 1; i <= m_yDivisions; i++)
     {
@@ -1253,6 +1255,25 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
+    if (m_showCorrections && !(pMount && pMount->IsStepGuider()))
+    {
+        wxString lblN(_("GuideNorth"));
+        wxString lblE(_("GuideEast"));
+        static wxSize szN, szE;
+        dc.SetFont(wxFont(wxFontInfo(8)));
+        if (szN.x == 0)
+        {
+            szN = dc.GetTextExtent(lblN);
+            szE = dc.GetTextExtent(lblE);
+        }
+        dc.SetTextForeground(m_decOrDyColor.ChangeLightness(75));
+        dc.DrawText(lblN, rightEdge - szN.GetWidth() - 4, topEdge + 2);
+        dc.SetTextForeground(m_raOrDxColor.ChangeLightness(75));
+        dc.DrawText(lblE, rightEdge - szE.GetWidth() - 4, bottomEdge - szE.GetHeight() - 2);
+        dc.SetTextForeground(*wxLIGHT_GREY);
+        dc.SetFont(SmallFont);
+    }
+
     // Draw data
     if (m_history.size() > 0)
     {
@@ -1275,6 +1296,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
                 if (h.raDur != 0)
                 {
+                    // West corrections => Up on graph
                     const int raDur = h.ra > 0.0 ? -h.raDur : h.raDur;
                     wxPoint pt(sctr.pt(j, raDur));
                     if (raDur < 0)
@@ -1292,7 +1314,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
                 if (h.decDur != 0)
                 {
-                    const int decDur = h.dec > 0.0 ? -h.decDur : h.decDur;
+                    // North Corrections => Up on graph
+                    const int decDur = h.dec > 0.0 ? h.decDur : -h.decDur;
                     wxPoint pt(sctr.pt(j, decDur));
                     pt.x += 5;
                     if (decDur < 0)
@@ -1360,7 +1383,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
             case MODE_RADEC:
                 m_line1[j] = sctr.pt(j, h.ra);
-                m_line2[j] = sctr.pt(j, h.dec);
+                m_line2[j] = sctr.pt(j, -h.dec); // North corrections Up, North offsets down
                 break;
             case MODE_DXDY:
                 m_line1[j] = sctr.pt(j, h.dx);
@@ -1388,6 +1411,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             case MODE_RADEC:
                 trendRaOrDx = trendline(m_trendLineAccum[2], plot_length);
                 trendDecOrDy = trendline(m_trendLineAccum[3], plot_length);
+                // North offsets plotted downward
+                trendDecOrDy = std::make_pair(-trendDecOrDy.first, -trendDecOrDy.second);
                 break;
             case MODE_DXDY:
                 trendRaOrDx = trendline(m_trendLineAccum[0], plot_length);
@@ -1414,9 +1439,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             // show polar alignment error
             if (m_mode == MODE_RADEC && sampling != 1.0 && pMount && pMount->IsDecDrifting())
             {
-                double declination = pPointingSource->GetGuidingDeclination();
+                double declination = pPointingSource->GetDeclination();
+                if (declination == UNKNOWN_DECLINATION) // assume declination 0
+                    declination = 0.0;
 
-                if (fabs(declination) <= Mount::DEC_COMP_LIMIT)
+                if (fabs(declination) <= Scope::DEC_COMP_LIMIT)
                 {
                     const S_HISTORY& h0 = m_history[start_item];
                     const S_HISTORY& h1 = m_history[m_history.size() - 1];

@@ -194,13 +194,23 @@ void GuidingLog::Close(void)
     }
 }
 
-static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
+static wxString PierSideStr(PierSide p)
 {
     switch (p)
     {
-    case PIER_SIDE_EAST: return _("East");
-    case PIER_SIDE_WEST: return _("West");
-    default:             return _("Unknown");
+    case PIER_SIDE_EAST: return "East";
+    case PIER_SIDE_WEST: return "West";
+    default:             return "Unknown";
+    }
+}
+
+static wxString ParityStr(int p)
+{
+    switch (p)
+    {
+    case GUIDE_PARITY_EVEN: return "Even";
+    case GUIDE_PARITY_ODD:  return "Odd";
+    default:                return "N/A";
     }
 }
 
@@ -220,7 +230,7 @@ static wxString RotatorPosStr(void)
         return wxString::Format("%.1f", norm(pos, 0.0, 360.0));
 }
 
-static wxString PointingInfo(void)
+static wxString PointingInfo()
 {
     double cur_ra, cur_dec, cur_st;
     if (pPointingSource && !pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
@@ -307,14 +317,14 @@ void GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direc
     Flush();
 }
 
-void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate)
+void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity)
 {
     if (!m_enabled)
         return;
 
     assert(m_file.IsOpened());
-    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f px/sec\n",
-        direction, degrees(angle), rate * 1000.0));
+    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f px/sec, Parity = %s\n",
+        direction, degrees(angle), rate * 1000.0, ParityStr(parity)));
     Flush();
 }
 

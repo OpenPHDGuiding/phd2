@@ -218,6 +218,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Connected = true;
     Name = info.Name;
     m_isColor = info.IsColorCam != ASI_FALSE;
+    Debug.AddLine("ZWO: IsColorCam = %d", m_isColor);
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)
@@ -243,7 +244,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     delete[] m_buffer;
     m_buffer = new unsigned char[info.MaxWidth * info.MaxHeight];
 
-    PixelSize = info.PixelSize;
+    m_devicePixelSize = info.PixelSize;
 
     wxYield();
 
@@ -319,6 +320,15 @@ bool Camera_ZWO::Disconnect()
     delete[] m_buffer;
     m_buffer = 0;
 
+    return false;
+}
+
+bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
+{
+    if (!Connected)
+        return true;
+
+    *devPixelSize = m_devicePixelSize;
     return false;
 }
 

@@ -39,25 +39,6 @@
 
 #include <wx/tokenzr.h>
 
-// enable dec compensation when calibration declination is less than this
-const double Mount::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;
-
-inline static bool
-IsOppositeSide(PierSide a, PierSide b)
-{
-    return (a == PIER_SIDE_EAST && b == PIER_SIDE_WEST) ||
-        (a == PIER_SIDE_WEST && b == PIER_SIDE_EAST);
-}
-
-inline static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
-{
-    switch (p) {
-    case PIER_SIDE_EAST: return _("East");
-    case PIER_SIDE_WEST: return _("West");
-    default:             return unknown;
-    }
-}
-
 inline static PierSide OppositeSide(PierSide p)
 {
     switch (p) {
@@ -67,9 +48,48 @@ inline static PierSide OppositeSide(PierSide p)
     }
 }
 
+inline static bool IsOppositeSide(PierSide a, PierSide b)
+{
+    return (a == PIER_SIDE_EAST && b == PIER_SIDE_WEST) ||
+        (a == PIER_SIDE_WEST && b == PIER_SIDE_EAST);
+}
+
+inline static wxString PierSideStr(PierSide p, const wxString& unknown = _("Unknown"))
+{
+    switch (p) {
+    case PIER_SIDE_EAST: return _("East");
+    case PIER_SIDE_WEST: return _("West");
+    default:             return unknown;
+    }
+}
+
 wxString Mount::PierSideStr(PierSide p)
 {
     return ::PierSideStr(p);
+}
+
+inline static const char *ParityStr(GuideParity par)
+{
+    switch (par) {
+    case GUIDE_PARITY_EVEN:      return "+";
+    case GUIDE_PARITY_ODD:       return "-";
+    case GUIDE_PARITY_UNKNOWN:   return "?";
+    default: case GUIDE_PARITY_UNCHANGED: return "x";
+    }
+}
+
+inline static GuideParity OppositeParity(GuideParity p)
+{
+    switch (p) {
+    case GUIDE_PARITY_EVEN: return GUIDE_PARITY_ODD;
+    case GUIDE_PARITY_ODD:  return GUIDE_PARITY_EVEN;
+    default:                return p;
+    }
+}
+
+wxString Mount::DeclinationStr(double dec, const wxString& numFormatStr)
+{
+    return dec == UNKNOWN_DECLINATION ? _("Unknown") : wxString::Format(numFormatStr, degrees(dec));
 }
 
 static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
@@ -332,11 +352,6 @@ void MountConfigDialogCtrlSet::UnloadValues()
     }
 }
 
-bool Mount::DecCompensationEnabled()
-{
-    return m_useDecCompensation;
-}
-
 GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
 {
     return GetGuideAlgorithm(m_pXGuideAlgorithm);
@@ -568,7 +583,7 @@ Mount::Mount(void)
     m_pXGuideAlgorithm = NULL;
     m_guidingEnabled = true;
 
-    m_backlashComp = 0;
+    m_backlashComp = NULL;
     m_lastStep.mount = this;
     m_lastStep.frameNumber = -1; // invalidate
 
@@ -586,24 +601,24 @@ Mount::~Mount()
     delete m_backlashComp;
 }
 
-double Mount::xRate()
+double Mount::xRate() const
 {
     return m_xRate;
 }
 
-double Mount::yRate()
+double Mount::yRate() const
 {
     return m_cal.yRate;
 }
 
-double Mount::xAngle()
+double Mount::xAngle() const
 {
     return m_cal.xAngle;
 }
 
-double Mount::yAngle()
+double Mount::yAngle() const
 {
-    return m_cal.xAngle - m_yAngleError + M_PI / 2.;
+    return norm_angle(m_cal.xAngle - m_yAngleError + M_PI / 2.);
 }
 
 static wxString RotAngleStr(double rotAngle)
@@ -629,8 +644,9 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.Write(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s rotAngle=%s\n",
-            degrees(origX), degrees(origY), decFlipRequired, ::PierSideStr(m_cal.pierSide), RotAngleStr(m_cal.rotatorAngle)));
+        Debug.Write(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s rotAngle=%s parity=%s/%s\n",
+            degrees(origX), degrees(origY), decFlipRequired, ::PierSideStr(m_cal.pierSide), RotAngleStr(m_cal.rotatorAngle),
+            ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -649,19 +665,25 @@ bool Mount::FlipCalibration(void)
         PierSide priorPierSide = m_cal.pierSide;
         PierSide newPierSide = OppositeSide(m_cal.pierSide);
 
-        Debug.Write(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s\n",
-            degrees(newX), degrees(newY), ::PierSideStr(newPierSide)));
+        // Dec polarity changes when pier side changes, i.e. if Guide(NORTH) moves the star north on one side,
+        // then Guide(NORTH) will move the star south on the other side of the pier.
+        // For mounts with CalibrationFlipRequiresDecFlip, the parity does not change after the flip.
+        GuideParity newDecParity = decFlipRequired ? m_cal.decGuideParity : OppositeParity(m_cal.decGuideParity);
+
+        Debug.Write(wxString::Format("FlipCalibration after: x=%.1f y=%.1f sideOfPier=%s parity=%s/%s\n",
+            degrees(newX), degrees(newY), ::PierSideStr(newPierSide), ParityStr(m_cal.raGuideParity), ParityStr(newDecParity)));
 
         Calibration cal(m_cal);
         cal.xAngle = newX;
         cal.yAngle = newY;
         cal.pierSide = newPierSide;
+        cal.decGuideParity = newDecParity;
 
         SetCalibration(cal);
 
-        pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            ::PierSideStr(priorPierSide, ""), degrees(origX), degrees(origY),
-            ::PierSideStr(newPierSide, ""), degrees(newX), degrees(newY)), 0);
+        pFrame->StatusMsg(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
+            ::PierSideStr(priorPierSide, wxEmptyString), degrees(origX), degrees(origY),
+            ::PierSideStr(newPierSide, wxEmptyString), degrees(newX), degrees(newY)));
     }
     catch (const wxString& Msg)
     {
@@ -672,17 +694,12 @@ bool Mount::FlipCalibration(void)
     return bError;
 }
 
-void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
-{
-    if (m_backlashComp && m_backlashComp->IsEnabled() && axis == GUIDE_DEC && !IsStepGuider() && GetGuidingEnabled())
-        m_backlashComp->HandleOverShoot((int) (pixelAmount / m_cal.yRate));
-}
-
 void Mount::LogGuideStepInfo()
 {
     if (m_lastStep.frameNumber < 0)
         return;
 
+    pFrame->UpdateGuiderInfo(m_lastStep);
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
@@ -737,10 +754,20 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
                 {
                     xDistance = m_pXGuideAlgorithm->result(xDistance);
                 }
+
+                // Let BLC track the raw offsets in Dec
+                if (m_backlashComp)
+                    m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+
                 if (m_pYGuideAlgorithm)
                 {
                     yDistance = m_pYGuideAlgorithm->result(yDistance);
                 }
+            }
+            else
+            {
+                if (m_backlashComp)
+                    m_backlashComp->ResetBaseline();
             }
         }
 
@@ -752,38 +779,15 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         MoveResultInfo xMoveResult;
         result = Move(xDirection, requestedXAmount, moveType, &xMoveResult);
 
-        wxString msg;
-
-        if (xMoveResult.amountMoved > 0)
-        {
-            msg = wxString::Format(_("%s %5.2f px %3d ms"), xDirection == EAST ? _("East") : _("West"),
-                fabs(xDistance), xMoveResult.amountMoved);
-        }
-
         MoveResultInfo yMoveResult;
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
-            if (!IsStepGuider() && moveType != MOVETYPE_DIRECT && GetGuidingEnabled())
+            if (requestedYAmount > 0 && !IsStepGuider() && moveType != MOVETYPE_DIRECT && GetGuidingEnabled())
             {
-                int backlash_pulse = m_backlashComp->GetBacklashComp(yDirection, yDistance);
-                requestedYAmount += backlash_pulse;
+                m_backlashComp->ApplyBacklashComp(yDirection, yDistance, &requestedYAmount);
             }
             result = Move(yDirection, requestedYAmount, moveType, &yMoveResult);
-
-            if (yMoveResult.amountMoved > 0)
-            {
-                msg = wxString::Format(_("%s%*s%s %.2f px %d ms"), msg,
-                    msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
-                    yDirection == SOUTH ? _("South") : _("North"),
-                    fabs(yDistance), yMoveResult.amountMoved);
-            }
-        }
-
-        if (!msg.IsEmpty())
-        {
-            pFrame->SetStatusText(msg, 1);
-            Debug.AddLine(msg);
         }
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
@@ -891,13 +895,13 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
             sin(yAngle) * hyp
             );
 
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
-                cameraTheta, m_cal.xAngle, xAngle, norm_angle(xAngle));
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)",
-                cameraTheta, m_cal.xAngle, m_yAngleError, yAngle, norm_angle(yAngle));
-        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f",
+        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+                cameraTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
+        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)\n",
+                cameraTheta, m_cal.xAngle, m_yAngleError, yAngle, norm_angle(yAngle)));
+        Debug.Write(wxString::Format("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f\n",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
-                mountVectorEndpoint.Angle());
+                mountVectorEndpoint.Angle()));
     }
     catch (const wxString& Msg)
     {
@@ -967,6 +971,11 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
     return NULL;
 };
 
+bool Mount::DecCompensationEnabled(void) const
+{
+    return false;
+}
+
 /*
  * Adjust the calibration data for the scope's current coordinates.
  *
@@ -977,13 +986,13 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
  */
 void Mount::AdjustCalibrationForScopePointing(void)
 {
-    double newDeclination = pPointingSource->GetGuidingDeclination();
+    double newDeclination = pPointingSource->GetDeclination();
     PierSide newPierSide = pPointingSource->SideOfPier();
     double newRotatorAngle = Rotator::RotatorPosition();
     unsigned short binning = pCamera->Binning;
 
-    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d rotAngle=%s bin=%hu",
-        GetMountClassName(), degrees(newDeclination), newPierSide, degrees(m_cal.declination), m_cal.pierSide,
+    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%s pierSide=%d, cal dec=%s pierSide=%d rotAngle=%s bin=%hu",
+        GetMountClassName(), DeclinationStr(newDeclination), newPierSide, DeclinationStr(m_cal.declination), m_cal.pierSide,
         RotAngleStr(newRotatorAngle), binning));
 
     // compensate for binning change
@@ -1002,26 +1011,37 @@ void Mount::AdjustCalibrationForScopePointing(void)
         SetCalibration(cal);
     }
 
-    if (newDeclination != m_cal.declination)             // Compensation required
+    // compensate RA guide rate for declination if the declination changed and we know both the
+    // calibration declination and the current declination
+
+    bool deccomp = false;
+
+    if (newDeclination != m_cal.declination &&
+        newDeclination != UNKNOWN_DECLINATION && m_cal.declination != UNKNOWN_DECLINATION)
     {
         // avoid division by zero and gross errors.  If the user didn't calibrate
         // somewhere near the celestial equator, we don't do this
-        if (fabs(m_cal.declination) > DEC_COMP_LIMIT)
+        if (fabs(m_cal.declination) > Scope::DEC_COMP_LIMIT)
         {
             Debug.AddLine("skipping Dec comp: initial calibration too far from equator");
         }
-        else
-        if (!m_useDecCompensation)
-            Debug.AddLine("skipping Dec comp: user has disabled Dec Comp");
+        else if (!DecCompensationEnabled())
+        {
+            Debug.AddLine("skipping Dec comp: Dec Comp not enabled");
+        }
         else
         {
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
-            m_currentDeclination = newDeclination;
+            deccomp = true;
+
             Debug.AddLine("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f",
                 m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
-            if (pFrame)
-                pFrame->UpdateCalibrationStatus();
         }
+    }
+    if (!deccomp && m_xRate != m_cal.xRate)
+    {
+        Debug.AddLine("No dec comp, using base xRate %.3f", m_cal.xRate * 1000.0);
+        m_xRate  = m_cal.xRate;
     }
 
     if (IsOppositeSide(newPierSide, m_cal.pierSide))
@@ -1167,8 +1187,10 @@ void Mount::ClearCalibration(void)
 
 void Mount::SetCalibration(const Calibration& cal)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f bin=%hu dec=%.1f pierSide=%d rotAng=%s",
-        GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.binning, cal.declination, cal.pierSide, RotAngleStr(cal.rotatorAngle)));
+    Debug.Write(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f bin=%hu dec=%s pierSide=%d par=%s/%s rotAng=%s\n",
+        GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.binning,
+        DeclinationStr(cal.declination), cal.pierSide, ParityStr(cal.raGuideParity), ParityStr(cal.decGuideParity),
+        RotAngleStr(cal.rotatorAngle)));
 
     // we do the rates first, since they just get stored
     m_cal.xRate = cal.xRate;
@@ -1176,10 +1198,14 @@ void Mount::SetCalibration(const Calibration& cal)
     m_cal.binning = cal.binning;
     m_cal.declination = cal.declination;
     m_cal.pierSide = cal.pierSide;
+    if (cal.raGuideParity != GUIDE_PARITY_UNCHANGED)
+        m_cal.raGuideParity = cal.raGuideParity;
+    if (cal.decGuideParity != GUIDE_PARITY_UNCHANGED)
+        m_cal.decGuideParity = cal.decGuideParity;
     m_cal.rotatorAngle = cal.rotatorAngle;
+    m_cal.isValid = true;
 
     m_xRate  = cal.xRate;
-    m_currentDeclination = cal.declination;
 
     // the angles are more difficult because we have to turn yAngle into a yError.
     m_cal.xAngle = cal.xAngle;
@@ -1203,6 +1229,8 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetInt(prefix + "binning", m_cal.binning);
     pConfig->Profile.SetDouble(prefix + "declination", m_cal.declination);
     pConfig->Profile.SetInt(prefix + "pierSide", m_cal.pierSide);
+    pConfig->Profile.SetInt(prefix + "raGuideParity", m_cal.raGuideParity);
+    pConfig->Profile.SetInt(prefix + "decGuideParity", m_cal.decGuideParity);
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
@@ -1245,30 +1273,88 @@ inline static PierSide pier_side(int val)
     return val == PIER_SIDE_EAST ? PIER_SIDE_EAST : val == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
 }
 
-bool Mount::GetLastCalibrationParams(Calibration *params)
+inline static GuideParity guide_parity(int val)
+{
+    switch (val) {
+    case GUIDE_PARITY_EVEN: return GUIDE_PARITY_EVEN;
+    case GUIDE_PARITY_ODD: return GUIDE_PARITY_ODD;
+    default: return GUIDE_PARITY_UNKNOWN;
+    }
+}
+
+void Mount::NotifyGuidingStopped(void)
+{
+    Debug.Write("Mount: notify guiding stopped\n");
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingStopped();
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingStopped();
+
+    if (m_backlashComp)
+        m_backlashComp->ResetBaseline();
+}
+
+void Mount::NotifyGuidingPaused(void)
+{
+    Debug.Write("Mount: notify guiding paused\n");
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingPaused();
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingPaused();
+}
+
+void Mount::NotifyGuidingResumed(void)
+{
+    Debug.Write("Mount: notify guiding resumed\n");
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingResumed();
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingResumed();
+}
+
+void Mount::NotifyGuidingDithered(double dx, double dy)
+{
+    Debug.Write(wxString::Format("Mount: notify guiding dithered (%.1f, %.1f)\n", dx, dy));
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingDithered(dx);
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingDithered(dy);
+}
+
+void Mount::GetLastCalibration(Calibration *cal)
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
 
     if (sTimestamp.Length() > 0)
     {
-        params->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
-        params->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
-        params->binning = (unsigned short) pConfig->Profile.GetInt(prefix + "binning", 1);
-        params->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
-        params->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
-        params->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-        params->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
-        params->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
-        params->timestamp = sTimestamp;
-        return true;
+        cal->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+        cal->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+        cal->binning = (unsigned short) pConfig->Profile.GetInt(prefix + "binning", 1);
+        cal->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+        cal->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
+        cal->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+        cal->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
+        cal->raGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "raGuideParity", GUIDE_PARITY_UNKNOWN));
+        cal->decGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "decGuideParity", GUIDE_PARITY_UNKNOWN));
+        cal->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
+        cal->timestamp = sTimestamp;
+        cal->isValid = true;
     }
     else
     {
-        params->declination = INVALID_DECLINATION; // indicate invalid calibration
-        return false;
+        cal->isValid = false;
     }
 }
+
 void Mount::GetCalibrationDetails(CalibrationDetails *details)
 {
     wxStringTokenizer tok;
@@ -1303,7 +1389,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
             err = true;
         if (!err)
             details->raSteps.push_back(wxRealPoint(x, y));
-        }
+    }
     // Do the same for decSteps
     stepStr = pConfig->Profile.GetString(prefix + "dec_steps", "");
     tok.SetString(stepStr, "},", wxTOKEN_STRTOK);
@@ -1322,12 +1408,6 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
         if (!err)
             details->decSteps.push_back(wxRealPoint(x, y));
     }
-}
-bool Mount::IsConnected()
-{
-    bool bReturn = m_connected;
-
-    return bReturn;
 }
 
 bool Mount::Connect(void)
@@ -1350,33 +1430,26 @@ bool Mount::Disconnect(void)
     return false;
 }
 
-void Mount::ClearHistory(void)
-{
-    if (m_pXGuideAlgorithm)
-    {
-        m_pXGuideAlgorithm->reset();
-    }
-
-    if (m_pYGuideAlgorithm)
-    {
-        m_pYGuideAlgorithm->reset();
-    }
-}
-
 wxString Mount::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
-
-    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
+    wxString auxMountStr = wxEmptyString;
+    if (m_Name == _("On Camera") && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
+        auxMountStr = "AuxMount=" +  pPointingSource->Name();
+    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f",
-                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0) : "not calibrated"
+        IsCalibrated() ?
+            wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f, parity = %s/%s",
+                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0,
+                ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)) :
+            "not calibrated",
+        auxMountStr
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithmSelection()],
         m_pXGuideAlgorithm->GetSettingsSummary()

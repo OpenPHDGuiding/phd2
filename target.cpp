@@ -337,7 +337,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     // Draw labels
     dc.DrawText(_("RA"), leftEdge, center.y - 15);
-    dc.DrawText(_("Dec"), center.x + 5, topEdge - 3);
+    dc.DrawText(_("Dec"), center.x - 35, topEdge - 3);
 
     // Draw impacts
     unsigned int startPoint = m_maxHistorySize - m_length;
@@ -347,11 +347,33 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
         startPoint = m_maxHistorySize - m_nItems;
     }
 
-    dc.SetPen(wxPen(wxColour(127,127,255),1, wxSOLID));
+    // plot guide star offsets in mount coordinates:
+    //   RA offset is distance W of lock pos
+    //        => plot -dRA for East = positive
+    //   Dec offset is distance S of lock pos
+    //        => plot -dDec for North = positive
+    double const raSign = -1.0;
+    double const decSign = -1.0;
+
+    // label sky coordinate directions
+
+    GuideParity raParity = pMount ? pMount->RAParity() : GUIDE_PARITY_UNKNOWN;
+    if (raParity == GUIDE_PARITY_EVEN)
+        dc.DrawText(_("SkyE"), size.x - 30, center.y + 5);  // sky E = mount E
+    else if (raParity == GUIDE_PARITY_ODD)
+        dc.DrawText(_("SkyE"), leftEdge, center.y + 5);     // sky E = mount W
+
+    GuideParity decParity = pMount ? pMount->DecParity() : GUIDE_PARITY_UNKNOWN;
+    if (decParity == GUIDE_PARITY_EVEN)
+        dc.DrawText(_("SkyN"), center.x + 5, topEdge - 3);  // sky N = mount N
+    else if (decParity == GUIDE_PARITY_ODD)
+        dc.DrawText(_("SkyN"), center.x + 5, size.y - 15);  // sky N = mount S
+
+    dc.SetPen(wxPen(wxColour(127, 127, 255), 1, wxSOLID));
     for (unsigned int i = startPoint; i < m_maxHistorySize; i++)
     {
-        int ximpact = center.x + m_history[i].ra * scale * m_zoom;
-        int yimpact = center.y + m_history[i].dec * scale * m_zoom;
+        int ximpact = center.x + m_history[i].ra * scale * m_zoom * raSign;
+        int yimpact = center.y - m_history[i].dec * scale * m_zoom * decSign;
         if (i == m_maxHistorySize - 1)
         {
             const int lcrux = 4;

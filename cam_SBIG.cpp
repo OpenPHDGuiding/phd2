@@ -322,6 +322,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     }
 
     MaxBinning = 1;
+    m_devicePixelSize = 0.0;
     for (int i = 0; i < gcir0.readoutModes; i++)
     {
         int mode = gcir0.readoutInfo[i].mode;
@@ -332,7 +333,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
             if (mode == RM_1X1)
             {
                 unsigned long bcd = wxMax(gcir0.readoutInfo[i].pixelWidth, gcir0.readoutInfo[i].pixelHeight);
-                PixelSize = (double) bcd2long(bcd) / 100.0;
+                m_devicePixelSize = (double) bcd2long(bcd) / 100.0;
             }
             else // RM_2x2
                 MaxBinning = 2;
@@ -357,6 +358,15 @@ bool Camera_SBIGClass::Disconnect()
     SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
     m_driverLoaded = false;
     Connected = false;
+    return false;
+}
+
+bool Camera_SBIGClass::GetDevicePixelSize(double* devPixelSize)
+{
+    if (!Connected)
+        return true;
+
+    *devPixelSize = m_devicePixelSize;
     return false;
 }
 

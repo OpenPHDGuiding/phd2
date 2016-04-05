@@ -103,12 +103,6 @@ double GuideAlgorithmLowpass::result(double input)
     {
         dReturn = 0.0;
     }
-    else
-    {
-        // Look for a direction reversal - possibly due to backlash comp
-        if (numpts > 2 && (m_history[numpts - 2] * m_history[numpts - 1] < 0))
-            m_pMount->FlagBacklashOverShoot(fabs(input) - m_minMove, m_guideAxis);
-    }
 
     Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() returns %.2f from input %.2f\n", dReturn, input));
 
@@ -213,7 +207,8 @@ GuideAlgorithmLowpass::
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
 
 }
 

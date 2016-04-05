@@ -49,6 +49,7 @@ public:
     int                 ImgExpDur;
     int                 ImgStackCnt;
     wxByte              BitsPerPixel;
+    unsigned short      Pedestal;
 
     usImage() {
         Min = Max = FiltMin = FiltMax = 0;
@@ -58,6 +59,7 @@ public:
         ImgExpDur = 0;
         ImgStackCnt = 1;
         BitsPerPixel = 0;
+        Pedestal = 0;
     }
     ~usImage() { delete[] ImageData; }
 

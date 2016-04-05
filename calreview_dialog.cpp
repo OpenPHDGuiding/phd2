@@ -154,31 +154,28 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
 // Base class version builds data grids showing last calibration details and calibration "context"
 void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSizer, bool AO)
 {
+    const double siderealSecondPerSec = 0.9973;
+    const double siderealRate = 15.0 * siderealSecondPerSec;
+
     Calibration calBaseline;
     CalibrationDetails calDetails;
-    const double dSiderealSecondPerSec = 0.9973;
-    bool validDetails = false;
-    bool validAscomInfo = false;
-    double guideRaSiderealX = 0.0;
-    double guideDecSiderealX = 0.0;
-    double binningAdjustment = 1.0;
 
     if (!pSecondaryMount)
     {
         pMount->GetCalibrationDetails(&calDetails);                              // Normal case, no AO
-        pMount->GetLastCalibrationParams(&calBaseline);
+        pMount->GetLastCalibration(&calBaseline);
     }
     else
     {
         if (AO)
         {
             pMount->GetCalibrationDetails(&calDetails);                          // AO tab, use AO details
-            pMount->GetLastCalibrationParams(&calBaseline);
+            pMount->GetLastCalibration(&calBaseline);
         }
         else
         {
             pSecondaryMount->GetCalibrationDetails(&calDetails);                 // Mount tab, use mount details
-            pSecondaryMount->GetLastCalibrationParams(&calBaseline);
+            pSecondaryMount->GetLastCalibration(&calBaseline);
         }
     }
 
@@ -187,8 +184,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 
     int row = 0;
     int col = 0;
-    validDetails = calDetails.raStepCount > 0;                                             // true for non-AO with pointing source info and "recent" calibration
-    validAscomInfo = calBaseline.declination != 0.0;
+    bool validDetails = calDetails.raStepCount > 0;                              // true for non-AO with pointing source info and "recent" calibration
+    bool validBaselineDeclination = calBaseline.declination != UNKNOWN_DECLINATION;
 
     // Build the upper frame and grid for data from the last calibration
     wxStaticBox* staticBoxLastCal = new wxStaticBox(parentPanel, wxID_ANY, _("Last Mount Calibration"));
@@ -227,11 +224,13 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     row++;
     col = 0;
 
-    if (validDetails)
+    double guideRaSiderealX = -1.0;
+    double guideDecSiderealX = -1.0;
+
+    if (validDetails && calDetails.raGuideSpeed > 0.0)
     {
-        guideRaSiderealX = calDetails.raGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        guideDecSiderealX = calDetails.decGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        binningAdjustment = calBaseline.binning / calDetails.origBinning;
+        guideRaSiderealX = calDetails.raGuideSpeed * 3600.0 / siderealRate;  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        guideDecSiderealX = calDetails.decGuideSpeed * 3600.0 / siderealRate;  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
     }
 
     wxString ARCSECPERSEC(_("a-s/sec"));
@@ -271,17 +270,21 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     if (validDetails && calBaseline.yRate > 0)
     {
         calGrid->SetCellValue(_("Expected RA rate:"), row, col++);
-        if (validAscomInfo && fabs(degrees(calBaseline.declination)) < 65.0)
+        if (validBaselineDeclination && guideRaSiderealX != -1.0 && fabs(degrees(calBaseline.declination)) < 65.0)
         {
             // Dec speed setting corrected for pointing position and then for any difference in RA guide speed setting
-            calGrid->SetCellValue(wxString::Format("%0.1f %s", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
-                guideRaSiderealX / guideDecSiderealX, ARCSECPERSEC), row, col++);
+            double expectedRaRate = siderealRate * cos(calBaseline.declination) * guideRaSiderealX;
+            calGrid->SetCellValue(wxString::Format("%0.1f %s", expectedRaRate, ARCSECPERSEC), row, col++);
         }
         else
             calGrid->SetCellValue(NA_STR, row, col++);
+
         calGrid->SetCellValue(_("Expected Dec rate:"), row, col++);
-        if (validAscomInfo)
-            calGrid->SetCellValue(wxString::Format("%0.1f %s", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, ARCSECPERSEC), row, col);
+        if (guideRaSiderealX != -1.0)
+        {
+            double expectedDecRate = siderealRate * guideDecSiderealX;
+            calGrid->SetCellValue(wxString::Format("%0.1f %s", expectedDecRate, ARCSECPERSEC), row, col);
+        }
         else
             calGrid->SetCellValue(NA_STR, row, col++);
     }
@@ -337,14 +340,15 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         col = 0;
 
         cfgGrid->SetCellValue(_("RA Guide speed:"), row, col++);
-        if (validAscomInfo)                                                // Do the RA guide setting
+        if (guideRaSiderealX != -1.0)                                       // Do the RA guide setting
         {
             cfgGrid->SetCellValue(wxString::Format("%0.2fx", guideRaSiderealX), row, col++);
         }
         else
             cfgGrid->SetCellValue(NA_STR, row, col++);
+
         cfgGrid->SetCellValue(_("Dec Guide speed:"), row, col++);
-        if (validAscomInfo)                                                // Do the Dec guide setting
+        if (guideDecSiderealX != -1.0)                                      // Do the Dec guide setting
         {
             cfgGrid->SetCellValue(wxString::Format("%0.2fx", guideDecSiderealX), row, col++);
         }
@@ -356,21 +360,22 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 
         // dec may be gotten from mount or imputed
         double dec = calBaseline.declination;
+        bool decEstimated = false;
 
-        if (!validAscomInfo)
+        if (!validBaselineDeclination)
         {
             if (fabs(calBaseline.yRate) > 0.00001 && fabs(calBaseline.xRate / calBaseline.yRate) <= 1.0)
-                dec = degrees(acos(calBaseline.xRate / calBaseline.yRate));        // RA_Rate = Dec_Rate * cos(dec)
+            {
+                dec = acos(calBaseline.xRate / calBaseline.yRate);        // RA_Rate = Dec_Rate * cos(dec)
+                decEstimated = true;
+            }
         }
-        else
-        {
-            dec = degrees(dec);
-        }
+
         cfgGrid->SetCellValue(_("Declination"), row, col++);
-        if (validAscomInfo)
-            cfgGrid->SetCellValue(wxString::Format("%0.1f", dec), row, col++);
-        else
-            cfgGrid->SetCellValue(wxString::Format("%0.1f", dec) + _(" (est)"), row, col++);
+        wxString decStr = Mount::DeclinationStr(dec, "%0.1f");
+        if (decEstimated)
+            decStr += _(" (est)");
+        cfgGrid->SetCellValue(decStr, row, col++);
 
         cfgGrid->SetCellValue(_("Rotator position:"), row, col++);
         bool valid_rotator = fabs(calBaseline.rotatorAngle) < 360.0;
@@ -429,7 +434,8 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         biggestVal = wxMax(biggestVal, fabs(it->x));
         biggestVal = wxMax(biggestVal, fabs(it->y));
     }
-    if (biggestVal > 0)
+
+    if (biggestVal > 0.0)
         scaleFactor = ((CALREVIEW_BITMAP_SIZE - 5) / 2) / biggestVal;           // Leave room for circular point
     else
         scaleFactor = 1.0;
@@ -540,9 +546,8 @@ void CalRestoreDialog::OnRestore(wxCommandEvent& event)
 {
     Debug.AddLine("User-requested restore calibration");
     pFrame->LoadCalibration();
-    pFrame->SetStatusText(_("Calibration restored"));
+    pFrame->StatusMsg(_("Calibration restored"));
     EndModal(wxID_OK);
-
 }
 
 // CalSanity dialog may get launched as part of an 'alert' if the last calibration looked wonky - this one is non-modal
@@ -550,13 +555,13 @@ CalSanityDialog::CalSanityDialog(wxFrame *parent, const Calibration& oldParams, 
     CalibrationIssueType issue)
 {
     m_pScope = TheScope();
-    m_pScope->GetLastCalibrationParams(&m_newParams);
+    m_pScope->GetLastCalibration(&m_newParams);
     pMount->GetCalibrationDetails(&m_calDetails);
     m_oldParams = oldParams;
     m_oldDetails = oldDetails;
     m_issue = issue;
     m_childDialog = true;
-    m_oldValid = (oldParams.declination < INVALID_DECLINATION);
+    m_oldValid = oldParams.isValid;
     // All above data must be initialized before the UI can be built
     Create(parent, _("Calibration Sanity Check"));
 }
@@ -598,7 +603,7 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
     case CI_Rates:
         msg = wxString::Format(_("The RA and Declination guiding rates differ by an unexpected amount.  For your declination of %0.0f degrees, "
             "the RA rate should be about %0.0f%% of the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  "
-            "This often means one of the axis calibrations is inaccurate, which may result in poor guiding."),
+            "This usually means one of the axis calibrations is incorrect and may result in poor guiding."),
             degrees(m_newParams.declination), cos(m_newParams.declination) * 100.0, m_newParams.xRate / m_newParams.yRate * 100.0);
         break;
     default:
@@ -606,7 +611,7 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
         break;
     }
     pText->SetLabel(msg);
-    pText->Wrap(380);
+    pText->Wrap(420);
 }
 
 // Overridden method for building the data grids - these are substantially different from the CalReview base but the overall appearance and graph presence are the same
@@ -618,7 +623,7 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     double newRARate = m_newParams.xRate * 1000;                          // px per sec for UI purposes
     double newDecRate = m_newParams.yRate * 1000;
     double imageScale = m_calDetails.imageScale;
-    bool oldValid = m_oldParams.declination < INVALID_DECLINATION;
+    bool oldValid = m_oldParams.isValid;
 
     if (!AO)                // AO calibration never triggers sanity check alerts, so don't show that data
     {
@@ -641,9 +646,9 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         wxStaticBoxSizer *pMsgGrp = new wxStaticBoxSizer(wxVERTICAL, parentPanel, _("Explanation"));
 
         // Explanation area
-        wxStaticText *pMsgArea = new wxStaticText(parentPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400, -1), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+        wxStaticText *pMsgArea = new wxStaticText(parentPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(450, -1), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
         BuildMessage(pMsgArea, m_issue);
-        pMsgArea->SetSizeHints(wxSize(-1, MESSAGE_HEIGHT));
+        pMsgArea->SetSizeHints(wxSize(450, MESSAGE_HEIGHT));
         wxFont font = pMsgArea->GetFont();
         font.SetWeight(wxFONTWEIGHT_BOLD);
         pMsgArea->SetFont(font);
@@ -723,7 +728,7 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         // Checkboxes for being quiet
         m_pBlockThis = new wxCheckBox(parentPanel, wxID_ANY, _("Don't show calibration alerts of this type"));
         pVSizer->Add(m_pBlockThis, wxSizerFlags(0).Border(wxALL, 15));
-        parentHSizer->Add(pVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);             // parentHSizer->Add(panelGridVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+        parentHSizer->Add(pVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
     }
 
 }
@@ -788,7 +793,7 @@ void CalSanityDialog::OnRestore(wxCommandEvent& evt)
     m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle, m_oldDetails.origBinning);
 
     pFrame->LoadCalibration();
-    pFrame->SetStatusText(_("Previous calibration restored"));
+    pFrame->StatusMsg(_("Previous calibration restored"));
     Debug.AddLine("Calibration sanity check: user chose to restore old calibration");
     ShutDown();
 }

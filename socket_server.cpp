@@ -82,6 +82,14 @@ bool MyFrame::StartServer(bool state)
 {
     if (state)
     {
+        if (SocketServer)
+        {
+            Debug.AddLine("start server, server already running");
+            return false;
+        }
+
+        Debug.AddLine("starting server");
+
         // Create the SocketServer socket
         unsigned int port = 4300 + m_instanceNumber - 1;
         wxIPV4address sockServerAddr;
@@ -94,6 +102,7 @@ bool MyFrame::StartServer(bool state)
             Debug.AddLine(wxString::Format("Socket server failed to start - Could not listen at port %u", port));
             delete SocketServer;
             SocketServer = NULL;
+            StatusMsg(_("Server start failed"));
             return true;
         }
         SocketServer->SetEventHandler(*this, SOCK_SERVER_ID);
@@ -105,20 +114,27 @@ bool MyFrame::StartServer(bool state)
         {
             delete SocketServer;
             SocketServer = NULL;
+            StatusMsg(_("Server start failed"));
             return true;
         }
 
-        SetStatusText(_("Server started"));
         Debug.AddLine(wxString::Format("Server started, listening on port %u", port));
+        StatusMsg(_("Server started"));
     }
     else {
-        Debug.AddLine("Server stopped");
+        if (!SocketServer)
+        {
+            Debug.AddLine("stop server, server already stopped");
+            return false;
+        }
+
+        Debug.AddLine("stopping server");
         std::for_each(s_clients.begin(), s_clients.end(), std::mem_fun(&wxSocketBase::Destroy));
         s_clients.empty();
         EvtServer.EventServerStop();
         delete SocketServer;
         SocketServer = NULL;
-        SetStatusText(_("Server stopped"));
+        StatusMsg(_("Server stopped"));
     }
 
     return false;
@@ -142,7 +158,7 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
 
     if (client)
     {
-        pFrame->SetStatusText("New connection");
+        pFrame->StatusMsg("New connection");
         Debug.AddLine("SOCKSVR: New connection");
     }
     else
@@ -281,7 +297,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 if (!pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x,y)))
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
-                    pFrame->SetStatusText(wxString::Format("Lock set to %d,%d",x,y));
+                    pFrame->StatusMsg(wxString::Format("Lock set to %d,%d", x, y));
                     GuideLog.NotifySetLockPosition(pGuider);
                 }
                 else

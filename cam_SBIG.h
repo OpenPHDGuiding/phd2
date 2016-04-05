@@ -47,6 +47,7 @@ class Camera_SBIGClass : public GuideCamera
     bool UseTrackingCCD;
     bool m_driverLoaded;
     wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
+    double m_devicePixelSize;
 
 public:
     Camera_SBIGClass();
@@ -61,6 +62,7 @@ public:
     bool ST4HasNonGuiMove() { return true; }
     bool HasNonGuiCapture() { return true; }
     wxByte BitsPerPixel();
+    virtual bool    GetDevicePixelSize(double* devPixelSize);
 
 private:
     bool LoadDriver();

@@ -41,6 +41,7 @@ class WorkerThread;
 class MyFrame;
 class RefineDefMap;
 struct alert_params;
+class PHDStatusBar;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
@@ -92,14 +93,32 @@ public:
     virtual void UnloadValues(void) {};
 };
 
+enum DitherMode
+{
+    DITHER_RANDOM,
+    DITHER_SPIRAL,
+};
+
+struct DitherSpiral
+{
+    int x, y, dx, dy;
+    bool prevRaOnly;
+
+    DitherSpiral() { Reset(); }
+    void Reset();
+    void GetDither(double amount, bool raOnly, double *dRA, double *dDec);
+};
+
 class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
     MyFrame *m_pFrame;
     wxCheckBox *m_pResetConfiguration;
     wxCheckBox *m_pResetDontAskAgain;
-    wxChoice* m_pLoggedImageFormat;
-    wxCheckBox *m_pDitherRaOnly;
-    wxSpinCtrlDouble *m_pDitherScaleFactor;
+    wxChoice *m_pLoggedImageFormat;
+    wxRadioButton *m_ditherRandom;
+    wxRadioButton *m_ditherSpiral;
+    wxSpinCtrlDouble *m_ditherScaleFactor;
+    wxCheckBox *m_ditherRaOnly;
     wxChoice *m_pNoiseReduction;
     wxSpinCtrl *m_pTimeLapse;
     wxTextCtrl *m_pFocalLength;
@@ -150,8 +169,10 @@ private:
     NOISE_REDUCTION_METHOD m_noiseReductionMethod;
     bool m_image_logging_enabled;
     LOGGED_IMAGE_FORMAT m_logged_image_format;
+    DitherMode m_ditherMode;
     double m_ditherScaleFactor;
     bool m_ditherRaOnly;
+    DitherSpiral m_ditherSpiral;
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
@@ -160,6 +181,7 @@ private:
     int m_instanceNumber;
 
     wxAuiManager m_mgr;
+    PHDStatusBar *m_statusbar;
     bool m_continueCapturing; // should another image be captured?
 
 public:
@@ -229,6 +251,7 @@ public:
     void OnDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
     void OnLoadDefectMap(wxCommandEvent& evt);
+    void GuideButtonClick(bool interactive);
     void OnGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
@@ -319,7 +342,12 @@ public:
     bool LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
     void CheckDarkFrameGeometry();
+    void UpdateStateLabels();
+    void UpdateStarInfo(double SNR, bool Saturated);
+    void UpdateGuiderInfo(const GuideStepInfo& info);
+    void ClearGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
+
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -370,8 +398,9 @@ public:
     double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
-    virtual void SetStatusText(const wxString& text, int number = 0);
+    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void StatusMsg(const wxString& text);
+    void StatusMsgNoTimeout(const wxString& text);
     wxString GetSettingsSummary();
     wxString ExposureDurationSummary(void) const;
     wxString PixelScaleSummary(void) const;
@@ -379,13 +408,15 @@ public:
 
     double TimeSinceGuidingStarted(void) const;
 
+    void SetDitherMode(DitherMode mode);
+    DitherMode GetDitherMode(void) const;
+
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pPrimaryWorkerThread;
     WorkerThread *m_pSecondaryWorkerThread;
 
     wxSocketServer *SocketServer;
-
     wxTimer m_statusbarTimer;
 
     int m_exposureDuration;
@@ -398,9 +429,10 @@ private:
 
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
     bool StopWorkerThread(WorkerThread*& pWorkerThread);
-    void OnSetStatusText(wxThreadEvent& event);
+    void OnStatusMsg(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
+    void OnAlertHelp(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
     void OnReconnectCameraFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
@@ -451,6 +483,7 @@ enum {
     BUTTON_CAM_PROPERTIES,
     BUTTON_ALERT_ACTION,
     BUTTON_ALERT_CLOSE,
+    BUTTON_ALERT_HELP,
     GEAR_DIALOG_IDS_BEGIN,
         GEAR_PROFILES,
         GEAR_PROFILE_MANAGE,
@@ -613,6 +646,11 @@ inline Star::FindMode MyFrame::GetStarFindMode(void) const
 inline bool MyFrame::GetRawImageMode(void) const
 {
     return m_rawImageMode;
+}
+
+inline DitherMode MyFrame::GetDitherMode(void) const
+{
+    return m_ditherMode;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

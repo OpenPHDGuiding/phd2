@@ -208,7 +208,7 @@ bool RotatorAscom::Connect(void)
     // create the COM object
     if (!m_impl->Create(&driver, &driver_class))
     {
-        pFrame->Alert(_("Could not create ASCOM rotator object"));
+        pFrame->Alert(_("Could not create ASCOM rotator object. See the debug log for more information."));
         return true;
     }
 

@@ -209,6 +209,16 @@ static bool IsAoBumpInProgress()
     return pMount && pMount->IsStepGuider() && static_cast<StepGuider *>(pMount)->IsBumpInProgress();
 }
 
+bool PhdController::CanGuide(wxString *error)
+{
+    if (!all_gear_connected())
+    {
+        *error = _T("all equipment must be connected first");
+        return false;
+    }
+    return true;
+}
+
 void PhdController::UpdateControllerState(void)
 {
     bool done = false;
@@ -227,11 +237,14 @@ void PhdController::UpdateControllerState(void)
             SETSTATE(STATE_ATTEMPT_START);
             break;
 
-        case STATE_ATTEMPT_START:
+        case STATE_ATTEMPT_START: {
 
-            if (!all_gear_connected())
+            wxString err;
+
+            if (!CanGuide(&err))
             {
-                do_fail(_T("all equipment must be connected first"));
+                Debug.Write(wxString::Format("PhdController: not ready: %s\n", err));
+                do_fail(err);
             }
             else if (pFrame->pGuider->IsCalibratingOrGuiding())
             {
@@ -276,6 +289,7 @@ void PhdController::UpdateControllerState(void)
                 }
             }
             break;
+        }
 
         case STATE_SELECT_STAR: {
             bool error = pFrame->pGuider->AutoSelect();

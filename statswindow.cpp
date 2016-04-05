@@ -222,12 +222,12 @@ void StatsWindow::UpdateScopePointing()
 {
     if (pPointingSource)
     {
-        double declination = pPointingSource->GetGuidingDeclination();
+        double declination = pPointingSource->GetDeclination();
         PierSide pierSide = pPointingSource->SideOfPier();
 
         m_grid2->BeginBatch();
         int row = 4, col = 1;
-        m_grid2->SetCellValue(wxString::Format("% .1f deg", degrees(declination)), row++, col);
+        m_grid2->SetCellValue(Mount::DeclinationStr(declination, "% .1f" DEGREES_SYMBOL), row++, col);
         m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
         m_grid2->SetCellValue(RotatorPosStr(), row++, col);
         m_grid2->SetCellValue(wxString::Format("%hu", pCamera->Binning), row++, col);

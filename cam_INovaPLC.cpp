@@ -144,7 +144,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, int options, cons
     while (rval != STATUS_OK) {
         ntries++;
         rval = DSCameraGrabFrame((BYTE *) RawData);
-        //pFrame->SetStatusText(wxString::Format("%d %d",ntries,rval));
+        //pFrame->StatusMsg(wxString::Format("%d %d",ntries,rval));
         if (ntries > 30) {
             pFrame->Alert("Timeout capturing frames - >30 bad in a row");
             return true;

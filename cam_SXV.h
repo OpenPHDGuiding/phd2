@@ -63,6 +63,7 @@ class Camera_SXVClass : public GuideCamera
     bool ColorSensor;
     bool SquarePixels;
     wxSize m_darkFrameSize;
+    double m_devicePixelSize;
 
 public:
 
@@ -79,6 +80,7 @@ public:
     bool ST4HasNonGuiMove() { return true; }
     bool ST4PulseGuideScope(int direction, int duration);
     wxByte BitsPerPixel();
+    bool GetDevicePixelSize(double *devPixelSize);
 
 private:
     void InitFrameSizes(void);

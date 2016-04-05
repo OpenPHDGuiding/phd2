@@ -426,8 +426,8 @@ bool GuiderOneStar::AutoSelect(void)
         }
 
         UpdateImageDisplay();
-        pFrame->SetStatusText(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
-        pFrame->SetStatusText(StarStatus(m_star));
+        pFrame->StatusMsg(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
+        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
     }
     catch (const wxString& Msg)
@@ -586,7 +586,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
             errorInfo->starMass = newStar.Mass;
             errorInfo->starSNR = newStar.SNR;
             errorInfo->status = StarStatusStr(m_star);
-            pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]), 1);
+            pFrame->StatusMsg(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]));
             Debug.Write(wxString::Format("UpdateGuideState(): star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100, limits[0], limits[2]));
             m_massChecker->AppendData(newStar.Mass);
             throw THROW_INFO("massChangeThreshold error");
@@ -606,7 +606,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
         pFrame->AdjustAutoExposure(m_star.SNR);
-
+        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         errorInfo->status = StarStatus(m_star);
     }
     catch (const wxString& Msg)
@@ -683,13 +683,13 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 
             if (!m_star.IsValid())
             {
-                pFrame->SetStatusText(wxString::Format(_("No star found")));
+                pFrame->StatusMsg(wxString::Format(_("No star found")));
             }
             else
             {
                 SetLockPosition(m_star);
-                pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
-                pFrame->SetStatusText(StarStatus(m_star));
+                pFrame->StatusMsg(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
+                pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();
@@ -706,7 +706,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
     }
 }
 
-inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, double scale)
+inline static void DrawBox(wxDC& dc, const PHD_Point& star, int halfW, double scale)
 {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     double w = ROUND((halfW * 2 + 1) * scale);
@@ -716,8 +716,7 @@ inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, dou
 // Define the repainting behaviour
 void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
-    //wxAutoBufferedPaintDC dc(this);
-    wxClientDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
     wxMemoryDC memDC;
 
     try
@@ -792,11 +791,11 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 tmpMdc.SelectObject(SubBmp);
                 memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
                 memDC.DrawLine(0, LockY * m_scaleFactor, XWinSize, LockY * m_scaleFactor);
-                memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+                memDC.DrawLine(LockX * m_scaleFactor, 0, LockX * m_scaleFactor, YWinSize);
     #ifdef __APPLEX__
                 tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
     #else
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X * m_scaleFactor) - 30,ROUND(m_star.Y * m_scaleFactor) - 30,wxCOPY,false);
     #endif
                 //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
 

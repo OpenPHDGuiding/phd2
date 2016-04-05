@@ -53,7 +53,6 @@ Camera_KWIQGuiderClass::Camera_KWIQGuiderClass()
     FullSize = wxSize(1280,1024);  // Current size of a full frame
     m_hasGuideOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
-    PixelSize = 5.2;
 
     KWIQguider = new KWIQGuider();
 }
@@ -128,6 +127,12 @@ bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, co
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
+    return false;
+}
+
+bool Camera_KWIQGuiderClass::GetDevicePixelSize(double *devPixelSize)
+{
+    *devPixelSize = 5.2;
     return false;
 }
 

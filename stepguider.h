@@ -179,8 +179,9 @@ public:
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
-    virtual bool GuidingCeases(void);
-    virtual void ClearHistory(void);
+    virtual void NotifyGuidingStopped(void);
+    virtual void NotifyGuidingResumed(void);
+    virtual void NotifyGuidingDithered(double dx, double dy);
 
     virtual void ShowPropertyDialog(void);
 

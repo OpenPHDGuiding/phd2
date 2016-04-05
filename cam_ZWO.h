@@ -47,6 +47,7 @@ class Camera_ZWO : public GuideCamera
     int m_minGain;
     int m_maxGain;
     bool m_isColor;
+    double m_devicePixelSize;
 
 public:
     Camera_ZWO();
@@ -63,6 +64,7 @@ public:
     bool HasNonGuiCapture() { return true; }
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
+    virtual bool    GetDevicePixelSize(double* devPixelSize);
 
 private:
     bool StopCapture(void);

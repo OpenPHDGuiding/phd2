@@ -72,7 +72,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_binning = binning;
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
     // Now improve on Dec and guide speed if mount/pointing info is available
-    if (pPointingSource && pPointingSource->IsConnected())
+    if (pPointingSource)
     {
         if (!pPointingSource->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
         {
@@ -202,7 +202,7 @@ void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, in
     double totalDuration = totalDistance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
     double MaxPulse = totalDuration / MIN_STEPS * 1000.0;            // max pulse size to still get MIN steps
-    Pulse = wxMin(MaxPulse, Pulse / cos(M_PI / 180.0 * Declination)); // UI forces abs(Dec) <= 60 degrees
+    Pulse = wxMin(MaxPulse, Pulse / cos(radians(Declination))); // UI forces abs(Dec) <= 60 degrees
     if (pImageScale)
         *pImageScale = ImageScale;
     *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms
