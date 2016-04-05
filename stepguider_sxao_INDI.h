@@ -76,18 +76,30 @@ private:
     ISwitch               *aoUnjam_prop;
     INDI::BaseDevice      *ao_device;
     ITextVectorProperty   *ao_port;
+    ITextVectorProperty   *ao_driverInfo;
+    IText                 *ao_driverName;
+    IText                 *ao_driverExec;
+    IText                 *ao_driverVersion;
+    IText                 *ao_driverInterface;
+    ITextVectorProperty   *ao_info;
+    IText                 *ao_firmware;
+    ILightVectorProperty  *ao_limit;
+    ILight                *ao_limit_north;
+    ILight                *ao_limit_south;
+    ILight                *ao_limit_east;
+    ILight                *ao_limit_west;
 
     // StepGuider parts
     static const int DefaultMaxSteps = 45;
 	wxString m_Name;
     int m_maxSteps;
-    int SxAoVersion; // TODO https://sourceforge.net/p/indi/feature-requests/6/
+    int SxAoVersion;
 
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
     virtual int MaxPosition(GUIDE_DIRECTION direction) const;
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit);
 
-    bool FirmwareVersion(unsigned int *version);
+    bool FirmwareVersion(int *version);
     bool Unjam(void);
     bool Center(void);
     bool Center(unsigned char cmd);
