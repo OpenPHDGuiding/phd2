@@ -44,6 +44,7 @@ class Camera_QHY : public GuideCamera
     double m_gainMin;
     double m_gainMax;
     double m_gainStep;
+    double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
     int m_curGain;
@@ -66,6 +67,7 @@ public:
     bool HasNonGuiCapture() { return true; }
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
+    bool GetDevicePixelSize(double *devPixelSize);
 };
 
 #endif // QHY5IIBASE_H_INCLUDED

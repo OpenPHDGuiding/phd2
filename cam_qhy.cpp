@@ -110,6 +110,15 @@ wxByte Camera_QHY::BitsPerPixel()
     return 8;
 }
 
+bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
+{
+    if (!Connected)
+        return true;
+
+    *devPixelSize = m_devicePixelSize;
+    return false;
+}
+
 bool Camera_QHY::Connect(const wxString& camId)
 {
     if (QHYSDKInit())
@@ -272,7 +281,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     size_t size = GetQHYCCDMemLength(m_camhandle);
     RawBuffer = new unsigned char[size];
 
-    PixelSize = sqrt(pixelw * pixelh);
+    m_devicePixelSize = sqrt(pixelw * pixelh);
 
     m_curGain = -1;
     m_curExposure = -1;
