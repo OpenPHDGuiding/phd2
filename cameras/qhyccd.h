@@ -319,7 +319,7 @@ EXPORTC uint32_t STDCALL ControlQHYCCDGuide(qhyccd_handle *handle,uint32_t direc
       @brief control color filter wheel port 
       @param handle camera control handle
 	  @param order order send to color filter wheel
-	  @param the order string length
+	  @param length the order string length
 	  @return
 	  on success,return QHYCCD_SUCCESS \n
 	  another QHYCCD_ERROR code on other failures
@@ -392,6 +392,19 @@ uint32_t OSXInitQHYCCDFirmware(char *path);
   */
 EXPORTC uint32_t STDCALL GetQHYCCDChipInfo(qhyccd_handle *h,double *chipw,double *chiph,uint32_t *imagew,uint32_t *imageh,double *pixelw,double *pixelh,uint32_t *bpp);
 
+/** @fn uint32_t GetQHYCCDEffectiveArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY)
+      @brief get the camera's ccd/cmos chip info
+      @param h camera control handle
+      @param startX the Effective area x position
+      @param startY the Effective area y position
+      @param sizeX the Effective area x size
+      @param sizeY the Effective area y size
+	  @return
+	  on success,return QHYCCD_SUCCESS \n
+	  another QHYCCD_ERROR code on other failures
+  */
+EXPORTC uint32_t STDCALL GetQHYCCDEffectiveArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY);
+
 /** @fn uint32_t GetQHYCCDOverScanArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY)
       @brief get the camera's ccd/cmos chip info
       @param h camera control handle
@@ -405,18 +418,6 @@ EXPORTC uint32_t STDCALL GetQHYCCDChipInfo(qhyccd_handle *h,double *chipw,double
   */
 EXPORTC uint32_t STDCALL GetQHYCCDOverScanArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY);
 
-/** @fn uint32_t GetQHYCCDEffectiveArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY)
-      @brief get the camera's ccd/cmos chip info
-      @param h camera control handle
-      @param startX the Effective area x position
-      @param startY the Effective area y position
-      @param sizeX the Effective area x size
-      @param sizeY the Effective area y size
-	  @return
-	  on success,return QHYCCD_SUCCESS \n
-	  another QHYCCD_ERROR code on other failures
-  */
-EXPORTC uint32_t STDCALL GetQHYCCDEffectiveArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY);
 
 /** @fn uint32_t SetQHYCCDFocusSetting(qhyccd_handle *h,uint32_t focusCenterX, uint32_t focusCenterY)
       @brief Set the camera on focus mode
@@ -492,7 +493,7 @@ EXPORTFUNC uint32_t STDCALL QHYCCDInterCamSerialRX(qhyccd_handle *h,char *buf);
 
 	/** @fn uint32_t QHYCCDInterCamOledOnOff(qhyccd_handle *handle,uint8_t onoff)
       @brief turn off or turn on the InterCam's Oled
-      @param h camera control handle
+      @param handle camera control handle
 	  @param onoff on or off the oled \n
 	  1:on \n
 	  0:off \n
@@ -505,7 +506,7 @@ EXPORTFUNC uint32_t STDCALL QHYCCDInterCamOledOnOff(qhyccd_handle *handle,uint8_
 /** 
   @fn uint32_t SetQHYCCDInterCamOledBrightness(qhyccd_handle *handle,uint8_t brightness)
   @brief send data to show on InterCam's OLED
-  @param h camera control handle
+  @param handle camera control handle
   @param brightness the oled's brightness
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -516,7 +517,7 @@ EXPORTFUNC uint32_t STDCALL SetQHYCCDInterCamOledBrightness(qhyccd_handle *handl
 /** 
   @fn uint32_t SendFourLine2QHYCCDInterCamOled(qhyccd_handle *handle,char *messagetemp,char *messageinfo,char *messagetime,char *messagemode)
   @brief spilit the message to two line,send to camera
-  @param h camera control handle
+  @param handle camera control handle
   @param messagetemp message for the oled's 1st line
   @param messageinfo message for the oled's 2nd line
   @param messagetime message for the oled's 3rd line
@@ -529,7 +530,7 @@ EXPORTFUNC uint32_t STDCALL SendFourLine2QHYCCDInterCamOled(qhyccd_handle *handl
 /** 
   @fn uint32_t SendTwoLine2QHYCCDInterCamOled(qhyccd_handle *handle,char *messageTop,char *messageBottom)
   @brief spilit the message to two line,send to camera
-  @param h camera control handle
+  @param handle camera control handle
   @param messageTop message for the oled's 1st line
   @param messageBottom message for the oled's 2nd line
   @return
@@ -541,7 +542,7 @@ EXPORTFUNC uint32_t STDCALL SendTwoLine2QHYCCDInterCamOled(qhyccd_handle *handle
 /** 
   @fn uint32_t SendOneLine2QHYCCDInterCamOled(qhyccd_handle *handle,char *messageTop)
   @brief spilit the message to two line,send to camera
-  @param h camera control handle
+  @param handle camera control handle
   @param messageTop message for all the oled
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -626,7 +627,7 @@ EXPORTFUNC bool STDCALL FFmpegInitAVI(wchar_t* fileName, uint32_t width, uint32_
 EXPORTFUNC void STDCALL FFmpegFreeAVI(void);
 
 /** 
-  @fn uint32_t SetQHYCCDStreamMode(qhyccd_handle *handle,uint8_t mode)
+  @fn uint32_t FFmpegWriteToFrame(uint8_t* data, uint32_t frameCount, uint32_t frameIndex)
   @brief write a frame to avi file
   @param data the raw image buffer
   @param frameCount the image size(byte) save to avi
@@ -679,7 +680,6 @@ EXPORTFUNC double STDCALL GetQHYCCDReadingProgress(qhyccd_handle *handle);
 */
 EXPORTFUNC uint32_t STDCALL TestQHYCCDPIDParas(qhyccd_handle *h, double p, double i, double d);
 
-
 EXPORTFUNC uint32_t STDCALL SetQHYCCDTrigerFunction(qhyccd_handle *h,bool value);
 
 EXPORTFUNC uint32_t STDCALL DownloadFX3FirmWare(uint16_t vid,uint16_t pid,char *imgpath);
@@ -687,5 +687,12 @@ EXPORTFUNC uint32_t STDCALL DownloadFX3FirmWare(uint16_t vid,uint16_t pid,char *
 EXPORTFUNC uint32_t STDCALL GetQHYCCDType(qhyccd_handle *h);
 
 EXPORTFUNC uint32_t STDCALL SetQHYCCDDebayerOnOff(qhyccd_handle *h,bool onoff);
+
+EXPORTFUNC uint32_t STDCALL SetQHYCCDFineTone(qhyccd_handle *h,uint8_t setshporshd,uint8_t shdloc,uint8_t shploc,uint8_t shwidth);
+
+EXPORTFUNC uint32_t STDCALL QHYCCDI2C_Write(qhyccd_handle *handle, uint8_t req,uint16_t value,uint16_t addr,uint8_t* data, uint16_t length);
+
+EXPORTFUNC uint32_t STDCALL QHYCCDI2C_Read(qhyccd_handle *handle, uint8_t req,uint16_t value,uint16_t addr,uint8_t* data, uint16_t length);
+
 
 #endif
