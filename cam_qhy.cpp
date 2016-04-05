@@ -158,6 +158,8 @@ bool Camera_QHY::Connect(const wxString& camId)
     m_camhandle = OpenQHYCCD(s);
     delete[] s;
 
+    Name = camid;
+
     if (!m_camhandle)
     {
         wxMessageBox(_("Failed to connect to camera"));
