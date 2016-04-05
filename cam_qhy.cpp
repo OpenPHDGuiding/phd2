@@ -49,7 +49,7 @@ static bool QHYSDKInit()
 
     if ((ret = InitQHYCCDResource()) != 0)
     {
-        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", ret));
+        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", (int)ret));
         return true;
     }
 
@@ -65,7 +65,7 @@ static bool QHYSDKInit()
 
     if ((ret = OSXInitQHYCCDFirmware(destImgPath)) != 0)
     {
-        Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) failed: %d\n", destImgPath, ret));
+        Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) failed: %d\n", destImgPath, (int)ret));
         delete[] destImgPath;
         return true;
     }
@@ -166,9 +166,9 @@ bool Camera_QHY::Connect(const wxString& camId)
         return true;
     }
 
-    //before do InitQHYCCD() must call SetQHYCCDStreamMode(camhandle,0 or 1)
-    //0:single frame mode  
-    //1:live frame mode 
+    // before calling InitQHYCCD() we must call SetQHYCCDStreamMode(camhandle, 0 or 1)
+    //   0: single frame mode  
+    //   1: live frame mode 
     uint32_t ret = SetQHYCCDStreamMode(m_camhandle, 0);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -177,13 +177,13 @@ bool Camera_QHY::Connect(const wxString& camId)
         wxMessageBox(_("SetQHYCCDStreamMode failed"));
         return true;
     }
-	 
+
     ret = SetQHYCCDBitsMode(m_camhandle, 8);
     if (ret != QHYCCD_SUCCESS)
     {
-        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", ret));
+        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", (int)ret));
     }
-	
+
     ret = InitQHYCCD(m_camhandle);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -247,8 +247,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         if (ret == QHYCCD_SUCCESS)
             maxBin = bin[i];
         else
-    
-        break;
+            break;
     }
     Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));
     MaxBinning = maxBin;
@@ -331,8 +330,6 @@ static bool StopExposure()
 
 bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    uint32_t  ret;
-
     if (Binning != m_curBin)
     {
         FullSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
@@ -384,29 +381,29 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (m_roi != unbinnedFrame)
     {
-        //when the roi changed must call this.
-        ret = CancelQHYCCDExposingAndReadout(m_camhandle);
+        // when roi changes, must call this
+        uint32_t ret = CancelQHYCCDExposingAndReadout(m_camhandle);
         if (ret == QHYCCD_SUCCESS)
         {
-            Debug.Write("CancelQHYCCDExposingAndReadout success!\n");
+            Debug.Write("CancelQHYCCDExposingAndReadout success\n");
         }
         else
         {
-            Debug.Write("CancelQHYCCDExposingAndReadout fail\n");
+            Debug.Write("CancelQHYCCDExposingAndReadout failed\n");
         }
     }
 
     // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    uint32_t ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
-        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", ret));
+        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int)ret));
     }
 
     ret = SetQHYCCDBitsMode(m_camhandle, 8);
     if (ret != QHYCCD_SUCCESS)
     {
-        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", ret));
+        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", (int)ret));
     }
 
     if (m_roi != unbinnedFrame)
@@ -419,7 +416,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         else
         {
             Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n",
-            unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight(), ret));
+                                         unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight(), (int)ret));
         }
     }
 
@@ -432,7 +429,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            Debug.Write(wxString::Format("QHY set exposure ret %d\n", ret));
+            Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int)ret));
             pFrame->Alert(_("Failed to set camera exposure"));
         }
     }
@@ -449,7 +446,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            Debug.Write(wxString::Format("QHY set gain ret %d\n", ret));
+            Debug.Write(wxString::Format("QHY set gain ret %d\n", (int)ret));
             pFrame->Alert(_("Failed to set camera gain"));
         }
     }
@@ -457,13 +454,13 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     ret = ExpQHYCCDSingleFrame(m_camhandle);
     if (ret == QHYCCD_ERROR)
     {
-        Debug.Write(wxString::Format("QHY exp single frame ret %d\n", ret));
+        Debug.Write(wxString::Format("QHY exp single frame ret %d\n", (int)ret));
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
     if (ret != QHYCCD_READ_DIRECTLY)
     {
-        Debug.Write("NOT QHYCCD_READ_DIRECTLY");
+        Debug.Write(wxString::Format("QHY: ExpQHYCCDSingleFrame did not return QHYCCD_READ_DIRECTLY (%d)\n", (int)ret));
         if (duration > 3000)
         {
            WorkerThread::MilliSleep(duration);
@@ -471,7 +468,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else
     {
-        Debug.Write("QHYCCD_READ_DIRECTLY");
+        //Debug.Write("QHYCCD_READ_DIRECTLY\n");
     }
 
     uint32_t w, h, bpp, channels;
