@@ -1459,7 +1459,7 @@ void MyFrame::StopCapturing(void)
 
     if (m_continueCapturing)
     {
-        StatusMsg(_("Waiting for devices..."));
+        StatusMsgNoTimeout(_("Waiting for devices..."));
         m_continueCapturing = false;
 
         if (m_exposurePending)
