@@ -236,14 +236,14 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
     {
-        this->SetSize(800,600);
+        SetSize(800,600);
     }
     else
     {
         wxArrayString fields = wxSplit(geometry, ';');
         if (fields[0] == "1")
         {
-            this->Maximize();
+            Maximize();
         }
         else
         {
@@ -252,8 +252,18 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
             fields[2].ToLong(&h);
             fields[3].ToLong(&x);
             fields[4].ToLong(&y);
-            this->SetSize(w, h);
-            this->SetPosition(wxPoint(x, y));
+            wxSize screen = wxGetDisplaySize();
+            if (x + w <= screen.GetWidth() &&
+                y + h <= screen.GetHeight())
+            {
+                SetSize(w, h);
+                SetPosition(wxPoint(x, y));
+            }
+            else
+            {
+                // looks like screen size changed, ignore position and revert to default size
+                SetSize(800, 600);
+            }
         }
     }
 
