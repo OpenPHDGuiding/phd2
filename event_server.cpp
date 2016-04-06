@@ -592,10 +592,64 @@ static void get_profiles(JObj& response, const json_value *params)
     response << jrpc_result(ary);
 }
 
+struct Params
+{
+    std::map<std::string, const json_value *> dict;
+
+    void Init(const char *names[], size_t nr_names, const json_value *params)
+    {
+        if (!params)
+            return;
+        if (params->type == JSON_ARRAY)
+        {
+            const json_value *jv = params->first_child;
+            for (size_t i = 0; jv && i < nr_names; i++, jv = jv->next_sibling)
+            {
+                const char *name = names[i];
+                dict.insert(std::make_pair(std::string(name), jv));
+            }
+        }
+        else if (params->type == JSON_OBJECT)
+        {
+            json_for_each(jv, params)
+            {
+                dict.insert(std::make_pair(std::string(jv->name), jv));
+            }
+        }
+    }
+    Params(const char *n1, const json_value *params)
+    {
+        const char *n[] = { n1 };
+        Init(n, 1, params);
+    }
+    Params(const char *n1, const char *n2, const json_value *params)
+    {
+        const char *n[] = { n1, n2 };
+        Init(n, 2, params);
+    }
+    Params(const char *n1, const char *n2, const char *n3, const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3 };
+        Init(n, 3, params);
+    }
+    Params(const char *n1, const char *n2, const char *n3, const char *n4, const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3, n4 };
+        Init(n, 4, params);
+    }
+    const json_value *param(const std::string& name) const
+    {
+        auto it = dict.find(name);
+        return it == dict.end() ? 0 : it->second;
+    }
+};
+
 static void set_exposure(JObj& response, const json_value *params)
 {
-    const json_value *exp;
-    if (!params || (exp = at(params, 0)) == 0 || exp->type != JSON_INT)
+    Params p("exposure", params);
+    const json_value *exp = p.param("exposure");
+
+    if (!exp || exp->type != JSON_INT)
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected exposure param");
         return;
@@ -630,8 +684,9 @@ static bool all_equipment_connected()
 
 static void set_profile(JObj& response, const json_value *params)
 {
-    const json_value *id;
-    if (!params || (id = at(params, 0)) == 0 || id->type != JSON_INT)
+    Params p("id", params);
+    const json_value *id = p.param("id");
+    if (!id || id->type != JSON_INT)
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected profile id param");
         return;
@@ -659,8 +714,9 @@ static void get_connected(JObj& response, const json_value *params)
 
 static void set_connected(JObj& response, const json_value *params)
 {
-    const json_value *val;
-    if (!params || (val = at(params, 0)) == 0 || val->type != JSON_BOOL)
+    Params p("connected", params);
+    const json_value *val = p.param("connected");
+    if (!val || val->type != JSON_BOOL)
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected connected boolean param");
         return;
@@ -712,6 +768,19 @@ static bool float_param(const char *name, const json_value *v, double *p)
     return float_param(v, p);
 }
 
+inline static bool bool_value(const json_value *v)
+{
+    return v->int_value ? true : false;
+}
+
+static bool bool_param(const json_value *jv, bool *val)
+{
+    if (jv->type != JSON_BOOL && jv->type != JSON_INT)
+        return false;
+    *val = bool_value(jv);
+    return true;
+}
+
 static void get_paused(JObj& response, const json_value *params)
 {
     VERIFY_GUIDER(response);
@@ -720,15 +789,15 @@ static void get_paused(JObj& response, const json_value *params)
 
 static void set_paused(JObj& response, const json_value *params)
 {
-    const json_value *p;
-    bool val;
+    Params p("paused", "type", params);
+    const json_value *jv = p.param("paused");
 
-    if (!params || (p = at(params, 0)) == 0 || p->type != JSON_BOOL)
+    bool val;
+    if (!jv || !bool_param(jv, &val))
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected bool param at index 0");
         return;
     }
-    val = p->int_value ? true : false;
 
     PauseType pause = PAUSE_NONE;
 
@@ -736,12 +805,12 @@ static void set_paused(JObj& response, const json_value *params)
     {
         pause = PAUSE_GUIDING;
 
-        p = at(params, 1);
-        if (p)
+        jv = p.param("type");
+        if (jv)
         {
-            if (p->type == JSON_STRING)
+            if (jv->type == JSON_STRING)
             {
-                if (strcmp(p->string_value, "full") == 0)
+                if (strcmp(jv->string_value, "full") == 0)
                     pause = PAUSE_FULL;
             }
             else
@@ -821,26 +890,26 @@ static void get_lock_position(JObj& response, const json_value *params)
 // {"method": "set_lock_position", "params": [X, Y, true], "id": 1}
 static void set_lock_position(JObj& response, const json_value *params)
 {
-    const json_value *p0, *p1;
+    Params p("x", "y", "exact", params);
+    const json_value *p0 = p.param("x"), *p1 = p.param("y");
     double x, y;
 
-    if (!params || (p0 = at(params, 0)) == 0 || (p1 = at(params, 1)) == 0 ||
-        !float_param(p0, &x) || !float_param(p1, &y))
+    if (!p0 || !p1 || !float_param(p0, &x) || !float_param(p1, &y))
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected lock position x, y params");
         return;
     }
 
     bool exact = true;
-    const json_value *p2 = at(params, 2);
+    const json_value *p2 = p.param("exact");
+
     if (p2)
     {
-        if (p2->type != JSON_BOOL)
+        if (!bool_param(p2, &exact))
         {
             response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected boolean param at index 2");
             return;
         }
-        exact = p2->int_value ? true : false;
     }
 
     VERIFY_GUIDER(response);
@@ -931,8 +1000,10 @@ static void get_lock_shift_enabled(JObj& response, const json_value *params)
 
 static void set_lock_shift_enabled(JObj& response, const json_value *params)
 {
-    const json_value *val;
-    if (!params || (val = at(params, 0)) == 0 || val->type != JSON_BOOL)
+    Params p("enabled", params);
+    const json_value *val = p.param("enabled");
+    bool enable;
+    if (!val || !bool_param(val, &enable))
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
         return;
@@ -940,7 +1011,7 @@ static void set_lock_shift_enabled(JObj& response, const json_value *params)
 
     VERIFY_GUIDER(response);
 
-    pFrame->pGuider->EnableLockPosShift(val->int_value ? true : false);
+    pFrame->pGuider->EnableLockPosShift(enable);
 
     response << jrpc_result(0);
 }
@@ -994,66 +1065,60 @@ static bool parse_point(PHD_Point *pt, const json_value *j)
 
 static bool parse_lock_shift_params(LockPosShiftParams *shift, const json_value *params, wxString *error)
 {
-    // {"rate":[3.3,1.1],"units":"arcsec/hr","axes":"RA/Dec"}
-    const json_value *p0;
-    if (!params || (p0 = at(params, 0)) == 0 || p0->type != JSON_OBJECT)
-    {
-        *error = "expected lock shift object param";
-        return false;
-    }
+    // "params":[{"rate":[3.3,1.1],"units":"arcsec/hr","axes":"RA/Dec"}]
+    // or
+    // "params":{"rate":[3.3,1.1],"units":"arcsec/hr","axes":"RA/Dec"}
+
+    if (params && params->type == JSON_ARRAY)
+        params = params->first_child;
+
+    Params p("rate", "units", "axes", params);
+
     shift->shiftUnits = UNIT_ARCSEC;
     shift->shiftIsMountCoords = true;
 
-    json_for_each (j, p0)
+    const json_value *j;
+    
+    j = p.param("rate");
+    if (!j || !parse_point(&shift->shiftRate, j))
     {
-        if (strcmp(j->name, "rate") == 0)
-        {
-            if (!parse_point(&shift->shiftRate, j))
-            {
-                *error = "expected rate value array";
-                return false;
-            }
-        }
-        else if (strcmp(j->name, "units") == 0)
-        {
-            const char *units = string_val(j);
-            if (wxStricmp(units, "arcsec/hr") == 0 ||
-                wxStricmp(units, "arc-sec/hr") == 0)
-            {
-                shift->shiftUnits = UNIT_ARCSEC;
-            }
-            else if (wxStricmp(units, "pixels/hr") == 0)
-            {
-                shift->shiftUnits = UNIT_PIXELS;
-            }
-            else
-            {
-                *error = "expected units 'arcsec/hr' or 'pixels/hr'";
-                return false;
-            }
-        }
-        else if (strcmp(j->name, "axes") == 0)
-        {
-            const char *axes = string_val(j);
-            if (wxStricmp(axes, "RA/Dec") == 0)
-            {
-                shift->shiftIsMountCoords = true;
-            }
-            else if (wxStricmp(axes, "X/Y") == 0)
-            {
-                shift->shiftIsMountCoords = false;
-            }
-            else
-            {
-                *error = "expected axes 'RA/Dec' or 'X/Y'";
-                return false;
-            }
-        }
-        else
-        {
-            *error = "unknown lock shift attribute name";
-            return false;
-        }
+        *error = "expected rate value array";
+        return false;
+    }
+
+    j = p.param("units");
+    const char *units = j ? string_val(j) : "";
+
+    if (wxStricmp(units, "arcsec/hr") == 0 ||
+        wxStricmp(units, "arc-sec/hr") == 0)
+    {
+        shift->shiftUnits = UNIT_ARCSEC;
+    }
+    else if (wxStricmp(units, "pixels/hr") == 0)
+    {
+        shift->shiftUnits = UNIT_PIXELS;
+    }
+    else
+    {
+        *error = "expected units 'arcsec/hr' or 'pixels/hr'";
+        return false;
+    }
+
+    j = p.param("axes");
+    const char *axes = j ? string_val(j) : "";
+
+    if (wxStricmp(axes, "RA/Dec") == 0)
+    {
+        shift->shiftIsMountCoords = true;
+    }
+    else if (wxStricmp(axes, "X/Y") == 0)
+    {
+        shift->shiftIsMountCoords = false;
+    }
+    else
+    {
+        *error = "expected axes 'RA/Dec' or 'X/Y'";
+        return false;
     }
 
     return true;
@@ -1166,8 +1231,9 @@ const char *const B64Encode::E = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrst
 static void get_star_image(JObj& response, const json_value *params)
 {
     int reqsize = 15;
-    const json_value *val;
-    if (params && (val = at(params, 0)) != 0)
+    Params p("size", params);
+    const json_value *val = p.param("size");
+    if (val)
     {
         if (val->type != JSON_INT || (reqsize = val->int_value) < 15)
         {
@@ -1267,6 +1333,8 @@ static void guide(JObj& response, const json_value *params)
     //   recalibrate: boolean
     //
     // {"method": "guide", "params": [{"pixels": 0.5, "time": 6, "timeout": 30}, false], "id": 42}
+    //    or
+    // {"method": "guide", "params": {"settle": {"pixels": 0.5, "time": 6, "timeout": 30}, "recalibrate": false}, "id": 42}
     //
     // todo:
     //   accept tolerance in arcsec or pixels
@@ -1274,8 +1342,9 @@ static void guide(JObj& response, const json_value *params)
 
     SettleParams settle;
 
-    const json_value *p0;
-    if (!params || (p0 = at(params, 0)) == 0 || p0->type != JSON_OBJECT)
+    Params p("settle", "recalibrate", params);
+    const json_value *p0 = p.param("settle");
+    if (!p0 || p0->type != JSON_OBJECT)
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
         return;
@@ -1288,10 +1357,14 @@ static void guide(JObj& response, const json_value *params)
     }
 
     bool recalibrate = false;
-    const json_value *p1 = at(params, 1);
-    if (p1 && (p1->type == JSON_BOOL || p1->type == JSON_INT))
+    const json_value *p1 = p.param("recalibrate");
+    if (p1)
     {
-        recalibrate = p1->int_value ? true : false;
+        if (!bool_param(p1, &recalibrate))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected bool value for recalibrate");
+            return;
+        }
     }
 
     if (recalibrate && !pConfig->Global.GetBoolean("/server/guide_allow_recalibrate", true))
@@ -1323,32 +1396,41 @@ static void dither(JObj& response, const json_value *params)
     //     timeout [integer]
     //
     // {"method": "dither", "params": [10, false, {"pixels": 1.5, "time": 8, "timeout": 30}], "id": 42}
+    //    or
+    // {"method": "dither", "params": {"amount": 10, "raOnly": false, "settle": {"pixels": 1.5, "time": 8, "timeout": 30}}, "id": 42}
 
-    const json_value *p;
+    Params p("amount", "raOnly", "settle", params);
+    const json_value *jv;
     double ditherAmt;
 
-    if (!params || (p = at(params, 0)) == 0 || !float_param(p, &ditherAmt))
+    jv = p.param("amount");
+    if (!jv || !float_param(jv, &ditherAmt))
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither amount param");
         return;
     }
 
-    if ((p = at(params, 1)) == 0 || p->type != JSON_BOOL)
+    bool raOnly = false;
+    jv = p.param("raOnly");
+    if (jv)
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither raOnly param");
-        return;
+        if (!bool_param(jv, &raOnly))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither raOnly param");
+            return;
+        }
     }
-    bool raOnly = p->int_value ? true : false;
 
     SettleParams settle;
 
-    if ((p = at(params, 2)) == 0 || p->type != JSON_OBJECT)
+    jv = p.param("settle");
+    if (!jv || jv->type != JSON_OBJECT)
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
         return;
     }
     wxString errMsg;
-    if (!parse_settle(&settle, p, &errMsg))
+    if (!parse_settle(&settle, jv, &errMsg))
     {
         response << jrpc_error(JSONRPC_INVALID_PARAMS, errMsg);
         return;
