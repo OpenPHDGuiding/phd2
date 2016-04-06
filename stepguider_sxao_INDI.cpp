@@ -76,6 +76,11 @@ void StepGuiderSxAoINDI::ClearStatus(void)
     aoUnjam_prop = NULL;
     ao_device = NULL;
     ao_port = NULL;
+    ao_driverInfo = NULL;
+    ao_driverName = NULL;
+    ao_driverExec = NULL;
+    ao_driverVersion = NULL;
+    ao_driverInterface = NULL;
     ao_info = NULL;
     ao_firmware = NULL;
     ao_limit = NULL;
@@ -92,23 +97,29 @@ void StepGuiderSxAoINDI::ClearStatus(void)
 void StepGuiderSxAoINDI::CheckState(void)
 {
     // Check if the device has all the required properties for our usage.
-    if (IsConnected() && (aoN_prop && aoS_prop && aoW_prop && aoE_prop && aoCenter_prop && ao_firmware)) {
-        if (! ready) {
-            if (FirmwareVersion(&SxAoVersion)) {
-                throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: unable to get firmware version");
-            }
-            if (SxAoVersion == 0) {
-                wxMessageBox(wxString::Format(
-                    _("This AO device has firmware version %03u which means it needs to be flashed.\n"
-                      "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
-                      "contains the firmware."), SxAoVersion),
-                      _("Error"));
-                throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: V000 means AO device needs a flash");
-            }
-            Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::CheckState is ready, firmware %03u", SxAoVersion));
-            ready = true;
-            if (modal) {
-                modal = false;
+    if (IsConnected() && (ao_driverVersion && aoN_prop && aoS_prop && aoW_prop && aoE_prop && aoCenter_prop)) {
+        if (atof(ao_driverVersion->text) < 1.12) {
+            wxMessageBox(wxString::Format(
+                _("We need at least INDI driver %s version 1.12 to get the Firmware version and the Limit switch states."),
+                ao_driverExec->text), _("Error"));
+        } else if (ao_firmware) {
+            if (! ready) {
+                if (FirmwareVersion(&SxAoVersion)) {
+                    throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: unable to get firmware version");
+                }
+                if (SxAoVersion == 0) {
+                    wxMessageBox(wxString::Format(
+                        _("This AO device has firmware version %03u which means it needs to be flashed.\n"
+                          "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                          "contains the firmware."), SxAoVersion),
+                          _("Error"));
+                    throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: V000 means AO device needs a flash");
+                }
+                Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::CheckState is ready, firmware %03u", SxAoVersion));
+                ready = true;
+                if (modal) {
+                    modal = false;
+                }
             }
         }
     }
@@ -140,7 +151,6 @@ void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
      * 3 INDI_LIGHT,  < ILightVectorProperty.
      * 4 INDI_BLOB,   < IBLOBVectorProperty.
      * 5 INDI_UNKNOWN
-     *
     SXAO PropName: CONNECTION Proptype: 1
     SXAO PropName: DRIVER_INFO Proptype: 2
     SXAO PropName: DEBUG Proptype: 1
@@ -371,9 +381,40 @@ int StepGuiderSxAoINDI::MaxPosition(GUIDE_DIRECTION direction) const
 
 bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
 {
-    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit TODO"));
-    // TODO https://sourceforge.net/p/indi/feature-requests/7/
-    return false;
+    bool bError = false;
+    if (ao_limit) {
+        try {
+            switch (direction) {
+                case NORTH:
+                    *isAtLimit = ao_limit_north->s == IPS_ALERT;
+                    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit North"));
+                    break;
+                case SOUTH:
+                    *isAtLimit = ao_limit_south->s == IPS_ALERT;
+                    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit South"));
+                    break;
+                case EAST:
+                    *isAtLimit = ao_limit_east->s == IPS_ALERT;
+                    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit East"));
+                    break;
+                case WEST:
+                    *isAtLimit = ao_limit_west->s == IPS_ALERT;
+                    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit West"));
+                    break;
+                default:
+                    throw ERROR_INFO("StepGuiderSxAoINDI::IsAtLimit: invalid direction");
+                    break;
+            }
+        } catch (wxString Msg) {
+            POSSIBLY_UNUSED(Msg);
+            bError = true;
+        }
+    } else {
+        Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit called before we received any ao_limit"));
+        bError = true;
+    }
+
+    return bError;
 }
 
 bool StepGuiderSxAoINDI::FirmwareVersion(int *version)
