@@ -43,7 +43,7 @@ StepGuiderSxAoINDI::StepGuiderSxAoINDI(void)
     // load the values from the current profile
     INDIhost   = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport   = pConfig->Profile.GetLong("/indi/INDIport", 7624);
-    INDIaoDeviceName = pConfig->Profile.GetString("/indi/INDIao", _T("INDI SVX-AO-LF"));
+    INDIaoDeviceName = pConfig->Profile.GetString("/indi/INDIao", _T("INDI SXV-AO-LF"));
     INDIaoDevicePort = pConfig->Profile.GetString("/indi/INDIao_port",_T("/dev/sx-ao-lf"));
 
     m_Name = INDIaoDeviceName;
@@ -219,7 +219,7 @@ void StepGuiderSxAoINDI::newMessage(INDI::BaseDevice *dp, int messageID) {}
 
 bool StepGuiderSxAoINDI::Connect(void)
 {
-    if (INDIaoDeviceName == wxT("INDI SVX-AO-LF")) {
+    if (INDIaoDeviceName == wxT("INDI SXV-AO-LF")) {
         SetupDialog(); // If not configured open the setup dialog
     }
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport); // define server to connect to.
