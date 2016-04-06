@@ -1372,12 +1372,12 @@ static void shutdown(JObj& response, const json_value *params)
 
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
-    Debug.AddLine(wxString::Format("evsrv: cli %p request: %s", cli, json_format(req)));
+    Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
 }
 
 static void dump_response(const wxSocketClient *cli, const JRpcResponse& resp)
 {
-    Debug.AddLine(wxString::Format("evsrv: cli %p response: %s", cli, const_cast<JRpcResponse&>(resp).str()));
+    Debug.Write(wxString::Format("evsrv: cli %p response: %s\n", cli, const_cast<JRpcResponse&>(resp).str()));
 }
 
 static bool handle_request(const wxSocketClient *cli, JObj& response, const json_value *req)
@@ -1570,7 +1570,7 @@ bool EventServer::EventServerStart(unsigned int instanceId)
 
     if (!m_serverSocket->Ok())
     {
-        Debug.AddLine(wxString::Format("Event server failed to start - Could not listen at port %u", port));
+        Debug.Write(wxString::Format("Event server failed to start - Could not listen at port %u\n", port));
         delete m_serverSocket;
         m_serverSocket = NULL;
         return true;
@@ -1580,7 +1580,7 @@ bool EventServer::EventServerStart(unsigned int instanceId)
     m_serverSocket->SetNotify(wxSOCKET_CONNECTION_FLAG);
     m_serverSocket->Notify(true);
 
-    Debug.AddLine(wxString::Format("event server started, listening on port %u", port));
+    Debug.Write(wxString::Format("event server started, listening on port %u\n", port));
 
     return false;
 }
@@ -1615,7 +1615,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     if (!client)
         return;
 
-    Debug.AddLine("evsrv: cli %p connect", client);
+    Debug.Write(wxString::Format("evsrv: cli %p connect\n", client));
 
     client->SetEventHandler(*this, EVENT_SERVER_CLIENT_ID);
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
@@ -1634,7 +1634,7 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
 
     if (event.GetSocketEvent() == wxSOCKET_LOST)
     {
-        Debug.AddLine("evsrv: cli %p disconnect", cli);
+        Debug.Write(wxString::Format("evsrv: cli %p disconnect\n", cli));
 
         unsigned int const n = m_eventServerClients.erase(cli);
         if (n != 1)
@@ -1648,7 +1648,7 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
     }
     else
     {
-        Debug.AddLine("unexpected client socket event %d", event.GetSocketEvent());
+        Debug.Write(wxString::Format("unexpected client socket event %d\n", event.GetSocketEvent()));
     }
 }
 
@@ -1839,7 +1839,7 @@ void EventServer::NotifySettling(double distance, double time, double settleTime
 
     Ev ev(ev_settling(distance, time, settleTime));
 
-    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+    Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
     do_notify(m_eventServerClients, ev);
 }
@@ -1851,7 +1851,7 @@ void EventServer::NotifySettleDone(const wxString& errorMsg)
 
     Ev ev(ev_settle_done(errorMsg));
 
-    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+    Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
     do_notify(m_eventServerClients, ev);
 }
