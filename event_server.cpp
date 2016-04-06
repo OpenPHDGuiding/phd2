@@ -437,7 +437,7 @@ static void send_catchup_events(wxSocketClient *cli)
 
 static void destroy_client(wxSocketClient *cli)
 {
-    ClientReadBuf *buf = client_rdbuf(cli);
+    ClientData *buf = (ClientData *) cli->GetClientData();
     cli->Destroy();
     delete buf;
 }
