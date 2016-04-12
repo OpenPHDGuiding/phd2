@@ -31,7 +31,7 @@
  
  \***************************************************************************/
 
-#if defined (__APPLE__)
+#if defined (__APPLE__) || defined (__linux__)
 
 //#include <MacTypes.h>
 typedef unsigned short UInt16;
@@ -171,4 +171,4 @@ extern "C" {
 }
 #endif
 
-#endif // __APPLE__
+#endif // __APPLE__ || __linux__

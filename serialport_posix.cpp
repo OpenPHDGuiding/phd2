@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#if defined (__LINUX__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__)
 
 #include <termios.h>
 #include <unistd.h>
@@ -300,4 +300,4 @@ bool SerialPortPosix::SetDTR(bool asserted)
     return true; // TODO
 }
 
-#endif // __LINUX__
+#endif // __linux__

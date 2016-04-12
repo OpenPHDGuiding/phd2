@@ -37,7 +37,7 @@
 #define STEPGUIDER_SXAO
 #endif
 
-#if defined (__LINUX__)
+#if defined (__linux__)
 #define STEPGUIDER_SXAO
 #endif
 

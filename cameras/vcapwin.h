@@ -40,7 +40,7 @@
     #define WXVIDCAP_MSW_VFW
     #define WXVIDCAP_AVI_SUPPORT
     #define WXVIDCAP_AUDIO_SUPPORT
-#elif defined(__LINUX__)
+#elif defined(__linux__)
     #define WXVIDCAP_LINUX_V4L
 #endif
 

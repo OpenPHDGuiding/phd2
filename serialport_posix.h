@@ -35,7 +35,7 @@
 #if !defined(SERIALPORT_POSIX_H_INCLUDED)
 #define SERIALPORT_POSIX_H_INCLUDED
 
-#if defined (__LINUX__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__)
 
 #include <termios.h>
 
@@ -65,6 +65,6 @@ public:
     virtual bool SetDTR(bool asserted);
 };
 
-#endif // __LINUX__ || __APPLE__
+#endif // __linux__ || __APPLE__
 
 #endif // SERIALPORT_POSIX_H_INCLUDED

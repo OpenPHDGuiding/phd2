@@ -2470,7 +2470,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-#ifndef __LINUX__  // See issue 83
+#ifndef __linux__  // See issue 83
         wxString catalogFile = wxGetApp().GetLocaleDir() +
             PATHSEPSTR + pLanguageInfo->CanonicalName +
             PATHSEPSTR "messages.mo";

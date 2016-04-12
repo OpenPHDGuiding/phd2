@@ -53,7 +53,7 @@
     //#define GUIDE_NEB
     #define GUIDE_EQMAC
 
-#elif defined (__LINUX__)
+#elif defined (__linux__)
 
     #define GUIDE_ONCAMERA
     #define GUIDE_ONSTEPGUIDER

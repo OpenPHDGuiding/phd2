@@ -39,7 +39,7 @@
  
  \***************************************************************************/
 
-#if defined (__APPLE__)
+#if defined (__APPLE__) || defined (__linux__)
 
 #include "SXMacLib.h"
 
@@ -673,7 +673,11 @@ static Boolean isSXCamera(struct libusb_device_descriptor* desc)
 {
     if (desc){
         const sxDeviceInfo* info = sxLookupDeviceInfo(desc->idVendor,desc->idProduct);
-        return (info && info->type == sxDeviceTypeCamera);
+        if (info && info->type == sxDeviceTypeCamera) {
+            printf("Found SX device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
+            return true;
+        }
+        printf("Skip device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
     }
     return false;
 }
@@ -706,10 +710,19 @@ UInt32 sxOpen(void** sxHandles)
         }
         if (isSXCamera(&desc)) {
             libusb_device_handle* handle;
-            
+
             ret = libusb_open(device[i], &handle);
             if (0 == ret) {
-                
+
+                if (libusb_kernel_driver_active(handle, 0)) {
+                    ret = libusb_detach_kernel_driver(handle, 0);
+                    if (ret == 0) {
+                        printf("Kernel driver detached.\n");
+                    } else {
+                        printf("Error detaching kernel driver.\n");
+                    }
+                }
+
                 ret = libusb_claim_interface(handle, 0);
                 if (0 == ret) {
                     
@@ -723,6 +736,8 @@ UInt32 sxOpen(void** sxHandles)
                         sxHandles[count] = handle;
                         count++;
                     }
+                } else {
+                    printf("libusb_claim_interface error %s\n", libusb_error_name(ret));
                 }
             }
             
