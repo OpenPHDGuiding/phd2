@@ -653,7 +653,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     wxBusyCursor busy;
 
-    Debug.AddLine(wxString::Format("Star::AutoFind called with edgeAllowance = %d searchRegion = %d", extraEdgeAllowance, searchRegion));
+    Debug.Write(wxString::Format("Star::AutoFind called with edgeAllowance = %d searchRegion = %d\n", extraEdgeAllowance, searchRegion));
 
     // run a 3x3 median first to eliminate hot pixels
     usImage smoothed;
@@ -692,10 +692,10 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     double global_mean, global_stdev;
     GetStats(&global_mean, &global_stdev, conv, convRect);
 
-    Debug.AddLine("AutoFind: global mean = %.1f, stdev %.1f", global_mean, global_stdev);
+    Debug.Write(wxString::Format("AutoFind: global mean = %.1f, stdev %.1f\n", global_mean, global_stdev));
 
     const double threshold = 0.1;
-    Debug.AddLine("AutoFind: using threshold = %.1f", threshold);
+    Debug.Write(wxString::Format("AutoFind: using threshold = %.1f\n", threshold));
 
     // find each local maximum
     int srch = 4;
@@ -737,7 +737,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
             if (h < threshold)
             {
-                //  Debug.AddLine(wxString::Format("AG: local max REJECT [%d, %d] PSF %.1f SNR %.1f", imgx, imgy, val, SNR));
+                //  Debug.Write(wxString::Format("AG: local max REJECT [%d, %d] PSF %.1f SNR %.1f\n", imgx, imgy, val, SNR));
                 continue;
             }
 
@@ -900,7 +900,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     for (int pass = 1; pass <= 3; pass++)
     {
-        Debug.AddLine("AutoSelect: finding best star pass %d", pass);
+        Debug.Write(wxString::Format("AutoSelect: finding best star pass %d\n", pass));
 
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
