@@ -714,7 +714,7 @@ UInt32 sxOpen(void** sxHandles)
             ret = libusb_open(device[i], &handle);
             if (0 == ret) {
 
-                if (libusb_kernel_driver_active(handle, 0)) {
+                if (libusb_kernel_driver_active(handle, 0) == 1) {
                     ret = libusb_detach_kernel_driver(handle, 0);
                     if (ret == 0) {
                         printf("Kernel driver detached.\n");
@@ -723,7 +723,15 @@ UInt32 sxOpen(void** sxHandles)
                     }
                 }
 
-                ret = libusb_claim_interface(handle, 0);
+                struct libusb_config_descriptor *config;
+                ret = libusb_get_config_descriptor(device[i], 0, &config);
+                if (ret == 0) {
+                        printf("Config descriptor read.\n");
+                    } else {
+                        printf("Error reading config descriptor.\n");
+                }
+                int interface = config->interface->altsetting->bInterfaceNumber;
+                ret = libusb_claim_interface(handle, interface);
                 if (0 == ret) {
                     
                     const int model = sxGetCameraModel(handle);
