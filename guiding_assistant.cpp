@@ -285,21 +285,21 @@ GuidingAsstWin::GuidingAsstWin()
 
     int col = 0;
     int row = 0;
-    m_statusgrid->SetCellValue(_("Start time"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("Start time"));
     m_timestamp_loc.Set(row, col++);
-    m_statusgrid->SetCellValue(_("Exposure time"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("Exposure time"));
     m_exposuretime_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_statusgrid->SetCellValue(_("SNR"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("SNR"));
     m_snr_loc.Set(row, col++);
-    m_statusgrid->SetCellValue(_("Star mass"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("Star mass"));
     m_starmass_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_statusgrid->SetCellValue(_("Elapsed time"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("Elapsed time"));
     m_elapsedtime_loc.Set(row, col++);
-    m_statusgrid->SetCellValue(_("Sample count"), row, col++);
+    m_statusgrid->SetCellValue(row, col++, _("Sample count"));
     m_samplecount_loc.Set(row, col++);
 
     //StartRow(row, col);
@@ -322,15 +322,15 @@ GuidingAsstWin::GuidingAsstWin()
 
     row = 0;
     col = 0;
-    m_displacementgrid->SetCellValue(_("Right ascension, RMS"), row, col++);
+    m_displacementgrid->SetCellValue(row, col++, _("Right ascension, RMS"));
     m_ra_rms_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_displacementgrid->SetCellValue(_("Declination, RMS"), row, col++);
+    m_displacementgrid->SetCellValue(row, col++, _("Declination, RMS"));
     m_dec_rms_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_displacementgrid->SetCellValue(_("Total, RMS"), row, col++);
+    m_displacementgrid->SetCellValue(row, col++, _("Total, RMS"));
     m_total_rms_loc.Set(row, col++);
 
     displacement_group->Add(m_displacementgrid);
@@ -349,39 +349,39 @@ GuidingAsstWin::GuidingAsstWin()
 
     row = 0;
     col = 0;
-    m_othergrid->SetCellValue(_("Right ascension, Peak"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Right ascension, Peak"));
     m_ra_peak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Declination, Peak"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Declination, Peak"));
     m_dec_peak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Right ascension, Peak-Peak"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Right ascension, Peak-Peak"));
     m_ra_peakpeak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Right ascension Drift Rate"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Right ascension Drift Rate"));
     m_ra_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Right ascension Max Drift Rate"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Right ascension Max Drift Rate"));
     m_ra_peak_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Drift-limiting exposure"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Drift-limiting exposure"));
     m_ra_drift_exp_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Declination Drift Rate"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Declination Drift Rate"));
     m_dec_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Declination Backlash"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Declination Backlash"));
     m_backlash_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(_("Polar Alignment Error"), row, col++);
+    m_othergrid->SetCellValue(row, col++, _("Polar Alignment Error"));
     m_pae_loc.Set(row, col++);
 
     other_group->Add(m_othergrid);
@@ -1175,7 +1175,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     FillResultCell(m_othergrid, m_ra_peakpeak_loc, rangeRA, rangeRA * pxscale, PX, ARCSEC);
     FillResultCell(m_othergrid, m_ra_drift_loc, raDriftRate, raDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
     FillResultCell(m_othergrid, m_ra_peak_drift_loc, maxRateRA, maxRateRA * pxscale, PXPERSEC, ARCSECPERSEC);
-    m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? " " : 
+    m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
         wxString::Format("%6.1f %s ",  1.3 * rarms / maxRateRA, SEC));
     FillResultCell(m_othergrid, m_dec_drift_loc, decDriftRate, decDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
     m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
