@@ -88,6 +88,7 @@ void CalReviewDialog::CreateControls()
 
     wxPanel* panelMount = new wxPanel(calibNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxTAB_TRAVERSAL);
     CreatePanel(panelMount, false);
+    panelMount->SetBackgroundColour("BLACK");
 
     calibNotebook->AddPage(panelMount, _("Mount"));
 
@@ -96,6 +97,7 @@ void CalReviewDialog::CreateControls()
     {
         wxPanel* panelAO = new wxPanel(calibNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxTAB_TRAVERSAL);
         CreatePanel(panelAO, true);
+        panelAO->SetBackgroundColour("BLACK");
         calibNotebook->AddPage(panelAO, _("AO"));
     }
 
@@ -130,7 +132,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
     panelGraphVSizer->Add(graphLegendGroup, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     wxStaticText* labelRA = new wxStaticText(thisPanel, wxID_STATIC, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
-    labelRA->SetForegroundColour("RED");
+    labelRA->SetForegroundColour(pFrame->pGraphLog->GetRaOrDxColor());
     if (AO)
         labelRA->SetLabelText(_("X"));
     else
@@ -138,7 +140,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
     graphLegendGroup->Add(labelRA, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     wxStaticText* labelDec = new wxStaticText(thisPanel, wxID_STATIC, _("Declination"), wxDefaultPosition, wxDefaultSize, 0);
-    labelDec->SetForegroundColour("BLUE");
+    labelDec->SetForegroundColour(pFrame->pGraphLog->GetDecOrDyColor());
     if (AO)
         labelDec->SetLabelText(_("Y"));
     else
@@ -189,6 +191,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 
     // Build the upper frame and grid for data from the last calibration
     wxStaticBox* staticBoxLastCal = new wxStaticBox(parentPanel, wxID_ANY, _("Last Mount Calibration"));
+    staticBoxLastCal->SetForegroundColour("WHITE");
     if (AO)
         staticBoxLastCal->SetLabelText(_("Last AO Calibration"));
     wxStaticBoxSizer* calibFrame = new wxStaticBoxSizer(staticBoxLastCal, wxVERTICAL | wxEXPAND);
@@ -303,6 +306,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     {
         // Build the upper frame and grid for configuration data
         wxStaticBox* staticBoxMount = new wxStaticBox(parentPanel, wxID_ANY, _("Mount Configuration"));
+        staticBoxMount->SetForegroundColour("WHITE");
         wxStaticBoxSizer* configFrame = new wxStaticBoxSizer(staticBoxMount, wxVERTICAL);
         panelGridVSizer->Add(configFrame, 0, wxALIGN_LEFT | wxALL, 5);
 
@@ -396,11 +400,13 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
 {
     wxMemoryDC memDC;
     wxBitmap bmp(CALREVIEW_BITMAP_SIZE, CALREVIEW_BITMAP_SIZE, -1);
-    wxPen axisPen("BLACK", 3, wxCROSS_HATCH);
-    wxPen redPen("RED", 3, wxSOLID);
-    wxPen bluePen("BLUE", 3, wxSOLID);
-    wxBrush redBrush("RED", wxSOLID);
-    wxBrush blueBrush("BLUE", wxSOLID);
+    wxPen axisPen("GREY", 3, wxCROSS_HATCH);
+    wxColour raColor = pFrame->pGraphLog->GetRaOrDxColor();
+    wxColour decColor = pFrame->pGraphLog->GetDecOrDyColor();
+    wxPen raPen(raColor, 3, wxSOLID);
+    wxPen decPen(decColor, 3, wxSOLID);
+    wxBrush raBrush(raColor, wxSOLID);
+    wxBrush decBrush(decColor, wxSOLID);
     CalibrationDetails calDetails;
     double scaleFactor;
     int ptRadius;
@@ -441,7 +447,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         scaleFactor = 1.0;
 
     memDC.SelectObject(bmp);
-    memDC.SetBackground(*wxLIGHT_GREY_BRUSH);
+    memDC.SetBackground(*wxBLACK_BRUSH);
     memDC.Clear();
     memDC.SetPen(axisPen);
     // Draw the axes
@@ -452,8 +458,8 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     if (calDetails.raStepCount > 0)
     {
         // Draw the RA data
-        memDC.SetPen(redPen);
-        memDC.SetBrush(redBrush);
+        memDC.SetPen(raPen);
+        memDC.SetBrush(raBrush);
         ptRadius = 2;
 
         // Scale the points, then plot them individually
@@ -461,14 +467,14 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         {
             if (i == calDetails.raStepCount + 2)        // Valid even for "single-step" calibration
             {
-                memDC.SetPen(wxPen("Red", 1));         // 1-pixel-thick red outline
+                memDC.SetPen(wxPen(raColor, 1));         // 1-pixel-thick outline
                 memDC.SetBrush(wxNullBrush);           // Outline only for "return" data points
                 ptRadius = 3;
             }
             memDC.DrawCircle(IntPoint(calDetails.raSteps.at(i), scaleFactor), ptRadius);
         }
         // Show the line PHD2 will use for the rate
-        memDC.SetPen(redPen);
+        memDC.SetPen(raPen);
         if ((int)calDetails.raSteps.size() > calDetails.raStepCount)         // New calib, includes return values
             memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount), scaleFactor));
         else
@@ -476,8 +482,8 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     }
 
     // Handle the Dec data
-    memDC.SetPen(bluePen);
-    memDC.SetBrush(blueBrush);
+    memDC.SetPen(decPen);
+    memDC.SetBrush(decBrush);
     ptRadius = 2;
     if (calDetails.decStepCount > 0)
     {
@@ -485,14 +491,14 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         {
             if (i == calDetails.decStepCount + 2)
             {
-                memDC.SetPen(wxPen("Blue", 1));         // 1-pixel-thick red outline
+                memDC.SetPen(wxPen(decColor, 1));         // 1-pixel-thick outline
                 memDC.SetBrush(wxNullBrush);           // Outline only for "return" data points
                 ptRadius = 3;
             }
             memDC.DrawCircle(IntPoint(calDetails.decSteps.at(i), scaleFactor), ptRadius);
         }
         // Show the line PHD2 will use for the rate
-        memDC.SetPen(bluePen);
+        memDC.SetPen(decPen);
         if ((int)calDetails.decSteps.size() > calDetails.decStepCount)         // New calib, includes return values
             memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount), scaleFactor));
         else
