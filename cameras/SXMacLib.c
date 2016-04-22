@@ -776,6 +776,7 @@ void sxClose(void* sxHandle)
 static sxDeviceInfo infos[] = {
     {0x0507,"Lodestar",sxDeviceTypeCamera},
     {0x0509,"Superstar",sxDeviceTypeCamera},
+    {0x0517,"CoStar",sxDeviceTypeCamera},
     {0x0525,"Ultrastar",sxDeviceTypeCamera},
     {0x0398,"H814c",sxDeviceTypeCamera},
     {0x0198,"H814",sxDeviceTypeCamera},
