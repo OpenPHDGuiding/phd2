@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-06 22:54-0400\n"
+"POT-Creation-Date: 2016-04-22 16:23-0400\n"
 "PO-Revision-Date: 2015-08-27 22:56+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Other Devices"
 msgstr ""
 
-#: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1456
+#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1456
 #: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:251 gear_dialog.cpp:253
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -240,165 +240,165 @@ msgstr ""
 msgid "N/A"
 msgstr ""
 
-#: calreview_dialog.cpp:99 config_INDI.cpp:110 eegg.cpp:112 gear_dialog.cpp:292
-#: gear_dialog.cpp:294 testguide.cpp:161
+#: calreview_dialog.cpp:101 config_INDI.cpp:110 eegg.cpp:112
+#: gear_dialog.cpp:292 gear_dialog.cpp:294 testguide.cpp:161
 msgid "AO"
 msgstr "AO"
 
-#: calreview_dialog.cpp:132 calreview_dialog.cpp:137 mount.cpp:125
+#: calreview_dialog.cpp:134 calreview_dialog.cpp:139 mount.cpp:125
 #: scope_manual_pointing.cpp:121
 msgid "Right Ascension"
 msgstr "赤経"
 
-#: calreview_dialog.cpp:135 comet_tool.cpp:326 myframe_events.cpp:151
+#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:151
 msgid "X"
 msgstr "X"
 
-#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:374
+#: calreview_dialog.cpp:142 calreview_dialog.cpp:147 calreview_dialog.cpp:378
 #: mount.cpp:128 statswindow.cpp:97
 msgid "Declination"
 msgstr "赤緯"
 
-#: calreview_dialog.cpp:143 comet_tool.cpp:327 myframe_events.cpp:158
+#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:158
 msgid "Y"
 msgstr "Y"
 
-#: calreview_dialog.cpp:191
+#: calreview_dialog.cpp:193
 msgid "Last Mount Calibration"
 msgstr "直近のマウントキャリブレーション"
 
-#: calreview_dialog.cpp:193
+#: calreview_dialog.cpp:196
 msgid "Last AO Calibration"
 msgstr "直近のAOキャリブレーション"
 
-#: calreview_dialog.cpp:203
+#: calreview_dialog.cpp:206
 msgid "RA steps:"
 msgstr "赤経ステップ:"
 
-#: calreview_dialog.cpp:208
+#: calreview_dialog.cpp:211
 msgid "Dec steps:"
 msgstr "赤緯ステップ:"
 
-#: calreview_dialog.cpp:215
+#: calreview_dialog.cpp:218
 msgid "Camera angle:"
 msgstr "カメラ角度:"
 
-#: calreview_dialog.cpp:218 calreview_dialog.cpp:680
+#: calreview_dialog.cpp:221 calreview_dialog.cpp:686
 msgid "Orthogonality error:"
 msgstr "直交性エラー:"
 
-#: calreview_dialog.cpp:236
+#: calreview_dialog.cpp:239
 msgid "a-s/sec"
 msgstr "秒角/秒"
 
-#: calreview_dialog.cpp:237 guiding_assistant.cpp:1157
+#: calreview_dialog.cpp:240 guiding_assistant.cpp:1157
 msgid "px/sec"
 msgstr "px/秒"
 
-#: calreview_dialog.cpp:238
+#: calreview_dialog.cpp:241
 msgid "a-s/px"
 msgstr "秒角/秒"
 
-#: calreview_dialog.cpp:242 calreview_dialog.cpp:709
+#: calreview_dialog.cpp:245 calreview_dialog.cpp:715
 msgid "RA rate:"
 msgstr "赤経レート:"
 
-#: calreview_dialog.cpp:245
+#: calreview_dialog.cpp:248
 msgid "X rate:"
 msgstr "Xレート:"
 
-#: calreview_dialog.cpp:252
+#: calreview_dialog.cpp:255
 msgid "Dec rate:"
 msgstr "赤緯レート:"
 
-#: calreview_dialog.cpp:254
+#: calreview_dialog.cpp:257
 msgid "Y rate:"
 msgstr "Yレート:"
 
-#: calreview_dialog.cpp:272
+#: calreview_dialog.cpp:275
 msgid "Expected RA rate:"
 msgstr "期待される赤経レート:"
 
-#: calreview_dialog.cpp:282
+#: calreview_dialog.cpp:285
 msgid "Expected Dec rate:"
 msgstr "期待される赤緯レート:"
 
-#: calreview_dialog.cpp:294
+#: calreview_dialog.cpp:297
 msgid "Binning:"
 msgstr ""
 
-#: calreview_dialog.cpp:296
+#: calreview_dialog.cpp:299
 msgid "Created:"
 msgstr ""
 
-#: calreview_dialog.cpp:297 mount.cpp:57 mount.cpp:92 statswindow.cpp:216
+#: calreview_dialog.cpp:300 mount.cpp:57 mount.cpp:92 statswindow.cpp:216
 msgid "Unknown"
 msgstr "不明"
 
-#: calreview_dialog.cpp:305
+#: calreview_dialog.cpp:308
 msgid "Mount Configuration"
 msgstr "マウント設定"
 
-#: calreview_dialog.cpp:317
+#: calreview_dialog.cpp:321
 msgid "Modified:"
 msgstr ""
 
-#: calreview_dialog.cpp:319
+#: calreview_dialog.cpp:323
 msgid "Focal length:"
 msgstr "焦点距離:"
 
-#: calreview_dialog.cpp:326
+#: calreview_dialog.cpp:330
 msgid "Image scale:"
 msgstr "画像スケール:"
 
-#: calreview_dialog.cpp:329
+#: calreview_dialog.cpp:333
 #, c-format
 msgid "Binning: %d"
 msgstr ""
 
-#: calreview_dialog.cpp:334
+#: calreview_dialog.cpp:338
 msgid "Side-of-pier:"
 msgstr "望遠鏡の位置"
 
-#: calreview_dialog.cpp:335 cam_simulator.cpp:1600 mount.cpp:60
+#: calreview_dialog.cpp:339 cam_simulator.cpp:1600 mount.cpp:60
 #: testguide.cpp:152
 msgid "East"
 msgstr "East"
 
-#: calreview_dialog.cpp:336 cam_simulator.cpp:1600 mount.cpp:61
+#: calreview_dialog.cpp:340 cam_simulator.cpp:1600 mount.cpp:61
 #: testguide.cpp:152
 msgid "West"
 msgstr "West"
 
-#: calreview_dialog.cpp:342
+#: calreview_dialog.cpp:346
 msgid "RA Guide speed:"
 msgstr "赤経(RA)ガイドスピード:"
 
-#: calreview_dialog.cpp:350
+#: calreview_dialog.cpp:354
 msgid "Dec Guide speed:"
 msgstr "赤緯(Dec)ガイドスピード"
 
-#: calreview_dialog.cpp:377
+#: calreview_dialog.cpp:381
 msgid " (est)"
 msgstr ""
 
-#: calreview_dialog.cpp:380
+#: calreview_dialog.cpp:384
 msgid "Rotator position:"
 msgstr "ローテータ位置:"
 
-#: calreview_dialog.cpp:534 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:540 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "再読込み"
 
-#: calreview_dialog.cpp:549
+#: calreview_dialog.cpp:555
 msgid "Calibration restored"
 msgstr "キャリブレーション再読込"
 
-#: calreview_dialog.cpp:566
+#: calreview_dialog.cpp:572
 msgid "Calibration Sanity Check"
 msgstr "キャリブレーションチェック"
 
-#: calreview_dialog.cpp:589
+#: calreview_dialog.cpp:595
 msgid ""
 "The calibration was done with a very small number of steps, which can "
 "produce inaccurate results. Consider reducing the size of the calibration "
@@ -410,7 +410,7 @@ msgstr ""
 "ションステップサイズ を減らすことを考えてください。マウントタブ『計算機』機能"
 "を使って、これを補助できます。"
 
-#: calreview_dialog.cpp:594
+#: calreview_dialog.cpp:600
 #, c-format
 msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
@@ -420,7 +420,7 @@ msgid ""
 "large periodic error in RA."
 msgstr ""
 
-#: calreview_dialog.cpp:599
+#: calreview_dialog.cpp:605
 #, c-format
 msgid ""
 "The most recent calibration produced results that are %s%% different from "
@@ -433,7 +433,7 @@ msgstr ""
 "ました。機器構成を変えたためにそうなったのならば、異なるプロファイルを使った"
 "ほうがいいでしょう。"
 
-#: calreview_dialog.cpp:604
+#: calreview_dialog.cpp:610
 #, c-format
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
@@ -443,55 +443,55 @@ msgid ""
 "guiding."
 msgstr ""
 
-#: calreview_dialog.cpp:646
+#: calreview_dialog.cpp:652
 msgid "Explanation"
 msgstr "説明"
 
-#: calreview_dialog.cpp:659
+#: calreview_dialog.cpp:665
 msgid "Details"
 msgstr "詳細"
 
-#: calreview_dialog.cpp:668
+#: calreview_dialog.cpp:674
 msgid "Steps, RA:"
 msgstr "Steps, RA:"
 
-#: calreview_dialog.cpp:670
+#: calreview_dialog.cpp:676
 msgid "Steps, Dec:"
 msgstr "Steps, Dec:"
 
-#: calreview_dialog.cpp:682
+#: calreview_dialog.cpp:688
 msgid "Previous orthogonality error:"
 msgstr "Previous orthogonality error:"
 
-#: calreview_dialog.cpp:694
+#: calreview_dialog.cpp:700
 msgid "This declination rate:"
 msgstr "This declination rate:"
 
-#: calreview_dialog.cpp:699
+#: calreview_dialog.cpp:705
 msgid "Previous declination rate:"
 msgstr "Previous declination rate:"
 
-#: calreview_dialog.cpp:711
+#: calreview_dialog.cpp:717
 msgid "Declination rate:"
 msgstr "Declination rate:"
 
-#: calreview_dialog.cpp:729
+#: calreview_dialog.cpp:735
 msgid "Don't show calibration alerts of this type"
 msgstr "このタイプのキャリブレーション警報を示さない"
 
-#: calreview_dialog.cpp:740
+#: calreview_dialog.cpp:746
 msgid "Accept calibration"
 msgstr "キャリブレーション有効"
 
-#: calreview_dialog.cpp:741
+#: calreview_dialog.cpp:747
 msgid "Accept the calibration as being valid and continue guiding"
 msgstr "キャリブレーションが正確であるとみなし、ガイドを続けます。"
 
-#: calreview_dialog.cpp:743
+#: calreview_dialog.cpp:749
 msgid "Discard calibration"
 msgstr "キャリブレーション破棄"
 
-#: calreview_dialog.cpp:744
+#: calreview_dialog.cpp:750
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
@@ -499,11 +499,11 @@ msgstr ""
 "ガイドを停止して、直近のキャリブレーションを破棄します。次にガイドを開始する"
 "際、キャリブレーションはやり直されます。"
 
-#: calreview_dialog.cpp:746
+#: calreview_dialog.cpp:752
 msgid "Restore old calibration"
 msgstr "旧キャリブレーションの読込"
 
-#: calreview_dialog.cpp:747
+#: calreview_dialog.cpp:753
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
@@ -511,7 +511,7 @@ msgstr ""
 "ガイドを停止し、直近のキャリブレーションを破棄します。そして以前の（良好な）"
 "キャリブレーションを読込みます。"
 
-#: calreview_dialog.cpp:796
+#: calreview_dialog.cpp:802
 msgid "Previous calibration restored"
 msgstr "過去のキャリブレーションの読込"
 
@@ -2025,7 +2025,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "利用可能なキャリブレーションデータがありません。"
 
-#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:880
+#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:882
 msgid "Please connect a mount first."
 msgstr "先にマウントと接続して下さい。"
 
@@ -3246,6 +3246,10 @@ msgstr "秒角/分"
 msgid "arc-sec/sec"
 msgstr "秒角/秒"
 
+#: guiding_assistant.cpp:1178
+msgid " "
+msgstr ""
+
 #: image_math.cpp:1146
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
@@ -4265,11 +4269,11 @@ msgstr "強制キャリブレーションを行いますがいいですか?"
 msgid "Force Recalibration"
 msgstr "強制キャリブレーション"
 
-#: myframe_events.cpp:880 testguide.cpp:146
+#: myframe_events.cpp:882 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "手動ガイド"
 
-#: myframe_events.cpp:936
+#: myframe_events.cpp:939
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4282,15 +4286,15 @@ msgstr ""
 "基本的ガイドパラメータを設定するのを助けます。\n"
 "セットアップウィザードを使用しますか？"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "Yes"
 msgstr "はい"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "No"
 msgstr "いいえ"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "Setup Wizard Recommendation"
 msgstr "セットアップウィザード推奨"
 

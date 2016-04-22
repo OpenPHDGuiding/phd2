@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-06 22:54-0400\n"
+"POT-Creation-Date: 2016-04-22 16:23-0400\n"
 "PO-Revision-Date: 2016-02-25 23:28+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -72,7 +72,7 @@ msgstr "導星演算法"
 msgid "Other Devices"
 msgstr "其他裝置"
 
-#: advanced_dialog.cpp:343 calreview_dialog.cpp:92 cam_simulator.cpp:1456
+#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1456
 #: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:251 gear_dialog.cpp:253
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -245,165 +245,165 @@ msgstr "測量時發生錯誤:"
 msgid "N/A"
 msgstr "N/A"
 
-#: calreview_dialog.cpp:99 config_INDI.cpp:110 eegg.cpp:112 gear_dialog.cpp:292
-#: gear_dialog.cpp:294 testguide.cpp:161
+#: calreview_dialog.cpp:101 config_INDI.cpp:110 eegg.cpp:112
+#: gear_dialog.cpp:292 gear_dialog.cpp:294 testguide.cpp:161
 msgid "AO"
 msgstr "AO"
 
-#: calreview_dialog.cpp:132 calreview_dialog.cpp:137 mount.cpp:125
+#: calreview_dialog.cpp:134 calreview_dialog.cpp:139 mount.cpp:125
 #: scope_manual_pointing.cpp:121
 msgid "Right Ascension"
 msgstr "赤經"
 
-#: calreview_dialog.cpp:135 comet_tool.cpp:326 myframe_events.cpp:151
+#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:151
 msgid "X"
 msgstr "X"
 
-#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:374
+#: calreview_dialog.cpp:142 calreview_dialog.cpp:147 calreview_dialog.cpp:378
 #: mount.cpp:128 statswindow.cpp:97
 msgid "Declination"
 msgstr "赤緯"
 
-#: calreview_dialog.cpp:143 comet_tool.cpp:327 myframe_events.cpp:158
+#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:158
 msgid "Y"
 msgstr "Y"
 
-#: calreview_dialog.cpp:191
+#: calreview_dialog.cpp:193
 msgid "Last Mount Calibration"
 msgstr "最終赤道儀校準"
 
-#: calreview_dialog.cpp:193
+#: calreview_dialog.cpp:196
 msgid "Last AO Calibration"
 msgstr "最終 AO 校準"
 
-#: calreview_dialog.cpp:203
+#: calreview_dialog.cpp:206
 msgid "RA steps:"
 msgstr "赤經步數:"
 
-#: calreview_dialog.cpp:208
+#: calreview_dialog.cpp:211
 msgid "Dec steps:"
 msgstr "赤緯步數:"
 
-#: calreview_dialog.cpp:215
+#: calreview_dialog.cpp:218
 msgid "Camera angle:"
 msgstr "相機角度:"
 
-#: calreview_dialog.cpp:218 calreview_dialog.cpp:680
+#: calreview_dialog.cpp:221 calreview_dialog.cpp:686
 msgid "Orthogonality error:"
 msgstr "垂直誤差:"
 
-#: calreview_dialog.cpp:236
+#: calreview_dialog.cpp:239
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:237 guiding_assistant.cpp:1157
+#: calreview_dialog.cpp:240 guiding_assistant.cpp:1157
 msgid "px/sec"
 msgstr "px/sec"
 
-#: calreview_dialog.cpp:238
+#: calreview_dialog.cpp:241
 msgid "a-s/px"
 msgstr "a-s/px"
 
-#: calreview_dialog.cpp:242 calreview_dialog.cpp:709
+#: calreview_dialog.cpp:245 calreview_dialog.cpp:715
 msgid "RA rate:"
 msgstr "赤經速率:"
 
-#: calreview_dialog.cpp:245
+#: calreview_dialog.cpp:248
 msgid "X rate:"
 msgstr "X 速率:"
 
-#: calreview_dialog.cpp:252
+#: calreview_dialog.cpp:255
 msgid "Dec rate:"
 msgstr "赤緯速率:"
 
-#: calreview_dialog.cpp:254
+#: calreview_dialog.cpp:257
 msgid "Y rate:"
 msgstr "Y 速率:"
 
-#: calreview_dialog.cpp:272
+#: calreview_dialog.cpp:275
 msgid "Expected RA rate:"
 msgstr "預期赤經速率:"
 
-#: calreview_dialog.cpp:282
+#: calreview_dialog.cpp:285
 msgid "Expected Dec rate:"
 msgstr "預期赤緯速率:"
 
-#: calreview_dialog.cpp:294
+#: calreview_dialog.cpp:297
 msgid "Binning:"
 msgstr "影像併合:"
 
-#: calreview_dialog.cpp:296
+#: calreview_dialog.cpp:299
 msgid "Created:"
 msgstr "已建立:"
 
-#: calreview_dialog.cpp:297 mount.cpp:57 mount.cpp:92 statswindow.cpp:216
+#: calreview_dialog.cpp:300 mount.cpp:57 mount.cpp:92 statswindow.cpp:216
 msgid "Unknown"
 msgstr "未知"
 
-#: calreview_dialog.cpp:305
+#: calreview_dialog.cpp:308
 msgid "Mount Configuration"
 msgstr "赤道儀組態"
 
-#: calreview_dialog.cpp:317
+#: calreview_dialog.cpp:321
 msgid "Modified:"
 msgstr "已修改:"
 
-#: calreview_dialog.cpp:319
+#: calreview_dialog.cpp:323
 msgid "Focal length:"
 msgstr "焦長, mm："
 
-#: calreview_dialog.cpp:326
+#: calreview_dialog.cpp:330
 msgid "Image scale:"
 msgstr "影像解析度："
 
-#: calreview_dialog.cpp:329
+#: calreview_dialog.cpp:333
 #, c-format
 msgid "Binning: %d"
 msgstr "影像併合: %d"
 
-#: calreview_dialog.cpp:334
+#: calreview_dialog.cpp:338
 msgid "Side-of-pier:"
 msgstr "赤道儀方向"
 
-#: calreview_dialog.cpp:335 cam_simulator.cpp:1600 mount.cpp:60
+#: calreview_dialog.cpp:339 cam_simulator.cpp:1600 mount.cpp:60
 #: testguide.cpp:152
 msgid "East"
 msgstr "東"
 
-#: calreview_dialog.cpp:336 cam_simulator.cpp:1600 mount.cpp:61
+#: calreview_dialog.cpp:340 cam_simulator.cpp:1600 mount.cpp:61
 #: testguide.cpp:152
 msgid "West"
 msgstr "西"
 
-#: calreview_dialog.cpp:342
+#: calreview_dialog.cpp:346
 msgid "RA Guide speed:"
 msgstr "赤經導星速率"
 
-#: calreview_dialog.cpp:350
+#: calreview_dialog.cpp:354
 msgid "Dec Guide speed:"
 msgstr "赤緯導星速率:"
 
-#: calreview_dialog.cpp:377
+#: calreview_dialog.cpp:381
 msgid " (est)"
 msgstr "(est)"
 
-#: calreview_dialog.cpp:380
+#: calreview_dialog.cpp:384
 msgid "Rotator position:"
 msgstr "相場旋轉器位置"
 
-#: calreview_dialog.cpp:534 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:540 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "恢復"
 
-#: calreview_dialog.cpp:549
+#: calreview_dialog.cpp:555
 msgid "Calibration restored"
 msgstr "校準被恢復"
 
-#: calreview_dialog.cpp:566
+#: calreview_dialog.cpp:572
 msgid "Calibration Sanity Check"
 msgstr "校準完整性檢查"
 
-#: calreview_dialog.cpp:589
+#: calreview_dialog.cpp:595
 msgid ""
 "The calibration was done with a very small number of steps, which can "
 "produce inaccurate results. Consider reducing the size of the calibration "
@@ -413,7 +413,7 @@ msgstr ""
 "校準步數太小, 有可能產生不精確的結果, 請考慮降低校準步數參數直到每個方向均最"
 "少有 8 個步數為止, 在【赤道儀】設定項目中的【計算機】可以幫助你設定該參數。"
 
-#: calreview_dialog.cpp:594
+#: calreview_dialog.cpp:600
 #, c-format
 msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
@@ -427,7 +427,7 @@ msgstr ""
 "度的誤差, 這種誤差可能是因為沒有好好對極軸或者在赤經軸上有極大的週期性誤差所"
 "致。"
 
-#: calreview_dialog.cpp:599
+#: calreview_dialog.cpp:605
 #, c-format
 msgid ""
 "The most recent calibration produced results that are %s%% different from "
@@ -440,7 +440,7 @@ msgstr ""
 "能就要使用不同的設備配置檔案，這樣可以讓你在不同設備配置檔案間切換並且保留設"
 "定即校準相關資料。"
 
-#: calreview_dialog.cpp:604
+#: calreview_dialog.cpp:610
 #, c-format
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
@@ -453,71 +453,71 @@ msgstr ""
 "緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
 "%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
-#: calreview_dialog.cpp:646
+#: calreview_dialog.cpp:652
 msgid "Explanation"
 msgstr "說明"
 
-#: calreview_dialog.cpp:659
+#: calreview_dialog.cpp:665
 msgid "Details"
 msgstr "細節"
 
-#: calreview_dialog.cpp:668
+#: calreview_dialog.cpp:674
 msgid "Steps, RA:"
 msgstr "步數, 赤經:"
 
-#: calreview_dialog.cpp:670
+#: calreview_dialog.cpp:676
 msgid "Steps, Dec:"
 msgstr "步數, 赤緯:"
 
-#: calreview_dialog.cpp:682
+#: calreview_dialog.cpp:688
 msgid "Previous orthogonality error:"
 msgstr "先前的正直誤差:"
 
-#: calreview_dialog.cpp:694
+#: calreview_dialog.cpp:700
 msgid "This declination rate:"
 msgstr "赤緯速率:"
 
-#: calreview_dialog.cpp:699
+#: calreview_dialog.cpp:705
 msgid "Previous declination rate:"
 msgstr "先前的赤緯速率:"
 
-#: calreview_dialog.cpp:711
+#: calreview_dialog.cpp:717
 msgid "Declination rate:"
 msgstr "赤緯速率:"
 
-#: calreview_dialog.cpp:729
+#: calreview_dialog.cpp:735
 msgid "Don't show calibration alerts of this type"
 msgstr "不顯示此類型的校準警告"
 
-#: calreview_dialog.cpp:740
+#: calreview_dialog.cpp:746
 msgid "Accept calibration"
 msgstr "接受校準"
 
-#: calreview_dialog.cpp:741
+#: calreview_dialog.cpp:747
 msgid "Accept the calibration as being valid and continue guiding"
 msgstr "接受此校準, 當做正確值並開始導星"
 
-#: calreview_dialog.cpp:743
+#: calreview_dialog.cpp:749
 msgid "Discard calibration"
 msgstr "放棄校準"
 
-#: calreview_dialog.cpp:744
+#: calreview_dialog.cpp:750
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
 msgstr "停止導星並捨棄最近的校準資料, 在下次開始導星時會重新做校準"
 
-#: calreview_dialog.cpp:746
+#: calreview_dialog.cpp:752
 msgid "Restore old calibration"
 msgstr "恢復舊有效準資料"
 
-#: calreview_dialog.cpp:747
+#: calreview_dialog.cpp:753
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
 msgstr "停止導星並捨棄最近的校準資料, 然後載入之前良好的校準資料"
 
-#: calreview_dialog.cpp:796
+#: calreview_dialog.cpp:802
 msgid "Previous calibration restored"
 msgstr "先前恢復的校準:"
 
@@ -2051,7 +2051,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "無校準資料"
 
-#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:880
+#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:882
 msgid "Please connect a mount first."
 msgstr "請連接赤道儀"
 
@@ -3265,6 +3265,10 @@ msgstr "角秒/分鐘"
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
+#: guiding_assistant.cpp:1178
+msgid " "
+msgstr ""
+
 #: image_math.cpp:1146
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
@@ -4263,11 +4267,11 @@ msgstr "是否希望強制重新校準？"
 msgid "Force Recalibration"
 msgstr "強制重新校準"
 
-#: myframe_events.cpp:880 testguide.cpp:146
+#: myframe_events.cpp:882 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "手動導星"
 
-#: myframe_events.cpp:936
+#: myframe_events.cpp:939
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4278,15 +4282,15 @@ msgstr ""
 "似乎這是第一次連接到你的相機和赤道儀, 設定精靈將會幫助你為你所使用設備\n"
 "設定導星所需的基本參數。是否要使用設定精靈呢?"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "No"
 msgstr "否"
 
-#: myframe_events.cpp:939
+#: myframe_events.cpp:942
 msgid "Setup Wizard Recommendation"
 msgstr "設定精靈建議值"
 
