@@ -212,11 +212,13 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 {
     wxMemoryDC dc;
     wxBitmap bmp(bmpWidth, bmpHeight, -1);
-    wxPen axisPen("BLACK", 3, wxCROSS_HATCH);
-    wxPen redPen("RED", 3, wxSOLID);
-    wxPen bluePen("BLUE", 3, wxSOLID);
-    wxBrush redBrush("RED", wxSOLID);
-    wxBrush blueBrush("BLUE", wxSOLID);
+    wxColour decColor = pFrame->pGraphLog->GetDecOrDyColor();
+    wxColour idealColor = wxColour("WHITE");
+    wxPen axisPen("GREY", 3, wxCROSS_HATCH);
+    wxPen decPen(decColor, 3, wxSOLID);
+    wxPen idealPen(idealColor, 3, wxSOLID);
+    wxBrush decBrush(decColor, wxSOLID);
+    wxBrush idealBrush(idealColor, wxSOLID);
     //double fakeNorthPoints[] = 
     //{152.04, 164.77, 176.34, 188.5, 200.25, 212.36, 224.21, 236.89, 248.62, 260.25, 271.34, 283.54, 294.79, 307.56, 319.22, 330.87, 343.37, 355.75, 367.52, 379.7, 391.22, 403.89, 415.34, 427.09, 439.41, 450.36, 462.6};
     //double fakeSouthPoints[] = 
@@ -263,15 +265,15 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     numSouth = southSteps.size();       // Should be same as numNorth but be careful
 
     dc.SelectObject(bmp);
-    dc.SetBackground(*wxLIGHT_GREY_BRUSH);
+    dc.SetBackground(*wxBLACK_BRUSH);
 
     dc.SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     dc.Clear();
 
     // Bottom and top labels
-    dc.SetTextForeground("BLUE");
+    dc.SetTextForeground(idealColor);
     dc.DrawText(_("Ideal"), 0.7 * graphWindowWidth, bmpHeight - 25);
-    dc.SetTextForeground("RED");
+    dc.SetTextForeground(decColor);
     dc.DrawText(_("Measured"), 0.2 * graphWindowWidth, bmpHeight - 25);
     dc.DrawText(_("North"), 0.1 * graphWindowWidth, 10);
     dc.DrawText(_("South"), 0.8 * graphWindowWidth, 10);
@@ -283,8 +285,8 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     dc.DrawLine(xOrigin, yOrigin, xOrigin, 0);             // y
 
     // Draw the north steps
-    dc.SetPen(redPen);
-    dc.SetBrush(redBrush);
+    dc.SetPen(decPen);
+    dc.SetBrush(decBrush);
     ptRadius = 2;
 
     for (int i = 0; i < numNorth; i++)
@@ -300,8 +302,8 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     }
 
     // Now show an ideal south recovery line
-    dc.SetPen(bluePen);
-    dc.SetBrush(blueBrush);
+    dc.SetPen(idealPen);
+    dc.SetBrush(idealBrush);
 
     double peakSouth = southSteps.at(0);
     for (int i = 1; i <= numNorth; i++)
