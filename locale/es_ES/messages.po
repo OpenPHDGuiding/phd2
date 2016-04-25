@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-22 16:23-0400\n"
+"POT-Creation-Date: 2016-04-25 18:06-0400\n"
 "PO-Revision-Date: 2015-04-15 20:53+0100\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team:  <LL@li.org>\n"
@@ -46,6 +46,228 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+
+#: Refine_DefMap.cpp:60 calstep_dialog.cpp:176 cam_simulator.cpp:1352
+#: camcal_import_dialog.cpp:47 camera.cpp:707 configdialog.cpp:61
+#: configdialog.cpp:226 darks_dialog.cpp:53 myframe.cpp:2552
+#: profile_wizard.cpp:59 profile_wizard.cpp:66
+msgid ": "
+msgstr ":"
+
+#: Refine_DefMap.cpp:66
+msgid "Refine Bad-pixel Map"
+msgstr "Refinar el mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:74
+msgid "Rebuild Master Dark Frame"
+msgstr "recrear toma DARK maestra"
+
+#: Refine_DefMap.cpp:75
+msgid ""
+"Click to re-acquire the master dark frames needed to compute an initial bad-"
+"pixel map"
+msgstr ""
+"Haga click para ejecutar de nuevo las tomas de darks para calcular un mapa "
+"de píxeles erróneos inicial"
+
+#: Refine_DefMap.cpp:80
+msgid "Show Master Dark Details"
+msgstr "Mostrar detalles de Master Dark"
+
+#: Refine_DefMap.cpp:81
+msgid ""
+"Click to display detailed statistics of master dark frame used to compute "
+"bad-pixel map"
+msgstr ""
+"Haga click para mostrar las estadísticas detalladas de las tomas dark usadas "
+"para calcular el mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:85
+msgid "Show defect pixels"
+msgstr "Mostrar Píxeles Defectuosos"
+
+#: Refine_DefMap.cpp:86
+msgid "Check to show hot/cold pixels in the main image window."
+msgstr ""
+"Marcar para mostrar los píxeles calientes/fríos en la ventana de la imagen "
+"principal."
+
+#: Refine_DefMap.cpp:91
+msgid "General Information"
+msgstr "Información General"
+
+#: Refine_DefMap.cpp:101
+msgid "Time:"
+msgstr "Fecha:"
+
+#: Refine_DefMap.cpp:103
+msgid "Camera:"
+msgstr "Cámara:"
+
+#: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
+msgid "Master Dark Exposure Time:"
+msgstr "Tiempo de Exposición del Dark Maestro:"
+
+#: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
+msgid "Master Dark Exposure Count:"
+msgstr "Número de muestras para el Dark Maestro:"
+
+#: Refine_DefMap.cpp:116
+msgid "Aggressiveness, hot pixels:"
+msgstr "Agresividad, Píxeles calientes:"
+
+#: Refine_DefMap.cpp:118
+msgid "Aggressiveness, cold pixels:"
+msgstr "Agresividad, Píxeles fríos:"
+
+#: Refine_DefMap.cpp:122
+msgid "Mean:"
+msgstr "Promedio:"
+
+#: Refine_DefMap.cpp:124
+msgid "Standard Deviation:"
+msgstr "Desviación Estándar:"
+
+#: Refine_DefMap.cpp:128
+msgid "Median:"
+msgstr "Mediana:"
+
+#: Refine_DefMap.cpp:130
+msgid "Median Absolute Deviation:"
+msgstr "Mediana  de la Desviación Absoluta:"
+
+#: Refine_DefMap.cpp:137
+msgid "Results"
+msgstr "Resultados"
+
+#: Refine_DefMap.cpp:147
+msgid "Hot pixel count:"
+msgstr "Total de Píxeles Calientes:"
+
+#: Refine_DefMap.cpp:149
+msgid "Cold pixel count:"
+msgstr "Total de Píxeles Fríos:"
+
+#: Refine_DefMap.cpp:153
+msgid "Manually added pixels"
+msgstr "Añadir píxeles manualmente"
+
+#: Refine_DefMap.cpp:159 guide_algorithm_hysteresis.cpp:227
+#: guide_algorithm_lowpass2.cpp:209 guide_algorithm_resistswitch.cpp:267
+msgid "Aggressiveness"
+msgstr "Agresividad"
+
+#: Refine_DefMap.cpp:164
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'hot', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"Mueva esta barra de desplazamiento para incrementar o disminuir el número de "
+"píxeles que se tratarán como 'calientes', haga click entonces en 'generar' "
+"para crear y cargar un nuevo mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:168
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'cold', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"Mueva esta barra de desplazamiento para incrementar o disminuir el número de "
+"píxeles que se tratarán como 'fríos', haga click entonces en 'generar' para "
+"crear y cargar un nuevo mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:169 cam_simulator.cpp:1450
+msgid "Hot pixels"
+msgstr "Hot Pixels"
+
+#: Refine_DefMap.cpp:170
+msgid "Cold pixels"
+msgstr "Píxeles Fríos"
+
+#: Refine_DefMap.cpp:176 cam_simulator.cpp:1535 darks_dialog.cpp:208
+#: testguide.cpp:101
+msgid "Reset"
+msgstr "Borrar"
+
+#: Refine_DefMap.cpp:178
+msgid "Reset parameters to starting point"
+msgstr "Borrar parámetros para comenzar de nuevo"
+
+#: Refine_DefMap.cpp:180
+msgid "Generate"
+msgstr "Generar"
+
+#: Refine_DefMap.cpp:182
+msgid ""
+"Use the current aggressiveness settings to build and load a new bad-pixel "
+"map; this will discard any manually added bad pixels"
+msgstr ""
+"Usar las configuraciones actuales de agresividad para construir y cargar un "
+"nuevo mapa de píxeles erróneos; esto descartará todos los píxeles erróneos "
+"añadidos manualmente"
+
+#: Refine_DefMap.cpp:184
+msgid "Add Bad Pixel"
+msgstr "Añadir Pixel Erróneo"
+
+#: Refine_DefMap.cpp:186
+msgid ""
+"Click on a bad pixel in the image display; then click on this button to add "
+"it to the in-use bad-pixel map"
+msgstr ""
+"Haga click en un pixel erróneo de la imagen; haga click entonces en este "
+"botón para añadirlo en el mapa actual de píxeles erróneos"
+
+#: Refine_DefMap.cpp:206
+msgid "Adjust sliders to increase/decrease pixels marked as bad"
+msgstr ""
+"Desplazar labarra para incrementar/disminuir los píxeles marcados como "
+"erróneos"
+
+#: Refine_DefMap.cpp:263
+msgid "Please wait while image statistics are being computed..."
+msgstr ""
+"Por favor espere a que las estadísticas de la imagen sean calculadas..."
+
+#: Refine_DefMap.cpp:338
+msgid "Building new bad-pixel map"
+msgstr "Creando un nuevo mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:340
+msgid "Saving new bad-pixel map file"
+msgstr "Guardando nuevo fichero de mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:342
+msgid "Loading new bad-pixel map"
+msgstr "Cargando nuedo mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:344
+msgid "New bad-pixel map now being used"
+msgstr "Nuevo mapa de píxeles erróneos no está siendo usado"
+
+#: Refine_DefMap.cpp:367
+msgid "Master dark frames NOT rebuilt"
+msgstr "Maestro de tomas DARK no recreado"
+
+#: Refine_DefMap.cpp:451
+msgid "You must first load a bad-pixel map"
+msgstr "Debe cargar primero un mapa de píxeles erróneos"
+
+#: Refine_DefMap.cpp:456
+#, c-format
+msgid "Bad pixel marked at %d,%d"
+msgstr "Pixel Erróneomarcadoe %d,%d"
+
+#: Refine_DefMap.cpp:462
+msgid "Pixel position not added - no star-like object recognized there"
+msgstr ""
+"Posición de pixel no añadida - no se reconoce un objeto similar a una "
+"estrella"
+
+#: Refine_DefMap.cpp:472
+msgid "Settings restored to original values"
+msgstr "Configuraciones restauradas valores por defecto"
 
 #: advanced_dialog.cpp:88
 msgid "Advanced setup"
@@ -98,6 +320,11 @@ msgid ""
 "Green means SNR >= 10\n"
 "Yellow means  4 <= SNR < 10\n"
 "Red means SNR < 4"
+msgstr ""
+
+#: aui_controls.cpp:263 aui_controls.cpp:286 aui_controls.cpp:300
+#, c-format
+msgid "%d ms, %0.1f px"
 msgstr ""
 
 #: aui_controls.cpp:365
@@ -184,58 +411,79 @@ msgstr ""
 msgid "Backlash Results"
 msgstr ""
 
-#: backlash_comp.cpp:273
+#: backlash_comp.cpp:275
 msgid "Ideal"
 msgstr ""
 
-#: backlash_comp.cpp:275
+#: backlash_comp.cpp:277
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:276 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
+#: backlash_comp.cpp:278 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
 #: testguide.cpp:152
 msgid "North"
 msgstr "Norte"
 
-#: backlash_comp.cpp:277 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
+#: backlash_comp.cpp:279 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
 #: testguide.cpp:152
 msgid "South"
 msgstr "Sur"
 
-#: backlash_comp.cpp:333
+#: backlash_comp.cpp:335
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 
-#: backlash_comp.cpp:455
+#: backlash_comp.cpp:412
+#, c-format
+msgid "Clearing North backlash, step %d"
+msgstr ""
+
+#: backlash_comp.cpp:449
+#, c-format
+msgid "Clearing North backlash, step %d (up to limit of %d)"
+msgstr ""
+
+#: backlash_comp.cpp:457
 msgid "Could not clear North backlash - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:498
+#: backlash_comp.cpp:484
+#, c-format
+msgid "Moving North for %d ms, step %d / %d"
+msgstr ""
+
+#: backlash_comp.cpp:500
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr ""
 
-#: backlash_comp.cpp:543
+#: backlash_comp.cpp:515
+#, c-format
+msgid "Moving South for %d ms, step %d / %d"
+msgstr ""
+
+#: backlash_comp.cpp:545
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr ""
 
-#: backlash_comp.cpp:602
+#: backlash_comp.cpp:604
 msgid "Restoring star position"
 msgstr ""
 
-#: backlash_comp.cpp:610
+#: backlash_comp.cpp:612
 msgid "Measurement complete"
 msgstr ""
 
-#: backlash_comp.cpp:619
+#: backlash_comp.cpp:621
 msgid "Measurement halted"
 msgstr ""
 
-#: backlash_comp.cpp:629
-msgid "Measurement encountered an error: "
+#: backlash_comp.cpp:631
+#, c-format
+msgid "Measurement encountered an error: %s"
 msgstr ""
 
 #: calreview_dialog.cpp:47 statswindow.cpp:213
@@ -293,7 +541,7 @@ msgstr "Error de Ortogonalidad:"
 msgid "a-s/sec"
 msgstr "a-s/seg"
 
-#: calreview_dialog.cpp:240 guiding_assistant.cpp:1157
+#: calreview_dialog.cpp:240 guiding_assistant.cpp:1155
 msgid "px/sec"
 msgstr "px/seg"
 
@@ -349,6 +597,11 @@ msgstr ""
 msgid "Focal length:"
 msgstr "Longitud Focal:"
 
+#: calreview_dialog.cpp:325
+#, c-format
+msgid "%d mm"
+msgstr ""
+
 #: calreview_dialog.cpp:330
 msgid "Image scale:"
 msgstr "Escala de Imagen"
@@ -375,6 +628,11 @@ msgstr "Oeste"
 #: calreview_dialog.cpp:346
 msgid "RA Guide speed:"
 msgstr "Velocidad de guiado RA:"
+
+#: calreview_dialog.cpp:349 calreview_dialog.cpp:357
+#, c-format
+msgid "%0.2fx"
+msgstr ""
 
 #: calreview_dialog.cpp:354
 msgid "Dec Guide speed:"
@@ -471,9 +729,23 @@ msgstr "Error de Ortogonalidad anterior:"
 msgid "This declination rate:"
 msgstr "Esta velocidad de Declinación:"
 
+#: calreview_dialog.cpp:702 calreview_dialog.cpp:716 calreview_dialog.cpp:719
+#, c-format
+msgid ""
+"%0.3f a-s/sec\n"
+"%0.3f px/sec"
+msgstr ""
+
 #: calreview_dialog.cpp:705
 msgid "Previous declination rate:"
 msgstr "Velocidad de declinación anterior:"
+
+#: calreview_dialog.cpp:707
+#, c-format
+msgid ""
+"\n"
+"%0.3f px/sec"
+msgstr ""
 
 #: calreview_dialog.cpp:717
 msgid "Declination rate:"
@@ -597,13 +869,6 @@ msgstr "Escala de Imagen, arc-seg/px"
 msgid "Calibration step, ms"
 msgstr "Pasos de Calibración, ms"
 
-#: calstep_dialog.cpp:176 cam_simulator.cpp:1352 camcal_import_dialog.cpp:47
-#: camera.cpp:707 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:53
-#: myframe.cpp:2552 profile_wizard.cpp:59 profile_wizard.cpp:66
-#: Refine_DefMap.cpp:60
-msgid ": "
-msgstr ":"
-
 #: calstep_dialog.cpp:239
 msgid "Please enter a focal length of at least 50"
 msgstr "Por favor, introduzca una longitud focal mínima de 50"
@@ -620,40 +885,40 @@ msgstr ""
 msgid "Settings"
 msgstr "Configuraciones"
 
-#: cam_Altair.cpp:143 cam_Altair.cpp:153 cam_Altair.cpp:176
-#: cam_ascomlate.cpp:443 cam_ascomlate.cpp:449 cam_ascomlate.cpp:460
-#: cam_Atik16.cpp:128 cam_firewire_IC.cpp:94 cam_INovaPLC.cpp:61
-#: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
-#: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
-#: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:120 cam_SAC42.cpp:71
-#: cam_SACGuide.cpp:82 cam_SACGuide.cpp:93 cam_SACGuide.cpp:96
-#: cam_SACGuide.cpp:99 cam_SACGuide.cpp:102 cam_SACGuide.cpp:111
-#: cam_SBIG.cpp:285 cam_SBIG.cpp:295 cam_SBIG.cpp:318 cam_SSPIAG.cpp:131
-#: cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155
-#: cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179
-#: cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203
-#: cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233
-#: cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257
-#: cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92
-#: cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_Altair.cpp:143 cam_Altair.cpp:153 cam_Altair.cpp:176 cam_Atik16.cpp:128
+#: cam_INovaPLC.cpp:61 cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67
+#: cam_LESerialWebcam.cpp:294 cam_MeadeDSI.cpp:97 cam_OSPL130.cpp:54
+#: cam_OSPL130.cpp:59 cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:120
+#: cam_SAC42.cpp:71 cam_SACGuide.cpp:82 cam_SACGuide.cpp:93
+#: cam_SACGuide.cpp:96 cam_SACGuide.cpp:99 cam_SACGuide.cpp:102
+#: cam_SACGuide.cpp:111 cam_SBIG.cpp:285 cam_SBIG.cpp:295 cam_SBIG.cpp:318
+#: cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149
+#: cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173
+#: cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197
+#: cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221
+#: cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250
+#: cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_SXV.cpp:261
+#: cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96
+#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
 #: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
-#: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261 cam_wdm.cpp:132 cam_wdm.cpp:141
-#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
-#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:255
+#: cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:149 cam_ZWO.cpp:177 cam_ZWO.cpp:192
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:255 cam_ascomlate.cpp:443
+#: cam_ascomlate.cpp:449 cam_ascomlate.cpp:460 cam_firewire_IC.cpp:94
+#: cam_openssag.cpp:96 cam_openssag.cpp:113 cam_qhy5.cpp:117 cam_qhy5.cpp:124
+#: cam_wdm.cpp:132 cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257
+#: cam_wdm.cpp:280 cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305
 #: gear_dialog.cpp:1181 gear_dialog.cpp:1842 gear_dialog.cpp:1851
 #: gear_dialog.cpp:1858 gear_dialog.cpp:1903 gear_dialog.cpp:1909
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
-#: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
-#: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
-#: scope_ascom.cpp:283 scope_ascom.cpp:299 scope_ascom.cpp:306
-#: scope_ascom.cpp:394 scope_ascom.cpp:402 scope_eqmac.cpp:135
-#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
-#: scope_GC_USBST4.cpp:242 scope_gpusb.cpp:304 stepguider_sxao.cpp:107
+#: scope_GC_USBST4.cpp:242 scope_ascom.cpp:148 scope_ascom.cpp:155
+#: scope_ascom.cpp:166 scope_ascom.cpp:251 scope_ascom.cpp:266
+#: scope_ascom.cpp:274 scope_ascom.cpp:283 scope_ascom.cpp:299
+#: scope_ascom.cpp:306 scope_ascom.cpp:394 scope_ascom.cpp:402
+#: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
+#: scope_equinox.cpp:142 scope_gpusb.cpp:304 stepguider_sxao.cpp:107
 #: stepguider_sxao.cpp:157 stepguider_sxao_INDI.cpp:104
 #: stepguider_sxao_INDI.cpp:115
 msgid "Error"
@@ -666,6 +931,250 @@ msgstr ""
 #: cam_Altair.cpp:176
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
+
+#: cam_Atik16.cpp:77
+msgid "DLL error"
+msgstr "Error de librería DLL"
+
+#: cam_Atik16.cpp:119
+msgid "Already connected"
+msgstr "Ya está conectado"
+
+#: cam_Atik16.cpp:294
+msgid "Couldn't start exposure - aborting"
+msgstr "No es posible iniciar la Exposición - Abortando"
+
+#: cam_INDI.cpp:335
+#, c-format
+msgid "Cannot connect to camera %s"
+msgstr ""
+
+#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:515
+msgid "Unsupported type or read error loading FITS file"
+msgstr "Tipo no soportado o error al cargar fichero FITS"
+
+#: cam_INDI.cpp:446 cam_simulator.cpp:504 cam_simulator.cpp:1239
+msgid "FITS file is not of an image"
+msgstr "El fichero FITS no es una imagen"
+
+#: cam_INDI.cpp:464 cam_INDI.cpp:487 cam_firewire_IC.cpp:290
+#: cam_opencv.cpp:146 cam_simulator.cpp:527 cam_simulator.cpp:1074
+#: cam_simulator.cpp:1136 cam_simulator.cpp:1256 image_math.cpp:85
+#: image_math.cpp:545
+msgid "Memory allocation error"
+msgstr "Error adquiriendo memoria"
+
+#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:545
+#: cam_simulator.cpp:1261
+msgid "Error reading data"
+msgstr "Error leyendo datos"
+
+#: cam_INDI.cpp:510
+msgid "No CCD_FRAME property, failed to determine image dimensions"
+msgstr ""
+"Error al determinar las dimensiones de la imagen, no existelapropiedad "
+"CCD_FRAME"
+
+#: cam_INDI.cpp:515
+msgid "No WIDTH value, failed to determine image dimensions"
+msgstr ""
+"Error al determinar las dimensiones de la imagen, no existe valor WIDTH"
+
+#: cam_INDI.cpp:521
+msgid "No HEIGHT value, failed to determine image dimensions"
+msgstr ""
+"Error al determinar las dimensiones de la imagen, no existe la propiedad "
+"HEIGHT"
+
+#: cam_INDI.cpp:528
+msgid "CCD stream: memory allocation error"
+msgstr "Flujo CCD: Error adquiriendo memoria"
+
+#: cam_INDI.cpp:645
+msgid "Unknown image format: "
+msgstr "Formato de imagen desconocido:"
+
+#: cam_INovaPLC.cpp:61
+#, c-format
+msgid "Error on connection: %d"
+msgstr "Error en la conexión: %d"
+
+#: cam_INovaPLC.cpp:83
+msgid "Error setting exposure duration"
+msgstr "Error en la configuración de la duración de exposición"
+
+#: cam_INovaPLC.cpp:87
+msgid "Error setting gain"
+msgstr "Error configurando la ganacia"
+
+#: cam_LELXUSBWebcam.cpp:67
+msgid "Unable to open LXUSB device"
+msgstr "Error al abrir dispositivo LXUSB"
+
+#: cam_LESerialWebcam.cpp:274
+msgid "Serial LE Webcam"
+msgstr "Webcam con Larga Exposición Serie"
+
+#: cam_LESerialWebcam.cpp:279 camera.cpp:853
+msgid "LE Port"
+msgstr "Puerto de Larga Exposición"
+
+#: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:157
+msgid "No serial ports found"
+msgstr "No se encontraron puertos serie"
+
+#: cam_LESerialWebcam.cpp:316
+msgid "Port pins"
+msgstr "Pins del Puerto"
+
+#: cam_LESerialWebcam.cpp:352
+msgid "Inverted logic"
+msgstr "Lógica invertida"
+
+#: cam_LESerialWebcam.cpp:355
+msgid "Use Amp"
+msgstr "Usar Amplificación"
+
+#: cam_LESerialWebcam.cpp:365
+msgid "Defaults"
+msgstr "Por Defecto"
+
+#: cam_LESerialWebcam.cpp:369
+msgid "Webcam settings"
+msgstr "Configuración de Webcam"
+
+#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
+msgid "Cannot start exposure"
+msgstr "No se puede iniciar la exposición"
+
+#: cam_QHY5IIbase.cpp:107
+#, c-format
+msgid "Camera DLL missing entry %s"
+msgstr "Librería DLL de la Cámara no encontrada %s"
+
+#: cam_QHY5IIbase.cpp:120
+#, c-format
+msgid "Cannot load camera dll %s.dll"
+msgstr "No se cargó librería dll de la Cámara %s.dll"
+
+#: cam_QHY5IIbase.cpp:148
+msgid "No camera"
+msgstr "No hay Cámara"
+
+#: cam_SAC42.cpp:135
+msgid "Error capturing data from camera"
+msgstr "Error capturando datos desde la Cámara"
+
+#: cam_SBIG.cpp:113
+msgid "Error loading SBIG driver and/or DLL"
+msgstr "Error al cargar driver o librería DLL SBIG"
+
+#: cam_SBIG.cpp:136
+msgid "Select interface"
+msgstr "Seleccionar Interface"
+
+#: cam_SBIG.cpp:136
+msgid "Interface"
+msgstr "Interface"
+
+#: cam_SBIG.cpp:168
+msgid "Select USB camera"
+msgstr "Seleccionar cámara USB"
+
+#: cam_SBIG.cpp:168
+msgid "Camera name"
+msgstr "Nombre de la Cámara"
+
+#: cam_SBIG.cpp:179
+msgid "IP address"
+msgstr "Dirección IP"
+
+#: cam_SBIG.cpp:179
+msgid "Enter IP address"
+msgstr "Entrar dirección IP"
+
+#: cam_SBIG.cpp:308
+msgid "CCD Choice"
+msgstr "Selector de CCD"
+
+#: cam_SBIG.cpp:318
+msgid "Error getting info on main CCD"
+msgstr "Error al obtener información de la CCD principal"
+
+#: cam_SBIG.cpp:475
+msgid "Cannot poll exposure"
+msgstr "No se puede consultar la exposición"
+
+#: cam_SBIG.cpp:498
+msgid "Cannot stop exposure"
+msgstr "No se puede parar la exposición"
+
+#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+msgid "Error downloading data"
+msgstr "Error cargando datos"
+
+#: cam_SBIG.cpp:581
+msgid "Cannot check SBIG relay status"
+msgstr "No se puede verificar el estado del gestor de SBIG"
+
+#: cam_SBIG.cpp:590
+msgid "Timeout expired waiting for guide pulse to complete."
+msgstr "Se supero el tiempo de espera para completar el guiado por pulsos"
+
+#: cam_SXV.cpp:153
+msgid "SX Camera Settings"
+msgstr "Configuración de Cámara SX"
+
+#: cam_SXV.cpp:261
+msgid "No SX cameras found"
+msgstr ""
+
+#: cam_SXV.cpp:285
+msgid "Connect failed: could not retrieve camera parameters."
+msgstr "Fallo la Conexión: No se pudieron obtener los parámetros de la cámara."
+
+#: cam_SXV.cpp:776
+msgid "Lost connection to camera"
+msgstr ""
+
+#: cam_StarShootDSCI.cpp:152
+msgid "Problem sending register to StarShoot"
+msgstr "Problemas al enviar registro a StarShoot"
+
+#: cam_StarShootDSCI.cpp:163
+msgid "Error starting exposure"
+msgstr "Error al iniciar la exposición"
+
+#: cam_VFW.cpp:88
+msgid "Select capture device"
+msgstr "Seleccionar dispositivo de captura"
+
+#: cam_VFW.cpp:88 cam_wdm.cpp:168
+msgid "Camera choice"
+msgstr "Selección de Cámara"
+
+#: cam_ZWO.cpp:101
+#, c-format
+msgid "Could not load DLL %s"
+msgstr "No se pudieron cargar DLL %s"
+
+#: cam_ZWO.cpp:104
+msgid ""
+"The ASI camera library requires the Microsoft Visual C++ 2008 "
+"Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
+"download/details.aspx?id=29"
+msgstr ""
+"La cámara ASI requiere el paquete Microsoft Visual C++ 2008 Redistributable "
+"Package (x86), disponible en http://www.microsoft.com/en-us/download/details."
+"aspx?id=29"
+
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:255
+msgid "Failed to get camera properties for ZWO ASI Camera."
+msgstr "Fallo la obtención de propiedades de la cámara ZWO ASI"
+
+#: cam_ZWO.cpp:213
+msgid "Failed to open ZWO ASI Camera."
+msgstr "Falló la apertura de la cámara ZWO ASI"
 
 #: cam_ascomlate.cpp:338 scope_ascom.cpp:735
 msgid ""
@@ -770,18 +1279,6 @@ msgstr "Excepción al consultar la cámara"
 msgid "Error reading image"
 msgstr "Error leyendo imagen"
 
-#: cam_Atik16.cpp:77
-msgid "DLL error"
-msgstr "Error de librería DLL"
-
-#: cam_Atik16.cpp:119
-msgid "Already connected"
-msgstr "Ya está conectado"
-
-#: cam_Atik16.cpp:294
-msgid "Couldn't start exposure - aborting"
-msgstr "No es posible iniciar la Exposición - Abortando"
-
 #: cam_firewire_IC.cpp:104
 msgid "No camera found"
 msgstr "No se encontró la Cámara"
@@ -806,12 +1303,6 @@ msgstr ""
 "Aviso - No es posible controlar la exposición - ejecutándose en auto-"
 "exposición"
 
-#: cam_firewire_IC.cpp:290 cam_INDI.cpp:464 cam_INDI.cpp:487 cam_opencv.cpp:146
-#: cam_simulator.cpp:527 cam_simulator.cpp:1074 cam_simulator.cpp:1136
-#: cam_simulator.cpp:1256 image_math.cpp:85 image_math.cpp:545
-msgid "Memory allocation error"
-msgstr "Error adquiriendo memoria"
-
 #: cam_firewire_IC.cpp:302
 msgid "Could not start video stream"
 msgstr "No puede iniciarse el flujo de video"
@@ -825,179 +1316,9 @@ msgstr "Error capturando imagen: %d (%d) %s"
 msgid "Cannot get a frame from the queue"
 msgstr "No es posible obtener una toma de la cola"
 
-#: cam_INDI.cpp:335
-#, c-format
-msgid "Cannot connect to camera %s"
-msgstr ""
-
-#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:515
-msgid "Unsupported type or read error loading FITS file"
-msgstr "Tipo no soportado o error al cargar fichero FITS"
-
-#: cam_INDI.cpp:446 cam_simulator.cpp:504 cam_simulator.cpp:1239
-msgid "FITS file is not of an image"
-msgstr "El fichero FITS no es una imagen"
-
-#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:545
-#: cam_simulator.cpp:1261
-msgid "Error reading data"
-msgstr "Error leyendo datos"
-
-#: cam_INDI.cpp:510
-msgid "No CCD_FRAME property, failed to determine image dimensions"
-msgstr ""
-"Error al determinar las dimensiones de la imagen, no existelapropiedad "
-"CCD_FRAME"
-
-#: cam_INDI.cpp:515
-msgid "No WIDTH value, failed to determine image dimensions"
-msgstr ""
-"Error al determinar las dimensiones de la imagen, no existe valor WIDTH"
-
-#: cam_INDI.cpp:521
-msgid "No HEIGHT value, failed to determine image dimensions"
-msgstr ""
-"Error al determinar las dimensiones de la imagen, no existe la propiedad "
-"HEIGHT"
-
-#: cam_INDI.cpp:528
-msgid "CCD stream: memory allocation error"
-msgstr "Flujo CCD: Error adquiriendo memoria"
-
-#: cam_INDI.cpp:645
-msgid "Unknown image format: "
-msgstr "Formato de imagen desconocido:"
-
-#: cam_INovaPLC.cpp:61
-#, c-format
-msgid "Error on connection: %d"
-msgstr "Error en la conexión: %d"
-
-#: cam_INovaPLC.cpp:83
-msgid "Error setting exposure duration"
-msgstr "Error en la configuración de la duración de exposición"
-
-#: cam_INovaPLC.cpp:87
-msgid "Error setting gain"
-msgstr "Error configurando la ganacia"
-
-#: cam_LELXUSBWebcam.cpp:67
-msgid "Unable to open LXUSB device"
-msgstr "Error al abrir dispositivo LXUSB"
-
-#: cam_LESerialWebcam.cpp:274
-msgid "Serial LE Webcam"
-msgstr "Webcam con Larga Exposición Serie"
-
-#: cam_LESerialWebcam.cpp:279 camera.cpp:853
-msgid "LE Port"
-msgstr "Puerto de Larga Exposición"
-
-#: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:157
-msgid "No serial ports found"
-msgstr "No se encontraron puertos serie"
-
-#: cam_LESerialWebcam.cpp:316
-msgid "Port pins"
-msgstr "Pins del Puerto"
-
-#: cam_LESerialWebcam.cpp:352
-msgid "Inverted logic"
-msgstr "Lógica invertida"
-
-#: cam_LESerialWebcam.cpp:355
-msgid "Use Amp"
-msgstr "Usar Amplificación"
-
-#: cam_LESerialWebcam.cpp:365
-msgid "Defaults"
-msgstr "Por Defecto"
-
-#: cam_LESerialWebcam.cpp:369
-msgid "Webcam settings"
-msgstr "Configuración de Webcam"
-
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
 msgstr ""
-
-#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
-msgid "Cannot start exposure"
-msgstr "No se puede iniciar la exposición"
-
-#: cam_QHY5IIbase.cpp:107
-#, c-format
-msgid "Camera DLL missing entry %s"
-msgstr "Librería DLL de la Cámara no encontrada %s"
-
-#: cam_QHY5IIbase.cpp:120
-#, c-format
-msgid "Cannot load camera dll %s.dll"
-msgstr "No se cargó librería dll de la Cámara %s.dll"
-
-#: cam_QHY5IIbase.cpp:148
-msgid "No camera"
-msgstr "No hay Cámara"
-
-#: cam_SAC42.cpp:135
-msgid "Error capturing data from camera"
-msgstr "Error capturando datos desde la Cámara"
-
-#: cam_SBIG.cpp:113
-msgid "Error loading SBIG driver and/or DLL"
-msgstr "Error al cargar driver o librería DLL SBIG"
-
-#: cam_SBIG.cpp:136
-msgid "Select interface"
-msgstr "Seleccionar Interface"
-
-#: cam_SBIG.cpp:136
-msgid "Interface"
-msgstr "Interface"
-
-#: cam_SBIG.cpp:168
-msgid "Select USB camera"
-msgstr "Seleccionar cámara USB"
-
-#: cam_SBIG.cpp:168
-msgid "Camera name"
-msgstr "Nombre de la Cámara"
-
-#: cam_SBIG.cpp:179
-msgid "IP address"
-msgstr "Dirección IP"
-
-#: cam_SBIG.cpp:179
-msgid "Enter IP address"
-msgstr "Entrar dirección IP"
-
-#: cam_SBIG.cpp:308
-msgid "CCD Choice"
-msgstr "Selector de CCD"
-
-#: cam_SBIG.cpp:318
-msgid "Error getting info on main CCD"
-msgstr "Error al obtener información de la CCD principal"
-
-#: cam_SBIG.cpp:475
-msgid "Cannot poll exposure"
-msgstr "No se puede consultar la exposición"
-
-#: cam_SBIG.cpp:498
-msgid "Cannot stop exposure"
-msgstr "No se puede parar la exposición"
-
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
-msgid "Error downloading data"
-msgstr "Error cargando datos"
-
-#: cam_SBIG.cpp:581
-msgid "Cannot check SBIG relay status"
-msgstr "No se puede verificar el estado del gestor de SBIG"
-
-#: cam_SBIG.cpp:590
-msgid "Timeout expired waiting for guide pulse to complete."
-msgstr "Se supero el tiempo de espera para completar el guiado por pulsos"
 
 #: cam_sbigrotator.cpp:62
 msgid "Enter RA Angle (in degrees)"
@@ -1081,10 +1402,6 @@ msgstr "Estrellas"
 #: cam_simulator.cpp:1449
 msgid "Number of hot pixels"
 msgstr "Número de Hot Pixels"
-
-#: cam_simulator.cpp:1450 Refine_DefMap.cpp:169
-msgid "Hot pixels"
-msgstr "Hot Pixels"
 
 #: cam_simulator.cpp:1451
 #, c-format
@@ -1224,11 +1541,6 @@ msgstr "Cometa"
 msgid "Star fading due to clouds"
 msgstr "La estrella se desvanece por las nubes"
 
-#: cam_simulator.cpp:1535 darks_dialog.cpp:208 Refine_DefMap.cpp:176
-#: testguide.cpp:101
-msgid "Reset"
-msgstr "Borrar"
-
 #: cam_simulator.cpp:1536
 msgid "Reset all values to application defaults"
 msgstr "Borrar todos los valores y volver a valores por defecto"
@@ -1247,38 +1559,6 @@ msgstr "Cancelar"
 msgid "Side of pier: %s"
 msgstr "Tamaño de la Columna: %s"
 
-#: cam_StarShootDSCI.cpp:152
-msgid "Problem sending register to StarShoot"
-msgstr "Problemas al enviar registro a StarShoot"
-
-#: cam_StarShootDSCI.cpp:163
-msgid "Error starting exposure"
-msgstr "Error al iniciar la exposición"
-
-#: cam_SXV.cpp:153
-msgid "SX Camera Settings"
-msgstr "Configuración de Cámara SX"
-
-#: cam_SXV.cpp:261
-msgid "No SX cameras found"
-msgstr ""
-
-#: cam_SXV.cpp:285
-msgid "Connect failed: could not retrieve camera parameters."
-msgstr "Fallo la Conexión: No se pudieron obtener los parámetros de la cámara."
-
-#: cam_SXV.cpp:776
-msgid "Lost connection to camera"
-msgstr ""
-
-#: cam_VFW.cpp:88
-msgid "Select capture device"
-msgstr "Seleccionar dispositivo de captura"
-
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
-msgid "Camera choice"
-msgstr "Selección de Cámara"
-
 #: cam_wdm.cpp:168
 msgid "Select WDM camera"
 msgstr "Seleccionar cámara WDM"
@@ -1290,29 +1570,6 @@ msgstr "Seleccionar modo de cámara"
 #: cam_wdm.cpp:200
 msgid "Camera mode"
 msgstr "Modo de Cámara"
-
-#: cam_ZWO.cpp:101
-#, c-format
-msgid "Could not load DLL %s"
-msgstr "No se pudieron cargar DLL %s"
-
-#: cam_ZWO.cpp:104
-msgid ""
-"The ASI camera library requires the Microsoft Visual C++ 2008 "
-"Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
-"download/details.aspx?id=29"
-msgstr ""
-"La cámara ASI requiere el paquete Microsoft Visual C++ 2008 Redistributable "
-"Package (x86), disponible en http://www.microsoft.com/en-us/download/details."
-"aspx?id=29"
-
-#: cam_ZWO.cpp:207 cam_ZWO.cpp:255
-msgid "Failed to get camera properties for ZWO ASI Camera."
-msgstr "Fallo la obtención de propiedades de la cámara ZWO ASI"
-
-#: cam_ZWO.cpp:213
-msgid "Failed to open ZWO ASI Camera."
-msgstr "Falló la apertura de la cámara ZWO ASI"
 
 #: camcal_import_dialog.cpp:57
 #, c-format
@@ -1770,6 +2027,22 @@ msgid ""
 "dark frames will be discarded. You  MUST use this option if you've seen "
 "alert messages about incompatible frame sizes or mismatches with the current "
 "camera."
+msgstr ""
+
+#: darks_dialog.cpp:151
+#, c-format
+msgid ""
+"Existing dark library covers %d exposure times in the range of %g s to %g s"
+msgstr ""
+
+#: darks_dialog.cpp:157
+msgid ""
+"Existing dark library contains incompatible frames - it must be rebuilt from "
+"scratch"
+msgstr ""
+
+#: darks_dialog.cpp:164
+msgid "No compatible dark library is available"
 msgstr ""
 
 #: darks_dialog.cpp:179
@@ -2486,6 +2759,26 @@ msgstr "Importar perfiles PHD de equipo"
 msgid "Export PHD Equipment Profile"
 msgstr "Exportar Perfil de Equipo PHD"
 
+#: graph-stepguider.cpp:47 myframe.cpp:296 myframe.cpp:360
+msgid "AO Position"
+msgstr "Posición Óptica Adaptativa"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Seleccione el número de tomas de histórico a mostrar"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:112 target.cpp:79
+msgid "Clear"
+msgstr "Limpiar"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "Borrar datos de gráfica"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "Óptica Adaptativa no conectada"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Telescopio:"
@@ -2497,10 +2790,6 @@ msgstr "Seleccione el número de puntos de histórico a mostrar en el eje X"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "Configuraciones de Gráficas"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:112 target.cpp:79
-msgid "Clear"
-msgstr "Limpiar"
 
 #: graph.cpp:130
 msgid ""
@@ -2623,22 +2912,6 @@ msgstr ""
 msgid "Dither"
 msgstr "Dither"
 
-#: graph-stepguider.cpp:47 myframe.cpp:296 myframe.cpp:360
-msgid "AO Position"
-msgstr "Posición Óptica Adaptativa"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Seleccione el número de tomas de histórico a mostrar"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "Borrar datos de gráfica"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "Óptica Adaptativa no conectada"
-
 #: guide_algorithm.cpp:49
 msgid "DEC"
 msgstr "DEC"
@@ -2671,11 +2944,6 @@ msgid ""
 msgstr ""
 "Cuánto histórico de pulsos de guiado debe aplicarse\n"
 "Por Defecto = %.f%%,aumentar para suavizar los comandos de guiado"
-
-#: guide_algorithm_hysteresis.cpp:227 guide_algorithm_lowpass2.cpp:209
-#: guide_algorithm_resistswitch.cpp:267 Refine_DefMap.cpp:159
-msgid "Aggressiveness"
-msgstr "Agresividad"
 
 #: guide_algorithm_hysteresis.cpp:228
 #, c-format
@@ -3188,7 +3456,7 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr ""
 
-#: guiding_assistant.cpp:591 guiding_assistant.cpp:1153
+#: guiding_assistant.cpp:591 guiding_assistant.cpp:1151
 msgid "px"
 msgstr "px"
 
@@ -3199,6 +3467,11 @@ msgstr ""
 #: guiding_assistant.cpp:682 guiding_assistant.cpp:683
 msgid "Apply"
 msgstr "Aplicar"
+
+#: guiding_assistant.cpp:790
+#, c-format
+msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
+msgstr ""
 
 #: guiding_assistant.cpp:799
 msgid "Consider re-doing your calibration "
@@ -3259,31 +3532,31 @@ msgstr ""
 msgid "Guiding stopped"
 msgstr "Guiado Parado"
 
-#: guiding_assistant.cpp:1152
+#: guiding_assistant.cpp:1150
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1154
+#: guiding_assistant.cpp:1152
 msgid "arc-sec"
 msgstr "arc-seg"
 
-#: guiding_assistant.cpp:1155
+#: guiding_assistant.cpp:1153
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1156
+#: guiding_assistant.cpp:1154
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1158
+#: guiding_assistant.cpp:1156
 msgid "arc-sec/min"
 msgstr "arc-segs/min"
 
-#: guiding_assistant.cpp:1159
+#: guiding_assistant.cpp:1157
 msgid "arc-sec/sec"
 msgstr "arc-segs/seg"
 
-#: guiding_assistant.cpp:1178
+#: guiding_assistant.cpp:1176
 msgid " "
 msgstr ""
 
@@ -4755,207 +5028,6 @@ msgstr ""
 msgid "Detect Pixel Size"
 msgstr "Detectar tamaño de Pixel"
 
-#: Refine_DefMap.cpp:66
-msgid "Refine Bad-pixel Map"
-msgstr "Refinar el mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:74
-msgid "Rebuild Master Dark Frame"
-msgstr "recrear toma DARK maestra"
-
-#: Refine_DefMap.cpp:75
-msgid ""
-"Click to re-acquire the master dark frames needed to compute an initial bad-"
-"pixel map"
-msgstr ""
-"Haga click para ejecutar de nuevo las tomas de darks para calcular un mapa "
-"de píxeles erróneos inicial"
-
-#: Refine_DefMap.cpp:80
-msgid "Show Master Dark Details"
-msgstr "Mostrar detalles de Master Dark"
-
-#: Refine_DefMap.cpp:81
-msgid ""
-"Click to display detailed statistics of master dark frame used to compute "
-"bad-pixel map"
-msgstr ""
-"Haga click para mostrar las estadísticas detalladas de las tomas dark usadas "
-"para calcular el mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:85
-msgid "Show defect pixels"
-msgstr "Mostrar Píxeles Defectuosos"
-
-#: Refine_DefMap.cpp:86
-msgid "Check to show hot/cold pixels in the main image window."
-msgstr ""
-"Marcar para mostrar los píxeles calientes/fríos en la ventana de la imagen "
-"principal."
-
-#: Refine_DefMap.cpp:91
-msgid "General Information"
-msgstr "Información General"
-
-#: Refine_DefMap.cpp:101
-msgid "Time:"
-msgstr "Fecha:"
-
-#: Refine_DefMap.cpp:103
-msgid "Camera:"
-msgstr "Cámara:"
-
-#: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
-msgid "Master Dark Exposure Time:"
-msgstr "Tiempo de Exposición del Dark Maestro:"
-
-#: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
-msgid "Master Dark Exposure Count:"
-msgstr "Número de muestras para el Dark Maestro:"
-
-#: Refine_DefMap.cpp:116
-msgid "Aggressiveness, hot pixels:"
-msgstr "Agresividad, Píxeles calientes:"
-
-#: Refine_DefMap.cpp:118
-msgid "Aggressiveness, cold pixels:"
-msgstr "Agresividad, Píxeles fríos:"
-
-#: Refine_DefMap.cpp:122
-msgid "Mean:"
-msgstr "Promedio:"
-
-#: Refine_DefMap.cpp:124
-msgid "Standard Deviation:"
-msgstr "Desviación Estándar:"
-
-#: Refine_DefMap.cpp:128
-msgid "Median:"
-msgstr "Mediana:"
-
-#: Refine_DefMap.cpp:130
-msgid "Median Absolute Deviation:"
-msgstr "Mediana  de la Desviación Absoluta:"
-
-#: Refine_DefMap.cpp:137
-msgid "Results"
-msgstr "Resultados"
-
-#: Refine_DefMap.cpp:147
-msgid "Hot pixel count:"
-msgstr "Total de Píxeles Calientes:"
-
-#: Refine_DefMap.cpp:149
-msgid "Cold pixel count:"
-msgstr "Total de Píxeles Fríos:"
-
-#: Refine_DefMap.cpp:153
-msgid "Manually added pixels"
-msgstr "Añadir píxeles manualmente"
-
-#: Refine_DefMap.cpp:164
-msgid ""
-"Move this slider to increase or decrease the number of pixels that will be "
-"treated as 'hot', then click on 'generate' to build and load the new bad-"
-"pixel map"
-msgstr ""
-"Mueva esta barra de desplazamiento para incrementar o disminuir el número de "
-"píxeles que se tratarán como 'calientes', haga click entonces en 'generar' "
-"para crear y cargar un nuevo mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:168
-msgid ""
-"Move this slider to increase or decrease the number of pixels that will be "
-"treated as 'cold', then click on 'generate' to build and load the new bad-"
-"pixel map"
-msgstr ""
-"Mueva esta barra de desplazamiento para incrementar o disminuir el número de "
-"píxeles que se tratarán como 'fríos', haga click entonces en 'generar' para "
-"crear y cargar un nuevo mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:170
-msgid "Cold pixels"
-msgstr "Píxeles Fríos"
-
-#: Refine_DefMap.cpp:178
-msgid "Reset parameters to starting point"
-msgstr "Borrar parámetros para comenzar de nuevo"
-
-#: Refine_DefMap.cpp:180
-msgid "Generate"
-msgstr "Generar"
-
-#: Refine_DefMap.cpp:182
-msgid ""
-"Use the current aggressiveness settings to build and load a new bad-pixel "
-"map; this will discard any manually added bad pixels"
-msgstr ""
-"Usar las configuraciones actuales de agresividad para construir y cargar un "
-"nuevo mapa de píxeles erróneos; esto descartará todos los píxeles erróneos "
-"añadidos manualmente"
-
-#: Refine_DefMap.cpp:184
-msgid "Add Bad Pixel"
-msgstr "Añadir Pixel Erróneo"
-
-#: Refine_DefMap.cpp:186
-msgid ""
-"Click on a bad pixel in the image display; then click on this button to add "
-"it to the in-use bad-pixel map"
-msgstr ""
-"Haga click en un pixel erróneo de la imagen; haga click entonces en este "
-"botón para añadirlo en el mapa actual de píxeles erróneos"
-
-#: Refine_DefMap.cpp:206
-msgid "Adjust sliders to increase/decrease pixels marked as bad"
-msgstr ""
-"Desplazar labarra para incrementar/disminuir los píxeles marcados como "
-"erróneos"
-
-#: Refine_DefMap.cpp:263
-msgid "Please wait while image statistics are being computed..."
-msgstr ""
-"Por favor espere a que las estadísticas de la imagen sean calculadas..."
-
-#: Refine_DefMap.cpp:338
-msgid "Building new bad-pixel map"
-msgstr "Creando un nuevo mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:340
-msgid "Saving new bad-pixel map file"
-msgstr "Guardando nuevo fichero de mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:342
-msgid "Loading new bad-pixel map"
-msgstr "Cargando nuedo mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:344
-msgid "New bad-pixel map now being used"
-msgstr "Nuevo mapa de píxeles erróneos no está siendo usado"
-
-#: Refine_DefMap.cpp:367
-msgid "Master dark frames NOT rebuilt"
-msgstr "Maestro de tomas DARK no recreado"
-
-#: Refine_DefMap.cpp:451
-msgid "You must first load a bad-pixel map"
-msgstr "Debe cargar primero un mapa de píxeles erróneos"
-
-#: Refine_DefMap.cpp:456
-#, c-format
-msgid "Bad pixel marked at %d,%d"
-msgstr "Pixel Erróneomarcadoe %d,%d"
-
-#: Refine_DefMap.cpp:462
-msgid "Pixel position not added - no star-like object recognized there"
-msgstr ""
-"Posición de pixel no añadida - no se reconoce un objeto similar a una "
-"estrella"
-
-#: Refine_DefMap.cpp:472
-msgid "Settings restored to original values"
-msgstr "Configuraciones restauradas valores por defecto"
-
 #: rotator.cpp:144
 msgid "Rotator Settings"
 msgstr "Configuración de Rotador"
@@ -5220,6 +5292,11 @@ msgstr "RA Mx"
 msgid "Mx DEC"
 msgstr "DEC Mx"
 
+#: scope_GC_USBST4.cpp:122
+#, c-format
+msgid "Error writing to GC USB ST4: %s(%d)"
+msgstr "Error escribiendo mediante GC USB ST4: %s(%d)"
+
 #: scope_ascom.cpp:155
 msgid ""
 "Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"
@@ -5268,11 +5345,6 @@ msgstr "Verifique la conexión con la montura"
 #: scope_eqmac.cpp:176 scope_equinox.cpp:181
 msgid " not running"
 msgstr "no arrancado"
-
-#: scope_GC_USBST4.cpp:122
-#, c-format
-msgid "Error writing to GC USB ST4: %s(%d)"
-msgstr "Error escribiendo mediante GC USB ST4: %s(%d)"
 
 #: scope_manual_pointing.cpp:79
 msgid "Approximate telescope declination, degrees"
