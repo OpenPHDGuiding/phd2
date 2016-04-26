@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-22 16:23-0400\n"
+"POT-Creation-Date: 2016-04-25 18:06-0400\n"
 "PO-Revision-Date: 2016-02-25 23:28+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -45,6 +45,212 @@ msgstr ""
 "X-Generator: Poedit 1.8.5\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+
+#: Refine_DefMap.cpp:60 calstep_dialog.cpp:176 cam_simulator.cpp:1352
+#: camcal_import_dialog.cpp:47 camera.cpp:707 configdialog.cpp:61
+#: configdialog.cpp:226 darks_dialog.cpp:53 myframe.cpp:2552
+#: profile_wizard.cpp:59 profile_wizard.cpp:66
+msgid ": "
+msgstr ": "
+
+#: Refine_DefMap.cpp:66
+msgid "Refine Bad-pixel Map"
+msgstr "完善壞像素影像"
+
+#: Refine_DefMap.cpp:74
+msgid "Rebuild Master Dark Frame"
+msgstr "重建主暗場影像"
+
+#: Refine_DefMap.cpp:75
+msgid ""
+"Click to re-acquire the master dark frames needed to compute an initial bad-"
+"pixel map"
+msgstr "點擊進行重做主暗場影像是計算最原始壞像素影像所必需的"
+
+#: Refine_DefMap.cpp:80
+msgid "Show Master Dark Details"
+msgstr "顯示主暗場影像細節"
+
+#: Refine_DefMap.cpp:81
+msgid ""
+"Click to display detailed statistics of master dark frame used to compute "
+"bad-pixel map"
+msgstr "點擊以顯示用來計算壞像素影像的主暗場影像詳細統計資訊"
+
+#: Refine_DefMap.cpp:85
+msgid "Show defect pixels"
+msgstr "顯示壞像素"
+
+#: Refine_DefMap.cpp:86
+msgid "Check to show hot/cold pixels in the main image window."
+msgstr "選核該項以在主影像視窗中顯示熱/冷噪像素"
+
+#: Refine_DefMap.cpp:91
+msgid "General Information"
+msgstr "一般資訊"
+
+#: Refine_DefMap.cpp:101
+msgid "Time:"
+msgstr "時間:"
+
+#: Refine_DefMap.cpp:103
+msgid "Camera:"
+msgstr "相機:"
+
+#: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
+msgid "Master Dark Exposure Time:"
+msgstr "主暗場影像曝光時間:"
+
+#: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
+msgid "Master Dark Exposure Count:"
+msgstr "主暗場影像拍攝張數:"
+
+#: Refine_DefMap.cpp:116
+msgid "Aggressiveness, hot pixels:"
+msgstr "修正, 熱像素"
+
+#: Refine_DefMap.cpp:118
+msgid "Aggressiveness, cold pixels:"
+msgstr "修正, 冷像素"
+
+#: Refine_DefMap.cpp:122
+msgid "Mean:"
+msgstr "平均:"
+
+#: Refine_DefMap.cpp:124
+msgid "Standard Deviation:"
+msgstr "標準差:"
+
+#: Refine_DefMap.cpp:128
+msgid "Median:"
+msgstr "中位數:"
+
+#: Refine_DefMap.cpp:130
+msgid "Median Absolute Deviation:"
+msgstr "中位數絕對偏差:"
+
+#: Refine_DefMap.cpp:137
+msgid "Results"
+msgstr "結果"
+
+#: Refine_DefMap.cpp:147
+msgid "Hot pixel count:"
+msgstr "熱噪數目:"
+
+#: Refine_DefMap.cpp:149
+msgid "Cold pixel count:"
+msgstr "冷噪數目:"
+
+#: Refine_DefMap.cpp:153
+msgid "Manually added pixels"
+msgstr "手動增加像素"
+
+#: Refine_DefMap.cpp:159 guide_algorithm_hysteresis.cpp:227
+#: guide_algorithm_lowpass2.cpp:209 guide_algorithm_resistswitch.cpp:267
+msgid "Aggressiveness"
+msgstr "修正強度"
+
+#: Refine_DefMap.cpp:164
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'hot', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"拉動滑軌以增加或減少會被當做熱噪點的像素數目, 然後點擊【產生】以建立或載入該"
+"新建的壞像素影像"
+
+#: Refine_DefMap.cpp:168
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'cold', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"拉動滑軌以增加或減少會被當做冷噪點的像素數目, 然後點擊【產生】以建立或載入該"
+"新建的壞像素影像"
+
+#: Refine_DefMap.cpp:169 cam_simulator.cpp:1450
+msgid "Hot pixels"
+msgstr "熱噪"
+
+#: Refine_DefMap.cpp:170
+msgid "Cold pixels"
+msgstr "冷噪"
+
+#: Refine_DefMap.cpp:176 cam_simulator.cpp:1535 darks_dialog.cpp:208
+#: testguide.cpp:101
+msgid "Reset"
+msgstr "重設"
+
+#: Refine_DefMap.cpp:178
+msgid "Reset parameters to starting point"
+msgstr "重置參數, 回到開始點"
+
+#: Refine_DefMap.cpp:180
+msgid "Generate"
+msgstr "產生"
+
+#: Refine_DefMap.cpp:182
+msgid ""
+"Use the current aggressiveness settings to build and load a new bad-pixel "
+"map; this will discard any manually added bad pixels"
+msgstr ""
+"使用目前 Aggressiveness 設定值以建立並載入新的壞像素影像; 這樣會捨棄任何手動"
+"加入的壞像素"
+
+#: Refine_DefMap.cpp:184
+msgid "Add Bad Pixel"
+msgstr "增加壞像素"
+
+#: Refine_DefMap.cpp:186
+msgid ""
+"Click on a bad pixel in the image display; then click on this button to add "
+"it to the in-use bad-pixel map"
+msgstr "點擊螢幕影像中的壞像素, 然後按下此按鈕將該壞像素加到壞像素影像中"
+
+#: Refine_DefMap.cpp:206
+msgid "Adjust sliders to increase/decrease pixels marked as bad"
+msgstr "拉動滑軌增加或降低被標示為壞點的像數數量"
+
+#: Refine_DefMap.cpp:263
+msgid "Please wait while image statistics are being computed..."
+msgstr "影像統計計算中, 請稍待..."
+
+#: Refine_DefMap.cpp:338
+msgid "Building new bad-pixel map"
+msgstr "建立壞點圖型"
+
+#: Refine_DefMap.cpp:340
+msgid "Saving new bad-pixel map file"
+msgstr "儲存新建的壞點圖型"
+
+#: Refine_DefMap.cpp:342
+msgid "Loading new bad-pixel map"
+msgstr "載入新建的壞點圖型"
+
+#: Refine_DefMap.cpp:344
+msgid "New bad-pixel map now being used"
+msgstr "已使用新建的壞點圖型"
+
+#: Refine_DefMap.cpp:367
+msgid "Master dark frames NOT rebuilt"
+msgstr "尚未重建主暗場影像"
+
+#: Refine_DefMap.cpp:451
+msgid "You must first load a bad-pixel map"
+msgstr "首先, 你必須載入壞點圖型"
+
+#: Refine_DefMap.cpp:456
+#, c-format
+msgid "Bad pixel marked at %d,%d"
+msgstr "壞像點標示在 %d,%d"
+
+#: Refine_DefMap.cpp:462
+msgid "Pixel position not added - no star-like object recognized there"
+msgstr "像素位置沒有被加入 - 該位置為非星點狀的物件"
+
+#: Refine_DefMap.cpp:472
+msgid "Settings restored to original values"
+msgstr "設定回復到初始值"
 
 #: advanced_dialog.cpp:88
 msgid "Advanced setup"
@@ -102,6 +308,11 @@ msgstr ""
 "綠色代表 SNR >= 10\n"
 "黃色代表 4 <= SNR < 10 \n"
 "紅色代表 SNR < 4"
+
+#: aui_controls.cpp:263 aui_controls.cpp:286 aui_controls.cpp:300
+#, c-format
+msgid "%d ms, %0.1f px"
+msgstr ""
 
 #: aui_controls.cpp:365
 msgid "Camera, "
@@ -187,59 +398,80 @@ msgstr "選擇在 (999.9, 999.9) 位置的星體"
 msgid "Backlash Results"
 msgstr "回差結果"
 
-#: backlash_comp.cpp:273
+#: backlash_comp.cpp:275
 msgid "Ideal"
 msgstr "理想值"
 
-#: backlash_comp.cpp:275
+#: backlash_comp.cpp:277
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:276 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
+#: backlash_comp.cpp:278 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
 #: testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:277 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
+#: backlash_comp.cpp:279 scope.cpp:1676 scope.cpp:1782 scope.cpp:1816
 #: testguide.cpp:152
 msgid "South"
 msgstr "南向"
 
-#: backlash_comp.cpp:333
+#: backlash_comp.cpp:335
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "無法執行回差測量, 請重新校准赤道儀"
 
-#: backlash_comp.cpp:455
+#: backlash_comp.cpp:412
+#, c-format
+msgid "Clearing North backlash, step %d"
+msgstr ""
+
+#: backlash_comp.cpp:449
+#, c-format
+msgid "Clearing North backlash, step %d (up to limit of %d)"
+msgstr ""
+
+#: backlash_comp.cpp:457
 msgid "Could not clear North backlash - test failed"
 msgstr "無法清除北向回差, 測試失敗"
 
-#: backlash_comp.cpp:498
+#: backlash_comp.cpp:484
+#, c-format
+msgid "Moving North for %d ms, step %d / %d"
+msgstr ""
+
+#: backlash_comp.cpp:500
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr "導星星體太靠近邊緣以致於無法準確地測量回差, 請選擇離邊緣遠一點的星體"
 
-#: backlash_comp.cpp:543
+#: backlash_comp.cpp:515
+#, c-format
+msgid "Moving South for %d ms, step %d / %d"
+msgstr ""
+
+#: backlash_comp.cpp:545
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "開始測試 %d ms 的回差修正"
 
-#: backlash_comp.cpp:602
+#: backlash_comp.cpp:604
 msgid "Restoring star position"
 msgstr "回復星點位置"
 
-#: backlash_comp.cpp:610
+#: backlash_comp.cpp:612
 msgid "Measurement complete"
 msgstr "測量完成"
 
-#: backlash_comp.cpp:619
+#: backlash_comp.cpp:621
 msgid "Measurement halted"
 msgstr "測量中斷"
 
-#: backlash_comp.cpp:629
-msgid "Measurement encountered an error: "
-msgstr "測量時發生錯誤:"
+#: backlash_comp.cpp:631
+#, c-format
+msgid "Measurement encountered an error: %s"
+msgstr ""
 
 #: calreview_dialog.cpp:47 statswindow.cpp:213
 msgid "N/A"
@@ -296,7 +528,7 @@ msgstr "垂直誤差:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:240 guiding_assistant.cpp:1157
+#: calreview_dialog.cpp:240 guiding_assistant.cpp:1155
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -352,6 +584,11 @@ msgstr "已修改:"
 msgid "Focal length:"
 msgstr "焦長, mm："
 
+#: calreview_dialog.cpp:325
+#, c-format
+msgid "%d mm"
+msgstr ""
+
 #: calreview_dialog.cpp:330
 msgid "Image scale:"
 msgstr "影像解析度："
@@ -378,6 +615,11 @@ msgstr "西"
 #: calreview_dialog.cpp:346
 msgid "RA Guide speed:"
 msgstr "赤經導星速率"
+
+#: calreview_dialog.cpp:349 calreview_dialog.cpp:357
+#, c-format
+msgid "%0.2fx"
+msgstr ""
 
 #: calreview_dialog.cpp:354
 msgid "Dec Guide speed:"
@@ -477,9 +719,23 @@ msgstr "先前的正直誤差:"
 msgid "This declination rate:"
 msgstr "赤緯速率:"
 
+#: calreview_dialog.cpp:702 calreview_dialog.cpp:716 calreview_dialog.cpp:719
+#, c-format
+msgid ""
+"%0.3f a-s/sec\n"
+"%0.3f px/sec"
+msgstr ""
+
 #: calreview_dialog.cpp:705
 msgid "Previous declination rate:"
 msgstr "先前的赤緯速率:"
+
+#: calreview_dialog.cpp:707
+#, c-format
+msgid ""
+"\n"
+"%0.3f px/sec"
+msgstr ""
 
 #: calreview_dialog.cpp:717
 msgid "Declination rate:"
@@ -598,13 +854,6 @@ msgstr "影像解析度, 角秒/像素"
 msgid "Calibration step, ms"
 msgstr "校準步數, ms"
 
-#: calstep_dialog.cpp:176 cam_simulator.cpp:1352 camcal_import_dialog.cpp:47
-#: camera.cpp:707 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:53
-#: myframe.cpp:2552 profile_wizard.cpp:59 profile_wizard.cpp:66
-#: Refine_DefMap.cpp:60
-msgid ": "
-msgstr ": "
-
 #: calstep_dialog.cpp:239
 msgid "Please enter a focal length of at least 50"
 msgstr "焦長值需大於 50"
@@ -621,40 +870,40 @@ msgstr "Altair 相機設定"
 msgid "Settings"
 msgstr "設定"
 
-#: cam_Altair.cpp:143 cam_Altair.cpp:153 cam_Altair.cpp:176
-#: cam_ascomlate.cpp:443 cam_ascomlate.cpp:449 cam_ascomlate.cpp:460
-#: cam_Atik16.cpp:128 cam_firewire_IC.cpp:94 cam_INovaPLC.cpp:61
-#: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
-#: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
-#: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:120 cam_SAC42.cpp:71
-#: cam_SACGuide.cpp:82 cam_SACGuide.cpp:93 cam_SACGuide.cpp:96
-#: cam_SACGuide.cpp:99 cam_SACGuide.cpp:102 cam_SACGuide.cpp:111
-#: cam_SBIG.cpp:285 cam_SBIG.cpp:295 cam_SBIG.cpp:318 cam_SSPIAG.cpp:131
-#: cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155
-#: cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179
-#: cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203
-#: cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233
-#: cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257
-#: cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92
-#: cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_Altair.cpp:143 cam_Altair.cpp:153 cam_Altair.cpp:176 cam_Atik16.cpp:128
+#: cam_INovaPLC.cpp:61 cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67
+#: cam_LESerialWebcam.cpp:294 cam_MeadeDSI.cpp:97 cam_OSPL130.cpp:54
+#: cam_OSPL130.cpp:59 cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:120
+#: cam_SAC42.cpp:71 cam_SACGuide.cpp:82 cam_SACGuide.cpp:93
+#: cam_SACGuide.cpp:96 cam_SACGuide.cpp:99 cam_SACGuide.cpp:102
+#: cam_SACGuide.cpp:111 cam_SBIG.cpp:285 cam_SBIG.cpp:295 cam_SBIG.cpp:318
+#: cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149
+#: cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173
+#: cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197
+#: cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221
+#: cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250
+#: cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_SXV.cpp:261
+#: cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96
+#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
 #: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
 #: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
-#: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261 cam_wdm.cpp:132 cam_wdm.cpp:141
-#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
-#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
-#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:255
+#: cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:149 cam_ZWO.cpp:177 cam_ZWO.cpp:192
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:255 cam_ascomlate.cpp:443
+#: cam_ascomlate.cpp:449 cam_ascomlate.cpp:460 cam_firewire_IC.cpp:94
+#: cam_openssag.cpp:96 cam_openssag.cpp:113 cam_qhy5.cpp:117 cam_qhy5.cpp:124
+#: cam_wdm.cpp:132 cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257
+#: cam_wdm.cpp:280 cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305
 #: gear_dialog.cpp:1181 gear_dialog.cpp:1842 gear_dialog.cpp:1851
 #: gear_dialog.cpp:1858 gear_dialog.cpp:1903 gear_dialog.cpp:1909
 #: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
-#: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
-#: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
-#: scope_ascom.cpp:283 scope_ascom.cpp:299 scope_ascom.cpp:306
-#: scope_ascom.cpp:394 scope_ascom.cpp:402 scope_eqmac.cpp:135
-#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
-#: scope_GC_USBST4.cpp:242 scope_gpusb.cpp:304 stepguider_sxao.cpp:107
+#: scope_GC_USBST4.cpp:242 scope_ascom.cpp:148 scope_ascom.cpp:155
+#: scope_ascom.cpp:166 scope_ascom.cpp:251 scope_ascom.cpp:266
+#: scope_ascom.cpp:274 scope_ascom.cpp:283 scope_ascom.cpp:299
+#: scope_ascom.cpp:306 scope_ascom.cpp:394 scope_ascom.cpp:402
+#: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
+#: scope_equinox.cpp:142 scope_gpusb.cpp:304 stepguider_sxao.cpp:107
 #: stepguider_sxao.cpp:157 stepguider_sxao_INDI.cpp:104
 #: stepguider_sxao_INDI.cpp:115
 msgid "Error"
@@ -667,6 +916,244 @@ msgstr "開啟 Altair 相機失敗。"
 #: cam_Altair.cpp:176
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
+
+#: cam_Atik16.cpp:77
+msgid "DLL error"
+msgstr "DLL 錯誤"
+
+#: cam_Atik16.cpp:119
+msgid "Already connected"
+msgstr "已連接"
+
+#: cam_Atik16.cpp:294
+msgid "Couldn't start exposure - aborting"
+msgstr "無法開始曝光 - 中斷"
+
+#: cam_INDI.cpp:335
+#, c-format
+msgid "Cannot connect to camera %s"
+msgstr ""
+
+#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:515
+msgid "Unsupported type or read error loading FITS file"
+msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
+
+#: cam_INDI.cpp:446 cam_simulator.cpp:504 cam_simulator.cpp:1239
+msgid "FITS file is not of an image"
+msgstr "該 FITS 檔案不是影像檔"
+
+#: cam_INDI.cpp:464 cam_INDI.cpp:487 cam_firewire_IC.cpp:290
+#: cam_opencv.cpp:146 cam_simulator.cpp:527 cam_simulator.cpp:1074
+#: cam_simulator.cpp:1136 cam_simulator.cpp:1256 image_math.cpp:85
+#: image_math.cpp:545
+msgid "Memory allocation error"
+msgstr "記憶體配置錯誤"
+
+#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:545
+#: cam_simulator.cpp:1261
+msgid "Error reading data"
+msgstr "讀取資料錯誤"
+
+#: cam_INDI.cpp:510
+msgid "No CCD_FRAME property, failed to determine image dimensions"
+msgstr "無法決定影像尺寸, CCD_FRAME 屬性不存在"
+
+#: cam_INDI.cpp:515
+msgid "No WIDTH value, failed to determine image dimensions"
+msgstr "無法決定影像尺寸, WIDTH 屬性不存在"
+
+#: cam_INDI.cpp:521
+msgid "No HEIGHT value, failed to determine image dimensions"
+msgstr "無法決定影像尺寸, HIGHT 屬性不存在"
+
+#: cam_INDI.cpp:528
+msgid "CCD stream: memory allocation error"
+msgstr "CCD 串流: 記憶體配置錯誤"
+
+#: cam_INDI.cpp:645
+msgid "Unknown image format: "
+msgstr "不明的影像格式"
+
+#: cam_INovaPLC.cpp:61
+#, c-format
+msgid "Error on connection: %d"
+msgstr "連接錯誤: %d"
+
+#: cam_INovaPLC.cpp:83
+msgid "Error setting exposure duration"
+msgstr "設定曝光時間發生錯誤"
+
+#: cam_INovaPLC.cpp:87
+msgid "Error setting gain"
+msgstr "設定增益發生錯誤"
+
+#: cam_LELXUSBWebcam.cpp:67
+msgid "Unable to open LXUSB device"
+msgstr "無法開啟 LXUSB 設備"
+
+#: cam_LESerialWebcam.cpp:274
+msgid "Serial LE Webcam"
+msgstr "Serial LE Webcam"
+
+#: cam_LESerialWebcam.cpp:279 camera.cpp:853
+msgid "LE Port"
+msgstr "LE 埠"
+
+#: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:157
+msgid "No serial ports found"
+msgstr "找不到序列埠"
+
+#: cam_LESerialWebcam.cpp:316
+msgid "Port pins"
+msgstr "通訊埠腳位"
+
+#: cam_LESerialWebcam.cpp:352
+msgid "Inverted logic"
+msgstr "反向邏輯"
+
+#: cam_LESerialWebcam.cpp:355
+msgid "Use Amp"
+msgstr "使用 Amp"
+
+#: cam_LESerialWebcam.cpp:365
+msgid "Defaults"
+msgstr "預設值"
+
+#: cam_LESerialWebcam.cpp:369
+msgid "Webcam settings"
+msgstr "Webcam 設定"
+
+#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
+msgid "Cannot start exposure"
+msgstr "無法開始曝光"
+
+#: cam_QHY5IIbase.cpp:107
+#, c-format
+msgid "Camera DLL missing entry %s"
+msgstr "相機 DLL 缺少參數 %s"
+
+#: cam_QHY5IIbase.cpp:120
+#, c-format
+msgid "Cannot load camera dll %s.dll"
+msgstr "無法載入相機 DLL %s.dll"
+
+#: cam_QHY5IIbase.cpp:148
+msgid "No camera"
+msgstr "無相機"
+
+#: cam_SAC42.cpp:135
+msgid "Error capturing data from camera"
+msgstr "由相機擷取資料時發生錯誤"
+
+#: cam_SBIG.cpp:113
+msgid "Error loading SBIG driver and/or DLL"
+msgstr "載入 SBIG 驅動程式發生錯誤"
+
+#: cam_SBIG.cpp:136
+msgid "Select interface"
+msgstr "選擇介面"
+
+#: cam_SBIG.cpp:136
+msgid "Interface"
+msgstr "介面"
+
+#: cam_SBIG.cpp:168
+msgid "Select USB camera"
+msgstr "選擇 USB 相機"
+
+#: cam_SBIG.cpp:168
+msgid "Camera name"
+msgstr "相機名稱"
+
+#: cam_SBIG.cpp:179
+msgid "IP address"
+msgstr "IP 地址"
+
+#: cam_SBIG.cpp:179
+msgid "Enter IP address"
+msgstr "輸入 IP 地址"
+
+#: cam_SBIG.cpp:308
+msgid "CCD Choice"
+msgstr "選擇 CCD"
+
+#: cam_SBIG.cpp:318
+msgid "Error getting info on main CCD"
+msgstr "取得主 CCD 資訊時發生錯誤"
+
+#: cam_SBIG.cpp:475
+msgid "Cannot poll exposure"
+msgstr "無法發出曝光命令"
+
+#: cam_SBIG.cpp:498
+msgid "Cannot stop exposure"
+msgstr "無法停止曝光"
+
+#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+msgid "Error downloading data"
+msgstr "下載資料失敗"
+
+#: cam_SBIG.cpp:581
+msgid "Cannot check SBIG relay status"
+msgstr "無法檢查 SBIG 繼電器狀態"
+
+#: cam_SBIG.cpp:590
+msgid "Timeout expired waiting for guide pulse to complete."
+msgstr "超過逾時時間, 等待導星訊號完成"
+
+#: cam_SXV.cpp:153
+msgid "SX Camera Settings"
+msgstr "SX 相機設定"
+
+#: cam_SXV.cpp:261
+msgid "No SX cameras found"
+msgstr "找不到 SX 相機"
+
+#: cam_SXV.cpp:285
+msgid "Connect failed: could not retrieve camera parameters."
+msgstr "連接錯誤: 無法讀取相機參數"
+
+#: cam_SXV.cpp:776
+msgid "Lost connection to camera"
+msgstr ""
+
+#: cam_StarShootDSCI.cpp:152
+msgid "Problem sending register to StarShoot"
+msgstr "向 StarShoot 發送註冊訊號時發生錯誤"
+
+#: cam_StarShootDSCI.cpp:163
+msgid "Error starting exposure"
+msgstr "開始曝光時發生錯誤"
+
+#: cam_VFW.cpp:88
+msgid "Select capture device"
+msgstr "選擇拍攝裝置"
+
+#: cam_VFW.cpp:88 cam_wdm.cpp:168
+msgid "Camera choice"
+msgstr "選擇相機"
+
+#: cam_ZWO.cpp:101
+#, c-format
+msgid "Could not load DLL %s"
+msgstr "無法載入 DLL %s"
+
+#: cam_ZWO.cpp:104
+msgid ""
+"The ASI camera library requires the Microsoft Visual C++ 2008 "
+"Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
+"download/details.aspx?id=29"
+msgstr ""
+"ASI 相機程式庫需要 Microsoft Visual C++ 2008 可轉發套件 (x86), 此套件可以由 "
+"http://www.microsoft.com/en-us/download/details.aspx?id=29 取得"
+
+#: cam_ZWO.cpp:207 cam_ZWO.cpp:255
+msgid "Failed to get camera properties for ZWO ASI Camera."
+msgstr "無法取得供 ZWO ASI 相機的屬性"
+
+#: cam_ZWO.cpp:213
+msgid "Failed to open ZWO ASI Camera."
+msgstr "無法開啟 ZWO ASI 相機"
 
 #: cam_ascomlate.cpp:338 scope_ascom.cpp:735
 msgid ""
@@ -780,18 +1267,6 @@ msgstr "對相機送出異常訊號"
 msgid "Error reading image"
 msgstr "影像讀取錯誤"
 
-#: cam_Atik16.cpp:77
-msgid "DLL error"
-msgstr "DLL 錯誤"
-
-#: cam_Atik16.cpp:119
-msgid "Already connected"
-msgstr "已連接"
-
-#: cam_Atik16.cpp:294
-msgid "Couldn't start exposure - aborting"
-msgstr "無法開始曝光 - 中斷"
-
 #: cam_firewire_IC.cpp:104
 msgid "No camera found"
 msgstr "找不到相機"
@@ -814,12 +1289,6 @@ msgid ""
 "exposure"
 msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執行中"
 
-#: cam_firewire_IC.cpp:290 cam_INDI.cpp:464 cam_INDI.cpp:487 cam_opencv.cpp:146
-#: cam_simulator.cpp:527 cam_simulator.cpp:1074 cam_simulator.cpp:1136
-#: cam_simulator.cpp:1256 image_math.cpp:85 image_math.cpp:545
-msgid "Memory allocation error"
-msgstr "記憶體配置錯誤"
-
 #: cam_firewire_IC.cpp:302
 msgid "Could not start video stream"
 msgstr "無法開啟視訊串流"
@@ -833,174 +1302,9 @@ msgstr "拍攝影像錯誤: %d (%d) %s"
 msgid "Cannot get a frame from the queue"
 msgstr "無法由佇列中取得影像"
 
-#: cam_INDI.cpp:335
-#, c-format
-msgid "Cannot connect to camera %s"
-msgstr ""
-
-#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:515
-msgid "Unsupported type or read error loading FITS file"
-msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
-
-#: cam_INDI.cpp:446 cam_simulator.cpp:504 cam_simulator.cpp:1239
-msgid "FITS file is not of an image"
-msgstr "該 FITS 檔案不是影像檔"
-
-#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:545
-#: cam_simulator.cpp:1261
-msgid "Error reading data"
-msgstr "讀取資料錯誤"
-
-#: cam_INDI.cpp:510
-msgid "No CCD_FRAME property, failed to determine image dimensions"
-msgstr "無法決定影像尺寸, CCD_FRAME 屬性不存在"
-
-#: cam_INDI.cpp:515
-msgid "No WIDTH value, failed to determine image dimensions"
-msgstr "無法決定影像尺寸, WIDTH 屬性不存在"
-
-#: cam_INDI.cpp:521
-msgid "No HEIGHT value, failed to determine image dimensions"
-msgstr "無法決定影像尺寸, HIGHT 屬性不存在"
-
-#: cam_INDI.cpp:528
-msgid "CCD stream: memory allocation error"
-msgstr "CCD 串流: 記憶體配置錯誤"
-
-#: cam_INDI.cpp:645
-msgid "Unknown image format: "
-msgstr "不明的影像格式"
-
-#: cam_INovaPLC.cpp:61
-#, c-format
-msgid "Error on connection: %d"
-msgstr "連接錯誤: %d"
-
-#: cam_INovaPLC.cpp:83
-msgid "Error setting exposure duration"
-msgstr "設定曝光時間發生錯誤"
-
-#: cam_INovaPLC.cpp:87
-msgid "Error setting gain"
-msgstr "設定增益發生錯誤"
-
-#: cam_LELXUSBWebcam.cpp:67
-msgid "Unable to open LXUSB device"
-msgstr "無法開啟 LXUSB 設備"
-
-#: cam_LESerialWebcam.cpp:274
-msgid "Serial LE Webcam"
-msgstr "Serial LE Webcam"
-
-#: cam_LESerialWebcam.cpp:279 camera.cpp:853
-msgid "LE Port"
-msgstr "LE 埠"
-
-#: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:157
-msgid "No serial ports found"
-msgstr "找不到序列埠"
-
-#: cam_LESerialWebcam.cpp:316
-msgid "Port pins"
-msgstr "通訊埠腳位"
-
-#: cam_LESerialWebcam.cpp:352
-msgid "Inverted logic"
-msgstr "反向邏輯"
-
-#: cam_LESerialWebcam.cpp:355
-msgid "Use Amp"
-msgstr "使用 Amp"
-
-#: cam_LESerialWebcam.cpp:365
-msgid "Defaults"
-msgstr "預設值"
-
-#: cam_LESerialWebcam.cpp:369
-msgid "Webcam settings"
-msgstr "Webcam 設定"
-
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
 msgstr "無法啟用 USB 程式庫"
-
-#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
-msgid "Cannot start exposure"
-msgstr "無法開始曝光"
-
-#: cam_QHY5IIbase.cpp:107
-#, c-format
-msgid "Camera DLL missing entry %s"
-msgstr "相機 DLL 缺少參數 %s"
-
-#: cam_QHY5IIbase.cpp:120
-#, c-format
-msgid "Cannot load camera dll %s.dll"
-msgstr "無法載入相機 DLL %s.dll"
-
-#: cam_QHY5IIbase.cpp:148
-msgid "No camera"
-msgstr "無相機"
-
-#: cam_SAC42.cpp:135
-msgid "Error capturing data from camera"
-msgstr "由相機擷取資料時發生錯誤"
-
-#: cam_SBIG.cpp:113
-msgid "Error loading SBIG driver and/or DLL"
-msgstr "載入 SBIG 驅動程式發生錯誤"
-
-#: cam_SBIG.cpp:136
-msgid "Select interface"
-msgstr "選擇介面"
-
-#: cam_SBIG.cpp:136
-msgid "Interface"
-msgstr "介面"
-
-#: cam_SBIG.cpp:168
-msgid "Select USB camera"
-msgstr "選擇 USB 相機"
-
-#: cam_SBIG.cpp:168
-msgid "Camera name"
-msgstr "相機名稱"
-
-#: cam_SBIG.cpp:179
-msgid "IP address"
-msgstr "IP 地址"
-
-#: cam_SBIG.cpp:179
-msgid "Enter IP address"
-msgstr "輸入 IP 地址"
-
-#: cam_SBIG.cpp:308
-msgid "CCD Choice"
-msgstr "選擇 CCD"
-
-#: cam_SBIG.cpp:318
-msgid "Error getting info on main CCD"
-msgstr "取得主 CCD 資訊時發生錯誤"
-
-#: cam_SBIG.cpp:475
-msgid "Cannot poll exposure"
-msgstr "無法發出曝光命令"
-
-#: cam_SBIG.cpp:498
-msgid "Cannot stop exposure"
-msgstr "無法停止曝光"
-
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
-msgid "Error downloading data"
-msgstr "下載資料失敗"
-
-#: cam_SBIG.cpp:581
-msgid "Cannot check SBIG relay status"
-msgstr "無法檢查 SBIG 繼電器狀態"
-
-#: cam_SBIG.cpp:590
-msgid "Timeout expired waiting for guide pulse to complete."
-msgstr "超過逾時時間, 等待導星訊號完成"
 
 #: cam_sbigrotator.cpp:62
 msgid "Enter RA Angle (in degrees)"
@@ -1082,10 +1386,6 @@ msgstr "星點"
 #: cam_simulator.cpp:1449
 msgid "Number of hot pixels"
 msgstr "熱燥數量"
-
-#: cam_simulator.cpp:1450 Refine_DefMap.cpp:169
-msgid "Hot pixels"
-msgstr "熱噪"
 
 #: cam_simulator.cpp:1451
 #, c-format
@@ -1219,11 +1519,6 @@ msgstr "彗星"
 msgid "Star fading due to clouds"
 msgstr "導星星體被雲遮蔽"
 
-#: cam_simulator.cpp:1535 darks_dialog.cpp:208 Refine_DefMap.cpp:176
-#: testguide.cpp:101
-msgid "Reset"
-msgstr "重設"
-
 #: cam_simulator.cpp:1536
 msgid "Reset all values to application defaults"
 msgstr "將所有數值重設為應用程式預設值"
@@ -1242,38 +1537,6 @@ msgstr "取消"
 msgid "Side of pier: %s"
 msgstr "赤道儀方向: %s"
 
-#: cam_StarShootDSCI.cpp:152
-msgid "Problem sending register to StarShoot"
-msgstr "向 StarShoot 發送註冊訊號時發生錯誤"
-
-#: cam_StarShootDSCI.cpp:163
-msgid "Error starting exposure"
-msgstr "開始曝光時發生錯誤"
-
-#: cam_SXV.cpp:153
-msgid "SX Camera Settings"
-msgstr "SX 相機設定"
-
-#: cam_SXV.cpp:261
-msgid "No SX cameras found"
-msgstr "找不到 SX 相機"
-
-#: cam_SXV.cpp:285
-msgid "Connect failed: could not retrieve camera parameters."
-msgstr "連接錯誤: 無法讀取相機參數"
-
-#: cam_SXV.cpp:776
-msgid "Lost connection to camera"
-msgstr ""
-
-#: cam_VFW.cpp:88
-msgid "Select capture device"
-msgstr "選擇拍攝裝置"
-
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
-msgid "Camera choice"
-msgstr "選擇相機"
-
 #: cam_wdm.cpp:168
 msgid "Select WDM camera"
 msgstr "選擇 WDM 相機"
@@ -1285,28 +1548,6 @@ msgstr "選擇相機模式"
 #: cam_wdm.cpp:200
 msgid "Camera mode"
 msgstr "相機模式"
-
-#: cam_ZWO.cpp:101
-#, c-format
-msgid "Could not load DLL %s"
-msgstr "無法載入 DLL %s"
-
-#: cam_ZWO.cpp:104
-msgid ""
-"The ASI camera library requires the Microsoft Visual C++ 2008 "
-"Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
-"download/details.aspx?id=29"
-msgstr ""
-"ASI 相機程式庫需要 Microsoft Visual C++ 2008 可轉發套件 (x86), 此套件可以由 "
-"http://www.microsoft.com/en-us/download/details.aspx?id=29 取得"
-
-#: cam_ZWO.cpp:207 cam_ZWO.cpp:255
-msgid "Failed to get camera properties for ZWO ASI Camera."
-msgstr "無法取得供 ZWO ASI 相機的屬性"
-
-#: cam_ZWO.cpp:213
-msgid "Failed to open ZWO ASI Camera."
-msgstr "無法開啟 ZWO ASI 相機"
 
 #: camcal_import_dialog.cpp:57
 #, c-format
@@ -1764,6 +2005,22 @@ msgstr ""
 "建立的暗場影像將會被用來新建一個暗場影像庫, 舊有的影像會被捨棄: 如果你看到關"
 "於不相容影像大小或與目前相機不符的影像等告警訊息, 你必須使用此選項來修正此類"
 "問題。"
+
+#: darks_dialog.cpp:151
+#, c-format
+msgid ""
+"Existing dark library covers %d exposure times in the range of %g s to %g s"
+msgstr ""
+
+#: darks_dialog.cpp:157
+msgid ""
+"Existing dark library contains incompatible frames - it must be rebuilt from "
+"scratch"
+msgstr ""
+
+#: darks_dialog.cpp:164
+msgid "No compatible dark library is available"
+msgstr ""
 
 #: darks_dialog.cpp:179
 msgid "Dark Frame Settings"
@@ -2483,6 +2740,26 @@ msgstr "匯入 PHD 設備配置檔案"
 msgid "Export PHD Equipment Profile"
 msgstr "匯出 PHD 設備配置檔案"
 
+#: graph-stepguider.cpp:47 myframe.cpp:296 myframe.cpp:360
+msgid "AO Position"
+msgstr "AO 位置"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "選擇所要顯示的歷史影像數目"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:112 target.cpp:79
+msgid "Clear"
+msgstr "清除"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "清除圖型資料"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO 未連接"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "赤道儀:"
@@ -2494,10 +2771,6 @@ msgstr "選擇 X-軸要顯示的歷史圖像數目:"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "圖型設定"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:112 target.cpp:79
-msgid "Clear"
-msgstr "清除"
 
 #: graph.cpp:130
 msgid ""
@@ -2618,22 +2891,6 @@ msgstr "往東導星"
 msgid "Dither"
 msgstr "Dither"
 
-#: graph-stepguider.cpp:47 myframe.cpp:296 myframe.cpp:360
-msgid "AO Position"
-msgstr "AO 位置"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "選擇所要顯示的歷史影像數目"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "清除圖型資料"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO 未連接"
-
 #: guide_algorithm.cpp:49
 msgid "DEC"
 msgstr "赤緯"
@@ -2666,11 +2923,6 @@ msgid ""
 msgstr ""
 "要使用多少歷史導星訊號\n"
 "預設值 = %.f%%,, 增加該參數以讓導星曲線趨於平滑。"
-
-#: guide_algorithm_hysteresis.cpp:227 guide_algorithm_lowpass2.cpp:209
-#: guide_algorithm_resistswitch.cpp:267 Refine_DefMap.cpp:159
-msgid "Aggressiveness"
-msgstr "修正強度"
 
 #: guide_algorithm_hysteresis.cpp:228
 #, c-format
@@ -3170,7 +3422,7 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "測量回差當中:"
 
-#: guiding_assistant.cpp:591 guiding_assistant.cpp:1153
+#: guiding_assistant.cpp:591 guiding_assistant.cpp:1151
 msgid "px"
 msgstr "px"
 
@@ -3181,6 +3433,11 @@ msgstr "ms"
 #: guiding_assistant.cpp:682 guiding_assistant.cpp:683
 msgid "Apply"
 msgstr "套用"
+
+#: guiding_assistant.cpp:790
+#, c-format
+msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
+msgstr ""
 
 #: guiding_assistant.cpp:799
 msgid "Consider re-doing your calibration "
@@ -3241,31 +3498,31 @@ msgstr "回差測量當中..."
 msgid "Guiding stopped"
 msgstr "導星終止"
 
-#: guiding_assistant.cpp:1152
+#: guiding_assistant.cpp:1150
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1154
+#: guiding_assistant.cpp:1152
 msgid "arc-sec"
 msgstr "角秒"
 
-#: guiding_assistant.cpp:1155
+#: guiding_assistant.cpp:1153
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1156
+#: guiding_assistant.cpp:1154
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1158
+#: guiding_assistant.cpp:1156
 msgid "arc-sec/min"
 msgstr "角秒/分鐘"
 
-#: guiding_assistant.cpp:1159
+#: guiding_assistant.cpp:1157
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
-#: guiding_assistant.cpp:1178
+#: guiding_assistant.cpp:1176
 msgid " "
 msgstr ""
 
@@ -4689,191 +4946,6 @@ msgstr ""
 msgid "Detect Pixel Size"
 msgstr "壞像素大小"
 
-#: Refine_DefMap.cpp:66
-msgid "Refine Bad-pixel Map"
-msgstr "完善壞像素影像"
-
-#: Refine_DefMap.cpp:74
-msgid "Rebuild Master Dark Frame"
-msgstr "重建主暗場影像"
-
-#: Refine_DefMap.cpp:75
-msgid ""
-"Click to re-acquire the master dark frames needed to compute an initial bad-"
-"pixel map"
-msgstr "點擊進行重做主暗場影像是計算最原始壞像素影像所必需的"
-
-#: Refine_DefMap.cpp:80
-msgid "Show Master Dark Details"
-msgstr "顯示主暗場影像細節"
-
-#: Refine_DefMap.cpp:81
-msgid ""
-"Click to display detailed statistics of master dark frame used to compute "
-"bad-pixel map"
-msgstr "點擊以顯示用來計算壞像素影像的主暗場影像詳細統計資訊"
-
-#: Refine_DefMap.cpp:85
-msgid "Show defect pixels"
-msgstr "顯示壞像素"
-
-#: Refine_DefMap.cpp:86
-msgid "Check to show hot/cold pixels in the main image window."
-msgstr "選核該項以在主影像視窗中顯示熱/冷噪像素"
-
-#: Refine_DefMap.cpp:91
-msgid "General Information"
-msgstr "一般資訊"
-
-#: Refine_DefMap.cpp:101
-msgid "Time:"
-msgstr "時間:"
-
-#: Refine_DefMap.cpp:103
-msgid "Camera:"
-msgstr "相機:"
-
-#: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
-msgid "Master Dark Exposure Time:"
-msgstr "主暗場影像曝光時間:"
-
-#: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
-msgid "Master Dark Exposure Count:"
-msgstr "主暗場影像拍攝張數:"
-
-#: Refine_DefMap.cpp:116
-msgid "Aggressiveness, hot pixels:"
-msgstr "修正, 熱像素"
-
-#: Refine_DefMap.cpp:118
-msgid "Aggressiveness, cold pixels:"
-msgstr "修正, 冷像素"
-
-#: Refine_DefMap.cpp:122
-msgid "Mean:"
-msgstr "平均:"
-
-#: Refine_DefMap.cpp:124
-msgid "Standard Deviation:"
-msgstr "標準差:"
-
-#: Refine_DefMap.cpp:128
-msgid "Median:"
-msgstr "中位數:"
-
-#: Refine_DefMap.cpp:130
-msgid "Median Absolute Deviation:"
-msgstr "中位數絕對偏差:"
-
-#: Refine_DefMap.cpp:137
-msgid "Results"
-msgstr "結果"
-
-#: Refine_DefMap.cpp:147
-msgid "Hot pixel count:"
-msgstr "熱噪數目:"
-
-#: Refine_DefMap.cpp:149
-msgid "Cold pixel count:"
-msgstr "冷噪數目:"
-
-#: Refine_DefMap.cpp:153
-msgid "Manually added pixels"
-msgstr "手動增加像素"
-
-#: Refine_DefMap.cpp:164
-msgid ""
-"Move this slider to increase or decrease the number of pixels that will be "
-"treated as 'hot', then click on 'generate' to build and load the new bad-"
-"pixel map"
-msgstr ""
-"拉動滑軌以增加或減少會被當做熱噪點的像素數目, 然後點擊【產生】以建立或載入該"
-"新建的壞像素影像"
-
-#: Refine_DefMap.cpp:168
-msgid ""
-"Move this slider to increase or decrease the number of pixels that will be "
-"treated as 'cold', then click on 'generate' to build and load the new bad-"
-"pixel map"
-msgstr ""
-"拉動滑軌以增加或減少會被當做冷噪點的像素數目, 然後點擊【產生】以建立或載入該"
-"新建的壞像素影像"
-
-#: Refine_DefMap.cpp:170
-msgid "Cold pixels"
-msgstr "冷噪"
-
-#: Refine_DefMap.cpp:178
-msgid "Reset parameters to starting point"
-msgstr "重置參數, 回到開始點"
-
-#: Refine_DefMap.cpp:180
-msgid "Generate"
-msgstr "產生"
-
-#: Refine_DefMap.cpp:182
-msgid ""
-"Use the current aggressiveness settings to build and load a new bad-pixel "
-"map; this will discard any manually added bad pixels"
-msgstr ""
-"使用目前 Aggressiveness 設定值以建立並載入新的壞像素影像; 這樣會捨棄任何手動"
-"加入的壞像素"
-
-#: Refine_DefMap.cpp:184
-msgid "Add Bad Pixel"
-msgstr "增加壞像素"
-
-#: Refine_DefMap.cpp:186
-msgid ""
-"Click on a bad pixel in the image display; then click on this button to add "
-"it to the in-use bad-pixel map"
-msgstr "點擊螢幕影像中的壞像素, 然後按下此按鈕將該壞像素加到壞像素影像中"
-
-#: Refine_DefMap.cpp:206
-msgid "Adjust sliders to increase/decrease pixels marked as bad"
-msgstr "拉動滑軌增加或降低被標示為壞點的像數數量"
-
-#: Refine_DefMap.cpp:263
-msgid "Please wait while image statistics are being computed..."
-msgstr "影像統計計算中, 請稍待..."
-
-#: Refine_DefMap.cpp:338
-msgid "Building new bad-pixel map"
-msgstr "建立壞點圖型"
-
-#: Refine_DefMap.cpp:340
-msgid "Saving new bad-pixel map file"
-msgstr "儲存新建的壞點圖型"
-
-#: Refine_DefMap.cpp:342
-msgid "Loading new bad-pixel map"
-msgstr "載入新建的壞點圖型"
-
-#: Refine_DefMap.cpp:344
-msgid "New bad-pixel map now being used"
-msgstr "已使用新建的壞點圖型"
-
-#: Refine_DefMap.cpp:367
-msgid "Master dark frames NOT rebuilt"
-msgstr "尚未重建主暗場影像"
-
-#: Refine_DefMap.cpp:451
-msgid "You must first load a bad-pixel map"
-msgstr "首先, 你必須載入壞點圖型"
-
-#: Refine_DefMap.cpp:456
-#, c-format
-msgid "Bad pixel marked at %d,%d"
-msgstr "壞像點標示在 %d,%d"
-
-#: Refine_DefMap.cpp:462
-msgid "Pixel position not added - no star-like object recognized there"
-msgstr "像素位置沒有被加入 - 該位置為非星點狀的物件"
-
-#: Refine_DefMap.cpp:472
-msgid "Settings restored to original values"
-msgstr "設定回復到初始值"
-
 #: rotator.cpp:144
 msgid "Rotator Settings"
 msgstr "相場選轉器設定"
@@ -5137,6 +5209,11 @@ msgstr "Mx RA"
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
+#: scope_GC_USBST4.cpp:122
+#, c-format
+msgid "Error writing to GC USB ST4: %s(%d)"
+msgstr "寫入錯誤 - GC USB ST4: %s(%d)"
+
 #: scope_ascom.cpp:155
 msgid ""
 "Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"
@@ -5185,11 +5262,6 @@ msgstr "程式回應沒有連接到任何赤道儀"
 #: scope_eqmac.cpp:176 scope_equinox.cpp:181
 msgid " not running"
 msgstr "沒有執行"
-
-#: scope_GC_USBST4.cpp:122
-#, c-format
-msgid "Error writing to GC USB ST4: %s(%d)"
-msgstr "寫入錯誤 - GC USB ST4: %s(%d)"
 
 #: scope_manual_pointing.cpp:79
 msgid "Approximate telescope declination, degrees"
@@ -5680,6 +5752,9 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid "Measurement encountered an error: "
+#~ msgstr "測量時發生錯誤:"
 
 #~ msgid "Cannot connect to camera "
 #~ msgstr "無法連接相機"

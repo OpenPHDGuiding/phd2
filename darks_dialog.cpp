@@ -148,24 +148,24 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
                 double min_v, max_v;
                 int num;
                 pCamera->GetDarklibProperties(&num, &min_v, &max_v);
-                pInfo->SetLabel(wxString::Format("Existing dark library covers %d exposure times in the range of %g s to %g s",
+                pInfo->SetLabel(wxString::Format(_("Existing dark library covers %d exposure times in the range of %g s to %g s"),
                     num, min_v / 1000., max_v / 1000.));
                 m_rbModifyDarkLib->SetValue(true);
             }
             else
             {
-                pInfo->SetLabel("Existing dark library contains incompatible frames - it must be rebuilt from scratch");
+                pInfo->SetLabel(_("Existing dark library contains incompatible frames - it must be rebuilt from scratch"));
                 m_rbModifyDarkLib->Enable(false);
                 m_rbNewDarkLib->SetValue(true);
             }
         }
         else
         {
-            pInfo->SetLabel("No compatible dark library is available");
+            pInfo->SetLabel(_("No compatible dark library is available"));
             m_rbModifyDarkLib->Enable(false);
             m_rbNewDarkLib->SetValue(true);
         }
-        
+
         hSizer->Add(m_rbModifyDarkLib, wxSizerFlags().Border(wxALL, 10));
         hSizer->Add(m_rbNewDarkLib, wxSizerFlags().Border(wxALL, 10));
         pBuildOptions->Add(pInfo, wxSizerFlags().Border(wxALL, 10).Border(wxLEFT, 25));
