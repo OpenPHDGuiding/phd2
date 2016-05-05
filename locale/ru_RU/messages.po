@@ -5282,7 +5282,7 @@ msgstr ""
 
 #: scope.cpp:1641
 msgid "Stop guiding when mount slews"
-msgstr "Закончить гидирование при движении телескопа"
+msgstr "Остановить гидирование при движении монтировки"
 
 #: scope.cpp:1643
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
