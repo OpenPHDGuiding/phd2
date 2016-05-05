@@ -65,6 +65,9 @@ private:
     INumberVectorProperty *GeographicCoord_prop;
     INumberVectorProperty *SiderealTime_prop;
     ITextVectorProperty   *scope_port;
+    ISwitchVectorProperty *pierside_prop;
+    ISwitch               *piersideEast_prop;
+    ISwitch               *piersideWest_prop;
     INDI::BaseDevice      *scope_device;
     long     INDIport;
     wxString INDIhost;
@@ -115,6 +118,7 @@ public:
     bool   SlewToCoordinatesAsync(double ra, double dec);
     void   AbortSlew(void);
     bool   Slewing(void);
+    PierSide SideOfPier(void);
 };
 
 #endif /* GUIDE_INDI */

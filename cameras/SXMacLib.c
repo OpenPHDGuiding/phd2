@@ -129,12 +129,15 @@ static inline Boolean WriteFile(void* sxHandle,
                                 UInt32 *transferred,
                                 void* ignored)
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
                                      ENDPOINT_OUT | LIBUSB_ENDPOINT_OUT,
                                      packet,
                                      length,
-                                     (int *)transferred,
+                                     &actualLength,
                                      ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 static inline Boolean ReadFile(void* sxHandle,
@@ -144,12 +147,15 @@ static inline Boolean ReadFile(void* sxHandle,
                                void* ignored)
 
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
-                                     ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
-                                     packet,
-                                     length,
-                                     (int *)transferred,
-                                     ioTimeout);
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
+                                   ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
+                                   packet,
+                                   length,
+                                   &actualLength,
+                                   ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 Boolean sxReset(void* sxHandle)

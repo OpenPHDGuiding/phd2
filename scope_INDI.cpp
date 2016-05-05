@@ -78,6 +78,7 @@ void ScopeINDI::ClearStatus()
     SiderealTime_prop = NULL;
     scope_device = NULL;
     scope_port = NULL;
+    pierside_prop = NULL;
     // reset connection status
     ready = false;
     eod_coord = false;
@@ -325,6 +326,11 @@ void ScopeINDI::newProperty(INDI::Property *property)
        pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
        pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
+    else if ((strcmp(PropName, "PIERSIDE") == 0) && Proptype == INDI_SWITCH){
+        pierside_prop = property->getSwitch();
+        piersideEast_prop = IUFindSwitch(pierside_prop,"EAST");
+        piersideWest_prop = IUFindSwitch(pierside_prop,"WEST");
+    }
     else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {    
 	scope_port = property->getText();
     }
@@ -547,6 +553,43 @@ void   ScopeINDI::AbortSlew(void)
 bool   ScopeINDI::Slewing(void)
 {
     return coord_prop && coord_prop->s == IPS_BUSY;
+}
+
+PierSide ScopeINDI::SideOfPier(void)
+{
+    PierSide pierSide = PIER_SIDE_UNKNOWN;
+    
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("INDI Scope: cannot get side of pier when not connected");
+        }
+        
+        if (pierside_prop == NULL)
+        {
+            throw THROW_INFO("INDI Scope: not capable of getting side of pier");
+        }
+        else
+        {
+            if (piersideEast_prop->s == ISS_ON) {
+                pierSide = PIER_SIDE_EAST;
+                
+            }
+            if (piersideWest_prop->s == ISS_ON) {
+                pierSide = PIER_SIDE_WEST;
+                
+            }
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+    
+    Debug.AddLine("ScopeINDI::SideOfPier() returns %d", pierSide);
+    
+    return pierSide;
 }
 
 #endif /* GUIDE_INDI */

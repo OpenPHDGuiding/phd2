@@ -123,11 +123,13 @@ class BacklashComp
     int m_pulseWidth;
     ArrayOfDbl m_residualOffsets;
     Mount *m_pMount;
+    Scope *m_pScope;
 
 public:
 
     BacklashComp(Mount *theMount);
     int GetBacklashPulse() const { return m_pulseWidth; }
+    int GetBacklashPulseLimit();
     void SetBacklashPulse(int ms);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }
@@ -137,6 +139,7 @@ public:
 
 private:
     void _TrackBLCResults(double yDistance, double minMove, double yRate);
+    void SetCompValues(int requestSize);
 };
 
 inline void BacklashComp::TrackBLCResults(double yDistance, double minMove, double yRate)

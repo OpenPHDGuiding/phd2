@@ -44,7 +44,7 @@
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
 static const int DefaultMaxRaDuration = 2500;
-enum { MAX_DURATION_MIN = 50, MAX_DURATION_MAX = 5000, };
+enum { MAX_DURATION_MIN = 50, MAX_DURATION_MAX = 8000, };
 
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
@@ -1656,8 +1656,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_cbDecComp), wxID_ANY, _("Use backlash comp"));
         AddCtrl(CtrlMap, AD_cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
         m_pBacklashPulse = new wxSpinCtrlDouble(GetParentWindow(AD_szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
-        AddGroup(CtrlMap, AD_szDecCompAmt, (MakeLabeledControl(AD_szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."))));
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, pScope->m_backlashComp->GetBacklashPulseLimit(), 450, 50);
+        AddGroup(CtrlMap, AD_szDecCompAmt, (MakeLabeledControl(AD_szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically adjusted based on observed performance."))));
 
         m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Dec compensation"));
         m_pUseDecComp->Enable(enableCtrls && pPointingSource != NULL);
@@ -1715,11 +1715,15 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
         m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
         m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-        int oldVal = m_pScope->m_backlashComp->GetBacklashPulse();
-        if (oldVal != m_pBacklashPulse->GetValue())
-            m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+        int oldBC = m_pScope->m_backlashComp->GetBacklashPulse();
+        int newBC = m_pBacklashPulse->GetValue();
+        if (oldBC != newBC)
+            m_pScope->m_backlashComp->SetBacklashPulse(newBC);
         m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
         m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
+        // Following needed in case user changes max_duration with blc value already set
+        if (m_pScope->m_backlashComp->IsEnabled() && m_pScope->GetMaxDecDuration() < newBC)
+            m_pScope->SetMaxDecDuration(newBC);
         if (pFrame)
             pFrame->UpdateCalibrationStatus();
     }
