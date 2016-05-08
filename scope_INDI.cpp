@@ -211,6 +211,7 @@ void ScopeINDI::serverConnected()
     else {
        Disconnect();
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::serverDisconnected(int exit_code)
@@ -223,6 +224,7 @@ void ScopeINDI::serverDisconnected(int exit_code)
     }
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
@@ -231,6 +233,7 @@ void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 	// The mount object
 	scope_device = dp;
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
@@ -246,25 +249,28 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
             if (ready) ScopeINDI::Disconnect();
         }
     }
-    
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the mount driver send a message
     //printf("Mount Receving message: %s\n", dp->messageQueue(messageID));
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
     //printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np->value);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
     //printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void ScopeINDI::newProperty(INDI::Property *property) 
@@ -346,6 +352,7 @@ void ScopeINDI::newProperty(INDI::Property *property)
 	SiderealTime_prop = property->getNumber();
     }
     CheckState();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration) 
@@ -378,6 +385,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 	    printf("error ScopeINDI::Guide NONE\n");
             break;
     }
+    wxSetlocale(LC_NUMERIC, "C");
     wxMilliSleep(duration);
     return MOVE_OK;
   }
@@ -440,6 +448,7 @@ double ScopeINDI::GetDeclination(void)
             double dec = decprop->value;     // Degrees
 	        if (dec > 89.0) dec = 89.0;     // avoid crash when dividing by cos(dec) 
             if (dec < -89.0) dec = -89.0; 
+            wxSetlocale(LC_NUMERIC, "C");
             return radians(dec);
         }
     }
@@ -465,6 +474,7 @@ bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 	    err = false;
 	}
     }
+    wxSetlocale(LC_NUMERIC, "C");
     return err;
 }
 
@@ -497,6 +507,7 @@ bool   ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 	   #endif
 	}
     }
+    wxSetlocale(LC_NUMERIC, "C");
     return err;
 }
 
@@ -512,6 +523,7 @@ bool   ScopeINDI::GetSiteLatLong(double *latitude, double *longitude)
 	    err = false;
 	}
     }
+    wxSetlocale(LC_NUMERIC, "C");
     return err;
 }
 
@@ -536,6 +548,7 @@ bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
 	sendNewNumber(coord_prop);
 	err = false;
     }
+    wxSetlocale(LC_NUMERIC, "C");
     return err;
 }
 
@@ -580,8 +593,10 @@ PierSide ScopeINDI::SideOfPier(void)
                 pierSide = PIER_SIDE_WEST;
                 
             }
+            wxSetlocale(LC_NUMERIC, "C");
         }
     }
+    
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);

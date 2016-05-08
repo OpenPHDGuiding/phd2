@@ -186,11 +186,13 @@ void INDIConfig::Connect()
     if (connectServer()) {
         connect_status->SetLabel(_("Connected"));
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void INDIConfig::Disconnect()
 {
    disconnectServer();
+   wxSetlocale(LC_NUMERIC, "C");
    connect_status->SetLabel(_("Disconnected"));
    gui = NULL;
 }
@@ -202,6 +204,7 @@ void INDIConfig::newDevice(INDI::BaseDevice *dp)
    if (d_name == INDIDevName) {
       dev->SetValue(INDIDevName);
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void INDIConfig::SetSettings()

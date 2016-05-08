@@ -136,12 +136,14 @@ void IndiGui::serverConnected()
 {
     setBLOBMode(B_NEVER, "", NULL);
     ready = true;
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::serverDisconnected(int exit_code)
 {
    // connection to server is lost, destroy ourself 
-   if (ready) Destroy();
+    wxSetlocale(LC_NUMERIC, "C");
+    if (ready) Destroy();
 }
 
 void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
@@ -161,6 +163,7 @@ void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
     panel->Fit();
     sizer->Layout();
     Fit();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
@@ -205,6 +208,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     indiDev->page->Show();
     sizer->Layout();
     Fit();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
@@ -250,6 +254,7 @@ void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiPro
 	 break;
    }
    indiProp->gbs->Layout();
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 int IndiGui::GetSwitchType(ISwitchVectorProperty *svp)
@@ -275,6 +280,7 @@ void IndiGui::CreateSwitchWidget(INDI::Property *property, IndiProp *indiProp)
       case SWITCH_CHECKBOX: CreateSwitchCheckbox(property->getSwitch(), indiProp); break;
       case SWITCH_BUTTON:   CreateSwitchButton(property->getSwitch(), indiProp);   break;
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiProp)
@@ -304,6 +310,7 @@ void IndiGui::CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiPro
    gbs->Add(combo, POS(0, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
    indiProp->ctrl[wxString::FromAscii(svp->name)] = (void *) combo;
    delete [] choices;
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiProp)
@@ -326,6 +333,7 @@ void IndiGui::CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiPro
 	      wxCommandEventHandler(IndiGui::SetCheckboxEvent));
       gbs->Add(button, POS(pos / 4, pos % 4), SPAN(1, 1), wxALIGN_LEFT | wxALL);
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
@@ -351,6 +359,7 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
       }
       gbs->Add(button, POS(0, pos), SPAN(1, 1), wxALIGN_LEFT | wxALL);
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateTextWidget(INDI::Property *property, IndiProp *indiProp)
@@ -385,6 +394,7 @@ if (tvp->p != IP_RO) {
    Connect(button->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(IndiGui::SetButtonEvent));
    gbs->Add(button, POS(0, 3), SPAN(pos, 1), wxALIGN_LEFT | wxALL);
 } 
+wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
@@ -405,6 +415,7 @@ void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
       gbs->Add(new wxStaticText(p, wxID_ANY, wxString::FromAscii(nvp->np[pos].label)),
 	       POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
       
+      wxSetlocale(LC_NUMERIC, "C");
       value = new wxStaticText(p, wxID_ANY, wxString::Format(_T("%f"), nvp->np[pos].value));
       indiProp->ctrl[wxString::FromAscii(nvp->np[pos].name)] = value;
       gbs->Add(value, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
@@ -420,24 +431,27 @@ void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
       Connect(button->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(IndiGui::SetButtonEvent));
       gbs->Add(button, POS(0, 3), SPAN(pos, 1), wxALIGN_LEFT | wxALL);
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateLightWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateLightWidget\n");
-   
+    wxSetlocale(LC_NUMERIC, "C");
+    
 }
 
 void IndiGui::CreateBlobWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateBlobWidget\n");
-   
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::CreateUnknowWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateUnknowWidget\n");
-   
+    wxSetlocale(LC_NUMERIC, "C");
+    
 }
 
 void IndiGui::OnNewNumberFromThread(wxThreadEvent& event)
@@ -453,9 +467,11 @@ void IndiGui::OnNewNumberFromThread(wxThreadEvent& event)
     for (i = 0; i < nvp->nnp; i++) {
 	st = indiProp->ctrl[wxString::FromAscii(nvp->np[i].name)];
 	wxStaticText *ctrl = (wxStaticText *)st;
-	ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
+        wxSetlocale(LC_NUMERIC, "C");
+        ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
     }
     indiProp->state->SetState(nvp->s);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::OnNewTextFromThread(wxThreadEvent& event)
@@ -474,6 +490,7 @@ void IndiGui::OnNewTextFromThread(wxThreadEvent& event)
 	ctrl->SetLabel(wxString::Format(wxT("%s"), tvp->tp[i].text));
     }
     indiProp->state->SetState(tvp->s);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::OnNewSwitchFromThread(wxThreadEvent& event)
@@ -516,6 +533,7 @@ void IndiGui::OnNewSwitchFromThread(wxThreadEvent& event)
 	    break;
 	}
     }
+    wxSetlocale(LC_NUMERIC, "C");
     
 }
 
@@ -528,6 +546,7 @@ void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)
       textbuffer->WriteText(wxString::FromAscii(message));
       textbuffer->WriteText(_T("\n"));
    }
+   wxSetlocale(LC_NUMERIC, "C");
 #ifdef INDI_PRE_1_0_0
    delete message; //http://sourceforge.net/p/indi/code/1803/
 #endif   
@@ -568,6 +587,7 @@ void IndiGui::SetButtonEvent(wxCommandEvent & event)
        default:{
        }
    }
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::SetToggleButtonEvent(wxCommandEvent & event)
@@ -615,6 +635,7 @@ void IndiGui::SetToggleButtonEvent(wxCommandEvent & event)
       }
    }
    sendNewSwitch(svp);
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 
@@ -636,6 +657,7 @@ void IndiGui::SetComboboxEvent(wxCommandEvent & event)
        }
     }
     sendNewSwitch(svp);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::SetCheckboxEvent(wxCommandEvent & event)
@@ -664,6 +686,7 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent & event)
        }
     }
     sendNewSwitch(svp);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)

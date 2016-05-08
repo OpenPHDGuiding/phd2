@@ -114,6 +114,7 @@ void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
       // The camera object, maybe this can be useful in the future
       camera_device = dp;
   }
+  wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
@@ -129,12 +130,14 @@ void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
             if (ready) Disconnect();
         }
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the camera driver send a message
     //printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
@@ -158,12 +161,14 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
         m_curBinning = Binning;
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
     //printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void  Camera_INDIClass::newBLOB(IBLOB *bp)
@@ -181,6 +186,7 @@ void  Camera_INDIClass::newBLOB(IBLOB *bp)
         cam_bp = bp;
         // TODO : cumulate the frames received during exposure
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::newProperty(INDI::Property *property)
@@ -255,6 +261,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     }
 
     CheckState();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 bool Camera_INDIClass::Connect(const wxString& camId)
@@ -336,6 +343,7 @@ void Camera_INDIClass::serverConnected()
         Connected = false;
         Disconnect();
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::serverDisconnected(int exit_code)
@@ -344,6 +352,7 @@ void Camera_INDIClass::serverDisconnected(int exit_code)
    Disconnect();
    // after disconnection we reset the connection status and the properties pointers
    ClearStatus();
+   wxSetlocale(LC_NUMERIC, "C");
 }
 
 void Camera_INDIClass::ShowPropertyDialog()
@@ -440,8 +449,10 @@ bool Camera_INDIClass::ReadFITS(usImage& img, bool takeSubframe, const wxRect& s
             &status) )
     {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
+        wxSetlocale(LC_NUMERIC, "C");
         return true;
     }
+    wxSetlocale(LC_NUMERIC, "C");
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
         pFrame->Alert(_("FITS file is not of an image"));
         PHD_fits_close_file(fptr);
@@ -533,6 +544,7 @@ bool Camera_INDIClass::ReadStream(usImage& img)
     inptr = (unsigned char *) cam_bp->blob;
     for (int i = 0; i < xsize * ysize; i++)
         *outptr ++ = *inptr++;
+    wxSetlocale(LC_NUMERIC, "C");
     return false;
 }
 
@@ -579,6 +591,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
           // set the exposure time, this immediately start the exposure
           expose_prop->np->value = (double)duration/1000;
           sendNewNumber(expose_prop);
+          wxSetlocale(LC_NUMERIC, "C");
 
           modal = true;  // will be reset when the image blob is received
 
@@ -607,6 +620,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
           v_off->s = ISS_OFF;
           // start capture, every video frame is received as a blob
           sendNewSwitch(video_prop);
+          wxSetlocale(LC_NUMERIC, "C");
 
           // wait the required time
           wxMilliSleep(duration); // TODO : add the frames received during exposure
@@ -615,6 +629,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
           v_on->s = ISS_OFF;
           v_off->s = ISS_ON;
           sendNewSwitch(video_prop);
+          wxSetlocale(LC_NUMERIC, "C");
       }
       else {
           return true;
@@ -695,6 +710,7 @@ bool Camera_INDIClass::ST4PulseGuideScope(int direction, int duration)
                 printf("error CameraINDI::Guide NONE\n");
                 break;
         }
+        wxSetlocale(LC_NUMERIC, "C");
         wxMilliSleep(duration);
         return false;
     }

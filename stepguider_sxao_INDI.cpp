@@ -130,6 +130,7 @@ void StepGuiderSxAoINDI::newDevice(INDI::BaseDevice *dp)
     if (strcmp(dp->getDeviceName(), INDIaoDeviceName.mb_str(wxConvUTF8)) == 0) {
         ao_device = dp;
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice *dp) {}
 
@@ -211,6 +212,7 @@ void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
     }
 
     CheckState();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void StepGuiderSxAoINDI::newNumber(INumberVectorProperty *nvp) {}
@@ -317,6 +319,7 @@ void StepGuiderSxAoINDI::serverConnected(void)
     } else {
         Disconnect();
     }
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 void StepGuiderSxAoINDI::serverDisconnected(int exit_code)
@@ -330,6 +333,7 @@ void StepGuiderSxAoINDI::serverDisconnected(int exit_code)
     }
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
+    wxSetlocale(LC_NUMERIC, "C");
 }
 
 bool StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
@@ -364,6 +368,7 @@ bool StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
                 break;
             }
+            wxSetlocale(LC_NUMERIC, "C");
         } catch (wxString Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
@@ -405,6 +410,7 @@ bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
                     throw ERROR_INFO("StepGuiderSxAoINDI::IsAtLimit: invalid direction");
                     break;
             }
+            wxSetlocale(LC_NUMERIC, "C");
         } catch (wxString Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
@@ -449,6 +455,7 @@ bool StepGuiderSxAoINDI::Unjam(void)
     if (aoCenterUnjam_prop) {
         aoUnjam_prop->s = ISS_ON;
         sendNewSwitch(aoCenterUnjam_prop);
+        wxSetlocale(LC_NUMERIC, "C");
         return false;
     }
     return true;
@@ -460,6 +467,7 @@ bool StepGuiderSxAoINDI::Center(void)
     if (aoCenterUnjam_prop) {
         aoCenter_prop->s = ISS_ON;
         sendNewSwitch(aoCenterUnjam_prop);
+        wxSetlocale(LC_NUMERIC, "C");
         return false;
     }
     return true;
@@ -517,6 +525,7 @@ bool StepGuiderSxAoINDI::ST4PulseGuideScope(int direction, int duration)
                 throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope: invalid direction");
                 break;
             }
+            wxSetlocale(LC_NUMERIC, "C");
         } catch (wxString Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
