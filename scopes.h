@@ -46,6 +46,7 @@
 #elif defined (__APPLE__)
 
     #define GUIDE_ONCAMERA
+    #define GUIDE_ONSTEPGUIDER
     #define GUIDE_GPUSB
     #define GUIDE_GCUSBST4
     #define GUIDE_EQUINOX

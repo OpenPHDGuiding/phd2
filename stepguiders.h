@@ -37,6 +37,10 @@
 #define STEPGUIDER_SXAO
 #endif
 
+#if defined (__APPLE__)
+#define STEPGUIDER_SXAO
+#endif
+
 #if defined (__linux__)
 #define STEPGUIDER_SXAO
 #endif
