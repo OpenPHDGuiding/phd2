@@ -141,7 +141,7 @@ void IndiGui::serverConnected()
 void IndiGui::serverDisconnected(int exit_code)
 {
    // connection to server is lost, destroy ourself 
-   if (ready) Destroy();
+    if (ready) Destroy();
 }
 
 void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
@@ -425,19 +425,16 @@ void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
 void IndiGui::CreateLightWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateLightWidget\n");
-   
 }
 
 void IndiGui::CreateBlobWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateBlobWidget\n");
-   
 }
 
 void IndiGui::CreateUnknowWidget(INDI::Property *property, IndiProp *indiProp)
 {
    //printf("IndiGui: Unimplemented CreateUnknowWidget\n");
-   
 }
 
 void IndiGui::OnNewNumberFromThread(wxThreadEvent& event)
@@ -453,7 +450,7 @@ void IndiGui::OnNewNumberFromThread(wxThreadEvent& event)
     for (i = 0; i < nvp->nnp; i++) {
 	st = indiProp->ctrl[wxString::FromAscii(nvp->np[i].name)];
 	wxStaticText *ctrl = (wxStaticText *)st;
-	ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
+        ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
     }
     indiProp->state->SetState(nvp->s);
 }
@@ -516,7 +513,6 @@ void IndiGui::OnNewSwitchFromThread(wxThreadEvent& event)
 	    break;
 	}
     }
-    
 }
 
 void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)

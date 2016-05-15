@@ -322,7 +322,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         cfgGrid->SetCellValue(row, col++, calBaseline.timestamp);
         cfgGrid->SetCellValue(row, col++, _("Focal length:"));
         if (validDetails)
-            cfgGrid->SetCellValue(row, col++, wxString::Format("%d mm", calDetails.focalLength));
+            cfgGrid->SetCellValue(row, col++, wxString::Format(_("%d mm"), calDetails.focalLength));
         else
             cfgGrid->SetCellValue(row, col++, NA_STR);
         row++;
@@ -346,7 +346,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         cfgGrid->SetCellValue(row, col++, _("RA Guide speed:"));
         if (guideRaSiderealX != -1.0)                                       // Do the RA guide setting
         {
-            cfgGrid->SetCellValue(row, col++, wxString::Format("%0.2fx", guideRaSiderealX));
+            cfgGrid->SetCellValue(row, col++, wxString::Format(_("%0.2fx"), guideRaSiderealX));
         }
         else
             cfgGrid->SetCellValue(row, col++, NA_STR);
@@ -354,7 +354,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         cfgGrid->SetCellValue(row, col++, _("Dec Guide speed:"));
         if (guideDecSiderealX != -1.0)                                      // Do the Dec guide setting
         {
-            cfgGrid->SetCellValue(row, col++, wxString::Format("%0.2fx", guideDecSiderealX));
+            cfgGrid->SetCellValue(row, col++, wxString::Format(_("%0.2fx"), guideDecSiderealX));
         }
         else
             cfgGrid->SetCellValue(row, col++, NA_STR);
@@ -699,12 +699,12 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         {
             pGrid->SetCellValue(row, col++, _("This declination rate:"));
             if (newDecRate != CALIBRATION_RATE_UNCALIBRATED)
-                pGrid->SetCellValue(row, col++, wxString::Format("%0.3f ''/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate));
+                pGrid->SetCellValue(row, col++, wxString::Format(_("%0.3f a-s/sec\n%0.3f px/sec"), newDecRate * imageScale, newDecRate));
             else
                 pGrid->SetCellValue(row, col++, NA_STR);
             pGrid->SetCellValue(row, col++, _("Previous declination rate:"));
             if (m_oldParams.yRate != CALIBRATION_RATE_UNCALIBRATED)
-                pGrid->SetCellValue(row, col++, wxString::Format("\n%0.3f px/sec", m_oldParams.yRate * 1000));
+                pGrid->SetCellValue(row, col++, wxString::Format(_("\n%0.3f px/sec"), m_oldParams.yRate * 1000));
             else
                 pGrid->SetCellValue(row, col++, NA_STR);
             HighlightCell(pGrid, row, 1);
@@ -713,10 +713,10 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         else
         {
             pGrid->SetCellValue(row, col++, _("RA rate:"));
-            pGrid->SetCellValue(row, col++, wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", newRARate * imageScale, newRARate));
+            pGrid->SetCellValue(row, col++, wxString::Format(_("%0.3f a-s/sec\n%0.3f px/sec"), newRARate * imageScale, newRARate));
             pGrid->SetCellValue(row, col++, _("Declination rate:"));
             if (newDecRate != CALIBRATION_RATE_UNCALIBRATED)
-                pGrid->SetCellValue(row, col++, wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate));
+                pGrid->SetCellValue(row, col++, wxString::Format(_("%0.3f a-s/sec\n%0.3f px/sec"), newDecRate * imageScale, newDecRate));
             else
                 pGrid->SetCellValue(row, col++, NA_STR);
             if (m_issue == CI_Rates)

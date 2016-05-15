@@ -223,7 +223,7 @@ struct GuidingAsstWin : public wxDialog
 
     wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
     wxStaticText *AddRecommendationEntry(const wxString& msg);
-    void FillResultCell(wxGrid *pGrid, wxGridCellCoords loc, double pxVal, double asVal, wxString units1, wxString units2, wxString extraInfo = "");
+    void FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, double pxVal, double asVal, const wxString& units1, const wxString& units2, const wxString& extraInfo = wxEmptyString);
     void UpdateInfo(const GuideStepInfo& info);
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
@@ -787,7 +787,7 @@ void GuidingAsstWin::MakeRecommendations()
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
     // Always make a recommendation on exposure times
-    wxString msg = SizedMsg(wxString::Format("Try to keep your exposure times in the range of %.1fs to %.1fs", m_min_exp_rec, m_max_exp_rec));
+    wxString msg = SizedMsg(wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec));
     if (!m_exposure_msg)
         m_exposure_msg = AddRecommendationEntry(msg);
     else
@@ -1078,12 +1078,10 @@ void GuidingAsstWin::OnClose(wxCloseEvent& evt)
     Destroy();
 }
 
-void GuidingAsstWin::FillResultCell(wxGrid *pGrid, wxGridCellCoords loc, double pxVal, double asVal, wxString units1, wxString units2, 
-    wxString extraInfo)
+void GuidingAsstWin::FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, double pxVal, double asVal, const wxString& units1, const wxString& units2,
+    const wxString& extraInfo)
 {
-    pGrid->SetCellValue(loc,
-        wxString::Format("%6.2f %s (%6.2f %s %s)", pxVal, units1, asVal, units2, extraInfo)
-        );
+    pGrid->SetCellValue(loc, wxString::Format("%6.2f %s (%6.2f %s %s)", pxVal, units1, asVal, units2, extraInfo));
 }
 
 void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)

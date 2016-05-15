@@ -165,7 +165,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
             m_rbModifyDarkLib->Enable(false);
             m_rbNewDarkLib->SetValue(true);
         }
-        
+
         hSizer->Add(m_rbModifyDarkLib, wxSizerFlags().Border(wxALL, 10));
         hSizer->Add(m_rbNewDarkLib, wxSizerFlags().Border(wxALL, 10));
         pBuildOptions->Add(pInfo, wxSizerFlags().Border(wxALL, 10).Border(wxLEFT, 25));

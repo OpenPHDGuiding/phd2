@@ -129,12 +129,15 @@ static inline Boolean WriteFile(void* sxHandle,
                                 UInt32 *transferred,
                                 void* ignored)
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
                                      ENDPOINT_OUT | LIBUSB_ENDPOINT_OUT,
                                      packet,
                                      length,
-                                     (int *)transferred,
+                                     &actualLength,
                                      ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 static inline Boolean ReadFile(void* sxHandle,
@@ -144,12 +147,15 @@ static inline Boolean ReadFile(void* sxHandle,
                                void* ignored)
 
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
-                                     ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
-                                     packet,
-                                     length,
-                                     (int *)transferred,
-                                     ioTimeout);
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
+                                   ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
+                                   packet,
+                                   length,
+                                   &actualLength,
+                                   ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 Boolean sxReset(void* sxHandle)
@@ -674,10 +680,10 @@ static Boolean isSXCamera(struct libusb_device_descriptor* desc)
     if (desc){
         const sxDeviceInfo* info = sxLookupDeviceInfo(desc->idVendor,desc->idProduct);
         if (info && info->type == sxDeviceTypeCamera) {
-            printf("Found SX device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
+            printf("SXMacLib: Found SX device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
             return true;
         }
-        printf("Skip device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
+        printf("SXMacLib: Skip device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
     }
     return false;
 }
@@ -714,23 +720,30 @@ UInt32 sxOpen(void** sxHandles)
             ret = libusb_open(device[i], &handle);
             if (0 == ret) {
 
+#if defined (__linux__)
                 if (libusb_kernel_driver_active(handle, 0) == 1) {
                     ret = libusb_detach_kernel_driver(handle, 0);
                     if (ret == 0) {
-                        printf("Kernel driver detached.\n");
+                        printf("SXMacLib: Kernel driver detached.\n");
                     } else {
-                        printf("Error detaching kernel driver.\n");
+                        fprintf(stderr,"SXMacLib: Error detaching kernel driver.\n");
                     }
                 }
 
                 struct libusb_config_descriptor *config;
                 ret = libusb_get_config_descriptor(device[i], 0, &config);
                 if (ret == 0) {
-                        printf("Config descriptor read.\n");
+                        printf("SXMacLib: Config descriptor read.\n");
                     } else {
-                        printf("Error reading config descriptor.\n");
+                        fprintf(stderr,"SXMacLib: Error reading config descriptor.\n");
                 }
                 int interface = config->interface->altsetting->bInterfaceNumber;
+#else
+                // passing bInterfaceNumber doesn't work on a Mac so leave it as 0 as it was before.
+                // This is probably a off by one error and we should be passing in config->interface->altsetting->bInterfaceNumber - 1
+                const int interface = 0;
+#endif
+                
                 ret = libusb_claim_interface(handle, interface);
                 if (0 == ret) {
                     
@@ -745,7 +758,7 @@ UInt32 sxOpen(void** sxHandles)
                         count++;
                     }
                 } else {
-                    printf("libusb_claim_interface error %s\n", libusb_error_name(ret));
+                    fprintf(stderr,"SXMacLib: libusb_claim_interface error %s\n", libusb_error_name(ret));
                 }
             }
             
