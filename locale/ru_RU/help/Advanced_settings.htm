@@ -154,7 +154,8 @@
         хотите использовать полный кадр, чтобы выбрать другую звезду,
         просто щёлкните где-нибудь за пределами подкадра.</li>
     </ul>
-    <span style="font-weight: bold;"><a name="Binning_usage"></a>Использование биннинга</span><br>
+    <span style="font-weight: bold;"><a name="Binning_usage"></a>Использование
+      биннинга</span><br>
     Некоторые из камер поддерживают аппаратный биннинг, который может
     быть полезным при больших фокусных расстояниях или очень маленьких
     пикселях гидирующей камеры. These scenarios often result in having
@@ -363,7 +364,7 @@
     <h3><a name="Algorithms_Tab"></a>Алгоритмы<br>
     </h3>
     <span style="font-size: 10pt; font-family: Arial;"></span><img
-      style="width: 810px; height: 432px;" alt=""
+      style="width: 811px; height: 487px;" alt=""
       src="Advanced_algorithms.png"><br>
     <br>
     Эта вкладка определяет алгоритмы гидирования и их параметры.&nbsp;
@@ -383,19 +384,16 @@
         компенсацию люфта' - определяет, будет ли PHD2 компенсировать
         люфт при изменении направления гидирования по склонению.&nbsp;
         Измерение люфта и вычисление подходящей начальной величины для
-        компенсации делается в Помощнике Гидирования. &nbsp;The size of
-        the additional guide correction (compensation value) is shown in
-        the 'Amount' field adjacent to the checkbox. &nbsp;This amount
-        may be adjusted downward by PHD2 if necessary to avoid
-        over-shooting and oscillation. &nbsp;Since PHD2 has the ability
-        to detect and adapt to over-corrections, the backlash
-        compensation available here should work better than the
-        fixed&nbsp;backlash compensation available in many mount
-        controllers. &nbsp;If you use the PHD2 backlash compensation,
-        you should disable any&nbsp; backlash compensation in the mount.
-        &nbsp;See the help section on the <a
-          href="Tools.htm#Guiding_Assistant">Guiding Assistant</a> for
-        more details.</li>
+        компенсации делается в Помощнике Гидирования.&nbsp; Величина
+        компенсации показывается в поле 'Количество'.&nbsp; PHD2 может
+        уменьшить это значение, дабы избежать излишней компенсации и
+        колебаний.&nbsp; Поскольку PHD2 умеет определять и поправлять
+        излишнюю компенсацию, она работает лучше, чем фиксированная
+        компенсация люфта во многих контроллерах монтировок.&nbsp; При
+        использовании компенсации люфта PHD2 компенсация люфта в
+        монтировке должна быть выключена.&nbsp; Подробнее см. раздел
+        справки <a href="Tools.htm#Guiding_Assistant">Помощник
+          гидирования</a>.</li>
       <li>"<a name="Max_Duration_Declination"></a>Mаксимальная
         длительность по склонению' - определяет максимальную
         продолжительность гидирующего импульса для склонения (по
@@ -403,27 +401,24 @@
         полезным, чтобы избежать избыточной корректировки с последующим
         переключением направления при гидировании по склонению.</li>
       <li>'<a name="Dec_guide_mode"></a>Режим гидирования по склонению'
-        - предоставляет дополнительнst возможностb управления
-        гидированием по склонению. &nbsp;Declination guiding is not like
-        RA guiding because the errors are not caused by imperfections in
-        your mount's gears. &nbsp;Instead, deflections in declination
-        are primarily the result of imperfect polar alignment or
-        flexure. &nbsp;The result is an error that should be smooth and
-        mostly uni-directional, assuming there is no&nbsp;over-shoot
-        from an earlier correction. &nbsp;The default value of 'auto'
-        tells <span style="font-style: italic;">PHD2</span> that some
-        reversals in direction are acceptable, subject to the behavior
-        of the various guiding algorithms. &nbsp;However, if your mount
-        has severe declination backlash, you may want to
-        prevent&nbsp;direction reversal altogether. &nbsp;If so, you can
-        select either 'north' or 'south' to restrict corrections to only
-        that direction. &nbsp;Keep in mind, however, that
-        an&nbsp;over-shoot in correction with one of these modes will
-        leave the star positoned off-target for an extended period of
-        time. So you'll probably want to use conservative parameters for
-        aggressiveness if you are disallowing direction reversals.
-        &nbsp;Finally, a choice of 'none' here disables declination
-        guiding altogether.</li>
+        - предоставляет дополнительную возможность управления
+        гидированием по склонению.&nbsp; В отличие от гидирования по
+        прямому восхождению, ошибки гидирования по склонению не вызваны
+        несовершенством механизма монтировки.&nbsp; Причиной их в
+        основном являются ошибка выставления полярной или прогиб.&nbsp;
+        Ошибка должна быть гладкой и, как правило, однонаправленной,
+        чтобы не было избыточных коррекций.&nbsp; Режим по умолчанию
+        'Авто'&nbsp; допускает смену направлений коррекции, однако, если
+        у вашей монтировки есть значительный люфт, вы можете захотеть
+        запретить смену направлений вовсе.&nbsp; В этом случае вы можете
+        выбрать режимы 'север' или 'юг', и корректировки будут
+        ограничены выбранным направлением.&nbsp; Следует иметь в виду,
+        что после избыточной корректировки в этих режимах в результате
+        избыточной корректировки настройка на опорную звезду может на
+        продолжительное время оказаться сбитой. Чтобы избежать этого,
+        при отключенной смене направлений корректировки следует
+        применять консервативные параметры агрессивности.&nbsp; И,
+        наконец, режим 'Нет' совсем отключает гидирование по склонению.</li>
     </ul>
     <br>
     <h3><a name="Other_Devices_Tab"></a>Другие устройства<br>
@@ -434,28 +429,27 @@
     <br>
     При использовании адаптивной оптики и/или поворотного устройства
     появится вкладка 'Другие устройства'. Верхний раздел посвящён
-    устройству алаптивной оптики, если таковое подключено. You can use
-    the first four parameters&nbsp;to control the calibration process
-    and the manner in which 'bump' operations are done. &nbsp;The
-    'calibration step' field tells <span style="font-style: italic;">PHD2</span>
-    the amount to move the tip/tilt element&nbsp;in each of the
-    up/down/left/right directions, in units of AO steps, during
-    calibration. &nbsp;The guide star position is measured at the
-    beginning and end of each&nbsp;leg of the calibration, and the
-    'samples to average' parameter tells <span style="font-style:
-      italic;">PHD2</span> how many samples to take at each of these
-    points. &nbsp;Averaging images is important because the seeing will
-    always cause the guide star to "bounce around" a bit. &nbsp;As
-    discussed earlier, the AO unit can make corrections only within a
-    limited range of guide star movement. &nbsp;You will&nbsp;want to
-    initiate mount 'bump' corrections before these limits are actually
-    reached, and the 'bump percentage' field is used for that purpose.
-    &nbsp;To move the mount, the full bump correction is accomplished
-    in&nbsp;steps - the 'bump step' field controls the size of these
-    increments. &nbsp;If the bump operation has begun and the guide star
-    remains outside the "bump percentage" area, <span
-      style="font-style: italic;">PHD2</span> will increase the bump
-    size until the guide star is back within that range.
+    устройству алаптивной оптики, если таковое подключено. Первые четыре
+    параметра могут быть использованы для управления калибровкой и
+    операцией 'толчка'.&nbsp; Поле 'шаг калибровки' задаёт <span
+      style="font-style: italic;">PHD2 </span>величину движения&nbsp;
+    the tip/tilt element&nbsp;in each of the up/down/left/right
+    directions, in units of AO steps, during calibration. &nbsp;The
+    guide star position is measured at the beginning and end of
+    each&nbsp;leg of the calibration, and the 'samples to average'
+    parameter tells <span style="font-style: italic;">PHD2</span> how
+    many samples to take at each of these points. &nbsp;Averaging images
+    is important because the seeing will always cause the guide star to
+    "bounce around" a bit. &nbsp;As discussed earlier, the AO unit can
+    make corrections only within a limited range of guide star movement.
+    &nbsp;You will&nbsp;want to initiate mount 'bump' corrections before
+    these limits are actually reached, and the 'bump percentage' field
+    is used for that purpose. &nbsp;To move the mount, the full bump
+    correction is accomplished in&nbsp;steps - the 'bump step' field
+    controls the size of these increments. &nbsp;If the bump operation
+    has begun and the guide star remains outside the "bump percentage"
+    area, <span style="font-style: italic;">PHD2</span> will increase
+    the bump size until the guide star is back within that range.
     &nbsp;Additional movement from that point to the&nbsp;center
     position will continue at the specified "bump step size". &nbsp;This
     complexity is required in order to maintain good guiding, with no
@@ -464,44 +458,33 @@
     long "mount bump" is continuously&nbsp;offset by adjustments in the
     AO.<br>
     <br>
-    The 'Bump on dither' option tells PHD2 to bump the mount when a
-    dither command is received and thus move the guide star back closer
-    to the center position of the AO. &nbsp;The option to enable or
-    disable AO guide commands operates independently from the 'Enable
-    mount guiding' checkbox in the Guiding tab. &nbsp;So you can
-    independently enable/disable either the guide commands to the
-    tip/tilt device or the 'bump' guide commands to the mount. &nbsp;The
-    same principle holds for the 'Clear AO calibration' option - that
-    will force a recalibration of the AO without affecting calibration
-    of the mount.<br>
+    При установленном параметре 'Толчок при подвижке' PHD2 будет
+    осуществлять толчок всякий раз при получении команды подвижки и
+    таким образом подвигать опорную звезду ближе к центральному
+    положению АО. &nbsp;The option to enable or disable AO guide
+    commands operates independently from the 'Enable mount guiding'
+    checkbox in the Guiding tab. &nbsp;So you can independently
+    enable/disable either the guide commands to the tip/tilt device or
+    the 'bump' guide commands to the mount. &nbsp;The same principle
+    holds for the 'Clear AO calibration' option - that will force a
+    recalibration of the AO without affecting calibration of the mount.<br>
     <br>
     При использовании адаптивной оптики вкладка 'Алгоритмы' покажет
     choices for controlling the tip/tilt optical element in the AO
-    device
-    itself.<br>
+    device itself.<br>
     <br>
     <img style="width: 811px; height: 434px;" alt=""
       src="Advanced_other_Algo.png"><br>
     <br>
-    Поскольку устройство АО не пытается передвигать тяжёлое
-    оборудование, можно выбирать более агрессивные параметры алгоритма
-    гидирования.
-    &nbsp;The default algorithms for an AO are&nbsp;'None', which means
-    there will be
-    no damping or history-based calculations applied at all. &nbsp;In
-    that
-    case, each correction will be based only on the most recent guide
-    frame
-    and will make a 100% correction of the most recent deflection.
-    &nbsp;If
-    you use a different algorithm,&nbsp;you should
-    probably start with a high level of aggressiveness there as well,
-    perhaps 100%.
-    &nbsp; The other, shared guiding parameters normally displayed on
-    the
-    'Algorithms' tab will not be shown for the AO because they aren't
-    used
-    to control the device.<br>
+    Поскольку устройство АО не передвигает тяжёлое оборудование, можно
+    выбирать более агрессивные параметры алгоритма гидирования.&nbsp; По
+    умолчанию задано 'Нет', что означает отсутствие демпфирования или
+    вычислений на основе истории.&nbsp; В этом случае каждая поправка
+    основывается только на последнем кадре и осуществляется100%
+    коррекция последнего отклонения.&nbsp; При использовании другого
+    алгоритма следует начать с высокого уровня агрессивности, возможно
+    100%. &nbsp; Другие параметры гидирования не показываются для АО,
+    поскольку они не используются для управления устройством.<br>
     <br>
     В настоящее время поворотное устройство управляется только одним
     параметром.&nbsp; Флажок "Реверс" может быть использовано для

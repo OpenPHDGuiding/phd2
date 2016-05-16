@@ -5323,6 +5323,8 @@ msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
 msgstr ""
+"Продолжительность корректирующего люфт импульса в мсек. Вычисляется "
+"автоматически на основании наблюдаемой производительности."
 
 #: scope.cpp:1668
 msgid "Use Dec compensation"
