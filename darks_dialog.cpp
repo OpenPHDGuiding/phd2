@@ -171,7 +171,6 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         pBuildOptions->Add(pInfo, wxSizerFlags().Border(wxALL, 10).Border(wxLEFT, 25));
         pBuildOptions->Add(hSizer, wxSizerFlags().Border(wxALL, 10));
         pvSizer->Add(pBuildOptions, wxSizerFlags().Expand());
-
     }
     else
     {

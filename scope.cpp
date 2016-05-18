@@ -239,7 +239,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
               "Off", "Auto", "North", "South"
             };
 
-            Debug.AddLine(wxString::Format("DecGuideMode set to %s (%d)", dec_modes[decGuideMode], decGuideMode));
+            Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", dec_modes[decGuideMode], decGuideMode));
             GuideLog.SetGuidingParam("Dec Guide Mode", dec_modes[decGuideMode]);
 
             m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
@@ -600,7 +600,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
                     if (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
-                        Debug.AddLine("duration set to %d by maxDecDuration", duration);
+                        Debug.Write(wxString::Format("duration set to %d by maxDecDuration\n", duration));
                         limitReached = true;
                     }
 
@@ -627,7 +627,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
                     if (duration > m_maxRaDuration)
                     {
                         duration = m_maxRaDuration;
-                        Debug.AddLine("duration set to %d by maxRaDuration", duration);
+                        Debug.Write(wxString::Format("duration set to %d by maxRaDuration\n", duration));
                         limitReached = true;
                     }
 
@@ -669,7 +669,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
         duration = 0;
     }
 
-    Debug.AddLine(wxString::Format("Move returns status %d, amount %d", result, duration));
+    Debug.Write(wxString::Format("Move returns status %d, amount %d\n", result, duration));
 
     if (moveResult)
     {
@@ -820,6 +820,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
         default:
             break;
         }
+
         if (pConfig->Global.GetBoolean(CalibrationWarningKey(m_lastCalibrationIssue), true))        // User hasn't disabled this type of alert
         {
             // Generate alert with 'Help' button that will lead to trouble-shooting section
@@ -827,11 +828,16 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
                 _("Details..."), ShowCalibrationIssues, (long)this, true);
         }
         else
+        {
             Debug.AddLine(wxString::Format("Alert detected in scope calibration but not shown to user - suppressed message was: %s", alertMsg));
+        }
+
         Debug.AddLine(wxString::Format("Calibration alert details: %s", detailInfo));
     }
     else
+    {
         Debug.AddLine("Calibration passed sanity checks...");
+    }
 }
 
 void Scope::ClearCalibration(void)
@@ -1281,8 +1287,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     double dec_dist = dist * cos(yAngle - m_calibration.yAngle);
                     m_calibration.yRate = dec_dist / (m_calibrationSteps * m_calibrationDuration);
 
-                    Debug.AddLine("Assuming orthogonal axes: measured Y angle = %.1f, X angle = %.1f, orthogonal = %.1f, %.1f, best = %.1f, dist = %.2f, dec_dist = %.2f",
-                        degrees(yAngle), degrees(m_calibration.xAngle), degrees(a1), degrees(a2), degrees(m_calibration.yAngle), dist, dec_dist);
+                    Debug.Write(wxString::Format("Assuming orthogonal axes: measured Y angle = %.1f, X angle = %.1f, orthogonal = %.1f, %.1f, best = %.1f, dist = %.2f, dec_dist = %.2f\n",
+                        degrees(yAngle), degrees(m_calibration.xAngle), degrees(a1), degrees(a2), degrees(m_calibration.yAngle), dist, dec_dist));
                 }
                 else
                 {
