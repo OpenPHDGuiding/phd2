@@ -2735,11 +2735,11 @@ msgstr "Выбрать масштаб по оси Y в угловых секун
 
 #: graph.cpp:1260
 msgid "GuideNorth"
-msgstr "Гид. Север"
+msgstr "Север"
 
 #: graph.cpp:1261
 msgid "GuideEast"
-msgstr "Гид. Восток"
+msgstr "Восток"
 
 #: graph.cpp:1378 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
@@ -3726,7 +3726,7 @@ msgstr "Включить/выключить цель"
 
 #: myframe.cpp:466
 msgid "Display Star &Profile"
-msgstr "Показать профиль звезды"
+msgstr "Показать звёздный профиль"
 
 #: myframe.cpp:466
 msgid "Enable / disable star profile view"
@@ -5830,11 +5830,11 @@ msgstr "Радиус подсветки мишени"
 
 #: target.cpp:362 target.cpp:364
 msgid "SkyE"
-msgstr "Неб. В"
+msgstr "Зв. Восток"
 
 #: target.cpp:368 target.cpp:370
 msgid "SkyN"
-msgstr "Неб. C"
+msgstr "Зв. Cевер"
 
 #: testguide.cpp:90
 msgid "Guide Pulse Duration (ms):"
