@@ -889,8 +889,8 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
         POSSIBLY_UNUSED(Msg);
     }
 
-    Debug.AddLine("ScopeASCOM::GetGuideRates returns %u %.3f %.3f a-s/sec", bError,
-        bError ? 0.0 : *pDecGuideRate * 3600., bError ? 0.0 : *pRAGuideRate * 3600.);
+    Debug.AddLine(wxString::Format("ScopeASCOM::GetGuideRates returns %u %.3f %.3f a-s/sec", bError,
+        bError ? 0.0 : *pDecGuideRate * 3600., bError ? 0.0 : *pRAGuideRate * 3600.));
 
     return bError;
 }

@@ -149,7 +149,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
 
     // Done with left-hand side
     // Now put the data grid(s) on the right side
-
+    thisPanel->SetForegroundColour("WHITE");
     CreateDataGrids(thisPanel, panelHSizer, AO);                  // Virtual function
 }
 
@@ -191,7 +191,6 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 
     // Build the upper frame and grid for data from the last calibration
     wxStaticBox* staticBoxLastCal = new wxStaticBox(parentPanel, wxID_ANY, _("Last Mount Calibration"));
-    staticBoxLastCal->SetForegroundColour("WHITE");
     if (AO)
         staticBoxLastCal->SetLabelText(_("Last AO Calibration"));
     wxStaticBoxSizer* calibFrame = new wxStaticBoxSizer(staticBoxLastCal, wxVERTICAL | wxEXPAND);
@@ -306,7 +305,6 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     {
         // Build the upper frame and grid for configuration data
         wxStaticBox* staticBoxMount = new wxStaticBox(parentPanel, wxID_ANY, _("Mount Configuration"));
-        staticBoxMount->SetForegroundColour("WHITE");
         wxStaticBoxSizer* configFrame = new wxStaticBoxSizer(staticBoxMount, wxVERTICAL);
         panelGridVSizer->Add(configFrame, 0, wxALIGN_LEFT | wxALL, 5);
 

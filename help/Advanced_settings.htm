@@ -326,20 +326,27 @@ algorithm selections, are described below. &nbsp;
 guide pulse duration for right ascension. &nbsp;You might reduce
 this
 below the default value if you want to avoid&nbsp;chasing a large
-deflection that could be caused by a spurious event (e.g. wind gust, hot pixel, etc.) .'</li><li>'<a name="Declination_backlash_comp"></a>Use backlash comp' - this
+deflection that could be caused by a spurious event (e.g. wind gust, hot pixel, etc.) .'</li><li>'<a name="Declination_backlash_comp"></a>Use
+backlash comp' - this
 controls whether PHD2 will apply a compensation factor when the
 direction of declination guiding needs to be reversed.
 &nbsp;Measurement of backlash and calculation of a good starting value
 for the compensation factor is done in the Guiding Assistant. &nbsp;The
 size of the additional guide correction (compensation value) is shown
 in the 'Amount' field adjacent to the checkbox. &nbsp;This amount may
-be adjusted downward by PHD2 if necessary to avoid over-shooting and
-oscillation. &nbsp;Since
+be adjusted upward or downward by PHD2 if necessary to tune the guiding
+results. &nbsp;In either case, the adjustments are made conservatively
+in order to avoid making guiding unstable. &nbsp;Since
 PHD2 has the ability to detect and adapt to over-corrections, the
 backlash compensation available here should work better than the
 fixed&nbsp;backlash compensation available in many mount controllers.
 &nbsp;If you use the PHD2 backlash compensation, you should disable
-any&nbsp; backlash compensation in the mount. &nbsp;See the help section on the <a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a> for more details.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
+any&nbsp; backlash compensation in the mount. &nbsp;See the help
+section on the <a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a>
+for more details. &nbsp;The 'Max Dec duration' parameter may be
+adjusted automatically to avoid truncating the backlash compensation
+pulse. &nbsp;That said, you shouldn't expect backlash compensation to
+work well if your mount has many seconds of backlash.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
 maximum allowed guide pulse duration for declination (same as above but
 for declination).</li><li>'<a name="Dec_guide_mode"></a>Declination guide mode' -&nbsp;gives you additional control over declination
 guiding. &nbsp;Declination guiding is not like RA guiding because the
@@ -357,7 +364,7 @@ however, that an&nbsp;over-shoot in correction with one of these modes
 will leave the star positoned off-target for an extended period of
 time. So you'll probably want to use conservative parameters for
 aggressiveness if you are disallowing direction reversals.
-&nbsp;Finally, a choice of 'none' here disables declination guiding
+&nbsp;Finally, a choice of 'off'' here disables declination guiding
 altogether.</li></ul><br><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 591px; height: 451px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
 Devices" tab will be shown. &nbsp;The upper section deals with the AO

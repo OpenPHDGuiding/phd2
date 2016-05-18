@@ -30,7 +30,7 @@ and choose one that suits you.
 The
 graphical display window is one of the more powerful tools for judging
 guiding performance, and you will probably learn to rely on it.
-&nbsp;A typical example is shown below: <br><br><img style="width: 964px; height: 300px;" alt="" src="Guider_Graph.png"><br><br><br>The
+&nbsp;A typical example is shown below: <br><br><img style="width: 1101px; height: 281px;" alt="" src="Guider_Graph.png"><br><br><br>The
 major portion of the window shows the detailed displacements of the
 guide star for each guide exposure, plotted left-to-right.
 &nbsp;Normally, one line shows displacements in right ascension while
@@ -42,7 +42,7 @@ change the colors of the two graph lines. &nbsp;The range of the
 vertical axis is controlled by the second button from the top, labelled
 y:+/-4" in this example. &nbsp;The range of the horizontal axis - the
 number of guide exposures being plotted -&nbsp; is controlled by the
-topmost button, labelled x:100 in this example. &nbsp;This scale also
+topmost button, labelled x:50 in this example. &nbsp;This scale also
 controls the sample size used for calculating the
 <a name="statistics"></a>statistics you see in the lower left part of the graph window.
 &nbsp;These values show the root-mean-square (RMS or standard
@@ -52,10 +52,10 @@ performance because they can be directly compared to star sizes and
 seeing conditions. &nbsp;The '<a name="RA_Osc"></a>RA Osc'&nbsp; value shows the odds that
 the current RA move is in the opposite direction as the last RA move.
 &nbsp;If you are too aggressive in your guiding and over-shooting the
-mark each time, this number will head toward 1.0. &nbsp;If you were
+mark each time, this number will trend toward 1.0. &nbsp;If you were
 perfect and not over- or under-shooting and your mount had no periodic
 error, the score would be 0.5 &nbsp;Taking periodic error into account,
-the ideal value would be closer to 0.3. &nbsp;If this score gets very
+the ideal value would be closer to 0.3 or 0.4. &nbsp;If this score gets very
 low (e.g. 0.1), you may want to increase the RA aggressivness or
 decrease the hysteresis. &nbsp;If it gets quite high (e.g. 0.8), you
 may want adjust aggressivness/hysteresis in the opposite
@@ -78,9 +78,16 @@ seeing the effects of flexure) and can
 help if you are trying to set up custom tracking rates. &nbsp;If
 dithering commands are issued, usually by an external imaging
 application, a 'dithering' label will be superimposed on the graph in
-the appropriate time interval. &nbsp;This tells you that the star
+the appropriate time interval. &nbsp;This tells you&nbsp;the star
 displacements being graphed are being influenced by the dithering
-operation.<br><br>The recommended way to look at guiding
+operation. &nbsp;If you are using an ASCOM connection for either the
+'mount' or 'aux-mount', PHD2 will also show the directions (GuideNorth,
+GuideEast) associated with the guide commands, as shown in the example
+above. &nbsp;This can be helpful if you are looking at overall drift
+and want to determine how to set uni-directional guiding for
+declination. &nbsp;The up/down convention used in this graph has
+nothing to do with the camera orientation or N-S-E-W movements in the
+field of view.<br><br>The recommended way to look at guiding
 performance is to use units of arc-seconds rather than pixels.
 &nbsp;Doing this allows an equipment-independent way of evaluating
 performance because it transcends questions of focal length and image
@@ -145,7 +152,13 @@ performance. &nbsp;The red 'X' shows the star displacement for the most
 recent guide exposure, while the blue dots show the recent history.
 &nbsp;You can zoom in or out with the controls at the upper left of the
 window, as well as change the number of points shown in the history.
-&nbsp;
+&nbsp;&nbsp;If you are using an ASCOM connection for either the 'mount' or
+'aux-mount', PHD2 will also show the directions (SkyNorth, SkyEast)
+associated with the star movement, as shown in the example above.
+&nbsp;This can be helpful if you are looking at overall drift and want to
+determine how to set uni-directional guiding for declination. &nbsp;The
+up/down convention used in this graph has nothing to do with the camera
+orientation or N-S-E-W movements in the field of view.
 <h3><a name="Adaptive_Optics_AO_Graph"></a>Adaptive Optics (AO) Graph</h3><img style="width: 426px; height: 354px;" alt="AO Graph Image" src="AO_graph.png"><br><br>The
 AO graph is equivalent to the 'target' display, but shows the history
 of corrections relative to the axes of the adaptive optics device.

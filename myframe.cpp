@@ -501,8 +501,8 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("&Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
     wxMenu *help_menu = new wxMenu;
-    help_menu->Append(wxID_ABOUT, _("&About...\tF1"), wxString::Format(_("About %s"), APPNAME));
-    help_menu->Append(wxID_HELP_CONTENTS,_("&Contents"),_("Full help"));
+    help_menu->Append(wxID_ABOUT, _("&About..."), wxString::Format(_("About %s"), APPNAME));
+    help_menu->Append(wxID_HELP_CONTENTS,_("&Contents...\tF1"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 
     Menubar = new wxMenuBar();
@@ -992,7 +992,8 @@ void MyFrame::OnAlertButton(wxCommandEvent& evt)
 {
     if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
         (*m_alertFn)(m_alertFnArg);
-    m_infoBar->Dismiss();
+    if (evt.GetId() == BUTTON_ALERT_CLOSE)
+        m_infoBar->Dismiss();
 }
 
 void MyFrame::OnAlertHelp(wxCommandEvent& evt)
