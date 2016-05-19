@@ -285,7 +285,7 @@ bool Camera_QHY::Connect(const wxString& camId)
 
     m_curGain = -1;
     m_curExposure = -1;
-    m_roi = wxRect(0, 0, FullSize.GetWidth() * Binning, FullSize.GetHeight() * Binning);  // un-binned coordinates
+    m_roi = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());  // binned coordinates
 
     Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
     ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
@@ -356,39 +356,28 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (useSubframe)
         img.Clear();
 
-    // convert frame to un-binned coordinates
-    // transfer width must be a multiple of 4
-    wxRect unbinnedFrame;
-    if (Binning > 1)
-    {
-        unbinnedFrame = wxRect(frame.x * Binning, frame.y * Binning, frame.width * Binning, frame.height * Binning);
-        int m = 4 * Binning;
-        unbinnedFrame.width = ((unbinnedFrame.width + m - 1) / m) * m;
-        unbinnedFrame.height = ((unbinnedFrame.height + m - 1) / m) * m;
-    }
-    else
-    {
-        unbinnedFrame = frame;
-        unbinnedFrame.width = ((unbinnedFrame.width + 3) / 4) * 4;
-        unbinnedFrame.height = ((unbinnedFrame.height + 3) / 4) * 4;
-    }
+    // find a roi that will and include the sub-frame and satisfy the requirement that the
+    // transfer width and height must be a multiples of 4
+    wxRect roi(frame);
+    roi.width = ((roi.width + 3) / 4) * 4;
+    roi.height = ((roi.height + 3) / 4) * 4;
 
     int xofs = 0;
-    if (unbinnedFrame.GetRight() >= m_maxSize.GetWidth())
+    if (roi.GetRight() >= FullSize.GetWidth())
     {
-        int d = unbinnedFrame.GetRight() + 1 - m_maxSize.GetWidth();
-        unbinnedFrame.x -= d;
+        int d = roi.GetRight() + 1 - FullSize.GetWidth();
+        roi.x -= d;
         xofs = d;
     }
     int yofs = 0;
-    if (unbinnedFrame.GetBottom() >= m_maxSize.GetHeight())
+    if (roi.GetBottom() >= FullSize.GetHeight())
     {
-        int d = unbinnedFrame.GetBottom() + 1 - m_maxSize.GetHeight();
-        unbinnedFrame.y -= d;
+        int d = roi.GetBottom() + 1 - FullSize.GetHeight();
+        roi.y -= d;
         yofs = d;
     }
 
-    if (m_roi != unbinnedFrame)
+    if (m_roi != roi)
     {
         // when roi changes, must call this
         uint32_t ret = CancelQHYCCDExposingAndReadout(m_camhandle);
@@ -415,17 +404,17 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", (int)ret));
     }
 
-    if (m_roi != unbinnedFrame)
+    if (m_roi != roi)
     {
-        ret = SetQHYCCDResolution(m_camhandle, unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight());
+        ret = SetQHYCCDResolution(m_camhandle, roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight());
         if (ret == QHYCCD_SUCCESS)
         {
-            m_roi = unbinnedFrame;
+            m_roi = roi;
         }
         else
         {
             Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n",
-                                         unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight(), (int)ret));
+                                         roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight(), (int)ret));
         }
     }
 
@@ -467,7 +456,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
-    if (ret != QHYCCD_READ_DIRECTLY)
+    if (ret != QHYCCD_READ_DIRECTLY && ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY: ExpQHYCCDSingleFrame did not return QHYCCD_READ_DIRECTLY (%d)\n", (int)ret));
         if (duration > 3000)
@@ -495,8 +484,8 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         img.Subframe = frame;
 
-        int dy = yofs / Binning;
-        int dxl = xofs / Binning; // binned-coordinate x-offset
+        int dy = yofs;
+        int dxl = xofs;
         int dxr = w - frame.width - dxl;
         const unsigned char *src = RawBuffer + dy * w;
         unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();

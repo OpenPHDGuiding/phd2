@@ -29,6 +29,8 @@
 
 #ifndef WIN32
 #define LINUX
+#else
+#define QHYCCD_OPENCV_SUPPORT
 #endif
 
 
@@ -54,9 +56,9 @@
  #define EXPORTC extern "C"
  #endif
 #else
- #define EXPORTFUNC
+ #define EXPORTFUNC extern "C"
  #define STDCALL
- #define EXPORTC
+ #define EXPORTC extern "C"
 #endif
 
 #include "stdint.h"
@@ -174,8 +176,11 @@ enum CONTROL_ID
 	CAM_16BITS,                              //!< 16bit depth
 	CAM_GPS,                                 //!< check if camera has gps 
 
-	CAM_IGNOREOVERSCAN_INTERFACE            //!< ignore overscan area 
+	CAM_IGNOREOVERSCAN_INTERFACE,            //!< ignore overscan area 
 
+    QHYCCD_3A_AUTOBALANCE,
+    QHYCCD_3A_AUTOEXPOSURE,
+    QHYCCD_3A_AUTOFOCUS
 };
 
 /**
