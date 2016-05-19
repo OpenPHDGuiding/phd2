@@ -236,14 +236,14 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
     {
-        this->SetSize(800,600);
+        SetSize(800,600);
     }
     else
     {
         wxArrayString fields = wxSplit(geometry, ';');
         if (fields[0] == "1")
         {
-            this->Maximize();
+            Maximize();
         }
         else
         {
@@ -252,8 +252,18 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
             fields[2].ToLong(&h);
             fields[3].ToLong(&x);
             fields[4].ToLong(&y);
-            this->SetSize(w, h);
-            this->SetPosition(wxPoint(x, y));
+            wxSize screen = wxGetDisplaySize();
+            if (x + w <= screen.GetWidth() &&
+                y + h <= screen.GetHeight())
+            {
+                SetSize(w, h);
+                SetPosition(wxPoint(x, y));
+            }
+            else
+            {
+                // looks like screen size changed, ignore position and revert to default size
+                SetSize(800, 600);
+            }
         }
     }
 
@@ -491,8 +501,8 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("&Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
     wxMenu *help_menu = new wxMenu;
-    help_menu->Append(wxID_ABOUT, _("&About...\tF1"), wxString::Format(_("About %s"), APPNAME));
-    help_menu->Append(wxID_HELP_CONTENTS,_("&Contents"),_("Full help"));
+    help_menu->Append(wxID_ABOUT, _("&About..."), wxString::Format(_("About %s"), APPNAME));
+    help_menu->Append(wxID_HELP_CONTENTS,_("&Contents...\tF1"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 
     Menubar = new wxMenuBar();
@@ -982,7 +992,8 @@ void MyFrame::OnAlertButton(wxCommandEvent& evt)
 {
     if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
         (*m_alertFn)(m_alertFnArg);
-    m_infoBar->Dismiss();
+    if (evt.GetId() == BUTTON_ALERT_CLOSE)
+        m_infoBar->Dismiss();
 }
 
 void MyFrame::OnAlertHelp(wxCommandEvent& evt)
@@ -1459,7 +1470,7 @@ void MyFrame::StopCapturing(void)
 
     if (m_continueCapturing)
     {
-        StatusMsg(_("Waiting for devices..."));
+        StatusMsgNoTimeout(_("Waiting for devices..."));
         m_continueCapturing = false;
 
         if (m_exposurePending)
@@ -2470,7 +2481,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-#ifndef __LINUX__  // See issue 83
+#ifndef __linux__  // See issue 83
         wxString catalogFile = wxGetApp().GetLocaleDir() +
             PATHSEPSTR + pLanguageInfo->CanonicalName +
             PATHSEPSTR "messages.mo";

@@ -38,7 +38,7 @@
 #include    <sys/ioctl.h>
 #include <termios.h>
 
-#ifdef __LINUX__
+#ifdef __linux__
 #include <errno.h>
 #endif
 
@@ -163,7 +163,7 @@ bool ScopeGCUSBST4::Connect()
 
 #endif   //__APPLE__
 
-#ifdef  __LINUX__
+#ifdef  __linux__
        char tempstr[256] = "/dev/ttyACM0";
 #endif
 

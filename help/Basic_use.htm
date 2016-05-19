@@ -50,11 +50,21 @@ probably don't have the ASCOM driver installed. Neither the ASCOM nor
 OS-level drivers are included with PHD2, so they must be located,
 downloaded, and installed separately. &nbsp;For non-ASCOM cameras, the
 PHD2 distribution does include the additional application libraries
-needed by PHD2 to use the camera..<br><br>The
-list of supported cameras at the time of writing is shown below - but
-you can contact the <a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> to inquire about your specific camera or mount.<br>
-<br>
-Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG dual-chip cameras</h4>Many
+needed by PHD2 to use the camera..<br><br>It
+is not practical to provide an exhaustive list of cameras that are
+supported by PHD2. &nbsp;In many cases, camera vendors extend their
+product lines by updating their lower-level drivers without having to
+change the application libraries used by PHD2. &nbsp;In those cases, we
+aren't aware of the changes unless a user reports problems. &nbsp;The
+list shown below should be interpeted as follows:<br>1. &nbsp;If the
+camera vendor is completely absent, it is unlikely that the camera is
+supported, or it may only be supported using a web-cam interface<br>2.
+&nbsp;If the camera model is shown in the list, it is supported unless
+there are unresolved problems with the vendor's drivers<br>3. &nbsp;If the specific camera model is absent but earlier models are shown, it is likely the camera is supported<br>4. &nbsp;If the camera uses an ASCOM interface, it is supported<br><br>Since
+the PHD2 download is free, the simplest course of action is to&nbsp;
+install it and see if your camera is shown in the PHD2 drop-down list.
+&nbsp;Alternatively, you can post a message on the&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> asking if anyone has experience with the camera. &nbsp;<br><br>
+Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG dual-chip cameras</h4>Many
 cameras from the Santa Barbara Instrument Group (SBIG) have
 two&nbsp;sensors - a primary one for imaging and a second, smaller one
 for guiding. &nbsp;While the two sensors are physically separate, they

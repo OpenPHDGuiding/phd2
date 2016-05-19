@@ -39,7 +39,7 @@
  
  \***************************************************************************/
 
-#if defined (__APPLE__)
+#if defined (__APPLE__) || defined (__linux__)
 
 #include "SXMacLib.h"
 
@@ -129,12 +129,15 @@ static inline Boolean WriteFile(void* sxHandle,
                                 UInt32 *transferred,
                                 void* ignored)
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
                                      ENDPOINT_OUT | LIBUSB_ENDPOINT_OUT,
                                      packet,
                                      length,
-                                     (int *)transferred,
+                                     &actualLength,
                                      ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 static inline Boolean ReadFile(void* sxHandle,
@@ -144,12 +147,15 @@ static inline Boolean ReadFile(void* sxHandle,
                                void* ignored)
 
 {
-    return 0 == libusb_bulk_transfer(sxHandle,
-                                     ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
-                                     packet,
-                                     length,
-                                     (int *)transferred,
-                                     ioTimeout);
+    int actualLength;
+    int ret = libusb_bulk_transfer(sxHandle,
+                                   ENDPOINT_IN | LIBUSB_ENDPOINT_IN,
+                                   packet,
+                                   length,
+                                   &actualLength,
+                                   ioTimeout);
+   *transferred = actualLength;
+   return 0 == ret;
 }
 
 Boolean sxReset(void* sxHandle)
@@ -673,7 +679,11 @@ static Boolean isSXCamera(struct libusb_device_descriptor* desc)
 {
     if (desc){
         const sxDeviceInfo* info = sxLookupDeviceInfo(desc->idVendor,desc->idProduct);
-        return (info && info->type == sxDeviceTypeCamera);
+        if (info && info->type == sxDeviceTypeCamera) {
+            printf("SXMacLib: Found SX device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
+            return true;
+        }
+        printf("SXMacLib: Skip device Vendor/Product %04x/%04x\n", desc->idVendor, desc->idProduct);
     }
     return false;
 }
@@ -706,11 +716,35 @@ UInt32 sxOpen(void** sxHandles)
         }
         if (isSXCamera(&desc)) {
             libusb_device_handle* handle;
-            
+
             ret = libusb_open(device[i], &handle);
             if (0 == ret) {
+
+#if defined (__linux__)
+                if (libusb_kernel_driver_active(handle, 0) == 1) {
+                    ret = libusb_detach_kernel_driver(handle, 0);
+                    if (ret == 0) {
+                        printf("SXMacLib: Kernel driver detached.\n");
+                    } else {
+                        fprintf(stderr,"SXMacLib: Error detaching kernel driver.\n");
+                    }
+                }
+
+                struct libusb_config_descriptor *config;
+                ret = libusb_get_config_descriptor(device[i], 0, &config);
+                if (ret == 0) {
+                        printf("SXMacLib: Config descriptor read.\n");
+                    } else {
+                        fprintf(stderr,"SXMacLib: Error reading config descriptor.\n");
+                }
+                int interface = config->interface->altsetting->bInterfaceNumber;
+#else
+                // passing bInterfaceNumber doesn't work on a Mac so leave it as 0 as it was before.
+                // This is probably a off by one error and we should be passing in config->interface->altsetting->bInterfaceNumber - 1
+                const int interface = 0;
+#endif
                 
-                ret = libusb_claim_interface(handle, 0);
+                ret = libusb_claim_interface(handle, interface);
                 if (0 == ret) {
                     
                     const int model = sxGetCameraModel(handle);
@@ -723,6 +757,8 @@ UInt32 sxOpen(void** sxHandles)
                         sxHandles[count] = handle;
                         count++;
                     }
+                } else {
+                    fprintf(stderr,"SXMacLib: libusb_claim_interface error %s\n", libusb_error_name(ret));
                 }
             }
             
@@ -753,6 +789,7 @@ void sxClose(void* sxHandle)
 static sxDeviceInfo infos[] = {
     {0x0507,"Lodestar",sxDeviceTypeCamera},
     {0x0509,"Superstar",sxDeviceTypeCamera},
+    {0x0517,"CoStar",sxDeviceTypeCamera},
     {0x0525,"Ultrastar",sxDeviceTypeCamera},
     {0x0398,"H814c",sxDeviceTypeCamera},
     {0x0198,"H814",sxDeviceTypeCamera},

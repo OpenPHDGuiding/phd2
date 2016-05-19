@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#if defined (__LINUX__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__)
 
 #include <termios.h>
 #include <unistd.h>
@@ -73,7 +73,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
     bool bError = false;
 
     try {
-        if ((m_fd = open(portName, O_RDWR|O_NOCTTY)) < 0) {
+        if ((m_fd = open(portName.mb_str(), O_RDWR|O_NOCTTY)) < 0) {
             wxString exposeToUser = wxString::Format("open %s failed %s(%d)", portName, strerror((int)errno), (int)errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + exposeToUser);
         }
@@ -300,4 +300,4 @@ bool SerialPortPosix::SetDTR(bool asserted)
     return true; // TODO
 }
 
-#endif // __LINUX__
+#endif // __linux__

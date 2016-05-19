@@ -260,7 +260,7 @@ void SBGuideIndicators::PositionControls()
     txtRaAmounts->SetPosition(raPosition);
 
     fieldNum++;
-    wxString txtSizer = "120 ms, 4.38 px";
+    wxString txtSizer =  wxString::Format(_("%d ms, %0.1f px"), 120, 4.38);
     parentPanel->GetTextExtent(txtSizer, &txtWidth, &txtHeight);
     wxPoint decPosition = parentPanel->FieldLoc(fieldNum);
     txtDecAmounts->SetPosition(decPosition);
@@ -283,7 +283,7 @@ void SBGuideIndicators::UpdateState(int raDirection, int decDirection, double ra
             bitmapRA->SetBitmap(arrowLeft);
 
         bitmapRA->Show(true);
-        raInfo = wxString::Format("%d ms, %0.1f px", raPulse, raPx);
+        raInfo = wxString::Format(_("%d ms, %0.1f px"), raPulse, raPx);
     }
     else
     {
@@ -297,7 +297,7 @@ void SBGuideIndicators::UpdateState(int raDirection, int decDirection, double ra
         else
             bitmapDec->SetBitmap(arrowDown);
         bitmapDec->Show(true);
-        decInfo = wxString::Format("%d ms, %0.1f px", decPulse, decPx);
+        decInfo = wxString::Format(_("%d ms, %0.1f px"), decPulse, decPx);
     }
     else
     {
@@ -429,7 +429,7 @@ void SBStateIndicatorItem::UpdateState()
             pic->SetIcon(container->icoRedLed);
             quadState = -1;
         }
-            
+
         break;
 
     case Field_Darks:
@@ -502,7 +502,7 @@ void SBStateIndicatorItem::UpdateState()
 
 wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triState)
 {
-    wxString rslt = "";
+    wxString rslt;
 
     switch (indType)
     {
@@ -529,7 +529,7 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
         case -1:
             rslt += _("Not completed");
             break;
-        case 0: 
+        case 0:
             rslt += _("Completed, but scope pointing info not available/not in-use");
             break;
         case 1:

@@ -49,7 +49,7 @@ SerialPort *SerialPort::SerialPortFactory(void)
     return new SerialPortWin32();
 #elif defined(__APPLE__)
     return new SerialPortMac();
-#elif defined(__LINUX__)
+#elif defined(__linux__)
     return new SerialPortPosix();
 #else
     return 0;

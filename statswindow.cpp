@@ -53,8 +53,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->SetRowLabelSize(1);
     m_grid1->SetColLabelSize(1);
     m_grid1->EnableEditing(false);
-    m_grid1->SetCellBackgroundColour(*wxBLACK);
-    m_grid1->SetCellTextColour(*wxLIGHT_GREY);
+    m_grid1->SetDefaultCellBackgroundColour(*wxBLACK);
+    m_grid1->SetDefaultCellTextColour(*wxLIGHT_GREY);
     m_grid1->SetGridLineColour(wxColour(40, 40, 40));
 
     int col = 0;
@@ -81,8 +81,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
-    m_grid2->SetCellBackgroundColour(*wxBLACK);
-    m_grid2->SetCellTextColour(*wxLIGHT_GREY);
+    m_grid2->SetDefaultCellBackgroundColour(*wxBLACK);
+    m_grid2->SetDefaultCellTextColour(*wxLIGHT_GREY);
     m_grid2->SetGridLineColour(wxColour(40, 40, 40));
 
     row = 0, col = 0;
@@ -173,35 +173,35 @@ void StatsWindow::UpdateStats(void)
     m_grid2->BeginBatch();
 
     int row = 1, col = 1;
-    m_grid1->SetCellValue(arcsecs(stats.rms_ra, sampling), row++, col);
-    m_grid1->SetCellValue(arcsecs(stats.rms_dec, sampling), row++, col);
-    m_grid1->SetCellValue(arcsecs(stats.rms_tot, sampling), row++, col);
+    m_grid1->SetCellValue(row++, col, arcsecs(stats.rms_ra, sampling));
+    m_grid1->SetCellValue(row++, col, arcsecs(stats.rms_dec, sampling));
+    m_grid1->SetCellValue(row++, col, arcsecs(stats.rms_tot, sampling));
 
     row = 1, col = 2;
-    m_grid1->SetCellValue(arcsecs(stats.ra_peak, sampling), row++, col);
-    m_grid1->SetCellValue(arcsecs(stats.dec_peak, sampling), row++, col);
+    m_grid1->SetCellValue(row++, col, arcsecs(stats.ra_peak, sampling));
+    m_grid1->SetCellValue(row++, col, arcsecs(stats.dec_peak, sampling));
 
     row = 0, col = 1;
     if (stats.osc_alert)
-        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+        m_grid2->SetCellTextColour(row, col, wxColour(185, 20, 0));
     else
-        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
-    m_grid2->SetCellValue(wxString::Format("% .02f", stats.osc_index), row++, col);
+        m_grid2->SetCellTextColour(row, col, *wxLIGHT_GREY);
+    m_grid2->SetCellValue(row++, col, wxString::Format("% .02f", stats.osc_index));
 
     unsigned int historyItems = wxMax(pFrame->pGraphLog->GetHistoryItemCount(), 1); // avoid divide-by-zero
     if (stats.ra_limit_cnt > 0)
-        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+        m_grid2->SetCellTextColour(row, col, wxColour(185, 20, 0));
     else
-        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
-    m_grid2->SetCellValue(wxString::Format(" %u (%.f%%)", stats.ra_limit_cnt, stats.ra_limit_cnt * 100. / historyItems), row++, col);
+        m_grid2->SetCellTextColour(row, col, *wxLIGHT_GREY);
+    m_grid2->SetCellValue(row++, col, wxString::Format(" %u (%.f%%)", stats.ra_limit_cnt, stats.ra_limit_cnt * 100. / historyItems));
 
     if (stats.dec_limit_cnt > 0)
-        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+        m_grid2->SetCellTextColour(row, col, wxColour(185, 20, 0));
     else
-        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
-    m_grid2->SetCellValue(wxString::Format(" %u (%.f%%)", stats.dec_limit_cnt, stats.dec_limit_cnt * 100. / historyItems), row++, col);
+        m_grid2->SetCellTextColour(row, col, *wxLIGHT_GREY);
+    m_grid2->SetCellValue(row++, col, wxString::Format(" %u (%.f%%)", stats.dec_limit_cnt, stats.dec_limit_cnt * 100. / historyItems));
 
-    m_grid2->SetCellValue(wxString::Format(" %u", stats.star_lost_cnt), row++, col);
+    m_grid2->SetCellValue(row++, col, wxString::Format(" %u", stats.star_lost_cnt));
 
     m_grid1->EndBatch();
     m_grid2->EndBatch();
@@ -227,10 +227,10 @@ void StatsWindow::UpdateScopePointing()
 
         m_grid2->BeginBatch();
         int row = 4, col = 1;
-        m_grid2->SetCellValue(Mount::DeclinationStr(declination, "% .1f" DEGREES_SYMBOL), row++, col);
-        m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
-        m_grid2->SetCellValue(RotatorPosStr(), row++, col);
-        m_grid2->SetCellValue(wxString::Format("%hu", pCamera->Binning), row++, col);
+        m_grid2->SetCellValue(row++, col, Mount::DeclinationStr(declination, "% .1f" DEGREES_SYMBOL));
+        m_grid2->SetCellValue(row++, col, Mount::PierSideStr(pierSide));
+        m_grid2->SetCellValue(row++, col, RotatorPosStr());
+        m_grid2->SetCellValue(row++, col, wxString::Format("%hu", pCamera->Binning));
         m_grid2->EndBatch();
     }
 }

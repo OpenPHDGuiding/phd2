@@ -63,7 +63,7 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     wxStaticBoxSizer* darksGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
 
     wxStaticText* darksLabel = new wxStaticText(this, wxID_STATIC, _("Choose the profile with the dark library you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
-    darksGroup->Add(darksLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxADJUST_MINSIZE, 5);
+    darksGroup->Add(darksLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
     wxFlexGridSizer* drkGrid = new wxFlexGridSizer(2, 2, 0, 0);
 
     wxArrayString drkChoices;
@@ -89,7 +89,7 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     wxStaticBoxSizer* bpmGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Bad-pixel Map"));
 
     wxStaticText* bpmLabel = new wxStaticText(this, wxID_STATIC, _("Choose the profile with the bad-pixel map you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
-    bpmGroup->Add(bpmLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxADJUST_MINSIZE, 10);
+    bpmGroup->Add(bpmLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
 
     wxArrayString bpmChoices;
     bpmChoices.Add(_("None"));

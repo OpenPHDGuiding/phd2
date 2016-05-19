@@ -1750,7 +1750,7 @@ bool GearDialog::DisconnectAll(wxString *error)
 
 void GearDialog::Shutdown(bool forced)
 {
-    Debug.AddLine("Shutdown: forced=%d", forced);
+    Debug.Write(wxString::Format("Shutdown: forced=%d\n", forced));
 
     if (!forced && m_pScope && m_pScope->IsConnected())
     {

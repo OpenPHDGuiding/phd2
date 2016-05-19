@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Glossary of Terms</title></head>
+<body><h2>Glossary of Technical Terms</h2><br>Although
+PHD2 strives for ease-of-use, the underlying task of guiding a
+telescope is actually quite complicated. &nbsp;If you're trying to
+resolve equipment-related problems or fine-tune your guiding, you may
+brush up against unfamiliar topics and terminology from statistics,
+astronomy, and mechanical engineering. &nbsp;Some of these terms appear
+in the PHD2 user interfaces as well as in the support forums and
+discussion groups, so it's worthwhile to have a basic knowledge of what
+they mean. &nbsp;Some of the terms you are&nbsp;likely to encounter are
+discussed below.<br><br><span style="font-weight: bold;"><a name="RMS"></a>RMS</span>
+-
+is a shorthand for "root-mean-square", a statistical quantity used to
+characterize a set of data. &nbsp;In the context of PHD2, it is the
+same as standard deviation. &nbsp;It is a useful quantity to describe
+the spread of the data points around some average value. &nbsp;If we
+concentrate on the task of guiding, we're interested in knowing how
+much we see
+the guide star moving around on the RA and Dec axes. &nbsp;Let's
+consider a sequence that measures a sequence of guide star
+displacements that look like this: &nbsp; 1.0, -1.2, 1.5, -1.3, 1.0
+-1.6, 1.4,
+-2.1, 1.2, -2.4, 1.2, -2.1 -1.1, 2.1, 0, 2.4, -1.2, 1.6, -1.5, 1.3,
+-1.0, 1.2 -1.6, 1.2. &nbsp; How should we
+characterize how much movement we're seeing around the zero-point?
+&nbsp;We could take a simple approach and compute the average of these
+deflections - and the result is zero! &nbsp;That tells us nothing at
+all, obviously 0 is not a good characterization. &nbsp;The reason for
+this result is that we happened to get equal displacements in both the
++ and - directions, so the displacements are cancelling each other out.
+Hence the reason for using a slightly more complicated RMS (standard
+deviation)&nbsp;calculation, which factors out the signs of the
+displacements. &nbsp;The RMS value for this sequence is 1.5, which
+tells us a lot more. &nbsp;Over a sufficiently long period (somewhat
+longer than
+the 25 points in this example), the underlying mathematics tells us we
+would expect&nbsp;68% of the excursions to be smaller than +- 1.5 px,
+and&nbsp;95% of the excursions to fall within +/- 2*RMS (3.0) arc-sec.
+&nbsp;Obviously, this tell us a lot more about the guiding performance,
+and it's the reason RMS is used in the PHD2 visualization tools.<br><br><span style="font-weight: bold;"><a name="Backlash"></a>Backlash</span>
+- is a typical shortcoming of most telescope mounts that use gears to
+drive the two axes (most but not all amateur mounts use gears).
+&nbsp;It is caused by a
+variable amount of looseness or slack anywhere two gears are meshed
+together.
+&nbsp;Some amount of slack is necessary or the gears wouldn't be able
+to reverse direction at all, they would simply lock up.
+&nbsp;This mandatory (hopefully small) amount of slack in the gear mesh
+means that a reversal in direction will briefly push the drive gear
+into a
+small dead-zone where the gears are no longer meshed at all. &nbsp;At
+that point, the drive motor will continue to turn but the mount axis
+won't move. &nbsp;This will continue until the motor has turned
+enough to re-engage the gears in the reverse direction.
+&nbsp;High-quality geared mounts have a very small amount of backlash,
+so small that it typically doesn't affect guiding. &nbsp;But lower-end mounts may
+have a large amount of backlash, and direction reversals may experience
+long lags before the axis moves in the desired direction.
+&nbsp;Backlash is not a problem in RA so long as the guide speed is
+less than or equal to 1x sidereal. &nbsp;In those cases, the RA motor
+never reverses direction during guiding, so the backlash is not
+encountered. &nbsp;However, backlash is typically an issue for
+declination
+because the drive motor and&nbsp;gears are usually stationary except for
+intermittent commands to move north or south to track the star.
+&nbsp;Direction reversals in Dec will quite often trigger backlash delays.
+&nbsp; The Guiding Assistant in PHD2 can measure this, and you will
+quite often see discussions about backlash in the support forums.
+&nbsp;As a general rule, backlash is best addressed by re-meshiing or
+otherwise improving the gear train on your declination axis.<br><br><span style="font-weight: bold;"><a name="Periodic_Error"></a>Periodic Error</span>
+- is another typical characteristic of geared mounts, this time
+affecting only&nbsp;the RA axis. &nbsp;Periodic error is usually caused
+by small irregularities&nbsp;in the worm that drives the RA gear train.
+&nbsp;It is periodic because whatever irregularities are present will
+appear each time the worm makes a full cycle (the worm period).
+&nbsp;The irregularities make their presence known by small RA tracking
+errors that appear on a&nbsp;consistent and predictable basis.
+&nbsp;Periodic error can be more complicated than this when defects are
+present elsewhere in the RA gear mechanism, but the principle is the
+same. &nbsp;Mounts that are advertised as being imaging-capable should
+have a way to correct for this by applying
+proactive corrections as the worm reaches various points in its cycle.
+&nbsp;This correction mechanism is called periodic error correction,
+usually abbreviated as PEC. &nbsp;The PEC is usually programmed into
+the mount firmware through use of a separate application (e.g. PemPro
+or PecPrep). &nbsp; Since the PE corrections are applied
+by the mount firmware proactively, they do not interfere with PHD2
+guiding.
+&nbsp;In fact, they&nbsp;help it substantially - there will usually be
+a smaller range of motion for which PHD2 needs to correct..<br><br><span style="font-weight: bold;"><a name="Image_Scale"></a>Image Scale </span>-
+is a fairly simple property of the imaging or guiding system, although
+not something most users want to calculate. &nbsp;It is expressed in
+units of arc-sec/pixel and basically describes how angular distances in
+the sky (arc-seconds) are translated into linear distances on the
+camera sensor (pixels). &nbsp;To apply this concept to guiding,
+consider a telescope/mount system that has some amount of tracking
+error. &nbsp;The tracking errors create very small angular movements in
+pointing, so they are measured and expressed in units of arc-seconds.
+&nbsp;For example, the mount might have a periodic error of 10
+arc-secs, so a guide star would appear to move by 10 arc-seconds during
+the worm period. &nbsp;But how much movement will show up on the camera
+sensor? &nbsp;This&nbsp;is what will determine how the guiding software
+reacts. &nbsp;If the guiding is being done with a long focal length
+scope, the image scale will be (perversely) small because&nbsp; each
+camera pixel is looking at a smaller angular distance in the sky.
+&nbsp;A given angular deflection (arc-secs) will result in a
+comparatively large linear movement on the sensor. &nbsp;If the same
+guide camera is used on a shorter focal length scope, the image scale
+is larger and the star deflections will appear smaller - each pixel is
+looking at a larger region of the sky. &nbsp;PHD2 computes the image
+scale for you if you correctly enter the guide scope focal length and
+guide camera pixel sizes. &nbsp;Once this is known, the guiding
+performance shown with tools like the guiding graph can be displayed in
+units of arc-seconds. These are the units you want to use to measure,
+improve, and discuss your guiding performance because they address the
+real, physical behavior of your guiding system and aren't dependent on
+the specifics of your optical configuration.<br><br><span style="font-weight: bold;"><a name="SNR"></a>SNR </span>-
+is the acronym used for signal-to-noise-ratio. &nbsp;This is a
+specialized measurement used by PHD2 to determine how well
+the star can be distinguished from the background. It is similar but
+not identical to the signal-to-noise ratio used in photometry.
+&nbsp;PHD2's calculation of an accurate position for the guide star can
+be affected by the SNR, but the effects typically become unimportant
+when the SNR is at 10 or higher. &nbsp;At that point, errors in
+computing the star position will be much smaller than the other
+measurement uncertainties inherent to guiding.<br><br><span style="font-weight: bold;"><a name="Saturation"></a>Saturation - </span>occurs
+when the brightest parts of the guide star image exceed the maximum
+capacity of the sensors in your guide camera. &nbsp;When this happens,
+the star profile no longer has a sharp central peak because the pixel
+values are clipped (truncated) at the maximum value for the sensor.
+&nbsp;The star profile then has a flat top, and the computation of the
+star position is degraded. &nbsp;You can see this by using the Star
+Profile tool, and you should try to avoid this situation whenever
+possible.<br><br><span style="font-weight: bold;"><a name="Star_Mass"></a>Star Mass - </span>is
+an internal PHD2 metric that indicates the overall brightness and
+apparent size of the guide star. &nbsp;It can be a rough indicator of
+star-dimming events such as passing clouds or fog, and it is used
+primarily in the "star mass detection" control on the Guide tab of the
+Advanced Dialog.<br><br><br><br><br><br><br><br><br></body></html>

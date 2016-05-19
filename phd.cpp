@@ -37,9 +37,9 @@
 #include <wx/cmdline.h>
 #include <wx/snglinst.h>
 
-#ifdef  __LINUX__
+#ifdef  __linux__
     #include <X11/Xlib.h>
-#endif // __LINUX__
+#endif // __linux__
 
 //#define DEVBUILD
 
@@ -91,9 +91,9 @@ PhdApp::PhdApp(void)
 {
     m_resetConfig = false;
     m_instanceNumber = 1;
-#ifdef  __LINUX__
+#ifdef  __linux__
     XInitThreads();
-#endif // __LINUX__
+#endif // __linux__
 };
 
 bool PhdApp::OnInit()
