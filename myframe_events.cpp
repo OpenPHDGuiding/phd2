@@ -723,12 +723,10 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 
 void MyFrame::OnLog(wxCommandEvent& evt)
 {
-
     if (evt.GetId() == MENU_LOGIMAGES)
     {
         pFrame->EnableImageLogging(evt.IsChecked());
     }
-
 }
 
 bool MyFrame::FlipRACal()
