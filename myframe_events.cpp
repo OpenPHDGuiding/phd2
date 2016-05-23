@@ -57,7 +57,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     int duration = ExposureDurationFromSelection(sel);
     if (duration > 0)
     {
-        Debug.AddLine("OnExposureDurationSelected: duration = %d", duration);
+        Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
 
         m_exposureDuration = duration;
         m_autoExp.enabled = false;

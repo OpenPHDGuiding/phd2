@@ -61,8 +61,8 @@ bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
         data &= ~clearBits;
         data |= setBits;
 
-        Debug.AddLine("ParallelPort::ManipulateByte: orig=0x%x clearBits=0x%x setBits=0x%x data=0x%x",
-                origData, clearBits, setBits, data);
+        Debug.Write(wxString::Format("ParallelPort::ManipulateByte: orig=0x%x clearBits=0x%x setBits=0x%x data=0x%x\n",
+                                     origData, clearBits, setBits, data));
 
         if (WriteByte(data))
         {

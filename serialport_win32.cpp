@@ -273,7 +273,7 @@ bool SerialPortWin32::EscapeFunction(DWORD command)
 
     try
     {
-        Debug.AddLine("EscapeFunction(0x%x)", command);
+        Debug.Write(wxString::Format("EscapeFunction(0x%x)\n", command));
 
         if (!EscapeCommFunction(m_handle, command))
         {

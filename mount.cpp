@@ -514,7 +514,7 @@ void Mount::TestTransforms(void)
                 xAngle = atan2(sin(xAngle), cos(xAngle));
                 yAngle = atan2(sin(yAngle), cos(yAngle));
 
-                Debug.AddLine("xidx=%.2f, yIdx=%.2f", xAngle/M_PI*180.0/15, yAngle/M_PI*180.0/15);
+                Debug.Write(wxString::Format("xidx=%.2f, yIdx=%.2f\n", xAngle/M_PI*180.0/15, yAngle/M_PI*180.0/15));
 
                 SetCalibration(xAngle, yAngle, 1.0, 1.0);
 
@@ -656,7 +656,7 @@ bool Mount::FlipCalibration(void)
             newY += M_PI;
         }
 
-        Debug.AddLine("FlipCalibration pre-normalize: x=%.1f, y=%.1f", degrees(newX), degrees(newY));
+        Debug.Write(wxString::Format("FlipCalibration pre-normalize: x=%.1f, y=%.1f\n", degrees(newX), degrees(newY)));
 
         // normalize
         newX = norm_angle(newX);
@@ -940,11 +940,11 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
                 sin(xAngle) * hyp
                 );
 
-        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
-                mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle));
-        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
-                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
-                cameraVectorEndpoint.Angle());
+        Debug.Write(wxString::Format("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+                                     mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
+        Debug.Write(wxString::Format("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f\n",
+                                     mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+                                     cameraVectorEndpoint.Angle()));
     }
     catch (const wxString& Msg)
     {
@@ -1034,13 +1034,13 @@ void Mount::AdjustCalibrationForScopePointing(void)
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
             deccomp = true;
 
-            Debug.AddLine("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f",
-                m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
+            Debug.Write(wxString::Format("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f\n",
+                                         m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination)));
         }
     }
     if (!deccomp && m_xRate != m_cal.xRate)
     {
-        Debug.AddLine("No dec comp, using base xRate %.3f", m_cal.xRate * 1000.0);
+        Debug.Write(wxString::Format("No dec comp, using base xRate %.3f\n", m_cal.xRate * 1000.0));
         m_xRate  = m_cal.xRate;
     }
 
@@ -1065,7 +1065,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
 
             if (fabs(da) > 0.05)
             {
-                Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
+                Debug.Write(wxString::Format("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg\n", newRotatorAngle, m_cal.rotatorAngle, da));
 
                 da = radians(da);
 

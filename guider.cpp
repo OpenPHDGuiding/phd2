@@ -164,7 +164,8 @@ void Guider::LoadProfileSettings(void)
 
 PauseType Guider::SetPaused(PauseType pause)
 {
-    Debug.AddLine("Guider::SetPaused(%d)", pause);
+    Debug.Write(wxString::Format("Guider::SetPaused(%d)\n", pause));
+
     PauseType prev = m_paused;
     m_paused = pause;
 
@@ -415,8 +416,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                                     xScaleFactor :
                                     yScaleFactor;
 
-//            Debug.AddLine("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f", xScaleFactor,
-//                    yScaleFactor, newScaleFactor);
+//            Debug.Write(wxString::Format("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f\n", xScaleFactor,
+//                    yScaleFactor, newScaleFactor));
 
             // we rescale the image if:
             // - The image is either too big
@@ -891,7 +892,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
         if (newState > m_state + 1)
         {
-            Debug.AddLine("Cannot transition from %d to  newState=%d", m_state, newState);
+            Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
             throw ERROR_INFO("Illegal state transition");
         }
 
@@ -1397,7 +1398,7 @@ void Guider::EnableLockPosShift(bool enable)
 {
     if (enable != m_lockPosShift.shiftEnabled)
     {
-        Debug.AddLine("EnableLockPosShift: enable = %d", enable);
+        Debug.Write(wxString::Format("EnableLockPosShift: enable = %d\n", enable));
         m_lockPosShift.shiftEnabled = enable;
         if (enable)
         {

@@ -339,8 +339,8 @@ bool ScopeManualPointing::PreparePositionInteractive(void)
         pConfig->Profile.SetDouble("/scope/manual_pointing/longitude", m_longitude);
     }
 
-    Debug.AddLine("ScopeManualPointing%s coords %.3f,%.3f pierside %d site %.3f,%.3f",
-        dlg.m_raHr ? " (driftalign)" : "", m_ra, degrees(m_dec), m_sideOfPier, m_latitude, m_longitude);
+    Debug.Write(wxString::Format("ScopeManualPointing%s coords %.3f,%.3f pierside %d site %.3f,%.3f\n",
+                                 dlg.m_raHr ? " (driftalign)" : "", m_ra, degrees(m_dec), m_sideOfPier, m_latitude, m_longitude));
 
     return false;
 }

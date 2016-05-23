@@ -900,7 +900,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         PierSide new_side = pPointingSource->SideOfPier();
         if (new_side != SimCamParams::pier_side)
         {
-            Debug.AddLine("Cam simulator: pointing source pier side changed from %d to %d\n", SimCamParams::pier_side, new_side);
+            Debug.Write(wxString::Format("Cam simulator: pointing source pier side changed from %d to %d\n", SimCamParams::pier_side, new_side));
             SimCamParams::pier_side = new_side;
         }
     }
@@ -1212,7 +1212,7 @@ static PierSide OtherSide(PierSide side)
 void Camera_SimClass::FlipPierSide(void)
 {
     SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
-    Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", SimCamParams::pier_side, SimCamParams::cam_angle);
+    Debug.Write(wxString::Format("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f\n", SimCamParams::pier_side, SimCamParams::cam_angle));
 }
 
 #if SIMMODE == 4
