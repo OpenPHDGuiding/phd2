@@ -139,7 +139,7 @@ public:
 
 private:
     void _TrackBLCResults(double yDistance, double minMove, double yRate);
-    void SetCompValues(int requestSize);
+    void SetCompValues(int requestSize, bool autoAdjust);
 };
 
 inline void BacklashComp::TrackBLCResults(double yDistance, double minMove, double yRate)
