@@ -996,7 +996,7 @@ Camera_SimClass::Camera_SimClass()
 
 wxByte Camera_SimClass::BitsPerPixel()
 {
-#if 0
+#if 1
     return 16;
 #else
     return 8;

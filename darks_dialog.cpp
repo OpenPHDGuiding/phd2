@@ -36,6 +36,7 @@
 #include "phd.h"
 #include "darks_dialog.h"
 #include "wx/valnum.h"
+#include <sstream>
 
 static const int DefMinExpTime = 1;
 static const int DefMaxExpTime = 10;
@@ -259,6 +260,8 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
 
     wxString wrapupMsg;
 
+    bool err = false;
+
     if (buildDarkLib)
     {
         int darkFrameCount = m_pDarkCount->GetValue();
@@ -284,9 +287,9 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             else
                 ShowStatus (wxString::Format(_("Building master dark at %d mSec:"), darkExpTime), false);
             usImage *newDark = new usImage();
-            CreateMasterDarkFrame(*newDark, exposureDurations[inx], darkFrameCount);
+            err = CreateMasterDarkFrame(*newDark, exposureDurations[inx], darkFrameCount);
             wxYield();
-            if (m_cancelling)
+            if (m_cancelling || err)
             {
                 delete newDark;
                 break;
@@ -297,15 +300,15 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             }
         }
 
-        if (m_cancelling)
+        if (m_cancelling || err)
         {
-            ShowStatus(_("Operation cancelled - no changes have been made"), false);
+            ShowStatus(m_cancelling ? _("Operation cancelled - no changes have been made") : _("Operation failed - no changes have been made"), false);
             if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
             {
                 if (pFrame->LoadDarkHandler(true))
-                    Debug.AddLine("Dark library - user cancelled operation, dark library restored.");
+                    Debug.AddLine("Dark library abort, dark library restored.");
                 else
-                    Debug.AddLine("Dark library = user cancelled operation, dark library still invalid.");
+                    Debug.AddLine("Dark library abort, dark library still invalid.");
             }
         }
         else
@@ -320,7 +323,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             ShowStatus(wrapupMsg, false);
         }
     }
-
     else
     {
         // Start by computing master dark frame with longish exposure times
@@ -333,11 +335,13 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         m_pProgress->SetValue(0);
 
         DefectMapDarks darks;
-        CreateMasterDarkFrame(darks.masterDark, defectExpTime, defectFrameCount);
+        err = CreateMasterDarkFrame(darks.masterDark, defectExpTime, defectFrameCount);
 
         if (m_cancelling)
+        {
             ShowStatus(_("Operation cancelled"), false);
-        else
+        }
+        else if (!err)
         {
             // Our role here is to build the dark-related files needed for defect map building
             ShowStatus(_("Analyzing master dark..."), false);
@@ -360,7 +364,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     m_pResetBtn->Enable(true);
     pFrame->SetDarkMenuState();         // Hard to know where we are at this point
 
-    if (m_cancelling)
+    if (m_cancelling || err)
     {
         m_pProgress->SetValue(0);
         m_cancelling = false;
@@ -435,51 +439,117 @@ void DarksDialog::SaveProfileInfo()
     pConfig->Profile.SetString("/camera/darks_note", m_pNotes->GetValue());
 }
 
-void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int frameCount)
+struct Histogram
 {
+    unsigned long val[256];
+    unsigned int median;
+    double mean;
+
+    Histogram(const usImage& img)
+    {
+        memset(&val[0], 0, sizeof(val));
+        mean = 0.0;
+        for (int i = 0; i < img.NPixels; i++)
+        {
+            unsigned short v = img.ImageData[i];
+            mean += v;
+            v >>= (img.BitsPerPixel - 8);
+            if (v > 255)
+                v = 255;  // should never happen if BitsPerPixel is valid
+            ++val[v];
+        }
+        mean /= img.NPixels;
+        // median (approx)
+        unsigned long sum = 0;
+        int i;
+        for (i = 0; i < 256; i++)
+        {
+            sum += val[i];
+            if (sum > img.NPixels / 2)
+                break;
+        }
+        median = i << (img.BitsPerPixel - 8);
+    }
+
+    void Dump()
+    {
+        Debug.Write(wxString::Format("mean = %.f  median(approx) = %u\n", mean, median));
+        int i = 0;
+        for (int l = 0; l < 4; l++)
+        {
+            std::ostringstream os;
+            os << "histo[" << (l * 64) << ".." << ((l + 1) * 64 - 1) << "]";
+            for (int j = 0; j < 64; j++, i++)
+                os << ' ' << val[i];
+            os << "\n";
+            Debug.Write(os.str());
+        }
+    }
+};
+
+bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int frameCount)
+{
+    bool err = false;
+
     pCamera->InitCapture();
     darkFrame.ImgExpDur = expTime;
     darkFrame.ImgStackCnt = frameCount;
-    ShowStatus(_("Taking dark frame") + " #1", true);
-    if (GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK))
+
+    unsigned int *avgimg = 0;
+
+    for (int j = 1; j <= frameCount; j++)
     {
-        ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
-        pCamera->ShutterClosed = false;
-    }
-    else
-    {
-        m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
-        unsigned int *avgimg = new unsigned int[darkFrame.NPixels];
-        unsigned int *iptr = avgimg;
-        unsigned short *usptr = darkFrame.ImageData;
-        for (int i = 0; i < darkFrame.NPixels; i++)
-            *iptr++ = *usptr++;
         wxYield();
-        for (int j = 1; j < frameCount; j++)
+        if (m_cancelling)
+            break;
+        ShowStatus(wxString::Format(_("Taking dark frame %d/%d"), j, frameCount), true);
+
+        Debug.Write(wxString::Format("Capture dark frame %d/%d exp=%d\n", j, frameCount, expTime));
+        err = GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK);
+        if (err)
         {
-            wxYield();
-            if (m_cancelling)
-                break;
-            ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
-            wxYield();
-            GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK);
-            m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
-            iptr = avgimg;
-            usptr = darkFrame.ImageData;
-            for (int i = 0; i < darkFrame.NPixels; i++)
-                *iptr++ += *usptr++;
-        }
-        if (!m_cancelling)
-        {
-            ShowStatus(_("Dark frames complete"), true);
-            iptr = avgimg;
-            usptr = darkFrame.ImageData;
-            for (int i = 0; i < darkFrame.NPixels; i++)
-                *usptr++ = (unsigned short)(*iptr++ / frameCount);
+            ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double)expTime / 1000.0), true);
+            pCamera->ShutterClosed = false;
+            break;
         }
 
-        delete[] avgimg;
+        m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
+        wxYield();
+
+        darkFrame.CalcStats();
+        Debug.Write(wxString::Format("dark frame stats: bpp %u min %u max %u filtmin %u filtmax %u\n",
+            darkFrame.BitsPerPixel, darkFrame.Min, darkFrame.Max, darkFrame.FiltMin, darkFrame.FiltMax));
+        Histogram h(darkFrame);
+        h.Dump();
+        wxYield();
+
+        if (!avgimg)
+        {
+            avgimg = new unsigned int[darkFrame.NPixels];
+            memset(avgimg, 0, darkFrame.NPixels * sizeof(*avgimg));
+        }
+
+        unsigned int *iptr = avgimg;
+        const unsigned short *usptr = darkFrame.ImageData;
+        for (int i = 0; i < darkFrame.NPixels; i++)
+            *iptr++ += *usptr++;
     }
+
+    if (!m_cancelling && !err)
+    {
+        ShowStatus(_("Dark frames complete"), true);
+        const unsigned int *iptr = avgimg;
+        unsigned short *usptr = darkFrame.ImageData;
+        for (int i = 0; i < darkFrame.NPixels; i++)
+            *usptr++ = (unsigned short)(*iptr++ / frameCount);
+    }
+
+    m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
+    wxYield();
+
+    delete[] avgimg;
+
+    return err;
 }
 
 DarksDialog::~DarksDialog(void)
