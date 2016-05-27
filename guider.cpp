@@ -910,6 +910,7 @@ void Guider::SetState(GUIDER_STATE newState)
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())
                 {
+                    pMount->ResetErrorCount();
                     if (pMount->BeginCalibration(CurrentPosition()))
                     {
                         newState = STATE_UNINITIALIZED;
@@ -930,6 +931,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 }
                 else if (!pSecondaryMount->IsCalibrated())
                 {
+                    pSecondaryMount->ResetErrorCount();
                     if (pSecondaryMount->BeginCalibration(CurrentPosition()))
                     {
                         newState = STATE_UNINITIALIZED;
@@ -1231,7 +1233,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     if (pMount->UpdateCalibrationState(CurrentPosition()))
                     {
                         SetState(STATE_UNINITIALIZED);
-                        statusMessage = _("calibration failed (primary)");
+                        statusMessage = pMount->IsStepGuider() ? _("AO calibration failed") : _("calibration failed");
                         throw ERROR_INFO("Calibration failed");
                     }
 
@@ -1264,7 +1266,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
                         {
                             SetState(STATE_UNINITIALIZED);
-                            statusMessage = _("calibration failed (secondary)");
+                            statusMessage = _("calibration failed");
                             throw ERROR_INFO("Calibration failed");
                         }
                     }

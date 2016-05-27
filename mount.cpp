@@ -578,6 +578,7 @@ Mount::Mount(void)
 {
     m_connected = false;
     m_requestCount = 0;
+    m_errorCount = 0;
 
     m_pYGuideAlgorithm = NULL;
     m_pXGuideAlgorithm = NULL;
@@ -1080,11 +1081,6 @@ void Mount::AdjustCalibrationForScopePointing(void)
     }
 }
 
-bool Mount::IsBusy(void)
-{
-    return m_requestCount > 0;
-}
-
 void Mount::IncrementRequestCount(void)
 {
     m_requestCount++;
@@ -1093,7 +1089,6 @@ void Mount::IncrementRequestCount(void)
     // enqueue them two at a time.  There is no reason we can't, it's just that
     // right now we don't, and this might catch an error
     assert(m_requestCount <= 2);
-
 }
 
 void Mount::DecrementRequestCount(void)
@@ -1413,6 +1408,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
 bool Mount::Connect(void)
 {
     m_connected = true;
+    ResetErrorCount();
 
     if (pFrame)
     {

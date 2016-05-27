@@ -526,6 +526,15 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
     try
     {
+        enum { MAX_CALIBRATION_MOVE_ERRORS = 12 };
+        if (ErrorCount() > MAX_CALIBRATION_MOVE_ERRORS)
+        {
+            pFrame->Alert(_("The AO is failing to move and calibration cannot complete. Check the Debug Log for more information."));
+            Debug.Write(wxString::Format("stepguider calibration failure, current pos = %+d,%+d, required range = %+d..%+d,%+d..%+d\n",
+                m_xOffset, m_yOffset, -MaxPosition(LEFT), MaxPosition(RIGHT), -MaxPosition(DOWN), MaxPosition(UP)));
+            throw ERROR_INFO("too many move errors during calibration");
+        }
+
         if (!m_calibrationStartingLocation.IsValid())
         {
             m_calibrationStartingLocation = currentLocation;
@@ -547,10 +556,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
         assert(stepsRemainingUp >= 0);
         assert(stepsRemainingDown >= 0);
-        assert(stepsRemainingRight  >= 0);
-        assert(stepsRemainingLeft  >= 0);
-        assert(stepsRemainingDownAndRight    >= 0);
-
+        assert(stepsRemainingRight >= 0);
+        assert(stepsRemainingLeft >= 0);
+        assert(stepsRemainingDownAndRight >= 0);
 
         bool moveUp = false;
         bool moveDown = false;

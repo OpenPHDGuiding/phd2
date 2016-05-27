@@ -252,6 +252,15 @@ bool StepGuiderSimulator::Disconnect(void)
 
 bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
 {
+#if 0 // enable to test step failure
+    wxPoint pos = GetAoPos();
+    if (direction == LEFT && pos.x - steps < -35)
+    {
+        Debug.Write("simulate step failure\n");
+        return true;
+    }
+#endif
+
     // parent class maintains x/y offsets, so nothing to do here. Just simulate a delay.
     enum { LATENCY_MS_PER_STEP = 5 };
     wxMilliSleep(steps * LATENCY_MS_PER_STEP);
