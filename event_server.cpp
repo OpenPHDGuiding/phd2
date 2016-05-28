@@ -335,14 +335,30 @@ struct ClientReadBuf
 
 struct ClientData
 {
+    wxSocketClient *cli;
+    int refcnt;
     ClientReadBuf rdbuf;
     wxMutex wrlock;
+
+    ClientData(wxSocketClient *cli_) : cli(cli_), refcnt(1) { }
+    void AddRef() { ++refcnt; }
+    void RemoveRef()
+    {
+        if (--refcnt == 0)
+        {
+            cli->Destroy();
+            delete this;
+        }
+    }
 };
 
-inline static ClientReadBuf *client_rdbuf(wxSocketClient *cli)
+struct ClientDataGuard
 {
-    return &((ClientData *) cli->GetClientData())->rdbuf;
-}
+    ClientData *cd;
+    ClientDataGuard(wxSocketClient *cli) : cd((ClientData *) cli->GetClientData()) { cd->AddRef(); }
+    ~ClientDataGuard() { cd->RemoveRef(); }
+    ClientData *operator->() const { return cd; }
+};
 
 inline static wxMutex *client_wrlock(wxSocketClient *cli)
 {
@@ -438,8 +454,7 @@ static void send_catchup_events(wxSocketClient *cli)
 static void destroy_client(wxSocketClient *cli)
 {
     ClientData *buf = (ClientData *) cli->GetClientData();
-    cli->Destroy();
-    delete buf;
+    buf->RemoveRef();
 }
 
 static void drain_input(wxSocketInputStream& sis)
@@ -1594,7 +1609,15 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
 
 static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
 {
-    ClientReadBuf *rdbuf = client_rdbuf(cli);
+    // Bump refcnt to protect against reentrancy.
+    //
+    // Some functions like set_connected can cause the event loop to run reentrantly. If the
+    // client disconnects before the response is sent and a socket disconnect event is
+    // dispatched the client data could be destroyed before we respond.
+
+    ClientDataGuard clidata(cli);
+
+    ClientReadBuf *rdbuf = &clidata->rdbuf;
 
     wxSocketInputStream sis(*cli);
     size_t avail = rdbuf->avail();
@@ -1703,7 +1726,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
     client->SetFlags(wxSOCKET_NOWAIT);
     client->Notify(true);
-    client->SetClientData(new ClientData());
+    client->SetClientData(new ClientData(client));
 
     send_catchup_events(client);
 
