@@ -852,8 +852,17 @@ void MyFrame::GuideButtonClick(bool interactive)
 
         if (interactive && pPointingSource && pPointingSource->IsConnected())
         {
+            bool proceed = true;
             bool error = pPointingSource->PreparePositionInteractive();
-            if (error)
+
+            if (!error && fabs(pPointingSource->GetDeclination()) > Scope::DEC_COMP_LIMIT && !TheScope()->IsCalibrated() )
+            {
+                proceed = ConfirmDialog::Confirm(
+                    _("Calibration this far from the equator will be error-prone; Do you want to proceed?"),
+                    "/highdec_calibration_ok", _("Confirm Calibration at Large Dec")
+                    );
+            }
+            if (error || !proceed)
                 return;
         }
 

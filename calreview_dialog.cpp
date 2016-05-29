@@ -597,7 +597,7 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
     case CI_Angle:
         msg = wxString::Format(_("The RA and Declination angles computed in the calibration are questionable.  Normally, "
             "these angles will be nearly perpendicular, having an 'orthogonality error' of less than 10 degrees.  In this calibration, your error was %s degrees, which "
-            "is often caused by poor polar alignment or a large periodic error in RA."), m_newAngleDelta);
+            "is often caused by poor polar alignment, large Dec backlash, or a large periodic error in RA."), m_newAngleDelta);
         break;
     case CI_Different:
         msg = wxString::Format(_("The most recent calibration produced results that are %s%% different from the previous calibration.  If this is because "

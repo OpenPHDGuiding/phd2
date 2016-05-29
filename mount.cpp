@@ -1024,10 +1024,15 @@ void Mount::AdjustCalibrationForScopePointing(void)
         if (fabs(m_cal.declination) > Scope::DEC_COMP_LIMIT)
         {
             Debug.AddLine("skipping Dec comp: initial calibration too far from equator");
+            pFrame->Alert(_("Calibration was too far from equator, recalibration is needed."));
+
         }
         else if (!DecCompensationEnabled())
         {
             Debug.AddLine("skipping Dec comp: Dec Comp not enabled");
+            if (degrees(fabs(newDeclination - m_cal.declination)) > 15.0)
+                pFrame->Alert(_("Scope position has changed significantly, recalibration is needed."));
+
         }
         else
         {
