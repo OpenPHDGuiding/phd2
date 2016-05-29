@@ -57,7 +57,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     int duration = ExposureDurationFromSelection(sel);
     if (duration > 0)
     {
-        Debug.AddLine("OnExposureDurationSelected: duration = %d", duration);
+        Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
 
         m_exposureDuration = duration;
         m_autoExp.enabled = false;
@@ -426,16 +426,18 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
     {
-        Mount *pThisMount = event.GetPayload<Mount *>();
-        assert(pThisMount->IsBusy());
-        pThisMount->DecrementRequestCount();
+        Mount *mount = event.GetPayload<Mount *>();
+        assert(mount->IsBusy());
+        mount->DecrementRequestCount();
 
         Mount::MOVE_RESULT moveResult = static_cast<Mount::MOVE_RESULT>(event.GetInt());
 
-        pMount->LogGuideStepInfo();
+        mount->LogGuideStepInfo();
 
         if (moveResult != Mount::MOVE_OK)
         {
+            mount->IncrementErrorCount();
+
             if (moveResult == Mount::MOVE_STOP_GUIDING)
             {
                 Debug.Write("mount move error indicates guiding should stop\n");

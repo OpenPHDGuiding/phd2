@@ -140,7 +140,7 @@ bool PhdApp::OnInit()
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    Debug.AddLine("CoInitializeEx returns %x", hr);
+    Debug.Write(wxString::Format("CoInitializeEx returns %x\n", hr));
 #endif
 
     DisableOSXAppNap();

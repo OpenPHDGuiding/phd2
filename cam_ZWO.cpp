@@ -218,14 +218,14 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Connected = true;
     Name = info.Name;
     m_isColor = info.IsColorCam != ASI_FALSE;
-    Debug.AddLine("ZWO: IsColorCam = %d", m_isColor);
+    Debug.Write(wxString::Format("ZWO: IsColorCam = %d\n", m_isColor));
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)
     {
         if (!info.SupportedBins[i])
             break;
-        Debug.AddLine("ZWO: supported bin %d = %d", i, info.SupportedBins[i]);
+        Debug.Write(wxString::Format("ZWO: supported bin %d = %d\n", i, info.SupportedBins[i]));
         if (info.SupportedBins[i] > maxBin)
             maxBin = info.SupportedBins[i];
     }
@@ -291,7 +291,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     wxYield();
 
     m_frame = wxRect(FullSize);
-    Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
+    Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
     ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, ASI_IMG_RAW8);
@@ -354,7 +354,7 @@ static void flush_buffered_image(int cameraId, usImage& img)
         if (status != ASI_SUCCESS)
             break; // no more buffered frames
 
-        Debug.AddLine("ZWO: getimagedata clearbuf %u ret %d", num_cleared + 1, status);
+        Debug.Write(wxString::Format("ZWO: getimagedata clearbuf %u ret %d\n", num_cleared + 1, status));
     }
 }
 
@@ -406,7 +406,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ASIGetControlValue(m_cameraId, ASI_EXPOSURE, &cur_exp, &tmp) == ASI_SUCCESS &&
         cur_exp != exposureUS)
     {
-        Debug.AddLine("ZWO: set CONTROL_EXPOSURE %d", exposureUS);
+        Debug.Write(wxString::Format("ZWO: set CONTROL_EXPOSURE %d\n", exposureUS));
         ASISetControlValue(m_cameraId, ASI_EXPOSURE, exposureUS, ASI_FALSE);
     }
 
@@ -415,7 +415,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ASIGetControlValue(m_cameraId, ASI_GAIN, &cur_gain, &tmp) == ASI_SUCCESS &&
         new_gain != cur_gain)
     {
-        Debug.AddLine("ZWO: set CONTROL_GAIN %d%% %d", GuideCameraGain, new_gain);
+        Debug.Write(wxString::Format("ZWO: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
         ASISetControlValue(m_cameraId, ASI_GAIN, new_gain, ASI_FALSE);
     }
 
@@ -425,7 +425,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     if (size_change || pos_change)
     {
         m_frame = frame;
-        Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
+        Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
     }
 
     if (size_change || binning_change)
@@ -434,14 +434,14 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
         ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, ASI_IMG_RAW8);
         if (status != ASI_SUCCESS)
-            Debug.AddLine("ZWO: setImageFormat(%d,%d,%hu) => %d", frame.GetWidth(), frame.GetHeight(), Binning, status);
+            Debug.Write(wxString::Format("ZWO: setImageFormat(%d,%d,%hu) => %d\n", frame.GetWidth(), frame.GetHeight(), Binning, status));
     }
 
     if (pos_change)
     {
         ASI_ERROR_CODE status = ASISetStartPos(m_cameraId, frame.GetLeft(), frame.GetTop());
         if (status != ASI_SUCCESS)
-            Debug.AddLine("ZWO: setStartPos(%d,%d) => %d", frame.GetLeft(), frame.GetTop(), status);
+            Debug.Write(wxString::Format("ZWO: setStartPos(%d,%d) => %d\n", frame.GetLeft(), frame.GetTop(), status));
     }
 
     // the camera and/or driver will buffer frames and return the oldest frame,
@@ -481,7 +481,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         if (watchdog.Expired())
         {
-            Debug.AddLine("ZWO: getimagedata ret %d", status);
+            Debug.Write(wxString::Format("ZWO: getimagedata ret %d\n", status));
             StopCapture();
             DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;

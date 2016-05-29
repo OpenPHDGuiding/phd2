@@ -77,7 +77,7 @@ bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
 
         wxString choice = m_pParallelPort->ChooseParallelPort(lastParallelPort);
 
-        Debug.AddLine("Camera_LEParallelWebcamClass::Connect: parallel port choice is: %s", choice);
+        Debug.Write(wxString::Format("Camera_LEParallelWebcamClass::Connect: parallel port choice is: %s\n", choice));
 
         if (choice.IsEmpty())
         {

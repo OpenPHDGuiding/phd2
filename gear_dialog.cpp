@@ -981,19 +981,19 @@ bool GearDialog::DoConnectCamera(void)
         m_cameraUpdated = true;
 
         Debug.AddLine("Connected Camera: " + m_pCamera->Name);
-        Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
-        Debug.AddLine(wxString::Format("PixelSize=%.2f", m_pCamera->GetCameraPixelSize()));
-        Debug.AddLine("BitsPerPixel=%u", m_pCamera->BitsPerPixel());
-        Debug.AddLine("HasGainControl=%d", m_pCamera->HasGainControl);
+        Debug.Write(wxString::Format("FullSize=(%d,%d)\n", m_pCamera->FullSize.x, m_pCamera->FullSize.y));
+        Debug.Write(wxString::Format("PixelSize=%.2f\n", m_pCamera->GetCameraPixelSize()));
+        Debug.Write(wxString::Format("BitsPerPixel=%u\n", m_pCamera->BitsPerPixel()));
+        Debug.Write(wxString::Format("HasGainControl=%d\n", m_pCamera->HasGainControl));
 
         if (m_pCamera->HasGainControl)
         {
-            Debug.AddLine("GuideCameraGain=%d", m_pCamera->GuideCameraGain);
+            Debug.Write(wxString::Format("GuideCameraGain=%d\n", m_pCamera->GuideCameraGain));
         }
 
-        Debug.AddLine("HasShutter=%d", m_pCamera->HasShutter);
-        Debug.AddLine("HasSubFrames=%d", m_pCamera->HasSubframes);
-        Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
+        Debug.Write(wxString::Format("HasShutter=%d\n", m_pCamera->HasShutter));
+        Debug.Write(wxString::Format("HasSubFrames=%d\n", m_pCamera->HasSubframes));
+        Debug.Write(wxString::Format("ST4HasGuideOutput=%d\n", m_pCamera->ST4HasGuideOutput()));
 
         AutoLoadDefectMap();
         if (!pCamera->CurrentDefectMap)

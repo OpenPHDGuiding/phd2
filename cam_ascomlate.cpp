@@ -661,7 +661,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (driver.GetProp(&vRes, L"MaxBinY"))
         maxBinY = vRes.iVal;
     MaxBinning = wxMin(maxBinX, maxBinY);
-    Debug.AddLine("ASCOM camera: MaxBinning is %hu", MaxBinning);
+    Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxBinning));
     if (Binning > MaxBinning)
         Binning = MaxBinning;
     m_curBin = Binning;
@@ -785,13 +785,13 @@ bool Camera_ASCOMLateClass::AbortExposure(void)
     if (m_canAbortExposure)
     {
         bool err = ASCOM_AbortExposure(cam.IDisp(), &excep);
-        Debug.AddLine("ASCOM_AbortExposure returns err = %d", err);
+        Debug.Write(wxString::Format("ASCOM_AbortExposure returns err = %d\n", err));
         return !err;
     }
     else
     {
         bool err = ASCOM_StopExposure(cam.IDisp(), &excep);
-        Debug.AddLine("ASCOM_StopExposure returns err = %d", err);
+        Debug.Write(wxString::Format("ASCOM_StopExposure returns err = %d\n", err));
         return !err;
     }
 }

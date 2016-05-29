@@ -217,7 +217,7 @@ void StepGuider::InitBumpPositions(void)
     enum { BumpCenterTolerancePct = 10 }; // end bump when position is within 10 pct of center
     m_bumpCenterTolerance = IntegerPercent(BumpCenterTolerancePct, 2 * MaxPosition(UP));
 
-    Debug.AddLine("StepGuider: Bump Limits: X: %d, %d; Y: %d, %d; center: %d", m_xBumpPos1, m_xBumpPos2, m_yBumpPos1, m_yBumpPos2, m_bumpCenterTolerance);
+    Debug.Write(wxString::Format("StepGuider: Bump Limits: X: %d, %d; Y: %d, %d; center: %d\n", m_xBumpPos1, m_xBumpPos2, m_yBumpPos1, m_yBumpPos2, m_bumpCenterTolerance));
 }
 
 int StepGuider::GetSamplesToAverage(void)
@@ -526,6 +526,15 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
     try
     {
+        enum { MAX_CALIBRATION_MOVE_ERRORS = 12 };
+        if (ErrorCount() > MAX_CALIBRATION_MOVE_ERRORS)
+        {
+            pFrame->Alert(_("The AO is failing to move and calibration cannot complete. Check the Debug Log for more information."));
+            Debug.Write(wxString::Format("stepguider calibration failure, current pos = %+d,%+d, required range = %+d..%+d,%+d..%+d\n",
+                m_xOffset, m_yOffset, -MaxPosition(LEFT), MaxPosition(RIGHT), -MaxPosition(DOWN), MaxPosition(UP)));
+            throw ERROR_INFO("too many move errors during calibration");
+        }
+
         if (!m_calibrationStartingLocation.IsValid())
         {
             m_calibrationStartingLocation = currentLocation;
@@ -547,10 +556,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
         assert(stepsRemainingUp >= 0);
         assert(stepsRemainingDown >= 0);
-        assert(stepsRemainingRight  >= 0);
-        assert(stepsRemainingLeft  >= 0);
-        assert(stepsRemainingDownAndRight    >= 0);
-
+        assert(stepsRemainingRight >= 0);
+        assert(stepsRemainingLeft >= 0);
+        assert(stepsRemainingDownAndRight >= 0);
 
         bool moveUp = false;
         bool moveDown = false;
@@ -977,13 +985,13 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             {
                 if (absX > m_xBumpPos2 || absY > m_yBumpPos2)
                 {
-                    Debug.AddLine("FAR outside bump range, increase bump weight %.2f => %.2f", m_bumpStepWeight, m_bumpStepWeight + 1.0);
+                    Debug.Write(wxString::Format("FAR outside bump range, increase bump weight %.2f => %.2f\n", m_bumpStepWeight, m_bumpStepWeight + 1.0));
                     m_bumpStepWeight += 1.0;
                 }
                 else
                 {
-                    Debug.AddLine("outside bump range, increase bump weight %.2f => %.2f", m_bumpStepWeight, m_bumpStepWeight + 1./6.);
-                    m_bumpStepWeight += 1./6.;
+                    Debug.Write(wxString::Format("outside bump range, increase bump weight %.2f => %.2f\n", m_bumpStepWeight, m_bumpStepWeight + 1. / 6.));
+                    m_bumpStepWeight += 1. / 6.;
                 }
             }
 
@@ -994,7 +1002,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 m_bumpStepWeight *= 0.5;
                 if (m_bumpStepWeight < 1.0)
                     m_bumpStepWeight = 1.0;
-                Debug.AddLine("back inside bump range: decrease bump weight %.2f => %.2f", prior, m_bumpStepWeight);
+                Debug.Write(wxString::Format("back inside bump range: decrease bump weight %.2f => %.2f\n", prior, m_bumpStepWeight));
             }
 
             if (m_bumpInProgress && !m_bumpTimeoutAlertSent)
@@ -1057,7 +1065,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 throw ERROR_INFO("MountToCamera failed");
             }
 
-            Debug.AddLine("incremental bump (%.3f, %.3f) isValid = %d", bumpVec.X, bumpVec.Y, bumpVec.IsValid());
+            Debug.Write(wxString::Format("incremental bump (%.3f, %.3f) isValid = %d\n", bumpVec.X, bumpVec.Y, bumpVec.IsValid()));
 
             double maxBumpPixelsX = m_calibration.xRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
             double maxBumpPixelsY = m_calibration.yRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
@@ -1076,7 +1084,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 pFrame->pStepGuiderGraph->ShowBump(tcur);
             }
 
-            Debug.AddLine("Scheduling Mount bump of (%.3f, %.3f)", thisBump.X, thisBump.Y);
+            Debug.Write(wxString::Format("Scheduling Mount bump of (%.3f, %.3f)\n", thisBump.X, thisBump.Y));
 
             pFrame->ScheduleSecondaryMove(pSecondaryMount, thisBump, MOVETYPE_DIRECT);
         }

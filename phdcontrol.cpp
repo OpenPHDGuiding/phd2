@@ -102,7 +102,7 @@ bool PhdController::Guide(bool recalibrate, const SettleParams& settle, wxString
 {
     if (ctrl.state != STATE_IDLE)
     {
-        Debug.AddLine("PhdController::Guide reentrancy state = %d op = %d", ctrl.state, ctrl.settleOp);
+        Debug.Write(wxString::Format("PhdController::Guide reentrancy state = %d op = %d\n", ctrl.state, ctrl.settleOp));
         *error = ReentrancyError("guide");
         return false;
     }
@@ -128,7 +128,7 @@ bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settl
 {
     if (ctrl.state != STATE_IDLE)
     {
-        Debug.AddLine("PhdController::Dither reentrancy state = %d op = %d", ctrl.state, ctrl.settleOp);
+        Debug.Write(wxString::Format("PhdController::Dither reentrancy state = %d op = %d\n", ctrl.state, ctrl.settleOp));
         *errMsg = ReentrancyError("dither");
         return false;
     }
@@ -249,7 +249,7 @@ void PhdController::UpdateControllerState(void)
             else if (pFrame->pGuider->IsCalibratingOrGuiding())
             {
                 GUIDER_STATE state = pFrame->pGuider->GetState();
-                Debug.AddLine("PhdController: guider state = %d", state);
+                Debug.Write(wxString::Format("PhdController: guider state = %d\n", state));
                 if (state == STATE_CALIBRATED || state == STATE_GUIDING)
                 {
                     SETSTATE(STATE_SETTLE_BEGIN);
@@ -295,7 +295,7 @@ void PhdController::UpdateControllerState(void)
             bool error = pFrame->pGuider->AutoSelect();
             if (error)
             {
-                Debug.AddLine("auto find star failed, attempts remaining = %d", ctrl.autoFindAttemptsRemaining);
+                Debug.Write(wxString::Format("auto find star failed, attempts remaining = %d\n", ctrl.autoFindAttemptsRemaining));
                 if (--ctrl.autoFindAttemptsRemaining == 0)
                 {
                     do_fail(_T("failed to find a suitable guide star"));
@@ -323,7 +323,7 @@ void PhdController::UpdateControllerState(void)
             }
             else
             {
-                Debug.AddLine("waiting for star selected, attempts remaining = %d", ctrl.waitSelectedRemaining);
+                Debug.Write(wxString::Format("waiting for star selected, attempts remaining = %d\n", ctrl.waitSelectedRemaining));
                 if (--ctrl.waitSelectedRemaining == 0)
                 {
                     SETSTATE(STATE_ATTEMPT_START);
@@ -405,8 +405,8 @@ void PhdController::UpdateControllerState(void)
             bool aoBumpInProgress = IsAoBumpInProgress();
             long timeInRange = 0;
 
-            Debug.AddLine("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d", lockedOnStar, currentError,
-                ctrl.settle.tolerancePx, aoBumpInProgress);
+            Debug.Write(wxString::Format("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d\n", lockedOnStar, currentError,
+                                         ctrl.settle.tolerancePx, aoBumpInProgress));
 
             if (inRange)
             {

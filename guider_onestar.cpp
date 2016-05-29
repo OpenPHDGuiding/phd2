@@ -421,7 +421,7 @@ bool GuiderOneStar::AutoSelect(void)
             // the next exposure to complete. Socket server clients are going to
             // try to start guiding after selecting the star, but guiding will fail
             // to start if state is still STATE_SELECTING
-            Debug.AddLine("AutoSelect: state = %d, call UpdateGuideState", GetState());
+            Debug.Write(wxString::Format("AutoSelect: state = %d, call UpdateGuideState\n", GetState()));
             UpdateGuideState(NULL, false);
         }
 
