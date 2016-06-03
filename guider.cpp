@@ -308,11 +308,6 @@ void Guider::SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int
     Update();
 }
 
-bool Guider::IsFastRecenterEnabled(void)
-{
-    return m_fastRecenterEnabled;
-}
-
 void Guider::EnableFastRecenter(bool enable)
 {
     m_fastRecenterEnabled = enable;
@@ -323,16 +318,6 @@ void Guider::SetPolarAlignCircle(const PHD_Point& pt, double radius)
 {
     m_polarAlignCircleRadius = radius;
     m_polarAlignCircleCenter = pt;
-}
-
-double Guider::GetPolarAlignCircleCorrection(void)
-{
-    return m_polarAlignCircleCorrection;
-}
-
-void Guider::SetPolarAlignCircleCorrection(double val)
-{
-    m_polarAlignCircleCorrection = val;
 }
 
 bool Guider::SetScaleImage(bool newScaleValue)
@@ -351,26 +336,6 @@ bool Guider::SetScaleImage(bool newScaleValue)
 
     pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
     return bError;
-}
-
-bool Guider::GetScaleImage(void)
-{
-    return m_scaleImage;
-}
-
-const PHD_Point& Guider::LockPosition()
-{
-    return m_lockPosition;
-}
-
-GUIDER_STATE Guider::GetState(void)
-{
-    return m_state;
-}
-
-bool Guider::IsCalibratingOrGuiding(void)
-{
-    return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
 }
 
 void Guider::OnErase(wxEraseEvent& evt)
@@ -885,7 +850,7 @@ void Guider::SetState(GUIDER_STATE newState)
             }
 
             if (pMount)
-	        pMount->NotifyGuidingStopped();
+                pMount->NotifyGuidingStopped();
         }
 
         assert(newState != STATE_STOP);
@@ -1030,21 +995,6 @@ double Guider::CurrentError(void)
     return m_avgDistance;
 }
 
-usImage *Guider::CurrentImage(void)
-{
-    return m_pCurrentImage;
-}
-
-wxImage *Guider::DisplayedImage(void)
-{
-    return m_displayedImage;
-}
-
-double Guider::ScaleFactor(void)
-{
-    return m_scaleFactor;
-}
-
 void Guider::StartGuiding(void)
 {
     // we set the state to calibrating.  The state machine will
@@ -1067,10 +1017,17 @@ void Guider::StopGuiding(void)
         case STATE_CALIBRATED:
             EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_SECONDARY ? pSecondaryMount : pMount,
                 _("Calibration manually stopped"));
-            break;
+            // fall through to notify guiding stopped
         case STATE_GUIDING:
-            EvtServer.NotifyGuidingStopped();
-            GuideLog.StopGuiding();
+            if ((!pMount || !pMount->IsBusy()) && (!pSecondaryMount || !pSecondaryMount->IsBusy()))
+            {
+                // Notify guiding stopped if there are no outstanding guide steps.  The Guiding
+                // Stopped notification must come after the final GuideStep notification otherwise
+                // event server clients and the guide log will show the guide step happening after
+                // guiding stopped.
+
+                pFrame->NotifyGuidingStopped();
+            }
             break;
         case STATE_STOP:
             break;
@@ -1598,11 +1555,6 @@ EXPOSED_STATE Guider::GetExposedState(void)
     }
 
     return rval;
-}
-
-bool Guider::GetBookmarksShown(void)
-{
-    return m_showBookmarks;
 }
 
 void Guider::SetBookmarksShown(bool show)

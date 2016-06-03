@@ -1393,51 +1393,51 @@ void MyFrame::ScheduleExposure(void)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
-void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::SchedulePrimaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
-    pMount->IncrementRequestCount();
+    assert(mount);
+    mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
 }
 
-void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::ScheduleSecondaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
+    assert(mount);
 
-    if (pMount->SynchronousOnly())
+    if (mount->SynchronousOnly())
     {
         // some mounts must run on the Primary thread even if the secondary is requested.
-        SchedulePrimaryMove(pMount, vectorEndpoint, moveType);
+        SchedulePrimaryMove(mount, vectorEndpoint, moveType);
     }
     else
     {
-        pMount->IncrementRequestCount();
+        mount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
     }
 }
 
-void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
+void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
+    assert(mount);
 
-    pMount->IncrementRequestCount();
+    mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction, duration);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, direction, duration);
 }
 
 void MyFrame::StartCapturing()
@@ -1844,6 +1844,14 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
     pConfig->Profile.SetBoolean("/DitherRaOnly", m_ditherRaOnly);
 
     return bError;
+}
+
+void MyFrame::NotifyGuidingStopped(void)
+{
+    assert(!pMount || !pMount->IsBusy());
+    assert(!pSecondaryMount || !pSecondaryMount->IsBusy());
+    EvtServer.NotifyGuidingStopped();
+    GuideLog.StopGuiding();
 }
 
 bool MyFrame::GetAutoLoadCalibration(void)

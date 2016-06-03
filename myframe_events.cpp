@@ -434,6 +434,15 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 
         mount->LogGuideStepInfo();
 
+        // deliver the outstanding GuidingStopped notification if this is a late-arriving
+        // move completion event
+        if (!pGuider->IsCalibratingOrGuiding() &&
+            (!pMount || !pMount->IsBusy()) &&
+            (!pSecondaryMount || !pSecondaryMount->IsBusy()))
+        {
+            pFrame->NotifyGuidingStopped();
+        }
+
         if (moveResult != Mount::MOVE_OK)
         {
             mount->IncrementErrorCount();

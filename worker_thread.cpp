@@ -214,17 +214,17 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
     m_interruptRequested &= ~INT_STOP;
 
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.Write(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)\n", pMount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
+    Debug.Write(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)\n", mount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
 
     message.request                   = REQUEST_MOVE;
-    message.args.move.pMount          = pMount;
+    message.args.move.pMount          = mount;
     message.args.move.calibrationMove = false;
     message.args.move.vectorEndpoint  = vectorEndpoint;
     message.args.move.moveType        = moveType;
@@ -233,7 +233,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
     EnqueueMessage(message);
 }
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRECTION direction, int duration)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -243,7 +243,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
     Debug.Write(wxString::Format("Enqueuing Calibration Move request for direction %d\n", direction));
 
     message.request                   = REQUEST_MOVE;
-    message.args.move.pMount          = pMount;
+    message.args.move.pMount          = mount;
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
     message.args.move.duration        = duration;
@@ -325,11 +325,11 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
     return result;
 }
 
-void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESULT moveResult)
+void WorkerThread::SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
     event->SetInt(moveResult);
-    event->SetPayload<Mount *>(pMount);
+    event->SetPayload<Mount *>(mount);
     wxQueueEvent(m_pFrame, event);
 }
 

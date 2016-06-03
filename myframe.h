@@ -348,7 +348,6 @@ public:
     void ClearGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
-
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
@@ -407,6 +406,7 @@ public:
     void TryReconnect(void);
 
     double TimeSinceGuidingStarted(void) const;
+    void NotifyGuidingStopped(void);
 
     void SetDitherMode(DitherMode mode);
     DitherMode GetDitherMode(void) const;
