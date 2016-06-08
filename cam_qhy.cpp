@@ -1,36 +1,36 @@
 /*
-*  cam_qhy.cpp
-*  Open PHD Guiding
-*
-*  Created by Andy Galasso.
-*  Copyright (c) 2015 Andy Galasso.
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of openphdguiding.org nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_qhy.cpp
+ *  Open PHD Guiding
+ *
+ *  Created by Andy Galasso.
+ *  Copyright (c) 2015 Andy Galasso.
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 
@@ -128,26 +128,18 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
 
     int num_cams = ScanQHYCCD();
-    std::vector<std::string> qhycamids;
+    std::vector<std::string> q5camids;
 
     for (int i = 0; i < num_cams; i++)
     {
         char camid[32] = "";
         GetQHYCCDId(i, camid);
         Debug.Write(wxString::Format("QHY cam [%d] %s\n", i, camid));
-        m_camhandle = OpenQHYCCD(camid);
-        if (m_camhandle != nullptr)
-        {
-            uint32_t ret = IsQHYCCDControlAvailable(m_camhandle,CONTROL_ST4PORT);
-            if (ret == QHYCCD_SUCCESS)
-            {
-                qhycamids.push_back(camid);
-            }
-        }
-        
+        if (strncmp(camid, "QHY5", 4) == 0 && camid[5] == 'I')
+            q5camids.push_back(camid);
     }
 
-    if (qhycamids.size() == 0)
+    if (q5camids.size() == 0)
     {
         wxMessageBox(_("No compatible QHY cameras found"));
         return true;
@@ -155,20 +147,20 @@ bool Camera_QHY::Connect(const wxString& camId)
 
     std::string camid;
 
-    if (qhycamids.size() > 1)
+    if (q5camids.size() > 1)
     {
         wxArrayString names;
         int n = 1;
-        for (auto it = qhycamids.begin(); it != qhycamids.end(); ++it, ++n)
+        for (auto it = q5camids.begin(); it != q5camids.end(); ++it, ++n)
             names.Add(wxString::Format("%d: %s", n, *it));
 
         int i = wxGetSingleChoiceIndex(_("Select QHY camera"), _("Camera choice"), names);
         if (i == -1)
             return true;
-        camid = qhycamids[i];
+        camid = q5camids[i];
     }
     else
-        camid = qhycamids[0];
+        camid = q5camids[0];
 
     char *s = new char[camid.length() + 1];
     memcpy(s, camid.c_str(), camid.length() + 1);
@@ -193,6 +185,12 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_camhandle = 0;
         wxMessageBox(_("SetQHYCCDStreamMode failed"));
         return true;
+    }
+
+    ret = SetQHYCCDBitsMode(m_camhandle, 8);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", (int)ret));
     }
 
     ret = InitQHYCCD(m_camhandle);
@@ -228,7 +226,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
 
     Color = false;
-    switch ((BAYER_ID)bayer) {
+    switch ((BAYER_ID) bayer) {
     case BAYER_GB:
     case BAYER_GR:
     case BAYER_BG:
@@ -238,7 +236,7 @@ bool Camera_QHY::Connect(const wxString& camId)
 
     // check bin modes
     CONTROL_ID modes[] = { CAM_BIN2X2MODE, CAM_BIN3X3MODE, CAM_BIN4X4MODE, };
-    int bin[] = { 2, 3, 4, };
+    int bin[] =          {              2,              3,              4, };
     int maxBin = 1;
     for (int i = 0; i < WXSIZEOF(modes); i++)
     {
@@ -379,18 +377,10 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         yofs = d;
     }
 
-    uint32_t ret = QHYCCD_ERROR;
-    // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
-    if (ret != QHYCCD_SUCCESS)
-    {
-        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int)ret));
-    }
-
     if (m_roi != roi)
     {
         // when roi changes, must call this
-        ret = CancelQHYCCDExposingAndReadout(m_camhandle);
+        uint32_t ret = CancelQHYCCDExposingAndReadout(m_camhandle);
         if (ret == QHYCCD_SUCCESS)
         {
             Debug.Write("CancelQHYCCDExposingAndReadout success\n");
@@ -399,7 +389,23 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         {
             Debug.Write("CancelQHYCCDExposingAndReadout failed\n");
         }
+    }
 
+    // lzr from QHY says this needs to be set for every exposure
+    uint32_t ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int)ret));
+    }
+
+    ret = SetQHYCCDBitsMode(m_camhandle, 8);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        Debug.Write(wxString::Format("SetQHYCCDBitsMode failed! ret = %d\n", (int)ret));
+    }
+
+    if (m_roi != roi)
+    {
         ret = SetQHYCCDResolution(m_camhandle, roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight());
         if (ret == QHYCCD_SUCCESS)
         {
@@ -408,7 +414,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         else
         {
             Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n",
-                roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight(), (int)ret));
+                                         roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight(), (int)ret));
         }
     }
 
@@ -418,7 +424,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         if (ret == QHYCCD_SUCCESS)
         {
             m_curExposure = duration;
-        } 
+        }
         else
         {
             Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int)ret));
@@ -450,14 +456,17 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
-    if (ret == QHYCCD_SUCCESS)
+    if (ret != QHYCCD_READ_DIRECTLY && ret != QHYCCD_SUCCESS)
     {
-        Debug.Write(wxString::Format("QHY: 200ms delay needed\n"));
-        WorkerThread::MilliSleep(200);
+        Debug.Write(wxString::Format("QHY: ExpQHYCCDSingleFrame did not return QHYCCD_READ_DIRECTLY (%d)\n", (int)ret));
+        if (duration > 3000)
+        {
+           WorkerThread::MilliSleep(duration);
+        }
     }
-    if (ret = QHYCCD_READ_DIRECTLY)
+    else
     {
-        //
+        //Debug.Write("QHYCCD_READ_DIRECTLY\n");
     }
 
     uint32_t w, h, bpp, channels;
@@ -478,63 +487,29 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         int dy = yofs;
         int dxl = xofs;
         int dxr = w - frame.width - dxl;
-        if (bpp == 8)
+        const unsigned char *src = RawBuffer + dy * w;
+        unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
+        for (int y = dy; y < frame.height; y++)
         {
-            const unsigned char *src = RawBuffer + dy * w;
-            unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-            for (int y = dy; y < frame.height; y++)
-            {
-                unsigned short *d = dst;
-                src += dxl;
-                for (int x = 0; x < frame.width; x++)
-                    *d++ = (unsigned short)*src++;
-                src += dxr;
-                dst += FullSize.GetWidth();
-            }
-        }
-        if (bpp == 16)
-        {
-            const unsigned short *src = (unsigned short*)RawBuffer + dy * w;
-            unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-            for (int y = dy; y < frame.height; y++)
-            {
-                unsigned short *d = dst;
-                src += dxl;
-                for (int x = 0; x < frame.width; x++)
-                    *d++ = (unsigned short)*src++;
-                src += dxr;
-                dst += FullSize.GetWidth();
-            }
+            unsigned short *d = dst;
+            src += dxl;
+            for (int x = 0; x < frame.width; x++)
+                *d++ = (unsigned short) *src++;
+            src += dxr;
+            dst += FullSize.GetWidth();
         }
     }
     else
     {
-        if (bpp == 8)
+        const unsigned char *src = RawBuffer;
+        unsigned short *dst = img.ImageData;
+        for (int y = 0; y < h; y++)
         {
-            const unsigned char *src = RawBuffer;
-            unsigned short *dst = img.ImageData;
-            for (int y = 0; y < h; y++)
+            for (int x = 0;  x < w; x++)
             {
-                for (int x = 0; x < w; x++)
-                {
-                    *dst++ = (unsigned short)*src++;
-                }
+                *dst++ = (unsigned short) *src++;
             }
         }
-
-        if (bpp == 16)
-        {
-            const unsigned short *src = (unsigned short*)RawBuffer;
-            unsigned short *dst = img.ImageData;
-            for (int y = 0; y < h; y++)
-            {
-                for (int x = 0; x < w; x++)
-                {
-                    *dst++ = (unsigned short)*src++;
-                }
-            }
-        }
-
     }
 
     if (options & CAPTURE_SUBTRACT_DARK)
