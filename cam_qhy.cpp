@@ -503,8 +503,8 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
             for (int y = dy; y < frame.height; y++)
             {
                 src += dxl;
-                memcpy(dst, src, frame.width);
-                src += dxr;
+                memcpy(dst, src, frame.width * sizeof(unsigned short));
+                src += frame.width + dxr;
                 dst += FullSize.GetWidth();
             }
         }
