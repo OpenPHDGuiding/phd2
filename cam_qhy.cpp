@@ -142,7 +142,7 @@ bool Camera_QHY::Connect(const wxString& camId)
             if (ret == QHYCCD_SUCCESS)
                 st4 = true;
                 //CloseQHYCCD(h); // CloseQHYCCD() would proform a reset, so the other software that use QHY camera would be impacted.
-			                      // Do not call this,would not cause memory leak.The SDk has already process this.
+                                  // Do not call this,would not cause memory leak.The SDk has already process this.
         }
         Debug.Write(wxString::Format("QHY cam [%d] %s avail %s st4 %s\n", i, camid, h ? "Yes" : "No", st4 ? "Yes" : "No"));
         if (st4)
@@ -308,7 +308,7 @@ bool Camera_QHY::Connect(const wxString& camId)
 
 bool Camera_QHY::Disconnect()
 {
-    CancelQHYCCDExposingAndReadout(m_camhandle);//for single frame mode use this to stop.
+    CancelQHYCCDExposingAndReadout(m_camhandle);  // for single frame mode use this to stop
     CloseQHYCCD(m_camhandle);
     m_camhandle = 0;
     Connected = false;
@@ -525,7 +525,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else // bpp == 16
         {
-            memcpy(img.ImageData, RawBuffer, w * h * 2);//just display half image if did not multiply 2
+            memcpy(img.ImageData, RawBuffer, w * h * sizeof(unsigned short));
         }
     }
 
