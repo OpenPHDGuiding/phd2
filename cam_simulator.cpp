@@ -252,6 +252,15 @@ bool StepGuiderSimulator::Disconnect(void)
 
 bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
 {
+#if 0 // enable to test step failure
+    wxPoint pos = GetAoPos();
+    if (direction == LEFT && pos.x - steps < -35)
+    {
+        Debug.Write("simulate step failure\n");
+        return true;
+    }
+#endif
+
     // parent class maintains x/y offsets, so nothing to do here. Just simulate a delay.
     enum { LATENCY_MS_PER_STEP = 5 };
     wxMilliSleep(steps * LATENCY_MS_PER_STEP);
@@ -900,7 +909,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         PierSide new_side = pPointingSource->SideOfPier();
         if (new_side != SimCamParams::pier_side)
         {
-            Debug.AddLine("Cam simulator: pointing source pier side changed from %d to %d\n", SimCamParams::pier_side, new_side);
+            Debug.Write(wxString::Format("Cam simulator: pointing source pier side changed from %d to %d\n", SimCamParams::pier_side, new_side));
             SimCamParams::pier_side = new_side;
         }
     }
@@ -996,7 +1005,7 @@ Camera_SimClass::Camera_SimClass()
 
 wxByte Camera_SimClass::BitsPerPixel()
 {
-#if 0
+#if 1
     return 16;
 #else
     return 8;
@@ -1122,7 +1131,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
     FullSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
-    if (subframe.width <= 0 || subframe.height <= 0)
+    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
         usingSubframe = false;
     if (!usingSubframe)
         subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
@@ -1212,7 +1221,7 @@ static PierSide OtherSide(PierSide side)
 void Camera_SimClass::FlipPierSide(void)
 {
     SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
-    Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", SimCamParams::pier_side, SimCamParams::cam_angle);
+    Debug.Write(wxString::Format("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f\n", SimCamParams::pier_side, SimCamParams::cam_angle));
 }
 
 #if SIMMODE == 4

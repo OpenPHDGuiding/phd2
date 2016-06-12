@@ -313,14 +313,69 @@ inline PauseType Guider::GetPauseType(void) const
     return m_paused;
 }
 
+inline bool Guider::GetScaleImage(void)
+{
+    return m_scaleImage;
+}
+
+inline const PHD_Point& Guider::LockPosition()
+{
+    return m_lockPosition;
+}
+
+inline GUIDER_STATE Guider::GetState(void)
+{
+    return m_state;
+}
+
 inline bool Guider::IsGuiding(void) const
 {
     return m_state == STATE_GUIDING;
 }
 
+inline bool Guider::IsCalibratingOrGuiding(void)
+{
+    return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
+}
+
 inline int Guider::GetSearchRegion(void) const
 {
     return m_searchRegion;
+}
+
+inline bool Guider::IsFastRecenterEnabled(void)
+{
+    return m_fastRecenterEnabled;
+}
+
+inline double Guider::GetPolarAlignCircleCorrection(void)
+{
+    return m_polarAlignCircleCorrection;
+}
+
+inline void Guider::SetPolarAlignCircleCorrection(double val)
+{
+    m_polarAlignCircleCorrection = val;
+}
+
+inline usImage *Guider::CurrentImage(void)
+{
+    return m_pCurrentImage;
+}
+
+inline wxImage *Guider::DisplayedImage(void)
+{
+    return m_displayedImage;
+}
+
+inline double Guider::ScaleFactor(void)
+{
+    return m_scaleFactor;
+}
+
+inline bool Guider::GetBookmarksShown(void)
+{
+    return m_showBookmarks;
 }
 
 #endif /* GUIDER_H_INCLUDED */

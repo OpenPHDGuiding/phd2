@@ -148,6 +148,7 @@ class Mount : public wxMessageBoxProxy
 {
     bool m_connected;
     int m_requestCount;
+    int m_errorCount;
 
     bool m_calibrated;
     Calibration m_cal;
@@ -253,6 +254,14 @@ public:
     static wxString DeclinationStr(double dec, const wxString& numFormatStr = "%.1f");
     static wxString PierSideStr(PierSide side);
 
+    bool IsBusy(void) const;
+    void IncrementRequestCount(void);
+    void DecrementRequestCount(void);
+
+    int ErrorCount(void) const;
+    void IncrementErrorCount(void);
+    void ResetErrorCount(void);
+
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
@@ -285,9 +294,6 @@ public:
     // consider whether they need to call the base class functions as part of
     // their operation
 public:
-    virtual bool IsBusy(void);
-    virtual void IncrementRequestCount(void);
-    virtual void DecrementRequestCount(void);
 
     virtual bool HasNonGuiMove(void);
     virtual bool SynchronousOnly(void);
@@ -324,6 +330,26 @@ protected:
     bool MountIsCalibrated(void) const { return m_calibrated; }
     const Calibration& MountCal(void) const { return m_cal; }
 };
+
+inline bool Mount::IsBusy(void) const
+{
+    return m_requestCount > 0;
+}
+
+inline int Mount::ErrorCount(void) const
+{
+    return m_errorCount;
+}
+
+inline void Mount::IncrementErrorCount(void)
+{
+    ++m_errorCount;
+}
+
+inline void Mount::ResetErrorCount(void)
+{
+    m_errorCount = 0;
+}
 
 inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
 {

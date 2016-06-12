@@ -158,7 +158,7 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, int options, cons
             sum3 += *dptr3++;
         }
 
-        Debug.AddLine("sum1=%lld sum2=%lld sum3=%lld", sum1, sum2, sum3);
+        Debug.Write(wxString::Format("sum1=%lld sum2=%lld sum3=%lld\n", sum1, sum2, sum3));
 
         usImage *srcPtr = &frame1;
 

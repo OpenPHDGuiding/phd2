@@ -587,7 +587,7 @@ PierSide ScopeINDI::SideOfPier(void)
         POSSIBLY_UNUSED(Msg);
     }
     
-    Debug.AddLine("ScopeINDI::SideOfPier() returns %d", pierSide);
+    Debug.Write(wxString::Format("ScopeINDI::SideOfPier() returns %d\n", pierSide));
     
     return pierSide;
 }

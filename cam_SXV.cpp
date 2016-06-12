@@ -645,6 +645,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
             return true;
         }
         m_prevBin = Binning;
+        takeSubframe = false; // subframe may be out of bounds now
     }
 
     unsigned short xbin, ybin;

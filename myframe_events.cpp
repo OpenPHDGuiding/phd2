@@ -57,7 +57,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     int duration = ExposureDurationFromSelection(sel);
     if (duration > 0)
     {
-        Debug.AddLine("OnExposureDurationSelected: duration = %d", duration);
+        Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
 
         m_exposureDuration = duration;
         m_autoExp.enabled = false;
@@ -426,16 +426,27 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
     {
-        Mount *pThisMount = event.GetPayload<Mount *>();
-        assert(pThisMount->IsBusy());
-        pThisMount->DecrementRequestCount();
+        Mount *mount = event.GetPayload<Mount *>();
+        assert(mount->IsBusy());
+        mount->DecrementRequestCount();
 
         Mount::MOVE_RESULT moveResult = static_cast<Mount::MOVE_RESULT>(event.GetInt());
 
-        pMount->LogGuideStepInfo();
+        mount->LogGuideStepInfo();
+
+        // deliver the outstanding GuidingStopped notification if this is a late-arriving
+        // move completion event
+        if (!pGuider->IsCalibratingOrGuiding() &&
+            (!pMount || !pMount->IsBusy()) &&
+            (!pSecondaryMount || !pSecondaryMount->IsBusy()))
+        {
+            pFrame->NotifyGuidingStopped();
+        }
 
         if (moveResult != Mount::MOVE_OK)
         {
+            mount->IncrementErrorCount();
+
             if (moveResult == Mount::MOVE_STOP_GUIDING)
             {
                 Debug.Write("mount move error indicates guiding should stop\n");
@@ -723,12 +734,10 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 
 void MyFrame::OnLog(wxCommandEvent& evt)
 {
-
     if (evt.GetId() == MENU_LOGIMAGES)
     {
         pFrame->EnableImageLogging(evt.IsChecked());
     }
-
 }
 
 bool MyFrame::FlipRACal()
@@ -852,10 +861,19 @@ void MyFrame::GuideButtonClick(bool interactive)
             }
         }
 
-        if (interactive && pPointingSource && pPointingSource->IsConnected())
+        if (interactive && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
         {
+            bool proceed = true;
             bool error = pPointingSource->PreparePositionInteractive();
-            if (error)
+
+            if (!error && fabs(pPointingSource->GetDeclination()) > Scope::DEC_COMP_LIMIT && !TheScope()->IsCalibrated() )
+            {
+                proceed = ConfirmDialog::Confirm(
+                    _("Calibration this far from the celestial equator will be error-prone.  For best results, calibrate at a declination of -20 to +20."),
+                    "/highdec_calibration_ok", _("Confirm Calibration at Large Declination")
+                    );
+            }
+            if (error || !proceed)
                 return;
         }
 

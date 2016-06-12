@@ -552,6 +552,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
               binning_y->value = Binning;
               sendNewNumber(binning_prop);
               m_curBinning = Binning;
+              takeSubframe = false; // subframe may be out of bounds now
           }
 
           if (! frame_prop || subframe.width <= 0 || subframe.height <= 0)

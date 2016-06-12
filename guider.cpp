@@ -164,7 +164,8 @@ void Guider::LoadProfileSettings(void)
 
 PauseType Guider::SetPaused(PauseType pause)
 {
-    Debug.AddLine("Guider::SetPaused(%d)", pause);
+    Debug.Write(wxString::Format("Guider::SetPaused(%d)\n", pause));
+
     PauseType prev = m_paused;
     m_paused = pause;
 
@@ -307,11 +308,6 @@ void Guider::SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int
     Update();
 }
 
-bool Guider::IsFastRecenterEnabled(void)
-{
-    return m_fastRecenterEnabled;
-}
-
 void Guider::EnableFastRecenter(bool enable)
 {
     m_fastRecenterEnabled = enable;
@@ -322,16 +318,6 @@ void Guider::SetPolarAlignCircle(const PHD_Point& pt, double radius)
 {
     m_polarAlignCircleRadius = radius;
     m_polarAlignCircleCenter = pt;
-}
-
-double Guider::GetPolarAlignCircleCorrection(void)
-{
-    return m_polarAlignCircleCorrection;
-}
-
-void Guider::SetPolarAlignCircleCorrection(double val)
-{
-    m_polarAlignCircleCorrection = val;
 }
 
 bool Guider::SetScaleImage(bool newScaleValue)
@@ -350,26 +336,6 @@ bool Guider::SetScaleImage(bool newScaleValue)
 
     pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
     return bError;
-}
-
-bool Guider::GetScaleImage(void)
-{
-    return m_scaleImage;
-}
-
-const PHD_Point& Guider::LockPosition()
-{
-    return m_lockPosition;
-}
-
-GUIDER_STATE Guider::GetState(void)
-{
-    return m_state;
-}
-
-bool Guider::IsCalibratingOrGuiding(void)
-{
-    return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
 }
 
 void Guider::OnErase(wxEraseEvent& evt)
@@ -415,8 +381,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                                     xScaleFactor :
                                     yScaleFactor;
 
-//            Debug.AddLine("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f", xScaleFactor,
-//                    yScaleFactor, newScaleFactor);
+//            Debug.Write(wxString::Format("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f\n", xScaleFactor,
+//                    yScaleFactor, newScaleFactor));
 
             // we rescale the image if:
             // - The image is either too big
@@ -884,14 +850,14 @@ void Guider::SetState(GUIDER_STATE newState)
             }
 
             if (pMount)
-	        pMount->NotifyGuidingStopped();
+                pMount->NotifyGuidingStopped();
         }
 
         assert(newState != STATE_STOP);
 
         if (newState > m_state + 1)
         {
-            Debug.AddLine("Cannot transition from %d to  newState=%d", m_state, newState);
+            Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
             throw ERROR_INFO("Illegal state transition");
         }
 
@@ -909,6 +875,7 @@ void Guider::SetState(GUIDER_STATE newState)
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())
                 {
+                    pMount->ResetErrorCount();
                     if (pMount->BeginCalibration(CurrentPosition()))
                     {
                         newState = STATE_UNINITIALIZED;
@@ -929,6 +896,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 }
                 else if (!pSecondaryMount->IsCalibrated())
                 {
+                    pSecondaryMount->ResetErrorCount();
                     if (pSecondaryMount->BeginCalibration(CurrentPosition()))
                     {
                         newState = STATE_UNINITIALIZED;
@@ -1027,21 +995,6 @@ double Guider::CurrentError(void)
     return m_avgDistance;
 }
 
-usImage *Guider::CurrentImage(void)
-{
-    return m_pCurrentImage;
-}
-
-wxImage *Guider::DisplayedImage(void)
-{
-    return m_displayedImage;
-}
-
-double Guider::ScaleFactor(void)
-{
-    return m_scaleFactor;
-}
-
 void Guider::StartGuiding(void)
 {
     // we set the state to calibrating.  The state machine will
@@ -1064,10 +1017,17 @@ void Guider::StopGuiding(void)
         case STATE_CALIBRATED:
             EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_SECONDARY ? pSecondaryMount : pMount,
                 _("Calibration manually stopped"));
-            break;
+            // fall through to notify guiding stopped
         case STATE_GUIDING:
-            EvtServer.NotifyGuidingStopped();
-            GuideLog.StopGuiding();
+            if ((!pMount || !pMount->IsBusy()) && (!pSecondaryMount || !pSecondaryMount->IsBusy()))
+            {
+                // Notify guiding stopped if there are no outstanding guide steps.  The Guiding
+                // Stopped notification must come after the final GuideStep notification otherwise
+                // event server clients and the guide log will show the guide step happening after
+                // guiding stopped.
+
+                pFrame->NotifyGuidingStopped();
+            }
             break;
         case STATE_STOP:
             break;
@@ -1230,7 +1190,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     if (pMount->UpdateCalibrationState(CurrentPosition()))
                     {
                         SetState(STATE_UNINITIALIZED);
-                        statusMessage = _("calibration failed (primary)");
+                        statusMessage = pMount->IsStepGuider() ? _("AO calibration failed") : _("calibration failed");
                         throw ERROR_INFO("Calibration failed");
                     }
 
@@ -1263,7 +1223,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
                         {
                             SetState(STATE_UNINITIALIZED);
-                            statusMessage = _("calibration failed (secondary)");
+                            statusMessage = _("calibration failed");
                             throw ERROR_INFO("Calibration failed");
                         }
                     }
@@ -1397,7 +1357,7 @@ void Guider::EnableLockPosShift(bool enable)
 {
     if (enable != m_lockPosShift.shiftEnabled)
     {
-        Debug.AddLine("EnableLockPosShift: enable = %d", enable);
+        Debug.Write(wxString::Format("EnableLockPosShift: enable = %d\n", enable));
         m_lockPosShift.shiftEnabled = enable;
         if (enable)
         {
@@ -1595,11 +1555,6 @@ EXPOSED_STATE Guider::GetExposedState(void)
     }
 
     return rval;
-}
-
-bool Guider::GetBookmarksShown(void)
-{
-    return m_showBookmarks;
 }
 
 void Guider::SetBookmarksShown(bool show)

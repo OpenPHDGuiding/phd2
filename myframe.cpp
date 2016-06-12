@@ -571,7 +571,7 @@ int MyFrame::ExposureDurationFromSelection(const wxString& sel)
     for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
         if (sel == dur_choices[i])
             return dur_values[i];
-    Debug.AddLine("unexpected exposure selection: " + sel);
+    Debug.Write(wxString::Format("unexpected exposure selection: %s\n", sel));
     return 1000;
 }
 
@@ -623,7 +623,7 @@ bool MyFrame::SetExposureDuration(int val)
 
 void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
 {
-    Debug.AddLine("AutoExp: config min = %d max = %d snr = %.2f", minExp, maxExp, targetSNR);
+    Debug.Write(wxString::Format("AutoExp: config min = %d max = %d snr = %.2f\n", minExp, maxExp, targetSNR));
 
     pConfig->Profile.SetInt("/auto_exp/exposure_min", minExp);
     pConfig->Profile.SetInt("/auto_exp/exposure_max", maxExp);
@@ -646,7 +646,7 @@ void MyFrame::ResetAutoExposure(void)
 {
     if (m_autoExp.enabled)
     {
-        Debug.AddLine("AutoExp: reset exp to %d", m_autoExp.maxExposure);
+        Debug.Write(wxString::Format("AutoExp: reset exp to %d\n", m_autoExp.maxExposure));
         m_exposureDuration = m_autoExp.maxExposure;
     }
 }
@@ -657,7 +657,7 @@ void MyFrame::AdjustAutoExposure(double curSNR)
     {
         if (curSNR < 1.0)
         {
-            Debug.AddLine("AutoExp: low SNR (%.2f), reset exp to %d", curSNR, m_autoExp.maxExposure);
+            Debug.Write(wxString::Format("AutoExp: low SNR (%.2f), reset exp to %d\n", curSNR, m_autoExp.maxExposure));
             m_exposureDuration = m_autoExp.maxExposure;
         }
         else
@@ -678,7 +678,7 @@ void MyFrame::AdjustAutoExposure(double curSNR)
                 m_exposureDuration = m_autoExp.minExposure;
             else if (m_exposureDuration > m_autoExp.maxExposure)
                 m_exposureDuration = m_autoExp.maxExposure;
-            Debug.AddLine("AutoExp: adjust SNR=%.2f new exposure %d", curSNR, m_exposureDuration);
+            Debug.Write(wxString::Format("AutoExp: adjust SNR=%.2f new exposure %d\n", curSNR, m_exposureDuration));
         }
     }
 }
@@ -707,7 +707,7 @@ LOGGED_IMAGE_FORMAT MyFrame::GetLoggedImageFormat(void)
 Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
 {
     Star::FindMode prev = m_starFindMode;
-    Debug.AddLine("Setting StarFindMode = %d", mode);
+    Debug.Write(wxString::Format("Setting StarFindMode = %d\n", mode));
     m_starFindMode = mode;
     return prev;
 }
@@ -715,7 +715,7 @@ Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
 bool MyFrame::SetRawImageMode(bool mode)
 {
     bool prev = m_rawImageMode;
-    Debug.AddLine("Setting RawImageMode = %d", mode);
+    Debug.Write(wxString::Format("Setting RawImageMode = %d\n", mode));
     m_rawImageMode = mode;
     if (mode)
         m_rawImageModeWarningDone = false;
@@ -1004,7 +1004,8 @@ void MyFrame::OnAlertHelp(wxCommandEvent& evt)
 
 void MyFrame::DoAlert(const alert_params& params)
 {
-    Debug.AddLine(wxString::Format("Alert: %s", params.msg));
+    Debug.Write(wxString::Format("Alert: %s\n", params.msg));
+
     m_alertFn = params.fn;
     m_alertFnArg = params.arg;
 
@@ -1255,7 +1256,7 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
 
     try
     {
-        Debug.AddLine(wxString::Format("StartWorkerThread(0x%p) begins", pWorkerThread));
+        Debug.Write(wxString::Format("StartWorkerThread(0x%p) begins\n", pWorkerThread));
 
         if (!pWorkerThread || !pWorkerThread->IsRunning())
         {
@@ -1281,7 +1282,7 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
         bError = true;
     }
 
-    Debug.AddLine(wxString::Format("StartWorkerThread(0x%p) ends", pWorkerThread));
+    Debug.Write(wxString::Format("StartWorkerThread(0x%p) ends\n", pWorkerThread));
 
     return bError;
 }
@@ -1292,7 +1293,7 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) begins", pWorkerThread));
+    Debug.Write(wxString::Format("StopWorkerThread(0x%p) begins\n", pWorkerThread));
 
     if (pWorkerThread && pWorkerThread->IsRunning())
     {
@@ -1307,14 +1308,14 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
         {
             while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable())
             {
-                Debug.AddLine("Worker thread 0x%p is not killable, waiting...", pWorkerThread);
+                Debug.Write(wxString::Format("Worker thread 0x%p is not killable, waiting...\n", pWorkerThread));
                 wxStopWatch swatch2;
                 while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable() && swatch2.Time() < TIMEOUT_MS)
                     wxGetApp().Yield();
             }
             if (pWorkerThread->IsAlive())
             {
-                Debug.AddLine("StopWorkerThread(0x%p) thread did not terminate, force kill", pWorkerThread);
+                Debug.Write(wxString::Format("StopWorkerThread(0x%p) thread did not terminate, force kill\n", pWorkerThread));
                 pWorkerThread->Kill();
                 killed = true;
             }
@@ -1322,11 +1323,11 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
         else
         {
             wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
-            Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
+            Debug.Write(wxString::Format("StopWorkerThread() threadExitCode=%d\n", threadExitCode));
         }
     }
 
-    Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) ends", pWorkerThread));
+    Debug.Write(wxString::Format("StopWorkerThread(0x%p) ends\n", pWorkerThread));
 
     delete pWorkerThread;
     pWorkerThread = NULL;
@@ -1392,51 +1393,51 @@ void MyFrame::ScheduleExposure(void)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
-void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::SchedulePrimaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
-    pMount->IncrementRequestCount();
+    assert(mount);
+    mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
 }
 
-void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::ScheduleSecondaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
+    assert(mount);
 
-    if (pMount->SynchronousOnly())
+    if (mount->SynchronousOnly())
     {
         // some mounts must run on the Primary thread even if the secondary is requested.
-        SchedulePrimaryMove(pMount, vectorEndpoint, moveType);
+        SchedulePrimaryMove(mount, vectorEndpoint, moveType);
     }
     else
     {
-        pMount->IncrementRequestCount();
+        mount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
     }
 }
 
-void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
+void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(pMount);
+    assert(mount);
 
-    pMount->IncrementRequestCount();
+    mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction, duration);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, direction, duration);
 }
 
 void MyFrame::StartCapturing()
@@ -1845,6 +1846,14 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
     return bError;
 }
 
+void MyFrame::NotifyGuidingStopped(void)
+{
+    assert(!pMount || !pMount->IsBusy());
+    assert(!pSecondaryMount || !pSecondaryMount->IsBusy());
+    EvtServer.NotifyGuidingStopped();
+    GuideLog.StopGuiding();
+}
+
 bool MyFrame::GetAutoLoadCalibration(void)
 {
     return m_autoLoadCalibration;
@@ -2025,12 +2034,12 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 if (fits_read_key(fptr, TFLOAT, keyname, &exposure, NULL, &status))
                 {
                     exposure = (float)pFrame->RequestedExposureDuration() / 1000.0;
-                    Debug.AddLine("missing EXPOSURE value, assume %.3f", exposure);
+                    Debug.Write(wxString::Format("missing EXPOSURE value, assume %.3f\n", exposure));
                     status = 0;
                 }
                 img->ImgExpDur = (int)(exposure * 1000.0);
 
-                Debug.AddLine("loaded dark frame exposure = %d", img->ImgExpDur);
+                Debug.Write(wxString::Format("loaded dark frame exposure = %d\n", img->ImgExpDur));
                 camera->AddDark(img.release());
 
                 // if this is the last hdu, we are done
@@ -2105,8 +2114,9 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
                     bOk = true;
                 else
                 {
-                    Debug.AddLine(wxString::Format("DarkLib check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
-                        " dark dimensions = {%d,%d}", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
+                    Debug.Write(wxString::Format("DarkLib check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
+                        " dark dimensions = {%d,%d}\n", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
+
                     if (showAlert)
                         Alert(_("Dark library does not match the camera in this profile - it needs to be replaced."));
                 }
@@ -2136,7 +2146,7 @@ void MyFrame::CheckDarkFrameGeometry()
             if (m_useDefectMapMenuItem->IsChecked())
                 LoadDefectMapHandler(false);
             m_useDefectMapMenuItem->Enable(false);
-            Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found");
+            Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found\n");
             defectMapOk = false;
         }
     }
@@ -2152,7 +2162,7 @@ void MyFrame::CheckDarkFrameGeometry()
             if (m_useDarksMenuItem->IsChecked())
                 LoadDarkHandler(false);
             m_useDarksMenuItem->Enable(false);
-            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
+            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found\n");
             if (!defectMapOk)
                 pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
         }
@@ -2223,7 +2233,7 @@ void MyFrame::DeleteDarkLibraryFiles(int profileId)
 
     if (wxFileExists(filename))
     {
-        Debug.AddLine("Removing dark library file: " + filename);
+        Debug.Write(wxString::Format("Removing dark library file: %s\n", filename));
         wxRemoveFile(filename);
     }
 

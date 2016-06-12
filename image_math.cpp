@@ -891,14 +891,14 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
 
     const ImageStats& stats = m_impl->w.stats;
 
-    Debug.AddLine("DefectMapBuilder: Dark N = %d Mean = %.f Median = %d Standard Deviation = %.f MAD=%d",
-        darks.masterDark.NPixels, stats.mean, stats.median, stats.stdev, stats.mad);
+    Debug.Write(wxString::Format("DefectMapBuilder: Dark N = %d Mean = %.f Median = %d Standard Deviation = %.f MAD=%d\n",
+                                 darks.masterDark.NPixels, stats.mean, stats.median, stats.stdev, stats.mad));
 
     // load potential defects
 
     int thresh = (int)(AggrToSigma(100) * stats.stdev);
 
-    Debug.AddLine("DefectMapBuilder: load potential defects thresh = %d", thresh);
+    Debug.Write(wxString::Format("DefectMapBuilder: load potential defects thresh = %d\n", thresh));
 
     usImage& dark = m_impl->darks->masterDark;
     usImage& medianFilt = m_impl->darks->filteredDark;
@@ -924,7 +924,7 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
         }
     }
 
-    Debug.AddLine("DefectMapBuilder: Loaded %d cold %d hot", m_impl->coldPx.size(), m_impl->hotPx.size());
+    Debug.Write(wxString::Format("DefectMapBuilder: Loaded %d cold %d hot\n", m_impl->coldPx.size(), m_impl->hotPx.size()));
 }
 
 const ImageStats& DefectMapBuilder::GetImageStats() const
@@ -950,8 +950,8 @@ static void FindThresh(DefectMapBuilderImpl *impl)
     int coldThresh = (int) (multCold * impl->w.stats.stdev);
     int hotThresh = (int) (multHot * impl->w.stats.stdev);
 
-    Debug.AddLine("DefectMap: find thresholds aggr:(%d,%d) sigma:(%.1f,%.1f) px:(%+d,%+d)",
-        impl->aggrCold, impl->aggrHot, multCold, multHot, -coldThresh, hotThresh);
+    Debug.Write(wxString::Format("DefectMap: find thresholds aggr:(%d,%d) sigma:(%.1f,%.1f) px:(%+d,%+d)\n",
+                                 impl->aggrCold, impl->aggrHot, multCold, multHot, -coldThresh, hotThresh));
 
     impl->coldPxThresh = impl->coldPx.lower_bound(BadPx(0, 0, coldThresh));
     impl->hotPxThresh = impl->hotPx.lower_bound(BadPx(0, 0, hotThresh));
@@ -959,7 +959,7 @@ static void FindThresh(DefectMapBuilderImpl *impl)
     impl->coldPxSelected = std::distance(impl->coldPxThresh, impl->coldPx.end());
     impl->hotPxSelected = std::distance(impl->hotPxThresh, impl->hotPx.end());
 
-    Debug.AddLine("DefectMap: find thresholds found (%d,%d)", impl->coldPxSelected, impl->hotPxSelected);
+    Debug.Write(wxString::Format("DefectMap: find thresholds found (%d,%d)\n", impl->coldPxSelected, impl->hotPxSelected));
 
     impl->threshValid = true;
 }
@@ -984,7 +984,7 @@ inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_it
         if (verbose)
         {
             int v = sign * it->v;
-            Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0);
+            Debug.Write(wxString::Format("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)\n", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0));
         }
         defectMap.push_back(wxPoint(it->x, it->y));
     }
@@ -1019,7 +1019,7 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap, bool verbose) const
     info.push_back(wxString::Format("DeltaCold: %+d", -deltaCold));
     info.push_back(wxString::Format("DeltaHot: %+d", deltaHot));
 
-    if (verbose) Debug.AddLine("DefectMap: deltaCold = %+d deltaHot = %+d", -deltaCold, deltaHot);
+    if (verbose) Debug.Write(wxString::Format("DefectMap: deltaCold = %+d deltaHot = %+d\n", -deltaCold, deltaHot));
 
     FindThresh(m_impl);
 
@@ -1027,7 +1027,7 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap, bool verbose) const
     unsigned int nr_cold = emit_defects(defectMap, m_impl->coldPxThresh, m_impl->coldPx.end(), stats.stdev, -1, verbose);
     unsigned int nr_hot = emit_defects(defectMap, m_impl->hotPxThresh, m_impl->hotPx.end(), stats.stdev, +1, verbose);
 
-    if (verbose) Debug.AddLine("New defect map created, count=%d (cold=%d, hot=%d)", defectMap.size(), nr_cold, nr_hot);
+    if (verbose) Debug.Write(wxString::Format("New defect map created, count=%d (cold=%d, hot=%d)\n", defectMap.size(), nr_cold, nr_hot));
 }
 
 const wxArrayString& DefectMapBuilder::GetMapInfo() const

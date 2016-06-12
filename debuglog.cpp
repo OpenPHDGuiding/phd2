@@ -119,16 +119,9 @@ void DebugLog::RemoveOldFiles()
     Logger::RemoveMatchingFiles("PHD2_DebugLog*.txt", RetentionPeriod);
 }
 
-wxString DebugLog::AddLine(const wxString& format, ...)
+wxString DebugLog::AddLine(const wxString& str)
 {
-    va_list args;
-    va_start(args, format);
-
-    wxString ret = Write(wxString::FormatV(format, args) + "\n");
-
-    va_end(args);
-
-    return ret;
+    return Write(str + "\n");
 }
 
 wxString DebugLog::AddBytes(const wxString& str, const unsigned char *pBytes, unsigned int count)

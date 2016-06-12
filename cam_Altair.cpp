@@ -215,7 +215,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     wxYield();
 
     m_frame = wxRect(FullSize);
-    Debug.AddLine("Altair: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
+    Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     if (hasROI && ReduceResolution)
     {
@@ -311,7 +311,7 @@ void __stdcall CameraCallback(unsigned nEvent, void* pCallbackCtx)
 //        if (status != ASI_SUCCESS)
 //            break; // no more buffered frames
 //
-//        Debug.AddLine("Altair: getimagedata clearbuf %u ret %d", num_cleared + 1, status);
+//        Debug.Write(wxString::Format("Altair: getimagedata clearbuf %u ret %d\n", num_cleared + 1, status));
 //    }
 //}
 
@@ -331,7 +331,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     if (Altair_get_ExpoTime(m_handle, &cur_exp) == 0 &&
         cur_exp != exposureUS)
     {
-        Debug.AddLine("Altair: set CONTROL_EXPOSURE %d", exposureUS);
+        Debug.Write(wxString::Format("Altair: set CONTROL_EXPOSURE %d\n", exposureUS));
         Altair_put_ExpoTime(m_handle, exposureUS);
     }
 
@@ -340,7 +340,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     if (Altair_get_ExpoAGain(m_handle, &cur_gain) == 0 &&
         new_gain != cur_gain)
     {
-        Debug.AddLine("Altair: set CONTROL_GAIN %d%% %d", GuideCameraGain, new_gain);
+        Debug.Write(wxString::Format("Altair: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
         Altair_put_ExpoAGain(m_handle, new_gain);
     }
 
@@ -364,7 +364,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         HRESULT result = Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
         if (result != 0)
         {
-            Debug.AddLine("Altair_StartPullModeWithCallback failed with code %d", result);
+            Debug.Write(wxString::Format("Altair_StartPullModeWithCallback failed with code %d\n", result));
             return true;
         }
         m_capturing = true;
