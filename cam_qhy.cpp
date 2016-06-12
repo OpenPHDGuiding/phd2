@@ -342,10 +342,13 @@ static bool StopExposure()
 
 bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
+    bool useSubframe = UseSubframes && !subframe.IsEmpty();
+
     if (Binning != m_curBin)
     {
         FullSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
         m_curBin = Binning;
+        useSubframe = false; // subframe may be out of bounds now
     }
 
     if (img.Init(FullSize))
@@ -354,7 +357,6 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         return true;
     }
 
-    bool useSubframe = UseSubframes && !subframe.IsEmpty();
     wxRect frame = useSubframe ? subframe : wxRect(FullSize);
     if (useSubframe)
         img.Clear();
