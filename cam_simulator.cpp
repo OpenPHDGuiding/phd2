@@ -1131,7 +1131,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
     FullSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
-    if (subframe.width <= 0 || subframe.height <= 0)
+    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
         usingSubframe = false;
     if (!usingSubframe)
         subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());

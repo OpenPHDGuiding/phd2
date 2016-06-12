@@ -812,6 +812,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
     {
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         binning_changed = true;
+        takeSubframe = false; // subframe may be out of bounds now
     }
 
     // Program the size

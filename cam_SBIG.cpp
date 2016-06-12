@@ -385,12 +385,12 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
 {
     bool TakeSubframe = UseSubframes;
 
-    if (subframe.width <= 0 || subframe.height <= 0)
+    FullSize = m_imageSize[Binning - 1];
+
+    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FullSize.GetWidth() || subframe.GetBottom() >= FullSize.GetHeight())
     {
         TakeSubframe = false;
     }
-
-    FullSize = m_imageSize[Binning - 1];
 
     StartExposureParams2 sep;
     EndExposureParams eep;
