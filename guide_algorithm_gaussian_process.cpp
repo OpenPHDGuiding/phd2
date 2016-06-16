@@ -283,6 +283,9 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 
     bool dark_tracking_mode_;
 
+    bool dithering_active_;
+    int dither_steps_;
+
     covariance_functions::PeriodicSquareExponential2 covariance_function_;
     covariance_functions::PeriodicSquareExponential output_covariance_function_;
     GP gp_;
@@ -300,6 +303,9 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
       min_points_for_period_computation(0),
       points_for_approximation(0),
       compute_period(false),
+      dark_tracking_mode_(false),
+      dithering_active_(false),
+      dither_steps_(0),
       gp_(covariance_function_)
     {
         circular_buffer_parameters.push_front(data_points()); // add first point
@@ -977,6 +983,24 @@ double GuideAlgorithmGaussianProcess::result(double input)
         return deduceResult();
     }
 
+    /*
+    * Dithering behaves differently from pausing. During dithering, the mount
+    * is moved and thus we can assume that we applied the perfect control, but
+    * we cannot trust the measurement. Once dithering has settled, we can trust
+    * the measurement again and we can pretend nothing has happend.
+    */
+    if (parameters->dithering_active_ == true)
+    {
+        parameters->dither_steps_--;
+        if (parameters->dither_steps_ <= 0)
+        {
+            parameters->dithering_active_ = false;
+        }
+        deduceResult(); // just pretend we would do dark guiding...
+        return parameters->control_gain_*input; // ...but apply proportional control
+    }
+
+
     HandleMeasurements(input);
     HandleTimestamps();
     HandleSNR(pFrame->pGuider->SNR());
@@ -1195,8 +1219,19 @@ void GuideAlgorithmGaussianProcess::GuidingResumed(void)
 
 void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
 {
+    /*
+     * We don't compensate for the dither amout (yet), but we need to know
+     * that we are currently dithering.
+     */
+    parameters->dithering_active_ = true;
+    parameters->dither_steps_ = 10;
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(void)
 {
+    /*
+     * Once dithering has settled, we can start regular guiding again.
+     */
+    parameters->dithering_active_ = false;
+    parameters->dither_steps_ = 0;
 }
