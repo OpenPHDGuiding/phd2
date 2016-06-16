@@ -1168,6 +1168,29 @@ void GuideAlgorithmGaussianProcess::GuidingPaused(void)
 
 void GuideAlgorithmGaussianProcess::GuidingResumed(void)
 {
+    /**
+     * During a pause, the following happens: The no guiding commands are
+     * issued, therefore the error builds up. Since we need this erorr to show
+     * up in the data for the GP and for the FFT, we have to hallucinate the
+     * error from the GP predictions. Note that this error needs to be
+     * "measured" and not "controlled", since we didn't move the telescope.
+     */
+
+    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
+
+    // we need a fake measurement for every missed real measurement
+    while (parameters->timer_.Time() - parameters->last_prediction_end_*1000
+                > delta_controller_time_ms)
+    {
+        HandleMeasurements(PredictGearError());
+        HandleTimestamps();
+        HandleSNR(1e2); // assume high noise, since we didn't really measure
+
+        parameters->control_signal_ = 0; // we didn't issue control signals
+
+        parameters->add_one_point(); // add new point here, since the control is for the next point in time
+        HandleControls(parameters->control_signal_);
+    }
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
