@@ -67,3 +67,7 @@ void GuideAlgorithm::GuidingDithered(double amt)
 {
     reset();
 }
+
+void GuideAlgorithm::GuidingDitherSettleDone(bool success)
+{
+}

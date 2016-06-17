@@ -181,6 +181,9 @@ static void do_notify(void)
         EvtServer.NotifySettleDone(ctrl.errorMsg);
         GuideLog.NotifySettlingStateChange("Settling failed");
     }
+
+    if (pMount)
+        pMount->NotifyGuidingDitherSettleDone(ctrl.succeeded);
 }
 
 static bool start_capturing(void)

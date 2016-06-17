@@ -88,6 +88,7 @@ public:
     virtual void GuidingPaused(void);
     virtual void GuidingResumed(void);
     virtual void GuidingDithered(double amt);
+    virtual void GuidingDitherSettleDone(bool success);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return 0; };
