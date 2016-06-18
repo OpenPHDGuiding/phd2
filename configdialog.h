@@ -76,6 +76,7 @@ enum BRAIN_CTRL_IDS
     AD_szMaxDecAmt,
     AD_szDecGuideMode,
     AD_MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+    AD_AOTravel,
     AD_szCalStepsPerIteration,
     AD_szSamplesToAverage,
     AD_szBumpPercentage,

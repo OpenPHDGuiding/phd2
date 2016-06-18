@@ -212,6 +212,7 @@ static StepGuiderSimulator *s_sim_ao;
 StepGuiderSimulator::StepGuiderSimulator(void)
 {
     m_Name = _("AO-Simulator");
+    SimAoParams::max_position = pConfig->Profile.GetInt("/SimAo/max_steps", 45);
 }
 
 StepGuiderSimulator::~StepGuiderSimulator(void)
@@ -270,6 +271,13 @@ bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
 int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const
 {
     return SimAoParams::max_position;
+}
+
+bool StepGuiderSimulator::SetMaxPosition(int steps)
+{
+    SimAoParams::max_position = (unsigned int) steps;
+    pConfig->Profile.SetInt("/SimAo/max_steps", steps);
+    return false;
 }
 
 bool StepGuiderSimulator::HasNonGuiMove(void)

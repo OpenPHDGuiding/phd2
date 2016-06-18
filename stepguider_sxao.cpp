@@ -109,12 +109,15 @@ bool StepGuiderSxAO::Connect(void)
         }
         else if (version >= 102 && version <= 107)
         {
-            wxMessageBox(wxString::Format(
+            bool confirmed = ConfirmDialog::Confirm(wxString::Format(
                 _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
-                  "calibration to fail. It is recommended to load firmware version 101 or earlier.\n"
-                  "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
-                  "contains the v101 firmware."), version),
-                  _("Warning"));
+                "calibration to fail. It is recommended to load firmware version 101 or earlier.\n"
+                "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                "contains the v101 firmware."), version) + "\n\n" + _("Would you like to proceed anyway?"),
+                "/sx_ao_bad_firmware_ok");
+
+            if (!confirmed)
+                throw ERROR_INFO("StepGuiderSxAO::Connect: user cancelled after firmware version warning");
         }
 
         wxYield();
@@ -133,7 +136,7 @@ bool StepGuiderSxAO::Connect(void)
 
         StepGuider::Connect();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -189,7 +192,7 @@ bool StepGuiderSxAO::Disconnect(void)
             throw ERROR_INFO("StepGuiderSxAO::serial port disconnect failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -213,11 +216,11 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char *rece
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
-        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive sent %c received %c", &sendChar, receivedChar));
+        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive sent %c received %c", sendChar, receivedChar));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
-        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive send unsigned char %c", &sendChar));
+        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive send unsigned char %c", sendChar));
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -250,7 +253,7 @@ bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int 
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         Debug.AddBytes("StepGuiderSxAO::SendThenReceive send", pBuffer, bufferSize);
         POSSIBLY_UNUSED(Msg);
@@ -268,7 +271,7 @@ bool StepGuiderSxAO::SendShortCommand(unsigned char command, unsigned char *resp
     {
         bError = SendThenReceive(command, response);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -318,7 +321,7 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand SendThenReceive failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -374,7 +377,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
         }
         Debug.AddLine(wxString::Format("StepGuiderSxAO::Firmwareversion %u", *version));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -415,7 +418,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
 
         StepGuider::ZeroCurrentPosition();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -436,7 +439,7 @@ bool StepGuiderSxAO::Center()
             throw ERROR_INFO("StepGuiderSxAO::Center: Center() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -455,9 +458,8 @@ bool StepGuiderSxAO::Unjam(void)
         {
             throw ERROR_INFO("StepGuiderSxAO::Center: Center() failed");
         }
-
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -512,7 +514,7 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
         }
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -524,6 +526,14 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
 int StepGuiderSxAO::MaxPosition(GUIDE_DIRECTION direction) const
 {
     return m_maxSteps;
+}
+
+bool StepGuiderSxAO::SetMaxPosition(int steps)
+{
+    Debug.Write(wxString::Format("SX-AO: setting max steps = %d\n", steps));
+    m_maxSteps = steps;
+    pConfig->Profile.SetInt("/stepguider/sxao/MaxSteps", m_maxSteps);
+    return false;
 }
 
 bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
@@ -564,7 +574,7 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
                 break;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -631,7 +641,7 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
         // wait
         WorkerThread::MilliSleep(duration);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
