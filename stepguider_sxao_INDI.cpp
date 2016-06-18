@@ -375,8 +375,15 @@ bool StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
 
 int StepGuiderSxAoINDI::MaxPosition(GUIDE_DIRECTION direction) const
 {
-    Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::MaxPosition %d", m_maxSteps));
     return m_maxSteps;
+}
+
+bool StepGuiderSxAoINDI::SetMaxPosition(int steps)
+{
+    Debug.Write(wxString::Format("StepGuiderSxAoINDI: setting max steps = %d\n", steps));
+    m_maxSteps = steps;
+    pConfig->Profile.SetInt("/stepguider/sxao/MaxSteps", m_maxSteps);
+    return false;
 }
 
 bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)

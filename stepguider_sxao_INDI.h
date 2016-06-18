@@ -97,6 +97,7 @@ private:
 
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
     virtual int MaxPosition(GUIDE_DIRECTION direction) const;
+    virtual bool SetMaxPosition(int steps);
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit);
 
     bool FirmwareVersion(int *version);
