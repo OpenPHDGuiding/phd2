@@ -71,6 +71,8 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxChoice *m_binning;
+    wxCheckBox *m_coolerOn;
+    wxSpinCtrl *m_coolerSetpt;
 
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -122,7 +124,7 @@ public:
     int             ReadDelay;
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
-
+    bool            HasCooler;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage        *CurrentDarkFrame;
@@ -166,6 +168,10 @@ public:
     bool            SetCameraPixelSize(double pixel_size);
     double          GetCameraPixelSize(void) const;
     virtual bool    GetDevicePixelSize(double *devPixelSize);           // Value from device/driver or error return
+
+    virtual bool    SetCoolerOn(bool on);
+    virtual bool    SetCoolerSetpoint(double temperature);
+    virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
 
     virtual wxString GetSettingsSummary();
     void            AddDark(usImage *dark);

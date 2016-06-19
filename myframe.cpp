@@ -1345,7 +1345,7 @@ void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 
 void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 {
-    PHD_MOVE_REQUEST *pRequest = (PHD_MOVE_REQUEST *)evt.GetClientData();
+    MOVE_REQUEST *pRequest = (MOVE_REQUEST *) evt.GetClientData();
 
     Debug.Write("OnRequestMountMove() begins\n");
 

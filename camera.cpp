@@ -197,6 +197,7 @@ GuideCamera::GuideCamera(void)
     HasShutter = false;
     ShutterClosed = false;
     HasSubframes = false;
+    HasCooler = false;
     FullSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
@@ -696,6 +697,21 @@ bool GuideCamera::SetCameraPixelSize(double pixel_size)
     return bError;
 }
 
+bool GuideCamera::SetCoolerOn(bool on)
+{
+    return true; // error
+}
+
+bool GuideCamera::SetCoolerSetpoint(double temperature)
+{
+    return true; // error
+}
+
+bool GuideCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+{
+    return true; // error
+}
+
 CameraConfigDialogPane *GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 {
     return new CameraConfigDialogPane(pParent, this);
@@ -754,6 +770,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         if (pCamera->HasDelayParam)  ++numItems;
         if (pCamera->HasPortNum)     ++numItems;
         if (pCamera->MaxBinning > 1) ++numItems;
+        if (pCamera->HasCooler)      ++numItems;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
@@ -769,6 +786,8 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_binning));
         if (pCamera->HasSubframes)
             pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames));
+        if (pCamera->HasCooler)
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_cooler));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
     }
     else
@@ -851,6 +870,18 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxPoint(-1, -1),
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
+    }
+
+    if (m_pCamera->HasCooler)
+    {
+        wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
+        m_coolerOn = new wxCheckBox(GetParentWindow(AD_cooler), wxID_ANY, _("Cooler On"));
+        m_coolerOn->SetToolTip(_("Turn camera cooler on or off"));
+        sz->Add(m_coolerOn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT));
+        m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, -99, 99, 1);
+        wxSizer *szt = MakeLabeledControl(AD_cooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
+        sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+        AddGroup(CtrlMap, AD_cooler, sz);
     }
 
     // Watchdog timeout
@@ -968,6 +999,34 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_pPixelSize->Enable(false);                // Got a device-level pixel size, disable the control
 
     m_pPixelSize->SetValue(pxSize);
+
+    if (m_pCamera->HasCooler)
+    {
+        bool ok = false;
+        bool on;
+        double setpt;
+
+        if (m_pCamera->Connected)
+        {
+            double power, temp;
+            bool err = m_pCamera->GetCoolerStatus(&on, &setpt, &power, &temp);
+            if (!err)
+                ok = true;
+        }
+
+        if (ok)
+        {
+            m_coolerOn->SetValue(on);
+            if (!on)
+            {
+                setpt = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
+            }
+            m_coolerSetpt->SetValue((int)floor(setpt));
+        }
+
+        m_coolerOn->Enable(ok);
+        m_coolerSetpt->Enable(ok);
+    }
 }
 
 void CameraConfigDialogCtrlSet::UnloadValues()
@@ -1028,6 +1087,17 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     }
 
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
+
+    if (m_pCamera->HasCooler)
+    {
+        bool on = m_coolerOn->GetValue();
+        m_pCamera->SetCoolerOn(on);
+        double setpt = (double) m_coolerSetpt->GetValue();
+        m_pCamera->SetCoolerSetpoint(setpt);
+        pConfig->Profile.SetDouble("/camera/CoolerSetpt", setpt);
+    }
+
+    pFrame->pStatsWin->UpdateCooler();
 }
 
 double CameraConfigDialogCtrlSet::GetPixelSize()

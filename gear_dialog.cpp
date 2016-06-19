@@ -1005,8 +1005,8 @@ bool GearDialog::DoConnectCamera(void)
         pFrame->StatusMsg(_("Camera Connected"));
         
         pFrame->UpdateStateLabels();
-     }
-
+        pFrame->pStatsWin->UpdateCooler();
+    }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
@@ -1054,6 +1054,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
 
         pFrame->StatusMsg(_("Camera Disconnected"));
         pFrame->UpdateStateLabels();
+        pFrame->pStatsWin->UpdateCooler();
     }
     catch (const wxString& Msg)
     {

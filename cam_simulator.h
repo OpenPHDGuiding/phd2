@@ -51,6 +51,9 @@ public:
     bool     HasNonGuiCapture() { return true; }
     bool     ST4HasNonGuiMove() { return true; }
     wxByte   BitsPerPixel();
+    bool    SetCoolerOn(bool on);
+    bool    SetCoolerSetpoint(double temperature);
+    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
     bool     ST4PulseGuideScope (int direction, int duration);
     PierSide SideOfPier() const;
     void     FlipPierSide();

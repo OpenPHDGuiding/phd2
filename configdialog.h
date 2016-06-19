@@ -56,6 +56,7 @@ enum BRAIN_CTRL_IDS
     AD_szDelay,
     AD_szPort,
     AD_binning,
+    AD_cooler,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
     AD_cbScaleImages,
     AD_szFocalLength,

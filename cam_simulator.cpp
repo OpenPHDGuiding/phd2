@@ -365,6 +365,66 @@ struct SimStar
     double inten;
 };
 
+static const double AMBIENT_TEMP = 15.;
+static const double MIN_COOLER_TEMP = -15.;
+
+struct Cooler
+{
+    bool on;
+    double startTemp;
+    double endTemp;
+    double setTemp;
+    time_t endTime;
+    double rate; // degrees per second
+    double direction; // -1 = cooling, +1 = warming
+
+    Cooler() : on(false), startTemp(AMBIENT_TEMP), endTemp(AMBIENT_TEMP), setTemp(AMBIENT_TEMP), endTime(0), rate(1. / 8.), direction(0.) { }
+
+    double CurrentTemp() const
+    {
+        time_t now = wxDateTime::GetTimeNow();
+
+        if (now >= endTime)
+            return endTemp;
+
+        return endTemp - rate * direction * (double)(endTime - now);
+    }
+
+    void TurnOn()
+    {
+        if (!on)
+        {
+            _SetTemp(CurrentTemp());
+            on = true;
+        }
+    }
+
+    void TurnOff()
+    {
+        if (on)
+        {
+            _SetTemp(AMBIENT_TEMP);
+            on = false;
+        }
+    }
+
+    void _SetTemp(double newtemp)
+    {
+        startTemp = CurrentTemp();
+        endTemp = std::max(std::min(newtemp, AMBIENT_TEMP), MIN_COOLER_TEMP);
+        double dt = ceil(fabs(endTemp - startTemp) / rate);
+        endTime = wxDateTime::GetTimeNow() + (time_t) dt;
+        direction = endTemp < startTemp ? -1. : +1.;
+    }
+
+    void SetTemp(double newtemp)
+    {
+        assert(on);
+        _SetTemp(newtemp);
+        setTemp = newtemp;
+    }
+};
+
 struct SimCamState
 {
     unsigned int width;
@@ -376,6 +436,7 @@ struct SimCamState
     double cum_dec_drift;    // cumulative dec drift
     wxStopWatch timer;       // platform-independent timer
     long last_exposure_time; // last expoure time, milliseconds
+    Cooler cooler;           // simulated cooler
 
 #ifdef SIMDEBUG
     wxFFile DebugFile;
@@ -1009,6 +1070,7 @@ Camera_SimClass::Camera_SimClass()
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxBinning = 3;
+    HasCooler = true;
 }
 
 wxByte Camera_SimClass::BitsPerPixel()
@@ -1213,6 +1275,46 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
     default: return true;
     }
     WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
+    return false;
+}
+
+bool Camera_SimClass::SetCoolerOn(bool on)
+{
+    if (on)
+        sim->cooler.TurnOn();
+    else
+        sim->cooler.TurnOff();
+
+    return false; // no error
+}
+
+bool Camera_SimClass::SetCoolerSetpoint(double temperature)
+{
+    if (!sim->cooler.on)
+        return true; // error
+
+    sim->cooler.SetTemp(temperature);
+    return false;
+}
+
+bool Camera_SimClass::GetCoolerStatus(bool *onp, double *setpoint, double *power, double *temperature)
+{
+    bool on = sim->cooler.on;
+    double cur = sim->cooler.CurrentTemp();
+
+    *onp = on;
+
+    if (on)
+    {
+        *setpoint = sim->cooler.setTemp;
+        *power = cur < MIN_COOLER_TEMP ? 100. : cur >= AMBIENT_TEMP ? 0. : (AMBIENT_TEMP - cur) * 100. / (AMBIENT_TEMP - MIN_COOLER_TEMP);
+        *temperature = cur;
+    }
+    else
+    {
+        *temperature = cur;
+    }
+
     return false;
 }
 

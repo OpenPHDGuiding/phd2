@@ -1089,7 +1089,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             pFrame->ScheduleSecondaryMove(pSecondaryMount, thisBump, MOVETYPE_DIRECT);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = MOVE_ERROR;

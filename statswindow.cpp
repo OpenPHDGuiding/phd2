@@ -35,15 +35,21 @@
 #include "phd.h"
 #include "statswindow.h"
 
+enum {
+    TIMER_ID_COOLER = 101,
+};
+
 wxBEGIN_EVENT_TABLE(StatsWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH, StatsWindow::OnButtonLength)
     EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, StatsWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR, StatsWindow::OnButtonClear)
+    EVT_TIMER(TIMER_ID_COOLER, StatsWindow::OnTimerCooler)
 wxEND_EVENT_TABLE()
 
 StatsWindow::StatsWindow(wxWindow *parent)
     : wxWindow(parent, wxID_ANY),
-    m_visible(false)
+    m_visible(false),
+    m_coolerTimer(this, TIMER_ID_COOLER)
 {
     SetBackgroundColour(*wxBLACK);
 
@@ -77,7 +83,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(8, 2);
+    m_grid2->CreateGrid(9, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -102,6 +108,9 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid2->SetCellValue(row, col++, _("Rotator Pos"));
     ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Camera binning"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Camera cooler"));
+    m_grid2->SetCellValue(row, col, "-99" DEGREES_SYMBOL " / -99" DEGREES_SYMBOL ", 999%");
 
     m_grid2->AutoSize();
     m_grid2->SetCellValue(3, 1, _T(""));
@@ -139,6 +148,7 @@ void StatsWindow::SetState(bool is_active)
     if (m_visible)
     {
         UpdateStats();
+        UpdateCooler();
     }
 }
 
@@ -205,6 +215,46 @@ void StatsWindow::UpdateStats(void)
 
     m_grid1->EndBatch();
     m_grid2->EndBatch();
+}
+
+static wxString CamCoolerStatus()
+{
+    bool on;
+    double setpt, power, temp;
+    bool err = pCamera->GetCoolerStatus(&on, &setpt, &power, &temp);
+    if (err)
+        return _("Camera error");
+    else if (on)
+        return wxString::Format(_("%.f" DEGREES_SYMBOL " / %.f" DEGREES_SYMBOL ", %.f%%"), temp, setpt, power);
+    else
+        return wxString::Format(_("%.f" DEGREES_SYMBOL ", Off"), temp);
+}
+
+void StatsWindow::UpdateCooler()
+{
+    m_coolerTimer.Stop();
+
+    if (!m_visible)
+        return;
+
+    wxString s;
+    if (pCamera && pCamera->Connected)
+    {
+        if (pCamera->HasCooler)
+        {
+            s = CamCoolerStatus();
+            enum { COOLER_POLL_INTERVAL_MS = 10000 };
+            m_coolerTimer.StartOnce(COOLER_POLL_INTERVAL_MS);
+        }
+        else
+            s = _("None");
+    }
+    m_grid2->SetCellValue(8, 1, s);
+}
+
+void StatsWindow::OnTimerCooler(wxTimerEvent&)
+{
+    UpdateCooler();
 }
 
 static wxString RotatorPosStr()
