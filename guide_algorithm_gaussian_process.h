@@ -53,6 +53,7 @@
 #endif
 
 #define CIRCULAR_BUFFER_SIZE 2048
+#define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
 
 class wxStopWatch;
 
@@ -103,12 +104,12 @@ private:
 
     /**
      * Calculates the noise from the reported SNR value according to an
-     * empirically justified equation.
+     * empirically justified equation and stores it.
      */
     void HandleSNR(double SNR);
 
     /**
-     * Run the inference machinery on the GP. Gets the measurement data from
+     * Runs the inference machinery on the GP. Gets the measurement data from
      * the circular buffer and stores it in Eigen::Vectors. Detrends the data
      * with linear regression. Calculates the main frequency with an FFT.
      * Updates the GP accordingly with new data and parameter.
@@ -126,14 +127,14 @@ protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
-    int GetNbPointsInference() const;
-    bool SetNbPointsInference(int nb_points_inference);
+    int GetNumPointsInference() const;
+    bool SetNumPointsInference(int num_points_inference);
 
-    int GetNbPointsPeriodComputation() const;
-    bool SetNbPointsPeriodComputation(int);
+    int GetNumPointsPeriodComputation() const;
+    bool SetNumPointsPeriodComputation(int);
 
-    int GetNbPointsForApproximation() const;
-    bool SetNbPointsForApproximation(int);
+    int GetNumPointsForApproximation() const;
+    bool SetNumPointsForApproximation(int);
 
     bool GetBoolComputePeriod() const;
     bool SetBoolComputePeriod(bool);
@@ -199,7 +200,7 @@ public:
      * This method tells the guider that dithering is finished. The guider
      * will resume normal operation.
      */
-    virtual void GuidingDitherSettleDone(void);
+    virtual void GuidingDitherSettleDone(bool success);
 
     /**
      * Clears the data from the circular buffer and clears the GP data.

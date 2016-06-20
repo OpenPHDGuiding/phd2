@@ -112,12 +112,12 @@ GP::GP(const double noise_variance,
 GP::~GP()
 {
     delete this->covFunc_; // tidy up since we are responsible for the covFunc.
-    delete this->covFuncProj_; // tidy up since we are responsible for the covFunc.
+    delete this->covFuncProj_; // tidy up since we are responsible for the covFuncProj.
 }
 
 GP::GP(const GP& that) :
-    covFunc_(0),
-    covFuncProj_(0),
+    covFunc_(0), // initialize to zero, clone later
+    covFuncProj_(0), // initialize to zero, clone later
     data_loc_(that.data_loc_),
     data_out_(that.data_out_),
     data_var_(that.data_var_),
@@ -137,9 +137,10 @@ GP::GP(const GP& that) :
 
 bool GP::setCovarianceFunction(const covariance_functions::CovFunc& covFunc)
 {
+    // can only set the covariance function if training dataset is empty
     if (data_loc_.size() != 0 || data_out_.size() != 0)
         return false;
-    delete covFunc_;
+    delete covFunc_; // initialized to zero, so delete is safe
     covFunc_ = covFunc.clone();
 
     return true;
@@ -147,13 +148,13 @@ bool GP::setCovarianceFunction(const covariance_functions::CovFunc& covFunc)
 
 void GP::enableOutputProjection(const covariance_functions::CovFunc& covFuncProj)
 {
-    delete covFuncProj_;
+    delete covFuncProj_;// initialized to zero, so delete is safe
     covFuncProj_ = covFuncProj.clone();
 }
 
 void GP::disableOutputProjection()
 {
-    delete covFuncProj_;
+    delete covFuncProj_; // initialized to zero, so delete is safe
     covFuncProj_ = 0;
 }
 
@@ -195,12 +196,12 @@ Eigen::VectorXd GP::drawSample(const Eigen::VectorXd& locations,
     prior_covariance = covFunc_->evaluate(locations, locations);
     kernel_matrix = prior_covariance;
 
-    if (gram_matrix_.cols() == 0)   // i.e. only a prior
+    if (gram_matrix_.cols() == 0)   // no data, i.e. only a prior
     {
         kernel_matrix = prior_covariance + JITTER * Eigen::MatrixXd::Identity(
                             prior_covariance.rows(), prior_covariance.cols());
     }
-    else
+    else // we have some data
     {
         Eigen::MatrixXd mixed_covariance;
         mixed_covariance = covFunc_->evaluate(locations, data_loc_);
@@ -215,6 +216,7 @@ Eigen::VectorXd GP::drawSample(const Eigen::VectorXd& locations,
     // Draw sample: s = chol(K)*x, where x is a random vector
     samples = chol_kernel_matrix.matrixL() * random_vector;
 
+    // add the measurement noise on return
     return samples + std::exp(log_noise_sd_) *
            math_tools::generate_normal_random_matrix(samples.rows(), samples.cols());
 }
@@ -227,7 +229,7 @@ void GP::infer()
     Eigen::MatrixXd data_cov = covFunc_->evaluate(data_loc_, data_loc_);
 
     // compute and store the Gram matrix
-    gram_matrix_.swap(data_cov);
+    gram_matrix_.swap(data_cov); // store the new data_cov as gram matrix
     if (data_var_.rows() == 0) // homoscedastic
     {
         gram_matrix_ += (std::exp(2 * log_noise_sd_) + JITTER) *
@@ -248,8 +250,8 @@ void GP::infer()
     {
         feature_vectors_ = Eigen::MatrixXd(2, data_loc_.rows());
         // precompute necessary matrices for the explicit trend function
-        feature_vectors_.row(0) = data_loc_.array().pow(0);
-        feature_vectors_.row(1) = data_loc_.array().pow(1);
+        feature_vectors_.row(0) = Eigen::MatrixXd::Ones(1,data_loc_.rows()); // instead of pow(0)
+        feature_vectors_.row(1) = data_loc_.array(); // instead of pow(1)
 
         feature_matrix_ = feature_vectors_ * chol_gram_matrix_.solve(feature_vectors_.transpose());
         chol_feature_matrix_ = feature_matrix_.ldlt();
@@ -281,6 +283,7 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
     Eigen::VectorXd prediction_loc(1);
     if ( math_tools::isNaN(prediction_point) )
     {
+        // if none given, use the last datapoint as prediction reference
         prediction_loc = data_loc.tail(1);
     }
     else
@@ -288,9 +291,10 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
         prediction_loc << prediction_point;
     }
 
-    // use the last datapoint as prediction reference
+    // calculate covariance between data and prediction point for point selection
     covariance = covFunc_->evaluate(data_loc, prediction_loc);
 
+    // generate index vector
     std::vector<int> index(covariance.size(), 0);
     for (int i = 0 ; i != index.size() ; i++) {
         index[i] = i;
@@ -301,7 +305,7 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
          covariance_ordering(covariance)
     );
 
-    bool use_var = data_var.rows() > 0; // heteroscedastic noise, if true
+    bool use_var = data_var.rows() > 0; // true means heteroscedastic noise
 
     if (n < data_loc.rows()) {
         std::vector<double> loc_arr(n);
@@ -325,7 +329,7 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
             data_var_ = Eigen::Map<Eigen::VectorXd>(var_arr.data(),n,1);
         }
     }
-    else
+    else // we can use all points and don't neet to select
     {
         data_loc_ = data_loc;
         data_out_ = data_out;
@@ -356,14 +360,15 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
     }
     else
     {
-        // The mixed covariance matrix (test and data points)
+        // Calculate mixed covariance matrix (test and data points)
         Eigen::MatrixXd mixed_cov = covFunc_->evaluate(locations, data_loc_);
 
+        // Calculate feature matrix for linear feature
         Eigen::MatrixXd phi(2, locations.rows());
         if (use_explicit_trend_)
         {
-            phi.row(0) = locations.array().pow(0);
-            phi.row(1) = locations.array().pow(1);
+            phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // instead of pow(0)
+            phi.row(1) = locations.array(); // instead of pow(1)
 
             return predict(prior_cov, mixed_cov, phi);
         }
@@ -403,8 +408,8 @@ GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) cons
         if (use_explicit_trend_)
         {
             // calculate the feature vectors for linear regression
-            phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // locations.pow(0)
-            phi.row(1) = locations.array(); // locations.pow(1)
+            phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // instead of pow(0)
+            phi.row(1) = locations.array(); // instead of pow(1)
 
             return predict(prior_cov, mixed_cov, phi);
         }
@@ -417,11 +422,14 @@ GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
                                  const Eigen::MatrixXd& phi) const
 {
 
+    // calculate GP mean from precomputed alpha vector
     Eigen::VectorXd m = mixed_cov * alpha_;
 
+    // calculate GP variance
     Eigen::MatrixXd v = prior_cov - mixed_cov *
                         (chol_gram_matrix_.solve(mixed_cov.transpose()));
 
+    // include fixed-features in the calculations
     if (use_explicit_trend_)
     {
         Eigen::MatrixXd R = phi - feature_vectors_ * chol_gram_matrix_.solve(mixed_cov.transpose());

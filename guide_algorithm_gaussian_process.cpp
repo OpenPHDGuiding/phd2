@@ -56,9 +56,9 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
-    wxSpinCtrl       *m_pNbPointsInference;
-    wxSpinCtrl       *m_pNbPointsPeriodComputation;
-    wxSpinCtrl       *m_pNbPointsApproximation;
+    wxSpinCtrl       *m_pNumPointsInference;
+    wxSpinCtrl       *m_pNumPointsPeriodComputation;
+    wxSpinCtrl       *m_pNumPointsApproximation;
 
     wxSpinCtrlDouble *m_pSE0KLengthScale;
     wxSpinCtrlDouble *m_pSE0KSignalVariance;
@@ -92,16 +92,16 @@ public:
         m_pPredictionGain->SetDigits(2);
 
         // number of elements before starting the inference
-        m_pNbPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+        m_pNumPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                              wxDefaultPosition,wxSize(width+30, -1),
                                              wxSP_ARROW_KEYS, 0, 1000, 10);
 
-        m_pNbPointsPeriodComputation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+        m_pNumPointsPeriodComputation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0, 1000, 10);
 
         // number of points used for the approximate GP inference (subset of data)
-        m_pNbPointsApproximation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+        m_pNumPointsApproximation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0, 2000, 10);
 
@@ -155,15 +155,15 @@ public:
         DoAdd(_("Prediction gain"), m_pPredictionGain,
               _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0"));
 
-        DoAdd(_("Minimum data points (inference)"), m_pNbPointsInference,
+        DoAdd(_("Minimum data points (inference)"), m_pNumPointsInference,
               _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
                 "the result might be poor. Default = 25"));
 
-        DoAdd(_("Minimum data points (period)"), m_pNbPointsPeriodComputation,
+        DoAdd(_("Minimum data points (period)"), m_pNumPointsPeriodComputation,
               _("Minimal number of measurements to start estimating the periodicity. If there are too little data points, "
                 "the estimation might not work. Default = 100"));
 
-        DoAdd(_("Used data points (approximation)"), m_pNbPointsApproximation,
+        DoAdd(_("Used data points (approximation)"), m_pNumPointsApproximation,
               _("Number of data points used in the approximation. Both prediction accuracy as well as runtime rise with "
                 "the number of datapoints. Default = 100"));
 
@@ -200,15 +200,15 @@ public:
       // no need to destroy the widgets, this is done by the parent...
     }
 
-    /* Fill the GUI with the parameters that are currently chosen in the
+    /* Fill the GUI with the parameters that are currently configured in the
      * guiding algorithm.
      */
     virtual void LoadValues(void)
     {
         m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
-        m_pNbPointsInference->SetValue(m_pGuideAlgorithm->GetNbPointsInference());
-        m_pNbPointsPeriodComputation->SetValue(m_pGuideAlgorithm->GetNbPointsPeriodComputation());
-        m_pNbPointsApproximation->SetValue(m_pGuideAlgorithm->GetNbPointsForApproximation());
+        m_pNumPointsInference->SetValue(m_pGuideAlgorithm->GetNumPointsInference());
+        m_pNumPointsPeriodComputation->SetValue(m_pGuideAlgorithm->GetNumPointsPeriodComputation());
+        m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
 
         std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
         assert(hyperparameters.size() == 8);
@@ -230,9 +230,9 @@ public:
     virtual void UnloadValues(void)
     {
         m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
-        m_pGuideAlgorithm->SetNbPointsInference(m_pNbPointsInference->GetValue());
-        m_pGuideAlgorithm->SetNbPointsPeriodComputation(m_pNbPointsPeriodComputation->GetValue());
-        m_pGuideAlgorithm->SetNbPointsForApproximation(m_pNbPointsApproximation->GetValue());
+        m_pGuideAlgorithm->SetNumPointsInference(m_pNumPointsInference->GetValue());
+        m_pGuideAlgorithm->SetNumPointsPeriodComputation(m_pNumPointsPeriodComputation->GetValue());
+        m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
 
         std::vector<double> hyperparameters(8);
 
@@ -251,21 +251,19 @@ public:
 };
 
 
-struct gp_guiding_circular_datapoints
+struct data_point
 {
     double timestamp;
-    double measurement;
-    double modified_measurement;
-    double control;
-    double variance;
+    double measurement; // current pointing error
+    double variance; // current measurement variance
+    double control; // control action
 };
 
 
-// parameters of the GP guiding algorithm
+// data structure of the GP guiding algorithm
 struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 {
-    typedef gp_guiding_circular_datapoints data_points;
-    circular_buffer<data_points> circular_buffer_parameters;
+    circular_buffer<data_point> circular_buffer_data;
 
     wxStopWatch timer_;
     double control_signal_;
@@ -275,23 +273,23 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
     double prediction_;
     double last_prediction_end_;
 
-    int min_nb_element_for_inference;
-    int min_points_for_period_computation;
-    int points_for_approximation;
+    int min_points_for_inference_;
+    int min_points_for_period_computation_;
 
-    bool compute_period;
+    int points_for_approximation_;
 
+    bool compute_period_;
     bool dark_tracking_mode_;
 
     bool dithering_active_;
     int dither_steps_;
 
-    covariance_functions::PeriodicSquareExponential2 covariance_function_;
-    covariance_functions::PeriodicSquareExponential output_covariance_function_;
+    covariance_functions::PeriodicSquareExponential2 covariance_function_; // for inference
+    covariance_functions::PeriodicSquareExponential output_covariance_function_; // for prediction
     GP gp_;
 
     gp_guide_parameters() :
-      circular_buffer_parameters(CIRCULAR_BUFFER_SIZE),
+      circular_buffer_data(CIRCULAR_BUFFER_SIZE),
       timer_(),
       control_signal_(0.0),
       control_gain_(0.0),
@@ -299,46 +297,46 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
       prediction_gain_(0.0),
       prediction_(0.0),
       last_prediction_end_(0.0),
-      min_nb_element_for_inference(0),
-      min_points_for_period_computation(0),
-      points_for_approximation(0),
-      compute_period(false),
+      min_points_for_inference_(0),
+      min_points_for_period_computation_(0),
+      points_for_approximation_(0),
+      compute_period_(false),
       dark_tracking_mode_(false),
       dithering_active_(false),
       dither_steps_(0),
       gp_(covariance_function_)
     {
-        circular_buffer_parameters.push_front(data_points()); // add first point
-        circular_buffer_parameters[0].control = 0; // set first control to zero
-        gp_.enableOutputProjection(output_covariance_function_);
+        circular_buffer_data.push_front(data_point()); // add first point
+        circular_buffer_data[0].control = 0; // set first control to zero
+        gp_.enableOutputProjection(output_covariance_function_); // for prediction
     }
 
-    data_points& get_last_point()
+    data_point& get_last_point()
     {
-        return circular_buffer_parameters[circular_buffer_parameters.size() - 1];
+        return circular_buffer_data[circular_buffer_data.size() - 1];
     }
 
-    data_points& get_second_last_point()
+    data_point& get_second_last_point()
     {
-        return circular_buffer_parameters[circular_buffer_parameters.size() - 2];
+        return circular_buffer_data[circular_buffer_data.size() - 2];
     }
 
     size_t get_number_of_measurements() const
     {
-        return circular_buffer_parameters.size();
+        return circular_buffer_data.size();
     }
 
     void add_one_point()
     {
-        circular_buffer_parameters.push_front(data_points());
+        circular_buffer_data.push_front(data_point());
     }
 
     void clear()
     {
-        circular_buffer_parameters.clear();
-        circular_buffer_parameters.push_front(data_points()); // add first point
-        circular_buffer_parameters[0].control = 0; // set first control to zero
-        last_prediction_end_ = 0;
+        circular_buffer_data.clear();
+        circular_buffer_data.push_front(data_point()); // add first point
+        circular_buffer_data[0].control = 0; // set first control to zero
+        last_prediction_end_ = 0.0;
         gp_.clearData();
     }
 
@@ -346,7 +344,7 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 
 
 static const double DefaultControlGain                   = 0.8; // control gain
-static const int    DefaultNbMinPointsForInference       = 25; // minimal number of points for doing the inference
+static const int    DefaultNumMinPointsForInference       = 25; // minimal number of points for doing the inference
 
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
@@ -358,15 +356,14 @@ static const double DefaultSignalVariancePerKer          = 10.0; // signal varia
 static const double DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
 static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
 
-static const int    DefaultNbMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
-static const int    DefaultNbPointsForApproximation        = 100; // number of points used in the GP approximation
+static const int    DefaultNumMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
+static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 static const double DefaultPredictionGain                  = 1.0; // amount of GP prediction to blend in
 
 static const bool   DefaultComputePeriod                 = true;
 
 GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis),
-      parameters(0)
+    : GuideAlgorithm(pMount, axis), parameters(0)
 {
     parameters = new gp_guide_parameters();
     wxString configPath = GetConfigPath();
@@ -374,14 +371,14 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
 
-    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNbMinPointsForInference);
-    SetNbPointsInference(nb_element_for_inference);
+    int num_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNumMinPointsForInference);
+    SetNumPointsInference(num_element_for_inference);
 
-    int nb_points_period_computation = pConfig->Profile.GetInt(configPath + "/gp_min_points_period_computation", DefaultNbMinPointsForPeriodComputation);
-    SetNbPointsPeriodComputation(nb_points_period_computation);
+    int num_points_period_computation = pConfig->Profile.GetInt(configPath + "/gp_min_points_period_computation", DefaultNumMinPointsForPeriodComputation);
+    SetNumPointsPeriodComputation(num_points_period_computation);
 
-    int nb_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNbPointsForApproximation);
-    SetNbPointsForApproximation(nb_points_approximation);
+    int num_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNumPointsForApproximation);
+    SetNumPointsForApproximation(num_points_approximation);
 
     double prediction_gain = pConfig->Profile.GetDouble(configPath + "/gp_prediction_gain", DefaultPredictionGain);
     SetPredictionGain(prediction_gain);
@@ -401,11 +398,8 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
     SetBoolComputePeriod(compute_period);
 
-    // enable the explicit basis function for the linear drift
-    parameters->gp_.enableExplicitTrend();
-
-    parameters->dark_tracking_mode_ = false;
-
+    parameters->gp_.enableExplicitTrend(); // enable the explicit basis function for the linear drift
+    parameters->dark_tracking_mode_ = false; // dark tracking mode ignores measurements
     reset();
 }
 
@@ -445,77 +439,77 @@ bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetNbPointsInference(int nb_elements)
+bool GuideAlgorithmGaussianProcess::SetNumPointsInference(int num_elements)
 {
     bool error = false;
 
     try
     {
-        if (nb_elements < 0)
+        if (num_elements < 0)
         {
             throw ERROR_INFO("invalid number of elements");
         }
 
-        parameters->min_nb_element_for_inference = nb_elements;
+        parameters->min_points_for_inference_ = num_elements;
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->min_nb_element_for_inference = DefaultNbMinPointsForInference;
+        parameters->min_points_for_inference_ = DefaultNumMinPointsForInference;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_inference", parameters->min_nb_element_for_inference);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_inference", parameters->min_points_for_inference_);
 
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetNbPointsPeriodComputation(int nb_points)
+bool GuideAlgorithmGaussianProcess::SetNumPointsPeriodComputation(int num_points)
 {
     bool error = false;
 
     try
     {
-        if (nb_points < 0)
+        if (num_points < 0)
         {
             throw ERROR_INFO("invalid number of points");
         }
 
-        parameters->min_points_for_period_computation = nb_points;
+        parameters->min_points_for_period_computation_ = num_points;
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->min_points_for_period_computation = DefaultNbMinPointsForPeriodComputation;
+        parameters->min_points_for_period_computation_ = DefaultNumMinPointsForPeriodComputation;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_period_computation", parameters->min_points_for_period_computation);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_period_computation", parameters->min_points_for_period_computation_);
 
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetNbPointsForApproximation(int nb_points)
+bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
 {
     bool error = false;
 
     try
     {
-        if (nb_points < 0)
+        if (num_points < 0)
         {
             throw ERROR_INFO("invalid number of points");
         }
 
-        parameters->points_for_approximation = nb_points;
+        parameters->points_for_approximation_ = num_points;
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->points_for_approximation = DefaultNbPointsForApproximation;
+        parameters->points_for_approximation_ = DefaultNumPointsForApproximation;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_points_approximation", parameters->points_for_approximation);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_points_approximation", parameters->points_for_approximation_);
 
     return error;
 }
@@ -699,8 +693,8 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
 
 bool GuideAlgorithmGaussianProcess::SetBoolComputePeriod(bool active)
 {
-  parameters->compute_period = active;
-  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", parameters->compute_period);
+  parameters->compute_period_ = active;
+  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", parameters->compute_period_);
   return true;
 }
 
@@ -709,19 +703,19 @@ double GuideAlgorithmGaussianProcess::GetControlGain() const
     return parameters->control_gain_;
 }
 
-int GuideAlgorithmGaussianProcess::GetNbPointsInference() const
+int GuideAlgorithmGaussianProcess::GetNumPointsInference() const
 {
-    return parameters->min_nb_element_for_inference;
+    return parameters->min_points_for_inference_;
 }
 
-int GuideAlgorithmGaussianProcess::GetNbPointsPeriodComputation() const
+int GuideAlgorithmGaussianProcess::GetNumPointsPeriodComputation() const
 {
-    return parameters->min_points_for_period_computation;
+    return parameters->min_points_for_period_computation_;
 }
 
-int GuideAlgorithmGaussianProcess::GetNbPointsForApproximation() const
+int GuideAlgorithmGaussianProcess::GetNumPointsForApproximation() const
 {
-    return parameters->points_for_approximation;
+    return parameters->points_for_approximation_;
 }
 
 std::vector<double> GuideAlgorithmGaussianProcess::GetGPHyperparameters() const
@@ -741,7 +735,7 @@ double GuideAlgorithmGaussianProcess::GetPredictionGain() const
 
 bool GuideAlgorithmGaussianProcess::GetBoolComputePeriod() const
 {
-    return parameters->compute_period;
+    return parameters->compute_period_;
 }
 
 bool GuideAlgorithmGaussianProcess::GetDarkTracking()
@@ -781,7 +775,7 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
       std::exp(hyperparameters(2)), std::exp(hyperparameters(3)),
       std::exp(hyperparameters(4)), std::exp(hyperparameters(5)),
       std::exp(hyperparameters(6)), std::exp(hyperparameters(7)),
-      parameters->min_points_for_period_computation);
+      parameters->min_points_for_period_computation_);
 }
 
 
@@ -824,14 +818,14 @@ void GuideAlgorithmGaussianProcess::HandleSNR(double SNR)
     SNR = std::max(SNR, 3.4); // limit the minimal SNR
 
     // this was determined by simulated experiments
-    double standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;// -0.0212;
+    double standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;
 
     parameters->get_last_point().variance = standard_deviation * standard_deviation;
 }
 
 void GuideAlgorithmGaussianProcess::UpdateGP()
 {
-    clock_t begin = std::clock();
+    clock_t begin = std::clock(); // this is for timing the method in a simple way
 
     int N = parameters->get_number_of_measurements();
 
@@ -846,23 +840,24 @@ void GuideAlgorithmGaussianProcess::UpdateGP()
     // transfer the data from the circular buffer to the Eigen::Vectors
     for(size_t i = 0; i < N-1; i++)
     {
-        sum_control += parameters->circular_buffer_parameters[i].control; // sum over the control signals
-        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        variances(i) = parameters->circular_buffer_parameters[i].variance;
-        sum_controls(i) = sum_control;
+        sum_control += parameters->circular_buffer_data[i].control; // sum over the control signals
+        timestamps(i) = parameters->circular_buffer_data[i].timestamp;
+        measurements(i) = parameters->circular_buffer_data[i].measurement;
+        variances(i) = parameters->circular_buffer_data[i].variance;
+        sum_controls(i) = sum_control; // store current accumulated control signal
     }
 
     Eigen::VectorXd gear_error(N-1);
     Eigen::VectorXd linear_fit(N-1);
 
+    // calculate the accumulated gear error
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     clock_t end = std::clock();
     double time_init = double(end - begin) / CLOCKS_PER_SEC;
     begin = std::clock();
 
-    // linear least squares regression for offset and drift
+    // linear least squares regression for offset and drift to de-trend the data
     Eigen::MatrixXd feature_matrix(2, timestamps.rows());
     feature_matrix.row(0) = Eigen::MatrixXd::Ones(1, timestamps.rows()); // timestamps.pow(0)
     feature_matrix.row(1) = timestamps.array(); // timestamps.pow(1)
@@ -874,31 +869,31 @@ void GuideAlgorithmGaussianProcess::UpdateGP()
     // calculate the linear regression for all datapoints
     linear_fit = weights.transpose()*feature_matrix;
 
-    // correct the datapoints by the polynomial fit
+    // subtract polynomial fit from the data points
     Eigen::VectorXd gear_error_detrend = gear_error - linear_fit;
 
     end = std::clock();
     double time_detrend = double(end - begin) / CLOCKS_PER_SEC;
     begin = std::clock();
 
-    double time_fft = 0;
+    double time_fft = 0; // need to initialize in case the FFT isn't calculated
+
     // calculate period length if we have enough points already
-    if (parameters->compute_period && parameters->min_points_for_period_computation > 0
-      && parameters->get_number_of_measurements() > parameters->min_points_for_period_computation)
+    if (parameters->compute_period_ && parameters->min_points_for_period_computation_ > 0
+      && parameters->get_number_of_measurements() > parameters->min_points_for_period_computation_)
     {
       // find periodicity parameter with FFT
 
-      // compute Hamming window to prevent too much spectral leakage
+      // compute Hamming window to reduce spectral leakage
       Eigen::VectorXd windowed_gear_error = gear_error_detrend.array() * math_tools::hamming_window(gear_error_detrend.rows()).array();
 
       // compute the spectrum
-      int N_fft = 2048;
-      std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(windowed_gear_error, N_fft);
+      std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(windowed_gear_error, FFT_SIZE);
 
       Eigen::ArrayXd amplitudes = result.first;
       Eigen::ArrayXd frequencies = result.second;
 
-      double dt = (timestamps(timestamps.rows()-1) - timestamps(1))/timestamps.rows();
+      double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/timestamps.rows(); // (t_end - t_begin) / num_t
       if (dt < 0)
       {
           Debug.AddLine("Something is wrong: The average time step length is is negative!");
@@ -917,13 +912,12 @@ void GuideAlgorithmGaussianProcess::UpdateGP()
       amplitudes.maxCoeff(&maxIndex);
       double period_length = 1 / frequencies(maxIndex);
 
-      Eigen::VectorXd optim = parameters->gp_.getHyperParameters();
-      optim[7] = std::log(period_length); // parameters are stored in log space
-      parameters->gp_.setHyperParameters(optim);
+      Eigen::VectorXd hypers = parameters->gp_.getHyperParameters();
+      hypers[7] = std::log(period_length); // parameters are stored in log space
+      parameters->gp_.setHyperParameters(hypers);
 
       end = std::clock();
       time_fft = double(end - begin) / CLOCKS_PER_SEC;
-
 
 #if GP_DEBUG_FILE_
       std::ofstream outfile;
@@ -942,8 +936,9 @@ void GuideAlgorithmGaussianProcess::UpdateGP()
     }
 
     begin = std::clock();
-    // inference of the GP with this new points, maximum accuracy should be reached around current time
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
+
+    // inference of the GP with the new points, maximum accuracy should be reached around current time
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation_, variances, parameters->timer_.Time() / 1000.0);
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
@@ -954,7 +949,8 @@ double GuideAlgorithmGaussianProcess::PredictGearError()
 {
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
-    if ( parameters->last_prediction_end_ < 1.0 ) // check if this is near zero
+    // prevent large jumps after calling clear()
+    if ( parameters->last_prediction_end_ < 1.0 )
     {
         parameters->last_prediction_end_ = parameters->timer_.Time() / 1000.0;
     }
@@ -967,12 +963,12 @@ double GuideAlgorithmGaussianProcess::PredictGearError()
 
     double p1 = prediction(1);
     double p0 = prediction(0);
-    assert(std::abs(p1 - p0) < 100);
+    assert(std::abs(p1 - p0) < 100); // large differences don't make sense
     assert(!math_tools::isNaN(p1 - p0));
 
     parameters->last_prediction_end_ = next_location(1); // store current endpoint
 
-    // the prediction is consisting of GP prediction and the linear drift
+    // we are interested in the error introduced by the gear over the next time step
     return (p1 - p0);
 }
 
@@ -1000,25 +996,24 @@ double GuideAlgorithmGaussianProcess::result(double input)
         return parameters->control_gain_*input; // ...but apply proportional control
     }
 
-
+    // collect data point content, except for the control signal
     HandleMeasurements(input);
     HandleTimestamps();
     HandleSNR(pFrame->pGuider->SNR());
 
-    parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
+    parameters->control_signal_ = parameters->control_gain_*input; // start with proportional control
 
     // check if we are allowed to use the GP
-    if (parameters->min_nb_element_for_inference > 0 &&
-        parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
+    if (parameters->min_points_for_inference_ > 0 &&
+        parameters->get_number_of_measurements() > parameters->min_points_for_inference_)
     {
         UpdateGP(); // update the GP based on the new measurements
-        parameters->control_signal_ = parameters->control_gain_*input;
         parameters->prediction_ = PredictGearError();
-        parameters->control_signal_ += parameters->prediction_gain_*parameters->prediction_; // mix in the prediction
+        parameters->control_signal_ += parameters->prediction_gain_*parameters->prediction_; // add the prediction
     }
 
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
-    HandleControls(parameters->control_signal_);
+    HandleControls(parameters->control_signal_); // already store control signal
 
 // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -1036,11 +1031,11 @@ double GuideAlgorithmGaussianProcess::result(double input)
     // transfer the data from the circular buffer to the Eigen::Vectors
     for(size_t i = 0; i < N-1; i++)
     {
-        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        variances(i) = parameters->circular_buffer_parameters[i].variance;
-        controls(i) = parameters->circular_buffer_parameters[i].control;
-        sum_controls(i) = parameters->circular_buffer_parameters[i].control;
+        timestamps(i) = parameters->circular_buffer_data[i].timestamp;
+        measurements(i) = parameters->circular_buffer_data[i].measurement;
+        variances(i) = parameters->circular_buffer_data[i].variance;
+        controls(i) = parameters->circular_buffer_data[i].control;
+        sum_controls(i) = parameters->circular_buffer_data[i].control;
         if(i > 0)
         {
             sum_controls(i) += sum_controls(i-1); // sum over the control signals
@@ -1049,7 +1044,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation_, variances, parameters->timer_.Time() / 1000.0);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1084,7 +1079,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
 #endif
     Debug.AddLine(wxString::Format("GP Guider generated %f from input %f.", parameters->control_signal_, input));
 
-    assert(std::abs(parameters->control_signal_) < 100);
+    assert(std::abs(parameters->control_signal_) < 100); // such large control signals don't make sense
     assert(!math_tools::isNaN(parameters->control_signal_));
     return parameters->control_signal_;
 }
@@ -1094,10 +1089,10 @@ double GuideAlgorithmGaussianProcess::deduceResult()
     HandleDarkGuiding();
     HandleTimestamps();
 
-    parameters->control_signal_ = 0;
+    parameters->control_signal_ = 0; // no measurement!
     // check if we are allowed to use the GP
-    if (parameters->min_nb_element_for_inference > 0 &&
-        parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
+    if (parameters->min_points_for_inference_ > 0 &&
+        parameters->get_number_of_measurements() > parameters->min_points_for_inference_)
     {
         UpdateGP(); // update the GP to update the SD approximation
         parameters->prediction_ = PredictGearError();
@@ -1105,7 +1100,7 @@ double GuideAlgorithmGaussianProcess::deduceResult()
     }
 
     parameters->add_one_point(); // add new point here, since the control is for the next point in time
-    HandleControls(parameters->control_signal_);
+    HandleControls(parameters->control_signal_); // already store control signal
 
     // write the GP output to a file for easy analyzation
 #if GP_DEBUG_FILE_
@@ -1123,11 +1118,11 @@ double GuideAlgorithmGaussianProcess::deduceResult()
     // transfer the data from the circular buffer to the Eigen::Vectors
     for (size_t i = 0; i < N - 1; i++)
     {
-        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        variances(i) = parameters->circular_buffer_parameters[i].variance;
-        controls(i) = parameters->circular_buffer_parameters[i].control;
-        sum_controls(i) = parameters->circular_buffer_parameters[i].control;
+        timestamps(i) = parameters->circular_buffer_data[i].timestamp;
+        measurements(i) = parameters->circular_buffer_data[i].measurement;
+        variances(i) = parameters->circular_buffer_data[i].variance;
+        controls(i) = parameters->circular_buffer_data[i].control;
+        sum_controls(i) = parameters->circular_buffer_data[i].control;
         if (i > 0)
         {
             sum_controls(i) += sum_controls(i - 1); // sum over the control signals
@@ -1136,7 +1131,7 @@ double GuideAlgorithmGaussianProcess::deduceResult()
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation, variances, parameters->timer_.Time() / 1000.0);
+    parameters->gp_.inferSD(timestamps, gear_error, parameters->points_for_approximation_, variances, parameters->timer_.Time() / 1000.0);
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, parameters->get_second_last_point().timestamp + 1500);
@@ -1227,11 +1222,14 @@ void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
     parameters->dither_steps_ = 10;
 }
 
-void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(void)
+void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)
 {
     /*
      * Once dithering has settled, we can start regular guiding again.
      */
-    parameters->dithering_active_ = false;
-    parameters->dither_steps_ = 0;
+    if (success)
+    {
+        parameters->dithering_active_ = false;
+        parameters->dither_steps_ = 0;
+    }
 }

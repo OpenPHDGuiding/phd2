@@ -83,8 +83,15 @@ namespace math_tools
      */
     Eigen::MatrixXd squareDistance(const Eigen::MatrixXd& a);
 
+    /*!
+     * Generates a uniformly distributed random matrix of values between 0 and 1.
+     */
     Eigen::MatrixXd generate_uniform_random_matrix_0_1(const size_t n, const size_t m);
 
+    /*!
+     * Apply the Box-Muller transform, which transforms uniform random samples
+     * to Gaussian distributed random samples.
+     */
     Eigen::MatrixXd box_muller(const Eigen::VectorXd& vRand);
 
     /*!

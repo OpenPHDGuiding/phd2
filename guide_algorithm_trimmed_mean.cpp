@@ -102,7 +102,7 @@ public:
 
         DoAdd(_("Differential Gain"), m_pDifferentialGain,
               _("The differential gain is used to reduce overshoot. It tries to slow down the control system, but if set "
-              " too high, it can lead to noise amplification. Default = 10.0"));
+              " too high, it can lead to noise amplification. Default = 5.0"));
 
         DoAdd(_("Min data points (inference)"), m_pNbMeasurementMin,
               _("Minimal number of measurements to start using the Trimmed Mean. If there are too little data points, "
@@ -220,8 +220,8 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
 
 static const double DefaultControlGain = 0.5;
 static const double DefaultPredictionGain = 1.0;
-static const double DefaultDifferentialGain = 10.0;
-static const int    DefaultNbMinPointsForInference = 100;
+static const double DefaultDifferentialGain = 5.0;
+static const int    DefaultNumMinPointsForInference = 50;
 
 GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
@@ -239,7 +239,7 @@ GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis ax
     double differential_gain = pConfig->Profile.GetDouble(configPath + "/mw_differential_gain", DefaultDifferentialGain);
     SetDifferentialGain(differential_gain);
 
-    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/mw_nb_elements_for_prediction", DefaultNbMinPointsForInference);
+    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/mw_nb_elements_for_prediction", DefaultNumMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
     parameters->dark_tracking_mode_ = false;
@@ -351,7 +351,7 @@ bool GuideAlgorithmTrimmedMean::SetNbElementForInference(int nb_elements)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->min_nb_element_for_inference_ = DefaultNbMinPointsForInference;
+        parameters->min_nb_element_for_inference_ = DefaultNumMinPointsForInference;
     }
 
     pConfig->Profile.SetInt(GetConfigPath() + "/mw_nb_elements_for_prediction", parameters->min_nb_element_for_inference_);

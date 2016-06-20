@@ -65,7 +65,8 @@ namespace covariance_functions
         double plP  = exp(extraParameters(0));
 
         // Work with arrays internally, convert to matrix for return value.
-        // This is because all the operations act elementwise.
+        // This is because all the operations act elementwise, and Eigen::Arrays
+        // do so, too.
 
         // Compute Distances
         Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
@@ -135,7 +136,8 @@ namespace covariance_functions
         double plP  = exp(extraParameters(0));
 
         // Work with arrays internally, convert to matrix for return value.
-        // This is because all the operations act elementwise.
+        // This is because all the operations act elementwise, and Eigen::Arrays
+        // do so, too.
 
         // Compute Distances
         Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
