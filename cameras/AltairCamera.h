@@ -294,10 +294,11 @@ extern "C" {
 	*/
 
 #ifndef __ALTAIR_CALLBACK_DEFINED__
+#define __ALTAIR_CALLBACK_DEFINED__
 	typedef void(__stdcall*     PIALTAIR_EXPOSURE_CALLBACK)(void* pCtx);
 	typedef void(__stdcall*     PIALTAIR_WHITEBALANCE_CALLBACK)(const int aGain[3], void* pCtx);
 	typedef void(__stdcall*     PIALTAIR_TEMPTINT_CALLBACK)(const int nTemp, const int nTint, void* pCtx);
-	typedef void(__stdcall*     PIALTAIR_HISTOGRAM_CALLBACK)(const double aHistY[256], const double aHistR[256], const double aHistG[256], const double aHistB[256], void* pCtx);
+	typedef void(__stdcall*     PIALTAIR_HISTOGRAM_CALLBACK)(const float aHistY[256], const float aHistR[256], const float aHistG[256], const float aHistB[256], void* pCtx);
 	typedef void(__stdcall*     PIALTAIR_CHROME_CALLBACK)(void* pCtx);
 #endif
 
@@ -454,9 +455,9 @@ extern "C" {
 	altair_ports(HRESULT)  Altair_read_UART(HAltair h, unsigned char* pBuffer, unsigned nBufferLen);
 
 
-#define ALTAIR_TEC_TARGET_MIN      -300
-#define ALTAIR_TEC_TARGET_DEF      -100
-#define ALTAIR_TEC_TARGET_MAX      300
+#define ALTAIR_TEC_TARGET_MIN      -300/* -30.0 degrees Celsius */
+#define ALTAIR_TEC_TARGET_DEF      -100/* -10.0 degrees Celsius */
+#define ALTAIR_TEC_TARGET_MAX      300 /* 30.0 degrees Celsius */
 
 #define ALTAIR_OPTION_NOFRAME_TIMEOUT      0x01    /* iValue: 1 = enable; 0 = disable. default: enable */
 #define ALTAIR_OPTION_THREAD_PRIORITY      0x02    /* set the priority of the internal thread which grab data from the usb device. iValue: 0 = THREAD_PRIORITY_NORMAL; 1 = THREAD_PRIORITY_ABOVE_NORMAL; 2 = THREAD_PRIORITY_HIGHEST; default: 0; see: msdn SetThreadPriority */
@@ -472,6 +473,14 @@ extern "C" {
 #define ALTAIR_OPTION_TRIGGER              0x0b    /* 0 = continuous mode, 1 = trigger mode, default value =  0 */
 #define ALTAIR_OPTION_RGB48                0x0c    /* enable RGB48 format when bitdepth > 8 */
 #define ALTAIR_OPTION_TECTARGET            0x0f    /* get or set the target temperature of the thermoelectric cooler, in degree Celsius */
+#define ALTAIR_OPTION_AGAIN                0x10    /* enable or disable adjusting the analog gain when auto exposure is enabled. default value: enable */
+#define ALTAIR_OPTION_FRAMERATE            0x11    /* limit the frame rate, range=[0, 63], the default value 0 means no limit. frame rate control is auto disabled in trigger mode */
+
+
+	/*
+	get the frame rate: framerate (fps) = Frame * 1000.0 / nTime
+	*/
+	altair_ports(HRESULT)  Altair_get_FrameRate(HAltair h, unsigned* nFrame, unsigned* nTime, unsigned* nTotalFrame);
 
 
 	altair_ports(HRESULT)  Altair_put_Option(HAltair h, unsigned iOption, int iValue);
