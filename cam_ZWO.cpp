@@ -257,6 +257,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     }
 
     HasGainControl = false;
+	HasCooler = false;
 
     for (int i = 0; i < numControls; i++)
     {
@@ -281,12 +282,17 @@ bool Camera_ZWO::Connect(const wxString& camId)
             case ASI_HARDWARE_BIN:
                 // this control is not present
                 break;
+			case ASI_COOLER_ON:
+				if (caps.IsWritable)
+					HasCooler = true;
             default:
                 break;
             }
         }
 
     }
+
+	
 
     wxYield();
 
@@ -330,6 +336,37 @@ bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
 
     *devPixelSize = m_devicePixelSize;
     return false;
+}
+
+bool Camera_ZWO::SetCoolerOn(bool on)
+{
+	return (ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS);
+}
+
+bool Camera_ZWO::SetCoolerSetpoint(double temperature)
+{
+	return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
+
+}
+
+bool Camera_ZWO::GetCoolerStatus(bool* on, double* setpoint, double* power, double* temperature)
+{
+	long value;
+	ASI_BOOL isAuto;
+
+	if (ASIGetControlValue(m_cameraId, ASI_COOLER_ON, &value, &isAuto) == ASI_SUCCESS)
+		*on = value != 0;
+
+	if (ASIGetControlValue(m_cameraId, ASI_TARGET_TEMP, &value, &isAuto) == ASI_SUCCESS)
+		*setpoint = value;
+
+	if (ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto) == ASI_SUCCESS)
+		*temperature = value/10.0;
+
+	if (ASIGetControlValue(m_cameraId, ASI_COOLER_POWER_PERC, &value, &isAuto) == ASI_SUCCESS)
+		*power = value;
+
+	return false;
 }
 
 inline static int round_down(int v, int m)
