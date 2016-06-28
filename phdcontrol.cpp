@@ -68,6 +68,7 @@ struct ControllerState
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
     wxStopWatch *settleInRange;
+    int settleFrameCount;
     bool succeeded;
     wxString errorMsg;
 };
@@ -151,6 +152,27 @@ bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settl
     return true;
 }
 
+bool PhdController::Dither(double pixels, bool raOnly, int settleFrames, wxString *errMsg)
+{
+    SettleParams settle;
+
+    settle.tolerancePx = 99.;
+    settle.settleTimeSec = 9999;
+    settle.timeoutSec = 9999;
+    settle.frames = settleFrames;
+
+    return Dither(pixels, raOnly, settle, errMsg);
+}
+
+bool PhdController::DitherCompat(double pixels, bool raOnly, wxString *errMsg)
+{
+    AbortController("manual or phd1-style dither");
+
+    enum { SETTLE_FRAMES = 10 };
+
+    return Dither(pixels, raOnly, SETTLE_FRAMES, errMsg);
+}
+
 void PhdController::AbortController(const wxString& reason)
 {
     if (ctrl.state != STATE_IDLE)
@@ -181,6 +203,9 @@ static void do_notify(void)
         EvtServer.NotifySettleDone(ctrl.errorMsg);
         GuideLog.NotifySettlingStateChange("Settling failed");
     }
+
+    if (pMount)
+        pMount->NotifyGuidingDitherSettleDone(ctrl.succeeded);
 }
 
 static bool start_capturing(void)
@@ -392,6 +417,7 @@ void PhdController::UpdateControllerState(void)
 
         case STATE_SETTLE_BEGIN:
             ctrl.settlePriorFrameInRange = false;
+            ctrl.settleFrameCount = 0;
             ctrl.settleTimeout->Start();
             SETSTATE(STATE_SETTLE_WAIT);
             GuideLog.NotifySettlingStateChange("Settling started");
@@ -405,8 +431,18 @@ void PhdController::UpdateControllerState(void)
             bool aoBumpInProgress = IsAoBumpInProgress();
             long timeInRange = 0;
 
-            Debug.Write(wxString::Format("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d\n", lockedOnStar, currentError,
-                                         ctrl.settle.tolerancePx, aoBumpInProgress));
+            ++ctrl.settleFrameCount;
+
+            Debug.Write(wxString::Format("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d frame = %d / %d\n",
+                                         lockedOnStar, currentError, ctrl.settle.tolerancePx, aoBumpInProgress, ctrl.settleFrameCount,
+                                         ctrl.settle.frames));
+
+            if (ctrl.settleFrameCount >= ctrl.settle.frames)
+            {
+                ctrl.succeeded = true;
+                SETSTATE(STATE_FINISH);
+                break;
+            }
 
             if (inRange)
             {

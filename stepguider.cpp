@@ -1089,7 +1089,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             pFrame->ScheduleSecondaryMove(pSecondaryMount, thisBump, MOVETYPE_DIRECT);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = MOVE_ERROR;
@@ -1251,6 +1251,7 @@ void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMa
 {
     wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_AOTravel));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
@@ -1269,7 +1270,12 @@ AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuid
 {
     int width;
 
-    m_pStepGuider = (StepGuider*) pStepGuider;
+    m_pStepGuider = (StepGuider *) pStepGuider;
+
+    width = StringWidth(_T("000"));
+    m_travel = new wxSpinCtrl(GetParentWindow(AD_AOTravel), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 10, 45, 1);
+    AddGroup(CtrlMap, AD_AOTravel, MakeLabeledControl(AD_AOTravel, _("AO Travel"), m_travel, _("Maximum number of steps the AO can move in each direction")));
 
     width = StringWidth(_T("000"));
     wxString tip = wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration);
@@ -1309,7 +1315,7 @@ AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuid
 
 void AOConfigDialogCtrlSet::LoadValues()
 {
-    //MountConfigDialogCtrlSet::LoadValues();
+    m_travel->SetValue(m_pStepGuider->MaxPosition(GUIDE_DIRECTION::LEFT));
     m_pCalibrationStepsPerIteration->SetValue(m_pStepGuider->GetCalibrationStepsPerIteration());
     m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
     m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
@@ -1322,6 +1328,7 @@ void AOConfigDialogCtrlSet::LoadValues()
 
 void AOConfigDialogCtrlSet::UnloadValues()
 {
+    m_pStepGuider->SetMaxPosition(m_travel->GetValue());
     m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);

@@ -98,8 +98,8 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposur
     message.args.expose.pImage           = pImage;
     message.args.expose.exposureDuration = exposureDuration;
     message.args.expose.options          = exposureOptions;
-    message.args.expose.subframe = subframe;
-    message.args.expose.pSemaphore       = NULL;
+    message.args.expose.subframe         = subframe;
+    message.args.expose.pSemaphore       = 0;
 
     EnqueueMessage(message);
 }
@@ -136,7 +136,7 @@ void WorkerThread::SetSkipExposeComplete()
     m_skipSendExposeComplete = true;
 }
 
-bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
+bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
 {
     bool bError = false;
 
@@ -253,7 +253,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRE
     EnqueueMessage(message);
 }
 
-Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
+Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *pArgs)
 {
     Mount::MOVE_RESULT result = Mount::MOVE_OK;
 
@@ -371,13 +371,11 @@ wxThread::ExitCode WorkerThread::Entry()
         {
             bool bError;
 
-            case REQUEST_NONE:
-                Debug.Write("worker thread servicing REQUEST_NONE\n");
-                break;
             case REQUEST_TERMINATE:
                 Debug.Write("worker thread servicing REQUEST_TERMINATE\n");
                 bDone = true;
                 break;
+
             case REQUEST_EXPOSE:
                 Debug.Write(wxString::Format("worker thread servicing REQUEST_EXPOSE %d\n",
                     message.args.expose.exposureDuration));
@@ -392,6 +390,7 @@ wxThread::ExitCode WorkerThread::Entry()
                 else
                     SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
+
             case REQUEST_MOVE: {
                 Debug.Write(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)\n",
                     message.args.move.pMount->GetMountClassName(), message.args.move.direction,
@@ -400,6 +399,7 @@ wxThread::ExitCode WorkerThread::Entry()
                 SendWorkerThreadMoveComplete(message.args.move.pMount, moveResult);
                 break;
             }
+
             default:
                 Debug.Write(wxString::Format("worker thread servicing unknown request %d\n", message.request));
                 break;

@@ -75,6 +75,7 @@ public:
     bool GetProp(Variant *res, OLECHAR *name, int arg);
     bool PutProp(OLECHAR *name, OLECHAR *val);
     bool PutProp(DISPID dispid, bool val);
+    bool PutProp(DISPID dispid, double val);
     bool PutProp(OLECHAR *name, bool val);
     bool InvokeMethod(Variant *res, OLECHAR *name);
     bool InvokeMethod(Variant *res, OLECHAR *name, OLECHAR *arg);

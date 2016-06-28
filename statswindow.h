@@ -35,8 +35,6 @@
 #ifndef STATSWINDOW_INCLUDED
 #define STATSWINDOW_INCLUDED
 
-#include "mount.h"
-
 class StatsWindow : public wxWindow
 {
     bool m_visible;
@@ -44,17 +42,20 @@ class StatsWindow : public wxWindow
     wxGrid *m_grid2;
     int m_length;
     OptionsButton *m_pLengthButton;
+    wxTimer m_coolerTimer;
 
     void OnButtonLength(wxCommandEvent&);
     void OnMenuLength(wxCommandEvent&);
     void OnButtonClear(wxCommandEvent&);
+    void OnTimerCooler(wxTimerEvent&);
 
 public:
     StatsWindow(wxWindow *parent);
-    ~StatsWindow(void);
+    ~StatsWindow();
 
-    void UpdateStats(void);
+    void UpdateStats();
     void UpdateScopePointing();
+    void UpdateCooler();
     void SetState(bool is_active);
 
     DECLARE_EVENT_TABLE()

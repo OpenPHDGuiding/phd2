@@ -144,8 +144,24 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         return true;
     }
     wxString camId(camIdArg);
-    if (camId == DEFAULT_CAMERA_ID)
+    if (camId == DEFAULT_CAMERA_ID || numCameras == 1)
         camId = ai[0].id;
+
+	bool found = false;
+	for (int i=0; i<numCameras; i++)
+	{
+		if (camId == ai[i].id)
+		{
+			found = true;
+			break;
+		}
+	}
+	if (!found)
+	if (m_handle == NULL)
+	{
+		wxMessageBox(_("Specified Altair Camera not found."), _("Error"), wxOK | wxICON_ERROR);
+		return true;
+	}
 
     m_handle = Altair_Open(camId);
     if ( m_handle == NULL)

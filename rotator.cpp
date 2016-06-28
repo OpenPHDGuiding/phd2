@@ -107,6 +107,7 @@ Rotator::Rotator(void)
     : m_connected(false)
 {
     m_isReversed = pConfig->Profile.GetBoolean("/rotator/isReversed", false);
+    Debug.Write(wxString::Format("Rotator:ctor: isReversed = %d\n", m_isReversed));
 }
 
 Rotator::~Rotator(void)
@@ -138,10 +139,11 @@ void Rotator::SetReversed(bool val)
 {
     m_isReversed = val;
     pConfig->Profile.SetBoolean("/rotator/isReversed", val);
+    Debug.Write(wxString::Format("Rotator:SetReversed: isReversed = %d\n", m_isReversed));
 }
 
 RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
-: ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
+    : ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
 {
 
 }
@@ -175,6 +177,7 @@ void RotatorConfigDialogCtrlSet::LoadValues()
 {
     m_cbReverse->SetValue(m_rotator->IsReversed());
 }
+
 void RotatorConfigDialogCtrlSet::UnloadValues()
 {
     m_rotator->SetReversed(m_cbReverse->GetValue());

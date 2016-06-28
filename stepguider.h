@@ -43,6 +43,7 @@ class StepGuider;
 class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
 {
     StepGuider *m_pStepGuider;
+    wxSpinCtrl *m_travel;
     wxSpinCtrl *m_pCalibrationStepsPerIteration;
     wxSpinCtrl *m_pSamplesToAverage;
     wxSpinCtrl *m_pBumpPercentage;
@@ -208,6 +209,7 @@ protected:
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps) = 0;
     virtual int MaxPosition(GUIDE_DIRECTION direction) const = 0;
+    virtual bool SetMaxPosition(int steps) = 0;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of

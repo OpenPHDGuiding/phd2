@@ -278,6 +278,7 @@ public:
     virtual void NotifyGuidingPaused(void);
     virtual void NotifyGuidingResumed(void);
     virtual void NotifyGuidingDithered(double dx, double dy);
+    virtual void NotifyGuidingDitherSettleDone(bool success);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;

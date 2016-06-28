@@ -418,12 +418,14 @@ void AdvancedDialog::LoadValues(void)
         m_pCameraCtrlSet->LoadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->LoadValues();
+    if (m_pRotatorCtrlSet)
+        m_pRotatorCtrlSet->LoadValues();
 
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
+
     if (TheAO())
     {
         m_pAOCtrlSet->LoadValues();
-        //m_pAOPane->LoadValues();
     }
     if (TheScope())
     {
@@ -443,12 +445,14 @@ void AdvancedDialog::UnloadValues(void)
         m_pCameraCtrlSet->UnloadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->UnloadValues();
+    if (m_pRotatorCtrlSet)
+        m_pRotatorCtrlSet->UnloadValues();
 
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
+
     if (TheAO())
     {
         m_pAOCtrlSet->UnloadValues();
-        //m_pAOPane->UnloadValues();
     }
     if (TheScope())
     {

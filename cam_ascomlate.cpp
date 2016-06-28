@@ -54,7 +54,8 @@ static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
     dispid_numx, dispid_numy,
     dispid_startexposure, dispid_abortexposure, dispid_stopexposure,
     dispid_imageready, dispid_imagearray,
-    dispid_ispulseguiding, dispid_pulseguide;
+    dispid_ispulseguiding, dispid_pulseguide,
+    dispid_cooleron, dispid_coolerpower, dispid_ccdtemperature, dispid_setccdtemperature;
 
 inline static void LogExcep(HRESULT hr, const wxString& prefix, const EXCEPINFO& excep)
 {
@@ -666,6 +667,29 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         Binning = MaxBinning;
     m_curBin = Binning;
 
+    HasCooler = false;
+    if (driver.GetProp(&vRes, L"CoolerOn"))
+    {
+        Debug.Write("ASCOM camera: has cooler\n");
+        HasCooler = true;
+
+        if (!driver.GetProp(&vRes, L"CanSetCCDTemperature"))
+        {
+            Debug.AddLine(ExcepMsg("CanSetCCDTemperature", driver.Excep()));
+            pFrame->Alert(_("ASCOM driver missing the CanSetCCDTemperature property. Please report this error to your ASCOM driver provider."));
+            return true;
+        }
+        m_canSetCoolerTemperature = vRes.boolVal != VARIANT_FALSE ? true : false;
+
+        if (!driver.GetProp(&vRes, L"CanGetCoolerPower"))
+        {
+            Debug.AddLine(ExcepMsg("CanGetCoolerPower", driver.Excep()));
+            pFrame->Alert(_("ASCOM driver missing the CanGetCoolerPower property. Please report this error to your ASCOM driver provider."));
+            return true;
+        }
+        m_canGetCoolerPower = vRes.boolVal != VARIANT_FALSE ? true : false;
+    }
+
     // Get the dispids we'll need for more routine things
     if (!GetDispid(&dispid_setxbin, driver, L"BinX"))
         return true;
@@ -704,6 +728,18 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         return true;
 
     if (!GetDispid(&dispid_ispulseguiding, driver, L"IsPulseGuiding"))
+        return true;
+
+    if (!GetDispid(&dispid_cooleron, driver, L"CoolerOn"))
+        return true;
+
+    if (!GetDispid(&dispid_coolerpower, driver, L"CoolerPower"))
+        return true;
+
+    if (!GetDispid(&dispid_ccdtemperature, driver, L"CCDTemperature"))
+        return true;
+
+    if (!GetDispid(&dispid_setccdtemperature, driver, L"SetCCDTemperature"))
         return true;
 
     // Program some defaults -- full size and binning
@@ -757,6 +793,94 @@ bool Camera_ASCOMLateClass::GetDevicePixelSize(double *devPixelSize)
         return true;
 
     *devPixelSize = m_driverPixelSize;
+    return false;
+}
+
+bool Camera_ASCOMLateClass::SetCoolerOn(bool on)
+{
+    if (!HasCooler)
+    {
+        Debug.Write("cam has no cooler!\n");
+        return true; // error
+    }
+
+    GITObjRef cam(m_gitEntry);
+
+    if (!cam.PutProp(dispid_cooleron, on))
+    {
+        Debug.AddLine(ExcepMsg(wxString::Format("ASCOM error turning camera cooler %s", on ? "on" : "off"), cam.Excep()));
+        pFrame->Alert(ExcepMsg(wxString::Format(_("ASCOM error turning camera cooler %s"), on ? _("on") : _("off")), cam.Excep()));
+        return true;
+    }
+
+    return false;
+}
+
+bool Camera_ASCOMLateClass::SetCoolerSetpoint(double temperature)
+{
+    if (!HasCooler || !m_canSetCoolerTemperature)
+    {
+        Debug.Write("camera cannot set cooler temperature\n");
+        return true; // error
+    }
+
+    GITObjRef cam(m_gitEntry);
+
+    if (!cam.PutProp(dispid_setccdtemperature, temperature))
+    {
+        Debug.AddLine(ExcepMsg("ASCOM error setting cooler setpoint", cam.Excep()));
+        return true;
+    }
+
+    return false;
+}
+
+bool Camera_ASCOMLateClass::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+{
+    if (!HasCooler)
+        return true; // error
+
+    GITObjRef cam(m_gitEntry);
+    Variant res;
+
+    if (!cam.GetProp(&res, dispid_cooleron))
+    {
+        Debug.AddLine(ExcepMsg("ASCOM error getting CoolerOn property", cam.Excep()));
+        return true;
+    }
+    *on = res.boolVal != VARIANT_FALSE ? true : false;
+
+    if (!cam.GetProp(&res, dispid_ccdtemperature))
+    {
+        Debug.AddLine(ExcepMsg("ASCOM error getting CCDTemperature property", cam.Excep()));
+        return true;
+    }
+    *temperature = res.dblVal;
+
+    if (m_canSetCoolerTemperature)
+    {
+        if (!cam.GetProp(&res, dispid_setccdtemperature))
+        {
+            Debug.AddLine(ExcepMsg("ASCOM error getting SetCCDTemperature property", cam.Excep()));
+            return true;
+        }
+        *setpoint = res.dblVal;
+    }
+    else
+        *setpoint = *temperature;
+
+    if (m_canGetCoolerPower)
+    {
+        if (!cam.GetProp(&res, dispid_coolerpower))
+        {
+            Debug.AddLine(ExcepMsg("ASCOM error getting CoolerPower property", cam.Excep()));
+            return true;
+        }
+        *power = res.dblVal;
+    }
+    else
+        *power = 100.0;
+
     return false;
 }
 

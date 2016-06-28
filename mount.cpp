@@ -1329,6 +1329,17 @@ void Mount::NotifyGuidingDithered(double dx, double dy)
         m_pYGuideAlgorithm->GuidingDithered(dy);
 }
 
+void Mount::NotifyGuidingDitherSettleDone(bool success)
+{
+    Debug.Write(wxString::Format("Mount: notify guiding dither settle done success=%d\n", success));
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingDitherSettleDone(success);
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingDitherSettleDone(success);
+}
+
 void Mount::GetLastCalibration(Calibration *cal)
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";

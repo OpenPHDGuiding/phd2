@@ -351,28 +351,7 @@ public:
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
-    struct EXPOSE_REQUEST
-    {
-        usImage         *pImage;
-        int              exposureDuration;
-        int              options;
-        wxRect           subframe;
-        bool             error;
-        wxSemaphore     *pSemaphore;
-    };
     void OnRequestExposure(wxCommandEvent& evt);
-
-    struct PHD_MOVE_REQUEST
-    {
-        Mount             *pMount;
-        int                duration;
-        GUIDE_DIRECTION    direction;
-        bool               calibrationMove;
-        MountMoveType      moveType;
-        Mount::MOVE_RESULT moveResult;
-        PHD_Point          vectorEndpoint;
-        wxSemaphore       *pSemaphore;
-    };
     void OnRequestMountMove(wxCommandEvent& evt);
 
     void ScheduleExposure(void);
