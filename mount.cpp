@@ -154,8 +154,18 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         }
         m_pRABox->Add(m_pXGuideAlgorithmChoice, def_flags);
         m_pRABox->Add(m_pXGuideAlgorithmConfigDialogPane, def_flags);
+
         if (!stepGuider)
             m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
+
+        // Parameter resets are applicable to either scope or AO "mounts"
+        m_pResetRAParams = new wxButton(m_pParent, wxID_ANY, _("Reset"));
+        m_pResetRAParams->SetToolTip(_("Causes an IMMEDIATE reset of the RA algorithm parameters to their default values"));
+        m_pResetRAParams->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Mount::MountConfigDialogPane::OnResetRAParams, this);
+        if (!stepGuider)
+            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 55).Center());
+        else
+            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 
         wxString yAlgorithms[] = 
         {
@@ -192,6 +202,12 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());
             m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szDecGuideMode), wxSizerFlags(0).Border(wxTOP, 10).Center());
         }
+
+        m_pResetDecParams = new wxButton(m_pParent, wxID_ANY, _("Reset"));
+        m_pResetDecParams->SetToolTip(_("Causes an IMMEDIATE reset of the DEC algorithm parameters to their default values"));
+        m_pResetDecParams->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Mount::MountConfigDialogPane::OnResetDecParams, this);
+        m_pDecBox->Add(m_pResetDecParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
+
         m_pAlgoBox->Add(m_pRABox, def_flags);
         m_pAlgoBox->Add(m_pDecBox, def_flags);
         m_pAlgoBox->Layout();
@@ -203,6 +219,40 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
 
 Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
 {
+}
+
+void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
+{
+    // Re-initialize the algorithm params
+    GuideAlgorithm* currRAAlgo = m_pMount->m_pXGuideAlgorithm;
+    currRAAlgo->ResetParams();                  // Default is to remove the keys in the registry
+    delete m_pMount->m_pXGuideAlgorithm;        // force creation of a new algo instance
+    m_pMount->m_pXGuideAlgorithm = NULL;
+    wxCommandEvent dummy;
+    OnXAlgorithmSelected(dummy);                // Update the UI
+    // Re-initialize any other RA guiding parameters not part of algos
+    if (!m_pMount->IsStepGuider())
+    {
+        ScopeConfigDialogCtrlSet* scopeCtrlSet = (ScopeConfigDialogCtrlSet*) m_pMount->currConfigDialogCtrlSet;
+        scopeCtrlSet->ResetRAParameterUI();
+    }
+}
+
+void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
+{
+    // Re-initialize the algorithm params
+    GuideAlgorithm* currDecAlgo = m_pMount->m_pYGuideAlgorithm;
+    currDecAlgo->ResetParams();
+    delete m_pMount->m_pYGuideAlgorithm;
+    m_pMount->m_pYGuideAlgorithm = NULL;
+    wxCommandEvent dummy;
+    OnYAlgorithmSelected(dummy);
+    // Re-initialize any other Dec guiding parameters not part of algos
+    if (!m_pMount->IsStepGuider())
+    {
+        ScopeConfigDialogCtrlSet* scopeCtrlSet = (ScopeConfigDialogCtrlSet*)m_pMount->currConfigDialogCtrlSet;
+        scopeCtrlSet->ResetDecParameterUI();
+    }
 }
 
 void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
@@ -1332,10 +1382,8 @@ void Mount::NotifyGuidingDithered(double dx, double dy)
 void Mount::NotifyGuidingDitherSettleDone(bool success)
 {
     Debug.Write(wxString::Format("Mount: notify guiding dither settle done success=%d\n", success));
-
     if (m_pXGuideAlgorithm)
         m_pXGuideAlgorithm->GuidingDitherSettleDone(success);
-
     if (m_pYGuideAlgorithm)
         m_pYGuideAlgorithm->GuidingDitherSettleDone(success);
 }

@@ -61,6 +61,8 @@ public:
     virtual ~ScopeConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
+    void ResetRAParameterUI();
+    void ResetDecParameterUI();
 };
 
 class Scope : public Mount

@@ -181,6 +181,8 @@ public:
         wxStaticBoxSizer* m_pAlgoBox;
         wxStaticBoxSizer* m_pRABox;
         wxStaticBoxSizer* m_pDecBox;
+        wxButton* m_pResetRAParams;
+        wxButton* m_pResetDecParams;
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
@@ -194,6 +196,8 @@ public:
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
+        void OnResetRAParams(wxCommandEvent& evt);
+        void OnResetDecParams(wxCommandEvent& evt);
     };
 
     GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);
@@ -282,6 +286,7 @@ public:
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
+    ConfigDialogCtrlSet* currConfigDialogCtrlSet;
 
     virtual wxString GetMountClassName() const = 0;
 

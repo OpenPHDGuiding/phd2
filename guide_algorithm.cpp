@@ -49,6 +49,14 @@ wxString GuideAlgorithm::GetAxis()
     return (m_guideAxis == GUIDE_RA ? _("RA") : _("DEC"));
 }
 
+// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo 
+// class will then use default values for everything.  If this is too brute-force for a particular algo, the function can be overridden
+void GuideAlgorithm::ResetParams()
+{
+    wxString configPath = GetConfigPath();
+    pConfig->Profile.DeleteGroup(configPath);
+}
+
 void GuideAlgorithm::GuidingStopped(void)
 {
     reset();
@@ -70,4 +78,5 @@ void GuideAlgorithm::GuidingDithered(double amt)
 
 void GuideAlgorithm::GuidingDitherSettleDone(bool success)
 {
+
 }

@@ -1311,6 +1311,7 @@ AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuid
     m_pEnableAOGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
     AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableAOGuide,
         _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
+    m_pStepGuider->currConfigDialogCtrlSet = this;
 }
 
 void AOConfigDialogCtrlSet::LoadValues()

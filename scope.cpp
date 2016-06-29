@@ -1685,6 +1685,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
             wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
         AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+        m_pScope->currConfigDialogCtrlSet = this;
     }
 }
 
@@ -1734,6 +1735,17 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
             pFrame->UpdateCalibrationStatus();
     }
     MountConfigDialogCtrlSet::UnloadValues();
+}
+
+void ScopeConfigDialogCtrlSet::ResetRAParameterUI()
+{
+    m_pMaxRaDuration->SetValue(DefaultMaxRaDuration);
+}
+
+void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
+{
+    m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
+    m_pDecMode->SetSelection(1);                // 'Auto'
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
