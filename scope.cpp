@@ -1746,6 +1746,7 @@ void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
 {
     m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
     m_pDecMode->SetSelection(1);                // 'Auto'
+    m_pUseBacklashComp->SetValue(false);
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)

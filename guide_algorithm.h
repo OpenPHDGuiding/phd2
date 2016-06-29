@@ -99,6 +99,7 @@ public:
     wxString GetConfigPath();
     wxString GetAxis();
     virtual void ResetParams();     // Override if fine-tuned logic is needed by a particular algo
+    static double SmartDefaultMinMove();
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */
