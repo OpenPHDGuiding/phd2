@@ -98,7 +98,7 @@ public:
     virtual bool SetMinMove(double minMove) { return true; };       // true indicates error
     wxString GetConfigPath();
     wxString GetAxis();
-    virtual void ResetParams();     // Override if discarding all config params isn't appropriate
+    virtual void ResetParams();     // Override if fine-tuned logic is needed by a particular algo
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */

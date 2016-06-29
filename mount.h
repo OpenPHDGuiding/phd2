@@ -286,7 +286,7 @@ public:
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
-    ConfigDialogCtrlSet* currConfigDialogCtrlSet;
+    ConfigDialogCtrlSet* currConfigDialogCtrlSet;               // instance currently in-use by AD
 
     virtual wxString GetMountClassName() const = 0;
 
