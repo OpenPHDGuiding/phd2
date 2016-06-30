@@ -341,6 +341,16 @@ static bool StopExposure()
     return true;
 }
 
+inline static int round_down(int v, int m)
+{
+    return v & ~(m - 1);
+}
+
+inline static int round_up(int v, int m)
+{
+    return round_down(v + m - 1, m);
+}
+
 bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
@@ -362,25 +372,22 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (useSubframe)
         img.Clear();
 
-    // find a roi that will and include the sub-frame and satisfy the requirement that the
-    // transfer width and height must be a multiples of 4
-    wxRect roi(frame);
-    roi.width = ((roi.width + 3) / 4) * 4;
-    roi.height = ((roi.height + 3) / 4) * 4;
+    wxRect roi;
 
-    int xofs = 0;
-    if (roi.GetRight() >= FullSize.GetWidth())
+    if (useSubframe)
     {
-        int d = roi.GetRight() + 1 - FullSize.GetWidth();
-        roi.x -= d;
-        xofs = d;
+        // Use a larger ROI around the subframe to avoid changing the ROI as the centroid
+        // wobbles around. Changing the ROI introduces a lag of several seconds.
+        // This also satifies the constraint that ROI width and height must be multiples of 4.
+        enum { PAD = 1 << 5 };
+        roi.SetLeft(round_down(subframe.GetLeft(), PAD));
+        roi.SetRight(round_up(subframe.GetRight() + 1, PAD) - 1);
+        roi.SetTop(round_down(subframe.GetTop(), PAD));
+        roi.SetBottom(round_up(subframe.GetBottom() + 1, PAD) - 1);
     }
-    int yofs = 0;
-    if (roi.GetBottom() >= FullSize.GetHeight())
+    else
     {
-        int d = roi.GetBottom() + 1 - FullSize.GetHeight();
-        roi.y -= d;
-        yofs = d;
+        roi = frame;
     }
 
     uint32_t ret = QHYCCD_ERROR;
@@ -479,30 +486,31 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         img.Subframe = frame;
 
-        int dy = yofs;
-        int dxl = xofs;
-        int dxr = w - frame.width - dxl;
+        int xofs = subframe.GetLeft() - roi.GetLeft();
+        int yofs = subframe.GetTop() - roi.GetTop();
+
+        int dxr = w - frame.width - xofs;
         if (bpp == 8)
         {
-            const unsigned char *src = RawBuffer + dy * w;
+            const unsigned char *src = RawBuffer + yofs * w;
             unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-            for (int y = dy; y < frame.height; y++)
+            for (int y = 0; y < frame.height; y++)
             {
                 unsigned short *d = dst;
-                src += dxl;
+                src += xofs;
                 for (int x = 0; x < frame.width; x++)
-                    *d++ = (unsigned short)*src++;
+                    *d++ = (unsigned short) *src++;
                 src += dxr;
                 dst += FullSize.GetWidth();
             }
         }
         else // bpp == 16
         {
-            const unsigned short *src = (const unsigned short *) RawBuffer + dy * w;
+            const unsigned short *src = (const unsigned short *) RawBuffer + yofs * w;
             unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-            for (int y = dy; y < frame.height; y++)
+            for (int y = 0; y < frame.height; y++)
             {
-                src += dxl;
+                src += xofs;
                 memcpy(dst, src, frame.width * sizeof(unsigned short));
                 src += frame.width + dxr;
                 dst += FullSize.GetWidth();
@@ -519,7 +527,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
             {
                 for (int x = 0; x < w; x++)
                 {
-                    *dst++ = (unsigned short)*src++;
+                    *dst++ = (unsigned short) *src++;
                 }
             }
         }
