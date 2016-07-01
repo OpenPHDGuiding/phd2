@@ -35,7 +35,7 @@
 
 
 #ifdef LINUX
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 #endif
 
 #ifdef WIN32

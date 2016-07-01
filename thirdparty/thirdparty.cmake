@@ -697,8 +697,14 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
-  
-  
+
+  find_library( qhylib
+                NAMES qhy
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
+  if(NOT qhylib)
+    message(FATAL_ERROR "Cannot find the qhy SDK libs")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
 
   #############################################

@@ -87,15 +87,16 @@
 #endif
 
 #elif defined (__APPLE__)  // Mac cameras
-# define FIREWIRE
-# define SBIG
-# define MEADE_DSI
-# define STARFISH
-# define SIMULATOR
-# define SXV
-# define OPENSSAG
-# define KWIQGUIDER
 
+# define FIREWIRE
+# define KWIQGUIDER
+# define MEADE_DSI
+# define OPENSSAG
+# define QHY_CAMERA
+# define SBIG
+# define SIMULATOR
+# define STARFISH
+# define SXV
 # define ZWO_ASI
 
 #elif defined (__linux__)
