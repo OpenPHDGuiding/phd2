@@ -325,10 +325,10 @@ void ScopeINDI::newProperty(INDI::Property *property)
        pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
        pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
-    else if ((strcmp(PropName, "PIERSIDE") == 0) && Proptype == INDI_SWITCH){
+    else if ((strcmp(PropName, "TELESCOPE_PIER_SIDE") == 0) && Proptype == INDI_SWITCH){
         pierside_prop = property->getSwitch();
-        piersideEast_prop = IUFindSwitch(pierside_prop,"EAST");
-        piersideWest_prop = IUFindSwitch(pierside_prop,"WEST");
+        piersideEast_prop = IUFindSwitch(pierside_prop,"PIER_EAST");
+        piersideWest_prop = IUFindSwitch(pierside_prop,"PIER_WEST");
     }
     else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {    
 	scope_port = property->getText();
