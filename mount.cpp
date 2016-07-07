@@ -1081,9 +1081,6 @@ void Mount::AdjustCalibrationForScopePointing(void)
         else if (!DecCompensationEnabled())
         {
             Debug.AddLine("skipping Dec comp: Dec Comp not enabled");
-            if (degrees(fabs(newDeclination - m_cal.declination)) > 15.0)
-                pFrame->Alert(_("Scope position has changed significantly, recalibration is needed."));
-
         }
         else
         {

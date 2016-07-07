@@ -521,7 +521,8 @@ static wxString SlewWarningEnabledKey()
 
 static void SuppressSlewAlert(long)
 {
-    pConfig->Global.SetBoolean(SlewWarningEnabledKey(), false);
+    //If the user doesn't want to see these, we shouldn't be checking for the condition
+    TheScope()->EnableStopGuidingWhenSlewing(false);
 }
 
 static wxString PulseGuideFailedAlertEnabledKey()
