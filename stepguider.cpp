@@ -1010,13 +1010,11 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 long now = ::wxGetUTCTime();
                 if (now - m_bumpStartTime > BumpWarnTime)
                 {
-                    if (pConfig->Global.GetBoolean(SlowBumpWarningEnabledKey(), true))
-                    {
-                        pFrame->Alert(_("A mount \"bump\" was needed to bring the AO back to its center position,\n"
-                            "but the bump did not complete in a reasonable amount of time.\n"
-                            "You probably need to increase the AO Bump Step setting."),
-                            _("Don't show\nthis again"), SuppressSlowBumpWarning, 0, wxICON_INFORMATION);
-                    }
+                    pFrame->SuppressableAlert(SlowBumpWarningEnabledKey(),
+                        _("A mount \"bump\" was needed to bring the AO back to its center position,\n"
+                        "but the bump did not complete in a reasonable amount of time.\n"
+                        "You probably need to increase the AO Bump Step setting."),
+                        SuppressSlowBumpWarning, 0, false, wxICON_INFORMATION);
                     m_bumpTimeoutAlertSent = true;
                 }
             }

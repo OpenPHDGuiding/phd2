@@ -376,7 +376,8 @@ public:
     double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
     void StatusMsg(const wxString& text);
     void StatusMsgNoTimeout(const wxString& text);
     wxString GetSettingsSummary();
@@ -401,8 +402,10 @@ private:
     int m_exposureDuration;
     AutoExposureCfg m_autoExp;
 
-    alert_fn *m_alertFn;
+    alert_fn *m_alertDontShowFn;
+    alert_fn *m_alertSpecialFn;
     long m_alertFnArg;
+
 
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 
@@ -463,6 +466,7 @@ enum {
     BUTTON_ALERT_ACTION,
     BUTTON_ALERT_CLOSE,
     BUTTON_ALERT_HELP,
+    BUTTON_ALERT_DONTSHOW,
     GEAR_DIALOG_IDS_BEGIN,
         GEAR_PROFILES,
         GEAR_PROFILE_MANAGE,

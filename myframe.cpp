@@ -213,6 +213,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_infoBar = new wxInfoBar(guiderWin);
     m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON,
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+    m_infoBar->Connect(BUTTON_ALERT_DONTSHOW, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
     m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
     m_infoBar->Connect(BUTTON_ALERT_HELP, wxEVT_BUTTON,
@@ -983,15 +985,22 @@ struct alert_params
     wxString msg;
     wxString buttonLabel;
     int flags;
-    alert_fn *fn;
+    alert_fn *fnDontShow;
+    alert_fn *fnSpecial;
     long arg;
     bool showHelp;
 };
 
 void MyFrame::OnAlertButton(wxCommandEvent& evt)
 {
-    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
-        (*m_alertFn)(m_alertFnArg);
+    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertSpecialFn)
+        (*m_alertSpecialFn)(m_alertFnArg);
+    if (evt.GetId() == BUTTON_ALERT_DONTSHOW && m_alertDontShowFn)
+    {
+        (*m_alertDontShowFn)(m_alertFnArg);
+        // Don't show should also mean close the window
+        m_infoBar->Dismiss();
+    }
     if (evt.GetId() == BUTTON_ALERT_CLOSE)
         m_infoBar->Dismiss();
 }
@@ -1002,34 +1011,47 @@ void MyFrame::OnAlertHelp(wxCommandEvent& evt)
     help->Display(_("Trouble-shooting and Analysis"));
 }
 
+// Alerts may have a combination of 'Don't show', help, close, and 'Custom' buttons.  The 'close' button is added automatically if any of
+// the other buttons are present.
 void MyFrame::DoAlert(const alert_params& params)
 {
     Debug.Write(wxString::Format("Alert: %s\n", params.msg));
 
-    m_alertFn = params.fn;
+    m_alertDontShowFn = params.fnDontShow;
+    m_alertSpecialFn = params.fnSpecial;
     m_alertFnArg = params.arg;
 
     int buttonSpace = 80;
     m_infoBar->RemoveButton(BUTTON_ALERT_ACTION);
     m_infoBar->RemoveButton(BUTTON_ALERT_CLOSE);
     m_infoBar->RemoveButton(BUTTON_ALERT_HELP);
-    if (params.fn)
+    m_infoBar->RemoveButton(BUTTON_ALERT_DONTSHOW);
+    if (params.fnDontShow)
+    {
+        m_infoBar->AddButton(BUTTON_ALERT_DONTSHOW, _("Don't show\n again"));
+        buttonSpace += 80;
+    }
+    if (params.fnSpecial)
     {
         m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
+        buttonSpace += 80;
+    }
+    if (params.fnSpecial || params.fnDontShow)
+    {
         m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
-        buttonSpace = 280;
+        buttonSpace += 80;
     }
     if (params.showHelp)
     {
         m_infoBar->AddButton(BUTTON_ALERT_HELP, _("Help"));
-        buttonSpace += 100;
+        buttonSpace += 80;
     }
     m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
     m_statusbar->UpdateStates();        // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
 
-void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton, int flags)
+void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton, int flags)
 {
     if (wxThread::IsMain())
     {
@@ -1037,7 +1059,8 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params.msg = msg;
         params.buttonLabel = buttonLabel;
         params.flags = flags;
-        params.fn = fn;
+        params.fnDontShow = DontShowFn;
+        params.fnSpecial = SpecialFn;
         params.arg = arg;
         params.showHelp = showHelpButton;
         DoAlert(params);
@@ -1048,7 +1071,8 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params->msg = msg;
         params->buttonLabel = buttonLabel;
         params->flags = flags;
-        params->fn = fn;
+        params->fnDontShow = DontShowFn;
+        params->fnSpecial = SpecialFn;
         params->arg = arg;
         params->showHelp = showHelpButton;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
@@ -1057,9 +1081,21 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
     }
 }
 
+// Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is made if 
+// the user has blocked the alert for this type of problem
+void MyFrame::SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton, int flags)
+{
+    if (pConfig->Global.GetBoolean(configPropKey, true))
+    {
+        Alert(msg, dontShowFn, wxEmptyString,  0, arg, showHelpButton);
+    }
+    else
+        Debug.Write(wxString::Format("Suppressed alert:  %s\n", msg));
+}
+
 void MyFrame::Alert(const wxString& msg, int flags)
 {
-    Alert(msg, wxEmptyString, 0, 0, false, flags);
+    Alert(msg, 0, wxEmptyString, 0, 0, false, flags);
 }
 
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)

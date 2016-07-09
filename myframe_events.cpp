@@ -314,11 +314,8 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FullSize != pCamera->DarkFrameSize())
     {
-        if (pConfig->Global.GetBoolean(RawModeWarningKey(), true))
-        {
-            pFrame->Alert(_("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
-                _("Don't show\nthis again"), SuppressRawModeWarning, 0);
-        }
+        pFrame->SuppressableAlert(RawModeWarningKey(), _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
+            SuppressRawModeWarning, 0);
     }
 }
 
@@ -807,13 +804,10 @@ static void ValidateDarksLoaded(void)
 {
     if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
     {
-        if (pConfig->Global.GetBoolean(DarksWarningEnabledKey(), true))
-        {
-            pFrame->Alert(_("For best results, use a Dark Library or a Bad-pixel Map "
-                "while guiding. This will help prevent PHD from locking on to a hot pixel. "
-                "Use the Darks menu to build a Dark Library or Bad-pixel Map."),
-                _("Don't show\nthis again"), SuppressDarksAlert, 0);
-        }
+        pFrame->SuppressableAlert(DarksWarningEnabledKey(),
+            _("For best results, use a Dark Library or a Bad-pixel Map "
+            "while guiding. This will help prevent PHD from locking on to a hot pixel. "
+            "Use the Darks menu to build a Dark Library or Bad-pixel Map."), SuppressDarksAlert, 0);
     }
 }
 

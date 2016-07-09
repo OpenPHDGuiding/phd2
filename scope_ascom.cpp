@@ -695,22 +695,16 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
             if (!WorkerThread::InterruptRequested())
             {
-                if (pConfig->Global.GetBoolean(PulseGuideFailedAlertEnabledKey(), true))
-                {
-                    pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
-                        _("Don't show\nthis again"), SuppressPulseGuideFailedAlert, 0);
-                }
+                pFrame->SuppressableAlert(PulseGuideFailedAlertEnabledKey(), _("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
+                    SuppressPulseGuideFailedAlert, 0);
             }
         }
     }
 
     if (result == MOVE_STOP_GUIDING)
     {
-        if (pConfig->Global.GetBoolean(SlewWarningEnabledKey(), true))
-        {
-            pFrame->Alert(_("Guiding stopped: the scope started slewing."), 
-                _("Don't show\nthis again"), SuppressSlewAlert, 0);
-        }
+        pFrame->SuppressableAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."),
+            SuppressSlewAlert, 0);
     }
 
     return result;

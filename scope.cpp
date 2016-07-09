@@ -540,27 +540,26 @@ static void SuppressLimitReachedWarning(long axis)
 
 void Scope::AlertLimitReached(int duration, GuideAxis axis)
 {
-    if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
+    static time_t s_lastLogged;
+    time_t now = wxDateTime::GetTimeNow();
+    if (s_lastLogged == 0 || now - s_lastLogged > 30)
     {
-        static time_t s_lastLogged;
-        time_t now = wxDateTime::GetTimeNow();
-        if (s_lastLogged == 0 || now - s_lastLogged > 30)
+        s_lastLogged = now;
+        if (duration < MAX_DURATION_MAX)
         {
-            s_lastLogged = now;
-            if (duration < MAX_DURATION_MAX)
-            {
-                wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-                pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                    "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
-                    _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
-            }
-            else
-            {
-                wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
-                pFrame->Alert(wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
-                    "Guiding will be impaired until you can eliminate the source of these problems."), which_axis)
-                    , _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
-            }
+            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+            pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+                wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
+                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+        }
+        else
+        {
+            wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
+            pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+                wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
+                "Guiding will be impaired until you can eliminate the source of these problems."), which_axis),
+                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
         }
     }
 }
@@ -821,10 +820,11 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
             break;
         }
 
+        // Suppression of calibration alerts is handled in the 'Details' dialog - a special case
         if (pConfig->Global.GetBoolean(CalibrationWarningKey(m_lastCalibrationIssue), true))        // User hasn't disabled this type of alert
         {
             // Generate alert with 'Help' button that will lead to trouble-shooting section
-            pFrame->Alert(alertMsg,
+            pFrame->Alert(alertMsg, 0,
                 _("Details..."), ShowCalibrationIssues, (long)this, true);
         }
         else
