@@ -257,7 +257,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     }
 
     HasGainControl = false;
-	HasCooler = false;
+    HasCooler = false;
 
     for (int i = 0; i < numControls; i++)
     {
@@ -282,17 +282,19 @@ bool Camera_ZWO::Connect(const wxString& camId)
             case ASI_HARDWARE_BIN:
                 // this control is not present
                 break;
-			case ASI_COOLER_ON:
-				if (caps.IsWritable)
-					HasCooler = true;
+            case ASI_COOLER_ON:
+                if (caps.IsWritable)
+                {
+                    Debug.Write("ZWO: camera has cooler\n");
+                    HasCooler = true;
+                }
+                break;
             default:
                 break;
             }
         }
 
     }
-
-	
 
     wxYield();
 
@@ -340,33 +342,50 @@ bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
 
 bool Camera_ZWO::SetCoolerOn(bool on)
 {
-	return (ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS);
+    return (ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS);
 }
 
 bool Camera_ZWO::SetCoolerSetpoint(double temperature)
 {
-	return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
+    return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
 
 }
 
-bool Camera_ZWO::GetCoolerStatus(bool* on, double* setpoint, double* power, double* temperature)
+bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
-	long value;
-	ASI_BOOL isAuto;
+    ASI_ERROR_CODE r;
+    long value;
+    ASI_BOOL isAuto;
 
-	if (ASIGetControlValue(m_cameraId, ASI_COOLER_ON, &value, &isAuto) == ASI_SUCCESS)
-		*on = value != 0;
+    if ((r = ASIGetControlValue(m_cameraId, ASI_COOLER_ON, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_COOLER_ON\n", r));
+        return true;
+    }
+    *on = value != 0;
 
-	if (ASIGetControlValue(m_cameraId, ASI_TARGET_TEMP, &value, &isAuto) == ASI_SUCCESS)
-		*setpoint = value;
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TARGET_TEMP, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TARGET_TEMP\n", r));
+        return true;
+    }
+    *setpoint = value;
 
-	if (ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto) == ASI_SUCCESS)
-		*temperature = value/10.0;
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TEMPERATURE\n", r));
+        return true;
+    }
+    *temperature = value / 10.0;
 
-	if (ASIGetControlValue(m_cameraId, ASI_COOLER_POWER_PERC, &value, &isAuto) == ASI_SUCCESS)
-		*power = value;
+    if ((r = ASIGetControlValue(m_cameraId, ASI_COOLER_POWER_PERC, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_COOLER_POWER_PERC\n", r));
+        return true;
+    }
+    *power = value;
 
-	return false;
+    return false;
 }
 
 inline static int round_down(int v, int m)

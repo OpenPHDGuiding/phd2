@@ -868,7 +868,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
         return;
 
     wxArrayString names;
-	m_cameraIds.clear(); // otherwise camera selection only works randomly as EnumCameras tends to append to the camera Ids
+    m_cameraIds.clear(); // otherwise camera selection only works randomly as EnumCameras tends to append to the camera Ids
     bool error = m_pCamera->EnumCameras(names, m_cameraIds);
     if (error || names.size() == 0)
     {
