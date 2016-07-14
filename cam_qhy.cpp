@@ -58,21 +58,26 @@ static bool QHYSDKInit()
     wxString exePath(exeFile.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR));
 
     const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(exePath);
+#if 1 // temporary, for testing. put the firmware files in $HOME/qhyfirmware/firmware
+    char temp[1024];
+    snprintf(temp, sizeof(temp), "%s/qhyfirmware/", getenv("HOME"));
+#else
     const char *temp = (const char *)tmp_buf;
+#endif
     size_t const len = strlen(temp) + 1;
     char *destImgPath = new char[len];
     memcpy(destImgPath, temp, len);
 
-    if ((ret = OSXInitQHYCCDFirmware(destImgPath)) != 0)
-    {
-        Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) failed: %d\n", destImgPath, (int)ret));
-        delete[] destImgPath;
-        return true;
-    }
-    delete[] destImgPath;
+    Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) returns %d\n", destImgPath, ret));
 
-    // lzr from QHY says that it is important to wait 5s for firmware download to complete
-    WorkerThread::MilliSleep(5000);
+    if (ret == 0)
+    {
+        // wait 5s for firmware download to complete
+        WorkerThread::MilliSleep(5000);
+    }
+    // non-zero result indicates camera already has firmware
+
+    delete[] destImgPath;
 #endif
 
     s_qhySdkInitDone = true;
