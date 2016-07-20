@@ -1329,6 +1329,8 @@ static bool parse_settle(SettleParams *settle, const json_value *j, wxString *er
         }
     }
 
+    settle->frames = 99999;
+
     bool ok = found_pixels && found_time && found_timeout;
     if (!ok)
         *error = "invalid settle params";
