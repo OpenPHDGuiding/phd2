@@ -107,9 +107,6 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Scope: could not query registered telescopes: " + ExcepMsg(ilist.Excep()));
 
-        // if we made it this far ASCOM is installed and apprears sane, so add the chooser
-        list.Add(_T("ASCOM Telescope Chooser"));
-
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
 
@@ -139,64 +136,6 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     return list;
 }
 
-static bool ChooseASCOMScope(BSTR *res)
-{
-    DispatchObj chooser;
-    if (!chooser.Create(L"DriverHelper.Chooser"))
-    {
-        Debug.Write(wxString::Format("Chooser instantiate failed: %s\n", ExcepMsg(chooser.Excep())));
-        wxMessageBox(_("Failed to find the ASCOM Chooser. Make sure it is installed"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (!chooser.PutProp(L"DeviceType", L"Telescope"))
-    {
-        Debug.Write(wxString::Format("Chooser put prop failed: %s\n", ExcepMsg(chooser.Excep())));
-        wxMessageBox(_("Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    // Look in Registry to see if there is a default
-    wxString wx_ProgID = pConfig->Global.GetString("/scope/ascom/ScopeID", _T(""));
-    BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
-
-    Variant vchoice;
-    if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
-    {
-        wxMessageBox(_("Failed to run the Telescope Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (SysStringLen(vchoice.bstrVal) == 0)
-        return false; // use hit cancel
-
-    // Save name of scope
-    pConfig->Global.SetString("/scope/ascom/ScopeID", vchoice.bstrVal);
-
-    *res = vchoice.bstrVal;
-    return true;
-}
-
-static bool IsChooser(const wxString& choice)
-{
-    return choice.Find(_T("Chooser")) != wxNOT_FOUND;
-}
-
-static bool GetDriverProgId(BSTR *progid, const wxString& choice)
-{
-    if (IsChooser(choice))
-    {
-        if (!ChooseASCOMScope(progid))
-            return false;
-    }
-    else
-    {
-        wxString progidstr = s_progid[choice];
-        *progid = wxBasicString(progidstr).Get();
-    }
-    return true;
-}
-
 bool ScopeASCOM::Create(DispatchObj& obj)
 {
     try
@@ -209,15 +148,11 @@ bool ScopeASCOM::Create(DispatchObj& obj)
             return true;
         }
 
-        BSTR bstr_progid;
-        if (!GetDriverProgId(&bstr_progid, m_choice))
-        {
-            throw ERROR_INFO("ASCOM Scope: Chooser returned an error");
-        }
+        wxBasicString progid(s_progid[m_choice]);
 
-        if (!obj.Create(bstr_progid))
+        if (!obj.Create(progid))
         {
-            throw ERROR_INFO("Could not establish instance of " + wxString(bstr_progid));
+            throw ERROR_INFO("Could not establish instance of " + wxString(progid));
         }
 
         Debug.Write(wxString::Format("pScopeDriver = 0x%p\n", obj.IDisp()));
@@ -236,7 +171,7 @@ bool ScopeASCOM::Create(DispatchObj& obj)
 
 bool ScopeASCOM::HasSetupDialog(void) const
 {
-    return !IsChooser(m_choice);
+    return true;
 }
 
 void ScopeASCOM::SetupDialog(void)
