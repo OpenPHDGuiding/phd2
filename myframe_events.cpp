@@ -587,7 +587,7 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     if (!pRefineDefMap)
         pRefineDefMap = new RefineDefMap(this);
 
-    if (pRefineDefMap->InitUI())                    // UI ready go, user wants to proceed
+    if (pRefineDefMap->InitUI())                    // Required data present, UI built and ready to go
     {
         pRefineDefMap->Show();
 
