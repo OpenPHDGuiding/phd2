@@ -106,6 +106,7 @@ public:
     wxRect GetBoundingBox(void);
     int GetMaxMovePixels(void);
     double StarMass(void);
+    unsigned int StarPeakADU(void);
     double SNR(void);
     double HFD(void);
     int StarError(void);

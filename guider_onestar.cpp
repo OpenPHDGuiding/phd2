@@ -520,6 +520,11 @@ double GuiderOneStar::StarMass(void)
     return m_star.Mass;
 }
 
+unsigned int GuiderOneStar::StarPeakADU(void)
+{
+    return m_star.IsValid() ? m_star.PeakVal : 0;
+}
+
 double GuiderOneStar::SNR(void)
 {
     return m_star.SNR;

@@ -225,6 +225,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 
+    unsigned int peak = pFrame->pGuider->StarPeakADU();
+    if (peak) {
+        dc.DrawText(_("Peak"), 3, 3);
+        dc.DrawText(wxString::Format("%u", peak), 3, 3 + smallFontHeight);
+    }
+
     float hfd = pFrame->pGuider->HFD();
 	if (hfd != 0.f) {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
