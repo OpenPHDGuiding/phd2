@@ -118,9 +118,7 @@ public:
 
     double Distance(void) const
     {
-        PHD_Point origin(0,0);
-
-        return Distance(origin);
+        return hypot(X, Y);
     }
 
     double Angle(const PHD_Point& p) const

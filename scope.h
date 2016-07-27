@@ -167,14 +167,14 @@ protected:
 
 public:
 
-    virtual int GetCalibrationDuration(void);
-    virtual bool SetCalibrationDuration(int calibrationDuration);
-    virtual int GetMaxDecDuration(void);
-    virtual bool SetMaxDecDuration(int maxDecDuration);
-    virtual int GetMaxRaDuration(void);
-    virtual bool SetMaxRaDuration(double maxRaDuration);
-    virtual DEC_GUIDE_MODE GetDecGuideMode(void);
-    virtual bool SetDecGuideMode(int decGuideMode);
+    int GetCalibrationDuration(void) const;
+    bool SetCalibrationDuration(int calibrationDuration);
+    int GetMaxDecDuration(void) const;
+    bool SetMaxDecDuration(int maxDecDuration);
+    int GetMaxRaDuration(void) const;
+    bool SetMaxRaDuration(double maxRaDuration);
+    DEC_GUIDE_MODE GetDecGuideMode(void) const;
+    bool SetDecGuideMode(int decGuideMode);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -268,6 +268,26 @@ inline bool Scope::IsAssumeOrthogonal(void) const
 inline bool Scope::DecCompensationEnabled() const
 {
     return m_useDecCompensation;
+}
+
+inline int Scope::GetCalibrationDuration(void) const
+{
+    return m_calibrationDuration;
+}
+
+inline int Scope::GetMaxDecDuration(void) const
+{
+    return m_maxDecDuration;
+}
+
+inline int Scope::GetMaxRaDuration(void) const
+{
+    return m_maxRaDuration;
+}
+
+inline DEC_GUIDE_MODE Scope::GetDecGuideMode(void) const
+{
+    return m_decGuideMode;
 }
 
 #endif /* SCOPE_H_INCLUDED */
