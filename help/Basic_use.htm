@@ -153,7 +153,38 @@ last entry in the list of 'Aux mount' connections is labeled "Ask for
 coordinates." &nbsp;This can provide a rudimentary aux-mount facility
 if you can't use an ASCOM or INDI connection to your mount. &nbsp;If
 you need to pursue this option, you can read about the details in
-the&nbsp;<a href="Tools.htm#Ask_for_coordinates_aux_mount">Tools</a> section. <h4><a name="AO_Selection"></a>Adaptive Optics and <a name="Rotator_Selection"></a>Rotator Selections</h4>
+the&nbsp;<a href="Tools.htm#Ask_for_coordinates_aux_mount">Tools</a> section.<br><h4><a name="ASCOM_Benefits"></a>Benefits of Using ASCOM (or INDI) connections</h4>If
+you're running on a Windows platform, you'll probably be better off
+using an ASCOM connection for guiding your mount. &nbsp;On other
+operating systems, your best choice is likely to be an INDI connection
+if one is available. &nbsp;This advice may be contrary to some
+old-school experience or folklore on the Web and probably isn't what
+you'll hear from the manufacturer of the guide camera. &nbsp;But the
+benefits of doing so with PHD2 are substantial, and you should use this
+alternative unless you have&nbsp;specific and credible information
+against it. &nbsp;Here are some of the primary benefits:<br><ol><li>A drastic reduction in the number of re-calibrations you'll need to perform. &nbsp;Changing targets will <span style="font-weight: bold;">not</span>
+require another calibration&nbsp;because PHD2 can know where the scope
+is pointing and automatically make adjustments to the guider
+calibration. &nbsp;Most users get a good calibration and then re-use
+it&nbsp;until they make hardware changes of some kind.</li><li>Automatic adjustment for meridian flips - no need to remember to manually flip the calibration data.</li><li>Automatic adjustment of RA calibration to handle targets in different parts of the sky (declination compensation)</li><li>Elimination
+of the ST-4 guide cable as a point of failure - this is a surprisingly
+common problem because the cables&nbsp;can be damaged or confused with
+similar-looking cables (e.g. telephone cables)</li><li>Elimination of a moving cable that can snag, drag, or bind as the scope is moved around.</li><li>Improved
+ability for PHD2 to sanity-check calibration results and warn of
+possible problems before you waste hours of imaging time.</li><li>Better diagnostic and trouble-shooting information, which is particularly helpful if you need to ask for assistance</li><li>Availability of scope-slewing options during drift alignment which can further speed the process of polar alignment</li></ol>If
+you have an older mount built before 2005 or thereabouts, it may not
+have firmware-level support for ASCOM pulse guiding. &nbsp;In those
+cases, you may get better guiding results using the ST-4 guiding
+interface. &nbsp;If you're in doubt, check the documentation for your
+mount or ask on one of the forums about pulse-guide support. &nbsp;Even
+then, you can use ASCOM for the PHD2 "aux-mount" connection and get
+many of the benefits listed above. &nbsp;A common misconception,
+frequently seen on Web forums, is that ST-4 guiding is hardware-based
+and thus more accurate or responsive. &nbsp;For any of the modern
+mounts you're likely to encounter, this is no longer true - there will
+always be software running at each end of the cable, just like ASCOM
+guiding. &nbsp;The bottom line is this: if you have an ASCOM or Indi
+driver available for your mount, you should probably use it. <h4><a name="AO_Selection"></a>Adaptive Optics and <a name="Rotator_Selection"></a>Rotator Selections</h4>
 With
 <span style="font-style: italic;">PHD2</span>, you
 now have the option of controlling the Starlight Xpress
@@ -230,7 +261,11 @@ wizard...'. &nbsp;If you are changing cameras and want to keep the dark
 libraries and bad-pixel maps associated with the old camera, you should
 create a separate profile for the new camera. &nbsp;When a camera
 selection is changed in an existing profile, the previously built dark
-library and bad-pixel map data will no longer be usable.<br>
+library and bad-pixel map data will no longer be usable. &nbsp; That
+also applies to using the same camera with different binning values.
+Setups using different binning factors should be kept in separate
+profiles because
+the dark library and bad-pixel maps depend on the binning factor.<br>
 <br>
 If
 you already have a suitable default equipment profile and you simply

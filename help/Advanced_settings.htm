@@ -239,9 +239,9 @@ the PHD2/guiding icon on the main page, which will force a re-calibration.</li><
 Declination Compensation' - if PHD2 can get pointing information from
 the mount via an ASCOM connection ('Mount' or 'Aux'), it will
 automatically adjust the RA guide rate based on the current declination.
-&nbsp;This box should normally be left checked except in very unusual
+&nbsp;This box should normally be left checked except in&nbsp;unusual
 cases. &nbsp;For example, SiTech mount controllers evidently apply a
-compensation automatically, in which case PHD2 should not.</li></ul>Shared Guiding Parameters<ul><li>'<a name="Fast_Re-center"></a>Fast
+compensation automatically, in which case the box should be left un-checked..</li></ul>Shared Guiding Parameters<ul><li>'<a name="Fast_Re-center"></a>Fast
 re-center after calibration or dither' - during calibration or
 dithering, the mount may be moved a significant distance from the
 initial "lock" position. &nbsp;If you click this checkbox, PHD2 will
@@ -312,7 +312,7 @@ made in the calculator will be reflected there as well. &nbsp;However,
 this will not be done if you click on 'Cancel' in the calculator
 dialog. &nbsp;Note that PHD2 never changes the guide speed setting in
 your mount regardless of what may be entered in the 'Guide Speed' field.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 598px; height: 566px;" alt="" src="Advanced_algorithms.png"><br><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 527px;" alt="" src="Advanced_algorithms.png"><br><br>
 The algorithms tab can be used to select the guiding algorithms you
 want to use and to fine-tune the parameters associated with them. &nbsp;The parameters displayed will change significantly if
 you
@@ -365,7 +365,63 @@ will leave the star positoned off-target for an extended period of
 time. So you'll probably want to use conservative parameters for
 aggressiveness if you are disallowing direction reversals.
 &nbsp;Finally, a choice of 'off'' here disables declination guiding
-altogether.</li></ul><br><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 591px; height: 451px;" alt="" src="Advanced_other.png"><br><br>If
+altogether.</li><li>'Reset'
+- resets the guiding parameters for the selected RA or Dec algorithm to
+their default values. &nbsp;Min-move settings will be set using the
+same algorithm employed in the new-profile-wizard. &nbsp;If you
+previously used the Guiding Assistant to adjust the min-move settings,
+you should probably repeat that procedure.</li></ul><h4><a name="Declination-Uni-directional_guiding"></a>Uni-directional Declination Guiding</h4>As
+discussed elsewhere, some mounts have too much declination backlash to
+support guiding in both&nbsp;north and south directions. &nbsp;This
+situation can be mitigated by configuring PHD2 to guide in only one of
+the directions, what we call uni-directional Dec guiding. &nbsp;This
+can be
+a manageable situation because declination guiding is only intended to
+correct for slow drift - errors caused by polar misalignment and to a
+lesser extent, mechanical flexure. &nbsp;Ironically, you might want to
+de-tune your polar alignment a bit to make it easier to see the drift
+direction and to reduce the likelihood that seeing will interfere with
+uni-directional guiding. &nbsp;Remember that polar mis-alignment,
+within
+reason, doesn't usually degrade guiding performance. &nbsp;Instead, it
+may introduce field rotation if you're imaging near the pole and have a
+large camera sensor. &nbsp;A good first step would be to polar align to
+within a few arc-minutes of the pole before setting up for
+uni-directional
+guiding. &nbsp;You can always go back later and check for field
+rotation. &nbsp;Just take a sample image with your main camera at the
+highest declination you would expect for imaging - perhaps 70 degrees
+north. &nbsp;If you don't see field rotation there, you can leave the
+polar alignment where it is. &nbsp;With any amount of polar
+mis-alignment, the direction of&nbsp; Dec corrections will change at
+some point in the sky. &nbsp;(Technically, it will reverse directions
+at two points in the sky but one of those is usually below the
+horizon.) &nbsp;The sky location for the reversal depends entirely on
+how you are mis-aligned on the pole - the relative amounts of azimuth
+and altitude alignment errors. &nbsp;You may even have a situation
+where
+the reversal point is near enough to the horizon that you don't
+encounter it during normal imaging.<br><br>To set up for uni-directional guiding, you can follow these steps:<br><ol><li>Move
+to a field with a good guide star and open the Guiding Graph window.
+&nbsp;Disable Dec guiding entirely by setting the Dec guide mode to
+'off', then start guiding. &nbsp;Now watch the graph until you can see
+a clear trend in the way the guide star is drifting either north or
+south. &nbsp;Once you see this, reset the Dec guide mode to issue
+corrections in the right direction. &nbsp;For example, if the star is
+drifting north, set the Guide mode to 'south.'</li><li>Try using the
+'LowPass' or 'LowPass2' guiding algorithms for declination and start
+with a fairly low aggressiveness factor, say 50%. &nbsp;If the
+aggressiveness is too high, the correction may push the star to the
+"wrong" side of the lock position, where it will remain until the slow
+drift rate moves it back. &nbsp;It's better to issue a few consecutive
+small corrections rather than one larger one in order to minimze this
+type of over-shoot.</li><li>Watch the guiding graph to be sure the
+corrections are being issued in the right direction and the star isn't
+just steadily drifting&nbsp;off-target. &nbsp;Over the course of
+minutes or hours, you may notice the amount of drift is decreasing.
+&nbsp;This means you are slowly approaching the point of
+declination reversal and you should be prepared to change the Dec guide
+mode accordingly.</li><li>If you are dithering, set the dithering parameters to "RA-only" to avoid disrupting the Dec guiding.</li></ol><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 591px; height: 451px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
 Devices" tab will be shown. &nbsp;The upper section deals with the AO
 device if one is being used. &nbsp;You
