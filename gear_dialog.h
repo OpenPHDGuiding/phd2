@@ -104,6 +104,7 @@ public:
     void Shutdown(bool forced);
     bool IsEmptyProfile();
     bool ReconnectCamera();
+    Scope *AuxScope() const;
 
 private:
     void LoadGearChoices(void);
@@ -168,5 +169,10 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+inline Scope *GearDialog::AuxScope() const
+{
+    return m_pAuxScope;
+}
 
 #endif // GEAR_DIALOG_H_INCLUDED

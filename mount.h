@@ -236,7 +236,7 @@ public:
     GuideParity DecParity(void) const;
 
     bool FlipCalibration(void);
-    bool GetGuidingEnabled(void);
+    bool GetGuidingEnabled(void) const;
     void SetGuidingEnabled(bool guidingEnabled);
 
     virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType);
@@ -336,6 +336,11 @@ protected:
     bool MountIsCalibrated(void) const { return m_calibrated; }
     const Calibration& MountCal(void) const { return m_cal; }
 };
+
+inline bool Mount::GetGuidingEnabled(void) const
+{
+    return m_guidingEnabled;
+}
 
 inline bool Mount::IsBusy(void) const
 {

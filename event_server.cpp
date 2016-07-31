@@ -690,6 +690,37 @@ static void get_profile(JObj& response, const json_value *params)
     response << jrpc_result(t);
 }
 
+inline static void devstat(JObj& t, const char *dev, const char *name, bool connected)
+{
+    t << NV(dev, JObj() << NV("name", name) << NV("connected", connected));
+}
+
+static void get_current_equipment(JObj& response, const json_value *params)
+{
+    JObj t;
+
+    if (pCamera)
+       devstat(t, "camera", pCamera->Name, pCamera->Connected);
+
+    Mount *mount = TheScope();
+    if (mount)
+        devstat(t, "mount", mount->Name(), mount->IsConnected());
+
+    Mount *auxMount = pFrame->pGearDialog->AuxScope();
+    if (auxMount)
+        devstat(t, "aux_mount", auxMount->Name(), auxMount->IsConnected());
+
+    Mount *ao = TheAO();
+    if (ao)
+        devstat(t, "AO", ao->Name(), ao->IsConnected());
+
+    Rotator *rotator = pRotator;
+    if (rotator)
+        devstat(t, "rotator", rotator->Name(), rotator->IsConnected());
+
+    response << jrpc_result(t);
+}
+
 static bool all_equipment_connected()
 {
     return pCamera && pCamera->Connected &&
@@ -1552,6 +1583,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_search_region", &get_search_region, },
         { "shutdown", &shutdown, },
         { "get_camera_binning", &get_camera_binning, },
+        { "get_current_equipment", &get_current_equipment, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

@@ -444,11 +444,6 @@ void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
     }
 }
 
-bool Mount::GetGuidingEnabled(void)
-{
-    return m_guidingEnabled;
-}
-
 void Mount::SetGuidingEnabled(bool guidingEnabled)
 {
     if (guidingEnabled != m_guidingEnabled)
