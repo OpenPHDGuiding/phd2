@@ -692,7 +692,8 @@ static void get_profile(JObj& response, const json_value *params)
 
 inline static void devstat(JObj& t, const char *dev, const char *name, bool connected)
 {
-    t << NV(dev, JObj() << NV("name", name) << NV("connected", connected));
+    JObj o;
+    t << NV(dev, o << NV("name", name) << NV("connected", connected));
 }
 
 static void get_current_equipment(JObj& response, const json_value *params)
