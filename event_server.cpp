@@ -1489,38 +1489,35 @@ static void get_camera_binning(JObj& response, const json_value *params)
         response << jrpc_error(1, "camera not connected");
 }
 
-static void get_mount_guiding_enabled(JObj& response, const json_value *params)
+static void get_guide_output_enabled(JObj& response, const json_value *params)
 {
-	if (pMount)
-		response << jrpc_result(pMount->GetGuidingEnabled());
-	else
-		response << jrpc_error(1, "mount not defined");
+    if (pMount)
+        response << jrpc_result(pMount->GetGuidingEnabled());
+    else
+        response << jrpc_error(1, "mount not defined");
 }
 
-static void set_mount_guiding_enabled(JObj& response, const json_value *params)
+static void set_guide_output_enabled(JObj& response, const json_value *params)
 {
-	Params p("enabled", params);
-	const json_value *val = p.param("enabled");
-	bool enable;
-	if (!val || !bool_param(val, &enable))
-	{
-		response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
-		return;
-	}
+    Params p("enabled", params);
+    const json_value *val = p.param("enabled");
+    bool enable;
+    if (!val || !bool_param(val, &enable))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        return;
+    }
 
-	VERIFY_GUIDER(response);
-
-	if (pMount)
-	{
-		pMount->SetGuidingEnabled(enable);
-		if (pFrame && pFrame->pAdvancedDialog)
-			pFrame->pAdvancedDialog->LoadValues();
-		response << jrpc_result(0);
-	}
-	else
-		response << jrpc_error(1, "mount not defined");
+    if (pMount)
+    {
+        pMount->SetGuidingEnabled(enable);
+        if (pFrame && pFrame->pAdvancedDialog)
+            pFrame->pAdvancedDialog->LoadValues();
+        response << jrpc_result(0);
+    }
+    else
+        response << jrpc_error(1, "mount not defined");
 }
-
 
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
@@ -1584,10 +1581,9 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_use_subframes", &get_use_subframes, },
         { "get_search_region", &get_search_region, },
         { "shutdown", &shutdown, },
-        { "get_camera_binning", &get_camera_binning },
-		{ "get_mount_guiding_enabled", &get_mount_guiding_enabled },
-		{ "set_mount_guiding_enabled", &set_mount_guiding_enabled },
-
+        { "get_camera_binning", &get_camera_binning, },
+        { "get_guide_output_enabled", &get_guide_output_enabled, },
+        { "set_guide_output_enabled", &set_guide_output_enabled, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
