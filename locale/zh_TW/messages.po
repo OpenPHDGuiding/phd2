@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-29 14:55-0400\n"
-"PO-Revision-Date: 2016-02-25 23:28+0800\n"
+"PO-Revision-Date: 2016-08-03 23:22+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.5\n"
+"X-Generator: Poedit 1.8.7\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -106,7 +106,7 @@ msgstr ""
 #: aui_controls.cpp:263 aui_controls.cpp:286 aui_controls.cpp:300
 #, c-format
 msgid "%d ms, %0.1f px"
-msgstr ""
+msgstr "%d ms, %0.1f px"
 
 #: aui_controls.cpp:365
 msgid "Camera, "
@@ -218,12 +218,12 @@ msgstr "無法執行回差測量, 請重新校准赤道儀"
 #: backlash_comp.cpp:438
 #, c-format
 msgid "Clearing North backlash, step %d"
-msgstr ""
+msgstr "清除北向回差, 步數 %d"
 
 #: backlash_comp.cpp:475
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
-msgstr ""
+msgstr "清除北向回差, 步數 %d (到達 %d 的限制)"
 
 #: backlash_comp.cpp:483
 msgid "Could not clear North backlash - test failed"
@@ -232,7 +232,7 @@ msgstr "無法清除北向回差, 測試失敗"
 #: backlash_comp.cpp:510
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
-msgstr ""
+msgstr "往北移動 %d ms, 步數 %d /%d"
 
 #: backlash_comp.cpp:526
 msgid ""
@@ -243,7 +243,7 @@ msgstr "導星星體太靠近邊緣以致於無法準確地測量回差, 請選�
 #: backlash_comp.cpp:541
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
-msgstr ""
+msgstr "往南移動 %d ms, 步數 %d /%d"
 
 #: backlash_comp.cpp:571
 #, c-format
@@ -265,7 +265,7 @@ msgstr "測量中斷"
 #: backlash_comp.cpp:657
 #, c-format
 msgid "Measurement encountered an error: %s"
-msgstr ""
+msgstr "測量時發生錯誤: %s"
 
 #: calreview_dialog.cpp:47 statswindow.cpp:263
 msgid "N/A"
@@ -381,7 +381,7 @@ msgstr "焦長, mm："
 #: calreview_dialog.cpp:323
 #, c-format
 msgid "%d mm"
-msgstr ""
+msgstr "%d mm"
 
 #: calreview_dialog.cpp:328
 msgid "Image scale:"
@@ -413,7 +413,7 @@ msgstr "赤經導星速率"
 #: calreview_dialog.cpp:347 calreview_dialog.cpp:355
 #, c-format
 msgid "%0.2fx"
-msgstr ""
+msgstr "%0.2fx"
 
 #: calreview_dialog.cpp:352
 msgid "Dec Guide speed:"
@@ -458,6 +458,9 @@ msgid ""
 "error was %s degrees, which is often caused by poor polar alignment, large "
 "Dec backlash, or a large periodic error in RA."
 msgstr ""
+"由校準計算所得的赤經及赤緯角度有問題，通常這個角度會接近於垂直(正直誤差需小"
+"於 10 度)，校準後所得的結果為 %s 度，通常是因為沒有對好極軸、赤緯軸回差太大或"
+"赤經軸上有很大的週期性誤差。"
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -515,6 +518,8 @@ msgid ""
 "%0.3f a-s/sec\n"
 "%0.3f px/sec"
 msgstr ""
+"%0.3f a-s/sec\n"
+"%0.3f px/sec"
 
 #: calreview_dialog.cpp:703
 msgid "Previous declination rate:"
@@ -526,6 +531,8 @@ msgid ""
 "\n"
 "%0.3f px/sec"
 msgstr ""
+"\n"
+"%0.3f px/sec"
 
 #: calreview_dialog.cpp:715
 msgid "Declination rate:"
@@ -705,7 +712,7 @@ msgstr "錯誤"
 
 #: cam_Altair.cpp:162
 msgid "Specified Altair Camera not found."
-msgstr ""
+msgstr "找不到所指定的 Altair 相機。"
 
 #: cam_Altair.cpp:169
 msgid "Failed to open Altair Camera."
@@ -793,12 +800,16 @@ msgid ""
 "ASCOM driver missing the CanSetCCDTemperature property. Please report this "
 "error to your ASCOM driver provider."
 msgstr ""
+"ASCOM 驅動程式缺少 CanSetCCDTemperature 屬性, 請將此錯誤回報給提供 ASCOM 驅動"
+"程式的廠商"
 
 #: cam_ascomlate.cpp:626
 msgid ""
 "ASCOM driver missing the CanGetCoolerPower property. Please report this "
 "error to your ASCOM driver provider."
 msgstr ""
+"ASCOM 驅動程式缺少 CanGetCoolerPower 屬性, 請將此錯誤回報給提供 ASCOM 驅動程"
+"式的廠商"
 
 #: cam_ascomlate.cpp:691 cam_ascomlate.cpp:901
 msgid ""
@@ -813,15 +824,15 @@ msgstr "ASCOM 驅動程式異常: 無法切斷"
 #: cam_ascomlate.cpp:751
 #, c-format
 msgid "ASCOM error turning camera cooler %s"
-msgstr ""
+msgstr "微調相機冷卻器 %s 時發生錯誤"
 
 #: cam_ascomlate.cpp:751
 msgid "on"
-msgstr ""
+msgstr "開啟"
 
 #: cam_ascomlate.cpp:751
 msgid "off"
-msgstr ""
+msgstr "關閉"
 
 #: cam_ascomlate.cpp:889
 msgid "Cannot allocate memory to download image from camera"
@@ -895,7 +906,7 @@ msgstr "無法由佇列中取得影像"
 #: cam_INDI.cpp:335
 #, c-format
 msgid "Cannot connect to camera %s"
-msgstr ""
+msgstr "無法連接相機 %s"
 
 #: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:593
 msgid "Unsupported type or read error loading FITS file"
@@ -1323,7 +1334,7 @@ msgstr "連接錯誤: 無法讀取相機參數"
 
 #: cam_SXV.cpp:777
 msgid "Lost connection to camera"
-msgstr ""
+msgstr "與相機連接中斷"
 
 #: cam_VFW.cpp:88
 msgid "Select capture device"
@@ -1472,13 +1483,15 @@ msgstr "使用影像截圖"
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
-msgstr ""
+msgstr "僅檢查所下載的局部影像 (ROIs),  局部影像大小與搜尋區域相同。"
 
 #: camera.cpp:829
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
+"導星相機未併合像素大小(單位為微米), 與導星鏡焦長一起用來計算出導星誤差後, 以"
+"秒弧為單位來顯示導星誤差。"
 
 #: camera.cpp:830
 msgid "Pixel size"
@@ -1493,6 +1506,8 @@ msgid ""
 "Camera gain, default = 95 % , lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
+"相機影像增益值, 預設為 95%, 如果你覺得畫面上噪點很多或想利用高亮度的星體當導"
+"星星體, 可以降低此數值; 但並不是所有的導星相機都有支援此功能。"
 
 #: camera.cpp:849
 msgid "Binning"
@@ -1516,19 +1531,19 @@ msgstr "控制長時間曝光的通訊埠號碼"
 
 #: camera.cpp:878
 msgid "Cooler On"
-msgstr ""
+msgstr "啟用冷卻器"
 
 #: camera.cpp:879
 msgid "Turn camera cooler on or off"
-msgstr ""
+msgstr "切換冷卻器開關"
 
 #: camera.cpp:882
 msgid "Set Temperature"
-msgstr ""
+msgstr "設定溫度"
 
 #: camera.cpp:882
 msgid "Cooler setpoint temperature"
-msgstr ""
+msgstr "冷卻器 setpoint 溫度"
 
 #: camera.cpp:891
 msgid ""
@@ -1549,12 +1564,12 @@ msgstr ""
 
 #: camera.cpp:1142
 msgid "unspecified"
-msgstr ""
+msgstr "未指定"
 
 #: camera.cpp:1144
 #, c-format
 msgid "%0.1f um"
-msgstr ""
+msgstr "%0.1f um"
 
 #: camera.cpp:1284
 msgid "Memory allocation error during capture"
@@ -1845,17 +1860,19 @@ msgstr ""
 #, c-format
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
-msgstr ""
+msgstr "目前暗場影像庫是以 %d 次曝光, 曝光時間範圍在 %.gs 至 %.gs 所建立的。"
 
 #: darks_dialog.cpp:158
 msgid ""
 "Existing dark library contains incompatible frames - it must be rebuilt from "
 "scratch"
 msgstr ""
+"目前的暗場影像庫包含與目前所使用設備不相容的影像資料 - 你必須要重建暗場影像"
+"庫。"
 
 #: darks_dialog.cpp:165
 msgid "No compatible dark library is available"
-msgstr ""
+msgstr "相容的暗場影像庫不存在"
 
 #: darks_dialog.cpp:179
 msgid "Dark Frame Settings"
@@ -1915,7 +1932,7 @@ msgstr "作業被中止, 沒有任何改變。"
 
 #: darks_dialog.cpp:305
 msgid "Operation failed - no changes have been made"
-msgstr ""
+msgstr "作業被中止, 沒有任何改變。"
 
 #: darks_dialog.cpp:318
 msgid "dark library built"
@@ -1953,7 +1970,7 @@ msgstr "取消中...."
 #: darks_dialog.cpp:505
 #, c-format
 msgid "Taking dark frame %d/%d"
-msgstr ""
+msgstr "拍攝暗場影像 %d/%d"
 
 #: darks_dialog.cpp:511
 #, c-format
@@ -2124,7 +2141,7 @@ msgstr "座標已儲存。"
 
 #: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:607
 msgid "Please connect a camera first."
-msgstr ""
+msgstr "請先連接相機"
 
 #: drift_tool.cpp:807
 msgid ""
@@ -2791,6 +2808,9 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
+"How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+"If camera is binned, this is a fraction of the binned pixel size. Default = "
+"%.2f"
 
 #: guide_algorithm_hysteresis.cpp:285
 msgid "Agr"
@@ -2898,11 +2918,11 @@ msgstr "暫停"
 
 #: guider.cpp:1193
 msgid "AO calibration failed"
-msgstr ""
+msgstr "AO 校準失敗"
 
 #: guider.cpp:1193 guider.cpp:1226
 msgid "calibration failed"
-msgstr ""
+msgstr "校準失敗"
 
 #: guider.cpp:1429
 msgid "Guider Settings"
@@ -3282,7 +3302,7 @@ msgstr "套用"
 #: guiding_assistant.cpp:790
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
-msgstr ""
+msgstr "請將曝光時間維持在 %.1fs 至 %.1fs 範圍"
 
 #: guiding_assistant.cpp:799
 msgid "Consider re-doing your calibration "
@@ -3433,7 +3453,7 @@ msgstr "在赤經軸上使用那一種導星演算法?"
 msgid ""
 "Causes an IMMEDIATE reset of the RA algorithm parameters to their default "
 "values"
-msgstr ""
+msgstr "把赤經導星演算法參數回復為預設值"
 
 #: mount.cpp:180
 msgid "Which Guide Algorithm to use for Declination"
@@ -3443,7 +3463,7 @@ msgstr "在赤緯軸上使用那一種導星演算法?"
 msgid ""
 "Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
 "values"
-msgstr ""
+msgstr "把赤緯導星演算法參數回復為預設值"
 
 #: mount.cpp:370
 msgid "Clear mount calibration"
@@ -3482,7 +3502,7 @@ msgstr "赤緯:"
 
 #: mount.cpp:1078
 msgid "Calibration was too far from equator, recalibration is needed."
-msgstr ""
+msgstr "校準參考區遠離天球赤道，需重做校準。"
 
 #: mount.cpp:1112
 msgid "Rotator position has changed, recalibration is needed."
@@ -3490,7 +3510,7 @@ msgstr "因為相場旋轉器位置改變, 必須要重新校準。"
 
 #: mount.cpp:1497
 msgid "On Camera"
-msgstr ""
+msgstr "On Camera"
 
 #: myframe.cpp:288 myframe.cpp:360
 msgid "History"
@@ -3834,7 +3854,7 @@ msgstr "移除所有的標記"
 
 #: myframe.cpp:506
 msgid "&About..."
-msgstr ""
+msgstr "關於..."
 
 #: myframe.cpp:506
 #, c-format
@@ -3843,7 +3863,7 @@ msgstr "關於 %s"
 
 #: myframe.cpp:507
 msgid "&Contents...\tF1"
-msgstr ""
+msgstr "內容"
 
 #: myframe.cpp:507
 msgid "Full help"
@@ -3933,17 +3953,17 @@ msgstr "找不到輔助文件"
 
 #: myframe.cpp:1011
 msgid "Trouble-shooting and Analysis"
-msgstr ""
+msgstr "除錯與分析"
 
 #: myframe.cpp:1031
 msgid ""
 "Don't show\n"
 " again"
-msgstr ""
+msgstr "不再顯示"
 
 #: myframe.cpp:1046
 msgid "Help"
-msgstr ""
+msgstr "幫助"
 
 #: myframe.cpp:1406 myframe.cpp:1582
 msgid "Looping"
@@ -4046,13 +4066,13 @@ msgstr "重置所有的組態和程式設定為初始值—注意, 如此會關�
 
 #: myframe.cpp:2480
 msgid "Reset \"Don't Show Again\" messages"
-msgstr ""
+msgstr "重置【不再顯示】訊息"
 
 #: myframe.cpp:2481
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
-msgstr ""
+msgstr "恢復所有因為設定了「不再顯示該訊息」選項而被隱藏的訊息。"
 
 #: myframe.cpp:2485
 msgid "Low Q JPEG"
@@ -4146,32 +4166,32 @@ msgstr "瀏灠..."
 
 #: myframe.cpp:2577
 msgid "Dither Settings"
-msgstr ""
+msgstr "抖動設定"
 
 #: myframe.cpp:2578
 msgid "Random"
-msgstr ""
+msgstr "隨機的"
 
 #: myframe.cpp:2579
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
-msgstr ""
+msgstr "每次抖動命令會將鎖定位置往每個軸向移動某個隨機的距離"
 
 #: myframe.cpp:2580
 msgid "Spiral"
-msgstr ""
+msgstr "螺旋狀"
 
 #: myframe.cpp:2581
 msgid "Each dither command moves the lock position along a spiral path"
-msgstr ""
+msgstr "每次抖動命令會沿著螺旋狀路徑移動鎖定位置"
 
 #: myframe.cpp:2583
 msgid "Mode: "
-msgstr ""
+msgstr "模式："
 
 #: myframe.cpp:2588
 msgid "RA only"
-msgstr ""
+msgstr "僅 RA"
 
 #: myframe.cpp:2589
 msgid "Constrain dither to RA only"
@@ -4263,6 +4283,23 @@ msgid ""
 " panel. Use the 'View' menu to watch your guiding performance. If you have\n"
 " problems, read the help files! "
 msgstr ""
+"歡迎使用 PHD2 (Push Here Dummy, Gen2) 導星軟體\n"
+"\n"
+"基本的操作非常簡單 (所以才稱為 「PHD」)\n"
+"\n"
+" 1)  點擊綠色的「USB」圖示。選擇你所使用的相機和赤道儀，然後點擊「連接所有設"
+"備」\n"
+" 2) 由下啦是列表中選取曝光時間\n"
+" 3) 點擊「迴圈」圖示，有必要的話，調整導星鏡焦點\n"
+" 4) 點選畫面上遠離邊緣區域的某顆星當導星星體或按 Alt-S 自動選取導星星體\n"
+" 5) 點擊「導星」圖示開始導星\n"
+"\n"
+"PHD2 會進行校準，校準完成後就開始進行導星。就是這麼簡單\n"
+"\n"
+"想要停止導星時，只要點擊「迴圈」或「停止」圖示即可，如果你要微調任何參數，\n"
+"點擊「大腦」圖示即可開啟「進階」設定畫面；利用功能表「監視」項可以檢視導星的"
+"效能\n"
+"如果有任何問題，請參與輔助說明。"
 
 #: myframe_events.cpp:110
 msgid "Instructions"
@@ -4373,10 +4410,12 @@ msgid ""
 "Calibration this far from the celestial equator will be error-prone.  For "
 "best results, calibrate at a declination of -20 to +20."
 msgstr ""
+"校準在遠離天球赤道處進行，如此及有可能產生錯誤的結果，最好是在赤緯 -20 到 "
+"+20 度處執行校準。"
 
 #: myframe_events.cpp:867
 msgid "Confirm Calibration at Large Declination"
-msgstr ""
+msgstr "確認要在高赤緯角度進行校準動作"
 
 #: myframe_events.cpp:894 testguide.cpp:146
 msgid "Manual Guide"
@@ -4537,7 +4576,7 @@ msgstr "連接相機並偵測像速大小"
 
 #: profile_wizard.cpp:143
 msgid "Guide camera un-binned pixel size (microns)"
-msgstr ""
+msgstr "導星相機未併合 (un-binned) 像素大小 (微米)"
 
 #: profile_wizard.cpp:148
 msgid ""
@@ -4677,6 +4716,10 @@ msgid ""
 "name you just entered, and making your changes there. If you are new to PHD2 "
 "or encounter problems, please use the 'Help' function for assistance."
 msgstr ""
+"設備組態檔已經完成並且可以存檔，指定檔案名稱並選擇是否建立暗場影像庫，為了取"
+"得較佳的校準及導星效果，我們建議您執行建立暗場影像庫的動作；你隨時都可以透過"
+"點擊 PHD2 「USB」圖示來修改新設備組態檔的設定， 如果你是新手或設定遇到問題，"
+"請參考「幫助」功能來進行設定。"
 
 #: profile_wizard.cpp:289
 msgid ""
@@ -4788,13 +4831,13 @@ msgstr "無法連接相機"
 
 #: profile_wizard.cpp:541
 msgid "Camera driver cannot report pixel size"
-msgstr ""
+msgstr "相機驅動程式無法回報像素大小。"
 
 #: profile_wizard.cpp:548
 msgid ""
 ". Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
-msgstr ""
+msgstr ". 請輸入相機文件或供應商網站所提供的正確 un-binned 像素大小"
 
 #: profile_wizard.cpp:548
 msgid "Detect Pixel Size"
@@ -4950,7 +4993,7 @@ msgstr "影像統計計算中, 請稍待..."
 
 #: Refine_DefMap.cpp:297
 msgid "Statistics completed..."
-msgstr ""
+msgstr "統計完成..."
 
 #: Refine_DefMap.cpp:340
 msgid "Building new bad-pixel map"
@@ -5187,7 +5230,7 @@ msgstr "數量"
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
-msgstr ""
+msgstr "回差修正訊號長度(微秒)，此數值會自動依據所間看到的效能自動作調整。"
 
 #: scope.cpp:1648
 msgid "Use Dec compensation"
@@ -5454,7 +5497,7 @@ msgstr "相場旋轉器位置"
 
 #: statswindow.cpp:112
 msgid "Camera cooler"
-msgstr ""
+msgstr "相機冷卻器"
 
 #: statswindow.cpp:122
 msgid "Clear graph data and stats"
@@ -5466,18 +5509,18 @@ msgstr "選擇所要顯示的歷史星點及影像數目"
 
 #: statswindow.cpp:226
 msgid "Camera error"
-msgstr ""
+msgstr "相機錯誤"
 
 #: statswindow.cpp:228 statswindow.cpp:230
 #, c-format
 msgid "%.f"
-msgstr ""
+msgstr "%.f"
 
 #: stepguider.cpp:532
 msgid ""
 "The AO is failing to move and calibration cannot complete. Check the Debug "
 "Log for more information."
-msgstr ""
+msgstr "AO 無法移動及校準，請檢查除錯日誌以取得更多的資訊。"
 
 #: stepguider.cpp:575
 #, c-format
@@ -5524,11 +5567,11 @@ msgstr "AO 設定"
 
 #: stepguider.cpp:1276
 msgid "AO Travel"
-msgstr ""
+msgstr "AO Travel"
 
 #: stepguider.cpp:1276
 msgid "Maximum number of steps the AO can move in each direction"
-msgstr ""
+msgstr "AO 在每個方向可移動的最大步數值"
 
 #: stepguider.cpp:1279
 #, c-format
@@ -5617,6 +5660,11 @@ msgid ""
 "downloads,\n"
 "contains the v101 firmware."
 msgstr ""
+"AO 裝置韌體版本為  %03u, 這個版本需要升級\n"
+"建議使用 V101 或之前的版本, \n"
+"V104 以後版的 SXV-AO 工具程式可以在  http://www.sxccd.com/drivers-"
+"downloads,\n"
+"取得, 該工具程式同時也包含 v101 版韌體。"
 
 #: stepguider_sxao.cpp:113
 #, c-format
@@ -5635,7 +5683,7 @@ msgstr ""
 
 #: stepguider_sxao.cpp:116
 msgid "Would you like to proceed anyway?"
-msgstr ""
+msgstr "確定要這樣做？"
 
 #: stepguider_sxao.cpp:166
 msgid "Select serial port"
@@ -5650,7 +5698,7 @@ msgstr "序列埠"
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
 "the Limit switch states."
-msgstr ""
+msgstr "INDI 驅動程式 %s 至少需為 1.12 版才能取得韌體版本及 Limit 開關狀態。"
 
 #: stepguider_sxao_INDI.cpp:112
 #, c-format
@@ -5661,6 +5709,10 @@ msgid ""
 "downloads,\n"
 "contains the firmware."
 msgstr ""
+"AO 裝置韌體版本為  %03u, 這個版本需要升級\n"
+"V104 版以上的 SXV-AO 工具程式可以在  http://www.sxccd.com/drivers-"
+"downloads,\n"
+"取得, 該工具程式同時也包含新的韌體。"
 
 #: target.cpp:71
 msgid "Zoom in"
