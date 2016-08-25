@@ -91,8 +91,8 @@
 			<param name="Local" value="Advanced_settings.htm#Camera_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Mount Parameters">
-			<param name="Local" value="Advanced_settings.htm#Mount_Tab">
+			<param name="Name" value="Algorithms">
+			<param name="Local" value="Advanced_settings.htm#Algorithms_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="AO Parameters">
@@ -181,6 +181,14 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Camera Timeouts and Download Problems">
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Camera_Timeouts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Hot Pixel Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-Hot_Pixels">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Restoring Baseline Guiding">
+			<param name="Local" value="Trouble_shooting.htm#Problems-restore_guiding_parameters">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Poor Guiding Performance">
