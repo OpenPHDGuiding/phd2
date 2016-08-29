@@ -690,7 +690,7 @@ static void get_profile(JObj& response, const json_value *params)
     response << jrpc_result(t);
 }
 
-inline static void devstat(JObj& t, const char *dev, const char *name, bool connected)
+inline static void devstat(JObj& t, const char *dev, const wxString& name, bool connected)
 {
     JObj o;
     t << NV(dev, o << NV("name", name) << NV("connected", connected));
