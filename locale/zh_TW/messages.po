@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-29 14:55-0400\n"
+"POT-Creation-Date: 2016-08-31 23:22-0400\n"
 "PO-Revision-Date: 2016-08-03 23:22+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -1397,7 +1397,7 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔"
 #: camera.cpp:369 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
 #: gear_dialog.cpp:938 gear_dialog.cpp:1605 gear_dialog.cpp:1606
-#: gear_dialog.cpp:1607 mount.cpp:133 mount.cpp:172 mount.cpp:678
+#: gear_dialog.cpp:1607 mount.cpp:133 mount.cpp:172 mount.cpp:673
 #: myframe.cpp:2496 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
 #: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:250
@@ -3487,28 +3487,28 @@ msgstr ""
 "點選此撿核項來進行導星, 解除該檢核項可以關閉所有對赤道儀的導星命令讓赤道儀在"
 "自由追蹤狀況下運行"
 
-#: mount.cpp:735
+#: mount.cpp:730
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:1012
+#: mount.cpp:1007
 msgid "RA:"
 msgstr "赤經:"
 
-#: mount.cpp:1017
+#: mount.cpp:1012
 msgid "DEC:"
 msgstr "赤緯:"
 
-#: mount.cpp:1078
+#: mount.cpp:1073
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr "校準參考區遠離天球赤道，需重做校準。"
 
-#: mount.cpp:1112
+#: mount.cpp:1107
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "因為相場旋轉器位置改變, 必須要重新校準。"
 
-#: mount.cpp:1497
+#: mount.cpp:1492
 msgid "On Camera"
 msgstr "On Camera"
 

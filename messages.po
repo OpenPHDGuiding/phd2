@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-29 14:55-0400\n"
+"POT-Creation-Date: 2016-08-31 23:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1324,7 +1324,7 @@ msgstr ""
 #: camera.cpp:369 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
 #: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
 #: gear_dialog.cpp:938 gear_dialog.cpp:1605 gear_dialog.cpp:1606
-#: gear_dialog.cpp:1607 mount.cpp:133 mount.cpp:172 mount.cpp:678
+#: gear_dialog.cpp:1607 mount.cpp:133 mount.cpp:172 mount.cpp:673
 #: myframe.cpp:2496 profile_wizard.cpp:197 profile_wizard.cpp:198
 #: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
 #: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:250
@@ -3320,28 +3320,28 @@ msgid ""
 "and allow the mount to run un-guided"
 msgstr ""
 
-#: mount.cpp:735
+#: mount.cpp:730
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr ""
 
-#: mount.cpp:1012
+#: mount.cpp:1007
 msgid "RA:"
 msgstr ""
 
-#: mount.cpp:1017
+#: mount.cpp:1012
 msgid "DEC:"
 msgstr ""
 
-#: mount.cpp:1078
+#: mount.cpp:1073
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1112
+#: mount.cpp:1107
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1497
+#: mount.cpp:1492
 msgid "On Camera"
 msgstr ""
 
