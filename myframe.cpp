@@ -2437,6 +2437,30 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
     ctrl->Bind(wxEVT_KILL_FOCUS, &MyFrame::OnTextControlKillFocus, this);
 }
 
+// Reset the guiding parameters and the various graphical displays when binning changes.  This should be done when guiding starts 
+// so the user can experiment with binning without losing guider settings
+void MyFrame::HandleBinningChange()
+{
+    if (pMount)
+    {
+        pAdvancedDialog->ResetGuidingParams();
+        wxCommandEvent dummyEvt;
+        if (pGraphLog)
+        {
+            pGraphLog->OnButtonClear(dummyEvt);
+            pGraphLog->UpdateControls();
+        }
+        if (pStepGuiderGraph)
+            pStepGuiderGraph->OnButtonClear(dummyEvt);
+        if (pTarget)
+        {
+            pTarget->OnButtonClear(dummyEvt);
+            pTarget->UpdateControls();
+        }
+        Alert(_("Guiding parameters have been reset because the camera binning changed. You should use separate profiles for different binning values."));
+    }
+}
+
 MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);

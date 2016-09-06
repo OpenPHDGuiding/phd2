@@ -183,6 +183,8 @@ public:
         wxStaticBoxSizer* m_pDecBox;
         wxButton* m_pResetRAParams;
         wxButton* m_pResetDecParams;
+        void OnResetRAParams(wxCommandEvent& evt);
+        void OnResetDecParams(wxCommandEvent& evt);
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
@@ -196,8 +198,8 @@ public:
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
-        void OnResetRAParams(wxCommandEvent& evt);
-        void OnResetDecParams(wxCommandEvent& evt);
+        void ResetRAGuidingParams();
+        void ResetDecGuidingParams();
     };
 
     GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);

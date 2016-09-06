@@ -221,7 +221,7 @@ Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
 {
 }
 
-void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
+void Mount::MountConfigDialogPane::ResetRAGuidingParams()
 {
     // Re-initialize the algorithm params
     GuideAlgorithm* currRAAlgo = m_pMount->m_pXGuideAlgorithm;
@@ -238,7 +238,12 @@ void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
     }
 }
 
-void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
+void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
+{
+    ResetRAGuidingParams();
+}
+
+void Mount::MountConfigDialogPane::ResetDecGuidingParams()
 {
     // Re-initialize the algorithm params
     GuideAlgorithm* currDecAlgo = m_pMount->m_pYGuideAlgorithm;
@@ -253,6 +258,11 @@ void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
         ScopeConfigDialogCtrlSet* scopeCtrlSet = (ScopeConfigDialogCtrlSet*)m_pMount->currConfigDialogCtrlSet;
         scopeCtrlSet->ResetDecParameterUI();
     }
+}
+
+void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
+{
+    ResetDecGuidingParams();
 }
 
 void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
@@ -1041,7 +1051,15 @@ void Mount::AdjustCalibrationForScopePointing(void)
         GetMountClassName(), DeclinationStr(newDeclination), newPierSide, DeclinationStr(m_cal.declination), m_cal.pierSide,
         RotAngleStr(newRotatorAngle), binning));
 
-    // compensate for binning change
+    // Compensate for binning change. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
+    // the reported pixel size
+    if (pCamera->GetCameraPixelSize() != GuideCamera::GetProfilePixelSize())
+    {
+        // Punt on this, it's a cockpit error to be changing binning properties outside of the PHD2 UI
+        pFrame->Alert(_("Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct guiding."));
+        Debug.Write(wxString::Format("Camera pixel size changed from %0.1f to %0.1f\n",
+            GuideCamera::GetProfilePixelSize(), pCamera->GetCameraPixelSize()));
+    }
     if (binning != m_cal.binning)
     {
         Calibration cal(m_cal);
@@ -1055,6 +1073,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
             m_cal.binning, binning, m_cal.xRate * 1000., m_cal.yRate * 1000., cal.xRate * 1000., cal.yRate * 1000.));
 
         SetCalibration(cal);
+        pFrame->HandleBinningChange();
     }
 
     // compensate RA guide rate for declination if the declination changed and we know both the

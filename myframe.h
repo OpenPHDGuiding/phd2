@@ -391,6 +391,8 @@ public:
     void SetDitherMode(DitherMode mode);
     DitherMode GetDitherMode(void) const;
 
+    void HandleBinningChange();
+
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pPrimaryWorkerThread;

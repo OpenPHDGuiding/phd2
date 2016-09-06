@@ -181,7 +181,7 @@ extern "C" {
 
 const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
-static double GetProfilePixelSize(void)
+double GuideCamera::GetProfilePixelSize(void)
 {
     return pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
 }
