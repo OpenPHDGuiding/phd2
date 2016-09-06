@@ -227,6 +227,8 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         HasGainControl = max > min;
     }
 
+	Altaircam_put_AutoExpoEnable(m_handle, FALSE);
+
     Altaircam_put_Speed(m_handle, 0);
     Altaircam_put_RealTime(m_handle, TRUE);
 
@@ -244,6 +246,8 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         Altaircam_put_Mode(m_handle, 0);
 
     Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
+	Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
+
 
     return false;
 }
@@ -375,7 +379,6 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     }
 
 
-    m_frameReady = false;
     if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
@@ -386,7 +389,8 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
             return true;
         }
         m_capturing = true;
-    }
+		m_frameReady = false;
+	}
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
 
@@ -394,11 +398,13 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+	// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
+
+  /*  if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
         (WorkerThread::TerminateRequested() || StopCapture()))
     {
         return true;
-    }
+    }*/
 
     while (true)
     {
