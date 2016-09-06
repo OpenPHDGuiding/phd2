@@ -35,7 +35,7 @@
 #define CAM_Altair_H_INCLUDED
 
 #include "camera.h"
-#include "cameras/AltairCamera.h"
+#include "cameras/altaircamsdk.h"
 
 class Camera_Altair : public GuideCamera
 {
@@ -45,7 +45,7 @@ class Camera_Altair : public GuideCamera
     int m_minGain;
     int m_maxGain;
     double m_devicePixelSize;
-    HAltair m_handle;
+	HAltairCam m_handle;
     volatile bool m_frameReady;
     bool ReduceResolution;
 public:
