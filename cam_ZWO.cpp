@@ -519,12 +519,6 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-        (WorkerThread::TerminateRequested() || StopCapture()))
-    {
-        return true;
-    }
-
     while (true)
     {
         ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, m_buffer, frameSize, poll);
