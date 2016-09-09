@@ -621,7 +621,11 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
             dc.SetTextForeground(*wxYELLOW);
             dc.DrawText(_("PAUSED"), 10, YWinSize - 20);
         }
-
+        else if (pMount && !pMount->GetGuidingEnabled())
+        {
+            dc.SetTextForeground(*wxYELLOW);
+            dc.DrawText(_("Guide output DISABLED"), 10, YWinSize - 20);
+        }
     }
     catch (const wxString& Msg)
     {
