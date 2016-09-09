@@ -284,7 +284,7 @@ GuideAlgorithmLowpass2GraphControlPane::
 OnAggrSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetAggressiveness(m_pAggressiveness->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass2 aggressiveness", m_pAggressiveness->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass2 aggressiveness", m_pAggressiveness->GetValue());
 }
 
 void GuideAlgorithmLowpass2::
@@ -292,5 +292,5 @@ GuideAlgorithmLowpass2GraphControlPane::
 OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass2 minimum move", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass2 minimum move", m_pMinMove->GetValue());
 }

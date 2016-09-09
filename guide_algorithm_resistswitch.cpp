@@ -349,7 +349,7 @@ void GuideAlgorithmResistSwitch::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
 }
 
 void GuideAlgorithmResistSwitch::
@@ -357,5 +357,5 @@ void GuideAlgorithmResistSwitch::
     OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());
 }

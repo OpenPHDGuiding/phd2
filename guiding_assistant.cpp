@@ -620,7 +620,7 @@ void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
         {
             Debug.Write(wxString::Format("GuideAssistant changed RA_MinMove to %0.2f\n", m_ra_val_rec));
             pFrame->pGraphLog->UpdateControls();
-            GuideLog.SetGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_ra_val_rec);
+            pFrame->NotifyGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_ra_val_rec);
             m_raMinMoveButton->Enable(false);
         }
         else
@@ -643,7 +643,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
         {
             Debug.Write(wxString::Format("GuideAssistant changed Dec_MinMove to %0.2f\n", m_dec_val_rec));
             pFrame->pGraphLog->UpdateControls();
-            GuideLog.SetGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_dec_val_rec);
+            pFrame->NotifyGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_dec_val_rec);
             m_decMinMoveButton->Enable(false);
         }
         else

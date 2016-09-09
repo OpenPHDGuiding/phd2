@@ -277,7 +277,7 @@ void GuideAlgorithmLowpass::
     OnSlopeWeightSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetSlopeWeight(m_pSlopeWeight->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass slope weight", m_pSlopeWeight->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass slope weight", m_pSlopeWeight->GetValue());
 }
 
 void GuideAlgorithmLowpass::
@@ -285,5 +285,5 @@ void GuideAlgorithmLowpass::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass minimum move", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass minimum move", m_pMinMove->GetValue());
 }

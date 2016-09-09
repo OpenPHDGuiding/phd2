@@ -2077,3 +2077,35 @@ void EventServer::NotifyAlert(const wxString& msg, int type)
 
     do_notify(m_eventServerClients, ev);
 }
+
+template<typename T>
+static void NotifyGuidingParam(const EventServer::CliSockSet& clients, const wxString& name, T val)
+{
+    if (clients.empty())
+        return;
+
+    Ev ev("GuideParamChange");
+    ev << NV(name, val);
+
+    do_notify(clients, ev);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, double val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, int val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, bool val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, const wxString& val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}

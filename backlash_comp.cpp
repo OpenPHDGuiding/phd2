@@ -87,7 +87,7 @@ void BacklashComp::SetBacklashPulse(int ms)
     if (m_pulseWidth != ms)
     {
         SetCompValues(ms, false);
-        GuideLog.SetGuidingParam("Backlash comp amount", m_pulseWidth);
+        pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
         Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms\n", m_pulseWidth));
     }
 
@@ -97,7 +97,10 @@ void BacklashComp::SetBacklashPulse(int ms)
 void BacklashComp::EnableBacklashComp(bool enable)
 {
     if (m_compActive != enable)
-        GuideLog.SetGuidingParam("Backlash comp enabled", enable ? "true" : "false");
+    {
+        pFrame->NotifyGuidingParam("Backlash comp enabled", enable);
+    }
+
     m_compActive = enable;
     pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));

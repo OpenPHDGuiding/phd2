@@ -393,6 +393,11 @@ public:
 
     void HandleBinningChange();
 
+    void NotifyGuidingParam(const wxString& name, double val);
+    void NotifyGuidingParam(const wxString& name, int val);
+    void NotifyGuidingParam(const wxString& name, bool val);
+    void NotifyGuidingParam(const wxString& name, const wxString& val);
+
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pPrimaryWorkerThread;

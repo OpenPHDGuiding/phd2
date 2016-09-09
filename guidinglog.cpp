@@ -508,22 +508,17 @@ void GuidingLog::ServerCommand(Guider *guider, const wxString& cmd)
 
 void GuidingLog::SetGuidingParam(const wxString& name, double val)
 {
-    if (!m_enabled || !m_isGuiding)
-        return;
-
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %.2f\n", name, val));
-    m_keepFile = true;
-    Flush();
+    SetGuidingParam(name, wxString::Format("%.2f", val));
 }
 
 void GuidingLog::SetGuidingParam(const wxString& name, int val)
 {
-    if (!m_enabled || !m_isGuiding)
-        return;
+    SetGuidingParam(name, wxString::Format("%d", val));
+}
 
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %d\n", name, val));
-    m_keepFile = true;
-    Flush();
+void GuidingLog::SetGuidingParam(const wxString& name, bool val)
+{
+    SetGuidingParam(name, wxString(val ? "true" : "false"));
 }
 
 void GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)

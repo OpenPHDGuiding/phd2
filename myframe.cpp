@@ -2787,3 +2787,30 @@ void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
     else
         win->Move(x, y);
 }
+
+template<typename T>
+static void NotifyGuidingParam(const wxString& name, T val)
+{
+    GuideLog.SetGuidingParam(name, val);
+    EvtServer.NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, double val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, int val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, bool val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val)
+{
+    ::NotifyGuidingParam(name, val);
+}

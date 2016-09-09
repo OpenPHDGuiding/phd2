@@ -172,7 +172,7 @@ public:
     int GetMaxDecDuration(void) const;
     bool SetMaxDecDuration(int maxDecDuration);
     int GetMaxRaDuration(void) const;
-    bool SetMaxRaDuration(double maxRaDuration);
+    bool SetMaxRaDuration(int maxRaDuration);
     DEC_GUIDE_MODE GetDecGuideMode(void) const;
     bool SetDecGuideMode(int decGuideMode);
 

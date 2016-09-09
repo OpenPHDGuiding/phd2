@@ -119,6 +119,7 @@ public:
 
     void SetGuidingParam(const wxString& name, double val);
     void SetGuidingParam(const wxString& name, int val);
+    void SetGuidingParam(const wxString& name, bool val);
     void SetGuidingParam(const wxString& name, const wxString& val);
 
     bool ChangeDirLog(const wxString& newdir);

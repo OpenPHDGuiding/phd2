@@ -75,6 +75,10 @@ public:
     void NotifySettling(double distance, double time, double settleTime);
     void NotifySettleDone(const wxString& errorMsg);
     void NotifyAlert(const wxString& msg, int type);
+    void NotifyGuidingParam(const wxString& name, double val);
+    void NotifyGuidingParam(const wxString& name, int val);
+    void NotifyGuidingParam(const wxString& name, bool val);
+    void NotifyGuidingParam(const wxString& name, const wxString& val);
 
 private:
     void OnEventServerEvent(wxSocketEvent& evt);
