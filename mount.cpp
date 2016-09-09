@@ -1053,13 +1053,14 @@ void Mount::AdjustCalibrationForScopePointing(void)
 
     // Compensate for binning change. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
     // the reported pixel size
-    if (pCamera->GetCameraPixelSize() != GuideCamera::GetProfilePixelSize())
+    if (fabs(pCamera->GetCameraPixelSize() - GuideCamera::GetProfilePixelSize()) >= 1.0)
     {
         // Punt on this, it's a cockpit error to be changing binning properties outside of the PHD2 UI
         pFrame->Alert(_("Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct guiding."));
         Debug.Write(wxString::Format("Camera pixel size changed from %0.1f to %0.1f\n",
             GuideCamera::GetProfilePixelSize(), pCamera->GetCameraPixelSize()));
     }
+
     if (binning != m_cal.binning)
     {
         Calibration cal(m_cal);
