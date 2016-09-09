@@ -2085,7 +2085,8 @@ static void NotifyGuidingParam(const EventServer::CliSockSet& clients, const wxS
         return;
 
     Ev ev("GuideParamChange");
-    ev << NV(name, val);
+    ev << NV("Name", name);
+    ev << NV("Value", val);
 
     do_notify(clients, ev);
 }
