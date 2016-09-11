@@ -1059,6 +1059,8 @@ void Mount::AdjustCalibrationForScopePointing(void)
         pFrame->Alert(_("Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct guiding."));
         Debug.Write(wxString::Format("Camera pixel size changed from %0.1f to %0.1f\n",
             GuideCamera::GetProfilePixelSize(), pCamera->GetCameraPixelSize()));
+        // Update profile value to avoid repetitive alerts
+        pCamera->SetCameraPixelSize(pCamera->GetCameraPixelSize());
     }
 
     if (binning != m_cal.binning)
