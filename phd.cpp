@@ -213,7 +213,7 @@ void PhdApp::OnInitCmdLine(wxCmdLineParser& parser)
     parser.SetSwitchChars(wxT("-"));
 }
 
-bool PhdApp::OnCmdLineParsed(wxCmdLineParser & parser)
+bool PhdApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
     bool bReturn = true;
 
