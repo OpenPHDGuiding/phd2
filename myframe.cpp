@@ -233,7 +233,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGuider->SetLockPosIsSticky(sticky);
     tools_menu->Check(EEGG_STICKY_LOCK, sticky);
 
-    SetMinSize(wxSize(wxMax(400, m_statusbar->GetMinSBWidth()), 300));
+    SetMinSize(wxSize(300, 300));
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
