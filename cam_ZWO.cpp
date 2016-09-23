@@ -201,16 +201,27 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     int selected = (int) idx;
 
+    ASI_ERROR_CODE r;
     ASI_CAMERA_INFO info;
-    if (ASIGetCameraProperty(&info, selected) != ASI_SUCCESS)
+    if ((r = ASIGetCameraProperty(&info, selected)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIGetCameraProperty ret %d\n", r));
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
-    if (ASIOpenCamera(selected) != ASI_SUCCESS)
+    if ((r = ASIOpenCamera(selected)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIOpenCamera ret %d\n", r));
         wxMessageBox(_("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+
+    if ((r = ASIInitCamera(selected)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ASIInitCamera ret %d\n", r));
+        ASICloseCamera(selected);
+        wxMessageBox(_("Failed to initizlize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -249,8 +260,9 @@ bool Camera_ZWO::Connect(const wxString& camId)
     wxYield();
 
     int numControls;
-    if (ASIGetNumOfControls(m_cameraId, &numControls) != ASI_SUCCESS)
+    if ((r = ASIGetNumOfControls(m_cameraId, &numControls)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIGetNumOfControls ret %d\n", r));
         Disconnect();
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
