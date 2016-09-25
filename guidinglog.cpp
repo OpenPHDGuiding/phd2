@@ -280,7 +280,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y, 
+                pFrame->pGuider->CurrentPosition().Y,
                 pFrame->pGuider->HFD()));
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
     Flush();
@@ -461,6 +461,13 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 void GuidingLog::NotifySettlingStateChange(const wxString& msg)
 {
     m_file.Write(wxString::Format("INFO: SETTLING STATE CHANGE, %s\n", msg));
+    Flush();
+}
+
+void GuidingLog::NotifyGAResult(const wxString& msg)
+{
+    // Client needs to handle end-of-line formatting
+    m_file.Write(wxString::Format("INFO: GA Result - %s", msg));
     Flush();
 }
 

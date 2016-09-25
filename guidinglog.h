@@ -116,6 +116,7 @@ public:
     void NotifySetLockPosition(Guider *guider);
     void NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate);
     void NotifySettlingStateChange(const wxString& msg);
+    void NotifyGAResult(const wxString& msg);
 
     void SetGuidingParam(const wxString& name, double val);
     void SetGuidingParam(const wxString& name, int val);
