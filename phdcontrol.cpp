@@ -69,6 +69,7 @@ struct ControllerState
     wxStopWatch *settleTimeout;
     wxStopWatch *settleInRange;
     int settleFrameCount;
+    int droppedFrameCount;
     bool succeeded;
     wxString errorMsg;
 };
@@ -194,13 +195,13 @@ static void do_notify(void)
     if (ctrl.succeeded)
     {
         Debug.AddLine("PhdController complete: success");
-        EvtServer.NotifySettleDone(wxEmptyString);
+        EvtServer.NotifySettleDone(wxEmptyString, ctrl.settleFrameCount, ctrl.droppedFrameCount);
         GuideLog.NotifySettlingStateChange("Settling complete");
     }
     else
     {
         Debug.AddLine(wxString::Format("PhdController complete: fail: %s", ctrl.errorMsg));
-        EvtServer.NotifySettleDone(ctrl.errorMsg);
+        EvtServer.NotifySettleDone(ctrl.errorMsg, ctrl.settleFrameCount, ctrl.droppedFrameCount);
         GuideLog.NotifySettlingStateChange("Settling failed");
     }
 
@@ -417,7 +418,7 @@ void PhdController::UpdateControllerState(void)
 
         case STATE_SETTLE_BEGIN:
             ctrl.settlePriorFrameInRange = false;
-            ctrl.settleFrameCount = 0;
+            ctrl.settleFrameCount = ctrl.droppedFrameCount = 0;
             ctrl.settleTimeout->Start();
             SETSTATE(STATE_SETTLE_WAIT);
             GuideLog.NotifySettlingStateChange("Settling started");
@@ -432,6 +433,9 @@ void PhdController::UpdateControllerState(void)
             long timeInRange = 0;
 
             ++ctrl.settleFrameCount;
+
+            if (!lockedOnStar)
+                ++ctrl.droppedFrameCount;
 
             Debug.Write(wxString::Format("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d frame = %d / %d\n",
                                          lockedOnStar, currentError, ctrl.settle.tolerancePx, aoBumpInProgress, ctrl.settleFrameCount,
@@ -469,7 +473,7 @@ void PhdController::UpdateControllerState(void)
                 do_fail(_T("timed-out waiting for guider to settle"));
                 break;
             }
-            EvtServer.NotifySettling(currentError, (double) timeInRange / 1000., ctrl.settle.settleTimeSec);
+            EvtServer.NotifySettling(currentError, (double)timeInRange / 1000., ctrl.settle.settleTimeSec, lockedOnStar);
             ctrl.settlePriorFrameInRange = inRange;
             done = true;
             break;

@@ -295,18 +295,19 @@ static Ev ev_app_state(EXPOSED_STATE st = Guider::GetExposedState())
     return ev;
 }
 
-static Ev ev_settling(double distance, double time, double settleTime)
+static Ev ev_settling(double distance, double time, double settleTime, bool starLocked)
 {
     Ev ev("Settling");
 
     ev << NV("Distance", distance, 2)
        << NV("Time", time, 1)
-       << NV("SettleTime", settleTime, 1);
+       << NV("SettleTime", settleTime, 1)
+       << NV("StarLocked", starLocked);
 
     return ev;
 }
 
-static Ev ev_settle_done(const wxString& errorMsg)
+static Ev ev_settle_done(const wxString& errorMsg, int settleFrames, int droppedFrames)
 {
     Ev ev("SettleDone");
 
@@ -318,6 +319,9 @@ static Ev ev_settle_done(const wxString& errorMsg)
     {
         ev << NV("Error", errorMsg);
     }
+
+    ev << NV("TotalFrames", settleFrames)
+        << NV("DroppedFrames", droppedFrames);
 
     return ev;
 }
@@ -2023,24 +2027,24 @@ void EventServer::NotifyAppState()
     do_notify(m_eventServerClients, ev_app_state());
 }
 
-void EventServer::NotifySettling(double distance, double time, double settleTime)
+void EventServer::NotifySettling(double distance, double time, double settleTime, bool starLocked)
 {
     if (m_eventServerClients.empty())
         return;
 
-    Ev ev(ev_settling(distance, time, settleTime));
+    Ev ev(ev_settling(distance, time, settleTime, starLocked));
 
     Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
     do_notify(m_eventServerClients, ev);
 }
 
-void EventServer::NotifySettleDone(const wxString& errorMsg)
+void EventServer::NotifySettleDone(const wxString& errorMsg, int settleFrames, int droppedFrames)
 {
     if (m_eventServerClients.empty())
         return;
 
-    Ev ev(ev_settle_done(errorMsg));
+    Ev ev(ev_settle_done(errorMsg, settleFrames, droppedFrames));
 
     Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
