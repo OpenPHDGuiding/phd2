@@ -1511,8 +1511,11 @@ wxString Mount::GetSettingsSummary()
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
     wxString auxMountStr = wxEmptyString;
-    if (m_Name == _("On Camera") && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
-        auxMountStr = "AuxMount=" +  pPointingSource->Name();
+    if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
+    {
+        if (pPointingSource != TheScope())
+            auxMountStr = "AuxMount=" + pPointingSource->Name();
+    }
     wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
