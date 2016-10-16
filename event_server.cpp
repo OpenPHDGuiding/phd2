@@ -1561,13 +1561,13 @@ static bool axis_param(const Params& p, GuideAxis *a)
 
     bool ok = true;
 
-    if (stricmp(val->string_value, "ra") == 0)
+    if (wxStricmp(val->string_value, "ra") == 0)
         *a = GUIDE_RA;
-    else if (stricmp(val->string_value, "x") == 0)
+    else if (wxStricmp(val->string_value, "x") == 0)
         *a = GUIDE_X;
-    else if (stricmp(val->string_value, "dec") == 0)
+    else if (wxStricmp(val->string_value, "dec") == 0)
         *a = GUIDE_DEC;
-    else if (stricmp(val->string_value, "y") == 0)
+    else if (wxStricmp(val->string_value, "y") == 0)
         *a = GUIDE_Y;
     else
         ok = false;
