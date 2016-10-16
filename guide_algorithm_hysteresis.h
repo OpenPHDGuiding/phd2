@@ -46,7 +46,9 @@ class GuideAlgorithmHysteresis : public GuideAlgorithm
     double m_hysteresis;
     double m_aggression;
     double m_lastMove;
+
 protected:
+
     class GuideAlgorithmHysteresisConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;
@@ -88,7 +90,9 @@ protected:
 
     friend class GuideAlgorithmHysteresisConfigDialogPane;
     friend class GraphLogWindow;
+
 public:
+
     GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmHysteresis(void);
 
@@ -100,6 +104,24 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Hysteresis"; }
+    virtual void GetParamNames(wxArrayString& names) const;
+    virtual bool GetParam(const wxString& name, double *val);
+    virtual bool SetParam(const wxString& name, double val);
 };
+
+inline double GuideAlgorithmHysteresis::GetMinMove(void)
+{
+    return m_minMove;
+}
+
+inline double GuideAlgorithmHysteresis::GetHysteresis(void)
+{
+    return m_hysteresis;
+}
+
+inline double GuideAlgorithmHysteresis::GetAggression(void)
+{
+    return m_aggression;
+}
 
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

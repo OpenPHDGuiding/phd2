@@ -94,11 +94,6 @@ double GuideAlgorithmHysteresis::result(double input)
     return dReturn;
 }
 
-double GuideAlgorithmHysteresis::GetMinMove(void)
-{
-    return m_minMove;
-}
-
 bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
 {
     bool bError = false;
@@ -113,7 +108,7 @@ bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -123,11 +118,6 @@ bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
     pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
 
     return bError;
-}
-
-double GuideAlgorithmHysteresis::GetHysteresis(void)
-{
-    return m_hysteresis;
 }
 
 bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
@@ -144,7 +134,7 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
         m_hysteresis = hysteresis;
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -154,11 +144,6 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
     pConfig->Profile.SetDouble(GetConfigPath() + "/hysteresis", m_hysteresis);
 
     return bError;
-}
-
-double GuideAlgorithmHysteresis::GetAggression(void)
-{
-    return m_aggression;
 }
 
 bool GuideAlgorithmHysteresis::SetAggression(double aggression)
@@ -174,7 +159,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
 
         m_aggression = aggression;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -195,6 +180,45 @@ wxString GuideAlgorithmHysteresis::GetSettingsSummary()
             GetAggression(),
             GetMinMove()
         );
+}
+
+void GuideAlgorithmHysteresis::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("hysteresis");
+    names.push_back("aggression");
+}
+
+bool GuideAlgorithmHysteresis::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "hysteresis")
+        *val = GetHysteresis();
+    else if (name == "aggression")
+        *val = GetAggression();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmHysteresis::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "hysteresis")
+        err = SetHysteresis(val);
+    else if (name == "aggression")
+        err = SetAggression(val);
+    else
+        err = true;
+
+    return !err;
 }
 
 ConfigDialogPane *GuideAlgorithmHysteresis::GetConfigDialogPane(wxWindow *pParent)
@@ -265,7 +289,6 @@ GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParen
 {
     return new GuideAlgorithmHysteresisGraphControlPane(pParent, this, label);
 }
-
 
 GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisGraphControlPane::

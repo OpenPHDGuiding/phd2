@@ -103,5 +103,18 @@ void GuideAlgorithm::GuidingDithered(double amt)
 
 void GuideAlgorithm::GuidingDitherSettleDone(bool success)
 {
+}
 
+void GuideAlgorithm::GetParamNames(wxArrayString& names) const
+{
+}
+
+bool GuideAlgorithm::GetParam(const wxString& name, double *val)
+{
+    return false;
+}
+
+bool GuideAlgorithm::SetParam(const wxString& name, double val)
+{
+    return false;
 }

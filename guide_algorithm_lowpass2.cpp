@@ -115,11 +115,6 @@ double GuideAlgorithmLowpass2::result(double input)
     return dReturn;
 }
 
-double GuideAlgorithmLowpass2::GetMinMove(void)
-{
-    return m_minMove;
-}
-
 bool GuideAlgorithmLowpass2::SetMinMove(double minMove)
 {
     bool bError = false;
@@ -134,7 +129,7 @@ bool GuideAlgorithmLowpass2::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -146,9 +141,38 @@ bool GuideAlgorithmLowpass2::SetMinMove(double minMove)
     return bError;
 }
 
-double GuideAlgorithmLowpass2::GetAggressiveness(void)
+void GuideAlgorithmLowpass2::GetParamNames(wxArrayString& names) const
 {
-    return m_aggressiveness;
+    names.push_back("minMove");
+    names.push_back("aggressiveness");
+}
+
+bool GuideAlgorithmLowpass2::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "aggressiveness")
+        *val = GetAggressiveness();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmLowpass2::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "aggressiveness")
+        err = SetAggressiveness(val);
+    else
+        err = true;
+
+    return !err;
 }
 
 bool GuideAlgorithmLowpass2::SetAggressiveness(double aggressiveness)
@@ -164,7 +188,7 @@ bool GuideAlgorithmLowpass2::SetAggressiveness(double aggressiveness)
 
         m_aggressiveness = aggressiveness;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

@@ -109,11 +109,6 @@ double GuideAlgorithmLowpass::result(double input)
     return dReturn;
 }
 
-double GuideAlgorithmLowpass::GetMinMove(void)
-{
-    return m_minMove;
-}
-
 bool GuideAlgorithmLowpass::SetMinMove(double minMove)
 {
     bool bError = false;
@@ -128,7 +123,7 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -138,11 +133,6 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
     pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
 
     return bError;
-}
-
-double GuideAlgorithmLowpass::GetSlopeWeight(void)
-{
-    return m_slopeWeight;
 }
 
 bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
@@ -158,7 +148,7 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
 
         m_slopeWeight = slopeWeight;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -168,6 +158,40 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
     pConfig->Profile.SetDouble(GetConfigPath() + "/SlopeWeight", m_slopeWeight);
 
     return bError;
+}
+
+void GuideAlgorithmLowpass::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("slopeWeight");
+}
+
+bool GuideAlgorithmLowpass::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "slopeWeight")
+        *val = GetSlopeWeight();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmLowpass::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "slopeWeight")
+        err = SetSlopeWeight(val);
+    else
+        err = true;
+
+    return !err;
 }
 
 wxString GuideAlgorithmLowpass::GetSettingsSummary()

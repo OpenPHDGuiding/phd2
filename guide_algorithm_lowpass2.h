@@ -93,8 +93,21 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass2"; }
+    virtual void GetParamNames(wxArrayString& names) const;
+    virtual bool GetParam(const wxString& name, double *val);
+    virtual bool SetParam(const wxString& name, double val);
     virtual double GetMinMove(void);
     virtual bool SetMinMove(double minMove);
 };
+
+inline double GuideAlgorithmLowpass2::GetMinMove(void)
+{
+    return m_minMove;
+}
+
+inline double GuideAlgorithmLowpass2::GetAggressiveness(void)
+{
+    return m_aggressiveness;
+}
 
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

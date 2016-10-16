@@ -1553,6 +1553,117 @@ static void set_guide_output_enabled(JObj& response, const json_value *params)
         response << jrpc_error(1, "mount not defined");
 }
 
+static bool axis_param(const Params& p, GuideAxis *a)
+{
+    const json_value *val = p.param("axis");
+    if (!val || val->type != JSON_STRING)
+        return false;
+
+    bool ok = true;
+
+    if (stricmp(val->string_value, "ra") == 0)
+        *a = GUIDE_RA;
+    else if (stricmp(val->string_value, "x") == 0)
+        *a = GUIDE_X;
+    else if (stricmp(val->string_value, "dec") == 0)
+        *a = GUIDE_DEC;
+    else if (stricmp(val->string_value, "y") == 0)
+        *a = GUIDE_Y;
+    else
+        ok = false;
+
+    return ok;
+}
+
+static void get_algo_param_names(JObj& response, const json_value *params)
+{
+    Params p("axis", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    wxArrayString ary;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        alg->GetParamNames(ary);
+    }
+
+    JAry names;
+    for (auto it = ary.begin(); it != ary.end(); ++it)
+        names << ('"' + json_escape(*it) + '"');
+
+    response << jrpc_result(names);
+}
+
+static void get_algo_param(JObj& response, const json_value *params)
+{
+    Params p("axis", "name", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    const json_value *name = p.param("name");
+    if (!name || name->type != JSON_STRING)
+    {
+        response << jrpc_error(1, "expected param name param");
+        return;
+    }
+    bool ok = false;
+    double val;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        ok = alg->GetParam(name->string_value, &val);
+    }
+    if (ok)
+        response << jrpc_result(val);
+    else
+        response << jrpc_error(1, "could not get param");
+}
+
+static void set_algo_param(JObj& response, const json_value *params)
+{
+    Params p("axis", "name", "value", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    const json_value *name = p.param("name");
+    if (!name || name->type != JSON_STRING)
+    {
+        response << jrpc_error(1, "expected param name param");
+        return;
+    }
+    const json_value *val = p.param("value");
+    double v;
+    if (!float_param(val, &v))
+    {
+        response << jrpc_error(1, "expected param value param");
+        return;
+    }
+    bool ok = false;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        ok = alg->SetParam(name->string_value, v);
+    }
+    if (ok)
+    {
+        response << jrpc_result(0);
+        if (pFrame->pGraphLog)
+            pFrame->pGraphLog->UpdateControls();
+    }
+    else
+        response << jrpc_error(1, "could not set param");
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -1619,6 +1730,9 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_current_equipment", &get_current_equipment, },
         { "get_guide_output_enabled", &get_guide_output_enabled, },
         { "set_guide_output_enabled", &set_guide_output_enabled, },
+        { "get_algo_param_names", &get_algo_param_names, },
+        { "get_algo_param", &get_algo_param, },
+        { "set_algo_param", &set_algo_param, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

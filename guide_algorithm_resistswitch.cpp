@@ -190,7 +190,7 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
         m_minMove = minMove;
         m_currentSide = 0;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -236,6 +236,47 @@ void GuideAlgorithmResistSwitch::SetFastSwitchEnabled(bool enable)
     m_fastSwitchEnabled = enable;
     pConfig->Profile.SetBoolean(GetConfigPath() + "/fastSwitch", m_fastSwitchEnabled);
     Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetFastSwitchEnabled(%d)\n", m_fastSwitchEnabled));
+}
+
+void GuideAlgorithmResistSwitch::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("fastSwitch");
+    names.push_back("aggression");
+}
+
+bool GuideAlgorithmResistSwitch::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "fastSwitch")
+        *val = GetFastSwitchEnabled() ? 1.0 : 0.0;
+    else if (name == "aggression")
+        *val = GetAggression();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "fasetSwitch") {
+        SetFastSwitchEnabled(val != 0.0);
+        err = false;
+    }
+    else if (name == "aggression")
+        err = SetAggression(val);
+    else
+        err = true;
+
+    return !err;
 }
 
 wxString GuideAlgorithmResistSwitch::GetSettingsSummary()
