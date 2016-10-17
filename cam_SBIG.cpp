@@ -418,9 +418,9 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
 
     sep.exposureTime = (unsigned long) duration / 10;
     sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
+    sep.readoutMode = rlp.readoutMode = dlp.readoutMode =
+        Binning == 1 ? RM_1X1 : RM_2X2;
 
-    // Setup readout mode (now needed by StartExposure 2)
-    sep.readoutMode = Binning == 1 ? RM_1X1 : RM_2X2;
     if (TakeSubframe)
     {
         sep.top = subframe.x;
@@ -501,15 +501,12 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
 
     // Get data
 
-    rlp.readoutMode = 0;
-
     if (TakeSubframe)
     {
         img.Subframe = subframe;
 
         // dump the lines above the one we want
         dlp.lineLength = subframe.y;
-        dlp.readoutMode = 0;
         SBIGUnivDrvCommand(CC_DUMP_LINES, &dlp, NULL);
 
         // set up to read the part of the lines we do want
