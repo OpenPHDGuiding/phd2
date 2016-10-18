@@ -301,16 +301,16 @@ GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000"));
-    m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
+    m_pAggression = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
 
     DoAdd(_("Aggressiveness"), m_pAggression,
         wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
-    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
@@ -362,8 +362,8 @@ GuideAlgorithmResistSwitch::
 
     // Aggression
     width = StringWidth(_T("000"));
-    m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
+    m_pAggression = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrlDouble, this);
     DoAdd(m_pAggression, _T("Agr"));
@@ -371,8 +371,8 @@ GuideAlgorithmResistSwitch::
 
     // Min move
     width = StringWidth(_T("00.00"));
-    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove,_T("MnMo"));

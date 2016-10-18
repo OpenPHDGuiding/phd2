@@ -51,7 +51,7 @@ const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;       // 50% sidereal rate
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
-    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    wxSpinCtrlDouble *pNewCtrl = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, inc);
     pNewCtrl->SetDigits(2);
     return pNewCtrl;
@@ -63,6 +63,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
     const double dSiderealSecondPerSec = 0.9973;
+    int spinnerWidth, spinnerHeight;
+    int textWidth;
 
     // Get squared away with initial parameter values - start with values from the profile
     m_iNumSteps = pConfig->Profile.GetInt("/CalStepCalc/NumSteps", DEFAULT_STEPS);
@@ -71,6 +73,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_fPixelSize = pixelSize;
     m_binning = binning;
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
+
     // Now improve on Dec and guide speed if mount/pointing info is available
     if (pPointingSource)
     {
@@ -98,19 +101,20 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // Build the group of input fields
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
+    textWidth = StringWidth(this, "00000");
+    m_pPixelSize = NewSpinner(this, textWidth, m_fPixelSize, MIN_PIXELSIZE, MAX_PIXELSIZE, 0.1);
+    m_pPixelSize->GetSize(&spinnerWidth, &spinnerHeight);         // Get sizing info from spinner, which will be largest
 
-    // Note that "min" values in fp validators don't work right - so leave them out
-    // Focal length - any positive int, same as global tab
-    int width = StringWidth(this, "00000") + 10;
+    // Focal length - any positive int
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
     valFocalLength.SetRange(0, wxINT32_MAX);
-    m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
+    m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(spinnerWidth,
+        -1), 0, valFocalLength);
     m_pFocalLength->Enable(!pFrame->CaptureActive);
     m_pFocalLength->Bind(wxEVT_TEXT, &CalstepDialog::OnText, this);
     AddTableEntry (m_pInputTableSizer, _("Focal length, mm"), m_pFocalLength, _("Guide scope focal length"));
 
     // Pixel size
-    m_pPixelSize = NewSpinner (this, 1.5*width, m_fPixelSize, MIN_PIXELSIZE, MAX_PIXELSIZE, 0.1);
     m_pPixelSize->Enable(!pFrame->CaptureActive);
     m_pPixelSize->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
@@ -127,20 +131,20 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_binningChoice->Enable(m_binningChoice->GetCount() > 1);
 
     // Guide speed
-    m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
+    m_pGuideSpeed = NewSpinner(this, textWidth, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
     m_pGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed,
                    _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
 
     // Number of steps
-    m_pNumSteps = NewSpinner (this, 1.5*width, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
+    m_pNumSteps = NewSpinner(this, textWidth, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
     m_pNumSteps->SetDigits (0);
     m_pNumSteps->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps,
                    wxString::Format(_("Targeted number of steps in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_STEPS));
 
     // Calibration declination
-    m_pDeclination = NewSpinner(this, 1.5*width, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
+    m_pDeclination = NewSpinner(this, textWidth, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
     m_pDeclination->SetDigits(0);
     m_pDeclination->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Calibration declination, degrees"), m_pDeclination, _("Approximate declination where you will do calibration"));
@@ -149,10 +153,11 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Computed Values"));
 
     m_status = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
-    m_pImageScale = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
+    m_pImageScale = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(spinnerWidth,
+        -1));
     m_pImageScale->Enable(false);
     AddTableEntry (m_pOutputTableSizer, _("Image scale, arc-sec/px"), m_pImageScale, "");
-    m_pRslt = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
+    m_pRslt = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(spinnerWidth, -1));
     AddTableEntry (m_pOutputTableSizer, _("Calibration step, ms"), m_pRslt, "");
 
     // Add the tables to the panel, centered

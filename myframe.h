@@ -183,6 +183,7 @@ private:
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
     bool m_continueCapturing; // should another image be captured?
+    static const int SPINNER_PADDING = 40;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -397,6 +398,14 @@ public:
     void NotifyGuidingParam(const wxString& name, int val);
     void NotifyGuidingParam(const wxString& name, bool val);
     void NotifyGuidingParam(const wxString& name, const wxString& val);
+    // Following 2 functions are used by clients that need to size the spin control based on the max text width
+    wxSpinCtrl* MakeSpinCtrl(wxWindow *parent, wxWindowID id = -1, const wxString& value = wxEmptyString,
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_ARROW_KEYS,
+        int min = 0, int max = 100, int initial = 0, const wxString& name = wxT("wxSpinCtrl"));
+    wxSpinCtrlDouble* MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString,
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+        long style = wxSP_ARROW_KEYS | wxALIGN_RIGHT, double min = 0, double max = 100, double initial = 0,
+        double inc = 1, const wxString& name = wxT("wxSpinCtrlDouble"));
 
 private:
     wxCriticalSection m_CSpWorkerThread;

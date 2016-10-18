@@ -226,16 +226,16 @@ GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pAggressiveness = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
+    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
     m_pAggressiveness->SetDigits(2);
 
     DoAdd(_("Aggressiveness"), m_pAggressiveness,
         wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggressiveness));
 
     width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
@@ -280,15 +280,15 @@ GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pAggressiveness = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
+    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
     m_pAggressiveness->SetDigits(2);
     m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass2::GuideAlgorithmLowpass2GraphControlPane::OnAggrSpinCtrlDouble, this);
     DoAdd(m_pAggressiveness, _("Agg"));
 
     width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass2::GuideAlgorithmLowpass2GraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));

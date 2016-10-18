@@ -89,8 +89,8 @@ wxSizer *TestGuideDialog::InitMountControls()
 
     sz1->Add(new wxStaticText(this, wxID_ANY, _("Guide Pulse Duration (ms):")),
         wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
-    pulseDurationSpinCtrl = new wxSpinCtrlDouble(this, ID_PULSEDURATION, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(GetParent(),"00000")+30,-1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 100.0, 5000.0, 100.0, 100.0);
+    pulseDurationSpinCtrl = pFrame->MakeSpinCtrlDouble(this, ID_PULSEDURATION, wxEmptyString, wxDefaultPosition,
+        wxSize(StringWidth(GetParent(), "00000"), -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 100.0, 5000.0, 100.0, 100.0);
     pulseDurationSpinCtrl->SetDigits(0);
     pulseDurationSpinCtrl->SetToolTip(_("Manual guide pulse duration (milliseconds)"));
     Mount *mnt = TheScope();
@@ -117,8 +117,8 @@ wxSizer *TestGuideDialog::InitMountControls()
     sz2->Add(ditherTypeChoice, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
 
     sz2->Add(new wxStaticText(this, wxID_ANY, _("Scale")), wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
-    ditherScaleSpinCtrl = new wxSpinCtrlDouble(this, ID_DITHERSCALE, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(GetParent(),"000.0")+30,-1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.1, 100.0, 1.0, 1.0);
+    ditherScaleSpinCtrl = pFrame->MakeSpinCtrlDouble(this, ID_DITHERSCALE, wxEmptyString, wxDefaultPosition,
+        wxSize(StringWidth(GetParent(), "000.0"), -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.1, 100.0, 1.0, 1.0);
     ditherScaleSpinCtrl->SetDigits(1);
     ditherScaleSpinCtrl->SetValue(pFrame->GetDitherScaleFactor());
     ditherScaleSpinCtrl->SetToolTip(_("Scale factor for dithering. The dither amount type is multiplied by this value to get the actual dither amount. Changing the value here affects both manual dithering and dithering from imaging applications connected to PHD."));

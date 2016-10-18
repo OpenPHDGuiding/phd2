@@ -2529,13 +2529,13 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 
     width = StringWidth(_T("00000"));
     parent = GetParentWindow(AD_szTimeLapse);
-    m_pTimeLapse = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
+    m_pTimeLapse = pFrame->MakeSpinCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
     AddLabeledCtrl(CtrlMap, AD_szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
     parent = GetParentWindow(AD_szFocalLength);
-    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1));
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
@@ -2613,8 +2613,8 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherRaOnly->SetToolTip(_("Constrain dither to RA only"));
 
     width = StringWidth(_T("000.00"));
-    m_ditherScaleFactor = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
+    m_ditherScaleFactor = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
     m_ditherScaleFactor->SetDigits(1);
     m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
@@ -2638,8 +2638,8 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
 
     width = StringWidth(_T("00.0"));
-    m_autoExpSNR = new wxSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
+    m_autoExpSNR = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
     wxFlexGridSizer *sz1 = new wxFlexGridSizer(1, 3, 10, 10);
     sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
@@ -2786,6 +2786,30 @@ void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
     }
     else
         win->Move(x, y);
+}
+
+// The spin control factories allow clients to specify a width based on the max width of the numeric values without having 
+// to make guesses about the additional space required by the other parts of the control
+wxSpinCtrl* MyFrame::MakeSpinCtrl(wxWindow *parent, wxWindowID id, const wxString& value,
+    const wxPoint& pos, const wxSize& size, long style,
+    int min, int max, int initial, const wxString& name)
+{
+    wxSize actualSize = size;
+    int requestedWidth = size.GetWidth();
+    if (requestedWidth > 0)
+        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
+    return new wxSpinCtrl(parent, id, value, pos, actualSize, style, min, max, initial, name);
+}
+
+wxSpinCtrlDouble* MyFrame::MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id, const wxString& value,
+    const wxPoint& pos, const wxSize& size, long style, double min, double max, double initial,
+    double inc, const wxString& name)
+{
+    wxSize actualSize = size;
+    int requestedWidth = size.GetWidth();
+    if (requestedWidth > 0)
+        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
+    return new wxSpinCtrlDouble(parent, id, value, pos, actualSize, style, min, max, initial, inc, name);
 }
 
 template<typename T>
