@@ -479,7 +479,7 @@ bool   ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 	    err = false;
 	}
 	if (SiderealTime_prop) {   // LX200 only
-	    INumber *stprop = IUFindNumber(coord_prop,"LST"); 
+	    INumber *stprop = IUFindNumber(SiderealTime_prop,"LST"); 
 	    if (stprop){
 		*siderealTime = stprop->value;
 	    }
