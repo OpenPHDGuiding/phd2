@@ -684,6 +684,8 @@ bool GuideCamera::SetCameraPixelSize(double pixel_size)
         }
 
         m_pixelSize = pixel_size;
+        if (pFrame->pStatsWin)
+            pFrame->pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {

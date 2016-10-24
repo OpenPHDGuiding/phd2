@@ -49,7 +49,8 @@ wxEND_EVENT_TABLE()
 StatsWindow::StatsWindow(wxWindow *parent)
     : wxWindow(parent, wxID_ANY),
     m_visible(false),
-    m_coolerTimer(this, TIMER_ID_COOLER)
+    m_coolerTimer(this, TIMER_ID_COOLER),
+    m_lastFrameSize(wxDefaultSize)
 {
     SetBackgroundColour(*wxBLACK);
 
@@ -83,7 +84,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(9, 2);
+    m_grid2->CreateGrid(11, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -109,11 +110,20 @@ StatsWindow::StatsWindow(wxWindow *parent)
     ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Camera binning"));
     ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Image size"));
+    m_frameSizeRow = row;
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Field of View"));
+    // Make sure the column is big enough
+    m_grid2->SetCellValue(row, col, _("nnn.n x nnn.n arc-min"));
+    ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Camera cooler"));
     m_grid2->SetCellValue(row, col, "-99" DEGREES_SYMBOL " / -99" DEGREES_SYMBOL ", 999%");
+    m_coolerRow = row;
 
     m_grid2->AutoSize();
     m_grid2->SetCellValue(3, 1, _T(""));
+    m_grid2->SetCellValue(m_frameSizeRow + 1, 1, _T(""));
     m_grid2->ClearSelection();
 
     wxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
@@ -249,7 +259,34 @@ void StatsWindow::UpdateCooler()
         else
             s = _("None");
     }
-    m_grid2->SetCellValue(8, 1, s);
+    m_grid2->SetCellValue(m_coolerRow, 1, s);
+}
+
+static wxString fov(wxSize sensorFormat, double sampling)
+{
+    if (sampling != 1.0)
+        return wxString::Format("% 4.1f x % 4.1f %s", sensorFormat.x * sampling / 60.0, sensorFormat.y * sampling / 60.0, (" arc-min"));
+    else
+        return " ";
+}
+
+void StatsWindow::UpdateImageSize(wxSize frameSize)
+{
+    if (m_visible && frameSize != m_lastFrameSize)
+    {
+        wxString sensorStr = wxString::Format("%d x %d %s", frameSize.x, frameSize.y, _("px"));
+        m_grid2->SetCellValue(m_frameSizeRow, 1, sensorStr);
+        const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
+        m_grid2->SetCellValue(m_frameSizeRow + 1, 1, fov(frameSize, sampling));
+        m_lastFrameSize = frameSize;
+    }
+}
+
+void StatsWindow::ResetImageSize()
+{
+    m_lastFrameSize = wxDefaultSize;
+    m_grid2->SetCellValue(m_frameSizeRow, 1, wxEmptyString);
+    m_grid2->SetCellValue(m_frameSizeRow + 1, 1, wxEmptyString);
 }
 
 void StatsWindow::OnTimerCooler(wxTimerEvent&)

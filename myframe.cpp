@@ -2339,6 +2339,8 @@ bool MyFrame::SetFocalLength(int focalLength)
         }
 
         m_focalLength = focalLength;
+        if (pStatsWin)
+            pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {

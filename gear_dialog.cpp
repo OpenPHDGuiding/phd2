@@ -1056,6 +1056,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
         pFrame->StatusMsg(_("Camera Disconnected"));
         pFrame->UpdateStateLabels();
         pFrame->pStatsWin->UpdateCooler();
+        pFrame->pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {

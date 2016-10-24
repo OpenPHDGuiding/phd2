@@ -1073,6 +1073,9 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             pImage = m_pCurrentImage;
         }
 
+        if (pFrame && pFrame->pStatsWin)
+            pFrame->pStatsWin->UpdateImageSize(pImage->Size);
+
         if (bStopping)
         {
             StopGuiding();

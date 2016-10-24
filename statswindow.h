@@ -43,6 +43,9 @@ class StatsWindow : public wxWindow
     int m_length;
     OptionsButton *m_pLengthButton;
     wxTimer m_coolerTimer;
+    int m_frameSizeRow;
+    int m_coolerRow;
+    wxSize m_lastFrameSize;
 
     void OnButtonLength(wxCommandEvent&);
     void OnMenuLength(wxCommandEvent&);
@@ -56,6 +59,8 @@ public:
     void UpdateStats();
     void UpdateScopePointing();
     void UpdateCooler();
+    void UpdateImageSize(wxSize frameSize);
+    void ResetImageSize();
     void SetState(bool is_active);
 
     DECLARE_EVENT_TABLE()
