@@ -262,7 +262,7 @@ void StatsWindow::UpdateCooler()
     m_grid2->SetCellValue(m_coolerRow, 1, s);
 }
 
-static wxString fov(wxSize sensorFormat, double sampling)
+static wxString fov(const wxSize& sensorFormat, double sampling)
 {
     if (sampling != 1.0)
         return wxString::Format("% 4.1f x % 4.1f %s", sensorFormat.x * sampling / 60.0, sensorFormat.y * sampling / 60.0, _(" arc-min"));
@@ -270,7 +270,7 @@ static wxString fov(wxSize sensorFormat, double sampling)
         return " ";
 }
 
-void StatsWindow::UpdateImageSize(wxSize frameSize)
+void StatsWindow::UpdateImageSize(const wxSize& frameSize)
 {
     if (m_visible && frameSize != m_lastFrameSize)
     {

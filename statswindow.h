@@ -59,7 +59,7 @@ public:
     void UpdateStats();
     void UpdateScopePointing();
     void UpdateCooler();
-    void UpdateImageSize(wxSize frameSize);
+    void UpdateImageSize(const wxSize& frameSize);
     void ResetImageSize();
     void SetState(bool is_active);
 
