@@ -274,6 +274,64 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
 
 
 
+##############################################
+# VidCapture
+
+if(WIN32)
+
+  set(libvidcap_root ${thirdparties_deflate_directory}/VidCapture)
+
+  if(NOT EXISTS ${libvidcap_root})
+    # untar the dependency
+    message(STATUS "Untarring VidCapture")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/VidCapture-20161026.zip
+                      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
+
+  # copied and adapted from the CMakeLists.txt of cftsio project. The
+  # sources of the project are left untouched
+
+  file(GLOB VIDCAP_H_FILES "${libvidcap_root}/Source/CVCommon/*.h" "${libvidcap_root}/Source/VidCapture/*.h")
+
+  set(VIDCAP_SRC_FILES
+      Source/VidCapture/CVImage.cpp
+      Source/VidCapture/CVImageGrey.cpp
+      Source/VidCapture/CVImageRGB24.cpp
+      Source/VidCapture/CVImageRGBFloat.cpp
+      Source/VidCapture/CVVidCapture.cpp
+      Source/VidCapture/CVVidCaptureDSWin32.cpp
+      Source/VidCapture/CVDShowUtil.cpp
+      Source/VidCapture/CVFile.cpp
+      Source/VidCapture/CVPlatformWin32.cpp
+      Source/VidCapture/CVTraceWin32.cpp
+  )
+
+  foreach(_src_file IN LISTS VIDCAP_SRC_FILES)
+    set(VIDCAP_SRC_FILES_rooted "${VIDCAP_SRC_FILES_rooted}" ${libvidcap_root}/${_src_file})
+  endforeach()
+
+  add_library(VidCapture STATIC ${VIDCAP_H_FILES} ${VIDCAP_SRC_FILES_rooted})
+  target_include_directories(VidCapture PUBLIC ${libvidcap_root}/Source/CVCommon ${libvidcap_root}/Source/VidCapture)
+
+  target_compile_definitions(
+    VidCapture
+    PRIVATE FF_NO_UNISTD_H
+    PRIVATE _CRT_SECURE_NO_WARNINGS
+    PRIVATE _CRT_SECURE_NO_DEPRECATE)
+
+  set_target_properties(VidCapture PROPERTIES 
+                         FOLDER "Thirdparty/")
+
+  # indicating the link and include directives to the main project.
+  # already done by the directive target_include_directories(vidcap PUBLIC
+  # include_directories(${libvidcap_root})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} VidCapture)
+
+endif()
+
+
+
+
 #############################################
 # libusb / win32 / apple
 
@@ -495,7 +553,6 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 # Windows specific dependencies
 # - OpenCV
 # - Video For Windows (vfw)
-# - VidCap
 # - ASCOM camera stuff
 #############################################
 
@@ -555,16 +612,9 @@ endif()
 
 # Various camera libraries
 if(WIN32)
-  # VidCapture
-  set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
-  include_directories(${vidcap_dir})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
-
-
   # Video for Windows, directshow and windows media
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
-  
-  
+
   # gpusb
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
