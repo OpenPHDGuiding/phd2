@@ -139,8 +139,6 @@ struct GuidingAsstWin : public wxDialog
     wxGrid *m_othergrid;
     wxFlexGridSizer *m_recommendgrid;
     wxBoxSizer *m_vSizer;
-    wxBoxSizer *m_vResultsSizer;
-    wxBoxSizer *m_hResultsSizer;
     wxStaticBoxSizer *m_recommend_group;
     wxCheckBox *m_backlashCB;
     wxStaticText *m_backlashInfo;
@@ -262,17 +260,25 @@ GuidingAsstWin::GuidingAsstWin()
       m_guideOutputDisabled(false),
       m_origSubFrames(-1)
 {
+    // Sizer hierarchy:
+    // m_vSizer has {instructions, vResultsSizer, m_backlashInfo, btnSizer}
+    // vResultsSizer has {hTopSizer, hBottomSizer}
+    // hTopSizer has {status_group, displacement_group}
+    // hBottomSizer has {other_group, m_recommendation_group}
     m_vSizer = new wxBoxSizer(wxVERTICAL);
-    m_vResultsSizer = new wxBoxSizer(wxVERTICAL);
-    m_hResultsSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* vResultsSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* hTopSizer = new wxBoxSizer(wxHORIZONTAL);       // Measurement status and high-frequency results
+    wxBoxSizer* hBottomSizer = new wxBoxSizer(wxHORIZONTAL);             // Low-frequency results and recommendations
 
-    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 70), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(700, 50), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
     MakeBold(m_instructions);
     m_vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8));
 
     // Grids have either 3 or 4 columns, so compute width of largest label as scaling term for column widths
-    double minCol = StringWidth(this,
+    double minLeftCol = StringWidth(this,
         _(" -999.99 px/min (-999.99 arc-sec/min )")) + 6;
+    double minRightCol = 1.25 * (StringWidth(this,
+        _(" 9.99 px ( 9.99 arc-sec)")) + 6);
     // Start of status group
     wxStaticBoxSizer *status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
     m_statusgrid = new wxGrid(this, wxID_ANY);
@@ -281,7 +287,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_statusgrid->SetRowLabelSize(1);
     m_statusgrid->SetColLabelSize(1);
     m_statusgrid->EnableEditing(false);
-    m_statusgrid->SetDefaultColSize((round(2.0 * minCol / 4.0) + 0.5));
+    m_statusgrid->SetDefaultColSize((round(2.0 * minLeftCol / 4.0) + 0.5));
 
     int col = 0;
     int row = 0;
@@ -307,7 +313,7 @@ GuidingAsstWin::GuidingAsstWin()
     //m_hfcutoff_loc.Set(row, col++);
 
     status_group->Add(m_statusgrid);
-    m_vSizer->Add(status_group, wxSizerFlags(0).Border(wxALL, 8));
+    hTopSizer->Add(status_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of status group
 
     // Start of star displacement group
@@ -318,7 +324,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_displacementgrid->SetRowLabelSize(1);
     m_displacementgrid->SetColLabelSize(1);
     m_displacementgrid->EnableEditing(false);
-    m_displacementgrid->SetDefaultColSize(minCol);
+    m_displacementgrid->SetDefaultColSize(minRightCol);
 
     row = 0;
     col = 0;
@@ -334,7 +340,8 @@ GuidingAsstWin::GuidingAsstWin()
     m_total_rms_loc.Set(row, col++);
 
     displacement_group->Add(m_displacementgrid);
-    m_vResultsSizer->Add(displacement_group, wxSizerFlags(0).Border(wxALL, 8));
+    hTopSizer->Add(displacement_group, wxSizerFlags(0).Border(wxALL, 8));
+    vResultsSizer->Add(hTopSizer);
     // End of displacement group
 
     // Start of "Other" (peak and drift) group
@@ -345,7 +352,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_othergrid->SetRowLabelSize(1);
     m_othergrid->SetColLabelSize(1);
     m_othergrid->EnableEditing(false);
-    m_othergrid->SetDefaultColSize(minCol);
+    m_othergrid->SetDefaultColSize(minLeftCol);
 
     row = 0;
     col = 0;
@@ -385,7 +392,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_pae_loc.Set(row, col++);
 
     other_group->Add(m_othergrid);
-    m_vResultsSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
+    hBottomSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of peak and drift group
 
     // Start of Recommendations group - just a place-holder for layout, populated in MakeRecommendations
@@ -401,16 +408,20 @@ GuidingAsstWin::GuidingAsstWin()
     m_calibration_msg = NULL;
 
     m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
-    // Put the recommendation block at the bottom so it can be hidden/shown
-    m_hResultsSizer->Add(m_vResultsSizer);
-    m_hResultsSizer->Add(m_recommend_group, wxSizerFlags(0).Border(wxALL, 8));
+    // Add a button for viewing the Dec backlash graph
+    m_graphBtn = new wxButton(this, wxID_ANY, _("Show Backlash Graph"));
+    m_graphBtn->SetToolTip(_("Show graph of backlash measurement points"));
+    m_graphBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnGraph), NULL, this);
+    m_graphBtn->Enable(false);
+    m_recommend_group->Add(m_graphBtn, wxSizerFlags(0).Border(wxALL, 5));
+    // Recommendations will be hidden/shown depending on state
+    hBottomSizer->Add(m_recommend_group, wxSizerFlags(0).Border(wxALL, 8));
+    vResultsSizer->Add(hBottomSizer);
 
-    m_vSizer->Add(m_hResultsSizer);
-    //m_vSizer->Add(m_recommend_group, wxSizerFlags(1).Border(wxALL, 8).Expand());
+    m_vSizer->Add(vResultsSizer);
     m_recommend_group->Show(false);
     // End of recommendations
 
-    wxStaticBoxSizer *bl_group = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Dec Backlash"));
     m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Declination Backlash"));
     m_backlashCB->SetToolTip(_("PHD2 will move the guide star a considerable distance north, then south to measure backlash. Be sure the selected star has "
         "plenty of room to move in the north direction.  If the guide star is lost, increase the size of the search region to at least 20 px"));
@@ -424,21 +435,16 @@ GuidingAsstWin::GuidingAsstWin()
         m_backlashCB->SetValue(false);
         m_backlashCB->Enable(false);
     }
-    m_graphBtn = new wxButton(this, wxID_ANY, _("Show Graph"));
-    m_graphBtn->SetToolTip(_("Show graph of backlash measurement points"));
-    bl_group->Add(m_backlashCB, wxSizerFlags(0).Border(wxALL, 8));
-    bl_group->Add(m_graphBtn, wxSizerFlags(0).Border(wxLEFT, 30));
-    m_graphBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnGraph), NULL, this);
-    m_vSizer->Add(bl_group, wxSizerFlags(0).Border(wxALL, 8).Center());
-    m_graphBtn->Enable(false);
-
+    // Text area for showing backlash measuring steps
     m_backlashInfo = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_CENTER);
     MakeBold(m_backlashInfo);
     m_vSizer->Add(m_backlashInfo, wxSizerFlags(0).Border(wxALL, 8).Center());
     m_backlashInfo->Show(false);
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
-    btnSizer->Add(0, 0, 1, wxEXPAND, 5);
+    btnSizer->Add(10, 0);       // a little spacing left of Start button
+    btnSizer->Add(m_backlashCB, wxSizerFlags(0).Border(wxALL, 8));
+    btnSizer->Add(40, 0);       // Put a spacer between the button and checkbox
 
     m_start = new wxButton(this, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0);
     m_start->SetToolTip(_("Start measuring (disables guiding)"));
@@ -450,10 +456,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_stop->Enable(false);
 
     btnSizer->Add(m_stop, 0, wxALL, 5);
-    btnSizer->Add(0, 0, 1, wxEXPAND, 5);
     m_vSizer->Add(btnSizer, 0, wxEXPAND, 5);
-
-
 
     SetAutoLayout(true);
     SetSizerAndFit(m_vSizer);
@@ -560,14 +563,14 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
             instr = m_instructions->GetLabel();
         break;
     case STATE_MEASURING:
-        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS values have stabilized (at least 1 minute).");
+        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS values have stabilized (at least 2 minutes).");
         break;
     case STATE_STOPPED:
         instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click Start to repeat the measurements, or close the window to continue guiding.");
         break;
     }
     m_instructions->SetLabel(instr);
-    m_instructions->Wrap(500);
+    m_instructions->Wrap(700);
     m_instructions->Layout();
 }
 
