@@ -1332,7 +1332,7 @@ void AOConfigDialogCtrlSet::UnloadValues()
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
-    m_pStepGuider->m_bumpOnDither = m_bumpOnDither->GetValue();
+    m_pStepGuider->SetBumpOnDither(m_bumpOnDither->GetValue());
     if (m_pClearAOCalibration->IsChecked())
     {
         m_pStepGuider->ClearCalibration();
