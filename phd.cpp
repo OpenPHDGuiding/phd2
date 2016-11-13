@@ -70,9 +70,10 @@ wxIMPLEMENT_APP(PhdApp);
 static void DisableOSXAppNap(void)
 {
 #ifdef __APPLE__
-# define  APPKEY "com.open-phd-guiding.PHD2"
-    int osver = wxPlatformInfo::Get().GetOSMinorVersion();
-    if (osver == 9)  // Mavericks -- deal with App Nap
+# define  APPKEY "org.openphdguiding.phd2"
+    int major = wxPlatformInfo::Get().GetOSMajorVersion();
+    int minor = wxPlatformInfo::Get().GetOSMinorVersion();
+    if (major > 10 || (major == 10 && minor >= 9))  // Mavericks or later -- deal with App Nap
     {
         wxArrayString out, err;
         wxExecute("defaults read " APPKEY " NSAppSleepDisabled", out, err);
