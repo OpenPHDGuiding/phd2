@@ -161,7 +161,47 @@ using this test is that it reduces things to the absolute basics: will
 the mount move as directed or not. &nbsp;It has nothing to do with PHD2
 guide settings because they aren't involved in the test. &nbsp;You may
 find it helpful to use the test results to communicate with the mount
-manufacturer or other users who understand that specific mount and its typical&nbsp; problems..<br><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+manufacturer or other users who understand that specific mount and its typical&nbsp; problems.<br><br><span style="font-weight: bold;"><a name="Measuring_Mount_Behavior"></a>Measuring the Mount's Behavior<br></span>If you're having<span style="font-weight: bold;"> </span>trouble
+getting decent guiding results, your first instinct will probably be to
+try making wild changes to the guiding parameters in the hope of
+finding a magic solution. &nbsp;Thiis almost never works, and you're
+more likely to just make things worse. &nbsp;If the default parameters
+from the new-profile-wizard aren't producing reasonable results, the
+fault is probably with the hardware and you'll need to determine the
+underlying cause. &nbsp;Once you understand the cause, you can probably
+improve your guiding results even if no actual repairs can be made -
+but understanding the underlying problem is important. &nbsp;To
+understand what the mount is doing, perform the following steps:<br><br><div style="margin-left: 40px;">1. Use the new-profile-wizard to create a new equipment profile for the test, being sure the <span style="font-style: italic;">guide scope</span> focal length and camera pixel size are correct. &nbsp;Don't guess at them, look them up if you aren't sure. <br>2. Use an ASCOM connection to the mount if one is available.<br>3.
+Perform a fresh calibration near Dec=0 with the scope pointing at least
+40 degrees above the horizon to minimize seeing effects. <br>4. Make
+sure there are no backlash compensation settings active in the mount,
+and set the mount guide speed to 0.5x - 1x sidereal.<br>5. Run the
+Guiding Assistant for 10-15 minutes and apply whatever recommendations
+it makes, particularly with respect to min-move values. &nbsp;Let it
+measure your declination backlash. &nbsp;You may need to use a large
+tracking region to avoid losing the guide star during this part of the
+process - just be sure there aren't multiple stars in the tracking
+rectangle. &nbsp;The backlash test will move the star a long distance
+north, so choose a guide star that is nearer the southern edge of your
+camera frame to give yourself plenty of room.<br>6. Do not change any of the guide parameters beyond what is recommended by the Guiding Assistant.<br>7.
+Take a careful look at the results shown in the Guiding Assistant
+table. &nbsp;Each entry in the table can tell you something useful
+about the mount's performance. &nbsp;These results are also written to
+the guiding log, so they are available for later analysis.<br>8.
+If you got calibration alert messages in step 3, you should probably
+remedy those problems before proceeding. &nbsp;Guiding with a bad
+calibration is not likely to produce good results. &nbsp;Also, if your
+polar alignment error is 10 arc-min or more, you should improve on that
+and then repeat the above steps.<br>9. Let PHD2 guide for another 10-15
+minutes, just letting it run so long as there aren't gross errors from
+wind or other "mistakes." &nbsp;<span style="font-weight: bold;">Do NOT</span> change any of the guiding parameters while this is being done.<br></div><br>If
+you want to analyze the results yourself, use the PHDLogView tool and
+the tutorial on Analyzing PHD2 Guiding Results. &nbsp;You should also
+consult the document on PHD2 Best Practices. &nbsp;All of these
+references are available on the OpenPHDGuiding.org web site under the
+'News' tab. &nbsp;If you'd like some help understanding the results,
+post both the guiding and debug log files on the OpenPHD2 Google forum
+and we'll be glad to help you out.<br><span style="font-weight: bold;"><br><span style="font-weight: bold;"></span></span><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
 that the image displayed in the main window is extremely noisy or is
 almost all-white or all-black. &nbsp;Assuming the camera is
 functioning and actually downloading images, the display issues are

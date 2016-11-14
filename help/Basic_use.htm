@@ -63,7 +63,7 @@ supported, or it may only be supported using a web-cam interface<br>2.
 there are unresolved problems with the vendor's drivers<br>3. &nbsp;If the specific camera model is absent but earlier models are shown, it is likely the camera is supported<br>4. &nbsp;If the camera uses an ASCOM interface, it is supported<br><br>Since
 the PHD2 download is free, the simplest course of action is to&nbsp;
 install it and see if your camera is shown in the PHD2 drop-down list.
-&nbsp;Alternatively, you can post a message on the&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> asking if anyone has experience with the camera. &nbsp;<br><br>
+&nbsp;Alternatively, you can check for camera support info in the Wiki on the PHD2 Google forum: &nbsp;<a href="https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport">https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport</a><br><br>Finally, you can always post a message on the&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> asking if anyone has experience with the camera. &nbsp;<br><br>
 Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG dual-chip cameras</h4>Many
 cameras from the Santa Barbara Instrument Group (SBIG) have
 two&nbsp;sensors - a primary one for imaging and a second, smaller one
@@ -370,16 +370,19 @@ north movements are actually used to compute the guide rates and camera
 angle. The east and south moves are used only to restore the star
 roughly to its starting position. &nbsp;Before the north moves are
 begun, you will see a&nbsp;sequence of pulses that are intended to
-clear backlash. &nbsp;Starting with the 2.5 release, PHD2 takes a more
+clear backlash. &nbsp;PHD2 takes a fairly
 aggressive approach to clearing this backlash, watching for a clear
 pattern of movement in a single direction with no reversals. &nbsp;Even
 so, these pulses may still not clear all the declination
-backlash in your mount, particularly if you are guiding at a long focal
-length. &nbsp; In that case, the computed declination rate may be too
+backlash in your mount, particularly if you are significantly affected
+by seeing conditions. &nbsp; In that case, the computed declination
+rate may be too
 low, a situation that is discussed further in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a>
 section. &nbsp;You may also see that the south pulses leave the guide
 star well-short of its starting position - this is another visual clue
-that you have significant declination backlash in your mount.<br>
+that you have significant declination backlash in your mount. &nbsp;If
+you see evidence of sizable backlash, you can run the Guiding Assistant
+tool and measure it directly.<br>
 <br>
 In
 most cases, calibration will complete automatically without any user
@@ -392,18 +395,13 @@ move enough";&nbsp; and you'll need to do some trouble-shooting.
 directions, you should look first at the cable connections and mount
 behavior. The "manual guide" function under the 'Tools' menu can help
 with this as can the <a href="Trouble_shooting.htm">trouble-shooting</a>
-section of this document. &nbsp; But if the star has moved by some
-amount in each direction, you may need to adjust a calibration setting
-called the
-calibration step-size. &nbsp;<span style="font-style: italic;">PHD2</span>
-uses this parameter during
-calibration as a fixed-size duration of movement. &nbsp;The default
-value has been chosen to cover a wide range of typical guide scope
-set-ups, but you may need to adjust it for your situation.
-&nbsp;For
-example,&nbsp;an off-axis-guider on a long focal
-length scope will probably need a setting that's different from the
-default value. &nbsp; To adjust it, go into the "brain dialog" (<a href="Advanced_settings.htm">Advanced Settings</a>)<big><span style="font-weight: bold;"><span style="font-weight: bold;"></span> </span></big>and
+section of this document. &nbsp; The size of the guide pulses used
+during calibration is controlled by a parameter called the "calibration
+step-size." &nbsp;The new-profile-wizard computes this value
+automatically, and it should work well if you've entered the correct
+values for camera pixel size and guide scope focal length. &nbsp;If you
+have some need to adjust the calibration step-size, &nbsp;go into the
+"brain dialog" (<a href="Advanced_settings.htm">Advanced Settings</a>)<big><span style="font-weight: bold;"><span style="font-weight: bold;"></span> </span></big>and
 click on the 'Guiding' tab. &nbsp;On that tab, you'll find a setting
 for
 'Calibration step(ms)', and that's where you change the value.
@@ -412,18 +410,37 @@ an
 optimal value for the parameter. &nbsp;Once you've set this value,
 it
 will be remembered as part of your equipment profile and you probably
-won't have to adjust it again.<br>
-<br>
-You may also see&nbsp;a
-calibration failure if you're using a star too close to&nbsp;the
-celestial pole. &nbsp;In those locations, fixed-length movements in
-right ascension often move the star only a very small distance.
-&nbsp;In that case, move to a star location closer to the equator,
-ideally somewhere in the range of -30 to +30 degrees declination, and
-re-run
-the calibration. &nbsp;But if this is not feasible, you can adjust
-the
-calibration step-size upward until calibration succeeds. &nbsp;You can
+won't have to adjust it again. &nbsp;But to reiterate, if you've used
+the new-profile-wizard to build your profile, there's little reason to
+modify the calibration step-size unless you subsequently change the
+guide speed in your mount.<br><br>If
+you're using an ASCOM (or Indi) connection for either the 'mount' or
+'aux-mount', a good calibration can be re-used for a long&nbsp;time,
+and that is the preferred way to operate. &nbsp;These &nbsp;connection
+options allow PHD2 to know where the telescope is pointing, so a
+calibration done at one point in the sky will be automatically adjusted
+as you slew to different targets. &nbsp;The old method of having to
+re-calibrate whenever you slewed the scope or switched the side-of-pier
+is a thing of the past so long as PHD2 has pointing information.
+&nbsp;With this type of set-up, you would only re-calibrate if
+you rotate the position of the guide camera by more than about 5
+degrees or make other major changes to the hardware configuration.
+&nbsp;In general, the best practice is to get a good calibration within
+about +/- 20 degrees of the celestrial equator and high enough in the
+sky to avoid major seeing (turbulence) problems. &nbsp;Once you have a
+good calibration for the profile you're using, you can check the 'Auto
+restore calibration' option in the Guiding tab of the Advanced Dialog.
+&nbsp;From that point on, you can simply connect to your
+gear,&nbsp;choose a guide star, then begin guiding immediately.
+&nbsp;If this option is not checked, you can restore calibration data
+manually by using the '<a name="Restore_Calibration_Data"></a>Restore
+Calibration Data'&nbsp; item under the 'Tools/Modify Calibration' menu.
+&nbsp; Finally, if you're using an instrument rotator as part of your
+equipment
+profile, PHD2 can use the 'Rotator' connection to adjust the
+calibration data based on the angular position of the guide camera -
+one less reason for re-doing a calibration.<br>
+<br>You can
 always review the results of your last calibration by using the 'Tools'
 menu and clicking on 'Review Calibration Data' &nbsp;That will open a
 dialog that shows a graphical representation of the mount's movements
@@ -436,68 +453,15 @@ no significant&nbsp;curves, bends, clumping of points, or reversals in direction
 you do see these kinds of odd patterns in the graph, you should
 probably re-do the calibration. &nbsp;Even with high-end mounts,
 calibrations can occasionally go awry because of environmental
-conditions, especially wind and bad seeing.<br>
-<br>
-Like
-all
-other guide settings, the calibration data is automatically
-saved as part of your current equipment profile. &nbsp;If nothing
-has
-changed in your configuration from one session to the next - even over
-an extended time period - you can restore the previous calibration data
-and start guiding immediately. &nbsp;This function
-is&nbsp;located
-under the
-'Tools/Modify Calibration' menu and is labelled '<a name="Restore_Calibration_Data"></a>Restore Calibration Data.'
-&nbsp;Remember, the data are saved whenever a full calibration is
-completed or when you use the 'flip calibration data' command under the
-'Tools/Modify Calibration' menu (see below). &nbsp;If you're using a German equatorial
-mount and the ASCOM interface or you have an 'aux' mount connected, the saved calibration data will include
-the side of pier where you were last guiding; so <span style="font-style: italic;">PHD2</span>
-will adjust
-automatically for your current pointing position. &nbsp;But if you
-are
-not using mount interfaces that can return pointing information, you'll
-need to remember which side of the
-pier was being used the last time you were guiding. &nbsp;Clicking on
-'Restore Calibration Data' will open a window that shows the results
-from your last calibration, essentially identical to what is shown
-using 'Review Calibration Data.' &nbsp;You can quickly check the
-information in this window to be sure the calibration you are restoring
-is sufficiently accurate and relevant to your current set-up. &nbsp;If
-it looks good, click on 'Restore' to re-use it.<br>
-<br>
-If
-you're using an ASCOM mount (or 'aux' mount) connection, <span style="font-style: italic;">PHD2</span>
-will also
-include the
-calibration and target declinations as part of its calculations.
-&nbsp;In that case,&nbsp; guiding moves in right ascension will
-be
-automatically adjusted to account for the declination of the current
-guide star, as opposed to the&nbsp;star you used for calibration.
-&nbsp;This is really just a refinement and isn't critical in most
-situations, so absence of pointing information is not a big problem.
-&nbsp;However, if you are concerned
-about
-it and are imaging near the celestial pole, you should consider
-calibrating using a star that's also at high declination.
-&nbsp;If you do a calibration at a declination &gt; 60 degrees, PHD2 will <span style="font-weight: bold;">not</span>&nbsp;adjust
-the guide rates if you move to a different location. &nbsp;So
-calibration at high declination values is really for the purpose of
-imaging in the same region and should not be used as a baseline
-calibration for general use.&nbsp; Finally, if you have a rotator
-configured as part of your
-equipment profile, PHD2 will use its angle position property to adjust
-the calibration for changes in camera angle, thus eliminating another
-need to re-calibrate.<br><br>After
+conditions, especially wind and bad seeing. &nbsp;<br>
+<br>After
 a calibration is completed, PHD2 will&nbsp;<a href="Trouble_shooting.htm#Calibration_sanity_check">"sanity check"</a> the results to be
 sure the calculations at least look reasonable. &nbsp;If they don't,
 you will see an 'alert' message at the top of the main window that
 describes the calibration result that looks questionable. &nbsp;You can
 choose to ignore the alert or click on 'Details' to get more
 information. &nbsp;It is generally advisable to pay attention to these
-alerts because there is no point in trying to proceed using calibration results that are significantly in error.<br>
+alerts because there is no point in trying to guide using a significantly bad calibration.<br>
 <h4><a name="Adaptive_Optics_Devices"></a>Adaptive Optics Devices</h4>
 If
 you are using an adaptive optics device, there are actually two
@@ -563,7 +527,7 @@ calibration on the current side of the pier, a process that will
 typically take only a couple of minutes. &nbsp;Or, you
 can&nbsp;use
 the pull-down menu item under 'Tools/Modify Calibration' to "<a name="flip_calibration_data"></a>flip calibration data" and
-then resume guiding immediately. &nbsp;<br>
+then resume guiding immediately. &nbsp;<span style="font-weight: bold;">Note</span>: 'flip calibration data' will have no effect if PHD2 is using an ASCOM or 'aux-mount' connection.<br>
 <br>
 In some cases, you may
 want to force a re-calibration. &nbsp;For example, you may have

@@ -175,6 +175,10 @@
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Mount_Control">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Measuring Mount Behavior">
+			<param name="Local" value="Trouble_shooting.htm#Measuring_Mount_Behavior">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Display Window Problems">
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Display_Window">
 			</OBJECT>

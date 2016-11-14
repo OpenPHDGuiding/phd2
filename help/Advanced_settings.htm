@@ -158,18 +158,17 @@ will be reduced by the binning factor. &nbsp;This is not likely to be a
 problem if the un-binned image scale is below 1 arc-sec/pixel, but your
 guiding results may suffer if the un-binned image scale is well above 1
 arc-sec/pixel. &nbsp;You may need to experiment because the results
-will also depend on the image scale of your main camera system.</li><li>Each
+will also depend on the image scale of your main camera system.</li></ol>Each
 binning level requires its own&nbsp;dark frames and bad-pixel map -
 they are not interchangeable, nor can a transform be done
 automatically. &nbsp;If you foresee the need to switch back and forth
 between binning settings, you should create separate profiles for each
-setting. &nbsp;Then build&nbsp;a dark library and a bad-pixel map for
+binning value. &nbsp;Then build&nbsp;a dark library and a bad-pixel map
+for
 each of those profiles. &nbsp;When you want to change binning factors,
 just switch to the profile that has the setting you want, and a dark
-library and/or bad-pixel map will be available.</li></ol>Most PHD2
-users probably won't need to use binning, and you should probably avoid
-doing so unless you have a clear understanding of the implications and
-an equally clear idea of what you are trying to accomplish.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 567px;" alt="" src="Advanced_guiding.png"><br><br>The
+library and/or bad-pixel map will be available. &nbsp; If you want to
+check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a> window to confirm the firame size and current on-camera bin settings.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 567px;" alt="" src="Advanced_guiding.png"><br><br>The
 guiding tab shows the&nbsp; parameters used for calibration,
 star-tracking, and guiding behavior shared by all of the guide algorithms..<br><br>Guide Star Tracking<br><ul><li>'<a name="Search_region"></a>Search
 region' - specifies the size of the "tracking rectangle", in units of
@@ -257,16 +256,21 @@ error in RA.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Rever
 output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data after a meridian flip. &nbsp;Some
 mounts track their 'side of pier' state and automatically reverse the
-direction of guide commands in declination. &nbsp;Other mounts do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span> needs to know if
+direction of the declination motor. &nbsp;Most&nbsp;mounts do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span>
+needs to know if
 the
 mount will automatically change its behavior based on
 side-of-pier. &nbsp;You may have difficulty finding information about
 how your mount behaves in this respect, so it's probably easiest to
 just run a quick experiment. &nbsp;With the checkbox disabled,
 calibrate on one side of the pier, then move the mount to the other
-side. &nbsp;Select &nbsp;'Flip Calibration' under the 'Tools' menu, and
-start guiding. &nbsp;If the guiding works normally, leave the box
-un-checked; but if you see run-away in declination, check the box and
+side. &nbsp;If you are guiding via ASCOM or Indi or are using an 'aux
+mount' connection, just start guiding. &nbsp;If you're guiding only via
+ST-4 and PHD2 has no scope pointing information, first select
+&nbsp;'Flip Calibration' under the 'Tools' menu, and
+then start guiding. &nbsp;In either case, if the guiding works
+normally, leave the box
+un-checked; but if you see run-away <span style="font-weight: bold; font-style: italic;">in declination</span>, check the box and
 repeat the entire procedure, including calibration.</li><li>'<a name="Enable_guide_output"></a>Enable
 mount guide output'
 - this is normally checked because it tells <span style="font-style: italic;">PHD2</span> to send guide
