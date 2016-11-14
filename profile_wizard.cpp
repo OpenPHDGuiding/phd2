@@ -233,7 +233,7 @@ void ProfileWizard::ShowHelp(DialogState state)
             "guide scope focal length, and mount guide speed so PHD2 can compute reasonable default settings for you.");
         break;
     case STATE_MOUNT:
-        hText = _("Select your mount interface from the list.  This determines how PHD2 will move the telescope and get pointing information. For most modern "
+        hText = _("Select your mount interface from the list.  This determines how PHD2 will send guide commands to the mount. For most modern "
             "mounts, the ASCOM interface is a good choice if you are running MS Windows.  The other interfaces are available for "
             "cases where ASCOM is not available or isn't well supported by mount firmware.");
         break;

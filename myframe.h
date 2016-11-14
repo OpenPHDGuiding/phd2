@@ -159,8 +159,6 @@ protected:
 
     bool SetLanguage(int language);
 
-    void SetAutoLoadCalibration(bool val);
-
     friend class MyFrameConfigDialogPane;
     friend class MyFrameConfigDialogCtrlSet;
     friend class WorkerThread;
@@ -330,6 +328,7 @@ public:
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
+    void SetAutoLoadCalibration(bool val);
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();

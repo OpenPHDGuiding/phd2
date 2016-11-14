@@ -215,8 +215,13 @@ to
 the right of this control will launch a dialog that can help you
 compute an appropriate value (see below)&nbsp;</li><li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
 <span style="font-style: italic;">PHD2</span> to automatically reload the most recent calibration data as soon
-as the equipment is connected. &nbsp;Be sure to read the <a href="Basic_use.htm#Automatic_Calibration">Auto calibration</a> section to understand the implications
-and potential risks of doing this.</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
+as the equipment is connected. &nbsp;If
+you're using an ASCOM (or Indi) mount connection or have an 'aux-mount'
+connection, this option will be set automatically whenever you connect
+to the gear. &nbsp;Conversely, if PHD2 has no scope pointing
+information available, this option will be automatically reset.
+&nbsp;Since you can force a re-calibration whenever you want, there is
+little reason to manually change the value of this checkbox..</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
 Dec orthogonal to RA' - Normally, the calibration process independently
 computes the camera angles for both right ascension and declination.
 &nbsp;There is no need for great precision on these values, and the

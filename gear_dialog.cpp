@@ -251,6 +251,8 @@ void GearDialog::Initialize(void)
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
                              Scope::List(), 0, wxDefaultValidator, _("Mount"));
+    m_pScopes->SetToolTip(_("Specify how guide commands will be sent to the mount - via an ASCOM or Indi driver, directly from the camera or AO, "
+        "or via one of the GPxxx devices. An ASCOM connection is recommended."));
     m_gearSizer->Add(m_pScopes, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, setup_bmp);
     m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
@@ -450,7 +452,10 @@ void GearDialog::EndModal(int retCode)
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
 
-    if (pFrame->GetAutoLoadCalibration())
+    // Handle the auto-restore calibration option automatically
+    bool autoLoadCalib = pPointingSource && pPointingSource->CanReportPosition();
+    pFrame->SetAutoLoadCalibration(autoLoadCalib);
+    if (autoLoadCalib)
     {
         if (pMount && pMount->IsConnected() &&
             (!pSecondaryMount || pSecondaryMount->IsConnected()))
