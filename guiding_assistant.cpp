@@ -218,6 +218,7 @@ struct GuidingAsstWin : public wxDialog
     void OnDecMinMove(wxCommandEvent& event);
     void OnDecBacklash(wxCommandEvent& event);
     void OnGraph(wxCommandEvent& event);
+    void OnHelp(wxCommandEvent& event);
 
     wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
     wxStaticText *AddRecommendationEntry(const wxString& msg);
@@ -408,12 +409,18 @@ GuidingAsstWin::GuidingAsstWin()
     m_calibration_msg = NULL;
 
     m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
-    // Add a button for viewing the Dec backlash graph
+    // Add buttons for viewing the Dec backlash graph or getting help
+    wxBoxSizer* hBtnSizer = new wxBoxSizer(wxHORIZONTAL);
     m_graphBtn = new wxButton(this, wxID_ANY, _("Show Backlash Graph"));
     m_graphBtn->SetToolTip(_("Show graph of backlash measurement points"));
     m_graphBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnGraph), NULL, this);
     m_graphBtn->Enable(false);
-    m_recommend_group->Add(m_graphBtn, wxSizerFlags(0).Border(wxALL, 5));
+    hBtnSizer->Add(m_graphBtn, wxSizerFlags(0).Border(wxALL, 5));
+    wxButton* helpBtn = new wxButton(this, wxID_ANY, _("Help"));
+    helpBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnHelp), NULL, this);
+    hBtnSizer->Add(50, 0);
+    hBtnSizer->Add(helpBtn, wxSizerFlags(0).Border(wxALL, 5));
+    m_recommend_group->Add(hBtnSizer, wxSizerFlags(0).Border(wxALL, 5));
     // Recommendations will be hidden/shown depending on state
     hBottomSizer->Add(m_recommend_group, wxSizerFlags(0).Border(wxALL, 8));
     vResultsSizer->Add(hBottomSizer);
@@ -668,6 +675,11 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
     m_backlashTool->ShowGraph(this);
+}
+
+void GuidingAsstWin::OnHelp(wxCommandEvent& event)
+{
+    pFrame->help->Display("Tools.htm#Guiding_Assistant");   // named anchors in help file are not subject to translation
 }
 
 // Adds a recommendation string and a button bound to the passed event handler
