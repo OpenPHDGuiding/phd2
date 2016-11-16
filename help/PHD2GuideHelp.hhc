@@ -27,6 +27,10 @@
 			<param name="URL" value="Basic_use.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Equipment Profiles">
+			<param name="Local" value="Basic_use.htm#Equipment_Profile">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Exposure Time &amp; Star Selection">
 			<param name="Local" value="Basic_use.htm#Exposure_Time_and_Star_Selection">
 			</OBJECT>

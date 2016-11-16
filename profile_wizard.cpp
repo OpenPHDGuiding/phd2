@@ -44,6 +44,8 @@ EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
 EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
 EVT_BUTTON(ID_DETECT_PIXELSIZE, ProfileWizard::OnDetectPixelSize)
+EVT_BUTTON(ID_DETECT_GUIDESPEED, ProfileWizard::OnDetectGuideRates)
+EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
 wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
@@ -127,7 +129,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Control for pixel-size and focal length
-    m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
+    m_pUserProperties = new wxFlexGridSizer(2, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
                                           wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
@@ -149,6 +151,9 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
+    // controls for the mount pane
+    wxBoxSizer *mtSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pMountProperties = new wxFlexGridSizer(1, 2, 5, 15);
     m_pGuideSpeed = new wxSpinCtrlDouble(this, ID_GUIDESPEED, wxEmptyString, wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 0.2, 1.0, 0.5, 0.1);
     m_pGuideSpeed->SetValue(0.5);
@@ -156,8 +161,16 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pGuideSpeed->SetDigits(2);
     m_pGuideSpeed->SetToolTip(_("The mount guide speed you will use for calibration and guiding, expressed as a multiple of the sidereal rate. If you "
         "don't know, leave the setting at the default value (0.5X)"));
-    AddTableEntryPair(this, m_pUserProperties, _("Mount guide speed (n.n x sidereal)"), m_pGuideSpeed);
+    m_detectGuideSpeedBtn = new wxButton(this, ID_DETECT_GUIDESPEED, _("Detect"));
+    m_detectGuideSpeedBtn->Enable(false);
+    m_detectGuideSpeedBtn->SetToolTip(_("Connect to mount and detect guide speed"));
+    mtSizer->Add(m_pGuideSpeed, 1);
+    mtSizer->Add(10, 0);
+    mtSizer->Add(m_detectGuideSpeedBtn);
+    AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
+
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
+    m_pvSizer->Add(m_pMountProperties, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Wrapup panel
     m_pWrapUp = new wxFlexGridSizer(2, 2, 5, 15);
@@ -174,12 +187,17 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pPrevBtn = new wxButton(this, ID_PREV, _("< Back"));
     m_pPrevBtn->SetToolTip(_("Back up to the previous screen"));
 
+    wxButton* helpBtn = new wxButton(this, ID_HELP, _("Help"));
+
     m_pNextBtn = new wxButton(this, ID_NEXT, _("Next >"));
     m_pNextBtn->SetToolTip(_("Move forward to next screen"));
 
     pButtonSizer->AddStretchSpacer();
     pButtonSizer->Add(
         m_pPrevBtn,
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
+    pButtonSizer->Add(
+        helpBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 5));
     pButtonSizer->Add(
         m_pNextBtn,
@@ -229,13 +247,14 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
-            "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the camera pixel size, "
-            "guide scope focal length, and mount guide speed so PHD2 can compute reasonable default settings for you.");
+            "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the camera pixel size "
+            "and guide scope focal length so PHD2 can compute reasonable guiding parameters for you.");
         break;
     case STATE_MOUNT:
         hText = _("Select your mount interface from the list.  This determines how PHD2 will send guide commands to the mount. For most modern "
             "mounts, the ASCOM interface is a good choice if you are running MS Windows.  The other interfaces are available for "
-            "cases where ASCOM is not available or isn't well supported by mount firmware.");
+            "cases where ASCOM isn't available or isn't well supported by mount firmware.  You should specify the mount guide speed so "
+            "PHD2 can calibrate efficiently.");
         break;
     case STATE_AUXMOUNT:
         hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
@@ -344,6 +363,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearLabel->Show(false);
             m_pGearChoice->Show(false);
             m_pUserProperties->Show(false);
+            m_pMountProperties->Show(false);
             m_pWrapUp->Show(false);
             m_pInstructions->SetLabel(_("Welcome to the PHD2 'first light' wizard"));
             m_pHelpText->SetSizeHints(wxSize(-1, TallHelpHeight));
@@ -360,6 +380,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearLabel->Show(true);
             m_pGearChoice->Show(true);
             m_pUserProperties->Show(true);
+            m_pMountProperties->Show(false);
             m_pWrapUp->Show(false);
             m_pHelpText->SetSizeHints(wxSize(-1, NormalHelpHeight));
             SetSizerAndFit(m_pvSizer);
@@ -375,9 +396,11 @@ void ProfileWizard::UpdateState(const int change)
             if (m_SelectedMount.length() > 0)
                 m_pGearChoice->SetStringSelection(m_SelectedMount);
             m_pUserProperties->Show(false);
+            m_pMountProperties->Show(true);
             m_pInstructions->SetLabel(_("Select your mount connection - this will determine how guide signals are transmitted"));
             break;
         case STATE_AUXMOUNT:
+            m_pMountProperties->Show(false);
             if (m_PositionAware)                        // Skip this state if the selected mount is already position aware
             {
                 UpdateState(change);
@@ -500,6 +523,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
         m_PositionAware = (pMount && pMount->CanReportPosition());
+        m_detectGuideSpeedBtn->Enable(m_PositionAware);             // A good approximation, code handles errors
         if (m_PositionAware)
         {
             m_SelectedAuxMount = _("None");
@@ -558,6 +582,49 @@ void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
     }
 }
 
+void ProfileWizard::OnDetectGuideRates(wxCommandEvent& evt)
+{
+    Scope* newScope;
+    double raGuideSpeed;
+    double decGuideSpeed;
+    double guideSpeedX;
+    const double dSiderealSecondPerSec = 0.9973;
+
+    newScope = Scope::Factory(m_SelectedMount);
+    try
+    {
+        wxBusyCursor busy;
+        if (!newScope)
+            throw _("Could not initialize mount");
+        ShowStatus(_("Connecting to mount..."));
+        bool err = newScope->Connect();
+        ShowStatus(wxEmptyString);
+        if (err)
+            throw _("Could not connect to mount");
+        if (newScope->GetGuideRates(&raGuideSpeed, &decGuideSpeed))
+            throw (_("Mount driver cannot report guide speeds"));
+        guideSpeedX = wxMax(raGuideSpeed, decGuideSpeed) * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        m_pGuideSpeed->SetValue(guideSpeedX);
+        wxSpinDoubleEvent dummy;
+        OnGuideSpeedChange(dummy);
+    }
+    catch (const wxString& msg)
+    {
+        wxMessageBox(msg + _(". Please enter the correct mount guide speed"), _("Detect mount guide speed"));
+        m_pGuideSpeed->SetValue(0.5);
+    }
+
+    if (newScope)
+    {
+        if (newScope->IsConnected())
+        {
+            if (newScope->Disconnect())
+                Debug.AddLine("Mount disconnect failed!");
+            delete newScope;
+        }
+    }
+}
+
 void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
 {
     m_PixelSize = m_pPixelSize->GetValue();
@@ -576,6 +643,11 @@ void ProfileWizard::OnGuideSpeedChange(wxSpinDoubleEvent& evt)
 void ProfileWizard::OnNext(wxCommandEvent& evt)
 {
     UpdateState(1);
+}
+
+void ProfileWizard::OnContextHelp(wxCommandEvent& evt)
+{
+    pFrame->help->Display("Basic_use.htm#New_profile_wizard");
 }
 
 void ProfileWizard::OnPrev(wxCommandEvent& evt)

@@ -54,9 +54,11 @@ public:
         ID_COMBO = 10001,
         ID_PIXELSIZE,
         ID_DETECT_PIXELSIZE,
+        ID_DETECT_GUIDESPEED,
         ID_FOCALLENGTH,
         ID_GUIDESPEED,
         ID_PREV,
+        ID_HELP,
         ID_NEXT
     };
 
@@ -69,6 +71,7 @@ private:
     wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
     wxButton *m_detectPixelSizeBtn;
+    wxButton *m_detectGuideSpeedBtn;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxButton *m_pPrevBtn;
@@ -77,6 +80,7 @@ private:
     wxStaticText *m_pHelpText;
     wxFlexGridSizer *m_pGearGrid;
     wxFlexGridSizer *m_pUserProperties;
+    wxFlexGridSizer *m_pMountProperties;
     wxFlexGridSizer *m_pWrapUp;
     wxTextCtrl *m_pProfileName;
     wxCheckBox *m_pLaunchDarks;
@@ -97,9 +101,11 @@ private:
     void OnPrev(wxCommandEvent& evt);
     void OnGearChoice(wxCommandEvent& evt);
     void OnDetectPixelSize(wxCommandEvent& evt);
+    void OnDetectGuideRates(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
     void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
+    void OnContextHelp(wxCommandEvent& evt);
     void ShowStatus(const wxString& msg, bool appending = false);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);

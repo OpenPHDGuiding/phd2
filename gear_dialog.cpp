@@ -192,8 +192,8 @@ void GearDialog::Initialize(void)
     profilesSizer->Add(m_profiles, sizerButtonFlags);
 
     m_menuProfileManage = new wxMenu();
-    m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_WIZARD, _("New using Wizard..."), _("Run the first-light wizard to create a new profile"));
+    m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_DELETE, _("Delete"), _("Delete the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_LOAD, _("Import..."), _("Load a profile from a file"));
