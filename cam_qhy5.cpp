@@ -146,9 +146,9 @@ bool Camera_QHY5Class::ST4PulseGuideScope(int direction, int duration)
     int reg = 0;
     int32_t dur[2] = { -1, -1};
 
-    duration /= 10;
+    // duration /= 10;
 
-    if (duration >= 255) duration = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
+    if (duration >= 2500) duration = 2500; // Max guide pulse is 2.54s -- 255 keeps it on always
     switch (direction)
     {
     case WEST:
