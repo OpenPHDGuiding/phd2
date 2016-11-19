@@ -1117,7 +1117,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
-                    GuideLog.FrameDropped(info);
+                    GuideLog.CalibrationFrameDropped(info);
                     Debug.Write("Star lost during calibration... blundering on\n");
                     EvtServer.NotifyStarLost(info);
                     pFrame->StatusMsg(_("star lost"));

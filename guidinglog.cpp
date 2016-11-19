@@ -442,14 +442,24 @@ void GuidingLog::FrameDropped(const FrameDroppedInfo& info)
 
     assert(m_file.IsOpened());
 
-    if (info.time > 0)
-        m_file.Write(wxString::Format("%d,%.3f,\"DROP\",,,,,,,,,,,,,%.f,%.2f,%d,\"%s\"\n",
-            info.frameNumber, info.time, info.starMass, info.starSNR, info.starError, info.status));
-    else
-        m_file.Write(wxString::Format("%d,%s,\"DROP\",,,,,,,,,,,,,%.f,%.2f,%d,\"%s\"\n",
-        info.frameNumber, "Calibrating", info.starMass, info.starSNR, info.starError, info.status));
+    m_file.Write(wxString::Format("%d,%.3f,\"DROP\",,,,,,,,,,,,,%.f,%.2f,%d,\"%s\"\n",
+        info.frameNumber, info.time, info.starMass, info.starSNR, info.starError, info.status));
 
     Flush();
+}
+
+
+void GuidingLog::CalibrationFrameDropped(const FrameDroppedInfo& info)
+{
+    if (!m_enabled)
+        return;
+    assert(m_file.IsOpened());
+
+    m_file.Write(wxString::Format("INFO: STAR LOST during calibration, Mass= %.f, SNR= %.2f, Error= %d, Status=%s\n",
+        info.starMass, info.starSNR, info.starError, info.status));
+
+    Flush();
+
 }
 
 void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)

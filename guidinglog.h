@@ -110,6 +110,7 @@ public:
     void StopGuiding();
     void GuideStep(const GuideStepInfo& info);
     void FrameDropped(const FrameDroppedInfo& info);
+    void CalibrationFrameDropped(const FrameDroppedInfo& info);
 
     void ServerCommand(Guider *guider, const wxString& cmd);
     void NotifyGuidingDithered(Guider *guider, double dx, double dy);
