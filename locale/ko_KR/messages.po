@@ -1,0 +1,6128 @@
+#
+#  fr\messages.po
+#  PHD Guiding
+#
+#  Created by Sylvain Girard
+#  Copyright (c) 2013 Sylvain Girard
+#  All rights reserved.
+#
+#  This source code is distributed under the following "BSD" license
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are met:
+#    Redistributions of source code must retain the above copyright notice,
+#     this list of conditions and the following disclaimer.
+#    Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
+#     contributors may be used to endorse or promote products derived from
+#     this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#  POSSIBILITY OF SUCH DAMAGE.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-12-02 04:03-0500\n"
+"PO-Revision-Date: 2016-12-01 21:26+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: kor\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+
+#: advanced_dialog.cpp:88
+msgid "Advanced setup"
+msgstr "고급설정 "
+
+#: advanced_dialog.cpp:138
+msgid "Global"
+msgstr "Global"
+
+#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1564
+#: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
+msgid "Camera"
+msgstr "카메라"
+
+#: advanced_dialog.cpp:148 guider.cpp:1258 myframe.cpp:1404
+#: scope_manual_pointing.cpp:66
+msgid "Guiding"
+msgstr "가이딩 "
+
+#: advanced_dialog.cpp:153
+msgid "Algorithms"
+msgstr "알고리즘 "
+
+#: advanced_dialog.cpp:158 advanced_dialog.cpp:279
+msgid "Other Devices"
+msgstr "기타장치 "
+
+#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1575
+#: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:251 gear_dialog.cpp:253
+#: testguide.cpp:149 testguide.cpp:193
+msgid "Mount"
+msgstr "마운트"
+
+#: advanced_dialog.cpp:344
+msgid "No mount specified"
+msgstr "마운트 지정되지 않음"
+
+#: aui_controls.cpp:140 aui_controls.cpp:152 guiding_assistant.cpp:301
+#: aui_controls.h:139
+msgid "SNR"
+msgstr "SNR"
+
+#: aui_controls.cpp:142 aui_controls.h:140
+msgid "SAT"
+msgstr "SAT"
+
+#: aui_controls.cpp:159
+msgid ""
+"Signal-to-noise ratio of guide star\n"
+"Green means SNR >= 10\n"
+"Yellow means  4 <= SNR < 10\n"
+"Red means SNR < 4"
+msgstr ""
+"가이드별의 SNR\n"
+"green 평균 SNR >=10\n"
+"Yellow 평균 SNR = 4~10\n"
+"Red 평균 SNR <4"
+
+#: aui_controls.cpp:263 aui_controls.cpp:286 aui_controls.cpp:300
+#, c-format
+msgid "%d ms, %0.1f px"
+msgstr "%d ms, %0.1f px"
+
+#: aui_controls.cpp:365
+msgid "Camera, "
+msgstr "카메라, "
+
+#: aui_controls.cpp:374
+msgid "Mount, "
+msgstr "마운트, "
+
+#: aui_controls.cpp:382
+msgid "Aux Mount, "
+msgstr "Aux 마운트, "
+
+#: aui_controls.cpp:392
+msgid "AO, "
+msgstr "AO, "
+
+#: aui_controls.cpp:403
+msgid "Rotator, "
+msgstr "로테이터, "
+
+#: aui_controls.cpp:442
+msgid "BPM"
+msgstr "BMP "
+
+#: aui_controls.cpp:442 aui_controls.cpp:520 aui_controls.cpp:552
+msgid "Dark"
+msgstr "다크"
+
+#: aui_controls.cpp:511
+msgid "All devices connected"
+msgstr "모든 장치 연결됨"
+
+#: aui_controls.cpp:514
+msgid "No devices connected"
+msgstr "연결된 장치 없음 "
+
+#: aui_controls.cpp:516
+msgid "Devices not connected: "
+msgstr "연결된 장치 없음"
+
+#: aui_controls.cpp:521
+msgid "Dark library: "
+msgstr "다크 라이브러리"
+
+#: aui_controls.cpp:521 aui_controls.cpp:523
+msgid "In-use"
+msgstr "사용중"
+
+#: aui_controls.cpp:521 aui_controls.cpp:523
+msgid "Not in-use"
+msgstr "사용하지 않음"
+
+#: aui_controls.cpp:523
+msgid "Bad pixel map: "
+msgstr "불량화소 지도 :"
+
+#: aui_controls.cpp:526
+msgid "Calibration: "
+msgstr "캘리브레이션:"
+
+#: aui_controls.cpp:530
+msgid "Not completed"
+msgstr "완료되지 않음 "
+
+#: aui_controls.cpp:533
+msgid "Completed, but scope pointing info not available/not in-use"
+msgstr "완료, 망원경 위치 정보를 사용할 수 없거나 사용하지 않음"
+
+#: aui_controls.cpp:536
+msgid "Completed, scope pointing info in-use"
+msgstr "완료, 망원경 위치정보 사용 "
+
+#: aui_controls.cpp:552
+msgid "Cal"
+msgstr "Cal"
+
+#: aui_controls.cpp:621
+msgid "Selected star at (999.9, 999.9)"
+msgstr "선택된 별(999.9, 999.9)"
+
+#: backlash_comp.cpp:219
+msgid "Backlash Results"
+msgstr "백래시 결과"
+
+#: backlash_comp.cpp:304
+msgid "Ideal"
+msgstr "이상적인 "
+
+#: backlash_comp.cpp:306
+msgid "Measured"
+msgstr "측정 "
+
+#: backlash_comp.cpp:307 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+#: testguide.cpp:152
+msgid "North"
+msgstr "북쪽 "
+
+#: backlash_comp.cpp:308 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+#: testguide.cpp:152
+msgid "South"
+msgstr "남쪽"
+
+#: backlash_comp.cpp:359
+msgid ""
+"Backlash measurement cannot be run - please re-run your mount calibration"
+msgstr ""
+"백래시 측정을 실행할 수 없습니다. 마운트 캘리브레이셔을 다시 실행하십시오."
+
+#: backlash_comp.cpp:449
+msgid "Backlash measurement cannot be run - Dec guide rate not available"
+msgstr ""
+
+#: backlash_comp.cpp:463
+#, c-format
+msgid "Clearing North backlash, step %d"
+msgstr "북쪽 백래시 제거,  단계  %d"
+
+#: backlash_comp.cpp:500
+#, c-format
+msgid "Clearing North backlash, step %d (up to limit of %d)"
+msgstr "북쪽 백래시 제거, 단계 %d (최대한계 %d)"
+
+#: backlash_comp.cpp:508
+msgid "Could not clear North backlash - test failed"
+msgstr "북쪽 백래시 제거실패 "
+
+#: backlash_comp.cpp:535
+#, c-format
+msgid "Moving North for %d ms, step %d / %d"
+msgstr "북쪽으로 이동 중  %d ms, 단계 %d / %d"
+
+#: backlash_comp.cpp:551
+msgid ""
+"Star too close to edge for accurate measurement of backlash. Choose a star "
+"farther from the edge."
+msgstr ""
+"별이 가장자리에 너무 가까이 있습니다. 정확한 백래시 측정을 위해  가장자리에"
+"서 멀리 떨어진 별을 선택하십시오."
+
+#: backlash_comp.cpp:566
+#, c-format
+msgid "Moving South for %d ms, step %d / %d"
+msgstr "남쪽으로 이동 중  %d ms, 단계 %d / %d"
+
+#: backlash_comp.cpp:596
+#, c-format
+msgid "Issuing test backlash correction of %d ms"
+msgstr "테스트 백래시 캘리브레이션 중  %d ms"
+
+#: backlash_comp.cpp:655
+msgid "Restoring star position"
+msgstr "별 위치 복원 "
+
+#: backlash_comp.cpp:663
+msgid "Measurement complete"
+msgstr "측정 완료 "
+
+#: backlash_comp.cpp:672
+msgid "Measurement halted"
+msgstr "측정 중지 "
+
+#: backlash_comp.cpp:682
+#, c-format
+msgid "Measurement encountered an error: %s"
+msgstr "측정에 오류가 발생했습니다: %s"
+
+#: calreview_dialog.cpp:47 statswindow.cpp:300
+msgid "N/A"
+msgstr "N/A"
+
+#: calreview_dialog.cpp:101 config_INDI.cpp:110 eegg.cpp:112
+#: gear_dialog.cpp:294 gear_dialog.cpp:296 testguide.cpp:161
+msgid "AO"
+msgstr "AO"
+
+#: calreview_dialog.cpp:134 calreview_dialog.cpp:139 mount.cpp:125
+#: scope_manual_pointing.cpp:121
+msgid "Right Ascension"
+msgstr "적경 "
+
+#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:151
+msgid "X"
+msgstr "X"
+
+#: calreview_dialog.cpp:142 calreview_dialog.cpp:147 calreview_dialog.cpp:376
+#: mount.cpp:128 statswindow.cpp:104
+msgid "Declination"
+msgstr "적위 "
+
+#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:158
+msgid "Y"
+msgstr "Y"
+
+#: calreview_dialog.cpp:193
+msgid "Last Mount Calibration"
+msgstr "마지막 마운트 캘리브레이션 "
+
+#: calreview_dialog.cpp:195
+msgid "Last AO Calibration"
+msgstr "마지막 AO 캘리브레이션"
+
+#: calreview_dialog.cpp:205
+msgid "RA steps:"
+msgstr "RA 단계:"
+
+#: calreview_dialog.cpp:210
+msgid "Dec steps:"
+msgstr "Dec 단계:"
+
+#: calreview_dialog.cpp:217
+msgid "Camera angle:"
+msgstr "카메라 각도:"
+
+#: calreview_dialog.cpp:220 calreview_dialog.cpp:684
+msgid "Orthogonality error:"
+msgstr "직교 오차:"
+
+#: calreview_dialog.cpp:238
+msgid "a-s/sec"
+msgstr "a-s/sec"
+
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1195
+msgid "px/sec"
+msgstr "px/sec"
+
+#: calreview_dialog.cpp:240
+msgid "a-s/px"
+msgstr "a-s/px"
+
+#: calreview_dialog.cpp:244 calreview_dialog.cpp:713
+msgid "RA rate:"
+msgstr "RA 속도: "
+
+#: calreview_dialog.cpp:247
+msgid "X rate:"
+msgstr "X 속도:"
+
+#: calreview_dialog.cpp:254
+msgid "Dec rate:"
+msgstr "Dec 속도:"
+
+#: calreview_dialog.cpp:256
+msgid "Y rate:"
+msgstr "Y 속도:"
+
+#: calreview_dialog.cpp:274
+msgid "Expected RA rate:"
+msgstr "예상 RA 속도 :"
+
+#: calreview_dialog.cpp:284
+msgid "Expected Dec rate:"
+msgstr "예상 Dec 속도 :"
+
+#: calreview_dialog.cpp:296
+msgid "Binning:"
+msgstr "비닝:"
+
+#: calreview_dialog.cpp:298
+msgid "Created:"
+msgstr "작성됨:"
+
+#: calreview_dialog.cpp:299 mount.cpp:57 mount.cpp:92 statswindow.cpp:303
+msgid "Unknown"
+msgstr "알 수 없음 "
+
+#: calreview_dialog.cpp:307
+msgid "Mount Configuration"
+msgstr "마운트 구성 "
+
+#: calreview_dialog.cpp:319
+msgid "Modified:"
+msgstr "변경 됨:"
+
+#: calreview_dialog.cpp:321
+msgid "Focal length:"
+msgstr "초점거리: "
+
+#: calreview_dialog.cpp:323
+#, c-format
+msgid "%d mm"
+msgstr "%d mm"
+
+#: calreview_dialog.cpp:328
+msgid "Image scale:"
+msgstr "이미지 스케일:"
+
+#: calreview_dialog.cpp:331
+#, c-format
+msgid "Binning: %d"
+msgstr "비닝: %d"
+
+#: calreview_dialog.cpp:336
+msgid "Side-of-pier:"
+msgstr "피어 방향:"
+
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1719 mount.cpp:60
+#: testguide.cpp:152
+msgid "East"
+msgstr "동쪽 "
+
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1719 mount.cpp:61
+#: testguide.cpp:152
+msgid "West"
+msgstr "서쪽 "
+
+#: calreview_dialog.cpp:344
+msgid "RA Guide speed:"
+msgstr "RA 가이드 속도:"
+
+#: calreview_dialog.cpp:347 calreview_dialog.cpp:355
+#, c-format
+msgid "%0.2fx"
+msgstr "%0.2fx"
+
+#: calreview_dialog.cpp:352
+msgid "Dec Guide speed:"
+msgstr "Dec 가이드 속도:"
+
+#: calreview_dialog.cpp:379
+msgid " (est)"
+msgstr " (est)"
+
+#: calreview_dialog.cpp:382
+msgid "Rotator position:"
+msgstr "로테이터 위치:"
+
+#: calreview_dialog.cpp:538 nudge_lock.cpp:181 nudge_lock.cpp:192
+msgid "Restore"
+msgstr "복원 "
+
+#: calreview_dialog.cpp:553
+msgid "Calibration restored"
+msgstr "캘리브레이션을 복원 함 "
+
+#: calreview_dialog.cpp:570
+msgid "Calibration Sanity Check"
+msgstr "캘리브레이션의 정상여부 검사 "
+
+#: calreview_dialog.cpp:593
+msgid ""
+"The calibration was done with a very small number of steps, which can "
+"produce inaccurate results. Consider reducing the size of the calibration "
+"step parameter until you see at least 8 steps in each direction.  The "
+"'calculator' feature in the 'Mount' configuration tab can help you with this."
+msgstr ""
+"캘리브레이션 단계가 매우 적어 부정확 한 결과가 발생할 수 있습니다. 각 방향으"
+"로 적어도 8 단계 이상이 되도록 매개 변수의 크기를 줄이는 것이 좋습니다. '마운"
+"트' 구성 탭의 '계산기'기능을 사용하면 이 기능을 사용할 수 있습니다."
+
+#: calreview_dialog.cpp:598
+#, c-format
+msgid ""
+"The RA and Declination angles computed in the calibration are questionable.  "
+"Normally, these angles will be nearly perpendicular, having an "
+"'orthogonality error' of less than 10 degrees.  In this calibration, your "
+"error was %s degrees, which is often caused by poor polar alignment, large "
+"Dec backlash, or a large periodic error in RA."
+msgstr ""
+"캘리브레이션에서 계산 된 RA와 Dec의 각이 의심 스럽습니다. 일반적으로 이 각도"
+"는 거의 수직이며 10도 미만의 '직교 오차'를 갖습니다. 이 보정에서 오류는 % s도"
+"였습니다. 극축 정렬 오차나 Dec 백래시가 큰 경우 또는 RA의 주기 오차가 큰 경우"
+"로 인해 발생하는 오류입니다."
+
+#: calreview_dialog.cpp:603
+#, c-format
+msgid ""
+"The most recent calibration produced results that are %s%% different from "
+"the previous calibration.  If this is because you changed equipment "
+"configurations, you may want to use different profiles.  Doing so will allow "
+"you to switch back and forth between configurations and still retain earlier "
+"settings and calibration results."
+msgstr ""
+"가장 최근 캘리브레이션 결과는 이전 캘리브레이션과 다른 % s %% 결과를 나타냅니"
+"다. 만일 장비 구성을 변경하여 나타난 결과면 다른 프로파일을 사용 할 수 있습니"
+"다. 새로운 프로파일을 사용하면 두 프로파일을  전환하면서 초기 설정 및 캘리브"
+"레이션 결과를 유지할 수 있습니다."
+
+#: calreview_dialog.cpp:608
+#, c-format
+msgid ""
+"The RA and Declination guiding rates differ by an unexpected amount.  For "
+"your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
+"the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This usually "
+"means one of the axis calibrations is incorrect and may result in poor "
+"guiding."
+msgstr ""
+"RA 및 Dec가이딩 속도에 예상치 못한 차이가 있습니다. % 0.0f 도의 적위에 대해 "
+"RA 속도는 Dec 속도의 % 0.0f %% 여야합니다. 하지만 RA 속도는 Dec 속도의 "
+"% 0.0f %%입니다. 이는 일반적으로 RA 또는 Dec 중 하나의 캘리브레이션이 잘못되"
+"어 가이드가잘 안될 수 있음을 의미합니다."
+
+#: calreview_dialog.cpp:650
+msgid "Explanation"
+msgstr "설명 "
+
+#: calreview_dialog.cpp:663
+msgid "Details"
+msgstr "세부내용 "
+
+#: calreview_dialog.cpp:672
+msgid "Steps, RA:"
+msgstr "단계, RA:"
+
+#: calreview_dialog.cpp:674
+msgid "Steps, Dec:"
+msgstr "단계, Dec:"
+
+#: calreview_dialog.cpp:686
+msgid "Previous orthogonality error:"
+msgstr "이전 직교 오차:"
+
+#: calreview_dialog.cpp:698
+msgid "This declination rate:"
+msgstr "현재 Dec 속도:"
+
+#: calreview_dialog.cpp:700 calreview_dialog.cpp:714 calreview_dialog.cpp:717
+#, c-format
+msgid ""
+"%0.3f a-s/sec\n"
+"%0.3f px/sec"
+msgstr ""
+"%0.3f a-s/sec\n"
+"%0.3f px/sec"
+
+#: calreview_dialog.cpp:703
+msgid "Previous declination rate:"
+msgstr "이전 Dec 속도:"
+
+#: calreview_dialog.cpp:705
+#, c-format
+msgid ""
+"\n"
+"%0.3f px/sec"
+msgstr ""
+"\n"
+"%0.3f px/sec"
+
+#: calreview_dialog.cpp:715
+msgid "Declination rate:"
+msgstr "Dec 속도:"
+
+#: calreview_dialog.cpp:733
+msgid "Don't show calibration alerts of this type"
+msgstr "이 유형의 경고를 표시하지 마십시오."
+
+#: calreview_dialog.cpp:744
+msgid "Accept calibration"
+msgstr "캘리브레이션 채택 "
+
+#: calreview_dialog.cpp:745
+msgid "Accept the calibration as being valid and continue guiding"
+msgstr "캘리브레이션이 유효한 것으로 받아들이고 계속 가이드를 하십시오."
+
+#: calreview_dialog.cpp:747
+msgid "Discard calibration"
+msgstr "캘리브레이션 폐기"
+
+#: calreview_dialog.cpp:748
+msgid ""
+"Stop guiding and discard the most recent calibration.  Calibration will be "
+"re-done the next time you start guiding"
+msgstr ""
+"가이딩을 중지하고 가장 최근 캘리브레이션을 폐기하십시오. 다음 가이딩시 캘리브"
+"레이션을 다시 수행합니다."
+
+#: calreview_dialog.cpp:750
+msgid "Restore old calibration"
+msgstr "이전 캘리브레이션 복원"
+
+#: calreview_dialog.cpp:751
+msgid ""
+"Stop guiding, discard the most recent calibration, then load the previous "
+"(good) calibration"
+msgstr ""
+"가이딩을 중지하고 가장 최근 캘리브레이션을 폐기하십시오. 그후 이전의 양호한 "
+"캘리브레이션을 불러옵니다."
+
+#: calreview_dialog.cpp:800
+msgid "Previous calibration restored"
+msgstr "이전 캘리브레이션 복원 "
+
+#: calstep_dialog.cpp:61
+msgid "Calibration Step Calculator"
+msgstr "캘리브레이션 단계 계산기 "
+
+#: calstep_dialog.cpp:103
+msgid "Input Parameters"
+msgstr "파라미터 입력 "
+
+#: calstep_dialog.cpp:115
+msgid "Focal length, mm"
+msgstr "초점거리, mm"
+
+#: calstep_dialog.cpp:115
+msgid "Guide scope focal length"
+msgstr "가이드망원경 초점거리 "
+
+#: calstep_dialog.cpp:120
+msgid "Pixel size, microns"
+msgstr "픽셀 크기, um"
+
+#: calstep_dialog.cpp:120
+msgid "Guide camera pixel size"
+msgstr "가이드카메라 픽셀 크기 "
+
+#: calstep_dialog.cpp:130 statswindow.cpp:111
+msgid "Camera binning"
+msgstr "카메라 비닝 "
+
+#: calstep_dialog.cpp:130
+msgid "Guide camera pixel binning"
+msgstr "가이드카메라 픽셀 비닝 "
+
+#: calstep_dialog.cpp:136
+msgid "Guide speed, n.nn x sidereal"
+msgstr "가이드 속도, n.nn x 항성속도"
+
+#: calstep_dialog.cpp:137
+#, c-format
+msgid ""
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
+"50% sidereal rate, enter 0.5"
+msgstr ""
+"가이드 속도, 항성속도 배수;  if your mount's guide speed is 50% sidereal "
+"rate, enter 0.5"
+
+#: calstep_dialog.cpp:143
+msgid "Calibration steps"
+msgstr "보정 단계 "
+
+#: calstep_dialog.cpp:144
+#, c-format
+msgid ""
+"Targeted number of steps in each direction. The default value (%d) works "
+"fine for most setups."
+msgstr ""
+"각 방향으로 목표 단계 수입니다. 대부분의 성정에서 기본값 (% d) 설정에서 정상"
+"적으로 작동합니다."
+
+#: calstep_dialog.cpp:150
+msgid "Calibration declination, degrees"
+msgstr "Dec 보정, 도 "
+
+#: calstep_dialog.cpp:150
+msgid "Approximate declination where you will do calibration"
+msgstr "캘리브레이션을 수행 할  적위"
+
+#: calstep_dialog.cpp:153
+msgid "Computed Values"
+msgstr "계산 값"
+
+#: calstep_dialog.cpp:159
+msgid "Image scale, arc-sec/px"
+msgstr "이미지 스케일, arc-sec/px"
+
+#: calstep_dialog.cpp:161
+msgid "Calibration step, ms"
+msgstr "보정 단계, ms"
+
+#: calstep_dialog.cpp:181 cam_simulator.cpp:1471 camcal_import_dialog.cpp:47
+#: camera.cpp:725 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:54
+#: myframe.cpp:2625 profile_wizard.cpp:61 profile_wizard.cpp:68
+#: Refine_DefMap.cpp:59
+msgid ": "
+msgstr ":"
+
+#: calstep_dialog.cpp:244
+msgid "Please enter a focal length of at least 50"
+msgstr "초점거리 입력(최소 50)."
+
+#: calstep_dialog.cpp:248
+msgid "Please enter a pixel size greater than zero."
+msgstr "픽셀크기 입력(0보다 큰 값) "
+
+#: cam_Altair.cpp:56
+msgid "Altair Camera Settings"
+msgstr "Altair 카메라 설정 "
+
+#: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
+msgid "Settings"
+msgstr "설정"
+
+#: cam_Altair.cpp:143 cam_Altair.cpp:162 cam_Altair.cpp:169 cam_Altair.cpp:192
+#: cam_Atik16.cpp:128 cam_firewire_IC.cpp:94 cam_INovaPLC.cpp:61
+#: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
+#: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
+#: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_qhy5.cpp:117 cam_qhy5.cpp:124
+#: cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:120 cam_SAC42.cpp:71
+#: cam_SACGuide.cpp:82 cam_SACGuide.cpp:93 cam_SACGuide.cpp:96
+#: cam_SACGuide.cpp:99 cam_SACGuide.cpp:102 cam_SACGuide.cpp:111
+#: cam_SBIG.cpp:285 cam_SBIG.cpp:295 cam_SBIG.cpp:318 cam_SSPIAG.cpp:131
+#: cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155
+#: cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179
+#: cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203
+#: cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233
+#: cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257
+#: cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92
+#: cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
+#: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
+#: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261 cam_wdm.cpp:132 cam_wdm.cpp:141
+#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:209 cam_ZWO.cpp:216 cam_ZWO.cpp:224
+#: cam_ZWO.cpp:267 gear_dialog.cpp:1189 gear_dialog.cpp:1850
+#: gear_dialog.cpp:1859 gear_dialog.cpp:1866 gear_dialog.cpp:1911
+#: gear_dialog.cpp:1917 scope_ascom.cpp:186 scope_ascom.cpp:201
+#: scope_ascom.cpp:209 scope_ascom.cpp:218 scope_ascom.cpp:234
+#: scope_ascom.cpp:241 scope_ascom.cpp:329 scope_ascom.cpp:337
+#: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
+#: scope_equinox.cpp:142 scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160
+#: scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204
+#: scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242 scope_gpusb.cpp:304
+#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:160 stepguider_sxao_INDI.cpp:104
+#: stepguider_sxao_INDI.cpp:115
+msgid "Error"
+msgstr "에러"
+
+#: cam_Altair.cpp:162
+msgid "Specified Altair Camera not found."
+msgstr "지정된 Altair 카메라를 찾을 수 없습니다."
+
+#: cam_Altair.cpp:169
+msgid "Failed to open Altair Camera."
+msgstr "Altair 카메라를 열지 못했습니다."
+
+#: cam_Altair.cpp:192
+msgid "Failed to get camera resolution for Altair Camera."
+msgstr "Altair 카메라의 해상도를 얻지 못했습니다."
+
+#: cam_ascomlate.cpp:339 scope_ascom.cpp:665
+msgid ""
+"ASCOM driver failed checking IsPulseGuiding. See the debug log for more "
+"information."
+msgstr ""
+"ASCOM 드라이버가 PulseGuiding을 확인하지 못했습니다. 자세한 정보는 디버그 로"
+"그를 참조하십시오."
+
+#: cam_ascomlate.cpp:456
+msgid "ASCOM Camera Driver missing required property "
+msgstr "ASCOM 카메라 드라이버가 없음"
+
+#: cam_ascomlate.cpp:470
+msgid ""
+"Could not create ASCOM camera object. See the debug log for more information."
+msgstr ""
+"ASCOM 카메라 객체를 만들 수 없습니다. 자세한 정보는 디버그 로그를 참조하십시"
+"오."
+
+#: cam_ascomlate.cpp:494 rotator_ascom.cpp:174
+msgid "ASCOM driver problem: Connect"
+msgstr "ASCOM 드라이브 문제: 연결 "
+
+#: cam_ascomlate.cpp:510
+msgid ""
+"ASCOM driver missing the CanPulseGuide property. Please report this error to "
+"your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CanPulseGuide 속성이 누락되었습니다. 이 오류를 ASCOM 드라이"
+"버 제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:518
+msgid ""
+"ASCOM driver missing the CanAbortExposure property. Please report this error "
+"to your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CanAbortExposure 속성이 누락되었습니다. 이 오류를 ASCOM 드라"
+"이버 제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:526
+msgid ""
+"ASCOM driver missing the CanStopExposure property. Please report this error "
+"to your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CanStopExposure 속성이 누락되었습니다. 이 오류를 ASCOM 드라"
+"이버 제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:542
+msgid ""
+"ASCOM driver missing the CameraXSize property. Please report this error to "
+"your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CameraXSize 속성이 누락되었습니다. 이 오류를 ASCOM 드라이버 "
+"제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:550
+msgid ""
+"ASCOM driver missing the CameraYSize property. Please report this error to "
+"your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CameraYSize 속성이 누락되었습니다. 이 오류를 ASCOM 드라이버 "
+"제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:585
+msgid ""
+"ASCOM driver missing the PixelSizeX property. Please report this error to "
+"your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 PixelSizeX 속성이 누락되었습니다. 이 오류를 ASCOM 드라이버 "
+"제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:593
+msgid ""
+"ASCOM driver missing the PixelSizeY property. Please report this error to "
+"your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 PixelSizeY 속성이 누락되었습니다. 이 오류를 ASCOM 드라이버 "
+"제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:618
+msgid ""
+"ASCOM driver missing the CanSetCCDTemperature property. Please report this "
+"error to your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CanSetCCDTemperature 속성이 누락되었습니다. 이 오류를 ASCOM "
+"드라이버 제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:626
+msgid ""
+"ASCOM driver missing the CanGetCoolerPower property. Please report this "
+"error to your ASCOM driver provider."
+msgstr ""
+"ASCOM 드라이버에 CanGetCoolerPower 속성이 누락되었습니다. 이 오류를 ASCOM 드"
+"라이버 제공 업체에보고하십시오."
+
+#: cam_ascomlate.cpp:691 cam_ascomlate.cpp:901
+msgid ""
+"The ASCOM camera failed to set binning. See the debug log for more "
+"information."
+msgstr ""
+"ASCOM 카메라가 비닝을 설정하지 못했습니다. 자세한 정보는 디버그 로그를 참조하"
+"십시오."
+
+#: cam_ascomlate.cpp:718
+msgid "ASCOM driver problem -- cannot disconnect"
+msgstr "ASCOM 드라이브 문제 --연결을 해제 ㅎ 수 없습니다."
+
+#: cam_ascomlate.cpp:751
+#, c-format
+msgid "ASCOM error turning camera cooler %s"
+msgstr "ASCOM 오류 카메라 냉각 %s"
+
+#: cam_ascomlate.cpp:751
+msgid "on"
+msgstr "ON"
+
+#: cam_ascomlate.cpp:751
+msgid "off"
+msgstr "OFF"
+
+#: cam_ascomlate.cpp:889
+msgid "Cannot allocate memory to download image from camera"
+msgstr "카메라에서 이미지를 다운로드하기 위해 메모리를 할당 할 수 없습니다."
+
+#: cam_ascomlate.cpp:919
+msgid "ASCOM error -- Cannot start exposure with given parameters"
+msgstr "ASCOM 오류 - 주어진 매개 변수로 노출을 시작할 수 없습니다"
+
+#: cam_ascomlate.cpp:943
+msgid "Exception thrown polling camera"
+msgstr "Exception thrown polling camera"
+
+#: cam_ascomlate.cpp:964
+msgid "Error reading image"
+msgstr "이미지 읽기 오류"
+
+#: cam_Atik16.cpp:77
+msgid "DLL error"
+msgstr "DLL 오류"
+
+#: cam_Atik16.cpp:119
+msgid "Already connected"
+msgstr "이미 연결됨 "
+
+#: cam_Atik16.cpp:294
+msgid "Couldn't start exposure - aborting"
+msgstr "노출을 시작할 수 없습니다 - 중지합니다."
+
+#: cam_firewire_IC.cpp:104
+msgid "No camera found"
+msgstr "카메라가 없습니다."
+
+#: cam_firewire_IC.cpp:117
+msgid "Select Camera"
+msgstr "카메라 선택"
+
+#: cam_firewire_IC.cpp:126
+msgid "Cannot open camera"
+msgstr "카메라를 열 수 없습니다."
+
+#: cam_firewire_IC.cpp:135
+msgid "Cannot get list of video modes"
+msgstr "비디오 모드 목록을 가져올 수 없습니다."
+
+#: cam_firewire_IC.cpp:215
+msgid ""
+"Warning - cannot directly control exposure duration - running in auto-"
+"exposure"
+msgstr "경고 - 노출 시간을 직접 제어 할 수 없음 - 자동 노출로 실행 중"
+
+#: cam_firewire_IC.cpp:290 cam_INDI.cpp:464 cam_INDI.cpp:487 cam_opencv.cpp:146
+#: cam_simulator.cpp:605 cam_simulator.cpp:1153 cam_simulator.cpp:1215
+#: cam_simulator.cpp:1375 image_math.cpp:85 image_math.cpp:545
+msgid "Memory allocation error"
+msgstr "메모리 할당 오류"
+
+#: cam_firewire_IC.cpp:302
+msgid "Could not start video stream"
+msgstr "비디오 스트림을 시작할 수 없습니다."
+
+#: cam_firewire_IC.cpp:323
+#, c-format
+msgid "Error capturing image: %d (%d) %s"
+msgstr "이미지 캡처 오류: %d (%d) %s"
+
+#: cam_firewire_OSX.cpp:361
+msgid "Cannot get a frame from the queue"
+msgstr "프레임을 가져올 수 없습니다."
+
+#: cam_INDI.cpp:335
+#, c-format
+msgid "Cannot connect to camera %s"
+msgstr "카메라에 연결할 수 없습니다. %s"
+
+#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:593
+msgid "Unsupported type or read error loading FITS file"
+msgstr ""
+"FITS 파일을로드하는 중에 지원되지 않는 유형 또는 읽기 오류가 발생했습니다."
+
+#: cam_INDI.cpp:446 cam_simulator.cpp:582 cam_simulator.cpp:1358
+msgid "FITS file is not of an image"
+msgstr "FITS 파일에 이미지가 없습니다."
+
+#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:623
+#: cam_simulator.cpp:1380
+msgid "Error reading data"
+msgstr "데이터 읽기 오류"
+
+#: cam_INDI.cpp:510
+msgid "No CCD_FRAME property, failed to determine image dimensions"
+msgstr "CCD_FRAME 특성이 없음, 이미지 크기 결정 실패"
+
+#: cam_INDI.cpp:515
+msgid "No WIDTH value, failed to determine image dimensions"
+msgstr "WIDTH 값 없음, 이미지 크기 결정 실패"
+
+#: cam_INDI.cpp:521
+msgid "No HEIGHT value, failed to determine image dimensions"
+msgstr "HEIGHT 값 없음, 이미지 크기 결정 실패"
+
+#: cam_INDI.cpp:528
+msgid "CCD stream: memory allocation error"
+msgstr "CCD 스트림 : 메모리 할당 오류"
+
+#: cam_INDI.cpp:646
+msgid "Unknown image format: "
+msgstr "알수없는 이미지 형식:"
+
+#: cam_INovaPLC.cpp:61
+#, c-format
+msgid "Error on connection: %d"
+msgstr "연결오류: %d"
+
+#: cam_INovaPLC.cpp:83
+msgid "Error setting exposure duration"
+msgstr "노출 지속 시간 설정 오류"
+
+#: cam_INovaPLC.cpp:87
+msgid "Error setting gain"
+msgstr "Gain 설정 오류"
+
+#: cam_LELXUSBWebcam.cpp:67
+msgid "Unable to open LXUSB device"
+msgstr "LXUSB 장치를 열 수 없습니다."
+
+#: cam_LESerialWebcam.cpp:274
+msgid "Serial LE Webcam"
+msgstr "Serial LE Webcam"
+
+#: cam_LESerialWebcam.cpp:279 camera.cpp:872
+msgid "LE Port"
+msgstr "LE Port"
+
+#: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:160
+msgid "No serial ports found"
+msgstr "시리얼포트가 없습니다."
+
+#: cam_LESerialWebcam.cpp:316
+msgid "Port pins"
+msgstr "Port pins"
+
+#: cam_LESerialWebcam.cpp:352
+msgid "Inverted logic"
+msgstr "Inverted logic"
+
+#: cam_LESerialWebcam.cpp:355
+msgid "Use Amp"
+msgstr "Amp 사용"
+
+#: cam_LESerialWebcam.cpp:365
+msgid "Defaults"
+msgstr "기본값"
+
+#: cam_LESerialWebcam.cpp:369
+msgid "Webcam settings"
+msgstr "웹캠 설정"
+
+#: cam_openssag.cpp:96 cam_qhy5.cpp:117
+msgid "Could not initialize USB library"
+msgstr "USB 라이브러리를 초기화 할 수 없습니다."
+
+#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
+msgid "Cannot start exposure"
+msgstr "노출을 시작할 수 없습니다."
+
+#: cam_QHY5IIbase.cpp:107
+#, c-format
+msgid "Camera DLL missing entry %s"
+msgstr "카메라 DLL 누락 된 항목 %s"
+
+#: cam_QHY5IIbase.cpp:120
+#, c-format
+msgid "Cannot load camera dll %s.dll"
+msgstr "카메라 %s. dll을 로드 할 수 없습니다."
+
+#: cam_QHY5IIbase.cpp:148
+msgid "No camera"
+msgstr "카메라 없음"
+
+#: cam_SAC42.cpp:135
+msgid "Error capturing data from camera"
+msgstr "카메라에서 데이터를 캡처하는 중 오류가 발생했습니다."
+
+#: cam_SBIG.cpp:113
+msgid "Error loading SBIG driver and/or DLL"
+msgstr "SBIG 드라이버/ 또는 DLL 로드 오류"
+
+#: cam_SBIG.cpp:136
+msgid "Select interface"
+msgstr "인터페이스 선택"
+
+#: cam_SBIG.cpp:136
+msgid "Interface"
+msgstr "인터페이스"
+
+#: cam_SBIG.cpp:168
+msgid "Select USB camera"
+msgstr "USB카메라 선택"
+
+#: cam_SBIG.cpp:168
+msgid "Camera name"
+msgstr "카메라 이름"
+
+#: cam_SBIG.cpp:179
+msgid "IP address"
+msgstr "IP 주소"
+
+#: cam_SBIG.cpp:179
+msgid "Enter IP address"
+msgstr "IP 주소 입력"
+
+#: cam_SBIG.cpp:308
+msgid "CCD Choice"
+msgstr "CCD 선택"
+
+#: cam_SBIG.cpp:318
+msgid "Error getting info on main CCD"
+msgstr "메인 CCD에서 정보를 가져 오는 중 오류가 발생했습니다."
+
+#: cam_SBIG.cpp:475
+msgid "Cannot poll exposure"
+msgstr "Cannot poll exposure"
+
+#: cam_SBIG.cpp:498
+msgid "Cannot stop exposure"
+msgstr "노출을 멈출 수 없ㅇ"
+
+#: cam_SBIG.cpp:524 cam_SBIG.cpp:540
+msgid "Error downloading data"
+msgstr "데이타 다운로드 에러 "
+
+#: cam_SBIG.cpp:578
+msgid "Cannot check SBIG relay status"
+msgstr "SBIC 릴레이 상태를 확인할 수 없음 "
+
+#: cam_SBIG.cpp:587
+msgid "Timeout expired waiting for guide pulse to complete."
+msgstr "가이드 펄스 완료 대기 시간이 만료되었습니다."
+
+#: cam_sbigrotator.cpp:62
+msgid "Enter RA Angle (in degrees)"
+msgstr "RA 각도 입력 (도)"
+
+#: cam_sbigrotator.cpp:62
+msgid "RA angle"
+msgstr "RA 각도"
+
+#: cam_sbigrotator.cpp:77
+msgid "Choose Dec Angle"
+msgstr "Dec 각도 선택 "
+
+#: cam_sbigrotator.cpp:77
+msgid "Dec Angle"
+msgstr "Dec 각도"
+
+#: cam_simulator.cpp:214
+msgid "AO-Simulator"
+msgstr "AO-시뮬레이터"
+
+#: cam_simulator.cpp:235
+msgid ""
+"The AO Simulator only works with the Camera Simulator. You should either "
+"disconnect the AO Simulator or connect the Camera Simulator."
+msgstr ""
+"AO 시뮬레이터는 카메라 시뮬레이터에서만 작동합니다. AO 사뮬레이터를 분리하거"
+"나 카메라 시뮬레이터를 연결해야합니다."
+
+#: cam_simulator.cpp:304
+msgid ""
+"The Rotator Simulator only works with the Camera Simulator. You must either "
+"disconnect the Rotator Simulator or connect the Camera Simulator."
+msgstr ""
+"로테이터 시뮬레이터는 카메라 시뮬레이터에서만 작동합니다. 로테이터 시뮬레이터"
+"를 분리하거나 카메라 시뮬레이터를 연결해야합니다."
+
+#: cam_simulator.cpp:515
+msgid "Choose a star displacements file"
+msgstr "별 치환 파일 선택"
+
+#: cam_simulator.cpp:523
+msgid "Can't use this file for star displacements"
+msgstr "별 치환 파일로 사용할 수 없습니다 "
+
+#: cam_simulator.cpp:527
+msgid "Can't simulate any star movement without a displacement file"
+msgstr "별 치환파일 없이 별의 이동을 시뮬레이션 할 수 없습니다"
+
+#: cam_simulator.cpp:1147
+msgid "Cannot load simulated image"
+msgstr "시뮬레이터된 이미지를 로드하 수 없습니다"
+
+#: cam_simulator.cpp:1370
+#, c-format
+msgid "Unsupported type or read error loading FITS file %d %d"
+msgstr "FITS 파일 로드 에러 또는 지원하지않는 파일 형식입니다 %d %d"
+
+#: cam_simulator.cpp:1540
+msgid "PE amplitude and period must be > 0"
+msgstr "PE 진폭과 주기는 반드시 0보다 크야합니다."
+
+#: cam_simulator.cpp:1546
+msgid "PE amplitude and period must be numbers > 0"
+msgstr "PE 진폭과 주기는 반드시 0보다 많아야 합니다."
+
+#: cam_simulator.cpp:1556
+msgid "Camera Simulator"
+msgstr "카메라 시뮬레이터 "
+
+#: cam_simulator.cpp:1566
+msgid "Number of simulated stars"
+msgstr "시뮬레이션된 별 수"
+
+#: cam_simulator.cpp:1567
+msgid "Stars"
+msgstr "Stars"
+
+#: cam_simulator.cpp:1568
+msgid "Number of hot pixels"
+msgstr "핫픽셀 수 "
+
+#: cam_simulator.cpp:1569 Refine_DefMap.cpp:168
+msgid "Hot pixels"
+msgstr "핫픽셀"
+
+#: cam_simulator.cpp:1570
+#, c-format
+msgid "% Simulated noise"
+msgstr "% Simulated noise"
+
+#: cam_simulator.cpp:1571
+msgid "Noise"
+msgstr "노이즈"
+
+#: cam_simulator.cpp:1577
+msgid "Dec backlash, arc-secs"
+msgstr "Dec 백래시, arc-secs"
+
+#: cam_simulator.cpp:1578
+msgid "Dec backlash"
+msgstr "Dec 백래시 "
+
+#: cam_simulator.cpp:1579
+msgid "Dec drift, arc-sec/min"
+msgstr "Dec 표류, arc-sec/min"
+
+#: cam_simulator.cpp:1580
+msgid "Dec drift"
+msgstr "Dec 표류 "
+
+#: cam_simulator.cpp:1581
+msgid "Guide rate, x sidereal"
+msgstr "가이드 속도, x 항성속도 "
+
+#: cam_simulator.cpp:1582
+msgid "Guide rate"
+msgstr "가이드 속도 "
+
+#: cam_simulator.cpp:1586
+msgid "PE"
+msgstr "주기오차 "
+
+#: cam_simulator.cpp:1587
+msgid "Apply PE"
+msgstr "주기오차 적용 "
+
+#: cam_simulator.cpp:1587
+msgid "Simulate periodic error"
+msgstr "주기오차 시뮬레이터션 "
+
+#: cam_simulator.cpp:1591
+msgid "Default curve"
+msgstr "기본곡선 "
+
+#: cam_simulator.cpp:1593
+msgid "Use a built-in PE curve that has some steep and smooth sections."
+msgstr "가파르고 부드러운 부분이있는 내장 PE 곡선을 사용하십시오."
+
+#: cam_simulator.cpp:1595
+msgid "Amplitude: "
+msgstr "진폭: "
+
+#: cam_simulator.cpp:1596
+msgid "PE Amplitude, arc-secs"
+msgstr "주지오차 진폭, 아크초 "
+
+#: cam_simulator.cpp:1604
+msgid "Custom curve"
+msgstr "사용자 곡성 "
+
+#: cam_simulator.cpp:1606
+msgid ""
+"Use a simple sinusoidal curve. You can specify the amplitude and period."
+msgstr "간단한 사인 곡선을 사용하십시오. 진폭과 주기를 지정할 수 있습니다."
+
+#: cam_simulator.cpp:1609
+msgid "Amplitude"
+msgstr "진폭 "
+
+#: cam_simulator.cpp:1609
+msgid "Amplitude, arc-secs"
+msgstr "진폭, arc-secs"
+
+#: cam_simulator.cpp:1610
+msgid "Period"
+msgstr "주기 "
+
+#: cam_simulator.cpp:1610
+msgid "Period, seconds"
+msgstr "주기, 초 "
+
+#: cam_simulator.cpp:1622
+msgid "Reverse Dec pulse on West side of pier"
+msgstr "피어의 서쪽에에서 Dec은 역 펄스 "
+
+#: cam_simulator.cpp:1623
+msgid ""
+"Simulate a mount that reverses guide pulse direction after a meridian flip, "
+"like an ASCOM pulse-guided mount."
+msgstr ""
+"자오선 플립 후 가이드 펄스의 방향을 역전시키는 마운트를 시뮬레이트합니다. "
+"ASCOM 펄스-가이드 마운트와 같음."
+
+#: cam_simulator.cpp:1625
+msgid "Side of Pier: MMMMM"
+msgstr "피어 방향: MMMMM"
+
+#: cam_simulator.cpp:1627
+msgid "Pier Flip"
+msgstr "피어플립 "
+
+#: cam_simulator.cpp:1634
+msgid "Session"
+msgstr "세션 "
+
+#: cam_simulator.cpp:1636
+msgid "Camera angle, degrees"
+msgstr "카메라 각도, 도 "
+
+#: cam_simulator.cpp:1637
+msgid "Camera angle"
+msgstr "카메라 각도 "
+
+#: cam_simulator.cpp:1638
+msgid "Seeing, FWHM arc-sec"
+msgstr "시잉, FWHM 아크초 "
+
+#: cam_simulator.cpp:1639
+msgid "Seeing"
+msgstr "시잉 "
+
+#: cam_simulator.cpp:1640
+msgid "Comet"
+msgstr "혜성 "
+
+#: cam_simulator.cpp:1642
+msgid "Star fading due to clouds"
+msgstr "구름으로 인해 별이 사라짐."
+
+#: cam_simulator.cpp:1654 darks_dialog.cpp:208 mount.cpp:162 mount.cpp:206
+#: Refine_DefMap.cpp:175 testguide.cpp:101
+msgid "Reset"
+msgstr "초기화 "
+
+#: cam_simulator.cpp:1655
+msgid "Reset all values to application defaults"
+msgstr "모든 값을 초기화 하고 프로그램 기본값으로 돌아 감"
+
+#: cam_simulator.cpp:1660 camcal_import_dialog.cpp:119
+msgid "OK"
+msgstr "OK"
+
+#: cam_simulator.cpp:1666 camcal_import_dialog.cpp:124 darks_dialog.cpp:216
+#: darks_dialog.cpp:372
+msgid "Cancel"
+msgstr "취소 "
+
+#: cam_simulator.cpp:1719
+#, c-format
+msgid "Side of pier: %s"
+msgstr "피어 방향: %s"
+
+#: cam_StarShootDSCI.cpp:152
+msgid "Problem sending register to StarShoot"
+msgstr "StarShoot으로 전송 문제"
+
+#: cam_StarShootDSCI.cpp:163
+msgid "Error starting exposure"
+msgstr "노출 시작 에러 "
+
+#: cam_SXV.cpp:153
+msgid "SX Camera Settings"
+msgstr "SX 카메라 설정 "
+
+#: cam_SXV.cpp:261
+msgid "No SX cameras found"
+msgstr "SX 카메라가 없음 "
+
+#: cam_SXV.cpp:285
+msgid "Connect failed: could not retrieve camera parameters."
+msgstr "연결 오류: 카메라 매개 변수를 검색 할 수 없습니다."
+
+#: cam_SXV.cpp:777
+msgid "Lost connection to camera"
+msgstr "카메라와의 연결이 끊어졌습니다."
+
+#: cam_VFW.cpp:88
+msgid "Select capture device"
+msgstr "캡처 장치 선택"
+
+#: cam_VFW.cpp:88 cam_wdm.cpp:168
+msgid "Camera choice"
+msgstr "카메라 선택 "
+
+#: cam_wdm.cpp:168
+msgid "Select WDM camera"
+msgstr "WDM 카메라 선택"
+
+#: cam_wdm.cpp:200
+msgid "Select camera mode"
+msgstr "카메라 모드 선택 "
+
+#: cam_wdm.cpp:200
+msgid "Camera mode"
+msgstr "카메라 모드 "
+
+#: cam_ZWO.cpp:101
+#, c-format
+msgid "Could not load DLL %s"
+msgstr "DLL을로드 할 수 없습니다 %s"
+
+#: cam_ZWO.cpp:104
+msgid ""
+"The ASI camera library requires the Microsoft Visual C++ 2008 "
+"Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
+"download/details.aspx?id=29"
+msgstr ""
+"ASI 카메라 라이브러리에는 Microsoft Visual C ++ 2008 재배포 가능 패키지 (x86)"
+"가 필요합니다.\n"
+"http://www.microsoft.com/en-us/download/details.aspx?id=29"
+
+#: cam_ZWO.cpp:209 cam_ZWO.cpp:267
+msgid "Failed to get camera properties for ZWO ASI Camera."
+msgstr "ZWO ASI 카메라의  속성을 가져 오는 데 실패했습니다."
+
+#: cam_ZWO.cpp:216
+msgid "Failed to open ZWO ASI Camera."
+msgstr "ZWO ASI 카메라를 열수 없습니다 "
+
+#: cam_ZWO.cpp:224
+msgid "Failed to initizlize ZWO ASI Camera."
+msgstr ""
+
+#: camcal_import_dialog.cpp:57
+#, c-format
+msgid "Import Darks to Profile %s"
+msgstr "프로파일로 다크 가져오기 %s"
+
+#: camcal_import_dialog.cpp:63 darks_dialog.cpp:114
+msgid "Dark Library"
+msgstr "다크 라이브러리 "
+
+#: camcal_import_dialog.cpp:65
+msgid "Choose the profile with the dark library you want to use:"
+msgstr ""
+"다크 라이브러리 사용을 원하면 다크라이브러리가있는 프로파일을 선택하십시오:"
+
+#: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
+#: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
+#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:228
+#: camera.cpp:369 gear_dialog.cpp:349 gear_dialog.cpp:353 gear_dialog.cpp:357
+#: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:581
+#: gear_dialog.cpp:943 gear_dialog.cpp:1611 gear_dialog.cpp:1612
+#: gear_dialog.cpp:1613 mount.cpp:133 mount.cpp:172 mount.cpp:683
+#: myframe.cpp:2522 profile_wizard.cpp:215 profile_wizard.cpp:216
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:520
+#: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
+#: scope.cpp:294 scope.cpp:334 statswindow.cpp:260 stepguider.cpp:92
+#: stepguider.cpp:119
+msgid "None"
+msgstr "없음 "
+
+#: camcal_import_dialog.cpp:76
+msgid "Darks Profiles"
+msgstr "다크 프로파일 "
+
+#: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
+msgid "Import from profile"
+msgstr "프로파에서 가져오기 "
+
+#: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
+msgid "Camera in profile"
+msgstr "프로필의 카메라 "
+
+#: camcal_import_dialog.cpp:85
+msgid "There are no compatible dark libraries available"
+msgstr "호환 가능한 다크 라이브러리가 없음 "
+
+#: camcal_import_dialog.cpp:89
+msgid "Bad-pixel Map"
+msgstr "불량화소 지도"
+
+#: camcal_import_dialog.cpp:91
+msgid "Choose the profile with the bad-pixel map you want to use:"
+msgstr "불량화소 지도를 사용하려면 불량화소 지도가 있는 프로파일을 선택 "
+
+#: camcal_import_dialog.cpp:101
+msgid "Bad-pix Map Profiles"
+msgstr "불량화소 지도 프로파일 "
+
+#: camcal_import_dialog.cpp:111
+msgid "There are no compatible bad-pixel maps available"
+msgstr "호환 가능한 불량화소 지도가 없음 "
+
+#: camcal_import_dialog.cpp:216
+msgid "Bad-pixel map could not be imported because of errors in file/copy"
+msgstr "파일 복사 오류로 불량화소 지도를 불러올 수 없음 "
+
+#: camcal_import_dialog.cpp:235
+msgid "Dark library could not be imported because of errors in file/copy"
+msgstr "파일 복사 오류로 다크 라이브러리를 불러올 수 없음 "
+
+#: camera.cpp:574
+msgid "Select your camera"
+msgstr "카메라 선택 "
+
+#: camera.cpp:615
+#, c-format
+msgid "Camera %d"
+msgstr "카메라 %d"
+
+#: camera.cpp:749
+msgid "Camera Settings"
+msgstr "카메라 설정 "
+
+#: camera.cpp:756
+msgid "General Properties"
+msgstr "일반 속성 "
+
+#: camera.cpp:767
+msgid "Camera-specific Properties"
+msgstr "카메라-특정 속성 "
+
+#: camera.cpp:797
+msgid "No camera specified"
+msgstr "카메라가 지정되지 않음 "
+
+#: camera.cpp:823
+msgid "Use Subframes"
+msgstr "서브프레임 사용 "
+
+#: camera.cpp:824
+msgid ""
+"Check to only download subframes (ROIs). Sub-frame size is equal to search "
+"region size."
+msgstr ""
+"서브 프레임 (ROI) 만 다운로드하도록 선택. 서브 프레임 크기는 검색 영역 크기"
+"와 같음."
+
+#: camera.cpp:831
+msgid ""
+"Guide camera un-binned pixel size in microns. Used with the guide telescope "
+"focal length to display guiding error in arc-seconds."
+msgstr ""
+"가이드 카메라의 비닝하지않은 픽셀 크기는 미크론 단위. 가이드 망원경 초점 거리"
+"와 함께 사용하여 가이드 오차를 아크 초 단위로 표시"
+
+#: camera.cpp:832
+msgid "Pixel size"
+msgstr "픽셀 크기 "
+
+#: camera.cpp:838
+msgid "Camera gain"
+msgstr "카메라 게인 "
+
+#: camera.cpp:838
+msgid ""
+"Camera gain, default = 95 % , lower if you experience noise or wish to guide "
+"on a very bright star. Not available on all cameras."
+msgstr ""
+"카메라 게인, 기본값=95%, 노이즈가 발생하거나 매우 밝은 별을 가이드하고 싶다"
+"면 이 값을 작게합니다. 모든 카메라에서 사용할 수있는 것은 아닙니다."
+
+#: camera.cpp:850
+msgid "Binning"
+msgstr "비닝 "
+
+#: camera.cpp:850
+msgid "Camera pixel binning"
+msgstr "카메라 픽셀 비닝 "
+
+#: camera.cpp:857
+msgid "Delay"
+msgstr "지연 "
+
+#: camera.cpp:857
+msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
+msgstr "LE 읽기 지연(ms), 프레임이 떨어지는 경우 조정 "
+
+#: camera.cpp:872
+msgid "Port number for long-exposure control"
+msgstr "장시간 노출 제어를위한 포트 번호"
+
+#: camera.cpp:878
+msgid "Cooler On"
+msgstr "냉각 ON"
+
+#: camera.cpp:879
+msgid "Turn camera cooler on or off"
+msgstr "카메라 냉각기 켜기 또는 끄기"
+
+#: camera.cpp:882
+msgid "Set Temperature"
+msgstr "온도 설정 "
+
+#: camera.cpp:882
+msgid "Cooler setpoint temperature"
+msgstr "냉각 설정 온도 "
+
+#: camera.cpp:890
+msgid ""
+"Disconnect nonresponsive          \n"
+"camera after (seconds)"
+msgstr ""
+
+#: camera.cpp:891
+#, c-format
+msgid ""
+"The camera will be disconnected if it fails to respond for this long. The "
+"default value, %d seconds, should be appropriate for most cameras."
+msgstr ""
+"카메라가 오랫동안 응답이 없으면 연결이 끊어집니다. 기본값 %d 초는 대부분의 카"
+"메라에 적합해야합니다."
+
+#: camera.cpp:1141
+msgid "unspecified"
+msgstr "지정되지 않음 "
+
+#: camera.cpp:1143
+#, c-format
+msgid "%0.1f um"
+msgstr "%0.1f um"
+
+#: camera.cpp:1283
+msgid "Memory allocation error during capture"
+msgstr "캡처 중 메모리 할당 오류"
+
+#: camera.cpp:1288
+#, c-format
+msgid ""
+"After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
+"been disconnected to prevent other problems. If you think the hardware is "
+"working correctly, you can increase the timeout period on the Camera tab of "
+"the Advanced Settings Dialog."
+msgstr ""
+"% .1f 초 후 카메라는 % .1f 초 노출을 완료하지 않았으므로 다른 문제를 방지하"
+"기 위해 연결이 끊어졌습니다. 하드웨어가 올바르게 작동한다고 생각되면 고급 설"
+"정 대화 상자의 카메라 탭에서 제한 시간을 늘릴 수 있습니다."
+
+#: camera.cpp:1309
+msgid "PHD will make several attempts to re-connect the camera."
+msgstr "PHD는 여러 번 카메라를 다시 연결하려고 시도합니다."
+
+#: camera.cpp:1314
+msgid ""
+"The camera has been disconnected. Please resolve the problem and re-connect "
+"the camera."
+msgstr ""
+"카메라 연결이 해제되었습니다. 문제를 해결하고 카메라를 다시 연결하십시오."
+
+#: comdispatch.cpp:48
+msgid "A COM Error occurred. There may be more info in the Debug Log."
+msgstr ""
+"COM 오류가 발생하였습니다. 디버그 로그에 더 많은 정보가있을 수 있습니다."
+
+#: comet_tool.cpp:79
+msgid "Comet Tracking"
+msgstr "혜성 추적 "
+
+#: comet_tool.cpp:80
+msgid "Comet Tracking - Training Active"
+msgstr "혜성 추적-교육 활성"
+
+#: comet_tool.cpp:81
+msgid "Comet Tracking - Active"
+msgstr "혜성 추적 -활성 "
+
+#: comet_tool.cpp:90 comet_tool.cpp:200 guider_onestar.cpp:955
+msgid "Enable"
+msgstr "사용 "
+
+#: comet_tool.cpp:91
+msgid "Toggle comet tracking on or off."
+msgstr "혜성 추적 켜기/끄기"
+
+#: comet_tool.cpp:99 comet_tool.cpp:101
+msgid "Comet tracking rate"
+msgstr "혜성 추적 속도 "
+
+#: comet_tool.cpp:103
+msgid "Pixels/hr"
+msgstr "Pixels/hr"
+
+#: comet_tool.cpp:103
+msgid "Arcsec/hr"
+msgstr "Arcsec/hr"
+
+#: comet_tool.cpp:105
+msgid "Units"
+msgstr "단위 "
+
+#: comet_tool.cpp:107
+msgid "Tracking rate units"
+msgstr "추적 속도 단위 "
+
+#: comet_tool.cpp:109
+msgid "Camera (X/Y)"
+msgstr "카메라(X/Y) "
+
+#: comet_tool.cpp:109
+msgid "Mount (RA/Dec)"
+msgstr "마운트(RA/Dec) "
+
+#: comet_tool.cpp:111
+msgid "Axes"
+msgstr "축 "
+
+#: comet_tool.cpp:113
+msgid "Tracking rate axes"
+msgstr "추적 속도 축 "
+
+#: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:456
+msgid "Start"
+msgstr "시작 "
+
+#: comet_tool.cpp:116
+msgid "Start training the tracking rate."
+msgstr "추적 속도 교육 시작 "
+
+#: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:461
+msgid "Stop"
+msgstr "중지 "
+
+#: comet_tool.cpp:118
+msgid "Stop training"
+msgstr "교육 중지 "
+
+#: comet_tool.cpp:138
+msgid "Rates"
+msgstr "속도 "
+
+#: comet_tool.cpp:150
+msgid "Rate Training"
+msgstr "속도 교육 "
+
+#: comet_tool.cpp:195
+msgid "Disable"
+msgstr "사용 안함 "
+
+#: comet_tool.cpp:295
+#, c-format
+msgid ""
+"Training, elapsed time %lus.\n"
+"Use the \"Adjust Lock Position\" controls to center the comet\n"
+"in the imaging camera and click Stop to complete training."
+msgstr ""
+"훈련, 경과 시간 %lus.\n"
+"혜성을 중앙에 놓으려면 \"잠금 위치 조정\"컨트롤을 사용하십시오.\n"
+"촬영 카메라에서 중지를 클릭하여 교육을 완료하십시오."
+
+#: comet_tool.cpp:302
+msgid ""
+"Center the comet in the imaging camera.\n"
+"Select a guide star and start Guiding.\n"
+"Then, click Start to begin training."
+msgstr ""
+"혜성을 이미징 카메라의 중심에 놓습니다.\n"
+"가이드 별을 선택하고 가이드를 시작하십시오.\n"
+"그런 다음 시작을 클릭하여 교육을 시작하십시오."
+
+#: comet_tool.cpp:320 graph.cpp:157 graph.cpp:184 graph.cpp:320
+#: guide_algorithm.cpp:50 scope.cpp:540 statswindow.cpp:73 target.cpp:339
+msgid "RA"
+msgstr "RA "
+
+#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:540
+#: statswindow.cpp:77 target.cpp:340
+msgid "Dec"
+msgstr "Dec "
+
+#: config_INDI.cpp:62
+msgid "INDI Configuration"
+msgstr "INDI 구성 "
+
+#: config_INDI.cpp:79
+msgid "INDI Server"
+msgstr "INDI 서버 "
+
+#: config_INDI.cpp:83
+msgid "Hostname"
+msgstr "호스트 이름 "
+
+#: config_INDI.cpp:89 config_INDI.cpp:131
+msgid "Port"
+msgstr "포트 "
+
+#: config_INDI.cpp:95 config_INDI.cpp:194
+msgid "Disconnected"
+msgstr "연결 해제 "
+
+#: config_INDI.cpp:97 gear_dialog.cpp:491 gear_dialog.cpp:517
+#: gear_dialog.cpp:533 gear_dialog.cpp:554 gear_dialog.cpp:598
+#: gear_dialog.cpp:619 gear_dialog.cpp:636 gear_dialog.cpp:657
+#: gear_dialog.cpp:674 gear_dialog.cpp:695 runinbg.h:80 runinbg.h:86
+#: runinbg.h:92 runinbg.h:98
+msgid "Connect"
+msgstr "연결 "
+
+#: config_INDI.cpp:102
+msgid "Device"
+msgstr "장치 "
+
+#: config_INDI.cpp:115
+msgid "Driver"
+msgstr "드라이브"
+
+#: config_INDI.cpp:122
+msgid "CCD"
+msgstr "CCD"
+
+#: config_INDI.cpp:125
+msgid "Main imager"
+msgstr "Main imager"
+
+#: config_INDI.cpp:126 myframe_events.cpp:717
+msgid "Guider"
+msgstr "가이드 "
+
+#: config_INDI.cpp:137
+msgid "Other options"
+msgstr "기타옵션 "
+
+#: config_INDI.cpp:139
+msgid "INDI"
+msgstr "INDI "
+
+#: config_INDI.cpp:187
+msgid "Connected"
+msgstr "연결 "
+
+#: confirm_dialog.cpp:40
+msgid "Don't ask again"
+msgstr "다시 묻지 않기 "
+
+#: confirm_dialog.cpp:82
+msgid "Confirm"
+msgstr "확인 "
+
+#: darks_dialog.cpp:63 guiding_assistant.cpp:297
+msgid "Exposure time"
+msgstr "노출시간 "
+
+#: darks_dialog.cpp:100
+msgid "Build Dark Library"
+msgstr "다크 라이브러리 만들기 "
+
+#: darks_dialog.cpp:105
+msgid "Acquire Master Dark Frames for Bad Pixel Map Calculation"
+msgstr "불량화소 맵 계산을위한 마스터 다크 프레임 획득"
+
+#: darks_dialog.cpp:120
+msgid "Min Exposure Time"
+msgstr "최소 노출시간 "
+
+#: darks_dialog.cpp:122
+msgid ""
+"Minimum exposure time for darks. Choose a value corresponding to the "
+"shortest camera exposure you will use for guiding."
+msgstr ""
+"다크를 위한 최소 노출 시간. 가이딩에 사용할 최소 노출에 해당하는 값을 선택하"
+"십시오."
+
+#: darks_dialog.cpp:127
+msgid "Max Exposure Time"
+msgstr "최대 노출 시간"
+
+#: darks_dialog.cpp:129
+msgid ""
+"Maximum exposure time for darks. Choose a value corresponding to the longest "
+"camera exposure you will use for guiding."
+msgstr ""
+"다크를 위한 최대 노출 시간. 가이딩에 사용할 최대 노출에 해당하는 값을 선택하"
+"십시오."
+
+#: darks_dialog.cpp:131
+msgid "Number of dark frames for each exposure time"
+msgstr "각 노출 시간에 대한 다크 프레임 이미지 수"
+
+#: darks_dialog.cpp:132
+msgid ""
+"Frames to take for each \n"
+" exposure time"
+msgstr ""
+"프레임 수\n"
+"노출시간"
+
+#: darks_dialog.cpp:136
+msgid "Options"
+msgstr "옵션 "
+
+#: darks_dialog.cpp:139
+msgid "Modify/extend existing dark library"
+msgstr "기존 다크 라이브러리 수정/확장"
+
+#: darks_dialog.cpp:140
+msgid ""
+"Darks created now will replace older darks having matching exposure times. "
+"If different exposure times are used, those darks will be added to the "
+"library."
+msgstr ""
+"지금 생성 된 다크는 일치하는 노출 시간을 가진 이전의 다크를 대체합니다. 다른 "
+"노출 시간을 사용하면 해당 다크 라이브러리에 추가됩니다."
+
+#: darks_dialog.cpp:142
+msgid "Create entirely new dark library"
+msgstr "새로운 다크 라이브러리 만들기"
+
+#: darks_dialog.cpp:143
+msgid ""
+"Darks created now will be used to build a completely new dark library - old "
+"dark frames will be discarded. You  MUST use this option if you've seen "
+"alert messages about incompatible frame sizes or mismatches with the current "
+"camera."
+msgstr ""
+"생성 된 다크는 완전히 새로운 다크 라이브러리를 만드는 데 사용됩니다. 오래된 "
+"다크 프레임은 삭제됩니다. 호환되지 않는 프레임 크기 또는 현재 카메라와의 불일"
+"치에 대한 경고 메시지를 본 경우 반드시이 옵션을 사용해야합니다."
+
+#: darks_dialog.cpp:152
+#, c-format
+msgid ""
+"Existing dark library covers %d exposure times in the range of %g s to %g s"
+msgstr ""
+"Existing dark library covers %d exposure times in the range of %g s to %g s"
+
+#: darks_dialog.cpp:158
+msgid ""
+"Existing dark library contains incompatible frames - it must be rebuilt from "
+"scratch"
+msgstr ""
+"기존의 다크 라이브러리에 호환되지 않는 프레임이 포함되어 있습니다. 처음부터 "
+"다시 만들ㅇ야합니다."
+
+#: darks_dialog.cpp:165
+msgid "No compatible dark library is available"
+msgstr "호환 가능한 다크 라이브러리가 없음 "
+
+#: darks_dialog.cpp:179
+msgid "Dark Frame Settings"
+msgstr "다크 프레임 설정 "
+
+#: darks_dialog.cpp:181
+msgid "Exposure time for building defect map"
+msgstr "불량화소 지도를 만들기 위한 노출 시간 "
+
+#: darks_dialog.cpp:182
+msgid "Exposure Time"
+msgstr "노출 시간 "
+
+#: darks_dialog.cpp:183
+msgid "Number of exposures for building defect map"
+msgstr "불량화소 지도를 만들기 위한 이미지 수 "
+
+#: darks_dialog.cpp:184
+msgid "Number of Exposures"
+msgstr "이미지 수 "
+
+#: darks_dialog.cpp:191
+msgid "Notes: "
+msgstr "메모: "
+
+#: darks_dialog.cpp:194
+msgid ""
+"Free-form note, included in FITs header for each dark frame; max length=65"
+msgstr "자유 형식, 각 다크 프레임의 FITs 헤더에 포함됨. 최대 길이 = 65"
+
+#: darks_dialog.cpp:210
+msgid "Reset all parameters to application defaults"
+msgstr "모든 값을 초기화 하고 프로그램 기본값으로 돌아 감"
+
+#: darks_dialog.cpp:234
+msgid "Set your parameters, click 'Start' to begin"
+msgstr "매개 변수를 설정하고 시작하려면 '시작'을 클릭하십시오."
+
+#: darks_dialog.cpp:256
+msgid "Cover guide scope"
+msgstr "가이드 망원경의 커버를 닫음"
+
+#: darks_dialog.cpp:286
+#, c-format
+msgid "Building master dark at %.1f sec:"
+msgstr "마스터 다크를 만듬  %.1f 초:"
+
+#: darks_dialog.cpp:288
+#, c-format
+msgid "Building master dark at %d mSec:"
+msgstr "마스터 다크를 만듬 %d 밀리초:"
+
+#: darks_dialog.cpp:305
+msgid "Operation cancelled - no changes have been made"
+msgstr "작업 취소 - 변경 사항 없음"
+
+#: darks_dialog.cpp:305
+msgid "Operation failed - no changes have been made"
+msgstr "작업 실패 - 변경 사항 없음 "
+
+#: darks_dialog.cpp:318
+msgid "dark library built"
+msgstr "다크 라이브러리 제작  "
+
+#: darks_dialog.cpp:329
+msgid "Taking darks to compute defect map: "
+msgstr "다크를 이용하여 불량화소 지도 계산:"
+
+#: darks_dialog.cpp:342
+msgid "Operation cancelled"
+msgstr "작업 취소 "
+
+#: darks_dialog.cpp:347
+msgid "Analyzing master dark..."
+msgstr "마스터 다크 분석..."
+
+#: darks_dialog.cpp:357 darks_dialog.cpp:359
+msgid "Master dark data files built"
+msgstr "마스터 다크파일 제작  "
+
+#: darks_dialog.cpp:379
+msgid "Uncover guide scope"
+msgstr "가이드 망원경 커버 제거 "
+
+#: darks_dialog.cpp:380
+#, c-format
+msgid "Operation complete: %s"
+msgstr "작업완료: %s"
+
+#: darks_dialog.cpp:391
+msgid "Cancelling..."
+msgstr "취소 중.."
+
+#: darks_dialog.cpp:505
+#, c-format
+msgid "Taking dark frame %d/%d"
+msgstr "다크 프레임 촬영  %d/%d"
+
+#: darks_dialog.cpp:511
+#, c-format
+msgid "%.1f s dark FAILED"
+msgstr "%.1f 초 다크 실패 "
+
+#: darks_dialog.cpp:540
+msgid "Dark frames complete"
+msgstr "다크 프레임 완료 "
+
+#: drift_tool.cpp:134
+msgid "Drift Align"
+msgstr "표류이탈정렬 "
+
+#: drift_tool.cpp:167 scope_manual_pointing.cpp:54
+msgid "Scope Pointing"
+msgstr "망원경 위치 "
+
+#: drift_tool.cpp:176
+msgid "Meridian Offset ("
+msgstr "자오선 오프셋("
+
+#: drift_tool.cpp:180 scope_manual_pointing.cpp:74
+msgid "Declination ("
+msgstr "Dec("
+
+#: drift_tool.cpp:184
+msgid "Current"
+msgstr "현재 "
+
+#: drift_tool.cpp:194
+msgid "Slew To"
+msgstr "Slew To"
+
+#: drift_tool.cpp:204 drift_tool.cpp:548
+msgid "Slew"
+msgstr "이동 "
+
+#: drift_tool.cpp:205
+msgid "Click to slew to given coordinates."
+msgstr "주어진 좌표로 이동하려면 클릭"
+
+#: drift_tool.cpp:208 nudge_lock.cpp:180 nudge_lock.cpp:189
+msgid "Save"
+msgstr "저장 "
+
+#: drift_tool.cpp:213
+msgid ""
+"Click to save these coordinates as the default location for this axis "
+"adjustment."
+msgstr "축 조정을 위한 기본 위치로 저장하려면 좌표 저장을 클릭"
+
+#: drift_tool.cpp:225 drift_tool.cpp:395
+msgid "Altitude adjustment notes"
+msgstr "고도각 조정 메모 "
+
+#: drift_tool.cpp:240
+msgid "Drift"
+msgstr "표류 "
+
+#: drift_tool.cpp:246
+msgid "Adjust"
+msgstr "조절 "
+
+#: drift_tool.cpp:373
+msgid "Drift Align - Azimuth Adjustment"
+msgstr "표류이탈 정렬 - 방위각 조정 "
+
+#: drift_tool.cpp:376
+msgid ""
+"Slew to near the Meridian and the Equator.\n"
+"Press Drift to measure drift, watch the Dec trend line.\n"
+"Press Adjust and adjust your mount's azimuth.\n"
+"Repeat Drift/Adjust until alignment is complete.\n"
+"Then, click Altitude to begin Altitude adjustment."
+msgstr ""
+"자오선과 적도 부근으로 이동\n"
+"표류를 클릭하여 표류를 측정하고 Dec의 추세선을 봅니다.\n"
+"조정을 누르고 마운트의 방위각을 조정\n"
+"정렬이 완료 될 때까지 표류/조정을 반복\n"
+"그런 다음 고도를 클릭하여 고도를 조정"
+
+#: drift_tool.cpp:381
+msgid "Azimuth adjustment notes"
+msgstr "방위각 조정 메모 "
+
+#: drift_tool.cpp:383
+msgid "> Altitude"
+msgstr ">고도각 "
+
+#: drift_tool.cpp:387
+msgid "Drift Align - Altitude Adjustment"
+msgstr "표류이탈 정렬 - 고도각 조정 "
+
+#: drift_tool.cpp:390
+msgid ""
+"Slew to a location near the Equator and the Eastern or Western horizon.\n"
+"Press Drift to measure drift, watch the Dec trend line.\n"
+"Press Adjust and adjust your mount's altitude.\n"
+"Repeat Drift/Adjust until alignment is complete.\n"
+"Click Azimuth to repeat Azimuth adjustment."
+msgstr ""
+"동쪽 또는 서쪽 지평선과 적도 부근으로 이동\n"
+"표류를 클릭하여 표류를 측정하고 Dec의 추세선을 봅니다.\n"
+"조정을 누르고 마운트의 고도각을 조정\n"
+"정렬이 완료 될 때까지 표류/조정을 반복\n"
+"그런 다음 방위를 클릭하여 방위각을 다시 조정"
+
+#: drift_tool.cpp:397
+msgid "< Azimuth"
+msgstr "<방위각 "
+
+#: drift_tool.cpp:422
+msgid "Please connect a camera and a mount"
+msgstr "카메라와 마운트를 연결하십시오 "
+
+#: drift_tool.cpp:429
+msgid "Please calibrate before starting drift alignment"
+msgstr "표류이탈 정렬을 시작하기 전에 캘리브레이션을 하십시오  "
+
+#: drift_tool.cpp:437
+msgid "Start Looping..."
+msgstr "루핑 시자..."
+
+#: drift_tool.cpp:449
+msgid "Auto-selecting a star"
+msgstr "가이드 별 자동 선택 "
+
+#: drift_tool.cpp:456
+msgid "Waiting for calibration to complete..."
+msgstr "캘리브레이션이 완료될 때 까지 대기...."
+
+#: drift_tool.cpp:459
+msgid "Start guiding..."
+msgstr "가이딩 시작..."
+
+#: drift_tool.cpp:470
+msgid "Drifting... click Adjust when done drifting"
+msgstr "표류....표류가 완료되면 조정을 클릭 "
+
+#: drift_tool.cpp:486
+msgid "Adjust azimuth, click Drift when done"
+msgstr "방위각 조정, 표류가 완료되면 클릭 "
+
+#: drift_tool.cpp:487
+msgid "Adjust altitude, click Drift when done"
+msgstr "고도각 조정, 표류가 완료되면 클릭 "
+
+#: drift_tool.cpp:548
+msgid "Slewing..."
+msgstr "이동 중 ..."
+
+#: drift_tool.cpp:557
+msgid "Slew failed!"
+msgstr "이동 실패! "
+
+#: drift_tool.cpp:566
+msgid "Slew was canceled"
+msgstr "이동 취소"
+
+#: drift_tool.cpp:584
+msgid "Slewing ..."
+msgstr "이동 중 ..."
+
+#: drift_tool.cpp:603
+msgid "Coordinates saved."
+msgstr "좌표저장 "
+
+#: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:607
+msgid "Please connect a camera first."
+msgstr "먼저 카메라를 연결하시오 "
+
+#: drift_tool.cpp:807
+msgid ""
+"The Drift Align tool is most effective when PHD2 knows your guide\n"
+"scope focal length and camera pixel size.\n"
+"\n"
+"Enter your guide scope focal length on the Global tab in the Brain.\n"
+"Enter your camera pixel size on the Camera tab in the Brain.\n"
+"\n"
+"Would you like to run the drift tool anyway?"
+msgstr ""
+"표류이탈 정렬 도구는 PHD2가 가이드를 알고있을 때 가장 효과적입니다.\n"
+"망원경 초점 거리 및 카메라 픽셀 크기.\n"
+"\n"
+"Brain의 Global 탭에 가이드 범위 초점 길이를 입력하십시오.\n"
+"두뇌의 카메라 탭에 카메라 픽셀 크기를 입력하십시오.\n"
+"\n"
+"어쨌든 표류 도구를 사용 하시겠습니까?"
+
+#: eegg.cpp:50
+msgid "There is no calibration data available."
+msgstr "호환 가능한 캘리브레이션 데이타가 없음 "
+
+#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:894
+msgid "Please connect a mount first."
+msgstr "먼저 마운트를 연결하시오 "
+
+#: eegg.cpp:118
+msgid ", Mount"
+msgstr ", 마운트 "
+
+#: eegg.cpp:122
+#, c-format
+msgid ""
+"%s calibration will be cleared - calibration will be re-done when guiding is "
+"started."
+msgstr ""
+"%s 캘리브레이션이 지워졌습니다 - 가이드를 시작하면 캘리브레이션이 다시 시작 "
+"됩니다"
+
+#: eegg.cpp:123
+msgid "Clear Calibration"
+msgstr "캘리브레이션 지우기 "
+
+#: eegg.cpp:146
+msgid "Failed to flip RA calibration"
+msgstr "RA 캘리브레이션 반전 실패  "
+
+#: eegg.cpp:152
+#, c-format
+msgid "RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"
+msgstr "RA 캘리브레이션 각도 플립 됨 :  (%.2f, %.2f) to (%.2f, %.2f)"
+
+#: eegg.cpp:223
+msgid ""
+"The Guiding Assitant will disable guide output and\n"
+"allow the guide star to drift.\n"
+"\n"
+"Ok to disable guide output?"
+msgstr ""
+"가이딩 어시스턴트가 가이드 출력을 비활성화합니다\n"
+"가이드 별의 표류를 허용합니다\n"
+"\n"
+"가이드 출력을 비활성화 하시겠습니까?"
+
+#: eegg.cpp:228
+msgid "Confirm Disable Guiding"
+msgstr "가이딩 비활성화 확인 "
+
+#: gear_dialog.cpp:120
+msgid "Connect Equipment"
+msgstr "장비 연결 "
+
+#: gear_dialog.cpp:187
+msgid "Equipment profile"
+msgstr "장비 프로파일 "
+
+#: gear_dialog.cpp:189
+msgid ""
+"Select the Equipment Profile you would like to use. PHD stores all of your "
+"settings and equipment selections in an Equipment Profile. You can create "
+"multiple profiles and switch back and forth between them."
+msgstr ""
+"사용할 장비 프로파일을 선택하십시오. PHD는 모든 설정 및 장비 선택을 장비 프로"
+"파일에 저장합니다. 여러 개의 프로필을 만들고 앞뒤로 전환 할 수 있습니다."
+
+#: gear_dialog.cpp:195
+msgid "New using Wizard..."
+msgstr "마법사를 사용하여 새로 만들기 ..."
+
+#: gear_dialog.cpp:195
+msgid "Run the first-light wizard to create a new profile"
+msgstr "마법사를 실행하여 새 프로파이 만들기"
+
+#: gear_dialog.cpp:196
+msgid "New"
+msgstr "New "
+
+#: gear_dialog.cpp:196
+msgid "Create a new profile, optionally copying from another profile"
+msgstr "새 프로파일 만들기, 선택적으로 다른 프로파일에서 복사"
+
+#: gear_dialog.cpp:197
+msgid "Delete"
+msgstr "삭제 "
+
+#: gear_dialog.cpp:197
+msgid "Delete the selected profile"
+msgstr "선택된 프로파일 삭제 "
+
+#: gear_dialog.cpp:198
+msgid "Rename"
+msgstr "이름 변경 "
+
+#: gear_dialog.cpp:198
+msgid "Rename the selected profile"
+msgstr "선택된 프로파일 이름 변경 "
+
+#: gear_dialog.cpp:199
+msgid "Import..."
+msgstr "가져오기......"
+
+#: gear_dialog.cpp:199
+msgid "Load a profile from a file"
+msgstr "파일에서 프로파일 가져오기 "
+
+#: gear_dialog.cpp:200
+msgid "Export..."
+msgstr "내보내기..."
+
+#: gear_dialog.cpp:200
+msgid "Save the selected profile to a file"
+msgstr "선택된 프로파일 저장하기 "
+
+#: gear_dialog.cpp:201
+msgid "Settings..."
+msgstr "설정..."
+
+#: gear_dialog.cpp:201
+msgid "Open the advanced settings dialog"
+msgstr "고급 설정 대화 상자 열기 "
+
+#: gear_dialog.cpp:203
+msgid "Manage Profiles"
+msgstr "프로파일 관리 "
+
+#: gear_dialog.cpp:204
+msgid ""
+"Create a new Equipment Profile, or delete or rename the selected Equipment "
+"Profile"
+msgstr ""
+"새 장비 프로파일을 만들거나 선택한 장비 프로파일을 삭제하거나 이름을 변경"
+
+#: gear_dialog.cpp:215
+msgid ""
+"Select your equipment below and click Connect All to connect, or click "
+"Disconnect All to disconnect. You can also connect or disconnect individual "
+"equipment items by clicking the button next to the item."
+msgstr ""
+"장비를 선택하고 모두 연결을 클릭하여 연결하거나 모두 연결 해제를 클릭하여 연"
+"결을 끊습니다. 항목 옆에있는 버튼을 클릭하여 개별 장비 항목을 연결하거나 연"
+"결 해제 할 수도 있습니다."
+
+#: gear_dialog.cpp:240
+msgid ""
+"Select which camera to connect to when there are multiple cameras of the "
+"same type."
+msgstr "같은 종류의 카메라가 여러 대 있을 때 연결할 카메라를 선택"
+
+#: gear_dialog.cpp:243
+msgid "Camera Setup"
+msgstr "카메라 설정 "
+
+#: gear_dialog.cpp:245 gear_dialog.cpp:260 gear_dialog.cpp:285
+#: gear_dialog.cpp:301 gear_dialog.cpp:313 gear_dialog.cpp:508
+#: gear_dialog.cpp:546 gear_dialog.cpp:611 gear_dialog.cpp:648
+#: gear_dialog.cpp:686
+msgid "Disconnect"
+msgstr "연결 해제 "
+
+#: gear_dialog.cpp:254
+msgid ""
+"Specify how guide commands will be sent to the mount - via an ASCOM or Indi "
+"driver, directly from the camera or AO, or via one of the GPxxx devices. An "
+"ASCOM connection is recommended."
+msgstr ""
+
+#: gear_dialog.cpp:258
+msgid "Mount Setup"
+msgstr "마운트 설정 "
+
+#: gear_dialog.cpp:266 gear_dialog.cpp:268
+msgid "Aux Mount"
+msgstr "Aux 마운트 "
+
+#: gear_dialog.cpp:276
+#, c-format
+msgid ""
+"If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
+"you can also use an 'aux' connection to your %s-compatible mount. This will "
+"be used to make automatic calibration adjustments based on declination and "
+"side-of-pier.  If you have already selected an %s driver for your 'mount', "
+"the 'aux' mount parameter will not be used.'"
+msgstr ""
+"가이드 포트 (On-camera 또는 GPXXX)를 사용하는 경우 %s 호환 마운트에 'aux'연결"
+"을 사용할 수도 있습니다. 이것은 Dec과 피어의 방향에 기초한 자동 교정 조정을하"
+"는데 사용됩니다. 'mount'에 대한 % s 드라이버를 이미 선택했다면 'aux'마운트 매"
+"개 변수는 사용되지 않습니다. "
+
+#: gear_dialog.cpp:283
+msgid "Aux Mount Setup"
+msgstr "Aux 마운트 설정 "
+
+#: gear_dialog.cpp:299
+msgid "AO Setup"
+msgstr "AO 설정 "
+
+#: gear_dialog.cpp:307 gear_dialog.cpp:308
+msgid "Rotator"
+msgstr "로테이터 "
+
+#: gear_dialog.cpp:311
+msgid "Rotator Setup"
+msgstr "로테이터 설정 "
+
+#: gear_dialog.cpp:321
+msgid "Connect All"
+msgstr "모두 연결 "
+
+#: gear_dialog.cpp:322
+msgid "Connect all equipment and close the equipment selection window"
+msgstr "모든 장비를 연결하고 장비 선택 창을 닫습니다."
+
+#: gear_dialog.cpp:325
+msgid "Disconnect All"
+msgstr "모든 연결 해제 "
+
+#: gear_dialog.cpp:326
+msgid "Disconnect all equipment"
+msgstr "모든 장비 연결 해제 "
+
+#: gear_dialog.cpp:329 myframe.cpp:1041
+msgid "Close"
+msgstr "닫기 "
+
+#: gear_dialog.cpp:493 gear_dialog.cpp:519
+msgid "Connect to camera"
+msgstr "카메라 연결 "
+
+#: gear_dialog.cpp:510
+msgid "Disconnect from camera"
+msgstr "카메라 연결 해제"
+
+#: gear_dialog.cpp:535 gear_dialog.cpp:556
+msgid "Connect to mount"
+msgstr "마운트 연결 "
+
+#: gear_dialog.cpp:548
+msgid "Disconnect from mount"
+msgstr "마운트 연결 해제 "
+
+#: gear_dialog.cpp:600 gear_dialog.cpp:621
+msgid "Connect to aux mount"
+msgstr "Aux 마운트 연결 "
+
+#: gear_dialog.cpp:613
+msgid "Disconnect from aux mount"
+msgstr "Aux 마운트 연결 해제 "
+
+#: gear_dialog.cpp:638 gear_dialog.cpp:659
+msgid "Connect to AO"
+msgstr "AO 연결 "
+
+#: gear_dialog.cpp:650
+msgid "Disconnect from AO"
+msgstr "AO 연결 해제 "
+
+#: gear_dialog.cpp:676 gear_dialog.cpp:697
+msgid "Connect to Rotator"
+msgstr "로테이터 연결 "
+
+#: gear_dialog.cpp:688
+msgid "Disconnect from Rotator"
+msgstr "로테이터 연결 해제 "
+
+#: gear_dialog.cpp:881
+msgid "No cameras found"
+msgstr "카메라가 없습니다 "
+
+#: gear_dialog.cpp:952
+msgid ""
+"By changing cameras in this profile, you won't be able to use the existing "
+"dark library or bad-pixel maps. You should consider creating a new profile "
+"for this set-up.  Do you want to proceed with changes to this profile?"
+msgstr ""
+"이 프로파일의 카메라를 변경하면 기존의 다크 라이브러리 또는 불량화소 지도를 "
+"사용할 수 없습니다. 이 설정에 대한 새 프로필을 만드는 것을 고려해야합니다. "
+"이 프로필을 변경 하시겠습니까?"
+
+#: gear_dialog.cpp:954
+msgid "Camera Change Warning"
+msgstr "카메라 변경 경고..."
+
+#: gear_dialog.cpp:969
+msgid "Connecting to Camera ..."
+msgstr "카메라 연결 중..."
+
+#: gear_dialog.cpp:1011
+msgid "Camera Connected"
+msgstr "카메라 연결"
+
+#: gear_dialog.cpp:1019
+msgid "Camera Connect Failed"
+msgstr "카메라 연결 실패 "
+
+#: gear_dialog.cpp:1061
+msgid "Camera Disconnected"
+msgstr "카메라 연결 해제 "
+
+#: gear_dialog.cpp:1179
+msgid "Connecting to Mount ..."
+msgstr "마운트 연결 중..."
+
+#: gear_dialog.cpp:1189
+msgid "Mount does not support the required PulseGuide interface"
+msgstr "마운트는 PulseGuide를 지원하지않습니다 "
+
+#: gear_dialog.cpp:1193
+msgid "Mount Connected"
+msgstr "마운트 연결 "
+
+#: gear_dialog.cpp:1206
+msgid "Mount Connect Failed"
+msgstr "마운트 연결 실패 "
+
+#: gear_dialog.cpp:1226
+msgid "Connecting to Aux Mount ..."
+msgstr "Aux 마운트 연결 중..."
+
+#: gear_dialog.cpp:1233
+msgid "Aux Mount Connected"
+msgstr "Aux 마운트 연결 "
+
+#: gear_dialog.cpp:1241
+msgid "Aux Mount Connect Failed"
+msgstr "Aux 마운트 연결 실패 "
+
+#: gear_dialog.cpp:1262
+msgid "Mount Disconnected"
+msgstr "마운트 연결 해제 "
+
+#: gear_dialog.cpp:1293
+msgid "Aux Mount Disconnected"
+msgstr "Aux 마운트 연결 해제 "
+
+#: gear_dialog.cpp:1309
+msgid "Hide"
+msgstr "숨기기 "
+
+#: gear_dialog.cpp:1315
+msgid "More Equipment ..."
+msgstr "더 많은 장비..."
+
+#: gear_dialog.cpp:1375
+msgid "Connecting to AO ..."
+msgstr "AO 연결 중..."
+
+#: gear_dialog.cpp:1385
+msgid "AO Connected"
+msgstr "AO 연결 "
+
+#: gear_dialog.cpp:1398
+msgid "AO Connect Failed"
+msgstr "AO 연결 실패 "
+
+#: gear_dialog.cpp:1426
+msgid "AO Disconnected"
+msgstr "AO 연결 해제 "
+
+#: gear_dialog.cpp:1490
+msgid "Connecting to Rotator ..."
+msgstr "로테이터 연결 중..."
+
+#: gear_dialog.cpp:1500
+msgid "Rotator Connected"
+msgstr "로테이터 연결 "
+
+#: gear_dialog.cpp:1513
+msgid "Rotator Connect Failed"
+msgstr "로테이터 연결 실패 "
+
+#: gear_dialog.cpp:1536
+msgid "Rotator Disconnected"
+msgstr "로테이터 연결 해제 "
+
+#: gear_dialog.cpp:1805
+msgid "New Equipment Profile"
+msgstr "새 장비 프로파일 "
+
+#: gear_dialog.cpp:1812
+msgid "Name"
+msgstr "이름 "
+
+#: gear_dialog.cpp:1816
+msgid "Enter the name of the new equipment profile"
+msgstr "새 장비 프로파일의 이름을 적으시오.."
+
+#: gear_dialog.cpp:1820
+msgid "PHD Defaults"
+msgstr "PHD 기본 값 "
+
+#: gear_dialog.cpp:1823
+msgid "Profile initial settings"
+msgstr "프로파일 초기 설정 "
+
+#: gear_dialog.cpp:1826
+msgid ""
+"Select PHD Defaults to create a profile with default PHD settings, or select "
+"an existing Equipment Profile to copy its settings into your new profile."
+msgstr ""
+"PHD 기본값을 선택하여 기본 PHD 설정으로 프로파일을 생성하거나 기존 장비 프로"
+"파일을 선택하여 새 프로파일에 설정을 복사하십시오."
+
+#: gear_dialog.cpp:1850
+#, c-format
+msgid "Cannot create profile %s, there is already a profile with that name"
+msgstr "프로파일을 만들 수 없습니다 %s, 이미 그 이름을 가진 프로필이 있습니다."
+
+#: gear_dialog.cpp:1859
+#, c-format
+msgid "Could not create profile %s from profile %s"
+msgstr "프로파일 %s로 부터 프로파일을 만들 수 없습니다 %s"
+
+#: gear_dialog.cpp:1866 profile_wizard.cpp:489
+#, c-format
+msgid "Could not create profile %s"
+msgstr "프로파일을 만들 수 없습니다 %s"
+
+#: gear_dialog.cpp:1882
+#, c-format
+msgid "Delete profile %s?"
+msgstr "프로파일을 제거할까요%s ?"
+
+#: gear_dialog.cpp:1882
+msgid "Delete Equipment Profile"
+msgstr "장비 프로파일 제거 "
+
+#: gear_dialog.cpp:1901
+#, c-format
+msgid "Rename %s"
+msgstr "이름변경 %s "
+
+#: gear_dialog.cpp:1901
+msgid "Rename Equipment Profile"
+msgstr "장비 프로파일 이름변경 "
+
+#: gear_dialog.cpp:1917
+msgid "Could not rename profile"
+msgstr "프로파일 이름을 변경 할 수 없습니다 "
+
+#: gear_dialog.cpp:1931
+msgid "Import PHD Equipment Profiles"
+msgstr "PHD 장비 프로파일을 불러옴 "
+
+#: gear_dialog.cpp:1964
+msgid "Export PHD Equipment Profile"
+msgstr "PHD 장비 프로파일 내보내기 "
+
+#: graph.cpp:87 graph.cpp:579
+msgid "Scope:"
+msgstr "망원경: "
+
+#: graph.cpp:116
+msgid "Select the number of frames of history to display on the X-axis"
+msgstr "X 축에 표시 할 기록 프레임 수 선택"
+
+#: graph.cpp:126
+msgid "Graph settings"
+msgstr "그래프 설정 "
+
+#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:131 target.cpp:79
+msgid "Clear"
+msgstr "제거 "
+
+#: graph.cpp:130
+msgid ""
+"Clear graph data. You can also partially clear the graph by holding down the "
+"Ctrl key and clicking on the graph where you want the data to start."
+msgstr ""
+"그래프 데이터를 지 웁니다. Ctrl 키를 누른 상태에서 데이터를 시작할 그래프를 "
+"클릭하여 그래프를 부분적으로 지울 수도 있습니다."
+
+#: graph.cpp:134
+msgid "Trendlines"
+msgstr "추세선 "
+
+#: graph.cpp:141
+msgid "Plot trend lines"
+msgstr "그래프 추세선 "
+
+#: graph.cpp:144
+msgid "Corrections"
+msgstr "교정 "
+
+#: graph.cpp:151
+msgid "Display mount corrections"
+msgstr "마운트 교정 표시 "
+
+#: graph.cpp:175
+msgid "RMS Error:"
+msgstr "RMS 에러 "
+
+#: graph.cpp:210
+msgid "Tot"
+msgstr "Tot "
+
+#: graph.cpp:222
+msgid "RA Osc: 0.00"
+msgstr "RA Osc: 0.00"
+
+#: graph.cpp:267
+msgid "Plot mode"
+msgstr "그래프 모드 "
+
+#: graph.cpp:269
+msgid "RA / Dec"
+msgstr "RA / Dec"
+
+#: graph.cpp:270
+msgid "dx / dy"
+msgstr "dx / dy"
+
+#: graph.cpp:278
+msgid "Y-axis units"
+msgstr "Y 축 단위 "
+
+#: graph.cpp:280
+msgid "Arc-seconds"
+msgstr "아크초 "
+
+#: graph.cpp:284
+msgid "Pixels"
+msgstr "픽셀 "
+
+#: graph.cpp:291
+msgid "Star Mass"
+msgstr "Star Mass "
+
+#: graph.cpp:293
+msgid "Star SNR"
+msgstr "Star SNR"
+
+#: graph.cpp:300
+msgid "RA Color..."
+msgstr "RA 칼라 "
+
+#: graph.cpp:301
+msgid "Dec Color..."
+msgstr "Dec 칼라 "
+
+#: graph.cpp:305
+msgid "dx Color..."
+msgstr "dx 칼라 "
+
+#: graph.cpp:306
+msgid "dy Color..."
+msgstr "dy 칼라 "
+
+#: graph.cpp:324
+msgid "dx"
+msgstr "dx"
+
+#: graph.cpp:325
+msgid "dy"
+msgstr "dy"
+
+#: graph.cpp:390
+msgid "RA or dx Color"
+msgstr "RA 또는 dx 칼라 "
+
+#: graph.cpp:406
+msgid "Dec or dy Color"
+msgstr "Dec 또는 dy 칼라 "
+
+#: graph.cpp:698
+msgid "Select the Y-axis scale, pixels per Y division"
+msgstr "Y 축 스케일, Y 분할 당 픽셀 수를 선택"
+
+#: graph.cpp:703
+msgid "Select the Y-axis scale, arc-seconds per Y division"
+msgstr "Y 축 스케일, Y 분할 당 아크초 선택"
+
+#: graph.cpp:1260
+msgid "GuideNorth"
+msgstr "가이드 북쪽 "
+
+#: graph.cpp:1261
+msgid "GuideEast"
+msgstr "가이드 남쪽 "
+
+#: graph.cpp:1378 testguide.cpp:107 testguide.cpp:132
+msgid "Dither"
+msgstr "Dither"
+
+#: graph-stepguider.cpp:47 myframe.cpp:298 myframe.cpp:362
+msgid "AO Position"
+msgstr "AO 위치 "
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "표시 할 기록 프레임 수 선택"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "그래프 데이타 삭제 "
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO가 연결되지 않았습니다 "
+
+#: guide_algorithm.cpp:50
+msgid "DEC"
+msgstr "DEC"
+
+#: guide_algorithm_gaussian_process.cpp:53
+msgid "Gaussian Process Guide Algorithm"
+msgstr "가우스 프로세스 가이드 알고리즘 "
+
+#: guide_algorithm_gaussian_process.cpp:68
+msgid "Control Gain"
+msgstr "게인 조절 "
+
+#: guide_algorithm_gaussian_process.cpp:69
+msgid "Description of the control gain. Default = 1.0"
+msgstr "게인 조절에 대한 설명. 기본값 = 1.0"
+
+#: guide_algorithm_hysteresis.cpp:232
+msgid "Hysteresis Guide Algorithm"
+msgstr "히스테리시스 가이드 알고리즘"
+
+#: guide_algorithm_hysteresis.cpp:243 mount.cpp:133 mount.cpp:172
+msgid "Hysteresis"
+msgstr "히스테리시스"
+
+#: guide_algorithm_hysteresis.cpp:244
+#, c-format
+msgid ""
+"How much history of previous guide pulses should be applied\n"
+"Default = %.f%%, increase to smooth out guiding commands"
+msgstr ""
+"이전 가이드 펄스의 내역이 적용되어야하는 정도\n"
+"기본값 = % .f %%, 가이딩을 부드럽게하기 위해 증가"
+
+#: guide_algorithm_hysteresis.cpp:251 guide_algorithm_lowpass2.cpp:233
+#: guide_algorithm_resistswitch.cpp:308 Refine_DefMap.cpp:158
+msgid "Aggressiveness"
+msgstr "적극성 "
+
+#: guide_algorithm_hysteresis.cpp:252
+#, c-format
+msgid ""
+"What percent of the measured error should be applied? Default = %.f%%, "
+"adjust if responding too much or too slowly"
+msgstr ""
+"측정 된 오류의 몇 퍼센트가 적용되어야 합니까? 기본값 = % .f %%, 응답이 너무 "
+"많거나 너무 느리면 조정하십시오."
+
+#: guide_algorithm_hysteresis.cpp:259 guide_algorithm_lowpass.cpp:233
+#: guide_algorithm_lowpass2.cpp:241 guide_algorithm_resistswitch.cpp:316
+msgid "Minimum Move (pixels)"
+msgstr "최대 이동(픽셀) "
+
+#: guide_algorithm_hysteresis.cpp:260 guide_algorithm_lowpass.cpp:234
+#: guide_algorithm_lowpass2.cpp:242 guide_algorithm_resistswitch.cpp:317
+#, c-format
+msgid ""
+"How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+"If camera is binned, this is a fraction of the binned pixel size. Default = "
+"%.2f"
+msgstr ""
+"가이드 펄스를 발생 시키려면 별이 몇 픽셀 씩 움직여야합니까?\n"
+"카메라가 비닝 된 경우, 비닝 된 픽셀 크. 기본값 = % .2f"
+
+#: guide_algorithm_hysteresis.cpp:308
+msgid "Agr"
+msgstr "Agr"
+
+#: guide_algorithm_hysteresis.cpp:316
+msgid "Hys"
+msgstr "Hys"
+
+#: guide_algorithm_hysteresis.cpp:324 guide_algorithm_lowpass.cpp:287
+#: guide_algorithm_lowpass2.cpp:294
+msgid "MnMo"
+msgstr "MnMo"
+
+#: guide_algorithm_identity.cpp:77
+msgid "Guide Algorithm"
+msgstr "가이드 알고리즘 "
+
+#: guide_algorithm_identity.cpp:80
+msgid "Nothing to Configure"
+msgstr "구성내용 없음 "
+
+#: guide_algorithm_lowpass.cpp:214
+msgid "Lowpass Guide Algorithm"
+msgstr "Lowpass 가이드 알고리즘 "
+
+#: guide_algorithm_lowpass.cpp:225
+msgid "Slope Weight"
+msgstr "기울기 가중치 "
+
+#: guide_algorithm_lowpass.cpp:226
+msgid "Weighting of slope parameter in lowpass auto-dec"
+msgstr "Lowpass auto-dec에서 기울기 매개 변수의 가중치 부여"
+
+#: guide_algorithm_lowpass.cpp:280
+msgid "Sl W"
+msgstr "Sl W"
+
+#: guide_algorithm_lowpass2.cpp:220
+msgid "Lowpass2 Guide Algorithm"
+msgstr "Lowpass2 가이드 알고리즘 "
+
+#: guide_algorithm_lowpass2.cpp:234 guide_algorithm_resistswitch.cpp:309
+#, c-format
+msgid "Aggressiveness factor, percent. Default = %.f%%"
+msgstr "적극성 요소, 퍼센트. 기본값 =  %.f%%"
+
+#: guide_algorithm_lowpass2.cpp:287
+msgid "Agg"
+msgstr "Agg"
+
+#: guide_algorithm_resistswitch.cpp:297
+msgid "ResistSwitch Guide Algorithm"
+msgstr "ResistSwitch 가이드 알고리즘"
+
+#: guide_algorithm_resistswitch.cpp:320
+msgid "Fast switch for large deflections"
+msgstr "큰 처짐을위한 빠른 스위치"
+
+#: guide_algorithm_resistswitch.cpp:321
+msgid ""
+"Ordinarily the Resist Switch algortithm waits several frames before "
+"switching direction. With Fast Switch enabled PHD2 will switch direction "
+"immediately if it sees a very large deflection. Enable this option if your "
+"mount has a substantial amount of backlash and PHD2 sometimes overcorrects."
+msgstr ""
+"대개 Resist Switch 알고리즘은 방향을 전환하기 전에 여러 프레임을 대기합니다. "
+"빠른 스위치가 활성화 된 상태에서는 매우 큰 처짐을 보이게되면 즉시 방향을 전환"
+"합니다. 마운트에 상당한 백래시가 있고 PHD2가 때로는 지나친 교정 인 경우이 옵"
+"션을 활성화하십시오."
+
+#: guider.cpp:487
+msgid "E"
+msgstr "E"
+
+#: guider.cpp:508
+msgid "N"
+msgstr "N"
+
+#: guider.cpp:622
+msgid "PAUSED"
+msgstr "일시 중지 "
+
+#: guider.cpp:627
+msgid "Guide output DISABLED"
+msgstr "가이드 출력 사용 중지 "
+
+#: guider.cpp:1023
+msgid "Calibration manually stopped"
+msgstr "캘리브레이션 사용자 중지 "
+
+#: guider.cpp:1082
+msgid "Stopped Guiding"
+msgstr "가이딩 중지 "
+
+#: guider.cpp:1093
+msgid ""
+"Shifted lock position outside allowable area. Lock Position Shift disabled."
+msgstr "잠금 위치가 허용범위를 벗어나 이동. 잠금 위치 이동 비활성화"
+
+#: guider.cpp:1123
+msgid "star lost"
+msgstr "star lost"
+
+#: guider.cpp:1179 myframe.cpp:1539
+msgid "Paused"
+msgstr "일시 중지 "
+
+#: guider.cpp:1201
+msgid "AO calibration failed"
+msgstr "AO 캘리브레이션 실패 "
+
+#: guider.cpp:1201 guider.cpp:1234
+msgid "calibration failed"
+msgstr "캘리브레이션 실패 "
+
+#: guider.cpp:1437
+msgid "Guider Settings"
+msgstr "가이ㄷ 설정 "
+
+#: guider.cpp:1446
+msgid "Guide star tracking"
+msgstr "가이드 별 추적 "
+
+#: guider.cpp:1447
+msgid "Calibration"
+msgstr "캘리브레이션 "
+
+#: guider.cpp:1448
+msgid "Shared Parameters"
+msgstr "공유 매개변수 "
+
+#: guider.cpp:1492
+msgid "Always scale images"
+msgstr "이미지 크기 항상 조정"
+
+#: guider.cpp:1493
+msgid "Always scale images to fill window"
+msgstr "창의 크기에 맞게 항상 이미지 크기 조정"
+
+#: guider.cpp:1495
+msgid "Fast recenter after calibration or dither"
+msgstr "보정 또는 디더링 후 빠른 중앙 복귀"
+
+#: guider.cpp:1496
+msgid ""
+"Speed up calibration and dithering by using larger guide pulses to return "
+"the star to the center position. Un-check to use the old, slower method of "
+"recentering after calibration or dither."
+msgstr ""
+"더 큰 가이드 펄스를 사용하여 별을 중앙 위치로 되돌려 교정 및 디더링 속도를 높"
+"입니다. 캘리브레이션이나 디더 처리 후별을 중앙으로 되돌리는 속도가 느린 옛날 "
+"방법을 사용하려면 체크를 해제."
+
+#: guider.cpp:1588
+msgid "Are you sure you want to delete all Bookmarks?"
+msgstr "모든 북마크를 삭제 하시겠습니까?"
+
+#: guider_onestar.cpp:342 guider_onestar.cpp:561
+msgid "No star selected"
+msgstr "별이 선택되지 않음 "
+
+#: guider_onestar.cpp:346
+msgid "Star lost - low SNR"
+msgstr "Star lost - 낮은 SNR"
+
+#: guider_onestar.cpp:347
+msgid "Star lost - low mass"
+msgstr "Star lost - 낮은 mass"
+
+#: guider_onestar.cpp:348
+msgid "Star too near edge"
+msgstr "별이 너무 가장자리에 위치 "
+
+#: guider_onestar.cpp:349
+msgid "Star lost - mass changed"
+msgstr "Star lost - mass가 변경 됨 "
+
+#: guider_onestar.cpp:350 guider_onestar.cpp:691
+msgid "No star found"
+msgstr "별이 보이지 않음 "
+
+#: guider_onestar.cpp:356
+#, c-format
+msgid "m=%.0f SNR=%.1f"
+msgstr "m=%.0f SNR=%.1f"
+
+#: guider_onestar.cpp:359
+msgid "Saturated"
+msgstr "포화됨 "
+
+#: guider_onestar.cpp:369
+#, c-format
+msgid "Exp=%0.1f s"
+msgstr "Exp=%0.1f s"
+
+#: guider_onestar.cpp:371
+#, c-format
+msgid "Exp=%d ms"
+msgstr "Exp=%d ms"
+
+#: guider_onestar.cpp:429
+#, c-format
+msgid "Auto-selected star at (%.1f, %.1f)"
+msgstr "가이드 별 자동 선택  (%.1f, %.1f)"
+
+#: guider_onestar.cpp:594
+#, c-format
+msgid "Mass: %.0f vs %.0f"
+msgstr "Mass: %.0f vs %.0f"
+
+#: guider_onestar.cpp:696
+#, c-format
+msgid "Selected star at (%.1f, %.1f)"
+msgstr "선택된 별 (%.1f, %.1f)"
+
+#: guider_onestar.cpp:951
+msgid "Search region (pixels)"
+msgstr "검색 영역 (픽셀) "
+
+#: guider_onestar.cpp:952
+msgid ""
+"How many pixels (up/down/left/right) do we examine to find the star? Default "
+"= 15"
+msgstr ""
+"별을 찾기 위해 몇 픽셀 (위 / 아래 / 왼쪽 / 오른쪽)을 검사합니까? 기본값 = 15"
+
+#: guider_onestar.cpp:954
+msgid "Star Mass Detection"
+msgstr "Star Mass 감지 "
+
+#: guider_onestar.cpp:956
+msgid ""
+"Check to enable star mass change detection. When enabled, PHD skips frames "
+"when the guide star mass changes by an amount greater than the setting for "
+"'tolerance'."
+msgstr ""
+"별 mass 변화 감지를 활성화하려면 선택. 이 옵션을 사용하면 가이드 별 mass가  "
+"'tolerance' 설정보다 크게 변경되면 PHD가 프레임을 건너 뜁니다."
+
+#: guider_onestar.cpp:965
+msgid "Tolerance"
+msgstr "Tolerance"
+
+#: guider_onestar.cpp:966
+msgid ""
+"When star mass change detection is enabled, this is the tolerance for star "
+"mass changes between frames, in percent. Larger values are more tolerant "
+"(less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
+"If star mass change detection is not enabled then this setting is ignored."
+msgstr ""
+"별 mass 변화 감지가 활성화되면 이것은 프레임 사이의 별 mass 변화에 대한 허용 "
+"오차입니다 (백분율). 큰 값은 별의 mass 변화에 보다 관대합니다 (덜 민감합니"
+"다). 유효한 범위는 10-100이며 기본값은 50입니다. 별 mass 변경 감지가 활성화되"
+"지 않은 경우이 설정은 무시됩니다."
+
+#: guiding_assistant.cpp:258
+msgid "Guiding Assistant"
+msgstr "가이딩 어시스턴트"
+
+#: guiding_assistant.cpp:280
+msgid " -999.99 px/min (-999.99 arc-sec/min )"
+msgstr " -999.99 px/min (-999.99 arc-sec/min )"
+
+#: guiding_assistant.cpp:282
+msgid " 9.99 px ( 9.99 arc-sec)"
+msgstr ""
+
+#: guiding_assistant.cpp:284
+msgid "Measurement Status"
+msgstr "측정 상태"
+
+#: guiding_assistant.cpp:295
+msgid "Start time"
+msgstr "시작시간 "
+
+#: guiding_assistant.cpp:303
+msgid "Star mass"
+msgstr "Star mass"
+
+#: guiding_assistant.cpp:307
+msgid "Elapsed time"
+msgstr "경과 시간 "
+
+#: guiding_assistant.cpp:309
+msgid "Sample count"
+msgstr "샘플 수 "
+
+#: guiding_assistant.cpp:321
+msgid "High-frequency Star Motion"
+msgstr "고주파 별 움직임 "
+
+#: guiding_assistant.cpp:332
+msgid "Right ascension, RMS"
+msgstr "RA, RMS"
+
+#: guiding_assistant.cpp:336
+msgid "Declination, RMS"
+msgstr "Dec, RMS"
+
+#: guiding_assistant.cpp:340
+msgid "Total, RMS"
+msgstr "전체, RMS"
+
+#: guiding_assistant.cpp:349
+msgid "Other Star Motion"
+msgstr "기타 별 움직임 "
+
+#: guiding_assistant.cpp:360
+msgid "Right ascension, Peak"
+msgstr "RA, Peak"
+
+#: guiding_assistant.cpp:364
+msgid "Declination, Peak"
+msgstr "Dec, Peak"
+
+#: guiding_assistant.cpp:368
+msgid "Right ascension, Peak-Peak"
+msgstr "RA, Peak to Peak "
+
+#: guiding_assistant.cpp:372
+msgid "Right ascension Drift Rate"
+msgstr "RA 표류 속도 "
+
+#: guiding_assistant.cpp:376
+msgid "Right ascension Max Drift Rate"
+msgstr "RA 최대 표류 속도 "
+
+#: guiding_assistant.cpp:380
+msgid "Drift-limiting exposure"
+msgstr "표류 제한 노출 "
+
+#: guiding_assistant.cpp:384
+msgid "Declination Drift Rate"
+msgstr "Dex 표류 속도 "
+
+#: guiding_assistant.cpp:388
+msgid "Declination Backlash"
+msgstr "Dec 백래시 "
+
+#: guiding_assistant.cpp:392
+msgid "Polar Alignment Error"
+msgstr "극축 오차 "
+
+#: guiding_assistant.cpp:400
+msgid "Recommendations"
+msgstr "권장사항 "
+
+#: guiding_assistant.cpp:414
+msgid "Show Backlash Graph"
+msgstr ""
+
+#: guiding_assistant.cpp:415
+msgid "Show graph of backlash measurement points"
+msgstr "백래시 측정 지점의 그래프 보기  "
+
+#: guiding_assistant.cpp:419 myframe.cpp:1046 profile_wizard.cpp:190
+msgid "Help"
+msgstr "도움말 "
+
+#: guiding_assistant.cpp:432
+msgid "Measure Declination Backlash"
+msgstr "Dec 백래시 측정 "
+
+#: guiding_assistant.cpp:433
+msgid ""
+"PHD2 will move the guide star a considerable distance north, then south to "
+"measure backlash. Be sure the selected star has plenty of room to move in "
+"the north direction.  If the guide star is lost, increase the size of the "
+"search region to at least 20 px"
+msgstr ""
+"PHD2는 가이드 별을 북쪽으로 이동 한 다음 남쪽으로 이동기켜 백래시를 측정합니"
+"다. 선택된 별은 북쪽 방향으로 이동할 수있는 충분한 공간이 있어야합니다. 가이"
+"드 별이 없어지면 검색 영역의 크기를 20 픽셀 이상으로 늘립니다"
+
+#: guiding_assistant.cpp:457
+msgid "Start measuring (disables guiding)"
+msgstr "측정 시작(가이딩 비활성화) "
+
+#: guiding_assistant.cpp:462
+msgid "Stop measuring and re-enable guiding"
+msgstr "측정 중지와 가이딩 재시작"
+
+#: guiding_assistant.cpp:514
+msgid ""
+"Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
+"the sky/noise background"
+msgstr ""
+"신호 대 잡음비; PHD2가 하늘 / 배경 노이즈에서 별을 얼마나 잘 분리 할 수 있는"
+"지 측정"
+
+#: guiding_assistant.cpp:516
+msgid ""
+"Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
+"S) to choose the star."
+msgstr ""
+"전체적인 별 밝기 측정. '별 자동 선택 (Alt-S)'을 사용하여 별을 선택하십시오."
+
+#: guiding_assistant.cpp:521
+msgid ""
+"Measure of typical high-frequency right ascension star movements; guiding "
+"usually cannot correct for fluctuations this small."
+msgstr ""
+"전형적인 고주파 RA 항성 운동 측정; 가이딩은 보통 이러한 작은 변동을 교정할 "
+"수 없습니다."
+
+#: guiding_assistant.cpp:522
+msgid ""
+"Measure of typical high-frequency declination star movements; guiding "
+"usually cannot correct for fluctuations this small."
+msgstr ""
+"전형적인 고주파 Dec 항성 움직임의 측정; 가이딩은  보통 이러한 작은 변동을 교"
+"정할 수 없습니다."
+
+#: guiding_assistant.cpp:525
+msgid "Maximum sample-sample deflection seen in right ascension."
+msgstr "RA 에서 보이는 최대 샘플 - 샘플 처짐."
+
+#: guiding_assistant.cpp:526
+msgid "Maximum sample-sample deflection seen in declination."
+msgstr "Dec에서 보이는 최대 샘플 - 샘플 처짐."
+
+#: guiding_assistant.cpp:527
+msgid ""
+"Maximum peak-peak deflection seen in right ascension during sampling period."
+msgstr "샘플링 기간 동안 RA에서 보이는 최대 피크-피크 첨짐 "
+
+#: guiding_assistant.cpp:528
+msgid "Estimated overall drift rate in right ascension."
+msgstr "RA의 전체 표류속도 예상 "
+
+#: guiding_assistant.cpp:529
+msgid "Maximum drift rate in right ascension during sampling period."
+msgstr "샘플링 기간 동안 RA의 최대 표류속도 "
+
+#: guiding_assistant.cpp:530
+msgid ""
+"Exposure time to keep maximum RA drift below the recommended min-move level."
+msgstr "최대 RA 표류를 유지하는 노출 시간. 권장되는 min-move 레벨보다 낮다 "
+
+#: guiding_assistant.cpp:531
+msgid "Estimated overall drift rate in declination."
+msgstr "Dec의 전체 표류속도 예상 "
+
+#: guiding_assistant.cpp:532
+msgid ""
+"Estimate of declination backlash if backlash testing was completed "
+"successfully"
+msgstr "백래시 테스트가 성공한 경우 Dec 백래시 예상 "
+
+#: guiding_assistant.cpp:533
+msgid ""
+"Estimate of polar alignment error. If the scope declination is unknown, the "
+"value displayed is a lower bound and the actual error may be larger."
+msgstr ""
+"극축 오차의 추정치. Dec이 알려지지 않은 경우 표시된 값은 하한값이며 실제 오류"
+"는 더 클 수 있습니다."
+
+#: guiding_assistant.cpp:564
+msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
+msgstr "좋은 SNR (> = 8)을 가지는 포화되지 않은 별을 선택하고 가이딩 시작"
+
+#: guiding_assistant.cpp:568
+msgid ""
+"Click Start to begin measurements.  Guiding will be disabled during this "
+"time, so the star will move around."
+msgstr ""
+"측정을 시작하려면 시작을 클릭. 이 시간에는 가이딩이 해제되어 별이 움직일 것입"
+"니다."
+
+#: guiding_assistant.cpp:573
+msgid ""
+"Guiding output is disabled and star movement is being measured.  Click Stop "
+"when the RMS values have stabilized (at least 2 minutes)."
+msgstr ""
+
+#: guiding_assistant.cpp:576
+msgid ""
+"Guiding has been resumed. Look at the recommendations and make any desired "
+"changes.  Click Start to repeat the measurements, or close the window to "
+"continue guiding."
+msgstr ""
+"가이딩이 재개되었습니다. 권장 사항을보고 원하는대로 변경하십시오. 시작을 클릭"
+"하여 측정을 반복하거나 가이딩을 계속하기 위해 창을 닫습니다."
+
+#: guiding_assistant.cpp:587 guiding_assistant.cpp:592
+msgid "Measuring backlash: "
+msgstr "백래시 측정:"
+
+#: guiding_assistant.cpp:601 guiding_assistant.cpp:1191 statswindow.cpp:277
+msgid "px"
+msgstr "px"
+
+#: guiding_assistant.cpp:601
+msgid "ms"
+msgstr "ms"
+
+#: guiding_assistant.cpp:697 guiding_assistant.cpp:698
+msgid "Apply"
+msgstr "적용 "
+
+#: guiding_assistant.cpp:815
+#, c-format
+msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
+msgstr "노출 시간을 유지. 범위 %.1fs to %.1fs"
+
+#: guiding_assistant.cpp:824
+msgid "Consider re-doing your calibration "
+msgstr "캘리브레이션 재실행을 고려하십시오."
+
+#: guiding_assistant.cpp:826
+msgid "(Prior alert)"
+msgstr "(사전 경고)"
+
+#: guiding_assistant.cpp:828
+msgid "(Backlash clearing)"
+msgstr "(백래시 제거)"
+
+#: guiding_assistant.cpp:840
+msgid ""
+"Consider using a brighter star for the test or increasing the exposure time"
+msgstr "더 밝은 별을 사용하거나 노출 시간을 늘리는 것을 고려하십시오."
+
+#: guiding_assistant.cpp:858
+msgid "Polar alignment error > 5 arc-min; that could probably be improved."
+msgstr "극축 오차 > 5 arc-min; 아마도 개선 될 수 있습니다."
+
+#: guiding_assistant.cpp:859
+msgid ""
+"Polar alignment error > 10 arc-min; try using the Drift Align tool to "
+"improve alignment."
+msgstr ""
+"극축 오차 > 10 arc-min; Drift Align 도구를 사용하여 재 정렬을 하십시오."
+
+#: guiding_assistant.cpp:879
+#, c-format
+msgid "Try setting RA min-move to %0.2f"
+msgstr "RA min-move를 % 0.2f로 설정해보십시오."
+
+#: guiding_assistant.cpp:897
+#, c-format
+msgid "Try setting Dec min-move to %0.2f"
+msgstr "Dec min-move를 % 0.2f로 설정해보십시오."
+
+#: guiding_assistant.cpp:919
+#, c-format
+msgid "Try setting a Dec backlash value of %d ms"
+msgstr "Dec 백래쉬 값을 %d ms로 설정해보십시오."
+
+#: guiding_assistant.cpp:921
+#, c-format
+msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
+msgstr "백래시는 %0.1f px; Dec을 한 방향으로 만 가이딩해야 할 필요가 있습니다."
+
+#: guiding_assistant.cpp:1030
+msgid "Backlash test aborted..."
+msgstr "백래시 테스터 중지... "
+
+#: guiding_assistant.cpp:1064 guiding_assistant.cpp:1071
+msgid "Measuring backlash... "
+msgstr "백래시 측정 중..."
+
+#: guiding_assistant.cpp:1093
+msgid "Guiding stopped"
+msgstr "가이딩 중지됨 "
+
+#: guiding_assistant.cpp:1190
+msgid "s"
+msgstr "s"
+
+#: guiding_assistant.cpp:1192
+msgid "arc-sec"
+msgstr "arc-sec"
+
+#: guiding_assistant.cpp:1193
+msgid "arc-min"
+msgstr "arc-min"
+
+#: guiding_assistant.cpp:1194
+msgid "px/min"
+msgstr "px/min"
+
+#: guiding_assistant.cpp:1196
+msgid "arc-sec/min"
+msgstr "arc-sec/min"
+
+#: guiding_assistant.cpp:1197
+msgid "arc-sec/sec"
+msgstr "arc-sec/sec"
+
+#: guiding_assistant.cpp:1216
+msgid " "
+msgstr ""
+
+#: image_math.cpp:1146
+msgid ""
+"Bad-pixel map does not match the camera in this profile - it needs to be "
+"replaced."
+msgstr ""
+"불량화소 지도가 프로파일의 카메라와 일치하지 않습니다. 불량화소 지도 교체"
+
+#: indi_gui.cpp:707
+msgid "INDI Options"
+msgstr "INDI 옵션 "
+
+#: manualcal_dialog.cpp:40
+msgid "Manual Calibration"
+msgstr "수동 캘리브레이션 "
+
+#: manualcal_dialog.cpp:46
+msgid "Camera binning:"
+msgstr "카메라 비닝: "
+
+#: manualcal_dialog.cpp:54
+msgid "RA rate, px/sec (e.g. 5.0):"
+msgstr "RA 속도, px/sec (e.g. 5.0):"
+
+#: manualcal_dialog.cpp:60
+msgid "Dec rate, px/sec (e.g. 5.0):"
+msgstr "Dec 속도, px/sec (e.g. 5.0):"
+
+#: manualcal_dialog.cpp:66
+msgid "RA angle (degrees):"
+msgstr "RA 각도 (도):"
+
+#: manualcal_dialog.cpp:72
+msgid "Dec angle (degrees):"
+msgstr "Dec 각도 (ㄷ):"
+
+#: manualcal_dialog.cpp:78
+msgid "Declination (e.g. 2.1):"
+msgstr "Dec(e.g. 2.1):"
+
+#: mount.cpp:133 mount.cpp:172
+msgid "Lowpass"
+msgstr "Lowpass"
+
+#: mount.cpp:133 mount.cpp:172
+msgid "Lowpass2"
+msgstr "Lowpass2"
+
+#: mount.cpp:133 mount.cpp:172
+msgid "Resist Switch"
+msgstr "Resist Switch"
+
+#: mount.cpp:135 mount.cpp:174
+msgid "Gaussian Process"
+msgstr "가우스 프로세스"
+
+#: mount.cpp:142
+msgid "Which Guide Algorithm to use for Right Ascension"
+msgstr "RA에 사용할 가이드 알고리즘"
+
+#: mount.cpp:163
+msgid ""
+"Causes an IMMEDIATE reset of the RA algorithm parameters to their default "
+"values"
+msgstr "RA 알고리즘 매개 변수가 IMMEDIATE 재설정에 의해 기본값으로 설정 됨."
+
+#: mount.cpp:180
+msgid "Which Guide Algorithm to use for Declination"
+msgstr "Dec에 사용할 가이드 알고리즘"
+
+#: mount.cpp:207
+msgid ""
+"Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
+"values"
+msgstr "Dec 알고리즘 매개 변수가 IMMEDIATE 재설정에 의해 기본값으로 설정 됨."
+
+#: mount.cpp:380
+msgid "Clear mount calibration"
+msgstr "마운트 캘리브레이션 제거 "
+
+#: mount.cpp:383
+msgid ""
+"Clear the current mount calibration data - calibration will be re-done when "
+"guiding is started"
+msgstr ""
+"현재 마운트 캘리브레이션 데이터 지우기 - 가이드 시작시 캘리브레이셔이 다시 수"
+"행됩니다."
+
+#: mount.cpp:384
+msgid "Enable mount guide output"
+msgstr "마운트 가이드 출력 사용 "
+
+#: mount.cpp:386
+msgid ""
+"Keep this checked for guiding. Un-check to disable all mount guide commands "
+"and allow the mount to run un-guided"
+msgstr ""
+"가이딩을 위해 이것을 확인하십시오. 체크를 해제하면 마운트 가이드 명령을 비활"
+"성화하고 마운트가 가이드되지 않은 상태로 실행 됩니다."
+
+#: mount.cpp:740
+#, c-format
+msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
+msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
+
+#: mount.cpp:1017
+msgid "RA:"
+msgstr "RA:"
+
+#: mount.cpp:1022
+msgid "DEC:"
+msgstr "DEC:"
+
+#: mount.cpp:1059
+msgid ""
+"Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
+"guiding."
+msgstr ""
+"카메라 픽셀 크기가 예기치 않게 변경되었습니다. 정확한 가이딩을 위해서 캘리브"
+"레이션을 다시하십시오."
+
+#: mount.cpp:1095
+msgid "Calibration was too far from equator, recalibration is needed."
+msgstr "캘리브레이션이 적도에서 너무 멀면 캘리브레이션을 다시 해야합니다."
+
+#: mount.cpp:1129
+msgid "Rotator position has changed, recalibration is needed."
+msgstr "로테이터 위치가 변경되어 캘리브레이션을 다시 해야합니다."
+
+#: myframe.cpp:288 myframe.cpp:360
+msgid "History"
+msgstr "History"
+
+#: myframe.cpp:293 myframe.cpp:361
+msgid "Guide Stats"
+msgstr "가이드 통계 "
+
+#: myframe.cpp:303 myframe.cpp:363
+msgid "Star Profile"
+msgstr "별 프로파일 "
+
+#: myframe.cpp:308 myframe.cpp:364 target.cpp:51
+msgid "Target"
+msgstr "Target"
+
+#: myframe.cpp:437
+msgid "&Save Image..."
+msgstr "&이미지 저장...."
+
+#: myframe.cpp:437
+msgid "Save current image"
+msgstr "현재 이미지 저장 "
+
+#: myframe.cpp:438
+msgid "E&xit\tAlt-X"
+msgstr "E&xit\tAlt-X"
+
+#: myframe.cpp:438
+msgid "Quit this program"
+msgstr "프로그램 종료 "
+
+#: myframe.cpp:441
+msgid "&Manual Guide"
+msgstr "&수동 가이드"
+
+#: myframe.cpp:441
+msgid "Manual / test guide dialog"
+msgstr "수동 / 테스트 가이드 대화 상자"
+
+#: myframe.cpp:442
+msgid "&Auto-select Star\tAlt-S"
+msgstr "&자동 별 선택\tAlt-S"
+
+#: myframe.cpp:442
+msgid "Automatically select star"
+msgstr "자동으로 별 선택 "
+
+#: myframe.cpp:443
+msgid "&Review Calibration Data\tAlt-C"
+msgstr "&캘리브레이션 데이타 검토\tAlt-C"
+
+#: myframe.cpp:443
+msgid "Review calibration data from last successful calibration"
+msgstr "최근 성공한 캘리브레이션 데이타 검토 "
+
+#: myframe.cpp:446
+msgid "Restore Calibration Data..."
+msgstr "캘리브레이션 데이타 복원 "
+
+#: myframe.cpp:446
+msgid "Restore calibration data from last successful calibration"
+msgstr "최근 성공한 캘리브레이션 데이타 복원 "
+
+#: myframe.cpp:447
+msgid "Enter Calibration Data..."
+msgstr "캘리브레이션 데이타 입력 "
+
+#: myframe.cpp:447
+msgid "Manually calibrate"
+msgstr "수동 캘리브레이션 "
+
+#: myframe.cpp:448
+msgid "Flip Calibration Data"
+msgstr "캘리브레이션 데이타 플립 "
+
+#: myframe.cpp:448
+msgid "Flip RA calibration vector"
+msgstr "RA 캘리브레이션 벡타 플립 "
+
+#: myframe.cpp:449
+msgid "Clear Calibration Data..."
+msgstr "캘리브레이션 데이터 지우기 ... "
+
+#: myframe.cpp:449
+msgid "Clear calibration data currently in use"
+msgstr "현재 사용중인 캘리브레이션 데이터 지우기 "
+
+#: myframe.cpp:450
+msgid "Modify Calibration"
+msgstr "캘리브레이션 수정 "
+
+#: myframe.cpp:453
+msgid "Adjust &Lock Position"
+msgstr "조정&잠금 위치 "
+
+#: myframe.cpp:453
+msgid "Adjust the lock position"
+msgstr "잠금 위치 조정 "
+
+#: myframe.cpp:454
+msgid "&Comet Tracking"
+msgstr "&혜성추적 "
+
+#: myframe.cpp:454
+msgid "Run the Comet Tracking tool"
+msgstr "혜성추적 도구 실행 "
+
+#: myframe.cpp:455
+msgid "&Guiding Assistant"
+msgstr "&Guiding Assistant"
+
+#: myframe.cpp:455
+msgid "Run the Guiding Assistant"
+msgstr "Guiding Assistant 실행 "
+
+#: myframe.cpp:456
+msgid "&Drift Align"
+msgstr "&표류이탈 "
+
+#: myframe.cpp:456
+msgid "Run the Drift Alignment tool"
+msgstr "표류이탈 실행 "
+
+#: myframe.cpp:458
+msgid "Enable Star Image Logging"
+msgstr "별 이미지 로깅 사용 "
+
+#: myframe.cpp:458
+msgid "Enable logging of star images"
+msgstr "별 이미지 로깅 사용"
+
+#: myframe.cpp:459
+msgid "Enable Server"
+msgstr "Enable Server"
+
+#: myframe.cpp:459
+msgid "Enable PHD2 server capability"
+msgstr "PHD2 서버 기능 사용 "
+
+#: myframe.cpp:460 nudge_lock.cpp:159
+msgid "Sticky Lock Position"
+msgstr "고정 잠금 위치 "
+
+#: myframe.cpp:460
+msgid "Keep the same lock position when guiding starts"
+msgstr "가이딩 시작시 동일한 잠금 위치 유지"
+
+#: myframe.cpp:463
+msgid "Display Toolbar"
+msgstr "툴바 표시 "
+
+#: myframe.cpp:463
+msgid "Enable / disable tool bar"
+msgstr "도구 모음 활성화 / 비활성화 "
+
+#: myframe.cpp:464
+msgid "Display &Graph"
+msgstr "디스플레이 & 그래프"
+
+#: myframe.cpp:464
+msgid "Enable / disable graph"
+msgstr "그래프  활성화 / 비활성화 "
+
+#: myframe.cpp:465
+msgid "Display &Stats"
+msgstr "디스플레이 & 통계"
+
+#: myframe.cpp:465
+msgid "Enable / disable guide stats"
+msgstr "가이드 통계 활성화 / 비활성화"
+
+#: myframe.cpp:466
+msgid "Display &AO Graph"
+msgstr "디스플레이 & AO 그래프 "
+
+#: myframe.cpp:466
+msgid "Enable / disable AO graph"
+msgstr "AO 그래프 활성화 / 비활성화 "
+
+#: myframe.cpp:467
+msgid "Display &Target"
+msgstr "디스플레이 & Target "
+
+#: myframe.cpp:467
+msgid "Enable / disable target"
+msgstr "Target 활성화 / 비활성화 "
+
+#: myframe.cpp:468
+msgid "Display Star &Profile"
+msgstr "스타 디스플레이 & 프로파일 "
+
+#: myframe.cpp:468
+msgid "Enable / disable star profile view"
+msgstr "프로파일 보기 활성화 / 비활성화 "
+
+#: myframe.cpp:470
+msgid "&No Overlay"
+msgstr "&오버레이 없음"
+
+#: myframe.cpp:470
+msgid "No additional crosshairs"
+msgstr "추가 십자선 없음 "
+
+#: myframe.cpp:471
+msgid "&Bullseye"
+msgstr "&Bullseye"
+
+#: myframe.cpp:471
+msgid "Centered bullseye overlay"
+msgstr "중앙 bullseye 오브레이 "
+
+#: myframe.cpp:472
+msgid "&Fine Grid"
+msgstr "&미세격자 "
+
+#: myframe.cpp:472 myframe.cpp:473
+msgid "Grid overlay"
+msgstr "격자 오브레이 "
+
+#: myframe.cpp:473
+msgid "&Coarse Grid"
+msgstr "&거친 격자 "
+
+#: myframe.cpp:474
+msgid "&RA/Dec"
+msgstr "&RA/Dec"
+
+#: myframe.cpp:474
+msgid "RA and Dec overlay"
+msgstr "Ra, Dec 오브레이 "
+
+#: myframe.cpp:475
+msgid "Spectrograph S&lit"
+msgstr "Spectrograph Slit"
+
+#: myframe.cpp:475
+msgid "Spectrograph slit overlay"
+msgstr "Spectrograph slit 오브레이 "
+
+#: myframe.cpp:477
+msgid "Slit Position..."
+msgstr "슬릿 위치 "
+
+#: myframe.cpp:479
+msgid "Restore Window Positions"
+msgstr "창 위치 복원 "
+
+#: myframe.cpp:479
+msgid "Restore all windows to their default/docked positions"
+msgstr "모든 창을 기본 / 도킹 된 위치로 복원"
+
+#: myframe.cpp:482
+msgid "Dark &Library..."
+msgstr "다크 라이브러리 "
+
+#: myframe.cpp:482
+msgid "Build a dark library for this profile"
+msgstr "이 프로파일에서 다크 라이브러리 제작 "
+
+#: myframe.cpp:483
+msgid "Bad-pixel &Map..."
+msgstr "불량화소 지도 "
+
+#: myframe.cpp:483
+msgid "Adjust parameters to create or modify the bad-pixel map"
+msgstr "불량화소 제작 및 변경을 위한 매개변수 조정 "
+
+#: myframe.cpp:484
+msgid "Import From Profile..."
+msgstr "프로파일에서 가져오기...."
+
+#: myframe.cpp:484
+msgid "Import existing dark library/bad-pixel map from a different profile"
+msgstr "다른 프로파일에서 기존의 다크 라이브러리 / 불량화소 지도 가져 오기"
+
+#: myframe.cpp:486
+msgid "Use &Dark Library"
+msgstr "다크 라이브러리 사용 "
+
+#: myframe.cpp:486
+msgid "Use the the dark library for this profile"
+msgstr "이 프로파일에 다크 라이브러리 사용"
+
+#: myframe.cpp:487
+msgid "Use &Bad-pixel Map"
+msgstr "불량화소 지도 사용 "
+
+#: myframe.cpp:487
+msgid "Use the bad-pixel map for this profile"
+msgstr "이 프로파일에서 불량화소 지도 사용 "
+
+#: myframe.cpp:492
+msgid "&Save settings"
+msgstr "&저장 설정"
+
+#: myframe.cpp:492
+msgid "Save current camera settings"
+msgstr "현재 카메라 설정 저장 "
+
+#: myframe.cpp:493
+msgid "&Restore settings"
+msgstr "&설정 복원 "
+
+#: myframe.cpp:493
+msgid "Restore camera settings"
+msgstr "카메라 설정 복원 "
+
+#: myframe.cpp:497
+msgid "Show &Bookmarks\tb"
+msgstr "보기 & 북마크"
+
+#: myframe.cpp:497
+msgid "Hide or show bookmarks"
+msgstr "북마크 감추기 "
+
+#: myframe.cpp:500
+msgid "Bookmark &Lock Pos\tShift-B"
+msgstr "북마크&잠금 위치\tShift-B"
+
+#: myframe.cpp:500
+msgid "Set a bookmark at the current lock position"
+msgstr "현재 잠금 위치에 북마크 설정 "
+
+#: myframe.cpp:502
+msgid "Bookmark &Star Pos"
+msgstr "북마크 & 별 위치 "
+
+#: myframe.cpp:502
+msgid "Set a bookmark at the position of the currently selected star"
+msgstr "현재 선택된 별의 위치에 북마크 설정"
+
+#: myframe.cpp:503
+msgid "&Delete all\tCtrl-B"
+msgstr "&모두 삭제l\tCtrl-B"
+
+#: myframe.cpp:503
+msgid "Remove all bookmarks"
+msgstr "모든 북마크 삭제 "
+
+#: myframe.cpp:506
+msgid "&About..."
+msgstr "&About..."
+
+#: myframe.cpp:506
+#, c-format
+msgid "About %s"
+msgstr "About %s"
+
+#: myframe.cpp:507
+msgid "&Contents...\tF1"
+msgstr "&목차...\tF1"
+
+#: myframe.cpp:507
+msgid "Full help"
+msgstr "전체 도움말 "
+
+#: myframe.cpp:508
+msgid "&Impatient Instructions"
+msgstr "&성급한 지침"
+
+#: myframe.cpp:508
+msgid "Quick instructions for the impatient"
+msgstr "성급한 사람들을위한 빠른 지침 "
+
+#: myframe.cpp:511
+msgid "&File"
+msgstr "&파일 "
+
+#: myframe.cpp:520
+msgid "&Tools"
+msgstr "&툴 "
+
+#: myframe.cpp:521
+msgid "&View"
+msgstr "&보기 "
+
+#: myframe.cpp:522
+msgid "&Darks"
+msgstr "&다크 "
+
+#: myframe.cpp:523
+msgid "&Bookmarks"
+msgstr "&북마크 "
+
+#: myframe.cpp:524
+msgid "&Help"
+msgstr "&도움말 "
+
+#: myframe.cpp:813 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+msgid "Auto"
+msgstr "자동 "
+
+#: myframe.cpp:817
+msgid "Camera exposure duration"
+msgstr "카메라 노출 시간"
+
+#: myframe.cpp:822
+msgid "Screen gamma (brightness)"
+msgstr "스크린 감마(밝기) "
+
+#: myframe.cpp:824
+msgid ""
+"Connect to equipment. Shift-click to reconnect the same equipment last "
+"connected."
+msgstr ""
+"장비에 연결하십시오. 마지막으로 연결된 동일한 장비를 다시 연결하려면 Shift 키"
+"를 누른 상태로  클릭하십시오."
+
+#: myframe.cpp:825
+msgid "Begin looping exposures for frame and focus"
+msgstr "프레임 및 포커스에 대한 반복 노출시작"
+
+#: myframe.cpp:826
+msgid "Begin guiding (PHD). Shift-click to force calibration."
+msgstr ""
+"안내 시작 (PHD). Shift 키를 누른 상태에서 강제로 클릭하여 캘리브레이션합니다."
+
+#: myframe.cpp:827
+msgid "Stop looping and guiding"
+msgstr "반복 루핑 및 가이드 중지"
+
+#: myframe.cpp:829
+msgid "Exposure duration"
+msgstr "노출시간 "
+
+#: myframe.cpp:830
+msgid "Gamma"
+msgstr "감마 "
+
+#: myframe.cpp:832
+msgid "Advanced parameters"
+msgstr "고급 매개 변수 "
+
+#: myframe.cpp:833
+msgid "Camera settings"
+msgstr "카메라 설정 "
+
+#: myframe.cpp:886
+msgid "Could not find help file: "
+msgstr "도움말 파일을 찾을 수 없습니다:"
+
+#: myframe.cpp:1011
+msgid "Trouble-shooting and Analysis"
+msgstr "문제 해결 및 분석"
+
+#: myframe.cpp:1031
+msgid ""
+"Don't show\n"
+" again"
+msgstr "다시 표시하지 않음"
+
+#: myframe.cpp:1406 myframe.cpp:1582
+msgid "Looping"
+msgstr "루핑 "
+
+#: myframe.cpp:1510
+msgid "Waiting for devices..."
+msgstr "기기 대기 중 ..."
+
+#: myframe.cpp:1553
+msgid "Resumed"
+msgstr "재개 됨 "
+
+#: myframe.cpp:1600
+msgid ""
+"Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
+"pixel Map window."
+msgstr ""
+"불량화소 지도를 수정하는 동안 가이드 할 수 없습니다. 수정 중인 불량화소 지도 "
+"창을 닫으십시오."
+
+#: myframe.cpp:1733
+#, c-format
+msgid "Dither by %.2f,%.2f"
+msgstr "Dither by %.2f,%.2f"
+
+#: myframe.cpp:1765
+msgid "Are you sure you want to exit while capturing is active?"
+msgstr "캡쳐가 활성화되어있는 동안 종료 하시겠습니까?"
+
+#: myframe.cpp:1766
+msgid "Confirm Exit"
+msgstr "종료 확인 "
+
+#: myframe.cpp:2028 usImage.cpp:434
+msgid "FITS file is not of an image: "
+msgstr "FITS 파일이 이미지가 아닙니다: "
+
+#: myframe.cpp:2036 usImage.cpp:446
+msgid "Unsupported type or read error loading FITS file "
+msgstr ""
+"FITS 파일을로드하는 중 지원되지 않는 유형 또는 읽기 오류가 발생했습니다."
+
+#: myframe.cpp:2046
+msgid ""
+"Existing dark library has frames with incompatible formats - please rebuild "
+"the dark library from scratch."
+msgstr ""
+"기존의 다크 라이브러리와 호환되지 않는 형식의 프레임이 있습니다. 다크 라이브"
+"러리를 처음부터 다시 작성하십시오."
+
+#: myframe.cpp:2057
+msgid "Memory allocation error reading FITS file "
+msgstr "FITS 파일을 읽는 중 메모리 할당 오류가 발생했습니다."
+
+#: myframe.cpp:2064
+msgid "Error reading data from "
+msgstr "데이타를 읽는 중 오류 발생 "
+
+#: myframe.cpp:2093 usImage.cpp:478
+msgid "Error opening FITS file "
+msgstr "FITS파일을 여는 중 오류  발생 "
+
+#: myframe.cpp:2157
+msgid ""
+"Dark library does not match the camera in this profile - it needs to be "
+"replaced."
+msgstr ""
+"다크 라이브러리가 프로파일의 카메라와 일치하지 않습니다. 다크 라이브러리를 교"
+"체해야합니다."
+
+#: myframe.cpp:2203
+msgid ""
+"Dark library and bad-pixel maps are incompatible with the current camera - "
+"both need to be replaced"
+msgstr ""
+"다크 라이브러리 및 불량화소 지도는 현재 카메라와 호환되지 않습니다. 둘 다 교"
+"체해야합니다."
+
+#: myframe.cpp:2234
+msgid "You must connect a camera before loading dark frames"
+msgstr "다크 프레임을 로드하기 전에 카메라를 연결해야합니다."
+
+#: myframe.cpp:2241
+msgid "Darks not loaded"
+msgstr "다크가 로드되지 않음"
+
+#: myframe.cpp:2248
+msgid "Darks loaded"
+msgstr "다크 로드 됨 "
+
+#: myframe.cpp:2261
+msgid "Error saving darks FITS file "
+msgstr "다크 FITS 파일을 저장하는 동안 오류가 발생했습니다."
+
+#: myframe.cpp:2462
+msgid ""
+"Guiding parameters have been reset because the camera binning changed. You "
+"should use separate profiles for different binning values."
+msgstr ""
+"카메라 비닝이 변경 되었기 때문에 가이드 매개 변수가 재설정되었습니다. 다른 비"
+"닝값에 대해 별도의 프로파일을 사용해야합니다."
+
+#: myframe.cpp:2472
+msgid "Global Settings"
+msgstr "Global 설정 "
+
+#: myframe.cpp:2504
+msgid "Reset Configuration"
+msgstr "구성 재설정"
+
+#: myframe.cpp:2505
+msgid ""
+"Reset all configuration and program settings to fresh install status -- "
+"Note: this closes PHD2"
+msgstr ""
+"모든 구성 및 프로그램 설정을 프로그램 설치 상태로 재설정 - 참고 :이 작업은 "
+"PHD2를 닫습니다."
+
+#: myframe.cpp:2506
+msgid "Reset \"Don't Show Again\" messages"
+msgstr "\"다시 표시하지 않음\"메시지 다시 설정"
+
+#: myframe.cpp:2507
+msgid ""
+"Restore any messages that were hidden when you checked \"Don't show this "
+"again\"."
+msgstr ""
+"\"이 메시지를 다시 표시하지 않음\"을 선택했을 때 숨겨진 메시지를 복원하십시"
+"오."
+
+#: myframe.cpp:2511
+msgid "Low Q JPEG"
+msgstr "Low Q JPEG"
+
+#: myframe.cpp:2511
+msgid "High Q JPEG"
+msgstr "High Q JPEG"
+
+#: myframe.cpp:2511
+msgid "Raw FITS"
+msgstr "Raw FITS"
+
+#: myframe.cpp:2517
+msgid "Image logging format"
+msgstr "이미지 로깅 형식"
+
+#: myframe.cpp:2518
+msgid "File format of logged images"
+msgstr "기록 된 이미지의 파일 형식"
+
+#: myframe.cpp:2522
+msgid "2x2 mean"
+msgstr "2x2 mean"
+
+#: myframe.cpp:2522
+msgid "3x3 median"
+msgstr "3x3 median"
+
+#: myframe.cpp:2529
+msgid "Noise Reduction"
+msgstr "노이즈 제거 "
+
+#: myframe.cpp:2530
+msgid "Technique to reduce noise in images"
+msgstr "이미지 노이즈 감소 기술"
+
+#: myframe.cpp:2536
+msgid "Time Lapse (ms)"
+msgstr "Time Lapse (ms)"
+
+#: myframe.cpp:2537
+msgid ""
+"How long should PHD wait between guide frames? Default = 0ms, useful when "
+"using very short exposures (e.g., using a video camera) but wanting to send "
+"guide commands less frequently"
+msgstr ""
+"PHD는 가이드 프레임간에 얼마나 오래 기다려야합니까? 기본값 = 0ms. 매우 짧은 "
+"노출 (예 : 비디오 카메라 사용)을 사용할 때 유용하지만 가이드 명령을 자주 보내"
+"지 않으려 할때"
+
+#: myframe.cpp:2541
+msgid "Focal length (mm)"
+msgstr "초점거리(mm)"
+
+#: myframe.cpp:2542
+msgid ""
+"Guider telescope focal length, used with the camera pixel size to display "
+"guiding error in arc-sec."
+msgstr ""
+"가이드 망원경 초점 거리, arc-sec에서 가이드 오류를 표시하기 위해 카메라 픽셀 "
+"크기와 함께 사용됩니다."
+
+#: myframe.cpp:2548 myframe.cpp:2580
+msgid "System default"
+msgstr "시스템 기본 값 "
+
+#: myframe.cpp:2563
+msgid "Language-Name"
+msgstr "언어-이름 "
+
+#: myframe.cpp:2584
+msgid "Language"
+msgstr "언어 "
+
+#: myframe.cpp:2585
+#, c-format
+msgid "%s Language. You'll have to restart PHD to take effect."
+msgstr "% s 언어. 적용하려면 PHD를 다시 시작해야합니다."
+
+#: myframe.cpp:2589
+msgid "Log File Location"
+msgstr "로그파일 위치 "
+
+#: myframe.cpp:2592
+msgid ""
+"Folder for guide and debug logs; empty string to restore the default location"
+msgstr "가이드 및 디버그 로그를위한 폴더; 빈 문자열을 사용하여 기본 위치 복원"
+
+#: myframe.cpp:2593
+msgid "Browse..."
+msgstr "검색...."
+
+#: myframe.cpp:2603
+msgid "Dither Settings"
+msgstr "Dither 설정 "
+
+#: myframe.cpp:2604
+msgid "Random"
+msgstr "랜덤 "
+
+#: myframe.cpp:2605
+msgid ""
+"Each dither command moves the lock position a random distance on each axis"
+msgstr "각 디더 명령은 잠금 위치를 각 축에서 임의의 거리만큼 이동시킵니다."
+
+#: myframe.cpp:2606
+msgid "Spiral"
+msgstr "나선 "
+
+#: myframe.cpp:2607
+msgid "Each dither command moves the lock position along a spiral path"
+msgstr "각 디더 명령은 나선형 경로를 따라 잠금 위치를 이동합니다."
+
+#: myframe.cpp:2609
+msgid "Mode: "
+msgstr "모드:"
+
+#: myframe.cpp:2614
+msgid "RA only"
+msgstr "RA only"
+
+#: myframe.cpp:2615
+msgid "Constrain dither to RA only"
+msgstr "RA에만 디더를 제한"
+
+#: myframe.cpp:2621
+msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
+msgstr "디더 명령의 스케일링. 기본값 = 1.0 (0.01-100.0)"
+
+#: myframe.cpp:2625 testguide.cpp:119
+msgid "Scale"
+msgstr "스케일 "
+
+#: myframe.cpp:2632
+msgid "Auto restore calibration"
+msgstr "캘리브레이션 자동 복원 "
+
+#: myframe.cpp:2633
+msgid ""
+"Automatically restore calibration data from last successful calibration when "
+"connecting equipment."
+msgstr ""
+"장비를 연결할 때 마지막으로 성공적으로 수행 한 캘리브레이셔 데이터를 자동으"
+"로 복원합니다."
+
+#: myframe.cpp:2647
+msgid "Min"
+msgstr "최소 "
+
+#: myframe.cpp:2647
+msgid "Auto exposure minimum duration"
+msgstr "자동 노출 최소 지속 시간"
+
+#: myframe.cpp:2648
+msgid "Max"
+msgstr "최대 "
+
+#: myframe.cpp:2648
+msgid "Auto exposure maximum duration"
+msgstr "자동 노출 최대 지속 시간"
+
+#: myframe.cpp:2649
+msgid "Target SNR"
+msgstr "SNR 목표 "
+
+#: myframe.cpp:2649
+msgid "Auto exposure target SNR value"
+msgstr "목표 SNR을 위한 자동 노출 시간"
+
+#: myframe.cpp:2650
+msgid "Auto Exposure"
+msgstr "자동 노출 "
+
+#: myframe.cpp:2702
+msgid ""
+"This will reset all PHD2 configuration values and exit the program.  Are you "
+"sure?"
+msgstr ""
+"그러면 모든 PHD2 구성 값이 재설정되고 프로그램이 종료됩니다. 확실합니까?"
+
+#: myframe.cpp:2702
+msgid "Confirmation"
+msgstr "확인 "
+
+#: myframe.cpp:2730
+msgid "You must restart PHD2 for the language change to take effect."
+msgstr "언어 변경 사항을 적용하려면 PHD2를 다시 시작해야합니다."
+
+#: myframe.cpp:2730 myframe_events.cpp:273 myframe_events.cpp:480
+#: myframe_events.cpp:583
+msgid "Info"
+msgstr "정보 "
+
+#: myframe_events.cpp:99
+msgid ""
+"Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
+"\n"
+" Basic operation is quite simple (hence the 'PHD')\n"
+"\n"
+"   1) Press the green 'USB' button, select your camera and mount, click on "
+"'Connect All'\n"
+"   2) Pick an exposure duration from the drop-down list. Try 2 seconds to "
+"start.\n"
+"   3) Hit the 'Loop' button, adjust your focus if necessary\n"
+"   4) Click on a star away from the edge or use Alt-S to auto-select a star\n"
+"   5) Press the guide (green target) icon\n"
+"\n"
+" PHD2 will then calibrate itself and begin guiding.  That's it!\n"
+"\n"
+" To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need "
+"to \n"
+" tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n"
+" panel. Use the 'View' menu to watch your guiding performance. If you have\n"
+" problems, read the 'Best Practices' document and the help files! "
+msgstr ""
+
+#: myframe_events.cpp:110
+msgid "Instructions"
+msgstr "명령 "
+
+#: myframe_events.cpp:116 profile_wizard.cpp:361
+msgid "Introduction"
+msgstr "소개 "
+
+#: myframe_events.cpp:138
+msgid "Spectrograph Slit Overlay"
+msgstr "Spectrograph Slit Overlay"
+
+#: myframe_events.cpp:147
+msgid "Position (Center)"
+msgstr "위치 (중앙)"
+
+#: myframe_events.cpp:148
+msgid "Size"
+msgstr "크기 "
+
+#: myframe_events.cpp:167
+msgid "Width"
+msgstr "폭 "
+
+#: myframe_events.cpp:174
+msgid "Height"
+msgstr "높이 "
+
+#: myframe_events.cpp:184
+msgid "Angle (degrees)"
+msgstr "각도(도) "
+
+#: myframe_events.cpp:245
+msgid "Save FITS Image"
+msgstr "FITS 이미지 저장 "
+
+#: myframe_events.cpp:255
+#, c-format
+msgid "The image could not be saved to %s"
+msgstr "이미지를 %s에 저장할 수 없습니다."
+
+#: myframe_events.cpp:259
+#, c-format
+msgid "%s saved"
+msgstr "%s 저장됨 "
+
+#: myframe_events.cpp:273 myframe_events.cpp:480 myframe_events.cpp:583
+msgid "Please connect to a camera first"
+msgstr "먼저 카메라를 연결하십시오."
+
+#: myframe_events.cpp:299 myframe_events.cpp:367
+msgid "Stopped."
+msgstr "중지 됨 "
+
+#: myframe_events.cpp:317
+msgid ""
+"For refining the Bad-pixel Map PHD2 is now displaying raw camera data "
+"frames, which are a different size from ordinary guide frames for this "
+"camera."
+msgstr ""
+"불량화소 지도를 세부조정하기 위해 PHD2는 RAW 카메라 데이터 프레임을 표시합니"
+"다.이 프레임은이 카메라의 일반 가이드 프레임과 다른 크기입니다."
+
+#: myframe_events.cpp:495
+msgid "You must connect a camera before loading a dark library"
+msgstr "다크 라이브러리를 로드하기 전에 카메라를 연결해야합니다."
+
+#: myframe_events.cpp:522
+msgid "Dark library unloaded"
+msgstr "다크 라이브러리 로드되지 않음 "
+
+#: myframe_events.cpp:538
+msgid "You must connect a camera before loading a bad-pixel map"
+msgstr "불량 화소 지도를 로드하기 전에 카메라를 연결해야합니다."
+
+#: myframe_events.cpp:553
+msgid "Defect map loaded"
+msgstr "불량화소 지도가 로드 됨 "
+
+#: myframe_events.cpp:557
+msgid "Defect map not loaded"
+msgstr "불량화소 지도가 로드되지 않음 "
+
+#: myframe_events.cpp:569
+msgid "Bad-pixel map unloaded"
+msgstr "불량화소 지도가 로드되지 않음 "
+
+#: myframe_events.cpp:808
+msgid ""
+"For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
+"will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
+"build a Dark Library or Bad-pixel Map."
+msgstr ""
+"최상의 결과를 얻으려면 가이드하는 동안 다크 라이브러리 또는 불량화소 지도를 "
+"사용하십시오. 이렇게하면 PHD가 핫 픽셀에 고정되는 것을 방지 할 수 있습니다. "
+"다크 라이브러리 또는 불량화소 지도를 작성하려면 다크 메뉴를 사용하십시오."
+
+#: myframe_events.cpp:847
+msgid "Are you sure you want force recalibration?"
+msgstr "강제로 다시 캘리브레이션을 원하십니까?"
+
+#: myframe_events.cpp:848
+msgid "Force Recalibration"
+msgstr "강재로 캘리브레이션을 다시 함 "
+
+#: myframe_events.cpp:866
+msgid ""
+"Calibration this far from the celestial equator will be error-prone.  For "
+"best results, calibrate at a declination of -20 to +20."
+msgstr ""
+"천구의 적도로 부터 거리가 먼 캘리브레이션은 오류가 발생하기 쉽습니다. 최상의 "
+"결과를 얻으려면 Dec이 -20에서 +20 사이의 가 좋음 "
+
+#: myframe_events.cpp:867
+msgid "Confirm Calibration at Large Declination"
+msgstr "큰 적위에서 교정 확인"
+
+#: myframe_events.cpp:894 testguide.cpp:146
+msgid "Manual Guide"
+msgstr "수동 가이드 "
+
+#: myframe_events.cpp:951
+msgid ""
+"It looks like this is a first-time connection to your camera and mount. The "
+"Setup Wizard can help\n"
+"you with that and will also establish baseline guiding parameters for your "
+"new configuration.\n"
+"Would you like to use the Setup Wizard now?"
+msgstr ""
+"이 카메라를 처음 연결하는 것 같습니다. 설치 마법사가 도움이 될 수 있습니다.\n"
+"새로운 구성에 대한 기본 지침 매개 변수를 설정합니다.\n"
+"지금 설치 마법사를 사용 하시겠습니까?"
+
+#: myframe_events.cpp:954
+msgid "Yes"
+msgstr "Yes"
+
+#: myframe_events.cpp:954
+msgid "No"
+msgstr "No"
+
+#: myframe_events.cpp:954
+msgid "Setup Wizard Recommendation"
+msgstr "설치 마법사 권장 사항 "
+
+#: nudge_lock.cpp:117
+msgid "Adjust Lock Position"
+msgstr "잠금 위치 조정 "
+
+#: nudge_lock.cpp:120
+msgid "Always on top"
+msgstr "항상 맨앞에 "
+
+#: nudge_lock.cpp:122 testguide.cpp:151
+msgid "Up"
+msgstr "위 "
+
+#: nudge_lock.cpp:123 testguide.cpp:151
+msgid "Down"
+msgstr "아래 "
+
+#: nudge_lock.cpp:124 testguide.cpp:151
+msgid "Left"
+msgstr "왼쪽 "
+
+#: nudge_lock.cpp:125 testguide.cpp:151
+msgid "Right"
+msgstr "오른쪽 "
+
+#: nudge_lock.cpp:148
+msgid "Step"
+msgstr "단계 "
+
+#: nudge_lock.cpp:153
+msgid ""
+"Adjust how far the lock position moves when you click the Up/Down/Left/Right "
+"buttons"
+msgstr "위/아래/왼쪽/오른쪽 버튼을 클릭 할 때 잠금 위치 이동거리 조정 "
+
+#: nudge_lock.cpp:160
+msgid ""
+"Sticky lock position will not follow the star when guiding is stopped and "
+"restarted, or after calibration completes"
+msgstr ""
+"가이딩이 중지되고 다시 시작될 때 또는 캘리브레이션이 완료된 후에 고정 잠금 위"
+"치가 별을 따라 가지 않습니다."
+
+#: nudge_lock.cpp:165
+msgid "Lock Pos:"
+msgstr "잠금위치 :"
+
+#: nudge_lock.cpp:170
+msgid "Lock position X coordinate"
+msgstr "잠금 위치 X 좌표"
+
+#: nudge_lock.cpp:176
+msgid "Lock position Y coordinate"
+msgstr "잠금 위치 Y 좌표"
+
+#: nudge_lock.cpp:179 nudge_lock.cpp:186
+msgid "Set"
+msgstr "Set"
+
+#: nudge_lock.cpp:187
+msgid "Set the lock position to the entered coordinates"
+msgstr "잠금 위치를 입력된 좌표로 설정하십시오."
+
+#: nudge_lock.cpp:190
+msgid "Save the current lock position so it can be restored later"
+msgstr "나중에 복원 할 수 있도록 현재 잠금 위치 저장"
+
+#: nudge_lock.cpp:193
+msgid "Restore the saved lock position"
+msgstr "저장된 잠금위치 복원 "
+
+#: nudge_lock.cpp:345
+#, c-format
+msgid "Set lock position to saved value (%.2f,%.2f)?"
+msgstr "잠금 위치를 저장된 값으로 설정 (% .2f, % .2f)"
+
+#: nudge_lock.cpp:346
+msgid "Restore saved Lock Pos"
+msgstr "저장된 잠금 위치 복원"
+
+#: parallelport_win32.cpp:69
+msgid "Select Parallel Port"
+msgstr "병렬 포트 선택"
+
+#: parallelport_win32.cpp:76
+msgid "Custom Port Address:"
+msgstr "사용자 지정 포트 주소 :"
+
+#: phd.cpp:110
+#, c-format
+msgid ""
+"PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
+"option to start a different instance."
+msgstr ""
+"PHD2 인스턴스 %ld가 이미 실행 중입니다. 다른 인스턴스를 시작하려면 -i "
+"INSTANCE_NUM 명령 행 옵션을 사용하십시오."
+
+#: phdconfig.cpp:44
+msgid "My Equipment"
+msgstr "내 장비 "
+
+#: profile_wizard.cpp:74
+msgid "New Profile Wizard"
+msgstr "새 프로파일 마법사 "
+
+#: profile_wizard.cpp:77
+msgid "New Profile Wizard - "
+msgstr "새 프로파일 마법사 -"
+
+#: profile_wizard.cpp:116
+msgid "More Info"
+msgstr "더 많은 정보 "
+
+#: profile_wizard.cpp:126
+msgid "Gear"
+msgstr "장비 "
+
+#: profile_wizard.cpp:137
+msgid ""
+"Click Detect to read the pixel size from the camera. Otherwise, you can get "
+"this value from your camera documentation or from an online source.  You can "
+"use the up/down control or type in a value directly."
+msgstr ""
+"탐지를 클릭하여 카메라에서 픽셀 크기를 읽습니다. 그렇지 않으면 카메라 설명서"
+"에서 이 값을 얻을 수 있습니다. 위 / 아래 컨트롤을 사용하거나 값을 직접 입력 "
+"할 수 있습니다."
+
+#: profile_wizard.cpp:139 profile_wizard.cpp:164
+msgid "Detect"
+msgstr "탐지 "
+
+#: profile_wizard.cpp:141
+msgid "Connect to camera and detect pixel size"
+msgstr "카메라에 연결하고 픽셀 크기를 감지합니다."
+
+#: profile_wizard.cpp:145
+msgid "Guide camera un-binned pixel size (microns)"
+msgstr "가이드 카메라 비닝하지않은 픽셀 크기 (마이크론)"
+
+#: profile_wizard.cpp:150
+msgid ""
+"This is the focal length of the guide scope - or the imaging scope if you "
+"are using an off-axis-guider or an adaptive optics device.  You can use the "
+"up/down control or type in a value directly."
+msgstr ""
+"이것은 비축가이드나 적응광학 장치를 사용하는 경우 가이드 망원경 또는 이미지 "
+"망원경의   초점 거리입니다. 위 / 아래 버튼으로 조절하거나 값을 직접 입력 할 "
+"수 있습니다."
+
+#: profile_wizard.cpp:153
+msgid "Guide scope focal length (mm)"
+msgstr "가이드 망원경 초점 거리(mm) "
+
+#: profile_wizard.cpp:162
+msgid ""
+"The mount guide speed you will use for calibration and guiding, expressed as "
+"a multiple of the sidereal rate. If you don't know, leave the setting at the "
+"default value (0.5X)"
+msgstr ""
+"캘리브레이션 및 가이드를 위해 사용할 마운트의 가이드 속도이며 항성시 속도의 "
+"배수로 표시됩니다. 모르는 경우 설정을 기본값 (0.5X)으로 그대로 두십시오."
+
+#: profile_wizard.cpp:166
+msgid "Connect to mount and detect guide speed"
+msgstr ""
+
+#: profile_wizard.cpp:170
+msgid "Mount guide speed (n.n x sidereal)"
+msgstr "마운트 가이드 속도 (n.n x sidereal)"
+
+#: profile_wizard.cpp:178
+msgid "Build dark library"
+msgstr "다크 라이브러리 만들기 "
+
+#: profile_wizard.cpp:180
+msgid ""
+"Check this to automatically start the process of building a dark library for "
+"this profile."
+msgstr ""
+"이 프로파일에 대한 다크 라이브러리를 작성하는 프로세스를 자동으로 시작하려면"
+"이 옵션을 선택하십시오."
+
+#: profile_wizard.cpp:181
+msgid "Profile Name"
+msgstr "프로파일 이름 "
+
+#: profile_wizard.cpp:187
+msgid "< Back"
+msgstr "< Back"
+
+#: profile_wizard.cpp:188
+msgid "Back up to the previous screen"
+msgstr "이전 화면으로 이동 "
+
+#: profile_wizard.cpp:192 profile_wizard.cpp:429
+msgid "Next >"
+msgstr "Next >"
+
+#: profile_wizard.cpp:193 profile_wizard.cpp:430
+msgid "Move forward to next screen"
+msgstr "다은 화면으로 이동 "
+
+#: profile_wizard.cpp:242
+msgid ""
+"This short sequence of steps will help you identify the equipment you want "
+"to use for guiding and will associate it with a profile name of your choice. "
+"This profile will then be available any time you run PHD2.  At a minimum, "
+"you will need to choose both the guide camera and the mount interface that "
+"PHD2 will use for guiding.  You will also enter some information about the "
+"optical characteristics of your setup. PHD2 will use this to create a good "
+"'starter set' of guiding and calibration parameters. If you are a new user, "
+"please review the 'Impatient Instructions' under the 'Help' menu after the "
+"wizard dialog has finished."
+msgstr ""
+"이 짧은 순서로 가이드에 사용할 장비를 식별하고 원하는 프로파일 이름과 연결할 "
+"수 있습니다. 이 프로파일은 PHD2를 실행할 때마다 사용할 수 있습니다. 최소한 "
+"PHD2가 가이드 할 때 사용할 가이드 카메라와 마운트 인터페이스를 모두 선택해야"
+"합니다. 광학 특성에 대한 정보도 입력할 수 있습니다. PHD2는 가이드 및 캘리브레"
+"이션 매개 변수의 '초기 설정'을 생성하기 위해 이 기능을 사용합니다. 새로운 사"
+"용자 인 경우 마법사 대화 상자가 끝난 후 'Help'메뉴의 '성급한 지침'ㅇ 검토하십"
+"시오."
+
+#: profile_wizard.cpp:249
+msgid ""
+"Select your guide camera from the list.  All cameras supported by PHD2 and "
+"all installed ASCOM cameras are shown. If your camera is not shown, it is "
+"either not supported by PHD2 or its camera driver is not installed. You must "
+"also specify the camera pixel size and guide scope focal length so PHD2 can "
+"compute reasonable guiding parameters for you."
+msgstr ""
+
+#: profile_wizard.cpp:254
+msgid ""
+"Select your mount interface from the list.  This determines how PHD2 will "
+"send guide commands to the mount. For most modern mounts, the ASCOM "
+"interface is a good choice if you are running MS Windows.  The other "
+"interfaces are available for cases where ASCOM isn't available or isn't well "
+"supported by mount firmware.  You should specify the mount guide speed so "
+"PHD2 can calibrate efficiently."
+msgstr ""
+
+#: profile_wizard.cpp:260
+msgid ""
+"The mount interface you chose in the previous step doesn't provide pointing "
+"information, so PHD2 will not be able to automatically adjust guiding for "
+"side-of-pier and declination. You can enable these features by choosing an "
+"'Aux Mount' connection that does provide pointing information.  The Aux "
+"Mount interface will be used only for that purpose and not for sending guide "
+"commands."
+msgstr ""
+"이전 단계에서 선택한 마운트 인터페이스는 포인팅 정보를 제공하지 않으므로 PHD2"
+"는 Dec 및  피어의 방향에 대한 가이딩을 자동으로 조정할 수 없습니다. 포인팅 정"
+"보를 제공하는 'Aux Mount'연결을 선택하여 이러한 기능을 활성화 할 수 있습니"
+"다. Aux Mount 인터페이스는 해당 용도로만 사용되며 가이디 명령은 보내지 않습니"
+"다."
+
+#: profile_wizard.cpp:265
+msgid ""
+"If you have an adaptive optics (AO) device, you can select it here.  The AO "
+"device will be used for high speed, small guiding corrections, while the "
+"mount interface you chose earlier will be used for larger ('bump') "
+"corrections. Calibration of both interfaces will be handled automatically."
+msgstr ""
+"적응 형 광학 (AO) 장치가있는 경우 여기에서 선택하십시오. AO 디바이스는 고속"
+"의 작은 가이딩 캘리브레이션에 사용되며 이전에 선택한 마운트 인터페이스는 더 "
+"큰 ( '범프') 교정에 사용됩니다. 두 인터페이스의 보정은 자동으로 처리됩니다."
+
+#: profile_wizard.cpp:269
+msgid ""
+"Your profile is complete and ready to save.  Give it a name and, optionally, "
+"build a dark-frame library for it.  This is strongly recommended for best "
+"results in both calibration and guiding. You can always change the settings "
+"in this new profile by clicking on the PHD2 USB icon, selecting the profile "
+"name you just entered, and making your changes there. If you are new to PHD2 "
+"or encounter problems, please use the 'Help' function for assistance."
+msgstr ""
+"프로파일이 완전하고 저장 준비가되었습니다. 이름을 지정하고 선택적으로 다크 프"
+"레임 라이브러리를 만듭니다. 이는 캘리브레이션 및 가이드 할 때 최상의 결과를 "
+"얻기위해 강력히 권장됩니다. PHD2 USB 아이콘을 클릭하고 방금 입력 한 프로파일 "
+"이름을 선택한 다음 변경 사항을 적용하여 이 새 프로파일의 설정을 언제든지 변경"
+"할 수 있습니다. PHD2를 처음 사용하거나 문제가 발생하면 '도움말'기능을 사용하"
+"여 도움을 받으십시오."
+
+#: profile_wizard.cpp:308
+msgid ""
+"Please specify camera type, guider focal length, and guide camera pixel size"
+msgstr ""
+"카메라 유형, 가이드의 초점 길이 및 가이드 카메라 픽셀 크기를 지정하십시오."
+
+#: profile_wizard.cpp:313
+msgid "Please select a mount type to handle guider commands"
+msgstr "가이드 명령을 처리 할 마운트 유형을 선택하십시오."
+
+#: profile_wizard.cpp:323
+msgid "Please specify a name for the profile."
+msgstr "프로파일 이름을 지정하십시오."
+
+#: profile_wizard.cpp:327
+msgid ""
+"There is already a profile with that name. Please choose a different name."
+msgstr "해당 이름의 프로파이이 이미 있습니다. 다른 이름을 선택하십시오."
+
+#: profile_wizard.cpp:368
+msgid "Welcome to the PHD2 'first light' wizard"
+msgstr "PHD2 첫 번째 마법사에 오신 것을 환영합니다."
+
+#: profile_wizard.cpp:373
+msgid "Choose a Guide Camera"
+msgstr "가이드 카메라를 선택하십시오 "
+
+#: profile_wizard.cpp:375
+msgid "Guide Camera:"
+msgstr "가이드 카메라:"
+
+#: profile_wizard.cpp:387
+msgid ""
+"Select your guide camera and specify the optical properties of your guiding "
+"set-up"
+msgstr "가이드 카메라를 선택하고 가이드 설정의 광학 특성을 지정하십시오"
+
+#: profile_wizard.cpp:391
+msgid "Choose a Mount Connection"
+msgstr "마운트 연결을 선택 하십시오 "
+
+#: profile_wizard.cpp:393
+msgid "Mount:"
+msgstr "마운트:"
+
+#: profile_wizard.cpp:400
+msgid ""
+"Select your mount connection - this will determine how guide signals are "
+"transmitted"
+msgstr "마운트 연결 선택 - 가이드 신호 전송 방법 결정"
+
+#: profile_wizard.cpp:410
+msgid "Choose an Auxiliary Mount Connection (optional)"
+msgstr "Aux 마운트 연결 선택 (선택 사항)"
+
+#: profile_wizard.cpp:411
+msgid "Aux Mount:"
+msgstr "Aux 마운트 "
+
+#: profile_wizard.cpp:415
+msgid ""
+"Since your primary mount connection does not report pointing position, you "
+"may want to choose an 'Aux Mount' connection"
+msgstr ""
+"기본 마운트 연결이 포인팅 위치를보고하지 않기 때문에 'Aux 마운트'연결을 선택"
+"할 수 있습니다"
+
+#: profile_wizard.cpp:419
+msgid "Choose an Adaptive Optics Device (optional)"
+msgstr "적응 광학 장치 선택 (선택 사항)"
+
+#: profile_wizard.cpp:420
+msgid "AO:"
+msgstr "AO:"
+
+#: profile_wizard.cpp:424
+msgid "Specify your adaptive optics device if desired"
+msgstr "원하는 경우 적응 광학 장치를 지정하십시오."
+
+#: profile_wizard.cpp:435
+msgid "Finish Creating Your New Profile"
+msgstr "새 프로파이 작성 완료"
+
+#: profile_wizard.cpp:438
+msgid "Finish"
+msgstr "완료 "
+
+#: profile_wizard.cpp:439
+msgid "Finish creating the equipment profile"
+msgstr "장비 프로파일 작성 완료"
+
+#: profile_wizard.cpp:440
+msgid ""
+"Enter a name for your profile and optionally launch the process to build a "
+"dark library"
+msgstr ""
+"프로파일의 이름을 입력하고 선택적으로 다크 라이브러리를 작성하는 프로세스를 "
+"시작하십시오."
+
+#: profile_wizard.cpp:558
+msgid "Could not initialize camera"
+msgstr "카메라를 초기화 할 수 없습니다."
+
+#: profile_wizard.cpp:559
+msgid "Connecting to camera..."
+msgstr "카메라 연결 중 ..."
+
+#: profile_wizard.cpp:563
+msgid "Could not connect to camera"
+msgstr "카메라를 연결할 수 없습니다."
+
+#: profile_wizard.cpp:565
+msgid "Camera driver cannot report pixel size"
+msgstr "카메라 드라이버가 픽셀 크기를 보고 할 수 없습니다."
+
+#: profile_wizard.cpp:572
+msgid ""
+". Please enter the correct un-binned pixel size from the camera "
+"documentation or vendor web site."
+msgstr ""
+".카메라 설명서 또는 공급 업체 웹 사이트에서 올바른 픽셀 크기를 입력하십시오."
+
+#: profile_wizard.cpp:572
+msgid "Detect Pixel Size"
+msgstr "픽셀 크기 감지"
+
+#: profile_wizard.cpp:598
+msgid "Could not initialize mount"
+msgstr ""
+
+#: profile_wizard.cpp:599
+msgid "Connecting to mount..."
+msgstr ""
+
+#: profile_wizard.cpp:603
+msgid "Could not connect to mount"
+msgstr ""
+
+#: profile_wizard.cpp:605
+msgid "Mount driver cannot report guide speeds"
+msgstr ""
+
+#: profile_wizard.cpp:613
+msgid ". Please enter the correct mount guide speed"
+msgstr ""
+
+#: profile_wizard.cpp:613
+msgid "Detect mount guide speed"
+msgstr ""
+
+#: Refine_DefMap.cpp:65
+msgid "Refine Bad-pixel Map"
+msgstr "불량화소 지도 조정 "
+
+#: Refine_DefMap.cpp:73
+msgid "Rebuild Master Dark Frame"
+msgstr "마스터 다크 프레임 재작성 "
+
+#: Refine_DefMap.cpp:74
+msgid ""
+"Click to re-acquire the master dark frames needed to compute an initial bad-"
+"pixel map"
+msgstr ""
+"초기 불량 화소 지도를 계산하는 데 필요한 마스터 다크 프레임을 다시 획득하려"
+"면 클릭하십시오."
+
+#: Refine_DefMap.cpp:79
+msgid "Show Master Dark Details"
+msgstr "마스터 다크 세부 정보 표시"
+
+#: Refine_DefMap.cpp:80
+msgid ""
+"Click to display detailed statistics of master dark frame used to compute "
+"bad-pixel map"
+msgstr ""
+"불량 화소지도를 계산하는 데 사용 된 마스터 다크 프레임의 자세한 통계를 표시하"
+"려면 클릭하십시오."
+
+#: Refine_DefMap.cpp:84
+msgid "Show defect pixels"
+msgstr "불량화소 보기 "
+
+#: Refine_DefMap.cpp:85
+msgid "Check to show hot/cold pixels in the main image window."
+msgstr "기본 이미지 창에 고/저 픽셀을 표시하려면 선택합니다."
+
+#: Refine_DefMap.cpp:90
+msgid "General Information"
+msgstr "일반정보 "
+
+#: Refine_DefMap.cpp:100
+msgid "Time:"
+msgstr "시간:"
+
+#: Refine_DefMap.cpp:102
+msgid "Camera:"
+msgstr "카메라:"
+
+#: Refine_DefMap.cpp:106 Refine_DefMap.cpp:111
+msgid "Master Dark Exposure Time:"
+msgstr "마스터 다크 노출 시간:"
+
+#: Refine_DefMap.cpp:108 Refine_DefMap.cpp:112
+msgid "Master Dark Exposure Count:"
+msgstr "마스터 다크 노출 회수 :"
+
+#: Refine_DefMap.cpp:115
+msgid "Aggressiveness, hot pixels:"
+msgstr "적극성, 핫픽셀:"
+
+#: Refine_DefMap.cpp:117
+msgid "Aggressiveness, cold pixels:"
+msgstr "적극성, 콜드픽셀:"
+
+#: Refine_DefMap.cpp:121
+msgid "Mean:"
+msgstr "평균:"
+
+#: Refine_DefMap.cpp:123
+msgid "Standard Deviation:"
+msgstr "표준편차:"
+
+#: Refine_DefMap.cpp:127
+msgid "Median:"
+msgstr "중앙값:"
+
+#: Refine_DefMap.cpp:129
+msgid "Median Absolute Deviation:"
+msgstr "중앙값 절대 편차 :"
+
+#: Refine_DefMap.cpp:136
+msgid "Results"
+msgstr "결과 "
+
+#: Refine_DefMap.cpp:146
+msgid "Hot pixel count:"
+msgstr "핫 픽셀 수 :"
+
+#: Refine_DefMap.cpp:148
+msgid "Cold pixel count:"
+msgstr "콜드 픽셀 수 :"
+
+#: Refine_DefMap.cpp:152
+msgid "Manually added pixels"
+msgstr "수동으로 픽셀 추가"
+
+#: Refine_DefMap.cpp:163
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'hot', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"이 슬라이더를 움직여 '핫'으로 처리 할 픽셀 수를 늘리거나 줄인 다음 '생성'을 "
+"클릭하여 새 불량 픽셀 지도를 작성하고 로드하십시오"
+
+#: Refine_DefMap.cpp:167
+msgid ""
+"Move this slider to increase or decrease the number of pixels that will be "
+"treated as 'cold', then click on 'generate' to build and load the new bad-"
+"pixel map"
+msgstr ""
+"이 슬라이더를 움직여 '콜드'로 처리 할 픽셀 수를 늘리거나 줄인 다음 '생성'을 "
+"클릭하여 새 불량 픽셀 지도를 작성하고 로드하십시오"
+
+#: Refine_DefMap.cpp:169
+msgid "Cold pixels"
+msgstr "콜드픽셀 "
+
+#: Refine_DefMap.cpp:177
+msgid "Reset parameters to starting point"
+msgstr "매개 변수를 시작점으로 재설정하십시오."
+
+#: Refine_DefMap.cpp:179
+msgid "Generate"
+msgstr "생성 "
+
+#: Refine_DefMap.cpp:181
+msgid ""
+"Use the current aggressiveness settings to build and load a new bad-pixel "
+"map; this will discard any manually added bad pixels"
+msgstr ""
+"현재의 적극성 설정을 사용하여 새로운 불량화소 픽셀 지도 작성하고 로드하십시"
+"오. 이렇게하면 수동으로 추가 된 불량 화소는 무시됩니다."
+
+#: Refine_DefMap.cpp:183
+msgid "Add Bad Pixel"
+msgstr "불량화소 추가 "
+
+#: Refine_DefMap.cpp:185
+msgid ""
+"Click on a bad pixel in the image display; then click on this button to add "
+"it to the in-use bad-pixel map"
+msgstr ""
+"이미지 디스플레이에서 불량 화소를 클릭하십시오. 이 버튼을 클릭하여 사용중인 "
+"불량 화소 지도에 추가하십시오"
+
+#: Refine_DefMap.cpp:205
+msgid "Adjust sliders to increase/decrease pixels marked as bad"
+msgstr "슬라이더를 조정하여 불량으로 표시된 픽셀을 늘리거나 줄입니다."
+
+#: Refine_DefMap.cpp:262
+msgid "Please wait while image statistics are being computed..."
+msgstr "이미지 통계를 계산하는 동안 기다려주십시오 ..."
+
+#: Refine_DefMap.cpp:297
+msgid "Statistics completed..."
+msgstr "통계 완료 ..."
+
+#: Refine_DefMap.cpp:340
+msgid "Building new bad-pixel map"
+msgstr "새로운 불량화소 지도 제작 "
+
+#: Refine_DefMap.cpp:342
+msgid "Saving new bad-pixel map file"
+msgstr "불량화소 지도파일 저장 "
+
+#: Refine_DefMap.cpp:344
+msgid "Loading new bad-pixel map"
+msgstr "새로운 불량화소 지도 로드 "
+
+#: Refine_DefMap.cpp:346
+msgid "New bad-pixel map now being used"
+msgstr "새로운 불량화소 지도가 사용 중입니다."
+
+#: Refine_DefMap.cpp:370
+msgid "Master dark frames NOT rebuilt"
+msgstr "마스터 다크 프레임이 재건되지 않음"
+
+#: Refine_DefMap.cpp:454
+msgid "You must first load a bad-pixel map"
+msgstr "먼저 불량 화소 지도를 로드해야합니다."
+
+#: Refine_DefMap.cpp:459
+#, c-format
+msgid "Bad pixel marked at %d,%d"
+msgstr "불량화소 표시 %d,%d"
+
+#: Refine_DefMap.cpp:465
+msgid "Pixel position not added - no star-like object recognized there"
+msgstr "픽셀 위치가 추가되지 않음 - 그곳ㅇ 별 모양의 객체가 인식되지 않음"
+
+#: Refine_DefMap.cpp:475
+msgid "Settings restored to original values"
+msgstr "설정이 원래 값으로 복원되었습니다."
+
+#: rotator.cpp:146
+msgid "Rotator Settings"
+msgstr "로테이터 설정 "
+
+#: rotator.cpp:172
+msgid "Reverse sign of angle"
+msgstr "각도의 역 기호"
+
+#: rotator_ascom.cpp:150
+msgid ""
+"Could not create ASCOM rotator object. See the debug log for more "
+"information."
+msgstr ""
+"ASCOM 로테이터 개체를 생성 할 수 없습니다. 자세한 정보는 디버그 로그를 참조하"
+"십시오."
+
+#: rotator_ascom.cpp:235
+msgid "ASCOM driver problem -- cannot get rotator position"
+msgstr "ASCOM 드라이버 문제 - 로테이터 위치를 얻을 수 없습니다."
+
+#: runinbg.cpp:112
+msgid "The operation was canceled"
+msgstr "작업이 취소되었습니다."
+
+#: scope.cpp:283 scope.cpp:304
+msgid "INDI Mount"
+msgstr "INDI 마운트 "
+
+#: scope.cpp:532
+msgid "Max RA Duration setting"
+msgstr "최대 RA 지속 시간 설정"
+
+#: scope.cpp:532
+msgid "Max Dec Duration setting"
+msgstr "최대 Dec 지속 시간 설정"
+
+#: scope.cpp:534
+#, c-format
+msgid ""
+"Your %s is preventing PHD from making adequate corrections to keep the guide "
+"star locked. Increase the %s to allow PHD2 to make the needed corrections."
+msgstr ""
+"%s가 PHD가 가이드 별을 잠근 상태로 유지하기 위해 적절한 수정을하지 못하게하"
+"고 있습니다. PHD2가 필요한 수정을 할 수 있도록 %s를 증가 시키십시오."
+
+#: scope.cpp:542
+#, c-format
+msgid ""
+"Even using the maximum moves, PHD2 can't properly correct for the large "
+"guide star movements in %s. Guiding will be impaired until you can eliminate "
+"the source of these problems."
+msgstr ""
+"최대 이동을 사용하더라도 PHD2는 %s의 큰 가이드 별 움직임을 올바르게 수정할 "
+"수 없습니다. 이러한 문제의 원인을 제거 할 수있을 때까지 가이드 장애가있습니"
+"다."
+
+#: scope.cpp:791
+msgid "Calibration is based on very few steps, so accuracy is questionable"
+msgstr ""
+"캘리브레이션은 매우 적은 단계를 기반으로하므로 정확성에 의문의 여지가 있습니"
+"다."
+
+#: scope.cpp:794
+msgid "Calibration computed RA/Dec axis angles that are questionable"
+msgstr "의심스러운 RA / Dec 축 각도 캘리브레이션 "
+
+#: scope.cpp:797
+msgid ""
+"This calibration is substantially different from the previous one - have you "
+"changed configurations?"
+msgstr ""
+"이 캘리브레이션은 이전의 것과 실질적으로 다릅니다 - 구성을 변경 했습니까?"
+
+#: scope.cpp:800
+msgid "The RA and Dec rates vary by an unexpected amount"
+msgstr "RA 및 Dec 속도는 예상치 못한 양에 따라 다릅니다"
+
+#: scope.cpp:810
+msgid "Details..."
+msgstr "새부내용..."
+
+#: scope.cpp:1012
+msgid "RA Calibration Failed: star did not move enough"
+msgstr "RA 캘리브레이션 실패 : 별이 충분히 움직이지 않았습니다."
+
+#: scope.cpp:1019
+#, c-format
+msgid "West step %3d, dist=%4.1f"
+msgstr "서쪽단계 %3d, dist=%4.1f"
+
+#: scope.cpp:1086
+#, c-format
+msgid "East step %3d, dist=%4.1f"
+msgstr "동쪽단계 %3d, dist=%4.1f"
+
+#: scope.cpp:1147
+msgid "Clearing backlash step 1"
+msgstr "백래시 제거 단계 1"
+
+#: scope.cpp:1184
+#, c-format
+msgid "Clearing backlash step %3d"
+msgstr "백래시 제거 단계 %3d"
+
+#: scope.cpp:1203
+msgid "Backlash Clearing Failed: star did not move enough"
+msgstr "백래시 제거 실패 : 별이 충분히 움직이지 않았습니다."
+
+#: scope.cpp:1248
+msgid "DEC Calibration Failed: star did not move enough"
+msgstr "Dec 캘리브레이션 실패 : 별이 충분히 움직이지 않았습니다."
+
+#: scope.cpp:1255
+#, c-format
+msgid "North step %3d, dist=%4.1f"
+msgstr "북쪽단계 %3d, dist=%4.1f"
+
+#: scope.cpp:1339
+#, c-format
+msgid "South step %3d, dist=%4.1f"
+msgstr "남쪽단계 %3d, dist=%4.1f"
+
+#: scope.cpp:1393
+#, c-format
+msgid "Nudge South %3d"
+msgstr "Nudge South %3d"
+
+#: scope.cpp:1423
+msgid "Calibration complete"
+msgstr "캘리브레이션 완료 "
+
+#: scope.cpp:1569
+msgid "Mount Guide Algorithms"
+msgstr "마운트 가이드 알고리즘 "
+
+#: scope.cpp:1607
+msgid "Calibration step (ms)"
+msgstr "캘리브레이션 스텝(ms)"
+
+#: scope.cpp:1608
+msgid ""
+"How long a guide pulse should be used during calibration? Click \"Calculate"
+"\" to compute a suitable value."
+msgstr ""
+"캘리브레이션 중에 가이드 펄스를 얼마나 오래 사용해야합니까? 적절한 값을 계산"
+"하려면 \"계산\"을 클릭하십시오."
+
+#: scope.cpp:1612
+msgid "Calculate..."
+msgstr "계산 중....."
+
+#: scope.cpp:1613
+msgid ""
+"Click to open the Calibration Step Calculator to help find a good "
+"calibration step size"
+msgstr ""
+"양호한 캘리브레이션 단계 크기를 찾는 데 도움이되는 캘리브레이션 단계 계산기"
+"를 열려면 클릭하십시오."
+
+#: scope.cpp:1620
+msgid "Reverse Dec output after meridian flip"
+msgstr "자오선 플ㄹ 후 역방향 Dec 출력"
+
+#: scope.cpp:1622
+msgid "Check if your mount needs Dec output reversed after a meridian flip"
+msgstr "마운트가 자오선 플립 후 Dec 출력을 반전해야하는지 점검하십시오."
+
+#: scope.cpp:1629
+msgid "Stop guiding when mount slews"
+msgstr "마운트가 이동중일때 가이드를 멈춤 "
+
+#: scope.cpp:1631
+msgid "When checked, PHD will stop guiding if the mount starts slewing"
+msgstr "이 옵션을 선택하면 마운트가 이동하면 가이드를 멈 춥니 다."
+
+#: scope.cpp:1637
+msgid "Assume Dec orthogonal to RA"
+msgstr "RA와 직각을 이룬다 고 가정하십시오."
+
+#: scope.cpp:1640
+msgid ""
+"Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
+"Prevents RA periodic error from affecting Dec calibration. Option takes "
+"effect when calibrating DEC."
+msgstr ""
+"Dec 축은 캘리브레이션에 관계없이 RA 축에 수직이라고 가정합니다. RA 주기오차"
+"가 Dec 캘리브레이션에 영향을 미치지 않도록합니다. DEC을 캘리브레이션 할 때 옵"
+"션이 적용됩니다."
+
+#: scope.cpp:1644
+msgid "Use backlash comp"
+msgstr "백래시 보상 사용"
+
+#: scope.cpp:1645
+msgid ""
+"Check this if you want to apply a backlash compensation guide pulse when "
+"declination direction is reversed."
+msgstr ""
+"Dec 방향이 반대 일 때 백래시 보정 가이드 펄스를 적용하려면이 옵션을 선택하십"
+"시오."
+
+#: scope.cpp:1648
+msgid "Amount"
+msgstr "양"
+
+#: scope.cpp:1648
+msgid ""
+"Length of backlash correction pulse (mSec). This will be automatically "
+"adjusted based on observed performance."
+msgstr ""
+"백래시 보정 펄스의 길이 (ms). 이는 관측 된 성능에 따라 자동으로 조정됩니다."
+
+#: scope.cpp:1650
+msgid "Use Dec compensation"
+msgstr "Dec 보상 사용 "
+
+#: scope.cpp:1652
+msgid "Automatically adjust RA guide rate based on scope declination"
+msgstr "망원겨의 Dec에 기초하여 RA 가이드 속도 자동 조정"
+
+#: scope.cpp:1657
+msgid "Max RA duration"
+msgstr "최대 RA 지속 시간"
+
+#: scope.cpp:1657
+msgid ""
+"Longest length of pulse to send in RA\n"
+"Default = 2500 ms."
+msgstr ""
+"RA에서 보내는 가장 긴 펄스 길이\n"
+"기본값= 2500ms"
+
+#: scope.cpp:1661
+msgid "Max Dec duration"
+msgstr "최대 Dec 지속 시간"
+
+#: scope.cpp:1661
+msgid ""
+"Longest length of pulse to send in declination\n"
+"Default = 2500 ms.  Increase if drift is fast."
+msgstr ""
+"Dec에서 보내는 가장 긴 펄스 길이\n"
+"기본값= 2500ms"
+
+#: scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+msgid "Off"
+msgstr "Off"
+
+#: scope.cpp:1669
+msgid "Dec guide mode"
+msgstr "Dec 가이드 모드 "
+
+#: scope.cpp:1669
+msgid "Directions in which Dec guide commands will be issued"
+msgstr "Dec 가이드 명령이 발행 될 방향"
+
+#: scope.cpp:1779
+msgid "Mx RA"
+msgstr "Mx RA"
+
+#: scope.cpp:1785
+msgid "Mx DEC"
+msgstr "Mx DEC"
+
+#: scope_ascom.cpp:422
+msgid ""
+"ASCOM driver problem during disconnect, check the debug log for more "
+"information"
+msgstr ""
+"연결 해제 중 ASCOM 드라이버 문제, 자세한 정보는 디버그 로그를 확인하십시오."
+
+#: scope_ascom.cpp:490
+msgid ""
+"ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."
+msgstr ""
+"ASCOM 드라이버는 PulseGuide를 지원하지 않습니다. ASCOM 드라이버 설정을 확인하"
+"십시오."
+
+#: scope_ascom.cpp:633
+msgid ""
+"PulseGuide command to mount has failed - guiding is likely to be ineffective."
+msgstr "PulseGuide 명령을 탑재하지 못했습니다. 지침이 효과적이지 않습니다."
+
+#: scope_ascom.cpp:641
+msgid "Guiding stopped: the scope started slewing."
+msgstr "가이드 중지됨 : 망원경 이동이 시작되었습니다."
+
+#: scope_ascom.cpp:688
+msgid ""
+"ASCOM driver failed checking for slewing, see the debug log for more "
+"information."
+msgstr ""
+"ASCOM 드라이버가 이동을 위한 검사에 실패했습니다. 자세한 정보는 디버그 로그"
+"를 참조하십시오."
+
+#: scope_ascom.cpp:705
+msgid ""
+"ASCOM driver failed calling AbortSlew, see the debug log for more "
+"information."
+msgstr ""
+"ASCOM 드라이버가 AbortSlew 호출에 실패했습니다. 자세한 정보는 디버그 로그를 "
+"참조하십시오."
+
+#: scope_eqmac.cpp:172 scope_equinox.cpp:177
+msgid " responded it's not connected to a mount"
+msgstr " 마운트에 연결되지 않았다"
+
+#: scope_eqmac.cpp:176 scope_equinox.cpp:181
+msgid " not running"
+msgstr " 실행되지 않음"
+
+#: scope_GC_USBST4.cpp:122
+#, c-format
+msgid "Error writing to GC USB ST4: %s(%d)"
+msgstr "GC USB ST4에 쓰는 중 오류가 발생했습니다 : %s (%d)"
+
+#: scope_manual_pointing.cpp:79
+msgid "Approximate telescope declination, degrees"
+msgstr "대략적인 망원경 적위, 도"
+
+#: scope_manual_pointing.cpp:89
+msgid "Side of Pier"
+msgstr "피어 방향 "
+
+#: scope_manual_pointing.cpp:91
+msgid "West (pointing East)"
+msgstr "서쪽(동쪽을 가리킴)"
+
+#: scope_manual_pointing.cpp:92
+msgid ""
+"Telescope is on the West side of the pier, typically pointing East, before "
+"the meridian flip"
+msgstr ""
+"자오선 플립 전에 망원경은 피어의 서쪽에 있으며, 일반적으로 동쪽을 가리킴 "
+
+#: scope_manual_pointing.cpp:96
+msgid "East (pointing West)"
+msgstr "동쪽(서쪽을 가리킴)"
+
+#: scope_manual_pointing.cpp:97
+msgid ""
+"Telescope is on the East side of the pier, typically pointing West, after "
+"the meridian flip"
+msgstr ""
+"자오선 플립 전에 망원경은 피어의 동쪽에 있으며, 일반적으로 서쪽을 가리킴 "
+
+#: scope_manual_pointing.cpp:101
+msgid "Unspecified"
+msgstr "지정되지 않음"
+
+#: scope_manual_pointing.cpp:102
+msgid ""
+"Select Unspecified if you do not want PHD2 to flip your calibration data for "
+"side of pier changes"
+msgstr ""
+"피어의 방향 변경 사항에 대해 PHD2가 캘리브레이션 데이터를 반전하지 않도록하려"
+"면 지정되지 않음을 선택하십시오."
+
+#: scope_manual_pointing.cpp:116
+msgid "Drift Alignment"
+msgstr "표류이탈 "
+
+#: scope_manual_pointing.cpp:125
+msgid "hr"
+msgstr "hr"
+
+#: scope_manual_pointing.cpp:130
+msgid "Telescope's Right Ascension, hours"
+msgstr "망원경 RA, hr "
+
+#: scope_manual_pointing.cpp:135
+msgid "min"
+msgstr "min"
+
+#: scope_manual_pointing.cpp:140
+msgid "Telescope's Right Ascension, minutes"
+msgstr "망원경 RA, min"
+
+#: scope_manual_pointing.cpp:150
+msgid "Latitude ("
+msgstr "위도("
+
+#: scope_manual_pointing.cpp:157
+msgid "Site latitude"
+msgstr "위도 "
+
+#: scope_manual_pointing.cpp:162
+msgid "Longitude ("
+msgstr "경도("
+
+#: scope_manual_pointing.cpp:169
+msgid ""
+"Site longitude, degrees East of Greenwich.  Longitudes West of Greenwich are "
+"negative."
+msgstr "경도, 그리니치 동쪽은 (+), 그리니치 서쪽은 (-)"
+
+#: scope_manual_pointing.cpp:202
+msgid "Ask for coordinates"
+msgstr "좌표 요청 "
+
+#: scope_voyager.cpp:53
+msgid "Connection established"
+msgstr "연결 설정 됨 "
+
+#: socket_server.cpp:105 socket_server.cpp:117
+msgid "Server start failed"
+msgstr "서버 시작 실패"
+
+#: socket_server.cpp:122
+msgid "Server started"
+msgstr "서버 시작 "
+
+#: socket_server.cpp:137
+msgid "Server stopped"
+msgstr "서버 종료 "
+
+#: star_profile.cpp:50
+msgid "Profile"
+msgstr "프로파일 "
+
+#: star_profile.cpp:163
+msgid "Mid row"
+msgstr "Mid row"
+
+#: star_profile.cpp:167
+msgid "Avg row"
+msgstr "Avg row"
+
+#: star_profile.cpp:171
+msgid "Avg col"
+msgstr "Avg col"
+
+#: star_profile.cpp:230 statswindow.cpp:71
+msgid "Peak"
+msgstr "Peak "
+
+#: star_profile.cpp:238 star_profile.cpp:258
+#, c-format
+msgid "%s FWHM: %.2f"
+msgstr "%s FWHM: %.2f"
+
+#: star_profile.cpp:240
+msgid "HFD: "
+msgstr "HFD: "
+
+#: star_profile.cpp:254
+#, c-format
+msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
+msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
+
+#: statswindow.cpp:70
+msgid "RMS"
+msgstr "RMS"
+
+#: statswindow.cpp:75
+msgid " 99.99 (99.99'')"
+msgstr " 99.99 (99.99'')"
+
+#: statswindow.cpp:79
+msgid "Total"
+msgstr "전체 "
+
+#: statswindow.cpp:96
+msgid "RA Osc"
+msgstr "RA Osc"
+
+#: statswindow.cpp:98
+msgid "RA Limited"
+msgstr "RA 제한 "
+
+#: statswindow.cpp:100
+msgid "Dec Limited"
+msgstr "Dec 제한 "
+
+#: statswindow.cpp:102
+msgid "Star lost"
+msgstr "Star lost"
+
+#: statswindow.cpp:106
+msgid "Pier Side"
+msgstr "피어 방향 "
+
+#: statswindow.cpp:109
+msgid "Rotator Pos"
+msgstr "Rotator Pos"
+
+#: statswindow.cpp:113
+msgid "Image size"
+msgstr ""
+
+#: statswindow.cpp:116
+msgid "Field of View"
+msgstr ""
+
+#: statswindow.cpp:118
+msgid "nnn.n x nnn.n arc-min"
+msgstr ""
+
+#: statswindow.cpp:120
+msgid "Camera cooler"
+msgstr "카메라 냉각기 "
+
+#: statswindow.cpp:132
+msgid "Clear graph data and stats"
+msgstr "그래프 데이터 및 통계 지우기"
+
+#: statswindow.cpp:137
+msgid "Select the number of frames of history for stats and the graph"
+msgstr "통계 및 그래프의 기록 프레임 수를 선택하십시오."
+
+#: statswindow.cpp:236
+msgid "Camera error"
+msgstr "카메라 오류 "
+
+#: statswindow.cpp:238 statswindow.cpp:240
+#, c-format
+msgid "%.f"
+msgstr "%.f"
+
+#: statswindow.cpp:268
+msgid " arc-min"
+msgstr ""
+
+#: stepguider.cpp:532
+msgid ""
+"The AO is failing to move and calibration cannot complete. Check the Debug "
+"Log for more information."
+msgstr ""
+"AO가 움직이지 못하고 캘리브레이션이 완료되지 않습니다. 자세한 정보는 디버그 "
+"로그를 확인하십시오."
+
+#: stepguider.cpp:575
+#, c-format
+msgid "Init Calibration: %3d"
+msgstr "초기 캘리브레이셔: %3d"
+
+#: stepguider.cpp:589 stepguider.cpp:624 stepguider.cpp:665
+#, c-format
+msgid "Averaging: %3d"
+msgstr "Averaging: %3d"
+
+#: stepguider.cpp:604
+#, c-format
+msgid "Left Calibration: %3d"
+msgstr "왼쪽 캘리브레이셔: %3d"
+
+#: stepguider.cpp:645
+#, c-format
+msgid "Up Calibration: %3d"
+msgstr "Up 캘리브레이션: %3d"
+
+#: stepguider.cpp:684
+#, c-format
+msgid "Re-centering: %3d"
+msgstr "Re-centering: % 3d"
+
+#: stepguider.cpp:1014
+msgid ""
+"A mount \"bump\" was needed to bring the AO back to its center position,\n"
+"but the bump did not complete in a reasonable amount of time.\n"
+"You probably need to increase the AO Bump Step setting."
+msgstr ""
+"AO를 중앙 위치로 되돌리려면 마운트 \"범프\"가 필요\n"
+"그러나 범프는 적당한 시간 내에 완료되지 않았음\n"
+"AO 범퍼 단계 설정을 늘려야합니다."
+
+#: stepguider.cpp:1220
+msgid "AO Guide Algorithms"
+msgstr "AO 가이드 알고리즘 "
+
+#: stepguider.cpp:1243
+msgid "AO Settings"
+msgstr "AO 설정 "
+
+#: stepguider.cpp:1276
+msgid "AO Travel"
+msgstr "AO Travel"
+
+#: stepguider.cpp:1276
+msgid "Maximum number of steps the AO can move in each direction"
+msgstr "AO가 각 방향으로 이동할 수있는 최대 단계 수"
+
+#: stepguider.cpp:1279
+#, c-format
+msgid ""
+"How many steps should be issued per calibration cycle. Default = %d, "
+"increase for short f/l scopes and decrease for longer f/l scopes"
+msgstr ""
+"캘리브레이션주기 당 얼마나 많은 단계가 필요합니까? 기본값 = % d,  짧은 f/l 범"
+"위에서는 증가하고 더 긴 f/l 범위에서는 감소합니다"
+
+#: stepguider.cpp:1282
+msgid "Cal steps"
+msgstr "캘리브레이션 단계 "
+
+#: stepguider.cpp:1285
+#, c-format
+msgid ""
+"When calibrating, how many samples should be averaged. Default = %d, "
+"increase for worse seeing and small imaging scales"
+msgstr ""
+"캘리브레이션 할 때 몇 개의 샘플을 평균해야합니다. 기본값 = % d, 시잉이 나쁘"
+"고 이미지 스케일이 작으면 증가합니다."
+
+#: stepguider.cpp:1288
+msgid "Samples to average"
+msgstr "평균 샘플"
+
+#: stepguider.cpp:1291
+#, c-format
+msgid ""
+"What percentage of the AO travel can be used before bumping the mount. "
+"Default = %d"
+msgstr "AO travel의 몇 퍼센트가 마운트 범핑 전에 사용되나?  기본값 = % d"
+
+#: stepguider.cpp:1294
+msgid "Bump percentage"
+msgstr "범프 퍼센트 "
+
+#: stepguider.cpp:1297
+#, c-format
+msgid ""
+"How far should a mount bump move the mount between images (in AO steps). "
+"Default = %.2f, decrease if mount bumps cause spikes on the graph"
+msgstr ""
+"마운트 범프가 이미지 사이의 마운트를 얼마나 멀리 움직여야합니까 (AO 단계). 기"
+"본값 = % .2f, 마운트 범프가 그래프에 스파이크를 일으키는 경우 감소"
+
+#: stepguider.cpp:1300
+msgid "Bump steps"
+msgstr "범퍼 단계 "
+
+#: stepguider.cpp:1302
+msgid "Bump on dither"
+msgstr "Bump on dither"
+
+#: stepguider.cpp:1303
+msgid "Bump the mount to return the AO to center at each dither"
+msgstr "AO를 각 디더의 중심으로 되돌리려면 마운트를 범퍼"
+
+#: stepguider.cpp:1305
+msgid "Clear AO calibration"
+msgstr "AO 캘리브레이셔 지우기"
+
+#: stepguider.cpp:1308
+msgid ""
+"Clear the current AO calibration data - calibration will be re-done when "
+"guiding is started"
+msgstr ""
+"현재 AO 캘리브레이션 데이터 지우기 - 가이드가 시작되면 캘리브레이셔이 다시 수"
+"행됩니다."
+
+#: stepguider.cpp:1309
+msgid "Enable AO corrections"
+msgstr "AO 교정 사용"
+
+#: stepguider.cpp:1311
+msgid ""
+"Keep this checked for AO guiding. Un-check to disable AO corrections and use "
+"only mount guiding"
+msgstr ""
+"AO 가이딩을 체크하십시오.  AO 교정을 비활성화하고 마운트 가이드 만 사용하려"
+"면 선택을 취소하십시오."
+
+#: stepguider_sxao.cpp:103
+#, c-format
+msgid ""
+"This AO device has firmware version %03u which means it needs to be "
+"flashed.\n"
+"It is recommended to load firmware version 101 or earlier.\n"
+"The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-"
+"downloads,\n"
+"contains the v101 firmware."
+msgstr ""
+"이 AO 장치에는 펌웨어 버전 %03u가있어 플래시가 필요함을 의미합니다.\n"
+"펌웨어 버전 101 또는 이전 버전을 로드하는 것이 좋습니다.\n"
+" SXV-AO 유틸리티 v104 또는 신버전ㅇ http://www.sxccd.com/drivers-downloads에"
+"서 다운로드\n"
+"v101 펌웨어가 들어 있습니다."
+
+#: stepguider_sxao.cpp:113
+#, c-format
+msgid ""
+"This version of AO firmware (%03u) limits the travel range of the AO, and "
+"may cause\n"
+"calibration to fail. It is recommended to load firmware version 101 or "
+"earlier.\n"
+"The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-"
+"downloads,\n"
+"contains the v101 firmware."
+msgstr ""
+"이 버전의 AO 펌웨어 (% 03u)는 AO의 이동 범위를 제한하며,\n"
+"캘리브레이션이 실패합니다. 펌웨어 버전 101 또는 이전 버전을로드하는 것이 좋습"
+"니다.\n"
+" SXV-AO 유틸리티 v104 이상은 http://www.sxccd.com/drivers-downloads에서 다운"
+"로드\n"
+"v101 펌웨어가 들어 있습니다."
+
+#: stepguider_sxao.cpp:116
+msgid "Would you like to proceed anyway?"
+msgstr "계속 하시겠습니까?"
+
+#: stepguider_sxao.cpp:166
+msgid "Select serial port"
+msgstr "직렬 포트 선택"
+
+#: stepguider_sxao.cpp:166
+msgid "Serial Port"
+msgstr "직렬 포트"
+
+#: stepguider_sxao_INDI.cpp:103
+#, c-format
+msgid ""
+"We need at least INDI driver %s version 1.12 to get the Firmware version and "
+"the Limit switch states."
+msgstr ""
+"펌웨어 버전과 제한 스위치 상태를 얻으려면 적어도 INDI 드라이버 %s 버전 1.12"
+"가 필요합니다."
+
+#: stepguider_sxao_INDI.cpp:112
+#, c-format
+msgid ""
+"This AO device has firmware version %03u which means it needs to be "
+"flashed.\n"
+"The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-"
+"downloads,\n"
+"contains the firmware."
+msgstr ""
+"이 AO 장치에는 펌웨어 버전 % 03u가있어 플래시가 필요함을 의미합니다.\n"
+"SXV-AO 유틸리티 v104 또는 신버전은 http://www.sxccd.com/drivers-downloads에"
+"서 다운로드\n"
+"펌웨어가 들어 있습니다."
+
+#: target.cpp:71
+msgid "Zoom in"
+msgstr "확대"
+
+#: target.cpp:74
+msgid "Zoom out"
+msgstr "축소 "
+
+#: target.cpp:82
+msgid "Reference Circle"
+msgstr "참조 서클"
+
+#: target.cpp:83
+msgid "Check to display a reference circle"
+msgstr "참조 서클을 표시하려면 선택하십시오."
+
+#: target.cpp:91
+msgid "Radius:"
+msgstr "반지름:"
+
+#: target.cpp:98
+msgid "Reference circle radius"
+msgstr "참조 서클 반경"
+
+#: target.cpp:362 target.cpp:364
+msgid "SkyE"
+msgstr "SkyE"
+
+#: target.cpp:368 target.cpp:370
+msgid "SkyN"
+msgstr "SkyN"
+
+#: testguide.cpp:90
+msgid "Guide Pulse Duration (ms):"
+msgstr "가이드 펄스 지속 시간 (ms) :"
+
+#: testguide.cpp:95
+msgid "Manual guide pulse duration (milliseconds)"
+msgstr "수동 가이드 펄스 지속 시간 (밀리 초)"
+
+#: testguide.cpp:103
+msgid ""
+"Reset the manual guide pulse duration to the default value. The default "
+"value is the calibration step size."
+msgstr ""
+"수동 가이드 펄스 지속 시간을 기본값으로 재설정하십시오. 기본값은 캘리브레이"
+"셔 단계 크기입니다."
+
+#: testguide.cpp:109
+msgid "MOVE1 (+/- 0.5)"
+msgstr "MOVE1 (+/- 0.5)"
+
+#: testguide.cpp:110
+msgid "MOVE2 (+/- 1.0)"
+msgstr "MOVE2 (+/- 1.0)"
+
+#: testguide.cpp:111
+msgid "MOVE3 (+/- 2.0)"
+msgstr "MOVE3 (+/- 2.0)"
+
+#: testguide.cpp:112
+msgid "MOVE4 (+/- 3.0)"
+msgstr "MOVE4 (+/- 3.0)"
+
+#: testguide.cpp:113
+msgid "MOVE5 (+/- 5.0)"
+msgstr "MOVE5 (+/- 5.0)"
+
+#: testguide.cpp:116
+msgid ""
+"Select the dither amount type. Imaging applications have the option of "
+"sending each of these dither amounts to PHD."
+msgstr ""
+"디더 양 유형을 선택하십시오. 이미징 응용 프로그램에는 이러한 디더 양을 PHD로 "
+"보낼 수있는 옵션이 있습니다."
+
+#: testguide.cpp:124
+msgid ""
+"Scale factor for dithering. The dither amount type is multiplied by this "
+"value to get the actual dither amount. Changing the value here affects both "
+"manual dithering and dithering from imaging applications connected to PHD."
+msgstr ""
+"디더링의 스케일 계수. 디더 양 유형에 이 값을 곱하여 실제 디더 값을 얻습니다. "
+"여기서 값을 변경하면 PHD에 연결된 이미징 응용 프로그램에서의 수동 디더링 및 "
+"디더링 모두에 영향을줍니다."
+
+#: testguide.cpp:127
+msgid "RA Only"
+msgstr "RA Only"
+
+#: testguide.cpp:130
+msgid ""
+"Dither on RA axis only. Changing the value here affects both manual "
+"dithering and dithering from imaging applications connected to PHD."
+msgstr ""
+"RA 축에서만 디더링합니다. 여기서 값을 변경하면 PHD에 연결된 이미징 응용 프로"
+"그램에서의 수동 디더링 및 디더링 모두에 영향을줍니다."
+
+#: testguide.cpp:133
+msgid ""
+"Move the guider lock position a random amount on each axis, up to the "
+"maximum value determined by the dither type and the dither scale factor."
+msgstr ""
+"가이더 잠금 위치를 각 축에서 임의의 양만큼(디더 유형 및 디더 스케일 인자에 의"
+"해 결정되는 최대 값까지) 이동하십시오."
+
+#: usImage.cpp:423
+msgid "File does not exist - cannot load "
+msgstr "파일이 존재하지 않습니다 - 로드 할 수 없습니다."
+
+#: usImage.cpp:451
+msgid "Memory allocation error loading FITS file "
+msgstr "FITS 파일을 로드하는 중 메모리 할당 오류"
+
+#: usImage.cpp:456
+msgid "Error reading data from FITS file "
+msgstr "FITS 파일에서 데이터를 읽는 중 오류가 발생했습니다."
+
+#: aui_controls.h:138
+msgid "Mass"
+msgstr "Mass"
+
+#: calreview_dialog.h:48
+msgid "Review Calibration"
+msgstr "캘리브레이셔 검토"
+
+#: calreview_dialog.h:75
+msgid "Restore Calibration"
+msgstr "캘리브레이션 복원 "
+
+#: runinbg.h:80
+msgid "Connecting to Mount..."
+msgstr "마운트 연결 중...."
+
+#: runinbg.h:86
+msgid "Connecting to AO..."
+msgstr "AO 연결 중...."
+
+#: runinbg.h:92
+msgid "Connecting to Camera..."
+msgstr "카메라 연결 중...."
+
+#: runinbg.h:98
+msgid "Connecting to Rotator..."
+msgstr "로테이터 연결 중..."
+
+#~ msgid ""
+#~ "Disconnect nonresponsive\n"
+#~ "camera after (seconds)"
+#~ msgstr ""
+#~ "응답이 없어 연결 끊기\n"
+#~ "카메라 (초)"
+
+#~ msgid "Dec Backlash"
+#~ msgstr "Dec 백래시 "
+
+#~ msgid "Show Graph"
+#~ msgstr "그래프 보기 "
+
+#~ msgid ""
+#~ "Guiding output is disabled and star movement is being measured.  Click "
+#~ "Stop when the RMS values have stabilized (at least 1 minute)."
+#~ msgstr ""
+#~ "가이딩 출력이 비활성화되고 별의 움직임이 측정됩니다. RMS 값이 안정화되면 "
+#~ "(최소 1 분) 중지를 클릭하십시오."
+
+#~ msgid "On Camera"
+#~ msgstr "On Camera"
+
+#~ msgid ""
+#~ "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
+#~ "\n"
+#~ " Basic operation is quite simple (hence the 'PHD')\n"
+#~ "\n"
+#~ "   1) Press the green 'USB' button, select your camera and mount, click "
+#~ "on 'Connect All'\n"
+#~ "   2) Pick an exposure duration from the drop-down list\n"
+#~ "   3) Hit the 'Loop' button, adjust your focus if necessary\n"
+#~ "   4) Click on a star away from the edge or use Alt-S to auto-select a "
+#~ "star\n"
+#~ "   5) Press the guide (green target) icon\n"
+#~ "\n"
+#~ " PHD2 will then calibrate itself and begin guiding.  That's it!\n"
+#~ "\n"
+#~ " To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need "
+#~ "to \n"
+#~ " tweak any options, click on the 'Brain' button to bring up the "
+#~ "'Advanced' \n"
+#~ " panel. Use the 'View' menu to watch your guiding performance. If you "
+#~ "have\n"
+#~ " problems, read the help files! "
+#~ msgstr ""
+#~ "PHD2에 오신 것을 환영합니다 (Push Here Dummy, Gen2).\n"
+#~ "\n"
+#~ "\n"
+#~ "기본 작업은 매우 간단합니다\n"
+#~ "\n"
+#~ "    1) 녹색 'USB'버튼을 눌러 카메라와 마운트를 선택하고 '모두 연결'을 클릭"
+#~ "하십시오.\n"
+#~ "    2) 드롭 다운 목록에서 노출 시간을 선택하십시오.\n"
+#~ "    3) 'Loop'버튼을 누르고 필요한 경우 초점을 조정하십시오.\n"
+#~ "    4) 가장자리에서 멀리있는 별을 클릭하거나 Alt-S를 사용하여 별을 자동 선"
+#~ "택하십시오\n"
+#~ "    5) 가이드 (녹색 타겟) 아이콘을 누릅니다.\n"
+#~ "\n"
+#~ "  그러면 PHD2가 캘리브레이션을 하고 가이딩 시작합니다.\n"
+#~ "\n"
+#~ "   가이딩을 중지하려면 'Loop'또는 'Stop'버튼을 누르기 만하면됩니다. 필요"
+#~ "한 경우\n"
+#~ "  'Brain'버튼을 클릭하면 '고급' 창이 나옴\n"
+#~ "  '보기'메뉴를 사용하여 가이드 성능을 확인하십시오. \n"
+#~ "  문제가 있다면 도움말 파일을 읽으십시오! "
+
+#~ msgid ""
+#~ "Select your guide camera from the list.  All cameras supported by PHD2 "
+#~ "and all installed ASCOM cameras are shown. If your camera is not shown, "
+#~ "it is either not supported by PHD2 or its camera driver is not installed. "
+#~ "You must also specify the camera pixel size, guide scope focal length, "
+#~ "and mount guide speed so PHD2 can compute reasonable default settings for "
+#~ "you."
+#~ msgstr ""
+#~ "목록에서 가이드 카메라를 선택하십시오. PHD2가 지원하는 모든 카메라와 설치"
+#~ "된 모든 ASCOM 카메라가 표시됩니다. 카메라가 보이지 않으면 PHD2에서 지원하"
+#~ "지 않거나 카메라 드라이버가 설치되어 있지 않습니다. PHD2가 적절한 기본 설"
+#~ "정을 계산할 수 있도록 카메라 픽셀 크기, 가이드 범위 초점 길이 및 마운트 가"
+#~ "이드 속도를 지정해야합니다."
+
+#~ msgid ""
+#~ "Select your mount interface from the list.  This determines how PHD2 will "
+#~ "move the telescope and get pointing information. For most modern mounts, "
+#~ "the ASCOM interface is a good choice if you are running MS Windows.  The "
+#~ "other interfaces are available for cases where ASCOM is not available or "
+#~ "isn't well supported by mount firmware."
+#~ msgstr ""
+#~ "목록에서 마운트 인터페이스를 선택하십시오. 이것은 PHD2가 망원경을 움직이"
+#~ "고 지시 정보를 얻는 방법을 결정합니다. 최신 마운트의 경우  MS Windows를 사"
+#~ "용하는 경우 ASCOM 인터페이스는 좋은 선택입니다. 다른 인터페이스는 ASCOM을 "
+#~ "사용할 수 없거나 마운트 펌웨어가 잘 지원되지 않는 경우에 사용할 수 있습니"
+#~ "다."
