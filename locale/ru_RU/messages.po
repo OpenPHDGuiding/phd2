@@ -219,6 +219,8 @@ msgstr "Люфт не может быть измерен - перезапуст�
 #: backlash_comp.cpp:449
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
+"Невозможно измерить люфт - значение скорости гидирования по склонению "
+"недоступно"
 
 #: backlash_comp.cpp:463
 #, c-format
@@ -1407,7 +1409,7 @@ msgstr "Сбой доступа к камере ZWP ASI."
 
 #: cam_ZWO.cpp:224
 msgid "Failed to initizlize ZWO ASI Camera."
-msgstr ""
+msgstr "Сбой инициализации камеры ZWO."
 
 #: camcal_import_dialog.cpp:57
 #, c-format
@@ -1585,7 +1587,7 @@ msgstr "Заданное значение температуры холодил�
 msgid ""
 "Disconnect nonresponsive          \n"
 "camera after (seconds)"
-msgstr ""
+msgstr "Отключить не отвечающую камеру через (сек)"
 
 #: camera.cpp:891
 #, c-format
@@ -2382,6 +2384,9 @@ msgid ""
 "driver, directly from the camera or AO, or via one of the GPxxx devices. An "
 "ASCOM connection is recommended."
 msgstr ""
+"Задать способ посылки монтировке гидирующих команд - через драйвера ASCOM "
+"или Indi, напрямую с камеры или АО или через одно из устройств GPxxx. "
+"Предпочтительнее использовать ASCOM. "
 
 #: gear_dialog.cpp:258
 msgid "Mount Setup"
@@ -3148,7 +3153,7 @@ msgstr " -999.99 пикс/мин (-999.99 угл. сек/мин )"
 
 #: guiding_assistant.cpp:282
 msgid " 9.99 px ( 9.99 arc-sec)"
-msgstr ""
+msgstr " 9.99 пикс ( 9.99 угл. сек.)"
 
 #: guiding_assistant.cpp:284
 msgid "Measurement Status"
@@ -3232,7 +3237,7 @@ msgstr "Советы"
 
 #: guiding_assistant.cpp:414
 msgid "Show Backlash Graph"
-msgstr ""
+msgstr "Показать график люфта"
 
 #: guiding_assistant.cpp:415
 msgid "Show graph of backlash measurement points"
@@ -3363,6 +3368,8 @@ msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 2 minutes)."
 msgstr ""
+"Гидирование отключено для измерения движений звезды. Нажмите 'Остановить', "
+"когда среднеквадратичные значения стабилизируются (не менее одной минуты)."
 
 #: guiding_assistant.cpp:576
 msgid ""
@@ -4422,6 +4429,28 @@ msgid ""
 " panel. Use the 'View' menu to watch your guiding performance. If you have\n"
 " problems, read the 'Best Practices' document and the help files! "
 msgstr ""
+"Добро пожаловать в программу гидирования PHD2 (Push Here Dummy 2го "
+"поколения)\n"
+"\n"
+"Работать с ней очень просто (поскольку 'PHD')\n"
+"\n"
+"   1) Нажмите кнопку 'Камера', укажите свои камеру и монтировку и нажмите \n"
+"         'Подключить всё'\n"
+"   2) В раскрывающемся меню выберите продолжительность экспозиции\n"
+"   3) Нажмите кнопку 'Петля', сфокусируйтесь, если нужно\n"
+"   4) Выберите звезду подальше от края поля или используйте Alt-S, чтобы "
+"сделать \n"
+"        это автоматически\n"
+"   5) Нажмите иконку PHD (стрела в мишени)\n"
+"\n"
+" PHD2 откалибруется и начнёт гидировать\n"
+"\n"
+" Чтобы закончить гидирование, нажмите кнопки 'Петля' или 'STOP'. Чтобы "
+"изменить\n"
+" настройки, щёлкните по иконке 'Мозг'. Используйте пункты меню 'Вид' для "
+"задания \n"
+" режимов просмотра гидирования. \n"
+" А возникнут проблемы - читайте справку!"
 
 #: myframe_events.cpp:110
 msgid "Instructions"
@@ -4737,7 +4766,7 @@ msgstr ""
 
 #: profile_wizard.cpp:166
 msgid "Connect to mount and detect guide speed"
-msgstr ""
+msgstr "Подключиться к монтировке и узнать скорость гидирования"
 
 #: profile_wizard.cpp:170
 msgid "Mount guide speed (n.n x sidereal)"
@@ -4800,6 +4829,11 @@ msgid ""
 "also specify the camera pixel size and guide scope focal length so PHD2 can "
 "compute reasonable guiding parameters for you."
 msgstr ""
+"Выберите свою гидирующую камеру из списка.  Если ваша камера не "
+"отображается, то она не поддерживается PHD2 или же её драйвер не установлен. "
+"Также необходимо указать размер пикселя сенсора камеры, фокусное расстояние "
+"гидирующего телескопа и скорость гидирования монтировки, чтобы PHD2 смог "
+"рассчитать подходящие значения по умолчанию."
 
 #: profile_wizard.cpp:254
 msgid ""
@@ -4810,6 +4844,11 @@ msgid ""
 "supported by mount firmware.  You should specify the mount guide speed so "
 "PHD2 can calibrate efficiently."
 msgstr ""
+"Выберите интерфейс монтировки из списка, чтобы определить, как PHD2 будет "
+"управлять телескопом и получать от него информацию. Если Вы работаете под "
+"Windows, то интерфейс ASCOM - хороший выбор для большинства современных "
+"монтировок. Если ASCOM недоступен или плохо поддерживается ПО монтировки, "
+"можно выбрать другой интерфейс."
 
 #: profile_wizard.cpp:260
 msgid ""
@@ -4983,27 +5022,27 @@ msgstr "Определить размер пикселя"
 
 #: profile_wizard.cpp:598
 msgid "Could not initialize mount"
-msgstr ""
+msgstr "Невозможно проинициализировать монтировку"
 
 #: profile_wizard.cpp:599
 msgid "Connecting to mount..."
-msgstr ""
+msgstr "Подключение монтировки.."
 
 #: profile_wizard.cpp:603
 msgid "Could not connect to mount"
-msgstr ""
+msgstr "Невозможно подключиться к монтировке"
 
 #: profile_wizard.cpp:605
 msgid "Mount driver cannot report guide speeds"
-msgstr ""
+msgstr "Драйвер монтировки не может выдать скорость гидирования"
 
 #: profile_wizard.cpp:613
 msgid ". Please enter the correct mount guide speed"
-msgstr ""
+msgstr ". Введите правильную скорость гидирования монтировки"
 
 #: profile_wizard.cpp:613
 msgid "Detect mount guide speed"
-msgstr ""
+msgstr "Определить скорость гидирования монтировки"
 
 #: Refine_DefMap.cpp:65
 msgid "Refine Bad-pixel Map"
@@ -5690,15 +5729,15 @@ msgstr "Положение поворотного устройства"
 
 #: statswindow.cpp:113
 msgid "Image size"
-msgstr ""
+msgstr "Размер изображения"
 
 #: statswindow.cpp:116
 msgid "Field of View"
-msgstr ""
+msgstr "Поле видимости"
 
 #: statswindow.cpp:118
 msgid "nnn.n x nnn.n arc-min"
-msgstr ""
+msgstr "nnn.n x nnn.n угл. мин."
 
 #: statswindow.cpp:120
 msgid "Camera cooler"
@@ -5723,7 +5762,7 @@ msgstr "%.f"
 
 #: statswindow.cpp:268
 msgid " arc-min"
-msgstr ""
+msgstr "угл. мин."
 
 #: stepguider.cpp:532
 msgid ""
@@ -6078,732 +6117,3 @@ msgstr "Подключение камеры..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
-
-#~ msgid ""
-#~ "Disconnect nonresponsive\n"
-#~ "camera after (seconds)"
-#~ msgstr "Отключить не отвечающую камеру через (сек)"
-
-#~ msgid "Dec Backlash"
-#~ msgstr "Люфт Dec"
-
-#~ msgid "Show Graph"
-#~ msgstr "Показать график"
-
-#~ msgid ""
-#~ "Guiding output is disabled and star movement is being measured.  Click "
-#~ "Stop when the RMS values have stabilized (at least 1 minute)."
-#~ msgstr ""
-#~ "Гидирование отключено для измерения движений звезды. Нажмите "
-#~ "'Остановить', когда среднеквадратичные значения стабилизируются (не менее "
-#~ "одной минуты)."
-
-#~ msgid "On Camera"
-#~ msgstr "На камере"
-
-#~ msgid ""
-#~ "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
-#~ "\n"
-#~ " Basic operation is quite simple (hence the 'PHD')\n"
-#~ "\n"
-#~ "   1) Press the green 'USB' button, select your camera and mount, click "
-#~ "on 'Connect All'\n"
-#~ "   2) Pick an exposure duration from the drop-down list\n"
-#~ "   3) Hit the 'Loop' button, adjust your focus if necessary\n"
-#~ "   4) Click on a star away from the edge or use Alt-S to auto-select a "
-#~ "star\n"
-#~ "   5) Press the guide (green target) icon\n"
-#~ "\n"
-#~ " PHD2 will then calibrate itself and begin guiding.  That's it!\n"
-#~ "\n"
-#~ " To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need "
-#~ "to \n"
-#~ " tweak any options, click on the 'Brain' button to bring up the "
-#~ "'Advanced' \n"
-#~ " panel. Use the 'View' menu to watch your guiding performance. If you "
-#~ "have\n"
-#~ " problems, read the help files! "
-#~ msgstr ""
-#~ "Добро пожаловать в программу гидирования PHD2 (Push Here Dummy 2го "
-#~ "поколения)\n"
-#~ "\n"
-#~ "Работать с ней очень просто (потому и 'PHD')\n"
-#~ "\n"
-#~ "  1) Нажмите кнопку 'USB', укажите свои камеру и монтировку и нажмите "
-#~ "'Подключить всё'\n"
-#~ "  2) В раскрывающемся меню выберите продолжительность экспозиции\n"
-#~ "  3) Нажмите кнопку 'Петля', сфокусируйтесь, если нужно\n"
-#~ "  4) Выберите звезду подальше от края поля или используйте Alt-S, чтобы "
-#~ "сделать  это автоматически\n"
-#~ "  5) Нажмите иконку PHD (стрела в мишени)\n"
-#~ "\n"
-#~ "PHD2 откалибруется и начнёт гидировать\n"
-#~ "\n"
-#~ " Чтобы закончить гидирование, нажмите кнопки 'Петля' или 'STOP'. Чтобы "
-#~ "изменить\n"
-#~ " настройки, щёлкните по иконке 'Мозг'. Используйте пункты меню 'Вид' для "
-#~ "задания \n"
-#~ " режимов просмотра гидирования. \n"
-#~ " А возникнут проблемы - читайте справку!"
-
-#~ msgid ""
-#~ "Select your guide camera from the list.  All cameras supported by PHD2 "
-#~ "and all installed ASCOM cameras are shown. If your camera is not shown, "
-#~ "it is either not supported by PHD2 or its camera driver is not installed. "
-#~ "You must also specify the camera pixel size, guide scope focal length, "
-#~ "and mount guide speed so PHD2 can compute reasonable default settings for "
-#~ "you."
-#~ msgstr ""
-#~ "Выберите свою гидирующую камеру из списка.  Если ваша камера не "
-#~ "отображается, то она не поддерживается PHD2 или же её драйвер не "
-#~ "установлен. Также необходимо указать размер пикселя сенсора камеры, "
-#~ "фокусное расстояние гидирующего телескопа и скорость гидирования "
-#~ "монтировки, чтобы PHD2 смог рассчитать подходящие значения по умолчанию."
-
-#~ msgid ""
-#~ "Select your mount interface from the list.  This determines how PHD2 will "
-#~ "move the telescope and get pointing information. For most modern mounts, "
-#~ "the ASCOM interface is a good choice if you are running MS Windows.  The "
-#~ "other interfaces are available for cases where ASCOM is not available or "
-#~ "isn't well supported by mount firmware."
-#~ msgstr ""
-#~ "Выберите интерфейс монтировки из списка, чтобы определить, как PHD2 будет "
-#~ "управлять телескопом и получать от него информацию. Если Вы работаете под "
-#~ "Windows, то интерфейс ASCOM - хороший выбор для большинства современных "
-#~ "монтировок. Если ASCOM недоступен или плохо поддерживается ПО монтировки, "
-#~ "можно выбрать другой интерфейс."
-
-#~ msgid "Failed to find the ASCOM Chooser. Make sure it is installed"
-#~ msgstr "Невозможно найти ASCOM Chooser. Проверьте, что он установлен"
-
-#~ msgid ""
-#~ "Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"
-#~ msgstr "Сбой установки типа камеры. Что-то неладное с ASCOM"
-
-#~ msgid "Failed to run the Camera Chooser. Something is wrong with ASCOM"
-#~ msgstr "Сбой запуска выбора камеры. Что-то неладное с ASCOM"
-
-#~ msgid ""
-#~ "Don't show\n"
-#~ "this again"
-#~ msgstr ""
-#~ "Не показывать\n"
-#~ "это больше"
-
-#~ msgid ""
-#~ "Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"
-#~ msgstr "Сбой установки типа поворотного устройства. Что-то неладное с ASCOM"
-
-#~ msgid "Failed to run the Rotator Chooser. Something is wrong with ASCOM"
-#~ msgstr "Сбой запуска выбора поворотного устройства. Что-то неладное с ASCOM"
-
-#~ msgid ""
-#~ "Failed to set the Chooser's type to Telescope. Something is wrong with "
-#~ "ASCOM"
-#~ msgstr "Сбой установки типа телескопа. Что-то неладное с ASCOM"
-
-#~ msgid "Failed to run the Telescope Chooser. Something is wrong with ASCOM"
-#~ msgstr "Сбой запуска выбора телескопа. Что-то неладное с ASCOM"
-
-#~ msgid ""
-#~ "The RA and Declination angles computed in the calibration are "
-#~ "questionable.  Normally, these angles will be nearly perpendicular, "
-#~ "having an 'orthogonality error' of less than 10 degrees.  In this "
-#~ "calibration, your error was %s degrees, which is often caused by poor "
-#~ "polar alignment or a large periodic error in RA."
-#~ msgstr ""
-#~ "Вычисленные во время калибровки направления прямого восхождения и "
-#~ "склонения сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-#~ "ортогональности' составляет менее 10 градусов. Сейчас же ошибка "
-#~ "составляет %s градусов, что часто вызвано недостаточным выравниванием "
-#~ "полюса или большой периодической ошибкой по прямому восхождению."
-
-#~ msgid "calibration failed (primary)"
-#~ msgstr "сбой калибровки (первичной)"
-
-#~ msgid "calibration failed (secondary)"
-#~ msgstr "сбой калибровки (вторичной)"
-
-#~ msgid "Warning"
-#~ msgstr "Внимание!"
-
-#~ msgid "Taking dark frame"
-#~ msgstr "Получение темнового кадра"
-
-#~ msgid "&About...\tF1"
-#~ msgstr "&О программе...\tF1"
-
-#~ msgid "&Contents"
-#~ msgstr "Оглавление"
-
-#~ msgid ""
-#~ "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
-#~ "\n"
-#~ " Operation is quite simple (hence the 'PHD')\n"
-#~ "\n"
-#~ "   1) Press the 'Camera' button, select your camera and mount, click on "
-#~ "'Connect All'\n"
-#~ "   2) Pick an exposure duration from the drop-down list\n"
-#~ "   3) Hit the 'Loop' button, adjust your focus if necessary\n"
-#~ "   4) Click on a star away from the edge or use Alt-S to auto-select a "
-#~ "star\n"
-#~ "   5) Press the PHD (archery target) icon\n"
-#~ "\n"
-#~ " PHD2 will then calibrate itself and begin guiding.  That's it!\n"
-#~ "\n"
-#~ " To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need "
-#~ "to \n"
-#~ " tweak any options, click on the 'Brain' button to bring up the "
-#~ "'Advanced' \n"
-#~ " panel. Use the 'View' menu to watch your guiding performance. If you "
-#~ "have\n"
-#~ " problems, read the help files! "
-#~ msgstr ""
-#~ "Добро пожаловать в программу гидирования PHD2 (Push Here Dummy 2го "
-#~ "поколения)\n"
-#~ "\n"
-#~ "Работать с ней очень просто (поскольку 'PHD')\n"
-#~ "\n"
-#~ "   1) Нажмите кнопку 'Камера', укажите свои камеру и монтировку и "
-#~ "нажмите \n"
-#~ "         'Подключить всё'\n"
-#~ "   2) В раскрывающемся меню выберите продолжительность экспозиции\n"
-#~ "   3) Нажмите кнопку 'Петля', сфокусируйтесь, если нужно\n"
-#~ "   4) Выберите звезду подальше от края поля или используйте Alt-S, чтобы "
-#~ "сделать \n"
-#~ "        это автоматически\n"
-#~ "   5) Нажмите иконку PHD (стрела в мишени)\n"
-#~ "\n"
-#~ " PHD2 откалибруется и начнёт гидировать\n"
-#~ "\n"
-#~ " Чтобы закончить гидирование, нажмите кнопки 'Петля' или 'STOP'. Чтобы "
-#~ "изменить\n"
-#~ " настройки, щёлкните по иконке 'Мозг'. Используйте пункты меню 'Вид' для "
-#~ "задания \n"
-#~ " режимов просмотра гидирования. \n"
-#~ " А возникнут проблемы - читайте справку!"
-
-#~ msgid ""
-#~ "Length of backlash correction pulse (mSec). This will be automatically "
-#~ "decreased if over-shoot corrections are observed."
-#~ msgstr ""
-#~ "Длительность импульса поправки люфта (мсек). Может быть увеличена "
-#~ "автоматически при избыточных поправках."
-
-#~ msgid "Check to only download subframes (ROIs) if your camera supports it"
-#~ msgstr "Включите только если камера поддерживает подкадры"
-
-#~ msgid ""
-#~ "Guide camera pixel size in microns. Used with the guide telescope focal "
-#~ "length to display guiding error in arc-seconds."
-#~ msgstr ""
-#~ "Размер пикселей гидирующей камеры. Используется с фокусным расстоянием "
-#~ "гидирующего телескопа для отображения ошибки гидирования в угловых "
-#~ "секундах"
-
-#~ msgid ""
-#~ "Camera gain boost ? Default = 95 % , lower if you experience noise or "
-#~ "wish to guide on a very bright star. Not available on all cameras."
-#~ msgstr ""
-#~ "Чувствительность камеры по умолчанию 95%, уменьшите в случае шумов или "
-#~ "гидирования по очень яркой звезде. Доступно не для всех камер."
-
-#~ msgid ""
-#~ "How many (fractional) pixels must the star move to trigger a guide pulse? "
-#~ "Default = %.2f"
-#~ msgstr ""
-#~ "Количество пикселей, на которое должна сдвинуться звезда, чтобы вызвать "
-#~ "гидирующий импульс. По умолчанию %2f"
-
-#~ msgid ""
-#~ "How many (fractional) pixels must the star move to trigger a guide pulse? "
-#~ "Default = 0.15"
-#~ msgstr ""
-#~ "Количество пикселей, на которое должна сдвинуться звезда, чтобы вызвать "
-#~ "гидирующий импульс. По умолчанию 0.15"
-
-#~ msgid "Cal +"
-#~ msgstr "Калибр. +"
-
-#~ msgid "Калибр."
-#~ msgstr "Kal"
-
-#~ msgid "No cal"
-#~ msgstr "Не откалибр."
-
-#~ msgid "Reset \"Don't Ask Again\" messages"
-#~ msgstr "Сброс сообщения \"Больше не спрашивать\""
-
-#~ msgid ""
-#~ "Restore any messages that were hidden when you checked \"Don't Ask Again"
-#~ "\"."
-#~ msgstr ""
-#~ "Восстановить сообщения, которые были скрыты при нажатии \"Больше не "
-#~ "показывать\"."
-
-#~ msgid "Dither RA only"
-#~ msgstr "Делать подвижки только по RA"
-
-#~ msgid "Dither Scale"
-#~ msgstr "Масштаб подвижек"
-
-#~ msgid "Guide camera pixel size (microns)"
-#~ msgstr "Размер пикселей гидирующей камеры в микронах"
-
-#~ msgid "West step %3d"
-#~ msgstr "на запад %3d"
-
-#~ msgid "East step %3d"
-#~ msgstr "на восток %3d"
-
-#~ msgid "North step %3d"
-#~ msgstr "на север %3d"
-
-#~ msgid "South step %3d"
-#~ msgstr "на юг %3d"
-
-#~ msgid "Guiding..."
-#~ msgstr "Гидирование..."
-
-#~ msgid "Star too close to edge for accurate measurement of backlash"
-#~ msgstr ""
-#~ "Звезда слишком близка к краю, чтобы было можно аккуратно измерить люфт"
-
-#~ msgid "ASCOM driver failed checking IsPulseGuiding"
-#~ msgstr "Драйвер ASCOM не может проверить IsPulseGuiding"
-
-#~ msgid "Could not create ASCOM camera object"
-#~ msgstr "Невозможно создать объект ASCOM camera"
-
-#~ msgid "ASCOM driver missing the CanPulseGuide property"
-#~ msgstr "Драйвер ASCOM не находит свойство CanPulseGuide"
-
-#~ msgid "ASCOM driver missing the CanAbortExposure property"
-#~ msgstr "Драйвер ASCOM не находит свойство CanAbortExposure"
-
-#~ msgid "ASCOM driver missing the CanStopExposure property"
-#~ msgstr "Драйвер ASCOM не находит свойство CanStopExposure"
-
-#~ msgid "ASCOM driver missing the CameraXSize property"
-#~ msgstr "Драйвер ASCOM не находит свойство CameraXSize"
-
-#~ msgid "ASCOM driver missing the CameraYSize property"
-#~ msgstr "Драйвер ASCOM не находит свойство CameraYSize"
-
-#~ msgid "ASCOM driver missing the PixelSizeX property"
-#~ msgstr "Драйвер ASCOM не находит свойство PixelSizeX"
-
-#~ msgid "ASCOM driver missing the PixelSizeY property"
-#~ msgstr "Драйвер ASCOM не находит свойство PixelSizeY"
-
-#~ msgid "Meridian Offset (deg)"
-#~ msgstr "Смещение меридиана в град."
-
-#~ msgid "Declination (deg)"
-#~ msgstr "Склонение в градусах"
-
-#~ msgid "%s %5.2f px %3d ms"
-#~ msgstr "%s %5.2f пикс %3d мсек"
-
-#~ msgid "%s%*s%s %.2f px %d ms"
-#~ msgstr "%s%*s%s %.2f пикс %d мсек"
-
-#~ msgid "Could not create ASCOM rotator object"
-#~ msgstr "Невозможно создать объект поворотного устройства ASCOM"
-
-#~ msgid "angle=%.1f rate=%.3f"
-#~ msgstr "угол=%.1f скорость=%.3f"
-
-#~ msgid "calibration complete"
-#~ msgstr "калибровка завершена"
-
-#~ msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
-#~ msgstr "dx=%4.1f dy=%4.1f дальность=%4.1f"
-
-#~ msgid " connected"
-#~ msgstr "подключено"
-
-#~ msgid "ASCOM driver problem during disconnect"
-#~ msgstr "Проблема драйвера ASCOM при отключении"
-
-#~ msgid "ASCOM driver does not support PulseGuide"
-#~ msgstr "Драйвер ASCOM не может проверить IsPulseGuiding"
-
-#~ msgid "ASCOM driver failed checking Slewing"
-#~ msgstr "Драйвер ASCOM не может проверить Slewing"
-
-#~ msgid "ASCOM driver failed calling AbortSlew"
-#~ msgstr "Драйвер ASCOM не может вызвать AbortSlew"
-
-#~ msgid "angle=%.1f rate=%.2f"
-#~ msgstr "угол=%.1f скорость=%.2f"
-
-#~ msgid "up Calibration: %3d"
-#~ msgstr "калибровка вверх: %3d"
-
-#~ msgid "Finish Calibration: %3d"
-#~ msgstr "Конец калибровки: %3d"
-
-#~ msgid ""
-#~ "The RA and Declination angles computed in the calibration are "
-#~ "questionable.  Normally, these angles will be nearly perpendicular, "
-#~ "having an 'orthogonality error' of less than 10 degrees.  In this "
-#~ "calibration, your error was %s degrees. This could mean the calibration "
-#~ "is inaccurate, perhaps because of small or erratic star movement during "
-#~ "the calibration."
-#~ msgstr ""
-#~ "Истинность вычисленных во время калибровки углы прямого восхождения и "
-#~ "склонения сомнительна. Обычно эти углы почти перпендикулярны с 'ошибкой "
-#~ "ортогональности' не более 10 градусов. Для этой калибровки ошибка "
-#~ "составляет %s градусов. Это значит, что калибровка неточна, возможно из-"
-#~ "за малого или беспорядочного движения звезды во время калибровки."
-
-#~ msgid ""
-#~ "The RA and Declination guiding rates differ by an unexpected amount.  For "
-#~ "your declination of %0.0f degrees, the RA rate should be about %0.0f%% of "
-#~ "the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  This could "
-#~ "mean the calibration is inaccurate, perhaps because of small or erratic "
-#~ "star movement during the calibration."
-#~ msgstr ""
-#~ "Скорость гидирования по склонению отличается от скорости гидирования по "
-#~ "прямому восхождению. Для склонения %0.0f градусов скорость по RA должна "
-#~ "быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
-#~ "%0.0f%%. Поэтому калибровка неточна, возможно, из-за малого или "
-#~ "беспорядочного движения звежды во время калибровки. "
-
-#~ msgid ""
-#~ "Maximum drift rate in right ascension during sampling period; may be "
-#~ "useful for setting exposure time."
-#~ msgstr ""
-#~ "Максимальная скорость дрейфа по прямому восхождению за измеряемый период; "
-#~ "может быть полезна при задании времени экспозиции."
-
-#~ msgid "Timestamp:"
-#~ msgstr "Отметка времени:"
-
-#~ msgid "FWHM: %.2f"
-#~ msgstr "полуширина: %.2f"
-
-#~ msgid "Consider using a brighter star or increasing the exposure time"
-#~ msgstr "Подумайте о выборе звезды поярче или увеличьте выдержку"
-
-#~ msgid "Max Exp"
-#~ msgstr "Макс. эксп."
-
-#~ msgid ""
-#~ "Select your guide camera from the list.  All cameras supported by PHD2 "
-#~ "and all installed ASCOM cameras are shown. If your camera is not shown, "
-#~ "it is either not supported by PHD2 or its camera driver is not installed. "
-#~ "You must also specify the pixel size of the camera and the focal length "
-#~ "of your guide scope so that PHD2 can compute the correct image scale."
-#~ msgstr ""
-#~ "Выберите гидирующую камеру из списка, содержащего все поддержииваемые "
-#~ "PHD2 камеры и все установленные камеры ASCOM. Если камеры нет в списке, "
-#~ "она либо не поддерживается PHD2, либо её драйвер не установлен. Также "
-#~ "необходимо указать размер пикселей камеры и фокусное расстояние "
-#~ "гидирующего телескопа."
-
-#~ msgid "Choose an Auxillary Mount Connection (optional)"
-#~ msgstr "Выберите подключение дополнительной монтировки (не обязательно)"
-
-#~ msgid "No Camera Selected"
-#~ msgstr "Камера не выбрана"
-
-#~ msgid "Mount Settings"
-#~ msgstr "Настройки монтировки"
-
-#~ msgid "No Mount Selected"
-#~ msgstr "Монтировка не выбрана"
-
-#~ msgid "Select camera"
-#~ msgstr "Выбор камеры"
-
-#~ msgid "Which DSI camera?"
-#~ msgstr "Какая камера DSI?"
-
-#~ msgid "Select SX camera"
-#~ msgstr "Выбрать камеру SX"
-
-#~ msgid "Aggression"
-#~ msgstr "Агрессивность"
-
-#~ msgid "Aggression factor, percent. Default = %.f%%"
-#~ msgstr "Коэффициент агрессивности в процентах. По умолчанию %.f%%"
-
-#~ msgid "Always Scale Images"
-#~ msgstr "Всегда масштабировать изображения"
-
-#~ msgid "Star mass change detection"
-#~ msgstr "Слежение за изменением звёздной величины"
-
-#~ msgid ""
-#~ "Check to enable star mass change detection. When enabled, PHD skips "
-#~ "frames when the guide star mass changes by an amount greater than the "
-#~ "Star mass tolerance setting."
-#~ msgstr ""
-#~ "Включить проверку изменения звёздной величины. В этом случае кадры, где "
-#~ "величина гидируемой звезды меняется больше заданного допуска, будут "
-#~ "пропущены."
-
-#~ msgid "Star mass tolerance"
-#~ msgstr "Допуск изменения звёздной величины"
-
-#~ msgid "Clear calibration"
-#~ msgstr "Сброс калибровки"
-
-#~ msgid ""
-#~ "Clear the current calibration data - calibration will be re-done when "
-#~ "guiding is started"
-#~ msgstr ""
-#~ "Сбросить данные последней калибровки. Калибровка будет проведена при "
-#~ "запуске следующего гидирования"
-
-#~ msgid "Enable Guide Output"
-#~ msgstr "Вкл гид. импульсы"
-
-#~ msgid "RA Algorithm"
-#~ msgstr "Алгоритм для RA"
-
-#~ msgid "Declination Algorithm"
-#~ msgstr "Алгоритм по склонению"
-
-#~ msgid ""
-#~ "Reset all configuration to fresh install status -- Note: this closes PHD2"
-#~ msgstr "Сбросить все настройки. Завершить PHD2."
-
-#~ msgid "Constrain dither to RA only?"
-#~ msgstr "Ограничить подвижки осью RA"
-
-#~ msgid "Dither scale"
-#~ msgstr "Масштаб подвижек"
-
-#~ msgid "You must restart PHD for the language change to take effect."
-#~ msgstr "Перегрузите PHD, чтобы изменение языка вступило в силу."
-
-#~ msgid "Reversed"
-#~ msgstr "Инвертировано"
-
-#~ msgid "Check to use the reverse of the angle reported by the rotator"
-#~ msgstr ""
-#~ "Нажмите, чтобы инвертировать используемый поворотным устройством угол"
-
-#~ msgid "Max Duration"
-#~ msgstr "Максимальная длительность"
-
-#~ msgid ""
-#~ "Longest length of pulse to send in RA\n"
-#~ "Default = 1000 ms."
-#~ msgstr ""
-#~ "Наибольшая длина импульса RA\n"
-#~ "По умолчанию 1000 мсек"
-
-#~ msgid ""
-#~ "Longest length of pulse to send in declination\n"
-#~ "Default = 1000 ms.  Increase if drift is fast."
-#~ msgstr ""
-#~ "Самый длинный импульс по оси склонения\n"
-#~ "По умолчанию 1000 мсек. Увеличьте при быстром дрейфе."
-
-#~ msgid ""
-#~ "Check if your mount needs Dec output reversed after doing Flip "
-#~ "Calibration Data"
-#~ msgstr ""
-#~ "Нужно ли инвертировать импульсы по Dec после перекладывания калибровки"
-
-#~ msgid "Guide in declination as well?"
-#~ msgstr "Режим гидирования по склонению"
-
-#~ msgid "Calibration Steps"
-#~ msgstr "Шаги калибровки"
-
-#~ msgid "Samples to Average"
-#~ msgstr "Образцы для усреднения"
-
-#~ msgid "Bump Percentage"
-#~ msgstr "Процент силы удара"
-
-#~ msgid "Bump Step"
-#~ msgstr "Шаг удара"
-
-#~ msgid "Bump on Dither"
-#~ msgstr "Удар при подвижке"
-
-#~ msgid ""
-#~ "The camera will be disconnected if it fails to respond for this long. The "
-#~ "default value, 5 seconds, should be appropriate for most cameras."
-#~ msgstr ""
-#~ "Камера будет отключена, если не ответит в течение этого времени. Значение "
-#~ "по умолчанию, 5 секунд, подходит для большинства камер."
-
-#~ msgid "Camera timeout during capture"
-#~ msgstr "Таймаут камеры во время экспозиции"
-
-#~ msgid ""
-#~ "Slew to near the Meridian and the Equator.\n"
-#~ "Press Drift to measure drift.\n"
-#~ "Press Adjust and adjust your mount's azimuth.\n"
-#~ "Repeat Drift/Adjust until alignment is complete.\n"
-#~ "Then, click Altitude to begin Altitude adjustment."
-#~ msgstr ""
-#~ "Наведитесь ближе к меридиану и экватору.\n"
-#~ "Нажмите 'Дрейф'.\n"
-#~ "Нажмите 'Установить' и установите азимут монтировки.\n"
-#~ "Повторяйте до завершения выравнивания.\n"
-#~ "Нажмите 'Высоту' для повторения выравнивания \n"
-#~ "по высоте."
-
-#~ msgid ""
-#~ "Slew to a location near the Equator and the Eastern or Western horizon.\n"
-#~ "Press Drift to measure drift.\n"
-#~ "Press Adjust and adjust your mount's altitude.\n"
-#~ "Repeat Drift/Adjust until alignment is complete.\n"
-#~ "Click Azimuth to repeat Azimuth adjustment."
-#~ msgstr ""
-#~ "Наведитесь ближе к экватору и восточному или западному горизонту.\n"
-#~ "Нажмите 'Дрейф'.\n"
-#~ "Нажмите 'Установить' и установите высоту монтировки.\n"
-#~ "Повторяйте до завершения выравнивания.\n"
-#~ "Нажмите 'Азимут' для повторения выравнивания по азимуту."
-
-#~ msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
-#~ msgstr ""
-#~ "Выберите неокрашенную звезду с хорошим соотношением сигнал/шум (>10) и "
-#~ "начните гидирование"
-
-#~ msgid ""
-#~ "You may want to spend some time improving your polar alignment. You may "
-#~ "see some field rotation, especially if you are imaging targets closer to "
-#~ "the pole."
-#~ msgstr ""
-#~ "Возможно, вы захотите улучшить настройку полюса из-за вращения поля, "
-#~ "особенно в околополярной области."
-
-#~ msgid ""
-#~ "Your polar alignment is pretty far off. You are likely to see field "
-#~ "rotation unless you keep your exposures very short."
-#~ msgstr ""
-#~ "Установка полюса очень неточная. Если не делать выдержки очень короткими, "
-#~ "будет заметно вращение поля."
-
-#~ msgid " (log active)"
-#~ msgstr "(лог активен')"
-
-#~ msgid "Enable Guide &Log\tAlt-L"
-#~ msgstr "Включить &лог гидирования"
-
-#~ msgid "Enable guide log file"
-#~ msgstr "Включить лог-файл гидирования"
-
-#~ msgid "Enable Debug Log"
-#~ msgstr "Включить лог отладки"
-
-#~ msgid "Enable debug log file"
-#~ msgstr "Включить отладочный лог-файл"
-
-#~ msgid "Cam Dialog"
-#~ msgstr "Камера"
-
-#~ msgid "Equipment"
-#~ msgstr "Оборудование"
-
-#~ msgid "Loop Exposure"
-#~ msgstr "Серийная съёмка"
-
-#~ msgid "Guide"
-#~ msgstr "Гидировать"
-
-#~ msgid ""
-#~ "Your %s is preventing PHD from making adequate corrections to keep the "
-#~ "guide star locked. Increasing the %s will allow PHD to make the needed "
-#~ "corrections."
-#~ msgstr ""
-#~ "Значение параметра '%s' мешает PHD2 сделать адекватные поправки, чтобы "
-#~ "удержать гидируемую звезду. Увеличение значения '%s' позволит PHD2 "
-#~ "сделать необходимые поправки."
-
-#~ msgid "Clear backlash step %3d"
-#~ msgstr "компенсация люфта %3d"
-
-#~ msgid "Import Dark Library and Bad Pixel Map"
-#~ msgstr "Импортировать темновую библиотеку и карту дефектных пикселей"
-
-#~ msgid "Import profile"
-#~ msgstr "Импорт профиля"
-
-#~ msgid "Restore window positions"
-#~ msgstr "Восстановить расположение окон"
-
-#~ msgid "Import from profile..."
-#~ msgstr "Импорт из профиля..."
-
-#~ msgid "Enable / disable link to Nebulosity"
-#~ msgstr "Включить/выключить связь с Nebulosity"
-
-#~ msgid "Abort the current action"
-#~ msgstr "Отменить текущее действие"
-
-#~ msgid "Guidability Check"
-#~ msgstr "Проверка гидируемости"
-
-#~ msgid "Guidability Check - In Progress"
-#~ msgstr "Проверка гидируемости работает"
-
-#~ msgid "Report"
-#~ msgstr "Отчёт"
-
-#~ msgid "Measurement in progress, guide output is disabled"
-#~ msgstr "Измерения производятся, гидирование выключено"
-
-#~ msgid "Click Start to begin measurement."
-#~ msgstr "Нажмите 'Начать' чтобы запустить измерения"
-
-#~ msgid ""
-#~ "Select a guide star and start guiding, then click Start to begin "
-#~ "measurement."
-#~ msgstr ""
-#~ "Во время гидирования по опорной звезде нажмите 'Начать', чтобы запустить "
-#~ "измерения."
-
-#~ msgid "No AO Selected"
-#~ msgstr "АО не выбрана"
-
-#~ msgid "Restore calibration data"
-#~ msgstr "Сбросить данные калибровки"
-
-#~ msgid "Guider focal length:"
-#~ msgstr "Фокусное расстояние гида"
-
-#~ msgid "(estimated):"
-#~ msgstr "(примерно):"
-
-#~ msgid "(from mount)"
-#~ msgstr "(от монтировки)"
-
-#~ msgid "%s Settings"
-#~ msgstr "%s Настройки"
-
-#~ msgid "Configure INDI settings"
-#~ msgstr "Задать настройки INDI"
-
-#~ msgid ""
-#~ "Select your equipment below and click Connect All to connect, or click "
-#~ msgstr "Выберите оборудование внизу и нажмите Подключить Всё или нажмите"
-
-#~ msgid ""
-#~ "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
-#~ "\n"
-#~ " Operation is quite simple (hence the 'PHD')\n"
-#~ "\n"
-#~ " 1) Press the 'Camera' button, select your camera and mount, click on "
-#~ "'Connect All'\n"
-#~ " 2) Pick an exposure duration from the drop-down list\n"
-#~ " 3) Hit the 'Loop' button, adjust your focus if necessary\n"
-#~ msgstr ""
-#~ "Добро пожаловать в PHD2 (Push Here Dummy, Gen2) Guiding\n"
-#~ "\n"
-#~ " Начать работу очень просто (отсюда и 'PHD')\n"
-#~ "\n"
-#~ " 1) Нажмите кнопку 'Камера', выберите камеру и монтировку, нажмите "
-#~ "'Подключит всё'\n"
-#~ " 2) Выберите продолжительность экспозиции из раскрывающегося списка\n"
-#~ " 3) Нажмите кнопку 'Петля', сфокусируйтесь при необходимости\n"
