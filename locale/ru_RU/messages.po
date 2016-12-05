@@ -2269,7 +2269,7 @@ msgstr "Подтвердить выключение гидирования"
 
 #: gear_dialog.cpp:120
 msgid "Connect Equipment"
-msgstr "Подключить оборудование "
+msgstr "Подключение оборудования "
 
 #: gear_dialog.cpp:187
 msgid "Equipment profile"
