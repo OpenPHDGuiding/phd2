@@ -452,10 +452,7 @@ void GearDialog::EndModal(int retCode)
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
 
-    // Handle the auto-restore calibration option automatically
-    bool autoLoadCalib = pPointingSource && pPointingSource->CanReportPosition();
-    pFrame->SetAutoLoadCalibration(autoLoadCalib);
-    if (autoLoadCalib)
+    if (pFrame->GetAutoLoadCalibration())
     {
         if (pMount && pMount->IsConnected() &&
             (!pSecondaryMount || pSecondaryMount->IsConnected()))

@@ -1049,6 +1049,33 @@ void Guider::Reset(bool fullReset)
     }
 }
 
+// Called from the alert to offer auto-restore calibration
+static void SetAutoLoad(long param)
+{
+    pFrame->SetAutoLoadCalibration(true);
+    pFrame->m_infoBar->Dismiss();
+}
+// Generate an alert if the user is likely to be missing the opportunity for auto-restore of
+// the just-completed calibration
+void Guider::CheckForCalibrationAutoLoad(void)
+{
+    int autoLoadProfileVal = pConfig->Profile.GetInt("/AutoLoadCalibration", -1);
+    bool shouldAutoLoad = pPointingSource && pPointingSource->CanReportPosition();
+    bool alreadyAsked = pConfig->Profile.GetBoolean("/AlreadyAskedCalibAutoload", false);
+
+    if (autoLoadProfileVal == -1)       // new profile, assert appropriate choice as default
+        pFrame->SetAutoLoadCalibration(shouldAutoLoad);
+    else
+    {
+        if (!alreadyAsked && autoLoadProfileVal == 0 && shouldAutoLoad)
+        {
+            wxString msg = wxString::Format(_("Do you want to automatically restore this calibration whenever the profile is used?"));
+            pFrame->Alert(msg, 0, "Auto-restore", &SetAutoLoad, 0, false, 0);
+            pConfig->Profile.SetBoolean("/AlreadyAskedCalibAutoload", true);
+        }
+    }
+}
+
 /*************  A new image is ready ************************/
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
@@ -1260,6 +1287,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
                 EvtServer.NotifyStartGuiding();
+                CheckForCalibrationAutoLoad();
                 break;
             case STATE_GUIDING:
                 if (m_ditherRecenterRemaining.IsValid())

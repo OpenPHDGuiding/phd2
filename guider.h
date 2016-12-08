@@ -258,6 +258,7 @@ public:
 
     void Reset(bool fullReset);
     void EnableMeasurementMode(bool enabled);
+    void CheckForCalibrationAutoLoad(void);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of

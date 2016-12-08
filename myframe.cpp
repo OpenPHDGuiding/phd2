@@ -747,7 +747,10 @@ void MyFrame::LoadProfileSettings(void)
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
 
-    SetAutoLoadCalibration(pConfig->Profile.GetBoolean("/AutoLoadCalibration", false));
+    // Don't re-save the setting here with a call to SetAutoLoadCalibration().  An un-initialized registry key (-1) will
+    // be populated after the 1st calibration
+    int autoLoad = pConfig->Profile.GetInt("/AutoLoadCalibration", -1);
+    m_autoLoadCalibration = (autoLoad == 1);        // new profile=> false
 
     int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultFocalLength);
     SetFocalLength(focalLength);
