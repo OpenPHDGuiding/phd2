@@ -90,7 +90,7 @@ msgstr "Сигнал/шум"
 
 #: aui_controls.cpp:142 aui_controls.h:140
 msgid "SAT"
-msgstr "Окр."
+msgstr "Пересв."
 
 #: aui_controls.cpp:159
 msgid ""
@@ -3076,7 +3076,7 @@ msgstr "m=%.0f сигнал/шум=%.1f"
 
 #: guider_onestar.cpp:359
 msgid "Saturated"
-msgstr "Окрашено"
+msgstr "Пересвечено"
 
 #: guider_onestar.cpp:369
 #, c-format
@@ -3352,7 +3352,7 @@ msgstr ""
 #: guiding_assistant.cpp:564
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
-"Выберите неокрашенную звезду с хорошим соотношением сигнал-шум (>=8) и "
+"Выберите не пересвеченную звезду с хорошим соотношением сигнал-шум (>=8) и "
 "приступите к гидированию"
 
 #: guiding_assistant.cpp:568
