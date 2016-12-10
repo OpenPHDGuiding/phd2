@@ -465,7 +465,8 @@ set(phd2_SRC
   ${phd_src_dir}/serialports.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
-  
+  ${phd_src_dir}/starcross_test.cpp
+  ${phd_src_dir}/starcross_test.h 
   ${phd_src_dir}/statswindow.cpp
   ${phd_src_dir}/statswindow.h
   

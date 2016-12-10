@@ -39,6 +39,7 @@
 #include "Refine_DefMap.h"
 #include "camcal_import_dialog.h"
 #include "aui_controls.h"
+#include "starcross_test.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -900,6 +901,23 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
         pManualGuide = TestGuide::CreateManualGuideWindow();
 
     pManualGuide->Show();
+}
+
+void MyFrame::OnStarCrossTest(wxCommandEvent& evt)
+{
+    if (!pMount || !pMount->IsConnected())
+    {
+        if (!pSecondaryMount || !pSecondaryMount->IsConnected())
+        {
+            wxMessageBox(_("Please connect a mount first."), _("Star-Cross Test"));
+            return;
+        }
+    }
+
+    if (!pStarCrossDlg)
+        pStarCrossDlg = new StarCrossDialog(this);
+
+    pStarCrossDlg->Show();
 }
 
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)

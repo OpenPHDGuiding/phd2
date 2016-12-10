@@ -215,6 +215,7 @@ public:
     TargetWindow *pTarget;
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
+    wxDialog * pStarCrossDlg;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
     wxWindow *pGuidingAssistant;
@@ -255,6 +256,7 @@ public:
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
     void OnTestGuide(wxCommandEvent& evt);
+    void OnStarCrossTest(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
@@ -603,6 +605,7 @@ enum {
     MENU_BOOKMARKS_SET_AT_LOCK,
     MENU_BOOKMARKS_SET_AT_STAR,
     MENU_BOOKMARKS_CLEAR_ALL,
+    MENU_STARCROSS_TEST,
 };
 
 enum {

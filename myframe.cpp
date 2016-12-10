@@ -90,6 +90,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadDark)
     EVT_MENU(MENU_LOADDEFECTMAP,MyFrame::OnLoadDefectMap)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
+    EVT_MENU(MENU_STARCROSS_TEST, MyFrame::OnStarCrossTest)
     EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
@@ -314,6 +315,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     pDriftTool = NULL;
     pManualGuide = NULL;
+    pStarCrossDlg = NULL;
     pNudgeLock = NULL;
     pCometTool = NULL;
     pGuidingAssistant = NULL;
@@ -409,6 +411,8 @@ MyFrame::~MyFrame()
         pCalSanityCheckDlg->Destroy();
     if (pCalReviewDlg)
         pCalReviewDlg->Destroy();
+    if (pStarCrossDlg)
+        pStarCrossDlg->Destroy();
 
     m_mgr.UnInit();
 
@@ -439,6 +443,7 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
+    tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
     tools_menu->Append(EEGG_REVIEWCAL, _("&Review Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
 
