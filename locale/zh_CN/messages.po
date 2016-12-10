@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 04:03-0500\n"
+"POT-Creation-Date: 2016-12-10 02:47-0500\n"
 "PO-Revision-Date: 2015-10-11 10:45+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
@@ -58,7 +58,7 @@ msgstr "全局"
 msgid "Camera"
 msgstr "相机"
 
-#: advanced_dialog.cpp:148 guider.cpp:1258 myframe.cpp:1404
+#: advanced_dialog.cpp:148 guider.cpp:1290 myframe.cpp:1412
 #: scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "导星"
@@ -280,7 +280,7 @@ msgstr "AO"
 msgid "Right Ascension"
 msgstr "赤经"
 
-#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:151
+#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:152
 msgid "X"
 msgstr ""
 
@@ -289,7 +289,7 @@ msgstr ""
 msgid "Declination"
 msgstr "赤纬"
 
-#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:158
+#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:159
 msgid "Y"
 msgstr ""
 
@@ -594,7 +594,7 @@ msgstr ""
 msgid "Guide speed, n.nn x sidereal"
 msgstr "导星速率, n.nn x 恒星时"
 
-#: calstep_dialog.cpp:137
+#: calstep_dialog.cpp:137 starcross_test.cpp:108
 #, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
@@ -634,8 +634,8 @@ msgstr "校准时长, 毫秒"
 
 #: calstep_dialog.cpp:181 cam_simulator.cpp:1471 camcal_import_dialog.cpp:47
 #: camera.cpp:725 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:54
-#: myframe.cpp:2625 profile_wizard.cpp:61 profile_wizard.cpp:68
-#: Refine_DefMap.cpp:59
+#: myframe.cpp:2633 profile_wizard.cpp:61 profile_wizard.cpp:68
+#: Refine_DefMap.cpp:59 starcross_test.cpp:52
 msgid ": "
 msgstr ":"
 
@@ -677,9 +677,9 @@ msgstr "设置"
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
 #: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
 #: cam_ZWO.cpp:192 cam_ZWO.cpp:209 cam_ZWO.cpp:216 cam_ZWO.cpp:224
-#: cam_ZWO.cpp:267 gear_dialog.cpp:1189 gear_dialog.cpp:1850
-#: gear_dialog.cpp:1859 gear_dialog.cpp:1866 gear_dialog.cpp:1911
-#: gear_dialog.cpp:1917 scope_ascom.cpp:186 scope_ascom.cpp:201
+#: cam_ZWO.cpp:267 gear_dialog.cpp:1186 gear_dialog.cpp:1847
+#: gear_dialog.cpp:1856 gear_dialog.cpp:1863 gear_dialog.cpp:1908
+#: gear_dialog.cpp:1914 scope_ascom.cpp:186 scope_ascom.cpp:201
 #: scope_ascom.cpp:209 scope_ascom.cpp:218 scope_ascom.cpp:234
 #: scope_ascom.cpp:241 scope_ascom.cpp:329 scope_ascom.cpp:337
 #: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
@@ -1251,7 +1251,7 @@ msgid "Star fading due to clouds"
 msgstr "被导星因为云遮挡而丢失"
 
 #: cam_simulator.cpp:1654 darks_dialog.cpp:208 mount.cpp:162 mount.cpp:206
-#: Refine_DefMap.cpp:175 testguide.cpp:101
+#: Refine_DefMap.cpp:175 starcross_test.cpp:147 testguide.cpp:101
 msgid "Reset"
 msgstr "重置"
 
@@ -1360,10 +1360,10 @@ msgstr "选择你希望使用的暗场库文件:"
 #: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:228
 #: camera.cpp:369 gear_dialog.cpp:349 gear_dialog.cpp:353 gear_dialog.cpp:357
-#: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:581
-#: gear_dialog.cpp:943 gear_dialog.cpp:1611 gear_dialog.cpp:1612
-#: gear_dialog.cpp:1613 mount.cpp:133 mount.cpp:172 mount.cpp:683
-#: myframe.cpp:2522 profile_wizard.cpp:215 profile_wizard.cpp:216
+#: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:578
+#: gear_dialog.cpp:940 gear_dialog.cpp:1608 gear_dialog.cpp:1609
+#: gear_dialog.cpp:1610 mount.cpp:133 mount.cpp:172 mount.cpp:683
+#: myframe.cpp:2530 profile_wizard.cpp:215 profile_wizard.cpp:216
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:520
 #: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
 #: scope.cpp:294 scope.cpp:334 statswindow.cpp:260 stepguider.cpp:92
@@ -1608,6 +1608,7 @@ msgid "Tracking rate axes"
 msgstr "轴跟踪速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:456
+#: starcross_test.cpp:160
 msgid "Start"
 msgstr "开始"
 
@@ -1616,6 +1617,7 @@ msgid "Start training the tracking rate."
 msgstr ""
 
 #: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:461
+#: starcross_test.cpp:162
 msgid "Stop"
 msgstr "停止"
 
@@ -1683,10 +1685,10 @@ msgstr ""
 msgid "Disconnected"
 msgstr ""
 
-#: config_INDI.cpp:97 gear_dialog.cpp:491 gear_dialog.cpp:517
-#: gear_dialog.cpp:533 gear_dialog.cpp:554 gear_dialog.cpp:598
-#: gear_dialog.cpp:619 gear_dialog.cpp:636 gear_dialog.cpp:657
-#: gear_dialog.cpp:674 gear_dialog.cpp:695 runinbg.h:80 runinbg.h:86
+#: config_INDI.cpp:97 gear_dialog.cpp:488 gear_dialog.cpp:514
+#: gear_dialog.cpp:530 gear_dialog.cpp:551 gear_dialog.cpp:595
+#: gear_dialog.cpp:616 gear_dialog.cpp:633 gear_dialog.cpp:654
+#: gear_dialog.cpp:671 gear_dialog.cpp:692 runinbg.h:80 runinbg.h:86
 #: runinbg.h:92 runinbg.h:98
 msgid "Connect"
 msgstr "连接"
@@ -1707,7 +1709,7 @@ msgstr ""
 msgid "Main imager"
 msgstr ""
 
-#: config_INDI.cpp:126 myframe_events.cpp:717
+#: config_INDI.cpp:126 myframe_events.cpp:718
 msgid "Guider"
 msgstr ""
 
@@ -2072,7 +2074,7 @@ msgstr "指向中 ..."
 msgid "Coordinates saved."
 msgstr "坐标已保存"
 
-#: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:607
+#: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:608
 msgid "Please connect a camera first."
 msgstr ""
 
@@ -2098,7 +2100,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "无效的校准数据"
 
-#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:894
+#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:895 myframe_events.cpp:912
 msgid "Please connect a mount first."
 msgstr "请先连接赤道仪。"
 
@@ -2242,9 +2244,9 @@ msgid "Camera Setup"
 msgstr "相机设置"
 
 #: gear_dialog.cpp:245 gear_dialog.cpp:260 gear_dialog.cpp:285
-#: gear_dialog.cpp:301 gear_dialog.cpp:313 gear_dialog.cpp:508
-#: gear_dialog.cpp:546 gear_dialog.cpp:611 gear_dialog.cpp:648
-#: gear_dialog.cpp:686
+#: gear_dialog.cpp:301 gear_dialog.cpp:313 gear_dialog.cpp:505
+#: gear_dialog.cpp:543 gear_dialog.cpp:608 gear_dialog.cpp:645
+#: gear_dialog.cpp:683
 msgid "Disconnect"
 msgstr "断开"
 
@@ -2305,178 +2307,178 @@ msgstr "断开所有设备"
 msgid "Disconnect all equipment"
 msgstr "断开所有的设备"
 
-#: gear_dialog.cpp:329 myframe.cpp:1041
+#: gear_dialog.cpp:329 myframe.cpp:1049
 msgid "Close"
 msgstr "关闭"
 
-#: gear_dialog.cpp:493 gear_dialog.cpp:519
+#: gear_dialog.cpp:490 gear_dialog.cpp:516
 msgid "Connect to camera"
 msgstr "连接相机"
 
-#: gear_dialog.cpp:510
+#: gear_dialog.cpp:507
 msgid "Disconnect from camera"
 msgstr "断开相机"
 
-#: gear_dialog.cpp:535 gear_dialog.cpp:556
+#: gear_dialog.cpp:532 gear_dialog.cpp:553
 msgid "Connect to mount"
 msgstr "连接赤道仪"
 
-#: gear_dialog.cpp:548
+#: gear_dialog.cpp:545
 msgid "Disconnect from mount"
 msgstr "断开赤道仪"
 
-#: gear_dialog.cpp:600 gear_dialog.cpp:621
+#: gear_dialog.cpp:597 gear_dialog.cpp:618
 msgid "Connect to aux mount"
 msgstr "连接Aux赤道仪"
 
-#: gear_dialog.cpp:613
+#: gear_dialog.cpp:610
 msgid "Disconnect from aux mount"
 msgstr "断开Aux赤道仪"
 
-#: gear_dialog.cpp:638 gear_dialog.cpp:659
+#: gear_dialog.cpp:635 gear_dialog.cpp:656
 msgid "Connect to AO"
 msgstr "连接AO"
 
-#: gear_dialog.cpp:650
+#: gear_dialog.cpp:647
 msgid "Disconnect from AO"
 msgstr "断开AO"
 
-#: gear_dialog.cpp:676 gear_dialog.cpp:697
+#: gear_dialog.cpp:673 gear_dialog.cpp:694
 msgid "Connect to Rotator"
 msgstr "连接旋转器"
 
-#: gear_dialog.cpp:688
+#: gear_dialog.cpp:685
 msgid "Disconnect from Rotator"
 msgstr "断开旋转器"
 
-#: gear_dialog.cpp:881
+#: gear_dialog.cpp:878
 msgid "No cameras found"
 msgstr ""
 
-#: gear_dialog.cpp:952
+#: gear_dialog.cpp:949
 msgid ""
 "By changing cameras in this profile, you won't be able to use the existing "
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to proceed with changes to this profile?"
 msgstr ""
 
-#: gear_dialog.cpp:954
+#: gear_dialog.cpp:951
 msgid "Camera Change Warning"
 msgstr ""
 
-#: gear_dialog.cpp:969
+#: gear_dialog.cpp:966
 msgid "Connecting to Camera ..."
 msgstr "正在连接相机 ..."
 
-#: gear_dialog.cpp:1011
+#: gear_dialog.cpp:1008
 msgid "Camera Connected"
 msgstr "相机已连接"
 
-#: gear_dialog.cpp:1019
+#: gear_dialog.cpp:1016
 msgid "Camera Connect Failed"
 msgstr "相机连接失败"
 
-#: gear_dialog.cpp:1061
+#: gear_dialog.cpp:1058
 msgid "Camera Disconnected"
 msgstr "相机已连接"
 
-#: gear_dialog.cpp:1179
+#: gear_dialog.cpp:1176
 msgid "Connecting to Mount ..."
 msgstr "正在连接赤道仪 ..."
 
-#: gear_dialog.cpp:1189
+#: gear_dialog.cpp:1186
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "赤道仪不支持PulseGuide导星方式"
 
-#: gear_dialog.cpp:1193
+#: gear_dialog.cpp:1190
 msgid "Mount Connected"
 msgstr "赤道仪已连接"
 
-#: gear_dialog.cpp:1206
+#: gear_dialog.cpp:1203
 msgid "Mount Connect Failed"
 msgstr "赤道仪连接失败"
 
-#: gear_dialog.cpp:1226
+#: gear_dialog.cpp:1223
 msgid "Connecting to Aux Mount ..."
 msgstr "正在连接Aux赤道仪 ..."
 
-#: gear_dialog.cpp:1233
+#: gear_dialog.cpp:1230
 msgid "Aux Mount Connected"
 msgstr "Aux赤道仪已连接"
 
-#: gear_dialog.cpp:1241
+#: gear_dialog.cpp:1238
 msgid "Aux Mount Connect Failed"
 msgstr "Aux赤道仪连接错误"
 
-#: gear_dialog.cpp:1262
+#: gear_dialog.cpp:1259
 msgid "Mount Disconnected"
 msgstr "赤道仪已断开"
 
-#: gear_dialog.cpp:1293
+#: gear_dialog.cpp:1290
 msgid "Aux Mount Disconnected"
 msgstr "Aux赤道仪已断开"
 
-#: gear_dialog.cpp:1309
+#: gear_dialog.cpp:1306
 msgid "Hide"
 msgstr "隐藏"
 
-#: gear_dialog.cpp:1315
+#: gear_dialog.cpp:1312
 msgid "More Equipment ..."
 msgstr "更多设备..."
 
-#: gear_dialog.cpp:1375
+#: gear_dialog.cpp:1372
 msgid "Connecting to AO ..."
 msgstr "正在连接AO ..."
 
-#: gear_dialog.cpp:1385
+#: gear_dialog.cpp:1382
 msgid "AO Connected"
 msgstr "AO已连接"
 
-#: gear_dialog.cpp:1398
+#: gear_dialog.cpp:1395
 msgid "AO Connect Failed"
 msgstr "AO连接失败"
 
-#: gear_dialog.cpp:1426
+#: gear_dialog.cpp:1423
 msgid "AO Disconnected"
 msgstr "AO已断开"
 
-#: gear_dialog.cpp:1490
+#: gear_dialog.cpp:1487
 msgid "Connecting to Rotator ..."
 msgstr "正在连接旋转器 ..."
 
-#: gear_dialog.cpp:1500
+#: gear_dialog.cpp:1497
 msgid "Rotator Connected"
 msgstr "旋转器已连接"
 
-#: gear_dialog.cpp:1513
+#: gear_dialog.cpp:1510
 msgid "Rotator Connect Failed"
 msgstr "旋转器连接失败"
 
-#: gear_dialog.cpp:1536
+#: gear_dialog.cpp:1533
 msgid "Rotator Disconnected"
 msgstr "旋转器已断开"
 
-#: gear_dialog.cpp:1805
+#: gear_dialog.cpp:1802
 msgid "New Equipment Profile"
 msgstr "新建设备配置文件"
 
-#: gear_dialog.cpp:1812
+#: gear_dialog.cpp:1809
 msgid "Name"
 msgstr "名称"
 
-#: gear_dialog.cpp:1816
+#: gear_dialog.cpp:1813
 msgid "Enter the name of the new equipment profile"
 msgstr "输入新建的设备配置文件名"
 
-#: gear_dialog.cpp:1820
+#: gear_dialog.cpp:1817
 msgid "PHD Defaults"
 msgstr "PHD缺省值"
 
-#: gear_dialog.cpp:1823
+#: gear_dialog.cpp:1820
 msgid "Profile initial settings"
 msgstr "配置初始设置"
 
-#: gear_dialog.cpp:1826
+#: gear_dialog.cpp:1823
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2484,48 +2486,48 @@ msgstr ""
 "选择\"PHD缺省值\"，创建一个包含PHD缺省设置的配置文件。或者从一个已经存在的配"
 "置文件创建你的新配置文件。"
 
-#: gear_dialog.cpp:1850
+#: gear_dialog.cpp:1847
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "不能创建配置文件 %s，已经存在同名配置文件。"
 
-#: gear_dialog.cpp:1859
+#: gear_dialog.cpp:1856
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "不能创建配置文件 %s，从 %s"
 
-#: gear_dialog.cpp:1866 profile_wizard.cpp:489
+#: gear_dialog.cpp:1863 profile_wizard.cpp:489
 #, c-format
 msgid "Could not create profile %s"
 msgstr "不能创建配置文件 %s"
 
-#: gear_dialog.cpp:1882
+#: gear_dialog.cpp:1879
 #, c-format
 msgid "Delete profile %s?"
 msgstr "是否删除配置文件 %s ?"
 
-#: gear_dialog.cpp:1882
+#: gear_dialog.cpp:1879
 msgid "Delete Equipment Profile"
 msgstr "删除配置文件"
 
-#: gear_dialog.cpp:1901
+#: gear_dialog.cpp:1898
 #, c-format
 msgid "Rename %s"
 msgstr "重命名 %s"
 
-#: gear_dialog.cpp:1901
+#: gear_dialog.cpp:1898
 msgid "Rename Equipment Profile"
 msgstr "重命名配置文件"
 
-#: gear_dialog.cpp:1917
+#: gear_dialog.cpp:1914
 msgid "Could not rename profile"
 msgstr "不能重命名配置文件"
 
-#: gear_dialog.cpp:1931
+#: gear_dialog.cpp:1928
 msgid "Import PHD Equipment Profiles"
 msgstr "导入PHD设备配置文件"
 
-#: gear_dialog.cpp:1964
+#: gear_dialog.cpp:1961
 msgid "Export PHD Equipment Profile"
 msgstr "导出PHD设备配置文件"
 
@@ -2663,7 +2665,7 @@ msgstr ""
 msgid "Dither"
 msgstr "抖动"
 
-#: graph-stepguider.cpp:47 myframe.cpp:298 myframe.cpp:362
+#: graph-stepguider.cpp:47 myframe.cpp:299 myframe.cpp:364
 msgid "AO Position"
 msgstr "AO位置"
 
@@ -2826,60 +2828,66 @@ msgstr ""
 msgid "Calibration manually stopped"
 msgstr "手工停止校准"
 
-#: guider.cpp:1082
+#: guider.cpp:1077
+msgid ""
+"Do you want to automatically restore this calibration whenever the profile "
+"is used?"
+msgstr ""
+
+#: guider.cpp:1114
 msgid "Stopped Guiding"
 msgstr "导星已停止"
 
-#: guider.cpp:1093
+#: guider.cpp:1125
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 
-#: guider.cpp:1123
+#: guider.cpp:1155
 msgid "star lost"
 msgstr "被导星丢失"
 
-#: guider.cpp:1179 myframe.cpp:1539
+#: guider.cpp:1211 myframe.cpp:1547
 msgid "Paused"
 msgstr "暂停"
 
-#: guider.cpp:1201
+#: guider.cpp:1233
 msgid "AO calibration failed"
 msgstr ""
 
-#: guider.cpp:1201 guider.cpp:1234
+#: guider.cpp:1233 guider.cpp:1266
 msgid "calibration failed"
 msgstr ""
 
-#: guider.cpp:1437
+#: guider.cpp:1470
 msgid "Guider Settings"
 msgstr "导星设置"
 
-#: guider.cpp:1446
+#: guider.cpp:1479
 msgid "Guide star tracking"
 msgstr ""
 
-#: guider.cpp:1447
+#: guider.cpp:1480
 msgid "Calibration"
 msgstr ""
 
-#: guider.cpp:1448
+#: guider.cpp:1481
 msgid "Shared Parameters"
 msgstr ""
 
-#: guider.cpp:1492
+#: guider.cpp:1525
 msgid "Always scale images"
 msgstr ""
 
-#: guider.cpp:1493
+#: guider.cpp:1526
 msgid "Always scale images to fill window"
 msgstr "始终缩放图像充满窗口"
 
-#: guider.cpp:1495
+#: guider.cpp:1528
 msgid "Fast recenter after calibration or dither"
 msgstr "校准或抖动后快速回到中心"
 
-#: guider.cpp:1496
+#: guider.cpp:1529
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -2889,7 +2897,7 @@ msgstr ""
 "the star to the center position. Un-check to use the old, slower method of "
 "recentering after calibration or dither."
 
-#: guider.cpp:1588
+#: guider.cpp:1621
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "是否确认删除所有的标记?"
 
@@ -3088,7 +3096,7 @@ msgstr ""
 msgid "Show graph of backlash measurement points"
 msgstr ""
 
-#: guiding_assistant.cpp:419 myframe.cpp:1046 profile_wizard.cpp:190
+#: guiding_assistant.cpp:419 myframe.cpp:1054 profile_wizard.cpp:190
 msgid "Help"
 msgstr ""
 
@@ -3432,611 +3440,619 @@ msgstr ""
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "旋转器位置已改变，需要进行重新校准。"
 
-#: myframe.cpp:288 myframe.cpp:360
+#: myframe.cpp:289 myframe.cpp:362
 msgid "History"
 msgstr "历史"
 
-#: myframe.cpp:293 myframe.cpp:361
+#: myframe.cpp:294 myframe.cpp:363
 msgid "Guide Stats"
 msgstr "导星状态"
 
-#: myframe.cpp:303 myframe.cpp:363
+#: myframe.cpp:304 myframe.cpp:365
 msgid "Star Profile"
 msgstr "星点图"
 
-#: myframe.cpp:308 myframe.cpp:364 target.cpp:51
+#: myframe.cpp:309 myframe.cpp:366 target.cpp:51
 msgid "Target"
 msgstr "散点图"
 
-#: myframe.cpp:437
+#: myframe.cpp:441
 msgid "&Save Image..."
 msgstr "保存图像..."
 
-#: myframe.cpp:437
+#: myframe.cpp:441
 msgid "Save current image"
 msgstr "保存当前图像"
 
-#: myframe.cpp:438
+#: myframe.cpp:442
 msgid "E&xit\tAlt-X"
 msgstr "退出\tAlt-X"
 
-#: myframe.cpp:438
+#: myframe.cpp:442
 msgid "Quit this program"
 msgstr "退出程序"
 
-#: myframe.cpp:441
+#: myframe.cpp:445
 msgid "&Manual Guide"
 msgstr "手动导星"
 
-#: myframe.cpp:441
+#: myframe.cpp:445
 msgid "Manual / test guide dialog"
 msgstr "手动 / 测试导星对话框"
 
-#: myframe.cpp:442
+#: myframe.cpp:446
 msgid "&Auto-select Star\tAlt-S"
 msgstr "自动选星\tAlt-S"
 
-#: myframe.cpp:442
+#: myframe.cpp:446
 msgid "Automatically select star"
 msgstr "自动选择被导星"
 
-#: myframe.cpp:443
+#: myframe.cpp:447
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "查看校准数据\tAlt-C"
 
-#: myframe.cpp:443
+#: myframe.cpp:447
 msgid "Review calibration data from last successful calibration"
 msgstr "查看上一次成功的校准数据"
 
-#: myframe.cpp:446
+#: myframe.cpp:450
 msgid "Restore Calibration Data..."
 msgstr "恢复校准数据..."
 
-#: myframe.cpp:446
+#: myframe.cpp:450
 msgid "Restore calibration data from last successful calibration"
 msgstr "恢复至从上一次成功的校准数据"
 
-#: myframe.cpp:447
+#: myframe.cpp:451
 msgid "Enter Calibration Data..."
 msgstr "手工输入校准数据"
 
-#: myframe.cpp:447
+#: myframe.cpp:451
 msgid "Manually calibrate"
 msgstr "手工校准"
 
-#: myframe.cpp:448
+#: myframe.cpp:452
 msgid "Flip Calibration Data"
 msgstr "翻转校准数据"
 
-#: myframe.cpp:448
+#: myframe.cpp:452
 msgid "Flip RA calibration vector"
 msgstr "翻转赤经校准方向"
 
-#: myframe.cpp:449
+#: myframe.cpp:453
 msgid "Clear Calibration Data..."
 msgstr "清除校准数据..."
 
-#: myframe.cpp:449
+#: myframe.cpp:453
 msgid "Clear calibration data currently in use"
 msgstr "清除当前的校准数据"
 
-#: myframe.cpp:450
+#: myframe.cpp:454
 msgid "Modify Calibration"
 msgstr "修改校准数据"
 
-#: myframe.cpp:453
+#: myframe.cpp:457
 msgid "Adjust &Lock Position"
 msgstr "调整锁定框位置"
 
-#: myframe.cpp:453
+#: myframe.cpp:457
 msgid "Adjust the lock position"
 msgstr "调整锁定框"
 
-#: myframe.cpp:454
+#: myframe.cpp:458
 msgid "&Comet Tracking"
 msgstr "彗星跟踪"
 
-#: myframe.cpp:454
+#: myframe.cpp:458
 msgid "Run the Comet Tracking tool"
 msgstr "运行彗星跟踪工具"
 
-#: myframe.cpp:455
+#: myframe.cpp:459 myframe_events.cpp:912 starcross_test.cpp:76
+msgid "Star-Cross Test"
+msgstr ""
+
+#: myframe.cpp:459
+msgid "Run a star-cross test for mount diagnostics"
+msgstr ""
+
+#: myframe.cpp:460
 msgid "&Guiding Assistant"
 msgstr "导星助手"
 
-#: myframe.cpp:455
+#: myframe.cpp:460
 msgid "Run the Guiding Assistant"
 msgstr "运行导星助手"
 
-#: myframe.cpp:456
+#: myframe.cpp:461
 msgid "&Drift Align"
 msgstr "漂移校准法"
 
-#: myframe.cpp:456
+#: myframe.cpp:461
 msgid "Run the Drift Alignment tool"
 msgstr "运行漂移校准工具"
 
-#: myframe.cpp:458
+#: myframe.cpp:463
 msgid "Enable Star Image Logging"
 msgstr "开启记录图像日志"
 
-#: myframe.cpp:458
+#: myframe.cpp:463
 msgid "Enable logging of star images"
 msgstr "启用图像日志记录"
 
-#: myframe.cpp:459
+#: myframe.cpp:464
 msgid "Enable Server"
 msgstr "启用服务器模式"
 
-#: myframe.cpp:459
+#: myframe.cpp:464
 msgid "Enable PHD2 server capability"
 msgstr "启用PHD2服务器功能"
 
-#: myframe.cpp:460 nudge_lock.cpp:159
+#: myframe.cpp:465 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
 msgstr "*Sticky Lock Position"
 
-#: myframe.cpp:460
+#: myframe.cpp:465
 msgid "Keep the same lock position when guiding starts"
 msgstr "*Keep the same lock position when guiding starts"
 
-#: myframe.cpp:463
+#: myframe.cpp:468
 msgid "Display Toolbar"
 msgstr "显示工具栏"
 
-#: myframe.cpp:463
+#: myframe.cpp:468
 msgid "Enable / disable tool bar"
 msgstr "启用 / 禁用 工具栏"
 
-#: myframe.cpp:464
+#: myframe.cpp:469
 msgid "Display &Graph"
 msgstr "显示图形"
 
-#: myframe.cpp:464
+#: myframe.cpp:469
 msgid "Enable / disable graph"
 msgstr "启用 / 禁用 历史图"
 
-#: myframe.cpp:465
+#: myframe.cpp:470
 msgid "Display &Stats"
 msgstr "显示状态图"
 
-#: myframe.cpp:465
+#: myframe.cpp:470
 msgid "Enable / disable guide stats"
 msgstr "启用 / 关闭 星点图"
 
-#: myframe.cpp:466
+#: myframe.cpp:471
 msgid "Display &AO Graph"
 msgstr "显示AO图形"
 
-#: myframe.cpp:466
+#: myframe.cpp:471
 msgid "Enable / disable AO graph"
 msgstr "启用 / 禁用 AO图"
 
-#: myframe.cpp:467
+#: myframe.cpp:472
 msgid "Display &Target"
 msgstr "显示散点图"
 
-#: myframe.cpp:467
+#: myframe.cpp:472
 msgid "Enable / disable target"
 msgstr "启用 / 禁用 散点图"
 
-#: myframe.cpp:468
+#: myframe.cpp:473
 msgid "Display Star &Profile"
 msgstr "显示星点图"
 
-#: myframe.cpp:468
+#: myframe.cpp:473
 msgid "Enable / disable star profile view"
 msgstr "启用 / 禁用 星点图"
 
-#: myframe.cpp:470
+#: myframe.cpp:475
 msgid "&No Overlay"
 msgstr "无附加线"
 
-#: myframe.cpp:470
+#: myframe.cpp:475
 msgid "No additional crosshairs"
 msgstr "无额外交叉线"
 
-#: myframe.cpp:471
+#: myframe.cpp:476
 msgid "&Bullseye"
 msgstr "靶心线"
 
-#: myframe.cpp:471
+#: myframe.cpp:476
 msgid "Centered bullseye overlay"
 msgstr "在中心叠加靶心图"
 
-#: myframe.cpp:472
+#: myframe.cpp:477
 msgid "&Fine Grid"
 msgstr "细网格线"
 
-#: myframe.cpp:472 myframe.cpp:473
+#: myframe.cpp:477 myframe.cpp:478
 msgid "Grid overlay"
 msgstr "叠加网格线"
 
-#: myframe.cpp:473
+#: myframe.cpp:478
 msgid "&Coarse Grid"
 msgstr "粗网格线"
 
-#: myframe.cpp:474
+#: myframe.cpp:479
 msgid "&RA/Dec"
 msgstr "赤经/赤纬线"
 
-#: myframe.cpp:474
+#: myframe.cpp:479
 msgid "RA and Dec overlay"
 msgstr "叠加赤经/赤纬线"
 
-#: myframe.cpp:475
+#: myframe.cpp:480
 msgid "Spectrograph S&lit"
 msgstr "光谱仪狭长区块"
 
-#: myframe.cpp:475
+#: myframe.cpp:480
 msgid "Spectrograph slit overlay"
 msgstr "叠加光谱仪狭长区块"
 
-#: myframe.cpp:477
+#: myframe.cpp:482
 msgid "Slit Position..."
 msgstr "Slit Position..."
 
-#: myframe.cpp:479
+#: myframe.cpp:484
 msgid "Restore Window Positions"
 msgstr "存储窗口位置"
 
-#: myframe.cpp:479
+#: myframe.cpp:484
 msgid "Restore all windows to their default/docked positions"
 msgstr "还原所有窗口的默认/停靠位置"
 
-#: myframe.cpp:482
+#: myframe.cpp:487
 msgid "Dark &Library..."
 msgstr "暗场库..."
 
-#: myframe.cpp:482
+#: myframe.cpp:487
 msgid "Build a dark library for this profile"
 msgstr "为这个配置文件创建暗场库"
 
-#: myframe.cpp:483
+#: myframe.cpp:488
 msgid "Bad-pixel &Map..."
 msgstr "坏点映射图..."
 
-#: myframe.cpp:483
+#: myframe.cpp:488
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "调整参数，用来创建或修改坏点映射图"
 
-#: myframe.cpp:484
+#: myframe.cpp:489
 msgid "Import From Profile..."
 msgstr "从配置文件导入..."
 
-#: myframe.cpp:484
+#: myframe.cpp:489
 msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr "从另一个配置文件导入暗场库或坏点映射图"
 
-#: myframe.cpp:486
+#: myframe.cpp:491
 msgid "Use &Dark Library"
 msgstr "使用暗场库"
 
-#: myframe.cpp:486
+#: myframe.cpp:491
 msgid "Use the the dark library for this profile"
 msgstr ""
 
-#: myframe.cpp:487
+#: myframe.cpp:492
 msgid "Use &Bad-pixel Map"
 msgstr "使用坏点映射图"
 
-#: myframe.cpp:487
+#: myframe.cpp:492
 msgid "Use the bad-pixel map for this profile"
 msgstr "为本配置文件使用坏点映射图"
 
-#: myframe.cpp:492
+#: myframe.cpp:497
 msgid "&Save settings"
 msgstr "保存配置"
 
-#: myframe.cpp:492
+#: myframe.cpp:497
 msgid "Save current camera settings"
 msgstr "*Save current camera settings"
 
-#: myframe.cpp:493
+#: myframe.cpp:498
 msgid "&Restore settings"
 msgstr "恢复配置"
 
-#: myframe.cpp:493
+#: myframe.cpp:498
 msgid "Restore camera settings"
 msgstr "*Restore camera settings"
 
-#: myframe.cpp:497
+#: myframe.cpp:502
 msgid "Show &Bookmarks\tb"
 msgstr "显示标记\tB"
 
-#: myframe.cpp:497
+#: myframe.cpp:502
 msgid "Hide or show bookmarks"
 msgstr "隐藏/显示标记"
 
-#: myframe.cpp:500
+#: myframe.cpp:505
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "标记锁定框\tShift-B"
 
-#: myframe.cpp:500
+#: myframe.cpp:505
 msgid "Set a bookmark at the current lock position"
 msgstr "*Set a bookmark at the current lock position"
 
-#: myframe.cpp:502
+#: myframe.cpp:507
 msgid "Bookmark &Star Pos"
 msgstr "标记被导星位置"
 
-#: myframe.cpp:502
+#: myframe.cpp:507
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "*Set a bookmark at the position of the currently selected star"
 
-#: myframe.cpp:503
+#: myframe.cpp:508
 msgid "&Delete all\tCtrl-B"
 msgstr "删除全部标记\tCtrl-B"
 
-#: myframe.cpp:503
+#: myframe.cpp:508
 msgid "Remove all bookmarks"
 msgstr "移除所有标记"
 
-#: myframe.cpp:506
+#: myframe.cpp:511
 msgid "&About..."
 msgstr ""
 
-#: myframe.cpp:506
+#: myframe.cpp:511
 #, c-format
 msgid "About %s"
 msgstr "关于 %s"
 
-#: myframe.cpp:507
+#: myframe.cpp:512
 msgid "&Contents...\tF1"
 msgstr ""
 
-#: myframe.cpp:507
+#: myframe.cpp:512
 msgid "Full help"
 msgstr "*Full help"
 
-#: myframe.cpp:508
+#: myframe.cpp:513
 msgid "&Impatient Instructions"
 msgstr "简介"
 
-#: myframe.cpp:508
+#: myframe.cpp:513
 msgid "Quick instructions for the impatient"
 msgstr "*Quick instructions for the impatient"
 
-#: myframe.cpp:511
+#: myframe.cpp:516
 msgid "&File"
 msgstr "文件"
 
-#: myframe.cpp:520
+#: myframe.cpp:525
 msgid "&Tools"
 msgstr "工具"
 
-#: myframe.cpp:521
+#: myframe.cpp:526
 msgid "&View"
 msgstr "查看"
 
-#: myframe.cpp:522
+#: myframe.cpp:527
 msgid "&Darks"
 msgstr "暗场"
 
-#: myframe.cpp:523
+#: myframe.cpp:528
 msgid "&Bookmarks"
 msgstr "标记"
 
-#: myframe.cpp:524
+#: myframe.cpp:529
 msgid "&Help"
 msgstr "帮助"
 
-#: myframe.cpp:813 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+#: myframe.cpp:821 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
 msgid "Auto"
 msgstr "自动"
 
-#: myframe.cpp:817
+#: myframe.cpp:825
 msgid "Camera exposure duration"
 msgstr "相机曝光时间"
 
-#: myframe.cpp:822
+#: myframe.cpp:830
 msgid "Screen gamma (brightness)"
 msgstr "显示灰度(亮度)"
 
-#: myframe.cpp:824
+#: myframe.cpp:832
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
 msgstr "连接设备。按住Shift并点击，可以连接上次使用的设备。"
 
-#: myframe.cpp:825
+#: myframe.cpp:833
 msgid "Begin looping exposures for frame and focus"
 msgstr "开始进行连续曝光"
 
-#: myframe.cpp:826
+#: myframe.cpp:834
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr "开始导星。按住Shift并点击可进行强制校准。"
 
-#: myframe.cpp:827
+#: myframe.cpp:835
 msgid "Stop looping and guiding"
 msgstr ""
 
-#: myframe.cpp:829
+#: myframe.cpp:837
 msgid "Exposure duration"
 msgstr "曝光时间"
 
-#: myframe.cpp:830
+#: myframe.cpp:838
 msgid "Gamma"
 msgstr "伽玛"
 
-#: myframe.cpp:832
+#: myframe.cpp:840
 msgid "Advanced parameters"
 msgstr "高级参数设置"
 
-#: myframe.cpp:833
+#: myframe.cpp:841
 msgid "Camera settings"
 msgstr ""
 
-#: myframe.cpp:886
+#: myframe.cpp:894
 msgid "Could not find help file: "
 msgstr "未找到帮助文件"
 
-#: myframe.cpp:1011
+#: myframe.cpp:1019
 msgid "Trouble-shooting and Analysis"
 msgstr ""
 
-#: myframe.cpp:1031
+#: myframe.cpp:1039
 msgid ""
 "Don't show\n"
 " again"
 msgstr ""
 
-#: myframe.cpp:1406 myframe.cpp:1582
+#: myframe.cpp:1414 myframe.cpp:1590
 msgid "Looping"
 msgstr ""
 
-#: myframe.cpp:1510
+#: myframe.cpp:1518
 msgid "Waiting for devices..."
 msgstr "等待设备..."
 
-#: myframe.cpp:1553
+#: myframe.cpp:1561
 msgid "Resumed"
 msgstr "挂起"
 
-#: myframe.cpp:1600
+#: myframe.cpp:1608
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
 msgstr "不能开始导星。请关闭生成坏点映射图窗口。"
 
-#: myframe.cpp:1733
+#: myframe.cpp:1741
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "抖动 %.2f,%.2f"
 
-#: myframe.cpp:1765
+#: myframe.cpp:1773
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "拍摄正在进行，是否确认退出?"
 
-#: myframe.cpp:1766
+#: myframe.cpp:1774
 msgid "Confirm Exit"
 msgstr "退出时确认"
 
-#: myframe.cpp:2028 usImage.cpp:434
+#: myframe.cpp:2036 usImage.cpp:434
 msgid "FITS file is not of an image: "
 msgstr "FITS文件不是一个图像:"
 
-#: myframe.cpp:2036 usImage.cpp:446
+#: myframe.cpp:2044 usImage.cpp:446
 msgid "Unsupported type or read error loading FITS file "
 msgstr "不支持的文件类型或读取FITS文件错误"
 
-#: myframe.cpp:2046
+#: myframe.cpp:2054
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
 msgstr ""
 
-#: myframe.cpp:2057
+#: myframe.cpp:2065
 msgid "Memory allocation error reading FITS file "
 msgstr "读取FITS文件时分配内存错误"
 
-#: myframe.cpp:2064
+#: myframe.cpp:2072
 msgid "Error reading data from "
 msgstr "*Error reading data from "
 
-#: myframe.cpp:2093 usImage.cpp:478
+#: myframe.cpp:2101 usImage.cpp:478
 msgid "Error opening FITS file "
 msgstr "打开FITS文件失败"
 
-#: myframe.cpp:2157
+#: myframe.cpp:2165
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
 msgstr ""
 
-#: myframe.cpp:2203
+#: myframe.cpp:2211
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
 msgstr "暗场库和坏点映射图与当前相机不兼容，两者都需要重新生成。"
 
-#: myframe.cpp:2234
+#: myframe.cpp:2242
 msgid "You must connect a camera before loading dark frames"
 msgstr "读取暗场之间必须先连接相机"
 
-#: myframe.cpp:2241
+#: myframe.cpp:2249
 msgid "Darks not loaded"
 msgstr "暗场未能读取"
 
-#: myframe.cpp:2248
+#: myframe.cpp:2256
 msgid "Darks loaded"
 msgstr "暗场已读取"
 
-#: myframe.cpp:2261
+#: myframe.cpp:2269
 msgid "Error saving darks FITS file "
 msgstr "保存暗场FITS文件失败"
 
-#: myframe.cpp:2462
+#: myframe.cpp:2470
 msgid ""
 "Guiding parameters have been reset because the camera binning changed. You "
 "should use separate profiles for different binning values."
 msgstr ""
 
-#: myframe.cpp:2472
+#: myframe.cpp:2480
 msgid "Global Settings"
 msgstr "全局设置"
 
-#: myframe.cpp:2504
+#: myframe.cpp:2512
 msgid "Reset Configuration"
 msgstr "重置所有设置"
 
-#: myframe.cpp:2505
+#: myframe.cpp:2513
 msgid ""
 "Reset all configuration and program settings to fresh install status -- "
 "Note: this closes PHD2"
 msgstr ""
 
-#: myframe.cpp:2506
+#: myframe.cpp:2514
 msgid "Reset \"Don't Show Again\" messages"
 msgstr ""
 
-#: myframe.cpp:2507
+#: myframe.cpp:2515
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr ""
 
-#: myframe.cpp:2511
+#: myframe.cpp:2519
 msgid "Low Q JPEG"
 msgstr "低质量JPEG"
 
-#: myframe.cpp:2511
+#: myframe.cpp:2519
 msgid "High Q JPEG"
 msgstr "高质量JPEG"
 
-#: myframe.cpp:2511
+#: myframe.cpp:2519
 msgid "Raw FITS"
 msgstr "原始FITS"
 
-#: myframe.cpp:2517
+#: myframe.cpp:2525
 msgid "Image logging format"
 msgstr "保存图像类型"
 
-#: myframe.cpp:2518
+#: myframe.cpp:2526
 msgid "File format of logged images"
 msgstr "图像日志的文件类型"
 
-#: myframe.cpp:2522
+#: myframe.cpp:2530
 msgid "2x2 mean"
 msgstr "2x2平均"
 
-#: myframe.cpp:2522
+#: myframe.cpp:2530
 msgid "3x3 median"
 msgstr "3x3中位数"
 
-#: myframe.cpp:2529
+#: myframe.cpp:2537
 msgid "Noise Reduction"
 msgstr "降噪"
 
-#: myframe.cpp:2530
+#: myframe.cpp:2538
 msgid "Technique to reduce noise in images"
 msgstr "*Technique to reduce noise in images"
 
-#: myframe.cpp:2536
+#: myframe.cpp:2544
 msgid "Time Lapse (ms)"
 msgstr "延时 (毫秒)"
 
-#: myframe.cpp:2537
+#: myframe.cpp:2545
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -4046,11 +4062,11 @@ msgstr ""
 "using very short exposures (e.g., using a video camera) but wanting to send "
 "guide commands less frequently"
 
-#: myframe.cpp:2541
+#: myframe.cpp:2549
 msgid "Focal length (mm)"
 msgstr "焦距 (毫米)"
 
-#: myframe.cpp:2542
+#: myframe.cpp:2550
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -4058,135 +4074,135 @@ msgstr ""
 "*Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
 
-#: myframe.cpp:2548 myframe.cpp:2580
+#: myframe.cpp:2556 myframe.cpp:2588
 msgid "System default"
 msgstr "系统默认"
 
-#: myframe.cpp:2563
+#: myframe.cpp:2571
 msgid "Language-Name"
 msgstr "语言名称"
 
-#: myframe.cpp:2584
+#: myframe.cpp:2592
 msgid "Language"
 msgstr "语言"
 
-#: myframe.cpp:2585
+#: myframe.cpp:2593
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "*%s Language. You'll have to restart PHD to take effect."
 
-#: myframe.cpp:2589
+#: myframe.cpp:2597
 msgid "Log File Location"
 msgstr "日志文件位置"
 
-#: myframe.cpp:2592
+#: myframe.cpp:2600
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "存放导星和调试日志的文件目录。如果为空，将使用系统缺省目录。"
 
-#: myframe.cpp:2593
+#: myframe.cpp:2601
 msgid "Browse..."
 msgstr "浏览..."
 
-#: myframe.cpp:2603
+#: myframe.cpp:2611
 msgid "Dither Settings"
 msgstr ""
 
-#: myframe.cpp:2604
+#: myframe.cpp:2612
 msgid "Random"
 msgstr ""
 
-#: myframe.cpp:2605
+#: myframe.cpp:2613
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr ""
 
-#: myframe.cpp:2606
+#: myframe.cpp:2614
 msgid "Spiral"
 msgstr ""
 
-#: myframe.cpp:2607
+#: myframe.cpp:2615
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr ""
 
-#: myframe.cpp:2609
+#: myframe.cpp:2617
 msgid "Mode: "
 msgstr ""
 
-#: myframe.cpp:2614
+#: myframe.cpp:2622
 msgid "RA only"
 msgstr ""
 
-#: myframe.cpp:2615
+#: myframe.cpp:2623
 msgid "Constrain dither to RA only"
 msgstr ""
 
-#: myframe.cpp:2621
+#: myframe.cpp:2629
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "*Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:2625 testguide.cpp:119
+#: myframe.cpp:2633 testguide.cpp:119
 msgid "Scale"
 msgstr "*Scale"
 
-#: myframe.cpp:2632
+#: myframe.cpp:2640
 msgid "Auto restore calibration"
 msgstr "自动使用上一次校准数据"
 
-#: myframe.cpp:2633
+#: myframe.cpp:2641
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
 msgstr "当连接设备的时候，自动使用上一次成功的校准数据。"
 
-#: myframe.cpp:2647
+#: myframe.cpp:2655
 msgid "Min"
 msgstr "最小"
 
-#: myframe.cpp:2647
+#: myframe.cpp:2655
 msgid "Auto exposure minimum duration"
 msgstr "自动曝光最小时间"
 
-#: myframe.cpp:2648
+#: myframe.cpp:2656
 msgid "Max"
 msgstr "最大"
 
-#: myframe.cpp:2648
+#: myframe.cpp:2656
 msgid "Auto exposure maximum duration"
 msgstr "自动曝光最大时间"
 
-#: myframe.cpp:2649
+#: myframe.cpp:2657
 msgid "Target SNR"
 msgstr "信噪比"
 
-#: myframe.cpp:2649
+#: myframe.cpp:2657
 msgid "Auto exposure target SNR value"
 msgstr "自动曝光SNR值"
 
-#: myframe.cpp:2650
+#: myframe.cpp:2658
 msgid "Auto Exposure"
 msgstr "自动曝光"
 
-#: myframe.cpp:2702
+#: myframe.cpp:2710
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
 msgstr "本操作将重置PHD2所有配置参数并退出程序。是否确认？"
 
-#: myframe.cpp:2702
+#: myframe.cpp:2710
 msgid "Confirmation"
 msgstr "确认"
 
-#: myframe.cpp:2730
+#: myframe.cpp:2738
 msgid "You must restart PHD2 for the language change to take effect."
 msgstr ""
 
-#: myframe.cpp:2730 myframe_events.cpp:273 myframe_events.cpp:480
-#: myframe_events.cpp:583
+#: myframe.cpp:2738 myframe_events.cpp:274 myframe_events.cpp:481
+#: myframe_events.cpp:584
 msgid "Info"
 msgstr "提示"
 
-#: myframe_events.cpp:99
+#: myframe_events.cpp:100
 msgid ""
 "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
 "\n"
@@ -4209,121 +4225,121 @@ msgid ""
 " problems, read the 'Best Practices' document and the help files! "
 msgstr ""
 
-#: myframe_events.cpp:110
+#: myframe_events.cpp:111
 msgid "Instructions"
 msgstr "说明"
 
-#: myframe_events.cpp:116 profile_wizard.cpp:361
+#: myframe_events.cpp:117 profile_wizard.cpp:361
 msgid "Introduction"
 msgstr "说明"
 
-#: myframe_events.cpp:138
+#: myframe_events.cpp:139
 msgid "Spectrograph Slit Overlay"
 msgstr "叠加光谱仪狭长区块"
 
-#: myframe_events.cpp:147
+#: myframe_events.cpp:148
 msgid "Position (Center)"
 msgstr "位置(中心)"
 
-#: myframe_events.cpp:148
+#: myframe_events.cpp:149
 msgid "Size"
 msgstr ""
 
-#: myframe_events.cpp:167
+#: myframe_events.cpp:168
 msgid "Width"
 msgstr "宽度"
 
-#: myframe_events.cpp:174
+#: myframe_events.cpp:175
 msgid "Height"
 msgstr "高度"
 
-#: myframe_events.cpp:184
+#: myframe_events.cpp:185
 msgid "Angle (degrees)"
 msgstr "转角(度)"
 
-#: myframe_events.cpp:245
+#: myframe_events.cpp:246
 msgid "Save FITS Image"
 msgstr "保存FITS图像"
 
-#: myframe_events.cpp:255
+#: myframe_events.cpp:256
 #, c-format
 msgid "The image could not be saved to %s"
 msgstr "*The image could not be saved to %s"
 
-#: myframe_events.cpp:259
+#: myframe_events.cpp:260
 #, c-format
 msgid "%s saved"
 msgstr "%s 已保存"
 
-#: myframe_events.cpp:273 myframe_events.cpp:480 myframe_events.cpp:583
+#: myframe_events.cpp:274 myframe_events.cpp:481 myframe_events.cpp:584
 msgid "Please connect to a camera first"
 msgstr "请先连接相机。"
 
-#: myframe_events.cpp:299 myframe_events.cpp:367
+#: myframe_events.cpp:300 myframe_events.cpp:368
 msgid "Stopped."
 msgstr "已停止。"
 
-#: myframe_events.cpp:317
+#: myframe_events.cpp:318
 msgid ""
 "For refining the Bad-pixel Map PHD2 is now displaying raw camera data "
 "frames, which are a different size from ordinary guide frames for this "
 "camera."
 msgstr ""
 
-#: myframe_events.cpp:495
+#: myframe_events.cpp:496
 msgid "You must connect a camera before loading a dark library"
 msgstr "装载暗场库之前必须先连接相机"
 
-#: myframe_events.cpp:522
+#: myframe_events.cpp:523
 msgid "Dark library unloaded"
 msgstr "暗场库不能读取"
 
-#: myframe_events.cpp:538
+#: myframe_events.cpp:539
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr "装载坏点映射图之前必须先连接相机"
 
-#: myframe_events.cpp:553
+#: myframe_events.cpp:554
 msgid "Defect map loaded"
 msgstr "检测图已装载"
 
-#: myframe_events.cpp:557
+#: myframe_events.cpp:558
 msgid "Defect map not loaded"
 msgstr "检测图未装载"
 
-#: myframe_events.cpp:569
+#: myframe_events.cpp:570
 msgid "Bad-pixel map unloaded"
 msgstr "坏点映射图未能加载"
 
-#: myframe_events.cpp:808
+#: myframe_events.cpp:809
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
 
-#: myframe_events.cpp:847
+#: myframe_events.cpp:848
 msgid "Are you sure you want force recalibration?"
 msgstr "是否希望强制校准？"
 
-#: myframe_events.cpp:848
+#: myframe_events.cpp:849
 msgid "Force Recalibration"
 msgstr "强制重新校准"
 
-#: myframe_events.cpp:866
+#: myframe_events.cpp:867
 msgid ""
 "Calibration this far from the celestial equator will be error-prone.  For "
 "best results, calibrate at a declination of -20 to +20."
 msgstr ""
 
-#: myframe_events.cpp:867
+#: myframe_events.cpp:868
 msgid "Confirm Calibration at Large Declination"
 msgstr ""
 
-#: myframe_events.cpp:894 testguide.cpp:146
+#: myframe_events.cpp:895 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "手动导星"
 
-#: myframe_events.cpp:951
+#: myframe_events.cpp:969
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4332,15 +4348,15 @@ msgid ""
 "Would you like to use the Setup Wizard now?"
 msgstr ""
 
-#: myframe_events.cpp:954
+#: myframe_events.cpp:972
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:954
+#: myframe_events.cpp:972
 msgid "No"
 msgstr "否"
 
-#: myframe_events.cpp:954
+#: myframe_events.cpp:972
 msgid "Setup Wizard Recommendation"
 msgstr "设置向导建议"
 
@@ -5353,6 +5369,137 @@ msgstr ""
 #: star_profile.cpp:254
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
+msgstr ""
+
+#: starcross_test.cpp:86
+msgid "88888"
+msgstr ""
+
+#: starcross_test.cpp:92
+msgid "Configuration"
+msgstr ""
+
+#: starcross_test.cpp:110
+msgid "Guide speed, n.n x sidereal"
+msgstr ""
+
+#: starcross_test.cpp:115
+msgid "Test Summary"
+msgstr ""
+
+#: starcross_test.cpp:120
+msgid "Total guide pulse duration in EACH of 4 directions"
+msgstr ""
+
+#: starcross_test.cpp:122
+msgid ""
+"Total guide duration, \n"
+"EACH direction (s)"
+msgstr ""
+
+#: starcross_test.cpp:125
+msgid "Total duration of test (s)"
+msgstr ""
+
+#: starcross_test.cpp:126
+msgid "Total test duration (s)"
+msgstr ""
+
+#: starcross_test.cpp:128 starcross_test.cpp:460
+msgid "Show Details"
+msgstr ""
+
+#: starcross_test.cpp:134
+msgid "Test Details"
+msgstr ""
+
+#: starcross_test.cpp:136
+msgid "Number of guide pulses in EACH direction"
+msgstr ""
+
+#: starcross_test.cpp:139
+msgid "Number of guide pulses"
+msgstr ""
+
+#: starcross_test.cpp:142
+msgid "Guide pulse size (ms)"
+msgstr ""
+
+#: starcross_test.cpp:145
+msgid "Pulse size (ms)"
+msgstr ""
+
+#: starcross_test.cpp:154
+msgid "Verify or adjust your parameters, click 'Start' to begin"
+msgstr ""
+
+#: starcross_test.cpp:252
+#, c-format
+msgid "%d ms move "
+msgstr ""
+
+#: starcross_test.cpp:259
+msgid "WEST"
+msgstr ""
+
+#: starcross_test.cpp:262
+msgid "EAST"
+msgstr ""
+
+#: starcross_test.cpp:265
+msgid "WEST toward starting point"
+msgstr ""
+
+#: starcross_test.cpp:268
+msgid "NORTH"
+msgstr ""
+
+#: starcross_test.cpp:271
+msgid "SOUTH"
+msgstr ""
+
+#: starcross_test.cpp:274
+msgid "NORTH toward starting point"
+msgstr ""
+
+#: starcross_test.cpp:277
+msgid "Test completed"
+msgstr ""
+
+#: starcross_test.cpp:281
+#, c-format
+msgid ", step %d of %d"
+msgstr ""
+
+#: starcross_test.cpp:316
+#, c-format
+msgid "Start a %d exposure on your main camera, then click 'Ok'"
+msgstr ""
+
+#: starcross_test.cpp:330
+msgid ""
+"Wait for the main camera exposure to complete, then save that image for "
+"review"
+msgstr ""
+
+#: starcross_test.cpp:353
+msgid "Star-cross moved failed, test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:362
+msgid "Mount connection lost, test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:373
+msgid "Test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:432
+msgid "Mount connection must be restored"
+msgstr ""
+
+#: starcross_test.cpp:454
+msgid "Hide Details"
 msgstr ""
 
 #: statswindow.cpp:70
