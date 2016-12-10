@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-12-10 02:47-0500\n"
-"PO-Revision-Date: 2016-12-09 13:38+0800\n"
+"PO-Revision-Date: 2016-12-11 00:32+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -110,7 +110,7 @@ msgstr "%d ms, %0.1f px"
 
 #: aui_controls.cpp:365
 msgid "Camera, "
-msgstr "相機"
+msgstr "相機,"
 
 #: aui_controls.cpp:374
 msgid "Mount, "
@@ -2924,7 +2924,7 @@ msgstr "手動停止校準"
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
-msgstr ""
+msgstr "不論是否使用設定組態檔時, 你真的都要自動回復校準資料?"
 
 #: guider.cpp:1114
 msgid "Stopped Guiding"
@@ -3657,11 +3657,11 @@ msgstr "執行彗星追蹤工具"
 
 #: myframe.cpp:459 myframe_events.cpp:912 starcross_test.cpp:76
 msgid "Star-Cross Test"
-msgstr ""
+msgstr "十字星點移動測試"
 
 #: myframe.cpp:459
 msgid "Run a star-cross test for mount diagnostics"
-msgstr ""
+msgstr "執行一次十字星點移動測試來檢測赤道儀"
 
 #: myframe.cpp:460
 msgid "&Guiding Assistant"
@@ -4155,7 +4155,7 @@ msgstr "降噪"
 
 #: myframe.cpp:2538
 msgid "Technique to reduce noise in images"
-msgstr "用以降噪的技術"
+msgstr "用來降噪的技術"
 
 #: myframe.cpp:2544
 msgid "Time Lapse (ms)"
@@ -4338,12 +4338,12 @@ msgstr ""
 "   1) 點擊綠色的 「USB」按鈕, 選擇你所使用的導星相機及赤道儀連接方式, 然後, "
 "點擊「連接所有裝置」\n"
 "   2) 由下拉式表列中選取曝光時間, 建議由兩秒作為初始的曝光值\n"
-"   3) 點擊「Loop」按鈕開始曝光取得影像, 如果焦距部隊請重新調焦\n"
+"   3) 點擊「Loop」按鈕開始曝光取得影像, 如果焦距不準確, 請重新調焦\n"
 "   4) 點選畫面上離邊緣較遠的的任何一顆亮度適中的星星當做導星星體或使用 Alt-S "
 "快速鍵讓 PHD2 自動選星\n"
 "   5) 點擊「導星」按鈕圖示 (綠色標把符號)\n"
 "\n"
-" PHD2 就會開始進行校準併進行導星動作, 就醬子!\n"
+" PHD2 就會開始進行校準並進行導星動作, 就醬子!\n"
 "\n"
 " 想要停指導星, 只要點擊「迴圈」或「停止」按鈕圖示即可, 如果你想要 \n"
 " 微調任何參數, 點擊「大腦」按鈕以開啟進階設定頁面, 使用「檢視」選單 \n"
@@ -4443,7 +4443,7 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
-"位取得最佳的結果，建議在導星時使用暗場影像或壞點影像庫，如此可以避免 PHD 選到"
+"為取得最佳的結果，建議在導星時使用暗場影像或壞點影像庫，如此可以避免 PHD 選到"
 "熱噪點當導星星體，請利用【暗場】功能表項來建立暗場或壞點影像庫"
 
 #: myframe_events.cpp:848
@@ -4634,7 +4634,7 @@ msgid ""
 "up/down control or type in a value directly."
 msgstr ""
 "此數值為導星鏡的焦長或是拍攝時所用望遠鏡的焦長(如果你是使用離軸導星或 AO 裝置"
-"的話), 你可以點擊【上】【】控制扭或直接輸入數值來進行調整。"
+"的話), 你可以點擊「上」「下」控制扭或直接輸入數值來進行調整。"
 
 #: profile_wizard.cpp:153
 msgid "Guide scope focal length (mm)"
@@ -5539,134 +5539,136 @@ msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f”)"
 
 #: starcross_test.cpp:86
 msgid "88888"
-msgstr ""
+msgstr "88888"
 
 #: starcross_test.cpp:92
 msgid "Configuration"
-msgstr ""
+msgstr "設定組態"
 
 #: starcross_test.cpp:110
 msgid "Guide speed, n.n x sidereal"
-msgstr ""
+msgstr "導星速率, n.n x 恆星時"
 
 #: starcross_test.cpp:115
 msgid "Test Summary"
-msgstr ""
+msgstr "測試總結"
 
 #: starcross_test.cpp:120
 msgid "Total guide pulse duration in EACH of 4 directions"
-msgstr ""
+msgstr "四個方向中每個方向的總導星訊號脈衝時間"
 
 #: starcross_test.cpp:122
 msgid ""
 "Total guide duration, \n"
 "EACH direction (s)"
 msgstr ""
+"總導星時間, \n"
+"每個方向 (s)"
 
 #: starcross_test.cpp:125
 msgid "Total duration of test (s)"
-msgstr ""
+msgstr "縱測試時間 (s)"
 
 #: starcross_test.cpp:126
 msgid "Total test duration (s)"
-msgstr ""
+msgstr "總測試時間 (s)"
 
 #: starcross_test.cpp:128 starcross_test.cpp:460
 msgid "Show Details"
-msgstr ""
+msgstr "顯示細節"
 
 #: starcross_test.cpp:134
 msgid "Test Details"
-msgstr ""
+msgstr "測試細節"
 
 #: starcross_test.cpp:136
 msgid "Number of guide pulses in EACH direction"
-msgstr ""
+msgstr "每個方向所給予的導星訊號脈衝次數"
 
 #: starcross_test.cpp:139
 msgid "Number of guide pulses"
-msgstr ""
+msgstr "導星訊號脈衝次數"
 
 #: starcross_test.cpp:142
 msgid "Guide pulse size (ms)"
-msgstr ""
+msgstr "導星訊號脈衝長度 (ms)"
 
 #: starcross_test.cpp:145
 msgid "Pulse size (ms)"
-msgstr ""
+msgstr "訊號脈衝長度 (ms)"
 
 #: starcross_test.cpp:154
 msgid "Verify or adjust your parameters, click 'Start' to begin"
-msgstr ""
+msgstr "確認或調整你所使用的參數, 點擊「開始」以進行測試"
 
 #: starcross_test.cpp:252
 #, c-format
 msgid "%d ms move "
-msgstr ""
+msgstr "移動 %d 微秒"
 
 #: starcross_test.cpp:259
 msgid "WEST"
-msgstr ""
+msgstr "WEST (往西)"
 
 #: starcross_test.cpp:262
 msgid "EAST"
-msgstr ""
+msgstr "EAST (往東)"
 
 #: starcross_test.cpp:265
 msgid "WEST toward starting point"
-msgstr ""
+msgstr "WEST (往西) 趨近啟始點"
 
 #: starcross_test.cpp:268
 msgid "NORTH"
-msgstr ""
+msgstr "NORTH (往北)"
 
 #: starcross_test.cpp:271
 msgid "SOUTH"
-msgstr ""
+msgstr "SOUTH (往南)"
 
 #: starcross_test.cpp:274
 msgid "NORTH toward starting point"
-msgstr ""
+msgstr "NORTH (往北) 趨近啟始點"
 
 #: starcross_test.cpp:277
 msgid "Test completed"
-msgstr ""
+msgstr "測試完成"
 
 #: starcross_test.cpp:281
 #, c-format
 msgid ", step %d of %d"
-msgstr ""
+msgstr ", %d 之 %d 步數"
 
 #: starcross_test.cpp:316
 #, c-format
 msgid "Start a %d exposure on your main camera, then click 'Ok'"
-msgstr ""
+msgstr "主相機開始一次 %d 曝光, 然後點擊「OK」"
 
 #: starcross_test.cpp:330
 msgid ""
 "Wait for the main camera exposure to complete, then save that image for "
 "review"
-msgstr ""
+msgstr "等待主相機完成曝光, 儲存影像以供檢視"
 
 #: starcross_test.cpp:353
 msgid "Star-cross moved failed, test cancelled"
-msgstr ""
+msgstr "十字星點移動失敗, 取消測試"
 
 #: starcross_test.cpp:362
 msgid "Mount connection lost, test cancelled"
-msgstr ""
+msgstr "赤道儀連線中斷, 取消測試"
 
 #: starcross_test.cpp:373
 msgid "Test cancelled"
-msgstr ""
+msgstr "取消測試"
 
 #: starcross_test.cpp:432
 msgid "Mount connection must be restored"
-msgstr ""
+msgstr "必須要恢復赤道儀連線"
 
 #: starcross_test.cpp:454
 msgid "Hide Details"
-msgstr ""
+msgstr "隱藏細節"
 
 #: statswindow.cpp:70
 msgid "RMS"
