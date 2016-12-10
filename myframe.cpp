@@ -443,7 +443,6 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
-    tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
     tools_menu->Append(EEGG_REVIEWCAL, _("&Review Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
 
@@ -457,6 +456,7 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
+    tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();

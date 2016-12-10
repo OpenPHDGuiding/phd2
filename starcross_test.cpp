@@ -54,7 +54,7 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc, double decimals,
+static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc, unsigned int decimals,
                                  const wxString& tooltip)
 {
     wxSpinCtrlDouble *pNewCtrl = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
@@ -105,7 +105,7 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
 
         }
     }
-    m_CtlGuideSpeed = NewSpinner(this, width, guideSpeedMultiple, 0.1, 1.0, 0.1, 0, _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
+    m_CtlGuideSpeed = NewSpinner(this, width, guideSpeedMultiple, 0.1, 1.0, 0.1, 2, _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
     m_CtlGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &StarCrossDialog::OnGuideSpeedChange, this);
     AddTableEntryPair(this, mountSpecSizer, _("Guide speed, n.n x sidereal"), m_CtlGuideSpeed);
     configGroup->Add(mountSpecSizer, wxSizerFlags().Border(wxALL, 5));
