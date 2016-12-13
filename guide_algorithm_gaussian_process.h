@@ -148,6 +148,9 @@ protected:
     bool GetDarkTracking();
     bool SetDarkTracking(bool value);
 
+    bool GetExpertMode();
+    bool SetExpertMode(bool value);
+
 public:
     GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmGaussianProcess(void);

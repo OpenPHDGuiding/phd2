@@ -52,7 +52,7 @@
 #include "gaussian_process.h"
 #include "covariance_functions.h"
 
-class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public ConfigDialogPane
+class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
@@ -73,6 +73,10 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
 
     wxCheckBox       *m_checkboxDarkMode;
 
+    wxCheckBox       *m_checkboxExpertMode;
+
+    wxBoxSizer *m_pExpertPage;
+
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
       : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
@@ -85,114 +89,115 @@ public:
                                               wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
                                               _T("Control Gain"));
         m_pControlGain->SetDigits(2);
+        DoAdd(_("Control gain"), m_pControlGain,
+              _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
+              "fed back to the system. Default = 0.8"));
+
+        m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 50, 2000, 500, 1);
+        m_pPKPeriodLength->SetDigits(2);
+        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("auto"));
+        DoAdd(_("Period length [periodic]"), m_pPKPeriodLength,
+              _("The period length of the periodic error component that should be corrected. Default = 500.0"), m_checkboxComputePeriod);
+
+        // number of points used for the approximate GP inference (subset of data)
+        m_pNumPointsApproximation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
+                                                   wxDefaultPosition,wxSize(width+30, -1),
+                                                   wxSP_ARROW_KEYS, 0, 2000, 10);
+        DoAdd(_("Used data points (approximation)"), m_pNumPointsApproximation,
+              _("Number of data points used in the approximation. Both prediction accuracy as well as runtime rise with "
+              "the number of datapoints. Default = 100"));
+
+        // create the expert options page
+        m_pExpertPage = new wxBoxSizer(wxVERTICAL);
 
         m_pPredictionGain = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                   wxDefaultPosition,wxSize(width+30, -1),
                                                   wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
         m_pPredictionGain->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Prediction gain"), m_pPredictionGain,
+              _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0")));
 
         // number of elements before starting the inference
         m_pNumPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                              wxDefaultPosition,wxSize(width+30, -1),
                                              wxSP_ARROW_KEYS, 0, 1000, 10);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum data points (inference)"), m_pNumPointsInference,
+              _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
+              "the result might be poor. Default = 25")));
 
         m_pNumPointsPeriodComputation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0, 1000, 10);
-
-        // number of points used for the approximate GP inference (subset of data)
-        m_pNumPointsApproximation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
-                                                 wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0, 2000, 10);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum data points (period)"), m_pNumPointsPeriodComputation,
+              _("Minimal number of measurements to start estimating the periodicity. If there are too little data points, "
+              "the estimation might not work. Default = 100")));
 
         // hyperparameters
         m_pSE0KLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0.0, 5000.0, 500.0, 1.0);
         m_pSE0KLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length scale [long range]"), m_pSE0KLengthScale,
+              _("The length scale of the large non-periodic structure in the error. This is essentially a high-pass "
+              "filter and the length scale defines the corner frequency. Default = 500.0")));
 
         m_pSE0KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                     wxDefaultPosition,wxSize(width+30, -1),
                                                     wxSP_ARROW_KEYS, 0.0, 10, 1, 0.1);
         m_pSE0KSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance [long range]"), m_pSE0KSignalVariance,
+              _("Signal Variance of the long-term variations. Default = 10.0")));
 
 
         m_pPKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                 wxDefaultPosition,wxSize(width+30, -1),
                                                 wxSP_ARROW_KEYS, 0.0, 10, 1.0, 0.1);
         m_pPKLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length scale [periodic]"), m_pPKLengthScale,
+              _("The length scale defines the \"wigglyness\" of the function. The smaller the length scale, the more "
+              "structure can be learned. If chosen too small, some non-periodic structure might be picked up as well. "
+              "Default = 0.5")));
 
-        m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
-                                                 wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 50, 2000, 500, 1);
-        m_pPKPeriodLength->SetDigits(2);
 
 
         m_pPKSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                    wxDefaultPosition,wxSize(width+30, -1),
                                                    wxSP_ARROW_KEYS, 0.0, 30, 10, 0.1);
         m_pPKSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal variance [periodic]"), m_pPKSignalVariance,
+              _("The width of the periodic error. Should be around the amplitude of the PE curve, but is not a critical parameter. "
+              "Default = 10.0")));
 
         m_pSE1KLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0.0, 10.0, 5.0, 0.1);
         m_pSE1KLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length scale [short range]"), m_pSE1KLengthScale,
+              _("The length scale of the short range non-periodic parts of the gear error. This is essentially a low-pass "
+              "filter and the length scale defines the corner frequency. Default = 5.0")));
 
         m_pSE1KSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0.0, 10, 1, 0.1);
         m_pSE1KSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance [short range]"), m_pSE1KSignalVariance,
+              _("Signal Variance of the short-term variations. Default = 1.0")));
 
 
-        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T(""));
 
-        m_checkboxDarkMode = new wxCheckBox(pParent, wxID_ANY, _T(""));
+        m_checkboxExpertMode = new wxCheckBox(pParent, wxID_ANY, _T(""));
+        pParent->Connect(m_checkboxExpertMode->GetId(), wxEVT_CHECKBOX, wxCommandEventHandler(GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane::EnableExpertMode), 0, this);
+        DoAdd(_("Show expert options"), m_checkboxExpertMode, _("This is just for debugging and disabled by default"));
 
-        DoAdd(_("Control Gain"), m_pControlGain,
-              _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
-                "fed back to the system. Default = 0.8"));
 
-        DoAdd(_("Prediction gain"), m_pPredictionGain,
-              _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0"));
 
-        DoAdd(_("Minimum data points (inference)"), m_pNumPointsInference,
-              _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
-                "the result might be poor. Default = 25"));
+        m_checkboxDarkMode = new wxCheckBox(pParent, wxID_ANY, "");
+        m_pExpertPage->Add(MakeLabeledControl(_("Dark guiding mode"), m_checkboxDarkMode, _("This is just for debugging and disabled by default")));
 
-        DoAdd(_("Minimum data points (period)"), m_pNumPointsPeriodComputation,
-              _("Minimal number of measurements to start estimating the periodicity. If there are too little data points, "
-                "the estimation might not work. Default = 100"));
-
-        DoAdd(_("Used data points (approximation)"), m_pNumPointsApproximation,
-              _("Number of data points used in the approximation. Both prediction accuracy as well as runtime rise with "
-                "the number of datapoints. Default = 100"));
-
-        // hyperparameters
-        DoAdd(_("Length scale [long range]"), m_pSE0KLengthScale,
-              _("The length scale of the large non-periodic structure in the error. This is essentially a high-pass "
-                "filter and the length scale defines the corner frequency. Default = 500.0"));
-        DoAdd(_("Signal Variance [long range]"), m_pSE0KSignalVariance,
-              _("Signal Variance of the long-term variations. Default = 10.0"));
-        DoAdd(_("Length scale [periodic]"), m_pPKLengthScale,
-              _("The length scale defines the \"wigglyness\" of the function. The smaller the length scale, the more "
-                "structure can be learned. If chosen too small, some non-periodic structure might be picked up as well. "
-                "Default = 0.5"));
-        DoAdd(_("Period length [periodic]"), m_pPKPeriodLength,
-              _("The period length of the periodic error component that should be corrected. It turned out that the shorter "
-                "period is more important for the performance than the long one, if a telescope mount shows both. Default = 500.0"));
-        DoAdd(_("Signal variance [periodic]"), m_pPKSignalVariance,
-              _("The width of the periodic error. Should be around the amplitude of the PE curve, but is not a critical parameter. "
-                "Default = 10.0"));
-        DoAdd(_("Length scale [short range]"), m_pSE1KLengthScale,
-              _("The length scale of the short range non-periodic parts of the gear error. This is essentially a low-pass "
-                "filter and the length scale defines the corner frequency. Default = 5.0"));
-        DoAdd(_("Signal Variance [short range]"), m_pSE1KSignalVariance,
-              _("Signal Variance of the short-term variations. Default = 1.0"));
-
-        DoAdd(_("Compute period"), m_checkboxComputePeriod,
-              _("Compute period length with FFT. Default  = on"));
-
-        DoAdd(_("Force dark tracking"), m_checkboxDarkMode, _("This is just for debugging and disabled by default"));
+        // add expert options to the main options
+        DoAdd(m_pExpertPage);
     }
 
     virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
@@ -224,6 +229,10 @@ public:
         m_pPredictionGain->SetValue(m_pGuideAlgorithm->GetPredictionGain());
 
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
+
+        m_pExpertPage->ShowItems(m_pGuideAlgorithm->GetExpertMode());
+        m_pExpertPage->Layout();
+        m_pParent->Layout();
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
@@ -247,6 +256,15 @@ public:
         m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
         m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue());
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
+
+        m_pGuideAlgorithm->SetExpertMode(m_checkboxExpertMode->GetValue());
+    }
+
+    virtual void EnableExpertMode(wxCommandEvent& evt)
+    {
+        m_pExpertPage->ShowItems(evt.IsChecked());
+        m_pExpertPage->Layout();
+        m_pParent->Layout();
     }
 };
 
@@ -280,6 +298,7 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 
     bool compute_period_;
     bool dark_tracking_mode_;
+    bool expert_mode_;
 
     bool dithering_active_;
     int dither_steps_;
@@ -302,6 +321,7 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
       points_for_approximation_(0),
       compute_period_(false),
       dark_tracking_mode_(false),
+      expert_mode_(false),
       dithering_active_(false),
       dither_steps_(0),
       gp_(covariance_function_)
@@ -400,6 +420,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
 
     parameters->gp_.enableExplicitTrend(); // enable the explicit basis function for the linear drift
     parameters->dark_tracking_mode_ = false; // dark tracking mode ignores measurements
+    parameters->expert_mode_ = false; // expert mode exposes the GP hyperparameters
     reset();
 }
 
@@ -746,6 +767,17 @@ bool GuideAlgorithmGaussianProcess::GetDarkTracking()
 bool GuideAlgorithmGaussianProcess::SetDarkTracking(bool value)
 {
     parameters->dark_tracking_mode_ = value;
+    return false;
+}
+
+bool GuideAlgorithmGaussianProcess::GetExpertMode()
+{
+    return parameters->expert_mode_;
+}
+
+bool GuideAlgorithmGaussianProcess::SetExpertMode(bool value)
+{
+    parameters->expert_mode_ = value;
     return false;
 }
 
