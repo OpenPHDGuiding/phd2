@@ -100,11 +100,14 @@
 # define ZWO_ASI
 
 #elif defined (__linux__)
+
 # define SIMULATOR
 # define CAM_QHY5
+# define QHY_CAMERA
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
+
 #endif
 
 // Currently unused

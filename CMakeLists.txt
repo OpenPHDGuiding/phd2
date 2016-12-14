@@ -249,6 +249,8 @@ elseif(UNIX AND (NOT APPLE))
       ${cam_SRC}
       #${phd_src_dir}/cam_simulator.h
       #${phd_src_dir}/cam_simulator.cpp
+      ${phd_src_dir}/cam_qhy5.h
+      ${phd_src_dir}/cam_qhy5.cpp
       ${phd_src_dir}/cameras/SXMacLib.h
       ${phd_src_dir}/cameras/SXMacLib.c
      )

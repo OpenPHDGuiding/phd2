@@ -899,11 +899,14 @@ if(UNIX AND NOT APPLE)
 
  if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm(.*)")
     set(arch "armv6")
+    set(qhyarch "armv6")
  else()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
     set(arch "x64") 
+    set(qhyarch "x86_64")
   else() 
     set(arch "x86") 
+    set(qhyarch "x86_32")
   endif()
  endif()
 
@@ -920,6 +923,13 @@ if(UNIX AND NOT APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
+  find_library( qhylib
+                NAMES qhy
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
+  if(NOT qhylib)
+    message(FATAL_ERROR "Cannot find the qhy SDK libs")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
   # math library is needed, and should be one of the last things to link to here
   find_library(mathlib NAMES m)  
