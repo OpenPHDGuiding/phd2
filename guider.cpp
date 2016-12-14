@@ -616,7 +616,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
 
-        if (GetPauseType() != PAUSE_NONE)
+        if (IsPaused())
         {
             dc.SetTextForeground(*wxYELLOW);
             dc.DrawText(_("PAUSED"), 10, YWinSize - 20);
@@ -1208,6 +1208,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (IsPaused())
         {
+            if (m_state == STATE_GUIDING)
+            {
+                // allow guide algorithms to attempt dead reckoning
+                pFrame->SchedulePrimaryMove(pMount, PHD_Point(0., 0.), MOVETYPE_DEDUCED);
+            }
+
             statusMessage = _("Paused");
             throw THROW_INFO("Skipping frame - guider is paused");
         }
