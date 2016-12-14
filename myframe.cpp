@@ -2058,7 +2058,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 last_frame_size[0] = fsize[0];
                 last_frame_size[1] = fsize[1];
 
-                std::auto_ptr<usImage> img(new usImage());
+                std::unique_ptr<usImage> img(new usImage());
 
                 if (img->Init((int)fsize[0], (int)fsize[1]))
                 {
