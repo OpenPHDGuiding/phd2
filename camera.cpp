@@ -177,7 +177,7 @@ extern "C" {
 
 const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
-static double GetProfilePixelSize(void)
+double GuideCamera::GetProfilePixelSize(void)
 {
     return pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
 }
@@ -670,6 +670,8 @@ bool GuideCamera::SetCameraPixelSize(double pixel_size)
         }
 
         m_pixelSize = pixel_size;
+        if (pFrame->pStatsWin)
+            pFrame->pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {
@@ -713,8 +715,8 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 
 static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc)
 {
-    wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
+    wxSpinCtrl *pNewCtrl = pFrame->MakeSpinCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val);
     pNewCtrl->SetValue(val);
     return pNewCtrl;
 }
@@ -722,7 +724,7 @@ static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minva
 static wxSpinCtrlDouble *NewSpinnerDouble(wxWindow *parent, int width, double val, double minval, double maxval, double inc,
                                           const wxString& tooltip)
 {
-    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    wxSpinCtrlDouble *pNewCtrl = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(" "), wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, inc);
     pNewCtrl->SetDigits(2);
     pNewCtrl->SetToolTip(tooltip);
@@ -797,6 +799,7 @@ CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, G
 CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
+    int textWidth = StringWidth(_T("0000"));
     assert(pCamera);
 
     m_pCamera = pCamera;
@@ -809,17 +812,15 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
 
-    int width = StringWidth(_T("0000")) + 30;
     // Pixel size always
-    m_pPixelSize = NewSpinnerDouble(GetParentWindow(AD_szPixelSize), width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
+    m_pPixelSize = NewSpinnerDouble(GetParentWindow(AD_szPixelSize), textWidth, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera un-binned pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
     AddLabeledCtrl(CtrlMap, AD_szPixelSize, _("Pixel size"), m_pPixelSize, "");
 
     // Gain control
     if (m_pCamera->HasGainControl)
     {
-        int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), width, 100, 0, 100, 1);
+        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), textWidth, 100, 0, 100, 1);
         AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain, _("Camera gain, default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
     }
 
@@ -830,7 +831,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         wxArrayString opts;
         m_pCamera->GetBinningOpts(&opts);
         int width = StringArrayWidth(opts);
-        m_binning = new wxChoice(GetParentWindow(AD_binning), wxID_ANY, wxPoint(-1, -1),
+        m_binning = new wxChoice(GetParentWindow(AD_binning), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), opts);
         AddLabeledCtrl(CtrlMap, AD_binning, _("Binning"), m_binning, _("Camera pixel binning"));
     }
@@ -838,8 +839,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     // Delay parameter
     if (m_pCamera->HasDelayParam)
     {
-        int width = StringWidth(_T("0000")) + 30;
-        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, 0, 250, 150);
+        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, 0, 250, 150);
         AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
     }
 
@@ -853,7 +853,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         };
 
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxPoint(-1, -1),
+        m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
@@ -864,7 +864,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         m_coolerOn = new wxCheckBox(GetParentWindow(AD_cooler), wxID_ANY, _("Cooler On"));
         m_coolerOn->SetToolTip(_("Turn camera cooler on or off"));
         sz->Add(m_coolerOn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT));
-        m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, -99, 99, 1);
+        m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, -99, 99, 1);
         wxSizer *szt = MakeLabeledControl(AD_cooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
         sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         AddGroup(CtrlMap, AD_cooler, sz);
@@ -872,9 +872,8 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     // Watchdog timeout
     {
-        int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), width, 5, 5, 9999, 1);
-        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal,
+        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
+        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
             wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
             "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
     }

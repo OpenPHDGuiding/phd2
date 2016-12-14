@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-19 03:47-0400\n"
+"POT-Creation-Date: 2016-12-10 02:47-0500\n"
 "PO-Revision-Date: 2015-07-07 07:44+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -60,7 +60,7 @@ msgstr "Global"
 msgid "Camera"
 msgstr "Cameră"
 
-#: advanced_dialog.cpp:148 guider.cpp:1250 myframe.cpp:1368
+#: advanced_dialog.cpp:148 guider.cpp:1290 myframe.cpp:1412
 #: scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "Ghidaj"
@@ -83,7 +83,7 @@ msgstr "Montură"
 msgid "No mount specified"
 msgstr ""
 
-#: aui_controls.cpp:140 aui_controls.cpp:152 guiding_assistant.cpp:294
+#: aui_controls.cpp:140 aui_controls.cpp:152 guiding_assistant.cpp:301
 #: aui_controls.h:139
 msgid "SNR"
 msgstr "SNR (Signal to Noise Ratio)"
@@ -185,93 +185,97 @@ msgstr "Cal"
 msgid "Selected star at (999.9, 999.9)"
 msgstr ""
 
-#: backlash_comp.cpp:216
+#: backlash_comp.cpp:219
 msgid "Backlash Results"
 msgstr "Rezultatele reacției (backlash)"
 
-#: backlash_comp.cpp:301
+#: backlash_comp.cpp:304
 msgid "Ideal"
 msgstr "Ideal"
 
-#: backlash_comp.cpp:303
+#: backlash_comp.cpp:306
 msgid "Measured"
 msgstr "Măsurat"
 
-#: backlash_comp.cpp:304 scope.cpp:1682 scope.cpp:1792 scope.cpp:1826
+#: backlash_comp.cpp:307 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
 #: testguide.cpp:152
 msgid "North"
 msgstr "Nord"
 
-#: backlash_comp.cpp:305 scope.cpp:1682 scope.cpp:1792 scope.cpp:1826
+#: backlash_comp.cpp:308 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
 #: testguide.cpp:152
 msgid "South"
 msgstr "Sud"
 
-#: backlash_comp.cpp:361
+#: backlash_comp.cpp:359
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 "Reacția (backlash) măsurată nu poate fi rulată - vă rugăm să refaceți "
 "calibrarea monturii"
 
-#: backlash_comp.cpp:438
+#: backlash_comp.cpp:449
+msgid "Backlash measurement cannot be run - Dec guide rate not available"
+msgstr ""
+
+#: backlash_comp.cpp:463
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr ""
 
-#: backlash_comp.cpp:475
+#: backlash_comp.cpp:500
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr ""
 
-#: backlash_comp.cpp:483
+#: backlash_comp.cpp:508
 msgid "Could not clear North backlash - test failed"
 msgstr "Reacția (backlash) spre Nord nu s-a putut curăța - test eșuat"
 
-#: backlash_comp.cpp:510
+#: backlash_comp.cpp:535
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:526
+#: backlash_comp.cpp:551
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr ""
 
-#: backlash_comp.cpp:541
+#: backlash_comp.cpp:566
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:571
+#: backlash_comp.cpp:596
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Emiterea corecției testului reacției (backlash) %d ms"
 
-#: backlash_comp.cpp:630
+#: backlash_comp.cpp:655
 msgid "Restoring star position"
 msgstr "Restabilirea poziției stelei"
 
-#: backlash_comp.cpp:638
+#: backlash_comp.cpp:663
 msgid "Measurement complete"
 msgstr "Măsurarea completă"
 
-#: backlash_comp.cpp:647
+#: backlash_comp.cpp:672
 msgid "Measurement halted"
 msgstr "Măsurarea oprită"
 
-#: backlash_comp.cpp:657
+#: backlash_comp.cpp:682
 #, c-format
 msgid "Measurement encountered an error: %s"
 msgstr ""
 
-#: calreview_dialog.cpp:47 statswindow.cpp:263
+#: calreview_dialog.cpp:47 statswindow.cpp:300
 msgid "N/A"
 msgstr "N/A"
 
 #: calreview_dialog.cpp:101 config_INDI.cpp:110 eegg.cpp:112
-#: gear_dialog.cpp:292 gear_dialog.cpp:294 testguide.cpp:161
+#: gear_dialog.cpp:294 gear_dialog.cpp:296 testguide.cpp:161
 msgid "AO"
 msgstr "Optica adaptativă (AO)"
 
@@ -280,16 +284,16 @@ msgstr "Optica adaptativă (AO)"
 msgid "Right Ascension"
 msgstr "Ascensie dreaptă (RA)"
 
-#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:151
+#: calreview_dialog.cpp:137 comet_tool.cpp:326 myframe_events.cpp:152
 msgid "X"
 msgstr "X"
 
 #: calreview_dialog.cpp:142 calreview_dialog.cpp:147 calreview_dialog.cpp:376
-#: mount.cpp:128 statswindow.cpp:103
+#: mount.cpp:128 statswindow.cpp:104
 msgid "Declination"
 msgstr "Declinație (Dec)"
 
-#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:158
+#: calreview_dialog.cpp:145 comet_tool.cpp:327 myframe_events.cpp:159
 msgid "Y"
 msgstr "Y"
 
@@ -321,7 +325,7 @@ msgstr "Eroarea de ortogonalitate"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1155
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1195
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -361,7 +365,7 @@ msgstr ""
 msgid "Created:"
 msgstr ""
 
-#: calreview_dialog.cpp:299 mount.cpp:57 mount.cpp:92 statswindow.cpp:266
+#: calreview_dialog.cpp:299 mount.cpp:57 mount.cpp:92 statswindow.cpp:303
 msgid "Unknown"
 msgstr "Necunoscut"
 
@@ -575,39 +579,39 @@ msgstr "Calibrarea anterioară restaurată"
 msgid "Calibration Step Calculator"
 msgstr "Calculator pentru pașii calibrării"
 
-#: calstep_dialog.cpp:100
+#: calstep_dialog.cpp:103
 msgid "Input Parameters"
 msgstr "Parametri de intrare"
 
-#: calstep_dialog.cpp:110
+#: calstep_dialog.cpp:115
 msgid "Focal length, mm"
 msgstr "Lungimea focală, mm"
 
-#: calstep_dialog.cpp:110
+#: calstep_dialog.cpp:115
 msgid "Guide scope focal length"
 msgstr "Lungimea focală a instrumentului de ghidaj"
 
-#: calstep_dialog.cpp:116
+#: calstep_dialog.cpp:120
 msgid "Pixel size, microns"
 msgstr "Mărimea pixelului, microni"
 
-#: calstep_dialog.cpp:116
+#: calstep_dialog.cpp:120
 msgid "Guide camera pixel size"
 msgstr "Mărimea pixelului camerei de ghidaj"
 
-#: calstep_dialog.cpp:126 statswindow.cpp:110
+#: calstep_dialog.cpp:130 statswindow.cpp:111
 msgid "Camera binning"
 msgstr ""
 
-#: calstep_dialog.cpp:126
+#: calstep_dialog.cpp:130
 msgid "Guide camera pixel binning"
 msgstr ""
 
-#: calstep_dialog.cpp:132
+#: calstep_dialog.cpp:136
 msgid "Guide speed, n.nn x sidereal"
 msgstr "Viteza de ghidaj, n.nn x siderală"
 
-#: calstep_dialog.cpp:133
+#: calstep_dialog.cpp:137 starcross_test.cpp:108
 #, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
@@ -616,11 +620,11 @@ msgstr ""
 "Viteza de ghidaj, multiplu de rată siderală; dacă viteza de ghidaj a "
 "monturii este 50% din rata siderală, introduceți 0.5"
 
-#: calstep_dialog.cpp:139
+#: calstep_dialog.cpp:143
 msgid "Calibration steps"
 msgstr "Pașii calibrării"
 
-#: calstep_dialog.cpp:140
+#: calstep_dialog.cpp:144
 #, c-format
 msgid ""
 "Targeted number of steps in each direction. The default value (%d) works "
@@ -629,38 +633,38 @@ msgstr ""
 "Numărul stabilit de pași în fiecare direcție. Valoarea implicită (%d) merge "
 "bine pentru majoritatea configurațiilor."
 
-#: calstep_dialog.cpp:146
+#: calstep_dialog.cpp:150
 msgid "Calibration declination, degrees"
 msgstr "Calibrarea declinației, grade"
 
-#: calstep_dialog.cpp:146
+#: calstep_dialog.cpp:150
 msgid "Approximate declination where you will do calibration"
 msgstr "Declinația aproximativă unde veți face calibrarea"
 
-#: calstep_dialog.cpp:149
+#: calstep_dialog.cpp:153
 msgid "Computed Values"
 msgstr "Valorile calculate"
 
-#: calstep_dialog.cpp:154
+#: calstep_dialog.cpp:159
 msgid "Image scale, arc-sec/px"
 msgstr "Scara imaginii, arc-sec/px"
 
-#: calstep_dialog.cpp:156
+#: calstep_dialog.cpp:161
 msgid "Calibration step, ms"
 msgstr "Pașii calibrării, ms"
 
-#: calstep_dialog.cpp:176 cam_simulator.cpp:1471 camcal_import_dialog.cpp:47
-#: camera.cpp:723 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:54
-#: myframe.cpp:2563 profile_wizard.cpp:59 profile_wizard.cpp:66
-#: Refine_DefMap.cpp:60
+#: calstep_dialog.cpp:181 cam_simulator.cpp:1471 camcal_import_dialog.cpp:47
+#: camera.cpp:725 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:54
+#: myframe.cpp:2633 profile_wizard.cpp:61 profile_wizard.cpp:68
+#: Refine_DefMap.cpp:59 starcross_test.cpp:52
 msgid ": "
 msgstr ":"
 
-#: calstep_dialog.cpp:239
+#: calstep_dialog.cpp:244
 msgid "Please enter a focal length of at least 50"
 msgstr "Vă rugăm să introduceți o lungime focală de cel puțin 50"
 
-#: calstep_dialog.cpp:243
+#: calstep_dialog.cpp:248
 msgid "Please enter a pixel size greater than zero."
 msgstr "Vă rugăm să introduceți o dimensiune a pixelului mai mare de 0."
 
@@ -672,8 +676,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Setări"
 
-#: cam_Altair.cpp:143 cam_Altair.cpp:153 cam_Altair.cpp:176
-#: cam_ascomlate.cpp:444 cam_ascomlate.cpp:450 cam_ascomlate.cpp:461
+#: cam_Altair.cpp:143 cam_Altair.cpp:162 cam_Altair.cpp:169 cam_Altair.cpp:192
 #: cam_Atik16.cpp:128 cam_firewire_IC.cpp:94 cam_INovaPLC.cpp:61
 #: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
 #: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
@@ -694,154 +697,142 @@ msgstr "Setări"
 #: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261 cam_wdm.cpp:132 cam_wdm.cpp:141
 #: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
 #: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:149 cam_ZWO.cpp:177
-#: cam_ZWO.cpp:192 cam_ZWO.cpp:207 cam_ZWO.cpp:213 cam_ZWO.cpp:255
-#: gear_dialog.cpp:1182 gear_dialog.cpp:1843 gear_dialog.cpp:1852
-#: gear_dialog.cpp:1859 gear_dialog.cpp:1904 gear_dialog.cpp:1910
-#: rotator_ascom.cpp:129 rotator_ascom.cpp:135 rotator_ascom.cpp:146
-#: scope_ascom.cpp:148 scope_ascom.cpp:155 scope_ascom.cpp:166
-#: scope_ascom.cpp:251 scope_ascom.cpp:266 scope_ascom.cpp:274
-#: scope_ascom.cpp:283 scope_ascom.cpp:299 scope_ascom.cpp:306
-#: scope_ascom.cpp:394 scope_ascom.cpp:402 scope_eqmac.cpp:135
-#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
-#: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
-#: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
-#: scope_GC_USBST4.cpp:242 scope_gpusb.cpp:304 stepguider_sxao.cpp:107
-#: stepguider_sxao.cpp:160 stepguider_sxao_INDI.cpp:104
+#: cam_ZWO.cpp:192 cam_ZWO.cpp:209 cam_ZWO.cpp:216 cam_ZWO.cpp:224
+#: cam_ZWO.cpp:267 gear_dialog.cpp:1186 gear_dialog.cpp:1847
+#: gear_dialog.cpp:1856 gear_dialog.cpp:1863 gear_dialog.cpp:1908
+#: gear_dialog.cpp:1914 scope_ascom.cpp:186 scope_ascom.cpp:201
+#: scope_ascom.cpp:209 scope_ascom.cpp:218 scope_ascom.cpp:234
+#: scope_ascom.cpp:241 scope_ascom.cpp:329 scope_ascom.cpp:337
+#: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
+#: scope_equinox.cpp:142 scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160
+#: scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204
+#: scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242 scope_gpusb.cpp:304
+#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:160 stepguider_sxao_INDI.cpp:104
 #: stepguider_sxao_INDI.cpp:115
 msgid "Error"
 msgstr "Eroare"
 
-#: cam_Altair.cpp:153
+#: cam_Altair.cpp:162
+msgid "Specified Altair Camera not found."
+msgstr ""
+
+#: cam_Altair.cpp:169
 msgid "Failed to open Altair Camera."
 msgstr ""
 
-#: cam_Altair.cpp:176
+#: cam_Altair.cpp:192
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
 
-#: cam_ascomlate.cpp:339 scope_ascom.cpp:735
+#: cam_ascomlate.cpp:339 scope_ascom.cpp:665
 msgid ""
 "ASCOM driver failed checking IsPulseGuiding. See the debug log for more "
 "information."
 msgstr ""
 
-#: cam_ascomlate.cpp:444 rotator_ascom.cpp:129 scope_ascom.cpp:148
-msgid "Failed to find the ASCOM Chooser. Make sure it is installed"
-msgstr "Găsirea ASCOM Chooser a eșuat. Verificați dacă este instalat"
-
-#: cam_ascomlate.cpp:450
-msgid ""
-"Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"
-msgstr ""
-"Setarea alegerii tipului camerei a eșuat. Ceva este în neregulă cu ASCOM-ul "
-
-#: cam_ascomlate.cpp:461
-msgid "Failed to run the Camera Chooser. Something is wrong with ASCOM"
-msgstr "Alegerea camerei a eșuat. Ceva este în neregulă cu ASCOM-ul"
-
-#: cam_ascomlate.cpp:517
+#: cam_ascomlate.cpp:456
 msgid "ASCOM Camera Driver missing required property "
 msgstr "Driver-ului ASCOM al camerei îî lipsește proprietatea cerută"
 
-#: cam_ascomlate.cpp:531
+#: cam_ascomlate.cpp:470
 msgid ""
 "Could not create ASCOM camera object. See the debug log for more information."
 msgstr ""
 
-#: cam_ascomlate.cpp:555 rotator_ascom.cpp:235
+#: cam_ascomlate.cpp:494 rotator_ascom.cpp:174
 msgid "ASCOM driver problem: Connect"
 msgstr "Problemă a driver-ului ASCOM: Conectare"
 
-#: cam_ascomlate.cpp:571
+#: cam_ascomlate.cpp:510
 msgid ""
 "ASCOM driver missing the CanPulseGuide property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:579
+#: cam_ascomlate.cpp:518
 msgid ""
 "ASCOM driver missing the CanAbortExposure property. Please report this error "
 "to your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:587
+#: cam_ascomlate.cpp:526
 msgid ""
 "ASCOM driver missing the CanStopExposure property. Please report this error "
 "to your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:603
+#: cam_ascomlate.cpp:542
 msgid ""
 "ASCOM driver missing the CameraXSize property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:611
+#: cam_ascomlate.cpp:550
 msgid ""
 "ASCOM driver missing the CameraYSize property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:646
+#: cam_ascomlate.cpp:585
 msgid ""
 "ASCOM driver missing the PixelSizeX property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:654
+#: cam_ascomlate.cpp:593
 msgid ""
 "ASCOM driver missing the PixelSizeY property. Please report this error to "
 "your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:679
+#: cam_ascomlate.cpp:618
 msgid ""
 "ASCOM driver missing the CanSetCCDTemperature property. Please report this "
 "error to your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:687
+#: cam_ascomlate.cpp:626
 msgid ""
 "ASCOM driver missing the CanGetCoolerPower property. Please report this "
 "error to your ASCOM driver provider."
 msgstr ""
 
-#: cam_ascomlate.cpp:752 cam_ascomlate.cpp:962
+#: cam_ascomlate.cpp:691 cam_ascomlate.cpp:901
 msgid ""
 "The ASCOM camera failed to set binning. See the debug log for more "
 "information."
 msgstr ""
 
-#: cam_ascomlate.cpp:779
+#: cam_ascomlate.cpp:718
 msgid "ASCOM driver problem -- cannot disconnect"
 msgstr "Problemă a driver-ului ASCOM -- nu se poate deconecta"
 
-#: cam_ascomlate.cpp:812
+#: cam_ascomlate.cpp:751
 #, c-format
 msgid "ASCOM error turning camera cooler %s"
 msgstr ""
 
-#: cam_ascomlate.cpp:812
+#: cam_ascomlate.cpp:751
 msgid "on"
 msgstr ""
 
-#: cam_ascomlate.cpp:812
+#: cam_ascomlate.cpp:751
 msgid "off"
 msgstr ""
 
-#: cam_ascomlate.cpp:950
+#: cam_ascomlate.cpp:889
 msgid "Cannot allocate memory to download image from camera"
 msgstr "Nu se poate aloca memorie pentru descărcarea imaginii din cameră"
 
-#: cam_ascomlate.cpp:980
+#: cam_ascomlate.cpp:919
 msgid "ASCOM error -- Cannot start exposure with given parameters"
 msgstr "Eroare ASCOM -- Nu se poate începe expunerea cu parametrii actuali"
 
-#: cam_ascomlate.cpp:1004
+#: cam_ascomlate.cpp:943
 msgid "Exception thrown polling camera"
 msgstr "Exception thrown polling camera"
 
-#: cam_ascomlate.cpp:1025
+#: cam_ascomlate.cpp:964
 msgid "Error reading image"
 msgstr "Eroare de citire a imaginii"
 
@@ -1057,15 +1048,15 @@ msgstr "Nu pot arunca expunerea"
 msgid "Cannot stop exposure"
 msgstr "Nu pot opri expunerea"
 
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+#: cam_SBIG.cpp:524 cam_SBIG.cpp:540
 msgid "Error downloading data"
 msgstr "Eroare de descărcare a datelor"
 
-#: cam_SBIG.cpp:581
+#: cam_SBIG.cpp:578
 msgid "Cannot check SBIG relay status"
 msgstr "Nu pot verifica starea releului SBIG"
 
-#: cam_SBIG.cpp:590
+#: cam_SBIG.cpp:587
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "Pauza a expirat așteptând pulsul de ghidaj să termine."
 
@@ -1152,7 +1143,7 @@ msgstr "Stele"
 msgid "Number of hot pixels"
 msgstr "Numărul pixelilor fierbinți"
 
-#: cam_simulator.cpp:1569 Refine_DefMap.cpp:169
+#: cam_simulator.cpp:1569 Refine_DefMap.cpp:168
 msgid "Hot pixels"
 msgstr "Pixeli fierbinți"
 
@@ -1292,8 +1283,8 @@ msgstr "Cometă"
 msgid "Star fading due to clouds"
 msgstr "Steaua se atenuează din cauza norilor."
 
-#: cam_simulator.cpp:1654 darks_dialog.cpp:208 Refine_DefMap.cpp:176
-#: testguide.cpp:101
+#: cam_simulator.cpp:1654 darks_dialog.cpp:208 mount.cpp:162 mount.cpp:206
+#: Refine_DefMap.cpp:175 starcross_test.cpp:147 testguide.cpp:101
 msgid "Reset"
 msgstr "Resetare"
 
@@ -1373,13 +1364,17 @@ msgstr ""
 "Librăriile camerei ASI necesită Pachetul Microsoft Visual C++ 2008 (x86) "
 "disponibil la: http://www.microsoft.com/en-us/download/details.aspx?id=29"
 
-#: cam_ZWO.cpp:207 cam_ZWO.cpp:255
+#: cam_ZWO.cpp:209 cam_ZWO.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "Am eșuat să obțin proprietățile camerei ZWO ASI."
 
-#: cam_ZWO.cpp:213
+#: cam_ZWO.cpp:216
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Am eșuat să dechid camera ZWO ASI."
+
+#: cam_ZWO.cpp:224
+msgid "Failed to initizlize ZWO ASI Camera."
+msgstr ""
 
 #: camcal_import_dialog.cpp:57
 #, c-format
@@ -1397,14 +1392,14 @@ msgstr "Alege profilul cu Librăria de Dark-uri pe care vrei să îl folosești:
 #: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
 #: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:228
-#: camera.cpp:369 gear_dialog.cpp:347 gear_dialog.cpp:351 gear_dialog.cpp:355
-#: gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:576
-#: gear_dialog.cpp:937 gear_dialog.cpp:1604 gear_dialog.cpp:1605
-#: gear_dialog.cpp:1606 mount.cpp:133 mount.cpp:162 mount.cpp:628
-#: myframe.cpp:2460 profile_wizard.cpp:197 profile_wizard.cpp:198
-#: profile_wizard.cpp:287 profile_wizard.cpp:292 profile_wizard.cpp:497
-#: profile_wizard.cpp:505 rotator.cpp:47 rotator.cpp:82 scope.cpp:270
-#: scope.cpp:312 scope.cpp:352 statswindow.cpp:250 stepguider.cpp:92
+#: camera.cpp:369 gear_dialog.cpp:349 gear_dialog.cpp:353 gear_dialog.cpp:357
+#: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:578
+#: gear_dialog.cpp:940 gear_dialog.cpp:1608 gear_dialog.cpp:1609
+#: gear_dialog.cpp:1610 mount.cpp:133 mount.cpp:172 mount.cpp:683
+#: myframe.cpp:2530 profile_wizard.cpp:215 profile_wizard.cpp:216
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:520
+#: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
+#: scope.cpp:294 scope.cpp:334 statswindow.cpp:260 stepguider.cpp:92
 #: stepguider.cpp:119
 msgid "None"
 msgstr "Nici unul"
@@ -1463,61 +1458,57 @@ msgstr "Selectați camera"
 msgid "Camera %d"
 msgstr ""
 
-#: camera.cpp:731 darks_dialog.cpp:63 guiding_assistant.cpp:290
-msgid "Exposure time"
-msgstr "Timpul de expunere"
-
-#: camera.cpp:747
+#: camera.cpp:749
 msgid "Camera Settings"
 msgstr "Setările camerei"
 
-#: camera.cpp:754
+#: camera.cpp:756
 msgid "General Properties"
 msgstr ""
 
-#: camera.cpp:765
+#: camera.cpp:767
 msgid "Camera-specific Properties"
 msgstr ""
 
-#: camera.cpp:795
+#: camera.cpp:797
 msgid "No camera specified"
 msgstr ""
 
-#: camera.cpp:820
+#: camera.cpp:823
 msgid "Use Subframes"
 msgstr "Folosiți subframe-uri"
 
-#: camera.cpp:821
+#: camera.cpp:824
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
 msgstr ""
 
-#: camera.cpp:829
+#: camera.cpp:831
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
 
-#: camera.cpp:830
+#: camera.cpp:832
 msgid "Pixel size"
 msgstr "Mărimea pixelului"
 
-#: camera.cpp:837
+#: camera.cpp:838
 msgid "Camera gain"
 msgstr "Câștigul camerei"
 
-#: camera.cpp:837
+#: camera.cpp:838
 msgid ""
 "Camera gain, default = 95 % , lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
 
-#: camera.cpp:849
+#: camera.cpp:850
 msgid "Binning"
 msgstr ""
 
-#: camera.cpp:849
+#: camera.cpp:850
 msgid "Camera pixel binning"
 msgstr ""
 
@@ -1549,15 +1540,13 @@ msgstr ""
 msgid "Cooler setpoint temperature"
 msgstr ""
 
-#: camera.cpp:891
+#: camera.cpp:890
 msgid ""
-"Disconnect nonresponsive\n"
+"Disconnect nonresponsive          \n"
 "camera after (seconds)"
 msgstr ""
-"Camera nu răspunde!\n"
-"Deconecteaz-o după (secunde)"
 
-#: camera.cpp:892
+#: camera.cpp:891
 #, c-format
 msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
@@ -1567,20 +1556,20 @@ msgstr ""
 "implicită, %d secunde, ar trebui să fie suficientă pentru majoritatea "
 "camerelor."
 
-#: camera.cpp:1142
+#: camera.cpp:1141
 msgid "unspecified"
 msgstr ""
 
-#: camera.cpp:1144
+#: camera.cpp:1143
 #, c-format
 msgid "%0.1f um"
 msgstr ""
 
-#: camera.cpp:1284
+#: camera.cpp:1283
 msgid "Memory allocation error during capture"
 msgstr "Eroare de alocare a memoriei în timpul capturii"
 
-#: camera.cpp:1289
+#: camera.cpp:1288
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
@@ -1589,11 +1578,11 @@ msgid ""
 "the Advanced Settings Dialog."
 msgstr ""
 
-#: camera.cpp:1310
+#: camera.cpp:1309
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr ""
 
-#: camera.cpp:1315
+#: camera.cpp:1314
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1617,7 +1606,7 @@ msgstr "Urmărire cometă - Pregătire activă"
 msgid "Comet Tracking - Active"
 msgstr "Urmărire cometă - Activă"
 
-#: comet_tool.cpp:90 comet_tool.cpp:200 guider_onestar.cpp:950
+#: comet_tool.cpp:90 comet_tool.cpp:200 guider_onestar.cpp:955
 msgid "Enable"
 msgstr "Permite"
 
@@ -1661,7 +1650,8 @@ msgstr "Axe"
 msgid "Tracking rate axes"
 msgstr "Axele ritmului de urmărire (Tracking rate axes)"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:443
+#: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:456
+#: starcross_test.cpp:160
 msgid "Start"
 msgstr "Pornește"
 
@@ -1669,7 +1659,8 @@ msgstr "Pornește"
 msgid "Start training the tracking rate."
 msgstr "Începe pregătirea ritmului de urmărire."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:448
+#: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:461
+#: starcross_test.cpp:162
 msgid "Stop"
 msgstr "Oprește"
 
@@ -1712,12 +1703,12 @@ msgstr ""
 "Apoi, apasă Pornește pentru a începe pregătirea."
 
 #: comet_tool.cpp:320 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:49 scope.cpp:559 statswindow.cpp:72 target.cpp:339
+#: guide_algorithm.cpp:50 scope.cpp:540 statswindow.cpp:73 target.cpp:339
 msgid "RA"
 msgstr "RA"
 
-#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:559
-#: statswindow.cpp:76 target.cpp:340
+#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:540
+#: statswindow.cpp:77 target.cpp:340
 msgid "Dec"
 msgstr "Dec"
 
@@ -1741,10 +1732,10 @@ msgstr ""
 msgid "Disconnected"
 msgstr ""
 
-#: config_INDI.cpp:97 gear_dialog.cpp:486 gear_dialog.cpp:512
-#: gear_dialog.cpp:528 gear_dialog.cpp:549 gear_dialog.cpp:593
-#: gear_dialog.cpp:614 gear_dialog.cpp:631 gear_dialog.cpp:652
-#: gear_dialog.cpp:669 gear_dialog.cpp:690 runinbg.h:80 runinbg.h:86
+#: config_INDI.cpp:97 gear_dialog.cpp:488 gear_dialog.cpp:514
+#: gear_dialog.cpp:530 gear_dialog.cpp:551 gear_dialog.cpp:595
+#: gear_dialog.cpp:616 gear_dialog.cpp:633 gear_dialog.cpp:654
+#: gear_dialog.cpp:671 gear_dialog.cpp:692 runinbg.h:80 runinbg.h:86
 #: runinbg.h:92 runinbg.h:98
 msgid "Connect"
 msgstr "Conectați"
@@ -1765,7 +1756,7 @@ msgstr ""
 msgid "Main imager"
 msgstr ""
 
-#: config_INDI.cpp:126 myframe_events.cpp:720
+#: config_INDI.cpp:126 myframe_events.cpp:718
 msgid "Guider"
 msgstr ""
 
@@ -1788,6 +1779,10 @@ msgstr "Nu mai întreba"
 #: confirm_dialog.cpp:82
 msgid "Confirm"
 msgstr "Confirmați"
+
+#: darks_dialog.cpp:63 guiding_assistant.cpp:297
+msgid "Exposure time"
+msgstr "Timpul de expunere"
 
 #: darks_dialog.cpp:100
 msgid "Build Dark Library"
@@ -2153,7 +2148,7 @@ msgstr "Rotire (Slewing) ..."
 msgid "Coordinates saved."
 msgstr "Coordonate salvate."
 
-#: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:610
+#: drift_tool.cpp:798 eegg.cpp:207 myframe_events.cpp:608
 msgid "Please connect a camera first."
 msgstr ""
 
@@ -2181,7 +2176,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "Nu există date de calibrare disponibile."
 
-#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:900
+#: eegg.cpp:56 eegg.cpp:212 myframe_events.cpp:895 myframe_events.cpp:912
 msgid "Please connect a mount first."
 msgstr "Vă rugăm să conectați o montură mai întâi."
 
@@ -2247,21 +2242,21 @@ msgstr ""
 "în funcție de echipament."
 
 #: gear_dialog.cpp:195
-msgid "New"
-msgstr "Nou"
-
-#: gear_dialog.cpp:195
-msgid "Create a new profile, optionally copying from another profile"
-msgstr "Creează un profil nou, opțional copiind dintr-un alt profil"
-
-#: gear_dialog.cpp:196
 msgid "New using Wizard..."
 msgstr "Nou folosind vrăjitorul..."
 
-#: gear_dialog.cpp:196
+#: gear_dialog.cpp:195
 msgid "Run the first-light wizard to create a new profile"
 msgstr ""
 "Rulează vrăjitorul prima lumină (first-light) pentru a crea un profil nou"
+
+#: gear_dialog.cpp:196
+msgid "New"
+msgstr "Nou"
+
+#: gear_dialog.cpp:196
+msgid "Create a new profile, optionally copying from another profile"
+msgstr "Creează un profil nou, opțional copiind dintr-un alt profil"
 
 #: gear_dialog.cpp:197
 msgid "Delete"
@@ -2336,22 +2331,29 @@ msgstr ""
 msgid "Camera Setup"
 msgstr "Setări cameră"
 
-#: gear_dialog.cpp:245 gear_dialog.cpp:258 gear_dialog.cpp:283
-#: gear_dialog.cpp:299 gear_dialog.cpp:311 gear_dialog.cpp:503
-#: gear_dialog.cpp:541 gear_dialog.cpp:606 gear_dialog.cpp:643
-#: gear_dialog.cpp:681
+#: gear_dialog.cpp:245 gear_dialog.cpp:260 gear_dialog.cpp:285
+#: gear_dialog.cpp:301 gear_dialog.cpp:313 gear_dialog.cpp:505
+#: gear_dialog.cpp:543 gear_dialog.cpp:608 gear_dialog.cpp:645
+#: gear_dialog.cpp:683
 msgid "Disconnect"
 msgstr "Deconectează"
 
-#: gear_dialog.cpp:256
+#: gear_dialog.cpp:254
+msgid ""
+"Specify how guide commands will be sent to the mount - via an ASCOM or Indi "
+"driver, directly from the camera or AO, or via one of the GPxxx devices. An "
+"ASCOM connection is recommended."
+msgstr ""
+
+#: gear_dialog.cpp:258
 msgid "Mount Setup"
 msgstr "Setări montură"
 
-#: gear_dialog.cpp:264 gear_dialog.cpp:266
+#: gear_dialog.cpp:266 gear_dialog.cpp:268
 msgid "Aux Mount"
 msgstr "Montură Aux"
 
-#: gear_dialog.cpp:274
+#: gear_dialog.cpp:276
 #, c-format
 msgid ""
 "If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
@@ -2367,89 +2369,89 @@ msgstr ""
 "ați selectat un driver %s pentru 'montura' dumneavoastră, parametrul 'aux' "
 "nu va fi utilizat."
 
-#: gear_dialog.cpp:281
+#: gear_dialog.cpp:283
 msgid "Aux Mount Setup"
 msgstr "Setări montură Aux"
 
-#: gear_dialog.cpp:297
+#: gear_dialog.cpp:299
 msgid "AO Setup"
 msgstr "Setări AO"
 
-#: gear_dialog.cpp:305 gear_dialog.cpp:306
+#: gear_dialog.cpp:307 gear_dialog.cpp:308
 msgid "Rotator"
 msgstr "Rotator"
 
-#: gear_dialog.cpp:309
+#: gear_dialog.cpp:311
 msgid "Rotator Setup"
 msgstr "Setări rotator"
 
-#: gear_dialog.cpp:319
+#: gear_dialog.cpp:321
 msgid "Connect All"
 msgstr "Conectează tot"
 
-#: gear_dialog.cpp:320
+#: gear_dialog.cpp:322
 msgid "Connect all equipment and close the equipment selection window"
 msgstr ""
 "Conectează tot echipamentul și închide fereastra de selectare a "
 "echipamentului"
 
-#: gear_dialog.cpp:323
+#: gear_dialog.cpp:325
 msgid "Disconnect All"
 msgstr "Deconectează tot"
 
-#: gear_dialog.cpp:324
+#: gear_dialog.cpp:326
 msgid "Disconnect all equipment"
 msgstr "Deconectează tot echipamentul"
 
-#: gear_dialog.cpp:327 myframe.cpp:1019
+#: gear_dialog.cpp:329 myframe.cpp:1049
 msgid "Close"
 msgstr "Închideți"
 
-#: gear_dialog.cpp:488 gear_dialog.cpp:514
+#: gear_dialog.cpp:490 gear_dialog.cpp:516
 msgid "Connect to camera"
 msgstr "Conectați cameră"
 
-#: gear_dialog.cpp:505
+#: gear_dialog.cpp:507
 msgid "Disconnect from camera"
 msgstr "Deconectați camera"
 
-#: gear_dialog.cpp:530 gear_dialog.cpp:551
+#: gear_dialog.cpp:532 gear_dialog.cpp:553
 msgid "Connect to mount"
 msgstr "Conectați montură"
 
-#: gear_dialog.cpp:543
+#: gear_dialog.cpp:545
 msgid "Disconnect from mount"
 msgstr "Deconectați montura"
 
-#: gear_dialog.cpp:595 gear_dialog.cpp:616
+#: gear_dialog.cpp:597 gear_dialog.cpp:618
 msgid "Connect to aux mount"
 msgstr "Conectați AUX monturii"
 
-#: gear_dialog.cpp:608
+#: gear_dialog.cpp:610
 msgid "Disconnect from aux mount"
 msgstr "Deconectați AUX monturii"
 
-#: gear_dialog.cpp:633 gear_dialog.cpp:654
+#: gear_dialog.cpp:635 gear_dialog.cpp:656
 msgid "Connect to AO"
 msgstr "Conectați AO"
 
-#: gear_dialog.cpp:645
+#: gear_dialog.cpp:647
 msgid "Disconnect from AO"
 msgstr "Deconectare de la AO"
 
-#: gear_dialog.cpp:671 gear_dialog.cpp:692
+#: gear_dialog.cpp:673 gear_dialog.cpp:694
 msgid "Connect to Rotator"
 msgstr "Conectare la rotator"
 
-#: gear_dialog.cpp:683
+#: gear_dialog.cpp:685
 msgid "Disconnect from Rotator"
 msgstr "Deconectare de la rotator"
 
-#: gear_dialog.cpp:875
+#: gear_dialog.cpp:878
 msgid "No cameras found"
 msgstr ""
 
-#: gear_dialog.cpp:946
+#: gear_dialog.cpp:949
 msgid ""
 "By changing cameras in this profile, you won't be able to use the existing "
 "dark library or bad-pixel maps. You should consider creating a new profile "
@@ -2460,123 +2462,123 @@ msgstr ""
 "un nou profil pentru această configurare. Vreți să continuați cu schimbările "
 "aplicate acestui profil?"
 
-#: gear_dialog.cpp:948
+#: gear_dialog.cpp:951
 msgid "Camera Change Warning"
 msgstr "Avertisment schimbare de cameră"
 
-#: gear_dialog.cpp:963
+#: gear_dialog.cpp:966
 msgid "Connecting to Camera ..."
 msgstr "Conectare la cameră ..."
 
-#: gear_dialog.cpp:1005
+#: gear_dialog.cpp:1008
 msgid "Camera Connected"
 msgstr "Camera conectată"
 
-#: gear_dialog.cpp:1013
+#: gear_dialog.cpp:1016
 msgid "Camera Connect Failed"
 msgstr "Conectare eșuată la cameră"
 
-#: gear_dialog.cpp:1055
+#: gear_dialog.cpp:1058
 msgid "Camera Disconnected"
 msgstr "Camera deconectată"
 
-#: gear_dialog.cpp:1172
+#: gear_dialog.cpp:1176
 msgid "Connecting to Mount ..."
 msgstr "Conectare la montură ..."
 
-#: gear_dialog.cpp:1182
+#: gear_dialog.cpp:1186
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "Montura nu suportă interfața cerută PulseGuide"
 
-#: gear_dialog.cpp:1186
+#: gear_dialog.cpp:1190
 msgid "Mount Connected"
 msgstr "Montura conectată"
 
-#: gear_dialog.cpp:1199
+#: gear_dialog.cpp:1203
 msgid "Mount Connect Failed"
 msgstr "Conectarea monturii eșuată"
 
-#: gear_dialog.cpp:1219
+#: gear_dialog.cpp:1223
 msgid "Connecting to Aux Mount ..."
 msgstr "Conectare la montura Aux ..."
 
-#: gear_dialog.cpp:1226
+#: gear_dialog.cpp:1230
 msgid "Aux Mount Connected"
 msgstr "Montura Aux conectată"
 
-#: gear_dialog.cpp:1234
+#: gear_dialog.cpp:1238
 msgid "Aux Mount Connect Failed"
 msgstr "Conectare eșuată la montura Aux"
 
-#: gear_dialog.cpp:1255
+#: gear_dialog.cpp:1259
 msgid "Mount Disconnected"
 msgstr "Montura deconectată"
 
-#: gear_dialog.cpp:1286
+#: gear_dialog.cpp:1290
 msgid "Aux Mount Disconnected"
 msgstr "Montura Aux deconectată"
 
-#: gear_dialog.cpp:1302
+#: gear_dialog.cpp:1306
 msgid "Hide"
 msgstr "Ascunde"
 
-#: gear_dialog.cpp:1308
+#: gear_dialog.cpp:1312
 msgid "More Equipment ..."
 msgstr "Mai mult echipament..."
 
-#: gear_dialog.cpp:1368
+#: gear_dialog.cpp:1372
 msgid "Connecting to AO ..."
 msgstr "Conectare la AO ..."
 
-#: gear_dialog.cpp:1378
+#: gear_dialog.cpp:1382
 msgid "AO Connected"
 msgstr "AO conectată"
 
-#: gear_dialog.cpp:1391
+#: gear_dialog.cpp:1395
 msgid "AO Connect Failed"
 msgstr "Conectarea AO eșuată"
 
-#: gear_dialog.cpp:1419
+#: gear_dialog.cpp:1423
 msgid "AO Disconnected"
 msgstr "AO deconectată"
 
-#: gear_dialog.cpp:1483
+#: gear_dialog.cpp:1487
 msgid "Connecting to Rotator ..."
 msgstr "Conectare la rotator ..."
 
-#: gear_dialog.cpp:1493
+#: gear_dialog.cpp:1497
 msgid "Rotator Connected"
 msgstr "Rotator conectat"
 
-#: gear_dialog.cpp:1506
+#: gear_dialog.cpp:1510
 msgid "Rotator Connect Failed"
 msgstr "Conectarea rotatorului eșuată"
 
-#: gear_dialog.cpp:1529
+#: gear_dialog.cpp:1533
 msgid "Rotator Disconnected"
 msgstr "Rotatorul deconectat"
 
-#: gear_dialog.cpp:1798
+#: gear_dialog.cpp:1802
 msgid "New Equipment Profile"
 msgstr "Profil echipament nou"
 
-#: gear_dialog.cpp:1805
+#: gear_dialog.cpp:1809
 msgid "Name"
 msgstr "Nume"
 
-#: gear_dialog.cpp:1809
+#: gear_dialog.cpp:1813
 msgid "Enter the name of the new equipment profile"
 msgstr "Introduceți numele profilului pentru noul echipament"
 
-#: gear_dialog.cpp:1813
+#: gear_dialog.cpp:1817
 msgid "PHD Defaults"
 msgstr "PHD2 implicite"
 
-#: gear_dialog.cpp:1816
+#: gear_dialog.cpp:1820
 msgid "Profile initial settings"
 msgstr "Setările inițiale ale profilului"
 
-#: gear_dialog.cpp:1819
+#: gear_dialog.cpp:1823
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2585,48 +2587,48 @@ msgstr ""
 "PHD2, sau selectați un profil de echipament existent pentru a copia setările "
 "sale în noul dumneavoastră profil."
 
-#: gear_dialog.cpp:1843
+#: gear_dialog.cpp:1847
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "Nu pot să creez profil %s, deja există un profil cu acest nume."
 
-#: gear_dialog.cpp:1852
+#: gear_dialog.cpp:1856
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "Nu am putut crea profilul %s din profilul %s"
 
-#: gear_dialog.cpp:1859 profile_wizard.cpp:466
+#: gear_dialog.cpp:1863 profile_wizard.cpp:489
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Nu am putut crea profilul %s"
 
-#: gear_dialog.cpp:1875
+#: gear_dialog.cpp:1879
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Șterge profilul %s?"
 
-#: gear_dialog.cpp:1875
+#: gear_dialog.cpp:1879
 msgid "Delete Equipment Profile"
 msgstr "Șterge profilul echipamentului"
 
-#: gear_dialog.cpp:1894
+#: gear_dialog.cpp:1898
 #, c-format
 msgid "Rename %s"
 msgstr "Redenumește %s"
 
-#: gear_dialog.cpp:1894
+#: gear_dialog.cpp:1898
 msgid "Rename Equipment Profile"
 msgstr "Redenumește profilul echipamentului"
 
-#: gear_dialog.cpp:1910
+#: gear_dialog.cpp:1914
 msgid "Could not rename profile"
 msgstr "Nu am putut redenumi profilul"
 
-#: gear_dialog.cpp:1924
+#: gear_dialog.cpp:1928
 msgid "Import PHD Equipment Profiles"
 msgstr "Importă profilele de echipamente PHD2"
 
-#: gear_dialog.cpp:1957
+#: gear_dialog.cpp:1961
 msgid "Export PHD Equipment Profile"
 msgstr "Exportă profilele de echipamente PHD2"
 
@@ -2643,7 +2645,7 @@ msgstr ""
 msgid "Graph settings"
 msgstr "Setările graficului"
 
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:121 target.cpp:79
+#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:131 target.cpp:79
 msgid "Clear"
 msgstr "Șterge"
 
@@ -2768,7 +2770,7 @@ msgstr ""
 msgid "Dither"
 msgstr "Oscilația (Dither)"
 
-#: graph-stepguider.cpp:47 myframe.cpp:296 myframe.cpp:360
+#: graph-stepguider.cpp:47 myframe.cpp:299 myframe.cpp:364
 msgid "AO Position"
 msgstr "Poziția AO"
 
@@ -2784,7 +2786,7 @@ msgstr "Șterge datele graficului"
 msgid "AO not connected"
 msgstr "AO nu este conectată"
 
-#: guide_algorithm.cpp:49
+#: guide_algorithm.cpp:50
 msgid "DEC"
 msgstr "DEC"
 
@@ -2801,15 +2803,15 @@ msgid "Description of the control gain. Default = 1.0"
 msgstr ""
 "Descrierea controlului câștigului (control gain). Valoarea implicită = 1.0"
 
-#: guide_algorithm_hysteresis.cpp:208
+#: guide_algorithm_hysteresis.cpp:232
 msgid "Hysteresis Guide Algorithm"
 msgstr "Algoritmul de ghidaj Hysteresis"
 
-#: guide_algorithm_hysteresis.cpp:219 mount.cpp:133 mount.cpp:162
+#: guide_algorithm_hysteresis.cpp:243 mount.cpp:133 mount.cpp:172
 msgid "Hysteresis"
 msgstr "Hysteresis"
 
-#: guide_algorithm_hysteresis.cpp:220
+#: guide_algorithm_hysteresis.cpp:244
 #, c-format
 msgid ""
 "How much history of previous guide pulses should be applied\n"
@@ -2818,12 +2820,12 @@ msgstr ""
 "Câte din pulsurile anterioare de ghidaj ar trebui aplicate\n"
 "Valoare implicită = %.f%%, măriți valoarea pentru a calma comenzile de ghidaj"
 
-#: guide_algorithm_hysteresis.cpp:227 guide_algorithm_lowpass2.cpp:209
-#: guide_algorithm_resistswitch.cpp:267 Refine_DefMap.cpp:159
+#: guide_algorithm_hysteresis.cpp:251 guide_algorithm_lowpass2.cpp:233
+#: guide_algorithm_resistswitch.cpp:308 Refine_DefMap.cpp:158
 msgid "Aggressiveness"
 msgstr "Agresivitate"
 
-#: guide_algorithm_hysteresis.cpp:228
+#: guide_algorithm_hysteresis.cpp:252
 #, c-format
 msgid ""
 "What percent of the measured error should be applied? Default = %.f%%, "
@@ -2832,13 +2834,13 @@ msgstr ""
 "Ce procent din eroarea măsurată ar trebui aplicată? Valoarea implicită = %.f"
 "%%, ajustați dacă răspunsul este prea rapid sau prea lent."
 
-#: guide_algorithm_hysteresis.cpp:235 guide_algorithm_lowpass.cpp:209
-#: guide_algorithm_lowpass2.cpp:217 guide_algorithm_resistswitch.cpp:275
+#: guide_algorithm_hysteresis.cpp:259 guide_algorithm_lowpass.cpp:233
+#: guide_algorithm_lowpass2.cpp:241 guide_algorithm_resistswitch.cpp:316
 msgid "Minimum Move (pixels)"
 msgstr "Mișcare minimă (pixeli)"
 
-#: guide_algorithm_hysteresis.cpp:236 guide_algorithm_lowpass.cpp:210
-#: guide_algorithm_lowpass2.cpp:218 guide_algorithm_resistswitch.cpp:276
+#: guide_algorithm_hysteresis.cpp:260 guide_algorithm_lowpass.cpp:234
+#: guide_algorithm_lowpass2.cpp:242 guide_algorithm_resistswitch.cpp:317
 #, c-format
 msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? \n"
@@ -2846,16 +2848,16 @@ msgid ""
 "%.2f"
 msgstr ""
 
-#: guide_algorithm_hysteresis.cpp:285
+#: guide_algorithm_hysteresis.cpp:308
 msgid "Agr"
 msgstr "Agr"
 
-#: guide_algorithm_hysteresis.cpp:293
+#: guide_algorithm_hysteresis.cpp:316
 msgid "Hys"
 msgstr "Hys"
 
-#: guide_algorithm_hysteresis.cpp:301 guide_algorithm_lowpass.cpp:263
-#: guide_algorithm_lowpass2.cpp:270
+#: guide_algorithm_hysteresis.cpp:324 guide_algorithm_lowpass.cpp:287
+#: guide_algorithm_lowpass2.cpp:294
 msgid "MnMo"
 msgstr "MnMo"
 
@@ -2867,44 +2869,44 @@ msgstr "Algoritm de ghidaj"
 msgid "Nothing to Configure"
 msgstr "Nimic de configurat"
 
-#: guide_algorithm_lowpass.cpp:190
+#: guide_algorithm_lowpass.cpp:214
 msgid "Lowpass Guide Algorithm"
 msgstr "Algoritm de ghidaj Lowpass"
 
-#: guide_algorithm_lowpass.cpp:201
+#: guide_algorithm_lowpass.cpp:225
 msgid "Slope Weight"
 msgstr "Înălțimea pantei (Slope Weight)"
 
-#: guide_algorithm_lowpass.cpp:202
+#: guide_algorithm_lowpass.cpp:226
 msgid "Weighting of slope parameter in lowpass auto-dec"
 msgstr "Ponderea parametrului pantei în Lowpass auto-dec"
 
-#: guide_algorithm_lowpass.cpp:256
+#: guide_algorithm_lowpass.cpp:280
 msgid "Sl W"
 msgstr "Sl W"
 
-#: guide_algorithm_lowpass2.cpp:196
+#: guide_algorithm_lowpass2.cpp:220
 msgid "Lowpass2 Guide Algorithm"
 msgstr "Algoritm de ghidaj Lowpass2"
 
-#: guide_algorithm_lowpass2.cpp:210 guide_algorithm_resistswitch.cpp:268
+#: guide_algorithm_lowpass2.cpp:234 guide_algorithm_resistswitch.cpp:309
 #, c-format
 msgid "Aggressiveness factor, percent. Default = %.f%%"
 msgstr "Factorul de agresivitate, procent. Valoare implicită = %.f%%"
 
-#: guide_algorithm_lowpass2.cpp:263
+#: guide_algorithm_lowpass2.cpp:287
 msgid "Agg"
 msgstr "Agr"
 
-#: guide_algorithm_resistswitch.cpp:256
+#: guide_algorithm_resistswitch.cpp:297
 msgid "ResistSwitch Guide Algorithm"
 msgstr "Algoritm de ghidaj ResistSwich"
 
-#: guide_algorithm_resistswitch.cpp:279
+#: guide_algorithm_resistswitch.cpp:320
 msgid "Fast switch for large deflections"
 msgstr "Comutator Rapid pentru abateri mari"
 
-#: guide_algorithm_resistswitch.cpp:280
+#: guide_algorithm_resistswitch.cpp:321
 msgid ""
 "Ordinarily the Resist Switch algortithm waits several frames before "
 "switching direction. With Fast Switch enabled PHD2 will switch direction "
@@ -2929,66 +2931,76 @@ msgstr ""
 msgid "PAUSED"
 msgstr ""
 
-#: guider.cpp:1019
+#: guider.cpp:627
+msgid "Guide output DISABLED"
+msgstr ""
+
+#: guider.cpp:1023
 msgid "Calibration manually stopped"
 msgstr "Calibrare oprită manual"
 
-#: guider.cpp:1075
+#: guider.cpp:1077
+msgid ""
+"Do you want to automatically restore this calibration whenever the profile "
+"is used?"
+msgstr ""
+
+#: guider.cpp:1114
 msgid "Stopped Guiding"
 msgstr "Ghidaj oprit"
 
-#: guider.cpp:1086
+#: guider.cpp:1125
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "Poziția de blocare deplasată în afara zonei de toleranță. Deplasarea "
 "poziției de blocare a fost dezactivată."
 
-#: guider.cpp:1115
+#: guider.cpp:1155
 msgid "star lost"
 msgstr "stea pierdută"
 
-#: guider.cpp:1171 myframe.cpp:1503
+#: guider.cpp:1211 myframe.cpp:1547
 msgid "Paused"
 msgstr "Întrerupt"
 
-#: guider.cpp:1193
+#: guider.cpp:1233
 msgid "AO calibration failed"
 msgstr ""
 
-#: guider.cpp:1193 guider.cpp:1226
+#: guider.cpp:1233 guider.cpp:1266
 msgid "calibration failed"
 msgstr ""
 
-#: guider.cpp:1429
+#: guider.cpp:1470
 msgid "Guider Settings"
 msgstr "Setările guider-ului"
 
-#: guider.cpp:1438
+#: guider.cpp:1479
 msgid "Guide star tracking"
 msgstr ""
 
-#: guider.cpp:1439
+#: guider.cpp:1480
 msgid "Calibration"
 msgstr ""
 
-#: guider.cpp:1440
+#: guider.cpp:1481
 msgid "Shared Parameters"
 msgstr ""
 
-#: guider.cpp:1484
+#: guider.cpp:1525
 msgid "Always scale images"
 msgstr ""
 
-#: guider.cpp:1485
+#: guider.cpp:1526
 msgid "Always scale images to fill window"
 msgstr "Totdeauna scalează imaginile pentru a umple fereastra"
 
-#: guider.cpp:1487
+#: guider.cpp:1528
 msgid "Fast recenter after calibration or dither"
 msgstr "Recentrare rapidă după calibrare sau oscilație (dither)"
 
-#: guider.cpp:1488
+#: guider.cpp:1529
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -2999,11 +3011,11 @@ msgstr ""
 "pentru a folosi vechea și mai lenta metodă de recentrare după calibrare sau "
 "oscilație (dither)."
 
-#: guider.cpp:1580
+#: guider.cpp:1621
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "Sunteți sigur că vreți să ștergeți toate semnele de carte?"
 
-#: guider_onestar.cpp:342 guider_onestar.cpp:556
+#: guider_onestar.cpp:342 guider_onestar.cpp:561
 msgid "No star selected"
 msgstr "Nici-o stea selectată"
 
@@ -3023,7 +3035,7 @@ msgstr "Stea prea apropiată de margine"
 msgid "Star lost - mass changed"
 msgstr "Steaua s-a pierdut - masa s-a modificat"
 
-#: guider_onestar.cpp:350 guider_onestar.cpp:686
+#: guider_onestar.cpp:350 guider_onestar.cpp:691
 msgid "No star found"
 msgstr "Nu s-a gasit nici-o stea"
 
@@ -3051,21 +3063,21 @@ msgstr ""
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr ""
 
-#: guider_onestar.cpp:589
+#: guider_onestar.cpp:594
 #, c-format
 msgid "Mass: %.0f vs %.0f"
 msgstr "Masa: %.0f vs. %.0f"
 
-#: guider_onestar.cpp:691
+#: guider_onestar.cpp:696
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "Steaua selectată la (%.1f, %.1f)"
 
-#: guider_onestar.cpp:946
+#: guider_onestar.cpp:951
 msgid "Search region (pixels)"
 msgstr "Regiunea de căutare (pixeli)"
 
-#: guider_onestar.cpp:947
+#: guider_onestar.cpp:952
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
@@ -3073,22 +3085,22 @@ msgstr ""
 "Câți pixeli (sus/jos/stânga/dreapta) se examinează pentru a găsi steaua? "
 "Valoare implicită = 15"
 
-#: guider_onestar.cpp:949
+#: guider_onestar.cpp:954
 msgid "Star Mass Detection"
 msgstr ""
 
-#: guider_onestar.cpp:951
+#: guider_onestar.cpp:956
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
 "'tolerance'."
 msgstr ""
 
-#: guider_onestar.cpp:960
+#: guider_onestar.cpp:965
 msgid "Tolerance"
 msgstr ""
 
-#: guider_onestar.cpp:961
+#: guider_onestar.cpp:966
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -3102,103 +3114,115 @@ msgstr ""
 "schimbării masei stelare este dezactivată atunci această valoare este "
 "ignorată."
 
-#: guiding_assistant.cpp:259
+#: guiding_assistant.cpp:258
 msgid "Guiding Assistant"
 msgstr "Asistentul de ghidaj"
 
-#: guiding_assistant.cpp:275
+#: guiding_assistant.cpp:280
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr ""
 
-#: guiding_assistant.cpp:277
+#: guiding_assistant.cpp:282
+msgid " 9.99 px ( 9.99 arc-sec)"
+msgstr ""
+
+#: guiding_assistant.cpp:284
 msgid "Measurement Status"
 msgstr "Statusul măsurătorii:"
 
-#: guiding_assistant.cpp:288
+#: guiding_assistant.cpp:295
 msgid "Start time"
 msgstr "Timpul de început"
 
-#: guiding_assistant.cpp:296
+#: guiding_assistant.cpp:303
 msgid "Star mass"
 msgstr "Masa stelei"
 
-#: guiding_assistant.cpp:300
+#: guiding_assistant.cpp:307
 msgid "Elapsed time"
 msgstr "Timp scurs"
 
-#: guiding_assistant.cpp:302
+#: guiding_assistant.cpp:309
 msgid "Sample count"
 msgstr "Contorizarea probelor"
 
-#: guiding_assistant.cpp:314
+#: guiding_assistant.cpp:321
 msgid "High-frequency Star Motion"
 msgstr "Mișcările stelei de frecvență înaltă:"
 
-#: guiding_assistant.cpp:325
+#: guiding_assistant.cpp:332
 msgid "Right ascension, RMS"
 msgstr "RA, RMS"
 
-#: guiding_assistant.cpp:329
+#: guiding_assistant.cpp:336
 msgid "Declination, RMS"
 msgstr "Dec, RMS"
 
-#: guiding_assistant.cpp:333
+#: guiding_assistant.cpp:340
 msgid "Total, RMS"
 msgstr "Total, RMS"
 
-#: guiding_assistant.cpp:341
+#: guiding_assistant.cpp:349
 msgid "Other Star Motion"
 msgstr "Alte mișcări ale stelei:"
 
-#: guiding_assistant.cpp:352
+#: guiding_assistant.cpp:360
 msgid "Right ascension, Peak"
 msgstr "RA, Vârf"
 
-#: guiding_assistant.cpp:356
+#: guiding_assistant.cpp:364
 msgid "Declination, Peak"
 msgstr "Dec, Vârf"
 
-#: guiding_assistant.cpp:360
+#: guiding_assistant.cpp:368
 msgid "Right ascension, Peak-Peak"
 msgstr "RA, Vârf-Vârf"
 
-#: guiding_assistant.cpp:364
+#: guiding_assistant.cpp:372
 msgid "Right ascension Drift Rate"
 msgstr "Rata Derivei în RA"
 
-#: guiding_assistant.cpp:368
+#: guiding_assistant.cpp:376
 msgid "Right ascension Max Drift Rate"
 msgstr "Rata Maximă a Derivei în RA (Max Drift Rate)"
 
-#: guiding_assistant.cpp:372
+#: guiding_assistant.cpp:380
 msgid "Drift-limiting exposure"
 msgstr ""
 
-#: guiding_assistant.cpp:376
+#: guiding_assistant.cpp:384
 msgid "Declination Drift Rate"
 msgstr "Rata Derivei în Dec"
 
-#: guiding_assistant.cpp:380
+#: guiding_assistant.cpp:388
 msgid "Declination Backlash"
 msgstr "Reacția (backlash) Declinației"
 
-#: guiding_assistant.cpp:384
+#: guiding_assistant.cpp:392
 msgid "Polar Alignment Error"
 msgstr "Eroarea de aliniere polară"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:400
 msgid "Recommendations"
 msgstr "Recomandări"
 
-#: guiding_assistant.cpp:413
-msgid "Dec Backlash"
-msgstr "Reacția (backlash) Dec"
-
 #: guiding_assistant.cpp:414
+msgid "Show Backlash Graph"
+msgstr ""
+
+#: guiding_assistant.cpp:415
+msgid "Show graph of backlash measurement points"
+msgstr "Arată graficul punctelor de reacție (backlash) măsurată"
+
+#: guiding_assistant.cpp:419 myframe.cpp:1054 profile_wizard.cpp:190
+msgid "Help"
+msgstr ""
+
+#: guiding_assistant.cpp:432
 msgid "Measure Declination Backlash"
 msgstr "Măsoară reacția (backlash) Declinației"
 
-#: guiding_assistant.cpp:415
+#: guiding_assistant.cpp:433
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -3210,23 +3234,15 @@ msgstr ""
 "suficient spațiu pentru a fi mișcată spre Nord. Dacă steaua de ghidaj se "
 "pierde, măriți suprafața de căutare la cel puțin 20 px"
 
-#: guiding_assistant.cpp:427
-msgid "Show Graph"
-msgstr "Arată graficul"
-
-#: guiding_assistant.cpp:428
-msgid "Show graph of backlash measurement points"
-msgstr "Arată graficul punctelor de reacție (backlash) măsurată"
-
-#: guiding_assistant.cpp:444
+#: guiding_assistant.cpp:457
 msgid "Start measuring (disables guiding)"
 msgstr "Începe măsurătorile (oprește ghidajul)"
 
-#: guiding_assistant.cpp:449
+#: guiding_assistant.cpp:462
 msgid "Stop measuring and re-enable guiding"
 msgstr "Oprește măsurătorile și repornește ghidajul"
 
-#: guiding_assistant.cpp:504
+#: guiding_assistant.cpp:514
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
@@ -3234,7 +3250,7 @@ msgstr ""
 "Rația semnal-zgomot (SNR); o măsurătoare a puterii PHD2 de a izola steaua de "
 "fundalul cerului/zgomot fundalului"
 
-#: guiding_assistant.cpp:506
+#: guiding_assistant.cpp:516
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
@@ -3242,7 +3258,7 @@ msgstr ""
 "Măsură a luminozității globale a stelei. Considerați să folosiți 'Auto-"
 "select Star' (Alt-S) pentru a alege steaua."
 
-#: guiding_assistant.cpp:511
+#: guiding_assistant.cpp:521
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3250,7 +3266,7 @@ msgstr ""
 "Măsură a mișcărilor tipice de înaltă frecvență din RA ale stelei ; ghidajul "
 "de obicei nu poate corecta fluctuații atât de mici."
 
-#: guiding_assistant.cpp:512
+#: guiding_assistant.cpp:522
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3258,39 +3274,39 @@ msgstr ""
 "Măsură a mișcărilor tipice de înaltă frecvență din Dec ale stelei ; ghidajul "
 "de obicei nu poate corecta fluctuații atât de mici."
 
-#: guiding_assistant.cpp:515
+#: guiding_assistant.cpp:525
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "Deformarea maximă probă-probă măsurată în RA."
 
-#: guiding_assistant.cpp:516
+#: guiding_assistant.cpp:526
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "Deformarea maximă probă-probă măsurată în Dec."
 
-#: guiding_assistant.cpp:517
+#: guiding_assistant.cpp:527
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr ""
 "Deformarea maximă probă-probă măsurată în RA  în timpul perioadei de "
 "eșantionare."
 
-#: guiding_assistant.cpp:518
+#: guiding_assistant.cpp:528
 msgid "Estimated overall drift rate in right ascension."
 msgstr "Estimare a deviației globale (overall drift) în RA."
 
-#: guiding_assistant.cpp:519
+#: guiding_assistant.cpp:529
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr ""
 
-#: guiding_assistant.cpp:520
+#: guiding_assistant.cpp:530
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 
-#: guiding_assistant.cpp:521
+#: guiding_assistant.cpp:531
 msgid "Estimated overall drift rate in declination."
 msgstr "Estimare a deviației globale (overall drift) în Dec."
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:532
 msgid ""
 "Estimate of declination backlash if backlash testing was completed "
 "successfully"
@@ -3298,7 +3314,7 @@ msgstr ""
 "Estimare a reacției (backlash) declinației dacă testarea reacției (backlash) "
 "a fost completată cu succes"
 
-#: guiding_assistant.cpp:523
+#: guiding_assistant.cpp:533
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -3307,11 +3323,11 @@ msgstr ""
 "telescopului, valoarea afișată se află la limita inferioară și de fapt "
 "eroarea poate fi mai mare."
 
-#: guiding_assistant.cpp:554
+#: guiding_assistant.cpp:564
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr "Alegeți o stea nesaturată cu un SNR bun (>= 8) și începeți ghidajul"
 
-#: guiding_assistant.cpp:558
+#: guiding_assistant.cpp:568
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -3319,15 +3335,13 @@ msgstr ""
 "Apăsați Pornește pentru a începe măsurătorile. Ghidajul va fi dezactivat în "
 "acest timp, deci steaua se va mișca liberă."
 
-#: guiding_assistant.cpp:563
+#: guiding_assistant.cpp:573
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
-"when the RMS values have stabilized (at least 1 minute)."
+"when the RMS values have stabilized (at least 2 minutes)."
 msgstr ""
-"Ghidajul este dezactivat iar mișcările stelei sunt măsurate. Apăsați Oprește "
-"cînd valorile RMS s-au stabilizat (cel puțin 1 minut)."
 
-#: guiding_assistant.cpp:566
+#: guiding_assistant.cpp:576
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -3337,49 +3351,49 @@ msgstr ""
 "modificările necesare. Apăsați Pornire pentru repetarea măsurătorilor, sau "
 "închideți fereastra pentru a continua ghidajul."
 
-#: guiding_assistant.cpp:577 guiding_assistant.cpp:582
+#: guiding_assistant.cpp:587 guiding_assistant.cpp:592
 msgid "Measuring backlash: "
 msgstr "Măsor reacția (backlash):"
 
-#: guiding_assistant.cpp:591 guiding_assistant.cpp:1151
+#: guiding_assistant.cpp:601 guiding_assistant.cpp:1191 statswindow.cpp:277
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:591
+#: guiding_assistant.cpp:601
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:682 guiding_assistant.cpp:683
+#: guiding_assistant.cpp:697 guiding_assistant.cpp:698
 msgid "Apply"
 msgstr "Aplicați"
 
-#: guiding_assistant.cpp:790
+#: guiding_assistant.cpp:815
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 
-#: guiding_assistant.cpp:799
+#: guiding_assistant.cpp:824
 msgid "Consider re-doing your calibration "
 msgstr ""
 
-#: guiding_assistant.cpp:801
+#: guiding_assistant.cpp:826
 msgid "(Prior alert)"
 msgstr ""
 
-#: guiding_assistant.cpp:803
+#: guiding_assistant.cpp:828
 msgid "(Backlash clearing)"
 msgstr ""
 
-#: guiding_assistant.cpp:813
+#: guiding_assistant.cpp:840
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 
-#: guiding_assistant.cpp:829
+#: guiding_assistant.cpp:858
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr ""
 
-#: guiding_assistant.cpp:830
+#: guiding_assistant.cpp:859
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
@@ -3387,65 +3401,65 @@ msgstr ""
 "Eroarea de aliniere polară > 10 arc-min; încercați să folosiți unealta "
 "Deriva Alinierii pentru a îmbunătăți alinierea polară."
 
-#: guiding_assistant.cpp:850 guiding_assistant.cpp:855
+#: guiding_assistant.cpp:879
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "Încercați să setați RA min-move la %0.2f"
 
-#: guiding_assistant.cpp:865 guiding_assistant.cpp:870
+#: guiding_assistant.cpp:897
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Încercați să setați Dec min-move la %0.2f"
 
-#: guiding_assistant.cpp:881
+#: guiding_assistant.cpp:919
 #, c-format
 msgid "Try setting a Dec backlash value of %d ms"
 msgstr "Încercați să reglați o valoare a reacției (backlash) Dec de %d ms "
 
-#: guiding_assistant.cpp:883
+#: guiding_assistant.cpp:921
 #, c-format
 msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
 msgstr ""
 "Reacția (backlash) este %0.1f px; poate va trebui să ghidați doar pe o "
 "direcție Dec"
 
-#: guiding_assistant.cpp:990
+#: guiding_assistant.cpp:1030
 msgid "Backlash test aborted..."
 msgstr "Testarea reacției (backlash) abandonată..."
 
-#: guiding_assistant.cpp:1024 guiding_assistant.cpp:1031
+#: guiding_assistant.cpp:1064 guiding_assistant.cpp:1071
 msgid "Measuring backlash... "
 msgstr "Măsor reacția (backlash)..."
 
-#: guiding_assistant.cpp:1053
+#: guiding_assistant.cpp:1093
 msgid "Guiding stopped"
 msgstr "Ghidaj oprit"
 
-#: guiding_assistant.cpp:1150
+#: guiding_assistant.cpp:1190
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1152
+#: guiding_assistant.cpp:1192
 msgid "arc-sec"
 msgstr "arc-sec"
 
-#: guiding_assistant.cpp:1153
+#: guiding_assistant.cpp:1193
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1154
+#: guiding_assistant.cpp:1194
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1156
+#: guiding_assistant.cpp:1196
 msgid "arc-sec/min"
 msgstr "arc-sec/min"
 
-#: guiding_assistant.cpp:1157
+#: guiding_assistant.cpp:1197
 msgid "arc-sec/sec"
 msgstr "arc-sec/sec"
 
-#: guiding_assistant.cpp:1176
+#: guiding_assistant.cpp:1216
 msgid " "
 msgstr ""
 
@@ -3489,19 +3503,19 @@ msgstr "Unghiul Dec (grade):"
 msgid "Declination (e.g. 2.1):"
 msgstr "Declinație (ex. 2.1):"
 
-#: mount.cpp:133 mount.cpp:162
+#: mount.cpp:133 mount.cpp:172
 msgid "Lowpass"
 msgstr "Lowpass"
 
-#: mount.cpp:133 mount.cpp:162
+#: mount.cpp:133 mount.cpp:172
 msgid "Lowpass2"
 msgstr "Lowpass2"
 
-#: mount.cpp:133 mount.cpp:162
+#: mount.cpp:133 mount.cpp:172
 msgid "Resist Switch"
 msgstr "Resist Switch"
 
-#: mount.cpp:135 mount.cpp:164
+#: mount.cpp:135 mount.cpp:174
 msgid "Gaussian Process"
 msgstr "Proces Gaussian"
 
@@ -3509,25 +3523,37 @@ msgstr "Proces Gaussian"
 msgid "Which Guide Algorithm to use for Right Ascension"
 msgstr "Ce algoritm de ghidaj să folosiți pentru RA"
 
-#: mount.cpp:170
+#: mount.cpp:163
+msgid ""
+"Causes an IMMEDIATE reset of the RA algorithm parameters to their default "
+"values"
+msgstr ""
+
+#: mount.cpp:180
 msgid "Which Guide Algorithm to use for Declination"
 msgstr "Ce algoritm de ghidaj să folosiți pentru Dec"
 
-#: mount.cpp:320
+#: mount.cpp:207
+msgid ""
+"Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
+"values"
+msgstr ""
+
+#: mount.cpp:380
 msgid "Clear mount calibration"
 msgstr ""
 
-#: mount.cpp:323
+#: mount.cpp:383
 msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: mount.cpp:324
+#: mount.cpp:384
 msgid "Enable mount guide output"
 msgstr ""
 
-#: mount.cpp:326
+#: mount.cpp:386
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
@@ -3535,439 +3561,445 @@ msgstr ""
 "Păstrează asta bifată pentru ghidaj. Debifează pentru a dezactiva toate "
 "comenzile  de ghidare a monturii și permite monturii să ruleze neghidată."
 
-#: mount.cpp:685
+#: mount.cpp:740
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:962
+#: mount.cpp:1017
 msgid "RA:"
 msgstr "RA:"
 
-#: mount.cpp:967
+#: mount.cpp:1022
 msgid "DEC:"
 msgstr "Dec"
 
-#: mount.cpp:1028
+#: mount.cpp:1059
+msgid ""
+"Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
+"guiding."
+msgstr ""
+
+#: mount.cpp:1095
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1035
-msgid "Scope position has changed significantly, recalibration is needed."
-msgstr ""
-
-#: mount.cpp:1065
+#: mount.cpp:1129
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "Poziția rotatorului s-a schimbat, recalibrarea este necesară."
 
-#: mount.cpp:1452
-msgid "On Camera"
-msgstr ""
-
-#: myframe.cpp:286 myframe.cpp:358
+#: myframe.cpp:289 myframe.cpp:362
 msgid "History"
 msgstr "Grafic"
 
-#: myframe.cpp:291 myframe.cpp:359
+#: myframe.cpp:294 myframe.cpp:363
 msgid "Guide Stats"
 msgstr "Statisticile ghidajului"
 
-#: myframe.cpp:301 myframe.cpp:361
+#: myframe.cpp:304 myframe.cpp:365
 msgid "Star Profile"
 msgstr "Profilul stelei"
 
-#: myframe.cpp:306 myframe.cpp:362 target.cpp:51
+#: myframe.cpp:309 myframe.cpp:366 target.cpp:51
 msgid "Target"
 msgstr "Ținta"
 
-#: myframe.cpp:435
+#: myframe.cpp:441
 msgid "&Save Image..."
 msgstr "&Salvați imaginea..."
 
-#: myframe.cpp:435
+#: myframe.cpp:441
 msgid "Save current image"
 msgstr "Salvează imaginea curentă"
 
-#: myframe.cpp:436
+#: myframe.cpp:442
 msgid "E&xit\tAlt-X"
 msgstr "Ieșire Alt-X"
 
-#: myframe.cpp:436
+#: myframe.cpp:442
 msgid "Quit this program"
 msgstr "Închideți acest program"
 
-#: myframe.cpp:439
+#: myframe.cpp:445
 msgid "&Manual Guide"
 msgstr "&Ghidaj manual"
 
-#: myframe.cpp:439
+#: myframe.cpp:445
 msgid "Manual / test guide dialog"
 msgstr "Manual/Test dialogul de ghidaj"
 
-#: myframe.cpp:440
+#: myframe.cpp:446
 msgid "&Auto-select Star\tAlt-S"
 msgstr "&Auto selectează steaua\tAlt-S"
 
-#: myframe.cpp:440
+#: myframe.cpp:446
 msgid "Automatically select star"
 msgstr "Selectează steaua automat"
 
-#: myframe.cpp:441
+#: myframe.cpp:447
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "&Revezi datele calibrării\tAlt-C"
 
-#: myframe.cpp:441
+#: myframe.cpp:447
 msgid "Review calibration data from last successful calibration"
 msgstr "Revezi datele calibrării de la ultima calibrare reușită"
 
-#: myframe.cpp:444
+#: myframe.cpp:450
 msgid "Restore Calibration Data..."
 msgstr "Restaurez datele calibrării..."
 
-#: myframe.cpp:444
+#: myframe.cpp:450
 msgid "Restore calibration data from last successful calibration"
 msgstr "Restaurez datele calibrării de la ultima calibrare reușită"
 
-#: myframe.cpp:445
+#: myframe.cpp:451
 msgid "Enter Calibration Data..."
 msgstr "Introduc datele calibrării..."
 
-#: myframe.cpp:445
+#: myframe.cpp:451
 msgid "Manually calibrate"
 msgstr "Calibrare manuală"
 
-#: myframe.cpp:446
+#: myframe.cpp:452
 msgid "Flip Calibration Data"
 msgstr "(Flip) Răstoarnă datele de calibrare"
 
-#: myframe.cpp:446
+#: myframe.cpp:452
 msgid "Flip RA calibration vector"
 msgstr "(Flip) Răstoarnă vectorul de calibrare în RA"
 
-#: myframe.cpp:447
+#: myframe.cpp:453
 msgid "Clear Calibration Data..."
 msgstr "Șterg datele calibrării..."
 
-#: myframe.cpp:447
+#: myframe.cpp:453
 msgid "Clear calibration data currently in use"
 msgstr "Șterge datele calibrării curente"
 
-#: myframe.cpp:448
+#: myframe.cpp:454
 msgid "Modify Calibration"
 msgstr "Modifică calibrarea"
 
-#: myframe.cpp:451
+#: myframe.cpp:457
 msgid "Adjust &Lock Position"
 msgstr "Ajustează &Blochează poziția"
 
-#: myframe.cpp:451
+#: myframe.cpp:457
 msgid "Adjust the lock position"
 msgstr "Ajustează poziția de blocare"
 
-#: myframe.cpp:452
+#: myframe.cpp:458
 msgid "&Comet Tracking"
 msgstr "&Urmărire cometă"
 
-#: myframe.cpp:452
+#: myframe.cpp:458
 msgid "Run the Comet Tracking tool"
 msgstr "Rulează unealta de urmărire a cometei"
 
-#: myframe.cpp:453
+#: myframe.cpp:459 myframe_events.cpp:912 starcross_test.cpp:76
+msgid "Star-Cross Test"
+msgstr ""
+
+#: myframe.cpp:459
+msgid "Run a star-cross test for mount diagnostics"
+msgstr ""
+
+#: myframe.cpp:460
 msgid "&Guiding Assistant"
 msgstr "&Asistent de ghidaj"
 
-#: myframe.cpp:453
+#: myframe.cpp:460
 msgid "Run the Guiding Assistant"
 msgstr "Rulează asistentul de ghidaj"
 
-#: myframe.cpp:454
+#: myframe.cpp:461
 msgid "&Drift Align"
 msgstr "&Deriva alinierii"
 
-#: myframe.cpp:454
+#: myframe.cpp:461
 msgid "Run the Drift Alignment tool"
 msgstr "Rulează unealta derivei de aliniere"
 
-#: myframe.cpp:456
+#: myframe.cpp:463
 msgid "Enable Star Image Logging"
 msgstr "Activează jurnalul imaginilor cu stele"
 
-#: myframe.cpp:456
+#: myframe.cpp:463
 msgid "Enable logging of star images"
 msgstr "Activează înregistrarea imaginilor cu stele"
 
-#: myframe.cpp:457
+#: myframe.cpp:464
 msgid "Enable Server"
 msgstr "Activează serverul"
 
-#: myframe.cpp:457
+#: myframe.cpp:464
 msgid "Enable PHD2 server capability"
 msgstr "Activează capabilitatea serverului PHD2"
 
-#: myframe.cpp:458 nudge_lock.cpp:159
+#: myframe.cpp:465 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
 msgstr "Poziția de blocare stabilită"
 
-#: myframe.cpp:458
+#: myframe.cpp:465
 msgid "Keep the same lock position when guiding starts"
 msgstr "Păstrează aceeași poziție blocată când ghidează pe stele"
 
-#: myframe.cpp:461
+#: myframe.cpp:468
 msgid "Display Toolbar"
 msgstr "Afișează Bara cu unelte"
 
-#: myframe.cpp:461
+#: myframe.cpp:468
 msgid "Enable / disable tool bar"
 msgstr "Activează/Dezactivează bara cu unelte"
 
-#: myframe.cpp:462
+#: myframe.cpp:469
 msgid "Display &Graph"
 msgstr "Afișează &Graficul"
 
-#: myframe.cpp:462
+#: myframe.cpp:469
 msgid "Enable / disable graph"
 msgstr "Activează/Dezactivează graficul"
 
-#: myframe.cpp:463
+#: myframe.cpp:470
 msgid "Display &Stats"
 msgstr "Afișează &Statistici"
 
-#: myframe.cpp:463
+#: myframe.cpp:470
 msgid "Enable / disable guide stats"
 msgstr "Activează/Dezactivează statisticile de ghidare"
 
-#: myframe.cpp:464
+#: myframe.cpp:471
 msgid "Display &AO Graph"
 msgstr "Afișează &Graficul AO"
 
-#: myframe.cpp:464
+#: myframe.cpp:471
 msgid "Enable / disable AO graph"
 msgstr "Activează/Dezactivează graficul AO"
 
-#: myframe.cpp:465
+#: myframe.cpp:472
 msgid "Display &Target"
 msgstr "Afișează &Steaua țintă"
 
-#: myframe.cpp:465
+#: myframe.cpp:472
 msgid "Enable / disable target"
 msgstr "Activează/Dezactivează ținta"
 
-#: myframe.cpp:466
+#: myframe.cpp:473
 msgid "Display Star &Profile"
 msgstr "Afișează &Profilul stelei"
 
-#: myframe.cpp:466
+#: myframe.cpp:473
 msgid "Enable / disable star profile view"
 msgstr "Activează/Dezactivează profilul stelei"
 
-#: myframe.cpp:468
+#: myframe.cpp:475
 msgid "&No Overlay"
 msgstr "&Fără acoperire"
 
-#: myframe.cpp:468
+#: myframe.cpp:475
 msgid "No additional crosshairs"
 msgstr "Fără cruciulițe aditionale"
 
-#: myframe.cpp:469
+#: myframe.cpp:476
 msgid "&Bullseye"
 msgstr "Țintă"
 
-#: myframe.cpp:469
+#: myframe.cpp:476
 msgid "Centered bullseye overlay"
 msgstr "Acoperirea țintei centrale"
 
-#: myframe.cpp:470
+#: myframe.cpp:477
 msgid "&Fine Grid"
 msgstr "&Grilă deasă"
 
-#: myframe.cpp:470 myframe.cpp:471
+#: myframe.cpp:477 myframe.cpp:478
 msgid "Grid overlay"
 msgstr "Acoperirea grilei"
 
-#: myframe.cpp:471
+#: myframe.cpp:478
 msgid "&Coarse Grid"
 msgstr "&Grilă rară"
 
-#: myframe.cpp:472
+#: myframe.cpp:479
 msgid "&RA/Dec"
 msgstr "&RA/Dec"
 
-#: myframe.cpp:472
+#: myframe.cpp:479
 msgid "RA and Dec overlay"
 msgstr "Acoperirea RA și Dec"
 
-#: myframe.cpp:473
+#: myframe.cpp:480
 msgid "Spectrograph S&lit"
 msgstr "Spectograf cu fantă"
 
-#: myframe.cpp:473
+#: myframe.cpp:480
 msgid "Spectrograph slit overlay"
 msgstr "Acoperirea fantei spectografului"
 
-#: myframe.cpp:475
+#: myframe.cpp:482
 msgid "Slit Position..."
 msgstr "Poziția fantei..."
 
-#: myframe.cpp:477
+#: myframe.cpp:484
 msgid "Restore Window Positions"
 msgstr "Restaurează poziția ferestrei"
 
-#: myframe.cpp:477
+#: myframe.cpp:484
 msgid "Restore all windows to their default/docked positions"
 msgstr "Restaurați toate ferestrele la pozițiile lor implicite/andocate"
 
-#: myframe.cpp:480
+#: myframe.cpp:487
 msgid "Dark &Library..."
 msgstr "Librărie Dark-uri"
 
-#: myframe.cpp:480
+#: myframe.cpp:487
 msgid "Build a dark library for this profile"
 msgstr "Construiește o Librărie de Dark-uri pentru acest profil"
 
-#: myframe.cpp:481
+#: myframe.cpp:488
 msgid "Bad-pixel &Map..."
 msgstr "Harta Pixelilor Defecți"
 
-#: myframe.cpp:481
+#: myframe.cpp:488
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "Ajustează parametrii pentru a crea/modifica Harta Pixelilor Defecți"
 
-#: myframe.cpp:482
+#: myframe.cpp:489
 msgid "Import From Profile..."
 msgstr "Importă din profil..."
 
-#: myframe.cpp:482
+#: myframe.cpp:489
 msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr ""
 "Importă o Librărie de Dark-uri/Hartă de Pixeli Defecți dintr-un profil "
 "diferit"
 
-#: myframe.cpp:484
+#: myframe.cpp:491
 msgid "Use &Dark Library"
 msgstr "Folosește & Librăria de Dark-uri"
 
-#: myframe.cpp:484
+#: myframe.cpp:491
 msgid "Use the the dark library for this profile"
 msgstr "Folosește Librăria de Dark-uri pentru acest profil"
 
-#: myframe.cpp:485
+#: myframe.cpp:492
 msgid "Use &Bad-pixel Map"
 msgstr "Folosește &Harta Pixelilor Defecți"
 
-#: myframe.cpp:485
+#: myframe.cpp:492
 msgid "Use the bad-pixel map for this profile"
 msgstr "Folosește Harta Pixelilor Morți pentru acest profil"
 
-#: myframe.cpp:490
+#: myframe.cpp:497
 msgid "&Save settings"
 msgstr "&Salvează setările"
 
-#: myframe.cpp:490
+#: myframe.cpp:497
 msgid "Save current camera settings"
 msgstr "Salvează setările curente ale camerei"
 
-#: myframe.cpp:491
+#: myframe.cpp:498
 msgid "&Restore settings"
 msgstr "&Restaurează setările"
 
-#: myframe.cpp:491
+#: myframe.cpp:498
 msgid "Restore camera settings"
 msgstr "Restaurează setările camerei"
 
-#: myframe.cpp:495
+#: myframe.cpp:502
 msgid "Show &Bookmarks\tb"
 msgstr "Arată &Semne de carte\tb"
 
-#: myframe.cpp:495
+#: myframe.cpp:502
 msgid "Hide or show bookmarks"
 msgstr "Ascunde/Arată semne de carte"
 
-#: myframe.cpp:498
+#: myframe.cpp:505
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "Semne de carte &Poziție de blocare\tShift-B"
 
-#: myframe.cpp:498
+#: myframe.cpp:505
 msgid "Set a bookmark at the current lock position"
 msgstr "Pune un semn de carte la poziția de blocare curentă"
 
-#: myframe.cpp:500
+#: myframe.cpp:507
 msgid "Bookmark &Star Pos"
 msgstr "Semne de carte &Poziția stelei"
 
-#: myframe.cpp:500
+#: myframe.cpp:507
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "Pune un semn de carte la poziția stelei selectate"
 
-#: myframe.cpp:501
+#: myframe.cpp:508
 msgid "&Delete all\tCtrl-B"
 msgstr "&Șterge tot\tCtrl-B"
 
-#: myframe.cpp:501
+#: myframe.cpp:508
 msgid "Remove all bookmarks"
 msgstr "Îndepărtează toate semnele de carte"
 
-#: myframe.cpp:504
+#: myframe.cpp:511
 msgid "&About..."
 msgstr ""
 
-#: myframe.cpp:504
+#: myframe.cpp:511
 #, c-format
 msgid "About %s"
 msgstr "Despre %s"
 
-#: myframe.cpp:505
+#: myframe.cpp:512
 msgid "&Contents...\tF1"
 msgstr ""
 
-#: myframe.cpp:505
+#: myframe.cpp:512
 msgid "Full help"
 msgstr "Ajutor complet"
 
-#: myframe.cpp:506
+#: myframe.cpp:513
 msgid "&Impatient Instructions"
 msgstr "&Instrucțiuni rapide"
 
-#: myframe.cpp:506
+#: myframe.cpp:513
 msgid "Quick instructions for the impatient"
 msgstr "Instrucțiuni rapide pentru nerăbdători"
 
-#: myframe.cpp:509
+#: myframe.cpp:516
 msgid "&File"
 msgstr "&Fișier"
 
-#: myframe.cpp:518
+#: myframe.cpp:525
 msgid "&Tools"
 msgstr "&Unelte"
 
-#: myframe.cpp:519
+#: myframe.cpp:526
 msgid "&View"
 msgstr "&Vizualizare"
 
-#: myframe.cpp:520
+#: myframe.cpp:527
 msgid "&Darks"
 msgstr "&Dark-uri"
 
-#: myframe.cpp:521
+#: myframe.cpp:528
 msgid "&Bookmarks"
 msgstr "&Semne de carte"
 
-#: myframe.cpp:522
+#: myframe.cpp:529
 msgid "&Help"
 msgstr "&Ajutor"
 
-#: myframe.cpp:811 scope.cpp:1682 scope.cpp:1792 scope.cpp:1826
+#: myframe.cpp:821 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
 msgid "Auto"
 msgstr "Auto"
 
-#: myframe.cpp:815
+#: myframe.cpp:825
 msgid "Camera exposure duration"
 msgstr "Durata expunerii camerei"
 
-#: myframe.cpp:820
+#: myframe.cpp:830
 msgid "Screen gamma (brightness)"
 msgstr "Luminozitate"
 
-#: myframe.cpp:822
+#: myframe.cpp:832
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
@@ -3975,59 +4007,61 @@ msgstr ""
 "Conectarea la echipament. Shift-click pentru reconectarea la același "
 "echipament ca data trecută."
 
-#: myframe.cpp:823
+#: myframe.cpp:833
 msgid "Begin looping exposures for frame and focus"
 msgstr "Începe expunerile în buclă pentru focusare"
 
-#: myframe.cpp:824
+#: myframe.cpp:834
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr "Începe ghidajul (PHD2). Shift-click pentru calibrare forțată."
 
-#: myframe.cpp:825
+#: myframe.cpp:835
 msgid "Stop looping and guiding"
 msgstr "Oprește bucla și ghidajul"
 
-#: myframe.cpp:827
+#: myframe.cpp:837
 msgid "Exposure duration"
 msgstr "Durata expunerii"
 
-#: myframe.cpp:828
+#: myframe.cpp:838
 msgid "Gamma"
 msgstr "Gamma"
 
-#: myframe.cpp:830
+#: myframe.cpp:840
 msgid "Advanced parameters"
 msgstr "Parametri avansați"
 
-#: myframe.cpp:831
+#: myframe.cpp:841
 msgid "Camera settings"
 msgstr "Setările camerei"
 
-#: myframe.cpp:884
+#: myframe.cpp:894
 msgid "Could not find help file: "
 msgstr "Nu pot găsi fișierul de ajutor:"
 
-#: myframe.cpp:1002
+#: myframe.cpp:1019
 msgid "Trouble-shooting and Analysis"
 msgstr ""
 
-#: myframe.cpp:1024
-msgid "Help"
+#: myframe.cpp:1039
+msgid ""
+"Don't show\n"
+" again"
 msgstr ""
 
-#: myframe.cpp:1370 myframe.cpp:1546
+#: myframe.cpp:1414 myframe.cpp:1590
 msgid "Looping"
 msgstr ""
 
-#: myframe.cpp:1474
+#: myframe.cpp:1518
 msgid "Waiting for devices..."
 msgstr "Aștept dispozitivele..."
 
-#: myframe.cpp:1517
+#: myframe.cpp:1561
 msgid "Resumed"
 msgstr "Reluat"
 
-#: myframe.cpp:1564
+#: myframe.cpp:1608
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
@@ -4035,28 +4069,28 @@ msgstr ""
 "Nu se poate ghida în timp ce se îmbunătățește Harta Pixelilor Defecți. Vă "
 "rugăm să închideți fereastra de îmbunătățire a Hărții Pixelilor Defecți."
 
-#: myframe.cpp:1697
+#: myframe.cpp:1741
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Oscilează cu %.2f,%.2f"
 
-#: myframe.cpp:1729
+#: myframe.cpp:1773
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "Sunteți sigur că doriți să ieșiți în timpul capturii?"
 
-#: myframe.cpp:1730
+#: myframe.cpp:1774
 msgid "Confirm Exit"
 msgstr "Confirmă ieșirea"
 
-#: myframe.cpp:1992 usImage.cpp:432
+#: myframe.cpp:2036 usImage.cpp:434
 msgid "FITS file is not of an image: "
 msgstr "Fișierul FITS nu este al unei imagini"
 
-#: myframe.cpp:2000 usImage.cpp:444
+#: myframe.cpp:2044 usImage.cpp:446
 msgid "Unsupported type or read error loading FITS file "
 msgstr "Tip nesuportat sau eroare de citire la încărcarea fișierului FITS"
 
-#: myframe.cpp:2010
+#: myframe.cpp:2054
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
@@ -4064,19 +4098,19 @@ msgstr ""
 "Librăria de Dark-uri are fișiere cu un format invalid - vă rugăm să o "
 "reconstruiți."
 
-#: myframe.cpp:2021
+#: myframe.cpp:2065
 msgid "Memory allocation error reading FITS file "
 msgstr "Eroare de alocare a memoriei la citirea fișierului FITS"
 
-#: myframe.cpp:2028
+#: myframe.cpp:2072
 msgid "Error reading data from "
 msgstr "Eroare de citire a datelor din"
 
-#: myframe.cpp:2057 usImage.cpp:476
+#: myframe.cpp:2101 usImage.cpp:478
 msgid "Error opening FITS file "
 msgstr "Eroare de deschidere a fișierului FITS"
 
-#: myframe.cpp:2121
+#: myframe.cpp:2165
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
@@ -4084,7 +4118,7 @@ msgstr ""
 "Librăria de Dark-uri nu se potrivește cu camera din acest profil - trebuie "
 "înlocuită"
 
-#: myframe.cpp:2167
+#: myframe.cpp:2211
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
@@ -4092,87 +4126,93 @@ msgstr ""
 "Librăria de Dark-uri și Harta Pixelilor Defecți sunt incompatibile cu camera "
 "curentă - amândouă trebuie înlocuite"
 
-#: myframe.cpp:2198
+#: myframe.cpp:2242
 msgid "You must connect a camera before loading dark frames"
 msgstr "Trebuie să conectați o cameră înaintea încărcării Dark-urilor"
 
-#: myframe.cpp:2205
+#: myframe.cpp:2249
 msgid "Darks not loaded"
 msgstr "Dark-urile nu sunt încărcate"
 
-#: myframe.cpp:2212
+#: myframe.cpp:2256
 msgid "Darks loaded"
 msgstr "Dark-uri încărcate"
 
-#: myframe.cpp:2225
+#: myframe.cpp:2269
 msgid "Error saving darks FITS file "
 msgstr "Eroare de salvare a fișierelor Dark FITS"
 
-#: myframe.cpp:2410
+#: myframe.cpp:2470
+msgid ""
+"Guiding parameters have been reset because the camera binning changed. You "
+"should use separate profiles for different binning values."
+msgstr ""
+
+#: myframe.cpp:2480
 msgid "Global Settings"
 msgstr "Setări globale"
 
-#: myframe.cpp:2442
+#: myframe.cpp:2512
 msgid "Reset Configuration"
 msgstr "Resetează configurarea"
 
-#: myframe.cpp:2443
+#: myframe.cpp:2513
 msgid ""
 "Reset all configuration and program settings to fresh install status -- "
 "Note: this closes PHD2"
 msgstr ""
 
-#: myframe.cpp:2444
+#: myframe.cpp:2514
 msgid "Reset \"Don't Show Again\" messages"
 msgstr ""
 
-#: myframe.cpp:2445
+#: myframe.cpp:2515
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr ""
 
-#: myframe.cpp:2449
+#: myframe.cpp:2519
 msgid "Low Q JPEG"
 msgstr "Low Q JPEG"
 
-#: myframe.cpp:2449
+#: myframe.cpp:2519
 msgid "High Q JPEG"
 msgstr "High Q JPEG"
 
-#: myframe.cpp:2449
+#: myframe.cpp:2519
 msgid "Raw FITS"
 msgstr "Raw FITS"
 
-#: myframe.cpp:2455
+#: myframe.cpp:2525
 msgid "Image logging format"
 msgstr "Formatul imaginii jurnal"
 
-#: myframe.cpp:2456
+#: myframe.cpp:2526
 msgid "File format of logged images"
 msgstr "Formatul fișierelor imaginilor jurnal"
 
-#: myframe.cpp:2460
+#: myframe.cpp:2530
 msgid "2x2 mean"
 msgstr "2x2 mean"
 
-#: myframe.cpp:2460
+#: myframe.cpp:2530
 msgid "3x3 median"
 msgstr "3x3 median"
 
-#: myframe.cpp:2467
+#: myframe.cpp:2537
 msgid "Noise Reduction"
 msgstr "Reducerea zgomotului"
 
-#: myframe.cpp:2468
+#: myframe.cpp:2538
 msgid "Technique to reduce noise in images"
 msgstr "Tehnica de reducere a zgomotului în imagini"
 
-#: myframe.cpp:2474
+#: myframe.cpp:2544
 msgid "Time Lapse (ms)"
 msgstr "Interval de timp (ms)"
 
-#: myframe.cpp:2475
+#: myframe.cpp:2545
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -4183,11 +4223,11 @@ msgstr ""
 "folosirea unei camere video) dar se dorește trimiterea mai rar a comenzilor "
 "de ghidaj "
 
-#: myframe.cpp:2479
+#: myframe.cpp:2549
 msgid "Focal length (mm)"
 msgstr "Lungimea focală (mm)"
 
-#: myframe.cpp:2480
+#: myframe.cpp:2550
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -4195,86 +4235,86 @@ msgstr ""
 "Lungimea focală a instrumentului de ghidaj, utilizat împreună cu mărimea "
 "pixelului camerei pentru a afișa eroarea de ghidaj în arc-sec."
 
-#: myframe.cpp:2486 myframe.cpp:2518
+#: myframe.cpp:2556 myframe.cpp:2588
 msgid "System default"
 msgstr "Sistemul implicit"
 
-#: myframe.cpp:2501
+#: myframe.cpp:2571
 msgid "Language-Name"
 msgstr "Romanian"
 
-#: myframe.cpp:2522
+#: myframe.cpp:2592
 msgid "Language"
 msgstr "Limba"
 
-#: myframe.cpp:2523
+#: myframe.cpp:2593
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s Limbaj. Trebuie să reinițializați PHD2 pentru a-și face efectul."
 
-#: myframe.cpp:2527
+#: myframe.cpp:2597
 msgid "Log File Location"
 msgstr "Locația fișierului jurnal:"
 
-#: myframe.cpp:2530
+#: myframe.cpp:2600
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 "Dosarul pentru fișierele jurnal de ghidaj/depanare; nu puneți nici-o valoare "
 "pentru a restaura locația implicită"
 
-#: myframe.cpp:2531
+#: myframe.cpp:2601
 msgid "Browse..."
 msgstr "Caută..."
 
-#: myframe.cpp:2541
+#: myframe.cpp:2611
 msgid "Dither Settings"
 msgstr ""
 
-#: myframe.cpp:2542
+#: myframe.cpp:2612
 msgid "Random"
 msgstr ""
 
-#: myframe.cpp:2543
+#: myframe.cpp:2613
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr ""
 
-#: myframe.cpp:2544
+#: myframe.cpp:2614
 msgid "Spiral"
 msgstr ""
 
-#: myframe.cpp:2545
+#: myframe.cpp:2615
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr ""
 
-#: myframe.cpp:2547
+#: myframe.cpp:2617
 msgid "Mode: "
 msgstr ""
 
-#: myframe.cpp:2552
+#: myframe.cpp:2622
 msgid "RA only"
 msgstr ""
 
-#: myframe.cpp:2553
+#: myframe.cpp:2623
 msgid "Constrain dither to RA only"
 msgstr ""
 
-#: myframe.cpp:2559
+#: myframe.cpp:2629
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr ""
 "Scalarea pentru comenzile de oscilație (dither). Valoarea implicită = 1.0 "
 "(0.01-100.0)"
 
-#: myframe.cpp:2563 testguide.cpp:119
+#: myframe.cpp:2633 testguide.cpp:119
 msgid "Scale"
 msgstr "Scară"
 
-#: myframe.cpp:2570
+#: myframe.cpp:2640
 msgid "Auto restore calibration"
 msgstr "Restaurează calibrarea automat"
 
-#: myframe.cpp:2571
+#: myframe.cpp:2641
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -4282,35 +4322,35 @@ msgstr ""
 "Restaurează automat datele de calibrare de la ultima calibrare bună atunci "
 "când se conectează echipamentul."
 
-#: myframe.cpp:2585
+#: myframe.cpp:2655
 msgid "Min"
 msgstr "Minim"
 
-#: myframe.cpp:2585
+#: myframe.cpp:2655
 msgid "Auto exposure minimum duration"
 msgstr "Durata minimă a autoexpunerii"
 
-#: myframe.cpp:2586
+#: myframe.cpp:2656
 msgid "Max"
 msgstr "Maxim"
 
-#: myframe.cpp:2586
+#: myframe.cpp:2656
 msgid "Auto exposure maximum duration"
 msgstr "Durata maximă a autoexpunerii"
 
-#: myframe.cpp:2587
+#: myframe.cpp:2657
 msgid "Target SNR"
 msgstr "Ținta SNR"
 
-#: myframe.cpp:2587
+#: myframe.cpp:2657
 msgid "Auto exposure target SNR value"
 msgstr "Valoarea SNR țintă a autoexpunerii"
 
-#: myframe.cpp:2588
+#: myframe.cpp:2658
 msgid "Auto Exposure"
 msgstr "Autoexpunere"
 
-#: myframe.cpp:2640
+#: myframe.cpp:2710
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -4318,20 +4358,20 @@ msgstr ""
 "Aceasta va reseta toate configurările PHD2 și va închide programul. Sunteți "
 "sigur?"
 
-#: myframe.cpp:2640
+#: myframe.cpp:2710
 msgid "Confirmation"
 msgstr "Confirmare"
 
-#: myframe.cpp:2668
+#: myframe.cpp:2738
 msgid "You must restart PHD2 for the language change to take effect."
 msgstr ""
 
-#: myframe.cpp:2668 myframe_events.cpp:273 myframe_events.cpp:483
-#: myframe_events.cpp:586
+#: myframe.cpp:2738 myframe_events.cpp:274 myframe_events.cpp:481
+#: myframe_events.cpp:584
 msgid "Info"
 msgstr "Info"
 
-#: myframe_events.cpp:99
+#: myframe_events.cpp:100
 msgid ""
 "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
 "\n"
@@ -4339,7 +4379,8 @@ msgid ""
 "\n"
 "   1) Press the green 'USB' button, select your camera and mount, click on "
 "'Connect All'\n"
-"   2) Pick an exposure duration from the drop-down list\n"
+"   2) Pick an exposure duration from the drop-down list. Try 2 seconds to "
+"start.\n"
 "   3) Hit the 'Loop' button, adjust your focus if necessary\n"
 "   4) Click on a star away from the edge or use Alt-S to auto-select a star\n"
 "   5) Press the guide (green target) icon\n"
@@ -4350,64 +4391,64 @@ msgid ""
 "to \n"
 " tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n"
 " panel. Use the 'View' menu to watch your guiding performance. If you have\n"
-" problems, read the help files! "
+" problems, read the 'Best Practices' document and the help files! "
 msgstr ""
 
-#: myframe_events.cpp:110
+#: myframe_events.cpp:111
 msgid "Instructions"
 msgstr "Instrucții"
 
-#: myframe_events.cpp:116 profile_wizard.cpp:342
+#: myframe_events.cpp:117 profile_wizard.cpp:361
 msgid "Introduction"
 msgstr "Introducere"
 
-#: myframe_events.cpp:138
+#: myframe_events.cpp:139
 msgid "Spectrograph Slit Overlay"
 msgstr "Dimensiunile fantei spectorafului"
 
-#: myframe_events.cpp:147
+#: myframe_events.cpp:148
 msgid "Position (Center)"
 msgstr "Poziție (Centru)"
 
-#: myframe_events.cpp:148
+#: myframe_events.cpp:149
 msgid "Size"
 msgstr "Mărime"
 
-#: myframe_events.cpp:167
+#: myframe_events.cpp:168
 msgid "Width"
 msgstr "Lățime"
 
-#: myframe_events.cpp:174
+#: myframe_events.cpp:175
 msgid "Height"
 msgstr "Înălțime"
 
-#: myframe_events.cpp:184
+#: myframe_events.cpp:185
 msgid "Angle (degrees)"
 msgstr "Unghi (grade)"
 
-#: myframe_events.cpp:245
+#: myframe_events.cpp:246
 msgid "Save FITS Image"
 msgstr "Salvează imaginea FITS"
 
-#: myframe_events.cpp:255
+#: myframe_events.cpp:256
 #, c-format
 msgid "The image could not be saved to %s"
 msgstr "Imaginea nu a putut fi salvată în %s"
 
-#: myframe_events.cpp:259
+#: myframe_events.cpp:260
 #, c-format
 msgid "%s saved"
 msgstr "%s salvat"
 
-#: myframe_events.cpp:273 myframe_events.cpp:483 myframe_events.cpp:586
+#: myframe_events.cpp:274 myframe_events.cpp:481 myframe_events.cpp:584
 msgid "Please connect to a camera first"
 msgstr "Vă rugăm să conectați întâi o cameră"
 
-#: myframe_events.cpp:299 myframe_events.cpp:370
+#: myframe_events.cpp:300 myframe_events.cpp:368
 msgid "Stopped."
 msgstr "Oprit."
 
-#: myframe_events.cpp:319
+#: myframe_events.cpp:318
 msgid ""
 "For refining the Bad-pixel Map PHD2 is now displaying raw camera data "
 "frames, which are a different size from ordinary guide frames for this "
@@ -4417,43 +4458,34 @@ msgstr ""
 "native Raw ale camerei, care diferă ca dimensiuni față de freme-uri normale "
 "de ghidaj ale camerei."
 
-#: myframe_events.cpp:320 myframe_events.cpp:815 scope.cpp:555 scope.cpp:562
-#: scope_ascom.cpp:700 scope_ascom.cpp:711 stepguider.cpp:1018
-msgid ""
-"Don't show\n"
-"this again"
-msgstr ""
-"Nu mai arata\n"
-" asta."
-
-#: myframe_events.cpp:498
+#: myframe_events.cpp:496
 msgid "You must connect a camera before loading a dark library"
 msgstr ""
 "Trebuie să conectați o cameră înaintea încărcării unei Librării de Dark-uri"
 
-#: myframe_events.cpp:525
+#: myframe_events.cpp:523
 msgid "Dark library unloaded"
 msgstr "Librăria de dark-uri nu este încărcată"
 
-#: myframe_events.cpp:541
+#: myframe_events.cpp:539
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr ""
 "Trebuie să conectați o cameră înaintea încărcării unei Hărți a Pixelilor "
 "Defecți"
 
-#: myframe_events.cpp:556
+#: myframe_events.cpp:554
 msgid "Defect map loaded"
 msgstr "Harta defectelor este încărcată"
 
-#: myframe_events.cpp:560
+#: myframe_events.cpp:558
 msgid "Defect map not loaded"
 msgstr "Harta defectelor nu este încărcată"
 
-#: myframe_events.cpp:572
+#: myframe_events.cpp:570
 msgid "Bad-pixel map unloaded"
 msgstr "Harta pixelilor defecți neîncărcată"
 
-#: myframe_events.cpp:812
+#: myframe_events.cpp:809
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
@@ -4464,29 +4496,29 @@ msgstr ""
 "ul să folosească un pixel fierbinte. Folosiți meniul de Dark-uri pentru a "
 "construi o Librărie de Dark-uri sau o Hartă a Pixelilor Defecți."
 
-#: myframe_events.cpp:853
+#: myframe_events.cpp:848
 msgid "Are you sure you want force recalibration?"
 msgstr "Sunteți sigur că doriți să forțați recalibrarea?"
 
-#: myframe_events.cpp:854
+#: myframe_events.cpp:849
 msgid "Force Recalibration"
 msgstr "Forțează calibrarea"
 
-#: myframe_events.cpp:872
+#: myframe_events.cpp:867
 msgid ""
 "Calibration this far from the celestial equator will be error-prone.  For "
 "best results, calibrate at a declination of -20 to +20."
 msgstr ""
 
-#: myframe_events.cpp:873
+#: myframe_events.cpp:868
 msgid "Confirm Calibration at Large Declination"
 msgstr ""
 
-#: myframe_events.cpp:900 testguide.cpp:146
+#: myframe_events.cpp:895 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "Ghidaj manual"
 
-#: myframe_events.cpp:957
+#: myframe_events.cpp:969
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4500,15 +4532,15 @@ msgstr ""
 "configurație.\n"
 "Vreți să folosiți vrăjitorul de setări?"
 
-#: myframe_events.cpp:960
+#: myframe_events.cpp:972
 msgid "Yes"
 msgstr "Da"
 
-#: myframe_events.cpp:960
+#: myframe_events.cpp:972
 msgid "No"
 msgstr "Nu"
 
-#: myframe_events.cpp:960
+#: myframe_events.cpp:972
 msgid "Setup Wizard Recommendation"
 msgstr "Setările recomandate de vrăjitor"
 
@@ -4602,7 +4634,7 @@ msgstr "Selectați portul paralel"
 msgid "Custom Port Address:"
 msgstr "Adresa portului personalizat:"
 
-#: phd.cpp:109
+#: phd.cpp:110
 #, c-format
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
@@ -4615,23 +4647,23 @@ msgstr ""
 msgid "My Equipment"
 msgstr "Echipamentul meu"
 
-#: profile_wizard.cpp:72
+#: profile_wizard.cpp:74
 msgid "New Profile Wizard"
 msgstr "Vrăjitor pentru un profil nou"
 
-#: profile_wizard.cpp:75
+#: profile_wizard.cpp:77
 msgid "New Profile Wizard - "
 msgstr "Vrăjitor pentru un profil nou -"
 
-#: profile_wizard.cpp:114
+#: profile_wizard.cpp:116
 msgid "More Info"
 msgstr "Mai multe informații:"
 
-#: profile_wizard.cpp:124
+#: profile_wizard.cpp:126
 msgid "Gear"
 msgstr "Echipament"
 
-#: profile_wizard.cpp:135
+#: profile_wizard.cpp:137
 msgid ""
 "Click Detect to read the pixel size from the camera. Otherwise, you can get "
 "this value from your camera documentation or from an online source.  You can "
@@ -4641,19 +4673,19 @@ msgstr ""
 "puteți afla această valoare din documentația camerei sau din surse online. "
 "Puteți folosi controlul sus/jos sau scrieți direct valoarea."
 
-#: profile_wizard.cpp:137
+#: profile_wizard.cpp:139 profile_wizard.cpp:164
 msgid "Detect"
 msgstr "Detectează"
 
-#: profile_wizard.cpp:139
+#: profile_wizard.cpp:141
 msgid "Connect to camera and detect pixel size"
 msgstr "Conectează camera și detectează mărimea pixelului"
 
-#: profile_wizard.cpp:143
+#: profile_wizard.cpp:145
 msgid "Guide camera un-binned pixel size (microns)"
 msgstr ""
 
-#: profile_wizard.cpp:148
+#: profile_wizard.cpp:150
 msgid ""
 "This is the focal length of the guide scope - or the imaging scope if you "
 "are using an off-axis-guider or an adaptive optics device.  You can use the "
@@ -4664,26 +4696,30 @@ msgstr ""
 "cu optică adaptativă. Puteți folosi controlul sus/jos sau scrieți direct "
 "valoarea."
 
-#: profile_wizard.cpp:151
+#: profile_wizard.cpp:153
 msgid "Guide scope focal length (mm)"
 msgstr "Lungimea focală atelescopului de ghidaj (mm)"
 
-#: profile_wizard.cpp:157
+#: profile_wizard.cpp:162
 msgid ""
 "The mount guide speed you will use for calibration and guiding, expressed as "
 "a multiple of the sidereal rate. If you don't know, leave the setting at the "
 "default value (0.5X)"
 msgstr ""
 
-#: profile_wizard.cpp:159
+#: profile_wizard.cpp:166
+msgid "Connect to mount and detect guide speed"
+msgstr ""
+
+#: profile_wizard.cpp:170
 msgid "Mount guide speed (n.n x sidereal)"
 msgstr ""
 
-#: profile_wizard.cpp:165
+#: profile_wizard.cpp:178
 msgid "Build dark library"
 msgstr "Construiți o Librărie de Drak-uri"
 
-#: profile_wizard.cpp:167
+#: profile_wizard.cpp:180
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
@@ -4691,27 +4727,27 @@ msgstr ""
 "Selectați asta pentru a începe automat procesul de construire a unei "
 "Librării de Drak-uri pentru acest profil."
 
-#: profile_wizard.cpp:168
+#: profile_wizard.cpp:181
 msgid "Profile Name"
 msgstr "Numele profilului"
 
-#: profile_wizard.cpp:174
+#: profile_wizard.cpp:187
 msgid "< Back"
 msgstr "< Înapoi"
 
-#: profile_wizard.cpp:175
+#: profile_wizard.cpp:188
 msgid "Back up to the previous screen"
 msgstr "Reîntoarceți-vă la ecranul anterior"
 
-#: profile_wizard.cpp:177 profile_wizard.cpp:406
+#: profile_wizard.cpp:192 profile_wizard.cpp:429
 msgid "Next >"
 msgstr "Următorul >"
 
-#: profile_wizard.cpp:178 profile_wizard.cpp:407
+#: profile_wizard.cpp:193 profile_wizard.cpp:430
 msgid "Move forward to next screen"
 msgstr "Înaintați către ecranul următor"
 
-#: profile_wizard.cpp:224
+#: profile_wizard.cpp:242
 msgid ""
 "This short sequence of steps will help you identify the equipment you want "
 "to use for guiding and will associate it with a profile name of your choice. "
@@ -4734,31 +4770,26 @@ msgstr ""
 "nou, vă rugăm să vă uitați peste 'Instrucíuni rapide' aflate în menu-ul "
 "'Ajutor' după ce dialogul vrăjitor s-a încheiat."
 
-#: profile_wizard.cpp:231
+#: profile_wizard.cpp:249
 msgid ""
 "Select your guide camera from the list.  All cameras supported by PHD2 and "
 "all installed ASCOM cameras are shown. If your camera is not shown, it is "
 "either not supported by PHD2 or its camera driver is not installed. You must "
-"also specify the camera pixel size, guide scope focal length, and mount "
-"guide speed so PHD2 can compute reasonable default settings for you."
+"also specify the camera pixel size and guide scope focal length so PHD2 can "
+"compute reasonable guiding parameters for you."
 msgstr ""
 
-#: profile_wizard.cpp:236
+#: profile_wizard.cpp:254
 msgid ""
 "Select your mount interface from the list.  This determines how PHD2 will "
-"move the telescope and get pointing information. For most modern mounts, the "
-"ASCOM interface is a good choice if you are running MS Windows.  The other "
-"interfaces are available for cases where ASCOM is not available or isn't "
-"well supported by mount firmware."
+"send guide commands to the mount. For most modern mounts, the ASCOM "
+"interface is a good choice if you are running MS Windows.  The other "
+"interfaces are available for cases where ASCOM isn't available or isn't well "
+"supported by mount firmware.  You should specify the mount guide speed so "
+"PHD2 can calibrate efficiently."
 msgstr ""
-"Selectați interfața monturii din listă. Aceasta va determina cum v-a mișca "
-"PHD2-ul telescopul și cum va achiziționa informațiile despre orientare "
-"(pointing). Pentru majoritatea monturilor moderne, interfața ASCOM este o "
-"alegere bună dacă rulați sistemul de operare MS Windows. Celelate interfețe "
-"sunt disponibile pentru cazurile în care ASCOM nu este disponibil sau nu "
-"este bine suportat de către firmware-ul monturii. "
 
-#: profile_wizard.cpp:241
+#: profile_wizard.cpp:260
 msgid ""
 "The mount interface you chose in the previous step doesn't provide pointing "
 "information, so PHD2 will not be able to automatically adjust guiding for "
@@ -4774,7 +4805,7 @@ msgstr ""
 "despre orientare. Interfața Montură Aux va fi folosită doar în acest scop și "
 "nu pentru a trimite comenzi de ghidare."
 
-#: profile_wizard.cpp:246
+#: profile_wizard.cpp:265
 msgid ""
 "If you have an adaptive optics (AO) device, you can select it here.  The AO "
 "device will be used for high speed, small guiding corrections, while the "
@@ -4787,7 +4818,7 @@ msgstr ""
 "folosită pentru corecții mari de ghidaj ('bump'). Calibrarea celor două "
 "interfețe va fi manevrată automat."
 
-#: profile_wizard.cpp:250
+#: profile_wizard.cpp:269
 msgid ""
 "Your profile is complete and ready to save.  Give it a name and, optionally, "
 "build a dark-frame library for it.  This is strongly recommended for best "
@@ -4797,39 +4828,39 @@ msgid ""
 "or encounter problems, please use the 'Help' function for assistance."
 msgstr ""
 
-#: profile_wizard.cpp:289
+#: profile_wizard.cpp:308
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
 msgstr ""
 "Vă rugăm să specificați tipul camerei, lungimea focală a telescopului de "
 "ghidaj și mărimea pixelului camerei de ghidaj"
 
-#: profile_wizard.cpp:294
+#: profile_wizard.cpp:313
 msgid "Please select a mount type to handle guider commands"
 msgstr "Vă rugăm să selectați o montură pentru a folosi comenzile de ghidaj"
 
-#: profile_wizard.cpp:304
+#: profile_wizard.cpp:323
 msgid "Please specify a name for the profile."
 msgstr "Vă rugăm să specificați un nume pentru profil."
 
-#: profile_wizard.cpp:308
+#: profile_wizard.cpp:327
 msgid ""
 "There is already a profile with that name. Please choose a different name."
 msgstr "Aveți deja un profil cu acest nume. Vă rugăm să alegi un nume diferit."
 
-#: profile_wizard.cpp:348
+#: profile_wizard.cpp:368
 msgid "Welcome to the PHD2 'first light' wizard"
 msgstr "Bun venit la vrăjitorul PHD2 'prima lumină'"
 
-#: profile_wizard.cpp:353
+#: profile_wizard.cpp:373
 msgid "Choose a Guide Camera"
 msgstr " Alegeți o cameră de ghidaj"
 
-#: profile_wizard.cpp:355
+#: profile_wizard.cpp:375
 msgid "Guide Camera:"
 msgstr "Camera de ghidaj"
 
-#: profile_wizard.cpp:366
+#: profile_wizard.cpp:387
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "set-up"
@@ -4837,15 +4868,15 @@ msgstr ""
 "Selectați camera de ghidaj și specificați proprietățile optice ale "
 "sistemului de ghidaj"
 
-#: profile_wizard.cpp:370
+#: profile_wizard.cpp:391
 msgid "Choose a Mount Connection"
 msgstr " Alegeți conexiunea cu montura"
 
-#: profile_wizard.cpp:372
+#: profile_wizard.cpp:393
 msgid "Mount:"
 msgstr "Montura:"
 
-#: profile_wizard.cpp:378
+#: profile_wizard.cpp:400
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
@@ -4853,15 +4884,15 @@ msgstr ""
 "Selectați conexiunea cu montura - aceasta va determina cum vor fi transmise "
 "semnalele de ghidaj"
 
-#: profile_wizard.cpp:387
+#: profile_wizard.cpp:410
 msgid "Choose an Auxiliary Mount Connection (optional)"
 msgstr ""
 
-#: profile_wizard.cpp:388
+#: profile_wizard.cpp:411
 msgid "Aux Mount:"
 msgstr "Montura AUX"
 
-#: profile_wizard.cpp:392
+#: profile_wizard.cpp:415
 msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
@@ -4869,31 +4900,31 @@ msgstr ""
 "Deoarece conexiunea primară a montură nu raoprtează poziția de orientare "
 "(pointing), poate doriți să alegeți conexiunea 'Montura AUX'"
 
-#: profile_wizard.cpp:396
+#: profile_wizard.cpp:419
 msgid "Choose an Adaptive Optics Device (optional)"
 msgstr " Alegeți un dispozitiv cu (AO) optică adaptativă (opțional)"
 
-#: profile_wizard.cpp:397
+#: profile_wizard.cpp:420
 msgid "AO:"
 msgstr "AO:"
 
-#: profile_wizard.cpp:401
+#: profile_wizard.cpp:424
 msgid "Specify your adaptive optics device if desired"
 msgstr "Specificați dacă doriți dispozitivul cu optică adaptativă"
 
-#: profile_wizard.cpp:412
+#: profile_wizard.cpp:435
 msgid "Finish Creating Your New Profile"
 msgstr " Încheiați crearea noului profil"
 
-#: profile_wizard.cpp:415
+#: profile_wizard.cpp:438
 msgid "Finish"
 msgstr "Încheiere"
 
-#: profile_wizard.cpp:416
+#: profile_wizard.cpp:439
 msgid "Finish creating the equipment profile"
 msgstr "Încheiați crearea profilului de echipament"
 
-#: profile_wizard.cpp:417
+#: profile_wizard.cpp:440
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
@@ -4901,41 +4932,65 @@ msgstr ""
 "Introduceți un nume pentru profil și opțional lansați procesul de construire "
 "a unei Librării de Drak-uri"
 
-#: profile_wizard.cpp:534
+#: profile_wizard.cpp:558
 msgid "Could not initialize camera"
 msgstr "Nu am putut inițializa camera"
 
-#: profile_wizard.cpp:535
+#: profile_wizard.cpp:559
 msgid "Connecting to camera..."
 msgstr "Ne conectăm la cameră..."
 
-#: profile_wizard.cpp:539
+#: profile_wizard.cpp:563
 msgid "Could not connect to camera"
 msgstr "Nu ne-am putut conecta la cameră"
 
-#: profile_wizard.cpp:541
+#: profile_wizard.cpp:565
 msgid "Camera driver cannot report pixel size"
 msgstr ""
 
-#: profile_wizard.cpp:548
+#: profile_wizard.cpp:572
 msgid ""
 ". Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
 msgstr ""
 
-#: profile_wizard.cpp:548
+#: profile_wizard.cpp:572
 msgid "Detect Pixel Size"
 msgstr "Detectează mărimea pixelului"
 
-#: Refine_DefMap.cpp:66
+#: profile_wizard.cpp:598
+msgid "Could not initialize mount"
+msgstr ""
+
+#: profile_wizard.cpp:599
+msgid "Connecting to mount..."
+msgstr ""
+
+#: profile_wizard.cpp:603
+msgid "Could not connect to mount"
+msgstr ""
+
+#: profile_wizard.cpp:605
+msgid "Mount driver cannot report guide speeds"
+msgstr ""
+
+#: profile_wizard.cpp:613
+msgid ". Please enter the correct mount guide speed"
+msgstr ""
+
+#: profile_wizard.cpp:613
+msgid "Detect mount guide speed"
+msgstr ""
+
+#: Refine_DefMap.cpp:65
 msgid "Refine Bad-pixel Map"
 msgstr "Rafinați Harta Pixelilor Defecți"
 
-#: Refine_DefMap.cpp:74
+#: Refine_DefMap.cpp:73
 msgid "Rebuild Master Dark Frame"
 msgstr "Reconstruiți Frame-ul Master Dark"
 
-#: Refine_DefMap.cpp:75
+#: Refine_DefMap.cpp:74
 msgid ""
 "Click to re-acquire the master dark frames needed to compute an initial bad-"
 "pixel map"
@@ -4943,11 +4998,11 @@ msgstr ""
 "Reachiziționați Frame-urile Master Dark utilizate la calcularea Hărții "
 "Pixelilor Defecți inițiale"
 
-#: Refine_DefMap.cpp:80
+#: Refine_DefMap.cpp:79
 msgid "Show Master Dark Details"
 msgstr "Arată detaliile Master Dark"
 
-#: Refine_DefMap.cpp:81
+#: Refine_DefMap.cpp:80
 msgid ""
 "Click to display detailed statistics of master dark frame used to compute "
 "bad-pixel map"
@@ -4955,77 +5010,77 @@ msgstr ""
 "Afișați statistici detaliate ale Frame-urilor Master Dark folosite pentru "
 "calcularea Hărții Pixelilor Defecți"
 
-#: Refine_DefMap.cpp:85
+#: Refine_DefMap.cpp:84
 msgid "Show defect pixels"
 msgstr "Arată pixelii defecți"
 
-#: Refine_DefMap.cpp:86
+#: Refine_DefMap.cpp:85
 msgid "Check to show hot/cold pixels in the main image window."
 msgstr ""
 "Apasă pentru a arăta pixelii fierbinți/reci în fereastra principală a "
 "imaginii"
 
-#: Refine_DefMap.cpp:91
+#: Refine_DefMap.cpp:90
 msgid "General Information"
 msgstr "Informații generale"
 
-#: Refine_DefMap.cpp:101
+#: Refine_DefMap.cpp:100
 msgid "Time:"
 msgstr "Timp:"
 
-#: Refine_DefMap.cpp:103
+#: Refine_DefMap.cpp:102
 msgid "Camera:"
 msgstr "Camera:"
 
-#: Refine_DefMap.cpp:107 Refine_DefMap.cpp:112
+#: Refine_DefMap.cpp:106 Refine_DefMap.cpp:111
 msgid "Master Dark Exposure Time:"
 msgstr "Timpul de expunere pentru Master Dark"
 
-#: Refine_DefMap.cpp:109 Refine_DefMap.cpp:113
+#: Refine_DefMap.cpp:108 Refine_DefMap.cpp:112
 msgid "Master Dark Exposure Count:"
 msgstr "Numărul de expuneri pentru Master Dark"
 
-#: Refine_DefMap.cpp:116
+#: Refine_DefMap.cpp:115
 msgid "Aggressiveness, hot pixels:"
 msgstr "Agresivitatea, pixeli fierbinți:"
 
-#: Refine_DefMap.cpp:118
+#: Refine_DefMap.cpp:117
 msgid "Aggressiveness, cold pixels:"
 msgstr "Agresivitatea, pixeli reci:"
 
-#: Refine_DefMap.cpp:122
+#: Refine_DefMap.cpp:121
 msgid "Mean:"
 msgstr "Medie:"
 
-#: Refine_DefMap.cpp:124
+#: Refine_DefMap.cpp:123
 msgid "Standard Deviation:"
 msgstr "Deviație Standard:"
 
-#: Refine_DefMap.cpp:128
+#: Refine_DefMap.cpp:127
 msgid "Median:"
 msgstr "Mediană:"
 
-#: Refine_DefMap.cpp:130
+#: Refine_DefMap.cpp:129
 msgid "Median Absolute Deviation:"
 msgstr "Deviație Absolută Mediană:"
 
-#: Refine_DefMap.cpp:137
+#: Refine_DefMap.cpp:136
 msgid "Results"
 msgstr "Rezultate"
 
-#: Refine_DefMap.cpp:147
+#: Refine_DefMap.cpp:146
 msgid "Hot pixel count:"
 msgstr "Numărul pixelilor fierbinți:"
 
-#: Refine_DefMap.cpp:149
+#: Refine_DefMap.cpp:148
 msgid "Cold pixel count:"
 msgstr "Numărul pixelilor reci:"
 
-#: Refine_DefMap.cpp:153
+#: Refine_DefMap.cpp:152
 msgid "Manually added pixels"
 msgstr "Pixelii adăugați manual"
 
-#: Refine_DefMap.cpp:164
+#: Refine_DefMap.cpp:163
 msgid ""
 "Move this slider to increase or decrease the number of pixels that will be "
 "treated as 'hot', then click on 'generate' to build and load the new bad-"
@@ -5035,7 +5090,7 @@ msgstr ""
 "considerați 'fierbinți', apoi apăsați pe 'generează' pentru a construi și "
 "încărca o Nouă Hartă a Pixelilor Defecți"
 
-#: Refine_DefMap.cpp:168
+#: Refine_DefMap.cpp:167
 msgid ""
 "Move this slider to increase or decrease the number of pixels that will be "
 "treated as 'cold', then click on 'generate' to build and load the new bad-"
@@ -5045,19 +5100,19 @@ msgstr ""
 "considerați 'reci', apoi apăsați pe 'generează' pentru a construi și încărca "
 "o Nouă Hartă a Pixelilor Defecți"
 
-#: Refine_DefMap.cpp:170
+#: Refine_DefMap.cpp:169
 msgid "Cold pixels"
 msgstr "Pixeli reci"
 
-#: Refine_DefMap.cpp:178
+#: Refine_DefMap.cpp:177
 msgid "Reset parameters to starting point"
 msgstr "Resetați parametrii la punctul de început."
 
-#: Refine_DefMap.cpp:180
+#: Refine_DefMap.cpp:179
 msgid "Generate"
 msgstr "Generează"
 
-#: Refine_DefMap.cpp:182
+#: Refine_DefMap.cpp:181
 msgid ""
 "Use the current aggressiveness settings to build and load a new bad-pixel "
 "map; this will discard any manually added bad pixels"
@@ -5066,11 +5121,11 @@ msgstr ""
 "pixelilori defecți; această acțiune va elimina orice pixel defect adăugat "
 "manual"
 
-#: Refine_DefMap.cpp:184
+#: Refine_DefMap.cpp:183
 msgid "Add Bad Pixel"
 msgstr "Adaugă pixel mort"
 
-#: Refine_DefMap.cpp:186
+#: Refine_DefMap.cpp:185
 msgid ""
 "Click on a bad pixel in the image display; then click on this button to add "
 "it to the in-use bad-pixel map"
@@ -5078,78 +5133,72 @@ msgstr ""
 "Apasă pe un pixel defect din imagine; apoi apasă pe acest buton pentru a-l "
 "adăuga la Harta Pixelilor Defecți curentă"
 
-#: Refine_DefMap.cpp:206
+#: Refine_DefMap.cpp:205
 msgid "Adjust sliders to increase/decrease pixels marked as bad"
 msgstr "Ajustați cursoarele pentru a mări/micșora pixelii marcați ca defecți"
 
-#: Refine_DefMap.cpp:263
+#: Refine_DefMap.cpp:262
 msgid "Please wait while image statistics are being computed..."
 msgstr "Vă rugăm așteptați cât timp statisticile imaginii sunt calculate..."
 
-#: Refine_DefMap.cpp:338
+#: Refine_DefMap.cpp:297
+msgid "Statistics completed..."
+msgstr ""
+
+#: Refine_DefMap.cpp:340
 msgid "Building new bad-pixel map"
 msgstr "Construiește o nouă hartă a pixelilor defecți"
 
-#: Refine_DefMap.cpp:340
+#: Refine_DefMap.cpp:342
 msgid "Saving new bad-pixel map file"
 msgstr "Salvează o nouă hartă a pixelilor defecți"
 
-#: Refine_DefMap.cpp:342
+#: Refine_DefMap.cpp:344
 msgid "Loading new bad-pixel map"
 msgstr "Încarcă o nouă hartă a pixelilor defecți"
 
-#: Refine_DefMap.cpp:344
+#: Refine_DefMap.cpp:346
 msgid "New bad-pixel map now being used"
 msgstr "O nouă hartă a pixelilor defecți este utilizată"
 
-#: Refine_DefMap.cpp:367
+#: Refine_DefMap.cpp:370
 msgid "Master dark frames NOT rebuilt"
 msgstr "Frame-urile Master Dark NU s-au reconstruit"
 
-#: Refine_DefMap.cpp:451
+#: Refine_DefMap.cpp:454
 msgid "You must first load a bad-pixel map"
 msgstr "Întâi trebuie să adăugați o hartă a pixelilor defecți"
 
-#: Refine_DefMap.cpp:456
+#: Refine_DefMap.cpp:459
 #, c-format
 msgid "Bad pixel marked at %d,%d"
 msgstr "Pixel defect marcat la %d,%d"
 
-#: Refine_DefMap.cpp:462
+#: Refine_DefMap.cpp:465
 msgid "Pixel position not added - no star-like object recognized there"
 msgstr ""
 "Poziția pixelului nu este adăugată - nici-un obiect/stea nu se recunoaște "
 "aici"
 
-#: Refine_DefMap.cpp:472
+#: Refine_DefMap.cpp:475
 msgid "Settings restored to original values"
 msgstr "Setările sunt restaurate la valorile originale"
 
-#: rotator.cpp:144
+#: rotator.cpp:146
 msgid "Rotator Settings"
 msgstr "Setările rotatorului"
 
-#: rotator.cpp:170
+#: rotator.cpp:172
 msgid "Reverse sign of angle"
 msgstr ""
 
-#: rotator_ascom.cpp:135
-msgid ""
-"Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"
-msgstr ""
-"Am eșuat să setez tipul de Chooser la Rotator. Ceva este greșit cu ASCOM-ul"
-
-#: rotator_ascom.cpp:146
-msgid "Failed to run the Rotator Chooser. Something is wrong with ASCOM"
-msgstr "Am eșuat să rulez Rotator Chooser. Ceva este greșit cu ASCOM-ul"
-
-#: rotator_ascom.cpp:211
+#: rotator_ascom.cpp:150
 msgid ""
 "Could not create ASCOM rotator object. See the debug log for more "
 "information."
 msgstr ""
 
-#: rotator_ascom.cpp:296
+#: rotator_ascom.cpp:235
 msgid "ASCOM driver problem -- cannot get rotator position"
 msgstr "Problemă a driver-ului ASCOM -- nu găsesc poziția rotatorului"
 
@@ -5157,26 +5206,26 @@ msgstr "Problemă a driver-ului ASCOM -- nu găsesc poziția rotatorului"
 msgid "The operation was canceled"
 msgstr "Operația a fost anulată"
 
-#: scope.cpp:301 scope.cpp:322
+#: scope.cpp:283 scope.cpp:304
 msgid "INDI Mount"
 msgstr ""
 
-#: scope.cpp:552
+#: scope.cpp:532
 msgid "Max RA Duration setting"
 msgstr "Setarea duratei Max RA"
 
-#: scope.cpp:552
+#: scope.cpp:532
 msgid "Max Dec Duration setting"
 msgstr "Setarea duratei Max Dec"
 
-#: scope.cpp:553
+#: scope.cpp:534
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
 "star locked. Increase the %s to allow PHD2 to make the needed corrections."
 msgstr ""
 
-#: scope.cpp:560
+#: scope.cpp:542
 #, c-format
 msgid ""
 "Even using the maximum moves, PHD2 can't properly correct for the large "
@@ -5187,16 +5236,16 @@ msgstr ""
 "corespunzător mișcările mari ale stelei de ghidaj în %s. Ghidajul va fi "
 "afectat până când veți elimina sursa acestor probleme."
 
-#: scope.cpp:810
+#: scope.cpp:791
 msgid "Calibration is based on very few steps, so accuracy is questionable"
 msgstr ""
 "Calibrarea se bazează pe foarte puțini pași, deci acurtețea este îndoielnică."
 
-#: scope.cpp:813
+#: scope.cpp:794
 msgid "Calibration computed RA/Dec axis angles that are questionable"
 msgstr "Calibrarea a calculat unghiuri ale axelor RA/Dec care sunt îndoielnice"
 
-#: scope.cpp:816
+#: scope.cpp:797
 msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
@@ -5204,73 +5253,73 @@ msgstr ""
 "Această calibrare este substanțial diferită față de ultima - ați schimbat "
 "cumva configurația?"
 
-#: scope.cpp:819
+#: scope.cpp:800
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr "Ratele RA și Dec variază cu o valoare neașteptată"
 
-#: scope.cpp:828
+#: scope.cpp:810
 msgid "Details..."
 msgstr "Detalii..."
 
-#: scope.cpp:1030
+#: scope.cpp:1012
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "Calibrare în RA eșuată: steaua nu s-a mișcat suficient"
 
-#: scope.cpp:1037
+#: scope.cpp:1019
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1104
+#: scope.cpp:1086
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1165
+#: scope.cpp:1147
 msgid "Clearing backlash step 1"
 msgstr "Curăț reacția (backlash) pasul 1"
 
-#: scope.cpp:1202
+#: scope.cpp:1184
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "Curăț reacția (backlash) pasul %3d"
 
-#: scope.cpp:1221
+#: scope.cpp:1203
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "Curățirea reacției (backlash) a eșuat: steaua nu s-a mișcat suficient"
 
-#: scope.cpp:1266
+#: scope.cpp:1248
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "Calibrarea Dec a eșuat: steaua nu s-a mișcat suficient"
 
-#: scope.cpp:1273
+#: scope.cpp:1255
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1357
+#: scope.cpp:1339
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1411
+#: scope.cpp:1393
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Nudge Sud %3d"
 
-#: scope.cpp:1441
+#: scope.cpp:1423
 msgid "Calibration complete"
 msgstr ""
 
-#: scope.cpp:1587
+#: scope.cpp:1569
 msgid "Mount Guide Algorithms"
 msgstr ""
 
-#: scope.cpp:1625
+#: scope.cpp:1607
 msgid "Calibration step (ms)"
 msgstr "Pas calibrare (ms)"
 
-#: scope.cpp:1626
+#: scope.cpp:1608
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -5278,11 +5327,11 @@ msgstr ""
 "Cât timp un puls de ghidaj ar trebui folosit în timpul calibrării? Apasă "
 "\"Calculează\" pentru a afla o valoare corespunzătoare."
 
-#: scope.cpp:1630
+#: scope.cpp:1612
 msgid "Calculate..."
 msgstr "Calculează..."
 
-#: scope.cpp:1631
+#: scope.cpp:1613
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -5290,28 +5339,28 @@ msgstr ""
 "Deschideți Calculatorul pentru Pașii de Calibrare care vă ajută să găsiți o "
 "mărime optimă a pașilor de calibrare"
 
-#: scope.cpp:1638
+#: scope.cpp:1620
 msgid "Reverse Dec output after meridian flip"
 msgstr "Inversează Dec după meridian flip"
 
-#: scope.cpp:1640
+#: scope.cpp:1622
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 
-#: scope.cpp:1647
+#: scope.cpp:1629
 msgid "Stop guiding when mount slews"
 msgstr "Oprește ghidajul în timp ce montura se rotește (slew)."
 
-#: scope.cpp:1649
+#: scope.cpp:1631
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 "Când este bifat, PHD2 va opri ghidajul dacă montura începe rotirea (slewing)."
 
-#: scope.cpp:1655
+#: scope.cpp:1637
 msgid "Assume Dec orthogonal to RA"
 msgstr "Presupunem că Dec este ortogonal față de RA"
 
-#: scope.cpp:1658
+#: scope.cpp:1640
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -5321,11 +5370,11 @@ msgstr ""
 "calibrare. Aceasta previne ca eroarea periodică din RA să influențeze "
 "calibrarea Dec. Opțiunea intră în vigoare în timpul calibrării Dec."
 
-#: scope.cpp:1662
+#: scope.cpp:1644
 msgid "Use backlash comp"
 msgstr ""
 
-#: scope.cpp:1663
+#: scope.cpp:1645
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -5333,105 +5382,93 @@ msgstr ""
 "Marcați asta dacă vreți să aplicați un puls de ghidaj pentru compensarea "
 "reacției (backlash) când direcția Declinației este inversată."
 
-#: scope.cpp:1666
+#: scope.cpp:1648
 msgid "Amount"
 msgstr "Cantitate"
 
-#: scope.cpp:1666
+#: scope.cpp:1648
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
 msgstr ""
 
-#: scope.cpp:1668
+#: scope.cpp:1650
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1670
+#: scope.cpp:1652
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1675
+#: scope.cpp:1657
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1675
+#: scope.cpp:1657
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1679
+#: scope.cpp:1661
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1679
+#: scope.cpp:1661
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1682 scope.cpp:1792 scope.cpp:1826
+#: scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
 msgid "Off"
 msgstr "Închis"
 
-#: scope.cpp:1687
+#: scope.cpp:1669
 msgid "Dec guide mode"
 msgstr "Modul de ghidaj în Dec"
 
-#: scope.cpp:1687
+#: scope.cpp:1669
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1784
+#: scope.cpp:1779
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1790
+#: scope.cpp:1785
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
-#: scope_ascom.cpp:155
-msgid ""
-"Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"
-msgstr ""
-"Am eșuat să selectez Telescopul din Chooser's type. Ceva este în neregulă cu "
-"ASCOM-ul."
-
-#: scope_ascom.cpp:166
-msgid "Failed to run the Telescope Chooser. Something is wrong with ASCOM"
-msgstr ""
-"Am eșuat să rulez Telescope Chooser. Ceva este în neregulă cu ASCOM-ul."
-
-#: scope_ascom.cpp:487
+#: scope_ascom.cpp:422
 msgid ""
 "ASCOM driver problem during disconnect, check the debug log for more "
 "information"
 msgstr ""
 
-#: scope_ascom.cpp:554
+#: scope_ascom.cpp:490
 msgid ""
 "ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."
 msgstr ""
 
-#: scope_ascom.cpp:699
+#: scope_ascom.cpp:633
 msgid ""
 "PulseGuide command to mount has failed - guiding is likely to be ineffective."
 msgstr ""
 "Comanda PulseGuide către montură a eșuat - ghidajul se pare că este "
 "ineficient."
 
-#: scope_ascom.cpp:710
+#: scope_ascom.cpp:641
 msgid "Guiding stopped: the scope started slewing."
 msgstr "Ghidajul s-a oprit: telescopul a început rotirea (slewing)."
 
-#: scope_ascom.cpp:758
+#: scope_ascom.cpp:688
 msgid ""
 "ASCOM driver failed checking for slewing, see the debug log for more "
 "information."
 msgstr ""
 
-#: scope_ascom.cpp:775
+#: scope_ascom.cpp:705
 msgid ""
 "ASCOM driver failed calling AbortSlew, see the debug log for more "
 "information."
@@ -5562,79 +5599,226 @@ msgstr "Avg rând"
 msgid "Avg col"
 msgstr "Avg col"
 
-#: star_profile.cpp:232 star_profile.cpp:252
+#: star_profile.cpp:230 statswindow.cpp:71
+msgid "Peak"
+msgstr "Vârf"
+
+#: star_profile.cpp:238 star_profile.cpp:258
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr ""
 
-#: star_profile.cpp:234
+#: star_profile.cpp:240
 msgid "HFD: "
 msgstr ""
 
-#: star_profile.cpp:248
+#: star_profile.cpp:254
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr ""
 
-#: statswindow.cpp:69
+#: starcross_test.cpp:86
+msgid "88888"
+msgstr ""
+
+#: starcross_test.cpp:92
+msgid "Configuration"
+msgstr ""
+
+#: starcross_test.cpp:110
+msgid "Guide speed, n.n x sidereal"
+msgstr ""
+
+#: starcross_test.cpp:115
+msgid "Test Summary"
+msgstr ""
+
+#: starcross_test.cpp:120
+msgid "Total guide pulse duration in EACH of 4 directions"
+msgstr ""
+
+#: starcross_test.cpp:122
+msgid ""
+"Total guide duration, \n"
+"EACH direction (s)"
+msgstr ""
+
+#: starcross_test.cpp:125
+msgid "Total duration of test (s)"
+msgstr ""
+
+#: starcross_test.cpp:126
+msgid "Total test duration (s)"
+msgstr ""
+
+#: starcross_test.cpp:128 starcross_test.cpp:460
+msgid "Show Details"
+msgstr ""
+
+#: starcross_test.cpp:134
+msgid "Test Details"
+msgstr ""
+
+#: starcross_test.cpp:136
+msgid "Number of guide pulses in EACH direction"
+msgstr ""
+
+#: starcross_test.cpp:139
+msgid "Number of guide pulses"
+msgstr ""
+
+#: starcross_test.cpp:142
+msgid "Guide pulse size (ms)"
+msgstr ""
+
+#: starcross_test.cpp:145
+msgid "Pulse size (ms)"
+msgstr ""
+
+#: starcross_test.cpp:154
+msgid "Verify or adjust your parameters, click 'Start' to begin"
+msgstr ""
+
+#: starcross_test.cpp:252
+#, c-format
+msgid "%d ms move "
+msgstr ""
+
+#: starcross_test.cpp:259
+msgid "WEST"
+msgstr ""
+
+#: starcross_test.cpp:262
+msgid "EAST"
+msgstr ""
+
+#: starcross_test.cpp:265
+msgid "WEST toward starting point"
+msgstr ""
+
+#: starcross_test.cpp:268
+msgid "NORTH"
+msgstr ""
+
+#: starcross_test.cpp:271
+msgid "SOUTH"
+msgstr ""
+
+#: starcross_test.cpp:274
+msgid "NORTH toward starting point"
+msgstr ""
+
+#: starcross_test.cpp:277
+msgid "Test completed"
+msgstr ""
+
+#: starcross_test.cpp:281
+#, c-format
+msgid ", step %d of %d"
+msgstr ""
+
+#: starcross_test.cpp:316
+#, c-format
+msgid "Start a %d exposure on your main camera, then click 'Ok'"
+msgstr ""
+
+#: starcross_test.cpp:330
+msgid ""
+"Wait for the main camera exposure to complete, then save that image for "
+"review"
+msgstr ""
+
+#: starcross_test.cpp:353
+msgid "Star-cross moved failed, test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:362
+msgid "Mount connection lost, test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:373
+msgid "Test cancelled"
+msgstr ""
+
+#: starcross_test.cpp:432
+msgid "Mount connection must be restored"
+msgstr ""
+
+#: starcross_test.cpp:454
+msgid "Hide Details"
+msgstr ""
+
+#: statswindow.cpp:70
 msgid "RMS"
 msgstr "RMS"
 
-#: statswindow.cpp:70
-msgid "Peak"
-msgstr "Vârf"
-
-#: statswindow.cpp:74
+#: statswindow.cpp:75
 msgid " 99.99 (99.99'')"
 msgstr " 99.99 (99.99'')"
 
-#: statswindow.cpp:78
+#: statswindow.cpp:79
 msgid "Total"
 msgstr "Total"
 
-#: statswindow.cpp:95
+#: statswindow.cpp:96
 msgid "RA Osc"
 msgstr "RA Osc"
 
-#: statswindow.cpp:97
+#: statswindow.cpp:98
 msgid "RA Limited"
 msgstr "RA Limitat"
 
-#: statswindow.cpp:99
+#: statswindow.cpp:100
 msgid "Dec Limited"
 msgstr "Dec Limitat"
 
-#: statswindow.cpp:101
+#: statswindow.cpp:102
 msgid "Star lost"
 msgstr "Stea pierdută"
 
-#: statswindow.cpp:105
+#: statswindow.cpp:106
 msgid "Pier Side"
 msgstr "Partea pilonului"
 
-#: statswindow.cpp:108
+#: statswindow.cpp:109
 msgid "Rotator Pos"
 msgstr "Avg col"
 
-#: statswindow.cpp:112
+#: statswindow.cpp:113
+msgid "Image size"
+msgstr ""
+
+#: statswindow.cpp:116
+msgid "Field of View"
+msgstr ""
+
+#: statswindow.cpp:118
+msgid "nnn.n x nnn.n arc-min"
+msgstr ""
+
+#: statswindow.cpp:120
 msgid "Camera cooler"
 msgstr ""
 
-#: statswindow.cpp:122
+#: statswindow.cpp:132
 msgid "Clear graph data and stats"
 msgstr "Șterge datele și statisticile graficului"
 
-#: statswindow.cpp:127
+#: statswindow.cpp:137
 msgid "Select the number of frames of history for stats and the graph"
 msgstr "Selectați numărul de frame-uri din jural pentru statistici și grafic"
 
-#: statswindow.cpp:226
+#: statswindow.cpp:236
 msgid "Camera error"
 msgstr ""
 
-#: statswindow.cpp:228 statswindow.cpp:230
+#: statswindow.cpp:238 statswindow.cpp:240
 #, c-format
 msgid "%.f"
+msgstr ""
+
+#: statswindow.cpp:268
+msgid " arc-min"
 msgstr ""
 
 #: stepguider.cpp:532
@@ -5668,7 +5852,7 @@ msgstr ""
 msgid "Re-centering: %3d"
 msgstr ""
 
-#: stepguider.cpp:1015
+#: stepguider.cpp:1014
 msgid ""
 "A mount \"bump\" was needed to bring the AO back to its center position,\n"
 "but the bump did not complete in a reasonable amount of time.\n"
@@ -5679,23 +5863,23 @@ msgstr ""
 "dar bruscarea nu s-a terminat într-o periodă rezonabilă de timp.\n"
 "Probabil că trebuie să măriți valoarea pasului de bruscare al AO."
 
-#: stepguider.cpp:1222
+#: stepguider.cpp:1220
 msgid "AO Guide Algorithms"
 msgstr ""
 
-#: stepguider.cpp:1245
+#: stepguider.cpp:1243
 msgid "AO Settings"
 msgstr "Setările AO"
 
-#: stepguider.cpp:1278
+#: stepguider.cpp:1276
 msgid "AO Travel"
 msgstr ""
 
-#: stepguider.cpp:1278
+#: stepguider.cpp:1276
 msgid "Maximum number of steps the AO can move in each direction"
 msgstr ""
 
-#: stepguider.cpp:1281
+#: stepguider.cpp:1279
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -5705,11 +5889,11 @@ msgstr ""
 "creșteți valoarea pentru telescoape cu f/l scurte și scădeți valoarea pentru "
 "telescoape cu f/l lungi"
 
-#: stepguider.cpp:1284
+#: stepguider.cpp:1282
 msgid "Cal steps"
 msgstr ""
 
-#: stepguider.cpp:1287
+#: stepguider.cpp:1285
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -5719,11 +5903,11 @@ msgstr ""
 "creșteți valoarea pentru vizibilitate (seeing) proastă și rezoluții mici "
 "(small imaging scales)"
 
-#: stepguider.cpp:1290
+#: stepguider.cpp:1288
 msgid "Samples to average"
 msgstr ""
 
-#: stepguider.cpp:1293
+#: stepguider.cpp:1291
 #, c-format
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
@@ -5732,11 +5916,11 @@ msgstr ""
 "Ce procent din traseul AO poate fi folosit înainte de bruscarea monturii. "
 "Valoarea implicită = %d"
 
-#: stepguider.cpp:1296
+#: stepguider.cpp:1294
 msgid "Bump percentage"
 msgstr ""
 
-#: stepguider.cpp:1299
+#: stepguider.cpp:1297
 #, c-format
 msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
@@ -5746,35 +5930,35 @@ msgstr ""
 "Valoarea implicită = %.2f, scadeți valoarea dacă bruscările produc vârfuri "
 "ascuțite în grafic"
 
-#: stepguider.cpp:1302
+#: stepguider.cpp:1300
 msgid "Bump steps"
 msgstr ""
 
-#: stepguider.cpp:1304
+#: stepguider.cpp:1302
 msgid "Bump on dither"
 msgstr ""
 
-#: stepguider.cpp:1305
+#: stepguider.cpp:1303
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr ""
 "Bruschează (bump) montura pentru a reîntoarce AO în centru la fiecare "
 "oscilație (dither)"
 
-#: stepguider.cpp:1307
+#: stepguider.cpp:1305
 msgid "Clear AO calibration"
 msgstr ""
 
-#: stepguider.cpp:1310
+#: stepguider.cpp:1308
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: stepguider.cpp:1311
+#: stepguider.cpp:1309
 msgid "Enable AO corrections"
 msgstr ""
 
-#: stepguider.cpp:1313
+#: stepguider.cpp:1311
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -5950,15 +6134,15 @@ msgstr ""
 "aproape de valoarea maximă determinată de tipul de oscilație și de scara "
 "factorului de oscilație (the dither scale factor)."
 
-#: usImage.cpp:421
+#: usImage.cpp:423
 msgid "File does not exist - cannot load "
 msgstr "Fișierul nu există - nu se poate încărca"
 
-#: usImage.cpp:449
+#: usImage.cpp:451
 msgid "Memory allocation error loading FITS file "
 msgstr "Eroare de alocare a memoriei la încărcatea fișierului FITS"
 
-#: usImage.cpp:454
+#: usImage.cpp:456
 msgid "Error reading data from FITS file "
 msgstr "Eroare de citire a datelor din fișierul FITS"
 
@@ -5989,6 +6173,79 @@ msgstr "Conectare la cameră ... "
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "Conectare la rotator ..."
+
+#~ msgid ""
+#~ "Disconnect nonresponsive\n"
+#~ "camera after (seconds)"
+#~ msgstr ""
+#~ "Camera nu răspunde!\n"
+#~ "Deconecteaz-o după (secunde)"
+
+#~ msgid "Dec Backlash"
+#~ msgstr "Reacția (backlash) Dec"
+
+#~ msgid "Show Graph"
+#~ msgstr "Arată graficul"
+
+#~ msgid ""
+#~ "Guiding output is disabled and star movement is being measured.  Click "
+#~ "Stop when the RMS values have stabilized (at least 1 minute)."
+#~ msgstr ""
+#~ "Ghidajul este dezactivat iar mișcările stelei sunt măsurate. Apăsați "
+#~ "Oprește cînd valorile RMS s-au stabilizat (cel puțin 1 minut)."
+
+#~ msgid ""
+#~ "Select your mount interface from the list.  This determines how PHD2 will "
+#~ "move the telescope and get pointing information. For most modern mounts, "
+#~ "the ASCOM interface is a good choice if you are running MS Windows.  The "
+#~ "other interfaces are available for cases where ASCOM is not available or "
+#~ "isn't well supported by mount firmware."
+#~ msgstr ""
+#~ "Selectați interfața monturii din listă. Aceasta va determina cum v-a "
+#~ "mișca PHD2-ul telescopul și cum va achiziționa informațiile despre "
+#~ "orientare (pointing). Pentru majoritatea monturilor moderne, interfața "
+#~ "ASCOM este o alegere bună dacă rulați sistemul de operare MS Windows. "
+#~ "Celelate interfețe sunt disponibile pentru cazurile în care ASCOM nu este "
+#~ "disponibil sau nu este bine suportat de către firmware-ul monturii. "
+
+#~ msgid "Failed to find the ASCOM Chooser. Make sure it is installed"
+#~ msgstr "Găsirea ASCOM Chooser a eșuat. Verificați dacă este instalat"
+
+#~ msgid ""
+#~ "Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"
+#~ msgstr ""
+#~ "Setarea alegerii tipului camerei a eșuat. Ceva este în neregulă cu ASCOM-"
+#~ "ul "
+
+#~ msgid "Failed to run the Camera Chooser. Something is wrong with ASCOM"
+#~ msgstr "Alegerea camerei a eșuat. Ceva este în neregulă cu ASCOM-ul"
+
+#~ msgid ""
+#~ "Don't show\n"
+#~ "this again"
+#~ msgstr ""
+#~ "Nu mai arata\n"
+#~ " asta."
+
+#~ msgid ""
+#~ "Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"
+#~ msgstr ""
+#~ "Am eșuat să setez tipul de Chooser la Rotator. Ceva este greșit cu ASCOM-"
+#~ "ul"
+
+#~ msgid "Failed to run the Rotator Chooser. Something is wrong with ASCOM"
+#~ msgstr "Am eșuat să rulez Rotator Chooser. Ceva este greșit cu ASCOM-ul"
+
+#~ msgid ""
+#~ "Failed to set the Chooser's type to Telescope. Something is wrong with "
+#~ "ASCOM"
+#~ msgstr ""
+#~ "Am eșuat să selectez Telescopul din Chooser's type. Ceva este în neregulă "
+#~ "cu ASCOM-ul."
+
+#~ msgid "Failed to run the Telescope Chooser. Something is wrong with ASCOM"
+#~ msgstr ""
+#~ "Am eșuat să rulez Telescope Chooser. Ceva este în neregulă cu ASCOM-ul."
 
 #~ msgid "calibration failed (primary)"
 #~ msgstr "calibrare eșuată (primar)"

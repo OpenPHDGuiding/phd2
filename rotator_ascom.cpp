@@ -89,9 +89,6 @@ wxArrayString RotatorAscom::EnumAscomRotators(void)
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Rotator: could not query registered rotators: " + ExcepMsg(ilist.Excep()));
 
-        // if we made it this far ASCOM is installed and apprears sane, so add the chooser
-        list.Add(_T("ASCOM Rotator Chooser"));
-
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
 
@@ -121,62 +118,6 @@ wxArrayString RotatorAscom::EnumAscomRotators(void)
     return list;
 }
 
-static bool ChooseASCOMRotator(BSTR *res)
-{
-    DispatchObj chooser;
-    if (!chooser.Create(L"DriverHelper.Chooser"))
-    {
-        wxMessageBox(_("Failed to find the ASCOM Chooser. Make sure it is installed"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (!chooser.PutProp(L"DeviceType", L"Rotator"))
-    {
-        wxMessageBox(_("Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    // Look in Registry to see if there is a default
-    wxString progId = pConfig->Profile.GetString("/rotator/ascom/progid", wxEmptyString);
-    BSTR bstrProgId = wxBasicString(progId).Get();
-
-    Variant vchoice;
-    if (!chooser.InvokeMethod(&vchoice, L"Choose", bstrProgId))
-    {
-        wxMessageBox(_("Failed to run the Rotator Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (SysStringLen(vchoice.bstrVal) == 0)
-        return false; // use hit cancel
-
-    // Save progid
-    pConfig->Profile.SetString("/rotator/ascom/progid", vchoice.bstrVal);
-
-    *res = vchoice.bstrVal;
-    return true;
-}
-
-static bool IsChooser(const wxString& choice)
-{
-    return choice.Find(_T("Chooser")) != wxNOT_FOUND;
-}
-
-static bool GetDriverProgId(BSTR *progid, const wxString& choice)
-{
-    if (IsChooser(choice))
-    {
-        if (!ChooseASCOMRotator(progid))
-            return false;
-    }
-    else
-    {
-        wxString progidstr = s_progid[choice];
-        *progid = wxBasicString(progidstr).Get();
-    }
-    return true;
-}
-
 bool AscomRotatorImpl::Create(DispatchObj *obj, DispatchClass *cls)
 {
     IDispatch *idisp = m_gitEntry.Get();
@@ -186,11 +127,9 @@ bool AscomRotatorImpl::Create(DispatchObj *obj, DispatchClass *cls)
         return true;
     }
 
-    BSTR bstr_progid;
-    if (!GetDriverProgId(&bstr_progid, m_choice))
-        return false;
+    wxBasicString progid(s_progid[m_choice]);
 
-    if (!obj->Create(bstr_progid))
+    if (!obj->Create(progid))
     {
         Debug.AddLine("ASCOM Rotator: Could not get CLSID for rotator " + m_choice);
         return false;

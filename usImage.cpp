@@ -355,6 +355,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             float sz = b * pCamera->GetCameraPixelSize();
             hdr.write("XPIXSZ", sz, "pixel size in microns (with binning)");
             hdr.write("YPIXSZ", sz, "pixel size in microns (with binning)");
+            unsigned int g = (unsigned int) pCamera->GuideCameraGain;
+            hdr.write("GAIN", g, "PHD Gain Value (0-100)");
         }
 
         if (pPointingSource)

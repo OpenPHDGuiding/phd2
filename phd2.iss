@@ -3,7 +3,7 @@
 ; Updated to install independently of PHD1 by Andy Galasso on 2013/7/25
 
 #define APP_NAME "PHD 2"
-#define APP_VERSION "2.6.1"
+#define APP_VERSION "2.6.2"
 
 [Setup]
 AppName={#APP_NAME}
@@ -42,7 +42,7 @@ Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\AltairCamera.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\altaircamsdk.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
 Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll

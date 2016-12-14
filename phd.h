@@ -68,8 +68,8 @@
 #include <stdarg.h>
 
 #define APPNAME _T("PHD2 Guiding")
-#define PHDVERSION _T("2.6.1")
-#define PHDSUBVER _T("dev11")
+#define PHDVERSION _T("2.6.2")
+#define PHDSUBVER _T("dev7")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)

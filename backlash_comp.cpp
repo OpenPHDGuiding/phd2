@@ -80,14 +80,14 @@ void BacklashComp::SetCompValues(int requestedSize, bool autoAdjust)
         m_pScope->SetMaxDecDuration(m_pulseWidth);
 }
 
-// Public method to ask for a particular backlash comp.  This method will adjust the ceiling to 
+// Public method to ask for a particular backlash comp.  This method will adjust the ceiling to
 // 2x the value
 void BacklashComp::SetBacklashPulse(int ms)
 {
     if (m_pulseWidth != ms)
     {
         SetCompValues(ms, false);
-        GuideLog.SetGuidingParam("Backlash comp amount", m_pulseWidth);
+        pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
         Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms\n", m_pulseWidth));
     }
 
@@ -97,7 +97,10 @@ void BacklashComp::SetBacklashPulse(int ms)
 void BacklashComp::EnableBacklashComp(bool enable)
 {
     if (m_compActive != enable)
-        GuideLog.SetGuidingParam("Backlash comp enabled", enable ? "true" : "false");
+    {
+        pFrame->NotifyGuidingParam("Backlash comp enabled", enable);
+    }
+
     m_compActive = enable;
     pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));
@@ -116,10 +119,10 @@ void BacklashComp::ResetBaseline()
 void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRate)
 {
     assert(m_justCompensated); // caller checks this
-        
+
     // The previous Dec correction included a BLC
 
-    // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we 
+    // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we
     // needed more correction (+) or less (-)
     GUIDE_DIRECTION dir = yDistance > 0.0 ? DOWN : UP;
     yDistance = fabs(yDistance);
@@ -347,25 +350,36 @@ BacklashTool::BacklashTool()
 {
     m_scope = TheScope();
 
-    Calibration lastCalibration;
-    m_scope->GetLastCalibration(&lastCalibration);
-
-    if (lastCalibration.isValid)
-    {
-        m_lastDecGuideRate = lastCalibration.yRate;
+    m_lastDecGuideRate = GetLastDecGuideRate();     // -1 if we aren't calibrated
+    if (m_lastDecGuideRate > 0)
         m_bltState = BLT_STATE_INITIALIZE;
-    }
     else
     {
         m_bltState = BLT_STATE_ABORTED;
         m_lastStatus = _("Backlash measurement cannot be run - please re-run your mount calibration");
         Debug.Write("BLT: Could not get calibration data\n");
     }
-
     m_backlashResultPx = 0;
     m_backlashResultMs = 0;
     m_cumClearingDistance = 0;
     m_backlashExemption = false;
+}
+
+double BacklashTool::GetLastDecGuideRate()
+{
+    double rtnVal;
+    Calibration lastCalibration;
+    m_scope->GetLastCalibration(&lastCalibration);
+
+    if (lastCalibration.isValid)
+    {
+        rtnVal = lastCalibration.yRate;
+    }
+    else
+    {
+        rtnVal = -1;
+    }
+    return rtnVal;
 }
 
 void BacklashTool::StartMeasurement()
@@ -414,16 +428,27 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             m_markerPoint = currMountLocation;
             m_startingPoint = currMountLocation;
             // Compute pulse size for clearing backlash - just use the last known guide rate
-            m_pulseWidth = BACKLASH_EXPECTED_DISTANCE * 1.25 / m_lastDecGuideRate;      // px/px_per_ms, bump it to sidestep near misses
-            m_acceptedMoves = 0;
-            m_lastClearRslt = 0;
-            m_cumClearingDistance = 0;
-            m_backlashExemption = false;
-            m_Rslt = MEASUREMENT_VALID;
-            // Get this state machine in synch with the guider state machine - let it drive us, starting with backlash clearing step
-            m_bltState = BLT_STATE_CLEAR_NORTH;
-            m_scope->SetGuidingEnabled(true);
-            pFrame->pGuider->EnableMeasurementMode(true);                   // Measurement results now come to us
+            if (m_lastDecGuideRate <= 0)
+                m_lastDecGuideRate = GetLastDecGuideRate();             // try it again, maybe the user has since calibrated
+            if (m_lastDecGuideRate > 0)
+            {
+                m_pulseWidth = BACKLASH_EXPECTED_DISTANCE * 1.25 / m_lastDecGuideRate;      // px/px_per_ms, bump it to sidestep near misses
+                m_acceptedMoves = 0;
+                m_lastClearRslt = 0;
+                m_cumClearingDistance = 0;
+                m_backlashExemption = false;
+                m_Rslt = MEASUREMENT_VALID;
+                // Get this state machine in synch with the guider state machine - let it drive us, starting with backlash clearing step
+                m_bltState = BLT_STATE_CLEAR_NORTH;
+                m_scope->SetGuidingEnabled(true);
+                pFrame->pGuider->EnableMeasurementMode(true);                   // Measurement results now come to us
+            }
+            else
+            {
+                m_bltState = BLT_STATE_ABORTED;
+                m_lastStatus = _("Backlash measurement cannot be run - Dec guide rate not available");
+                Debug.Write("BLT: Could not get calibration data\n");
+            }
             break;
 
         case BLT_STATE_CLEAR_NORTH:
@@ -645,7 +670,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
         case BLT_STATE_ABORTED:
             m_lastStatus = _("Measurement halted");
-            Debug.Write("BLT: measurement process halted by user\n");
+            Debug.Write("BLT: measurement process halted by user or by error\n");
             CleanUp();
             break;
         }                       // end of switch on state

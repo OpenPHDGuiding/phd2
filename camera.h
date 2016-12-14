@@ -185,6 +185,8 @@ public:
 
     virtual const wxSize& DarkFrameSize() { return FullSize; }
 
+    static double GetProfilePixelSize(void);
+
 protected:
 
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;

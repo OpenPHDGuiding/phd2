@@ -9,7 +9,7 @@ there are too many of these defects, you may have trouble identifying
 and selecting a good guide star - trying to calibrate on a hot pixel is
 a common problem for beginners. &nbsp;Even after guiding has begun, a
 spurious hot pixel close to the guide star can disrupt the calculations
-needed for smooth guiding and may case the software to "jump" between
+needed for smooth guiding and may cause the software to "jump" between
 the real star and the hot pixel. &nbsp;These sorts of problems can be
 mitigated by using either of two approaches in PHD2: dark frames and
 bad pixel maps. &nbsp;All functions related to dark frames and bad-pixel maps are located under the top-level 'Darks' menu.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark Frames</h3>PHD2 will
@@ -151,18 +151,21 @@ settings, you may create so many bad pixel areas that they interfere
 with detection of usable guide stars. &nbsp;It's easy to make
 adjustments with the sliders &nbsp;- just change the slider settings,
 click on 'Generate' again, and look at the results in the main PHD2
-window.<br><br>You may find that this statistical approach still leaves
-a few hot pixels that you'd&nbsp;like to eliminate. &nbsp; You can do
-this quickly and easily by manually adding the bad pixels to the map.
-&nbsp;Just use the main PHD2 window to take a guide exposure, then
-click on the hot pixel you want to remove. &nbsp;PHD2 will highlight
-that area with the green tracking box, at which time you can click on
-the 'Add Bad Pixel' button in the dialog box shown above. &nbsp;This
-automatically updates the map with the pixel location you just identified
-and immediately reloads the map, so you should see the result in the
-next guide exposure you take. &nbsp;You can continue with this process
-until you are satisfied with the results. &nbsp;Remember, you don't
-need "perfect", just "good enough." &nbsp;<br><br>Once
+window.<br><br>You
+may find&nbsp; this&nbsp;approach still leaves some hot pixels that you'd&nbsp;like to eliminate. &nbsp; Since the
+default approach relies on statistics and needs to apply to a wide
+range of cameras, it isn't a "fire-and-forget" operation - you will
+often need to fine-tune it using the steps below.<br><br><h4>Step-by-Step Guide to Refining a Bad-pixel Map</h4>The following steps are recommended for refining a bad-pixel map to control pixel-level artifacts in your camera:<br><ol><li>Cover the guide scope and start looping 5-second exposures</li><li>Open
+the Refine Bad-pixel Map window (Menu/Darks/Bad-pixel Map), then drag
+it to the side of your screen so you can see both the BPM and guiding
+windows</li><li>Adjust the gamma slider in the main window until you
+can see the hot pixels - this may require a brighter image than you are
+accustomed to seeing</li><li>Select the option "Show defect pixels."
+&nbsp;With the box checked, red dots will appear for any hot pixels
+that are already known. &nbsp;</li><li>Slowly drag the hot-pixels
+aggressiveness slider left and right until most of the hot pixels are
+covered by a red dot, with a much smaller number (or even zero) hot
+pixels not covered. &nbsp;Click the 'Generate' button</li><li>Now pick up the remaining hot pixels by manually adding them to the bad-pixel map</li></ol><ul style="margin-left: 40px;"><li>Un-check the "Show defect pixels" checkbox</li><li>Select a hot pixel in the guiding window by clicking on it</li><li>Click on 'Add bad pixel' in the BPM window</li><li>Repeat as necessary until you satisfied most of the bad pixels have been handled</li><li>Close the BPM window - DO NOT click 'Generate' again because that will undo the manual pixel selection</li></ul>&nbsp;&nbsp;&nbsp; <br>Once
 your bad-pixel
 map has been built, you control its use by the 'Use Bad-pixel Map'
 &nbsp;item under the 'Darks' menu. &nbsp;This setting is retained
@@ -188,9 +191,8 @@ operating system.<br><br>Like dark libraries, bad-pixel maps are&nbsp;associated
 &nbsp;PHD2 will check to be sure that the bad-pixel map matches the camera
 you are currently using. &nbsp;If it does not, you will see an alert message telling you the bad-pixel map can't be
 used and must be rebuilt. &nbsp;This can happen when you've changed cameras
-inside an existing equipment profile, something you shouldn't do unless
-you have upgraded your guide camera and have no plan to revert to use
-of the old camera. &nbsp;<br><br><h3><a name="reuse_dark_library"></a>Reusing Dark Frames and Bad-pixel Maps</h3>If
+or binning factors inside an existing equipment profile, something you shouldn't do unless
+you have no need for the old settings. &nbsp;<br><br><h3><a name="reuse_dark_library"></a>Reusing Dark Frames and Bad-pixel Maps</h3>If
 you're using the same camera in multiple profiles, you may want to
 re-use the dark libraries or bad-pixel maps you built for that camera.
 &nbsp;This can be accomplished by importing the camera-related data

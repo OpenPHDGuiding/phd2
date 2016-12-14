@@ -39,6 +39,7 @@
 #include "Refine_DefMap.h"
 #include "camcal_import_dialog.h"
 #include "aui_controls.h"
+#include "starcross_test.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -99,7 +100,7 @@ void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event))
     wxMessageBox(wxString::Format(_("Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n\n \
 Basic operation is quite simple (hence the 'PHD')\n\n \
   1) Press the green 'USB' button, select your camera and mount, click on 'Connect All'\n \
-  2) Pick an exposure duration from the drop-down list\n \
+  2) Pick an exposure duration from the drop-down list. Try 2 seconds to start.\n \
   3) Hit the 'Loop' button, adjust your focus if necessary\n \
   4) Click on a star away from the edge or use Alt-S to auto-select a star\n \
   5) Press the guide (green target) icon\n\n \
@@ -107,7 +108,7 @@ PHD2 will then calibrate itself and begin guiding.  That's it!\n\n \
 To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need to \n \
 tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n \
 panel. Use the 'View' menu to watch your guiding performance. If you have\n \
-problems, read the help files! ")),_("Instructions"));
+problems, read the 'Best Practices' document and the help files! ")),_("Instructions"));
 
 }
 
@@ -314,11 +315,8 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FullSize != pCamera->DarkFrameSize())
     {
-        if (pConfig->Global.GetBoolean(RawModeWarningKey(), true))
-        {
-            pFrame->Alert(_("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
-                _("Don't show\nthis again"), SuppressRawModeWarning, 0);
-        }
+        pFrame->SuppressableAlert(RawModeWarningKey(), _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
+            SuppressRawModeWarning, 0);
     }
 }
 
@@ -590,7 +588,7 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     if (!pRefineDefMap)
         pRefineDefMap = new RefineDefMap(this);
 
-    if (pRefineDefMap->InitUI())                    // UI ready go, user wants to proceed
+    if (pRefineDefMap->InitUI())                    // Required data present, UI built and ready to go
     {
         pRefineDefMap->Show();
 
@@ -807,13 +805,10 @@ static void ValidateDarksLoaded(void)
 {
     if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
     {
-        if (pConfig->Global.GetBoolean(DarksWarningEnabledKey(), true))
-        {
-            pFrame->Alert(_("For best results, use a Dark Library or a Bad-pixel Map "
-                "while guiding. This will help prevent PHD from locking on to a hot pixel. "
-                "Use the Darks menu to build a Dark Library or Bad-pixel Map."),
-                _("Don't show\nthis again"), SuppressDarksAlert, 0);
-        }
+        pFrame->SuppressableAlert(DarksWarningEnabledKey(),
+            _("For best results, use a Dark Library or a Bad-pixel Map "
+            "while guiding. This will help prevent PHD from locking on to a hot pixel. "
+            "Use the Darks menu to build a Dark Library or Bad-pixel Map."), SuppressDarksAlert, 0);
     }
 }
 
@@ -906,6 +901,23 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
         pManualGuide = TestGuide::CreateManualGuideWindow();
 
     pManualGuide->Show();
+}
+
+void MyFrame::OnStarCrossTest(wxCommandEvent& evt)
+{
+    if (!pMount || !pMount->IsConnected())
+    {
+        if (!pSecondaryMount || !pSecondaryMount->IsConnected())
+        {
+            wxMessageBox(_("Please connect a mount first."), _("Star-Cross Test"));
+            return;
+        }
+    }
+
+    if (!pStarCrossDlg)
+        pStarCrossDlg = new StarCrossDialog(this);
+
+    pStarCrossDlg->Show();
 }
 
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)

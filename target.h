@@ -86,11 +86,11 @@ public:
     void AppendData(const GuideStepInfo& step);
     void SetState(bool is_active);
     void UpdateControls(void);
+    void OnButtonClear(wxCommandEvent& evt);
 
 private:
     void OnButtonLength(wxCommandEvent& evt);
     void OnMenuLength(wxCommandEvent& evt);
-    void OnButtonClear(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
     void OnCheckBoxRefCircle(wxCommandEvent& event);

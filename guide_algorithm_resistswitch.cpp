@@ -190,7 +190,7 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
         m_minMove = minMove;
         m_currentSide = 0;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -238,6 +238,47 @@ void GuideAlgorithmResistSwitch::SetFastSwitchEnabled(bool enable)
     Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetFastSwitchEnabled(%d)\n", m_fastSwitchEnabled));
 }
 
+void GuideAlgorithmResistSwitch::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("fastSwitch");
+    names.push_back("aggression");
+}
+
+bool GuideAlgorithmResistSwitch::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "fastSwitch")
+        *val = GetFastSwitchEnabled() ? 1.0 : 0.0;
+    else if (name == "aggression")
+        *val = GetAggression();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "fasetSwitch") {
+        SetFastSwitchEnabled(val != 0.0);
+        err = false;
+    }
+    else if (name == "aggression")
+        err = SetAggression(val);
+    else
+        err = true;
+
+    return !err;
+}
+
 wxString GuideAlgorithmResistSwitch::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
@@ -260,16 +301,16 @@ GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000"));
-    m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
+    m_pAggression = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
 
     DoAdd(_("Aggressiveness"), m_pAggression,
         wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
-    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
@@ -321,8 +362,8 @@ GuideAlgorithmResistSwitch::
 
     // Aggression
     width = StringWidth(_T("000"));
-    m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
+    m_pAggression = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrlDouble, this);
     DoAdd(m_pAggression, _T("Agr"));
@@ -330,8 +371,8 @@ GuideAlgorithmResistSwitch::
 
     // Min move
     width = StringWidth(_T("00.00"));
-    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove,_T("MnMo"));
@@ -349,7 +390,7 @@ void GuideAlgorithmResistSwitch::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
 }
 
 void GuideAlgorithmResistSwitch::
@@ -357,5 +398,5 @@ void GuideAlgorithmResistSwitch::
     OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());
 }

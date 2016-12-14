@@ -35,7 +35,6 @@
 #include "phd.h"
 #include "Refine_DefMap.h"
 #include "darks_dialog.h"
-#include "wx/busyinfo.h"
 
 enum {
     ID_PREVIEW = 10001,
@@ -260,7 +259,8 @@ bool RefineDefMap::InitUI()
 void RefineDefMap::LoadFromProfile()
 {
     // Let the user know this might take some time...
-    wxBusyInfo busyMsg(_("Please wait while image statistics are being computed..."), this);
+    ShowStatus(_("Please wait while image statistics are being computed..."), false);
+    
 
     m_darks.LoadDarks();
     m_builder.Init(m_darks);
@@ -294,8 +294,9 @@ void RefineDefMap::LoadFromProfile()
     pInfoGrid->SetCellValue(madLoc, wxString::Format("%d", stats.mad));
 
     GetBadPxCounts();
-
+    ShowStatus(_("Statistics completed..."), false);
     LoadPreview();
+
 }
 
 bool RefineDefMap::RebuildMasterDarks()
@@ -326,6 +327,7 @@ void RefineDefMap::ShowStatus(const wxString& msg, bool appending)
         pStatusBar->SetStatusText(msg);
         preamble = msg;
     }
+    pStatusBar->Update();
 }
 
 // Build a new defect map based on current aggressiveness params; load it and update the UI
@@ -361,6 +363,7 @@ void RefineDefMap::OnGenerate(wxCommandEvent& evt)
         if (RebuildMasterDarks())
         {
             pRebuildDarks->SetValue(false);
+            LoadFromProfile();
         }
         else
         {

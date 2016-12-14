@@ -409,7 +409,6 @@ set(phd2_SRC
   ${phd_src_dir}/onboard_st4.h
   ${phd_src_dir}/optionsbutton.cpp
   ${phd_src_dir}/optionsbutton.h
-  ${phd_src_dir}/PHD-Info.plist
   ${phd_src_dir}/phd.cpp
   ${phd_src_dir}/phd.h
   ${phd_src_dir}/PHD2GuideHelp.zip
@@ -456,7 +455,8 @@ set(phd2_SRC
   ${phd_src_dir}/serialports.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
-  
+  ${phd_src_dir}/starcross_test.cpp
+  ${phd_src_dir}/starcross_test.h 
   ${phd_src_dir}/statswindow.cpp
   ${phd_src_dir}/statswindow.h
   
@@ -582,10 +582,15 @@ if(APPLE)
     ${local_files}
   )
   set_target_properties(
+    phd2
+    PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/MacOSXBundleInfo.plist.in
+  )
+  set_target_properties(
     phd2 
     PROPERTIES 
-      OUTPUT_NAME PHD2  # upper case on OSX
-    )
+    OUTPUT_NAME PHD2  # upper case on OSX
+  )
   
   target_include_directories(
     phd2

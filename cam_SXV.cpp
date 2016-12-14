@@ -774,10 +774,10 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
 
     if (!ReadPixels(hCam, RawData, nPixelsToRead))  // stop exposure and read but only the one frame
     {
-        DisconnectWithAlert(_("Lost connection to camera"),NO_RECONNECT);
+        DisconnectWithAlert(_("Lost connection to camera"), RECONNECT);
         return true;
     }
-    
+
     if (HasShutter && ShutterClosed)
     {
         sxSetShutter(hCam, 0);  // Open it back up

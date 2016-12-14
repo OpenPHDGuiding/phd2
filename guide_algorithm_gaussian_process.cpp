@@ -55,8 +55,8 @@ public:
         m_pGuideAlgorithm = pGuideAlgorithm;
 
         int width = StringWidth(_T("000.00"));
-        m_pControlGain = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
+        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+            wxPoint(-1, -1), wxSize(width, -1),
                                               wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
                                               _T("Control Gain"));
         m_pControlGain->SetDigits(2);

@@ -280,7 +280,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y, 
+                pFrame->pGuider->CurrentPosition().Y,
                 pFrame->pGuider->HFD()));
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
     Flush();
@@ -448,6 +448,20 @@ void GuidingLog::FrameDropped(const FrameDroppedInfo& info)
     Flush();
 }
 
+
+void GuidingLog::CalibrationFrameDropped(const FrameDroppedInfo& info)
+{
+    if (!m_enabled)
+        return;
+    assert(m_file.IsOpened());
+
+    m_file.Write(wxString::Format("INFO: STAR LOST during calibration, Mass= %.f, SNR= %.2f, Error= %d, Status=%s\n",
+        info.starMass, info.starSNR, info.starError, info.status));
+
+    Flush();
+
+}
+
 void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 {
     if (!m_enabled || !m_isGuiding)
@@ -461,6 +475,13 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 void GuidingLog::NotifySettlingStateChange(const wxString& msg)
 {
     m_file.Write(wxString::Format("INFO: SETTLING STATE CHANGE, %s\n", msg));
+    Flush();
+}
+
+void GuidingLog::NotifyGAResult(const wxString& msg)
+{
+    // Client needs to handle end-of-line formatting
+    m_file.Write(wxString::Format("INFO: GA Result - %s", msg));
     Flush();
 }
 
@@ -508,22 +529,17 @@ void GuidingLog::ServerCommand(Guider *guider, const wxString& cmd)
 
 void GuidingLog::SetGuidingParam(const wxString& name, double val)
 {
-    if (!m_enabled || !m_isGuiding)
-        return;
-
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %.2f\n", name, val));
-    m_keepFile = true;
-    Flush();
+    SetGuidingParam(name, wxString::Format("%.2f", val));
 }
 
 void GuidingLog::SetGuidingParam(const wxString& name, int val)
 {
-    if (!m_enabled || !m_isGuiding)
-        return;
+    SetGuidingParam(name, wxString::Format("%d", val));
+}
 
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %d\n", name, val));
-    m_keepFile = true;
-    Flush();
+void GuidingLog::SetGuidingParam(const wxString& name, bool val)
+{
+    SetGuidingParam(name, wxString(val ? "true" : "false"));
 }
 
 void GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)

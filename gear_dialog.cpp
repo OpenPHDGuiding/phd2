@@ -192,8 +192,8 @@ void GearDialog::Initialize(void)
     profilesSizer->Add(m_profiles, sizerButtonFlags);
 
     m_menuProfileManage = new wxMenu();
-    m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_WIZARD, _("New using Wizard..."), _("Run the first-light wizard to create a new profile"));
+    m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_DELETE, _("Delete"), _("Delete the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_LOAD, _("Import..."), _("Load a profile from a file"));
@@ -251,6 +251,8 @@ void GearDialog::Initialize(void)
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
                              Scope::List(), 0, wxDefaultValidator, _("Mount"));
+    m_pScopes->SetToolTip(_("Specify how guide commands will be sent to the mount - via an ASCOM or Indi driver, directly from the camera or AO, "
+        "or via one of the GPxxx devices. An ASCOM connection is recommended."));
     m_gearSizer->Add(m_pScopes, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, setup_bmp);
     m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
@@ -868,6 +870,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
         return;
 
     wxArrayString names;
+    m_cameraIds.clear(); // otherwise camera selection only works randomly as EnumCameras tends to append to the camera Ids
     bool error = m_pCamera->EnumCameras(names, m_cameraIds);
     if (error || names.size() == 0)
     {
@@ -1055,6 +1058,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
         pFrame->StatusMsg(_("Camera Disconnected"));
         pFrame->UpdateStateLabels();
         pFrame->pStatsWin->UpdateCooler();
+        pFrame->pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {

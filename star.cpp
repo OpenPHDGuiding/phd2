@@ -816,7 +816,10 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     // exclude stars too close to the edge
     {
         enum { MIN_EDGE_DIST = 40 };
-        int edgeDist = MIN_EDGE_DIST + extraEdgeAllowance;
+        int edgeDist = pConfig->Profile.GetInt("/StarAutoFind/MinEdgeDist", MIN_EDGE_DIST);
+        if (edgeDist < searchRegion)
+            edgeDist = searchRegion;
+        edgeDist += extraEdgeAllowance;
 
         std::set<Peak>::iterator it = stars.begin();
         while (it != stars.end())

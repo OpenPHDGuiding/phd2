@@ -101,8 +101,10 @@ public:
     void SetPixelSize(double val);
     int GetBinning(void);
     void SetBinning(int binning);
+    void ResetGuidingParams();
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
+
 
 private:
     void AddCameraPage(void);

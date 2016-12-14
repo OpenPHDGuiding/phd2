@@ -94,7 +94,7 @@ TargetWindow::TargetWindow(wxWindow *parent) :
 
     int w, h;
     GetTextExtent(_T("88.8"), &w, &h);
-    m_refCircleRadius = new wxSpinCtrlDouble(this, TARGET_REF_CIRCLE_RADIUS, wxEmptyString, wxDefaultPosition, wxSize(w + 30, -1));
+    m_refCircleRadius = pFrame->MakeSpinCtrlDouble(this, TARGET_REF_CIRCLE_RADIUS, wxEmptyString, wxDefaultPosition, wxSize(w, -1));
     m_refCircleRadius->SetToolTip(_("Reference circle radius"));
     m_refCircleRadius->SetRange(0.1, 10.0);
     m_refCircleRadius->SetIncrement(0.1);

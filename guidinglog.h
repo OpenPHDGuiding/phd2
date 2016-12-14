@@ -110,15 +110,18 @@ public:
     void StopGuiding();
     void GuideStep(const GuideStepInfo& info);
     void FrameDropped(const FrameDroppedInfo& info);
+    void CalibrationFrameDropped(const FrameDroppedInfo& info);
 
     void ServerCommand(Guider *guider, const wxString& cmd);
     void NotifyGuidingDithered(Guider *guider, double dx, double dy);
     void NotifySetLockPosition(Guider *guider);
     void NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate);
     void NotifySettlingStateChange(const wxString& msg);
+    void NotifyGAResult(const wxString& msg);
 
     void SetGuidingParam(const wxString& name, double val);
     void SetGuidingParam(const wxString& name, int val);
+    void SetGuidingParam(const wxString& name, bool val);
     void SetGuidingParam(const wxString& name, const wxString& val);
 
     bool ChangeDirLog(const wxString& newdir);

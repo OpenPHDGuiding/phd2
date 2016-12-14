@@ -191,8 +191,8 @@ bool Camera_WDMClass::SelectDeviceAndMode()
             CVVidCapture::VIDCAP_MODE modeInfo;
             if (CVSUCCESS(vidCap->GetModeInfo(curmode, modeInfo)))
             {
-                modeNames.Add(wxString::Format("%dx%d (%s)", modeInfo.XRes, modeInfo.YRes,
-                    vidCap->GetFormatModeName(modeInfo.InputFormat)));
+                modeNames.Add(wxString::Format("%dx%d (%s) %d fps", modeInfo.XRes, modeInfo.YRes,
+                    vidCap->GetFormatModeName(modeInfo.InputFormat), modeInfo.EstFrameRate));
             }
         }
 

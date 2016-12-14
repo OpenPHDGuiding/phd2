@@ -616,12 +616,16 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
 
-        if (GetPauseType() != PAUSE_NONE)
+        if (IsPaused())
         {
             dc.SetTextForeground(*wxYELLOW);
             dc.DrawText(_("PAUSED"), 10, YWinSize - 20);
         }
-
+        else if (pMount && !pMount->GetGuidingEnabled())
+        {
+            dc.SetTextForeground(*wxYELLOW);
+            dc.DrawText(_("Guide output DISABLED"), 10, YWinSize - 20);
+        }
     }
     catch (const wxString& Msg)
     {
@@ -1045,6 +1049,38 @@ void Guider::Reset(bool fullReset)
     }
 }
 
+// Called from the alert to offer auto-restore calibration
+static void SetAutoLoad(long param)
+{
+    pFrame->SetAutoLoadCalibration(true);
+    pFrame->m_infoBar->Dismiss();
+}
+
+// Generate an alert if the user is likely to be missing the opportunity for auto-restore of
+// the just-completed calibration
+static void CheckCalibrationAutoLoad()
+{
+    int autoLoadProfileVal = pConfig->Profile.GetInt("/AutoLoadCalibration", -1);
+    bool shouldAutoLoad = pPointingSource && pPointingSource->CanReportPosition();
+
+    if (autoLoadProfileVal == -1)
+    {
+        // new profile, assert appropriate choice as default
+        pFrame->SetAutoLoadCalibration(shouldAutoLoad);
+    }
+    else if (autoLoadProfileVal == 0 && shouldAutoLoad)
+    {
+        bool alreadyAsked = pConfig->Profile.GetBoolean("/AlreadyAskedCalibAutoload", false);
+
+        if (!alreadyAsked)
+        {
+            wxString msg = wxString::Format(_("Do you want to automatically restore this calibration whenever the profile is used?"));
+            pFrame->Alert(msg, 0, "Auto-restore", &SetAutoLoad, 0, false, 0);
+            pConfig->Profile.SetBoolean("/AlreadyAskedCalibAutoload", true);
+        }
+    }
+}
+
 /*************  A new image is ready ************************/
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
@@ -1068,6 +1104,9 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             pImage = m_pCurrentImage;
         }
+
+        if (pFrame && pFrame->pStatsWin)
+            pFrame->pStatsWin->UpdateImageSize(pImage->Size);
 
         if (bStopping)
         {
@@ -1110,6 +1149,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
+                    GuideLog.CalibrationFrameDropped(info);
                     Debug.Write("Star lost during calibration... blundering on\n");
                     EvtServer.NotifyStarLost(info);
                     pFrame->StatusMsg(_("star lost"));
@@ -1168,6 +1208,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (IsPaused())
         {
+            if (m_state == STATE_GUIDING)
+            {
+                // allow guide algorithms to attempt dead reckoning
+                pFrame->SchedulePrimaryMove(pMount, PHD_Point(0., 0.), MOVETYPE_DEDUCED);
+            }
+
             statusMessage = _("Paused");
             throw THROW_INFO("Skipping frame - guider is paused");
         }
@@ -1252,6 +1298,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
                 EvtServer.NotifyStartGuiding();
+                CheckCalibrationAutoLoad();
                 break;
             case STATE_GUIDING:
                 if (m_ditherRecenterRemaining.IsValid())

@@ -90,6 +90,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadDark)
     EVT_MENU(MENU_LOADDEFECTMAP,MyFrame::OnLoadDefectMap)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
+    EVT_MENU(MENU_STARCROSS_TEST, MyFrame::OnStarCrossTest)
     EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
@@ -213,6 +214,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_infoBar = new wxInfoBar(guiderWin);
     m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON,
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+    m_infoBar->Connect(BUTTON_ALERT_DONTSHOW, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
     m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
         wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
     m_infoBar->Connect(BUTTON_ALERT_HELP, wxEVT_BUTTON,
@@ -231,7 +234,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGuider->SetLockPosIsSticky(sticky);
     tools_menu->Check(EEGG_STICKY_LOCK, sticky);
 
-    SetMinSize(wxSize(wxMax(400, m_statusbar->GetMinSBWidth()), 300));
+    SetMinSize(wxSize(300, 300));
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
@@ -312,6 +315,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     pDriftTool = NULL;
     pManualGuide = NULL;
+    pStarCrossDlg = NULL;
     pNudgeLock = NULL;
     pCometTool = NULL;
     pGuidingAssistant = NULL;
@@ -407,6 +411,8 @@ MyFrame::~MyFrame()
         pCalSanityCheckDlg->Destroy();
     if (pCalReviewDlg)
         pCalReviewDlg->Destroy();
+    if (pStarCrossDlg)
+        pStarCrossDlg->Destroy();
 
     m_mgr.UnInit();
 
@@ -450,6 +456,7 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
+    tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
@@ -745,7 +752,10 @@ void MyFrame::LoadProfileSettings(void)
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
 
-    SetAutoLoadCalibration(pConfig->Profile.GetBoolean("/AutoLoadCalibration", false));
+    // Don't re-save the setting here with a call to SetAutoLoadCalibration().  An un-initialized registry key (-1) will
+    // be populated after the 1st calibration
+    int autoLoad = pConfig->Profile.GetInt("/AutoLoadCalibration", -1);
+    m_autoLoadCalibration = (autoLoad == 1);        // new profile=> false
 
     int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultFocalLength);
     SetFocalLength(focalLength);
@@ -983,15 +993,22 @@ struct alert_params
     wxString msg;
     wxString buttonLabel;
     int flags;
-    alert_fn *fn;
+    alert_fn *fnDontShow;
+    alert_fn *fnSpecial;
     long arg;
     bool showHelp;
 };
 
 void MyFrame::OnAlertButton(wxCommandEvent& evt)
 {
-    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
-        (*m_alertFn)(m_alertFnArg);
+    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertSpecialFn)
+        (*m_alertSpecialFn)(m_alertFnArg);
+    if (evt.GetId() == BUTTON_ALERT_DONTSHOW && m_alertDontShowFn)
+    {
+        (*m_alertDontShowFn)(m_alertFnArg);
+        // Don't show should also mean close the window
+        m_infoBar->Dismiss();
+    }
     if (evt.GetId() == BUTTON_ALERT_CLOSE)
         m_infoBar->Dismiss();
 }
@@ -1002,34 +1019,47 @@ void MyFrame::OnAlertHelp(wxCommandEvent& evt)
     help->Display(_("Trouble-shooting and Analysis"));
 }
 
+// Alerts may have a combination of 'Don't show', help, close, and 'Custom' buttons.  The 'close' button is added automatically if any of
+// the other buttons are present.
 void MyFrame::DoAlert(const alert_params& params)
 {
     Debug.Write(wxString::Format("Alert: %s\n", params.msg));
 
-    m_alertFn = params.fn;
+    m_alertDontShowFn = params.fnDontShow;
+    m_alertSpecialFn = params.fnSpecial;
     m_alertFnArg = params.arg;
 
     int buttonSpace = 80;
     m_infoBar->RemoveButton(BUTTON_ALERT_ACTION);
     m_infoBar->RemoveButton(BUTTON_ALERT_CLOSE);
     m_infoBar->RemoveButton(BUTTON_ALERT_HELP);
-    if (params.fn)
+    m_infoBar->RemoveButton(BUTTON_ALERT_DONTSHOW);
+    if (params.fnDontShow)
+    {
+        m_infoBar->AddButton(BUTTON_ALERT_DONTSHOW, _("Don't show\n again"));
+        buttonSpace += 80;
+    }
+    if (params.fnSpecial)
     {
         m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
+        buttonSpace += 80;
+    }
+    if (params.fnSpecial || params.fnDontShow)
+    {
         m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
-        buttonSpace = 280;
+        buttonSpace += 80;
     }
     if (params.showHelp)
     {
         m_infoBar->AddButton(BUTTON_ALERT_HELP, _("Help"));
-        buttonSpace += 100;
+        buttonSpace += 80;
     }
     m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
     m_statusbar->UpdateStates();        // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
 
-void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton, int flags)
+void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton, int flags)
 {
     if (wxThread::IsMain())
     {
@@ -1037,7 +1067,8 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params.msg = msg;
         params.buttonLabel = buttonLabel;
         params.flags = flags;
-        params.fn = fn;
+        params.fnDontShow = DontShowFn;
+        params.fnSpecial = SpecialFn;
         params.arg = arg;
         params.showHelp = showHelpButton;
         DoAlert(params);
@@ -1048,7 +1079,8 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
         params->msg = msg;
         params->buttonLabel = buttonLabel;
         params->flags = flags;
-        params->fn = fn;
+        params->fnDontShow = DontShowFn;
+        params->fnSpecial = SpecialFn;
         params->arg = arg;
         params->showHelp = showHelpButton;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
@@ -1057,9 +1089,21 @@ void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *
     }
 }
 
+// Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is made if 
+// the user has blocked the alert for this type of problem
+void MyFrame::SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton, int flags)
+{
+    if (pConfig->Global.GetBoolean(configPropKey, true))
+    {
+        Alert(msg, dontShowFn, wxEmptyString,  0, arg, showHelpButton);
+    }
+    else
+        Debug.Write(wxString::Format("Suppressed alert:  %s\n", msg));
+}
+
 void MyFrame::Alert(const wxString& msg, int flags)
 {
-    Alert(msg, wxEmptyString, 0, 0, false, flags);
+    Alert(msg, 0, wxEmptyString, 0, 0, false, flags);
 }
 
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
@@ -2014,7 +2058,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 last_frame_size[0] = fsize[0];
                 last_frame_size[1] = fsize[1];
 
-                std::auto_ptr<usImage> img(new usImage());
+                std::unique_ptr<usImage> img(new usImage());
 
                 if (img->Init((int)fsize[0], (int)fsize[1]))
                 {
@@ -2303,6 +2347,8 @@ bool MyFrame::SetFocalLength(int focalLength)
         }
 
         m_focalLength = focalLength;
+        if (pStatsWin)
+            pStatsWin->ResetImageSize();
     }
     catch (const wxString& Msg)
     {
@@ -2401,6 +2447,30 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
     ctrl->Bind(wxEVT_KILL_FOCUS, &MyFrame::OnTextControlKillFocus, this);
 }
 
+// Reset the guiding parameters and the various graphical displays when binning changes.  This should be done when guiding starts 
+// so the user can experiment with binning without losing guider settings
+void MyFrame::HandleBinningChange()
+{
+    if (pMount)
+    {
+        pAdvancedDialog->ResetGuidingParams();
+        wxCommandEvent dummyEvt;
+        if (pGraphLog)
+        {
+            pGraphLog->OnButtonClear(dummyEvt);
+            pGraphLog->UpdateControls();
+        }
+        if (pStepGuiderGraph)
+            pStepGuiderGraph->OnButtonClear(dummyEvt);
+        if (pTarget)
+        {
+            pTarget->OnButtonClear(dummyEvt);
+            pTarget->UpdateControls();
+        }
+        Alert(_("Guiding parameters have been reset because the camera binning changed. You should use separate profiles for different binning values."));
+    }
+}
+
 MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);
@@ -2469,13 +2539,13 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 
     width = StringWidth(_T("00000"));
     parent = GetParentWindow(AD_szTimeLapse);
-    m_pTimeLapse = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
+    m_pTimeLapse = pFrame->MakeSpinCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
     AddLabeledCtrl(CtrlMap, AD_szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
     parent = GetParentWindow(AD_szFocalLength);
-    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1));
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
@@ -2553,8 +2623,8 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherRaOnly->SetToolTip(_("Constrain dither to RA only"));
 
     width = StringWidth(_T("000.00"));
-    m_ditherScaleFactor = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
+    m_ditherScaleFactor = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
     m_ditherScaleFactor->SetDigits(1);
     m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
@@ -2578,8 +2648,8 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
 
     width = StringWidth(_T("00.0"));
-    m_autoExpSNR = new wxSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
+    m_autoExpSNR = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
     wxFlexGridSizer *sz1 = new wxFlexGridSizer(1, 3, 10, 10);
     sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
@@ -2726,4 +2796,55 @@ void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
     }
     else
         win->Move(x, y);
+}
+
+// The spin control factories allow clients to specify a width based on the max width of the numeric values without having 
+// to make guesses about the additional space required by the other parts of the control
+wxSpinCtrl* MyFrame::MakeSpinCtrl(wxWindow *parent, wxWindowID id, const wxString& value,
+    const wxPoint& pos, const wxSize& size, long style,
+    int min, int max, int initial, const wxString& name)
+{
+    wxSize actualSize = size;
+    int requestedWidth = size.GetWidth();
+    if (requestedWidth > 0)
+        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
+    return new wxSpinCtrl(parent, id, value, pos, actualSize, style, min, max, initial, name);
+}
+
+wxSpinCtrlDouble* MyFrame::MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id, const wxString& value,
+    const wxPoint& pos, const wxSize& size, long style, double min, double max, double initial,
+    double inc, const wxString& name)
+{
+    wxSize actualSize = size;
+    int requestedWidth = size.GetWidth();
+    if (requestedWidth > 0)
+        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
+    return new wxSpinCtrlDouble(parent, id, value, pos, actualSize, style, min, max, initial, inc, name);
+}
+
+template<typename T>
+static void NotifyGuidingParam(const wxString& name, T val)
+{
+    GuideLog.SetGuidingParam(name, val);
+    EvtServer.NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, double val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, int val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, bool val)
+{
+    ::NotifyGuidingParam(name, val);
+}
+
+void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val)
+{
+    ::NotifyGuidingParam(name, val);
 }

@@ -295,18 +295,19 @@ static Ev ev_app_state(EXPOSED_STATE st = Guider::GetExposedState())
     return ev;
 }
 
-static Ev ev_settling(double distance, double time, double settleTime)
+static Ev ev_settling(double distance, double time, double settleTime, bool starLocked)
 {
     Ev ev("Settling");
 
     ev << NV("Distance", distance, 2)
        << NV("Time", time, 1)
-       << NV("SettleTime", settleTime, 1);
+       << NV("SettleTime", settleTime, 1)
+       << NV("StarLocked", starLocked);
 
     return ev;
 }
 
-static Ev ev_settle_done(const wxString& errorMsg)
+static Ev ev_settle_done(const wxString& errorMsg, int settleFrames, int droppedFrames)
 {
     Ev ev("SettleDone");
 
@@ -318,6 +319,9 @@ static Ev ev_settle_done(const wxString& errorMsg)
     {
         ev << NV("Error", errorMsg);
     }
+
+    ev << NV("TotalFrames", settleFrames)
+        << NV("DroppedFrames", droppedFrames);
 
     return ev;
 }
@@ -687,6 +691,38 @@ static void get_profile(JObj& response, const json_value *params)
     wxString name = pConfig->GetCurrentProfile();
     JObj t;
     t << NV("id", id) << NV("name", name);
+    response << jrpc_result(t);
+}
+
+inline static void devstat(JObj& t, const char *dev, const wxString& name, bool connected)
+{
+    JObj o;
+    t << NV(dev, o << NV("name", name) << NV("connected", connected));
+}
+
+static void get_current_equipment(JObj& response, const json_value *params)
+{
+    JObj t;
+
+    if (pCamera)
+       devstat(t, "camera", pCamera->Name, pCamera->Connected);
+
+    Mount *mount = TheScope();
+    if (mount)
+        devstat(t, "mount", mount->Name(), mount->IsConnected());
+
+    Mount *auxMount = pFrame->pGearDialog->AuxScope();
+    if (auxMount)
+        devstat(t, "aux_mount", auxMount->Name(), auxMount->IsConnected());
+
+    Mount *ao = TheAO();
+    if (ao)
+        devstat(t, "AO", ao->Name(), ao->IsConnected());
+
+    Rotator *rotator = pRotator;
+    if (rotator)
+        devstat(t, "rotator", rotator->Name(), rotator->IsConnected());
+
     response << jrpc_result(t);
 }
 
@@ -1329,6 +1365,8 @@ static bool parse_settle(SettleParams *settle, const json_value *j, wxString *er
         }
     }
 
+    settle->frames = 99999;
+
     bool ok = found_pixels && found_time && found_timeout;
     if (!ok)
         *error = "invalid settle params";
@@ -1476,6 +1514,156 @@ static void shutdown(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void get_camera_binning(JObj& response, const json_value *params)
+{
+    if (pCamera && pCamera->Connected)
+    {
+        int binning = pCamera->Binning;
+        response << jrpc_result(binning);
+    }
+    else
+        response << jrpc_error(1, "camera not connected");
+}
+
+static void get_guide_output_enabled(JObj& response, const json_value *params)
+{
+    if (pMount)
+        response << jrpc_result(pMount->GetGuidingEnabled());
+    else
+        response << jrpc_error(1, "mount not defined");
+}
+
+static void set_guide_output_enabled(JObj& response, const json_value *params)
+{
+    Params p("enabled", params);
+    const json_value *val = p.param("enabled");
+    bool enable;
+    if (!val || !bool_param(val, &enable))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        return;
+    }
+
+    if (pMount)
+    {
+        pMount->SetGuidingEnabled(enable);
+        response << jrpc_result(0);
+    }
+    else
+        response << jrpc_error(1, "mount not defined");
+}
+
+static bool axis_param(const Params& p, GuideAxis *a)
+{
+    const json_value *val = p.param("axis");
+    if (!val || val->type != JSON_STRING)
+        return false;
+
+    bool ok = true;
+
+    if (wxStricmp(val->string_value, "ra") == 0)
+        *a = GUIDE_RA;
+    else if (wxStricmp(val->string_value, "x") == 0)
+        *a = GUIDE_X;
+    else if (wxStricmp(val->string_value, "dec") == 0)
+        *a = GUIDE_DEC;
+    else if (wxStricmp(val->string_value, "y") == 0)
+        *a = GUIDE_Y;
+    else
+        ok = false;
+
+    return ok;
+}
+
+static void get_algo_param_names(JObj& response, const json_value *params)
+{
+    Params p("axis", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    wxArrayString ary;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        alg->GetParamNames(ary);
+    }
+
+    JAry names;
+    for (auto it = ary.begin(); it != ary.end(); ++it)
+        names << ('"' + json_escape(*it) + '"');
+
+    response << jrpc_result(names);
+}
+
+static void get_algo_param(JObj& response, const json_value *params)
+{
+    Params p("axis", "name", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    const json_value *name = p.param("name");
+    if (!name || name->type != JSON_STRING)
+    {
+        response << jrpc_error(1, "expected param name param");
+        return;
+    }
+    bool ok = false;
+    double val;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        ok = alg->GetParam(name->string_value, &val);
+    }
+    if (ok)
+        response << jrpc_result(val);
+    else
+        response << jrpc_error(1, "could not get param");
+}
+
+static void set_algo_param(JObj& response, const json_value *params)
+{
+    Params p("axis", "name", "value", params);
+    GuideAxis a;
+    if (!axis_param(p, &a))
+    {
+        response << jrpc_error(1, "expected axis name param");
+        return;
+    }
+    const json_value *name = p.param("name");
+    if (!name || name->type != JSON_STRING)
+    {
+        response << jrpc_error(1, "expected param name param");
+        return;
+    }
+    const json_value *val = p.param("value");
+    double v;
+    if (!float_param(val, &v))
+    {
+        response << jrpc_error(1, "expected param value param");
+        return;
+    }
+    bool ok = false;
+    if (pMount)
+    {
+        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        ok = alg->SetParam(name->string_value, v);
+    }
+    if (ok)
+    {
+        response << jrpc_result(0);
+        if (pFrame->pGraphLog)
+            pFrame->pGraphLog->UpdateControls();
+    }
+    else
+        response << jrpc_error(1, "could not set param");
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -1538,6 +1726,13 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_use_subframes", &get_use_subframes, },
         { "get_search_region", &get_search_region, },
         { "shutdown", &shutdown, },
+        { "get_camera_binning", &get_camera_binning, },
+        { "get_current_equipment", &get_current_equipment, },
+        { "get_guide_output_enabled", &get_guide_output_enabled, },
+        { "set_guide_output_enabled", &set_guide_output_enabled, },
+        { "get_algo_param_names", &get_algo_param_names, },
+        { "get_algo_param", &get_algo_param, },
+        { "set_algo_param", &set_algo_param, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
@@ -1946,24 +2141,24 @@ void EventServer::NotifyAppState()
     do_notify(m_eventServerClients, ev_app_state());
 }
 
-void EventServer::NotifySettling(double distance, double time, double settleTime)
+void EventServer::NotifySettling(double distance, double time, double settleTime, bool starLocked)
 {
     if (m_eventServerClients.empty())
         return;
 
-    Ev ev(ev_settling(distance, time, settleTime));
+    Ev ev(ev_settling(distance, time, settleTime, starLocked));
 
     Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
     do_notify(m_eventServerClients, ev);
 }
 
-void EventServer::NotifySettleDone(const wxString& errorMsg)
+void EventServer::NotifySettleDone(const wxString& errorMsg, int settleFrames, int droppedFrames)
 {
     if (m_eventServerClients.empty())
         return;
 
-    Ev ev(ev_settle_done(errorMsg));
+    Ev ev(ev_settle_done(errorMsg, settleFrames, droppedFrames));
 
     Debug.Write(wxString::Format("evsrv: %s\n", ev.str()));
 
@@ -1999,4 +2194,37 @@ void EventServer::NotifyAlert(const wxString& msg, int type)
     ev << NV("Type", s);
 
     do_notify(m_eventServerClients, ev);
+}
+
+template<typename T>
+static void NotifyGuidingParam(const EventServer::CliSockSet& clients, const wxString& name, T val)
+{
+    if (clients.empty())
+        return;
+
+    Ev ev("GuideParamChange");
+    ev << NV("Name", name);
+    ev << NV("Value", val);
+
+    do_notify(clients, ev);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, double val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, int val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, bool val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyGuidingParam(const wxString& name, const wxString& val)
+{
+    ::NotifyGuidingParam(m_eventServerClients, name, val);
 }

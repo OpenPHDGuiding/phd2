@@ -159,8 +159,6 @@ protected:
 
     bool SetLanguage(int language);
 
-    void SetAutoLoadCalibration(bool val);
-
     friend class MyFrameConfigDialogPane;
     friend class MyFrameConfigDialogCtrlSet;
     friend class WorkerThread;
@@ -183,6 +181,7 @@ private:
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
     bool m_continueCapturing; // should another image be captured?
+    static const int SPINNER_PADDING = 40;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -216,6 +215,7 @@ public:
     TargetWindow *pTarget;
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
+    wxDialog * pStarCrossDlg;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
     wxWindow *pGuidingAssistant;
@@ -256,6 +256,7 @@ public:
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
     void OnTestGuide(wxCommandEvent& evt);
+    void OnStarCrossTest(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
@@ -329,6 +330,7 @@ public:
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
+    void SetAutoLoadCalibration(bool val);
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();
@@ -376,7 +378,8 @@ public:
     double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
     void StatusMsg(const wxString& text);
     void StatusMsgNoTimeout(const wxString& text);
     wxString GetSettingsSummary();
@@ -390,6 +393,21 @@ public:
     void SetDitherMode(DitherMode mode);
     DitherMode GetDitherMode(void) const;
 
+    void HandleBinningChange();
+
+    void NotifyGuidingParam(const wxString& name, double val);
+    void NotifyGuidingParam(const wxString& name, int val);
+    void NotifyGuidingParam(const wxString& name, bool val);
+    void NotifyGuidingParam(const wxString& name, const wxString& val);
+    // Following 2 functions are used by clients that need to size the spin control based on the max text width
+    wxSpinCtrl* MakeSpinCtrl(wxWindow *parent, wxWindowID id = -1, const wxString& value = wxEmptyString,
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_ARROW_KEYS,
+        int min = 0, int max = 100, int initial = 0, const wxString& name = wxT("wxSpinCtrl"));
+    wxSpinCtrlDouble* MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString,
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+        long style = wxSP_ARROW_KEYS | wxALIGN_RIGHT, double min = 0, double max = 100, double initial = 0,
+        double inc = 1, const wxString& name = wxT("wxSpinCtrlDouble"));
+
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pPrimaryWorkerThread;
@@ -401,8 +419,10 @@ private:
     int m_exposureDuration;
     AutoExposureCfg m_autoExp;
 
-    alert_fn *m_alertFn;
+    alert_fn *m_alertDontShowFn;
+    alert_fn *m_alertSpecialFn;
     long m_alertFnArg;
+
 
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 
@@ -463,6 +483,7 @@ enum {
     BUTTON_ALERT_ACTION,
     BUTTON_ALERT_CLOSE,
     BUTTON_ALERT_HELP,
+    BUTTON_ALERT_DONTSHOW,
     GEAR_DIALOG_IDS_BEGIN,
         GEAR_PROFILES,
         GEAR_PROFILE_MANAGE,
@@ -584,6 +605,7 @@ enum {
     MENU_BOOKMARKS_SET_AT_LOCK,
     MENU_BOOKMARKS_SET_AT_STAR,
     MENU_BOOKMARKS_CLEAR_ALL,
+    MENU_STARCROSS_TEST,
 };
 
 enum {

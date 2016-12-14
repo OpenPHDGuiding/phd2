@@ -503,6 +503,23 @@ void AdvancedDialog::SetPixelSize(double val)
         m_pCameraCtrlSet->SetPixelSize(val);
 }
 
+// Needed to handle reset if the camera binning changes on the fly
+void AdvancedDialog::ResetGuidingParams()
+{
+    m_pMountPane->ResetRAGuidingParams();
+    m_pMountPane->ResetDecGuidingParams();
+    // No dialog active, so we need to make these changes take effect
+    if (TheAO())
+    {
+        m_pAOCtrlSet->UnloadValues();
+    }
+    if (TheScope())
+    {
+        m_pScopeCtrlSet->UnloadValues();
+        m_pMountPane->UnloadValues();
+    }
+}
+
 int AdvancedDialog::GetBinning(void)
 {
     return m_pCameraCtrlSet ? m_pCameraCtrlSet->GetBinning() : 1;

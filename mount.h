@@ -181,6 +181,10 @@ public:
         wxStaticBoxSizer* m_pAlgoBox;
         wxStaticBoxSizer* m_pRABox;
         wxStaticBoxSizer* m_pDecBox;
+        wxButton* m_pResetRAParams;
+        wxButton* m_pResetDecParams;
+        void OnResetRAParams(wxCommandEvent& evt);
+        void OnResetDecParams(wxCommandEvent& evt);
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
@@ -194,6 +198,8 @@ public:
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
+        void ResetRAGuidingParams();
+        void ResetDecGuidingParams();
     };
 
     GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);
@@ -232,7 +238,7 @@ public:
     GuideParity DecParity(void) const;
 
     bool FlipCalibration(void);
-    bool GetGuidingEnabled(void);
+    bool GetGuidingEnabled(void) const;
     void SetGuidingEnabled(bool guidingEnabled);
 
     virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType);
@@ -282,6 +288,7 @@ public:
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
+    ConfigDialogCtrlSet* currConfigDialogCtrlSet;               // instance currently in-use by AD
 
     virtual wxString GetMountClassName() const = 0;
 
@@ -331,6 +338,11 @@ protected:
     bool MountIsCalibrated(void) const { return m_calibrated; }
     const Calibration& MountCal(void) const { return m_cal; }
 };
+
+inline bool Mount::GetGuidingEnabled(void) const
+{
+    return m_guidingEnabled;
+}
 
 inline bool Mount::IsBusy(void) const
 {

@@ -161,7 +161,47 @@ using this test is that it reduces things to the absolute basics: will
 the mount move as directed or not. &nbsp;It has nothing to do with PHD2
 guide settings because they aren't involved in the test. &nbsp;You may
 find it helpful to use the test results to communicate with the mount
-manufacturer or other users who understand that specific mount and its typical&nbsp; problems..<br><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+manufacturer or other users who understand that specific mount and its typical&nbsp; problems.<br><br><span style="font-weight: bold;"><a name="Measuring_Mount_Behavior"></a>Measuring the Mount's Behavior<br></span>If you're having<span style="font-weight: bold;"> </span>trouble
+getting decent guiding results, your first instinct will probably be to
+try making wild changes to the guiding parameters in the hope of
+finding a magic solution. &nbsp;Thiis almost never works, and you're
+more likely to just make things worse. &nbsp;If the default parameters
+from the new-profile-wizard aren't producing reasonable results, the
+fault is probably with the hardware and you'll need to determine the
+underlying cause. &nbsp;Once you understand the cause, you can probably
+improve your guiding results even if no actual repairs can be made -
+but understanding the underlying problem is important. &nbsp;To
+understand what the mount is doing, perform the following steps:<br><br><div style="margin-left: 40px;">1. Use the new-profile-wizard to create a new equipment profile for the test, being sure the <span style="font-style: italic;">guide scope</span> focal length and camera pixel size are correct. &nbsp;Don't guess at them, look them up if you aren't sure. <br>2. Use an ASCOM connection to the mount if one is available.<br>3.
+Perform a fresh calibration near Dec=0 with the scope pointing at least
+40 degrees above the horizon to minimize seeing effects. <br>4. Make
+sure there are no backlash compensation settings active in the mount,
+and set the mount guide speed to 0.5x - 1x sidereal.<br>5. Run the
+Guiding Assistant for 10-15 minutes and apply whatever recommendations
+it makes, particularly with respect to min-move values. &nbsp;Let it
+measure your declination backlash. &nbsp;You may need to use a large
+tracking region to avoid losing the guide star during this part of the
+process - just be sure there aren't multiple stars in the tracking
+rectangle. &nbsp;The backlash test will move the star a long distance
+north, so choose a guide star that is nearer the southern edge of your
+camera frame to give yourself plenty of room.<br>6. Do not change any of the guide parameters beyond what is recommended by the Guiding Assistant.<br>7.
+Take a careful look at the results shown in the Guiding Assistant
+table. &nbsp;Each entry in the table can tell you something useful
+about the mount's performance. &nbsp;These results are also written to
+the guiding log, so they are available for later analysis.<br>8.
+If you got calibration alert messages in step 3, you should probably
+remedy those problems before proceeding. &nbsp;Guiding with a bad
+calibration is not likely to produce good results. &nbsp;Also, if your
+polar alignment error is 10 arc-min or more, you should improve on that
+and then repeat the above steps.<br>9. Let PHD2 guide for another 10-15
+minutes, just letting it run so long as there aren't gross errors from
+wind or other "mistakes." &nbsp;<span style="font-weight: bold;">Do NOT</span> change any of the guiding parameters while this is being done.<br></div><br>If
+you want to analyze the results yourself, use the PHDLogView tool and
+the tutorial on Analyzing PHD2 Guiding Results. &nbsp;You should also
+consult the document on PHD2 Best Practices. &nbsp;All of these
+references are available on the OpenPHDGuiding.org web site under the
+'News' tab. &nbsp;If you'd like some help understanding the results,
+post both the guiding and debug log files on the OpenPHD2 Google forum
+and we'll be glad to help you out.<br><span style="font-weight: bold;"><br><span style="font-weight: bold;"></span></span><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
 that the image displayed in the main window is extremely noisy or is
 almost all-white or all-black. &nbsp;Assuming the camera is
 functioning and actually downloading images, the display issues are
@@ -178,7 +218,51 @@ causes the noisy/all-white/all-black display results. &nbsp;You may
 also encounter display problems if the guider is not well-focused.
 &nbsp;Focusing the guider can be a tedious and frustrating experience
 but it's critical to getting good guiding results. &nbsp;A good
-technique is to start with a bright <span style="font-style: italic;">but unsaturated</span> star and try to reach focus with that. &nbsp;Then move to successively fainter stars to fine-tune the focus position. &nbsp; <h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>In
+technique is to start with a bright <span style="font-style: italic;">but unsaturated</span> star and try to reach focus with that. &nbsp;Then move to successively fainter stars to fine-tune the focus position. &nbsp;<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel Problems</h3>Even
+with some high-quality guide cameras, you may encounter problems where
+clumps of hot pixels are mistaken by PHD2 as guide stars. &nbsp;This
+can be especially annoying if you're using automation tools and&nbsp;
+the 'auto-select' guide star selection is mistakenly choosing hot pixels. &nbsp;For many cameras, a
+simple dark frame will suffice for reducing or eliminating hot-pixel
+problems, and dark frames should always be used as a starting-point.
+&nbsp;But for other cameras, you will need to build a bad-pixel map and
+update it as necessary when you see changes in the locations and sizes
+of defective pixels. &nbsp;Camera sensors change over time and may
+react to changing temperatures, so bad-pixel map maintenance is a small
+task you should be able to perform. &nbsp;Step-by-step instructions can
+be found in the&nbsp;<a href="Darks_BadPixel_Maps.htm#Bad-pixel_Maps">Bad-pixel map</a>
+chapter of this document. &nbsp;These problems are different from
+transient hot pixels, which can be caused by cosmic ray strikes on the
+sensor. &nbsp;Although cosmic ray hits can disrupt guiding, there's
+really nothing you can do about them.<br><br><h3><a name="Problems-Restore_Guiding_Parameters"></a>Restoring a Working Baseline</h3>Despite&nbsp;advice to the contrary, you may have made rapid, uninformed
+changes to your guiding parameters only to find the performance stayed
+the same or even got worse. &nbsp;Before proceeding, you should restore the
+settings to their default values. &nbsp;If you used the
+new-profile-wizard to build your profiles, the parameters will have
+been set based on the specifics of your configuration, and they are
+likely to be pretty close. &nbsp;If you encounter&nbsp;significant
+guiding problems using those settings, you are probably having
+issues with the mount or other hardware. Blindly changing guiding
+parameters almost never solves these problems and quite often makes
+things worse. &nbsp;You have several options for restoring the settings
+to their default values: <br><ol><li>On the 'Algorithm' tab of the
+Advanced Dialog, you can individually reset parameters by looking at
+the tool-tip for each field. &nbsp;Hover your mouse cursor over the
+field and the default value will be displayed. &nbsp;Note that this is
+not accurate for the min-move settings, which depend on your image
+scale. &nbsp;This approach is best when you want to restore only a few
+settings.</li><li>Click the 'reset' buttons on the 'Algorithm' tab for
+the selected RA and Dec guide algorithms. &nbsp;This is the recommended
+approach for resetting all the guiding parameters. &nbsp;The min-move
+settings will be reset to the values originally calculated by the
+new-profile-wizard. &nbsp;If you subsequently adjusted those settings
+by running the Guiding Assistant, you should repeat that process.</li><li>Run the new-profile-wizard, accessed by clicking on the 'Manage Profiles' button in the 'Connection' dialog.
+&nbsp;Use the same camera and mount choices you already have and give
+the profile a new name. &nbsp;If you want to re-use the dark library
+and bad-pixel map from the old profile, connect to the new profile and
+use the 'Darks' menu to import those files from the old profile.
+&nbsp;Once you are satisfied with the new profile settings, you can
+delete the old one.</li></ol> <h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>In
 some cases, you may experience problems where guider images aren't
 downloaded or displayed. &nbsp;In extreme cases, this may even cause
 <span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to

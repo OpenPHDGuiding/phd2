@@ -109,11 +109,6 @@ double GuideAlgorithmLowpass::result(double input)
     return dReturn;
 }
 
-double GuideAlgorithmLowpass::GetMinMove(void)
-{
-    return m_minMove;
-}
-
 bool GuideAlgorithmLowpass::SetMinMove(double minMove)
 {
     bool bError = false;
@@ -128,7 +123,7 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -138,11 +133,6 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
     pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
 
     return bError;
-}
-
-double GuideAlgorithmLowpass::GetSlopeWeight(void)
-{
-    return m_slopeWeight;
 }
 
 bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
@@ -158,7 +148,7 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
 
         m_slopeWeight = slopeWeight;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -168,6 +158,40 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
     pConfig->Profile.SetDouble(GetConfigPath() + "/SlopeWeight", m_slopeWeight);
 
     return bError;
+}
+
+void GuideAlgorithmLowpass::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("slopeWeight");
+}
+
+bool GuideAlgorithmLowpass::GetParam(const wxString& name, double *val)
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "slopeWeight")
+        *val = GetSlopeWeight();
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmLowpass::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "slopeWeight")
+        err = SetSlopeWeight(val);
+    else
+        err = true;
+
+    return !err;
 }
 
 wxString GuideAlgorithmLowpass::GetSettingsSummary()
@@ -194,16 +218,16 @@ GuideAlgorithmLowpass::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pSlopeWeight = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5,_T("SlopeWeight"));
+    m_pSlopeWeight = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5, _T("SlopeWeight"));
     m_pSlopeWeight->SetDigits(2);
 
     DoAdd(_("Slope Weight"), m_pSlopeWeight,
         _("Weighting of slope parameter in lowpass auto-dec"));
 
     width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
@@ -249,15 +273,15 @@ GuideAlgorithmLowpass::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pSlopeWeight = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5,_T("SlopeWeight"));
+    m_pSlopeWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5, _T("SlopeWeight"));
     m_pSlopeWeight->SetDigits(2);
     m_pSlopeWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnSlopeWeightSpinCtrlDouble, this);
     DoAdd(m_pSlopeWeight, _("Sl W"));
 
     width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
@@ -277,7 +301,7 @@ void GuideAlgorithmLowpass::
     OnSlopeWeightSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetSlopeWeight(m_pSlopeWeight->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass slope weight", m_pSlopeWeight->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass slope weight", m_pSlopeWeight->GetValue());
 }
 
 void GuideAlgorithmLowpass::
@@ -285,5 +309,5 @@ void GuideAlgorithmLowpass::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass minimum move", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass minimum move", m_pMinMove->GetValue());
 }

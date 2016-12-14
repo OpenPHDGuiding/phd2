@@ -114,11 +114,6 @@ Scope::~Scope(void)
     }
 }
 
-int Scope::GetCalibrationDuration(void)
-{
-    return m_calibrationDuration;
-}
-
 bool Scope::SetCalibrationDuration(int calibrationDuration)
 {
     bool bError = false;
@@ -144,11 +139,6 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
     return bError;
 }
 
-int Scope::GetMaxDecDuration(void)
-{
-    return m_maxDecDuration;
-}
-
 bool Scope::SetMaxDecDuration(int maxDecDuration)
 {
     bool bError = false;
@@ -161,9 +151,9 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
         }
 
         if (m_maxDecDuration != maxDecDuration)
-            GuideLog.SetGuidingParam("Dec Max Duration", maxDecDuration);
-        m_maxDecDuration = maxDecDuration;
+            pFrame->NotifyGuidingParam("Dec Max Duration", maxDecDuration);
 
+        m_maxDecDuration = maxDecDuration;
     }
     catch (const wxString& Msg)
     {
@@ -177,12 +167,7 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
     return bError;
 }
 
-int Scope::GetMaxRaDuration(void)
-{
-    return m_maxRaDuration;
-}
-
-bool Scope::SetMaxRaDuration(double maxRaDuration)
+bool Scope::SetMaxRaDuration(int maxRaDuration)
 {
     bool bError = false;
 
@@ -194,9 +179,11 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
         }
 
         if (m_maxRaDuration != maxRaDuration)
-            GuideLog.SetGuidingParam("RA Max Duration", maxRaDuration);
-        m_maxRaDuration =  maxRaDuration;
+        {
+            pFrame->NotifyGuidingParam("RA Max Duration", maxRaDuration);
 
+            m_maxRaDuration = maxRaDuration;
+        }
     }
     catch (const wxString& Msg)
     {
@@ -208,11 +195,6 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
     pConfig->Profile.SetInt("/scope/MaxRaDuration", m_maxRaDuration);
 
     return bError;
-}
-
-DEC_GUIDE_MODE Scope::GetDecGuideMode(void)
-{
-    return m_decGuideMode;
 }
 
 bool Scope::SetDecGuideMode(int decGuideMode)
@@ -240,7 +222,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
             };
 
             Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", dec_modes[decGuideMode], decGuideMode));
-            GuideLog.SetGuidingParam("Dec Guide Mode", dec_modes[decGuideMode]);
+            pFrame->NotifyGuidingParam("Dec Guide Mode", wxString(dec_modes[decGuideMode]));
 
             m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
 
@@ -540,27 +522,26 @@ static void SuppressLimitReachedWarning(long axis)
 
 void Scope::AlertLimitReached(int duration, GuideAxis axis)
 {
-    if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
+    static time_t s_lastLogged;
+    time_t now = wxDateTime::GetTimeNow();
+    if (s_lastLogged == 0 || now - s_lastLogged > 30)
     {
-        static time_t s_lastLogged;
-        time_t now = wxDateTime::GetTimeNow();
-        if (s_lastLogged == 0 || now - s_lastLogged > 30)
+        s_lastLogged = now;
+        if (duration < MAX_DURATION_MAX)
         {
-            s_lastLogged = now;
-            if (duration < MAX_DURATION_MAX)
-            {
-                wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-                pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                    "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
-                    _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
-            }
-            else
-            {
-                wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
-                pFrame->Alert(wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
-                    "Guiding will be impaired until you can eliminate the source of these problems."), which_axis)
-                    , _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
-            }
+            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+            pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+                wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
+                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+        }
+        else
+        {
+            wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
+            pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+                wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
+                "Guiding will be impaired until you can eliminate the source of these problems."), which_axis),
+                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
         }
     }
 }
@@ -821,10 +802,11 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
             break;
         }
 
+        // Suppression of calibration alerts is handled in the 'Details' dialog - a special case
         if (pConfig->Global.GetBoolean(CalibrationWarningKey(m_lastCalibrationIssue), true))        // User hasn't disabled this type of alert
         {
             // Generate alert with 'Help' button that will lead to trouble-shooting section
-            pFrame->Alert(alertMsg,
+            pFrame->Alert(alertMsg, 0,
                 _("Details..."), ShowCalibrationIssues, (long)this, true);
         }
         else
@@ -1620,8 +1602,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     width = StringWidth(_T("00000"));
 
     wxBoxSizer* pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pCalibrationDuration = new wxSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxPoint(-1, -1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
+    m_pCalibrationDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dur"));
     pCalibSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration, 
         _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value.")));
     m_pCalibrationDuration->Enable(enableCtrls);
@@ -1661,8 +1643,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     {
         m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_cbDecComp), wxID_ANY, _("Use backlash comp"));
         AddCtrl(CtrlMap, AD_cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
-        m_pBacklashPulse = new wxSpinCtrlDouble(GetParentWindow(AD_szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, pScope->m_backlashComp->GetBacklashPulseLimit(), 450, 50);
+        m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, pScope->m_backlashComp->GetBacklashPulseLimit(), 450, 50);
         AddGroup(CtrlMap, AD_szDecCompAmt, (MakeLabeledControl(AD_szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically adjusted based on observed performance."))));
 
         m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Dec compensation"));
@@ -1670,21 +1652,22 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         AddCtrl(CtrlMap, AD_cbUseDecComp, m_pUseDecComp, _("Automatically adjust RA guide rate based on scope declination"));
 
         width = StringWidth(_T("00000"));
-        m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
+        m_pMaxRaDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T(""), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
         AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 2500 ms."));
 
-        m_pMaxDecDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
+        m_pMaxDecDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T(""), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
         AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
         wxString dec_choices[] = {
           _("Off"), _("Auto"), _("North"), _("South")
         };
         width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-        m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
+        m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
         AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+        m_pScope->currConfigDialogCtrlSet = this;
     }
 }
 
@@ -1736,6 +1719,18 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     MountConfigDialogCtrlSet::UnloadValues();
 }
 
+void ScopeConfigDialogCtrlSet::ResetRAParameterUI()
+{
+    m_pMaxRaDuration->SetValue(DefaultMaxRaDuration);
+}
+
+void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
+{
+    m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
+    m_pDecMode->SetSelection(1);                // 'Auto'
+    m_pUseBacklashComp->SetValue(false);
+}
+
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
 {
     int focalLength = 0;
@@ -1778,13 +1773,13 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
     pScope->m_graphControlPane = this;
 
     width = StringWidth(_T("0000"));
-    m_pMaxRaDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
+    m_pMaxRaDuration = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
         wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
     m_pMaxRaDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl, this);
     DoAdd(m_pMaxRaDuration, _("Mx RA"));
 
     width = StringWidth(_T("0000"));
-    m_pMaxDecDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
+    m_pMaxDecDuration = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
         wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
     m_pMaxDecDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl, this);
     DoAdd(m_pMaxDecDuration, _("Mx DEC"));
@@ -1811,18 +1806,18 @@ Scope::ScopeGraphControlPane::~ScopeGraphControlPane()
 void Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-    GuideLog.SetGuidingParam("Max RA duration", m_pMaxRaDuration->GetValue());
+    pFrame->NotifyGuidingParam("Max RA duration", m_pMaxRaDuration->GetValue());
 }
 
 void Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    GuideLog.SetGuidingParam("Max DEC duration", m_pMaxDecDuration->GetValue());
+    pFrame->NotifyGuidingParam("Max DEC duration", m_pMaxDecDuration->GetValue());
 }
 
 void Scope::ScopeGraphControlPane::OnDecModeChoice(wxCommandEvent& WXUNUSED(evt))
 {
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     wxString dec_choices[] = { _("Off"),_("Auto"),_("North"),_("South") };
-    GuideLog.SetGuidingParam("DEC guide mode", dec_choices[m_pDecMode->GetSelection()]);
+    pFrame->NotifyGuidingParam("DEC guide mode", dec_choices[m_pDecMode->GetSelection()]);
 }

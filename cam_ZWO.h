@@ -65,6 +65,9 @@ public:
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
     virtual bool    GetDevicePixelSize(double* devPixelSize);
+	virtual bool    SetCoolerOn(bool on);
+	virtual bool    SetCoolerSetpoint(double temperature);
+	virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
 
 private:
     bool StopCapture(void);

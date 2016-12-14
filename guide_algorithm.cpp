@@ -38,6 +38,7 @@
  */
 #include "phd.h"
 
+
 wxString GuideAlgorithm::GetConfigPath()
 {
     return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
@@ -47,6 +48,38 @@ wxString GuideAlgorithm::GetConfigPath()
 wxString GuideAlgorithm::GetAxis()
 {
     return (m_guideAxis == GUIDE_RA ? _("RA") : _("DEC"));
+}
+
+// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo 
+// class will then use default values for everything.  If this is too brute-force for a particular algo, the function can be overridden. 
+// For algos that use a min-move parameter, a smart value will be applied based on image scale
+void GuideAlgorithm::ResetParams()
+{
+    wxString configPath = GetConfigPath();
+    pConfig->Profile.DeleteGroup(configPath);
+    if (GetMinMove() >= 0)
+        SetMinMove(SmartDefaultMinMove());
+}
+
+double GuideAlgorithm::SmartDefaultMinMove()
+{
+    try
+    {
+        double focalLength = pFrame->GetFocalLength();
+        if (focalLength != 0)
+        {
+            double imageScale = MyFrame::GetPixelScale(pCamera->GetCameraPixelSize(), focalLength, pCamera->Binning);
+            // Following based on empirical data using a range of image scales - same as profile wizard
+            return wxMax(0.1515 + 0.1548 / imageScale, 0.15);
+        }
+        else
+            return 0.2;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        return 0.2;
+    }
 }
 
 void GuideAlgorithm::GuidingStopped(void)
@@ -70,4 +103,18 @@ void GuideAlgorithm::GuidingDithered(double amt)
 
 void GuideAlgorithm::GuidingDitherSettleDone(bool success)
 {
+}
+
+void GuideAlgorithm::GetParamNames(wxArrayString& names) const
+{
+}
+
+bool GuideAlgorithm::GetParam(const wxString& name, double *val)
+{
+    return false;
+}
+
+bool GuideAlgorithm::SetParam(const wxString& name, double val)
+{
+    return false;
 }

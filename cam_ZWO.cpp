@@ -201,16 +201,27 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     int selected = (int) idx;
 
+    ASI_ERROR_CODE r;
     ASI_CAMERA_INFO info;
-    if (ASIGetCameraProperty(&info, selected) != ASI_SUCCESS)
+    if ((r = ASIGetCameraProperty(&info, selected)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIGetCameraProperty ret %d\n", r));
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
-    if (ASIOpenCamera(selected) != ASI_SUCCESS)
+    if ((r = ASIOpenCamera(selected)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIOpenCamera ret %d\n", r));
         wxMessageBox(_("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+
+    if ((r = ASIInitCamera(selected)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ASIInitCamera ret %d\n", r));
+        ASICloseCamera(selected);
+        wxMessageBox(_("Failed to initizlize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -249,14 +260,16 @@ bool Camera_ZWO::Connect(const wxString& camId)
     wxYield();
 
     int numControls;
-    if (ASIGetNumOfControls(m_cameraId, &numControls) != ASI_SUCCESS)
+    if ((r = ASIGetNumOfControls(m_cameraId, &numControls)) != ASI_SUCCESS)
     {
+        Debug.Write(wxString::Format("ASIGetNumOfControls ret %d\n", r));
         Disconnect();
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     HasGainControl = false;
+    HasCooler = false;
 
     for (int i = 0; i < numControls; i++)
     {
@@ -280,6 +293,13 @@ bool Camera_ZWO::Connect(const wxString& camId)
                 break;
             case ASI_HARDWARE_BIN:
                 // this control is not present
+                break;
+            case ASI_COOLER_ON:
+                if (caps.IsWritable)
+                {
+                    Debug.Write("ZWO: camera has cooler\n");
+                    HasCooler = true;
+                }
                 break;
             default:
                 break;
@@ -329,6 +349,54 @@ bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
         return true;
 
     *devPixelSize = m_devicePixelSize;
+    return false;
+}
+
+bool Camera_ZWO::SetCoolerOn(bool on)
+{
+    return (ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS);
+}
+
+bool Camera_ZWO::SetCoolerSetpoint(double temperature)
+{
+    return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
+
+}
+
+bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+{
+    ASI_ERROR_CODE r;
+    long value;
+    ASI_BOOL isAuto;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_COOLER_ON, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_COOLER_ON\n", r));
+        return true;
+    }
+    *on = value != 0;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TARGET_TEMP, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TARGET_TEMP\n", r));
+        return true;
+    }
+    *setpoint = value;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TEMPERATURE\n", r));
+        return true;
+    }
+    *temperature = value / 10.0;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_COOLER_POWER_PERC, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_COOLER_POWER_PERC\n", r));
+        return true;
+    }
+    *power = value;
+
     return false;
 }
 
@@ -462,12 +530,6 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     int poll = wxMin(duration, 100);
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
-
-    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-        (WorkerThread::TerminateRequested() || StopCapture()))
-    {
-        return true;
-    }
 
     while (true)
     {

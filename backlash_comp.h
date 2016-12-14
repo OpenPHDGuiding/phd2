@@ -61,6 +61,7 @@ class BacklashTool
     Scope *m_scope;
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;
+    double GetLastDecGuideRate();
 
 public:
     enum BLT_STATE
@@ -83,7 +84,7 @@ public:
         BACKLASH_EXEMPTION_DISTANCE = 40,
         MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
-        MAX_NORTH_PULSES = 8000,    
+        MAX_NORTH_PULSES = 8000,
         TRIAL_TOLERANCE = 2
     };
 

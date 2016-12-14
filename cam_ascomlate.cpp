@@ -343,11 +343,6 @@ static bool ASCOM_IsMoving(IDispatch *cam)
     return vRes.boolVal == VARIANT_TRUE;
 }
 
-static bool IsChooser(const wxString& choice)
-{
-    return choice.Find(_T("Chooser")) != wxNOT_FOUND;
-}
-
 Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
 {
     m_choice = choice;
@@ -358,7 +353,7 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
     m_hasGuideOutput = false;
     HasGainControl = false;
     HasSubframes = true;
-    PropertyDialogType = IsChooser(choice) ? PROPDLG_NONE : PROPDLG_WHEN_DISCONNECTED;
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Color = false;
     DriverVersion = 1;
     m_bitsPerPixel = 0;
@@ -404,9 +399,6 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Camera: could not query registered cameras");
 
-        // if we made it this far, ASCOM is installed and apparently sane, so add the ASCOM chooser
-        list.Add(_T("ASCOM Camera Chooser"));
-
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
 
@@ -436,57 +428,6 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
     return list;
 }
 
-static bool ChooseASCOMCamera(BSTR *res)
-{
-    DispatchObj chooser;
-    if (!chooser.Create(L"DriverHelper.Chooser"))
-    {
-        wxMessageBox(_("Failed to find the ASCOM Chooser. Make sure it is installed"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (!chooser.PutProp(L"DeviceType", L"Camera"))
-    {
-        wxMessageBox(_("Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    // Look in Registry to see if there is a default
-    wxString wx_ProgID = pConfig->Profile.GetString("/camera/ASCOMlate/camera_id", _T(""));
-    BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
-
-    Variant vchoice;
-    if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
-    {
-        wxMessageBox(_("Failed to run the Camera Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
-        return false;
-    }
-
-    if (SysStringLen(vchoice.bstrVal) == 0)
-        return false; // use hit cancel
-
-    // Save name of cam
-    pConfig->Profile.SetString("/camera/ASCOMlate/camera_id", vchoice.bstrVal);
-
-    *res = vchoice.bstrVal;
-    return true;
-}
-
-static bool GetDriverProgId(BSTR *progid, const wxString& choice)
-{
-    if (IsChooser(choice))
-    {
-        if (!ChooseASCOMCamera(progid))
-            return false;
-    }
-    else
-    {
-        wxString progidstr = s_progid[choice];
-        *progid = wxBasicString(progidstr).Get();
-    }
-    return true;
-}
-
 bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
 {
     IDispatch *idisp = m_gitEntry.Get();
@@ -496,11 +437,9 @@ bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
         return true;
     }
 
-    BSTR bstr_progid;
-    if (!GetDriverProgId(&bstr_progid, m_choice))
-        return false;
+    wxBasicString progid(s_progid[m_choice]);
 
-    if (!obj->Create(bstr_progid))
+    if (!obj->Create(progid))
     {
         Debug.AddLine("ASCOM Camera: Could not get CLSID for camera " + m_choice);
         return false;

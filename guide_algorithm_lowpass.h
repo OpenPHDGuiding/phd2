@@ -96,6 +96,19 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass"; }
+    virtual void GetParamNames(wxArrayString& names) const;
+    virtual bool GetParam(const wxString& name, double *val);
+    virtual bool SetParam(const wxString& name, double val);
 };
+
+inline double GuideAlgorithmLowpass::GetMinMove(void)
+{
+    return m_minMove;
+}
+
+inline double GuideAlgorithmLowpass::GetSlopeWeight(void)
+{
+    return m_slopeWeight;
+}
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

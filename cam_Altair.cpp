@@ -121,9 +121,9 @@ inline static int gain_pct(int minval, int maxval, int val)
 
 bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-    AltairInst ai[ALTAIR_MAX];
+	AltaircamInst ai[ALTAIRCAM_MAX];
 
-    unsigned int numCameras = Altair_Enum(ai);
+    unsigned int numCameras = Altaircam_Enum(ai);
 
     for (int i = 0; i < numCameras; i++)
     {
@@ -136,8 +136,8 @@ bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 
 bool Camera_Altair::Connect(const wxString& camIdArg)
 {
-    AltairInst ai[ALTAIR_MAX];
-    unsigned int numCameras = Altair_Enum(ai);
+	AltaircamInst ai[ALTAIRCAM_MAX];
+    unsigned int numCameras = Altaircam_Enum(ai);
     if (numCameras == 0)
     {
         wxMessageBox(_T("No Altair cameras detected."), _("Error"), wxOK | wxICON_ERROR);
@@ -163,7 +163,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 		return true;
 	}
 
-    m_handle = Altair_Open(camId);
+    m_handle = Altaircam_Open(camId);
     if ( m_handle == NULL)
     {
         wxMessageBox(_("Failed to open Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
@@ -179,19 +179,23 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         if (ai[i].id == camId)
         {
             Name = ai[i].displayname;
-            hasROI = (ai[i].model->flag & ALTAIR_FLAG_ROI_HARDWARE) != 0;
-            hasSkip = (ai[i].model->flag & ALTAIR_FLAG_BINSKIP_SUPPORTED) != 0;
+            hasROI = (ai[i].model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
+            hasSkip = (ai[i].model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
             break;
         }
     }
 
     int width, height;
-    if (FAILED(Altair_get_Resolution(m_handle, 0, &width, &height)))
+    if (FAILED(Altaircam_get_Resolution(m_handle, 0, &width, &height)))
     {
         Disconnect();
         wxMessageBox(_("Failed to get camera resolution for Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
+
+	delete[] m_buffer; 
+	m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
+
 
     ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
     if (hasROI && ReduceResolution)
@@ -203,12 +207,10 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     FullSize.x = width;
     FullSize.y = height;
 
-    delete[] m_buffer;
-    m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
     float xSize, ySize;
     m_devicePixelSize = 3.75; // for all cameras so far....
-    if (Altair_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
+    if (Altaircam_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
     {
         m_devicePixelSize = xSize;
     }
@@ -218,15 +220,17 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     HasGainControl = false;
 
     unsigned short min, max, def;
-    if (SUCCEEDED(Altair_get_ExpoAGainRange(m_handle, &min, &max, &def)))
+    if (SUCCEEDED(Altaircam_get_ExpoAGainRange(m_handle, &min, &max, &def)))
     {
         m_minGain = min;
         m_maxGain = max;
         HasGainControl = max > min;
     }
 
-    Altair_put_Speed(m_handle, 0);
-    Altair_put_RealTime(m_handle, TRUE);
+	Altaircam_put_AutoExpoEnable(m_handle, FALSE);
+
+    Altaircam_put_Speed(m_handle, 0);
+    Altaircam_put_RealTime(m_handle, TRUE);
 
     wxYield();
 
@@ -235,13 +239,15 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 
     if (hasROI && ReduceResolution)
     {
-        Altair_put_Roi(m_handle, 0, 0, width, height);
+        Altaircam_put_Roi(m_handle, 0, 0, width, height);
     }
 
     if (hasSkip)
-        Altair_put_Mode(m_handle, 0);
+        Altaircam_put_Mode(m_handle, 0);
 
-    Altair_put_Option(m_handle, ALTAIR_OPTION_RAW, 0);
+    Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
+	Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
+
 
     return false;
 }
@@ -251,7 +257,7 @@ bool Camera_Altair::StopCapture(void)
     if (m_capturing)
     {
         Debug.AddLine("Altair: stopcapture");
-        Altair_Stop(m_handle);
+        Altaircam_Stop(m_handle);
         m_capturing = false;
     }
     return true;
@@ -286,7 +292,7 @@ void Camera_Altair::ShowPropertyDialog()
 bool Camera_Altair::Disconnect()
 {
     StopCapture();
-    Altair_Close(m_handle);
+    Altaircam_Close(m_handle);
 
     Connected = false;
 
@@ -309,7 +315,7 @@ inline static int round_up(int v, int m)
 
 void __stdcall CameraCallback(unsigned nEvent, void* pCallbackCtx)
 {
-    if (nEvent == ALTAIR_EVENT_IMAGE)
+    if (nEvent == ALTAIRCAM_EVENT_IMAGE)
     {
         Camera_Altair* pCam = (Camera_Altair*)pCallbackCtx;
         pCam->FrameReady();
@@ -344,20 +350,20 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;
-    if (Altair_get_ExpoTime(m_handle, &cur_exp) == 0 &&
+    if (Altaircam_get_ExpoTime(m_handle, &cur_exp) == 0 &&
         cur_exp != exposureUS)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_EXPOSURE %d\n", exposureUS));
-        Altair_put_ExpoTime(m_handle, exposureUS);
+        Altaircam_put_ExpoTime(m_handle, exposureUS);
     }
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     unsigned short cur_gain;
-    if (Altair_get_ExpoAGain(m_handle, &cur_gain) == 0 &&
+    if (Altaircam_get_ExpoAGain(m_handle, &cur_gain) == 0 &&
         new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
-        Altair_put_ExpoAGain(m_handle, new_gain);
+        Altaircam_put_ExpoAGain(m_handle, new_gain);
     }
 
 
@@ -367,24 +373,24 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     //flush_buffered_image(m_handle, img);
     unsigned int width, height;
-    while (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
+    while (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
     {
         
     }
 
 
-    m_frameReady = false;
     if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-        HRESULT result = Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
+        HRESULT result = Altaircam_StartPullModeWithCallback(m_handle, CameraCallback, this);
         if (result != 0)
         {
-            Debug.Write(wxString::Format("Altair_StartPullModeWithCallback failed with code %d\n", result));
+            Debug.Write(wxString::Format("Altaircam_StartPullModeWithCallback failed with code %d\n", result));
             return true;
         }
         m_capturing = true;
-    }
+		m_frameReady = false;
+	}
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
 
@@ -392,11 +398,13 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+	// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
+
+  /*  if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
         (WorkerThread::TerminateRequested() || StopCapture()))
     {
         return true;
-    }
+    }*/
 
     while (true)
     {
@@ -404,7 +412,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         {
             m_frameReady = false;
             
-            if (SUCCEEDED(Altair_PullImage(m_handle, m_buffer, 8, &width, &height)))
+            if (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
                 break;
         }
         WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
@@ -449,14 +457,14 @@ inline static int GetAltairDirection(int direction)
 bool Camera_Altair::ST4PulseGuideScope(int direction, int duration)
 {
     int d = GetAltairDirection(direction);
-    Altair_ST4PlusGuide(m_handle, d, duration);
+    Altaircam_ST4PlusGuide(m_handle, d, duration);
 
     return false;
 }
 
 void  Camera_Altair::ClearGuidePort()
 {
-    Altair_ST4PlusGuide(m_handle, 0,0);
+    Altaircam_ST4PlusGuide(m_handle, 0,0);
 }
 
-#endif // Altair_ASI
+#endif // Altaircam_ASI
