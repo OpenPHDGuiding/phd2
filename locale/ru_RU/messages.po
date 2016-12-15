@@ -2982,7 +2982,7 @@ msgstr "Калибровка остановлена вручную"
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
-msgstr ""
+msgstr "Восстанавливать калибровку при использовании профиля?"
 
 #: guider.cpp:1114
 msgid "Stopped Guiding"
@@ -3745,11 +3745,11 @@ msgstr "Запустить отслеживание комет"
 
 #: myframe.cpp:459 myframe_events.cpp:912 starcross_test.cpp:76
 msgid "Star-Cross Test"
-msgstr ""
+msgstr "Перекрёстный тест звезды"
 
 #: myframe.cpp:459
 msgid "Run a star-cross test for mount diagnostics"
-msgstr ""
+msgstr "Запустить перекрёстный тест звезды чтобы проверить монтировку"
 
 #: myframe.cpp:460
 msgid "&Guiding Assistant"
@@ -5709,134 +5709,136 @@ msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 
 #: starcross_test.cpp:86
 msgid "88888"
-msgstr ""
+msgstr "88888"
 
 #: starcross_test.cpp:92
 msgid "Configuration"
-msgstr ""
+msgstr "Конфигурация"
 
 #: starcross_test.cpp:110
 msgid "Guide speed, n.n x sidereal"
-msgstr ""
+msgstr "Скорость гидирования n.n от солнечной"
 
 #: starcross_test.cpp:115
 msgid "Test Summary"
-msgstr ""
+msgstr "Итоги теста"
 
 #: starcross_test.cpp:120
 msgid "Total guide pulse duration in EACH of 4 directions"
-msgstr ""
+msgstr "Полная длительность гидирующих импульсов в каждом из 4 направлений"
 
 #: starcross_test.cpp:122
 msgid ""
 "Total guide duration, \n"
 "EACH direction (s)"
 msgstr ""
+"Полное время гидирования \n"
+"в КАЖДОМ направлении (сек)"
 
 #: starcross_test.cpp:125
 msgid "Total duration of test (s)"
-msgstr ""
+msgstr "Общая продолжительность теста (сек)"
 
 #: starcross_test.cpp:126
 msgid "Total test duration (s)"
-msgstr ""
+msgstr "Общая продолжительность теста (сек)"
 
 #: starcross_test.cpp:128 starcross_test.cpp:460
 msgid "Show Details"
-msgstr ""
+msgstr "Показать детали"
 
 #: starcross_test.cpp:134
 msgid "Test Details"
-msgstr ""
+msgstr "Детали теста"
 
 #: starcross_test.cpp:136
 msgid "Number of guide pulses in EACH direction"
-msgstr ""
+msgstr "Количество гидирующих импульсов в КАЖДОМ направлении"
 
 #: starcross_test.cpp:139
 msgid "Number of guide pulses"
-msgstr ""
+msgstr "Количество гидирующих импульсов"
 
 #: starcross_test.cpp:142
 msgid "Guide pulse size (ms)"
-msgstr ""
+msgstr "Длительность гидирующих импульсов (мсек)"
 
 #: starcross_test.cpp:145
 msgid "Pulse size (ms)"
-msgstr ""
+msgstr "Гидирующие импульсы (мсек)"
 
 #: starcross_test.cpp:154
 msgid "Verify or adjust your parameters, click 'Start' to begin"
-msgstr ""
+msgstr "Проверить или задать параметры, нажмите 'Пуск', чтобы начать"
 
 #: starcross_test.cpp:252
 #, c-format
 msgid "%d ms move "
-msgstr ""
+msgstr "%d мсек движение "
 
 #: starcross_test.cpp:259
 msgid "WEST"
-msgstr ""
+msgstr "ЗАПАД"
 
 #: starcross_test.cpp:262
 msgid "EAST"
-msgstr ""
+msgstr "ВОСТОК"
 
 #: starcross_test.cpp:265
 msgid "WEST toward starting point"
-msgstr ""
+msgstr "ЗАПАД к исходному положению"
 
 #: starcross_test.cpp:268
 msgid "NORTH"
-msgstr ""
+msgstr "СЕВЕР"
 
 #: starcross_test.cpp:271
 msgid "SOUTH"
-msgstr ""
+msgstr "ЮГ"
 
 #: starcross_test.cpp:274
 msgid "NORTH toward starting point"
-msgstr ""
+msgstr "СЕВЕР к исходному положению"
 
 #: starcross_test.cpp:277
 msgid "Test completed"
-msgstr ""
+msgstr "Тест завершён"
 
 #: starcross_test.cpp:281
 #, c-format
 msgid ", step %d of %d"
-msgstr ""
+msgstr "шаг %d из %d"
 
 #: starcross_test.cpp:316
 #, c-format
 msgid "Start a %d exposure on your main camera, then click 'Ok'"
-msgstr ""
+msgstr "Начать %d экспозицию, затем нажать 'Принять'"
 
 #: starcross_test.cpp:330
 msgid ""
 "Wait for the main camera exposure to complete, then save that image for "
 "review"
-msgstr ""
+msgstr "Ждать завершения экспозиции, затем сохранить изображение для просмотра"
 
 #: starcross_test.cpp:353
 msgid "Star-cross moved failed, test cancelled"
-msgstr ""
+msgstr "Сбой перекрёстных движений, тест отменён "
 
 #: starcross_test.cpp:362
 msgid "Mount connection lost, test cancelled"
-msgstr ""
+msgstr "Подключение к монтировке потеряно, тест прерван"
 
 #: starcross_test.cpp:373
 msgid "Test cancelled"
-msgstr ""
+msgstr "Тест прерван"
 
 #: starcross_test.cpp:432
 msgid "Mount connection must be restored"
-msgstr ""
+msgstr "Подключение монтировки должно быть восстановлено"
 
 #: starcross_test.cpp:454
 msgid "Hide Details"
-msgstr ""
+msgstr "Скрыть детали"
 
 #: statswindow.cpp:70
 msgid "RMS"
