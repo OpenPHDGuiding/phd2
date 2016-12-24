@@ -2872,7 +2872,7 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:259 guide_algorithm_lowpass.cpp:233
 #: guide_algorithm_lowpass2.cpp:241 guide_algorithm_resistswitch.cpp:316
 msgid "Minimum Move (pixels)"
-msgstr "Минимальное движение в пикселях"
+msgstr "Минимальное перемещение в пикселях"
 
 #: guide_algorithm_hysteresis.cpp:260 guide_algorithm_lowpass.cpp:234
 #: guide_algorithm_lowpass2.cpp:242 guide_algorithm_resistswitch.cpp:317
