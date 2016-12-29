@@ -312,9 +312,9 @@ void StarCrossDialog::ExecuteTest()
         pFrame->OnLoopExposure(dummy);
     }
     m_CancelTest = false;
-
+    // Leave plenty of room for camera exposure and mount response overhead
     wxMessageBox(wxString::Format(_("Start a %d exposure on your main camera, then click 'Ok'"),
-        (totalPulses * m_Amount / 1000) + 10));
+        (2 * totalPulses * m_Amount) / 1000));
     while (!done && !m_CancelTest)
     {
         if (dirCount == currStep.pulseCount)
