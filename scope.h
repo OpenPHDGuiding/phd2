@@ -40,6 +40,14 @@
 
 class Scope;
 
+enum DEC_GUIDE_MODE
+{
+    DEC_NONE = 0,
+    DEC_AUTO,
+    DEC_NORTH,
+    DEC_SOUTH
+};
+
 class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 {
     Scope* m_pScope;
@@ -175,6 +183,9 @@ public:
     bool SetMaxRaDuration(int maxRaDuration);
     DEC_GUIDE_MODE GetDecGuideMode(void) const;
     bool SetDecGuideMode(int decGuideMode);
+
+    static wxString DecGuideModeStr(DEC_GUIDE_MODE m);
+    static wxString DecGuideModeLocaleStr(DEC_GUIDE_MODE m);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);

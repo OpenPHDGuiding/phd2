@@ -1664,6 +1664,50 @@ static void set_algo_param(JObj& response, const json_value *params)
         response << jrpc_error(1, "could not set param");
 }
 
+static void get_dec_guide_mode(JObj& response, const json_value *params)
+{
+    Scope *scope = TheScope();
+    DEC_GUIDE_MODE mode = scope ? scope->GetDecGuideMode() : DEC_NONE;
+    wxString s = Scope::DecGuideModeStr(mode);
+    response << jrpc_result(s);
+}
+
+static void set_dec_guide_mode(JObj& response, const json_value *params)
+{
+    Params p("mode", params);
+    const json_value *mode = p.param("mode");
+    if (!mode || mode->type != JSON_STRING)
+    {
+        response << jrpc_error(1, "expected mode param");
+        return;
+    }
+    DEC_GUIDE_MODE m = DEC_AUTO;
+    bool found = false;
+    for (int im = DEC_NONE; im <= DEC_SOUTH; im++)
+    {
+        m = (DEC_GUIDE_MODE) im;
+        if (wxStricmp(mode->string_value, Scope::DecGuideModeStr(m)) == 0)
+        {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        response << jrpc_error(1, "invalid dec guide mode param");
+        return;
+    }
+
+    Scope *scope = TheScope();
+    if (scope)
+        scope->SetDecGuideMode(m);
+
+    if (pFrame->pGraphLog)
+        pFrame->pGraphLog->UpdateControls();
+
+    response << jrpc_result(0);
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -1733,6 +1777,8 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_algo_param_names", &get_algo_param_names, },
         { "get_algo_param", &get_algo_param, },
         { "set_algo_param", &set_algo_param, },
+        { "get_dec_guide_mode", &get_dec_guide_mode, },
+        { "set_dec_guide_mode", &set_dec_guide_mode, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

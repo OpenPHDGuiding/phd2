@@ -197,6 +197,30 @@ bool Scope::SetMaxRaDuration(int maxRaDuration)
     return bError;
 }
 
+wxString Scope::DecGuideModeStr(DEC_GUIDE_MODE m)
+{
+    switch (m)
+    {
+    case DEC_NONE:  return "Off";
+    case DEC_AUTO:  return "Auto";
+    case DEC_NORTH: return "North";
+    case DEC_SOUTH: return "South";
+    default:        return "Invalid";
+    }
+}
+
+wxString Scope::DecGuideModeLocaleStr(DEC_GUIDE_MODE m)
+{
+    switch (m)
+    {
+    case DEC_NONE:  return _("Off");
+    case DEC_AUTO:  return _("Auto");
+    case DEC_NORTH: return _("North");
+    case DEC_SOUTH: return _("South");
+    default:        return _("Invalid");
+    }
+}
+
 bool Scope::SetDecGuideMode(int decGuideMode)
 {
     bool bError = false;
@@ -217,14 +241,11 @@ bool Scope::SetDecGuideMode(int decGuideMode)
 
         if (m_decGuideMode != decGuideMode)
         {
-            const char *dec_modes[] = {
-              "Off", "Auto", "North", "South"
-            };
-
-            Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", dec_modes[decGuideMode], decGuideMode));
-            pFrame->NotifyGuidingParam("Dec Guide Mode", wxString(dec_modes[decGuideMode]));
-
             m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
+
+            wxString s = DecGuideModeStr(m_decGuideMode);
+            Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", s, decGuideMode));
+            pFrame->NotifyGuidingParam("Dec Guide Mode", s);
 
             pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
             if (pFrame)
@@ -1527,13 +1548,12 @@ wxString Scope::GetSettingsSummary()
 
     // return a loggable summary of current mount settings
     wxString rtnVal = Mount::GetSettingsSummary() +
-        wxString::Format
-            ("Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
+        wxString::Format(
+            "Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetMaxRaDuration(),
             GetMaxDecDuration(),
-            GetDecGuideMode() == DEC_NONE ? "Off" : GetDecGuideMode() == DEC_AUTO ? "Auto" :
-            GetDecGuideMode() == DEC_NORTH ? "North" : "South"
-            );
+            DecGuideModeStr(GetDecGuideMode()));
+
     if (calDetails.raGuideSpeed != -1.0)
     {
         rtnVal += wxString::Format("RA Guide Speed = %0.1f a-s/s, Dec Guide Speed = %0.1f a-s/s, ",
@@ -1661,8 +1681,12 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
         wxString dec_choices[] = {
-          _("Off"), _("Auto"), _("North"), _("South")
+            Scope::DecGuideModeLocaleStr(DEC_NONE),
+            Scope::DecGuideModeLocaleStr(DEC_AUTO),
+            Scope::DecGuideModeLocaleStr(DEC_NORTH),
+            Scope::DecGuideModeLocaleStr(DEC_SOUTH),
         };
+
         width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
         m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
@@ -1784,7 +1808,12 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
     m_pMaxDecDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl, this);
     DoAdd(m_pMaxDecDuration, _("Mx DEC"));
 
-    wxString dec_choices[] = { _("Off"),_("Auto"),_("North"),_("South") };
+    wxString dec_choices[] = {
+        DecGuideModeLocaleStr(DEC_NONE),
+        DecGuideModeLocaleStr(DEC_AUTO),
+        DecGuideModeLocaleStr(DEC_NORTH),
+        DecGuideModeLocaleStr(DEC_SOUTH),
+    };
     m_pDecMode = new wxChoice(this, wxID_ANY,
         wxDefaultPosition,wxDefaultSize, WXSIZEOF(dec_choices), dec_choices );
     m_pDecMode->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &Scope::ScopeGraphControlPane::OnDecModeChoice, this);
@@ -1806,18 +1835,14 @@ Scope::ScopeGraphControlPane::~ScopeGraphControlPane()
 void Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-    pFrame->NotifyGuidingParam("Max RA duration", m_pMaxRaDuration->GetValue());
 }
 
 void Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    pFrame->NotifyGuidingParam("Max DEC duration", m_pMaxDecDuration->GetValue());
 }
 
 void Scope::ScopeGraphControlPane::OnDecModeChoice(wxCommandEvent& WXUNUSED(evt))
 {
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-    wxString dec_choices[] = { _("Off"),_("Auto"),_("North"),_("South") };
-    pFrame->NotifyGuidingParam("DEC guide mode", dec_choices[m_pDecMode->GetSelection()]);
 }
