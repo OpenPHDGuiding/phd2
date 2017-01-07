@@ -238,6 +238,7 @@ SCT_StepInfo StarCrossDialog::NextStep(const SCT_StepInfo& prevStep)
         nextStep.pulseCount = m_DirectionalPulseCount;
         break;
     case SCT_STATE_NORTH_RETURN:
+    case SCT_STATE_DONE:
         nextStep.state = SCT_STATE_DONE;
         nextStep.direction = NONE;
         nextStep.pulseCount = 0;
