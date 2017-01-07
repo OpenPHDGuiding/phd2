@@ -335,7 +335,7 @@ endif()
 #############################################
 # libusb / win32 / apple
 
-set(LIBUSB libusb-1.0.9)
+set(LIBUSB libusb-1.0.21)
 set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
 set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
 
@@ -351,6 +351,7 @@ set(libusb_dir ${libusb_root}/libusb)
 set(libUSB_SRC
   ${libusb_dir}/core.c
   ${libusb_dir}/descriptor.c
+  ${libusb_dir}/hotplug.c
   ${libusb_dir}/io.c
   ${libusb_dir}/sync.c
   ${libusb_dir}/libusb.h
@@ -371,6 +372,8 @@ if(APPLE)
     
     ${libusb_dir}/os/threads_posix.h 
     ${libusb_dir}/os/threads_posix.c
+
+    ${libusb_dir}/os/poll_posix.c
    )
   set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1") 
   set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
@@ -424,6 +427,8 @@ elseif(UNIX)
     
      ${libusb_dir}/os/threads_posix.h
      ${libusb_dir}/os/threads_posix.c
+
+     ${libusb_dir}/os/poll_posix.c
     )
 
     set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
