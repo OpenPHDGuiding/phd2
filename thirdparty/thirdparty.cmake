@@ -386,8 +386,8 @@ elseif(WIN32)
     ${libusb_root}/msvc/config.h
   
     # platform specific implementation
-    ${libusb_dir}/os/windows_usb.h
-    ${libusb_dir}/os/windows_usb.c
+    ${libusb_dir}/os/windows_winusb.h
+    ${libusb_dir}/os/windows_winusb.c
     
     ${libusb_dir}/os/threads_windows.h
     ${libusb_dir}/os/threads_windows.c
