@@ -406,7 +406,7 @@ elseif(UNIX)
   # this would find the libUSB module that is installed on the system. 
   # It requires "sudo apt-get install libusb-1.0-0-dev"
   pkg_check_modules(USB_pkg libusb-1.0)
-  if(USB_pkg_FOUND)
+  if(0) # if(USB_pkg_FOUND) - force using the bundled libusb - older versions may not work with the ZWO ASI camera SDK
     include_directories(${USB_pkg_INCLUDE_DIRS})
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
     set(USB_build FALSE)
@@ -424,7 +424,8 @@ elseif(UNIX)
      # platform specific implementation
      ${libusb_dir}/os/linux_usbfs.c
      ${libusb_dir}/os/linux_usbfs.h
-    
+     ${libusb_dir}/os/linux_netlink.c
+
      ${libusb_dir}/os/threads_posix.h
      ${libusb_dir}/os/threads_posix.c
 
