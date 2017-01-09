@@ -1693,22 +1693,6 @@ bool MyFrame::Dither(double amount, bool raOnly)
             throw ERROR_INFO("cannot dither if not guiding");
         }
 
-        if (m_ditherRaOnly)
-        {
-            raOnly = true;
-        }
-
-        if (!raOnly && !pMount->IsStepGuider())
-        {
-            Scope *scope = dynamic_cast<Scope *>(pMount);
-            DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
-            if (dgm != DEC_AUTO)
-            {
-                Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %d\n", dgm));
-                raOnly = true;
-            }
-        }
-
         amount *= m_ditherScaleFactor;
 
         double dRa = 0.0;

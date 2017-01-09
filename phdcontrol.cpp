@@ -126,7 +126,7 @@ static void do_fail(const wxString& msg)
     SETSTATE(STATE_FINISH);
 }
 
-bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settle, wxString *errMsg)
+bool PhdController::Dither(double pixels, bool forceRaOnly, const SettleParams& settle, wxString *errMsg)
 {
     if (ctrl.state != STATE_IDLE)
     {
@@ -136,6 +136,20 @@ bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settl
     }
 
     Debug.AddLine("PhdController::Dither begins");
+
+    bool raOnly = pFrame->GetDitherRaOnly();
+    if (forceRaOnly)
+    {
+        // event server client wants RA only
+        raOnly = true;
+    }
+    Scope *scope = TheScope();
+    DEC_GUIDE_MODE dgm = scope ? scope->GetDecGuideMode() : DEC_NONE;
+    if (dgm == DEC_NORTH || dgm == DEC_SOUTH)
+    {
+        Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n", Scope::DecGuideModeStr(dgm)));
+        raOnly = true;
+    }
 
     bool error = pFrame->Dither(pixels, raOnly);
     if (error)
@@ -153,7 +167,7 @@ bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settl
     return true;
 }
 
-bool PhdController::Dither(double pixels, bool raOnly, int settleFrames, wxString *errMsg)
+bool PhdController::Dither(double pixels, int settleFrames, wxString *errMsg)
 {
     SettleParams settle;
 
@@ -162,16 +176,16 @@ bool PhdController::Dither(double pixels, bool raOnly, int settleFrames, wxStrin
     settle.timeoutSec = 9999;
     settle.frames = settleFrames;
 
-    return Dither(pixels, raOnly, settle, errMsg);
+    return Dither(pixels, false, settle, errMsg);
 }
 
-bool PhdController::DitherCompat(double pixels, bool raOnly, wxString *errMsg)
+bool PhdController::DitherCompat(double pixels, wxString *errMsg)
 {
     AbortController("manual or phd1-style dither");
 
     enum { SETTLE_FRAMES = 10 };
 
-    return Dither(pixels, raOnly, SETTLE_FRAMES, errMsg);
+    return Dither(pixels, SETTLE_FRAMES, errMsg);
 }
 
 void PhdController::AbortController(const wxString& reason)
