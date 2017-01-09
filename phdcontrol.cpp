@@ -143,12 +143,15 @@ bool PhdController::Dither(double pixels, bool forceRaOnly, const SettleParams& 
         // event server client wants RA only
         raOnly = true;
     }
-    Scope *scope = TheScope();
-    DEC_GUIDE_MODE dgm = scope ? scope->GetDecGuideMode() : DEC_NONE;
-    if (dgm == DEC_NORTH || dgm == DEC_SOUTH)
+    if (pMount && !pMount->IsStepGuider())
     {
-        Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n", Scope::DecGuideModeStr(dgm)));
-        raOnly = true;
+        Scope *scope = static_cast<Scope *>(pMount);
+        DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
+        if (dgm == DEC_NORTH || dgm == DEC_SOUTH)
+        {
+            Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n", Scope::DecGuideModeStr(dgm)));
+            raOnly = true;
+        }
     }
 
     bool error = pFrame->Dither(pixels, raOnly);
