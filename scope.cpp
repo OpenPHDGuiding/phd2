@@ -246,7 +246,9 @@ bool Scope::SetDecGuideMode(int decGuideMode)
             wxString s = DecGuideModeStr(m_decGuideMode);
             Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", s, decGuideMode));
             pFrame->NotifyGuidingParam("Dec Guide Mode", s);
-
+            BacklashComp* blc = GetBacklashComp();
+            if (blc)
+                blc->ResetBaseline();
             pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
             if (pFrame)
                 pFrame->UpdateCalibrationStatus();

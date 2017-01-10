@@ -53,6 +53,7 @@ static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
 static const DitherMode DefaultDitherMode = DITHER_RANDOM;
+static const bool DefaultDitherDecModeOverride = false;
 static const bool DefaultServerMode = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
@@ -748,6 +749,9 @@ void MyFrame::LoadProfileSettings(void)
 
     int ditherMode = pConfig->Profile.GetInt("/DitherMode", DefaultDitherMode);
     SetDitherMode(ditherMode == DITHER_RANDOM ? DITHER_RANDOM : DITHER_SPIRAL);
+
+    bool ditherDecModeOverride = pConfig->Profile.GetBoolean("/DitherDecModeOverrideOk", DefaultDitherDecModeOverride);
+    SetDitherDecModeOverride(ditherDecModeOverride);
 
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
@@ -1874,6 +1878,17 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
     return bError;
 }
 
+bool MyFrame::GetDitherDecModeOverride()
+{
+    return m_ditherDecModeOverrideOk;
+}
+
+void MyFrame::SetDitherDecModeOverride(bool overrideOk)
+{
+    m_ditherDecModeOverrideOk = overrideOk;
+    pConfig->Profile.SetBoolean("/DitherDecModeOverrideOk", m_ditherDecModeOverrideOk);
+}
+
 void MyFrame::NotifyGuidingStopped(void)
 {
     assert(!pMount || !pMount->IsBusy());
@@ -2606,6 +2621,9 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherRaOnly = new wxCheckBox(parent, wxID_ANY, _("RA only"));
     m_ditherRaOnly->SetToolTip(_("Constrain dither to RA only"));
 
+    m_ctlDecModeOverrideOk = new wxCheckBox(parent, wxID_ANY, _("Ok to override DecMode"));
+    m_ctlDecModeOverrideOk->SetToolTip("Ok for PHD2 to temporarily set Dec guide mode to 'Auto' for dithers");
+
     width = StringWidth(_T("000.00"));
     m_ditherScaleFactor = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(" "), wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
@@ -2616,6 +2634,8 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
     sz->Add(new wxStaticText(parent, wxID_ANY, _("Scale") + _(": ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
     sz->Add(m_ditherScaleFactor, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
+    sz->AddSpacer(15);
+    sz->Add(m_ctlDecModeOverrideOk, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
     ditherGroupBox->Add(sz);
 
     AddGroup(CtrlMap, AD_szDither, ditherGroupBox);
@@ -2657,6 +2677,7 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     else
         m_ditherSpiral->SetValue(true);
     m_ditherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
+    m_ctlDecModeOverrideOk->SetValue(m_pFrame->GetDitherDecModeOverride());
     m_ditherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
     SetFocalLength(m_pFrame->GetFocalLength());
@@ -2712,6 +2733,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         m_pFrame->SetDitherMode(m_ditherRandom->GetValue() ? DITHER_RANDOM : DITHER_SPIRAL);
         m_pFrame->SetDitherRaOnly(m_ditherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_ditherScaleFactor->GetValue());
+        m_pFrame->SetDitherDecModeOverride(m_ctlDecModeOverrideOk->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
         m_pFrame->SetFocalLength(GetFocalLength());
 

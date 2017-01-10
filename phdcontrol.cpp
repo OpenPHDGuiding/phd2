@@ -68,6 +68,8 @@ struct ControllerState
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
     wxStopWatch *settleInRange;
+    DEC_GUIDE_MODE saveDecGuideMode;
+    bool overrideDecGuideMode;
     int settleFrameCount;
     int droppedFrameCount;
     bool succeeded;
@@ -75,6 +77,7 @@ struct ControllerState
 };
 
 static ControllerState ctrl;
+static const int SETTLING_TIME_VALUE_DISABLED = 9999;
 
 void PhdController::OnAppInit()
 {
@@ -127,6 +130,7 @@ static void do_fail(const wxString& msg)
 }
 
 bool PhdController::Dither(double pixels, bool forceRaOnly, const SettleParams& settle, wxString *errMsg)
+
 {
     if (ctrl.state != STATE_IDLE)
     {
@@ -143,14 +147,30 @@ bool PhdController::Dither(double pixels, bool forceRaOnly, const SettleParams& 
         // event server client wants RA only
         raOnly = true;
     }
-    if (pMount && !pMount->IsStepGuider())
+    ctrl.overrideDecGuideMode = false;
+    if (pMount && !pMount->IsStepGuider() && !raOnly)
     {
+        // Check to see if we need to force raOnly or temporarily adjust dec guide mode
         Scope *scope = static_cast<Scope *>(pMount);
-        DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
-        if (dgm == DEC_NORTH || dgm == DEC_SOUTH)
+        ctrl.saveDecGuideMode = scope->GetDecGuideMode();
+        if (ctrl.saveDecGuideMode != DEC_AUTO)
         {
-            Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n", Scope::DecGuideModeStr(dgm)));
-            raOnly = true;
+            if (ctrl.saveDecGuideMode == DEC_NORTH || ctrl.saveDecGuideMode == DEC_SOUTH)
+            {
+                // Might be ok to temporarily override dec guide mode
+                if (pFrame->GetDitherDecModeOverride() && settle.settleTimeSec != SETTLING_TIME_VALUE_DISABLED)
+                {
+                    ctrl.overrideDecGuideMode = true;
+                    Debug.Write("Setting Dec guide mode to 'auto' for dithering\n");    // in state machine
+                }
+            }
+            if (!ctrl.overrideDecGuideMode)
+            {
+                // Uni-directional or DEC_NONE
+                Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n",
+                    Scope::DecGuideModeStr(ctrl.saveDecGuideMode)));
+                raOnly = true;
+            }
         }
     }
 
@@ -175,8 +195,8 @@ bool PhdController::Dither(double pixels, int settleFrames, wxString *errMsg)
     SettleParams settle;
 
     settle.tolerancePx = 99.;
-    settle.settleTimeSec = 9999;
-    settle.timeoutSec = 9999;
+    settle.settleTimeSec = SETTLING_TIME_VALUE_DISABLED;
+    settle.timeoutSec = SETTLING_TIME_VALUE_DISABLED;
     settle.frames = settleFrames;
 
     return Dither(pixels, false, settle, errMsg);
@@ -277,6 +297,7 @@ void PhdController::UpdateControllerState(void)
             Debug.AddLine("PhdController: setup");
             ctrl.haveSaveSticky = false;
             ctrl.autoFindAttemptsRemaining = 3;
+            ctrl.overrideDecGuideMode = false;      // guide stop/start with no dithering
             SETSTATE(STATE_ATTEMPT_START);
             break;
 
@@ -434,6 +455,8 @@ void PhdController::UpdateControllerState(void)
             break;
 
         case STATE_SETTLE_BEGIN:
+            if (ctrl.overrideDecGuideMode)
+                TheScope()->SetDecGuideMode(DEC_AUTO);
             ctrl.settlePriorFrameInRange = false;
             ctrl.settleFrameCount = ctrl.droppedFrameCount = 0;
             ctrl.settleTimeout->Start();
@@ -497,6 +520,12 @@ void PhdController::UpdateControllerState(void)
         }
 
         case STATE_FINISH:
+            if (ctrl.overrideDecGuideMode)
+            {
+                TheScope()->SetDecGuideMode(ctrl.saveDecGuideMode);
+                ctrl.overrideDecGuideMode = false;
+                Debug.Write("Restored user-specified Dec guide mode after dither\n");
+            }
             do_notify();
             SETSTATE(STATE_IDLE);
             done = true;

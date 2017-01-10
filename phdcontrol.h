@@ -46,7 +46,6 @@ struct SettleParams
 class PhdController
 {
 public:
-
     static bool CanGuide(wxString *error);
     static bool Guide(bool recalibrate, const SettleParams& settle, wxString *error);
     static bool Dither(double pixels, bool forceRaOnly, const SettleParams& settle, wxString *error);
