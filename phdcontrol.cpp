@@ -155,18 +155,15 @@ bool PhdController::Dither(double pixels, bool forceRaOnly, const SettleParams& 
         ctrl.saveDecGuideMode = scope->GetDecGuideMode();
         if (ctrl.saveDecGuideMode != DEC_AUTO)
         {
-            if (ctrl.saveDecGuideMode == DEC_NORTH || ctrl.saveDecGuideMode == DEC_SOUTH)
+            if ((ctrl.saveDecGuideMode == DEC_NORTH || ctrl.saveDecGuideMode == DEC_SOUTH) && settle.settleTimeSec != SETTLING_TIME_VALUE_DISABLED)
             {
-                // Might be ok to temporarily override dec guide mode
-                if (pFrame->GetDitherDecModeOverride() && settle.settleTimeSec != SETTLING_TIME_VALUE_DISABLED)
-                {
-                    ctrl.overrideDecGuideMode = true;
-                    Debug.Write("Setting Dec guide mode to 'auto' for dithering\n");    // in state machine
-                }
+                // Temporarily override dec guide mode because user has not set ra-only
+                ctrl.overrideDecGuideMode = true;
+                Debug.Write("Setting Dec guide mode to 'auto' for dithering\n");    // in state machine
             }
-            if (!ctrl.overrideDecGuideMode)
+            else
             {
-                // Uni-directional or DEC_NONE
+                // DEC_NONE or no settling parameters
                 Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %s\n",
                     Scope::DecGuideModeStr(ctrl.saveDecGuideMode)));
                 raOnly = true;

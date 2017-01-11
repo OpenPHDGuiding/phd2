@@ -119,7 +119,6 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxRadioButton *m_ditherSpiral;
     wxSpinCtrlDouble *m_ditherScaleFactor;
     wxCheckBox *m_ditherRaOnly;
-    wxCheckBox *m_ctlDecModeOverrideOk;
     wxChoice *m_pNoiseReduction;
     wxSpinCtrl *m_pTimeLapse;
     wxTextCtrl *m_pFocalLength;
@@ -172,7 +171,6 @@ private:
     double m_ditherScaleFactor;
     bool m_ditherRaOnly;
     DitherSpiral m_ditherSpiral;
-    bool m_ditherDecModeOverrideOk;
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
@@ -316,8 +314,6 @@ public:
     bool SetDitherScaleFactor(double ditherScaleFactor);
     bool GetDitherRaOnly(void);
     bool SetDitherRaOnly(bool ditherRaOnly);
-    bool GetDitherDecModeOverride();
-    void SetDitherDecModeOverride(bool overrideOk);
     double GetDitherAmount(int ditherType);
     void EnableImageLogging(bool enable);
     bool IsImageLoggingEnabled(void);
