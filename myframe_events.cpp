@@ -960,6 +960,31 @@ static void AlertSetRAOnly(long param)
     pFrame->m_infoBar->Dismiss();
 }
 
+static void CheckDecGuideModeAlert()
+{
+    // One-time, per-profile check to highlight new dithering behavior when Dec guide mode is north or south
+
+    if (pConfig->Profile.GetBoolean("/ShowDecModeWarning", true))
+    {
+        if (pMount && !pMount->IsStepGuider())
+        {
+            Scope *scope = static_cast<Scope *>(pMount);
+            DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
+
+            if ((dgm == DEC_NORTH || dgm == DEC_SOUTH) && !pFrame->GetDitherRaOnly())
+            {
+                wxString msg = _("With your current setting for Dec guide mode, this version of PHD2 will "
+                                 "dither in Declination. To restore the old behavior you can set the RA-only "
+                                 "option in the Dither Settings of the Advanced Dialog.");
+                pFrame->Alert(msg, 0,
+                              _("Set RA-only now"), AlertSetRAOnly, 0);
+
+               pConfig->Profile.SetBoolean("/ShowDecModeWarning", false);
+            }
+        }
+    }
+}
+
 void MyFrame::OnSelectGear(wxCommandEvent& evt)
 {
     try
@@ -983,25 +1008,8 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
         }
 
         pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
-        // One-time, per-profile check to highlight new dithering behavior when Dec guide mode is north or south
-        if (pConfig->Profile.GetBoolean("/ShowDecModeWarning", true))
-        {
-            Scope *scope = TheScope();
-            if (scope)
-            {
-                DEC_GUIDE_MODE profileDecGuideMode = scope->GetDecGuideMode();
-                if ((profileDecGuideMode == DEC_NORTH || profileDecGuideMode == DEC_SOUTH) &&
-                    !pFrame->GetDitherRaOnly())
-                {
-                    wxString msg = _("With your current setting for Dec guide mode, this version of PHD2 will dither in Declination. "
-                        "To restore the old behavior you can set the RA-only option in the Dither Settings "
-                        "of the Advanced Dialog.");
-                    Alert(msg, 0,
-                        _("Set RA-only now"), AlertSetRAOnly, 0);
-                    pConfig->Profile.SetBoolean("/ShowDecModeWarning", false);
-                }
-            }
-        }
+
+        CheckDecGuideModeAlert();
     }
     catch (const wxString& Msg)
     {
