@@ -693,7 +693,7 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
 
     try
     {
-        if (prediction_gain < 0)
+        if (prediction_gain < 0 || prediction_gain > 1.0)
         {
             throw ERROR_INFO("invalid prediction gain");
         }
