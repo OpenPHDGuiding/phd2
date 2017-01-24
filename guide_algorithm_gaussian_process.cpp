@@ -269,7 +269,7 @@ public:
 };
 
 
-struct data_point
+struct gp_data_point
 {
     double timestamp;
     double measurement; // current pointing error
@@ -281,7 +281,7 @@ struct data_point
 // data structure of the GP guiding algorithm
 struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 {
-    circular_buffer<data_point> circular_buffer_data;
+    circular_buffer<gp_data_point> circular_buffer_data;
 
     wxStopWatch timer_;
     double control_signal_;
@@ -326,17 +326,17 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
       dither_steps_(0),
       gp_(covariance_function_)
     {
-        circular_buffer_data.push_front(data_point()); // add first point
+        circular_buffer_data.push_front(gp_data_point()); // add first point
         circular_buffer_data[0].control = 0; // set first control to zero
         gp_.enableOutputProjection(output_covariance_function_); // for prediction
     }
 
-    data_point& get_last_point()
+    gp_data_point& get_last_point()
     {
         return circular_buffer_data[circular_buffer_data.size() - 1];
     }
 
-    data_point& get_second_last_point()
+    gp_data_point& get_second_last_point()
     {
         return circular_buffer_data[circular_buffer_data.size() - 2];
     }
@@ -348,13 +348,13 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 
     void add_one_point()
     {
-        circular_buffer_data.push_front(data_point());
+        circular_buffer_data.push_front(gp_data_point());
     }
 
     void clear()
     {
         circular_buffer_data.clear();
-        circular_buffer_data.push_front(data_point()); // add first point
+        circular_buffer_data.push_front(gp_data_point()); // add first point
         circular_buffer_data[0].control = 0; // set first control to zero
         last_prediction_end_ = 0.0;
         gp_.clearData();

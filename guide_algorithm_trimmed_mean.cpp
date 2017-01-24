@@ -144,19 +144,17 @@ public:
 };
 
 
-struct mw_guiding_circular_datapoints
+struct tm_data_point
 {
-  double timestamp;
-  double measurement;
-  double modified_measurement;
-  double control;
+    double timestamp;
+    double measurement; // current pointing error
+    double control; // control action
 };
 
 
 struct GuideAlgorithmTrimmedMean::tm_guide_parameters
 {
-    typedef mw_guiding_circular_datapoints data_points;
-    circular_buffer<data_points> circular_buffer_parameters;
+    circular_buffer<tm_data_point> circular_buffer_parameters;
 
     wxStopWatch timer_;
     double control_signal_;
@@ -185,16 +183,16 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
       last_prediction_end_(0.0),
       min_nb_element_for_inference_(0)
     {
-        circular_buffer_parameters.push_front(data_points());
+        circular_buffer_parameters.push_front(tm_data_point());
         circular_buffer_parameters[0].control = 0; // the first control is always zero
     }
 
-    data_points& get_last_point()
+    tm_data_point& get_last_point()
     {
       return circular_buffer_parameters[circular_buffer_parameters.size() - 1];
     }
 
-    data_points& get_second_last_point()
+    tm_data_point& get_second_last_point()
     {
       return circular_buffer_parameters[circular_buffer_parameters.size() - 2];
     }
@@ -206,13 +204,13 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
 
     void add_one_point()
     {
-      circular_buffer_parameters.push_front(data_points());
+      circular_buffer_parameters.push_front(tm_data_point());
     }
 
     void clear()
     {
       circular_buffer_parameters.clear();
-      circular_buffer_parameters.push_front(data_points());
+      circular_buffer_parameters.push_front(tm_data_point());
       circular_buffer_parameters[0].control = 0; // the first control is always zero
     }
 
@@ -230,16 +228,16 @@ GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis ax
     parameters = new tm_guide_parameters();
     wxString configPath = GetConfigPath();
 
-    double control_gain = pConfig->Profile.GetDouble(configPath + "/mw_control_gain", DefaultControlGain);
+    double control_gain = pConfig->Profile.GetDouble(configPath + "/tm_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
 
-    double prediction_gain = pConfig->Profile.GetDouble(configPath + "/mw_prediction_gain", DefaultPredictionGain);
+    double prediction_gain = pConfig->Profile.GetDouble(configPath + "/tm_prediction_gain", DefaultPredictionGain);
     SetPredictionGain(prediction_gain);
 
-    double differential_gain = pConfig->Profile.GetDouble(configPath + "/mw_differential_gain", DefaultDifferentialGain);
+    double differential_gain = pConfig->Profile.GetDouble(configPath + "/tm_differential_gain", DefaultDifferentialGain);
     SetDifferentialGain(differential_gain);
 
-    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/mw_nb_elements_for_prediction", DefaultNumMinPointsForInference);
+    int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/tm_nb_elements_for_prediction", DefaultNumMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
     parameters->dark_tracking_mode_ = false;
@@ -279,7 +277,7 @@ bool GuideAlgorithmTrimmedMean::SetControlGain(double control_gain)
         parameters->control_gain_ = DefaultControlGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/mw_control_gain", parameters->control_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/tm_control_gain", parameters->control_gain_);
 
     return error;
 }
@@ -304,7 +302,7 @@ bool GuideAlgorithmTrimmedMean::SetPredictionGain(double prediction_gain)
         parameters->prediction_gain_ = DefaultPredictionGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/mw_prediction_gain", parameters->prediction_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/tm_prediction_gain", parameters->prediction_gain_);
 
     return error;
 }
@@ -329,7 +327,7 @@ bool GuideAlgorithmTrimmedMean::SetDifferentialGain(double differential_gain)
         parameters->differential_gain_ = DefaultDifferentialGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/mw_differential_gain", parameters->differential_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/tm_differential_gain", parameters->differential_gain_);
 
     return error;
 }
@@ -354,7 +352,7 @@ bool GuideAlgorithmTrimmedMean::SetNbElementForInference(int nb_elements)
         parameters->min_nb_element_for_inference_ = DefaultNumMinPointsForInference;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/mw_nb_elements_for_prediction", parameters->min_nb_element_for_inference_);
+    pConfig->Profile.SetInt(GetConfigPath() + "/tm_nb_elements_for_prediction", parameters->min_nb_element_for_inference_);
 
     return error;
 }
@@ -578,7 +576,7 @@ double GuideAlgorithmTrimmedMean::result(double input)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     std::ofstream outfile;
-    outfile.open("mw_data.csv", std::ios_base::out);
+    outfile.open("tm_data.csv", std::ios_base::out);
     if (outfile.is_open()) {
         outfile << "location, output\n";
         for (int i = 0; i < timestamps.size(); ++i) {
@@ -607,7 +605,7 @@ double GuideAlgorithmTrimmedMean::deduceResult()
 
     StoreControls(parameters->control_signal_);
 
-    Debug.AddLine(wxString::Format("Median window guider (deduced): gain: %f, prediction: %f, control: %f",
+    Debug.AddLine(wxString::Format("Trimmed mean guider (deduced): gain: %f, prediction: %f, control: %f",
         parameters->control_gain_, drift_prediction, parameters->control_signal_));
 
     assert(parameters->control_gain_ < 10);

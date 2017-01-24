@@ -9,7 +9,7 @@ import threading
 
 def read_data():
 
-    measurement_data = genfromtxt('mw_data.csv', delimiter=',') # read GP data from csv
+    measurement_data = genfromtxt('tm_data.csv', delimiter=',') # read GP data from csv
     measurement_data = measurement_data[1:,:] # strip first line to remove header text
 
     location = measurement_data[:,0]
@@ -23,7 +23,7 @@ def read_data():
     std = gp_data[:,2]
 
     return location, output
-    
+
 def update_plot(fig, axes, p1):
     #print("update_plot() called")
 
@@ -33,15 +33,15 @@ def update_plot(fig, axes, p1):
     #plt.plot(x_range, mean, '-b')
     #plt.plot(x_range, mean+2*std, ':b')
     #plt.plot(x_range, mean-2*std, ':b')
-    
+
     p1.set_data(location,output)
 
     axes.relim()
     axes.autoscale_view(True,True,True)
     fig.canvas.draw()
     #plt.draw()
-    
-    
+
+
 
 
 def main():
@@ -57,6 +57,6 @@ def main():
         except:
             pass
         plt.pause(1.0)
-    
+
 if __name__ == "__main__":
     main()

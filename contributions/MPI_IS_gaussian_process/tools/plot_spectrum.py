@@ -20,7 +20,7 @@ def read_data():
 def update_plot(fig, axes, p1):
 
     periods, amplitudes = read_data()
-    
+
     p1.set_data(periods, amplitudes)
     axes.relim()
     axes.autoscale_view(True,True,True)
@@ -39,6 +39,6 @@ def main():
         except:
             pass
         plt.pause(1.0)
-    
+
 if __name__ == "__main__":
     main()
