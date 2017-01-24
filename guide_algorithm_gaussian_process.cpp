@@ -56,6 +56,7 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
+    wxSpinCtrlDouble *m_pMinMove;
     wxSpinCtrl       *m_pNumPointsInference;
     wxSpinCtrl       *m_pNumPointsPeriodComputation;
     wxSpinCtrl       *m_pNumPointsApproximation;
@@ -75,7 +76,7 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
 
     wxCheckBox       *m_checkboxExpertMode;
 
-    wxBoxSizer *m_pExpertPage;
+    wxBoxSizer       *m_pExpertPage;
 
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
@@ -92,6 +93,20 @@ public:
         DoAdd(_("Control gain"), m_pControlGain,
               _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
               "fed back to the system. Default = 0.8"));
+
+        m_pPredictionGain = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0.0, 1.0, 1.0, 0.01);
+        m_pPredictionGain->SetDigits(2);
+        DoAdd(_("Prediction gain"), m_pPredictionGain,
+             _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0"));
+
+        m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                              wxDefaultPosition,wxSize(width+30, -1),
+                                              wxSP_ARROW_KEYS, 0.0, 1.0, 0.2, 0.05);
+        m_pMinMove->SetDigits(2);
+        DoAdd(_("Min move"), m_pMinMove,
+              _("Defines the smallest correction move the controller executes. Default = 0.2"));
 
         m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
@@ -111,13 +126,6 @@ public:
 
         // create the expert options page
         m_pExpertPage = new wxBoxSizer(wxVERTICAL);
-
-        m_pPredictionGain = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
-                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                  wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
-        m_pPredictionGain->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Prediction gain"), m_pPredictionGain,
-              _("The prediction gain defines how much control signal is generated from the prediction. Default = 1.0")));
 
         // number of elements before starting the inference
         m_pNumPointsInference = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
@@ -286,6 +294,7 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
     wxStopWatch timer_;
     double control_signal_;
     double control_gain_;
+    double min_move_;
     double last_timestamp_;
     double prediction_gain_;
     double prediction_;
@@ -312,6 +321,7 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
       timer_(),
       control_signal_(0.0),
       control_gain_(0.0),
+      min_move_(0.0),
       last_timestamp_(0.0),
       prediction_gain_(0.0),
       prediction_(0.0),
@@ -364,7 +374,8 @@ struct GuideAlgorithmGaussianProcess::gp_guide_parameters
 
 
 static const double DefaultControlGain                   = 0.8; // control gain
-static const int    DefaultNumMinPointsForInference       = 25; // minimal number of points for doing the inference
+static const int    DefaultNumMinPointsForInference      = 25; // minimal number of points for doing the inference
+static const double DefaultMinMove                       = 0.2;
 
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
@@ -390,6 +401,9 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
 
     double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
+
+    double min_move = pConfig->Profile.GetDouble(configPath + "/gp_min_move", DefaultMinMove);
+    SetMinMove(min_move);
 
     int num_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNumMinPointsForInference);
     SetNumPointsInference(num_element_for_inference);
@@ -456,6 +470,31 @@ bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_control_gain", parameters->control_gain_);
+
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetMinMove(double min_move)
+{
+    bool error = false;
+
+    try
+    {
+        if (min_move < 0)
+        {
+            throw ERROR_INFO("invalid minimum move");
+        }
+
+        parameters->min_move_ = min_move;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->min_move_ = DefaultMinMove;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_min_move", parameters->min_move_);
 
     return error;
 }
@@ -724,6 +763,11 @@ double GuideAlgorithmGaussianProcess::GetControlGain() const
     return parameters->control_gain_;
 }
 
+double GuideAlgorithmGaussianProcess::GetMinMove() const
+{
+    return parameters->min_move_;
+}
+
 int GuideAlgorithmGaussianProcess::GetNumPointsInference() const
 {
     return parameters->min_points_for_inference_;
@@ -784,8 +828,9 @@ bool GuideAlgorithmGaussianProcess::SetExpertMode(bool value)
 wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
 {
     static const char* format =
-      "Control Gain = %.3f\n"
+      "Control gain = %.3f\n"
       "Prediction gain = %.3f\n"
+      "Minimum move = %.3f\n"
       "Hyperparameters\n"
       "\tLength scale long range SE kernel = %.3f\n"
       "\tSignal variance long range SE kernel = %.3f\n"
@@ -802,7 +847,8 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
     return wxString::Format(
       format,
       GetControlGain(),
-      parameters->prediction_gain_,
+      GetPredictionGain(),
+      GetMinMove(),
       std::exp(hyperparameters(0)), std::exp(hyperparameters(1)),
       std::exp(hyperparameters(2)), std::exp(hyperparameters(3)),
       std::exp(hyperparameters(4)), std::exp(hyperparameters(5)),
@@ -1034,6 +1080,10 @@ double GuideAlgorithmGaussianProcess::result(double input)
     HandleSNR(pFrame->pGuider->SNR());
 
     parameters->control_signal_ = parameters->control_gain_*input; // start with proportional control
+    if (parameters->control_signal_ < parameters->min_move_)
+    {
+        parameters->control_signal_ = 0; // don't make small moves
+    }
 
     // check if we are allowed to use the GP
     if (parameters->min_points_for_inference_ > 0 &&

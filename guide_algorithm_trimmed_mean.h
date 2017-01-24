@@ -41,9 +41,9 @@
 #ifndef GUIDE_ALGORITHM_TRIMMED_MEAN_H
 #define GUIDE_ALGORITHM_TRIMMED_MEAN_H
 
-#define MW_DEBUG_FILE_ 1
+#define TM_DEBUG_FILE_ 1
 
-#define MW_BUFFER_SIZE 256
+#define TM_BUFFER_SIZE 256
 
 #include <Eigen/Dense>
 #include "guide_algorithm.h"
@@ -107,6 +107,9 @@ private:
 protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
+
+    double GetMinMove() const;
+    bool SetMinMove(double min_move);
 
     double GetPredictionGain() const;
     bool SetPredictionGain(double prediction_gain);

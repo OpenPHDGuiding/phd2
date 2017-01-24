@@ -127,6 +127,9 @@ protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
+    double GetMinMove() const;
+    bool SetMinMove(double min_move);
+
     int GetNumPointsInference() const;
     bool SetNumPointsInference(int num_points_inference);
 

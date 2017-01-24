@@ -56,6 +56,7 @@ class GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMeanDialogPane : public Co
 {
     GuideAlgorithmTrimmedMean *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
+    wxSpinCtrlDouble *m_pMinMove;
     wxSpinCtrlDouble *m_pPredictionGain;
     wxSpinCtrlDouble *m_pDifferentialGain;
     wxSpinCtrl       *m_pNbMeasurementMin;
@@ -80,6 +81,11 @@ public:
                                               wxSP_ARROW_KEYS, 0.0, 2.0, 0.5, 0.05);
         m_pPredictionGain->SetDigits(2);
 
+        m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                          wxDefaultPosition,wxSize(width+30, -1),
+                                          wxSP_ARROW_KEYS, 0.0, 1.0, 0.2, 0.05);
+        m_pMinMove->SetDigits(2);
+
         m_pDifferentialGain = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
                                                  wxSP_ARROW_KEYS, 0.0, 20.0, 0.5, 0.5);
@@ -99,6 +105,9 @@ public:
         DoAdd(_("Prediction Gain"), m_pPredictionGain,
               _("The prediction gain defines how much of the prediction should be used to compensate the drift error. "
               "Default = 1.0"));
+
+        DoAdd(_("Min move"), m_pMinMove,
+              _("Defines the smallest correction move the controller executes. Default = 0.2"));
 
         DoAdd(_("Differential Gain"), m_pDifferentialGain,
               _("The differential gain is used to reduce overshoot. It tries to slow down the control system, but if set "
@@ -159,6 +168,7 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
     wxStopWatch timer_;
     double control_signal_;
     double control_gain_;
+    double min_move_;
     double prediction_gain_;
     double differential_gain_;
     double last_timestamp_;
@@ -171,10 +181,11 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
     int min_nb_element_for_inference_;
 
     tm_guide_parameters() :
-      circular_buffer_parameters(MW_BUFFER_SIZE),
+      circular_buffer_parameters(TM_BUFFER_SIZE),
       timer_(),
       control_signal_(0.0),
       control_gain_(0.0),
+      min_move_(0.0),
       prediction_gain_(0.0),
       differential_gain_(0.0),
       last_timestamp_(0.0),
@@ -217,6 +228,7 @@ struct GuideAlgorithmTrimmedMean::tm_guide_parameters
 };
 
 static const double DefaultControlGain = 0.5;
+static const double DefaultMinMove = 0.2;
 static const double DefaultPredictionGain = 1.0;
 static const double DefaultDifferentialGain = 5.0;
 static const int    DefaultNumMinPointsForInference = 50;
@@ -230,6 +242,9 @@ GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMean(Mount *pMount, GuideAxis ax
 
     double control_gain = pConfig->Profile.GetDouble(configPath + "/tm_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
+
+    double min_move = pConfig->Profile.GetDouble(configPath + "/tm_min_move", DefaultMinMove);
+    SetMinMove(min_move);
 
     double prediction_gain = pConfig->Profile.GetDouble(configPath + "/tm_prediction_gain", DefaultPredictionGain);
     SetPredictionGain(prediction_gain);
@@ -278,6 +293,31 @@ bool GuideAlgorithmTrimmedMean::SetControlGain(double control_gain)
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/tm_control_gain", parameters->control_gain_);
+
+    return error;
+}
+
+bool GuideAlgorithmTrimmedMean::SetMinMove(double min_move)
+{
+    bool error = false;
+
+    try
+    {
+        if (min_move < 0)
+        {
+            throw ERROR_INFO("invalid minimum move");
+        }
+
+        parameters->min_move_ = min_move;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->min_move_ = DefaultMinMove;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/tm_min_move", parameters->min_move_);
 
     return error;
 }
@@ -360,6 +400,11 @@ bool GuideAlgorithmTrimmedMean::SetNbElementForInference(int nb_elements)
 double GuideAlgorithmTrimmedMean::GetControlGain() const
 {
     return parameters->control_gain_;
+}
+
+double GuideAlgorithmTrimmedMean::GetMinMove() const
+{
+    return parameters->min_move_;
 }
 
 double GuideAlgorithmTrimmedMean::GetPredictionGain() const
@@ -515,6 +560,10 @@ double GuideAlgorithmTrimmedMean::result(double input)
     HandleTimestamps();
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
+    if (parameters->control_signal_ < parameters->min_move_)
+    {
+        parameters->control_signal_ = 0; // don't make small moves
+    }
 
     double difference = 0;
 
@@ -551,7 +600,7 @@ double GuideAlgorithmTrimmedMean::result(double input)
         input, difference, drift_prediction, parameters->control_signal_));
 
     // write the data to a file for easy debugging
-#if MW_DEBUG_FILE_
+#if TM_DEBUG_FILE_
     int N = parameters->get_number_of_measurements();
 
     // initialize the different vectors needed for the GP
