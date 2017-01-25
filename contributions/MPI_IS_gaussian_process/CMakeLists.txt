@@ -58,7 +58,16 @@ target_include_directories(MPIIS_GP PUBLIC ${EIGEN_SRC} ${gaussian_process_root_
                                            ${gaussian_process_root_dir}/tools)
 set_property(TARGET MPIIS_GP PROPERTY FOLDER "Contributions/")
 
-
+# Gaussian Process Guider library
+set(gpg_SRC
+${gaussian_process_root_dir}/src/gaussian_process_guider.cpp
+${gaussian_process_root_dir}/src/gaussian_process_guider.h
+)
+add_library(GPGuider STATIC ${gpg_SRC})
+target_link_libraries(GPGuider PUBLIC MPIIS_GP_TOOLS MPIIS_GP)
+target_include_directories(GPGuider PUBLIC ${EIGEN_SRC} ${gaussian_process_root_dir}/src
+${gaussian_process_root_dir}/tools ${phd_src_dir})
+set_property(TARGET GPGuider PROPERTY FOLDER "Contributions/")
 
 
 ################################################################
@@ -86,3 +95,10 @@ add_executable(Sandbox ${gaussian_process_root_dir}/tests/gaussian_process/sandb
 target_link_libraries(Sandbox MPIIS_GP)
 target_include_directories(Sandbox  PRIVATE ${gaussian_process_root_dir}/tools ${gaussian_process_root_dir}/src ${GTEST_HEADERS} ${EIGEN_SRC})
 set_property(TARGET Sandbox PROPERTY FOLDER "Unit tests/Contribution")
+
+# Test for the GP Guider
+add_executable(GPGuiderTest ${gaussian_process_root_dir}/tests/gaussian_process/gp_guider_test.cpp)
+target_link_libraries(GPGuiderTest MPIIS_GP gtest GPGuider)
+target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
+set_property(TARGET GPGuiderTest PROPERTY FOLDER "Unit tests/Contribution")
+add_test(NAME GPTest-3 COMMAND GPGuiderTest)

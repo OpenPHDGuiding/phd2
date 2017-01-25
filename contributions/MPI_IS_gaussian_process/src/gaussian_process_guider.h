@@ -2,7 +2,7 @@
  * PHD2 Guiding
  *
  * @file
- * @date      2014-2016
+ * @date      2014-2017
  * @copyright Max Planck Society
  *
  * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
@@ -39,11 +39,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUIDE_GAUSSIAN_PROCESS
-#define GUIDE_GAUSSIAN_PROCESS
-
-#include "guide_algorithm.h"
-#include "gaussian_process_guider.h"
+#ifndef GAUSSIAN_PROCESS_GUIDER
+#define GAUSSIAN_PROCESS_GUIDER
 
 #define GP_DEBUG_FILE_ 1
 
@@ -53,10 +50,13 @@
 #include <fstream>
 #endif
 
+#include "circbuf.h"
+#include "gaussian_process.h"
+#include "covariance_functions.h"
+#include "math_tools.h"
+
 #define CIRCULAR_BUFFER_SIZE 2048
 #define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
-
-class wxStopWatch;
 
 /**
  * This class provides a guiding algorithm for the right ascension axis that
@@ -65,26 +65,85 @@ class wxStopWatch;
  * error. Further it is able to perform tracking without measurement to increase
  * robustness of the overall guiding system.
  */
-class GuideAlgorithmGaussianProcess : public GuideAlgorithm
+class GaussianProcessGuider
 {
-private:
+public:
+
+    struct data_point
+    {
+        double timestamp;
+        double measurement; // current pointing error
+        double variance; // current measurement variance
+        double control; // control action
+    };
+
     /**
      * Holds all data that is needed for the GP guiding.
      */
-    struct gp_guide_parameters;
+    struct guide_parameters
+    {
+        double control_gain_;
+        double min_move_;
+        double prediction_gain_;
+
+        int min_points_for_inference_;
+        int min_points_for_period_computation_;
+        int points_for_approximation_;
+
+        bool compute_period_;
+
+        double Noise_;
+        double SE0KLengthScale_;
+        double SE0KSignalVariance_;
+        double PKLengthScale_;
+        double PKSignalVariance_;
+        double SE1KLengthScale_;
+        double SE1KSignalVariance_;
+        double PKPeriodLength_;
+
+        guide_parameters() :
+        control_gain_(0.0),
+        min_move_(0.0),
+        prediction_gain_(0.0),
+        min_points_for_inference_(0),
+        min_points_for_period_computation_(0),
+        points_for_approximation_(0),
+        compute_period_(false),
+        Noise_(0.0),
+        SE0KLengthScale_(0.0),
+        SE0KSignalVariance_(0.0),
+        PKLengthScale_(0.0),
+        PKSignalVariance_(0.0),
+        SE1KLengthScale_(0.0),
+        SE1KSignalVariance_(0.0),
+        PKPeriodLength_(0.0)
+        {
+        }
+
+    };
+
+private:
+
+    double time_start;
+    double control_signal_;
+    double last_timestamp_;
+    double prediction_;
+    double last_prediction_end_;
+
+    int dither_steps_;
+
+    bool dithering_active_;
+
+    circular_buffer<data_point> circular_buffer_data_;
+
+    covariance_functions::PeriodicSquareExponential2 covariance_function_; // for inference
+    covariance_functions::PeriodicSquareExponential output_covariance_function_; // for prediction
+    GP gp_;
 
     /**
-     * Provides the GUI configuration functionality.
+     * Guiding parameters of this instance.
      */
-    class GuideAlgorithmGaussianProcessDialogPane;
-
-    /**
-     * Pointer to the class that does the actual work.
-     */
-    GaussianProcessGuider* gpg_;
-
-    bool expert_mode_;
-    bool dark_tracking_mode_;
+    guide_parameters parameters;
 
     /**
      * Stores the current time and creates a timestamp for the GP.
@@ -125,9 +184,11 @@ private:
      * prediction point and the current prediction point, which lies one
      * exposure length in the future.
      */
-    double PredictGearError();
+    double PredictGearError(double prediction_location);
 
-protected:
+
+
+public:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
@@ -138,32 +199,22 @@ protected:
     bool SetNumPointsInference(int num_points_inference);
 
     int GetNumPointsPeriodComputation() const;
-    bool SetNumPointsPeriodComputation(int);
+    bool SetNumPointsPeriodComputation(int num_points);
 
     int GetNumPointsForApproximation() const;
-    bool SetNumPointsForApproximation(int);
+    bool SetNumPointsForApproximation(int num_points);
 
     bool GetBoolComputePeriod() const;
-    bool SetBoolComputePeriod(bool);
+    bool SetBoolComputePeriod(bool active);
 
-    std::vector<double> GetGPHyperparameters() const;
-    bool SetGPHyperparameters(std::vector< double > hyperparameters);
+    std::vector< double > GetGPHyperparameters() const;
+    bool SetGPHyperparameters(const std::vector< double >& hyperparameters);
 
     double GetPredictionGain() const;
     bool SetPredictionGain(double);
 
-    bool GetDarkTracking();
-    bool SetDarkTracking(bool value);
-
-    bool GetExpertMode();
-    bool SetExpertMode(bool value);
-
-public:
-    GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmGaussianProcess(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
-
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    GaussianProcessGuider(guide_parameters parameters);
+    ~GaussianProcessGuider();
 
     /**
      * Calculates the control value based on the current input. 1. The input is
@@ -171,55 +222,84 @@ public:
      * is calculated to compensate the gear error and 4. the controller is
      * calculated, consisting of feedback and prediction parts.
      */
-    virtual double result(double input);
+    double result(double input, double SNR, double time_step);
 
     /**
      * This method provides predictive control if no measurement could be made.
      * A zero measurement is stored with high uncertainty, and then the GP
      * prediction is used for control.
      */
-    virtual double deduceResult(void);
+    double deduceResult(double time_step);
 
     /**
      * This method tells the guider that guiding was stopped, e.g. for
      * slweing. This method resets the internal state of the guider.
      */
-    virtual void GuidingStopped(void);
+    void GuidingStopped(void);
 
     /**
      * This method tells the guider that guiding was paused, e.g. for
      * refocusing. This method keeps the internal state of the guider.
      */
-    virtual void GuidingPaused(void);
+    void GuidingPaused(void);
 
     /**
      * This method tells the guider that guiding was resumed, e.g. after
      * refocusing. This method fills the measurements of the guider with
      * predictions to keep the FFT and the GP in a working state.
      */
-    virtual void GuidingResumed(void);
+    void GuidingResumed(void);
 
     /**
      * This method tells the guider that a dither command was issued. The guider
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.
      */
-    virtual void GuidingDithered(double amt);
+    void GuidingDithered(double amt);
 
     /**
      * This method tells the guider that dithering is finished. The guider
      * will resume normal operation.
      */
-    virtual void GuidingDitherSettleDone(bool success);
+    void GuidingDitherSettleDone(bool success);
 
     /**
      * Clears the data from the circular buffer and clears the GP data.
      */
-    virtual void reset();
+    void reset();
 
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
+    data_point& get_last_point()
+    {
+        return circular_buffer_data_[circular_buffer_data_.size() - 1];
+    }
+
+    data_point& get_second_last_point()
+    {
+        return circular_buffer_data_[circular_buffer_data_.size() - 2];
+    }
+
+    size_t get_number_of_measurements() const
+    {
+        return circular_buffer_data_.size();
+    }
+
+    void add_one_point()
+    {
+        circular_buffer_data_.push_front(data_point());
+    }
+
+    void clear()
+    {
+        circular_buffer_data_.clear();
+        circular_buffer_data_.push_front(data_point()); // add first point
+        circular_buffer_data_[0].control = 0; // set first control to zero
+        last_prediction_end_ = 0.0;
+        gp_.clearData();
+    }
 
 };
 
-#endif  // GUIDE_GAUSSIAN_PROCESS
+
+
+
+#endif  // GAUSSIAN_PROCESS_GUIDER
