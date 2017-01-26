@@ -5,9 +5,20 @@
 you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
 for the first time, you may have trouble getting the guider calibration
 done. &nbsp;This problem usually takes one of two forms, each requiring
-different responses: <br><ol><li>The star moves during calibration but
-it moves "too far" or "too little." &nbsp;This is usually easy to fix - simply
-adjust the 'calibration step-size' parameter in the 'Guiding' tab of <a href="Advanced_settings.htm">Advanced Settings</a>. The help content there describes how this parameter is used, and you should be able to resolve the problem quickly.</li><li>The
+different responses: <br><ol><li>The
+star moves during calibration but
+it moves "too far" or "too little." &nbsp;If you've used the
+new-profile wizard and have provided correct values for focal length,
+camera pixel-size, and mount guide speed setting, the "step-size" used
+in calibration should
+already be correct. &nbsp;But if you've configured your profile by hand
+or have changed guide speed settings in the mount, you may need
+to&nbsp;adjust the 'calibration step-size' parameter in the 'Guiding'
+tab of <a href="Advanced_settings.htm">Advanced Settings</a>.
+The help content there describes how this parameter is used, and you
+should be able to resolve the problem quickly. &nbsp;But if you've used
+the new profile wizard and are seeing problems with "too far" or "too
+little" guide star movement, the problem probably lies elsewhere.</li><li>The
 star doesn't move enough during&nbsp;RA calibration,&nbsp;declination
 backlash clearing, or Dec calibration. &nbsp;These problems
 are announced by<span style="font-weight: bold;"> alert messages </span>at
@@ -43,15 +54,17 @@ is also possible that the calibration process will complete but PHD2
 will post a calibration alert message saying that some of the results
 are
 questionable. &nbsp;This "sanity check" dialog will show an explanation
-of the issue and some details of the calibration results: <br><br><img style="width: 779px; height: 426px;" alt="" src="Calib_Sanity.png"><br><br>Starting with the 2.4.0 release, there are four things checked by PHD2: <br><ul><li>Too
-few steps (shown above) - resolving this issue is quite easy.
+of the issue and some details of the calibration results: <br><br><img style="width: 797px; height: 426px;" alt="" src="Calib_Sanity.png"><br><br>Starting with the 2.4.0 release, there are four things checked by PHD2: <br><ul><li>Too
+few steps (shown above) - resolving this issue can be easy assuming the
+mount is actually working correctly.
 &nbsp;Just adjust the calibration step-size downward until you get at
 least 8 steps in both the west and north calibrations. &nbsp;If you
 used the new profile wizard to set up your configuration, a good
 starting value for calibration step-size will already be set. &nbsp;If
 you find that the number of steps in RA and Declination is
-substantially different, &nbsp;you may be seeing evidence of a problem
-with the mount unless you are using different guide speed settings on
+substantially different, &nbsp;you are probably seeing evidence of
+declination backlash&nbsp;unless you are using different guide speed
+settings on
 the two axes.</li><li>Non-orthogonal
 camera axes - the camera axes are normally computed independently even
 though they&nbsp;<span style="font-style: italic;">should</span>
@@ -110,10 +123,60 @@ repeated alerts on the same topic and are convinced there really
 isn't&nbsp;a problem, you can use the 'don't show' checkbox to block
 future alerts of that type. &nbsp;But you should be aware that the
 sanity-checking used by PHD2 works well for a wide range of equipment,
-and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;">Declination Backlash</span><span style="font-weight: bold;"></span><br>One
-of the more common sources of calibration problems, assuming the guide
-commands are working at all, is excessive backlash in declination.
-&nbsp;This is discussed in the <a href="Tools.htm#Declination_Backlash">Tools and Utilities</a> section, along with options for either fixing or side-stepping the problem.<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
+and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;"><a name="Declination_backlash"></a>Declination Backlash</span><span style="font-weight: bold;"></span><br>By
+far the most common source of calibration problems is declination
+backlash, which is present to some degree in most geared mounts.
+&nbsp;With many less-expensive mounts, however, the problem can
+be&nbsp;severe and
+can lead to poor calibration and guiding results. &nbsp;Consider the
+following
+example of a calibration review dialog: <br><br><img style="width: 767px; height: 399px;" alt="" src="Calib_Review_Backlash.png"><br><br>The
+first clue to the problem is found by comparing the number of steps
+required for calibration on the two axes - 10 for RA but 42 for Dec.
+&nbsp;This shows&nbsp;the mount was not moving consistently in
+declination, probably&nbsp;because the backlash had not been
+effectively cleared. &nbsp;This also explains the "wandering" behavior
+of the declination points (light green) when the guide commands were
+reversed from north to south. Finally, the computed declination rate is
+much smaller than the RA rate even though the guide speed settings on
+the two axes were identical. &nbsp;In fact, this would have triggered a
+calibration alert dialog.
+&nbsp;There are
+actually two problems to be addressed here. &nbsp;First, the
+calibration result is poor and should be repeated in order to get a
+more accurate measure of the declination guide rate. &nbsp;Second, the
+mount is likely to behave badly during direction reversals in
+declination even if the dec guide rate is correct. &nbsp;The
+calibration can be improved by first manually moving the mount&nbsp;
+north at
+guide speed for&nbsp;10-20 seconds&nbsp;until consistent star
+movement is seen&nbsp;in the main window. &nbsp;You can do this with
+the 'Manual Guide'
+tool or by using the hand-controller on your mount. &nbsp;Once this is
+done, most of the declination backlash in your mount should have been
+overcome. &nbsp;You can then repeat the calibration procedure
+and&nbsp;probably get a declination guiding rate that is more
+reasonable.
+&nbsp;The underlying backlash problem generally requires some mechanical adjustment
+to the mount. &nbsp;You can try using a backlash compensation setting,
+but this is not likely to work well&nbsp;if the backlash is large -
+more&nbsp; than 2-3 seconds, for example. &nbsp;If you can't correct
+the
+backlash or reduce
+it to manageable levels, you should consider choosing uni-directional
+guiding&nbsp;for declination. To do this, you&nbsp;determine
+which way the mount drifts due to polar alignment error, and tell PHD2
+to guide only in the opposite direction (see &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a>). This is controlled by the 'Dec
+guide mode' control on the'Algorithms' tab of the Advanced Dialog.
+&nbsp;For example, if the
+mount tends to drift north overall, restrict guide commands to
+south-only. This is not an ideal solution, obviously, but you can
+still use reasonably long exposures and achieve decent guiding results
+- and there are plenty of imagers out there who use this technique
+effectively.<font style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;"></span></font>
+&nbsp;If you have an unusual circumstance, such as a mount with no
+declination control at all, you can set the 'Dec guide mode' choice to
+'Off'. &nbsp;<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
 problems getting calibration to complete without alert messages, you
 should run a very simple test to see if the mount is responding to
 guide commands. &nbsp;This test basically mimics what is done during
@@ -156,7 +219,7 @@ total&nbsp; of guide durations plus a margin for error. On most mounts,
 the star will not return to its exact center because of some
 declination backlash - you can see that in the first example&nbsp;image. &nbsp;But
 it should be fairly close or you'll need to look more carefully at how
-much declination backlash you have in the mount.<br><br>One benefit to
+much declination backlash you have in the mount. &nbsp;PHD2 also has a star-cross test tool, descibed here: <a href="Tools.htm#Star_cross_tool">Star-cross Tool</a>. &nbsp;You can use that to automatically perform the test steps described in 1-5 above.<br><br>One benefit to
 using this test is that it reduces things to the absolute basics: will
 the mount move as directed or not. &nbsp;It has nothing to do with PHD2
 guide settings because they aren't involved in the test. &nbsp;You may

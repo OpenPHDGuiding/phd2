@@ -153,6 +153,10 @@
 			<param name="Local" value="Tools.htm#Guiding_Assistant">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Star-cross Test Tool">
+			<param name="Local" value="Tools.htm#Star_cross_tool">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Profiles">
 			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
 			</OBJECT>
