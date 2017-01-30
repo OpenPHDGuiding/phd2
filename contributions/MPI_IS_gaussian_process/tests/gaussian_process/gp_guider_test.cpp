@@ -41,6 +41,7 @@
 #include "gaussian_process_guider.h"
 
 #include <fstream>
+#include <thread>
 
 class GPGTest : public ::testing::Test
 {
@@ -147,6 +148,25 @@ TEST_F(GPGTest, parameters_test)
     EXPECT_NEAR(GPG->GetNumPointsForApproximation(), DefaultNumPointsForApproximation, 1e-6);
     EXPECT_NEAR(GPG->GetPredictionGain(), DefaultPredictionGain, 1e-6);
     EXPECT_NEAR(GPG->GetBoolComputePeriod(), DefaultComputePeriod, 1e-6);
+}
+
+TEST_F(GPGTest, timer_test)
+{
+    double result = 0;
+    int wait = 1000;
+
+    GPG->result(1.0, 2.0, 3.0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+
+    auto time_start = std::chrono::system_clock::now();
+    GPG->result(1.0, 2.0, 3.0);
+    double first_time = GPG->get_second_last_point().timestamp;
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+    auto time_end = std::chrono::system_clock::now();
+    GPG->result(1.0, 2.0, 3.0);
+    double second_time = GPG->get_second_last_point().timestamp;
+
+    EXPECT_NEAR(second_time - first_time, std::chrono::duration<double>(time_end - time_start).count(), 1e-1);
 }
 
 int main(int argc, char** argv)

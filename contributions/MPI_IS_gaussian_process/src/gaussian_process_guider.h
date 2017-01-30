@@ -55,6 +55,8 @@
 #include "covariance_functions.h"
 #include "math_tools.h"
 
+#include <chrono>
+
 #define CIRCULAR_BUFFER_SIZE 2048
 #define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
 
@@ -124,9 +126,10 @@ public:
 
 private:
 
-    double time_start;
+    std::chrono::system_clock::time_point start_time_; // reference time
+    std::chrono::system_clock::time_point last_time_;
+
     double control_signal_;
-    double last_timestamp_;
     double prediction_;
     double last_prediction_end_;
 
@@ -287,16 +290,6 @@ public:
     {
         circular_buffer_data_.push_front(data_point());
     }
-
-    void clear()
-    {
-        circular_buffer_data_.clear();
-        circular_buffer_data_.push_front(data_point()); // add first point
-        circular_buffer_data_[0].control = 0; // set first control to zero
-        last_prediction_end_ = 0.0;
-        gp_.clearData();
-    }
-
 };
 
 

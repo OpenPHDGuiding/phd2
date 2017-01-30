@@ -43,7 +43,8 @@
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
 parameters(parameters),
-time_start((double) std::clock() / CLOCKS_PER_SEC),
+start_time_(std::chrono::system_clock::now()),
+last_time_(std::chrono::system_clock::now()),
 gp_(covariance_function_),
 circular_buffer_data_(CIRCULAR_BUFFER_SIZE)
 {
@@ -70,14 +71,11 @@ GaussianProcessGuider::~GaussianProcessGuider()
 
 void GaussianProcessGuider::HandleTimestamps()
 {
-    if (get_number_of_measurements() == 0)
-    {
-        time_start = (double) std::clock() / CLOCKS_PER_SEC;
-    }
-    double time_now = std::clock() / CLOCKS_PER_SEC;
-    double delta_measurement_time = time_now - last_timestamp_;
-    last_timestamp_ = time_now;
-    get_last_point().timestamp = (time_now - delta_measurement_time / 2.0);
+    auto current_time = std::chrono::system_clock::now();
+    double delta_measurement_time = std::chrono::duration<double>(current_time - last_time_).count();
+    last_time_ = current_time;
+    get_last_point().timestamp = std::chrono::duration<double>(current_time - start_time_).count()
+        - (delta_measurement_time / 2.0); // use the midpoint as time stamp
 }
 
 // adds a new measurement to the circular buffer that holds the data.
@@ -216,7 +214,8 @@ void GaussianProcessGuider::UpdateGP()
     begin = std::clock();
 
     // inference of the GP with the new points, maximum accuracy should be reached around current time
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances, (double) std::clock() / CLOCKS_PER_SEC);
+    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
+                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
@@ -225,11 +224,6 @@ void GaussianProcessGuider::UpdateGP()
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)
 {
-    // prevent large jumps after calling clear()
-    if ( last_prediction_end_ < 1.0 )
-    {
-        last_prediction_end_ = (double) std::clock() / CLOCKS_PER_SEC;
-    }
 
     // prediction from the last endpoint to the prediction point
     Eigen::VectorXd next_location(2);
@@ -272,7 +266,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step)
     HandleSNR(SNR);
 
     control_signal_ = parameters.control_gain_*input; // start with proportional control
-    if (control_signal_ < parameters.min_move_)
+    if (std::abs(control_signal_) < parameters.min_move_)
     {
         control_signal_ = 0; // don't make small moves
     }
@@ -282,7 +276,8 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step)
         get_number_of_measurements() > parameters.min_points_for_inference_)
     {
         UpdateGP(); // update the GP based on the new measurements
-        prediction_ = PredictGearError((double) std::clock() / CLOCKS_PER_SEC + time_step);
+        prediction_ = PredictGearError(
+            std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count() + time_step);
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
     }
 
@@ -318,7 +313,8 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances, (double) std::clock() / CLOCKS_PER_SEC);
+    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
+                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
@@ -369,7 +365,8 @@ double GaussianProcessGuider::deduceResult(double time_step)
         get_number_of_measurements() > parameters.min_points_for_inference_)
     {
         UpdateGP(); // update the GP to update the SD approximation
-        prediction_ = PredictGearError((double) std::clock() / CLOCKS_PER_SEC + time_step);
+        prediction_ = PredictGearError(
+            std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count() + time_step);
         control_signal_ += prediction_; // control based on prediction
     }
 
@@ -405,7 +402,8 @@ double GaussianProcessGuider::deduceResult(double time_step)
     gear_error = sum_controls + measurements; // for each time step, add the residual error
 
     // inference of the GP with these new points
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances, (double) std::clock() / CLOCKS_PER_SEC);
+    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
+                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
 
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
@@ -447,7 +445,13 @@ double GaussianProcessGuider::deduceResult(double time_step)
 
 void GaussianProcessGuider::reset()
 {
-    clear();
+    circular_buffer_data_.clear();
+    circular_buffer_data_.push_front(data_point()); // add first point
+    circular_buffer_data_[0].control = 0; // set first control to zero
+    last_prediction_end_ = 0.0;
+    start_time_ = std::chrono::system_clock::now();
+    last_time_ = std::chrono::system_clock::now();
+    gp_.clearData();
 }
 
 void GaussianProcessGuider::GuidingStopped(void)

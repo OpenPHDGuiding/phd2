@@ -805,12 +805,12 @@ double GuideAlgorithmGaussianProcess::deduceResult()
 
 void GuideAlgorithmGaussianProcess::reset()
 {
-    gpg_->clear();
+    gpg_->reset();
 }
 
 void GuideAlgorithmGaussianProcess::GuidingStopped(void)
 {
-    gpg_->reset(); // reset is only done on a complete stop
+    reset(); // reset is only done on a complete stop
 }
 
 void GuideAlgorithmGaussianProcess::GuidingPaused(void)
