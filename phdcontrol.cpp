@@ -94,6 +94,11 @@ void PhdController::OnAppExit()
     ctrl.settleInRange = NULL;
 }
 
+bool PhdController::IsSettling()
+{
+    return ctrl.state == STATE_SETTLE_BEGIN || ctrl.state == STATE_SETTLE_WAIT;
+}
+
 #define SETSTATE(newstate) do { \
     Debug.AddLine("PhdController: newstate " #newstate); \
     ctrl.state = newstate; \

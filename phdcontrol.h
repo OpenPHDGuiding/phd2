@@ -53,9 +53,11 @@ public:
     static bool DitherCompat(double pixels, wxString *error);
 
     static void AbortController(const wxString& reason);
-    static void UpdateControllerState(void);
-    static void OnAppInit(void);
-    static void OnAppExit(void);
+    static void UpdateControllerState();
+    static void OnAppInit();
+    static void OnAppExit();
+
+    static bool IsSettling();
 };
 
 #endif

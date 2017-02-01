@@ -927,7 +927,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
  */
 
 bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
-                                                         PHD_Point& mountVectorEndpoint)
+                                                         PHD_Point& mountVectorEndpoint, bool logged)
 {
     bool bError = false;
 
@@ -951,13 +951,16 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
             sin(yAngle) * hyp
             );
 
-        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+        if (logged)
+        {
+            Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
                 cameraTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
-        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)\n",
+            Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)\n",
                 cameraTheta, m_cal.xAngle, m_yAngleError, yAngle, norm_angle(yAngle)));
-        Debug.Write(wxString::Format("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f\n",
+            Debug.Write(wxString::Format("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f\n",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
                 mountVectorEndpoint.Angle()));
+        }
     }
     catch (const wxString& Msg)
     {
@@ -970,7 +973,7 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
 }
 
 bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
-                                                        PHD_Point& cameraVectorEndpoint)
+                                                        PHD_Point& cameraVectorEndpoint, bool logged)
 {
     bool bError = false;
 
@@ -996,11 +999,14 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
                 sin(xAngle) * hyp
                 );
 
-        Debug.Write(wxString::Format("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
-                                     mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
-        Debug.Write(wxString::Format("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f\n",
-                                     mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
-                                     cameraVectorEndpoint.Angle()));
+        if (logged)
+        {
+            Debug.Write(wxString::Format("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+                mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
+            Debug.Write(wxString::Format("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f\n",
+                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+                cameraVectorEndpoint.Angle()));
+        }
     }
     catch (const wxString& Msg)
     {
