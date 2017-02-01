@@ -41,12 +41,21 @@
 
 #include "gaussian_process_guider.h"
 
+#include <cmath>
+
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
-parameters(parameters),
 start_time_(std::chrono::system_clock::now()),
 last_time_(std::chrono::system_clock::now()),
-gp_(covariance_function_),
-circular_buffer_data_(CIRCULAR_BUFFER_SIZE)
+control_signal_(0),
+prediction_(0),
+last_prediction_end_(0),
+dither_steps_(0),
+dithering_active_(false),
+circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
+parameters(parameters),
+covariance_function_(),
+output_covariance_function_(),
+gp_(covariance_function_)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
@@ -58,10 +67,10 @@ circular_buffer_data_(CIRCULAR_BUFFER_SIZE)
     hyperparameters.push_back(parameters.SE0KLengthScale_);
     hyperparameters.push_back(parameters.SE0KSignalVariance_);
     hyperparameters.push_back(parameters.PKLengthScale_);
-    hyperparameters.push_back(parameters.PKPeriodLength_);
     hyperparameters.push_back(parameters.PKSignalVariance_);
     hyperparameters.push_back(parameters.SE1KLengthScale_);
     hyperparameters.push_back(parameters.SE1KSignalVariance_);
+    hyperparameters.push_back(parameters.PKPeriodLength_);
     SetGPHyperparameters(hyperparameters);
 }
 
@@ -241,7 +250,7 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
     return (p1 - p0);
 }
 
-double GaussianProcessGuider::result(double input, double SNR, double time_step)
+double GaussianProcessGuider::result(double input, double SNR, double time_step, double prediction_point /*= -1*/)
 {
     /*
      * Dithering behaves differently from pausing. During dithering, the mount
@@ -270,14 +279,19 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step)
     {
         control_signal_ = 0; // don't make small moves
     }
+    assert(std::abs(control_signal_) == 0 || std::abs(control_signal_) >= parameters.min_move_);
 
     // check if we are allowed to use the GP
     if (parameters.min_points_for_inference_ > 0 &&
         get_number_of_measurements() > parameters.min_points_for_inference_)
     {
         UpdateGP(); // update the GP based on the new measurements
-        prediction_ = PredictGearError(
-            std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count() + time_step);
+        if (prediction_point < 0.0)
+        {
+            prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+        }
+        prediction_point += time_step;
+        prediction_ = PredictGearError(prediction_point);
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
     }
 
@@ -354,7 +368,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step)
     return control_signal_;
 }
 
-double GaussianProcessGuider::deduceResult(double time_step)
+double GaussianProcessGuider::deduceResult(double time_step, double prediction_point /*= -1.0*/)
 {
     HandleDarkGuiding();
     HandleTimestamps();
@@ -365,8 +379,12 @@ double GaussianProcessGuider::deduceResult(double time_step)
         get_number_of_measurements() > parameters.min_points_for_inference_)
     {
         UpdateGP(); // update the GP to update the SD approximation
-        prediction_ = PredictGearError(
-            std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count() + time_step);
+        if (prediction_point < 0.0)
+        {
+            prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+        }
+        prediction_point += time_step;
+        prediction_ = PredictGearError(prediction_point);
         control_signal_ += prediction_; // control based on prediction
     }
 
@@ -593,6 +611,19 @@ double GaussianProcessGuider::GetPredictionGain() const {
 bool GaussianProcessGuider::SetPredictionGain(double prediction_gain) {
     parameters.prediction_gain_ = prediction_gain;
     return false;
+}
+
+void GaussianProcessGuider::inject_data_point(double timestamp, double input, double SNR, double control) {
+    // collect data point content, except for the control signal
+    HandleMeasurements(input);
+    last_prediction_end_ = timestamp;
+    get_last_point().timestamp = timestamp; // overrides the usual HandleTimestamps();
+    HandleSNR(SNR);
+
+    start_time_ = std::chrono::system_clock::now() - std::chrono::seconds((int) timestamp);
+
+    add_one_point(); // add new point here, since the control is for the next point in time
+    HandleControls(control); // already store control signal
 }
 
 

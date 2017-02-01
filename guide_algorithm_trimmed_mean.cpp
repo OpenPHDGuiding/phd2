@@ -560,7 +560,7 @@ double GuideAlgorithmTrimmedMean::result(double input)
     HandleTimestamps();
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
-    if (parameters->control_signal_ < parameters->min_move_)
+    if (std::fabs(parameters->control_signal_) < parameters->min_move_)
     {
         parameters->control_signal_ = 0; // don't make small moves
     }
@@ -582,7 +582,7 @@ double GuideAlgorithmTrimmedMean::result(double input)
         parameters->control_signal_ += parameters->differential_gain_ * difference; // D-component of PD controller
 
         // check if the input points in the wrong direction, but only if the error isn't too big
-        if (std::abs(input) < 10.0 && parameters->control_signal_ * drift_prediction < 0)
+        if (std::fabs(input) < 10.0 && parameters->control_signal_ * drift_prediction < 0)
         {
             parameters->control_signal_ = 0; // prevent backlash overshooting
         }

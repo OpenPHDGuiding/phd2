@@ -283,7 +283,7 @@ static const double DefaultMinMove                       = 0.2;
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 static const double DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-static const double DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
+static const double DefaultSignalVarianceSE0Ker          = 1.0; // signal variance of the long-range SE-kernel
 static const double DefaultLengthScalePerKer             = 0.5; // length-scale of the periodic kernel
 static const double DefaultPeriodLengthPerKer            = 500; // P_p, period-length of the periodic kernel
 static const double DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel

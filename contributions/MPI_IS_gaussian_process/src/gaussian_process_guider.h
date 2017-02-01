@@ -225,14 +225,14 @@ public:
      * is calculated to compensate the gear error and 4. the controller is
      * calculated, consisting of feedback and prediction parts.
      */
-    double result(double input, double SNR, double time_step);
+    double result(double input, double SNR, double time_step, double prediction_point = -1.0);
 
     /**
      * This method provides predictive control if no measurement could be made.
      * A zero measurement is stored with high uncertainty, and then the GP
      * prediction is used for control.
      */
-    double deduceResult(double time_step);
+    double deduceResult(double time_step, double prediction_point = -1.0);
 
     /**
      * This method tells the guider that guiding was stopped, e.g. for
@@ -290,6 +290,11 @@ public:
     {
         circular_buffer_data_.push_front(data_point());
     }
+
+    /**
+     * This method is needed for automated testing. It can inject data points.
+     */
+    void inject_data_point(double timestamp, double input, double SNR, double control);
 };
 
 
