@@ -160,7 +160,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013-2016 Bruce Waddington<br>"
         "Copyright 2014 Hans Lambermont<br>"
         "Copyright 2014 Robin Glover<br>"
-        "Copyright 2014-2016 Max Planck Society<br>"
+        "Copyright 2014-2017 Max Planck Society<br>"
         "<br>"
         "<br>"
         "The Gaussian process guide algorithm is based on<br>"

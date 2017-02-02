@@ -16,7 +16,7 @@ def read_data():
     amplitudes = spectrum_data[:,1]
 
     return periods, amplitudes
-    
+
 def update_plot(fig, axes, p1):
 
     periods, amplitudes = read_data()

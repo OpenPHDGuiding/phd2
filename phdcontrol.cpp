@@ -242,15 +242,13 @@ static void do_notify(void)
     if (ctrl.succeeded)
     {
         Debug.AddLine("PhdController complete: success");
-        pMount->NotifyGuidingDitherSettleDone();
-        EvtServer.NotifySettleDone(wxEmptyString);
+        EvtServer.NotifySettleDone(wxEmptyString, ctrl.settleFrameCount, ctrl.droppedFrameCount);
         GuideLog.NotifySettlingStateChange("Settling complete");
     }
     else
     {
         Debug.AddLine(wxString::Format("PhdController complete: fail: %s", ctrl.errorMsg));
-        pMount->NotifyGuidingDitherSettleDone();
-        EvtServer.NotifySettleDone(ctrl.errorMsg);
+        EvtServer.NotifySettleDone(ctrl.errorMsg, ctrl.settleFrameCount, ctrl.droppedFrameCount);
         GuideLog.NotifySettlingStateChange("Settling failed");
     }
 

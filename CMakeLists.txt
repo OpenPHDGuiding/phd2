@@ -78,6 +78,8 @@ option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm
 project(phd2)
 enable_testing()
 
+
+
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
@@ -340,7 +342,7 @@ set(guiding_SRC
 
 # gaussian process, also the main project should link to the GP project in the contrib dir
 if(${GUIDING_GAUSSIAN_PROCESS})
-  set(guiding_SRC
+  set(guiding_SRC 
       ${guiding_SRC}
       ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
       ${phd_src_dir}/guide_algorithm_gaussian_process.h

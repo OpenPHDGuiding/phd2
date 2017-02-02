@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016, Max Planck Society.
+ * Copyright 2014-2017, Max Planck Society.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +31,7 @@
 
 /**
  * @file
- * @date      2014-2016
+ * @date      2014-2017
  * @copyright Max Planck Society
  *
  * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>

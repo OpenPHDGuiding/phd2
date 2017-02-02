@@ -2,7 +2,7 @@
  * PHD2 Guiding
  *
  * @file
- * @date      2014-2016
+ * @date      2014-2017
  * @copyright Max Planck Society
  *
  * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>

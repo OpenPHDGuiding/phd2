@@ -23,7 +23,7 @@ def read_data():
     std = gp_data[:,2]
 
     return location, output, x_range, mean, std
-    
+
 def update_plot(fig, axes, p1, p2, p3, p4):
     #print("update_plot() called")
 
@@ -33,7 +33,7 @@ def update_plot(fig, axes, p1, p2, p3, p4):
     #plt.plot(x_range, mean, '-b')
     #plt.plot(x_range, mean+2*std, ':b')
     #plt.plot(x_range, mean-2*std, ':b')
-    
+
     p1.set_data(location,output)
     p2.set_data(x_range,mean)
     p3.set_data(x_range,mean+2*std)
@@ -42,8 +42,8 @@ def update_plot(fig, axes, p1, p2, p3, p4):
     axes.autoscale_view(True,True,True)
     fig.canvas.draw()
     #plt.draw()
-    
-    
+
+
 
 
 def main():
@@ -61,6 +61,6 @@ def main():
         except:
             pass
         plt.pause(1.0)
-    
+
 if __name__ == "__main__":
     main()
