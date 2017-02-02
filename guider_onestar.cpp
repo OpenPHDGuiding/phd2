@@ -58,14 +58,16 @@ class MassChecker
     unsigned long m_timeWindow;
     double *m_tmp;
     size_t m_tmpSize;
-    int m_lastExposure;
+    int m_exposure;
+    bool m_isAutoExposure;
 
 public:
 
     MassChecker()
         : m_tmp(0),
           m_tmpSize(0),
-          m_lastExposure(0)
+          m_exposure(0),
+          m_isAutoExposure(false)
     {
         SetTimeWindow(DefaultTimeWindowMs);
     }
@@ -81,13 +83,27 @@ public:
         m_timeWindow = milliseconds * 2;
     }
 
-    void SetExposure(int exposure)
+    void SetExposure(int exposure, bool isAutoExp)
     {
-        if (exposure != m_lastExposure)
+        if (isAutoExp != m_isAutoExposure)
         {
-            m_lastExposure = exposure;
+            m_isAutoExposure = isAutoExp;
+            m_exposure = exposure;
             Reset();
         }
+        else if (exposure != m_exposure)
+        {
+            m_exposure = exposure;
+            if (!m_isAutoExposure)
+            {
+                Reset();
+            }
+        }
+    }
+
+    double AdjustedMass(double mass) const
+    {
+        return m_isAutoExposure ? mass / (double) m_exposure : mass;
     }
 
     void AppendData(double mass)
@@ -100,7 +116,7 @@ public:
 
         Entry entry;
         entry.time = now;
-        entry.mass = mass;
+        entry.mass = AdjustedMass(mass);
         m_data.push_back(entry);
     }
 
@@ -130,7 +146,17 @@ public:
         limits[1] = med;
         limits[2] = med * (1. + threshold);
 
-        return mass < limits[0] || mass > limits[2];
+        double adjmass = AdjustedMass(mass);
+        bool reject =  adjmass < limits[0] || adjmass > limits[2];
+
+        if (reject && m_isAutoExposure)
+        {
+            // convert back to mass-like numbers for logging by caller
+            for (int i = 0; i < 3; i++)
+                limits[i] *= (double) m_exposure;
+        }
+
+        return reject;
     }
 
     void Reset(void)
@@ -581,20 +607,25 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         // check to see if it seems like the star we just found was the
         // same as the original star.  We do this by comparing the
         // mass
-        m_massChecker->SetExposure(pFrame->RequestedExposureDuration());
-        double limits[3];
-        if (m_massChangeThresholdEnabled &&
-            m_massChecker->CheckMass(newStar.Mass, m_massChangeThreshold, limits))
+        if (m_massChangeThresholdEnabled)
         {
-            m_star.SetError(Star::STAR_MASSCHANGE);
-            errorInfo->starError = Star::STAR_MASSCHANGE;
-            errorInfo->starMass = newStar.Mass;
-            errorInfo->starSNR = newStar.SNR;
-            errorInfo->status = StarStatusStr(m_star);
-            pFrame->StatusMsg(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]));
-            Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100, limits[0], limits[2]));
-            m_massChecker->AppendData(newStar.Mass);
-            throw THROW_INFO("massChangeThreshold error");
+            int exposure;
+            bool isAutoExp;
+            pFrame->GetExposureInfo(&exposure, &isAutoExp);
+            m_massChecker->SetExposure(exposure, isAutoExp);
+            double limits[3];
+            if (m_massChecker->CheckMass(newStar.Mass, m_massChangeThreshold, limits))
+            {
+                m_star.SetError(Star::STAR_MASSCHANGE);
+                errorInfo->starError = Star::STAR_MASSCHANGE;
+                errorInfo->starMass = newStar.Mass;
+                errorInfo->starSNR = newStar.SNR;
+                errorInfo->status = StarStatusStr(m_star);
+                pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
+                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2]));
+                m_massChecker->AppendData(newStar.Mass);
+                throw THROW_INFO("massChangeThreshold error");
+            }
         }
 
         // update the star position, mass, etc.
