@@ -241,19 +241,6 @@ public:
     void GuidingStopped(void);
 
     /**
-     * This method tells the guider that guiding was paused, e.g. for
-     * refocusing. This method keeps the internal state of the guider.
-     */
-    void GuidingPaused(void);
-
-    /**
-     * This method tells the guider that guiding was resumed, e.g. after
-     * refocusing. This method fills the measurements of the guider with
-     * predictions to keep the FFT and the GP in a working state.
-     */
-    void GuidingResumed(void);
-
-    /**
      * This method tells the guider that a dither command was issued. The guider
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.

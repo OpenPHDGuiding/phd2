@@ -830,22 +830,12 @@ void GuideAlgorithmGaussianProcess::GuidingResumed(void)
 
 void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
 {
-    /*
-     * We don't compensate for the dither amout (yet), but we need to know
-     * that we are currently dithering.
-     */
-//     parameters.dithering_active_ = true;
-//     parameters.dither_steps_ = 10;
+    // just hand it on to the guide algorithm
+    gpg_->GuidingDithered(amt);
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)
 {
-    /*
-     * Once dithering has settled, we can start regular guiding again.
-     */
-//     if (success)
-//     {
-//         parameters.dithering_active_ = false;
-//         parameters.dither_steps_ = 0;
-//     }
+    // just hand it on to the guide algorithm
+    gpg_->GuidingDitherSettleDone(success);
 }
