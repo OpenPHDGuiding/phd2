@@ -184,7 +184,7 @@ void GaussianProcessGuider::UpdateGP()
         Eigen::ArrayXd amplitudes = result.first;
         Eigen::ArrayXd frequencies = result.second;
 
-        double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/timestamps.rows(); // (t_end - t_begin) / num_t
+        double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/(timestamps.rows()-1); // (t_end - t_begin) / num_t
 
         frequencies /= dt; // correct for the average time step width
 

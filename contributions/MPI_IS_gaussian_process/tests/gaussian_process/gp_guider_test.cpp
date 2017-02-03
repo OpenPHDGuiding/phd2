@@ -103,9 +103,9 @@ const double GPGTest::DefaultMinMove                       = 0.2;
 const double GPGTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 const double GPGTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-const double GPGTest::DefaultSignalVarianceSE0Ker          = 1.0; // signal variance of the long-range SE-kernel
+const double GPGTest::DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
 const double GPGTest::DefaultLengthScalePerKer             = 0.5; // length-scale of the periodic kernel
-const double GPGTest::DefaultPeriodLengthPerKer            = 500; // P_p, period-length of the periodic kernel
+const double GPGTest::DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
 const double GPGTest::DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
 const double GPGTest::DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
 const double GPGTest::DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
@@ -115,6 +115,54 @@ const int GPGTest::DefaultNumPointsForApproximation        = 100; // number of p
 const double GPGTest::DefaultPredictionGain                = 1.0; // amount of GP prediction to blend in
 
 const bool GPGTest::DefaultComputePeriod                   = true;
+
+#include <iterator>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+
+class CSVRow
+{
+    public:
+        std::string const& operator[](std::size_t index) const
+        {
+            return m_data[index];
+        }
+        std::size_t size() const
+        {
+            return m_data.size();
+        }
+        void readNextRow(std::istream& str)
+        {
+            std::string         line;
+            std::getline(str, line);
+
+            std::stringstream   lineStream(line);
+            std::string         cell;
+
+            m_data.clear();
+            while(std::getline(lineStream, cell, ','))
+            {
+                m_data.push_back(cell);
+            }
+            // This checks for a trailing comma with no data after it.
+            if (!lineStream && cell.empty())
+            {
+                // If there was a trailing comma then add an empty element.
+                m_data.push_back("");
+            }
+        }
+    private:
+        std::vector<std::string>    m_data;
+};
+
+std::istream& operator>>(std::istream& str, CSVRow& data)
+{
+    data.readNextRow(str);
+    return str;
+}
 
 TEST_F(GPGTest, simple_result_test)
 {
@@ -183,10 +231,10 @@ TEST_F(GPGTest, gp_prediction_test)
     {
         GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
     }
-    locations << timestamps[timestamps.size()-1], timestamps[timestamps.size()-1] + prediction_length;
+    locations << max_time, max_time + prediction_length;
     predictions = 50*(locations.array()*2*M_PI/period_length).sin();
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.15, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-2);
+    EXPECT_NEAR(GPG->result(0.15, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-1);
     GPG->reset();
 
     // feed data to the GPGuider
@@ -194,9 +242,8 @@ TEST_F(GPGTest, gp_prediction_test)
     {
         GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
     }
-    predictions = 50*(locations.array()*2*M_PI/period_length).sin();
     // the first case is with an error larger than min_move_
-    EXPECT_NEAR(GPG->result(0.25, 2.0, prediction_length, max_time), 0.25*0.8+predictions[1]-predictions[0], 1e-2);
+    EXPECT_NEAR(GPG->result(0.25, 2.0, prediction_length, max_time), 0.25*0.8+predictions[1]-predictions[0], 1e-1);
 }
 
 TEST_F(GPGTest, parameters_test)
@@ -245,7 +292,7 @@ TEST_F(GPGTest, gp_projection_test)
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
     double max_time = 3*period_length;
-    int resolution = 200;
+    int resolution = 600;
     double prediction_length = 3.0;
     Eigen::VectorXd locations(2);
     Eigen::VectorXd predictions(2);
@@ -254,7 +301,7 @@ TEST_F(GPGTest, gp_projection_test)
     Eigen::VectorXd controls = 0*measurements;
     Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
 
-    Eigen::VectorXd sine_noise = 10*(timestamps.array()*2*M_PI/23.0).sin(); // smaller "disturbance" to add
+    Eigen::VectorXd sine_noise = 5*(timestamps.array()*2*M_PI/56.6).sin(); // smaller "disturbance" to add
 
     measurements = measurements + sine_noise;
 
@@ -263,10 +310,10 @@ TEST_F(GPGTest, gp_projection_test)
     {
         GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
     }
-    locations << timestamps[timestamps.size()-1], timestamps[timestamps.size()-1] + prediction_length;
+    locations << max_time, max_time + prediction_length;
     predictions = 50*(locations.array()*2*M_PI/period_length).sin();
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-2);
+    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-1);
     GPG->reset();
 }
 
@@ -349,6 +396,50 @@ TEST_F(GPGTest, data_preparation_test)
 
     EXPECT_NEAR(measured_result, controlled_result, 1e-2);
 }
+
+// TEST_F(GPGTest, real_data_test)
+// {
+//     double time = 0.0;
+//     double measurement = 0.0;
+//     double SNR = 0.0;
+//     double control = 0.0;
+//
+//     std::ifstream file("dataset01.csv");
+//
+//     int i = 0;
+//     CSVRow row;
+//     while(file >> row)
+//     {
+//         ++i;
+//         if (row[0][0] == 'I') // "INFO" lines don't contain data
+//         {
+//             continue;
+//         }
+//         if (row[0][0] == 'F') // ignore the first line, which starts with "Frame"
+//         {
+// //             std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
+//             continue;
+//         }
+//         if (row[2][1] == 'D') // ignore the "DROP" lines
+//         {
+//             continue;
+//         }
+// //         std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
+//         time = std::stod(row[1]);
+//         measurement = std::stod(row[5]);
+//         control = std::stod(row[7]);
+//         SNR = std::stod(row[16]);
+//
+// //         std::cout << "dt = time / N | " << time / i << std::endl;
+//
+//         GPG->inject_data_point(time, measurement, SNR, control);
+//     }
+//
+//     GPG->result(0.0, 25.0, 3.0, time);
+// //     std::cout << "period length: " << GPG->GetGPHyperparameters()[7] << std::endl;
+//
+//     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
+// }
 
 int main(int argc, char** argv)
 {
