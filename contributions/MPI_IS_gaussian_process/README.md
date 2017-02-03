@@ -45,7 +45,6 @@ README.md | This file.
 `tools/plot_spectrum.py` | Python plotting for debugging.
 `tests/gaussian_process/gaussian_process_test.cpp` | Unittests for the GP.
 `tests/gaussian_process/math_tools_test.cpp` | Unittests for the math tools.
-`tests/gaussian_process/sandbox.cpp` | Sandbox to test GP functionality
 
 Copyright and Licensing
 -----------------------

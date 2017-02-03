@@ -90,12 +90,6 @@ target_include_directories(MathToolboxTest  PRIVATE ${gaussian_process_root_dir}
 set_property(TARGET MathToolboxTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPTest-2 COMMAND MathToolboxTest)
 
-# Sandbox
-add_executable(Sandbox ${gaussian_process_root_dir}/tests/gaussian_process/sandbox.cpp)
-target_link_libraries(Sandbox MPIIS_GP)
-target_include_directories(Sandbox  PRIVATE ${gaussian_process_root_dir}/tools ${gaussian_process_root_dir}/src ${GTEST_HEADERS} ${EIGEN_SRC})
-set_property(TARGET Sandbox PROPERTY FOLDER "Unit tests/Contribution")
-
 # Test for the GP Guider
 add_executable(GPGuiderTest ${gaussian_process_root_dir}/tests/gaussian_process/gp_guider_test.cpp)
 target_link_libraries(GPGuiderTest MPIIS_GP gtest GPGuider)
