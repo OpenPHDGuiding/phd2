@@ -790,6 +790,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
         return deduceResult();
     }
 
+    // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
     double control_signal = gpg_->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
 
     Debug.AddLine(wxString::Format("GP Guider generated %f from input %f.", control_signal, input));

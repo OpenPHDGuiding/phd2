@@ -41,6 +41,12 @@
 #include "phd.h"
 #include "guide_algorithm_trimmed_mean.h"
 
+#if TM_DEBUG_FILE_
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#endif
+
 // A functor for special orderings
 struct value_index_ordering
 {

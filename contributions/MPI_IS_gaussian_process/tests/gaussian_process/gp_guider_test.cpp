@@ -270,7 +270,7 @@ TEST_F(GPGTest, parameters_test)
 TEST_F(GPGTest, timer_test)
 {
     double result = 0;
-    int wait = 1000;
+    int wait = 500;
 
     GPG->result(1.0, 2.0, 3.0);
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
@@ -396,50 +396,6 @@ TEST_F(GPGTest, data_preparation_test)
 
     EXPECT_NEAR(measured_result, controlled_result, 1e-2);
 }
-
-// TEST_F(GPGTest, real_data_test)
-// {
-//     double time = 0.0;
-//     double measurement = 0.0;
-//     double SNR = 0.0;
-//     double control = 0.0;
-//
-//     std::ifstream file("dataset01.csv");
-//
-//     int i = 0;
-//     CSVRow row;
-//     while(file >> row)
-//     {
-//         ++i;
-//         if (row[0][0] == 'I') // "INFO" lines don't contain data
-//         {
-//             continue;
-//         }
-//         if (row[0][0] == 'F') // ignore the first line, which starts with "Frame"
-//         {
-// //             std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
-//             continue;
-//         }
-//         if (row[2][1] == 'D') // ignore the "DROP" lines
-//         {
-//             continue;
-//         }
-// //         std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
-//         time = std::stod(row[1]);
-//         measurement = std::stod(row[5]);
-//         control = std::stod(row[7]);
-//         SNR = std::stod(row[16]);
-//
-// //         std::cout << "dt = time / N | " << time / i << std::endl;
-//
-//         GPG->inject_data_point(time, measurement, SNR, control);
-//     }
-//
-//     GPG->result(0.0, 25.0, 3.0, time);
-// //     std::cout << "period length: " << GPG->GetGPHyperparameters()[7] << std::endl;
-//
-//     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
-// }
 
 int main(int argc, char** argv)
 {

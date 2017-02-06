@@ -21,33 +21,33 @@ listed, together with a short description, in the following.
 
 ### Files in the Project Root
 
-File name | Description
-----------|------------
-`guide_algorithm_gaussian_process.cpp` | Provides the UI for the GP-based guider.
-`guide_algorithm_gaussian_process.h` | Header for GP guider UI.
-`guide_algorithm_trimmed_mean.cpp` | Provides a trimmed mean control algorithm for the declination axis.
-`guide_algorithm_trimmed mean.h` | Header for the trimmed mean guide algorithm.
+|File name | Description|
+|----------|------------|
+|`guide_algorithm_gaussian_process.cpp` | Provides the UI for the GP-based guider.|
+|`guide_algorithm_gaussian_process.h` | Header for GP guider UI.|
+|`guide_algorithm_trimmed_mean.cpp` | Provides a trimmed mean control algorithm for the declination axis.|
+|`guide_algorithm_trimmed mean.h` | Header for the trimmed mean guide algorithm.|
 
 ### Files in `contributions/MPI_IS_gaussian_process`
 
-File name | Description
-----------|------------
-CMakeLists.txt | CMake file for this subtree.
-README.md | This file.
-`src/covariance_functions.cpp` | Provides the necessary covariance functions / kernels for the Gaussian process.
-`src/covariance_functions.h` | Header for covariance functions.
-`src/gaussian_process.cpp` | Provides the Gaussian process inference and prediction functionality.
-`src/gaussian_process.h` | Header for the Gaussian process.
-`src/gaussian_process_guider.cpp` | Provides the GP-based control algorithm for the right ascension axis.
-`src/gaussian_process_guider.h` | Header for the Gaussian process guider.
-`tools/math_tools.cpp` | Mathematical tools for the GP implementation.
-`tools/math_tools.h` | Header for the math tools.
-`tools/plot_dec_data.py` | Python plotting for debugging.
-`tools/plot_gp_data.py` | Python plotting for debugging.
-`tools/plot_spectrum.py` | Python plotting for debugging.
-`tests/gaussian_process/gaussian_process_test.cpp` | Unittests for the GP.
-`tests/gaussian_process/math_tools_test.cpp` | Unittests for the math tools.
-`tests/gaussian_process/dataset01.csv` | Real-world dataset for certaint tests.
+|File name | Description|
+|----------|------------|
+|CMakeLists.txt | CMake file for this subtree.|
+|README.md | This file.|
+|`src/covariance_functions.cpp` | Provides the necessary covariance functions / kernels for the Gaussian process.|
+|`src/covariance_functions.h` | Header for covariance functions.|
+|`src/gaussian_process.cpp` | Provides the Gaussian process inference and prediction functionality.|
+|`src/gaussian_process.h` | Header for the Gaussian process.|
+|`src/gaussian_process_guider.cpp` | Provides the GP-based control algorithm for the right ascension axis.|
+|`src/gaussian_process_guider.h` | Header for the Gaussian process guider.|
+|`tools/math_tools.cpp` | Mathematical tools for the GP implementation.|
+|`tools/math_tools.h` | Header for the math tools.|
+|`tools/plot_dec_data.py` | Python plotting for debugging.|
+|`tools/plot_gp_data.py` | Python plotting for debugging.|
+|`tools/plot_spectrum.py` | Python plotting for debugging.|
+|`tests/gaussian_process/gaussian_process_test.cpp` | Unittests for the GP.|
+|`tests/gaussian_process/math_tools_test.cpp` | Unittests for the math tools.|
+|`tests/gaussian_process/dataset01.csv` | Real-world dataset for certaint tests.|
 
 Copyright and Licensing
 -----------------------

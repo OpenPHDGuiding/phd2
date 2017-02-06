@@ -45,17 +45,6 @@
 #include "guide_algorithm.h"
 #include "gaussian_process_guider.h"
 
-#define GP_DEBUG_FILE_ 1
-
-#if GP_DEBUG_FILE_
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#endif
-
-#define CIRCULAR_BUFFER_SIZE 2048
-#define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
-
 class wxStopWatch;
 
 /**
@@ -83,7 +72,14 @@ private:
      */
     GaussianProcessGuider* gpg_;
 
+    /**
+     * The expert mode shows more parameters in the configuration window.
+     */
     bool expert_mode_;
+
+    /**
+     * Dark tracking mode is for debugging: only deduceResult is called if enabled.
+     */
     bool dark_tracking_mode_;
 
     /**

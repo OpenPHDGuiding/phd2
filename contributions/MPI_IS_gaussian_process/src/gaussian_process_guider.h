@@ -42,23 +42,12 @@
 #ifndef GAUSSIAN_PROCESS_GUIDER
 #define GAUSSIAN_PROCESS_GUIDER
 
-#define GP_DEBUG_FILE_ 1
-
-#if GP_DEBUG_FILE_
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#endif
-
 #include "circbuf.h"
 #include "gaussian_process.h"
 #include "covariance_functions.h"
 #include "math_tools.h"
 
 #include <chrono>
-
-#define CIRCULAR_BUFFER_SIZE 2048
-#define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
 
 /**
  * This class provides a guiding algorithm for the right ascension axis that
@@ -104,21 +93,21 @@ public:
         double PKPeriodLength_;
 
         guide_parameters() :
-        control_gain_(0.0),
-        min_move_(0.0),
-        prediction_gain_(0.0),
-        min_points_for_inference_(0),
-        min_points_for_period_computation_(0),
-        points_for_approximation_(0),
-        compute_period_(false),
-        Noise_(0.0),
-        SE0KLengthScale_(0.0),
-        SE0KSignalVariance_(0.0),
-        PKLengthScale_(0.0),
-        PKSignalVariance_(0.0),
-        SE1KLengthScale_(0.0),
-        SE1KSignalVariance_(0.0),
-        PKPeriodLength_(0.0)
+            control_gain_(0.0),
+            min_move_(0.0),
+            prediction_gain_(0.0),
+            min_points_for_inference_(0),
+            min_points_for_period_computation_(0),
+            points_for_approximation_(0),
+            compute_period_(false),
+            Noise_(0.0),
+            SE0KLengthScale_(0.0),
+            SE0KSignalVariance_(0.0),
+            PKLengthScale_(0.0),
+            PKSignalVariance_(0.0),
+            SE1KLengthScale_(0.0),
+            SE1KSignalVariance_(0.0),
+            PKPeriodLength_(0.0)
         {
         }
 

@@ -42,20 +42,31 @@
 #include "gaussian_process_guider.h"
 
 #include <cmath>
+#include <ctime>
+
+#define GP_DEBUG_FILE_ 0
+#define CIRCULAR_BUFFER_SIZE 2048
+#define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
+
+#if GP_DEBUG_FILE_
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#endif
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
-start_time_(std::chrono::system_clock::now()),
-last_time_(std::chrono::system_clock::now()),
-control_signal_(0),
-prediction_(0),
-last_prediction_end_(0),
-dither_steps_(0),
-dithering_active_(false),
-circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
-parameters(parameters),
-covariance_function_(),
-output_covariance_function_(),
-gp_(covariance_function_)
+    start_time_(std::chrono::system_clock::now()),
+    last_time_(std::chrono::system_clock::now()),
+    control_signal_(0),
+    prediction_(0),
+    last_prediction_end_(0),
+    dither_steps_(0),
+    dithering_active_(false),
+    circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
+    parameters(parameters),
+    covariance_function_(),
+    output_covariance_function_(),
+    gp_(covariance_function_)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
@@ -118,7 +129,7 @@ void GaussianProcessGuider::UpdateGP()
 {
     clock_t begin = std::clock(); // this is for timing the method in a simple way
 
-    int N = get_number_of_measurements();
+    size_t N = get_number_of_measurements();
 
     // initialize the different vectors needed for the GP
     Eigen::VectorXd timestamps(N-1);
@@ -170,8 +181,8 @@ void GaussianProcessGuider::UpdateGP()
     double time_fft = 0; // need to initialize in case the FFT isn't calculated
 
     // calculate period length if we have enough points already
-    if (parameters.compute_period_ && parameters.min_points_for_period_computation_ > 0
-        && get_number_of_measurements() > parameters.min_points_for_period_computation_)
+    size_t const min_points = static_cast<size_t>(parameters.min_points_for_period_computation_);
+    if (parameters.compute_period_ && min_points > 0 && get_number_of_measurements() > min_points)
     {
         // find periodicity parameter with FFT
 
@@ -294,8 +305,8 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     assert(std::abs(control_signal_) == 0 || std::abs(control_signal_) >= parameters.min_move_);
 
     // check if we are allowed to use the GP
-    if (parameters.min_points_for_inference_ > 0 &&
-        get_number_of_measurements() > parameters.min_points_for_inference_)
+    size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
+    if (min_points > 0 && get_number_of_measurements() > min_points)
     {
         UpdateGP(); // update the GP based on the new measurements
         if (prediction_point < 0.0)
@@ -387,8 +398,8 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
 
     control_signal_ = 0; // no measurement!
     // check if we are allowed to use the GP
-    if (parameters.min_points_for_inference_ > 0 &&
-        get_number_of_measurements() > parameters.min_points_for_inference_)
+    size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
+    if (min_points > 0 && get_number_of_measurements() > min_points)
     {
         UpdateGP(); // update the GP to update the SD approximation
         if (prediction_point < 0.0)

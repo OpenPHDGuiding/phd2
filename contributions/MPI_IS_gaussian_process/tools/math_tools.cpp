@@ -173,7 +173,7 @@ namespace math_tools
         {
             N = N_data;
         }
-        N = std::pow(2, std::ceil(std::log(N) / std::log(2))); // map to nearest power of 2
+        N = static_cast<int>(std::pow(2, std::ceil(std::log(N) / std::log(2)))); // map to nearest power of 2
 
         Eigen::VectorXd padded_data = Eigen::VectorXd::Zero(N);
         padded_data.head(N_data) = data;
@@ -190,7 +190,7 @@ namespace math_tools
         Eigen::VectorXcd result = Eigen::Map<Eigen::VectorXcd>(&vec_result[0], vec_result.size());
 
         // the low_index is the lowest useful frequency, depending on the number of actual datapoints
-        int low_index = std::ceil(static_cast<double>(N) / static_cast<double>(N_data));
+        int low_index = static_cast<int>(std::ceil(static_cast<double>(N) / static_cast<double>(N_data)));
 
         // prepare amplitudes and frequencies, don't return frequencies introduced by padding
         Eigen::VectorXd spectrum = result.segment(low_index, N / 2 - low_index + 1).array().abs().pow(2);
