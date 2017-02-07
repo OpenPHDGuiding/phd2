@@ -233,6 +233,11 @@ void GaussianProcessGuider::UpdateGP()
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)
 {
+    // in the first step of each sequence, use the current time stamp as last prediction end
+    if (last_prediction_end_ < 0.0)
+    {
+        last_prediction_end_ = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+    }
 
     // prediction from the last endpoint to the prediction point
     Eigen::VectorXd next_location(2);
@@ -267,6 +272,13 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         }
         deduceResult(time_step); // just pretend we would do dark guiding...
         return parameters.control_gain_*input; // ...but apply proportional control
+    }
+
+    // the starting time is set at the first call of result after startup or reset
+    if (get_number_of_measurements() == 1)
+    {
+        start_time_ = std::chrono::system_clock::now();
+        last_time_ = start_time_; // this is OK, since last_time_ only provides a minor correction
     }
 
     // collect data point content, except for the control signal
@@ -466,7 +478,7 @@ void GaussianProcessGuider::reset()
     circular_buffer_data_.clear();
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
-    last_prediction_end_ = 0.0;
+    last_prediction_end_ = -1.0; // the negative value signals we didn't predict yet
     start_time_ = std::chrono::system_clock::now();
     last_time_ = std::chrono::system_clock::now();
     gp_.clearData();
