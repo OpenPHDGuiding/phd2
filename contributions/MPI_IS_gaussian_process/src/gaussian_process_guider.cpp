@@ -185,32 +185,8 @@ void GaussianProcessGuider::UpdateGP()
     if (parameters.compute_period_ && min_points > 0 && get_number_of_measurements() > min_points)
     {
         // find periodicity parameter with FFT
-
-        // compute Hamming window to reduce spectral leakage
-        Eigen::VectorXd windowed_gear_error = gear_error_detrend.array() * math_tools::hamming_window(gear_error_detrend.rows()).array();
-
-        // compute the spectrum
-        std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(windowed_gear_error, FFT_SIZE);
-
-        Eigen::ArrayXd amplitudes = result.first;
-        Eigen::ArrayXd frequencies = result.second;
-
-        double dt = (timestamps(timestamps.rows()-1) - timestamps(0))/(timestamps.rows()-1); // (t_end - t_begin) / num_t
-
-        frequencies /= dt; // correct for the average time step width
-
-        Eigen::ArrayXd periods = 1/frequencies.array();
-        amplitudes = (periods > 1500.0).select(0,amplitudes); // set amplitudes to zero for too large periods
-
-        assert(amplitudes.size() == frequencies.size());
-
-        Eigen::VectorXd::Index maxIndex;
-        amplitudes.maxCoeff(&maxIndex);
-        double period_length = 1 / frequencies(maxIndex);
-
-        std::vector<double> hypers = GetGPHyperparameters();
-        hypers[7] = period_length;
-        SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
+        double period_length = EstimatePeriodLength(timestamps, gear_error_detrend);
+        UpdatePeriodLength(period_length);
 
         end = std::clock();
         time_fft = double(end - begin) / CLOCKS_PER_SEC;
@@ -625,7 +601,84 @@ void GaussianProcessGuider::inject_data_point(double timestamp, double input, do
     HandleControls(control); // already store control signal
 }
 
+double GaussianProcessGuider::EstimatePeriodLength(Eigen::VectorXd time, Eigen::VectorXd data) {
+        // compute Hamming window to reduce spectral leakage
+        Eigen::VectorXd windowed_data = data.array() * math_tools::hamming_window(data.rows()).array();
 
+        // compute the spectrum
+        std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(windowed_data, FFT_SIZE);
 
+        Eigen::ArrayXd amplitudes = result.first;
+        Eigen::ArrayXd frequencies = result.second;
 
+        double dt = (time(time.rows()-1) - time(0))/(time.rows()-1); // (t_end - t_begin) / num_t
 
+        frequencies /= dt; // correct for the average time step width
+
+        Eigen::ArrayXd periods = 1/frequencies.array();
+        amplitudes = (periods > 1500.0).select(0,amplitudes); // set amplitudes to zero for too large periods
+
+        assert(amplitudes.size() == frequencies.size());
+
+        Eigen::VectorXd::Index maxIndex;
+        amplitudes.maxCoeff(&maxIndex);
+        double period_length = 1 / frequencies(maxIndex);
+
+        // quadratic interpolation to find maximum
+        // check if we can interpolate
+        if (maxIndex < frequencies.size() - 1 && maxIndex > 0)
+        {
+            // need to center the locations for numerical stability
+            Eigen::VectorXd interp_loc(3);
+            interp_loc << 1 / frequencies(maxIndex - 1) - period_length,
+                1 / frequencies(maxIndex) - period_length, 1 / frequencies(maxIndex + 1) - period_length;
+
+            // calculations in the log domain don't change the location of the max
+            Eigen::VectorXd interp_dat(3);
+            interp_dat << amplitudes(maxIndex - 1), amplitudes(maxIndex), amplitudes(maxIndex + 1);
+            interp_dat = interp_dat.array().log();
+
+            // building feature matrix
+            Eigen::MatrixXd phi(3,3);
+            phi.row(0) = interp_loc.array().pow(2);
+            phi.row(1) = interp_loc.array().pow(1);
+            phi.row(2) = interp_loc.array().pow(0);
+
+            // standard equation for linear regression
+            Eigen::VectorXd w = (phi*phi.transpose()).ldlt().solve(phi*interp_dat);
+
+            // recovering the maximum from the weights
+            period_length = period_length -w(1)/(2*w(0));
+        }
+
+        #if GP_DEBUG_FILE_
+        std::ofstream outfile;
+        outfile.open("spectrum_data.csv", std::ios_base::out);
+        if (outfile.is_open()) {
+            outfile << "period, amplitude\n";
+            for (int i = 0; i < amplitudes.size(); ++i) {
+                outfile << std::setw(8) << periods[i] << "," << std::setw(8) << amplitudes[i] << "\n";
+            }
+        }
+        else {
+            std::cout << "unable to write to file" << std::endl;
+        }
+        outfile.close();
+        #endif
+
+        return period_length;
+}
+
+void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
+        std::vector<double> hypers = GetGPHyperparameters();
+
+        double mean = hypers[7]; // the old mean
+        double variance = period_length_variance_ + PROCESS_VARIANCE; // predictive variance
+        double residual = period_length - mean;
+        double gain = variance / (variance + MEASUREMENT_VARIANCE); // Kalman gain
+
+        hypers[7] = mean + gain * residual; // Kalman update
+        period_length_variance_ = variance - gain * variance; // Kalman update
+
+        SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
+}
