@@ -759,7 +759,7 @@ void Mount::LogGuideStepInfo()
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
-    if (m_lastStep.moveType != MOVETYPE_DIRECT)
+    if (m_lastStep.moveType != MOVETYPE_DIRECT && m_lastStep.moveType != MOVETYPE_DEDUCED)
     {
         pFrame->pGraphLog->AppendData(m_lastStep);
         pFrame->pTarget->AppendData(m_lastStep);
