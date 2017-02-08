@@ -291,8 +291,8 @@ TEST_F(GPGTest, gp_projection_test)
 
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
-    double max_time = 3*period_length;
-    int resolution = 600;
+    double max_time = 5*period_length;
+    int resolution = 300;
     double prediction_length = 3.0;
     Eigen::VectorXd locations(2);
     Eigen::VectorXd predictions(2);
@@ -395,6 +395,71 @@ TEST_F(GPGTest, data_preparation_test)
     double measured_result = GPG->result(0.0, 2.0, prediction_length, max_time);
 
     EXPECT_NEAR(measured_result, controlled_result, 1e-2);
+}
+
+TEST_F(GPGTest, real_data_test)
+{
+    double time = 0.0;
+    double measurement = 0.0;
+    double SNR = 0.0;
+    double control = 0.0;
+
+    std::ifstream file("dataset01.csv");
+
+    int i = 0;
+    CSVRow row;
+    while(file >> row)
+    {
+        ++i;
+        if (row[0][0] == 'I') // "INFO" lines don't contain data
+        {
+            continue;
+        }
+        if (row[0][0] == 'F') // ignore the first line, which starts with "Frame"
+        {
+//             std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
+            continue;
+        }
+        if (row[2][1] == 'D') // ignore the "DROP" lines
+        {
+            continue;
+        }
+//         std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
+        time = std::stod(row[1]);
+        measurement = std::stod(row[5]);
+        control = std::stod(row[7]);
+        SNR = std::stod(row[16]);
+
+//         std::cout << "dt = time / N | " << time / i << std::endl;
+
+        GPG->inject_data_point(time, measurement, SNR, control);
+    }
+
+    GPG->result(0.0, 25.0, 3.0, time);
+//     std::cout << "period length: " << GPG->GetGPHyperparameters()[7] << std::endl;
+
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
+}
+
+TEST_F(GPGTest, period_interpolation_test)
+{
+    // first: prepare a nice GP with a sine wave
+    double period_length = 297;
+    double max_time = 3000;
+    int resolution = 500;
+    Eigen::VectorXd timestamps = Eigen::VectorXd::LinSpaced(resolution + 1, 0, max_time);
+    Eigen::VectorXd measurements = 50*(timestamps.array()*2*M_PI/period_length).sin();
+    Eigen::VectorXd controls = 0*measurements;
+    Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
+
+    // feed data to the GPGuider
+    for (int i = 0; i < timestamps.size(); ++i)
+    {
+        GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
+    }
+    GPG->result(0.15, 2.0, 3.0);
+
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1);
 }
 
 int main(int argc, char** argv)
