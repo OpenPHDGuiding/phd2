@@ -216,8 +216,8 @@ TEST_F(GPGTest, gp_prediction_test)
 
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
-    double max_time = 3*period_length;
-    int resolution = 200;
+    double max_time = 5*period_length;
+    int resolution = 600;
     double prediction_length = 3.0;
     Eigen::VectorXd locations(2);
     Eigen::VectorXd predictions(2);
@@ -234,7 +234,7 @@ TEST_F(GPGTest, gp_prediction_test)
     locations << max_time, max_time + prediction_length;
     predictions = 50*(locations.array()*2*M_PI/period_length).sin();
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.15, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-1);
+    EXPECT_NEAR(GPG->result(0.15, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 2e-1);
     GPG->reset();
 
     // feed data to the GPGuider
@@ -243,7 +243,7 @@ TEST_F(GPGTest, gp_prediction_test)
         GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
     }
     // the first case is with an error larger than min_move_
-    EXPECT_NEAR(GPG->result(0.25, 2.0, prediction_length, max_time), 0.25*0.8+predictions[1]-predictions[0], 1e-1);
+    EXPECT_NEAR(GPG->result(0.25, 2.0, prediction_length, max_time), 0.25*0.8+predictions[1]-predictions[0], 2e-1);
 }
 
 TEST_F(GPGTest, parameters_test)
@@ -292,7 +292,7 @@ TEST_F(GPGTest, gp_projection_test)
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
     double max_time = 5*period_length;
-    int resolution = 300;
+    int resolution = 600;
     double prediction_length = 3.0;
     Eigen::VectorXd locations(2);
     Eigen::VectorXd predictions(2);
@@ -301,7 +301,7 @@ TEST_F(GPGTest, gp_projection_test)
     Eigen::VectorXd controls = 0*measurements;
     Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
 
-    Eigen::VectorXd sine_noise = 5*(timestamps.array()*2*M_PI/56.6).sin(); // smaller "disturbance" to add
+    Eigen::VectorXd sine_noise = 5*(timestamps.array()*2*M_PI/26).sin(); // smaller "disturbance" to add
 
     measurements = measurements + sine_noise;
 
@@ -313,7 +313,7 @@ TEST_F(GPGTest, gp_projection_test)
     locations << max_time, max_time + prediction_length;
     predictions = 50*(locations.array()*2*M_PI/period_length).sin();
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-1);
+    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 3e-1);
     GPG->reset();
 }
 
@@ -323,7 +323,7 @@ TEST_F(GPGTest, linear_drift_identification_test)
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
     double max_time = 3*period_length;
-    int resolution = 200;
+    int resolution = 300;
     double prediction_length = period_length; // necessary to only see the drift
     Eigen::VectorXd locations(2);
     Eigen::VectorXd predictions(2);
@@ -353,7 +353,7 @@ TEST_F(GPGTest, linear_drift_identification_test)
     locations << 5000, 5000 + prediction_length;
     predictions = 0.25*locations; // only predict linear drift here
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 1e-2);
+    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 2e-1);
 }
 
 TEST_F(GPGTest, data_preparation_test)
@@ -397,72 +397,6 @@ TEST_F(GPGTest, data_preparation_test)
     EXPECT_NEAR(measured_result, controlled_result, 1e-2);
 }
 
-// TEST_F(GPGTest, real_data_test)
-// {
-//     double time = 0.0;
-//     double measurement = 0.0;
-//     double SNR = 0.0;
-//     double control = 0.0;
-//
-//     std::ifstream file("dataset01.csv");
-//
-//     int i = 0;
-//     CSVRow row;
-//     while(file >> row)
-//     {
-//         ++i;
-//         if (row[0][0] == 'I') // "INFO" lines don't contain data
-//         {
-//             continue;
-//         }
-//         if (row[0][0] == 'F') // ignore the first line, which starts with "Frame"
-//         {
-// //             std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
-//             continue;
-//         }
-//         if (row[2][1] == 'D') // ignore the "DROP" lines
-//         {
-//             continue;
-//         }
-// //         std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
-//         time = std::stod(row[1]);
-//         measurement = std::stod(row[5]);
-//         control = std::stod(row[7]);
-//         SNR = std::stod(row[16]);
-//
-// //         std::cout << "dt = time / N | " << time / i << std::endl;
-//
-//         GPG->inject_data_point(time, measurement, SNR, control);
-//     }
-//
-//     GPG->result(0.0, 25.0, 3.0, time);
-// //     std::cout << "period length: " << GPG->GetGPHyperparameters()[7] << std::endl;
-//
-//     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
-// }
-
-TEST_F(GPGTest, period_interpolation_test)
-{
-    // first: prepare a nice GP with a sine wave
-    double period_length = 317;
-    double max_time = 2345;
-    int resolution = 527;
-    Eigen::VectorXd timestamps = Eigen::VectorXd::LinSpaced(resolution + 1, 0, max_time);
-    Eigen::VectorXd measurements = 50*(timestamps.array()*2*M_PI/period_length).sin();
-    Eigen::VectorXd controls = 0*measurements;
-    Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
-
-    // feed data to the GPGuider
-    for (int i = 0; i < timestamps.size(); ++i)
-    {
-        GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
-    }
-    GPG->result(0.15, 2.0, 3.0);
-
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
-}
-
-
 TEST_F(GPGTest, real_data_test)
 {
     double time = 0.0;
@@ -476,33 +410,24 @@ TEST_F(GPGTest, real_data_test)
     CSVRow row;
     while(file >> row)
     {
-        ++i;
-        if (row[0][0] == 'I') // "INFO" lines don't contain data
+        // ignore special lines: "INFO", "Frame", "DROP"
+        if (row[0][0] == 'I' || row[0][0] == 'F' || row[2][1] == 'D')
         {
             continue;
         }
-        if (row[0][0] == 'F') // ignore the first line, which starts with "Frame"
+        else
         {
-//             std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
-            continue;
+            ++i;
         }
-        if (row[2][1] == 'D') // ignore the "DROP" lines
-        {
-            continue;
-        }
-//         std::cout << row[1] << " | " << row[5] << " | " << row[7] << " | " <<  row[16] << "\n";
         time = std::stod(row[1]);
         measurement = std::stod(row[5]);
         control = std::stod(row[7]);
         SNR = std::stod(row[16]);
 
-//         std::cout << "dt = time / N | " << time / i << std::endl;
-
         GPG->inject_data_point(time, measurement, SNR, control);
     }
 
     GPG->result(0.0, 25.0, 3.0, time);
-//     std::cout << "period length: " << GPG->GetGPHyperparameters()[7] << std::endl;
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
 }
@@ -531,14 +456,14 @@ TEST_F(GPGTest, parameter_filter_test)
 
         GPG->UpdatePeriodLength(period_length);
         filtered_period_lengths(i - 1) = GPG->GetGPHyperparameters()[7];
-//         std::cout << GPG->GetGPHyperparameters()[7] << std::endl;
     }
     filtered_period_lengths.conservativeResize(i);
 //     std::cout << filtered_period_lengths << std::endl;
 
-    Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(50);
+    Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(25);
+    Eigen::VectorXd deviation = period_lengths_tail - 482*Eigen::VectorXd::Ones(25);
 
-    EXPECT_LT(math_tools::stdandard_deviation(period_lengths_tail), 1);
+    EXPECT_LT(math_tools::stdandard_deviation(deviation), 1);
 }
 
 TEST_F(GPGTest, period_interpolation_test)
@@ -560,6 +485,77 @@ TEST_F(GPGTest, period_interpolation_test)
     GPG->result(0.15, 2.0, 3.0);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
+}
+
+TEST_F(GPGTest, data_regularization_test)
+{
+    // first: prepare a nice GP with a sine wave
+    double period_length = 300;
+    double max_time = 800;
+    int resolution = 500;
+
+    // second: mess up the grid of time stamps
+    Eigen::VectorXd timestamps(resolution);
+    timestamps << Eigen::VectorXd::LinSpaced(resolution/2, 0, max_time/3),
+        Eigen::VectorXd::LinSpaced(resolution/2, max_time/3 + 0.5, max_time);
+    timestamps += math_tools::generate_normal_random_matrix(resolution, 1);
+
+    Eigen::VectorXd measurements = 50*(timestamps.array()*2*M_PI/period_length).sin();
+    Eigen::VectorXd controls = 0*measurements;
+    Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
+
+    // feed data to the GPGuider
+    for (int i = 0; i < timestamps.size(); ++i)
+    {
+        GPG->inject_data_point(timestamps[i], measurements[i], SNRs[i], controls[i]);
+    }
+    GPG->result(0.15, 2.0, 3.0);
+
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1);
+}
+
+/**
+ * This "test" is used to log the identified period length to file. This functionality
+ * can be useful for debugging and for assessing the value of the period interpolation,
+ * data regulatization and Kalman filtering techniques.
+ */
+TEST_F(GPGTest, DISABLED_log_period_length)
+{
+    double time = 0.0;
+    double measurement = 0.0;
+    double SNR = 0.0;
+    double control = 0.0;
+
+    std::ifstream file("dataset01.csv");
+
+    std::ofstream outfile;
+    outfile.open("period_lengths_reg_int_kf.csv", std::ios_base::out);
+    outfile << "period_length\n";
+
+    int i = 0;
+    CSVRow row;
+    while(file >> row)
+    {
+        // ignore special lines: "INFO", "Frame", "DROP"
+        if (row[0][0] == 'I' || row[0][0] == 'F' || row[2][1] == 'D')
+        {
+            continue;
+        }
+        else
+        {
+            ++i;
+        }
+        time = std::stod(row[1]);
+        measurement = std::stod(row[5]);
+        control = std::stod(row[7]);
+        SNR = std::stod(row[16]);
+
+        GPG->inject_data_point(time, measurement, SNR, control);
+
+        GPG->UpdateGP();
+        outfile << std::setw(8) << GPG->GetGPHyperparameters()[7] << "\n";
+    }
+    outfile.close();
 }
 
 int main(int argc, char** argv)

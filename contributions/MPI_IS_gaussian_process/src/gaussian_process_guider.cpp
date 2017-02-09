@@ -50,9 +50,9 @@
 #define GRID_INTERVAL 5.0
 
 // for the Kalman filter
-#define PRIOR_VARIANCE 1e5
-#define PROCESS_VARIANCE 1e-4
-#define MEASUREMENT_VARIANCE 1e2
+#define PRIOR_VARIANCE 1e6
+#define PROCESS_VARIANCE 1e0
+#define MEASUREMENT_VARIANCE 1e3
 
 #if GP_DEBUG_FILE_
 #include <iostream>
