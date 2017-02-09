@@ -283,6 +283,11 @@ public:
      * This method is needed for automated testing. It can inject data points.
      */
     void inject_data_point(double timestamp, double input, double SNR, double control);
+
+    /**
+     * Takes timestamps, measurements and SNRs and returns them regularized in a matrix.
+     */
+    Eigen::MatrixXd regularize_dataset(Eigen::VectorXd& timestamps, Eigen::VectorXd& gear_error, Eigen::VectorXd& variances);
 };
 
 #endif  // GAUSSIAN_PROCESS_GUIDER

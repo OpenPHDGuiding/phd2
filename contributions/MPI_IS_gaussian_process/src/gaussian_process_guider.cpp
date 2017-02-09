@@ -47,6 +47,7 @@
 #define GP_DEBUG_FILE_ 0
 #define CIRCULAR_BUFFER_SIZE 4096
 #define FFT_SIZE 4096 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
+#define GRID_INTERVAL 5.0
 
 // for the Kalman filter
 #define PRIOR_VARIANCE 1e5
@@ -165,6 +166,17 @@ void GaussianProcessGuider::UpdateGP()
     double time_init = double(end - begin) / CLOCKS_PER_SEC;
     begin = std::clock();
 
+    // regularize the measurements
+    Eigen::MatrixXd result = regularize_dataset(timestamps, gear_error, variances);
+
+    timestamps = result.row(0);
+    gear_error = result.row(1);
+    variances = result.row(2);
+
+    end = std::clock();
+    double time_regularize = double(end - begin) / CLOCKS_PER_SEC;
+    begin = std::clock();
+
     // linear least squares regression for offset and drift to de-trend the data
     Eigen::MatrixXd feature_matrix(2, timestamps.rows());
     feature_matrix.row(0) = Eigen::MatrixXd::Ones(1, timestamps.rows()); // timestamps.pow(0)
@@ -207,8 +219,8 @@ void GaussianProcessGuider::UpdateGP()
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-//     printf("timings: init: %f, detrend: %f, fft: %f, gp: %f\n",
-//            time_init, time_detrend, time_fft, time_gp);
+//     printf("timings: init: %f, regularize: %f, detrend: %f, fft: %f, gp: %f\n",
+//            time_init, time_regularize, time_detrend, time_fft, time_gp);
 }
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)
@@ -673,4 +685,63 @@ void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
         period_length_variance_ = variance - gain * variance; // Kalman update
 
         SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
+}
+
+Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(Eigen::VectorXd& timestamps,
+    Eigen::VectorXd& gear_error, Eigen::VectorXd& variances)
+{
+    size_t N = get_number_of_measurements();
+    double grid_interval = GRID_INTERVAL;
+    double last_cell_end = -grid_interval;
+    double last_timestamp = -grid_interval;
+    double last_gear_error = 0.0;
+    double last_variance = 0.0;
+    double gear_error_sum = 0.0;
+    double variance_sum = 0.0;
+    Eigen::VectorXd reg_timestamps(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
+    Eigen::VectorXd reg_gear_error(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
+    Eigen::VectorXd reg_variances(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
+    int j = 0;
+    for (int i = 0; i < N-1; ++i)
+    {
+        if (timestamps(i) < last_cell_end + grid_interval)
+        {
+            gear_error_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_gear_error + gear_error(i));
+            variance_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_variance + variances(i));
+            last_timestamp = timestamps(i);
+        }
+        else
+        {
+            while (timestamps(i) >= last_cell_end + grid_interval)
+            {
+                double inter_timestamp = last_cell_end + grid_interval;
+
+                double proportion = (inter_timestamp-last_timestamp)/(timestamps(i)-last_timestamp);
+                double inter_gear_error = proportion*gear_error(i) + (1-proportion)*last_gear_error;
+                double inter_variance = proportion*variances(i) + (1-proportion)*last_variance;
+
+                gear_error_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_gear_error + inter_gear_error);
+                variance_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_variance + inter_variance);
+
+                reg_timestamps(j) = last_cell_end + 0.5 * grid_interval;
+                reg_gear_error(j) = gear_error_sum / grid_interval;
+                reg_variances(j) = variance_sum / grid_interval;
+
+                last_timestamp = inter_timestamp;
+                last_gear_error = inter_gear_error;
+                last_variance = inter_variance;
+                last_cell_end = inter_timestamp;
+
+                gear_error_sum = 0.0;
+                variance_sum = 0.0;
+                ++j;
+            }
+        }
+    }
+    Eigen::MatrixXd result(3,j);
+    result.row(0) = reg_timestamps.head(j);
+    result.row(1) = reg_gear_error.head(j);
+    result.row(2) = reg_variances.head(j);
+
+    return result;
 }
