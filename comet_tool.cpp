@@ -178,8 +178,9 @@ CometToolWin::CometToolWin()
 
     UpdateStatus();
 
-    wxCommandEvent dummy;
-    OnAppStateNotify(dummy); // init controls
+    wxCommandEvent notify;
+    notify.SetInt(1); // init rates
+    OnAppStateNotify(notify); // init controls
 }
 
 CometToolWin::~CometToolWin(void)
