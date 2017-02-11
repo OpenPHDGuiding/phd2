@@ -1281,13 +1281,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 }
                 assert(!pSecondaryMount || !pSecondaryMount->IsConnected() || pSecondaryMount->IsCalibrated());
 
-                // camera angle is now known, so ok to calculate shift rate camera coords
-                UpdateLockPosShiftCameraCoords();
-                if (LockPosShiftEnabled())
-                {
-                    GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
-                }
-
                 SetState(STATE_CALIBRATED);
                 // fall through
             case STATE_CALIBRATED:
@@ -1298,6 +1291,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
                 EvtServer.NotifyStartGuiding();
+
+                // camera angle is known, so ok to calculate shift rate camera coords
+                UpdateLockPosShiftCameraCoords();
+                if (LockPosShiftEnabled())
+                    GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
+
                 CheckCalibrationAutoLoad();
                 break;
             case STATE_GUIDING:
@@ -1379,7 +1378,7 @@ bool Guider::ShiftLockPosition(void)
     return !isValid;
 }
 
-void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords)
+void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords, bool updateToolWin)
 {
     Debug.Write(wxString::Format("SetLockPosShiftRate: rate = %.2f,%.2f units = %d isMountCoords = %d\n",
         rate.X, rate.Y, units, isMountCoords));
@@ -1388,7 +1387,7 @@ void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool 
     m_lockPosShift.shiftUnits = units;
     m_lockPosShift.shiftIsMountCoords = isMountCoords;
 
-    CometTool::UpdateCometToolControls();
+    CometTool::UpdateCometToolControls(updateToolWin);
 
     if (m_state == STATE_CALIBRATED || m_state == STATE_GUIDING)
     {
@@ -1415,7 +1414,7 @@ void Guider::EnableLockPosShift(bool enable)
             GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
         }
 
-        CometTool::UpdateCometToolControls();
+        CometTool::UpdateCometToolControls(false);
     }
 }
 

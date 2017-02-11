@@ -1187,7 +1187,7 @@ static void set_lock_shift_params(JObj& response, const json_value *params)
 
     VERIFY_GUIDER(response);
 
-    pFrame->pGuider->SetLockPosShiftRate(shift.shiftRate, shift.shiftUnits, shift.shiftIsMountCoords);
+    pFrame->pGuider->SetLockPosShiftRate(shift.shiftRate, shift.shiftUnits, shift.shiftIsMountCoords, true);
 
     response << jrpc_result(0);
 }

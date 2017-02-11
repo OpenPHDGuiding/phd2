@@ -41,7 +41,7 @@ class CometTool
 public:
     static wxWindow *CreateCometToolWindow();
     static void NotifyUpdateLockPos();
-    static void UpdateCometToolControls();
+    static void UpdateCometToolControls(bool updateRates);
 };
 
 #endif

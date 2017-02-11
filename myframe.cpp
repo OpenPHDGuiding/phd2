@@ -958,7 +958,7 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 
     if (pCometTool)
-        CometTool::UpdateCometToolControls();
+        CometTool::UpdateCometToolControls(false);
 
     if (pGuidingAssistant)
         GuidingAssistant::UpdateUIControls();
