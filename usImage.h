@@ -44,22 +44,30 @@ public:
     int                 NPixels;
     int                 Min;
     int                 Max;
-    int                 FiltMin, FiltMax;
+    int                 FiltMin;
+    int                 FiltMax;
     time_t              ImgStartTime;
     int                 ImgExpDur;
     int                 ImgStackCnt;
     wxByte              BitsPerPixel;
     unsigned short      Pedestal;
+    unsigned int        FrameNum;
 
-    usImage() {
-        Min = Max = FiltMin = FiltMax = 0;
-        NPixels = 0;
-        ImageData = NULL;
-        ImgStartTime = 0;
-        ImgExpDur = 0;
-        ImgStackCnt = 1;
-        BitsPerPixel = 0;
-        Pedestal = 0;
+    usImage()
+        :
+        ImageData(0),
+        NPixels(0),
+        Min(0),
+        Max(0),
+        FiltMin(0),
+        FiltMax(0),
+        ImgStartTime(0),
+        ImgExpDur(0),
+        ImgStackCnt(1),
+        BitsPerPixel(0),
+        Pedestal(0),
+        FrameNum(0)
+    {
     }
     ~usImage() { delete[] ImageData; }
 

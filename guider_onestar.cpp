@@ -304,7 +304,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         }
 
         m_massChecker->Reset();
-        bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode());
+        bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(), pFrame->GetMinStarHFD());
     }
     catch (const wxString& Msg)
     {
@@ -371,6 +371,7 @@ static wxString StarStatusStr(const Star& star)
     {
     case Star::STAR_LOWSNR:        return _("Star lost - low SNR");
     case Star::STAR_LOWMASS:       return _("Star lost - low mass");
+    case Star::STAR_LOWHFD:        return _("Star lost - low HFD");
     case Star::STAR_TOO_NEAR_EDGE: return _("Star too near edge");
     case Star::STAR_MASSCHANGE:    return _("Star lost - mass changed");
     default:                       return _("No star found");
@@ -431,7 +432,7 @@ bool GuiderOneStar::AutoSelect(void)
 
         m_massChecker->Reset();
 
-        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID))
+        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, pFrame->GetMinStarHFD()))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -594,19 +595,21 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
     {
         Star newStar(m_star);
 
-        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode()))
+        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), pFrame->GetMinStarHFD()))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
             errorInfo->starSNR = 0.0;
             errorInfo->status = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
+
+            ImageLogger::LogImage(pImage, *errorInfo);
+
             throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
         }
 
         // check to see if it seems like the star we just found was the
-        // same as the original star.  We do this by comparing the
-        // mass
+        // same as the original star by comparing the mass
         if (m_massChangeThresholdEnabled)
         {
             int exposure;
@@ -624,18 +627,24 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
                 pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
                 Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2]));
                 m_massChecker->AppendData(newStar.Mass);
+
+                ImageLogger::LogImage(pImage, *errorInfo);
+
                 throw THROW_INFO("massChangeThreshold error");
             }
         }
+
+        const PHD_Point& lockPos = LockPosition();
+        double distance = lockPos.IsValid() ? newStar.Distance(lockPos) : -1.;
+
+        ImageLogger::LogImage(pImage, distance);
 
         // update the star position, mass, etc.
         m_star = newStar;
         m_massChecker->AppendData(newStar.Mass);
 
-        const PHD_Point& lockPos = LockPosition();
         if (lockPos.IsValid())
         {
-            double distance = newStar.Distance(lockPos);
             UpdateCurrentDistance(distance);
         }
 

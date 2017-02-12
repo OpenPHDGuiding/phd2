@@ -84,6 +84,7 @@ struct DitherInfo
 struct SummaryStats
 {
     S_HISTORY cur;
+    unsigned int nr;
     double rms_ra;
     double rms_dec;
     double rms_tot;

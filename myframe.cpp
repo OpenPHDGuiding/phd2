@@ -36,16 +36,17 @@
 
 #include "phd.h"
 
-#include "Refine_DefMap.h"
+#include "aui_controls.h"
 #include "comet_tool.h"
 #include "guiding_assistant.h"
+#include "Refine_DefMap.h"
 
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 #include <wx/artprov.h>
 #include <wx/dirdlg.h>
+#include <wx/dnd.h>
 #include <wx/textwrapper.h>
-#include "aui_controls.h"
 
 #include <memory>
 
@@ -155,6 +156,37 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
 END_EVENT_TABLE()
 
+struct FileDropTarget : public wxFileDropTarget
+{
+    FileDropTarget() { }
+
+    wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
+    {
+        if (!pFrame->CaptureActive)
+            return wxDragResult::wxDragCopy;
+        return wxDragResult::wxDragNone;
+    }
+
+    bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+    {
+        if (filenames.size() != 1)
+            return false;
+
+        if (pFrame->CaptureActive)
+            return false;
+
+        std::unique_ptr<usImage> img(new usImage());
+
+        if (img->Load(filenames[0]))
+            return false;
+
+        img->CalcStats();
+        pFrame->pGuider->DisplayImage(img.release());
+
+        return true;
+    }
+};
+
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
@@ -206,6 +238,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     // Setup Status bar
     SetupStatusBar();
+
     LoadProfileSettings();
 
     // Setup container window for alert message info bar and guider window
@@ -274,6 +307,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     // Setup some keyboard shortcuts
     SetupKeyboardShortcuts();
 
+    SetDropTarget(new FileDropTarget());
+
     m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
         Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
         ToolbarPane().Bottom());
@@ -324,9 +359,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pCalSanityCheckDlg = NULL;
     pCalReviewDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
+    m_minStarHFD = 0.;
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
-
 
     UpdateTitle();
 
@@ -720,6 +755,13 @@ Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
     return prev;
 }
 
+void MyFrame::SetMinStarHFD(double val)
+{
+    Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
+    pConfig->Profile.SetDouble("/StarMinHFD", val);
+    m_minStarHFD = val;
+}
+
 bool MyFrame::SetRawImageMode(bool mode)
 {
     bool prev = m_rawImageMode;
@@ -728,6 +770,19 @@ bool MyFrame::SetRawImageMode(bool mode)
     if (mode)
         m_rawImageModeWarningDone = false;
     return prev;
+}
+
+static void LoadImageLoggerSettings()
+{
+    ImageLoggerSettings settings;
+
+    settings.logFramesOverThreshRel = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesOverThreshRel", false);
+    settings.logFramesOverThreshPx = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesOverThreshPx", false);
+    settings.logFramesDropped = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesDropped", false);
+    settings.guideErrorThreshRel = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshRel", 4.0);
+    settings.guideErrorThreshPx = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshPx", 4.0);
+
+    ImageLogger::ApplySettings(settings);
 }
 
 enum {
@@ -752,6 +807,9 @@ void MyFrame::LoadProfileSettings(void)
 
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
+
+    double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
+    SetMinStarHFD(minHFD);
 
     // Don't re-save the setting here with a call to SetAutoLoadCalibration().  An un-initialized registry key (-1) will
     // be populated after the 1st calibration
@@ -779,6 +837,8 @@ void MyFrame::LoadProfileSettings(void)
     if (val > GAMMA_MAX) val = GAMMA_MAX;
     Stretch_gamma = (double) val / 100.0;
     Gamma_Slider->SetValue(val);
+
+    LoadImageLoggerSettings();
 }
 
 void MyFrame::SetupToolBar()
@@ -1492,7 +1552,7 @@ void MyFrame::StartCapturing()
     if (!CaptureActive)
     {
         m_continueCapturing = true;
-        CaptureActive     = true;
+        CaptureActive = true;
         m_frameCounter = 0;
         m_loggedImageFrame = 0;
 
@@ -2744,6 +2804,14 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
             durationMax = durationMin;
 
         m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
+
+        { // TODO: UI for min HFD
+            double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
+            m_pFrame->SetMinStarHFD(minHFD);
+        }
+
+        // TODO: UI for image logger settings
+        LoadImageLoggerSettings();
     }
     catch (const wxString& Msg)
     {

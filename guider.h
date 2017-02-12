@@ -234,6 +234,7 @@ public:
     void StartGuiding(void);
     void StopGuiding(void);
     void UpdateGuideState(usImage *pImage, bool bStopping=false);
+    void DisplayImage(usImage *img);
 
     bool SetScaleImage(bool newScaleValue);
     bool GetScaleImage(void);

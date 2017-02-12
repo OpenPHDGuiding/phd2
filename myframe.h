@@ -230,6 +230,7 @@ public:
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
     Star::FindMode m_starFindMode;
+    double m_minStarHFD;
     bool m_rawImageMode;
     bool m_rawImageModeWarningDone;
     wxSize m_prevDarkFrameSize;
@@ -321,6 +322,8 @@ public:
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
     Star::FindMode GetStarFindMode(void) const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
+    double GetMinStarHFD(void) const;
+    void SetMinStarHFD(double val);
     bool GetRawImageMode(void) const;
     bool SetRawImageMode(bool force);
 
@@ -642,6 +645,11 @@ inline double MyFrame::TimeSinceGuidingStarted(void) const
 inline Star::FindMode MyFrame::GetStarFindMode(void) const
 {
     return m_starFindMode;
+}
+
+inline double MyFrame::GetMinStarHFD(void) const
+{
+    return m_minStarHFD;
 }
 
 inline bool MyFrame::GetRawImageMode(void) const

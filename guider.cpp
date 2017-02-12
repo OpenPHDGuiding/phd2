@@ -1081,6 +1081,20 @@ static void CheckCalibrationAutoLoad()
     }
 }
 
+void Guider::DisplayImage(usImage *img)
+{
+    if (IsCalibratingOrGuiding())
+        return;
+ 
+    // switch in the new image
+    usImage *prev = m_pCurrentImage;
+    m_pCurrentImage = img;
+
+    ImageLogger::SaveImage(prev);
+
+    UpdateImageDisplay();
+}
+
 /*************  A new image is ready ************************/
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
@@ -1098,7 +1112,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
             usImage *pPrevImage = m_pCurrentImage;
             m_pCurrentImage = pImage;
-            delete pPrevImage;
+
+            ImageLogger::SaveImage(pPrevImage);
         }
         else
         {
@@ -1132,7 +1147,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (UpdateCurrentPosition(pImage, &info))           // true means error
         {
-            info.frameNumber = pFrame->m_frameCounter;
+            info.frameNumber = pImage->FrameNum;
             info.time = pFrame->TimeSinceGuidingStarted();
             info.avgDist = CurrentError();
 
@@ -1140,7 +1155,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
-                    EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                    EvtServer.NotifyLooping(pImage->FrameNum);
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
@@ -1196,7 +1211,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_UNINITIALIZED:
             case STATE_SELECTING:
             case STATE_SELECTED:
-                EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                EvtServer.NotifyLooping(pImage->FrameNum);
                 break;
             case STATE_CALIBRATING_PRIMARY:
             case STATE_CALIBRATING_SECONDARY:

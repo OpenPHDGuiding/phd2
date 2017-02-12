@@ -179,6 +179,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "phdcontrol.h"
 #include "runinbg.h"
 #include "fitsiowrap.h"
+#include "imagelogger.h"
 
 class wxSingleInstanceChecker;
 
@@ -207,6 +208,7 @@ class PhdApp : public wxApp
     long m_instanceNumber;
     bool m_resetConfig;
     wxString m_localeDir;
+    wxDateTime m_initTime;
 
 protected:
 
@@ -220,7 +222,8 @@ public:
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
-    wxString GetLocaleDir() const { return m_localeDir; }
+    const wxString& GetLocaleDir() const { return m_localeDir; }
+    const wxDateTime& GetInitTime() const { return m_initTime; }
 };
 
 wxDECLARE_APP(PhdApp);

@@ -373,7 +373,8 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
             throw ERROR_INFO("Error reported capturing image");
         }
-        ++m_frameCounter;
+
+        pNewFrame->FrameNum = ++m_frameCounter;
 
         if (m_rawImageMode && !m_rawImageModeWarningDone)
         {

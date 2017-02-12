@@ -1330,7 +1330,7 @@ static void get_star_image(JObj& response, const json_value *params)
     pos.Y -= rect.GetTop();
 
     JObj rslt;
-    rslt << NV("frame", (int) pFrame->m_frameCounter)
+    rslt << NV("frame", (int) img->FrameNum)
         << NV("width", rect.GetWidth())
         << NV("height", rect.GetHeight())
         << NV("star_pos", pos)

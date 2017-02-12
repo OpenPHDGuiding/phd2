@@ -135,7 +135,7 @@ static double hfr(std::vector<R2M>& vec, double cx, double cy, double mass)
     return hfr;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode)
+bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD)
 {
     FindResult Result = STAR_OK;
     double newX = base_x;
@@ -143,8 +143,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
     try
     {
-        Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d))\n", searchRegion, base_x, base_y, mode,
-            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height));
+        Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f) frame %u\n", searchRegion, base_x, base_y, mode,
+            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height, minHFD, pImg->FrameNum));
 
         if (base_x < 0 || base_y < 0)
         {
@@ -365,9 +365,15 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
 
         if (mass < 10.0)
+        {
+            HFD = 0.;
             Result = STAR_LOWMASS;
+        }
         else if (SNR < LOW_SNR)
+        {
+            HFD = 0.;
             Result = STAR_LOWSNR;
+        }
         else
         {
             newX = peak_x + cx / mass;
@@ -375,27 +381,34 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
             HFD = 2.0 * hfr(hfrvec, newX, newY, mass);
 
-            // even at saturation, the max values may vary a bit due to noise
-            // Call it saturated if the the top three values are within 32 parts per 65535 of max for 16-bit cameras,
-            // or within 1 part per 191 for 8-bit cameras
-            unsigned int d = (unsigned int) (max3[0] - max3[2]);
-            unsigned int mx = (unsigned int) max3[0];
-
-            // remove pedestal
-            if (mx >= pImg->Pedestal)
-                mx -= pImg->Pedestal;
-            else
-                mx = 0; // unlikely
-
-            if (pImg->BitsPerPixel < 12)
+            if (HFD < minHFD)
             {
-                if (d * 191U < 1U * mx)
-                    Result = STAR_SATURATED;
+                Result = STAR_LOWHFD;
             }
             else
             {
-                if (d * 65535U < 32U * mx)
-                    Result = STAR_SATURATED;
+                // even at saturation, the max values may vary a bit due to noise
+                // Call it saturated if the the top three values are within 32 parts per 65535 of max for 16-bit cameras,
+                // or within 1 part per 191 for 8-bit cameras
+                unsigned int d = (unsigned int) (max3[0] - max3[2]);
+                unsigned int mx = (unsigned int) max3[0];
+
+                // remove pedestal
+                if (mx >= pImg->Pedestal)
+                    mx -= pImg->Pedestal;
+                else
+                    mx = 0; // unlikely
+
+                if (pImg->BitsPerPixel < 12)
+                {
+                    if (d * 191U < 1U * mx)
+                        Result = STAR_SATURATED;
+                }
+                else
+                {
+                    if (d * 65535U < 32U * mx)
+                        Result = STAR_SATURATED;
+                }
             }
         }
     }
@@ -428,9 +441,9 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
     return wasFound;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode)
+bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD)
 {
-    return Find(pImg, searchRegion, X, Y, mode);
+    return Find(pImg, searchRegion, X, Y, mode, minHFD);
 }
 
 struct FloatImg
@@ -853,7 +866,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         Star tmp;
-        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID);
+        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->GetMinStarHFD());
         if (tmp.WasFound() && tmp.GetError() == STAR_SATURATED)
         {
             if ((maxVal - tmp.PeakVal) * 255U > maxVal)
@@ -908,7 +921,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->GetMinStarHFD());
             if (tmp.WasFound())
             {
                 if (pass == 1)

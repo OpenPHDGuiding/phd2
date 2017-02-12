@@ -402,6 +402,8 @@ set(phd2_SRC
   ${phd_src_dir}/guidinglog.h
   ${phd_src_dir}/image_math.cpp
   ${phd_src_dir}/image_math.h
+  ${phd_src_dir}/imagelogger.cpp
+  ${phd_src_dir}/imagelogger.h
   ${phd_src_dir}/json_parser.cpp
   ${phd_src_dir}/json_parser.h
   ${phd_src_dir}/logger.cpp

@@ -49,7 +49,7 @@ public:
 
     Logger(void);
     ~Logger(void);
-    wxString GetLogDir(void);
+    const wxString& GetLogDir(void);
     virtual void RemoveMatchingFiles(const wxString& filePattern, int DaysOld);
 };
 

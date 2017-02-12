@@ -40,7 +40,8 @@
 const int RetentionPeriod = 60;
 
 GuidingLog::GuidingLog(void)
-    : m_enabled(false),
+    :
+    m_enabled(false),
     m_keepFile(false),
     m_isGuiding(false)
 {
@@ -59,11 +60,10 @@ bool GuidingLog::EnableLogging(void)
 
     try
     {
-        wxDateTime now = wxDateTime::Now();
+        const wxDateTime& initTime = wxGetApp().GetInitTime();
         if (!m_file.IsOpened())
         {
-            m_fileName = GetLogDir() + PATHSEPSTR + "PHD2_GuideLog" + now.Format(_T("_%Y-%m-%d")) +
-                now.Format(_T("_%H%M%S")) + ".txt";
+            m_fileName = GetLogDir() + PATHSEPSTR + initTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
 
             if (!m_file.Open(m_fileName, "w"))
             {
@@ -75,7 +75,7 @@ bool GuidingLog::EnableLogging(void)
         assert(m_file.IsOpened());
 
         m_file.Write(_T("PHD2 version ") FULLVER _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
-            now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            initTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
         Flush();
 
         m_enabled = true;

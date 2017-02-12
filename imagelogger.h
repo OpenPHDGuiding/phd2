@@ -1,11 +1,9 @@
 /*
- *  star.h
- *  PHD Guiding
+ *  imagelogger.h
+ *  PHD2 Guiding
  *
- *  Created by Craig Stark.
- *  Refactored by Bret McKee
- *  Copyright (c) 2006-2010 Craig Stark.
- *  Copyright (c) 2012 Bret McKee
+ *  Created by Andy Galasso
+ *  Copyright (c) 2017 openphdguiding.org
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -16,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of OpenPHDGuiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -35,62 +32,33 @@
  *
  */
 
-#ifndef STAR_H_INCLUDED
-#define STAR_H_INCLUDED
+#ifndef IMAGELOGGER_INCLUDED
+#define IMAGELOGGER_INCLUDED
 
-#include "point.h"
-
-class Star : public PHD_Point
+struct ImageLoggerSettings
 {
-public:
-    enum FindMode
-    {
-        FIND_CENTROID,
-        FIND_PEAK,
-    };
+    bool logFramesOverThreshRel;
+    bool logFramesOverThreshPx;
+    bool logFramesDropped;
+    double guideErrorThreshRel; // relative error theshold
+    double guideErrorThreshPx; // pixel error theshold
 
-    enum FindResult
-    {
-        STAR_OK=0,
-        STAR_SATURATED,
-        STAR_LOWSNR,
-        STAR_LOWMASS,
-        STAR_LOWHFD,
-        STAR_TOO_NEAR_EDGE,
-        STAR_MASSCHANGE,
-        STAR_ERROR,
-    };
-
-    double Mass;
-    double SNR;
-    double HFD;
-    unsigned short PeakVal;
-
-    Star(void);
-    ~Star();
-
-    /*
-     * Note: contrary to most boolean PHD functions, the star find functions return
-     *       a boolean indicating success instead of a boolean indicating an
-     *       error
-     */
-    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd);
-    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd);
-    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
-
-    bool WasFound(FindResult result);
-    bool WasFound(void);
-    void Invalidate(void);
-    void SetError(FindResult error);
-    FindResult GetError(void) const;
-
-private:
-    FindResult m_lastFindResult;
+    ImageLoggerSettings() : logFramesOverThreshRel(false), logFramesOverThreshPx(false), logFramesDropped(false) { }
 };
 
-inline Star::FindResult Star::GetError(void) const
+class ImageLogger
 {
-    return m_lastFindResult;
-}
+public:
 
-#endif /* STAR_H_INCLUDED */
+    static void Init();
+    static void Destroy();
+
+    static void GetSettings(ImageLoggerSettings *settings);
+    static void ApplySettings(const ImageLoggerSettings& settings);
+
+    static void SaveImage(usImage *img);
+    static void LogImage(const usImage *img, const FrameDroppedInfo& info);
+    static void LogImage(const usImage *img, double distance);
+};
+
+#endif // IMAGELOGGER_INCLUDED

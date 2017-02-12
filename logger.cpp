@@ -68,33 +68,33 @@ static wxString DefaultDir(void)
 }
 
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-wxString Logger::GetLogDir(void)
+const wxString& Logger::GetLogDir(void)
 {
-    if (m_Initialized)
-        return m_CurrentDir;
-
-    // One-time initialization at start-up
-    wxString rslt = "";
-
-    if (pConfig)
+    if (!m_Initialized)
     {
-        rslt = pConfig->Global.GetString ("/frame/LogDir", "");
-        if (rslt.length() == 0)
-            rslt = DefaultDir();                // user has never even looked at it
+        // One-time initialization at start-up
+        wxString rslt;
+
+        if (pConfig)
+        {
+            rslt = pConfig->Global.GetString("/frame/LogDir", "");
+            if (rslt.length() == 0)
+                rslt = DefaultDir();                // user has never even looked at it
+            else
+                if (!wxDirExists(rslt))        // user might have deleted our old directories
+                {
+                    if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
+                        rslt = DefaultDir();
+                }
+        }
         else
-            if (!wxDirExists(rslt))        // user might have deleted our old directories
-            {
-                if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
-                    rslt = DefaultDir();
-            }
+            rslt = DefaultDir();                    // shouldn't ever happen
+
+        m_CurrentDir = rslt;
+        m_Initialized = true;
     }
-    else
-        rslt = DefaultDir();                    // shouldn't ever happen
 
-    m_CurrentDir = rslt;
-    m_Initialized = true;
-
-    return rslt;
+    return m_CurrentDir;
 }
 
 // Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
