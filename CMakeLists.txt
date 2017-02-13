@@ -36,8 +36,8 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 set(VERSION_MAJOR 2)
-set(VERSION_MINOR 5)
-set(VERSION_PATCH 0)
+set(VERSION_MINOR 6)
+set(VERSION_PATCH 3)
 
 #################################################################################
 #
