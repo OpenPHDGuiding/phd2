@@ -132,7 +132,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
+            _("Gaussian Process"), _("Median Window")
 #endif
         };
 
@@ -279,10 +279,6 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
-
-    // we can probably get rid of this when we reduce the number of GP algo settings
-    wxWindow *adv = pFrame->pAdvancedDialog;
-    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
@@ -299,10 +295,6 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
-
-    // we can probably get rid of this when we reduce the number of GP algo settings
-    wxWindow *adv = pFrame->pAdvancedDialog;
-    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::LoadValues(void)
@@ -1507,10 +1499,7 @@ wxString Mount::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
-        _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _T("Gaussian Process"), _("Trimmed Mean")
-#endif
+        _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
