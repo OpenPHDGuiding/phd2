@@ -214,7 +214,7 @@ public:
     virtual void reset();
 
     virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Predictive PEC"; }
 
 };
 

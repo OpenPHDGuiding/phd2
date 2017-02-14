@@ -163,7 +163,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2014-2017 Max Planck Society<br>"
         "<br>"
         "<br>"
-        "The Gaussian process guide algorithm is based on<br>"
+        "The Predictive PEC guide algorithm is based on<br>"
         "<a href=\"http://dx.doi.org/10.1109/TCST.2015.2420629\">Gaussian Process Based Predictive Control<br>for Periodic Error Correction</a>"
         "</font>"
         "</body></html>", APPNAME, FULLVER));

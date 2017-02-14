@@ -147,7 +147,7 @@ public:
      */
     virtual void reset();
     virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Trimmed Mean"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Predictive Drift"; }
 
 };
 

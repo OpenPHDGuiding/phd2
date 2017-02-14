@@ -208,9 +208,9 @@ void GaussianProcessGuider::UpdateGP()
         amplitudes.maxCoeff(&maxIndex);
         double period_length = 1 / frequencies(maxIndex);
 
-        Eigen::VectorXd hypers = gp_.getHyperParameters();
-        hypers[7] = std::log(period_length); // parameters are stored in log space
-        gp_.setHyperParameters(hypers);
+        std::vector<double> hypers = GetGPHyperparameters();
+        hypers[7] = period_length;
+        SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
 
         end = std::clock();
         time_fft = double(end - begin) / CLOCKS_PER_SEC;
@@ -547,6 +547,9 @@ std::vector<double> GaussianProcessGuider::GetGPHyperparameters() const
     // since the GP class works in log space, we have to exp() the parameters first.
     Eigen::VectorXd hyperparameters = gp_.getHyperParameters().array().exp();
 
+    // converts the length-scale of the periodic covariance from standard notation to natural units
+    hyperparameters(3) = std::asin(hyperparameters(3)/4)*hyperparameters(7)/M_PI;
+
     // we need to map the Eigen::vector into a std::vector.
     return std::vector<double>(hyperparameters.data(), // the first element is at the array address
                                hyperparameters.data() + 8); // 8 parameters, therefore the last is at position 7
@@ -554,6 +557,9 @@ std::vector<double> GaussianProcessGuider::GetGPHyperparameters() const
 
 bool GaussianProcessGuider::SetGPHyperparameters(std::vector<double> const &hyperparameters) {
     Eigen::VectorXd hyperparameters_eig = Eigen::VectorXd::Map(&hyperparameters[0], hyperparameters.size());
+
+    // converts the length-scale of the periodic covariance from natural units to standard notation
+    hyperparameters_eig(3) = 4*std::sin(hyperparameters_eig(3)*M_PI/hyperparameters_eig(7));
 
     // the GP works in log space, therefore we need to convert
     gp_.setHyperParameters(hyperparameters_eig.array().log());

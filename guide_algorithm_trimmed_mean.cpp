@@ -71,7 +71,7 @@ class GuideAlgorithmTrimmedMean::GuideAlgorithmTrimmedMeanDialogPane : public Co
 
 public:
     GuideAlgorithmTrimmedMeanDialogPane(wxWindow *pParent, GuideAlgorithmTrimmedMean *pGuideAlgorithm)
-      : ConfigDialogPane(_("Trimmed Mean Guide Algorithm"),pParent)
+      : ConfigDialogPane(_("Predictive Drift Guide Algorithm"),pParent)
     {
         m_pGuideAlgorithm = pGuideAlgorithm;
 
@@ -120,7 +120,7 @@ public:
               " too high, it can lead to noise amplification. Default = 5.0"));
 
         DoAdd(_("Min data points (inference)"), m_pNbMeasurementMin,
-              _("Minimal number of measurements to start using the Trimmed Mean. If there are too little data points, "
+              _("Minimal number of measurements to start using the prediction. If there are too little data points, "
                 "the result might be poor. Default = 50"));
 
         DoAdd(_("Force dark tracking"), m_checkboxDarkMode, _("This is just for debugging and disabled by default"));
@@ -602,7 +602,7 @@ double GuideAlgorithmTrimmedMean::result(double input)
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
 
-    Debug.AddLine(wxString::Format("Trimmed mean guider: input: %f, diff: %f, prediction: %f, control: %f",
+    Debug.AddLine(wxString::Format("Predictive Drift Guider: input: %f, diff: %f, prediction: %f, control: %f",
         input, difference, drift_prediction, parameters->control_signal_));
 
     // write the data to a file for easy debugging
@@ -660,8 +660,8 @@ double GuideAlgorithmTrimmedMean::deduceResult()
 
     StoreControls(parameters->control_signal_);
 
-    Debug.AddLine(wxString::Format("Trimmed mean guider (deduced): gain: %f, prediction: %f, control: %f",
-        parameters->control_gain_, drift_prediction, parameters->control_signal_));
+    Debug.AddLine(wxString::Format("Predictive Drift Guider (deduced): prediction: %f, control: %f",
+        drift_prediction, parameters->control_signal_));
 
     assert(parameters->control_gain_ < 10);
 

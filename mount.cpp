@@ -128,11 +128,11 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
 
-        wxString xAlgorithms[] = 
+        wxString xAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
+            _("Predictive PEC"),
 #endif
         };
 
@@ -167,11 +167,11 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 
-        wxString yAlgorithms[] = 
+        wxString yAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"), _("Trimmed Mean"),
+            _("Predictive PEC"), _("Predictive Drift"),
 #endif
         };
         width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
@@ -1509,7 +1509,7 @@ wxString Mount::GetSettingsSummary()
     wxString algorithms[] = {
         _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _T("Gaussian Process"), _("Trimmed Mean")
+        _T("Predictive PEC"), _("Predictive Drift")
 #endif
     };
     wxString auxMountStr = wxEmptyString;

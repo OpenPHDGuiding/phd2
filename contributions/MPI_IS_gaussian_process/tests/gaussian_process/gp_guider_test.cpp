@@ -104,7 +104,7 @@ const double GPGTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gau
 
 const double GPGTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
 const double GPGTest::DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
-const double GPGTest::DefaultLengthScalePerKer             = 0.5; // length-scale of the periodic kernel
+const double GPGTest::DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
 const double GPGTest::DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
 const double GPGTest::DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
 const double GPGTest::DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
