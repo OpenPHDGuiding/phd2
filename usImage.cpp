@@ -396,6 +396,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         hdr.write("SCALE", sc, "Image scale (arcsec / pixel)");
         hdr.write("PIXSCALE", sc, "Image scale (arcsec / pixel)");
         hdr.write("PEDESTAL", (unsigned int) Pedestal, "dark subtraction bias value");
+        hdr.write("SATURATE", (1U << BitsPerPixel) - 1, "Data value at which saturation occurs");
 
         if (!Subframe.IsEmpty())
         {
@@ -483,6 +484,14 @@ bool usImage::Load(const wxString& fname)
             int stackcnt;
             if (fhdr_int(fptr, "STACKCNT", &stackcnt))
                 ImgStackCnt = stackcnt;
+
+            int pedestal;
+            if (fhdr_int(fptr, "PEDESTAL", &pedestal))
+              Pedestal = (unsigned short) pedestal;
+
+            int saturate;
+            if (fhdr_int(fptr, "SATURATE", &saturate))
+                BitsPerPixel = saturate > 255 ? 16 : 8;
 
             wxRect subf;
             bool ok = fhdr_int(fptr, "PHDSUBFX", &subf.x);
