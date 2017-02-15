@@ -143,6 +143,11 @@ namespace math_tools
      */
     Eigen::VectorXd hamming_window(int N);
 
+    /*!
+     * Computes the standard deviation of a vector... which is not part of Eigen.
+     */
+    double stdandard_deviation(Eigen::VectorXd& input);
+
 }  // namespace math_tools
 
 #endif  // define GP_MATH_TOOLS_H

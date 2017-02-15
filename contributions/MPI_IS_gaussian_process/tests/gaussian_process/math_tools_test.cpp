@@ -198,6 +198,17 @@ TEST(MathToolsTest, HammingTest)
     }
 }
 
+TEST(MathToolsTest, StdTest)
+{
+    Eigen::VectorXd data(6);
+    data << 1, 2, 3, 4, 5, 6;
+    Eigen::ArrayXd centered = data.array() - data.array().mean();
+    std::cout << centered << std::endl;
+    double matlab_result = 1.8708;
+
+    EXPECT_NEAR(math_tools::stdandard_deviation(data), matlab_result, 1e-3);
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

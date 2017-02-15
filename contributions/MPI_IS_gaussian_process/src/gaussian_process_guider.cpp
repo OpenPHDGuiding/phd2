@@ -48,6 +48,11 @@
 #define CIRCULAR_BUFFER_SIZE 4096
 #define FFT_SIZE 4096 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
 
+// for the Kalman filter
+#define PRIOR_VARIANCE 1e5
+#define PROCESS_VARIANCE 1e-4
+#define MEASUREMENT_VARIANCE 1e2
+
 #if GP_DEBUG_FILE_
 #include <iostream>
 #include <iomanip>
@@ -66,7 +71,8 @@ GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     parameters(parameters),
     covariance_function_(),
     output_covariance_function_(),
-    gp_(covariance_function_)
+    gp_(covariance_function_),
+    period_length_variance_(PRIOR_VARIANCE)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
@@ -191,20 +197,6 @@ void GaussianProcessGuider::UpdateGP()
         end = std::clock();
         time_fft = double(end - begin) / CLOCKS_PER_SEC;
 
-        #if GP_DEBUG_FILE_
-        std::ofstream outfile;
-        outfile.open("spectrum_data.csv", std::ios_base::out);
-        if (outfile.is_open()) {
-            outfile << "period, amplitude\n";
-            for (int i = 0; i < amplitudes.size(); ++i) {
-                outfile << std::setw(8) << periods[i] << "," << std::setw(8) << amplitudes[i] << "\n";
-            }
-        }
-        else {
-            std::cout << "unable to write to file" << std::endl;
-        }
-        outfile.close();
-        #endif
     }
 
     begin = std::clock();

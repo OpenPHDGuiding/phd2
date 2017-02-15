@@ -462,39 +462,6 @@ TEST_F(GPGTest, period_interpolation_test)
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
 }
 
-TEST_F(GPGTest, parameter_filter_test)
-{
-    double period_length = 0.0;
-
-    std::ifstream infile("dataset02.csv");
-
-    Eigen::VectorXd filtered_period_lengths(1000); // must be longer than the dataset
-
-    int i = 0;
-    CSVRow row;
-    while(infile >> row)
-    {
-        if (row[0][0] == 'p') // ignore the first line
-        {
-            continue;
-        }
-        else
-        {
-            ++i;
-        }
-        period_length = std::stod(row[0]);
-
-        GPG->UpdatePeriodLength(period_length);
-        filtered_period_lengths(i - 1) = GPG->GetGPHyperparameters()[7];
-//         std::cout << GPG->GetGPHyperparameters()[7] << std::endl;
-    }
-    filtered_period_lengths.conservativeResize(i);
-//     std::cout << filtered_period_lengths << std::endl;
-
-    Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(50);
-
-    EXPECT_LT(math_tools::stdandard_deviation(period_lengths_tail), 1);
-}
 
 TEST_F(GPGTest, real_data_test)
 {

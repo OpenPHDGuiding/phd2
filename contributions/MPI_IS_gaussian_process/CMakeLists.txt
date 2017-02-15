@@ -97,6 +97,7 @@ target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/to
 set_property(TARGET GPGuiderTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPTest-3 COMMAND GPGuiderTest)
 configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset01.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset01.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset02.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset02.csv COPYONLY)
 
 # Performance Test for the GP Guider
 add_executable(GuidePerformanceTest ${gaussian_process_root_dir}/tests/gaussian_process/guide_performance_test.cpp)

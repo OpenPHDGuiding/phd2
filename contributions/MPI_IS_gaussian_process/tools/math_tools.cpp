@@ -219,6 +219,12 @@ namespace math_tools
         return window;
     }
 
+    double stdandard_deviation(Eigen::VectorXd& input) {
+        Eigen::ArrayXd centered = input.array() - input.array().mean();
+        return std::sqrt(centered.pow(2).sum()/(centered.size() - 1));
+    }
+
+
 }  // namespace math_tools
 
 

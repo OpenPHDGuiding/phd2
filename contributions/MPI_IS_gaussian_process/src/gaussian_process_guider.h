@@ -132,6 +132,8 @@ private:
     covariance_functions::PeriodicSquareExponential output_covariance_function_; // for prediction
     GP gp_;
 
+    double period_length_variance_;
+
     /**
      * Guiding parameters of this instance.
      */
@@ -164,12 +166,9 @@ private:
     void HandleSNR(double SNR);
 
     /**
-     * Runs the inference machinery on the GP. Gets the measurement data from
-     * the circular buffer and stores it in Eigen::Vectors. Detrends the data
-     * with linear regression. Calculates the main frequency with an FFT.
-     * Updates the GP accordingly with new data and parameter.
+     * Estimates the main period length for a given dataset.
      */
-    void UpdateGP();
+    double EstimatePeriodLength(Eigen::VectorXd time, Eigen::VectorXd data);
 
     /**
      * Calculates the difference in gear error for the time between the last
@@ -247,6 +246,19 @@ public:
      */
     void reset();
 
+    /**
+     * Runs the inference machinery on the GP. Gets the measurement data from
+     * the circular buffer and stores it in Eigen::Vectors. Detrends the data
+     * with linear regression. Calculates the main frequency with an FFT.
+     * Updates the GP accordingly with new data and parameter.
+     */
+    void UpdateGP();
+
+    /**
+     * Does filtering and sets the period length of the GPGuider.
+     */
+    void UpdatePeriodLength(double period_length);
+
     data_point& get_last_point()
     {
         return circular_buffer_data_[circular_buffer_data_.size() - 1];
@@ -272,8 +284,5 @@ public:
      */
     void inject_data_point(double timestamp, double input, double SNR, double control);
 };
-
-
-
 
 #endif  // GAUSSIAN_PROCESS_GUIDER
