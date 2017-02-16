@@ -359,7 +359,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pCalSanityCheckDlg = NULL;
     pCalReviewDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
-    m_minStarHFD = 0.;
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
 
