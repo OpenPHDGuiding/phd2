@@ -470,24 +470,37 @@ GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
     return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
 
-bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm** ppAlgorithm)
+bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm)
 {
-    bool bError = false;
+    bool error = false;
 
     try
     {
         switch (guideAlgorithm)
         {
-            case GUIDE_ALGORITHM_IDENTITY:
-            case GUIDE_ALGORITHM_HYSTERESIS:
-            case GUIDE_ALGORITHM_LOWPASS:
-            case GUIDE_ALGORITHM_LOWPASS2:
-            case GUIDE_ALGORITHM_RESIST_SWITCH:
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
-            case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-#endif
-                break;
             case GUIDE_ALGORITHM_NONE:
+            case GUIDE_ALGORITHM_IDENTITY:
+                *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_HYSTERESIS:
+                *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_LOWPASS:
+                *ppAlgorithm = new GuideAlgorithmLowpass(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_LOWPASS2:
+                *ppAlgorithm = new GuideAlgorithmLowpass2(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_RESIST_SWITCH:
+                *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
+                break;
+            
+    #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
+            case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
+                *ppAlgorithm = new GuideGaussianProcess(mount, axis);
+                break;
+    #endif
+
             default:
                 throw ERROR_INFO("invalid guideAlgorithm");
                 break;
@@ -496,41 +509,10 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
-        guideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
+        error = true;
     }
 
-    switch (guideAlgorithm)
-    {
-        case GUIDE_ALGORITHM_IDENTITY:
-            *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_HYSTERESIS:
-            *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_LOWPASS:
-            *ppAlgorithm = new GuideAlgorithmLowpass(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_LOWPASS2:
-            *ppAlgorithm = new GuideAlgorithmLowpass2(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_RESIST_SWITCH:
-            *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
-            break;
-            
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
-        case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-            *ppAlgorithm = new GuideGaussianProcess(mount, axis);
-            break;
-#endif
-
-        case GUIDE_ALGORITHM_NONE:
-        default:
-            assert(false);
-            break;
-    }
-
-    return bError;
+    return error;
 }
 
 #ifdef TEST_TRANSFORMS
