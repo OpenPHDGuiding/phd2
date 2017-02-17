@@ -952,6 +952,13 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             throw THROW_INFO("Guiding disabled");
         }
 
+        if (moveType == MOVETYPE_DEDUCED)
+        {
+            if (m_bumpInProgress)
+                Debug.Write("StepGuider: deferring bump, MOVETYPE_DEDUCED\n");
+            return result;
+        }
+
         // keep a moving average of the AO position
         if (m_avgOffset.IsValid())
         {
@@ -975,7 +982,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             bool forceStartBump = false;
             if (m_forceStartBump)
             {
-                Debug.Write("stepguider::Move: will start forced bump\n");
+                Debug.Write("StepGuider::Move: will start forced bump\n");
                 forceStartBump = true;
                 m_forceStartBump = false;
             }
