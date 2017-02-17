@@ -837,8 +837,23 @@ void GuideAlgorithmGaussianProcess::GuidingResumed(void)
 
 void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
 {
-    // just hand it on to the guide algorithm
-    gpg_->GuidingDithered(amt);
+    CalibrationDetails calDetails;
+    m_pMount->GetCalibrationDetails(&calDetails);
+
+    double guide_speed = 1.0; // normalized to 15 a-s per second
+                              // 1.0 means 15 a-s/sec,
+                              // 0.5 means 7.5 a-s/sec, etc.
+
+    if (calDetails.raGuideSpeed != -1.0)
+    {
+        guide_speed = 3600.0 * calDetails.raGuideSpeed / 15.0; // normalize!
+    }
+
+    // the guide rate here is normalized to seconds and adjusted for the speed
+    double guide_rate = 1000 * m_pMount->xRate() / guide_speed;
+
+    // just hand it on to the guide algorithm, and pass the RA rate
+    gpg_->GuidingDithered(amt, guide_rate);
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)

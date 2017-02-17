@@ -68,6 +68,7 @@ GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     last_prediction_end_(0),
     dither_steps_(0),
     dithering_active_(false),
+    dither_offset_(0.0),
     circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
     parameters(parameters),
     covariance_function_(),
@@ -102,7 +103,8 @@ void GaussianProcessGuider::HandleTimestamps()
     double delta_measurement_time = std::chrono::duration<double>(current_time - last_time_).count();
     last_time_ = current_time;
     get_last_point().timestamp = std::chrono::duration<double>(current_time - start_time_).count()
-        - (delta_measurement_time / 2.0); // use the midpoint as time stamp
+        - (delta_measurement_time / 2.0) // use the midpoint as time stamp
+        + dither_offset_; // correct for the gear time offset from dithering
 }
 
 // adds a new measurement to the circular buffer that holds the data.
@@ -233,7 +235,7 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
 
     // prediction from the last endpoint to the prediction point
     Eigen::VectorXd next_location(2);
-    next_location << last_prediction_end_, prediction_location;
+    next_location << last_prediction_end_, prediction_location + dither_offset_;
     Eigen::VectorXd prediction = gp_.predictProjected(next_location).first;
 
     double p1 = prediction(1);
@@ -294,8 +296,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         {
             prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
         }
-        prediction_point += time_step;
-        prediction_ = PredictGearError(prediction_point);
+        prediction_ = PredictGearError(prediction_point + time_step);
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
     }
 
@@ -387,8 +388,7 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
         {
             prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
         }
-        prediction_point += time_step;
-        prediction_ = PredictGearError(prediction_point);
+        prediction_ = PredictGearError(prediction_point + time_step);
         control_signal_ += prediction_; // control based on prediction
     }
 
@@ -474,6 +474,10 @@ void GaussianProcessGuider::reset()
     start_time_ = std::chrono::system_clock::now();
     last_time_ = std::chrono::system_clock::now();
     gp_.clearData();
+
+    dither_offset_ = 0.0;
+    dither_steps_ = 0;
+    dithering_active_ = false;
 }
 
 void GaussianProcessGuider::GuidingStopped(void)
@@ -481,25 +485,21 @@ void GaussianProcessGuider::GuidingStopped(void)
     reset(); // reset is only done on a complete stop
 }
 
-void GaussianProcessGuider::GuidingDithered(double amt)
+void GaussianProcessGuider::GuidingDithered(double amt, double rate)
 {
-    /*
-     * We don't compensate for the dither amout (yet), but we need to know
-     * that we are currently dithering.
-     */
+    // we store the amount of dither in seconds of gear time
+    dither_offset_ += amt / rate; // this is the amount of time offset
+
     dithering_active_ = true;
     dither_steps_ = 10;
 }
 
 void GaussianProcessGuider::GuidingDitherSettleDone(bool success)
 {
-    /*
-     * Once dithering has settled, we can start regular guiding again.
-     */
     if (success)
     {
-        dithering_active_ = false;
-        dither_steps_ = 0;
+        dither_steps_ = 1; // the last dither step should always be executed by
+                           // result(), since it corrects for the time difference
     }
 }
 
@@ -698,11 +698,13 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(Eigen::VectorXd& times
     double last_variance = 0.0;
     double gear_error_sum = 0.0;
     double variance_sum = 0.0;
-    Eigen::VectorXd reg_timestamps(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
-    Eigen::VectorXd reg_gear_error(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
-    Eigen::VectorXd reg_variances(std::ceil(timestamps(timestamps.size()-1) / grid_interval) + 1);
+    int grid_size = std::ceil(timestamps(timestamps.size() - 1) / grid_interval) + 1;
+    assert(grid_size > 0);
+    Eigen::VectorXd reg_timestamps(grid_size);
+    Eigen::VectorXd reg_gear_error(grid_size);
+    Eigen::VectorXd reg_variances(grid_size);
     int j = 0;
-    for (int i = 0; i < N-1; ++i)
+    for (size_t i = 0; i < N-1; ++i)
     {
         if (timestamps(i) < last_cell_end + grid_interval)
         {

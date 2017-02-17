@@ -123,8 +123,10 @@ private:
     double last_prediction_end_;
 
     int dither_steps_;
-
     bool dithering_active_;
+
+    //! the dither offset collects the correction in gear time from dithering
+    double dither_offset_;
 
     circular_buffer<data_point> circular_buffer_data_;
 
@@ -233,7 +235,7 @@ public:
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.
      */
-    void GuidingDithered(double amt);
+    void GuidingDithered(double amt, double rate);
 
     /**
      * This method tells the guider that dithering is finished. The guider
