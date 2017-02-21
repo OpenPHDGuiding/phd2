@@ -254,7 +254,7 @@ public:
      * with linear regression. Calculates the main frequency with an FFT.
      * Updates the GP accordingly with new data and parameter.
      */
-    void UpdateGP();
+    void UpdateGP(double prediction_point = std::numeric_limits<double>::quiet_NaN());
 
     /**
      * Does filtering and sets the period length of the GPGuider.

@@ -134,7 +134,7 @@ void GaussianProcessGuider::HandleSNR(double SNR)
     get_last_point().variance = standard_deviation * standard_deviation;
 }
 
-void GaussianProcessGuider::UpdateGP()
+void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_limits<double>::quiet_NaN()*/)
 {
     clock_t begin = std::clock(); // this is for timing the method in a simple way
 
@@ -216,8 +216,7 @@ void GaussianProcessGuider::UpdateGP()
     begin = std::clock();
 
     // inference of the GP with the new points, maximum accuracy should be reached around current time
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
-                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
+    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances, prediction_point);
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
@@ -291,11 +290,11 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
     if (min_points > 0 && get_number_of_measurements() > min_points)
     {
-        UpdateGP(); // update the GP based on the new measurements
         if (prediction_point < 0.0)
         {
             prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
         }
+        UpdateGP(prediction_point + 0.5*time_step); // update the GP based on the new measurements
         prediction_ = PredictGearError(prediction_point + time_step);
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
     }
