@@ -228,7 +228,7 @@ void GP::infer()
     // The data covariance matrix
     Eigen::MatrixXd data_cov = covFunc_->evaluate(data_loc_, data_loc_);
 
-    // compute and store the Gram matrix
+    // swapping in the Gram matrix is faster than directly assigning it
     gram_matrix_.swap(data_cov); // store the new data_cov as gram matrix
     if (data_var_.rows() == 0) // homoscedastic
     {
@@ -243,7 +243,7 @@ void GP::infer()
     // compute the Cholesky decomposition of the Gram matrix
     chol_gram_matrix_ = gram_matrix_.ldlt();
 
-    // pre-compute the alpha, which is the solution of the chol to the data.
+    // pre-compute the alpha, which is the solution of the chol to the data
     alpha_ = chol_gram_matrix_.solve(data_out_);
 
     if (use_explicit_trend_)
@@ -378,7 +378,7 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
 
 GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) const
 {
-    // use the suitable covariance function, depending on wheter an
+    // use the suitable covariance function, depending on whether an
     // output projection is used or not.
     covariance_functions::CovFunc* covFunc = 0;
     if (covFuncProj_ == 0)
@@ -425,14 +425,16 @@ GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
     // calculate GP mean from precomputed alpha vector
     Eigen::VectorXd m = mixed_cov * alpha_;
 
+    // precompute K^{-1} * mixed_cov
+    Eigen::MatrixXd gamma = chol_gram_matrix_.solve(mixed_cov.transpose());
+
     // calculate GP variance
-    Eigen::MatrixXd v = prior_cov - mixed_cov *
-                        (chol_gram_matrix_.solve(mixed_cov.transpose()));
+    Eigen::MatrixXd v = prior_cov - mixed_cov * gamma;
 
     // include fixed-features in the calculations
     if (use_explicit_trend_)
     {
-        Eigen::MatrixXd R = phi - feature_vectors_ * chol_gram_matrix_.solve(mixed_cov.transpose());
+        Eigen::MatrixXd R = phi - feature_vectors_ * gamma;
         Eigen::MatrixXd B = R.transpose() * chol_feature_matrix_.solve(R);
 
         m += R.transpose() * beta_;

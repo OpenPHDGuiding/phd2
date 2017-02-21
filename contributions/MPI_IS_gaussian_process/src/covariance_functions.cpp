@@ -71,6 +71,11 @@ namespace covariance_functions
         // Compute Distances
         Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
 
+        // fast version
+        return svSE0 * ((-0.5 / std::pow(lsSE0, 2)) * squareDistanceXY).exp()
+            + svP * (-2 * (((M_PI / plP) * squareDistanceXY.sqrt()).sin() / lsP).square()).exp();
+
+        /* // verbose version
         // Square Exponential Kernel
         Eigen::ArrayXXd K0 = squareDistanceXY / std::pow(lsSE0, 2);
         K0 = svSE0 * (-0.5 * K0).exp();
@@ -83,6 +88,7 @@ namespace covariance_functions
 
         // Combined Kernel
         return K0 + K1;
+        */
     }
 
     void PeriodicSquareExponential::setParameters(const Eigen::VectorXd& params)
@@ -142,6 +148,12 @@ namespace covariance_functions
         // Compute Distances
         Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance( x.transpose(), y.transpose());
 
+        // fast version
+        return svSE0 * ((-0.5 / std::pow(lsSE0, 2)) * squareDistanceXY).exp()
+            + svP * (-2 * (((M_PI / plP) * squareDistanceXY.sqrt()).sin() / lsP).square()).exp()
+            + svSE1 * ((-0.5 / std::pow(lsSE1, 2)) * squareDistanceXY).exp();
+
+        /* // verbose version
         // Square Exponential Kernel
         Eigen::ArrayXXd K0 = squareDistanceXY / pow(lsSE0, 2);
         K0 = svSE0 * (-0.5 * K0).exp();
@@ -158,6 +170,7 @@ namespace covariance_functions
 
         // Combined Kernel
         return K0 + K1 + K2;
+        */
     }
 
     void PeriodicSquareExponential2::setParameters(const Eigen::VectorXd& params)

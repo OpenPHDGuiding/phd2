@@ -239,8 +239,8 @@ void GaussianProcessGuider::UpdateGP()
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-    printf("timings: init: %f, regularize: %f, detrend: %f, fft: %f, gp: %f\n",
-           time_init, time_regularize, time_detrend, time_fft, time_gp);
+//     printf("timings: init: %f, detrend: %f, fft: %f, gp: %f\n",
+//            time_init, time_detrend, time_fft, time_gp);
 }
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)

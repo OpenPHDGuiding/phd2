@@ -92,6 +92,13 @@ namespace math_tools
         // The square distance calculation (a - b)^2 is calculated as a^2 - 2*ab * b^2
         // (using the binomial formula) because of numerical stability.
 
+        // fast version
+        return
+            (am.array().square().colwise().sum().transpose().rowwise().replicate(bCols).matrix()
+            + bm.array().square().colwise().sum().colwise().replicate(aCols).matrix())
+            - 2 * (am.transpose()) * bm;
+
+        /* // verbose version
         Eigen::MatrixXd a_square =
             am.array().square().colwise().sum().transpose().rowwise().replicate(bCols);
 
@@ -101,6 +108,7 @@ namespace math_tools
         Eigen::MatrixXd twoab = 2 * (am.transpose()) * bm;
 
         return (a_square.matrix() + b_square.matrix()) - twoab;
+        */
     }
 
     Eigen::MatrixXd squareDistance(const Eigen::MatrixXd& a)
