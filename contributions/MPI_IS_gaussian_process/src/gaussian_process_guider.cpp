@@ -44,9 +44,12 @@
 #include <cmath>
 #include <ctime>
 
+#include <iostream>
+
 #define GP_DEBUG_FILE_ 0
-#define CIRCULAR_BUFFER_SIZE 4096
-#define FFT_SIZE 4096 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
+#define CIRCULAR_BUFFER_SIZE 8192 // for the raw data storage
+#define REGULAR_BUFFER_SIZE 2048 // for the regularized data storage
+#define FFT_SIZE 4096 // for zero-padding the FFT, >= REGULAR_BUFFER_SIZE!
 #define GRID_INTERVAL 5.0
 
 // for the Kalman filter
@@ -220,8 +223,9 @@ void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_li
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-//     printf("timings: init: %f, regularize: %f, detrend: %f, fft: %f, gp: %f\n",
-//            time_init, time_regularize, time_detrend, time_fft, time_gp);
+//     printf("timings: init: %f, regularize: %f, detrend: %f, fft: %f, gp: %f, total: %f\n",
+//            time_init, time_regularize, time_detrend, time_fft, time_gp,
+//            time_init + time_regularize + time_detrend + time_fft + time_gp);
 }
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)
@@ -738,6 +742,10 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(Eigen::VectorXd& times
                 ++j;
             }
         }
+    }
+    if (j > REGULAR_BUFFER_SIZE)
+    {
+        j = REGULAR_BUFFER_SIZE;
     }
     Eigen::MatrixXd result(3,j);
     result.row(0) = reg_timestamps.head(j);

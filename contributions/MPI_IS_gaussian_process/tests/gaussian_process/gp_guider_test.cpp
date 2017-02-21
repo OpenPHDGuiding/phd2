@@ -394,7 +394,7 @@ TEST_F(GPGTest, data_preparation_test)
     }
     double measured_result = GPG->result(0.0, 2.0, prediction_length, max_time);
 
-    EXPECT_NEAR(measured_result, controlled_result, 1e-2);
+    EXPECT_NEAR(measured_result, controlled_result, 1e-1);
 }
 
 TEST_F(GPGTest, real_data_test)
@@ -491,8 +491,8 @@ TEST_F(GPGTest, data_regularization_test)
 {
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
-    double max_time = 1000;
-    int resolution = 300;
+    double max_time = 20000;
+    int resolution = 8192;
 
     // second: mess up the grid of time stamps
     Eigen::VectorXd timestamps(resolution);
