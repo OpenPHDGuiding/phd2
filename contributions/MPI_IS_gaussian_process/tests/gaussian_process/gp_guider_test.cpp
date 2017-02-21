@@ -491,14 +491,14 @@ TEST_F(GPGTest, data_regularization_test)
 {
     // first: prepare a nice GP with a sine wave
     double period_length = 300;
-    double max_time = 800;
-    int resolution = 500;
+    double max_time = 1000;
+    int resolution = 300;
 
     // second: mess up the grid of time stamps
     Eigen::VectorXd timestamps(resolution);
-    timestamps << Eigen::VectorXd::LinSpaced(resolution/2, 0, max_time/3),
-        Eigen::VectorXd::LinSpaced(resolution/2, max_time/3 + 0.5, max_time);
-    timestamps += math_tools::generate_normal_random_matrix(resolution, 1);
+    timestamps << Eigen::VectorXd::LinSpaced(resolution/2, 0, max_time/6),
+        Eigen::VectorXd::LinSpaced(resolution/2, max_time/6 + 0.5, max_time);
+    timestamps += 0.5*math_tools::generate_normal_random_matrix(resolution, 1);
 
     Eigen::VectorXd measurements = 50*(timestamps.array()*2*M_PI/period_length).sin();
     Eigen::VectorXd controls = 0*measurements;
