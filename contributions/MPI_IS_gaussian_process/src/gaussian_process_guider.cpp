@@ -45,8 +45,8 @@
 #include <ctime>
 
 #define GP_DEBUG_FILE_ 0
-#define CIRCULAR_BUFFER_SIZE 2048
-#define FFT_SIZE 2048 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
+#define CIRCULAR_BUFFER_SIZE 4096
+#define FFT_SIZE 4096 // needs to be larger or equal than CIRCULAR_BUFFER_SIZE!
 
 #if GP_DEBUG_FILE_
 #include <iostream>
@@ -239,7 +239,8 @@ void GaussianProcessGuider::UpdateGP()
 
     end = std::clock();
     double time_gp = double(end - begin) / CLOCKS_PER_SEC;
-//     Debug.AddLine(wxString::Format("timings: init: %f, detrend: %f, fft: %f, gp: %f", time_init, time_detrend, time_fft, time_gp));
+    printf("timings: init: %f, regularize: %f, detrend: %f, fft: %f, gp: %f\n",
+           time_init, time_regularize, time_detrend, time_fft, time_gp);
 }
 
 double GaussianProcessGuider::PredictGearError(double prediction_location)
