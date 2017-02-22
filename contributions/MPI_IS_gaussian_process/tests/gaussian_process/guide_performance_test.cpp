@@ -164,6 +164,63 @@ std::istream& operator>>(std::istream& str, CSVRow& data)
     return str;
 }
 
+Eigen::ArrayXXd read_data_from_file(std::string filename)
+{
+    std::ifstream file(filename);
+
+    int i = 0;
+    CSVRow row;
+    while(file >> row)
+    {
+        // ignore special lines
+        if (row[0][0] == 'F' || row.size() < 18 )
+        {
+            continue;
+        }
+        else
+        {
+            ++i;
+        }
+    }
+
+    size_t N = i;
+    i = -1;
+
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd times(N);
+    Eigen::VectorXd measurements(N);
+    Eigen::VectorXd controls(N);
+    Eigen::VectorXd SNRs(N);
+
+    file.close();
+    file.clear();
+    file.open(filename);
+    while(file >> row)
+    {
+        // ignore special lines
+        if (row[0][0] == 'F' || row.size() < 18 )
+        {
+            continue;
+        }
+        else
+        {
+            ++i;
+        }
+        times(i) = std::stod(row[1]);
+        measurements(i) = std::stod(row[5]);
+        controls(i) = std::stod(row[7]);
+        SNRs(i) = std::stod(row[16]);
+    }
+
+    Eigen::ArrayXXd result(4,N);
+    result.row(0) = times;
+    result.row(1) = measurements;
+    result.row(2) = controls;
+    result.row(3) = SNRs;
+
+    return result;
+}
+
 /*
  * Replicates the behavior of the standard Hysteresis algorithm.
  */
@@ -215,58 +272,13 @@ TEST_F(GuidePerformanceTest, performance_dataset03)
     GAH.m_minMove = 0.1;
 
     std::string filename("dataset03.csv");
-    std::ifstream file(filename);
 
-    int i = 0;
-    CSVRow row;
-    while(file >> row)
-    {
-        // ignore special lines
-        if (row[0][0] == 'F' || row.size() < 18 )
-        {
-            continue;
-        }
-        else
-        {
-            ++i;
-        }
-    }
+    Eigen::ArrayXXd data = read_data_from_file(filename);
 
-    size_t N = i;
-    i = -1;
-
-    // initialize the different vectors needed for the GP
-    Eigen::VectorXd times(N);
-    Eigen::VectorXd measurements(N);
-    Eigen::VectorXd controls(N);
-    Eigen::VectorXd SNRs(N);
-    Eigen::VectorXd sum_controls(N);
-    Eigen::VectorXd gear_error(N);
-    double sum_control = 0;
-
-    file.close();
-    file.clear();
-    file.open(filename);
-    while(file >> row)
-    {
-        // ignore special lines
-        if (row[0][0] == 'F' || row.size() < 18 )
-        {
-            continue;
-        }
-        else
-        {
-            ++i;
-        }
-        times(i) = std::stod(row[1]);
-        measurements(i) = std::stod(row[5]);
-        controls(i) = std::stod(row[7]);
-        SNRs(i) = std::stod(row[16]);
-        sum_control += controls(i); // sum over the control signals
-        sum_controls(i) = sum_control; // store current accumulated control signal
-    }
-
-    gear_error = sum_controls + measurements;
+    Eigen::ArrayXd times = data.row(0);
+    Eigen::ArrayXd measurements = data.row(1);
+    Eigen::ArrayXd controls = data.row(2);
+    Eigen::ArrayXd SNRs = data.row(3);
 
     int hysteresis_mismatch = 0;
     double hysteresis_control = 0.0;
@@ -278,7 +290,7 @@ TEST_F(GuidePerformanceTest, performance_dataset03)
 
     Eigen::ArrayXd gp_guider_states(times.size()-1);
 
-    for (i = 0; i < times.size()-1; ++i)
+    for (int i = 0; i < times.size()-1; ++i)
     {
         hysteresis_control = GAH.result(hysteresis_state);
 

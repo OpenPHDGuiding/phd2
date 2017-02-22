@@ -100,7 +100,7 @@ GaussianProcessGuider::~GaussianProcessGuider()
 {
 }
 
-void GaussianProcessGuider::HandleTimestamps()
+void GaussianProcessGuider::CreateTimestamp()
 {
     auto current_time = std::chrono::system_clock::now();
     double delta_measurement_time = std::chrono::duration<double>(current_time - last_time_).count();
@@ -111,13 +111,19 @@ void GaussianProcessGuider::HandleTimestamps()
 }
 
 // adds a new measurement to the circular buffer that holds the data.
-void GaussianProcessGuider::HandleMeasurements(double input)
-{
+void GaussianProcessGuider::HandleGuiding(double input, double SNR) {
+    CreateTimestamp();
     get_last_point().measurement = input;
+    get_last_point().variance = CalculateVariance(SNR);
+
+    // we don't want to predict for the part we have measured!
+    // therefore, don't use the past when a measurement is available.
+    last_prediction_end_ = get_last_point().timestamp;
 }
 
 void GaussianProcessGuider::HandleDarkGuiding()
 {
+    CreateTimestamp();
     get_last_point().measurement = 0; // we didn't actually measure
     get_last_point().variance = 1e4; // add really high noise
 }
@@ -127,14 +133,14 @@ void GaussianProcessGuider::HandleControls(double control_input)
     get_last_point().control = control_input;
 }
 
-void GaussianProcessGuider::HandleSNR(double SNR)
+double GaussianProcessGuider::CalculateVariance(double SNR)
 {
     SNR = std::max(SNR, 3.4); // limit the minimal SNR
 
     // this was determined by simulated experiments
     double standard_deviation = 2.1752 * 1 / (SNR - 3.3) + 0.5;
 
-    get_last_point().variance = standard_deviation * standard_deviation;
+    return standard_deviation * standard_deviation;
 }
 
 void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_limits<double>::quiet_NaN()*/)
@@ -279,9 +285,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     }
 
     // collect data point content, except for the control signal
-    HandleMeasurements(input);
-    HandleTimestamps();
-    HandleSNR(SNR);
+    HandleGuiding(input, SNR);
 
     control_signal_ = parameters.control_gain_*input; // start with proportional control
     if (std::abs(control_signal_) < parameters.min_move_)
@@ -379,7 +383,6 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
 double GaussianProcessGuider::deduceResult(double time_step, double prediction_point /*= -1.0*/)
 {
     HandleDarkGuiding();
-    HandleTimestamps();
 
     control_signal_ = 0; // no measurement!
     // check if we are allowed to use the GP
@@ -597,10 +600,9 @@ bool GaussianProcessGuider::SetPredictionGain(double prediction_gain) {
 
 void GaussianProcessGuider::inject_data_point(double timestamp, double input, double SNR, double control) {
     // collect data point content, except for the control signal
-    HandleMeasurements(input);
+    HandleGuiding(input, SNR);
     last_prediction_end_ = timestamp;
     get_last_point().timestamp = timestamp; // overrides the usual HandleTimestamps();
-    HandleSNR(SNR);
 
     start_time_ = std::chrono::system_clock::now() - std::chrono::seconds((int) timestamp);
 

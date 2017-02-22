@@ -144,12 +144,12 @@ private:
     /**
      * Stores the current time and creates a timestamp for the GP.
      */
-    void HandleTimestamps();
+    void CreateTimestamp();
 
     /**
-     * Stores the measurement to the last datapoint.
+     * Stores the measurement, SNR and resets last_prediction_end_.
      */
-    void HandleMeasurements(double input);
+    void HandleGuiding(double input, double SNR);
 
     /**
      * Stores a zero as blind "measurement" with high variance.
@@ -165,7 +165,7 @@ private:
      * Calculates the noise from the reported SNR value according to an
      * empirically justified equation and stores it.
      */
-    void HandleSNR(double SNR);
+    double CalculateVariance(double SNR);
 
     /**
      * Estimates the main period length for a given dataset.

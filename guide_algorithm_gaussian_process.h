@@ -82,47 +82,6 @@ private:
      */
     bool dark_tracking_mode_;
 
-    /**
-     * Stores the current time and creates a timestamp for the GP.
-     */
-    void HandleTimestamps();
-
-    /**
-     * Stores the measurement to the last datapoint.
-     */
-    void HandleMeasurements(double input);
-
-    /**
-     * Stores a zero as blind "measurement" with high variance.
-     */
-    void HandleDarkGuiding();
-
-    /**
-     * Stores the control value.
-     */
-    void HandleControls(double control_input);
-
-    /**
-     * Calculates the noise from the reported SNR value according to an
-     * empirically justified equation and stores it.
-     */
-    void HandleSNR(double SNR);
-
-    /**
-     * Runs the inference machinery on the GP. Gets the measurement data from
-     * the circular buffer and stores it in Eigen::Vectors. Detrends the data
-     * with linear regression. Calculates the main frequency with an FFT.
-     * Updates the GP accordingly with new data and parameter.
-     */
-    void UpdateGP();
-
-    /**
-     * Calculates the difference in gear error for the time between the last
-     * prediction point and the current prediction point, which lies one
-     * exposure length in the future.
-     */
-    double PredictGearError();
-
 protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
