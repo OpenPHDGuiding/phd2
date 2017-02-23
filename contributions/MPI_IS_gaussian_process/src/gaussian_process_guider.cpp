@@ -288,11 +288,11 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     HandleGuiding(input, SNR);
 
     control_signal_ = parameters.control_gain_*input; // start with proportional control
-    if (std::abs(control_signal_) < parameters.min_move_)
+    if (fabs(input) < parameters.min_move_)
     {
         control_signal_ = 0; // don't make small moves
     }
-    assert(std::abs(control_signal_) == 0 || std::abs(control_signal_) >= parameters.min_move_);
+    assert(std::abs(control_signal_) == 0 || fabs(input) >= parameters.min_move_);
 
     // check if we are allowed to use the GP
     size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
