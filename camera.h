@@ -125,6 +125,8 @@ public:
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     bool            HasCooler;
+    bool            MaxADUIsKnown;
+    unsigned short  MaxADU;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage        *CurrentDarkFrame;
@@ -187,6 +189,8 @@ public:
 
     static double GetProfilePixelSize(void);
 
+    unsigned short GetMaxADU(void) const;
+
 protected:
 
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
@@ -195,6 +199,7 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
+    void SetMaxADU(bool isKnown, unsigned short maxADU);
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,
@@ -226,6 +231,11 @@ inline double GuideCamera::GetCameraPixelSize(void) const
 inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
     return true;                // Return an error, the device/driver can't report pixel size
+}
+
+inline unsigned short GuideCamera::GetMaxADU(void) const
+{
+    return MaxADUIsKnown ? MaxADU : 0;
 }
 
 #endif /* CAMERA_H_INCLUDED */

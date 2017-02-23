@@ -46,7 +46,7 @@
 
 class MassChecker
 {
-    enum { DefaultTimeWindowMs = 15000 };
+    enum { DefaultTimeWindowMs = 22500 };
 
     struct Entry
     {
@@ -55,6 +55,8 @@ class MassChecker
     };
 
     std::deque<Entry> m_data;
+    double m_highMass;   // high-water mark
+    double m_lowMass;    // low-water mark
     unsigned long m_timeWindow;
     double *m_tmp;
     size_t m_tmpSize;
@@ -64,7 +66,9 @@ class MassChecker
 public:
 
     MassChecker()
-        : m_tmp(0),
+        : m_highMass(0.),
+          m_lowMass(9e99),
+          m_tmp(0),
           m_tmpSize(0),
           m_exposure(0),
           m_isAutoExposure(false)
@@ -120,9 +124,9 @@ public:
         m_data.push_back(entry);
     }
 
-    bool CheckMass(double mass, double threshold, double limits[3])
+    bool CheckMass(double mass, double threshold, double limits[4])
     {
-        if (m_data.size() < 3)
+        if (m_data.size() < 5)
             return false;
 
         if (m_tmpSize < m_data.size())
@@ -142,17 +146,30 @@ public:
         std::nth_element(&m_tmp[0], &m_tmp[mid], &m_tmp[m_data.size()]);
         double med = m_tmp[mid];
 
-        limits[0] = med * (1. - threshold);
+        if (med > m_highMass)
+            m_highMass = med;
+        if (med < m_lowMass)
+            m_lowMass = med;
+
+        // let the low water mark drift to follow the median so that it moves back up after a
+        // period of intermittent clouds has brought it down
+        m_lowMass += .05 * (med - m_lowMass);
+
+        limits[0] = m_lowMass * (1. - threshold);
         limits[1] = med;
-        limits[2] = med * (1. + threshold);
+        limits[2] = m_highMass * (1. + threshold);
+        // when mass is depressed by sky conditions, we still want to trigger a rejection when
+        // there is a large spike in mass, even if it is still below the high water mark-based
+        // threhold
+        limits[3] = med * (1. + 2.0 * threshold);
 
         double adjmass = AdjustedMass(mass);
-        bool reject =  adjmass < limits[0] || adjmass > limits[2];
+        bool reject = adjmass < limits[0] || adjmass > limits[2] || adjmass > limits[3];
 
         if (reject && m_isAutoExposure)
         {
             // convert back to mass-like numbers for logging by caller
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
                 limits[i] *= (double) m_exposure;
         }
 
@@ -162,6 +179,8 @@ public:
     void Reset(void)
     {
         m_data.clear();
+        m_highMass = 0.;
+        m_lowMass = 9e99;
     }
 };
 
@@ -304,7 +323,8 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         }
 
         m_massChecker->Reset();
-        bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(), pFrame->GetMinStarHFD());
+        bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(),
+                              pFrame->GetMinStarHFD(), pCamera->GetMaxADU());
     }
     catch (const wxString& Msg)
     {
@@ -432,7 +452,8 @@ bool GuiderOneStar::AutoSelect(void)
 
         m_massChecker->Reset();
 
-        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, pFrame->GetMinStarHFD()))
+        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, pFrame->GetMinStarHFD(),
+                         pCamera->GetMaxADU()))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -577,6 +598,54 @@ void GuiderOneStar::InvalidateCurrentPosition(bool fullReset)
     }
 }
 
+struct DistanceChecker
+{
+    bool enabled;
+    wxLongLong_t expires;
+
+    enum { ENABLED_INTERVAL_MS = 6 * 1000 };
+
+    void Activate()
+    {
+        if (!enabled)
+            Debug.Write("DistanceChecker: activated\n");
+
+        enabled = true;
+        expires = ::wxGetUTCTimeMillis().GetValue() + ENABLED_INTERVAL_MS;
+    }
+
+    bool CheckDistance(double distance)
+    {
+        if (!enabled)
+            return true;
+
+        wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
+        if (now < expires)
+        {
+            // Star was recently rejected. Check the guide error and reject the frame if the guide
+            // error is large. This helps to handle the case of an object like a satellite
+            // traversing the searach region and causing one or more bad frames, but with only the
+            // first frame triggering the star rejection.
+
+            double distanceThreshold = 2.0 * pFrame->pGuider->CurrentError();
+            if (distance > distanceThreshold)
+            {
+                Debug.Write(wxString::Format("DistanceChecker: reject for large offset (%.2f > %.2f)\n", distance, distanceThreshold));
+                return false;
+            }
+        }
+
+        // "small" offset, safe to assume recovery complete
+        Debug.Write("DistanceChecker: deactivated\n");
+        enabled = false;
+
+        return true;
+    }
+};
+
+static DistanceChecker s_distanceChecker;
+
+
 bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo)
 {
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
@@ -595,7 +664,8 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
     {
         Star newStar(m_star);
 
-        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), pFrame->GetMinStarHFD()))
+        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), pFrame->GetMinStarHFD(),
+                          pCamera->GetMaxADU()))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
@@ -603,6 +673,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
             errorInfo->status = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
 
+            s_distanceChecker.Activate();
             ImageLogger::LogImage(pImage, *errorInfo);
 
             throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
@@ -616,7 +687,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
             bool isAutoExp;
             pFrame->GetExposureInfo(&exposure, &isAutoExp);
             m_massChecker->SetExposure(exposure, isAutoExp);
-            double limits[3];
+            double limits[4];
             if (m_massChecker->CheckMass(newStar.Mass, m_massChangeThreshold, limits))
             {
                 m_star.SetError(Star::STAR_MASSCHANGE);
@@ -625,9 +696,10 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
                 errorInfo->starSNR = newStar.SNR;
                 errorInfo->status = StarStatusStr(m_star);
                 pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
-                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2]));
+                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% limits=(%.1f, %.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2], limits[3]));
                 m_massChecker->AppendData(newStar.Mass);
 
+                s_distanceChecker.Activate();
                 ImageLogger::LogImage(pImage, *errorInfo);
 
                 throw THROW_INFO("massChangeThreshold error");
@@ -636,6 +708,20 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
 
         const PHD_Point& lockPos = LockPosition();
         double distance = lockPos.IsValid() ? newStar.Distance(lockPos) : -1.;
+
+        if (!s_distanceChecker.CheckDistance(distance))
+        {
+            m_star.SetError(Star::STAR_ERROR);
+            errorInfo->starError = Star::STAR_ERROR;
+            errorInfo->starMass = newStar.Mass;
+            errorInfo->starSNR = newStar.SNR;
+            errorInfo->status = StarStatusStr(m_star);
+            pFrame->StatusMsg(_("Recovering"));
+
+            ImageLogger::LogImage(pImage, *errorInfo);
+
+            throw THROW_INFO("CheckDistance error");
+        }
 
         ImageLogger::LogImage(pImage, distance);
 

@@ -160,7 +160,7 @@ void ImageLogger::LogImage(const usImage *img, const FrameDroppedInfo& info)
     if (s_il.settings.logFramesDropped &&
         pFrame->pGuider->IsCalibratingOrGuiding() && !pFrame->pGuider->IsPaused())
     {
-        Debug.Write(wxString::Format("ImgLogger: star lost frame %u event %u\n", img->FrameNum, s_il.eventNumber));
+        Debug.Write(wxString::Format("ImgLogger: star lost (%d) frame %u event %u\n", info.starError, img->FrameNum, s_il.eventNumber));
         s_il.BeginLogging(img);
         return;
     }
@@ -176,19 +176,34 @@ void ImageLogger::LogImage(const usImage *img, double distance)
     {
         enum { MIN_FRAMES_FOR_STATS = 10 };
         unsigned int frameCount = pFrame->m_frameCounter; // do not use img->FrameNum since the image may have been captured before guiding started
-        double curErr = wxMax(pFrame->pGuider->CurrentError(), 0.001); // prevent divide by zero
-        double relErr = distance / curErr;
-        double threshPx = s_il.settings.logFramesOverThreshPx ? s_il.settings.guideErrorThreshPx : 99.;
-        double threshRel = s_il.settings.logFramesOverThreshRel ? s_il.settings.guideErrorThreshRel : 99.;
 
-        if (frameCount >= MIN_FRAMES_FOR_STATS &&
-            (distance > threshPx || relErr > threshRel))
+        if (frameCount >= MIN_FRAMES_FOR_STATS)
         {
-            Debug.Write(wxString::Format("ImgLogger: large offset frame %u event %u dist px %.2f vs %.2f rel %.2f vs %.2f cur %.2f\n",
-                img->FrameNum, s_il.eventNumber, distance, threshPx, relErr, threshRel, curErr));
+            double curErr = wxMax(pFrame->pGuider->CurrentError(), 0.001); // prevent divide by zero
+            double relErr = distance / curErr;
+            double threshPx = s_il.settings.logFramesOverThreshPx ? s_il.settings.guideErrorThreshPx : 99.;
+            double threshRel = s_il.settings.logFramesOverThreshRel ? s_il.settings.guideErrorThreshRel : 99.;
 
-            s_il.BeginLogging(img);
-            return;
+            bool logit = false;
+
+            if (s_il.settings.logFramesOverThreshPx && s_il.settings.logFramesOverThreshRel)
+            {
+                if (distance > threshPx && relErr > threshRel)
+                    logit = true;
+            }
+            else if (s_il.settings.logFramesOverThreshPx && distance > threshPx)
+                logit = true;
+            else if (s_il.settings.logFramesOverThreshRel && relErr > threshRel)
+                logit = true;
+
+            if (logit)
+            {
+                Debug.Write(wxString::Format("ImgLogger: large offset frame %u event %u dist px %.2f vs %.2f rel %.2f vs %.2f cur %.2f\n",
+                    img->FrameNum, s_il.eventNumber, distance, threshPx, relErr, threshRel, curErr));
+
+                s_il.BeginLogging(img);
+                return;
+            }
         }
     }
 

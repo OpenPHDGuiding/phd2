@@ -203,6 +203,8 @@ GuideCamera::GuideCamera(void)
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
+    MaxADUIsKnown = pConfig->Profile.GetBoolean("/camera/MaxADUIsKnown", false);
+    MaxADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
     m_pixelSize = GetProfilePixelSize();
     MaxBinning = 1;
     Binning = pConfig->Profile.GetInt("/camera/binning", 1);
@@ -672,6 +674,14 @@ void GuideCamera::SetTimeoutMs(int ms)
     pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
 }
 
+void GuideCamera::SetMaxADU(bool isKnown, unsigned short maxADU)
+{
+    MaxADUIsKnown = isKnown;
+    MaxADU = maxADU;
+    pConfig->Profile.SetBoolean("/camera/MaxADUIsKnown", isKnown);
+    pConfig->Profile.SetInt("/camera/MaxADU", maxADU);
+}
+
 bool GuideCamera::SetCameraPixelSize(double pixel_size)
 {
     bool bError = false;
@@ -1086,6 +1096,12 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     }
 
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
+
+    { // TODO: UI for maxADU (saturation level)
+        bool isKnown = pConfig->Profile.GetBoolean("/camera/MaxADUIsKnown", false);
+        int maxADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
+        m_pCamera->SetMaxADU(isKnown, (unsigned short) maxADU);
+    }
 
     if (m_pCamera->HasCooler)
     {
