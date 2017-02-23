@@ -39,6 +39,7 @@
 #include <vector>
 #include <iostream>
 #include "gaussian_process_guider.h"
+#include "guide_performance_tools.h"
 
 #include <fstream>
 #include <thread>
@@ -96,173 +97,25 @@ public:
     }
 };
 
-const double GuidePerformanceTest::DefaultControlGain                   = 0.8; // control gain
-const int GuidePerformanceTest::DefaultNumMinPointsForInference         = 25; // minimal number of points for doing the inference
-const double GuidePerformanceTest::DefaultMinMove                       = 0.2;
+const double GuidePerformanceTest::DefaultControlGain                   = 0.99; // control gain
+const int GuidePerformanceTest::DefaultNumMinPointsForInference         = 100; // minimal number of points for doing the inference
+const double GuidePerformanceTest::DefaultMinMove                       = 0.01;
 
 const double GuidePerformanceTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 7.0; // signal variance of the long-range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScalePerKer             = 20.0; // length-scale of the periodic kernel
 const double GuidePerformanceTest::DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
-const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
+const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 28.0; // signal variance of the periodic kernel
 const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 8.0; // signal variance of the short range SE-kernel
 
-const int GuidePerformanceTest::DefaultNumMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
+const int GuidePerformanceTest::DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
 const int GuidePerformanceTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double GuidePerformanceTest::DefaultPredictionGain                = 1.0; // amount of GP prediction to blend in
+const double GuidePerformanceTest::DefaultPredictionGain                = 0.75; // amount of GP prediction to blend in
 
 const bool GuidePerformanceTest::DefaultComputePeriod                   = true;
-
-#include <iterator>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
-
-class CSVRow
-{
-    public:
-        std::string const& operator[](std::size_t index) const
-        {
-            return m_data[index];
-        }
-        std::size_t size() const
-        {
-            return m_data.size();
-        }
-        void readNextRow(std::istream& str)
-        {
-            std::string         line;
-            std::getline(str, line);
-
-            std::stringstream   lineStream(line);
-            std::string         cell;
-
-            m_data.clear();
-            while(std::getline(lineStream, cell, ','))
-            {
-                m_data.push_back(cell);
-            }
-            // This checks for a trailing comma with no data after it.
-            if (!lineStream && cell.empty())
-            {
-                // If there was a trailing comma then add an empty element.
-                m_data.push_back("");
-            }
-        }
-    private:
-        std::vector<std::string>    m_data;
-};
-
-std::istream& operator>>(std::istream& str, CSVRow& data)
-{
-    data.readNextRow(str);
-    return str;
-}
-
-Eigen::ArrayXXd read_data_from_file(std::string filename)
-{
-    std::ifstream file(filename);
-
-    int i = 0;
-    CSVRow row;
-    while(file >> row)
-    {
-        // ignore special lines
-        if (row[0][0] == 'F' || row.size() < 18 )
-        {
-            continue;
-        }
-        else
-        {
-            ++i;
-        }
-    }
-
-    size_t N = i;
-    i = -1;
-
-    // initialize the different vectors needed for the GP
-    Eigen::VectorXd times(N);
-    Eigen::VectorXd measurements(N);
-    Eigen::VectorXd controls(N);
-    Eigen::VectorXd SNRs(N);
-
-    file.close();
-    file.clear();
-    file.open(filename);
-    while(file >> row)
-    {
-        // ignore special lines
-        if (row[0][0] == 'F' || row.size() < 18 )
-        {
-            continue;
-        }
-        else
-        {
-            ++i;
-        }
-        times(i) = std::stod(row[1]);
-        measurements(i) = std::stod(row[5]);
-        controls(i) = std::stod(row[7]);
-        SNRs(i) = std::stod(row[16]);
-    }
-
-    Eigen::ArrayXXd result(4,N);
-    result.row(0) = times;
-    result.row(1) = measurements;
-    result.row(2) = controls;
-    result.row(3) = SNRs;
-
-    return result;
-}
-
-/*
- * Replicates the behavior of the standard Hysteresis algorithm.
- */
-class GAHysteresis
-{
-public:
-    double m_hysteresis;
-    double m_aggression;
-    double m_minMove;
-    double m_lastMove;
-
-    GAHysteresis() : m_hysteresis(0.1), m_aggression(0.7), m_minMove(0.2), m_lastMove(0.0)
-    { }
-
-    double result(double input)
-    {
-        double dReturn = (1.0 - m_hysteresis) * input + m_hysteresis * m_lastMove;
-
-        dReturn *= m_aggression;
-
-        if (fabs(input) < m_minMove)
-        {
-            dReturn = 0.0;
-        }
-
-        // round to three digits
-        dReturn = dReturn*1000;
-        if( dReturn < 0 )
-        {
-            dReturn = ceil(dReturn - 0.5);
-        }
-        else
-        {
-            dReturn = floor(dReturn + 0.5);
-        }
-        dReturn = dReturn/1000;
-
-        m_lastMove = dReturn;
-
-        return dReturn;
-    }
-};
 
 TEST_F(GuidePerformanceTest, performance_dataset03)
 {
@@ -270,54 +123,65 @@ TEST_F(GuidePerformanceTest, performance_dataset03)
     GAH.m_aggression = 0.6;
     GAH.m_hysteresis = 0.3;
     GAH.m_minMove = 0.1;
-
+    double exposure = 3.0;
     std::string filename("dataset03.csv");
-
-    Eigen::ArrayXXd data = read_data_from_file(filename);
-
-    Eigen::ArrayXd times = data.row(0);
-    Eigen::ArrayXd measurements = data.row(1);
-    Eigen::ArrayXd controls = data.row(2);
-    Eigen::ArrayXd SNRs = data.row(3);
-
-    int hysteresis_mismatch = 0;
-    double hysteresis_control = 0.0;
-    double hysteresis_error = 0.0;
-    double hysteresis_state = measurements(0);
-
-    double gp_guider_control = 0.0;
-    double gp_guider_state = measurements(0);
-
-    Eigen::ArrayXd gp_guider_states(times.size()-1);
-
-    for (int i = 0; i < times.size()-1; ++i)
-    {
-        hysteresis_control = GAH.result(hysteresis_state);
-
-        // this is a simple telescope "simulator"
-        hysteresis_state = hysteresis_state + (measurements(i+1) - (measurements(i) - controls(i))) - hysteresis_control;
-
-        // check consistency of simulator and hysteresis algorithm
-        EXPECT_NEAR(hysteresis_state, measurements(i+1), 5e-2);
-
-        GPG->reset();
-        for (int j = 0; j < i; ++j)
-        {
-            GPG->inject_data_point(times(j), measurements(j), SNRs(j), controls(j));
-        }
-        gp_guider_control = GPG->result(gp_guider_state, SNRs(i), 3.0);
-        gp_guider_state = gp_guider_state + (measurements(i+1) - (measurements(i) - controls(i))) - gp_guider_control;
-
-        gp_guider_states(i) = gp_guider_state;
-    }
-
-    std::cout << "GPGuider Performance: " <<
-        std::sqrt(gp_guider_states.pow(2).sum()/gp_guider_states.size()) <<
-        " | " << std::sqrt(measurements.array().pow(2).sum()/measurements.size()) << std::endl;
-    EXPECT_LT(std::sqrt(gp_guider_states.pow(2).sum()/gp_guider_states.size()),
-              std::sqrt(measurements.array().pow(2).sum()/measurements.size()));
+    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    EXPECT_GT(improvement, 0);
 }
 
+TEST_F(GuidePerformanceTest, performance_dataset04)
+{
+    GAHysteresis GAH;
+    GAH.m_hysteresis = 0.1;
+    GAH.m_aggression = 0.65;
+    GAH.m_minMove = 0.15;
+    double exposure = 2.0;
+    std::string filename("dataset04.csv");
+    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    EXPECT_GT(improvement, 0);
+}
+
+TEST_F(GuidePerformanceTest, performance_dataset05)
+{
+    GAHysteresis GAH;
+    GAH.m_hysteresis = 0.1;
+    GAH.m_aggression = 0.65;
+    GAH.m_minMove = 0.45;
+    double exposure = 0.5;
+    std::string filename("dataset05.csv");
+    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    EXPECT_GT(improvement, 0);
+}
+
+// doesn't really work for this dataset, not clear why
+TEST_F(GuidePerformanceTest, DISABLED_performance_dataset06)
+{
+    GAHysteresis GAH;
+    GAH.m_hysteresis = 0.25;
+    GAH.m_aggression = 0.55;
+    GAH.m_minMove = 0.1;
+    double exposure = 2.0;
+    std::string filename("dataset06.csv");
+    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    EXPECT_GT(improvement, 0);
+}
+
+TEST_F(GuidePerformanceTest, performance_dataset07)
+{
+    GAHysteresis GAH;
+    GAH.m_hysteresis = 0.1;
+    GAH.m_aggression = 0.7;
+    GAH.m_minMove = 0.2;
+    double exposure = 3.5;
+    std::string filename("dataset07.csv");
+    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    EXPECT_GT(improvement, 0);
+}
 
 int main(int argc, char** argv)
 {

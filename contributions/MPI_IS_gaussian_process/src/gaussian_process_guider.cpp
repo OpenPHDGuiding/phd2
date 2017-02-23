@@ -249,7 +249,11 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
 
     double p1 = prediction(1);
     double p0 = prediction(0);
-    assert(std::abs(p1 - p0) < 100); // large differences don't make sense
+
+    if (std::abs(p1 - p0) > 100) // large differences don't make sense
+    {
+        return 0.0;
+    }
     assert(!math_tools::isNaN(p1 - p0));
 
     last_prediction_end_ = next_location(1); // store current endpoint

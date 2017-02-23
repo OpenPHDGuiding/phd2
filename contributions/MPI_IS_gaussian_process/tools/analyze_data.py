@@ -27,7 +27,6 @@ def read_data_from_folder(data_folder):
             with open(csv_file, 'rb') as csvfile:
 
                 data.append([])
-                r = -1
                 guider_started = False
                 settling_started = False
                 csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')

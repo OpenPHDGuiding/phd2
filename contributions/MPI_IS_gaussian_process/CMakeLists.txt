@@ -106,3 +106,18 @@ target_include_directories(GuidePerformanceTest  PRIVATE ${gaussian_process_root
 set_property(TARGET GuidePerformanceTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPTest-4 COMMAND GuidePerformanceTest)
 configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset03.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset03.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset04.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset04.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset05.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset05.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset06.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset06.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset07.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset07.csv COPYONLY)
+
+# Performance Evaluation for the GP Guider
+add_executable(GuidePerformanceEval ${gaussian_process_root_dir}/tests/gaussian_process/evaluate_performance.cpp)
+target_link_libraries(GuidePerformanceEval MPIIS_GP gtest GPGuider)
+target_include_directories(GuidePerformanceEval  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
+set_property(TARGET GuidePerformanceEval PROPERTY FOLDER "Unit tests/Contribution")
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset03.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset03.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset04.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset04.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset05.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset05.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset06.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset06.csv COPYONLY)
+configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset07.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset07.csv COPYONLY)
