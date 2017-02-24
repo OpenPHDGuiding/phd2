@@ -54,23 +54,23 @@
 
 /** Default values for the parameters of this algorithm */
 
-static const double DefaultControlGain                   = 0.8; // control gain
-static const int    DefaultNumMinPointsForInference      = 25; // minimal number of points for doing the inference
-static const double DefaultMinMove                       = 0.2;
+static const double DefaultControlGain                   = 0.6; // control gain
+static const int    DefaultNumMinPointsForInference      = 100; // minimal number of points for doing the inference
+static const double DefaultMinMove                       = 0.01;
 
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 static const double DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-static const double DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
-static const double DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
-static const double DefaultPeriodLengthPerKer            = 500; // P_p, period-length of the periodic kernel
-static const double DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
-static const double DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
-static const double DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
+static const double DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
+static const double DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
+static const double DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
+static const double DefaultSignalVariancePerKer          = 30.0; // signal variance of the periodic kernel
+static const double DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
+static const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
-static const int    DefaultNumMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
+static const int    DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
 static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-static const double DefaultPredictionGain                  = 1.0; // amount of GP prediction to blend in
+static const double DefaultPredictionGain                  = 0.8; // amount of GP prediction to blend in
 
 static const bool   DefaultComputePeriod                 = true;
 

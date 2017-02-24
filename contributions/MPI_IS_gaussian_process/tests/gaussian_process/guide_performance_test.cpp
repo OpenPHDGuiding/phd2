@@ -97,23 +97,23 @@ public:
     }
 };
 
-const double GuidePerformanceTest::DefaultControlGain                   = 0.99; // control gain
+const double GuidePerformanceTest::DefaultControlGain                   = 0.6; // control gain
 const int GuidePerformanceTest::DefaultNumMinPointsForInference         = 100; // minimal number of points for doing the inference
 const double GuidePerformanceTest::DefaultMinMove                       = 0.01;
 
 const double GuidePerformanceTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 7.0; // signal variance of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultLengthScalePerKer             = 20.0; // length-scale of the periodic kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
 const double GuidePerformanceTest::DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
-const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 28.0; // signal variance of the periodic kernel
-const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 8.0; // signal variance of the short range SE-kernel
+const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 30.0; // signal variance of the periodic kernel
+const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
 const int GuidePerformanceTest::DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
 const int GuidePerformanceTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double GuidePerformanceTest::DefaultPredictionGain                = 0.75; // amount of GP prediction to blend in
+const double GuidePerformanceTest::DefaultPredictionGain                = 0.8; // amount of GP prediction to blend in
 
 const bool GuidePerformanceTest::DefaultComputePeriod                   = true;
 

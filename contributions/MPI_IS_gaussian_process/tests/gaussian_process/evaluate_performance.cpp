@@ -35,23 +35,23 @@
 #include "gaussian_process_guider.h"
 #include "guide_performance_tools.h"
 
-const double DefaultControlGain                   = 0.99;//0.60; // control gain
+const double DefaultControlGain                   = 0.60; // control gain
 const int DefaultNumMinPointsForInference         = 100; // minimal number of points for doing the inference
 const double DefaultMinMove                       = 0.01;
 
 const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 const double DefaultLengthScaleSE0Ker             = 500.0;//900.0 // length-scale of the long-range SE-kernel
-const double DefaultSignalVarianceSE0Ker          = 14.0;//5.0; // signal variance of the long-range SE-kernel
-const double DefaultLengthScalePerKer             = 20.0;//25.0; // length-scale of the periodic kernel
+const double DefaultSignalVarianceSE0Ker          = 20.0;//5.0; // signal variance of the long-range SE-kernel
+const double DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
 const double DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
-const double DefaultSignalVariancePerKer          = 28.0;//20.0; // signal variance of the periodic kernel
-const double DefaultLengthScaleSE1Ker             = 5.0;//7.0; // length-scale of the short-range SE-kernel
-const double DefaultSignalVarianceSE1Ker          = 8.0;//10.0; // signal variance of the short range SE-kernel
+const double DefaultSignalVariancePerKer          = 30.0;//20.0; // signal variance of the periodic kernel
+const double DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
+const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
 const int DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
 const int DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double DefaultPredictionGain                = 0.75;//0.8; // amount of GP prediction to blend in
+const double DefaultPredictionGain                = 0.8; // amount of GP prediction to blend in
 
 const bool DefaultComputePeriod                   = true;
 
