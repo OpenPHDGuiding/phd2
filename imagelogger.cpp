@@ -101,7 +101,8 @@ struct IL
     void LogSavedImages()
     {
         for (int i = 0; i < SAVE_IMAGES; i++)
-            LogImage(saved_image[i]);
+            if (saved_image[i])
+                LogImage(saved_image[i]);
     }
 
     void BeginLogging(const usImage *img)
