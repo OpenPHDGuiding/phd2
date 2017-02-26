@@ -294,6 +294,12 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                 }
             }
 
+            if (nbg < 10) // only possible after the first iteration
+            {
+                Debug.Write(wxString::Format("Star::Find: too few background points! nbg=%u mean=%.1f sigma=%.1f\n", nbg, mean_bg, sigma_bg));
+                break;
+            }
+
             prev_mean_bg = mean_bg;
             mean_bg = sum / (double) nbg;
             sigma2_bg = q / (double) (nbg - 1);
