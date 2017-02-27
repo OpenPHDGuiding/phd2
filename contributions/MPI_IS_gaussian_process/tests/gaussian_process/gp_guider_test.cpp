@@ -123,46 +123,7 @@ const bool GPGTest::DefaultComputePeriod                   = true;
 #include <vector>
 #include <string>
 
-class CSVRow
-{
-    public:
-        std::string const& operator[](std::size_t index) const
-        {
-            return m_data[index];
-        }
-        std::size_t size() const
-        {
-            return m_data.size();
-        }
-        void readNextRow(std::istream& str)
-        {
-            std::string         line;
-            std::getline(str, line);
-
-            std::stringstream   lineStream(line);
-            std::string         cell;
-
-            m_data.clear();
-            while(std::getline(lineStream, cell, ','))
-            {
-                m_data.push_back(cell);
-            }
-            // This checks for a trailing comma with no data after it.
-            if (!lineStream && cell.empty())
-            {
-                // If there was a trailing comma then add an empty element.
-                m_data.push_back("");
-            }
-        }
-    private:
-        std::vector<std::string>    m_data;
-};
-
-std::istream& operator>>(std::istream& str, CSVRow& data)
-{
-    data.readNextRow(str);
-    return str;
-}
+#include "guide_performance_tools.h"
 
 TEST_F(GPGTest, simple_result_test)
 {
@@ -427,6 +388,8 @@ TEST_F(GPGTest, real_data_test)
         GPG->inject_data_point(time, measurement, SNR, control);
     }
 
+    EXPECT_GT(i, 0) << "dataset01.csv was empty or not present";
+
     GPG->result(0.0, 25.0, 3.0, time);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
@@ -458,12 +421,19 @@ TEST_F(GPGTest, parameter_filter_test)
         filtered_period_lengths(i - 1) = GPG->GetGPHyperparameters()[7];
     }
     filtered_period_lengths.conservativeResize(i);
-//     std::cout << filtered_period_lengths << std::endl;
 
-    Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(25);
-    Eigen::VectorXd deviation = period_lengths_tail - 482*Eigen::VectorXd::Ones(25);
+    EXPECT_GT(i, 0) << "dataset02.csv was empty or not present";
 
-    EXPECT_LT(math_tools::stdandard_deviation(deviation), 1);
+    double std_dev = std::numeric_limits<double>::infinity();
+
+    if (i > 25)
+    {
+        Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(25);
+        Eigen::VectorXd deviation = period_lengths_tail - 482*Eigen::VectorXd::Ones(25);
+        std_dev = math_tools::stdandard_deviation(deviation);
+    }
+
+    EXPECT_LT(std_dev, 1);
 }
 
 TEST_F(GPGTest, period_interpolation_test)
@@ -556,6 +526,28 @@ TEST_F(GPGTest, DISABLED_log_period_length)
         outfile << std::setw(8) << GPG->GetGPHyperparameters()[7] << "\n";
     }
     outfile.close();
+}
+
+// This is the dataset of an user who experienced a NaN-issue.
+// It should, of course, return a non-NaN value (a.k.a.: a number).
+TEST_F(GPGTest, real_data_test_nan_issue)
+{
+    Eigen::ArrayXXd data = read_data_from_file("dataset08.csv");
+
+    Eigen::ArrayXd controls = data.row(2);
+
+    for (int i = 0; i < data.cols(); ++i)
+    {
+        GPG->inject_data_point(data(0,i), data(1,i), data(3,i), data(2,i));
+    }
+
+    EXPECT_GT(data.cols(), 0) << "dataset was empty or not present";
+
+    double result = GPG->result(0.622, 15.32, 2.0);
+
+    std::cout << result << std::endl;
+
+    EXPECT_FALSE(math_tools::isNaN(result));
 }
 
 int main(int argc, char** argv)

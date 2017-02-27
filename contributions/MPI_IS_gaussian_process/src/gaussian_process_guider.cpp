@@ -549,8 +549,16 @@ std::vector<double> GaussianProcessGuider::GetGPHyperparameters() const
 bool GaussianProcessGuider::SetGPHyperparameters(std::vector<double> const &hyperparameters) {
     Eigen::VectorXd hyperparameters_eig = Eigen::VectorXd::Map(&hyperparameters[0], hyperparameters.size());
 
+    // prevent length scales from becoming too small (makes GP unstable)
+    hyperparameters_eig(1) = std::max(hyperparameters_eig(1), 1.0);
+    hyperparameters_eig(3) = std::max(hyperparameters_eig(3), 1.0);
+    hyperparameters_eig(5) = std::max(hyperparameters_eig(5), 1.0);
+
     // converts the length-scale of the periodic covariance from natural units to standard notation
     hyperparameters_eig(3) = 4*std::sin(hyperparameters_eig(3)*M_PI/hyperparameters_eig(7));
+
+    // safeguard all parameters from being too small (log conversion)
+    hyperparameters_eig = hyperparameters_eig.array().max(1e-10);
 
     // the GP works in log space, therefore we need to convert
     gp_.setHyperParameters(hyperparameters_eig.array().log());
@@ -651,6 +659,13 @@ double GaussianProcessGuider::EstimatePeriodLength(Eigen::VectorXd time, Eigen::
             interp_dat << amplitudes(maxIndex - 1), amplitudes(maxIndex), amplitudes(maxIndex + 1);
             interp_dat = interp_dat.array().log();
 
+            // we need to handle the case where all amplitudes are equal
+            // the linear regression would be unstable in this case
+            if (interp_dat.maxCoeff() - interp_dat.minCoeff() < 1e-10)
+            {
+                return period_length; // don't do the linear regression
+            }
+
             // building feature matrix
             Eigen::MatrixXd phi(3,3);
             phi.row(0) = interp_loc.array().pow(2);
@@ -679,11 +694,22 @@ double GaussianProcessGuider::EstimatePeriodLength(Eigen::VectorXd time, Eigen::
         outfile.close();
         #endif
 
+        assert(!math_tools::isNaN(period_length));
+
         return period_length;
 }
 
 void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
         std::vector<double> hypers = GetGPHyperparameters();
+
+        // assert for the developers...
+        assert(!math_tools::isNaN(period_length));
+
+        // ...and save the day for the users
+        if (math_tools::isNaN(period_length))
+        {
+             period_length = hypers[7]; // just use the old value instead
+        }
 
         double mean = hypers[7]; // the old mean
         double variance = period_length_variance_ + PROCESS_VARIANCE; // predictive variance

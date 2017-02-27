@@ -127,7 +127,7 @@ public:
 
         width = StringWidth(_T("0.00"));
         m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, DefaultMinMove, 0.05);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 5.0, DefaultMinMove, 0.01);
         m_pMinMove->SetDigits(2);
         DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
             wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? "
@@ -136,7 +136,7 @@ public:
 
         width = StringWidth(_T("0000.0"));
         m_pPKPeriodLength = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 50, 2000, DefaultPeriodLengthPerKer, 1);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 50.0, 2000.0, DefaultPeriodLengthPerKer, 1);
         m_pPKPeriodLength->SetDigits(2);
         m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("auto"));
         DoAdd(_("Period Length"), m_pPKPeriodLength,
@@ -163,7 +163,7 @@ public:
 
         width = StringWidth(_T("0000"));
         m_pNumPointsPeriodComputation = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, DefaultNumMinPointsForPeriodComputation, 10);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 1000, DefaultNumMinPointsForPeriodComputation);
         m_pExpertPage->Add(MakeLabeledControl(_("Minimum Data Points (Period Estimation)"), m_pNumPointsPeriodComputation,
             wxString::Format(_("Minimal number of measurements for estimating the period length. "
             "If there are too little data points, the estimation might not work. Default = %d"),
@@ -181,14 +181,14 @@ public:
 
         width = StringWidth(_T("000.0"));
         m_pSE0KSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE0Ker, 0.1);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE0Ker, 1.0);
         m_pSE0KSignalVariance->SetDigits(2);
         m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Long Range)"), m_pSE0KSignalVariance,
             wxString::Format(_("Signal variance (in pixels) of the long-term variations. Default = %.2f"), DefaultSignalVarianceSE0Ker)));
 
         width = StringWidth(_T("000.0"));
         m_pPKLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultLengthScalePerKer, 0.05);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 50.0, DefaultLengthScalePerKer, 5.0);
         m_pPKLengthScale->SetDigits(2);
         m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Periodic)"), m_pPKLengthScale,
             wxString::Format(_("The length scale (in seconds) defines the \"wigglyness\" of the periodic structure. "
@@ -205,7 +205,7 @@ public:
 
         width = StringWidth(_T("000.0"));
         m_pSE1KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultLengthScaleSE1Ker, 1.0);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, DefaultLengthScaleSE1Ker, 1.0);
         m_pSE1KLengthScale->SetDigits(2);
         m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Short Range)"), m_pSE1KLengthScale,
             wxString::Format(_("Length scale (in seconds) of the short range non-periodic parts "
@@ -532,7 +532,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // length scale short SE kernel
     try
     {
-      if (hyperparameters[1] < 0)
+      if (hyperparameters[1] < 1.0) // zero length scale is unstable
       {
         throw ERROR_INFO("invalid length scale for short SE kernel");
       }
@@ -549,7 +549,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // signal variance short SE kernel
     try
     {
-      if (hyperparameters[2] < 0)
+      if (hyperparameters[2] < 0.0)
       {
         throw ERROR_INFO("invalid signal variance for the short SE kernel");
       }
@@ -566,7 +566,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // length scale periodic kernel
     try
     {
-        if (hyperparameters[3] < 0)
+        if (hyperparameters[3] < 1.0) // zero length scale is unstable
         {
             throw ERROR_INFO("invalid length scale for periodic kernel");
         }
@@ -583,7 +583,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // signal variance periodic kernel
     try
     {
-        if (hyperparameters[4] < 0)
+        if (hyperparameters[4] < 0.0)
         {
             throw ERROR_INFO("invalid signal variance for the periodic kernel");
         }
@@ -601,7 +601,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // length scale long SE kernel
     try
     {
-        if (hyperparameters[5] < 0)
+        if (hyperparameters[5] < 1.0) // zero length scale is unstable
         {
             throw ERROR_INFO("invalid length scale for SE kernel");
         }
@@ -618,7 +618,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // signal variance SE kernel
     try
     {
-        if (hyperparameters[6] < 0)
+        if (hyperparameters[6] < 0.0)
         {
             throw ERROR_INFO("invalid signal variance for the SE kernel");
         }
@@ -635,7 +635,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // period length periodic kernel
     try
     {
-      if (hyperparameters[7] < 0)
+      if (hyperparameters[7] < 1.0) // zero period length is unstable
       {
         throw ERROR_INFO("invalid period length for periodic kernel");
       }
