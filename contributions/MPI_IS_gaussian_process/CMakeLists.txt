@@ -95,21 +95,14 @@ add_executable(GPGuiderTest ${gaussian_process_root_dir}/tests/gaussian_process/
 target_link_libraries(GPGuiderTest MPIIS_GP gtest GPGuider)
 target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
 set_property(TARGET GPGuiderTest PROPERTY FOLDER "Unit tests/Contribution")
-add_test(NAME GPTest-3 COMMAND GPGuiderTest)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset01.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset01.csv COPYONLY)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset02.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset02.csv COPYONLY)
+add_test(NAME GPTest-3 COMMAND GPGuiderTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
 # Performance Test for the GP Guider
 add_executable(GuidePerformanceTest ${gaussian_process_root_dir}/tests/gaussian_process/guide_performance_test.cpp)
 target_link_libraries(GuidePerformanceTest MPIIS_GP gtest GPGuider)
 target_include_directories(GuidePerformanceTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
 set_property(TARGET GuidePerformanceTest PROPERTY FOLDER "Unit tests/Contribution")
-add_test(NAME GPTest-4 COMMAND GuidePerformanceTest)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset03.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset03.csv COPYONLY)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset04.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset04.csv COPYONLY)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset05.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset05.csv COPYONLY)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset06.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset06.csv COPYONLY)
-configure_file(${gaussian_process_root_dir}/tests/gaussian_process/dataset07.csv ${CMAKE_CURRENT_BINARY_DIR}/dataset07.csv COPYONLY)
+add_test(NAME GPTest-4 COMMAND GuidePerformanceTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
 # Performance Evaluation for the GP Guider
 add_executable(GuidePerformanceEval ${gaussian_process_root_dir}/tests/gaussian_process/evaluate_performance.cpp)

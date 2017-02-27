@@ -144,7 +144,7 @@ private:
     /**
      * Stores the current time and creates a timestamp for the GP.
      */
-    void CreateTimestamp();
+    void SetTimestamp();
 
     /**
      * Stores the measurement, SNR and resets last_prediction_end_.
@@ -170,7 +170,7 @@ private:
     /**
      * Estimates the main period length for a given dataset.
      */
-    double EstimatePeriodLength(Eigen::VectorXd time, Eigen::VectorXd data);
+    double EstimatePeriodLength(const Eigen::VectorXd& time, const Eigen::VectorXd& data);
 
     /**
      * Calculates the difference in gear error for the time between the last
@@ -289,7 +289,7 @@ public:
     /**
      * Takes timestamps, measurements and SNRs and returns them regularized in a matrix.
      */
-    Eigen::MatrixXd regularize_dataset(Eigen::VectorXd& timestamps, Eigen::VectorXd& gear_error, Eigen::VectorXd& variances);
+    Eigen::MatrixXd regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error, const Eigen::VectorXd& variances);
 };
 
 #endif  // GAUSSIAN_PROCESS_GUIDER

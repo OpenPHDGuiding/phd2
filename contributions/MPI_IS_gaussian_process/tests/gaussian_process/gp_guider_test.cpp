@@ -358,6 +358,7 @@ TEST_F(GPGTest, data_preparation_test)
     EXPECT_NEAR(measured_result, controlled_result, 1e-1);
 }
 
+// The period identification should work on real data, with irregular timestamps
 TEST_F(GPGTest, real_data_test)
 {
     double time = 0.0;
@@ -429,6 +430,7 @@ TEST_F(GPGTest, parameter_filter_test)
     if (i > 25)
     {
         Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(25);
+        // the period length of 482 is estimated from my telescope hardware
         Eigen::VectorXd deviation = period_lengths_tail - 482*Eigen::VectorXd::Ones(25);
         std_dev = math_tools::stdandard_deviation(deviation);
     }

@@ -76,13 +76,13 @@ class CSVRow
         std::vector<std::string>    m_data;
 };
 
-std::istream& operator>>(std::istream& str, CSVRow& data)
+inline std::istream& operator>>(std::istream& str, CSVRow& data)
 {
     data.readNextRow(str);
     return str;
 }
 
-Eigen::ArrayXXd read_data_from_file(std::string filename)
+inline Eigen::ArrayXXd read_data_from_file(std::string filename)
 {
     std::ifstream file(filename);
 
@@ -184,7 +184,7 @@ public:
 /*
  * Calculates the improvement of the GP Guider over Hysteresis on a dataset.
  */
-double calculate_improvement(std::string filename, GAHysteresis GAH, GaussianProcessGuider* GPG, double exposure)
+inline double calculate_improvement(std::string filename, GAHysteresis GAH, GaussianProcessGuider* GPG, double exposure)
 {
     Eigen::ArrayXXd data = read_data_from_file(filename);
 
