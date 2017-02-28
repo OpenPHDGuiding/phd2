@@ -1708,6 +1708,12 @@ static void set_dec_guide_mode(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void get_settling(JObj& response, const json_value *params)
+{
+    bool settling = PhdController::IsSettling();
+    response << jrpc_result(settling);
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -1779,6 +1785,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "set_algo_param", &set_algo_param, },
         { "get_dec_guide_mode", &get_dec_guide_mode, },
         { "set_dec_guide_mode", &set_dec_guide_mode, },
+        { "get_settling", &get_settling, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
