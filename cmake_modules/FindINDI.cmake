@@ -27,6 +27,16 @@ macro(_INDI_check_version)
   set(INDI_VERSION_RELEASE "${CMAKE_MATCH_1}")
 
   set(INDI_VERSION ${INDI_VERSION_MAJOR}.${INDI_VERSION_MINOR}.${INDI_VERSION_RELEASE})
+
+  if(${INDI_VERSION} STREQUAL "..")
+    # we may have an old version
+    string(REGEX MATCH "#define INDI_LIBV[ \t]+([0-9]+).([0-9]+)" _INDI_version_major_match _INDI_version_minor_match "${_INDI_version_header}")
+    set(INDI_VERSION_MAJOR "${CMAKE_MATCH_1}")
+    set(INDI_VERSION_MINOR "${CMAKE_MATCH_2}")
+    set(INDI_VERSION ${INDI_VERSION_MAJOR}.${INDI_VERSION_MINOR})
+    message(STATUS "Old INDI version ${INDI_VERSION} found in ${INDI_INCLUDE_DIR}, please consider upgrading")
+  endif(${INDI_VERSION} STREQUAL "..")
+
   if(${INDI_VERSION} VERSION_LESS ${INDI_FIND_VERSION})
     set(INDI_VERSION_OK FALSE)
   else(${INDI_VERSION} VERSION_LESS ${INDI_FIND_VERSION})
