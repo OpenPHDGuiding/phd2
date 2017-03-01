@@ -349,14 +349,18 @@ void GP::clearData()
     data_out_ = Eigen::VectorXd();
 }
 
-GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
+Eigen::VectorXd GP::predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=0*/) const
 {
     // The prior covariance matrix (evaluated on test points)
     Eigen::MatrixXd prior_cov = covFunc_->evaluate(locations, locations);
 
     if (data_loc_.rows() == 0)  // check if the data is empty
     {
-        return std::make_pair(Eigen::VectorXd::Zero(locations.size()), prior_cov);
+        if (variances != 0)
+        {
+            (*variances) = prior_cov.diagonal();
+        }
+        return Eigen::VectorXd::Zero(locations.size());
     }
     else
     {
@@ -370,13 +374,13 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const
             phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // instead of pow(0)
             phi.row(1) = locations.array(); // instead of pow(1)
 
-            return predict(prior_cov, mixed_cov, phi);
+            return predict(prior_cov, mixed_cov, phi, variances);
         }
-        return predict(prior_cov, mixed_cov);
+        return predict(prior_cov, mixed_cov, Eigen::MatrixXd(), variances);
     }
 }
 
-GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) const
+Eigen::VectorXd GP::predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=0*/) const
 {
     // use the suitable covariance function, depending on whether an
     // output projection is used or not.
@@ -397,7 +401,11 @@ GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) cons
 
     if (data_loc_.rows() == 0)  // check if the data is empty
     {
-        return std::make_pair(Eigen::VectorXd::Zero(locations.size()), prior_cov);
+        if (variances != 0)
+        {
+            (*variances) = prior_cov.diagonal();
+        }
+        return Eigen::VectorXd::Zero(locations.size());
     }
     else
     {
@@ -411,15 +419,14 @@ GP::VectorMatrixPair GP::predictProjected(const Eigen::VectorXd& locations) cons
             phi.row(0) = Eigen::MatrixXd::Ones(1,locations.rows()); // instead of pow(0)
             phi.row(1) = locations.array(); // instead of pow(1)
 
-            return predict(prior_cov, mixed_cov, phi);
+            return predict(prior_cov, mixed_cov, phi, variances);
         }
-        return predict(prior_cov, mixed_cov);
+        return predict(prior_cov, mixed_cov, Eigen::MatrixXd(), variances);
     }
 }
 
-GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
-                                 const Eigen::MatrixXd& mixed_cov,
-                                 const Eigen::MatrixXd& phi) const
+Eigen::VectorXd GP::predict(const Eigen::MatrixXd& prior_cov, const Eigen::MatrixXd& mixed_cov,
+                            const Eigen::MatrixXd& phi /*=Eigen::MatrixXd()*/, Eigen::VectorXd* variances /*=0*/) const
 {
 
     // calculate GP mean from precomputed alpha vector
@@ -428,20 +435,31 @@ GP::VectorMatrixPair GP::predict(const Eigen::MatrixXd& prior_cov,
     // precompute K^{-1} * mixed_cov
     Eigen::MatrixXd gamma = chol_gram_matrix_.solve(mixed_cov.transpose());
 
-    // calculate GP variance
-    Eigen::MatrixXd v = prior_cov - mixed_cov * gamma;
+    Eigen::MatrixXd R;
 
     // include fixed-features in the calculations
     if (use_explicit_trend_)
     {
-        Eigen::MatrixXd R = phi - feature_vectors_ * gamma;
-        Eigen::MatrixXd B = R.transpose() * chol_feature_matrix_.solve(R);
+        R = phi - feature_vectors_ * gamma;
 
         m += R.transpose() * beta_;
-        v += B;
     }
 
-    return std::make_pair(m, v);
+    if (variances != 0)
+    {
+        // calculate GP variance
+        Eigen::MatrixXd v = prior_cov - mixed_cov * gamma;
+
+        // include fixed-features in the calculations
+        if (use_explicit_trend_)
+        {
+            assert(R.size() > 0);
+            v += R.transpose() * chol_feature_matrix_.solve(R);
+        }
+
+        (*variances) = v.diagonal();
+    }
+    return m;
 }
 
 void GP::setHyperParameters(const Eigen::VectorXd& hyperParameters)

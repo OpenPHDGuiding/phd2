@@ -257,7 +257,7 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
     // prediction from the last endpoint to the prediction point
     Eigen::VectorXd next_location(2);
     next_location << last_prediction_end_, prediction_location + dither_offset_;
-    Eigen::VectorXd prediction = gp_.predictProjected(next_location).first;
+    Eigen::VectorXd prediction = gp_.predictProjected(next_location);
 
     double p1 = prediction(1);
     double p0 = prediction(0);
@@ -722,10 +722,9 @@ void GaussianProcessGuider::save_gp_data() const
     int M = 512; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
 
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = gp_.predictProjected(locations);
-
-    Eigen::VectorXd means = predictions.first;
-    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
+    Eigen::VectorXd vars(locations.size());
+    Eigen::VectorXd means = gp_.predictProjected(locations, &vars);
+    Eigen::VectorXd stds = vars.array().sqrt();
 
     std::ofstream outfile;
     outfile.open("measurement_data.csv", std::ios_base::out);

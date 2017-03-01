@@ -207,14 +207,14 @@ TEST_F(GPTest, infer_prediction_clear_test)
     Eigen::VectorXd prediction_location(2);
     prediction_location << 1, 2;
 
-    Eigen::VectorXd prediction = gp_.predict(prediction_location).first;
+    Eigen::VectorXd prediction = gp_.predict(prediction_location);
 
     EXPECT_NEAR(prediction(0), 1, 1e-6);
     EXPECT_FALSE(std::abs(prediction(1) - 1) < 1e-6);
 
     gp_.clearData();
 
-    prediction = gp_.predict(prediction_location).first;
+    prediction = gp_.predict(prediction_location);
 
     EXPECT_NEAR(prediction(0), 0, 1e-6);
     EXPECT_NEAR(prediction(1), 0, 1e-6);
