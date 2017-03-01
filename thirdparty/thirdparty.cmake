@@ -887,7 +887,7 @@ endif()  # APPLE
 # Unix/Linux specific dependencies
 # - ASI cameras
 # - INDI
-# - Nova (optional)
+# - Nova (Required by INDI)
 # - USB (commonly shared)
 # - math (libm)
 # - 
@@ -927,28 +927,26 @@ if(UNIX AND NOT APPLE)
   # some features for indi >= 0.9 are used apparently
   find_package(INDI 0.9 REQUIRED)
   include_directories(${INDI_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  if(PC_INDI_VERSION VERSION_LESS "1.1")
+  if(INDI_VERSION VERSION_LESS "1.4")
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+  else(INDI_VERSION VERSION_LESS "1.4")
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+  endif(INDI_VERSION VERSION_LESS "1.4")
+  if(INDI_VERSION VERSION_LESS "1.1")
     add_definitions("-DINDI_PRE_1_1_0")
   endif()
-  if(PC_INDI_VERSION VERSION_LESS "1.0")
+  if(INDI_VERSION VERSION_LESS "1.0")
     add_definitions("-DINDI_PRE_1_0_0")
   endif()
   
   # INDI depends on libz
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-
   
-  # Nova
-  find_package(Nova)
-  if(NOVA_FOUND)
-      include_directories(${NOVA_INCLUDE_DIR})
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-      add_definitions("-DLIBNOVA" )
-  else()
-      message(WARNING "libnova not found! Considere to install libnova-dev ")
-  endif() 
-
+  # INDI depends on libnova
+  find_package(Nova REQUIRED)
+  include_directories(${NOVA_INCLUDE_DIR})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+  add_definitions("-DLIBNOVA")
 
 endif()
