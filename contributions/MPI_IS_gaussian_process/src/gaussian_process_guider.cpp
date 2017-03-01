@@ -43,10 +43,11 @@
 
 #include <cmath>
 #include <ctime>
-
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 
-#define GP_DEBUG_FILE_ 0
+#define SAVE_FFT_DATA_ 0
 #define PRINT_TIMINGS_ 0
 
 #define CIRCULAR_BUFFER_SIZE 8192 // for the raw data storage
@@ -59,12 +60,6 @@
 #define PRIOR_VARIANCE 1e6
 #define PROCESS_VARIANCE 1e0
 #define MEASUREMENT_VARIANCE 1e3
-
-#if GP_DEBUG_FILE_
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#endif
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     start_time_(std::chrono::system_clock::now()),
@@ -330,69 +325,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(control_signal_); // already store control signal
 
-    // write the GP output to a file for easy analyzation
-    #if GP_DEBUG_FILE_
-    int N = get_number_of_measurements();
 
-    // initialize the different vectors needed for the GP
-    Eigen::VectorXd timestamps(N - 1);
-    Eigen::VectorXd measurements(N - 1);
-    Eigen::VectorXd variances(N - 1);
-    Eigen::VectorXd controls(N - 1);
-    Eigen::VectorXd sum_controls(N - 1);
-    Eigen::VectorXd gear_error(N - 1);
-    Eigen::VectorXd linear_fit(N - 1);
-
-    // transfer the data from the circular buffer to the Eigen::Vectors
-    for(size_t i = 0; i < N-1; i++)
-    {
-        timestamps(i) = circular_buffer_data_[i].timestamp;
-        measurements(i) = circular_buffer_data_[i].measurement;
-        variances(i) = circular_buffer_data_[i].variance;
-        controls(i) = circular_buffer_data_[i].control;
-        sum_controls(i) = circular_buffer_data_[i].control;
-        if(i > 0)
-        {
-            sum_controls(i) += sum_controls(i-1); // sum over the control signals
-        }
-    }
-    gear_error = sum_controls + measurements; // for each time step, add the residual error
-
-    // inference of the GP with these new points
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
-                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
-
-    int M = 512; // number of prediction points
-    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
-
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = gp_.predictProjected(locations);
-
-    Eigen::VectorXd means = predictions.first;
-    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
-
-    std::ofstream outfile;
-    outfile.open("measurement_data.csv", std::ios_base::out);
-    if(outfile.is_open()) {
-        outfile << "location, output\n";
-        for( int i = 0; i < timestamps.size(); ++i) {
-            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
-        }
-    } else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
-
-    outfile.open("gp_data.csv", std::ios_base::out);
-    if(outfile.is_open()) {
-        outfile << "location, mean, std\n";
-        for( int i = 0; i < locations.size(); ++i) {
-            outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
-        }
-    } else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
-    #endif
 
     // assert for the developers...
     assert(!math_tools::isNaN(control_signal_));
@@ -424,72 +357,6 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
 
     add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(control_signal_); // already store control signal
-
-    // write the GP output to a file for easy analyzation
-    #if GP_DEBUG_FILE_
-    int N = get_number_of_measurements();
-
-    // initialize the different vectors needed for the GP
-    Eigen::VectorXd timestamps(N - 1);
-    Eigen::VectorXd measurements(N - 1);
-    Eigen::VectorXd variances(N - 1);
-    Eigen::VectorXd controls(N - 1);
-    Eigen::VectorXd sum_controls(N - 1);
-    Eigen::VectorXd gear_error(N - 1);
-    Eigen::VectorXd linear_fit(N - 1);
-
-    // transfer the data from the circular buffer to the Eigen::Vectors
-    for (size_t i = 0; i < N - 1; i++)
-    {
-        timestamps(i) = circular_buffer_data_[i].timestamp;
-        measurements(i) = circular_buffer_data_[i].measurement;
-        variances(i) = circular_buffer_data_[i].variance;
-        controls(i) = circular_buffer_data_[i].control;
-        sum_controls(i) = circular_buffer_data_[i].control;
-        if (i > 0)
-        {
-            sum_controls(i) += sum_controls(i - 1); // sum over the control signals
-        }
-    }
-    gear_error = sum_controls + measurements; // for each time step, add the residual error
-
-    // inference of the GP with these new points
-    gp_.inferSD(timestamps, gear_error, parameters.points_for_approximation_, variances,
-                std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count());
-
-    int M = 512; // number of prediction points
-    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
-
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = gp_.predictProjected(locations);
-
-    Eigen::VectorXd means = predictions.first;
-    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
-
-    std::ofstream outfile;
-    outfile.open("measurement_data.csv", std::ios_base::out);
-    if (outfile.is_open()) {
-        outfile << "location, output\n";
-        for (int i = 0; i < timestamps.size(); ++i) {
-            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
-        }
-    }
-    else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
-
-    outfile.open("gp_data.csv", std::ios_base::out);
-    if (outfile.is_open()) {
-        outfile << "location, mean, std\n";
-        for (int i = 0; i < locations.size(); ++i) {
-            outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
-        }
-    }
-    else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
-    #endif
 
     // assert for the developers...
     assert(!math_tools::isNaN(control_signal_));
@@ -709,7 +576,7 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
         max_frequency = max_frequency - w(1)/(2*w(0))*spread; // note the de-normalization
     }
 
-    #if GP_DEBUG_FILE_
+#if SAVE_FFT_DATA_
     std::ofstream outfile;
     outfile.open("spectrum_data.csv", std::ios_base::out);
     if (outfile.is_open()) {
@@ -722,7 +589,7 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
         std::cout << "unable to write to file" << std::endl;
     }
     outfile.close();
-    #endif
+#endif
 
     double period_length = 1 / max_frequency; // we return the period length!
     return period_length;
@@ -816,4 +683,70 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
     result.row(2) = reg_variances.head(j);
 
     return result;
+}
+
+void GaussianProcessGuider::save_gp_data() const
+{
+    // write the GP output to a file for easy analyzation
+    int N = get_number_of_measurements();
+
+    if (N < 2)
+    {
+        return; // cannot save data before first measurement
+    }
+
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd timestamps(N - 1);
+    Eigen::VectorXd measurements(N - 1);
+    Eigen::VectorXd variances(N - 1);
+    Eigen::VectorXd controls(N - 1);
+    Eigen::VectorXd sum_controls(N - 1);
+    Eigen::VectorXd gear_error(N - 1);
+    Eigen::VectorXd linear_fit(N - 1);
+
+    // transfer the data from the circular buffer to the Eigen::Vectors
+    for(size_t i = 0; i < N-1; i++)
+    {
+        timestamps(i) = circular_buffer_data_[i].timestamp;
+        measurements(i) = circular_buffer_data_[i].measurement;
+        variances(i) = circular_buffer_data_[i].variance;
+        controls(i) = circular_buffer_data_[i].control;
+        sum_controls(i) = circular_buffer_data_[i].control;
+        if(i > 0)
+        {
+            sum_controls(i) += sum_controls(i-1); // sum over the control signals
+        }
+    }
+    gear_error = sum_controls + measurements; // for each time step, add the residual error
+
+    int M = 512; // number of prediction points
+    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(M, 0, get_second_last_point().timestamp + 1500);
+
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = gp_.predictProjected(locations);
+
+    Eigen::VectorXd means = predictions.first;
+    Eigen::VectorXd stds = predictions.second.diagonal().array().sqrt();
+
+    std::ofstream outfile;
+    outfile.open("measurement_data.csv", std::ios_base::out);
+    if(outfile.is_open()) {
+        outfile << "location, output\n";
+        for( int i = 0; i < timestamps.size(); ++i) {
+            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
+        }
+    } else {
+        std::cout << "unable to write to file" << std::endl;
+    }
+    outfile.close();
+
+    outfile.open("gp_data.csv", std::ios_base::out);
+    if(outfile.is_open()) {
+        outfile << "location, mean, std\n";
+        for( int i = 0; i < locations.size(); ++i) {
+            outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
+        }
+    } else {
+        std::cout << "unable to write to file" << std::endl;
+    }
+    outfile.close();
 }

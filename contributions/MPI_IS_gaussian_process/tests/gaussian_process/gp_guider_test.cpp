@@ -136,6 +136,8 @@ TEST_F(GPGTest, simple_result_test)
     // for an empty dataset, result is equivalent to a P-controller
     result = GPG->result(1.0, 2.0, 3.0);
     EXPECT_NEAR(result, 0.8, 1e-6); // result should be measurement x control gain
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, period_identification_test)
@@ -157,6 +159,8 @@ TEST_F(GPGTest, period_identification_test)
     GPG->result(0.15, 2.0, 3.0);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, min_move_test)
@@ -170,6 +174,8 @@ TEST_F(GPGTest, min_move_test)
     GPG->reset();
     EXPECT_NEAR(GPG->result(-0.25, 2.0, 3.0), -0.25*0.8, 1e-6);
     GPG->reset();
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, gp_prediction_test)
@@ -205,6 +211,8 @@ TEST_F(GPGTest, gp_prediction_test)
     }
     // the first case is with an error larger than min_move_
     EXPECT_NEAR(GPG->result(0.25, 2.0, prediction_length, max_time), 0.25*0.8+predictions[1]-predictions[0], 2e-1);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, parameters_test)
@@ -226,6 +234,8 @@ TEST_F(GPGTest, parameters_test)
     EXPECT_NEAR(GPG->GetNumPointsForApproximation(), DefaultNumPointsForApproximation, 1e-6);
     EXPECT_NEAR(GPG->GetPredictionGain(), DefaultPredictionGain, 1e-6);
     EXPECT_NEAR(GPG->GetBoolComputePeriod(), DefaultComputePeriod, 1e-6);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, timer_test)
@@ -245,6 +255,8 @@ TEST_F(GPGTest, timer_test)
     double second_time = GPG->get_second_last_point().timestamp;
 
     EXPECT_NEAR(second_time - first_time, std::chrono::duration<double>(time_end - time_start).count(), 1e-1);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, gp_projection_test)
@@ -276,6 +288,8 @@ TEST_F(GPGTest, gp_projection_test)
     // the first case is with an error smaller than min_move_
     EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 3e-1);
     GPG->reset();
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, linear_drift_identification_test)
@@ -315,6 +329,8 @@ TEST_F(GPGTest, linear_drift_identification_test)
     predictions = 0.25*locations; // only predict linear drift here
     // the first case is with an error smaller than min_move_
     EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 2e-1);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, data_preparation_test)
@@ -356,6 +372,8 @@ TEST_F(GPGTest, data_preparation_test)
     double measured_result = GPG->result(0.0, 2.0, prediction_length, max_time);
 
     EXPECT_NEAR(measured_result, controlled_result, 1e-1);
+
+    GPG->save_gp_data();
 }
 
 // The period identification should work on real data, with irregular timestamps
@@ -394,6 +412,8 @@ TEST_F(GPGTest, real_data_test)
     GPG->result(0.0, 25.0, 3.0, time);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7],483.0,5);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, parameter_filter_test)
@@ -436,6 +456,8 @@ TEST_F(GPGTest, parameter_filter_test)
     }
 
     EXPECT_LT(std_dev, 1);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, period_interpolation_test)
@@ -457,6 +479,8 @@ TEST_F(GPGTest, period_interpolation_test)
     GPG->result(0.15, 2.0, 3.0);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
+
+    GPG->save_gp_data();
 }
 
 TEST_F(GPGTest, data_regularization_test)
@@ -484,6 +508,8 @@ TEST_F(GPGTest, data_regularization_test)
     GPG->result(0.15, 2.0, 3.0);
 
     EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1);
+
+    GPG->save_gp_data();
 }
 
 /**
@@ -548,6 +574,8 @@ TEST_F(GPGTest, real_data_test_nan_issue)
     double result = GPG->result(0.622, 15.32, 2.0);
 
     EXPECT_FALSE(math_tools::isNaN(result));
+
+    GPG->save_gp_data();
 }
 
 int main(int argc, char** argv)

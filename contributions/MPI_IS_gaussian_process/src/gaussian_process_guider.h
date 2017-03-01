@@ -261,12 +261,12 @@ public:
      */
     void UpdatePeriodLength(double period_length);
 
-    data_point& get_last_point()
+    data_point& get_last_point() const
     {
         return circular_buffer_data_[circular_buffer_data_.size() - 1];
     }
 
-    data_point& get_second_last_point()
+    data_point& get_second_last_point() const
     {
         return circular_buffer_data_[circular_buffer_data_.size() - 2];
     }
@@ -290,6 +290,11 @@ public:
      * Takes timestamps, measurements and SNRs and returns them regularized in a matrix.
      */
     Eigen::MatrixXd regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error, const Eigen::VectorXd& variances);
+
+    /**
+     * Saves the GP data to a csv file for external analysis. Expensive!
+     */
+    void save_gp_data() const;
 };
 
 #endif  // GAUSSIAN_PROCESS_GUIDER
