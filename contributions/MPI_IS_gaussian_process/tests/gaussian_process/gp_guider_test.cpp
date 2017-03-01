@@ -156,7 +156,7 @@ TEST_F(GPGTest, period_identification_test)
     }
     GPG->result(0.15, 2.0, 3.0);
 
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1);
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[7], period_length, 1e0);
 }
 
 TEST_F(GPGTest, min_move_test)
@@ -546,8 +546,6 @@ TEST_F(GPGTest, real_data_test_nan_issue)
     EXPECT_GT(data.cols(), 0) << "dataset was empty or not present";
 
     double result = GPG->result(0.622, 15.32, 2.0);
-
-    std::cout << result << std::endl;
 
     EXPECT_FALSE(math_tools::isNaN(result));
 }

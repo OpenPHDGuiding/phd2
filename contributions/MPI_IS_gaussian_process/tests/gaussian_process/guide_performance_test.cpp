@@ -156,8 +156,7 @@ TEST_F(GuidePerformanceTest, performance_dataset05)
     EXPECT_GT(improvement, 0);
 }
 
-// doesn't really work for this dataset, not clear why
-TEST_F(GuidePerformanceTest, DISABLED_performance_dataset06)
+TEST_F(GuidePerformanceTest, performance_dataset06)
 {
     GAHysteresis GAH;
     GAH.m_hysteresis = 0.25;

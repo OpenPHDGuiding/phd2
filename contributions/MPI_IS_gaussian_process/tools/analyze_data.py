@@ -167,7 +167,7 @@ def main():
                 ra_guide = array(run['RAGuideDistance']) * run['PixelScale']
                 ra_acc = (ra_guide.cumsum() + ra_dist)
                 ax = plt.subplot(nr, 1, r)
-                plt.plot(time, ra_dist, 'r+')
+                plt.plot(time, ra_dist, 'r-+')
                 ax.set_ylim(miny, maxy)
                 ax.set_xlim(minx, maxx)
                 plt.title('{} | Dataset {} | Run {}'.format(run['RAAlgorithm'], data.index(dataset), dataset.index(run)))

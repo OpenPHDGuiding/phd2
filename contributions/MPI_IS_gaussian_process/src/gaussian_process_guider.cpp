@@ -670,17 +670,20 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
 
     Eigen::VectorXd::Index maxIndex;
     amplitudes.maxCoeff(&maxIndex);
-    double period_length = 1 / frequencies(maxIndex);
+
+    double max_frequency = frequencies(maxIndex);
 
     // quadratic interpolation to find maximum
     // check if we can interpolate
     if (maxIndex < frequencies.size() - 1 && maxIndex > 0)
     {
-        // need to center the locations for numerical stability
+        double spread = std::abs(frequencies(maxIndex - 1) - frequencies(maxIndex + 1));
+
         Eigen::VectorXd interp_loc(3);
-        interp_loc << 1 / frequencies(maxIndex - 1) - period_length,
-            1 / frequencies(maxIndex) - period_length, 1 / frequencies(maxIndex + 1) - period_length;
-        
+        interp_loc << frequencies(maxIndex - 1), frequencies(maxIndex), frequencies(maxIndex + 1);
+        interp_loc = interp_loc.array() - max_frequency; // centering for numerical stability
+        interp_loc = interp_loc.array() / spread; // normalize for numerical stability
+
         Eigen::VectorXd interp_dat(3);
         interp_dat << amplitudes(maxIndex - 1), amplitudes(maxIndex), amplitudes(maxIndex + 1);
         interp_dat = interp_dat.array() / amplitudes(maxIndex); // normalize for numerical stability
@@ -689,7 +692,7 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
         // the linear regression would be unstable in this case
         if (interp_dat.maxCoeff() - interp_dat.minCoeff() < 1e-10)
         {
-                return period_length; // don't do the linear regression
+            return 1 / max_frequency; // don't do the linear regression
         }
 
 
@@ -702,8 +705,8 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
         // standard equation for linear regression
         Eigen::VectorXd w = (phi*phi.transpose()).ldlt().solve(phi*interp_dat);
 
-        // recovering the maximum from the weights relative to the period_length of the maximum
-        period_length = period_length - w(1)/(2*w(0));
+        // recovering the maximum from the weights relative to the frequency of the maximum
+        max_frequency = max_frequency - w(1)/(2*w(0))*spread; // note the de-normalization
     }
 
     #if GP_DEBUG_FILE_
@@ -721,8 +724,7 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
     outfile.close();
     #endif
 
-    assert(!math_tools::isNaN(period_length));
-
+    double period_length = 1 / max_frequency; // we return the period length!
     return period_length;
 }
 
