@@ -57,23 +57,9 @@ const bool DefaultComputePeriod                   = true;
 
 
 
-
-// TEST_F(GuidePerformanceTest, performance_dataset03)
-// {
-//     GAHysteresis GAH;
-//     GAH.m_aggression = 0.6;
-//     GAH.m_hysteresis = 0.3;
-//     GAH.m_minMove = 0.1;
-//
-//     std::string filename("dataset03.csv");
-//
-//     EXPECT_GT(calculate_improvement(filename, GAH, GPG), 0);
-// }
-
-
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 13)
         return -1;
 
     GaussianProcessGuider* GPG;
@@ -96,77 +82,31 @@ int main(int argc, char** argv)
     parameters.compute_period_ = DefaultComputePeriod;
 
     // use parameters from command line
+    parameters.control_gain_ = std::stod(argv[2]);
+    parameters.min_move_ = std::stod(argv[3]);
+    parameters.prediction_gain_ = std::stod(argv[4]);
 
-    parameters.control_gain_ *= std::stod(argv[1]);
-    parameters.min_move_ *= std::stod(argv[2]);
-    parameters.prediction_gain_ *= std::stod(argv[3]);
+    parameters.SE0KSignalVariance_ = std::stod(argv[5]);
+    parameters.PKSignalVariance_ = std::stod(argv[6]);
+    parameters.SE1KSignalVariance_ = std::stod(argv[7]);
 
-    parameters.SE0KSignalVariance_ *= std::stod(argv[4]);
-    parameters.PKSignalVariance_ *= std::stod(argv[5]);
-    parameters.SE1KSignalVariance_ *= std::stod(argv[6]);
+    parameters.SE0KLengthScale_ = std::stod(argv[8]);
+    parameters.min_points_for_period_computation_ *= std::stod(argv[9]);
+    parameters.min_points_for_inference_ = std::stod(argv[10]);
 
-    parameters.SE0KLengthScale_ *= std::stod(argv[7]);
-    parameters.min_periods_for_period_estimation_ *= std::stod(argv[8]);
-    parameters.min_periods_for_inference_ *= std::stod(argv[9]);
-
-    parameters.PKLengthScale_ *= std::stod(argv[10]);
-    parameters.SE1KLengthScale_ *= std::stod(argv[11]);
-
-    if (parameters.control_gain_ > 1 || parameters.prediction_gain_ > 1)
-    {
-        std::cout << -10 << std::endl;
-        return 0;
-    }
+    parameters.PKLengthScale_ = std::stod(argv[11]);
+    parameters.SE1KLengthScale_ = std::stod(argv[12]);
 
     GPG = new GaussianProcessGuider(parameters);
 
     GAHysteresis GAH;
 
-    double improvements = 1.0;
     std::string filename;
-    double exposure = 3.0;
 
-    filename = "dataset03.csv";
-    GAH.m_lastMove = 0.0;
-    GAH.m_aggression = 0.6;
-    GAH.m_hysteresis = 0.3;
-    GAH.m_minMove = 0.1;
-    exposure = 3.0;
-    improvements = std::min(improvements, calculate_improvement(filename, GAH, GPG, exposure));
+    filename = argv[1];
+    double improvement = calculate_improvement(filename, GAH, GPG);
 
-    filename = "dataset04.csv";
-    GAH.m_lastMove = 0.0;
-    GAH.m_hysteresis = 0.1;
-    GAH.m_aggression = 0.65;
-    GAH.m_minMove = 0.15;
-    exposure = 2.0;
-    improvements = std::min(improvements, calculate_improvement(filename, GAH, GPG, exposure));
-
-    filename = "dataset05.csv";
-    GAH.m_lastMove = 0.0;
-    GAH.m_hysteresis = 0.1;
-    GAH.m_aggression = 0.65;
-    GAH.m_minMove = 0.45;
-    exposure = 0.5;
-    improvements = std::min(improvements, calculate_improvement(filename, GAH, GPG, exposure));
-
-    filename = "dataset06.csv";
-    GAH.m_lastMove = 0.0;
-    GAH.m_hysteresis = 0.25;
-    GAH.m_aggression = 0.55;
-    GAH.m_minMove = 0.1;
-    exposure = 2.0;
-    improvements = std::min(improvements, calculate_improvement(filename, GAH, GPG, exposure));
-
-    filename = "dataset07.csv";
-    GAH.m_lastMove = 0.0;
-    GAH.m_hysteresis = 0.1;
-    GAH.m_aggression = 0.7;
-    GAH.m_minMove = 0.2;
-    exposure = 3.5;
-    improvements = std::min(improvements, calculate_improvement(filename, GAH, GPG, exposure));
-
-    std::cout << improvements << std::endl;
+    std::cout << improvement << std::endl;
 
     return 0;
 }

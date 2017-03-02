@@ -150,6 +150,26 @@ inline Eigen::ArrayXXd read_data_from_file(std::string filename)
     return result;
 }
 
+inline double get_exposure_from_file(std::string filename)
+{
+    std::ifstream file(filename);
+
+    CSVRow row;
+    double exposure = 3.0; // initialize a default value
+    while(file >> row)
+    {
+        if (row[0][0] == 'E')
+        {
+            std::string infoline(row[0]);
+            if (infoline.substr(0,8) == "Exposure")
+            {
+                exposure = std::stoi(infoline.substr(11,4)) / 1000.0;
+            }
+        }
+    }
+    return exposure;
+}
+
 /*
  * Replicates the behavior of the standard Hysteresis algorithm.
  */
@@ -184,9 +204,10 @@ public:
 /*
  * Calculates the improvement of the GP Guider over Hysteresis on a dataset.
  */
-inline double calculate_improvement(std::string filename, GAHysteresis GAH, GaussianProcessGuider* GPG, double exposure)
+inline double calculate_improvement(std::string filename, GAHysteresis GAH, GaussianProcessGuider* GPG)
 {
     Eigen::ArrayXXd data = read_data_from_file(filename);
+    double exposure = get_exposure_from_file(filename);
 
     Eigen::ArrayXd times = data.row(0);
     Eigen::ArrayXd measurements = data.row(1);
@@ -217,7 +238,6 @@ inline double calculate_improvement(std::string filename, GAHysteresis GAH, Gaus
             GPG->inject_data_point(times(j), measurements(j), SNRs(j), controls(j));
         }
         gp_guider_control = GPG->result(gp_guider_state, SNRs(i), exposure);
-//         std::cout << times(i) << " | " << gp_guider_state << " | " << measurements(i+1) << " | " << measurements(i) << " | " << controls(i) << " | " << gp_guider_control << std::endl;
         gp_guider_state = gp_guider_state + (measurements(i+1) - (measurements(i) - controls(i))) - gp_guider_control;
         assert(fabs(gp_guider_state) < 100);
 

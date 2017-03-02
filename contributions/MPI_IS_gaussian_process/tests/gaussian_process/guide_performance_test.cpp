@@ -123,9 +123,8 @@ TEST_F(GuidePerformanceTest, performance_dataset03)
     GAH.m_aggression = 0.6;
     GAH.m_hysteresis = 0.3;
     GAH.m_minMove = 0.1;
-    double exposure = 3.0;
     std::string filename("dataset03.csv");
-    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    double improvement = calculate_improvement(filename, GAH, GPG);
     std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
@@ -136,9 +135,8 @@ TEST_F(GuidePerformanceTest, performance_dataset04)
     GAH.m_hysteresis = 0.1;
     GAH.m_aggression = 0.65;
     GAH.m_minMove = 0.15;
-    double exposure = 2.0;
     std::string filename("dataset04.csv");
-    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    double improvement = calculate_improvement(filename, GAH, GPG);
     std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
@@ -149,9 +147,8 @@ TEST_F(GuidePerformanceTest, performance_dataset05)
     GAH.m_hysteresis = 0.1;
     GAH.m_aggression = 0.65;
     GAH.m_minMove = 0.45;
-    double exposure = 0.5;
     std::string filename("dataset05.csv");
-    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    double improvement = calculate_improvement(filename, GAH, GPG);
     std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
@@ -162,9 +159,8 @@ TEST_F(GuidePerformanceTest, performance_dataset06)
     GAH.m_hysteresis = 0.25;
     GAH.m_aggression = 0.55;
     GAH.m_minMove = 0.1;
-    double exposure = 2.0;
     std::string filename("dataset06.csv");
-    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    double improvement = calculate_improvement(filename, GAH, GPG);
     std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
@@ -175,9 +171,8 @@ TEST_F(GuidePerformanceTest, performance_dataset07)
     GAH.m_hysteresis = 0.1;
     GAH.m_aggression = 0.7;
     GAH.m_minMove = 0.2;
-    double exposure = 3.5;
     std::string filename("dataset07.csv");
-    double improvement = calculate_improvement(filename, GAH, GPG, exposure);
+    double improvement = calculate_improvement(filename, GAH, GPG);
     std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
