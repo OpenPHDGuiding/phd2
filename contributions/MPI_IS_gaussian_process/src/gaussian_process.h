@@ -162,7 +162,7 @@ public:
      * This function just builds the prior and mixed covariance matrices and
      * calls the other predict afterwards.
      */
-    Eigen::VectorXd predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = 0) const;
+    Eigen::VectorXd predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = nullptr) const;
 
     /*!
      * Predicts the mean and covariance for a vector of locations based on
@@ -171,7 +171,7 @@ public:
      * This function just builds the prior and mixed covariance matrices and
      * calls the other predict afterwards.
      */
-    Eigen::VectorXd predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = 0) const;
+    Eigen::VectorXd predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = nullptr) const;
 
     /*!
      * Does the real work for predict. Solves the Cholesky decomposition for the
@@ -179,7 +179,7 @@ public:
      * already.
      */
     Eigen::VectorXd predict(const Eigen::MatrixXd& prior_cov, const Eigen::MatrixXd& mixed_cov,
-                             const Eigen::MatrixXd& phi = Eigen::MatrixXd() , Eigen::VectorXd* variances = 0) const;
+                             const Eigen::MatrixXd& phi = Eigen::MatrixXd() , Eigen::VectorXd* variances = nullptr) const;
 
     /*!
      * Sets the hyperparameters to the given vector.

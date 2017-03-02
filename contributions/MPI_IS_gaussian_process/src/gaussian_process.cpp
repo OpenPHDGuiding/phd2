@@ -58,8 +58,8 @@ struct covariance_ordering
     Eigen::VectorXd const& covariance_;
 };
 
-GP::GP() : covFunc_(0), // initialize pointer to null
-    covFuncProj_(0), // initialize pointer to null
+GP::GP() : covFunc_(nullptr), // initialize pointer to null
+    covFuncProj_(nullptr), // initialize pointer to null
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
     data_var_(Eigen::VectorXd()),
@@ -76,7 +76,7 @@ GP::GP() : covFunc_(0), // initialize pointer to null
 
 GP::GP(const covariance_functions::CovFunc& covFunc) :
     covFunc_(covFunc.clone()),
-    covFuncProj_(0),
+    covFuncProj_(nullptr),
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
     data_var_(Eigen::VectorXd()),
@@ -94,7 +94,7 @@ GP::GP(const covariance_functions::CovFunc& covFunc) :
 GP::GP(const double noise_variance,
        const covariance_functions::CovFunc& covFunc) :
     covFunc_(covFunc.clone()),
-    covFuncProj_(0),
+    covFuncProj_(nullptr),
     data_loc_(Eigen::VectorXd()),
     data_out_(Eigen::VectorXd()),
     data_var_(Eigen::VectorXd()),
@@ -116,8 +116,8 @@ GP::~GP()
 }
 
 GP::GP(const GP& that) :
-    covFunc_(0), // initialize to zero, clone later
-    covFuncProj_(0), // initialize to zero, clone later
+    covFunc_(nullptr), // initialize to nullptr, clone later
+    covFuncProj_(nullptr), // initialize to nullptr, clone later
     data_loc_(that.data_loc_),
     data_out_(that.data_out_),
     data_var_(that.data_var_),
@@ -155,7 +155,7 @@ void GP::enableOutputProjection(const covariance_functions::CovFunc& covFuncProj
 void GP::disableOutputProjection()
 {
     delete covFuncProj_; // initialized to zero, so delete is safe
-    covFuncProj_ = 0;
+    covFuncProj_ = nullptr;
 }
 
 GP& GP::operator=(const GP& that)
@@ -349,14 +349,14 @@ void GP::clearData()
     data_out_ = Eigen::VectorXd();
 }
 
-Eigen::VectorXd GP::predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=0*/) const
+Eigen::VectorXd GP::predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=nullptr*/) const
 {
     // The prior covariance matrix (evaluated on test points)
     Eigen::MatrixXd prior_cov = covFunc_->evaluate(locations, locations);
 
     if (data_loc_.rows() == 0)  // check if the data is empty
     {
-        if (variances != 0)
+        if (variances != nullptr)
         {
             (*variances) = prior_cov.diagonal();
         }
@@ -380,12 +380,12 @@ Eigen::VectorXd GP::predict(const Eigen::VectorXd& locations, Eigen::VectorXd* v
     }
 }
 
-Eigen::VectorXd GP::predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=0*/) const
+Eigen::VectorXd GP::predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances /*=nullptr*/) const
 {
     // use the suitable covariance function, depending on whether an
     // output projection is used or not.
-    covariance_functions::CovFunc* covFunc = 0;
-    if (covFuncProj_ == 0)
+    covariance_functions::CovFunc* covFunc = nullptr;
+    if (covFuncProj_ == nullptr)
     {
         covFunc = covFunc_;
     }
@@ -394,14 +394,14 @@ Eigen::VectorXd GP::predictProjected(const Eigen::VectorXd& locations, Eigen::Ve
         covFunc = covFuncProj_;
     }
 
-    assert(covFunc != 0);
+    assert(covFunc != nullptr);
 
     // The prior covariance matrix (evaluated on test points)
     Eigen::MatrixXd prior_cov = covFunc->evaluate(locations, locations);
 
     if (data_loc_.rows() == 0)  // check if the data is empty
     {
-        if (variances != 0)
+        if (variances != nullptr)
         {
             (*variances) = prior_cov.diagonal();
         }
@@ -426,7 +426,8 @@ Eigen::VectorXd GP::predictProjected(const Eigen::VectorXd& locations, Eigen::Ve
 }
 
 Eigen::VectorXd GP::predict(const Eigen::MatrixXd& prior_cov, const Eigen::MatrixXd& mixed_cov,
-                            const Eigen::MatrixXd& phi /*=Eigen::MatrixXd()*/, Eigen::VectorXd* variances /*=0*/) const
+                            const Eigen::MatrixXd& phi /*=Eigen::MatrixXd()*/, Eigen::VectorXd* variances /*=nullptr*/)
+                    const
 {
 
     // calculate GP mean from precomputed alpha vector
@@ -445,7 +446,7 @@ Eigen::VectorXd GP::predict(const Eigen::MatrixXd& prior_cov, const Eigen::Matri
         m += R.transpose() * beta_;
     }
 
-    if (variances != 0)
+    if (variances != nullptr)
     {
         // calculate GP variance
         Eigen::MatrixXd v = prior_cov - mixed_cov * gamma;
@@ -475,7 +476,7 @@ void GP::setHyperParameters(const Eigen::VectorXd& hyperParameters)
     }
 
     // if the projection kernel is set, set the parameters there as well.
-    if (covFuncProj_ != 0)
+    if (covFuncProj_ != nullptr)
     {
         covFuncProj_->setParameters(hyperParameters.segment(1, covFunc_->getParameterCount()));
         covFuncProj_->setExtraParameters(hyperParameters.tail(covFunc_->getExtraParameterCount()));

@@ -577,18 +577,20 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
     }
 
 #if SAVE_FFT_DATA_
-    std::ofstream outfile;
-    outfile.open("spectrum_data.csv", std::ios_base::out);
-    if (outfile.is_open()) {
-        outfile << "period, amplitude\n";
-        for (int i = 0; i < amplitudes.size(); ++i) {
-            outfile << std::setw(8) << periods[i] << "," << std::setw(8) << amplitudes[i] << "\n";
+    {
+        std::ofstream outfile;
+        outfile.open("spectrum_data.csv", std::ios_base::out);
+        if (outfile) {
+            outfile << "period, amplitude\n";
+            for (int i = 0; i < amplitudes.size(); ++i) {
+                outfile << std::setw(8) << periods[i] << "," << std::setw(8) << amplitudes[i] << "\n";
+            }
         }
+        else {
+            std::cout << "unable to write to file" << std::endl;
+        }
+        outfile.close();
     }
-    else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
 #endif
 
     double period_length = 1 / max_frequency; // we return the period length!
@@ -726,26 +728,28 @@ void GaussianProcessGuider::save_gp_data() const
     Eigen::VectorXd means = gp_.predictProjected(locations, &vars);
     Eigen::VectorXd stds = vars.array().sqrt();
 
-    std::ofstream outfile;
-    outfile.open("measurement_data.csv", std::ios_base::out);
-    if(outfile.is_open()) {
-        outfile << "location, output\n";
-        for( int i = 0; i < timestamps.size(); ++i) {
-            outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
+    {
+        std::ofstream outfile;
+        outfile.open("measurement_data.csv", std::ios_base::out);
+        if(outfile) {
+            outfile << "location, output\n";
+            for( int i = 0; i < timestamps.size(); ++i) {
+                outfile << std::setw(8) << timestamps[i] << "," << std::setw(8) << gear_error[i] << "\n";
+            }
+        } else {
+            std::cout << "unable to write to file" << std::endl;
         }
-    } else {
-        std::cout << "unable to write to file" << std::endl;
-    }
-    outfile.close();
+        outfile.close();
 
-    outfile.open("gp_data.csv", std::ios_base::out);
-    if(outfile.is_open()) {
-        outfile << "location, mean, std\n";
-        for( int i = 0; i < locations.size(); ++i) {
-            outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
+        outfile.open("gp_data.csv", std::ios_base::out);
+        if(outfile) {
+            outfile << "location, mean, std\n";
+            for( int i = 0; i < locations.size(); ++i) {
+                outfile << std::setw(8) << locations[i] << "," << std::setw(8) << means[i] << "," << std::setw(8) << stds[i] << "\n";
+            }
+        } else {
+            std::cout << "unable to write to file" << std::endl;
         }
-    } else {
-        std::cout << "unable to write to file" << std::endl;
+        outfile.close();
     }
-    outfile.close();
 }
