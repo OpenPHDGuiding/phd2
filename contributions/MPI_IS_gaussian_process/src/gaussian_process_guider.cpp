@@ -56,10 +56,7 @@
 #define GRID_INTERVAL 5.0
 #define MAX_DITHER_STEPS 10 // for our fallback dithering
 
-// for the Kalman filter
-#define PRIOR_VARIANCE 1e6
-#define PROCESS_VARIANCE 1e0
-#define MEASUREMENT_VARIANCE 1e3
+#define DEFAULT_LEARNING_RATE 0.01 // for a smooth parameter adaptation
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     start_time_(std::chrono::system_clock::now()),
@@ -75,7 +72,7 @@ GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     covariance_function_(),
     output_covariance_function_(),
     gp_(covariance_function_),
-    period_length_variance_(PRIOR_VARIANCE)
+    learning_rate_(DEFAULT_LEARNING_RATE)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
@@ -609,13 +606,8 @@ void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
             period_length = hypers[7]; // just use the old value instead
     }
 
-    double mean = hypers[7]; // the old mean
-    double variance = period_length_variance_ + PROCESS_VARIANCE; // predictive variance
-    double residual = period_length - mean;
-    double gain = variance / (variance + MEASUREMENT_VARIANCE); // Kalman gain
-
-    hypers[7] = mean + gain * residual; // Kalman update
-    period_length_variance_ = variance - gain * variance; // Kalman update
+    // we just apply a simple learning rate to slow down parameter jumps
+    hypers[7] = (1 - learning_rate_) * hypers[7] + learning_rate_ * period_length;
 
     SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
 }
@@ -752,4 +744,10 @@ void GaussianProcessGuider::save_gp_data() const
         }
         outfile.close();
     }
+}
+
+void GaussianProcessGuider::SetLearningRate(double learning_rate)
+{
+    learning_rate_ = learning_rate;
+    return;
 }

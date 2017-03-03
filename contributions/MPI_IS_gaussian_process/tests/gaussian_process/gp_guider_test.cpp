@@ -88,6 +88,7 @@ public:
         parameters.compute_period_ = DefaultComputePeriod;
 
         GPG = new GaussianProcessGuider(parameters);
+        GPG->SetLearningRate(1.0); // disable smooth learning
     }
 
     ~GPGTest()
@@ -424,6 +425,11 @@ TEST_F(GPGTest, parameter_filter_test)
 
     Eigen::VectorXd filtered_period_lengths(1000); // must be longer than the dataset
 
+    std::vector<double> hypers = GPG->GetGPHyperparameters();
+    hypers[7] = 483; // initialize close to final value
+    GPG->SetGPHyperparameters(hypers);
+    GPG->SetLearningRate(0.01);
+
     int i = 0;
     CSVRow row;
     while(infile >> row)
@@ -447,15 +453,13 @@ TEST_F(GPGTest, parameter_filter_test)
 
     double std_dev = std::numeric_limits<double>::infinity();
 
-    if (i > 25)
+    if (i > 10)
     {
-        Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(25);
-        // the period length of 482 is estimated from my telescope hardware
-        Eigen::VectorXd deviation = period_lengths_tail - 482*Eigen::VectorXd::Ones(25);
-        std_dev = math_tools::stdandard_deviation(deviation);
+        Eigen::VectorXd period_lengths_tail = filtered_period_lengths.tail(10);
+        std_dev = math_tools::stdandard_deviation(period_lengths_tail);
     }
 
-    EXPECT_LT(std_dev, 1);
+    EXPECT_LT(std_dev, 0.1);
 
     GPG->save_gp_data();
 }

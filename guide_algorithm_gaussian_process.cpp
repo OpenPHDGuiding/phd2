@@ -63,7 +63,7 @@ static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gauss
 static const double DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
 static const double DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
 static const double DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
-static const double DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
+static const double DefaultPeriodLengthPerKer            = 100.0; // P_p, period-length of the periodic kernel
 static const double DefaultSignalVariancePerKer          = 30.0; // signal variance of the periodic kernel
 static const double DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
 static const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
@@ -845,6 +845,10 @@ void GuideAlgorithmGaussianProcess::reset()
 
 void GuideAlgorithmGaussianProcess::GuidingStopped(void)
 {
+    // need to store the estimated period length in case the user exits the application
+    double period_length = gpg_->GetGPHyperparameters()[7];
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
+
     reset(); // reset is only done on a complete stop
 }
 

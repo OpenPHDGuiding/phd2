@@ -134,7 +134,10 @@ private:
     covariance_functions::PeriodicSquareExponential output_covariance_function_; // for prediction
     GP gp_;
 
-    double period_length_variance_;
+    /**
+     * Learning rate for smooth parameter adaptation.
+     */
+    double learning_rate_;
 
     /**
      * Guiding parameters of this instance.
@@ -295,6 +298,11 @@ public:
      * Saves the GP data to a csv file for external analysis. Expensive!
      */
     void save_gp_data() const;
+
+    /**
+     * Sets the learning rate. Useful for disabling it for testing.
+     */
+    void SetLearningRate(double learning_rate);
 };
 
 #endif  // GAUSSIAN_PROCESS_GUIDER
