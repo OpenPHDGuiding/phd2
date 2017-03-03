@@ -5,6 +5,7 @@ import os
 import matplotlib.pyplot as plt
 from numpy import *
 import code
+import scipy.signal
 
 def read_data_from_folder(data_folder):
     data = [] # initialize empty data structure
@@ -166,9 +167,15 @@ def main():
                 ra_dist = array(run['RARawDistance']) * run['PixelScale']
                 ra_guide = array(run['RAGuideDistance']) * run['PixelScale']
                 ra_acc = (ra_guide.cumsum() + ra_dist)
+
+                h = scipy.signal.firwin(numtaps=10, cutoff=40, nyq=160)
+                ra_filt = scipy.signal.lfilter(h, 1.0, ra_dist)
+
                 ax = plt.subplot(nr, 1, r)
-                plt.plot(time, ra_dist, 'r-+')
-                ax.set_ylim(miny, maxy)
+                #plt.plot(time, ra_filt, 'r-')
+                #plt.plot(time, ra_dist, 'b+')
+                plt.plot(time, ra_acc, 'r-+')
+                #ax.set_ylim(miny, maxy)
                 ax.set_xlim(minx, maxx)
                 plt.title('{} | Dataset {} | Run {}'.format(run['RAAlgorithm'], data.index(dataset), dataset.index(run)))
 
