@@ -47,7 +47,7 @@ class GPGTest : public ::testing::Test
 {
 public:
     static const double DefaultControlGain; // control gain
-    static const int    DefaultNumMinPointsForInference; // minimal number of points for doing the inference
+    static const double DefaultPeriodLengthsForInference; // minimal number of period lengths for full prediction
     static const double DefaultMinMove;
 
     static const double DefaultGaussianNoiseHyperparameter; // default Gaussian measurement noise
@@ -60,7 +60,7 @@ public:
     static const double DefaultLengthScaleSE1Ker; // length-scale of the short-range SE-kernel
     static const double DefaultSignalVarianceSE1Ker; // signal variance of the short range SE-kernel
 
-    static const int    DefaultNumMinPointsForPeriodComputation; // minimal number of points for doing the period identification
+    static const double DefaultPeriodLengthsForPeriodEstimation; // minimal number of period lengts for PL estimation
     static const int    DefaultNumPointsForApproximation; // number of points used in the GP approximation
     static const double DefaultPredictionGain; // amount of GP prediction to blend in
 
@@ -72,7 +72,7 @@ public:
     {
         GaussianProcessGuider::guide_parameters parameters;
         parameters.control_gain_ = DefaultControlGain;
-        parameters.min_points_for_inference_ = DefaultNumMinPointsForInference;
+        parameters.min_periods_for_inference_ = DefaultPeriodLengthsForInference;
         parameters.min_move_ = DefaultMinMove;
         parameters.Noise_ = DefaultGaussianNoiseHyperparameter;
         parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
@@ -82,7 +82,7 @@ public:
         parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
         parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
         parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
-        parameters.min_points_for_period_computation_ = DefaultNumMinPointsForPeriodComputation;
+        parameters.min_periods_for_period_estimation_ = DefaultPeriodLengthsForPeriodEstimation;
         parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
         parameters.prediction_gain_ = DefaultPredictionGain;
         parameters.compute_period_ = DefaultComputePeriod;
@@ -98,7 +98,7 @@ public:
 };
 
 const double GPGTest::DefaultControlGain                   = 0.8; // control gain
-const int GPGTest::DefaultNumMinPointsForInference         = 25; // minimal number of points for doing the inference
+const double GPGTest::DefaultPeriodLengthsForInference     = 1.0; // minimal number of period lengths for full prediction
 const double GPGTest::DefaultMinMove                       = 0.2;
 
 const double GPGTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
@@ -106,12 +106,12 @@ const double GPGTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gau
 const double GPGTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
 const double GPGTest::DefaultSignalVarianceSE0Ker          = 10.0; // signal variance of the long-range SE-kernel
 const double GPGTest::DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
-const double GPGTest::DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
+const double GPGTest::DefaultPeriodLengthPerKer            = 100.0; // P_p, period-length of the periodic kernel
 const double GPGTest::DefaultSignalVariancePerKer          = 10.0; // signal variance of the periodic kernel
 const double GPGTest::DefaultLengthScaleSE1Ker             = 5.0; // length-scale of the short-range SE-kernel
 const double GPGTest::DefaultSignalVarianceSE1Ker          = 1.0; // signal variance of the short range SE-kernel
 
-const int GPGTest::DefaultNumMinPointsForPeriodComputation = 100; // minimal number of points for doing the period identification
+const double GPGTest::DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengts for PL estimation
 const int GPGTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 const double GPGTest::DefaultPredictionGain                = 1.0; // amount of GP prediction to blend in
 
@@ -129,6 +129,9 @@ const bool GPGTest::DefaultComputePeriod                   = true;
 TEST_F(GPGTest, simple_result_test)
 {
     double result = 0.0;
+
+    // disable hysteresis blending
+    GPG->SetPeriodLengthsInference(0.0);
 
     // for an empty dataset, deduceResult should return zero
     result = GPG->deduceResult(3.0);
@@ -166,6 +169,9 @@ TEST_F(GPGTest, period_identification_test)
 
 TEST_F(GPGTest, min_move_test)
 {
+    // disable hysteresis blending
+    GPG->SetPeriodLengthsInference(0.0);
+
     // simple min-moves (without GP data)
     EXPECT_NEAR(GPG->result(0.15, 2.0, 3.0), 0, 1e-6);
     GPG->reset();
@@ -219,7 +225,7 @@ TEST_F(GPGTest, gp_prediction_test)
 TEST_F(GPGTest, parameters_test)
 {
     EXPECT_NEAR(GPG->GetControlGain(), DefaultControlGain, 1e-6);
-    EXPECT_NEAR(GPG->GetNumPointsInference(), DefaultNumMinPointsForInference, 1e-6);
+    EXPECT_NEAR(GPG->GetPeriodLengthsInference(), DefaultPeriodLengthsForInference, 1e-6);
     EXPECT_NEAR(GPG->GetMinMove(), DefaultMinMove, 1e-6);
 
     std::vector<double> parameters = GPG->GetGPHyperparameters();
@@ -231,7 +237,7 @@ TEST_F(GPGTest, parameters_test)
     EXPECT_NEAR(parameters[6], DefaultSignalVarianceSE1Ker, 1e-6);
     EXPECT_NEAR(parameters[7], DefaultPeriodLengthPerKer, 1e-6);
 
-    EXPECT_NEAR(GPG->GetNumPointsPeriodComputation(), DefaultNumMinPointsForPeriodComputation, 1e-6);
+    EXPECT_NEAR(GPG->GetPeriodLengthsPeriodEstimation(), DefaultPeriodLengthsForPeriodEstimation, 1e-6);
     EXPECT_NEAR(GPG->GetNumPointsForApproximation(), DefaultNumPointsForApproximation, 1e-6);
     EXPECT_NEAR(GPG->GetPredictionGain(), DefaultPredictionGain, 1e-6);
     EXPECT_NEAR(GPG->GetBoolComputePeriod(), DefaultComputePeriod, 1e-6);
@@ -319,7 +325,7 @@ TEST_F(GPGTest, linear_drift_identification_test)
     GPG->SetBoolComputePeriod(false); // use the exact period length
     GPG->SetGPHyperparameters(parameters);
 
-    GPG->SetNumPointsForApproximation(1000); // need all data points for exact drift
+    GPG->SetNumPointsForApproximation(2000); // need all data points for exact drift
 
     // feed data to the GPGuider
     for (int i = 0; i < timestamps.size(); ++i)
@@ -329,7 +335,7 @@ TEST_F(GPGTest, linear_drift_identification_test)
     locations << 5000, 5000 + prediction_length;
     predictions = 0.25*locations; // only predict linear drift here
     // the first case is with an error smaller than min_move_
-    EXPECT_NEAR(GPG->result(0.0, 2.0, prediction_length, max_time), predictions[1]-predictions[0], 2e-1);
+    EXPECT_NEAR(GPG->result(0.0, 100.0, prediction_length, max_time), predictions[1]-predictions[0], 2e-1);
 
     GPG->save_gp_data();
 }

@@ -55,7 +55,7 @@
 /** Default values for the parameters of this algorithm */
 
 static const double DefaultControlGain                   = 0.6; // control gain
-static const int    DefaultNumMinPointsForInference      = 100; // minimal number of points for doing the inference
+static const double DefaultPeriodLengthsForInference     = 2.0; // minimal number of period lengths for full prediction
 static const double DefaultMinMove                       = 0.01;
 
 static const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
@@ -68,7 +68,7 @@ static const double DefaultSignalVariancePerKer          = 30.0; // signal varia
 static const double DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
 static const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
-static const int    DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
+static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengts for PL estimation
 static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 static const double DefaultPredictionGain                  = 0.8; // amount of GP prediction to blend in
 
@@ -79,8 +79,8 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
     wxSpinCtrlDouble *m_pMinMove;
-    wxSpinCtrl       *m_pNumPointsInference;
-    wxSpinCtrl       *m_pNumPointsPeriodComputation;
+    wxSpinCtrlDouble *m_pPeriodLengthsInference;
+    wxSpinCtrlDouble *m_pPeriodLengthsPeriodEstimation;
     wxSpinCtrl       *m_pNumPointsApproximation;
 
     wxSpinCtrlDouble *m_pSE0KLengthScale;
@@ -153,21 +153,23 @@ public:
         // create the expert options page
         m_pExpertPage = new wxBoxSizer(wxVERTICAL);
 
-        width = StringWidth(_T("0000"));
-        m_pNumPointsInference = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 1000, DefaultNumMinPointsForInference);
-        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Data Points (Prediction)"), m_pNumPointsInference,
-            wxString::Format(_("Minimal number of measurements needed to use the prediction. "
+        width = StringWidth(_T("0.00"));
+        m_pPeriodLengthsInference = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForInference, 0.1);
+        m_pPeriodLengthsInference->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Prediction)"), m_pPeriodLengthsInference,
+            wxString::Format(_("Minimal number of worm cycles needed to use the prediction. "
             "If there are too little data points, the prediction might be poor. "
-            "Default = %d"), DefaultNumMinPointsForInference)));
+            "Default = %.2f"), DefaultPeriodLengthsForInference)));
 
         width = StringWidth(_T("0000"));
-        m_pNumPointsPeriodComputation = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 1000, DefaultNumMinPointsForPeriodComputation);
-        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Data Points (Period Estimation)"), m_pNumPointsPeriodComputation,
-            wxString::Format(_("Minimal number of measurements for estimating the period length. "
+        m_pPeriodLengthsPeriodEstimation = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForPeriodEstimation, 0.1);
+        m_pPeriodLengthsPeriodEstimation->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Period Estimation)"), m_pPeriodLengthsPeriodEstimation,
+            wxString::Format(_("Minimal number of worm cycles for estimating the period length. "
             "If there are too little data points, the estimation might not work. Default = %d"),
-            DefaultNumMinPointsForPeriodComputation)));
+            DefaultPeriodLengthsForPeriodEstimation)));
 
         width = StringWidth(_T("0000.0"));
         m_pSE0KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -247,8 +249,8 @@ public:
         m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
         m_pPredictionGain->SetValue(m_pGuideAlgorithm->GetPredictionGain());
         m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
-        m_pNumPointsInference->SetValue(m_pGuideAlgorithm->GetNumPointsInference());
-        m_pNumPointsPeriodComputation->SetValue(m_pGuideAlgorithm->GetNumPointsPeriodComputation());
+        m_pPeriodLengthsInference->SetValue(m_pGuideAlgorithm->GetPeriodLengthsInference());
+        m_pPeriodLengthsPeriodEstimation->SetValue(m_pGuideAlgorithm->GetPeriodLengthsPeriodEstimation());
         m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
 
         std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
@@ -275,8 +277,8 @@ public:
         m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
         m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue());
         m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-        m_pGuideAlgorithm->SetNumPointsInference(m_pNumPointsInference->GetValue());
-        m_pGuideAlgorithm->SetNumPointsPeriodComputation(m_pNumPointsPeriodComputation->GetValue());
+        m_pGuideAlgorithm->SetPeriodLengthsInference(m_pPeriodLengthsInference->GetValue());
+        m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());
         m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
 
         std::vector<double> hyperparameters(8);
@@ -310,7 +312,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     // create guide parameters, load default values at first
     GaussianProcessGuider::guide_parameters parameters;
     parameters.control_gain_ = DefaultControlGain;
-    parameters.min_points_for_inference_ = DefaultNumMinPointsForInference;
+    parameters.min_periods_for_inference_ = DefaultPeriodLengthsForInference;
     parameters.min_move_ = DefaultMinMove;
     parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
     parameters.SE0KSignalVariance_ = DefaultSignalVarianceSE0Ker;
@@ -319,7 +321,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
     parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
     parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
-    parameters.min_points_for_period_computation_ = DefaultNumMinPointsForPeriodComputation;
+    parameters.min_periods_for_period_estimation_ = DefaultPeriodLengthsForPeriodEstimation;
     parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
     parameters.prediction_gain_ = DefaultPredictionGain;
     parameters.compute_period_ = DefaultComputePeriod;
@@ -335,11 +337,11 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     double min_move = pConfig->Profile.GetDouble(configPath + "/gp_min_move", DefaultMinMove);
     SetMinMove(min_move);
 
-    int num_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_min_points_inference", DefaultNumMinPointsForInference);
-    SetNumPointsInference(num_element_for_inference);
+    double period_lengths_for_inference = pConfig->Profile.GetInt(configPath + "/gp_period_lengths_inference", DefaultPeriodLengthsForInference);
+    SetPeriodLengthsInference(period_lengths_for_inference);
 
-    int num_points_period_computation = pConfig->Profile.GetInt(configPath + "/gp_min_points_period_computation", DefaultNumMinPointsForPeriodComputation);
-    SetNumPointsPeriodComputation(num_points_period_computation);
+    int period_lengths_for_period_estimation = pConfig->Profile.GetInt(configPath + "/gp_period_lengths_period_estimation", DefaultPeriodLengthsForPeriodEstimation);
+    SetPeriodLengthsPeriodEstimation(period_lengths_for_period_estimation);
 
     int num_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNumPointsForApproximation);
     SetNumPointsForApproximation(num_points_approximation);
@@ -428,13 +430,13 @@ bool GuideAlgorithmGaussianProcess::SetMinMove(double min_move)
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetNumPointsInference(int num_elements)
+bool GuideAlgorithmGaussianProcess::SetPeriodLengthsInference(double num_periods)
 {
     bool error = false;
 
     try
     {
-        if (num_elements < 0)
+        if (num_periods < 0.0)
         {
             throw ERROR_INFO("invalid number of elements");
         }
@@ -443,37 +445,37 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsInference(int num_elements)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        num_elements = DefaultNumMinPointsForInference;
+        num_periods = DefaultPeriodLengthsForInference;
     }
 
-    GPG->SetNumPointsInference(num_elements);
+    GPG->SetPeriodLengthsInference(num_periods);
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_inference", num_elements);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_lengths_inference", num_periods);
 
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetNumPointsPeriodComputation(int num_points)
+bool GuideAlgorithmGaussianProcess::SetPeriodLengthsPeriodEstimation(double num_periods)
 {
     bool error = false;
 
     try
     {
-        if (num_points < 0)
+        if (num_periods < 0.0)
         {
-            throw ERROR_INFO("invalid number of points");
+            throw ERROR_INFO("invalid number of period lengths");
         }
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        num_points = DefaultNumMinPointsForPeriodComputation;
+        num_periods = DefaultPeriodLengthsForPeriodEstimation;
     }
 
-    GPG->SetNumPointsPeriodComputation(num_points);
+    GPG->SetPeriodLengthsPeriodEstimation(num_periods);
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_period_computation", num_points);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_lengths_period_estimation", num_periods);
 
     return error;
 }
@@ -695,14 +697,14 @@ double GuideAlgorithmGaussianProcess::GetMinMove() const
     return GPG->GetMinMove();
 }
 
-int GuideAlgorithmGaussianProcess::GetNumPointsInference() const
+double GuideAlgorithmGaussianProcess::GetPeriodLengthsInference() const
 {
-    return GPG->GetNumPointsInference();
+    return GPG->GetPeriodLengthsInference();
 }
 
-int GuideAlgorithmGaussianProcess::GetNumPointsPeriodComputation() const
+double GuideAlgorithmGaussianProcess::GetPeriodLengthsPeriodEstimation() const
 {
-    return GPG->GetNumPointsPeriodComputation();
+    return GPG->GetPeriodLengthsPeriodEstimation();
 }
 
 int GuideAlgorithmGaussianProcess::GetNumPointsForApproximation() const
@@ -761,7 +763,7 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
       "\tLength scale short range SE kernel = %.3f\n"
       "\tSignal variance short range SE kernel = %.3f\n"
       "\tPeriod length periodic kernel = %.3f\n"
-      "FFT called after = %d points\n"
+      "FFT called after = %.3f worm cycles\n"
     ;
 
     std::vector<double> hyperparameters = GetGPHyperparameters();
@@ -778,7 +780,7 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
       hyperparameters[5],
       hyperparameters[6],
       hyperparameters[7],
-      GetNumPointsPeriodComputation());
+      GetPeriodLengthsPeriodEstimation());
 }
 
 

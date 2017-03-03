@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 
     GaussianProcessGuider::guide_parameters parameters;
     parameters.control_gain_ = DefaultControlGain;
-    parameters.min_points_for_inference_ = DefaultNumMinPointsForInference;
+    parameters.min_periods_for_inference_ = DefaultNumMinPointsForInference;
     parameters.min_move_ = DefaultMinMove;
     parameters.Noise_ = DefaultGaussianNoiseHyperparameter;
     parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
     parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
     parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
-    parameters.min_points_for_period_computation_ = DefaultNumMinPointsForPeriodComputation;
+    parameters.min_periods_for_period_estimation_ = DefaultNumMinPointsForPeriodComputation;
     parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
     parameters.prediction_gain_ = DefaultPredictionGain;
     parameters.compute_period_ = DefaultComputePeriod;
@@ -106,8 +106,8 @@ int main(int argc, char** argv)
     parameters.SE1KSignalVariance_ *= std::stod(argv[6]);
 
     parameters.SE0KLengthScale_ *= std::stod(argv[7]);
-    parameters.min_points_for_period_computation_ *= std::stod(argv[8]);
-    parameters.min_points_for_inference_ *= std::stod(argv[9]);
+    parameters.min_periods_for_period_estimation_ *= std::stod(argv[8]);
+    parameters.min_periods_for_inference_ *= std::stod(argv[9]);
 
     parameters.PKLengthScale_ *= std::stod(argv[10]);
     parameters.SE1KLengthScale_ *= std::stod(argv[11]);

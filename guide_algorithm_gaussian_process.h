@@ -89,11 +89,11 @@ protected:
     double GetMinMove() const;
     bool SetMinMove(double min_move);
 
-    int GetNumPointsInference() const;
-    bool SetNumPointsInference(int num_points_inference);
+    double GetPeriodLengthsInference() const;
+    bool SetPeriodLengthsInference(double);
 
-    int GetNumPointsPeriodComputation() const;
-    bool SetNumPointsPeriodComputation(int);
+    double GetPeriodLengthsPeriodEstimation() const;
+    bool SetPeriodLengthsPeriodEstimation(double num_periods);
 
     int GetNumPointsForApproximation() const;
     bool SetNumPointsForApproximation(int);

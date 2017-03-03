@@ -77,8 +77,9 @@ public:
         double min_move_;
         double prediction_gain_;
 
-        int min_points_for_inference_;
-        int min_points_for_period_computation_;
+        double min_periods_for_inference_;
+        double min_periods_for_period_estimation_;
+
         int points_for_approximation_;
 
         bool compute_period_;
@@ -96,8 +97,8 @@ public:
             control_gain_(0.0),
             min_move_(0.0),
             prediction_gain_(0.0),
-            min_points_for_inference_(0),
-            min_points_for_period_computation_(0),
+            min_periods_for_inference_(0.0),
+            min_periods_for_period_estimation_(0.0),
             points_for_approximation_(0),
             compute_period_(false),
             Noise_(0.0),
@@ -191,11 +192,11 @@ public:
     double GetMinMove() const;
     bool SetMinMove(double min_move);
 
-    int GetNumPointsInference() const;
-    bool SetNumPointsInference(int num_points_inference);
+    double GetPeriodLengthsInference() const;
+    bool SetPeriodLengthsInference(double num_periods);
 
-    int GetNumPointsPeriodComputation() const;
-    bool SetNumPointsPeriodComputation(int num_points);
+    double GetPeriodLengthsPeriodEstimation() const;
+    bool SetPeriodLengthsPeriodEstimation(double num_periods);
 
     int GetNumPointsForApproximation() const;
     bool SetNumPointsForApproximation(int num_points);

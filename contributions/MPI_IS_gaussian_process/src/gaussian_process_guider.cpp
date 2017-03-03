@@ -58,6 +58,9 @@
 
 #define DEFAULT_LEARNING_RATE 0.01 // for a smooth parameter adaptation
 
+#define HYSTERESIS 0.1 // for the hybrid mode
+#define AGGRESSION 0.7 // for the hybrid mode
+
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     start_time_(std::chrono::system_clock::now()),
     last_time_(std::chrono::system_clock::now()),
@@ -213,11 +216,11 @@ void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_li
 #endif
 
     // calculate period length if we have enough points already
-    size_t const min_points = static_cast<size_t>(parameters.min_points_for_period_computation_);
-    if (parameters.compute_period_ && min_points > 0 && get_number_of_measurements() > min_points)
+    double period_length = GetGPHyperparameters()[7];
+    if (GetBoolComputePeriod() && get_last_point().timestamp > parameters.min_periods_for_period_estimation_ * period_length)
     {
         // find periodicity parameter with FFT
-        double period_length = EstimatePeriodLength(timestamps, gear_error_detrend);
+        period_length = EstimatePeriodLength(timestamps, gear_error_detrend);
         UpdatePeriodLength(period_length);
 
 #if PRINT_TIMINGS_
@@ -296,16 +299,25 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     // collect data point content, except for the control signal
     HandleGuiding(input, SNR);
 
+    // calculate hysteresis result, too, for hybrid control
+    double last_control = 0.0;
+    if (get_number_of_measurements() > 1)
+    {
+        last_control = get_second_last_point().control;
+    }
+    double hysteresis_control = (1 - HYSTERESIS) * input + HYSTERESIS * last_control;
+    hysteresis_control *= AGGRESSION;
+
     control_signal_ = parameters.control_gain_*input; // start with proportional control
     if (std::abs(input) < parameters.min_move_)
     {
         control_signal_ = 0; // don't make small moves
+        hysteresis_control = 0;
     }
     assert(std::abs(control_signal_) == 0 || std::abs(input) >= parameters.min_move_);
 
-    // check if we are allowed to use the GP
-    size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
-    if (min_points > 0 && get_number_of_measurements() > min_points)
+    // calculate GP prediction
+    if (get_number_of_measurements() > 10)
     {
         if (prediction_point < 0.0)
         {
@@ -317,6 +329,15 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         // the prediction should end after one time step
         prediction_ = PredictGearError(prediction_point + time_step);
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
+
+        // smoothly blend over between hysteresis and GP
+        double period_length = GetGPHyperparameters()[7];
+        if (get_last_point().timestamp < parameters.min_periods_for_inference_ * GetGPHyperparameters()[7])
+        {
+            double percentage = get_last_point().timestamp / (parameters.min_periods_for_inference_ * period_length);
+            percentage = std::min(percentage, 1.0); // limit to 100 percent GP
+            control_signal_ = percentage * control_signal_ + (1 - percentage) * hysteresis_control;
+        }
     }
 
     // assert for the developers...
@@ -340,8 +361,8 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
 
     control_signal_ = 0; // no measurement!
     // check if we are allowed to use the GP
-    size_t const min_points = static_cast<size_t>(parameters.min_points_for_inference_);
-    if (min_points > 0 && get_number_of_measurements() > min_points)
+    if (get_number_of_measurements() > 10
+        && get_last_point().timestamp > parameters.min_periods_for_inference_ * GetGPHyperparameters()[7])
     {
         if (prediction_point < 0.0)
         {
@@ -482,21 +503,21 @@ bool GaussianProcessGuider::SetNumPointsForApproximation(int num_points) {
     return false;
 }
 
-int GaussianProcessGuider::GetNumPointsInference() const {
-    return parameters.min_points_for_inference_;
+double GaussianProcessGuider::GetPeriodLengthsInference() const {
+    return parameters.min_periods_for_inference_;
 }
 
-bool GaussianProcessGuider::SetNumPointsInference(int num_points_inference) {
-    parameters.min_points_for_inference_ = num_points_inference;
+bool GaussianProcessGuider::SetPeriodLengthsInference(double num_periods) {
+    parameters.min_periods_for_inference_ = num_periods;
     return false;
 }
 
-int GaussianProcessGuider::GetNumPointsPeriodComputation() const {
-    return parameters.min_points_for_period_computation_;
+double GaussianProcessGuider::GetPeriodLengthsPeriodEstimation() const {
+    return parameters.min_periods_for_period_estimation_;
 }
 
-bool GaussianProcessGuider::SetNumPointsPeriodComputation(int num_points) {
-    parameters.min_points_for_period_computation_ = num_points;
+bool GaussianProcessGuider::SetPeriodLengthsPeriodEstimation(double num_periods) {
+    parameters.min_periods_for_period_estimation_ = num_periods;
     return false;
 }
 

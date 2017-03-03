@@ -48,7 +48,7 @@ class GuidePerformanceTest : public ::testing::Test
 {
 public:
     static const double DefaultControlGain; // control gain
-    static const int    DefaultNumMinPointsForInference; // minimal number of points for doing the inference
+    static const double DefaultPeriodLengthsInference; // minimal number of points for doing the inference
     static const double DefaultMinMove;
 
     static const double DefaultGaussianNoiseHyperparameter; // default Gaussian measurement noise
@@ -61,7 +61,7 @@ public:
     static const double DefaultLengthScaleSE1Ker; // length-scale of the short-range SE-kernel
     static const double DefaultSignalVarianceSE1Ker; // signal variance of the short range SE-kernel
 
-    static const int    DefaultNumMinPointsForPeriodComputation; // minimal number of points for doing the period identification
+    static const double DefaultPeriodLengthsPeriodEstimation; // minimal number of points for doing the period identification
     static const int    DefaultNumPointsForApproximation; // number of points used in the GP approximation
     static const double DefaultPredictionGain; // amount of GP prediction to blend in
 
@@ -73,7 +73,7 @@ public:
     {
         GaussianProcessGuider::guide_parameters parameters;
         parameters.control_gain_ = DefaultControlGain;
-        parameters.min_points_for_inference_ = DefaultNumMinPointsForInference;
+        parameters.min_periods_for_inference_ = DefaultPeriodLengthsInference;
         parameters.min_move_ = DefaultMinMove;
         parameters.Noise_ = DefaultGaussianNoiseHyperparameter;
         parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
@@ -83,7 +83,7 @@ public:
         parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
         parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
         parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
-        parameters.min_points_for_period_computation_ = DefaultNumMinPointsForPeriodComputation;
+        parameters.min_periods_for_period_estimation_ = DefaultPeriodLengthsPeriodEstimation;
         parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
         parameters.prediction_gain_ = DefaultPredictionGain;
         parameters.compute_period_ = DefaultComputePeriod;
@@ -98,7 +98,7 @@ public:
 };
 
 const double GuidePerformanceTest::DefaultControlGain                   = 0.6; // control gain
-const int GuidePerformanceTest::DefaultNumMinPointsForInference         = 100; // minimal number of points for doing the inference
+const double GuidePerformanceTest::DefaultPeriodLengthsInference        = 2.0; // minimal number of points for doing the inference
 const double GuidePerformanceTest::DefaultMinMove                       = 0.01;
 
 const double GuidePerformanceTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
@@ -111,7 +111,7 @@ const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 30.0; 
 const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
 const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
-const int GuidePerformanceTest::DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
+const double GuidePerformanceTest::DefaultPeriodLengthsPeriodEstimation = 2.0; // minimal number of points for doing the period identification
 const int GuidePerformanceTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 const double GuidePerformanceTest::DefaultPredictionGain                = 0.8; // amount of GP prediction to blend in
 
