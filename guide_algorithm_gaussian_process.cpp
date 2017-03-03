@@ -800,21 +800,6 @@ double GuideAlgorithmGaussianProcess::result(double input)
     Debug.AddLine(wxString::Format("Predictive PEC Guider: input: %f, control: %f, exposure: %f",
         input, control_signal, (double) pFrame->RequestedExposureDuration()/1000.0));
 
-    // assert for the developers...
-    assert(!math_tools::isNaN(control_signal));
-
-    // ...and safeguard for the users
-    if (math_tools::isNaN(control_signal))
-    {
-        // calculate a simple P-controller not to screw up the user
-        control_signal = GetControlGain() * input;
-        if (std::abs(input) < GetMinMove())
-        {
-            control_signal = 0.0;
-        }
-
-        Debug.AddLine(wxString::Format("WARNING: Predictive PEC produced NaN! Returning P-control: %f", control_signal));
-    }
     return control_signal;
 }
 
@@ -824,16 +809,6 @@ double GuideAlgorithmGaussianProcess::deduceResult()
 
     Debug.AddLine(wxString::Format("Predictive PEC Guider (deduced): control: %f, exposure: %f", control_signal,
         (double) pFrame->RequestedExposureDuration()/1000.0));
-
-    // assert for the developers...
-    assert(!math_tools::isNaN(control_signal));
-
-    // ...and safeguard for the users
-    if (math_tools::isNaN(control_signal))
-    {
-        Debug.AddLine("WARNING: Predictive PEC (deduced) produced NaN! Returning 0.0");
-        control_signal = 0.0;
-    }
 
     return control_signal;
 }

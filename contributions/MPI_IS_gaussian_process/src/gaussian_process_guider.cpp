@@ -319,15 +319,18 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
     }
 
-    add_one_point(); // add new point here, since the control is for the next point in time
-    HandleControls(control_signal_); // already store control signal
-
-
-
     // assert for the developers...
     assert(!math_tools::isNaN(control_signal_));
 
-    // ...safeguarding is done by the caller
+    // ...safeguard for the users
+    if (math_tools::isNaN(control_signal_))
+    {
+        control_signal_ = hysteresis_control;
+    }
+
+    add_one_point(); // add new point here, since the control is for the next point in time
+    HandleControls(control_signal_); // already store control signal
+
     return control_signal_;
 }
 
@@ -358,7 +361,12 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
     // assert for the developers...
     assert(!math_tools::isNaN(control_signal_));
 
-    // ...safeguarding is done by the caller
+    // ...safeguard for the users
+    if (math_tools::isNaN(control_signal_))
+    {
+        control_signal_ = 0.0;
+    }
+
     return control_signal_;
 }
 
