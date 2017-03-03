@@ -70,7 +70,7 @@ private:
     /**
      * Pointer to the class that does the actual work.
      */
-    GaussianProcessGuider* gpg_;
+    GaussianProcessGuider* GPG;
 
     /**
      * The expert mode shows more parameters in the configuration window.

@@ -305,7 +305,7 @@ public:
 
 
 GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis), gpg_(0)
+    : GuideAlgorithm(pMount, axis), GPG(0)
 {
     // create guide parameters, load default values at first
     GaussianProcessGuider::guide_parameters parameters;
@@ -325,7 +325,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     parameters.compute_period_ = DefaultComputePeriod;
 
     // create instance of the worker
-    gpg_ = new GaussianProcessGuider(parameters);
+    GPG = new GaussianProcessGuider(parameters);
 
     wxString configPath = GetConfigPath();
 
@@ -369,7 +369,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
 
 GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
 {
-    delete gpg_;
+    delete GPG;
 }
 
 
@@ -396,7 +396,7 @@ bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
         control_gain = DefaultControlGain;
     }
 
-    gpg_->SetControlGain(control_gain);
+    GPG->SetControlGain(control_gain);
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_control_gain", control_gain);
 
@@ -421,7 +421,7 @@ bool GuideAlgorithmGaussianProcess::SetMinMove(double min_move)
         min_move = DefaultMinMove;
     }
 
-    gpg_->SetMinMove(min_move);
+    GPG->SetMinMove(min_move);
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_min_move", min_move);
 
@@ -446,7 +446,7 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsInference(int num_elements)
         num_elements = DefaultNumMinPointsForInference;
     }
 
-    gpg_->SetNumPointsInference(num_elements);
+    GPG->SetNumPointsInference(num_elements);
 
     pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_inference", num_elements);
 
@@ -471,7 +471,7 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsPeriodComputation(int num_points
         num_points = DefaultNumMinPointsForPeriodComputation;
     }
 
-    gpg_->SetNumPointsPeriodComputation(num_points);
+    GPG->SetNumPointsPeriodComputation(num_points);
 
     pConfig->Profile.SetInt(GetConfigPath() + "/gp_min_points_period_computation", num_points);
 
@@ -496,7 +496,7 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
         num_points = DefaultNumPointsForApproximation;
     }
 
-    gpg_->SetNumPointsForApproximation(num_points);
+    GPG->SetNumPointsForApproximation(num_points);
 
     pConfig->Profile.SetInt(GetConfigPath() + "/gp_points_approximation", num_points);
 
@@ -649,7 +649,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", hyperparameters[7]);
 
-    gpg_->SetGPHyperparameters(hyperparameters);
+    GPG->SetGPHyperparameters(hyperparameters);
     return error;
 }
 
@@ -671,7 +671,7 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
         prediction_gain = DefaultPredictionGain;
     }
 
-    gpg_->SetPredictionGain(prediction_gain);
+    GPG->SetPredictionGain(prediction_gain);
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_prediction_gain", prediction_gain);
 
@@ -680,49 +680,49 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
 
 bool GuideAlgorithmGaussianProcess::SetBoolComputePeriod(bool active)
 {
-  gpg_->SetBoolComputePeriod(active);
+  GPG->SetBoolComputePeriod(active);
   pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", active);
   return true;
 }
 
 double GuideAlgorithmGaussianProcess::GetControlGain() const
 {
-    return gpg_->GetControlGain();
+    return GPG->GetControlGain();
 }
 
 double GuideAlgorithmGaussianProcess::GetMinMove() const
 {
-    return gpg_->GetMinMove();
+    return GPG->GetMinMove();
 }
 
 int GuideAlgorithmGaussianProcess::GetNumPointsInference() const
 {
-    return gpg_->GetNumPointsInference();
+    return GPG->GetNumPointsInference();
 }
 
 int GuideAlgorithmGaussianProcess::GetNumPointsPeriodComputation() const
 {
-    return gpg_->GetNumPointsPeriodComputation();
+    return GPG->GetNumPointsPeriodComputation();
 }
 
 int GuideAlgorithmGaussianProcess::GetNumPointsForApproximation() const
 {
-    return gpg_->GetNumPointsForApproximation();
+    return GPG->GetNumPointsForApproximation();
 }
 
 std::vector<double> GuideAlgorithmGaussianProcess::GetGPHyperparameters() const
 {
-    return gpg_->GetGPHyperparameters();
+    return GPG->GetGPHyperparameters();
 }
 
 double GuideAlgorithmGaussianProcess::GetPredictionGain() const
 {
-    return gpg_->GetPredictionGain();
+    return GPG->GetPredictionGain();
 }
 
 bool GuideAlgorithmGaussianProcess::GetBoolComputePeriod() const
 {
-    return gpg_->GetBoolComputePeriod();
+    return GPG->GetBoolComputePeriod();
 }
 
 bool GuideAlgorithmGaussianProcess::GetDarkTracking()
@@ -795,7 +795,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
     }
 
     // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
-    double control_signal = gpg_->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
+    double control_signal = GPG->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
 
     Debug.AddLine(wxString::Format("Predictive PEC Guider: input: %f, control: %f, exposure: %f",
         input, control_signal, (double) pFrame->RequestedExposureDuration()/1000.0));
@@ -820,7 +820,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
 
 double GuideAlgorithmGaussianProcess::deduceResult()
 {
-    double control_signal = gpg_->deduceResult((double) pFrame->RequestedExposureDuration()/1000.0);
+    double control_signal = GPG->deduceResult((double) pFrame->RequestedExposureDuration()/1000.0);
 
     Debug.AddLine(wxString::Format("Predictive PEC Guider (deduced): control: %f, exposure: %f", control_signal,
         (double) pFrame->RequestedExposureDuration()/1000.0));
@@ -840,13 +840,13 @@ double GuideAlgorithmGaussianProcess::deduceResult()
 
 void GuideAlgorithmGaussianProcess::reset()
 {
-    gpg_->reset();
+    GPG->reset();
 }
 
 void GuideAlgorithmGaussianProcess::GuidingStopped(void)
 {
     // need to store the estimated period length in case the user exits the application
-    double period_length = gpg_->GetGPHyperparameters()[7];
+    double period_length = GPG->GetGPHyperparameters()[7];
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
     reset(); // reset is only done on a complete stop
@@ -880,11 +880,11 @@ void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
     double guide_rate = 1000 * m_pMount->xRate() / guide_speed;
 
     // just hand it on to the guide algorithm, and pass the RA rate
-    gpg_->GuidingDithered(amt, guide_rate);
+    GPG->GuidingDithered(amt, guide_rate);
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)
 {
     // just hand it on to the guide algorithm
-    gpg_->GuidingDitherSettleDone(success);
+    GPG->GuidingDitherSettleDone(success);
 }
