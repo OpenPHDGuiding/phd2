@@ -69,9 +69,8 @@
 
 #define APPNAME _T("PHD2 Guiding")
 #define PHDVERSION _T("2.6.3")
-#define PHDSUBVER _T("a")
-#define GPGVER _T(" GPGuide beta 3")
-#define FULLVER PHDVERSION PHDSUBVER GPGVER
+#define PHDSUBVER _T("a-GP_beta3")
+#define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
