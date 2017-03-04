@@ -35,7 +35,16 @@
 #ifndef CONFIG_DIALOG_H_INCLUDED
 #define CONFIG_DIALOG_H_INCLUDED
 
+
+// Design Notes:  The goal here is to separate the ownership of various controls from where they are displayed in the AD.  A class that "owns" a control
+// will create it and handle all its behavior - loading, unloading, all the semantics.  This part is handled by the ConfigDlgControlSet.  Where those controls
+// are displayed is determined by the BrainIDControlMap, a dictionary that maps the control ids to the AD panel where they will be displayed.  The owner of the
+// AD panel - the "host" - is responsible for creating the panel UI and rendering all the controls that belong on that panel.  This will be handled in the
+// LayoutControls() method of the hosting class.  Beyond that, the host class has no involvement with controls that are owned by a different class.
+// Example: the focal length control (AD_szFocalLength) is owned by MyFrame but is displayed on the guiding tab
+
 // Segmented by the tab page location seen in the UI
+// "sz" => element is a sizer
 enum BRAIN_CTRL_IDS
 {
     AD_UNASSIGNED,
@@ -44,6 +53,8 @@ enum BRAIN_CTRL_IDS
     AD_szImageLoggingFormat,
     AD_szLanguage,
     AD_szLogFileInfo,
+    AD_cbEnableImageLogging,
+    AD_szImageLoggingOptions,
     AD_szDither,
     AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
     AD_cbUseSubFrames,
@@ -55,8 +66,9 @@ enum BRAIN_CTRL_IDS
     AD_szGain,
     AD_szDelay,
     AD_szPort,
-    AD_binning,
-    AD_cooler,
+    AD_szBinning,
+    AD_szCooler,
+    AD_szCameraMaxADU,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
     AD_cbScaleImages,
     AD_szFocalLength,
@@ -141,8 +153,6 @@ protected:
 class MyFrame;
 class AdvancedDialog;
 
-// ConfigDialogCtrlSet objects create and manage the UI controls and associated semantics - but they don't control tab locations or layout - those functions
-// are done by the ConfigDialogPane objects
 class ConfigDialogCtrlSet
 {
 protected:

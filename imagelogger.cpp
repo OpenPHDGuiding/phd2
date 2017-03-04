@@ -45,6 +45,7 @@ struct IL
     int eventNumber;
     ImageLoggerSettings settings;
     wxString debugLogDir;
+    wxString imageLoggingRoot = "PHD2_Diag_Frames";
     wxString subdir;
 
     void Init()
@@ -86,7 +87,7 @@ struct IL
         {
             // first time through or debug log changed
             debugLogDir = dir;
-            subdir = dir + PATHSEPSTR + wxGetApp().GetInitTime().Format("CameraFrames_%Y-%m-%d-%H%M%S");
+            subdir = dir + PATHSEPSTR + imageLoggingRoot + PATHSEPSTR + wxGetApp().GetInitTime().Format("CameraFrames_%Y-%m-%d-%H%M%S");
             if (!wxFileName::Mkdir(subdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
             {
                 Debug.Write(wxString::Format("Error: Could not create frame logging directory %s\n", subdir));
@@ -133,6 +134,7 @@ void ImageLogger::Init()
 
 void ImageLogger::Destroy()
 {
+    Debug.RemoveOldDirectories("CameraFrames*", 30);
     s_il.Destroy();
 }
 
@@ -143,10 +145,10 @@ void ImageLogger::GetSettings(ImageLoggerSettings *settings)
 
 void ImageLogger::ApplySettings(const ImageLoggerSettings& settings)
 {
-    Debug.Write(wxString::Format("ImgLogger: Settings Log Rel=%d,%.2f Log Px=%d,%.2f LogFrameDrop=%d\n",
+    Debug.Write(wxString::Format("ImgLogger: Settings Log Rel=%d, %.2f Log Px=%d, %.2f LogFrameDrop=%d LogEnabled=%d\n",
         settings.logFramesOverThreshRel, settings.logFramesOverThreshRel ? settings.guideErrorThreshRel : 0.,
         settings.logFramesOverThreshPx, settings.logFramesOverThreshPx ? settings.guideErrorThreshPx : 0.,
-        settings.logFramesDropped));
+        settings.logFramesDropped, settings.loggingEnabled));
 
     s_il.settings = settings;
 }
@@ -158,7 +160,7 @@ void ImageLogger::SaveImage(usImage *img)
 
 void ImageLogger::LogImage(const usImage *img, const FrameDroppedInfo& info)
 {
-    if (s_il.settings.logFramesDropped &&
+    if (s_il.settings.loggingEnabled && s_il.settings.logFramesDropped &&
         pFrame->pGuider->IsCalibratingOrGuiding() && !pFrame->pGuider->IsPaused())
     {
         Debug.Write(wxString::Format("ImgLogger: star lost (%d) frame %u event %u\n", info.starError, img->FrameNum, s_il.eventNumber));
@@ -171,7 +173,7 @@ void ImageLogger::LogImage(const usImage *img, const FrameDroppedInfo& info)
 
 void ImageLogger::LogImage(const usImage *img, double distance)
 {
-    if ((s_il.settings.logFramesOverThreshRel || s_il.settings.logFramesOverThreshPx) &&
+    if (s_il.settings.loggingEnabled && (s_il.settings.logFramesOverThreshRel || s_il.settings.logFramesOverThreshPx) &&
         pFrame->pGuider->IsGuiding() && !pFrame->pGuider->IsPaused() &&
         !PhdController::IsSettling())
     {

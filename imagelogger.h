@@ -37,13 +37,15 @@
 
 struct ImageLoggerSettings
 {
+    bool loggingEnabled;
     bool logFramesOverThreshRel;
     bool logFramesOverThreshPx;
     bool logFramesDropped;
     double guideErrorThreshRel; // relative error theshold
     double guideErrorThreshPx; // pixel error theshold
 
-    ImageLoggerSettings() : logFramesOverThreshRel(false), logFramesOverThreshPx(false), logFramesDropped(false) { }
+    ImageLoggerSettings() : logFramesOverThreshRel(false), logFramesOverThreshPx(false), logFramesDropped(false),
+        loggingEnabled(false) { }
 };
 
 class ImageLogger

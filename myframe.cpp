@@ -754,13 +754,6 @@ Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
     return prev;
 }
 
-void MyFrame::SetMinStarHFD(double val)
-{
-    Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
-    pConfig->Profile.SetDouble("/StarMinHFD", val);
-    m_minStarHFD = val;
-}
-
 bool MyFrame::SetRawImageMode(bool mode)
 {
     bool prev = m_rawImageMode;
@@ -780,8 +773,19 @@ static void LoadImageLoggerSettings()
     settings.logFramesDropped = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesDropped", false);
     settings.guideErrorThreshRel = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshRel", 4.0);
     settings.guideErrorThreshPx = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshPx", 4.0);
+    settings.loggingEnabled = pConfig->Profile.GetBoolean("/ImageLogger/LoggingEnabled", false);
 
     ImageLogger::ApplySettings(settings);
+}
+
+static void SaveImageLoggerSettings(const ImageLoggerSettings& settings)
+{
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshRel", settings.logFramesOverThreshRel);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshPx", settings.logFramesOverThreshPx);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesDropped", settings.logFramesDropped);
+    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshRel", settings.guideErrorThreshPx);
+    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshPx", settings.guideErrorThreshPx);
+    pConfig->Profile.SetBoolean("/ImageLogger/LoggingEnabled", settings.loggingEnabled);
 }
 
 enum {
@@ -806,9 +810,6 @@ void MyFrame::LoadProfileSettings(void)
 
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
-
-    double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
-    SetMinStarHFD(minHFD);
 
     // Don't re-save the setting here with a call to SetAutoLoadCalibration().  An un-initialized registry key (-1) will
     // be populated after the 1st calibration
@@ -2537,6 +2538,8 @@ void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
     pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat));
     this->Add(pTopGrid, sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
+    this->Add(GetSingleCtrl(CtrlMap, AD_cbEnableImageLogging), sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingOptions), sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szDither), sizer_flags);
     Layout();
 }
@@ -2650,6 +2653,44 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
     AddGroup(CtrlMap, AD_szLogFileInfo, pInputGroupBox);
 
+    // Image logging controls
+    width = StringWidth(_T("00.0"));
+    parent = GetParentWindow(AD_cbEnableImageLogging);
+    m_EnableImageLogging = new wxCheckBox(parent, wxID_ANY, _("Enable diagnostic image logging"));
+    AddCtrl(CtrlMap, AD_cbEnableImageLogging, m_EnableImageLogging, _("Save guider images based on options below"));
+    parent = GetParentWindow(AD_szImageLoggingOptions);
+    m_EnableImageLogging->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &MyFrameConfigDialogCtrlSet::OnImageLogEnableChecked, this);
+    m_LoggingOptions = new wxStaticBoxSizer(wxVERTICAL, parent, _("Diagnostic Logging Options"));
+    wxFlexGridSizer *pOptionsGrid = new wxFlexGridSizer(2, 2, 5, 5);
+    m_LogDroppedFrames = new wxCheckBox(parent, wxID_ANY, _("Save guider image for all lost-star frames"));
+    m_LogDroppedFrames->SetToolTip(_("Save guider image whenever a lost-star event occurs"));
+
+    wxBoxSizer *pHzRel = new wxBoxSizer(wxHORIZONTAL);
+    m_LogRelErrors = new wxCheckBox(parent, wxID_ANY, _("Save guider images with relative error >"));
+    m_LogRelErrors->SetToolTip(_("Save guider images based on size of deflection between consecutive frames"));
+    m_LogRelErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 10.0, 4.0, 1.0);
+    m_LogRelErrorThresh->SetToolTip(_("Save guider image whenever the displacement between consecutive frames >= this amount"));
+    pHzRel->Add(m_LogRelErrors, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    pHzRel->Add(m_LogRelErrorThresh, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+
+    wxBoxSizer *pHzAbs = new wxBoxSizer(wxHORIZONTAL);
+    m_LogAbsErrors = new wxCheckBox(parent, wxID_ANY, _("Save guider images with absolute error >"));
+    m_LogAbsErrors->SetToolTip(_("Save guider images based on distance between guide star and lock-point"));
+    width = StringWidth(_T("00.0"));
+    m_LogAbsErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 10.0, 4.0, 1.0);
+    m_LogAbsErrorThresh->SetToolTip(_("Save guider image whenever the distance from the star to the lock-point >= this amount"));
+    pHzAbs->Add(m_LogAbsErrors, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    pHzAbs->Add(m_LogAbsErrorThresh, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+
+    pOptionsGrid->Add(pHzRel);
+    pOptionsGrid->Add(pHzAbs);
+    pOptionsGrid->Add(m_LogDroppedFrames, wxSizerFlags().Border(wxALL, 5));
+    m_LoggingOptions->Add(pOptionsGrid);
+
+    AddGroup(CtrlMap, AD_szImageLoggingOptions, m_LoggingOptions);
+
     // Dither
     parent = GetParentWindow(AD_szDither);
     wxStaticBoxSizer *ditherGroupBox = new wxStaticBoxSizer(wxVERTICAL, parent, _("Dither Settings"));
@@ -2743,6 +2784,17 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_autoExpDurationMax->SetValue(dur_choices[idx]);
 
     m_autoExpSNR->SetValue(cfg.targetSNR);
+
+    ImageLoggerSettings imlSettings;
+    ImageLogger::GetSettings(&imlSettings);
+    m_EnableImageLogging->SetValue(imlSettings.loggingEnabled);
+    m_LogDroppedFrames->SetValue(imlSettings.logFramesDropped);
+    m_LogRelErrors->SetValue(imlSettings.logFramesOverThreshRel);
+    m_LogRelErrorThresh->SetValue(imlSettings.guideErrorThreshRel);
+    m_LogAbsErrors->SetValue(imlSettings.logFramesOverThreshPx);
+    m_LogAbsErrorThresh->SetValue(imlSettings.guideErrorThreshPx);
+    wxCommandEvent dummy;
+    OnImageLogEnableChecked(dummy);
 }
 
 void MyFrameConfigDialogCtrlSet::UnloadValues()
@@ -2804,13 +2856,20 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
         m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
 
-        { // TODO: UI for min HFD
-            double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
-            m_pFrame->SetMinStarHFD(minHFD);
+        ImageLoggerSettings imlSettings;
+        ImageLogger::GetSettings(&imlSettings);
+        imlSettings.loggingEnabled = m_EnableImageLogging->GetValue();
+        if (imlSettings.loggingEnabled)
+        {
+            imlSettings.logFramesOverThreshRel = m_LogRelErrors->GetValue();
+            imlSettings.logFramesOverThreshPx = m_LogAbsErrors->GetValue();
+            imlSettings.logFramesDropped = m_LogDroppedFrames->GetValue();
+            imlSettings.guideErrorThreshRel = m_LogRelErrorThresh->GetValue();
+            imlSettings.guideErrorThreshPx = m_LogAbsErrorThresh->GetValue();
         }
+        ImageLogger::ApplySettings(imlSettings);
+        SaveImageLoggerSettings(imlSettings);
 
-        // TODO: UI for image logger settings
-        LoadImageLoggerSettings();
     }
     catch (const wxString& Msg)
     {
@@ -2837,6 +2896,17 @@ void MyFrameConfigDialogCtrlSet::OnDirSelect(wxCommandEvent& evt)
 
     if (sRtn.Len() > 0)
         m_pLogDir->SetValue(sRtn);
+}
+
+void MyFrameConfigDialogCtrlSet::OnImageLogEnableChecked(wxCommandEvent& event)
+{
+    // wxStaticBoxSizer doesn't have an Enable method :-(
+    bool setIt = m_EnableImageLogging->IsChecked();
+    m_LogDroppedFrames->Enable(setIt);
+    m_LogRelErrors->Enable(setIt);
+    m_LogRelErrorThresh->Enable(setIt);
+    m_LogAbsErrors->Enable(setIt);
+    m_LogAbsErrorThresh->Enable(setIt);
 }
 
 void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)

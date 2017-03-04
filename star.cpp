@@ -912,7 +912,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->GetMinStarHFD(), pCamera->GetMaxADU());
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetMaxADU());
             if (tmp.WasFound() && tmp.GetError() == STAR_SATURATED)
             {
                 if ((maxVal - tmp.PeakVal) * 255U > maxVal)
@@ -968,7 +968,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->GetMinStarHFD(), pCamera->GetMaxADU());
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetMaxADU());
             if (tmp.WasFound())
             {
                 if (pass == 1)

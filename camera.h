@@ -73,6 +73,7 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice *m_binning;
     wxCheckBox *m_coolerOn;
     wxSpinCtrl *m_coolerSetpt;
+    wxTextCtrl *m_camMaxADU;
 
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -189,7 +190,8 @@ public:
 
     static double GetProfilePixelSize(void);
 
-    unsigned short GetMaxADU(void) const;
+    unsigned short GetMaxADU(void);
+    void SetMaxADU(bool isKnown, unsigned short maxADU);
 
 protected:
 
@@ -199,7 +201,7 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
-    void SetMaxADU(bool isKnown, unsigned short maxADU);
+
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,
@@ -231,11 +233,6 @@ inline double GuideCamera::GetCameraPixelSize(void) const
 inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
     return true;                // Return an error, the device/driver can't report pixel size
-}
-
-inline unsigned short GuideCamera::GetMaxADU(void) const
-{
-    return MaxADUIsKnown ? MaxADU : 0;
 }
 
 #endif /* CAMERA_H_INCLUDED */

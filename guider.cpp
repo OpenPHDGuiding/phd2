@@ -134,6 +134,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     int angle = pConfig->Profile.GetInt("/overlay/slit/angle", 0);
     SetOverlaySlitCoords(center, size, angle);
 
+
     m_defectMapPreview = 0;
 
     m_polarAlignCircleRadius = 0.0;
@@ -160,6 +161,9 @@ void Guider::LoadProfileSettings(void)
 
     bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
     SetScaleImage(scaleImage);
+
+    double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", 0.);
+    SetMinStarHFD(minHFD);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -1616,6 +1620,13 @@ EXPOSED_STATE Guider::GetExposedState(void)
     }
 
     return rval;
+}
+
+void Guider::SetMinStarHFD(double val)
+{
+    Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
+    pConfig->Profile.SetDouble("/guider/StarMinHFD", val);
+    m_minStarHFD = val;
 }
 
 void Guider::SetBookmarksShown(bool show)

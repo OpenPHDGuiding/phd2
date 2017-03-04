@@ -127,11 +127,19 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     int m_oldLanguageChoice;
     wxTextCtrl *m_pLogDir;
     wxButton *m_pSelectDir;
+    wxCheckBox *m_EnableImageLogging;
+    wxStaticBoxSizer *m_LoggingOptions;
+    wxCheckBox *m_LogRelErrors;
+    wxCheckBox *m_LogAbsErrors;
+    wxCheckBox *m_LogDroppedFrames;
+    wxSpinCtrlDouble *m_LogRelErrorThresh;
+    wxSpinCtrlDouble *m_LogAbsErrorThresh;
     wxCheckBox *m_pAutoLoadCalibration;
     wxComboBox *m_autoExpDurationMin;
     wxComboBox *m_autoExpDurationMax;
     wxSpinCtrlDouble *m_autoExpSNR;
     void OnDirSelect(wxCommandEvent& evt);
+    void OnImageLogEnableChecked(wxCommandEvent& event);
 
 public:
     MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -322,8 +330,6 @@ public:
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
     Star::FindMode GetStarFindMode(void) const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
-    double GetMinStarHFD(void) const;
-    void SetMinStarHFD(double val);
     bool GetRawImageMode(void) const;
     bool SetRawImageMode(bool force);
 
@@ -647,10 +653,7 @@ inline Star::FindMode MyFrame::GetStarFindMode(void) const
     return m_starFindMode;
 }
 
-inline double MyFrame::GetMinStarHFD(void) const
-{
-    return m_minStarHFD;
-}
+
 
 inline bool MyFrame::GetRawImageMode(void) const
 {

@@ -674,6 +674,14 @@ void GuideCamera::SetTimeoutMs(int ms)
     pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
 }
 
+unsigned short GuideCamera::GetMaxADU(void)
+{
+    if (MaxADUIsKnown)
+        return MaxADU;
+    else
+        return 0;
+}
+
 void GuideCamera::SetMaxADU(bool isKnown, unsigned short maxADU)
 {
     MaxADUIsKnown = isKnown;
@@ -761,6 +769,13 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     m_pParent = pParent;
 }
 
+static void MakeBold(wxControl *ctrl)
+{
+    wxFont font = ctrl->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    ctrl->SetFont(font);
+}
+
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
@@ -777,7 +792,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
     wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
     if (pCamera)
     {
-        int numItems = 2;
+        int numItems = 3;
         if (pCamera->HasGainControl) ++numItems;
         if (pCamera->HasDelayParam)  ++numItems;
         if (pCamera->HasPortNum)     ++numItems;
@@ -785,7 +800,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         if (pCamera->HasCooler)      ++numItems;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
-        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
         if (pCamera->HasGainControl)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
@@ -795,11 +810,12 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         if (pCamera->HasPortNum)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
         if (pCamera->MaxBinning > 1)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_binning));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
         if (pCamera->HasSubframes)
-            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames));
+            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         if (pCamera->HasCooler)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_cooler));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraMaxADU));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
     }
     else
@@ -810,6 +826,13 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
 
     }
     this->Add(pGenGroup, def_flags);
+    if (pCamera && !pCamera->Connected)
+    {
+        wxStaticText *pNotConnected = new wxStaticText(m_pParent, wxID_ANY,
+            _("Camera is not connected.  Additional camera properties may be available if you connect to it first."));
+        MakeBold(pNotConnected);
+        this->Add(pNotConnected, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 10));
+    }
     this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
     this->Layout();
     Fit(m_pParent);
@@ -855,9 +878,9 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         wxArrayString opts;
         m_pCamera->GetBinningOpts(&opts);
         int width = StringArrayWidth(opts);
-        m_binning = new wxChoice(GetParentWindow(AD_binning), wxID_ANY, wxDefaultPosition,
+        m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), opts);
-        AddLabeledCtrl(CtrlMap, AD_binning, _("Binning"), m_binning, _("Camera pixel binning"));
+        AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
     }
 
     // Delay parameter
@@ -881,26 +904,29 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
-
+    // Cooler settings
     if (m_pCamera->HasCooler)
     {
         wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
-        m_coolerOn = new wxCheckBox(GetParentWindow(AD_cooler), wxID_ANY, _("Cooler On"));
+        m_coolerOn = new wxCheckBox(GetParentWindow(AD_szCooler), wxID_ANY, _("Cooler On"));
         m_coolerOn->SetToolTip(_("Turn camera cooler on or off"));
         sz->Add(m_coolerOn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT));
         m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, -99, 99, 1);
-        wxSizer *szt = MakeLabeledControl(AD_cooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
+        wxSizer *szt = MakeLabeledControl(AD_szCooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
         sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
-        AddGroup(CtrlMap, AD_cooler, sz);
+        AddGroup(CtrlMap, AD_szCooler, sz);
     }
+    // Max ADU
+    int width = StringWidth(_("65535"));
+    m_camMaxADU = new wxTextCtrl(GetParentWindow(AD_szCameraMaxADU), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
+    AddLabeledCtrl(CtrlMap, AD_szCameraMaxADU, _("Max ADU"), m_camMaxADU,
+        _("Maximum ADU value for camera - 655535 for most cameras"));
 
     // Watchdog timeout
-    {
-        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
-        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
-            wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
-            "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
-    }
+    m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
+    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
+        wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
+        "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
 }
 
 void CameraConfigDialogCtrlSet::LoadValues()
@@ -1036,6 +1062,15 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_coolerOn->Enable(ok);
         m_coolerSetpt->Enable(ok);
     }
+    if (m_pCamera->MaxADUIsKnown)
+        m_camMaxADU->SetValue(wxString::Format("%d", m_pCamera->GetMaxADU()));
+    else
+    {
+        if (m_pCamera->BitsPerPixel() > 0)
+            m_camMaxADU->SetValue(wxString::Format("%d", (int) std::pow(2, (int)m_pCamera->BitsPerPixel()) - 1));
+        else
+            m_camMaxADU->SetValue(wxString::Format("%d", 0));
+    }
 }
 
 void CameraConfigDialogCtrlSet::UnloadValues()
@@ -1097,11 +1132,14 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
 
-    { // TODO: UI for maxADU (saturation level)
-        bool isKnown = pConfig->Profile.GetBoolean("/camera/MaxADUIsKnown", false);
-        int maxADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
-        m_pCamera->SetMaxADU(isKnown, (unsigned short) maxADU);
+    long val = 0;
+    m_camMaxADU->GetValue().ToLong(&val);
+    if (val > 0)
+    {
+        m_pCamera->SetMaxADU(true, (unsigned short)val);
     }
+    else
+        m_pCamera->SetMaxADU(false, 0);
 
     if (m_pCamera->HasCooler)
     {

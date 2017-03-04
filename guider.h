@@ -155,6 +155,7 @@ class Guider : public wxWindow
     bool m_fastRecenterEnabled;
     LockPosShiftParams m_lockPosShift;
     bool m_measurementMode;
+    double m_minStarHFD;
 
 protected:
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
@@ -251,6 +252,8 @@ public:
 
     void Reset(bool fullReset);
     void EnableMeasurementMode(bool enabled);
+    void SetMinStarHFD(double val);
+    double Guider::GetMinStarHFD(void) { return m_minStarHFD; }
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
