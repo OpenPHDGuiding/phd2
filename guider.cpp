@@ -134,7 +134,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     int angle = pConfig->Profile.GetInt("/overlay/slit/angle", 0);
     SetOverlaySlitCoords(center, size, angle);
 
-
     m_defectMapPreview = 0;
 
     m_polarAlignCircleRadius = 0.0;

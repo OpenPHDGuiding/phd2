@@ -190,7 +190,7 @@ public:
 
     static double GetProfilePixelSize(void);
 
-    unsigned short GetMaxADU(void);
+    unsigned short GetMaxADU(void) const;
     void SetMaxADU(bool isKnown, unsigned short maxADU);
 
 protected:
@@ -233,6 +233,11 @@ inline double GuideCamera::GetCameraPixelSize(void) const
 inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
     return true;                // Return an error, the device/driver can't report pixel size
+}
+
+inline unsigned short GuideCamera::GetMaxADU(void) const
+{
+    return MaxADUIsKnown ? MaxADU : 0;
 }
 
 #endif /* CAMERA_H_INCLUDED */

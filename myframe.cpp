@@ -780,12 +780,12 @@ static void LoadImageLoggerSettings()
 
 static void SaveImageLoggerSettings(const ImageLoggerSettings& settings)
 {
+    pConfig->Profile.SetBoolean("/ImageLogger/LoggingEnabled", settings.loggingEnabled);
     pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshRel", settings.logFramesOverThreshRel);
     pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshPx", settings.logFramesOverThreshPx);
     pConfig->Profile.SetBoolean("/ImageLogger/LogFramesDropped", settings.logFramesDropped);
     pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshRel", settings.guideErrorThreshPx);
     pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshPx", settings.guideErrorThreshPx);
-    pConfig->Profile.SetBoolean("/ImageLogger/LoggingEnabled", settings.loggingEnabled);
 }
 
 enum {
@@ -2869,7 +2869,6 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         }
         ImageLogger::ApplySettings(imlSettings);
         SaveImageLoggerSettings(imlSettings);
-
     }
     catch (const wxString& Msg)
     {

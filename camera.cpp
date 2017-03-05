@@ -674,14 +674,6 @@ void GuideCamera::SetTimeoutMs(int ms)
     pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
 }
 
-unsigned short GuideCamera::GetMaxADU(void)
-{
-    if (MaxADUIsKnown)
-        return MaxADU;
-    else
-        return 0;
-}
-
 void GuideCamera::SetMaxADU(bool isKnown, unsigned short maxADU)
 {
     MaxADUIsKnown = isKnown;
@@ -904,6 +896,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
+
     // Cooler settings
     if (m_pCamera->HasCooler)
     {
@@ -916,11 +909,12 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         AddGroup(CtrlMap, AD_szCooler, sz);
     }
+
     // Max ADU
     int width = StringWidth(_("65535"));
     m_camMaxADU = new wxTextCtrl(GetParentWindow(AD_szCameraMaxADU), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
     AddLabeledCtrl(CtrlMap, AD_szCameraMaxADU, _("Max ADU"), m_camMaxADU,
-        _("Maximum ADU value for camera - 655535 for most cameras"));
+        _("Maximum ADU value for camera - 65535 for most 16-bit cameras or 255 for 8-bit cameras"));
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
@@ -1062,8 +1056,11 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_coolerOn->Enable(ok);
         m_coolerSetpt->Enable(ok);
     }
+
     if (m_pCamera->MaxADUIsKnown)
+    {
         m_camMaxADU->SetValue(wxString::Format("%d", m_pCamera->GetMaxADU()));
+    }
     else
     {
         if (m_pCamera->BitsPerPixel() > 0)
@@ -1139,7 +1136,9 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetMaxADU(true, (unsigned short)val);
     }
     else
+    {
         m_pCamera->SetMaxADU(false, 0);
+    }
 
     if (m_pCamera->HasCooler)
     {

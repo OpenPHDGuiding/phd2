@@ -653,8 +653,6 @@ inline Star::FindMode MyFrame::GetStarFindMode(void) const
     return m_starFindMode;
 }
 
-
-
 inline bool MyFrame::GetRawImageMode(void) const
 {
     return m_rawImageMode;

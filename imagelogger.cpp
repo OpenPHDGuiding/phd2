@@ -145,10 +145,11 @@ void ImageLogger::GetSettings(ImageLoggerSettings *settings)
 
 void ImageLogger::ApplySettings(const ImageLoggerSettings& settings)
 {
-    Debug.Write(wxString::Format("ImgLogger: Settings Log Rel=%d, %.2f Log Px=%d, %.2f LogFrameDrop=%d LogEnabled=%d\n",
+    Debug.Write(wxString::Format("ImgLogger: Settings LogEnabled=%d Log Rel=%d, %.2f Log Px=%d, %.2f LogFrameDrop=%d\n",
+        settings.loggingEnabled,
         settings.logFramesOverThreshRel, settings.logFramesOverThreshRel ? settings.guideErrorThreshRel : 0.,
         settings.logFramesOverThreshPx, settings.logFramesOverThreshPx ? settings.guideErrorThreshPx : 0.,
-        settings.logFramesDropped, settings.loggingEnabled));
+        settings.logFramesDropped));
 
     s_il.settings = settings;
 }
