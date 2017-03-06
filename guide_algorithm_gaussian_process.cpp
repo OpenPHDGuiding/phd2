@@ -337,10 +337,10 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     double min_move = pConfig->Profile.GetDouble(configPath + "/gp_min_move", DefaultMinMove);
     SetMinMove(min_move);
 
-    double period_lengths_for_inference = pConfig->Profile.GetInt(configPath + "/gp_period_lengths_inference", DefaultPeriodLengthsForInference);
+    double period_lengths_for_inference = pConfig->Profile.GetDouble(configPath + "/gp_period_lengths_inference", DefaultPeriodLengthsForInference);
     SetPeriodLengthsInference(period_lengths_for_inference);
 
-    int period_lengths_for_period_estimation = pConfig->Profile.GetInt(configPath + "/gp_period_lengths_period_estimation", DefaultPeriodLengthsForPeriodEstimation);
+    double period_lengths_for_period_estimation = pConfig->Profile.GetDouble(configPath + "/gp_period_lengths_period_estimation", DefaultPeriodLengthsForPeriodEstimation);
     SetPeriodLengthsPeriodEstimation(period_lengths_for_period_estimation);
 
     int num_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNumPointsForApproximation);
