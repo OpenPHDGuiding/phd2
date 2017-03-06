@@ -241,4 +241,5 @@ inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
     return true;                // Return an error, the device/driver can't report pixel size
 }
 
+
 #endif /* CAMERA_H_INCLUDED */
