@@ -203,8 +203,8 @@ GuideCamera::GuideCamera(void)
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
-    MaxADUIsKnown = pConfig->Profile.GetBoolean("/camera/MaxADUIsKnown", false);
-    MaxADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
+    saturationADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
+    saturationByMaxADU = pConfig->Profile.GetBoolean("/camera/SaturationByAdu", false);
     m_pixelSize = GetProfilePixelSize();
     MaxBinning = 1;
     Binning = pConfig->Profile.GetInt("/camera/binning", 1);
@@ -674,20 +674,34 @@ void GuideCamera::SetTimeoutMs(int ms)
     pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
 }
 
-unsigned short GuideCamera::GetMaxADU(void)
+unsigned short GuideCamera::GetSaturationADU(void)
 {
-    if (MaxADUIsKnown)
-        return MaxADU;
+    if (saturationByMaxADU)
+        return saturationADU;
     else
         return 0;
 }
 
-void GuideCamera::SetMaxADU(bool isKnown, unsigned short maxADU)
+unsigned short GuideCamera::GetProfileSaturationADU()
 {
-    MaxADUIsKnown = isKnown;
-    MaxADU = maxADU;
-    pConfig->Profile.SetBoolean("/camera/MaxADUIsKnown", isKnown);
-    pConfig->Profile.SetInt("/camera/MaxADU", maxADU);
+    unsigned short val = (unsigned short)wxMin(pConfig->Profile.GetInt("/camera/MaxADU", 0), 65535);
+    return val;
+}
+
+void GuideCamera::SetSaturationADU(unsigned short satADU)
+{
+    saturationADU = satADU;
+    pConfig->Profile.SetInt("/camera/MaxADU", satADU);
+}
+
+void GuideCamera::SetSaturationByADU(bool val)
+{
+    saturationByMaxADU = val;
+    if (val)
+        Debug.Write(wxString::Format("Saturation detection set to Max-ADU value: &d\n", val));
+    else
+        Debug.Write("Saturation detection set to star-profile-mode");
+    pConfig->Profile.SetBoolean("/camera/SaturationByAdu", val);
 }
 
 bool GuideCamera::SetCameraPixelSize(double pixel_size)
@@ -789,7 +803,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
     pGenGroup->Layout();
 
     // Specific controls
-    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
+    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-Specific Properties"));
     if (pCamera)
     {
         int numItems = 3;
@@ -815,8 +829,8 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
             pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         if (pCamera->HasCooler)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraMaxADU));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
+        pSpecGroup->Layout();
     }
     else
     {
@@ -826,6 +840,13 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
 
     }
     this->Add(pGenGroup, def_flags);
+    if (pCamera)
+    {
+        wxStaticBoxSizer *szSaturationGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Star Saturation Detection"));
+        szSaturationGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
+        szSaturationGroup->Layout();
+        this->Add(szSaturationGroup, def_flags);
+    }
     if (pCamera && !pCamera->Connected)
     {
         wxStaticText *pNotConnected = new wxStaticText(m_pParent, wxID_ANY,
@@ -916,17 +937,39 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         AddGroup(CtrlMap, AD_szCooler, sz);
     }
-    // Max ADU
+
+    // Max ADU and related saturation choices in a single group
     int width = StringWidth(_("65535"));
-    m_camMaxADU = new wxTextCtrl(GetParentWindow(AD_szCameraMaxADU), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
-    AddLabeledCtrl(CtrlMap, AD_szCameraMaxADU, _("Max ADU"), m_camMaxADU,
-        _("Maximum ADU value for camera - 655535 for most cameras"));
+    wxWindow* parent = GetParentWindow(AD_szSaturationOptions);
+    m_camSaturationADU = new wxTextCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
+    m_camSaturationADU->SetToolTip(_("ADU level to determine saturation - 655535 for most cameras."));
+    m_SaturationByADU = new wxRadioButton(parent, wxID_ANY, "Saturation by Max-ADU value:");
+    m_SaturationByADU->SetToolTip(_("Identify star saturation based on camera maximum-ADU value"));
+    m_SaturationByADU->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
+    wxStaticBoxSizer* szADUGroup = new wxStaticBoxSizer(wxHORIZONTAL, parent,
+        wxEmptyString);
+    szADUGroup->Add(m_SaturationByADU, wxSizerFlags().Border(wxTOP, 2));
+    szADUGroup->Add(m_camSaturationADU, wxSizerFlags().Border(wxLEFT, 6));
+
+    m_SaturationByProfile = new wxRadioButton(parent, wxID_ANY, "Saturation via star-profile");
+    m_SaturationByProfile->SetToolTip(_("Identify star saturation based on flat-topped profile, regardless of brightness (default)"));
+    m_SaturationByProfile->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
+    wxFlexGridSizer* szSaturationGroup = new wxFlexGridSizer(1, 2, 5, 15);
+
+    szSaturationGroup->Add(szADUGroup, wxSizerFlags().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
+    szSaturationGroup->Add(m_SaturationByProfile, wxSizerFlags(0).Border(wxLEFT, 70).Expand().Align(wxALIGN_CENTER_VERTICAL));
+    AddGroup(CtrlMap, AD_szSaturationOptions, szSaturationGroup);
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
     AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
         wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
         "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+}
+
+void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
+{
+    m_camSaturationADU->Enable(m_SaturationByADU->GetValue());
 }
 
 void CameraConfigDialogCtrlSet::LoadValues()
@@ -952,6 +995,21 @@ void CameraConfigDialogCtrlSet::LoadValues()
     }
 
     m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
+    m_SaturationByADU->SetValue(m_pCamera->GetSaturationByADU());
+    m_SaturationByProfile->SetValue(!m_SaturationByADU->GetValue());
+    if (m_pCamera->GetProfileSaturationADU() != 0)
+    {
+        m_camSaturationADU->SetValue(wxString::Format("%d", m_pCamera->GetProfileSaturationADU()));
+    }
+    else
+    {
+        if (m_pCamera->BitsPerPixel() > 0)
+            m_camSaturationADU->SetValue(wxString::Format("%d", (int)std::pow(2, (int)m_pCamera->BitsPerPixel()) - 1));
+        else
+            m_camSaturationADU->SetValue(wxString::Format("%d", 0));
+    }
+    wxCommandEvent dummy;
+    OnSaturationChoiceChanged(dummy);
 
     if (m_pCamera->HasDelayParam)
     {
@@ -1062,15 +1120,6 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_coolerOn->Enable(ok);
         m_coolerSetpt->Enable(ok);
     }
-    if (m_pCamera->MaxADUIsKnown)
-        m_camMaxADU->SetValue(wxString::Format("%d", m_pCamera->GetMaxADU()));
-    else
-    {
-        if (m_pCamera->BitsPerPixel() > 0)
-            m_camMaxADU->SetValue(wxString::Format("%d", (int) std::pow(2, (int)m_pCamera->BitsPerPixel()) - 1));
-        else
-            m_camMaxADU->SetValue(wxString::Format("%d", 0));
-    }
 }
 
 void CameraConfigDialogCtrlSet::UnloadValues()
@@ -1132,14 +1181,28 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
 
-    long val = 0;
-    m_camMaxADU->GetValue().ToLong(&val);
-    if (val > 0)
+    m_pCamera->SetSaturationByADU(m_SaturationByADU->GetValue());
+    if (m_SaturationByADU->GetValue())
     {
-        m_pCamera->SetMaxADU(true, (unsigned short)val);
+        long val = 0;
+        m_camSaturationADU->GetValue().ToLong(&val);
+        if (val > 0)
+        {
+            // Need to check this here before cast from long to unsigned short
+            if (m_pCamera->BitsPerPixel() > 0)
+                val = wxMin(val, std::pow(2.0, (int)m_pCamera->BitsPerPixel()) - 1);
+            else
+                val = wxMin(val, 65535);
+            m_pCamera->SetSaturationADU((unsigned short)val);
+        }
+        else
+        {
+            // user-entered zero treated as 'set to default'
+            if (m_pCamera->BitsPerPixel() > 0)
+                m_pCamera->SetSaturationADU(std::pow(2.0, (int)m_pCamera->BitsPerPixel()) - 1);
+            m_pCamera->SetSaturationByADU(false);
+        }
     }
-    else
-        m_pCamera->SetMaxADU(false, 0);
 
     if (m_pCamera->HasCooler)
     {

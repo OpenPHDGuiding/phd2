@@ -223,8 +223,6 @@ void GuiderOneStar::LoadProfileSettings(void)
 
     int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DEFAULT_SEARCH_REGION);
     SetSearchRegion(searchRegion);
-
-    SaturationByMaxADU = pConfig->Profile.GetBoolean("/guider/onestar/SaturationByAdu", false);
 }
 
 bool GuiderOneStar::GetMassChangeThresholdEnabled(void)
@@ -326,7 +324,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
 
         m_massChecker->Reset();
         bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(),
-                              GetMinStarHFD(), pCamera->GetMaxADU());
+                              GetMinStarHFD(), pCamera->GetSaturationADU());
     }
     catch (const wxString& Msg)
     {
@@ -455,7 +453,7 @@ bool GuiderOneStar::AutoSelect(void)
         m_massChecker->Reset();
 
         if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
-                         pCamera->GetMaxADU()))
+                         pCamera->GetSaturationADU()))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -667,7 +665,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         Star newStar(m_star);
 
         if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), GetMinStarHFD(),
-                          pCamera->GetMaxADU()))
+                          pCamera->GetSaturationADU()))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
@@ -1040,16 +1038,6 @@ void GuiderOneStar::SaveStarFITS()
     PHD_fits_close_file(fptr);
 }
 
-void GuiderOneStar::SetSaturationByADU(bool val)
-{
-    SaturationByMaxADU = val;
-    if (val)
-        Debug.Write(wxString::Format("Saturation detection set to Max-ADU value: &d\n", val));
-    else
-        Debug.Write("Saturation detection set to star-profile-mode");
-    pConfig->Profile.SetBoolean("/guider/onestar/SaturationByAdu", val);
-}
-
 wxString GuiderOneStar::GetSettingsSummary()
 {
     // return a loggable summary of guider configs
@@ -1119,10 +1107,7 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
 
     parent = GetParentWindow(AD_szStarTracking);
     width = StringWidth(_("65535"));
-    m_SaturationByProfile = new wxRadioButton(parent, wxID_ANY, "Detect saturation via star-profile");
-    m_SaturationByProfile->SetToolTip(_("Identify star saturation based on flat-topped profile, regardless of brightness (default)"));
-    m_SaturationByADU = new wxRadioButton(parent, wxID_ANY, "Detect saturation by camera max-ADU value");
-    m_SaturationByADU->SetToolTip(_("Identify star saturation based on camera maximum-ADU value"));
+
 
     m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, 2.0, 0.5);
@@ -1132,8 +1117,6 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
     pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));
-    pTrackingParams->Add(m_SaturationByProfile, wxSizerFlags().Border(wxTOP, 2));
-    pTrackingParams->Add(m_SaturationByADU, wxSizerFlags(0).Border(wxLEFT, 75));
     pTrackingParams->Add(pHFD, wxSizerFlags().Border(wxTOP, 3));
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
@@ -1152,8 +1135,6 @@ void GuiderOneStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderOneStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
     m_MinHFD->SetValue(m_pGuiderOneStar->GetMinStarHFD());
-    m_SaturationByADU->SetValue(m_pGuiderOneStar->GetSaturationByADU() && pCamera->MaxADUIsKnown);
-    m_SaturationByProfile->SetValue(!m_SaturationByADU->GetValue());
 
     GuiderConfigDialogCtrlSet::LoadValues();
 }
@@ -1164,7 +1145,6 @@ void GuiderOneStarConfigDialogCtrlSet::UnloadValues()
     m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
     m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
     m_pGuiderOneStar->SetMinStarHFD(m_MinHFD->GetValue());
-    m_pGuiderOneStar->SetSaturationByADU(m_SaturationByADU->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
 

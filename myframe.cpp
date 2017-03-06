@@ -2530,12 +2530,13 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
+    wxSizerFlags grid_flags = wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL);
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(2, 2, 15, 15);
 
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk));
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage), grid_flags);
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig), grid_flags);
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk), grid_flags);
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat), grid_flags);
     this->Add(pTopGrid, sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
     this->Add(GetSingleCtrl(CtrlMap, AD_cbEnableImageLogging), sizer_flags);

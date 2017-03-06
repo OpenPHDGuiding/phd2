@@ -60,6 +60,7 @@ enum BRAIN_CTRL_IDS
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
     AD_szAutoExposure,
+    AD_szSaturationOptions,
     AD_szCameraTimeout,
     AD_szTimeLapse,
     AD_szPixelSize,
@@ -68,7 +69,6 @@ enum BRAIN_CTRL_IDS
     AD_szPort,
     AD_szBinning,
     AD_szCooler,
-    AD_szCameraMaxADU,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
     AD_cbScaleImages,
     AD_szFocalLength,

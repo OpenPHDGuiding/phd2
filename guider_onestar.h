@@ -55,8 +55,6 @@ public:
     wxSpinCtrl *m_pSearchRegion;
     wxCheckBox *m_pEnableStarMassChangeThresh;
     wxSpinCtrlDouble *m_pMassChangeThreshold;
-    wxRadioButton *m_SaturationByProfile;
-    wxRadioButton *m_SaturationByADU;
     wxSpinCtrlDouble *m_MinHFD;
 
     virtual void LoadValues(void);
@@ -114,8 +112,6 @@ public:
     double HFD(void);
     int StarError(void);
     wxString GetSettingsSummary();
-    bool GetSaturationByADU() { return SaturationByMaxADU; }
-    void SetSaturationByADU(bool val);
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -127,7 +123,6 @@ private:
     void InvalidateCurrentPosition(bool fullReset = false);
     bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
     bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
-    bool SaturationByMaxADU;
 
     void OnLClick(wxMouseEvent& evt);
 

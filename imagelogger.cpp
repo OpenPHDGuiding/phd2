@@ -130,11 +130,11 @@ static IL s_il;
 void ImageLogger::Init()
 {
     s_il.Init();
+    Debug.RemoveOldDirectories("CameraFrames*", 30);
 }
 
 void ImageLogger::Destroy()
 {
-    Debug.RemoveOldDirectories("CameraFrames*", 30);
     s_il.Destroy();
 }
 

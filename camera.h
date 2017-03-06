@@ -73,7 +73,9 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice *m_binning;
     wxCheckBox *m_coolerOn;
     wxSpinCtrl *m_coolerSetpt;
-    wxTextCtrl *m_camMaxADU;
+    wxTextCtrl *m_camSaturationADU;
+    wxRadioButton *m_SaturationByProfile;
+    wxRadioButton *m_SaturationByADU;
 
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -85,6 +87,7 @@ public:
     void SetPixelSize(double val);
     int GetBinning(void);
     void SetBinning(int val);
+    void OnSaturationChoiceChanged(wxCommandEvent& event);
 };
 
 enum CaptureOptionBits
@@ -107,6 +110,7 @@ class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 protected:
     bool            m_hasGuideOutput;
     int             m_timeoutMs;
+    bool            saturationByMaxADU;
 
 public:
     int             GuideCameraGain;
@@ -126,8 +130,7 @@ public:
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     bool            HasCooler;
-    bool            MaxADUIsKnown;
-    unsigned short  MaxADU;
+    unsigned short  saturationADU;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage        *CurrentDarkFrame;
@@ -190,8 +193,11 @@ public:
 
     static double GetProfilePixelSize(void);
 
-    unsigned short GetMaxADU(void);
-    void SetMaxADU(bool isKnown, unsigned short maxADU);
+    unsigned short GetSaturationADU(void);
+    unsigned short GetProfileSaturationADU(void);
+    void SetSaturationADU(unsigned short satADU);
+    bool GetSaturationByADU() { return saturationByMaxADU; }
+    void SetSaturationByADU(bool val);
 
 protected:
 
