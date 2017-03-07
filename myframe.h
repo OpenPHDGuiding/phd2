@@ -64,13 +64,6 @@ enum NOISE_REDUCTION_METHOD
     NR_3x3MEDIAN
 };
 
-enum LOGGED_IMAGE_FORMAT
-{
-    LIF_LOW_Q_JPEG,
-    LIF_HI_Q_JPEG,
-    LIF_RAW_FITS
-};
-
 struct AutoExposureCfg
 {
     bool enabled;
@@ -114,7 +107,6 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     MyFrame *m_pFrame;
     wxCheckBox *m_pResetConfiguration;
     wxCheckBox *m_pResetDontAskAgain;
-    wxChoice *m_pLoggedImageFormat;
     wxRadioButton *m_ditherRandom;
     wxRadioButton *m_ditherSpiral;
     wxSpinCtrlDouble *m_ditherScaleFactor;
@@ -129,11 +121,14 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxButton *m_pSelectDir;
     wxCheckBox *m_EnableImageLogging;
     wxStaticBoxSizer *m_LoggingOptions;
+    wxCheckBox *m_LogNextNFrames;
     wxCheckBox *m_LogRelErrors;
     wxCheckBox *m_LogAbsErrors;
     wxCheckBox *m_LogDroppedFrames;
+    wxCheckBox *m_LogAutoSelectFrames;
     wxSpinCtrlDouble *m_LogRelErrorThresh;
     wxSpinCtrlDouble *m_LogAbsErrorThresh;
+    wxSpinCtrl *m_LogNextNFramesCount;
     wxCheckBox *m_pAutoLoadCalibration;
     wxComboBox *m_autoExpDurationMin;
     wxComboBox *m_autoExpDurationMax;
@@ -172,9 +167,8 @@ protected:
     friend class WorkerThread;
 
 private:
+
     NOISE_REDUCTION_METHOD m_noiseReductionMethod;
-    bool m_image_logging_enabled;
-    LOGGED_IMAGE_FORMAT m_logged_image_format;
     DitherMode m_ditherMode;
     double m_ditherScaleFactor;
     bool m_ditherRaOnly;
@@ -235,7 +229,6 @@ public:
     double Stretch_gamma;
     wxLocale *m_pLocale;
     unsigned int m_frameCounter;
-    unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
     Star::FindMode m_starFindMode;
     double m_minStarHFD;
@@ -253,7 +246,6 @@ public:
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
-    void OnLog(wxCommandEvent& evt);
     void OnSelectGear(wxCommandEvent& evt);
     void OnLoopExposure(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
@@ -324,10 +316,6 @@ public:
     bool GetDitherRaOnly(void);
     bool SetDitherRaOnly(bool ditherRaOnly);
     double GetDitherAmount(int ditherType);
-    void EnableImageLogging(bool enable);
-    bool IsImageLoggingEnabled(void);
-    void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
-    LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
     Star::FindMode GetStarFindMode(void) const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
     bool GetRawImageMode(void) const;
@@ -555,7 +543,6 @@ enum {
     MENU_XHAIR5,
     MENU_SLIT_OVERLAY_COORDS,
     MENU_TAKEDARKS,
-    MENU_LOGIMAGES,
     MENU_SERVER,
     MENU_TOOLBAR,
     MENU_GRAPH,

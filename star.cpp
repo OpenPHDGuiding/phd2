@@ -892,7 +892,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     unsigned int sat_level; // saturation level, including pedestal
 
-    if (pCamera->GetSaturationByADU())
+    if (pCamera->IsSaturationByADU())
     {
         // known saturation level ... easy
         sat_level = pCamera->GetSaturationADU() + image.Pedestal;

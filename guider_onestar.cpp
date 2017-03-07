@@ -310,7 +310,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         double x = position.X;
         double y = position.Y;
 
-        Debug.AddLine(wxString::Format("SetCurrentPosition(%.2f,%.2f)", x, y ));
+        Debug.Write(wxString::Format("SetCurrentPosition(%.2f,%.2f)\n", x, y ));
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {
@@ -332,54 +332,6 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
     }
 
     return bError;
-}
-
-class AutoSelectFailFinder : public wxDirTraverser
-{
-public:
-    wxString prefix;
-    wxArrayString files;
-    AutoSelectFailFinder(const wxString& prefix_) : prefix(prefix_) {  }
-    wxDirTraverseResult OnFile(const wxString& filename)
-    {
-        wxFileName fn(filename);
-        if (fn.GetFullName().StartsWith(prefix))
-            files.Add(filename);
-        return wxDIR_CONTINUE;
-    }
-    wxDirTraverseResult OnDir(const wxString& WXUNUSED(dirname))
-    {
-        return wxDIR_CONTINUE;
-    }
-};
-
-static void RemoveOldAutoSelectFailFiles(const wxString& prefix, unsigned int keep_files)
-{
-    AutoSelectFailFinder finder(prefix);
-    wxDir dir(Debug.GetLogDir());
-    dir.Traverse(finder);
-
-    finder.files.Sort();
-
-    while (finder.files.size() >= keep_files)
-    {
-        wxRemoveFile(finder.files[0]);
-        finder.files.RemoveAt(0);
-    }
-}
-
-static void SaveAutoSelectFailedImg(usImage *pImage)
-{
-    static const wxString prefix = _T("PHD2_AutoSelectFail_");
-    enum { KEEP_FILES = 10 };
-
-    RemoveOldAutoSelectFailFiles(prefix, KEEP_FILES);
-
-    wxString filename = prefix + wxDateTime::UNow().Format(_T("%Y-%m-%d_%H%M%S.fit"));
-
-    Debug.AddLine("GuiderOneStar::AutoSelect failed. Saving image to " + filename);
-
-    pImage->Save(wxFileName(Debug.GetLogDir(), filename).GetFullPath());
 }
 
 static wxString StarStatusStr(const Star& star)
@@ -423,13 +375,13 @@ static wxString StarStatus(const Star& star)
 
 bool GuiderOneStar::AutoSelect(void)
 {
-    bool bError = false;
+    bool error = false;
 
-    usImage *pImage = CurrentImage();
+    usImage *image = CurrentImage();
 
     try
     {
-        if (!pImage || !pImage->ImageData)
+        if (!image || !image->ImageData)
         {
             throw ERROR_INFO("No Current Image");
         }
@@ -445,14 +397,14 @@ bool GuiderOneStar::AutoSelect(void)
             edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
 
         Star newStar;
-        if (!newStar.AutoFind(*pImage, edgeAllowance, m_searchRegion))
+        if (!newStar.AutoFind(*image, edgeAllowance, m_searchRegion))
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
 
         m_massChecker->Reset();
 
-        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
+        if (!m_star.Find(image, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
                          pCamera->GetSaturationADU()))
         {
             throw ERROR_INFO("Unable to find");
@@ -476,20 +428,23 @@ bool GuiderOneStar::AutoSelect(void)
         UpdateImageDisplay();
         pFrame->StatusMsg(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
         pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
-        pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
+        pFrame->pProfile->UpdateData(image, m_star.X, m_star.Y);
     }
     catch (const wxString& Msg)
     {
-        if (pImage && pImage->ImageData)
-        {
-            SaveAutoSelectFailedImg(pImage);
-        }
-
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        error = true;
     }
 
-    return bError;
+    if (image && image->ImageData)
+    {
+        if (error)
+            Debug.Write("GuiderOneStar::AutoSelect failed.\n");
+
+        ImageLogger::LogAutoSelectImage(image, !error);
+    }
+
+    return error;
 }
 
 bool GuiderOneStar::IsLocked(void)
@@ -650,11 +605,12 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
 {
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
     {
-        Debug.AddLine("UpdateCurrentPosition: no star selected");
+        Debug.Write("UpdateCurrentPosition: no star selected\n");
         errorInfo->starError = Star::STAR_ERROR;
         errorInfo->starMass = 0.0;
         errorInfo->starSNR = 0.0;
         errorInfo->status = _("No star selected");
+        ImageLogger::LogImageStarDeselected(pImage);
         return true;
     }
 
@@ -901,50 +857,6 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 dc.SetPen(wxPen(wxColour(230,130,30), 1, wxDOT));
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
-
-        // Image logging
-        if (state >= STATE_SELECTED && pFrame->IsImageLoggingEnabled() && pFrame->m_frameCounter != pFrame->m_loggedImageFrame)
-        {
-            // only log each image frame once
-            pFrame->m_loggedImageFrame = pFrame->m_frameCounter;
-
-            if (pFrame->GetLoggedImageFormat() == LIF_RAW_FITS) // Save star image as a FITS
-            {
-                SaveStarFITS();
-            }
-            else  // Save star image as a JPEG
-            {
-                double LockX = LockPosition().X;
-                double LockY = LockPosition().Y;
-
-                wxBitmap SubBmp(60,60,-1);
-                wxMemoryDC tmpMdc;
-                tmpMdc.SelectObject(SubBmp);
-                memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-                memDC.DrawLine(0, LockY * m_scaleFactor, XWinSize, LockY * m_scaleFactor);
-                memDC.DrawLine(LockX * m_scaleFactor, 0, LockX * m_scaleFactor, YWinSize);
-    #ifdef __APPLEX__
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
-    #else
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X * m_scaleFactor) - 30,ROUND(m_star.Y * m_scaleFactor) - 30,wxCOPY,false);
-    #endif
-                //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
-
-                wxString imgLogDirectory = Debug.GetLogDir() + PATHSEPSTR + "PHD2_Stars";
-                if (!wxDirExists(imgLogDirectory))
-                    wxFileName::Mkdir(imgLogDirectory, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
-                wxString fname = imgLogDirectory + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".jpg";
-                wxImage subImg = SubBmp.ConvertToImage();
-                // subImg.Rescale(120, 120);  zoom up (not now)
-                if (pFrame->GetLoggedImageFormat() == LIF_HI_Q_JPEG)
-                {
-                    // set high(ish) JPEG quality
-                    subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
-                }
-                subImg.SaveFile(fname, wxBITMAP_TYPE_JPEG);
-                tmpMdc.SelectObject(wxNullBitmap);
-            }
-        }
     }
     catch (const wxString& Msg)
     {
@@ -1112,8 +1024,11 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
     m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, 2.0, 0.5);
     m_MinHFD->SetDigits(1);
-    wxSizer *pHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum HFD for star"), m_MinHFD,
-        _("The minimum star HFD (size) that will be used for tracking.  If the HFD falls below this level, a lost-star event will occur"));
+    wxSizer *pHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum star HFD (pixels)"), m_MinHFD,
+        _("The minimum star HFD (size) that will be used for identifying a guide star. "
+          "This setting can be used to prevent PHD2 from guiding on a hot pixel. "
+          "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
+          "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
     pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));

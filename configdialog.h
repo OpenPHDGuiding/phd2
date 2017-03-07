@@ -50,7 +50,6 @@ enum BRAIN_CTRL_IDS
     AD_UNASSIGNED,
     AD_cbResetConfig,
     AD_cbDontAsk,
-    AD_szImageLoggingFormat,
     AD_szLanguage,
     AD_szLogFileInfo,
     AD_cbEnableImageLogging,

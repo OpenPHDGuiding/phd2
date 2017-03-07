@@ -168,9 +168,9 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
 
 // Same as RemoveMatchingFiles but this applies to subdirectories in the logging directory.  Implemented to clean up the "CameraFrames..." diagnostic
 // directories for image logging
-void Logger::RemoveOldDirectories (const wxString& filePattern, int DaysOld)
+void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
 {
-    wxString dirRoot = GetLogDir() + PATHSEPSTR + "PHD2_Diag_Frames";
+    wxString dirRoot = GetLogDir();
     wxArrayString dirTargets;
     int hitCount = 0;
     wxDateTime oldestDate = wxDateTime::UNow() + wxDateSpan::Days(-DaysOld);

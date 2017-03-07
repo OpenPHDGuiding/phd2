@@ -110,7 +110,8 @@ class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 protected:
     bool            m_hasGuideOutput;
     int             m_timeoutMs;
-    bool            saturationByMaxADU;
+    bool            m_saturationByADU;
+    unsigned short  m_saturationADU;
 
 public:
     int             GuideCameraGain;
@@ -130,7 +131,6 @@ public:
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     bool            HasCooler;
-    unsigned short  saturationADU;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage        *CurrentDarkFrame;
@@ -193,11 +193,9 @@ public:
 
     static double GetProfilePixelSize(void);
 
-    unsigned short GetSaturationADU(void);
-    unsigned short GetProfileSaturationADU(void);
-    void SetSaturationADU(unsigned short satADU);
-    bool GetSaturationByADU() { return saturationByMaxADU; }
-    void SetSaturationByADU(bool val);
+    unsigned short GetSaturationADU(void) const;
+    bool IsSaturationByADU(void) const;
+    void SetSaturationByADU(bool saturationByADU, unsigned short saturationVal);
 
 protected:
 
@@ -241,5 +239,14 @@ inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
     return true;                // Return an error, the device/driver can't report pixel size
 }
 
+inline bool GuideCamera::IsSaturationByADU(void) const
+{
+    return m_saturationByADU;
+}
+
+inline unsigned short GuideCamera::GetSaturationADU(void) const
+{
+    return m_saturationByADU ? m_saturationADU : 0;
+}
 
 #endif /* CAMERA_H_INCLUDED */
