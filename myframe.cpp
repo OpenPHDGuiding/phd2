@@ -2618,7 +2618,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
     AddGroup(CtrlMap, AD_szLogFileInfo, pInputGroupBox);
 
-    const int PAD = 3;
+    const int PAD = 6;
 
     // Image logging controls
     width = StringWidth(_T("00.0"));
@@ -2627,17 +2627,17 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     AddCtrl(CtrlMap, AD_cbEnableImageLogging, m_EnableImageLogging, _("Save guider images based on options below"));
     parent = GetParentWindow(AD_szImageLoggingOptions);
     m_EnableImageLogging->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &MyFrameConfigDialogCtrlSet::OnImageLogEnableChecked, this);
-    m_LoggingOptions = new wxStaticBoxSizer(wxVERTICAL, parent, _("Diagnostic Logging Options"));
-    wxFlexGridSizer *pOptionsGrid = new wxFlexGridSizer(3, 1, 0, PAD);
+    m_LoggingOptions = new wxStaticBoxSizer(wxVERTICAL, parent, _("Save Guider Images"));
+    wxFlexGridSizer *pOptionsGrid = new wxFlexGridSizer(3, 2, 0, PAD);
 
-    m_LogDroppedFrames = new wxCheckBox(parent, wxID_ANY, _("Save guider image for all lost-star frames"));
+    m_LogDroppedFrames = new wxCheckBox(parent, wxID_ANY, _("For all lost-star frames"));
     m_LogDroppedFrames->SetToolTip(_("Save guider image whenever a lost-star event occurs"));
 
-    m_LogAutoSelectFrames = new wxCheckBox(parent, wxID_ANY, _("Save all Auto-select Star frames"));
+    m_LogAutoSelectFrames = new wxCheckBox(parent, wxID_ANY, _("For all Auto-select Star frames"));
     m_LogAutoSelectFrames->SetToolTip(_("Save guider image when a star auto-selection is made. Note: the image is always saved when star auto-selection fails, regardless of this setting."));
 
     wxBoxSizer *pHzRel = new wxBoxSizer(wxHORIZONTAL);
-    m_LogRelErrors = new wxCheckBox(parent, wxID_ANY, _("Save guider images when relative error exceeds"));
+    m_LogRelErrors = new wxCheckBox(parent, wxID_ANY, _("When relative error exceeds"));
     m_LogRelErrors->SetToolTip(_("Save guider images when the error for the current frame exceeds the average error by this factor. "
         "For example, if the average (RMS) error is 0.5 pixels, and the current frame's error is 1.5 pixels, the relative error is 3"));
     m_LogRelErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
@@ -2647,7 +2647,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     pHzRel->Add(m_LogRelErrorThresh, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
 
     wxBoxSizer *pHzAbs = new wxBoxSizer(wxHORIZONTAL);
-    m_LogAbsErrors = new wxCheckBox(parent, wxID_ANY, _("Save guider images when absolute error exceeds (pixels)"));
+    m_LogAbsErrors = new wxCheckBox(parent, wxID_ANY, _("When absolute error exceeds (pixels)"));
     m_LogAbsErrors->SetToolTip(_("Save guider images when the distance between the guide star and the lock position exceeds this many pixels"));
     width = StringWidth(_T("00.0"));
     m_LogAbsErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
@@ -2657,18 +2657,18 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     pHzAbs->Add(m_LogAbsErrorThresh, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
 
     wxBoxSizer *pHzN = new wxBoxSizer(wxHORIZONTAL);
-    m_LogNextNFrames = new wxCheckBox(parent, wxID_ANY, _("Save all guider images until this count is reached"));
+    m_LogNextNFrames = new wxCheckBox(parent, wxID_ANY, _("Until this count is reached"));
     m_LogNextNFrames->SetToolTip(_("Save each guider image until the specified number of images have been saved"));
     m_LogNextNFramesCount = pFrame->MakeSpinCtrl(parent, wxID_ANY, "1", wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 1, 100, 1);
     m_LogNextNFramesCount->SetToolTip(_("Number of images to save"));
     pHzN->Add(m_LogNextNFrames, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
     pHzN->Add(m_LogNextNFramesCount, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
 
-    pOptionsGrid->Add(pHzRel);
-    pOptionsGrid->Add(pHzAbs);
     pOptionsGrid->Add(m_LogDroppedFrames, wxSizerFlags().Border(wxALL, PAD));
     pOptionsGrid->Add(m_LogAutoSelectFrames, wxSizerFlags().Border(wxALL, PAD));
+    pOptionsGrid->Add(pHzRel);
     pOptionsGrid->Add(pHzN);
+    pOptionsGrid->Add(pHzAbs);
     m_LoggingOptions->Add(pOptionsGrid);
 
     AddGroup(CtrlMap, AD_szImageLoggingOptions, m_LoggingOptions);
@@ -2681,9 +2681,9 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherSpiral = new wxRadioButton(parent, wxID_ANY, _("Spiral"));
     m_ditherSpiral->SetToolTip(_("Each dither command moves the lock position along a spiral path"));
     wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
-    sz->Add(new wxStaticText(parent, wxID_ANY, _("Mode: ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherRandom, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherSpiral, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
+    sz->Add(new wxStaticText(parent, wxID_ANY, _("Mode: ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+    sz->Add(m_ditherRandom, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+    sz->Add(m_ditherSpiral, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
     ditherGroupBox->Add(sz);
 
     m_ditherRaOnly = new wxCheckBox(parent, wxID_ANY, _("RA only"));
@@ -2696,9 +2696,9 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     sz = new wxBoxSizer(wxHORIZONTAL);
-    sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(new wxStaticText(parent, wxID_ANY, _("Scale") + _(": ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherScaleFactor, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
+    sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 8));
+    sz->Add(new wxStaticText(parent, wxID_ANY, _("Scale") + _(": ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 40));
+    sz->Add(m_ditherScaleFactor, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 10));
     ditherGroupBox->Add(sz);
 
     AddGroup(CtrlMap, AD_szDither, ditherGroupBox);
