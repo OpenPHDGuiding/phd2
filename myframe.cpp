@@ -761,7 +761,7 @@ static void SaveImageLoggerSettings(const ImageLoggerSettings& settings)
     pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshPx", settings.logFramesOverThreshPx);
     pConfig->Profile.SetBoolean("/ImageLogger/LogFramesDropped", settings.logFramesDropped);
     pConfig->Profile.SetBoolean("/ImageLogger/LogAutoSelectFrames", settings.logAutoSelectFrames);
-    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshRel", settings.guideErrorThreshPx);
+    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshRel", settings.guideErrorThreshRel);
     pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshPx", settings.guideErrorThreshPx);
 }
 
