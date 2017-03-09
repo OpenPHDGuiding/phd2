@@ -398,6 +398,13 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         hdr.write("PEDESTAL", (unsigned int) Pedestal, "dark subtraction bias value");
         hdr.write("SATURATE", (1U << BitsPerPixel) - 1, "Data value at which saturation occurs");
 
+        const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
+        if (lockPos.IsValid())
+        {
+            hdr.write("PHDLOCKX", (float) lockPos.X, "PHD2 lock position x");
+            hdr.write("PHDLOCKY", (float) lockPos.Y, "PHD2 lock position y");
+        }
+
         if (!Subframe.IsEmpty())
         {
             hdr.write("PHDSUBFX", (unsigned int) Subframe.x, "PHD2 subframe x");

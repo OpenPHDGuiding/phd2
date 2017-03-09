@@ -114,7 +114,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
     EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
     EVT_MENU(MENU_STATS, MyFrame::OnStats)
@@ -201,7 +200,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_mgr.SetManagedWindow(this);
 
     m_frameCounter = 0;
-    m_loggedImageFrame = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = NULL;
@@ -215,9 +213,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     SetServerMode(serverMode);
 
     GuideLog.EnableLogging(true);
-
-    m_image_logging_enabled = false;
-    m_logged_image_format = (LOGGED_IMAGE_FORMAT) pConfig->Global.GetInt("/LoggedImageFormat", LIF_LOW_Q_JPEG);
 
     m_sampling = 1.0;
 
@@ -495,7 +490,6 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
 
@@ -725,40 +719,12 @@ void MyFrame::AdjustAutoExposure(double curSNR)
     }
 }
 
-void MyFrame::EnableImageLogging(bool enable)
-{
-    m_image_logging_enabled = enable;
-}
-
-bool MyFrame::IsImageLoggingEnabled(void)
-{
-    return m_image_logging_enabled;
-}
-
-void MyFrame::SetLoggedImageFormat(LOGGED_IMAGE_FORMAT format)
-{
-    pConfig->Global.SetInt("/LoggedImageFormat", (int) format);
-    m_logged_image_format = format;
-}
-
-LOGGED_IMAGE_FORMAT MyFrame::GetLoggedImageFormat(void)
-{
-    return m_logged_image_format;
-}
-
 Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
 {
     Star::FindMode prev = m_starFindMode;
     Debug.Write(wxString::Format("Setting StarFindMode = %d\n", mode));
     m_starFindMode = mode;
     return prev;
-}
-
-void MyFrame::SetMinStarHFD(double val)
-{
-    Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
-    pConfig->Profile.SetDouble("/StarMinHFD", val);
-    m_minStarHFD = val;
 }
 
 bool MyFrame::SetRawImageMode(bool mode)
@@ -775,13 +741,28 @@ static void LoadImageLoggerSettings()
 {
     ImageLoggerSettings settings;
 
+    settings.loggingEnabled = pConfig->Profile.GetBoolean("/ImageLogger/LoggingEnabled", false);
     settings.logFramesOverThreshRel = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesOverThreshRel", false);
     settings.logFramesOverThreshPx = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesOverThreshPx", false);
     settings.logFramesDropped = pConfig->Profile.GetBoolean("/ImageLogger/LogFramesDropped", false);
+    settings.logAutoSelectFrames = pConfig->Profile.GetBoolean("/ImageLogger/LogAutoSelectFrames", false);
+    settings.logNextNFrames = false;
+    settings.logNextNFramesCount = 1;
     settings.guideErrorThreshRel = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshRel", 4.0);
     settings.guideErrorThreshPx = pConfig->Profile.GetDouble("/ImageLogger/ErrorThreshPx", 4.0);
 
     ImageLogger::ApplySettings(settings);
+}
+
+static void SaveImageLoggerSettings(const ImageLoggerSettings& settings)
+{
+    pConfig->Profile.SetBoolean("/ImageLogger/LoggingEnabled", settings.loggingEnabled);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshRel", settings.logFramesOverThreshRel);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesOverThreshPx", settings.logFramesOverThreshPx);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogFramesDropped", settings.logFramesDropped);
+    pConfig->Profile.SetBoolean("/ImageLogger/LogAutoSelectFrames", settings.logAutoSelectFrames);
+    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshRel", settings.guideErrorThreshRel);
+    pConfig->Profile.SetDouble("/ImageLogger/ErrorThreshPx", settings.guideErrorThreshPx);
 }
 
 enum {
@@ -806,9 +787,6 @@ void MyFrame::LoadProfileSettings(void)
 
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
-
-    double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
-    SetMinStarHFD(minHFD);
 
     // Don't re-save the setting here with a call to SetAutoLoadCalibration().  An un-initialized registry key (-1) will
     // be populated after the 1st calibration
@@ -1553,7 +1531,6 @@ void MyFrame::StartCapturing()
         m_continueCapturing = true;
         CaptureActive = true;
         m_frameCounter = 0;
-        m_loggedImageFrame = 0;
 
         CheckDarkFrameGeometry();
         UpdateButtonsStatus();
@@ -2529,14 +2506,16 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
+    wxSizerFlags grid_flags = wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL);
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(2, 2, 15, 15);
 
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk));
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage), grid_flags);
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig), grid_flags);
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk), grid_flags);
     this->Add(pTopGrid, sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
+    this->Add(GetSingleCtrl(CtrlMap, AD_cbEnableImageLogging), sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingOptions), sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szDither), sizer_flags);
     Layout();
 }
@@ -2557,17 +2536,6 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status -- Note: this closes PHD2"));
     m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Show Again\" messages")); 
     AddCtrl(CtrlMap, AD_cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't show this again\"."));
-
-    wxString img_formats[] =
-    {
-        _("Low Q JPEG"), _("High Q JPEG"), _("Raw FITS")
-    };
-
-    width = StringArrayWidth(img_formats, WXSIZEOF(img_formats));
-    m_pLoggedImageFormat = new wxChoice(GetParentWindow(AD_szImageLoggingFormat), wxID_ANY, wxPoint(-1, -1),
-        wxSize(width + 35, -1), WXSIZEOF(img_formats), img_formats);
-    AddLabeledCtrl(CtrlMap, AD_szImageLoggingFormat, _("Image logging format"), m_pLoggedImageFormat,
-        _("File format of logged images"));
 
     wxString nralgo_choices[] =
     {
@@ -2650,6 +2618,61 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
     AddGroup(CtrlMap, AD_szLogFileInfo, pInputGroupBox);
 
+    const int PAD = 6;
+
+    // Image logging controls
+    width = StringWidth(_T("00.0"));
+    parent = GetParentWindow(AD_cbEnableImageLogging);
+    m_EnableImageLogging = new wxCheckBox(parent, wxID_ANY, _("Enable diagnostic image logging"));
+    AddCtrl(CtrlMap, AD_cbEnableImageLogging, m_EnableImageLogging, _("Save guider images based on options below"));
+    parent = GetParentWindow(AD_szImageLoggingOptions);
+    m_EnableImageLogging->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &MyFrameConfigDialogCtrlSet::OnImageLogEnableChecked, this);
+    m_LoggingOptions = new wxStaticBoxSizer(wxVERTICAL, parent, _("Save Guider Images"));
+    wxFlexGridSizer *pOptionsGrid = new wxFlexGridSizer(3, 2, 0, PAD);
+
+    m_LogDroppedFrames = new wxCheckBox(parent, wxID_ANY, _("For all lost-star frames"));
+    m_LogDroppedFrames->SetToolTip(_("Save guider image whenever a lost-star event occurs"));
+
+    m_LogAutoSelectFrames = new wxCheckBox(parent, wxID_ANY, _("For all Auto-select Star frames"));
+    m_LogAutoSelectFrames->SetToolTip(_("Save guider image when a star auto-selection is made. Note: the image is always saved when star auto-selection fails, regardless of this setting."));
+
+    wxBoxSizer *pHzRel = new wxBoxSizer(wxHORIZONTAL);
+    m_LogRelErrors = new wxCheckBox(parent, wxID_ANY, _("When relative error exceeds"));
+    m_LogRelErrors->SetToolTip(_("Save guider images when the error for the current frame exceeds the average error by this factor. "
+        "For example, if the average (RMS) error is 0.5 pixels, and the current frame's error is 1.5 pixels, the relative error is 3"));
+    m_LogRelErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 10.0, 4.0, 1.0);
+    m_LogRelErrorThresh->SetToolTip(_("Relative error threshold. Relative error is the ratio between the current frame's error and the average error"));
+    pHzRel->Add(m_LogRelErrors, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+    pHzRel->Add(m_LogRelErrorThresh, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+
+    wxBoxSizer *pHzAbs = new wxBoxSizer(wxHORIZONTAL);
+    m_LogAbsErrors = new wxCheckBox(parent, wxID_ANY, _("When absolute error exceeds (pixels)"));
+    m_LogAbsErrors->SetToolTip(_("Save guider images when the distance between the guide star and the lock position exceeds this many pixels"));
+    width = StringWidth(_T("00.0"));
+    m_LogAbsErrorThresh = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 10.0, 4.0, 1.0);
+    m_LogAbsErrorThresh->SetToolTip(_("Absolute error threshold in pixels"));
+    pHzAbs->Add(m_LogAbsErrors, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+    pHzAbs->Add(m_LogAbsErrorThresh, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+
+    wxBoxSizer *pHzN = new wxBoxSizer(wxHORIZONTAL);
+    m_LogNextNFrames = new wxCheckBox(parent, wxID_ANY, _("Until this count is reached"));
+    m_LogNextNFrames->SetToolTip(_("Save each guider image until the specified number of images have been saved"));
+    m_LogNextNFramesCount = pFrame->MakeSpinCtrl(parent, wxID_ANY, "1", wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 1, 100, 1);
+    m_LogNextNFramesCount->SetToolTip(_("Number of images to save"));
+    pHzN->Add(m_LogNextNFrames, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+    pHzN->Add(m_LogNextNFramesCount, wxSizerFlags().Border(wxALL, PAD).Align(wxALIGN_CENTER_VERTICAL));
+
+    pOptionsGrid->Add(m_LogDroppedFrames, wxSizerFlags().Border(wxALL, PAD));
+    pOptionsGrid->Add(m_LogAutoSelectFrames, wxSizerFlags().Border(wxALL, PAD));
+    pOptionsGrid->Add(pHzRel);
+    pOptionsGrid->Add(pHzN);
+    pOptionsGrid->Add(pHzAbs);
+    m_LoggingOptions->Add(pOptionsGrid);
+
+    AddGroup(CtrlMap, AD_szImageLoggingOptions, m_LoggingOptions);
+
     // Dither
     parent = GetParentWindow(AD_szDither);
     wxStaticBoxSizer *ditherGroupBox = new wxStaticBoxSizer(wxVERTICAL, parent, _("Dither Settings"));
@@ -2658,9 +2681,9 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherSpiral = new wxRadioButton(parent, wxID_ANY, _("Spiral"));
     m_ditherSpiral->SetToolTip(_("Each dither command moves the lock position along a spiral path"));
     wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
-    sz->Add(new wxStaticText(parent, wxID_ANY, _("Mode: ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherRandom, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherSpiral, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
+    sz->Add(new wxStaticText(parent, wxID_ANY, _("Mode: ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+    sz->Add(m_ditherRandom, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+    sz->Add(m_ditherSpiral, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
     ditherGroupBox->Add(sz);
 
     m_ditherRaOnly = new wxCheckBox(parent, wxID_ANY, _("RA only"));
@@ -2673,9 +2696,9 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     sz = new wxBoxSizer(wxHORIZONTAL);
-    sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(new wxStaticText(parent, wxID_ANY, _("Scale") + _(": ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
-    sz->Add(m_ditherScaleFactor, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 3));
+    sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 8));
+    sz->Add(new wxStaticText(parent, wxID_ANY, _("Scale") + _(": ")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 40));
+    sz->Add(m_ditherScaleFactor, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 10));
     ditherGroupBox->Add(sz);
 
     AddGroup(CtrlMap, AD_szDither, ditherGroupBox);
@@ -2710,7 +2733,6 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_pResetConfiguration->SetValue(false);
     m_pResetConfiguration->Enable(!pFrame->CaptureActive);
     m_pResetDontAskAgain->SetValue(false);
-    m_pLoggedImageFormat->SetSelection(pFrame->GetLoggedImageFormat());
     m_pNoiseReduction->SetSelection(pFrame->GetNoiseReductionMethod());
     if (m_pFrame->GetDitherMode() == DITHER_RANDOM)
         m_ditherRandom->SetValue(true);
@@ -2743,6 +2765,22 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_autoExpDurationMax->SetValue(dur_choices[idx]);
 
     m_autoExpSNR->SetValue(cfg.targetSNR);
+
+    ImageLoggerSettings imlSettings;
+    ImageLogger::GetSettings(&imlSettings);
+
+    m_EnableImageLogging->SetValue(imlSettings.loggingEnabled);
+    m_LogDroppedFrames->SetValue(imlSettings.logFramesDropped);
+    m_LogAutoSelectFrames->SetValue(imlSettings.logAutoSelectFrames);
+    m_LogRelErrors->SetValue(imlSettings.logFramesOverThreshRel);
+    m_LogRelErrorThresh->SetValue(imlSettings.guideErrorThreshRel);
+    m_LogAbsErrors->SetValue(imlSettings.logFramesOverThreshPx);
+    m_LogAbsErrorThresh->SetValue(imlSettings.guideErrorThreshPx);
+    m_LogNextNFrames->SetValue(imlSettings.logNextNFrames);
+    m_LogNextNFramesCount->SetValue(imlSettings.logNextNFramesCount);
+
+    wxCommandEvent dummy;
+    OnImageLogEnableChecked(dummy);
 }
 
 void MyFrameConfigDialogCtrlSet::UnloadValues()
@@ -2767,7 +2805,6 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
             ConfirmDialog::ResetAllDontAskAgain();
         }
 
-        m_pFrame->SetLoggedImageFormat((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
         m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
         m_pFrame->SetDitherMode(m_ditherRandom->GetValue() ? DITHER_RANDOM : DITHER_SPIRAL);
         m_pFrame->SetDitherRaOnly(m_ditherRaOnly->GetValue());
@@ -2804,13 +2841,24 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
         m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
 
-        { // TODO: UI for min HFD
-            double minHFD = pConfig->Profile.GetDouble("/StarMinHFD", 0.);
-            m_pFrame->SetMinStarHFD(minHFD);
+        ImageLoggerSettings imlSettings;
+        ImageLogger::GetSettings(&imlSettings);
+
+        imlSettings.loggingEnabled = m_EnableImageLogging->GetValue();
+        if (imlSettings.loggingEnabled)
+        {
+            imlSettings.logFramesOverThreshRel = m_LogRelErrors->GetValue();
+            imlSettings.logFramesOverThreshPx = m_LogAbsErrors->GetValue();
+            imlSettings.logFramesDropped = m_LogDroppedFrames->GetValue();
+            imlSettings.logAutoSelectFrames = m_LogAutoSelectFrames->GetValue();
+            imlSettings.guideErrorThreshRel = m_LogRelErrorThresh->GetValue();
+            imlSettings.guideErrorThreshPx = m_LogAbsErrorThresh->GetValue();
+            imlSettings.logNextNFrames = m_LogNextNFrames->GetValue();
+            imlSettings.logNextNFramesCount = m_LogNextNFramesCount->GetValue();
         }
 
-        // TODO: UI for image logger settings
-        LoadImageLoggerSettings();
+        ImageLogger::ApplySettings(imlSettings);
+        SaveImageLoggerSettings(imlSettings);
     }
     catch (const wxString& Msg)
     {
@@ -2837,6 +2885,20 @@ void MyFrameConfigDialogCtrlSet::OnDirSelect(wxCommandEvent& evt)
 
     if (sRtn.Len() > 0)
         m_pLogDir->SetValue(sRtn);
+}
+
+void MyFrameConfigDialogCtrlSet::OnImageLogEnableChecked(wxCommandEvent& event)
+{
+    // wxStaticBoxSizer doesn't have an Enable method :-(
+    bool setIt = m_EnableImageLogging->IsChecked();
+    m_LogRelErrors->Enable(setIt);
+    m_LogRelErrorThresh->Enable(setIt);
+    m_LogAbsErrors->Enable(setIt);
+    m_LogAbsErrorThresh->Enable(setIt);
+    m_LogDroppedFrames->Enable(setIt);
+    m_LogAutoSelectFrames->Enable(setIt);
+    m_LogNextNFrames->Enable(setIt);
+    m_LogNextNFramesCount->Enable(setIt);
 }
 
 void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)

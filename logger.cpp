@@ -165,3 +165,50 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
     if (hitCount > 0)
         Debug.Write(wxString::Format("Removed %d files of pattern: %s\n", hitCount, filePattern));
 }
+
+// Same as RemoveMatchingFiles but this applies to subdirectories in the logging directory.  Implemented to clean up the "CameraFrames..." diagnostic
+// directories for image logging
+void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
+{
+    wxString dirRoot = GetLogDir();
+    wxArrayString dirTargets;
+    int hitCount = 0;
+    wxDateTime oldestDate = wxDateTime::UNow() + wxDateSpan::Days(-DaysOld);
+    wxString oldestDateStr = oldestDate.Format(_T("%Y-%m-%d_%H%M%S"));
+    wxDir dir;
+    wxString subdir;
+
+    try
+    {
+        if (wxDirExists(dirRoot))
+        {
+            if (dir.Open(dirRoot))
+            {
+                bool more = dir.GetFirst(&subdir, filePattern, wxDIR_DIRS);
+                while (more)
+                {
+                    wxString rslt = subdir.AfterFirst('_');
+                    if (rslt < oldestDateStr)
+                        dirTargets.Add(subdir);
+                    more = dir.GetNext(&subdir);
+                }
+                dir.Close();
+                for (int i = 0; i < dirTargets.GetCount(); i++)
+                {
+                    ++hitCount;
+                    subdir = dirRoot + PATHSEPSTR + dirTargets[i];
+                    bool didit = wxDir::Remove(subdir, wxPATH_RMDIR_RECURSIVE);
+                    if (!didit)
+                        Debug.Write(wxString::Format("Error removing old debug log directory: %s\n", subdir));
+                }
+            }
+        }
+    }
+    catch (const wxString& Msg)            // Eat the errors and press ahead, no place for UI here
+    {
+        Debug.Write(wxString::Format("Error removing old debug log directory %s: %s\n", subdir, Msg));
+    }
+
+    if (hitCount > 0)
+        Debug.Write(wxString::Format("Removed %d directories of pattern: %s\n", hitCount, filePattern));
+}

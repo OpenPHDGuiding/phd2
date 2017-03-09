@@ -73,6 +73,9 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice *m_binning;
     wxCheckBox *m_coolerOn;
     wxSpinCtrl *m_coolerSetpt;
+    wxTextCtrl *m_camSaturationADU;
+    wxRadioButton *m_SaturationByProfile;
+    wxRadioButton *m_SaturationByADU;
 
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -84,6 +87,7 @@ public:
     void SetPixelSize(double val);
     int GetBinning(void);
     void SetBinning(int val);
+    void OnSaturationChoiceChanged(wxCommandEvent& event);
 };
 
 enum CaptureOptionBits
@@ -106,6 +110,8 @@ class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 protected:
     bool            m_hasGuideOutput;
     int             m_timeoutMs;
+    bool            m_saturationByADU;
+    unsigned short  m_saturationADU;
 
 public:
     int             GuideCameraGain;
@@ -187,6 +193,10 @@ public:
 
     static double GetProfilePixelSize(void);
 
+    unsigned short GetSaturationADU(void) const;
+    bool IsSaturationByADU(void) const;
+    void SetSaturationByADU(bool saturationByADU, unsigned short saturationVal);
+
 protected:
 
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
@@ -195,6 +205,7 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
+
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,
@@ -226,6 +237,16 @@ inline double GuideCamera::GetCameraPixelSize(void) const
 inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
     return true;                // Return an error, the device/driver can't report pixel size
+}
+
+inline bool GuideCamera::IsSaturationByADU(void) const
+{
+    return m_saturationByADU;
+}
+
+inline unsigned short GuideCamera::GetSaturationADU(void) const
+{
+    return m_saturationByADU ? m_saturationADU : 0;
 }
 
 #endif /* CAMERA_H_INCLUDED */

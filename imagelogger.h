@@ -37,13 +37,20 @@
 
 struct ImageLoggerSettings
 {
+    bool loggingEnabled;
     bool logFramesOverThreshRel;
     bool logFramesOverThreshPx;
     bool logFramesDropped;
+    bool logAutoSelectFrames;
+    bool logNextNFrames;
     double guideErrorThreshRel; // relative error theshold
     double guideErrorThreshPx; // pixel error theshold
+    unsigned int logNextNFramesCount;
 
-    ImageLoggerSettings() : logFramesOverThreshRel(false), logFramesOverThreshPx(false), logFramesDropped(false) { }
+    ImageLoggerSettings() :
+        loggingEnabled(false), logFramesOverThreshRel(false), logFramesOverThreshPx(false),
+        logFramesDropped(false), logAutoSelectFrames(false), logNextNFrames(false)
+    { }
 };
 
 class ImageLogger
@@ -59,6 +66,8 @@ public:
     static void SaveImage(usImage *img);
     static void LogImage(const usImage *img, const FrameDroppedInfo& info);
     static void LogImage(const usImage *img, double distance);
+    static void LogImageStarDeselected(const usImage *img);
+    static void LogAutoSelectImage(const usImage *img, bool succeeded);
 };
 
 #endif // IMAGELOGGER_INCLUDED

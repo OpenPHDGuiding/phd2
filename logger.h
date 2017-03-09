@@ -50,7 +50,9 @@ public:
     Logger(void);
     ~Logger(void);
     const wxString& GetLogDir(void);
-    virtual void RemoveMatchingFiles(const wxString& filePattern, int DaysOld);
+
+    void RemoveMatchingFiles(const wxString& filePattern, int DaysOld);
+    void RemoveOldDirectories(const wxString& dirPattern, int DaysOld);
 };
 
 #endif
