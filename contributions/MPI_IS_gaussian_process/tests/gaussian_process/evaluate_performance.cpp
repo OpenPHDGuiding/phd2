@@ -35,67 +35,31 @@
 #include "gaussian_process_guider.h"
 #include "guide_performance_tools.h"
 
-const double DefaultControlGain                   = 0.60; // control gain
-const int DefaultNumMinPointsForInference         = 100; // minimal number of points for doing the inference
-const double DefaultMinMove                       = 0.01;
-
-const double DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
-
-const double DefaultLengthScaleSE0Ker             = 500.0;//900.0 // length-scale of the long-range SE-kernel
-const double DefaultSignalVarianceSE0Ker          = 20.0;//5.0; // signal variance of the long-range SE-kernel
-const double DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
-const double DefaultPeriodLengthPerKer            = 500.0; // P_p, period-length of the periodic kernel
-const double DefaultSignalVariancePerKer          = 30.0;//20.0; // signal variance of the periodic kernel
-const double DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
-const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
-
-const int DefaultNumMinPointsForPeriodComputation = 240; // minimal number of points for doing the period identification
-const int DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double DefaultPredictionGain                = 0.8; // amount of GP prediction to blend in
-
-const bool DefaultComputePeriod                   = true;
-
-
-
 int main(int argc, char** argv)
 {
-    if (argc < 13)
+    if (argc < 16)
         return -1;
 
     GaussianProcessGuider* GPG;
 
     GaussianProcessGuider::guide_parameters parameters;
-    parameters.control_gain_ = DefaultControlGain;
-    parameters.min_periods_for_inference_ = DefaultNumMinPointsForInference;
-    parameters.min_move_ = DefaultMinMove;
-    parameters.Noise_ = DefaultGaussianNoiseHyperparameter;
-    parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
-    parameters.SE0KSignalVariance_ = DefaultSignalVarianceSE0Ker;
-    parameters.PKLengthScale_ = DefaultLengthScalePerKer;
-    parameters.PKPeriodLength_ = DefaultPeriodLengthPerKer;
-    parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
-    parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
-    parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
-    parameters.min_periods_for_period_estimation_ = DefaultNumMinPointsForPeriodComputation;
-    parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
-    parameters.prediction_gain_ = DefaultPredictionGain;
-    parameters.compute_period_ = DefaultComputePeriod;
 
     // use parameters from command line
     parameters.control_gain_ = std::stod(argv[2]);
-    parameters.min_move_ = std::stod(argv[3]);
-    parameters.prediction_gain_ = std::stod(argv[4]);
-
-    parameters.SE0KSignalVariance_ = std::stod(argv[5]);
-    parameters.PKSignalVariance_ = std::stod(argv[6]);
-    parameters.SE1KSignalVariance_ = std::stod(argv[7]);
-
-    parameters.SE0KLengthScale_ = std::stod(argv[8]);
-    parameters.min_points_for_period_computation_ *= std::stod(argv[9]);
-    parameters.min_points_for_inference_ = std::stod(argv[10]);
-
-    parameters.PKLengthScale_ = std::stod(argv[11]);
-    parameters.SE1KLengthScale_ = std::stod(argv[12]);
+    parameters.min_periods_for_inference_ = std::stod(argv[3]);
+    parameters.min_move_ = std::stod(argv[4]);
+    parameters.Noise_ = std::stod(argv[5]);
+    parameters.SE0KLengthScale_ = std::stod(argv[6]);
+    parameters.SE0KSignalVariance_ = std::stod(argv[7]);
+    parameters.PKLengthScale_ = std::stod(argv[8]);
+    parameters.PKPeriodLength_ = std::stod(argv[9]);
+    parameters.PKSignalVariance_ = std::stod(argv[10]);
+    parameters.SE1KLengthScale_ = std::stod(argv[11]);
+    parameters.SE1KSignalVariance_ = std::stod(argv[12]);
+    parameters.min_periods_for_period_estimation_ = std::stod(argv[13]);
+    parameters.points_for_approximation_ = std::floor(std::stod(argv[14]));
+    parameters.prediction_gain_ = std::stod(argv[15]);
+    parameters.compute_period_ = true;
 
     GPG = new GaussianProcessGuider(parameters);
 

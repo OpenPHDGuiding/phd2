@@ -570,7 +570,7 @@ TEST_F(GPGTest, DISABLED_log_period_length)
 // It should, of course, return a non-NaN value (a.k.a.: a number).
 TEST_F(GPGTest, real_data_test_nan_issue)
 {
-    Eigen::ArrayXXd data = read_data_from_file("dataset08.csv");
+    Eigen::ArrayXXd data = read_data_from_file("dataset03.csv");
 
     Eigen::ArrayXd controls = data.row(2);
 
