@@ -102,21 +102,21 @@ public:
 
 const double GuidePerformanceTest::DefaultControlGain                   = 0.7; // control gain
 const double GuidePerformanceTest::DefaultPeriodLengthsInference        = 2.0; // period lengths until inference
-const double GuidePerformanceTest::DefaultMinMove                       = 0.1; // minimal move
+const double GuidePerformanceTest::DefaultMinMove                       = 0.2; // minimal move
 
 const double GuidePerformanceTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
-const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 500.0; // length-scale of the long-range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 700.0; // length-scale of the long-range SE-kernel
 const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultLengthScalePerKer             = 25.0; // length-scale of the periodic kernel
+const double GuidePerformanceTest::DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
 const double GuidePerformanceTest::DefaultPeriodLengthPerKer            = 200.0; // P_p, period-length of the periodic kernel
 const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 20.0; // signal variance of the periodic kernel
-const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 7.0; // length-scale of the short-range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 25.0; // length-scale of the short-range SE-kernel
 const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
 
 const double GuidePerformanceTest::DefaultPeriodLengthsPeriodEstimation = 2.0; // period lengths until FFT
 const int GuidePerformanceTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double GuidePerformanceTest::DefaultPredictionGain                = 0.20; // amount of GP prediction to blend in
+const double GuidePerformanceTest::DefaultPredictionGain                = 0.5; // amount of GP prediction to blend in
 
 const bool GuidePerformanceTest::DefaultComputePeriod                   = true;
 
