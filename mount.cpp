@@ -168,6 +168,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         wxString yAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+            _("Predictive PEC"), _("Predictive Drift"),
         };
         width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
@@ -500,7 +501,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
                 break;
-
+            case GUIDE_ALGORITHM_TRIMMED_MEAN:
+                *ppAlgorithm = new GuideAlgorithmTrimmedMean(mount, axis);
+                break;
             default:
                 throw ERROR_INFO("invalid guideAlgorithm");
                 break;
@@ -1497,7 +1500,7 @@ wxString Mount::GetSettingsSummary()
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
         _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
-        _T("Predictive PEC")
+        _T("Predictive PEC"), _("Predictive Drift")
     };
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())

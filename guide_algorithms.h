@@ -49,6 +49,7 @@ enum GUIDE_ALGORITHM
     GUIDE_ALGORITHM_LOWPASS2,
     GUIDE_ALGORITHM_RESIST_SWITCH,
     GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
+    GUIDE_ALGORITHM_TRIMMED_MEAN,
 };
 
 #include "guide_algorithm.h"
@@ -58,5 +59,6 @@ enum GUIDE_ALGORITHM
 #include "guide_algorithm_lowpass2.h"
 #include "guide_algorithm_resistswitch.h"
 #include "guide_algorithm_gaussian_process.h"
+#include "guide_algorithm_trimmed_mean.h"
 
 #endif /* GUIDE_ALGORITHMS_H_INCLUDED */
