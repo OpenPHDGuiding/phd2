@@ -43,14 +43,26 @@ listed, together with a short description, in the following.
 |`tools/plot_dec_data.py` | Python plotting for debugging.|
 |`tools/plot_gp_data.py` | Python plotting for debugging.|
 |`tools/plot_spectrum.py` | Python plotting for debugging.|
+|`tools/analyze_data.py` | Python script that analyzes and plots data from testers.|
+|`tools/optimize_params.py` | Python script for rudimentary parameter optimization.|
 |`tests/gaussian_process/gaussian_process_test.cpp` | Unittests for the GP.|
 |`tests/gaussian_process/math_tools_test.cpp` | Unittests for the math tools.|
-|`tests/gaussian_process/dataset01.csv` | Real-world dataset for certaint tests.|
+|`tests/gaussian_process/dataset01.csv` | Real-world dataset for certain tests.|
+|`tests/gaussian_process/dataset02.csv` | Real-world dataset for certain tests.|
+|`tests/gaussian_process/dataset03.csv` | Real-world dataset for certain tests.|
+|`tests/gaussian_process/performance_dataset01.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset02.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset03.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset04.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset05.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset06.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset07.csv` | Real-world dataset for performance tests.|
+|`tests/gaussian_process/performance_dataset08.csv` | Real-world dataset for performance tests.|
 
 Copyright and Licensing
 -----------------------
 
-Copyright 2014-2016, Max Planck Society.
+Copyright 2014-2017, Max Planck Society.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
