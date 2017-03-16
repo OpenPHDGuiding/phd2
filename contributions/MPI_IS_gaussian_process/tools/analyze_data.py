@@ -46,7 +46,7 @@ def read_data_from_folder(data_folder):
                                 data[ds][r]['SNR'] = []
                                 guider_started = True
 
-                            if (row[0].split(' ')[1] == 'Ends'):
+                            if (row[0].split(' ')[1] == 'Ends' and not r == -1):
                                 time = array(data[ds][r]['Time'])
                                 ra_dist = array(data[ds][r]['RARawDistance']) * data[ds][r]['PixelScale']
                                 dec_dist = array(data[ds][r]['DECRawDistance']) * data[ds][r]['PixelScale']
@@ -172,10 +172,10 @@ def main():
                 ra_filt = scipy.signal.lfilter(h, 1.0, ra_dist)
 
                 ax = plt.subplot(nr, 1, r)
-                #plt.plot(time, ra_filt, 'r-')
-                #plt.plot(time, ra_dist, 'b+')
-                plt.plot(time, ra_acc, 'r-+')
-                #ax.set_ylim(miny, maxy)
+                plt.plot(time, ra_filt, 'r-')
+                plt.plot(time, ra_dist, 'b+')
+                #plt.plot(time, ra_acc, 'r-+')
+                ax.set_ylim(miny, maxy)
                 ax.set_xlim(minx, maxx)
                 plt.title('{} | Dataset {} | Run {}'.format(run['RAAlgorithm'], data.index(dataset), dataset.index(run)))
 
