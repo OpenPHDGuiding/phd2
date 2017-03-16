@@ -51,7 +51,6 @@ enum GUIDE_ALGORITHM
 
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
     GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
-    GUIDE_ALGORITHM_TRIMMED_MEAN,
 #endif
 
 };
@@ -65,7 +64,6 @@ enum GUIDE_ALGORITHM
 
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
   #include "guide_algorithm_gaussian_process.h"
-  #include "guide_algorithm_trimmed_mean.h"
 #endif
 
 #endif /* GUIDE_ALGORITHMS_H_INCLUDED */

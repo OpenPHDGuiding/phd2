@@ -25,8 +25,6 @@ listed, together with a short description, in the following.
 |----------|------------|
 |`guide_algorithm_gaussian_process.cpp` | Provides the UI for the GP-based guider.|
 |`guide_algorithm_gaussian_process.h` | Header for GP guider UI.|
-|`guide_algorithm_trimmed_mean.cpp` | Provides a trimmed mean control algorithm for the declination axis.|
-|`guide_algorithm_trimmed mean.h` | Header for the trimmed mean guide algorithm.|
 
 ### Files in `contributions/MPI_IS_gaussian_process`
 
