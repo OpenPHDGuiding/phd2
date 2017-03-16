@@ -51,8 +51,6 @@ public:
     static const double DefaultPeriodLengthsInference; // minimal number of points for doing the inference
     static const double DefaultMinMove;
 
-    static const double DefaultGaussianNoiseHyperparameter; // default Gaussian measurement noise
-
     static const double DefaultLengthScaleSE0Ker; // length-scale of the long-range SE-kernel
     static const double DefaultSignalVarianceSE0Ker; // signal variance of the long-range SE-kernel
     static const double DefaultLengthScalePerKer; // length-scale of the periodic kernel
@@ -78,7 +76,6 @@ public:
         parameters.control_gain_ = DefaultControlGain;
         parameters.min_periods_for_inference_ = DefaultPeriodLengthsInference;
         parameters.min_move_ = DefaultMinMove;
-        parameters.Noise_ = DefaultGaussianNoiseHyperparameter;
         parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
         parameters.SE0KSignalVariance_ = DefaultSignalVarianceSE0Ker;
         parameters.PKLengthScale_ = DefaultLengthScalePerKer;
@@ -103,8 +100,6 @@ public:
 const double GuidePerformanceTest::DefaultControlGain                   = 0.7; // control gain
 const double GuidePerformanceTest::DefaultPeriodLengthsInference        = 2.0; // period lengths until inference
 const double GuidePerformanceTest::DefaultMinMove                       = 0.2; // minimal move
-
-const double GuidePerformanceTest::DefaultGaussianNoiseHyperparameter   = 1.0; // default Gaussian measurement noise
 
 const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 700.0; // length-scale of the long-range SE-kernel
 const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel

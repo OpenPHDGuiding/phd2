@@ -84,7 +84,6 @@ public:
 
         bool compute_period_;
 
-        double Noise_;
         double SE0KLengthScale_;
         double SE0KSignalVariance_;
         double PKLengthScale_;
@@ -101,7 +100,6 @@ public:
             min_periods_for_period_estimation_(0.0),
             points_for_approximation_(0),
             compute_period_(false),
-            Noise_(0.0),
             SE0KLengthScale_(0.0),
             SE0KSignalVariance_(0.0),
             PKLengthScale_(0.0),

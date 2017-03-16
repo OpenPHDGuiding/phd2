@@ -82,15 +82,14 @@ GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     gp_.enableExplicitTrend(); // enable the explicit basis function for the linear drift
     gp_.enableOutputProjection(output_covariance_function_); // for prediction
 
-    std::vector<double> hyperparameters;
-    hyperparameters.push_back(parameters.Noise_);
-    hyperparameters.push_back(parameters.SE0KLengthScale_);
-    hyperparameters.push_back(parameters.SE0KSignalVariance_);
-    hyperparameters.push_back(parameters.PKLengthScale_);
-    hyperparameters.push_back(parameters.PKSignalVariance_);
-    hyperparameters.push_back(parameters.SE1KLengthScale_);
-    hyperparameters.push_back(parameters.SE1KSignalVariance_);
-    hyperparameters.push_back(parameters.PKPeriodLength_);
+    std::vector<double> hyperparameters(7);
+    hyperparameters[0] = parameters.SE0KLengthScale_;
+    hyperparameters[1] = parameters.SE0KSignalVariance_;
+    hyperparameters[2] = parameters.PKLengthScale_;
+    hyperparameters[3] = parameters.PKSignalVariance_;
+    hyperparameters[4] = parameters.SE1KLengthScale_;
+    hyperparameters[5] = parameters.SE1KSignalVariance_;
+    hyperparameters[6] = parameters.PKPeriodLength_;
     SetGPHyperparameters(hyperparameters);
 }
 
@@ -216,7 +215,7 @@ void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_li
 #endif
 
     // calculate period length if we have enough points already
-    double period_length = GetGPHyperparameters()[7];
+    double period_length = GetGPHyperparameters()[6];
     if (GetBoolComputePeriod() && get_last_point().timestamp > parameters.min_periods_for_period_estimation_ * period_length)
     {
         // find periodicity parameter with FFT
@@ -331,8 +330,8 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
 
         // smoothly blend over between hysteresis and GP
-        double period_length = GetGPHyperparameters()[7];
-        if (get_last_point().timestamp < parameters.min_periods_for_inference_ * GetGPHyperparameters()[7])
+        double period_length = GetGPHyperparameters()[6];
+        if (get_last_point().timestamp < parameters.min_periods_for_inference_ * period_length)
         {
             double percentage = get_last_point().timestamp / (parameters.min_periods_for_inference_ * period_length);
             percentage = std::min(percentage, 1.0); // limit to 100 percent GP
@@ -362,7 +361,7 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
     control_signal_ = 0; // no measurement!
     // check if we are allowed to use the GP
     if (get_number_of_measurements() > 10
-        && get_last_point().timestamp > parameters.min_periods_for_inference_ * GetGPHyperparameters()[7])
+        && get_last_point().timestamp > parameters.min_periods_for_inference_ * GetGPHyperparameters()[6])
     {
         if (prediction_point < 0.0)
         {
@@ -456,32 +455,38 @@ bool GaussianProcessGuider::SetBoolComputePeriod(bool active) {
 std::vector<double> GaussianProcessGuider::GetGPHyperparameters() const
 {
     // since the GP class works in log space, we have to exp() the parameters first.
-    Eigen::VectorXd hyperparameters = gp_.getHyperParameters().array().exp();
+    Eigen::VectorXd hyperparameters_full = gp_.getHyperParameters().array().exp();
+    // remove first parameter, which is unused here
+    Eigen::VectorXd hyperparameters = hyperparameters_full.tail(7);
 
     // converts the length-scale of the periodic covariance from standard notation to natural units
-    hyperparameters(3) = std::asin(hyperparameters(3)/4)*hyperparameters(7)/M_PI;
+    hyperparameters(2) = std::asin(hyperparameters(2)/4)*hyperparameters(6)/M_PI;
 
     // we need to map the Eigen::vector into a std::vector.
     return std::vector<double>(hyperparameters.data(), // the first element is at the array address
-                               hyperparameters.data() + 8); // 8 parameters, therefore the last is at position 7
+                               hyperparameters.data() + 7); // 7 parameters, therefore the last is at position 6
 }
 
 bool GaussianProcessGuider::SetGPHyperparameters(std::vector<double> const &hyperparameters) {
     Eigen::VectorXd hyperparameters_eig = Eigen::VectorXd::Map(&hyperparameters[0], hyperparameters.size());
 
     // prevent length scales from becoming too small (makes GP unstable)
-    hyperparameters_eig(1) = std::max(hyperparameters_eig(1), 1.0);
-    hyperparameters_eig(3) = std::max(hyperparameters_eig(3), 1.0);
-    hyperparameters_eig(5) = std::max(hyperparameters_eig(5), 1.0);
+    hyperparameters_eig(0) = std::max(hyperparameters_eig(0), 1.0);
+    hyperparameters_eig(2) = std::max(hyperparameters_eig(2), 1.0);
+    hyperparameters_eig(4) = std::max(hyperparameters_eig(4), 1.0);
 
     // converts the length-scale of the periodic covariance from natural units to standard notation
-    hyperparameters_eig(3) = 4*std::sin(hyperparameters_eig(3)*M_PI/hyperparameters_eig(7));
+    hyperparameters_eig(2) = 4*std::sin(hyperparameters_eig(2)*M_PI/hyperparameters_eig(6));
 
     // safeguard all parameters from being too small (log conversion)
     hyperparameters_eig = hyperparameters_eig.array().max(1e-10);
 
+    // need to convert to GP parameters
+    Eigen::VectorXd hyperparameters_full(8); // the GP has one more parameter!
+    hyperparameters_full << 1.0, hyperparameters_eig;
+
     // the GP works in log space, therefore we need to convert
-    gp_.setHyperParameters(hyperparameters_eig.array().log());
+    gp_.setHyperParameters(hyperparameters_full.array().log());
     return false;
 }
 
@@ -632,11 +637,11 @@ void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
     // ...and save the day for the users
     if (math_tools::isNaN(period_length))
     {
-            period_length = hypers[7]; // just use the old value instead
+            period_length = hypers[6]; // just use the old value instead
     }
 
     // we just apply a simple learning rate to slow down parameter jumps
-    hypers[7] = (1 - learning_rate_) * hypers[7] + learning_rate_ * period_length;
+    hypers[6] = (1 - learning_rate_) * hypers[6] + learning_rate_ * period_length;
 
     SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
 }

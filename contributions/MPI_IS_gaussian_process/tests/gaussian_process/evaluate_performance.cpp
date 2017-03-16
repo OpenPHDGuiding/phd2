@@ -37,7 +37,7 @@
 
 int main(int argc, char** argv)
 {
-    if (argc < 16)
+    if (argc < 15)
         return -1;
 
     GaussianProcessGuider* GPG;
@@ -48,17 +48,16 @@ int main(int argc, char** argv)
     parameters.control_gain_ = std::stod(argv[2]);
     parameters.min_periods_for_inference_ = std::stod(argv[3]);
     parameters.min_move_ = std::stod(argv[4]);
-    parameters.Noise_ = std::stod(argv[5]);
-    parameters.SE0KLengthScale_ = std::stod(argv[6]);
-    parameters.SE0KSignalVariance_ = std::stod(argv[7]);
-    parameters.PKLengthScale_ = std::stod(argv[8]);
-    parameters.PKPeriodLength_ = std::stod(argv[9]);
-    parameters.PKSignalVariance_ = std::stod(argv[10]);
-    parameters.SE1KLengthScale_ = std::stod(argv[11]);
-    parameters.SE1KSignalVariance_ = std::stod(argv[12]);
-    parameters.min_periods_for_period_estimation_ = std::stod(argv[13]);
-    parameters.points_for_approximation_ = std::floor(std::stod(argv[14]));
-    parameters.prediction_gain_ = std::stod(argv[15]);
+    parameters.SE0KLengthScale_ = std::stod(argv[5]);
+    parameters.SE0KSignalVariance_ = std::stod(argv[6]);
+    parameters.PKLengthScale_ = std::stod(argv[7]);
+    parameters.PKPeriodLength_ = std::stod(argv[8]);
+    parameters.PKSignalVariance_ = std::stod(argv[9]);
+    parameters.SE1KLengthScale_ = std::stod(argv[10]);
+    parameters.SE1KSignalVariance_ = std::stod(argv[11]);
+    parameters.min_periods_for_period_estimation_ = std::stod(argv[12]);
+    parameters.points_for_approximation_ = std::floor(std::stod(argv[13]));
+    parameters.prediction_gain_ = std::stod(argv[14]);
     parameters.compute_period_ = true;
 
     GPG = new GaussianProcessGuider(parameters);

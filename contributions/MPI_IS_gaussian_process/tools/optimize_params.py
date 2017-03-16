@@ -55,7 +55,6 @@ def optimize():
         pontrol_gain
         min_periods_for_inference
         min_move
-        Noise
         SE0KLengthScale
         SE0KSignalVariance
         PKLengthScale
@@ -71,7 +70,7 @@ def optimize():
     # the bounds are used to select which parameters to optimize,
     # and in which range to optimize. If the range is zero (e.g., (1.0,1.0))
     # the parameter isn't optimized at all.
-    bounds = [(0.7,0.7), (2.0,2.0), (0.2,0.2), (1.0,1.0), (700,700), (20,20), (10,10), (200,200), (20,20), (25,25), (10,10), (2,2), (100,100), (0.3,0.6)]
+    bounds = [(0.7,0.7), (2.0,2.0), (0.2,0.2), (1,1000), (18,18), (10,10), (200,200), (20,20), (25,25), (10,10), (2,2), (100,100), (0.5,0.5)]
     bounds = np.log(bounds)
 
     # the initial_design_numdata defines how many random values are tested.
@@ -82,7 +81,7 @@ def optimize():
     print -myBopt.fx_opt
     opt_params = np.exp(myBopt.x_opt)
 
-    print "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(opt_params[0], opt_params[1], opt_params[2], opt_params[3], opt_params[4], opt_params[5], opt_params[6], opt_params[7], opt_params[8], opt_params[9], opt_params[10], opt_params[11], opt_params[12], opt_params[13])
+    print "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(opt_params[0], opt_params[1], opt_params[2], opt_params[3], opt_params[4], opt_params[5], opt_params[6], opt_params[7], opt_params[8], opt_params[9], opt_params[10], opt_params[11], opt_params[12])
 
 if __name__ == "__main__":
     optimize()
