@@ -54,7 +54,7 @@
 
 /** Default values for the parameters of this algorithm */
 
-static const double DefaultControlGain                   = 0.7; // control gain
+static const double DefaultControlGain                   = 0.6; // control gain
 static const double DefaultPeriodLengthsForInference     = 2.0; // minimal number of period lengths for full prediction
 static const double DefaultMinMove                       = 0.2;
 
@@ -107,21 +107,20 @@ public:
         int width;
 
         width = StringWidth(_T("0.00"));
-        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 1.0, DefaultControlGain, 0.05);
-        m_pControlGain->SetDigits(2);
-
-        DoAdd(_("Control Gain"), m_pControlGain,
-            wxString::Format(_("The control gain defines the aggressiveness of the controller. "
-            "It is the amount of pointing error that is fed back to the system. Default = %.2f"), DefaultControlGain));
+        m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain, 5);
+        m_pPredictionGain->SetDigits(0);
+        DoAdd(_("Prediction"), m_pPredictionGain,
+            wxString::Format(_("How much of the gear error prediction should be applied? "
+            "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
 
         width = StringWidth(_T("0.00"));
-        m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 1.0, DefaultPredictionGain, 0.05);
-        m_pPredictionGain->SetDigits(2);
-        DoAdd(_("Prediction Gain"), m_pPredictionGain,
-            wxString::Format(_("The prediction gain defines how much of the prediction is used for control. "
-            "Default = %.2f"), DefaultPredictionGain));
+        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultControlGain, 5);
+        m_pControlGain->SetDigits(0);
+        DoAdd(_("Aggressiveness"), m_pControlGain,
+            wxString::Format(_("What percent of the measured error should be applied? "
+            "Default = %.f%%, adjust if responding too much or too slowly"), 100 * DefaultControlGain));
 
         width = StringWidth(_T("0.00"));
         m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -141,15 +140,15 @@ public:
             wxString::Format(_("The period length (in seconds) of the periodic error component that should be "
             "corrected. Default = %.2f"), DefaultPeriodLengthPerKer), m_checkboxComputePeriod);
 
+        // create the expert options page
+        m_pExpertPage = new wxBoxSizer(wxVERTICAL);
+
         width = StringWidth(_T("0000"));
         m_pNumPointsApproximation = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, 0, 2000, DefaultNumPointsForApproximation);
-        DoAdd(_("Approximation Data Points"), m_pNumPointsApproximation,
+        m_pExpertPage->Add(MakeLabeledControl(_("Approximation Data Points"), m_pNumPointsApproximation,
             wxString::Format(_("Number of data points used in the approximation. Both prediction accuracy "
-            "as well as runtime rise with the number of datapoints. Default = %d"), DefaultNumPointsForApproximation));
-
-        // create the expert options page
-        m_pExpertPage = new wxBoxSizer(wxVERTICAL);
+            "as well as runtime rise with the number of datapoints. Default = %d"), DefaultNumPointsForApproximation)));
 
         width = StringWidth(_T("0.00"));
         m_pPeriodLengthsInference = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -244,8 +243,8 @@ public:
      */
     virtual void LoadValues(void)
     {
-        m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
-        m_pPredictionGain->SetValue(m_pGuideAlgorithm->GetPredictionGain());
+        m_pControlGain->SetValue(100 * m_pGuideAlgorithm->GetControlGain());
+        m_pPredictionGain->SetValue(100 * m_pGuideAlgorithm->GetPredictionGain());
         m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
         m_pPeriodLengthsInference->SetValue(m_pGuideAlgorithm->GetPeriodLengthsInference());
         m_pPeriodLengthsPeriodEstimation->SetValue(m_pGuideAlgorithm->GetPeriodLengthsPeriodEstimation());
@@ -272,8 +271,8 @@ public:
     // Set the parameters chosen in the GUI in the actual guiding algorithm
     virtual void UnloadValues(void)
     {
-        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
-        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue());
+        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100);
+        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100);
         m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
         m_pGuideAlgorithm->SetPeriodLengthsInference(m_pPeriodLengthsInference->GetValue());
         m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());

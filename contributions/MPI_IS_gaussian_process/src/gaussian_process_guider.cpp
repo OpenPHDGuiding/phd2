@@ -59,7 +59,6 @@
 #define DEFAULT_LEARNING_RATE 0.01 // for a smooth parameter adaptation
 
 #define HYSTERESIS 0.1 // for the hybrid mode
-#define AGGRESSION 0.7 // for the hybrid mode
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     start_time_(std::chrono::system_clock::now()),
@@ -305,7 +304,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         last_control = get_second_last_point().control;
     }
     double hysteresis_control = (1 - HYSTERESIS) * input + HYSTERESIS * last_control;
-    hysteresis_control *= AGGRESSION;
+    hysteresis_control *= parameters.control_gain_;
 
     control_signal_ = parameters.control_gain_*input; // start with proportional control
     if (std::abs(input) < parameters.min_move_)
