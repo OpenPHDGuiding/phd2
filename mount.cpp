@@ -131,9 +131,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         wxString xAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
             _("Predictive PEC"),
-#endif
         };
 
         width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -498,16 +496,10 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 break;
             case GUIDE_ALGORITHM_RESIST_SWITCH:
                 *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
-                break;
-            
-    #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
+                break;         
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
                 break;
-			case GUIDE_ALGORITHM_TRIMMED_MEAN:
-            	*ppAlgorithm = new GuideLinearRegression(mount, axis);
-            	break;
-    #endif
 
             default:
                 throw ERROR_INFO("invalid guideAlgorithm");
@@ -1505,9 +1497,7 @@ wxString Mount::GetSettingsSummary()
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
         _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
         _T("Predictive PEC")
-#endif
     };
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())

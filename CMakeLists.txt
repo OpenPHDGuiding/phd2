@@ -66,10 +66,6 @@ set(BUILD_SHARED_LIBS FALSE)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-# options
-option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" ON)
-
-
 
 #################################################################################
 #
@@ -135,10 +131,7 @@ include(thirdparty/thirdparty.cmake)
 #################################################################################
 #
 # contributions
-if(${GUIDING_GAUSSIAN_PROCESS})
-  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
-  message(STATUS "[configuration] PHD2 includes the Gaussian Process guiding algorithm")
-endif()
+add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
 
@@ -341,13 +334,11 @@ set(guiding_SRC
 )
 
 # gaussian process, also the main project should link to the GP project in the contrib dir
-if(${GUIDING_GAUSSIAN_PROCESS})
-  set(guiding_SRC
-      ${guiding_SRC}
-      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
-      ${phd_src_dir}/guide_algorithm_gaussian_process.h
-  )
-endif()
+set(guiding_SRC
+  ${guiding_SRC}
+  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+  ${phd_src_dir}/guide_algorithm_gaussian_process.h
+)
 
 source_group(Guiding FILES ${guiding_SRC})
 
