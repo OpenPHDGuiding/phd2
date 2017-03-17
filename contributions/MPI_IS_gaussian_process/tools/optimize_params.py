@@ -70,8 +70,12 @@ def optimize():
     # the bounds are used to select which parameters to optimize,
     # and in which range to optimize. If the range is zero (e.g., (1.0,1.0))
     # the parameter isn't optimized at all.
-    bounds = [(0.7,0.7), (2.0,2.0), (0.2,0.2), (1,1000), (18,18), (10,10), (200,200), (20,20), (25,25), (10,10), (2,2), (100,100), (0.5,0.5)]
+    bounds = [(0.7,0.7), (2.0,2.0), (0.2,0.2), (700,700), (18,18), (10,10), (200,200), (20,20), (25,25), (10,10), (2,2), (100,100), (0.5,0.5)]
     bounds = np.log(bounds)
+
+    # evaluate the current parameter set
+    opt_params = [0.7, 2, 0.2, 700, 18, 10, 200, 20, 25, 10, 2, 100, 0.5]
+    print eval_func([np.log(opt_params)])
 
     # the initial_design_numdata defines how many random values are tested.
     # apparently this is the most important value and should be as high as affordable.

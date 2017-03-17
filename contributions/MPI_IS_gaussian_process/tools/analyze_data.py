@@ -65,7 +65,7 @@ def read_data_from_folder(data_folder):
                                 data[ds][r]['DECRMS'] = dec_rms
                                 data[ds][r]['TotalRMS'] = total_rms
 
-                                if (time[-1]/60 >= 10):
+                                if (len(time) > 0 and time[-1]/60 >= 10):
                                     print '{:<14} | RA RMS: {:1.3f} | {:<14} | Dec RMS: {:1.3f} | Total RMS: {:1.3f} | Duration:{: 4.0f} | RelPerf: {: 6.1f}'.format(data[ds][r]['RAAlgorithm'], ra_rms, data[ds][r]['DecAlgorithm'], dec_rms, total_rms, time[-1]/60, 100*(1-ra_rms/dec_rms))
 
                                 guider_started = False
@@ -140,7 +140,7 @@ def main():
         maxx = 0
         fig = False
         for run in dataset:
-            if (run['Time'][-1]/60 >= 10):
+            if (len(run['Time']) > 0 and run['Time'][-1]/60 >= 10):
                 nr = nr + 1
                 if (maxtime < run['Time'][-1]):
                     maxtime = run['Time'][-1]
@@ -161,7 +161,7 @@ def main():
             plt.figure()
         r = 0
         for run in dataset:
-            if (run['Time'][-1]/60 >= 10):
+            if (len(run['Time']) > 0 and run['Time'][-1]/60 >= 10):
                 r = r + 1
                 time = array(run['Time'])
                 ra_dist = array(run['RARawDistance']) * run['PixelScale']
