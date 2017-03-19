@@ -369,14 +369,32 @@ inline static wxMutex *client_wrlock(wxSocketClient *cli)
     return &((ClientData *) cli->GetClientData())->wrlock;
 }
 
+static wxString SockErrStr(wxSocketError e)
+{
+    switch (e) {
+    case wxSOCKET_NOERROR:    return "";
+    case wxSOCKET_INVOP:      return "Invalid operation";
+    case wxSOCKET_IOERR:      return "Input / Output error";
+    case wxSOCKET_INVADDR:    return "Invalid address";
+    case wxSOCKET_INVSOCK:    return "Invalid socket(uninitialized)";
+    case wxSOCKET_NOHOST:     return "No corresponding host";
+    case wxSOCKET_INVPORT:    return "Invalid port";
+    case wxSOCKET_WOULDBLOCK: return "operation would block";
+    case wxSOCKET_TIMEDOUT:   return "timeout expired";
+    case wxSOCKET_MEMERR:     return "Memory exhausted";
+    default: return wxString::Format("unknown socket error %d", e);
+    }
+}
+
 static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
 {
     wxMutexLocker lock(*client_wrlock(client));
     client->Write(buf.data(), buf.length());
     if (client->LastWriteCount() != buf.length())
     {
-        Debug.Write(wxString::Format("evsrv: cli %p short write %u/%u\n",
-            client, client->LastWriteCount(), (unsigned int) buf.length()));
+        Debug.Write(wxString::Format("evsrv: cli %p short write %u/%u %s\n",
+            client, client->LastWriteCount(), (unsigned int) buf.length(),
+            SockErrStr(client->Error() ? client->LastError() : wxSOCKET_NOERROR)));
     }
 }
 
