@@ -1,29 +1,29 @@
 # Copyright 2014-2015, Max Planck Society.
 # All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, 
+#
+# Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above copyright notice, 
+#
+# 1. Redistributions of source code must retain the above copyright notice,
 #    this list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above copyright notice, 
-#    this list of conditions and the following disclaimer in the documentation 
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
 #    and/or other materials provided with the distribution.
-# 
-# 3. Neither the name of the copyright holder nor the names of its contributors 
-#    may be used to endorse or promote products derived from this software without 
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
 #    specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # File created by Raffi Enficiaud
@@ -35,9 +35,21 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-set(VERSION_MAJOR 2)
-set(VERSION_MINOR 6)
-set(VERSION_PATCH 3)
+
+# root directory of the project
+set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+
+# declare useful functions
+include(cmake_modules/PHD2BuildDoc.cmake)
+
+# retrieves the version from the source file
+get_phd_version()
+
+
+message(STATUS "PHD2 version '${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}' (extracted from source)")
+
+
 
 #################################################################################
 #
@@ -76,9 +88,6 @@ enable_testing()
 
 
 
-# root directory of the project
-set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
 include_directories(${phd_src_dir})
 
@@ -106,10 +115,10 @@ else()
   elseif(HAS_CXX0X_FLAG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   endif()
-  
+
   if(APPLE)
     check_cxx_compiler_flag(-stdlib=libc++ HAS_LIBCXX11_FLAG)
-    
+
     if(HAS_LIBCXX11_FLAG)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     endif()
@@ -131,7 +140,7 @@ include(thirdparty/thirdparty.cmake)
 #################################################################################
 #
 # contributions
-add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
+  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
 
@@ -235,7 +244,7 @@ if(WIN32)
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
 
-    # ascom, not there in the sln project -> commented for now 
+    # ascom, not there in the sln project -> commented for now
     # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
     #${phd_src_dir}/cam_ascom.cpp
     #${phd_src_dir}/ascom.cpp
@@ -326,9 +335,9 @@ set(guiding_SRC
 )
 
 # gaussian process, also the main project should link to the GP project in the contrib dir
-set(guiding_SRC
-  ${guiding_SRC}
-  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+  set(guiding_SRC
+      ${guiding_SRC}
+      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
   ${phd_src_dir}/guide_algorithm_gaussian_process.h
 )
 
@@ -349,16 +358,16 @@ set(phd2_SRC
 
   ${phd_src_dir}/calreview_dialog.cpp
   ${phd_src_dir}/calreview_dialog.h
-  
+
   ${phd_src_dir}/calstep_dialog.cpp
   ${phd_src_dir}/calstep_dialog.h
   ${phd_src_dir}/camcal_import_dialog.cpp
   ${phd_src_dir}/camcal_import_dialog.h
   ${phd_src_dir}/circbuf.h
-  
+
   ${phd_src_dir}/comet_tool.cpp
   ${phd_src_dir}/comet_tool.h
-  
+
   ${phd_src_dir}/configdialog.cpp
   ${phd_src_dir}/configdialog.h
   ${phd_src_dir}/confirm_dialog.cpp
@@ -375,7 +384,7 @@ set(phd2_SRC
 
   ${phd_src_dir}/fitsiowrap.cpp
   ${phd_src_dir}/fitsiowrap.h
-  
+
   ${phd_src_dir}/gear_dialog.cpp
   ${phd_src_dir}/gear_dialog.h
   ${phd_src_dir}/graph-stepguider.cpp
@@ -416,30 +425,30 @@ set(phd2_SRC
 
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
-  
+
   ${phd_src_dir}/profile_wizard.h
   ${phd_src_dir}/profile_wizard.cpp
-  
+
   ${phd_src_dir}/point.h
 
   ${phd_src_dir}/Refine_DefMap.cpp
   ${phd_src_dir}/Refine_DefMap.h
-  
+
   # rotators
   ${phd_src_dir}/rotators.h
-  
+
   ${phd_src_dir}/rotator.cpp
   ${phd_src_dir}/rotator.h
-  
+
   ${phd_src_dir}/rotator_ascom.cpp
   ${phd_src_dir}/rotator_ascom.h
-  
+
   ${phd_src_dir}/rotator_simulator.h
   ###
-  
+
   ${phd_src_dir}/runinbg.cpp
   ${phd_src_dir}/runinbg.h
-  
+
   ${phd_src_dir}/serialport.cpp
   ${phd_src_dir}/serialport.h
   ${phd_src_dir}/serialport_loopback.cpp
@@ -454,10 +463,10 @@ set(phd2_SRC
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
   ${phd_src_dir}/starcross_test.cpp
-  ${phd_src_dir}/starcross_test.h 
+  ${phd_src_dir}/starcross_test.h
   ${phd_src_dir}/statswindow.cpp
   ${phd_src_dir}/statswindow.h
-  
+
   ${phd_src_dir}/star.cpp
   ${phd_src_dir}/star.h
   ${phd_src_dir}/star_profile.cpp
@@ -473,14 +482,14 @@ set(phd2_SRC
 )
 
 if(UNIX AND NOT APPLE)
-  set(phd2_SRC 
+  set(phd2_SRC
       ${phd2_SRC}
       ${phd_src_dir}/config_INDI.cpp
       ${phd_src_dir}/config_INDI.h
-      
+
       ${phd_src_dir}/indi_gui.cpp
       ${phd_src_dir}/indi_gui.h
-      
+
       ${phd_src_dir}/wxled.cpp
       ${phd_src_dir}/wxled.h
      )
@@ -489,7 +498,7 @@ endif()
 if (WIN32)
   set(phd2_SRC
       ${phd2_SRC}
-      
+
       # windows-only sources
 
       ${phd_src_dir}/parallelports.h
@@ -546,16 +555,16 @@ if(APPLE)
   set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
   # get the locales
-  file( GLOB_RECURSE local_files 
-        LIST_DIRECTORIES false 
+  file( GLOB_RECURSE local_files
+        LIST_DIRECTORIES false
         RELATIVE ${PHD_PROJECT_ROOT_DIR}
         ${PHD_PROJECT_ROOT_DIR}/locale/*.[mp]o)
 
-  file( GLOB_RECURSE local_help_files 
-        LIST_DIRECTORIES false 
+  file( GLOB_RECURSE local_help_files
+        LIST_DIRECTORIES false
         RELATIVE ${PHD_PROJECT_ROOT_DIR}
         ${PHD_PROJECT_ROOT_DIR}/locale/*PHD2GuideHelp.zip)
-  
+
   set(local_files ${local_files} ${local_help_files})
 
 
@@ -567,15 +576,15 @@ if(APPLE)
     ${cam_KWIQGuider_SRC}
     ${guiding_SRC}
     ${phd2_SRC}
-    
+
     # resources of the bundle
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
     ${phd_src_dir}/PHD2GuideHelp.zip
-    
+
     # extra frameworks
     ${sbigudFramework}
     ${fcCamFramework}
-    
+
     # locales
     ${local_files}
   )
@@ -585,33 +594,33 @@ if(APPLE)
     MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/MacOSXBundleInfo.plist.in
   )
   set_target_properties(
-    phd2 
-    PROPERTIES 
+    phd2
+    PROPERTIES
     OUTPUT_NAME PHD2  # upper case on OSX
   )
-  
+
   target_include_directories(
     phd2
     PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
   )
 
   set_source_files_properties(
-    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} 
+    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
     ${phd_src_dir}/PHD2GuideHelp.zip
-      PROPERTIES 
+      PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
   )
-  
+
   foreach(_l IN LISTS local_files)
     get_filename_component(_dest ${_l} DIRECTORY)
     set_source_files_properties(
       ${_l}
-      PROPERTIES 
+      PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources/${_dest}
   )
 
   endforeach()
-  
+
   # this is a workaround to what looks like a bug on cmake for Makefile generators
   if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
     get_filename_component(framework1 ${fcCamFramework} NAME)
@@ -627,8 +636,8 @@ if(APPLE)
       COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}
     )
   else()
-    set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
-    set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
+    set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
   endif()
 
   add_custom_command(
@@ -666,8 +675,8 @@ elseif(WIN32)
     )
 
   set_target_properties(
-    phd2 
-    PROPERTIES 
+    phd2
+    PROPERTIES
       OUTPUT_NAME phd2  # lower case on Win32
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
       LINK_FLAGS_DEBUG "/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib"
@@ -683,7 +692,7 @@ elseif(WIN32)
   copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
 elseif(UNIX)
-  
+
   # should be linux there
   add_executable(
    phd2
@@ -695,11 +704,11 @@ elseif(UNIX)
   target_link_libraries(phd2 X11)
 
   set_target_properties(
-    phd2 
-    PROPERTIES 
+    phd2
+    PROPERTIES
       OUTPUT_NAME phd2  # lower case on linux
-    )  
-  
+    )
+
 else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
@@ -718,13 +727,14 @@ target_link_libraries(phd2 MPIIS_GP GPGuider)
 
 
 
-# Additional files in the workspace, To improve maintainability 
+# Additional files in the workspace, To improve maintainability
 add_custom_target(CmakeAdditionalFiles
   SOURCES
   ${phd_src_dir}/thirdparty/thirdparty.cmake
   ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
   ${phd_src_dir}/cmake_modules/FindINDI.cmake
-  ${phd_src_dir}/cmake_modules/FindNova.cmake)
+  ${phd_src_dir}/cmake_modules/FindNova.cmake
+  ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake)
 
 
 
@@ -783,15 +793,15 @@ if(UNIX AND NOT APPLE)
     list(GET locales_help       ${_index} _var1)
     list(GET locales_help_msg   ${_index} _var2)
 
-    install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip 
-            DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/ 
+    install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip
+            DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/
             OPTIONAL)
 
-    install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo 
-             DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/ 
+    install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo
+             DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/
              RENAME "phd2.mo"
-             OPTIONAL)          
-            
+             OPTIONAL)
+
   endforeach()
 
   # Make Debian package
@@ -826,7 +836,7 @@ endif()
 if(APPLE)
   install(TARGETS phd2 RUNTIME DESTINATION . BUNDLE DESTINATION .)
   set(CPACK_GENERATOR "ZIP" "DragNDrop")
-  set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-Darwin") 
+  set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-Darwin")
 endif()
 
 include(CPack)
