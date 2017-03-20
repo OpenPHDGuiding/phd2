@@ -157,7 +157,7 @@ TEST_F(GPGTest, period_identification_test)
     }
     GPG->result(0.15, 2.0, 3.0);
 
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[6], period_length, 1e0);
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[PKPeriodLength], period_length, 1e0);
 
     GPG->save_gp_data();
 }
@@ -224,13 +224,13 @@ TEST_F(GPGTest, parameters_test)
     EXPECT_NEAR(GPG->GetMinMove(), DefaultMinMove, 1e-6);
 
     std::vector<double> parameters = GPG->GetGPHyperparameters();
-    EXPECT_NEAR(parameters[0], DefaultLengthScaleSE0Ker, 1e-6);
-    EXPECT_NEAR(parameters[1], DefaultSignalVarianceSE0Ker, 1e-6);
-    EXPECT_NEAR(parameters[2], DefaultLengthScalePerKer, 1e-6);
-    EXPECT_NEAR(parameters[3], DefaultSignalVariancePerKer, 1e-6);
-    EXPECT_NEAR(parameters[4], DefaultLengthScaleSE1Ker, 1e-6);
-    EXPECT_NEAR(parameters[5], DefaultSignalVarianceSE1Ker, 1e-6);
-    EXPECT_NEAR(parameters[6], DefaultPeriodLengthPerKer, 1e-6);
+    EXPECT_NEAR(parameters[SE0KLengthScale], DefaultLengthScaleSE0Ker, 1e-6);
+    EXPECT_NEAR(parameters[SE0KSignalVariance], DefaultSignalVarianceSE0Ker, 1e-6);
+    EXPECT_NEAR(parameters[PKLengthScale], DefaultLengthScalePerKer, 1e-6);
+    EXPECT_NEAR(parameters[PKSignalVariance], DefaultSignalVariancePerKer, 1e-6);
+    EXPECT_NEAR(parameters[SE1KLengthScale], DefaultLengthScaleSE1Ker, 1e-6);
+    EXPECT_NEAR(parameters[SE1KSignalVariance], DefaultSignalVarianceSE1Ker, 1e-6);
+    EXPECT_NEAR(parameters[PKPeriodLength], DefaultPeriodLengthPerKer, 1e-6);
 
     EXPECT_NEAR(GPG->GetPeriodLengthsPeriodEstimation(), DefaultPeriodLengthsForPeriodEstimation, 1e-6);
     EXPECT_NEAR(GPG->GetNumPointsForApproximation(), DefaultNumPointsForApproximation, 1e-6);
@@ -314,9 +314,9 @@ TEST_F(GPGTest, linear_drift_identification_test)
     Eigen::VectorXd SNRs = 100*Eigen::VectorXd::Ones(resolution + 1);
 
     std::vector<double> parameters = GPG->GetGPHyperparameters();
-    parameters[1] = 1e-10; // disable long-range SE kernel
-    parameters[5] = 1e-10; // disable short-range SE kernel
-    parameters[6] = period_length; // set exact period length
+    parameters[SE0KSignalVariance] = 1e-10; // disable long-range SE kernel
+    parameters[SE1KSignalVariance] = 1e-10; // disable short-range SE kernel
+    parameters[PKPeriodLength] = period_length; // set exact period length
     GPG->SetBoolComputePeriod(false); // use the exact period length
     GPG->SetGPHyperparameters(parameters);
 
@@ -413,7 +413,7 @@ TEST_F(GPGTest, real_data_test)
 
     GPG->result(0.0, 25.0, 3.0, time);
 
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[6],483.0,5);
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[PKPeriodLength],483.0,5);
 
     GPG->save_gp_data();
 }
@@ -427,7 +427,7 @@ TEST_F(GPGTest, parameter_filter_test)
     Eigen::VectorXd filtered_period_lengths(1000); // must be longer than the dataset
 
     std::vector<double> hypers = GPG->GetGPHyperparameters();
-    hypers[6] = 483; // initialize close to final value
+    hypers[PKPeriodLength] = 483; // initialize close to final value
     GPG->SetGPHyperparameters(hypers);
     GPG->SetLearningRate(0.01);
 
@@ -446,7 +446,7 @@ TEST_F(GPGTest, parameter_filter_test)
         period_length = std::stod(row[0]);
 
         GPG->UpdatePeriodLength(period_length);
-        filtered_period_lengths(i - 1) = GPG->GetGPHyperparameters()[6];
+        filtered_period_lengths(i - 1) = GPG->GetGPHyperparameters()[PKPeriodLength];
     }
     filtered_period_lengths.conservativeResize(i);
 
@@ -483,7 +483,7 @@ TEST_F(GPGTest, period_interpolation_test)
     }
     GPG->result(0.15, 2.0, 3.0);
 
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[6], period_length, 1e0);
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[PKPeriodLength], period_length, 1e0);
 
     GPG->save_gp_data();
 }
@@ -512,7 +512,7 @@ TEST_F(GPGTest, data_regularization_test)
     }
     GPG->result(0.15, 2.0, 3.0);
 
-    EXPECT_NEAR(GPG->GetGPHyperparameters()[6], period_length, 1);
+    EXPECT_NEAR(GPG->GetGPHyperparameters()[PKPeriodLength], period_length, 1);
 
     GPG->save_gp_data();
 }
@@ -556,7 +556,7 @@ TEST_F(GPGTest, DISABLED_log_period_length)
         GPG->inject_data_point(time, measurement, SNR, control);
 
         GPG->UpdateGP();
-        outfile << std::setw(8) << GPG->GetGPHyperparameters()[6] << "\n";
+        outfile << std::setw(8) << GPG->GetGPHyperparameters()[PKPeriodLength] << "\n";
     }
     outfile.close();
 }

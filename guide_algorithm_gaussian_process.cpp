@@ -251,15 +251,15 @@ public:
         m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
 
         std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
-        assert(hyperparameters.size() == 7);
+        assert(hyperparameters.size() == NumParameters);
 
-        m_pSE0KLengthScale->SetValue(hyperparameters[0]);
-        m_pSE0KSignalVariance->SetValue(hyperparameters[1]);
-        m_pPKLengthScale->SetValue(hyperparameters[2]);
-        m_pPKSignalVariance->SetValue(hyperparameters[3]);
-        m_pSE1KLengthScale->SetValue(hyperparameters[4]);
-        m_pSE1KSignalVariance->SetValue(hyperparameters[5]);
-        m_pPKPeriodLength->SetValue(hyperparameters[6]);
+        m_pSE0KLengthScale->SetValue(hyperparameters[SE0KLengthScale]);
+        m_pSE0KSignalVariance->SetValue(hyperparameters[SE0KSignalVariance]);
+        m_pPKLengthScale->SetValue(hyperparameters[PKLengthScale]);
+        m_pPKSignalVariance->SetValue(hyperparameters[PKSignalVariance]);
+        m_pSE1KLengthScale->SetValue(hyperparameters[SE1KLengthScale]);
+        m_pSE1KSignalVariance->SetValue(hyperparameters[SE1KSignalVariance]);
+        m_pPKPeriodLength->SetValue(hyperparameters[PKPeriodLength]);
 
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
 
@@ -278,15 +278,15 @@ public:
         m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());
         m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
 
-        std::vector<double> hyperparameters(7);
+        std::vector<double> hyperparameters(NumParameters);
 
-        hyperparameters[0] = m_pSE0KLengthScale->GetValue();
-        hyperparameters[1] = m_pSE0KSignalVariance->GetValue();
-        hyperparameters[2] = m_pPKLengthScale->GetValue();
-        hyperparameters[3] = m_pPKSignalVariance->GetValue();
-        hyperparameters[4] = m_pSE1KLengthScale->GetValue();
-        hyperparameters[5] = m_pSE1KSignalVariance->GetValue();
-        hyperparameters[6] = m_pPKPeriodLength->GetValue();
+        hyperparameters[SE0KLengthScale] = m_pSE0KLengthScale->GetValue();
+        hyperparameters[SE0KSignalVariance] = m_pSE0KSignalVariance->GetValue();
+        hyperparameters[PKLengthScale] = m_pPKLengthScale->GetValue();
+        hyperparameters[PKSignalVariance] = m_pPKSignalVariance->GetValue();
+        hyperparameters[SE1KLengthScale] = m_pSE1KLengthScale->GetValue();
+        hyperparameters[SE1KSignalVariance] = m_pSE1KSignalVariance->GetValue();
+        hyperparameters[PKPeriodLength] = m_pPKPeriodLength->GetValue();
 
         m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
@@ -346,14 +346,14 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     double prediction_gain = pConfig->Profile.GetDouble(configPath + "/gp_prediction_gain", DefaultPredictionGain);
     SetPredictionGain(prediction_gain);
 
-    std::vector<double> v_hyperparameters(7);
-    v_hyperparameters[0] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se0_kern",  DefaultLengthScaleSE0Ker);
-    v_hyperparameters[1] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se0_kern",        DefaultSignalVarianceSE0Ker);
-    v_hyperparameters[2] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_per_kern",  DefaultLengthScalePerKer);
-    v_hyperparameters[3] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_per_kern",        DefaultSignalVariancePerKer);
-    v_hyperparameters[4] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se1_kern",  DefaultLengthScaleSE1Ker);
-    v_hyperparameters[5] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se1_kern",        DefaultSignalVarianceSE1Ker);
-    v_hyperparameters[6] = pConfig->Profile.GetDouble(configPath + "/gp_period_per_kern",        DefaultPeriodLengthPerKer);
+    std::vector<double> v_hyperparameters(NumParameters);
+    v_hyperparameters[SE0KLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se0_kern",  DefaultLengthScaleSE0Ker);
+    v_hyperparameters[SE0KSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se0_kern",        DefaultSignalVarianceSE0Ker);
+    v_hyperparameters[PKLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_per_kern",  DefaultLengthScalePerKer);
+    v_hyperparameters[PKSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_per_kern",        DefaultSignalVariancePerKer);
+    v_hyperparameters[SE1KLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se1_kern",  DefaultLengthScaleSE1Ker);
+    v_hyperparameters[SE1KSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se1_kern",        DefaultSignalVarianceSE1Ker);
+    v_hyperparameters[PKPeriodLength] = pConfig->Profile.GetDouble(configPath + "/gp_period_per_kern",        DefaultPeriodLengthPerKer);
 
     SetGPHyperparameters(v_hyperparameters);
 
@@ -503,7 +503,7 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
 
 bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyperparameters)
 {
-    if(hyperparameters.size() != 7)
+    if(hyperparameters.size() != NumParameters)
         return false;
 
     bool error = false;
@@ -513,7 +513,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // length scale short SE kernel
     try
     {
-      if (hyperparameters[0] < 1.0) // zero length scale is unstable
+      if (hyperparameters[SE0KLengthScale] < 1.0) // zero length scale is unstable
       {
         throw ERROR_INFO("invalid length scale for short SE kernel");
       }
@@ -522,15 +522,15 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
-      hyperparameters[0] = DefaultLengthScaleSE0Ker;
+      hyperparameters[SE0KLengthScale] = DefaultLengthScaleSE0Ker;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se0_kern", hyperparameters[0]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se0_kern", hyperparameters[SE0KLengthScale]);
 
     // signal variance short SE kernel
     try
     {
-      if (hyperparameters[1] < 0.0)
+      if (hyperparameters[SE0KSignalVariance] < 0.0)
       {
         throw ERROR_INFO("invalid signal variance for the short SE kernel");
       }
@@ -539,15 +539,15 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
-      hyperparameters[1] = DefaultSignalVarianceSE0Ker;
+      hyperparameters[SE0KSignalVariance] = DefaultSignalVarianceSE0Ker;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se0_kern", hyperparameters[1]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se0_kern", hyperparameters[SE0KSignalVariance]);
 
     // length scale periodic kernel
     try
     {
-        if (hyperparameters[2] < 1.0) // zero length scale is unstable
+        if (hyperparameters[PKLengthScale] < 1.0) // zero length scale is unstable
         {
             throw ERROR_INFO("invalid length scale for periodic kernel");
         }
@@ -556,15 +556,15 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        hyperparameters[2] = DefaultLengthScalePerKer;
+        hyperparameters[PKLengthScale] = DefaultLengthScalePerKer;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_per_kern", hyperparameters[2]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_per_kern", hyperparameters[PKLengthScale]);
 
     // signal variance periodic kernel
     try
     {
-        if (hyperparameters[3] < 0.0)
+        if (hyperparameters[PKSignalVariance] < 0.0)
         {
             throw ERROR_INFO("invalid signal variance for the periodic kernel");
         }
@@ -573,16 +573,16 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        hyperparameters[3] = DefaultSignalVariancePerKer;
+        hyperparameters[PKSignalVariance] = DefaultSignalVariancePerKer;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_per_kern", hyperparameters[3]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_per_kern", hyperparameters[PKSignalVariance]);
 
 
     // length scale long SE kernel
     try
     {
-        if (hyperparameters[4] < 1.0) // zero length scale is unstable
+        if (hyperparameters[SE1KLengthScale] < 1.0) // zero length scale is unstable
         {
             throw ERROR_INFO("invalid length scale for SE kernel");
         }
@@ -591,15 +591,15 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        hyperparameters[4] = DefaultLengthScaleSE1Ker;
+        hyperparameters[SE1KLengthScale] = DefaultLengthScaleSE1Ker;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se1_kern", hyperparameters[4]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se1_kern", hyperparameters[SE1KLengthScale]);
 
     // signal variance SE kernel
     try
     {
-        if (hyperparameters[5] < 0.0)
+        if (hyperparameters[SE1KSignalVariance] < 0.0)
         {
             throw ERROR_INFO("invalid signal variance for the SE kernel");
         }
@@ -608,15 +608,15 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        hyperparameters[5] = DefaultSignalVarianceSE1Ker;
+        hyperparameters[SE1KSignalVariance] = DefaultSignalVarianceSE1Ker;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se1_kern", hyperparameters[5]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se1_kern", hyperparameters[SE1KSignalVariance]);
 
     // period length periodic kernel
     try
     {
-      if (hyperparameters[6] < 1.0) // zero period length is unstable
+      if (hyperparameters[PKPeriodLength] < 1.0) // zero period length is unstable
       {
         throw ERROR_INFO("invalid period length for periodic kernel");
       }
@@ -625,10 +625,10 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
-      hyperparameters[6] = DefaultPeriodLengthPerKer;
+      hyperparameters[PKPeriodLength] = DefaultPeriodLengthPerKer;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", hyperparameters[6]);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", hyperparameters[PKPeriodLength]);
 
     GPG->SetGPHyperparameters(hyperparameters);
     return error;
@@ -752,13 +752,13 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
       GetControlGain(),
       GetPredictionGain(),
       GetMinMove(),
-      hyperparameters[0],
-      hyperparameters[1],
-      hyperparameters[2],
-      hyperparameters[3],
-      hyperparameters[4],
-      hyperparameters[5],
-      hyperparameters[6],
+      hyperparameters[SE0KLengthScale],
+      hyperparameters[SE0KSignalVariance],
+      hyperparameters[PKLengthScale],
+      hyperparameters[PKSignalVariance],
+      hyperparameters[SE1KLengthScale],
+      hyperparameters[SE1KSignalVariance],
+      hyperparameters[PKPeriodLength],
       GetPeriodLengthsPeriodEstimation());
 }
 
@@ -802,7 +802,7 @@ void GuideAlgorithmGaussianProcess::reset()
 void GuideAlgorithmGaussianProcess::GuidingStopped(void)
 {
     // need to store the estimated period length in case the user exits the application
-    double period_length = GPG->GetGPHyperparameters()[6];
+    double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
     reset(); // reset is only done on a complete stop

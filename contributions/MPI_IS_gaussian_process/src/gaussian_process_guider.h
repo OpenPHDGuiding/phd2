@@ -49,6 +49,18 @@
 
 #include <chrono>
 
+enum Hyperparameters
+{
+    SE0KLengthScale,
+    SE0KSignalVariance,
+    PKLengthScale,
+    PKSignalVariance,
+    SE1KLengthScale,
+    SE1KSignalVariance,
+    PKPeriodLength,
+    NumParameters // this represents the number of elements in the enum
+};
+
 /**
  * This class provides a guiding algorithm for the right ascension axis that
  * learns and predicts the periodic gear error with a Gaussian process. This

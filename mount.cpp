@@ -496,7 +496,7 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 break;
             case GUIDE_ALGORITHM_RESIST_SWITCH:
                 *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
-                break;         
+                break;
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
                 break;
