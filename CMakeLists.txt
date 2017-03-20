@@ -33,21 +33,38 @@ cmake_minimum_required(VERSION 2.8.11)
 
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
+    if(POLICY CMP0043)
+      cmake_policy(SET CMP0043 NEW)
+    endif()
+endif()
 
 
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
+# Additional files in the workspace, To improve maintainability
+add_custom_target(CmakeAdditionalFiles
+  SOURCES
+  ${phd_src_dir}/thirdparty/thirdparty.cmake
+  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
+  ${phd_src_dir}/cmake_modules/FindINDI.cmake
+  ${phd_src_dir}/cmake_modules/FindNova.cmake
+  ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake
+  ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake)
+
 # declare useful functions
 include(cmake_modules/PHD2BuildDoc.cmake)
 
 # retrieves the version from the source file
 get_phd_version()
-
-
 message(STATUS "PHD2 version '${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}' (extracted from source)")
+
+# generates the documentation targets
+generate_doc_targets()
+
+
+
 
 
 
@@ -70,8 +87,8 @@ endif()
 if(UNIX AND NOT APPLE)
   if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "PHD2 install path" FORCE)
-  endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-endif(UNIX AND NOT APPLE)
+  endif()
+endif()
 
 set(USE_FOLDERS TRUE)
 set(BUILD_SHARED_LIBS FALSE)
@@ -89,7 +106,7 @@ enable_testing()
 
 
 
-include_directories(${phd_src_dir})
+
 
 
 # build type, by default to release (with optimisations)
@@ -140,14 +157,15 @@ include(thirdparty/thirdparty.cmake)
 #################################################################################
 #
 # contributions
-  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
+add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
 
-# Adding the wxWidgets include definitions. Maybe narrowed to PHD2 project only
+# WxWidgets inclusion narrowed to PHD2 project only
 #include_directories(${wxWidgets_INCLUDE_DIRS})
-
-
+include_directories(${phd_src_dir}/cam_KWIQGuider/)
+include_directories(${phd_src_dir}/cameras/)
+include_directories(${phd_src_dir})
 
 
 
@@ -316,6 +334,9 @@ set(guiding_SRC
   ${phd_src_dir}/backlash_comp.h
   ${phd_src_dir}/guide_algorithm_hysteresis.cpp
   ${phd_src_dir}/guide_algorithm_hysteresis.h
+  # gaussian process, also the main project should link to the GP project in the contrib dir
+  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+  ${phd_src_dir}/guide_algorithm_gaussian_process.h
   ${phd_src_dir}/guide_algorithm_identity.cpp
   ${phd_src_dir}/guide_algorithm_identity.h
   ${phd_src_dir}/guide_algorithm_lowpass.cpp
@@ -333,14 +354,6 @@ set(guiding_SRC
   ${phd_src_dir}/guider.h
   ${phd_src_dir}/guiders.h
 )
-
-# gaussian process, also the main project should link to the GP project in the contrib dir
-  set(guiding_SRC
-      ${guiding_SRC}
-      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
-  ${phd_src_dir}/guide_algorithm_gaussian_process.h
-)
-
 source_group(Guiding FILES ${guiding_SRC})
 
 
@@ -512,16 +525,10 @@ if (WIN32)
       ${phd_src_dir}/comdispatch.cpp
       ${phd_src_dir}/phd.rc   # resource file
      )
-  include_directories("C:/Program Files (x86)/Visual Leak Detector/include")
-  link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
-
 endif()
 
 source_group(src FILES ${phd2_SRC})
 
-
-include_directories(${phd_src_dir}/cam_KWIQGuider/)
-include_directories(${phd_src_dir}/cameras/)
 
 MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
   IF(MSVC)
@@ -538,9 +545,11 @@ MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar
 
     # Add precompiled header to SourcesVar
     LIST(APPEND ${SourcesVar} ${PrecompiledSource})
-  ENDIF(MSVC)
+  ENDIF()
 ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
 
+## #########################
+## OSX
 if(APPLE)
 
   # bundle definitions
@@ -592,13 +601,8 @@ if(APPLE)
     phd2
     PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/MacOSXBundleInfo.plist.in
-  )
-  set_target_properties(
-    phd2
-    PROPERTIES
     OUTPUT_NAME PHD2  # upper case on OSX
   )
-
   target_include_directories(
     phd2
     PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
@@ -616,9 +620,7 @@ if(APPLE)
     set_source_files_properties(
       ${_l}
       PROPERTIES
-        MACOSX_PACKAGE_LOCATION Resources/${_dest}
-  )
-
+        MACOSX_PACKAGE_LOCATION Resources/${_dest})
   endforeach()
 
   # this is a workaround to what looks like a bug on cmake for Makefile generators
@@ -657,7 +659,6 @@ if(APPLE)
 elseif(WIN32)
 
   set(phd2_WIN_SRC
-
     ${scopes_SRC}
     ${cam_SRC}
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
@@ -668,6 +669,7 @@ elseif(WIN32)
   ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
   source_group(src FILES precompiled_header.cpp)
 
+  link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
   add_executable(
     phd2
     WIN32
@@ -681,6 +683,9 @@ elseif(WIN32)
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
       LINK_FLAGS_DEBUG "/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib"
     )
+
+  target_include_directories(phd2 PRIVATE "C:/Program Files (x86)/Visual Leak Detector/include")
+
   # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
 
@@ -691,6 +696,8 @@ elseif(WIN32)
 
   copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
+## #########################
+## Unix
 elseif(UNIX)
 
   # should be linux there
@@ -720,23 +727,9 @@ endif()
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(phd2 ${PHD_LINK_EXTERNAL})
-
-# option configurations parts
-target_link_libraries(phd2 MPIIS_GP GPGuider)
-
-
-
-# Additional files in the workspace, To improve maintainability
-add_custom_target(CmakeAdditionalFiles
-  SOURCES
-  ${phd_src_dir}/thirdparty/thirdparty.cmake
-  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
-  ${phd_src_dir}/cmake_modules/FindINDI.cmake
-  ${phd_src_dir}/cmake_modules/FindNova.cmake
-  ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake)
-
-
+target_link_libraries(phd2 
+                      MPIIS_GP GPGuider # GP Guider
+                      ${PHD_LINK_EXTERNAL})
 
 
 
@@ -760,10 +753,11 @@ if(WIN32)
     install (FILES ${PHD_COPY_EXTERNAL_REL} DESTINATION . )
   else()
     install (FILES ${PHD_COPY_EXTERNAL_DBG} DESTINATION . )
-  endif (CMAKE_BUILD_TYPE MATCHES DEBUG)
+  endif()
   install (FILES ${phd_src_dir}/README-PHD2.txt DESTINATION . )
   install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION . )
   install (DIRECTORY ${phd_src_dir}/locale DESTINATION . )
+  
   # Make NSIS package
   set(CPACK_GENERATOR "NSIS")
   set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-win32")

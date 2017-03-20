@@ -1,29 +1,29 @@
 # Copyright 2014-2015, Max Planck Society.
 # All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, 
+#
+# Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above copyright notice, 
+#
+# 1. Redistributions of source code must retain the above copyright notice,
 #    this list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above copyright notice, 
-#    this list of conditions and the following disclaimer in the documentation 
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
 #    and/or other materials provided with the distribution.
-# 
-# 3. Neither the name of the copyright holder nor the names of its contributors 
-#    may be used to endorse or promote products derived from this software without 
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
 #    specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # File created by Raffi Enficiaud
@@ -39,14 +39,14 @@ endif()
 
 
 # custom cmake packages, should have lower priority than the ones bundled with cmake
-set(CMAKE_MODULE_PATH 
+set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake_modules/ )
 
 
 
 # these variables allow to specify to which the main project will link and
-# to potentially copy some resources to the output directory of the main project. 
+# to potentially copy some resources to the output directory of the main project.
 # They are used by the CMakeLists.txt calling this file.
 
 set(PHD_LINK_EXTERNAL)          # target to which the phd2 main library will link to
@@ -66,7 +66,7 @@ endif()
 #
 macro(copy_dependency_with_config target_name dependency_list_all dependency_list_dbg dependency_list_release)
 
-  
+
   set(dependency_list_dbg_with_all ${${dependency_list_dbg}} ${${dependency_list_all}})
   set(dependency_list_dbg_with_all_cleaned)
   foreach(_element ${dependency_list_dbg_with_all})
@@ -78,25 +78,25 @@ macro(copy_dependency_with_config target_name dependency_list_all dependency_lis
     set(dependency_list_dbg_with_all_cleaned ${dependency_list_dbg_with_all_cleaned} ${_element1})
     unset(_element1)
   endforeach()
-  
+
   list(REMOVE_DUPLICATES dependency_list_dbg_with_all_cleaned)
   set(dependency_list_dbg_with_all ${dependency_list_dbg_with_all_cleaned})
   unset(dependency_list_dbg_with_all_cleaned)
   unset(_element)
-  
+
   foreach(_element ${dependency_list_dbg_with_all})
     get_filename_component(_element_name ${_element} NAME)
     add_custom_command(
       TARGET ${target_name}
       PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E 
+      COMMAND ${CMAKE_COMMAND} -E
         $<$<CONFIG:Debug>:echo>
         $<$<CONFIG:Debug>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
         $<$<NOT:$<CONFIG:Debug>>:echo_append>
         $<$<NOT:$<CONFIG:Debug>>:".">
-      COMMAND ${CMAKE_COMMAND} -E 
-        $<$<CONFIG:Debug>:copy_if_different> 
-        $<$<CONFIG:Debug>:${_element}> 
+      COMMAND ${CMAKE_COMMAND} -E
+        $<$<CONFIG:Debug>:copy_if_different>
+        $<$<CONFIG:Debug>:${_element}>
         $<$<CONFIG:Debug>:$<TARGET_FILE_DIR:${target_name}>/.>
         $<$<NOT:$<CONFIG:Debug>>:echo_append>
         $<$<NOT:$<CONFIG:Debug>>:"">
@@ -109,15 +109,15 @@ macro(copy_dependency_with_config target_name dependency_list_all dependency_lis
       # TARGET ${target_name}
       # PRE_BUILD
       # COMMAND ${CMAKE_COMMAND} -E echo Copy ${_element_name} into $<TARGET_FILE_DIR:${target_name}>/.
-    
+
       # COMMAND ${CMAKE_COMMAND} -E $<$<CONFIG:Debug>:copy_if_different>$<$<NOT:$<CONFIG:Debug>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
       # COMMENT "Copy ${target_name} dependencies into the output folder")
-    
+
     unset(_element_name)
   endforeach()
   unset(dependency_list_dbg_with_all)
   unset(_element)
-  
+
 
   set(dependency_list_release_with_all ${${dependency_list_release}} ${${dependency_list_all}})
   set(dependency_list_release_with_all_cleaned)
@@ -133,25 +133,25 @@ macro(copy_dependency_with_config target_name dependency_list_all dependency_lis
   set(dependency_list_release_with_all ${dependency_list_release_with_all_cleaned})
   unset(dependency_list_release_with_all_cleaned)
   unset(_element)
-  
+
   foreach(_element ${dependency_list_release_with_all})
     get_filename_component(_element_name ${_element} NAME)
     add_custom_command(
       TARGET ${target_name}
       PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E 
+      COMMAND ${CMAKE_COMMAND} -E
         $<$<CONFIG:Release>:echo> #$<$<NOT:$<CONFIG:Release>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
         $<$<CONFIG:Release>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
         $<$<NOT:$<CONFIG:Release>>:echo_append>
         $<$<NOT:$<CONFIG:Release>>:".">
-      COMMAND ${CMAKE_COMMAND} -E 
-        $<$<CONFIG:Release>:copy_if_different> 
-        $<$<CONFIG:Release>:${_element}> 
+      COMMAND ${CMAKE_COMMAND} -E
+        $<$<CONFIG:Release>:copy_if_different>
+        $<$<CONFIG:Release>:${_element}>
         $<$<CONFIG:Release>:$<TARGET_FILE_DIR:${target_name}>/.>
         $<$<NOT:$<CONFIG:Release>>:echo_append>
         $<$<NOT:$<CONFIG:Release>>:"">
       COMMENT "Copy ${target_name} dependencies into the output folder")
-    unset(_element_name)      
+    unset(_element_name)
   endforeach()
   unset(dependency_list_release_with_all)
   unset(_element)
@@ -163,7 +163,7 @@ macro(copy_dependency_with_config target_name dependency_list_all dependency_lis
   #install( FILES ${dependency_name_non_debug}
   #          DESTINATION bin
   #          CONFIGURATIONS Release)
-            
+
 
 endmacro(copy_dependency_with_config)
 
@@ -213,21 +213,21 @@ set(CFTSIO_SRC_FILES
     putcolj.c putcolk.c putcoluk.c putcoll.c putcols.c putcolsb.c
     putcolu.c putcolui.c putcoluj.c putkey.c region.c scalnull.c
     swapproc.c wcssub.c wcsutil.c imcompress.c quantize.c ricecomp.c
-    pliocomp.c fits_hcompress.c fits_hdecompress.c 
-    
+    pliocomp.c fits_hcompress.c fits_hdecompress.c
+
     zlib/zuncompress.c
-    zlib/zcompress.c 
-    zlib/adler32.c 
-    zlib/crc32.c 
+    zlib/zcompress.c
+    zlib/adler32.c
+    zlib/crc32.c
     zlib/inffast.c
-    zlib/inftrees.c 
-    zlib/trees.c 
-    zlib/zutil.c 
+    zlib/inftrees.c
+    zlib/trees.c
+    zlib/zutil.c
     zlib/deflate.c
-    zlib/infback.c 
-    zlib/inflate.c 
-    zlib/uncompr.c 
-    
+    zlib/infback.c
+    zlib/inflate.c
+    zlib/uncompr.c
+
     simplerng.c
     f77_wrap1.c f77_wrap2.c f77_wrap3.c f77_wrap4.c
 )
@@ -244,7 +244,7 @@ if(UNIX)
   target_link_libraries(cfitsio m)
 endif()
 
-# OpenPhdGuiding MODIFICATION HERE: suppress warning about unused function result 
+# OpenPhdGuiding MODIFICATION HERE: suppress warning about unused function result
 if(UNIX AND NOT APPLE)
   set_target_properties(cfitsio PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
   # Raffi: use target_compile_options ?
@@ -259,11 +259,11 @@ if(WIN32)
 endif()
 
 
-set_target_properties(cfitsio PROPERTIES 
-                         VERSION ${CFITSIO_VERSION} 
+set_target_properties(cfitsio PROPERTIES
+                         VERSION ${CFITSIO_VERSION}
                          SOVERSION ${CFITSIO_MAJOR_VERSION}
                          FOLDER "Thirdparty/")
-                         
+
 
 # indicating the link and include directives to the main project.
 # already done by the directive target_include_directories(cfitsio PUBLIC
@@ -319,7 +319,7 @@ if(WIN32)
     PRIVATE _CRT_SECURE_NO_WARNINGS
     PRIVATE _CRT_SECURE_NO_DEPRECATE)
 
-  set_target_properties(VidCapture PROPERTIES 
+  set_target_properties(VidCapture PROPERTIES
                          FOLDER "Thirdparty/")
 
   # indicating the link and include directives to the main project.
@@ -344,7 +344,7 @@ if(NOT EXISTS ${libusb_root})
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${LIBUSB}.tar.bz2
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()  
+endif()
 
 set(libusb_dir ${libusb_root}/libusb)
 # core files
@@ -361,49 +361,49 @@ set(libUSB_SRC
 
 # platform dependent files
 if(APPLE)
-  set(libUSB_SRC ${libUSB_SRC}  
-  
+  set(libUSB_SRC ${libUSB_SRC}
+
     # platform specific configuration file
     ${thirdparty_dir}/include/${LIBUSB}
-  
+
     # platform specific implementation
     ${libusb_dir}/os/darwin_usb.h
     ${libusb_dir}/os/darwin_usb.c
-    
-    ${libusb_dir}/os/threads_posix.h 
+
+    ${libusb_dir}/os/threads_posix.h
     ${libusb_dir}/os/threads_posix.c
 
     ${libusb_dir}/os/poll_posix.c
    )
-  set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1") 
+  set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1")
   set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
 elseif(WIN32)
-  set(libUSB_SRC ${libUSB_SRC}  
-  
+  set(libUSB_SRC ${libUSB_SRC}
+
     # platform specific configuration files
     ${libusb_root}/msvc/stdint.h
     ${libusb_root}/msvc/inttypes.h
     ${libusb_root}/msvc/config.h
-  
+
     # platform specific implementation
     ${libusb_dir}/os/windows_winusb.h
     ${libusb_dir}/os/windows_winusb.c
-    
+
     ${libusb_dir}/os/threads_windows.h
     ${libusb_dir}/os/threads_windows.c
-    
+
     ${libusb_dir}/os/poll_windows.h
     ${libusb_dir}/os/poll_windows.c
    )
   set(${LIBUSB}_additional_compile_definition "OS_WINDOWS=1")
   set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
 elseif(UNIX)
-  # libUSB is already an indirect requirement/dependency for phd2 (through libindi). 
+  # libUSB is already an indirect requirement/dependency for phd2 (through libindi).
   # I (Raffi) personally prefer having the same version
   # for all platforms, but it should in theory always be better to link against existing libraries
   # compiled ans shipped by skilled people.
 
-  # this would find the libUSB module that is installed on the system. 
+  # this would find the libUSB module that is installed on the system.
   # It requires "sudo apt-get install libusb-1.0-0-dev"
   pkg_check_modules(USB_pkg libusb-1.0)
   if(0) # if(USB_pkg_FOUND) - force using the bundled libusb - older versions may not work with the ZWO ASI camera SDK
@@ -415,12 +415,12 @@ elseif(UNIX)
 
     # in case the library is not installed on the system (as I have on my machines)
     # try by building the library ourselves
-  
+
     set(libUSB_SRC ${libUSB_SRC}
-    
+
      # platform specific configuration file
      ${thirdparty_dir}/include/${LIBUSB}
-    
+
      # platform specific implementation
      ${libusb_dir}/os/linux_usbfs.c
      ${libusb_dir}/os/linux_usbfs.h
@@ -512,11 +512,11 @@ set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
 if(WIN32)
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
-  
+
   if(NOT wxWidgets_PREFIX_DIRECTORY OR NOT EXISTS ${wxWidgets_PREFIX_DIRECTORY})
     message(FATAL_ERROR "The variable wxWidgets_PREFIX_DIRECTORY should be defined and should point to a valid wxWindows installation path. See the open-phd-guiding wiki for more information.")
   endif()
-  
+
   set(wxWidgets_ROOT_DIR ${wxWidgets_PREFIX_DIRECTORY})
   set(wxWidgets_USE_STATIC ON)
   set(wxWidgets_USE_DEBUG ON)
@@ -525,17 +525,17 @@ if(WIN32)
   include(${wxWidgets_USE_FILE})
   #message(${wxWidgets_USE_FILE})
 
-  
+
 else()
   if(wxWidgets_PREFIX_DIRECTORY)
     set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
-  
+
     find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS ${wxWidgets_PREFIX_DIRECTORY}/bin NO_DEFAULT_PATH)
     if(NOT wxWidgets_CONFIG_EXECUTABLE)
       message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE from the given directory ${wxWidgets_PREFIX_DIRECTORY}")
-    endif()  
+    endif()
   endif()
-  
+
   find_package(wxWidgets REQUIRED COMPONENTS aui core base adv html net)
   if(NOT wxWidgets_FOUND)
     message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
@@ -567,14 +567,14 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 if(WIN32)
 
   # openCV
-  # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and 
+  # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and
   # the build is aborted.
   if(NOT OpenCVRoot)
     message(FATAL_ERROR "OpenCVRoot is not defined. OpenCVRoot should be defined with the option -DOpenCVRoot=<root-to-opencv>")
   endif()
-  
+
   set(opencv_root ${OpenCVRoot})
-  
+
   if(NOT EXISTS ${opencv_root}/build/include)
     message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
   endif()
@@ -593,7 +593,7 @@ if(WIN32)
   if(NOT OpenCV_INCLUDE_DIRS)
     message(FATAL_ERROR "Cannot add the OpenCV include directories")
   endif()
-  
+
   list(REMOVE_DUPLICATES OpenCV_LIB_DIR)
   list(LENGTH OpenCV_LIB_DIR list_lenght)
   if(${list_lenght} GREATER 1)
@@ -601,20 +601,20 @@ if(WIN32)
   endif()
   set(OpenCV_BIN_DIR ${OpenCV_LIB_DIR}/../bin)
   get_filename_component(OpenCV_BIN_DIR ${OpenCV_BIN_DIR} ABSOLUTE)
-  
+
   include_directories(${OpenCV_INCLUDE_DIRS})
   set(OPENCV_VER "2410")
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${OpenCV_LIBS}) # Raffi: maybe reduce a bit the number of libraries to link against
   set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}d.dll)
   set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}.dll)
-  
+
   set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}d.dll)
   set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}.dll)
-  
+
   set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}d.dll)
   set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}.dll)
 endif()
-  
+
 
 # Various camera libraries
 if(WIN32)
@@ -626,7 +626,7 @@ if(WIN32)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
-  
+
   # ASI cameras
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
@@ -639,33 +639,33 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/altaircamsdk.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/altaircamsdk.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/Altaircam.dll)
-  
+
   # DsiDevice
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DSCI.dll)
-  
+
   # SBIGUDrv
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
   #set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
-  
+
   # DICAMSDK
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
-  
+
   # SSAGIF
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSAGIFv2.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSAGIFv4.dll)
-  
+
   # FCLib
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/FCAPI.dll)
-  
+
   # SXUSB
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
-  
+
   # astroDLL
   #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLGeneric.dll)
@@ -712,8 +712,8 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
 
   find_path(CARBON_INCLUDE_DIR Carbon.h)
-  
-  
+
+
   #############################################
   # Camera frameworks
   #
@@ -726,7 +726,7 @@ if(APPLE)
   include_directories(${sbigudFramework})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sbigudFramework})
 
-  ### 
+  ###
   find_library( fcCamFramework
                 NAMES fcCamFw
                 PATHS ${thirdparty_dir}/frameworks)
@@ -765,7 +765,7 @@ if(APPLE)
   #############################################
   # libDC
   #
-  
+
   set(LIBDC libdc1394-2.2.2)
   set(libdc_root ${thirdparties_deflate_directory}/${LIBDC})
   if(NOT EXISTS ${libdc_root})
@@ -773,14 +773,14 @@ if(APPLE)
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${LIBDC}.tar.gz
       WORKING_DIRECTORY ${thirdparties_deflate_directory})
-  endif()  
-  
+  endif()
+
 
   set(libdc_include_dir ${libdc_root})
   set(libdc_dir ${libdc_include_dir}/dc1394)
   include_directories(${libdc_dir})
   include_directories(${libdc_include_dir})
-  
+
   set(libDC_SRC
     ${libdc_dir}/dc1394.h
 
@@ -792,36 +792,36 @@ if(APPLE)
 
     ${libdc_dir}/control.c
     ${libdc_dir}/control.h
-    
+
     ${libdc_dir}/conversions.c
     ${libdc_dir}/conversions.h
-        
+
     ${libdc_dir}/enumeration.c
-    
+
     ${libdc_dir}/format7.c
     ${libdc_dir}/format7.h
-    
+
     ${libdc_dir}/internal.c
     ${libdc_dir}/internal.h
-    
+
     ${libdc_dir}/iso.c
     ${libdc_dir}/iso.h
-    
+
     ${libdc_dir}/log.c
     ${libdc_dir}/log.h
-    
+
     ${libdc_dir}/offsets.h
     ${libdc_dir}/platform.h
-    
+
     ${libdc_dir}/register.c
     ${libdc_dir}/register.h
     ${libdc_dir}/types.h
-    
+
     ${libdc_dir}/utils.c
     ${libdc_dir}/utils.h
-    
+
     ${libdc_dir}/video.h
-    
+
     # USB backend
     ${libdc_dir}/usb/capture.c
     ${libdc_dir}/usb/control.c
@@ -835,12 +835,12 @@ if(APPLE)
     ${libdc_dir}/macosx/macosx.h
 
   )
-  
+
   add_library(dc ${libDC_SRC})
   target_include_directories(dc PRIVATE ${thirdparty_dir}/include/${LIBDC})
   set_property(TARGET dc PROPERTY FOLDER "Thirdparty/")
   # the following line generated too many warnings. The macros are already defined in the config.h of this library
-  # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX) 
+  # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
 
 
@@ -852,11 +852,11 @@ if(APPLE)
   #if(NOT EXISTS "${thirdparty_dir}/HID Utilities Source")
   #  # untar the dependency
   #  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${thirdparty_dir}/HID Utilities Source.zip")
-  #endif()  
+  #endif()
 
   # library removed
-  
-  
+
+
   ### does not work on x64
   #find_library( openssag
   #              NAMES openssag
@@ -881,7 +881,7 @@ if(APPLE)
   target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
-    
+
 endif()  # APPLE
 
 
@@ -897,7 +897,7 @@ endif()  # APPLE
 # - Nova (Required by INDI)
 # - USB (commonly shared)
 # - math (libm)
-# - 
+# -
 #
 #############################################
 if(UNIX AND NOT APPLE)
@@ -925,8 +925,8 @@ if(UNIX AND NOT APPLE)
   find_path(ZWO_INCLUDE_DIR ASICamera2.h
     PATHS
     ${PHD_PROJECT_ROOT_DIR}/cameras
-  )  
-  
+  )
+
   find_library(asiCamera2
                 NAMES ASICamera2
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${arch})
@@ -946,7 +946,7 @@ if(UNIX AND NOT APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
   # math library is needed, and should be one of the last things to link to here
-  find_library(mathlib NAMES m)  
+  find_library(mathlib NAMES m)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
   # INDI
@@ -964,11 +964,11 @@ if(UNIX AND NOT APPLE)
   if(INDI_VERSION VERSION_LESS "1.0")
     add_definitions("-DINDI_PRE_1_0_0")
   endif()
-  
+
   # INDI depends on libz
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-  
+
   # INDI depends on libnova
   find_package(Nova REQUIRED)
   include_directories(${NOVA_INCLUDE_DIR})
@@ -976,3 +976,79 @@ if(UNIX AND NOT APPLE)
   add_definitions("-DLIBNOVA")
 
 endif()
+
+
+#############################################
+#
+# gettext and msgmerge tools for documentation/internationalization
+#
+#############################################
+
+# zip file support integrated in cmake 3.2+
+if(WIN32 AND ("${CMAKE_VERSION}" VERSION_GREATER "3.2")
+         AND ("${GETTEXT_ROOT}" STREQUAL ""))
+
+  # GETTEXT_ROOT not given from the command line: deflating our own
+
+  set(GETTEXTTOOLS gettext-0.14.4)
+  set(GETTEXT_ROOT ${thirdparties_deflate_directory}/${GETTEXTTOOLS})
+
+  # deflate
+  if(NOT EXISTS ${GETTEXT_ROOT})
+
+    message(STATUS "Deflating gettexttools from thirdparties to ${GETTEXT_ROOT}")
+    # create directory
+    if(NOT EXISTS ${GETTEXT_ROOT})
+      file(MAKE_DIRECTORY ${GETTEXT_ROOT})
+    endif()
+
+    # untar the dependency
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GETTEXTTOOLS}-bin.zip
+      WORKING_DIRECTORY ${GETTEXT_ROOT})
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GETTEXTTOOLS}-dep.zip
+      WORKING_DIRECTORY ${GETTEXT_ROOT})
+  endif()    
+    
+endif()
+
+set(GETTEXT_FINDPROGRAM_OPTIONS)
+if(NOT ("${GETTEXT_ROOT}" STREQUAL ""))
+  set(GETTEXT_FINDPROGRAM_OPTIONS
+      PATHS ${GETTEXT_ROOT}
+               PATH_SUFFIXES bin
+               DOC "gettext program deflated from the thirdparties"
+               NO_DEFAULT_PATH)
+endif()
+
+find_program(XGETTEXT 
+             NAMES xgettext
+             ${GETTEXT_FINDPROGRAM_OPTIONS})
+
+find_program(MSGFMT
+              NAMES msgfmt
+             ${GETTEXT_FINDPROGRAM_OPTIONS})
+
+find_program(MSGMERGE
+              NAMES msgmerge
+             ${GETTEXT_FINDPROGRAM_OPTIONS})
+
+if(NOT XGETTEXT)
+  message(STATUS "'xgettext' program not found")
+else()
+  message(STATUS "'xgettext' program found at '${XGETTEXT}'")
+endif()
+
+if(NOT MSGFMT)
+  message(STATUS "'msgfmt' program not found")
+else()
+  message(STATUS "'msgfmt' program found at '${MSGFMT}'")
+endif()
+
+if(NOT MSGMERGE)
+  message(STATUS "'msgmerge' program not found")
+else()
+  message(STATUS "'msgmerge' program found at '${MSGMERGE}'")
+endif()
+  
