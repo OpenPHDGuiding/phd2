@@ -657,7 +657,7 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
     double last_variance = 0.0;
     double gear_error_sum = 0.0;
     double variance_sum = 0.0;
-    int grid_size = std::ceil(timestamps(timestamps.size() - 1) / grid_interval) + 1;
+    int grid_size = static_cast<int>(std::ceil(timestamps(timestamps.size() - 1) / grid_interval)) + 1;
     assert(grid_size > 0);
     Eigen::VectorXd reg_timestamps(grid_size);
     Eigen::VectorXd reg_gear_error(grid_size);
@@ -716,7 +716,7 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
 void GaussianProcessGuider::save_gp_data() const
 {
     // write the GP output to a file for easy analyzation
-    int N = get_number_of_measurements();
+    size_t N = get_number_of_measurements();
 
     if (N < 2)
     {
@@ -733,7 +733,7 @@ void GaussianProcessGuider::save_gp_data() const
     Eigen::VectorXd linear_fit(N - 1);
 
     // transfer the data from the circular buffer to the Eigen::Vectors
-    for(size_t i = 0; i < N-1; i++)
+    for (size_t i = 0; i < N-1; i++)
     {
         timestamps(i) = circular_buffer_data_[i].timestamp;
         measurements(i) = circular_buffer_data_[i].measurement;
