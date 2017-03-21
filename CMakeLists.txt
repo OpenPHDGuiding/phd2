@@ -708,10 +708,7 @@ target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(phd2 ${PHD_LINK_EXTERNAL})
 
 # option configurations parts
-if(${GUIDING_GAUSSIAN_PROCESS})
-  target_link_libraries(phd2 MPIIS_GP GPGuider)
-  target_compile_definitions(phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
-endif()
+target_link_libraries(phd2 MPIIS_GP GPGuider)
 
 
 
