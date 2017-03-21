@@ -1,9 +1,16 @@
-//
-//  guide_gaussian_process.cpp
-//  PHD
-//
-//  Created by Stephan Wenninger
-//  Copyright 2014, Max Planck Society.
+/**
+ * PHD2 Guiding
+ *
+ * @file
+ * @date      2014-2017
+ * @copyright Max Planck Society
+ *
+ * @author    Edgar D. Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author    Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
+ * @author    Raffi Enficiaud <raffi.enficiaud@tuebingen.mpg.de>
+ *
+ * @brief     Provides a Gaussian process based guiding algorithm
+ */
 
 /*
 *  This source code is distributed under the following "BSD" license
@@ -32,309 +39,808 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "phd.h"
 
-#include "UDPGuidingInteraction.h"
-#include "tools/circular_buffer.h"
+#include "phd.h"
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
-#include "tools/math_tools.h"
-#include "UDPGuidingInteraction.h"
+#include <ctime>
 
+#include "math_tools.h"
 
-class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialogPane
+#include "math_tools.h"
+#include "gaussian_process.h"
+#include "covariance_functions.h"
+
+/** Default values for the parameters of this algorithm */
+
+static const double DefaultControlGain                   = 0.6; // control gain
+static const double DefaultPeriodLengthsForInference     = 2.0; // minimal number of period lengths for full prediction
+static const double DefaultMinMove                       = 0.2;
+
+static const double DefaultLengthScaleSE0Ker             = 700.0; // length-scale of the long-range SE-kernel
+static const double DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
+static const double DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
+static const double DefaultPeriodLengthPerKer            = 200.0; // P_p, period-length of the periodic kernel
+static const double DefaultSignalVariancePerKer          = 20.0; // signal variance of the periodic kernel
+static const double DefaultLengthScaleSE1Ker             = 25.0; // length-scale of the short-range SE-kernel
+static const double DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
+
+static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengts for PL estimation
+static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
+static const double DefaultPredictionGain                  = 0.5; // amount of GP prediction to blend in
+
+static const bool   DefaultComputePeriod                 = true;
+
+class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
-    GuideGaussianProcess *m_pGuideAlgorithm;
+    GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
+    wxSpinCtrlDouble *m_pMinMove;
+    wxSpinCtrlDouble *m_pPeriodLengthsInference;
+    wxSpinCtrlDouble *m_pPeriodLengthsPeriodEstimation;
+    wxSpinCtrl       *m_pNumPointsApproximation;
+
+    wxSpinCtrlDouble *m_pSE0KLengthScale;
+    wxSpinCtrlDouble *m_pSE0KSignalVariance;
+    wxSpinCtrlDouble *m_pPKLengthScale;
+    wxSpinCtrlDouble *m_pPKPeriodLength;
+    wxSpinCtrlDouble *m_pPKSignalVariance;
+    wxSpinCtrlDouble *m_pSE1KLengthScale;
+    wxSpinCtrlDouble *m_pSE1KSignalVariance;
+    wxSpinCtrlDouble *m_pPredictionGain;
+
+    wxCheckBox       *m_checkboxComputePeriod;
+
+    wxCheckBox       *m_checkboxDarkMode;
+
+    wxCheckBox       *m_checkboxExpertMode;
+
+    wxBoxSizer       *m_pExpertPage;
 
 public:
-    GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
-      : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
+    GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
+      : ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent)
     {
         m_pGuideAlgorithm = pGuideAlgorithm;
 
-        int width = StringWidth(_T("000.00"));
-        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-            wxPoint(-1, -1), wxSize(width, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
-                                              _T("Control Gain"));
-        m_pControlGain->SetDigits(2);
+        int width;
 
+        width = StringWidth(_T("0.00"));
+        m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain, 5);
+        m_pPredictionGain->SetDigits(0);
+        DoAdd(_("Prediction"), m_pPredictionGain,
+            wxString::Format(_("How much of the gear error prediction should be applied? "
+            "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
 
-        //
-        // TODO Add description of the control gain!
-        //
-        DoAdd(_("Control Gain"), m_pControlGain,
-              _("Description of the control gain. Default = 1.0"));
+        width = StringWidth(_T("0.00"));
+        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultControlGain, 5);
+        m_pControlGain->SetDigits(0);
+        DoAdd(_("Aggressiveness"), m_pControlGain,
+            wxString::Format(_("What percent of the measured error should be applied? "
+            "Default = %.f%%, adjust if responding too much or too slowly"), 100 * DefaultControlGain));
+
+        width = StringWidth(_T("0.00"));
+        m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 5.0, DefaultMinMove, 0.01);
+        m_pMinMove->SetDigits(2);
+        DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
+            wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? "
+            "If camera is binned, this is a fraction of the binned pixel size. Note that the movements from "
+            "the prediction are not affected by this. Default = %.2f"), DefaultMinMove));
+
+        width = StringWidth(_T("0000.0"));
+        m_pPKPeriodLength = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 50.0, 2000.0, DefaultPeriodLengthPerKer, 1);
+        m_pPKPeriodLength->SetDigits(2);
+        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("auto"));
+        DoAdd(_("Period Length"), m_pPKPeriodLength,
+            wxString::Format(_("The period length (in seconds) of the periodic error component that should be "
+            "corrected. Default = %.2f"), DefaultPeriodLengthPerKer), m_checkboxComputePeriod);
+
+        // create the expert options page
+        m_pExpertPage = new wxBoxSizer(wxVERTICAL);
+
+        width = StringWidth(_T("0000"));
+        m_pNumPointsApproximation = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 2000, DefaultNumPointsForApproximation);
+        m_pExpertPage->Add(MakeLabeledControl(_("Approximation Data Points"), m_pNumPointsApproximation,
+            wxString::Format(_("Number of data points used in the approximation. Both prediction accuracy "
+            "as well as runtime rise with the number of datapoints. Default = %d"), DefaultNumPointsForApproximation)));
+
+        width = StringWidth(_T("0.00"));
+        m_pPeriodLengthsInference = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForInference, 0.1);
+        m_pPeriodLengthsInference->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Prediction)"), m_pPeriodLengthsInference,
+            wxString::Format(_("Minimal number of worm cycles needed to use the prediction. "
+            "If there are too little data points, the prediction might be poor. "
+            "Default = %.2f"), DefaultPeriodLengthsForInference)));
+
+        width = StringWidth(_T("0000"));
+        m_pPeriodLengthsPeriodEstimation = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForPeriodEstimation, 0.1);
+        m_pPeriodLengthsPeriodEstimation->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Period Estimation)"), m_pPeriodLengthsPeriodEstimation,
+            wxString::Format(_("Minimal number of worm cycles for estimating the period length. "
+            "If there are too little data points, the estimation might not work. Default = %d"),
+            DefaultPeriodLengthsForPeriodEstimation)));
+
+        width = StringWidth(_T("0000.0"));
+        m_pSE0KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 100.0, 5000.0, DefaultLengthScaleSE0Ker, 10.0);
+        m_pSE0KLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Long Range)"), m_pSE0KLengthScale,
+            wxString::Format(_("The length scale (in seconds) of the large non-periodic structure. "
+            "This is essentially a high-pass filter for the periodic error and the length scale "
+            "defines the corner frequency. Default = %.2f"),
+            DefaultLengthScaleSE0Ker)));
+
+        width = StringWidth(_T("000.0"));
+        m_pSE0KSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE0Ker, 1.0);
+        m_pSE0KSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Long Range)"), m_pSE0KSignalVariance,
+            wxString::Format(_("Signal variance (in pixels) of the long-term variations. Default = %.2f"), DefaultSignalVarianceSE0Ker)));
+
+        width = StringWidth(_T("000.0"));
+        m_pPKLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 50.0, DefaultLengthScalePerKer, 5.0);
+        m_pPKLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Periodic)"), m_pPKLengthScale,
+            wxString::Format(_("The length scale (in seconds) defines the \"wigglyness\" of the periodic structure. "
+            "The smaller the length scale, the more structure can be learned. If chosen too "
+            "small, some non-periodic structure might be picked up as well. Default = %.2f"), DefaultLengthScalePerKer)));
+
+        width = StringWidth(_T("000.0"));
+        m_pPKSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVariancePerKer, 0.1);
+        m_pPKSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Periodic)"), m_pPKSignalVariance,
+            wxString::Format(_("The signal variance (in pixels) of the periodic error. "
+            "Default = %.2f"), DefaultSignalVariancePerKer)));
+
+        width = StringWidth(_T("000.0"));
+        m_pSE1KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, DefaultLengthScaleSE1Ker, 1.0);
+        m_pSE1KLengthScale->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Short Range)"), m_pSE1KLengthScale,
+            wxString::Format(_("Length scale (in seconds) of the short range non-periodic parts "
+            "of the gear error. This is essentially a low-pass filter for the periodic error and the length "
+            "scale defines the corner frequency. Default = %.2f"), DefaultLengthScaleSE1Ker)));
+
+        width = StringWidth(_T("000.0"));
+        m_pSE1KSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE1Ker, 0.1);
+        m_pSE1KSignalVariance->SetDigits(2);
+        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Short Range)"), m_pSE1KSignalVariance,
+            wxString::Format(_("Signal variance (in pixels) of the short-term variations. Default = %.2f"), DefaultSignalVarianceSE1Ker)));
+
+        m_checkboxExpertMode = new wxCheckBox(pParent, wxID_ANY, _T(""));
+        pParent->Connect(m_checkboxExpertMode->GetId(), wxEVT_CHECKBOX,
+            wxCommandEventHandler(GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane::EnableExpertMode),
+            0, this);
+        DoAdd(_("Show expert options"), m_checkboxExpertMode, _("Shows the expert options for tuning the predictions. "
+            "Use at your own risk!"));
+
+        m_checkboxDarkMode = new wxCheckBox(pParent, wxID_ANY, "");
+        m_pExpertPage->Add(MakeLabeledControl(_("Dark Guiding Mode"), m_checkboxDarkMode,
+            _("Disables the use of the measurements, useful only for testing.")));
+
+        // add expert options to the main options
+        DoAdd(m_pExpertPage);
     }
 
-    virtual ~GuideGaussianProcessDialogPane(void) 
-    {}
+    virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
+    {
+      // no need to destroy the widgets, this is done by the parent...
+    }
 
-    /* Fill the GUI with the parameters that are currently chosen in the
-      * guiding algorithm
-      */
+    /* Fill the GUI with the parameters that are currently configured in the
+     * guiding algorithm.
+     */
     virtual void LoadValues(void)
     {
-      m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
+        m_pControlGain->SetValue(100 * m_pGuideAlgorithm->GetControlGain());
+        m_pPredictionGain->SetValue(100 * m_pGuideAlgorithm->GetPredictionGain());
+        m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+        m_pPeriodLengthsInference->SetValue(m_pGuideAlgorithm->GetPeriodLengthsInference());
+        m_pPeriodLengthsPeriodEstimation->SetValue(m_pGuideAlgorithm->GetPeriodLengthsPeriodEstimation());
+        m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
+
+        std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
+        assert(hyperparameters.size() == NumParameters);
+
+        m_pSE0KLengthScale->SetValue(hyperparameters[SE0KLengthScale]);
+        m_pSE0KSignalVariance->SetValue(hyperparameters[SE0KSignalVariance]);
+        m_pPKLengthScale->SetValue(hyperparameters[PKLengthScale]);
+        m_pPKSignalVariance->SetValue(hyperparameters[PKSignalVariance]);
+        m_pSE1KLengthScale->SetValue(hyperparameters[SE1KLengthScale]);
+        m_pSE1KSignalVariance->SetValue(hyperparameters[SE1KSignalVariance]);
+        m_pPKPeriodLength->SetValue(hyperparameters[PKPeriodLength]);
+
+        m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
+
+        m_pExpertPage->ShowItems(m_pGuideAlgorithm->GetExpertMode());
+        m_pExpertPage->Layout();
+        m_pParent->Layout();
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
     virtual void UnloadValues(void)
     {
-      m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
+        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100);
+        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100);
+        m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+        m_pGuideAlgorithm->SetPeriodLengthsInference(m_pPeriodLengthsInference->GetValue());
+        m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());
+        m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
+
+        std::vector<double> hyperparameters(NumParameters);
+
+        hyperparameters[SE0KLengthScale] = m_pSE0KLengthScale->GetValue();
+        hyperparameters[SE0KSignalVariance] = m_pSE0KSignalVariance->GetValue();
+        hyperparameters[PKLengthScale] = m_pPKLengthScale->GetValue();
+        hyperparameters[PKSignalVariance] = m_pPKSignalVariance->GetValue();
+        hyperparameters[SE1KLengthScale] = m_pSE1KLengthScale->GetValue();
+        hyperparameters[SE1KSignalVariance] = m_pSE1KSignalVariance->GetValue();
+        hyperparameters[PKPeriodLength] = m_pPKPeriodLength->GetValue();
+
+        m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
+        m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
+
+        m_pGuideAlgorithm->SetExpertMode(m_checkboxExpertMode->GetValue());
     }
 
+    virtual void EnableExpertMode(wxCommandEvent& evt)
+    {
+        m_pExpertPage->ShowItems(evt.IsChecked());
+        m_pExpertPage->Layout();
+        m_pParent->Layout();
+    }
 };
 
 
-
-// parameters of the GP guiding algorithm
-struct GuideGaussianProcess::gp_guide_parameters
+GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
+    : GuideAlgorithm(pMount, axis), GPG(0)
 {
-    UDPGuidingInteraction udpInteraction;
-    CircularDoubleBuffer timestamps_;
-    CircularDoubleBuffer measurements_;
-    CircularDoubleBuffer modified_measurements_;
-    wxStopWatch timer_;
-    double control_signal_;
-    int number_of_measurements_;
-    double control_gain_;
-    double elapsed_time_ms_;
+    // create guide parameters, load default values at first
+    GaussianProcessGuider::guide_parameters parameters;
+    parameters.control_gain_ = DefaultControlGain;
+    parameters.min_periods_for_inference_ = DefaultPeriodLengthsForInference;
+    parameters.min_move_ = DefaultMinMove;
+    parameters.SE0KLengthScale_ = DefaultLengthScaleSE0Ker;
+    parameters.SE0KSignalVariance_ = DefaultSignalVarianceSE0Ker;
+    parameters.PKLengthScale_ = DefaultLengthScalePerKer;
+    parameters.PKPeriodLength_ = DefaultPeriodLengthPerKer;
+    parameters.PKSignalVariance_ = DefaultSignalVariancePerKer;
+    parameters.SE1KLengthScale_ = DefaultLengthScaleSE1Ker;
+    parameters.SE1KSignalVariance_ = DefaultSignalVarianceSE1Ker;
+    parameters.min_periods_for_period_estimation_ = DefaultPeriodLengthsForPeriodEstimation;
+    parameters.points_for_approximation_ = DefaultNumPointsForApproximation;
+    parameters.prediction_gain_ = DefaultPredictionGain;
+    parameters.compute_period_ = DefaultComputePeriod;
 
-    gp_guide_parameters() :
-      udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
-      timestamps_(100),
-      measurements_(100),
-      modified_measurements_(100),
-      timer_(),
-      control_signal_(0.0),
-      number_of_measurements_(0),
-      elapsed_time_ms_(0.0)
-    {
+    // create instance of the worker
+    GPG = new GaussianProcessGuider(parameters);
 
-    }
-
-
-
-    void clear()
-    {
-        timestamps_.clear();
-        measurements_.clear();
-        modified_measurements_.clear();
-        number_of_measurements_ = 0;
-    }
-
-};
-
-
-
-
-static const double DefaultControlGain = 1.0;
-
-GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis),
-      parameters(0)
-{
-    parameters = new gp_guide_parameters();
     wxString configPath = GetConfigPath();
-    double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain", DefaultControlGain);
+
+    double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_control_gain", DefaultControlGain);
     SetControlGain(control_gain);
 
+    double min_move = pConfig->Profile.GetDouble(configPath + "/gp_min_move", DefaultMinMove);
+    SetMinMove(min_move);
+
+    double period_lengths_for_inference = pConfig->Profile.GetDouble(configPath + "/gp_period_lengths_inference", DefaultPeriodLengthsForInference);
+    SetPeriodLengthsInference(period_lengths_for_inference);
+
+    double period_lengths_for_period_estimation = pConfig->Profile.GetDouble(configPath + "/gp_period_lengths_period_estimation", DefaultPeriodLengthsForPeriodEstimation);
+    SetPeriodLengthsPeriodEstimation(period_lengths_for_period_estimation);
+
+    int num_points_approximation = pConfig->Profile.GetInt(configPath + "/gp_points_for_approximation", DefaultNumPointsForApproximation);
+    SetNumPointsForApproximation(num_points_approximation);
+
+    double prediction_gain = pConfig->Profile.GetDouble(configPath + "/gp_prediction_gain", DefaultPredictionGain);
+    SetPredictionGain(prediction_gain);
+
+    std::vector<double> v_hyperparameters(NumParameters);
+    v_hyperparameters[SE0KLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se0_kern",  DefaultLengthScaleSE0Ker);
+    v_hyperparameters[SE0KSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se0_kern",        DefaultSignalVarianceSE0Ker);
+    v_hyperparameters[PKLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_per_kern",  DefaultLengthScalePerKer);
+    v_hyperparameters[PKSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_per_kern",        DefaultSignalVariancePerKer);
+    v_hyperparameters[SE1KLengthScale] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se1_kern",  DefaultLengthScaleSE1Ker);
+    v_hyperparameters[SE1KSignalVariance] = pConfig->Profile.GetDouble(configPath + "/gp_sigvar_se1_kern",        DefaultSignalVarianceSE1Ker);
+    v_hyperparameters[PKPeriodLength] = pConfig->Profile.GetDouble(configPath + "/gp_period_per_kern",        DefaultPeriodLengthPerKer);
+
+    SetGPHyperparameters(v_hyperparameters);
+
+    bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
+    SetBoolComputePeriod(compute_period);
+
+    dark_tracking_mode_ = false; // dark tracking mode ignores measurements
+    SetExpertMode(false); // expert mode exposes the GP hyperparameters
     reset();
 }
 
-GuideGaussianProcess::~GuideGaussianProcess(void)
+GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
 {
-  delete parameters;
+    delete GPG;
 }
 
 
-ConfigDialogPane *GuideGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
+ConfigDialogPane *GuideAlgorithmGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
 {
-    return new GuideGaussianProcessDialogPane(pParent, this);
+    return new GuideAlgorithmGaussianProcessDialogPane(pParent, this);
 }
 
-
-
-bool GuideGaussianProcess::SetControlGain(double control_gain)
+bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
 {
     bool error = false;
 
-    try 
+    try
     {
-        if (control_gain < 0) 
+        if (control_gain < 0)
         {
             throw ERROR_INFO("invalid controlGain");
         }
-
-        parameters->control_gain_ = control_gain;
     }
-    catch (wxString Msg) 
+    catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->control_gain_ = DefaultControlGain;
+        control_gain = DefaultControlGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/controlGain", parameters->control_gain_);
+    GPG->SetControlGain(control_gain);
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_control_gain", control_gain);
 
     return error;
 }
 
-double GuideGaussianProcess::GetControlGain()
+bool GuideAlgorithmGaussianProcess::SetMinMove(double min_move)
 {
-    return parameters->control_gain_;
+    bool error = false;
+
+    try
+    {
+        if (min_move < 0)
+        {
+            throw ERROR_INFO("invalid minimum move");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        min_move = DefaultMinMove;
+    }
+
+    GPG->SetMinMove(min_move);
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_min_move", min_move);
+
+    return error;
 }
 
-wxString GuideGaussianProcess::GetSettingsSummary()
+bool GuideAlgorithmGaussianProcess::SetPeriodLengthsInference(double num_periods)
 {
-    return wxString::Format("Control Gain = %.3f\n", GetControlGain());
+    bool error = false;
+
+    try
+    {
+        if (num_periods < 0.0)
+        {
+            throw ERROR_INFO("invalid number of elements");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        num_periods = DefaultPeriodLengthsForInference;
+    }
+
+    GPG->SetPeriodLengthsInference(num_periods);
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_lengths_inference", num_periods);
+
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetPeriodLengthsPeriodEstimation(double num_periods)
+{
+    bool error = false;
+
+    try
+    {
+        if (num_periods < 0.0)
+        {
+            throw ERROR_INFO("invalid number of period lengths");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        num_periods = DefaultPeriodLengthsForPeriodEstimation;
+    }
+
+    GPG->SetPeriodLengthsPeriodEstimation(num_periods);
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_lengths_period_estimation", num_periods);
+
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
+{
+    bool error = false;
+
+    try
+    {
+        if (num_points < 0)
+        {
+            throw ERROR_INFO("invalid number of points");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        num_points = DefaultNumPointsForApproximation;
+    }
+
+    GPG->SetNumPointsForApproximation(num_points);
+
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_points_approximation", num_points);
+
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyperparameters)
+{
+    if(hyperparameters.size() != NumParameters)
+        return false;
+
+    bool error = false;
+
+    // we do this check in sequence: maybe there would be additional checks on this later.
+
+    // length scale short SE kernel
+    try
+    {
+      if (hyperparameters[SE0KLengthScale] < 1.0) // zero length scale is unstable
+      {
+        throw ERROR_INFO("invalid length scale for short SE kernel");
+      }
+    }
+    catch (wxString Msg)
+    {
+      POSSIBLY_UNUSED(Msg);
+      error = true;
+      hyperparameters[SE0KLengthScale] = DefaultLengthScaleSE0Ker;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se0_kern", hyperparameters[SE0KLengthScale]);
+
+    // signal variance short SE kernel
+    try
+    {
+      if (hyperparameters[SE0KSignalVariance] < 0.0)
+      {
+        throw ERROR_INFO("invalid signal variance for the short SE kernel");
+      }
+    }
+    catch (wxString Msg)
+    {
+      POSSIBLY_UNUSED(Msg);
+      error = true;
+      hyperparameters[SE0KSignalVariance] = DefaultSignalVarianceSE0Ker;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se0_kern", hyperparameters[SE0KSignalVariance]);
+
+    // length scale periodic kernel
+    try
+    {
+        if (hyperparameters[PKLengthScale] < 1.0) // zero length scale is unstable
+        {
+            throw ERROR_INFO("invalid length scale for periodic kernel");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[PKLengthScale] = DefaultLengthScalePerKer;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_per_kern", hyperparameters[PKLengthScale]);
+
+    // signal variance periodic kernel
+    try
+    {
+        if (hyperparameters[PKSignalVariance] < 0.0)
+        {
+            throw ERROR_INFO("invalid signal variance for the periodic kernel");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[PKSignalVariance] = DefaultSignalVariancePerKer;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_per_kern", hyperparameters[PKSignalVariance]);
+
+
+    // length scale long SE kernel
+    try
+    {
+        if (hyperparameters[SE1KLengthScale] < 1.0) // zero length scale is unstable
+        {
+            throw ERROR_INFO("invalid length scale for SE kernel");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[SE1KLengthScale] = DefaultLengthScaleSE1Ker;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se1_kern", hyperparameters[SE1KLengthScale]);
+
+    // signal variance SE kernel
+    try
+    {
+        if (hyperparameters[SE1KSignalVariance] < 0.0)
+        {
+            throw ERROR_INFO("invalid signal variance for the SE kernel");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[SE1KSignalVariance] = DefaultSignalVarianceSE1Ker;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se1_kern", hyperparameters[SE1KSignalVariance]);
+
+    // period length periodic kernel
+    try
+    {
+      if (hyperparameters[PKPeriodLength] < 1.0) // zero period length is unstable
+      {
+        throw ERROR_INFO("invalid period length for periodic kernel");
+      }
+    }
+    catch (wxString Msg)
+    {
+      POSSIBLY_UNUSED(Msg);
+      error = true;
+      hyperparameters[PKPeriodLength] = DefaultPeriodLengthPerKer;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", hyperparameters[PKPeriodLength]);
+
+    GPG->SetGPHyperparameters(hyperparameters);
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
+{
+    bool error = false;
+
+    try
+    {
+        if (prediction_gain < 0 || prediction_gain > 1.0)
+        {
+            throw ERROR_INFO("invalid prediction gain");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        prediction_gain = DefaultPredictionGain;
+    }
+
+    GPG->SetPredictionGain(prediction_gain);
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_prediction_gain", prediction_gain);
+
+    return error;
+}
+
+bool GuideAlgorithmGaussianProcess::SetBoolComputePeriod(bool active)
+{
+  GPG->SetBoolComputePeriod(active);
+  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", active);
+  return true;
+}
+
+double GuideAlgorithmGaussianProcess::GetControlGain() const
+{
+    return GPG->GetControlGain();
+}
+
+double GuideAlgorithmGaussianProcess::GetMinMove() const
+{
+    return GPG->GetMinMove();
+}
+
+double GuideAlgorithmGaussianProcess::GetPeriodLengthsInference() const
+{
+    return GPG->GetPeriodLengthsInference();
+}
+
+double GuideAlgorithmGaussianProcess::GetPeriodLengthsPeriodEstimation() const
+{
+    return GPG->GetPeriodLengthsPeriodEstimation();
+}
+
+int GuideAlgorithmGaussianProcess::GetNumPointsForApproximation() const
+{
+    return GPG->GetNumPointsForApproximation();
+}
+
+std::vector<double> GuideAlgorithmGaussianProcess::GetGPHyperparameters() const
+{
+    return GPG->GetGPHyperparameters();
+}
+
+double GuideAlgorithmGaussianProcess::GetPredictionGain() const
+{
+    return GPG->GetPredictionGain();
+}
+
+bool GuideAlgorithmGaussianProcess::GetBoolComputePeriod() const
+{
+    return GPG->GetBoolComputePeriod();
+}
+
+bool GuideAlgorithmGaussianProcess::GetDarkTracking()
+{
+    return dark_tracking_mode_;
+}
+
+bool GuideAlgorithmGaussianProcess::SetDarkTracking(bool value)
+{
+    dark_tracking_mode_ = value;
+    return false;
+}
+
+bool GuideAlgorithmGaussianProcess::GetExpertMode()
+{
+    return expert_mode_;
+}
+
+bool GuideAlgorithmGaussianProcess::SetExpertMode(bool value)
+{
+    expert_mode_ = value;
+    return false;
+}
+
+wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
+{
+    static const char* format =
+      "Control gain = %.3f\n"
+      "Prediction gain = %.3f\n"
+      "Minimum move = %.3f\n"
+      "Hyperparameters\n"
+      "\tLength scale long range SE kernel = %.3f\n"
+      "\tSignal variance long range SE kernel = %.3f\n"
+      "\tLength scale periodic kernel = %.3f\n"
+      "\tSignal variance periodic kernel = %.3f\n"
+      "\tLength scale short range SE kernel = %.3f\n"
+      "\tSignal variance short range SE kernel = %.3f\n"
+      "\tPeriod length periodic kernel = %.3f\n"
+      "FFT called after = %.3f worm cycles\n"
+    ;
+
+    std::vector<double> hyperparameters = GetGPHyperparameters();
+
+    return wxString::Format(
+      format,
+      GetControlGain(),
+      GetPredictionGain(),
+      GetMinMove(),
+      hyperparameters[SE0KLengthScale],
+      hyperparameters[SE0KSignalVariance],
+      hyperparameters[PKLengthScale],
+      hyperparameters[PKSignalVariance],
+      hyperparameters[SE1KLengthScale],
+      hyperparameters[SE1KSignalVariance],
+      hyperparameters[PKPeriodLength],
+      GetPeriodLengthsPeriodEstimation());
 }
 
 
-
-GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm(void)
 {
     return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
 }
 
-void GuideGaussianProcess::HandleTimestamps()
+double GuideAlgorithmGaussianProcess::result(double input)
 {
-    if (parameters->number_of_measurements_ == 0)
+    if (dark_tracking_mode_ == true)
     {
-        parameters->timer_.Start();
+        return deduceResult();
     }
-    double time_now = parameters->timer_.Time();
-    double delta_measurement_time_ms = time_now - parameters->elapsed_time_ms_;
-    parameters->elapsed_time_ms_ = time_now;
-    parameters->timestamps_.append(parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2);
+
+    // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
+    double control_signal = GPG->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
+
+    Debug.AddLine(wxString::Format("Predictive PEC Guider: input: %f, control: %f, exposure: %f",
+        input, control_signal, (double) pFrame->RequestedExposureDuration()/1000.0));
+
+    return control_signal;
 }
 
-void GuideGaussianProcess::HandleMeasurements(double input)
+double GuideAlgorithmGaussianProcess::deduceResult()
 {
-    parameters->measurements_.append(input);
+    double control_signal = GPG->deduceResult((double) pFrame->RequestedExposureDuration()/1000.0);
+
+    Debug.AddLine(wxString::Format("Predictive PEC Guider (deduced): control: %f, exposure: %f", control_signal,
+        (double) pFrame->RequestedExposureDuration()/1000.0));
+
+    return control_signal;
 }
 
-void GuideGaussianProcess::HandleModifiedMeasurements(double input)
+void GuideAlgorithmGaussianProcess::reset()
 {
-    // If there is no previous measurement, a random one is generated.
-    if(parameters->number_of_measurements_ == 0)
-    {
-        //The daytime indoor measurement noise SD is 0.25-0.35
-        double indoor_noise_standard_deviation = 0.25;
-        double first_random_measurement = indoor_noise_standard_deviation *
-            math_tools::generate_normal_random_double();
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            first_random_measurement * (1 - parameters->control_gain_) -
-            input;
-        parameters->modified_measurements_.append(new_modified_measurement);
-    }
-    else
-    {
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            parameters->measurements_.getSecondLastElement() * (1 - parameters->control_gain_) -
-            parameters->measurements_.getLastElement();
-        parameters->modified_measurements_.append(new_modified_measurement);
-    }
+    GPG->reset();
 }
 
-double GuideGaussianProcess::result(double input)
+void GuideAlgorithmGaussianProcess::GuidingStopped(void)
 {
-    HandleTimestamps();
-    HandleMeasurements(input);
-    HandleModifiedMeasurements(input);
-    parameters->number_of_measurements_++;
+    // need to store the estimated period length in case the user exits the application
+    double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
-    /*
-     * Need to read this value here because it is not loaded at the construction
-     * time of this object.
-     * 
-     *
-     * Not used when testing the Code with Matlab, will be used in the actual GP
-     */
-    double delta_controller_time_ms = pFrame->RequestedExposureDuration();
-
-
-
-    // This is the Code sending the circular buffers to Matlab:
-
-    double* timestamp_data = parameters->timestamps_.getEigenVector()->data();
-    double* modified_measurement_data = parameters->modified_measurements_.getEigenVector()->data();
-    double result;
-    double wait_time = 100;
-
-    bool sent = false;
-    bool received = false;
-
-    // Send the input
-    double input_buf[] = { input };
-    sent = parameters->udpInteraction.SendToUDPPort(input_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send the size of the buffer
-    double size = parameters->timestamps_.getEigenVector()->size();
-    double size_buf[] = { size };
-    sent = parameters->udpInteraction.SendToUDPPort(size_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send modified measurements
-    sent = parameters->udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send timestamps
-    sent = parameters->udpInteraction.SendToUDPPort(timestamp_data, size * 8);
-    // Receive the final control signal
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
-
-    return result;
-
-
-    /*
-     * This is the code running the actual GP
-     *
-     * TODO: 
-     * - Let GP class be a member of this Guiding Class
-     * - Call the GP´s BFGS Optimizer every once in a while (how often?)
-     *
-     */
-
-
-    /*
-
-    if (number_of_measurements_ > 5)
-    {
-
-        // Inference
-        gp_->infer(*timestamps_.getEigenVector(),
-                   *modified_measurements_.getEigenVector());
-        // Prediction of new control_signal_
-        Eigen::VectorXd prediction =
-            gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
-            control_gain_ * input / delta_controller_time_ms;
-        control_signal_ = prediction(0);
-
-    }
-    else
-    {
-        // Simpler prediction when there are not enough data points for the GP
-        control_signal_ = -input / delta_controller_time_ms;
-    }
-
-    return control_signal_;
-
-     */
+    reset(); // reset is only done on a complete stop
 }
 
-
-void GuideGaussianProcess::reset()
+void GuideAlgorithmGaussianProcess::GuidingPaused(void)
 {
-    parameters->clear();
-    return;
+}
+
+void GuideAlgorithmGaussianProcess::GuidingResumed(void)
+{
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
+{
+    CalibrationDetails calDetails;
+    m_pMount->GetCalibrationDetails(&calDetails);
+
+    double guide_speed = 1.0; // normalized to 15 a-s per second
+                              // 1.0 means 15 a-s/sec,
+                              // 0.5 means 7.5 a-s/sec, etc.
+
+    if (calDetails.raGuideSpeed != -1.0)
+    {
+        // raGuideSpeed is stored in a-s per hour.
+        // We want to normalize relative to the sideral 15 a-s per second.
+        guide_speed = 3600.0 * calDetails.raGuideSpeed / 15.0; // normalize!
+    }
+
+    // the guide rate here is normalized to seconds and adjusted for the speed
+    double guide_rate = 1000 * m_pMount->xRate() / guide_speed;
+
+    // just hand it on to the guide algorithm, and pass the RA rate
+    GPG->GuidingDithered(amt, guide_rate);
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)
+{
+    // just hand it on to the guide algorithm
+    GPG->GuidingDitherSettleDone(success);
 }

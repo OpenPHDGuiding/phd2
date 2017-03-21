@@ -36,6 +36,8 @@
 #ifndef CIRCBUF_INCLUDED
 #define CIRCBUF_INCLUDED
 
+#include <cassert>
+
 template<typename T>
 class circular_buffer
 {

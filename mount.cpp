@@ -128,12 +128,10 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
 
-        wxString xAlgorithms[] = 
+        wxString xAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
-#endif
+            _("Predictive PEC"),
         };
 
         width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -167,12 +165,9 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 
-        wxString yAlgorithms[] = 
+        wxString yAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
-#endif
         };
         width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
@@ -279,6 +274,10 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
@@ -295,6 +294,10 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::LoadValues(void)
@@ -494,12 +497,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             case GUIDE_ALGORITHM_RESIST_SWITCH:
                 *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
                 break;
-            
-    #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-                *ppAlgorithm = new GuideGaussianProcess(mount, axis);
+                *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
                 break;
-    #endif
 
             default:
                 throw ERROR_INFO("invalid guideAlgorithm");
@@ -1496,7 +1496,8 @@ wxString Mount::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
-        _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+        _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
+        _T("Predictive PEC")
     };
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
