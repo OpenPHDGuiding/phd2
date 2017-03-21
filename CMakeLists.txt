@@ -28,8 +28,8 @@
 
 # File created by Raffi Enficiaud
 
-cmake_minimum_required(VERSION 2.8.11)
-
+cmake_minimum_required(VERSION 3.2)
+enable_language(C CXX)
 
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
@@ -51,17 +51,20 @@ add_custom_target(CmakeAdditionalFiles
   ${phd_src_dir}/cmake_modules/FindINDI.cmake
   ${phd_src_dir}/cmake_modules/FindNova.cmake
   ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake
-  ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake)
+  ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake
+  ${phd_src_dir}/cmake_modules/compiler_options.cmake
+  ${phd_src_dir}/cmake_modules/PHD2Packaging.cmake)
 
-# declare useful functions
+# compiler options
+include(cmake_modules/compiler_options.cmake)
+
+# declare useful functions about documentation
 include(cmake_modules/PHD2BuildDoc.cmake)
 
 # retrieves the version from the source file
 get_phd_version()
 message(STATUS "PHD2 version '${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}' (extracted from source)")
 
-# generates the documentation targets
-generate_doc_targets()
 
 
 
@@ -71,19 +74,6 @@ generate_doc_targets()
 #################################################################################
 #
 # general defines
-if(APPLE)
-  # should be done *before* declaring project.
-  set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "build architecture for OSX" FORCE)
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -m32"   CACHE STRING "Flags used by the compiler during all build types")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32" CACHE STRING "Flags used by the compiler during all build types")
-  set(CMAKE_MACOSX_RPATH TRUE)
-endif()
-
-# this must appear very early in the file
-if(WIN32)
-  set(CMAKE_GENERATOR_TOOLSET "v120_xp" CACHE STRING "Platform Toolset" FORCE)
-endif()
-
 if(UNIX AND NOT APPLE)
   if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "PHD2 install path" FORCE)
@@ -104,53 +94,17 @@ project(phd2)
 enable_testing()
 
 
-
-
-
-
-
-# build type, by default to release (with optimisations)
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-# compiler capabilities
-include(CheckCXXCompilerFlag)
-if(WIN32)
-  set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
-  #set(CMAKE_LIBRARY_ARCHITECTURE x86)
-else()
-  # c++11 options
-  check_cxx_compiler_flag(-std=c++11 HAS_CXX11_FLAG)
-  check_cxx_compiler_flag(-std=c++0x HAS_CXX0X_FLAG)
-
-  if(HAS_CXX11_FLAG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  elseif(HAS_CXX0X_FLAG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  endif()
-
-  if(APPLE)
-    check_cxx_compiler_flag(-stdlib=libc++ HAS_LIBCXX11_FLAG)
-
-    if(HAS_LIBCXX11_FLAG)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    endif()
-  endif()
-endif()
-
-
-
-
 #################################################################################
 #
 # external libraries
 # to be changed in add_subdirectory
 include(thirdparty/thirdparty.cmake)
 
+
+#################################################################################
+#
+# generates the documentation targets
+generate_doc_targets()
 
 
 
@@ -161,8 +115,11 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
 
+#################################################################################
+#
+# Global include directories
 # WxWidgets inclusion narrowed to PHD2 project only
-#include_directories(${wxWidgets_INCLUDE_DIRS})
+# include_directories(${wxWidgets_INCLUDE_DIRS})
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
 include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
@@ -721,8 +678,6 @@ else()
 endif()
 
 
-
-
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
@@ -737,101 +692,4 @@ target_link_libraries(phd2
 #
 # Installation and packaging
 #
-
-SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
-SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
-SET(CPACK_PACKAGE_VENDOR "PHD2 team")
-
-string(TIMESTAMP cdate "%Y%m%d%H%M%S" UTC)
-site_name(HOST_NAME)
-
-if(WIN32)
-  install (TARGETS phd2 RUNTIME DESTINATION .)
-  install (FILES ${PHD_COPY_EXTERNAL_ALL} DESTINATION . )
-  if (CMAKE_BUILD_TYPE MATCHES Release)
-    install (FILES ${PHD_COPY_EXTERNAL_REL} DESTINATION . )
-  else()
-    install (FILES ${PHD_COPY_EXTERNAL_DBG} DESTINATION . )
-  endif()
-  install (FILES ${phd_src_dir}/README-PHD2.txt DESTINATION . )
-  install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION . )
-  install (DIRECTORY ${phd_src_dir}/locale DESTINATION . )
-  
-  # Make NSIS package
-  set(CPACK_GENERATOR "NSIS")
-  set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-win32")
-  set(CPACK_PACKAGE_INSTALL_DIRECTORY "PHDGuiding2")
-  set(CPACK_NSIS_EXECUTABLES_DIRECTORY .)
-  set(CPACK_NSIS_MENU_LINKS "phd2.exe" "PHD Guiding 2")
-  set(CPACK_PACKAGE_DESCRIPTION_FILE "${phd_src_dir}/README-PHD2.txt")
-  set(CPACK_RESOURCE_FILE_README "${phd_src_dir}/README-PHD2.txt")
-  set(CPACK_RESOURCE_FILE_LICENSE "${phd_src_dir}/LICENSE.txt")
-
-endif()
-
-if(UNIX AND NOT APPLE)
-  install (TARGETS phd2 RUNTIME DESTINATION bin)
-  install (FILES ${phd_src_dir}/icons/phd2_48.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ RENAME "phd2.png")
-  install (FILES ${phd_src_dir}/phd2.desktop      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
-  install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/ )
-
-
-  # install language help files
-  set(locales_help     de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
-  set(locales_help_msg de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
-  list(LENGTH locales_help _len)
-  math(EXPR _len "${_len} - 1")
-  foreach(_index RANGE ${_len})
-
-    list(GET locales_help       ${_index} _var1)
-    list(GET locales_help_msg   ${_index} _var2)
-
-    install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip
-            DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/
-            OPTIONAL)
-
-    install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo
-             DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/
-             RENAME "phd2.mo"
-             OPTIONAL)
-
-  endforeach()
-
-  # Make Debian package
-  set(CPACK_GENERATOR "DEB")
-  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PHD2 team https://github.com/OpenPHDGuiding/phd2")
-  # get package information
-  if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm(.*)")
-    set(debarch "armhf")
-  else()
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      set(debarch "amd64")
-    else()
-      set(debarch "i386")
-    endif()
-  endif()
-  # package name is lowercase short name
-  set(CPACK_DEBIAN_PACKAGE_NAME "phd2")
-  # architecture use debian terminology
-  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${debarch}")
-  # version control compatible version name < ppa name to allow further upgrade
-  set(CPACK_DEBIAN_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.0${HOST_NAME}")
-  # set version and arch compatible file name
-  set(CPACK_PACKAGE_FILE_NAME "phd2_${CPACK_DEBIAN_PACKAGE_VERSION}_${debarch}")
-  # Ubuntu 14.04 compatible minimal dependency
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.17), libgcc1 (>= 1:4.1.1), indi-bin (>= 0.9.7), libnova-0.14-0, libstdc++6 (>= 4.2.1), libusb-1.0-0 (>= 2:1.0.8), libwxbase3.0-0 (>= 3.0.0), libwxgtk3.0-0 (>=3.0.0), libx11-6, zlib1g (>= 1:1.1.4)")
-  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "PHD2 auto-guiding software")
-  # same section as many astronomy packages
-  set(CPACK_DEBIAN_PACKAGE_SECTION "education")
-  set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-endif()
-
-if(APPLE)
-  install(TARGETS phd2 RUNTIME DESTINATION . BUNDLE DESTINATION .)
-  set(CPACK_GENERATOR "ZIP" "DragNDrop")
-  set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-Darwin")
-endif()
-
-include(CPack)
-
+include(cmake_modules/PHD2Packaging.cmake)

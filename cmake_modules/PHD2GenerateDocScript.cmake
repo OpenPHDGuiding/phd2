@@ -65,6 +65,10 @@ foreach(_f IN LISTS files_to_zip)
 endforeach()
 message("to ${output_folder}/PHD2GuideHelp.zip")
 
+# TODO check if the zip is available (cmake version 3.2)
+# if this is not the case, we might require 7zip and plug it as explained in here:
+# http://stackoverflow.com/questions/7050997/zip-files-using-cmake
+
 execute_process(COMMAND
                 ${CMAKE_COMMAND} -E tar cfv ${output_folder}/PHD2GuideHelp.zip --format=zip ${files_to_zip}
                 WORKING_DIRECTORY ${output_folder}

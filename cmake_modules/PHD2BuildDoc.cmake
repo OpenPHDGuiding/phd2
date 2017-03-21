@@ -194,7 +194,13 @@ endfunction()
 # .. command:: generate_single_doc_targets
 #
 #    Generates all the targets concerning documentation and
-#    populates an output variable for each locale
+#    populates an output variable for a specific locale.
+#
+#    If the HTML files are found ("help/" subfolder) a target named `<locale>_html` is created. This target
+#    generates the .hhk file and then zips the documentation files.
+#    A target `<locale>_translation` generating the .mo files from a translated .po file is also created. This target
+#    depends on the fact that the xgettext tools are found or not. If not, only a message indicating that the target files
+#    cannot be regenerated properly is emitted.
 #
 #    ::
 #
@@ -229,25 +235,24 @@ function(generate_single_doc_targets)
     set(locale "${_local_vars_LOCALE}")
   endif()
 
-  message(STATUS "[DOC] Creating target for locale ${locale}")
-
-  set(target_files)
-  set(input_files)
-
   # about HTML files
   if(EXISTS "${input_folder}/help")
+
+    message(STATUS "[DOC] Creating HTML target for locale ${locale}")
+    set(html_input_files)
+    set(html_target_files)
 
     if(NOT (EXISTS "${input_folder}/help/PHD2GuideHelp.hhp"))
       message(FATAL_ERROR "'${input_folder}/help/PHD2GuideHelp.hhp' file is missing")
     endif()
 
     # retrieves the filenames for the documentation
-    list(APPEND input_files ${input_folder}/help/PHD2GuideHelp.hhp)
+    list(APPEND html_input_files ${input_folder}/help/PHD2GuideHelp.hhp)
     extract_help_filenames(${input_folder}/help/PHD2GuideHelp.hhp
                            ${input_folder}/help
                            documentation_filelist)
 
-    list(APPEND input_files ${documentation_filelist})
+    list(APPEND html_input_files ${documentation_filelist})
 
     set(current_locale_output_folder ${CMAKE_BINARY_DIR}/doc/${locale}/)
     set(generated_hhk ${current_locale_output_folder}/PHD2GuideHelp.hhk)
@@ -255,13 +260,13 @@ function(generate_single_doc_targets)
         ${generated_hhk}
         ${current_locale_output_folder}/PHD2GuideHelp.zip)
 
-    list(APPEND target_files ${generated_outputs})
+    list(APPEND html_target_files ${generated_outputs})
 
     # this command generates the hhk file and the zip command, see script PHD2GenerateDocScript.cmake
     # for more details
     add_custom_command(
         OUTPUT ${generated_outputs}
-        DEPENDS ${input_files}
+        DEPENDS ${html_input_files}
         COMMAND ${CMAKE_COMMAND}
           -Dproject_root_dir=${PHD_PROJECT_ROOT_DIR}
           "-Dlist_of_files='${documentation_filelist}'"
@@ -269,23 +274,114 @@ function(generate_single_doc_targets)
           "-Dinput_folder=${input_folder}/help/"
           -P ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2GenerateDocScript.cmake
         )
+
+    add_custom_target(${locale}_html
+      SOURCES
+      ${html_input_files}
+      ${html_target_files})
+    source_group(html/ FILES ${documentation_filelist})
+    source_group(generated/ FILES ${html_target_files})
+    set_target_properties(${locale}_html PROPERTIES FOLDER "Documentation/")
+
   endif()
 
   # about translation in the GUI
   if(EXISTS "${input_folder}/messages.po")
+    message(STATUS "[DOC] Creating translation target for locale ${locale}")
+
+    set(translation_input_files)
+    set(translation_target_files)
+
+    if(NOT (EXISTS "${input_folder}/messages.po"))
+      message(FATAL_ERROR "'${input_folder}/messages.po' file is missing")
+    endif()
+
+    set(current_translation_output_folder ${CMAKE_BINARY_DIR}/translation/${locale})
+    list(APPEND translation_input_files ${input_folder}/messages.po)
+
+    if(NOT EXISTS "${current_translation_output_folder}")
+      file(MAKE_DIRECTORY "${current_translation_output_folder}")
+    endif()
+
+    if(NOT "${MSGFMT}" STREQUAL "")
+      add_custom_command(
+          OUTPUT "${current_translation_output_folder}/messages.mo"
+          DEPENDS "${input_folder}/messages.po"
+          COMMAND ${MSGFMT} ${input_folder}/messages.po
+          COMMENT "Generating ${current_translation_output_folder}/messages.mo"
+          WORKING_DIRECTORY ${current_translation_output_folder}
+          )
+      list(APPEND translation_target_files ${current_translation_output_folder}/messages.mo)
+
+      # This is wx widget stuff
+      if(EXISTS "${input_folder}/wxstd.po")
+        list(APPEND translation_input_files "${input_folder}/wxstd.po")
+        add_custom_command(
+            OUTPUT "${current_translation_output_folder}/wxstd.mo"
+            DEPENDS "${input_folder}/wxstd.po"
+            COMMAND ${MSGFMT} "${input_folder}/wxstd.po" --output-file="${current_translation_output_folder}/wxstd.mo"
+            COMMENT "Generating ${current_translation_output_folder}/wxstd.mo"
+            WORKING_DIRECTORY ${current_translation_output_folder}
+            )
+
+        list(APPEND translation_target_files "${current_translation_output_folder}/wxstd.mo")
+      endif()
+    else()
+      message(STATUS "[DOC] Translation for locale ${locale}: msgfmt not found on your system, cannot generate the .mo file")
+      add_custom_command(
+          OUTPUT "${input_folder}/messages.mo"
+          DEPENDS "${input_folder}/messages.po"
+          COMMAND ${CMAKE_COMMAND} -E echo "Cannot generate the message.mo file as msgfmt is not found on your system."
+          WORKING_DIRECTORY ${input_folder}
+          )
+
+      list(APPEND translation_target_files ${input_folder}/messages.mo)
+
+      # This is wx widget stuff
+      if(EXISTS "${input_folder}/wxstd.po")
+        list(APPEND translation_input_files "${input_folder}/wxstd.po")
+        add_custom_command(
+            OUTPUT "${input_folder}/wxstd.mo"
+            DEPENDS "${input_folder}/wxstd.po"
+            COMMAND ${CMAKE_COMMAND} -E echo "Cannot generate the wxstd.mo file as msgfmt is not found on your system."
+            WORKING_DIRECTORY ${input_folder}
+            )
+
+        list(APPEND translation_target_files "${input_folder}/wxstd.mo")
+      endif()
+
+    endif()
+
+    add_custom_target(${locale}_translation
+      SOURCES
+      ${translation_input_files}
+      ${translation_target_files})
+    source_group(input/ FILES ${translation_input_files})
+    source_group(generated/ FILES ${translation_target_files})
+    set_target_properties(${locale}_translation PROPERTIES FOLDER "Documentation/")
+
 
   endif()
-
-  add_custom_target(doc_${locale}
-      SOURCES
-      ${input_files}
-      ${target_files})
-  set_target_properties(doc_${locale} PROPERTIES FOLDER "Documentation/")
-
 
 endfunction()
 
 
+#.rst:
+# .. command:: generate_doc_targets
+#
+#    Generates all the targets concerning documentation and
+#    populates an output variable for each locale
+#
+#    ::
+#
+#     generate_single_doc_targets(
+#        INPUT_FOLDER <folder>
+#        [LOCALE <current_locale>]
+#      )
+#
+#  * `INPUT_FOLDER` input folder. This folder should contain a `PHD2GuideHelp.hhp` file and the .html files.
+#  * `LOCALE` the current locale for the documentation. Defaults to `en_EN`
+#
 function(generate_doc_targets)
 
   # global English
@@ -300,7 +396,7 @@ function(generate_doc_targets)
    endif()
 
    get_filename_component(locale "${var}" NAME)
-   message(STATUS "locale = ${var} ${locale}")
+   # message(STATUS "locale = ${var} ${locale}")
    generate_single_doc_targets(
       LOCALE ${locale}
       INPUT_FOLDER "${var}")
