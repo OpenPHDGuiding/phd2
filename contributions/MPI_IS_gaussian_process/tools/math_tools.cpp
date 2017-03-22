@@ -214,7 +214,7 @@ namespace math_tools
         double beta = 0.46;
 
         Eigen::VectorXd range = Eigen::VectorXd::LinSpaced(N, 0, 1);
-        Eigen::VectorXd window = alpha - beta * std::cos(2 * M_PI * range.array());
+        Eigen::VectorXd window = alpha - beta * (2 * M_PI * range.array()).cos();
 
         return window;
     }

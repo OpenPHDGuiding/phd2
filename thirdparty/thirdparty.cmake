@@ -463,7 +463,7 @@ endif()
 #############################################
 # the Eigen library, mostly header only
 
-set(EIGEN eigen-eigen-36bf2ceaf8f5)
+set(EIGEN eigen-eigen-67e894c6cd8f)
 set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
 if(NOT EXISTS ${eigen_root})
   # untar the dependency
