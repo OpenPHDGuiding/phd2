@@ -729,36 +729,36 @@ UInt32 sxOpen(void** sxHandles)
                         fprintf(stderr,"SXMacLib: Error detaching kernel driver.\n");
                     }
                 }
+#endif
 
-                struct libusb_config_descriptor *config;
+                struct libusb_config_descriptor *config = NULL;
                 ret = libusb_get_config_descriptor(device[i], 0, &config);
                 if (ret == 0) {
-                        printf("SXMacLib: Config descriptor read.\n");
-                    } else {
-                        fprintf(stderr,"SXMacLib: Error reading config descriptor.\n");
-                }
-                int interface = config->interface->altsetting->bInterfaceNumber;
-#else
-                // passing bInterfaceNumber doesn't work on a Mac so leave it as 0 as it was before.
-                // This is probably a off by one error and we should be passing in config->interface->altsetting->bInterfaceNumber - 1
-                const int interface = 0;
-#endif
-                
-                ret = libusb_claim_interface(handle, interface);
-                if (0 == ret) {
-                    
-                    const int model = sxGetCameraModel(handle);
-                    if (0xFFFF == model) {
-                        /* somehow prompt user for model? */
-                    }
-                    else {
-                        
-                        //printf("model = %0x\n", model);
-                        sxHandles[count] = handle;
-                        count++;
-                    }
+                    printf("SXMacLib: Config descriptor read.\n");
                 } else {
-                    fprintf(stderr,"SXMacLib: libusb_claim_interface error %s\n", libusb_error_name(ret));
+                    fprintf(stderr,"SXMacLib: Error reading config descriptor.\n");
+                }
+                
+                if (!config) {
+                    fprintf(stderr,"SXMacLib: Failed to get config descriptor.\n");
+                } else {
+                    const int interface = config->interface->altsetting->bInterfaceNumber;
+                    ret = libusb_claim_interface(handle, interface);
+                    if (0 == ret) {
+                        
+                        const int model = sxGetCameraModel(handle);
+                        if (0xFFFF == model) {
+                            /* somehow prompt user for model? */
+                        }
+                        else {
+                            
+                            //printf("model = %0x\n", model);
+                            sxHandles[count] = handle;
+                            count++;
+                        }
+                    } else {
+                        fprintf(stderr,"SXMacLib: libusb_claim_interface error %s\n", libusb_error_name(ret));
+                    }
                 }
             }
             
