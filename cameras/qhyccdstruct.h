@@ -34,10 +34,6 @@
 #endif
 
 
-#ifdef LINUX
-#include <libusb.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -181,7 +177,19 @@ enum CONTROL_ID
     QHYCCD_3A_AUTOEXPOSURE,
     QHYCCD_3A_AUTOFOCUS,
     CONTROL_AMPV,                            //!< ccd or cmos ampv
-    CONTROL_VCAM                             //!< Virtual Camera on off 
+    CONTROL_VCAM,                            //!< Virtual Camera on off 
+	CAM_VIEW_MODE,
+
+	CONTROL_CFWSLOTSNUM,         //!< check CFW slots number
+	IS_EXPOSING_DONE,
+	ScreenStretchB,
+	ScreenStretchW,
+	CONTROL_DDR,
+	CAM_LIGHT_PERFORMANCE_MODE,
+
+	CAM_QHY5II_GUIDE_MODE,
+	DDR_BUFFER_CAPACITY,
+	DDR_BUFFER_READ_THRESHOLD
 };
 
 /**
