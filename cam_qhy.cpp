@@ -68,6 +68,7 @@ static bool QHYSDKInit()
     char *destImgPath = new char[len];
     memcpy(destImgPath, temp, len);
 
+    ret = OSXInitQHYCCDFirmware(destImgPath);
     Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) returns %d\n", destImgPath, ret));
 
     if (ret == 0)
