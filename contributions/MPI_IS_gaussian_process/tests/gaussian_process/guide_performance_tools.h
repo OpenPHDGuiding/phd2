@@ -214,9 +214,7 @@ inline double calculate_improvement(std::string filename, GAHysteresis GAH, Gaus
     Eigen::ArrayXd controls = data.row(2);
     Eigen::ArrayXd SNRs = data.row(3);
 
-    int hysteresis_mismatch = 0;
     double hysteresis_control = 0.0;
-    double hysteresis_error = 0.0;
     double hysteresis_state = measurements(0);
     Eigen::ArrayXd hysteresis_states(times.size()-2);
 

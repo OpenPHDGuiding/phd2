@@ -296,7 +296,7 @@ void GP::inferSD(const Eigen::VectorXd& data_loc,
 
     // generate index vector
     std::vector<int> index(covariance.size(), 0);
-    for (int i = 0 ; i != index.size() ; i++) {
+    for (size_t i = 0 ; i != index.size() ; i++) {
         index[i] = i;
     }
 
