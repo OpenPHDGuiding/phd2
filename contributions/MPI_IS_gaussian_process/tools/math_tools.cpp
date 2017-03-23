@@ -94,9 +94,9 @@ namespace math_tools
 
         // fast version
         return
-            (am.array().square().colwise().sum().transpose().rowwise().replicate(bCols).matrix()
+            ((am.array().square().colwise().sum().transpose().rowwise().replicate(bCols).matrix()
             + bm.array().square().colwise().sum().colwise().replicate(aCols).matrix())
-            - 2 * (am.transpose()) * bm;
+            - 2 * (am.transpose()) * bm).array().max(0);
 
         /* // verbose version
         Eigen::MatrixXd a_square =
@@ -107,7 +107,7 @@ namespace math_tools
 
         Eigen::MatrixXd twoab = 2 * (am.transpose()) * bm;
 
-        return (a_square.matrix() + b_square.matrix()) - twoab;
+        return ((a_square.matrix() + b_square.matrix()) - twoab).array().max(0);
         */
     }
 
