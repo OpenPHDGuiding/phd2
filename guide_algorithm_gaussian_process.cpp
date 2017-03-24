@@ -100,9 +100,13 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
 
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
-      : ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent)
+      : ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent), m_pGuideAlgorithm(pGuideAlgorithm),
+      m_pControlGain(0), m_pMinMove(0), m_pPeriodLengthsInference(0), m_pPeriodLengthsPeriodEstimation(0),
+      m_pNumPointsApproximation(0), m_pSE0KLengthScale(0), m_pSE0KSignalVariance(0), m_pPKLengthScale(0),
+      m_pPKPeriodLength(0), m_pPKSignalVariance(0), m_pSE1KLengthScale(0), m_pSE1KSignalVariance(0),
+      m_pPredictionGain(0), m_checkboxComputePeriod(0), m_checkboxDarkMode(0), m_checkboxExpertMode(0),
+      m_pExpertPage(0)
     {
-        m_pGuideAlgorithm = pGuideAlgorithm;
 
         int width;
 
@@ -300,11 +304,15 @@ public:
         m_pExpertPage->Layout();
         m_pParent->Layout();
     }
+
+    // make the class non-copyable (if we ever need this, we must implement a deep copy)
+    GuideAlgorithmGaussianProcessDialogPane(const GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane&) = delete;
+    GuideAlgorithmGaussianProcessDialogPane& operator=(const GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane&) = delete;
 };
 
 
 GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis), GPG(0)
+    : GuideAlgorithm(pMount, axis), GPG(0), expert_mode_(false), dark_tracking_mode_(false)
 {
     // create guide parameters, load default values at first
     GaussianProcessGuider::guide_parameters parameters;
@@ -360,8 +368,6 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
     SetBoolComputePeriod(compute_period);
 
-    dark_tracking_mode_ = false; // dark tracking mode ignores measurements
-    SetExpertMode(false); // expert mode exposes the GP hyperparameters
     reset();
 }
 
