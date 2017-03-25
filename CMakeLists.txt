@@ -635,6 +635,20 @@ if(APPLE)
     set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
   endif()
 
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware
+  )
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
+    WORKING_DIRECTORY PHD2.app/Contents/Resources/qhyfirmware
+    COMMENT "unpack QHY firmware"
+    VERBATIM
+  )
+
 elseif(WIN32)
 
   set(phd2_WIN_SRC

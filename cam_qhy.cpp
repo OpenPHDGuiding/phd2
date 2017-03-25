@@ -54,16 +54,11 @@ static bool QHYSDKInit()
     }
 
 #if defined (__APPLE__)
-    wxFileName exeFile(wxStandardPaths::Get().GetExecutablePath());
-    wxString exePath(exeFile.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR));
+    wxString fwpath = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+        + _T("qhyfirmware");
 
-    const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(exePath);
-#if 1 // temporary, for testing. put the firmware files in $HOME/qhyfirmware/firmware
-    char temp[1024];
-    snprintf(temp, sizeof(temp), "%s/qhyfirmware/", getenv("HOME"));
-#else
+    const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(fwpath);
     const char *temp = (const char *)tmp_buf;
-#endif
     size_t const len = strlen(temp) + 1;
     char *destImgPath = new char[len];
     memcpy(destImgPath, temp, len);
