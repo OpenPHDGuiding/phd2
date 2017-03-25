@@ -257,7 +257,7 @@ void TestGuideDialog::OnDither(wxCommandEvent& evt)
 {
     int ditherType = ditherTypeChoice->GetSelection() + 1;
     wxString errMsg;
-    PhdController::DitherCompat(pFrame->GetDitherAmount(ditherType), pFrame->GetDitherRaOnly(), &errMsg);
+    PhdController::DitherCompat(pFrame->GetDitherAmount(ditherType), &errMsg);
 }
 
 void TestGuideDialog::OnButton(wxCommandEvent &evt)

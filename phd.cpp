@@ -129,7 +129,9 @@ bool PhdApp::OnInit()
 #endif
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    Debug.Init("debug", true);
+    m_initTime = wxDateTime::Now();
+
+    Debug.Init(GetInitTime(), true);
 
     Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
     Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));
@@ -176,6 +178,8 @@ bool PhdApp::OnInit()
 
     PhdController::OnAppInit();
 
+    ImageLogger::Init();
+
     wxImage::AddHandler(new wxJPEGHandler);
     wxImage::AddHandler(new wxPNGHandler);
 
@@ -196,6 +200,8 @@ int PhdApp::OnExit(void)
     assert(pMount == NULL);
     assert(pSecondaryMount == NULL);
     assert(pCamera == NULL);
+
+    ImageLogger::Destroy();
 
     PhdController::OnAppExit();
 

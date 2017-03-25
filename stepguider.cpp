@@ -952,6 +952,13 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             throw THROW_INFO("Guiding disabled");
         }
 
+        if (moveType == MOVETYPE_DEDUCED)
+        {
+            if (m_bumpInProgress)
+                Debug.Write("StepGuider: deferring bump, MOVETYPE_DEDUCED\n");
+            return result;
+        }
+
         // keep a moving average of the AO position
         if (m_avgOffset.IsValid())
         {
@@ -975,7 +982,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             bool forceStartBump = false;
             if (m_forceStartBump)
             {
-                Debug.Write("stepguider::Move: will start forced bump\n");
+                Debug.Write("StepGuider::Move: will start forced bump\n");
                 forceStartBump = true;
                 m_forceStartBump = false;
             }
@@ -1065,8 +1072,22 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
 
             Debug.Write(wxString::Format("incremental bump (%.3f, %.3f) isValid = %d\n", bumpVec.X, bumpVec.Y, bumpVec.IsValid()));
 
-            double maxBumpPixelsX = m_calibration.xRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
-            double maxBumpPixelsY = m_calibration.yRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
+            double weight = m_bumpStepWeight;
+
+            // force larger bump when settling
+            if (PhdController::IsSettling())
+            {
+                double boost = pConfig->Profile.GetDouble("/stepguider/BumpSettlingBoost", 3.0);
+                if (weight < boost)
+                {
+                    weight = boost;
+                    Debug.Write(wxString::Format("boost bump step weight to %.1f for settling\n", weight));
+                }
+            }
+
+            double maxBumpPixelsX = m_calibration.xRate * m_bumpMaxStepsPerCycle * weight;
+            double maxBumpPixelsY = m_calibration.yRate * m_bumpMaxStepsPerCycle * weight;
+
             double len = bumpVec.Distance();
             double xBumpSize = bumpVec.X * maxBumpPixelsX / len;
             double yBumpSize = bumpVec.Y * maxBumpPixelsY / len;
@@ -1076,7 +1097,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
             // display the current bump vector on the stepguider graph
             {
                 PHD_Point tcur;
-                TransformCameraCoordinatesToMountCoordinates(thisBump, tcur);
+                TransformCameraCoordinatesToMountCoordinates(thisBump, tcur, false);
                 tcur.X /= xRate();
                 tcur.Y /= yRate();
                 pFrame->pStepGuiderGraph->ShowBump(tcur);

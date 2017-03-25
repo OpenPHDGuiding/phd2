@@ -335,7 +335,7 @@ endif()
 #############################################
 # libusb / win32 / apple
 
-set(LIBUSB libusb-1.0.9)
+set(LIBUSB libusb-1.0.21)
 set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
 set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
 
@@ -351,6 +351,7 @@ set(libusb_dir ${libusb_root}/libusb)
 set(libUSB_SRC
   ${libusb_dir}/core.c
   ${libusb_dir}/descriptor.c
+  ${libusb_dir}/hotplug.c
   ${libusb_dir}/io.c
   ${libusb_dir}/sync.c
   ${libusb_dir}/libusb.h
@@ -371,6 +372,8 @@ if(APPLE)
     
     ${libusb_dir}/os/threads_posix.h 
     ${libusb_dir}/os/threads_posix.c
+
+    ${libusb_dir}/os/poll_posix.c
    )
   set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1") 
   set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
@@ -383,8 +386,8 @@ elseif(WIN32)
     ${libusb_root}/msvc/config.h
   
     # platform specific implementation
-    ${libusb_dir}/os/windows_usb.h
-    ${libusb_dir}/os/windows_usb.c
+    ${libusb_dir}/os/windows_winusb.h
+    ${libusb_dir}/os/windows_winusb.c
     
     ${libusb_dir}/os/threads_windows.h
     ${libusb_dir}/os/threads_windows.c
@@ -403,7 +406,7 @@ elseif(UNIX)
   # this would find the libUSB module that is installed on the system. 
   # It requires "sudo apt-get install libusb-1.0-0-dev"
   pkg_check_modules(USB_pkg libusb-1.0)
-  if(USB_pkg_FOUND)
+  if(0) # if(USB_pkg_FOUND) - force using the bundled libusb - older versions may not work with the ZWO ASI camera SDK
     include_directories(${USB_pkg_INCLUDE_DIRS})
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
     set(USB_build FALSE)
@@ -421,9 +424,12 @@ elseif(UNIX)
      # platform specific implementation
      ${libusb_dir}/os/linux_usbfs.c
      ${libusb_dir}/os/linux_usbfs.h
-    
+     ${libusb_dir}/os/linux_netlink.c
+
      ${libusb_dir}/os/threads_posix.h
      ${libusb_dir}/os/threads_posix.c
+
+     ${libusb_dir}/os/poll_posix.c
     )
 
     set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
@@ -889,7 +895,7 @@ endif()  # APPLE
 # Unix/Linux specific dependencies
 # - ASI cameras
 # - INDI
-# - Nova (optional)
+# - Nova (Required by INDI)
 # - USB (commonly shared)
 # - math (libm)
 # - 
@@ -939,28 +945,26 @@ if(UNIX AND NOT APPLE)
   # some features for indi >= 0.9 are used apparently
   find_package(INDI 0.9 REQUIRED)
   include_directories(${INDI_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  if(PC_INDI_VERSION VERSION_LESS "1.1")
+  if(INDI_VERSION VERSION_LESS "1.4")
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+  else(INDI_VERSION VERSION_LESS "1.4")
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+  endif(INDI_VERSION VERSION_LESS "1.4")
+  if(INDI_VERSION VERSION_LESS "1.1")
     add_definitions("-DINDI_PRE_1_1_0")
   endif()
-  if(PC_INDI_VERSION VERSION_LESS "1.0")
+  if(INDI_VERSION VERSION_LESS "1.0")
     add_definitions("-DINDI_PRE_1_0_0")
   endif()
   
   # INDI depends on libz
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-
   
-  # Nova
-  find_package(Nova)
-  if(NOVA_FOUND)
-      include_directories(${NOVA_INCLUDE_DIR})
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-      add_definitions("-DLIBNOVA" )
-  else()
-      message(WARNING "libnova not found! Considere to install libnova-dev ")
-  endif() 
-
+  # INDI depends on libnova
+  find_package(Nova REQUIRED)
+  include_directories(${NOVA_INCLUDE_DIR})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+  add_definitions("-DLIBNOVA")
 
 endif()

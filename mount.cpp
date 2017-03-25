@@ -128,12 +128,10 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
 
-        wxString xAlgorithms[] = 
+        wxString xAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
-#endif
+            _("Predictive PEC"),
         };
 
         width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -167,12 +165,9 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 
-        wxString yAlgorithms[] = 
+        wxString yAlgorithms[] =
         {
             _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-            _("Gaussian Process"),
-#endif
         };
         width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
@@ -279,6 +274,10 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
@@ -295,6 +294,10 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
+
+    // we can probably get rid of this when we reduce the number of GP algo settings
+    wxWindow *adv = pFrame->pAdvancedDialog;
+    adv->GetSizer()->Fit(adv);
 }
 
 void Mount::MountConfigDialogPane::LoadValues(void)
@@ -470,24 +473,34 @@ GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
     return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
 
-bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm** ppAlgorithm)
+bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm)
 {
-    bool bError = false;
+    bool error = false;
 
     try
     {
         switch (guideAlgorithm)
         {
-            case GUIDE_ALGORITHM_IDENTITY:
-            case GUIDE_ALGORITHM_HYSTERESIS:
-            case GUIDE_ALGORITHM_LOWPASS:
-            case GUIDE_ALGORITHM_LOWPASS2:
-            case GUIDE_ALGORITHM_RESIST_SWITCH:
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
-            case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-#endif
-                break;
             case GUIDE_ALGORITHM_NONE:
+            case GUIDE_ALGORITHM_IDENTITY:
+                *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_HYSTERESIS:
+                *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_LOWPASS:
+                *ppAlgorithm = new GuideAlgorithmLowpass(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_LOWPASS2:
+                *ppAlgorithm = new GuideAlgorithmLowpass2(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_RESIST_SWITCH:
+                *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
+                *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
+                break;
+
             default:
                 throw ERROR_INFO("invalid guideAlgorithm");
                 break;
@@ -496,41 +509,10 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
-        guideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
+        error = true;
     }
 
-    switch (guideAlgorithm)
-    {
-        case GUIDE_ALGORITHM_IDENTITY:
-            *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_HYSTERESIS:
-            *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_LOWPASS:
-            *ppAlgorithm = new GuideAlgorithmLowpass(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_LOWPASS2:
-            *ppAlgorithm = new GuideAlgorithmLowpass2(mount, axis);
-            break;
-        case GUIDE_ALGORITHM_RESIST_SWITCH:
-            *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
-            break;
-            
-#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
-        case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-            *ppAlgorithm = new GuideGaussianProcess(mount, axis);
-            break;
-#endif
-
-        case GUIDE_ALGORITHM_NONE:
-        default:
-            assert(false);
-            break;
-    }
-
-    return bError;
+    return error;
 }
 
 #ifdef TEST_TRANSFORMS
@@ -759,7 +741,7 @@ void Mount::LogGuideStepInfo()
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
-    if (m_lastStep.moveType != MOVETYPE_DIRECT)
+    if (m_lastStep.moveType != MOVETYPE_DIRECT && m_lastStep.moveType != MOVETYPE_DEDUCED)
     {
         pFrame->pGraphLog->AppendData(m_lastStep);
         pFrame->pTarget->AppendData(m_lastStep);
@@ -927,7 +909,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
  */
 
 bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
-                                                         PHD_Point& mountVectorEndpoint)
+                                                         PHD_Point& mountVectorEndpoint, bool logged)
 {
     bool bError = false;
 
@@ -951,13 +933,16 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
             sin(yAngle) * hyp
             );
 
-        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+        if (logged)
+        {
+            Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
                 cameraTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
-        Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)\n",
+            Debug.Write(wxString::Format("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)\n",
                 cameraTheta, m_cal.xAngle, m_yAngleError, yAngle, norm_angle(yAngle)));
-        Debug.Write(wxString::Format("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f\n",
+            Debug.Write(wxString::Format("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f\n",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
                 mountVectorEndpoint.Angle()));
+        }
     }
     catch (const wxString& Msg)
     {
@@ -970,7 +955,7 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
 }
 
 bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
-                                                        PHD_Point& cameraVectorEndpoint)
+                                                        PHD_Point& cameraVectorEndpoint, bool logged)
 {
     bool bError = false;
 
@@ -996,11 +981,14 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
                 sin(xAngle) * hyp
                 );
 
-        Debug.Write(wxString::Format("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
-                                     mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
-        Debug.Write(wxString::Format("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f\n",
-                                     mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
-                                     cameraVectorEndpoint.Angle()));
+        if (logged)
+        {
+            Debug.Write(wxString::Format("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)\n",
+                mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle)));
+            Debug.Write(wxString::Format("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f\n",
+                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+                cameraVectorEndpoint.Angle()));
+        }
     }
     catch (const wxString& Msg)
     {
@@ -1508,7 +1496,8 @@ wxString Mount::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
-        _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+        _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
+        _T("Predictive PEC")
     };
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())

@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-10 02:47-0500\n"
+"POT-Creation-Date: 2017-01-13 01:45-0500\n"
 "PO-Revision-Date: 2016-12-03 17:30+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -58,7 +58,7 @@ msgstr "Global"
 msgid "Camera"
 msgstr "카메라"
 
-#: advanced_dialog.cpp:148 guider.cpp:1290 myframe.cpp:1412
+#: advanced_dialog.cpp:148 guider.cpp:1296 myframe.cpp:1413
 #: scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "가이딩 "
@@ -199,13 +199,11 @@ msgstr "이상적인 "
 msgid "Measured"
 msgstr "측정 "
 
-#: backlash_comp.cpp:307 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
-#: testguide.cpp:152
+#: backlash_comp.cpp:307 scope.cpp:218 testguide.cpp:152
 msgid "North"
 msgstr "북쪽 "
 
-#: backlash_comp.cpp:308 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
-#: testguide.cpp:152
+#: backlash_comp.cpp:308 scope.cpp:219 testguide.cpp:152
 msgid "South"
 msgstr "남쪽"
 
@@ -668,7 +666,7 @@ msgstr "캘리브레이션 단계, ms"
 
 #: calstep_dialog.cpp:181 cam_simulator.cpp:1471 camcal_import_dialog.cpp:47
 #: camera.cpp:725 configdialog.cpp:61 configdialog.cpp:226 darks_dialog.cpp:54
-#: myframe.cpp:2633 profile_wizard.cpp:61 profile_wizard.cpp:68
+#: myframe.cpp:2618 profile_wizard.cpp:61 profile_wizard.cpp:68
 #: Refine_DefMap.cpp:59 starcross_test.cpp:52
 msgid ": "
 msgstr ":"
@@ -1430,10 +1428,10 @@ msgstr ""
 #: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:578
 #: gear_dialog.cpp:940 gear_dialog.cpp:1608 gear_dialog.cpp:1609
 #: gear_dialog.cpp:1610 mount.cpp:133 mount.cpp:172 mount.cpp:683
-#: myframe.cpp:2530 profile_wizard.cpp:215 profile_wizard.cpp:216
+#: myframe.cpp:2515 profile_wizard.cpp:215 profile_wizard.cpp:216
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:520
-#: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:252
-#: scope.cpp:294 scope.cpp:334 statswindow.cpp:260 stepguider.cpp:92
+#: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:275
+#: scope.cpp:317 scope.cpp:357 statswindow.cpp:260 stepguider.cpp:92
 #: stepguider.cpp:119
 msgid "None"
 msgstr "없음 "
@@ -1739,11 +1737,11 @@ msgstr ""
 "그런 다음 시작을 클릭하여 교육을 시작하십시오."
 
 #: comet_tool.cpp:320 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:50 scope.cpp:540 statswindow.cpp:73 target.cpp:339
+#: guide_algorithm.cpp:50 scope.cpp:563 statswindow.cpp:73 target.cpp:339
 msgid "RA"
 msgstr "RA "
 
-#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:540
+#: comet_tool.cpp:321 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:563
 #: statswindow.cpp:77 target.cpp:340
 msgid "Dec"
 msgstr "Dec "
@@ -2424,7 +2422,7 @@ msgstr "모든 연결 해제 "
 msgid "Disconnect all equipment"
 msgstr "모든 장비 연결 해제 "
 
-#: gear_dialog.cpp:329 myframe.cpp:1049
+#: gear_dialog.cpp:329 myframe.cpp:1050
 msgid "Close"
 msgstr "닫기 "
 
@@ -2787,7 +2785,7 @@ msgstr "가이드 남쪽 "
 msgid "Dither"
 msgstr "Dither"
 
-#: graph-stepguider.cpp:47 myframe.cpp:299 myframe.cpp:364
+#: graph-stepguider.cpp:47 myframe.cpp:300 myframe.cpp:365
 msgid "AO Position"
 msgstr "AO 위치 "
 
@@ -2975,47 +2973,47 @@ msgstr "잠금 위치가 허용범위를 벗어나 이동. 잠금 위치 이동 
 msgid "star lost"
 msgstr "star lost"
 
-#: guider.cpp:1211 myframe.cpp:1547
+#: guider.cpp:1217 myframe.cpp:1548
 msgid "Paused"
 msgstr "일시 중지 "
 
-#: guider.cpp:1233
+#: guider.cpp:1239
 msgid "AO calibration failed"
 msgstr "AO 캘리브레이션 실패 "
 
-#: guider.cpp:1233 guider.cpp:1266
+#: guider.cpp:1239 guider.cpp:1272
 msgid "calibration failed"
 msgstr "캘리브레이션 실패 "
 
-#: guider.cpp:1470
+#: guider.cpp:1476
 msgid "Guider Settings"
 msgstr "가이드 설정 "
 
-#: guider.cpp:1479
+#: guider.cpp:1485
 msgid "Guide star tracking"
 msgstr "가이드 별 추적 "
 
-#: guider.cpp:1480
+#: guider.cpp:1486
 msgid "Calibration"
 msgstr "캘리브레이션 "
 
-#: guider.cpp:1481
+#: guider.cpp:1487
 msgid "Shared Parameters"
 msgstr "공유 매개변수 "
 
-#: guider.cpp:1525
+#: guider.cpp:1531
 msgid "Always scale images"
 msgstr "이미지 크기 항상 조정"
 
-#: guider.cpp:1526
+#: guider.cpp:1532
 msgid "Always scale images to fill window"
 msgstr "창의 크기에 맞게 항상 이미지 크기 조정"
 
-#: guider.cpp:1528
+#: guider.cpp:1534
 msgid "Fast recenter after calibration or dither"
 msgstr "보정 또는 디더링 후 빠른 중앙 복귀"
 
-#: guider.cpp:1529
+#: guider.cpp:1535
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -3025,7 +3023,7 @@ msgstr ""
 "입니다. 캘리브레이션이나 디더 처리 후 별을 중앙으로 되돌리는 속도가 느린 옛"
 "날 방법을 사용하려면 체크를 해제."
 
-#: guider.cpp:1621
+#: guider.cpp:1627
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "모든 북마크를 삭제 하시겠습니까?"
 
@@ -3226,7 +3224,7 @@ msgstr ""
 msgid "Show graph of backlash measurement points"
 msgstr "백래시 측정 지점의 그래프 보기  "
 
-#: guiding_assistant.cpp:419 myframe.cpp:1054 profile_wizard.cpp:190
+#: guiding_assistant.cpp:419 myframe.cpp:1055 profile_wizard.cpp:190
 msgid "Help"
 msgstr "도움말 "
 
@@ -3591,416 +3589,416 @@ msgstr "캘리브레이션이 적도에서 너무 먼 경우 캘리브레이션�
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "로테이터 위치가 변경되어 캘리브레이션을 다시 해야합니다."
 
-#: myframe.cpp:289 myframe.cpp:362
+#: myframe.cpp:290 myframe.cpp:363
 msgid "History"
 msgstr "History"
 
-#: myframe.cpp:294 myframe.cpp:363
+#: myframe.cpp:295 myframe.cpp:364
 msgid "Guide Stats"
 msgstr "가이드 통계 "
 
-#: myframe.cpp:304 myframe.cpp:365
+#: myframe.cpp:305 myframe.cpp:366
 msgid "Star Profile"
 msgstr "별 프로파일 "
 
-#: myframe.cpp:309 myframe.cpp:366 target.cpp:51
+#: myframe.cpp:310 myframe.cpp:367 target.cpp:51
 msgid "Target"
 msgstr "타겟 "
 
-#: myframe.cpp:441
+#: myframe.cpp:442
 msgid "&Save Image..."
 msgstr "&이미지 저장...."
 
-#: myframe.cpp:441
+#: myframe.cpp:442
 msgid "Save current image"
 msgstr "현재 이미지 저장 "
 
-#: myframe.cpp:442
+#: myframe.cpp:443
 msgid "E&xit\tAlt-X"
 msgstr "종료\tAlt-X"
 
-#: myframe.cpp:442
+#: myframe.cpp:443
 msgid "Quit this program"
 msgstr "프로그램 종료 "
 
-#: myframe.cpp:445
+#: myframe.cpp:446
 msgid "&Manual Guide"
 msgstr "&수동 가이드"
 
-#: myframe.cpp:445
+#: myframe.cpp:446
 msgid "Manual / test guide dialog"
 msgstr "수동/테스트 가이드 대화 상자"
 
-#: myframe.cpp:446
+#: myframe.cpp:447
 msgid "&Auto-select Star\tAlt-S"
 msgstr "&자동 별 선택\tAlt-S"
 
-#: myframe.cpp:446
+#: myframe.cpp:447
 msgid "Automatically select star"
 msgstr "자동으로 별 선택 "
 
-#: myframe.cpp:447
+#: myframe.cpp:448
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "&캘리브레이션 데이터 검토\tAlt-C"
 
-#: myframe.cpp:447
+#: myframe.cpp:448
 msgid "Review calibration data from last successful calibration"
 msgstr "최근에 성공한 캘리브레이션 데이타 검토 "
 
-#: myframe.cpp:450
+#: myframe.cpp:451
 msgid "Restore Calibration Data..."
 msgstr "캘리브레이션 데이터 복원 "
 
-#: myframe.cpp:450
+#: myframe.cpp:451
 msgid "Restore calibration data from last successful calibration"
 msgstr "최근에 성공한 캘리브레이션 데이타 복원 "
 
-#: myframe.cpp:451
+#: myframe.cpp:452
 msgid "Enter Calibration Data..."
 msgstr "캘리브레이션 데이타 입력 "
 
-#: myframe.cpp:451
+#: myframe.cpp:452
 msgid "Manually calibrate"
 msgstr "수동 캘리브레이션 "
 
-#: myframe.cpp:452
+#: myframe.cpp:453
 msgid "Flip Calibration Data"
 msgstr "캘리브레이션 데이터 플립 "
 
-#: myframe.cpp:452
+#: myframe.cpp:453
 msgid "Flip RA calibration vector"
 msgstr "RA 캘리브레이션 벡타 플립 "
 
-#: myframe.cpp:453
+#: myframe.cpp:454
 msgid "Clear Calibration Data..."
 msgstr "캘리브레이션 데이터 지우기 ... "
 
-#: myframe.cpp:453
+#: myframe.cpp:454
 msgid "Clear calibration data currently in use"
 msgstr "현재 사용중인 캘리브레이션 데이터 지우기 "
 
-#: myframe.cpp:454
+#: myframe.cpp:455
 msgid "Modify Calibration"
 msgstr "캘리브레이션 수정 "
 
-#: myframe.cpp:457
+#: myframe.cpp:458
 msgid "Adjust &Lock Position"
 msgstr "조정&잠금 위치 "
 
-#: myframe.cpp:457
+#: myframe.cpp:458
 msgid "Adjust the lock position"
 msgstr "잠금 위치 조정 "
 
-#: myframe.cpp:458
+#: myframe.cpp:459
 msgid "&Comet Tracking"
 msgstr "&혜성추적 "
 
-#: myframe.cpp:458
+#: myframe.cpp:459
 msgid "Run the Comet Tracking tool"
 msgstr "혜성추적 도구 실행 "
 
-#: myframe.cpp:459 myframe_events.cpp:912 starcross_test.cpp:76
+#: myframe.cpp:460 myframe_events.cpp:912 starcross_test.cpp:76
 msgid "Star-Cross Test"
 msgstr ""
 
-#: myframe.cpp:459
+#: myframe.cpp:460
 msgid "Run a star-cross test for mount diagnostics"
 msgstr ""
 
-#: myframe.cpp:460
+#: myframe.cpp:461
 msgid "&Guiding Assistant"
 msgstr "&가이딩 어시스턴트 "
 
-#: myframe.cpp:460
+#: myframe.cpp:461
 msgid "Run the Guiding Assistant"
 msgstr "가이딩 어시스턴트 실행 "
 
-#: myframe.cpp:461
+#: myframe.cpp:462
 msgid "&Drift Align"
 msgstr "&표류이탈 "
 
-#: myframe.cpp:461
+#: myframe.cpp:462
 msgid "Run the Drift Alignment tool"
 msgstr "표류이탈 실행 "
 
-#: myframe.cpp:463
+#: myframe.cpp:464
 msgid "Enable Star Image Logging"
 msgstr "별 이미지 로깅 사용 "
 
-#: myframe.cpp:463
+#: myframe.cpp:464
 msgid "Enable logging of star images"
 msgstr "별 이미지 로깅 사용"
 
-#: myframe.cpp:464
+#: myframe.cpp:465
 msgid "Enable Server"
 msgstr "서버시작 "
 
-#: myframe.cpp:464
+#: myframe.cpp:465
 msgid "Enable PHD2 server capability"
 msgstr "PHD2 서버 기능 사용 "
 
-#: myframe.cpp:465 nudge_lock.cpp:159
+#: myframe.cpp:466 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
 msgstr "고정 잠금 위치 "
 
-#: myframe.cpp:465
+#: myframe.cpp:466
 msgid "Keep the same lock position when guiding starts"
 msgstr "가이딩 시작시 동일한 잠금 위치 유지"
 
-#: myframe.cpp:468
+#: myframe.cpp:469
 msgid "Display Toolbar"
 msgstr "툴바 표시 "
 
-#: myframe.cpp:468
+#: myframe.cpp:469
 msgid "Enable / disable tool bar"
 msgstr "도구 모음 활성화/비활성화 "
 
-#: myframe.cpp:469
+#: myframe.cpp:470
 msgid "Display &Graph"
 msgstr "디스플레이 & 그래프"
 
-#: myframe.cpp:469
+#: myframe.cpp:470
 msgid "Enable / disable graph"
 msgstr "그래프  활성화/비활성화 "
 
-#: myframe.cpp:470
+#: myframe.cpp:471
 msgid "Display &Stats"
 msgstr "디스플레이 & 통계"
 
-#: myframe.cpp:470
+#: myframe.cpp:471
 msgid "Enable / disable guide stats"
 msgstr "가이드 통계 활성화/비활성화"
 
-#: myframe.cpp:471
+#: myframe.cpp:472
 msgid "Display &AO Graph"
 msgstr "디스플레이 & AO 그래프 "
 
-#: myframe.cpp:471
+#: myframe.cpp:472
 msgid "Enable / disable AO graph"
 msgstr "AO 그래프 활성화/비활성화 "
 
-#: myframe.cpp:472
+#: myframe.cpp:473
 msgid "Display &Target"
 msgstr "디스플레이 & 타겟 "
 
-#: myframe.cpp:472
+#: myframe.cpp:473
 msgid "Enable / disable target"
 msgstr "타겟 활성화/비활성화 "
 
-#: myframe.cpp:473
+#: myframe.cpp:474
 msgid "Display Star &Profile"
 msgstr "별 디스플레이 & 프로파일 "
 
-#: myframe.cpp:473
+#: myframe.cpp:474
 msgid "Enable / disable star profile view"
 msgstr "프로파일 보기 활성화/비활성화 "
 
-#: myframe.cpp:475
+#: myframe.cpp:476
 msgid "&No Overlay"
 msgstr "&오버레이 없음"
 
-#: myframe.cpp:475
+#: myframe.cpp:476
 msgid "No additional crosshairs"
 msgstr "추가 십자선 없음 "
 
-#: myframe.cpp:476
+#: myframe.cpp:477
 msgid "&Bullseye"
 msgstr "&Bullseye"
 
-#: myframe.cpp:476
+#: myframe.cpp:477
 msgid "Centered bullseye overlay"
 msgstr "중앙 bullseye 오브레이 "
 
-#: myframe.cpp:477
+#: myframe.cpp:478
 msgid "&Fine Grid"
 msgstr "&미세격자 "
 
-#: myframe.cpp:477 myframe.cpp:478
+#: myframe.cpp:478 myframe.cpp:479
 msgid "Grid overlay"
 msgstr "격자 오브레이 "
 
-#: myframe.cpp:478
+#: myframe.cpp:479
 msgid "&Coarse Grid"
 msgstr "&거친격자 "
 
-#: myframe.cpp:479
+#: myframe.cpp:480
 msgid "&RA/Dec"
 msgstr "&RA/Dec"
 
-#: myframe.cpp:479
+#: myframe.cpp:480
 msgid "RA and Dec overlay"
 msgstr "Ra, Dec 오브레이 "
 
-#: myframe.cpp:480
+#: myframe.cpp:481
 msgid "Spectrograph S&lit"
 msgstr "Spectrograph Slit"
 
-#: myframe.cpp:480
+#: myframe.cpp:481
 msgid "Spectrograph slit overlay"
 msgstr "Spectrograph slit 오브레이 "
 
-#: myframe.cpp:482
+#: myframe.cpp:483
 msgid "Slit Position..."
 msgstr "슬릿 위치 "
 
-#: myframe.cpp:484
+#: myframe.cpp:485
 msgid "Restore Window Positions"
 msgstr "창 위치 복원 "
 
-#: myframe.cpp:484
+#: myframe.cpp:485
 msgid "Restore all windows to their default/docked positions"
 msgstr "모든 창을 기본/도킹 된 위치로 복원"
 
-#: myframe.cpp:487
+#: myframe.cpp:488
 msgid "Dark &Library..."
 msgstr "다크 라이브러리 "
 
-#: myframe.cpp:487
+#: myframe.cpp:488
 msgid "Build a dark library for this profile"
 msgstr "이 프로파일에서 다크 라이브러리 제작 "
 
-#: myframe.cpp:488
+#: myframe.cpp:489
 msgid "Bad-pixel &Map..."
 msgstr "불량화소 지도 "
 
-#: myframe.cpp:488
+#: myframe.cpp:489
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "불량화소 제작 및 변경을 위한 매개변수 조정 "
 
-#: myframe.cpp:489
+#: myframe.cpp:490
 msgid "Import From Profile..."
 msgstr "프로파일에서 가져오기...."
 
-#: myframe.cpp:489
+#: myframe.cpp:490
 msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr "다른 프로파일에서 기존의 다크 라이브러리 / 불량화소 지도 가져 오기"
 
-#: myframe.cpp:491
+#: myframe.cpp:492
 msgid "Use &Dark Library"
 msgstr "다크 라이브러리 사용 "
 
-#: myframe.cpp:491
+#: myframe.cpp:492
 msgid "Use the the dark library for this profile"
 msgstr "이 프로파일에 다크 라이브러리 사용"
 
-#: myframe.cpp:492
+#: myframe.cpp:493
 msgid "Use &Bad-pixel Map"
 msgstr "불량화소 지도 사용 "
 
-#: myframe.cpp:492
+#: myframe.cpp:493
 msgid "Use the bad-pixel map for this profile"
 msgstr "이 프로파일에서 불량화소 지도 사용 "
 
-#: myframe.cpp:497
+#: myframe.cpp:498
 msgid "&Save settings"
 msgstr "&설정 저장 "
 
-#: myframe.cpp:497
+#: myframe.cpp:498
 msgid "Save current camera settings"
 msgstr "현재 카메라 설정 저장 "
 
-#: myframe.cpp:498
+#: myframe.cpp:499
 msgid "&Restore settings"
 msgstr "&설정 복원 "
 
-#: myframe.cpp:498
+#: myframe.cpp:499
 msgid "Restore camera settings"
 msgstr "카메라 설정 복원 "
 
-#: myframe.cpp:502
+#: myframe.cpp:503
 msgid "Show &Bookmarks\tb"
 msgstr "보기 & 북마크"
 
-#: myframe.cpp:502
+#: myframe.cpp:503
 msgid "Hide or show bookmarks"
 msgstr "북마크 감추기 "
 
-#: myframe.cpp:505
+#: myframe.cpp:506
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "북마크&잠금 위치\tShift-B"
 
-#: myframe.cpp:505
+#: myframe.cpp:506
 msgid "Set a bookmark at the current lock position"
 msgstr "현재 잠금 위치에 북마크 설정 "
 
-#: myframe.cpp:507
+#: myframe.cpp:508
 msgid "Bookmark &Star Pos"
 msgstr "북마크 & 별 위치 "
 
-#: myframe.cpp:507
+#: myframe.cpp:508
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "현재 선택된 별의 위치에 북마크 설정"
 
-#: myframe.cpp:508
+#: myframe.cpp:509
 msgid "&Delete all\tCtrl-B"
 msgstr "&모두 삭제l\tCtrl-B"
 
-#: myframe.cpp:508
+#: myframe.cpp:509
 msgid "Remove all bookmarks"
 msgstr "모든 북마크 삭제 "
 
-#: myframe.cpp:511
+#: myframe.cpp:512
 msgid "&About..."
 msgstr "&About..."
 
-#: myframe.cpp:511
+#: myframe.cpp:512
 #, c-format
 msgid "About %s"
 msgstr "About %s"
 
-#: myframe.cpp:512
+#: myframe.cpp:513
 msgid "&Contents...\tF1"
 msgstr "&목차...\tF1"
 
-#: myframe.cpp:512
+#: myframe.cpp:513
 msgid "Full help"
 msgstr "전체 도움말 "
 
-#: myframe.cpp:513
+#: myframe.cpp:514
 msgid "&Impatient Instructions"
 msgstr "&빠른 지침"
 
-#: myframe.cpp:513
+#: myframe.cpp:514
 msgid "Quick instructions for the impatient"
 msgstr "성급한 사람들을 위한 빠른 지침 "
 
-#: myframe.cpp:516
+#: myframe.cpp:517
 msgid "&File"
 msgstr "&파일 "
 
-#: myframe.cpp:525
+#: myframe.cpp:526
 msgid "&Tools"
 msgstr "&툴 "
 
-#: myframe.cpp:526
+#: myframe.cpp:527
 msgid "&View"
 msgstr "&보기 "
 
-#: myframe.cpp:527
+#: myframe.cpp:528
 msgid "&Darks"
 msgstr "&다크 "
 
-#: myframe.cpp:528
+#: myframe.cpp:529
 msgid "&Bookmarks"
 msgstr "&북마크 "
 
-#: myframe.cpp:529
+#: myframe.cpp:530
 msgid "&Help"
 msgstr "&도움말 "
 
-#: myframe.cpp:821 scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
+#: myframe.cpp:822 scope.cpp:217
 msgid "Auto"
 msgstr "자동 "
 
-#: myframe.cpp:825
+#: myframe.cpp:826
 msgid "Camera exposure duration"
 msgstr "카메라 노출 시간"
 
-#: myframe.cpp:830
+#: myframe.cpp:831
 msgid "Screen gamma (brightness)"
 msgstr "스크린 감마(밝기) "
 
-#: myframe.cpp:832
+#: myframe.cpp:833
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
@@ -4008,63 +4006,63 @@ msgstr ""
 "장비에 연결하십시오. 마지막으로 연결된 동일한 장비를 다시 연결하려면 Shift 키"
 "를 누른 상태로  클릭하십시오."
 
-#: myframe.cpp:833
+#: myframe.cpp:834
 msgid "Begin looping exposures for frame and focus"
 msgstr "프레임 및 포커스에 대한 반복 노출시작"
 
-#: myframe.cpp:834
+#: myframe.cpp:835
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr ""
 "가이드 시작 (PHD). Shift 키를 누른 상태에서 강제로 클릭하여 캘리브레이션합니"
 "다."
 
-#: myframe.cpp:835
+#: myframe.cpp:836
 msgid "Stop looping and guiding"
 msgstr "반복 루핑 및 가이드 중지"
 
-#: myframe.cpp:837
+#: myframe.cpp:838
 msgid "Exposure duration"
 msgstr "노출시간 "
 
-#: myframe.cpp:838
+#: myframe.cpp:839
 msgid "Gamma"
 msgstr "감마 "
 
-#: myframe.cpp:840
+#: myframe.cpp:841
 msgid "Advanced parameters"
 msgstr "고급 매개 변수 "
 
-#: myframe.cpp:841
+#: myframe.cpp:842
 msgid "Camera settings"
 msgstr "카메라 설정 "
 
-#: myframe.cpp:894
+#: myframe.cpp:895
 msgid "Could not find help file: "
 msgstr "도움말 파일을 찾을 수 없습니다:"
 
-#: myframe.cpp:1019
+#: myframe.cpp:1020
 msgid "Trouble-shooting and Analysis"
 msgstr "문제 해결 및 분석"
 
-#: myframe.cpp:1039
+#: myframe.cpp:1040
 msgid ""
 "Don't show\n"
 " again"
 msgstr "다시 표시하지 않음"
 
-#: myframe.cpp:1414 myframe.cpp:1590
+#: myframe.cpp:1415 myframe.cpp:1591
 msgid "Looping"
 msgstr "루핑 "
 
-#: myframe.cpp:1518
+#: myframe.cpp:1519
 msgid "Waiting for devices..."
 msgstr "기기 대기 중 ..."
 
-#: myframe.cpp:1561
+#: myframe.cpp:1562
 msgid "Resumed"
 msgstr "다시시작 됨 "
 
-#: myframe.cpp:1608
+#: myframe.cpp:1609
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
@@ -4072,29 +4070,29 @@ msgstr ""
 "불량화소 지도를 수정하는 동안 가이드를 할 수 없습니다. 수정 중인 불량화소 지"
 "도 창을 닫으십시오."
 
-#: myframe.cpp:1741
+#: myframe.cpp:1726
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dither by %.2f,%.2f"
 
-#: myframe.cpp:1773
+#: myframe.cpp:1758
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "캡쳐가 활성화되어있는 동안 종료 하시겠습니까?"
 
-#: myframe.cpp:1774
+#: myframe.cpp:1759
 msgid "Confirm Exit"
 msgstr "종료 확인 "
 
-#: myframe.cpp:2036 usImage.cpp:434
+#: myframe.cpp:2021 usImage.cpp:434
 msgid "FITS file is not of an image: "
 msgstr "FITS 파일이 이미지가 아닙니다: "
 
-#: myframe.cpp:2044 usImage.cpp:446
+#: myframe.cpp:2029 usImage.cpp:446
 msgid "Unsupported type or read error loading FITS file "
 msgstr ""
 "FITS 파일을로드하는 중 지원되지 않는 유형 또는 읽기 오류가 발생했습니다."
 
-#: myframe.cpp:2054
+#: myframe.cpp:2039
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
@@ -4102,19 +4100,19 @@ msgstr ""
 "기존의 다크 라이브러리와 호환되지 않는 형식의 프레임이 있습니다. 다크 라이브"
 "러리를 처음부터 다시 작성하십시오."
 
-#: myframe.cpp:2065
+#: myframe.cpp:2050
 msgid "Memory allocation error reading FITS file "
 msgstr "FITS 파일을 읽는 중 메모리 할당 오류가 발생했습니다."
 
-#: myframe.cpp:2072
+#: myframe.cpp:2057
 msgid "Error reading data from "
 msgstr "데이터를 읽는 중 오류 발생 "
 
-#: myframe.cpp:2101 usImage.cpp:478
+#: myframe.cpp:2086 usImage.cpp:478
 msgid "Error opening FITS file "
 msgstr "FITS파일을 여는 중 오류  발생 "
 
-#: myframe.cpp:2165
+#: myframe.cpp:2150
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
@@ -4122,7 +4120,7 @@ msgstr ""
 "다크 라이브러리가 프로파일의 카메라 정보와 일치하지 않습니다. 다크 라이브러리"
 "를 교체해야합니다."
 
-#: myframe.cpp:2211
+#: myframe.cpp:2196
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
@@ -4130,23 +4128,23 @@ msgstr ""
 "다크 라이브러리 및 불량화소 지도는 현재 카메라와 호환되지 않습니다. 둘 다 교"
 "체해야합니다."
 
-#: myframe.cpp:2242
+#: myframe.cpp:2227
 msgid "You must connect a camera before loading dark frames"
 msgstr "다크 프레임을 로드하기 전에 카메라를 연결해야합니다."
 
-#: myframe.cpp:2249
+#: myframe.cpp:2234
 msgid "Darks not loaded"
 msgstr "다크가 로드되지 않음"
 
-#: myframe.cpp:2256
+#: myframe.cpp:2241
 msgid "Darks loaded"
 msgstr "다크 로드 됨 "
 
-#: myframe.cpp:2269
+#: myframe.cpp:2254
 msgid "Error saving darks FITS file "
 msgstr "다크 FITS 파일을 저장하는 동안 오류가 발생했습니다."
 
-#: myframe.cpp:2470
+#: myframe.cpp:2455
 msgid ""
 "Guiding parameters have been reset because the camera binning changed. You "
 "should use separate profiles for different binning values."
@@ -4154,15 +4152,15 @@ msgstr ""
 "카메라 비닝이 변경 되었기 때문에 가이드 매개 변수가 재설정되었습니다. 다른 비"
 "닝값에 대해 별도의 프로파일을 사용해야합니다."
 
-#: myframe.cpp:2480
+#: myframe.cpp:2465
 msgid "Global Settings"
 msgstr "Global 설정 "
 
-#: myframe.cpp:2512
+#: myframe.cpp:2497
 msgid "Reset Configuration"
 msgstr "구성 재설정"
 
-#: myframe.cpp:2513
+#: myframe.cpp:2498
 msgid ""
 "Reset all configuration and program settings to fresh install status -- "
 "Note: this closes PHD2"
@@ -4170,11 +4168,11 @@ msgstr ""
 "모든 구성 및 프로그램 설정을 프로그램 설치 상태로 재설정 - 참고 :이 작업은 "
 "PHD2를 종료합니다."
 
-#: myframe.cpp:2514
+#: myframe.cpp:2499
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "\"다시 표시하지 않음\"메시지 다시 설정"
 
-#: myframe.cpp:2515
+#: myframe.cpp:2500
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
@@ -4182,47 +4180,47 @@ msgstr ""
 "\"이 메시지를 다시 표시하지 않음\"을 선택했을 때 숨겨진 메시지를 복원하십시"
 "오."
 
-#: myframe.cpp:2519
+#: myframe.cpp:2504
 msgid "Low Q JPEG"
 msgstr "Low Q JPEG"
 
-#: myframe.cpp:2519
+#: myframe.cpp:2504
 msgid "High Q JPEG"
 msgstr "High Q JPEG"
 
-#: myframe.cpp:2519
+#: myframe.cpp:2504
 msgid "Raw FITS"
 msgstr "Raw FITS"
 
-#: myframe.cpp:2525
+#: myframe.cpp:2510
 msgid "Image logging format"
 msgstr "이미지 기록 형식"
 
-#: myframe.cpp:2526
+#: myframe.cpp:2511
 msgid "File format of logged images"
 msgstr "기록된 이미지의 파일 형식"
 
-#: myframe.cpp:2530
+#: myframe.cpp:2515
 msgid "2x2 mean"
 msgstr "2x2 평균값 "
 
-#: myframe.cpp:2530
+#: myframe.cpp:2515
 msgid "3x3 median"
 msgstr "3x3 중앙값 "
 
-#: myframe.cpp:2537
+#: myframe.cpp:2522
 msgid "Noise Reduction"
 msgstr "노이즈 감소 "
 
-#: myframe.cpp:2538
+#: myframe.cpp:2523
 msgid "Technique to reduce noise in images"
 msgstr "이미지 노이즈 감소 기술"
 
-#: myframe.cpp:2544
+#: myframe.cpp:2529
 msgid "Time Lapse (ms)"
 msgstr "타임랩스(ms)"
 
-#: myframe.cpp:2545
+#: myframe.cpp:2530
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -4232,11 +4230,11 @@ msgstr ""
 "출 (예 : 비디오 카메라 사용)을 사용할 때 유용하지만 가이드 명령을 자주 보내"
 "지 않기 위해 사용 "
 
-#: myframe.cpp:2549
+#: myframe.cpp:2534
 msgid "Focal length (mm)"
 msgstr "초점거리(mm)"
 
-#: myframe.cpp:2550
+#: myframe.cpp:2535
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -4244,82 +4242,82 @@ msgstr ""
 "가이드 망원경 초점 거리, 아크초단위로 가이드 오류를 표시하기 위해 카메라 픽"
 "셀 크기와 함께 사용됩니다."
 
-#: myframe.cpp:2556 myframe.cpp:2588
+#: myframe.cpp:2541 myframe.cpp:2573
 msgid "System default"
 msgstr "시스템 기본값 "
 
-#: myframe.cpp:2571
+#: myframe.cpp:2556
 msgid "Language-Name"
 msgstr "언어-이름 "
 
-#: myframe.cpp:2592
+#: myframe.cpp:2577
 msgid "Language"
 msgstr "언어 "
 
-#: myframe.cpp:2593
+#: myframe.cpp:2578
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s 언어. 적용하려면 PHD를 다시 시작해야 합니다."
 
-#: myframe.cpp:2597
+#: myframe.cpp:2582
 msgid "Log File Location"
 msgstr "로그파일 위치 "
 
-#: myframe.cpp:2600
+#: myframe.cpp:2585
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "가이드 및 디버그 로그를 위한 폴더; 빈 문자열을 사용하여 기본 위치 복원"
 
-#: myframe.cpp:2601
+#: myframe.cpp:2586
 msgid "Browse..."
 msgstr "검색...."
 
-#: myframe.cpp:2611
+#: myframe.cpp:2596
 msgid "Dither Settings"
 msgstr "디더 설정 "
 
-#: myframe.cpp:2612
+#: myframe.cpp:2597
 msgid "Random"
 msgstr "랜덤 "
 
-#: myframe.cpp:2613
+#: myframe.cpp:2598
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "각 디더 명령은 잠금 위치를 각 축에서 임의의 거리만큼 이동시킵니다."
 
-#: myframe.cpp:2614
+#: myframe.cpp:2599
 msgid "Spiral"
 msgstr "나선 "
 
-#: myframe.cpp:2615
+#: myframe.cpp:2600
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "각 디더 명령은 나선형 경로를 따라 잠금 위치를 이동합니다."
 
-#: myframe.cpp:2617
+#: myframe.cpp:2602
 msgid "Mode: "
 msgstr "모드:"
 
-#: myframe.cpp:2622
+#: myframe.cpp:2607
 msgid "RA only"
 msgstr "RA only"
 
-#: myframe.cpp:2623
+#: myframe.cpp:2608
 msgid "Constrain dither to RA only"
 msgstr "Constrain dither to RA only"
 
-#: myframe.cpp:2629
+#: myframe.cpp:2614
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "디더 명령의 스케일링. 기본값 = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:2633 testguide.cpp:119
+#: myframe.cpp:2618 testguide.cpp:119
 msgid "Scale"
 msgstr "스케일 "
 
-#: myframe.cpp:2640
+#: myframe.cpp:2625
 msgid "Auto restore calibration"
 msgstr "캘리브레이션 자동 복원 "
 
-#: myframe.cpp:2641
+#: myframe.cpp:2626
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -4327,50 +4325,50 @@ msgstr ""
 "장비를 연결할 때  성공적으로 수행 한 가장 최근의 캘리브레이션 데이터를 자동으"
 "로 복원합니다."
 
-#: myframe.cpp:2655
+#: myframe.cpp:2640
 msgid "Min"
 msgstr "최소 "
 
-#: myframe.cpp:2655
+#: myframe.cpp:2640
 msgid "Auto exposure minimum duration"
 msgstr "자동 노출 최소 지속 시간"
 
-#: myframe.cpp:2656
+#: myframe.cpp:2641
 msgid "Max"
 msgstr "최대 "
 
-#: myframe.cpp:2656
+#: myframe.cpp:2641
 msgid "Auto exposure maximum duration"
 msgstr "자동 노출 최대 지속 시간"
 
-#: myframe.cpp:2657
+#: myframe.cpp:2642
 msgid "Target SNR"
 msgstr "SNR 목표 "
 
-#: myframe.cpp:2657
+#: myframe.cpp:2642
 msgid "Auto exposure target SNR value"
 msgstr "목표 SNR을 위한 자동 노출 시간"
 
-#: myframe.cpp:2658
+#: myframe.cpp:2643
 msgid "Auto Exposure"
 msgstr "자동 노출 "
 
-#: myframe.cpp:2710
+#: myframe.cpp:2695
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
 msgstr ""
 "그러면 모든 PHD2 구성값이 재설정되고 프로그램이 종료됩니다. 확실합니까?"
 
-#: myframe.cpp:2710
+#: myframe.cpp:2695
 msgid "Confirmation"
 msgstr "확인 "
 
-#: myframe.cpp:2738
+#: myframe.cpp:2723
 msgid "You must restart PHD2 for the language change to take effect."
 msgstr "언어 변경 사항을 적용하려면 PHD2를 다시 시작해야합니다."
 
-#: myframe.cpp:2738 myframe_events.cpp:274 myframe_events.cpp:481
+#: myframe.cpp:2723 myframe_events.cpp:274 myframe_events.cpp:481
 #: myframe_events.cpp:584
 msgid "Info"
 msgstr "정보 "
@@ -4519,7 +4517,18 @@ msgstr "큰 적위에서 교정 확인"
 msgid "Manual Guide"
 msgstr "수동 가이드 "
 
-#: myframe_events.cpp:969
+#: myframe_events.cpp:976
+msgid ""
+"With your current setting for Dec guide mode, this version of PHD2 will "
+"dither in Declination. To restore the old behavior you can set the RA-only "
+"option in the Dither Settings of the Advanced Dialog."
+msgstr ""
+
+#: myframe_events.cpp:980
+msgid "Set RA-only now"
+msgstr ""
+
+#: myframe_events.cpp:1000
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -4531,15 +4540,15 @@ msgstr ""
 "새로운 구성에 대한 기본 지침 매개 변수를 설정합니다.\n"
 "지금 설치 마법사를 사용 하시겠습니까?"
 
-#: myframe_events.cpp:972
+#: myframe_events.cpp:1003
 msgid "Yes"
 msgstr "예 "
 
-#: myframe_events.cpp:972
+#: myframe_events.cpp:1003
 msgid "No"
 msgstr "아니오 "
 
-#: myframe_events.cpp:972
+#: myframe_events.cpp:1003
 msgid "Setup Wizard Recommendation"
 msgstr "설치 마법사 권장 사항 "
 
@@ -5194,19 +5203,27 @@ msgstr "ASCOM 드라이버 문제 - 로테이터 위치를 얻을 수 없습니�
 msgid "The operation was canceled"
 msgstr "작업이 취소되었습니다."
 
-#: scope.cpp:283 scope.cpp:304
+#: scope.cpp:216
+msgid "Off"
+msgstr "Off"
+
+#: scope.cpp:220
+msgid "Invalid"
+msgstr ""
+
+#: scope.cpp:306 scope.cpp:327
 msgid "INDI Mount"
 msgstr "INDI 마운트 "
 
-#: scope.cpp:532
+#: scope.cpp:555
 msgid "Max RA Duration setting"
 msgstr "최대 RA 지속 시간 설정"
 
-#: scope.cpp:532
+#: scope.cpp:555
 msgid "Max Dec Duration setting"
 msgstr "최대 Dec 지속 시간 설정"
 
-#: scope.cpp:534
+#: scope.cpp:557
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
@@ -5215,7 +5232,7 @@ msgstr ""
 "%s가 PHD가 가이드 별을 잠근 상태로 유지하기 위해 적절한 수정을하지 못하게하"
 "고 있습니다. PHD2가 필요한 수정을 할 수 있도록 %s를 증가 시키십시오."
 
-#: scope.cpp:542
+#: scope.cpp:565
 #, c-format
 msgid ""
 "Even using the maximum moves, PHD2 can't properly correct for the large "
@@ -5226,90 +5243,90 @@ msgstr ""
 "수 없습니다. 이러한 문제의 원인을 제거 할 수있을 때까지 가이드 장애가있습니"
 "다."
 
-#: scope.cpp:791
+#: scope.cpp:814
 msgid "Calibration is based on very few steps, so accuracy is questionable"
 msgstr ""
 "캘리브레이션은 매우 적은 단계를 기반으로하므로 정확성에 의문의 여지가 있습니"
 "다."
 
-#: scope.cpp:794
+#: scope.cpp:817
 msgid "Calibration computed RA/Dec axis angles that are questionable"
 msgstr "의심스러운 RA / Dec 축 각도 캘리브레이션 "
 
-#: scope.cpp:797
+#: scope.cpp:820
 msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
 msgstr ""
 "이 캘리브레이션은 이전의 것과 실질적으로 다릅니다 - 구성을 변경 했습니까?"
 
-#: scope.cpp:800
+#: scope.cpp:823
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr "예상하지 못한 양에의해 RA 및 Dec 속도가  변함"
 
-#: scope.cpp:810
+#: scope.cpp:833
 msgid "Details..."
 msgstr "세부정보..."
 
-#: scope.cpp:1012
+#: scope.cpp:1035
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "RA 캘리브레이션 실패 : 별이 충분히 움직이지 않았습니다."
 
-#: scope.cpp:1019
+#: scope.cpp:1042
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "서쪽단계 %3d, dist=%4.1f"
 
-#: scope.cpp:1086
+#: scope.cpp:1109
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "동쪽단계 %3d, dist=%4.1f"
 
-#: scope.cpp:1147
+#: scope.cpp:1170
 msgid "Clearing backlash step 1"
 msgstr "백래시 제거 단계 1"
 
-#: scope.cpp:1184
+#: scope.cpp:1207
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "백래시 제거 단계 %3d"
 
-#: scope.cpp:1203
+#: scope.cpp:1226
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "백래시 제거 실패 : 별이 충분히 움직이지 않았습니다."
 
-#: scope.cpp:1248
+#: scope.cpp:1271
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "Dec 캘리브레이션 실패 : 별이 충분히 움직이지 않았습니다."
 
-#: scope.cpp:1255
+#: scope.cpp:1278
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "북쪽단계 %3d, dist=%4.1f"
 
-#: scope.cpp:1339
+#: scope.cpp:1362
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "남쪽단계 %3d, dist=%4.1f"
 
-#: scope.cpp:1393
+#: scope.cpp:1416
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Nudge South %3d"
 
-#: scope.cpp:1423
+#: scope.cpp:1446
 msgid "Calibration complete"
 msgstr "캘리브레이션 완료 "
 
-#: scope.cpp:1569
+#: scope.cpp:1591
 msgid "Mount Guide Algorithms"
 msgstr "마운트 가이드 알고리즘 "
 
-#: scope.cpp:1607
+#: scope.cpp:1629
 msgid "Calibration step (ms)"
 msgstr "캘리브레이션 스텝(ms)"
 
-#: scope.cpp:1608
+#: scope.cpp:1630
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -5317,11 +5334,11 @@ msgstr ""
 "캘리브레이션 중에 가이드 펄스를 얼마나 오래동안 보내야 합니까? 적절한 값을 계"
 "산하려면 \"계산기\"를 클릭하십시오."
 
-#: scope.cpp:1612
+#: scope.cpp:1634
 msgid "Calculate..."
 msgstr "계산기"
 
-#: scope.cpp:1613
+#: scope.cpp:1635
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -5329,27 +5346,27 @@ msgstr ""
 "양호한 캘리브레이션 단계 크기를 찾는 데 도움이되는 캘리브레이션 단계 계산기"
 "를 열려면 클릭하십시오."
 
-#: scope.cpp:1620
+#: scope.cpp:1642
 msgid "Reverse Dec output after meridian flip"
 msgstr "자오선 플립 후 역방향 Dec 출력"
 
-#: scope.cpp:1622
+#: scope.cpp:1644
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr "마운트가 자오선 플립 후 Dec 출력을 반전해야하는지 점검하십시오."
 
-#: scope.cpp:1629
+#: scope.cpp:1651
 msgid "Stop guiding when mount slews"
 msgstr "마운트가 이동중일때 가이드 중지 "
 
-#: scope.cpp:1631
+#: scope.cpp:1653
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "이 옵션을 선택하면 마운트가 이동하면 가이드를 중지합니다."
 
-#: scope.cpp:1637
+#: scope.cpp:1659
 msgid "Assume Dec orthogonal to RA"
 msgstr "RA와 직각을 이룬다고 가정하십시오."
 
-#: scope.cpp:1640
+#: scope.cpp:1662
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -5359,40 +5376,40 @@ msgstr ""
 "가 Dec 캘리브레이션에 영향을 미치지 않도록합니다. DEC 캘리브레이션 할 때 옵션"
 "이 적용됩니다."
 
-#: scope.cpp:1644
+#: scope.cpp:1666
 msgid "Use backlash comp"
 msgstr "백래시 보상 사용"
 
-#: scope.cpp:1645
+#: scope.cpp:1667
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr "Dec 방향이 반대 일 때 백래시 보상을 적용하여면 이 옵션을 선택하십시오."
 
-#: scope.cpp:1648
+#: scope.cpp:1670
 msgid "Amount"
 msgstr "양"
 
-#: scope.cpp:1648
+#: scope.cpp:1670
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
 msgstr ""
 "백래시 보정 펄스의 길이 (ms). 이는 관측 된 성능에 따라 자동으로 조정됩니다."
 
-#: scope.cpp:1650
+#: scope.cpp:1672
 msgid "Use Dec compensation"
 msgstr "Dec 보상 사용 "
 
-#: scope.cpp:1652
+#: scope.cpp:1674
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr "망원경의  Dec에 기초하여 RA 가이드 속도 자동 조정"
 
-#: scope.cpp:1657
+#: scope.cpp:1679
 msgid "Max RA duration"
 msgstr "최대 RA 지속 시간"
 
-#: scope.cpp:1657
+#: scope.cpp:1679
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -5400,11 +5417,11 @@ msgstr ""
 "RA에서 보내는 가장 긴 펄스 길이\n"
 "기본값= 2500ms"
 
-#: scope.cpp:1661
+#: scope.cpp:1683
 msgid "Max Dec duration"
 msgstr "최대 Dec 지속 시간"
 
-#: scope.cpp:1661
+#: scope.cpp:1683
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -5412,23 +5429,19 @@ msgstr ""
 "Dec에서 보내는 가장 긴 펄스 길이\n"
 "기본값= 2500ms"
 
-#: scope.cpp:1664 scope.cpp:1787 scope.cpp:1821
-msgid "Off"
-msgstr "Off"
-
-#: scope.cpp:1669
+#: scope.cpp:1695
 msgid "Dec guide mode"
 msgstr "Dec 가이드 모드 "
 
-#: scope.cpp:1669
+#: scope.cpp:1695
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "Dec 가이드 명령이 발행 될 방향"
 
-#: scope.cpp:1779
+#: scope.cpp:1805
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1785
+#: scope.cpp:1811
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -5654,7 +5667,7 @@ msgstr ""
 msgid "Total test duration (s)"
 msgstr ""
 
-#: starcross_test.cpp:128 starcross_test.cpp:460
+#: starcross_test.cpp:128 starcross_test.cpp:461
 msgid "Show Details"
 msgstr ""
 
@@ -5682,72 +5695,72 @@ msgstr ""
 msgid "Verify or adjust your parameters, click 'Start' to begin"
 msgstr ""
 
-#: starcross_test.cpp:252
+#: starcross_test.cpp:253
 #, c-format
 msgid "%d ms move "
 msgstr ""
 
-#: starcross_test.cpp:259
+#: starcross_test.cpp:260
 msgid "WEST"
 msgstr ""
 
-#: starcross_test.cpp:262
+#: starcross_test.cpp:263
 msgid "EAST"
 msgstr ""
 
-#: starcross_test.cpp:265
+#: starcross_test.cpp:266
 msgid "WEST toward starting point"
 msgstr ""
 
-#: starcross_test.cpp:268
+#: starcross_test.cpp:269
 msgid "NORTH"
 msgstr ""
 
-#: starcross_test.cpp:271
+#: starcross_test.cpp:272
 msgid "SOUTH"
 msgstr ""
 
-#: starcross_test.cpp:274
+#: starcross_test.cpp:275
 msgid "NORTH toward starting point"
 msgstr ""
 
-#: starcross_test.cpp:277
+#: starcross_test.cpp:278
 msgid "Test completed"
 msgstr ""
 
-#: starcross_test.cpp:281
+#: starcross_test.cpp:282
 #, c-format
 msgid ", step %d of %d"
 msgstr ""
 
-#: starcross_test.cpp:316
+#: starcross_test.cpp:317
 #, c-format
 msgid "Start a %d exposure on your main camera, then click 'Ok'"
 msgstr ""
 
-#: starcross_test.cpp:330
+#: starcross_test.cpp:331
 msgid ""
 "Wait for the main camera exposure to complete, then save that image for "
 "review"
 msgstr ""
 
-#: starcross_test.cpp:353
+#: starcross_test.cpp:354
 msgid "Star-cross moved failed, test cancelled"
 msgstr ""
 
-#: starcross_test.cpp:362
+#: starcross_test.cpp:363
 msgid "Mount connection lost, test cancelled"
 msgstr ""
 
-#: starcross_test.cpp:373
+#: starcross_test.cpp:374
 msgid "Test cancelled"
 msgstr ""
 
-#: starcross_test.cpp:432
+#: starcross_test.cpp:433
 msgid "Mount connection must be restored"
 msgstr ""
 
-#: starcross_test.cpp:454
+#: starcross_test.cpp:455
 msgid "Hide Details"
 msgstr ""
 

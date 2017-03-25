@@ -68,33 +68,33 @@ static wxString DefaultDir(void)
 }
 
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-wxString Logger::GetLogDir(void)
+const wxString& Logger::GetLogDir(void)
 {
-    if (m_Initialized)
-        return m_CurrentDir;
-
-    // One-time initialization at start-up
-    wxString rslt = "";
-
-    if (pConfig)
+    if (!m_Initialized)
     {
-        rslt = pConfig->Global.GetString ("/frame/LogDir", "");
-        if (rslt.length() == 0)
-            rslt = DefaultDir();                // user has never even looked at it
+        // One-time initialization at start-up
+        wxString rslt;
+
+        if (pConfig)
+        {
+            rslt = pConfig->Global.GetString("/frame/LogDir", "");
+            if (rslt.length() == 0)
+                rslt = DefaultDir();                // user has never even looked at it
+            else
+                if (!wxDirExists(rslt))        // user might have deleted our old directories
+                {
+                    if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
+                        rslt = DefaultDir();
+                }
+        }
         else
-            if (!wxDirExists(rslt))        // user might have deleted our old directories
-            {
-                if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
-                    rslt = DefaultDir();
-            }
+            rslt = DefaultDir();                    // shouldn't ever happen
+
+        m_CurrentDir = rslt;
+        m_Initialized = true;
     }
-    else
-        rslt = DefaultDir();                    // shouldn't ever happen
 
-    m_CurrentDir = rslt;
-    m_Initialized = true;
-
-    return rslt;
+    return m_CurrentDir;
 }
 
 // Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
@@ -164,4 +164,51 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
 
     if (hitCount > 0)
         Debug.Write(wxString::Format("Removed %d files of pattern: %s\n", hitCount, filePattern));
+}
+
+// Same as RemoveMatchingFiles but this applies to subdirectories in the logging directory.  Implemented to clean up the "CameraFrames..." diagnostic
+// directories for image logging
+void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
+{
+    wxString dirRoot = GetLogDir();
+    wxArrayString dirTargets;
+    int hitCount = 0;
+    wxDateTime oldestDate = wxDateTime::UNow() + wxDateSpan::Days(-DaysOld);
+    wxString oldestDateStr = oldestDate.Format(_T("%Y-%m-%d_%H%M%S"));
+    wxDir dir;
+    wxString subdir;
+
+    try
+    {
+        if (wxDirExists(dirRoot))
+        {
+            if (dir.Open(dirRoot))
+            {
+                bool more = dir.GetFirst(&subdir, filePattern, wxDIR_DIRS);
+                while (more)
+                {
+                    wxString rslt = subdir.AfterFirst('_');
+                    if (rslt < oldestDateStr)
+                        dirTargets.Add(subdir);
+                    more = dir.GetNext(&subdir);
+                }
+                dir.Close();
+                for (int i = 0; i < dirTargets.GetCount(); i++)
+                {
+                    ++hitCount;
+                    subdir = dirRoot + PATHSEPSTR + dirTargets[i];
+                    bool didit = wxDir::Remove(subdir, wxPATH_RMDIR_RECURSIVE);
+                    if (!didit)
+                        Debug.Write(wxString::Format("Error removing old debug log directory: %s\n", subdir));
+                }
+            }
+        }
+    }
+    catch (const wxString& Msg)            // Eat the errors and press ahead, no place for UI here
+    {
+        Debug.Write(wxString::Format("Error removing old debug log directory %s: %s\n", subdir, Msg));
+    }
+
+    if (hitCount > 0)
+        Debug.Write(wxString::Format("Removed %d directories of pattern: %s\n", hitCount, filePattern));
 }

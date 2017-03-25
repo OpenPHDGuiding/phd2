@@ -922,6 +922,7 @@ static double rms(unsigned int nr, const TrendLineAccum *accum)
 
 void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
 {
+    m_stats.nr = nr;
     m_stats.rms_ra = rms(nr, &m_trendLineAccum[2]);
     m_stats.rms_dec = rms(nr, &m_trendLineAccum[3]);
     m_stats.rms_tot = hypot(m_stats.rms_ra, m_stats.rms_dec);

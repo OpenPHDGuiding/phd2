@@ -396,6 +396,22 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         hdr.write("SCALE", sc, "Image scale (arcsec / pixel)");
         hdr.write("PIXSCALE", sc, "Image scale (arcsec / pixel)");
         hdr.write("PEDESTAL", (unsigned int) Pedestal, "dark subtraction bias value");
+        hdr.write("SATURATE", (1U << BitsPerPixel) - 1, "Data value at which saturation occurs");
+
+        const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
+        if (lockPos.IsValid())
+        {
+            hdr.write("PHDLOCKX", (float) lockPos.X, "PHD2 lock position x");
+            hdr.write("PHDLOCKY", (float) lockPos.Y, "PHD2 lock position y");
+        }
+
+        if (!Subframe.IsEmpty())
+        {
+            hdr.write("PHDSUBFX", (unsigned int) Subframe.x, "PHD2 subframe x");
+            hdr.write("PHDSUBFY", (unsigned int) Subframe.y, "PHD2 subframe y");
+            hdr.write("PHDSUBFW", (unsigned int) Subframe.width, "PHD2 subframe width");
+            hdr.write("PHDSUBFH", (unsigned int) Subframe.height, "PHD2 subframe height");
+        }
 
         fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
 
@@ -410,6 +426,14 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
     }
 
     return bError;
+}
+
+static bool fhdr_int(fitsfile *fptr, const char *key, int *val)
+{
+    char *k = const_cast<char *>(key);
+    int status = 0;
+    fits_read_key(fptr, TINT, k, val, NULL, &status);
+    return status == 0;
 }
 
 bool usImage::Load(const wxString& fname)
@@ -464,12 +488,24 @@ bool usImage::Load(const wxString& fname)
             if (status == 0)
                 ImgExpDur = (int) (exposure * 1000.0);
 
-            key = const_cast<char *>("STACKCNT");
             int stackcnt;
-            status = 0;
-            fits_read_key(fptr, TINT, key, &stackcnt, NULL, &status);
-            if (status == 0)
-                ImgStackCnt = (int) stackcnt;
+            if (fhdr_int(fptr, "STACKCNT", &stackcnt))
+                ImgStackCnt = stackcnt;
+
+            int pedestal;
+            if (fhdr_int(fptr, "PEDESTAL", &pedestal))
+              Pedestal = (unsigned short) pedestal;
+
+            int saturate;
+            if (fhdr_int(fptr, "SATURATE", &saturate))
+                BitsPerPixel = saturate > 255 ? 16 : 8;
+
+            wxRect subf;
+            bool ok = fhdr_int(fptr, "PHDSUBFX", &subf.x);
+            if (ok) ok = fhdr_int(fptr, "PHDSUBFY", &subf.y);
+            if (ok) ok = fhdr_int(fptr, "PHDSUBFW", &subf.width);
+            if (ok) ok = fhdr_int(fptr, "PHDSUBFH", &subf.height);
+            if (ok) Subframe = subf;
 
             PHD_fits_close_file(fptr);
         }

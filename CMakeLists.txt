@@ -36,8 +36,8 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 set(VERSION_MAJOR 2)
-set(VERSION_MINOR 5)
-set(VERSION_PATCH 0)
+set(VERSION_MINOR 6)
+set(VERSION_PATCH 3)
 
 #################################################################################
 #
@@ -56,16 +56,14 @@ if(WIN32)
 endif()
 
 if(UNIX AND NOT APPLE)
-  set(CMAKE_INSTALL_PREFIX /usr)
-endif()
+  if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "PHD2 install path" FORCE)
+  endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+endif(UNIX AND NOT APPLE)
 
 set(USE_FOLDERS TRUE)
 set(BUILD_SHARED_LIBS FALSE)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-
-# options
-option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" OFF)
 
 
 
@@ -81,6 +79,8 @@ enable_testing()
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+
+include_directories(${phd_src_dir})
 
 
 # build type, by default to release (with optimisations)
@@ -131,10 +131,7 @@ include(thirdparty/thirdparty.cmake)
 #################################################################################
 #
 # contributions
-if(${GUIDING_GAUSSIAN_PROCESS})
-  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
-  message(STATUS "[configuration] PHD2 includes the Gaussian Process guiding algorithm")
-endif()
+add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
 
@@ -329,14 +326,11 @@ set(guiding_SRC
 )
 
 # gaussian process, also the main project should link to the GP project in the contrib dir
-if(${GUIDING_GAUSSIAN_PROCESS})
-  set(guiding_SRC 
-      ${guiding_SRC}
-      ${phd_src_dir}/UDPGuidingInteraction.cpp
-      ${phd_src_dir}/UDPGuidingInteraction.h
-      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
-      ${phd_src_dir}/guide_algorithm_gaussian_process.h)
-endif()
+set(guiding_SRC
+  ${guiding_SRC}
+  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+  ${phd_src_dir}/guide_algorithm_gaussian_process.h
+)
 
 source_group(Guiding FILES ${guiding_SRC})
 
@@ -394,6 +388,8 @@ set(phd2_SRC
   ${phd_src_dir}/guidinglog.h
   ${phd_src_dir}/image_math.cpp
   ${phd_src_dir}/image_math.h
+  ${phd_src_dir}/imagelogger.cpp
+  ${phd_src_dir}/imagelogger.h
   ${phd_src_dir}/json_parser.cpp
   ${phd_src_dir}/json_parser.h
   ${phd_src_dir}/logger.cpp
@@ -718,10 +714,7 @@ target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(phd2 ${PHD_LINK_EXTERNAL})
 
 # option configurations parts
-if(${GUIDING_GAUSSIAN_PROCESS})
-  target_link_libraries(phd2 MPIIS_GP)
-  target_compile_definitions(phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
-endif()
+target_link_libraries(phd2 MPIIS_GP GPGuider)
 
 
 

@@ -160,6 +160,9 @@ void Guider::LoadProfileSettings(void)
 
     bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
     SetScaleImage(scaleImage);
+
+    double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", 0.);
+    SetMinStarHFD(minHFD);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -1081,6 +1084,20 @@ static void CheckCalibrationAutoLoad()
     }
 }
 
+void Guider::DisplayImage(usImage *img)
+{
+    if (IsCalibratingOrGuiding())
+        return;
+ 
+    // switch in the new image
+    usImage *prev = m_pCurrentImage;
+    m_pCurrentImage = img;
+
+    ImageLogger::SaveImage(prev);
+
+    UpdateImageDisplay();
+}
+
 /*************  A new image is ready ************************/
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
@@ -1098,7 +1115,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
             usImage *pPrevImage = m_pCurrentImage;
             m_pCurrentImage = pImage;
-            delete pPrevImage;
+
+            ImageLogger::SaveImage(pPrevImage);
         }
         else
         {
@@ -1132,7 +1150,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (UpdateCurrentPosition(pImage, &info))           // true means error
         {
-            info.frameNumber = pFrame->m_frameCounter;
+            info.frameNumber = pImage->FrameNum;
             info.time = pFrame->TimeSinceGuidingStarted();
             info.avgDist = CurrentError();
 
@@ -1140,7 +1158,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
-                    EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                    EvtServer.NotifyLooping(pImage->FrameNum);
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
@@ -1196,7 +1214,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_UNINITIALIZED:
             case STATE_SELECTING:
             case STATE_SELECTED:
-                EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                EvtServer.NotifyLooping(pImage->FrameNum);
                 break;
             case STATE_CALIBRATING_PRIMARY:
             case STATE_CALIBRATING_SECONDARY:
@@ -1281,13 +1299,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 }
                 assert(!pSecondaryMount || !pSecondaryMount->IsConnected() || pSecondaryMount->IsCalibrated());
 
-                // camera angle is now known, so ok to calculate shift rate camera coords
-                UpdateLockPosShiftCameraCoords();
-                if (LockPosShiftEnabled())
-                {
-                    GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
-                }
-
                 SetState(STATE_CALIBRATED);
                 // fall through
             case STATE_CALIBRATED:
@@ -1298,6 +1309,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
                 EvtServer.NotifyStartGuiding();
+
+                // camera angle is known, so ok to calculate shift rate camera coords
+                UpdateLockPosShiftCameraCoords();
+                if (LockPosShiftEnabled())
+                    GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
+
                 CheckCalibrationAutoLoad();
                 break;
             case STATE_GUIDING:
@@ -1379,7 +1396,7 @@ bool Guider::ShiftLockPosition(void)
     return !isValid;
 }
 
-void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords)
+void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords, bool updateToolWin)
 {
     Debug.Write(wxString::Format("SetLockPosShiftRate: rate = %.2f,%.2f units = %d isMountCoords = %d\n",
         rate.X, rate.Y, units, isMountCoords));
@@ -1388,7 +1405,7 @@ void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool 
     m_lockPosShift.shiftUnits = units;
     m_lockPosShift.shiftIsMountCoords = isMountCoords;
 
-    CometTool::UpdateCometToolControls();
+    CometTool::UpdateCometToolControls(updateToolWin);
 
     if (m_state == STATE_CALIBRATED || m_state == STATE_GUIDING)
     {
@@ -1415,7 +1432,7 @@ void Guider::EnableLockPosShift(bool enable)
             GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
         }
 
-        CometTool::UpdateCometToolControls();
+        CometTool::UpdateCometToolControls(false);
     }
 }
 
@@ -1602,6 +1619,13 @@ EXPOSED_STATE Guider::GetExposedState(void)
     }
 
     return rval;
+}
+
+void Guider::SetMinStarHFD(double val)
+{
+    Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
+    pConfig->Profile.SetDouble("/guider/StarMinHFD", val);
+    m_minStarHFD = val;
 }
 
 void Guider::SetBookmarksShown(bool show)

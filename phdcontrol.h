@@ -46,17 +46,18 @@ struct SettleParams
 class PhdController
 {
 public:
-
     static bool CanGuide(wxString *error);
     static bool Guide(bool recalibrate, const SettleParams& settle, wxString *error);
-    static bool Dither(double pixels, bool raOnly, const SettleParams& settle, wxString *error);
-    static bool Dither(double pixels, bool raOnly, int settleFrames, wxString *error);
-    static bool DitherCompat(double pixels, bool raOnly, wxString *error);
+    static bool Dither(double pixels, bool forceRaOnly, const SettleParams& settle, wxString *error);
+    static bool Dither(double pixels, int settleFrames, wxString *error);
+    static bool DitherCompat(double pixels, wxString *error);
 
     static void AbortController(const wxString& reason);
-    static void UpdateControllerState(void);
-    static void OnAppInit(void);
-    static void OnAppExit(void);
+    static void UpdateControllerState();
+    static void OnAppInit();
+    static void OnAppExit();
+
+    static bool IsSettling();
 };
 
 #endif

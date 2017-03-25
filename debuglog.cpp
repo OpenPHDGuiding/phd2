@@ -49,12 +49,6 @@ DebugLog::DebugLog(void)
     InitVars();
 }
 
-DebugLog::DebugLog(const wxString& name, bool bEnabled = true)
-{
-    InitVars();
-    Init(name, bEnabled);
-}
-
 DebugLog::~DebugLog(void)
 {
     wxFFile::Flush();
@@ -70,7 +64,7 @@ bool DebugLog::Enable(bool bEnabled)
     return prevState;
 }
 
-bool DebugLog::Init(const wxString& name, bool bEnable, bool bForceOpen)
+bool DebugLog::Init(const wxDateTime& initTime, bool bEnable, bool bForceOpen)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
 
@@ -84,9 +78,7 @@ bool DebugLog::Init(const wxString& name, bool bEnable, bool bForceOpen)
 
     if (bEnable && (m_pPathName.IsEmpty() || bForceOpen))
     {
-        wxDateTime now = wxDateTime::UNow();
-
-        m_pPathName = GetLogDir() + PATHSEPSTR + "PHD2_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+        m_pPathName = GetLogDir() + PATHSEPSTR + initTime.Format(_T("PHD2_DebugLog_%Y-%m-%d_%H%M%S.txt"));
 
         if (!wxFFile::Open(m_pPathName, "a"))
         {
@@ -110,7 +102,8 @@ bool DebugLog::ChangeDirLog(const wxString& newdir)
         bOk = false;
     }
 
-    Init("debug", bEnabled, true);                // lots of side effects, but all good...
+    Init(wxGetApp().GetInitTime(), bEnabled, true);                // lots of side effects, but all good...
+
     return bOk;
 }
 

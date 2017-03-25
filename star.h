@@ -55,6 +55,7 @@ public:
         STAR_SATURATED,
         STAR_LOWSNR,
         STAR_LOWMASS,
+        STAR_LOWHFD,
         STAR_TOO_NEAR_EDGE,
         STAR_MASSCHANGE,
         STAR_ERROR,
@@ -73,8 +74,8 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(const usImage *pImg, int searchRegion, FindMode mode);
-    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation);
     bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
 
     bool WasFound(FindResult result);

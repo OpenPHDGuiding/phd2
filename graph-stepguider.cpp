@@ -306,6 +306,33 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.DrawLine(center.x+xOffset, center.y+yOffset, center.x-xOffset, center.y+yOffset);
     dc.DrawLine(center.x-xOffset, center.y+yOffset, center.x-xOffset, center.y-yOffset);
 
+    // draw ra-dec directions
+    if (pMount && pMount->IsCalibrated() && pSecondaryMount && pSecondaryMount->IsCalibrated())
+    {
+        double const LEN = 8.0;
+        PHD_Point mnt, cam, ao;
+
+        // RA vector
+        mnt.SetXY(1., 0.);
+        pSecondaryMount->TransformMountCoordinatesToCameraCoordinates(mnt, cam, false);
+        pMount->TransformCameraCoordinatesToMountCoordinates(cam, ao, false);
+        ao *= LEN / ao.Distance();
+        ao.X *= xPixelsPerStep;
+        ao.Y *= yPixelsPerStep;
+        dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(), 1, wxPENSTYLE_DOT));
+        dc.DrawLine(center.x - ao.X, center.y - ao.Y, center.x + ao.X, center.y + ao.Y);
+
+        // Dec vector
+        mnt.SetXY(0., 1.);
+        pSecondaryMount->TransformMountCoordinatesToCameraCoordinates(mnt, cam, false);
+        pMount->TransformCameraCoordinatesToMountCoordinates(cam, ao, false);
+        ao *= LEN / ao.Distance();
+        ao.X *= xPixelsPerStep;
+        ao.Y *= yPixelsPerStep;
+        dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(), 1, wxPENSTYLE_DOT));
+        dc.DrawLine(center.x - ao.X, center.y - ao.Y, center.x + ao.X, center.y + ao.Y);
+    }
+
     dc.SetPen(*wxWHITE_PEN);
 
     unsigned int startPoint = m_maxHistorySize - m_length;

@@ -243,10 +243,10 @@ public:
 
     virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType);
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
-                                                      PHD_Point& mountVectorEndpoint);
+                                                      PHD_Point& mountVectorEndpoint, bool logged = true);
 
     bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
-                                                     PHD_Point& cameraVectorEndpoint);
+                                                      PHD_Point& cameraVectorEndpoint, bool logged = true);
 
     void LogGuideStepInfo(void);
 

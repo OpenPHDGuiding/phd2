@@ -55,6 +55,7 @@ public:
     wxSpinCtrl *m_pSearchRegion;
     wxCheckBox *m_pEnableStarMassChangeThresh;
     wxSpinCtrlDouble *m_pMassChangeThreshold;
+    wxSpinCtrlDouble *m_MinHFD;
 
     virtual void LoadValues(void);
     virtual void UnloadValues(void);

@@ -178,8 +178,9 @@ CometToolWin::CometToolWin()
 
     UpdateStatus();
 
-    wxCommandEvent dummy;
-    OnAppStateNotify(dummy); // init controls
+    wxCommandEvent notify;
+    notify.SetInt(1); // init rates
+    OnAppStateNotify(notify); // init controls
 }
 
 CometToolWin::~CometToolWin(void)
@@ -213,7 +214,7 @@ void CometToolWin::UpdateGuiderShift()
     PHD_Point rate(m_xRate->GetValue(), m_yRate->GetValue());
     GRAPH_UNITS units = m_units->GetSelection() == 0 ? UNIT_PIXELS : UNIT_ARCSEC;
     bool isMountCoords = m_axes->GetSelection() == 1;
-    pFrame->pGuider->SetLockPosShiftRate(rate, units, isMountCoords);
+    pFrame->pGuider->SetLockPosShiftRate(rate, units, isMountCoords, false);
 }
 
 void CometToolWin::OnSpinCtrlX(wxSpinDoubleEvent& event)
@@ -285,7 +286,7 @@ void CometToolWin::CalcRate()
 {
     double dt = (double) (::wxGetUTCTimeMillis().GetValue() - m_startTime) / 3600000.0; // hours
     PHD_Point rate = (pFrame->pGuider->LockPosition() - m_startPos) / dt;
-    pFrame->pGuider->SetLockPosShiftRate(rate, UNIT_PIXELS, false);
+    pFrame->pGuider->SetLockPosShiftRate(rate, UNIT_PIXELS, false, true);
 }
 
 void CometToolWin::UpdateStatus()
@@ -304,15 +305,19 @@ void CometToolWin::UpdateStatus()
     }
 }
 
-void CometToolWin::OnAppStateNotify(wxCommandEvent& WXUNUSED(event))
+void CometToolWin::OnAppStateNotify(wxCommandEvent& event)
 {
     const LockPosShiftParams& shift = pFrame->pGuider->GetLockPosShiftParams();
 
     m_enable->SetValue(shift.shiftEnabled);
     SetEnabledState(this, m_enable->GetValue());
 
-    m_xRate->SetValue(shift.shiftRate.X);
-    m_yRate->SetValue(shift.shiftRate.Y);
+    bool updateRates = event.GetInt() != 0;
+    if (updateRates)
+    {
+        m_xRate->SetValue(shift.shiftRate.X);
+        m_yRate->SetValue(shift.shiftRate.Y);
+    }
 
     if (shift.shiftIsMountCoords)
     {
@@ -377,13 +382,14 @@ void CometTool::NotifyUpdateLockPos()
     }
 }
 
-void CometTool::UpdateCometToolControls()
+void CometTool::UpdateCometToolControls(bool updateRates)
 {
     // notify comet tool to update its controls
     if (pFrame && pFrame->pCometTool)
     {
         wxCommandEvent event(APPSTATE_NOTIFY_EVENT, pFrame->GetId());
         event.SetEventObject(pFrame);
+        event.SetInt(updateRates ? 1 : 0);
         wxPostEvent(pFrame->pCometTool, event);
     }
 }

@@ -238,6 +238,7 @@ SCT_StepInfo StarCrossDialog::NextStep(const SCT_StepInfo& prevStep)
         nextStep.pulseCount = m_DirectionalPulseCount;
         break;
     case SCT_STATE_NORTH_RETURN:
+    case SCT_STATE_DONE:
         nextStep.state = SCT_STATE_DONE;
         nextStep.direction = NONE;
         nextStep.pulseCount = 0;
@@ -312,9 +313,9 @@ void StarCrossDialog::ExecuteTest()
         pFrame->OnLoopExposure(dummy);
     }
     m_CancelTest = false;
-
+    // Leave plenty of room for camera exposure and mount response overhead
     wxMessageBox(wxString::Format(_("Start a %d exposure on your main camera, then click 'Ok'"),
-        (totalPulses * m_Amount / 1000) + 10));
+        (2 * totalPulses * m_Amount) / 1000));
     while (!done && !m_CancelTest)
     {
         if (dirCount == currStep.pulseCount)

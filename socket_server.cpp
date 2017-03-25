@@ -238,7 +238,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 double size = GetDitherAmount(ditherType);
 
                 wxString errMsg;
-                bool ok = PhdController::DitherCompat(size, m_ditherRaOnly, &errMsg);
+                bool ok = PhdController::DitherCompat(size, &errMsg);
                 if (!ok)
                 {
                     throw ERROR_INFO(+errMsg);

@@ -35,7 +35,7 @@ guide camera, the mount, and, optionally, an 'aux' mount, an adaptive optics
 (AO) device, or a rotator. &nbsp;When you click on the USB
 icon, you'll see a dialog that looks like this: <br>
 <br>
-<img style="width: 465px; height: 311px;" alt="" src="GearDialog_Basic.png"><br>
+<img style="width: 503px; height: 308px;" alt="" src="GearDialog_Basic.png"><br>
 <br>
 <h4><a name="Camera_Selection"></a>Camera Selection</h4>
 The
@@ -64,7 +64,7 @@ there are unresolved problems with the vendor's drivers<br>3. &nbsp;If the speci
 the PHD2 download is free, the simplest course of action is to&nbsp;
 install it and see if your camera is shown in the PHD2 drop-down list.
 &nbsp;Alternatively, you can check for camera support info in the Wiki on the PHD2 Google forum: &nbsp;<a href="https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport">https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport</a><br><br>Finally, you can always post a message on the&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> asking if anyone has experience with the camera. &nbsp;<br><br>
-Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG dual-chip cameras</h4>Many
+Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG Dual-chip Cameras</h4>Many
 cameras from the Santa Barbara Instrument Group (SBIG) have
 two&nbsp;sensors - a primary one for imaging and a second, smaller one
 for guiding. &nbsp;While the two sensors are physically separate, they
@@ -85,7 +85,18 @@ the time of this writing (October 2015), the only imaging
 application that does this is Sequence Generator Pro (SGP). &nbsp;If you
 use SGP as your main imaging application, you can also use their "SGP
 API Guider" module, which allows PHD2 to access the guide chip on the
-SBIG camera.
+SBIG camera.<br><h4>ASCOM Camera Properties</h4>If
+you choose an ASCOM camera, you'll also be able to access the ASCOM
+setup dialog for that camera by clicking on the properties button
+immediately to the left of the 'Connect' button: <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_AscomProps.png"><br><br>Depending on the camera, this may provide access to properties that are not controlled by PHD2.<br><h4>Multiple Cameras of the Same Type</h4>If
+your computer is connected to multiple cameras from the same
+manufacturer, you'll usually need to specify which camera should be
+used by PHD2. &nbsp;You can do that by clicking on the 'fork' button to
+the right of the camera drop-down list: <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_Camera2.png"><br><br>Clicking
+this button will show a list of the available cameras and you can
+choose the one you want. &nbsp;PHD2 will remember the choice and save
+it as part of your equipment profile, so you should only need to do
+this once.
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -141,7 +152,7 @@ calibration won't be automatically adjusted for declination, nor will
 it be automatically&nbsp;flipped when the side-of-pier changes. &nbsp;You
 can restore these features by specifying an "aux" mount connection that
 will be used only to get the telescope pointing information. &nbsp;An
-example is shown below: <br><br><img style="width: 465px; height: 311px;" alt="" src="GearDialog_Basic.png"><br><br>For
+example is shown below: <br><br><img style="width: 503px; height: 308px;" alt="" src="GearDialog_AuxMount.png"><br><br>For
 Windows users, the "aux" mount can use any of the ASCOM-compatible
 mount drivers, while Linux users can take advantage of INDI drivers.
 &nbsp;The "aux" mount choice will be used only if the primary mount
@@ -190,7 +201,7 @@ With
 now have the option of controlling the Starlight Xpress
 adaptive optics unit and/or any of several ASCOM-compatible camera
 rotators &nbsp;These can be specified by clicking on the 'More
-Equipment..." button in the above dialog: <br><br><img style="width: 465px; height: 392px;" alt="" src="GearDialog_Extended.png"><br><br>If
+Equipment..." button in the above dialog: <br><br><img style="width: 505px; height: 387px;" alt="" src="GearDialog_Extended.png"><br><br>If
 you don't have these devices, just leave the selections at 'None.'
 &nbsp;If these devices are connected, you'll see additional tabs in
 the 'Advanced Settings' dialog that provide access to various
@@ -370,7 +381,9 @@ displacements that need to be corrected.</li>
 As a starting point,&nbsp;try using exposure durations in the range
 of one to five seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
 guide star&nbsp;by using the Alt-S keyboard shortcut after stars are
-visible in the main display. &nbsp;If you are just starting with this
+visible in the main display. If you want to de-select a star without
+choosing another one, you can do a shift-click anywhere on the image display window. &nbsp; If you are just
+starting with this
 equipment set-up, you'll probably need to focus the guide camera -
 doing so is important for good guiding. &nbsp;You can use&nbsp;the <a href="Tools.htm#Star_Profile">Star Profile tool</a> to help with that process. <br><br>
 There is also an Auto exposure time selection available. When exposure
@@ -441,34 +454,7 @@ tool and measure it directly.<br>
 <br>
 In
 most cases, calibration will complete automatically without any user
-involvement. &nbsp;Obviously, this assumes that the mount and all
-the
-cable connections are working correctly. &nbsp;If they are not, the
-calibration is likely to fail with a message that the "star did not
-move enough";&nbsp; and you'll need to do some trouble-shooting.
-&nbsp;If the star has basically not moved at all in one or more
-directions, you should look first at the cable connections and mount
-behavior. The "manual guide" function under the 'Tools' menu can help
-with this as can the <a href="Trouble_shooting.htm">trouble-shooting</a>
-section of this document. &nbsp; The size of the guide pulses used
-during calibration is controlled by a parameter called the "calibration
-step-size." &nbsp;The new-profile-wizard computes this value
-automatically, and it should work well if you've entered the correct
-values for camera pixel size and guide scope focal length. &nbsp;If you
-have some need to adjust the calibration step-size, &nbsp;go into the
-"brain dialog" (<a href="Advanced_settings.htm">Advanced Settings</a>)<big><span style="font-weight: bold;"><span style="font-weight: bold;"></span> </span></big>and
-click on the 'Guiding' tab. &nbsp;On that tab, you'll find a setting
-for
-'Calibration step(ms)', and that's where you change the value.
-&nbsp;There's even a 'Calculate' button that will help you choose
-an
-optimal value for the parameter. &nbsp;Once you've set this value,
-it
-will be remembered as part of your equipment profile and you probably
-won't have to adjust it again. &nbsp;But to reiterate, if you've used
-the new-profile-wizard to build your profile, there's little reason to
-modify the calibration step-size unless you subsequently change the
-guide speed in your mount.<br><br>If
+involvement. &nbsp;If you get frequent failures during calibration, you should consult the <a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section.</a><br><br>If
 you're using an ASCOM (or Indi) connection for either the 'mount' or
 'aux-mount', a good calibration can be re-used for a long&nbsp;time,
 and that is the preferred way to operate. &nbsp;These &nbsp;connection
