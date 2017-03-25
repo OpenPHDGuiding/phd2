@@ -146,11 +146,6 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %hu) frame %u\n", searchRegion, base_x, base_y, mode,
             pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height, minHFD, maxADU, pImg->FrameNum));
 
-        if (base_x < 0 || base_y < 0)
-        {
-            throw ERROR_INFO("coordinates are invalid");
-        }
-
         int minx, miny, maxx, maxy;
 
         if (pImg->Subframe.IsEmpty())
@@ -172,6 +167,11 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         int end_x   = wxMin(base_x + searchRegion, maxx);
         int start_y = wxMax(base_y - searchRegion, miny);
         int end_y   = wxMin(base_y + searchRegion, maxy);
+
+        if (end_x <= start_x || end_y <= start_y)
+        {
+            throw ERROR_INFO("coordinates are invalid");
+        }
 
         const unsigned short *imgdata = pImg->ImageData;
         int rowsize = pImg->Size.GetWidth();
