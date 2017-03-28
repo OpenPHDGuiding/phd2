@@ -103,14 +103,21 @@ include(thirdparty/thirdparty.cmake)
 
 #################################################################################
 #
-# generates the documentation targets
-generate_doc_targets()
+# generates the documentation targets. Part of those targets define the
+# zip files PHD2GuideHelp.zip. In order to include them in the main build
+# we need to declare them here. Those targets should not depend on any source file
+# but may require thirdparty (gettext etc).
+generate_doc_targets(
+  DEFAULT_LOCALE default_locale
+  GENERATED_LOCALES all_locales)
 
 
 
 #################################################################################
 #
 # contributions
+
+# PEC Guider, Max Planck Institute for Intelligent Systems, Tuebingen, Germany.
 add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 
 
@@ -291,8 +298,7 @@ set(guiding_SRC
   ${phd_src_dir}/backlash_comp.h
   ${phd_src_dir}/guide_algorithm_hysteresis.cpp
   ${phd_src_dir}/guide_algorithm_hysteresis.h
-  # gaussian process, also the main project should link to the GP project in the contrib dir
-  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp # MPI.IS PEC Guider: requires link to the GP target (contrib)
   ${phd_src_dir}/guide_algorithm_gaussian_process.h
   ${phd_src_dir}/guide_algorithm_identity.cpp
   ${phd_src_dir}/guide_algorithm_identity.h
@@ -388,7 +394,6 @@ set(phd2_SRC
   ${phd_src_dir}/optionsbutton.h
   ${phd_src_dir}/phd.cpp
   ${phd_src_dir}/phd.h
-  ${phd_src_dir}/PHD2GuideHelp.zip
 
   ${phd_src_dir}/phdconfig.cpp
   ${phd_src_dir}/phdconfig.h
@@ -470,7 +475,6 @@ if (WIN32)
       ${phd2_SRC}
 
       # windows-only sources
-
       ${phd_src_dir}/parallelports.h
       ${phd_src_dir}/parallelport.h
       ${phd_src_dir}/parallelport.cpp
@@ -485,6 +489,36 @@ if (WIN32)
 endif()
 
 source_group(src FILES ${phd2_SRC})
+
+
+# Adding the generated documentation artifacts to the project
+if(NOT TARGET ${default_locale}_html)
+  message(FATAL_ERROR "The HTML target for the default locale cannot be found")
+endif()
+
+# Raffi: this target name is brought here, it should be hidden
+if(NOT TARGET ${default_language_extraction_target_name})
+  message(FATAL_ERROR "The translation target for the default locale cannot be found")
+endif()
+
+foreach(locale IN LISTS all_locales)
+  get_zip_file(current_zip LOCALE ${locale})
+  if(NOT "${current_zip}" STREQUAL "")
+    source_group(generated_doc\\${locale} FILES ${current_zip})
+    list(APPEND phd2_SRC ${current_zip})
+  endif()
+
+  get_translation_files(current_messages LOCALE ${locale})
+  if(NOT "${current_messages}" STREQUAL "")
+    source_group(generated_translation\\${locale} FILES ${current_messages})
+    list(APPEND phd2_SRC ${current_messages})
+  else()
+    if(NOT "${locale}" STREQUAL "${default_locale}")
+      message(WARNING "The translation for locale ${locale} is not found")
+    endif()
+  endif()
+
+endforeach()
 
 
 MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
@@ -511,29 +545,16 @@ if(APPLE)
 
   # bundle definitions
   # please edit the copyrights
-  set( MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
-  set( MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
-  set( MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set( MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2015 Open-phd-guiding team" )
-  set( MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
-  set( MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
+  set(MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
+  set(MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
+  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2015 Open-phd-guiding team" )
+  set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
+  set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set(MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
-  # get the locales
-  file( GLOB_RECURSE local_files
-        LIST_DIRECTORIES false
-        RELATIVE ${PHD_PROJECT_ROOT_DIR}
-        ${PHD_PROJECT_ROOT_DIR}/locale/*.[mp]o)
-
-  file( GLOB_RECURSE local_help_files
-        LIST_DIRECTORIES false
-        RELATIVE ${PHD_PROJECT_ROOT_DIR}
-        ${PHD_PROJECT_ROOT_DIR}/locale/*PHD2GuideHelp.zip)
-
-  set(local_files ${local_files} ${local_help_files})
-
-
+  # main target
   add_executable(
     phd2
     MACOSX_BUNDLE
@@ -545,14 +566,10 @@ if(APPLE)
 
     # resources of the bundle
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
-    ${phd_src_dir}/PHD2GuideHelp.zip
 
     # extra frameworks
     ${sbigudFramework}
     ${fcCamFramework}
-
-    # locales
-    ${local_files}
   )
   set_target_properties(
     phd2
@@ -567,17 +584,26 @@ if(APPLE)
 
   set_source_files_properties(
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
-    ${phd_src_dir}/PHD2GuideHelp.zip
       PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
   )
 
-  foreach(_l IN LISTS local_files)
-    get_filename_component(_dest ${_l} DIRECTORY)
+  # Bundle the help + locales files
+  foreach(locale IN LISTS all_locales)
+
+    if("${locale}" STREQUAL "${default_locale}")
+      set(destination "Resources")
+    else()
+      set(destination "Resources/${locale}")
+    endif()
+
+    get_zip_file(current_zip LOCALE ${locale})
+    get_translation_files(current_translations LOCALE ${locale})
+
     set_source_files_properties(
-      ${_l}
+      ${current_zip} ${current_translations}
       PROPERTIES
-        MACOSX_PACKAGE_LOCATION Resources/${_dest})
+        MACOSX_PACKAGE_LOCATION ${destination})
   endforeach()
 
   # this is a workaround to what looks like a bug on cmake for Makefile generators
@@ -646,10 +672,68 @@ elseif(WIN32)
   # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
 
+  # here we generate the installation commands and the commands that will make the 
+  # build tree look like the install tree, such that users can run the application directly
+  # from Visual Studio.
+  set(POST_BUILD_CMD)
+  foreach(current_locale IN LISTS all_locales)
+    
+    if("${current_locale}" STREQUAL "${default_locale}")
+      # because of wXWidget (wxStandardPaths::IgnoreAppBuildSubDirs)
+      # the paths "Debug", "Release" are discarded, and the parent path
+      # is considered instead as the application directory
+      # This is only for running the app from a Development environment
+      # (TODO: use only for multiconfig cmake projects)
+      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/..)
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+    else()
+      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/../locale/${current_locale})
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}/ OPTIONAL)
+    endif()
+
+    list(APPEND POST_BUILD_CMD 
+         COMMAND "${CMAKE_COMMAND}" -E make_directory ${build_tree_target_folder})
+    # installation of the ZIP files
+    get_zip_file(current_zip LOCALE ${current_locale})
+    if(current_zip)
+      list(APPEND POST_BUILD_CMD 
+           COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_zip} ${build_tree_target_folder})
+      install(FILES ${current_zip} ${install_options})
+    endif()
+
+    # installation of the translation files (only for the non default)
+    if(NOT "${current_locale}" STREQUAL "${default_locale}")
+      get_translation_files(current_translations LOCALE ${current_locale})
+      foreach(message_file IN LISTS current_translations)
+        get_filename_component(message_file_basename ${message_file} NAME)
+        if("${message_file_basename}" STREQUAL "messages.mo")
+          
+          list(APPEND POST_BUILD_CMD 
+               COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${message_file} ${build_tree_target_folder})
+
+          install(FILES       ${message_file}
+                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}
+                  OPTIONAL)
+        elseif("${message_file_basename}" STREQUAL "wxstd.mo")
+          
+          list(APPEND POST_BUILD_CMD 
+               COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${message_file} ${build_tree_target_folder})
+
+          install(FILES       ${message_file}
+                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}
+                  RENAME "wxstd.mo"
+                  OPTIONAL)
+        endif()
+      endforeach()
+    endif()
+  endforeach() # for all locales
+
+  # making the postbuild commands
   add_custom_command(
     TARGET phd2
-    PRE_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${PHD_PROJECT_ROOT_DIR}/PHD2GuideHelp.zip ${phd2_BINARY_DIR})
+    POST_BUILD
+    # COMMAND "${CMAKE_COMMAND}" -E echo "${POST_BUILD_CMD}"
+    ${POST_BUILD_CMD})
 
   copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
@@ -682,7 +766,7 @@ endif()
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(phd2 
+target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
 

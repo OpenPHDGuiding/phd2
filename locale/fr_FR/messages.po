@@ -294,7 +294,7 @@ msgstr "Guidage"
 
 #: advanced_dialog.cpp:153
 msgid "Algorithms"
-msgstr ""
+msgstr "Algorithmes"
 
 #: advanced_dialog.cpp:158 advanced_dialog.cpp:279
 msgid "Other Devices"

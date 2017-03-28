@@ -7,7 +7,7 @@ Display compile progress=No
 Index file=PHD2GuideHelp.hhk
 Language=0x409 English (United States)
 Title=PHD2 Guiding
-
+Charset=UTF-8
 
 [FILES]
 MainScreen.htm
