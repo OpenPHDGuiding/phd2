@@ -242,7 +242,6 @@ TEST_F(GPGTest, parameters_test)
 
 TEST_F(GPGTest, timer_test)
 {
-    double result = 0;
     int wait = 500;
 
     GPG->result(1.0, 2.0, 3.0);

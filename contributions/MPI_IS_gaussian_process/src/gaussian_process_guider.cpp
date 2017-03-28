@@ -70,11 +70,11 @@ GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters) :
     dithering_active_(false),
     dither_offset_(0.0),
     circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
-    parameters(parameters),
     covariance_function_(),
     output_covariance_function_(),
     gp_(covariance_function_),
-    learning_rate_(DEFAULT_LEARNING_RATE)
+    learning_rate_(DEFAULT_LEARNING_RATE),
+    parameters(parameters)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero

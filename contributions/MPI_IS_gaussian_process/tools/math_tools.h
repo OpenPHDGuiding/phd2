@@ -52,6 +52,12 @@
 #include <vector>
 #include <stdexcept>
 #include <cstdint>
+#include <cmath>
+
+// M_PI not part of the standard
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif 
 
 namespace math_tools
 {
