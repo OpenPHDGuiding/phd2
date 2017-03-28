@@ -1081,7 +1081,6 @@ void Mount::AdjustCalibrationForScopePointing(void)
         {
             Debug.AddLine("skipping Dec comp: initial calibration too far from equator");
             pFrame->Alert(_("Calibration was too far from equator, recalibration is needed."));
-
         }
         else if (!DecCompensationEnabled())
         {

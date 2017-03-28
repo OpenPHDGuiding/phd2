@@ -1450,12 +1450,45 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
     // convert shift rate to camera coordinates
     if (m_lockPosShift.shiftIsMountCoords)
     {
+        PHD_Point radec_rates = m_lockPosShift.shiftRate;
+
         Debug.Write(wxString::Format("UpdateLockPosShiftCameraCoords: shift rate mount coords = %.2f,%.2f\n",
-            m_lockPosShift.shiftRate.X, m_lockPosShift.shiftRate.Y));
+            radec_rates.X, radec_rates.Y));
 
         Mount *scope = TheScope();
         if (scope)
-            scope->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
+        {
+            if (m_lockPosShift.shiftUnits == UNIT_ARCSEC)
+            {
+                // if rates are RA/Dec arc-seconds, assume they are ephemeris rates
+
+                // account for parity if known
+                GuideParity raParity = scope->RAParity();
+                GuideParity decParity = scope->DecParity();
+                if (raParity != GUIDE_PARITY_UNKNOWN || decParity != GUIDE_PARITY_UNKNOWN)
+                {
+                    if (raParity == GUIDE_PARITY_ODD)
+                        radec_rates.X = -radec_rates.X;
+                    if (decParity == GUIDE_PARITY_ODD)
+                        radec_rates.Y = -radec_rates.Y;
+
+                    Debug.Write(wxString::Format("UpdateLockPosShiftCameraCoords: after parity adjustment: %.2f,%.2f\n", radec_rates.X, radec_rates.Y));
+                }
+
+                // account for scope declination
+                if (pPointingSource)
+                {
+                    double dec = pPointingSource->GetDeclination();
+                    if (dec != UNKNOWN_DECLINATION)
+                    {
+                        radec_rates.X *= cos(dec);
+                        Debug.Write(wxString::Format("UpdateLockPosShiftCameraCoords: RA shift rate adjusted for declination %.1f\n", degrees(dec)));
+                    }
+                }
+            }
+
+            scope->TransformMountCoordinatesToCameraCoordinates(radec_rates, rate);
+        }
     }
     else
     {
