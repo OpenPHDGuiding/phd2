@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-28 21:59-0400\n"
-"PO-Revision-Date: 2016-12-11 00:32+0800\n"
+"PO-Revision-Date: 2017-03-30 16:39+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -1471,7 +1471,7 @@ msgstr "一般特性"
 
 #: camera.cpp:791
 msgid "Camera-Specific Properties"
-msgstr ""
+msgstr "相機特有的屬性"
 
 #: camera.cpp:822
 msgid "No camera specified"
@@ -1481,11 +1481,11 @@ msgstr "沒有指定相機"
 msgid ""
 "Camera is not connected.  Additional camera properties may be available if "
 "you connect to it first."
-msgstr ""
+msgstr "沒有連接相機，連接上相機後可能出現相機特有的屬性"
 
 #: camera.cpp:837
 msgid "Star Saturation Detection"
-msgstr ""
+msgstr "星點飽和度偵測"
 
 #: camera.cpp:862
 msgid "Use Subframes"
@@ -1559,23 +1559,25 @@ msgstr "冷卻器 setpoint 溫度"
 
 #: camera.cpp:928 guider_onestar.cpp:1021
 msgid "65535"
-msgstr ""
+msgstr "65535"
 
 #: camera.cpp:931
 msgid ""
 "ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
 "for 8-bit cameras."
 msgstr ""
+"決定飽和度的 ADU 階層 - 對大多數 16 位元相機而言，此數值為 65535; 8 位元相機"
+"則為 255。"
 
 #: camera.cpp:933
 msgid "Identify star saturation based on camera maximum-ADU value"
-msgstr ""
+msgstr "以相機的最大 ADU 值為基準來判別星點的飽和度"
 
 #: camera.cpp:941
 msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness (default)"
-msgstr ""
+msgstr "不以亮度 (預設) 而是利用 flat-topped profile 為基準來判別星點的飽和度"
 
 #: camera.cpp:951
 msgid ""
@@ -2802,11 +2804,11 @@ msgstr "赤緯"
 
 #: guide_algorithm_gaussian_process.cpp:103
 msgid "Predictive PEC Guide Algorithm"
-msgstr ""
+msgstr "預測性 PEC 導星眼算法"
 
 #: guide_algorithm_gaussian_process.cpp:117
 msgid "Prediction"
-msgstr ""
+msgstr "預測性"
 
 #: guide_algorithm_gaussian_process.cpp:118
 #, c-format
@@ -2814,6 +2816,7 @@ msgid ""
 "How much of the gear error prediction should be applied? Default = %.f%%, "
 "increase to rely more on the predictions"
 msgstr ""
+"應該套用多少齒輪誤差預測？ 增加此數值會讓結果更偏賴預測值, 預設 = %.f%%"
 
 #: guide_algorithm_gaussian_process.cpp:125 guide_algorithm_hysteresis.cpp:251
 #: guide_algorithm_lowpass2.cpp:233 guide_algorithm_resistswitch.cpp:308
@@ -2843,21 +2846,23 @@ msgid ""
 "camera is binned, this is a fraction of the binned pixel size. Note that the "
 "movements from the prediction are not affected by this. Default = %.2f"
 msgstr ""
+"星點必須移動多少 (分數) 像素來觸發導星脈衝？如果有做影像併合，此數值為併合後"
+"像素大小的分數。注意，預測的移動量不受此影響。預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:143
 msgid "Period Length"
-msgstr ""
+msgstr "週期長度"
 
 #: guide_algorithm_gaussian_process.cpp:144
 #, c-format
 msgid ""
 "The period length (in seconds) of the periodic error component that should "
 "be corrected. Default = %.2f"
-msgstr ""
+msgstr "應修正的周期性誤差部份的周期長度 (以秒為單位)，預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:153
 msgid "Approximation Data Points"
-msgstr ""
+msgstr "趨近數值點"
 
 #: guide_algorithm_gaussian_process.cpp:154
 #, c-format
@@ -2865,10 +2870,12 @@ msgid ""
 "Number of data points used in the approximation. Both prediction accuracy as "
 "well as runtime rise with the number of datapoints. Default = %d"
 msgstr ""
+"用以計算趨近點的數據點數。預測精準度及執行時間都會隨著數據點的數量增加而上"
+"升。預設值 = %d"
 
 #: guide_algorithm_gaussian_process.cpp:161
 msgid "Minimum Worm Cycles (Prediction)"
-msgstr ""
+msgstr "最小渦輪轉動周數 (預測)"
 
 #: guide_algorithm_gaussian_process.cpp:162
 #, c-format
@@ -2876,10 +2883,12 @@ msgid ""
 "Minimal number of worm cycles needed to use the prediction. If there are too "
 "little data points, the prediction might be poor. Default = %.2f"
 msgstr ""
+"預測所需的最低渦輪轉動次數。如果數據點太少，所產生的預測結果可能會很差。預設"
+"值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:170
 msgid "Minimum Worm Cycles (Period Estimation)"
-msgstr ""
+msgstr "最小渦輪轉動周數 (週期預估)"
 
 #: guide_algorithm_gaussian_process.cpp:171
 #, c-format
@@ -2887,10 +2896,12 @@ msgid ""
 "Minimal number of worm cycles for estimating the period length. If there are "
 "too little data points, the estimation might not work. Default = %d"
 msgstr ""
+"用於估計週期長度的最小渦輪轉動周數。如果數據點太少，所產生的估計值可能無效。"
+"預設值 = %d"
 
 #: guide_algorithm_gaussian_process.cpp:179
 msgid "Length Scale (Long Range)"
-msgstr ""
+msgstr "時間長度（長期的）"
 
 #: guide_algorithm_gaussian_process.cpp:180
 #, c-format
@@ -2899,19 +2910,21 @@ msgid ""
 "essentially a high-pass filter for the periodic error and the length scale "
 "defines the corner frequency. Default = %.2f"
 msgstr ""
+"大型非週期結構性的時間長度（以秒為單位）。本質上是周期性誤差的高通過濾器，長"
+"度大小定義了拐角頻率。預設值 =  %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:189
 msgid "Signal Variance (Long Range)"
-msgstr ""
+msgstr "訊號偏差 (長範的)"
 
 #: guide_algorithm_gaussian_process.cpp:190
 #, c-format
 msgid "Signal variance (in pixels) of the long-term variations. Default = %.2f"
-msgstr ""
+msgstr "長時間變動的訊號偏差 (以像素為單位), 預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:196
 msgid "Length Scale (Periodic)"
-msgstr ""
+msgstr "時間長度（週期性）"
 
 #: guide_algorithm_gaussian_process.cpp:197
 #, c-format
@@ -2921,19 +2934,21 @@ msgid ""
 "If chosen too small, some non-periodic structure might be picked up as well. "
 "Default = %.2f"
 msgstr ""
+"定義 “wigglyness” 這種週期性結構的時間長度 (以秒為單位), 時間越短就會學到越多"
+"的結構內容，如果這個數值設得太短，也會取樣道類似的非週期性結構。預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:205
 msgid "Signal Variance (Periodic)"
-msgstr ""
+msgstr "訊號偏差 (週期性)"
 
 #: guide_algorithm_gaussian_process.cpp:206
 #, c-format
 msgid "The signal variance (in pixels) of the periodic error. Default = %.2f"
-msgstr ""
+msgstr "週期性誤差的訊號偏差 (以像素為單位)，預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:213
 msgid "Length Scale (Short Range)"
-msgstr ""
+msgstr "時間長度（短期的）"
 
 #: guide_algorithm_gaussian_process.cpp:214
 #, c-format
@@ -2942,33 +2957,35 @@ msgid ""
 "error. This is essentially a low-pass filter for the periodic error and the "
 "length scale defines the corner frequency. Default = %.2f"
 msgstr ""
+"短期非週期的齒輪誤差時間長度 (以秒為單位)。其實質上是週期性誤差的低通過濾器，"
+"時間長度定義了拐角頻率大小。預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:222
 msgid "Signal Variance (Short Range)"
-msgstr ""
+msgstr "訊號變異 (短期的)"
 
 #: guide_algorithm_gaussian_process.cpp:223
 #, c-format
 msgid ""
 "Signal variance (in pixels) of the short-term variations. Default = %.2f"
-msgstr ""
+msgstr "短時間內的訊號偏差 (以像素為單位), 預設值 = %2f"
 
 #: guide_algorithm_gaussian_process.cpp:229
 msgid "Show expert options"
-msgstr ""
+msgstr "顯示專家選項"
 
 #: guide_algorithm_gaussian_process.cpp:229
 msgid ""
 "Shows the expert options for tuning the predictions. Use at your own risk!"
-msgstr ""
+msgstr "顯示用以調整預測的專家選項。後果自負！"
 
 #: guide_algorithm_gaussian_process.cpp:233
 msgid "Dark Guiding Mode"
-msgstr ""
+msgstr "暗場導星模式"
 
 #: guide_algorithm_gaussian_process.cpp:234
 msgid "Disables the use of the measurements, useful only for testing."
-msgstr ""
+msgstr "關閉測量，僅適用於測試用途。"
 
 #: guide_algorithm_hysteresis.cpp:232
 msgid "Hysteresis Guide Algorithm"
@@ -2985,7 +3002,7 @@ msgid ""
 "Default = %.f%%, increase to smooth out guiding commands"
 msgstr ""
 "要使用多少歷史導星訊號\n"
-"預設值 = %.f%%,, 增加該參數以讓導星曲線趨於平滑。"
+"預設值 = %.f%%,, 增加該參數可以讓導星命令趨於平緩。"
 
 #: guide_algorithm_hysteresis.cpp:260 guide_algorithm_lowpass.cpp:234
 #: guide_algorithm_lowpass2.cpp:242 guide_algorithm_resistswitch.cpp:317
@@ -2995,9 +3012,8 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
-"How many (fractional) pixels must the star move to trigger a guide pulse? \n"
-"If camera is binned, this is a fraction of the binned pixel size. Default = "
-"%.2f"
+"星點需要移動多少 (分數) 的像素才會觸發導星訊號？\n"
+"如果相機有做影像併合，這個數值會是併合像素大小的分數，預設值 = %.2f"
 
 #: guide_algorithm_hysteresis.cpp:308
 msgid "Agr"
@@ -3178,7 +3194,7 @@ msgstr "星點遺失 - 低星點質心"
 
 #: guider_onestar.cpp:346 guider_onestar-bettermasschecker.cpp:393
 msgid "Star lost - low HFD"
-msgstr ""
+msgstr "星點遺失 - 低 HFD"
 
 #: guider_onestar.cpp:347 guider_onestar-bettermasschecker.cpp:394
 msgid "Star too near edge"
@@ -3221,11 +3237,11 @@ msgstr "自動選擇在 (%.1f, %.1f) 的星體"
 #: guider_onestar.cpp:654 guider_onestar-bettermasschecker.cpp:695
 #, c-format
 msgid "Mass: %.f vs %.f"
-msgstr ""
+msgstr "質心：%.f vs %.f"
 
 #: guider_onestar.cpp:675 guider_onestar-bettermasschecker.cpp:716
 msgid "Recovering"
-msgstr ""
+msgstr "回復中"
 
 #: guider_onestar.cpp:778 guider_onestar-bettermasschecker.cpp:819
 #, c-format
@@ -3273,7 +3289,7 @@ msgstr ""
 
 #: guider_onestar.cpp:1027
 msgid "Minimum star HFD (pixels)"
-msgstr ""
+msgstr "最小星點 HFD (像素) 值"
 
 #: guider_onestar.cpp:1028
 msgid ""
@@ -3283,6 +3299,9 @@ msgid ""
 "threshold a bit higher. When the HFD falls below this level, the hot pixel "
 "will be ignored."
 msgstr ""
+"將用於識別導星的星點最小 HFD 值。此設定值可用於避免 PHD2 使用太亮的星點作為導"
+"星星體。利用星點工具測量熱噪的 HFD，並將最小 HFD 門檻值設置得彼此數值高一些。"
+"當 HFD 低於該數值時，熱噪就會被忽略。"
 
 #: guiding_assistant.cpp:258
 msgid "Guiding Assistant"
@@ -3669,7 +3688,7 @@ msgstr "阻抗切換"
 
 #: mount.cpp:134
 msgid "Predictive PEC"
-msgstr ""
+msgstr "預測的 PEC"
 
 #: mount.cpp:140
 msgid "Which Guide Algorithm to use for Right Ascension"
@@ -4378,37 +4397,39 @@ msgstr "瀏灠..."
 
 #: myframe.cpp:2626
 msgid "Enable diagnostic image logging"
-msgstr ""
+msgstr "啟用除錯影像記錄"
 
 #: myframe.cpp:2627
 msgid "Save guider images based on options below"
-msgstr ""
+msgstr "根據以下選項來儲存導星影像"
 
 #: myframe.cpp:2630
 msgid "Save Guider Images"
-msgstr ""
+msgstr "儲存導星影像"
 
 #: myframe.cpp:2633
 msgid "For all lost-star frames"
-msgstr ""
+msgstr "所有遺失星點的影像"
 
 #: myframe.cpp:2634
 msgid "Save guider image whenever a lost-star event occurs"
-msgstr ""
+msgstr "無論是否發生星點遺失事件都儲存導星影像"
 
 #: myframe.cpp:2636
 msgid "For all Auto-select Star frames"
-msgstr ""
+msgstr "所有自動選星的影像"
 
 #: myframe.cpp:2637
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
 msgstr ""
+"當某星點於自動選星模式下被選取時就儲存導星影像，注意，不論是否有勾選此選項，"
+"當自動選星失敗時，都會立刻儲存影像。"
 
 #: myframe.cpp:2640
 msgid "When relative error exceeds"
-msgstr ""
+msgstr "當超過相對錯誤時"
 
 #: myframe.cpp:2641
 msgid ""
@@ -4416,39 +4437,41 @@ msgid ""
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
 "and the current frame's error is 1.5 pixels, the relative error is 3"
 msgstr ""
+"當目前影像的錯誤超過該數值的平均誤差時就儲存導星影像。如，如果平均（RMS）誤差"
+"為 0.5 個像素，目前影像的誤差為 1.5 個像素，則相對誤差為 3"
 
 #: myframe.cpp:2645
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
-msgstr ""
+msgstr "相對誤差門檻值，相對誤差是目前影像誤差與平均誤差之間的相對比值。"
 
 #: myframe.cpp:2650
 msgid "When absolute error exceeds (pixels)"
-msgstr ""
+msgstr "當絕對誤差超過 (像素) 時"
 
 #: myframe.cpp:2651
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
-msgstr ""
+msgstr "當導星影像和鎖定位置之間的距離超過多少像素時，就儲存導星影像"
 
 #: myframe.cpp:2655
 msgid "Absolute error threshold in pixels"
-msgstr ""
+msgstr "絕對誤差門檻值 (以像素為計算單位)"
 
 #: myframe.cpp:2660
 msgid "Until this count is reached"
-msgstr ""
+msgstr "直到達到此數值"
 
 #: myframe.cpp:2661
 msgid ""
 "Save each guider image until the specified number of images have been saved"
-msgstr ""
+msgstr "儲存每張導星影像到所設定的影像數量為止"
 
 #: myframe.cpp:2663
 msgid "Number of images to save"
-msgstr ""
+msgstr "要儲存的影像數"
 
 #: myframe.cpp:2678
 msgid "Dither Settings"
@@ -4715,10 +4738,12 @@ msgid ""
 "dither in Declination. To restore the old behavior you can set the RA-only "
 "option in the Dither Settings of the Advanced Dialog."
 msgstr ""
+"由於目前所設定的赤緯導星模式的關係, 此版本的 PHD2 將僅在赤緯方向做抖動, 將進"
+"階設定交談框內的抖動設定改成僅赤經方向 (RA-only) 就可以回復到原來的動作狀態。"
 
 #: myframe_events.cpp:973
 msgid "Set RA-only now"
-msgstr ""
+msgstr "設定為僅赤經方向 (RA-only)"
 
 #: myframe_events.cpp:993
 msgid ""
@@ -5388,7 +5413,7 @@ msgstr "關"
 
 #: scope.cpp:220
 msgid "Invalid"
-msgstr ""
+msgstr "不符合的"
 
 #: scope.cpp:306 scope.cpp:327
 msgid "INDI Mount"
