@@ -264,38 +264,33 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     tools_menu->Check(EEGG_STICKY_LOCK, sticky);
 
     SetMinSize(wxSize(300, 300));
+    SetSize(800, 600);
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
-    if (geometry == wxEmptyString)
+    wxArrayString fields = wxSplit(geometry, ';');
+    long w, h, x, y;
+    if (fields.size() == 5 &&
+        fields[1].ToLong(&w) &&
+        fields[2].ToLong(&h) &&
+        fields[3].ToLong(&x) &&
+        fields[4].ToLong(&y))
     {
-        SetSize(800,600);
-    }
-    else
-    {
-        wxArrayString fields = wxSplit(geometry, ';');
-        if (fields[0] == "1")
+        wxSize screen = wxGetDisplaySize();
+        if (x + w <= screen.GetWidth() &&
+            x >= 0 &&
+            y + h <= screen.GetHeight() &&
+            y >= 0)
         {
-            Maximize();
+            SetSize(w, h);
+            SetPosition(wxPoint(x, y));
         }
         else
         {
-            long w, h, x, y;
-            fields[1].ToLong(&w);
-            fields[2].ToLong(&h);
-            fields[3].ToLong(&x);
-            fields[4].ToLong(&y);
-            wxSize screen = wxGetDisplaySize();
-            if (x + w <= screen.GetWidth() &&
-                y + h <= screen.GetHeight())
-            {
-                SetSize(w, h);
-                SetPosition(wxPoint(x, y));
-            }
-            else
-            {
-                // looks like screen size changed, ignore position and revert to default size
-                SetSize(800, 600);
-            }
+            // looks like screen size changed, ignore position and revert to default size
+        }
+        if (fields[0] == "1")
+        {
+            Maximize();
         }
     }
 
@@ -1820,7 +1815,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
     wxString geometry = wxString::Format("%c;%d;%d;%d;%d",
         this->IsMaximized() ? '1' : '0',
         this->GetSize().x, this->GetSize().y,
-        this->GetPosition().x, this->GetPosition().y);
+        this->GetScreenPosition().x, this->GetScreenPosition().y);
     pConfig->Global.SetString("/geometry", geometry);
 
     if (help->GetFrame())
