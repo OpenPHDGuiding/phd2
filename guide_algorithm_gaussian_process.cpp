@@ -72,40 +72,152 @@ static const double DefaultPredictionGain                  = 0.5; // amount of G
 
 static const bool   DefaultComputePeriod                 = true;
 
+GuideAlgorithmGaussianProcess::
+GPExpertDialog::GPExpertDialog(wxWindow *Parent) :
+    wxDialog(Parent, wxID_ANY, _("Expert Settings", wxDefaultPosition, wxDefaultSize)),
+    m_pPeriodLengthsInference(0), m_pPeriodLengthsPeriodEstimation(0), m_pNumPointsApproximation(0), m_pSE0KLengthScale(0), m_pSE0KSignalVariance(0), m_pPKLengthScale(0),
+    m_pPKSignalVariance(0), m_pSE1KLengthScale(0), m_pSE1KSignalVariance(0), m_checkboxDarkMode(0)
+{
+    // create the expert options UI
+    wxFlexGridSizer *flexGrid = new wxFlexGridSizer(10, 2, 5, 5);
+    int width;
+
+    width = StringWidth(this, _T("0000"));
+    m_pNumPointsApproximation = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 2000, DefaultNumPointsForApproximation);
+    AddTableEntry(flexGrid, _("Approximation Data Points"), m_pNumPointsApproximation,
+        wxString::Format(_("Number of data points used in the approximation. Both prediction accuracy "
+        "as well as runtime rise with the number of datapoints. Default = %d"), DefaultNumPointsForApproximation));
+
+    width = StringWidth(this, _T("0.00"));
+    m_pPeriodLengthsInference = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForInference, 0.1);
+    m_pPeriodLengthsInference->SetDigits(2);
+    AddTableEntry(flexGrid, _("Minimum Worm Cycles (Prediction)"), m_pPeriodLengthsInference,
+        wxString::Format(_("Minimal number of worm cycles needed to use the prediction. "
+        "If there are too little data points, the prediction might be poor. "
+        "Default = %.2f"), DefaultPeriodLengthsForInference));
+
+    width = StringWidth(this, _T("0000"));
+    m_pPeriodLengthsPeriodEstimation = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForPeriodEstimation, 0.1);
+    m_pPeriodLengthsPeriodEstimation->SetDigits(2);
+    AddTableEntry(flexGrid, _("Minimum Worm Cycles (Period Estimation)"), m_pPeriodLengthsPeriodEstimation,
+        wxString::Format(_("Minimal number of worm cycles for estimating the period length. "
+        "If there are too little data points, the estimation might not work. Default = %d"),
+        (int)DefaultPeriodLengthsForPeriodEstimation));
+
+    width = StringWidth(this, _T("0000.0"));
+    m_pSE0KLengthScale = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 100.0, 5000.0, DefaultLengthScaleSE0Ker, 10.0);
+    m_pSE0KLengthScale->SetDigits(2);
+    AddTableEntry(flexGrid, _("Length Scale (Long Range)"), m_pSE0KLengthScale,
+        wxString::Format(_("The length scale (in seconds) of the large non-periodic structure. "
+        "This is essentially a high-pass filter for the periodic error and the length scale "
+        "defines the corner frequency. Default = %.2f"),
+        DefaultLengthScaleSE0Ker));
+
+    width = StringWidth(this, _T("000.0"));
+    m_pSE0KSignalVariance = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE0Ker, 1.0);
+    m_pSE0KSignalVariance->SetDigits(2);
+    AddTableEntry(flexGrid, _("Signal Variance (Long Range)"), m_pSE0KSignalVariance,
+        wxString::Format(_("Signal variance (in pixels) of the long-term variations. Default = %.2f"), DefaultSignalVarianceSE0Ker));
+
+    width = StringWidth(this, _T("000.0"));
+    m_pPKLengthScale = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 50.0, DefaultLengthScalePerKer, 5.0);
+    m_pPKLengthScale->SetDigits(2);
+    AddTableEntry(flexGrid, _("Length Scale (Periodic)"), m_pPKLengthScale,
+        wxString::Format(_("The length scale (in seconds) defines the \"wigglyness\" of the periodic structure. "
+        "The smaller the length scale, the more structure can be learned. If chosen too "
+        "small, some non-periodic structure might be picked up as well. Default = %.2f"), DefaultLengthScalePerKer));
+
+    width = StringWidth(this, _T("000.0"));
+    m_pPKSignalVariance = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVariancePerKer, 0.1);
+    m_pPKSignalVariance->SetDigits(2);
+    AddTableEntry(flexGrid, _("Signal Variance (Periodic)"), m_pPKSignalVariance,
+        wxString::Format(_("The signal variance (in pixels) of the periodic error. "
+        "Default = %.2f"), DefaultSignalVariancePerKer));
+
+    width = StringWidth(this, _T("000.0"));
+    m_pSE1KLengthScale = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, DefaultLengthScaleSE1Ker, 1.0);
+    m_pSE1KLengthScale->SetDigits(2);
+    AddTableEntry(flexGrid, _("Length Scale (Short Range)"), m_pSE1KLengthScale,
+        wxString::Format(_("Length scale (in seconds) of the short range non-periodic parts "
+        "of the gear error. This is essentially a low-pass filter for the periodic error and the length "
+        "scale defines the corner frequency. Default = %.2f"), DefaultLengthScaleSE1Ker));
+
+    width = StringWidth(this, _T("000.0"));
+    m_pSE1KSignalVariance = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE1Ker, 0.1);
+    m_pSE1KSignalVariance->SetDigits(2);
+    AddTableEntry(flexGrid, _("Signal Variance (Short Range)"), m_pSE1KSignalVariance,
+        wxString::Format(_("Signal variance (in pixels) of the short-term variations. Default = %.2f"), DefaultSignalVarianceSE1Ker));
+
+    m_checkboxDarkMode = new wxCheckBox(this, wxID_ANY, "");
+    AddTableEntry(flexGrid, _("Dark Guiding Mode"), m_checkboxDarkMode,
+        _("Disables the use of the measurements, useful only for testing."));
+
+    SetSizerAndFit(flexGrid);
+}
+
+void GuideAlgorithmGaussianProcess::GPExpertDialog::AddTableEntry(wxFlexGridSizer *Grid, const wxString& Label, wxWindow *Ctrl, const wxString& ToolTip)
+{
+    wxStaticText *pLabel = new wxStaticText(this, wxID_ANY, Label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
+    Grid->Add(pLabel, 1, wxALL, 5);
+    Grid->Add(Ctrl, 1, wxALL, 5);
+    Ctrl->SetToolTip(ToolTip);
+}
+
+void GuideAlgorithmGaussianProcess::GPExpertDialog::LoadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, const std::vector<double>& hyperParams)
+{
+    m_pPeriodLengthsInference->SetValue(m_pGuideAlgorithm->GetPeriodLengthsInference());
+    m_pPeriodLengthsPeriodEstimation->SetValue(m_pGuideAlgorithm->GetPeriodLengthsPeriodEstimation());
+    m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
+
+    m_pSE0KLengthScale->SetValue(hyperParams[SE0KLengthScale]);
+    m_pSE0KSignalVariance->SetValue(hyperParams[SE0KSignalVariance]);
+    m_pPKLengthScale->SetValue(hyperParams[PKLengthScale]);
+    m_pPKSignalVariance->SetValue(hyperParams[PKSignalVariance]);
+    m_pSE1KLengthScale->SetValue(hyperParams[SE1KLengthScale]);
+    m_pSE1KSignalVariance->SetValue(hyperParams[SE1KSignalVariance]);
+}
+
+void GuideAlgorithmGaussianProcess::GPExpertDialog::UnloadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, std::vector<double>& hyperParams)
+{
+    m_pGuideAlgorithm->SetPeriodLengthsInference(m_pPeriodLengthsInference->GetValue());
+    m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());
+    m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
+
+    hyperParams[SE0KLengthScale] = m_pSE0KLengthScale->GetValue();
+    hyperParams[SE0KSignalVariance] = m_pSE0KSignalVariance->GetValue();
+    hyperParams[PKLengthScale] = m_pPKLengthScale->GetValue();
+    hyperParams[PKSignalVariance] = m_pPKSignalVariance->GetValue();
+    hyperParams[SE1KLengthScale] = m_pSE1KLengthScale->GetValue();
+    hyperParams[SE1KSignalVariance] = m_pSE1KSignalVariance->GetValue();
+}
+
 class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
     wxSpinCtrlDouble *m_pMinMove;
-    wxSpinCtrlDouble *m_pPeriodLengthsInference;
-    wxSpinCtrlDouble *m_pPeriodLengthsPeriodEstimation;
-    wxSpinCtrl       *m_pNumPointsApproximation;
-
-    wxSpinCtrlDouble *m_pSE0KLengthScale;
-    wxSpinCtrlDouble *m_pSE0KSignalVariance;
-    wxSpinCtrlDouble *m_pPKLengthScale;
     wxSpinCtrlDouble *m_pPKPeriodLength;
-    wxSpinCtrlDouble *m_pPKSignalVariance;
-    wxSpinCtrlDouble *m_pSE1KLengthScale;
-    wxSpinCtrlDouble *m_pSE1KSignalVariance;
     wxSpinCtrlDouble *m_pPredictionGain;
-
     wxCheckBox       *m_checkboxComputePeriod;
-
-    wxCheckBox       *m_checkboxDarkMode;
-
-    wxCheckBox       *m_checkboxExpertMode;
-
-    wxBoxSizer       *m_pExpertPage;
+    GPExpertDialog   *m_expertOptions;
+    wxButton         *m_btnExpertOptions;
+    GPExpertDialog   *m_expertDialog;
 
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
       : ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent), m_pGuideAlgorithm(pGuideAlgorithm),
-      m_pControlGain(0), m_pMinMove(0), m_pPeriodLengthsInference(0), m_pPeriodLengthsPeriodEstimation(0),
-      m_pNumPointsApproximation(0), m_pSE0KLengthScale(0), m_pSE0KSignalVariance(0), m_pPKLengthScale(0),
-      m_pPKPeriodLength(0), m_pPKSignalVariance(0), m_pSE1KLengthScale(0), m_pSE1KSignalVariance(0),
-      m_pPredictionGain(0), m_checkboxComputePeriod(0), m_checkboxDarkMode(0), m_checkboxExpertMode(0),
-      m_pExpertPage(0)
+      m_pControlGain(0), m_pMinMove(0),
+      m_pPKPeriodLength(0), 
+      m_pPredictionGain(0), m_checkboxComputePeriod(0)
     {
 
         int width;
@@ -140,101 +252,19 @@ public:
             wxSize(width, -1), wxSP_ARROW_KEYS, 50.0, 2000.0, DefaultPeriodLengthPerKer, 1);
         m_pPKPeriodLength->SetDigits(2);
         m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("auto"));
+        m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length to identify repetitive movements. Default = %s"), 
+            DefaultComputePeriod ? _("On") : _("Off")));
         DoAdd(_("Period Length"), m_pPKPeriodLength,
             wxString::Format(_("The period length (in seconds) of the periodic error component that should be "
             "corrected. Default = %.2f"), DefaultPeriodLengthPerKer), m_checkboxComputePeriod);
 
-        // create the expert options page
-        m_pExpertPage = new wxBoxSizer(wxVERTICAL);
+        m_btnExpertOptions = new wxButton(pParent, wxID_ANY, _("Expert..."));
+        m_btnExpertOptions->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &GuideAlgorithmGaussianProcessDialogPane::OnExpertButton, this);
+        m_btnExpertOptions->SetToolTip(_("Change expert options for tuning the predictions. Use at your own risk!!"));
+        this->Add(m_btnExpertOptions, wxSizerFlags().Center().Border(wxALL, 3));
 
-        width = StringWidth(_T("0000"));
-        m_pNumPointsApproximation = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 2000, DefaultNumPointsForApproximation);
-        m_pExpertPage->Add(MakeLabeledControl(_("Approximation Data Points"), m_pNumPointsApproximation,
-            wxString::Format(_("Number of data points used in the approximation. Both prediction accuracy "
-            "as well as runtime rise with the number of datapoints. Default = %d"), DefaultNumPointsForApproximation)));
+        m_expertDialog = new GPExpertDialog(m_pParent);
 
-        width = StringWidth(_T("0.00"));
-        m_pPeriodLengthsInference = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForInference, 0.1);
-        m_pPeriodLengthsInference->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Prediction)"), m_pPeriodLengthsInference,
-            wxString::Format(_("Minimal number of worm cycles needed to use the prediction. "
-            "If there are too little data points, the prediction might be poor. "
-            "Default = %.2f"), DefaultPeriodLengthsForInference)));
-
-        width = StringWidth(_T("0000"));
-        m_pPeriodLengthsPeriodEstimation = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, DefaultPeriodLengthsForPeriodEstimation, 0.1);
-        m_pPeriodLengthsPeriodEstimation->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Minimum Worm Cycles (Period Estimation)"), m_pPeriodLengthsPeriodEstimation,
-            wxString::Format(_("Minimal number of worm cycles for estimating the period length. "
-            "If there are too little data points, the estimation might not work. Default = %d"),
-            DefaultPeriodLengthsForPeriodEstimation)));
-
-        width = StringWidth(_T("0000.0"));
-        m_pSE0KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 100.0, 5000.0, DefaultLengthScaleSE0Ker, 10.0);
-        m_pSE0KLengthScale->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Long Range)"), m_pSE0KLengthScale,
-            wxString::Format(_("The length scale (in seconds) of the large non-periodic structure. "
-            "This is essentially a high-pass filter for the periodic error and the length scale "
-            "defines the corner frequency. Default = %.2f"),
-            DefaultLengthScaleSE0Ker)));
-
-        width = StringWidth(_T("000.0"));
-        m_pSE0KSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE0Ker, 1.0);
-        m_pSE0KSignalVariance->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Long Range)"), m_pSE0KSignalVariance,
-            wxString::Format(_("Signal variance (in pixels) of the long-term variations. Default = %.2f"), DefaultSignalVarianceSE0Ker)));
-
-        width = StringWidth(_T("000.0"));
-        m_pPKLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 50.0, DefaultLengthScalePerKer, 5.0);
-        m_pPKLengthScale->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Periodic)"), m_pPKLengthScale,
-            wxString::Format(_("The length scale (in seconds) defines the \"wigglyness\" of the periodic structure. "
-            "The smaller the length scale, the more structure can be learned. If chosen too "
-            "small, some non-periodic structure might be picked up as well. Default = %.2f"), DefaultLengthScalePerKer)));
-
-        width = StringWidth(_T("000.0"));
-        m_pPKSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVariancePerKer, 0.1);
-        m_pPKSignalVariance->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Periodic)"), m_pPKSignalVariance,
-            wxString::Format(_("The signal variance (in pixels) of the periodic error. "
-            "Default = %.2f"), DefaultSignalVariancePerKer)));
-
-        width = StringWidth(_T("000.0"));
-        m_pSE1KLengthScale = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, DefaultLengthScaleSE1Ker, 1.0);
-        m_pSE1KLengthScale->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Length Scale (Short Range)"), m_pSE1KLengthScale,
-            wxString::Format(_("Length scale (in seconds) of the short range non-periodic parts "
-            "of the gear error. This is essentially a low-pass filter for the periodic error and the length "
-            "scale defines the corner frequency. Default = %.2f"), DefaultLengthScaleSE1Ker)));
-
-        width = StringWidth(_T("000.0"));
-        m_pSE1KSignalVariance = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, DefaultSignalVarianceSE1Ker, 0.1);
-        m_pSE1KSignalVariance->SetDigits(2);
-        m_pExpertPage->Add(MakeLabeledControl(_("Signal Variance (Short Range)"), m_pSE1KSignalVariance,
-            wxString::Format(_("Signal variance (in pixels) of the short-term variations. Default = %.2f"), DefaultSignalVarianceSE1Ker)));
-
-        m_checkboxExpertMode = new wxCheckBox(pParent, wxID_ANY, _T(""));
-        pParent->Connect(m_checkboxExpertMode->GetId(), wxEVT_CHECKBOX,
-            wxCommandEventHandler(GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane::EnableExpertMode),
-            0, this);
-        DoAdd(_("Show expert options"), m_checkboxExpertMode, _("Shows the expert options for tuning the predictions. "
-            "Use at your own risk!"));
-
-        m_checkboxDarkMode = new wxCheckBox(pParent, wxID_ANY, "");
-        m_pExpertPage->Add(MakeLabeledControl(_("Dark Guiding Mode"), m_checkboxDarkMode,
-            _("Disables the use of the measurements, useful only for testing.")));
-
-        // add expert options to the main options
-        DoAdd(m_pExpertPage);
     }
 
     virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
@@ -250,25 +280,15 @@ public:
         m_pControlGain->SetValue(100 * m_pGuideAlgorithm->GetControlGain());
         m_pPredictionGain->SetValue(100 * m_pGuideAlgorithm->GetPredictionGain());
         m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
-        m_pPeriodLengthsInference->SetValue(m_pGuideAlgorithm->GetPeriodLengthsInference());
-        m_pPeriodLengthsPeriodEstimation->SetValue(m_pGuideAlgorithm->GetPeriodLengthsPeriodEstimation());
-        m_pNumPointsApproximation->SetValue(m_pGuideAlgorithm->GetNumPointsForApproximation());
 
         std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
         assert(hyperparameters.size() == NumParameters);
 
-        m_pSE0KLengthScale->SetValue(hyperparameters[SE0KLengthScale]);
-        m_pSE0KSignalVariance->SetValue(hyperparameters[SE0KSignalVariance]);
-        m_pPKLengthScale->SetValue(hyperparameters[PKLengthScale]);
-        m_pPKSignalVariance->SetValue(hyperparameters[PKSignalVariance]);
-        m_pSE1KLengthScale->SetValue(hyperparameters[SE1KLengthScale]);
-        m_pSE1KSignalVariance->SetValue(hyperparameters[SE1KSignalVariance]);
         m_pPKPeriodLength->SetValue(hyperparameters[PKPeriodLength]);
-
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
 
-        m_pExpertPage->ShowItems(m_pGuideAlgorithm->GetExpertMode());
-        m_pExpertPage->Layout();
+        m_expertDialog->LoadExpertValues(m_pGuideAlgorithm, hyperparameters);
+
         m_pParent->Layout();
     }
 
@@ -278,31 +298,19 @@ public:
         m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100);
         m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100);
         m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-        m_pGuideAlgorithm->SetPeriodLengthsInference(m_pPeriodLengthsInference->GetValue());
-        m_pGuideAlgorithm->SetPeriodLengthsPeriodEstimation(m_pPeriodLengthsPeriodEstimation->GetValue());
-        m_pGuideAlgorithm->SetNumPointsForApproximation(m_pNumPointsApproximation->GetValue());
 
         std::vector<double> hyperparameters(NumParameters);
-
-        hyperparameters[SE0KLengthScale] = m_pSE0KLengthScale->GetValue();
-        hyperparameters[SE0KSignalVariance] = m_pSE0KSignalVariance->GetValue();
-        hyperparameters[PKLengthScale] = m_pPKLengthScale->GetValue();
-        hyperparameters[PKSignalVariance] = m_pPKSignalVariance->GetValue();
-        hyperparameters[SE1KLengthScale] = m_pSE1KLengthScale->GetValue();
-        hyperparameters[SE1KSignalVariance] = m_pSE1KSignalVariance->GetValue();
         hyperparameters[PKPeriodLength] = m_pPKPeriodLength->GetValue();
+        m_expertDialog->UnloadExpertValues(m_pGuideAlgorithm, hyperparameters);
 
         m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
-
-        m_pGuideAlgorithm->SetExpertMode(m_checkboxExpertMode->GetValue());
     }
 
-    virtual void EnableExpertMode(wxCommandEvent& evt)
+    virtual void OnExpertButton(wxCommandEvent& evt)
     {
-        m_pExpertPage->ShowItems(evt.IsChecked());
-        m_pExpertPage->Layout();
-        m_pParent->Layout();
+        if (!m_expertDialog->IsShown())
+            m_expertDialog->Show();
     }
 
     // make the class non-copyable (if we ever need this, we must implement a deep copy)
@@ -312,7 +320,7 @@ public:
 
 
 GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis), GPG(0), expert_mode_(false), dark_tracking_mode_(false)
+    : GuideAlgorithm(pMount, axis), GPG(0), dark_tracking_mode_(false)
 {
     // create guide parameters, load default values at first
     GaussianProcessGuider::guide_parameters parameters;
@@ -723,17 +731,6 @@ bool GuideAlgorithmGaussianProcess::SetDarkTracking(bool value)
     return false;
 }
 
-bool GuideAlgorithmGaussianProcess::GetExpertMode()
-{
-    return expert_mode_;
-}
-
-bool GuideAlgorithmGaussianProcess::SetExpertMode(bool value)
-{
-    expert_mode_ = value;
-    return false;
-}
-
 wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
 {
     static const char* format =
@@ -748,24 +745,27 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
       "\tLength scale short range SE kernel = %.3f\n"
       "\tSignal variance short range SE kernel = %.3f\n"
       "\tPeriod length periodic kernel = %.3f\n"
-      "FFT called after = %.3f worm cycles\n"
+      "\tFFT called after = %.3f worm cycles\n"
+      "\tAuto-adjust period length = %s\n"
     ;
 
     std::vector<double> hyperparameters = GetGPHyperparameters();
 
+
     return wxString::Format(
-      format,
-      GetControlGain(),
-      GetPredictionGain(),
-      GetMinMove(),
-      hyperparameters[SE0KLengthScale],
-      hyperparameters[SE0KSignalVariance],
-      hyperparameters[PKLengthScale],
-      hyperparameters[PKSignalVariance],
-      hyperparameters[SE1KLengthScale],
-      hyperparameters[SE1KSignalVariance],
-      hyperparameters[PKPeriodLength],
-      GetPeriodLengthsPeriodEstimation());
+        format,
+        GetControlGain(),
+        GetPredictionGain(),
+        GetMinMove(),
+        hyperparameters[SE0KLengthScale],
+        hyperparameters[SE0KSignalVariance],
+        hyperparameters[PKLengthScale],
+        hyperparameters[PKSignalVariance],
+        hyperparameters[SE1KLengthScale],
+        hyperparameters[SE1KSignalVariance],
+        hyperparameters[PKPeriodLength],
+        GetPeriodLengthsPeriodEstimation(),
+        GetBoolComputePeriod() ? "On" : "Off");
 }
 
 

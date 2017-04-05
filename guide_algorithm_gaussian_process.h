@@ -54,8 +54,33 @@ class wxStopWatch;
  * error. Further it is able to perform tracking without measurement to increase
  * robustness of the overall guiding system.
  */
+
+
+
 class GuideAlgorithmGaussianProcess : public GuideAlgorithm
 {
+protected:
+    class GPExpertDialog : public wxDialog
+    {
+        wxSpinCtrlDouble *m_pPeriodLengthsInference;
+        wxSpinCtrlDouble *m_pPeriodLengthsPeriodEstimation;
+        wxSpinCtrl       *m_pNumPointsApproximation;
+        wxSpinCtrlDouble *m_pSE0KLengthScale;
+        wxSpinCtrlDouble *m_pSE0KSignalVariance;
+        wxSpinCtrlDouble *m_pPKLengthScale;
+        wxSpinCtrlDouble *m_pPKSignalVariance;
+        wxSpinCtrlDouble *m_pSE1KLengthScale;
+        wxSpinCtrlDouble *m_pSE1KSignalVariance;
+        wxCheckBox       *m_checkboxDarkMode;
+        wxBoxSizer       *m_pExpertPage;
+        void AddTableEntry(wxFlexGridSizer *Grid, const wxString& Label, wxWindow *Ctrl, const wxString& ToolTip);
+
+    public:
+        GPExpertDialog(wxWindow *Parent);
+        void LoadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, const std::vector<double>& hyperParams);
+        void UnloadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, std::vector<double>& hyperParams);
+    };
+
 private:
     /**
      * Holds all data that is needed for the GP guiding.
@@ -67,15 +92,11 @@ private:
      */
     class GuideAlgorithmGaussianProcessDialogPane;
 
+
     /**
      * Pointer to the class that does the actual work.
      */
     GaussianProcessGuider* GPG;
-
-    /**
-     * The expert mode shows more parameters in the configuration window.
-     */
-    bool expert_mode_;
 
     /**
      * Dark tracking mode is for debugging: only deduceResult is called if enabled.
@@ -109,9 +130,6 @@ protected:
 
     bool GetDarkTracking();
     bool SetDarkTracking(bool value);
-
-    bool GetExpertMode();
-    bool SetExpertMode(bool value);
 
 public:
     GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis);
