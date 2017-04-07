@@ -344,6 +344,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
         hdr.write("DATE-OBS", GetImgStartTime().c_str(), "Time image was captured");
         hdr.write("CREATOR", wxString(APPNAME _T(" ") FULLVER).c_str(), "Capture software");
+        hdr.write("PHDPROFI", pConfig->GetCurrentProfile().c_str(), "PHD2 Equipment Profile");
         if (pCamera)
         {
             hdr.write("INSTRUME", pCamera->Name.c_str(), "Instrument name");
