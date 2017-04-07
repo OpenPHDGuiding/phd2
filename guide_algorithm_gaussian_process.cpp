@@ -87,7 +87,7 @@ GPExpertDialog::GPExpertDialog(wxWindow *Parent) :
 {
     // create the expert options UI
     wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
-    wxStaticText *warning = new wxStaticText(this, wxID_ANY, _("Warning!  Intended for use by developers"), wxPoint(-1, -1), wxSize(-1, -1));
+    wxStaticText *warning = new wxStaticText(this, wxID_ANY, _("Warning!  Intended for use by experts"), wxPoint(-1, -1), wxSize(-1, -1));
     MakeBold(warning);
     vSizer->Add(warning, wxSizerFlags().Center().Border(wxBOTTOM, 10));
 
@@ -330,7 +330,7 @@ public:
 
         m_btnExpertOptions = new wxButton(pParent, wxID_ANY, _("Expert..."));
         m_btnExpertOptions->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &GuideAlgorithmGaussianProcessDialogPane::OnExpertButton, this);
-        m_btnExpertOptions->SetToolTip(_("Change expert options for tuning the predictions. Use at your own risk!!"));
+        m_btnExpertOptions->SetToolTip(_("Change expert options for tuning the predictions. Use at your own risk!"));
         this->Add(m_btnExpertOptions, wxSizerFlags().Center().Border(wxALL, 3));
 
         if (!m_pGuideAlgorithm->m_expertDialog)
