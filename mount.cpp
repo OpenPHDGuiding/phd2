@@ -97,7 +97,7 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
     // we need to force the guide alogorithm config pane to be large enough for
     // any of the guide algorithms
     ConfigDialogPane *pane = algo->GetConfigDialogPane(parent);
-    pane->SetMinSize(-1, 110);
+    pane->SetMinSize(-1, 200);
     return pane;
 }
 
@@ -126,7 +126,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (m_pDecBox)
             m_pDecBox->Clear(true);
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
-        wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+        wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
         wxString xAlgorithms[] =
         {
@@ -154,14 +154,14 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pRABox->Add(m_pXGuideAlgorithmConfigDialogPane, def_flags);
 
         if (!stepGuider)
-            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
+            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 37).Center());
 
         // Parameter resets are applicable to either scope or AO "mounts"
         m_pResetRAParams = new wxButton(m_pParent, wxID_ANY, _("Reset"));
         m_pResetRAParams->SetToolTip(_("Causes an IMMEDIATE reset of the RA algorithm parameters to their default values"));
         m_pResetRAParams->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Mount::MountConfigDialogPane::OnResetRAParams, this);
         if (!stepGuider)
-            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 55).Center());
+            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 52).Center());
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 

@@ -72,13 +72,25 @@ static const double DefaultPredictionGain                  = 0.5; // amount of G
 
 static const bool   DefaultComputePeriod                 = true;
 
+static void MakeBold(wxControl *ctrl)
+{
+    wxFont font = ctrl->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    ctrl->SetFont(font);
+}
+
 GuideAlgorithmGaussianProcess::
 GPExpertDialog::GPExpertDialog(wxWindow *Parent) :
-    wxDialog(Parent, wxID_ANY, _("Expert Settings", wxDefaultPosition, wxDefaultSize)),
+    wxDialog(Parent, wxID_ANY, _("Expert Settings"), wxDefaultPosition, wxDefaultSize),
     m_pPeriodLengthsInference(0), m_pPeriodLengthsPeriodEstimation(0), m_pNumPointsApproximation(0), m_pSE0KLengthScale(0), m_pSE0KSignalVariance(0), m_pPKLengthScale(0),
-    m_pPKSignalVariance(0), m_pSE1KLengthScale(0), m_pSE1KSignalVariance(0), m_checkboxDarkMode(0)
+    m_pPKSignalVariance(0), m_pSE1KLengthScale(0), m_pSE1KSignalVariance(0)
 {
     // create the expert options UI
+    wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticText *warning = new wxStaticText(this, wxID_ANY, _("Warning!  Intended for use by developers"), wxPoint(-1, -1), wxSize(-1, -1));
+    MakeBold(warning);
+    vSizer->Add(warning, wxSizerFlags().Center().Border(wxBOTTOM, 10));
+
     wxFlexGridSizer *flexGrid = new wxFlexGridSizer(10, 2, 5, 5);
     int width;
 
@@ -157,11 +169,8 @@ GPExpertDialog::GPExpertDialog(wxWindow *Parent) :
     AddTableEntry(flexGrid, _("Signal Variance (Short Range)"), m_pSE1KSignalVariance,
         wxString::Format(_("Signal variance (in pixels) of the short-term variations. Default = %.2f"), DefaultSignalVarianceSE1Ker));
 
-    m_checkboxDarkMode = new wxCheckBox(this, wxID_ANY, "");
-    AddTableEntry(flexGrid, _("Dark Guiding Mode"), m_checkboxDarkMode,
-        _("Disables the use of the measurements, useful only for testing."));
-
-    SetSizerAndFit(flexGrid);
+    vSizer->Add(flexGrid);
+    SetSizerAndFit(vSizer);
 }
 
 void GuideAlgorithmGaussianProcess::GPExpertDialog::AddTableEntry(wxFlexGridSizer *Grid, const wxString& Label, wxWindow *Ctrl, const wxString& ToolTip)
@@ -200,6 +209,67 @@ void GuideAlgorithmGaussianProcess::GPExpertDialog::UnloadExpertValues(GuideAlgo
     hyperParams[SE1KSignalVariance] = m_pSE1KSignalVariance->GetValue();
 }
 
+GuideAlgorithmGaussianProcess::
+GuideAlgorithmGPGraphControlPane::GuideAlgorithmGPGraphControlPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pAlgorithm, const wxString& label)
+    : GraphControlPane(pParent, label)
+{
+    int width;
+
+    m_pGuideAlgorithm = pAlgorithm;
+
+    // Prediction Weight
+    width = StringWidth(_T("000"));
+    m_pWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Weight"));
+    m_pWeight->SetDigits(0);
+    m_pWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrlDouble, this);
+    DoAdd(m_pWeight, _("PredWt"));
+
+    // Aggression
+    width = StringWidth(_T("000"));
+    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
+    m_pAggressiveness->SetDigits(0);
+    m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrlDouble, this);
+    DoAdd(m_pAggressiveness, _("Agr"));
+
+    // Min move
+    width = StringWidth(_T("00.00"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove->SetDigits(2);
+    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnMinMoveSpinCtrlDouble, this);
+    DoAdd(m_pMinMove, _("MnMo"));
+
+    m_pWeight->SetValue(100.0 * m_pGuideAlgorithm->GetPredictionGain());
+    m_pAggressiveness->SetValue(100.0 * m_pGuideAlgorithm->GetControlGain());
+    m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+}
+
+GuideAlgorithmGaussianProcess::
+GuideAlgorithmGPGraphControlPane::~GuideAlgorithmGPGraphControlPane()
+{
+
+}
+
+void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetPredictionGain(m_pWeight->GetValue() / 100.0);
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC prediction weight", m_pWeight->GetValue());
+}
+
+void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetControlGain(m_pAggressiveness->GetValue() / 100.0);
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC aggressiveness", m_pAggressiveness->GetValue());
+}
+
+void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC minimum move", m_pMinMove->GetValue());
+}
+
 class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
@@ -208,9 +278,7 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
     wxSpinCtrlDouble *m_pPKPeriodLength;
     wxSpinCtrlDouble *m_pPredictionGain;
     wxCheckBox       *m_checkboxComputePeriod;
-    GPExpertDialog   *m_expertOptions;
     wxButton         *m_btnExpertOptions;
-    GPExpertDialog   *m_expertDialog;
 
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
@@ -226,7 +294,7 @@ public:
         m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain, 5);
         m_pPredictionGain->SetDigits(0);
-        DoAdd(_("Prediction"), m_pPredictionGain,
+        DoAdd(_("Prediction Weight"), m_pPredictionGain,
             wxString::Format(_("How much of the gear error prediction should be applied? "
             "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
 
@@ -251,20 +319,22 @@ public:
         m_pPKPeriodLength = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, 50.0, 2000.0, DefaultPeriodLengthPerKer, 1);
         m_pPKPeriodLength->SetDigits(2);
-        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("auto"));
-        m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length to identify repetitive movements. Default = %s"), 
+        m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("Auto-adjust period"));
+        m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length based on identified repetitive errors. Default = %s"), 
             DefaultComputePeriod ? _("On") : _("Off")));
+
         DoAdd(_("Period Length"), m_pPKPeriodLength,
             wxString::Format(_("The period length (in seconds) of the periodic error component that should be "
-            "corrected. Default = %.2f"), DefaultPeriodLengthPerKer), m_checkboxComputePeriod);
+            "corrected. Default = %.2f"), DefaultPeriodLengthPerKer));
+        DoAdd(m_checkboxComputePeriod);
 
         m_btnExpertOptions = new wxButton(pParent, wxID_ANY, _("Expert..."));
         m_btnExpertOptions->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &GuideAlgorithmGaussianProcessDialogPane::OnExpertButton, this);
         m_btnExpertOptions->SetToolTip(_("Change expert options for tuning the predictions. Use at your own risk!!"));
         this->Add(m_btnExpertOptions, wxSizerFlags().Center().Border(wxALL, 3));
 
-        m_expertDialog = new GPExpertDialog(m_pParent);
-
+        if (!m_pGuideAlgorithm->m_expertDialog)
+            m_pGuideAlgorithm->m_expertDialog = new GPExpertDialog(m_pParent);      // Do this here so the parent window has been built
     }
 
     virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
@@ -287,7 +357,7 @@ public:
         m_pPKPeriodLength->SetValue(hyperparameters[PKPeriodLength]);
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
 
-        m_expertDialog->LoadExpertValues(m_pGuideAlgorithm, hyperparameters);
+        m_pGuideAlgorithm->m_expertDialog->LoadExpertValues(m_pGuideAlgorithm, hyperparameters);
 
         m_pParent->Layout();
     }
@@ -301,16 +371,18 @@ public:
 
         std::vector<double> hyperparameters(NumParameters);
         hyperparameters[PKPeriodLength] = m_pPKPeriodLength->GetValue();
-        m_expertDialog->UnloadExpertValues(m_pGuideAlgorithm, hyperparameters);
+        m_pGuideAlgorithm->m_expertDialog->UnloadExpertValues(m_pGuideAlgorithm, hyperparameters);
 
         m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
+        if (pFrame->pGuider->IsGuiding() && m_pGuideAlgorithm->GetBoolComputePeriod() != m_checkboxComputePeriod->GetValue())
+            pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC Adjust Period Length", m_checkboxComputePeriod->GetValue());
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
     }
 
     virtual void OnExpertButton(wxCommandEvent& evt)
     {
-        if (!m_expertDialog->IsShown())
-            m_expertDialog->Show();
+        if (!m_pGuideAlgorithm->m_expertDialog->IsShown())
+            m_pGuideAlgorithm->m_expertDialog->Show();
     }
 
     // make the class non-copyable (if we ever need this, we must implement a deep copy)
@@ -375,12 +447,17 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
 
     bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
     SetBoolComputePeriod(compute_period);
-
+    m_expertDialog = NULL;
     reset();
 }
 
 GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
 {
+    if (m_expertDialog)
+    {
+        m_expertDialog->Destroy();
+        m_expertDialog = NULL;
+    }
     delete GPG;
 }
 
@@ -388,6 +465,11 @@ GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
 ConfigDialogPane *GuideAlgorithmGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuideAlgorithmGaussianProcessDialogPane(pParent, this);
+}
+
+GraphControlPane *GuideAlgorithmGaussianProcess::GetGraphControlPane(wxWindow *pParent, const wxString& label)
+{
+    return new GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane(pParent, this, label);
 }
 
 bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)

@@ -71,7 +71,6 @@ protected:
         wxSpinCtrlDouble *m_pPKSignalVariance;
         wxSpinCtrlDouble *m_pSE1KLengthScale;
         wxSpinCtrlDouble *m_pSE1KSignalVariance;
-        wxCheckBox       *m_checkboxDarkMode;
         wxBoxSizer       *m_pExpertPage;
         void AddTableEntry(wxFlexGridSizer *Grid, const wxString& Label, wxWindow *Ctrl, const wxString& ToolTip);
 
@@ -80,6 +79,26 @@ protected:
         void LoadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, const std::vector<double>& hyperParams);
         void UnloadExpertValues(GuideAlgorithmGaussianProcess *m_pGuideAlgorithm, std::vector<double>& hyperParams);
     };
+
+protected:
+    class GuideAlgorithmGPGraphControlPane : public GraphControlPane
+    {
+    public:
+        GuideAlgorithmGPGraphControlPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pAlgorithm, const wxString& label);
+        ~GuideAlgorithmGPGraphControlPane();
+
+    private:
+        GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pWeight;
+        wxSpinCtrlDouble *m_pAggressiveness;
+        wxSpinCtrlDouble *m_pMinMove;
+
+        void OnWeightSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnAggressivenessSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
+    };
+
+    GPExpertDialog   *m_expertDialog;
 
 private:
     /**
@@ -137,6 +156,7 @@ public:
     virtual GUIDE_ALGORITHM Algorithm(void);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
     /**
      * Calculates the control value based on the current input. 1. The input is
