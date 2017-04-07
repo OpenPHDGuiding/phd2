@@ -390,6 +390,10 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
                     hdr.write("OBJCTDEC", wxString::Format("%c%d %02d %06.3f", sign < 0 ? '-' : '+', d, m, dec).c_str(), "Object Declination in dms");
                 }
             }
+
+            PierSide p = pPointingSource->SideOfPier();
+            if (p != PierSide::PIER_SIDE_UNKNOWN)
+                hdr.write("PIERSIDE", (unsigned int) p, "Side of Pier 0=East 1=West");
         }
 
         float sc = (float) pFrame->GetCameraPixelScale();
