@@ -381,8 +381,7 @@ public:
 
     virtual void OnExpertButton(wxCommandEvent& evt)
     {
-        if (!m_pGuideAlgorithm->m_expertDialog->IsShown())
-            m_pGuideAlgorithm->m_expertDialog->Show();
+         m_pGuideAlgorithm->m_expertDialog->ShowModal();
     }
 
     // make the class non-copyable (if we ever need this, we must implement a deep copy)
