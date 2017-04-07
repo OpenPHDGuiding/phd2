@@ -98,7 +98,7 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    GPExpertDialog   *m_expertDialog;
+    GPExpertDialog   *m_expertDialog;       // Exactly one per GP instance independent from ConfigDialogPane lifetimes
 
 private:
     /**
