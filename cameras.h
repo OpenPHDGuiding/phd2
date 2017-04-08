@@ -68,8 +68,7 @@
 # define ASCOM_LATECAMERA
 # define SBIG
 # define SBIGROTATOR_CAMERA // must follow SBIG
-# define QHY5II
-# define QHY5LII
+# define QHY_CAMERA
 # define OPENCV_CAMERA
 # define LE_CAMERA
 # define LE_SERIAL_CAMERA
@@ -88,23 +87,27 @@
 #endif
 
 #elif defined (__APPLE__)  // Mac cameras
-# define FIREWIRE
-# define SBIG
-# define MEADE_DSI
-# define STARFISH
-# define SIMULATOR
-# define SXV
-# define OPENSSAG
-# define KWIQGUIDER
 
+# define FIREWIRE
+# define KWIQGUIDER
+# define MEADE_DSI
+# define OPENSSAG
+# define QHY_CAMERA
+# define SBIG
+# define SIMULATOR
+# define STARFISH
+# define SXV
 # define ZWO_ASI
 
 #elif defined (__linux__)
+
 # define SIMULATOR
 # define CAM_QHY5
+# define QHY_CAMERA
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
+
 #endif
 
 // Currently unused

@@ -183,12 +183,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_OSPL130.h
   ${phd_src_dir}/cam_QGuide.cpp
   ${phd_src_dir}/cam_QGuide.h
-
-  ${phd_src_dir}/cam_QHY5II.cpp
-  ${phd_src_dir}/cam_QHY5II.h
-  ${phd_src_dir}/cam_QHY5LII.cpp
-  ${phd_src_dir}/cam_QHY5LII.h
-
+  ${phd_src_dir}/cam_qhy.cpp
+  ${phd_src_dir}/cam_qhy.h
   ${phd_src_dir}/cam_SAC42.cpp
   ${phd_src_dir}/cam_SAC42.h
   ${phd_src_dir}/cam_SACGuide.cpp
@@ -239,9 +235,6 @@ if(WIN32)
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
 
-    ${phd_src_dir}/cam_QHY5IIbase.cpp
-    ${phd_src_dir}/cam_QHY5IIbase.h
-
     # ascom, not there in the sln project -> commented for now 
     # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
     #${phd_src_dir}/cam_ascom.cpp
@@ -253,7 +246,6 @@ elseif(UNIX AND (NOT APPLE))
       ${cam_SRC}
       #${phd_src_dir}/cam_simulator.h
       #${phd_src_dir}/cam_simulator.cpp
-      
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
       ${phd_src_dir}/cameras/SXMacLib.h
@@ -638,6 +630,20 @@ if(APPLE)
     set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
     set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
   endif()
+
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware
+  )
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
+    WORKING_DIRECTORY PHD2.app/Contents/Resources/qhyfirmware
+    COMMENT "unpack QHY firmware"
+    VERBATIM
+  )
 
 elseif(WIN32)
 
