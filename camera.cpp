@@ -911,11 +911,11 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     }
 
     // Max ADU and related saturation choices in a single group
-    int width = StringWidth(_("65535"));
+    int width = StringWidth(_T("65535"));
     wxWindow* parent = GetParentWindow(AD_szSaturationOptions);
     m_camSaturationADU = new wxTextCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
     m_camSaturationADU->SetToolTip(_("ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 for 8-bit cameras."));
-    m_SaturationByADU = new wxRadioButton(parent, wxID_ANY, "Saturation by Max-ADU value:");
+    m_SaturationByADU = new wxRadioButton(parent, wxID_ANY, _("Saturation by Max-ADU value:"));
     m_SaturationByADU->SetToolTip(_("Identify star saturation based on camera maximum-ADU value"));
     m_SaturationByADU->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
     wxStaticBoxSizer* szADUGroup = new wxStaticBoxSizer(wxHORIZONTAL, parent,
@@ -923,7 +923,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     szADUGroup->Add(m_SaturationByADU, wxSizerFlags().Border(wxTOP, 2));
     szADUGroup->Add(m_camSaturationADU, wxSizerFlags().Border(wxLEFT, 6));
 
-    m_SaturationByProfile = new wxRadioButton(parent, wxID_ANY, "Saturation via star-profile");
+    m_SaturationByProfile = new wxRadioButton(parent, wxID_ANY, _("Saturation via star-profile"));
     m_SaturationByProfile->SetToolTip(_("Identify star saturation based on flat-topped profile, regardless of brightness (default)"));
     m_SaturationByProfile->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
     wxFlexGridSizer* szSaturationGroup = new wxFlexGridSizer(1, 2, 5, 15);
