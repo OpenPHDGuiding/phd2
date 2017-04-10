@@ -103,8 +103,10 @@
 
 # define SIMULATOR
 # define CAM_QHY5
+#if 0 // temporarily disable new QHY SDK on Linux  - Issue #591
 #ifndef __arm__     // until we get an updated SDK from QHY uncluding arm version(s) of libqhy.a
 # define QHY_CAMERA
+#endif
 #endif
 # define INDI_CAMERA
 # define ZWO_ASI
