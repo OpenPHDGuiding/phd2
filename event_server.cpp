@@ -1020,11 +1020,11 @@ static void clear_calibration(JObj& response, const json_value *params)
         json_for_each (val, params)
         {
             const char *which = string_val(val);
-            if (strcmp(which, "mount") == 0)
+            if (wxStricmp(which, "mount") == 0)
                 clear_mount = true;
-            else if (strcmp(which, "ao") == 0)
+            else if (wxStricmp(which, "ao") == 0)
                 clear_ao = true;
-            else if (strcmp(which, "both") == 0)
+            else if (wxStricmp(which, "both") == 0)
                 clear_mount = clear_ao = true;
             else
             {
@@ -1732,6 +1732,173 @@ static void get_settling(JObj& response, const json_value *params)
     response << jrpc_result(settling);
 }
 
+static GUIDE_DIRECTION dir_param(const json_value *p)
+{
+    if (!p || p->type != JSON_STRING)
+        return GUIDE_DIRECTION::NONE;
+
+    struct {
+        const char *s; GUIDE_DIRECTION d;
+    } dirs[] = {
+        { "n", GUIDE_DIRECTION::NORTH },
+        { "s", GUIDE_DIRECTION::SOUTH },
+        { "e", GUIDE_DIRECTION::EAST },
+        { "w", GUIDE_DIRECTION::WEST },
+        { "north", GUIDE_DIRECTION::NORTH },
+        { "south", GUIDE_DIRECTION::SOUTH },
+        { "east", GUIDE_DIRECTION::EAST },
+        { "west", GUIDE_DIRECTION::WEST },
+        { "up", GUIDE_DIRECTION::UP },
+        { "down", GUIDE_DIRECTION::DOWN },
+        { "left", GUIDE_DIRECTION::LEFT },
+        { "right", GUIDE_DIRECTION::RIGHT },
+    };
+
+    for (int i = 0; i < WXSIZEOF(dirs); i++)
+        if (wxStricmp(p->string_value, dirs[i].s) == 0)
+            return dirs[i].d;
+
+    return GUIDE_DIRECTION::NONE;
+}
+
+static GUIDE_DIRECTION opposite(GUIDE_DIRECTION d)
+{
+    switch (d) {
+    case UP: return DOWN;
+    case DOWN: return UP;
+    case LEFT: return RIGHT;
+    case RIGHT: return UP;
+    default: return d;
+    }
+}
+
+enum WHICH_MOUNT
+{
+    MOUNT, AO, WHICH_MOUNT_ERR
+};
+
+static WHICH_MOUNT which_mount(const json_value *p)
+{
+    WHICH_MOUNT r = MOUNT;
+    if (p)
+    {
+        r = WHICH_MOUNT_ERR;
+        if (p->type == JSON_STRING)
+        {
+            if (wxStricmp(p->string_value, "ao") == 0)
+                r = AO;
+            else if (wxStricmp(p->string_value, "mount") == 0)
+                r = MOUNT;
+        }
+    }
+    return r;
+}
+
+static void guide_pulse(JObj& response, const json_value *params)
+{
+    Params p("amount", "direction", "which", params);
+
+    const json_value *amount = p.param("amount");
+    if (!amount || amount->type != JSON_INT)
+    {
+        response << jrpc_error(1, "expected amount param");
+        return;
+    }
+
+    GUIDE_DIRECTION dir = dir_param(p.param("direction"));
+    if (dir == GUIDE_DIRECTION::NONE)
+    {
+        response << jrpc_error(1, "expected direction param");
+        return;
+    }
+
+    WHICH_MOUNT which = which_mount(p.param("which"));
+    Mount *m = nullptr;
+    switch (which)
+    {
+    case MOUNT: m = TheScope(); break;
+    case AO: m = TheAO(); break;
+    case WHICH_MOUNT_ERR:
+        {
+            response << jrpc_error(1, "invalid 'which' param");
+            return;
+        }
+    }
+
+    if (!m || !m->IsConnected())
+    {
+        response << jrpc_error(1, "device not connected");
+        return;
+    }
+
+    if (pFrame->pGuider->IsCalibratingOrGuiding() || m->IsBusy())
+    {
+        response << jrpc_error(1, "cannot issue guide pulse while calibrating or guiding");
+        return;
+    }
+
+    int duration = amount->int_value;
+    if (duration < 0)
+    {
+        duration = -duration;
+        dir = opposite(dir);
+    }
+
+    Mount::MOVE_RESULT res = m->CalibrationMove(dir, duration);
+    if (res == Mount::MOVE_OK)
+        response << jrpc_result(0);
+    else
+        response << jrpc_error(1, "move failed");
+}
+
+static const char *parity_str(GuideParity p)
+{
+    switch (p) {
+    case GUIDE_PARITY_EVEN: return "+";
+    case GUIDE_PARITY_ODD: return "-";
+    default: return "?";
+    }
+}
+
+static void get_calibration_data(JObj& response, const json_value *params)
+{
+    Params p("which", params);
+
+    WHICH_MOUNT which = which_mount(p.param("which"));
+    Mount *m = nullptr;
+    switch (which)
+    {
+    case MOUNT: m = TheScope(); break;
+    case AO: m = TheAO(); break;
+    case WHICH_MOUNT_ERR:
+    {
+        response << jrpc_error(1, "invalid 'which' param");
+        return;
+    }
+    }
+
+    if (!m || !m->IsConnected())
+    {
+        response << jrpc_error(1, "device not connected");
+        return;
+    }
+
+    JObj rslt;
+    rslt << NV("calibrated", m->IsCalibrated());
+
+    if (m->IsCalibrated())
+    {
+        rslt << NV("xAngle", degrees(m->xAngle()), 1)
+            << NV("xRate", m->xRate() * 1000.0, 3)
+            << NV("xParity", parity_str(m->RAParity()))
+            << NV("yAngle", degrees(m->yAngle()), 1)
+            << NV("yRate", m->yRate() * 1000.0, 3)
+            << NV("yParity", parity_str(m->DecParity()));
+    }
+
+    response << jrpc_result(rslt);
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -1804,6 +1971,8 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_dec_guide_mode", &get_dec_guide_mode, },
         { "set_dec_guide_mode", &set_dec_guide_mode, },
         { "get_settling", &get_settling, },
+        { "guide_pulse", &guide_pulse, },
+        { "get_calibration_data", &get_calibration_data, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
