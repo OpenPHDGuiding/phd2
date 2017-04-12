@@ -1767,7 +1767,7 @@ static GUIDE_DIRECTION opposite(GUIDE_DIRECTION d)
     case UP: return DOWN;
     case DOWN: return UP;
     case LEFT: return RIGHT;
-    case RIGHT: return UP;
+    case RIGHT: return LEFT;
     default: return d;
     }
 }
@@ -1871,10 +1871,10 @@ static void get_calibration_data(JObj& response, const json_value *params)
     case MOUNT: m = TheScope(); break;
     case AO: m = TheAO(); break;
     case WHICH_MOUNT_ERR:
-    {
-        response << jrpc_error(1, "invalid 'which' param");
-        return;
-    }
+        {
+            response << jrpc_error(1, "invalid 'which' param");
+            return;
+        }
     }
 
     if (!m || !m->IsConnected())
