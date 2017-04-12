@@ -459,9 +459,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                 }
                 case OVERLAY_RADEC:
                 {
-                    if (!pMount)
-                        Debug.Write("No mount specified for View/RA_Dec overlay\n");        // Soft error
-                    else
+                    Mount *mount = TheScope();
+                    if (mount)
                     {
                         double StarX = CurrentPosition().X;
                         double StarY = CurrentPosition().Y;
@@ -469,9 +468,9 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                         double r = 15.0;
                         double rlabel = r + 9.0;
 
-                        double wAngle = pMount->IsCalibrated() ? pMount->xAngle() : 0.0;
+                        double wAngle = mount->IsCalibrated() ? mount->xAngle() : 0.0;
                         double eAngle = wAngle + M_PI;
-                        GuideParity raParity = pMount->RAParity();
+                        GuideParity raParity = mount->RAParity();
                         if (raParity == GUIDE_PARITY_ODD)
                         {
                             // odd parity => West calibration pulses move scope East
@@ -491,8 +490,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                                 ROUND(StarX * m_scaleFactor + rlabel * cos_eangle) - 4, ROUND(StarY * m_scaleFactor + rlabel * sin_eangle) - 6);
                         }
 
-                        double nAngle = pMount->IsCalibrated() ? pMount->yAngle() : M_PI / 2.0;
-                        GuideParity decParity = pMount->DecParity();
+                        double nAngle = mount->IsCalibrated() ? mount->yAngle() : M_PI / 2.0;
+                        GuideParity decParity = mount->DecParity();
                         if (decParity == GUIDE_PARITY_EVEN)
                         {
                             // even parity => North calibration pulses move scope North
