@@ -36,6 +36,8 @@
 #include "guiding_assistant.h"
 #include "backlash_comp.h"
 
+#include <wx/textwrapper.h>
+
 struct Stats
 {
     double alpha_lp;
@@ -115,8 +117,6 @@ inline static void StartRow(int& row, int& column)
     ++row;
     column = 0;
 }
-
-
 
 // Encapsulated struct for implementing the dialog box
 struct GuidingAsstWin : public wxDialog
@@ -253,6 +253,24 @@ struct GridTooltipInfo : public wxObject
     GridTooltipInfo(wxGrid *g, int i) : grid(g), gridNum(i) { }
 };
 
+struct TextWrapper
+{
+    wxWindow *win;
+    int width;
+    TextWrapper(wxWindow *win_, int width_) : win(win_), width(width_) { }
+    wxString Wrap(const wxString& text) const
+    {
+        struct Wrapper : public wxTextWrapper
+        {
+            wxString str;
+            Wrapper(wxWindow *win_, const wxString& text, int width_) { Wrap(win_, text, width_); }
+            void OnOutputLine(const wxString& line) { str += line; }
+            void OnNewLine() { str += '\n'; }
+        };
+        return Wrapper(win, text, width).str;
+    }
+};
+
 // Constructor
 GuidingAsstWin::GuidingAsstWin()
     : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant"))),
@@ -355,42 +373,47 @@ GuidingAsstWin::GuidingAsstWin()
     m_othergrid->EnableEditing(false);
     m_othergrid->SetDefaultColSize(minLeftCol);
 
+    TextWrapper w(this, minLeftCol);
+
     row = 0;
     col = 0;
-    m_othergrid->SetCellValue(row, col++, _("Right ascension, Peak"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Right ascension, Peak")));
     m_ra_peak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Declination, Peak"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Declination, Peak")));
     m_dec_peak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Right ascension, Peak-Peak"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Right ascension, Peak-Peak")));
     m_ra_peakpeak_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Right ascension Drift Rate"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Right ascension Drift Rate")));
     m_ra_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Right ascension Max Drift Rate"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Right ascension Max Drift Rate")));
     m_ra_peak_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Drift-limiting exposure"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Drift-limiting exposure")));
     m_ra_drift_exp_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Declination Drift Rate"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Declination Drift Rate")));
     m_dec_drift_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Declination Backlash"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Declination Backlash")));
     m_backlash_loc.Set(row, col++);
 
     StartRow(row, col);
-    m_othergrid->SetCellValue(row, col++, _("Polar Alignment Error"));
+    m_othergrid->SetCellValue(row, col++, w.Wrap(_("Polar Alignment Error")));
     m_pae_loc.Set(row, col++);
+
+    m_othergrid->AutoSizeColumn(0);
+    m_othergrid->AutoSizeRows();
 
     other_group->Add(m_othergrid);
     hBottomSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
