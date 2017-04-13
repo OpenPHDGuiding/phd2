@@ -785,3 +785,29 @@ void GaussianProcessGuider::SetLearningRate(double learning_rate)
     learning_rate_ = learning_rate;
     return;
 }
+
+// Debug Log interface ======
+
+class NullDebugLog : public GPDebug
+{
+    void Log(const char *fmt, ...) { }
+};
+
+class GPDebug *GPDebug = new NullDebugLog();
+
+namespace {
+    // just so the leak checker does not complain
+    struct GPDebugCleanup {
+        ~GPDebugCleanup() { GPDebug::SetGPDebug(nullptr); }
+    } s_cleanup;
+}
+
+void GPDebug::SetGPDebug(GPDebug *logger)
+{
+    delete ::GPDebug;
+    ::GPDebug = logger;
+}
+
+GPDebug::~GPDebug()
+{
+}

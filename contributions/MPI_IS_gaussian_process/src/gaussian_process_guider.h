@@ -316,4 +316,24 @@ public:
     void SetLearningRate(double learning_rate);
 };
 
+//
+// GPDebug abstract interface to allow logging to the PHD2 Debug Log when
+// GaussianProcessGuider is built in the context of the PHD2 application
+//
+// Add code like this to record debug info in the PHD2 debug log (with newline appended)
+//
+//   GPDebug->Log("input: %.2f SNR: %.1f time_step: %.1f", input, SNR, time_step);
+//
+// Outside of PHD2, like in the test framework, these calls will not produce any output
+//
+class GPDebug
+{
+public:
+    static void SetGPDebug(GPDebug *logger);
+    virtual ~GPDebug();
+    virtual void Log(const char *format, ...) = 0;
+};
+
+extern class GPDebug *GPDebug;
+
 #endif  // GAUSSIAN_PROCESS_GUIDER

@@ -38,6 +38,7 @@
 #include "guiding_assistant.h"
 
 #include <wx/tokenzr.h>
+#include <cstdarg>
 
 inline static PierSide OppositeSide(PierSide p)
 {
@@ -473,6 +474,25 @@ GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
     return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
 
+static GuideAlgorithm *MakeGaussianProcessGuideAlgo(Mount *mount, GuideAxis axis)
+{
+    static bool s_gp_debug_inited;
+    if (!s_gp_debug_inited)
+    {
+        class PHD2DebugLogger : public GPDebug {
+            void Log(const char *format, ...) {
+                va_list ap;
+                va_start(ap, format);
+                Debug.Write(wxString::FormatV(format + wxString("\n"), ap));
+                va_end(ap);
+            }
+        };
+        GPDebug::SetGPDebug(new PHD2DebugLogger());
+        s_gp_debug_inited = true;
+    }
+    return new GuideAlgorithmGaussianProcess(mount, axis);
+}
+
 bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm)
 {
     bool error = false;
@@ -498,7 +518,7 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
                 break;
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-                *ppAlgorithm = new GuideAlgorithmGaussianProcess(mount, axis);
+                *ppAlgorithm = MakeGaussianProcessGuideAlgo(mount, axis);
                 break;
 
             default:
