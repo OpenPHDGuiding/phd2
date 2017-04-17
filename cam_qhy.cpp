@@ -98,6 +98,10 @@ Camera_QHY::Camera_QHY()
     Color = false;
     HasSubframes = true;
     m_camhandle = 0;
+
+    // Override gain setting from base class
+    enum { DefaultQHYCameraGain = 40 };
+    GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultQHYCameraGain);
 }
 
 Camera_QHY::~Camera_QHY()
