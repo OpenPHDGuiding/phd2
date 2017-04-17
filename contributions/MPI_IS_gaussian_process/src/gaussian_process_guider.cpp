@@ -276,18 +276,21 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
      * we cannot trust the measurement. Once dithering has settled, we can trust
      * the measurement again and we can pretend nothing has happend.
      */
-    double hyst_percentage = 0;
-    double period_length = GetGPHyperparameters()[PKPeriodLength];
+    double hyst_percentage = 0.0;
+    double period_length = 0.0;
 
-    if (dithering_active_ == true)
+    if (dithering_active_)
     {
-        dither_steps_--;
-        if (dither_steps_ <= 0)
+        if (--dither_steps_ <= 0)
         {
             dithering_active_ = false;
         }
         deduceResult(time_step); // just pretend we would do dark guiding...
-        return parameters.control_gain_*input; // ...but apply proportional control
+
+        GPDebug->Log("PPEC rslt(dithering): input = %.2f, final = %.2f",
+            input, parameters.control_gain_ * input);
+
+        return parameters.control_gain_ * input; // ...but apply proportional control
     }
 
     // the starting time is set at the first call of result after startup or reset
@@ -306,16 +309,16 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     {
         last_control = get_second_last_point().control;
     }
-    double hysteresis_control = (1 - HYSTERESIS) * input + HYSTERESIS * last_control;
+    double hysteresis_control = (1.0 - HYSTERESIS) * input + HYSTERESIS * last_control;
     hysteresis_control *= parameters.control_gain_;
 
-    control_signal_ = parameters.control_gain_*input; // start with proportional control
+    control_signal_ = parameters.control_gain_ * input; // start with proportional control
     if (std::abs(input) < parameters.min_move_)
     {
-        control_signal_ = 0; // don't make small moves
-        hysteresis_control = 0;
+        control_signal_ = 0.0; // don't make small moves
+        hysteresis_control = 0.0;
     }
-    assert(std::abs(control_signal_) == 0 || std::abs(input) >= parameters.min_move_);
+    assert(std::abs(control_signal_) == 0.0 || std::abs(input) >= parameters.min_move_);
 
     // calculate GP prediction
     if (get_number_of_measurements() > 10)
@@ -325,7 +328,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
             prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
         }
         // the point of highest precision shoud be between now and the next step
-        UpdateGP(prediction_point + 0.5*time_step);
+        UpdateGP(prediction_point + 0.5 * time_step);
 
         // the prediction should end after one time step
         prediction_ = PredictGearError(prediction_point + time_step);
@@ -337,8 +340,8 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         {
             double percentage = get_last_point().timestamp / (parameters.min_periods_for_inference_ * period_length);
             percentage = std::min(percentage, 1.0); // limit to 100 percent GP
-            hyst_percentage = 1 - percentage;
-            control_signal_ = percentage * control_signal_ + (1 - percentage) * hysteresis_control;
+            hyst_percentage = 1.0 - percentage;
+            control_signal_ = percentage * control_signal_ + (1.0 - percentage) * hysteresis_control;
         }
     }
 
@@ -353,9 +356,11 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
 
     add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(control_signal_); // already store control signal
-    GPDebug->Log("PPEC rslt: input = %0.2f, final = %0.2f, react = %0.2f, pred = %0.2f, hyst = %0.2f, hyst_pct = %0.2f, period_length = %0.2f",
-        input, control_signal_, parameters.control_gain_*input, parameters.prediction_gain_*prediction_, hysteresis_control, hyst_percentage, 
-        period_length);             // EOL is appended in the Log function
+
+    GPDebug->Log("PPEC rslt: input = %.2f, final = %.2f, react = %.2f, pred = %.2f, hyst = %.2f, hyst_pct = %.2f, period_length = %.2f",
+        input, control_signal_, parameters.control_gain_ * input, parameters.prediction_gain_ * prediction_, hysteresis_control,
+        hyst_percentage, period_length);
+
     return control_signal_;
 }
 

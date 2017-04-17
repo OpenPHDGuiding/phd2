@@ -865,18 +865,18 @@ double GuideAlgorithmGaussianProcess::result(double input)
     // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
     double control_signal = GPG->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
 
-    Debug.AddLine(wxString::Format("Predictive PEC Guider: input: %f, control: %f, exposure: %f",
-        input, control_signal, (double) pFrame->RequestedExposureDuration()/1000.0));
+    Debug.AddLine(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d",
+        input, control_signal, pFrame->RequestedExposureDuration()));
 
     return control_signal;
 }
 
 double GuideAlgorithmGaussianProcess::deduceResult()
 {
-    double control_signal = GPG->deduceResult((double) pFrame->RequestedExposureDuration()/1000.0);
+    double control_signal = GPG->deduceResult((double) pFrame->RequestedExposureDuration() / 1000.0);
 
-    Debug.AddLine(wxString::Format("Predictive PEC Guider (deduced): control: %f, exposure: %f", control_signal,
-        (double) pFrame->RequestedExposureDuration()/1000.0));
+    Debug.AddLine(wxString::Format("PPEC (deduced): control: %.2f, exposure: %d", control_signal,
+        pFrame->RequestedExposureDuration()));
 
     return control_signal;
 }
