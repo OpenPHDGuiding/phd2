@@ -136,4 +136,157 @@ aggressiveness. &nbsp;Minimum-move has the same effect as it does in the
 other guide algorithms, and aggressiveness (percentage) is a way of further
 dampening the size of the guide corrections. LowPass2 is a very
 conservative, high-impedance algorithm that may be a good choice for
-users with good seeing conditions and well-behaved mounts with little or no declination backlash.<br><br>&nbsp;&nbsp;</body></html>
+users with good seeing conditions and well-behaved mounts with little or no declination backlash.<br><b style=""><br><a name="Predictive_PEC"></a>PHD2 Predictive PEC Guide
+Algorithm (PPEC)<o:p></o:p></b>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b style="">Overview<o:p></o:p></b></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm is different from the others in PHD2 because
+of its modeling and predictive capabilities.<span style="">&nbsp;
+</span>The algorithm analyzes the tracking performance of the mount in
+real-time and once that analysis is complete, it will compute guiding
+corrections even before a repetitive error is actually seen.<span style="">&nbsp; </span>Issuing proactive guiding corrections reduces
+the time delay inherent in traditional guiding and can significantly improve
+performance.<span style="">&nbsp; </span>With the other algorithms,
+which are completely reactive, guide corrections are issued only after the
+error has been seen on the camera sensor.<span style="">&nbsp;&nbsp;
+</span></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Once guiding has begun, the algorithm analyzes the
+performance of the mount and looks for tracking errors that are repetitive and
+thus, predictable.<span style="">&nbsp; </span>The algorithm employs
+a sophisticated Gaussian process model developed by a research team at the Max
+Planck Institute in <st1:country-region w:st="on"><st1:place w:st="on">Germany</st1:place></st1:country-region>.<span style="">&nbsp; </span>The mathematical details can be found in a
+paper referenced here:</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><a href="http://ieeexplore.ieee.org/document/7105398/?reload=true">http://ieeexplore.ieee.org/document/7105398/?reload=true</a></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm will normally be used for RA, where
+residual periodic error and other gear-related errors often reduce tracking
+accuracy.<span style="">&nbsp; </span>The algorithm uses separate
+time-scales for characterizing the behavior of the system: </p>
+
+
+
+
+
+
+
+<p class="MsoListBullet"><o:p>&nbsp;</o:p><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Short-term: for high-frequency errors such as
+those caused by gear roughness or seeing<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Medium-term: <span style="">&nbsp;</span>for residual periodic errors, typically occurring
+at intervals less than or equal to the worm period<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Longer-term: for steady drift and for lower
+frequency (longer time interval) harmonics that can be caused by the
+interaction of multiple gears in the drive train</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The short-term behavior is used to identify the
+unpredictable noise in the system, which is essentially filtered out in order
+to identify components that are predictable.<span style="">&nbsp;
+</span>For most mounts, the medium-term component is likely to be the most
+important.<span style="">&nbsp; </span>If you&#8217;re following best
+practices, you will have programmed periodic error correction in your mount (assuming
+that feature is available to you).<span style="">&nbsp; </span>Doing
+this reduces the amount of work that needs to be done by PHD2, and the PEC
+correction in the mount is normally saved permanently.<span style="">&nbsp; </span>This approach is preferable to having to
+measure and infer the periodic error behavior every time you set up your
+equipment.<span style="">&nbsp; </span>That said, PEC in the mount
+is never perfect, and you will often see residual repetitive errors even when
+PEC is active.<span style="">&nbsp; </span>These often arise when
+the tracking errors occur with a frequency that is not a harmonic (integer
+fraction) of the mount&#8217;s worm period &#8211; most PEC implementations can&#8217;t deal with
+those.<span style="">&nbsp; </span>You can also get residual
+periodic errors if they are dependent on the mechanical loading of the mount or
+if the mount&#8217;s behavior has changed since the PEC was programmed.<span style="">&nbsp; </span>The PPEC algorithm can be quite effective at
+identifying and reducing these errors because it doesn&#8217;t depend on the worm
+period and is always doing a fresh analysis of the mount&#8217;s current behavior.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm will also detect and proactively correct
+for drift errors.<span style="">&nbsp; </span>Although drift is
+typically handled well by any of the guide algorithms, the corrections will
+always lag the error by some amount.<span style="">&nbsp; </span>For
+some use cases &#8211; perhaps spectroscopy, photometry or comet-tracking &#8211; this
+might be a problem, in which case PPEC may deliver better results.<span style="">&nbsp; </span></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Since PPEC employs a learning process, it will usually take about
+2 worm periods to model the mount and become fully effective.<span style="">&nbsp; </span>During this training period, the algorithm
+will behave more like the &#8216;hysteresis&#8217; algorithm, so you won&#8217;t normally see a
+performance penalty while the internal model is being built.<span style="">&nbsp; </span>Instead, you&#8217;re likely to see a steady
+improvement in tracking as the model is refined and the algorithm shifts seamlessly
+from hysteresis to predictive-mode.<span style=""> &nbsp; This improvement can usually be seen even before the medium-term mount behavior is fully modeled. </span></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Since the PPEC model is implicitly tied to the state of the
+gear train, it must be re-learned if the mount is slewed to a new target.<span style="">&nbsp; </span>For the same reason, it can&#8217;t be retained
+across different guiding sessions, which is why conventional PEC is
+important.<span style="">&nbsp; </span>However, the PPEC model will
+remain intact during dither operations and while guiding is paused (via
+automation) for activities like focusing.<span style="">&nbsp;
+</span>For the most common use-case, namely imaging the same target for
+multiple hours with periodic dithering, the PPEC model will remain valid.<span style="">&nbsp; </span>In any case, the learning process and
+transition from one mode to the other is handled automatically, so you won&#8217;t
+need to pay it any attention.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b style="">Algorithm Details<o:p></o:p></b></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Once the training period is completed, the PPEC algorithm
+computes the guide correction using two factors.<span style="">&nbsp; </span>One is reactive, based on the displacement of
+the guide star in the most recent exposure.<span style="">&nbsp;
+</span>The second is predictive, based on the output from the Gaussian process model
+constructed during the training period.<span style="">&nbsp;
+</span>Each of these terms includes a separate gain or aggressiveness factor,
+so the final guide pulse amount is a sum: </p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>&nbsp;&nbsp;&nbsp; Guide-correction = (predicted amount * predictive gain) +
+(recent displacement * reactive gain)</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The &#8216;<b style="">predictive</b> <b style="">gain&#8217;</b> and &#8216;<b style="">reactive</b> <b style="">gain&#8217;</b>
+parameters are exposed in the Advanced Dialog, and their default values for
+these parameters should work well for most mounts.<span style="">&nbsp; </span>You should be conservative about changing
+them because bad choices for these parameters can definitely make your guiding
+worse.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>During the training period, the algorithm needs to identify
+periodic errors in the observed guide star movement.<span style="">&nbsp; </span>For initial trials, you can use
+the worm period of your mount as the starting point for the &#8216;<b style="">period</b> <b style="">length&#8217;</b>.<span style="">&nbsp; </span>This gives the
+algorithm a good starting point, but you should also leave the &#8216;auto-adjust
+period&#8217; option checked.<span style="">&nbsp; </span>This
+tells the
+algorithm to adjust the period as needed to better control whatever
+periodic
+errors it finds. &nbsp;Once you have run the altorithm multiple times
+and are happy with the results, you can leave this field set to
+whatever value was computed in the previous sessions.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The &#8216;<b style="">min-move&#8217;</b>
+parameter affects only the reactive component of the algorithm.<span style="">&nbsp; </span>If the measured star displacement is less
+than this amount, the reactive component will be set to zero.<span style="">&nbsp; </span>However, the predictive component of the
+algorithm will still be computed and applied.</p>
+<br><br><br>&nbsp;&nbsp;</body></html>

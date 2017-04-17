@@ -220,18 +220,18 @@ GuideAlgorithmGPGraphControlPane::GuideAlgorithmGPGraphControlPane(wxWindow *pPa
     // Prediction Weight
     width = StringWidth(_T("000"));
     m_pWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Weight"));
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Prediction Weight"));
     m_pWeight->SetDigits(0);
     m_pWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrlDouble, this);
     DoAdd(m_pWeight, _("PredWt"));
 
-    // Aggression
+    // Reactive Weight
     width = StringWidth(_T("000"));
     m_pAggressiveness = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Reactive Weight"));
     m_pAggressiveness->SetDigits(0);
     m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrlDouble, this);
-    DoAdd(m_pAggressiveness, _("Agr"));
+    DoAdd(m_pAggressiveness, _("ReactWt"));
 
     // Min move
     width = StringWidth(_T("00.00"));
@@ -294,16 +294,16 @@ public:
         m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain, 5);
         m_pPredictionGain->SetDigits(0);
-        DoAdd(_("Prediction Weight"), m_pPredictionGain,
-            wxString::Format(_("How much of the gear error prediction should be applied? "
+        DoAdd(_("Predictive Weight"), m_pPredictionGain,
+            wxString::Format(_("What percent of the predictive guide correction should be applied? "
             "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
 
         width = StringWidth(_T("0.00"));
         m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultControlGain, 5);
         m_pControlGain->SetDigits(0);
-        DoAdd(_("Aggressiveness"), m_pControlGain,
-            wxString::Format(_("What percent of the measured error should be applied? "
+        DoAdd(_("Reactive Weight"), m_pControlGain,
+            wxString::Format(_("What percent of the reactive guide correction should be applied? "
             "Default = %.f%%, adjust if responding too much or too slowly"), 100 * DefaultControlGain));
 
         width = StringWidth(_T("0.00"));
@@ -311,9 +311,9 @@ public:
             wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 5.0, DefaultMinMove, 0.01);
         m_pMinMove->SetDigits(2);
         DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-            wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? "
-            "If camera is binned, this is a fraction of the binned pixel size. Note that the movements from "
-            "the prediction are not affected by this. Default = %.2f"), DefaultMinMove));
+            wxString::Format(_("How many (fractional) pixels must the star move to trigger a reactive guide correction? "
+            "If camera is binned, this is a fraction of the binned pixel size. Note this has no effect "
+            "on the predictive guide correction. Default = %.2f"), DefaultMinMove));
 
         width = StringWidth(_T("0000.0"));
         m_pPKPeriodLength = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -324,8 +324,8 @@ public:
             DefaultComputePeriod ? _("On") : _("Off")));
 
         DoAdd(_("Period Length"), m_pPKPeriodLength,
-            wxString::Format(_("The period length (in seconds) of the periodic error component that should be "
-            "corrected. Default = %.2f"), DefaultPeriodLengthPerKer));
+            wxString::Format(_("The period length (in seconds) of the strongest periodic error component.  Default = %.2f"),
+            DefaultPeriodLengthPerKer));
         DoAdd(m_checkboxComputePeriod);
 
         m_btnExpertOptions = new wxButton(pParent, wxID_ANY, _("Expert..."));

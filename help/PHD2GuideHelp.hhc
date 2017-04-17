@@ -219,5 +219,9 @@
 			<param name="Local" value="Trouble_shooting.htm#Problem_Reporting">
 			</OBJECT>
 	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Glossary">
+		<param name="Local" value="Glossary.html">
+		</OBJECT>
 </UL>
 </BODY></HTML>

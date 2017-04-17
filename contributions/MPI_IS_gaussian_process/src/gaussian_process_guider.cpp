@@ -276,6 +276,9 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
      * we cannot trust the measurement. Once dithering has settled, we can trust
      * the measurement again and we can pretend nothing has happend.
      */
+    double hyst_percentage = 0;
+    double period_length = GetGPHyperparameters()[PKPeriodLength];
+
     if (dithering_active_ == true)
     {
         dither_steps_--;
@@ -329,11 +332,12 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
 
         // smoothly blend over between hysteresis and GP
-        double period_length = GetGPHyperparameters()[PKPeriodLength];
+        period_length = GetGPHyperparameters()[PKPeriodLength];
         if (get_last_point().timestamp < parameters.min_periods_for_inference_ * period_length)
         {
             double percentage = get_last_point().timestamp / (parameters.min_periods_for_inference_ * period_length);
             percentage = std::min(percentage, 1.0); // limit to 100 percent GP
+            hyst_percentage = 1 - percentage;
             control_signal_ = percentage * control_signal_ + (1 - percentage) * hysteresis_control;
         }
     }
@@ -349,7 +353,9 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
 
     add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(control_signal_); // already store control signal
-
+    GPDebug->Log("PPEC rslt: input = %0.2f, final = %0.2f, react = %0.2f, pred = %0.2f, hyst = %0.2f, hyst_pct = %0.2f, period_length = %0.2f",
+        input, control_signal_, parameters.control_gain_*input, parameters.prediction_gain_*prediction_, hysteresis_control, hyst_percentage, 
+        period_length);             // EOL is appended in the Log function
     return control_signal_;
 }
 

@@ -18,7 +18,7 @@ the spread of the data points around some average value. &nbsp;If we
 concentrate on the task of guiding, we're interested in knowing how
 much we see
 the guide star moving around on the RA and Dec axes. &nbsp;Let's
-consider a sequence that measures a sequence of guide star
+consider a sequence of guide star
 displacements that look like this: &nbsp; 1.0, -1.2, 1.5, -1.3, 1.0
 -1.6, 1.4,
 -2.1, 1.2, -2.4, 1.2, -2.1 -1.1, 2.1, 0, 2.4, -1.2, 1.6, -1.5, 1.3,
@@ -37,8 +37,8 @@ longer than
 the 25 points in this example), the underlying mathematics tells us we
 would expect&nbsp;68% of the excursions to be smaller than +- 1.5 px,
 and&nbsp;95% of the excursions to fall within +/- 2*RMS (3.0) arc-sec.
-&nbsp;Obviously, this tell us a lot more about the guiding performance,
-and it's the reason RMS is used in the PHD2 visualization tools.<br><br><span style="font-weight: bold;"><a name="Backlash"></a>Backlash</span>
+&nbsp;Obviously, this tells us a lot more about the guiding performance,
+and it's why RMS is used in the PHD2 visualization tools.<br><br><span style="font-weight: bold;"><a name="Backlash"></a>Backlash</span>
 - is a typical shortcoming of most telescope mounts that use gears to
 drive the two axes (most but not all amateur mounts use gears).
 &nbsp;It is caused by a
@@ -54,21 +54,26 @@ that point, the drive motor will continue to turn but the mount axis
 won't move. &nbsp;This will continue until the motor has turned
 enough to re-engage the gears in the reverse direction.
 &nbsp;High-quality geared mounts have a very small amount of backlash,
-so small that it typically doesn't affect guiding. &nbsp;But lower-end mounts may
+so small that it typically doesn't affect guiding. &nbsp;But lower-end
+mounts may
 have a large amount of backlash, and direction reversals may experience
-long lags before the axis moves in the desired direction.
+long lags before the axis starts moving in the desired direction.
 &nbsp;Backlash is not a problem in RA so long as the guide speed is
 less than or equal to 1x sidereal. &nbsp;In those cases, the RA motor
-never reverses direction during guiding, so the backlash is not
-encountered. &nbsp;However, backlash is typically an issue for
+never reverses direction during guiding, so the backlash is not seen.
+&nbsp;However, backlash is typically an issue for
 declination
-because the drive motor and&nbsp;gears are usually stationary except for
+because the drive motor and&nbsp;gears are usually stationary except
+for
 intermittent commands to move north or south to track the star.
-&nbsp;Direction reversals in Dec will quite often trigger backlash delays.
+&nbsp;Direction reversals in Dec will quite often trigger backlash
+delays.
 &nbsp; The Guiding Assistant in PHD2 can measure this, and you will
 quite often see discussions about backlash in the support forums.
 &nbsp;As a general rule, backlash is best addressed by re-meshiing or
-otherwise improving the gear train on your declination axis.<br><br><span style="font-weight: bold;"><a name="Periodic_Error"></a>Periodic Error</span>
+otherwise improving the gear train on your declination axis. &nbsp;Do
+NOT use backlash compensation or correction settings in the mount
+firmware, those will almost inevitably result in unstable guiding.<br><br><span style="font-weight: bold;"><a name="Periodic_Error"></a>Periodic Error</span>
 - is another typical characteristic of geared mounts, this time
 affecting only&nbsp;the RA axis. &nbsp;Periodic error is usually caused
 by small irregularities&nbsp;in the worm that drives the RA gear train.
@@ -83,8 +88,7 @@ have a way to correct for this by applying
 proactive corrections as the worm reaches various points in its cycle.
 &nbsp;This correction mechanism is called periodic error correction,
 usually abbreviated as PEC. &nbsp;The PEC is usually programmed into
-the mount firmware through use of a separate application (e.g. PemPro
-or PecPrep). &nbsp; Since the PE corrections are applied
+the mount firmware through use of a separate application (e.g.&nbsp;PecPrep). &nbsp; Since the PE corrections are applied
 by the mount firmware proactively, they do not interfere with PHD2
 guiding.
 &nbsp;In fact, they&nbsp;help it substantially - there will usually be
@@ -95,7 +99,7 @@ units of arc-sec/pixel and basically describes how angular distances in
 the sky (arc-seconds) are translated into linear distances on the
 camera sensor (pixels). &nbsp;To apply this concept to guiding,
 consider a telescope/mount system that has some amount of tracking
-error. &nbsp;The tracking errors create very small angular movements in
+error. The tracking errors create very small angular movements in
 pointing, so they are measured and expressed in units of arc-seconds.
 &nbsp;For example, the mount might have a periodic error of 10
 arc-secs, so a guide star would appear to move by 10 arc-seconds during
@@ -122,7 +126,7 @@ the star can be distinguished from the background. It is similar but
 not identical to the signal-to-noise ratio used in photometry.
 &nbsp;PHD2's calculation of an accurate position for the guide star can
 be affected by the SNR, but the effects typically become unimportant
-when the SNR is at 10 or higher. &nbsp;At that point, errors in
+when the SNR is at 15 or higher. &nbsp;At that point, errors in
 computing the star position will be much smaller than the other
 measurement uncertainties inherent to guiding.<br><br><span style="font-weight: bold;"><a name="Saturation"></a>Saturation - </span>occurs
 when the brightest parts of the guide star image exceed the maximum
