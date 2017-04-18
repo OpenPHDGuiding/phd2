@@ -119,11 +119,11 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) :
 
     if (devtype == TYPE_CAMERA) {
         pos ++;
-        gbs->Add(new wxStaticText(this, wxID_ANY, _("CCD")),
+        gbs->Add(new wxStaticText(this, wxID_ANY, _("Dual CCD")),
                  POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
         ccd =  new wxComboBox(this, wxID_ANY, _T(""));
-        ccd->Append(_("Main imager"));
-        ccd->Append(_("Guider"));
+        ccd->Append(_("Main"));
+        ccd->Append(_("Secondary"));
         gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
     }
 
