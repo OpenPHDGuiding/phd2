@@ -277,7 +277,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
      * the measurement again and we can pretend nothing has happend.
      */
     double hyst_percentage = 0.0;
-    double period_length = 0.0;
+    double period_length;
 
     if (dithering_active_)
     {
@@ -332,7 +332,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
 
         // the prediction should end after one time step
         prediction_ = PredictGearError(prediction_point + time_step);
-        control_signal_ += parameters.prediction_gain_*prediction_; // add the prediction
+        control_signal_ += parameters.prediction_gain_ * prediction_; // add the prediction
 
         // smoothly blend over between hysteresis and GP
         period_length = GetGPHyperparameters()[PKPeriodLength];
@@ -343,6 +343,10 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
             hyst_percentage = 1.0 - percentage;
             control_signal_ = percentage * control_signal_ + (1.0 - percentage) * hysteresis_control;
         }
+    }
+    else
+    {
+        period_length = GetGPHyperparameters()[PKPeriodLength]; // for logging
     }
 
     // assert for the developers...
