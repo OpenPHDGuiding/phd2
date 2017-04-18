@@ -187,20 +187,23 @@ void ScopeINDI::serverConnected()
     // wait for the device port property
     wxLongLong msec;
     msec = wxGetUTCTimeMillis();
-    while ((!scope_port) && wxGetUTCTimeMillis() - msec < 2 * 1000) {
-	::wxSafeYield();
-    }
-    // Set the port, this must be done before to try to connect the device
-    if (scope_port && INDIMountPort.Length()) {  // the mount port is not mandatory
-	char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
-	scope_port->tp->text = porttext;
-	sendNewText(scope_port); 
+    if (INDIMountPort.Length()) {    // the mount port is not mandatory
+        // wait for Port property
+        while ((!scope_port) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+            ::wxSafeYield();
+        }
+        // Set the port, this must be done before to try to connect the device
+        if (scope_port) {
+            char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
+            scope_port->tp->text = porttext;
+            sendNewText(scope_port); 
+        }
     }
     // Connect the mount device
     connectDevice(INDIMountName.mb_str(wxConvUTF8));
     
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 5 * 1000) {
+    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000) {
 	::wxSafeYield();
     }
     modal = false;

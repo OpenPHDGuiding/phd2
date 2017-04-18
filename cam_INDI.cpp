@@ -308,20 +308,22 @@ void Camera_INDIClass::serverConnected()
     // wait for the device port property
     wxLongLong msec;
     msec = wxGetUTCTimeMillis();
-    while ((!camera_port) && wxGetUTCTimeMillis() - msec < 1 * 1000) {
-        ::wxSafeYield();
-    }
-    // Set the port, this must be done before to try to connect the device
-    if (camera_port && INDICameraPort.Length()) {  // the camera port is not mandatory
-        char* porttext = (const_cast<char*>((const char*)INDICameraPort.mb_str()));
-        camera_port->tp->text = porttext;
-        sendNewText(camera_port);
+    if (INDICameraPort.Length()) {  // the camera port is not mandatory
+        while ((!camera_port) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+            ::wxSafeYield();
+        }
+        // Set the port, this must be done before to try to connect the device
+        if (camera_port) {
+            char* porttext = (const_cast<char*>((const char*)INDICameraPort.mb_str()));
+            camera_port->tp->text = porttext;
+            sendNewText(camera_port);
+        }
     }
     // Connect the camera device
     connectDevice(INDICameraName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 5 * 1000) {
+    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000) {
         ::wxSafeYield();
     }
     modal = false;
