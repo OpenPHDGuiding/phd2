@@ -24,33 +24,8 @@ for f in qhyccd.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
     cp "$sdk/include/$f" "$SRC"/cameras/
 done
 
-cp "$sdk"/linux/x86_32/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_32/
-cp "$sdk"/linux/x86_64/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
-cp "$sdk"/mac/libqhy.a          "$SRC"/cameras/qhyccdlibs/mac/x86_32/
-cp "$sdk"/win/dll/qhyccd.dll    "$SRC"/WinLibs/
-cp "$sdk"/win/lib/qhyccd.lib    "$SRC"/cameras/
-
-exit
-
-        0  05-18-2016 12:34   qhyccdlibs0.1.8/include/
-    20330  05-17-2016 18:24   qhyccdlibs0.1.8/include/CyAPI.h
-     3504  05-17-2016 18:24   qhyccdlibs0.1.8/include/CyUSB30_def.h
-    27388  05-17-2016 18:24   qhyccdlibs0.1.8/include/qhyccd.h
-     9273  05-17-2016 18:24   qhyccdlibs0.1.8/include/qhyccdcamdef.h
-     3954  05-17-2016 18:24   qhyccdlibs0.1.8/include/qhyccderr.h
-     6273  05-17-2016 18:24   qhyccdlibs0.1.8/include/qhyccdstruct.h
-        0  05-18-2016 18:12   qhyccdlibs0.1.8/linux/
-        0  05-18-2016 12:35   qhyccdlibs0.1.8/linux/x86_32/
-  4116806  05-17-2016 16:34   qhyccdlibs0.1.8/linux/x86_32/libqhy.a
-  1563302  05-17-2016 16:33   qhyccdlibs0.1.8/linux/x86_32/libqhy.so.0
-        0  05-18-2016 12:35   qhyccdlibs0.1.8/linux/x86_64/
-  5396694  05-17-2016 16:29   qhyccdlibs0.1.8/linux/x86_64/libqhy.a
-  1762941  05-17-2016 16:29   qhyccdlibs0.1.8/linux/x86_64/libqhy.so.0
-        0  05-18-2016 12:35   qhyccdlibs0.1.8/mac/
-  3482888  05-17-2016 18:19   qhyccdlibs0.1.8/mac/libqhy.0.dylib
- 20060680  05-17-2016 18:19   qhyccdlibs0.1.8/mac/libqhy.a
-        0  05-18-2016 18:07   qhyccdlibs0.1.8/win/
-        0  05-18-2016 18:07   qhyccdlibs0.1.8/win/dll/
-  3721728  05-18-2016 17:27   qhyccdlibs0.1.8/win/dll/qhyccd.dll
-        0  05-18-2016 18:07   qhyccdlibs0.1.8/win/lib/
-    21008  05-18-2016 17:27   qhyccdlibs0.1.8/win/lib/qhyccd.lib
+cp "$sdk"/Linux/i386/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_32/
+cp "$sdk"/Linux/x86-64/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
+cp "$sdk"/OSX/universal/libqhy.a "$SRC"/cameras/qhyccdlibs/mac/x86_32/
+cp "$sdk"/Windows/x86/vc12/qhyccd.dll    "$SRC"/WinLibs/
+cp "$sdk"/Windows/x86/vc12/qhyccd.lib    "$SRC"/cameras/
