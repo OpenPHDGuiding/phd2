@@ -104,6 +104,10 @@ bool PhdApp::OnInit()
         return false;
     }
 
+    // on MSW, do not strip off the Debug/ and Release/ build subdirs
+    // so that GetResourcesDir() is the same as the location of phd2.exe
+    wxStandardPaths::Get().DontIgnoreAppSubDir();
+
     m_instanceChecker = new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber));
     if (m_instanceChecker->IsAnotherRunning())
     {
@@ -154,13 +158,7 @@ bool PhdApp::OnInit()
     }
 
     wxString ldir = wxStandardPaths::Get().GetResourcesDir() + PATHSEPSTR "locale";
-    if (!wxDirExists(ldir))
-    {
-        // for development environments
-        ldir = _T("locale");
-    }
-    bool ex = wxDirExists(ldir);
-    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, ex));
+    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, wxDirExists(ldir)));
     wxLocale::AddCatalogLookupPathPrefix(ldir);
     m_localeDir = ldir;
 
