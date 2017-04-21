@@ -104,9 +104,11 @@ bool PhdApp::OnInit()
         return false;
     }
 
+#if defined(__WINDOWS__)
     // on MSW, do not strip off the Debug/ and Release/ build subdirs
     // so that GetResourcesDir() is the same as the location of phd2.exe
     wxStandardPaths::Get().DontIgnoreAppSubDir();
+#endif
 
     m_instanceChecker = new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber));
     if (m_instanceChecker->IsAnotherRunning())
