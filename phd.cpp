@@ -159,10 +159,17 @@ bool PhdApp::OnInit()
         pConfig->DeleteAll();
     }
 
-    wxString ldir = wxStandardPaths::Get().GetResourcesDir() + PATHSEPSTR "locale";
+#ifdef __linux__
+    // on Linux look in the build tree first, otherwise use the system location
+    m_resourcesDir = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath() + "/share/phd2";
+    if (!wxDirExists(m_resourcesDir))
+        m_resourcesDir = wxStandardPaths::Get().GetResourcesDir();
+#else
+    m_resourcesDir = wxStandardPaths::Get().GetResourcesDir();
+#endif
+    wxString ldir = GetLocalesDir();
     Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, wxDirExists(ldir)));
     wxLocale::AddCatalogLookupPathPrefix(ldir);
-    m_localeDir = ldir;
 
     m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
@@ -241,4 +248,9 @@ bool PhdApp::Yield(bool onlyIfNeeded)
     }
 
     return bReturn;
+}
+
+wxString PhdApp::GetLocalesDir() const
+{
+    return m_resourcesDir + PATHSEPSTR + _T("locale");
 }

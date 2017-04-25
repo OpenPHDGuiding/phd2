@@ -54,7 +54,7 @@ static bool QHYSDKInit()
     }
 
 #if defined (__APPLE__)
-    wxString fwpath = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+    wxString fwpath = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
         + _T("qhyfirmware");
 
     const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(fwpath);
