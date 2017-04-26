@@ -103,9 +103,7 @@
 
 # define SIMULATOR
 # define CAM_QHY5
-#ifndef __arm__     // until we get an updated SDK from QHY uncluding arm version(s) of libqhy.a
 # define QHY_CAMERA
-#endif
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
