@@ -458,6 +458,26 @@ void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
     }
 }
 
+static void NotifyGuidingEnabled(GuideAlgorithm *xAlgo, GuideAlgorithm *yAlgo, bool enabled)
+{
+    if (enabled)
+    {
+        if (xAlgo)
+            xAlgo->GuidingEnabled();
+
+        if (yAlgo)
+            yAlgo->GuidingEnabled();
+    }
+    else
+    {
+        if (xAlgo)
+            xAlgo->GuidingDisabled();
+
+        if (yAlgo)
+            yAlgo->GuidingDisabled();
+    }
+}
+
 void Mount::SetGuidingEnabled(bool guidingEnabled)
 {
     if (guidingEnabled != m_guidingEnabled)
@@ -466,23 +486,7 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
         Debug.Write(wxString::Format("%s: %d\n", s, guidingEnabled));
         pFrame->NotifyGuidingParam(s, guidingEnabled);
         m_guidingEnabled = guidingEnabled;
-        if (m_guidingEnabled)
-        {
-            if (m_pXGuideAlgorithm)
-                m_pXGuideAlgorithm->GuidingEnabled();
-
-            if (m_pYGuideAlgorithm)
-                m_pYGuideAlgorithm->GuidingEnabled();
-        }
-        else
-        {
-            if (m_pXGuideAlgorithm)
-                m_pXGuideAlgorithm->GuidingDisabled();
-
-            if (m_pYGuideAlgorithm)
-                m_pYGuideAlgorithm->GuidingDisabled();
-        }
-
+        NotifyGuidingEnabled(m_pXGuideAlgorithm, m_pYGuideAlgorithm, guidingEnabled);
     }
 }
 
