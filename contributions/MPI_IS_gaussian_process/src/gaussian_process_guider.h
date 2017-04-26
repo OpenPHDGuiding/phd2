@@ -239,12 +239,6 @@ public:
     double deduceResult(double time_step, double prediction_point = -1.0);
 
     /**
-     * This method tells the guider that guiding was stopped, e.g. for
-     * slweing. This method resets the internal state of the guider.
-     */
-    void GuidingStopped(void);
-
-    /**
      * This method tells the guider that a dither command was issued. The guider
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.

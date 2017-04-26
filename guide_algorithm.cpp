@@ -105,6 +105,17 @@ void GuideAlgorithm::GuidingDitherSettleDone(bool success)
 {
 }
 
+void GuideAlgorithm::GuidingDisabled(void)
+{
+    // By default, guide star deflections will be accumulated even with guiding disabled - algo can override if this is a problem
+}
+
+void GuideAlgorithm::GuidingEnabled(void)
+{
+    // Discard whatever history was accumulated with guiding disabled
+    reset();
+}
+
 void GuideAlgorithm::GetParamNames(wxArrayString& names) const
 {
 }

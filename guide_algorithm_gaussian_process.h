@@ -121,6 +121,7 @@ private:
      * Dark tracking mode is for debugging: only deduceResult is called if enabled.
      */
     bool dark_tracking_mode_;
+    bool block_updates_;             // Don't update GP if guiding is disabled
 
 protected:
     double GetControlGain() const;
@@ -209,6 +210,11 @@ public:
      * Clears the data from the circular buffer and clears the GP data.
      */
     virtual void reset();
+
+    // Tells guider that corrections are/not being sent to mount.  If not, updates should not be applied to the GP algo, specifically to avoid
+    // corruption of the period length
+    virtual void GuidingEnabled(void);
+    virtual void GuidingDisabled(void);
 
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Predictive PEC"; }

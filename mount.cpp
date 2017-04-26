@@ -466,6 +466,23 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
         Debug.Write(wxString::Format("%s: %d\n", s, guidingEnabled));
         pFrame->NotifyGuidingParam(s, guidingEnabled);
         m_guidingEnabled = guidingEnabled;
+        if (m_guidingEnabled)
+        {
+            if (m_pXGuideAlgorithm)
+                m_pXGuideAlgorithm->GuidingEnabled();
+
+            if (m_pYGuideAlgorithm)
+                m_pYGuideAlgorithm->GuidingEnabled();
+        }
+        else
+        {
+            if (m_pXGuideAlgorithm)
+                m_pXGuideAlgorithm->GuidingDisabled();
+
+            if (m_pYGuideAlgorithm)
+                m_pYGuideAlgorithm->GuidingDisabled();
+        }
+
     }
 }
 

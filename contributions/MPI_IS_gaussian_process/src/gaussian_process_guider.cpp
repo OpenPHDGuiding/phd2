@@ -423,11 +423,6 @@ void GaussianProcessGuider::reset()
     dithering_active_ = false;
 }
 
-void GaussianProcessGuider::GuidingStopped(void)
-{
-    reset(); // reset is only done on a complete stop
-}
-
 void GaussianProcessGuider::GuidingDithered(double amt, double rate)
 {
     // we store the amount of dither in seconds of gear time

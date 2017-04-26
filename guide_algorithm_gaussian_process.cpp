@@ -447,6 +447,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     bool compute_period = pConfig->Profile.GetBoolean(configPath + "/gp_compute_period", DefaultComputePeriod);
     SetBoolComputePeriod(compute_period);
     m_expertDialog = NULL;
+    block_updates_ = !(m_pMount->GetGuidingEnabled());
     reset();
 }
 
@@ -857,6 +858,9 @@ GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm(void)
 
 double GuideAlgorithmGaussianProcess::result(double input)
 {
+    if (block_updates_)
+        return(0);
+
     if (dark_tracking_mode_ == true)
     {
         return deduceResult();
@@ -865,7 +869,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
     // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
     double control_signal = GPG->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
 
-    Debug.AddLine(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d",
+    Debug.Write(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d\n",
         input, control_signal, pFrame->RequestedExposureDuration()));
 
     return control_signal;
@@ -875,7 +879,7 @@ double GuideAlgorithmGaussianProcess::deduceResult()
 {
     double control_signal = GPG->deduceResult((double) pFrame->RequestedExposureDuration() / 1000.0);
 
-    Debug.AddLine(wxString::Format("PPEC (deduced): control: %.2f, exposure: %d", control_signal,
+    Debug.Write(wxString::Format("PPEC (deduced): control: %.2f, exposure: %d\n", control_signal,
         pFrame->RequestedExposureDuration()));
 
     return control_signal;
@@ -892,7 +896,7 @@ void GuideAlgorithmGaussianProcess::GuidingStopped(void)
     double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
-    reset(); // reset is only done on a complete stop
+    reset(); // reset is only done when guiding is stopped or disabled
 }
 
 void GuideAlgorithmGaussianProcess::GuidingPaused(void)
@@ -901,6 +905,20 @@ void GuideAlgorithmGaussianProcess::GuidingPaused(void)
 
 void GuideAlgorithmGaussianProcess::GuidingResumed(void)
 {
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDisabled(void)
+{
+    // Don't submit guide star movements to the GP while guiding is disabled
+    Debug.Write("PPEC model updates disabled\n");
+    block_updates_ = true;
+    GuidingStopped();               // Keep our last state and reset
+}
+
+void GuideAlgorithmGaussianProcess::GuidingEnabled(void)
+{
+    Debug.Write("PPEC model updates enabled\n");
+    block_updates_ = false;
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
