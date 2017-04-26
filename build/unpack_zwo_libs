@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -x
+
+# usage: unpack_zwo_libs ASI_linux_mac_SDK_<version>.tar ASI_Windows_SDK_<version>.zip
+
+usage () {
+    echo 'usage: unpack_zwo_libs ASI_linux_mac_SDK_<version>.tar ASI_Windows_SDK_<version>.zip' >&2
+    exit 1
+}
+
+# === main ===
+
+MAC=
+WIN=
+while [ $# -gt 0 ]; do
+    case $1 in
+        *ASI_linux_mac_SDK_*.tar) MAC=$1; shift ;;
+        *ASI_Windows_SDK_*.zip) WIN=$1; shift ;;
+        *) usage ;;
+    esac
+done
+
+if [ -n "$MAC" -a ! -f "$MAC" ]; then
+    usage
+fi
+if [ -n "$WIN" -a ! -f "$WIN" ]; then
+    usage
+fi
+if [ -z "$MAC" -a -z "$WIN" ]; then
+    usage
+fi
+
+set -e
+
+TOP=$(cd $(dirname "$0")/..; /bin/pwd)
+
+TMP=$TOP/tmp/zwosdk
+mkdir -p "$TMP"
+trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
+
+# windows
+if [ -n "$WIN" ]; then
+    unzip -q -d "$TMP" "$WIN"
+    cp "$TMP/ASI SDK/include/ASICamera2.h" "$TOP"/cameras/
+    cp "$TMP/ASI SDK/lib/x86/ASICamera2.lib" "$TOP"/cameras/
+    cp "$TMP/ASI SDK/lib/x86/ASICamera2.dll" "$TOP"/WinLibs/
+fi
+
+# osx and linux
+if [ -n "$MAC" ]; then
+    tar xf "$MAC" -C "$TMP"
+    tar xfj "$TMP"/ASI_linux_mac_SDK*.tar.bz2 -C "$TMP"
+    for d in armv6 armv7 armv8 mac x64 x86; do
+        cp "$TMP"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
+    done
+fi

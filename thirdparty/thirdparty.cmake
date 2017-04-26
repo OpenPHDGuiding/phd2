@@ -902,10 +902,17 @@ endif()  # APPLE
 #############################################
 if(UNIX AND NOT APPLE)
 
- if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm(.*)")
+ if (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv6(.*)")
     set(arch "armv6")
     set(qhyarch "armv6")
+ elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv7(.*)")
+    set(arch "armv7")
+    set(qhyarch "armv7")
+ elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv8(.*)")
+    set(arch "armv8")
+    set(qhyarch "armv8")
  else()
+  # assuming x86 - fixme
   if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
     set(arch "x64") 
     set(qhyarch "x86_64")
