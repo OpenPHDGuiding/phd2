@@ -935,8 +935,10 @@ if(UNIX AND NOT APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
+  # be careful not to pick up any other qhy lib on the system
   find_library( qhylib
                 NAMES qhy
+                NO_DEFAULT_PATH
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
   if(NOT qhylib)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
