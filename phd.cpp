@@ -104,6 +104,12 @@ bool PhdApp::OnInit()
         return false;
     }
 
+#if defined(__WINDOWS__)
+    // on MSW, do not strip off the Debug/ and Release/ build subdirs
+    // so that GetResourcesDir() is the same as the location of phd2.exe
+    wxStandardPaths::Get().DontIgnoreAppSubDir();
+#endif
+
     m_instanceChecker = new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber));
     if (m_instanceChecker->IsAnotherRunning())
     {
@@ -153,16 +159,17 @@ bool PhdApp::OnInit()
         pConfig->DeleteAll();
     }
 
-    wxString ldir = wxStandardPaths::Get().GetResourcesDir() + PATHSEPSTR "locale";
-    if (!wxDirExists(ldir))
-    {
-        // for development environments
-        ldir = _T("locale");
-    }
-    bool ex = wxDirExists(ldir);
-    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, ex));
+#ifdef __linux__
+    // on Linux look in the build tree first, otherwise use the system location
+    m_resourcesDir = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath() + "/share/phd2";
+    if (!wxDirExists(m_resourcesDir))
+        m_resourcesDir = wxStandardPaths::Get().GetResourcesDir();
+#else
+    m_resourcesDir = wxStandardPaths::Get().GetResourcesDir();
+#endif
+    wxString ldir = GetLocalesDir();
+    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, wxDirExists(ldir)));
     wxLocale::AddCatalogLookupPathPrefix(ldir);
-    m_localeDir = ldir;
 
     m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
@@ -241,4 +248,9 @@ bool PhdApp::Yield(bool onlyIfNeeded)
     }
 
     return bReturn;
+}
+
+wxString PhdApp::GetLocalesDir() const
+{
+    return m_resourcesDir + PATHSEPSTR + _T("locale");
 }
