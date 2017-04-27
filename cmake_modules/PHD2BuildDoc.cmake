@@ -340,6 +340,12 @@ function(generate_single_doc_targets)
               --keyword="wxPLURAL:1,2"
               --keyword="wxTRANSLATE"
               --output="${current_translation_output_folder}/messages.po"
+          # This command replaces the proper charset in the generated file
+          # (see http://savannah.gnu.org/bugs/?20923)
+          COMMAND 
+            ${CMAKE_COMMAND}
+              -Dinput_file="${current_translation_output_folder}/messages.po"
+              -P ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2Removegettextwarning.cmake
           COMMAND 
             ${MSGMERGE} 
               -N

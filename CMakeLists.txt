@@ -52,6 +52,7 @@ add_custom_target(CmakeAdditionalFiles
   ${phd_src_dir}/cmake_modules/FindNova.cmake
   ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake
   ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake
+  ${phd_src_dir}/cmake_modules/PHD2Removegettextwarning.cmake
   ${phd_src_dir}/cmake_modules/compiler_options.cmake
   ${phd_src_dir}/cmake_modules/PHD2Packaging.cmake)
 
