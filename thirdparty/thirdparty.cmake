@@ -924,8 +924,7 @@ if(UNIX AND NOT APPLE)
  elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv8(.*)")
     set(arch "armv8")
     set(qhyarch "armv8")
- else()
-  # assuming x86 - fixme
+ elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86|X86|amd64|AMD64|i.86")
   if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
     set(arch "x64") 
     set(qhyarch "x86_64")
@@ -933,6 +932,8 @@ if(UNIX AND NOT APPLE)
     set(arch "x86") 
     set(qhyarch "x86_32")
   endif()
+ else()
+   message(FATAL_ERROR "unknown system architecture")
  endif()
 
   find_path(ZWO_INCLUDE_DIR ASICamera2.h
@@ -948,15 +949,22 @@ if(UNIX AND NOT APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
-  # be careful not to pick up any other qhy lib on the system
-  find_library( qhylib
-                NAMES qhy
-                NO_DEFAULT_PATH
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
-  if(NOT qhylib)
-    message(FATAL_ERROR "Cannot find the qhy SDK libs")
+  if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
+    add_definitions(-DHAVE_QHY_CAMERA=1)
+
+    # be careful not to pick up any other qhy lib on the system
+    find_library( qhylib
+                  NAMES qhy
+                  NO_DEFAULT_PATH
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
+    if(NOT qhylib)
+      message(FATAL_ERROR "Cannot find the qhy SDK libs")
+    endif()
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
+
+  # temporarily disable qhy camera pending fix for link error on Ubuntu Trusty
+  remove_definitions(-DHAVE_QHY_CAMERA=1)
 
   # math library is needed, and should be one of the last things to link to here
   find_library(mathlib NAMES m)

@@ -103,8 +103,9 @@
 
 # define SIMULATOR
 # define CAM_QHY5
-// temporarily disable qhy pending fix for link error on Ubuntu Trusty
-//# define QHY_CAMERA
+# ifdef HAVE_QHY_CAMERA
+#  define QHY_CAMERA
+# endif
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
