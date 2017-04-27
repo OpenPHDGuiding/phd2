@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# usage: build_help_pdf.sh 
+# usage: build_help_pdf.sh [build_tree]
 #
 #    build the pdf PHD2 documentation from help source files
 #
@@ -11,6 +11,12 @@
 build=$(cd $(dirname $0); /bin/pwd)
 top="$build/.."
 help="$top"/help
+
+BUILDTREE=$top/tmp
+if [ -n "$1" ]; then
+    BUILDTREE=$1
+    shift
+fi
 
 TMP=/tmp/phd2help$$
 mkdir "$TMP"
@@ -32,7 +38,7 @@ fi
 
 titlepg="$TMP"/00_title.html
 tocxsl="$TMP"/toc.xsl
-output="$top"/PHD2_User_Guide.pdf
+output="$BUILDTREE"/PHD2_User_Guide.pdf
 tocxsl_native=$tocxsl
 logo="$top"/icons/phd2_128.png
 
