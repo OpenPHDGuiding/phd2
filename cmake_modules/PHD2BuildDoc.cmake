@@ -32,7 +32,9 @@
 
 # global overridable variable
 set(translation_build_folder_names "tmp_build_translations")
-set(default_language_extraction_target_name "extract_string_from_sources")
+set(html_build_folder_names "tmp_build_html")
+set(target_string_extraction_from_sources "extract_locales_from_sources")
+set(target_copy_locales_to_source_tree "update_locales_in_source_tree")
 # the default language of the application.
 set(_default_locale "en_EN")
 
@@ -262,7 +264,7 @@ function(generate_single_doc_targets)
 
     list(APPEND html_input_files ${documentation_filelist})
 
-    set(current_locale_output_folder ${CMAKE_BINARY_DIR}/doc/${locale}/)
+    set(current_locale_output_folder ${CMAKE_BINARY_DIR}/${html_build_folder_names}/${locale}/)
     set(generated_hhk ${current_locale_output_folder}/PHD2GuideHelp.hhk)
     set(generated_outputs
         ${generated_hhk}
@@ -307,6 +309,7 @@ function(generate_single_doc_targets)
     # we generate the global .po file from the sources
 
     # the command that generates a global .po file
+    set(_extract_locales_commands)
     if(XGETTEXT)
       if((NOT MSGFMT) OR (NOT MSGMERGE))
         message(FATAL_ERROR "Some gettext tools were not found")
@@ -319,16 +322,9 @@ function(generate_single_doc_targets)
       #     "${PHD_PROJECT_ROOT_DIR}/*.h")
 
       # extracts the messages from the sources and merges those messages with the locale/messages.pot
-      add_custom_command(
-          OUTPUT
-            #"${PHD_PROJECT_ROOT_DIR}/locale/messages.pot"
-            #"${current_translation_output_folder}/messages.po"
-            # Raffi: this file will never exist and this is on purpose in order to regenerate "messages.pot"
-            # on demand. The other targets that are merging with messages.pot explicitely depend on this messages.pot file
-            # The fake file messages.po.generated should appear in the list of source files
-            "${current_translation_output_folder}/messages.po.generated"
-          # edit: the step is now manual
-          # DEPENDS "${all_sources}" # depends on all source files
+      # into the build folder. This is a manual step
+
+      set(_extract_locales_commands
           COMMAND 
             ${CMAKE_COMMAND} 
               -E make_directory
@@ -354,88 +350,92 @@ function(generate_single_doc_targets)
               "${current_translation_output_folder}/messages.po"
           COMMAND 
             "${CMAKE_COMMAND}" 
-              -E copy_if_different 
-              "${current_translation_output_folder}/messages.pot" 
-              "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot" 
-          COMMAND 
-            "${CMAKE_COMMAND}" 
               -E remove 
-              "${current_translation_output_folder}/messages.pot" 
               "${current_translation_output_folder}/messages.po"
-          COMMENT 
-            "Extracting strings from source files into '${PHD_PROJECT_ROOT_DIR}/locale/messages.pot'"
           WORKING_DIRECTORY 
-            ${PHD_PROJECT_ROOT_DIR}
-          )
-      list(APPEND translation_input_files
-           "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot")
-      list(APPEND translation_target_files 
-          "${current_translation_output_folder}/messages.po.generated"
-          )
-    
-    else() # if(XGETTEXT)
-      add_custom_command(
-          OUTPUT
-            "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot"
-          COMMENT 
-            "Cannot extract strings: the xgettext program is not found" 
-          )
-      list(APPEND translation_input_files 
-          "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot")
-    endif()
+            "${PHD_PROJECT_ROOT_DIR}"
+      )
+      list(APPEND translation_target_files
+           "${current_translation_output_folder}/messages.pot")
 
-    # Raffi: I believe we do not need this
-    if(MSGFMT AND FALSE)
-      # compiles the merged messages to a .mo file
+      # This command ensures that the temporary folder messages.pot exists
       add_custom_command(
           OUTPUT
-            "${current_translation_output_folder}/messages.mo"
-          DEPENDS 
-            "${current_translation_output_folder}/messages.po"
+            "${current_translation_output_folder}/messages.pot"
           COMMAND 
             ${CMAKE_COMMAND} 
               -E make_directory
               "${current_translation_output_folder}"
           COMMAND 
-            ${MSGFMT} "${current_translation_output_folder}/messages.po"
+            "${CMAKE_COMMAND}" 
+              -E copy_if_different 
+              "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot" 
+              "${current_translation_output_folder}/messages.pot" 
           COMMENT 
-            "Generating ${current_translation_output_folder}/messages.mo"
-          WORKING_DIRECTORY 
-            ${current_translation_output_folder}
-          )
-      list(APPEND translation_target_files
-           "${current_translation_output_folder}/messages.mo")
+            "Copying './locale/messages.pot' to the build folder"
+      )
+
+    else() # if(XGETTEXT)
+      set(_extract_locales_commands
+          COMMAND 
+            ${CMAKE_COMMAND} 
+              -E echo "Cannot extract strings: the xgettext program is not found" 
+      )
       list(APPEND translation_input_files 
           "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot")
     endif()
 
-    add_custom_target(${default_language_extraction_target_name}
+    list(APPEND translation_input_files
+         "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot")
+
+    # target for extracting the strings visible on an IDE
+    add_custom_target(${target_string_extraction_from_sources}
+      #DEPENDS
+      #  "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot" 
+      # the command to run in order to extract the strings
+      ${_extract_locales_commands}
       SOURCES
-      ${translation_input_files}
-      ${translation_target_files})
+        ${translation_input_files}
+        
+    )
     source_group(input/ FILES ${translation_input_files})
     source_group(generated/ FILES ${translation_target_files})
-    set_target_properties(${default_language_extraction_target_name} PROPERTIES FOLDER "Documentation/")
+    # set_target_properties(${target_string_extraction_from_sources} PROPERTIES FOLDER "Documentation/")
 
+
+    # adding a target for copying back the updated messages to the source tree
+    if(NOT TARGET ${target_copy_locales_to_source_tree})
+      add_custom_target(${target_copy_locales_to_source_tree}
+        # the command to run in order to extract the strings
+        ${_extract_locales_commands}
+        COMMAND 
+          "${CMAKE_COMMAND}" 
+            -E copy_if_different 
+            "${current_translation_output_folder}/messages.pot" 
+            "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot" 
+        COMMENT 
+          "Extracting strings and updating the source tree for file 'messages.pot'"
+      )
+      # set_target_properties(${target_copy_locales_to_source_tree} PROPERTIES FOLDER "Documentation/")
+    endif()
 
   elseif(EXISTS "${input_folder}/messages.po")
     message(STATUS "[DOC] Creating translation target for locale ${locale}")
 
-    if(NOT TARGET ${default_language_extraction_target_name})
-      message(FATAL_ERROR "Target ${default_language_extraction_target_name} should be defined first")
+    if(NOT TARGET ${target_string_extraction_from_sources})
+      message(FATAL_ERROR "Target ${target_string_extraction_from_sources} should be defined first")
     endif()
 
     if(NOT (EXISTS "${input_folder}/messages.po"))
       message(FATAL_ERROR "'${input_folder}/messages.po' file is missing")
     endif()
 
+    set(_merge_commands)
     if(MSGFMT)
       # generation of the messages.po (source tree) if the messages.pot (source tree) changes
-      add_custom_command(
-          OUTPUT
-            "${input_folder}/messages.po"
-          DEPENDS
-            "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot"
+
+      # we put the command into a variable: this is reused for the target pointed by ${target_copy_locales_to_source_tree}
+      set(_merge_commands
           COMMAND 
             ${CMAKE_COMMAND} 
               -E make_directory
@@ -445,40 +445,41 @@ function(generate_single_doc_targets)
               -N
               -o "${current_translation_output_folder}/messages.po"
               "${input_folder}/messages.po"
-              "${PHD_PROJECT_ROOT_DIR}/locale/messages.pot"
-          COMMAND 
-            "${CMAKE_COMMAND}" 
-              -E copy_if_different 
-              "${current_translation_output_folder}/messages.po" 
-              "${input_folder}/messages.po"
-          COMMAND 
-            "${CMAKE_COMMAND}" 
-            -E remove 
-              "${current_translation_output_folder}/messages.po"
+              "${CMAKE_BINARY_DIR}/${translation_build_folder_names}/${_default_locale}/messages.pot"
+      )
+
+      add_custom_command(
+          OUTPUT
+            "${current_translation_output_folder}/messages.po"
+          DEPENDS
+            "${CMAKE_BINARY_DIR}/${translation_build_folder_names}/${_default_locale}/messages.pot"
+            "${input_folder}/messages.po"
+          ${_merge_commands}
           COMMENT 
-            "Updating '${input_folder}/messages.po' from source changes"
+            "Merging 'messages.po' for locale '${locale}'"
           WORKING_DIRECTORY 
             ${current_translation_output_folder}
-          )
+      )
 
       # generation of the messages.mo (build tree) if the messages.po (source tree) changes
       add_custom_command(
-        OUTPUT
+          OUTPUT
             "${current_translation_output_folder}/messages.mo"
           MAIN_DEPENDENCY
-            "${input_folder}/messages.po"
+            "${current_translation_output_folder}/messages.po"
           COMMAND 
             ${MSGFMT} 
               "${input_folder}/messages.po" 
               --output-file="${current_translation_output_folder}/messages.mo"
           COMMENT 
-            "Generating ${current_translation_output_folder}/messages.mo"
+            "Generating 'messages.mo' for locale '${locale}'"
           WORKING_DIRECTORY 
             ${current_translation_output_folder}
           )
 
       list(APPEND translation_input_files ${input_folder}/messages.po)
       list(APPEND translation_target_files
+           ${current_translation_output_folder}/messages.po
            ${current_translation_output_folder}/messages.mo)
 
       # This is wx widget stuff: generation of the associated wxstd.mo
@@ -491,7 +492,7 @@ function(generate_single_doc_targets)
             COMMAND 
               ${MSGFMT} "${input_folder}/wxstd.po" --output-file="${current_translation_output_folder}/wxstd.mo"
             COMMENT 
-              "Generating ${current_translation_output_folder}/wxstd.mo"
+              "Generating 'wxstd.mo' for locale '${locale}'"
             WORKING_DIRECTORY 
               ${current_translation_output_folder}
             )
@@ -512,16 +513,19 @@ function(generate_single_doc_targets)
             ${input_folder}
           )
 
-      #list(APPEND translation_input_files "${input_folder}/messages.po")
       list(APPEND translation_target_files ${input_folder}/messages.mo)
 
       # This is wx widget stuff
       if(EXISTS "${input_folder}/wxstd.po")
         add_custom_command(
-            OUTPUT "${input_folder}/wxstd.mo"
-            DEPENDS "${input_folder}/wxstd.po"
-            COMMAND ${CMAKE_COMMAND} -E echo "Cannot generate the wxstd.mo file as msgfmt is not found on your system."
-            WORKING_DIRECTORY ${input_folder}
+            OUTPUT
+              "${input_folder}/wxstd.mo"
+            DEPENDS
+              "${input_folder}/wxstd.po"
+            COMMAND
+              ${CMAKE_COMMAND} -E echo "Cannot generate the wxstd.mo file as msgfmt is not found on your system."
+            WORKING_DIRECTORY
+              ${input_folder}
             )
 
         list(APPEND translation_input_files "${input_folder}/wxstd.po")
@@ -537,6 +541,25 @@ function(generate_single_doc_targets)
     source_group(input/ FILES ${translation_input_files})
     source_group(generated/ FILES ${translation_target_files})
     set_target_properties(${locale}_translation PROPERTIES FOLDER "Documentation/")
+
+    # Copy command for updating the source tree messages.po
+    add_custom_command(
+        TARGET 
+          ${target_copy_locales_to_source_tree}
+        POST_BUILD
+          #"${current_translation_output_folder}/messages.po"
+        COMMAND 
+          "${CMAKE_COMMAND}" 
+            -E echo "Merging 'messages.po' for locale '${locale}'"
+        ${_merge_commands}
+        COMMAND 
+          "${CMAKE_COMMAND}" 
+            -E copy_if_different 
+            "${current_translation_output_folder}/messages.po" 
+            "${input_folder}/messages.po"
+        COMMENT 
+          "Updating '${input_folder}/messages.po' from build tree changes"
+        )
 
   endif() ## elseif(EXISTS "${input_folder}/messages.po")
 
@@ -668,7 +691,7 @@ function(get_translation_files)
   set(returned_list)
 
   if("${locale}" STREQUAL "${_default_locale}")
-    set(target_name ${default_language_extraction_target_name})
+    set(target_name ${target_string_extraction_from_sources})
   else()
     set(target_name ${locale}_translation)
   endif()

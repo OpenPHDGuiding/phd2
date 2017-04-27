@@ -74,47 +74,6 @@ if(UNIX AND NOT APPLE)
   install(FILES ${phd_src_dir}/phd2.desktop      
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
 
-  # install language help files
-  set(locales_help     en_EN de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
-  set(locales_help_msg en    de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
-  list(LENGTH locales_help _len)
-  math(EXPR _len "${_len} - 1")
-  foreach(_index RANGE ${_len})
-
-    list(GET locales_help       ${_index} current_locale)
-    list(GET locales_help_msg   ${_index} current_locale_install_name)
-
-    # installation of the ZIP files
-    get_zip_file(current_zip LOCALE ${current_locale})
-
-    if(NOT DEFINED default_locale OR "${default_locale}" STREQUAL "")
-      message(FATAL_ERROR "The variable 'default_locale' should be defined at this point")
-    endif()
-
-    if("${current_locale}" STREQUAL "${default_locale}")
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/)
-    else()
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${current_locale}/ OPTIONAL)
-    endif()
-    install(FILES ${current_zip}
-            ${install_options})
-
-    # installation of the translation files (only for the non default)
-    if(NOT "${current_locale}" STREQUAL "${default_locale}")
-      get_translation_files(current_translations LOCALE ${current_locale})
-      foreach(message_file IN LISTS current_translations)
-        get_filename_component(message_file_basename ${message_file} NAME)
-        if("${message_file_basename}" STREQUAL "messages.mo")
-          install(FILES       ${message_file}
-                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${current_locale_install_name}/LC_MESSAGES/
-                  RENAME "phd2.mo"
-                  OPTIONAL)
-          break()
-        endif()
-      endforeach()
-    endif()
-  endforeach() # for all locales
-
   # Make Debian package
   set(CPACK_GENERATOR "DEB")
   set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PHD2 team https://github.com/OpenPHDGuiding/phd2")

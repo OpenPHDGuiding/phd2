@@ -488,38 +488,25 @@ if (WIN32)
       ${phd_src_dir}/phd.rc   # resource file
      )
 endif()
-
 source_group(src FILES ${phd2_SRC})
 
+# Add the messages.mo directly in the project such that this triggers a new build
+# and all the post_build commands are honored properly
+foreach(current_locale IN LISTS all_locales)
+  # installation of the document and translation files
+  get_zip_file(current_zip LOCALE ${current_locale})
+  get_translation_files(current_translations LOCALE ${current_locale})
 
-# Adding the generated documentation artifacts to the project
-if(NOT TARGET ${default_locale}_html)
-  message(FATAL_ERROR "The HTML target for the default locale cannot be found")
-endif()
-
-# Raffi: this target name is brought here, it should be hidden
-if(NOT TARGET ${default_language_extraction_target_name})
-  message(FATAL_ERROR "The translation target for the default locale cannot be found")
-endif()
-
-foreach(locale IN LISTS all_locales)
-  get_zip_file(current_zip LOCALE ${locale})
-  if(NOT "${current_zip}" STREQUAL "")
-    source_group(generated_doc\\${locale} FILES ${current_zip})
-    list(APPEND phd2_SRC ${current_zip})
-  endif()
-
-  get_translation_files(current_messages LOCALE ${locale})
-  if(NOT "${current_messages}" STREQUAL "")
-    source_group(generated_translation\\${locale} FILES ${current_messages})
-    list(APPEND phd2_SRC ${current_messages})
-  else()
-    if(NOT "${locale}" STREQUAL "${default_locale}")
-      message(WARNING "The translation for locale ${locale} is not found")
+  foreach(current_file IN LISTS current_translations)
+    get_filename_component(message_file_basename ${current_file} NAME)
+    get_filename_component(message_file_ext ${current_file} EXT)
+    if(("${message_file_ext}" STREQUAL ".mo") OR ("${message_file_ext}" STREQUAL ".zip"))
+      message(STATUS "Harhar ${message_file_ext} / ${current_file}")
+      set(phd2_SRC ${phd2_SRC} ${current_file})
     endif()
-  endif()
+  endforeach()
 
-endforeach()
+endforeach() # for all locales
 
 
 MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
@@ -589,24 +576,6 @@ if(APPLE)
         MACOSX_PACKAGE_LOCATION Resources
   )
 
-  # Bundle the help + locales files
-  foreach(locale IN LISTS all_locales)
-
-    if("${locale}" STREQUAL "${default_locale}")
-      set(destination "Resources")
-    else()
-      set(destination "Resources/${locale}")
-    endif()
-
-    get_zip_file(current_zip LOCALE ${locale})
-    get_translation_files(current_translations LOCALE ${locale})
-
-    set_source_files_properties(
-      ${current_zip} ${current_translations}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION ${destination})
-  endforeach()
-
   # this is a workaround to what looks like a bug on cmake for Makefile generators
   if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
     get_filename_component(framework1 ${fcCamFramework} NAME)
@@ -626,18 +595,13 @@ if(APPLE)
     set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
   endif()
 
+  # Bundling qhyfirmware
   add_custom_command(
     TARGET phd2
     POST_BUILD
-    COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware
-  )
-  add_custom_command(
-    TARGET phd2
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
-    WORKING_DIRECTORY PHD2.app/Contents/Resources/qhyfirmware
-    COMMENT "unpack QHY firmware"
-    VERBATIM
+      COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware/
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${qhyccd_root}/ $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware/
+    COMMENT "Bundling the qhyfirmware"
   )
 
 elseif(WIN32)
@@ -672,69 +636,6 @@ elseif(WIN32)
 
   # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
-
-  # here we generate the installation commands and the commands that will make the 
-  # build tree look like the install tree, such that users can run the application directly
-  # from Visual Studio.
-  set(POST_BUILD_CMD)
-  foreach(current_locale IN LISTS all_locales)
-    
-    if("${current_locale}" STREQUAL "${default_locale}")
-      # because of wXWidget (wxStandardPaths::IgnoreAppBuildSubDirs)
-      # the paths "Debug", "Release" are discarded, and the parent path
-      # is considered instead as the application directory
-      # This is only for running the app from a Development environment
-      # (TODO: use only for multiconfig cmake projects)
-      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/..)
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/)
-    else()
-      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/../locale/${current_locale})
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}/ OPTIONAL)
-    endif()
-
-    list(APPEND POST_BUILD_CMD 
-         COMMAND "${CMAKE_COMMAND}" -E make_directory ${build_tree_target_folder})
-    # installation of the ZIP files
-    get_zip_file(current_zip LOCALE ${current_locale})
-    if(current_zip)
-      list(APPEND POST_BUILD_CMD 
-           COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_zip} ${build_tree_target_folder})
-      install(FILES ${current_zip} ${install_options})
-    endif()
-
-    # installation of the translation files (only for the non default)
-    if(NOT "${current_locale}" STREQUAL "${default_locale}")
-      get_translation_files(current_translations LOCALE ${current_locale})
-      foreach(message_file IN LISTS current_translations)
-        get_filename_component(message_file_basename ${message_file} NAME)
-        if("${message_file_basename}" STREQUAL "messages.mo")
-          
-          list(APPEND POST_BUILD_CMD 
-               COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${message_file} ${build_tree_target_folder})
-
-          install(FILES       ${message_file}
-                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}
-                  OPTIONAL)
-        elseif("${message_file_basename}" STREQUAL "wxstd.mo")
-          
-          list(APPEND POST_BUILD_CMD 
-               COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${message_file} ${build_tree_target_folder})
-
-          install(FILES       ${message_file}
-                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}
-                  RENAME "wxstd.mo"
-                  OPTIONAL)
-        endif()
-      endforeach()
-    endif()
-  endforeach() # for all locales
-
-  # making the postbuild commands
-  add_custom_command(
-    TARGET phd2
-    POST_BUILD
-    # COMMAND "${CMAKE_COMMAND}" -E echo "${POST_BUILD_CMD}"
-    ${POST_BUILD_CMD})
 
   copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
@@ -771,6 +672,177 @@ target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
 
+
+
+
+################################################################
+#
+# documentation + translation
+#
+################################################################
+
+# adding dependencies on the generation of the htmls/translations
+# Adding the generated documentation artifacts to the project
+if(NOT TARGET ${default_locale}_html)
+  message(FATAL_ERROR "The HTML target for the default locale cannot be found")
+endif()
+
+if(NOT TARGET ${target_string_extraction_from_sources})
+  message(FATAL_ERROR "The translation target for the default locale cannot be found")
+endif()
+
+foreach(locale IN LISTS all_locales)
+  get_zip_file(current_zip LOCALE ${locale})
+  if(NOT "${current_zip}" STREQUAL "")
+    add_dependencies(phd2 ${locale}_html)
+  endif()
+
+  get_translation_files(current_messages LOCALE ${locale})
+  if(NOT "${current_messages}" STREQUAL "")
+    if("${locale}" STREQUAL "${default_locale}")
+      #set(dependent_target ${target_string_extraction_from_sources})
+    else()
+      #set(dependent_target ${locale}_translation)
+      add_dependencies(phd2 ${locale}_translation)
+    endif()
+  else()
+    if(NOT "${locale}" STREQUAL "${default_locale}")
+      message(WARNING "The translation for locale ${locale} is not found")
+    endif()
+  endif()
+
+endforeach()
+
+## Apple bundling of documentation + translation
+if(APPLE)
+  # Bundle the help + locales files
+  foreach(locale IN LISTS all_locales)
+
+    if("${locale}" STREQUAL "${default_locale}")
+      set(destination "Resources")
+    else()
+      set(destination "Resources/locale/${locale}")
+    endif()
+
+    get_zip_file(current_zip LOCALE ${locale})
+    get_translation_files(current_translations LOCALE ${locale})
+
+    # does not work well
+    # set_source_files_properties(
+    #  ${current_zip} ${current_translations}
+    #  PROPERTIES
+    #    MACOSX_PACKAGE_LOCATION ${destination})
+
+    foreach(current_file IN LISTS current_translations current_zip)
+      get_filename_component(message_file_name ${current_file} NAME)
+      get_filename_component(message_file_ext ${current_file} EXT)
+      message(STATUS "${current_file} // ${message_file_ext}")
+      if("${message_file_ext}" STREQUAL ".mo" OR "${message_file_ext}" STREQUAL ".zip")
+        add_custom_command(
+          TARGET phd2
+          POST_BUILD
+          COMMAND "${CMAKE_COMMAND}" -E make_directory $<TARGET_FILE_DIR:phd2>/../${destination}
+          COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} $<TARGET_FILE_DIR:phd2>/../${destination}/${message_file_name}
+        )
+        message(STATUS "${current_file} // $<TARGET_FILE_DIR:phd2>/../${destination}/${message_file_name}")
+      endif()
+    endforeach()
+  endforeach()
+endif()
+
+## Windows bundling of documentation + translation
+if(WIN32)
+  # here we generate the installation commands and the commands that will make the 
+  # build tree look like the install tree, such that users can run the application directly
+  # from Visual Studio.
+  foreach(current_locale IN LISTS all_locales)
+    
+    if("${current_locale}" STREQUAL "${default_locale}")
+      # because of wXWidget (wxStandardPaths::IgnoreAppBuildSubDirs)
+      # the paths "Debug", "Release" are discarded, and the parent path
+      # is considered instead as the application directory
+      # This is only for running the app from a Development environment
+      # (TODO: use only for multiconfig cmake projects)
+      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/)
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+    else()
+      set(build_tree_target_folder $<TARGET_FILE_DIR:phd2>/locale/${current_locale})
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}/ OPTIONAL)
+    endif()
+
+    # installation of the document and translation files
+    get_zip_file(current_zip LOCALE ${current_locale})
+    get_translation_files(current_translations LOCALE ${current_locale})
+
+    foreach(current_file IN LISTS current_translations current_zip)
+      get_filename_component(message_file_basename ${current_file} NAME)
+      get_filename_component(message_file_ext ${current_file} EXT)
+      if("${message_file_ext}" STREQUAL ".mo" OR "${message_file_ext}" STREQUAL ".zip")
+        add_custom_command(
+          TARGET phd2
+          POST_BUILD
+             COMMAND ${CMAKE_COMMAND} -E make_directory "${build_tree_target_folder}"
+             COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} "${build_tree_target_folder}/${message_file_basename}"
+        )
+        install(FILES       ${current_file}
+                DESTINATION  ${CMAKE_INSTALL_PREFIX}/locale/${current_locale}
+                OPTIONAL)
+      endif()
+    endforeach()
+
+  endforeach() # for all locales
+endif()
+
+
+## Linux bundling of documentation + translation
+if(UNIX AND NOT APPLE)
+  # install language help files
+  set(locales_help     en_EN de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
+  set(locales_help_msg en    de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
+  list(LENGTH locales_help _len)
+  math(EXPR _len "${_len} - 1")
+  foreach(_index RANGE ${_len})
+
+    list(GET locales_help       ${_index} current_locale)
+    list(GET locales_help_msg   ${_index} current_locale_install_name)
+
+    if("${current_locale}" STREQUAL "${default_locale}")
+      set(destination share/phd2/)
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/)
+    else()
+      set(destination share/phd2/locale/${current_locale}/)
+      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${current_locale}/ OPTIONAL)
+    endif()
+
+    get_zip_file(current_zip LOCALE ${current_locale})
+    get_translation_files(current_translations LOCALE ${current_locale})
+
+    foreach(current_file IN LISTS current_translations current_zip)
+      get_filename_component(message_file_name ${current_file} NAME)
+      get_filename_component(message_file_ext ${current_file} EXT)
+      if("${message_file_name}" STREQUAL "messages.mo" OR "${message_file_ext}" STREQUAL ".zip")
+        add_custom_command(
+          TARGET phd2
+          POST_BUILD
+          COMMAND "${CMAKE_COMMAND}" -E make_directory $<TARGET_FILE_DIR:phd2>/${destination}
+          COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} $<TARGET_FILE_DIR:phd2>/${destination}/${message_file_name}
+        )
+      endif()
+
+      if("${message_file_basename}" STREQUAL "messages.mo")
+          install(FILES       ${current_file}
+                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${current_locale_install_name}/LC_MESSAGES/
+                  RENAME "phd2.mo"
+                  OPTIONAL)
+      endif()
+
+      if(${current_zip})
+          install(FILES ${current_zip}
+                  ${install_options})
+      endif()
+    endforeach()
+  endforeach()
+endif()
 
 
 ################################################################

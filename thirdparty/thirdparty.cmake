@@ -180,12 +180,11 @@ endmacro(copy_dependency_with_config)
 # cfitsio
 
 set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio)
-
 if(NOT EXISTS ${libcfitsio_root})
   # untar the dependency
   message(STATUS "Untarring cfitsio")
   execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3370.tar.gz
-                    WORKING_DIRECTORY ${thirdparties_deflate_directory})
+                  WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
 # copied and adapted from the CMakeLists.txt of cftsio project. The sources of the project
@@ -260,9 +259,9 @@ endif()
 
 
 set_target_properties(cfitsio PROPERTIES
-                         VERSION ${CFITSIO_VERSION}
-                         SOVERSION ${CFITSIO_MAJOR_VERSION}
-                         FOLDER "Thirdparty/")
+                      VERSION ${CFITSIO_VERSION}
+                      SOVERSION ${CFITSIO_MAJOR_VERSION}
+                      FOLDER "Thirdparty/")
 
 
 # indicating the link and include directives to the main project.
@@ -285,7 +284,7 @@ if(WIN32)
     # untar the dependency
     message(STATUS "Untarring VidCapture")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/VidCapture-20161026.zip
-                      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+                    WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()
 
   # copied and adapted from the CMakeLists.txt of cftsio project. The
@@ -468,7 +467,7 @@ set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
 if(NOT EXISTS ${eigen_root})
   # untar the dependency
   execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
+    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
@@ -691,6 +690,20 @@ if(WIN32)
 
 endif()
 
+
+#############################################
+#
+# qhyccd specific dependencies
+#
+#############################################
+set(qhyccd_root ${thirdparties_deflate_directory}/qhyccdlibs)
+if(NOT EXISTS ${qhyccd_root})
+  # unzip the dependency
+  file(MAKE_DIRECTORY ${qhyccd_root})
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
+    WORKING_DIRECTORY ${qhyccd_root})
+endif()
 
 
 
