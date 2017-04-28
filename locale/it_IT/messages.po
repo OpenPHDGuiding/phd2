@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-09 00:24-0400\n"
+"POT-Creation-Date: 2017-04-28 12:33-0400\n"
 "PO-Revision-Date: 2016-04-15 21:31+0100\n"
 "Last-Translator: Giorgio Mazzacurati <pkorama@gmail.com>\n"
 "Language-Team: GrAG <info@grag.org>\n"
@@ -150,9 +150,8 @@ msgstr "Numero pixel freddi:"
 msgid "Manually added pixels"
 msgstr "Aggiungi manualmente dei pixel"
 
-#: Refine_DefMap.cpp:158 guide_algorithm_gaussian_process.cpp:305
-#: guide_algorithm_hysteresis.cpp:251 guide_algorithm_lowpass2.cpp:233
-#: guide_algorithm_resistswitch.cpp:308
+#: Refine_DefMap.cpp:158 guide_algorithm_hysteresis.cpp:251
+#: guide_algorithm_lowpass2.cpp:233 guide_algorithm_resistswitch.cpp:308
 msgid "Aggressiveness"
 msgstr "Aggressività"
 
@@ -185,7 +184,7 @@ msgid "Cold pixels"
 msgstr "Pixel freddi"
 
 #: Refine_DefMap.cpp:175 cam_simulator.cpp:1654 darks_dialog.cpp:208
-#: mount.cpp:160 mount.cpp:201 starcross_test.cpp:147 testguide.cpp:101
+#: mount.cpp:161 mount.cpp:202 starcross_test.cpp:147 testguide.cpp:101
 msgid "Reset"
 msgstr "Reset"
 
@@ -280,11 +279,11 @@ msgid "Global"
 msgstr "Globale"
 
 #: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1564
-#: config_INDI.cpp:104 gear_dialog.cpp:225 gear_dialog.cpp:227
+#: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Camera"
 
-#: advanced_dialog.cpp:148 guider.cpp:1307 myframe.cpp:1445
+#: advanced_dialog.cpp:148 guider.cpp:1306 myframe.cpp:1445
 #: scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "Guida"
@@ -298,7 +297,7 @@ msgid "Other Devices"
 msgstr "Altre periferiche"
 
 #: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1575
-#: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:251 gear_dialog.cpp:253
+#: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Montatura"
@@ -307,7 +306,7 @@ msgstr "Montatura"
 msgid "No mount specified"
 msgstr "Nessuna montatura specificata"
 
-#: aui_controls.cpp:140 aui_controls.cpp:152 guiding_assistant.cpp:301
+#: aui_controls.cpp:140 aui_controls.cpp:152 guiding_assistant.cpp:319
 #: aui_controls.h:139
 msgid "SNR"
 msgstr "SNR"
@@ -500,16 +499,16 @@ msgstr "Misurazione bloccata"
 msgid "Measurement encountered an error: %s"
 msgstr ""
 
-#: calreview_dialog.cpp:47 statswindow.cpp:300
+#: calreview_dialog.cpp:47 statswindow.cpp:300 statswindow.cpp:320
 msgid "N/A"
 msgstr "N/D"
 
 #: calreview_dialog.cpp:101 config_INDI.cpp:110 eegg.cpp:112
-#: gear_dialog.cpp:294 gear_dialog.cpp:296 testguide.cpp:161
+#: gear_dialog.cpp:308 gear_dialog.cpp:310 testguide.cpp:161
 msgid "AO"
 msgstr "OA"
 
-#: calreview_dialog.cpp:134 calreview_dialog.cpp:139 mount.cpp:125
+#: calreview_dialog.cpp:134 calreview_dialog.cpp:139 mount.cpp:126
 #: scope_manual_pointing.cpp:121
 msgid "Right Ascension"
 msgstr "Ascensione retta"
@@ -519,7 +518,7 @@ msgid "X"
 msgstr "X"
 
 #: calreview_dialog.cpp:142 calreview_dialog.cpp:147 calreview_dialog.cpp:376
-#: mount.cpp:128 statswindow.cpp:104
+#: mount.cpp:129 statswindow.cpp:104
 msgid "Declination"
 msgstr "Declinazione"
 
@@ -555,7 +554,7 @@ msgstr "Errore ortogonalità:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1195
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1218
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -595,7 +594,7 @@ msgstr "Binning:"
 msgid "Created:"
 msgstr "Creato:"
 
-#: calreview_dialog.cpp:299 mount.cpp:57 mount.cpp:92 statswindow.cpp:303
+#: calreview_dialog.cpp:299 mount.cpp:58 mount.cpp:93 statswindow.cpp:303
 msgid "Unknown"
 msgstr "Sconosciuto"
 
@@ -629,12 +628,12 @@ msgstr "Binning: %d"
 msgid "Side-of-pier:"
 msgstr "Lato della montatura:"
 
-#: calreview_dialog.cpp:337 cam_simulator.cpp:1719 mount.cpp:60
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1719 mount.cpp:61
 #: testguide.cpp:152
 msgid "East"
 msgstr "Est"
 
-#: calreview_dialog.cpp:338 cam_simulator.cpp:1719 mount.cpp:61
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1719 mount.cpp:62
 #: testguide.cpp:152
 msgid "West"
 msgstr "Ovest"
@@ -925,9 +924,9 @@ msgstr "Impostazioni"
 #: cam_ZWO.cpp:224 cam_ZWO.cpp:267 cam_firewire_IC.cpp:94 cam_openssag.cpp:96
 #: cam_openssag.cpp:113 cam_qhy5.cpp:117 cam_qhy5.cpp:124 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1186
-#: gear_dialog.cpp:1847 gear_dialog.cpp:1856 gear_dialog.cpp:1863
-#: gear_dialog.cpp:1908 gear_dialog.cpp:1914 scope_GC_USBST4.cpp:142
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1196
+#: gear_dialog.cpp:1857 gear_dialog.cpp:1866 gear_dialog.cpp:1873
+#: gear_dialog.cpp:1918 gear_dialog.cpp:1924 scope_GC_USBST4.cpp:142
 #: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
 #: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
 #: scope_ascom.cpp:186 scope_ascom.cpp:201 scope_ascom.cpp:209
@@ -963,53 +962,53 @@ msgstr "Sei già connesso"
 msgid "Couldn't start exposure - aborting"
 msgstr "Impossibile far partire l'esposizione - operazione annullata"
 
-#: cam_INDI.cpp:335
+#: cam_INDI.cpp:337
 #, c-format
 msgid "Cannot connect to camera %s"
 msgstr ""
 
-#: cam_INDI.cpp:442 cam_INDI.cpp:458 cam_simulator.cpp:593
+#: cam_INDI.cpp:444 cam_INDI.cpp:460 cam_simulator.cpp:593
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Errore nell'apertura del file FITS o tipo non supportato"
 
-#: cam_INDI.cpp:446 cam_simulator.cpp:582 cam_simulator.cpp:1358
+#: cam_INDI.cpp:448 cam_simulator.cpp:582 cam_simulator.cpp:1358
 msgid "FITS file is not of an image"
 msgstr "Il file FITS non è una immagine"
 
-#: cam_INDI.cpp:464 cam_INDI.cpp:487 cam_firewire_IC.cpp:290 cam_opencv.cpp:146
+#: cam_INDI.cpp:466 cam_INDI.cpp:489 cam_firewire_IC.cpp:290 cam_opencv.cpp:146
 #: cam_simulator.cpp:605 cam_simulator.cpp:1153 cam_simulator.cpp:1215
 #: cam_simulator.cpp:1375 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Errore nell'allocazione della memoria"
 
-#: cam_INDI.cpp:472 cam_INDI.cpp:493 cam_simulator.cpp:623
+#: cam_INDI.cpp:474 cam_INDI.cpp:495 cam_simulator.cpp:623
 #: cam_simulator.cpp:1380
 msgid "Error reading data"
 msgstr "Errore durante la lettura dei dati"
 
-#: cam_INDI.cpp:510
+#: cam_INDI.cpp:512
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr ""
 "Non è presente la proprietà CCD_FRAME, impossibile determinare la dimensione "
 "dell'immagine"
 
-#: cam_INDI.cpp:515
+#: cam_INDI.cpp:517
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr ""
 "Non è presente il valore WIDTH, impossibile determinare la dimensione "
 "dell'immagine"
 
-#: cam_INDI.cpp:521
+#: cam_INDI.cpp:523
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr ""
 "Non è presente il valore HEIGHT, impossibile determinare la dimensione "
 "dell'immagine"
 
-#: cam_INDI.cpp:528
+#: cam_INDI.cpp:530
 msgid "CCD stream: memory allocation error"
 msgstr "Flusso CCD: errore nell'allocazione della memoria"
 
-#: cam_INDI.cpp:646
+#: cam_INDI.cpp:648
 msgid "Unknown image format: "
 msgstr "Formato dell'immagine sconosciuto: "
 
@@ -1155,7 +1154,7 @@ msgstr "Impossibile iniziare l'esposizione"
 msgid "Select capture device"
 msgstr "Seleziona il dispositivo per la cattura delle immagini"
 
-#: cam_VFW.cpp:88 cam_qhy.cpp:168 cam_wdm.cpp:168
+#: cam_VFW.cpp:88 cam_qhy.cpp:172 cam_wdm.cpp:168
 msgid "Camera choice"
 msgstr "Scelta della camera"
 
@@ -1361,59 +1360,59 @@ msgstr "Impossibile recuperare il frame dalla coda"
 msgid "Could not initialize USB library"
 msgstr "Non riesco ad inizializzare la libreria USB"
 
-#: cam_qhy.cpp:127
+#: cam_qhy.cpp:131
 msgid "Failed to initialize QHY SDK"
 msgstr ""
 
-#: cam_qhy.cpp:155
+#: cam_qhy.cpp:159
 msgid "No compatible QHY cameras found"
 msgstr ""
 
-#: cam_qhy.cpp:168
+#: cam_qhy.cpp:172
 msgid "Select QHY camera"
 msgstr ""
 
-#: cam_qhy.cpp:185
+#: cam_qhy.cpp:189
 msgid "Failed to connect to camera"
 msgstr ""
 
-#: cam_qhy.cpp:197
+#: cam_qhy.cpp:201
 msgid "SetQHYCCDStreamMode failed"
 msgstr ""
 
-#: cam_qhy.cpp:206 cam_qhy.cpp:301
+#: cam_qhy.cpp:210 cam_qhy.cpp:305
 msgid "Init camera failed"
 msgstr ""
 
-#: cam_qhy.cpp:215
+#: cam_qhy.cpp:219
 msgid "Failed to get gain range"
 msgstr ""
 
-#: cam_qhy.cpp:226
+#: cam_qhy.cpp:230
 msgid "Failed to get camera chip info"
 msgstr ""
 
-#: cam_qhy.cpp:257
+#: cam_qhy.cpp:261
 msgid "Failed to get camera bin info"
 msgstr ""
 
-#: cam_qhy.cpp:277
+#: cam_qhy.cpp:281
 msgid "Failed to set camera binning"
 msgstr ""
 
-#: cam_qhy.cpp:437
+#: cam_qhy.cpp:441
 msgid "Failed to set camera exposure"
 msgstr ""
 
-#: cam_qhy.cpp:454
+#: cam_qhy.cpp:458
 msgid "Failed to set camera gain"
 msgstr ""
 
-#: cam_qhy.cpp:462
+#: cam_qhy.cpp:466
 msgid "QHY exposure failed"
 msgstr ""
 
-#: cam_qhy.cpp:482
+#: cam_qhy.cpp:486
 msgid "QHY get frame failed"
 msgstr ""
 
@@ -1686,10 +1685,10 @@ msgstr "Scegli il profilo con la libreria dark che vuoi usare:"
 #: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
 #: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:226
-#: camera.cpp:363 gear_dialog.cpp:349 gear_dialog.cpp:353 gear_dialog.cpp:357
-#: gear_dialog.cpp:361 gear_dialog.cpp:365 gear_dialog.cpp:578
-#: gear_dialog.cpp:940 gear_dialog.cpp:1608 gear_dialog.cpp:1609
-#: gear_dialog.cpp:1610 mount.cpp:133 mount.cpp:170 mount.cpp:665
+#: camera.cpp:363 gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:367
+#: gear_dialog.cpp:371 gear_dialog.cpp:375 gear_dialog.cpp:588
+#: gear_dialog.cpp:950 gear_dialog.cpp:1618 gear_dialog.cpp:1619
+#: gear_dialog.cpp:1620 mount.cpp:134 mount.cpp:171 mount.cpp:706
 #: myframe.cpp:2537 profile_wizard.cpp:215 profile_wizard.cpp:216
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:520
 #: profile_wizard.cpp:529 rotator.cpp:47 rotator.cpp:82 scope.cpp:275
@@ -1981,7 +1980,7 @@ msgstr "Assi"
 msgid "Tracking rate axes"
 msgstr "Velocità inseguimenti assi"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:456
+#: comet_tool.cpp:115 darks_dialog.cpp:212 guiding_assistant.cpp:479
 #: starcross_test.cpp:160
 msgid "Start"
 msgstr "Inizia"
@@ -1990,7 +1989,7 @@ msgstr "Inizia"
 msgid "Start training the tracking rate."
 msgstr "Inizia l'addestramento della velocità di inseguimento."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:461
+#: comet_tool.cpp:117 darks_dialog.cpp:250 guiding_assistant.cpp:484
 #: starcross_test.cpp:162
 msgid "Stop"
 msgstr "Ferma"
@@ -2063,10 +2062,10 @@ msgstr "Porta"
 msgid "Disconnected"
 msgstr "Disconnesso"
 
-#: config_INDI.cpp:97 gear_dialog.cpp:488 gear_dialog.cpp:514
-#: gear_dialog.cpp:530 gear_dialog.cpp:551 gear_dialog.cpp:595
-#: gear_dialog.cpp:616 gear_dialog.cpp:633 gear_dialog.cpp:654
-#: gear_dialog.cpp:671 gear_dialog.cpp:692 runinbg.h:80 runinbg.h:86
+#: config_INDI.cpp:97 gear_dialog.cpp:498 gear_dialog.cpp:524
+#: gear_dialog.cpp:540 gear_dialog.cpp:561 gear_dialog.cpp:605
+#: gear_dialog.cpp:626 gear_dialog.cpp:643 gear_dialog.cpp:664
+#: gear_dialog.cpp:681 gear_dialog.cpp:702 runinbg.h:80 runinbg.h:86
 #: runinbg.h:92 runinbg.h:98
 msgid "Connect"
 msgstr "Connesso"
@@ -2080,16 +2079,16 @@ msgid "Driver"
 msgstr "Driver"
 
 #: config_INDI.cpp:122
-msgid "CCD"
-msgstr "CCD"
+msgid "Dual CCD"
+msgstr ""
 
 #: config_INDI.cpp:125
-msgid "Main imager"
-msgstr "Camera principale"
+msgid "Main"
+msgstr ""
 
-#: config_INDI.cpp:126 myframe_events.cpp:719
-msgid "Guider"
-msgstr "Guida"
+#: config_INDI.cpp:126
+msgid "Secondary"
+msgstr ""
 
 #: config_INDI.cpp:137
 msgid "Other options"
@@ -2111,7 +2110,7 @@ msgstr "Non chiederlo di nuovo"
 msgid "Confirm"
 msgstr "Conferma"
 
-#: darks_dialog.cpp:63 guiding_assistant.cpp:297
+#: darks_dialog.cpp:63 guiding_assistant.cpp:315
 msgid "Exposure time"
 msgstr "Tempo esposizione"
 
@@ -2559,11 +2558,16 @@ msgstr "Confermi di disabilitare la guida"
 msgid "Connect Equipment"
 msgstr "Connetti i dispositivi"
 
-#: gear_dialog.cpp:187
+#: gear_dialog.cpp:184 gear_dialog.cpp:515 gear_dialog.cpp:553
+#: gear_dialog.cpp:618 gear_dialog.cpp:655 gear_dialog.cpp:693
+msgid "Disconnect"
+msgstr "Disconnetti"
+
+#: gear_dialog.cpp:211
 msgid "Equipment profile"
 msgstr "Profilo dei dispositivi"
 
-#: gear_dialog.cpp:189
+#: gear_dialog.cpp:213
 msgid ""
 "Select the Equipment Profile you would like to use. PHD stores all of your "
 "settings and equipment selections in an Equipment Profile. You can create "
@@ -2573,67 +2577,67 @@ msgstr ""
 "le impostazioni e selezione dei dispositivi nel Profilo dei dispositivi. "
 "Puoi creare più profili a spostarti tra loro. "
 
-#: gear_dialog.cpp:195
+#: gear_dialog.cpp:219
 msgid "New using Wizard..."
 msgstr "Nuovo utilizzando l'asistente automatico..."
 
-#: gear_dialog.cpp:195
+#: gear_dialog.cpp:219
 msgid "Run the first-light wizard to create a new profile"
 msgstr "Esegui l'assitente automatico per creare un nuovo profilo"
 
-#: gear_dialog.cpp:196
+#: gear_dialog.cpp:220
 msgid "New"
 msgstr "Nuovo"
 
-#: gear_dialog.cpp:196
+#: gear_dialog.cpp:220
 msgid "Create a new profile, optionally copying from another profile"
 msgstr "Crea un nuovo profilo, puoi anche copiare i dati da un altro profilo"
 
-#: gear_dialog.cpp:197
+#: gear_dialog.cpp:221
 msgid "Delete"
 msgstr "Cancella"
 
-#: gear_dialog.cpp:197
+#: gear_dialog.cpp:221
 msgid "Delete the selected profile"
 msgstr "Cancella il profilo selezionato"
 
-#: gear_dialog.cpp:198
+#: gear_dialog.cpp:222
 msgid "Rename"
 msgstr "Rinomina"
 
-#: gear_dialog.cpp:198
+#: gear_dialog.cpp:222
 msgid "Rename the selected profile"
 msgstr "Rinomima il profilo selezionato"
 
-#: gear_dialog.cpp:199
+#: gear_dialog.cpp:223
 msgid "Import..."
 msgstr "Importa..."
 
-#: gear_dialog.cpp:199
+#: gear_dialog.cpp:223
 msgid "Load a profile from a file"
 msgstr "Carica il profilo da un file"
 
-#: gear_dialog.cpp:200
+#: gear_dialog.cpp:224
 msgid "Export..."
 msgstr "Esporta..."
 
-#: gear_dialog.cpp:200
+#: gear_dialog.cpp:224
 msgid "Save the selected profile to a file"
 msgstr "Salva il profilo selezionato in un file"
 
-#: gear_dialog.cpp:201
+#: gear_dialog.cpp:225
 msgid "Settings..."
 msgstr "Impostazioni..."
 
-#: gear_dialog.cpp:201
+#: gear_dialog.cpp:225
 msgid "Open the advanced settings dialog"
 msgstr "Apri l'interfaccia avanzata delle impostazioni"
 
-#: gear_dialog.cpp:203
+#: gear_dialog.cpp:227
 msgid "Manage Profiles"
 msgstr "Gestisci i profili"
 
-#: gear_dialog.cpp:204
+#: gear_dialog.cpp:228
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
@@ -2641,7 +2645,7 @@ msgstr ""
 "Crea un nuovo Profilo dei dispositivi, o cancella o rinomina il profilo "
 "selezionato"
 
-#: gear_dialog.cpp:215
+#: gear_dialog.cpp:239
 msgid ""
 "Select your equipment below and click Connect All to connect, or click "
 "Disconnect All to disconnect. You can also connect or disconnect individual "
@@ -2652,7 +2656,7 @@ msgstr ""
 "connettere o disconnettere i singoli dispositivi premendo il bottone "
 "affianco alla descrizione oggetto."
 
-#: gear_dialog.cpp:240
+#: gear_dialog.cpp:260
 msgid ""
 "Select which camera to connect to when there are multiple cameras of the "
 "same type."
@@ -2660,33 +2664,26 @@ msgstr ""
 "Seleziona quale camera connettere quando ci sono più camere dello stesso "
 "tipo."
 
-#: gear_dialog.cpp:243
+#: gear_dialog.cpp:263
 msgid "Camera Setup"
 msgstr "Impostazioni camera"
 
-#: gear_dialog.cpp:245 gear_dialog.cpp:260 gear_dialog.cpp:285
-#: gear_dialog.cpp:301 gear_dialog.cpp:313 gear_dialog.cpp:505
-#: gear_dialog.cpp:543 gear_dialog.cpp:608 gear_dialog.cpp:645
-#: gear_dialog.cpp:683
-msgid "Disconnect"
-msgstr "Disconnetti"
-
-#: gear_dialog.cpp:254
+#: gear_dialog.cpp:272
 msgid ""
 "Specify how guide commands will be sent to the mount - via an ASCOM or Indi "
 "driver, directly from the camera or AO, or via one of the GPxxx devices. An "
 "ASCOM connection is recommended."
 msgstr ""
 
-#: gear_dialog.cpp:258
+#: gear_dialog.cpp:276
 msgid "Mount Setup"
 msgstr "Impostazioni montatura"
 
-#: gear_dialog.cpp:266 gear_dialog.cpp:268
+#: gear_dialog.cpp:282 gear_dialog.cpp:284
 msgid "Aux Mount"
 msgstr "Montatura esterna"
 
-#: gear_dialog.cpp:276
+#: gear_dialog.cpp:292
 #, c-format
 msgid ""
 "If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
@@ -2702,89 +2699,89 @@ msgstr ""
 "driver %s per la montatura, i parametri della montatura 'esterna' non "
 "saranno usati."
 
-#: gear_dialog.cpp:283
+#: gear_dialog.cpp:299
 msgid "Aux Mount Setup"
 msgstr "Impostazione montatura esterna"
 
-#: gear_dialog.cpp:299
+#: gear_dialog.cpp:313
 msgid "AO Setup"
 msgstr "Impostazione OA"
 
-#: gear_dialog.cpp:307 gear_dialog.cpp:308
+#: gear_dialog.cpp:319 gear_dialog.cpp:320
 msgid "Rotator"
 msgstr "Rotatore"
 
-#: gear_dialog.cpp:311
+#: gear_dialog.cpp:323
 msgid "Rotator Setup"
 msgstr "Impostazioni rotatore"
 
-#: gear_dialog.cpp:321
+#: gear_dialog.cpp:331
 msgid "Connect All"
 msgstr "Connetti tutto"
 
-#: gear_dialog.cpp:322
+#: gear_dialog.cpp:332
 msgid "Connect all equipment and close the equipment selection window"
 msgstr ""
 "Connetti tutti i dispositivi e chiudi la finestra con la selezione dei "
 "dispositivi"
 
-#: gear_dialog.cpp:325
+#: gear_dialog.cpp:335
 msgid "Disconnect All"
 msgstr "Disconnetti tutto"
 
-#: gear_dialog.cpp:326
+#: gear_dialog.cpp:336
 msgid "Disconnect all equipment"
 msgstr "Disconnetti tutti i dispositivi"
 
-#: gear_dialog.cpp:329 myframe.cpp:1082
+#: gear_dialog.cpp:339 myframe.cpp:1082
 msgid "Close"
 msgstr "Chiudi"
 
-#: gear_dialog.cpp:490 gear_dialog.cpp:516
+#: gear_dialog.cpp:500 gear_dialog.cpp:526
 msgid "Connect to camera"
 msgstr "Connetti la camera"
 
-#: gear_dialog.cpp:507
+#: gear_dialog.cpp:517
 msgid "Disconnect from camera"
 msgstr "Disconnetti la camera"
 
-#: gear_dialog.cpp:532 gear_dialog.cpp:553
+#: gear_dialog.cpp:542 gear_dialog.cpp:563
 msgid "Connect to mount"
 msgstr "Connetti la montatura"
 
-#: gear_dialog.cpp:545
+#: gear_dialog.cpp:555
 msgid "Disconnect from mount"
 msgstr "Disconnetti la montatura"
 
-#: gear_dialog.cpp:597 gear_dialog.cpp:618
+#: gear_dialog.cpp:607 gear_dialog.cpp:628
 msgid "Connect to aux mount"
 msgstr "Connetti la montatura esterna"
 
-#: gear_dialog.cpp:610
+#: gear_dialog.cpp:620
 msgid "Disconnect from aux mount"
 msgstr "Disconnetti la montatura esterna"
 
-#: gear_dialog.cpp:635 gear_dialog.cpp:656
+#: gear_dialog.cpp:645 gear_dialog.cpp:666
 msgid "Connect to AO"
 msgstr "Connetti la OA"
 
-#: gear_dialog.cpp:647
+#: gear_dialog.cpp:657
 msgid "Disconnect from AO"
 msgstr "Disconnetti la OA"
 
-#: gear_dialog.cpp:673 gear_dialog.cpp:694
+#: gear_dialog.cpp:683 gear_dialog.cpp:704
 msgid "Connect to Rotator"
 msgstr "Connetti il rotatore"
 
-#: gear_dialog.cpp:685
+#: gear_dialog.cpp:695
 msgid "Disconnect from Rotator"
 msgstr "Disconnetti il rotatore"
 
-#: gear_dialog.cpp:878
+#: gear_dialog.cpp:888
 msgid "No cameras found"
 msgstr "Nessuna camera trovata"
 
-#: gear_dialog.cpp:949
+#: gear_dialog.cpp:959
 msgid ""
 "By changing cameras in this profile, you won't be able to use the existing "
 "dark library or bad-pixel maps. You should consider creating a new profile "
@@ -2795,123 +2792,123 @@ msgstr ""
 "considerare la creazione di un nuovo profilo per questa configurazione. Vuoi "
 "procedere al cambiamento di questo profilo?"
 
-#: gear_dialog.cpp:951
+#: gear_dialog.cpp:961
 msgid "Camera Change Warning"
 msgstr "Avviso di modifica alla camera"
 
-#: gear_dialog.cpp:966
+#: gear_dialog.cpp:976
 msgid "Connecting to Camera ..."
 msgstr "Connessione alla camera..."
 
-#: gear_dialog.cpp:1008
+#: gear_dialog.cpp:1018
 msgid "Camera Connected"
 msgstr "Camera connessa"
 
-#: gear_dialog.cpp:1016
+#: gear_dialog.cpp:1026
 msgid "Camera Connect Failed"
 msgstr "Impossibile connettersi alla camera"
 
-#: gear_dialog.cpp:1058
+#: gear_dialog.cpp:1068
 msgid "Camera Disconnected"
 msgstr "Camera disconnessa"
 
-#: gear_dialog.cpp:1176
+#: gear_dialog.cpp:1186
 msgid "Connecting to Mount ..."
 msgstr "Connessione alla montatura..."
 
-#: gear_dialog.cpp:1186
+#: gear_dialog.cpp:1196
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "La montatura non supporta l'interfaccia di comunizione PulseGuide"
 
-#: gear_dialog.cpp:1190
+#: gear_dialog.cpp:1200
 msgid "Mount Connected"
 msgstr "Montatura connessa"
 
-#: gear_dialog.cpp:1203
+#: gear_dialog.cpp:1213
 msgid "Mount Connect Failed"
 msgstr "Impossibile connettere la montatura"
 
-#: gear_dialog.cpp:1223
+#: gear_dialog.cpp:1233
 msgid "Connecting to Aux Mount ..."
 msgstr "Connessione alla montatura esterna..."
 
-#: gear_dialog.cpp:1230
+#: gear_dialog.cpp:1240
 msgid "Aux Mount Connected"
 msgstr "Montatura esterna connessa"
 
-#: gear_dialog.cpp:1238
+#: gear_dialog.cpp:1248
 msgid "Aux Mount Connect Failed"
 msgstr "Impossibile connettersi alla montatura esterna"
 
-#: gear_dialog.cpp:1259
+#: gear_dialog.cpp:1269
 msgid "Mount Disconnected"
 msgstr "Montatura disconnessa"
 
-#: gear_dialog.cpp:1290
+#: gear_dialog.cpp:1300
 msgid "Aux Mount Disconnected"
 msgstr "Montatura esterna disconnessa"
 
-#: gear_dialog.cpp:1306
+#: gear_dialog.cpp:1316
 msgid "Hide"
 msgstr "Nascondi"
 
-#: gear_dialog.cpp:1312
+#: gear_dialog.cpp:1322
 msgid "More Equipment ..."
 msgstr "Altri dispositivi"
 
-#: gear_dialog.cpp:1372
+#: gear_dialog.cpp:1382
 msgid "Connecting to AO ..."
 msgstr "Connessione alla OA"
 
-#: gear_dialog.cpp:1382
+#: gear_dialog.cpp:1392
 msgid "AO Connected"
 msgstr "OA connessa"
 
-#: gear_dialog.cpp:1395
+#: gear_dialog.cpp:1405
 msgid "AO Connect Failed"
 msgstr "Impossibile connettersi alla OA"
 
-#: gear_dialog.cpp:1423
+#: gear_dialog.cpp:1433
 msgid "AO Disconnected"
 msgstr "OA disconnessa"
 
-#: gear_dialog.cpp:1487
+#: gear_dialog.cpp:1497
 msgid "Connecting to Rotator ..."
 msgstr "Rotatore connesso"
 
-#: gear_dialog.cpp:1497
+#: gear_dialog.cpp:1507
 msgid "Rotator Connected"
 msgstr "Rotatore sconnesso"
 
-#: gear_dialog.cpp:1510
+#: gear_dialog.cpp:1520
 msgid "Rotator Connect Failed"
 msgstr "Impossibile connettersi al rotatore"
 
-#: gear_dialog.cpp:1533
+#: gear_dialog.cpp:1543
 msgid "Rotator Disconnected"
 msgstr "Rotatore disconnesso"
 
-#: gear_dialog.cpp:1802
+#: gear_dialog.cpp:1812
 msgid "New Equipment Profile"
 msgstr "Nuovo profilo dei dispositivi"
 
-#: gear_dialog.cpp:1809
+#: gear_dialog.cpp:1819
 msgid "Name"
 msgstr "Nome"
 
-#: gear_dialog.cpp:1813
+#: gear_dialog.cpp:1823
 msgid "Enter the name of the new equipment profile"
 msgstr "Inserisci il nome del nuovo profilo dei dispositivi"
 
-#: gear_dialog.cpp:1817
+#: gear_dialog.cpp:1827
 msgid "PHD Defaults"
 msgstr "Valori PHD predefiniti"
 
-#: gear_dialog.cpp:1820
+#: gear_dialog.cpp:1830
 msgid "Profile initial settings"
 msgstr "Impostazioni iniziali dei profili"
 
-#: gear_dialog.cpp:1823
+#: gear_dialog.cpp:1833
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2920,49 +2917,49 @@ msgstr ""
 "impostazioni predefinite, o seleziona un profilo dei dispositivi già "
 "esistente per copiare le sue impostazioni nel nuovo profilo."
 
-#: gear_dialog.cpp:1847
+#: gear_dialog.cpp:1857
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr ""
 "Impossibile creare il profilo %s, esiste già un profilo con questo nome."
 
-#: gear_dialog.cpp:1856
+#: gear_dialog.cpp:1866
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "Impossibile creare il profilo %s dal profilo %s"
 
-#: gear_dialog.cpp:1863 profile_wizard.cpp:489
+#: gear_dialog.cpp:1873 profile_wizard.cpp:489
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Impossibile creare il profilo %s"
 
-#: gear_dialog.cpp:1879
+#: gear_dialog.cpp:1889
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Cancello il profilo %s?"
 
-#: gear_dialog.cpp:1879
+#: gear_dialog.cpp:1889
 msgid "Delete Equipment Profile"
 msgstr "Cancella il profilo dei dispositivi"
 
-#: gear_dialog.cpp:1898
+#: gear_dialog.cpp:1908
 #, c-format
 msgid "Rename %s"
 msgstr "Rinomina %s"
 
-#: gear_dialog.cpp:1898
+#: gear_dialog.cpp:1908
 msgid "Rename Equipment Profile"
 msgstr "Rinomina il profilo dei dispositivi"
 
-#: gear_dialog.cpp:1914
+#: gear_dialog.cpp:1924
 msgid "Could not rename profile"
 msgstr "Impossibile rinominare il profilo dei dispositivi"
 
-#: gear_dialog.cpp:1928
+#: gear_dialog.cpp:1938
 msgid "Import PHD Equipment Profiles"
 msgstr "Importa i profili dei dispositivi PHD"
 
-#: gear_dialog.cpp:1961
+#: gear_dialog.cpp:1971
 msgid "Export PHD Equipment Profile"
 msgstr "Esporta i profili dei dispoitivi PHD"
 
@@ -3234,9 +3231,9 @@ msgstr ""
 msgid "PredWt"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:234 guide_algorithm_hysteresis.cpp:308
-msgid "Agr"
-msgstr "Agr"
+#: guide_algorithm_gaussian_process.cpp:234
+msgid "ReactWt"
+msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:242 guide_algorithm_hysteresis.cpp:324
 #: guide_algorithm_lowpass.cpp:287 guide_algorithm_lowpass2.cpp:294
@@ -3248,24 +3245,26 @@ msgid "Predictive PEC Guide Algorithm"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:297
-msgid "Prediction Weight"
+msgid "Predictive Weight"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:298
 #, c-format
 msgid ""
-"How much of the gear error prediction should be applied? Default = %.f%%, "
-"increase to rely more on the predictions"
+"What percent of the predictive guide correction should be applied? Default = "
+"%.f%%, increase to rely more on the predictions"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:306 guide_algorithm_hysteresis.cpp:252
+#: guide_algorithm_gaussian_process.cpp:305
+msgid "Reactive Weight"
+msgstr ""
+
+#: guide_algorithm_gaussian_process.cpp:306
 #, c-format
 msgid ""
-"What percent of the measured error should be applied? Default = %.f%%, "
-"adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
-"Quale percentuale di errore della misura dovrebbe essere applicato? Valore "
-"predefinito = %.f%%, regolalo se la guida risponde troppo o troppo poco "
 
 #: guide_algorithm_gaussian_process.cpp:313 guide_algorithm_hysteresis.cpp:259
 #: guide_algorithm_lowpass.cpp:233 guide_algorithm_lowpass2.cpp:241
@@ -3276,9 +3275,10 @@ msgstr "Movimento minimo (in pixel)"
 #: guide_algorithm_gaussian_process.cpp:314
 #, c-format
 msgid ""
-"How many (fractional) pixels must the star move to trigger a guide pulse? If "
-"camera is binned, this is a fraction of the binned pixel size. Note that the "
-"movements from the prediction are not affected by this. Default = %.2f"
+"How many (fractional) pixels must the star move to trigger a reactive guide "
+"correction? If camera is binned, this is a fraction of the binned pixel "
+"size. Note this has no effect on the predictive guide correction. Default = "
+"%.2f"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:323
@@ -3303,8 +3303,8 @@ msgstr ""
 #: guide_algorithm_gaussian_process.cpp:327
 #, c-format
 msgid ""
-"The period length (in seconds) of the periodic error component that should "
-"be corrected. Default = %.2f"
+"The period length (in seconds) of the strongest periodic error component.  "
+"Default = %.2f"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:331
@@ -3319,7 +3319,7 @@ msgstr ""
 msgid "Hysteresis Guide Algorithm"
 msgstr "Algoritmo di isteresi di guida"
 
-#: guide_algorithm_hysteresis.cpp:243 mount.cpp:133 mount.cpp:170
+#: guide_algorithm_hysteresis.cpp:243 mount.cpp:134 mount.cpp:171
 msgid "Hysteresis"
 msgstr "Isteresi"
 
@@ -3333,6 +3333,15 @@ msgstr ""
 "Valore predefinito = %.f%%, incrementa il valore per rendere più morbidi i "
 "comandi di guida"
 
+#: guide_algorithm_hysteresis.cpp:252
+#, c-format
+msgid ""
+"What percent of the measured error should be applied? Default = %.f%%, "
+"adjust if responding too much or too slowly"
+msgstr ""
+"Quale percentuale di errore della misura dovrebbe essere applicato? Valore "
+"predefinito = %.f%%, regolalo se la guida risponde troppo o troppo poco "
+
 #: guide_algorithm_hysteresis.cpp:260 guide_algorithm_lowpass.cpp:234
 #: guide_algorithm_lowpass2.cpp:242 guide_algorithm_resistswitch.cpp:317
 #, c-format
@@ -3341,6 +3350,10 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
+
+#: guide_algorithm_hysteresis.cpp:308
+msgid "Agr"
+msgstr "Agr"
 
 #: guide_algorithm_hysteresis.cpp:316
 msgid "Hys"
@@ -3404,88 +3417,88 @@ msgstr ""
 "direzione immediatamente se vede una grande deviazione. Attiva questa "
 "opzione se la tua montatura ha un backlash grande e PHD2 sovra corregge."
 
-#: guider.cpp:490
+#: guider.cpp:489
 msgid "E"
 msgstr "E"
 
-#: guider.cpp:511
+#: guider.cpp:510
 msgid "N"
 msgstr "N"
 
-#: guider.cpp:625
+#: guider.cpp:624
 msgid "PAUSED"
 msgstr "PAUSA"
 
-#: guider.cpp:630
+#: guider.cpp:629
 msgid "Guide output DISABLED"
 msgstr ""
 
-#: guider.cpp:1026
+#: guider.cpp:1025
 msgid "Calibration manually stopped"
 msgstr "Calibrazione manuale fermata"
 
-#: guider.cpp:1080
+#: guider.cpp:1079
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr ""
 
-#: guider.cpp:1132
+#: guider.cpp:1131
 msgid "Stopped Guiding"
 msgstr "Guida fermata"
 
-#: guider.cpp:1143
+#: guider.cpp:1142
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "Lo spostamento della posizione di blocco è esterna all'area permessa. Lo "
 "spostamento della posizione di blocco è disabilitata."
 
-#: guider.cpp:1173
+#: guider.cpp:1172
 msgid "star lost"
 msgstr "Stella persa"
 
-#: guider.cpp:1235 myframe.cpp:1579
+#: guider.cpp:1234 myframe.cpp:1579
 msgid "Paused"
 msgstr "Pausa"
 
-#: guider.cpp:1257
+#: guider.cpp:1256
 msgid "AO calibration failed"
 msgstr ""
 
-#: guider.cpp:1257 guider.cpp:1290
+#: guider.cpp:1256 guider.cpp:1289
 msgid "calibration failed"
 msgstr ""
 
-#: guider.cpp:1526
+#: guider.cpp:1525
 msgid "Guider Settings"
 msgstr "Impostazioni guida"
 
-#: guider.cpp:1535
+#: guider.cpp:1534
 msgid "Guide star tracking"
 msgstr "Inseguimento della stella"
 
-#: guider.cpp:1536
+#: guider.cpp:1535
 msgid "Calibration"
 msgstr "Calibrazione"
 
-#: guider.cpp:1537
+#: guider.cpp:1536
 msgid "Shared Parameters"
 msgstr "Parametri condivisi"
 
-#: guider.cpp:1581
+#: guider.cpp:1580
 msgid "Always scale images"
 msgstr "Scala sempre le immagini"
 
-#: guider.cpp:1582
+#: guider.cpp:1581
 msgid "Always scale images to fill window"
 msgstr "Scala sempre le immagini per riempire la finestra"
 
-#: guider.cpp:1584
+#: guider.cpp:1583
 msgid "Fast recenter after calibration or dither"
 msgstr "Ricentra velocemente dopo una calibrazione o dither"
 
-#: guider.cpp:1585
+#: guider.cpp:1584
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -3496,7 +3509,7 @@ msgstr ""
 "usare il vecchio e più lento metodo per ricentrare dopo una calibrazione o "
 "dither."
 
-#: guider.cpp:1684
+#: guider.cpp:1683
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "Sei sicuro di voler cancellare tutti i preferiti?"
 
@@ -3628,115 +3641,115 @@ msgid ""
 "will be ignored."
 msgstr ""
 
-#: guiding_assistant.cpp:258
+#: guiding_assistant.cpp:276
 msgid "Guiding Assistant"
 msgstr "Assistente di guida"
 
-#: guiding_assistant.cpp:280
+#: guiding_assistant.cpp:298
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr " -999.99 px/min (-999.99 arc-sec/min )"
 
-#: guiding_assistant.cpp:282
+#: guiding_assistant.cpp:300
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr ""
 
-#: guiding_assistant.cpp:284
+#: guiding_assistant.cpp:302
 msgid "Measurement Status"
 msgstr "Stato della misura"
 
-#: guiding_assistant.cpp:295
+#: guiding_assistant.cpp:313
 msgid "Start time"
 msgstr "Orario di avvio"
 
-#: guiding_assistant.cpp:303
+#: guiding_assistant.cpp:321
 msgid "Star mass"
 msgstr "Massa della stella"
 
-#: guiding_assistant.cpp:307
+#: guiding_assistant.cpp:325
 msgid "Elapsed time"
 msgstr "Tempo trascorso"
 
-#: guiding_assistant.cpp:309
+#: guiding_assistant.cpp:327
 msgid "Sample count"
 msgstr "Numero campioni"
 
-#: guiding_assistant.cpp:321
+#: guiding_assistant.cpp:339
 msgid "High-frequency Star Motion"
 msgstr "Movimenti della stella ad alta frequenza"
 
-#: guiding_assistant.cpp:332
+#: guiding_assistant.cpp:350
 msgid "Right ascension, RMS"
 msgstr "Ascensione retta (AR), RMS"
 
-#: guiding_assistant.cpp:336
+#: guiding_assistant.cpp:354
 msgid "Declination, RMS"
 msgstr "Declinazione, RMS"
 
-#: guiding_assistant.cpp:340
+#: guiding_assistant.cpp:358
 msgid "Total, RMS"
 msgstr "RMS totale"
 
-#: guiding_assistant.cpp:349
+#: guiding_assistant.cpp:367
 msgid "Other Star Motion"
 msgstr "Altri movimenti della stella"
 
-#: guiding_assistant.cpp:360
+#: guiding_assistant.cpp:380
 msgid "Right ascension, Peak"
 msgstr "Ascensione retta (AR), massimo"
 
-#: guiding_assistant.cpp:364
+#: guiding_assistant.cpp:384
 msgid "Declination, Peak"
 msgstr "Declinazione, massimo"
 
-#: guiding_assistant.cpp:368
+#: guiding_assistant.cpp:388
 msgid "Right ascension, Peak-Peak"
 msgstr "Ascensione retta (AR), max-max"
 
-#: guiding_assistant.cpp:372
+#: guiding_assistant.cpp:392
 msgid "Right ascension Drift Rate"
 msgstr "Ascensione retta (AR) velocità deriva"
 
-#: guiding_assistant.cpp:376
+#: guiding_assistant.cpp:396
 msgid "Right ascension Max Drift Rate"
 msgstr "Ascensione retta (AR), vel max deriva"
 
-#: guiding_assistant.cpp:380
+#: guiding_assistant.cpp:400
 msgid "Drift-limiting exposure"
 msgstr "Limite esposizione per la deriva"
 
-#: guiding_assistant.cpp:384
+#: guiding_assistant.cpp:404
 msgid "Declination Drift Rate"
 msgstr "Declinazione velocità deriva (drift)"
 
-#: guiding_assistant.cpp:388
+#: guiding_assistant.cpp:408
 msgid "Declination Backlash"
 msgstr "Backlash in declinazione"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:412
 msgid "Polar Alignment Error"
 msgstr "Errore allineamento polare"
 
-#: guiding_assistant.cpp:400
+#: guiding_assistant.cpp:423
 msgid "Recommendations"
 msgstr "Raccomandazioni"
 
-#: guiding_assistant.cpp:414
+#: guiding_assistant.cpp:437
 msgid "Show Backlash Graph"
 msgstr ""
 
-#: guiding_assistant.cpp:415
+#: guiding_assistant.cpp:438
 msgid "Show graph of backlash measurement points"
 msgstr "Mostra il grafico a punti con la misura del backlash"
 
-#: guiding_assistant.cpp:419 myframe.cpp:1087 profile_wizard.cpp:190
+#: guiding_assistant.cpp:442 myframe.cpp:1087 profile_wizard.cpp:190
 msgid "Help"
 msgstr ""
 
-#: guiding_assistant.cpp:432
+#: guiding_assistant.cpp:455
 msgid "Measure Declination Backlash"
 msgstr "Misurazione del backlash in declinazione"
 
-#: guiding_assistant.cpp:433
+#: guiding_assistant.cpp:456
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -3748,15 +3761,15 @@ msgstr ""
 "spazio per muoversi in direzione nord. Se perdi la stella guida incrementa "
 "l'aerea di ricerca di almeno 20px."
 
-#: guiding_assistant.cpp:457
+#: guiding_assistant.cpp:480
 msgid "Start measuring (disables guiding)"
 msgstr "Misurazione partita (guida disabilitata)"
 
-#: guiding_assistant.cpp:462
+#: guiding_assistant.cpp:485
 msgid "Stop measuring and re-enable guiding"
 msgstr "Misurazione fermata e guida riabilitata"
 
-#: guiding_assistant.cpp:514
+#: guiding_assistant.cpp:537
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
@@ -3764,7 +3777,7 @@ msgstr ""
 "Rapporto segnale/rumore; la misura di come PHD2 può isolare la stella dal "
 "cielo/rumore di fondo"
 
-#: guiding_assistant.cpp:516
+#: guiding_assistant.cpp:539
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
@@ -3772,7 +3785,7 @@ msgstr ""
 "Misura della luminosità complessiva delle stelle. Considera di utilizzare "
 "'Seleziona automatica della stella' (Atl-S) per scegliere la stella."
 
-#: guiding_assistant.cpp:521
+#: guiding_assistant.cpp:544
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3780,7 +3793,7 @@ msgstr ""
 "Misura di un tipico movimento della stella in ascensione retta ad alta "
 "frequenza; la guida normalmente non corregge per fluttuazioni così piccole."
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:545
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3788,43 +3801,43 @@ msgstr ""
 "Misura di un tipico movimento della stella in declinazione ad alta "
 "frequenza; la guida normalmente non corregge per fluttuazioni così piccole."
 
-#: guiding_assistant.cpp:525
+#: guiding_assistant.cpp:548
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "Massima deviazione da campione a campione in ascensione retta."
 
-#: guiding_assistant.cpp:526
+#: guiding_assistant.cpp:549
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "Massima deviazione da campione a campione in declinazione."
 
-#: guiding_assistant.cpp:527
+#: guiding_assistant.cpp:550
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr ""
 "Massima deviazione da picco a picco in ascensione retta durante il "
 "campionamento del periodo."
 
-#: guiding_assistant.cpp:528
+#: guiding_assistant.cpp:551
 msgid "Estimated overall drift rate in right ascension."
 msgstr "Stima della deriva (drift) complessiva in ascensione retta."
 
-#: guiding_assistant.cpp:529
+#: guiding_assistant.cpp:552
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr ""
 "Massima deriva (drift) in ascensione retta durante il campionamento del "
 "periodo."
 
-#: guiding_assistant.cpp:530
+#: guiding_assistant.cpp:553
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 "Tempo di esposizione per avere la massima deriva in AR al di sotto del "
 "livello di movimento minimo consigliato."
 
-#: guiding_assistant.cpp:531
+#: guiding_assistant.cpp:554
 msgid "Estimated overall drift rate in declination."
 msgstr "Stima della deriva (drift) complessiva in declinazione."
 
-#: guiding_assistant.cpp:532
+#: guiding_assistant.cpp:555
 msgid ""
 "Estimate of declination backlash if backlash testing was completed "
 "successfully"
@@ -3832,7 +3845,7 @@ msgstr ""
 "Stima del backlash in declinazione se il test del backlash è stato "
 "completato con successo."
 
-#: guiding_assistant.cpp:533
+#: guiding_assistant.cpp:556
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -3841,12 +3854,12 @@ msgstr ""
 "telescopio è sconosciuta, il valore mostrato è il limite minimo e l'errore "
 "attuale può essere più grande."
 
-#: guiding_assistant.cpp:564
+#: guiding_assistant.cpp:587
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 "Scegli una stella non satura con un buon SNR (>=8) e poi inizia a guidare"
 
-#: guiding_assistant.cpp:568
+#: guiding_assistant.cpp:591
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -3854,13 +3867,13 @@ msgstr ""
 "Premi Inizia per iniziare la misurazione. La guida sarà disabilitata durante "
 "la misura e di conseguenza la stella potrebbe muoversi."
 
-#: guiding_assistant.cpp:573
+#: guiding_assistant.cpp:596
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 2 minutes)."
 msgstr ""
 
-#: guiding_assistant.cpp:576
+#: guiding_assistant.cpp:599
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -3870,53 +3883,53 @@ msgstr ""
 "desideri. Premi Inizia per ripetere la misura o chiudi la finestra per "
 "continuare la guida."
 
-#: guiding_assistant.cpp:587 guiding_assistant.cpp:592
+#: guiding_assistant.cpp:610 guiding_assistant.cpp:615
 msgid "Measuring backlash: "
 msgstr "Misura del backlash: "
 
-#: guiding_assistant.cpp:601 guiding_assistant.cpp:1191 statswindow.cpp:277
+#: guiding_assistant.cpp:624 guiding_assistant.cpp:1214 statswindow.cpp:277
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:601
+#: guiding_assistant.cpp:624
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:697 guiding_assistant.cpp:698
+#: guiding_assistant.cpp:720 guiding_assistant.cpp:721
 msgid "Apply"
 msgstr "Applica"
 
-#: guiding_assistant.cpp:815
+#: guiding_assistant.cpp:838
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 
-#: guiding_assistant.cpp:824
+#: guiding_assistant.cpp:847
 msgid "Consider re-doing your calibration "
 msgstr "Prendi in considerazione di ripetere la calibrazione "
 
-#: guiding_assistant.cpp:826
+#: guiding_assistant.cpp:849
 msgid "(Prior alert)"
 msgstr "(Avviso precedente)"
 
-#: guiding_assistant.cpp:828
+#: guiding_assistant.cpp:851
 msgid "(Backlash clearing)"
 msgstr "(Cancellazione del backlash)"
 
-#: guiding_assistant.cpp:840
+#: guiding_assistant.cpp:863
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 "Prendi in considerazione di utilizzare una stella più luminosa per il test o "
 "aumenta il tempo di esposizione"
 
-#: guiding_assistant.cpp:858
+#: guiding_assistant.cpp:881
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr ""
 "L'errore di allineamento polare è > 5 arc-min; probabilmente può essere "
 "migliorato."
 
-#: guiding_assistant.cpp:859
+#: guiding_assistant.cpp:882
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
@@ -3924,65 +3937,65 @@ msgstr ""
 "L'errore di allineamento polare è > 10 arc-min; prova ad utilizzare lo "
 "strumento di allineamento con deriva per migliorare l'allineamento."
 
-#: guiding_assistant.cpp:879
+#: guiding_assistant.cpp:902
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "Prova a impostare il minimo movimento di AR a %0.2f"
 
-#: guiding_assistant.cpp:897
+#: guiding_assistant.cpp:920
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Prova a impostare il minimo movimento di Dec a %0.2f"
 
-#: guiding_assistant.cpp:919
+#: guiding_assistant.cpp:942
 #, c-format
 msgid "Try setting a Dec backlash value of %d ms"
 msgstr "Prova a impostare il valore di backlash a %d ms"
 
-#: guiding_assistant.cpp:921
+#: guiding_assistant.cpp:944
 #, c-format
 msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
 msgstr ""
 "Il backlash è di %0.1f px; avresti bisogno di guidare solo nella direzione "
 "Dec"
 
-#: guiding_assistant.cpp:1030
+#: guiding_assistant.cpp:1053
 msgid "Backlash test aborted..."
 msgstr "Il test del backlash è annullato..."
 
-#: guiding_assistant.cpp:1064 guiding_assistant.cpp:1071
+#: guiding_assistant.cpp:1087 guiding_assistant.cpp:1094
 msgid "Measuring backlash... "
 msgstr "Misurazione del backlash... "
 
-#: guiding_assistant.cpp:1093
+#: guiding_assistant.cpp:1116
 msgid "Guiding stopped"
 msgstr "Guida fermata"
 
-#: guiding_assistant.cpp:1190
+#: guiding_assistant.cpp:1213
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1192
+#: guiding_assistant.cpp:1215
 msgid "arc-sec"
 msgstr "arc-sec"
 
-#: guiding_assistant.cpp:1193
+#: guiding_assistant.cpp:1216
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1194
+#: guiding_assistant.cpp:1217
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1196
+#: guiding_assistant.cpp:1219
 msgid "arc-sec/min"
 msgstr "arc-sec/min"
 
-#: guiding_assistant.cpp:1197
+#: guiding_assistant.cpp:1220
 msgid "arc-sec/sec"
 msgstr "arc-sec/sec"
 
-#: guiding_assistant.cpp:1216 myframe.cpp:2638 myframe.cpp:2648
+#: guiding_assistant.cpp:1239 myframe.cpp:2638 myframe.cpp:2648
 msgid " "
 msgstr ""
 
@@ -4026,47 +4039,47 @@ msgstr "Angolo Dec (gradi):"
 msgid "Declination (e.g. 2.1):"
 msgstr "Declinazione (es. 2.1):"
 
-#: mount.cpp:133 mount.cpp:170
+#: mount.cpp:134 mount.cpp:171
 msgid "Lowpass"
 msgstr "Passa basso"
 
-#: mount.cpp:133 mount.cpp:170
+#: mount.cpp:134 mount.cpp:171
 msgid "Lowpass2"
 msgstr "Passa basso 2"
 
-#: mount.cpp:133 mount.cpp:170
+#: mount.cpp:134 mount.cpp:171
 msgid "Resist Switch"
 msgstr "Resistenza al cambiamento (Resist Switch)"
 
-#: mount.cpp:134
+#: mount.cpp:135
 msgid "Predictive PEC"
 msgstr ""
 
-#: mount.cpp:140
+#: mount.cpp:141
 msgid "Which Guide Algorithm to use for Right Ascension"
 msgstr "Quale algoritmo utilizzare per l'ascensione retta"
 
-#: mount.cpp:161
+#: mount.cpp:162
 msgid ""
 "Causes an IMMEDIATE reset of the RA algorithm parameters to their default "
 "values"
 msgstr ""
 
-#: mount.cpp:175
+#: mount.cpp:176
 msgid "Which Guide Algorithm to use for Declination"
 msgstr "Quale algoritmo utilizzare per la declinazione"
 
-#: mount.cpp:202
+#: mount.cpp:203
 msgid ""
 "Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
 "values"
 msgstr ""
 
-#: mount.cpp:383
+#: mount.cpp:384
 msgid "Clear mount calibration"
 msgstr "Cancella la calibrazione della montatura"
 
-#: mount.cpp:386
+#: mount.cpp:387
 msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
@@ -4074,11 +4087,11 @@ msgstr ""
 "Cancella i dati della attuale calibrazione della montatura - la calibrazione "
 "sarà rieffettuata quando la guida partirà"
 
-#: mount.cpp:387
+#: mount.cpp:388
 msgid "Enable mount guide output"
 msgstr "Attiva il risultato della guida della montatura"
 
-#: mount.cpp:389
+#: mount.cpp:390
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
@@ -4086,30 +4099,30 @@ msgstr ""
 "Selezionalo per guidare. Deselezionalo per disattivare tutti i comandi di "
 "guida alla montatura e lascia la montatura senza guida"
 
-#: mount.cpp:722
+#: mount.cpp:763
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:1005
+#: mount.cpp:1046
 msgid "RA:"
 msgstr "AR:"
 
-#: mount.cpp:1010
+#: mount.cpp:1051
 msgid "DEC:"
 msgstr "DEC: "
 
-#: mount.cpp:1047
+#: mount.cpp:1088
 msgid ""
 "Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
 "guiding."
 msgstr ""
 
-#: mount.cpp:1083
+#: mount.cpp:1124
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1116
+#: mount.cpp:1157
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 "La posizione del rotatore è cambiata èd è necessario effettuare una nuova "
@@ -5069,6 +5082,10 @@ msgstr "Impossibile caricare la mappa dei difetti"
 msgid "Bad-pixel map unloaded"
 msgstr "Impossibile caricare la mappa dei pixel difettosi"
 
+#: myframe_events.cpp:719
+msgid "Guider"
+msgstr "Guida"
+
 #: myframe_events.cpp:802
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
@@ -5230,7 +5247,7 @@ msgstr "Seleziona la porta parallela"
 msgid "Custom Port Address:"
 msgstr "Indirizzo personalizzato della porta:"
 
-#: phd.cpp:110
+#: phd.cpp:116
 #, c-format
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
@@ -6603,6 +6620,12 @@ msgstr "Connessione della camera..."
 #: runinbg.h:98
 msgid "Connecting to Rotator..."
 msgstr "Connessione al rotatore..."
+
+#~ msgid "CCD"
+#~ msgstr "CCD"
+
+#~ msgid "Main imager"
+#~ msgstr "Camera principale"
 
 #~ msgid "Camera DLL missing entry %s"
 #~ msgstr "Manca un attributo nella DLL della camera %s"
