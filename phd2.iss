@@ -48,48 +48,16 @@ Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll
-Source: ..\WinLibs\vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall
+Source: ..\WinLibs\msvcr120.dll; DestDir: {app}; Flags: replacesameversion
+Source: ..\WinLibs\msvcp120.dll; DestDir: {app}; Flags: replacesameversion
 
 [Icons]
 Name: {group}\PHD Guiding 2; FileName: {app}\phd2.exe
 
 [Run]
-Filename: {tmp}\vcredist_x86.exe; Check: VCRedistNeedsInstall
 Filename: {tmp}\dark_mover.vbs; Description: Relocate dark files; Flags: shellexec waituntilterminated
 Filename: {app}\phd2.exe; Description: Launch {#APP_NAME} after installation; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKCU; Subkey: Software\StarkLabs; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: Software\StarkLabs\PHDGuidingV2; Flags: uninsdeletekey
-
-[Code]
-#IFDEF UNICODE
-  #DEFINE AW "W"
-#ELSE
-  #DEFINE AW "A"
-#ENDIF
-type
-  INSTALLSTATE = Longint;
-const
-  INSTALLSTATE_INVALIDARG = -2;  // An invalid parameter was passed to the function.
-  INSTALLSTATE_UNKNOWN = -1;     // The product is neither advertised or installed.
-  INSTALLSTATE_ADVERTISED = 1;   // The product is advertised but not installed.
-  INSTALLSTATE_ABSENT = 2;       // The product is installed for a different user.
-  INSTALLSTATE_DEFAULT = 5;      // The product is installed for the current user.
-
-  VC_2010_REDIST_X86 = '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';
-  VC_2010_SP1_REDIST_X86 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';
-  VC_2013_REDIST_X86 = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
-
-function MsiQueryProductState(szProduct: string): INSTALLSTATE;
-  external 'MsiQueryProductState{#AW}@msi.dll stdcall';
-
-function VCVersionInstalled(const ProductID: string): Boolean;
-begin
-  Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
-end;
-
-function VCRedistNeedsInstall: Boolean;
-begin
-  Result := not (VCVersionInstalled(VC_2013_REDIST_X86));
-end;
