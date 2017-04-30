@@ -161,23 +161,29 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     m_y = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
     hYSizer->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szPosition->Add(hYSizer, 1, wxEXPAND, 5);
-    hSizer->Add(szPosition, 1, 0, 5);
+    hSizer->Add(szPosition, 0, 0, 5);
 
     // Size controls
-    wxBoxSizer* hWidthSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* widthLabel = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxSize(40, -1), 0);
+    wxBoxSizer *hWidthSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *widthLabel = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxDefaultSize, 0);
     hWidthSizer->Add(widthLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_width = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
     hWidthSizer->Add(m_width, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szSlitSize->Add(hWidthSizer, 1, wxEXPAND, 5);
 
-    wxBoxSizer* hHeightSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* heightLabel = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxSize(40, -1), 0);
+    wxBoxSizer *hHeightSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *heightLabel = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxDefaultSize, 0);
     hHeightSizer->Add(heightLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_height = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
     hHeightSizer->Add(m_height, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szSlitSize->Add(hHeightSizer, 1, wxEXPAND, 5);
-    hSizer->Add(szSlitSize, 1, 0, 5);
+    hSizer->Add(szSlitSize, 0, 0, 5);
+
+    int ww = StringWidth(this, widthLabel->GetLabel());
+    int wh = StringWidth(this, heightLabel->GetLabel());
+    wxSize sz(wxMax(ww, wh), -1);
+    widthLabel->SetMinSize(sz);
+    heightLabel->SetMinSize(sz);
 
     vSizer->Add(hSizer, 0, wxEXPAND, 5);
     // Angle controls
