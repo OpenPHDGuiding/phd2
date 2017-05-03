@@ -39,23 +39,49 @@
 #if defined (__WINDOWS__)
 #include "ShoestringGPUSB_DLL.h"
 #elif defined (__APPLE__) // ------------------------------  Apple routines ----------------------------
-//#include "HID_Utilities_External.h"
+
 #include <IOKit/hid/IOHIDLib.h>
-IOHIDDeviceRef pGPUSB = NULL;
-int GPUSB_Model = 0;
 
+static IOHIDDeviceRef pGPUSB;
+static int GPUSB_Model;
+static IOHIDManagerRef s_managerRef;
+static CFMutableArrayRef s_deviceArrayRef;
 
-
-IOHIDDeviceRef FindDevice(IOHIDManagerRef manager, long vendorId, long productId)
+static void CFSetApplierFunctionCopyToCFArray(const void *value, void *context)
 {
-    IOHIDDeviceRef theDevice = NULL;
+    CFArrayAppendValue((CFMutableArrayRef) context, value);
+}
+
+static bool FindDevice(long vendorId, long productId)
+{
+    pGPUSB = nullptr;
+
+    bool first = false;
+    if (!s_managerRef)
+    {
+        first = true;
+        s_managerRef = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+        if (!s_managerRef)
+        {
+            Debug.Write("Could not create HIDManager!\n");
+            return false;
+        }
+    }
+
+#if 1 // workaround problem with crash on re-connect
+    if (!first)
+    {
+        pFrame->Alert(_("Please restart PHD2 to re-connect to the GPUSB"));
+        return false;
+    }
+#endif
 
     // setup dictionary
 
     CFMutableDictionaryRef dictionary = CFDictionaryCreateMutable(
-                                              kCFAllocatorDefault, 
-                                              2, 
-                                              &kCFTypeDictionaryKeyCallBacks, 
+                                              kCFAllocatorDefault,
+                                              2,
+                                              &kCFTypeDictionaryKeyCallBacks,
                                               &kCFTypeDictionaryValueCallBacks);
 
     CFNumberRef cfVendorId = CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &vendorId);
@@ -72,81 +98,53 @@ IOHIDDeviceRef FindDevice(IOHIDManagerRef manager, long vendorId, long productId
 
     // look for devices matching criteria
 
-    IOHIDManagerSetDeviceMatching(manager, dictionary);
-    CFSetRef foundDevices = IOHIDManagerCopyDevices(manager);
-    CFIndex foundCount = foundDevices ? CFSetGetCount(foundDevices) : 0; // what the API does not say is that it could be null
-    if(foundCount > 0) 
-    {
-        CFTypeRef* array = new CFTypeRef[foundCount]; // array of IOHIDDeviceRef
-        CFSetGetValues(foundDevices, array);
-        // get first matching device
-        theDevice = (IOHIDDeviceRef)array[0];
-        CFRetain(theDevice);
-        delete [] array;
-    }
-
-    if(foundDevices)
-    {
-        CFRelease(foundDevices);
-    }
+    IOHIDManagerSetDeviceMatching(s_managerRef, dictionary);
     CFRelease(dictionary);
 
-    return theDevice;
-}
-
-/*
-
-
-
-unsigned long HIDCreateOpenDeviceInterface (UInt32 hidDevice, IOHIDDeviceRef pDevice)
-{
-    IOHIDManagerRef managerRef = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    
-    CFMutableDictionaryRef resultMutableDict = CFDictionaryCreateMutable(
-                                                  kCFAllocatorDefault, 
-                                                  0, 
-                                                  &kCFTypeDictionaryKeyCallBacks,
-                                                  &kCFTypeDictionaryValueCallBacks);
-    
-    IOReturn result = kIOReturnSuccess;
-    HRESULT plugInResult = S_OK;
-    SInt32 score = 0;
-    IOCFPlugInInterface ** ppPlugInInterface = NULL;
-
-    if (NULL == pGPUSB_interface)
+    if (first)
     {
-        result = IOCreatePlugInInterfaceForService (
-                      hidDevice, 
-                      kIOHIDDeviceUserClientTypeID,
-											kIOCFPlugInInterfaceID, 
-                      &ppPlugInInterface, 
-                      &score);
-        if (kIOReturnSuccess == result)
+        IOReturn tIOReturn = IOHIDManagerOpen(s_managerRef, kIOHIDOptionsTypeNone);
+        if (tIOReturn != kIOReturnSuccess)
         {
-            // Call a method of the intermediate plug-in to create the device interface
-            plugInResult = (*ppPlugInInterface)->QueryInterface (
-                                ppPlugInInterface,
-                                CFUUIDGetUUIDBytes (kIOHIDDeviceInterfaceID), 
-                                (void *) &(pGPUSB_interface));
-            if (S_OK != plugInResult)
-                HIDReportErrorNum ("Couldn’t query HID class device interface from plugInInterface", plugInResult);
-            IODestroyPlugInInterface (ppPlugInInterface); // replace (*ppPlugInInterface)->Release (ppPlugInInterface)
-		}
-		else
-			HIDReportErrorNum ("Failed to create **plugInInterface via IOCreatePlugInInterfaceForService.", result);
-	}
-	if (NULL != pGPUSB_interface)
-	{
-		result = pGPUSB_interface->open (pGPUSB_interface, 0);
-		if (kIOReturnSuccess != result)
-			HIDReportErrorNum ("Failed to open pDevice->interface via open.", result);
-	}
-    return result; 
+            Debug.Write(wxString::Format("%s: Couldn’t open IOHIDManager.\n", __PRETTY_FUNCTION__));
+            return false;
+        }
+    }
+
+    CFSetRef foundDevices = IOHIDManagerCopyDevices(s_managerRef);
+    if (foundDevices)
+    {
+        if (s_deviceArrayRef)
+        {
+            CFRelease(s_deviceArrayRef);
+        }
+
+        // create an empty array
+        s_deviceArrayRef = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+
+        // copy the set to the array
+        CFSetApplyFunction(foundDevices, CFSetApplierFunctionCopyToCFArray, s_deviceArrayRef);
+
+        // release the set we copied from the IOHID manager
+        CFRelease(foundDevices);
+
+        CFIndex foundCount = CFArrayGetCount(s_deviceArrayRef);
+
+        if (foundCount == 0)
+        {
+            CFRelease(s_deviceArrayRef);
+            s_deviceArrayRef = nullptr;
+        }
+        else
+        {
+            pGPUSB = (IOHIDDeviceRef) CFArrayGetValueAtIndex(s_deviceArrayRef, 0);
+        }
+    }
+
+    return pGPUSB != nullptr;
 }
 
-*/
-
-IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
+static IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
 {
     IOHIDElementRef output = NULL;
     CFArrayRef arrayElements = IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
@@ -154,24 +152,24 @@ IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
     for(CFIndex i = 0; i < elementCount; i++)
     {
         IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef) CFArrayGetValueAtIndex(arrayElements, i);
-				if(!tIOHIDElementRef)
+        if(!tIOHIDElementRef)
         {
-					continue;
-				}
-				IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
-				
-				switch ( type )
+            continue;
+        }
+        IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
+
+        switch (type)
         {
             case kIOHIDElementTypeOutput:
             {
                 output = tIOHIDElementRef;
                 break;
-            }          
+            }
             default:
                 break;
         }
-        
-        if(output)
+
+        if (output)
         {
             break;
         }
@@ -181,22 +179,21 @@ IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
     return output;
 }
 
-
-IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementRef previousElement)
+static IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementRef previousElement)
 {
     bool found = false;
     IOHIDElementRef output = NULL;
     CFArrayRef arrayElements = IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
     CFIndex elementCount = CFArrayGetCount(arrayElements);
-    for(CFIndex i = 0; i < elementCount; i++)
+    for (CFIndex i = 0; i < elementCount; i++)
     {
         IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef) CFArrayGetValueAtIndex(arrayElements, i);
-				if(!tIOHIDElementRef)
+        if (!tIOHIDElementRef)
         {
-					continue;
-				}
-        
-        if(!found)
+            continue;
+        }
+
+        if (!found)
         {
             if(previousElement == tIOHIDElementRef)
             {
@@ -205,22 +202,21 @@ IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementRef prev
             }
             continue;
         }
-        
-        
-				IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
-				
-				switch ( type )
+
+        IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
+
+        switch (type)
         {
             case kIOHIDElementTypeOutput:
             {
                 output = tIOHIDElementRef;
                 break;
-            }          
+            }
             default:
                 break;
         }
-        
-        if(output)
+
+        if (output)
         {
             break;
         }
@@ -230,109 +226,91 @@ IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementRef prev
     return output;
 }
 
+static bool GPUSB_Open()
+{
+    enum {
+        VID = 4938,
+        PID = 36896
+    };
 
-bool GPUSB_Open() {
-
-    // VID = 4938  PID = 36897
-    IOHIDManagerRef managerRef = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    pGPUSB = FindDevice(managerRef, 4938, 36896);
-    if(!pGPUSB)
+    if (!FindDevice(VID, PID))
     {
-      CFRelease(managerRef);
-      return false;
+        return false;
     }
-    
 
     GPUSB_Model = 0;
+
     CFArrayRef arrayElements = IOHIDDeviceCopyMatchingElements(pGPUSB, NULL, kIOHIDOptionsTypeNone);
     CFIndex elementCount = CFArrayGetCount(arrayElements);
     int countInputElements = 0;
-    for(int i = 0; i < elementCount; i++)
+    for (int i = 0; i < elementCount; i++)
     {
         IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef) CFArrayGetValueAtIndex(arrayElements, i);
-				if(!tIOHIDElementRef)
+        if (!tIOHIDElementRef)
         {
-					continue;
-				}
-				IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
-				
-				switch ( type )
-        {
-            case kIOHIDElementTypeInput_Misc:
-            case kIOHIDElementTypeInput_Button:
-            case kIOHIDElementTypeInput_Axis:
-            case kIOHIDElementTypeInput_ScanCodes:
-            {
-                countInputElements++;
-                break;
-            }
-          
-            default:
-                break;
+            continue;
         }
-        
+        IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
+
+        switch ( type )
+        {
+        case kIOHIDElementTypeInput_Misc:
+        case kIOHIDElementTypeInput_Button:
+        case kIOHIDElementTypeInput_Axis:
+        case kIOHIDElementTypeInput_ScanCodes:
+        {
+            countInputElements++;
+            break;
+        }
+        default:
+            break;
+        }
+
         CFRelease(tIOHIDElementRef);
     }
-    
+
     CFRelease(arrayElements);
-    if(countInputElements == 1)
-         GPUSB_Model = 1;
 
-
-    // now opening the device for communication
-    IOReturn ioReturnValue = IOHIDDeviceOpen(pGPUSB, kIOHIDOptionsTypeSeizeDevice);
-    if(ioReturnValue != kIOReturnSuccess)
+    if (countInputElements == 1)
     {
-      CFRelease(pGPUSB);
-      pGPUSB = NULL;
-      CFRelease(managerRef);
-      return false;
-      
+        GPUSB_Model = 1;
     }
-    
 
-    
-    CFRelease(managerRef); // check if this is ok
     return true;
 }
 
-bool GPUSB_Close() {
-    if (!pGPUSB) return false;
-    IOReturn ioReturnValue = IOHIDDeviceClose(pGPUSB, kIOHIDOptionsTypeSeizeDevice);
-    if(ioReturnValue != kIOReturnSuccess)
+static void GPUSB_Close()
+{
+    if (!pGPUSB)
+        return;
+
+    if (s_deviceArrayRef)
     {
-        wxMessageBox ("GPUSB_Close: error while closing the device",_("Error"));
+        CFRelease(s_deviceArrayRef);
+        s_deviceArrayRef = nullptr;
     }
-    
-    CFRelease(pGPUSB);
-    return ioReturnValue == kIOReturnSuccess;
+
+    pGPUSB = nullptr;
 }
 
-
-
-
-
-void GPUSB_SetBit(int bit, int val)
+static void GPUSB_SetBit(int bit, int val)
 {
-    if (!pGPUSB) return;  // no device, bail
     IOHIDElementRef pCurrentHIDElement = NULL;
-    //IOHIDEventStruct HID_IOEvent;
-    
+
     int i;
     static int bitarray[8]={0,0,0,0,1,1,0,0};
     static unsigned char GPUSB_reg = 0x30;
 
     if (GPUSB_Model)
-    { 
+    {
         // Newer models - use a single byte
         pCurrentHIDElement = GetFirstOutputElement(pGPUSB);
-        if(pCurrentHIDElement == NULL)
+        if (pCurrentHIDElement == NULL)
         {
-            wxMessageBox(std::string(__PRETTY_FUNCTION__) + " Null element");
+            Debug.Write(__PRETTY_FUNCTION__ + wxString(" Null element!\n"));
             return;
         }
-//      HIDTransactionAddElement(pGPUSB,pCurrentHIDElement);
-        
+
         unsigned char bmask = 1;
         bmask = bmask << bit;
         if (val)
@@ -343,80 +321,55 @@ void GPUSB_SetBit(int bit, int val)
         {
             GPUSB_reg = GPUSB_reg & ~bmask;
         }
-        
-        //HID_IOEvent.longValueSize = 0;
-        //HID_IOEvent.longValue = nil;
 
-        /*IOHIDValueRef valueToSend = IOHIDValueCreateWithBytes(
-                                        kCFAllocatorDefault, 
-                                        pCurrentHIDElement, 
-                                        uint64_t        inTimeStamp,
-                                        &GPUSB_reg,
-                                        1);
-        */
-
-        //IOHIDElementCookie cookie = IOHIDElementGetCookie(pCurrentHIDElement);
         IOHIDValueRef valueToSend;
         IOReturn tIOReturn = IOHIDDeviceGetValue(pGPUSB, pCurrentHIDElement, &valueToSend);
-        if(tIOReturn != kIOReturnSuccess)
+        if (tIOReturn != kIOReturnSuccess)
         {
             CFRelease(pCurrentHIDElement);
-            wxMessageBox(std::string(__PRETTY_FUNCTION__) + " Cannot retrieve value (1)");
+            Debug.Write(__PRETTY_FUNCTION__ + wxString(" Cannot retrieve value (1)\n"));
             return;
         }
-        
+
         assert(IOHIDValueGetLength(valueToSend) == 1);
-        
+
         IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithBytes(
-                                        kCFAllocatorDefault, 
-                                        pCurrentHIDElement, 
+                                        kCFAllocatorDefault,
+                                        pCurrentHIDElement,
                                         IOHIDValueGetTimeStamp(valueToSend),
                                         &GPUSB_reg,
                                         1);
-        
-        
+
         tIOReturn = IOHIDDeviceSetValue(pGPUSB, pCurrentHIDElement, valueToSendCopied);
-        if(tIOReturn != kIOReturnSuccess)
+        if (tIOReturn != kIOReturnSuccess)
         {
             CFRelease(pCurrentHIDElement);
-            wxMessageBox(std::string(__PRETTY_FUNCTION__) + " Cannot send value (1)");
+            Debug.Write(__PRETTY_FUNCTION__ + wxString(" Cannot send value (1)\n"));
             return;
         }
 
-        
-        
-        //pGPUSB_interface->getElementValue (pGPUSB_interface, cookie, &HID_IOEvent);
-
-        //HID_IOEvent.value = (SInt32) GPUSB_reg;
-//      wxMessageBox(wxString::Format("%x - %x %x    %d %d",foo,GPUSB_reg,bmask,bit,val));
-//      HID_IOEvent.type = (IOHIDElementType) pCurrentHIDElement->type;
-        //HIDSetElementValue(pGPUSB,pCurrentHIDElement,&HID_IOEvent);
-//      HIDTransactionCommit(pGPUSB);
         CFRelease(pCurrentHIDElement);
     }
     else {
         // Generic bit-set routine.  For older adapters, we can't send a whole
         // byte and things are setup as SInt32's per bit with 8 bits total...
-        //IOHIDEventStruct hidstruct = {kIOHIDElementTypeOutput};
-        
-        
+
         IOHIDTransactionRef transaction = IOHIDTransactionCreate(
                           kCFAllocatorDefault,
                           pGPUSB,
-                          kIOHIDTransactionDirectionTypeOutput, 
-                          kIOHIDOptionsTypeNone);    
-                          
-        if(transaction == NULL)
+                          kIOHIDTransactionDirectionTypeOutput,
+                          kIOHIDOptionsTypeNone);
+
+        if (transaction == NULL)
         {
-            wxMessageBox(std::string(__PRETTY_FUNCTION__) + " Cannot create a transaction");
+            Debug.Write(__PRETTY_FUNCTION__ + wxString(" Cannot create a transaction\n"));
         }
-        
-        
-        bitarray[bit]=val;
-//      std::cout << "Setting to ";
-        for (i=0; i<8; i++) {  // write
-//          std::cout << " " << bitarray[i];
-            if (i==0)
+
+        bitarray[bit] = val;
+
+        for (i = 0; i < 8; i++) // write
+        {
+            if (i == 0)
             {
                 pCurrentHIDElement = GetFirstOutputElement(pGPUSB);
             }
@@ -424,98 +377,114 @@ void GPUSB_SetBit(int bit, int val)
             {
                 pCurrentHIDElement = GetNextOutputElement(pGPUSB, pCurrentHIDElement);
             }
-            
+
             IOHIDValueRef valueToSend;
             IOReturn tIOReturn = IOHIDDeviceGetValue(pGPUSB, pCurrentHIDElement, &valueToSend);
-            if(tIOReturn != kIOReturnSuccess)
+            if (tIOReturn != kIOReturnSuccess)
             {
                 CFRelease(pCurrentHIDElement);
-                wxMessageBox(std::string(__PRETTY_FUNCTION__) + " Cannot retrieve value (1)");
+                Debug.Write(__PRETTY_FUNCTION__ + wxString(" Cannot retrieve value (1)\n"));
                 return;
             }
-            
-            //CFTypeID tID = IOHIDValueGetTypeID(valueToSend);
-            
-            /*IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithBytes(
-                                                  kCFAllocatorDefault, 
-                                                  pCurrentHIDElement, 
-                                                  IOHIDValueGetTimeStamp(valueToSend),
-                                                  &bitarray[i],
-                                                  sizeof(bitarray[i]));   */
-                                                  
+
             IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithIntegerValue(
                                                   kCFAllocatorDefault,
                                                   pCurrentHIDElement,
                                                   IOHIDValueGetTimeStamp(valueToSend),
                                                   bitarray[i]);
-            
+
             IOHIDTransactionAddElement(transaction, pCurrentHIDElement);
             IOHIDTransactionSetValue(transaction, pCurrentHIDElement, valueToSendCopied, 0);
-            
-            
-            //HIDTransactionAddElement(pGPUSB,pCurrentHIDElement);
-            //hidstruct.type = (IOHIDElementType) pCurrentHIDElement->type;
-            //hidstruct.value = (SInt32) bitarray[i];
-            //HIDTransactionSetElementValue(pGPUSB,pCurrentHIDElement,&hidstruct);
         }
-//      std::cout << "\n";
         IOHIDTransactionCommit(transaction);
     }
-
-//  wxMilliSleep(30);
 }
 
-bool GPUSB_LEDOn() {
+static bool GPUSB_LEDOn()
+{
     // LED On/Off is bit 5
-    if (!pGPUSB) return false;
+
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(5,1);
     return true;
 }
-bool GPUSB_LEDOff() {
+
+static bool GPUSB_LEDOff()
+{
     // LED On/Off is bit 5
-    if (!pGPUSB) return false;
+
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(5,0);
     return true;
 }
-bool GPUSB_LEDRed() {
+
+static bool GPUSB_LEDRed()
+{
     // LED Red/Green is bit 4
-    if (!pGPUSB) return false;
+
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(4,1);
     return true;
 }
-bool GPUSB_LEDGreen() {
+
+static bool GPUSB_LEDGreen()
+{
     // LED Red/Green is bit 4
-    if (!pGPUSB) return false;
+
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(4,0);
     return true;
 }
 
-bool GPUSB_DecPAssert() {
-    if (!pGPUSB) return false;
+static bool GPUSB_DecPAssert()
+{
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(3,1);
-
     return true;
 }
-bool GPUSB_DecMAssert() {
-    if (!pGPUSB) return false;
+
+static bool GPUSB_DecMAssert()
+{
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(2,1);
-
     return true;
 }
-bool GPUSB_RAPAssert() {
-    if (!pGPUSB) return false;
+
+static bool GPUSB_RAPAssert()
+{
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(1,1);
-
     return true;
 }
-bool GPUSB_RAMAssert() {
-    if (!pGPUSB) return false;
+
+static bool GPUSB_RAMAssert()
+{
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(0,1);
-
     return true;
 }
-bool GPUSB_AllDirDeassert() {
-    if (!pGPUSB) return false;
+
+static bool GPUSB_AllDirDeassert()
+{
+    if (!pGPUSB)
+        return false;
+
     GPUSB_SetBit(0,0);
     GPUSB_SetBit(1,0);
     GPUSB_SetBit(2,0);
@@ -523,10 +492,13 @@ bool GPUSB_AllDirDeassert() {
 
     return true;
 }
+
 #endif // ------------------------------  Apple routines ----------------------------
 
-bool ScopeGpUsb::Connect() {
-    if (GPUSB_Open()) {
+bool ScopeGpUsb::Connect()
+{
+    if (GPUSB_Open())
+    {
         GPUSB_AllDirDeassert();
         GPUSB_LEDOn();
         GPUSB_LEDRed();
@@ -537,7 +509,8 @@ bool ScopeGpUsb::Connect() {
         return true;
 }
 
-bool ScopeGpUsb::Disconnect() {
+bool ScopeGpUsb::Disconnect()
+{
     GPUSB_LEDOff();
     GPUSB_Close();
     Scope::Disconnect();
