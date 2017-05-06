@@ -450,7 +450,7 @@ elseif(UNIX)
 
     set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
     set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
-  endif()
+  endif(USE_SYSTEM_LIBUSB)
 
 else()
   message(FATAL_ERROR "libUSB unsupported platform")
