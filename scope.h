@@ -62,6 +62,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashPulse;
     wxCheckBox *m_pUseDecComp;
 
+    int m_prevStepSize;
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
 public:
@@ -71,6 +72,7 @@ public:
     virtual void UnloadValues(void);
     void ResetRAParameterUI();
     void ResetDecParameterUI();
+    void HandleBinningChange(int oldVal, int newVal);
 };
 
 class Scope : public Mount

@@ -345,6 +345,12 @@ void GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm->SetFastSwitchEnabled(m_pFastSwitch->GetValue());
 }
 
+void GuideAlgorithmResistSwitch::
+GuideAlgorithmResistSwitchConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+{
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+}
+
 GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmResistSwitchGraphControlPane(pParent, this, label);

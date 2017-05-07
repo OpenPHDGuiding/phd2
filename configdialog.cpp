@@ -142,6 +142,11 @@ wxSizer *ConfigDialogPane::GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS 
     return ctrl;           // May return null, won't add entry in CtrlMap
 }
 
+void ConfigDialogPane::HandleBinningChange(int oldVal, int newVal)
+{
+    // Do nothing by default - subclasses will override if needed
+}
+
 ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     m_pParent = pParent;
@@ -194,6 +199,11 @@ int ConfigDialogCtrlSet::StringArrayWidth(const wxArrayString& ary)
 wxWindow* ConfigDialogCtrlSet::GetParentWindow(BRAIN_CTRL_IDS id) 
 { 
     return m_pAdvDlg->GetTabLocation(id); 
+}
+
+void ConfigDialogCtrlSet::HandleBinningChange(int oldVal, int newVal)
+{
+    // Do nothing by default - subclasses will override if needed
 }
 
 // Base method for adding map elements

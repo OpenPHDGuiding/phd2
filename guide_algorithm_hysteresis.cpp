@@ -285,6 +285,12 @@ UnloadValues(void)
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
+void GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+{
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+}
+
 GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmHysteresisGraphControlPane(pParent, this, label);

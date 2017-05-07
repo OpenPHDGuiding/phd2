@@ -463,8 +463,7 @@ static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
 {
     double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
 
-    // Following based on empirical data using a range of image scales
-    double minMove = wxMax(0.1515 + 0.1548 / imageScale, 0.15);        // Don't use a ridiculously small value
+    double minMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
 
     // Min moves for hysteresis guiding in RA and resist switch in Dec
     pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Hysteresis/minMove", minMove);

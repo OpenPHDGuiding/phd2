@@ -520,6 +520,14 @@ void AdvancedDialog::ResetGuidingParams()
     }
 }
 
+void AdvancedDialog::MakeBinningAdjustments(int oldVal, int newVal)
+{
+    // Let the scope adjust the calibration step-size
+    m_pScopeCtrlSet->HandleBinningChange(oldVal, newVal);
+    // Let the current guide algos adjust min-moves or whatever else is needed
+    m_pMountPane->HandleBinningChange(oldVal, newVal);
+}
+
 int AdvancedDialog::GetBinning(void)
 {
     return m_pCameraCtrlSet ? m_pCameraCtrlSet->GetBinning() : 1;

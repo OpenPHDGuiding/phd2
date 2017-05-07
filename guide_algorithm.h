@@ -104,7 +104,9 @@ public:
     wxString GetConfigPath();
     wxString GetAxis();
     virtual void ResetParams();     // Override if fine-tuned logic is needed by a particular algo
+    static void AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl, int oldBinVal, int newBinVal);
     static double SmartDefaultMinMove();
+    static double SmartDefaultMinMove(int focalLength, double pixelSize, int binning);
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */

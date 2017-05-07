@@ -101,6 +101,7 @@ public:
     void SetPixelSize(double val);
     int GetBinning(void);
     void SetBinning(int binning);
+    void MakeBinningAdjustments(int oldVal, int newVal);
     void ResetGuidingParams();
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);

@@ -1700,7 +1700,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 void ScopeConfigDialogCtrlSet::LoadValues()
 {
     MountConfigDialogCtrlSet::LoadValues();
-    m_pCalibrationDuration->SetValue(m_pScope->GetCalibrationDuration());
+    m_prevStepSize = m_pScope->GetCalibrationDuration();
+    m_pCalibrationDuration->SetValue(m_prevStepSize);
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
@@ -1755,6 +1756,13 @@ void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
     m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
     m_pDecMode->SetSelection(1);                // 'Auto'
     m_pUseBacklashComp->SetValue(false);
+}
+
+void ScopeConfigDialogCtrlSet::HandleBinningChange(int oldBinVal, int newBinVal)
+{
+    double ratio = (double)newBinVal / (double)oldBinVal;
+    m_pCalibrationDuration->SetValue(ratio * m_prevStepSize);
+    m_prevStepSize = ratio * m_prevStepSize;
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)

@@ -379,6 +379,11 @@ public:
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
     }
 
+    virtual void HandleBinningChange(int oldBinVal, int newBinVal)
+    {
+        GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+    }
+
     virtual void OnExpertButton(wxCommandEvent& evt)
     {
          m_pGuideAlgorithm->m_expertDialog->ShowModal();

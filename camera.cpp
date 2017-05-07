@@ -872,6 +872,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         int width = StringArrayWidth(opts);
         m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), opts);
+        m_binning->Bind(wxEVT_CHOICE, &CameraConfigDialogCtrlSet::OnBinningChoiceChanged, this);
         AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
     }
 
@@ -939,6 +940,18 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
 }
 
+// Adjust other controls in the AD panes when user changes binning
+void CameraConfigDialogCtrlSet::OnBinningChoiceChanged(wxCommandEvent& evt)
+{
+    int newVal = m_binning->GetSelection() + 1;
+    // Spinner enforces min/max limits
+    if (newVal != m_prevBinning)
+    {
+        pFrame->pAdvancedDialog->MakeBinningAdjustments(m_prevBinning, newVal);
+        m_prevBinning = newVal;
+    }
+}
+
 void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
 {
     m_camSaturationADU->Enable(m_SaturationByADU->GetValue());
@@ -967,6 +980,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
     {
         int idx = m_pCamera->Binning - 1;
         m_binning->Select(idx);
+        m_prevBinning = idx + 1;
         // don't allow binning change when calibrating or guiding
         m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
     }
@@ -1128,8 +1142,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     if (m_binning)
     {
-        int idx = m_binning->GetSelection();
-        m_pCamera->SetBinning(idx + 1);
+        m_pCamera->SetBinning(m_binning->GetSelection() + 1);
     }
 
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);

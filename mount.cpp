@@ -234,6 +234,12 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
     }
 }
 
+void Mount::MountConfigDialogPane::HandleBinningChange(int oldVal, int newVal)
+{
+    m_pXGuideAlgorithmConfigDialogPane->HandleBinningChange(oldVal, newVal);
+    m_pYGuideAlgorithmConfigDialogPane->HandleBinningChange(oldVal, newVal);
+}
+
 void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
 {
     ResetRAGuidingParams();

@@ -61,6 +61,13 @@ void GuideAlgorithm::ResetParams()
         SetMinMove(SmartDefaultMinMove());
 }
 
+double GuideAlgorithm::SmartDefaultMinMove(int focalLength, double pixelSize, int binning)
+{
+    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
+    // Following based on empirical data with a range of image scales
+    return wxMax(0.1515 + 0.1548 / imageScale, 0.15);
+}
+
 double GuideAlgorithm::SmartDefaultMinMove()
 {
     try
@@ -68,9 +75,7 @@ double GuideAlgorithm::SmartDefaultMinMove()
         double focalLength = pFrame->GetFocalLength();
         if (focalLength != 0)
         {
-            double imageScale = MyFrame::GetPixelScale(pCamera->GetCameraPixelSize(), focalLength, pCamera->Binning);
-            // Following based on empirical data using a range of image scales - same as profile wizard
-            return wxMax(0.1515 + 0.1548 / imageScale, 0.15);
+            return GuideAlgorithm::SmartDefaultMinMove(focalLength, pCamera->GetCameraPixelSize(), pCamera->Binning);
         }
         else
             return 0.2;
@@ -80,6 +85,12 @@ double GuideAlgorithm::SmartDefaultMinMove()
         POSSIBLY_UNUSED(Msg);
         return 0.2;
     }
+}
+
+void GuideAlgorithm::AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl, int oldBinVal, int newBinVal)
+{
+    double smartMove = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), newBinVal);
+    minMoveCtrl->SetValue(smartMove);
 }
 
 void GuideAlgorithm::GuidingStopped(void)

@@ -193,6 +193,7 @@ public:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
         virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
+        virtual void HandleBinningChange(int oldVal, int newVal);
 
         virtual void Undo(void);
 

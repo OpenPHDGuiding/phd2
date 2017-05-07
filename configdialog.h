@@ -137,6 +137,7 @@ public:
     wxWindow *GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
     wxSizer *GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
     void CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags = 0);
+    virtual void HandleBinningChange(int oldVal, int newVal);
 
 protected:
     wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
@@ -172,6 +173,7 @@ public:
     void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl);      // Bare control
     void AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
     void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
+    virtual void HandleBinningChange(int oldVal, int newVal);
 
     wxWindow *GetParentWindow(BRAIN_CTRL_IDS id);
 

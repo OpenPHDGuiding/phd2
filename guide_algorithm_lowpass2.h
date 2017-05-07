@@ -61,6 +61,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void HandleBinningChange(int oldBinVal, int newBinVal);
     };
 
     class GuideAlgorithmLowpass2GraphControlPane : public GraphControlPane

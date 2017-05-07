@@ -77,6 +77,8 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxRadioButton *m_SaturationByProfile;
     wxRadioButton *m_SaturationByADU;
 
+    int m_prevBinning;
+
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~CameraConfigDialogCtrlSet() {};
@@ -88,6 +90,7 @@ public:
     int GetBinning(void);
     void SetBinning(int val);
     void OnSaturationChoiceChanged(wxCommandEvent& event);
+    void OnBinningChoiceChanged(wxCommandEvent& evt);
 };
 
 enum CaptureOptionBits
