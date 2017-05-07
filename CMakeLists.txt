@@ -49,6 +49,7 @@ add_custom_target(CmakeAdditionalFiles
   ${phd_src_dir}/thirdparty/thirdparty.cmake
   ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
   ${phd_src_dir}/cmake_modules/FindCFITSIO.cmake
+  ${phd_src_dir}/cmake_modules/FindGtest.cmake
   ${phd_src_dir}/cmake_modules/FindINDI.cmake
   ${phd_src_dir}/cmake_modules/FindNova.cmake
   ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake

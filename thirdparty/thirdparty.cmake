@@ -492,29 +492,31 @@ set(EIGEN_SRC ${eigen_root})
 #############################################
 # Google test, easily built
 
-set(GTEST gtest-1.7.0)
-set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
-if(NOT EXISTS ${gtest_root})
-  # unzip the dependency
-  execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
-    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()
+if(USE_SYSTEM_GTEST)
+  find_package(Gtest REQUIRED)
+  set(GTEST_HEADERS ${GTEST_INCLUDE_DIR})
+  message(STATUS "Using system's Gtest.")
+else(USE_SYSTEM_GTEST)
+  set(GTEST gtest-1.7.0)
+  set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
+  if(NOT EXISTS ${gtest_root})
+    # unzip the dependency
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
 
-if(MSVC)
-  # do not replace default things, basically this line avoids gtest to replace
-  # default compilation options (which ends up with messing the link options) for the CRT
-  # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
-  set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
-endif()
-set(GTEST_HEADERS ${gtest_root}/include)
-add_subdirectory(${gtest_root} tmp_cmakegtest)
-set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
-set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
-
-
-
-
+  if(MSVC)
+    # do not replace default things, basically this line avoids gtest to replace
+    # default compilation options (which ends up with messing the link options) for the CRT
+    # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
+    set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
+  endif()
+  set(GTEST_HEADERS ${gtest_root}/include)
+  add_subdirectory(${gtest_root} tmp_cmakegtest)
+  set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
+  set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
+endif(USE_SYSTEM_GTEST)
 
 
 #############################################
