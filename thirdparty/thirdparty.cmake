@@ -474,19 +474,22 @@ endif()
 #############################################
 # the Eigen library, mostly header only
 
-set(EIGEN eigen-eigen-67e894c6cd8f)
-set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
-if(NOT EXISTS ${eigen_root})
-  # untar the dependency
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
-    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()
+if(USE_SYSTEM_EIGEN3)
+  find_package(Eigen3 REQUIRED)
+  set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
+  message(STATUS "Using system's Eigen3.")
+else(USE_SYSTEM_EIGEN3)
+  set(EIGEN eigen-eigen-67e894c6cd8f)
+  set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
+  if(NOT EXISTS ${eigen_root})
+    # untar the dependency
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
 
-set(EIGEN_SRC ${eigen_root})
-
-
-
+  set(EIGEN_SRC ${eigen_root})
+endif(USE_SYSTEM_EIGEN3)
 
 
 #############################################
