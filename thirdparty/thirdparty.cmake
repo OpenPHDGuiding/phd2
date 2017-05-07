@@ -44,11 +44,6 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake_modules/ )
 
 
-# these option allow to use system libraries
-option(USE_SYSTEM_CFITSIO "Enable this option here or in cmake call if you want to use system's cfitsio." OFF)
-option(USE_SYSTEM_LIBUSB "Enable this option here or in cmake call if you want to use system's libUSB." OFF)
-
-
 
 # these variables allow to specify to which the main project will link and
 # to potentially copy some resources to the output directory of the main project.
