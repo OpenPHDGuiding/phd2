@@ -496,8 +496,8 @@ endif(USE_SYSTEM_EIGEN3)
 # Google test, easily built
 
 if(USE_SYSTEM_GTEST)
-  find_package(Gtest REQUIRED)
-  set(GTEST_HEADERS ${GTEST_INCLUDE_DIR})
+  find_package(GTest REQUIRED)
+  set(GTEST_HEADERS ${GTEST_INCLUDE_DIRS})
   message(STATUS "Using system's Gtest.")
 else(USE_SYSTEM_GTEST)
   set(GTEST gtest-1.7.0)
