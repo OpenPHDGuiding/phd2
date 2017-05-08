@@ -44,11 +44,6 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake_modules/ )
 
 
-# these option allow to use system libraries
-option(USE_SYSTEM_CFITSIO "Enable this option here or in cmake call if you want to use system's cfitsio." OFF)
-option(USE_SYSTEM_LIBUSB "Enable this option here or in cmake call if you want to use system's libUSB." OFF)
-
-
 
 # these variables allow to specify to which the main project will link and
 # to potentially copy some resources to the output directory of the main project.
@@ -479,47 +474,52 @@ endif()
 #############################################
 # the Eigen library, mostly header only
 
-set(EIGEN eigen-eigen-67e894c6cd8f)
-set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
-if(NOT EXISTS ${eigen_root})
-  # untar the dependency
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
-    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()
+if(USE_SYSTEM_EIGEN3)
+  find_package(Eigen3 REQUIRED)
+  set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
+  message(STATUS "Using system's Eigen3.")
+else(USE_SYSTEM_EIGEN3)
+  set(EIGEN eigen-eigen-67e894c6cd8f)
+  set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
+  if(NOT EXISTS ${eigen_root})
+    # untar the dependency
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
 
-set(EIGEN_SRC ${eigen_root})
-
-
-
+  set(EIGEN_SRC ${eigen_root})
+endif(USE_SYSTEM_EIGEN3)
 
 
 #############################################
 # Google test, easily built
 
-set(GTEST gtest-1.7.0)
-set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
-if(NOT EXISTS ${gtest_root})
-  # unzip the dependency
-  execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
-    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()
+if(USE_SYSTEM_GTEST)
+  find_package(GTest REQUIRED)
+  set(GTEST_HEADERS ${GTEST_INCLUDE_DIRS})
+  message(STATUS "Using system's Gtest.")
+else(USE_SYSTEM_GTEST)
+  set(GTEST gtest-1.7.0)
+  set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
+  if(NOT EXISTS ${gtest_root})
+    # unzip the dependency
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
 
-if(MSVC)
-  # do not replace default things, basically this line avoids gtest to replace
-  # default compilation options (which ends up with messing the link options) for the CRT
-  # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
-  set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
-endif()
-set(GTEST_HEADERS ${gtest_root}/include)
-add_subdirectory(${gtest_root} tmp_cmakegtest)
-set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
-set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
-
-
-
-
+  if(MSVC)
+    # do not replace default things, basically this line avoids gtest to replace
+    # default compilation options (which ends up with messing the link options) for the CRT
+    # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
+    set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
+  endif()
+  set(GTEST_HEADERS ${gtest_root}/include)
+  add_subdirectory(${gtest_root} tmp_cmakegtest)
+  set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
+  set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
+endif(USE_SYSTEM_GTEST)
 
 
 #############################################
