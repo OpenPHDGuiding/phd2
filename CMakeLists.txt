@@ -830,15 +830,15 @@ if(UNIX AND NOT APPLE)
         )
       endif()
 
-      if("${message_file_basename}" STREQUAL "messages.mo")
+      if("${message_file_name}" STREQUAL "messages.mo")
           install(FILES       ${current_file}
                   DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${current_locale_install_name}/LC_MESSAGES/
                   RENAME "phd2.mo"
                   OPTIONAL)
       endif()
 
-      if(${current_zip})
-          install(FILES ${current_zip}
+      if("${message_file_ext}" STREQUAL ".zip")
+          install(FILES ${current_file}
                   ${install_options})
       endif()
     endforeach()
