@@ -127,7 +127,7 @@ protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
-    double GetMinMove() const;
+    double GetMinMove();
     bool SetMinMove(double min_move);
 
     double GetPeriodLengthsInference() const;

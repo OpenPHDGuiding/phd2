@@ -772,7 +772,7 @@ double GuideAlgorithmGaussianProcess::GetControlGain() const
     return GPG->GetControlGain();
 }
 
-double GuideAlgorithmGaussianProcess::GetMinMove() const
+double GuideAlgorithmGaussianProcess::GetMinMove()                          // Must override virtual method in Mount
 {
     return GPG->GetMinMove();
 }
