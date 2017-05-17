@@ -24,7 +24,7 @@ at the bottom of the form. &nbsp;Clicking on 'Ok' means that changes
 made to any of the tab fields will be put into effect. &nbsp;Clicking
 on 'Cancel' discards any changes that were made.<br><br><span style="text-decoration: underline;"><a href="#Global_Tab">Global Tab</a></span><br><span style="text-decoration: underline;"><a href="#Camera_Tab">Camera Tab</a></span><br><span style="text-decoration: underline;"><a href="#Guiding_Tab">Guiding Tab</a><br><a href="#Algorithms_Tab">Algorithms Tab</a><br><a href="#Other_Devices_Tab">Other Devices Tab</a><br><a href="#Rotator_Tab"></a><br></span>
 <h3><a name="Global_Tab"></a>Global Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 606px; height: 471px;" alt="" src="Advanced_global.png"><br><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 604px; height: 577px;" alt="" src="Advanced_global.png"><br><br>
 The&nbsp;controls on the
 'Global' tab are well-described by their respective tool-tips, but they
 are summarized here for completeness:<br>
@@ -32,13 +32,58 @@ are summarized here for completeness:<br>
 <li>'<a name="Language"></a>Language' - determines the language
 used in the <span style="font-style: italic;">PHD2</span> user interface, subject to available localization.
 &nbsp;Changing this requires a program restart</li><li>'<a name="Reset_Configuration"></a>Reset Configuration' - restores all settings to their
-initial values as if <span style="font-style: italic;">PHD2</span> had been freshly installed</li><li>'<a name="Reset_Dont_Ask"></a>Reset Don't Ask Again messages' - restores the display of alert messages if you have previously chosen to not show them</li>
-<li>'<a name="Image_format"></a>Image logging format' - specifies the file format&nbsp;if
-star-image logging is enabled. If you are doing this for the purpose of documenting a problem, use Raw FITS</li>
-<li>'<a name="Dither_RA_only"></a>Dither
-RA only' - for imaging apps that use the <span style="font-style: italic;">PHD2</span> server interface,
-specifies that dithering should be done only on the RA axis</li>
-<li>'<a name="Dither_scale"></a>Dither scale' - an optional multiplier used to adjust the maximum-dither amount specified by the image application. See <a href="Tools.htm#Dithering_Ops">Dithering Operations</a>&nbsp;</li><li>'<a name="Log_File_Location"></a>Log File Location' - specifies a file directory where PHD2 guide and debug log files will be stored.</li></ul><br><h3><a name="Camera_Tab"></a>Camera Tab</h3>
+initial values as if <span style="font-style: italic;">PHD2</span> had been freshly installed</li><li>'<a name="Reset_Dont_Ask"></a>Reset Don't Show Again messages' - restores the display of alert messages if you have previously chosen to not show them</li><li>'<a name="Log_File_Location"></a>Log
+File Location' - specifies a file directory where PHD2 guide logs,
+debug logs, and any diagnostic image files will be stored.</li><li><a name="Dither_Settings"></a>Dither Settings</li><ul><li><a name="Dither_Random_Mode"></a>'Random
+mode' - tells PHD2 to use a random-number generator to compute both the
+size and the direction of the dither, subject to any constraints
+imposed by RA-only mode or by the Dec guiding mode being set to 'none'.</li><li><a name="Dither_Spiral_Mode"></a>'Spiral mode' - tells PHD2 to dither with fixed-size amounts in a clockwise spiral pattern.
+&nbsp;This can be a good choice when the imaging camera has
+significant fixed-pattern noise or the mount has a troublesome amount
+of Dec backlash.</li></ul>
+
+<ul><li>'<a name="Dither_RA_only"></a>Dither
+RA only' - tells PHD2 to dither&nbsp;only on the RA axis.</li></ul>
+<ul><li>'<a name="Dither_scale"></a>Dither scale' - an optional multiplier used to adjust the maximum-dither amount specified by the image application. See <a href="Tools.htm#Dithering_Ops">Dithering Operations</a>&nbsp;</li></ul><li><a name="Image_Logging"></a>'Enable
+diagnostic image logging' - used primarily for product support and
+diagnosis of problems dealing with PHD2 star-recognition and
+measurement. &nbsp;However, it can be used to examine and analyze guide
+frame images for any other purpose as well. &nbsp;Guide frame images
+are captured and logged in a FITs format subject to the filter/trigger
+controls in the group-box. &nbsp;Images are saved in sub-folders of the
+PHD2 logging directory with the date and time encoded as part of the
+sub-folder name. &nbsp;Individual guide frames are saved with filenames
+that indicate the time the image was captured and the reason the frame
+was saved. &nbsp;Since the guide frames are saved in a FITs format, the
+header will include other useful information such as exposure time.
+&nbsp;Because the logging function is primarily used for
+trouble-shooting, the image sub-folders are automatically removed after
+30 days. &nbsp;If you wish to keep the images for your own purposes,
+you should either rename the sub-folders or copy/move them to a
+different directory. &nbsp;When logging is triggered by one of the
+"events" - e.g. lost star or large errors - a group of&nbsp;images
+(an <span style="font-style: italic;">image set)</span> will be saved, centered in time on the image that
+triggered the event. This provides a record &nbsp;of guider
+images that will show what the guide star and guide frame looked like
+both before and after the unusual condition occurred. &nbsp;The various
+triggering and filtering controls are described below and are also shown in the tooltips for the controls:</li><ul><li>'All
+lost star frames' - logs the image set for any lost-star events,
+regardless of the reason for the lost star (low SNR, mass-change, etc.)</li><li>'All
+auto-select star frames' - logs the image set for any frames used for
+auto-selection of the star, regardless of outcome. &nbsp;Note that any
+failed attempts to auto-select a star will always result in a logged
+image, regardless of&nbsp;choices made in the user interface.</li><li>'When
+relative error exceeds' - logs the image set when the star deflection
+on the current frame exceeds&nbsp;the running-average error by the
+factor chosen in the adjacent spin control. &nbsp;For example, if the
+average (RMS) error is 0.5 pixels and the current frame's error is 1.5
+pixels, the relative error is 3.</li><li>'When
+absolute error exceeds' - logs the image set when&nbsp;the star
+deflection exceeds the number of pixels specified in the adjacent spin
+control.</li><li>'Until
+this count is reached' &nbsp;- logs images until the count matches the
+value of the adjacent spin control. &nbsp;The counter is reset to zero
+when the limit is reached.</li></ul></ul><h3><a name="Camera_Tab"></a>Camera Tab</h3>
 <span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 605px; height: 480px;" alt="" src="Advanced_camera.png"><br>
 <br>
 The controls on the 'Camera' tab are used as follows: <br>
