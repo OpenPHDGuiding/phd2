@@ -262,14 +262,20 @@ in 8-14&nbsp;steps in each direction. &nbsp; The 'calculate...' button
 to
 the right of this control will launch a dialog that can help you
 compute an appropriate value (see below)&nbsp;</li><li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
-<span style="font-style: italic;">PHD2</span> to automatically reload the most recent calibration data as soon
+<span style="font-style: italic;">PHD2</span> to automatically reload
+the most recent calibration data as soon
 as the equipment is connected. &nbsp;If
 you're using an ASCOM (or Indi) mount connection or have an 'aux-mount'
-connection, this option will be set automatically whenever you connect
-to the gear. &nbsp;Conversely, if PHD2 has no scope pointing
-information available, this option will be automatically reset.
-&nbsp;Since you can force a re-calibration whenever you want, there is
-little reason to manually change the value of this checkbox..</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
+connection, you'll probably want to have this option set.
+&nbsp;Conversely, if PHD2 has no scope pointing
+information available, this option will normally be reset.
+&nbsp;The new-profile wizard will choose a default setting
+for&nbsp;this option&nbsp;based on the configuration you define.
+&nbsp;Note that auto-restore is remembered for each separate equipment
+profile,&nbsp;and it only has an effect when you load the profile and
+connect to the equipment. &nbsp;If you want to force a recalibration
+before an individual guiding session begins, you can simply clear the
+mount calibration (see below).</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
 Dec orthogonal to RA' - Normally, the calibration process independently
 computes the camera angles for both right ascension and declination.
 &nbsp;There is no need for great precision on these values, and the
@@ -285,27 +291,30 @@ re-calibrate
 before
 guiding is restarted. &nbsp;You might do this for a variety of
 reasons
-- you might have rotated the guide camera or slewed&nbsp;to a target close to the celestial pole, etc.
+- rotating the guide camera or changing the mount guide speed, for example.
 &nbsp;You can also accomplish the same result by doing a Shift-Click on
 the PHD2/guiding icon on the main page, which will force a re-calibration.</li><li>'<a name="Declination_compensation"></a>Use
 Declination Compensation' - if PHD2 can get pointing information from
 the mount via an ASCOM connection ('Mount' or 'Aux'), it will
-automatically adjust the RA guide rate based on the current declination.
+automatically adjust the RA guide rate based on the current
+declination.
 &nbsp;This box should normally be left checked except in&nbsp;unusual
 cases. &nbsp;For example, SiTech mount controllers evidently apply a
-compensation automatically, in which case the box should be left un-checked..</li></ul>Shared Guiding Parameters<ul><li>'<a name="Fast_Re-center"></a>Fast
+compensation automatically, in which case the box should be left
+un-checked. &nbsp;Don't confuse this option with 'Declination backlash
+compensation', which is an entirely different feature.</li></ul>Shared Guiding Parameters<ul><li>'<a name="Fast_Re-center"></a>Fast
 re-center after calibration or dither' - during calibration or
 dithering, the mount may be moved a significant distance from the
 initial "lock" position. &nbsp;If you click this checkbox, PHD2 will
 move the mount&nbsp;back to the lock position as quickly as possible,
 using the largest guide commands permitted by the 'Max Duration'
 settings of
-your guide algorithms. &nbsp;This is only an optimization, so the use
+your guide algorithms and by the size of your tracking region. &nbsp;This is only an optimization, so the use
 of this checkbox is completely optional. &nbsp;If you find that
-calibration fails because the star is lost during the fast re-center,
-you should disable this option. &nbsp;That sort of problem probably
-indicates you have a large polar alignment error or excessive periodic
-error in RA.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
+calibration often fails because the star is lost during the fast re-center,
+you should disable this option. &nbsp;That sort of problem may
+indicate that you have a large polar alignment error or excessive periodic
+error in RA. &nbsp;You can run the Guiding Assistant to help see what's causing the problem.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
 output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data after a meridian flip. &nbsp;Some
 mounts track their 'side of pier' state and automatically reverse the

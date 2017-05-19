@@ -467,8 +467,25 @@ void GearDialog::EndModal(int retCode)
         if (pMount && pMount->IsConnected() &&
             (!pSecondaryMount || pSecondaryMount->IsConnected()))
         {
-            Debug.AddLine("Auto-loading calibration data");
+            Debug.Write("Auto-loading calibration data\n");
             pFrame->LoadCalibration();
+        }
+    }
+    else
+    {
+        // if user is loading/unloading the same profile, the calibration will hang around unless we clear it
+        Debug.Write("Clearing calibration data because auto-load is false\n");
+        if (m_pStepGuider)
+        {
+            if (m_pStepGuider->IsConnected())
+                m_pStepGuider->ClearCalibration();
+            if (pSecondaryMount && pSecondaryMount->IsConnected())
+                pSecondaryMount->ClearCalibration();
+        }
+        else
+        {
+            if (pMount && pMount->IsConnected())
+                pMount->ClearCalibration();
         }
     }
 

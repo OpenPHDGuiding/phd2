@@ -498,6 +498,8 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
+    if (m_PositionAware || m_SelectedAuxMount != _("None"))
+        pConfig->Profile.SetBoolean("/AutoLoadCalibration", true);
 
     GuideLog.EnableLogging();               // Especially for newbies
 

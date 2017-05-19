@@ -2700,7 +2700,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 
     parent = GetParentWindow(AD_cbAutoRestoreCal);
     m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
-    AddCtrl(CtrlMap, AD_cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
+    AddCtrl(CtrlMap, AD_cbAutoRestoreCal, m_pAutoLoadCalibration, _("For this equipment profile, automatically restore data from last successful calibration after gear is connected."));
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     parent = GetParentWindow(AD_szAutoExposure);
