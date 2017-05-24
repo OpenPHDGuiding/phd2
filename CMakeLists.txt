@@ -797,27 +797,19 @@ endif()
 
 ## Linux bundling of documentation + translation
 if(UNIX AND NOT APPLE)
-  # install language help files
-  set(locales_help     en_EN de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
-  set(locales_help_msg en    de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
-  list(LENGTH locales_help _len)
-  math(EXPR _len "${_len} - 1")
-  foreach(_index RANGE ${_len})
 
-    list(GET locales_help       ${_index} current_locale)
-    list(GET locales_help_msg   ${_index} current_locale_install_name)
-
+  foreach(current_locale IN LISTS all_locales)
     if("${current_locale}" STREQUAL "${default_locale}")
       set(destination share/phd2/)
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/)
+      set(install_help_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/)
     else()
       set(destination share/phd2/locale/${current_locale}/)
-      set(install_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${current_locale}/ OPTIONAL)
+      set(install_help_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${current_locale}/ OPTIONAL)
     endif()
-
+    
     get_zip_file(current_zip LOCALE ${current_locale})
     get_translation_files(current_translations LOCALE ${current_locale})
-
+    
     foreach(current_file IN LISTS current_translations current_zip)
       get_filename_component(message_file_name ${current_file} NAME)
       get_filename_component(message_file_ext ${current_file} EXT)
@@ -826,20 +818,20 @@ if(UNIX AND NOT APPLE)
           TARGET phd2
           POST_BUILD
           COMMAND "${CMAKE_COMMAND}" -E make_directory $<TARGET_FILE_DIR:phd2>/${destination}
-          COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} $<TARGET_FILE_DIR:phd2>/${destination}/${message_file_name}
+          COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} $<TARGET_FILE_DIR:phd2>/${destination}${message_file_name}
         )
       endif()
 
-      if("${message_file_basename}" STREQUAL "messages.mo")
+      if("${message_file_name}" STREQUAL "messages.mo")
           install(FILES       ${current_file}
-                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${current_locale_install_name}/LC_MESSAGES/
+                  DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${current_locale}/LC_MESSAGES/
                   RENAME "phd2.mo"
                   OPTIONAL)
       endif()
 
-      if(${current_zip})
-          install(FILES ${current_zip}
-                  ${install_options})
+      if("${message_file_ext}" STREQUAL ".zip")
+          install(FILES ${current_file}
+                  ${install_help_options})
       endif()
     endforeach()
   endforeach()
