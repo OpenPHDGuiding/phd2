@@ -54,18 +54,24 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent) :
     wxBoxSizer *pMainSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer *pLeftSizer = new wxBoxSizer(wxVERTICAL);
 
-    pMainSizer->Add(pLeftSizer);
+    pMainSizer->Add(pLeftSizer, wxSizerFlags().Expand());
 
     m_pClient->m_length = pConfig->Global.GetInt("/graph_stepguider/length", 1);
     wxString label = wxString::Format(_T("%3d"),m_pClient->m_length);
     LengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxPoint(10,10),wxSize(80,-1),wxALIGN_CENTER_HORIZONTAL);
     LengthButton->SetToolTip(_("Select the number of frames of history to display"));
+    pLeftSizer->Add(LengthButton, wxSizerFlags().Border(wxALL, 3).Expand());
 
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
     ClearButton->SetToolTip(_("Clear graph data"));
+    pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxALL, 3));
 
-    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxALL,3).Expand());
-    pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxALL,3));
+    pLeftSizer->AddStretchSpacer();
+
+    m_hzText = new wxStaticText(this, wxID_ANY, wxEmptyString/*wxString::Format(_("%.1f Hz"), 999.9)*/, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxST_NO_AUTORESIZE);
+    m_hzText->SetForegroundColour(*wxLIGHT_GREY);
+    m_hzText->SetBackgroundColour(*wxBLACK);
+    pLeftSizer->Add(m_hzText, wxSizerFlags().Border(wxALL, 3).Expand());
 
     pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL,3).Expand().Proportion(1));
 
@@ -151,6 +157,18 @@ void GraphStepguiderWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
 
 void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
 {
+    wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
+
+    if (m_pClient->m_nItems > 0)
+    {
+        double hz = 1000.0 / static_cast<double>(now - m_prevTimestamp);
+        m_hzText->SetLabel(wxString::Format(_("%.1f Hz"), hz));
+    }
+    else
+        m_hzText->SetLabel(wxEmptyString);
+
+    m_prevTimestamp = now;
+
     m_pClient->AppendData(dx, dy, avgPos);
 
     if (this->m_visible)
@@ -170,7 +188,7 @@ void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump)
 }
 
 BEGIN_EVENT_TABLE(GraphStepguiderClient, wxWindow)
-EVT_PAINT(GraphStepguiderClient::OnPaint)
+  EVT_PAINT(GraphStepguiderClient::OnPaint)
 END_EVENT_TABLE()
 
 GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent) :
@@ -212,14 +230,14 @@ void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax,
 
 void GraphStepguiderClient::AppendData(int dx, int dy, const PHD_Point& avgPos)
 {
-    memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
+    memmove(&m_history, &m_history[1], sizeof(m_history[0]) * (m_maxHistorySize - 1));
 
-    m_history[m_maxHistorySize-1].dx = dx;
-    m_history[m_maxHistorySize-1].dy = dy;
+    m_history[m_maxHistorySize - 1].dx = dx;
+    m_history[m_maxHistorySize - 1].dy = dy;
 
     if (m_nItems < m_maxHistorySize)
     {
-        m_nItems++;
+        ++m_nItems;
     }
 
     m_avgPos = avgPos;
@@ -249,15 +267,15 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     const int stepsPerDivision = 10;
 
-    wxPoint center(size.x/2, size.y/2);
+    wxPoint center(size.x / 2, size.y / 2);
 
-    int xSteps = ((m_xMax+stepsPerDivision-1)/stepsPerDivision)*stepsPerDivision;
-    int xDivisions = xSteps/stepsPerDivision;
-    int xPixelsPerStep = (size.x-1) / (2*xSteps);
+    int xSteps = ((m_xMax + stepsPerDivision - 1) / stepsPerDivision) * stepsPerDivision;
+    int xDivisions = xSteps / stepsPerDivision;
+    int xPixelsPerStep = (size.x - 1) / (2 * xSteps);
 
-    int ySteps = ((m_yMax+stepsPerDivision-1)/stepsPerDivision)*stepsPerDivision;
-    int yDivisions = ySteps/stepsPerDivision;
-    int yPixelsPerStep = (size.y-1) / (2*ySteps);
+    int ySteps = ((m_yMax + stepsPerDivision - 1) / stepsPerDivision) * stepsPerDivision;
+    int yDivisions = ySteps / stepsPerDivision;
+    int yPixelsPerStep = (size.y - 1) / (2 * ySteps);
 
     int leftEdge     = center.x - xDivisions * stepsPerDivision * xPixelsPerStep;
     int rightEdge    = center.x + xDivisions * stepsPerDivision * xPixelsPerStep;
@@ -274,37 +292,37 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     // Draw divisions
     dc.SetPen(GreyDashPen);
 
-    for(int division=1;division <= xDivisions; division++)
+    for (int division = 1; division <= xDivisions; division++)
     {
-        int pos = stepsPerDivision* xPixelsPerStep * division;
-        dc.DrawLine(center.x-pos, topEdge, center.x-pos, bottomEdge);
-        dc.DrawLine(center.x+pos, topEdge, center.x+pos, bottomEdge);
+        int pos = stepsPerDivision * xPixelsPerStep * division;
+        dc.DrawLine(center.x - pos, topEdge, center.x - pos, bottomEdge);
+        dc.DrawLine(center.x + pos, topEdge, center.x + pos, bottomEdge);
     }
 
-    for(int division=1;division <= yDivisions; division++)
+    for (int division = 1; division <= yDivisions; division++)
     {
-        int pos = stepsPerDivision* yPixelsPerStep * division;
-        dc.DrawLine(leftEdge, center.y-pos, rightEdge, center.y-pos);
-        dc.DrawLine(leftEdge, center.y+pos, rightEdge, center.y+pos);
+        int pos = stepsPerDivision * yPixelsPerStep * division;
+        dc.DrawLine(leftEdge, center.y - pos, rightEdge, center.y - pos);
+        dc.DrawLine(leftEdge, center.y + pos, rightEdge, center.y + pos);
     }
 
     int xOffset = m_xBump * xPixelsPerStep;
     int yOffset = m_yBump * yPixelsPerStep;
 
     dc.SetPen(*wxYELLOW_PEN);
-    dc.DrawLine(center.x-xOffset, center.y-yOffset, center.x+xOffset, center.y-yOffset);
-    dc.DrawLine(center.x+xOffset, center.y-yOffset, center.x+xOffset, center.y+yOffset);
-    dc.DrawLine(center.x+xOffset, center.y+yOffset, center.x-xOffset, center.y+yOffset);
-    dc.DrawLine(center.x-xOffset, center.y+yOffset, center.x-xOffset, center.y-yOffset);
+    dc.DrawLine(center.x - xOffset, center.y - yOffset, center.x + xOffset, center.y - yOffset);
+    dc.DrawLine(center.x + xOffset, center.y - yOffset, center.x + xOffset, center.y + yOffset);
+    dc.DrawLine(center.x + xOffset, center.y + yOffset, center.x - xOffset, center.y + yOffset);
+    dc.DrawLine(center.x - xOffset, center.y + yOffset, center.x - xOffset, center.y - yOffset);
 
     xOffset = m_xMax * xPixelsPerStep;
     yOffset = m_yMax * yPixelsPerStep;
 
     dc.SetPen(*wxRED_PEN);
-    dc.DrawLine(center.x-xOffset, center.y-yOffset, center.x+xOffset, center.y-yOffset);
-    dc.DrawLine(center.x+xOffset, center.y-yOffset, center.x+xOffset, center.y+yOffset);
-    dc.DrawLine(center.x+xOffset, center.y+yOffset, center.x-xOffset, center.y+yOffset);
-    dc.DrawLine(center.x-xOffset, center.y+yOffset, center.x-xOffset, center.y-yOffset);
+    dc.DrawLine(center.x - xOffset, center.y - yOffset, center.x + xOffset, center.y - yOffset);
+    dc.DrawLine(center.x + xOffset, center.y - yOffset, center.x + xOffset, center.y + yOffset);
+    dc.DrawLine(center.x + xOffset, center.y + yOffset, center.x - xOffset, center.y + yOffset);
+    dc.DrawLine(center.x - xOffset, center.y + yOffset, center.x - xOffset, center.y - yOffset);
 
     // draw ra-dec directions
     if (pMount && pMount->IsCalibrated() && pSecondaryMount && pSecondaryMount->IsCalibrated())
@@ -357,7 +375,7 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
         dc.SetPen(*m_pPens[i]);
         dc.SetBrush(*m_pBrushes[i]);
-        dc.DrawCircle(center.x+m_history[i].dx*xPixelsPerStep, center.y+m_history[i].dy*yPixelsPerStep, dotSize);
+        dc.DrawCircle(center.x + m_history[i].dx * xPixelsPerStep, center.y + m_history[i].dy * yPixelsPerStep, dotSize);
     }
 
     if (m_avgPos.IsValid())
@@ -376,8 +394,8 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.SetPen(*wxGREEN_PEN);
             dc.DrawLine(center.x + (int)(m_avgPos.X * xPixelsPerStep),
                     center.y + (int)(m_avgPos.Y * yPixelsPerStep),
-                    center.x + (int)((m_avgPos.X+m_curBump.X*2.0) * xPixelsPerStep),
-                    center.y + (int)((m_avgPos.Y+m_curBump.Y*2.0) * yPixelsPerStep));
+                    center.x + (int)((m_avgPos.X + m_curBump.X * 2.0) * xPixelsPerStep),
+                    center.y + (int)((m_avgPos.Y + m_curBump.Y * 2.0) * yPixelsPerStep));
         }
     }
 }

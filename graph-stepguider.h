@@ -94,8 +94,10 @@ public:
 private:
     OptionsButton *LengthButton;
     wxButton *ClearButton;
-
+    wxStaticText *m_hzText;
     GraphStepguiderClient *m_pClient;
+
+    wxLongLong_t m_prevTimestamp;
 
     bool m_visible;
 
