@@ -223,7 +223,7 @@ GuideAlgorithmLowpass::
     m_pSlopeWeight->SetDigits(2);
 
     DoAdd(_("Slope Weight"), m_pSlopeWeight,
-        _("Weighting of slope parameter in lowpass auto-dec"));
+        wxString::Format(_("Weighting of slope parameter in lowpass auto-dec. Default = %.1f"), DefaultSlopeWeight));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -283,6 +283,7 @@ GuideAlgorithmLowpass::
     m_pSlopeWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5, _T("SlopeWeight"));
     m_pSlopeWeight->SetDigits(2);
+    m_pSlopeWeight->SetToolTip(wxString::Format(_("Weighting of slope parameter in lowpass auto-dec. Default = %.1f"), DefaultSlopeWeight));
     m_pSlopeWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnSlopeWeightSpinCtrlDouble, this);
     DoAdd(m_pSlopeWeight, _("Sl W"));
 
@@ -290,6 +291,8 @@ GuideAlgorithmLowpass::
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
+    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
 

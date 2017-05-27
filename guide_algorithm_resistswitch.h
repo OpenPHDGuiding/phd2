@@ -55,7 +55,7 @@ protected:
     {
         GuideAlgorithmResistSwitch *m_pGuideAlgorithm;
         wxSpinCtrlDouble *m_pMinMove;
-        wxSpinCtrlDouble *m_pAggression;
+        wxSpinCtrl *m_pAggression;
         wxCheckBox *m_pFastSwitch;
 
     public:
@@ -76,10 +76,10 @@ protected:
     private:
         GuideAlgorithmResistSwitch *m_pGuideAlgorithm;
         wxSpinCtrlDouble *m_pMinMove;
-        wxSpinCtrlDouble *m_pAggression;
+        wxSpinCtrl *m_pAggression;
 
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
-        void OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnAggressionSpinCtrl(wxSpinEvent& evt);
     };
 
     virtual double GetMinMove(void);

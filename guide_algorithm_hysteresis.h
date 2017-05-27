@@ -52,8 +52,8 @@ protected:
     class GuideAlgorithmHysteresisConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pHysteresis;
-        wxSpinCtrlDouble *m_pAggression;
+        wxSpinCtrl *m_pHysteresis;
+        wxSpinCtrl *m_pAggression;
         wxSpinCtrlDouble *m_pMinMove;
 
     public:
@@ -73,12 +73,12 @@ protected:
 
     private:
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pAggression;
-        wxSpinCtrlDouble *m_pHysteresis;
+        wxSpinCtrl *m_pAggression;
+        wxSpinCtrl *m_pHysteresis;
         wxSpinCtrlDouble *m_pMinMove;
 
-        void OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& evt);
-        void OnHysteresisSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnAggressionSpinCtrl(wxSpinEvent& evt);
+        void OnHysteresisSpinCtrl(wxSpinEvent& evt);
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 

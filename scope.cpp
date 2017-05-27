@@ -1809,12 +1809,14 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
     width = StringWidth(_T("0000"));
     m_pMaxRaDuration = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
         wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
+    m_pMaxRaDuration->SetToolTip(_("Longest length of pulse to send in RA\nDefault = 2500 ms."));
     m_pMaxRaDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl, this);
     DoAdd(m_pMaxRaDuration, _("Mx RA"));
 
     width = StringWidth(_T("0000"));
     m_pMaxDecDuration = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
         wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
+    m_pMaxDecDuration->SetToolTip(_("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
     m_pMaxDecDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl, this);
     DoAdd(m_pMaxDecDuration, _("Mx DEC"));
 

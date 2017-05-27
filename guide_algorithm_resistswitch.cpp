@@ -301,12 +301,11 @@ GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000"));
-    m_pAggression = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
-    m_pAggression->SetDigits(0);
+    m_pAggression = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, _T("Aggressiveness"));
 
     DoAdd(_("Aggressiveness"), m_pAggression,
-        wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
+        wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
@@ -368,10 +367,10 @@ GuideAlgorithmResistSwitch::
 
     // Aggression
     width = StringWidth(_T("000"));
-    m_pAggression = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
-    m_pAggression->SetDigits(0);
-    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrlDouble, this);
+    m_pAggression = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, _T("Aggressiveness"));
+    m_pAggression->SetToolTip(wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggression * 100.0));
+    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrl, this);
     DoAdd(m_pAggression, _T("Agr"));
     m_pAggression->SetValue(m_pGuideAlgorithm->GetAggression() * 100.0);
 
@@ -380,6 +379,8 @@ GuideAlgorithmResistSwitch::
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
+    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove,_T("MnMo"));
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
@@ -401,7 +402,7 @@ void GuideAlgorithmResistSwitch::
 
 void GuideAlgorithmResistSwitch::
     GuideAlgorithmResistSwitchGraphControlPane::
-    OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+    OnAggressionSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());

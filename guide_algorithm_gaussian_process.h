@@ -89,12 +89,12 @@ protected:
 
     private:
         GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pWeight;
-        wxSpinCtrlDouble *m_pAggressiveness;
+        wxSpinCtrl *m_pWeight;
+        wxSpinCtrl *m_pAggressiveness;
         wxSpinCtrlDouble *m_pMinMove;
 
-        void OnWeightSpinCtrlDouble(wxSpinDoubleEvent& evt);
-        void OnAggressivenessSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnWeightSpinCtrl(wxSpinEvent& evt);
+        void OnAggressivenessSpinCtrl(wxSpinEvent& evt);
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 

@@ -53,7 +53,7 @@ protected:
     class GuideAlgorithmLowpass2ConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmLowpass2 *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pAggressiveness;
+        wxSpinCtrl *m_pAggressiveness;
         wxSpinCtrlDouble *m_pMinMove;
     public:
         GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm);
@@ -72,9 +72,9 @@ protected:
 
     private:
         GuideAlgorithmLowpass2 *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pAggressiveness;
+        wxSpinCtrl *m_pAggressiveness;
         wxSpinCtrlDouble *m_pMinMove;
-        void OnAggrSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnAggrSpinCtrl(wxSpinEvent& evt);
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 

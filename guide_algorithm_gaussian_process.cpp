@@ -219,18 +219,20 @@ GuideAlgorithmGPGraphControlPane::GuideAlgorithmGPGraphControlPane(wxWindow *pPa
 
     // Prediction Weight
     width = StringWidth(_T("000"));
-    m_pWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Prediction Weight"));
-    m_pWeight->SetDigits(0);
-    m_pWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrlDouble, this);
+    m_pWeight = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0, 100, 0, _T("Prediction Weight"));
+    m_pWeight->SetToolTip(wxString::Format(_("What percent of the predictive guide correction should be applied? "
+        "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
+    m_pWeight->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrl, this);
     DoAdd(m_pWeight, _("PredWt"));
 
     // Reactive Weight
     width = StringWidth(_T("000"));
-    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Reactive Weight"));
-    m_pAggressiveness->SetDigits(0);
-    m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrlDouble, this);
+    m_pAggressiveness = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0, 100, 0, _T("Reactive Weight"));
+    m_pAggressiveness->SetToolTip(wxString::Format(_("What percent of the reactive guide correction should be applied? "
+        "Default = %.f%%, adjust if responding too much or too slowly"), 100 * DefaultControlGain));
+    m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrl, this);
     DoAdd(m_pAggressiveness, _("ReactWt"));
 
     // Min move
@@ -238,6 +240,9 @@ GuideAlgorithmGPGraphControlPane::GuideAlgorithmGPGraphControlPane(wxWindow *pPa
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
+    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a reactive guide correction? "
+        "If camera is binned, this is a fraction of the binned pixel size. Note this has no effect "
+        "on the predictive guide correction. Default = %.2f"), DefaultMinMove));
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
 
@@ -252,13 +257,13 @@ GuideAlgorithmGPGraphControlPane::~GuideAlgorithmGPGraphControlPane()
 
 }
 
-void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnWeightSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetPredictionGain(m_pWeight->GetValue() / 100.0);
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC prediction weight", m_pWeight->GetValue());
 }
 
-void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnAggressivenessSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetControlGain(m_pAggressiveness->GetValue() / 100.0);
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC aggressiveness", m_pAggressiveness->GetValue());
@@ -273,10 +278,10 @@ void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnMinMoveS
 class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
-    wxSpinCtrlDouble *m_pControlGain;
+    wxSpinCtrl *m_pControlGain;
     wxSpinCtrlDouble *m_pMinMove;
     wxSpinCtrlDouble *m_pPKPeriodLength;
-    wxSpinCtrlDouble *m_pPredictionGain;
+    wxSpinCtrl *m_pPredictionGain;
     wxCheckBox       *m_checkboxComputePeriod;
     wxButton         *m_btnExpertOptions;
 
@@ -291,17 +296,15 @@ public:
         int width;
 
         width = StringWidth(_T("0.00"));
-        m_pPredictionGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain, 5);
-        m_pPredictionGain->SetDigits(0);
+        m_pPredictionGain = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultPredictionGain);
         DoAdd(_("Predictive Weight"), m_pPredictionGain,
             wxString::Format(_("What percent of the predictive guide correction should be applied? "
             "Default = %.f%%, increase to rely more on the predictions"), 100 * DefaultPredictionGain));
 
         width = StringWidth(_T("0.00"));
-        m_pControlGain = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultControlGain, 5);
-        m_pControlGain->SetDigits(0);
+        m_pControlGain = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 100, 100 * DefaultControlGain);
         DoAdd(_("Reactive Weight"), m_pControlGain,
             wxString::Format(_("What percent of the reactive guide correction should be applied? "
             "Default = %.f%%, adjust if responding too much or too slowly"), 100 * DefaultControlGain));
@@ -365,8 +368,8 @@ public:
     // Set the parameters chosen in the GUI in the actual guiding algorithm
     virtual void UnloadValues(void)
     {
-        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100);
-        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100);
+        m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100.0);
+        m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100.0);
         m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 
         std::vector<double> hyperparameters(NumParameters);

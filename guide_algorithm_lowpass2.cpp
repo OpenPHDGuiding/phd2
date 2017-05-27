@@ -226,12 +226,11 @@ GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
-    m_pAggressiveness->SetDigits(2);
+    m_pAggressiveness = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, _T("Aggressiveness"));
 
     DoAdd(_("Aggressiveness"), m_pAggressiveness,
-        wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggressiveness));
+        wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggressiveness));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -287,16 +286,18 @@ GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pAggressiveness = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Aggressiveness"));
-    m_pAggressiveness->SetDigits(2);
-    m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass2::GuideAlgorithmLowpass2GraphControlPane::OnAggrSpinCtrlDouble, this);
+    m_pAggressiveness = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, _T("Aggressiveness"));
+    m_pAggressiveness->SetToolTip(wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggressiveness));
+    m_pAggressiveness->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &GuideAlgorithmLowpass2::GuideAlgorithmLowpass2GraphControlPane::OnAggrSpinCtrl, this);
     DoAdd(m_pAggressiveness, _("Agg"));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
+    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass2::GuideAlgorithmLowpass2GraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
 
@@ -312,7 +313,7 @@ GuideAlgorithmLowpass2GraphControlPane::
 
 void GuideAlgorithmLowpass2::
 GuideAlgorithmLowpass2GraphControlPane::
-OnAggrSpinCtrlDouble(wxSpinDoubleEvent& evt)
+OnAggrSpinCtrl(wxSpinEvent& evt)
 {
     m_pGuideAlgorithm->SetAggressiveness(m_pAggressiveness->GetValue());
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass2 aggressiveness", m_pAggressiveness->GetValue());
