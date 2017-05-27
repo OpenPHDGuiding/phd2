@@ -74,6 +74,7 @@ Camera_INDIClass::~Camera_INDIClass()
 void Camera_INDIClass::ClearStatus()
 {
     // reset properties pointer
+    connection_prop = NULL;
     expose_prop = NULL;
     frame_prop = NULL;
     frame_type_prop = NULL;
@@ -236,7 +237,8 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     else if (PropName == "CONNECTION" && Proptype == INDI_SWITCH) {
         //printf("Found CONNECTION for %s %s\n",DeviName, PropName);
         // Check the value here in case the device is already connected
-        ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
+        connection_prop = property->getSwitch();
+        ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
         Connected = (connectswitch->s == ISS_ON);
     }
     else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER){
@@ -302,8 +304,6 @@ bool Camera_INDIClass::Disconnect()
 void Camera_INDIClass::serverConnected()
 {
     // After connection to the server
-    // set option to receive blob and messages for the selected CCD
-    setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
     modal = true;
     // wait for the device port property
     wxLongLong msec;
@@ -320,6 +320,9 @@ void Camera_INDIClass::serverConnected()
         }
     }
     // Connect the camera device
+    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+         ::wxSafeYield();
+    }
     connectDevice(INDICameraName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
@@ -332,6 +335,8 @@ void Camera_INDIClass::serverConnected()
     {
         Connected = true;
         m_hasGuideOutput = (pulseGuideNS_prop && pulseGuideEW_prop);
+        // set option to receive blob and messages for the selected CCD
+        setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
     }
     else {
         pFrame->Alert(wxString::Format(_("Cannot connect to camera %s"), INDICameraName));

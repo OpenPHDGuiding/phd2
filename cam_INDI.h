@@ -48,6 +48,7 @@
 class Camera_INDIClass : public GuideCamera, public INDI::BaseClient
 {
 private:
+    ISwitchVectorProperty *connection_prop;
     INumberVectorProperty *expose_prop;
     INumberVectorProperty *frame_prop;
     INumber               *frame_x;

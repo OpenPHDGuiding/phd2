@@ -65,6 +65,7 @@ ScopeINDI::~ScopeINDI()
 void ScopeINDI::ClearStatus()
 {
     // reset properties pointer
+    connection_prop = NULL;
     coord_prop = NULL;
     abort_prop = NULL;
     MotionRate_prop = NULL;
@@ -200,6 +201,9 @@ void ScopeINDI::serverConnected()
         }
     }
     // Connect the mount device
+    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+         ::wxSafeYield();
+    }
     connectDevice(INDIMountName.mb_str(wxConvUTF8));
     
     msec = wxGetUTCTimeMillis();
@@ -338,7 +342,8 @@ void ScopeINDI::newProperty(INDI::Property *property)
     }
     else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
 	// Check the value here in case the device is already connected
-	ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
+        connection_prop = property->getSwitch();
+	ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
 	if (connectswitch->s == ISS_ON) Scope::Connect();
     }
     else if ((strcmp(PropName, "GEOGRAPHIC_COORD") == 0) && Proptype == INDI_NUMBER){

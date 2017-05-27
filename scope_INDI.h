@@ -42,6 +42,7 @@
 
 class ScopeINDI : public Scope, public INDI::BaseClient {
 private:
+    ISwitchVectorProperty *connection_prop;
     INumberVectorProperty *coord_prop;    
     ISwitchVectorProperty *abort_prop;
     INumberVectorProperty *MotionRate_prop;
