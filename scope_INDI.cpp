@@ -67,7 +67,7 @@ void ScopeINDI::ClearStatus()
     // reset properties pointer
     connection_prop = NULL;
     coord_prop = NULL;
-    abort_prop = NULL;
+    AbortMotion_prop = NULL;
     MotionRate_prop = NULL;
     moveNS_prop = NULL;
     moveEW_prop = NULL;
@@ -303,8 +303,9 @@ void ScopeINDI::newProperty(INDI::Property *property)
 	settrack_prop = IUFindSwitch(oncoordset_prop,"TRACK");
 	setsync_prop = IUFindSwitch(oncoordset_prop,"SYNC");
     }
-    else if ((strcmp(PropName, "ABORT") == 0) && Proptype == INDI_SWITCH){
-       abort_prop = property->getSwitch();
+    else if ((strcmp(PropName, "TELESCOPE_ABORT_MOTION") == 0) && Proptype == INDI_SWITCH){
+       AbortMotion_prop = property->getSwitch();
+       Abort_prop = IUFindSwitch(AbortMotion_prop,"ABORT");
     }
     else if ((strcmp(PropName, "TELESCOPE_MOTION_RATE") == 0) && Proptype == INDI_NUMBER){
 	MotionRate_prop = property->getNumber();
@@ -524,11 +525,25 @@ bool   ScopeINDI::GetSiteLatLong(double *latitude, double *longitude)
 
 bool   ScopeINDI::CanSlewAsync()
 {
-    // TODO: implement CanSlewAsync
-    return false;
+    // INDI slew is always async
+    return true;
 }
 
 bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
+{
+    bool err = true;
+    if (coord_prop && oncoordset_prop) {
+        err = SlewToCoordinatesAsync(ra, dec);
+        wxLongLong msec;
+        msec = wxGetUTCTimeMillis();
+        while ((coord_prop->s == IPS_BUSY) && wxGetUTCTimeMillis() - msec < 90 * 1000) {
+            ::wxSafeYield();
+        } 
+    }
+    return err; 
+}
+
+bool   ScopeINDI::SlewToCoordinatesAsync(double ra, double dec)
 {
     bool err = true;
     if (coord_prop && oncoordset_prop) {
@@ -546,15 +561,12 @@ bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
     return err;
 }
 
-bool   ScopeINDI::SlewToCoordinatesAsync(double ra, double dec)
-{
-    // TODO: implement SlewToCoordinatesAsync
-    return true; // error
-}
-
 void   ScopeINDI::AbortSlew(void)
 {
-    // TODO: implement AbortSlew
+    if (AbortMotion_prop && Abort_prop) {
+        Abort_prop->s = ISS_ON;
+        sendNewSwitch(AbortMotion_prop);
+    }    
 }
 
 bool   ScopeINDI::Slewing(void)

@@ -44,7 +44,6 @@ class ScopeINDI : public Scope, public INDI::BaseClient {
 private:
     ISwitchVectorProperty *connection_prop;
     INumberVectorProperty *coord_prop;    
-    ISwitchVectorProperty *abort_prop;
     INumberVectorProperty *MotionRate_prop;
     ISwitchVectorProperty *moveNS_prop;
     ISwitch               *moveN_prop;
@@ -69,6 +68,8 @@ private:
     ISwitchVectorProperty *pierside_prop;
     ISwitch               *piersideEast_prop;
     ISwitch               *piersideWest_prop;
+    ISwitchVectorProperty *AbortMotion_prop;
+    ISwitch               *Abort_prop;
     INDI::BaseDevice      *scope_device;
     long     INDIport;
     wxString INDIhost;
