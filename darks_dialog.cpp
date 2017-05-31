@@ -68,30 +68,26 @@ static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minva
 
 static void GetExposureDurationStrings(wxArrayString *ary)
 {
-    pFrame->GetExposureDurationStrings(ary);
-    ary->RemoveAt(0); // remove "Auto"
-}
-
-static void GetExposureDurations(std::vector<int> *vec)
-{
-    pFrame->GetExposureDurations(vec);
-    vec->erase(vec->begin()); // remove "Auto"
+    std::vector<int> d(pFrame->GetExposureDurations());
+    std::sort(d.begin(), d.end());
+    for (auto it = d.begin(); it != d.end(); ++it)
+        ary->Add(pFrame->ExposureDurationLabel(*it));
 }
 
 static wxString MinExposureDefault()
 {
     if (pMount && pMount->IsStepGuider())
-        return _T("0.1 s");
+        return pFrame->ExposureDurationLabel(100);
     else
-        return _T("1.0 s");
+        return pFrame->ExposureDurationLabel(1000);
 }
 
 static wxString MaxExposureDefault()
 {
     if (pMount && pMount->IsStepGuider())
-        return _T("2.5 s");
+        return pFrame->ExposureDurationLabel(2500);
     else
-        return _T("6.0 s");
+        return pFrame->ExposureDurationLabel(6000);
 }
 
 // Dialog operates in one of two modes: 1) To create a user-requested dark library or 2) To create a master dark frame
@@ -115,14 +111,14 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         wxFlexGridSizer *pDarkParams = new wxFlexGridSizer(2, 4, 5, 15);
 
         m_pDarkMinExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-            expCount, &m_expStrings[0], wxCB_READONLY);
+            m_expStrings, wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Min Exposure Time"), m_pDarkMinExpTime);
         m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", MinExposureDefault()));
         m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks. Choose a value corresponding to the shortest camera exposure you will use for guiding."));
 
         m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-            expCount, &m_expStrings[0], wxCB_READONLY);
+            m_expStrings, wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Max Exposure Time"), m_pDarkMaxExpTime);
         m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", MaxExposureDefault()));
@@ -268,8 +264,8 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         int minExpInx = m_pDarkMinExpTime->GetSelection();
         int maxExpInx = m_pDarkMaxExpTime->GetSelection();
 
-        std::vector<int> exposureDurations;
-        GetExposureDurations(&exposureDurations);
+        std::vector<int> exposureDurations(pFrame->GetExposureDurations());
+        std::sort(exposureDurations.begin(), exposureDurations.end());
 
         int tot_dur = 0;
         for (int i = minExpInx; i <= maxExpInx; i++)

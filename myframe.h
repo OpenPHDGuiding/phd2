@@ -302,15 +302,15 @@ public:
     void LoadProfileSettings(void);
     void UpdateTitle(void);
 
-    void GetExposureDurations(std::vector<int> *exposure_durations);
-    void GetExposureDurationStrings(wxArrayString *target);
-    int ExposureDurationFromSelection(const wxString& selection);
+    const std::vector<int>& GetExposureDurations();
+    bool SetCustomExposureDuration(int ms);
     void GetExposureInfo(int *currExpMs, bool *autoExp);
     bool SetExposureDuration(int val);
     const AutoExposureCfg& GetAutoExposureCfg(void) const { return m_autoExp; }
     void SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
     void ResetAutoExposure(void);
     void AdjustAutoExposure(double curSNR);
+    static wxString ExposureDurationLabel(int exposure);
     double GetDitherScaleFactor(void);
     bool SetDitherScaleFactor(double ditherScaleFactor);
     bool GetDitherRaOnly(void);

@@ -59,6 +59,7 @@ static const bool DefaultServerMode = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
 static const int DefaultFocalLength = 0;
+static const int DefaultExposureDuration = 1000;
 static const int DefaultAutoExpMin = 1000;
 static const int DefaultAutoExpMax = 5000;
 static const double DefaultAutoExpSNR = 6.0;
@@ -309,7 +310,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("Guider")).Caption(_T("Guider")).
         CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
 
-
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().
         Name(_T("GraphLog")).Caption(_("History")).
@@ -418,6 +418,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     Menubar->Check(MENU_TARGET, panel_state);
 
     m_mgr.Update();
+
+    // this forces force a resize of MainToolbar in case size changed from the saved perspective
+    MainToolbar->Realize();
 }
 
 MyFrame::~MyFrame()
@@ -581,50 +584,25 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
     pComboBox->SetMinSize(wxSize(width + extra, -1));
 }
 
-static wxString dur_choices[] = {
-    _T("Auto-placeholder"), // translated value provided later, cannot use _() in static initializer
-    _T("0.01 s"), _T("0.02 s"), _T("0.05 s"),
-    _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
-    _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
-    _T("6.0 s"), _T("7.0 s"), _T("8.0 s"), _T("9.0 s"),_T("10 s"), _T("15.0 s")
-};
-static const int DefaultDurChoiceIdx = 7; // 1.0s
-static int dur_values[] = {
-    -1,
-    10, 20, 50,
-    100, 200, 500, 1000, 1500,
-    2000, 2500, 3000, 3500, 4000, 4500, 5000,
-    6000, 7000, 8000, 9000, 10000, 15000,
-};
+static std::vector<int> exposure_durations;
 
-int MyFrame::ExposureDurationFromSelection(const wxString& sel)
+const std::vector<int>& MyFrame::GetExposureDurations()
 {
-    for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
-        if (sel == dur_choices[i])
-            return dur_values[i];
-    Debug.Write(wxString::Format("unexpected exposure selection: %s\n", sel));
-    return 1000;
+    return exposure_durations;
 }
 
-void MyFrame::GetExposureDurations(std::vector<int> *exposure_durations)
+bool MyFrame::SetCustomExposureDuration(int ms)
 {
-    exposure_durations->clear();
-    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
-        exposure_durations->push_back(dur_values[i]);
-}
-
-void MyFrame::GetExposureDurationStrings(wxArrayString *target)
-{
-    for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
-        target->Add(dur_choices[i]);
-}
-
-static int dur_index(int duration)
-{
-    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
-        if (duration == dur_values[i])
-            return i;
-    return -1;
+    auto end = exposure_durations.end() - 1;
+    for (auto it = exposure_durations.begin(); it != end; ++it)
+        if (ms == *it)
+            return true; // error, duplicate value
+    if (m_exposureDuration == *end)
+        m_exposureDuration = ms;
+    *end = ms;
+    Dur_Choice->SetString(1 + exposure_durations.size() - 1, wxString::Format(_("Custom: %g s"), (double) ms / 1000.));
+    pConfig->Profile.SetInt("/CustomExposureDuration", ms);
+    return false;
 }
 
 void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp)
@@ -641,12 +619,22 @@ void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp)
     }
 }
 
+static int dur_index(int duration)
+{
+    for (auto it = exposure_durations.begin(); it != exposure_durations.end(); ++it)
+        if (duration == *it)
+            return it - exposure_durations.begin();
+    return -1;
+}
+
 bool MyFrame::SetExposureDuration(int val)
 {
     int idx;
-    if ((idx = dur_index(val)) == -1)
+    if (val < 0) // Auto
+        idx = 0;
+    else if ((idx = dur_index(val)) == -1)
         return false;
-    Dur_Choice->SetValue(dur_choices[idx]);
+    Dur_Choice->SetSelection(idx + 1); // skip Auto
     wxCommandEvent dummy;
     OnExposureDurationSelected(dummy);
     return true;
@@ -712,6 +700,15 @@ void MyFrame::AdjustAutoExposure(double curSNR)
             Debug.Write(wxString::Format("AutoExp: adjust SNR=%.2f new exposure %d\n", curSNR, m_exposureDuration));
         }
     }
+}
+
+wxString MyFrame::ExposureDurationLabel(int duration)
+{
+    if (duration >= 10000)
+        return wxString::Format(_("%g s"), (double) duration / 1000.);
+
+    int digits = duration < 100 ? 2 : 1;
+    return wxString::Format(_("%.*f s"), digits, (double) duration / 1000.);
 }
 
 Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
@@ -799,10 +796,33 @@ void MyFrame::LoadProfileSettings(void)
     m_autoExp.enabled = true; // OnExposureDurationSelected below will set the actual value
     ResetAutoExposure();
 
-    wxString dur = pConfig->Profile.GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
-    Dur_Choice->SetValue(dur);
-    wxCommandEvent dummy;
-    OnExposureDurationSelected(dummy);
+    // set custom exposure duration vector value and drop-down list string from profile setting
+    int customDuration = pConfig->Profile.GetInt("/CustomExposureDuration", 30000);
+    *exposure_durations.rbegin() = customDuration;
+    Dur_Choice->SetString(1 + exposure_durations.size() - 1, wxString::Format(_("Custom: %g s"), (double) customDuration / 1000.));
+
+    // for backward compatibity:
+    // exposure duration used to be stored as the formatted string value appearing in the drop-down list,
+    // but this does not work if the locale is changed
+    // TODO: remove this code after a few releases (code added 5/30/2017)
+    // replace with:
+    // int exposureDuration = pConfig->Profile.GetInt("/ExposureDurationMs", DefaultExposureDuration);
+    int exposureDuration = DefaultExposureDuration;
+    if (pConfig->Profile.HasEntry("/ExposureDurationMs"))
+        exposureDuration = pConfig->Profile.GetInt("/ExposureDurationMs", DefaultExposureDuration);
+    else if (pConfig->Profile.HasEntry("/ExposureDuration"))
+    {
+        wxString s = pConfig->Profile.GetString("/ExposureDuration", wxEmptyString);
+        const wxStringCharType *start = s.wx_str();
+        wxStringCharType *end;
+        double d = wxStrtod(start, &end);
+        if (end != start)
+            exposureDuration = (int)(d * 1000.0);
+        else if (s == _("Auto"))
+            exposureDuration = -1;
+        pConfig->Profile.DeleteEntry("/ExposureDuration");
+    }
+    SetExposureDuration(exposureDuration);
 
     int val = pConfig->Profile.GetInt("/Gamma", GAMMA_DEFAULT);
     if (val < GAMMA_MIN) val = GAMMA_MIN;
@@ -850,13 +870,27 @@ void MyFrame::SetupToolBar()
 #   include "icons/cam_setup_disabled.png.h"
     wxBitmap cam_setup_bmp_disabled(wxBITMAP_PNG_FROM_DATA(cam_setup_disabled));
 
-    // provide translated strings for dur_choices here since cannot use _() in static initializer
-    dur_choices[0] = _("Auto");
+    int dur_values[] = {
+        10, 20, 50,
+        100, 200, 500, 1000, 1500,
+        2000, 2500, 3000, 3500, 4000, 4500, 5000,
+        6000, 7000, 8000, 9000, 10000, 15000,
+        30000, // final entry is custom value
+    };
+    for (int i = 0; i < WXSIZEOF(dur_values); i++)
+        exposure_durations.push_back(dur_values[i]);
+
+    wxArrayString durs;
+    durs.Add(_("Auto"));
+    for (int i = 0; i < WXSIZEOF(dur_values) - 1; i++)
+        durs.Add(ExposureDurationLabel(dur_values[i]));
+    durs.Add(wxString::Format(_("Custom: %g s"), 9999.0));
+    durs.Add(_("Edit Custom..."));
 
     Dur_Choice = new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        WXSIZEOF(dur_choices), dur_choices, wxCB_READONLY);
+        durs, wxCB_READONLY);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
-    SetComboBoxWidth(Dur_Choice, 40);
+    SetComboBoxWidth(Dur_Choice, 10);
 
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
     Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60));         // Slightly darker than toolbar background
@@ -2525,7 +2559,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 {
     int width;
     wxWindow *parent;
-    
+
     m_pFrame = pFrame;
     m_pResetConfiguration = new wxCheckBox(GetParentWindow(AD_cbResetConfig), wxID_ANY, _("Reset Configuration"));
     AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status -- Note: this closes PHD2"));
@@ -2704,10 +2738,14 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     parent = GetParentWindow(AD_szAutoExposure);
+
     m_autoExpDurationMin = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
+        wxArrayString(), wxCB_READONLY);
     m_autoExpDurationMax = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
+        wxArrayString(), wxCB_READONLY);
+    wxSize minsz(StringWidth(pFrame->ExposureDurationLabel(999.99)) + 30, -1);
+    m_autoExpDurationMin->SetMinSize(minsz);
+    m_autoExpDurationMax->SetMinSize(minsz);
 
     width = StringWidth(_T("00.0"));
     m_autoExpSNR = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
@@ -2750,14 +2788,25 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
 
     const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
-    int idx = dur_index(cfg.minExposure);
-    if (idx == -1)
-        idx = dur_index(DefaultAutoExpMin);
-    m_autoExpDurationMin->SetValue(dur_choices[idx]);
-    idx = dur_index(cfg.maxExposure);
-    if (idx == -1)
-        idx = dur_index(DefaultAutoExpMax);
-    m_autoExpDurationMax->SetValue(dur_choices[idx]);
+
+    std::vector<int> dur(pFrame->GetExposureDurations());
+    std::sort(dur.begin(), dur.end());
+    wxArrayString as;
+    for (auto it = dur.begin(); it != dur.end(); ++it)
+        as.Add(pFrame->ExposureDurationLabel(*it));
+
+    m_autoExpDurationMin->Set(as);
+    m_autoExpDurationMax->Set(as);
+
+    auto pos = std::find(dur.begin(), dur.end(), cfg.minExposure);
+    if (pos == dur.end())
+        pos = std::find(dur.begin(), dur.end(), DefaultAutoExpMin);
+    m_autoExpDurationMin->SetSelection(pos - dur.begin());
+
+    pos = std::find(dur.begin(), dur.end(), cfg.maxExposure);
+    if (pos == dur.end())
+        pos = std::find(dur.begin(), dur.end(), DefaultAutoExpMax);
+    m_autoExpDurationMax->SetSelection(pos - dur.begin());
 
     m_autoExpSNR->SetValue(cfg.targetSNR);
 
@@ -2823,17 +2872,13 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
         m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
 
-        wxString sel = m_autoExpDurationMin->GetValue();
-        int durationMin = m_pFrame->ExposureDurationFromSelection(sel);
-        if (durationMin <= 0)
-            durationMin = DefaultAutoExpMin;
-        sel = m_autoExpDurationMax->GetValue();
-        int durationMax = m_pFrame->ExposureDurationFromSelection(sel);
-        if (durationMax <= 0)
-            durationMax = DefaultAutoExpMax;
+        const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
+        std::vector<int> dur(m_pFrame->GetExposureDurations());
+        std::sort(dur.begin(), dur.end());
+        int durationMin = dur[m_autoExpDurationMin->GetSelection()];
+        int durationMax = dur[m_autoExpDurationMax->GetSelection()];
         if (durationMax < durationMin)
             durationMax = durationMin;
-
         m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
 
         ImageLoggerSettings imlSettings;

@@ -42,22 +42,68 @@
 #include "starcross_test.h"
 
 #include <wx/spinctrl.h>
-#include <wx/textfile.h>
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
 #include <wx/stdpaths.h>
+#include <wx/textdlg.h>
+#include <wx/textfile.h>
+#include <wx/txtstrm.h>
 #include <wx/utils.h>
+#include <wx/wfstream.h>
 
 #include <memory>
 
 wxDEFINE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
 
-void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
+void MyFrame::OnExposureDurationSelected(wxCommandEvent& evt)
 {
-    wxString sel = Dur_Choice->GetValue();
-    int duration = ExposureDurationFromSelection(sel);
-    if (duration > 0)
+    int idx = Dur_Choice->GetSelection();
+    bool needSelect = false;
+
+    if (idx == 0)
     {
+        // Auto-exposure
+        if (!m_autoExp.enabled)
+            Debug.AddLine("AutoExp: enabled");
+        m_autoExp.enabled = true;
+    }
+    else if (idx == Dur_Choice->GetCount() - 1)
+    {
+        // edit custom
+
+        int customVal = *(GetExposureDurations().end() - 1);
+        wxTextEntryDialog dlg(this, _("Custom exposure duration (seconds)"), _("Edit custom exposure"),
+            wxString::Format("%g", (double) customVal / 1000.), wxOK | wxCANCEL);
+        if (dlg.ShowModal() == wxID_OK)
+        {
+            double val;
+            if (dlg.GetValue().ToDouble(&val) && val > 0.0 && val < 3600.)
+            {
+                int ms = (int)(val * 1000.0);
+                SetCustomExposureDuration(ms);
+            }
+        }
+
+        // restore the actual selection
+        if (m_autoExp.enabled)
+        {
+            Dur_Choice->SetSelection(0);
+        }
+        else
+        {
+            const std::vector<int>& dur(GetExposureDurations());
+            auto pos = std::find(dur.begin(), dur.end(), m_exposureDuration);
+            if (pos == dur.end())
+                pos = std::find(dur.begin(), dur.end(), 1000); // safe fall-back, should not happen
+            Dur_Choice->SetSelection(pos - dur.begin() + 1); // skip Auto
+        }
+    }
+    else
+        needSelect = true;
+
+    if (needSelect)
+    {
+        const std::vector<int>& dur(GetExposureDurations());
+        int duration = dur[idx - 1];
+
         Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
 
         m_exposureDuration = duration;
@@ -69,17 +115,10 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
             pCamera->SelectDark(m_exposureDuration);
         }
     }
-    else
-    {
-        // Auto-exposure
-        if (!m_autoExp.enabled)
-            Debug.AddLine("AutoExp: enabled");
-        m_autoExp.enabled = true;
-    }
 
     GuideLog.SetGuidingParam("Exposure", ExposureDurationSummary());
 
-    pConfig->Profile.SetString("/ExposureDuration", sel);
+    pConfig->Profile.SetInt("/ExposureDurationMs", m_exposureDuration);
 }
 
 int MyFrame::RequestedExposureDuration()

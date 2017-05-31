@@ -604,8 +604,7 @@ static void get_exposure(JObj& response, const json_value *params)
 
 static void get_exposure_durations(JObj& response, const json_value *params)
 {
-    std::vector<int> exposure_durations;
-    pFrame->GetExposureDurations(&exposure_durations);
+    const std::vector<int>& exposure_durations = pFrame->GetExposureDurations();
     response << jrpc_result(exposure_durations);
 }
 
