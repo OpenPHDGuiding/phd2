@@ -629,12 +629,19 @@ static int dur_index(int duration)
 
 bool MyFrame::SetExposureDuration(int val)
 {
-    int idx;
-    if (val < 0) // Auto
-        idx = 0;
-    else if ((idx = dur_index(val)) == -1)
-        return false;
-    Dur_Choice->SetSelection(idx + 1); // skip Auto
+    if (val < 0)
+    {
+        // Auto
+        Dur_Choice->SetSelection(0);
+    }
+    else
+    {
+        int idx = dur_index(val);
+        if (idx == -1)
+            return false;
+        Dur_Choice->SetSelection(idx + 1); // skip Auto
+    }
+
     wxCommandEvent dummy;
     OnExposureDurationSelected(dummy);
     return true;
