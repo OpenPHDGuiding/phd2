@@ -1515,18 +1515,7 @@ static void dither(JObj& response, const json_value *params)
 
 static void shutdown(JObj& response, const json_value *params)
 {
-#if defined(__WINDOWS__)
-
-    // The wxEVT_CLOSE_WINDOW message may not be processed on Windows if phd2 is sitting idle
-    // when the client invokes shutdown. As a workaround pump some timer event messages to
-    // keep the event loop from stalling and ensure that the wxEVT_CLOSE_WINDOW is processed.
-
-    (new wxTimer(&wxGetApp()))->Start(20); // this object leaks but we don't care
-#endif
-
-    wxCloseEvent *evt = new wxCloseEvent(wxEVT_CLOSE_WINDOW);
-    evt->SetCanVeto(false);
-    wxQueueEvent(pFrame, evt);
+    wxGetApp().TerminateApp();
 
     response << jrpc_result(0);
 }

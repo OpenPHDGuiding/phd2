@@ -2867,7 +2867,10 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         pFrame->SetLanguage(m_LanguageIDs[language]);
         if (m_oldLanguageChoice != language)
         {
-            wxMessageBox(_("You must restart PHD2 for the language change to take effect."), _("Info"));
+            int val = wxMessageBox(_("You must restart PHD2 for the language change to take effect.\n"
+                "Would you like to restart PHD2 now?"), _("Restart PHD2"), wxYES_NO | wxCENTRE);
+            if (val == wxYES)
+                wxGetApp().RestartApp();
         }
 
         wxString newdir = m_pLogDir->GetValue();

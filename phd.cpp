@@ -97,8 +97,72 @@ PhdApp::PhdApp(void)
 #endif // __linux__
 };
 
+void PhdApp::HandleRestart()
+{
+    // wait until prev instance (parent) terminates
+    while (true)
+    {
+        std::unique_ptr<wxSingleInstanceChecker> si(new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber)));
+        if (!si->IsAnotherRunning())
+            break;
+        wxMilliSleep(200);
+    }
+
+    // copy command-line args skipping "restart"
+    wchar_t **targv = new wchar_t*[argc * sizeof(*targv)];
+    targv[0] = wxStrdup(argv[0].wc_str());
+    int src = 2, dst = 1;
+    while (src < argc)
+        targv[dst++] = wxStrdup(argv[src++].wc_str());
+    targv[dst] = 0;
+
+    // launch a new instance
+    wxExecute(targv, wxEXEC_ASYNC);
+
+    // exit the helper instance
+    wxExit();
+}
+
+void PhdApp::RestartApp()
+{
+    // copy command-line args inserting "restart" as the first arg
+    wchar_t **targv = new wchar_t*[(argc + 2) * sizeof(*targv)];
+    targv[0] = wxStrdup(argv[0].wc_str());
+    targv[1] = wxStrdup(_T("restart"));
+    int src = 1, dst = 2;
+    while (src < argc)
+        targv[dst++] = wxStrdup(argv[src++].wc_str());
+    targv[dst] = 0;
+
+    // launch the restart process
+    wxExecute(targv, wxEXEC_ASYNC);
+
+    // gracefully exit this instance
+    TerminateApp();
+}
+
+void PhdApp::TerminateApp()
+{
+#if defined(__WINDOWS__)
+
+    // The wxEVT_CLOSE_WINDOW message may not be processed on Windows if phd2 is sitting idle
+    // when the client invokes shutdown. As a workaround pump some timer event messages to
+    // keep the event loop from stalling and ensure that the wxEVT_CLOSE_WINDOW is processed.
+
+    (new wxTimer(&wxGetApp()))->Start(20); // this object leaks but we don't care
+
+#endif // __WINDOWS__
+
+    wxCloseEvent *evt = new wxCloseEvent(wxEVT_CLOSE_WINDOW);
+    evt->SetCanVeto(false);
+    wxQueueEvent(pFrame, evt);
+}
+
 bool PhdApp::OnInit()
 {
+    if (argc > 1 && argv[1] == _T("restart"))
+        HandleRestart(); // exits
+
     if (!wxApp::OnInit())
     {
         return false;
@@ -215,7 +279,7 @@ int PhdApp::OnExit(void)
     delete pConfig;
     pConfig = NULL;
 
-    delete m_instanceChecker; // OnExit() won't be called if we return false
+    delete m_instanceChecker;
     m_instanceChecker = 0;
 
     return wxApp::OnExit();

@@ -221,6 +221,9 @@ public:
     int OnExit(void);
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
+    void TerminateApp(void);
+    void RestartApp(void);
+    void HandleRestart(void);
     virtual bool Yield(bool onlyIfNeeded=false);
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
