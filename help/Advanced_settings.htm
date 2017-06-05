@@ -139,7 +139,14 @@ two. &nbsp;The pixel size has no effect on guiding accuracy, so a small
 amount of imprecision in the user interface won't &nbsp;cause any
 problems. &nbsp;If you're using the binning setting in this dialog to
 control camera binning, the pixel size should be the native, un-binned
-size.</li><li>'<a name="Camera_gain"></a>Camera
+size. &nbsp;<span style="font-weight: bold;">Note:&nbsp;</span>
+this control may be disabled if the camera and camera driver can report
+the pixel size to PHD2. &nbsp;In that case, the value displayed in the
+disabled control represents the device-reported pixel size - it is what
+it is. &nbsp;If you're also specifying a binning factor at the camera
+driver level rather than in PHD2, the reported pixel size may change as
+a result. &nbsp;It is generally better to use PHD2 to set binning (see
+below).</li><li>'<a name="Camera_gain"></a>Camera
 gain' - Sets the gain level for the many cameras
 that support this feature. &nbsp;Reducing this parameter can help to
 reduce the noise level or may allow use of a bright star without

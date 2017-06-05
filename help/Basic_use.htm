@@ -350,10 +350,9 @@ is required in clicking on the star -&nbsp;<span style="font-style: italic;">PHD
 star
 nearest to the cursor. &nbsp;After you do this, a green box will
 appear to frame the star. &nbsp;If you pick a star that is too
-bright, a message box will tell you the star is&nbsp;saturated, and you
-should
-either use a different star or decrease the exposure duration.
-&nbsp;The choice of exposure time will
+bright (saturated), the status bar will show a &nbsp;red 'SAT' label&nbsp;&nbsp;and you
+should choose a fainter star if one is available.
+&nbsp;You can adjust the gamma slider to the left to see fainter stars. &nbsp;The choice of exposure time will
 depend entirely on your equipment, sky conditions, and the available
 stars. &nbsp;The exposure time you choose has several
 implications: <br>
@@ -372,20 +371,32 @@ to experiment to understand what works best for your situation.
 &nbsp;</li><li>It
 has a strong effect on the sensitivity of the guide algorithms to
 seeing conditions. &nbsp;As the exposure time is increased up
-through&nbsp;4-6 seconds, the effects of seeing are smoothed out.
+through 2-6 seconds, the effects of seeing are smoothed out.
 &nbsp;The camera is essentially averaging out the larger,
 high-frequency seeing movements, so the guide algorithms have less
 difficulty distinguishing "seeing jitter" from actual guide star
-displacements that need to be corrected.</li>
+displacements that need to be corrected. &nbsp;This is particularly
+noticeable if you are guiding with a long focal length setup.</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
-of one to five seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
+of two to four seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
 guide star&nbsp;by using the Alt-S keyboard shortcut after stars are
 visible in the main display. If you want to de-select a star without
 choosing another one, you can do a shift-click anywhere on the image display window. &nbsp; If you are just
 starting with this
 equipment set-up, you'll probably need to focus the guide camera -
-doing so is important for good guiding. &nbsp;You can use&nbsp;the <a href="Tools.htm#Star_Profile">Star Profile tool</a> to help with that process. <br><br>
+doing so is important for good guiding. &nbsp;You can use&nbsp;the <a href="Tools.htm#Star_Profile">Star Profile tool</a>
+to help with that process. &nbsp; The camera exposure control displays
+a wide range of pre-set exposure times. &nbsp;Exposure
+times smaller than one second are intended for use with adaptive
+optics devices or in other special situations - they are generally not
+appropriate for use with typical guide camera set-ups. &nbsp;There is
+also a
+'custom' exposure option at the bottom of the list that lets you
+specify a value not already displayed. &nbsp;Again, this is intended
+for special applications, for example where an unusually long exposure
+time is
+needed.<br><br>
 There is also an Auto exposure time selection available. When exposure
 is set to Auto, PHD2 will attempt to adjust the exposure to keep the
 selected guide star at a constant signal-to-noise ratio (SNR) value.
