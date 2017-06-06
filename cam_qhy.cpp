@@ -324,17 +324,19 @@ bool Camera_QHY::Disconnect()
 
 bool Camera_QHY::ST4PulseGuideScope(int direction, int duration)
 {
-    int qdir;
+    uint32_t qdir;
 
     switch (direction)
     {
-    case NORTH: qdir = 0; break;
-    case SOUTH: qdir = 1; break;
-    case EAST:  qdir = 2; break;
+    case NORTH: qdir = 1; break;
+    case SOUTH: qdir = 2; break;
+    case EAST:  qdir = 0; break;
     case WEST:  qdir = 3; break;
     default: return true; // bad direction passed in
     }
-    ControlQHYCCDGuide(m_camhandle, qdir, duration);
+    if (duration > (uint16_t) (-1))
+        duration = (uint16_t) (-1);
+    ControlQHYCCDGuide(m_camhandle, qdir, static_cast<uint16_t>(duration));
     WorkerThread::MilliSleep(duration + 10);
     return false;
 }
