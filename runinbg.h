@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Andy Galasso.
- *  Copyright (c) 2014 Andy Galasso
+ *  Copyright (c) 2014-2017 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -50,6 +50,7 @@ public:
     virtual ~RunInBg(void);
     void SetPopupDelay(unsigned int millis);
     bool Run();
+    void SetMessage(const wxString& message);
 
     // sub-classes implement the background activity in Entry()
     virtual bool Entry(void) = 0;
@@ -59,6 +60,10 @@ public:
 
     void SetErrorMsg(const wxString& msg);
     wxString GetErrorMsg(void);
+
+    // Sub-classes can override OnCancel() to do something when the cancel button is clicked (in
+    // the main thread)
+    virtual void OnCancel();
 
     // If cancel is requested and the background thread does not exit after a short grace period,
     // the backdound thread will be killed. Sub-classes can override OnKill() to do something right

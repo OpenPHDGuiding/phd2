@@ -202,6 +202,7 @@ public:
     wxMenuItem *m_useDefectMapMenuItem;
     wxMenuItem *m_calibrationMenuItem;
     wxMenuItem *m_importCamCalMenuItem;
+    wxMenuItem *m_upgradeMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
@@ -243,6 +244,7 @@ public:
     void OnHelp(wxCommandEvent& evt);
     void OnOverlay(wxCommandEvent& evt);
     void OnOverlaySlitCoords(wxCommandEvent& evt);
+    void OnUpgrade(wxCommandEvent& evt);
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
@@ -396,11 +398,14 @@ public:
     void NotifyGuidingParam(const wxString& name, int val);
     void NotifyGuidingParam(const wxString& name, bool val);
     void NotifyGuidingParam(const wxString& name, const wxString& val);
+
+    void NotifyUpdaterStateChanged();
+
     // Following 2 functions are used by clients that need to size the spin control based on the max text width
-    wxSpinCtrl* MakeSpinCtrl(wxWindow *parent, wxWindowID id = -1, const wxString& value = wxEmptyString,
+    wxSpinCtrl *MakeSpinCtrl(wxWindow *parent, wxWindowID id = -1, const wxString& value = wxEmptyString,
         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_ARROW_KEYS,
         int min = 0, int max = 100, int initial = 0, const wxString& name = wxT("wxSpinCtrl"));
-    wxSpinCtrlDouble* MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString,
+    wxSpinCtrlDouble *MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString,
         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
         long style = wxSP_ARROW_KEYS | wxALIGN_RIGHT, double min = 0, double max = 100, double initial = 0,
         double inc = 1, const wxString& name = wxT("wxSpinCtrlDouble"));
@@ -420,7 +425,6 @@ private:
     alert_fn *m_alertSpecialFn;
     long m_alertFnArg;
 
-
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
@@ -432,6 +436,7 @@ private:
     void OnAlertFromThread(wxThreadEvent& event);
     void OnReconnectCameraFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
+    void OnUpdaterStateChanged(wxThreadEvent& event);
     void OnMessageBoxProxy(wxCommandEvent& evt);
     void SetupMenuBar(void);
     void SetupStatusBar(void);
@@ -602,6 +607,7 @@ enum {
     MENU_BOOKMARKS_SET_AT_STAR,
     MENU_BOOKMARKS_CLEAR_ALL,
     MENU_STARCROSS_TEST,
+    MENU_HELP_UPGRADE,
 };
 
 enum {

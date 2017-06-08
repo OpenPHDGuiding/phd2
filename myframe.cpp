@@ -39,6 +39,7 @@
 #include "aui_controls.h"
 #include "comet_tool.h"
 #include "guiding_assistant.h"
+#include "phdupdate.h"
 #include "Refine_DefMap.h"
 
 #include <wx/filesys.h>
@@ -72,6 +73,7 @@ wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -86,6 +88,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
     EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
+    EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
     EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -150,6 +153,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnStatusMsg)
     EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
     EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
+    EVT_THREAD(UPDATER_EVENT, MyFrame::OnUpdaterStateChanged)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
 
@@ -536,6 +540,7 @@ void MyFrame::SetupMenuBar(void)
 
     wxMenu *help_menu = new wxMenu;
     help_menu->Append(wxID_ABOUT, _("&About..."), wxString::Format(_("About %s"), APPNAME));
+    m_upgradeMenuItem = help_menu->Append(MENU_HELP_UPGRADE, _("&Check for updates"), _("Check for PHD2 software updates"));
     help_menu->Append(wxID_HELP_CONTENTS,_("&Contents...\tF1"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 
@@ -1367,6 +1372,22 @@ void MyFrame::ClearGuiderInfo()
     m_statusbar->ClearGuiderInfo();
 }
 
+void MyFrame::OnUpgrade(wxCommandEvent& evt)
+{
+    PHD2Updater::CheckNow();
+}
+
+void MyFrame::NotifyUpdaterStateChanged()
+{
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, UPDATER_EVENT);
+    wxQueueEvent(this, event);
+}
+
+void MyFrame::OnUpdaterStateChanged(wxThreadEvent& event)
+{
+    PHD2Updater::OnUpdaterStateChanged();
+}
+
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
 {
     bool bError = false;
@@ -1846,6 +1867,8 @@ void MyFrame::OnClose(wxCloseEvent& event)
 
     // disconnect all gear
     pGearDialog->Shutdown(killed);
+
+    PHD2Updater::StopUpdater();
 
     // stop the socket server and event server
     StartServer(false);
@@ -2830,6 +2853,11 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_LogNextNFrames->SetValue(imlSettings.logNextNFrames);
     m_LogNextNFramesCount->SetValue(imlSettings.logNextNFramesCount);
 
+    UpdaterSettings updSettings;
+    PHD2Updater::GetSettings(&updSettings);
+
+    // todo: updater settings UI
+
     wxCommandEvent dummy;
     OnImageLogEnableChecked(dummy);
 }
@@ -2909,6 +2937,11 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
         ImageLogger::ApplySettings(imlSettings);
         SaveImageLoggerSettings(imlSettings);
+
+        UpdaterSettings updSettings;
+        PHD2Updater::GetSettings(&updSettings);
+        // todo: update updSettings from the UI
+        PHD2Updater::SetSettings(updSettings);
     }
     catch (const wxString& Msg)
     {

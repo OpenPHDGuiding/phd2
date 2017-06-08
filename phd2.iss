@@ -44,6 +44,7 @@ Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\altaircamsdk.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\LIBCURL.DLL; DestDir: {app}; Flags: replacesameversion
 Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
@@ -56,8 +57,27 @@ Name: {group}\PHD Guiding 2; FileName: {app}\phd2.exe
 
 [Run]
 Filename: {tmp}\dark_mover.vbs; Description: Relocate dark files; Flags: shellexec waituntilterminated
-Filename: {app}\phd2.exe; Description: Launch {#APP_NAME} after installation; Flags: nowait postinstall skipifsilent
+Filename: {app}\phd2.exe; Description: Launch {#APP_NAME} after installation; Flags: nowait postinstall runasoriginaluser skipifsilent
 
 [Registry]
 Root: HKCU; Subkey: Software\StarkLabs; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: Software\StarkLabs\PHDGuidingV2; Flags: uninsdeletekey
+
+[Code]
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode, i: Integer;
+begin
+  if CurStep = ssDone then
+    if WizardSilent() then
+    begin
+      for I := 1 to ParamCount do begin
+        if CompareText(ParamStr(i), '/launch') = 0 then
+        begin
+          ExecAsOriginalUser(ExpandConstant('{app}\phd2.exe'), '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
+          break;
+        end
+      end
+    end
+end;

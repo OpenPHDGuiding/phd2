@@ -403,6 +403,9 @@ set(phd2_SRC
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
 
+  ${phd_src_dir}/phdupdate.cpp
+  ${phd_src_dir}/phdupdate.h
+
   ${phd_src_dir}/profile_wizard.h
   ${phd_src_dir}/profile_wizard.cpp
 
@@ -437,6 +440,8 @@ set(phd2_SRC
   ${phd_src_dir}/serialport_posix.cpp
   ${phd_src_dir}/serialport_posix.h
   ${phd_src_dir}/serialports.h
+  ${phd_src_dir}/sha1.cpp
+  ${phd_src_dir}/sha1.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
   ${phd_src_dir}/starcross_test.cpp
@@ -502,7 +507,7 @@ foreach(current_locale IN LISTS all_locales)
     get_filename_component(message_file_basename ${current_file} NAME)
     get_filename_component(message_file_ext ${current_file} EXT)
     if(("${message_file_ext}" STREQUAL ".mo") OR ("${message_file_ext}" STREQUAL ".zip"))
-      message(STATUS "Harhar ${message_file_ext} / ${current_file}")
+      # message(STATUS "Harhar ${message_file_ext} / ${current_file}")
       set(phd2_SRC ${phd2_SRC} ${current_file})
     endif()
   endforeach()

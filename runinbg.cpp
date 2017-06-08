@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Andy Galasso.
- *  Copyright (c) 2014 Andy Galasso
+ *  Copyright (c) 2014-2017 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -50,6 +50,8 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
     wxWindow *m_parent;
     wxString m_title;
     wxString m_message;
+    wxCriticalSection m_updateMsgCS;
+    wxString *m_updateMsg;
     ProgressWindow *m_win;
     bool m_shown;
     volatile bool m_done;
@@ -63,6 +65,7 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         m_parent(parent),
         m_title(title),
         m_message(message),
+        m_updateMsg(nullptr),
         m_win(0),
         m_shown(false),
         m_done(false),
@@ -126,6 +129,17 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         return err;
     }
 
+    void SetMessage(const wxString& message)
+    {
+        if (m_win)
+        {
+            wxCriticalSectionLocker _lck(m_updateMsgCS);
+            m_updateMsg = new wxString(message);
+        }
+        else
+            m_message = message;
+    }
+
     void Notify() // timer notification
     {
         if (!m_shown && wxDateTime::UNow() >= m_showTime)
@@ -135,11 +149,28 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         }
         if (m_win)
         {
-            bool cont = m_win->Pulse();
+            wxString *updateMsg;
+            { // lock scope
+                wxCriticalSectionLocker _lck(m_updateMsgCS);
+                updateMsg = m_updateMsg;
+                m_updateMsg = nullptr;
+            }
+
+            bool cont;
+            if (updateMsg)
+            {
+                cont = m_win->Pulse(*updateMsg);
+                m_message = *updateMsg;
+                delete updateMsg;
+            }
+            else
+                cont = m_win->Pulse();
+
             if (!cont)
             {
                 m_canceled = true;
                 Debug.AddLine("Canceled");
+                m_bg->OnCancel();
                 delete m_win;
                 m_win = 0;
             }
@@ -174,6 +205,11 @@ bool RunInBg::Run(void)
     return m_impl->Run();
 }
 
+void RunInBg::SetMessage(const wxString& message)
+{
+    m_impl->SetMessage(message);
+}
+
 void RunInBg::SetErrorMsg(const wxString& msg)
 {
     m_impl->m_errorMsg = msg;
@@ -187,6 +223,10 @@ wxString RunInBg::GetErrorMsg(void)
 bool RunInBg::IsCanceled(void)
 {
     return m_impl->m_canceled;
+}
+
+void RunInBg::OnCancel()
+{
 }
 
 void RunInBg::OnKill()

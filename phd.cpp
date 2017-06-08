@@ -34,11 +34,13 @@
 
 #include "phd.h"
 
+#include "phdupdate.h"
+
 #include <wx/cmdline.h>
 #include <wx/snglinst.h>
 
 #ifdef  __linux__
-    #include <X11/Xlib.h>
+# include <X11/Xlib.h>
 #endif // __linux__
 
 //#define DEVBUILD
@@ -262,6 +264,8 @@ bool PhdApp::OnInit()
     {
         pFrame->pGearDialog->ShowProfileWizard();               // First-light version of profile wizard
     }
+
+    PHD2Updater::InitUpdater();
 
     return true;
 }

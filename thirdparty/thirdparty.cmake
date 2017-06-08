@@ -470,6 +470,27 @@ if(${USB_build})
 endif()
 
 
+#############################################
+# libcurl
+#############################################
+
+if(WIN32)
+  set(libcurl_root ${thirdparties_deflate_directory}/libcurl)
+  set(libcurl_dir ${libcurl_root}/libcurl-7.54.0-win32)
+  if(NOT EXISTS ${libcurl_root})
+    # unzip the dependency
+    file(MAKE_DIRECTORY ${libcurl_root})
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/libcurl-7.54.0-win32.zip --format=zip
+        WORKING_DIRECTORY ${libcurl_root})
+  endif()
+  include_directories(${libcurl_dir}/include)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libcurl_dir}/lib/LIBCURL.LIB)
+else()
+  find_package(CURL REQUIRED)
+  include_directories(${CURL_INCLUDE_DIRS})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CURL_LIBRARIES})
+endif()
 
 #############################################
 # the Eigen library, mostly header only
@@ -563,9 +584,6 @@ else()
 endif()
 
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
-
-
-
 
 
 
@@ -699,6 +717,8 @@ if(WIN32)
   # some other that are explicitly loaded at runtime
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGUSB_WIN.dll)
+
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${libcurl_dir}/lib/LIBCURL.DLL)
 
   # ASCOM
   # disabled since not used in the SLN
