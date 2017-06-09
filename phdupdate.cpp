@@ -177,7 +177,7 @@ struct Updater
     CURL *curl;
     wxString newver;
     wxString installer_url;
-    wxString sha1;
+    wxString installer_sha1;
     bool m_interactive;
     UpdateNow *m_updatenow;
     volatile bool abort;
@@ -263,6 +263,10 @@ struct Updater
 
     bool FetchVersionInfo()
     {
+        newver.Clear();
+        installer_url.Clear();
+        installer_sha1.Clear();
+
         if (!curl)
             return false;
 
@@ -288,20 +292,26 @@ struct Updater
 
         // split
         wxArrayString ary = wxStringTokenize(buf);
-        if (ary.size() != 3)
-        {
-            Debug.Write("UPD: unexpected version info format from server\n");
 
+        if (ary.size() >= 1)
+        {
+            newver = ary[0];
+            Debug.Write(wxString::Format("UPD: latest ver = %s\n", newver));
+        }
+        else
+        {
+            Debug.Write("UPD: missing version info from server\n");
             return false;
         }
 
-        newver = ary[0];
-        installer_url = ary[1];
-        sha1 = ary[2];
+        if (ary.size() >= 3)
+        {
+            installer_url = ary[1];
+            installer_sha1 = ary[2];
 
-        Debug.Write(wxString::Format("UPD: latest ver = %s\n", newver));
-        Debug.Write(wxString::Format("UPD: URL = %s\n", installer_url));
-        Debug.Write(wxString::Format("UPD: SHA1 = %s\n", sha1));
+            Debug.Write(wxString::Format("UPD: URL = %s\n", installer_url));
+            Debug.Write(wxString::Format("UPD: SHA1 = %s\n", installer_sha1));
+        }
 
         return true;
     }
@@ -401,7 +411,7 @@ struct Updater
         {
             Debug.Write(wxString::Format("UPD: installer is present %s\n", filename));
 
-            if (SHA1Valid(filename, sha1))
+            if (SHA1Valid(filename, installer_sha1))
                 return false;
 
             // sha1 is invalid, remove the file
@@ -487,26 +497,28 @@ struct Updater
             return;
         }
 
-#ifdef __WXMSW__
-
-        // Windows: download the installer
-
-        if (DownloadNeeded())
+        if (installer_url.IsEmpty())
         {
-            SetStatus(UPD_DOWNLOADING_INSTALLER);
-            bool ok = DownloadInstaller();
-            SetStatus(ok ? UPD_DOWNLOAD_DONE : UPD_ABORTED);
+            // OSX and Linux: no installer, just show a message indicating
+            // that a newer version is available
+
+            SetStatus(UPD_UPDATE_NEEDED);
         }
         else
         {
-            SetStatus(UPD_READY_FOR_INSTALL);
-        }
-#else
-        // OSX and Linux: no installer, just show a message indicating
-        // that a newer version is available
+            // Windows: download the installer
 
-        SetStatus(UPD_UPDATE_NEEDED);
-#endif
+            if (DownloadNeeded())
+            {
+                SetStatus(UPD_DOWNLOADING_INSTALLER);
+                bool ok = DownloadInstaller();
+                SetStatus(ok ? UPD_DOWNLOAD_DONE : UPD_ABORTED);
+            }
+            else
+            {
+                SetStatus(UPD_READY_FOR_INSTALL);
+            }
+        }
     }
 
     bool CanCheckNow()
@@ -597,21 +609,10 @@ struct Updater
             wxT("http://openphdguiding.org/development-snapshots") : wxT("http://openphdguiding.org/downloads");
     }
 
-    static void VisitSite(const wxString& loc)
-    {
-#if defined(__WXMSW__)
-        ::ShellExecuteA(NULL, "open", loc.c_str(), NULL, NULL, SW_SHOWNORMAL);
-#elif defined(__WXOSX__)
-        ::wxExecute("/usr/bin/open '" + loc + "'", wxEXEC_ASYNC);
-#else
-        ::wxExecute("xdg-open '" + loc + "'", wxEXEC_ASYNC);
-#endif
-    }
-
     static void AlertVisitSite(long arg)
     {
         Updater *This = reinterpret_cast<Updater *>(arg);
-        VisitSite(This->GetDownloadPageURL());
+        wxLaunchDefaultBrowser(This->GetDownloadPageURL());
     }
 
     void AlertUpdateAvailableNonInteractive()
