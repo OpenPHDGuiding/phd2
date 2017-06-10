@@ -44,19 +44,50 @@
 #endif
 
 #if defined(__WXMSW__)
-# define OSNAME "win"
+# define OSNAME _T("win")
 # define DefaultEnableUpdate true
 #elif defined(__APPLE__)
-# define OSNAME "osx"
+# define OSNAME _T("osx")
 # define DefaultEnableUpdate true
 #else
-# define OSNAME "linux"
+# define OSNAME _T("linux")
 # define DefaultEnableUpdate false
 #endif
 
 static unsigned long DownloadBgMaxBPS = 100 * 1024; // 100 kB/sec
 
 struct Updater;
+
+struct UpdaterDialog : public wxDialog
+{
+    enum Mode {
+        MODE_NOTIFY,  // notification that a new version is available (Linux/OSX)
+        MODE_INSTALL, // ready to install a new version (Windows)
+    };
+    enum Interactive {
+        NONINTERACTIVE,
+        INTERACTIVE,
+    };
+
+    static const int DisplayTime = 60;
+
+    Updater *m_updater;
+    Mode m_mode;
+    wxTextCtrl *m_text;
+    wxButton *m_goButton;
+    wxHtmlWindow *m_html;
+    wxStaticText *m_closingMessage;
+    wxCheckBox *m_keepOpen;
+    wxTimer m_timer;
+    int m_timeRemaining;
+
+    UpdaterDialog(Updater *updater, Mode mode, Interactive interactive, const wxString& text, const wxString& changelog);
+    ~UpdaterDialog();
+
+    void OnGoClicked(wxCommandEvent& event);
+    void OnKeepOpenChecked(wxCommandEvent& event);
+    void OnTimer(wxTimerEvent& event);
+};
 
 enum UpdaterStatus
 {
@@ -178,6 +209,7 @@ struct Updater
     wxString newver;
     wxString installer_url;
     wxString installer_sha1;
+    wxString changelog;
     bool m_interactive;
     UpdateNow *m_updatenow;
     volatile bool abort;
@@ -251,14 +283,44 @@ struct Updater
         curl_global_cleanup();
     }
 
+    wxString SeriesName()
+    {
+        switch (m_settings.series) {
+        case UPD_SERIES_MAIN: return _T("main");
+        case UPD_SERIES_DEV: default: return _T("dev");
+        }
+    }
+ 
     wxString ReleaseInfoURL()
     {
-        wxString series;
-        switch (m_settings.series) {
-        case UPD_SERIES_MAIN: series = "main"; break;
-        case UPD_SERIES_DEV: series = "dev"; break;
+        return wxString::Format(_T("https://openphdguiding.org/release-%s-") OSNAME _T(".txt"), SeriesName());
+    }
+
+    wxString ChangeLogURL()
+    {
+        return wxString::Format(_T("https://openphdguiding.org/changelog-%s/"), SeriesName());
+    }
+
+    bool FetchURL(wxString *buf, const wxString& url)
+    {
+        if (!curl)
+            return false;
+
+        Debug.Write(wxString::Format("UPD: fetch %s\n", url));
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
+        curl_easy_setopt(curl, CURLOPT_URL, (const char *) url);
+
+        CURLcode res = curl_easy_perform(curl);
+
+        if (res != CURLE_OK)
+        {
+            Debug.Write(wxString::Format("UPD: fetch error: %s\n",  curl_easy_strerror(res)));
+            return false;
         }
-        return wxString::Format("https://openphdguiding.org/release-%s-" OSNAME ".txt", series);
+
+        return true;
     }
 
     bool FetchVersionInfo()
@@ -267,28 +329,10 @@ struct Updater
         installer_url.Clear();
         installer_sha1.Clear();
 
-        if (!curl)
-            return false;
-
-        wxString url = ReleaseInfoURL();
-
-        Debug.Write(wxString::Format("UPD: fetch version info %s\n", url));
-
         wxString buf;
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buf);
-        curl_easy_setopt(curl, CURLOPT_URL, (const char *) url);
-
-        CURLcode res = curl_easy_perform(curl);
-
-        if (res != CURLE_OK)
-        {
-            Debug.Write(wxString::Format("UPD: could not fetch version info: %s\n",
-                curl_easy_strerror(res)));
-
+        if (!FetchURL(&buf, ReleaseInfoURL()))
             return false;
-        }
 
         // split
         wxArrayString ary = wxStringTokenize(buf);
@@ -316,6 +360,12 @@ struct Updater
         return true;
     }
 
+    bool FetchChangeLog()
+    {
+        changelog.Clear();
+        return FetchURL(&changelog, ChangeLogURL());
+    }
+
     bool NeedsUpgrade()
     {
         Version cur(FULLVER);
@@ -335,10 +385,12 @@ struct Updater
                 if (force > 2 || (force == 2 && m_interactive) || (force == 1 && !m_interactive))
                 {
                     Debug.Write("UPD: dev forcing upgrade\n");
+
                     needs_upgrade = true;
+
+                    // one-shot, set it back to 0
+                    pConfig->Global.SetInt("/Update/force", 0);
                 }
-                // one-shot, set it back to 0
-                pConfig->Global.SetInt("/Update/force", 0);
             }
         }
 
@@ -497,6 +549,12 @@ struct Updater
             return;
         }
 
+        if (!FetchChangeLog())
+        {
+            SetStatus(UPD_ABORTED);
+            return;
+        }
+
         if (installer_url.IsEmpty())
         {
             // OSX and Linux: no installer, just show a message indicating
@@ -578,76 +636,35 @@ struct Updater
         return false;
     }
 
-    void PromptAndRunInstaller()
-    {
-        wxString msg = wxString::Format(
-            _("PHD2 version %s is ready to install.\n\nUpdate and restart PHD2 now?"), newver);
-
-        int val = wxMessageBox(msg, _("PHD2 Update Available"), wxYES_NO, pFrame);
-
-        if (val == wxYES)
-            RunInstaller();
-    }
-
-    static void AlertRunInstaller(long arg)
-    {
-        Updater *This = reinterpret_cast<Updater *>(arg);
-        This->RunInstaller();
-    }
-
-    void PromptAndRunInstallerNonInteractive()
-    {
-        wxString msg = wxString::Format(
-            _("PHD2 version %s is ready to install. Update and restart PHD2 now?"), newver);
-
-        pFrame->Alert(msg, nullptr, _("Update"), AlertRunInstaller, reinterpret_cast<long>(this), false, wxICON_INFORMATION);
-    }
-
     wxString GetDownloadPageURL()
     {
         return m_settings.series == UPD_SERIES_DEV ?
             wxT("http://openphdguiding.org/development-snapshots") : wxT("http://openphdguiding.org/downloads");
     }
 
-    static void AlertVisitSite(long arg)
+    void ShowUpdate(UpdaterDialog::Mode mode, UpdaterDialog::Interactive interactive)
     {
-        Updater *This = reinterpret_cast<Updater *>(arg);
-        wxLaunchDefaultBrowser(This->GetDownloadPageURL());
-    }
+        wxString msg;
 
-    void AlertUpdateAvailableNonInteractive()
-    {
-        wxString msg = wxString::Format(
-            _("PHD2 version %s is available at %s"), newver, GetDownloadPageURL());
-
-        pFrame->Alert(msg, nullptr, _("Web Site"), AlertVisitSite, reinterpret_cast<long>(this), false, wxICON_INFORMATION);
-    }
-
-    void ShowUpdateNeeded()
-    {
-        struct Dialog : public wxDialog
+        if (mode == UpdaterDialog::MODE_NOTIFY)
         {
-            wxHtmlWindow *html;
-            Dialog() : wxDialog(pFrame, wxID_ANY, _("PHD2 Update Available"), wxDefaultPosition, wxDefaultSize,
-                                wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE)
-            {
-                SetSizeHints(wxDefaultSize, wxDefaultSize);
-                wxBoxSizer *b1 = new wxBoxSizer(wxVERTICAL);
-                html = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 80), 0);
-                b1->Add(html, 0, wxALL, 5);
-                SetSizer(b1);
-                Layout();
-                b1->Fit(this);
-                Centre(wxBOTH);
-            }
-        } dlg;
+            msg = wxString::Format(
+                _("PHD2 version %s is available at %s"), newver, GetDownloadPageURL());
+        }
+        else
+        {
+            msg = wxString::Format(
+                _("PHD2 version %s is ready to install. Update and restart PHD2 now?"), newver);
+        }
 
-        dlg.html->SetPage(
-            wxT("<br>") +
-            wxString::Format(_("PHD2 version %s is available at"), newver) +
-            wxT("<br><br><center>") + GetDownloadPageURL() + wxT("</center>"));
-
-        dlg.ShowModal();
+        UpdaterDialog *dlg = new UpdaterDialog(this, mode, interactive, msg, changelog);
+        if (interactive == UpdaterDialog::INTERACTIVE)
+        {
+            dlg->ShowModal();
+            delete dlg;
+        }
+        else
+            dlg->Show();
     }
 
     void HandleStateNonInteractive()
@@ -665,9 +682,9 @@ struct Updater
         }
 
         if (m_status == UPD_UPDATE_NEEDED)
-            AlertUpdateAvailableNonInteractive();  // Mac and Linux
+            ShowUpdate(UpdaterDialog::MODE_NOTIFY, UpdaterDialog::NONINTERACTIVE);  // Mac and Linux
         else if (m_status == UPD_READY_FOR_INSTALL)
-            PromptAndRunInstallerNonInteractive(); // Windows
+            ShowUpdate(UpdaterDialog::MODE_INSTALL, UpdaterDialog::NONINTERACTIVE);
     }
 
     void HandleStateInteractive()
@@ -718,6 +735,125 @@ void UpdateNow::OnCancel()
     m_upd->abort = true;
 }
 
+UpdaterDialog::UpdaterDialog(Updater *updater, Mode mode, Interactive interactive, const wxString& text, const wxString& changelog)
+    :
+    wxDialog(pFrame, wxID_ANY, _("PHD2 Update Available"), wxDefaultPosition, wxDefaultSize,
+             wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+    m_updater(updater),
+    m_mode(mode),
+    m_keepOpen(nullptr)
+{
+    wxBoxSizer *sz1 = new wxBoxSizer(wxVERTICAL);
+
+    m_text = new wxTextCtrl(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
+        wxTE_READONLY | wxTE_CENTRE | wxNO_BORDER);
+    wxFont fnt = m_text->GetFont();
+    fnt.SetWeight(wxBOLD);
+    m_text->SetFont(fnt);
+    m_text->SetMinClientSize(m_text->GetTextExtent(text) + wxSize(16, 0));
+    sz1->Add(m_text, 0, wxALL | wxEXPAND, 5);
+
+    wxString label = mode == MODE_NOTIFY ? _("Web Site") : _("Install");
+    m_goButton = new wxButton(this, wxID_ANY, label, wxDefaultPosition, wxDefaultSize, 0);
+    sz1->Add(m_goButton, 0, wxALIGN_CENTER | wxALL, 5);
+
+    wxStaticLine *line1 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+    sz1->Add(line1, 0, wxEXPAND | wxALL, 5);
+
+    wxStaticText *label1 = new wxStaticText(this, wxID_ANY, _("Change Log"), wxDefaultPosition, wxDefaultSize, 0);
+    label1->Wrap(-1);
+    sz1->Add(label1, 0, wxLEFT | wxRIGHT | wxTOP, 5);
+
+    m_html = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO);
+    m_html->SetMinSize(wxSize(550, 320));
+    sz1->Add(m_html, 1, wxALL | wxEXPAND, 5);
+    m_html->SetPage(changelog);
+
+    m_timer.SetOwner(this, wxID_ANY);
+
+    if (interactive == NONINTERACTIVE)
+    {
+        wxBoxSizer *sz3 = new wxBoxSizer(wxHORIZONTAL);
+
+        m_closingMessage = new wxStaticText(this, wxID_ANY, wxString::Format(_("Closing in %d seconds"), 9999), wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+        m_closingMessage->Wrap(-1);
+        sz3->Add(m_closingMessage, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+        m_keepOpen = new wxCheckBox(this, wxID_ANY, wxT("keep open"), wxDefaultPosition, wxDefaultSize, 0);
+        sz3->Add(m_keepOpen, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+        sz1->Add(sz3, 0, wxEXPAND, 5);
+
+        m_timeRemaining = DisplayTime;
+
+        wxTimerEvent dummy;
+        OnTimer(dummy);
+
+        m_timer.Start(1000);
+
+        m_keepOpen->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(UpdaterDialog::OnKeepOpenChecked), NULL, this);
+    }
+
+    SetSizerAndFit(sz1);
+    Layout();
+
+    Centre(wxBOTH);
+
+    // Connect Events
+    m_goButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(UpdaterDialog::OnGoClicked), NULL, this);
+    Connect(wxID_ANY, wxEVT_TIMER, wxTimerEventHandler(UpdaterDialog::OnTimer));
+}
+
+UpdaterDialog::~UpdaterDialog()
+{
+    // Disconnect Events
+    m_goButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(UpdaterDialog::OnGoClicked), NULL, this);
+    if (m_keepOpen)
+        m_keepOpen->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(UpdaterDialog::OnKeepOpenChecked), NULL, this);
+    Disconnect(wxID_ANY, wxEVT_TIMER, wxTimerEventHandler(UpdaterDialog::OnTimer));
+}
+
+void UpdaterDialog::OnGoClicked(wxCommandEvent& event)
+{
+    if (m_mode == MODE_INSTALL)
+    {
+        if (IsModal())
+            EndModal(wxID_OK);
+        else
+            Close();
+
+        m_updater->RunInstaller();
+    }
+    else
+    {
+        wxLaunchDefaultBrowser(m_updater->GetDownloadPageURL());
+    }
+}
+
+void UpdaterDialog::OnKeepOpenChecked(wxCommandEvent& event)
+{
+    if (m_keepOpen->IsChecked())
+    {
+        m_timer.Stop();
+        m_closingMessage->SetLabel(wxEmptyString);
+    }
+    else
+    {
+        m_timeRemaining = DisplayTime;
+        wxTimerEvent dummy;
+        OnTimer(dummy);
+        m_timer.Start();
+    }
+}
+
+void UpdaterDialog::OnTimer(wxTimerEvent& event)
+{
+    if (m_timeRemaining < 10 || (m_timeRemaining % 10) == 0)
+        m_closingMessage->SetLabel(wxString::Format(_("Closing in %d seconds"), m_timeRemaining));
+    if (m_timeRemaining-- <= 0)
+        Close();
+}
+
 // ======= public interface ======
 
 static Updater *updater;
@@ -761,9 +897,9 @@ void PHD2Updater::CheckNow()
     if (updater->m_status == UPD_UP_TO_DATE)
         pFrame->StatusMsg(_("PHD2 is up to date"));
     else if (updater->m_status == UPD_READY_FOR_INSTALL || updater->m_status == UPD_DOWNLOAD_DONE)
-        updater->PromptAndRunInstaller();
+        updater->ShowUpdate(UpdaterDialog::MODE_INSTALL, UpdaterDialog::INTERACTIVE);
     else if (updater->m_status == UPD_UPDATE_NEEDED)
-        updater->ShowUpdateNeeded();
+        updater->ShowUpdate(UpdaterDialog::MODE_NOTIFY, UpdaterDialog::INTERACTIVE);
     else if (updater->m_status == UPD_ABORTED && !updater->abort)
         pFrame->StatusMsg(_("Unable to check updates"));
 
