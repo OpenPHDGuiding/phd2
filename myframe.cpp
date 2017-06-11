@@ -2592,7 +2592,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
 
     m_pFrame = pFrame;
     m_pResetConfiguration = new wxCheckBox(GetParentWindow(AD_cbResetConfig), wxID_ANY, _("Reset Configuration"));
-    AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status -- Note: this closes PHD2"));
+    AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status. This will require restarting PHD2"));
     m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Show Again\" messages")); 
     AddCtrl(CtrlMap, AD_cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't show this again\"."));
 
@@ -2868,14 +2868,12 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
     {
         if (m_pResetConfiguration->GetValue())
         {
-            int choice = wxMessageBox(_("This will reset all PHD2 configuration values and exit the program.  Are you sure?"), _("Confirmation"), wxYES_NO);
+            int choice = wxMessageBox(_("This will reset all PHD2 configuration values and restart the program.  Are you sure?"), _("Confirmation"), wxYES_NO);
 
             if (choice == wxYES)
             {
                 pConfig->DeleteAll();
-
-                wxCommandEvent *pEvent = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, wxID_EXIT);
-                pFrame->QueueEvent(pEvent);
+                wxGetApp().RestartApp();
             }
         }
 
