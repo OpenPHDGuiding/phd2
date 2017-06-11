@@ -227,7 +227,9 @@ struct Updater
     void LoadSettings()
     {
         m_settings.enabled = pConfig->Global.GetBoolean("/Update/enabled", DefaultEnableUpdate);
-        int series = pConfig->Global.GetInt("/Update/series", UPD_SERIES_MAIN);
+        bool isDevBuild = !wxString(PHDSUBVER).IsEmpty();
+        int DefaultSeries = isDevBuild ? UPD_SERIES_DEV : UPD_SERIES_MAIN;
+        int series = pConfig->Global.GetInt("/Update/series", DefaultSeries);
         switch (series) {
         case UPD_SERIES_MAIN:
         case UPD_SERIES_DEV:
