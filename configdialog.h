@@ -51,6 +51,7 @@ enum BRAIN_CTRL_IDS
     AD_cbResetConfig,
     AD_cbDontAsk,
     AD_szLanguage,
+    AD_szSoftwareUpdate,
     AD_szLogFileInfo,
     AD_cbEnableImageLogging,
     AD_szImageLoggingOptions,

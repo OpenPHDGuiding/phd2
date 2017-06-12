@@ -2572,6 +2572,7 @@ void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
     pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig), grid_flags);
     pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk), grid_flags);
     this->Add(pTopGrid, sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szSoftwareUpdate), sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
     this->Add(GetSingleCtrl(CtrlMap, AD_cbEnableImageLogging), sizer_flags);
     this->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingOptions), sizer_flags);
@@ -2662,6 +2663,19 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         wxSize(width + 35, -1), languages);
     AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
         wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
+
+    // Software Update
+    {
+        parent = GetParentWindow(AD_szSoftwareUpdate);
+        wxStaticBoxSizer *sz = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Software Update"));
+        m_updateEnabled = new wxCheckBox(parent, wxID_ANY, _("Automatically check for updates"));
+        m_updateEnabled->SetToolTip(_("Check for software updates when PHD2 starts (recommended)"));
+        sz->Add(m_updateEnabled, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+        m_updateMajorOnly = new wxCheckBox(parent, wxID_ANY, _("Only check for major releases"));
+        m_updateMajorOnly->SetToolTip(_("Ignore minor (development) releases when checking for updates"));
+        sz->Add(m_updateMajorOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxALL, 8));
+        AddGroup(CtrlMap, AD_szSoftwareUpdate, sz);
+    }
 
     // Log directory location - use a group box with a wide text edit control and a 'browse' button at the far right
     parent = GetParentWindow(AD_szLogFileInfo);
@@ -2856,7 +2870,8 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     UpdaterSettings updSettings;
     PHD2Updater::GetSettings(&updSettings);
 
-    // todo: updater settings UI
+    m_updateEnabled->SetValue(updSettings.enabled);
+    m_updateMajorOnly->SetValue(updSettings.series == UPD_SERIES_MAIN);
 
     wxCommandEvent dummy;
     OnImageLogEnableChecked(dummy);
@@ -2937,8 +2952,8 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         SaveImageLoggerSettings(imlSettings);
 
         UpdaterSettings updSettings;
-        PHD2Updater::GetSettings(&updSettings);
-        // todo: update updSettings from the UI
+        updSettings.enabled = m_updateEnabled->GetValue();
+        updSettings.series = m_updateMajorOnly->GetValue() ? UPD_SERIES_MAIN : UPD_SERIES_DEV;
         PHD2Updater::SetSettings(updSettings);
     }
     catch (const wxString& Msg)
