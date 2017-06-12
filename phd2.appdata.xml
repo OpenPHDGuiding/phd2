@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Mattia Verga <mattia.verga@tiscali.it> -->
+<component type="desktop-application">
+    <id>phd2.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>BSD-3-Clause</project_license>
+    <name>PHD2</name>
+    <summary>Telescope guiding software</summary>
+    
+    <description>
+        <p>
+        PHD2 is telescope guiding software that simplifies the process
+        of tracking a guide star, letting you concentrate on other aspects of
+        deep-sky imaging or spectroscopy.
+        </p>
+        <ul>
+            <li>Easy-to-use, “push here dummy” guiding for beginners</li>
+            <li>Sophisticated guiding and analysis tools for experienced users</li>
+            <li>Extensive support for commonly-used equipment</li>
+            <li>Extensive online help and responsive product support</li>
+        </ul>
+    </description>
+    
+    <launchable type="desktop-id">phd2.desktop</launchable>
+    
+    <screenshots>
+        <screenshot type="default">
+            <caption>The main window</caption>
+            <image>http://openphdguiding.org/wp-content/uploads/2015/06/capture_21.jpg</image>
+        </screenshot>
+    </screenshots>
+    
+    <url type="homepage">http://openphdguiding.org/</url>
+    <url type="help">http://openphdguiding.org/manual/?section=Introduction.htm</url>
+</component>

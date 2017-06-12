@@ -73,6 +73,8 @@ if(UNIX AND NOT APPLE)
           RENAME "phd2.png")
   install(FILES ${phd_src_dir}/phd2.desktop      
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
+  install(FILES ${phd_src_dir}/phd2.appdata.xml      
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appdata/ )
 
   # Make Debian package
   set(CPACK_GENERATOR "DEB")
