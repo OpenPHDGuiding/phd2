@@ -4,7 +4,7 @@
     <id>phd2.desktop</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>BSD-3-Clause</project_license>
-    <name>Comical</name>
+    <name>PHD2</name>
     <summary>Telescope guiding software</summary>
     
     <description>
@@ -17,7 +17,6 @@
             <li>Easy-to-use, “push here dummy” guiding for beginners</li>
             <li>Sophisticated guiding and analysis tools for experienced users</li>
             <li>Extensive support for commonly-used equipment</li>
-            <li>Easy upgrade/co-installation with PHD1, including many new features</li>
             <li>Extensive online help and responsive product support</li>
         </ul>
     </description>
@@ -28,10 +27,6 @@
         <screenshot type="default">
             <caption>The main window</caption>
             <image>http://openphdguiding.org/wp-content/uploads/2015/06/capture_21.jpg</image>
-        </screenshot>
-        <screenshot>
-            <caption>The log viewer</caption>
-            <image>http://openphdguiding.org/wp-content/uploads/2015/05/phdlogviewer_sm.png</image>
         </screenshot>
     </screenshots>
     
