@@ -168,6 +168,10 @@
 			<param name="Name" value="Keyboard Shortcuts">
 			<param name="Local" value="Tools.htm#Keyboard_Shortcuts">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Software Update">
+			<param name="Local" value="Tools.htm#Software_Update">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Keyboard Shortcuts">
