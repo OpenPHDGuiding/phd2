@@ -598,7 +598,7 @@ struct Updater
         if (m_thread->Run() != wxTHREAD_NO_ERROR)
         {
             delete m_thread;
-            m_thread = 0;
+            m_thread = nullptr;
         }
     }
 
