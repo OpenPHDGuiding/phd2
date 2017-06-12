@@ -135,6 +135,7 @@ public:
 struct Version
 {
     short int r[5];
+
     Version(const wxString& s)
     {
         r[0] = r[1] = r[2] = r[3] = r[4] = 0;
@@ -163,6 +164,8 @@ struct Version
         }
     }
 
+    static Version ThisVersion() { return Version(FULLVER); }
+
     bool operator==(const Version& rhs) const
     {
         return r[0] == rhs.r[0] &&
@@ -184,6 +187,8 @@ struct Version
         if (r[3] > rhs.r[3]) return false;
         return r[4] < rhs.r[4];
     }
+
+    bool IsDevBuild() const { return r[3] != 0; }
 };
 
 static size_t write_buf_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
@@ -227,8 +232,7 @@ struct Updater
     void LoadSettings()
     {
         m_settings.enabled = pConfig->Global.GetBoolean("/Update/enabled", DefaultEnableUpdate);
-        bool isDevBuild = !wxString(PHDSUBVER).IsEmpty();
-        int DefaultSeries = isDevBuild ? UPD_SERIES_DEV : UPD_SERIES_MAIN;
+        int DefaultSeries = Version::ThisVersion().IsDevBuild() ? UPD_SERIES_DEV : UPD_SERIES_MAIN;
         int series = pConfig->Global.GetInt("/Update/series", DefaultSeries);
         switch (series) {
         case UPD_SERIES_MAIN:
@@ -687,6 +691,8 @@ struct Updater
             ShowUpdate(UpdaterDialog::MODE_NOTIFY, UpdaterDialog::NONINTERACTIVE);  // Mac and Linux
         else if (m_status == UPD_READY_FOR_INSTALL)
             ShowUpdate(UpdaterDialog::MODE_INSTALL, UpdaterDialog::NONINTERACTIVE);
+        else if (m_status == UPD_UP_TO_DATE)
+            pFrame->StatusMsg(_("PHD2 is up to date"));
     }
 
     void HandleStateInteractive()
@@ -897,13 +903,13 @@ void PHD2Updater::CheckNow()
     UpdateNow(updater).Run();
 
     if (updater->m_status == UPD_UP_TO_DATE)
-        pFrame->StatusMsg(_("PHD2 is up to date"));
+        wxMessageBox(_("PHD2 is up to date"), _("Software Update"), wxOK);
     else if (updater->m_status == UPD_READY_FOR_INSTALL || updater->m_status == UPD_DOWNLOAD_DONE)
         updater->ShowUpdate(UpdaterDialog::MODE_INSTALL, UpdaterDialog::INTERACTIVE);
     else if (updater->m_status == UPD_UPDATE_NEEDED)
         updater->ShowUpdate(UpdaterDialog::MODE_NOTIFY, UpdaterDialog::INTERACTIVE);
     else if (updater->m_status == UPD_ABORTED && !updater->abort)
-        pFrame->StatusMsg(_("Unable to check updates"));
+        wxMessageBox(_("Unable to check updates"), _("Software Update"), wxOK | wxICON_WARNING, pFrame);
 
     pFrame->m_upgradeMenuItem->Enable(true);
 }
