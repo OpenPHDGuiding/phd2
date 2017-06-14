@@ -35,8 +35,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-14 04:43-0400\n"
-"PO-Revision-Date: 2017-06-14 10:05+0200\n"
+"POT-Creation-Date: 2017-06-14 16:14-0400\n"
+"PO-Revision-Date: 2017-06-14 21:59+0200\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team: <LL@li.org>\n"
 "Language: es\n"
@@ -1782,7 +1782,7 @@ msgid ""
 "you connect to it first."
 msgstr ""
 "Cámara no conectada. Propiedades adicionales estarán disponibles si conecta "
-"la cámara primero."
+"primero la cámara."
 
 #: camera.cpp:823
 msgid "Star Saturation Detection"
@@ -4298,11 +4298,11 @@ msgstr "Calibrado Manual"
 
 #: myframe.cpp:484
 msgid "Flip Calibration Data"
-msgstr "Dar la vuelta a los datos de calibración"
+msgstr "Invertir a los datos de calibración"
 
 #: myframe.cpp:484
 msgid "Flip RA calibration vector"
-msgstr "Dar la vuelta a la calibración del vector RA"
+msgstr "Invertir la calibración del vector RA"
 
 #: myframe.cpp:485
 msgid "Clear Calibration Data..."
@@ -4601,7 +4601,7 @@ msgstr "Instrucciones rápidas paralosimpacientes"
 
 #: myframe.cpp:548
 msgid "&File"
-msgstr "&archivo"
+msgstr "&Archivo"
 
 #: myframe.cpp:557
 msgid "&Tools"
@@ -4850,7 +4850,7 @@ msgstr "Técnica para reducir el ruido en las imágenes"
 
 #: myframe.cpp:2616
 msgid "Time Lapse (ms)"
-msgstr "Tiempo entreTomas (ms)"
+msgstr "Tiempo entre tomas (ms)"
 
 #: myframe.cpp:2617
 msgid ""
@@ -6023,7 +6023,7 @@ msgstr ""
 
 #: scope.cpp:1642
 msgid "Reverse Dec output after meridian flip"
-msgstr "Dar la vuelta al valor de DEC después de un cambio de meridiano"
+msgstr "Invertir el valor de DEC después de un cambio de meridiano"
 
 #: scope.cpp:1644
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
@@ -6033,7 +6033,7 @@ msgstr ""
 
 #: scope.cpp:1651
 msgid "Stop guiding when mount slews"
-msgstr "Pararel guiado cuando la montura se desplaza"
+msgstr "Parar el guiado cuando la montura se desplaza"
 
 #: scope.cpp:1653
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
