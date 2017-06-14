@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-14 04:43-0400\n"
-"PO-Revision-Date: 2017-03-30 16:39+0800\n"
+"PO-Revision-Date: 2017-06-14 23:41+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -1322,59 +1322,59 @@ msgstr "無法啟用 USB 程式庫"
 
 #: cam_qhy.cpp:131
 msgid "Failed to initialize QHY SDK"
-msgstr ""
+msgstr "無法啟用 QHY SDK"
 
 #: cam_qhy.cpp:159
 msgid "No compatible QHY cameras found"
-msgstr ""
+msgstr "找不到相容的 QHY 相機"
 
 #: cam_qhy.cpp:172
 msgid "Select QHY camera"
-msgstr ""
+msgstr "選擇 QHY 相機"
 
 #: cam_qhy.cpp:189
 msgid "Failed to connect to camera"
-msgstr ""
+msgstr "無法連接相機"
 
 #: cam_qhy.cpp:201
 msgid "SetQHYCCDStreamMode failed"
-msgstr ""
+msgstr "SetQHYCCDStreamMode 失敗"
 
 #: cam_qhy.cpp:210 cam_qhy.cpp:305
 msgid "Init camera failed"
-msgstr ""
+msgstr "無法啟用相機"
 
 #: cam_qhy.cpp:219
 msgid "Failed to get gain range"
-msgstr ""
+msgstr "無法取得增益範圍"
 
 #: cam_qhy.cpp:230
 msgid "Failed to get camera chip info"
-msgstr ""
+msgstr "無法取得相機晶片資訊"
 
 #: cam_qhy.cpp:261
 msgid "Failed to get camera bin info"
-msgstr ""
+msgstr "無法取得相機影像併合資訊"
 
 #: cam_qhy.cpp:281
 msgid "Failed to set camera binning"
-msgstr ""
+msgstr "無法設定相機影像併合"
 
 #: cam_qhy.cpp:443
 msgid "Failed to set camera exposure"
-msgstr ""
+msgstr "無法設定相機曝光時間"
 
 #: cam_qhy.cpp:460
 msgid "Failed to set camera gain"
-msgstr ""
+msgstr "無法設定增益範圍"
 
 #: cam_qhy.cpp:468
 msgid "QHY exposure failed"
-msgstr ""
+msgstr "QHY 曝光失敗"
 
 #: cam_qhy.cpp:488
 msgid "QHY get frame failed"
-msgstr ""
+msgstr "由 QHY 相機讀取影像失敗"
 
 #: cam_sbigrotator.cpp:62
 msgid "Enter RA Angle (in degrees)"
@@ -1802,7 +1802,7 @@ msgstr ""
 
 #: camera.cpp:919
 msgid "Saturation by Max-ADU value:"
-msgstr ""
+msgstr "星點飽和度 (以 Max-ADU 值來評量):"
 
 #: camera.cpp:920
 msgid "Identify star saturation based on camera maximum-ADU value"
@@ -1810,7 +1810,7 @@ msgstr "以相機的最大 ADU 值為基準來判別星點的飽和度"
 
 #: camera.cpp:927
 msgid "Saturation via star-profile"
-msgstr ""
+msgstr "星點飽和度 (透過 star-profile 來評量)"
 
 #: camera.cpp:928
 msgid ""
@@ -2029,15 +2029,15 @@ msgstr "驅動程式"
 
 #: config_INDI.cpp:122
 msgid "Dual CCD"
-msgstr ""
+msgstr "雙 CCD"
 
 #: config_INDI.cpp:125
 msgid "Main"
-msgstr ""
+msgstr "主要"
 
 #: config_INDI.cpp:126
 msgid "Secondary"
-msgstr ""
+msgstr "次要"
 
 #: config_INDI.cpp:137
 msgid "Other options"
@@ -2902,7 +2902,7 @@ msgstr "清除圖型資料"
 #: graph-stepguider.cpp:165
 #, c-format
 msgid "%.1f Hz"
-msgstr ""
+msgstr "%.1f Hz"
 
 #: graph-stepguider.cpp:258
 msgid "AO not connected"
@@ -3045,11 +3045,11 @@ msgstr "赤緯"
 
 #: guide_algorithm_gaussian_process.cpp:84
 msgid "Expert Settings"
-msgstr ""
+msgstr "進階設定"
 
 #: guide_algorithm_gaussian_process.cpp:90
 msgid "Warning!  Intended for use by experts"
-msgstr ""
+msgstr "警告! 非專業人士請勿嘗試"
 
 #: guide_algorithm_gaussian_process.cpp:100
 msgid "Approximation Data Points"
@@ -3168,10 +3168,12 @@ msgid ""
 "What percent of the predictive guide correction should be applied? Default = "
 "%.f%%, increase to rely more on the predictions"
 msgstr ""
+"要套用多少百分比的預測性導星修正 (predictive guide correction) ？預設值 = %.f"
+"%%，增加百分比代表偏向預測值的層度越高。"
 
 #: guide_algorithm_gaussian_process.cpp:227
 msgid "PredWt"
-msgstr ""
+msgstr "PredWt"
 
 #: guide_algorithm_gaussian_process.cpp:233
 #: guide_algorithm_gaussian_process.cpp:309
@@ -3180,10 +3182,12 @@ msgid ""
 "What percent of the reactive guide correction should be applied? Default = "
 "%.f%%, adjust if responding too much or too slowly"
 msgstr ""
+"要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
+"當有回應速度太慢或太快的情況發生時，可以調整該數值。"
 
 #: guide_algorithm_gaussian_process.cpp:236
 msgid "ReactWt"
-msgstr ""
+msgstr "ReactWt"
 
 #: guide_algorithm_gaussian_process.cpp:243
 #: guide_algorithm_gaussian_process.cpp:317
@@ -3194,6 +3198,9 @@ msgid ""
 "size. Note this has no effect on the predictive guide correction. Default = "
 "%.2f"
 msgstr ""
+"星點需要多少 (分數) 像素的位移才會觸發反應性導星修正？如果有作影像併合，這個"
+"數值是併合後巷素大小的某個分數值，但這種狀況併不諱對預測性導星修正有影響。預"
+"設 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:247 guide_algorithm_hysteresis.cpp:330
 #: guide_algorithm_lowpass.cpp:297 guide_algorithm_lowpass2.cpp:302
@@ -3206,11 +3213,11 @@ msgstr "預測性 PEC 導星眼算法"
 
 #: guide_algorithm_gaussian_process.cpp:301
 msgid "Predictive Weight"
-msgstr ""
+msgstr "預期權重"
 
 #: guide_algorithm_gaussian_process.cpp:308
 msgid "Reactive Weight"
-msgstr ""
+msgstr "反應權重 (Reactive Weight)"
 
 #: guide_algorithm_gaussian_process.cpp:316 guide_algorithm_hysteresis.cpp:257
 #: guide_algorithm_lowpass.cpp:233 guide_algorithm_lowpass2.cpp:240
@@ -3223,11 +3230,11 @@ msgstr "星點最少移動量 (像素)"
 msgid ""
 "Auto-adjust the period length based on identified repetitive errors. Default "
 "= %s"
-msgstr ""
+msgstr "根據所判定的重複性誤差自動調整週期長度。預設值 = %s"
 
 #: guide_algorithm_gaussian_process.cpp:327
 msgid "On"
-msgstr ""
+msgstr "On"
 
 #: guide_algorithm_gaussian_process.cpp:327 scope.cpp:216
 msgid "Off"
@@ -3242,15 +3249,15 @@ msgstr "週期長度"
 msgid ""
 "The period length (in seconds) of the strongest periodic error component.  "
 "Default = %.2f"
-msgstr ""
+msgstr "最大周期性誤差的周期長度 (以秒為單位)，預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:334
 msgid "Expert..."
-msgstr ""
+msgstr "進階…"
 
 #: guide_algorithm_gaussian_process.cpp:336
 msgid "Change expert options for tuning the predictions. Use at your own risk!"
-msgstr ""
+msgstr "更改進階選項來微調預測值，請小心使用！"
 
 #: guide_algorithm_hysteresis.cpp:232
 msgid "Hysteresis Guide Algorithm"
@@ -3275,6 +3282,8 @@ msgid ""
 "What percentage of the computed correction should be applied? Default = %.f"
 "%%, adjust if responding too much or too slowly"
 msgstr ""
+"要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
+"太慢或太快的情況發生時，可以調整該數值。"
 
 #: guide_algorithm_hysteresis.cpp:258 guide_algorithm_hysteresis.cpp:327
 #: guide_algorithm_lowpass.cpp:234 guide_algorithm_lowpass.cpp:294
@@ -3295,6 +3304,8 @@ msgid ""
 "What percentage of the computed correction should be applied?? Default = %.f"
 "%%, adjust if responding too much or too slowly"
 msgstr ""
+"要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
+"太慢或太快的情況發生時，可以調整該數值。"
 
 #: guide_algorithm_hysteresis.cpp:312
 msgid "Agr"
@@ -3323,7 +3334,7 @@ msgstr "斜率加權值"
 #: guide_algorithm_lowpass.cpp:226 guide_algorithm_lowpass.cpp:286
 #, c-format
 msgid "Weighting of slope parameter in lowpass auto-dec. Default = %.1f"
-msgstr ""
+msgstr "低通 auto-dec 中斜率參數的加權值，預設 = %1f"
 
 #: guide_algorithm_lowpass.cpp:288
 msgid "Sl W"
@@ -3338,7 +3349,7 @@ msgstr "低通導星演算法 2"
 #, c-format
 msgid ""
 "What percentage of the computed correction should be applied? Default = %.f%%"
-msgstr ""
+msgstr "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%。"
 
 #: guide_algorithm_lowpass2.cpp:293
 msgid "Agg"
@@ -4389,11 +4400,11 @@ msgstr "關於 %s"
 
 #: myframe.cpp:543
 msgid "&Check for updates"
-msgstr ""
+msgstr "&C檢查更新"
 
 #: myframe.cpp:543
 msgid "Check for PHD2 software updates"
-msgstr ""
+msgstr "檢查 PHD2 軟體更新"
 
 #: myframe.cpp:544
 msgid "&Contents...\tF1"
@@ -4438,17 +4449,17 @@ msgstr "輔助"
 #: myframe.cpp:608 myframe.cpp:814 myframe.cpp:899
 #, c-format
 msgid "Custom: %g s"
-msgstr ""
+msgstr "自定: %g s"
 
 #: myframe.cpp:720
 #, c-format
 msgid "%g s"
-msgstr ""
+msgstr "%g s"
 
 #: myframe.cpp:723
 #, c-format
 msgid "%.*f s"
-msgstr ""
+msgstr "%.*f s"
 
 #: myframe.cpp:833 myframe.cpp:896 scope.cpp:217
 msgid "Auto"
@@ -4456,7 +4467,7 @@ msgstr "自動"
 
 #: myframe.cpp:900
 msgid "Edit Custom..."
-msgstr ""
+msgstr "編輯自定..."
 
 #: myframe.cpp:904
 msgid "Camera exposure duration"
@@ -4619,7 +4630,7 @@ msgstr "重置所有的設定"
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
-msgstr ""
+msgstr "重置所有的組態和程式設定回到初始值, 如此會重啟 PHD2 程式。"
 
 #: myframe.cpp:2597
 msgid "Reset \"Don't Show Again\" messages"
@@ -4690,23 +4701,23 @@ msgstr "%s 語言 . 您必須重新啟動 PHD2 才會生效。"
 
 #: myframe.cpp:2670 phdupdate.cpp:906 phdupdate.cpp:912
 msgid "Software Update"
-msgstr ""
+msgstr "軟體更新"
 
 #: myframe.cpp:2671
 msgid "Automatically check for updates"
-msgstr ""
+msgstr "自動檢查更新"
 
 #: myframe.cpp:2672
 msgid "Check for software updates when PHD2 starts (recommended)"
-msgstr ""
+msgstr "啟動 PHD2 時檢查軟體更新 (建議)"
 
 #: myframe.cpp:2674
 msgid "Only check for major releases"
-msgstr ""
+msgstr "只檢查是否為主要發行版本"
 
 #: myframe.cpp:2675
 msgid "Ignore minor (development) releases when checking for updates"
-msgstr ""
+msgstr "檢查更新時自動忽略小版本(開發版)的更新"
 
 #: myframe.cpp:2682
 msgid "Log File Location"
@@ -4849,6 +4860,7 @@ msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr ""
+"針對此設備組態腳本，當連接赤道儀後會自動恢復最近一次成功校準所得的資料。"
 
 #: myframe.cpp:2799
 msgid "Min"
@@ -4882,7 +4894,7 @@ msgstr "自動曝光"
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
-msgstr ""
+msgstr "這個動作會將 PHD2 所有組態設定重置並離開程式, 確定？"
 
 #: myframe.cpp:2886
 msgid "Confirmation"
@@ -4893,18 +4905,20 @@ msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
 msgstr ""
+"更改介面語言設定後壁需要重啟 PHD2 才會生效\n"
+"是否要馬上重啟 PHD2?"
 
 #: myframe.cpp:2912
 msgid "Restart PHD2"
-msgstr ""
+msgstr "重啟 PHD2"
 
 #: myframe_events.cpp:74
 msgid "Custom exposure duration (seconds)"
-msgstr ""
+msgstr "自定曝光時間 (秒)"
 
 #: myframe_events.cpp:74
 msgid "Edit custom exposure"
-msgstr ""
+msgstr "編輯自定曝光時間"
 
 #: myframe_events.cpp:139
 msgid ""
@@ -5211,54 +5225,54 @@ msgstr "我的設備"
 #: phdupdate.cpp:658
 #, c-format
 msgid "PHD2 version %s is available at %s"
-msgstr ""
+msgstr "PHD2 %s 版已經可在 %s 下載安裝"
 
 #: phdupdate.cpp:663
 #, c-format
 msgid "PHD2 version %s is ready to install. Update and restart PHD2 now?"
-msgstr ""
+msgstr "PHD2 %s 版本已裝妥，是否馬上更新並重新啟動？"
 
 #: phdupdate.cpp:695 phdupdate.cpp:906
 msgid "PHD2 is up to date"
-msgstr ""
+msgstr "PHD2 已經是最新版本"
 
 #: phdupdate.cpp:701
 #, c-format
 msgid "Downloading PHD2 version %s"
-msgstr ""
+msgstr "下載 PHD2 %s 版"
 
 #: phdupdate.cpp:721
 msgid "PHD2 Update"
-msgstr ""
+msgstr "更新 PHD2"
 
 #: phdupdate.cpp:721
 msgid "Checking for updates"
-msgstr ""
+msgstr "檢查更新"
 
 #: phdupdate.cpp:748
 msgid "PHD2 Update Available"
-msgstr ""
+msgstr "PHD2 有更新版本"
 
 #: phdupdate.cpp:764
 msgid "Web Site"
-msgstr ""
+msgstr "網站"
 
 #: phdupdate.cpp:764
 msgid "Install"
-msgstr ""
+msgstr "安裝"
 
 #: phdupdate.cpp:771
 msgid "Change Log"
-msgstr ""
+msgstr "異動日誌"
 
 #: phdupdate.cpp:786 phdupdate.cpp:860
 #, c-format
 msgid "Closing in %d seconds"
-msgstr ""
+msgstr "將於 %d 秒後關閉"
 
 #: phdupdate.cpp:912
 msgid "Unable to check updates"
-msgstr ""
+msgstr "無法檢查更新"
 
 #: profile_wizard.cpp:74
 msgid "New Profile Wizard"
@@ -5890,7 +5904,7 @@ msgstr "沒有執行"
 
 #: scope_gpusb.cpp:74
 msgid "Please restart PHD2 to re-connect to the GPUSB"
-msgstr ""
+msgstr "請重啟 PHD2 以重新連接 GPUSB"
 
 #: scope_manual_pointing.cpp:79
 msgid "Approximate telescope declination, degrees"
