@@ -75,6 +75,7 @@ struct UpdaterDialog : public wxDialog
     Mode m_mode;
     wxTextCtrl *m_text;
     wxButton *m_goButton;
+    wxButton *m_cancelButton;
     wxHtmlWindow *m_html;
     wxStaticText *m_closingMessage;
     wxCheckBox *m_keepOpen;
@@ -761,9 +762,20 @@ UpdaterDialog::UpdaterDialog(Updater *updater, Mode mode, Interactive interactiv
     m_text->SetMinClientSize(m_text->GetTextExtent(text) + wxSize(16, 0));
     sz1->Add(m_text, 0, wxALL | wxEXPAND, 5);
 
+    wxBoxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
+
     wxString label = mode == MODE_NOTIFY ? _("Web Site") : _("Install");
     m_goButton = new wxButton(this, wxID_ANY, label, wxDefaultPosition, wxDefaultSize, 0);
-    sz1->Add(m_goButton, 0, wxALIGN_CENTER | wxALL, 5);
+    sz2->Add(m_goButton, 0, wxALL, 5);
+
+    m_cancelButton = nullptr;
+    if (mode != MODE_NOTIFY)
+    {
+        m_cancelButton = new wxButton(this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
+        sz2->Add(m_cancelButton, 0, wxALL, 5);
+    }
+
+    sz1->Add(sz2, 0, wxALIGN_CENTER_HORIZONTAL, 5);
 
     wxStaticLine *line1 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
     sz1->Add(line1, 0, wxEXPAND | wxALL, 5);
