@@ -249,6 +249,7 @@ public:
     const wxColor& GetDecOrDyColor(void);
 
     const SummaryStats& Stats(void) const { return m_pClient->m_stats; }
+    void ResetData(void);
 
     DECLARE_EVENT_TABLE()
 };

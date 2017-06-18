@@ -186,8 +186,7 @@ void StatsWindow::UpdateStats(void)
     }
 
     const SummaryStats& stats = pFrame->pGraphLog->Stats();
-
-    const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
+    const double sampling = pFrame->GetCameraPixelScale();
 
     m_grid1->BeginBatch();
     m_grid2->BeginBatch();

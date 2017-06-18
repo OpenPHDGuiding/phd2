@@ -1645,6 +1645,7 @@ void GearDialog::OnProfileChoice(wxCommandEvent& event)
     pFrame->LoadProfileSettings();
     pFrame->pGuider->LoadProfileSettings();
     pFrame->UpdateTitle();
+    pFrame->pGraphLog->ResetData();
 }
 
 bool GearDialog::SetProfile(int profileId, wxString *error)

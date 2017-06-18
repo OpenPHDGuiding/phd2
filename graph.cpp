@@ -604,10 +604,15 @@ void GraphLogWindow::UpdateControls()
     Refresh();
 }
 
-void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
+void GraphLogWindow::ResetData()
 {
     m_pClient->ResetData();
     Refresh();
+}
+
+void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
+{
+    ResetData();
 }
 
 void GraphLogWindow::OnCheckboxTrendlines(wxCommandEvent& WXUNUSED(evt))
