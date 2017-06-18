@@ -85,7 +85,9 @@ inline static int gain_pct(int minval, int maxval, int val)
 #if !defined(FACILITY_VISUALCPP)
 # define FACILITY_VISUALCPP  ((LONG)0x6d)
 #endif
-#define VcppException(sev,err)  ((sev) | ((FACILITY_VISUALCPP)<<16) | err)
+#ifndef VcppException
+# define VcppException(sev,err)  ((sev) | ((FACILITY_VISUALCPP)<<16) | (err))
+#endif
 
 static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers, wxString *err)
 {
