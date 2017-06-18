@@ -465,6 +465,8 @@ void PhdController::UpdateControllerState(void)
             break;
 
         case STATE_SETTLE_BEGIN:
+            EvtServer.NotifySettleBegin();
+            GuideLog.NotifySettlingStateChange("Settling started");
             if (ctrl.overrideDecGuideMode)
             {
                 Debug.Write(wxString::Format("PhdController: setting Dec guide mode to %s for dither settle\n",
@@ -475,7 +477,6 @@ void PhdController::UpdateControllerState(void)
             ctrl.settleFrameCount = ctrl.droppedFrameCount = 0;
             ctrl.settleTimeout->Start();
             SETSTATE(STATE_SETTLE_WAIT);
-            GuideLog.NotifySettlingStateChange("Settling started");
             done = true;
             break;
 

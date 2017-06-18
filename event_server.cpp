@@ -2369,6 +2369,11 @@ void EventServer::NotifyAppState()
     do_notify(m_eventServerClients, ev_app_state());
 }
 
+void EventServer::NotifySettleBegin()
+{
+    SIMPLE_NOTIFY("SettleBegin");
+}
+
 void EventServer::NotifySettling(double distance, double time, double settleTime, bool starLocked)
 {
     if (m_eventServerClients.empty())
