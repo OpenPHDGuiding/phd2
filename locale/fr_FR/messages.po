@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-14 04:43-0400\n"
-"PO-Revision-Date: 2017-04-28 23:58+0200\n"
+"PO-Revision-Date: 2017-06-19 10:55+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr_FR\n"
@@ -861,7 +861,6 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "Vitesse de guidage, n.nn x sidérale"
 
 #: calstep_dialog.cpp:137 starcross_test.cpp:108
-#, fuzzy, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
@@ -1519,7 +1518,6 @@ msgid "Number of hot pixels"
 msgstr "Nombre de pixels chauds"
 
 #: cam_simulator.cpp:1570
-#, fuzzy, c-format
 msgid "% Simulated noise"
 msgstr "% de bruit simulé"
 
@@ -3027,7 +3025,7 @@ msgstr "Efface les données du graphique"
 #: graph-stepguider.cpp:165
 #, c-format
 msgid "%.1f Hz"
-msgstr ""
+msgstr "%.1f Hz"
 
 #: graph-stepguider.cpp:258
 msgid "AO not connected"
@@ -3429,6 +3427,8 @@ msgid ""
 "What percentage of the computed correction should be applied? Default = %.f"
 "%%, adjust if responding too much or too slowly"
 msgstr ""
+"Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
+"%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
 
 #: guide_algorithm_hysteresis.cpp:258 guide_algorithm_hysteresis.cpp:327
 #: guide_algorithm_lowpass.cpp:234 guide_algorithm_lowpass.cpp:294
@@ -3451,6 +3451,8 @@ msgid ""
 "What percentage of the computed correction should be applied?? Default = %.f"
 "%%, adjust if responding too much or too slowly"
 msgstr ""
+"Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
+"= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
 
 #: guide_algorithm_hysteresis.cpp:312
 msgid "Agr"
@@ -3480,6 +3482,8 @@ msgstr "Pondération Pente"
 #, c-format
 msgid "Weighting of slope parameter in lowpass auto-dec. Default = %.1f"
 msgstr ""
+"Pondération du paramètre de pente dans l'algorithme passe-bas ? Valeur par "
+"défaut = %.1f"
 
 #: guide_algorithm_lowpass.cpp:288
 msgid "Sl W"
@@ -3495,6 +3499,8 @@ msgstr "Algorithme Passe-bas 2"
 msgid ""
 "What percentage of the computed correction should be applied? Default = %.f%%"
 msgstr ""
+"Quel pourcentage de la correction calculée doit être appliqué? Valeur par "
+"défaut = %.f%%"
 
 #: guide_algorithm_lowpass2.cpp:293
 msgid "Agg"
@@ -4606,11 +4612,11 @@ msgstr "A propos de %s"
 
 #: myframe.cpp:543
 msgid "&Check for updates"
-msgstr ""
+msgstr "Vérification des mises à jour"
 
 #: myframe.cpp:543
 msgid "Check for PHD2 software updates"
-msgstr ""
+msgstr "Vérifier les mises à jour du logiciel PHD2"
 
 #: myframe.cpp:544
 msgid "&Contents...\tF1"
@@ -4655,17 +4661,17 @@ msgstr "&Aide"
 #: myframe.cpp:608 myframe.cpp:814 myframe.cpp:899
 #, c-format
 msgid "Custom: %g s"
-msgstr ""
+msgstr "Personnalisation : %g s"
 
 #: myframe.cpp:720
 #, c-format
 msgid "%g s"
-msgstr ""
+msgstr "%g s"
 
 #: myframe.cpp:723
 #, c-format
 msgid "%.*f s"
-msgstr ""
+msgstr "%.*f s"
 
 #: myframe.cpp:833 myframe.cpp:896 scope.cpp:217
 msgid "Auto"
@@ -4673,7 +4679,7 @@ msgstr "Auto"
 
 #: myframe.cpp:900
 msgid "Edit Custom..."
-msgstr ""
+msgstr "Modifier Personnalisation..."
 
 #: myframe.cpp:904
 msgid "Camera exposure duration"
@@ -4851,6 +4857,8 @@ msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
 msgstr ""
+"Réinitialiser tous les paramètres de configuration et de programme à un état "
+"de nouvelle installation. Cela nécessitera le redémarrage de PHD2"
 
 #: myframe.cpp:2597
 msgid "Reset \"Don't Show Again\" messages"
@@ -4927,23 +4935,26 @@ msgstr ""
 
 #: myframe.cpp:2670 phdupdate.cpp:906 phdupdate.cpp:912
 msgid "Software Update"
-msgstr ""
+msgstr "Mise À Jour Logiciel"
 
 #: myframe.cpp:2671
 msgid "Automatically check for updates"
-msgstr ""
+msgstr "Automatiquement vérifier les mises à jour"
 
 #: myframe.cpp:2672
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr ""
+"Vérifier les mises à jour du logiciel lorsque PHD2 démarre (recommandé)"
 
 #: myframe.cpp:2674
 msgid "Only check for major releases"
-msgstr ""
+msgstr "Uniquement vérifier les versions majeures"
 
 #: myframe.cpp:2675
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr ""
+"Ignorer les versions mineures (de développement) lors de la vérification des "
+"mises à jour"
 
 #: myframe.cpp:2682
 msgid "Log File Location"
@@ -5104,6 +5115,8 @@ msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr ""
+"Pour ce profil d'équipement, rétabli automatiquement les données du dernier "
+"calibrage réussi après la connexion de l'équipement."
 
 #: myframe.cpp:2799
 msgid "Min"
@@ -5138,6 +5151,8 @@ msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr ""
+"Cela va réinitialiser toutes les valeurs de configuration de PHD2 et "
+"redémarrer le programme. Êtes-vous sûr?"
 
 #: myframe.cpp:2886
 msgid "Confirmation"
@@ -5148,18 +5163,19 @@ msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
 msgstr ""
+"Veuillez redémarrer PHD2 pour prendre en charge les changements de langue."
 
 #: myframe.cpp:2912
 msgid "Restart PHD2"
-msgstr ""
+msgstr "Redémarrer PHD2"
 
 #: myframe_events.cpp:74
 msgid "Custom exposure duration (seconds)"
-msgstr ""
+msgstr "Durée d'exposition personnalisée (secondes)"
 
 #: myframe_events.cpp:74
 msgid "Edit custom exposure"
-msgstr ""
+msgstr "Modifier l'exposition personnalisée"
 
 #: myframe_events.cpp:139
 msgid ""
@@ -5489,54 +5505,56 @@ msgstr "Mon Equipement"
 #: phdupdate.cpp:658
 #, c-format
 msgid "PHD2 version %s is available at %s"
-msgstr ""
+msgstr "La version %s de PHD2 est disponible à %s"
 
 #: phdupdate.cpp:663
 #, c-format
 msgid "PHD2 version %s is ready to install. Update and restart PHD2 now?"
 msgstr ""
+"La version %s de PHD2 est prête à être installée. Mettre à jour et "
+"redémarrer PHD2 maintenant ?"
 
 #: phdupdate.cpp:695 phdupdate.cpp:906
 msgid "PHD2 is up to date"
-msgstr ""
+msgstr "PHD2 est à jour"
 
 #: phdupdate.cpp:701
 #, c-format
 msgid "Downloading PHD2 version %s"
-msgstr ""
+msgstr "Téléchargement de la version %s de PHD2"
 
 #: phdupdate.cpp:721
 msgid "PHD2 Update"
-msgstr ""
+msgstr "Mise à jour de PHD2"
 
 #: phdupdate.cpp:721
 msgid "Checking for updates"
-msgstr ""
+msgstr "Vérification des mises à jour"
 
 #: phdupdate.cpp:748
 msgid "PHD2 Update Available"
-msgstr ""
+msgstr "Mise à jour de PHD2 disponible"
 
 #: phdupdate.cpp:764
 msgid "Web Site"
-msgstr ""
+msgstr "Site Web"
 
 #: phdupdate.cpp:764
 msgid "Install"
-msgstr ""
+msgstr "Installation"
 
 #: phdupdate.cpp:771
 msgid "Change Log"
-msgstr ""
+msgstr "Journal des modifications"
 
 #: phdupdate.cpp:786 phdupdate.cpp:860
 #, c-format
 msgid "Closing in %d seconds"
-msgstr ""
+msgstr "Fermeture dans %d secondes"
 
 #: phdupdate.cpp:912
 msgid "Unable to check updates"
-msgstr ""
+msgstr "Impossible de vérifier les mises à jour"
 
 #: profile_wizard.cpp:74
 msgid "New Profile Wizard"
@@ -6237,6 +6255,7 @@ msgstr " ne fonctionne pas"
 #: scope_gpusb.cpp:74
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr ""
+"Veuillez redémarrer PHD2 afin de reconnecter l'interface de guidage USB"
 
 #: scope_manual_pointing.cpp:79
 msgid "Approximate telescope declination, degrees"
