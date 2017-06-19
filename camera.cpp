@@ -861,7 +861,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     {
         m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), textWidth, 100, 1, 100, 1);
         AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain,
-            _("Camera gain, default = 95%, lower if you experience noise or wish to guide on a very bright star. Not available on all cameras.")); // xgettext:no-c-format
+            /* xgettext:no-c-format */ _("Camera gain, default = 95%, lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
     }
 
     // Binning

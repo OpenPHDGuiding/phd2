@@ -106,7 +106,7 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
         }
     }
     m_CtlGuideSpeed = NewSpinner(this, width, guideSpeedMultiple, 0.1, 1.0, 0.1, 2,
-                                 _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5")); // xgettext:no-c-format
+        /* xgettext:no-c-format */ _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
     m_CtlGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &StarCrossDialog::OnGuideSpeedChange, this);
     AddTableEntryPair(this, mountSpecSizer, _("Guide speed, n.n x sidereal"), m_CtlGuideSpeed);
     configGroup->Add(mountSpecSizer, wxSizerFlags().Border(wxALL, 5));

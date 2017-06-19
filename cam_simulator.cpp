@@ -1568,7 +1568,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pHotpxSlider = NewSlider(this, SimCamParams::nr_hot_pixels, 0, 50, _("Number of hot pixels"));
     AddTableEntryPair(this, pCamTable, _("Hot pixels"), pHotpxSlider);
     pNoiseSlider = NewSlider(this, (int)floor(SimCamParams::noise_multiplier * 100 / NOISE_MAX), 0, 100,
-        _("% Simulated noise")); // xgettext:no-c-format
+        /* xgettext:no-c-format */ _("% Simulated noise"));
     AddTableEntryPair(this, pCamTable, _("Noise"), pNoiseSlider);
     pCamGroup->Add(pCamTable);
 
