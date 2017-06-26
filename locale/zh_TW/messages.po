@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-19 15:22-0400\n"
-"PO-Revision-Date: 2017-06-14 23:41+0800\n"
+"PO-Revision-Date: 2017-06-23 23:58+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -1754,6 +1754,8 @@ msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
+"相機影像增益值, 預設為 95%, 如果你覺得畫面上噪點很多或想利用高亮度的星體當導"
+"星星體, 可以降低此數值; 但並不是所有的導星相機都有支援此功能。"
 
 #: camera.cpp:877
 msgid "Binning"
@@ -3923,7 +3925,7 @@ msgstr "角秒/秒"
 
 #: guiding_assistant.cpp:1239 myframe.cpp:2716 myframe.cpp:2726
 msgid " "
-msgstr ""
+msgstr " "
 
 #: image_math.cpp:1146
 msgid ""
