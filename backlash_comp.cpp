@@ -147,9 +147,9 @@ void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRa
             avgMiss += m_residualOffsets.Item(inx);
         avgMiss = avgMiss / numPoints;
 
-        if (abs(avgMiss) > minMove)                        // Don't make micro-adjustments
+        if (fabs(avgMiss) > minMove)                        // Don't make micro-adjustments
         {
-            double corr = (int)floor(fabs(avgMiss / yRate) + 0.5);
+            int corr = (int)floor(fabs(avgMiss / yRate) + 0.5);
             int nominalBLC;
             int newBLC;
             if (miss >= 0)                                  // We under-shot the target

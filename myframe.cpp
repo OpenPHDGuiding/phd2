@@ -2787,7 +2787,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         wxArrayString(), wxCB_READONLY);
     m_autoExpDurationMax = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         wxArrayString(), wxCB_READONLY);
-    wxSize minsz(StringWidth(pFrame->ExposureDurationLabel(999.99)) + 30, -1);
+    wxSize minsz(StringWidth(pFrame->ExposureDurationLabel(999990)) + 30, -1);
     m_autoExpDurationMin->SetMinSize(minsz);
     m_autoExpDurationMax->SetMinSize(minsz);
 
