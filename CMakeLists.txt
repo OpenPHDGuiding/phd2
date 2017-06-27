@@ -29,6 +29,12 @@
 # File created by Raffi Enficiaud
 
 cmake_minimum_required(VERSION 3.2)
+
+# this must come before any enable_language() or project()
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "Minimum OSX deployment version")
+endif()
+
 enable_language(C CXX)
 
 if(COMMAND cmake_policy)
