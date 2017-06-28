@@ -18,7 +18,7 @@ OutputBaseFilename=phd2-v{#APP_VERSION}-installer
 DirExistsWarning=no
 
 [Files]
-Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion
+Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion; AfterInstall: UpdateFirewallRules
 Source: Release\locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
 Source: Release\PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
 Source: ..\README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
@@ -80,4 +80,12 @@ begin
         end
       end
     end
+end;
+
+procedure UpdateFirewallRules();
+var
+  ResultCode: Integer;
+begin
+  Exec('netsh.exe', 'advfirewall firewall delete rule name=' + AddQuotes(ExpandConstant('{#APP_NAME}')) + ' dir=in program=' + AddQuotes(ExpandConstant('{app}\phd2.exe')), '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('netsh.exe', 'advfirewall firewall add rule name=' + AddQuotes(ExpandConstant('{#APP_NAME}')) + ' dir=in action=allow program=' + AddQuotes(ExpandConstant('{app}\phd2.exe')) + ' profile=private', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;
