@@ -693,7 +693,9 @@ struct Updater
         else if (m_status == UPD_READY_FOR_INSTALL)
             ShowUpdate(UpdaterDialog::MODE_INSTALL, UpdaterDialog::NONINTERACTIVE);
         else if (m_status == UPD_UP_TO_DATE)
-            pFrame->StatusMsg(_("PHD2 is up to date"));
+        {
+            // this is annoying   pFrame->StatusMsg(_("PHD2 is up to date"));
+        }
     }
 
     void HandleStateInteractive()
