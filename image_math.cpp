@@ -741,7 +741,6 @@ static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& w
     w.temp.Init(img.Size);
 
     // Determine the mean and standard deviation
-    double sum = 0.0;
     double a = 0.0;
     double q = 0.0;
     double k = 1.0;
@@ -756,7 +755,6 @@ static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& w
         {
             *dst++ = *p;
             double const x = (double) *p;
-            sum += x;
             double const a0 = a;
             a += (x - a) / k;
             q += (x - a0) * (x - a);
@@ -766,7 +764,7 @@ static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& w
         p0 += img.Size.GetWidth();
     }
 
-    w.stats.mean = sum / km1;
+    w.stats.mean = a;
     w.stats.stdev = sqrt(q / km1);
 
     int winPixels = win.GetWidth() * win.GetHeight();

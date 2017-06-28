@@ -43,7 +43,6 @@ struct Stats
     double alpha_lp;
     double alpha_hp;
     unsigned int n;
-    double sum;
     double a;
     double q;
     double hpf;
@@ -61,7 +60,6 @@ struct Stats
     void Reset()
     {
         n = 0;
-        sum = 0.0;
         a = 0.0;
         q = 0.0;
         peakRawDx = 0.0;
@@ -91,7 +89,6 @@ struct Stats
 
         x = hpf;
         ++n;
-        sum += x;
         double const k = (double) n;
         double const a0 = a;
         a += (x - a) / k;
@@ -106,9 +103,8 @@ struct Stats
             return;
         }
 
-        double const nn = (double) n;
-        *mean = sum / nn;
-        *stdev = sqrt(q / nn);
+        *mean = a;
+        *stdev = sqrt(q / (double) n);
     }
 };
 
