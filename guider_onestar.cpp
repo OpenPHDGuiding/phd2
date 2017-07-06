@@ -386,6 +386,11 @@ bool GuiderOneStar::AutoSelect(void)
             throw ERROR_INFO("No Current Image");
         }
 
+        if (pFrame->pGuider->IsCalibratingOrGuiding())
+        {
+            throw ERROR_INFO("cannot auto-select star while calibrating or guiding");
+        }
+
         // If mount is not calibrated, we need to chose a star a bit farther
         // from the egde to allow for the motion of the star during
         // calibration

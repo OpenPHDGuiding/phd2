@@ -475,7 +475,7 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
-    tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
+    m_autoSelectStarMenuItem = tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
     tools_menu->Append(EEGG_REVIEWCAL, _("&Review Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
 
     wxMenu *calib_menu = new wxMenu;
@@ -1009,15 +1009,23 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 
     bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding();         // Not the same as 'bGuideable below
+
+    if (!guiding_active ^ m_autoSelectStarMenuItem->IsEnabled())
+    {
+        m_autoSelectStarMenuItem->Enable(!guiding_active);
+        need_update = true;
+    }
+
+    if (!guiding_active ^ m_refineDefMapMenuItem->IsEnabled())
+    {
+        m_refineDefMapMenuItem->Enable(!guiding_active);
+        need_update = true;
+    }
+
     bool mod_calibration_ok = !guiding_active && pMount && pMount->IsConnected();
     if (mod_calibration_ok ^ m_calibrationMenuItem->IsEnabled())
     {
         m_calibrationMenuItem->Enable(mod_calibration_ok);
-        need_update = true;
-    }
-    if (!guiding_active ^ m_refineDefMapMenuItem->IsEnabled())
-    {
-        m_refineDefMapMenuItem->Enable(!guiding_active);
         need_update = true;
     }
 
