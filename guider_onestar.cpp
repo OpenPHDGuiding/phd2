@@ -509,7 +509,7 @@ wxRect GuiderOneStar::GetBoundingBox(void)
     if (subframe)
     {
         wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
-        box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
+        box.Intersect(wxRect(pCamera->FullSize));
         return box;
     }
     else

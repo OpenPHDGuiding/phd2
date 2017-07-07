@@ -666,8 +666,9 @@ bool Guider::SaveCurrentImage(const wxString& fileName)
 
 void Guider::InvalidateLockPosition(void)
 {
+    if (m_lockPosition.IsValid())
+        EvtServer.NotifyLockPositionLost();
     m_lockPosition.Invalidate();
-    EvtServer.NotifyLockPositionLost();
     NudgeLockTool::UpdateNudgeLockControls();
 }
 
@@ -1125,6 +1126,21 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         if (pFrame && pFrame->pStatsWin)
             pFrame->pStatsWin->UpdateImageSize(pImage->Size);
 
+        switch (m_state)
+        {
+        case STATE_UNINITIALIZED:
+        case STATE_SELECTING:
+        case STATE_SELECTED:
+            EvtServer.NotifyLooping(pImage->FrameNum);
+            break;
+        case STATE_CALIBRATING_PRIMARY:
+        case STATE_CALIBRATING_SECONDARY:
+        case STATE_CALIBRATED:
+        case STATE_GUIDING:
+        case STATE_STOP:
+            break;
+        }
+
         if (bStopping)
         {
             StopGuiding();
@@ -1157,7 +1173,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
-                    EvtServer.NotifyLooping(pImage->FrameNum);
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
@@ -1206,21 +1221,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             Debug.Write("setting force full frames = false\n");
             m_forceFullFrame = false;
-        }
-
-        switch (m_state)
-        {
-            case STATE_UNINITIALIZED:
-            case STATE_SELECTING:
-            case STATE_SELECTED:
-                EvtServer.NotifyLooping(pImage->FrameNum);
-                break;
-            case STATE_CALIBRATING_PRIMARY:
-            case STATE_CALIBRATING_SECONDARY:
-            case STATE_CALIBRATED:
-            case STATE_GUIDING:
-            case STATE_STOP:
-                break;
         }
 
         if (IsPaused())

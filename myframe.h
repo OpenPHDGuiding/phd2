@@ -102,6 +102,13 @@ struct DitherSpiral
     void GetDither(double amount, bool raOnly, double *dRA, double *dDec);
 };
 
+struct SingleExposure
+{
+    bool enabled;
+    int duration;
+    wxRect subframe;
+};
+
 class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
     MyFrame *m_pFrame;
@@ -184,7 +191,10 @@ private:
 
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
+
     bool m_continueCapturing; // should another image be captured?
+    SingleExposure m_singleExposure;
+
     static const int SPINNER_PADDING = 40;
 
 public:
@@ -365,7 +375,8 @@ public:
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing(void);
-    void StopCapturing(void);
+    bool StopCapturing(void);
+    bool StartSingleExposure(int duration, const wxRect& subframe);
 
     void SetPaused(PauseType pause);
 

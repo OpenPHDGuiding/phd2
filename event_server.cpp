@@ -1131,6 +1131,31 @@ static bool parse_point(PHD_Point *pt, const json_value *j)
     return true;
 }
 
+static bool parse_rect(wxRect *r, const json_value *j)
+{
+    if (j->type != JSON_ARRAY)
+        return false;
+
+    int a[4];
+    const json_value *jv = j->first_child;
+    for (int i = 0; i < 4; i++)
+    {
+        if (!jv || jv->type != JSON_INT)
+            return false;
+        a[i] = jv->int_value;
+        jv = jv->next_sibling;
+    }
+    if (jv)
+        return false; // extra value
+
+    r->x = a[0];
+    r->y = a[1];
+    r->width = a[2];
+    r->height = a[3];
+
+    return true;
+}
+
 static bool parse_lock_shift_params(LockPosShiftParams *shift, const json_value *params, wxString *error)
 {
     // "params":[{"rate":[3.3,1.1],"units":"arcsec/hr","axes":"RA/Dec"}]
@@ -1231,6 +1256,50 @@ static void save_image(JObj& response, const json_value *params)
     JObj rslt;
     rslt << NV("filename", fname);
     response << jrpc_result(rslt);
+}
+
+static void capture_single_frame(JObj& response, const json_value *params)
+{
+    if (pFrame->CaptureActive)
+    {
+        response << jrpc_error(1, "cannot capture single frame when capture is currently active");
+        return;
+    }
+
+    Params p("exposure", "subframe", params);
+    const json_value *j = p.param("exposure");
+    int exposure;
+    if (j)
+    {
+        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > 10 * 60000)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected exposure param");
+            return;
+        }
+        exposure = j->int_value;
+    }
+    else
+    {
+        exposure = pFrame->RequestedExposureDuration();
+    }
+
+    wxRect subframe;
+
+    if ((j = p.param("subframe")) != nullptr)
+        if (!parse_rect(&subframe, j))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid subframe param");
+            return;
+        }
+
+    bool err = pFrame->StartSingleExposure(exposure, subframe);
+    if (err)
+    {
+        response << jrpc_error(2, "failed to start exposure");
+        return;
+    }
+
+    response << jrpc_result(0);
 }
 
 static void get_use_subframes(JObj& response, const json_value *params)
@@ -1961,6 +2030,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_settling", &get_settling, },
         { "guide_pulse", &guide_pulse, },
         { "get_calibration_data", &get_calibration_data, },
+        { "capture_single_frame", &capture_single_frame, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

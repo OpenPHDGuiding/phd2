@@ -376,6 +376,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     CaptureActive     = false;
     m_exposurePending = false;
 
+    m_singleExposure.enabled = false;
+    m_singleExposure.duration = 0;
+
     m_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -1523,7 +1526,8 @@ void MyFrame::ScheduleExposure(void)
 {
     int exposureDuration = RequestedExposureDuration();
     int exposureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
-    const wxRect& subframe = pGuider->GetBoundingBox();
+    const wxRect& subframe =
+        m_singleExposure.enabled ? m_singleExposure.subframe : pGuider->GetBoundingBox();
 
     Debug.Write(wxString::Format("ScheduleExposure(%d,%x,%d) exposurePending=%d\n",
         exposureDuration, exposureOptions, !subframe.IsEmpty(), m_exposurePending));
@@ -1587,13 +1591,38 @@ void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direct
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, direction, duration);
 }
 
+bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
+{
+    Debug.Write(wxString::Format("StartSingleExposure duration=%d\n", duration));
+
+    if (!pCamera || !pCamera->Connected)
+    {
+        Debug.Write("StartSingleExposure: camera not connected\n");
+        return true;
+    }
+
+    StatusMsgNoTimeout(_("Capturing single exposure"));
+
+    m_singleExposure.enabled = true;
+    m_singleExposure.duration = duration;
+    m_singleExposure.subframe = subframe;
+    if (!m_singleExposure.subframe.IsEmpty())
+        m_singleExposure.subframe.Intersect(wxRect(pCamera->FullSize));
+
+    StartCapturing();
+
+    return false;
+}
+
 void MyFrame::StartCapturing()
 {
     Debug.Write(wxString::Format("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
     if (!CaptureActive)
     {
-        m_continueCapturing = true;
+        if (!m_singleExposure.enabled)
+            m_continueCapturing = true;
+
         CaptureActive = true;
         m_frameCounter = 0;
 
@@ -1611,11 +1640,13 @@ void MyFrame::StartCapturing()
     }
 }
 
-void MyFrame::StopCapturing(void)
+bool MyFrame::StopCapturing(void)
 {
     Debug.Write(wxString::Format("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
-    if (m_continueCapturing)
+    bool finished = true;
+
+    if (m_continueCapturing || m_exposurePending)
     {
         StatusMsgNoTimeout(_("Waiting for devices..."));
         m_continueCapturing = false;
@@ -1623,6 +1654,7 @@ void MyFrame::StopCapturing(void)
         if (m_exposurePending)
         {
             m_pPrimaryWorkerThread->RequestStop();
+            finished = false;
         }
         else
         {
@@ -1635,6 +1667,8 @@ void MyFrame::StopCapturing(void)
             FinishStop();
         }
     }
+
+    return finished;
 }
 
 void MyFrame::SetPaused(PauseType pause)
