@@ -1007,10 +1007,15 @@ if(UNIX AND NOT APPLE)
   find_library(mathlib NAMES m)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
+endif()
+
+if(NOT WIN32)  # Linux or OSX
   # INDI
   # some features for indi >= 0.9 are used apparently
   find_package(INDI 0.9 REQUIRED)
-  include_directories(${INDI_INCLUDE_DIR})
+  # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
+  get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
+  include_directories(${INDI_INCLUDE_PARENT_DIR})
   if(INDI_VERSION VERSION_LESS "1.4")
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
   else(INDI_VERSION VERSION_LESS "1.4")

@@ -49,6 +49,7 @@
     #define GUIDE_ONSTEPGUIDER
     #define GUIDE_GPUSB
     #define GUIDE_GCUSBST4
+    #define GUIDE_INDI
     #define GUIDE_EQUINOX
     //#define GUIDE_VOYAGER
     //#define GUIDE_NEB

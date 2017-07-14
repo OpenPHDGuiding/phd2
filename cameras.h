@@ -89,6 +89,7 @@
 #elif defined (__APPLE__)  // Mac cameras
 
 # define FIREWIRE
+# define INDI_CAMERA
 # define KWIQGUIDER
 # define MEADE_DSI
 # define OPENSSAG

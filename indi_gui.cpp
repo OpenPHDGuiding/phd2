@@ -198,7 +198,6 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     gbs->Layout();
     page->Fit();
     panel->Fit();
-    page->Show();
     indiDev->properties[propname] = indiProp;
     indiDev->page->Fit();
     indiDev->page->Layout();
