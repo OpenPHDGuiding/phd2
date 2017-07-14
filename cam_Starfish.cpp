@@ -37,7 +37,7 @@
 #include "time.h"
 #include "image_math.h"
 
-#include "Cam_Starfish.h"
+#include "cam_Starfish.h"
 
 #if defined (__WINDOWS__)
 #define kIOReturnSuccess 0

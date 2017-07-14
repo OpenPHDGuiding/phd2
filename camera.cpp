@@ -125,7 +125,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (FIREWIRE)
-#include "cam_Firewire.h"
+#include "cam_firewire.h"
 #endif
 
 //#if defined (SIMULATOR)
