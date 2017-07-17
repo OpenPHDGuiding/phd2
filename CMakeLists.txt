@@ -352,6 +352,8 @@ set(phd2_SRC
   ${phd_src_dir}/comet_tool.cpp
   ${phd_src_dir}/comet_tool.h
 
+  ${phd_src_dir}/config_INDI.cpp
+  ${phd_src_dir}/config_INDI.h
   ${phd_src_dir}/configdialog.cpp
   ${phd_src_dir}/configdialog.h
   ${phd_src_dir}/confirm_dialog.cpp
@@ -383,6 +385,8 @@ set(phd2_SRC
   ${phd_src_dir}/image_math.h
   ${phd_src_dir}/imagelogger.cpp
   ${phd_src_dir}/imagelogger.h
+  ${phd_src_dir}/indi_gui.cpp
+  ${phd_src_dir}/indi_gui.h
   ${phd_src_dir}/json_parser.cpp
   ${phd_src_dir}/json_parser.h
   ${phd_src_dir}/logger.cpp
@@ -467,21 +471,9 @@ set(phd2_SRC
   ${phd_src_dir}/usImage.h
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
+  ${phd_src_dir}/wxled.cpp
+  ${phd_src_dir}/wxled.h
 )
-
-if(UNIX)
-  set(phd2_SRC
-      ${phd2_SRC}
-      ${phd_src_dir}/config_INDI.cpp
-      ${phd_src_dir}/config_INDI.h
-
-      ${phd_src_dir}/indi_gui.cpp
-      ${phd_src_dir}/indi_gui.h
-
-      ${phd_src_dir}/wxled.cpp
-      ${phd_src_dir}/wxled.h
-     )
-endif()
 
 if (WIN32)
   set(phd2_SRC
@@ -680,10 +672,14 @@ endif()
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+target_link_libraries(phd2
+                      optimized ${PHD_LINK_EXTERNAL_RELEASE})
+target_link_libraries(phd2
+                      debug ${PHD_LINK_EXTERNAL_DEBUG})
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
-
 
 
 

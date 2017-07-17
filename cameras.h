@@ -64,6 +64,7 @@
 # define SIMULATOR
 # define SXV
 # define ATIK_GEN3
+# define INDI_CAMERA
 # define INOVA_PLC
 # define ASCOM_LATECAMERA
 # define SBIG

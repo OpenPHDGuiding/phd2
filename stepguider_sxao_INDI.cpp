@@ -338,7 +338,6 @@ bool StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
     if (aoNS_prop && aoWE_prop) {
         bError = false;
         try {
-            unsigned char parameter;
             switch (direction) {
             case NORTH:
                 aoN_prop->value = steps;
@@ -498,7 +497,6 @@ bool StepGuiderSxAoINDI::ST4PulseGuideScope(int direction, int duration)
     if (pulseGuideNS_prop && pulseGuideWE_prop) {
         bError = false;
         try {
-            unsigned char parameter;
             switch (direction) {
             case NORTH:
                 pulseN_prop->value = duration;

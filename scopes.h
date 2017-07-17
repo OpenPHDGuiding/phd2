@@ -42,6 +42,7 @@
     #define GUIDE_ASCOM
     #define GUIDE_GPUSB
     #define GUIDE_GPINT
+    #define GUIDE_INDI
 
 #elif defined (__APPLE__)
 

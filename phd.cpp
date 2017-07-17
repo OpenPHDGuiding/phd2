@@ -220,6 +220,11 @@ bool PhdApp::OnInit()
 
     DisableOSXAppNap();
 
+#if defined(__WINDOWS__)
+    // use per-thread locales on windows to that INDI can set the locale in its thread without side effects
+    _configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
+#endif
+
     if (m_resetConfig)
     {
         pConfig->DeleteAll();

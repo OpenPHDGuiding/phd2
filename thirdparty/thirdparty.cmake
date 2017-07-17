@@ -339,7 +339,9 @@ endif()
 
 
 #############################################
-# libusb / win32 / apple
+# libusb: linux / apple
+
+if(NOT WIN32)
 
 set(LIBUSB libusb-1.0.21)
 set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
@@ -469,6 +471,7 @@ if(${USB_build})
   set_property(TARGET openphd_libusb PROPERTY FOLDER "Thirdparty/")
 endif()
 
+endif() # NOT WIN32
 
 #############################################
 # libcurl
@@ -585,6 +588,48 @@ endif()
 
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 
+
+#############################################
+#
+#  INDI
+#
+#############################################
+
+if(WIN32)
+  set(indiclient_root ${thirdparties_deflate_directory})
+  set(indiclient_dir ${indiclient_root}/indiclient)
+  if(NOT EXISTS ${indiclient_dir})
+    # unzip the dependency
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-d71f1c1d-win32.zip --format=zip
+        WORKING_DIRECTORY ${indiclient_root})
+  endif()
+  include_directories(${indiclient_dir}/include)
+  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
+  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+else()   # Linux or OSX
+  # INDI
+  # some features for indi >= 0.9 are used apparently
+  find_package(INDI 0.9 REQUIRED)
+  # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
+  get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
+  include_directories(${INDI_INCLUDE_PARENT_DIR})
+  if(INDI_VERSION VERSION_LESS "1.4")
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+  else(INDI_VERSION VERSION_LESS "1.4")
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+  endif(INDI_VERSION VERSION_LESS "1.4")
+  if(INDI_VERSION VERSION_LESS "1.1")
+    add_definitions("-DINDI_PRE_1_1_0")
+  endif()
+  if(INDI_VERSION VERSION_LESS "1.0")
+    add_definitions("-DINDI_PRE_1_0_0")
+  endif()
+
+  # INDI depends on libz
+  find_package(ZLIB REQUIRED)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+endif()
 
 
 
@@ -943,8 +988,6 @@ endif()  # APPLE
 #
 # Unix/Linux specific dependencies
 # - ASI cameras
-# - INDI
-# - Nova (Required by INDI)
 # - USB (commonly shared)
 # - math (libm)
 # -
@@ -1009,36 +1052,6 @@ if(UNIX AND NOT APPLE)
 
 endif()
 
-if(NOT WIN32)  # Linux or OSX
-  # INDI
-  # some features for indi >= 0.9 are used apparently
-  find_package(INDI 0.9 REQUIRED)
-  # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
-  get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
-  include_directories(${INDI_INCLUDE_PARENT_DIR})
-  if(INDI_VERSION VERSION_LESS "1.4")
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  else(INDI_VERSION VERSION_LESS "1.4")
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
-  endif(INDI_VERSION VERSION_LESS "1.4")
-  if(INDI_VERSION VERSION_LESS "1.1")
-    add_definitions("-DINDI_PRE_1_1_0")
-  endif()
-  if(INDI_VERSION VERSION_LESS "1.0")
-    add_definitions("-DINDI_PRE_1_0_0")
-  endif()
-
-  # INDI depends on libz
-  find_package(ZLIB REQUIRED)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-
-  # INDI depends on libnova
-  find_package(Nova REQUIRED)
-  include_directories(${NOVA_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-  add_definitions("-DLIBNOVA")
-
-endif()
 
 
 #############################################

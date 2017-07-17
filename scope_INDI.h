@@ -107,10 +107,10 @@ public:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
 
     bool   CanPulseGuide() { return (pulseGuideNS_prop && pulseGuideEW_prop);}
-    bool   CanReportPosition(void) { return (coord_prop); }
-    bool   CanSlew(void) { return (coord_prop);}
+    bool   CanReportPosition(void) { return coord_prop ? true : false; }
+    bool   CanSlew(void) { return coord_prop ? true : false;}
     bool   CanSlewAsync(void);
-    bool   CanCheckSlewing(void) { return (coord_prop); }
+    bool   CanCheckSlewing(void) { return coord_prop ? true : false; }
 
     double GetDeclination(void);
     bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
