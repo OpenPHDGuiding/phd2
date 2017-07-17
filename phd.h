@@ -35,6 +35,15 @@
 #ifndef PHD_H_INCLUDED
 #define PHD_H_INCLUDED
 
+#if defined(_WINDOWS)
+// ensure that windows.h does not include winsock.h which is
+// incompatible with winsock2.h
+# undef NOMINMAX
+# define NOMINMAX
+# include <winsock2.h>
+# include <windows.h>
+#endif
+
 #include <wx/wx.h>
 #include <wx/aui/aui.h>
 #include <wx/bitmap.h>
