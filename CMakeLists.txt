@@ -673,10 +673,12 @@ target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TR
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 
-target_link_libraries(phd2
-                      optimized ${PHD_LINK_EXTERNAL_RELEASE})
-target_link_libraries(phd2
-                      debug ${PHD_LINK_EXTERNAL_DEBUG})
+if (PHD_LINK_EXTERNAL_RELEASE)
+  target_link_libraries(phd2 optimized ${PHD_LINK_EXTERNAL_RELEASE})
+endif()
+if (PHD_LINK_EXTERNAL_DEBUG)
+  target_link_libraries(phd2 debug ${PHD_LINK_EXTERNAL_DEBUG})
+endif()
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
