@@ -727,7 +727,27 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 {
     try
     {
-        if (mevent.GetModifiers() == wxMOD_CONTROL)
+        //single shot move -- C.Johnson 3/2/2016
+	if (mevent.GetModifiers() == wxMOD_ALTGR)
+        	{
+		//if no star selected or mount not connected, do nothing
+		if((GetState() != STATE_SELECTED) || (!pMount->IsConnected()))
+			return;
+
+		//calculate the move distances
+		double const scaleFactor = ScaleFactor();
+		double slewX = m_star.X - ((double) mevent.m_x / scaleFactor);
+            	double slewY = m_star.Y - ((double) mevent.m_y / scaleFactor);
+		
+		//make the move
+		int slewres;	
+		pFrame->StatusMsg(wxString::Format(_("Move Star %.1f %.1f"), slewX, slewY));	
+		slewres = pMount->Move(PHD_Point(slewX,slewY), MOVETYPE_DIRECT);
+		
+		return;
+		}//end single shot move
+
+	if (mevent.GetModifiers() == wxMOD_CONTROL)
         {
             double const scaleFactor = ScaleFactor();
             wxRealPoint pt((double) mevent.m_x / scaleFactor,
