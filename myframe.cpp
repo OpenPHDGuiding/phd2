@@ -2095,7 +2095,6 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
         for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
         {
             const usImage *const img = it->second;
-            long fpixel[3] = { 1, 1, 1 };
             long fsize[] = {
                 (long)img->Size.GetWidth(),
                 (long)img->Size.GetHeight(),
@@ -2103,7 +2102,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!status)
                 fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
-            float exposure = (float)img->ImgExpDur / 1000.0;
+            float exposure = (float) img->ImgExpDur / 1000.0f;
             char *keyname = const_cast<char *>("EXPOSURE");
             char *comment = const_cast<char *>("Exposure time in seconds");
             if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
@@ -2114,7 +2113,12 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
                 if (!status) fits_write_key(fptr, TSTRING, USERNOTE, note.char_str(), NULL, &status);
             }
 
-            if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
+            if (!status)
+            {
+                long fpixel[3] = { 1, 1, 1 };
+                fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
+            }
+
             Debug.Write(wxString::Format("saving dark frame exposure = %d\n", img->ImgExpDur));
         }
 

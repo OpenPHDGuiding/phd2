@@ -101,7 +101,7 @@ struct IL
     {
         Debug.Write(wxString::Format("ImgLogger: LogImage event %u frame %u\n", eventNumber, img->FrameNum));
 
-        wxString t = wxDateTime(img->ImgStartTime).Format(_T("%Y-%m-%d_%H%M%S"));
+        wxString t = img->ImgStartTime.Format(_T("%Y-%m-%d_%H%M%S"), wxDateTime::Local);
         wxString filename = wxString::Format("event%03d_%05d_%s_%s.fit", eventNumber, img->FrameNum, t, trigger);
 
         LogImage(img, filename);
@@ -245,7 +245,7 @@ void ImageLogger::LogAutoSelectImage(const usImage *img, bool succeeded)
     if (succeeded && (!s_il.settings.loggingEnabled || !s_il.settings.logAutoSelectFrames))
         return;
 
-    wxString t = wxDateTime(img->ImgStartTime).Format(_T("%Y-%m-%d_%H%M%S"));
+    wxString t = img->ImgStartTime.Format(_T("%Y-%m-%d_%H%M%S"), wxDateTime::Local);
     wxString base = succeeded ? "AutoSelect" : "AutoSelectFail";
     wxString filename = wxString::Format("%s_%s.fit", base, t);
 

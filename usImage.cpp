@@ -277,34 +277,8 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double
 
 void usImage::InitImgStartTime()
 {
-    ImgStartTime = wxDateTime::GetTimeNow();
+    ImgStartTime = wxDateTime::UNow();
 }
-
-wxString usImage::GetImgStartTime() const
-{
-    if (!ImgStartTime)
-        return wxEmptyString;
-
-    struct tm *timestruct = gmtime(&ImgStartTime);
-    return wxString::Format("%.4d-%.2d-%.2dT%.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,
-        timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
-}
-
-struct FITSHdrWriter
-{
-    fitsfile *fptr;
-    int *status;
-    FITSHdrWriter(fitsfile *fptr_, int *status_) : fptr(fptr_), status(status_) { }
-    void write(const char *key, float val, const char *comment) {
-        fits_write_key(fptr, TFLOAT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
-    }
-    void write(const char *key, unsigned int val, const char *comment) {
-        fits_write_key(fptr, TUINT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
-    }
-    void write(const char *key, const char *val, const char *comment) {
-        fits_write_key(fptr, TSTRING, const_cast<char *>(key), const_cast<char *>(val), const_cast<char *>(comment), status);
-    }
-};
 
 bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 {
@@ -312,17 +286,15 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
     try
     {
-        long fsize[3] = {
-            (long)Size.GetWidth(),
-            (long)Size.GetHeight(),
-            0L,
-        };
-        long fpixel[3] = { 1, 1, 1 };
-
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
 
         PHD_fits_create_file(&fptr, fname, true, &status);
+
+        long fsize[] = {
+            (long) Size.GetWidth(),
+            (long) Size.GetHeight(),
+        };
         fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
         FITSHdrWriter hdr(fptr, &status);
@@ -336,15 +308,11 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         if (!hdrNote.IsEmpty())
             hdr.write("USERNOTE", hdrNote.utf8_str(), 0);
 
-        time_t now = wxDateTime::GetTimeNow();
-        struct tm *timestruct = gmtime(&now);
-        char buf[100];
-        sprintf(buf, "%.4d-%.2d-%.2d %.2d:%.2d:%.2d", timestruct->tm_year + 1900, timestruct->tm_mon + 1, timestruct->tm_mday, timestruct->tm_hour, timestruct->tm_min, timestruct->tm_sec);
-        hdr.write("DATE", buf, "Time FITS file was created");
-
-        hdr.write("DATE-OBS", GetImgStartTime().c_str(), "Time image was captured");
+        hdr.write("DATE", wxDateTime::UNow(), wxDateTime::UTC, "file creation time, UTC");
+        hdr.write("DATE-OBS", ImgStartTime, wxDateTime::UTC, "Image capture start time, UTC");
         hdr.write("CREATOR", wxString(APPNAME _T(" ") FULLVER).c_str(), "Capture software");
         hdr.write("PHDPROFI", pConfig->GetCurrentProfile().c_str(), "PHD2 Equipment Profile");
+
         if (pCamera)
         {
             hdr.write("INSTRUME", pCamera->Name.c_str(), "Instrument name");
@@ -418,6 +386,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             hdr.write("PHDSUBFH", (unsigned int) Subframe.height, "PHD2 subframe height");
         }
 
+        long fpixel[3] = { 1, 1, 1 };
         fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
 
         PHD_fits_close_file(fptr);

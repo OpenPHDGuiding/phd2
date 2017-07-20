@@ -37,6 +37,7 @@
  */
 
 #include "phd.h"
+
 #include <wx/dir.h>
 #include <algorithm>
 
@@ -900,58 +901,31 @@ void GuiderOneStar::SaveStarFITS()
 
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
-    long fpixel[3] = {1,1,1};
-    long fsize[3];
-    char keyname[9]; // was 9
-    char keycomment[100];
-    char keystring[100];
-    int output_format=USHORT_IMG;
 
-    fsize[0] = 60;
-    fsize[1] = 60;
-    fsize[2] = 0;
     PHD_fits_create_file(&fptr, fname, false, &status);
+
     if (!status)
     {
-        fits_create_img(fptr,output_format, 2, fsize, &status);
+        long fsize[] = { 60, 60 };
+        fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
-        time_t now = wxDateTime::GetTimeNow();
-        struct tm *timestruct = gmtime(&now);
-        sprintf(keyname,"DATE");
-        sprintf(keycomment,"UTC date that FITS file was created");
-        sprintf(keystring,"%.4d-%.2d-%.2d %.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
-        if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+        FITSHdrWriter hdr(fptr, &status);
 
-        sprintf(keyname,"DATE-OBS");
-        sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
-        sprintf(keystring,"%s", (const char *) pImage->GetImgStartTime().c_str());
-        if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+        hdr.write("DATE", wxDateTime::UNow(), wxDateTime::UTC, "file creation time, UTC");
+        hdr.write("DATE-OBS", pImage->ImgStartTime, wxDateTime::UTC, "image capture start time, UTC");
+        hdr.write("EXPOSURE", (float) pImage->ImgExpDur / 1000.0f, "Exposure time [s]");
+        hdr.write("XBINNING", (unsigned int) pCamera->Binning, "Camera X binning");
+        hdr.write("YBINNING", (unsigned int) pCamera->Binning, "Camera Y binning");
+        hdr.write("XORGSUB", start_x, "Subframe x position in binned pixels");
+        hdr.write("YORGSUB", start_y, "Subframe y position in binned pixels");
 
-        sprintf(keyname,"EXPOSURE");
-        sprintf(keycomment,"Exposure time [s]");
-        float dur = (float) pImage->ImgExpDur / 1000.0;
-        if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
-
-        unsigned int tmp = 1;
-        sprintf(keyname,"XBINNING");
-        sprintf(keycomment,"Camera binning mode");
-        fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
-        sprintf(keyname,"YBINNING");
-        sprintf(keycomment,"Camera binning mode");
-        fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
-
-        sprintf(keyname,"XORGSUB");
-        sprintf(keycomment,"Subframe x position in binned pixels");
-        tmp = start_x;
-        fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-        sprintf(keyname,"YORGSUB");
-        sprintf(keycomment,"Subframe y position in binned pixels");
-        tmp = start_y;
-        fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-
-        if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
-
+        if (!status)
+        {
+            long fpixel[] = { 1, 1, 1 };
+            fits_write_pix(fptr, TUSHORT, fpixel, tmpimg.NPixels, tmpimg.ImageData, &status);
+        }
     }
+
     PHD_fits_close_file(fptr);
 }
 

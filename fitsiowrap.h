@@ -40,4 +40,35 @@ extern int PHD_fits_open_diskfile(fitsfile **fptr, const wxString& filename, int
 extern int PHD_fits_create_file(fitsfile **fptr, const wxString& filename, bool clobber, int *status);
 extern void PHD_fits_close_file(fitsfile *fptr);
 
+class FITSHdrWriter
+{
+    fitsfile *fptr;
+    int *status;
+
+public:
+
+    FITSHdrWriter(fitsfile *fptr_, int *status_) : fptr(fptr_), status(status_) { }
+
+    void write(const char *key, float val, const char *comment) {
+        fits_write_key(fptr, TFLOAT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
+    }
+
+    void write(const char *key, unsigned int val, const char *comment) {
+        fits_write_key(fptr, TUINT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
+    }
+
+    void write(const char *key, int val, const char *comment) {
+        fits_write_key(fptr, TINT, const_cast<char *>(key), &val, const_cast<char *>(comment), status);
+    }
+
+    void write(const char *key, const char *val, const char *comment) {
+        fits_write_key(fptr, TSTRING, const_cast<char *>(key), const_cast<char *>(val), const_cast<char *>(comment), status);
+    }
+
+    void write(const char *key, const wxDateTime& t, const wxDateTime::TimeZone& z, const char *comment) {
+        wxString s = t.Format("%Y-%m-%dT%H:%M:%S", z) + wxString::Format(".%03d", t.GetMillisecond(z));
+        write(key, (const char *) s.c_str(), comment);
+    }
+};
+
 #endif

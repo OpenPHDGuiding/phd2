@@ -38,15 +38,15 @@
 class usImage
 {
 public:
-    unsigned short      *ImageData;     // Pointer to raw data
-    wxSize              Size;               // Dimensions of image
+    unsigned short     *ImageData;      // Pointer to raw data
+    wxSize              Size;           // Dimensions of image
     wxRect              Subframe;       // were the valid data is
     int                 NPixels;
     int                 Min;
     int                 Max;
     int                 FiltMin;
     int                 FiltMax;
-    time_t              ImgStartTime;
+    wxDateTime          ImgStartTime;
     int                 ImgExpDur;
     int                 ImgStackCnt;
     wxByte              BitsPerPixel;
@@ -61,7 +61,6 @@ public:
         Max(0),
         FiltMin(0),
         FiltMax(0),
-        ImgStartTime(0),
         ImgExpDur(0),
         ImgStackCnt(1),
         BitsPerPixel(0),
@@ -76,7 +75,6 @@ public:
     void                SwapImageData(usImage& other);
     void                CalcStats();
     void                InitImgStartTime();
-    wxString            GetImgStartTime() const;
     bool                CopyFrom(const usImage& src);
     bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
     bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
