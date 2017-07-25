@@ -128,7 +128,7 @@ bool ParallelPortWin32::Connect(const wxString& portName)
 
         Debug.AddLine(wxString::Format("parallel port %s assigned address 0x%x", portName, m_portAddr));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -145,7 +145,7 @@ bool ParallelPortWin32::Disconnect(void)
     {
         m_portAddr = 0;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -166,7 +166,7 @@ bool ParallelPortWin32::ReadByte(BYTE *pData)
         }
         *pData = Inp32(m_portAddr);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -188,7 +188,7 @@ bool ParallelPortWin32::WriteByte(UINT8 data)
 
         Out32(m_portAddr, data);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

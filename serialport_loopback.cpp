@@ -47,7 +47,7 @@ wxArrayString SerialPortLoopback::GetSerialPortList(void)
 
         ret.Add("Loopback 1");
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -71,7 +71,7 @@ bool SerialPortLoopback::Connect(const wxString& portName, int baud, int dataBit
     try
     {
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -87,7 +87,7 @@ bool SerialPortLoopback::Disconnect(void)
     try
     {
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -103,7 +103,7 @@ bool SerialPortLoopback::SetReceiveTimeout(int timeoutMs)
     try
     {
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -120,7 +120,7 @@ bool SerialPortLoopback::Send(const unsigned char *pData, unsigned count)
     {
         m_data = *pData;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -156,7 +156,7 @@ bool SerialPortLoopback::Receive(unsigned char *pData, unsigned count)
             *pData = m_data;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
