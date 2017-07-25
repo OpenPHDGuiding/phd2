@@ -40,7 +40,8 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
-class ScopeINDI : public Scope, public INDI::BaseClient {
+class ScopeINDI : public Scope, public INDI::BaseClient
+{
 private:
     ISwitchVectorProperty *connection_prop;
     INumberVectorProperty *coord_prop;    
@@ -82,45 +83,46 @@ private:
     void     CheckState();
     
 protected:
-    virtual void newDevice(INDI::BaseDevice *dp);
-    virtual void removeDevice(INDI::BaseDevice *dp) {}
-    virtual void newProperty(INDI::Property *property);
-    virtual void removeProperty(INDI::Property *property) {}
-    virtual void newBLOB(IBLOB *bp) {}
-    virtual void newSwitch(ISwitchVectorProperty *svp);
-    virtual void newNumber(INumberVectorProperty *nvp);
-    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
-    virtual void newText(ITextVectorProperty *tvp);
-    virtual void newLight(ILightVectorProperty *lvp) {}
-    virtual void serverConnected();
-    virtual void serverDisconnected(int exit_code);
+    void newDevice(INDI::BaseDevice *dp) override;
+    void removeDevice(INDI::BaseDevice *dp) override {}
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {}
+    void newBLOB(IBLOB *bp) override {}
+    void newSwitch(ISwitchVectorProperty *svp) override;
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override;
+    void newLight(ILightVectorProperty *lvp) override {}
+    void serverConnected() override;
+    void serverDisconnected(int exit_code) override;
     
 public:
     ScopeINDI();
     ~ScopeINDI();
 
-    bool     Connect(void);
-    bool     Disconnect(void);
-    bool     HasSetupDialog(void) const;
-    void     SetupDialog();
+    bool     Connect(void) override;
+    bool     Disconnect(void) override;
+    bool     HasSetupDialog(void) const override;
+    void     SetupDialog() override;
 
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
+    bool HasNonGuiMove(void) override;
 
-    bool   CanPulseGuide() { return (pulseGuideNS_prop && pulseGuideEW_prop);}
-    bool   CanReportPosition(void) { return coord_prop ? true : false; }
-    bool   CanSlew(void) { return coord_prop ? true : false;}
-    bool   CanSlewAsync(void);
-    bool   CanCheckSlewing(void) { return coord_prop ? true : false; }
+    bool   CanPulseGuide() override { return (pulseGuideNS_prop && pulseGuideEW_prop); }
+    bool   CanReportPosition(void) override { return coord_prop ? true : false; }
+    bool   CanSlew(void) override { return coord_prop ? true : false; }
+    bool   CanSlewAsync(void) override;
+    bool   CanCheckSlewing(void) override { return coord_prop ? true : false; }
 
-    double GetDeclination(void);
-    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
-    bool   GetCoordinates(double *ra, double *dec, double *siderealTime);
-    bool   GetSiteLatLong(double *latitude, double *longitude);
-    bool   SlewToCoordinates(double ra, double dec);
-    bool   SlewToCoordinatesAsync(double ra, double dec);
-    void   AbortSlew(void);
-    bool   Slewing(void);
-    PierSide SideOfPier(void);
+    double GetDeclination(void) override;
+    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
+    bool   GetCoordinates(double *ra, double *dec, double *siderealTime) override;
+    bool   GetSiteLatLong(double *latitude, double *longitude) override;
+    bool   SlewToCoordinates(double ra, double dec) override;
+    bool   SlewToCoordinatesAsync(double ra, double dec) override;
+    void   AbortSlew(void) override;
+    bool   Slewing(void) override;
+    PierSide SideOfPier(void) override;
 };
 
 #endif /* GUIDE_INDI */

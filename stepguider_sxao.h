@@ -52,16 +52,18 @@ public:
     StepGuiderSxAO(void);
     virtual ~StepGuiderSxAO(void);
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    bool Connect(void) override;
+    bool Disconnect(void) override;
 
-    virtual void ShowPropertyDialog(void);
+    void ShowPropertyDialog(void) override;
+
+    bool HasNonGuiMove(void) override;
 
 private:
-    virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int MaxPosition(GUIDE_DIRECTION direction) const;
-    virtual bool SetMaxPosition(int steps);
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit);
+    bool Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
 
     bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
     bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
@@ -74,10 +76,10 @@ private:
     bool Center();
     bool Center(unsigned char cmd);
 
-    virtual bool    ST4HasGuideOutput(void);
-    virtual bool    ST4HostConnected(void);
-    virtual bool    ST4HasNonGuiMove(void);
-    virtual bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4HasGuideOutput(void) override;
+    bool    ST4HostConnected(void) override;
+    bool    ST4HasNonGuiMove(void) override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
 };
 
 #endif // if defined(STEPGUIDER_SXAO)

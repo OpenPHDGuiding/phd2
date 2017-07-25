@@ -52,9 +52,10 @@ public:
         Disconnect();
     }
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+    bool Connect(void) override;
+    bool Disconnect(void) override;
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
+    bool HasNonGuiMove(void) override;
 };
 
 #endif /* GUIDE_GPINT */

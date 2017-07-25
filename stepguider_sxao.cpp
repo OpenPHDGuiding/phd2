@@ -650,4 +650,9 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
     return bError;
 }
 
+bool StepGuiderSxAO::HasNonGuiMove(void)
+{
+    return true;
+}
+
 #endif // STEPGUIDER_SXAO

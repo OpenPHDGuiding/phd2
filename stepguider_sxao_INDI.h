@@ -44,7 +44,7 @@
 
 #include "config_INDI.h"
 
-class StepGuiderSxAoINDI: public StepGuider , public INDI::BaseClient
+class StepGuiderSxAoINDI : public StepGuider, public INDI::BaseClient
 {
 private:
     // INDI parts
@@ -95,48 +95,47 @@ private:
     int m_maxSteps;
     int SxAoVersion;
 
-    virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int MaxPosition(GUIDE_DIRECTION direction) const;
-    virtual bool SetMaxPosition(int steps);
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit);
+    bool Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
 
     bool FirmwareVersion(int *version);
     bool Unjam(void);
     bool Center(void);
     bool Center(unsigned char cmd);
 
-    virtual bool    ST4HasGuideOutput(void);
-    virtual bool    ST4HostConnected(void);
-    virtual bool    ST4HasNonGuiMove(void);
-    virtual bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4HasGuideOutput(void) override;
+    bool    ST4HostConnected(void) override;
+    bool    ST4HasNonGuiMove(void) override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
 
 protected:
     // INDI parts
-    virtual void newDevice(INDI::BaseDevice *dp);
-    virtual void removeDevice(INDI::BaseDevice *dp);
-    virtual void newProperty(INDI::Property *property);
-    virtual void removeProperty(INDI::Property *property) {};
-    virtual void newBLOB(IBLOB *bp) {};
-    virtual void newSwitch(ISwitchVectorProperty *svp) {};
-    virtual void newNumber(INumberVectorProperty *nvp);
-    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
-    virtual void newText(ITextVectorProperty *tvp) {};
-    virtual void newLight(ILightVectorProperty *lvp) {};
-    virtual void serverConnected();
-    virtual void serverDisconnected(int exit_code);
+    void newDevice(INDI::BaseDevice *dp) override;
+    void removeDevice(INDI::BaseDevice *dp) override;
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {};
+    void newBLOB(IBLOB *bp) override {};
+    void newSwitch(ISwitchVectorProperty *svp) override {};
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override {};
+    void newLight(ILightVectorProperty *lvp) override {};
+    void serverConnected() override;
+    void serverDisconnected(int exit_code) override;
 
 public:
     StepGuiderSxAoINDI(void);
     ~StepGuiderSxAoINDI(void);
 
     // StepGuider parts
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-    virtual void ShowPropertyDialog(void); // just calling INDI SetupDialog()
-
-    // INDI parts
-    bool     HasSetupDialog(void) const;
-    void     SetupDialog();
+    bool Connect(void) override;
+    bool Disconnect(void) override;
+    void ShowPropertyDialog(void) override; // just calling INDI SetupDialog()
+    bool HasNonGuiMove(void) override;
+    bool HasSetupDialog(void) const override;
+    void SetupDialog() override;
 };
 
 #endif // #if defined(STEPGUIDER_SXAO_INDI)

@@ -42,7 +42,8 @@
 short _stdcall Inp32(short PortAddress);
 void _stdcall Out32(short PortAddress, short data);
 
-bool ScopeGpInt::Connect(void) {
+bool ScopeGpInt::Connect(void)
+{
     short reg = Inp32(port);
 
     reg = reg & 0x0F;  // Deassert all directions, protect low bits
@@ -51,7 +52,8 @@ bool ScopeGpInt::Connect(void) {
     return false;
 }
 
-bool ScopeGpInt::Disconnect(void) {
+bool ScopeGpInt::Disconnect(void)
+{
     short reg = Inp32(port);
 
     reg = reg & 0x0F;  // Deassert all directions, protect low bits
@@ -79,5 +81,9 @@ Mount::MOVE_RESULT ScopeGpInt::Guide(GUIDE_DIRECTION direction, int duration)
     return MOVE_OK;
 }
 
+bool ScopeGpInt::HasNonGuiMove(void)
+{
+    return true;
+}
 
 #endif /* GUIDE_GPINT */

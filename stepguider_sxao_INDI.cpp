@@ -311,7 +311,7 @@ void StepGuiderSxAoINDI::serverConnected(void)
         try {
             Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverConnected connecting StepGuider"));
             StepGuider::Connect();
-        } catch (wxString Msg) {
+        } catch (const wxString& Msg) {
             POSSIBLY_UNUSED(Msg);
         }
     } else {
@@ -363,7 +363,7 @@ bool StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
                 break;
             }
-        } catch (wxString Msg) {
+        } catch (const wxString& Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
@@ -411,7 +411,7 @@ bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
                     throw ERROR_INFO("StepGuiderSxAoINDI::IsAtLimit: invalid direction");
                     break;
             }
-        } catch (wxString Msg) {
+        } catch (const wxString& Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
@@ -438,7 +438,7 @@ bool StepGuiderSxAoINDI::FirmwareVersion(int *version)
                 *version += ch - '0';
             }
             Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Firmwareversion %u", *version));
-        } catch (wxString Msg) {
+        } catch (const wxString& Msg) {
             *version = -1;
             POSSIBLY_UNUSED(Msg);
             bError = true;
@@ -522,13 +522,18 @@ bool StepGuiderSxAoINDI::ST4PulseGuideScope(int direction, int duration)
                 throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope: invalid direction");
                 break;
             }
-        } catch (wxString Msg) {
+        } catch (const wxString& Msg) {
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
     }
 
     return bError;
+}
+
+bool StepGuiderSxAoINDI::HasNonGuiMove(void)
+{
+    return true;
 }
 
 #endif // #ifdef STEPGUIDER_SXAO_INDI

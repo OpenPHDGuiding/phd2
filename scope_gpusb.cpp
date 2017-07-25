@@ -534,4 +534,9 @@ Mount::MOVE_RESULT ScopeGpUsb::Guide(GUIDE_DIRECTION direction, int duration)
     return MOVE_OK;
 }
 
+bool ScopeGpUsb::HasNonGuiMove(void)
+{
+    return true;
+}
+
 #endif /* GUIDE_GPUSB */

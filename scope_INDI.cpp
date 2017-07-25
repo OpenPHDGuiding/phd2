@@ -601,7 +601,6 @@ PierSide ScopeINDI::SideOfPier(void)
             }
         }
     }
-    
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
@@ -610,6 +609,11 @@ PierSide ScopeINDI::SideOfPier(void)
     Debug.Write(wxString::Format("ScopeINDI::SideOfPier() returns %d\n", pierSide));
     
     return pierSide;
+}
+
+bool ScopeINDI::HasNonGuiMove(void)
+{
+    return true;
 }
 
 #endif /* GUIDE_INDI */
