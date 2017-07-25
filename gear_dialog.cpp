@@ -993,7 +993,9 @@ bool GearDialog::DoConnectCamera(void)
         pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
         wxString cameraId = SelectedCameraId(m_pCamera);
-        Debug.Write(wxString::Format("Connecting to camera id = [%s]\n", cameraId));
+
+        Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
+
         if (m_pCamera->Connect(cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");
@@ -1202,6 +1204,8 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
         {
             pFrame->StatusMsgNoTimeout(_("Connecting to Mount ..."));
 
+            Debug.Write(wxString::Format("Connecting to mount [%s]\n", m_pScopes->GetStringSelection()));
+
             if (m_pScope->Connect())
             {
                 throw THROW_INFO("OnButtonConnectScope: connect failed");
@@ -1248,6 +1252,8 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
         if (m_pAuxScope)
         {
             pFrame->StatusMsgNoTimeout(_("Connecting to Aux Mount ..."));
+
+            Debug.Write(wxString::Format("Connecting to aux mount [%s]\n", m_pAuxScopes->GetStringSelection()));
 
             if (m_pAuxScope->Connect())
             {
@@ -1398,6 +1404,8 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
         {
             pFrame->StatusMsgNoTimeout(_("Connecting to AO ..."));
 
+            Debug.Write(wxString::Format("Connecting to AO [%s]\n", m_pStepGuiders->GetStringSelection()));
+
             if (m_pStepGuider->Connect())
             {
                 throw THROW_INFO("OnButtonConnectStepGuider: connect failed");
@@ -1512,6 +1520,8 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
         if (m_pRotator)
         {
             pFrame->StatusMsgNoTimeout(_("Connecting to Rotator ..."));
+
+            Debug.Write(wxString::Format("Connecting to rotator [%s]\n", m_pRotators->GetStringSelection()));
 
             if (m_pRotator->Connect())
             {

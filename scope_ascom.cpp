@@ -148,6 +148,8 @@ bool ScopeASCOM::Create(DispatchObj& obj)
             return true;
         }
 
+        Debug.Write(wxString::Format("Create ASCOM Scope: choice '%s' progid %s\n", m_choice, s_progid[m_choice]));
+
         wxBasicString progid(s_progid[m_choice]);
 
         if (!obj.Create(progid))

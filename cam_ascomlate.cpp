@@ -437,6 +437,8 @@ bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
         return true;
     }
 
+    Debug.Write(wxString::Format("Create ASCOM Camera: choice '%s' progid %s\n", m_choice, s_progid[m_choice]));
+
     wxBasicString progid(s_progid[m_choice]);
 
     if (!obj->Create(progid))
