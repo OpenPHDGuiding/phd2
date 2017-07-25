@@ -152,17 +152,17 @@ protected:
     friend class AOConfigDialogCtrlSet;
 
 public:
-    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) { return NULL; };
-    virtual wxString GetSettingsSummary(void);
-    virtual wxString CalibrationSettingsSummary(void);
-    virtual wxString GetMountClassName(void) const;
-    virtual void AdjustCalibrationForScopePointing(void);
-    virtual bool IsStepGuider(void) const;
-    virtual wxPoint GetAoPos(void) const;
-    virtual wxPoint GetAoMaxPos(void) const;
-    virtual const char *DirectionStr(GUIDE_DIRECTION d);
-    virtual const char *DirectionChar(GUIDE_DIRECTION d);
+    MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override { return nullptr; };
+    wxString GetSettingsSummary(void) override;
+    wxString CalibrationSettingsSummary(void) override;
+    wxString GetMountClassName(void) const override;
+    void AdjustCalibrationForScopePointing(void) override;
+    bool IsStepGuider(void) const  override;
+    wxPoint GetAoPos(void) const override;
+    wxPoint GetAoMaxPos(void) const override;
+    const char *DirectionStr(GUIDE_DIRECTION d) override;
+    const char *DirectionChar(GUIDE_DIRECTION d) override;
 
 public:
     StepGuider(void);
@@ -194,9 +194,9 @@ public:
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, MountMoveType moveType);
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo);
-    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
+    MOVE_RESULT Move(const PHD_Point& vectorEndpoint, MountMoveType moveType) final;
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo) final;
+    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps) final;
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);
     void InitBumpPositions(void);

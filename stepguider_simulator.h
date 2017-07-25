@@ -44,14 +44,14 @@ public:
     StepGuiderSimulator(void);
     virtual ~StepGuiderSimulator(void);
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    bool Connect(void) override;
+    bool Disconnect(void) override;
 
 private:
-    virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int MaxPosition(GUIDE_DIRECTION direction) const;
-    virtual bool SetMaxPosition(int steps);
-    virtual bool HasNonGuiMove(void);
+    bool Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool HasNonGuiMove(void) override;
 };
 
 #endif // STEPGUIDER_SIMULATOR

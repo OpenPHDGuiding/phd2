@@ -87,30 +87,30 @@ public:
     virtual ~ScopeASCOM(void);
     static wxArrayString EnumAscomScopes(void);
 
-    bool Connect(void);
-    bool Disconnect(void);
+    bool Connect(void) override;
+    bool Disconnect(void) override;
 
-    bool HasSetupDialog(void) const;
-    void SetupDialog(void);
+    bool HasSetupDialog(void) const override;
+    void SetupDialog(void) override;
 
-    bool HasNonGuiMove(void);
+    bool HasNonGuiMove(void) override;
 
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
-    double GetDeclination(void);
-    bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
-    bool GetCoordinates(double *ra, double *dec, double *siderealTime);
-    bool GetSiteLatLong(double *latitude, double *longitude);
-    bool CanSlew(void);
-    bool CanSlewAsync(void);
-    bool CanReportPosition(void);
-    bool CanPulseGuide(void);
-    bool SlewToCoordinates(double ra, double dec);
-    bool SlewToCoordinatesAsync(double ra, double dec);
-    void AbortSlew(void);
-    bool CanCheckSlewing(void);
-    bool Slewing(void);
-    PierSide SideOfPier(void);
+    double GetDeclination(void) override;
+    bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
+    bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
+    bool GetSiteLatLong(double *latitude, double *longitude) override;
+    bool CanSlew(void) override;
+    bool CanSlewAsync(void) override;
+    bool CanReportPosition(void) override;
+    bool CanPulseGuide(void) override;
+    bool SlewToCoordinates(double ra, double dec) override;
+    bool SlewToCoordinatesAsync(double ra, double dec) override;
+    void AbortSlew(void) override;
+    bool CanCheckSlewing(void) override;
+    bool Slewing(void) override;
+    PierSide SideOfPier(void) override;
 };
 
 #endif // GUIDE_ASCOM

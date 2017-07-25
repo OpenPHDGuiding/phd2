@@ -208,7 +208,7 @@ public:
     bool IsGuiding(void) const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
-    void UpdateImageDisplay(usImage *pImage=NULL);
+    void UpdateImageDisplay(usImage *pImage = nullptr);
 
     bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);

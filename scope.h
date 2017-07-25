@@ -68,8 +68,8 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 public:
     ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~ScopeConfigDialogCtrlSet() {};
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    void LoadValues(void) override;
+    void UnloadValues(void) override;
     void ResetRAParameterUI();
     void ResetDecParameterUI();
     void HandleBinningChange(int oldVal, int newVal);
@@ -147,9 +147,9 @@ protected:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
         ~ScopeConfigDialogPane(void) {};
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-        virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
+        void LoadValues(void) override;
+        void UnloadValues(void) override;
+        void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap) override;
     };
 
     class ScopeGraphControlPane : public GraphControlPane
@@ -189,13 +189,13 @@ public:
     static wxString DecGuideModeStr(DEC_GUIDE_MODE m);
     static wxString DecGuideModeLocaleStr(DEC_GUIDE_MODE m);
 
-    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
 
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary();
-    virtual wxString CalibrationSettingsSummary();
-    virtual wxString GetMountClassName() const;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
+    wxString GetSettingsSummary() override;
+    wxString CalibrationSettingsSummary() override;
+    wxString GetMountClassName() const override;
 
     static wxArrayString List(void);
     static wxArrayString AuxMountList(void);
@@ -252,8 +252,8 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, MountMoveType moveType, MoveResultInfo *moveResultInfo);
-    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, MountMoveType moveType, MoveResultInfo *moveResultInfo) override;
+    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) override;
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);
 

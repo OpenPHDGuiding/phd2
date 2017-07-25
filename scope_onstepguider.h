@@ -37,16 +37,16 @@
 
 #include "scope_onboard_st4.h"
 
-class ScopeOnStepGuider:public ScopeOnboardST4
+class ScopeOnStepGuider : public ScopeOnboardST4
 {
 public:
     ScopeOnStepGuider(void);
     virtual ~ScopeOnStepGuider(void);
 
-    virtual bool Connect(void);
+    bool Connect(void) override;
 
-    virtual bool RequiresStepGuider(void);
-    virtual bool HasNonGuiMove(void);
+    bool RequiresStepGuider(void) override;
+    bool HasNonGuiMove(void) override;
 };
 
 #endif // GUIDE_ONSTEPGUIDER

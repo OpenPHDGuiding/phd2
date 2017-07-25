@@ -141,11 +141,11 @@ public:
     virtual void HandleBinningChange(int oldVal, int newVal);
 
 protected:
-    wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
+    wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = nullptr);
     void DoAdd(wxSizer *pSizer);
     void DoAdd(wxWindow *pWindow);
     void DoAdd(wxWindow *pWindow, const wxString& toolTip);
-    void DoAdd(const wxString& Label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
+    void DoAdd(const wxString& Label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = nullptr);
 
     int StringWidth(const wxString& string);
     int StringArrayWidth(wxString string[], int nElements);

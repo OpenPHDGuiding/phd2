@@ -64,7 +64,6 @@ bool ScopeOnCamera::HasNonGuiMove(void)
 /*
  * OnCamera mounts cannot move the mount while imaging
  */
-
 bool ScopeOnCamera::SynchronousOnly(void)
 {
     return true;

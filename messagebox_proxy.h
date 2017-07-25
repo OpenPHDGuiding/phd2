@@ -49,7 +49,7 @@ class wxMessageBoxProxy
 
 public:
     void showMessageBox(void);
-    int wxMessageBox(const wxString& message, const wxString& caption = "Message", int style = wxOK, wxWindow *parent = NULL, int x = -1, int y = -1);
+    int wxMessageBox(const wxString& message, const wxString& caption = "Message", int style = wxOK, wxWindow *parent = nullptr, int x = -1, int y = -1);
 };
 
 #endif // MESSAGEBOX_PROXY_H_INCLUDED

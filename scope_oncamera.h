@@ -37,17 +37,17 @@
 
 #include "scope_onboard_st4.h"
 
-class ScopeOnCamera:public ScopeOnboardST4
+class ScopeOnCamera : public ScopeOnboardST4
 {
 public:
     ScopeOnCamera(void);
     virtual ~ScopeOnCamera(void);
 
-    virtual bool Connect(void);
+    bool Connect(void) override;
 
-    virtual bool RequiresCamera(void);
-    virtual bool HasNonGuiMove(void);
-    virtual bool SynchronousOnly(void);
+    bool RequiresCamera(void) override;
+    bool HasNonGuiMove(void) override;
+    bool SynchronousOnly(void) override;
 };
 
 #endif // GUIDE_ONCAMERA

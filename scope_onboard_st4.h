@@ -47,11 +47,11 @@ public:
     ScopeOnboardST4(void);
     virtual ~ScopeOnboardST4(void);
 
-    virtual bool Disconnect(void);
+    bool Disconnect(void) override;
 
-    virtual bool HasNonGuiMove(void);
+    bool HasNonGuiMove(void) override;
 
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
 };
 
 #endif // SCOPE_ONBOARD_ST4_H_INCLUDED
