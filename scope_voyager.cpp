@@ -122,7 +122,7 @@ Mount::MOVE_RESULT ScopeVoyager::Guide(GUIDE_DIRECTION direction, int duration)
         VoyagerClient.Write(msg,strlen(msg));
         VoyagerClient.Read(&msg,10);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = MOVE_ERROR;

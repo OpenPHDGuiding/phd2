@@ -800,7 +800,7 @@ bool GraphLogClientWindow::SetMinLength(unsigned int minLength)
         }
         m_minLength = minLength;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -823,7 +823,7 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
             throw ERROR_INFO("maxLength < m_minLength");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -855,7 +855,7 @@ bool GraphLogClientWindow::SetMinHeight(unsigned int minHeight)
         }
         m_minHeight = minHeight;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -879,7 +879,7 @@ bool GraphLogClientWindow::SetMaxHeight(unsigned int maxHeight)
         }
         m_maxHeight = maxHeight;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

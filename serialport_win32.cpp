@@ -72,7 +72,7 @@ wxArrayString SerialPortWin32::GetSerialPortList(void)
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -149,7 +149,7 @@ bool SerialPortWin32::Connect(const wxString& portName, int baud, int dataBits, 
             throw ERROR_INFO("SerialPortWin32: GetCommState failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -169,7 +169,7 @@ bool SerialPortWin32::Disconnect(void)
             throw ERROR_INFO("SerialPortWin32: CloseHandle failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -199,7 +199,7 @@ bool SerialPortWin32::SetReceiveTimeout(int timeoutMs)
             throw ERROR_INFO("SerialPortWin32: unable to set serial port timeouts");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -229,7 +229,7 @@ bool SerialPortWin32::Send(const unsigned char *pData, unsigned count)
         }
 
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -258,7 +258,7 @@ bool SerialPortWin32::Receive(unsigned char *pData, unsigned count)
 
         Debug.AddBytes("Received", pData, receiveCount);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -280,7 +280,7 @@ bool SerialPortWin32::EscapeFunction(DWORD command)
             throw ERROR_INFO("SerialPortWin32: EscapeCommFunction failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

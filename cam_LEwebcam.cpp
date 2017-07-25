@@ -68,7 +68,7 @@ bool Camera_LEWebcamClass::Connect(const wxString& camId)
 
         LEControl(LECAMERA_LED_OFF | LECAMERA_SHUTTER_CLOSED | LECAMERA_EXPOSURE_FIELD_NONE | LECAMERA_AMP_OFF);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -178,7 +178,7 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, int options, cons
 
         img.SwapImageData(*srcPtr);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

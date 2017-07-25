@@ -80,7 +80,7 @@ bool ScopeOnboardST4::ConnectOnboardST4(OnboardST4 *pOnboardHost)
 
         Scope::Connect();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -106,7 +106,7 @@ bool ScopeOnboardST4::Disconnect(void)
 
         bError = Scope::Disconnect();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -141,7 +141,7 @@ Mount::MOVE_RESULT ScopeOnboardST4::Guide(GUIDE_DIRECTION direction, int duratio
             result = MOVE_ERROR;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = MOVE_ERROR;
@@ -173,7 +173,7 @@ bool ScopeOnboardST4::HasNonGuiMove(void)
 
         bReturn = m_pOnboardHost->ST4HasNonGuiMove();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

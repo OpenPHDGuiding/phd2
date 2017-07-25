@@ -400,7 +400,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 break;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -442,7 +442,7 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
                 break;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

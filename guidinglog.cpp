@@ -87,7 +87,7 @@ bool GuidingLog::EnableLogging(void)
         if (pFrame && pFrame->pGuider->IsGuiding())
             GuidingHeader();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -165,7 +165,7 @@ bool GuidingLog::Flush(void)
             throw ERROR_INFO("unable to flush file");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

@@ -94,7 +94,7 @@ bool Camera_OpenCVClass::Connect(const wxString& camId)
 
         Connected = TRUE;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -167,7 +167,7 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const 
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

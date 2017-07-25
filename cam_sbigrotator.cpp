@@ -87,7 +87,7 @@ bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
         FullSize = m_pSubcamera->FullSize;
         m_hasGuideOutput = m_pSubcamera->ST4HasGuideOutput();
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
 

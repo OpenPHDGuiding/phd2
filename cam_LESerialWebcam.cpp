@@ -100,7 +100,7 @@ bool Camera_LESerialWebcamClass::Connect(const wxString& camId)
             throw ERROR_INFO("Unable to open base class camera");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -125,7 +125,7 @@ bool Camera_LESerialWebcamClass::Disconnect()
             throw ERROR_INFO("Base class Disconnect() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -210,7 +210,7 @@ bool Camera_LESerialWebcamClass::LEControl(int actions)
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -306,7 +306,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
 
         delete pSerialPort;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

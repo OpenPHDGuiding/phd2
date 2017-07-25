@@ -59,7 +59,7 @@ bool ScopeOnStepGuider::Connect(void)
 
         bError = ScopeOnboardST4::ConnectOnboardST4(dynamic_cast<StepGuider *>(pMount));
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

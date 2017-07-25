@@ -76,7 +76,7 @@ bool Camera_LELxUsbWebcamClass::Connect(const wxString& camId)
             throw ERROR_INFO("base class Connect() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -106,7 +106,7 @@ bool Camera_LELxUsbWebcamClass::Disconnect()
             throw ERROR_INFO("Base class Disconnect() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -180,7 +180,7 @@ bool Camera_LELxUsbWebcamClass::LEControl(int actions)
 
         LXUSB_SetAll(frame1State, frame2State, shutterState, ampState, ledState);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

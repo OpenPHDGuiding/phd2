@@ -96,7 +96,7 @@ bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
             throw ERROR_INFO("base class Connect() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -121,7 +121,7 @@ bool Camera_LEParallelWebcamClass::Disconnect()
             throw ERROR_INFO("Base class Disconnect() failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -185,7 +185,7 @@ bool Camera_LEParallelWebcamClass::LEControl(int actions)
             throw ERROR_INFO("LEParallelWebcamClass::LEControl: ReadByte failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

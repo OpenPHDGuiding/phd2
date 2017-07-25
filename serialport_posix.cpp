@@ -173,7 +173,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
             throw ERROR_INFO("ioctl TIOCMSET");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -198,7 +198,7 @@ bool SerialPortPosix::Disconnect(void)
         if (close(m_fd) == -1){
             throw ERROR_INFO("SerialPortPosix: close failed");
         }
-    } catch (wxString Msg) {
+    } catch (const wxString& Msg) {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -224,7 +224,7 @@ bool SerialPortPosix::SetReceiveTimeout(int timeoutMilliSeconds)
         if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0 ) {
             throw ERROR_INFO("tcsetattr failed");
         }
-    } catch (wxString Msg) {
+    } catch (const wxString& Msg) {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -249,7 +249,7 @@ bool SerialPortPosix::Send(const unsigned char *pData, unsigned count)
             throw ERROR_INFO("SerialPortPosix: nBytesWritten != count");
         }
 
-    } catch (wxString Msg) {
+    } catch (const wxString& Msg) {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -282,7 +282,7 @@ bool SerialPortPosix::Receive(unsigned char *pData, unsigned count)
             throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"),count) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"),originalCount));
         }
         
-    } catch (wxString Msg) {
+    } catch (const wxString& Msg) {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }

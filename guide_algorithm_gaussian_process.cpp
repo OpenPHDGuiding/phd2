@@ -491,7 +491,7 @@ bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
             throw ERROR_INFO("invalid controlGain");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -516,7 +516,7 @@ bool GuideAlgorithmGaussianProcess::SetMinMove(double min_move)
             throw ERROR_INFO("invalid minimum move");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -541,7 +541,7 @@ bool GuideAlgorithmGaussianProcess::SetPeriodLengthsInference(double num_periods
             throw ERROR_INFO("invalid number of elements");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -566,7 +566,7 @@ bool GuideAlgorithmGaussianProcess::SetPeriodLengthsPeriodEstimation(double num_
             throw ERROR_INFO("invalid number of period lengths");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -591,7 +591,7 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
             throw ERROR_INFO("invalid number of points");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -622,7 +622,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
         throw ERROR_INFO("invalid length scale for short SE kernel");
       }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
@@ -639,7 +639,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
         throw ERROR_INFO("invalid signal variance for the short SE kernel");
       }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
@@ -656,7 +656,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
             throw ERROR_INFO("invalid length scale for periodic kernel");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -673,7 +673,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
             throw ERROR_INFO("invalid signal variance for the periodic kernel");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -691,7 +691,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
             throw ERROR_INFO("invalid length scale for SE kernel");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -708,7 +708,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
             throw ERROR_INFO("invalid signal variance for the SE kernel");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
@@ -725,7 +725,7 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
         throw ERROR_INFO("invalid period length for periodic kernel");
       }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
       POSSIBLY_UNUSED(Msg);
       error = true;
@@ -749,7 +749,7 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
             throw ERROR_INFO("invalid prediction gain");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;

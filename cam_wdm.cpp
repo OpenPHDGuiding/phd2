@@ -366,7 +366,7 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
         m_stackptr = img.ImageData;
         m_captureMode = captureMode;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -428,7 +428,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, int options, const wxR
             SubtractDark(img);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -455,7 +455,7 @@ bool Camera_WDMClass::CaptureOneFrame(usImage& img, int options, const wxRect& s
             SubtractDark(img);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;

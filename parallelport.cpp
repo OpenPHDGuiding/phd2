@@ -69,7 +69,7 @@ bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
             throw ERROR_INFO("ParallelPort: WriteByte failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
