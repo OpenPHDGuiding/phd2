@@ -131,7 +131,6 @@ void StepGuiderSxAoINDI::newDevice(INDI::BaseDevice *dp)
         ao_device = dp;
     }
 }
-void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice *dp) {}
 
 void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
 {

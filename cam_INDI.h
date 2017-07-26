@@ -97,18 +97,20 @@ private:
     bool     ReadStream(usImage& img);
     
 protected:
-    virtual void newDevice(INDI::BaseDevice *dp);
-    virtual void removeDevice(INDI::BaseDevice *dp) {}
-    virtual void newProperty(INDI::Property *property);
-    virtual void removeProperty(INDI::Property *property) {}
-    virtual void newBLOB(IBLOB *bp);
-    virtual void newSwitch(ISwitchVectorProperty *svp);
-    virtual void newNumber(INumberVectorProperty *nvp);
-    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
-    virtual void newText(ITextVectorProperty *tvp);
-    virtual void newLight(ILightVectorProperty *lvp) {}
-    virtual void serverConnected();
-    virtual void serverDisconnected(int exit_code);
+    void newDevice(INDI::BaseDevice *dp) override;
+#ifndef INDI_PRE_1_0_0
+    void removeDevice(INDI::BaseDevice *dp) override {};
+#endif
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {}
+    void newBLOB(IBLOB *bp) override;
+    void newSwitch(ISwitchVectorProperty *svp) override;
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override;
+    void newLight(ILightVectorProperty *lvp) override {}
+    void serverConnected() override;
+    void serverDisconnected(int exit_code) override;
 
 public:
     Camera_INDIClass();
