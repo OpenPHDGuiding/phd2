@@ -116,6 +116,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #define ROUND(x) (int) floor((x) + 0.5)
 #define ROUNDF(x) (int) floorf((x) + 0.5)
+#define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
 /* eliminate warnings for unused variables */
 #define POSSIBLY_UNUSED(x) (void)(x)

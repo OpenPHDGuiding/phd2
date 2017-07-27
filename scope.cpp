@@ -500,9 +500,6 @@ bool Scope::IsDecDrifting(void) const
     return m_decGuideMode == DEC_NONE;
 }
 
-// Useful utility functions
-#define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
-
 Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;
