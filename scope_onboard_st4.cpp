@@ -37,8 +37,9 @@
 #include "scope_onboard_st4.h"
 
 ScopeOnboardST4::ScopeOnboardST4(void)
+    :
+    m_pOnboardHost(nullptr)
 {
-    m_pOnboardHost = NULL;
 }
 
 ScopeOnboardST4::~ScopeOnboardST4(void)
@@ -47,7 +48,7 @@ ScopeOnboardST4::~ScopeOnboardST4(void)
     {
         Disconnect();
     }
-    m_pOnboardHost = NULL;
+    m_pOnboardHost = nullptr;
 }
 
 bool ScopeOnboardST4::ConnectOnboardST4(OnboardST4 *pOnboardHost)
@@ -102,7 +103,7 @@ bool ScopeOnboardST4::Disconnect(void)
 
         assert(m_pOnboardHost);
 
-        m_pOnboardHost = NULL;
+        m_pOnboardHost = nullptr;
 
         bError = Scope::Disconnect();
     }
@@ -158,17 +159,17 @@ bool ScopeOnboardST4::HasNonGuiMove(void)
     {
         if (!IsConnected())
         {
-            throw ERROR_INFO("Attempt to HasNonGuiMove On Camera mount when not connected");
-        }
-
-        if (!m_pOnboardHost->ST4HostConnected())
-        {
-            throw ERROR_INFO("Attempt to HasNonGuiMove On Camera mount when camera is not connected");
+            throw ERROR_INFO("Attempt to HasNonGuiMove OnboardST4 when not connected");
         }
 
         if (!m_pOnboardHost)
         {
-            throw ERROR_INFO("Attempt HasNonGuiMove OnboardST4 mount when m_pOnboardHost == NULL");
+            throw ERROR_INFO("Attempt HasNonGuiMove OnboardST4 when m_pOnboardHost == NULL");
+        }
+
+        if (!m_pOnboardHost->ST4HostConnected())
+        {
+            throw ERROR_INFO("Attempt to HasNonGuiMove OnboardST4 when host is not connected");
         }
 
         bReturn = m_pOnboardHost->ST4HasNonGuiMove();
@@ -179,4 +180,35 @@ bool ScopeOnboardST4::HasNonGuiMove(void)
     }
 
     return bReturn;
+}
+
+bool ScopeOnboardST4::SynchronousOnly(void)
+{
+    bool syncOnly = true;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ScopeOnboardST4: Attempt to get SynchronousOnly when not connected");
+        }
+
+        if (!m_pOnboardHost)
+        {
+            throw ERROR_INFO("ScopeOnboardST4: Attempt get SynchronousOnly m_pOnboardHost == NULL");
+        }
+
+        if (!m_pOnboardHost->ST4HostConnected())
+        {
+            throw ERROR_INFO("ScopeOnboardST4: Attempt to get SynchronousOnly when host not connected");
+        }
+
+        syncOnly = m_pOnboardHost->ST4SynchronousOnly();
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+
+    return syncOnly;
 }

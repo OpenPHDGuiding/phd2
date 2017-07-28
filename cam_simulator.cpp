@@ -81,6 +81,7 @@ struct SimCamParams
     static bool show_comet;
     static double comet_rate_x;
     static double comet_rate_y;
+    static bool allow_async_st4;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -106,6 +107,7 @@ double SimCamParams::custom_pe_period;
 bool SimCamParams::show_comet;
 double SimCamParams::comet_rate_x;
 double SimCamParams::comet_rate_y;
+bool SimCamParams::allow_async_st4 = true;
 
 // Note: these are all in units appropriate for the UI
 #define NR_STARS_DEFAULT 20
@@ -506,7 +508,7 @@ void SimCamState::Initialize()
 #endif
 
 #ifdef SIM_FILE_DISPLACEMENTS
-    pIStream = NULL;
+    pIStream = nullptr;
     wxString csvName = Debug.GetLogDir() + PATHSEPSTR + SIM_FILE_DISPLACEMENTS_DEFAULT;
     if (wxFile::Exists(csvName))
         pIStream = new wxFileInputStream(csvName);
@@ -529,7 +531,7 @@ void SimCamState::Initialize()
     if (pIStream && pIStream->IsOk())
         pText = new wxTextInputStream(*pIStream);
     else
-        pText = NULL;                   // User cancelled open dialog or file is useless
+        pText = nullptr;                   // User cancelled open dialog or file is useless
     scaleConversion = 1.0;          // safe default
 #endif
 
@@ -618,7 +620,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     long inc[] = { 1, 1 };
     long fpixel[] = { frame.GetLeft() + 1, frame.GetTop() + 1 };
     long lpixel[] = { frame.GetRight() + 1, frame.GetBottom() + 1 };
-    if (fits_read_subset(fptr, TUSHORT, fpixel, lpixel, inc, NULL, buf, NULL, &status))
+    if (fits_read_subset(fptr, TUSHORT, fpixel, lpixel, inc, nullptr, buf, nullptr, &status))
     {
         pFrame->Alert(_("Error reading data"));
         PHD_fits_close_file(fptr);
@@ -1059,7 +1061,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 }
 
-Camera_SimClass::Camera_SimClass()
+CameraSimulator::CameraSimulator()
     : sim(new SimCamState())
 {
     Connected = false;
@@ -1073,7 +1075,7 @@ Camera_SimClass::Camera_SimClass()
     HasCooler = true;
 }
 
-wxByte Camera_SimClass::BitsPerPixel()
+wxByte CameraSimulator::BitsPerPixel()
 {
 #if 1
     return 16;
@@ -1082,15 +1084,15 @@ wxByte Camera_SimClass::BitsPerPixel()
 #endif
 }
 
-bool Camera_SimClass::Connect(const wxString& camId)
+bool CameraSimulator::Connect(const wxString& camId)
 {
     load_sim_params();
     sim->Initialize();
 
     struct ConnectInBg : public ConnectCameraInBg
     {
-        Camera_SimClass *cam;
-        ConnectInBg(Camera_SimClass *cam_) : cam(cam_) { }
+        CameraSimulator *cam;
+        ConnectInBg(CameraSimulator *cam_) : cam(cam_) { }
         bool Entry()
         {
 //#define TEST_SLOW_CONNECT
@@ -1113,13 +1115,13 @@ bool Camera_SimClass::Connect(const wxString& camId)
     return err;
 }
 
-bool Camera_SimClass::Disconnect()
+bool CameraSimulator::Disconnect()
 {
     Connected = false;
     return false;
 }
 
-Camera_SimClass::~Camera_SimClass()
+CameraSimulator::~CameraSimulator()
 {
 #ifdef SIMDEBUG
     sim->DebugFile.Close();
@@ -1134,7 +1136,7 @@ Camera_SimClass::~Camera_SimClass()
 }
 
 #if SIMMODE==2
-bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize, ysize;
     wxImage disk_image;
@@ -1179,7 +1181,7 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 }
 #endif // SIMMODE == 3
 
-bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     wxRect subframe(subframeArg);
     CameraWatchdog watchdog(duration, GetTimeoutMs());
@@ -1245,7 +1247,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
     return false;
 }
 
-bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
 {
     double d = SimCamParams::guide_rate * duration / (1000.0 * SimCamParams::image_scale);
 
@@ -1278,7 +1280,7 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_SimClass::SetCoolerOn(bool on)
+bool CameraSimulator::SetCoolerOn(bool on)
 {
     if (on)
         sim->cooler.TurnOn();
@@ -1288,7 +1290,7 @@ bool Camera_SimClass::SetCoolerOn(bool on)
     return false; // no error
 }
 
-bool Camera_SimClass::SetCoolerSetpoint(double temperature)
+bool CameraSimulator::SetCoolerSetpoint(double temperature)
 {
     if (!sim->cooler.on)
         return true; // error
@@ -1297,7 +1299,7 @@ bool Camera_SimClass::SetCoolerSetpoint(double temperature)
     return false;
 }
 
-bool Camera_SimClass::GetCoolerStatus(bool *onp, double *setpoint, double *power, double *temperature)
+bool CameraSimulator::GetCoolerStatus(bool *onp, double *setpoint, double *power, double *temperature)
 {
     bool on = sim->cooler.on;
     double cur = sim->cooler.CurrentTemp();
@@ -1318,9 +1320,14 @@ bool Camera_SimClass::GetCoolerStatus(bool *onp, double *setpoint, double *power
     return false;
 }
 
-PierSide Camera_SimClass::SideOfPier(void) const
+PierSide CameraSimulator::SideOfPier(void) const
 {
     return SimCamParams::pier_side;
+}
+
+bool CameraSimulator::ST4SynchronousOnly(void)
+{
+    return !SimCamParams::allow_async_st4;
 }
 
 static PierSide OtherSide(PierSide side)
@@ -1328,14 +1335,14 @@ static PierSide OtherSide(PierSide side)
     return side == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST;
 }
 
-void Camera_SimClass::FlipPierSide(void)
+void CameraSimulator::FlipPierSide(void)
 {
     SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
     Debug.Write(wxString::Format("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f\n", SimCamParams::pier_side, SimCamParams::cam_angle));
 }
 
 #if SIMMODE == 4
-bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize, ysize;
     //  unsigned short *dataptr;
@@ -1376,7 +1383,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
             PHD_fits_close_file(fptr);
             return true;
         }
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
+        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, nullptr, img.ImageData, nullptr, &status) ) { // Read image
             pFrame->Alert(_("Error reading data"));
             PHD_fits_close_file(fptr);
             return true;
@@ -1720,7 +1727,7 @@ void SimCamDialog::UpdatePierSideLabel()
     pPiersideLabel->SetLabel(wxString::Format(_("Side of pier: %s"), pPierSide == PIER_SIDE_EAST ? _("East") : _("West")));
 }
 
-void Camera_SimClass::ShowPropertyDialog()
+void CameraSimulator::ShowPropertyDialog()
 {
     SimCamDialog dlg(pFrame);
     double imageScale = pFrame->GetCameraPixelScale();              // arc-sec/pixel, defaults to 1.0 if no user specs

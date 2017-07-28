@@ -42,6 +42,7 @@ public:
     virtual bool    ST4HasGuideOutput(void);
     virtual bool    ST4HostConnected(void);
     virtual bool    ST4HasNonGuiMove(void);
+    virtual bool    ST4SynchronousOnly(void);
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 };
 

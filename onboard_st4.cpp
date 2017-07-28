@@ -52,6 +52,11 @@ bool OnboardST4::ST4HasNonGuiMove(void)
     return true;
 }
 
+bool OnboardST4::ST4SynchronousOnly(void)
+{
+    return true;
+}
+
 bool OnboardST4::ST4PulseGuideScope(int direction, int duration)
 {
     assert(false);

@@ -36,6 +36,7 @@
 
 #include "phd.h"
 #include "camera.h"
+
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
@@ -204,8 +205,8 @@ GuideCamera::GuideCamera(void)
     m_pixelSize = GetProfilePixelSize();
     MaxBinning = 1;
     Binning = pConfig->Profile.GetInt("/camera/binning", 1);
-    CurrentDarkFrame = NULL;
-    CurrentDefectMap = NULL;
+    CurrentDarkFrame = nullptr;
+    CurrentDefectMap = nullptr;
 }
 
 GuideCamera::~GuideCamera(void)
@@ -340,7 +341,7 @@ wxArrayString GuideCamera::List(void)
 
 GuideCamera *GuideCamera::Factory(const wxString& choice)
 {
-    GuideCamera *pReturn = NULL;
+    GuideCamera *pReturn = nullptr;
 
     try
     {
@@ -363,7 +364,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice.Find(_("None")) + 1) {
         }
         else if (choice.Find(_T("Simulator")) + 1) {
-            pReturn = new Camera_SimClass();
+            pReturn = new CameraSimulator();
         }
 #if defined (SAC42)
         else if (choice.Find(_T("SAC4-2")) + 1) {
@@ -545,7 +546,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined (V4L_CAMERA)
         else if (choice.Find(_T("V4L(2) Camera")) + 1) {
             // There is at least ONE V4L(2) device ... let's find out exactly
-            DeviceInfo *deviceInfo = NULL;
+            DeviceInfo *deviceInfo = nullptr;
 
             if (1 == Camera_VIDEODEVICE.NumberOfDevices()) {
                 deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(0);
@@ -585,7 +586,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         if (pReturn)
         {
             delete pReturn;
-            pReturn = NULL;
+            pReturn = nullptr;
         }
     }
 
@@ -1339,7 +1340,7 @@ void GuideCamera::ClearDefectMap()
     {
         Debug.AddLine("Clearing defect map...");
         delete CurrentDefectMap;
-        CurrentDefectMap = NULL;
+        CurrentDefectMap = nullptr;
     }
 }
 
@@ -1359,7 +1360,7 @@ void GuideCamera::ClearDarks()
         delete it->second;
         Darks.erase(it);
     }
-    CurrentDarkFrame = NULL;
+    CurrentDarkFrame = nullptr;
 }
 
 void GuideCamera::SubtractDark(usImage& img)

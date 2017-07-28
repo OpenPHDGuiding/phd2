@@ -61,12 +61,4 @@ bool ScopeOnCamera::HasNonGuiMove(void)
     return true;
 }
 
-/*
- * OnCamera mounts cannot move the mount while imaging
- */
-bool ScopeOnCamera::SynchronousOnly(void)
-{
-    return true;
-}
-
 #endif // GUIDE_ONCAMERA

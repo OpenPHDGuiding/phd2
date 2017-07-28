@@ -47,7 +47,6 @@ public:
 
     bool RequiresCamera(void) override;
     bool HasNonGuiMove(void) override;
-    bool SynchronousOnly(void) override;
 };
 
 #endif // GUIDE_ONCAMERA

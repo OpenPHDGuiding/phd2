@@ -50,6 +50,7 @@ public:
     bool Disconnect(void) override;
 
     bool HasNonGuiMove(void) override;
+    bool SynchronousOnly(void) override;
 
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
 };

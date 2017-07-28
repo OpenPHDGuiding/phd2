@@ -38,23 +38,24 @@
 
 struct SimCamState;
 
-class Camera_SimClass : public GuideCamera
+class CameraSimulator : public GuideCamera
 {
     SimCamState *sim;
 public:
-    Camera_SimClass();
-    ~Camera_SimClass();
-    bool     Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool     Connect(const wxString& camId);
-    bool     Disconnect();
-    void     ShowPropertyDialog();
-    bool     HasNonGuiCapture() { return true; }
-    bool     ST4HasNonGuiMove() { return true; }
-    wxByte   BitsPerPixel();
-    bool    SetCoolerOn(bool on);
-    bool    SetCoolerSetpoint(double temperature);
-    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
-    bool     ST4PulseGuideScope (int direction, int duration);
+    CameraSimulator();
+    ~CameraSimulator();
+    bool     Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool     Connect(const wxString& camId) override;
+    bool     Disconnect() override;
+    void     ShowPropertyDialog() override;
+    bool     HasNonGuiCapture() override { return true; }
+    wxByte   BitsPerPixel() override;
+    bool     SetCoolerOn(bool on) override;
+    bool     SetCoolerSetpoint(double temperature) override;
+    bool     GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool     ST4HasNonGuiMove() override { return true; }
+    bool     ST4SynchronousOnly() override;
+    bool     ST4PulseGuideScope(int direction, int duration) override;
     PierSide SideOfPier() const;
     void     FlipPierSide();
 };

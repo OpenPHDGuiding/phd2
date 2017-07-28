@@ -101,7 +101,7 @@ bool MyFrame::StartServer(bool state)
         {
             Debug.AddLine(wxString::Format("Socket server failed to start - Could not listen at port %u", port));
             delete SocketServer;
-            SocketServer = NULL;
+            SocketServer = nullptr;
             StatusMsg(_("Server start failed"));
             return true;
         }
@@ -113,7 +113,7 @@ bool MyFrame::StartServer(bool state)
         if (EvtServer.EventServerStart(m_instanceNumber))
         {
             delete SocketServer;
-            SocketServer = NULL;
+            SocketServer = nullptr;
             StatusMsg(_("Server start failed"));
             return true;
         }
@@ -133,7 +133,7 @@ bool MyFrame::StartServer(bool state)
         s_clients.empty();
         EvtServer.EventServerStop();
         delete SocketServer;
-        SocketServer = NULL;
+        SocketServer = nullptr;
         StatusMsg(_("Server stopped"));
     }
 
@@ -144,7 +144,7 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
 {
     wxSocketServer *server = static_cast<wxSocketServer *>(event.GetSocket());
 
-    if (server == NULL)
+    if (!server)
         return;
 
     if (event.GetSocketEvent() != wxSOCKET_CONNECTION)
@@ -384,7 +384,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 Debug.AddLine("processing socket request flip camera simulator");
                 if (pCamera && pCamera->Name == _T("Simulator"))
                 {
-                    Camera_SimClass *simcam = static_cast<Camera_SimClass *>(pCamera);
+                    CameraSimulator *simcam = static_cast<CameraSimulator *>(pCamera);
                     simcam->FlipPierSide();
                 }
                 break;
@@ -420,7 +420,7 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
     {
         wxSocketBase *sock = event.GetSocket();
 
-        if (SocketServer == NULL)
+        if (!SocketServer)
         {
             throw ERROR_INFO("socket command when SocketServer == NULL");
         }
