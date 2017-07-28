@@ -1006,7 +1006,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
 
         pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
 
-        bool secondaryIsBusy = pSecondaryMount->IsBusy();
+        bool secondaryIsBusy = pSecondaryMount && pSecondaryMount->IsBusy();
 
         // consider bumping the secondary mount if this is a normal move
         if (moveType == MOVETYPE_ALGO && pSecondaryMount && pSecondaryMount->IsConnected())
