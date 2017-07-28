@@ -94,7 +94,7 @@ bool MyFrame::StartServer(bool state)
         unsigned int port = 4300 + m_instanceNumber - 1;
         wxIPV4address sockServerAddr;
         sockServerAddr.Service(port);
-        SocketServer = new wxSocketServer(sockServerAddr);
+        SocketServer = new wxSocketServer(sockServerAddr, wxSOCKET_REUSEADDR);
 
         // We use Ok() here to see if the server is really listening
         if (!SocketServer->Ok())

@@ -2173,7 +2173,7 @@ bool EventServer::EventServerStart(unsigned int instanceId)
     unsigned int port = 4400 + instanceId - 1;
     wxIPV4address eventServerAddr;
     eventServerAddr.Service(port);
-    m_serverSocket = new wxSocketServer(eventServerAddr);
+    m_serverSocket = new wxSocketServer(eventServerAddr, wxSOCKET_REUSEADDR);
 
     if (!m_serverSocket->Ok())
     {
