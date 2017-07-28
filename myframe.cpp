@@ -194,7 +194,7 @@ struct FileDropTarget : public wxFileDropTarget
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
-    : wxFrame(NULL, wxID_ANY, wxEmptyString),
+    : wxFrame(nullptr, wxID_ANY, wxEmptyString),
     m_showBookmarksAccel(0),
     m_bookmarkLockPosAccel(0),
     pStatsWin(0)
@@ -205,14 +205,14 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_mgr.SetManagedWindow(this);
 
     m_frameCounter = 0;
-    m_pPrimaryWorkerThread = NULL;
+    m_pPrimaryWorkerThread = nullptr;
     StartWorkerThread(m_pPrimaryWorkerThread);
-    m_pSecondaryWorkerThread = NULL;
+    m_pSecondaryWorkerThread = nullptr;
     StartWorkerThread(m_pSecondaryWorkerThread);
 
     m_statusbarTimer.SetOwner(this, STATUSBAR_TIMER_EVENT);
 
-    SocketServer = NULL;
+    SocketServer = nullptr;
 
     bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
@@ -247,13 +247,13 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     m_infoBar = new wxInfoBar(guiderWin);
     m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON,
-        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+        wxCommandEventHandler(MyFrame::OnAlertButton), nullptr, this);
     m_infoBar->Connect(BUTTON_ALERT_DONTSHOW, wxEVT_BUTTON,
-        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+        wxCommandEventHandler(MyFrame::OnAlertButton), nullptr, this);
     m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
-        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+        wxCommandEventHandler(MyFrame::OnAlertButton), nullptr, this);
     m_infoBar->Connect(BUTTON_ALERT_HELP, wxEVT_BUTTON,
-        wxCommandEventHandler(MyFrame::OnAlertHelp), NULL, this);
+        wxCommandEventHandler(MyFrame::OnAlertHelp), nullptr, this);
 
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
@@ -343,15 +343,15 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     pGearDialog = new GearDialog(this);
 
-    pDriftTool = NULL;
-    pManualGuide = NULL;
-    pStarCrossDlg = NULL;
-    pNudgeLock = NULL;
-    pCometTool = NULL;
-    pGuidingAssistant = NULL;
-    pRefineDefMap = NULL;
-    pCalSanityCheckDlg = NULL;
-    pCalReviewDlg = NULL;
+    pDriftTool = nullptr;
+    pManualGuide = nullptr;
+    pStarCrossDlg = nullptr;
+    pNudgeLock = nullptr;
+    pCometTool = nullptr;
+    pGuidingAssistant = nullptr;
+    pRefineDefMap = nullptr;
+    pCalSanityCheckDlg = nullptr;
+    pCalReviewDlg = nullptr;
     m_starFindMode = Star::FIND_CENTROID;
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
@@ -433,7 +433,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 MyFrame::~MyFrame()
 {
     delete pGearDialog;
-    pGearDialog = NULL;
+    pGearDialog = nullptr;
 
     pAdvancedDialog->Destroy();
 
@@ -569,7 +569,7 @@ int MyFrame::GetTextWidth(wxControl *pControl, const wxString& string)
 {
     int width;
 
-    pControl->GetTextExtent(string, &width, NULL);
+    pControl->GetTextExtent(string, &width, nullptr);
 
     return width;
 }
@@ -1428,7 +1428,7 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
     {
         POSSIBLY_UNUSED(Msg);
         delete pWorkerThread;
-        pWorkerThread = NULL;
+        pWorkerThread = nullptr;
         bError = true;
     }
 
@@ -1480,7 +1480,7 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
     Debug.Write(wxString::Format("StopWorkerThread(0x%p) ends\n", pWorkerThread));
 
     delete pWorkerThread;
-    pWorkerThread = NULL;
+    pWorkerThread = nullptr;
 
     return killed;
 }
@@ -1567,7 +1567,8 @@ void MyFrame::ScheduleSecondaryMove(Mount *mount, const PHD_Point& vectorEndpoin
 
     if (mount->SynchronousOnly())
     {
-        // some mounts must run on the Primary thread even if the secondary is requested.
+        // some mounts must run on the Primary thread even if the secondary is requested
+        // to ensure synchronous ST4 guide / camera exposure
         SchedulePrimaryMove(mount, vectorEndpoint, moveType);
     }
     else
@@ -2016,6 +2017,12 @@ void MyFrame::NotifyGuidingStopped(void)
 {
     assert(!pMount || !pMount->IsBusy());
     assert(!pSecondaryMount || !pSecondaryMount->IsBusy());
+
+    if (pMount)
+        pMount->NotifyGuidingStopped();
+    if (pSecondaryMount)
+        pSecondaryMount->NotifyGuidingStopped();
+
     EvtServer.NotifyGuidingStopped();
     GuideLog.StopGuiding();
 }
@@ -2110,7 +2117,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!note.IsEmpty())
             {
                 char *USERNOTE = const_cast<char *>("USERNOTE");
-                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, note.char_str(), NULL, &status);
+                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, note.char_str(), nullptr, &status);
             }
 
             if (!status)
@@ -2193,7 +2200,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 }
 
                 long fpixel[] = { 1, 1, 1 };
-                if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], NULL, img->ImageData, NULL, &status))
+                if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], nullptr, img->ImageData, nullptr, &status))
                 {
                     pFrame->Alert(_("Error reading data from ") + fname);
                     throw ERROR_INFO("Error reading");
@@ -2201,7 +2208,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
                 char keyname[] = "EXPOSURE";
                 float exposure;
-                if (fits_read_key(fptr, TFLOAT, keyname, &exposure, NULL, &status))
+                if (fits_read_key(fptr, TFLOAT, keyname, &exposure, nullptr, &status))
                 {
                     exposure = (float)pFrame->RequestedExposureDuration() / 1000.0;
                     Debug.Write(wxString::Format("missing EXPOSURE value, assume %.3f\n", exposure));
@@ -2219,7 +2226,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                     break;
 
                 // move to the next hdu
-                fits_movrel_hdu(fptr, +1, NULL, &status);
+                fits_movrel_hdu(fptr, +1, nullptr, &status);
             }
         }
         else
@@ -2684,10 +2691,10 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
             PATHSEPSTR + pLanguageInfo->CanonicalName +
             PATHSEPSTR "messages.mo";
         wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
-        if (pCat != NULL)
+        if (pCat)
         {
             const wxString *pLanguageName = pCat->GetString(wxTRANSLATE("Language-Name"));
-            if (pLanguageName != NULL)
+            if (pLanguageName)
             {
                 languages.Add(*pLanguageName);
                 bLanguageNameOk = true;

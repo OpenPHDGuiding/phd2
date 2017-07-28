@@ -855,9 +855,6 @@ void Guider::SetState(GUIDER_STATE newState)
                 case STATE_STOP:
                     break;
             }
-
-            if (pMount)
-                pMount->NotifyGuidingStopped();
         }
 
         assert(newState != STATE_STOP);
