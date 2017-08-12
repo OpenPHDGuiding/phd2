@@ -111,6 +111,7 @@
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
+# define SBIG
 
 #endif
 
