@@ -629,6 +629,11 @@ else()   # Linux or OSX
   # INDI depends on libz
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+  
+  # INDI depends on Nova
+  find_library(NOVALIB REQUIRED NAMES nova)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} nova)
+  
 endif()
 
 
@@ -787,8 +792,36 @@ if(NOT EXISTS ${qhyccd_root})
     WORKING_DIRECTORY ${qhyccd_root})
 endif()
 
+#############################################
+# SBIG specific dependencies if installed part of system
+#############################################
+if(SBIG_SYSTEM)
+
+  # Assumes SBIG's Universal driver has been loaded into the system and placed
+  # in a standard path. (e.g. sbigudrv.h in /usr/include, libsbigudrv.so in /usr/lib )
+  # 
+  # SDK for linux can be found here -> ftp://ftp.diffractionlimited.com/pub/devsw/LinuxDevKit.tar.gz
+  # 
+  # To rebuild libSBIG
+  # cd ${WORKDIR}/LinuxDevKit/x86/c/testapp
+  #  local sharedlink="-shared -Wl,-soname,libSBIG-1.33.0"
+  #  g++ -c ${CXXFLAGS} -c -fPIC -I /usr/include/libusb-1.0 -I ${WORKDIR}/LinuxDevKit/x86/c/testapp csbigimg.cpp csbigcam.cpp
+  #  g++ -L ${WORKDIR}/LinuxDevKit/x86/c/lib64/ ${sharedlink} -o libSBIG=1.33.0 csbigimg.o csbigcam.o -lm -lsbigudrv -lusb -lcfitsio
+  #  ar -cvq libSBIG.a csbigimg.o csbigcam.o
 
 
+  message(STATUS "Finding SBIG Univeral Drivers on system")
+  find_path(SBIG_INCLUDE_DIR sbigudrv.h)
+  find_library(SBIG_LIBRARIES NAMES SBIG)
+  find_library(SBIGUDRV_LIBRARIES NAMES sbigudrv)
+  include_directories(${SBIG_INCLUDE_DIR})
+  
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIG sbigudrv)
+ 
+  if(UNIX)
+    add_definitions("-DTARGET=7") 
+  endif()
+endif()
 
 #############################################
 #
