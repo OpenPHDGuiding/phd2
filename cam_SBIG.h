@@ -38,6 +38,8 @@
 
 #if defined (__APPLE__)
 #include <SBIGUDrv/sbigudrv.h>
+#elif defined(__LINUX__)
+    #include <sbigudrv.h>
 #else
 #include "cameras/Sbigudrv.h"
 #endif
@@ -48,6 +50,7 @@ class Camera_SBIGClass : public GuideCamera
     bool m_driverLoaded;
     wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
     double m_devicePixelSize;
+    bool IsColor;
 
 public:
     Camera_SBIGClass();
