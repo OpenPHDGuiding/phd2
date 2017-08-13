@@ -349,7 +349,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d\n", gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y));
 
     Name = gcir0.name;
-    IsColor = Name.find("Color");
+    IsColor = (Name.find("Color") != string::npos); 
    
     Connected = true;
     return false;
