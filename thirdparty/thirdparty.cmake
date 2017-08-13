@@ -630,10 +630,6 @@ else()   # Linux or OSX
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
   
-  # INDI depends on Nova
-  find_library(NOVALIB REQUIRED NAMES nova)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} nova)
-  
 endif()
 
 
