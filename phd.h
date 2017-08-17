@@ -96,16 +96,19 @@ WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #if defined (__WINDOWS__)
+#define PHD_OSNAME _T("Windows")
 #define PATHSEPCH '\\'
 #define PATHSEPSTR "\\"
 #endif
 
 #if defined (__APPLE__)
+#define PHD_OSNAME _T("OSX")
 #define PATHSEPCH '/'
 #define PATHSEPSTR "/"
 #endif
 
 #if defined (__WXGTK__)
+#define PHD_OSNAME _T("Linux")
 #define PATHSEPCH '/'
 #define PATHSEPSTR _T("/")
 #endif
