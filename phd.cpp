@@ -205,12 +205,16 @@ bool PhdApp::OnInit()
 
     Debug.Init(GetInitTime(), true);
 
-    Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
-    Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));
+    Debug.Write(wxString::Format("PHD2 version %s begins execution with:\n", FULLVER));
+    Debug.Write(wxString::Format("   %s\n", wxGetOsDescription()));
+#if defined(__linux__)
+    Debug.Write(wxString::Format("   %s\n", wxGetLinuxDistributionInfo().Description));
+#endif
+    Debug.Write(wxString::Format("   %s\n", wxVERSION_STRING));
     float dummy;
-    Debug.AddLine(wxString::Format("   cfitsio %.2lf", ffvers(&dummy)));
+    Debug.Write(wxString::Format("   cfitsio %.2lf\n", ffvers(&dummy)));
 #if defined(CV_VERSION)
-    Debug.AddLine(wxString::Format("   opencv %s", CV_VERSION));
+    Debug.Write(wxString::Format("   opencv %s\n", CV_VERSION));
 #endif
 
 #if defined(__WINDOWS__)

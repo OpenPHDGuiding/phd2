@@ -1406,7 +1406,7 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
 
     try
     {
-        Debug.Write(wxString::Format("StartWorkerThread(0x%p) begins\n", pWorkerThread));
+        Debug.Write(wxString::Format("StartWorkerThread(%p) begins\n", pWorkerThread));
 
         if (!pWorkerThread || !pWorkerThread->IsRunning())
         {
@@ -1432,7 +1432,7 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
         bError = true;
     }
 
-    Debug.Write(wxString::Format("StartWorkerThread(0x%p) ends\n", pWorkerThread));
+    Debug.Write(wxString::Format("StartWorkerThread(%p) ends\n", pWorkerThread));
 
     return bError;
 }
