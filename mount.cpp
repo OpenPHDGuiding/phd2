@@ -865,7 +865,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         result = Move(xDirection, requestedXAmount, moveType, &xMoveResult);
 
         MoveResultInfo yMoveResult;
-        if (result == MOVE_OK || result == MOVE_ERROR)
+        if (result != MOVE_ERROR_SLEWING && result != MOVE_ERROR_AO_LIMIT_REACHED)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
             if (requestedYAmount > 0 && !IsStepGuider() && moveType != MOVETYPE_DIRECT && GetGuidingEnabled())
@@ -903,7 +903,8 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
     catch (const wxString& errMsg)
     {
         POSSIBLY_UNUSED(errMsg);
-        result = MOVE_ERROR;
+        if (result == MOVE_OK)
+            result = MOVE_ERROR;
     }
 
     return result;

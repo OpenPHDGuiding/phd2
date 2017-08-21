@@ -493,10 +493,40 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         {
             mount->IncrementErrorCount();
 
-            if (moveResult == Mount::MOVE_STOP_GUIDING)
+            if (moveResult == Mount::MOVE_ERROR_SLEWING)
             {
                 Debug.Write("mount move error indicates guiding should stop\n");
                 pGuider->StopGuiding();
+            }
+            else if (moveResult == Mount::MOVE_ERROR_AO_LIMIT_REACHED)
+            {
+                const StepInfo& step = TheAO()->GetFailedStepInfo();
+                int newval = step.dx ? abs(step.x + step.dx) : abs(step.y + step.dy);
+
+                if (pGuider->IsCalibrating())
+                {
+                    pFrame->Alert(wxString::Format(_("The AO exceeded its travel limit stepping"
+                        " from (%d, %d) to (%d, %d) and calibration cannot proceed. Try reducing"
+                        " the AO Travel setting to %d or lower and try again."),
+                        step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
+
+                    pGuider->StopGuiding();
+                }
+                else // Guiding
+                {
+                    pFrame->Alert(wxString::Format(_("The AO exceeded its travel limit stepping"
+                        " from (%d, %d) to (%d, %d) and has been re-centered. Try reducing the AO"
+                        " Travel setting to %d or lower."),
+                        step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
+
+                    // Attempt to restart guiding after centering, otherwise the AO will
+                    // just bounce right back to the failing position
+                    bool saveSticky = pGuider->LockPosIsSticky();
+                    pGuider->SetLockPosIsSticky(false);
+                    pGuider->StopGuiding();
+                    pGuider->StartGuiding();
+                    pGuider->SetLockPosIsSticky(saveSticky);
+                }
             }
 
             throw ERROR_INFO("Error reported moving");

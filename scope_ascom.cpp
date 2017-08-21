@@ -445,7 +445,7 @@ bool ScopeASCOM::Disconnect(void)
     do { \
         if (IsStopGuidingWhenSlewingEnabled() && IsSlewing(dispobj)) \
         { \
-            *(result) = MOVE_STOP_GUIDING; \
+            *(result) = MOVE_ERROR_SLEWING; \
             throw ERROR_INFO("attempt to guide while slewing"); \
         } \
     } while (0)
@@ -638,7 +638,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         }
     }
 
-    if (result == MOVE_STOP_GUIDING)
+    if (result == MOVE_ERROR_SLEWING)
     {
         pFrame->SuppressableAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."),
             SuppressSlewAlert, 0);

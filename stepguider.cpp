@@ -844,7 +844,7 @@ Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int st
 
         if (move.amountMoved != steps)
         {
-            throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
+            throw THROW_INFO("stepsTaken != stepsRequested");
         }
     }
     catch (const wxString& Msg)
@@ -931,8 +931,26 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, MountM
 
             if (steps > 0)
             {
-                if (Step(direction, steps))
+                STEP_RESULT sres = Step(direction, steps);
+                if (sres != STEP_OK)
                 {
+                    if (sres == STEP_LIMIT_REACHED)
+                    {
+                        Debug.Write("AO: limit reached!\n");
+
+                        m_failedStep.x = m_xOffset;
+                        m_failedStep.y = m_yOffset;
+                        m_failedStep.dx = xDirection * steps;
+                        m_failedStep.dy = yDirection * steps;
+
+                        // attempt to recover by centering
+                        bool err = Center();
+                        if (err)
+                            Debug.Write("AO Center failed after limit reached\n");
+
+                        result = MOVE_ERROR_AO_LIMIT_REACHED;
+                    }
+
                     throw ERROR_INFO("step failed");
                 }
 
@@ -947,7 +965,8 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, MountM
     {
         POSSIBLY_UNUSED(Msg);
         steps = 0;
-        result = MOVE_ERROR;
+        if (result == MOVE_OK)
+            result = MOVE_ERROR;
     }
 
     if (moveResult)
@@ -976,9 +995,9 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
 
     try
     {
-        MOVE_RESULT mountResult = Mount::Move(cameraVectorEndpoint, moveType);
-        if (mountResult != MOVE_OK)
-            Debug.Write("StepGuider::Move: Mount::Move failed!\n");
+        result = Mount::Move(cameraVectorEndpoint, moveType);
+        if (result != MOVE_OK)
+            Debug.Write(wxString::Format("StepGuider::Move: Mount::Move failed! result %d\n", result));
 
         if (!m_guidingEnabled)
         {
@@ -1198,7 +1217,8 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        result = MOVE_ERROR;
+        if (result == MOVE_OK)
+            result = MOVE_ERROR;
     }
 
     return result;

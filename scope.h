@@ -204,8 +204,8 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
-    virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
+    void SetCalibration(const Calibration& cal) override;
+    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
@@ -257,7 +257,7 @@ private:
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);
 
-    void ClearCalibration(void);
+    void ClearCalibration(void) override;
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
     void SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails);
 

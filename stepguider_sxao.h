@@ -55,15 +55,16 @@ public:
     bool Connect(void) override;
     bool Disconnect(void) override;
 
-    void ShowPropertyDialog(void) override;
-
     bool HasNonGuiMove(void) override;
 
 private:
-    bool Step(GUIDE_DIRECTION direction, int steps) override;
+    bool Center(void) override;
+    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
     int MaxPosition(GUIDE_DIRECTION direction) const override;
     bool SetMaxPosition(int steps) override;
     bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
+
+    void ShowPropertyDialog(void) override;
 
     bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
     bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
@@ -72,8 +73,6 @@ private:
     bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
 
     bool FirmwareVersion(unsigned int *version);
-    bool Unjam(void);
-    bool Center();
     bool Center(unsigned char cmd);
 
     bool    ST4HasGuideOutput(void) override;

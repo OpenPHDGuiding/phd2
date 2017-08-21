@@ -253,21 +253,27 @@ bool StepGuiderSimulator::Disconnect(void)
     return false;
 }
 
-bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
+bool StepGuiderSimulator::Center()
+{
+    ZeroCurrentPosition();
+    return false;
+}
+
+StepGuider::STEP_RESULT StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
 {
 #if 0 // enable to test step failure
     wxPoint pos = GetAoPos();
     if (direction == LEFT && pos.x - steps < -35)
     {
         Debug.Write("simulate step failure\n");
-        return true;
+        return STEP_LIMIT_REACHED;
     }
 #endif
 
     // parent class maintains x/y offsets, so nothing to do here. Just simulate a delay.
     enum { LATENCY_MS_PER_STEP = 5 };
     wxMilliSleep(steps * LATENCY_MS_PER_STEP);
-    return false;
+    return STEP_OK;
 }
 
 int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const

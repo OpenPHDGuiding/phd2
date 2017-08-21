@@ -72,7 +72,7 @@ bool StepGuiderSxAO::Connect(void)
             ShowPropertyDialog();
         }
 
-        Debug.AddLine(wxString::Format("Connecting to SX AO on port %s", m_serialPortName));
+        Debug.Write(wxString::Format("Connecting to SX AO on port %s\n", m_serialPortName));
 
         if (m_pSerialPort->Connect(m_serialPortName, 9600, 8, 1, SerialPort::ParityNone, false, false))
         {
@@ -119,20 +119,6 @@ bool StepGuiderSxAO::Connect(void)
             if (!confirmed)
                 throw ERROR_INFO("StepGuiderSxAO::Connect: user cancelled after firmware version warning");
         }
-
-        wxYield();
-
-        if (Center())
-        {
-            wxYield();
-
-            if (Unjam())
-            {
-                throw ERROR_INFO("StepGuiderSxAO::Connect: unable to center or Unjam");
-            }
-        }
-
-        wxYield();
 
         StepGuider::Connect();
     }
@@ -216,11 +202,11 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char *rece
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
-        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive sent %c received %c", sendChar, receivedChar));
+        Debug.Write(wxString::Format("StepGuiderSxAO::SendThenReceive sent %c received %c\n", sendChar, receivedChar));
     }
     catch (const wxString& Msg)
     {
-        Debug.AddLine(wxString::Format("StepGuiderSxAO::SendThenReceive send unsigned char %c", sendChar));
+        Debug.Write(wxString::Format("StepGuiderSxAO::SendThenReceive send unsigned char %c\n", sendChar));
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -338,7 +324,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
 {
     bool bError = false;
 
-    Debug.AddLine("StepGuiderSxAO::Firmwareversion");
+    Debug.Write("StepGuiderSxAO::Firmwareversion\n");
     try
     {
         *version = 0;
@@ -375,7 +361,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
             *version *= 10;
             *version += ch - '0';
         }
-        Debug.AddLine(wxString::Format("StepGuiderSxAO::Firmwareversion %u", *version));
+        Debug.Write(wxString::Format("StepGuiderSxAO::Firmwareversion %u\n", *version));
     }
     catch (const wxString& Msg)
     {
@@ -390,7 +376,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
 {
     bool bError = false;
 
-    Debug.AddLine(wxString::Format("StepGuiderSxAO::Center using command %c", cmd));
+    Debug.Write(wxString::Format("StepGuiderSxAO::Center using command %c\n", cmd));
     try
     {
         unsigned char response;
@@ -415,8 +401,6 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
         {
             throw ERROR_INFO("StepGuiderSxAO::Center: SetReceiveTimeout failed");
         }
-
-        StepGuider::ZeroCurrentPosition();
     }
     catch (const wxString& Msg)
     {
@@ -429,48 +413,28 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
 
 bool StepGuiderSxAO::Center()
 {
-    bool bError = false;
+    Debug.Write("StepGuiderSxAO::Center (K)\n");
 
-    Debug.AddLine("StepGuiderSxAO::Center (K)");
-    try
+    bool err = Center('K');
+
+    if (err)
     {
-        if (Center('K'))
-        {
-            throw ERROR_INFO("StepGuiderSxAO::Center: Center() failed");
-        }
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
+        Debug.Write("StepGuiderSxAO::Center (R)\n");
+
+        err = Center('R');
+        if (err)
+            Debug.Write("StepGuiderSxAO: Unable to center or Unjam\n");
     }
 
-    return bError;
+    if (!err)
+        ZeroCurrentPosition();
+
+    return err;
 }
 
-bool StepGuiderSxAO::Unjam(void)
+StepGuider::STEP_RESULT StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
 {
-    bool bError = false;
-
-    try
-    {
-        if (Center('R'))
-        {
-            throw ERROR_INFO("StepGuiderSxAO::Center: Center() failed");
-        }
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
-{
-    bool bError = false;
+    STEP_RESULT result = STEP_OK;
 
     try
     {
@@ -505,6 +469,7 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
 
         if (response == 'L')
         {
+            result = STEP_LIMIT_REACHED;
             throw ERROR_INFO("StepGuiderSxAO::step: step: at limit");
         }
 
@@ -517,10 +482,11 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        if (result == STEP_OK)
+            result = STEP_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 int StepGuiderSxAO::MaxPosition(GUIDE_DIRECTION direction) const

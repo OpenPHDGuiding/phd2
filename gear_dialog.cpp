@@ -1410,6 +1410,13 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
             {
                 throw THROW_INFO("OnButtonConnectStepGuider: connect failed");
             }
+
+            pFrame->StatusMsgNoTimeout(_("Centering AO ..."));
+            if (m_pStepGuider->Center())
+            {
+                m_pStepGuider->Disconnect();
+                throw ERROR_INFO("StepGuider unable to center");
+            }
         }
 
         if (m_pStepGuider)

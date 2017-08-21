@@ -73,6 +73,14 @@ public:
     virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
 };
 
+struct StepInfo
+{
+    int x;
+    int y;
+    int dx;
+    int dy;
+};
+
 class StepGuider : public Mount, public OnboardST4
 {
     int m_samplesToAverage;
@@ -96,6 +104,8 @@ class StepGuider : public Mount, public OnboardST4
     bool m_bumpTimeoutAlertSent;
     long m_bumpStartTime;
     double m_bumpStepWeight;
+
+    StepInfo m_failedStep;  // position info for failed ao step
 
     // Calibration variables
     int   m_calibrationStepsPerIteration;
@@ -171,18 +181,20 @@ public:
     static wxArrayString List(void);
     static StepGuider *Factory(const wxString& choice);
 
-    virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
-    virtual bool BeginCalibration(const PHD_Point& currentLocation);
+    void SetCalibration(const Calibration& cal) override;
+    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
+    bool BeginCalibration(const PHD_Point& currentLocation) override;
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
-    virtual void ClearCalibration(void);
+    void ClearCalibration(void) override;
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    bool Connect(void) override;
+    bool Disconnect(void) override;
 
-    virtual void NotifyGuidingStopped(void);
-    virtual void NotifyGuidingResumed(void);
-    virtual void NotifyGuidingDithered(double dx, double dy);
+    virtual bool Center(void) = 0;
+
+    void NotifyGuidingStopped(void) override;
+    void NotifyGuidingResumed(void) override;
+    void NotifyGuidingDithered(double dx, double dy) override;
 
     virtual void ShowPropertyDialog(void);
 
@@ -190,6 +202,8 @@ public:
     void SetBumpOnDither(bool val);
     void ForceStartBump(void);
     bool IsBumpInProgress(void) const;
+
+    const StepInfo& GetFailedStepInfo() const;
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
@@ -205,9 +219,15 @@ private:
 protected:
     void ZeroCurrentPosition(void);
 
+    enum STEP_RESULT {
+        STEP_OK,              // step succeeded
+        STEP_LIMIT_REACHED,   // step failed and limit was reached, must recenter
+        STEP_ERROR,           // step failed for some other unspecified reason
+    };
+
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
-    virtual bool Step(GUIDE_DIRECTION direction, int steps) = 0;
+    virtual STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) = 0;
     virtual int MaxPosition(GUIDE_DIRECTION direction) const = 0;
     virtual bool SetMaxPosition(int steps) = 0;
 
@@ -229,6 +249,11 @@ inline bool StepGuider::IsBumpInProgress(void) const
 inline bool StepGuider::GetBumpOnDither(void) const
 {
     return m_bumpOnDither;
+}
+
+inline const StepInfo& StepGuider::GetFailedStepInfo() const
+{
+    return m_failedStep;
 }
 
 #endif /* STEPGUIDER_H_INCLUDED */

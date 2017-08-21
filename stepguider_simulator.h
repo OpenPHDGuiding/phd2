@@ -48,7 +48,8 @@ public:
     bool Disconnect(void) override;
 
 private:
-    bool Step(GUIDE_DIRECTION direction, int steps) override;
+    bool Center(void) override;
+    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
     int MaxPosition(GUIDE_DIRECTION direction) const override;
     bool SetMaxPosition(int steps) override;
     bool HasNonGuiMove(void) override;

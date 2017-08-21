@@ -222,8 +222,9 @@ public:
 
     enum MOVE_RESULT {
         MOVE_OK = 0,             // move succeeded
-        MOVE_ERROR,              // move failed
-        MOVE_STOP_GUIDING,       // move failed and guiding must stop
+        MOVE_ERROR,              // move failed for unspecified reason
+        MOVE_ERROR_SLEWING,      // move failed due to scope slewing
+        MOVE_ERROR_AO_LIMIT_REACHED, // move failed due to AO limit
     };
 
     Mount(void);

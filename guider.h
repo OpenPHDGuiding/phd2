@@ -205,6 +205,7 @@ public:
     GUIDER_STATE GetState(void) const;
     static EXPOSED_STATE GetExposedState(void);
     bool IsCalibratingOrGuiding(void) const;
+    bool IsCalibrating(void) const;
     bool IsGuiding(void) const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
@@ -333,6 +334,11 @@ inline bool Guider::IsGuiding(void) const
 inline bool Guider::IsCalibratingOrGuiding(void) const
 {
     return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
+}
+
+inline bool Guider::IsCalibrating(void) const
+{
+    return m_state >= STATE_CALIBRATING_PRIMARY && m_state < STATE_CALIBRATED;
 }
 
 inline int Guider::GetSearchRegion(void) const
