@@ -1260,13 +1260,14 @@ wxString GuideCamera::GetSettingsSummary()
     else
         pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
 
-    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
-                            Name, GuideCameraGain,
+    return wxString::Format("Camera = %s%s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
+                            Name,
+                            HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
                             HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
                             HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
                             FullSize.GetWidth(), FullSize.GetHeight(),
                             darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
-                            (CurrentDefectMap) ? "defect map in use" : "no defect map",
+                            CurrentDefectMap ? "defect map in use" : "no defect map",
                             pixelSizeStr);
 }
 
