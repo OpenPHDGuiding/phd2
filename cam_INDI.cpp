@@ -330,6 +330,11 @@ void Camera_INDIClass::serverConnected()
         ::wxSafeYield();
     }
     modal = false;
+    // wait 2 seconds more to finish reading all optional properties
+    msec = wxGetUTCTimeMillis();
+    while (wxGetUTCTimeMillis() - msec < 2 * 1000) {
+        ::wxSafeYield();
+    }
     // In case we not get all the required properties or connection to the device failed
     if (ready)
     {
