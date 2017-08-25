@@ -241,6 +241,7 @@ bool StepGuiderSxAoINDI::Disconnect(void)
        } 
        else return true;
     }
+    else return true;
 }
 
 bool StepGuiderSxAoINDI::HasSetupDialog(void) const

@@ -310,6 +310,7 @@ bool Camera_INDIClass::Disconnect()
        }
        else return true;
     }
+    else return true;
 }
 
 void Camera_INDIClass::serverConnected()

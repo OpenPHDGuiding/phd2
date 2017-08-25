@@ -177,6 +177,7 @@ bool ScopeINDI::Disconnect()
        }
        else return true;
     }
+    else return true;
 }
 
 void ScopeINDI::serverConnected()
