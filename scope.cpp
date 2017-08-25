@@ -478,6 +478,10 @@ void Scope::StartDecDrift(void)
 {
     m_saveDecGuideMode = m_decGuideMode;
     m_decGuideMode = DEC_NONE;
+
+    Debug.Write(wxString::Format("StartDecDrift: DecGuideMode set to %s (%d)\n",
+        DecGuideModeStr(m_decGuideMode), m_decGuideMode));
+
     if (m_graphControlPane)
     {
         m_graphControlPane->m_pDecMode->SetSelection(DEC_NONE);
@@ -488,6 +492,10 @@ void Scope::StartDecDrift(void)
 void Scope::EndDecDrift(void)
 {
     m_decGuideMode = m_saveDecGuideMode;
+
+    Debug.Write(wxString::Format("EndDecDrift: DecGuideMode set to %s (%d)\n",
+        DecGuideModeStr(m_decGuideMode), m_decGuideMode));
+
     if (m_graphControlPane)
     {
         m_graphControlPane->m_pDecMode->SetSelection(m_decGuideMode);
