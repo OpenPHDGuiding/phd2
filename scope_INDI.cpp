@@ -168,15 +168,15 @@ bool ScopeINDI::Connect()
 
 bool ScopeINDI::Disconnect() 
 {
-    // Disconnect from server
-    if (disconnectServer()){
-       if (ready) {
-	  ready = false;
-	  Scope::Disconnect();
+    if (ready) {
+       // Disconnect from server
+       if (disconnectServer()){
+          ClearStatus(); 
+          Scope::Disconnect();
+          return false;
        }
-       return false;
+       else return true;
     }
-    else return true;
 }
 
 void ScopeINDI::serverConnected()
@@ -222,15 +222,24 @@ void ScopeINDI::serverConnected()
 
 void ScopeINDI::serverDisconnected(int exit_code)
 {
-    // in case the connection lost we must reset the client socket
-   Disconnect();
-   if (ready) {
-       ready = false;
-       Scope::Disconnect();
-    }
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
+    // in case the connection lost we must reset the client socket
+    if (exit_code==-1) {
+       Disconnect();
+       Scope::Disconnect();
+    }
 }
+
+#ifndef INDI_PRE_1_0_0
+void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
+{
+   ClearStatus();
+   Disconnect();
+   Scope::Disconnect();
+}
+#endif
+
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {

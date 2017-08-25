@@ -303,11 +303,13 @@ wxByte Camera_INDIClass::BitsPerPixel()
 
 bool Camera_INDIClass::Disconnect()
 {
-    // Disconnect from server
-    if (disconnectServer()){
-        return false;
+    if (ready) {
+       // Disconnect from server
+       if (disconnectServer()){
+          return false;
+       }
+       else return true;
     }
-    else return true;
 }
 
 void Camera_INDIClass::serverConnected()
@@ -353,11 +355,19 @@ void Camera_INDIClass::serverConnected()
 
 void Camera_INDIClass::serverDisconnected(int exit_code)
 {
-   // in case the connection lost we must reset the client socket
-   Disconnect();
    // after disconnection we reset the connection status and the properties pointers
    ClearStatus();
+   // in case the connection lost we must reset the client socket
+   if (exit_code==-1) DisconnectWithAlert("INDI server disconnected",NO_RECONNECT);
 }
+
+#ifndef INDI_PRE_1_0_0
+void Camera_INDIClass::removeDevice(INDI::BaseDevice *dp)
+{
+   ClearStatus();
+   DisconnectWithAlert("INDI camera disconnected",NO_RECONNECT);
+}
+#endif
 
 void Camera_INDIClass::ShowPropertyDialog()
 {

@@ -232,14 +232,15 @@ bool StepGuiderSxAoINDI::Connect(void)
 
 bool StepGuiderSxAoINDI::Disconnect(void)
 {
-    if (disconnectServer() ) { // Disconnect from INDI server
-        if (ready) {
-            Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Disconnect"));
-            ready = false;
-            StepGuider::Disconnect();
-        }
-        return false;
-    } else return true;
+    if (ready) {
+       if (disconnectServer() ) { // Disconnect from INDI server
+          Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Disconnect"));
+          ClearStatus();
+          StepGuider::Disconnect();
+          return false;
+       } 
+       else return true;
+    }
 }
 
 bool StepGuiderSxAoINDI::HasSetupDialog(void) const
@@ -320,16 +321,24 @@ void StepGuiderSxAoINDI::serverConnected(void)
 
 void StepGuiderSxAoINDI::serverDisconnected(int exit_code)
 {
-    // in case the connection is lost we must reset the client socket
-    Disconnect();
-    if (ready) {
-        Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverDisconnected disconnecting StepGuider"));
-        ready = false;
-        StepGuider::Disconnect();
-    }
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
+    if (exit_code==-1) {
+       // in case the connection is lost we must reset the client socket
+       Disconnect();
+       Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverDisconnected disconnecting StepGuider"));
+       StepGuider::Disconnect();
+    }
 }
+
+#ifndef INDI_PRE_1_0_0
+void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice *dp)
+{
+   ClearStatus();
+   Disconnect();
+   StepGuider::Disconnect();
+}
+#endif
 
 StepGuider::STEP_RESULT StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
 {

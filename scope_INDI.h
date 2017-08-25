@@ -85,7 +85,7 @@ private:
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
 #ifndef INDI_PRE_1_0_0
-    void removeDevice(INDI::BaseDevice *dp) override {};
+    void removeDevice(INDI::BaseDevice *dp) override;
 #endif
     void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {}
