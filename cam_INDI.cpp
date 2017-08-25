@@ -112,7 +112,7 @@ void Camera_INDIClass::CheckState()
 void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
 {
   if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
-      // The camera object, maybe this can be useful in the future
+      // The camera object
       camera_device = dp;
   }
 }
@@ -201,7 +201,11 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 
     if (Proptype == INDI_BLOB) {
         //printf("Found BLOB property for %s %s\n", DeviName, PropName);
-        has_blob = 1;
+        if (PropName==INDICameraBlobName) {
+           has_blob = 1;
+           // set option to receive blob and messages for the selected CCD
+           setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));       
+        }
     }
     else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER) {
         //printf("Found CCD_EXPOSURE for %s %s\n", DeviName, PropName);
@@ -240,6 +244,11 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
         connection_prop = property->getSwitch();
         ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
         Connected = (connectswitch->s == ISS_ON);
+    }
+    else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT) {
+        if (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE) {
+          m_hasGuideOutput = true; // Device supports guiding
+        }
     }
     else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER){
         pulseGuideNS_prop = property->getNumber();
@@ -330,20 +339,12 @@ void Camera_INDIClass::serverConnected()
         ::wxSafeYield();
     }
     modal = false;
-    // wait 2 seconds more to finish reading all optional properties
-    msec = wxGetUTCTimeMillis();
-    while (wxGetUTCTimeMillis() - msec < 2 * 1000) {
-        ::wxSafeYield();
-    }
-    // In case we not get all the required properties or connection to the device failed
     if (ready)
     {
         Connected = true;
-        m_hasGuideOutput = (pulseGuideNS_prop && pulseGuideEW_prop);
-        // set option to receive blob and messages for the selected CCD
-        setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
     }
     else {
+        // In case we not get all the required properties or connection to the device failed
         pFrame->Alert(wxString::Format(_("Cannot connect to camera %s"), INDICameraName));
         Connected = false;
         Disconnect();
