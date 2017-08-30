@@ -256,7 +256,17 @@ but it may be unreliable if you are guiding on a faint star. &nbsp;If
 you are getting too many 'lost star' errors when the star is plainly
 visible on the display, try increasing the value of this setting.
 &nbsp;Resetting the 'Enable' checkbox or setting the threshold to 100 will disable the warnings
-entirely.</li></ul>Calibration<br><ul><li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
+entirely.</li><li>'<a name="Minimum_star_HFD"></a>Minimum
+star HFD' - specifies the minimum half-flux-diameter (roughtly the
+'size') of a suitable guide star. &nbsp;This is
+probably the best way to prevent&nbsp;PHD2 from
+mis-identifying clumps of hot pixels as usable guide stars. &nbsp;You
+can
+determine a suitable value for your system by manually selecting
+some&nbsp;small stars that you know are not just hot pixels, then use
+the star-profile tool to see the HFD values of those stars.
+&nbsp;You'll want to specify a minimum HFD value that allows selection
+of legitimate faint stars but not hot pixels.</li></ul>Calibration<br><ul><li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
 two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the image scale and thus
 report guiding performance in units of arc-seconds. &nbsp;The other
 parameter required for this is the guide camera pixel size, located on the
