@@ -111,17 +111,19 @@ void IndiGui::newMessage(INDI::BaseDevice *dp, int messageID)
 
 void IndiGui::removeProperty(INDI::Property *property)
 {
-   wxString devname =  wxString::FromAscii(property->getDeviceName());
-   wxString groupname =  wxString::FromAscii(property->getGroupName());
-   wxString propname =  wxString::FromAscii(property->getName());
-   IndiDev *indiDev = (IndiDev *)devlist[devname];
-   if (!indiDev) return;
-   IndiProp *indiProp = (IndiProp *)indiDev->properties[propname];
-   if (!indiProp) return;
+   if (property) {
+      wxString devname =  wxString::FromAscii(property->getDeviceName());
+      wxString groupname =  wxString::FromAscii(property->getGroupName());
+      wxString propname =  wxString::FromAscii(property->getName());
+      IndiDev *indiDev = (IndiDev *)devlist[devname];
+      if (!indiDev) return;
+      IndiProp *indiProp = (IndiProp *)indiDev->properties[propname];
+      if (!indiProp) return;
    
-   wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_REMOVEPROPERTY_EVENT);
-   event->SetExtraLong((long) indiProp);
-   wxQueueEvent(this, event);
+      wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_REMOVEPROPERTY_EVENT);
+      event->SetExtraLong((long) indiProp);
+      wxQueueEvent(this, event);
+   }
 }
 
 //////////////////////////////////////////////////////////////////////
