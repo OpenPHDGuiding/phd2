@@ -115,6 +115,8 @@ extern "C" {
 #define ALTAIRCAM_FLAG_TRIGGER_SOFTWARE   0x00080000  /* support software trigger */
 #define ALTAIRCAM_FLAG_TRIGGER_EXTERNAL   0x00100000  /* support external trigger */
 #define ALTAIRCAM_FLAG_TRIGGER_SINGLE     0x00200000  /* only support trigger single: one trigger, one image */
+#define ALTAIRCAM_FLAG_BLACKLEVEL         0x00400000  /* support set and get the black level */
+#define ALTAIRCAM_FLAG_AUTO_FOCUS         0x00800000  /* support auto focus */
 
 #define ALTAIRCAM_TEMP_DEF                6503
 #define ALTAIRCAM_TEMP_MIN                2000
@@ -143,6 +145,12 @@ extern "C" {
 #define ALTAIRCAM_WBGAIN_DEF              0
 #define ALTAIRCAM_WBGAIN_MIN              (-128)
 #define ALTAIRCAM_WBGAIN_MAX              128
+#define ALTAIRCAM_BLACKLEVEL_MIN          0
+#define ALTAIRCAM_BLACKLEVEL8_MAX         31              /* maximum black level for bit depth = 8 */
+#define ALTAIRCAM_BLACKLEVEL10_MAX        (31 * 4)        /* maximum black level for bit depth = 10 */
+#define ALTAIRCAM_BLACKLEVEL12_MAX        (31 * 16)       /* maximum black level for bit depth = 12 */
+#define ALTAIRCAM_BLACKLEVEL14_MAX        (31 * 64)       /* maximum black level for bit depth = 14 */
+#define ALTAIRCAM_BLACKLEVEL16_MAX        (31 * 256)      /* maximum black level for bit depth = 16 */
 
 	typedef struct{
 		unsigned    width;
@@ -495,6 +503,7 @@ extern "C" {
 #define ALTAIRCAM_OPTION_AGAIN                0x10    /* enable or disable adjusting the analog gain when auto exposure is enabled. default value: enable */
 #define ALTAIRCAM_OPTION_FRAMERATE            0x11    /* limit the frame rate, range=[0, 63], the default value 0 means no limit */
 #define ALTAIRCAM_OPTION_DEMOSAIC             0x12    /* demosaic method: BILINEAR = 0, VNG(Variable Number of Gradients interpolation) = 1, PPG(Patterned Pixel Grouping interpolation) = 2, AHD(Adaptive Homogeneity-Directed interpolation) = 3, see https://en.wikipedia.org/wiki/Demosaicing, default value: 0 */
+#define ALTAIRCAM_OPTION_BLACKLEVEL           0x15    /* black level */
 
 	altaircam_ports(HRESULT)  Altaircam_put_Option(HAltairCam h, unsigned iOption, int iValue);
 	altaircam_ports(HRESULT)  Altaircam_get_Option(HAltairCam h, unsigned iOption, int* piValue);
@@ -537,12 +546,6 @@ extern "C" {
 	altaircam_ports(void)   Altaircam_HotPlug(PALTAIRCAM_HOTPLUG pHotPlugCallback, void* pCallbackCtx);
 
 #else
-	/*
-	strRegPath, such as: Software\xxxCompany\yyyApplication.
-	If we call this function to enable this feature, the camera parameters will be save in the Registry at HKEY_CURRENT_USER\Software\XxxCompany\yyyApplication\{CameraModelName} when we close the handle,
-	and then, the next time, we open the camera, the parameters will be loaded automatically.
-	*/
-	altaircam_ports(void)     Altaircam_EnableReg(const wchar_t* strRegPath);
 
 	/* Altaircam_Start is obsolete, it's a synonyms for Altaircam_StartPushMode. */
 	altaircam_ports(HRESULT)  Altaircam_Start(HAltairCam h, PALTAIRCAM_DATA_CALLBACK pDataCallback, void* pCallbackCtx);
