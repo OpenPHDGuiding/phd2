@@ -791,7 +791,7 @@ endif()
 #############################################
 # SBIG specific dependencies if installed part of system
 #############################################
-if(SBIG_SYSTEM)
+if(SBIG_SYSTEM AND UNIX)
 
   # Assumes SBIG's Universal driver has been loaded into the system and placed
   # in a standard path. (e.g. sbigudrv.h in /usr/include, libsbigudrv.so in /usr/lib )
@@ -805,7 +805,8 @@ if(SBIG_SYSTEM)
   #  g++ -L ${WORKDIR}/LinuxDevKit/x86/c/lib64/ ${sharedlink} -o libSBIG=1.33.0 csbigimg.o csbigcam.o -lm -lsbigudrv -lusb -lcfitsio
   #  ar -cvq libSBIG.a csbigimg.o csbigcam.o
 
-
+  add_definitions(-DHAVE_SBIG_CAMERA=1)
+  add_definitions("-DTARGET=7") 
   message(STATUS "Finding SBIG Univeral Drivers on system")
   find_path(SBIG_INCLUDE_DIR sbigudrv.h)
   find_library(SBIG_LIBRARIES NAMES SBIG)
@@ -813,10 +814,7 @@ if(SBIG_SYSTEM)
   include_directories(${SBIG_INCLUDE_DIR})
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIG sbigudrv)
- 
-  if(UNIX)
-    add_definitions("-DTARGET=7") 
-  endif()
+
 endif()
 
 #############################################
