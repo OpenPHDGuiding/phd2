@@ -76,7 +76,7 @@ def read_data_from_folder(data_folder):
                         if (row[1] == ' Settling complete'):
                             settling_started = False
 
-                    if (guider_started and len(row) > 0 and len(row) < 18): # non-guiding lines
+                    if (guider_started and 0 < len(row) < 18): # non-guiding lines
                         if (row[0][0:11] == 'Pixel scale'):
                             pixel_scale = float(row[0][14:18])
                             data[ds][r]['PixelScale'] = pixel_scale
