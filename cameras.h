@@ -111,6 +111,9 @@
 # define INDI_CAMERA
 # define ZWO_ASI
 # define SXV
+# ifdef HAVE_SBIG_CAMERA
+#   define SBIG
+# endif
 
 #endif
 
