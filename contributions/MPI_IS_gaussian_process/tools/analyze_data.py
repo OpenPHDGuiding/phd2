@@ -3,9 +3,9 @@
 import csv
 import os
 import matplotlib.pyplot as plt
-from numpy import *
 import code
 import scipy.signal
+from numpy import *
 
 def read_data_from_folder(data_folder):
     data = [] # initialize empty data structure

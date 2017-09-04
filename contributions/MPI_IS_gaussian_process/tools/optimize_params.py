@@ -16,9 +16,9 @@ we achieve good average performance while not degrading performance for anyone.
 
 import subprocess
 import math
-from GPyOpt.methods import BayesianOptimization
 import numpy as np
 import os
+from GPyOpt.methods import BayesianOptimization
 
 def eval_func(input):
     parameters = np.exp(input[0])

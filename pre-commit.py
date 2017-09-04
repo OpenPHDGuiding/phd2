@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from __future__ import print_function, with_statement
 
-import os, sys, getopt
+import os, sys
 import subprocess
 import errno
 import io, codecs
