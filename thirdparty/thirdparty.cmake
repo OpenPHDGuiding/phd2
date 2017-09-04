@@ -725,6 +725,7 @@ if(WIN32)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DSCI.dll)
 
   # SBIGUDrv
+  add_definitions(-DHAVE_SBIG_CAMERA=1)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
   #set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
 
@@ -842,6 +843,7 @@ if(APPLE)
   find_library( sbigudFramework
                 NAMES SBIGUDrv
                 PATHS ${thirdparty_dir}/frameworks)
+  add_definitions(-DHAVE_SBIG_CAMERA=1)
   if(NOT sbigudFramework)
     message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
   endif()
