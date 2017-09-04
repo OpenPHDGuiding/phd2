@@ -10,17 +10,15 @@ import scipy.signal
 def read_data_from_folder(data_folder):
     data = [] # initialize empty data structure
 
-    ds = -1 # number of current dataset
     pixel_scale = -1
 
     datasets = os.walk(data_folder).next()[1]
 
     learning_cutoff = 0 # time to ignore at the start to allow for learning
 
-    for d in datasets:
+    for ds, d in enumerate(datasets):
         files = os.walk('./data/' + d).next()[2]
         print '===== DATASET: {} ====='.format(d)
-        ds = ds + 1
         r = -1
 
         for f in files:
