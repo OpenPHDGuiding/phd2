@@ -349,7 +349,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d\n", gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y));
 
     Name = gcir0.name;
-    IsColor = (Name.find("Color") != string::npos); 
+    IsColor = Name.Find("Color") != wxNOT_FOUND;
    
     Connected = true;
     return false;
@@ -546,10 +546,10 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
         }
     }
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
-    if (IsColor && Binning == 1 && (options & CAPTURE_RECON)) {
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
+    if (IsColor && Binning == 1 && (options & CAPTURE_RECON))
         QuickLRecon(img);
-    }
 
     return false;
 }
