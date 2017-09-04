@@ -3,24 +3,22 @@
 import csv
 import os
 import matplotlib.pyplot as plt
-from numpy import *
 import code
 import scipy.signal
+from numpy import *
 
 def read_data_from_folder(data_folder):
     data = [] # initialize empty data structure
 
-    ds = -1 # number of current dataset
     pixel_scale = -1
 
     datasets = os.walk(data_folder).next()[1]
 
     learning_cutoff = 0 # time to ignore at the start to allow for learning
 
-    for d in datasets:
+    for ds, d in enumerate(datasets):
         files = os.walk('./data/' + d).next()[2]
         print '===== DATASET: {} ====='.format(d)
-        ds = ds + 1
         r = -1
 
         for f in files:
@@ -76,7 +74,7 @@ def read_data_from_folder(data_folder):
                         if (row[1] == ' Settling complete'):
                             settling_started = False
 
-                    if (guider_started and len(row) > 0 and len(row) < 18): # non-guiding lines
+                    if (guider_started and 0 < len(row) < 18): # non-guiding lines
                         if (row[0][0:11] == 'Pixel scale'):
                             pixel_scale = float(row[0][14:18])
                             data[ds][r]['PixelScale'] = pixel_scale

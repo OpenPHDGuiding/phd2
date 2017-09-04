@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-import code
-from time import sleep
 from numpy import genfromtxt
-import numpy as np
 import matplotlib.pyplot as plt
-import threading
 
 def read_data():
 
