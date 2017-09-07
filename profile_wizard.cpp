@@ -556,21 +556,23 @@ void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
     {
         wxBusyCursor busy;
         if (!camera)
-            throw _("Could not initialize camera");
+            throw ERROR_INFO(wxTRANSLATE("Could not initialize camera"));
         ShowStatus(_("Connecting to camera..."));
         bool err = camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
         ShowStatus(wxEmptyString);
         if (err)
-            throw _("Could not connect to camera");
+            throw ERROR_INFO(wxTRANSLATE("Could not connect to camera"));
         if (camera->GetDevicePixelSize(&devPixelSize) || devPixelSize == 0)
-            throw (_("Camera driver cannot report pixel size"));
+            throw ERROR_INFO(wxTRANSLATE("Camera driver cannot report pixel size"));
         m_pPixelSize->SetValue(devPixelSize);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
     }
     catch (const wxString& msg)
     {
-        wxMessageBox(msg + _(". Please enter the correct un-binned pixel size from the camera documentation or vendor web site."), _("Detect Pixel Size"));
+        wxMessageBox(wxString::Format(_("%s. Please enter the correct un-binned pixel size from the camera documentation or vendor web site."),
+                                      wxGetTranslation(msg)),
+                     _("Detect Pixel Size"));
         m_pPixelSize->SetValue(0.);
     }
 
@@ -596,14 +598,14 @@ void ProfileWizard::OnDetectGuideRates(wxCommandEvent& evt)
     {
         wxBusyCursor busy;
         if (!newScope)
-            throw _("Could not initialize mount");
+            throw ERROR_INFO(wxTRANSLATE("Could not initialize mount"));
         ShowStatus(_("Connecting to mount..."));
         bool err = newScope->Connect();
         ShowStatus(wxEmptyString);
         if (err)
-            throw _("Could not connect to mount");
+            throw ERROR_INFO(wxTRANSLATE("Could not connect to mount"));
         if (newScope->GetGuideRates(&raGuideSpeed, &decGuideSpeed))
-            throw (_("Mount driver cannot report guide speeds"));
+            throw ERROR_INFO(wxTRANSLATE("Mount driver cannot report guide speeds"));
         guideSpeedX = wxMax(raGuideSpeed, decGuideSpeed) * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
         m_pGuideSpeed->SetValue(guideSpeedX);
         wxSpinDoubleEvent dummy;
@@ -611,7 +613,9 @@ void ProfileWizard::OnDetectGuideRates(wxCommandEvent& evt)
     }
     catch (const wxString& msg)
     {
-        wxMessageBox(msg + _(". Please enter the correct mount guide speed"), _("Detect mount guide speed"));
+        wxMessageBox(wxString::Format(_("%s. Please enter the correct mount guide speed"),
+                                      wxGetTranslation(msg)),
+                     _("Detect mount guide speed"));
         m_pGuideSpeed->SetValue(0.5);
     }
 

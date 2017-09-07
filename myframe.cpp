@@ -1415,12 +1415,12 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
 
             if (pWorkerThread->Create() != wxTHREAD_NO_ERROR)
             {
-                throw("Could not Create() the worker thread!");
+                throw ERROR_INFO("Could not Create() the worker thread!");
             }
 
             if (pWorkerThread->Run() != wxTHREAD_NO_ERROR)
             {
-                throw("Could not Run() the worker thread!");
+                throw ERROR_INFO("Could not Run() the worker thread!");
             }
         }
     }
