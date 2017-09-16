@@ -39,16 +39,17 @@
 
 #ifndef GUIDER_H_INCLUDED
 #define GUIDER_H_INCLUDED
+#include "staticpa_toolwin.h"
 
 enum GUIDER_STATE
 {
     STATE_UNINITIALIZED = 0,
     STATE_SELECTING,
     STATE_SELECTED,
-    STATE_CALIBRATING_PRIMARY,
-    STATE_CALIBRATING_SECONDARY,
-    STATE_CALIBRATED,
-    STATE_GUIDING,
+	STATE_CALIBRATING_PRIMARY,
+	STATE_CALIBRATING_SECONDARY,
+	STATE_CALIBRATED,
+	STATE_GUIDING,
     STATE_STOP, // This is a pseudo state
 };
 
@@ -166,7 +167,8 @@ protected:
 
     // Things related to the Advanced Config Dialog
 public:
-    class GuiderConfigDialogPane : public ConfigDialogPane
+	StaticPaToolWin *pStaticPaTool;
+	class GuiderConfigDialogPane : public ConfigDialogPane
     {
         Guider *m_pGuider;
         wxCheckBox *m_pScaleImage;
@@ -192,8 +194,8 @@ protected:
     Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider(void);
 
-    bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
-    void SetState(GUIDER_STATE newState);
+	bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
+	void SetState(GUIDER_STATE newState);
     void UpdateCurrentDistance(double distance);
 
     void ToggleBookmark(const wxRealPoint& pt);
@@ -228,9 +230,9 @@ public:
     void GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle);
     void SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int angle);
     void SetDefectMapPreview(const DefectMap *preview);
-    void SetPolarAlignCircle(const PHD_Point& center, double radius);
-    void SetPolarAlignCircleCorrection(double val);
-    double GetPolarAlignCircleCorrection(void) const;
+	void SetPolarAlignCircle(const PHD_Point& center, double radius);
+	void SetPolarAlignCircleCorrection(double val);
+	double GetPolarAlignCircleCorrection(void) const;
     bool SaveCurrentImage(const wxString& fileName);
 
     void StartGuiding(void);

@@ -86,6 +86,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
+    EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
     EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
@@ -344,6 +345,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGearDialog = new GearDialog(this);
 
     pDriftTool = nullptr;
+    pStaticPaTool = nullptr;
     pManualGuide = nullptr;
     pStarCrossDlg = nullptr;
     pNudgeLock = nullptr;
@@ -439,6 +441,8 @@ MyFrame::~MyFrame()
 
     if (pDriftTool)
         pDriftTool->Destroy();
+    if (pStaticPaTool)
+        pStaticPaTool->Destroy();
 
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
@@ -494,6 +498,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
+    tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"), _("Run the Static Polar Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
@@ -1045,6 +1050,14 @@ void MyFrame::UpdateButtonsStatus(void)
         event.SetEventObject(this);
         wxPostEvent(pDriftTool, event);
     }
+    if (pStaticPaTool)
+    {
+        // let the static PA tool update its buttons too
+        wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
+        event.SetEventObject(this);
+        wxPostEvent(pStaticPaTool, event);
+    }
+
 
     if (pCometTool)
         CometTool::UpdateCometToolControls(false);

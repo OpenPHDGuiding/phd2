@@ -143,6 +143,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 
     s_deflectionLogger.Init();
+	pStaticPaTool = 0;
 }
 
 Guider::~Guider(void)
@@ -428,7 +429,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
         int XImgSize = m_displayedImage->GetWidth();
         int YImgSize = m_displayedImage->GetHeight();
 
-        if (m_overlayMode)
+		if (m_overlayMode)
         {
             dc.SetPen(wxPen(wxColor(200,50,50)));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
@@ -565,8 +566,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                     }
                     break;
 
-                case OVERLAY_NONE:
-                    break;
+				case OVERLAY_NONE:
+					break;
             }
         }
 
@@ -617,6 +618,14 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
             dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
+
+        
+ 		// draw static polar align stuff
+		// Ideally get a pointer to StaticPaTool and let it do the work
+		if (pStaticPaTool)
+		{
+			pStaticPaTool->PaintHelper(dc, m_scaleFactor);
+		}
 
         if (IsPaused())
         {
@@ -848,9 +857,9 @@ void Guider::SetState(GUIDER_STATE newState)
                     // start over...
                     newState = STATE_UNINITIALIZED;
                     break;
-                case STATE_CALIBRATED:
-                case STATE_GUIDING:
-                    newState = STATE_SELECTED;
+				case STATE_CALIBRATED:
+				case STATE_GUIDING:
+					newState = STATE_SELECTED;
                     break;
                 case STATE_STOP:
                     break;
@@ -859,12 +868,11 @@ void Guider::SetState(GUIDER_STATE newState)
 
         assert(newState != STATE_STOP);
 
-        if (newState > m_state + 1)
-        {
-            Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
-            throw ERROR_INFO("Illegal state transition");
-        }
-
+		if (newState > m_state + 1)
+		{
+			Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
+			throw ERROR_INFO("Illegal state transition");
+		}
         GUIDER_STATE requestedState = newState;
 
         switch (requestedState)
@@ -938,7 +946,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
             case STATE_SELECTING:
             case STATE_CALIBRATED:
-            case STATE_STOP:
+			case STATE_STOP:
                 break;
         }
 
@@ -1176,14 +1184,14 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     SetState(STATE_UNINITIALIZED);
                     EvtServer.NotifyStarLost(info);
                     break;
-                case STATE_CALIBRATING_PRIMARY:
-                case STATE_CALIBRATING_SECONDARY:
-                    GuideLog.CalibrationFrameDropped(info);
-                    Debug.Write("Star lost during calibration... blundering on\n");
-                    EvtServer.NotifyStarLost(info);
-                    pFrame->StatusMsg(_("star lost"));
-                    break;
-                case STATE_GUIDING:
+				case STATE_CALIBRATING_PRIMARY:
+				case STATE_CALIBRATING_SECONDARY:
+					GuideLog.CalibrationFrameDropped(info);
+					Debug.Write("Star lost during calibration... blundering on\n");
+					EvtServer.NotifyStarLost(info);
+					pFrame->StatusMsg(_("star lost"));
+					break;
+				case STATE_GUIDING:
                 {
                     GuideLog.FrameDropped(info);
                     EvtServer.NotifyStarLost(info);
@@ -1203,7 +1211,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 }
 
                 case STATE_CALIBRATED:
-                case STATE_STOP:
+				case STATE_STOP:
                     break;
             }
 
@@ -1243,7 +1251,27 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_SELECTED:
                 // nothing to do but wait
-                break;
+				if (pStaticPaTool && pStaticPaTool->IsAligning())
+				{
+					//Get the current position
+					// Reset the lock position
+					// See if the star has moved enough
+					// If yes then bookmark the position and set up for the next position until aligned
+					// If not then rotate the mount some more
+					if (!pStaticPaTool->UpdateAlignmentState(CurrentPosition()))
+					{
+						SetState(STATE_UNINITIALIZED);
+						statusMessage = _("alignment failed");
+						throw ERROR_INFO("Alignment failed");
+					}
+
+					if (!pStaticPaTool->IsAligned())
+					{
+						break;
+					}
+					assert(pStaticPaTool->IsAligned());
+				}
+				break;
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())
                 {
@@ -1352,8 +1380,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition(), MOVETYPE_ALGO);
                 }
                 break;
-
-            case STATE_UNINITIALIZED:
+			case STATE_UNINITIALIZED:
             case STATE_STOP:
                 break;
         }
