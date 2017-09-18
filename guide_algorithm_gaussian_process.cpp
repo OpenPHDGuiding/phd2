@@ -320,7 +320,7 @@ public:
 
         width = StringWidth(_T("0000.0"));
         m_pPKPeriodLength = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 50.0, 2000.0, DefaultPeriodLengthPerKer, 1);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 2000.0, DefaultPeriodLengthPerKer, 1);
         m_pPKPeriodLength->SetDigits(2);
         m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _T("Auto-adjust period"));
         m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length based on identified repetitive errors. Default = %s"), 

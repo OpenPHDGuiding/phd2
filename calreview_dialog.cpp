@@ -246,7 +246,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     else
         calGrid->SetCellValue(row, col++, _("X rate:"));
     if (validDetails)
-        calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.xRate * 1000 * calDetails.imageScale * calBaseline.binning, ARCSECPERSEC,
+        calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.xRate * 1000 * calDetails.imageScale, ARCSECPERSEC,
             calBaseline.xRate * 1000, PXPERSEC));
     else
         calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s", calBaseline.xRate * 1000, PXPERSEC));      // just px/sec with no image scale data
@@ -257,7 +257,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     if (calBaseline.yRate != CALIBRATION_RATE_UNCALIBRATED)
     {
         if (validDetails)
-            calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.yRate * 1000 * calDetails.imageScale * calBaseline.binning, ARCSECPERSEC,
+            calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.yRate * 1000 * calDetails.imageScale, ARCSECPERSEC,
                 calBaseline.yRate * 1000, PXPERSEC));
         else
             calGrid->SetCellValue(row, col++, wxString::Format("%0.3f %s", calBaseline.yRate * 1000, PXPERSEC));      // just px/sec with no image scale data
