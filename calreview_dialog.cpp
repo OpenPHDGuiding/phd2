@@ -483,7 +483,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     memDC.SetPen(decPen);
     memDC.SetBrush(decBrush);
     ptRadius = 2;
-    if (calDetails.decStepCount > 0)
+    if (calDetails.decStepCount > 0 && calDetails.decSteps.size() > 0)      // redundant, protection against old bug
     {
     for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
         {
