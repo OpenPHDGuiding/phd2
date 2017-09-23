@@ -47,25 +47,32 @@ struct StaticPaToolWin : public wxFrame
 	~StaticPaToolWin();
 
 	wxStaticText *m_instructions;
-//	wxTextCtrl *m_raCurrent;
-//	wxTextCtrl *m_decCurrent;
-//	wxTextCtrl *m_siteLat;
-//	wxTextCtrl *m_siteLon;
-	wxTextCtrl *m_camScale;
-	wxTextCtrl *m_camRot;
-	wxCheckBox *m_manual;
-	wxTextCtrl *m_calPt[5][2];
-	wxButton *m_star1;
-	wxButton *m_star2;
-	wxButton *m_star3;
+	wxTextCtrl *m_camScale; // Text box for camera pixel scale
+	wxTextCtrl *m_camRot;   // Text box for camera rotation
+	wxCheckBox *m_manual;   // Checkbox for auto/manual slewing
+	wxTextCtrl *m_calPt[4][2];  // Text boxes for each point plus the CoR
+	wxButton *m_star1;      // Button for manual get of point 1
+	wxButton *m_star2;      // Button for manual get of point 2
+	wxButton *m_star3;      // Button for manual get of point 3
 
 	wxStaticText *m_notesLabel;
 	wxTextCtrl *m_notes;
-	wxButton *m_adjust;
-	wxButton *m_close;
+	wxButton *m_adjust;     // Button to calculate CoR
+	wxButton *m_close;      // Close button
 	wxStatusBar *m_statusBar;
-	wxChoice *alignStarChoice;
-	wxChoice *hemiChoice;
+	wxChoice *refStarChoice;  // Listbox for reference stars
+	wxChoice *hemiChoice;     // Listbox for manual hemisphere choice 
+	class PolePanel : public wxPanel
+	{
+	public:
+		PolePanel(StaticPaToolWin* parent);
+		StaticPaToolWin *paParent;
+		void OnPaint(wxPaintEvent &evt);
+		void Paint();
+		void Render(wxDC &dc);
+		DECLARE_EVENT_TABLE()
+	};
+	PolePanel *pole; // Panel for drawing of pole stars 
 
 	class Star
 	{
@@ -76,12 +83,6 @@ struct StaticPaToolWin : public wxFrame
 	};
 	std::vector<Star> SthStars, NthStars;
 	std::vector<Star> *poleStars;
-	enum StaticPaMode
-	{
-		MODE_IDLE,
-		MODE_ROTATE,
-		MODE_ADJUST,
-	};
 
 	enum StaticPaCtrlIds
 	{
@@ -96,58 +97,55 @@ struct StaticPaToolWin : public wxFrame
 		ID_ALIGNSTAR,
 		ID_HEMI
 	};
-	StaticPaMode m_mode;
-	double m_pxScale;
-	double m_dCamRot;
-	int m_alignStar;
+	double m_pxScale;  // Camera pixel scale
+	double m_dCamRot;  // Camera rotation
+	double m_camXpx;   // Camera width
+	int m_alignStar;   // Selected reference star
+	bool bauto;        // Auto slewing
+	int s_hemi;        // Hemisphere
 
-	PHD_Point m_Pospx[3];
-	int m_numPos;
-	PHD_Point m_CoRpx;
-	double m_dispSz[2];
-	double m_Radius;
-	int m_nstar;
-	double m_starpx[10][3];
-	double m_ra_rot[3];
+	bool aligning = false; // Collecting points
+	bool aligned = false;
+	double m_devpx;
+
+	int m_numPos;          // Number of alignment points
+	double m_rotdg;        // Amount of rotation required
+	int m_nstep;           //Number of steps needed
+	double tottheta = 0.0; // Rotation so far
+	int nstep;             // Number of steps taken so far
+
+	double m_ra_rot[3];    // RA readings at each point
+	PHD_Point m_Pospx[3];  // Alignment points - in pixels
+	PHD_Point m_CoRpx;     // Centre of Rotation in pixels
+	double m_Radius;       // Radius of centre of rotation to reference star
+
+	double m_dispSz[2];    // Display size
 	PHD_Point m_AzCorr, m_AltCorr;
 	PHD_Point m_ConeCorr, m_DecCorr;
-	double m_rotdg, m_rotpx, m_prevtheta;
-	int nstep, m_nstep;
-	double m_offsetpx, m_devpx, offsetdeg, m_guidedur;
-	bool m_can_slew;
-	bool m_slewing;
-	bool aligning = false;
-	bool aligned = false;
-	bool bauto;
-	int s_hemi;
 
-	double tottheta = 0.0;
-
-	void UpdateModeState();
 	void UpdateAlignStar();
+	void SetButtons();
 
-	//void OnSlew(wxCommandEvent& evt);
 	void OnHemi(wxCommandEvent& evt);
-	void OnRotate(wxCommandEvent& evt);
-	void OnAdjust(wxCommandEvent& evt);
 	void OnAlignStar(wxCommandEvent& evt);
 	void OnManual(wxCommandEvent& evt);
+	void OnRotate(wxCommandEvent& evt);
 	void OnStar2(wxCommandEvent& evt);
 	void OnStar3(wxCommandEvent& evt);
-	void SetButtons();
+	void OnAdjust(wxCommandEvent& evt);
 	void OnCloseBtn(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
-	void CalcRotationCentre(void);
-	PHD_Point Radec2Px(PHD_Point radec);
+		
+	void CreateStarTemplate(wxDC &dc);
 	bool IsAligning(){ return aligning; };
-	bool IsAligned(){ return aligned; }
-	void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-	bool RotateMount(); 
-	bool SetStar(int idx);
+	bool RotateMount();
 	bool SetParams(double newoffset);
 	void MoveWestBy(double thetadeg); //, double exp);
-	wxBitmap CreateStarTemplate();
-
+	bool SetStar(int idx);
+	bool IsAligned(){ return aligned; }
+	void CalcRotationCentre(void);
+	void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
+	PHD_Point Radec2Px(PHD_Point radec);
 
 	DECLARE_EVENT_TABLE()
 };
