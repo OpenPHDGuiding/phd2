@@ -91,23 +91,24 @@ struct StaticPaToolWin : public wxFrame
 		ID_STAR2,
 		ID_STAR3,
 		ID_ROTATE,
-		ID_ADJUST,
+		ID_CALCULATE,
 		ID_CLOSE,
 		ID_MANUAL,
-		ID_ALIGNSTAR,
+		ID_REFSTAR,
 		ID_HEMI
 	};
 	double m_pxScale;  // Camera pixel scale
 	double m_dCamRot;  // Camera rotation
 	double m_camXpx;   // Camera width
-	int m_alignStar;   // Selected reference star
+	int m_refStar;     // Selected reference star
 	bool bauto;        // Auto slewing
 	int s_hemi;        // Hemisphere
 
 	bool aligning = false; // Collecting points
-	bool aligned = false;
+//	bool aligned = false;
 	double m_devpx;
 
+	unsigned int state;
 	int m_numPos;          // Number of alignment points
 	double m_rotdg;        // Amount of rotation required
 	int m_nstep;           //Number of steps needed
@@ -123,16 +124,16 @@ struct StaticPaToolWin : public wxFrame
 	PHD_Point m_AzCorr, m_AltCorr;
 	PHD_Point m_ConeCorr, m_DecCorr;
 
-	void UpdateAlignStar();
+	void UpdateRefStar();
 	void SetButtons();
 
 	void OnHemi(wxCommandEvent& evt);
-	void OnAlignStar(wxCommandEvent& evt);
+	void OnRefStar(wxCommandEvent& evt);
 	void OnManual(wxCommandEvent& evt);
 	void OnRotate(wxCommandEvent& evt);
 	void OnStar2(wxCommandEvent& evt);
 	void OnStar3(wxCommandEvent& evt);
-	void OnAdjust(wxCommandEvent& evt);
+	void OnCalculate(wxCommandEvent& evt);
 	void OnCloseBtn(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
 		
@@ -142,7 +143,7 @@ struct StaticPaToolWin : public wxFrame
 	bool SetParams(double newoffset);
 	void MoveWestBy(double thetadeg); //, double exp);
 	bool SetStar(int idx);
-	bool IsAligned(){ return aligned; }
+	bool IsAligned(){ return bauto ? state == (3 << 1) : state == (7 << 1); }
 	void CalcRotationCentre(void);
 	void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
 	PHD_Point Radec2Px(PHD_Point radec);
