@@ -1258,7 +1258,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 					// See if the star has moved enough
 					// If yes then bookmark the position and set up for the next position until aligned
 					// If not then rotate the mount some more
-					if (!pStaticPaTool->UpdateAlignmentState(CurrentPosition()))
+					if (!pStaticPaTool->RotateMount())
 					{
 						SetState(STATE_UNINITIALIZED);
 						statusMessage = _("alignment failed");

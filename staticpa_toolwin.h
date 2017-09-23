@@ -47,24 +47,35 @@ struct StaticPaToolWin : public wxFrame
 	~StaticPaToolWin();
 
 	wxStaticText *m_instructions;
-	wxTextCtrl *m_raCurrent;
-	wxTextCtrl *m_decCurrent;
-	wxTextCtrl *m_siteLat;
-	wxTextCtrl *m_siteLon;
+//	wxTextCtrl *m_raCurrent;
+//	wxTextCtrl *m_decCurrent;
+//	wxTextCtrl *m_siteLat;
+//	wxTextCtrl *m_siteLon;
+	wxTextCtrl *m_camScale;
 	wxTextCtrl *m_camRot;
+	wxCheckBox *m_manual;
 	wxTextCtrl *m_calPt[5][2];
+	wxButton *m_star1;
+	wxButton *m_star2;
+	wxButton *m_star3;
 
 	wxStaticText *m_notesLabel;
 	wxTextCtrl *m_notes;
-	wxButton *m_rotate;
 	wxButton *m_adjust;
 	wxButton *m_close;
-	wxButton *m_phaseBtn;
 	wxStatusBar *m_statusBar;
-	wxTimer *m_timer;
-// Added from testguide
 	wxChoice *alignStarChoice;
+	wxChoice *hemiChoice;
 
+	class Star
+	{
+	public:
+		std::string name;
+		double ra, dec, mag;
+		Star(const char* a, const double b, const double c, const double d) :name(a), ra(b), dec(c), mag(d) {};
+	};
+	std::vector<Star> SthStars, NthStars;
+	std::vector<Star> *poleStars;
 	enum StaticPaMode
 	{
 		MODE_IDLE,
@@ -75,16 +86,17 @@ struct StaticPaToolWin : public wxFrame
 	enum StaticPaCtrlIds
 	{
 		ID_SLEW = 10001,
+		ID_STAR1,
+		ID_STAR2,
+		ID_STAR3,
 		ID_ROTATE,
 		ID_ADJUST,
 		ID_CLOSE,
-		ID_PULSEDURATION = 330001,
+		ID_MANUAL,
 		ID_ALIGNSTAR,
+		ID_HEMI
 	};
 	StaticPaMode m_mode;
-	bool m_rotating;
-
-	PHD_Point m_siteLatLong;
 	double m_pxScale;
 	double m_dCamRot;
 	int m_alignStar;
@@ -96,6 +108,7 @@ struct StaticPaToolWin : public wxFrame
 	double m_Radius;
 	int m_nstar;
 	double m_starpx[10][3];
+	double m_ra_rot[3];
 	PHD_Point m_AzCorr, m_AltCorr;
 	PHD_Point m_ConeCorr, m_DecCorr;
 	double m_rotdg, m_rotpx, m_prevtheta;
@@ -105,6 +118,8 @@ struct StaticPaToolWin : public wxFrame
 	bool m_slewing;
 	bool aligning = false;
 	bool aligned = false;
+	bool bauto;
+	int s_hemi;
 
 	double tottheta = 0.0;
 
@@ -112,10 +127,14 @@ struct StaticPaToolWin : public wxFrame
 	void UpdateAlignStar();
 
 	//void OnSlew(wxCommandEvent& evt);
+	void OnHemi(wxCommandEvent& evt);
 	void OnRotate(wxCommandEvent& evt);
 	void OnAdjust(wxCommandEvent& evt);
 	void OnAlignStar(wxCommandEvent& evt);
-	//void OnAppStateNotify(wxCommandEvent& evt);
+	void OnManual(wxCommandEvent& evt);
+	void OnStar2(wxCommandEvent& evt);
+	void OnStar3(wxCommandEvent& evt);
+	void SetButtons();
 	void OnCloseBtn(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
 	void CalcRotationCentre(void);
@@ -123,11 +142,12 @@ struct StaticPaToolWin : public wxFrame
 	bool IsAligning(){ return aligning; };
 	bool IsAligned(){ return aligned; }
 	void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-	bool UpdateAlignmentState(const PHD_Point& position);
-	bool setStar(int idx);
-	bool setparams(double newoffset);
-	bool rotateMount(double theta, int npulse);
-	void movewestby(double thetadeg); //, double exp);
+	bool RotateMount(); 
+	bool SetStar(int idx);
+	bool SetParams(double newoffset);
+	void MoveWestBy(double thetadeg); //, double exp);
+	wxBitmap CreateStarTemplate();
+
 
 	DECLARE_EVENT_TABLE()
 };
