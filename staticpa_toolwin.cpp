@@ -124,6 +124,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 	m_devpx = 8;
 	state = 0;
 	
+//Fairly convoluted way to get the camera size in pixels
 	usImage *pCurrImg = pFrame->pGuider->CurrentImage();
 	wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
 	double scalefactor = pFrame->pGuider->ScaleFactor();
@@ -132,6 +133,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 	m_CoRpx.X = xpx/2;
 	m_CoRpx.Y = ypx/2;
 	m_pxScale = pFrame->GetCameraPixelScale();
+// Fullsize is easier but the camera simulator does not set this.
 	wxSize camsize = pCamera->FullSize;
 	m_camXpx = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
 
@@ -148,8 +150,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 		Star("D: HD90105", 122.36, -89.52, 7.2),
 		Star("E: BQ Oct", 239.62, -89.83, 6.8),
 		Star("F: HD99685", 130.32, -89.85, 7.8),
-		Star("G: TYC9518-405-1", 102.04, -89.88, 8.75),
-		Star("H: unnamed", 136.63, -89.42, 8.0)
+		Star("G: HD98784", 99.78, -89.87, 8.9),
+		Star("I: HD92239", 136.63, -89.42, 8.0)
 	};
 	NthStars = {
 		Star("A: Polaris", 43.12, 89.34, 1.95),
@@ -157,11 +159,15 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 		Star("C: TYC4629-37-1", 85.51, 89.65, 9.15),
 		Star("D: TYC4661-2-1", 297.95, 89.83, 9.65),
 		Star("E: unnamed", 86.11, 89.43, 9.25),
-		Star("F: unnamed", 358.33, 89.54, 9.35)
+		Star("F: unnamed", 358.33, 89.54, 9.35),
+		Star("G: unnamed", 355.75, 89.64, 10.1),
+		Star("H: unnamed", 12.61, 89.76, 10.5),
+		Star("I: HD21070", 152.26, 89.48, 9.0),
 	};
 
-	// get site lat/long from scope
-	s_hemi = 1;
+	// get site lat/long from scope to determine hemisphere.
+	m_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 4);
+	s_hemi = pConfig->Profile.GetInt("/StaticPaTool/Hemisphere", 4);
 	if (pPointingSource)
 	{
 		double lat, lon;
@@ -170,10 +176,10 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 			s_hemi = lat >= 0 ? 1 : -1;
 		}
 	}
-	wxCommandEvent dummy;
 	if (!pFrame->CaptureActive)
 	{
 		// loop exposures
+		wxCommandEvent dummy;
 		SetStatusText(_("Start Looping..."));
 		pFrame->OnLoopExposure(dummy);
 	}
@@ -186,8 +192,38 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
 	// a horizontal box sizer for the bitmap and the instructions
 	wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
+	pautoInstr = new wxString(_(
+		"Slew to near the Celestial Pole.\n"
+		"Choose a reference star from the list.\n"
+		"Select it as the guide star on the main display.\n"
+		"Click Rotate to calibrate the RA Axis.\n"
+		"Wait for both calibration points to be measured.\n"
+		"Adjust your mount's altitude and azimuth as displayed.\n"
+		"Orange=Altitude; Green=Azimuth\n"
+		));
+	pmanualInstr = new wxString(_(
+		"Slew to near the Celestial Pole.\n"
+		"Choose a Reference Star from the list.\n"
+		"Select it as the guide star on the main display.\n"
+		"Click Get first point\n"
+		"Slew at least 0h20m west in RA\n"
+		"Ensure the Reference Star is still selected\n"
+		"Click Get second point\n"
+		"Repeat for the third point\n"
+		"Click Calculate to show the adjustments needed\n"
+		"Adjust your mount's altitude and azimuth to place"
+		"three reference stars on their orbits\n"
+		));
+	// can mount slew?
+	bauto = true;
+	pinstructions = pautoInstr;
+	m_can_slew = pPointingSource && pPointingSource->CanSlew();
+	if (!m_can_slew){
+		bauto = false;
+		pinstructions = pmanualInstr;
+	}
 
-	m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400, 120), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+	m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
 #ifdef __WXOSX__
 	m_instructions->SetFont(*wxSMALL_FONT);
 #endif
@@ -200,7 +236,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 	topSizer->Add(instrSizer);
 
 	// static box sizer holding the scope pointing controls
-	wxStaticBoxSizer *sbSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Scope Pointing")), wxVERTICAL);
+	wxStaticBoxSizer *sbSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Alignment Parameters")), wxVERTICAL);
 
 	// a grid box sizer for laying out scope pointing the controls
 	wxGridBagSizer *gbSizer = new wxGridBagSizer(0, 0);
@@ -354,36 +390,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 	int ypos = pConfig->Global.GetInt("/StaticPaTool/pos.y", -1);
 	MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
 
-	m_instructions->SetLabel(
-		_("Slew to near the Celestial Pole.\n"
-		"Choose an Alignment Star from the list.\n"
-		"Select it as the guide star on the display.\n"
-		"Press Rotate to calibrate the RA Axis.\n"
-		"Wait for both calibration points to be measured.\n"
-		"Adjust your mount's altitude and azimuth as displayed.\n"
-		"Orange=Altitude; Green=Azimuth\n"
-		));
+// Different instructions for manual versus auto
 
-	// can mount slew?
-	bauto = true;
-	bool m_can_slew = pPointingSource && pPointingSource->CanSlew();
-	if (!m_can_slew){
-		bauto = false;
-		m_manual->Hide();
-	}
 	SetButtons();
 
-	refStarChoice->Select(pConfig->Profile.GetInt("/StaticPaTool/RefStar", 4) - 1);
-	UpdateRefStar();
-
-	double xangle=0.0, yangle;
-	if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
-	{
-		xangle = degrees(pMount->xAngle());
-		yangle = degrees(pMount->yAngle());
-	}
-	m_camRot->SetValue(wxString::Format("%+.3f", xangle));
-	m_dCamRot = xangle;
+//	refStarChoice->Select(pConfig->Profile.GetInt("/StaticPaTool/RefStar", 4) - 1);
+//	UpdateRefStar();
 }
 
 StaticPaToolWin::~StaticPaToolWin()
@@ -395,6 +407,7 @@ StaticPaToolWin::~StaticPaToolWin()
 void StaticPaToolWin::OnHemi(wxCommandEvent& evt)
 {
 	int i_hemi = hemiChoice->GetSelection() <= 0 ? 1 : -1;
+	pConfig->Profile.SetInt("/StaticPaTool/Hemisphere", i_hemi);
 	if (i_hemi != s_hemi)
 	{
 		m_refStar = 0;
@@ -416,7 +429,7 @@ void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
 void StaticPaToolWin::UpdateRefStar()
 {
 	int i_refStar = refStarChoice->GetSelection();
-	pConfig->Profile.SetInt("/StaticPaTool/RefStar", refStarChoice->GetSelection() + 1);
+	pConfig->Profile.SetInt("/StaticPaTool/RefStar", refStarChoice->GetSelection());
 
 	m_refStar = i_refStar;
 }
@@ -485,7 +498,12 @@ void StaticPaToolWin::OnClose(wxCloseEvent& evt)
 
 void StaticPaToolWin::SetButtons()
 {
+	if (!m_can_slew){
+		m_manual->Hide();
+	}
 	m_manual->SetValue(!bauto);
+	pinstructions = bauto? pautoInstr: pmanualInstr;
+	m_instructions->SetLabel(*pinstructions);
 
 	m_star1->SetLabel(_("Rotate"));
 	if (aligning) {
@@ -653,6 +671,27 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 	{
 		ra_deg = ra_hrs * 15.0;
 	}
+	else
+	{
+		// If not a goto mount calculate ra_deg from LST assuming mount is in the home position (HA=18h)
+		tm j2000_info;
+		j2000_info.tm_year = 100;
+		j2000_info.tm_mon = 1;
+		j2000_info.tm_mday = 1;
+		j2000_info.tm_hour = 12;
+		j2000_info.tm_min = 0;
+		j2000_info.tm_sec = 0;
+		j2000_info.tm_isdst = 0;
+		time_t j2000 = mktime(&j2000_info);
+		time_t nowutc = time(NULL);
+		tm *nowinfo = localtime(&nowutc);
+		time_t now = mktime(nowinfo);
+		double since = difftime(now, j2000) / 86400.0;
+		ra_deg = fmod(280.46061837 + 360.98564736629 * since - 270.0, 360.0);
+		// RA = LST - HA 
+		// For for HA 270; RA_deg = LST_deg - 270.0
+	}
+
 
 	// Target hour angle - or rather the rotation needed to correct. 
 // HA = LST - RA
@@ -660,7 +699,10 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 // "Up" is HA=0
 // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
 // Star rotation is RAstar - RAmount
-	double a = m_dCamRot - copysign(radec.X - (ra_deg - 90.0), s_hemi);
+	double a1 = radec.X - (ra_deg - 90.0);
+	while (a1 < 0.0) a1 += 360.0;
+	a1 = fmod(a1, 360);
+	double a = m_dCamRot - copysign(a1, s_hemi);
 
 	PHD_Point px(m_CoRpx.X + r * cos(radians(a)), m_CoRpx.Y - r * sin(radians(a)));
 	return px;
@@ -710,41 +752,47 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 		starpx = Radec2Px(stardeg);
 		radpx = sqrt(pow(m_CoRpx.X - starpx.X, 2) + pow(m_CoRpx.Y - starpx.Y, 2));
 
-		dc.SetPen(wxPen(wxColor(255, 255, 0), 1, wxPENSTYLE_SOLID));
+		dc.SetPen(wxPen(wxColor(255, 255, 0), 1, wxPENSTYLE_DOT));
 		if (is == m_refStar)
 		{
-			dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_SOLID));
+			dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_DOT));
 		}
 		dc.DrawCircle(m_CoRpx.X * scale, m_CoRpx.Y * scale, radpx * scale);
 		dc.DrawCircle(starpx.X * scale, starpx.Y * scale, region*scale);
 	}
 	// Draw adjustment lines for centring the CoR on the display in blue (dec) and red (cone error)
-	double xr = m_CoRpx.X * scale;
-	double yr = m_CoRpx.Y * scale;
-	dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xr, yr, xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale);
-	dc.SetPen(wxPen(wxColor(0, 0, 255), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale,
-		xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
-		yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
-	dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xr, yr, xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
-		yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
-
+	bool drawCone = false;
+	if (drawCone){
+		double xr = m_CoRpx.X * scale;
+		double yr = m_CoRpx.Y * scale;
+		dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xr, yr, xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale);
+		dc.SetPen(wxPen(wxColor(0, 0, 255), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale,
+			xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
+			yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
+		dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xr, yr, xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
+			yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
+	}
 	// Draw adjustment lines for placing the guide star in its correct position relative to the CoR
-	// Green (azimuth) and orange (altitude)
-	int idx;
-	idx = bauto ? 1 : 2;
-	double xs = m_Pospx[idx].X * scale;
-	double ys = m_Pospx[idx].Y * scale;
-	dc.SetPen(wxPen(wxColor(255, 165, 0), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
-	dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
-		xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
-	dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
-	dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
-		ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
+	// Blue (azimuth) and Red (altitude)
+	bool drawCorr = true;
+	if (drawCorr)
+	{
+		int idx;
+		idx = bauto ? 1 : 2;
+		double xs = m_Pospx[idx].X * scale;
+		double ys = m_Pospx[idx].Y * scale;
+		dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
+		dc.SetPen(wxPen(wxColor(0, 0, 255), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
+			xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
+		dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+		dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
+			ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
+	}
 }
 
 bool StaticPaToolWin::RotateMount() 
@@ -876,6 +924,9 @@ bool StaticPaToolWin::RotateMount()
 				m_numPos++;
 			}
 			aligning = false;
+			if (IsAligned()){
+				CalcRotationCentre();
+			}
 			return isset;
 		}
 		m_numPos++;
@@ -956,14 +1007,14 @@ void StaticPaToolWin::MoveWestBy(double thetadeg)
 
 void StaticPaToolWin::CreateStarTemplate(wxDC& dc)
 {
+	dc.SetBackground(*wxGREY_BRUSH);
 	dc.Clear();
-	dc.SetBackground(*wxBLACK_BRUSH);
 
 	double scale = 320.0 / m_camXpx;
 	int region = 5;
 
 //	memDC.SetTextForeground(*wxLIGHT_GREY);
-	dc.SetTextForeground(*wxRED);
+	dc.SetTextForeground(*wxYELLOW);
 	const wxFont& SmallFont =
 #if defined(__WXOSX__)
 		*wxSMALL_FONT;
@@ -976,14 +1027,16 @@ void StaticPaToolWin::CreateStarTemplate(wxDC& dc)
 	PHD_Point starpx, stardeg;
 	double starsz, starmag;
 	// Draw orbits for each alignment star
-	for (int is = 0; is < poleStars->size(); is++)
-	{
+	for (int is = 4; is < poleStars->size(); is++)
+// for (int is = 0; is < poleStars->size(); is++)
+		{
 		stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
 		starmag = poleStars->at(is).mag;
 
 		starsz = 356.0*exp(-0.3*starmag) / m_pxScale;
 		starpx = Radec2Px(stardeg);
-		dc.SetPen(wxPen(wxColor(255, 255, 0), 1, wxPENSTYLE_SOLID));
+		dc.SetPen(*wxYELLOW_PEN);
+		dc.SetBrush(*wxYELLOW_BRUSH);
 
 		dc.DrawCircle(starpx.X * scale, starpx.Y * scale, starsz*scale);
 		dc.DrawText(wxString::Format("%c", alpha[is]), (starpx.X + starsz) * scale, starpx.Y * scale);

@@ -62,6 +62,12 @@ struct StaticPaToolWin : public wxFrame
 	wxStatusBar *m_statusBar;
 	wxChoice *refStarChoice;  // Listbox for reference stars
 	wxChoice *hemiChoice;     // Listbox for manual hemisphere choice 
+
+	bool m_can_slew;
+	wxString *pinstructions;
+	wxString *pautoInstr;
+	wxString *pmanualInstr;
+
 	class PolePanel : public wxPanel
 	{
 	public:
@@ -105,7 +111,6 @@ struct StaticPaToolWin : public wxFrame
 	int s_hemi;        // Hemisphere
 
 	bool aligning = false; // Collecting points
-//	bool aligned = false;
 	double m_devpx;
 
 	unsigned int state;
