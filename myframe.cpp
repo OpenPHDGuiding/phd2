@@ -1058,7 +1058,6 @@ void MyFrame::UpdateButtonsStatus(void)
         wxPostEvent(pStaticPaTool, event);
     }
 
-
     if (pCometTool)
         CometTool::UpdateCometToolControls(false);
 

@@ -36,9 +36,9 @@
 
 class StaticPaTool
 {
-	StaticPaTool(); // not implemented
+    StaticPaTool(); // not implemented
 public:
-	static wxWindow *CreateStaticPaToolWindow();
+    static wxWindow *CreateStaticPaToolWindow();
 };
 
 #endif

@@ -229,9 +229,9 @@ public:
     GearDialog *pGearDialog;
     ProfileWindow *pProfile;
     TargetWindow *pTarget;
-	wxWindow *pDriftTool;
-	wxWindow *pStaticPaTool;
-	wxWindow *pManualGuide;
+    wxWindow *pDriftTool;
+    wxWindow *pStaticPaTool;
+    wxWindow *pManualGuide;
     wxDialog * pStarCrossDlg;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
@@ -275,9 +275,9 @@ public:
     void OnTestGuide(wxCommandEvent& evt);
     void OnStarCrossTest(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
-	void OnDriftTool(wxCommandEvent& evt);
-	void OnStaticPaTool(wxCommandEvent& evt);
-	void OnCometTool(wxCommandEvent& evt);
+    void OnDriftTool(wxCommandEvent& evt);
+    void OnStaticPaTool(wxCommandEvent& evt);
+    void OnCometTool(wxCommandEvent& evt);
     void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
@@ -574,7 +574,7 @@ enum {
     MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
-	MENU_STATICPATOOL,
+    MENU_STATICPATOOL,
     MENU_COMETTOOL,
     MENU_GUIDING_ASSISTANT,
     MENU_SAVESETTINGS,

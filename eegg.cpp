@@ -192,7 +192,7 @@ void MyFrame::OnStaticPaTool(wxCommandEvent& WXUNUSED(evt))
 {
     if (!pStaticPaTool)
     {
-		pStaticPaTool = StaticPaTool::CreateStaticPaToolWindow();
+        pStaticPaTool = StaticPaTool::CreateStaticPaToolWindow();
     }
 
     if (pStaticPaTool)
