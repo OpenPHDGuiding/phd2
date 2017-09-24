@@ -1250,26 +1250,16 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 SetState(STATE_SELECTED);
                 break;
             case STATE_SELECTED:
-                // nothing to do but wait
+                // See if a Static PA is underway
                 if (pStaticPaTool && pStaticPaTool->IsAligning())
                 {
-                    //Get the current position
-                    // Reset the lock position
-                    // See if the star has moved enough
-                    // If yes then bookmark the position and set up for the next position until aligned
-                    // If not then rotate the mount some more
+                    // Rotate the mount in RA a bit
                     if (!pStaticPaTool->RotateMount())
                     {
                         SetState(STATE_UNINITIALIZED);
-                        statusMessage = _("alignment failed");
-                        throw ERROR_INFO("Alignment failed");
+                        statusMessage = _("Static PA rotation failed");
+                        throw ERROR_INFO("Static PA rotation failed");
                     }
-
-                    if (!pStaticPaTool->IsAligned())
-                    {
-                        break;
-                    }
-                    assert(pStaticPaTool->IsAligned());
                 }
                 break;
             case STATE_CALIBRATING_PRIMARY:
