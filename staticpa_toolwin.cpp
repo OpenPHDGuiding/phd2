@@ -66,16 +66,12 @@ StaticPaToolWin::PolePanel::PolePanel(StaticPaToolWin* parent):
 void StaticPaToolWin::PolePanel::OnPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
-    Render(dc);
+	paParent->CreateStarTemplate(dc);
 }
 void StaticPaToolWin::PolePanel::Paint()
 {
     wxClientDC dc(this);
-    Render(dc);
-}
-void StaticPaToolWin::PolePanel::Render(wxDC &dc)
-{
-    paParent->CreateStarTemplate(dc);
+	paParent->CreateStarTemplate(dc);
 }
 
 wxWindow *StaticPaTool::CreateStaticPaToolWindow()
@@ -432,11 +428,6 @@ void StaticPaToolWin::OnManual(wxCommandEvent& evt)
 }
 
 void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
-{
-    UpdateRefStar();
-}
-
-void StaticPaToolWin::UpdateRefStar()
 {
     int i_refStar = w_refStarChoice->GetSelection();
     pConfig->Profile.SetInt("/StaticPaTool/RefStar", w_refStarChoice->GetSelection());

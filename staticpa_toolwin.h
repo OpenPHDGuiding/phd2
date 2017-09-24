@@ -71,7 +71,6 @@ struct StaticPaToolWin : public wxFrame
         StaticPaToolWin *paParent;
         void OnPaint(wxPaintEvent &evt);
         void Paint();
-        void Render(wxDC &dc);
         DECLARE_EVENT_TABLE()
     };
     PolePanel *w_pole; // Panel for drawing of pole stars 
@@ -127,11 +126,10 @@ struct StaticPaToolWin : public wxFrame
     PHD_Point r_pxCentre;   // Centre of Rotation in pixels
     double r_radius;        // Radius of centre of rotation to reference star
 
-    double g_dispSz[2];    // Display size (dynamic)
+    double g_dispSz[2];     // Display size (dynamic)
     PHD_Point m_AzCorr, m_AltCorr; // Calculated Alt and Az corrections
     PHD_Point m_ConeCorr, m_DecCorr;  //Calculated Dec and Cone offsets
 
-    void UpdateRefStar();
     void FillPanel();
 
     void OnHemi(wxCommandEvent& evt);
@@ -148,7 +146,7 @@ struct StaticPaToolWin : public wxFrame
     bool IsAligning(){ return s_aligning; };
     bool RotateMount();
     bool SetParams(double newoffset);
-    void MoveWestBy(double thetadeg); //, double exp);
+    void MoveWestBy(double thetadeg);
     bool SetStar(int idx);
     bool IsAligned(){ return a_auto ? s_state == (3 << 1) : s_state == (7 << 1); }
     void CalcRotationCentre(void);
