@@ -116,7 +116,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 {
     pFrame->pGuider->pStaticPaTool = this;
     s_numPos = 0;
-    a_devpx = 8;
+    a_devpx = 5;
     s_state = 0;
     s_aligning = false;
     
@@ -584,7 +584,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
         Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
         // Alternative algorithm based on two poins and angle rotated
         double theta2;
-        theta2 = -a_hemi * radians(360.0 / 24.0 * (r_raPos[1] - r_raPos[0])) / 2.0;
+        theta2 = a_hemi * radians(360.0 / 24.0 * (r_raPos[1] - r_raPos[0])) / 2.0;
         double lenchord = sqrt(pow((x1 - x2), 2.0) + pow((y1 - y2), 2.0));
         cr = lenchord / 2.0 / sin(theta2);
         double lenbase = cr*cos(theta2);
@@ -857,8 +857,10 @@ bool StaticPaToolWin::RotateMount()
             // So theta is the total rotation needed for the current offset;
             // And prevtheta is how we have already moved;
             // Recalculate the offset based on the actual movement;
+
         }
-        else
+//		if (s_nStep >= 2)
+		else
         {
             // Recalculate the offset. CAUTION: This might end up in an endless loop. 
             bool isset = SetStar(s_numPos);
