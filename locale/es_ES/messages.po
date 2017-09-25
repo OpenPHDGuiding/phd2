@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-02 12:33-0400\n"
+"POT-Creation-Date: 2017-09-25 18:12-0400\n"
 "PO-Revision-Date: 2017-06-14 21:59+0200\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team: <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgstr ""
 "X-Generator: Poedit 2.0.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: Refine_DefMap.cpp:59 calstep_dialog.cpp:181 cam_simulator.cpp:1484
+#: Refine_DefMap.cpp:59 calstep_dialog.cpp:181 cam_simulator.cpp:1486
 #: camcal_import_dialog.cpp:47 camera.cpp:729 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:54
 #: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2826
@@ -178,7 +178,7 @@ msgstr ""
 "píxeles que se tratarán como 'fríos', haga click entonces en 'generar' para "
 "crear y cargar un nuevo mapa de píxeles erróneos"
 
-#: Refine_DefMap.cpp:168 cam_simulator.cpp:1582
+#: Refine_DefMap.cpp:168 cam_simulator.cpp:1584
 msgid "Hot pixels"
 msgstr "Píxeles calientes"
 
@@ -186,7 +186,7 @@ msgstr "Píxeles calientes"
 msgid "Cold pixels"
 msgstr "Píxeles fríos"
 
-#: Refine_DefMap.cpp:175 cam_simulator.cpp:1668 darks_dialog.cpp:204
+#: Refine_DefMap.cpp:175 cam_simulator.cpp:1670 darks_dialog.cpp:204
 #: mount.cpp:161 mount.cpp:202 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr "Borrar"
@@ -282,7 +282,7 @@ msgstr "Configuración Avanzada"
 msgid "Global"
 msgstr "Global"
 
-#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1577
+#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1579
 #: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Cámara"
@@ -300,7 +300,7 @@ msgstr "Algoritmos"
 msgid "Other Devices"
 msgstr "Otros Dispositivos"
 
-#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1589
+#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1591
 #: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -633,12 +633,12 @@ msgstr "Binning: %d"
 msgid "Side-of-pier:"
 msgstr "Tamaño de la Columna:"
 
-#: calreview_dialog.cpp:337 cam_simulator.cpp:1733 mount.cpp:61
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1735 mount.cpp:61
 #: testguide.cpp:152
 msgid "East"
 msgstr "Este"
 
-#: calreview_dialog.cpp:338 cam_simulator.cpp:1733 mount.cpp:62
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1735 mount.cpp:62
 #: testguide.cpp:152
 msgid "West"
 msgstr "Oeste"
@@ -922,31 +922,32 @@ msgstr "Configuraciones"
 #: cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294 cam_MeadeDSI.cpp:97
 #: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_SAC42.cpp:71 cam_SACGuide.cpp:82
 #: cam_SACGuide.cpp:93 cam_SACGuide.cpp:96 cam_SACGuide.cpp:99
-#: cam_SACGuide.cpp:102 cam_SACGuide.cpp:111 cam_SBIG.cpp:285 cam_SBIG.cpp:295
-#: cam_SBIG.cpp:318 cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143
+#: cam_SACGuide.cpp:102 cam_SACGuide.cpp:111 cam_SBIG.cpp:286 cam_SBIG.cpp:296
+#: cam_SBIG.cpp:319 cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143
 #: cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167
 #: cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191
 #: cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215
 #: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245
 #: cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_SXV.cpp:261
 #: cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96
-#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103 cam_StarShootDSCI.cpp:106
-#: cam_StarShootDSCI.cpp:110 cam_StarShootDSCI.cpp:113
-#: cam_StarShootDSCI.cpp:116 cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:153
-#: cam_ZWO.cpp:181 cam_ZWO.cpp:196 cam_ZWO.cpp:213 cam_ZWO.cpp:220
-#: cam_ZWO.cpp:228 cam_ZWO.cpp:271 cam_firewire_IC.cpp:94 cam_openssag.cpp:96
-#: cam_openssag.cpp:113 cam_qhy5.cpp:117 cam_qhy5.cpp:124 cam_wdm.cpp:132
-#: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1217
-#: gear_dialog.cpp:1892 gear_dialog.cpp:1901 gear_dialog.cpp:1908
-#: gear_dialog.cpp:1953 gear_dialog.cpp:1959 scope_GC_USBST4.cpp:142
-#: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
-#: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
-#: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
-#: scope_ascom.cpp:220 scope_ascom.cpp:236 scope_ascom.cpp:243
-#: scope_ascom.cpp:331 scope_ascom.cpp:339 scope_eqmac.cpp:135
-#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
-#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:146 stepguider_sxao_INDI.cpp:104
+#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
+#: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
+#: cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:153 cam_ZWO.cpp:181 cam_ZWO.cpp:196
+#: cam_ZWO.cpp:213 cam_ZWO.cpp:220 cam_ZWO.cpp:228 cam_ZWO.cpp:271
+#: cam_firewire_IC.cpp:94 cam_openssag.cpp:96 cam_openssag.cpp:113
+#: cam_qhy5.cpp:117 cam_qhy5.cpp:124 cam_wdm.cpp:132 cam_wdm.cpp:141
+#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1217 gear_dialog.cpp:1892
+#: gear_dialog.cpp:1901 gear_dialog.cpp:1908 gear_dialog.cpp:1953
+#: gear_dialog.cpp:1959 scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160
+#: scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204
+#: scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242 scope_ascom.cpp:188
+#: scope_ascom.cpp:203 scope_ascom.cpp:211 scope_ascom.cpp:220
+#: scope_ascom.cpp:236 scope_ascom.cpp:243 scope_ascom.cpp:331
+#: scope_ascom.cpp:339 scope_eqmac.cpp:135 scope_eqmac.cpp:139
+#: scope_equinox.cpp:138 scope_equinox.cpp:142 stepguider_sxao.cpp:107
+#: stepguider_sxao.cpp:146 stepguider_sxao_INDI.cpp:104
 #: stepguider_sxao_INDI.cpp:115
 msgid "Error"
 msgstr "Error"
@@ -984,18 +985,19 @@ msgstr "No se puede conectar la cámara %s"
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Tipo no soportado o error al cargar archivo FITS"
 
-#: cam_INDI.cpp:470 cam_simulator.cpp:590 cam_simulator.cpp:1371
+#: cam_INDI.cpp:470 cam_simulator.cpp:590 cam_simulator.cpp:1373
 msgid "FITS file is not of an image"
 msgstr "El archivo FITS no es una imagen"
 
-#: cam_INDI.cpp:488 cam_INDI.cpp:511 cam_firewire_IC.cpp:290 cam_opencv.cpp:146
-#: cam_simulator.cpp:613 cam_simulator.cpp:1161 cam_simulator.cpp:1223
-#: cam_simulator.cpp:1388 image_math.cpp:85 image_math.cpp:545
+#: cam_INDI.cpp:488 cam_INDI.cpp:511 cam_firewire_IC.cpp:290
+#: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
+#: cam_simulator.cpp:1223 cam_simulator.cpp:1390 image_math.cpp:85
+#: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Error de asignación de memoria"
 
 #: cam_INDI.cpp:496 cam_INDI.cpp:517 cam_simulator.cpp:631
-#: cam_simulator.cpp:1393
+#: cam_simulator.cpp:1395
 msgid "Error reading data"
 msgstr "Error leyendo datos"
 
@@ -1073,7 +1075,7 @@ msgstr "Por Defecto"
 msgid "Webcam settings"
 msgstr "Configuración de Webcam"
 
-#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
+#: cam_OSPL130.cpp:85 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
 msgstr "No se puede iniciar la exposición"
 
@@ -1081,59 +1083,59 @@ msgstr "No se puede iniciar la exposición"
 msgid "Error capturing data from camera"
 msgstr "Error capturando datos desde la Cámara"
 
-#: cam_SBIG.cpp:113
+#: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "Error al cargar driver o librería DLL SBIG"
 
-#: cam_SBIG.cpp:136
+#: cam_SBIG.cpp:137
 msgid "Select interface"
 msgstr "Seleccionar Interfaz"
 
-#: cam_SBIG.cpp:136
+#: cam_SBIG.cpp:137
 msgid "Interface"
 msgstr "Interfaz"
 
-#: cam_SBIG.cpp:168
+#: cam_SBIG.cpp:169
 msgid "Select USB camera"
 msgstr "Seleccionar cámara USB"
 
-#: cam_SBIG.cpp:168
+#: cam_SBIG.cpp:169
 msgid "Camera name"
 msgstr "Nombre de la Cámara"
 
-#: cam_SBIG.cpp:179
+#: cam_SBIG.cpp:180
 msgid "IP address"
 msgstr "Dirección IP"
 
-#: cam_SBIG.cpp:179
+#: cam_SBIG.cpp:180
 msgid "Enter IP address"
 msgstr "Entrar dirección IP"
 
-#: cam_SBIG.cpp:308
+#: cam_SBIG.cpp:309
 msgid "CCD Choice"
 msgstr "Selector de CCD"
 
-#: cam_SBIG.cpp:318
+#: cam_SBIG.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "Error al obtener información de la CCD principal"
 
-#: cam_SBIG.cpp:475
+#: cam_SBIG.cpp:478
 msgid "Cannot poll exposure"
 msgstr "No se puede consultar la exposición"
 
-#: cam_SBIG.cpp:498
+#: cam_SBIG.cpp:501
 msgid "Cannot stop exposure"
 msgstr "No se puede parar la exposición"
 
-#: cam_SBIG.cpp:524 cam_SBIG.cpp:540
+#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
 msgid "Error downloading data"
 msgstr "Error cargando datos"
 
-#: cam_SBIG.cpp:578
+#: cam_SBIG.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "No se puede verificar el estado del gestor de SBIG"
 
-#: cam_SBIG.cpp:587
+#: cam_SBIG.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "Se supero el tiempo de espera para completar el guiado por pulsos."
 
@@ -1485,130 +1487,130 @@ msgstr ""
 msgid "Cannot load simulated image"
 msgstr "No se puede cargar imagen simulada"
 
-#: cam_simulator.cpp:1383
+#: cam_simulator.cpp:1385
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
 msgstr "Tipo no soportado o error al abrir archivo FITS %d %d"
 
-#: cam_simulator.cpp:1553
+#: cam_simulator.cpp:1555
 msgid "PE amplitude and period must be > 0"
 msgstr "La amplitud y período del EP deben ser >0"
 
-#: cam_simulator.cpp:1559
+#: cam_simulator.cpp:1561
 msgid "PE amplitude and period must be numbers > 0"
 msgstr "La amplitud y período del EP deben ser números > 0"
 
-#: cam_simulator.cpp:1569
+#: cam_simulator.cpp:1571
 msgid "Camera Simulator"
 msgstr "Simulador de Cámara"
 
-#: cam_simulator.cpp:1579
+#: cam_simulator.cpp:1581
 msgid "Number of simulated stars"
 msgstr "Número de Estrellas Simuladas"
 
-#: cam_simulator.cpp:1580
+#: cam_simulator.cpp:1582
 msgid "Stars"
 msgstr "Estrellas"
 
-#: cam_simulator.cpp:1581
+#: cam_simulator.cpp:1583
 msgid "Number of hot pixels"
 msgstr "Número de Hot Pixels"
 
-#: cam_simulator.cpp:1584
+#: cam_simulator.cpp:1586
 #, no-c-format
 msgid "% Simulated noise"
 msgstr "% Simulación de Ruido"
 
-#: cam_simulator.cpp:1585
+#: cam_simulator.cpp:1587
 msgid "Noise"
 msgstr "Ruido"
 
-#: cam_simulator.cpp:1591
+#: cam_simulator.cpp:1593
 msgid "Dec backlash, arc-secs"
 msgstr "Backslash de Dec,en arc-segs"
 
-#: cam_simulator.cpp:1592
+#: cam_simulator.cpp:1594
 msgid "Dec backlash"
 msgstr "Backslash de Dec"
 
-#: cam_simulator.cpp:1593
+#: cam_simulator.cpp:1595
 msgid "Dec drift, arc-sec/min"
 msgstr "Deriva de Dec,arc-segs/min"
 
-#: cam_simulator.cpp:1594
+#: cam_simulator.cpp:1596
 msgid "Dec drift"
 msgstr "Deriva en Dec"
 
-#: cam_simulator.cpp:1595
+#: cam_simulator.cpp:1597
 msgid "Guide rate, x sidereal"
 msgstr "Tasa de Guiado, x sideral"
 
-#: cam_simulator.cpp:1596
+#: cam_simulator.cpp:1598
 msgid "Guide rate"
 msgstr "Tasa de Guiado"
 
-#: cam_simulator.cpp:1600
+#: cam_simulator.cpp:1602
 msgid "PE"
 msgstr "Error Periódico"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1603
 msgid "Apply PE"
 msgstr "Aplicar PE"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1603
 msgid "Simulate periodic error"
 msgstr "Simular error periódico"
 
-#: cam_simulator.cpp:1605
+#: cam_simulator.cpp:1607
 msgid "Default curve"
 msgstr "Curva por defecto"
 
-#: cam_simulator.cpp:1607
+#: cam_simulator.cpp:1609
 msgid "Use a built-in PE curve that has some steep and smooth sections."
 msgstr ""
 "Usar una curva de Error Periódico que tenga algunos secciones con picos y "
 "valles."
 
-#: cam_simulator.cpp:1609
+#: cam_simulator.cpp:1611
 msgid "Amplitude: "
 msgstr "Amplitud: "
 
-#: cam_simulator.cpp:1610
+#: cam_simulator.cpp:1612
 msgid "PE Amplitude, arc-secs"
 msgstr "Amplitud PE, arc-seg"
 
-#: cam_simulator.cpp:1618
+#: cam_simulator.cpp:1620
 msgid "Custom curve"
 msgstr "Curva personalizada"
 
-#: cam_simulator.cpp:1620
+#: cam_simulator.cpp:1622
 msgid ""
 "Use a simple sinusoidal curve. You can specify the amplitude and period."
 msgstr ""
 "Usar una curva sinusoidal sencilla. Se puede especificar la amplitud y el "
 "período."
 
-#: cam_simulator.cpp:1623
+#: cam_simulator.cpp:1625
 msgid "Amplitude"
 msgstr "Amplitud"
 
-#: cam_simulator.cpp:1623
+#: cam_simulator.cpp:1625
 msgid "Amplitude, arc-secs"
 msgstr "Amplitud, arc-seg"
 
-#: cam_simulator.cpp:1624
+#: cam_simulator.cpp:1626
 msgid "Period"
 msgstr "Período"
 
-#: cam_simulator.cpp:1624
+#: cam_simulator.cpp:1626
 msgid "Period, seconds"
 msgstr "Período, segundos"
 
-#: cam_simulator.cpp:1636
+#: cam_simulator.cpp:1638
 msgid "Reverse Dec pulse on West side of pier"
 msgstr "Intercambio de pulso de Dec al cambiar al Oeste de la columna"
 
-#: cam_simulator.cpp:1637
+#: cam_simulator.cpp:1639
 msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
@@ -1616,56 +1618,56 @@ msgstr ""
 "Simular una montura que invierte la dirección del guiado de pulsos después "
 "del cambio de meridiano, como en una montura guiada por pulsos con ASCOM."
 
-#: cam_simulator.cpp:1639
+#: cam_simulator.cpp:1641
 msgid "Side of Pier: MMMMM"
 msgstr "Tamaño de la columna: MMMMM"
 
-#: cam_simulator.cpp:1641
+#: cam_simulator.cpp:1643
 msgid "Pier Flip"
 msgstr "Girar sobre la columna"
 
-#: cam_simulator.cpp:1648
+#: cam_simulator.cpp:1650
 msgid "Session"
 msgstr "Sesión"
 
-#: cam_simulator.cpp:1650
+#: cam_simulator.cpp:1652
 msgid "Camera angle, degrees"
 msgstr "Ángulo de cámara,grados"
 
-#: cam_simulator.cpp:1651
+#: cam_simulator.cpp:1653
 msgid "Camera angle"
 msgstr "Ángulo de cámara"
 
-#: cam_simulator.cpp:1652
+#: cam_simulator.cpp:1654
 msgid "Seeing, FWHM arc-sec"
 msgstr "Seeing, FWHM arc-sec"
 
-#: cam_simulator.cpp:1653
+#: cam_simulator.cpp:1655
 msgid "Seeing"
 msgstr "Seeing"
 
-#: cam_simulator.cpp:1654
+#: cam_simulator.cpp:1656
 msgid "Comet"
 msgstr "Cometa"
 
-#: cam_simulator.cpp:1656
+#: cam_simulator.cpp:1658
 msgid "Star fading due to clouds"
 msgstr "La estrella se desvanece por las nubes"
 
-#: cam_simulator.cpp:1669
+#: cam_simulator.cpp:1671
 msgid "Reset all values to application defaults"
 msgstr "Borrar todos los valores y volver a valores por defecto"
 
-#: cam_simulator.cpp:1674 camcal_import_dialog.cpp:119
+#: cam_simulator.cpp:1676 camcal_import_dialog.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: cam_simulator.cpp:1680 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
+#: cam_simulator.cpp:1682 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 phdupdate.cpp:776
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: cam_simulator.cpp:1733
+#: cam_simulator.cpp:1735
 #, c-format
 msgid "Side of pier: %s"
 msgstr "Tamaño de la Columna: %s"
@@ -5839,38 +5841,38 @@ msgid "Camera driver cannot report pixel size"
 msgstr "El controlador de la cámara no conoce el tamaño del pixel"
 
 #: profile_wizard.cpp:573
+#, c-format
 msgid ""
-". Please enter the correct un-binned pixel size from the camera "
+"%s. Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
 msgstr ""
-". Por favor, introduzca el valor correcto del pixel unbinned desde la "
-"documentación de la cámara o web del fabricante."
 
-#: profile_wizard.cpp:573
+#: profile_wizard.cpp:575
 msgid "Detect Pixel Size"
 msgstr "Detectar tamaño de Pixel"
 
-#: profile_wizard.cpp:599
+#: profile_wizard.cpp:601
 msgid "Could not initialize mount"
 msgstr "No se pudo inicializar la montura"
 
-#: profile_wizard.cpp:600
+#: profile_wizard.cpp:602
 msgid "Connecting to mount..."
 msgstr "Conectando la montura..."
 
-#: profile_wizard.cpp:604
+#: profile_wizard.cpp:606
 msgid "Could not connect to mount"
 msgstr "No se pudo conectar la montura"
 
-#: profile_wizard.cpp:606
+#: profile_wizard.cpp:608
 msgid "Mount driver cannot report guide speeds"
 msgstr "El controlador de la montura no pudo comunicar la velocidad de guiado"
 
-#: profile_wizard.cpp:614
-msgid ". Please enter the correct mount guide speed"
-msgstr ". Por favor, introduzca la velocidad de guiado de la montura"
+#: profile_wizard.cpp:616
+#, c-format
+msgid "%s. Please enter the correct mount guide speed"
+msgstr ""
 
-#: profile_wizard.cpp:614
+#: profile_wizard.cpp:618
 msgid "Detect mount guide speed"
 msgstr "Detectar la velocidad de guiado de la montura"
 
@@ -5961,66 +5963,66 @@ msgstr "Los valores de velocidad de RA y Dec varían de manera inesperada"
 msgid "Details..."
 msgstr "Detalles..."
 
-#: scope.cpp:1040
+#: scope.cpp:1042
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "Falló la calibración de RA: La estrella no se movió lo suficiente"
 
-#: scope.cpp:1047
+#: scope.cpp:1049
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "Paso oeste %3d, dist=%4.1f"
 
-#: scope.cpp:1114
+#: scope.cpp:1116
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "Paso este %3d, dist=%4.1f"
 
-#: scope.cpp:1175
+#: scope.cpp:1177
 msgid "Clearing backlash step 1"
 msgstr "Limpiando paso de backlash 1"
 
-#: scope.cpp:1212
+#: scope.cpp:1214
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "Limpiando paso de backlash %3d"
 
-#: scope.cpp:1231
+#: scope.cpp:1233
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr ""
 "Falló la compensación de Backslash: La estrella no se movió lo suficiente"
 
-#: scope.cpp:1276
+#: scope.cpp:1278
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "Falló la calibración de DEC: La estrella no se movió lo suficiente"
 
-#: scope.cpp:1283
+#: scope.cpp:1285
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "Paso norte %3d, dist=%4.1f"
 
-#: scope.cpp:1367
+#: scope.cpp:1369
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "Paso sur %3d, dist=%4.1f"
 
-#: scope.cpp:1421
+#: scope.cpp:1423
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Mover al Sur %3d"
 
-#: scope.cpp:1451
+#: scope.cpp:1453
 msgid "Calibration complete"
 msgstr "Calibración completada"
 
-#: scope.cpp:1596
+#: scope.cpp:1598
 msgid "Mount Guide Algorithms"
 msgstr "Algoritmo de guiado de montura"
 
-#: scope.cpp:1634
+#: scope.cpp:1636
 msgid "Calibration step (ms)"
 msgstr "Pasos de Calibración (ms)"
 
-#: scope.cpp:1635
+#: scope.cpp:1637
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -6028,11 +6030,11 @@ msgstr ""
 "Cómo debe usarse un pulso largo de guiado durante la calibración? Hacer "
 "click en \"Calcular\" para calcular un valor usable."
 
-#: scope.cpp:1639
+#: scope.cpp:1641
 msgid "Calculate..."
 msgstr "Calcular..."
 
-#: scope.cpp:1640
+#: scope.cpp:1642
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -6040,31 +6042,31 @@ msgstr ""
 "Haga click para abrir la Calculadora de Pasos de Calibración para obtener "
 "mejor eltamaño delos pasos de calibración"
 
-#: scope.cpp:1647
+#: scope.cpp:1649
 msgid "Reverse Dec output after meridian flip"
 msgstr "Invertir el valor de DEC después de un cambio de meridiano"
 
-#: scope.cpp:1649
+#: scope.cpp:1651
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr ""
 "Compruebe si su montura necesita invertir la salida DEC después de un cambio "
 "de meridiano"
 
-#: scope.cpp:1656
+#: scope.cpp:1658
 msgid "Stop guiding when mount slews"
 msgstr "Parar el guiado cuando la montura se desplaza"
 
-#: scope.cpp:1658
+#: scope.cpp:1660
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 "Cuando está seleccionado, PHD parará el guiado si la montura comienza a "
 "desplazarse"
 
-#: scope.cpp:1664
+#: scope.cpp:1666
 msgid "Assume Dec orthogonal to RA"
 msgstr "Asumir ortogonalidad de Dec frente a RA"
 
-#: scope.cpp:1667
+#: scope.cpp:1669
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -6074,11 +6076,11 @@ msgstr ""
 "Esto previene que el error periódico de RA afecte a la calibración de Dec. "
 "Esta opción tiene efecto cuando se calibra DEC."
 
-#: scope.cpp:1671
+#: scope.cpp:1673
 msgid "Use backlash comp"
 msgstr "Usar compensación de backlash"
 
-#: scope.cpp:1672
+#: scope.cpp:1674
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -6086,11 +6088,11 @@ msgstr ""
 "Comrpuebe esto si necesita aplicar pulsos guía de compensación de backlash "
 "cuando la dirección de declinación se invierta."
 
-#: scope.cpp:1675
+#: scope.cpp:1677
 msgid "Amount"
 msgstr "Cantidad"
 
-#: scope.cpp:1675
+#: scope.cpp:1677
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
@@ -6098,21 +6100,21 @@ msgstr ""
 "Longitud de la corrección del pulso del backlash (mSec). Esto "
 "automáticamente se ajustará basado en el rendimiento observado."
 
-#: scope.cpp:1677
+#: scope.cpp:1679
 msgid "Use Dec compensation"
 msgstr "Usar compensación DEC"
 
-#: scope.cpp:1679
+#: scope.cpp:1681
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 "Ajustar automáticamente velocidad de guiado Ra basado en la declinación del "
 "telescopio"
 
-#: scope.cpp:1684
+#: scope.cpp:1686
 msgid "Max RA duration"
 msgstr "Duración máxima RA"
 
-#: scope.cpp:1684 scope.cpp:1817
+#: scope.cpp:1686 scope.cpp:1819
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -6120,11 +6122,11 @@ msgstr ""
 "Pulso más largo para enviar a RA\n"
 "Por defecto = 2500 ms."
 
-#: scope.cpp:1688
+#: scope.cpp:1690
 msgid "Max Dec duration"
 msgstr "Máxima duración de DEC"
 
-#: scope.cpp:1688 scope.cpp:1824
+#: scope.cpp:1690 scope.cpp:1826
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -6132,21 +6134,21 @@ msgstr ""
 "Pulso más largo para enviar a Declinación\n"
 "Por defecto = 2500 ms. Increméntelo si deriva muy rápido."
 
-#: scope.cpp:1700
+#: scope.cpp:1702
 msgid "Dec guide mode"
 msgstr "Modo de guiado en DEC"
 
-#: scope.cpp:1700
+#: scope.cpp:1702
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 "Direcciones en las cuales los comandos de guiado de DEC podrían tener "
 "problemas"
 
-#: scope.cpp:1819
+#: scope.cpp:1821
 msgid "Mx RA"
 msgstr "RA Mx"
 
-#: scope.cpp:1826
+#: scope.cpp:1828
 msgid "Mx DEC"
 msgstr "DEC Mx"
 
@@ -6923,6 +6925,16 @@ msgstr "Conectando con la Cámara..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Conectando con el Rotador..."
+
+#~ msgid ""
+#~ ". Please enter the correct un-binned pixel size from the camera "
+#~ "documentation or vendor web site."
+#~ msgstr ""
+#~ ". Por favor, introduzca el valor correcto del pixel unbinned desde la "
+#~ "documentación de la cámara o web del fabricante."
+
+#~ msgid ". Please enter the correct mount guide speed"
+#~ msgstr ". Por favor, introduzca la velocidad de guiado de la montura"
 
 #~ msgid ""
 #~ "Specify how guide commands will be sent to the mount - via an ASCOM or "
