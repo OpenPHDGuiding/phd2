@@ -1,4 +1,4 @@
-Welcome to PHD2 Release Version 2.6.3
+Welcome to PHD2 Release Version 2.6.4
 
 PHD2 is the next generation of the original PHD Guiding application
 from Stark Labs, now restructured, enhanced, and supported by an
