@@ -166,7 +166,6 @@ protected:
 
     // Things related to the Advanced Config Dialog
 public:
-//    StaticPaToolWin *pStaticPaTool;
     class GuiderConfigDialogPane : public ConfigDialogPane
     {
         Guider *m_pGuider;
