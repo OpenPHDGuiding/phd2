@@ -873,6 +873,7 @@ void Guider::SetState(GUIDER_STATE newState)
             Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
             throw ERROR_INFO("Illegal state transition");
         }
+
         GUIDER_STATE requestedState = newState;
 
         switch (requestedState)
@@ -1370,6 +1371,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition(), MOVETYPE_ALGO);
                 }
                 break;
+
             case STATE_UNINITIALIZED:
             case STATE_STOP:
                 break;
