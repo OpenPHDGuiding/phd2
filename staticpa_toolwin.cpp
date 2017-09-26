@@ -713,8 +713,10 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
 // Star rotation is RAstar - RAmount
     double a1 = radec.X - (ra_deg - 90.0);
-    while (a1 < 0.0) a1 += 360.0;
-    a1 = fmod(a1, 360);
+//    while (a1 < 0.0) a1 += 360.0;
+//    a1 = fmod(a1, 360);
+    a1 = a1 - 360.0 * floor(a1 / 360.0);
+
     double a = g_camAngle - copysign(a1, a_hemi);
 
 //    PHD_Point px(r_pxCentre.X + r * cos(radians(a)), r_pxCentre.Y - r * sin(radians(a)));
@@ -1010,11 +1012,12 @@ void StaticPaToolWin::MoveWestBy(double thetadeg)
     }
     double slew_ra = cur_ra - thetadeg * 24.0 / 360.0;
 
-    if (slew_ra >= 24.0)
+    slew_ra = slew_ra - 24.0 * floor(slew_ra / 24.0);
+/*    if (slew_ra >= 24.0)
         slew_ra -= 24.0;
     else if (slew_ra < 0.0)
         slew_ra += 24.0;
-
+*/
     if (pPointingSource->SlewToCoordinates(slew_ra, cur_dec))
     {
         Debug.AddLine("Rotate tool: slew failed");
