@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -66,12 +66,12 @@ StaticPaToolWin::PolePanel::PolePanel(StaticPaToolWin* parent):
 void StaticPaToolWin::PolePanel::OnPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
-	paParent->CreateStarTemplate(dc);
+    paParent->CreateStarTemplate(dc);
 }
 void StaticPaToolWin::PolePanel::Paint()
 {
     wxClientDC dc(this);
-	paParent->CreateStarTemplate(dc);
+    paParent->CreateStarTemplate(dc);
 }
 
 wxWindow *StaticPaTool::CreateStaticPaToolWindow()
@@ -109,12 +109,26 @@ wxWindow *StaticPaTool::CreateStaticPaToolWindow()
 
     return new StaticPaToolWin();
 }
+bool StaticPaTool::IsAligning()
+{
+    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
+    return win->IsAligning();
+}
+bool StaticPaTool::RotateMount()
+{
+    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
+    return win->RotateMount();
+}
+void StaticPaTool::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
+{
+    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
+    return win->PaintHelper(dc, scale);
+}
 
 StaticPaToolWin::StaticPaToolWin()
 : wxFrame(pFrame, wxID_ANY, _("Static Polar Alignment"), wxDefaultPosition, wxDefaultSize,
 wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR)
 {
-    pFrame->pGuider->pStaticPaTool = this;
     s_numPos = 0;
     a_devpx = 5;
     s_state = 0;
@@ -406,7 +420,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
 StaticPaToolWin::~StaticPaToolWin()
 {
-    pFrame->pGuider->pStaticPaTool = NULL;
     pFrame->pStaticPaTool = NULL;
 }
 
@@ -438,9 +451,12 @@ void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
 void StaticPaToolWin::OnRotate(wxCommandEvent& evt)
 {
     if (s_aligning){ // STOP rotating
+        pPointingSource->AbortSlew();
         s_aligning = false;
         s_numPos = 0;
         s_state = 0;
+        SetStatusText(_("Static alignment stopped"));
+        Debug.AddLine(wxString::Format("Static alignment stopped"));
         FillPanel();
         return;
     }
@@ -517,7 +533,7 @@ void StaticPaToolWin::FillPanel()
         w_star3->Show();
         w_hemiChoice->Enable(true);
     }
-	w_calculate->Enable(IsAligned());
+    w_calculate->Enable(IsAligned());
     poleStars = a_hemi >= 0 ? &c_NthStars : &c_SthStars;
     w_refStarChoice->Clear();
     std::string starname;
@@ -623,8 +639,8 @@ void StaticPaToolWin::CalcRotationCentre(void)
     PHD_Point starpx, stardeg;
     stardeg = PHD_Point(poleStars->at(a_refStar).ra, poleStars->at(a_refStar).dec);
     starpx = Radec2Px(stardeg);
-	double xt = starpx.X + r_pxCentre.X;
-	double yt = starpx.Y + r_pxCentre.Y;
+    double xt = starpx.X + r_pxCentre.X;
+    double yt = starpx.Y + r_pxCentre.Y;
 
     int idx = a_auto ? 1 : 2;
     double xs = r_pxPos[idx].X;
@@ -653,7 +669,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_AltCorr.X = alt_r * cos(radians(harot));
     m_AltCorr.Y = alt_r * sin(radians(harot));
 
-	FillPanel();
+    FillPanel();
 }
 
 PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
@@ -701,9 +717,9 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     a1 = fmod(a1, 360);
     double a = g_camAngle - copysign(a1, a_hemi);
 
-//	PHD_Point px(r_pxCentre.X + r * cos(radians(a)), r_pxCentre.Y - r * sin(radians(a)));
-	PHD_Point px(r * cos(radians(a)), -r * sin(radians(a)));
-	return px;
+//    PHD_Point px(r_pxCentre.X + r * cos(radians(a)), r_pxCentre.Y - r * sin(radians(a)));
+    PHD_Point px(r * cos(radians(a)), -r * sin(radians(a)));
+    return px;
 }
 
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
@@ -713,9 +729,9 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 
     for (int i = 0; i < 3; i++)
     {
-		if ((s_state >> (i + 1)) & 1){
-			dc.DrawCircle(r_pxPos[i].X*scale, r_pxPos[i].Y*scale, 12 * scale);
-		}
+        if ((s_state >> (i + 1)) & 1){
+            dc.DrawCircle(r_pxPos[i].X*scale, r_pxPos[i].Y*scale, 12 * scale);
+        }
     }
     if (!IsAligned())
     {
@@ -748,7 +764,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     {
         stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
         starpx = Radec2Px(stardeg);
-		radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
+        radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
 
         dc.SetPen(wxPen(wxColor(255, 255, 0), 1, wxPENSTYLE_DOT));
         if (is == a_refStar)
@@ -756,7 +772,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
             dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_DOT));
         }
         dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
-		dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
+        dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
     }
     // Draw adjustment lines for centring the CoR on the display in blue (dec) and red (cone error)
     bool drawCone = false;
@@ -815,10 +831,10 @@ bool StaticPaToolWin::RotateMount()
         if (!a_auto)
         {
             s_aligning = false;
-			if (IsAligned()){
-				CalcRotationCentre();
-			}
-		}
+            if (IsAligned()){
+                CalcRotationCentre();
+            }
+        }
         s_totRot = 0.0;
         s_nStep = 0;
         Debug.AddLine(wxString::Format("Leave Polar align: star #1 rotdg=%.1f s_nStep=%d", s_reqRot, s_reqStep));
@@ -840,10 +856,10 @@ bool StaticPaToolWin::RotateMount()
                 s_numPos++;
             }
             s_aligning = false;
-			if (IsAligned()){
-				CalcRotationCentre();
-			}
-			return isset;
+            if (IsAligned()){
+                CalcRotationCentre();
+            }
+            return isset;
         }
         SetStatusText(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
         Debug.AddLine(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
@@ -859,8 +875,7 @@ bool StaticPaToolWin::RotateMount()
             // Recalculate the offset based on the actual movement;
 
         }
-//		if (s_nStep >= 2)
-		else
+        else
         {
             // Recalculate the offset. CAUTION: This might end up in an endless loop. 
             bool isset = SetStar(s_numPos);
@@ -880,7 +895,6 @@ bool StaticPaToolWin::RotateMount()
             }
             double prev_rotdg = s_reqRot;
             int prev_nstep = s_reqStep;
-            // FIXME - alter setparams to take into account rotation so far
             bool rc = SetParams(actoffsetdeg); // s_reqRot, m_rotpx, s_reqStep for measures PA error
             if (!rc)
             {
@@ -898,8 +912,8 @@ bool StaticPaToolWin::RotateMount()
                 s_numPos++;
                 s_nStep = 0;
                 s_totRot = 0.0;
-				s_aligning = false;
-				CalcRotationCentre();
+                s_aligning = false;
+                CalcRotationCentre();
             }
             else if (s_reqRot > 45)
             {
@@ -1041,8 +1055,8 @@ void StaticPaToolWin::CreateStarTemplate(wxDC& dc)
         dc.SetPen(*wxYELLOW_PEN);
         dc.SetBrush(*wxYELLOW_BRUSH);
 
-		dc.DrawCircle(starpx.X * scale + 160, starpx.Y * scale + 120, starsz*scale);
-		dc.DrawText(wxString::Format("%c", alpha[is]), (starpx.X + starsz) * scale+160, (starpx.Y)* scale+120);
+        dc.DrawCircle(starpx.X * scale + 160, starpx.Y * scale + 120, starsz*scale);
+        dc.DrawText(wxString::Format("%c", alpha[is]), (starpx.X + starsz) * scale+160, (starpx.Y)* scale+120);
     }
     // draw the pole as a red cross
     dc.SetBrush(*wxTRANSPARENT_BRUSH);

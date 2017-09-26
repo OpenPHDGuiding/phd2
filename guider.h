@@ -39,7 +39,6 @@
 
 #ifndef GUIDER_H_INCLUDED
 #define GUIDER_H_INCLUDED
-#include "staticpa_toolwin.h"
 
 enum GUIDER_STATE
 {
@@ -167,7 +166,7 @@ protected:
 
     // Things related to the Advanced Config Dialog
 public:
-    StaticPaToolWin *pStaticPaTool;
+//    StaticPaToolWin *pStaticPaTool;
     class GuiderConfigDialogPane : public ConfigDialogPane
     {
         Guider *m_pGuider;

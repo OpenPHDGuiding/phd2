@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "staticpa_tool.h"
 #include "guiding_assistant.h"
 
 // un-comment to log star deflections to a file
@@ -143,7 +144,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 
     s_deflectionLogger.Init();
-    pStaticPaTool = 0;
 }
 
 Guider::~Guider(void)
@@ -622,9 +622,9 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
         
          // draw static polar align stuff
         // Ideally get a pointer to StaticPaTool and let it do the work
-        if (pStaticPaTool)
+        if (pFrame->pStaticPaTool)
         {
-            pStaticPaTool->PaintHelper(dc, m_scaleFactor);
+            StaticPaTool::PaintHelper(dc, m_scaleFactor);
         }
 
         if (IsPaused())
@@ -1251,10 +1251,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_SELECTED:
                 // See if a Static PA is underway
-                if (pStaticPaTool && pStaticPaTool->IsAligning())
+                if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
                 {
                     // Rotate the mount in RA a bit
-                    if (!pStaticPaTool->RotateMount())
+                    if (!StaticPaTool::RotateMount())
                     {
                         SetState(STATE_UNINITIALIZED);
                         statusMessage = _("Static PA rotation failed");
