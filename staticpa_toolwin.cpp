@@ -234,7 +234,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     w_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
 #ifdef __WXOSX__
-    m_instructions->SetFont(*wxSMALL_FONT);
+    w_instructions->SetFont(*wxSMALL_FONT);
 #endif
     w_instructions->Wrap(-1);
     instrSizer->Add(w_instructions, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
