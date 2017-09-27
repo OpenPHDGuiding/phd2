@@ -227,7 +227,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // can mount slew?
     a_auto = true;
-    g_canSlew = pPointingSource && pPointingSource->CanSlew();
+    g_canSlew = pPointingSource && pPointingSource->CanSlewAsync();
     if (!g_canSlew){
         a_auto = false;
     }
@@ -450,7 +450,7 @@ void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnRotate(wxCommandEvent& evt)
 {
-    if (s_aligning){ // STOP rotating
+    if (s_aligning && a_auto){ // STOP rotating
         pPointingSource->AbortSlew();
         s_aligning = false;
         s_numPos = 0;
@@ -598,7 +598,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     {
         SetStatusText(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
         Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
-        // Alternative algorithm based on two poins and angle rotated
+        // Alternative algorithm based on two points and angle rotated
         double theta2;
         theta2 = a_hemi * radians(360.0 / 24.0 * (r_raPos[1] - r_raPos[0])) / 2.0;
         double lenchord = sqrt(pow((x1 - x2), 2.0) + pow((y1 - y2), 2.0));
@@ -646,14 +646,14 @@ void StaticPaToolWin::CalcRotationCentre(void)
     double xs = r_pxPos[idx].X;
     double ys = r_pxPos[idx].Y;
 
-    //    // Calculate the camera rotation from the Azimuth axis
-    //    // Alt angle aligns to HA=0, Azimuth (East) to HA = -90
-    //    // In home position Az aligns with Dec
-    //    // So at HA +/-90 (home pos) Alt rotation is 0 (HA+90)
-    //    // At the meridian, HA=0 Alt aligns with dec so Rotation is +/-90
-    //    // Let harot =  camera rotation from Alt axis
-    //    // Alt axis is at HA+90
-    //    // This is camera rotation from RA minus(?) LST angle 
+    // Calculate the camera rotation from the Azimuth axis
+    // Alt angle aligns to HA=0, Azimuth (East) to HA = -90
+    // In home position Az aligns with Dec
+    // So at HA +/-90 (home pos) Alt rotation is 0 (HA+90)
+    // At the meridian, HA=0 Alt aligns with dec so Rotation is +/-90
+    // Let harot =  camera rotation from Alt axis
+    // Alt axis is at HA+90
+    // This is camera rotation from RA minus(?) LST angle 
     double    hcor_r = sqrt(pow(xt - xs, 2) + pow(yt - ys, 2));
     double    hcor_a = degrees(atan2((yt - ys), (xt - xs)));
     double ra_hrs, dec_deg, st_hrs;
@@ -865,23 +865,26 @@ bool StaticPaToolWin::RotateMount()
         }
         SetStatusText(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
         Debug.AddLine(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
+        if (pPointingSource->Slewing())  // Wait till the mount has stopped
+        {
+            return true;
+        }
         if (s_totRot < s_reqRot)
         {
             double newtheta = theta / (s_reqStep - s_nStep);
             MoveWestBy(newtheta);
             s_totRot += newtheta;
+        }
+        else
+        {
+            bool isset = SetStar(s_numPos);
+
             // Calclate how far the mount moved compared to the expected movement;
             // This assumes that the mount was rotated through theta degrees;
             // So theta is the total rotation needed for the current offset;
             // And prevtheta is how we have already moved;
             // Recalculate the offset based on the actual movement;
-
-        }
-        else
-        {
-            // Recalculate the offset. CAUTION: This might end up in an endless loop. 
-            bool isset = SetStar(s_numPos);
-
+            // CAUTION: This might end up in an endless loop. 
             double actpix = sqrt(pow(r_pxPos[1].X - r_pxPos[0].X, 2) + pow(r_pxPos[1].Y - r_pxPos[0].Y, 2));
             double actsec = actpix * g_pxScale;
             double actoffsetdeg = 90 - degrees(acos(actsec / 3600 / s_reqRot));
@@ -891,7 +894,6 @@ bool StaticPaToolWin::RotateMount()
             {
                 Debug.AddLine(wxString::Format("Polar align: star #2 Mount did not move actual offset =%.1f", actoffsetdeg));
                 SetStatusText(wxString::Format("Polar align: star #2 Mount did not move actual offset =%.1f", actoffsetdeg));
-                //self.settings["msg"] = "Mount did not move - check settings";
                 PHD_Point cor = r_pxPos[s_numPos - 1];
                 return false;
             }
@@ -1011,17 +1013,13 @@ void StaticPaToolWin::MoveWestBy(double thetadeg)
         return;
     }
     double slew_ra = cur_ra - thetadeg * 24.0 / 360.0;
-
     slew_ra = slew_ra - 24.0 * floor(slew_ra / 24.0);
-/*    if (slew_ra >= 24.0)
-        slew_ra -= 24.0;
-    else if (slew_ra < 0.0)
-        slew_ra += 24.0;
-*/
-    if (pPointingSource->SlewToCoordinates(slew_ra, cur_dec))
+
+    if (pPointingSource->SlewToCoordinatesAsync(slew_ra, cur_dec))
     {
-        Debug.AddLine("Rotate tool: slew failed");
+        Debug.AddLine("Rotate tool: async slew failed");
     }
+
     s_nStep++;
     PHD_Point lockpos = pFrame->pGuider->CurrentPosition();
     bool error = pFrame->pGuider->SetLockPosToStarAtPosition(lockpos);
