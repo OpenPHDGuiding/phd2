@@ -358,7 +358,9 @@ public:
         assert(hyperparameters.size() == NumParameters);
 
         m_pPKPeriodLength->SetValue(hyperparameters[PKPeriodLength]);
+        m_pPKPeriodLength->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
+        m_checkboxComputePeriod->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
 
         m_pGuideAlgorithm->m_expertDialog->LoadExpertValues(m_pGuideAlgorithm, hyperparameters);
 
