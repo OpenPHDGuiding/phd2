@@ -67,10 +67,14 @@ static double NUDGE_TOLERANCE = 2.0;
 const double Scope::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;   // 60 degrees
 
 Scope::Scope(void)
-    : m_raLimitReachedDirection(NONE),
-      m_raLimitReachedCount(0),
-      m_decLimitReachedDirection(NONE),
-      m_decLimitReachedCount(0)
+    :
+    m_maxDecDuration(0),
+    m_maxRaDuration(0),
+    m_decGuideMode(DEC_NONE),
+    m_raLimitReachedDirection(NONE),
+    m_raLimitReachedCount(0),
+    m_decLimitReachedDirection(NONE),
+    m_decLimitReachedCount(0)
 {
     m_calibrationSteps = 0;
     m_graphControlPane = NULL;
