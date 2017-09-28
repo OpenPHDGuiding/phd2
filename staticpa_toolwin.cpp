@@ -202,7 +202,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // a horizontal box sizer for the bitmap and the instructions
     wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
-    c_autoInstr = new wxString(_(
+    c_autoInstr = _(
         "Slew to near the Celestial Pole.\n"
         "Choose a reference star from the list.\n"
         "Select it as the guide star on the main display.\n"
@@ -210,8 +210,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "Wait for both calibration points to be measured.\n"
         "Adjust your mount's altitude and azimuth as displayed.\n"
         "Orange=Altitude; Green=Azimuth\n"
-        ));
-    c_manualInstr = new wxString(_(
+        );
+    c_manualInstr = _(
         "Slew to near the Celestial Pole.\n"
         "Choose a Reference Star from the list.\n"
         "Select it as the guide star on the main display.\n"
@@ -223,7 +223,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "Click Calculate to show the adjustments needed\n"
         "Adjust your mount's altitude and azimuth to place"
         "three reference stars on their orbits\n"
-        ));
+        );
 
     // can mount slew?
     a_auto = true;
@@ -516,7 +516,7 @@ void StaticPaToolWin::FillPanel()
         w_manual->Hide();
     }
     w_manual->SetValue(!a_auto);
-    w_instructions->SetLabel(a_auto ? *c_autoInstr :*c_manualInstr);
+    w_instructions->SetLabel(a_auto ? c_autoInstr : c_manualInstr);
 
     w_star1->SetLabel(_("Rotate"));
     if (s_aligning) {
