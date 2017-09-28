@@ -195,8 +195,6 @@ private:
     bool m_continueCapturing; // should another image be captured?
     SingleExposure m_singleExposure;
 
-    static const int SPINNER_PADDING = 40;
-
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
     virtual ~MyFrame();
@@ -230,6 +228,7 @@ public:
     ProfileWindow *pProfile;
     TargetWindow *pTarget;
     wxWindow *pDriftTool;
+    wxWindow *pStaticPaTool;
     wxWindow *pManualGuide;
     wxDialog * pStarCrossDlg;
     wxWindow *pNudgeLock;
@@ -275,6 +274,7 @@ public:
     void OnStarCrossTest(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
+    void OnStaticPaTool(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
     void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
@@ -572,6 +572,7 @@ enum {
     MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
+    MENU_STATICPATOOL,
     MENU_COMETTOOL,
     MENU_GUIDING_ASSISTANT,
     MENU_SAVESETTINGS,

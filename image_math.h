@@ -112,6 +112,11 @@ inline static double norm_angle(double val)
     return norm(val, -M_PI, M_PI);
 }
 
+inline static double norm_ra(double val)
+{
+    return norm(val, 0., 24.);
+}
+
 inline static double degrees(double radians)
 {
     return radians * 180. / M_PI;

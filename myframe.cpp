@@ -86,6 +86,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
+    EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
     EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
@@ -344,6 +345,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGearDialog = new GearDialog(this);
 
     pDriftTool = nullptr;
+    pStaticPaTool = nullptr;
     pManualGuide = nullptr;
     pStarCrossDlg = nullptr;
     pNudgeLock = nullptr;
@@ -439,6 +441,8 @@ MyFrame::~MyFrame()
 
     if (pDriftTool)
         pDriftTool->Destroy();
+    if (pStaticPaTool)
+        pStaticPaTool->Destroy();
 
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
@@ -494,6 +498,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
+    tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"), _("Run the Static Polar Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
@@ -1044,6 +1049,13 @@ void MyFrame::UpdateButtonsStatus(void)
         wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
         event.SetEventObject(this);
         wxPostEvent(pDriftTool, event);
+    }
+    if (pStaticPaTool)
+    {
+        // let the static PA tool update its buttons too
+        wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
+        event.SetEventObject(this);
+        wxPostEvent(pStaticPaTool, event);
     }
 
     if (pCometTool)
@@ -3061,28 +3073,37 @@ void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
         win->Move(x, y);
 }
 
+inline static void AdjustSpinnerWidth(wxSize *sz)
+{
+#ifdef __APPLE__
+    // GetSizeFromTextSize() not working on OSX, so we need to add more padding
+    enum { SPINNER_WIDTH_PAD = 20 };
+    sz->SetWidth(sz->GetWidth() + SPINNER_WIDTH_PAD);
+#endif
+}
+
 // The spin control factories allow clients to specify a width based on the max width of the numeric values without having 
 // to make guesses about the additional space required by the other parts of the control
 wxSpinCtrl* MyFrame::MakeSpinCtrl(wxWindow *parent, wxWindowID id, const wxString& value,
     const wxPoint& pos, const wxSize& size, long style,
     int min, int max, int initial, const wxString& name)
 {
-    wxSize actualSize = size;
-    int requestedWidth = size.GetWidth();
-    if (requestedWidth > 0)
-        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
-    return new wxSpinCtrl(parent, id, value, pos, actualSize, style, min, max, initial, name);
+    wxSpinCtrl *ctrl = new wxSpinCtrl(parent, id, value, pos, size, style, min, max, initial, name);
+    wxSize initsize(ctrl->GetSizeFromTextSize(size));
+    AdjustSpinnerWidth(&initsize);
+    ctrl->SetInitialSize(initsize);
+    return ctrl;
 }
 
 wxSpinCtrlDouble* MyFrame::MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id, const wxString& value,
     const wxPoint& pos, const wxSize& size, long style, double min, double max, double initial,
     double inc, const wxString& name)
 {
-    wxSize actualSize = size;
-    int requestedWidth = size.GetWidth();
-    if (requestedWidth > 0)
-        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
-    return new wxSpinCtrlDouble(parent, id, value, pos, actualSize, style, min, max, initial, inc, name);
+    wxSpinCtrlDouble *ctrl = new wxSpinCtrlDouble(parent, id, value, pos, size, style, min, max, initial, inc, name);
+    wxSize initsize(ctrl->GetSizeFromTextSize(size));
+    AdjustSpinnerWidth(&initsize);
+    ctrl->SetInitialSize(initsize);
+    return ctrl;
 }
 
 template<typename T>

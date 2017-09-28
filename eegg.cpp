@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "drift_tool.h"
+#include "staticpa_tool.h"
 #include "manualcal_dialog.h"
 #include "calreview_dialog.h"
 #include "nudge_lock.h"
@@ -184,6 +185,19 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
     if (pDriftTool)
     {
         pDriftTool->Show();
+    }
+}
+
+void MyFrame::OnStaticPaTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pStaticPaTool)
+    {
+        pStaticPaTool = StaticPaTool::CreateStaticPaToolWindow();
+    }
+
+    if (pStaticPaTool)
+    {
+        pStaticPaTool->Show();
     }
 }
 

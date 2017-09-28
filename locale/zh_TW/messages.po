@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-02 12:33-0400\n"
+"POT-Creation-Date: 2017-09-25 18:12-0400\n"
 "PO-Revision-Date: 2017-06-23 23:58+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -46,7 +46,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: Refine_DefMap.cpp:59 calstep_dialog.cpp:181 cam_simulator.cpp:1484
+#: Refine_DefMap.cpp:59 calstep_dialog.cpp:181 cam_simulator.cpp:1486
 #: camcal_import_dialog.cpp:47 camera.cpp:729 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:54
 #: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2826
@@ -169,7 +169,7 @@ msgstr ""
 "拉動滑軌以增加或減少會被當做冷噪點的像素數目, 然後點擊【產生】以建立或載入該"
 "新建的壞像素影像"
 
-#: Refine_DefMap.cpp:168 cam_simulator.cpp:1582
+#: Refine_DefMap.cpp:168 cam_simulator.cpp:1584
 msgid "Hot pixels"
 msgstr "熱噪"
 
@@ -177,7 +177,7 @@ msgstr "熱噪"
 msgid "Cold pixels"
 msgstr "冷噪"
 
-#: Refine_DefMap.cpp:175 cam_simulator.cpp:1668 darks_dialog.cpp:204
+#: Refine_DefMap.cpp:175 cam_simulator.cpp:1670 darks_dialog.cpp:204
 #: mount.cpp:161 mount.cpp:202 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr "重設"
@@ -265,7 +265,7 @@ msgstr "進階設定"
 msgid "Global"
 msgstr "整體"
 
-#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1577
+#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1579
 #: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "相機"
@@ -283,7 +283,7 @@ msgstr "導星演算法"
 msgid "Other Devices"
 msgstr "其他裝置"
 
-#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1589
+#: advanced_dialog.cpp:343 calreview_dialog.cpp:93 cam_simulator.cpp:1591
 #: config_INDI.cpp:107 eegg.cpp:114 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -609,12 +609,12 @@ msgstr "影像併合: %d"
 msgid "Side-of-pier:"
 msgstr "赤道儀方向"
 
-#: calreview_dialog.cpp:337 cam_simulator.cpp:1733 mount.cpp:61
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1735 mount.cpp:61
 #: testguide.cpp:152
 msgid "East"
 msgstr "東"
 
-#: calreview_dialog.cpp:338 cam_simulator.cpp:1733 mount.cpp:62
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1735 mount.cpp:62
 #: testguide.cpp:152
 msgid "West"
 msgstr "西"
@@ -885,31 +885,32 @@ msgstr "設定"
 #: cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294 cam_MeadeDSI.cpp:97
 #: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_SAC42.cpp:71 cam_SACGuide.cpp:82
 #: cam_SACGuide.cpp:93 cam_SACGuide.cpp:96 cam_SACGuide.cpp:99
-#: cam_SACGuide.cpp:102 cam_SACGuide.cpp:111 cam_SBIG.cpp:285 cam_SBIG.cpp:295
-#: cam_SBIG.cpp:318 cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143
+#: cam_SACGuide.cpp:102 cam_SACGuide.cpp:111 cam_SBIG.cpp:286 cam_SBIG.cpp:296
+#: cam_SBIG.cpp:319 cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143
 #: cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167
 #: cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191
 #: cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215
 #: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245
 #: cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_SXV.cpp:261
 #: cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96
-#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103 cam_StarShootDSCI.cpp:106
-#: cam_StarShootDSCI.cpp:110 cam_StarShootDSCI.cpp:113
-#: cam_StarShootDSCI.cpp:116 cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:153
-#: cam_ZWO.cpp:181 cam_ZWO.cpp:196 cam_ZWO.cpp:213 cam_ZWO.cpp:220
-#: cam_ZWO.cpp:228 cam_ZWO.cpp:271 cam_firewire_IC.cpp:94 cam_openssag.cpp:96
-#: cam_openssag.cpp:113 cam_qhy5.cpp:117 cam_qhy5.cpp:124 cam_wdm.cpp:132
-#: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1217
-#: gear_dialog.cpp:1892 gear_dialog.cpp:1901 gear_dialog.cpp:1908
-#: gear_dialog.cpp:1953 gear_dialog.cpp:1959 scope_GC_USBST4.cpp:142
-#: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
-#: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
-#: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
-#: scope_ascom.cpp:220 scope_ascom.cpp:236 scope_ascom.cpp:243
-#: scope_ascom.cpp:331 scope_ascom.cpp:339 scope_eqmac.cpp:135
-#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
-#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:146 stepguider_sxao_INDI.cpp:104
+#: cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
+#: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
+#: cam_StarShootDSCI.cpp:124 cam_ZWO.cpp:153 cam_ZWO.cpp:181 cam_ZWO.cpp:196
+#: cam_ZWO.cpp:213 cam_ZWO.cpp:220 cam_ZWO.cpp:228 cam_ZWO.cpp:271
+#: cam_firewire_IC.cpp:94 cam_openssag.cpp:96 cam_openssag.cpp:113
+#: cam_qhy5.cpp:117 cam_qhy5.cpp:124 cam_wdm.cpp:132 cam_wdm.cpp:141
+#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 gear_dialog.cpp:1217 gear_dialog.cpp:1892
+#: gear_dialog.cpp:1901 gear_dialog.cpp:1908 gear_dialog.cpp:1953
+#: gear_dialog.cpp:1959 scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160
+#: scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204
+#: scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242 scope_ascom.cpp:188
+#: scope_ascom.cpp:203 scope_ascom.cpp:211 scope_ascom.cpp:220
+#: scope_ascom.cpp:236 scope_ascom.cpp:243 scope_ascom.cpp:331
+#: scope_ascom.cpp:339 scope_eqmac.cpp:135 scope_eqmac.cpp:139
+#: scope_equinox.cpp:138 scope_equinox.cpp:142 stepguider_sxao.cpp:107
+#: stepguider_sxao.cpp:146 stepguider_sxao_INDI.cpp:104
 #: stepguider_sxao_INDI.cpp:115
 msgid "Error"
 msgstr "錯誤"
@@ -947,18 +948,19 @@ msgstr "無法連接相機 %s"
 msgid "Unsupported type or read error loading FITS file"
 msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
 
-#: cam_INDI.cpp:470 cam_simulator.cpp:590 cam_simulator.cpp:1371
+#: cam_INDI.cpp:470 cam_simulator.cpp:590 cam_simulator.cpp:1373
 msgid "FITS file is not of an image"
 msgstr "該 FITS 檔案不是影像檔"
 
-#: cam_INDI.cpp:488 cam_INDI.cpp:511 cam_firewire_IC.cpp:290 cam_opencv.cpp:146
-#: cam_simulator.cpp:613 cam_simulator.cpp:1161 cam_simulator.cpp:1223
-#: cam_simulator.cpp:1388 image_math.cpp:85 image_math.cpp:545
+#: cam_INDI.cpp:488 cam_INDI.cpp:511 cam_firewire_IC.cpp:290
+#: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
+#: cam_simulator.cpp:1223 cam_simulator.cpp:1390 image_math.cpp:85
+#: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
 #: cam_INDI.cpp:496 cam_INDI.cpp:517 cam_simulator.cpp:631
-#: cam_simulator.cpp:1393
+#: cam_simulator.cpp:1395
 msgid "Error reading data"
 msgstr "讀取資料錯誤"
 
@@ -1031,7 +1033,7 @@ msgstr "預設值"
 msgid "Webcam settings"
 msgstr "Webcam 設定"
 
-#: cam_OSPL130.cpp:85 cam_SBIG.cpp:451
+#: cam_OSPL130.cpp:85 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
 msgstr "無法開始曝光"
 
@@ -1039,59 +1041,59 @@ msgstr "無法開始曝光"
 msgid "Error capturing data from camera"
 msgstr "由相機擷取資料時發生錯誤"
 
-#: cam_SBIG.cpp:113
+#: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "載入 SBIG 驅動程式發生錯誤"
 
-#: cam_SBIG.cpp:136
+#: cam_SBIG.cpp:137
 msgid "Select interface"
 msgstr "選擇介面"
 
-#: cam_SBIG.cpp:136
+#: cam_SBIG.cpp:137
 msgid "Interface"
 msgstr "介面"
 
-#: cam_SBIG.cpp:168
+#: cam_SBIG.cpp:169
 msgid "Select USB camera"
 msgstr "選擇 USB 相機"
 
-#: cam_SBIG.cpp:168
+#: cam_SBIG.cpp:169
 msgid "Camera name"
 msgstr "相機名稱"
 
-#: cam_SBIG.cpp:179
+#: cam_SBIG.cpp:180
 msgid "IP address"
 msgstr "IP 地址"
 
-#: cam_SBIG.cpp:179
+#: cam_SBIG.cpp:180
 msgid "Enter IP address"
 msgstr "輸入 IP 地址"
 
-#: cam_SBIG.cpp:308
+#: cam_SBIG.cpp:309
 msgid "CCD Choice"
 msgstr "選擇 CCD"
 
-#: cam_SBIG.cpp:318
+#: cam_SBIG.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "取得主 CCD 資訊時發生錯誤"
 
-#: cam_SBIG.cpp:475
+#: cam_SBIG.cpp:478
 msgid "Cannot poll exposure"
 msgstr "無法發出曝光命令"
 
-#: cam_SBIG.cpp:498
+#: cam_SBIG.cpp:501
 msgid "Cannot stop exposure"
 msgstr "無法停止曝光"
 
-#: cam_SBIG.cpp:524 cam_SBIG.cpp:540
+#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
 msgid "Error downloading data"
 msgstr "下載資料失敗"
 
-#: cam_SBIG.cpp:578
+#: cam_SBIG.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "無法檢查 SBIG 繼電器狀態"
 
-#: cam_SBIG.cpp:587
+#: cam_SBIG.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "超過逾時時間, 等待導星訊號完成"
 
@@ -1428,181 +1430,181 @@ msgstr "沒有星體位移檔案, 無法模擬任何星體移動"
 msgid "Cannot load simulated image"
 msgstr "無法載入模擬影像"
 
-#: cam_simulator.cpp:1383
+#: cam_simulator.cpp:1385
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
 msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤 %d %d"
 
-#: cam_simulator.cpp:1553
+#: cam_simulator.cpp:1555
 msgid "PE amplitude and period must be > 0"
 msgstr "週期誤差的振幅及週期需大於 0"
 
-#: cam_simulator.cpp:1559
+#: cam_simulator.cpp:1561
 msgid "PE amplitude and period must be numbers > 0"
 msgstr "週期誤差的振幅及週期需為大於 0 的數值"
 
-#: cam_simulator.cpp:1569
+#: cam_simulator.cpp:1571
 msgid "Camera Simulator"
 msgstr "相機模擬器"
 
-#: cam_simulator.cpp:1579
+#: cam_simulator.cpp:1581
 msgid "Number of simulated stars"
 msgstr "模擬的星點數量"
 
-#: cam_simulator.cpp:1580
+#: cam_simulator.cpp:1582
 msgid "Stars"
 msgstr "星點"
 
-#: cam_simulator.cpp:1581
+#: cam_simulator.cpp:1583
 msgid "Number of hot pixels"
 msgstr "熱燥數量"
 
-#: cam_simulator.cpp:1584
+#: cam_simulator.cpp:1586
 #, no-c-format
 msgid "% Simulated noise"
 msgstr "% Simulated 模擬熱噪"
 
-#: cam_simulator.cpp:1585
+#: cam_simulator.cpp:1587
 msgid "Noise"
 msgstr "噪點"
 
-#: cam_simulator.cpp:1591
+#: cam_simulator.cpp:1593
 msgid "Dec backlash, arc-secs"
 msgstr "赤緯回差, 角秒"
 
-#: cam_simulator.cpp:1592
+#: cam_simulator.cpp:1594
 msgid "Dec backlash"
 msgstr "赤緯回差"
 
-#: cam_simulator.cpp:1593
+#: cam_simulator.cpp:1595
 msgid "Dec drift, arc-sec/min"
 msgstr "赤緯偏移, 角秒/分鐘"
 
-#: cam_simulator.cpp:1594
+#: cam_simulator.cpp:1596
 msgid "Dec drift"
 msgstr "赤緯偏移"
 
-#: cam_simulator.cpp:1595
+#: cam_simulator.cpp:1597
 msgid "Guide rate, x sidereal"
 msgstr "導星速率, x 恆星時"
 
-#: cam_simulator.cpp:1596
+#: cam_simulator.cpp:1598
 msgid "Guide rate"
 msgstr "導星速率"
 
-#: cam_simulator.cpp:1600
+#: cam_simulator.cpp:1602
 msgid "PE"
 msgstr "週期誤差"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1603
 msgid "Apply PE"
 msgstr "套用週期誤差"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1603
 msgid "Simulate periodic error"
 msgstr "模擬週期誤差"
 
-#: cam_simulator.cpp:1605
+#: cam_simulator.cpp:1607
 msgid "Default curve"
 msgstr "預設曲線"
 
-#: cam_simulator.cpp:1607
+#: cam_simulator.cpp:1609
 msgid "Use a built-in PE curve that has some steep and smooth sections."
 msgstr "使用一個內建具有峰值及平滑區間的週期誤差曲線。"
 
-#: cam_simulator.cpp:1609
+#: cam_simulator.cpp:1611
 msgid "Amplitude: "
 msgstr "振幅:"
 
-#: cam_simulator.cpp:1610
+#: cam_simulator.cpp:1612
 msgid "PE Amplitude, arc-secs"
 msgstr "PE 振幅, 角秒"
 
-#: cam_simulator.cpp:1618
+#: cam_simulator.cpp:1620
 msgid "Custom curve"
 msgstr "自定曲線"
 
-#: cam_simulator.cpp:1620
+#: cam_simulator.cpp:1622
 msgid ""
 "Use a simple sinusoidal curve. You can specify the amplitude and period."
 msgstr "使用一個簡單的正弦曲線, 你可以指定振幅和週期。"
 
-#: cam_simulator.cpp:1623
+#: cam_simulator.cpp:1625
 msgid "Amplitude"
 msgstr "振幅"
 
-#: cam_simulator.cpp:1623
+#: cam_simulator.cpp:1625
 msgid "Amplitude, arc-secs"
 msgstr "振幅, 角秒"
 
-#: cam_simulator.cpp:1624
+#: cam_simulator.cpp:1626
 msgid "Period"
 msgstr "週期"
 
-#: cam_simulator.cpp:1624
+#: cam_simulator.cpp:1626
 msgid "Period, seconds"
 msgstr "週期, 秒"
 
-#: cam_simulator.cpp:1636
+#: cam_simulator.cpp:1638
 msgid "Reverse Dec pulse on West side of pier"
 msgstr "赤道儀在西側時反轉赤緯導星訊號"
 
-#: cam_simulator.cpp:1637
+#: cam_simulator.cpp:1639
 msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
 msgstr "模擬如同 ASCOM pulse-guided 赤道儀在過中天翻轉後的反轉導星訊號。"
 
-#: cam_simulator.cpp:1639
+#: cam_simulator.cpp:1641
 msgid "Side of Pier: MMMMM"
 msgstr "赤道儀方向: MMMMM"
 
-#: cam_simulator.cpp:1641
+#: cam_simulator.cpp:1643
 msgid "Pier Flip"
 msgstr "翻轉"
 
-#: cam_simulator.cpp:1648
+#: cam_simulator.cpp:1650
 msgid "Session"
 msgstr "程序"
 
-#: cam_simulator.cpp:1650
+#: cam_simulator.cpp:1652
 msgid "Camera angle, degrees"
 msgstr "相機角度, 度"
 
-#: cam_simulator.cpp:1651
+#: cam_simulator.cpp:1653
 msgid "Camera angle"
 msgstr "相機角度"
 
-#: cam_simulator.cpp:1652
+#: cam_simulator.cpp:1654
 msgid "Seeing, FWHM arc-sec"
 msgstr "視寧度, FWHM 角秒"
 
-#: cam_simulator.cpp:1653
+#: cam_simulator.cpp:1655
 msgid "Seeing"
 msgstr "視寧度"
 
-#: cam_simulator.cpp:1654
+#: cam_simulator.cpp:1656
 msgid "Comet"
 msgstr "彗星"
 
-#: cam_simulator.cpp:1656
+#: cam_simulator.cpp:1658
 msgid "Star fading due to clouds"
 msgstr "導星星體被雲遮蔽"
 
-#: cam_simulator.cpp:1669
+#: cam_simulator.cpp:1671
 msgid "Reset all values to application defaults"
 msgstr "將所有數值重設為應用程式預設值"
 
-#: cam_simulator.cpp:1674 camcal_import_dialog.cpp:119
+#: cam_simulator.cpp:1676 camcal_import_dialog.cpp:119
 msgid "OK"
 msgstr "確認"
 
-#: cam_simulator.cpp:1680 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
+#: cam_simulator.cpp:1682 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 phdupdate.cpp:776
 msgid "Cancel"
 msgstr "取消"
 
-#: cam_simulator.cpp:1733
+#: cam_simulator.cpp:1735
 #, c-format
 msgid "Side of pier: %s"
 msgstr "赤道儀方向: %s"
@@ -5594,36 +5596,38 @@ msgid "Camera driver cannot report pixel size"
 msgstr "相機驅動程式無法回報像素大小。"
 
 #: profile_wizard.cpp:573
+#, c-format
 msgid ""
-". Please enter the correct un-binned pixel size from the camera "
+"%s. Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
-msgstr ". 請輸入相機文件或供應商網站所提供的正確 un-binned 像素大小"
+msgstr ""
 
-#: profile_wizard.cpp:573
+#: profile_wizard.cpp:575
 msgid "Detect Pixel Size"
 msgstr "壞像素大小"
 
-#: profile_wizard.cpp:599
+#: profile_wizard.cpp:601
 msgid "Could not initialize mount"
 msgstr "無法啟用赤道儀"
 
-#: profile_wizard.cpp:600
+#: profile_wizard.cpp:602
 msgid "Connecting to mount..."
 msgstr "連接赤道儀中..."
 
-#: profile_wizard.cpp:604
+#: profile_wizard.cpp:606
 msgid "Could not connect to mount"
 msgstr "無法連接赤道儀"
 
-#: profile_wizard.cpp:606
+#: profile_wizard.cpp:608
 msgid "Mount driver cannot report guide speeds"
 msgstr "赤道儀驅動程式無法回報導星速率"
 
-#: profile_wizard.cpp:614
-msgid ". Please enter the correct mount guide speed"
-msgstr ". 請輸入正確的赤道儀導星速率"
+#: profile_wizard.cpp:616
+#, c-format
+msgid "%s. Please enter the correct mount guide speed"
+msgstr ""
 
-#: profile_wizard.cpp:614
+#: profile_wizard.cpp:618
 msgid "Detect mount guide speed"
 msgstr "偵測赤道儀導星速率"
 
@@ -5706,103 +5710,103 @@ msgstr "因為赤道儀無法預期的因素造成赤經/赤緯速率有異常�
 msgid "Details..."
 msgstr "詳細..."
 
-#: scope.cpp:1040
+#: scope.cpp:1042
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "赤經校準失敗: 星點移動距離不足。"
 
-#: scope.cpp:1047
+#: scope.cpp:1049
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "往西 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1114
+#: scope.cpp:1116
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "往東 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1175
+#: scope.cpp:1177
 msgid "Clearing backlash step 1"
 msgstr "清除回差步數1"
 
-#: scope.cpp:1212
+#: scope.cpp:1214
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "清除回差步數 %3d"
 
-#: scope.cpp:1231
+#: scope.cpp:1233
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "回差消除失敗: 星點移動距離不足。"
 
-#: scope.cpp:1276
+#: scope.cpp:1278
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤緯校準失敗: 星點移動距離不足。"
 
-#: scope.cpp:1283
+#: scope.cpp:1285
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "往北 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1367
+#: scope.cpp:1369
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "往南 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1421
+#: scope.cpp:1423
 #, c-format
 msgid "Nudge South %3d"
 msgstr "南向微調 %3d"
 
-#: scope.cpp:1451
+#: scope.cpp:1453
 msgid "Calibration complete"
 msgstr "校準完成"
 
-#: scope.cpp:1596
+#: scope.cpp:1598
 msgid "Mount Guide Algorithms"
 msgstr "赤道儀導星演算法"
 
-#: scope.cpp:1634
+#: scope.cpp:1636
 msgid "Calibration step (ms)"
 msgstr "校準步數 (ms)"
 
-#: scope.cpp:1635
+#: scope.cpp:1637
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 "導星校準過程中導星訊號送出的週期長度為何? 點擊【計算】來計算出恰當的數值。"
 
-#: scope.cpp:1639
+#: scope.cpp:1641
 msgid "Calculate..."
 msgstr "計算機"
 
-#: scope.cpp:1640
+#: scope.cpp:1642
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
 "點擊以開啟校準步數計算器來依據你所使用的硬體設備估算出適當的校準步數大小"
 
-#: scope.cpp:1647
+#: scope.cpp:1649
 msgid "Reverse Dec output after meridian flip"
 msgstr "過中天翻轉後同時反轉赤緯輸出"
 
-#: scope.cpp:1649
+#: scope.cpp:1651
 msgid "Check if your mount needs Dec output reversed after a meridian flip"
 msgstr "過中天時, 如要讓赤道儀反轉赤緯方向的導星訊號輸出, 請核選這個選項。"
 
-#: scope.cpp:1656
+#: scope.cpp:1658
 msgid "Stop guiding when mount slews"
 msgstr "赤道儀轉動時停止導星"
 
-#: scope.cpp:1658
+#: scope.cpp:1660
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "當選用時, 假如赤道儀開始轉動, PHD 將會停止導星動作。"
 
-#: scope.cpp:1664
+#: scope.cpp:1666
 msgid "Assume Dec orthogonal to RA"
 msgstr "假設赤緯軸與赤經軸完全垂直"
 
-#: scope.cpp:1667
+#: scope.cpp:1669
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -5811,39 +5815,39 @@ msgstr ""
 "假設赤緯軸正直於赤經軸，想避免赤經軸的週期性誤差影響赤緯校準，在校準赤委實可"
 "以檢核該選項"
 
-#: scope.cpp:1671
+#: scope.cpp:1673
 msgid "Use backlash comp"
 msgstr "使用回差補償"
 
-#: scope.cpp:1672
+#: scope.cpp:1674
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr "如果你想在赤緯軸方向翻轉時發送出回差補償導星訊號時, 請核選此選項。"
 
-#: scope.cpp:1675
+#: scope.cpp:1677
 msgid "Amount"
 msgstr "數量"
 
-#: scope.cpp:1675
+#: scope.cpp:1677
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "adjusted based on observed performance."
 msgstr "回差修正訊號長度(微秒)，此數值會自動依據所間看到的效能自動作調整。"
 
-#: scope.cpp:1677
+#: scope.cpp:1679
 msgid "Use Dec compensation"
 msgstr "使用赤緯補償"
 
-#: scope.cpp:1679
+#: scope.cpp:1681
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr "依據赤道儀所指向的赤緯值自動調整赤經軸導星速率"
 
-#: scope.cpp:1684
+#: scope.cpp:1686
 msgid "Max RA duration"
 msgstr "最長的赤經週期時間"
 
-#: scope.cpp:1684 scope.cpp:1817
+#: scope.cpp:1686 scope.cpp:1819
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -5851,11 +5855,11 @@ msgstr ""
 "赤經方向送出導星訊號的最長時間\n"
 "預設 = 2500ms。"
 
-#: scope.cpp:1688
+#: scope.cpp:1690
 msgid "Max Dec duration"
 msgstr "最大赤緯週期"
 
-#: scope.cpp:1688 scope.cpp:1824
+#: scope.cpp:1690 scope.cpp:1826
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -5863,19 +5867,19 @@ msgstr ""
 "赤緯方向導星訊號傳送的最長時間\n"
 "預設值 = 2500ms, 如果偏移量過大, 請增加該數值。"
 
-#: scope.cpp:1700
+#: scope.cpp:1702
 msgid "Dec guide mode"
 msgstr "赤緯導星模式"
 
-#: scope.cpp:1700
+#: scope.cpp:1702
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "送出赤緯導星命令的方向"
 
-#: scope.cpp:1819
+#: scope.cpp:1821
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1826
+#: scope.cpp:1828
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -6602,6 +6606,14 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid ""
+#~ ". Please enter the correct un-binned pixel size from the camera "
+#~ "documentation or vendor web site."
+#~ msgstr ". 請輸入相機文件或供應商網站所提供的正確 un-binned 像素大小"
+
+#~ msgid ". Please enter the correct mount guide speed"
+#~ msgstr ". 請輸入正確的赤道儀導星速率"
 
 #~ msgid ""
 #~ "Specify how guide commands will be sent to the mount - via an ASCOM or "

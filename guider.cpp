@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "staticpa_tool.h"
 #include "guiding_assistant.h"
 
 // un-comment to log star deflections to a file
@@ -109,6 +110,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
+    m_showBookmarks = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
@@ -616,6 +618,14 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
             int radius = ROUND(m_polarAlignCircleRadius * m_polarAlignCircleCorrection * m_scaleFactor);
             dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
+        }
+
+        
+         // draw static polar align stuff
+        // Ideally get a pointer to StaticPaTool and let it do the work
+        if (pFrame->pStaticPaTool)
+        {
+            StaticPaTool::PaintHelper(dc, m_scaleFactor);
         }
 
         if (IsPaused())
@@ -1242,7 +1252,17 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 SetState(STATE_SELECTED);
                 break;
             case STATE_SELECTED:
-                // nothing to do but wait
+                // See if a Static PA is underway
+                if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
+                {
+                    // Rotate the mount in RA a bit
+                    if (!StaticPaTool::RotateMount())
+                    {
+                        SetState(STATE_UNINITIALIZED);
+                        statusMessage = _("Static PA rotation failed");
+                        throw ERROR_INFO("Static PA rotation failed");
+                    }
+                }
                 break;
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())

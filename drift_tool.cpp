@@ -530,11 +530,7 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
         return;
     }
 
-    double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
-    if (slew_ra >= 24.0)
-        slew_ra -= 24.0;
-    else if (slew_ra < 0.0)
-        slew_ra += 24.0;
+    double slew_ra = norm_ra(cur_st + (raSlew * 24.0 / 360.0));
 
     Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f",
         cur_ra, cur_dec, slew_ra, decSlew));
