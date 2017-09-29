@@ -75,13 +75,12 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
     staticText1->Wrap(-1);
     bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-    m_dec = new wxSpinCtrl(sbSizer2->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90, 0);
+    m_dec = pFrame->MakeSpinCtrl(sbSizer2->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, -90, 90, 0);
     m_dec->SetToolTip(_("Approximate telescope declination, degrees"));
-    m_dec->SetMaxSize(wxSize(70, -1));
     m_dec->SetSelection(-1, -1);
 
     bSizer3->Add(m_dec, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
 
     bSizer2->Add(bSizer3, 0, wxALIGN_CENTER_HORIZONTAL, 5);
 
@@ -126,9 +125,9 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
         staticText111->Wrap(-1);
         bSizer31->Add(staticText111, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-        m_raHr = new wxSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 23, 0);
+        m_raHr = pFrame->MakeSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
+            pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 23, 0);
         m_raHr->SetToolTip(_("Telescope's Right Ascension, hours"));
-        m_raHr->SetMaxSize(wxSize(50, -1));
 
         bSizer31->Add(m_raHr, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -136,9 +135,9 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
         staticText1111->Wrap(-1);
         bSizer31->Add(staticText1111, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-        m_raMin = new wxSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 59, 0);
+        m_raMin = pFrame->MakeSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
+            pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 59, 0);
         m_raMin->SetToolTip(_("Telescope's Right Ascension, minutes"));
-        m_raMin->SetMaxSize(wxSize(50, -1));
 
         bSizer31->Add(m_raMin, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 

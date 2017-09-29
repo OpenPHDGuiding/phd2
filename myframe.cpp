@@ -3073,28 +3073,37 @@ void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
         win->Move(x, y);
 }
 
+inline static void AdjustSpinnerWidth(wxSize *sz)
+{
+#ifdef __APPLE__
+    // GetSizeFromTextSize() not working on OSX, so we need to add more padding
+    enum { SPINNER_WIDTH_PAD = 20 };
+    sz->SetWidth(sz->GetWidth() + SPINNER_WIDTH_PAD);
+#endif
+}
+
 // The spin control factories allow clients to specify a width based on the max width of the numeric values without having 
 // to make guesses about the additional space required by the other parts of the control
 wxSpinCtrl* MyFrame::MakeSpinCtrl(wxWindow *parent, wxWindowID id, const wxString& value,
     const wxPoint& pos, const wxSize& size, long style,
     int min, int max, int initial, const wxString& name)
 {
-    wxSize actualSize = size;
-    int requestedWidth = size.GetWidth();
-    if (requestedWidth > 0)
-        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
-    return new wxSpinCtrl(parent, id, value, pos, actualSize, style, min, max, initial, name);
+    wxSpinCtrl *ctrl = new wxSpinCtrl(parent, id, value, pos, size, style, min, max, initial, name);
+    wxSize initsize(ctrl->GetSizeFromTextSize(size));
+    AdjustSpinnerWidth(&initsize);
+    ctrl->SetInitialSize(initsize);
+    return ctrl;
 }
 
 wxSpinCtrlDouble* MyFrame::MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id, const wxString& value,
     const wxPoint& pos, const wxSize& size, long style, double min, double max, double initial,
     double inc, const wxString& name)
 {
-    wxSize actualSize = size;
-    int requestedWidth = size.GetWidth();
-    if (requestedWidth > 0)
-        actualSize.SetWidth(requestedWidth + SPINNER_PADDING);
-    return new wxSpinCtrlDouble(parent, id, value, pos, actualSize, style, min, max, initial, inc, name);
+    wxSpinCtrlDouble *ctrl = new wxSpinCtrlDouble(parent, id, value, pos, size, style, min, max, initial, inc, name);
+    wxSize initsize(ctrl->GetSizeFromTextSize(size));
+    AdjustSpinnerWidth(&initsize);
+    ctrl->SetInitialSize(initsize);
+    return ctrl;
 }
 
 template<typename T>

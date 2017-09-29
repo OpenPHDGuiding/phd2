@@ -110,6 +110,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
+    m_showBookmarks = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;

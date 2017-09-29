@@ -182,6 +182,7 @@ struct SlitPropertiesDlg : public wxDialog
 SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
+    wxSize textSz = pFrame->GetTextExtent("888888");
     wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticBoxSizer *szPosition = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Position (Center)")), wxVERTICAL);
@@ -190,14 +191,14 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     wxBoxSizer *hXSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *xLabel = new wxStaticText(this, wxID_ANY, _("X"), wxDefaultPosition, wxDefaultSize, 0);
     hXSizer->Add(xLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    m_x = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
+    m_x = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, 0, 8000, 0);
     hXSizer->Add(m_x, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szPosition->Add(hXSizer, 0, wxEXPAND, 5);
 
     wxBoxSizer *hYSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* yLabel = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
     hYSizer->Add(yLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    m_y = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
+    m_y = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, 0, 8000, 0);
     hYSizer->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szPosition->Add(hYSizer, 1, wxEXPAND, 5);
     hSizer->Add(szPosition, 0, 0, 5);
@@ -206,14 +207,14 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     wxBoxSizer *hWidthSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *widthLabel = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxDefaultSize, 0);
     hWidthSizer->Add(widthLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    m_width = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
+    m_width = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, 2, 1000, 2);
     hWidthSizer->Add(m_width, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szSlitSize->Add(hWidthSizer, 1, wxEXPAND, 5);
 
     wxBoxSizer *hHeightSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *heightLabel = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxDefaultSize, 0);
     hHeightSizer->Add(heightLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    m_height = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
+    m_height = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, 2, 1000, 2);
     hHeightSizer->Add(m_height, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     szSlitSize->Add(hHeightSizer, 1, wxEXPAND, 5);
     hSizer->Add(szSlitSize, 0, 0, 5);
@@ -230,7 +231,7 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     wxStaticText* staticText1 = new wxStaticText(this, wxID_ANY, _("Angle (degrees)"), wxDefaultPosition, wxDefaultSize, 0);
     //staticText1->Wrap(-1);
     hAngleSizer->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    m_angle = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, -90, 90, 0);
+    m_angle = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, -90, 90, 0);
     hAngleSizer->Add(m_angle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
     vSizer->Add(hAngleSizer, 0, wxEXPAND, 5);

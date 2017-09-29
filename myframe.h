@@ -195,8 +195,6 @@ private:
     bool m_continueCapturing; // should another image be captured?
     SingleExposure m_singleExposure;
 
-    static const int SPINNER_PADDING = 40;
-
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
     virtual ~MyFrame();

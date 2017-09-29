@@ -78,8 +78,8 @@ struct StaticPaToolWin : public wxFrame
     /*
     Constants used in the tool window controls
     */
-    wxString *c_autoInstr;
-    wxString *c_manualInstr;
+    wxString c_autoInstr;
+    wxString c_manualInstr;
 
     class Star
     {

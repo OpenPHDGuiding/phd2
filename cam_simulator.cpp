@@ -1465,8 +1465,9 @@ static wxSlider *NewSlider(wxWindow *parent, int val, int minval, int maxval, co
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, double val, double minval, double maxval, double inc,
     const wxString& tooltip)
 {
-    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-        wxDefaultSize, wxSP_ARROW_KEYS, minval, maxval, val, inc);
+    wxSize sz = pFrame->GetTextExtent(wxString::Format("%.2f", maxval * 10.));
+    wxSpinCtrlDouble *pNewCtrl = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        sz, wxSP_ARROW_KEYS, minval, maxval, val, inc);
     pNewCtrl->SetDigits(2);
     pNewCtrl->SetToolTip(tooltip);
     return pNewCtrl;
