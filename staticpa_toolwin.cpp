@@ -804,12 +804,12 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         idx = a_auto ? 1 : 2;
         double xs = r_pxPos[idx].X * scale;
         double ys = r_pxPos[idx].Y * scale;
-        dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(127, 0, 0), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, 255), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(0, 0, 127), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
             xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
             ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
     }
@@ -826,7 +826,7 @@ bool StaticPaToolWin::RotateMount()
         SetStatusText(_("Polar align: star #1"));
         Debug.AddLine("Polar align: star #1");
         //   Initially offset is 5 degrees;
-        bool rc = SetParams(5.0); // s_reqRot, m_rotpx, s_reqStep for assumed 5.0 degree PA error
+        bool rc = SetParams(5.0); // s_reqRot, s_reqStep for assumed 5.0 degree PA error
         Debug.AddLine(wxString::Format("Polar align: star #1 rotdg=%.1f s_nStep=%d", s_reqRot, s_reqStep));
         bool isset = SetStar(s_numPos);
         if (isset)
