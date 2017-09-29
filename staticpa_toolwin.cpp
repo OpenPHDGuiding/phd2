@@ -204,22 +204,22 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
     c_autoInstr = new wxString(_(
         "Slew to near the Celestial Pole.\n"
-        "Choose a reference star from the list.\n"
+        "Choose a Reference Star from the list.\n"
         "Select it as the guide star on the main display.\n"
-        "Click Rotate to calibrate the RA Axis.\n"
-        "Wait for both calibration points to be measured.\n"
+        "Click Rotate to start the alignment.\n"
+        "Wait for the adjustments to display.\n"
         "Adjust your mount's altitude and azimuth as displayed.\n"
-        "Orange=Altitude; Green=Azimuth\n"
+        "Red=Altitude; Blue=Azimuth\n"
         ));
     c_manualInstr = new wxString(_(
         "Slew to near the Celestial Pole.\n"
         "Choose a Reference Star from the list.\n"
         "Select it as the guide star on the main display.\n"
-        "Click Get first point\n"
+        "Click Get first position\n"
         "Slew at least 0h20m west in RA\n"
         "Ensure the Reference Star is still selected\n"
-        "Click Get second point\n"
-        "Repeat for the third point\n"
+        "Click Get second position\n"
+        "Repeat for the third position\n"
         "Click Calculate to show the adjustments needed\n"
         "Adjust your mount's altitude and azimuth to place"
         "three reference stars on their orbits\n"
@@ -309,7 +309,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Pt #1"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Pos #1"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
@@ -324,7 +324,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Pt #2"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Pos #2"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
@@ -339,7 +339,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Pt #3"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Pos #3"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
@@ -383,6 +383,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_notes = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
     pFrame->RegisterTextCtrl(w_notes);
     topSizer->Add(w_notes, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    w_notes->Bind(wxEVT_COMMAND_TEXT_UPDATED, &StaticPaToolWin::OnNotes, this);
+    w_notes->SetValue(pConfig->Profile.GetString("/StaticPaTool/Notes", wxEmptyString));
 
     // horizontal sizer for the buttons
     wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -446,6 +448,11 @@ void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
     pConfig->Profile.SetInt("/StaticPaTool/RefStar", w_refStarChoice->GetSelection());
 
     a_refStar = i_refStar;
+}
+
+void StaticPaToolWin::OnNotes(wxCommandEvent& evt)
+{
+    pConfig->Profile.SetString("/StaticPaTool/Notes", w_notes->GetValue());
 }
 
 void StaticPaToolWin::OnRotate(wxCommandEvent& evt)
@@ -747,7 +754,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     // draw the centre of the circle as a red cross
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
-    int region = 5;
+    int region = 10;
     dc.DrawLine((r_pxCentre.X - region)*scale, r_pxCentre.Y*scale, (r_pxCentre.X + region)*scale, r_pxCentre.Y*scale);
     dc.DrawLine(r_pxCentre.X*scale, (r_pxCentre.Y - region)*scale, r_pxCentre.X*scale, (r_pxCentre.Y + region)*scale);
 
@@ -774,6 +781,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
             dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_DOT));
         }
         dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
+        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
         dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
     }
     // Draw adjustment lines for centring the CoR on the display in blue (dec) and red (cone error)
@@ -889,6 +897,12 @@ bool StaticPaToolWin::RotateMount()
             double actsec = actpix * g_pxScale;
             double actoffsetdeg = 90 - degrees(acos(actsec / 3600 / s_reqRot));
             Debug.AddLine(wxString::Format("Polar align: star #2 px=%.1f asec=%.1f pxscale=%.1f", actpix, actsec, g_pxScale));
+
+//            if (actpix < a_devpx)
+//            {
+//                Debug.AddLine(wxString::Format("Polar align: star #2 px=%.1f asec=%.1f pxscale=%.1f", actpix, actsec, g_pxScale));
+//                return true;
+//            }
 
             if (actoffsetdeg == 0)
             {

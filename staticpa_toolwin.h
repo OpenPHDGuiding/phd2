@@ -135,6 +135,7 @@ struct StaticPaToolWin : public wxFrame
     void OnHemi(wxCommandEvent& evt);
     void OnRefStar(wxCommandEvent& evt);
     void OnManual(wxCommandEvent& evt);
+    void OnNotes(wxCommandEvent& evt);
     void OnRotate(wxCommandEvent& evt);
     void OnStar2(wxCommandEvent& evt);
     void OnStar3(wxCommandEvent& evt);
