@@ -733,7 +733,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
-    dc.SetPen(wxPen(wxColour(0, 255, 255), 1, wxSOLID));
+    dc.SetPen(wxPen(wxColour(0, 127, 127), 1, wxSOLID));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     for (int i = 0; i < 3; i++)
@@ -748,7 +748,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     }
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     wxPenStyle penStyle = wxPENSTYLE_DOT;
-    dc.SetPen(wxPen(wxColor(255, 0, 255), 1, penStyle));
+    dc.SetPen(wxPen(wxColor(127, 0, 127), 1, penStyle));
     dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
 
     // draw the centre of the circle as a red cross
@@ -762,8 +762,8 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     double xsc = g_dispSz[0] / 2;
     double ysc = g_dispSz[1] / 2;
     dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
-    dc.DrawLine((xsc - region * 4)*scale, ysc*scale, (xsc + region * 4)*scale, ysc*scale);
-    dc.DrawLine(xsc*scale, (ysc - region * 4)*scale, xsc*scale, (ysc + region * 4)*scale);
+    dc.DrawLine((xsc - region)*scale, ysc*scale, (xsc + region)*scale, ysc*scale);
+    dc.DrawLine(xsc*scale, (ysc - region)*scale, xsc*scale, (ysc + region)*scale);
 
     // Draw orbits for each reference star
     // Caclulate pixel values for the reference stars
@@ -774,14 +774,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
         starpx = Radec2Px(stardeg);
         radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
-
-        dc.SetPen(wxPen(wxColor(255, 255, 0), 1, wxPENSTYLE_DOT));
-        if (is == a_refStar)
-        {
-            dc.SetPen(wxPen(wxColor(0, 255, 0), 1, wxPENSTYLE_DOT));
-        }
+        wxColor line_color = (is == a_refStar) ? wxColor(0, 127, 0): wxColor(127, 127, 0);
+        dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_DOT));
         dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
-        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_SOLID));
         dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
     }
     // Draw adjustment lines for centring the CoR on the display in blue (dec) and red (cone error)
@@ -789,9 +785,9 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     if (drawCone){
         double xr = r_pxCentre.X * scale;
         double yr = r_pxCentre.Y * scale;
-        dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(127, 0, 0), 1, wxPENSTYLE_SOLID));
         dc.DrawLine(xr, yr, xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, 255), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(0, 0, 127), 1, wxPENSTYLE_SOLID));
         dc.DrawLine(xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale,
             xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
             yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
@@ -897,12 +893,6 @@ bool StaticPaToolWin::RotateMount()
             double actsec = actpix * g_pxScale;
             double actoffsetdeg = 90 - degrees(acos(actsec / 3600 / s_reqRot));
             Debug.AddLine(wxString::Format("Polar align: star #2 px=%.1f asec=%.1f pxscale=%.1f", actpix, actsec, g_pxScale));
-
-//            if (actpix < a_devpx)
-//            {
-//                Debug.AddLine(wxString::Format("Polar align: star #2 px=%.1f asec=%.1f pxscale=%.1f", actpix, actsec, g_pxScale));
-//                return true;
-//            }
 
             if (actoffsetdeg == 0)
             {
