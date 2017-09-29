@@ -56,11 +56,10 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc,
+static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, const wxSize& size, int val, int minval, int maxval, int inc,
                                  const wxString& tooltip)
 {
-    wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-                                          wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
+    wxSpinCtrl *pNewCtrl = pFrame->MakeSpinCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, size, wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
     pNewCtrl->SetValue(val);
     pNewCtrl->SetToolTip(tooltip);
     return pNewCtrl;
@@ -96,7 +95,6 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     wxDialog(parent, wxID_ANY, _("Build Dark Library"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     buildDarkLib = darkLib;
-    int width = 72;
     if (!buildDarkLib)
         this->SetTitle(_("Acquire Master Dark Frames for Bad Pixel Map Calculation"));
     GetExposureDurationStrings(&m_expStrings);
@@ -124,7 +122,8 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", MaxExposureDefault()));
         m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks. Choose a value corresponding to the longest camera exposure you will use for guiding."));
 
-        m_pDarkCount = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount), 1, 20, 1, _("Number of dark frames for each exposure time"));
+        m_pDarkCount = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount),
+            1, 20, 1, _("Number of dark frames for each exposure time"));
         AddTableEntryPair(this, pDarkParams, _("Frames to take for each \n exposure time"), m_pDarkCount);
         pDarkGroup->Add(pDarkParams, wxSizerFlags().Border(wxALL, 10));
         pvSizer->Add(pDarkGroup, wxSizerFlags().Border(wxALL, 10).Expand());
@@ -174,9 +173,11 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         // Defect map controls
         wxStaticBoxSizer *pDMapGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Frame Settings"));
         wxFlexGridSizer *pDMapParams = new wxFlexGridSizer(2, 4, 5, 15);
-        m_pDefectExpTime = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/dmap_exptime", DefDMExpTime), 5, 15, 1, _("Exposure time for building defect map"));
+        m_pDefectExpTime = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_exptime", DefDMExpTime),
+            5, 15, 1, _("Exposure time for building defect map"));
         AddTableEntryPair(this, pDMapParams, _("Exposure Time"), m_pDefectExpTime);
-        m_pNumDefExposures = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/dmap_num_frames", DefDMCount), 5, 25, 1, _("Number of exposures for building defect map"));
+        m_pNumDefExposures = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_num_frames", DefDMCount),
+            5, 25, 1, _("Number of exposures for building defect map"));
         AddTableEntryPair(this, pDMapParams, _("Number of Exposures"), m_pNumDefExposures);
         pDMapGroup->Add(pDMapParams, wxSizerFlags().Border(wxALL, 10));
         pvSizer->Add(pDMapGroup, wxSizerFlags().Border(wxALL, 10));
@@ -185,8 +186,8 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     // Controls for notes and status
     wxBoxSizer *phSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY,  _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));
-    width = StringWidth(this, "M");
-    m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width * 38, -1));
+    wxSize sz(38 * StringWidth(this, "M"), -1);
+    m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, sz);
     m_pNotes->SetToolTip(_("Free-form note, included in FITs header for each dark frame; max length=65"));
     m_pNotes->SetMaxLength(MaxNoteLength);
     m_pNotes->SetValue(pConfig->Profile.GetString("/camera/darks_note", ""));
@@ -194,7 +195,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     phSizer->Add(m_pNotes, wxSizerFlags().Border(wxALL, 5));
     pvSizer->Add(phSizer, wxSizerFlags().Border(wxALL, 5));
     phSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pProgress = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, wxSize(width * 38, -1));
+    m_pProgress = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, sz);
     m_pProgress->Enable(false);
     pvSizer->Add(phSizer, wxSizerFlags().Border(wxALL, 5));
     pvSizer->Add(m_pProgress, wxSizerFlags().Border(wxLEFT, 60));
