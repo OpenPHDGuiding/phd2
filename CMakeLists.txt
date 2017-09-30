@@ -416,6 +416,10 @@ set(phd2_SRC
   ${phd_src_dir}/phdupdate.cpp
   ${phd_src_dir}/phdupdate.h
 
+  ${phd_src_dir}/polardrift_tool.h
+  ${phd_src_dir}/polardrift_toolwin.h
+  ${phd_src_dir}/polardrift_toolwin.cpp
+
   ${phd_src_dir}/profile_wizard.h
   ${phd_src_dir}/profile_wizard.cpp
 
