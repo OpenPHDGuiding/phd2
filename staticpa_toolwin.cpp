@@ -733,7 +733,8 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
-    dc.SetPen(wxPen(wxColour(0, 127, 127), 1, wxSOLID));
+    int intens = 180;
+    dc.SetPen(wxPen(wxColour(0, intens, intens), 1, wxSOLID));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     for (int i = 0; i < 3; i++)
@@ -747,8 +748,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         return;
     }
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    wxPenStyle penStyle = wxPENSTYLE_DOT;
-    dc.SetPen(wxPen(wxColor(127, 0, 127), 1, penStyle));
+    dc.SetPen(wxPen(wxColor(intens, 0, intens), 1, wxPENSTYLE_DOT));
     dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
 
     // draw the centre of the circle as a red cross
@@ -761,7 +761,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     // Show the centre of the display wth a grey cross
     double xsc = g_dispSz[0] / 2;
     double ysc = g_dispSz[1] / 2;
-    dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+    dc.SetPen(wxPen(wxColor(intens, intens, intens), 1, wxPENSTYLE_SOLID));
     dc.DrawLine((xsc - region)*scale, ysc*scale, (xsc + region)*scale, ysc*scale);
     dc.DrawLine(xsc*scale, (ysc - region)*scale, xsc*scale, (ysc + region)*scale);
 
@@ -774,7 +774,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
         starpx = Radec2Px(stardeg);
         radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
-        wxColor line_color = (is == a_refStar) ? wxColor(0, 127, 0): wxColor(127, 127, 0);
+        wxColor line_color = (is == a_refStar) ? wxColor(0, intens, 0) : wxColor(intens, intens, 0);
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_DOT));
         dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_SOLID));
@@ -785,13 +785,13 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     if (drawCone){
         double xr = r_pxCentre.X * scale;
         double yr = r_pxCentre.Y * scale;
-        dc.SetPen(wxPen(wxColor(127, 0, 0), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(intens, 0, 0), 1, wxPENSTYLE_SOLID));
         dc.DrawLine(xr, yr, xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, 127), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(0, 0, intens), 1, wxPENSTYLE_SOLID));
         dc.DrawLine(xr + m_ConeCorr.X * scale, yr + m_ConeCorr.Y * scale,
             xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
             yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_SOLID));
+        dc.SetPen(wxPen(wxColor(intens, intens, intens), 1, wxPENSTYLE_SOLID));
         dc.DrawLine(xr, yr, xr + m_DecCorr.X * scale + m_ConeCorr.X * scale,
             yr + m_DecCorr.Y * scale + m_ConeCorr.Y * scale);
     }
@@ -804,12 +804,12 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         idx = a_auto ? 1 : 2;
         double xs = r_pxPos[idx].X * scale;
         double ys = r_pxPos[idx].Y * scale;
-        dc.SetPen(wxPen(wxColor(127, 0, 0), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(intens, 0, 0), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, 127), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(0, 0, intens), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
             xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(127, 127, 127), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(intens, intens, intens), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
             ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
     }
