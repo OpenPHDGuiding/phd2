@@ -193,35 +193,26 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         SetStatusText(_("Start Looping..."));
         pFrame->OnLoopExposure(dummy);
     }
-    // Drop down list box for alignment star
-    SetBackgroundColour(wxColor(0xcccccc));
-    SetSizeHints(wxDefaultSize, wxDefaultSize);
-
-    // a vertical sizer holding everything
-    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
-
-    // a horizontal box sizer for the bitmap and the instructions
-    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
     c_autoInstr = _(
-        "Slew to near the Celestial Pole.\n"
-        "Choose a Reference Star from the list.\n"
-        "Select it as the guide star on the main display.\n"
-        "Click Rotate to start the alignment.\n"
-        "Wait for the adjustments to display.\n"
-        "Adjust your mount's altitude and azimuth as displayed.\n"
-        "Red=Altitude; Blue=Azimuth\n"
+        "Slew to near the Celestial Pole.<br/>"
+        "Choose a Reference Star from the list.<br/>"
+        "Select it as the guide star on the main display.<br/>"
+        "Click Rotate to start the alignment.<br/>"
+        "Wait for the adjustments to display.<br/>"
+        "Adjust your mount's altitude and azimuth as displayed.<br/>"
+        "Red=Altitude; Blue=Azimuth<br/>"
         );
     c_manualInstr = _(
-        "Slew to near the Celestial Pole.\n"
-        "Choose a Reference Star from the list.\n"
-        "Select it as the guide star on the main display.\n"
-        "Click Get first position\n"
-        "Slew at least 0h20m west in RA\n"
-        "Ensure the Reference Star is still selected\n"
-        "Click Get second position\n"
-        "Repeat for the third position\n"
-        "Click Calculate to show the adjustments needed\n"
-        "Adjust your mount's altitude and azimuth to place"
+        "Slew to near the Celestial Pole.<br/>"
+        "Choose a Reference Star from the list.<br/>"
+        "Select it as the guide star on the main display.<br/>"
+        "Click Get first position.<br/>"
+        "Slew at least 0h20m west in RA.<br/>"
+        "Ensure the Reference Star is still selected.<br/>"
+        "Click Get second position.<br/>"
+        "Repeat for the third position.<br/>"
+        "Click Calculate to show the adjustments needed.<br/>"
+        "Adjust your mount's altitude and azimuth to place "
         "three reference stars on their orbits\n"
         );
 
@@ -232,11 +223,22 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         a_auto = false;
     }
 
-    w_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    // Start window definition
+    SetBackgroundColour(wxColor(0xcccccc));
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+    // a vertical sizer holding everything
+    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+
+    // a horizontal box sizer for the bitmap and the instructions
+    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
+    w_instructions = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(240, 240), wxHW_DEFAULT_STYLE);
+    w_instructions->SetStandardFonts(8);
+    /*
 #ifdef __WXOSX__
     w_instructions->SetFont(*wxSMALL_FONT);
 #endif
-    w_instructions->Wrap(-1);
+    */
     instrSizer->Add(w_instructions, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     w_pole = new PolePanel(this);
@@ -523,7 +525,9 @@ void StaticPaToolWin::FillPanel()
         w_manual->Hide();
     }
     w_manual->SetValue(!a_auto);
-    w_instructions->SetLabel(a_auto ? c_autoInstr : c_manualInstr);
+
+    wxString html = wxString::Format("<html><body style=\"background-color:#cccccc;\">%s</body></html>", a_auto ? c_autoInstr : c_manualInstr);
+    w_instructions->SetPage(html);
 
     w_star1->SetLabel(_("Rotate"));
     if (s_aligning) {
