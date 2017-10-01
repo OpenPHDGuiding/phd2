@@ -259,8 +259,65 @@ be stored in the same location as the other log files. &nbsp;The format
 of these image files is controlled from the 'Global' tab of the
 'Advanced Settings' dialog. &nbsp;If you are trying to document a
 problem you're having, you should choose the 'Raw Fits' format for
-maximum flexibility.<br>
-<h3><a name="Drift_Align"></a>Drift Align</h3>
+maximum flexibility.<br><br><h3><a name="Polar_alignment_tools"></a>Polar Alignment Tools</h3>
+
+PHD2 currently offers two different polar alignment tools.<span style="">&nbsp; </span>The two approaches share the same basic
+objective: to help you physically align the RA axis of your mount to the
+celestial pole.<span style="">&nbsp; </span>These polar alignment
+tools are different from the &#8220;two-star&#8221; or &#8220;three-star&#8221; alignment procedures
+that are part of most popular go-to mounts.<span style="">&nbsp;
+</span>The mount software routines are generally focused on optimizing go-to
+operations, correcting the slewing/pointing operations for a variety of errors
+in the mount, including polar alignment error.<span style="">&nbsp;
+</span>They generally don&#8217;t involve physical adjustment of the mount&#8217;s azimuth
+and altitude controls, which is what is necessary for successful imaging and
+guiding.
+
+
+
+<br><br><o:p></o:p>The original polar alignment routine, drift alignment, is
+still considered by most to be the &#8220;gold standard&#8221; for accuracy.<span style="">&nbsp; </span>Partly, this is because it directly measures
+the thing you&#8217;re interested in: the amount of drift that will be caused by
+mis-alignment of the RA axis on the celestial pole.<span style="">&nbsp; </span>The drift alignment tool requires use of only
+one visible star at a time, and identification of the star is unnecessary.<span style="">&nbsp; </span>But the procedure can be time-consuming,
+especially for beginners, because each mount axis must be adjusted separately
+and the telescope will need to slew over a fairly wide area.<span style="">&nbsp; </span>Also, it works best if you have clear views
+of the celestial equator/meridian intersection and an area around 30 degrees
+above either the eastern or western horizon (azimuth 90 or 270 degrees).<span style="">&nbsp;&nbsp; </span>For imagers who are rushing to set up each
+night or have a limited view of the sky, these requirements may be
+unattractive. 
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The second alignment option, static polar alignment,
+addresses these concerns by taking a different approach.<span style="">&nbsp; </span>It specifically trades off a bit of accuracy
+to optimize the speed of the process.<span style="">&nbsp; </span>It
+requires only a clear view of the northern or southern polar region, and it
+facilitates adjustment of both mount axes at the same time.<span style="">&nbsp; </span>It is therefore a bit more intuitive and quite
+likely to be quicker to complete.<span style="">&nbsp; </span>It
+does require visibility and identification of several stars near the pole, but
+the tool makes that reasonably easy assuming your sky conditions are good
+enough to see the stars.&nbsp; </p><span style=""></span>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The two techniques are described in detail in the following
+sections.<span style="">&nbsp; </span>Imagers should probably
+experiment with both of them and choose the one that best suits their
+needs.<span style="">&nbsp; </span>The importance of alignment
+accuracy is often over-emphasized, so users need to keep things in
+perspective.<span style="">&nbsp; </span>Most declination drift can
+be well-managed by PHD2 guiding assuming the mount behaves well and doesn&#8217;t
+have a lot of declination backlash.<span style="">&nbsp;&nbsp;
+</span>However, at some point, the amount of polar alignment error can create
+field rotation in the images, something that can&#8217;t be corrected.<span style="">&nbsp; </span>The larger the imaging sensor and the closer
+to the pole the target is, the more field rotation can be an issue.<span style="">&nbsp; </span>You can compute the expected field rotation
+using an online calculator such as this one:
+
+</p><p class="MsoNormal"><a href="http://celestialwonders.com/tools/rotationMaxErrorCalc.html">http://celestialwonders.com/tools/rotationMaxErrorCalc.html</a></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The calculator can help you decide how much accuracy is
+&#8220;good enough&#8221; for your situation.<span style="">&nbsp; </span>It&#8217;s
+also important to remember that either procedure can be limited by the
+precision of the adjustment mechanisms on the mount.<br></p>
+
+<h3><a name="Drift_Align"></a>Drift Alignment Tool</h3>
 Drift alignment is a well-known technique for achieving polar alignment
 and
 is considered by many to be the "gold standard". &nbsp;The Drift
@@ -361,7 +418,7 @@ want to make smaller adjustments to avoid over-shooting.</li></ul>
 A very complete step-by-step tutorial for drift alignment is available
 on the Openphdguiding web site, and first-time users are strongly
 encouraged to study it.
-(https://sites.google.com/site/openphdguiding/phd2-drift-alignment)<br>
+(https://sites.google.com/site/openphdguiding/phd2-drift-alignment)<br><br><h3><a href="Tutorials.htm#Static_polar_alignment">Static Polar Alignment Tool</a></h3>
 <h3><a name="Lock_Positions"></a>Lock Positions</h3>
 <span style="font-style: italic;">PHD2</span> normally
 sets a 'lock position' where the guide star is located at the end of

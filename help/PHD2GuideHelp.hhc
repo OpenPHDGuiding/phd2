@@ -137,8 +137,8 @@
 			<param name="Local" value="Tools.htm#Logging_and_Debug_Output">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Drift Alignment">
-			<param name="Local" value="Tools.htm#Drift_Align">
+			<param name="Name" value="Polar Alignment Tools">
+			<param name="Local" value="Tools.htm#Polar_alignment_tools">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Lock Positions">
@@ -227,5 +227,15 @@
 		<param name="Name" value="Glossary">
 		<param name="Local" value="Glossary.html">
 		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Tutorials">
+		<param name="Local" value="Tutorials.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Static Polar Alignment">
+			<param name="Local" value="Tutorials.htm#Static_polar_alignment">
+			</OBJECT>
+	</UL>
 </UL>
 </BODY></HTML>
