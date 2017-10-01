@@ -63,6 +63,13 @@ struct PolarDriftToolWin : public wxFrame
     wxStatusBar *w_statusBar;
     wxChoice *w_refStarChoice;  // Listbox for reference stars
     wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
+    bool m_savePrimaryMountEnabled;
+    bool m_saveSecondaryMountEnabled;
+    bool m_guideOutputDisabled;
+    wxString startStr;
+    bool m_measuring;
+    long m_startTime;
+    wxBoxSizer *m_vSizer;
 
     class PolePanel : public wxPanel
     {

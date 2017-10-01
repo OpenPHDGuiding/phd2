@@ -799,12 +799,13 @@ bool PolarDriftToolWin::RotateMount()
     // Calculate how far to move in RA to get a detectable arc
     // Calculate the tangential ditance of that movement
     // Mark the starting position then rotate the mount
+    wxLongLong_t elapsedms = ::wxGetUTCTimeMillis().GetValue() - m_startTime;
+
     if (s_numPos == 1)
     {
         SetStatusText(_("Polar align: star #1"));
         Debug.AddLine("Polar align: star #1");
         //   Initially offset is 5 degrees;
-        bool rc = SetParams(5.0); // s_reqRot, m_rotpx, s_reqStep for assumed 5.0 degree PA error
         Debug.AddLine(wxString::Format("Polar align: star #1 rotdg=%.1f s_nStep=%d", s_reqRot, s_reqStep));
         bool isset = SetStar(s_numPos);
         if (isset)
@@ -812,50 +813,13 @@ bool PolarDriftToolWin::RotateMount()
             s_state = s_state | (1 << 1);
             s_numPos++;
         }
-        if (!a_auto)
-        {
-            s_aligning = false;
-            if (IsAligned()){
-                CalcRotationCentre();
-            }
-        }
-        s_totRot = 0.0;
-        s_nStep = 0;
         Debug.AddLine(wxString::Format("Leave Polar align: star #1 rotdg=%.1f s_nStep=%d", s_reqRot, s_reqStep));
         return isset;
     }
     if (s_numPos == 2)
     {
-        double theta = s_reqRot - s_totRot;
-        SetStatusText(_("Polar align: star #2"));
-        Debug.AddLine("Polar align: star #2");
-        // Once the mount has rotated theta degrees (as indicated by prevtheta);
-        if (!a_auto)
-        {
-            // rotate mount manually;
-            bool isset = SetStar(s_numPos);
-            if (isset)
-            {
-                s_state = s_state | (1 << 2);
-                s_numPos++;
-            }
-            s_aligning = false;
-            if (IsAligned()){
-                CalcRotationCentre();
-            }
-            return isset;
-        }
-        SetStatusText(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
-        Debug.AddLine(wxString::Format("Polar align: star #2 s_nStep=%d / %d theta=%.1f / %.1f", s_nStep, s_reqStep, s_totRot, s_reqRot));
-        if (pPointingSource->Slewing())  // Wait till the mount has stopped
-        {
-            return true;
-        }
         if (s_totRot < s_reqRot)
         {
-            double newtheta = theta / (s_reqStep - s_nStep);
-            MoveWestBy(newtheta);
-            s_totRot += newtheta;
         }
         else
         {
