@@ -224,18 +224,22 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Glossary">
-		<param name="Local" value="Glossary.html">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Tutorials">
 		<param name="Local" value="Tutorials.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Drift Alignment">
+			<param name="Local" value="Tutorials.htm#Drift_Align">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Static Polar Alignment">
 			<param name="Local" value="Tutorials.htm#Static_polar_alignment">
 			</OBJECT>
 	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Glossary">
+		<param name="Local" value="Glossary.html">
+		</OBJECT>
 </UL>
 </BODY></HTML>
