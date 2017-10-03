@@ -157,22 +157,22 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         Star("A: sigma Oct", 320.66, -88.89, 4.3),
         Star("B: HD99828", 164.22, -89.33, 7.5),
         Star("C: HD125371", 248.88, -89.38, 7.8),
-        Star("D: HD90105", 122.36, -89.52, 7.2),
-        Star("E: BQ Oct", 239.62, -89.83, 6.8),
-        Star("F: HD99685", 130.32, -89.85, 7.8),
-        Star("G: HD98784", 99.78, -89.87, 8.9),
-        Star("H: HD92239", 136.63, -89.42, 8.0)
+        Star("D: HD92239", 136.63, -89.42, 8.0),
+        Star("E: HD90105", 122.36, -89.52, 7.2),
+        Star("F: BQ Oct", 239.62, -89.83, 6.8),
+        Star("G: HD99685", 130.32, -89.85, 7.8),
+        Star("H: HD98784", 99.78, -89.87, 8.9),
     };
     c_NthStars = {
         Star("A: Polaris", 43.12, 89.34, 1.95),
-        Star("B: HD1687", 12.14, 89.54, 8.1),
-        Star("C: TYC4629-37-1", 85.51, 89.65, 9.15),
-        Star("D: TYC4661-2-1", 297.95, 89.83, 9.65),
-        Star("E: unnamed", 86.11, 89.43, 9.25),
-        Star("F: unnamed", 358.33, 89.54, 9.35),
-        Star("G: unnamed", 355.75, 89.64, 10.1),
-        Star("H: unnamed", 12.61, 89.76, 10.5),
-        Star("I: HD21070", 152.26, 89.48, 9.0),
+        Star("B: TYC-4629-33-1", 86.11, 89.43, 9.25),
+        Star("C: HD21070", 152.26, 89.48, 9.0),
+        Star("D: HD1687", 12.14, 89.54, 8.1),
+        Star("E: TYC-4662-45-1", 358.33, 89.54, 9.35),
+        Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
+        Star("G: TYC-4629-37-1", 85.51, 89.65, 9.15),
+        Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
+        Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
     };
 
     // get site lat/long from scope to determine hemisphere.
@@ -193,35 +193,26 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         SetStatusText(_("Start Looping..."));
         pFrame->OnLoopExposure(dummy);
     }
-    // Drop down list box for alignment star
-    SetBackgroundColour(wxColor(0xcccccc));
-    SetSizeHints(wxDefaultSize, wxDefaultSize);
-
-    // a vertical sizer holding everything
-    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
-
-    // a horizontal box sizer for the bitmap and the instructions
-    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
     c_autoInstr = _(
-        "Slew to near the Celestial Pole.\n"
-        "Choose a Reference Star from the list.\n"
-        "Select it as the guide star on the main display.\n"
-        "Click Rotate to start the alignment.\n"
-        "Wait for the adjustments to display.\n"
-        "Adjust your mount's altitude and azimuth as displayed.\n"
-        "Red=Altitude; Blue=Azimuth\n"
+        "Slew to near the Celestial Pole.<br/>"
+        "Choose a Reference Star from the list.<br/>"
+        "Select it as the guide star on the main display.<br/>"
+        "Click Rotate to start the alignment.<br/>"
+        "Wait for the adjustments to display.<br/>"
+        "Adjust your mount's altitude and azimuth as displayed.<br/>"
+        "Red=Altitude; Blue=Azimuth<br/>"
         );
     c_manualInstr = _(
-        "Slew to near the Celestial Pole.\n"
-        "Choose a Reference Star from the list.\n"
-        "Select it as the guide star on the main display.\n"
-        "Click Get first position\n"
-        "Slew at least 0h20m west in RA\n"
-        "Ensure the Reference Star is still selected\n"
-        "Click Get second position\n"
-        "Repeat for the third position\n"
-        "Click Calculate to show the adjustments needed\n"
-        "Adjust your mount's altitude and azimuth to place"
+        "Slew to near the Celestial Pole.<br/>"
+        "Choose a Reference Star from the list.<br/>"
+        "Select it as the guide star on the main display.<br/>"
+        "Click Get first position.<br/>"
+        "Slew at least 0h20m west in RA.<br/>"
+        "Ensure the Reference Star is still selected.<br/>"
+        "Click Get second position.<br/>"
+        "Repeat for the third position.<br/>"
+        "Click Calculate to show the adjustments needed.<br/>"
+        "Adjust your mount's altitude and azimuth to place "
         "three reference stars on their orbits\n"
         );
 
@@ -232,11 +223,22 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         a_auto = false;
     }
 
-    w_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    // Start window definition
+    SetBackgroundColour(wxColor(0xcccccc));
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+    // a vertical sizer holding everything
+    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+
+    // a horizontal box sizer for the bitmap and the instructions
+    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
+    w_instructions = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(240, 240), wxHW_DEFAULT_STYLE);
+    w_instructions->SetStandardFonts(8);
+    /*
 #ifdef __WXOSX__
     w_instructions->SetFont(*wxSMALL_FONT);
 #endif
-    w_instructions->Wrap(-1);
+    */
     instrSizer->Add(w_instructions, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     w_pole = new PolePanel(this);
@@ -523,7 +525,9 @@ void StaticPaToolWin::FillPanel()
         w_manual->Hide();
     }
     w_manual->SetValue(!a_auto);
-    w_instructions->SetLabel(a_auto ? c_autoInstr : c_manualInstr);
+
+    wxString html = wxString::Format("<html><body style=\"background-color:#cccccc;\">%s</body></html>", a_auto ? c_autoInstr : c_manualInstr);
+    w_instructions->SetPage(html);
 
     w_star1->SetLabel(_("Rotate"));
     if (s_aligning) {
@@ -566,12 +570,12 @@ void StaticPaToolWin::CalcRotationCentre(void)
     y2 = r_pxPos[1].Y;
     if (!a_auto)
     {
-        SetStatusText(wxString::Format("Manual CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
-        Debug.AddLine(wxString::Format("Manual CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
         double a, b, c, e, f, g, i, j, k;
         double m11, m12, m13, m14;
         x3 = r_pxPos[2].X;
         y3 = r_pxPos[2].Y;
+        SetStatusText(wxString::Format("Manual CalcCoR: (%.1f,%.1f); (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2, x3, y3));
+        Debug.AddLine(wxString::Format("Manual CalcCoR: (%.1f,%.1f); (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2, x3, y3));
         // |A| = aei + bfg + cdh -ceg -bdi -afh
         // a b c
         // d e f
@@ -603,17 +607,29 @@ void StaticPaToolWin::CalcRotationCentre(void)
     }
     else
     {
-        SetStatusText(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
-        Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f)", x1, y1, x2, y2));
+        SetStatusText(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0]*15., r_raPos[1]*15.));
+        Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0]*15., r_raPos[1]*15.));
         // Alternative algorithm based on two points and angle rotated
-        double theta2;
-        theta2 = a_hemi * radians(360.0 / 24.0 * (r_raPos[1] - r_raPos[0])) / 2.0;
+        double radiff, theta2;
+        // Get RA change. For westward movement RA decreases.
+        // Invert to get image rotation (mult by -1)
+        // Convert to radians radians(mult by 15)
+        // Convert to RH system (mult by a_hemi)
+        // normalise to +/- PI
+        radiff = norm_angle(radians((r_raPos[0] - r_raPos[1])*15.0*a_hemi));
+
+        theta2 = radiff / 2.0; // Half the image rotation for midpoint of chord
         double lenchord = sqrt(pow((x1 - x2), 2.0) + pow((y1 - y2), 2.0));
-        cr = lenchord / 2.0 / sin(theta2);
-        double lenbase = cr*cos(theta2);
-        double slopebase = atan2(y1 - y2, x2 - x1) + M_PI / 2.0;
+        cr = fabs(lenchord / 2.0 / sin(theta2));
+        double lenbase = fabs(cr*cos(theta2));
+        // Calculate the slope of the chord in pixels
+        // We know the image is moving clockwise in NH and anti-clockwise in SH
+        // So subtract PI/2 in NH or add PI/2 in SH to get the slope to the CoR
+        // Invert y values as pixels are +ve downwards
+        double slopebase = atan2(y1 - y2, x2 - x1) - a_hemi* M_PI / 2.0;
         cx = (x1 + x2) / 2.0 + lenbase * cos(slopebase);
         cy = (y1 + y2) / 2.0 - lenbase * sin(slopebase); // subtract for pixels
+        Debug.AddLine(wxString::Format("SPA CalcCoR: radiff(deg); %.1f; radius: ,%.1f; dir to CoR %.1f", degrees(radiff), cr, degrees(slopebase)));
     }
     r_pxCentre.X = cx;
     r_pxCentre.Y = cy;
@@ -629,6 +645,8 @@ void StaticPaToolWin::CalcRotationCentre(void)
     g_dispSz[0] = xpx;
     g_dispSz[1] = ypx;
 
+    Debug.AddLine(wxString::Format("SPA CalcCoR: W:H:scale:angle %d: %d: %.1f: %.1f", xpx, ypx, scalefactor, g_camAngle));
+
 // Diatance and angle of CoR from centre of sensor
     double cor_r = sqrt(pow(xpx / 2 - cx, 2) + pow(ypx / 2 - cy, 2));
     double cor_a = degrees(atan2((ypx / 2 - cy), (xpx / 2 - cx)));
@@ -642,18 +660,29 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_ConeCorr.Y = cone_r * sin(radians(rarot));
     double decCorr_deg = dec_r * g_pxScale / 3600;
 
-// Caclulate pixel values for the alignment stars
+// Caclulate pixel values for the alignment stars relative to the CoR
     PHD_Point starpx, stardeg;
     stardeg = PHD_Point(poleStars->at(a_refStar).ra, poleStars->at(a_refStar).dec);
     starpx = Radec2Px(stardeg);
+    // Convert to display pixel values by adding the CoR pixel coordinates
     double xt = starpx.X + r_pxCentre.X;
     double yt = starpx.Y + r_pxCentre.Y;
 
     int idx = a_auto ? 1 : 2;
     double xs = r_pxPos[idx].X;
     double ys = r_pxPos[idx].Y;
+    Debug.AddLine(wxString::Format("SPA CalcCoR: Refstar #%d %s RA/dec(%.1f,%.1f)", 
+        a_refStar, poleStars->at(a_refStar).name, poleStars->at(a_refStar).ra, poleStars->at(a_refStar).dec));
+    Debug.AddLine(wxString::Format("SPA CalcCoR: Calc pxPos(%.1f,%.1f), wrt Cor (%.1f,%.1f)", starpx.X, starpx.Y, r_pxCentre.X, r_pxCentre.Y));
+    Debug.AddLine(wxString::Format("SPA CalcCoR: measured pos: (%.1f,%.1f)", xs, ys));
 
     // Calculate the camera rotation from the Azimuth axis
+    // HA = LST - RA
+    // In NH HA decreases clockwise; RA increases clockwise
+    // "Up" is HA=0
+    // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
+    // Star rotation is RAstar - RAmount
+
     // Alt angle aligns to HA=0, Azimuth (East) to HA = -90
     // In home position Az aligns with Dec
     // So at HA +/-90 (home pos) Alt rotation is 0 (HA+90)
@@ -661,7 +690,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     // Let harot =  camera rotation from Alt axis
     // Alt axis is at HA+90
     // This is camera rotation from RA minus(?) LST angle 
-    double    hcor_r = sqrt(pow(xt - xs, 2) + pow(yt - ys, 2));
+    double    hcor_r = sqrt(pow(xt - xs, 2) + pow(yt - ys, 2)); //xt,yt: target, xs,ys: measured
     double    hcor_a = degrees(atan2((yt - ys), (xt - xs)));
     double ra_hrs, dec_deg, st_hrs;
     pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs);
@@ -769,6 +798,14 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     // Caclulate pixel values for the reference stars
     PHD_Point starpx, stardeg;
     double radpx;
+    const std::string alpha = "ABCDEFGHIJKL";
+    const wxFont& SmallFont =
+#if defined(__WXOSX__)
+        *wxSMALL_FONT;
+#else
+        *wxSWISS_FONT;
+#endif
+    dc.SetFont(SmallFont);
     for (int is = 0; is < poleStars->size(); is++)
     {
         stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
@@ -779,6 +816,8 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_SOLID));
         dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
+        dc.SetTextForeground(line_color);
+        dc.DrawText(wxString::Format("%c", alpha[is]), (r_pxCentre.X + starpx.X + region) * scale, (r_pxCentre.Y + starpx.Y) * scale);
     }
     // Draw adjustment lines for centring the CoR on the display in blue (dec) and red (cone error)
     bool drawCone = false;

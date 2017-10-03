@@ -48,7 +48,7 @@ struct StaticPaToolWin : public wxFrame
     /*
     Tool window controls
     */
-    wxStaticText *w_instructions;
+    wxHtmlWindow *w_instructions;
     wxTextCtrl *w_camScale; // Text box for camera pixel scale
     wxTextCtrl *w_camRot;   // Text box for camera rotation
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
