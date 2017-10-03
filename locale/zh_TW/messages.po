@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-03 11:49-0400\n"
+"POT-Creation-Date: 2017-10-03 11:52-0400\n"
 "PO-Revision-Date: 2017-09-30 13:02+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -200,12 +200,12 @@ msgstr "理想值"
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:307 scope.cpp:222 staticpa_toolwin.cpp:285
+#: backlash_comp.cpp:307 scope.cpp:222 staticpa_toolwin.cpp:287
 #: testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:308 scope.cpp:223 staticpa_toolwin.cpp:286
+#: backlash_comp.cpp:308 scope.cpp:223 staticpa_toolwin.cpp:288
 #: testguide.cpp:152
 msgid "South"
 msgstr "南向"
@@ -1751,7 +1751,7 @@ msgid "Start training the tracking rate."
 msgstr "開始調校追蹤速率"
 
 #: comet_tool.cpp:117 darks_dialog.cpp:247 guiding_assistant.cpp:480
-#: starcross_test.cpp:163 staticpa_toolwin.cpp:530
+#: starcross_test.cpp:163 staticpa_toolwin.cpp:534
 msgid "Stop"
 msgstr "停止"
 
@@ -2474,7 +2474,7 @@ msgstr "中斷所有"
 msgid "Disconnect all equipment"
 msgstr "中斷所有的設備"
 
-#: gear_dialog.cpp:339 myframe.cpp:1151 staticpa_toolwin.cpp:401
+#: gear_dialog.cpp:339 myframe.cpp:1151 staticpa_toolwin.cpp:403
 msgid "Close"
 msgstr "關閉"
 
@@ -6257,133 +6257,127 @@ msgstr ""
 msgid "Static Polar Alignment"
 msgstr ""
 
+#: staticpa_toolwin.cpp:197
+msgid ""
+"Slew to near the Celestial Pole.<br/>Choose a Reference Star from the list."
+"<br/>Select it as the guide star on the main display.<br/>Click Rotate to "
+"start the alignment.<br/>Wait for the adjustments to display.<br/>Adjust "
+"your mount's altitude and azimuth as displayed.<br/>Red=Altitude; "
+"Blue=Azimuth<br/>"
+msgstr ""
+
 #: staticpa_toolwin.cpp:206
 msgid ""
-"Slew to near the Celestial Pole.\n"
-"Choose a Reference Star from the list.\n"
-"Select it as the guide star on the main display.\n"
-"Click Rotate to start the alignment.\n"
-"Wait for the adjustments to display.\n"
-"Adjust your mount's altitude and azimuth as displayed.\n"
-"Red=Altitude; Blue=Azimuth\n"
+"Slew to near the Celestial Pole.<br/>Choose a Reference Star from the list."
+"<br/>Select it as the guide star on the main display.<br/>Click Get first "
+"position.<br/>Slew at least 0h20m west in RA.<br/>Ensure the Reference Star "
+"is still selected.<br/>Click Get second position.<br/>Repeat for the third "
+"position.<br/>Click Calculate to show the adjustments needed.<br/>Adjust "
+"your mount's altitude and azimuth to place three reference stars on their "
+"orbits\n"
 msgstr ""
 
-#: staticpa_toolwin.cpp:215
-msgid ""
-"Slew to near the Celestial Pole.\n"
-"Choose a Reference Star from the list.\n"
-"Select it as the guide star on the main display.\n"
-"Click Get first position\n"
-"Slew at least 0h20m west in RA\n"
-"Ensure the Reference Star is still selected\n"
-"Click Get second position\n"
-"Repeat for the third position\n"
-"Click Calculate to show the adjustments needed\n"
-"Adjust your mount's altitude and azimuth to placethree reference stars on "
-"their orbits\n"
-msgstr ""
-
-#: staticpa_toolwin.cpp:248
+#: staticpa_toolwin.cpp:250
 msgid "Alignment Parameters"
 msgstr ""
 
-#: staticpa_toolwin.cpp:259
+#: staticpa_toolwin.cpp:261
 msgid "Camera arcsec/pixel"
 msgstr ""
 
-#: staticpa_toolwin.cpp:263
+#: staticpa_toolwin.cpp:265
 msgid "Camera Angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:267
+#: staticpa_toolwin.cpp:269
 msgid "Hemisphere"
 msgstr ""
 
-#: staticpa_toolwin.cpp:272
+#: staticpa_toolwin.cpp:274
 msgid "Reference Star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:288
+#: staticpa_toolwin.cpp:290
 msgid "Select your hemisphere"
 msgstr ""
 
-#: staticpa_toolwin.cpp:292
+#: staticpa_toolwin.cpp:294
 msgid "Select the star used for checking alignment."
 msgstr ""
 
-#: staticpa_toolwin.cpp:297
+#: staticpa_toolwin.cpp:299
 msgid "X px"
 msgstr ""
 
-#: staticpa_toolwin.cpp:301
+#: staticpa_toolwin.cpp:303
 msgid "Y px"
 msgstr ""
 
-#: staticpa_toolwin.cpp:305
+#: staticpa_toolwin.cpp:307
 msgid "Manual Slew"
 msgstr ""
 
-#: staticpa_toolwin.cpp:308
+#: staticpa_toolwin.cpp:310
 msgid "Manually slew the mount to three alignment positions"
 msgstr ""
 
-#: staticpa_toolwin.cpp:312
+#: staticpa_toolwin.cpp:314
 msgid "Pos #1"
 msgstr ""
 
-#: staticpa_toolwin.cpp:322 staticpa_toolwin.cpp:528
+#: staticpa_toolwin.cpp:324 staticpa_toolwin.cpp:532
 msgid "Rotate"
 msgstr ""
 
-#: staticpa_toolwin.cpp:327
+#: staticpa_toolwin.cpp:329
 msgid "Pos #2"
 msgstr ""
 
-#: staticpa_toolwin.cpp:337
+#: staticpa_toolwin.cpp:339
 msgid "Get second position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:342
+#: staticpa_toolwin.cpp:344
 msgid "Pos #3"
 msgstr ""
 
-#: staticpa_toolwin.cpp:352
+#: staticpa_toolwin.cpp:354
 msgid "Get third position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:357
+#: staticpa_toolwin.cpp:359
 msgid "Centre"
 msgstr ""
 
-#: staticpa_toolwin.cpp:367
+#: staticpa_toolwin.cpp:369
 msgid "Calculate"
 msgstr ""
 
-#: staticpa_toolwin.cpp:379
+#: staticpa_toolwin.cpp:381
 msgid "Adjustment notes"
 msgstr ""
 
-#: staticpa_toolwin.cpp:465
+#: staticpa_toolwin.cpp:467
 msgid "Static alignment stopped"
 msgstr ""
 
-#: staticpa_toolwin.cpp:472
+#: staticpa_toolwin.cpp:474
 msgid "Please wait till Calibration is done and/or stop guiding"
 msgstr ""
 
-#: staticpa_toolwin.cpp:477
+#: staticpa_toolwin.cpp:479
 msgid "Please select a star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:538
+#: staticpa_toolwin.cpp:542
 msgid "Get first position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:826
+#: staticpa_toolwin.cpp:865
 msgid "Polar align: star #1"
 msgstr ""
 
-#: staticpa_toolwin.cpp:852
+#: staticpa_toolwin.cpp:891
 msgid "Polar align: star #2"
 msgstr ""
 
