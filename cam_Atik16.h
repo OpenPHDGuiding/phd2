@@ -40,6 +40,8 @@ class Camera_Atik16Class : public GuideCamera
 {
     bool m_dllLoaded;
     ArtemisHandle Cam_Handle;
+    ARTEMISPROPERTIES m_properties;
+    wxByte m_curBin;
 
 public:
     Camera_Atik16Class();
