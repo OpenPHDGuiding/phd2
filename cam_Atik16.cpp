@@ -41,7 +41,7 @@
 
 #include <wx/stopwatch.h>
 
-Camera_Atik16Class::Camera_Atik16Class()
+CameraAtik16::CameraAtik16()
     : m_dllLoaded(false)
 {
     Connected = false;
@@ -55,18 +55,18 @@ Camera_Atik16Class::Camera_Atik16Class()
     HasSubframes = true;
 }
 
-Camera_Atik16Class::~Camera_Atik16Class()
+CameraAtik16::~CameraAtik16()
 {
     if (m_dllLoaded)
         ArtemisUnLoadDLL();
 }
 
-wxByte Camera_Atik16Class::BitsPerPixel()
+wxByte CameraAtik16::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_Atik16Class::LoadDLL()
+bool CameraAtik16::LoadDLL()
 {
     if (!m_dllLoaded)
     {
@@ -91,7 +91,7 @@ static int FirstDevNum()
     return -1;
 }
 
-bool Camera_Atik16Class::EnumCameras(wxArrayString& names, wxArrayString& ids)
+bool CameraAtik16::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     if (!LoadDLL())
         return true;
@@ -110,7 +110,7 @@ bool Camera_Atik16Class::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-bool Camera_Atik16Class::Connect(const wxString& camId)
+bool CameraAtik16::Connect(const wxString& camId)
 {
     // returns true on error
 
@@ -192,7 +192,7 @@ bool Camera_Atik16Class::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration)
+bool CameraAtik16::ST4PulseGuideScope(int direction, int duration)
 {
     int axis;
     //wxStopWatch swatch;
@@ -221,12 +221,12 @@ bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void Camera_Atik16Class::ClearGuidePort()
+void CameraAtik16::ClearGuidePort()
 {
     ArtemisStopGuiding(Cam_Handle);
 }
 
-bool Camera_Atik16Class::Disconnect()
+bool CameraAtik16::Disconnect()
 {
     if (ArtemisIsConnected(Cam_Handle))
         ArtemisDisconnect(Cam_Handle);
@@ -249,7 +249,7 @@ static bool StopCapture(ArtemisHandle h)
     return ret == ARTEMIS_OK;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool useSubframe = UseSubframes;
 
@@ -369,7 +369,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
     return false;
 }
 
-/*void Camera_Atik16Class::RemoveLines(usImage& img) {
+/*void CameraAtik16::RemoveLines(usImage& img) {
     int i, j, val;
     unsigned short data[21];
     unsigned short *ptr1, *ptr2;
@@ -404,12 +404,12 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
     }
 }*/
 
-bool Camera_Atik16Class::HasNonGuiCapture(void)
+bool CameraAtik16::HasNonGuiCapture(void)
 {
     return true;
 }
 
-bool Camera_Atik16Class::ST4HasNonGuiMove(void)
+bool CameraAtik16::ST4HasNonGuiMove(void)
 {
     return true;
 }

@@ -45,7 +45,7 @@
 #include "time.h"
 #include "image_math.h"
 
-Camera_WDMClass::Camera_WDMClass()
+CameraWDM::CameraWDM()
 {
     Connected = false;
     Name = _T("Windows Camera");      // should get overwritten on connect
@@ -59,15 +59,15 @@ Camera_WDMClass::Camera_WDMClass()
     m_pVidCap = NULL;
 }
 
-wxByte Camera_WDMClass::BitsPerPixel()
+wxByte CameraWDM::BitsPerPixel()
 {
     // individual frames are 8-bit, but stacking can use up to 16-bits
     return 16;
 }
 
-bool Camera_WDMClass::CaptureCallback(CVRES status, CVImage* imagePtr, void* userParam)
+bool CameraWDM::CaptureCallback(CVRES status, CVImage* imagePtr, void* userParam)
 {
-    Camera_WDMClass* cam = (Camera_WDMClass*)userParam;
+    CameraWDM* cam = (CameraWDM*)userParam;
     bool bReturn = CVSUCCESS(status);
 
     cam->m_nAttempts++;
@@ -115,7 +115,7 @@ bool Camera_WDMClass::CaptureCallback(CVRES status, CVImage* imagePtr, void* use
     return bReturn;
 }
 
-bool Camera_WDMClass::SelectDeviceAndMode()
+bool CameraWDM::SelectDeviceAndMode()
 {
     bool error = false;
     CVVidCapture *vidCap = 0;
@@ -229,13 +229,13 @@ bool Camera_WDMClass::SelectDeviceAndMode()
     return error;
 }
 
-bool Camera_WDMClass::HandleSelectCameraButtonClick(wxCommandEvent& evt)
+bool CameraWDM::HandleSelectCameraButtonClick(wxCommandEvent& evt)
 {
     SelectDeviceAndMode();
     return true; // handled
 }
 
-bool Camera_WDMClass::Connect(const wxString& camId)
+bool CameraWDM::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -327,7 +327,7 @@ bool Camera_WDMClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_WDMClass::Disconnect()
+bool CameraWDM::Disconnect()
 {
     if (m_pVidCap)
     {
@@ -345,7 +345,7 @@ bool Camera_WDMClass::Disconnect()
 }
 
 
-bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
+bool CameraWDM::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 {
     bool bError = false;
 
@@ -376,7 +376,7 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
     return bError;
 }
 
-void Camera_WDMClass::EndCapture(void)
+void CameraWDM::EndCapture(void)
 {
     int iterations = 0;
 
@@ -405,7 +405,7 @@ void Camera_WDMClass::EndCapture(void)
     }
 }
 
-bool Camera_WDMClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
@@ -437,7 +437,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, int options, const wxR
     return bError;
 }
 
-bool Camera_WDMClass::CaptureOneFrame(usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::CaptureOneFrame(usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
@@ -464,7 +464,7 @@ bool Camera_WDMClass::CaptureOneFrame(usImage& img, int options, const wxRect& s
     return bError;
 }
 
-void Camera_WDMClass::ShowPropertyDialog()
+void CameraWDM::ShowPropertyDialog()
 {
     if (Connected)
     {

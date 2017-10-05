@@ -108,7 +108,7 @@ Q5V_V Q5V_QHY5VInit;
 typedef void (CALLBACK* Q5V_GUIDE) (char*, unsigned char, unsigned char);
 Q5V_GUIDE Q5V_SendGuideCommand;
 
-Camera_SSPIAGClass::Camera_SSPIAGClass()
+CameraSSPIAG::CameraSSPIAG()
 {
     Connected = false;
     Name = _T("StarShoot PIAG");
@@ -118,12 +118,12 @@ Camera_SSPIAGClass::Camera_SSPIAGClass()
     RawBuffer = NULL;
 }
 
-wxByte Camera_SSPIAGClass::BitsPerPixel()
+wxByte CameraSSPIAG::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_SSPIAGClass::Connect(const wxString& camId)
+bool CameraSSPIAG::Connect(const wxString& camId)
 {
     // returns true on error
     CameraDLL = LoadLibrary(TEXT("astroDLLsspiag"));
@@ -297,7 +297,7 @@ bool Camera_SSPIAGClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraSSPIAG::ST4PulseGuideScope(int direction, int duration)
 {
 // Vend req 0xb5  (vendTXD)
 // Buffer[0] = GuideCommand, Buffer[1]=PulseTime.
@@ -318,17 +318,17 @@ bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void Camera_SSPIAGClass::ClearGuidePort()
+void CameraSSPIAG::ClearGuidePort()
 {
     Q5V_SendGuideCommand("QHY5V-0",0,0);
 }
 
-void Camera_SSPIAGClass::InitCapture()
+void CameraSSPIAG::InitCapture()
 {
     //Q5V_SetQHY5VGlobalGain(GuideCameraGain * 63 / 100);
 }
 
-bool Camera_SSPIAGClass::Disconnect()
+bool CameraSSPIAG::Disconnect()
 {
     //closeUSB();
     if (RawBuffer)
@@ -341,7 +341,7 @@ bool Camera_SSPIAGClass::Disconnect()
 
 }
 
-bool Camera_SSPIAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
 // Only does full frames still
     static int last_dur = 0;

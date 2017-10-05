@@ -50,7 +50,7 @@ typedef HANDLE sxccd_handle_t;
 typedef void *sxccd_handle_t;
 #endif
 
-class Camera_SXVClass : public GuideCamera
+class CameraSXV : public GuideCamera
 {
     sxccd_handle_t hCam;
     sxccd_params_t CCDParams;
@@ -67,7 +67,7 @@ class Camera_SXVClass : public GuideCamera
 
 public:
 
-    Camera_SXVClass();
+    CameraSXV();
 
     bool EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);

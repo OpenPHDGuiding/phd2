@@ -44,19 +44,19 @@
 
 using namespace cv;
 
-Camera_LELxUsbWebcamClass::Camera_LELxUsbWebcamClass(void)
-    : Camera_LEWebcamClass()
+CameraLELxUsbWebcam::CameraLELxUsbWebcam(void)
+    : CameraLEWebcam()
 {
     m_isOpen = false;
     Name = _T("Usb USB Webcam");
 }
 
-Camera_LELxUsbWebcamClass::~Camera_LELxUsbWebcamClass(void)
+CameraLELxUsbWebcam::~CameraLELxUsbWebcam(void)
 {
     Disconnect();
 }
 
-bool Camera_LELxUsbWebcamClass::Connect(const wxString& camId)
+bool CameraLELxUsbWebcam::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -71,7 +71,7 @@ bool Camera_LELxUsbWebcamClass::Connect(const wxString& camId)
 
         LXUSB_Reset();
 
-        if (Camera_LEWebcamClass::Connect(camId))
+        if (CameraLEWebcam::Connect(camId))
         {
             throw ERROR_INFO("base class Connect() failed");
         }
@@ -87,7 +87,7 @@ bool Camera_LELxUsbWebcamClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_LELxUsbWebcamClass::Disconnect()
+bool CameraLELxUsbWebcam::Disconnect()
 {
     bool bError = false;
 
@@ -101,7 +101,7 @@ bool Camera_LELxUsbWebcamClass::Disconnect()
             m_isOpen = false;
         }
 
-        if (Camera_LEWebcamClass::Disconnect())
+        if (CameraLEWebcam::Disconnect())
         {
             throw ERROR_INFO("Base class Disconnect() failed");
         }
@@ -115,7 +115,7 @@ bool Camera_LELxUsbWebcamClass::Disconnect()
     return bError;
 }
 
-bool Camera_LELxUsbWebcamClass::LEControl(int actions)
+bool CameraLELxUsbWebcam::LEControl(int actions)
 {
     bool bError = false;
 

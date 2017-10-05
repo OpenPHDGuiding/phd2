@@ -40,7 +40,7 @@
 //#include "vcapwin.h"
 #include "cam_VFW.h"
 
-Camera_VFWClass::Camera_VFWClass()
+CameraVFW::CameraVFW()
 {
     Connected = false;
     Name = _T("Windows VFW");
@@ -51,12 +51,12 @@ Camera_VFWClass::Camera_VFWClass()
     HasPortNum = false;
 }
 
-wxByte Camera_VFWClass::BitsPerPixel()
+wxByte CameraVFW::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_VFWClass::Connect(const wxString& camId)
+bool CameraVFW::Connect(const wxString& camId)
 {
 // returns true on error
 //  bool retval;
@@ -111,7 +111,7 @@ bool Camera_VFWClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_VFWClass::Disconnect() {
+bool CameraVFW::Disconnect() {
     if (VFW_Window->IsDeviceConnected()) {
         VFW_Window->DeviceDisconnect();
     }
@@ -121,7 +121,7 @@ bool Camera_VFWClass::Disconnect() {
     return false;
 }
 
-bool Camera_VFWClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize,ysize, i;
     int NFrames = 0;
@@ -160,7 +160,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, int options, const wxR
 }
 
 
-void Camera_VFWClass::ShowPropertyDialog() {
+void CameraVFW::ShowPropertyDialog() {
 //      if (event.GetId() == ADV_BUTTON1) {
 /*  if (VFW_Window->HasVideoFormatDialog()) {
         VFW_Window->VideoFormatDialog();

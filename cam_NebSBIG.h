@@ -36,10 +36,10 @@
 #ifndef NEBSBIGDEF
 #define NEBSBIGDEF
 
-class Camera_NebSBIGClass : public GuideCamera
+class CameraNebSBIG : public GuideCamera
 {
 public:
-    Camera_NebSBIGClass();
+    CameraNebSBIG();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture();
     wxByte  BitsPerPixel();

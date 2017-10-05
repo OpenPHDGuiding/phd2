@@ -36,7 +36,7 @@
 
 #include "FcApiUser.h"
 
-class Camera_SAC42Class : public GuideCamera
+class CameraSAC42 : public GuideCamera
 {
 protected:
     HANDLE hDriver;
@@ -46,7 +46,7 @@ protected:
     int MaxExposure;
 
 public:
-    Camera_SAC42Class();
+    CameraSAC42();
     bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool   Connect(const wxString& camId);
     bool   Disconnect();

@@ -45,7 +45,7 @@
 
 #include "indi_gui.h"
 
-class Camera_INDIClass : public GuideCamera, public INDI::BaseClient
+class CameraINDI : public GuideCamera, public INDI::BaseClient
 {
 private:
     ISwitchVectorProperty *connection_prop;
@@ -113,8 +113,8 @@ protected:
     void serverDisconnected(int exit_code) override;
 
 public:
-    Camera_INDIClass();
-    ~Camera_INDIClass();
+    CameraINDI();
+    ~CameraINDI();
     bool    Connect(const wxString& camId);
     bool    Disconnect();
     bool    HasNonGuiCapture();

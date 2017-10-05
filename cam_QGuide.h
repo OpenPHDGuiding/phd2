@@ -36,12 +36,12 @@
 
 #include "cmosDLL.h"
 
-class Camera_QGuiderClass : public GuideCamera
+class CameraQGuider : public GuideCamera
 {
     unsigned char *buffer;
 
 public:
-    Camera_QGuiderClass();
+    CameraQGuider();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);

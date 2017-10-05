@@ -35,13 +35,13 @@
 #endif
 #if defined (SAC_FCLAB_GUIDE)
 #include "FcApiUser.h"
-class Camera_SACGuiderClass : public Camera_SAC42Class {
+class CameraSACGuider : public CameraSAC42 {
 public:
-    Camera_SACGuiderClass();
+    CameraSACGuider();
 };
 
 #elif defined (SAC_CMOS_GUIDE)
-class Camera_SACGuiderClass : public GuideCamera
+class CameraSACGuider : public GuideCamera
 {
     B_V_DLLFUNC CloseUSB;
     B_Cp_DLLFUNC OpenUSB;
@@ -54,7 +54,7 @@ class Camera_SACGuiderClass : public GuideCamera
 
 public:
 
-    Camera_SACGuiderClass();
+    CameraSACGuider();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);

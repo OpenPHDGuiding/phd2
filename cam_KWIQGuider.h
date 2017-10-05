@@ -39,11 +39,11 @@
 
 #include <KWIQGuider.h>
 
-class Camera_KWIQGuiderClass : public GuideCamera
+class CameraKWIQGuider : public GuideCamera
 {
     KWIQ::KWIQGuider *KWIQguider;
 public:
-    Camera_KWIQGuiderClass();
+    CameraKWIQGuider();
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool Connect(const wxString& camId);
     bool Disconnect();

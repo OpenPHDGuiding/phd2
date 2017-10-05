@@ -36,13 +36,13 @@
 #ifndef CAM_INOVAPLC_H_INCLUDED
 #define CAM_INOVAPLC_H_INCLUDED
 
-class Camera_INovaPLCClass : public GuideCamera
+class CameraINovaPLC : public GuideCamera
 {
     unsigned int RowTime;
     unsigned short *RawData;
 
 public:
-    Camera_INovaPLCClass();
+    CameraINovaPLC();
 
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool HasNonGuiCapture();

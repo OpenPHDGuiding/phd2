@@ -38,12 +38,12 @@
 
 #include <openssag.h>
 
-class Camera_OpenSSAGClass : public GuideCamera
+class CameraOpenSSAG : public GuideCamera
 {
     OpenSSAG::SSAG *ssag;
 public:
-    Camera_OpenSSAGClass();
-    ~Camera_OpenSSAGClass();
+    CameraOpenSSAG();
+    ~CameraOpenSSAG();
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool Connect(const wxString& camId);
     bool Disconnect();

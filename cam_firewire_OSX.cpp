@@ -47,7 +47,7 @@ bool DCAM_start_stop_mode = true;
 
 #include "cam_firewire.h"
 
-Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0)
+CameraFirewire::CameraFirewire() : m_dcContext(0), camera(0)
 {
     Connected = false;
 //  HaveBPMap = false;
@@ -58,7 +58,7 @@ Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0)
     m_hasGuideOutput = false;
 }
 
-Camera_FirewireClass::~Camera_FirewireClass()
+CameraFirewire::~CameraFirewire()
 {
   if(m_dcContext)
   {
@@ -67,12 +67,12 @@ Camera_FirewireClass::~Camera_FirewireClass()
   }
 }
 
-wxByte Camera_FirewireClass::BitsPerPixel()
+wxByte CameraFirewire::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_FirewireClass::Connect(const wxString& camId)
+bool CameraFirewire::Connect(const wxString& camId)
 {
     int err, CamNum;
     uint32_t i;
@@ -236,7 +236,7 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     return false;
 }
 
-void Camera_FirewireClass::InitCapture()
+void CameraFirewire::InitCapture()
 {
     // Set gain
     uint32_t Min;
@@ -248,7 +248,7 @@ void Camera_FirewireClass::InitCapture()
     dc1394_feature_set_value(camera,DC1394_FEATURE_GAIN, NewVal);
 }
 
-bool Camera_FirewireClass::Disconnect()
+bool CameraFirewire::Disconnect()
 {
     if (camera) {
         dc1394_video_set_transmission(camera,DC1394_OFF);
@@ -259,7 +259,7 @@ bool Camera_FirewireClass::Disconnect()
     return false;
 }
 
-bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize, ysize, i;
     unsigned short *dataptr;
@@ -375,7 +375,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_FirewireClass::HasNonGuiCapture(void)
+bool CameraFirewire::HasNonGuiCapture(void)
 {
     return true;
 }

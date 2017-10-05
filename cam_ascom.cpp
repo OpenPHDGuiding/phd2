@@ -1,9 +1,10 @@
 /*
- *  cam_ascomlate.cpp
- *  PHD Guiding
+ *  cam_ascom.cpp
+ *  PHD2 Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2010 Craig Stark.
+ *  Copyright (c) 2010 Craig Stark
+ *  Copyright (c) 2013-2017 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +15,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs, openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -34,7 +35,7 @@
 
 #include "phd.h"
 
-#if defined(ASCOM_LATECAMERA)
+#if defined(ASCOM_CAMERA)
 
 #include "camera.h"
 #include "comdispatch.h"
@@ -45,7 +46,7 @@
 #include <wx/txtstrm.h>
 #include <wx/stdpaths.h>
 
-#include "cam_ascomlate.h"
+#include "cam_ascom.h"
 #include <wx/msw/ole/oleutils.h>
 #include <comdef.h>
 
@@ -343,7 +344,7 @@ static bool ASCOM_IsMoving(IDispatch *cam)
     return vRes.boolVal == VARIANT_TRUE;
 }
 
-Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
+CameraASCOM::CameraASCOM(const wxString& choice)
 {
     m_choice = choice;
 
@@ -359,11 +360,11 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
     m_bitsPerPixel = 0;
 }
 
-Camera_ASCOMLateClass::~Camera_ASCOMLateClass()
+CameraASCOM::~CameraASCOM()
 {
 }
 
-wxByte Camera_ASCOMLateClass::BitsPerPixel()
+wxByte CameraASCOM::BitsPerPixel()
 {
     return m_bitsPerPixel;
 }
@@ -378,7 +379,7 @@ static wxString displayName(const wxString& ascomName)
 // map descriptive name to progid
 static std::map<wxString, wxString> s_progid;
 
-wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
+wxArrayString CameraASCOM::EnumAscomCameras()
 {
     wxArrayString list;
 
@@ -428,7 +429,7 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
     return list;
 }
 
-bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
+bool CameraASCOM::Create(DispatchObj *obj, DispatchClass *cls)
 {
     IDispatch *idisp = m_gitEntry.Get();
     if (idisp)
@@ -461,7 +462,7 @@ static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
     return true;
 }
 
-bool Camera_ASCOMLateClass::Connect(const wxString& camId)
+bool CameraASCOM::Connect(const wxString& camId)
 {
     DispatchClass driver_class;
     DispatchObj driver(&driver_class);
@@ -475,8 +476,8 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
 
     struct ConnectInBg : public ConnectCameraInBg
     {
-        Camera_ASCOMLateClass *cam;
-        ConnectInBg(Camera_ASCOMLateClass *cam_) : cam(cam_) { }
+        CameraASCOM *cam;
+        ConnectInBg(CameraASCOM *cam_) : cam(cam_) { }
         bool Entry()
         {
             GITObjRef dobj(cam->m_gitEntry);
@@ -703,7 +704,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_ASCOMLateClass::Disconnect()
+bool CameraASCOM::Disconnect()
 {
     if (!Connected)
     {
@@ -728,7 +729,7 @@ bool Camera_ASCOMLateClass::Disconnect()
     return false;
 }
 
-bool Camera_ASCOMLateClass::GetDevicePixelSize(double *devPixelSize)
+bool CameraASCOM::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;
@@ -737,7 +738,7 @@ bool Camera_ASCOMLateClass::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
-bool Camera_ASCOMLateClass::SetCoolerOn(bool on)
+bool CameraASCOM::SetCoolerOn(bool on)
 {
     if (!HasCooler)
     {
@@ -757,7 +758,7 @@ bool Camera_ASCOMLateClass::SetCoolerOn(bool on)
     return false;
 }
 
-bool Camera_ASCOMLateClass::SetCoolerSetpoint(double temperature)
+bool CameraASCOM::SetCoolerSetpoint(double temperature)
 {
     if (!HasCooler || !m_canSetCoolerTemperature)
     {
@@ -776,7 +777,7 @@ bool Camera_ASCOMLateClass::SetCoolerSetpoint(double temperature)
     return false;
 }
 
-bool Camera_ASCOMLateClass::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+bool CameraASCOM::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
     if (!HasCooler)
         return true; // error
@@ -825,7 +826,7 @@ bool Camera_ASCOMLateClass::GetCoolerStatus(bool *on, double *setpoint, double *
     return false;
 }
 
-bool Camera_ASCOMLateClass::GetCCDTemperature(double *temperature)
+bool CameraASCOM::GetCCDTemperature(double *temperature)
 {
     GITObjRef cam(m_gitEntry);
     Variant res;
@@ -840,7 +841,7 @@ bool Camera_ASCOMLateClass::GetCCDTemperature(double *temperature)
     return false;
 }
 
-void Camera_ASCOMLateClass::ShowPropertyDialog(void)
+void CameraASCOM::ShowPropertyDialog(void)
 {
     DispatchObj camera;
 
@@ -854,7 +855,7 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
     }
 }
 
-bool Camera_ASCOMLateClass::AbortExposure(void)
+bool CameraASCOM::AbortExposure(void)
 {
     if (!(m_canAbortExposure || m_canStopExposure))
         return false;
@@ -876,7 +877,7 @@ bool Camera_ASCOMLateClass::AbortExposure(void)
     }
 }
 
-bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     bool retval = false;
     bool takeSubframe = UseSubframes;
@@ -990,7 +991,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
     return false;
 }
 
-bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
 {
     if (!m_hasGuideOutput)
         return true;
@@ -1043,12 +1044,12 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_ASCOMLateClass::HasNonGuiCapture(void)
+bool CameraASCOM::HasNonGuiCapture(void)
 {
     return true;
 }
 
-bool Camera_ASCOMLateClass::ST4HasNonGuiMove(void)
+bool CameraASCOM::ST4HasNonGuiMove(void)
 {
     return true;
 }

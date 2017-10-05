@@ -37,16 +37,16 @@
 
 #include "cam_sbig.h"
 
-class Camera_SBIGRotatorClass : public GuideCamera
+class CameraSBIGRotator : public GuideCamera
 {
 private:
-    Camera_SBIGClass *m_pSubcamera;
+    CameraSBIG *m_pSubcamera;
     double m_raAngle;
     bool m_mirror;
 
 public:
-    Camera_SBIGRotatorClass();
-    ~Camera_SBIGRotatorClass();
+    CameraSBIGRotator();
+    ~CameraSBIGRotator();
 
     bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool   ST4PulseGuideScope(int direction, int duration);

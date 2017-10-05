@@ -35,7 +35,7 @@
 #ifndef SSPIAGDEF
 #define SSPIAGDEF
 
-class Camera_SSPIAGClass : public GuideCamera
+class CameraSSPIAG : public GuideCamera
 {
     HINSTANCE CameraDLL;
     HINSTANCE GenericDLL;
@@ -54,7 +54,7 @@ public:
     bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
 
-    Camera_SSPIAGClass();
+    CameraSSPIAG();
 };
 
 #endif

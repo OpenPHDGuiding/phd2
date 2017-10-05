@@ -36,7 +36,7 @@
 
 #include "ArtemisHSCAPI.h"
 
-class Camera_Atik16Class : public GuideCamera
+class CameraAtik16 : public GuideCamera
 {
     bool m_dllLoaded;
     ArtemisHandle Cam_Handle;
@@ -44,8 +44,8 @@ class Camera_Atik16Class : public GuideCamera
     wxByte m_curBin;
 
 public:
-    Camera_Atik16Class();
-    ~Camera_Atik16Class();
+    CameraAtik16();
+    ~CameraAtik16();
 
     bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);

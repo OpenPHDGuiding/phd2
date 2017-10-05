@@ -31,7 +31,7 @@ static bool DLLExists(const wxString& DLLName)
     return false;
 }
 
-Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
+CameraOpticstarPL130::CameraOpticstarPL130()
 {
     Connected = false;
     Name=_T("Opticstar PL-130M");
@@ -41,12 +41,12 @@ Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
     Color = false;
 }
 
-wxByte Camera_OpticstarPL130Class::BitsPerPixel()
+wxByte CameraOpticstarPL130::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_OpticstarPL130Class::Connect(const wxString& camId)
+bool CameraOpticstarPL130::Connect(const wxString& camId)
 {
 // returns true on error
     int retval;
@@ -64,14 +64,14 @@ bool Camera_OpticstarPL130Class::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_OpticstarPL130Class::Disconnect()
+bool CameraOpticstarPL130::Disconnect()
 {
     OSPL130_Finalize();
     Connected = false;
     return false;
 }
 
-bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool still_going = true;
 

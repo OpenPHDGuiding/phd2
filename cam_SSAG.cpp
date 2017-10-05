@@ -271,7 +271,7 @@ static void UnloadSSAGIFDll()
     }
 }
 
-Camera_SSAGClass::Camera_SSAGClass()
+CameraSSAG::CameraSSAG()
 {
     Connected = false;
     Name = _T("StarShoot Autoguider");
@@ -280,18 +280,18 @@ Camera_SSAGClass::Camera_SSAGClass()
     HasGainControl = true;
 }
 
-bool Camera_SSAGClass::GetDevicePixelSize(double* devPixelSize)
+bool CameraSSAG::GetDevicePixelSize(double* devPixelSize)
 {
     *devPixelSize = 5.2;
     return false;
 }
 
-wxByte Camera_SSAGClass::BitsPerPixel()
+wxByte CameraSSAG::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_SSAGClass::Connect(const wxString& camId)
+bool CameraSSAG::Connect(const wxString& camId)
 {
     // returns true on error
 
@@ -319,7 +319,7 @@ bool Camera_SSAGClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraSSAG::ST4PulseGuideScope(int direction, int duration)
 {
     int reg = 0;
     int dur = duration / 10;
@@ -345,17 +345,17 @@ bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void Camera_SSAGClass::ClearGuidePort()
+void CameraSSAG::ClearGuidePort()
 {
 }
 
-void Camera_SSAGClass::InitCapture()
+void CameraSSAG::InitCapture()
 {
     _SSAG_ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
     _SSAG_SetNoiseReduction(0);
 }
 
-bool Camera_SSAGClass::Disconnect()
+bool CameraSSAG::Disconnect()
 {
     _SSAG_closeUSB();
     UnloadSSAGIFDll();
@@ -375,7 +375,7 @@ static bool StopExposure()
     return true;
 }
 
-bool Camera_SSAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSSAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     // Only does full frames
 
@@ -436,7 +436,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, int options, const wx
     return false;
 }
 
-void Camera_SSAGClass::RemoveLines(usImage& img)
+void CameraSSAG::RemoveLines(usImage& img)
 {
     int i, j, val;
     unsigned short data[21];

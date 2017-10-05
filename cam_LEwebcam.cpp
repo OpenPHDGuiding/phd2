@@ -43,25 +43,25 @@
 
 using namespace cv;
 
-Camera_LEWebcamClass::Camera_LEWebcamClass(void)
-     : Camera_WDMClass()
+CameraLEWebcam::CameraLEWebcam(void)
+     : CameraWDM()
 {
     Name = _T("Generic LE Webcam");
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = true;
 }
 
-Camera_LEWebcamClass::~Camera_LEWebcamClass(void)
+CameraLEWebcam::~CameraLEWebcam(void)
 {
 }
 
-bool Camera_LEWebcamClass::Connect(const wxString& camId)
+bool CameraLEWebcam::Connect(const wxString& camId)
 {
     bool bError = false;
 
     try
     {
-        if (Camera_WDMClass::Connect(camId))
+        if (CameraWDM::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
@@ -77,16 +77,16 @@ bool Camera_LEWebcamClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_LEWebcamClass::Disconnect()
+bool CameraLEWebcam::Disconnect()
 {
     bool bError = false;
 
-    bError = Camera_WDMClass::Disconnect();
+    bError = CameraWDM::Disconnect();
 
     return bError;
 }
 
-bool Camera_LEWebcamClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
