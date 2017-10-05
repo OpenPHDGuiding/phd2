@@ -67,8 +67,10 @@ struct StaticPaToolWin : public wxFrame
     class PolePanel : public wxPanel
     {
     public:
+        wxPoint origPt, currPt;
         PolePanel(StaticPaToolWin* parent);
         StaticPaToolWin *paParent;
+        void OnClick(wxMouseEvent &evt);
         void OnPaint(wxPaintEvent &evt);
         void Paint();
         DECLARE_EVENT_TABLE()
@@ -143,7 +145,7 @@ struct StaticPaToolWin : public wxFrame
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    void CreateStarTemplate(wxDC &dc);
+    void CreateStarTemplate(wxDC &dc, wxPoint currPt);
     bool IsAligning(){ return s_aligning; };
     bool RotateMount();
     bool SetParams(double newoffset);

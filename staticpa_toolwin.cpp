@@ -54,24 +54,37 @@ EVT_CLOSE(StaticPaToolWin::OnClose)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(StaticPaToolWin::PolePanel, wxPanel)
-EVT_PAINT( StaticPaToolWin::PolePanel::OnPaint)
+EVT_PAINT(StaticPaToolWin::PolePanel::OnPaint)
+EVT_LEFT_DCLICK(StaticPaToolWin::PolePanel::OnClick)
 END_EVENT_TABLE()
 
 StaticPaToolWin::PolePanel::PolePanel(StaticPaToolWin* parent):
     wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(320, 240), wxBU_AUTODRAW | wxBU_EXACTFIT),
     paParent(parent)
 {
+    origPt.x = 160;
+    origPt.y = 120;
+    currPt.x = 0;
+    currPt.y = 0;
 }
 
 void StaticPaToolWin::PolePanel::OnPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
-    paParent->CreateStarTemplate(dc);
+    paParent->CreateStarTemplate(dc, currPt);
 }
 void StaticPaToolWin::PolePanel::Paint()
 {
     wxClientDC dc(this);
-    paParent->CreateStarTemplate(dc);
+    paParent->CreateStarTemplate(dc, currPt);
+}
+void StaticPaToolWin::PolePanel::OnClick(wxMouseEvent& evt)
+{
+    const wxPoint pt = wxGetMousePosition();
+    const wxPoint mpt = GetScreenPosition();
+    wxPoint mousePt = pt - mpt - origPt; // Distance fron centre
+    currPt = currPt + mousePt; // Distance from origin
+    Paint();
 }
 
 wxWindow *StaticPaTool::CreateStaticPaToolWindow()
@@ -164,15 +177,18 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         Star("H: HD98784", 99.78, -89.87, 8.9),
     };
     c_NthStars = {
-        Star("A: Polaris", 43.12, 89.34, 1.95),
-        Star("B: TYC-4629-33-1", 86.11, 89.43, 9.25),
-        Star("C: HD21070", 152.26, 89.48, 9.0),
-        Star("D: HD1687", 12.14, 89.54, 8.1),
-        Star("E: TYC-4662-45-1", 358.33, 89.54, 9.35),
-        Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
-        Star("G: TYC-4629-37-1", 85.51, 89.65, 9.15),
-        Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
-        Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
+        Star("A: HD5914", 26.39, 89.11, 6.45),
+        Star("B: HD14369", 61.11, 89.16, 8.05),
+        Star("C: Polaris", 43.12, 89.34, 1.95),
+        Star("D: HD211455", 301.77, 89.47, 8.9),
+        Star("E: TYC-4629-33-1", 86.11, 89.43, 9.25),
+        Star("F: HD21070", 152.26, 89.48, 9.0),
+        Star("G: HD1687", 12.14, 89.54, 8.1),
+//        Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
+//        Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
+        Star("H: TYC-4629-37-1", 85.51, 89.65, 9.15),
+//        Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
+//        Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
     };
 
     // get site lat/long from scope to determine hemisphere.
@@ -1068,7 +1084,7 @@ void StaticPaToolWin::MoveWestBy(double thetadeg)
     bool error = pFrame->pGuider->SetLockPosToStarAtPosition(lockpos);
 }
 
-void StaticPaToolWin::CreateStarTemplate(wxDC& dc)
+void StaticPaToolWin::CreateStarTemplate(wxDC& dc, wxPoint currPt)
 {
     dc.SetBackground(*wxGREY_BRUSH);
     dc.Clear();
@@ -1098,15 +1114,16 @@ void StaticPaToolWin::CreateStarTemplate(wxDC& dc)
         starpx = Radec2Px(stardeg);
         dc.SetPen(*wxYELLOW_PEN);
         dc.SetBrush(*wxYELLOW_BRUSH);
-
-        dc.DrawCircle(starpx.X * scale + 160, starpx.Y * scale + 120, starsz*scale);
-        dc.DrawText(wxString::Format("%c", alpha[is]), (starpx.X + starsz) * scale+160, (starpx.Y)* scale+120);
+        wxPoint starPt = wxPoint(starpx.X*scale, starpx.Y*scale) - currPt + wxPoint(160, 120);
+        dc.DrawCircle(starPt.x, starPt.y, starsz*scale);
+        dc.DrawText(wxString::Format("%c", alpha[is]), starPt.x + starsz*scale, starPt.y);
     }
     // draw the pole as a red cross
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
     dc.DrawLine(160- region*scale, 120, 160 + region*scale, 120);
     dc.DrawLine(160, 120 - region*scale, 160, 120 + region*scale);
+    dc.DrawLine(160, 120, 160-currPt.x, 120-currPt.y);
     return;
 }
 
