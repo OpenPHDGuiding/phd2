@@ -53,6 +53,7 @@ public:
     bool     SetCoolerOn(bool on) override;
     bool     SetCoolerSetpoint(double temperature) override;
     bool     GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool     GetCCDTemperature(double *temperature) override;
     bool     ST4HasNonGuiMove() override { return true; }
     bool     ST4SynchronousOnly() override;
     bool     ST4PulseGuideScope(int direction, int duration) override;

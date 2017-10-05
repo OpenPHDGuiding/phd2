@@ -825,6 +825,21 @@ bool Camera_ASCOMLateClass::GetCoolerStatus(bool *on, double *setpoint, double *
     return false;
 }
 
+bool Camera_ASCOMLateClass::GetCCDTemperature(double *temperature)
+{
+    GITObjRef cam(m_gitEntry);
+    Variant res;
+
+    if (!cam.GetProp(&res, dispid_ccdtemperature))
+    {
+        Debug.AddLine(ExcepMsg("ASCOM error getting CCDTemperature property", cam.Excep()));
+        return true;
+    }
+    *temperature = res.dblVal;
+
+    return false;
+}
+
 void Camera_ASCOMLateClass::ShowPropertyDialog(void)
 {
     DispatchObj camera;

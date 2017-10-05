@@ -68,17 +68,18 @@ public:
     Camera_ASCOMLateClass(const wxString& choice);
     ~Camera_ASCOMLateClass();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture(void);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect(void);
-    void    ShowPropertyDialog(void);
-    bool    ST4PulseGuideScope(int direction, int duration);
-    wxByte  BitsPerPixel();
-    bool    GetDevicePixelSize(double* devPixelSize);
-    bool    SetCoolerOn(bool on);
-    bool    SetCoolerSetpoint(double temperature);
-    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    HasNonGuiCapture(void) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect(void) override;
+    void    ShowPropertyDialog(void) override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double* devPixelSize) override;
+    bool    SetCoolerOn(bool on) override;
+    bool    SetCoolerSetpoint(double temperature) override;
+    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool    GetCCDTemperature(double *temperature) override;
 
 private:
 

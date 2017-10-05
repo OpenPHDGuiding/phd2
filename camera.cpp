@@ -718,6 +718,11 @@ bool GuideCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, dou
     return true; // error
 }
 
+bool GuideCamera::GetCCDTemperature(double *temperature)
+{
+    return true; // error
+}
+
 CameraConfigDialogPane *GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 {
     return new CameraConfigDialogPane(pParent, this);

@@ -404,6 +404,22 @@ bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
     return false;
 }
 
+bool Camera_ZWO::GetCCDTemperature(double *temperature)
+{
+    ASI_ERROR_CODE r;
+    long value;
+    ASI_BOOL isAuto;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TEMPERATURE\n", r));
+        return true;
+    }
+    *temperature = value / 10.0;
+
+    return false;
+}
+
 inline static int round_down(int v, int m)
 {
     return v & ~(m - 1);
