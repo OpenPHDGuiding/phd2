@@ -34,7 +34,7 @@
 #ifndef SSAGDEF
 #define SSAGDEF
 
-class Camera_SSAGClass : public GuideCamera
+class CameraSSAG : public GuideCamera
 {
 public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
@@ -50,7 +50,7 @@ public:
     wxByte BitsPerPixel();
     virtual bool    GetDevicePixelSize(double* devPixelSize);
 
-    Camera_SSAGClass();
+    CameraSSAG();
 
 private:
     void RemoveLines(usImage& img);

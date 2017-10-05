@@ -44,7 +44,7 @@
 
 using namespace cv;
 
-Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
+CameraOpenCV::CameraOpenCV(int devNumber)
 {
     Connected = false;
     Name=_T("OpenCV");
@@ -54,19 +54,19 @@ Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
     DeviceNum = devNumber;
 }
 
-Camera_OpenCVClass::~Camera_OpenCVClass(void)
+CameraOpenCV::~CameraOpenCV(void)
 {
     delete pCapDev;
     pCapDev = NULL;
 }
 
-wxByte Camera_OpenCVClass::BitsPerPixel()
+wxByte CameraOpenCV::BitsPerPixel()
 {
     // even though the raw data is 8-bit, integrated frames can go up to 16-bits
     return 16;
 }
 
-bool Camera_OpenCVClass::Connect(const wxString& camId)
+bool CameraOpenCV::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -103,7 +103,7 @@ bool Camera_OpenCVClass::Connect(const wxString& camId)
     return bError;;
 }
 
-bool Camera_OpenCVClass::Disconnect()
+bool CameraOpenCV::Disconnect()
 {
     Connected = FALSE;
 
@@ -115,7 +115,7 @@ bool Camera_OpenCVClass::Disconnect()
     return false;
 }
 
-bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 

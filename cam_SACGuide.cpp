@@ -39,7 +39,7 @@
 #include "cam_SACGuide.h"
 
 // FC Labs version -- draws from SAC4-2 for all
-Camera_SACGuiderClass::Camera_SACGuiderClass()
+CameraSACGuider::CameraSACGuider()
 {
     Connected = false;
     Name = _T("SAC Guider");
@@ -55,7 +55,7 @@ Camera_SACGuiderClass::Camera_SACGuiderClass()
 #elif defined (SAC_CMOS_GUIDE)
 // QHY CMOS guide camera version
 
-Camera_SACGuiderClass::Camera_SACGuiderClass()
+CameraSACGuider::CameraSACGuider()
 {
     Connected = false;
     Name = _T("SAC Guider");
@@ -64,12 +64,12 @@ Camera_SACGuiderClass::Camera_SACGuiderClass()
     HasGainControl = true;
 }
 
-wxByte Camera_SACGuiderClass::BitsPerPixel()
+wxByte CameraSACGuider::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_SACGuiderClass::Connect(const wxString& camId)
+bool CameraSACGuider::Connect(const wxString& camId)
 {
 // returns true on error
     CameraDLL = LoadLibrary("cmosDLL");
@@ -125,7 +125,7 @@ bool Camera_SACGuiderClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SACGuiderClass::SetGlobalGain(unsigned char gain) {
+bool CameraSACGuider::SetGlobalGain(unsigned char gain) {
     // Set global gain
     // User's call of 0-95% gets mapped onto the 1-15x
     // If > 95%, enter undocumented extra boost mode
@@ -152,7 +152,7 @@ bool Camera_SACGuiderClass::SetGlobalGain(unsigned char gain) {
     return false;
 }
 
-bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
+bool CameraSACGuider::ST4PulseGuideScope(int direction, int duration) {
     unsigned char dur;
     unsigned char reg = 0;
 
@@ -172,25 +172,25 @@ bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-void Camera_SACGuiderClass::ClearGuidePort() {
+void CameraSACGuider::ClearGuidePort() {
     SendGuideCommand(DevName,0,0);
 }
 
-void Camera_SACGuiderClass::InitCapture()
+void CameraSACGuider::InitCapture()
 {
     // Reset chip, just to be safe
     CmosReset(DevName);
     SetGlobalGain((unsigned char) GuideCameraGain);
 }
 
-bool Camera_SACGuiderClass::Disconnect() {
+bool CameraSACGuider::Disconnect() {
     //if (CloseUSB) CloseUSB();
     FreeLibrary(CameraDLL);
     Connected = false;
     return false;
 }
 
-bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos) {
+bool CameraSACGuider::GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos) {
 // Only does full frames still
 
     unsigned char *bptr;
@@ -232,13 +232,13 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
     return false;
 }
 
-bool Camera_SACGuiderClass::CaptureCrop(int duration, usImage& img)
+bool CameraSACGuider::CaptureCrop(int duration, usImage& img)
 {
     GenericCapture(duration, img, width,height,startX,startY);
     return false;
 }
 
-bool Camera_SACGuiderClass::CaptureFull(int duration, usImage& img)
+bool CameraSACGuider::CaptureFull(int duration, usImage& img)
 {
     GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
     return false;

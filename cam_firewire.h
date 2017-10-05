@@ -43,7 +43,7 @@
 #include "tisudshl.h"
 #endif
 
-class Camera_FirewireClass : public GuideCamera
+class CameraFirewire : public GuideCamera
 {
 #if defined (__APPLE__)
     dc1394_t *m_dcContext;
@@ -58,8 +58,8 @@ class Camera_FirewireClass : public GuideCamera
 
 public:
 
-    Camera_FirewireClass();
-    ~Camera_FirewireClass();
+    CameraFirewire();
+    ~CameraFirewire();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture();

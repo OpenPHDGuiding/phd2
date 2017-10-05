@@ -39,7 +39,7 @@
 #include "cam_INovaPLC.h"
 #include "DSCAMAPI.h"
 
-Camera_INovaPLCClass::Camera_INovaPLCClass()
+CameraINovaPLC::CameraINovaPLC()
 {
     Connected = FALSE;
     Name=_T("i-Nova PLC-M");
@@ -48,12 +48,12 @@ Camera_INovaPLCClass::Camera_INovaPLCClass()
     HasGainControl = true;  // Can we adjust gain?
 }
 
-wxByte Camera_INovaPLCClass::BitsPerPixel()
+wxByte CameraINovaPLC::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_INovaPLCClass::Connect(const wxString& camId)
+bool CameraINovaPLC::Connect(const wxString& camId)
 {
     DS_CAMERA_STATUS rval;
     rval = DSCameraInit(R_FULL);
@@ -71,7 +71,7 @@ bool Camera_INovaPLCClass::Connect(const wxString& camId)
     return false;
 }
 
-void Camera_INovaPLCClass::InitCapture()
+void CameraINovaPLC::InitCapture()
 {
     // Run after any exp change / at the start of a loop
     DS_CAMERA_STATUS rval;
@@ -87,7 +87,7 @@ void Camera_INovaPLCClass::InitCapture()
         pFrame->Alert(_("Error setting gain"));
 }
 
-bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraINovaPLC::ST4PulseGuideScope(int direction, int duration)
 {
     unsigned char dircode = 0;
     /*Param:  Value bit0 - RA+
@@ -115,7 +115,7 @@ bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_INovaPLCClass::Disconnect()
+bool CameraINovaPLC::Disconnect()
 {
     Connected = false;
     DSCameraUnInit();
@@ -123,7 +123,7 @@ bool Camera_INovaPLCClass::Disconnect()
     return false;
 }
 
-bool Camera_INovaPLCClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraINovaPLC::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -160,12 +160,12 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_INovaPLCClass::HasNonGuiCapture(void)
+bool CameraINovaPLC::HasNonGuiCapture(void)
 {
     return true;
 }
 
-bool Camera_INovaPLCClass::ST4HasNonGuiMove(void)
+bool CameraINovaPLC::ST4HasNonGuiMove(void)
 {
     return true;
 }

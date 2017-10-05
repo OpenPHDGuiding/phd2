@@ -53,21 +53,22 @@ public:
     Camera_ZWO();
     ~Camera_ZWO();
 
-    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration) override;
     void    ClearGuidePort();
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
-    virtual bool    GetDevicePixelSize(double* devPixelSize);
-	virtual bool    SetCoolerOn(bool on);
-	virtual bool    SetCoolerSetpoint(double temperature);
-	virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double* devPixelSize) override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetCCDTemperature(double *temperature) override;
 
 private:
     bool StopCapture(void);

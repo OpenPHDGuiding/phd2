@@ -32,16 +32,16 @@
  *
  */
 #include "phd.h"
-#if defined (ATIK16)
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include "wx/stopwatch.h"
+
+#if defined(ATIK16)
 
 #include "cam_Atik16.h"
-//#define ARTEMISDLLNAME "ArtemisCCD.dll"
+#include "camera.h"
+#include "image_math.h"
 
-Camera_Atik16Class::Camera_Atik16Class()
+#include <wx/stopwatch.h>
+
+CameraAtik16::CameraAtik16()
     : m_dllLoaded(false)
 {
     Connected = false;
@@ -55,26 +55,25 @@ Camera_Atik16Class::Camera_Atik16Class()
     HasSubframes = true;
 }
 
-Camera_Atik16Class::~Camera_Atik16Class()
+CameraAtik16::~CameraAtik16()
 {
     if (m_dllLoaded)
         ArtemisUnLoadDLL();
 }
 
-wxByte Camera_Atik16Class::BitsPerPixel()
+wxByte CameraAtik16::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_Atik16Class::LoadDLL()
+bool CameraAtik16::LoadDLL()
 {
     if (!m_dllLoaded)
     {
-        wxString DLLName = _T("ArtemisCCD.dll");
-        if (HSModel) DLLName = _T("ArtemisHSC.dll");
+        wxString DLLName = HSModel ? _T("ArtemisHSC.dll") : _T("ArtemisCCD.dll");
         if (!ArtemisLoadDLL(DLLName.char_str()))
         {
-            wxMessageBox(_T("Cannot load Artemis DLL"), _("DLL error"), wxICON_ERROR | wxOK);
+            wxMessageBox(wxString::Format(_("Cannot load Atik camera DLL %s"), DLLName), _("DLL error"), wxICON_ERROR | wxOK);
             return false;
         }
         m_dllLoaded = true;
@@ -92,7 +91,7 @@ static int FirstDevNum()
     return -1;
 }
 
-bool Camera_Atik16Class::EnumCameras(wxArrayString& names, wxArrayString& ids)
+bool CameraAtik16::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     if (!LoadDLL())
         return true;
@@ -111,7 +110,7 @@ bool Camera_Atik16Class::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-bool Camera_Atik16Class::Connect(const wxString& camId)
+bool CameraAtik16::Connect(const wxString& camId)
 {
     // returns true on error
 
@@ -125,7 +124,7 @@ bool Camera_Atik16Class::Connect(const wxString& camId)
     int firstDevNum = FirstDevNum();
     if (firstDevNum == -1)
     {
-        wxMessageBox(_T("No Atik cameras detected."), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("No Atik cameras detected."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -136,24 +135,36 @@ bool Camera_Atik16Class::Connect(const wxString& camId)
         camId.ToLong(&devnum);
 
     Cam_Handle = ArtemisConnect(devnum); // Connect to first avail camera
-    ARTEMISPROPERTIES pProp;
+
     if (!Cam_Handle) {  // Connection failed
-        wxMessageBox(wxString::Format("Connection routine failed - Driver version %d",ArtemisAPIVersion()));
+        wxMessageBox(wxString::Format(_("Atik camera connection failed - Driver version %d"), ArtemisAPIVersion()));
         return true;
     }
-    else {  // Good connection - Setup a few values
-//      wxMessageBox(wxString::Format("Connection routine OK - Driver version %d",ArtemisAPIVersion()));
-        ArtemisProperties(Cam_Handle, &pProp);
-        FullSize = wxSize(pProp.nPixelsX,pProp.nPixelsY);
-    //  PixelSize[0]=pProp.PixelMicronsX;
-        ArtemisBin(Cam_Handle,1,1);
-        ArtemisSubframe(Cam_Handle, 0,0,pProp.nPixelsX,pProp.nPixelsY);
-        HasShutter = (pProp.cameraflags & 0x10)?true:false;
-    }
+
+    // Good connection - Setup a few values
+    Debug.Write(wxString::Format("Atik: Driver version %d\n", ArtemisAPIVersion()));
+
+    ArtemisProperties(Cam_Handle, &m_properties);
+    HasShutter = (m_properties.cameraflags & 0x10) ? true : false;
+
+    int maxbinx = 1, maxbiny = 1;
+    ArtemisGetMaxBin(Cam_Handle, &maxbinx, &maxbiny);
+    MaxBinning = wxMin(maxbinx, maxbiny);
+    if (Binning > MaxBinning)
+        Binning = MaxBinning;
+
+    FullSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
+
+    ArtemisBin(Cam_Handle, Binning, Binning);
+    ArtemisSubframe(Cam_Handle, 0, 0, m_properties.nPixelsX, m_properties.nPixelsY);
+    m_curBin = Binning;
+
     char devname[64];
     ArtemisDeviceName(devnum, devname);
     Name = devname;
-    if (HSModel) { // Set TEC if avail
+    if (HSModel)
+    {
+        // Set TEC if avail
         int TECFlags;
         int NumTempSensors;
         int TECMin;
@@ -162,25 +173,26 @@ bool Camera_Atik16Class::Connect(const wxString& camId)
         TECFlags = TECMin = TECMax = level = setpoint = 0;
         ArtemisTemperatureSensorInfo(Cam_Handle,0,&NumTempSensors);
         ArtemisCoolingInfo(Cam_Handle, &TECFlags, &level, &TECMin, &TECMax, &setpoint);
-        if ((TECFlags & 0x04) && !(TECFlags & 0x08)) { // On/off only, no setpoints
+
+        if ((TECFlags & 0x04) && !(TECFlags & 0x08)) // On/off only, no setpoints
             setpoint = 1;  // Turn it on
-        }
         else
             setpoint = 10 * 100;  // should be 10C
+
         if (TECFlags & 0x02) // can be controlled
-            ArtemisSetCooling(Cam_Handle,setpoint);
-        ArtemisSetPreview(Cam_Handle,true);
+            ArtemisSetCooling(Cam_Handle, setpoint);
+
+        ArtemisSetPreview(Cam_Handle, true);
     }
-    /*wxString info_str = wxString::Format("07 SDK %s -- %s\n",pProp.Manufacturer,pProp.Description);
-    info_str = info_str + wxString::Format("%d x %d\n",pProp.nPixelsX,pProp.nPixelsY);
-    info_str = info_str + wxString::Format("Color: %d, HS: %d: DLL: ",(int) Color,(int) HSModel);
-    info_str = info_str + DLLName;
-    wxMessageBox(info_str);*/
+
+    Debug.Write(wxString::Format("Atik: SDK %s -- %s\n", m_properties.Manufacturer, m_properties.Description));
+    Debug.Write(wxString::Format("Atik: frame %d x %d\n", m_properties.nPixelsX, m_properties.nPixelsY));
+
     Connected = true;
     return false;
 }
 
-bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration)
+bool CameraAtik16::ST4PulseGuideScope(int direction, int duration)
 {
     int axis;
     //wxStopWatch swatch;
@@ -209,12 +221,12 @@ bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void Camera_Atik16Class::ClearGuidePort()
+void CameraAtik16::ClearGuidePort()
 {
     ArtemisStopGuiding(Cam_Handle);
 }
 
-bool Camera_Atik16Class::Disconnect()
+bool CameraAtik16::Disconnect()
 {
     if (ArtemisIsConnected(Cam_Handle))
         ArtemisDisconnect(Cam_Handle);
@@ -232,62 +244,71 @@ bool Camera_Atik16Class::Disconnect()
 
 static bool StopCapture(ArtemisHandle h)
 {
-    Debug.AddLine("Atik16: cancel exposure");
+    Debug.Write("Atik16: cancel exposure\n");
     int ret = ArtemisAbortExposure(h);
     return ret == ARTEMIS_OK;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
+    bool useSubframe = UseSubframes;
+
+    if (subframe.width <= 0 || subframe.height <= 0)
+        useSubframe = false;
+
+    if (m_curBin != Binning)
+    {
+        FullSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
+        ArtemisBin(Cam_Handle, Binning, Binning);
+        m_curBin = Binning;
+        useSubframe = false; // subframe may be out of bounds now
+    }
+
     if (img.Init(FullSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
-    bool useSubframe = UseSubframes;
-
-    if (subframe.width <= 0 || subframe.height <= 0)
-        useSubframe = false;
-
-    if (HasShutter)
-        ArtemisSetDarkMode(Cam_Handle, ShutterClosed);
-
-    wxRect frame;
-    wxPoint subframePos;  // position of subframe within frame
+    wxRect frame; // raw subframe to meet camera subframe requirements, may be a superset of the requested subframe - unbinned coords
+    wxPoint subframePos;  // position of PHD2 subframe within frame - binned coords
 
     if (useSubframe)
     {
         // Round height up to next multiple of 2 to workaround bug where the camera returns incorrect data when the subframe height is odd.
-        int w = subframe.width;
-        int x = subframe.x;
+        int w = subframe.width * Binning;
+        int x = subframe.x * Binning;
         if (w & 1)
         {
-            ++w;
-            if (x + w >= FullSize.GetWidth())
-                --x;
+            w += Binning;
+            if (x + w > m_properties.nPixelsX)
+                x -= Binning;
         }
-        int h = subframe.height;
-        int y = subframe.y;
+        int h = subframe.height * Binning;
+        int y = subframe.y * Binning;
         if (h & 1)
         {
-            ++h;
-            if (y + h >= FullSize.GetHeight())
-                --y;
+            h += Binning;
+            if (y + h > m_properties.nPixelsY)
+                y -= Binning;
         }
         frame = wxRect(x, y, w, h);
-        subframePos = subframe.GetLeftTop() - frame.GetLeftTop();
+        subframePos.x = subframe.x - x / Binning;
+        subframePos.y = subframe.y - y / Binning;
         ArtemisSubframe(Cam_Handle, x, y, w, h);
     }
     else
     {
-        ArtemisSubframe(Cam_Handle, 0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+        ArtemisSubframe(Cam_Handle, 0, 0, m_properties.nPixelsX, m_properties.nPixelsY);
     }
 
+    if (HasShutter)
+        ArtemisSetDarkMode(Cam_Handle, ShutterClosed);
+
     if (duration > 2500)
-        ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
+        ArtemisSetAmplifierSwitched(Cam_Handle, true); // Set the amp-off parameter
     else
-        ArtemisSetAmplifierSwitched(Cam_Handle,false);
+        ArtemisSetAmplifierSwitched(Cam_Handle, false);
 
     if (ArtemisStartExposure(Cam_Handle, (float) duration / 1000.0))
     {
@@ -324,9 +345,10 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
         img.Clear();
         const unsigned short *buf = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
 
+        int w_binned = frame.width / Binning;
         for (int y = 0; y < subframe.height; y++)
         {
-            const unsigned short *src = buf + (y + subframePos.y) * frame.width + subframePos.x;
+            const unsigned short *src = buf + (y + subframePos.y) * w_binned + subframePos.x;
             unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
             memcpy(dst, src, subframe.width * sizeof(unsigned short));
         }
@@ -347,7 +369,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
     return false;
 }
 
-/*void Camera_Atik16Class::RemoveLines(usImage& img) {
+/*void CameraAtik16::RemoveLines(usImage& img) {
     int i, j, val;
     unsigned short data[21];
     unsigned short *ptr1, *ptr2;
@@ -382,12 +404,12 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
     }
 }*/
 
-bool Camera_Atik16Class::HasNonGuiCapture(void)
+bool CameraAtik16::HasNonGuiCapture(void)
 {
     return true;
 }
 
-bool Camera_Atik16Class::ST4HasNonGuiMove(void)
+bool CameraAtik16::ST4HasNonGuiMove(void)
 {
     return true;
 }

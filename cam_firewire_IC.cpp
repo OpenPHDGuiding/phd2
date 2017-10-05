@@ -52,7 +52,7 @@
 using namespace _DSHOWLIB_NAMESPACE;
 
 
-Camera_FirewireClass::Camera_FirewireClass()
+CameraFirewire::CameraFirewire()
 {
     Connected = false;
     Name = _T("The Imaging Source");
@@ -61,15 +61,15 @@ Camera_FirewireClass::Camera_FirewireClass()
     m_hasGuideOutput = false;
 }
 
-wxByte Camera_FirewireClass::BitsPerPixel()
+wxByte CameraFirewire::BitsPerPixel()
 {
     return 8;
 }
 
-//Camera_FirewireClass::~Camera_FirewireClass () {
+//CameraFirewire::~CameraFirewire () {
 //  ;
 //}
-bool Camera_FirewireClass::Connect(const wxString& camId)
+bool CameraFirewire::Connect(const wxString& camId)
 {
     int CamNum, ModeNum;
     bool retval;
@@ -250,7 +250,7 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_FirewireClass::Disconnect()
+bool CameraFirewire::Disconnect()
 {
     m_pGrabber->stopLive();
     m_pGrabber->closeDev();
@@ -259,7 +259,7 @@ bool Camera_FirewireClass::Disconnect()
     return false;
 }
 
-void Camera_FirewireClass::InitCapture()
+void CameraFirewire::InitCapture()
 {
     // Set gain
     if (m_pGain != 0) {
@@ -273,7 +273,7 @@ void Camera_FirewireClass::InitCapture()
     }
 }
 
-bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize, ysize, i;
     unsigned short *dataptr;
@@ -346,7 +346,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_FirewireClass::HasNonGuiCapture(void)
+bool CameraFirewire::HasNonGuiCapture(void)
 {
     return true;
 }

@@ -44,7 +44,7 @@
 #include "cameras/Sbigudrv.h"
 #endif
 
-class Camera_SBIGClass : public GuideCamera
+class CameraSBIG : public GuideCamera
 {
     bool UseTrackingCCD;
     bool m_driverLoaded;
@@ -53,8 +53,8 @@ class Camera_SBIGClass : public GuideCamera
     bool IsColor;
 
 public:
-    Camera_SBIGClass();
-    ~Camera_SBIGClass();
+    CameraSBIG();
+    ~CameraSBIG();
 
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);

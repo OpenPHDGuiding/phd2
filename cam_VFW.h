@@ -37,13 +37,13 @@
 #include "vcapwin.h"
 #include <wx/splitter.h>
 
-class Camera_VFWClass : public GuideCamera
+class CameraVFW : public GuideCamera
 {
     wxVideoCaptureWindow *VFW_Window;
     wxSplitterWindow     *Extra_Window;
 
 public:
-    Camera_VFWClass();
+    CameraVFW();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
     bool    Disconnect();

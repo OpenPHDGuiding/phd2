@@ -39,7 +39,7 @@
 
 #include <opencv/highgui.h>
 
-class Camera_OpenCVClass : public GuideCamera
+class CameraOpenCV : public GuideCamera
 {
     int     DeviceNum;
 
@@ -47,8 +47,8 @@ protected:
     cv::VideoCapture *pCapDev;
 
 public:
-    Camera_OpenCVClass(int devNumber);
-    ~Camera_OpenCVClass(void);
+    CameraOpenCV(int devNumber);
+    ~CameraOpenCV(void);
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);

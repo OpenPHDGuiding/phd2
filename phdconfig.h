@@ -55,7 +55,7 @@
  *     hysteresis
  *   mount - mount globals if there are any
  *     scope - default choice
- *       ascomlate
+ *       ascom
  *   camera - default choice
  *     ascom
  *

@@ -40,7 +40,7 @@
 //#include "cameras/FcApiUser.h"
 
 
-Camera_SAC42Class::Camera_SAC42Class()
+CameraSAC42::CameraSAC42()
 {
     Connected = false;
     Name = _T("SAC4-2");
@@ -55,12 +55,12 @@ Camera_SAC42Class::Camera_SAC42Class()
     MaxExposure = 2000;
 }
 
-wxByte Camera_SAC42Class::BitsPerPixel()
+wxByte CameraSAC42::BitsPerPixel()
 {
     return 16; // camera is 8-bit but we can accumulate 16-bits
 }
 
-bool Camera_SAC42Class::Connect(const wxString& camId)
+bool CameraSAC42::Connect(const wxString& camId)
 {
 // returns true on error
     int retval;
@@ -78,7 +78,7 @@ bool Camera_SAC42Class::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SAC42Class::Disconnect()
+bool CameraSAC42::Disconnect()
 {
 #ifdef SAC42
     FclUninitialize(&hDriver);
@@ -87,12 +87,12 @@ bool Camera_SAC42Class::Disconnect()
     return false;
 }
 
-void Camera_SAC42Class::InitCapture()
+void CameraSAC42::InitCapture()
 {
     CapInfo.Gain[0] = CapInfo.Gain[1] = CapInfo.Gain[2] = (unsigned char) (GuideCameraGain * 63 / 100);
 }
 
-bool Camera_SAC42Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSAC42::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     // Recode to allow ROIs
 #ifdef SAC42

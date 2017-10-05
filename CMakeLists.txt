@@ -154,8 +154,8 @@ set(cam_KWIQGuider_SRC
 source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
 
 set(cam_SRC
-  ${phd_src_dir}/cam_ascomlate.cpp
-  ${phd_src_dir}/cam_ascomlate.h
+  ${phd_src_dir}/cam_ascom.cpp
+  ${phd_src_dir}/cam_ascom.h
 
   ${phd_src_dir}/cam_Atik16.cpp
   ${phd_src_dir}/cam_Atik16.h
@@ -238,7 +238,7 @@ if(WIN32)
     # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
     #${phd_src_dir}/cam_ascom.cpp
     #${phd_src_dir}/ascom.cpp
-    #${phd_src_dir}/extras/cam_ascomlate.cpp
+    #${phd_src_dir}/extras/cam_ascom.cpp
   )
 elseif(UNIX AND (NOT APPLE))
   set(cam_SRC

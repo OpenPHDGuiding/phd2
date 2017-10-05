@@ -47,20 +47,20 @@ void _stdcall Out32(short PortAddress, short data);
 
 using namespace cv;
 
-Camera_LEParallelWebcamClass::Camera_LEParallelWebcamClass(void)
-    : Camera_LEWebcamClass()
+CameraLEParallelWebcam::CameraLEParallelWebcam(void)
+    : CameraLEWebcam()
 {
     Name=_T("Parallel LE Webcam");
     m_pParallelPort = NULL;
 }
 
-Camera_LEParallelWebcamClass::~Camera_LEParallelWebcamClass(void)
+CameraLEParallelWebcam::~CameraLEParallelWebcam(void)
 {
     Disconnect();
     delete m_pParallelPort;
 }
 
-bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
+bool CameraLEParallelWebcam::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -77,7 +77,7 @@ bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
 
         wxString choice = m_pParallelPort->ChooseParallelPort(lastParallelPort);
 
-        Debug.Write(wxString::Format("Camera_LEParallelWebcamClass::Connect: parallel port choice is: %s\n", choice));
+        Debug.Write(wxString::Format("CameraLEParallelWebcam::Connect: parallel port choice is: %s\n", choice));
 
         if (choice.IsEmpty())
         {
@@ -91,7 +91,7 @@ bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
 
         pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", choice);
 
-        if (Camera_LEWebcamClass::Connect(camId))
+        if (CameraLEWebcam::Connect(camId))
         {
             throw ERROR_INFO("base class Connect() failed");
         }
@@ -107,7 +107,7 @@ bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_LEParallelWebcamClass::Disconnect()
+bool CameraLEParallelWebcam::Disconnect()
 {
     bool bError = false;
 
@@ -116,7 +116,7 @@ bool Camera_LEParallelWebcamClass::Disconnect()
         delete m_pParallelPort;
         m_pParallelPort = NULL;
 
-        if (Camera_LEWebcamClass::Disconnect())
+        if (CameraLEWebcam::Disconnect())
         {
             throw ERROR_INFO("Base class Disconnect() failed");
         }
@@ -130,7 +130,7 @@ bool Camera_LEParallelWebcamClass::Disconnect()
     return bError;
 }
 
-bool Camera_LEParallelWebcamClass::LEControl(int actions)
+bool CameraLEParallelWebcam::LEControl(int actions)
 {
     bool bError = false;
 

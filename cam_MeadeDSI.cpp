@@ -46,7 +46,7 @@
 
 #include "DsiDevice.h"
 
-Camera_DSIClass::Camera_DSIClass()
+CameraDSI::CameraDSI()
     : MeadeCam(0)
 {
     Name = _T("Meade DSI");
@@ -54,17 +54,17 @@ Camera_DSIClass::Camera_DSIClass()
     HasGainControl = true;
 }
 
-Camera_DSIClass::~Camera_DSIClass()
+CameraDSI::~CameraDSI()
 {
     delete MeadeCam;
 }
 
-wxByte Camera_DSIClass::BitsPerPixel()
+wxByte CameraDSI::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_DSIClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
+bool CameraDSI::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     if (!MeadeCam)
         MeadeCam = new DsiDevice();
@@ -85,7 +85,7 @@ bool Camera_DSIClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-bool Camera_DSIClass::Connect(const wxString& camId)
+bool CameraDSI::Connect(const wxString& camId)
 {
     bool retval = false;
 
@@ -132,7 +132,7 @@ bool Camera_DSIClass::Connect(const wxString& camId)
     return retval;
 }
 
-bool Camera_DSIClass::Disconnect()
+bool CameraDSI::Disconnect()
 {
     MeadeCam->Close();
     delete MeadeCam;
@@ -143,7 +143,7 @@ bool Camera_DSIClass::Disconnect()
     return false;
 }
 
-bool Camera_DSIClass::GetDevicePixelSize(double* devPixelSize)
+bool CameraDSI::GetDevicePixelSize(double* devPixelSize)
 {
     if (!Connected)
         return true;
@@ -160,7 +160,7 @@ bool Camera_DSIClass::GetDevicePixelSize(double* devPixelSize)
     return false;                               // Pixel sizes are hard-coded
 }
 
-bool Camera_DSIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
@@ -227,7 +227,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, int options, const wxR
     return false;
 }
 
-bool Camera_DSIClass::HasNonGuiCapture(void)
+bool CameraDSI::HasNonGuiCapture(void)
 {
     return true;
 }

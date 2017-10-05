@@ -39,7 +39,7 @@
 
 #include "cam_wdm.h"
 
-class Camera_LEWebcamClass : public Camera_WDMClass
+class CameraLEWebcam : public CameraWDM
 {
 protected:
     enum LECAMERA_ACTIONS
@@ -60,8 +60,8 @@ public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
-    Camera_LEWebcamClass(void);
-    ~Camera_LEWebcamClass(void);
+    CameraLEWebcam(void);
+    ~CameraLEWebcam(void);
     virtual bool HasNonGuiCapture(void) { return true; }
 
 private:

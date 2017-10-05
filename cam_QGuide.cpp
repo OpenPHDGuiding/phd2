@@ -55,7 +55,7 @@ int ushort_compare (const void * a, const void * b) {
 // QHY CMOS guide camera version
 // Tom's driver
 
-Camera_QGuiderClass::Camera_QGuiderClass()
+CameraQGuider::CameraQGuider()
 {
     Connected = false;
     Name = _T("Q-Guider");
@@ -64,12 +64,12 @@ Camera_QGuiderClass::Camera_QGuiderClass()
     HasGainControl = true;
 }
 
-wxByte Camera_QGuiderClass::BitsPerPixel()
+wxByte CameraQGuider::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_QGuiderClass::Connect(const wxString& camId)
+bool CameraQGuider::Connect(const wxString& camId)
 {
 // returns true on error
 //  CameraReset();
@@ -87,7 +87,7 @@ bool Camera_QGuiderClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraQGuider::ST4PulseGuideScope(int direction, int duration)
 {
     int reg = 0;
     int dur = duration / 10;
@@ -109,19 +109,19 @@ bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void Camera_QGuiderClass::ClearGuidePort()
+void CameraQGuider::ClearGuidePort()
 {
 //  SendGuideCommand(DevName,0,0);
 }
 
-void Camera_QGuiderClass::InitCapture()
+void CameraQGuider::InitCapture()
 {
 //  CameraReset();
     ProgramCamera(0,0,1280,1024, (GuideCameraGain * 63 / 100) );
 //  SetNoiseReduction(0);
 }
 
-bool Camera_QGuiderClass::Disconnect()
+bool CameraQGuider::Disconnect()
 {
     closeUSB();
 //  delete [] buffer;
@@ -137,7 +137,7 @@ static bool StopExposure()
     return true;
 }
 
-bool Camera_QGuiderClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraQGuider::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
 // Only does full frames still
 
@@ -202,7 +202,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, int options, const
     return false;
 }
 
-void Camera_QGuiderClass::RemoveLines(usImage& img)
+void CameraQGuider::RemoveLines(usImage& img)
 {
     int i, j, val;
     unsigned short data[21];

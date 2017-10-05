@@ -64,7 +64,7 @@ int fcUsb_cmd_setReadMode(int camNum, int DataXfrReadMode, int DataFormat) { ret
 bool fcUsb_haveCamera(void) { return FcCamFuncs::fcUsb_haveCamera(); }
 #endif
 
-Camera_StarfishClass::Camera_StarfishClass()
+CameraStarfish::CameraStarfish()
 {
     Connected = false;
     Name = _T("Fishcamp Starfish");
@@ -75,12 +75,12 @@ Camera_StarfishClass::Camera_StarfishClass()
     DriverLoaded = false;
 }
 
-wxByte Camera_StarfishClass::BitsPerPixel()
+wxByte CameraStarfish::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_StarfishClass::Connect(const wxString& camId)
+bool CameraStarfish::Connect(const wxString& camId)
 {
 // returns true on error
 
@@ -109,7 +109,7 @@ bool Camera_StarfishClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_StarfishClass::Disconnect()
+bool CameraStarfish::Disconnect()
 {
     if (fcUsb_haveCamera())
         fcUsb_CloseCameraDriver();
@@ -117,7 +117,7 @@ bool Camera_StarfishClass::Disconnect()
     return false;
 }
 
-void Camera_StarfishClass::InitCapture()
+void CameraStarfish::InitCapture()
 {
     // Set gain
     unsigned short Gain = (unsigned short) GuideCameraGain;
@@ -142,7 +142,7 @@ static bool StopExposure(int camNum)
     return ret == kIOReturnSuccess;
 }
 
-bool Camera_StarfishClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool debug = true;
     int xsize, ysize, xpos, ypos;
@@ -243,7 +243,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
+bool CameraStarfish::ST4PulseGuideScope(int direction, int duration) {
 
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
     else if (direction == EAST) direction = WEST;

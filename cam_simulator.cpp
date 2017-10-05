@@ -1328,6 +1328,13 @@ bool CameraSimulator::GetCoolerStatus(bool *onp, double *setpoint, double *power
     return false;
 }
 
+bool CameraSimulator::GetCCDTemperature(double *temperature)
+{
+    bool on;
+    double setpt, powr;
+    return GetCoolerStatus(&on, &setpt, &powr, temperature);
+}
+
 PierSide CameraSimulator::SideOfPier(void) const
 {
     return SimCamParams::pier_side;

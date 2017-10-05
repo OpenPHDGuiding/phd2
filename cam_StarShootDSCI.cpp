@@ -39,7 +39,7 @@
 #include "image_math.h"
 #include "cam_StarShootDSCI.h"
 
-Camera_StarShootDSCIClass::Camera_StarShootDSCIClass()
+CameraStarShootDSCI::CameraStarShootDSCI()
 {
     Connected = false;
     Name = _T("StarShoot DSCI");
@@ -53,19 +53,19 @@ Camera_StarShootDSCIClass::Camera_StarShootDSCIClass()
     lastdur = 0;
 }
 
-wxByte Camera_StarShootDSCIClass::BitsPerPixel()
+wxByte CameraStarShootDSCI::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_StarShootDSCIClass::Disconnect()
+bool CameraStarShootDSCI::Disconnect()
 {
     FreeLibrary(CameraDLL);
     Connected = false;
     return false;
 }
 
-bool Camera_StarShootDSCIClass::Connect(const wxString& camId)
+bool CameraStarShootDSCI::Connect(const wxString& camId)
 {
 // returns true on error
     bool retval;
@@ -131,7 +131,7 @@ bool Camera_StarShootDSCIClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraStarShootDSCI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool ampoff = true;
     if (duration < 1000)

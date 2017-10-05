@@ -34,12 +34,12 @@
 #ifndef OSPL130DEF
 #define OSPL130DEF
 
-class Camera_OpticstarPL130Class : public GuideCamera
+class CameraOpticstarPL130 : public GuideCamera
 {
     bool    Color;
 
 public:
-    Camera_OpticstarPL130Class();
+    CameraOpticstarPL130();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);

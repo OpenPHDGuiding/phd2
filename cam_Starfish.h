@@ -40,7 +40,7 @@
 #include <fcCamFw/fcCamFw.h>
 #endif
 
-class Camera_StarfishClass : public GuideCamera
+class CameraStarfish : public GuideCamera
 {
     int CamNum;
     int NCams;
@@ -49,7 +49,7 @@ class Camera_StarfishClass : public GuideCamera
     wxRect lastSubFrame;
 
 public:
-    Camera_StarfishClass();
+    CameraStarfish();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
