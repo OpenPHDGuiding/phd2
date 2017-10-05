@@ -35,14 +35,14 @@
 #ifndef QHY5_H_INCLUDED
 #define QHY5_H_INCLUDED
 
-class Camera_QHY5Class : public GuideCamera
+class CameraQHY5 : public GuideCamera
 {
     unsigned char *RawBuffer;
     bool m_QHY5;
 
 public:
-    Camera_QHY5Class();
-    ~Camera_QHY5Class();
+    CameraQHY5();
+    ~CameraQHY5();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
