@@ -51,6 +51,7 @@ struct StaticPaToolWin : public wxFrame
     wxHtmlWindow *w_instructions;
     wxTextCtrl *w_camScale; // Text box for camera pixel scale
     wxTextCtrl *w_camRot;   // Text box for camera rotation
+    wxSpinCtrlDouble *w_hourangle; // Spinner to manually set HA
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
     wxTextCtrl *w_calPt[4][2];  // Text boxes for each point plus the CoR
     wxButton *w_star1;      // Button for manual get of point 1
@@ -96,6 +97,7 @@ struct StaticPaToolWin : public wxFrame
     enum StaticPaCtrlIds
     {
         ID_HEMI = 10001,
+        ID_HA,
         ID_MANUAL,
         ID_REFSTAR,
         ID_ROTATE,
@@ -114,6 +116,7 @@ struct StaticPaToolWin : public wxFrame
     int a_refStar;      // Selected reference star
     bool a_auto;        // Auto slewing - must be manual if mount cannot slew
     int a_hemi;         // Hemisphere of the observer
+    double a_ha;        // Manual hour angle
 
     bool s_aligning;        // Indicates that alignment points are being collected
     unsigned int s_state;   // state of the alignment process
@@ -135,6 +138,7 @@ struct StaticPaToolWin : public wxFrame
     void FillPanel();
 
     void OnHemi(wxCommandEvent& evt);
+    void OnHa(wxSpinDoubleEvent& evt);
     void OnRefStar(wxCommandEvent& evt);
     void OnManual(wxCommandEvent& evt);
     void OnNotes(wxCommandEvent& evt);
