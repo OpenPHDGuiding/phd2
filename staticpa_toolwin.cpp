@@ -382,8 +382,10 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    w_calculate = new wxButton(this, ID_CALCULATE, _("Calculate"));
-    gbSizer->Add(w_calculate, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+//    w_calculate = new wxButton(this, ID_CALCULATE, _("Calculate"));
+//    gbSizer->Add(w_calculate, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(w_close, wxGBPosition(gridRow, 4), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -405,22 +407,22 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_notes->SetValue(pConfig->Profile.GetString("/StaticPaTool/Notes", wxEmptyString));
 
     // horizontal sizer for the buttons
-    wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+//    wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
 
     // proportional pad on left of Rotate button
-    hSizer->Add(0, 0, 2, wxEXPAND, 5);
+//    hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
     // proportional pad on right of Rotate button
-    hSizer->Add(0, 0, 1, wxEXPAND, 5);
+//    hSizer->Add(0, 0, 1, wxEXPAND, 5);
 
     // proportional pad on right of Align button
-    hSizer->Add(0, 0, 2, wxEXPAND, 5);
+//    hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
-    w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-    hSizer->Add(w_close, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+//    w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
+//    hSizer->Add(w_close, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     // add button sizer to top level sizer
-    topSizer->Add(hSizer, 1, wxEXPAND | wxALL, 5);
+//    topSizer->Add(hSizer, 1, wxEXPAND | wxALL, 5);
 
     SetSizer(topSizer);
 
@@ -576,7 +578,7 @@ void StaticPaToolWin::FillPanel()
         w_star3->Show();
         w_hemiChoice->Enable(true);
     }
-    w_calculate->Enable(IsAligned());
+//    w_calculate->Enable(IsAligned());
     poleStars = a_hemi >= 0 ? &c_NthStars : &c_SthStars;
     w_refStarChoice->Clear();
     std::string starname;
