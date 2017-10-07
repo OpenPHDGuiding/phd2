@@ -152,13 +152,18 @@ struct StaticPaToolWin : public wxFrame
     void CreateStarTemplate(wxDC &dc, wxPoint currPt);
     bool IsAligning(){ return s_aligning; };
     bool RotateMount();
+    bool RotateFail(const wxString msg);
     bool SetParams(double newoffset);
-    void MoveWestBy(double thetadeg);
+    bool MoveWestBy(double thetadeg);
     bool SetStar(int idx);
-    bool IsAligned(){ return a_auto ? s_state == (3 << 1) : s_state == (7 << 1); }
-    bool IsCalced(){ return s_state & 1; }
+    bool IsAligned(){ return a_auto ? ((s_state>>1) & 3) ==3 : ((s_state>>1) & 7)==7; }
+    bool IsCalced(){ return HasState(0); }
     void CalcRotationCentre(void);
     void CalcAdjustments(void);
+    bool HasState(int ipos) { return (s_state & (1 << ipos)) > 0;  }
+    void SetState(int ipos) { s_state = s_state | (1 << ipos); }
+    void UnsetState(int ipos) { s_state = s_state & ~(1 << ipos) & 15; }
+    void ClearState() { s_state = 0; }
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
     PHD_Point Radec2Px(PHD_Point radec);
 
