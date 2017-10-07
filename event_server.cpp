@@ -1988,7 +1988,7 @@ static void get_cooler_status(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
-static void get_ccd_temperature(JObj& response, const json_value *params)
+static void get_sensor_temperature(JObj& response, const json_value *params)
 {
     if (!pCamera || !pCamera->Connected)
     {
@@ -1997,10 +1997,10 @@ static void get_ccd_temperature(JObj& response, const json_value *params)
     }
 
     double temperature;
-    bool err = pCamera->GetCCDTemperature(&temperature);
+    bool err = pCamera->GetSensorTemperature(&temperature);
     if (err)
     {
-        response << jrpc_error(1, "failed to get CCD temperature");
+        response << jrpc_error(1, "failed to get sensor temperature");
         return;
     }
 
@@ -2086,7 +2086,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_calibration_data", &get_calibration_data, },
         { "capture_single_frame", &capture_single_frame, },
         { "get_cooler_status", &get_cooler_status, },
-        { "get_ccd_temperature", &get_ccd_temperature, },
+        { "get_ccd_temperature", &get_sensor_temperature, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
