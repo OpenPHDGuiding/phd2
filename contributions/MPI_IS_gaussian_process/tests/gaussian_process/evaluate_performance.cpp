@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     parameters.SE1KLengthScale_ = std::stod(argv[10]);
     parameters.SE1KSignalVariance_ = std::stod(argv[11]);
     parameters.min_periods_for_period_estimation_ = std::stod(argv[12]);
-    parameters.points_for_approximation_ = std::floor(std::stod(argv[13]));
+    parameters.points_for_approximation_ = static_cast<int>(std::floor(std::stod(argv[13])));
     parameters.prediction_gain_ = std::stod(argv[14]);
     parameters.compute_period_ = true;
 
