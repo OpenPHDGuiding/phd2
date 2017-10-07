@@ -85,6 +85,7 @@ void StaticPaToolWin::PolePanel::OnClick(wxMouseEvent& evt)
     const wxPoint mpt = GetScreenPosition();
     wxPoint mousePt = pt - mpt - origPt; // Distance fron centre
     currPt = currPt + mousePt; // Distance from origin
+    paParent->FillPanel();
     Paint();
 }
 
@@ -239,7 +240,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     if (!g_canSlew){
         a_auto = false;
     }
-    a_ha = -6.0;
+    a_ha = 270.0;
 
     // Start window definition
     SetBackgroundColour(wxColor(0xcccccc));
@@ -276,13 +277,10 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
 // First row of grid
     int gridRow = 0;
-    txt = new wxStaticText(this, wxID_ANY, _("Camera arcsec/pixel"), wxDefaultPosition, wxDefaultSize, 0);
+    // Hour angle
+    txt = new wxStaticText(this, wxID_ANY, _("Hour Angle"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
-
-    txt = new wxStaticText(this, wxID_ANY, _("Camera Angle"), wxDefaultPosition, wxDefaultSize, 0);
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
     txt = new wxStaticText(this, wxID_ANY, _("Hemisphere"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
@@ -293,13 +291,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL, 5);
 
-    // Next row of grid
+// Next row of grid
     gridRow++;
-    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-    w_camRot = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_camRot, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, 18.0, 0.1);
+    w_hourangle->SetToolTip(_("Set your scope hour angle"));
+    gbSizer->Add(w_hourangle, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
+    w_hourangle->SetDigits(1);
 
     wxArrayString hemi;
     hemi.Add(_("North"));
@@ -314,12 +311,11 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("(X, Y) pixels"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Camera Angle"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
-    // Hour angle
-    txt = new wxStaticText(this, wxID_ANY, _("Hour Angle"));
+    txt = new wxStaticText(this, wxID_ANY, _("(X, Y) pixels"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
 
@@ -330,47 +326,48 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
+
+    w_camRot = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    gbSizer->Add(w_camRot, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
     txt = new wxStaticText(this, wxID_ANY, _("Pos #1"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[0][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_calPt[0][0], wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -12.0, 12.0, 0.1);
-    w_hourangle->SetToolTip(_("Set your scope hour angle"));
-    gbSizer->Add(w_hourangle, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
-    w_hourangle->SetDigits(1);
+    gbSizer->Add(w_calPt[0][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_star1 = new wxButton(this, ID_ROTATE, _("Rotate"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_star1, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #2"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Camera arcsec/pixel"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
-    w_calPt[1][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_calPt[1][0], wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    txt = new wxStaticText(this, wxID_ANY, _("Pos #2"), wxDefaultPosition, wxDefaultSize, 0);
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
-//    w_calPt[1][1] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-//    gbSizer->Add(w_calPt[1][1], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_calPt[1][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    gbSizer->Add(w_calPt[1][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_star2 = new wxButton(this, ID_STAR2, _("Get second position"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_star2, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
+
+    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
     txt = new wxStaticText(this, wxID_ANY, _("Pos #3"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[2][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_calPt[2][0], wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-//    w_calPt[2][1] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-//    gbSizer->Add(w_calPt[2][1], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_calPt[2][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_star3 = new wxButton(this, ID_STAR3, _("Get third position"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_star3, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
@@ -379,13 +376,10 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     gridRow++;
     txt = new wxStaticText(this, wxID_ANY, _("Centre"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT, 5);
 
     w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-//    w_calPt[3][1] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-//    gbSizer->Add(w_calPt[3][1], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_calculate = new wxButton(this, ID_CALCULATE, _("Calculate"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_calculate, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
@@ -461,7 +455,7 @@ void StaticPaToolWin::OnHemi(wxCommandEvent& evt)
 }
 void StaticPaToolWin::OnHa(wxSpinDoubleEvent& evt)
 {
-    a_ha = evt.GetValue();
+    a_ha = evt.GetValue() * 15.0;
     w_pole->Paint();
 }
 
@@ -552,10 +546,11 @@ void StaticPaToolWin::FillPanel()
     double ra_hrs, dec_deg, st_hrs;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
     {
-        a_ha = (st_hrs - ra_hrs)*15.0;
+        a_ha = norm_ra(st_hrs - ra_hrs)*15.0;
+        w_hourangle->SetValue(norm_ra(a_ha / 15.0));
         w_hourangle->Enable(false);
     }
-    w_hourangle->SetValue(a_ha);
+    w_hourangle->SetValue(norm_ra(a_ha/15.0));
 
     if (!g_canSlew){
         w_manual->Hide();
@@ -614,6 +609,8 @@ void StaticPaToolWin::CalcRotationCentre(void)
     y1 = r_pxPos[0].Y;
     x2 = r_pxPos[1].X;
     y2 = r_pxPos[1].Y;
+    s_state = s_state & ~(1);
+
     if (!a_auto)
     {
         double a, b, c, e, f, g, i, j, k;
@@ -653,8 +650,8 @@ void StaticPaToolWin::CalcRotationCentre(void)
     }
     else
     {
-        SetStatusText(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0]*15., r_raPos[1]*15.));
-        Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0]*15., r_raPos[1]*15.));
+        SetStatusText(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0] * 15., r_raPos[1] * 15.));
+        Debug.AddLine(wxString::Format("SPA CalcCoR: (%.1f,%.1f); (%.1f,%.1f); RA: %.1f %.1f", x1, y1, x2, y2, r_raPos[0] * 15., r_raPos[1] * 15.));
         // Alternative algorithm based on two points and angle rotated
         double radiff, theta2;
         // Get RA change. For westward movement RA decreases.
@@ -681,7 +678,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     r_pxCentre.Y = cy;
     r_radius = cr;
     w_calPt[3][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxCentre.X, r_pxCentre.Y));
-//    w_calPt[3][1]->SetValue(wxString::Format("%+.f", r_pxCentre.Y));
+    //    w_calPt[3][1]->SetValue(wxString::Format("%+.f", r_pxCentre.Y));
 
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -693,11 +690,11 @@ void StaticPaToolWin::CalcRotationCentre(void)
 
     Debug.AddLine(wxString::Format("SPA CalcCoR: W:H:scale:angle %d: %d: %.1f: %.1f", xpx, ypx, scalefactor, g_camAngle));
 
-// Diatance and angle of CoR from centre of sensor
+    // Diatance and angle of CoR from centre of sensor
     double cor_r = sqrt(pow(xpx / 2 - cx, 2) + pow(ypx / 2 - cy, 2));
     double cor_a = degrees(atan2((ypx / 2 - cy), (xpx / 2 - cx)));
     double rarot = -g_camAngle;
-// Cone and Dec components of CoR vector
+    // Cone and Dec components of CoR vector
     double dec_r = cor_r * sin(radians(cor_a - rarot));
     m_DecCorr.X = -dec_r * sin(radians(rarot));
     m_DecCorr.Y = dec_r * cos(radians(rarot));
@@ -705,6 +702,13 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_ConeCorr.X = cone_r * cos(radians(rarot));
     m_ConeCorr.Y = cone_r * sin(radians(rarot));
     double decCorr_deg = dec_r * g_pxScale / 3600;
+    s_state = s_state | 1;
+    FillPanel();
+    return;
+}
+
+void StaticPaToolWin::CalcAdjustments(void)
+{
 
 // Caclulate pixel values for the alignment stars relative to the CoR
     PHD_Point starpx, stardeg;
@@ -717,10 +721,6 @@ void StaticPaToolWin::CalcRotationCentre(void)
     int idx = a_auto ? 1 : 2;
     double xs = r_pxPos[idx].X;
     double ys = r_pxPos[idx].Y;
-    Debug.AddLine(wxString::Format("SPA CalcCoR: Refstar #%d %s RA/dec(%.1f,%.1f)", 
-        a_refStar, poleStars->at(a_refStar).name, poleStars->at(a_refStar).ra, poleStars->at(a_refStar).dec));
-    Debug.AddLine(wxString::Format("SPA CalcCoR: Calc pxPos(%.1f,%.1f), wrt Cor (%.1f,%.1f)", starpx.X, starpx.Y, r_pxCentre.X, r_pxCentre.Y));
-    Debug.AddLine(wxString::Format("SPA CalcCoR: measured pos: (%.1f,%.1f)", xs, ys));
 
     // Calculate the camera rotation from the Azimuth axis
     // HA = LST - RA
@@ -743,8 +743,8 @@ void StaticPaToolWin::CalcRotationCentre(void)
     {
         a_ha = (st_hrs - ra_hrs)*15.0;
     }
+    double rarot = -g_camAngle;
     double harot = rarot - (90 + a_ha);
-//    double harot = rarot - (90 + (st_hrs - ra_hrs)*15.0);
     double hrot = hcor_a - harot;
 
     double az_r = hcor_r * sin(radians(hrot));
@@ -754,8 +754,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_AzCorr.Y = az_r * cos(radians(harot));
     m_AltCorr.X = alt_r * cos(radians(harot));
     m_AltCorr.Y = alt_r * sin(radians(harot));
-
-    FillPanel();
+    Debug.AddLine(wxString::Format("SPA CalcAdjust: Angles: rarot %.1f; a_ha %.1f; hcor_a %.1f; harot: %.1f", rarot, a_ha, hcor_a, harot));
 }
 
 PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
@@ -786,7 +785,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
         tm *nowinfo = localtime(&nowutc);
         time_t now = mktime(nowinfo);
         double since = difftime(now, j2000) / 86400.0;
-        double hadeg = a_ha * 15;
+        double hadeg = a_ha;
         ra_deg = degrees(norm_angle(radians(280.46061837 + 360.98564736629 * since - hadeg)));
         // RA = LST - HA 
         // For for HA 270; RA_deg = LST_deg - 270.0
@@ -820,7 +819,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
             dc.DrawCircle(r_pxPos[i].X*scale, r_pxPos[i].Y*scale, 12 * scale);
         }
     }
-    if (!IsAligned())
+    if (!IsCalced())
     {
         return;
     }
@@ -884,6 +883,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     }
     // Draw adjustment lines for placing the guide star in its correct position relative to the CoR
     // Blue (azimuth) and Red (altitude)
+    CalcAdjustments();
     bool drawCorr = true;
     if (drawCorr)
     {

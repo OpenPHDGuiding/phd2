@@ -156,7 +156,9 @@ struct StaticPaToolWin : public wxFrame
     void MoveWestBy(double thetadeg);
     bool SetStar(int idx);
     bool IsAligned(){ return a_auto ? s_state == (3 << 1) : s_state == (7 << 1); }
+    bool IsCalced(){ return s_state & 1; }
     void CalcRotationCentre(void);
+    void CalcAdjustments(void);
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
     PHD_Point Radec2Px(PHD_Point radec);
 
