@@ -771,7 +771,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
         // If not a goto mount calculate ra_deg from LST assuming mount is in the home position (HA=18h)
         tm j2000_info;
         j2000_info.tm_year = 100;
-        j2000_info.tm_mon = 1;
+        j2000_info.tm_mon = 0;  // January is month 0
         j2000_info.tm_mday = 1;
         j2000_info.tm_hour = 12;
         j2000_info.tm_min = 0;
