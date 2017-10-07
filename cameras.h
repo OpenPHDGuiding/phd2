@@ -66,7 +66,7 @@
 # define ATIK_GEN3
 # define INDI_CAMERA
 # define INOVA_PLC
-# define ASCOM_LATECAMERA
+# define ASCOM_CAMERA
 # define SBIG
 # define SBIGROTATOR_CAMERA // must follow SBIG
 # define QHY_CAMERA
