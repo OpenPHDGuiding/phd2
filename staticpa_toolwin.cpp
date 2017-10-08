@@ -98,7 +98,6 @@ wxWindow *StaticPaTool::CreateStaticPaToolWindow()
     }
 
     // confirm that image scale is specified
-
     if (pFrame->GetCameraPixelScale() == 1.0)
     {
         bool confirmed = ConfirmDialog::Confirm(_(
@@ -149,7 +148,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     ClearState();
     s_aligning = false;
     
-//Fairly convoluted way to get the camera size in pixels
+    //Fairly convoluted way to get the camera size in pixels
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
     double scalefactor = pFrame->pGuider->ScaleFactor();
@@ -158,7 +157,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     r_pxCentre.X = xpx/2;
     r_pxCentre.Y = ypx/2;
     g_pxScale = pFrame->GetCameraPixelScale();
-// Fullsize is easier but the camera simulator does not set this.
+    // Fullsize is easier but the camera simulator does not set this.
 //    wxSize camsize = pCamera->FullSize;
     g_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
 
@@ -229,7 +228,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "Ensure the Reference Star is still selected.<br/>"
         "Click Get second position.<br/>"
         "Repeat for the third position.<br/>"
-        "Click Calculate to show the adjustments needed.<br/>"
+        "Wait for the adjustments to display.<br/>"
         "Adjust your mount's altitude and azimuth to place "
         "three reference stars on their orbits\n"
         );
@@ -275,7 +274,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     wxStaticText *txt;
 
-// First row of grid
+    // First row of grid
     int gridRow = 0;
     // Hour angle
     txt = new wxStaticText(this, wxID_ANY, _("Hour Angle"));
@@ -291,7 +290,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
-// Next row of grid
+    // Next row of grid
     gridRow++;
     w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxSize(10, -1), wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, 18.0, 0.1);
     w_hourangle->SetToolTip(_("Set your scope hour angle"));
@@ -382,8 +381,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-//    w_calculate = new wxButton(this, ID_CALCULATE, _("Calculate"));
-//    gbSizer->Add(w_calculate, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
     w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_close, wxGBPosition(gridRow, 4), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
@@ -406,24 +403,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_notes->Bind(wxEVT_COMMAND_TEXT_UPDATED, &StaticPaToolWin::OnNotes, this);
     w_notes->SetValue(pConfig->Profile.GetString("/StaticPaTool/Notes", wxEmptyString));
 
-    // horizontal sizer for the buttons
-//    wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
-
-    // proportional pad on left of Rotate button
-//    hSizer->Add(0, 0, 2, wxEXPAND, 5);
-
-    // proportional pad on right of Rotate button
-//    hSizer->Add(0, 0, 1, wxEXPAND, 5);
-
-    // proportional pad on right of Align button
-//    hSizer->Add(0, 0, 2, wxEXPAND, 5);
-
-//    w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-//    hSizer->Add(w_close, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-    // add button sizer to top level sizer
-//    topSizer->Add(hSizer, 1, wxEXPAND | wxALL, 5);
-
     SetSizer(topSizer);
 
     w_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
@@ -435,9 +414,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     int ypos = pConfig->Global.GetInt("/StaticPaTool/pos.y", -1);
     MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
 
-// Different instructions for manual versus auto
     FillPanel();
-
 }
 
 StaticPaToolWin::~StaticPaToolWin()
@@ -578,7 +555,6 @@ void StaticPaToolWin::FillPanel()
         w_star3->Show();
         w_hemiChoice->Enable(true);
     }
-//    w_calculate->Enable(IsAligned());
     poleStars = a_hemi >= 0 ? &c_NthStars : &c_SthStars;
     w_refStarChoice->Clear();
     std::string starname;
@@ -597,10 +573,8 @@ void StaticPaToolWin::FillPanel()
         }
     }
 
-
     w_pole->Paint();
     Layout();
-
 }
 
 void StaticPaToolWin::CalcRotationCentre(void)
@@ -689,7 +663,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
 
     Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f", xpx, ypx, scalefactor));
 
-    // Diatance and angle of CoR from centre of sensor
+    // Distance and angle of CoR from centre of sensor
     double cor_r = sqrt(pow(xpx / 2 - cx, 2) + pow(ypx / 2 - cy, 2));
     double cor_a = degrees(atan2((ypx / 2 - cy), (xpx / 2 - cx)));
     double rarot = -g_camAngle;
@@ -708,8 +682,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
 
 void StaticPaToolWin::CalcAdjustments(void)
 {
-
-// Caclulate pixel values for the alignment stars relative to the CoR
+    // Caclulate pixel values for the alignment stars relative to the CoR
     PHD_Point starpx, stardeg;
     stardeg = PHD_Point(poleStars->at(a_refStar).ra, poleStars->at(a_refStar).dec);
     starpx = Radec2Px(stardeg);
@@ -758,10 +731,10 @@ void StaticPaToolWin::CalcAdjustments(void)
 
 PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 {
-// Convert dec to pixel radius
+    // Convert dec to pixel radius
     double r = (90.0 - fabs(radec.Y)) * 3600 / g_pxScale;
 
-// Rotate by calibration angle and HA f object taking into account mount rotation (HA)
+    // Rotate by calibration angle and HA f object taking into account mount rotation (HA)
     double ra_hrs, dec_deg, ra_deg, st_hrs;
     ra_deg = 0.0;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
@@ -786,17 +759,14 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
         double since = difftime(now, j2000) / 86400.0;
         double hadeg = a_ha;
         ra_deg = degrees(norm_angle(radians(280.46061837 + 360.98564736629 * since - hadeg)));
-        // RA = LST - HA 
-        // For for HA 270; RA_deg = LST_deg - 270.0
     }
 
-
-// Target hour angle - or rather the rotation needed to correct. 
-// HA = LST - RA
-// In NH HA decreases clockwise; RA increases clockwise
-// "Up" is HA=0
-// Sensor "up" is 90deg counterclockwise from mount RA plus rotation
-// Star rotation is RAstar - RAmount
+    // Target hour angle - or rather the rotation needed to correct. 
+    // HA = LST - RA
+    // In NH HA decreases clockwise; RA increases clockwise
+    // "Up" is HA=0
+    // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
+    // Star rotation is RAstar - RAmount
     double a1 = radec.X - (ra_deg - 90.0);
     a1 = degrees(norm_angle(radians(a1)));
 
