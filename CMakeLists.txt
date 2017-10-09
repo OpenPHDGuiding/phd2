@@ -32,7 +32,8 @@ cmake_minimum_required(VERSION 3.4)
 
 # this must come before any enable_language() or project()
 if(APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "Minimum OSX deployment version")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "Minimum OSX deployment version")
+  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 endif()
 
 enable_language(C CXX)
@@ -765,11 +766,11 @@ endif()
 
 ## Windows bundling of documentation + translation
 if(WIN32)
-  # here we generate the installation commands and the commands that will make the 
+  # here we generate the installation commands and the commands that will make the
   # build tree look like the install tree, such that users can run the application directly
   # from Visual Studio.
   foreach(current_locale IN LISTS all_locales)
-    
+
     if("${current_locale}" STREQUAL "${default_locale}")
       # because of wXWidget (wxStandardPaths::IgnoreAppBuildSubDirs)
       # the paths "Debug", "Release" are discarded, and the parent path
@@ -818,10 +819,10 @@ if(UNIX AND NOT APPLE)
       set(destination share/phd2/locale/${current_locale}/)
       set(install_help_options DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${current_locale}/ OPTIONAL)
     endif()
-    
+
     get_zip_file(current_zip LOCALE ${current_locale})
     get_translation_files(current_translations LOCALE ${current_locale})
-    
+
     foreach(current_file IN LISTS current_translations current_zip)
       get_filename_component(message_file_name ${current_file} NAME)
       get_filename_component(message_file_ext ${current_file} EXT)
