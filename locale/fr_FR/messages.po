@@ -1,11 +1,11 @@
-# 
+#
 #  fr\messages.po
 #  PHD Guiding
-# 
+#
 #  Created by Sylvain Girard
 #  Copyright (c) 2013 Sylvain Girard
 #  All rights reserved.
-# 
+#
 #  This source code is distributed under the following "BSD" license
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 #     contributors may be used to endorse or promote products derived from
 #     this software without specific prior written permission.
-# 
+#
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 #  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,15 +29,15 @@
 #  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 # , 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-08 18:04+0100\n"
-"PO-Revision-Date: 2017-08-23 16:22+0200\n"
+"PO-Revision-Date: 2017-10-09 23:06+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.4\n"
 
 #: advanced_dialog.cpp:88
 msgid "Advanced setup"
@@ -325,7 +325,7 @@ msgstr "Pas Dec :"
 
 #: calreview_dialog.cpp:217
 msgid "Camera angle:"
-msgstr "Angle de la caméra : "
+msgstr "Angle de la caméra :"
 
 #: calreview_dialog.cpp:220 calreview_dialog.cpp:684
 msgid "Orthogonality error:"
@@ -707,33 +707,33 @@ msgstr "Réglages"
 #: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
 #: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
 #: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SAC42.cpp:71 cam_SACGuide.cpp:82 cam_SACGuide.cpp:93
-#: cam_SACGuide.cpp:96 cam_SACGuide.cpp:99 cam_SACGuide.cpp:102
-#: cam_SACGuide.cpp:111 cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319
-#: cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149
-#: cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173
-#: cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197
-#: cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221
-#: cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250
-#: cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84
-#: cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99
-#: cam_StarShootDSCI.cpp:103 cam_StarShootDSCI.cpp:106
-#: cam_StarShootDSCI.cpp:110 cam_StarShootDSCI.cpp:113
-#: cam_StarShootDSCI.cpp:116 cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261
-#: cam_wdm.cpp:132 cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257
-#: cam_wdm.cpp:280 cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305
-#: cam_ZWO.cpp:153 cam_ZWO.cpp:181 cam_ZWO.cpp:196 cam_ZWO.cpp:213
-#: cam_ZWO.cpp:220 cam_ZWO.cpp:228 cam_ZWO.cpp:271 gear_dialog.cpp:1217
-#: gear_dialog.cpp:1892 gear_dialog.cpp:1901 gear_dialog.cpp:1908
-#: gear_dialog.cpp:1953 gear_dialog.cpp:1959 scope_ascom.cpp:188
-#: scope_ascom.cpp:203 scope_ascom.cpp:211 scope_ascom.cpp:220
-#: scope_ascom.cpp:236 scope_ascom.cpp:243 scope_ascom.cpp:331
-#: scope_ascom.cpp:339 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_equinox.cpp:138 scope_equinox.cpp:142 scope_GC_USBST4.cpp:142
-#: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
-#: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
-#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:104 stepguider_sxao_INDI.cpp:115
+#: cam_SAC42.cpp:71 cam_SACGuide.cpp:82 cam_SACGuide.cpp:93 cam_SACGuide.cpp:96
+#: cam_SACGuide.cpp:99 cam_SACGuide.cpp:102 cam_SACGuide.cpp:111
+#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_SSPIAG.cpp:131
+#: cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149 cam_SSPIAG.cpp:155
+#: cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173 cam_SSPIAG.cpp:179
+#: cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197 cam_SSPIAG.cpp:203
+#: cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:233
+#: cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250 cam_SSPIAG.cpp:257
+#: cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84 cam_StarShootDSCI.cpp:92
+#: cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99 cam_StarShootDSCI.cpp:103
+#: cam_StarShootDSCI.cpp:106 cam_StarShootDSCI.cpp:110
+#: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:116
+#: cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261 cam_wdm.cpp:132 cam_wdm.cpp:141
+#: cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286
+#: cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:153 cam_ZWO.cpp:181
+#: cam_ZWO.cpp:196 cam_ZWO.cpp:213 cam_ZWO.cpp:220 cam_ZWO.cpp:228
+#: cam_ZWO.cpp:271 gear_dialog.cpp:1217 gear_dialog.cpp:1892
+#: gear_dialog.cpp:1901 gear_dialog.cpp:1908 gear_dialog.cpp:1953
+#: gear_dialog.cpp:1959 scope_ascom.cpp:188 scope_ascom.cpp:203
+#: scope_ascom.cpp:211 scope_ascom.cpp:220 scope_ascom.cpp:236
+#: scope_ascom.cpp:243 scope_ascom.cpp:331 scope_ascom.cpp:339
+#: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
+#: scope_equinox.cpp:142 scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160
+#: scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204
+#: scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107
+#: stepguider_sxao.cpp:146 stepguider_sxao_INDI.cpp:104
+#: stepguider_sxao_INDI.cpp:115
 msgid "Error"
 msgstr "Erreur"
 
@@ -890,7 +890,7 @@ msgstr "Erreur à la lecture de l'image"
 #: cam_Atik16.cpp:76
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
-msgstr ""
+msgstr "Impossible de charger la DLL de la caméra Atik %s"
 
 #: cam_Atik16.cpp:76
 msgid "DLL error"
@@ -902,12 +902,12 @@ msgstr "Déjà connectée"
 
 #: cam_Atik16.cpp:127
 msgid "No Atik cameras detected."
-msgstr ""
+msgstr "Aucune caméra Atik détectée."
 
 #: cam_Atik16.cpp:140
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
-msgstr ""
+msgstr "La connexion de la caméra Atik a échoué - Version du pilote %d"
 
 #: cam_Atik16.cpp:315
 msgid "Couldn't start exposure - aborting"
@@ -937,10 +937,9 @@ msgstr ""
 "Attention - impossible de contrôler le temps de pose directement - "
 "fonctionne en exposition automatique"
 
-#: cam_firewire_IC.cpp:290 cam_INDI.cpp:488 cam_INDI.cpp:511
-#: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:290 cam_INDI.cpp:488 cam_INDI.cpp:511 cam_opencv.cpp:146
+#: cam_simulator.cpp:613 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -2049,8 +2048,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:153
 msgid ""
@@ -2724,7 +2723,7 @@ msgstr "Connexion à l'OA ..."
 
 #: gear_dialog.cpp:1414
 msgid "Centering AO ..."
-msgstr ""
+msgstr "Centrage de l'OA ..."
 
 #: gear_dialog.cpp:1424
 msgid "AO Connected"
@@ -3138,8 +3137,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3251,8 +3250,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3275,8 +3274,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3403,7 +3402,7 @@ msgstr "Pause"
 
 #: guider.cpp:1262
 msgid "Static PA rotation failed"
-msgstr ""
+msgstr "La rotation statique de l'alignement polaire a échoué"
 
 #: guider.cpp:1273
 msgid "AO calibration failed"
@@ -4250,11 +4249,11 @@ msgstr "Lancer l'outil d'Alignement de la Dérive (Drift Align)"
 
 #: myframe.cpp:501
 msgid "&Static Polar Align"
-msgstr ""
+msgstr "Alignement Polaire &Statique"
 
 #: myframe.cpp:501
 msgid "Run the Static Polar Alignment tool"
-msgstr ""
+msgstr "Exécute l'outil d'alignement polaire"
 
 #: myframe.cpp:503
 msgid "Enable Server"
@@ -5164,6 +5163,9 @@ msgid ""
 "calibration cannot proceed. Try reducing the AO Travel setting to %d or "
 "lower and try again."
 msgstr ""
+"L'OA a dépassé sa limite de déplacement allant de (%d, %d) à (%d, %d) et la "
+"calibration ne peut pas continuer. Essayez de réduire le paramètre "
+"Déplacement de l'OA à %d ou inférieur et réessayez."
 
 #: myframe_events.cpp:518
 #, c-format
@@ -5171,6 +5173,9 @@ msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and has "
 "been re-centered. Try reducing the AO Travel setting to %d or lower."
 msgstr ""
+"L'OA a dépassé sa limite de déplacement allant de (%d, %d) à (%d, %d) et a "
+"été recentré. Essayez de réduire le paramètre Déplacement de l'OA à %d ou "
+"inférieur."
 
 #: myframe_events.cpp:575
 msgid "You must connect a camera before loading a dark library"
@@ -5774,6 +5779,8 @@ msgid ""
 "%s. Please enter the correct un-binned pixel size from the camera "
 "documentation or vendor web site."
 msgstr ""
+"%s. Veuillez entrer la taille de pixel correcte telle qu'elle est indiquée à "
+"partir de la documentation de la caméra ou du site Web du fournisseur."
 
 #: profile_wizard.cpp:575
 msgid "Detect Pixel Size"
@@ -5798,7 +5805,7 @@ msgstr "Le pilote de la monture ne peut pas donner la vitesse de guidage"
 #: profile_wizard.cpp:616
 #, c-format
 msgid "%s. Please enter the correct mount guide speed"
-msgstr ""
+msgstr "%s. Veuillez entrer la vitesse correcte du guidage"
 
 #: profile_wizard.cpp:618
 msgid "Detect mount guide speed"
@@ -6628,14 +6635,25 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
+"L'outil d'Alignement Polaire Statique est plus efficace lorsque PHD2 "
+"connaît\n"
+"la longueur focale de votre instrument de guidage et la taille des pixels de "
+"la caméra.\n"
+"\n"
+"Entrez la longueur focale de l'instrument de guidage de l'onglet global dans "
+"le Cerveau,\n"
+"Entrez la taille des pixels de la caméra dans l'onglet global dans le "
+"Cerveau,\n"
+"\n"
+"Souhaitez-vous utiliser l'outil quoiqu'il en soit ?"
 
 #: staticpa_toolwin.cpp:120
 msgid "Please wait till Calibration is done and stop guiding"
-msgstr ""
+msgstr "Veuillez attendre que la calibration finisse et arrêter le guidage"
 
 #: staticpa_toolwin.cpp:143
 msgid "Static Polar Alignment"
-msgstr ""
+msgstr "Alignement Polaire Statique"
 
 #: staticpa_toolwin.cpp:214
 msgid ""
@@ -6645,6 +6663,11 @@ msgid ""
 "your mount's altitude and azimuth as displayed.<br/>Red=Altitude; "
 "Blue=Azimuth<br/>"
 msgstr ""
+"Pointez près du Pole Céleste.<br/>Choisissez une Étoile de Référence à "
+"partir de la liste.<br/>Sélectionnez-la comme étoile guide dans l'affichage "
+"principal.<br/>Cliquez pour démarrer l'alignement.<br/>Attendez que les "
+"ajustements s'affichent.<br/>Réglez l'altitude et l'azimut de votre monture "
+"comme indiqué.<br/>Rouge=Altitude; Bleu= Azimut<br/>"
 
 #: staticpa_toolwin.cpp:223
 msgid ""
@@ -6655,102 +6678,110 @@ msgid ""
 "position.<br/>Wait for the adjustments to display.<br/>Adjust your mount's "
 "altitude and azimuth to place three reference stars on their orbits\n"
 msgstr ""
+"Pointez près du Pole Céleste.<br/>Choisissez une Étoile de Référence à "
+"partir de la liste.<br/>Sélectionnez-la comme étoile guide dans l'affichage "
+"principal.<br/>Cliquez sur Aller à la position initiale<br/>Pointer au moins "
+"0h20m à l'ouest en AD.<br/>Assurez-vous que l'étoile de référence soit "
+"toujours sélectionnée.<br/>Aller à la seconde position<br/>Répétez pour la "
+"3ème position<br/>Attendez que les ajustements s'affichent.<br/>Ajustez "
+"l'altitude et l'azimut de votre monture pour placer trois étoiles de "
+"référence sur leurs orbites\n"
 
 #: staticpa_toolwin.cpp:268
 msgid "Alignment Parameters"
-msgstr ""
+msgstr "Paramètres d'Alignement"
 
 #: staticpa_toolwin.cpp:280
 msgid "Hour Angle"
-msgstr ""
+msgstr "Angle Horaire"
 
 #: staticpa_toolwin.cpp:284
 msgid "Hemisphere"
-msgstr ""
+msgstr "Hémisphere"
 
 #: staticpa_toolwin.cpp:289
 msgid "Reference Star"
-msgstr ""
+msgstr "Étoile de Référence"
 
 #: staticpa_toolwin.cpp:296
 msgid "Set your scope hour angle"
-msgstr ""
+msgstr "Définir l'angle horaire du trélescope"
 
 #: staticpa_toolwin.cpp:304
 msgid "Select your hemisphere"
-msgstr ""
+msgstr "Sélectionner votre hémisphère"
 
 #: staticpa_toolwin.cpp:308
 msgid "Select the star used for checking alignment."
-msgstr ""
+msgstr "Sélectionner l'étoile utilisée pour vérifier l'alignement."
 
 #: staticpa_toolwin.cpp:313
 msgid "Camera Angle"
-msgstr ""
+msgstr "Angle de la Caméra"
 
 #: staticpa_toolwin.cpp:317
 msgid "(X, Y) pixels"
-msgstr ""
+msgstr "(X, Y) pixels"
 
 #: staticpa_toolwin.cpp:321
 msgid "Manual Slew"
-msgstr ""
+msgstr "Pointage Manuel"
 
 #: staticpa_toolwin.cpp:324
 msgid "Manually slew the mount to three alignment positions"
-msgstr ""
+msgstr "Pointage manuel de la monture aux trois positions d'alignement"
 
 #: staticpa_toolwin.cpp:333
 msgid "Pos #1"
-msgstr ""
+msgstr "Pos #1"
 
 #: staticpa_toolwin.cpp:340 staticpa_toolwin.cpp:543
 msgid "Rotate"
-msgstr ""
+msgstr "Tournner"
 
 #: staticpa_toolwin.cpp:345
 msgid "Arcsec/pixel"
-msgstr ""
+msgstr "Arcsec/pixel"
 
 #: staticpa_toolwin.cpp:349
 msgid "Pos #2"
-msgstr ""
+msgstr "Pos #2"
 
 #: staticpa_toolwin.cpp:356
 msgid "Get second position"
-msgstr ""
+msgstr "Aller à la seconde position"
 
 #: staticpa_toolwin.cpp:365
 msgid "Pos #3"
-msgstr ""
+msgstr "Pos #3"
 
 #: staticpa_toolwin.cpp:372
 msgid "Get third position"
-msgstr ""
+msgstr "Aller à la 3ème position"
 
 #: staticpa_toolwin.cpp:377
 msgid "Centre"
-msgstr ""
+msgstr "Centre"
 
 #: staticpa_toolwin.cpp:396
 msgid "Adjustment notes"
-msgstr ""
+msgstr "Notes d'ajustement"
 
 #: staticpa_toolwin.cpp:468
 msgid "Static alignment stopped"
-msgstr ""
+msgstr "Alignement statique arrêté"
 
 #: staticpa_toolwin.cpp:475
 msgid "Please wait till Calibration is done and/or stop guiding"
-msgstr ""
+msgstr "Veuillez attendre que la calibration finisse et/ou arrêter le guidage"
 
 #: staticpa_toolwin.cpp:480
 msgid "Please select a star"
-msgstr ""
+msgstr "Veuillez sélectionner une étoile"
 
 #: staticpa_toolwin.cpp:553
 msgid "Get first position"
-msgstr ""
+msgstr "Aller à la position initiale"
 
 #: statswindow.cpp:70
 msgid "RMS"
@@ -7674,8 +7705,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
