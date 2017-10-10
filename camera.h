@@ -181,7 +181,7 @@ public:
     virtual bool    SetCoolerOn(bool on);
     virtual bool    SetCoolerSetpoint(double temperature);
     virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
-    virtual bool    GetCCDTemperature(double *temperature);
+    virtual bool    GetSensorTemperature(double *temperature);
 
     virtual wxString GetSettingsSummary();
     void            AddDark(usImage *dark);

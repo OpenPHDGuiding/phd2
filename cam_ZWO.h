@@ -68,7 +68,7 @@ public:
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;
     bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
-    bool GetCCDTemperature(double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
 
 private:
     bool StopCapture(void);

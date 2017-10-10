@@ -404,7 +404,7 @@ bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
     return false;
 }
 
-bool Camera_ZWO::GetCCDTemperature(double *temperature)
+bool Camera_ZWO::GetSensorTemperature(double *temperature)
 {
     ASI_ERROR_CODE r;
     long value;

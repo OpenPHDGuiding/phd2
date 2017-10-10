@@ -826,7 +826,7 @@ bool CameraASCOM::GetCoolerStatus(bool *on, double *setpoint, double *power, dou
     return false;
 }
 
-bool CameraASCOM::GetCCDTemperature(double *temperature)
+bool CameraASCOM::GetSensorTemperature(double *temperature)
 {
     GITObjRef cam(m_gitEntry);
     Variant res;

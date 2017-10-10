@@ -1328,7 +1328,7 @@ bool CameraSimulator::GetCoolerStatus(bool *onp, double *setpoint, double *power
     return false;
 }
 
-bool CameraSimulator::GetCCDTemperature(double *temperature)
+bool CameraSimulator::GetSensorTemperature(double *temperature)
 {
     bool on;
     double setpt, powr;
