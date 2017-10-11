@@ -199,8 +199,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     };
 
     // get site lat/long from scope to determine hemisphere.
-    a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 4);
-    a_hemi = pConfig->Profile.GetInt("/StaticPaTool/Hemisphere", 4);
+    a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 0);
+    a_hemi = pConfig->Profile.GetInt("/StaticPaTool/Hemisphere", 1);
     if (pPointingSource)
     {
         double lat, lon;
