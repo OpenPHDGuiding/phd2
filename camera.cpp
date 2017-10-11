@@ -673,7 +673,7 @@ void GuideCamera::SetSaturationByADU(bool saturationByADU, unsigned short satura
         Debug.Write(wxString::Format("Saturation detection set to Max-ADU value %d\n", saturationADU));
     }
     else
-        Debug.Write("Saturation detection set to star-profile-mode");
+        Debug.Write("Saturation detection set to star-profile-mode\n");
 }
 
 bool GuideCamera::SetCameraPixelSize(double pixel_size)
