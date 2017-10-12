@@ -162,9 +162,15 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     g_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
 
     g_camAngle = 0.0;
+    double camAngle_rad = 0.0;
     if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
     {
-        g_camAngle = degrees(pMount->xAngle());
+        camAngle_rad = pMount->xAngle();
+        if (pPointingSource->SideOfPier() == PIER_SIDE_EAST)
+        {
+            camAngle_rad = norm_angle(camAngle_rad + M_PI);
+        }
+        g_camAngle = degrees(camAngle_rad);
     }
 
     c_SthStars = {
@@ -193,8 +199,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     };
 
     // get site lat/long from scope to determine hemisphere.
-    a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 4);
-    a_hemi = pConfig->Profile.GetInt("/StaticPaTool/Hemisphere", 4);
+    a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 0);
+    a_hemi = pConfig->Profile.GetInt("/StaticPaTool/Hemisphere", 1);
     if (pPointingSource)
     {
         double lat, lon;
