@@ -45,6 +45,7 @@ BEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
 EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
 EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
 EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
+EVT_CHECKBOX(ID_ORBIT, StaticPaToolWin::OnOrbit)
 EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
 EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
 EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
@@ -174,29 +175,41 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     }
 
     c_SthStars = {
-        Star("A: sigma Oct", 320.66, -88.89, 4.3),
-        Star("B: HD99828", 164.22, -89.33, 7.5),
-        Star("C: HD125371", 248.88, -89.38, 7.8),
-        Star("D: HD92239", 136.63, -89.42, 8.0),
-        Star("E: HD90105", 122.36, -89.52, 7.2),
-        Star("F: BQ Oct", 239.62, -89.83, 6.8),
-        Star("G: HD99685", 130.32, -89.85, 7.8),
-        Star("H: HD98784", 99.78, -89.87, 8.9),
+        Star("A: sigma Oct", 317.19908, -88.9564, 4.3), // 320.66, -88.89
+        Star("B: HD99828", 165.91797, -89.2392, 7.5),   // 164.22, -89.33
+        Star("C: HD125371", 241.45949, -89.3087, 7.8),  // 248.88, -89.38
+        Star("D: HD92239", 142.27856, -89.3471, 8.0),   // 136.63, -89.42
+        Star("E: HD90105", 130.52896, -89.4606, 7.2),   // 122.36, -89.52
+        Star("F: BQ Oct", 218.86418, -89.7718, 6.8),    // 239.62, -89.83
+        Star("G: HD99685", 149.13626, -89.7824, 7.8),   // 130.32, -89.85
+        Star("H: HD98784", 134.64254, -89.8312, 8.9),   // 99.78, -89.87
     };
+    for (int is = 0; is < c_SthStars.size(); is++) {
+        PHD_Point radec_now = J2000Now(PHD_Point(c_SthStars.at(is).ra2000, c_SthStars.at(is).dec2000));
+        c_SthStars.at(is).ra = radec_now.X;
+        c_SthStars.at(is).dec = radec_now.Y;
+    }
+
     c_NthStars = {
-        Star("A: HD5914", 26.39, 89.11, 6.45),
-        Star("B: HD14369", 61.11, 89.16, 8.05),
-        Star("C: Polaris", 43.12, 89.34, 1.95),
-        Star("D: HD211455", 301.77, 89.47, 8.9),
-        Star("E: TYC-4629-33-1", 86.11, 89.43, 9.25),
-        Star("F: HD21070", 152.26, 89.48, 9.0),
-        Star("G: HD1687", 12.14, 89.54, 8.1),
-//        Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
-//        Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
-        Star("H: TYC-4629-37-1", 85.51, 89.65, 9.15),
-//        Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
-//        Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
+        Star("A: HD5914", 23.48114, 89.0155, 6.45),     // 26.39, 89.11
+        Star("B: HD14369", 55.20640, 89.1048, 8.05),    // 61.11, 89.16
+        Star("C: Polaris", 37.96089, 89.2643, 1.95),    // 43.12, 89.34
+        Star("D: HD211455", 309.69879, 89.4065, 8.9),   // 301.77, 89.47
+        Star("E: TYC-4629-33-1", 75.97399, 89.4207, 9.25), // 86.11, 89.43
+        Star("F: HD21070", 146.59109, 89.5695, 9.0),    // 152.26, 89.48
+        Star("G: HD1687", 9.92515, 89.4443, 8.1),       // 12.14, 89.54
+//      Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
+//      Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
+        Star("H: TYC-4629-37-1", 70.70722, 89.6301, 9.15), // 85.51, 89.65
+//      Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
+//      Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
     };
+    for (int is = 0; is < c_NthStars.size(); is++) {
+        PHD_Point radec_now = J2000Now(PHD_Point(c_NthStars.at(is).ra2000, c_NthStars.at(is).dec2000));
+        c_NthStars.at(is).ra = radec_now.X;
+        c_NthStars.at(is).dec = radec_now.Y;
+    }
+
 
     // get site lat/long from scope to determine hemisphere.
     a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 0);
@@ -241,6 +254,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // can mount slew?
     a_auto = true;
+    a_drawOrbit = true;
     g_canSlew = pPointingSource && pPointingSource->CanSlewAsync();
     if (!g_canSlew){
         a_auto = false;
@@ -289,12 +303,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     txt = new wxStaticText(this, wxID_ANY, _("Hemisphere"));
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
     // Alignment star specification
     txt = new wxStaticText(this, wxID_ANY, _("Reference Star"));
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
     // Next row of grid
     gridRow++;
@@ -308,11 +322,11 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     hemi.Add(_("South"));
     w_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
     w_hemiChoice->SetToolTip(_("Select your hemisphere"));
-    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
     w_refStarChoice = new wxChoice(this, ID_REFSTAR, wxDefaultPosition, wxDefaultSize);
     w_refStarChoice->SetToolTip(_("Select the star used for checking alignment."));
-    gbSizer->Add(w_refStarChoice, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(w_refStarChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
 
     // Next row of grid
     gridRow++;
@@ -320,12 +334,17 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
+    txt = new wxStaticText(this, wxID_ANY, _("Arcsec/pixel"));
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("(X, Y) pixels"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
-
+    */
     w_manual = new wxCheckBox(this, ID_MANUAL, _("Manual Slew"));
-    gbSizer->Add(w_manual, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(w_manual, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
     w_manual->SetValue(false);
     w_manual->SetToolTip(_("Manually slew the mount to three alignment positions"));
 
@@ -336,59 +355,74 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_camRot->SetMinSize(wxSize(10, -1));
     gbSizer->Add(w_camRot, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
+    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
+    w_camRot->SetMinSize(wxSize(10, -1));
+    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("Pos #1"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[0][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[0][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
+    */
     w_star1 = new wxButton(this, ID_ROTATE, _("Rotate"));
-    gbSizer->Add(w_star1, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star1, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
+
+    w_orbit = new wxCheckBox(this, ID_ORBIT, _("Show Orbits"));
+    gbSizer->Add(w_orbit, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    w_orbit->SetValue(a_drawOrbit);
+    w_orbit->SetToolTip(_("Show or hide the star orbits"));
+
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("Arcsec/pixel"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
-
+    */
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("Pos #2"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[1][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[1][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
+    */
     w_star2 = new wxButton(this, ID_STAR2, _("Get second position"));
-    gbSizer->Add(w_star2, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star2, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-
+    /*
     w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
+    */
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("Pos #3"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[2][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[2][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
+    */
     w_star3 = new wxButton(this, ID_STAR3, _("Get third position"));
-    gbSizer->Add(w_star3, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star3, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
+    /*
     txt = new wxStaticText(this, wxID_ANY, _("Centre"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
     w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
     gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
+    */
     w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(w_close, wxGBPosition(gridRow, 4), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_close, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -448,6 +482,12 @@ void StaticPaToolWin::OnHa(wxSpinDoubleEvent& evt)
 void StaticPaToolWin::OnManual(wxCommandEvent& evt)
 {
     a_auto = !w_manual->IsChecked();
+    FillPanel();
+}
+
+void StaticPaToolWin::OnOrbit(wxCommandEvent& evt)
+{
+    a_drawOrbit = w_orbit->IsChecked();
     FillPanel();
 }
 
@@ -575,7 +615,7 @@ void StaticPaToolWin::FillPanel()
     {
         if (HasState(idx + 1))
         {
-            w_calPt[idx][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxPos[idx].X, r_pxPos[idx].Y));
+//            w_calPt[idx][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxPos[idx].X, r_pxPos[idx].Y));
         }
     }
 
@@ -657,7 +697,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     r_pxCentre.X = cx;
     r_pxCentre.Y = cy;
     r_radius = cr;
-    w_calPt[3][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxCentre.X, r_pxCentre.Y));
+//    w_calPt[3][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxCentre.X, r_pxCentre.Y));
 
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -782,9 +822,60 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     return px;
 }
 
+PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
+{
+    // Input starting epoch and ending epoch;
+    const double JD2000 = 2451545.0;    // Julian day for J2000
+    const double JD1950 = 2433282.423;  // Julian day for B1950
+    const double JC = 36524.219878;     // days per tropical century
+
+    tm j2000_info;
+    j2000_info.tm_year = 100;
+    j2000_info.tm_mon = 0;  // January is month 0
+    j2000_info.tm_mday = 1;
+    j2000_info.tm_hour = 12;
+    j2000_info.tm_min = 0;
+    j2000_info.tm_sec = 0;
+    j2000_info.tm_isdst = 0;
+    time_t j2000 = mktime(&j2000_info);
+    time_t nowutc = time(NULL);
+    double JDnow = difftime(nowutc, j2000) / 86400.0;
+
+    // Build the transformation matrix;
+    double t2000 = (JD2000 - JD1950) / JC;
+    double tnow = JDnow / JC;    // number of Julian centuries since epoch 2000.0
+    double t2 = pow(tnow, 2);
+    double t3 = pow(tnow, 3);
+
+    double Xx, Xy, Xz, Yx, Yy, Yz, Zx, Zy, Zz;
+    Xx = 1 - ((29696 + 26 * t2000)*t2 - 13 * t3)* 1.0e-8;
+    Xy = ((2234941 + 1355 * t2000)*tnow - 676 * t2 + 221 * t3) * 1.0e-8;
+    Xz = ((971690 - 414 * t2000)*tnow + 207 * t2 + 96 * t3) * 1.0e-8;
+    Yx = -Xy;
+    Yy = 1 - ((24975 + 30 * t2000) *t2 - 15 * t3)* 1.0e-8;
+    Yz = -((10858 + 2 * t2000) *t2)* 1.0e-8;
+    Zx = -Xz;
+    Zy = Yz;
+    Zz = 1 - ((4721 - 4 * t2000) *t2)* 1.0e-8;
+
+    // Transform coordinates;
+    double x0, y0, z0;
+    double x, y, z;
+    x0 = cos(radians(radec.Y)) * cos(radians(radec.X));
+    y0 = cos(radians(radec.Y)) * sin(radians(radec.X));
+    z0 = sin(radians(radec.Y));
+    x = Xx * x0 + Yx * y0 + Zx*z0;
+    y = Xy * x0 + Yy * y0 + Zy*z0;
+    z = Xz * x0 + Yz * y0 + Zz*z0;
+    double radeg, decdeg;
+    radeg = norm(degrees(atan2(y, x)), 0, 360);
+    decdeg = degrees(atan2(z, sqrt(1 - z * z)));
+    return PHD_Point(radeg, decdeg);
+}
+
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
-    int intens = 180;
+    double intens = 255;
     dc.SetPen(wxPen(wxColour(0, intens, intens), 1, wxSOLID));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
@@ -801,7 +892,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     }
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(wxColor(intens, 0, intens), 1, wxPENSTYLE_DOT));
-    dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
+    if (a_drawOrbit)
+    {
+        dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
+    }
 
     // draw the centre of the circle as a red cross
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
@@ -828,6 +922,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 #else
         *wxSWISS_FONT;
 #endif
+//    bool a_drawOrbit = false;
     dc.SetFont(SmallFont);
     for (int is = 0; is < poleStars->size(); is++)
     {
@@ -836,7 +931,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
         wxColor line_color = (is == a_refStar) ? wxColor(0, intens, 0) : wxColor(intens, intens, 0);
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_DOT));
-        dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
+        if (a_drawOrbit)
+        {
+            dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
+        }
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_SOLID));
         dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
         dc.SetTextForeground(line_color);
@@ -869,10 +967,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         double ys = r_pxPos[idx].Y * scale;
         dc.SetPen(wxPen(wxColor(intens, 0, 0), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, intens), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(0, 188.0*intens / 255.0, intens), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
             xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(intens, intens, intens), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(intens*2/3, intens*2/3, intens*2/3), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
             ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
     }

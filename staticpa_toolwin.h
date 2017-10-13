@@ -53,6 +53,7 @@ struct StaticPaToolWin : public wxFrame
     wxTextCtrl *w_camRot;   // Text box for camera rotation
     wxSpinCtrlDouble *w_hourangle; // Spinner to manually set HA
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
+    wxCheckBox *w_orbit;    // Checkbox t show/hide orbits
     wxTextCtrl *w_calPt[4][2];  // Text boxes for each point plus the CoR
     wxButton *w_star1;      // Button for manual get of point 1
     wxButton *w_star2;      // Button for manual get of point 2
@@ -88,8 +89,8 @@ struct StaticPaToolWin : public wxFrame
     {
     public:
         std::string name;
-        double ra, dec, mag;
-        Star(const char* a, const double b, const double c, const double d) :name(a), ra(b), dec(c), mag(d) {};
+        double ra2000, dec2000, mag, ra, dec;
+        Star(const char* a, const double b, const double c, const double d) :name(a), ra2000(b), dec2000(c), mag(d), ra(-1), dec(-1) {};
     };
     std::vector<Star> c_SthStars, c_NthStars; // Stars around the poles
     std::vector<Star> *poleStars;
@@ -99,6 +100,7 @@ struct StaticPaToolWin : public wxFrame
         ID_HEMI = 10001,
         ID_HA,
         ID_MANUAL,
+        ID_ORBIT,
         ID_REFSTAR,
         ID_ROTATE,
         ID_STAR2,
@@ -117,6 +119,7 @@ struct StaticPaToolWin : public wxFrame
     bool a_auto;        // Auto slewing - must be manual if mount cannot slew
     int a_hemi;         // Hemisphere of the observer
     double a_ha;        // Manual hour angle
+    bool a_drawOrbit;   // Draw the star orbits
 
     bool s_aligning;        // Indicates that alignment points are being collected
     unsigned int s_state;   // state of the alignment process
@@ -141,6 +144,7 @@ struct StaticPaToolWin : public wxFrame
     void OnHa(wxSpinDoubleEvent& evt);
     void OnRefStar(wxCommandEvent& evt);
     void OnManual(wxCommandEvent& evt);
+    void OnOrbit(wxCommandEvent& evt);
     void OnNotes(wxCommandEvent& evt);
     void OnRotate(wxCommandEvent& evt);
     void OnStar2(wxCommandEvent& evt);
@@ -166,6 +170,7 @@ struct StaticPaToolWin : public wxFrame
     void ClearState() { s_state = 0; }
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
     PHD_Point Radec2Px(PHD_Point radec);
+    PHD_Point J2000Now(PHD_Point& radec);
 
     DECLARE_EVENT_TABLE()
 };
