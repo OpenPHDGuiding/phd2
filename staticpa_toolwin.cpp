@@ -173,16 +173,16 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         }
         g_camAngle = degrees(camAngle_rad);
     }
-
+    // RA and Dec in J2000.0
     c_SthStars = {
-        Star("A: sigma Oct", 317.19908, -88.9564, 4.3), // 320.66, -88.89
-        Star("B: HD99828", 165.91797, -89.2392, 7.5),   // 164.22, -89.33
-        Star("C: HD125371", 241.45949, -89.3087, 7.8),  // 248.88, -89.38
-        Star("D: HD92239", 142.27856, -89.3471, 8.0),   // 136.63, -89.42
-        Star("E: HD90105", 130.52896, -89.4606, 7.2),   // 122.36, -89.52
-        Star("F: BQ Oct", 218.86418, -89.7718, 6.8),    // 239.62, -89.83
-        Star("G: HD99685", 149.13626, -89.7824, 7.8),   // 130.32, -89.85
-        Star("H: HD98784", 134.64254, -89.8312, 8.9),   // 99.78, -89.87
+        Star("A: sigma Oct", 317.19908, -88.9564, 4.3),
+        Star("B: HD99828", 165.91797, -89.2392, 7.5),
+        Star("C: HD125371", 241.45949, -89.3087, 7.8),
+        Star("D: HD92239", 142.27856, -89.3471, 8.0),
+        Star("E: HD90105", 130.52896, -89.4606, 7.2),
+        Star("F: BQ Oct", 218.86418, -89.7718, 6.8),
+        Star("G: HD99685", 149.13626, -89.7824, 7.8),
+        Star("H: HD98784", 134.64254, -89.8312, 8.9),
     };
     for (int is = 0; is < c_SthStars.size(); is++) {
         PHD_Point radec_now = J2000Now(PHD_Point(c_SthStars.at(is).ra2000, c_SthStars.at(is).dec2000));
@@ -191,16 +191,16 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     }
 
     c_NthStars = {
-        Star("A: HD5914", 23.48114, 89.0155, 6.45),     // 26.39, 89.11
-        Star("B: HD14369", 55.20640, 89.1048, 8.05),    // 61.11, 89.16
-        Star("C: Polaris", 37.96089, 89.2643, 1.95),    // 43.12, 89.34
-        Star("D: HD211455", 309.69879, 89.4065, 8.9),   // 301.77, 89.47
-        Star("E: TYC-4629-33-1", 75.97399, 89.4207, 9.25), // 86.11, 89.43
-        Star("F: HD21070", 146.59109, 89.5695, 9.0),    // 152.26, 89.48
-        Star("G: HD1687", 9.92515, 89.4443, 8.1),       // 12.14, 89.54
+        Star("A: HD5914", 23.48114, 89.0155, 6.45),
+        Star("B: HD14369", 55.20640, 89.1048, 8.05),
+        Star("C: Polaris", 37.96089, 89.2643, 1.95),
+        Star("D: HD211455", 309.69879, 89.4065, 8.9),
+        Star("E: TYC-4629-33-1", 75.97399, 89.4207, 9.25),
+        Star("F: HD21070", 146.59109, 89.5695, 9.0),
+        Star("G: HD1687", 9.92515, 89.4443, 8.1),
 //      Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
 //      Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
-        Star("H: TYC-4629-37-1", 70.70722, 89.6301, 9.15), // 85.51, 89.65
+        Star("H: TYC-4629-37-1", 70.70722, 89.6301, 9.15),
 //      Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
 //      Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
     };
@@ -824,10 +824,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
 
 PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
 {
-    // Input starting epoch and ending epoch;
     const double JD2000 = 2451545.0;    // Julian day for J2000
-    const double JD1950 = 2433282.423;  // Julian day for B1950
-    const double JC = 36524.219878;     // days per tropical century
 
     tm j2000_info;
     j2000_info.tm_year = 100;
@@ -839,24 +836,42 @@ PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
     j2000_info.tm_isdst = 0;
     time_t j2000 = mktime(&j2000_info);
     time_t nowutc = time(NULL);
-    double JDnow = difftime(nowutc, j2000) / 86400.0;
+    double JDnow = difftime(nowutc, j2000) / 86400.0; 
 
-    // Build the transformation matrix;
-    double t2000 = (JD2000 - JD1950) / JC;
-    double tnow = JDnow / JC;    // number of Julian centuries since epoch 2000.0
+    /*
+    This code is adapted from paper
+    Improvement of the IAU 2000 precession model
+    N. Capitaine, P. T. Wallace, J. Chapront
+    https://www.aanda.org/articles/aa/full/2005/10/aa1908/aa1908.html
+    The order of polynomial to be used was found to be t^5 and the precision of the coefficients 0.1 uas. The following series with
+    a 0.1 uas level of precision matches the canonical 4-rotation series to sub-microarcsecond accuracy over 4 centuries:
+    zetaA = 2.5976176 + 2306.0809506 t + 0.3019015 t^2 + 0.0179663 t^3 - 0.0000327 t^4 - 0.0000002 t^5
+    zedA = -2.5976176 + 2306.0803226 t + 1.0947790 t^2 + 0.0182273 t^3 + 0.0000470 t^4 - 0.0000003 t^5
+    thetaA = 2004.1917476 t - 0.4269353 t^2 - 0.0418251 t^3 - 0.0000601 t^4 - 0.0000001 t^5
+    */
+    double tnow = JDnow / 36525;  // JDNow is days since J2000.0 so no need to subtract JD2000
     double t2 = pow(tnow, 2);
     double t3 = pow(tnow, 3);
+    double zed, zeta, theta;            // arcseconds
+    double zedrad, zetarad, thetarad;
+    zeta = 2.5976176 + 2306.0809506*tnow + 0.3019015*t2 + 0.0179663*t3;
+    zetarad = radians(zeta / 3600);
+    zed = -2.5976176 + 2306.0803226*tnow + 1.0947790*t2 + 0.0182273*t3;
+    zedrad = radians(zed / 3600);
+    theta = 2004.1917476*tnow - 0.4269353*t2 - 0.0418251*t3;
+    thetarad = radians(theta / 3600);
 
+//  Build the transformation matrix
     double Xx, Xy, Xz, Yx, Yy, Yz, Zx, Zy, Zz;
-    Xx = 1 - ((29696 + 26 * t2000)*t2 - 13 * t3)* 1.0e-8;
-    Xy = ((2234941 + 1355 * t2000)*tnow - 676 * t2 + 221 * t3) * 1.0e-8;
-    Xz = ((971690 - 414 * t2000)*tnow + 207 * t2 + 96 * t3) * 1.0e-8;
-    Yx = -Xy;
-    Yy = 1 - ((24975 + 30 * t2000) *t2 - 15 * t3)* 1.0e-8;
-    Yz = -((10858 + 2 * t2000) *t2)* 1.0e-8;
-    Zx = -Xz;
-    Zy = Yz;
-    Zz = 1 - ((4721 - 4 * t2000) *t2)* 1.0e-8;
+    Xx = cos(zedrad)*cos(thetarad)*cos(zetarad) - sin(zedrad)*sin(zetarad);
+    Yx = -cos(zedrad)*cos(thetarad)*sin(zetarad) - sin(zedrad)*cos(zetarad);
+    Zx = -cos(zedrad)*sin(thetarad);
+    Xy = sin(zedrad)*cos(thetarad)*cos(zetarad) + cos(zedrad)*sin(zetarad);
+    Yy = -sin(zedrad)*cos(thetarad)*sin(zetarad) + cos(zedrad)*cos(zetarad);
+    Zy = -sin(zedrad)*sin(thetarad);
+    Xz = sin(thetarad)*cos(zetarad);
+    Yz = -sin(thetarad)*sin(zetarad);
+    Zz = cos(thetarad);
 
     // Transform coordinates;
     double x0, y0, z0;
