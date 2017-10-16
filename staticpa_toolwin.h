@@ -53,8 +53,8 @@ struct StaticPaToolWin : public wxFrame
     wxTextCtrl *w_camRot;   // Text box for camera rotation
     wxSpinCtrlDouble *w_hourangle; // Spinner to manually set HA
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
+    wxCheckBox *w_flip;     // Checkbox to flip camera
     wxCheckBox *w_orbit;    // Checkbox t show/hide orbits
-    wxTextCtrl *w_calPt[4][2];  // Text boxes for each point plus the CoR
     wxButton *w_star1;      // Button for manual get of point 1
     wxButton *w_star2;      // Button for manual get of point 2
     wxButton *w_star3;      // Button for manual get of point 3
@@ -100,6 +100,7 @@ struct StaticPaToolWin : public wxFrame
         ID_HEMI = 10001,
         ID_HA,
         ID_MANUAL,
+        ID_FLIP,
         ID_ORBIT,
         ID_REFSTAR,
         ID_ROTATE,
@@ -120,6 +121,7 @@ struct StaticPaToolWin : public wxFrame
     int a_hemi;         // Hemisphere of the observer
     double a_ha;        // Manual hour angle
     bool a_drawOrbit;   // Draw the star orbits
+    bool a_flip;        // Flip the camera angle
 
     bool s_aligning;        // Indicates that alignment points are being collected
     unsigned int s_state;   // state of the alignment process
@@ -144,6 +146,7 @@ struct StaticPaToolWin : public wxFrame
     void OnHa(wxSpinDoubleEvent& evt);
     void OnRefStar(wxCommandEvent& evt);
     void OnManual(wxCommandEvent& evt);
+    void OnFlip(wxCommandEvent& evt);
     void OnOrbit(wxCommandEvent& evt);
     void OnNotes(wxCommandEvent& evt);
     void OnRotate(wxCommandEvent& evt);

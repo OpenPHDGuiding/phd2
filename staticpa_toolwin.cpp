@@ -45,6 +45,7 @@ BEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
 EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
 EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
 EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
+EVT_CHECKBOX(ID_FLIP, StaticPaToolWin::OnFlip)
 EVT_CHECKBOX(ID_ORBIT, StaticPaToolWin::OnOrbit)
 EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
 EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
@@ -164,12 +165,20 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     g_camAngle = 0.0;
     double camAngle_rad = 0.0;
+    a_flip = false;
     if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
     {
         camAngle_rad = pMount->xAngle();
-        if (pPointingSource->SideOfPier() == PIER_SIDE_EAST)
+        Debug.AddLine(wxString::Format("StaticPA: Camera angle %.1f", degrees(camAngle_rad)));
+        wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
+        int ipier = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+        PierSide calPierSide = ipier == PIER_SIDE_EAST ? PIER_SIDE_EAST : ipier == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+        PierSide currPierSide = pPointingSource->SideOfPier();
+        Debug.AddLine(wxString::Format("StaticPA: calPierSide %s; currPierSide %s", pMount->PierSideStr(calPierSide), pMount->PierSideStr(currPierSide)));
+        if (currPierSide != calPierSide  && currPierSide != PIER_SIDE_UNKNOWN)
         {
-            camAngle_rad = norm_angle(camAngle_rad + M_PI);
+            a_flip =  true;
+            Debug.AddLine(wxString::Format("StaticPA: Flipped Camera angle"));
         }
         g_camAngle = degrees(camAngle_rad);
     }
@@ -198,11 +207,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         Star("E: TYC-4629-33-1", 75.97399, 89.4207, 9.25),
         Star("F: HD21070", 146.59109, 89.5695, 9.0),
         Star("G: HD1687", 9.92515, 89.4443, 8.1),
-//      Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
-//      Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
         Star("H: TYC-4629-37-1", 70.70722, 89.6301, 9.15),
-//      Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
-//      Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
     };
     for (int is = 0; is < c_NthStars.size(); is++) {
         PHD_Point radec_now = J2000Now(PHD_Point(c_NthStars.at(is).ra2000, c_NthStars.at(is).dec2000));
@@ -359,16 +364,19 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_camRot->SetMinSize(wxSize(10, -1));
     gbSizer->Add(w_camScale, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #1"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[0][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[0][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-    */
     w_star1 = new wxButton(this, ID_ROTATE, _("Rotate"));
     gbSizer->Add(w_star1, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
+    // Next row of grid
+    gridRow++;
+
+    w_flip = new wxCheckBox(this, ID_FLIP, _("Flip camera"));
+    gbSizer->Add(w_flip, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    w_flip->SetValue(a_flip);
+    w_flip->SetToolTip(_("Invert the camera angle"));
+
+    w_star2 = new wxButton(this, ID_STAR2, _("Get second position"));
+    gbSizer->Add(w_star2, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
@@ -378,49 +386,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_orbit->SetValue(a_drawOrbit);
     w_orbit->SetToolTip(_("Show or hide the star orbits"));
 
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("Arcsec/pixel"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
-    */
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #2"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[1][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[1][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-    */
-    w_star2 = new wxButton(this, ID_STAR2, _("Get second position"));
-    gbSizer->Add(w_star2, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-    // Next row of grid
-    gridRow++;
-    /*
-    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-    */
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #3"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[2][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[2][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-    */
     w_star3 = new wxButton(this, ID_STAR3, _("Get third position"));
     gbSizer->Add(w_star3, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("Centre"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
-    w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-    */
     w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_close, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
@@ -482,6 +453,12 @@ void StaticPaToolWin::OnHa(wxSpinDoubleEvent& evt)
 void StaticPaToolWin::OnManual(wxCommandEvent& evt)
 {
     a_auto = !w_manual->IsChecked();
+    FillPanel();
+}
+
+void StaticPaToolWin::OnFlip(wxCommandEvent& evt)
+{
+    a_flip = w_flip->IsChecked();
     FillPanel();
 }
 
@@ -804,7 +781,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
         time_t now = mktime(nowinfo);
         double since = difftime(now, j2000) / 86400.0;
         double hadeg = a_ha;
-        ra_deg = degrees(norm_angle(radians(280.46061837 + 360.98564736629 * since - hadeg)));
+        ra_deg = norm((280.46061837 + 360.98564736629 * since - hadeg),0,360);
     }
 
     // Target hour angle - or rather the rotation needed to correct. 
@@ -814,9 +791,11 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
     // Star rotation is RAstar - RAmount
     double a1 = radec.X - (ra_deg - 90.0);
-    a1 = degrees(norm_angle(radians(a1)));
+    a1 = norm(a1, 0, 360);
 
-    double a = g_camAngle - a1 * a_hemi;
+    double l_camAngle;
+    l_camAngle = norm((a_flip ? g_camAngle + 180.0 : g_camAngle), 0, 360);
+    double a = l_camAngle - a1 * a_hemi;
 
     PHD_Point px(r * cos(radians(a)), -r * sin(radians(a)));
     return px;
@@ -848,6 +827,8 @@ PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
     zetaA = 2.5976176 + 2306.0809506 t + 0.3019015 t^2 + 0.0179663 t^3 - 0.0000327 t^4 - 0.0000002 t^5
     zedA = -2.5976176 + 2306.0803226 t + 1.0947790 t^2 + 0.0182273 t^3 + 0.0000470 t^4 - 0.0000003 t^5
     thetaA = 2004.1917476 t - 0.4269353 t^2 - 0.0418251 t^3 - 0.0000601 t^4 - 0.0000001 t^5
+
+    In this implementation we use coefficients up to t^3
     */
     double tnow = JDnow / 36525;  // JDNow is days since J2000.0 so no need to subtract JD2000
     double t2 = pow(tnow, 2);
