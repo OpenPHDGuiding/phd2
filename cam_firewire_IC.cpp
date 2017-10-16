@@ -91,8 +91,7 @@ bool CameraFirewire::Connect(const wxString& camId)
         if (debug) { debugfile->AddLine(wxString::Format("1: Init library")); debugfile->Write(); }
         // Init the TIS library
         if( ! DShowLib::InitLibrary( "ISB3200016679" ) ) {  // license key check
-            wxMessageBox(_T("Cannot initialize ImageCapture library"),_("Error"),wxOK | wxICON_ERROR);
-            return true;
+            return CamConnectFailed(_("Cannot initialize ImageCapture library"));
         }
 
         if (debug) { debugfile->AddLine(wxString::Format("2: Create grabber")); debugfile->Write(); }
@@ -100,10 +99,9 @@ bool CameraFirewire::Connect(const wxString& camId)
 
         if (debug) { debugfile->AddLine(wxString::Format("3: Find cameras")); debugfile->Write(); }
         Grabber::tVidCapDevListPtr pVidCapDevList = m_pGrabber->getAvailableVideoCaptureDevices();
-        if( pVidCapDevList == 0 || pVidCapDevList->empty() ) {
-            wxMessageBox(_("No camera found"));
-            return true;
-        }
+        if( pVidCapDevList == 0 || pVidCapDevList->empty() )
+            return CamConnectFailed(_("No camera found"));
+
         int NCams = (int) pVidCapDevList->size();
         if (debug) { debugfile->AddLine(wxString::Format("4: Found %d cams",NCams)); debugfile->Write(); }
 
@@ -119,22 +117,20 @@ bool CameraFirewire::Connect(const wxString& camId)
                 return true;
         }
 
-        if (debug) { debugfile->AddLine(wxString::Format("5: Open Camera")); debugfile->Write(); }
         // Open camera
+        if (debug) { debugfile->AddLine(wxString::Format("5: Open Camera")); debugfile->Write(); }
         retval = m_pGrabber->openDev( pVidCapDevList->at( CamNum ) );
-        if (!retval) {
-            wxMessageBox(_("Cannot open camera"));
-            return true;
-        }
+        if (!retval)
+            return CamConnectFailed(_("Cannot open camera"));
+
         if (debug) { debugfile->AddLine(wxString(pVidCapDevList->at(CamNum).toString())); debugfile->Write(); }
 
         if (debug) { debugfile->AddLine(wxString::Format("6: Get Video formats")); debugfile->Write(); }
         // Get video formats
         Grabber::tVidFmtListPtr pVidFmtList = m_pGrabber->getAvailableVideoFormats();
         if ((pVidFmtList == 0) || pVidFmtList->empty()) {
-            wxMessageBox(_("Cannot get list of video modes"));
             m_pGrabber->closeDev();
-            return true;
+            return CamConnectFailed(_("Cannot get list of video modes"));
         }
         int NModes = pVidFmtList->size();
         if (debug) { debugfile->AddLine(wxString::Format("7: Found %d formats",NModes)); debugfile->Write(); }
@@ -157,8 +153,7 @@ bool CameraFirewire::Connect(const wxString& camId)
             }
             //ModeNum = wxGetSingleChoiceIndex(_T("Select Mode"),_T("Mode"),Names);
             if (ModeNum == -1) {
-                wxMessageBox(_T("Cannot find a Y800 mode"));
-                return true;
+                return CamConnectFailed(_("Cannot find a Y800 mode"));
             }
     //  }
 
@@ -172,20 +167,25 @@ bool CameraFirewire::Connect(const wxString& camId)
     //  if (!retval) wxMessageBox (_T("Could not set to 7.5 FPS"));
         if (debug) { debugfile->AddLine(wxString::Format("10: Turn off auto-exposure")); debugfile->Write(); }
         retval = m_pGrabber->setProperty(CameraControl_Exposure,false);
-        if (!retval) wxMessageBox (_T("Could not turn off auto-exposure"));
+        if (!retval) {
+            return CamConnectFailed(_("Could not turn off auto-exposure"));
+        }
 
         // Setup the frame handler
         if (debug) { debugfile->AddLine(wxString::Format("11: Setup frame handler")); debugfile->Write(); }
         pSink = FrameHandlerSink::create(eY800, 4 );  // not sure why I even need 4...
-        if (pSink == 0)
-            wxMessageBox(_T("Cannot setup frame handler"));
+        if (!pSink) {
+            return CamConnectFailed(_("Cannot setup frame handler"));
+        }
 
         if (debug) { debugstep = 1; debugfile->AddLine(wxString::Format("12: Set snap mode")); debugfile->Write(); }
         pSink->setSnapMode( true );
 
         if (debug) { debugstep = 2; debugfile->AddLine(wxString::Format("12a: Setting SinkType")); debugfile->Write(); }
         retval = m_pGrabber->setSinkType(pSink);
-        if (!retval) { wxMessageBox("Could not set sink type"); }
+        if (!retval) {
+            return CamConnectFailed(_("Could not set sink type"));
+        }
 
         // Get info I need
         if (debug) { debugstep = 3; debugfile->AddLine(wxString::Format("12b: Getting name for mode %d",ModeNum)); debugfile->Write(); }
@@ -201,7 +201,9 @@ bool CameraFirewire::Connect(const wxString& camId)
         // Get the stream prepared, but don't start yet - going to start/stop on each frame grab
         if (debug) { debugstep = 8; debugfile->AddLine(wxString::Format("13: Prepare Live")); debugfile->Write(); }
         retval = m_pGrabber->prepareLive(false); // not using their renderer
-        if (!retval) { wxMessageBox("Could not start Live view"); }
+        if (!retval) {
+            return CamConnectFailed(_("Could not start Live view"));
+        }
 
         // Get pointer to the exposure duration functin needed
         if (debug) { debugfile->AddLine(wxString::Format("14: Get VCD properties")); debugfile->Write(); }
@@ -212,7 +214,7 @@ bool CameraFirewire::Connect(const wxString& camId)
             if (pExposureValueElement != 0) {
                 pExposureValueElement->getInterfacePtr(m_pExposureAbs);
                 if (m_pExposureAbs == 0) {
-                    wxMessageBox(_("Warning - cannot directly control exposure duration - running in auto-exposure"));
+                    pFrame->Alert(_("Warning - cannot directly control exposure duration - running in auto-exposure"));
                     m_pGrabber->setProperty(CameraControl_Exposure,true);
                 }
                 else
@@ -224,7 +226,7 @@ bool CameraFirewire::Connect(const wxString& camId)
             if (pGainValueElement != 0) {
                 pGainValueElement->getInterfacePtr(m_pGain);
                 if (m_pGain == 0) {
-                    wxMessageBox(_T("Warning - cannot directly control gain - running in auto-gain"));
+                    pFrame->Alert(_T("Warning - cannot directly control gain - running in auto-gain"));
     //              m_pGrabber->setProperty(CameraControl_Exposure,true);
                 }
                 else {
@@ -241,12 +243,11 @@ bool CameraFirewire::Connect(const wxString& camId)
         }
     } // try
     catch (...) {
-        wxMessageBox(wxString::Format("Fatal error at step %d connecting to TIS camera",debugstep));
         if (debug) {  debugfile->AddLine(wxString::Format("Failed at %d",debugstep)); debugfile->Write(); debugfile->Close(); }
-        return true;
+        return CamConnectFailed(wxString::Format(_("Fatal error at step %d connecting to TIS camera"),debugstep));
     }
     if (debug) {debugfile->Write(); debugfile->Close(); delete debugfile; }
-    Connected=true;
+    Connected = true;
     return false;
 }
 

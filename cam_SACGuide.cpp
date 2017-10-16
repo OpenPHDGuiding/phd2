@@ -76,11 +76,10 @@ bool CameraSACGuider::Connect(const wxString& camId)
     bool retval;
     sprintf(DevName,"EZUSB-0");
     if (CameraDLL != NULL) {
-        OpenUSB = (B_Cp_DLLFUNC)GetProcAddress(CameraDLL,"openUSB");
+        OpenUSB = (B_Cp_DLLFUNC) GetProcAddress(CameraDLL,"openUSB");
         if (!OpenUSB)   {
             FreeLibrary(CameraDLL);
-            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
-            return true;
+            return CamConnectFailed(_("Didn't find openUSB in DLL"));
         }
         else {
             retval = OpenUSB(DevName);
@@ -89,17 +88,25 @@ bool CameraSACGuider::Connect(const wxString& camId)
             //  if (!CloseUSB)
             //      (void) wxMessageBox(wxT("Didn't find closeUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 CmosReset = (V_Cp_DLLFUNC)GetProcAddress(CameraDLL,"cmosReset");
-                if (!CmosReset)
-                    (void) wxMessageBox(wxT("Didn't find cmosReset in DLL"),_("Error"),wxOK | wxICON_ERROR);
+                if (!CmosReset) {
+                    FreeLibrary(CameraDLL);
+                    return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"),"cmosReset"));
+                }
                 GetFrame = (GUIDEREG_DLLFUNC)GetProcAddress(CameraDLL,"readUSB2_OnePackage");
-                if (!GetFrame)
-                    (void) wxMessageBox(wxT("Didn't find readUSB2_OnePackage in DLL"),_("Error"),wxOK | wxICON_ERROR);
+                if (!GetFrame) {
+                    FreeLibrary(CameraDLL);
+                    return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"),"readUSB2_OnePackage"));
+                }
                 SendI2C = (Uc_CpUCp_DLLFUNC)GetProcAddress(CameraDLL,"sendI2C");
-                if (!SendI2C)
-                    (void) wxMessageBox(wxT("Didn't find sendI2C in DLL"),_("Error"),wxOK | wxICON_ERROR);
+                if (!SendI2C) {
+                    FreeLibrary(CameraDLL);
+                    return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"),"sendI2C"));
+                }
                 SendGuideCommand = (Uc_CpUCUC_DLLFUNC)GetProcAddress(CameraDLL,"sendGuideCommand");
-                if (!SendGuideCommand)
-                    (void) wxMessageBox(wxT("Didn't find sendGuideCommand in DLL"),_("Error"),wxOK | wxICON_ERROR);
+                if (!SendGuideCommand) {
+                    FreeLibrary(CameraDLL);
+                    return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"),"sendGuideCommand"));
+                }
             }
             else {
                 FreeLibrary(CameraDLL);
@@ -108,17 +115,15 @@ bool CameraSACGuider::Connect(const wxString& camId)
         }
     }
     else {
-      (void) wxMessageBox(wxT("Can't find cmosDLL.dll"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Can't find cmosDLL.dll"));
     }
     CmosReset(DevName);
-/*
-    wxMessageBox(_T("RA+")); wxGetApp().Yield(); ST4PulseGuideScope(WEST,2000); wxGetApp().Yield();
-    wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); ST4PulseGuideScope(NORTH,2000);wxGetApp().Yield();
-    wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); ST4PulseGuideScope(EAST,2000);wxGetApp().Yield();
-    wxMessageBox(_T("RA-"));  wxGetApp().Yield(); ST4PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
-    wxMessageBox(_T("Done"));
-*/
+
+//    wxMessageBox(_T("RA+")); wxGetApp().Yield(); ST4PulseGuideScope(WEST,2000); wxGetApp().Yield();
+//    wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); ST4PulseGuideScope(NORTH,2000);wxGetApp().Yield();
+//    wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); ST4PulseGuideScope(EAST,2000);wxGetApp().Yield();
+//    wxMessageBox(_T("RA-"));  wxGetApp().Yield(); ST4PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
+//    wxMessageBox(_T("Done"));
     }
     ClearGuidePort();
     Connected = true;

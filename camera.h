@@ -209,7 +209,7 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
-
+    static bool CamConnectFailed(const wxString& errorMessage);
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,

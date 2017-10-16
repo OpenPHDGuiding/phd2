@@ -55,12 +55,10 @@ wxByte CameraINovaPLC::BitsPerPixel()
 
 bool CameraINovaPLC::Connect(const wxString& camId)
 {
-    DS_CAMERA_STATUS rval;
-    rval = DSCameraInit(R_FULL);
-    if (rval != STATUS_OK) {
-        wxMessageBox(wxString::Format(_("Error on connection: %d"),rval), _("Error"));
-        return true;
-    }
+    DS_CAMERA_STATUS rval = DSCameraInit(R_FULL);
+    if (rval != STATUS_OK)
+        return CamConnectFailed(wxString::Format(_("Error on connection: %d"), rval));
+
     DSCameraSetDataWide(true);
     DSCameraSetAeState(false); // Turn off auto-exposure
     DSCameraGetRowTime(&RowTime);  // Figure the row-time in microseconds -- this lets me figure the actual exp time

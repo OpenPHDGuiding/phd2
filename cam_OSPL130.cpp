@@ -49,17 +49,15 @@ wxByte CameraOpticstarPL130::BitsPerPixel()
 bool CameraOpticstarPL130::Connect(const wxString& camId)
 {
 // returns true on error
-    int retval;
-    if (!DLLExists("OSPL130RT.dll")) {
-        wxMessageBox(_T("Cannot find OSPL130RT.dll"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    retval = OSPL130_Initialize((int) Color, false, 0, 2);
-    if (retval) {
-        wxMessageBox("Cannot init camera",_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-//OSPL130_SetGain(6);
+
+    if (!DLLExists("OSPL130RT.dll"))
+        return CamConnectFailed(_("Cannot find OSPL130RT.dll"));
+
+    int retval = OSPL130_Initialize((int) Color, false, 0, 2);
+    if (retval)
+        return CamConnectFailed(_("Cannot init camera"));
+
+    //OSPL130_SetGain(6);
     Connected = true;
     return false;
 }

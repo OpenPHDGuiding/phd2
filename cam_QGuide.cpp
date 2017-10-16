@@ -73,10 +73,9 @@ bool CameraQGuider::Connect(const wxString& camId)
 {
 // returns true on error
 //  CameraReset();
-    if (!openUSB(0)) {
-        wxMessageBox(_T("No camera"));
-        return true;
-    }
+    if (!openUSB(0))
+        return CamConnectFailed(_("No camera"));
+
 //  ClearGuidePort();
 //  GuideCommand(0x0F,10);
 //  buffer = new unsigned char[1311744];

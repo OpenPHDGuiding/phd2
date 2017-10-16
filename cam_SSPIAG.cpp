@@ -128,145 +128,126 @@ bool CameraSSPIAG::Connect(const wxString& camId)
     // returns true on error
     CameraDLL = LoadLibrary(TEXT("astroDLLsspiag"));
     if (CameraDLL == NULL) {
-        wxMessageBox(_T("Cannot load astroDLLsspiag.dll"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Cannot load astroDLLsspiag.dll"));
     }
     Q5V_SetDevName = (Q5V_PCHAR)GetProcAddress(CameraDLL,"setDevName");
     if (!Q5V_SetDevName) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have setDevName"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "setDevName"));
     }
     Q5V_GetFullSizeImage = (Q5V_UPCHAR)GetProcAddress(CameraDLL,"getFullSizeImage");
     if (!Q5V_GetFullSizeImage) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have getFullSizeImage"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "getFullSizeImage"));
     }
     Q5V_RowNoiseReductionMethod = (Q5V_UC)GetProcAddress(CameraDLL,"RowNoiseReductionMethod");
     if (!Q5V_RowNoiseReductionMethod) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have RowNoiseReductionMethod"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "RowNoiseReductionMethod"));
     }
     Q5V_BlackCalibration = (Q5V_UC)GetProcAddress(CameraDLL,"BlackCalibration");
     if (!Q5V_BlackCalibration) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have BlackCalibration"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "BlackCalibration"));
     }
     Q5V_RowNoiseConstant = (Q5V_UC)GetProcAddress(CameraDLL,"RowNoiseConstant");
     if (!Q5V_RowNoiseConstant) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have RowNoiseConstant"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "RowNoiseConstant"));
     }
     Q5V_OpenQHY5V = (Q5V_UC_V)GetProcAddress(CameraDLL,"openQHY5V");
     if (!Q5V_OpenQHY5V) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have openQHY5V"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "openQHY5V"));
     }
     Q5V_AGC_Enable = (Q5V_INT)GetProcAddress(CameraDLL,"AGC_enable");
     if (!Q5V_AGC_Enable) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have AGC_enable"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "AGC_enable"));
     }
     Q5V_AEC_Enable = (Q5V_INT)GetProcAddress(CameraDLL,"AEC_enable");
     if (!Q5V_AEC_Enable) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have AEC_enable"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "AEC_enable"));
     }
     Q5V_BitCompanding = (Q5V_INT)GetProcAddress(CameraDLL,"bitCompanding");
     if (!Q5V_BitCompanding) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have bitCompanding"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "bitCompanding"));
     }
     Q5V_LongExpMode = (Q5V_INT)GetProcAddress(CameraDLL,"LongExpMode");
     if (!Q5V_LongExpMode) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have LongExpMode"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "LongExpMode"));
     }
     Q5V_HighDynamic = (Q5V_INT)GetProcAddress(CameraDLL,"HighDynamic");
     if (!Q5V_HighDynamic) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have HighDynamic"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "HighDynamic"));
     }
     Q5V_BlackOffset = (Q5V_INT)GetProcAddress(CameraDLL,"BlackOffset");
     if (!Q5V_BlackOffset) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have BlackOffset"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "BlackOffset"));
     }
     Q5V_HighGainBoost = (Q5V_UC)GetProcAddress(CameraDLL,"HighGainBoost");
     if (!Q5V_HighGainBoost) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have HighGainBoost"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "HighGainBoost"));
     }
     Q5V_SetQHY5VGlobalGain = (Q5V_US)GetProcAddress(CameraDLL,"setQHY5VGlobalGain");
     if (!Q5V_SetQHY5VGlobalGain) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have setQHY5VGlobalGain"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "setQHY5VGlobalGain"));
     }
     Q5V_SetTotalShutterWidth = (Q5V_US)GetProcAddress(CameraDLL,"setTotalShutterWidth");
     if (!Q5V_SetTotalShutterWidth) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have setTotalShutterWidth"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "setTotalShutterWidth"));
     }
 /*  Q5V_RowNoiseReduction = (Q5V_ROWNR)GetProcAddress(CameraDLL,"RowNoiseReduction");
     if (!Q5V_RowNoiseReduction) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have RowNoiseReduction"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "RowNoiseReduction"));
     }*/
     Q5V_ReadMode = (Q5V_RMODE)GetProcAddress(CameraDLL,"ReadMode");
     if (!Q5V_ReadMode) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have ReadMode"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "ReadMode"));
     }
     Q5V_SetLongExpTime = (Q5V_UL)GetProcAddress(CameraDLL,"setLongExpTime");
     if (!Q5V_SetLongExpTime) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have setLongExpTime"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "setLongExpTime"));
     }
     Q5V_QHY5VInit = (Q5V_V)GetProcAddress(CameraDLL,"QHY5VInit");
     if (!Q5V_QHY5VInit) {
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("astroDLLsspiag.dll does not have QHY5VInit"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("astroDLLsspiag.dll does not have %s"), "QHY5VInit"));
     }
     GenericDLL = LoadLibrary(TEXT("SSPIAGCAM.dll"));
     if (GenericDLL == NULL) {
-        wxMessageBox(_T("Cannot load SSPIAGCAM.dll"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(_("Cannot load SSPIAGCAM.dll"));
     }
     Q5V_SendGuideCommand = (Q5V_GUIDE)GetProcAddress(GenericDLL,"sendGuideCommand");
     if (!Q5V_SendGuideCommand) {
         FreeLibrary(GenericDLL);
         FreeLibrary(CameraDLL);
-        wxMessageBox(_T("SSPIAGCAM.dll does not have sendGuideCommand"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(wxString::Format(_("SSPIAGCAM.dll does not have %s"), "sendGuideCommand"));
     }
-
 
     Q5V_SetDevName("SSPIA-0");
     if (!Q5V_OpenQHY5V()) {
-        wxMessageBox(_T("Failed to open the camera"), _("Error"));
-        return true;
+        FreeLibrary(GenericDLL);
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(_("Failed to open the camera"));
     }
+
     if (RawBuffer)
         delete [] RawBuffer;
     RawBuffer = new unsigned char[856*500];
+
     Q5V_QHY5VInit();
     Q5V_GetFullSizeImage(RawBuffer);
     wxMilliSleep(100);
@@ -338,7 +319,6 @@ bool CameraSSPIAG::Disconnect()
     FreeLibrary(GenericDLL);
     Connected = false;
     return false;
-
 }
 
 bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)

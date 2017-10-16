@@ -64,13 +64,10 @@ wxByte CameraKWIQGuider::BitsPerPixel()
 
 bool CameraKWIQGuider::Connect(const wxString& camId)
 {
-    if (!KWIQguider->Connect()) {
-        wxMessageBox(_T("Could not connect to KWIQGuider"), _("Error"));
-        return true;
-    }
+    if (!KWIQguider->Connect())
+        return CamConnectFailed(_("Could not connect to KWIQGuider"));
 
     Connected = true;  // Set global flag for being connected
-
     return false;
 }
 

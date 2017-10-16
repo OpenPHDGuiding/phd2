@@ -58,16 +58,17 @@ public:
     Camera_QHY();
     ~Camera_QHY();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool ST4PulseGuideScope(int direction, int duration) override;
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
 };
 
 #endif // QHY5IIBASE_H_INCLUDED

@@ -258,8 +258,7 @@ bool CameraSXV::Connect(const wxString& camId)
     int ncams = sxOpen(hCams);
     if (ncams == 0)
     {
-        wxMessageBox(_("No SX cameras found"), _("Error"));
-        return true;
+        return CamConnectFailed(_("No SX cameras found"));
     }
 
     if (idx < 0 || idx >= ncams)
@@ -282,8 +281,7 @@ bool CameraSXV::Connect(const wxString& camId)
 
     if (CCDParams.width == 0 || CCDParams.height == 0)
     {
-        pFrame->Alert(_("Connect failed: could not retrieve camera parameters."));
-        return true;
+        return CamConnectFailed(_("Connect failed: could not retrieve camera parameters."));
     }
 
     // deal with what if no porch in there ??

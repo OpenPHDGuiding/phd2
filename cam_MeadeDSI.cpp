@@ -93,10 +93,8 @@ bool CameraDSI::Connect(const wxString& camId)
         MeadeCam = new DsiDevice();
 
     unsigned int NDevices = MeadeCam->EnumDsiDevices();
-    if (!NDevices) {
-        wxMessageBox(_T("No DSIs found"), _("Error"));
-        return true;
-    }
+    if (!NDevices)
+        return CamConnectFailed(_("No DSI cameras found"));
 
     unsigned long DevNum = 0;
     if (camId == DEFAULT_CAMERA_ID)

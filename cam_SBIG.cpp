@@ -283,7 +283,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
+        wxMessageBox(wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
         Disconnect();
         return true;
     }
