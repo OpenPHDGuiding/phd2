@@ -343,11 +343,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
-    /*
-    txt = new wxStaticText(this, wxID_ANY, _("(X, Y) pixels"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
-    */
     w_manual = new wxCheckBox(this, ID_MANUAL, _("Manual Slew"));
     gbSizer->Add(w_manual, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
     w_manual->SetValue(false);
@@ -588,14 +583,6 @@ void StaticPaToolWin::FillPanel()
     w_camScale->SetValue(wxString::Format("%.1f", g_pxScale));
     w_camRot->SetValue(wxString::Format("%.1f", g_camAngle));
 
-    for (int idx = 0; idx < 3; idx++)
-    {
-        if (HasState(idx + 1))
-        {
-//            w_calPt[idx][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxPos[idx].X, r_pxPos[idx].Y));
-        }
-    }
-
     w_pole->Paint();
     Layout();
 }
@@ -674,7 +661,6 @@ void StaticPaToolWin::CalcRotationCentre(void)
     r_pxCentre.X = cx;
     r_pxCentre.Y = cy;
     r_radius = cr;
-//    w_calPt[3][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxCentre.X, r_pxCentre.Y));
 
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -918,7 +904,6 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 #else
         *wxSWISS_FONT;
 #endif
-//    bool a_drawOrbit = false;
     dc.SetFont(SmallFont);
     for (int is = 0; is < poleStars->size(); is++)
     {
