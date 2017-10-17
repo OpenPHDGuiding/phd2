@@ -67,8 +67,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     int col = 0;
     int row = 0;
     m_grid1->SetCellValue(row, col++, "");
-    m_grid1->SetCellValue(row, col++, _("RMS"));
-    m_grid1->SetCellValue(row, col++, _("Peak"));
+    m_grid1->SetCellValue(row, col++, _("RMS [px]"));
+    m_grid1->SetCellValue(row, col++, _("Peak [px]"));
     ++row, col = 0;
     m_grid1->SetCellValue(row, col++, _("RA"));
     m_grid1->SetCellValue(row, col++, _T(" 99.99 (99.99'')"));

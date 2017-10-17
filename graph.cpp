@@ -114,7 +114,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     m_pLengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     m_pLengthButton->SetToolTip(_("Select the number of frames of history to display on the X-axis"));
-    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
+    m_pLengthButton->SetLabel(wxString::Format(_T("x: %3d"), m_pClient->m_length));
     pButtonSizer->Add(m_pLengthButton, wxSizerFlags().Border(wxTOP, 5).Expand());
 
     m_pHeightButton = new OptionsButton(this,BUTTON_GRAPH_HEIGHT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
@@ -172,7 +172,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     wxStaticText *lbl;
 
-    lbl = new wxStaticText(this, wxID_ANY, _("RMS Error:"), wxDefaultPosition, wxDefaultSize);
+    lbl = new wxStaticText(this, wxID_ANY, _("RMS Error [px]:"), wxDefaultPosition, wxDefaultSize);
     OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
@@ -699,12 +699,12 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
     {
         if (val > 0)
         {
-            m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
+            m_pHeightButton->SetLabel(wxString::Format(_T("y: +/-%d px"), m_pClient->m_height));
             m_pHeightButton->SetToolTip(_("Select the Y-axis scale, pixels per Y division"));
         }
         else
         {
-            m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
+            m_pHeightButton->SetLabel(wxString::Format(_T("y: +/-%d''"), m_pClient->m_height));
             m_pHeightButton->SetToolTip(_("Select the Y-axis scale, arc-seconds per Y division"));
         }
         m_heightButtonLabelVal = val;
@@ -1243,7 +1243,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         double div_y = center.y - i * yPixelsPerDivision;
         dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : (i == 3 ? " px" : "")), leftEdge + 3, div_y - 13);
 
         div_y = center.y + i * yPixelsPerDivision;
         dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
