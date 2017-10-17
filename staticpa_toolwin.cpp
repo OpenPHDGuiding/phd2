@@ -51,7 +51,7 @@ EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
 EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
 EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
 EVT_BUTTON(ID_STAR3, StaticPaToolWin::OnStar3)
-EVT_BUTTON(ID_CALCULATE, StaticPaToolWin::OnCalculate)
+EVT_BUTTON(ID_CLEAR, StaticPaToolWin::OnClear)
 EVT_BUTTON(ID_CLOSE, StaticPaToolWin::OnCloseBtn)
 EVT_CLOSE(StaticPaToolWin::OnClose)
 END_EVENT_TABLE()
@@ -261,10 +261,11 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     a_auto = true;
     a_drawOrbit = true;
     g_canSlew = pPointingSource && pPointingSource->CanSlewAsync();
+    a_ha = 0.0;
     if (!g_canSlew){
         a_auto = false;
+        a_ha = 270.0;
     }
-    a_ha = 270.0;
 
     // Start window definition
     SetBackgroundColour(wxColor(0xcccccc));
@@ -317,7 +318,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // Next row of grid
     gridRow++;
-    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxSize(10, -1), wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, 18.0, 0.1);
+    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxSize(10, -1), wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, a_ha/15.0, 0.1);
     w_hourangle->SetToolTip(_("Set your scope hour angle"));
     gbSizer->Add(w_hourangle, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL | wxFIXED_MINSIZE, 5);
     w_hourangle->SetDigits(1);
@@ -383,6 +384,9 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     w_star3 = new wxButton(this, ID_STAR3, _("Get third position"));
     gbSizer->Add(w_star3, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
+    w_clear = new wxButton(this, ID_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(w_clear, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
@@ -517,9 +521,18 @@ void StaticPaToolWin::OnStar3(wxCommandEvent& evt)
     s_aligning = true;
 }
 
-void StaticPaToolWin::OnCalculate(wxCommandEvent& evt)
+void StaticPaToolWin::OnClear(wxCommandEvent& evt)
 {
-    CalcRotationCentre();
+    if (IsCalced())
+    {
+        s_aligning = false;
+        s_numPos = 0;
+        ClearState();
+        SetStatusText(_("Static Polar alignment display cleared"));
+        Debug.AddLine(wxString::Format("Static PA display cleared"));
+        FillPanel();
+        return;
+    }
 }
 
 void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
@@ -542,13 +555,15 @@ void StaticPaToolWin::FillPanel()
 {
     w_hourangle->Enable(true);
     double ra_hrs, dec_deg, st_hrs;
-    if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
-    {
-        a_ha = norm_ra(st_hrs - ra_hrs)*15.0;
-        w_hourangle->SetValue(norm_ra(a_ha / 15.0));
-        w_hourangle->Enable(false);
-    }
-    w_hourangle->SetValue(norm_ra(a_ha/15.0));
+//    , ha_deg;
+//    ha_deg = a_ha;
+//    if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
+//    {
+//        ha_deg = norm_ra(st_hrs - ra_hrs)*15.0 + a_ha;
+//        w_hourangle->SetValue(norm_ra(a_ha / 15.0));
+//        w_hourangle->Enable(false);
+//    }
+//    w_hourangle->SetValue(norm_ra(a_ha/15.0));
 
     if (!g_canSlew){
         w_manual->Hide();
@@ -670,7 +685,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     g_dispSz[0] = xpx;
     g_dispSz[1] = ypx;
 
-    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f", xpx, ypx, scalefactor));
+    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f %.1f", xpx, ypx, scalefactor, g_camAngle));
 
     // Distance and angle of CoR from centre of sensor
     double cor_r = sqrt(pow(xpx / 2 - cx, 2) + pow(ypx / 2 - cy, 2));
@@ -719,14 +734,15 @@ void StaticPaToolWin::CalcAdjustments(void)
     // This is camera rotation from RA minus(?) LST angle 
     double    hcor_r = sqrt(pow(xt - xs, 2) + pow(yt - ys, 2)); //xt,yt: target, xs,ys: measured
     double    hcor_a = degrees(atan2((yt - ys), (xt - xs)));
-    double ra_hrs, dec_deg, st_hrs;
+    double ra_hrs, dec_deg, st_hrs, ha_deg;
+    ha_deg = a_ha;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
     {
-        a_ha = (st_hrs - ra_hrs)*15.0;
+        ha_deg = norm((st_hrs - ra_hrs)*15.0 + a_ha, 0, 360);
     }
     double rarot = -g_camAngle;
-    double harot = rarot - (90 + a_ha);
-    double hrot = hcor_a - harot;
+    double harot = norm(rarot - (90 + ha_deg), 0, 360);
+    double hrot = norm(hcor_a - harot, 0, 360);
 
     double az_r = hcor_r * sin(radians(hrot));
     double alt_r = hcor_r * cos(radians(hrot));
@@ -735,7 +751,10 @@ void StaticPaToolWin::CalcAdjustments(void)
     m_AzCorr.Y = az_r * cos(radians(harot));
     m_AltCorr.X = alt_r * cos(radians(harot));
     m_AltCorr.Y = alt_r * sin(radians(harot));
-    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Angles: rarot %.1f; a_ha %.1f; hcor_a %.1f; harot: %.1f", rarot, a_ha, hcor_a, harot));
+    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Angles: rarot %.1f; ha_deg %.1f; a_ha %.1f; hcor_a %.1f; harot: %.1f", rarot, ha_deg, a_ha, hcor_a, harot));
+    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Errors(px): alt %.1f; az %.1f; tot %.1f", alt_r, az_r, hcor_r));
+    SetStatusText(wxString::Format("Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f",
+        fabs(alt_r)*g_pxScale/60, fabs(az_r)*g_pxScale/60, fabs(hcor_r)*g_pxScale/60));
 }
 
 PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
@@ -748,7 +767,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     ra_deg = 0.0;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
     {
-        ra_deg = ra_hrs * 15.0;
+        ra_deg = norm(ra_hrs * 15.0 + a_ha, 0, 360);
     }
     else
     {
@@ -1133,9 +1152,9 @@ bool StaticPaToolWin::SetStar(int npos)
     {
         return false;
     }
-    Debug.AddLine(wxString::Format("StaticPA: Setstar #%d %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     r_pxPos[idx] = star;
     SetState(npos);
+    Debug.AddLine(wxString::Format("StaticPA: Setstar #%d %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     SetStatusText(wxString::Format("Read Position #%d: %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     FillPanel();
     return true;

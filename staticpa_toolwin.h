@@ -60,8 +60,8 @@ struct StaticPaToolWin : public wxFrame
     wxButton *w_star3;      // Button for manual get of point 3
     wxStaticText *w_notesLabel;
     wxTextCtrl *w_notes;
-    wxButton *w_calculate;     // Button to calculate CoR
-    wxButton *w_close;      // Close button
+    wxButton *w_clear;     // Button to clear display
+    wxButton *w_close;     // Close button
     wxStatusBar *w_statusBar;
     wxChoice *w_refStarChoice;  // Listbox for reference stars
     wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
@@ -106,7 +106,7 @@ struct StaticPaToolWin : public wxFrame
         ID_ROTATE,
         ID_STAR2,
         ID_STAR3,
-        ID_CALCULATE,
+        ID_CLEAR,
         ID_CLOSE,
     };
 
@@ -152,7 +152,7 @@ struct StaticPaToolWin : public wxFrame
     void OnRotate(wxCommandEvent& evt);
     void OnStar2(wxCommandEvent& evt);
     void OnStar3(wxCommandEvent& evt);
-    void OnCalculate(wxCommandEvent& evt);
+    void OnClear(wxCommandEvent& evt);
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
