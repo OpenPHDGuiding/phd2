@@ -555,15 +555,6 @@ void StaticPaToolWin::FillPanel()
 {
     w_hourangle->Enable(true);
     double ra_hrs, dec_deg, st_hrs;
-//    , ha_deg;
-//    ha_deg = a_ha;
-//    if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
-//    {
-//        ha_deg = norm_ra(st_hrs - ra_hrs)*15.0 + a_ha;
-//        w_hourangle->SetValue(norm_ra(a_ha / 15.0));
-//        w_hourangle->Enable(false);
-//    }
-//    w_hourangle->SetValue(norm_ra(a_ha/15.0));
 
     if (!g_canSlew){
         w_manual->Hide();
