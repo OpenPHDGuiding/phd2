@@ -90,7 +90,7 @@ struct StaticPaToolWin : public wxFrame
     public:
         std::string name;
         double ra2000, dec2000, mag, ra, dec;
-        Star(const char* a, const double b, const double c, const double d) :name(a), ra2000(b), dec2000(c), mag(d), ra(-1), dec(-1) {};
+        Star(const char* a, double b, double c, double d) :name(a), ra2000(b), dec2000(c), mag(d), ra(-1), dec(-1) {};
     };
     std::vector<Star> c_SthStars, c_NthStars; // Stars around the poles
     std::vector<Star> *poleStars;
@@ -156,10 +156,10 @@ struct StaticPaToolWin : public wxFrame
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    void CreateStarTemplate(wxDC &dc, wxPoint currPt);
+    void CreateStarTemplate(wxDC &dc, const wxPoint& currPt);
     bool IsAligning(){ return s_aligning; };
     bool RotateMount();
-    bool RotateFail(const wxString msg);
+    bool RotateFail(const wxString& msg);
     bool SetParams(double newoffset);
     bool MoveWestBy(double thetadeg);
     bool SetStar(int idx);
@@ -172,8 +172,8 @@ struct StaticPaToolWin : public wxFrame
     void UnsetState(int ipos) { s_state = s_state & ~(1 << ipos) & 15; }
     void ClearState() { s_state = 0; }
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-    PHD_Point Radec2Px(PHD_Point radec);
-    PHD_Point J2000Now(PHD_Point& radec);
+    PHD_Point Radec2Px(const PHD_Point& radec);
+    PHD_Point J2000Now(const PHD_Point& radec);
 
     DECLARE_EVENT_TABLE()
 };
