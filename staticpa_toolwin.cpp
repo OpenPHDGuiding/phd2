@@ -45,11 +45,13 @@ BEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
 EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
 EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
 EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
+EVT_CHECKBOX(ID_FLIP, StaticPaToolWin::OnFlip)
+EVT_CHECKBOX(ID_ORBIT, StaticPaToolWin::OnOrbit)
 EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
 EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
 EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
 EVT_BUTTON(ID_STAR3, StaticPaToolWin::OnStar3)
-EVT_BUTTON(ID_CALCULATE, StaticPaToolWin::OnCalculate)
+EVT_BUTTON(ID_CLEAR, StaticPaToolWin::OnClear)
 EVT_BUTTON(ID_CLOSE, StaticPaToolWin::OnCloseBtn)
 EVT_CLOSE(StaticPaToolWin::OnClose)
 END_EVENT_TABLE()
@@ -163,40 +165,56 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     g_camAngle = 0.0;
     double camAngle_rad = 0.0;
+    a_flip = false;
     if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
     {
         camAngle_rad = pMount->xAngle();
-        if (pPointingSource->SideOfPier() == PIER_SIDE_EAST)
+        Debug.AddLine(wxString::Format("StaticPA: Camera angle %.1f", degrees(camAngle_rad)));
+        wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
+        int ipier = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+        PierSide calPierSide = ipier == PIER_SIDE_EAST ? PIER_SIDE_EAST : ipier == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+        PierSide currPierSide = pPointingSource->SideOfPier();
+        Debug.AddLine(wxString::Format("StaticPA: calPierSide %s; currPierSide %s", pMount->PierSideStr(calPierSide), pMount->PierSideStr(currPierSide)));
+        if (currPierSide != calPierSide  && currPierSide != PIER_SIDE_UNKNOWN)
         {
-            camAngle_rad = norm_angle(camAngle_rad + M_PI);
+            a_flip =  true;
+            Debug.AddLine(wxString::Format("StaticPA: Flipped Camera angle"));
         }
         g_camAngle = degrees(camAngle_rad);
     }
-
+    // RA and Dec in J2000.0
     c_SthStars = {
-        Star("A: sigma Oct", 320.66, -88.89, 4.3),
-        Star("B: HD99828", 164.22, -89.33, 7.5),
-        Star("C: HD125371", 248.88, -89.38, 7.8),
-        Star("D: HD92239", 136.63, -89.42, 8.0),
-        Star("E: HD90105", 122.36, -89.52, 7.2),
-        Star("F: BQ Oct", 239.62, -89.83, 6.8),
-        Star("G: HD99685", 130.32, -89.85, 7.8),
-        Star("H: HD98784", 99.78, -89.87, 8.9),
+        Star("A: sigma Oct", 317.19908, -88.9564, 4.3),
+        Star("B: HD99828", 165.91797, -89.2392, 7.5),
+        Star("C: HD125371", 241.45949, -89.3087, 7.8),
+        Star("D: HD92239", 142.27856, -89.3471, 8.0),
+        Star("E: HD90105", 130.52896, -89.4606, 7.2),
+        Star("F: BQ Oct", 218.86418, -89.7718, 6.8),
+        Star("G: HD99685", 149.13626, -89.7824, 7.8),
+        Star("H: HD98784", 134.64254, -89.8312, 8.9),
     };
+    for (int is = 0; is < c_SthStars.size(); is++) {
+        PHD_Point radec_now = J2000Now(PHD_Point(c_SthStars.at(is).ra2000, c_SthStars.at(is).dec2000));
+        c_SthStars.at(is).ra = radec_now.X;
+        c_SthStars.at(is).dec = radec_now.Y;
+    }
+
     c_NthStars = {
-        Star("A: HD5914", 26.39, 89.11, 6.45),
-        Star("B: HD14369", 61.11, 89.16, 8.05),
-        Star("C: Polaris", 43.12, 89.34, 1.95),
-        Star("D: HD211455", 301.77, 89.47, 8.9),
-        Star("E: TYC-4629-33-1", 86.11, 89.43, 9.25),
-        Star("F: HD21070", 152.26, 89.48, 9.0),
-        Star("G: HD1687", 12.14, 89.54, 8.1),
-//        Star("H: TYC-4662-45-1", 358.33, 89.54, 9.35),
-//        Star("F: TYC-4662-135-1", 355.75, 89.64, 10.1),
-        Star("H: TYC-4629-37-1", 85.51, 89.65, 9.15),
-//        Star("H: TYC-4627-6-1", 12.61, 89.76, 10.5),
-//        Star("I: TYC-4661-2-1", 297.95, 89.83, 9.65),
+        Star("A: HD5914", 23.48114, 89.0155, 6.45),
+        Star("B: HD14369", 55.20640, 89.1048, 8.05),
+        Star("C: Polaris", 37.96089, 89.2643, 1.95),
+        Star("D: HD211455", 309.69879, 89.4065, 8.9),
+        Star("E: TYC-4629-33-1", 75.97399, 89.4207, 9.25),
+        Star("F: HD21070", 146.59109, 89.5695, 9.0),
+        Star("G: HD1687", 9.92515, 89.4443, 8.1),
+        Star("H: TYC-4629-37-1", 70.70722, 89.6301, 9.15),
     };
+    for (int is = 0; is < c_NthStars.size(); is++) {
+        PHD_Point radec_now = J2000Now(PHD_Point(c_NthStars.at(is).ra2000, c_NthStars.at(is).dec2000));
+        c_NthStars.at(is).ra = radec_now.X;
+        c_NthStars.at(is).dec = radec_now.Y;
+    }
+
 
     // get site lat/long from scope to determine hemisphere.
     a_refStar = pConfig->Profile.GetInt("/StaticPaTool/RefStar", 0);
@@ -241,11 +259,13 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // can mount slew?
     a_auto = true;
+    a_drawOrbit = true;
     g_canSlew = pPointingSource && pPointingSource->CanSlewAsync();
+    a_ha = 0.0;
     if (!g_canSlew){
         a_auto = false;
+        a_ha = 270.0;
     }
-    a_ha = 270.0;
 
     // Start window definition
     SetBackgroundColour(wxColor(0xcccccc));
@@ -289,16 +309,16 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     txt = new wxStaticText(this, wxID_ANY, _("Hemisphere"));
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
     // Alignment star specification
     txt = new wxStaticText(this, wxID_ANY, _("Reference Star"));
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
     // Next row of grid
     gridRow++;
-    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxSize(10, -1), wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, 18.0, 0.1);
+    w_hourangle = new wxSpinCtrlDouble(this, ID_HA, wxEmptyString, wxDefaultPosition, wxSize(10, -1), wxSP_ARROW_KEYS | wxSP_WRAP, 0.0, 24.0, a_ha/15.0, 0.1);
     w_hourangle->SetToolTip(_("Set your scope hour angle"));
     gbSizer->Add(w_hourangle, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL | wxFIXED_MINSIZE, 5);
     w_hourangle->SetDigits(1);
@@ -308,11 +328,11 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     hemi.Add(_("South"));
     w_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
     w_hemiChoice->SetToolTip(_("Select your hemisphere"));
-    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
     w_refStarChoice = new wxChoice(this, ID_REFSTAR, wxDefaultPosition, wxDefaultSize);
     w_refStarChoice->SetToolTip(_("Select the star used for checking alignment."));
-    gbSizer->Add(w_refStarChoice, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(w_refStarChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
 
     // Next row of grid
     gridRow++;
@@ -320,12 +340,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("(X, Y) pixels"));
+    txt = new wxStaticText(this, wxID_ANY, _("Arcsec/pixel"));
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
     w_manual = new wxCheckBox(this, ID_MANUAL, _("Manual Slew"));
-    gbSizer->Add(w_manual, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    gbSizer->Add(w_manual, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
     w_manual->SetValue(false);
     w_manual->SetToolTip(_("Manually slew the mount to three alignment positions"));
 
@@ -336,59 +356,43 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_camRot->SetMinSize(wxSize(10, -1));
     gbSizer->Add(w_camRot, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #1"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[0][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[0][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
+    w_camRot->SetMinSize(wxSize(10, -1));
+    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_star1 = new wxButton(this, ID_ROTATE, _("Rotate"));
-    gbSizer->Add(w_star1, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star1, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Arcsec/pixel"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #2"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[1][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[1][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_flip = new wxCheckBox(this, ID_FLIP, _("Flip camera"));
+    gbSizer->Add(w_flip, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    w_flip->SetValue(a_flip);
+    w_flip->SetToolTip(_("Invert the camera angle"));
 
     w_star2 = new wxButton(this, ID_STAR2, _("Get second position"));
-    gbSizer->Add(w_star2, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star2, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
 
-    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-    txt = new wxStaticText(this, wxID_ANY, _("Pos #3"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[2][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[2][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    w_orbit = new wxCheckBox(this, ID_ORBIT, _("Show Orbits"));
+    gbSizer->Add(w_orbit, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    w_orbit->SetValue(a_drawOrbit);
+    w_orbit->SetToolTip(_("Show or hide the star orbits"));
 
     w_star3 = new wxButton(this, ID_STAR3, _("Get third position"));
-    gbSizer->Add(w_star3, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_star3, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
+    w_clear = new wxButton(this, ID_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(w_clear, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-    txt = new wxStaticText(this, wxID_ANY, _("Centre"));
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-
-    w_calPt[3][0] = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxSize(10, -1), wxTE_READONLY);
-    gbSizer->Add(w_calPt[3][0], wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(w_close, wxGBPosition(gridRow, 4), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(w_close, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -451,6 +455,18 @@ void StaticPaToolWin::OnManual(wxCommandEvent& evt)
     FillPanel();
 }
 
+void StaticPaToolWin::OnFlip(wxCommandEvent& evt)
+{
+    a_flip = w_flip->IsChecked();
+    FillPanel();
+}
+
+void StaticPaToolWin::OnOrbit(wxCommandEvent& evt)
+{
+    a_drawOrbit = w_orbit->IsChecked();
+    FillPanel();
+}
+
 void StaticPaToolWin::OnRefStar(wxCommandEvent& evt)
 {
     int i_refStar = w_refStarChoice->GetSelection();
@@ -505,9 +521,18 @@ void StaticPaToolWin::OnStar3(wxCommandEvent& evt)
     s_aligning = true;
 }
 
-void StaticPaToolWin::OnCalculate(wxCommandEvent& evt)
+void StaticPaToolWin::OnClear(wxCommandEvent& evt)
 {
-    CalcRotationCentre();
+    if (IsCalced())
+    {
+        s_aligning = false;
+        s_numPos = 0;
+        ClearState();
+        SetStatusText(_("Static Polar alignment display cleared"));
+        Debug.AddLine(wxString::Format("Static PA display cleared"));
+        FillPanel();
+        return;
+    }
 }
 
 void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
@@ -530,13 +555,6 @@ void StaticPaToolWin::FillPanel()
 {
     w_hourangle->Enable(true);
     double ra_hrs, dec_deg, st_hrs;
-    if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
-    {
-        a_ha = norm_ra(st_hrs - ra_hrs)*15.0;
-        w_hourangle->SetValue(norm_ra(a_ha / 15.0));
-        w_hourangle->Enable(false);
-    }
-    w_hourangle->SetValue(norm_ra(a_ha/15.0));
 
     if (!g_canSlew){
         w_manual->Hide();
@@ -570,14 +588,6 @@ void StaticPaToolWin::FillPanel()
     w_refStarChoice->SetSelection(a_refStar);
     w_camScale->SetValue(wxString::Format("%.1f", g_pxScale));
     w_camRot->SetValue(wxString::Format("%.1f", g_camAngle));
-
-    for (int idx = 0; idx < 3; idx++)
-    {
-        if (HasState(idx + 1))
-        {
-            w_calPt[idx][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxPos[idx].X, r_pxPos[idx].Y));
-        }
-    }
 
     w_pole->Paint();
     Layout();
@@ -657,7 +667,6 @@ void StaticPaToolWin::CalcRotationCentre(void)
     r_pxCentre.X = cx;
     r_pxCentre.Y = cy;
     r_radius = cr;
-    w_calPt[3][0]->SetValue(wxString::Format("(%.f, %.f)", r_pxCentre.X, r_pxCentre.Y));
 
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -667,7 +676,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
     g_dispSz[0] = xpx;
     g_dispSz[1] = ypx;
 
-    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f", xpx, ypx, scalefactor));
+    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f %.1f", xpx, ypx, scalefactor, g_camAngle));
 
     // Distance and angle of CoR from centre of sensor
     double cor_r = sqrt(pow(xpx / 2 - cx, 2) + pow(ypx / 2 - cy, 2));
@@ -716,14 +725,15 @@ void StaticPaToolWin::CalcAdjustments(void)
     // This is camera rotation from RA minus(?) LST angle 
     double    hcor_r = sqrt(pow(xt - xs, 2) + pow(yt - ys, 2)); //xt,yt: target, xs,ys: measured
     double    hcor_a = degrees(atan2((yt - ys), (xt - xs)));
-    double ra_hrs, dec_deg, st_hrs;
+    double ra_hrs, dec_deg, st_hrs, ha_deg;
+    ha_deg = a_ha;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
     {
-        a_ha = (st_hrs - ra_hrs)*15.0;
+        ha_deg = norm((st_hrs - ra_hrs)*15.0 + a_ha, 0, 360);
     }
     double rarot = -g_camAngle;
-    double harot = rarot - (90 + a_ha);
-    double hrot = hcor_a - harot;
+    double harot = norm(rarot - (90 + ha_deg), 0, 360);
+    double hrot = norm(hcor_a - harot, 0, 360);
 
     double az_r = hcor_r * sin(radians(hrot));
     double alt_r = hcor_r * cos(radians(hrot));
@@ -732,7 +742,10 @@ void StaticPaToolWin::CalcAdjustments(void)
     m_AzCorr.Y = az_r * cos(radians(harot));
     m_AltCorr.X = alt_r * cos(radians(harot));
     m_AltCorr.Y = alt_r * sin(radians(harot));
-    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Angles: rarot %.1f; a_ha %.1f; hcor_a %.1f; harot: %.1f", rarot, a_ha, hcor_a, harot));
+    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Angles: rarot %.1f; ha_deg %.1f; a_ha %.1f; hcor_a %.1f; harot: %.1f", rarot, ha_deg, a_ha, hcor_a, harot));
+    Debug.AddLine(wxString::Format("StaticPA CalcAdjust: Errors(px): alt %.1f; az %.1f; tot %.1f", alt_r, az_r, hcor_r));
+    SetStatusText(wxString::Format("Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f",
+        fabs(alt_r)*g_pxScale/60, fabs(az_r)*g_pxScale/60, fabs(hcor_r)*g_pxScale/60));
 }
 
 PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
@@ -745,7 +758,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     ra_deg = 0.0;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
     {
-        ra_deg = ra_hrs * 15.0;
+        ra_deg = norm(ra_hrs * 15.0 + a_ha, 0, 360);
     }
     else
     {
@@ -764,7 +777,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
         time_t now = mktime(nowinfo);
         double since = difftime(now, j2000) / 86400.0;
         double hadeg = a_ha;
-        ra_deg = degrees(norm_angle(radians(280.46061837 + 360.98564736629 * since - hadeg)));
+        ra_deg = norm((280.46061837 + 360.98564736629 * since - hadeg),0,360);
     }
 
     // Target hour angle - or rather the rotation needed to correct. 
@@ -774,17 +787,87 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     // Sensor "up" is 90deg counterclockwise from mount RA plus rotation
     // Star rotation is RAstar - RAmount
     double a1 = radec.X - (ra_deg - 90.0);
-    a1 = degrees(norm_angle(radians(a1)));
+    a1 = norm(a1, 0, 360);
 
-    double a = g_camAngle - a1 * a_hemi;
+    double l_camAngle;
+    l_camAngle = norm((a_flip ? g_camAngle + 180.0 : g_camAngle), 0, 360);
+    double a = l_camAngle - a1 * a_hemi;
 
     PHD_Point px(r * cos(radians(a)), -r * sin(radians(a)));
     return px;
 }
 
+PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
+{
+    const double JD2000 = 2451545.0;    // Julian day for J2000
+
+    tm j2000_info;
+    j2000_info.tm_year = 100;
+    j2000_info.tm_mon = 0;  // January is month 0
+    j2000_info.tm_mday = 1;
+    j2000_info.tm_hour = 12;
+    j2000_info.tm_min = 0;
+    j2000_info.tm_sec = 0;
+    j2000_info.tm_isdst = 0;
+    time_t j2000 = mktime(&j2000_info);
+    time_t nowutc = time(NULL);
+    double JDnow = difftime(nowutc, j2000) / 86400.0; 
+
+    /*
+    This code is adapted from paper
+    Improvement of the IAU 2000 precession model
+    N. Capitaine, P. T. Wallace, J. Chapront
+    https://www.aanda.org/articles/aa/full/2005/10/aa1908/aa1908.html
+    The order of polynomial to be used was found to be t^5 and the precision of the coefficients 0.1 uas. The following series with
+    a 0.1 uas level of precision matches the canonical 4-rotation series to sub-microarcsecond accuracy over 4 centuries:
+    zetaA = 2.5976176 + 2306.0809506 t + 0.3019015 t^2 + 0.0179663 t^3 - 0.0000327 t^4 - 0.0000002 t^5
+    zedA = -2.5976176 + 2306.0803226 t + 1.0947790 t^2 + 0.0182273 t^3 + 0.0000470 t^4 - 0.0000003 t^5
+    thetaA = 2004.1917476 t - 0.4269353 t^2 - 0.0418251 t^3 - 0.0000601 t^4 - 0.0000001 t^5
+
+    In this implementation we use coefficients up to t^3
+    */
+    double tnow = JDnow / 36525;  // JDNow is days since J2000.0 so no need to subtract JD2000
+    double t2 = pow(tnow, 2);
+    double t3 = pow(tnow, 3);
+    double zed, zeta, theta;            // arcseconds
+    double zedrad, zetarad, thetarad;
+    zeta = 2.5976176 + 2306.0809506*tnow + 0.3019015*t2 + 0.0179663*t3;
+    zetarad = radians(zeta / 3600);
+    zed = -2.5976176 + 2306.0803226*tnow + 1.0947790*t2 + 0.0182273*t3;
+    zedrad = radians(zed / 3600);
+    theta = 2004.1917476*tnow - 0.4269353*t2 - 0.0418251*t3;
+    thetarad = radians(theta / 3600);
+
+//  Build the transformation matrix
+    double Xx, Xy, Xz, Yx, Yy, Yz, Zx, Zy, Zz;
+    Xx = cos(zedrad)*cos(thetarad)*cos(zetarad) - sin(zedrad)*sin(zetarad);
+    Yx = -cos(zedrad)*cos(thetarad)*sin(zetarad) - sin(zedrad)*cos(zetarad);
+    Zx = -cos(zedrad)*sin(thetarad);
+    Xy = sin(zedrad)*cos(thetarad)*cos(zetarad) + cos(zedrad)*sin(zetarad);
+    Yy = -sin(zedrad)*cos(thetarad)*sin(zetarad) + cos(zedrad)*cos(zetarad);
+    Zy = -sin(zedrad)*sin(thetarad);
+    Xz = sin(thetarad)*cos(zetarad);
+    Yz = -sin(thetarad)*sin(zetarad);
+    Zz = cos(thetarad);
+
+    // Transform coordinates;
+    double x0, y0, z0;
+    double x, y, z;
+    x0 = cos(radians(radec.Y)) * cos(radians(radec.X));
+    y0 = cos(radians(radec.Y)) * sin(radians(radec.X));
+    z0 = sin(radians(radec.Y));
+    x = Xx * x0 + Yx * y0 + Zx*z0;
+    y = Xy * x0 + Yy * y0 + Zy*z0;
+    z = Xz * x0 + Yz * y0 + Zz*z0;
+    double radeg, decdeg;
+    radeg = norm(degrees(atan2(y, x)), 0, 360);
+    decdeg = degrees(atan2(z, sqrt(1 - z * z)));
+    return PHD_Point(radeg, decdeg);
+}
+
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
-    int intens = 180;
+    double intens = 255;
     dc.SetPen(wxPen(wxColour(0, intens, intens), 1, wxSOLID));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
@@ -801,7 +884,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     }
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(wxColor(intens, 0, intens), 1, wxPENSTYLE_DOT));
-    dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
+    if (a_drawOrbit)
+    {
+        dc.DrawCircle(r_pxCentre.X*scale, r_pxCentre.Y*scale, r_radius*scale);
+    }
 
     // draw the centre of the circle as a red cross
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
@@ -836,7 +922,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         radpx = sqrt(pow(starpx.X, 2) + pow(starpx.Y, 2));
         wxColor line_color = (is == a_refStar) ? wxColor(0, intens, 0) : wxColor(intens, intens, 0);
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_DOT));
-        dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
+        if (a_drawOrbit)
+        {
+            dc.DrawCircle(r_pxCentre.X * scale, r_pxCentre.Y * scale, radpx * scale);
+        }
         dc.SetPen(wxPen(line_color, 1, wxPENSTYLE_SOLID));
         dc.DrawCircle((r_pxCentre.X + starpx.X) * scale, (r_pxCentre.Y + starpx.Y) * scale, region*scale);
         dc.SetTextForeground(line_color);
@@ -869,10 +958,10 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
         double ys = r_pxPos[idx].Y * scale;
         dc.SetPen(wxPen(wxColor(intens, 0, 0), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(0, 0, intens), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(0, 188.0*intens / 255.0, intens), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs + m_AltCorr.X * scale, ys + m_AltCorr.Y * scale,
             xs + m_AltCorr.X * scale + m_AzCorr.X * scale, ys + m_AzCorr.Y * scale + m_AltCorr.Y * scale);
-        dc.SetPen(wxPen(wxColor(intens, intens, intens), 1, wxPENSTYLE_DOT));
+        dc.SetPen(wxPen(wxColor(intens*2/3, intens*2/3, intens*2/3), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xs, ys, xs + m_AltCorr.X * scale + m_AzCorr.X * scale,
             ys + m_AltCorr.Y * scale + m_AzCorr.Y * scale);
     }
@@ -1054,9 +1143,9 @@ bool StaticPaToolWin::SetStar(int npos)
     {
         return false;
     }
-    Debug.AddLine(wxString::Format("StaticPA: Setstar #%d %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     r_pxPos[idx] = star;
     SetState(npos);
+    Debug.AddLine(wxString::Format("StaticPA: Setstar #%d %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     SetStatusText(wxString::Format("Read Position #%d: %.0f, %.0f", npos, r_pxPos[idx].X, r_pxPos[idx].Y));
     FillPanel();
     return true;
