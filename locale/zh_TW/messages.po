@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-20 20:28+0100\n"
-"PO-Revision-Date: 2017-10-14 00:48+0800\n"
+"PO-Revision-Date: 2017-10-23 14:37+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: zh_TW\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 1.8.7\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -489,8 +489,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:650
 msgid "Explanation"
@@ -681,7 +681,7 @@ msgstr "設定"
 
 #: cam_Altair.cpp:144
 msgid "No Altair cameras detected"
-msgstr ""
+msgstr "找不到 Altair 相機"
 
 #: cam_Altair.cpp:162
 msgid "Specified Altair Camera not found."
@@ -704,7 +704,7 @@ msgstr "ASCOM 驅動程式檢查 IsPulseGuiding 失敗, 請參考除錯日誌中
 #: cam_ascom.cpp:459
 #, c-format
 msgid "ASCOM Camera Driver missing required property %s"
-msgstr ""
+msgstr "ASCOM 相機驅動程式缺少所需的屬性 %s"
 
 #: cam_ascom.cpp:473
 msgid ""
@@ -722,7 +722,7 @@ msgstr "ASCOM 驅動程式異常: 連接"
 msgid ""
 "ASCOM driver missing the %s property. Please report this error to your ASCOM "
 "driver provider."
-msgstr ""
+msgstr "ASCOM 驅動程式缺少 %s 屬性, 請將此錯誤回報給提供 ASCOM 驅動程式的廠商"
 
 #: cam_ascom.cpp:686 cam_ascom.cpp:910
 msgid ""
@@ -787,7 +787,7 @@ msgstr "無法開始曝光 - 中斷"
 
 #: cam_firewire_IC.cpp:94
 msgid "Cannot initialize ImageCapture library"
-msgstr ""
+msgstr "無法啟用 ImageCapture 程式庫"
 
 #: cam_firewire_IC.cpp:103
 msgid "No camera found"
@@ -807,23 +807,23 @@ msgstr "無法取得視訊模式列表"
 
 #: cam_firewire_IC.cpp:156
 msgid "Cannot find a Y800 mode"
-msgstr ""
+msgstr "找不到 Y800 模式"
 
 #: cam_firewire_IC.cpp:171
 msgid "Could not turn off auto-exposure"
-msgstr ""
+msgstr "無法關閉自動曝光"
 
 #: cam_firewire_IC.cpp:178
 msgid "Cannot setup frame handler"
-msgstr ""
+msgstr "無法設定禎控制器"
 
 #: cam_firewire_IC.cpp:187
 msgid "Could not set sink type"
-msgstr ""
+msgstr "無法設定接收器類型"
 
 #: cam_firewire_IC.cpp:205
 msgid "Could not start Live view"
-msgstr ""
+msgstr "無法啟用實時顯示"
 
 #: cam_firewire_IC.cpp:217
 msgid ""
@@ -834,12 +834,11 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 #: cam_firewire_IC.cpp:247
 #, c-format
 msgid "Fatal error at step %d connecting to TIS camera"
-msgstr ""
+msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:291 cam_INDI.cpp:489 cam_INDI.cpp:512
-#: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:291 cam_INDI.cpp:489 cam_INDI.cpp:512 cam_opencv.cpp:146
+#: cam_simulator.cpp:613 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -854,35 +853,35 @@ msgstr "拍攝影像錯誤: %d (%d) %s"
 
 #: cam_firewire_OSX.cpp:87
 msgid "Error looking for Firewire / IEEE1394 cameras (internal error)"
-msgstr ""
+msgstr "尋找 Firewire / IEEE1394 相機時發生錯誤 (內部錯誤)"
 
 #: cam_firewire_OSX.cpp:93
 msgid "Error looking for Firewire / IEEE1394 cameras"
-msgstr ""
+msgstr "尋找 Firewire / IEEE1394 相機時發生錯誤"
 
 #: cam_firewire_OSX.cpp:96
 msgid "No Firewire / IEEE1394 camera found"
-msgstr ""
+msgstr "找不到 Firewire / IEEE1394 相機"
 
 #: cam_firewire_OSX.cpp:144
 msgid "Cannot find a suitable monochrome video mode"
-msgstr ""
+msgstr "找不到合適的單色錄影模式"
 
 #: cam_firewire_OSX.cpp:149
 msgid "Cannot set frame rate to 7.5 FPS"
-msgstr ""
+msgstr "無法將禎率設為 7.5 FPS"
 
 #: cam_firewire_OSX.cpp:161
 msgid "Cannot setup DMA buffers"
-msgstr ""
+msgstr "無法設定 DMA 緩衝區"
 
 #: cam_firewire_OSX.cpp:170
 msgid "Cannot start transmission"
-msgstr ""
+msgstr "無法開始傳輸"
 
 #: cam_firewire_OSX.cpp:181
 msgid "Transmission failed to start"
-msgstr ""
+msgstr "傳輸無法開始"
 
 #: cam_firewire_OSX.cpp:354
 msgid "Cannot get a frame from the queue"
@@ -941,7 +940,7 @@ msgstr "設定增益發生錯誤"
 
 #: cam_KWIQGuider.cpp:68
 msgid "Could not connect to KWIQGuider"
-msgstr ""
+msgstr "無法連接到 KWIQGuider"
 
 #: cam_LELXUSBWebcam.cpp:67
 msgid "Unable to open LXUSB device"
@@ -998,7 +997,7 @@ msgstr "Webcam 設定"
 
 #: cam_MeadeDSI.cpp:97
 msgid "No DSI cameras found"
-msgstr ""
+msgstr "找不到 DSI 相機"
 
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
@@ -1006,15 +1005,15 @@ msgstr "無法啟用 USB 程式庫"
 
 #: cam_openssag.cpp:112
 msgid "Could not connect to StarShoot Autoguider"
-msgstr ""
+msgstr "無法連接 StarShoot 自動導星器"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
-msgstr ""
+msgstr "找不到 OSPL130RT.dll"
 
 #: cam_OSPL130.cpp:58
 msgid "Cannot init camera"
-msgstr ""
+msgstr "無法啟用相機"
 
 #: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
@@ -1078,7 +1077,7 @@ msgstr "由 QHY 相機讀取影像失敗"
 
 #: cam_SAC42.cpp:71
 msgid "Error connecting to SAC4-2"
-msgstr ""
+msgstr "SAC4-2 連接錯誤 "
 
 #: cam_SAC42.cpp:134
 msgid "Error capturing data from camera"
@@ -1086,7 +1085,7 @@ msgstr "由相機擷取資料時發生錯誤"
 
 #: cam_SACGuide.cpp:82 cam_StarShootDSCI.cpp:82
 msgid "Didn't find openUSB in DLL"
-msgstr ""
+msgstr "在 DLL 中找不到 openUSB"
 
 #: cam_SACGuide.cpp:93 cam_SACGuide.cpp:98 cam_SACGuide.cpp:103
 #: cam_SACGuide.cpp:108 cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101
@@ -1095,11 +1094,11 @@ msgstr ""
 #: cam_StarShootDSCI.cpp:129 cam_StarShootDSCI.cpp:134
 #, c-format
 msgid "Didn't find %s in DLL"
-msgstr ""
+msgstr "在 DLL 中找不到 %s"
 
 #: cam_SACGuide.cpp:118
 msgid "Can't find cmosDLL.dll"
-msgstr ""
+msgstr "找不到 cmosDLL.dll 檔案"
 
 #: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
@@ -1132,12 +1131,12 @@ msgstr "輸入 IP 地址"
 #: cam_SBIG.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
-msgstr ""
+msgstr "找不到 SBIG 相機: 錯誤碼 %d"
 
 #: cam_SBIG.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
-msgstr ""
+msgstr "連接到 SBIG 相機發生錯誤: 錯誤碼 %d"
 
 #: cam_SBIG.cpp:309
 msgid ""
@@ -1145,6 +1144,9 @@ msgid ""
 "\n"
 "No = use main image CCD"
 msgstr ""
+"找到追蹤 CCD, 要使用它?\n"
+"\n"
+"否 = 使用主要影像 CCD"
 
 #: cam_SBIG.cpp:309
 msgid "CCD Choice"
@@ -1416,7 +1418,7 @@ msgstr "赤道儀方向: %s"
 
 #: cam_SSPIAG.cpp:131
 msgid "Cannot load astroDLLsspiag.dll"
-msgstr ""
+msgstr "無法載入 astroDLLsspiag.dll"
 
 #: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
 #: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
@@ -1425,20 +1427,20 @@ msgstr ""
 #: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
-msgstr ""
+msgstr "astroDLLsspiag.dll 沒有 %s"
 
 #: cam_SSPIAG.cpp:231
 msgid "Cannot load SSPIAGCAM.dll"
-msgstr ""
+msgstr "無法載入 SSPIAGCAM.dll"
 
 #: cam_SSPIAG.cpp:237
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
-msgstr ""
+msgstr "SSPIAGCAM.dll 沒有 %s"
 
 #: cam_SSPIAG.cpp:244
 msgid "Failed to open the camera"
-msgstr ""
+msgstr "無法開啟相機"
 
 #: cam_StarShootDSCI.cpp:162
 msgid "Problem sending register to StarShoot"
@@ -1500,7 +1502,7 @@ msgstr ""
 
 #: cam_ZWO.cpp:196
 msgid "No ZWO cameras detected."
-msgstr ""
+msgstr "偵測不到 ZWO 相機"
 
 #: cam_ZWO.cpp:212 cam_ZWO.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
@@ -2851,7 +2853,7 @@ msgstr "顯示赤道儀修正量"
 
 #: graph.cpp:175
 msgid "RMS Error [px]:"
-msgstr ""
+msgstr "RMS 錯誤 [px]:"
 
 #: graph.cpp:210
 msgid "Tot"
@@ -3085,8 +3087,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3190,8 +3192,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3212,8 +3214,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -6427,11 +6429,11 @@ msgstr "旋轉"
 
 #: staticpa_toolwin.cpp:369
 msgid "Flip camera"
-msgstr ""
+msgstr "翻轉相機"
 
 #: staticpa_toolwin.cpp:372
 msgid "Invert the camera angle"
-msgstr ""
+msgstr "反轉相機角度"
 
 #: staticpa_toolwin.cpp:374
 msgid "Get second position"
@@ -6439,11 +6441,11 @@ msgstr "取得第二個位置"
 
 #: staticpa_toolwin.cpp:380
 msgid "Show Orbits"
-msgstr ""
+msgstr "顯示軌跡"
 
 #: staticpa_toolwin.cpp:383
 msgid "Show or hide the star orbits"
-msgstr ""
+msgstr "顯示或隱藏星點軌跡"
 
 #: staticpa_toolwin.cpp:385
 msgid "Get third position"
@@ -6467,7 +6469,7 @@ msgstr "請選擇一顆星"
 
 #: staticpa_toolwin.cpp:531
 msgid "Static Polar alignment display cleared"
-msgstr ""
+msgstr "靜態對極軸工具顯示已清除"
 
 #: staticpa_toolwin.cpp:577
 msgid "Get first position"
@@ -6475,11 +6477,11 @@ msgstr "取得第一個位置"
 
 #: statswindow.cpp:70
 msgid "RMS [px]"
-msgstr ""
+msgstr "RMS [px]"
 
 #: statswindow.cpp:71
 msgid "Peak [px]"
-msgstr ""
+msgstr "Peak [px]"
 
 #: statswindow.cpp:75
 msgid " 99.99 (99.99'')"
