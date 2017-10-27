@@ -60,6 +60,7 @@ struct StaticPaToolWin : public wxFrame
     wxButton *w_star3;      // Button for manual get of point 3
     wxStaticText *w_notesLabel;
     wxTextCtrl *w_notes;
+    wxButton *w_goto;     // Button to clear display
     wxButton *w_clear;     // Button to clear display
     wxButton *w_close;     // Close button
     wxStatusBar *w_statusBar;
@@ -106,6 +107,7 @@ struct StaticPaToolWin : public wxFrame
         ID_ROTATE,
         ID_STAR2,
         ID_STAR3,
+        ID_GOTO,
         ID_CLEAR,
         ID_CLOSE,
     };
@@ -152,6 +154,7 @@ struct StaticPaToolWin : public wxFrame
     void OnRotate(wxCommandEvent& evt);
     void OnStar2(wxCommandEvent& evt);
     void OnStar3(wxCommandEvent& evt);
+    void OnGoto(wxCommandEvent& evt);
     void OnClear(wxCommandEvent& evt);
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
