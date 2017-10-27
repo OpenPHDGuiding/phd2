@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-08 18:04+0100\n"
+"POT-Creation-Date: 2017-10-20 20:28+0100\n"
 "PO-Revision-Date: 2015-03-29 20:22+0100\n"
 "Last-Translator: Jakub Bartas <jakub.bartas@gmail.com>\n"
 "Language-Team: Jakub Bartas <jakub.bartas@gmail.com>\n"
@@ -55,7 +55,7 @@ msgstr "Ustawienia zaawansowane"
 msgid "Global"
 msgstr "Global"
 
-#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:117 cam_simulator.cpp:1587
+#: advanced_dialog.cpp:143 cam_firewire_IC.cpp:115 cam_simulator.cpp:1587
 #: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Kamera"
@@ -197,12 +197,12 @@ msgstr ""
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:307 scope.cpp:222 staticpa_toolwin.cpp:301
+#: backlash_comp.cpp:307 scope.cpp:222 staticpa_toolwin.cpp:327
 #: testguide.cpp:152
 msgid "North"
 msgstr "Północ"
 
-#: backlash_comp.cpp:308 scope.cpp:223 staticpa_toolwin.cpp:302
+#: backlash_comp.cpp:308 scope.cpp:223 staticpa_toolwin.cpp:328
 #: testguide.cpp:152
 msgid "South"
 msgstr "Południe"
@@ -651,7 +651,7 @@ msgid "Calibration step, ms"
 msgstr "Krok kalibracji, ms"
 
 #: calstep_dialog.cpp:181 cam_simulator.cpp:1494 camcal_import_dialog.cpp:47
-#: camera.cpp:734 configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:54
+#: camera.cpp:740 configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:54
 #: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2838
 #: profile_wizard.cpp:61 profile_wizard.cpp:68 Refine_DefMap.cpp:59
 #: starcross_test.cpp:52
@@ -674,50 +674,19 @@ msgstr ""
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: cam_Altair.cpp:143 cam_Altair.cpp:162 cam_Altair.cpp:169 cam_Altair.cpp:192
-#: cam_Atik16.cpp:127 cam_firewire_IC.cpp:94 cam_INovaPLC.cpp:61
-#: cam_KWIQGuider.cpp:68 cam_LELXUSBWebcam.cpp:67 cam_LESerialWebcam.cpp:294
-#: cam_MeadeDSI.cpp:97 cam_openssag.cpp:96 cam_openssag.cpp:113
-#: cam_OSPL130.cpp:54 cam_OSPL130.cpp:59 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SAC42.cpp:71 cam_SACGuide.cpp:82 cam_SACGuide.cpp:93
-#: cam_SACGuide.cpp:96 cam_SACGuide.cpp:99 cam_SACGuide.cpp:102
-#: cam_SACGuide.cpp:111 cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319
-#: cam_SSPIAG.cpp:131 cam_SSPIAG.cpp:137 cam_SSPIAG.cpp:143 cam_SSPIAG.cpp:149
-#: cam_SSPIAG.cpp:155 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:167 cam_SSPIAG.cpp:173
-#: cam_SSPIAG.cpp:179 cam_SSPIAG.cpp:185 cam_SSPIAG.cpp:191 cam_SSPIAG.cpp:197
-#: cam_SSPIAG.cpp:203 cam_SSPIAG.cpp:209 cam_SSPIAG.cpp:215 cam_SSPIAG.cpp:221
-#: cam_SSPIAG.cpp:233 cam_SSPIAG.cpp:239 cam_SSPIAG.cpp:245 cam_SSPIAG.cpp:250
-#: cam_SSPIAG.cpp:257 cam_SSPIAG.cpp:264 cam_StarShootDSCI.cpp:84
-#: cam_StarShootDSCI.cpp:92 cam_StarShootDSCI.cpp:96 cam_StarShootDSCI.cpp:99
-#: cam_StarShootDSCI.cpp:103 cam_StarShootDSCI.cpp:106
-#: cam_StarShootDSCI.cpp:110 cam_StarShootDSCI.cpp:113
-#: cam_StarShootDSCI.cpp:116 cam_StarShootDSCI.cpp:124 cam_SXV.cpp:261
-#: cam_wdm.cpp:132 cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257
-#: cam_wdm.cpp:280 cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305
-#: cam_ZWO.cpp:153 cam_ZWO.cpp:181 cam_ZWO.cpp:196 cam_ZWO.cpp:213
-#: cam_ZWO.cpp:220 cam_ZWO.cpp:228 cam_ZWO.cpp:271 gear_dialog.cpp:1217
-#: gear_dialog.cpp:1892 gear_dialog.cpp:1901 gear_dialog.cpp:1908
-#: gear_dialog.cpp:1953 gear_dialog.cpp:1959 scope_ascom.cpp:188
-#: scope_ascom.cpp:203 scope_ascom.cpp:211 scope_ascom.cpp:220
-#: scope_ascom.cpp:236 scope_ascom.cpp:243 scope_ascom.cpp:331
-#: scope_ascom.cpp:339 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_equinox.cpp:138 scope_equinox.cpp:142 scope_GC_USBST4.cpp:142
-#: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
-#: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
-#: stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:104 stepguider_sxao_INDI.cpp:115
-msgid "Error"
-msgstr "Błąd"
+#: cam_Altair.cpp:144
+msgid "No Altair cameras detected"
+msgstr ""
 
 #: cam_Altair.cpp:162
 msgid "Specified Altair Camera not found."
 msgstr ""
 
-#: cam_Altair.cpp:169
+#: cam_Altair.cpp:168
 msgid "Failed to open Altair Camera."
 msgstr ""
 
-#: cam_Altair.cpp:192
+#: cam_Altair.cpp:190
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
 
@@ -728,154 +697,130 @@ msgid ""
 msgstr ""
 
 #: cam_ascom.cpp:459
-msgid "ASCOM Camera Driver missing required property "
-msgstr "Brakuje wymaganych opcji dla sterownika kamery ASCOM "
+#, c-format
+msgid "ASCOM Camera Driver missing required property %s"
+msgstr ""
 
 #: cam_ascom.cpp:473
 msgid ""
 "Could not create ASCOM camera object. See the debug log for more information."
 msgstr ""
 
-#: cam_ascom.cpp:497 rotator_ascom.cpp:176
+#: cam_ascom.cpp:496 rotator_ascom.cpp:176
 msgid "ASCOM driver problem: Connect"
 msgstr "Problem sterownika ASCOM: Połącz"
 
-#: cam_ascom.cpp:513
+#: cam_ascom.cpp:511 cam_ascom.cpp:518 cam_ascom.cpp:525 cam_ascom.cpp:540
+#: cam_ascom.cpp:547 cam_ascom.cpp:581 cam_ascom.cpp:588 cam_ascom.cpp:612
+#: cam_ascom.cpp:619
+#, c-format
 msgid ""
-"ASCOM driver missing the CanPulseGuide property. Please report this error to "
-"your ASCOM driver provider."
+"ASCOM driver missing the %s property. Please report this error to your ASCOM "
+"driver provider."
 msgstr ""
 
-#: cam_ascom.cpp:521
-msgid ""
-"ASCOM driver missing the CanAbortExposure property. Please report this error "
-"to your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:529
-msgid ""
-"ASCOM driver missing the CanStopExposure property. Please report this error "
-"to your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:545
-msgid ""
-"ASCOM driver missing the CameraXSize property. Please report this error to "
-"your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:553
-msgid ""
-"ASCOM driver missing the CameraYSize property. Please report this error to "
-"your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:588
-msgid ""
-"ASCOM driver missing the PixelSizeX property. Please report this error to "
-"your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:596
-msgid ""
-"ASCOM driver missing the PixelSizeY property. Please report this error to "
-"your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:621
-msgid ""
-"ASCOM driver missing the CanSetCCDTemperature property. Please report this "
-"error to your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:629
-msgid ""
-"ASCOM driver missing the CanGetCoolerPower property. Please report this "
-"error to your ASCOM driver provider."
-msgstr ""
-
-#: cam_ascom.cpp:694 cam_ascom.cpp:919
+#: cam_ascom.cpp:686 cam_ascom.cpp:910
 msgid ""
 "The ASCOM camera failed to set binning. See the debug log for more "
 "information."
 msgstr ""
 
-#: cam_ascom.cpp:721
+#: cam_ascom.cpp:712
 msgid "ASCOM driver problem -- cannot disconnect"
 msgstr "Problem sterownika ASCOM - nie można się rozłączyć"
 
-#: cam_ascom.cpp:754
+#: cam_ascom.cpp:745
 #, c-format
 msgid "ASCOM error turning camera cooler %s"
 msgstr ""
 
-#: cam_ascom.cpp:754
+#: cam_ascom.cpp:745
 msgid "on"
 msgstr ""
 
-#: cam_ascom.cpp:754
+#: cam_ascom.cpp:745
 msgid "off"
 msgstr ""
 
-#: cam_ascom.cpp:907
+#: cam_ascom.cpp:898
 msgid "Cannot allocate memory to download image from camera"
 msgstr "Nie można zaalokować pamięci, w celu pobrania obrazu z kamery"
 
-#: cam_ascom.cpp:937
+#: cam_ascom.cpp:928
 msgid "ASCOM error -- Cannot start exposure with given parameters"
 msgstr "Błąd ASCOM -- Nie można rozpocząć ekspozycji z podanymi parametrami"
 
-#: cam_ascom.cpp:961
+#: cam_ascom.cpp:952
 msgid "Exception thrown polling camera"
 msgstr "Wyjątek podczas odpytywania kamery"
 
-#: cam_ascom.cpp:982
+#: cam_ascom.cpp:973
 msgid "Error reading image"
 msgstr "Błąd odczytywania danych"
 
-#: cam_Atik16.cpp:76
+#: cam_Atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
 msgstr ""
 
-#: cam_Atik16.cpp:76
+#: cam_Atik16.cpp:100
 msgid "DLL error"
 msgstr "Błąd DLL"
 
-#: cam_Atik16.cpp:118
-msgid "Already connected"
-msgstr "Połączenie zostało już ustanowione"
-
-#: cam_Atik16.cpp:127
+#: cam_Atik16.cpp:133
 msgid "No Atik cameras detected."
 msgstr ""
 
-#: cam_Atik16.cpp:140
+#: cam_Atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
 msgstr ""
 
-#: cam_Atik16.cpp:315
+#: cam_Atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
 msgstr "Nie można rozpocząć ekspozycji, anulowanie"
 
-#: cam_firewire_IC.cpp:104
+#: cam_firewire_IC.cpp:94
+msgid "Cannot initialize ImageCapture library"
+msgstr ""
+
+#: cam_firewire_IC.cpp:103
 msgid "No camera found"
 msgstr "Nie znaleziono kamery"
 
-#: cam_firewire_IC.cpp:117
+#: cam_firewire_IC.cpp:115
 msgid "Select Camera"
 msgstr "Wybierz kamerę"
 
-#: cam_firewire_IC.cpp:126
+#: cam_firewire_IC.cpp:124
 msgid "Cannot open camera"
 msgstr "Nie można uruchomić kamery"
 
-#: cam_firewire_IC.cpp:135
+#: cam_firewire_IC.cpp:133
 msgid "Cannot get list of video modes"
 msgstr "Nie można pobrać listy dostępnych opcji video"
 
-#: cam_firewire_IC.cpp:215
+#: cam_firewire_IC.cpp:156
+msgid "Cannot find a Y800 mode"
+msgstr ""
+
+#: cam_firewire_IC.cpp:171
+msgid "Could not turn off auto-exposure"
+msgstr ""
+
+#: cam_firewire_IC.cpp:178
+msgid "Cannot setup frame handler"
+msgstr ""
+
+#: cam_firewire_IC.cpp:187
+msgid "Could not set sink type"
+msgstr ""
+
+#: cam_firewire_IC.cpp:205
+msgid "Could not start Live view"
+msgstr ""
+
+#: cam_firewire_IC.cpp:217
 msgid ""
 "Warning - cannot directly control exposure duration - running in auto-"
 "exposure"
@@ -883,76 +828,117 @@ msgstr ""
 "Ostrzeżenie - nie można kontrolować czasu ekspozycji - tryb automatycznej "
 "ekspozycji"
 
-#: cam_firewire_IC.cpp:290 cam_INDI.cpp:488 cam_INDI.cpp:511
+#: cam_firewire_IC.cpp:247
+#, c-format
+msgid "Fatal error at step %d connecting to TIS camera"
+msgstr ""
+
+#: cam_firewire_IC.cpp:291 cam_INDI.cpp:489 cam_INDI.cpp:512
 #: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
 #: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
 #: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Błąd alokacji pamięci"
 
-#: cam_firewire_IC.cpp:302
+#: cam_firewire_IC.cpp:303
 msgid "Could not start video stream"
 msgstr "Nie można uruchomić strumienia wideo"
 
-#: cam_firewire_IC.cpp:323
+#: cam_firewire_IC.cpp:324
 #, c-format
 msgid "Error capturing image: %d (%d) %s"
 msgstr "Błąd przechwytywania obrazu: %d (%d) %s"
 
-#: cam_firewire_OSX.cpp:361
+#: cam_firewire_OSX.cpp:87
+msgid "Error looking for Firewire / IEEE1394 cameras (internal error)"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:93
+msgid "Error looking for Firewire / IEEE1394 cameras"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:96
+msgid "No Firewire / IEEE1394 camera found"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:144
+msgid "Cannot find a suitable monochrome video mode"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:149
+msgid "Cannot set frame rate to 7.5 FPS"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:161
+msgid "Cannot setup DMA buffers"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:170
+msgid "Cannot start transmission"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:181
+msgid "Transmission failed to start"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:354
 msgid "Cannot get a frame from the queue"
 msgstr "Nie można pobrać ramki z kolejki"
 
-#: cam_INDI.cpp:351
+#: cam_INDI.cpp:352
 #, c-format
 msgid "Cannot connect to camera %s"
 msgstr ""
 
-#: cam_INDI.cpp:466 cam_INDI.cpp:482 cam_simulator.cpp:601
+#: cam_INDI.cpp:467 cam_INDI.cpp:483 cam_simulator.cpp:601
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Nieobsługiwany typ lub błąd podczas odczytu pliku FITS"
 
-#: cam_INDI.cpp:470 cam_simulator.cpp:590 cam_simulator.cpp:1380
+#: cam_INDI.cpp:471 cam_simulator.cpp:590 cam_simulator.cpp:1380
 msgid "FITS file is not of an image"
 msgstr "Ten plik FITS nie ma obrazu"
 
-#: cam_INDI.cpp:496 cam_INDI.cpp:517 cam_simulator.cpp:631
+#: cam_INDI.cpp:497 cam_INDI.cpp:518 cam_simulator.cpp:631
 #: cam_simulator.cpp:1402
 msgid "Error reading data"
 msgstr "Błąd odczytywania danych"
 
-#: cam_INDI.cpp:534
+#: cam_INDI.cpp:535
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "Błąd podczas ustalania rozmiarów obrazu, brak własności CCD_FRAME"
 
-#: cam_INDI.cpp:539
+#: cam_INDI.cpp:540
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "Błąd podczas ustalania rozmiarów obrazu, brak wartości WIDTH"
 
-#: cam_INDI.cpp:545
+#: cam_INDI.cpp:546
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "Błąd podczas ustalania rozmiarów obrazu, brak wartości HEIGHT"
 
-#: cam_INDI.cpp:552
+#: cam_INDI.cpp:553
 msgid "CCD stream: memory allocation error"
 msgstr "Błąd alokacji pamięci dla strumienia CCD"
 
-#: cam_INDI.cpp:670
+#: cam_INDI.cpp:671
 msgid "Unknown image format: "
 msgstr "Nieznany format obrazu: "
 
-#: cam_INovaPLC.cpp:61
+#: cam_INovaPLC.cpp:60
 #, c-format
 msgid "Error on connection: %d"
 msgstr "Błąd połączenia: %d"
 
-#: cam_INovaPLC.cpp:83
+#: cam_INovaPLC.cpp:81
 msgid "Error setting exposure duration"
 msgstr "Błędne ustawienie długości ekspozycji"
 
-#: cam_INovaPLC.cpp:87
+#: cam_INovaPLC.cpp:85
 msgid "Error setting gain"
 msgstr "Błędne ustawienie parametru gain"
+
+#: cam_KWIQGuider.cpp:68
+msgid "Could not connect to KWIQGuider"
+msgstr ""
 
 #: cam_LELXUSBWebcam.cpp:67
 msgid "Unable to open LXUSB device"
@@ -962,13 +948,30 @@ msgstr "Nie można uruchomić LXUSB"
 msgid "Serial LE Webcam"
 msgstr "Webcam z szeregowym portem LE"
 
-#: cam_LESerialWebcam.cpp:279 camera.cpp:905
+#: cam_LESerialWebcam.cpp:279 camera.cpp:911
 msgid "LE Port"
 msgstr "Port LE"
 
 #: cam_LESerialWebcam.cpp:294 stepguider_sxao.cpp:146
 msgid "No serial ports found"
 msgstr "Nie znaleziono portu szeregowego"
+
+#: cam_LESerialWebcam.cpp:294 cam_qhy5.cpp:117 cam_qhy5.cpp:124
+#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
+#: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
+#: gear_dialog.cpp:1217 gear_dialog.cpp:1892 gear_dialog.cpp:1901
+#: gear_dialog.cpp:1908 gear_dialog.cpp:1953 gear_dialog.cpp:1959
+#: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
+#: scope_ascom.cpp:220 scope_ascom.cpp:236 scope_ascom.cpp:243
+#: scope_ascom.cpp:331 scope_ascom.cpp:339 scope_eqmac.cpp:135
+#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
+#: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
+#: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
+#: scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
+#: stepguider_sxao_INDI.cpp:104 stepguider_sxao_INDI.cpp:115
+msgid "Error"
+msgstr "Błąd"
 
 #: cam_LESerialWebcam.cpp:316
 msgid "Port pins"
@@ -990,77 +993,110 @@ msgstr "Domyślne"
 msgid "Webcam settings"
 msgstr "Ustawienia kamery"
 
+#: cam_MeadeDSI.cpp:97
+msgid "No DSI cameras found"
+msgstr ""
+
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
 msgstr ""
 
-#: cam_OSPL130.cpp:85 cam_SBIG.cpp:454
+#: cam_openssag.cpp:112
+msgid "Could not connect to StarShoot Autoguider"
+msgstr ""
+
+#: cam_OSPL130.cpp:54
+msgid "Cannot find OSPL130RT.dll"
+msgstr ""
+
+#: cam_OSPL130.cpp:58
+msgid "Cannot init camera"
+msgstr ""
+
+#: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
 msgstr "Nie można rozpocząć ekspozycji"
 
-#: cam_qhy.cpp:131
+#: cam_QGuide.cpp:77
+msgid "No camera"
+msgstr "Brak kamery"
+
+#: cam_qhy.cpp:166
 msgid "Failed to initialize QHY SDK"
 msgstr ""
 
-#: cam_qhy.cpp:159
+#: cam_qhy.cpp:178
 msgid "No compatible QHY cameras found"
 msgstr ""
 
-#: cam_qhy.cpp:172
-msgid "Select QHY camera"
-msgstr ""
-
-#: cam_qhy.cpp:172 cam_VFW.cpp:88 cam_wdm.cpp:168
-msgid "Camera choice"
-msgstr "Wybór kamery"
-
-#: cam_qhy.cpp:189
+#: cam_qhy.cpp:199
 msgid "Failed to connect to camera"
 msgstr ""
 
-#: cam_qhy.cpp:201
+#: cam_qhy.cpp:209
 msgid "SetQHYCCDStreamMode failed"
 msgstr ""
 
-#: cam_qhy.cpp:210 cam_qhy.cpp:305
+#: cam_qhy.cpp:217 cam_qhy.cpp:307
 msgid "Init camera failed"
 msgstr ""
 
-#: cam_qhy.cpp:219
+#: cam_qhy.cpp:225
 msgid "Failed to get gain range"
 msgstr ""
 
-#: cam_qhy.cpp:230
+#: cam_qhy.cpp:235
 msgid "Failed to get camera chip info"
 msgstr ""
 
-#: cam_qhy.cpp:261
+#: cam_qhy.cpp:265
 msgid "Failed to get camera bin info"
 msgstr ""
 
-#: cam_qhy.cpp:281
+#: cam_qhy.cpp:284
 msgid "Failed to set camera binning"
 msgstr ""
 
-#: cam_qhy.cpp:443
+#: cam_qhy.cpp:444
 msgid "Failed to set camera exposure"
 msgstr ""
 
-#: cam_qhy.cpp:460
+#: cam_qhy.cpp:461
 msgid "Failed to set camera gain"
 msgstr ""
 
-#: cam_qhy.cpp:468
+#: cam_qhy.cpp:469
 msgid "QHY exposure failed"
 msgstr ""
 
-#: cam_qhy.cpp:488
+#: cam_qhy.cpp:489
 msgid "QHY get frame failed"
 msgstr ""
 
-#: cam_SAC42.cpp:135
+#: cam_SAC42.cpp:71
+msgid "Error connecting to SAC4-2"
+msgstr ""
+
+#: cam_SAC42.cpp:134
 msgid "Error capturing data from camera"
 msgstr "Błąd przechwytywania obrazu z kamery"
+
+#: cam_SACGuide.cpp:82 cam_StarShootDSCI.cpp:82
+msgid "Didn't find openUSB in DLL"
+msgstr ""
+
+#: cam_SACGuide.cpp:93 cam_SACGuide.cpp:98 cam_SACGuide.cpp:103
+#: cam_SACGuide.cpp:108 cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101
+#: cam_StarShootDSCI.cpp:107 cam_StarShootDSCI.cpp:113
+#: cam_StarShootDSCI.cpp:118 cam_StarShootDSCI.cpp:124
+#: cam_StarShootDSCI.cpp:129 cam_StarShootDSCI.cpp:134
+#, c-format
+msgid "Didn't find %s in DLL"
+msgstr ""
+
+#: cam_SACGuide.cpp:118
+msgid "Can't find cmosDLL.dll"
+msgstr ""
 
 #: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
@@ -1089,6 +1125,23 @@ msgstr "Adres IP"
 #: cam_SBIG.cpp:180
 msgid "Enter IP address"
 msgstr "Wpisz adres IP"
+
+#: cam_SBIG.cpp:286
+#, c-format
+msgid "Cannot open SBIG camera: Code %d"
+msgstr ""
+
+#: cam_SBIG.cpp:296
+#, c-format
+msgid "Link to SBIG camera failed: Code %d"
+msgstr ""
+
+#: cam_SBIG.cpp:309
+msgid ""
+"Tracking CCD found, use it?\n"
+"\n"
+"No = use main image CCD"
+msgstr ""
 
 #: cam_SBIG.cpp:309
 msgid "CCD Choice"
@@ -1361,11 +1414,37 @@ msgstr "Anuluj"
 msgid "Side of pier: %s"
 msgstr "Strona montażu: %s"
 
-#: cam_StarShootDSCI.cpp:152
+#: cam_SSPIAG.cpp:131
+msgid "Cannot load astroDLLsspiag.dll"
+msgstr ""
+
+#: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
+#: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
+#: cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:181 cam_SSPIAG.cpp:186 cam_SSPIAG.cpp:191
+#: cam_SSPIAG.cpp:196 cam_SSPIAG.cpp:201 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:216
+#: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
+#, c-format
+msgid "astroDLLsspiag.dll does not have %s"
+msgstr ""
+
+#: cam_SSPIAG.cpp:231
+msgid "Cannot load SSPIAGCAM.dll"
+msgstr ""
+
+#: cam_SSPIAG.cpp:237
+#, c-format
+msgid "SSPIAGCAM.dll does not have %s"
+msgstr ""
+
+#: cam_SSPIAG.cpp:244
+msgid "Failed to open the camera"
+msgstr ""
+
+#: cam_StarShootDSCI.cpp:162
 msgid "Problem sending register to StarShoot"
 msgstr "Problem wysyłania rejestru do StarShoot"
 
-#: cam_StarShootDSCI.cpp:163
+#: cam_StarShootDSCI.cpp:173
 msgid "Error starting exposure"
 msgstr "Błąd podczas rozpoczęcia ekspozycji"
 
@@ -1377,17 +1456,21 @@ msgstr "Ustawienia kamery SX"
 msgid "No SX cameras found"
 msgstr ""
 
-#: cam_SXV.cpp:285
+#: cam_SXV.cpp:284
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "Niepowodzenie: nie można uzyskać parametrów kamery."
 
-#: cam_SXV.cpp:777
+#: cam_SXV.cpp:775
 msgid "Lost connection to camera"
 msgstr ""
 
 #: cam_VFW.cpp:88
 msgid "Select capture device"
 msgstr "Wybierz urządzenie przechwytujące"
+
+#: cam_VFW.cpp:88 cam_wdm.cpp:168
+msgid "Camera choice"
+msgstr "Wybór kamery"
 
 #: cam_wdm.cpp:168
 msgid "Select WDM camera"
@@ -1401,12 +1484,12 @@ msgstr "Wybierz tryb kamery"
 msgid "Camera mode"
 msgstr "Tryb kamery"
 
-#: cam_ZWO.cpp:105
+#: cam_ZWO.cpp:106
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "Nie można załadować pliku DLL %s.dll"
 
-#: cam_ZWO.cpp:108
+#: cam_ZWO.cpp:109
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -1416,15 +1499,19 @@ msgstr ""
 "Redistributable Package (x86), który jest dostępny na stronie http://www."
 "microsoft.com/en-us/download/details.aspx?id=29"
 
-#: cam_ZWO.cpp:213 cam_ZWO.cpp:271
+#: cam_ZWO.cpp:196
+msgid "No ZWO cameras detected."
+msgstr ""
+
+#: cam_ZWO.cpp:212 cam_ZWO.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "Nie udało się pobrać ustawień dla kamery ZWO ASI."
 
-#: cam_ZWO.cpp:220
+#: cam_ZWO.cpp:218
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Nie można uruchomić kamery ZWO ASI."
 
-#: cam_ZWO.cpp:228
+#: cam_ZWO.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr ""
 
@@ -1507,150 +1594,150 @@ msgstr "Wybierz swoją kamerę"
 msgid "Camera %d"
 msgstr ""
 
-#: camera.cpp:758
+#: camera.cpp:764
 msgid "Camera Settings"
 msgstr "Ustawienia kamery"
 
-#: camera.cpp:772
+#: camera.cpp:778
 msgid "General Properties"
 msgstr ""
 
-#: camera.cpp:783
+#: camera.cpp:789
 msgid "Camera-Specific Properties"
 msgstr ""
 
-#: camera.cpp:814
+#: camera.cpp:820
 msgid "No camera specified"
 msgstr ""
 
-#: camera.cpp:823
+#: camera.cpp:829
 msgid ""
 "Camera is not connected.  Additional camera properties may be available if "
 "you connect to it first."
 msgstr ""
 
-#: camera.cpp:829
+#: camera.cpp:835
 msgid "Star Saturation Detection"
 msgstr ""
 
-#: camera.cpp:854
+#: camera.cpp:860
 msgid "Use Subframes"
 msgstr "Korzystaj z zaznaczonego regionu"
 
-#: camera.cpp:855
+#: camera.cpp:861
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
 msgstr ""
 
-#: camera.cpp:862
+#: camera.cpp:868
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
 
-#: camera.cpp:863
+#: camera.cpp:869
 msgid "Pixel size"
 msgstr "Rozmiar piksela"
 
-#: camera.cpp:869
+#: camera.cpp:875
 msgid "Camera gain"
 msgstr "Wzmocnienie kamery (gain)"
 
-#: camera.cpp:870
+#: camera.cpp:876
 #, no-c-format
 msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
 
-#: camera.cpp:883
+#: camera.cpp:889
 msgid "Binning"
 msgstr ""
 
-#: camera.cpp:883
+#: camera.cpp:889
 msgid "Camera pixel binning"
 msgstr ""
 
-#: camera.cpp:890
+#: camera.cpp:896
 msgid "Delay"
 msgstr "Opóźnienie"
 
-#: camera.cpp:890
+#: camera.cpp:896
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
 msgstr "Opóźnienie odczytu LE (ms), dostosuj wartość, jeśli klatki są gubione"
 
-#: camera.cpp:905
+#: camera.cpp:911
 msgid "Port number for long-exposure control"
 msgstr "Numer portu do kontroli długich czasów"
 
-#: camera.cpp:912
+#: camera.cpp:918
 msgid "Cooler On"
 msgstr ""
 
-#: camera.cpp:913
+#: camera.cpp:919
 msgid "Turn camera cooler on or off"
 msgstr ""
 
-#: camera.cpp:916
+#: camera.cpp:922
 msgid "Set Temperature"
 msgstr ""
 
-#: camera.cpp:916
+#: camera.cpp:922
 msgid "Cooler setpoint temperature"
 msgstr ""
 
-#: camera.cpp:925
+#: camera.cpp:931
 msgid ""
 "ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
 "for 8-bit cameras."
 msgstr ""
 
-#: camera.cpp:926
+#: camera.cpp:932
 msgid "Saturation by Max-ADU value:"
 msgstr ""
 
-#: camera.cpp:927
+#: camera.cpp:933
 msgid "Identify star saturation based on camera maximum-ADU value"
 msgstr ""
 
-#: camera.cpp:934
+#: camera.cpp:940
 msgid "Saturation via star-profile"
 msgstr ""
 
-#: camera.cpp:935
+#: camera.cpp:941
 msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness (default)"
 msgstr ""
 
-#: camera.cpp:945
+#: camera.cpp:951
 msgid ""
 "Disconnect nonresponsive          \n"
 "camera after (seconds)"
 msgstr ""
 
-#: camera.cpp:946
+#: camera.cpp:952
 #, c-format
 msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, %d seconds, should be appropriate for most cameras."
 msgstr ""
 
-#: camera.cpp:1264
+#: camera.cpp:1270
 msgid "unspecified"
 msgstr ""
 
-#: camera.cpp:1266
+#: camera.cpp:1272
 #, c-format
 msgid "%0.1f um"
 msgstr ""
 
-#: camera.cpp:1407
+#: camera.cpp:1413
 msgid "Memory allocation error during capture"
 msgstr "Błąd alokacji pamięci podczas przechwytywania"
 
-#: camera.cpp:1412
+#: camera.cpp:1418
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
@@ -1659,11 +1746,11 @@ msgid ""
 "the Advanced Settings Dialog."
 msgstr ""
 
-#: camera.cpp:1433
+#: camera.cpp:1439
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr ""
 
-#: camera.cpp:1438
+#: camera.cpp:1444
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1739,7 +1826,7 @@ msgid "Start training the tracking rate."
 msgstr "Rozpocznij uczenie dla prędkości śledzenia."
 
 #: comet_tool.cpp:117 darks_dialog.cpp:247 guiding_assistant.cpp:480
-#: starcross_test.cpp:163 staticpa_toolwin.cpp:545
+#: starcross_test.cpp:163 staticpa_toolwin.cpp:569
 msgid "Stop"
 msgstr "Stop"
 
@@ -2162,7 +2249,7 @@ msgstr "Połącz się z kamerą i montażem."
 msgid "Please calibrate before starting drift alignment"
 msgstr "Przeprowadź kalibrację przed uruchomieniem metody dryfu "
 
-#: drift_tool.cpp:437 staticpa_toolwin.cpp:210
+#: drift_tool.cpp:437 staticpa_toolwin.cpp:234
 msgid "Start Looping..."
 msgstr "Rozpocznij sekwencję..."
 
@@ -2211,7 +2298,7 @@ msgid "Coordinates saved."
 msgstr "Współrzędne zapisane."
 
 #: drift_tool.cpp:794 eegg.cpp:221 myframe_events.cpp:687
-#: staticpa_toolwin.cpp:96
+#: staticpa_toolwin.cpp:98
 msgid "Please connect a camera first."
 msgstr ""
 
@@ -2456,7 +2543,7 @@ msgstr "Odłącz wszystko"
 msgid "Disconnect all equipment"
 msgstr "Odłącz wszystko"
 
-#: gear_dialog.cpp:339 myframe.cpp:1151 staticpa_toolwin.cpp:384
+#: gear_dialog.cpp:339 myframe.cpp:1151 staticpa_toolwin.cpp:394
 msgid "Close"
 msgstr "Zamknij"
 
@@ -2696,7 +2783,8 @@ msgstr "Pozycja AO"
 msgid "Select the number of frames of history to display"
 msgstr "Wybierz liczbę pokazywanych klatek"
 
-#: graph-stepguider.cpp:65 graph.cpp:129 statswindow.cpp:131 target.cpp:79
+#: graph-stepguider.cpp:65 graph.cpp:129 staticpa_toolwin.cpp:388
+#: statswindow.cpp:131 target.cpp:79
 msgid "Clear"
 msgstr "Wyczyść"
 
@@ -2751,8 +2839,8 @@ msgid "Display mount corrections"
 msgstr "Wyświetl korekcje montażu"
 
 #: graph.cpp:175
-msgid "RMS Error:"
-msgstr "Błąd RMS:"
+msgid "RMS Error [px]:"
+msgstr ""
 
 #: graph.cpp:210
 msgid "Tot"
@@ -6036,7 +6124,7 @@ msgstr "Śr. rząd"
 msgid "Avg col"
 msgstr "Śr. kol"
 
-#: star_profile.cpp:230 statswindow.cpp:71
+#: star_profile.cpp:230
 msgid "Peak"
 msgstr "Pik"
 
@@ -6185,7 +6273,7 @@ msgstr ""
 msgid "Hide Details"
 msgstr ""
 
-#: staticpa_toolwin.cpp:104
+#: staticpa_toolwin.cpp:106
 msgid ""
 "The Static Align tool is most effective when PHD2 knows your guide\n"
 "scope focal length and camera pixel size.\n"
@@ -6196,15 +6284,15 @@ msgid ""
 "Would you like to run the tool anyway?"
 msgstr ""
 
-#: staticpa_toolwin.cpp:120
+#: staticpa_toolwin.cpp:122
 msgid "Please wait till Calibration is done and stop guiding"
 msgstr ""
 
-#: staticpa_toolwin.cpp:143
+#: staticpa_toolwin.cpp:145
 msgid "Static Polar Alignment"
 msgstr ""
 
-#: staticpa_toolwin.cpp:214
+#: staticpa_toolwin.cpp:238
 msgid ""
 "Slew to near the Celestial Pole.<br/>Choose a Reference Star from the list."
 "<br/>Select it as the guide star on the main display.<br/>Click Rotate to "
@@ -6213,7 +6301,7 @@ msgid ""
 "Blue=Azimuth<br/>"
 msgstr ""
 
-#: staticpa_toolwin.cpp:223
+#: staticpa_toolwin.cpp:247
 msgid ""
 "Slew to near the Celestial Pole.<br/>Choose a Reference Star from the list."
 "<br/>Select it as the guide star on the main display.<br/>Click Get first "
@@ -6223,105 +6311,109 @@ msgid ""
 "altitude and azimuth to place three reference stars on their orbits\n"
 msgstr ""
 
-#: staticpa_toolwin.cpp:268
+#: staticpa_toolwin.cpp:294
 msgid "Alignment Parameters"
 msgstr ""
 
-#: staticpa_toolwin.cpp:280
+#: staticpa_toolwin.cpp:306
 msgid "Hour Angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:284
+#: staticpa_toolwin.cpp:310
 msgid "Hemisphere"
 msgstr ""
 
-#: staticpa_toolwin.cpp:289
+#: staticpa_toolwin.cpp:315
 msgid "Reference Star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:296
+#: staticpa_toolwin.cpp:322
 msgid "Set your scope hour angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:304
+#: staticpa_toolwin.cpp:330
 msgid "Select your hemisphere"
 msgstr ""
 
-#: staticpa_toolwin.cpp:308
+#: staticpa_toolwin.cpp:334
 msgid "Select the star used for checking alignment."
 msgstr ""
 
-#: staticpa_toolwin.cpp:313
+#: staticpa_toolwin.cpp:339
 msgid "Camera Angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:317
-msgid "(X, Y) pixels"
-msgstr ""
-
-#: staticpa_toolwin.cpp:321
-msgid "Manual Slew"
-msgstr ""
-
-#: staticpa_toolwin.cpp:324
-msgid "Manually slew the mount to three alignment positions"
-msgstr ""
-
-#: staticpa_toolwin.cpp:333
-msgid "Pos #1"
-msgstr ""
-
-#: staticpa_toolwin.cpp:340 staticpa_toolwin.cpp:543
-msgid "Rotate"
-msgstr ""
-
-#: staticpa_toolwin.cpp:345
+#: staticpa_toolwin.cpp:343
 msgid "Arcsec/pixel"
 msgstr ""
 
-#: staticpa_toolwin.cpp:349
-msgid "Pos #2"
+#: staticpa_toolwin.cpp:347
+msgid "Manual Slew"
 msgstr ""
 
-#: staticpa_toolwin.cpp:356
-msgid "Get second position"
+#: staticpa_toolwin.cpp:350
+msgid "Manually slew the mount to three alignment positions"
 msgstr ""
 
-#: staticpa_toolwin.cpp:365
-msgid "Pos #3"
+#: staticpa_toolwin.cpp:363 staticpa_toolwin.cpp:567
+msgid "Rotate"
+msgstr ""
+
+#: staticpa_toolwin.cpp:369
+msgid "Flip camera"
 msgstr ""
 
 #: staticpa_toolwin.cpp:372
+msgid "Invert the camera angle"
+msgstr ""
+
+#: staticpa_toolwin.cpp:374
+msgid "Get second position"
+msgstr ""
+
+#: staticpa_toolwin.cpp:380
+msgid "Show Orbits"
+msgstr ""
+
+#: staticpa_toolwin.cpp:383
+msgid "Show or hide the star orbits"
+msgstr ""
+
+#: staticpa_toolwin.cpp:385
 msgid "Get third position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:377
-msgid "Centre"
-msgstr ""
-
-#: staticpa_toolwin.cpp:396
+#: staticpa_toolwin.cpp:406
 msgid "Adjustment notes"
 msgstr ""
 
-#: staticpa_toolwin.cpp:468
+#: staticpa_toolwin.cpp:490
 msgid "Static alignment stopped"
 msgstr ""
 
-#: staticpa_toolwin.cpp:475
+#: staticpa_toolwin.cpp:497
 msgid "Please wait till Calibration is done and/or stop guiding"
 msgstr ""
 
-#: staticpa_toolwin.cpp:480
+#: staticpa_toolwin.cpp:502
 msgid "Please select a star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:553
+#: staticpa_toolwin.cpp:531
+msgid "Static Polar alignment display cleared"
+msgstr ""
+
+#: staticpa_toolwin.cpp:577
 msgid "Get first position"
 msgstr ""
 
 #: statswindow.cpp:70
-msgid "RMS"
-msgstr "RMS"
+msgid "RMS [px]"
+msgstr ""
+
+#: statswindow.cpp:71
+msgid "Peak [px]"
+msgstr ""
 
 #: statswindow.cpp:75
 msgid " 99.99 (99.99'')"
@@ -6746,6 +6838,18 @@ msgstr "Łączenie z kamerą..."
 msgid "Connecting to Rotator..."
 msgstr "Łączenie z rotatorem..."
 
+#~ msgid "ASCOM Camera Driver missing required property "
+#~ msgstr "Brakuje wymaganych opcji dla sterownika kamery ASCOM "
+
+#~ msgid "Already connected"
+#~ msgstr "Połączenie zostało już ustanowione"
+
+#~ msgid "RMS Error:"
+#~ msgstr "Błąd RMS:"
+
+#~ msgid "RMS"
+#~ msgstr "RMS"
+
 #~ msgid ""
 #~ "What percent of the measured error should be applied? Default = %.f%%, "
 #~ "adjust if responding too much or too slowly"
@@ -6778,9 +6882,6 @@ msgstr "Łączenie z rotatorem..."
 
 #~ msgid "Cannot load camera dll %s.dll"
 #~ msgstr "Nie można załadować pliku %s.dll"
-
-#~ msgid "No camera"
-#~ msgstr "Brak kamery"
 
 #~ msgid "Mass: %.0f vs %.0f"
 #~ msgstr "Rozmiar gwiazdy: %.0f vs %.0f"

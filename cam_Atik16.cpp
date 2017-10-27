@@ -66,14 +66,15 @@ wxByte CameraAtik16::BitsPerPixel()
     return 16;
 }
 
-bool CameraAtik16::LoadDLL()
+bool CameraAtik16::LoadDLL(wxString *err)
 {
     if (!m_dllLoaded)
     {
         wxString DLLName = HSModel ? _T("ArtemisHSC.dll") : _T("ArtemisCCD.dll");
+        Debug.Write(wxString::Format("Atik16 load DLL %s\n", DLLName));
         if (!ArtemisLoadDLL(DLLName.char_str()))
         {
-            wxMessageBox(wxString::Format(_("Cannot load Atik camera DLL %s"), DLLName), _("DLL error"), wxICON_ERROR | wxOK);
+            *err = wxString::Format(_("Cannot load Atik camera DLL %s"), DLLName);
             return false;
         }
         m_dllLoaded = true;
@@ -93,8 +94,12 @@ static int FirstDevNum()
 
 bool CameraAtik16::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-    if (!LoadDLL())
+    wxString err;
+    if (!LoadDLL(&err))
+    {
+        wxMessageBox(err, _("DLL error"), wxICON_ERROR | wxOK);
         return true;
+    }
 
     for (int i = 0; i < 10; i++)
     {
@@ -115,17 +120,17 @@ bool CameraAtik16::Connect(const wxString& camId)
     // returns true on error
 
     if (Cam_Handle) {
-        wxMessageBox(_("Already connected"));
+        Debug.Write("Already connected\n");
         return false;  // Already connected
     }
-    if (!LoadDLL())
-        return true;
+    wxString err;
+    if (!LoadDLL(&err))
+        return CamConnectFailed(err);
 
     int firstDevNum = FirstDevNum();
     if (firstDevNum == -1)
     {
-        wxMessageBox(_("No Atik cameras detected."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("No Atik cameras detected."));
     }
 
     long devnum = -1;
@@ -136,9 +141,9 @@ bool CameraAtik16::Connect(const wxString& camId)
 
     Cam_Handle = ArtemisConnect(devnum); // Connect to first avail camera
 
-    if (!Cam_Handle) {  // Connection failed
-        wxMessageBox(wxString::Format(_("Atik camera connection failed - Driver version %d"), ArtemisAPIVersion()));
-        return true;
+    if (!Cam_Handle)   // Connection failed
+    {
+        return CamConnectFailed(wxString::Format(_("Atik camera connection failed - Driver version %d"), ArtemisAPIVersion()));
     }
 
     // Good connection - Setup a few values

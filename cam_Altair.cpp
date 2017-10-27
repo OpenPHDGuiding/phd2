@@ -137,12 +137,13 @@ bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 bool Camera_Altair::Connect(const wxString& camIdArg)
 {
 	AltaircamInst ai[ALTAIRCAM_MAX];
+
     unsigned int numCameras = Altaircam_Enum(ai);
     if (numCameras == 0)
     {
-        wxMessageBox(_T("No Altair cameras detected."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("No Altair cameras detected"));
     }
+
     wxString camId(camIdArg);
     if (camId == DEFAULT_CAMERA_ID || numCameras == 1)
         camId = ai[0].id;
@@ -157,17 +158,14 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 		}
 	}
 	if (!found)
-	if (m_handle == NULL)
 	{
-		wxMessageBox(_("Specified Altair Camera not found."), _("Error"), wxOK | wxICON_ERROR);
-		return true;
+        return CamConnectFailed(_("Specified Altair Camera not found."));
 	}
 
     m_handle = Altaircam_Open(camId);
-    if ( m_handle == NULL)
+    if (m_handle == nullptr)
     {
-        wxMessageBox(_("Failed to open Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to open Altair Camera."));
     }
 
     Connected = true;
@@ -189,8 +187,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     if (FAILED(Altaircam_get_Resolution(m_handle, 0, &width, &height)))
     {
         Disconnect();
-        wxMessageBox(_("Failed to get camera resolution for Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to get camera resolution for Altair Camera."));
     }
 
 	delete[] m_buffer; 
@@ -247,7 +244,6 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 
     Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
 	Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
-
 
     return false;
 }

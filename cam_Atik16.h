@@ -62,7 +62,7 @@ public:
 
 private:
     bool ST4HasNonGuiMove(void);
-    bool LoadDLL(void);
+    bool LoadDLL(wxString *err);
 };
 
 #endif  //ATIK16DEF

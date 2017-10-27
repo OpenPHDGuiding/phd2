@@ -68,8 +68,7 @@ bool CameraSAC42::Connect(const wxString& camId)
     retval = FclInitialize("SAC4-2 camera",Index,CapInfo,&hDriver);
     if (retval) {
         FclUninitialize(&hDriver);
-        wxMessageBox(_T("Error connecting to SAC4-2"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Error connecting to SAC4-2"));
     }
     FclSetBw(hDriver,true);
     FclStopView(hDriver);  // make sure no view window going

@@ -98,7 +98,7 @@ void CameraINDI::ClearStatus()
 void CameraINDI::CheckState()
 {
     // Check if the device has all the required properties for our usage.
-    if(has_blob && Connected && (expose_prop || video_prop)) {
+    if (has_blob && camera_device && Connected && (expose_prop || video_prop)) {
         if (! ready) {
             //printf("Camera is ready\n");
             ready = true;
@@ -111,10 +111,10 @@ void CameraINDI::CheckState()
 
 void CameraINDI::newDevice(INDI::BaseDevice *dp)
 {
-  if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
-      // The camera object
-      camera_device = dp;
-  }
+    if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
+        // The camera object
+        camera_device = dp;
+    }
 }
 
 void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
@@ -197,7 +197,7 @@ void CameraINDI::newProperty(INDI::Property *property)
       INDI_PROPERTY_TYPE Proptype = property->getType();
     #endif
 
-    //printf("Camera Property: %s\n",PropName);
+    //printf("Camera Property: %s\n",property->getName());
 
     if (Proptype == INDI_BLOB) {
         //printf("Found BLOB property for %s %s\n", DeviName, PropName);
@@ -246,8 +246,8 @@ void CameraINDI::newProperty(INDI::Property *property)
         Connected = (connectswitch->s == ISS_ON);
     }
     else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT) {
-        if (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE) {
-          m_hasGuideOutput = true; // Device supports guiding
+        if (camera_device && (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE)) {
+            m_hasGuideOutput = true; // Device supports guiding
         }
     }
     else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER){
@@ -274,6 +274,7 @@ bool CameraINDI::Connect(const wxString& camId)
     if (INDICameraName == wxT("INDI Camera")) {
         CameraSetup();
     }
+    Debug.Write(wxString::Format("INDI Camera connecting to device [%s]\n", INDICameraName));
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     // Receive messages only for our camera.

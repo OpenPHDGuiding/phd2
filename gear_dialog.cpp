@@ -291,7 +291,7 @@ void GearDialog::Initialize(void)
 #endif
     m_pAuxScopes->SetToolTip(wxString::Format(_("If you are using a guide port (On-camera or GPXXX) interface  for guiding, you can also use an 'aux' connection to your %s-compatible mount. This will "
         "be used to make automatic calibration adjustments based on declination and side-of-pier.  If you have already selected an %s driver for your 'mount', the 'aux' mount "
-        "parameter will not be used.'"), driverName, driverName));
+        "parameter will not be used."), driverName, driverName));
 #endif // ASCOM or INDI
 
     m_gearSizer->Add(m_pAuxScopes, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);

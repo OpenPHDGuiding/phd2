@@ -93,8 +93,7 @@ bool CameraOpenSSAG::Connect(const wxString& camId)
 {
     if (init_libusb())
     {
-        wxMessageBox(_("Could not initialize USB library"), _("Error"));
-        return true;
+        return CamConnectFailed(_("Could not initialize USB library"));
     }
 
     struct ConnectInBg : public ConnectCameraInBg
@@ -110,8 +109,7 @@ bool CameraOpenSSAG::Connect(const wxString& camId)
 
     if (ConnectInBg(ssag).Run())
     {
-        wxMessageBox(_T("Could not connect to StarShoot Autoguider"), _("Error"));
-        return true;
+        return CamConnectFailed(_("Could not connect to StarShoot Autoguider"));
     }
 
     Connected = true;  // Set global flag for being connected

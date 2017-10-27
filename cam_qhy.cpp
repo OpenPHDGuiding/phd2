@@ -124,17 +124,15 @@ bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
-bool Camera_QHY::Connect(const wxString& camId)
+bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     if (QHYSDKInit())
-    {
-        wxMessageBox(_("Failed to initialize QHY SDK"));
         return true;
-    }
 
     int num_cams = ScanQHYCCD();
-    std::vector<std::string> camids;
+    Debug.Write(wxString::Format("QHY: found %d cameras\n", num_cams));
 
+    int n = 1;
     for (int i = 0; i < num_cams; i++)
     {
         char camid[32] = "";
@@ -146,49 +144,59 @@ bool Camera_QHY::Connect(const wxString& camId)
             uint32_t ret = IsQHYCCDControlAvailable(h, CONTROL_ST4PORT);
             if (ret == QHYCCD_SUCCESS)
                 st4 = true;
-                //CloseQHYCCD(h); // CloseQHYCCD() would proform a reset, so the other software that use QHY camera would be impacted.
-                                  // Do not call this,would not cause memory leak.The SDk has already process this.
+            //CloseQHYCCD(h); // CloseQHYCCD() would proform a reset, so the other software that use QHY camera would be impacted.
+            // Do not call this,would not cause memory leak.The SDk has already process this.
         }
         Debug.Write(wxString::Format("QHY cam [%d] %s avail %s st4 %s\n", i, camid, h ? "Yes" : "No", st4 ? "Yes" : "No"));
         if (st4)
-            camids.push_back(camid);
+        {
+            names.Add(wxString::Format("%d: %s", n, camid));
+            ids.Add(camid);
+            ++n;
+        }
     }
 
-    if (camids.size() == 0)
+    return false;
+}
+
+bool Camera_QHY::Connect(const wxString& camId)
+{
+    if (QHYSDKInit())
     {
-        wxMessageBox(_("No compatible QHY cameras found"));
-        return true;
+        return CamConnectFailed(_("Failed to initialize QHY SDK"));
     }
 
-    std::string camid;
+    std::string qid;
 
-    if (camids.size() > 1)
+    if (camId == DEFAULT_CAMERA_ID)
     {
-        wxArrayString names;
-        int n = 1;
-        for (auto it = camids.begin(); it != camids.end(); ++it, ++n)
-            names.Add(wxString::Format("%d: %s", n, *it));
+        wxArrayString names, ids;
+        EnumCameras(names, ids);
 
-        int i = wxGetSingleChoiceIndex(_("Select QHY camera"), _("Camera choice"), names);
-        if (i == -1)
-            return true;
-        camid = camids[i];
+        if (ids.size() == 0)
+        {
+            return CamConnectFailed(_("No compatible QHY cameras found"));
+        }
+
+        qid = ids[0];
     }
     else
-        camid = camids[0];
+    {
+        // scanning for cameras is required, otherwise OpenQHYCCD will fail
+        int num_cams = ScanQHYCCD();
+        Debug.Write(wxString::Format("QHY: found %d cameras\n", num_cams));
+        qid = camId;
+    }
 
-    char *s = new char[camid.length() + 1];
-    memcpy(s, camid.c_str(), camid.length() + 1);
+    char *s = new char[qid.length() + 1];
+    memcpy(s, qid.c_str(), qid.length() + 1);
     m_camhandle = OpenQHYCCD(s);
     delete[] s;
 
-    Name = camid;
+    Name = qid;
 
     if (!m_camhandle)
-    {
-        wxMessageBox(_("Failed to connect to camera"));
-        return true;
-    }
+        return CamConnectFailed(_("Failed to connect to camera"));
 
     // before calling InitQHYCCD() we must call SetQHYCCDStreamMode(camhandle, 0 or 1)
     //   0: single frame mode  
@@ -198,8 +206,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("SetQHYCCDStreamMode failed"));
-        return true;
+        return CamConnectFailed(_("SetQHYCCDStreamMode failed"));
     }
 
     ret = InitQHYCCD(m_camhandle);
@@ -207,8 +214,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Init camera failed"));
-        return true;
+        return CamConnectFailed(_("Init camera failed"));
     }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
@@ -216,8 +222,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Failed to get gain range"));
-        return true;
+        return CamConnectFailed(_("Failed to get gain range"));
     }
 
     double chipw, chiph, pixelw, pixelh;
@@ -227,8 +232,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Failed to get camera chip info"));
-        return true;
+        return CamConnectFailed(_("Failed to get camera chip info"));
     }
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
@@ -258,8 +262,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         {
             CloseQHYCCD(m_camhandle);
             m_camhandle = 0;
-            wxMessageBox(_("Failed to get camera bin info"));
-            return true;
+            return CamConnectFailed(_("Failed to get camera bin info"));
         }
 #endif
         if (ret == QHYCCD_SUCCESS)
@@ -278,8 +281,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Failed to set camera binning"));
-        return true;
+        return CamConnectFailed(_("Failed to set camera binning"));
     }
     m_curBin = Binning;
 
@@ -302,8 +304,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Init camera failed"));
-        return true;
+        return CamConnectFailed(_("Init camera failed"));
     }
 
     Debug.Write(wxString::Format("QHY: connect done\n"));

@@ -770,7 +770,7 @@ void StaticPaToolWin::CalcAdjustments(void)
         fabs(alt_r)*g_pxScale/60, fabs(az_r)*g_pxScale/60, fabs(hcor_r)*g_pxScale/60));
 }
 
-PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
+PHD_Point StaticPaToolWin::Radec2Px(const PHD_Point& radec)
 {
     // Convert dec to pixel radius
     double r = (90.0 - fabs(radec.Y)) * 3600 / g_pxScale;
@@ -819,7 +819,7 @@ PHD_Point StaticPaToolWin::Radec2Px( PHD_Point radec )
     return px;
 }
 
-PHD_Point StaticPaToolWin::J2000Now(PHD_Point& radec)
+PHD_Point StaticPaToolWin::J2000Now(const PHD_Point& radec)
 {
     const double JD2000 = 2451545.0;    // Julian day for J2000
 
@@ -1132,7 +1132,7 @@ bool StaticPaToolWin::RotateMount()
     return true;
 }
 
-bool StaticPaToolWin::RotateFail(const wxString msg)
+bool StaticPaToolWin::RotateFail(const wxString& msg)
 {
     SetStatusText(msg);
     s_aligning = false;
@@ -1223,7 +1223,7 @@ bool StaticPaToolWin::MoveWestBy(double thetadeg)
     return true;
 }
 
-void StaticPaToolWin::CreateStarTemplate(wxDC& dc, wxPoint currPt)
+void StaticPaToolWin::CreateStarTemplate(wxDC& dc, const wxPoint& currPt)
 {
     dc.SetBackground(*wxGREY_BRUSH);
     dc.Clear();

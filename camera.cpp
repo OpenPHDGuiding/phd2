@@ -608,6 +608,12 @@ bool GuideCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
+bool GuideCamera::CamConnectFailed(const wxString& errorMessage)
+{
+    pFrame->Alert(errorMessage);
+    return true; // error
+}
+
 int GuideCamera::GetCameraGain(void)
 {
     return GuideCameraGain;

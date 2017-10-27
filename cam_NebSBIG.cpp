@@ -56,9 +56,9 @@ wxByte CameraNebSBIG::BitsPerPixel()
 bool CameraNebSBIG::Connect(const wxString& camId)
 {
     int xsize, ysize;
-    bool retval = ServerSendCamConnect(xsize,ysize);
+    bool retval = ServerSendCamConnect(xsize, ysize);
     if (retval) return true;
-    FullSize=wxSize(xsize,ysize);
+    FullSize = wxSize(xsize,ysize);
     Connected = true;
     return false;
 }

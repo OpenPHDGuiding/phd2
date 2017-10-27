@@ -67,63 +67,73 @@ bool CameraStarShootDSCI::Disconnect()
 
 bool CameraStarShootDSCI::Connect(const wxString& camId)
 {
-// returns true on error
-    bool retval;
-    // Local function pointers -- those used elsewhere are in class decl.
-    B_V_DLLFUNC OCP_openUSB;            // Pointer to OPC's OpenUSB
-    B_V_DLLFUNC OCP_isUSB2;
-    UI_V_DLLFUNC OCP_Width;
-    UI_V_DLLFUNC OCP_Height;
+    // returns true on error
 
     CameraDLL = LoadLibrary(TEXT("DSCI"));  // load the DLL
 
-    if (CameraDLL != NULL) {  // check it and assign functions
-        OCP_openUSB = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"openUSB");
-        if (!OCP_openUSB)   {
-            FreeLibrary(CameraDLL);
-            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
-            return true;
-        }
-        else {
-            retval = OCP_openUSB();
-            if (retval) {  // Good to go, now get other functions
-                OCP_isUSB2 = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"IsUSB20");
-                if (!OCP_isUSB2)
-                    (void) wxMessageBox(wxT("Didn't find IsUSB20 in DLL"),_("Error"),wxOK | wxICON_ERROR);
+    if (!CameraDLL)
+        return CamConnectFailed(wxT("Can't find DSCI.dll"));
 
-                OCP_Width = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Width");
-                if (!OCP_Width)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Width in DLL"),_("Error"),wxOK | wxICON_ERROR);
-                OCP_Height = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Height");
-                if (!OCP_Height)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Height in DLL"),_("Error"),wxOK | wxICON_ERROR);
+    // assign functions
 
-                OCP_sendEP1_1BYTE = (V_V_DLLFUNC)GetProcAddress(CameraDLL,"sendEP1_1BYTE");
-                if (!OCP_sendEP1_1BYTE)
-                    (void) wxMessageBox(wxT("Didn't find sendEP1_1BYTE"),_("Error"),wxOK | wxICON_ERROR);
-                OCP_sendRegister = (OCPREGFUNC)GetProcAddress(CameraDLL,"sendRegister");
-                if (!OCP_sendRegister)
-                    (void) wxMessageBox(wxT("Didn't find sendRegister in DLL"),_("Error"),wxOK | wxICON_ERROR);
-
-                OCP_Exposure = (B_I_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposure");
-                if (!OCP_Exposure)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Exposure in DLL"),_("Error"),wxOK | wxICON_ERROR);
-                OCP_Exposing = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposing");
-                if (!OCP_Exposing)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Exposing in DLL"),_("Error"),wxOK | wxICON_ERROR);
-                OCP_ProcessedBuffer = (USP_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_ProcessedBuffer");
-                if (!OCP_ProcessedBuffer)
-                    (void) wxMessageBox(wxT("Didn't find OPC_ProcessedBuffer in DLL"),_("Error"),wxOK | wxICON_ERROR);
-            }
-            else {
-                return true;
-            }
-        }
+    B_V_DLLFUNC OCP_openUSB = (B_V_DLLFUNC) GetProcAddress(CameraDLL, "openUSB");
+    if (!OCP_openUSB) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(_("Didn't find openUSB in DLL"));
     }
-    else {
-      (void) wxMessageBox(wxT("Can't find DSCI.dll"),_("Error"),wxOK | wxICON_ERROR);
+
+    bool retval = OCP_openUSB();
+    if (!retval) {
+        FreeLibrary(CameraDLL);
         return true;
     }
+
+    // Good to go, now get other functions
+    B_V_DLLFUNC OCP_isUSB2 = (B_V_DLLFUNC) GetProcAddress(CameraDLL, "IsUSB20");
+    if (!OCP_isUSB2) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "IsUSB20"));
+    }
+
+    UI_V_DLLFUNC OCP_Width = (UI_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Width");
+    if (!OCP_Width) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Width"));
+    }
+
+    UI_V_DLLFUNC OCP_Height = (UI_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Height");
+    if (!OCP_Height) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Height"));
+    }
+
+    OCP_sendEP1_1BYTE = (V_V_DLLFUNC)GetProcAddress(CameraDLL,"sendEP1_1BYTE");
+    if (!OCP_sendEP1_1BYTE) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "sendEP1_1BYTE"));
+    }
+    OCP_sendRegister = (OCPREGFUNC)GetProcAddress(CameraDLL,"sendRegister");
+    if (!OCP_sendRegister) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "sendRegister"));
+    }
+
+    OCP_Exposure = (B_I_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposure");
+    if (!OCP_Exposure) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Exposure"));
+    }
+    OCP_Exposing = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposing");
+    if (!OCP_Exposing) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Exposing"));
+    }
+    OCP_ProcessedBuffer = (USP_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_ProcessedBuffer");
+    if (!OCP_ProcessedBuffer) {
+        FreeLibrary(CameraDLL);
+        return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_ProcessedBuffer"));
+    }
+
     USB2 = OCP_isUSB2();
     RawX = OCP_Width();
     RawY = OCP_Height();

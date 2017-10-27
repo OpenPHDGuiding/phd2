@@ -84,22 +84,19 @@ bool CameraStarfish::Connect(const wxString& camId)
 {
 // returns true on error
 
-    IOReturn rval;
-
     wxBeginBusyCursor();
     if (!DriverLoaded) {
         fcUsb_init();               // Init the driver
         DriverLoaded = true;
     }
     NCams = fcUsb_FindCameras();
-    int i = NCams;
     wxEndBusyCursor();
     if (NCams == 0)
         return true;
     else {
         CamNum = 1;  // Assume just the one cam for now
         // set to polling mode and turn off black adjustment but turn on auto balancing of the offsets in the 2x2 matrix
-        rval = fcUsb_cmd_setReadMode(CamNum,  fc_classicDataXfr, fc_16b_data);
+        IOReturn rval = fcUsb_cmd_setReadMode(CamNum, fc_classicDataXfr, fc_16b_data);
         if (rval != kIOReturnSuccess) return true;
         if (fcUsb_cmd_getTECInPowerOK(CamNum))
             fcUsb_cmd_setTemperature(CamNum,10);

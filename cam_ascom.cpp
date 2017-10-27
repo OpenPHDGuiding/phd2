@@ -452,11 +452,11 @@ bool CameraASCOM::Create(DispatchObj *obj, DispatchClass *cls)
     return true;
 }
 
-static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
+static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name, wxString *err)
 {
     if (!obj.GetDispatchId(pid, name))
     {
-        pFrame->Alert(_("ASCOM Camera Driver missing required property ") + name);
+        *err = wxString::Format(_("ASCOM Camera Driver missing required property %s"), name);
         return false;
     }
     return true;
@@ -470,8 +470,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     // create the COM object
     if (!Create(&driver, &driver_class))
     {
-        pFrame->Alert(_("Could not create ASCOM camera object. See the debug log for more information."));
-        return true;
+        return CamConnectFailed(_("Could not create ASCOM camera object. See the debug log for more information."));
     }
 
     struct ConnectInBg : public ConnectCameraInBg
@@ -494,8 +493,7 @@ bool CameraASCOM::Connect(const wxString& camId)
 
     if (bg.Run())
     {
-        pFrame->Alert(_("ASCOM driver problem: Connect") + ":\n" + bg.GetErrorMsg());
-        return true;
+        return CamConnectFailed(_("ASCOM driver problem: Connect") + ":\n" + bg.GetErrorMsg());
     }
 
     Variant vname;
@@ -510,24 +508,21 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
         Debug.AddLine(ExcepMsg("CanPulseGuide", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanPulseGuide property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanPulseGuide"));
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
 
     if (!driver.GetProp(&vRes, L"CanAbortExposure"))
     {
         Debug.AddLine(ExcepMsg("CanAbortExposure", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanAbortExposure property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanAbortExposure"));
     }
     m_canAbortExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
 
     if (!driver.GetProp(&vRes, L"CanStopExposure"))
     {
         Debug.AddLine(ExcepMsg("CanStopExposure", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CanStopExposure property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanStopExposure"));
     }
     m_canStopExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
 
@@ -542,16 +537,14 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
         Debug.AddLine(ExcepMsg("CameraXSize", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CameraXSize property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraXSize"));
     }
     m_maxSize.SetWidth((int) vRes.lVal);
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
         Debug.AddLine(ExcepMsg("CameraYSize", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the CameraYSize property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraYSize"));
     }
     m_maxSize.SetHeight((int) vRes.lVal);
 
@@ -585,16 +578,14 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeX", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the PixelSizeX property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeX"));
     }
     m_driverPixelSize = vRes.dblVal;
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeY", driver.Excep()));
-        pFrame->Alert(_("ASCOM driver missing the PixelSizeY property. Please report this error to your ASCOM driver provider."));
-        return true;
+        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeY"));
     }
     m_driverPixelSize = wxMax(m_driverPixelSize, vRes.dblVal);
 
@@ -618,71 +609,72 @@ bool CameraASCOM::Connect(const wxString& camId)
         if (!driver.GetProp(&vRes, L"CanSetCCDTemperature"))
         {
             Debug.AddLine(ExcepMsg("CanSetCCDTemperature", driver.Excep()));
-            pFrame->Alert(_("ASCOM driver missing the CanSetCCDTemperature property. Please report this error to your ASCOM driver provider."));
-            return true;
+            return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanSetCCDTemperature"));
         }
         m_canSetCoolerTemperature = vRes.boolVal != VARIANT_FALSE ? true : false;
 
         if (!driver.GetProp(&vRes, L"CanGetCoolerPower"))
         {
             Debug.AddLine(ExcepMsg("CanGetCoolerPower", driver.Excep()));
-            pFrame->Alert(_("ASCOM driver missing the CanGetCoolerPower property. Please report this error to your ASCOM driver provider."));
-            return true;
+            return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanGetCoolerPower"));
         }
         m_canGetCoolerPower = vRes.boolVal != VARIANT_FALSE ? true : false;
     }
 
     // Get the dispids we'll need for more routine things
-    if (!GetDispid(&dispid_setxbin, driver, L"BinX"))
-        return true;
 
-    if (!GetDispid(&dispid_setybin, driver, L"BinY"))
-        return true;
+    wxString err;
 
-    if (!GetDispid(&dispid_startx, driver, L"StartX"))
-        return true;
+    if (!GetDispid(&dispid_setxbin, driver, L"BinX", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_starty, driver, L"StartY"))
-        return true;
+    if (!GetDispid(&dispid_setybin, driver, L"BinY", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_numx, driver, L"NumX"))
-        return true;
+    if (!GetDispid(&dispid_startx, driver, L"StartX", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_numy, driver, L"NumY"))
-        return true;
+    if (!GetDispid(&dispid_starty, driver, L"StartY", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_imageready, driver, L"ImageReady"))
-        return true;
+    if (!GetDispid(&dispid_numx, driver, L"NumX", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_imagearray, driver, L"ImageArray"))
-        return true;
+    if (!GetDispid(&dispid_numy, driver, L"NumY", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_startexposure, driver, L"StartExposure"))
-        return true;
+    if (!GetDispid(&dispid_imageready, driver, L"ImageReady", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_abortexposure, driver, L"AbortExposure"))
-        return true;
+    if (!GetDispid(&dispid_imagearray, driver, L"ImageArray", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_stopexposure, driver, L"StopExposure"))
-        return true;
+    if (!GetDispid(&dispid_startexposure, driver, L"StartExposure", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_pulseguide, driver, L"PulseGuide"))
-        return true;
+    if (!GetDispid(&dispid_abortexposure, driver, L"AbortExposure", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_ispulseguiding, driver, L"IsPulseGuiding"))
-        return true;
+    if (!GetDispid(&dispid_stopexposure, driver, L"StopExposure", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_cooleron, driver, L"CoolerOn"))
-        return true;
+    if (!GetDispid(&dispid_pulseguide, driver, L"PulseGuide", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_coolerpower, driver, L"CoolerPower"))
-        return true;
+    if (!GetDispid(&dispid_ispulseguiding, driver, L"IsPulseGuiding", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_ccdtemperature, driver, L"CCDTemperature"))
-        return true;
+    if (!GetDispid(&dispid_cooleron, driver, L"CoolerOn", &err))
+        return CamConnectFailed(err);
 
-    if (!GetDispid(&dispid_setccdtemperature, driver, L"SetCCDTemperature"))
-        return true;
+    if (!GetDispid(&dispid_coolerpower, driver, L"CoolerPower", &err))
+        return CamConnectFailed(err);
+
+    if (!GetDispid(&dispid_ccdtemperature, driver, L"CCDTemperature", &err))
+        return CamConnectFailed(err);
+
+    if (!GetDispid(&dispid_setccdtemperature, driver, L"SetCCDTemperature", &err))
+        return CamConnectFailed(err);
 
     // Program some defaults -- full size and binning
     EXCEPINFO excep;
@@ -691,8 +683,7 @@ bool CameraASCOM::Connect(const wxString& camId)
         // only make this error fatal if the camera supports binning > 1
         if (MaxBinning > 1)
         {
-            pFrame->Alert(_("The ASCOM camera failed to set binning. See the debug log for more information."));
-            return true;
+            return CamConnectFailed(_("The ASCOM camera failed to set binning. See the debug log for more information."));
         }
     }
     FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);

@@ -152,16 +152,16 @@ static bool SelectInterfaceAndDevice()
 
     switch (resp) {
     case 0:
-        //          wxMessageBox(_("2: USB selected"));
+        //          wxMessageBox("2: USB selected");
         odp.deviceType = DEV_USB;
         QueryUSBResults usbp;
-        //          wxMessageBox(_("3: Sending Query USB"));
+        //          wxMessageBox("3: Sending Query USB");
         err = SBIGUnivDrvCommand(CC_QUERY_USB, 0, &usbp);
-        //          wxMessageBox(_("4: Query sent"));
+        //          wxMessageBox("4: Query sent");
         //          wxMessageBox(wxString::Format("5: %u cams found",usbp.camerasFound));
         if (usbp.camerasFound > 1)
         {
-            //              wxMessageBox(_("5a: Enumerating cams"));
+            //              wxMessageBox("5a: Enumerating cams");
             wxArrayString USBNames;
             int i;
             for (i = 0; i<usbp.camerasFound; i++)
@@ -283,7 +283,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
+        wxMessageBox(wxString::Format(_("Cannot open SBIG camera: Code %d"),err), _("Error"));
         Disconnect();
         return true;
     }
@@ -293,7 +293,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_ESTABLISH_LINK, NULL, &elr);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format("Link to SBIG camera failed: Code %d",err), _("Error"));
+        wxMessageBox (wxString::Format(_("Link to SBIG camera failed: Code %d"),err), _("Error"));
         Disconnect();
         return true;
     }
@@ -306,7 +306,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
     if (err == CE_NO_ERROR)
     {
-        int resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
+        int resp = wxMessageBox(wxString::Format(_("Tracking CCD found, use it?\n\nNo = use main image CCD")), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
         if (resp == wxYES)
             UseTrackingCCD = true;
     }
