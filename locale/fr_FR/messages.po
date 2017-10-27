@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-20 20:28+0100\n"
-"PO-Revision-Date: 2017-10-09 23:06+0200\n"
+"PO-Revision-Date: 2017-10-26 23:22+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -704,7 +704,7 @@ msgstr "Réglages"
 
 #: cam_Altair.cpp:144
 msgid "No Altair cameras detected"
-msgstr ""
+msgstr "Aucune caméra Altair détectée"
 
 #: cam_Altair.cpp:162
 msgid "Specified Altair Camera not found."
@@ -730,6 +730,7 @@ msgstr ""
 #, c-format
 msgid "ASCOM Camera Driver missing required property %s"
 msgstr ""
+"La propriété %s requise est manquante dans le pilote ASCOM de la caméra"
 
 #: cam_ascom.cpp:473
 msgid ""
@@ -750,6 +751,8 @@ msgid ""
 "ASCOM driver missing the %s property. Please report this error to your ASCOM "
 "driver provider."
 msgstr ""
+"La propriété %s est manquante dans le pilote ASCOM. Veuillez signaler cette "
+"erreur à votre fournisseur de pilote ASCOM."
 
 #: cam_ascom.cpp:686 cam_ascom.cpp:910
 msgid ""
@@ -818,7 +821,7 @@ msgstr "Impossible de démarrer la pose"
 
 #: cam_firewire_IC.cpp:94
 msgid "Cannot initialize ImageCapture library"
-msgstr ""
+msgstr "Impossible d'initialiser la bibliothèque ImageCapture"
 
 #: cam_firewire_IC.cpp:103
 msgid "No camera found"
@@ -838,15 +841,15 @@ msgstr "Impossible d'obtenir la liste des modes vidéo"
 
 #: cam_firewire_IC.cpp:156
 msgid "Cannot find a Y800 mode"
-msgstr ""
+msgstr "Impossible de trouver un mode Y800"
 
 #: cam_firewire_IC.cpp:171
 msgid "Could not turn off auto-exposure"
-msgstr ""
+msgstr "Impossible d'arrêter l'auto exposition"
 
 #: cam_firewire_IC.cpp:178
 msgid "Cannot setup frame handler"
-msgstr ""
+msgstr "Impossible de configurer le gestionnaire d'image"
 
 #: cam_firewire_IC.cpp:187
 msgid "Could not set sink type"
@@ -854,7 +857,7 @@ msgstr ""
 
 #: cam_firewire_IC.cpp:205
 msgid "Could not start Live view"
-msgstr ""
+msgstr "Impossible de démarrer le Live view"
 
 #: cam_firewire_IC.cpp:217
 msgid ""
@@ -867,12 +870,11 @@ msgstr ""
 #: cam_firewire_IC.cpp:247
 #, c-format
 msgid "Fatal error at step %d connecting to TIS camera"
-msgstr ""
+msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:291 cam_INDI.cpp:489 cam_INDI.cpp:512
-#: cam_opencv.cpp:146 cam_simulator.cpp:613 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:291 cam_INDI.cpp:489 cam_INDI.cpp:512 cam_opencv.cpp:146
+#: cam_simulator.cpp:613 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -888,34 +890,35 @@ msgstr "Erreur à la capture de l'image : %d (%d) %s"
 #: cam_firewire_OSX.cpp:87
 msgid "Error looking for Firewire / IEEE1394 cameras (internal error)"
 msgstr ""
+"Erreur lors de la recherche de caméras Firewire / IEEE1394 (erreur interne)"
 
 #: cam_firewire_OSX.cpp:93
 msgid "Error looking for Firewire / IEEE1394 cameras"
-msgstr ""
+msgstr "Erreur lors de la recherche de caméras Firewire / IEEE1394"
 
 #: cam_firewire_OSX.cpp:96
 msgid "No Firewire / IEEE1394 camera found"
-msgstr ""
+msgstr "Aucune caméra Firewire / IEEE1394 trouvée"
 
 #: cam_firewire_OSX.cpp:144
 msgid "Cannot find a suitable monochrome video mode"
-msgstr ""
+msgstr "Impossible de trouver un mode vidéo monochrome approprié"
 
 #: cam_firewire_OSX.cpp:149
 msgid "Cannot set frame rate to 7.5 FPS"
-msgstr ""
+msgstr "Impossible de définir la fréquence d'images à 7,5 FPS"
 
 #: cam_firewire_OSX.cpp:161
 msgid "Cannot setup DMA buffers"
-msgstr ""
+msgstr "Impossible de démarrer les buffers DMA"
 
 #: cam_firewire_OSX.cpp:170
 msgid "Cannot start transmission"
-msgstr ""
+msgstr "Impossible de démarrer la transmission"
 
 #: cam_firewire_OSX.cpp:181
 msgid "Transmission failed to start"
-msgstr ""
+msgstr "La transmission échoue à démarrer"
 
 #: cam_firewire_OSX.cpp:354
 msgid "Cannot get a frame from the queue"
@@ -978,7 +981,7 @@ msgstr "Erreur en fixant le gain"
 
 #: cam_KWIQGuider.cpp:68
 msgid "Could not connect to KWIQGuider"
-msgstr ""
+msgstr "Impossible de se connecter à KWIQGuider"
 
 #: cam_LELXUSBWebcam.cpp:67
 msgid "Unable to open LXUSB device"
@@ -1035,7 +1038,7 @@ msgstr "Réglages Webcam"
 
 #: cam_MeadeDSI.cpp:97
 msgid "No DSI cameras found"
-msgstr ""
+msgstr "Aucune caméra DSI trouvée"
 
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
@@ -1043,15 +1046,15 @@ msgstr "Impossible d'initialiser la bibliothèque USB"
 
 #: cam_openssag.cpp:112
 msgid "Could not connect to StarShoot Autoguider"
-msgstr ""
+msgstr "Impossible de se connecter à l'Autoguideur StarShoot"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
-msgstr ""
+msgstr "Impossible de trouver OSPL130RT.dll"
 
 #: cam_OSPL130.cpp:58
 msgid "Cannot init camera"
-msgstr ""
+msgstr "Impossible d'initialiser la caméra"
 
 #: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
@@ -1115,7 +1118,7 @@ msgstr "Échec dans la capture d'image de la QHY"
 
 #: cam_SAC42.cpp:71
 msgid "Error connecting to SAC4-2"
-msgstr ""
+msgstr "Erreur lors de la connexion à SAC4-2"
 
 #: cam_SAC42.cpp:134
 msgid "Error capturing data from camera"
@@ -1123,7 +1126,7 @@ msgstr "Erreur à l'enregistrement"
 
 #: cam_SACGuide.cpp:82 cam_StarShootDSCI.cpp:82
 msgid "Didn't find openUSB in DLL"
-msgstr ""
+msgstr "N'a pas trouvé openUSB dans la DLL"
 
 #: cam_SACGuide.cpp:93 cam_SACGuide.cpp:98 cam_SACGuide.cpp:103
 #: cam_SACGuide.cpp:108 cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101
@@ -1132,11 +1135,11 @@ msgstr ""
 #: cam_StarShootDSCI.cpp:129 cam_StarShootDSCI.cpp:134
 #, c-format
 msgid "Didn't find %s in DLL"
-msgstr ""
+msgstr "N'a pas trouvé %s dans la DLL"
 
 #: cam_SACGuide.cpp:118
 msgid "Can't find cmosDLL.dll"
-msgstr ""
+msgstr "Impossible de trouver cmosDLL.dll"
 
 #: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
@@ -1169,12 +1172,12 @@ msgstr "Entrez l'adresse IP"
 #: cam_SBIG.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
-msgstr ""
+msgstr "Impossible d'ouvrir la caméra SBIG : Code %d"
 
 #: cam_SBIG.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
-msgstr ""
+msgstr "Le lien vers la caméra SBIG a échoué : Code %d"
 
 #: cam_SBIG.cpp:309
 msgid ""
@@ -1182,6 +1185,9 @@ msgid ""
 "\n"
 "No = use main image CCD"
 msgstr ""
+"Suivi CCD trouvé, l'utiliser ?\n"
+"\n"
+"Non = utiliser l'image CCD principale"
 
 #: cam_SBIG.cpp:309
 msgid "CCD Choice"
@@ -1465,7 +1471,7 @@ msgstr "Côté du méridien : %s"
 
 #: cam_SSPIAG.cpp:131
 msgid "Cannot load astroDLLsspiag.dll"
-msgstr ""
+msgstr "Impossible de charger astroDLLsspiag.dll"
 
 #: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
 #: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
@@ -1474,20 +1480,20 @@ msgstr ""
 #: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
-msgstr ""
+msgstr "astroDLLsspiag.dll n'a pas %s"
 
 #: cam_SSPIAG.cpp:231
 msgid "Cannot load SSPIAGCAM.dll"
-msgstr ""
+msgstr "Impossible de charger SSPIAGCAM.dll"
 
 #: cam_SSPIAG.cpp:237
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
-msgstr ""
+msgstr "SSPIAGCAM.dll n'a pas %s"
 
 #: cam_SSPIAG.cpp:244
 msgid "Failed to open the camera"
-msgstr ""
+msgstr "Impossible d'ouvrir la caméra"
 
 #: cam_StarShootDSCI.cpp:162
 msgid "Problem sending register to StarShoot"
@@ -1551,7 +1557,7 @@ msgstr ""
 
 #: cam_ZWO.cpp:196
 msgid "No ZWO cameras detected."
-msgstr ""
+msgstr "Aucune caméra ZWO détectée."
 
 #: cam_ZWO.cpp:212 cam_ZWO.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
@@ -2118,8 +2124,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:153
 msgid ""
@@ -2962,7 +2968,7 @@ msgstr "Affiche les corrections de la monture"
 
 #: graph.cpp:175
 msgid "RMS Error [px]:"
-msgstr ""
+msgstr "Erreur RMS [px] :"
 
 #: graph.cpp:210
 msgid "Tot"
@@ -3208,8 +3214,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3321,8 +3327,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3345,8 +3351,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -4067,7 +4073,7 @@ msgstr "Calibration Manuelle"
 
 #: manualcal_dialog.cpp:46
 msgid "Camera binning:"
-msgstr "Binning de la caméra : "
+msgstr "Binning de la caméra :"
 
 #: manualcal_dialog.cpp:54
 msgid "RA rate, px/sec (e.g. 5.0):"
@@ -4079,11 +4085,11 @@ msgstr "Taux Dec, px/sec (ex. 5.0):"
 
 #: manualcal_dialog.cpp:66
 msgid "RA angle (degrees):"
-msgstr "angle AD (degrés):"
+msgstr "Angle AD (degrés) :"
 
 #: manualcal_dialog.cpp:72
 msgid "Dec angle (degrees):"
-msgstr "angle Dec (degrés) :"
+msgstr "Angle Dec (degrés) :"
 
 #: manualcal_dialog.cpp:78
 msgid "Declination (e.g. 2.1):"
@@ -5926,7 +5932,7 @@ msgstr "Information Générale"
 
 #: Refine_DefMap.cpp:100
 msgid "Time:"
-msgstr "Date heure : "
+msgstr "Date heure :"
 
 #: Refine_DefMap.cpp:102
 msgid "Camera:"
@@ -6808,11 +6814,11 @@ msgstr "Tournner"
 
 #: staticpa_toolwin.cpp:369
 msgid "Flip camera"
-msgstr ""
+msgstr "Tourner la caméra"
 
 #: staticpa_toolwin.cpp:372
 msgid "Invert the camera angle"
-msgstr ""
+msgstr "Inverser l'angle de la caméra"
 
 #: staticpa_toolwin.cpp:374
 msgid "Get second position"
@@ -6820,11 +6826,11 @@ msgstr "Aller à la seconde position"
 
 #: staticpa_toolwin.cpp:380
 msgid "Show Orbits"
-msgstr ""
+msgstr "Montrer les Orbites"
 
 #: staticpa_toolwin.cpp:383
 msgid "Show or hide the star orbits"
-msgstr ""
+msgstr "Montrer ou cacher les orbites des étoiles"
 
 #: staticpa_toolwin.cpp:385
 msgid "Get third position"
@@ -6848,7 +6854,7 @@ msgstr "Veuillez sélectionner une étoile"
 
 #: staticpa_toolwin.cpp:531
 msgid "Static Polar alignment display cleared"
-msgstr ""
+msgstr "Affichage de l'Alignement Polaire Statique effacé"
 
 #: staticpa_toolwin.cpp:577
 msgid "Get first position"
@@ -6856,11 +6862,11 @@ msgstr "Aller à la position initiale"
 
 #: statswindow.cpp:70
 msgid "RMS [px]"
-msgstr ""
+msgstr "RMS [px]"
 
 #: statswindow.cpp:71
 msgid "Peak [px]"
-msgstr ""
+msgstr "Pic [px]"
 
 #: statswindow.cpp:75
 msgid " 99.99 (99.99'')"
@@ -7067,8 +7073,7 @@ msgstr "Saut sur dithering"
 #: stepguider.cpp:1429
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr ""
-"Saut de monture pour replacer l'OA au centre à chaque mouvement de "
-"'dithering'"
+"Saut de monture pour replacer l'OA au centre à chaque mouvement de dithering"
 
 #: stepguider.cpp:1431
 msgid "Clear AO calibration"
@@ -7870,8 +7875,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
