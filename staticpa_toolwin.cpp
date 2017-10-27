@@ -466,7 +466,12 @@ void StaticPaToolWin::OnManual(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnFlip(wxCommandEvent& evt)
 {
-    a_flip = w_flip->IsChecked();
+    bool new_flip = w_flip->IsChecked();
+    if (new_flip != a_flip)
+    {
+        w_pole->currPt = wxPoint(0, 0) - w_pole->currPt;
+    }
+    a_flip = new_flip;
     FillPanel();
 }
 
