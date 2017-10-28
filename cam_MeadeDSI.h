@@ -40,13 +40,13 @@
 
 class DsiDevice;
 
-class Camera_DSIClass : public GuideCamera
+class CameraDSI : public GuideCamera
 {
     DsiDevice *MeadeCam;
 
 public:
-    Camera_DSIClass();
-    ~Camera_DSIClass();
+    CameraDSI();
+    ~CameraDSI();
 
     bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);

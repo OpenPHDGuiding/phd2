@@ -45,7 +45,7 @@
 
 using namespace KWIQ;
 
-Camera_KWIQGuiderClass::Camera_KWIQGuiderClass()
+CameraKWIQGuider::CameraKWIQGuider()
 {
     Connected = FALSE;
     Name=_T("KWIQGuider (KWIQGuider)");
@@ -57,31 +57,28 @@ Camera_KWIQGuiderClass::Camera_KWIQGuiderClass()
     KWIQguider = new KWIQGuider();
 }
 
-wxByte Camera_KWIQGuiderClass::BitsPerPixel()
+wxByte CameraKWIQGuider::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_KWIQGuiderClass::Connect(const wxString& camId)
+bool CameraKWIQGuider::Connect(const wxString& camId)
 {
-    if (!KWIQguider->Connect()) {
-        wxMessageBox(_T("Could not connect to KWIQGuider"), _("Error"));
-        return true;
-    }
+    if (!KWIQguider->Connect())
+        return CamConnectFailed(_("Could not connect to KWIQGuider"));
 
     Connected = true;  // Set global flag for being connected
-
     return false;
 }
 
-bool Camera_KWIQGuiderClass::Disconnect()
+bool CameraKWIQGuider::Disconnect()
 {
     Connected = false;
     KWIQguider->Disconnect();
     return false;
 }
 
-bool Camera_KWIQGuiderClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraKWIQGuider::ST4PulseGuideScope(int direction, int duration)
 {
     switch (direction) {
         case WEST:
@@ -104,7 +101,7 @@ bool Camera_KWIQGuiderClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraKWIQGuider::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -130,7 +127,7 @@ bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, co
     return false;
 }
 
-bool Camera_KWIQGuiderClass::GetDevicePixelSize(double *devPixelSize)
+bool CameraKWIQGuider::GetDevicePixelSize(double *devPixelSize)
 {
     *devPixelSize = 5.2;
     return false;

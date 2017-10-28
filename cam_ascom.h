@@ -1,9 +1,10 @@
 /*
- *  cam_ascomlate.h
- *  PHD Guiding
+ *  cam_ascom.h
+ *  PHD2 Guiding
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2009-2010 Craig Stark.
+ *  Copyright (c) 2013-2017 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +15,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs, openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,15 +33,15 @@
  *
  */
 
-#ifndef CAM_ASCOMLATE_H_INCLUDED
-#define CAM_ASCOMLATE_H_INCLUDED
+#ifndef CAM_ASCOM_INCLUDED
+#define CAM_ASCOM_INCLUDED
 
-#if defined (ASCOM_LATECAMERA)
+#if defined (ASCOM_CAMERA)
 
 class DispatchObj;
 class DispatchClass;
 
-class Camera_ASCOMLateClass : public GuideCamera
+class CameraASCOM : public GuideCamera
 {
 #ifdef __WINDOWS__
 
@@ -65,20 +66,21 @@ public:
 
     static wxArrayString EnumAscomCameras();
 
-    Camera_ASCOMLateClass(const wxString& choice);
-    ~Camera_ASCOMLateClass();
+    CameraASCOM(const wxString& choice);
+    ~CameraASCOM();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture(void);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect(void);
-    void    ShowPropertyDialog(void);
-    bool    ST4PulseGuideScope(int direction, int duration);
-    wxByte  BitsPerPixel();
-    bool    GetDevicePixelSize(double* devPixelSize);
-    bool    SetCoolerOn(bool on);
-    bool    SetCoolerSetpoint(double temperature);
-    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    HasNonGuiCapture(void) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect(void) override;
+    void    ShowPropertyDialog(void) override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double* devPixelSize) override;
+    bool    SetCoolerOn(bool on) override;
+    bool    SetCoolerSetpoint(double temperature) override;
+    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool    GetSensorTemperature(double *temperature) override;
 
 private:
 
@@ -93,6 +95,6 @@ private:
 #endif
 };
 
-#endif // defined (ASCOM_LATECAMERA)
+#endif // defined (ASCOM_CAMERA)
 
-#endif //CAM_ASCOMLATE_H_INCLUDED
+#endif // CAM_ASCOM_INCLUDED

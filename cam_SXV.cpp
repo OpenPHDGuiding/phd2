@@ -48,7 +48,7 @@ typedef HANDLE SXHandle;
 typedef void* SXHandle;
 #endif
 
-extern Camera_SXVClass Camera_SXV;
+extern CameraSXV Camera_SXV;
 
 enum {
     SX_CMOS_GUIDER = 39,
@@ -126,7 +126,7 @@ static wxString NameFromModel(int model)
     return m;
 }
 
-Camera_SXVClass::Camera_SXVClass()
+CameraSXV::CameraSXV()
 {
     Connected = false;
     Name = _T("Starlight Xpress SXV");
@@ -140,7 +140,7 @@ Camera_SXVClass::Camera_SXVClass()
     SquarePixels = pConfig->Profile.GetBoolean("/camera/SXV/SquarePixels", false);
 }
 
-wxByte Camera_SXVClass::BitsPerPixel()
+wxByte CameraSXV::BitsPerPixel()
 {
     return 16;
 }
@@ -181,7 +181,7 @@ SXCameraDlg::SXCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title,
     Centre(wxBOTH);
 }
 
-void Camera_SXVClass::ShowPropertyDialog()
+void CameraSXV::ShowPropertyDialog()
 {
     SXCameraDlg dlg(wxGetApp().GetTopWindow());
     dlg.m_squarePixels->SetValue(SquarePixels);
@@ -192,7 +192,7 @@ void Camera_SXVClass::ShowPropertyDialog()
     }
 }
 
-bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
+bool CameraSXV::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     SXHandle hCams[SXCCD_MAX_CAMS];
 
@@ -212,7 +212,7 @@ bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-void Camera_SXVClass::InitFrameSizes(void)
+void CameraSXV::InitFrameSizes(void)
 {
     if (Interlaced)
     {
@@ -239,7 +239,7 @@ void Camera_SXVClass::InitFrameSizes(void)
         Binning, m_darkFrameSize.x, m_darkFrameSize.y, FullSize.x, FullSize.y));
 }
 
-bool Camera_SXVClass::Connect(const wxString& camId)
+bool CameraSXV::Connect(const wxString& camId)
 {
     // returns true on error
 
@@ -258,8 +258,7 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     int ncams = sxOpen(hCams);
     if (ncams == 0)
     {
-        wxMessageBox(_("No SX cameras found"), _("Error"));
-        return true;
+        return CamConnectFailed(_("No SX cameras found"));
     }
 
     if (idx < 0 || idx >= ncams)
@@ -282,8 +281,7 @@ bool Camera_SXVClass::Connect(const wxString& camId)
 
     if (CCDParams.width == 0 || CCDParams.height == 0)
     {
-        pFrame->Alert(_("Connect failed: could not retrieve camera parameters."));
-        return true;
+        return CamConnectFailed(_("Connect failed: could not retrieve camera parameters."));
     }
 
     // deal with what if no porch in there ??
@@ -364,7 +362,7 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     return err;
 }
 
-bool Camera_SXVClass::Disconnect()
+bool CameraSXV::Disconnect()
 {
     delete[] RawData;
     RawData = NULL;
@@ -378,7 +376,7 @@ bool Camera_SXVClass::Disconnect()
     return false;
 }
 
-bool Camera_SXVClass::GetDevicePixelSize(double *devPixelSize)
+bool CameraSXV::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;
@@ -620,7 +618,7 @@ static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned
     return true;
 }
 
-bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     bool takeSubframe = UseSubframes;
     wxRect subframe(subframeArg);
@@ -865,7 +863,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
     return false;
 }
 
-bool Camera_SXVClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraSXV::ST4PulseGuideScope(int direction, int duration)
 {
     // Guide port values
     // West = 1

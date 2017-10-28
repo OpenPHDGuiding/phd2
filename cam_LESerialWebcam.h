@@ -39,7 +39,7 @@
 
 #include "cam_LEWebcam.h"
 
-class Camera_LESerialWebcamClass : public Camera_LEWebcamClass
+class CameraLESerialWebcam : public CameraLEWebcam
 {
     SerialPort *m_pSerialPort;
     bool m_InvertedLogic;
@@ -50,8 +50,8 @@ class Camera_LESerialWebcamClass : public Camera_LEWebcamClass
     bool m_Amp;
 
 public:
-    Camera_LESerialWebcamClass(void);
-    virtual ~Camera_LESerialWebcamClass(void);
+    CameraLESerialWebcam(void);
+    virtual ~CameraLESerialWebcam(void);
 
     virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();

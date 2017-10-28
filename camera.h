@@ -181,6 +181,7 @@ public:
     virtual bool    SetCoolerOn(bool on);
     virtual bool    SetCoolerSetpoint(double temperature);
     virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
+    virtual bool    GetSensorTemperature(double *temperature);
 
     virtual wxString GetSettingsSummary();
     void            AddDark(usImage *dark);
@@ -208,7 +209,7 @@ protected:
     bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
-
+    static bool CamConnectFailed(const wxString& errorMessage);
 
     enum CaptureFailType {
         CAPT_FAIL_MEMORY,

@@ -68,7 +68,7 @@ static void uninit_libusb()
     }
 }
 
-Camera_OpenSSAGClass::Camera_OpenSSAGClass()
+CameraOpenSSAG::CameraOpenSSAG()
 {
     Connected = false;
     Name = _T("StarShoot Autoguider (OpenSSAG)");
@@ -79,22 +79,21 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass()
     ssag = new SSAG();
 }
 
-Camera_OpenSSAGClass::~Camera_OpenSSAGClass()
+CameraOpenSSAG::~CameraOpenSSAG()
 {
     uninit_libusb();
 }
 
-wxByte Camera_OpenSSAGClass::BitsPerPixel()
+wxByte CameraOpenSSAG::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_OpenSSAGClass::Connect(const wxString& camId)
+bool CameraOpenSSAG::Connect(const wxString& camId)
 {
     if (init_libusb())
     {
-        wxMessageBox(_("Could not initialize USB library"), _("Error"));
-        return true;
+        return CamConnectFailed(_("Could not initialize USB library"));
     }
 
     struct ConnectInBg : public ConnectCameraInBg
@@ -110,8 +109,7 @@ bool Camera_OpenSSAGClass::Connect(const wxString& camId)
 
     if (ConnectInBg(ssag).Run())
     {
-        wxMessageBox(_T("Could not connect to StarShoot Autoguider"), _("Error"));
-        return true;
+        return CamConnectFailed(_("Could not connect to StarShoot Autoguider"));
     }
 
     Connected = true;  // Set global flag for being connected
@@ -119,7 +117,7 @@ bool Camera_OpenSSAGClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraOpenSSAG::ST4PulseGuideScope(int direction, int duration)
 {
     switch (direction) {
         case WEST:
@@ -142,14 +140,14 @@ bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_OpenSSAGClass::Disconnect()
+bool CameraOpenSSAG::Disconnect()
 {
     Connected = false;
     ssag->Disconnect();
     return false;
 }
 
-bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -180,7 +178,7 @@ bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_OpenSSAGClass::GetDevicePixelSize(double *devPixelSize)
+bool CameraOpenSSAG::GetDevicePixelSize(double *devPixelSize)
 {
     *devPixelSize = 5.2;
     return false;

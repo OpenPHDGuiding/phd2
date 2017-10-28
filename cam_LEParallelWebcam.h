@@ -39,14 +39,14 @@
 
 #include "cam_LEWebcam.h"
 
-class Camera_LEParallelWebcamClass : public Camera_LEWebcamClass
+class CameraLEParallelWebcam : public CameraLEWebcam
 {
 private:
     virtual bool LEControl(int actions);
     ParallelPort *m_pParallelPort;
 public:
-    Camera_LEParallelWebcamClass(void);
-    virtual ~Camera_LEParallelWebcamClass(void);
+    CameraLEParallelWebcam(void);
+    virtual ~CameraLEParallelWebcam(void);
 
     virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();

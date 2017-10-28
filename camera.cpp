@@ -157,8 +157,8 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #include "cam_INovaPLC.h"
 #endif
 
-#if defined (ASCOM_LATECAMERA)
- #include "cam_ascomlate.h"
+#if defined (ASCOM_CAMERA)
+ #include "cam_ascom.h"
 #endif
 
 #if defined (INDI_CAMERA)
@@ -225,8 +225,8 @@ wxArrayString GuideCamera::List(void)
     wxArrayString CameraList;
 
     CameraList.Add(_("None"));
-#if defined (ASCOM_LATECAMERA)
-    wxArrayString ascomCameras = Camera_ASCOMLateClass::EnumAscomCameras();
+#if defined (ASCOM_CAMERA)
+    wxArrayString ascomCameras = CameraASCOM::EnumAscomCameras();
     for (unsigned int i = 0; i < ascomCameras.Count(); i++)
         CameraList.Add(ascomCameras[i]);
 #endif
@@ -355,10 +355,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         if (false) // so else ifs can follow
         {
         }
-#if defined (ASCOM_LATECAMERA)
+#if defined (ASCOM_CAMERA)
         // do ascom first since it includes many choices, some of which match other choices below (like Simulator)
         else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
-            pReturn = new Camera_ASCOMLateClass(choice);
+            pReturn = new CameraASCOM(choice);
         }
 #endif
         else if (choice.Find(_("None")) + 1) {
@@ -368,12 +368,12 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #if defined (SAC42)
         else if (choice.Find(_T("SAC4-2")) + 1) {
-            pReturn = new Camera_SAC42Class();
+            pReturn = new CameraSAC42();
         }
 #endif
 #if defined (ATIK16)
         else if (choice.Find(_T("Atik 16 series")) + 1) {
-            Camera_Atik16Class *pNewGuideCamera = new Camera_Atik16Class();
+            CameraAtik16 *pNewGuideCamera = new CameraAtik16();
             pNewGuideCamera->HSModel = false;
             if (choice.Find(_T("color")))
                 pNewGuideCamera->Color = true;
@@ -384,7 +384,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (ATIK_GEN3)
         else if (choice.Find(_T("Atik Gen3")) + 1) {
-            Camera_Atik16Class *pNewGuideCamera = new Camera_Atik16Class();
+            CameraAtik16 *pNewGuideCamera = new CameraAtik16();
             pNewGuideCamera->HSModel = true;
             if (choice.Find(_T("color")))
                 pNewGuideCamera->Color = true;
@@ -395,11 +395,11 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (QGUIDE)
         else if (choice.Find(_T("CCD Labs Q-Guider")) + 1) {
-            pReturn = new Camera_QGuiderClass();
+            pReturn = new CameraQGuider();
             pReturn->Name = _T("Q-Guider");
         }
         else if (choice.Find(_T("MagZero MZ-5")) + 1) {
-            pReturn = new Camera_QGuiderClass();
+            pReturn = new CameraQGuider();
             pReturn->Name = _T("MagZero MZ-5");
         }
 #endif
@@ -422,32 +422,32 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
         else if (choice.Find(_T("QHY 5")) + 1) {
-            pReturn = new Camera_QHY5Class();
+            pReturn = new CameraQHY5();
         }
 #endif
 #if defined (OPENSSAG)
         else if (choice.Find(_T("Orion StarShoot Autoguider")) + 1) {
-            pReturn = new Camera_OpenSSAGClass();
+            pReturn = new CameraOpenSSAG();
         }
 #endif
 #if defined (KWIQGUIDER)
         else if (choice.Find(_T("KWIQGuider")) + 1) {
-            pReturn = new Camera_KWIQGuiderClass();
+            pReturn = new CameraKWIQGuider();
         }
 #endif
 #if defined (SSAG)
         else if (choice.Find(_T("StarShoot Autoguider")) + 1) {
-            pReturn = new Camera_SSAGClass();
+            pReturn = new CameraSSAG();
         }
 #endif
 #if defined (SSPIAG)
         else if (choice.Find(_T("StarShoot Planetary Imager & Autoguider")) + 1) {
-            pReturn = new Camera_SSPIAGClass();
+            pReturn = new CameraSSPIAG();
         }
 #endif
 #if defined (ORION_DSCI)
         else if (choice.Find(_T("Orion StarShoot DSCI")) + 1) {
-            pReturn = new Camera_StarShootDSCIClass();
+            pReturn = new CameraStarShootDSCI();
         }
 #endif
 #if defined (OPENCV_CAMERA)
@@ -457,47 +457,47 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             {
                 dev = 1;
             }
-            pReturn = new Camera_OpenCVClass(dev);
+            pReturn = new CameraOpenCV(dev);
         }
 #endif
 #if defined (WDM_CAMERA)
         else if (choice.Find(_T("Windows WDM")) + 1) {
-            pReturn = new Camera_WDMClass();
+            pReturn = new CameraWDM();
         }
 #endif
 #if defined (VFW_CAMERA)
         else if (choice.Find(_T("Windows VFW")) + 1) {
-            pReturn = new Camera_VFWClass();
+            pReturn = new CameraVFW();
         }
 #endif
 #if defined (LE_SERIAL_CAMERA)
         else if (choice.Find(_T("Long exposure Serial webcam")) + 1) {
-            pReturn = new Camera_LESerialWebcamClass();
+            pReturn = new CameraLESerialWebcam();
         }
 #endif
 #if defined (LE_PARALLEL_CAMERA)
         else if (choice.Find( _T("Long exposure Parallel webcam")) + 1) {
-            pReturn = new Camera_LEParallelWebcamClass();
+            pReturn = new CameraLEParallelWebcam();
         }
 #endif
 #if defined (LE_LXUSB_CAMERA)
         else if (choice.Find( _T("Long exposure LXUSB webcam")) + 1) {
-            pReturn = new Camera_LELxUsbWebcamClass();
+            pReturn = new CameraLELxUsbWebcam();
         }
 #endif
 #if defined (MEADE_DSI)
         else if (choice.Find(_T("Meade DSI I, II, or III")) + 1) {
-            pReturn = new Camera_DSIClass();
+            pReturn = new CameraDSI();
         }
 #endif
 #if defined (STARFISH)
         else if (choice.Find(_T("Fishcamp Starfish")) + 1) {
-            pReturn = new Camera_StarfishClass();
+            pReturn = new CameraStarfish();
         }
 #endif
 #if defined (SXV)
         else if (choice.Find(_T("Starlight Xpress SXV")) + 1) {
-            pReturn = new Camera_SXVClass();
+            pReturn = new CameraSXV();
         }
 #endif
 #if defined (OS_PL130)
@@ -514,33 +514,33 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (NEB_SBIG)
         else if (choice.Find(_T("Nebulosity")) + 1) {
-            pReturn = new Camera_NebSBIGClass();
+            pReturn = new CameraNebSBIG();
         }
 #endif
 #if defined (SBIGROTATOR_CAMERA)
         // must go above SBIG
         else if (choice.Find(_T("SBIG Rotator")) + 1) {
-            pReturn = new Camera_SBIGRotatorClass();
+            pReturn = new CameraSBIGRotator();
         }
 #endif
 #if defined (SBIG)
         else if (choice.Find(_T("SBIG")) + 1) {
-            pReturn = new Camera_SBIGClass();
+            pReturn = new CameraSBIG();
         }
 #endif
 #if defined (FIREWIRE)
         else if (choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1) {
-            pReturn = new Camera_FirewireClass();
+            pReturn = new CameraFirewire();
         }
 #endif
 #if defined (INOVA_PLC)
         else if (choice.Find(_T("i-Nova PLC-M")) + 1) {
-            pReturn = new Camera_INovaPLCClass();
+            pReturn = new CameraINovaPLC();
         }
 #endif
 #if defined (INDI_CAMERA)
         else if (choice.Find(_T("INDI Camera")) + 1) {
-            pReturn = new Camera_INDIClass();
+            pReturn = new CameraINDI();
         }
 #endif
 #if defined (V4L_CAMERA)
@@ -608,6 +608,12 @@ bool GuideCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
+bool GuideCamera::CamConnectFailed(const wxString& errorMessage)
+{
+    pFrame->Alert(errorMessage);
+    return true; // error
+}
+
 int GuideCamera::GetCameraGain(void)
 {
     return GuideCameraGain;
@@ -673,7 +679,7 @@ void GuideCamera::SetSaturationByADU(bool saturationByADU, unsigned short satura
         Debug.Write(wxString::Format("Saturation detection set to Max-ADU value %d\n", saturationADU));
     }
     else
-        Debug.Write("Saturation detection set to star-profile-mode");
+        Debug.Write("Saturation detection set to star-profile-mode\n");
 }
 
 bool GuideCamera::SetCameraPixelSize(double pixel_size)
@@ -714,6 +720,11 @@ bool GuideCamera::SetCoolerSetpoint(double temperature)
 }
 
 bool GuideCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+{
+    return true; // error
+}
+
+bool GuideCamera::GetSensorTemperature(double *temperature)
 {
     return true; // error
 }

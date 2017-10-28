@@ -49,7 +49,7 @@
 #include "image_math.h"
 #include "cam_INDI.h"
 
-Camera_INDIClass::Camera_INDIClass()
+CameraINDI::CameraINDI()
 {
     ClearStatus();
     // load the values from the current profile
@@ -66,12 +66,12 @@ Camera_INDIClass::Camera_INDIClass()
     m_bitsPerPixel = 0;
 }
 
-Camera_INDIClass::~Camera_INDIClass()
+CameraINDI::~CameraINDI()
 {
     disconnectServer();
 }
 
-void Camera_INDIClass::ClearStatus()
+void CameraINDI::ClearStatus()
 {
     // reset properties pointer
     connection_prop = NULL;
@@ -95,10 +95,10 @@ void Camera_INDIClass::ClearStatus()
     PixSize = PixSizeX = PixSizeY = 0.0;
 }
 
-void Camera_INDIClass::CheckState()
+void CameraINDI::CheckState()
 {
     // Check if the device has all the required properties for our usage.
-    if(has_blob && Connected && (expose_prop || video_prop)) {
+    if (has_blob && camera_device && Connected && (expose_prop || video_prop)) {
         if (! ready) {
             //printf("Camera is ready\n");
             ready = true;
@@ -109,15 +109,15 @@ void Camera_INDIClass::CheckState()
     }
 }
 
-void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
+void CameraINDI::newDevice(INDI::BaseDevice *dp)
 {
-  if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
-      // The camera object
-      camera_device = dp;
-  }
+    if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
+        // The camera object
+        camera_device = dp;
+    }
 }
 
-void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
+void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
     //printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
@@ -132,13 +132,13 @@ void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
     }
 }
 
-void Camera_INDIClass::newMessage(INDI::BaseDevice *dp, int messageID)
+void CameraINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the camera driver send a message
     //printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
 }
 
-void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
+void CameraINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
     //printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
@@ -161,13 +161,13 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
     }
 }
 
-void Camera_INDIClass::newText(ITextVectorProperty *tvp)
+void CameraINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
     //printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
 }
 
-void  Camera_INDIClass::newBLOB(IBLOB *bp)
+void  CameraINDI::newBLOB(IBLOB *bp)
 {
     // we go here every time a new blob is available
     // this is normally the image from the camera
@@ -184,7 +184,7 @@ void  Camera_INDIClass::newBLOB(IBLOB *bp)
     }
 }
 
-void Camera_INDIClass::newProperty(INDI::Property *property)
+void CameraINDI::newProperty(INDI::Property *property)
 {
     // Here we receive a list of all the properties after the connection
     // Updated values are not received here but in the newTYPE() functions above.
@@ -197,7 +197,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
       INDI_PROPERTY_TYPE Proptype = property->getType();
     #endif
 
-    //printf("Camera Property: %s\n",PropName);
+    //printf("Camera Property: %s\n",property->getName());
 
     if (Proptype == INDI_BLOB) {
         //printf("Found BLOB property for %s %s\n", DeviName, PropName);
@@ -246,8 +246,8 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
         Connected = (connectswitch->s == ISS_ON);
     }
     else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT) {
-        if (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE) {
-          m_hasGuideOutput = true; // Device supports guiding
+        if (camera_device && (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE)) {
+            m_hasGuideOutput = true; // Device supports guiding
         }
     }
     else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER){
@@ -268,12 +268,13 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     CheckState();
 }
 
-bool Camera_INDIClass::Connect(const wxString& camId)
+bool CameraINDI::Connect(const wxString& camId)
 {
     // If not configured open the setup dialog
     if (INDICameraName == wxT("INDI Camera")) {
         CameraSetup();
     }
+    Debug.Write(wxString::Format("INDI Camera connecting to device [%s]\n", INDICameraName));
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     // Receive messages only for our camera.
@@ -296,12 +297,12 @@ bool Camera_INDIClass::Connect(const wxString& camId)
     }
 }
 
-wxByte Camera_INDIClass::BitsPerPixel()
+wxByte CameraINDI::BitsPerPixel()
 {
     return m_bitsPerPixel;
 }
 
-bool Camera_INDIClass::Disconnect()
+bool CameraINDI::Disconnect()
 {
     if (ready) {
        // Disconnect from server
@@ -313,7 +314,7 @@ bool Camera_INDIClass::Disconnect()
     else return true;
 }
 
-void Camera_INDIClass::serverConnected()
+void CameraINDI::serverConnected()
 {
     // After connection to the server
     modal = true;
@@ -354,7 +355,7 @@ void Camera_INDIClass::serverConnected()
     }
 }
 
-void Camera_INDIClass::serverDisconnected(int exit_code)
+void CameraINDI::serverDisconnected(int exit_code)
 {
    // after disconnection we reset the connection status and the properties pointers
    ClearStatus();
@@ -363,14 +364,14 @@ void Camera_INDIClass::serverDisconnected(int exit_code)
 }
 
 #ifndef INDI_PRE_1_0_0
-void Camera_INDIClass::removeDevice(INDI::BaseDevice *dp)
+void CameraINDI::removeDevice(INDI::BaseDevice *dp)
 {
    ClearStatus();
    DisconnectWithAlert("INDI camera disconnected",NO_RECONNECT);
 }
 #endif
 
-void Camera_INDIClass::ShowPropertyDialog()
+void CameraINDI::ShowPropertyDialog()
 {
     if (Connected) {
         // show the devices INDI dialog
@@ -382,7 +383,7 @@ void Camera_INDIClass::ShowPropertyDialog()
     }
 }
 
-void Camera_INDIClass::CameraDialog()
+void CameraINDI::CameraDialog()
 {
    if (gui) {
       gui->Show();
@@ -396,7 +397,7 @@ void Camera_INDIClass::CameraDialog()
    }
 }
 
-void Camera_INDIClass::CameraSetup()
+void CameraINDI::CameraSetup()
 {
     // show the server and device configuration
     INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_CAMERA);
@@ -430,7 +431,7 @@ void Camera_INDIClass::CameraSetup()
     delete indiDlg;
 }
 
-void  Camera_INDIClass::SetCCDdevice()
+void  CameraINDI::SetCCDdevice()
 {
     if (INDICameraCCD == 0) {
         INDICameraBlobName = "CCD1";
@@ -442,7 +443,7 @@ void  Camera_INDIClass::SetCCDdevice()
     }
 }
 
-bool Camera_INDIClass::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe)
+bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe)
 {
     int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
@@ -524,7 +525,7 @@ bool Camera_INDIClass::ReadFITS(usImage& img, bool takeSubframe, const wxRect& s
     return false;
 }
 
-bool Camera_INDIClass::ReadStream(usImage& img)
+bool CameraINDI::ReadStream(usImage& img)
 {
     int xsize, ysize;
     unsigned char *inptr;
@@ -560,7 +561,7 @@ bool Camera_INDIClass::ReadStream(usImage& img)
     return false;
 }
 
-bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
   if (Connected) {
 
@@ -680,19 +681,19 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
   return true;
 }
 
-bool Camera_INDIClass::HasNonGuiCapture(void)
+bool CameraINDI::HasNonGuiCapture(void)
 {
     return true;
 }
 
 // Camera ST4 port
 
-bool Camera_INDIClass::ST4HasNonGuiMove(void)
+bool CameraINDI::ST4HasNonGuiMove(void)
 {
     return true;
 }
 
-bool Camera_INDIClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
 {
     if (pulseGuideNS_prop && pulseGuideEW_prop) {
         switch (direction) {
@@ -726,7 +727,7 @@ bool Camera_INDIClass::ST4PulseGuideScope(int direction, int duration)
     else return true;
 }
 
-bool Camera_INDIClass::GetDevicePixelSize(double *devPixelSize)
+bool CameraINDI::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true; // error

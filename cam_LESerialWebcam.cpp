@@ -54,21 +54,21 @@
 
 using namespace cv;
 
-Camera_LESerialWebcamClass::Camera_LESerialWebcamClass(void)
-    : Camera_LEWebcamClass()
+CameraLESerialWebcam::CameraLESerialWebcam(void)
+    : CameraLEWebcam()
 {
     Name = _T("Serial LE Webcam");
     PropertyDialogType = PROPDLG_ANY;
     m_pSerialPort = NULL;
 }
 
-Camera_LESerialWebcamClass::~Camera_LESerialWebcamClass(void)
+CameraLESerialWebcam::~CameraLESerialWebcam(void)
 {
     Disconnect();
     delete m_pSerialPort;
 }
 
-bool Camera_LESerialWebcamClass::Connect(const wxString& camId)
+bool CameraLESerialWebcam::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -95,7 +95,7 @@ bool Camera_LESerialWebcamClass::Connect(const wxString& camId)
 
         //pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
 
-        if (Camera_LEWebcamClass::Connect(camId))
+        if (CameraLEWebcam::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
@@ -111,7 +111,7 @@ bool Camera_LESerialWebcamClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_LESerialWebcamClass::Disconnect()
+bool CameraLESerialWebcam::Disconnect()
 {
     bool bError = false;
 
@@ -120,7 +120,7 @@ bool Camera_LESerialWebcamClass::Disconnect()
         delete m_pSerialPort;
         m_pSerialPort = NULL;
 
-        if (Camera_LEWebcamClass::Disconnect())
+        if (CameraLEWebcam::Disconnect())
         {
             throw ERROR_INFO("Base class Disconnect() failed");
         }
@@ -134,7 +134,7 @@ bool Camera_LESerialWebcamClass::Disconnect()
     return bError;
 }
 
-bool Camera_LESerialWebcamClass::LEControl(int actions)
+bool CameraLESerialWebcam::LEControl(int actions)
 {
     bool bError = false;
 
@@ -374,7 +374,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
     SetSizerAndFit(pVSizer);
 }
 
-void Camera_LESerialWebcamClass::ShowPropertyDialog()
+void CameraLESerialWebcam::ShowPropertyDialog()
 {
     wxWindow *parent = pFrame;
     if (pFrame->pGearDialog->IsActive())
@@ -406,7 +406,7 @@ void Camera_LESerialWebcamClass::ShowPropertyDialog()
 
         if (!Connected)
         {
-            Camera_LEWebcamClass::ShowPropertyDialog();
+            CameraLEWebcam::ShowPropertyDialog();
         }
     }
 }

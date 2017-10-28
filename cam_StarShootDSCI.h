@@ -38,7 +38,7 @@
 
 #include "StarShootDLL.h"
 
-class Camera_StarShootDSCIClass : public GuideCamera
+class CameraStarShootDSCI : public GuideCamera
 {
     bool USB2;  // Is it a USB2 connection?
     int RawX;  // Raw size of array
@@ -54,7 +54,7 @@ class Camera_StarShootDSCIClass : public GuideCamera
     USP_V_DLLFUNC OCP_ProcessedBuffer;
 
 public:
-    Camera_StarShootDSCIClass();
+    CameraStarShootDSCI();
     bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool   Connect(const wxString& camId);
     bool   Disconnect();

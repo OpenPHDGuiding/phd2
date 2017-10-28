@@ -38,7 +38,7 @@
 
 #include "cam_sbigrotator.h"
 
-Camera_SBIGRotatorClass::Camera_SBIGRotatorClass()
+CameraSBIGRotator::CameraSBIGRotator()
 {
     m_pSubcamera = NULL;
     m_raAngle = 0.0;
@@ -48,12 +48,12 @@ Camera_SBIGRotatorClass::Camera_SBIGRotatorClass()
     Name=_T("SBIG Rotator Camera");
 }
 
-Camera_SBIGRotatorClass::~Camera_SBIGRotatorClass()
+CameraSBIGRotator::~CameraSBIGRotator()
 {
     delete m_pSubcamera;
 }
 
-bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
+bool CameraSBIGRotator::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -79,7 +79,7 @@ bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
 
         m_mirror = (idx == 1);
 
-        m_pSubcamera = new Camera_SBIGClass();
+        m_pSubcamera = new CameraSBIG();
 
         bError = m_pSubcamera->Connect(camId);
         Connected = m_pSubcamera->Connected;
@@ -97,29 +97,29 @@ bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_SBIGRotatorClass::HasNonGuiCapture()
+bool CameraSBIGRotator::HasNonGuiCapture()
 {
     return m_pSubcamera && m_pSubcamera->HasNonGuiCapture();
 }
 
-bool Camera_SBIGRotatorClass::ST4HasNonGuiMove()
+bool CameraSBIGRotator::ST4HasNonGuiMove()
 {
     return m_pSubcamera && m_pSubcamera->ST4HasNonGuiMove();
 }
 
-wxByte Camera_SBIGRotatorClass::BitsPerPixel()
+wxByte CameraSBIGRotator::BitsPerPixel()
 {
     return m_pSubcamera ? m_pSubcamera->BitsPerPixel() : 0;
 }
 
-bool Camera_SBIGRotatorClass::Disconnect()
+bool CameraSBIGRotator::Disconnect()
 {
     m_pSubcamera->Disconnect();
     Connected = m_pSubcamera->Connected;
     return false;
 }
 
-bool Camera_SBIGRotatorClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSBIGRotator::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = m_pSubcamera->Capture(duration, img, options, subframe);
 
@@ -128,7 +128,7 @@ bool Camera_SBIGRotatorClass::Capture(int duration, usImage& img, int options, c
     return bError;
 }
 
-bool Camera_SBIGRotatorClass::ST4PulseGuideScope (int direction, int duration)
+bool CameraSBIGRotator::ST4PulseGuideScope (int direction, int duration)
 {
     return m_pSubcamera->ST4PulseGuideScope(direction, duration);
 }

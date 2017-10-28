@@ -36,14 +36,16 @@
 
 #include "ArtemisHSCAPI.h"
 
-class Camera_Atik16Class : public GuideCamera
+class CameraAtik16 : public GuideCamera
 {
     bool m_dllLoaded;
     ArtemisHandle Cam_Handle;
+    ARTEMISPROPERTIES m_properties;
+    wxByte m_curBin;
 
 public:
-    Camera_Atik16Class();
-    ~Camera_Atik16Class();
+    CameraAtik16();
+    ~CameraAtik16();
 
     bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
@@ -60,7 +62,7 @@ public:
 
 private:
     bool ST4HasNonGuiMove(void);
-    bool LoadDLL(void);
+    bool LoadDLL(wxString *err);
 };
 
 #endif  //ATIK16DEF

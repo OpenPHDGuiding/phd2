@@ -42,35 +42,35 @@
 #include "cam_NebSBIG.h"
 #include "socket_server.h"
 
-Camera_NebSBIGClass::Camera_NebSBIGClass()
+CameraNebSBIG::CameraNebSBIG()
 {
     Connected = false;
     Name=_T("Nebulosity SBIG Guide chip");
 }
 
-wxByte Camera_NebSBIGClass::BitsPerPixel()
+wxByte CameraNebSBIG::BitsPerPixel()
 {
     return 16;
 }
 
-bool Camera_NebSBIGClass::Connect(const wxString& camId)
+bool CameraNebSBIG::Connect(const wxString& camId)
 {
     int xsize, ysize;
-    bool retval = ServerSendCamConnect(xsize,ysize);
+    bool retval = ServerSendCamConnect(xsize, ysize);
     if (retval) return true;
-    FullSize=wxSize(xsize,ysize);
+    FullSize = wxSize(xsize,ysize);
     Connected = true;
     return false;
 }
 
-bool Camera_NebSBIGClass::Disconnect()
+bool CameraNebSBIG::Disconnect()
 {
     Connected = false;
     ServerSendCamDisconnect();
     return false;
 }
 
-bool Camera_NebSBIGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraNebSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (img.Init(FullSize))
     {
@@ -84,13 +84,13 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, int options, const
 
 }
 
-bool Camera_NebSBIGClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraNebSBIG::ST4PulseGuideScope(int direction, int duration)
 {
     bool retval = ServerSendGuideCommand(direction, duration);
     return retval;
 }
 
-bool Camera_NebSBIGClass::HasNonGuiCapture(void)
+bool CameraNebSBIG::HasNonGuiCapture(void)
 {
     return true;
 }

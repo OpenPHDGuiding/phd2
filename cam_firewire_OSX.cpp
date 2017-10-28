@@ -47,7 +47,7 @@ bool DCAM_start_stop_mode = true;
 
 #include "cam_firewire.h"
 
-Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0)
+CameraFirewire::CameraFirewire() : m_dcContext(0), camera(0)
 {
     Connected = false;
 //  HaveBPMap = false;
@@ -58,7 +58,7 @@ Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0)
     m_hasGuideOutput = false;
 }
 
-Camera_FirewireClass::~Camera_FirewireClass()
+CameraFirewire::~CameraFirewire()
 {
   if(m_dcContext)
   {
@@ -67,12 +67,12 @@ Camera_FirewireClass::~Camera_FirewireClass()
   }
 }
 
-wxByte Camera_FirewireClass::BitsPerPixel()
+wxByte CameraFirewire::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_FirewireClass::Connect(const wxString& camId)
+bool CameraFirewire::Connect(const wxString& camId)
 {
     int err, CamNum;
     uint32_t i;
@@ -84,19 +84,16 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     }
     if(m_dcContext == 0)
     {
-        wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras (internal error)"));
-        return true;
+        return CamConnectFailed(_("Error looking for Firewire / IEEE1394 cameras (internal error)"));
     }
-    dc1394camera_list_t * cameras;
+    dc1394camera_list_t *cameras;
     err = dc1394_camera_enumerate(m_dcContext, &cameras);
 
-    if ((err != DC1394_SUCCESS)){// && (err != DC1394_NO_CAMERA)) {
-        wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras"));
-        return true;
+    if (err != DC1394_SUCCESS) { // && (err != DC1394_NO_CAMERA)) {
+        return CamConnectFailed(_("Error looking for Firewire / IEEE1394 cameras"));
     }
     if (cameras->num == 0) {
-        wxMessageBox(_T("No Firewire / IEEE1394 camera found"));
-        return true;
+        return CamConnectFailed(_("No Firewire / IEEE1394 camera found"));
     }
 
     // Choose camera
@@ -143,15 +140,13 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
         }
     }
     if (!HaveValid) {
-        wxMessageBox(_T("Cannot find a suitable monochrome video mode"));
         dc1394_camera_free(camera);
-        return true;
+        return CamConnectFailed(_("Cannot find a suitable monochrome video mode"));
     }
 
     if (dc1394_video_set_framerate(camera,DC1394_FRAMERATE_7_5)) {
-        wxMessageBox(_T("Cannot set to 7.5 FPS"));
         dc1394_camera_free(camera);
-        return true;
+        return CamConnectFailed(_("Cannot set frame rate to 7.5 FPS"));
     }
 
     // Set to 400Mbps mode
@@ -162,19 +157,17 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
 
     // Setup DMA buffers for capture
     if (dc1394_capture_setup(camera,4,DC1394_CAPTURE_FLAGS_DEFAULT)) {
-        wxMessageBox(_T("Cannot setup DMA buffers"));
         dc1394_camera_free(camera);
-        return true;
+        return CamConnectFailed(_("Cannot setup DMA buffers"));
     }
 
     wxStopWatch swatch;
     long t1;
     // Startup transmission to make sure we can do so
     swatch.Start();
-    if (dc1394_video_set_transmission(camera, DC1394_ON) !=DC1394_SUCCESS) {
-        wxMessageBox(_T("Cannot start transmission"));
+    if (dc1394_video_set_transmission(camera, DC1394_ON) != DC1394_SUCCESS) {
         dc1394_camera_free(camera);
-        return true;
+        return CamConnectFailed(_("Cannot start transmission"));
     }
     dc1394switch_t status = DC1394_OFF;
     for (i=0; i<5; i++) {
@@ -184,8 +177,8 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     }
     t1 = swatch.Time();
     if (i==5) {
-        wxMessageBox(_T("Transmission failed to start"));
         dc1394_camera_free(camera);
+        return CamConnectFailed(_("Transmission failed to start"));
     }
 //  dc1394_video_set_transmission(camera, DC1394_OFF); // turn it back off for now
 
@@ -214,7 +207,7 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     dc1394bool_t    Present;
     dc1394_feature_has_absolute_control(camera,DC1394_FEATURE_SHUTTER,&Present);
     if (Present != DC1394_TRUE) {
-        wxMessageBox("Cannot use absolute values to set exposures.  Exposure durations will not be controlled properly");
+        pFrame->Alert("Cannot use absolute values to set exposures.  Exposure durations will not be controlled properly");
     }
     dc1394_feature_set_mode(camera, DC1394_FEATURE_SHUTTER, DC1394_FEATURE_MODE_MANUAL);
     dc1394_feature_set_absolute_control(camera,DC1394_FEATURE_SHUTTER,DC1394_ON);
@@ -236,7 +229,7 @@ bool Camera_FirewireClass::Connect(const wxString& camId)
     return false;
 }
 
-void Camera_FirewireClass::InitCapture()
+void CameraFirewire::InitCapture()
 {
     // Set gain
     uint32_t Min;
@@ -248,7 +241,7 @@ void Camera_FirewireClass::InitCapture()
     dc1394_feature_set_value(camera,DC1394_FEATURE_GAIN, NewVal);
 }
 
-bool Camera_FirewireClass::Disconnect()
+bool CameraFirewire::Disconnect()
 {
     if (camera) {
         dc1394_video_set_transmission(camera,DC1394_OFF);
@@ -259,7 +252,7 @@ bool Camera_FirewireClass::Disconnect()
     return false;
 }
 
-bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize, ysize, i;
     unsigned short *dataptr;
@@ -274,7 +267,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
             return true;
         }
     }
@@ -375,7 +368,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, cons
     return false;
 }
 
-bool Camera_FirewireClass::HasNonGuiCapture(void)
+bool CameraFirewire::HasNonGuiCapture(void)
 {
     return true;
 }

@@ -48,18 +48,20 @@ struct StaticPaToolWin : public wxFrame
     /*
     Tool window controls
     */
-    wxStaticText *w_instructions;
+    wxHtmlWindow *w_instructions;
     wxTextCtrl *w_camScale; // Text box for camera pixel scale
     wxTextCtrl *w_camRot;   // Text box for camera rotation
+    wxSpinCtrlDouble *w_hourangle; // Spinner to manually set HA
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
-    wxTextCtrl *w_calPt[4][2];  // Text boxes for each point plus the CoR
+    wxCheckBox *w_flip;     // Checkbox to flip camera
+    wxCheckBox *w_orbit;    // Checkbox t show/hide orbits
     wxButton *w_star1;      // Button for manual get of point 1
     wxButton *w_star2;      // Button for manual get of point 2
     wxButton *w_star3;      // Button for manual get of point 3
     wxStaticText *w_notesLabel;
     wxTextCtrl *w_notes;
-    wxButton *w_calculate;     // Button to calculate CoR
-    wxButton *w_close;      // Close button
+    wxButton *w_clear;     // Button to clear display
+    wxButton *w_close;     // Close button
     wxStatusBar *w_statusBar;
     wxChoice *w_refStarChoice;  // Listbox for reference stars
     wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
@@ -67,8 +69,10 @@ struct StaticPaToolWin : public wxFrame
     class PolePanel : public wxPanel
     {
     public:
+        wxPoint origPt, currPt;
         PolePanel(StaticPaToolWin* parent);
         StaticPaToolWin *paParent;
+        void OnClick(wxMouseEvent &evt);
         void OnPaint(wxPaintEvent &evt);
         void Paint();
         DECLARE_EVENT_TABLE()
@@ -85,8 +89,8 @@ struct StaticPaToolWin : public wxFrame
     {
     public:
         std::string name;
-        double ra, dec, mag;
-        Star(const char* a, const double b, const double c, const double d) :name(a), ra(b), dec(c), mag(d) {};
+        double ra2000, dec2000, mag, ra, dec;
+        Star(const char* a, double b, double c, double d) :name(a), ra2000(b), dec2000(c), mag(d), ra(-1), dec(-1) {};
     };
     std::vector<Star> c_SthStars, c_NthStars; // Stars around the poles
     std::vector<Star> *poleStars;
@@ -94,12 +98,15 @@ struct StaticPaToolWin : public wxFrame
     enum StaticPaCtrlIds
     {
         ID_HEMI = 10001,
+        ID_HA,
         ID_MANUAL,
+        ID_FLIP,
+        ID_ORBIT,
         ID_REFSTAR,
         ID_ROTATE,
         ID_STAR2,
         ID_STAR3,
-        ID_CALCULATE,
+        ID_CLEAR,
         ID_CLOSE,
     };
 
@@ -112,6 +119,9 @@ struct StaticPaToolWin : public wxFrame
     int a_refStar;      // Selected reference star
     bool a_auto;        // Auto slewing - must be manual if mount cannot slew
     int a_hemi;         // Hemisphere of the observer
+    double a_ha;        // Manual hour angle
+    bool a_drawOrbit;   // Draw the star orbits
+    bool a_flip;        // Flip the camera angle
 
     bool s_aligning;        // Indicates that alignment points are being collected
     unsigned int s_state;   // state of the alignment process
@@ -133,25 +143,37 @@ struct StaticPaToolWin : public wxFrame
     void FillPanel();
 
     void OnHemi(wxCommandEvent& evt);
+    void OnHa(wxSpinDoubleEvent& evt);
     void OnRefStar(wxCommandEvent& evt);
     void OnManual(wxCommandEvent& evt);
+    void OnFlip(wxCommandEvent& evt);
+    void OnOrbit(wxCommandEvent& evt);
+    void OnNotes(wxCommandEvent& evt);
     void OnRotate(wxCommandEvent& evt);
     void OnStar2(wxCommandEvent& evt);
     void OnStar3(wxCommandEvent& evt);
-    void OnCalculate(wxCommandEvent& evt);
+    void OnClear(wxCommandEvent& evt);
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    void CreateStarTemplate(wxDC &dc);
+    void CreateStarTemplate(wxDC &dc, const wxPoint& currPt);
     bool IsAligning(){ return s_aligning; };
     bool RotateMount();
+    bool RotateFail(const wxString& msg);
     bool SetParams(double newoffset);
-    void MoveWestBy(double thetadeg);
+    bool MoveWestBy(double thetadeg);
     bool SetStar(int idx);
-    bool IsAligned(){ return a_auto ? s_state == (3 << 1) : s_state == (7 << 1); }
+    bool IsAligned(){ return a_auto ? ((s_state>>1) & 3) ==3 : ((s_state>>1) & 7)==7; }
+    bool IsCalced(){ return HasState(0); }
     void CalcRotationCentre(void);
+    void CalcAdjustments(void);
+    bool HasState(int ipos) { return (s_state & (1 << ipos)) > 0;  }
+    void SetState(int ipos) { s_state = s_state | (1 << ipos); }
+    void UnsetState(int ipos) { s_state = s_state & ~(1 << ipos) & 15; }
+    void ClearState() { s_state = 0; }
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-    PHD_Point Radec2Px(PHD_Point radec);
+    PHD_Point Radec2Px(const PHD_Point& radec);
+    PHD_Point J2000Now(const PHD_Point& radec);
 
     DECLARE_EVENT_TABLE()
 };

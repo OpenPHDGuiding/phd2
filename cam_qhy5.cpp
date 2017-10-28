@@ -90,7 +90,7 @@ static void uninit_libusb()
     }
 }
 
-Camera_QHY5Class::Camera_QHY5Class()
+CameraQHY5::CameraQHY5()
 {
     Connected = FALSE;
     FullSize = wxSize(QHY5_IMAGE_WIDTH, QHY5_IMAGE_HEIGHT);
@@ -100,17 +100,17 @@ Camera_QHY5Class::Camera_QHY5Class()
     Name = _T("QHY 5");
 }
 
-Camera_QHY5Class::~Camera_QHY5Class()
+CameraQHY5::~CameraQHY5()
 {
     uninit_libusb();
 }
 
-wxByte Camera_QHY5Class::BitsPerPixel()
+wxByte CameraQHY5::BitsPerPixel()
 {
     return 8;
 }
 
-bool Camera_QHY5Class::Connect(const wxString& camId)
+bool CameraQHY5::Connect(const wxString& camId)
 {
     if (init_libusb())
     {
@@ -140,7 +140,7 @@ bool Camera_QHY5Class::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_QHY5Class::ST4PulseGuideScope(int direction, int duration)
+bool CameraQHY5::ST4PulseGuideScope(int direction, int duration)
 {
     int result = -1;
     int reg = 0;
@@ -176,17 +176,17 @@ bool Camera_QHY5Class::ST4PulseGuideScope(int direction, int duration)
     return result < 0 ? true : false;
 }
 
-void Camera_QHY5Class::ClearGuidePort()
+void CameraQHY5::ClearGuidePort()
 {
     int16_t res = 0;
     libusb_control_transfer(m_handle, 0xc2, 0x18, 0, 0, (unsigned char *)&res, sizeof(res), 5000);
 }
 
-void Camera_QHY5Class::InitCapture()
+void CameraQHY5::InitCapture()
 {
 }
 
-bool Camera_QHY5Class::Disconnect()
+bool CameraQHY5::Disconnect()
 {
     libusb_release_interface( m_handle, 0 );
     libusb_close( m_handle );
@@ -200,7 +200,7 @@ bool Camera_QHY5Class::Disconnect()
     return false;
 }
 
-bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraQHY5::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
 // Only does full frames still
     //static int last_dur = 0;

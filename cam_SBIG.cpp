@@ -59,7 +59,7 @@ static unsigned long bcd2long(unsigned long bcd)
     return val;
 }
 
-Camera_SBIGClass::Camera_SBIGClass()
+CameraSBIG::CameraSBIG()
     : m_driverLoaded(false)
 {
     Connected = false;
@@ -73,13 +73,13 @@ Camera_SBIGClass::Camera_SBIGClass()
     IsColor = false;
 }
 
-Camera_SBIGClass::~Camera_SBIGClass()
+CameraSBIG::~CameraSBIG()
 {
     if (m_driverLoaded)
         SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 }
 
-wxByte Camera_SBIGClass::BitsPerPixel()
+wxByte CameraSBIG::BitsPerPixel()
 {
     return 16;
 }
@@ -102,7 +102,7 @@ static bool _LoadDriver()
     return err == CE_NO_ERROR;
 }
 
-bool Camera_SBIGClass::LoadDriver()
+bool CameraSBIG::LoadDriver()
 {
     if (m_driverLoaded)
         return true;
@@ -152,16 +152,16 @@ static bool SelectInterfaceAndDevice()
 
     switch (resp) {
     case 0:
-        //          wxMessageBox(_("2: USB selected"));
+        //          wxMessageBox("2: USB selected");
         odp.deviceType = DEV_USB;
         QueryUSBResults usbp;
-        //          wxMessageBox(_("3: Sending Query USB"));
+        //          wxMessageBox("3: Sending Query USB");
         err = SBIGUnivDrvCommand(CC_QUERY_USB, 0, &usbp);
-        //          wxMessageBox(_("4: Query sent"));
+        //          wxMessageBox("4: Query sent");
         //          wxMessageBox(wxString::Format("5: %u cams found",usbp.camerasFound));
         if (usbp.camerasFound > 1)
         {
-            //              wxMessageBox(_("5a: Enumerating cams"));
+            //              wxMessageBox("5a: Enumerating cams");
             wxArrayString USBNames;
             int i;
             for (i = 0; i<usbp.camerasFound; i++)
@@ -249,14 +249,14 @@ static bool LoadOpenDeviceParams(OpenDeviceParams *odp)
     return true;
 }
 
-bool Camera_SBIGClass::HandleSelectCameraButtonClick(wxCommandEvent& evt)
+bool CameraSBIG::HandleSelectCameraButtonClick(wxCommandEvent& evt)
 {
     if (LoadDriver())
         SelectInterfaceAndDevice();
     return true; // handled
 }
 
-bool Camera_SBIGClass::Connect(const wxString& camId)
+bool CameraSBIG::Connect(const wxString& camId)
 {
     // DEAL WITH PIXEL ASPECT RATIO
     // DEAL WITH ASKING ABOUT WHICH INTERFACE
@@ -283,7 +283,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
+        wxMessageBox(wxString::Format(_("Cannot open SBIG camera: Code %d"),err), _("Error"));
         Disconnect();
         return true;
     }
@@ -293,7 +293,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_ESTABLISH_LINK, NULL, &elr);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format("Link to SBIG camera failed: Code %d",err), _("Error"));
+        wxMessageBox (wxString::Format(_("Link to SBIG camera failed: Code %d"),err), _("Error"));
         Disconnect();
         return true;
     }
@@ -306,7 +306,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
     if (err == CE_NO_ERROR)
     {
-        int resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
+        int resp = wxMessageBox(wxString::Format(_("Tracking CCD found, use it?\n\nNo = use main image CCD")), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
         if (resp == wxYES)
             UseTrackingCCD = true;
     }
@@ -355,7 +355,7 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SBIGClass::Disconnect()
+bool CameraSBIG::Disconnect()
 {
     SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
     SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
@@ -364,7 +364,7 @@ bool Camera_SBIGClass::Disconnect()
     return false;
 }
 
-bool Camera_SBIGClass::GetDevicePixelSize(double* devPixelSize)
+bool CameraSBIG::GetDevicePixelSize(double* devPixelSize)
 {
     if (!Connected)
         return true;
@@ -373,7 +373,7 @@ bool Camera_SBIGClass::GetDevicePixelSize(double* devPixelSize)
     return false;
 }
 
-void Camera_SBIGClass::InitCapture()
+void CameraSBIG::InitCapture()
 {
     // Set gain
 }
@@ -384,7 +384,7 @@ static bool StopExposure(EndExposureParams *eep)
     return err == CE_NO_ERROR;
 }
 
-bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool TakeSubframe = UseSubframes;
 
@@ -554,7 +554,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     return false;
 }
 
-bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration)
+bool CameraSBIG::ST4PulseGuideScope(int direction, int duration)
 {
     ActivateRelayParams rp;
     rp.tXMinus = rp.tXPlus = rp.tYMinus = rp.tYPlus = 0;

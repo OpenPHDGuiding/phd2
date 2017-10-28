@@ -44,7 +44,7 @@
 #define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
 #include "VidCapture.h"  // For DirectShow
 
-class Camera_WDMClass : public GuideCamera
+class CameraWDM : public GuideCamera
 {
     int m_deviceNumber;
     int m_deviceMode;
@@ -64,7 +64,7 @@ protected:
     CVVidCapture* m_pVidCap;
 
 public:
-    Camera_WDMClass();
+    CameraWDM();
 
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);

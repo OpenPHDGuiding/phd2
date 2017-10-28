@@ -4,6 +4,7 @@
 *
 *  Created by Robin Glover.
 *  Copyright (c) 2014 Robin Glover.
+*  Copyright (c) 2017 Andy Galasso
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -178,8 +179,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     wxString err;
     if (!TryLoadDll(&err))
     {
-        wxMessageBox(err, _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(err);
     }
 
     long idx = -1;
@@ -193,8 +193,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     if (numCameras == 0)
     {
-        wxMessageBox(_T("No ZWO cameras detected."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("No ZWO cameras detected."));
     }
 
     if (idx < 0 || idx >= numCameras)
@@ -210,23 +209,20 @@ bool Camera_ZWO::Connect(const wxString& camId)
     if ((r = ASIGetCameraProperty(&info, selected)) != ASI_SUCCESS)
     {
         Debug.Write(wxString::Format("ASIGetCameraProperty ret %d\n", r));
-        wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to get camera properties for ZWO ASI Camera."));
     }
 
     if ((r = ASIOpenCamera(selected)) != ASI_SUCCESS)
     {
         Debug.Write(wxString::Format("ASIOpenCamera ret %d\n", r));
-        wxMessageBox(_("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to open ZWO ASI Camera."));
     }
 
     if ((r = ASIInitCamera(selected)) != ASI_SUCCESS)
     {
         Debug.Write(wxString::Format("ASIInitCamera ret %d\n", r));
         ASICloseCamera(selected);
-        wxMessageBox(_("Failed to initizlize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to initizlize ZWO ASI Camera."));
     }
 
     m_cameraId = selected;
@@ -268,8 +264,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     {
         Debug.Write(wxString::Format("ASIGetNumOfControls ret %d\n", r));
         Disconnect();
-        wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
+        return CamConnectFailed(_("Failed to get camera properties for ZWO ASI Camera."));
     }
 
     HasGainControl = false;
@@ -400,6 +395,22 @@ bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
         return true;
     }
     *power = value;
+
+    return false;
+}
+
+bool Camera_ZWO::GetSensorTemperature(double *temperature)
+{
+    ASI_ERROR_CODE r;
+    long value;
+    ASI_BOOL isAuto;
+
+    if ((r = ASIGetControlValue(m_cameraId, ASI_TEMPERATURE, &value, &isAuto)) != ASI_SUCCESS)
+    {
+        Debug.Write(wxString::Format("ZWO: error (%d) getting ASI_TEMPERATURE\n", r));
+        return true;
+    }
+    *temperature = value / 10.0;
 
     return false;
 }

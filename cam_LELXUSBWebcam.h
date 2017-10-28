@@ -39,12 +39,12 @@
 
 #include "cam_LEWebcam.h"
 
-class Camera_LELxUsbWebcamClass : public Camera_LEWebcamClass
+class CameraLELxUsbWebcam : public CameraLEWebcam
 {
     bool m_isOpen;
 public:
-    Camera_LELxUsbWebcamClass(void);
-    virtual ~Camera_LELxUsbWebcamClass(void);
+    CameraLELxUsbWebcam(void);
+    virtual ~CameraLELxUsbWebcam(void);
 
     virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();

@@ -1956,6 +1956,60 @@ static void get_calibration_data(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
+static void get_cooler_status(JObj& response, const json_value *params)
+{
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "camera not connected");
+        return;
+    }
+
+    bool on;
+    double setpoint, power, temperature;
+
+    bool err = pCamera->GetCoolerStatus(&on, &setpoint, &power, &temperature);
+    if (err)
+    {
+        response << jrpc_error(1, "failed to get cooler status");
+        return;
+    }
+
+    JObj rslt;
+
+    rslt << NV("coolerOn", on)
+         << NV("temperature", temperature, 1);
+
+    if (on)
+    {
+        rslt << NV("setpoint", setpoint, 1)
+             << NV("power", power, 1);
+    }
+
+    response << jrpc_result(rslt);
+}
+
+static void get_sensor_temperature(JObj& response, const json_value *params)
+{
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "camera not connected");
+        return;
+    }
+
+    double temperature;
+    bool err = pCamera->GetSensorTemperature(&temperature);
+    if (err)
+    {
+        response << jrpc_error(1, "failed to get sensor temperature");
+        return;
+    }
+
+    JObj rslt;
+    rslt << NV("temperature", temperature, 1);
+
+    response << jrpc_result(rslt);
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
@@ -2031,6 +2085,8 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "guide_pulse", &guide_pulse, },
         { "get_calibration_data", &get_calibration_data, },
         { "capture_single_frame", &capture_single_frame, },
+        { "get_cooler_status", &get_cooler_status, },
+        { "get_ccd_temperature", &get_sensor_temperature, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
