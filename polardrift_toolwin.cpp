@@ -181,35 +181,16 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
 // First row of grid
     int gridRow = 0;
-    txt = new wxStaticText(this, wxID_ANY, _("Camera arcsec/pixel"), wxDefaultPosition, wxDefaultSize, 0);
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
-
-    txt = new wxStaticText(this, wxID_ANY, _("Camera Angle"), wxDefaultPosition, wxDefaultSize, 0);
-    txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
-
     txt = new wxStaticText(this, wxID_ANY, _("Hemisphere"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
-    gbSizer->Add(txt, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
-
-    // Next row of grid
-    gridRow++;
-    w_camScale = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_camScale, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
-    w_camRot = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(w_camRot, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(txt, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL, 5);
 
     wxArrayString hemi;
     hemi.Add(_("North"));
     hemi.Add(_("South"));
     w_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
     w_hemiChoice->SetToolTip(_("Select your hemisphere"));
-    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
-
-    // Next row of grid
-    gridRow++;
+    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
     w_start = new wxButton(this, ID_START, _("Start"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(w_start, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
@@ -333,10 +314,19 @@ void PolarDriftToolWin::FillPanel()
     if (s_drifting) {
         w_start->SetLabel(_("Stop"));
     }
-    w_hemiChoice->Enable(false);
+    w_hemiChoice->Enable(true);
+    if (pPointingSource)
+    {
+        double lat, lon;
+        if (!pPointingSource->GetSiteLatLong(&lat, &lon))
+        {
+            a_hemi = lat >= 0 ? 1 : -1;
+            w_hemiChoice->Enable(false);
+        }
+    }
     w_hemiChoice->SetSelection(a_hemi > 0 ? 0 : 1);
-    w_camScale->SetValue(wxString::Format("%+.3f", g_pxScale));
-    w_camRot->SetValue(wxString::Format("%+.3f", g_camAngle));
+//    w_camScale->SetValue(wxString::Format("%+.3f", g_pxScale));
+//    w_camRot->SetValue(wxString::Format("%+.3f", g_camAngle));
     Layout();
 }
 

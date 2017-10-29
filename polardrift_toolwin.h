@@ -49,20 +49,20 @@ struct PolarDriftToolWin : public wxFrame
     Tool window controls
     */
     wxStaticText *w_instructions;
-    wxTextCtrl *w_camScale; // Text box for camera pixel scale
-    wxTextCtrl *w_camRot;   // Text box for camera rotation
-    wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
+//    wxTextCtrl *w_camScale; // Text box for camera pixel scale
+//    wxTextCtrl *w_camRot;   // Text box for camera rotation
+//    wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
     wxButton *w_start;      // Button to start or stop drift
     wxStaticText *w_notesLabel;
     wxTextCtrl *w_notes;
     wxButton *w_close;      // Close button
     wxStatusBar *w_statusBar;
-    wxChoice *w_refStarChoice;  // Listbox for reference stars
+//    wxChoice *w_refStarChoice;  // Listbox for reference stars
     wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_guideOutputDisabled;
-    wxBoxSizer *m_vSizer;
+//    wxBoxSizer *m_vSizer;
 
     /*
     Constants used in the tool window controls
@@ -83,7 +83,6 @@ struct PolarDriftToolWin : public wxFrame
 
     int a_hemi;         // Hemisphere of the observer
 
-//    double s_start, s_end;  // Start and end time of drift
     bool s_drifting;        // Indicates that alignment points are being collected
     double t0;
     double sumt, sumt2, sumx, sumx2, sumy, sumy2, sumtx, sumty, sumxy;
