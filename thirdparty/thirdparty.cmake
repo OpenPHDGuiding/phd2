@@ -614,7 +614,8 @@ if(WIN32)
 else()
   # Linux or OSX
 
-  if(FALSE)
+  if(USE_SYSTEM_LIBINDI)
+    message(STATUS "Using system's libindi")
     # INDI
     # some features for indi >= 0.9 are used apparently
     find_package(INDI 0.9 REQUIRED)
@@ -642,8 +643,14 @@ else()
     find_package(ZLIB REQUIRED)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
 
+    # to recreate a package of libindi:
+    # cd /tmp
+    # git clone https://github.com/indilib/indi.git
+    # cd indi
+    # git archive --format=tar.gz --prefix=libindi/ --output=libindi-`git rev-parse HEAD`.tar.gz HEAD
     set(libindi "libindi")
     set(libindi_file libindi-a49ae31c8ad2f49450a49e47e0a8cbcaefc4a1c6)
+    message(STATUS "Using project provided libindi '${thirdparty_dir}/${libindi_file}.tar.gz'")
     set(libindi_root "${thirdparties_deflate_directory}/${libindi}")
     if(NOT EXISTS ${libindi_root})
       # unzip the dependency
