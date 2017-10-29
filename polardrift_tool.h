@@ -41,8 +41,8 @@ class PolarDriftTool
     PolarDriftTool(); // not implemented
 public:
     static wxWindow *CreatePolarDriftToolWindow();
-    static bool IsAligning();
-    static bool RotateMount();
+    static bool IsDrifting();
+    static bool WatchDrift();
     static void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
 
 };

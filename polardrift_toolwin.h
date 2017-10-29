@@ -52,13 +52,9 @@ struct PolarDriftToolWin : public wxFrame
     wxTextCtrl *w_camScale; // Text box for camera pixel scale
     wxTextCtrl *w_camRot;   // Text box for camera rotation
     wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
-    wxTextCtrl *w_calPt[4][2];  // Text boxes for each point plus the CoR
-    wxButton *w_star1;      // Button for manual get of point 1
-    wxButton *w_star2;      // Button for manual get of point 2
-    wxButton *w_star3;      // Button for manual get of point 3
+    wxButton *w_start;      // Button to start or stop drift
     wxStaticText *w_notesLabel;
     wxTextCtrl *w_notes;
-    wxButton *w_calculate;     // Button to calculate CoR
     wxButton *w_close;      // Close button
     wxStatusBar *w_statusBar;
     wxChoice *w_refStarChoice;  // Listbox for reference stars
@@ -66,47 +62,17 @@ struct PolarDriftToolWin : public wxFrame
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_guideOutputDisabled;
-    wxString startStr;
-    bool m_measuring;
-    long m_startTime;
     wxBoxSizer *m_vSizer;
-
-    class PolePanel : public wxPanel
-    {
-    public:
-        PolePanel(PolarDriftToolWin* parent);
-        PolarDriftToolWin *paParent;
-        void OnPaint(wxPaintEvent &evt);
-        void Paint();
-        DECLARE_EVENT_TABLE()
-    };
-    PolePanel *w_pole; // Panel for drawing of pole stars 
 
     /*
     Constants used in the tool window controls
     */
-    wxString c_autoInstr;
-    wxString c_manualInstr;
-
-    class Star
-    {
-    public:
-        std::string name;
-        double ra, dec, mag;
-        Star(const char* a, const double b, const double c, const double d) :name(a), ra(b), dec(c), mag(d) {};
-    };
-    std::vector<Star> c_SthStars, c_NthStars; // Stars around the poles
-    std::vector<Star> *poleStars;
+    wxString c_instr;
 
     enum PolarDriftCtrlIds
     {
         ID_HEMI = 10001,
-        ID_MANUAL,
-        ID_REFSTAR,
-        ID_ROTATE,
-        ID_STAR2,
-        ID_STAR3,
-        ID_CALCULATE,
+        ID_START,
         ID_CLOSE,
     };
 
@@ -115,51 +81,28 @@ struct PolarDriftToolWin : public wxFrame
     double g_camAngle;  // Camera angle to RA
     double g_camWidth;  // Camera width
 
-    double a_devpx;     // Number of pixels deviation needed to detect an arc
-    int a_refStar;      // Selected reference star
-    bool a_auto;        // Auto slewing - must be manual if mount cannot slew
     int a_hemi;         // Hemisphere of the observer
 
-    double s_start, s_end;  // Start and end time of drift
-    bool s_aligning;        // Indicates that alignment points are being collected
-    unsigned int s_state;   // state of the alignment process
-    int s_numPos;           // Number of alignment points
-    double s_reqRot;        // Amount of rotation required
-    int s_reqStep;          // Number of steps needed
-    double s_totRot;        // Rotation so far
-    int s_nStep;            // Number of steps taken so far
-
-    double r_raPos[3];      // RA readings at each point
-    PHD_Point r_pxPos[3];   // Alignment points - in pixels
-    PHD_Point r_pxCentre;   // Centre of Rotation in pixels
-    double r_radius;        // Radius of centre of rotation to reference star
+//    double s_start, s_end;  // Start and end time of drift
+    bool s_drifting;        // Indicates that alignment points are being collected
+    double t0;
+    double sumt, sumt2, sumx, sumx2, sumy, sumy2, sumtx, sumty, sumxy;
+    long num;
+    double offset, alpha;
+    PHD_Point current, target;
 
     double g_dispSz[2];     // Display size (dynamic)
-    PHD_Point m_AzCorr, m_AltCorr; // Calculated Alt and Az corrections
-    PHD_Point m_ConeCorr, m_DecCorr;  //Calculated Dec and Cone offsets
 
     void FillPanel();
 
     void OnHemi(wxCommandEvent& evt);
-    void OnRefStar(wxCommandEvent& evt);
-    void OnManual(wxCommandEvent& evt);
-    void OnRotate(wxCommandEvent& evt);
-    void OnStar2(wxCommandEvent& evt);
-    void OnStar3(wxCommandEvent& evt);
-    void OnCalculate(wxCommandEvent& evt);
+    void OnStart(wxCommandEvent& evt);
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    void CreateStarTemplate(wxDC &dc);
-    bool IsAligning(){ return s_aligning; };
-    bool RotateMount();
-    bool SetParams(double newoffset);
-    void MoveWestBy(double thetadeg);
-    bool SetStar(int idx);
-    bool IsAligned(){ return a_auto ? s_state == (3 << 1) : s_state == (7 << 1); }
-    void CalcRotationCentre(void);
+    bool IsDrifting(){ return s_drifting; };
+    bool WatchDrift();
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-    PHD_Point Radec2Px(PHD_Point radec);
 
     DECLARE_EVENT_TABLE()
 };
