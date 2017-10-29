@@ -53,7 +53,6 @@ public:
     {
         ID_COMBO = 10001,
         ID_PIXELSIZE,
-        ID_DETECT_PIXELSIZE,
         ID_DETECT_GUIDESPEED,
         ID_FOCALLENGTH,
         ID_GUIDESPEED,
@@ -70,8 +69,7 @@ private:
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
-    wxButton *m_detectPixelSizeBtn;
-    wxButton *m_detectGuideSpeedBtn;
+    wxSpinCtrl *m_pBinningLevel;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxButton *m_pPrevBtn;
@@ -100,8 +98,6 @@ private:
     void OnNext(wxCommandEvent& evt);
     void OnPrev(wxCommandEvent& evt);
     void OnGearChoice(wxCommandEvent& evt);
-    void OnDetectPixelSize(wxCommandEvent& evt);
-    void OnDetectGuideRates(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
     void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
@@ -111,8 +107,17 @@ private:
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
     void WrapUp();
-
+    GuideCamera* TryCameraConnect();
+    Mount* TryMountConnect();
+    double GetPixelSize(GuideCamera* cam);
+    void InitCameraProps(bool tryConnect);
+    void InitMountProps(Scope* theScope);
+    void SetBinningLevel(int val);
     DialogState m_State;
+    bool m_alreadyAskedCamera;
+    bool m_useCamera;
+    bool m_alreadyAskedMount;
+    bool m_useMount;
 
 public:
 

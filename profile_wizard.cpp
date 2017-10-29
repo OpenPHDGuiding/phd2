@@ -43,8 +43,6 @@ EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
 EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
-EVT_BUTTON(ID_DETECT_PIXELSIZE, ProfileWizard::OnDetectPixelSize)
-EVT_BUTTON(ID_DETECT_GUIDESPEED, ProfileWizard::OnDetectGuideRates)
 EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
 wxEND_EVENT_TABLE()
 
@@ -72,7 +70,7 @@ static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString&
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(true)
+    m_launchDarks(true), m_alreadyAskedCamera(false), m_alreadyAskedMount(false)
 {
     TitlePrefix = _("New Profile Wizard - ");
 
@@ -128,21 +126,23 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
-    // Control for pixel-size and focal length
-    m_pUserProperties = new wxFlexGridSizer(2, 2, 5, 15);
+    // Pixel-size
+    m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
                                           wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
-    m_pPixelSize->SetToolTip(_("Click Detect to read the pixel size from the camera. Otherwise, you can get this value from your camera documentation or from an online source.  You can use the up/down control "
+    m_pPixelSize->SetToolTip(_("Get this value from your camera documentation or from an online source.  You can use the up/down control "
         "or type in a value directly."));
-    m_detectPixelSizeBtn = new wxButton(this, ID_DETECT_PIXELSIZE, _("Detect"));
-    m_detectPixelSizeBtn->Enable(false);
-    m_detectPixelSizeBtn->SetToolTip(_("Connect to camera and detect pixel size"));
-    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
-    sizer->Add(m_pPixelSize, 1);
-    sizer->Add(m_detectPixelSizeBtn, 0, wxLEFT, 10);
-    AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), sizer);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), m_pPixelSize);
+
+    // Binning
+    m_pBinningLevel = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxSP_ARROW_KEYS,
+        1, 4, 1);
+    m_pBinningLevel->SetToolTip(_("The binning value you plan to use with this profile"));
+    AddTableEntryPair(this, m_pUserProperties, _("Binning level"), m_pBinningLevel);
+
+    // Focal length
     m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
@@ -151,6 +151,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
+
     // controls for the mount pane
     wxBoxSizer *mtSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pMountProperties = new wxFlexGridSizer(1, 2, 5, 15);
@@ -161,12 +162,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pGuideSpeed->SetDigits(2);
     m_pGuideSpeed->SetToolTip(_("The mount guide speed you will use for calibration and guiding, expressed as a multiple of the sidereal rate. If you "
         "don't know, leave the setting at the default value (0.5X)"));
-    m_detectGuideSpeedBtn = new wxButton(this, ID_DETECT_GUIDESPEED, _("Detect"));
-    m_detectGuideSpeedBtn->Enable(false);
-    m_detectGuideSpeedBtn->SetToolTip(_("Connect to mount and detect guide speed"));
     mtSizer->Add(m_pGuideSpeed, 1);
-    mtSizer->Add(10, 0);
-    mtSizer->Add(m_detectGuideSpeedBtn);
     AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
 
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -437,6 +433,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
             m_pNextBtn->SetToolTip(_("Finish creating the equipment profile"));
+            m_pLaunchDarks->SetValue(m_useCamera);
             m_pInstructions->SetLabel(_("Enter a name for your profile and optionally launch the process to build a dark library"));
             SetSizerAndFit(m_pvSizer);
             break;
@@ -470,12 +467,27 @@ static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
     pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
 }
 
+void ProfileWizard::SetBinningLevel(int val)
+{
+    GuideCamera* cam = TryCameraConnect();
+    if (cam)
+    {
+        if (cam->MaxBinning > 1)
+            cam->SetBinning(val);
+        if (cam->Disconnect())
+            Debug.AddLine("Camera disconnect failed!");
+        delete cam;
+    }
+}
+
 // Wrapup logic - build the new profile, maybe launch the darks dialog
 void ProfileWizard::WrapUp()
 {
     m_launchDarks = m_pLaunchDarks->GetValue();
 
-    int binning = 1; // assume starting with 1x1 binning
+    int binning = m_pBinningLevel->GetValue();
+    if (m_useCamera)
+        SetBinningLevel(binning);
 
     int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning);
 
@@ -496,6 +508,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetString("/stepguider/LastMenuChoice", m_SelectedAO);
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
+    pConfig->Profile.SetInt("/camera/binning", binning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     if (m_PositionAware || m_SelectedAuxMount != _("None"))
@@ -509,35 +522,95 @@ void ProfileWizard::WrapUp()
     EndModal(wxOK);
 }
 
+
 // Event handlers below
 void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 {
     Scope *pMount;
+    bool camNone = false;
 
     switch (m_State)
     {
     case STATE_CAMERA:
         m_SelectedCamera = m_pGearChoice->GetStringSelection();
-        m_detectPixelSizeBtn->Enable(!m_SelectedCamera.IsEmpty() && m_SelectedCamera != _("None"));
+        camNone = (m_SelectedCamera == _("None"));
+        if (!m_alreadyAskedCamera && !camNone)
+        {
+            int answer = wxMessageBox(_("Is the camera connected to the computer?"), _("Camera Connected?"),
+                wxYES_NO | wxCANCEL, this);
+            if (answer == wxCANCEL)
+            {
+                EndModal(wxCANCEL);
+                break;
+            }
+            m_useCamera = (answer == wxYES);
+            m_alreadyAskedCamera = true;
+        }
+        InitCameraProps(m_useCamera && !camNone);
         break;
+
     case STATE_MOUNT:
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
         m_PositionAware = (pMount && pMount->CanReportPosition());
-        m_detectGuideSpeedBtn->Enable(m_PositionAware);             // A good approximation, code handles errors
         if (m_PositionAware)
         {
+            if (!m_alreadyAskedMount)
+            {
+                int answer = wxMessageBox(_("Is the mount connected and ready to communicate with PHD2?"), _("Mount Connected?"),
+                    wxYES_NO | wxCANCEL, this);
+                if (answer == wxCANCEL)
+                {
+                    EndModal(wxCANCEL);
+                    break;
+                }
+                m_useMount = (answer == wxYES);
+                m_alreadyAskedMount = true;
+            }
             m_SelectedAuxMount = _("None");
+            if (m_useMount)
+                InitMountProps(pMount);
+            else
+                InitMountProps(NULL);
         }
+        else
+            InitMountProps(NULL);
+
         if (pMount)
         {
             delete pMount;
             pMount = NULL;
         }
         break;
+
     case STATE_AUXMOUNT:
         m_SelectedAuxMount = m_pGearChoice->GetStringSelection();
+        pMount = Scope::Factory(m_SelectedAuxMount);
+        // Handle setting of guide speed behind the scenes using aux-mount
+        if (!m_alreadyAskedMount)
+        {
+            int answer = wxMessageBox(_("Is the aux-mount connected and ready to communicate with PHD2?"), _("Aux-Mount Connected?"),
+                wxYES_NO | wxCANCEL, this);
+            if (answer == wxCANCEL)
+            {
+                EndModal(wxCANCEL);
+                break;
+            }
+            m_useMount = (answer == wxYES);
+            m_alreadyAskedMount = true;
+        }
+        if (m_useMount)
+            InitMountProps(pMount);
+        else
+            InitMountProps(NULL);
+
+        if (pMount)
+        {
+            delete pMount;
+            pMount = NULL;
+        }
         break;
+
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
         break;
@@ -548,86 +621,118 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     }
 }
 
-void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
+GuideCamera* ProfileWizard::TryCameraConnect()
 {
     GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
-    double devPixelSize = 0;
     try
     {
         wxBusyCursor busy;
         if (!camera)
-            throw ERROR_INFO(wxTRANSLATE("Could not initialize camera"));
-        ShowStatus(_("Connecting to camera..."));
-        bool err = camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
-        ShowStatus(wxEmptyString);
-        if (err)
-            throw ERROR_INFO(wxTRANSLATE("Could not connect to camera"));
-        if (camera->GetDevicePixelSize(&devPixelSize) || devPixelSize == 0)
-            throw ERROR_INFO(wxTRANSLATE("Camera driver cannot report pixel size"));
-        m_pPixelSize->SetValue(devPixelSize);
+            throw (wxString(_("Could not load camera driver")));
+        if (camera->Connect(GuideCamera::DEFAULT_CAMERA_ID))
+            throw (wxString(_("Could not connect to camera")));
+    }
+    catch (const wxString& msg)
+    {
+        wxMessageBox(msg + " - you'll need to enter camera properties manually");
+        camera = NULL;
+    }
+    this->SetFocus();           // In case driver messages might have caused us to lose it
+    return camera;
+}
+
+double ProfileWizard::GetPixelSize(GuideCamera* cam)
+{
+    double rslt;
+    if (cam->GetDevicePixelSize(&rslt))
+    {
+        wxMessageBox(_("Camera driver can't report pixel size - please enter the correct value manually"));
+        rslt = 0;
+    }
+    return rslt;
+}
+
+void ProfileWizard::InitCameraProps(bool tryConnect)
+{
+    GuideCamera* cam = NULL;
+    double pxSz = 0;
+    wxArrayString opts;
+
+    if (tryConnect)
+    {
+        cam = TryCameraConnect();
+        // Pixel size
+        if (cam)
+            pxSz = GetPixelSize(cam);
+        m_pPixelSize->SetValue(pxSz);           // Might be zero if driver doesn't report it
+        m_pPixelSize->Enable(pxSz == 0);
+        wxSpinDoubleEvent dummy;
+        OnPixelSizeChange(dummy);
+        m_pBinningLevel->SetValue(1);
+        // Binning
+        if (cam)
+        {
+            m_pBinningLevel->SetMax(cam->MaxBinning);
+        }
+        else
+            m_pBinningLevel->SetMax(4);         // We don't know, make it generous
+    }
+    else
+    {
+        m_pBinningLevel->SetMax(4);
+        m_pBinningLevel->SetValue(1);
+        m_pPixelSize->SetValue(0.);
+        m_pPixelSize->Enable(true);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
     }
-    catch (const wxString& msg)
-    {
-        wxMessageBox(wxString::Format(_("%s. Please enter the correct un-binned pixel size from the camera documentation or vendor web site."),
-                                      wxGetTranslation(msg)),
-                     _("Detect Pixel Size"));
-        m_pPixelSize->SetValue(0.);
-    }
 
-    if (camera)
+    if (cam)
     {
-        if (camera->Connected)
-            if (camera->Disconnect())
-                Debug.AddLine("Camera disconnect failed!");
-        delete camera;
+        if (cam->Connected)
+        if (cam->Disconnect())
+            Debug.AddLine("Camera disconnect failed!");
+        delete cam;
     }
 }
 
-void ProfileWizard::OnDetectGuideRates(wxCommandEvent& evt)
+void ProfileWizard::InitMountProps(Scope* theScope)
 {
-    Scope* newScope;
-    double raGuideSpeed;
-    double decGuideSpeed;
-    double guideSpeedX;
-    const double dSiderealSecondPerSec = 0.9973;
+    double raSpeed;
+    double decSpeed;
+    double speedVal;
+    const double siderealSecondPerSec = 0.9973;
+    bool err;
 
-    newScope = Scope::Factory(m_SelectedMount);
-    try
+    if (theScope)
     {
-        wxBusyCursor busy;
-        if (!newScope)
-            throw ERROR_INFO(wxTRANSLATE("Could not initialize mount"));
         ShowStatus(_("Connecting to mount..."));
-        bool err = newScope->Connect();
+        err = theScope->Connect();
         ShowStatus(wxEmptyString);
         if (err)
-            throw ERROR_INFO(wxTRANSLATE("Could not connect to mount"));
-        if (newScope->GetGuideRates(&raGuideSpeed, &decGuideSpeed))
-            throw ERROR_INFO(wxTRANSLATE("Mount driver cannot report guide speeds"));
-        guideSpeedX = wxMax(raGuideSpeed, decGuideSpeed) * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        m_pGuideSpeed->SetValue(guideSpeedX);
-        wxSpinDoubleEvent dummy;
-        OnGuideSpeedChange(dummy);
-    }
-    catch (const wxString& msg)
-    {
-        wxMessageBox(wxString::Format(_("%s. Please enter the correct mount guide speed"),
-                                      wxGetTranslation(msg)),
-                     _("Detect mount guide speed"));
-        m_pGuideSpeed->SetValue(0.5);
-    }
-
-    if (newScope)
-    {
-        if (newScope->IsConnected())
         {
-            if (newScope->Disconnect())
-                Debug.AddLine("Mount disconnect failed!");
-            delete newScope;
+            wxMessageBox(_("Could not connect to mount - you'll need to enter the guide speed manually"));
+            speedVal = 0.5;
+        }
+        else
+        {
+            // GetGuideRates handles exceptions thrown from driver, just returns a bool error
+            if (!theScope->GetGuideRates(&raSpeed, &decSpeed))
+                speedVal = wxMax(raSpeed, decSpeed) * 3600.0 / (15.0 * siderealSecondPerSec);  // deg/sec -> sidereal multiple
+            else
+            {
+                wxMessageBox(_("This mount driver doesn't report guide speeds.  You'll need to confirm what the "
+                    "guide speed setting is and enter it manually"));
+                speedVal = 0.5;
+            }
         }
     }
+    else
+        speedVal = 0.5;
+    m_pGuideSpeed->SetValue(speedVal);
+    wxSpinDoubleEvent dummy;
+    OnGuideSpeedChange(dummy);
+    this->SetFocus();
 }
 
 void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
