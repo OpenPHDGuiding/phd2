@@ -584,6 +584,10 @@ void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnClose(wxCloseEvent& evt)
 {
+    if (IsAligning())
+    {
+        m_aligning = false;
+    }
     // save the window position
     int x, y;
     GetPosition(&x, &y);
