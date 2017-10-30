@@ -48,29 +48,29 @@ struct StaticPaToolWin : public wxFrame
     /*
     Tool window controls
     */
-    wxHtmlWindow *w_instructions;
-    wxTextCtrl *w_camScale; // Text box for camera pixel scale
-    wxTextCtrl *w_camRot;   // Text box for camera rotation
-    wxSpinCtrlDouble *w_hourangle; // Spinner to manually set HA
-    wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
-    wxCheckBox *w_flip;     // Checkbox to flip camera
-    wxCheckBox *w_orbit;    // Checkbox t show/hide orbits
-    wxButton *w_star1;      // Button for manual get of point 1
-    wxButton *w_star2;      // Button for manual get of point 2
-    wxButton *w_star3;      // Button for manual get of point 3
-    wxStaticText *w_notesLabel;
-    wxTextCtrl *w_notes;
-    wxButton *w_goto;     // Button to clear display
-    wxButton *w_clear;     // Button to clear display
-    wxButton *w_close;     // Close button
-    wxStatusBar *w_statusBar;
-    wxChoice *w_refStarChoice;  // Listbox for reference stars
-    wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
+    wxHtmlWindow *m_instructionsText;
+    wxTextCtrl *m_camScaleText; // Text box for camera pixel scale
+    wxTextCtrl *m_camRotText;   // Text box for camera rotation
+    wxSpinCtrlDouble *m_hourAngleSpin; // Spinner to manually set HA
+    wxCheckBox *m_manualCheck;   // Checkbox for auto/manual slewing
+    wxCheckBox *m_flipCheck;     // Checkbox to flip camera
+    wxCheckBox *m_orbitCheck;    // Checkbox t show/hide orbits
+    wxButton *m_star1Button;      // Button for manual get of point 1
+    wxButton *m_star2Button;      // Button for manual get of point 2
+    wxButton *m_star3Button;      // Button for manual get of point 3
+    wxStaticText *m_notesLabel;
+    wxTextCtrl *m_notesText;
+    wxButton *m_gotoButton;     // Button to clear display
+    wxButton *m_clearButton;     // Button to clear display
+    wxButton *m_closeButton;     // Close button
+    wxStatusBar *m_statusBar;
+    wxChoice *m_refStarChoice;  // Listbox for reference stars
+    wxChoice *m_hemiChoice;     // Listbox for manual hemisphere choice 
 
     class PolePanel : public wxPanel
     {
     public:
-        wxPoint origPt, currPt;
+        wxPoint m_origPt, m_currPt;
         PolePanel(StaticPaToolWin* parent);
         StaticPaToolWin *paParent;
         void OnClick(wxMouseEvent &evt);
@@ -78,7 +78,7 @@ struct StaticPaToolWin : public wxFrame
         void Paint();
         DECLARE_EVENT_TABLE()
     };
-    PolePanel *w_pole; // Panel for drawing of pole stars 
+    PolePanel *m_polePanel; // Panel for drawing of pole stars 
 
     /*
     Constants used in the tool window controls
@@ -94,7 +94,7 @@ struct StaticPaToolWin : public wxFrame
         Star(const char* a, double b, double c, double d) :name(a), ra2000(b), dec2000(c), mag(d), ra(-1), dec(-1) {};
     };
     std::vector<Star> c_SthStars, c_NthStars; // Stars around the poles
-    std::vector<Star> *poleStars;
+    std::vector<Star> *m_poleStars;
 
     enum StaticPaCtrlIds
     {
@@ -112,33 +112,33 @@ struct StaticPaToolWin : public wxFrame
         ID_CLOSE,
     };
 
-    bool g_canSlew;     // Mount can slew
-    double g_pxScale;   // Camera pixel scale
-    double g_camAngle;  // Camera angle to RA
-    double g_camWidth;  // Camera width
+    bool m_canSlew;     // Mount can slew
+    double m_pxScale;   // Camera pixel scale
+    double m_camAngle;  // Camera angle to RA
+    double m_camWidth;  // Camera width
 
-    double a_devpx;     // Number of pixels deviation needed to detect an arc
-    int a_refStar;      // Selected reference star
-    bool a_auto;        // Auto slewing - must be manual if mount cannot slew
-    int a_hemi;         // Hemisphere of the observer
-    double a_ha;        // Manual hour angle
-    bool a_drawOrbit;   // Draw the star orbits
-    bool a_flip;        // Flip the camera angle
+    double m_devpx;     // Number of pixels deviation needed to detect an arc
+    int m_refStar;      // Selected reference star
+    bool m_auto;        // Auto slewing - must be manual if mount cannot slew
+    int m_hemi;         // Hemisphere of the observer
+    double m_ha;        // Manual hour angle
+    bool m_drawOrbit;   // Draw the star orbits
+    bool m_flip;        // Flip the camera angle
 
-    bool s_aligning;        // Indicates that alignment points are being collected
-    unsigned int s_state;   // state of the alignment process
-    int s_numPos;           // Number of alignment points
-    double s_reqRot;        // Amount of rotation required
-    int s_reqStep;          // Number of steps needed
-    double s_totRot;        // Rotation so far
-    int s_nStep;            // Number of steps taken so far
+    bool m_aligning;        // Indicates that alignment points are being collected
+    unsigned int m_state;   // state of the alignment process
+    int m_numPos;           // Number of alignment points
+    double m_reqRot;        // Amount of rotation required
+    int m_reqStep;          // Number of steps needed
+    double m_totRot;        // Rotation so far
+    int m_nStep;            // Number of steps taken so far
 
-    double r_raPos[3];      // RA readings at each point
-    PHD_Point r_pxPos[3];   // Alignment points - in pixels
-    PHD_Point r_pxCentre;   // Centre of Rotation in pixels
-    double r_radius;        // Radius of centre of rotation to reference star
+    double m_raPos[3];      // RA readings at each point
+    PHD_Point m_pxPos[3];   // Alignment points - in pixels
+    PHD_Point m_pxCentre;   // Centre of Rotation in pixels
+    double m_radius;        // Radius of centre of rotation to reference star
 
-    double g_dispSz[2];     // Display size (dynamic)
+    double m_dispSz[2];     // Display size (dynamic)
     PHD_Point m_AzCorr, m_AltCorr; // Calculated Alt and Az corrections
     PHD_Point m_ConeCorr, m_DecCorr;  //Calculated Dec and Cone offsets
 
@@ -159,21 +159,21 @@ struct StaticPaToolWin : public wxFrame
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    void CreateStarTemplate(wxDC &dc, const wxPoint& currPt);
-    bool IsAligning(){ return s_aligning; };
+    void CreateStarTemplate(wxDC &dc, const wxPoint& m_currPt);
+    bool IsAligning(){ return m_aligning; };
     bool RotateMount();
     bool RotateFail(const wxString& msg);
     bool SetParams(double newoffset);
     bool MoveWestBy(double thetadeg);
     bool SetStar(int idx);
-    bool IsAligned(){ return a_auto ? ((s_state>>1) & 3) ==3 : ((s_state>>1) & 7)==7; }
+    bool IsAligned(){ return m_auto ? ((m_state>>1) & 3) ==3 : ((m_state>>1) & 7)==7; }
     bool IsCalced(){ return HasState(0); }
     void CalcRotationCentre(void);
     void CalcAdjustments(void);
-    bool HasState(int ipos) { return (s_state & (1 << ipos)) > 0;  }
-    void SetState(int ipos) { s_state = s_state | (1 << ipos); }
-    void UnsetState(int ipos) { s_state = s_state & ~(1 << ipos) & 15; }
-    void ClearState() { s_state = 0; }
+    bool HasState(int ipos) { return (m_state & (1 << ipos)) > 0;  }
+    void SetState(int ipos) { m_state = m_state | (1 << ipos); }
+    void UnsetState(int ipos) { m_state = m_state & ~(1 << ipos) & 15; }
+    void ClearState() { m_state = 0; }
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
     PHD_Point Radec2Px(const PHD_Point& radec);
     PHD_Point J2000Now(const PHD_Point& radec);
