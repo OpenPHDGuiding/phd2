@@ -565,7 +565,10 @@ void StaticPaToolWin::OnClear(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
 {
+    wxCloseEvent dummy;
+    OnClose(dummy);
     // save the window position
+    /*
     int x, y;
     GetPosition(&x, &y);
     pConfig->Global.SetInt("/StaticPaTool/pos.x", x);
@@ -576,6 +579,7 @@ void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
         m_aligning = false;
     }
     Destroy();
+    */
 }
 
 void StaticPaToolWin::OnClose(wxCloseEvent& evt)
