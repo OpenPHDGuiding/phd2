@@ -175,20 +175,24 @@ endmacro(copy_dependency_with_config)
 #############################################
 
 
+# thread programs (see cmake documentation)
+# this might be needed by the
+find_package(Threads REQUIRED)
+
 
 ##############################################
 # cfitsio
 
-if (USE_SYSTEM_CFITSIO)
+if(USE_SYSTEM_CFITSIO)
   find_package(CFITSIO REQUIRED)
   include_directories(${CFITSIO_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CFITSIO_LIBRARIES})
   message(STATUS "Using system's CFITSIO.")
-else (USE_SYSTEM_CFITSIO)
+else(USE_SYSTEM_CFITSIO)
   set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio)
   if(NOT EXISTS ${libcfitsio_root})
     # untar the dependency
-    message(STATUS "Untarring cfitsio")
+    message(STATUS "[thirdparty] untarring cfitsio")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3370.tar.gz
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()
@@ -200,7 +204,6 @@ else (USE_SYSTEM_CFITSIO)
   set(CFITSIO_MAJOR_VERSION 3)
   set(CFITSIO_MINOR_VERSION 37)
   set(CFITSIO_VERSION ${CFITSIO_MAJOR_VERSION}.${CFITSIO_MINOR_VERSION})
-
 
   file(GLOB CFTSIO_H_FILES "${libcfitsio_root}/*.h")
 
@@ -243,6 +246,7 @@ else (USE_SYSTEM_CFITSIO)
 
   add_library(cfitsio STATIC ${CFTSIO_H_FILES} ${CFTSIO_SRC_FILES_rooted})
   target_include_directories(cfitsio PUBLIC ${libcfitsio_root}/)
+
 
   # OpenPhdGuiding MODIFICATION HERE: we link against math library only on UNIX
   if(UNIX)
@@ -607,29 +611,195 @@ if(WIN32)
   include_directories(${indiclient_dir}/include)
   set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
   set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
-else()   # Linux or OSX
-  # INDI
-  # some features for indi >= 0.9 are used apparently
-  find_package(INDI 0.9 REQUIRED)
-  # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
-  get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
-  include_directories(${INDI_INCLUDE_PARENT_DIR})
-  if(INDI_VERSION VERSION_LESS "1.4")
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  else(INDI_VERSION VERSION_LESS "1.4")
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
-  endif(INDI_VERSION VERSION_LESS "1.4")
-  if(INDI_VERSION VERSION_LESS "1.1")
-    add_definitions("-DINDI_PRE_1_1_0")
-  endif()
-  if(INDI_VERSION VERSION_LESS "1.0")
-    add_definitions("-DINDI_PRE_1_0_0")
+else()
+  # Linux or OSX
+
+  if(USE_SYSTEM_LIBINDI)
+    message(STATUS "Using system's libindi")
+    # INDI
+    # some features for indi >= 0.9 are used apparently
+    find_package(INDI 0.9 REQUIRED)
+    # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
+    get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
+    include_directories(${INDI_INCLUDE_PARENT_DIR})
+    if(INDI_VERSION VERSION_LESS "1.4")
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+    else(INDI_VERSION VERSION_LESS "1.4")
+        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+    endif(INDI_VERSION VERSION_LESS "1.4")
+    if(INDI_VERSION VERSION_LESS "1.1")
+      add_definitions("-DINDI_PRE_1_1_0")
+    endif()
+    if(INDI_VERSION VERSION_LESS "1.0")
+      add_definitions("-DINDI_PRE_1_0_0")
+    endif()
+
+
+    # INDI depends on libz
+    find_package(ZLIB REQUIRED)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+  else()
+
+    find_package(ZLIB REQUIRED)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+
+    # to recreate a package of libindi:
+    # cd /tmp
+    # git clone https://github.com/indilib/indi.git
+    # cd indi
+    # git archive --format=tar.gz --prefix=libindi/ --output=libindi-`git rev-parse HEAD`.tar.gz HEAD
+    set(libindi "libindi")
+    set(libindi_file libindi-a07680cf4ea5d4ffbd1b2851732e9ee3a9fd6e65)
+    message(STATUS "Using project provided libindi '${thirdparty_dir}/${libindi_file}.tar.gz'")
+    set(libindi_root "${thirdparties_deflate_directory}/${libindi}")
+    if(NOT EXISTS ${libindi_root})
+      # unzip the dependency
+      message(STATUS "[thirdparty] Untarring libindi")
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${libindi_file}.tar.gz
+        WORKING_DIRECTORY ${thirdparties_deflate_directory})
+    endif()
+
+    # warning: copied from the indi CMakeLists.txt. This should be updated when
+    # updating the archive of libindi
+    # those variables should be defined before the configure_files
+    set(INDI_SOVERSION "1")
+    set(CMAKE_INDI_VERSION_MAJOR 1)
+    set(CMAKE_INDI_VERSION_MINOR 5)
+    set(CMAKE_INDI_VERSION_RELEASE 0)
+    set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
+    set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
+
+    ########################################  Paths  ###################################################
+
+    set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
+
+    set(LIBINDI_DIRECTORY "${libindi_root}/libindi")
+
+    # separate folder for the configurations
+    set(libindi_root_config "${thirdparties_deflate_directory}/${libindi}_configuration")
+    if(NOT EXISTS ${libindi_root_config})
+      file(MAKE_DIRECTORY "${libindi_root_config}")
+    endif()
+
+    configure_file(${LIBINDI_DIRECTORY}/config.h.cmake ${libindi_root_config}/config.h )
+    configure_file(${LIBINDI_DIRECTORY}/indiversion.h.cmake ${libindi_root_config}/indiversion.h )
+
+    # here we simulate the fact that the installation layout is not the same
+    # as the source layout in libindi for the client. The installation layout
+    # is needed by program
+    # we do not want to perform a full installation in a fake directory
+    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
+    if(NOT EXISTS "${libindi_root_config}/libindi")
+      file(MAKE_DIRECTORY "${libindi_root_config}/libindi")
+    endif()
+    configure_file(
+      "${LIBINDI_DIRECTORY}/libs/indibase/baseclient.h"
+      "${libindi_root_config}/libindi/baseclient.h"
+      COPYONLY)
+    set(indiclient_INC
+      indiapi.h
+      indidevapi.h
+      base64.h
+      libs/lilxml.h
+      libs/indicom.h
+      eventloop.h
+      indidriver.h
+      libs/indibase/indibase.h
+      libs/indibase/indibasetypes.h
+      libs/indibase/basedevice.h
+      libs/indibase/defaultdevice.h
+      libs/indibase/indiccd.h
+      libs/indibase/indidetector.h
+      libs/indibase/indifilterwheel.h
+      libs/indibase/indifocuserinterface.h
+      libs/indibase/indifocuser.h
+      libs/indibase/inditelescope.h
+      libs/indibase/indiguiderinterface.h
+      libs/indibase/indifilterinterface.h
+      libs/indibase/indiproperty.h
+      libs/indibase/indistandardproperty.h
+      libs/indibase/indidome.h
+      libs/indibase/indigps.h
+      libs/indibase/indilightboxinterface.h
+      libs/indibase/indidustcapinterface.h
+      libs/indibase/indiweather.h
+      libs/indibase/indilogger.h
+      libs/indibase/indicontroller.h
+      libs/indibase/indiusbdevice.h
+      libs/indibase/hidapi.h
+
+      libs/indibase/connectionplugins/connectioninterface.h
+      libs/indibase/connectionplugins/connectionserial.h
+      libs/indibase/connectionplugins/connectiontcp.h
+    )
+
+    foreach(_file IN LISTS indiclient_INC)
+      get_filename_component(_file_wo_d "${_file}" NAME)
+      configure_file(
+        "${LIBINDI_DIRECTORY}/${_file}"
+        "${libindi_root_config}/libindi/${_file_wo_d}"
+        COPYONLY)
+    endforeach()
+
+
+
+    # include_directories( ${CMAKE_CURRENT_BINARY_DIR})
+    ####include_directories( ${LIBINDI_DIRECTORY})
+    ####include_directories( ${LIBINDI_DIRECTORY}/libs)
+    ####include_directories( ${LIBINDI_DIRECTORY}/libs/indibase)
+    ####include_directories( ${ZLIB_INCLUDE_DIR})
+    ####include_directories( ${CFITSIO_INCLUDE_DIR})
+
+    # default for libindi client
+    option(INDI_FAST_BLOB "Build INDI with Fast BLOB support" ON)
+
+    set(indiclient_C_SRC
+        ${LIBINDI_DIRECTORY}/libs/lilxml.c
+        ${LIBINDI_DIRECTORY}/base64.c
+        ${LIBINDI_DIRECTORY}/libs/indicom.c)
+
+    set(indiclient_CXX_SRC
+        ${LIBINDI_DIRECTORY}/libs/indibase/basedevice.cpp
+        ${LIBINDI_DIRECTORY}/libs/indibase/baseclient.cpp
+        ${LIBINDI_DIRECTORY}/libs/indibase/indiproperty.cpp
+        ${LIBINDI_DIRECTORY}/libs/indibase/indistandardproperty.cpp)
+
+    add_library(indiclient STATIC ${indiclient_C_SRC} ${indiclient_CXX_SRC})
+    target_include_directories(indiclient
+      PUBLIC
+        ${libindi_root_config}
+        ${LIBINDI_DIRECTORY}
+        ${LIBINDI_DIRECTORY}/libs
+        ${LIBINDI_DIRECTORY}/libs/indibase
+        ${ZLIB_INCLUDE_DIR}
+        ${CFITSIO_INCLUDE_DIR}
+    )
+    if(INDI_FAST_BLOB)
+      # Append ENCLEN attribute to outgoing BLOB elements to enable fast parsing by clients
+      target_compile_definitions(indiclient
+        PUBLIC
+          -DWITH_ENCLEN)
+    endif()
+    set_property(TARGET indiclient PROPERTY C_STANDARD 99) # some C code of the client requires this
+    target_link_libraries(indiclient
+      PUBLIC
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${ZLIB_LIBRARIES}) # for conserving DSO
+    set_property(TARGET indiclient PROPERTY FOLDER "Thirdparty/")
+
+    # Raffi: I do not think we need this, see documentaiton for
+    # POSITION_INDEPENDENT_CODE property of CMake
+    #if (NOT CYGWIN AND NOT WIN32)
+    #  set_target_properties(indiclient PROPERTIES COMPILE_FLAGS "-fPIC")
+    #endif (NOT CYGWIN AND NOT WIN32)
+
+    #install(TARGETS indiclient ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    #install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
+
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} indiclient)
   endif()
 
-  # INDI depends on libz
-  find_package(ZLIB REQUIRED)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-  
 endif()
 
 
@@ -796,9 +966,9 @@ if(SBIG_SYSTEM AND UNIX)
 
   # Assumes SBIG's Universal driver has been loaded into the system and placed
   # in a standard path. (e.g. sbigudrv.h in /usr/include, libsbigudrv.so in /usr/lib )
-  # 
+  #
   # SDK for linux can be found here -> ftp://ftp.diffractionlimited.com/pub/devsw/LinuxDevKit.tar.gz
-  # 
+  #
   # To rebuild libSBIG
   # cd ${WORKDIR}/LinuxDevKit/x86/c/testapp
   #  local sharedlink="-shared -Wl,-soname,libSBIG-1.33.0"
@@ -807,13 +977,13 @@ if(SBIG_SYSTEM AND UNIX)
   #  ar -cvq libSBIG.a csbigimg.o csbigcam.o
 
   add_definitions(-DHAVE_SBIG_CAMERA=1)
-  add_definitions("-DTARGET=7") 
+  add_definitions("-DTARGET=7")
   message(STATUS "Finding SBIG Univeral Drivers on system")
   find_path(SBIG_INCLUDE_DIR sbigudrv.h)
   find_library(SBIG_LIBRARIES NAMES SBIG)
   find_library(SBIGUDRV_LIBRARIES NAMES sbigudrv)
   include_directories(${SBIG_INCLUDE_DIR})
-  
+
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIG sbigudrv)
 
 endif()
@@ -1034,11 +1204,11 @@ if(UNIX AND NOT APPLE)
     set(arch "armv8")
     set(qhyarch "armv8")
  elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86|X86|amd64|AMD64|i.86")
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
-    set(arch "x64") 
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(arch "x64")
     set(qhyarch "x86_64")
-  else() 
-    set(arch "x86") 
+  else()
+    set(arch "x86")
     set(qhyarch "x86_32")
   endif()
  else()
@@ -1114,8 +1284,8 @@ if(WIN32 AND ("${CMAKE_VERSION}" VERSION_GREATER "3.2")
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GETTEXTTOOLS}-dep.zip
       WORKING_DIRECTORY ${GETTEXT_ROOT})
-  endif()    
-    
+  endif()
+
 endif()
 
 set(GETTEXT_FINDPROGRAM_OPTIONS)
@@ -1127,7 +1297,7 @@ if(NOT ("${GETTEXT_ROOT}" STREQUAL ""))
                NO_DEFAULT_PATH)
 endif()
 
-find_program(XGETTEXT 
+find_program(XGETTEXT
              NAMES xgettext
              ${GETTEXT_FINDPROGRAM_OPTIONS})
 
@@ -1156,4 +1326,3 @@ if(NOT MSGMERGE)
 else()
   message(STATUS "'msgmerge' program found at '${MSGMERGE}'")
 endif()
-  
