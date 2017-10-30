@@ -103,11 +103,11 @@ PolarDriftToolWin::PolarDriftToolWin()
 : wxFrame(pFrame, wxID_ANY, _("Polar Drift Alignment"), wxDefaultPosition, wxDefaultSize,
 wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR)
 {
-    t0 = 0;
-    sumt = sumt2 = sumx = sumx2 = sumy = sumy2 = sumtx = sumty = sumxy = 0.0;
-    num = 0;
-    offset = alpha = 0.0;
-    s_drifting = false;
+    m_t0 = 0;
+    m_sumt = m_sumt2 = m_sumx = m_sumx2 = m_sumy = m_sumy2 = m_sumtx = m_sumty = m_sumxy = 0.0;
+    m_num = 0;
+    m_offset = m_alpha = 0.0;
+    m_drifting = false;
     
 //Fairly convoluted way to get the camera size in pixels
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
@@ -115,24 +115,24 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     double scalefactor = pFrame->pGuider->ScaleFactor();
     double xpx = pDispImg->GetWidth() / scalefactor;
     double ypx = pDispImg->GetHeight() / scalefactor;
-    g_pxScale = pFrame->GetCameraPixelScale();
+    m_pxScale = pFrame->GetCameraPixelScale();
 // Fullsize is easier but the camera simulator does not set this.
 //    wxSize camsize = pCamera->FullSize;
-    g_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
+//    g_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
 
-    g_camAngle = 0.0;
-    if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
-    {
-        g_camAngle = degrees(pMount->xAngle());
-    }
+//    g_camAngle = 0.0;
+//    if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
+//    {
+//        g_camAngle = degrees(pMount->xAngle());
+//    }
 
-    a_hemi = pConfig->Profile.GetInt("/PolarDriftTool/Hemisphere", 1);
+    m_hemi = pConfig->Profile.GetInt("/PolarDriftTool/Hemisphere", 1);
     if (pPointingSource)
     {
         double lat, lon;
         if (!pPointingSource->GetSiteLatLong(&lat, &lon))
         {
-            a_hemi = lat >= 0 ? 1 : -1;
+            m_hemi = lat >= 0 ? 1 : -1;
         }
     }
     if (!pFrame->CaptureActive)
@@ -160,12 +160,12 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "the guide star in its target circle\n"
         );
 
-    w_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT);
+    m_instructionsText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT);
 #ifdef __WXOSX__
-    w_instructions->SetFont(*wxSMALL_FONT);
+    m_instructionsText->SetFont(*wxSMALL_FONT);
 #endif
-    w_instructions->Wrap(-1);
-    instrSizer->Add(w_instructions, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+    m_instructionsText->Wrap(-1);
+    instrSizer->Add(m_instructionsText, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     topSizer->Add(instrSizer);
 
@@ -188,17 +188,17 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     wxArrayString hemi;
     hemi.Add(_("North"));
     hemi.Add(_("South"));
-    w_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
-    w_hemiChoice->SetToolTip(_("Select your hemisphere"));
-    gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
+    m_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
+    m_hemiChoice->SetToolTip(_("Select your hemisphere"));
+    gbSizer->Add(m_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
-    w_start = new wxButton(this, ID_START, _("Start"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(w_start, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    m_startButton = new wxButton(this, ID_START, _("Start"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(m_startButton, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // Next row of grid
     gridRow++;
-    w_close = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(w_close, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    m_closeButton = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(m_closeButton, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -209,16 +209,16 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     // add some padding below the static sizer
     topSizer->Add(0, 3, 0, wxEXPAND, 3);
 
-    w_notesLabel = new wxStaticText(this, wxID_ANY, _("Adjustment notes"), wxDefaultPosition, wxDefaultSize, 0);
-    w_notesLabel->Wrap(-1);
-    topSizer->Add(w_notesLabel, 0, wxEXPAND | wxTOP | wxLEFT, 8);
+    m_notesLabel = new wxStaticText(this, wxID_ANY, _("Adjustment notes"), wxDefaultPosition, wxDefaultSize, 0);
+    m_notesLabel->Wrap(-1);
+    topSizer->Add(m_notesLabel, 0, wxEXPAND | wxTOP | wxLEFT, 8);
 
-    w_notes = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
-    pFrame->RegisterTextCtrl(w_notes);
-    topSizer->Add(w_notes, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    w_notesText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
+    pFrame->RegisterTextCtrl(w_notesText);
+    topSizer->Add(w_notesText, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
     SetSizer(topSizer);
-    w_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+    m_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
 
     Layout();
     topSizer->Fit(this);
@@ -237,22 +237,22 @@ PolarDriftToolWin::~PolarDriftToolWin()
 
 void PolarDriftToolWin::OnHemi(wxCommandEvent& evt)
 {
-    int i_hemi = w_hemiChoice->GetSelection() <= 0 ? 1 : -1;
+    int i_hemi = m_hemiChoice->GetSelection() <= 0 ? 1 : -1;
     pConfig->Profile.SetInt("/PolarDriftTool/Hemisphere", i_hemi);
-    if (i_hemi != a_hemi)
+    if (i_hemi != m_hemi)
     {
-        a_hemi = i_hemi;
+        m_hemi = i_hemi;
     }
     FillPanel();
 }
 
 void PolarDriftToolWin::OnStart(wxCommandEvent& evt)
 {
-    if (s_drifting){ // STOP drifting
-        s_drifting = false;
+    if (m_drifting){ // STOP drifting
+        m_drifting = false;
         SetStatusText(_("Polar Drift alignment stopped"));
         Debug.AddLine(wxString::Format("Polar Drift alignment stopped"));
-        SetStatusText(wxString::Format("PA err(arcmin): %.1f Angle (deg): %.1f", offset*g_pxScale / 60, norm(-alpha, -180, 180)));
+        SetStatusText(wxString::Format(_("PA err(arcmin): %.1f Angle (deg): %.1f"), m_offset*m_pxScale / 60, norm(-m_alpha, -180, 180)));
         FillPanel();
         return;
     }
@@ -278,21 +278,16 @@ void PolarDriftToolWin::OnStart(wxCommandEvent& evt)
     }
 
     m_guideOutputDisabled = true;
-    num = 0;
-    s_drifting = true;
+    m_num = 0;
+    m_drifting = true;
     FillPanel();
     return;
 }
 
 void PolarDriftToolWin::OnCloseBtn(wxCommandEvent& evt)
 {
-    // save the window position
-    int x, y;
-    GetPosition(&x, &y);
-    pConfig->Global.SetInt("/PolarDriftTool/pos.x", x);
-    pConfig->Global.SetInt("/PolarDriftTool/pos.y", y);
-    Debug.AddLine("Close PolarDriftTool");
-    Destroy();
+    wxCloseEvent dummy;
+    OnClose(dummy);
 }
 
 void PolarDriftToolWin::OnClose(wxCloseEvent& evt)
@@ -308,31 +303,31 @@ void PolarDriftToolWin::OnClose(wxCloseEvent& evt)
 
 void PolarDriftToolWin::FillPanel()
 {
-    w_instructions->SetLabel(c_instr);
+    m_instructionsText->SetLabel(c_instr);
 
-    w_start->SetLabel(_("Start"));
-    if (s_drifting) {
-        w_start->SetLabel(_("Stop"));
+    m_startButton->SetLabel(_("Start"));
+    if (m_drifting) {
+        m_startButton->SetLabel(_("Stop"));
     }
-    w_hemiChoice->Enable(true);
+    m_hemiChoice->Enable(true);
     if (pPointingSource)
     {
         double lat, lon;
         if (!pPointingSource->GetSiteLatLong(&lat, &lon))
         {
-            a_hemi = lat >= 0 ? 1 : -1;
-            w_hemiChoice->Enable(false);
+            m_hemi = lat >= 0 ? 1 : -1;
+            m_hemiChoice->Enable(false);
         }
     }
-    w_hemiChoice->SetSelection(a_hemi > 0 ? 0 : 1);
-//    w_camScale->SetValue(wxString::Format("%+.3f", g_pxScale));
+    m_hemiChoice->SetSelection(m_hemi > 0 ? 0 : 1);
+//    w_camScale->SetValue(wxString::Format("%+.3f", m_pxScale));
 //    w_camRot->SetValue(wxString::Format("%+.3f", g_camAngle));
     Layout();
 }
 
 void PolarDriftToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
-    if (num < 2)
+    if (m_num < 2)
     {
         return;
     }
@@ -340,53 +335,53 @@ void PolarDriftToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     // Draw adjustment lines for placing the guide star in its correct position relative to the CoR
     // Blue (azimuth) and Red (altitude)
     dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
-    dc.DrawLine(current.X*scale, current.Y*scale, target.X*scale, target.Y*scale);
-    dc.DrawCircle(target.X*scale, target.Y*scale, 10*scale);
+    dc.DrawLine(m_current.X*scale, m_current.Y*scale, m_target.X*scale, m_target.Y*scale);
+    dc.DrawCircle(m_target.X*scale, m_target.Y*scale, 10*scale);
 }
 
 bool PolarDriftToolWin::WatchDrift()
 {
-    // Initially, assume an offset of 5.0 degrees of the camera from the CoR
+    // Initially, assume an m_offset of 5.0 degrees of the camera from the CoR
     // Calculate how far to move in RA to get a detectable arc
     // Calculate the tangential ditance of that movement
     // Mark the starting position then rotate the mount
     double tnow = ::wxGetUTCTimeMillis().GetValue()/1000.0;
-    current = pFrame->pGuider->CurrentPosition();
-    num++;
-    if (num <= 1)
+    m_current = pFrame->pGuider->CurrentPosition();
+    m_num++;
+    if (m_num <= 1)
     {
-        sumt = sumt2 = sumx = sumx2 = sumy = sumy2 = sumtx = sumty = sumxy = 0.0;
-        offset = alpha = 0.0;
-        t0 = tnow;
+        m_sumt = m_sumt2 = m_sumx = m_sumx2 = m_sumy = m_sumy2 = m_sumtx = m_sumty = m_sumxy = 0.0;
+        m_offset = m_alpha = 0.0;
+        m_t0 = tnow;
     }
-    tnow -= t0;
-    sumt += tnow;
-    sumt2 += tnow*tnow;
-    sumx += current.X;
-    sumx2 += current.X * current.X;
-    sumy += current.Y;
-    sumy2 += current.Y*current.Y;
-    sumtx += tnow * current.X;
-    sumty += tnow * current.Y;
-    sumxy += current.X * current.Y;
+    tnow -= m_t0;
+    m_sumt += tnow;
+    m_sumt2 += tnow*tnow;
+    m_sumx += m_current.X;
+    m_sumx2 += m_current.X * m_current.X;
+    m_sumy += m_current.Y;
+    m_sumy2 += m_current.Y*m_current.Y;
+    m_sumtx += tnow * m_current.X;
+    m_sumty += tnow * m_current.Y;
+    m_sumxy += m_current.X * m_current.Y;
 
-    if (num <= 1) return true;
+    if (m_num <= 1) return true;
     const double factor = 24 * 3600 / 2 / M_PI;
-    double xslope = (num*sumtx - sumt*sumx) / (num*sumt2 - sumt*sumt);
-    double yslope = (num*sumty - sumt*sumy) / (num*sumt2 - sumt*sumt);
+    double xslope = (m_num*m_sumtx - m_sumt*m_sumx) / (m_num*m_sumt2 - m_sumt*m_sumt);
+    double yslope = (m_num*m_sumty - m_sumt*m_sumy) / (m_num*m_sumt2 - m_sumt*m_sumt);
 
     double theta = degrees(atan2(yslope, xslope));
     // In the northern hemisphere the star rotates clockwise, in the southern hemisphere anti-clockwise
     // In NH the pole is to the right of the drift vector (-90 degrees) however in pixel terms (Y +ve down) it is to the left (+90 degrees)
-    // So we multiply by a_hemi to get the correct direction
+    // So we multiply by m_hemi to get the correct direction
 
-    alpha = theta + a_hemi * 90; // direction to the pole
-    offset = sqrt(xslope*xslope + yslope*yslope)*factor;  //polar alignment error in pixels
-    target = PHD_Point(current.X + offset*cos(radians(alpha)), current.Y + offset*(sin(radians(alpha))));
+    m_alpha = theta + m_hemi * 90; // direction to the pole
+    m_offset = hypot(xslope, yslope)*factor;  //polar alignment error in pixels
+    m_target = PHD_Point(m_current.X + m_offset*cos(radians(m_alpha)), m_current.Y + m_offset*(sin(radians(m_alpha))));
 
-    Debug.AddLine(wxString::Format("Polar Drift: num %d t0 %.1f tnow %.1f Pos: %.1f,%.1f PA err(px): %.1f Angle (deg): %.1f", num, t0, tnow));
-    Debug.AddLine(wxString::Format("Polar Drift: slopex %.1f slopey %.1f offset %.1f theta %1f alpha %.1f", xslope, yslope, offset, theta, alpha));
-    SetStatusText(wxString::Format("Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f", tnow, offset*g_pxScale/60, norm(-alpha,-180,180)));
+    Debug.AddLine(wxString::Format("Polar Drift: m_num %d m_t0 %.1f tnow %.1f Pos: %.1f,%.1f PA err(px): %.1f Angle (deg): %.1f", m_num, m_t0, tnow));
+    Debug.AddLine(wxString::Format("Polar Drift: slopex %.1f slopey %.1f m_offset %.1f theta %1f m_alpha %.1f", xslope, yslope, m_offset, theta, m_alpha));
+    SetStatusText(wxString::Format(_("Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"), tnow, m_offset*m_pxScale/60, norm(-m_alpha,-180,180)));
 
     return true;
 }

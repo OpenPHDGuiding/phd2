@@ -501,9 +501,9 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
-    tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
-    tools_menu->Append(MENU_POLARDRIFTTOOL, _("&Polar Drift Align"), _("Run the Polar Drift Alignment tool"));
-    tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"), _("Run the Static Polar Alignment tool"));
+    tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Align by analysing star drift near the celestial equator (Accurate)"));
+    tools_menu->Append(MENU_POLARDRIFTTOOL, _("&Polar Drift Align"), _("Align by analysing star drift near the celestial pole (Simple)"));
+    tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"), _("Align by measuring the RA axis offset from the celestial pole (Fast)"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
