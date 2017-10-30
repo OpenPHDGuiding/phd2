@@ -48,21 +48,16 @@ struct PolarDriftToolWin : public wxFrame
     /*
     Tool window controls
     */
-    wxStaticText *w_instructions;
-//    wxTextCtrl *w_camScale; // Text box for camera pixel scale
-//    wxTextCtrl *w_camRot;   // Text box for camera rotation
-//    wxCheckBox *w_manual;   // Checkbox for auto/manual slewing
-    wxButton *w_start;      // Button to start or stop drift
-    wxStaticText *w_notesLabel;
-    wxTextCtrl *w_notes;
-    wxButton *w_close;      // Close button
-    wxStatusBar *w_statusBar;
-//    wxChoice *w_refStarChoice;  // Listbox for reference stars
-    wxChoice *w_hemiChoice;     // Listbox for manual hemisphere choice 
+    wxStaticText *m_instructionsText;
+    wxButton *m_startButton;      // Button to start or stop drift
+    wxStaticText *m_notesLabel;
+    wxTextCtrl *w_notesText;
+    wxButton *m_closeButton;      // Close button
+    wxStatusBar *m_statusBar;
+    wxChoice *m_hemiChoice;     // Listbox for manual hemisphere choice 
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_guideOutputDisabled;
-//    wxBoxSizer *m_vSizer;
 
     /*
     Constants used in the tool window controls
@@ -76,21 +71,21 @@ struct PolarDriftToolWin : public wxFrame
         ID_CLOSE,
     };
 
-    bool g_canSlew;     // Mount can slew
-    double g_pxScale;   // Camera pixel scale
-    double g_camAngle;  // Camera angle to RA
-    double g_camWidth;  // Camera width
+//    bool g_canSlew;     // Mount can slew
+    double m_pxScale;   // Camera pixel scale
+//    double g_camAngle;  // Camera angle to RA
+//    double g_camWidth;  // Camera width
 
-    int a_hemi;         // Hemisphere of the observer
+    int m_hemi;         // Hemisphere of the observer
 
-    bool s_drifting;        // Indicates that alignment points are being collected
-    double t0;
-    double sumt, sumt2, sumx, sumx2, sumy, sumy2, sumtx, sumty, sumxy;
-    long num;
-    double offset, alpha;
-    PHD_Point current, target;
+    bool m_drifting;        // Indicates that alignment points are being collected
+    double m_t0;
+    double m_sumt, m_sumt2, m_sumx, m_sumx2, m_sumy, m_sumy2, m_sumtx, m_sumty, m_sumxy;
+    long m_num;
+    double m_offset, m_alpha;
+    PHD_Point m_current, m_target;
 
-    double g_dispSz[2];     // Display size (dynamic)
+//    double g_dispSz[2];     // Display size (dynamic)
 
     void FillPanel();
 
@@ -99,7 +94,7 @@ struct PolarDriftToolWin : public wxFrame
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 
-    bool IsDrifting(){ return s_drifting; };
+    bool IsDrifting(){ return m_drifting; };
     bool WatchDrift();
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
 
