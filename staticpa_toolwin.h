@@ -55,6 +55,7 @@ struct StaticPaToolWin : public wxFrame
     wxCheckBox *m_manualCheck;   // Checkbox for auto/manual slewing
     wxCheckBox *m_flipCheck;     // Checkbox to flip camera
     wxCheckBox *m_orbitCheck;    // Checkbox t show/hide orbits
+    wxButton *m_instrButton;      // Button to toggle instructions/map
     wxButton *m_star1Button;      // Button for manual get of point 1
     wxButton *m_star2Button;      // Button for manual get of point 2
     wxButton *m_star3Button;      // Button for manual get of point 3
@@ -100,6 +101,7 @@ struct StaticPaToolWin : public wxFrame
     {
         ID_HEMI = 10001,
         ID_HA,
+        ID_INSTR,
         ID_MANUAL,
         ID_FLIP,
         ID_ORBIT,
@@ -111,12 +113,12 @@ struct StaticPaToolWin : public wxFrame
         ID_CLEAR,
         ID_CLOSE,
     };
-
     bool m_canSlew;     // Mount can slew
     double m_pxScale;   // Camera pixel scale
     double m_camAngle;  // Camera angle to RA
     double m_camWidth;  // Camera width
 
+    bool m_instr;       // Instructions displayed va Map displayed
     double m_devpx;     // Number of pixels deviation needed to detect an arc
     int m_refStar;      // Selected reference star
     bool m_auto;        // Auto slewing - must be manual if mount cannot slew
@@ -144,6 +146,7 @@ struct StaticPaToolWin : public wxFrame
 
     void FillPanel();
 
+    void OnInstr(wxCommandEvent& evt);
     void OnHemi(wxCommandEvent& evt);
     void OnHa(wxSpinDoubleEvent& evt);
     void OnRefStar(wxCommandEvent& evt);

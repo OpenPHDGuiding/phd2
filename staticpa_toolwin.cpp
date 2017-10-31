@@ -42,6 +42,7 @@
 
 //==================================
 BEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
+EVT_BUTTON(ID_INSTR, StaticPaToolWin::OnInstr)
 EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
 EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
 EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
@@ -235,9 +236,11 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         SetStatusText(_("Start Looping..."));
         pFrame->OnLoopExposure(dummy);
     }
+    m_instr = false;
     c_autoInstr = _(
         "Slew to near the Celestial Pole.<br/>"
         "Choose a Reference Star from the list.<br/>"
+        "Use the Star Map to help identify a Reference Star.<br/>"
         "Select it as the guide star on the main display.<br/>"
         "Click Rotate to start the alignment.<br/>"
         "Wait for the adjustments to display.<br/>"
@@ -247,6 +250,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     c_manualInstr = _(
         "Slew to near the Celestial Pole.<br/>"
         "Choose a Reference Star from the list.<br/>"
+        "Use the Star Map to help identify a Reference Star.<br/>"
         "Select it as the guide star on the main display.<br/>"
         "Click Get first position.<br/>"
         "Slew at least 0h20m west in RA.<br/>"
@@ -277,8 +281,9 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     // a horizontal box sizer for the bitmap and the instructions
     wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_instructionsText = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(240, 240), wxHW_DEFAULT_STYLE);
+    m_instructionsText = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(320, 240), wxHW_DEFAULT_STYLE);
     m_instructionsText->SetStandardFonts(8);
+    m_instructionsText->Hide();
     /*
 #ifdef __WXOSX__
     m_instructionsText->SetFont(*wxSMALL_FONT);
@@ -289,7 +294,10 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_polePanel = new PolePanel(this);
     instrSizer->Add(m_polePanel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
 
-    topSizer->Add(instrSizer);
+    m_instrButton = new wxButton(this, ID_INSTR, _("Instructions"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    instrSizer->Add(m_instrButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 0);
+
+    topSizer->Add(instrSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     // static box sizer holding the scope pointing controls
     wxStaticBoxSizer *sbSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Alignment Parameters")), wxVERTICAL);
@@ -342,7 +350,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     gbSizer->Add(refSizer, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
 
-
     // Next row of grid
     gridRow++;
     txt = new wxStaticText(this, wxID_ANY, _("Camera Angle"));
@@ -394,14 +401,14 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_star3Button = new wxButton(this, ID_STAR3, _("Get third position"));
     gbSizer->Add(m_star3Button, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    m_clearButton = new wxButton(this, ID_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(m_clearButton, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
-
     // Next row of grid
     gridRow++;
 
+    m_clearButton = new wxButton(this, ID_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0);
+    gbSizer->Add(m_clearButton, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+
     m_closeButton = new wxButton(this, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer->Add(m_closeButton, wxGBPosition(gridRow, 3), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
+    gbSizer->Add(m_closeButton, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -439,6 +446,13 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 StaticPaToolWin::~StaticPaToolWin()
 {
     pFrame->pStaticPaTool = NULL;
+}
+
+void StaticPaToolWin::OnInstr(wxCommandEvent& evt)
+{
+    m_instr = !m_instr;
+    FillPanel();
+    return;
 }
 
 void StaticPaToolWin::OnHemi(wxCommandEvent& evt)
@@ -567,19 +581,6 @@ void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
 {
     wxCloseEvent dummy;
     OnClose(dummy);
-    // save the window position
-    /*
-    int x, y;
-    GetPosition(&x, &y);
-    pConfig->Global.SetInt("/StaticPaTool/pos.x", x);
-    pConfig->Global.SetInt("/StaticPaTool/pos.y", y);
-    Debug.AddLine("Close StaticPaTool");
-    if (IsAligning())
-    {
-        m_aligning = false;
-    }
-    Destroy();
-    */
 }
 
 void StaticPaToolWin::OnClose(wxCloseEvent& evt)
@@ -599,6 +600,19 @@ void StaticPaToolWin::OnClose(wxCloseEvent& evt)
 
 void StaticPaToolWin::FillPanel()
 {
+    if (m_instr)
+    {
+        m_instructionsText->Show();
+        m_polePanel->Hide();
+        m_instrButton->SetLabel(_("Star Map"));
+    }
+    else
+    {
+        m_instructionsText->Hide();
+        m_polePanel->Show();
+        m_instrButton->SetLabel(_("Instructions"));
+    }
+
     m_hourAngleSpin->Enable(true);
 
     if (!m_canSlew){
