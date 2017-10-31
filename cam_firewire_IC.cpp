@@ -184,7 +184,8 @@ bool CameraFirewire::Connect(const wxString& camId)
         if (debug) { debugstep = 2; debugfile->AddLine(wxString::Format("12a: Setting SinkType")); debugfile->Write(); }
         retval = m_pGrabber->setSinkType(pSink);
         if (!retval) {
-            return CamConnectFailed(_("Could not set sink type"));
+            Debug.Write("cam_firewire_IC: Could not set sink type\n");
+            return CamConnectFailed(_("FireWire camera setup failed"));
         }
 
         // Get info I need
