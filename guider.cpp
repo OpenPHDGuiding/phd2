@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "polardrift_tool.h"
 #include "staticpa_tool.h"
 #include "guiding_assistant.h"
 
@@ -623,6 +624,10 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
         
          // draw static polar align stuff
         // Ideally get a pointer to StaticPaTool and let it do the work
+        if (pFrame->pPolarDriftTool)
+        {
+            PolarDriftTool::PaintHelper(dc, m_scaleFactor);
+        }
         if (pFrame->pStaticPaTool)
         {
             StaticPaTool::PaintHelper(dc, m_scaleFactor);
@@ -1261,6 +1266,16 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         SetState(STATE_UNINITIALIZED);
                         statusMessage = _("Static PA rotation failed");
                         throw ERROR_INFO("Static PA rotation failed");
+                    }
+                }
+                if (pFrame->pPolarDriftTool && PolarDriftTool::IsDrifting())
+                {
+                    // Rotate the mount in RA a bit
+                    if (!PolarDriftTool::WatchDrift())
+                    {
+                        SetState(STATE_UNINITIALIZED);
+                        statusMessage = _("Polar Drift PA drift failed");
+                        throw ERROR_INFO("Polar Drift PA drift failed");
                     }
                 }
                 break;

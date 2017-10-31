@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "drift_tool.h"
+#include "polardrift_tool.h"
 #include "staticpa_tool.h"
 #include "manualcal_dialog.h"
 #include "calreview_dialog.h"
@@ -185,6 +186,19 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
     if (pDriftTool)
     {
         pDriftTool->Show();
+    }
+}
+
+void MyFrame::OnPolarDriftTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pPolarDriftTool)
+    {
+        pPolarDriftTool = PolarDriftTool::CreatePolarDriftToolWindow();
+    }
+
+    if (pPolarDriftTool)
+    {
+        pPolarDriftTool->Show();
     }
 }
 

@@ -51,6 +51,7 @@ EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
 EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
 EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
 EVT_BUTTON(ID_STAR3, StaticPaToolWin::OnStar3)
+EVT_BUTTON(ID_GOTO, StaticPaToolWin::OnGoto)
 EVT_BUTTON(ID_CLEAR, StaticPaToolWin::OnClear)
 EVT_BUTTON(ID_CLOSE, StaticPaToolWin::OnCloseBtn)
 EVT_CLOSE(StaticPaToolWin::OnClose)
@@ -330,9 +331,17 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     w_hemiChoice->SetToolTip(_("Select your hemisphere"));
     gbSizer->Add(w_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
 
+    wxBoxSizer *refSizer = new wxBoxSizer(wxHORIZONTAL);
+
     w_refStarChoice = new wxChoice(this, ID_REFSTAR, wxDefaultPosition, wxDefaultSize);
     w_refStarChoice->SetToolTip(_("Select the star used for checking alignment."));
-    gbSizer->Add(w_refStarChoice, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
+    refSizer->Add(w_refStarChoice, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 0);
+
+    w_goto = new wxButton(this, ID_GOTO, _(">"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    refSizer->Add(w_goto, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 0);
+
+    gbSizer->Add(refSizer, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxALL, 5);
+
 
     // Next row of grid
     gridRow++;
@@ -457,7 +466,12 @@ void StaticPaToolWin::OnManual(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnFlip(wxCommandEvent& evt)
 {
-    a_flip = w_flip->IsChecked();
+    bool new_flip = w_flip->IsChecked();
+    if (new_flip != a_flip)
+    {
+        w_pole->currPt = wxPoint(0, 0) - w_pole->currPt;
+    }
+    a_flip = new_flip;
     FillPanel();
 }
 
@@ -521,6 +535,20 @@ void StaticPaToolWin::OnStar3(wxCommandEvent& evt)
     s_aligning = true;
 }
 
+void StaticPaToolWin::OnGoto(wxCommandEvent& evt)
+{
+    // Get current star
+    // Convert current star Ra Dec to pixels
+    int is = a_refStar;
+    double scale = 320.0 / g_camWidth;
+
+    PHD_Point stardeg = PHD_Point(poleStars->at(is).ra, poleStars->at(is).dec);
+    PHD_Point starpx = Radec2Px(stardeg);
+    w_pole->currPt = wxPoint(starpx.X*scale, starpx.Y*scale);
+    FillPanel();
+    return;
+}
+
 void StaticPaToolWin::OnClear(wxCommandEvent& evt)
 {
     if (IsCalced())
@@ -537,6 +565,11 @@ void StaticPaToolWin::OnClear(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
 {
+    // save the window position
+    int x, y;
+    GetPosition(&x, &y);
+    pConfig->Global.SetInt("/StaticPaTool/pos.x", x);
+    pConfig->Global.SetInt("/StaticPaTool/pos.y", y);
     Debug.AddLine("Close StaticPaTool");
     if (IsAligning())
     {
@@ -547,6 +580,11 @@ void StaticPaToolWin::OnCloseBtn(wxCommandEvent& evt)
 
 void StaticPaToolWin::OnClose(wxCloseEvent& evt)
 {
+    // save the window position
+    int x, y;
+    GetPosition(&x, &y);
+    pConfig->Global.SetInt("/StaticPaTool/pos.x", x);
+    pConfig->Global.SetInt("/StaticPaTool/pos.y", y);
     Debug.AddLine("Close StaticPaTool");
     Destroy();
 }
@@ -554,7 +592,6 @@ void StaticPaToolWin::OnClose(wxCloseEvent& evt)
 void StaticPaToolWin::FillPanel()
 {
     w_hourangle->Enable(true);
-    double ra_hrs, dec_deg, st_hrs;
 
     if (!g_canSlew){
         w_manual->Hide();
@@ -1078,7 +1115,7 @@ bool StaticPaToolWin::RotateMount()
             else if (s_reqRot > 45)
             {
                 Debug.AddLine(wxString::Format("StaticPA: Pos#2 Too close to CoR actoffsetdeg=%.1f s_reqRot=%.1f", actoffsetdeg, s_reqRot));
-                return RotateFail(wxString::Format("Star is too close to CoR %.1f deg", actoffsetdeg ));
+                return RotateFail(wxString::Format("Star is too close to CoR (%.1f deg) - try another reference star", actoffsetdeg ));
             }
             else
             {

@@ -48,6 +48,7 @@ option(USE_SYSTEM_CFITSIO "Enable this option here or in cmake call if you want 
 option(USE_SYSTEM_LIBUSB "Enable this option here or in cmake call if you want to use system's libUSB." OFF)
 option(USE_SYSTEM_EIGEN3 "Enable this option here or in cmake call if you want to use system's Eigen3." OFF)
 option(USE_SYSTEM_GTEST "Enable this option here or in cmake call if you want to use system's Gtest." OFF)
+option(USE_SYSTEM_LIBINDI "Enable this option here or in cmake call if you want to use system's libindi." OFF)
 
 # build type, by default to release (with optimisations)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
