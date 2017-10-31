@@ -72,7 +72,6 @@ public:
     void UnloadValues(void) override;
     void ResetRAParameterUI();
     void ResetDecParameterUI();
-    void HandleBinningChange(int oldVal, int newVal);
 };
 
 class Scope : public Mount
@@ -255,6 +254,7 @@ private:
     MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, MountMoveType moveType, MoveResultInfo *moveResultInfo) override;
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) override;
     int CalibrationMoveSize(void);
+    void CheckCalibrationDuration(int currDuration);
     int CalibrationTotDistance(void);
 
     void ClearCalibration(void) override;

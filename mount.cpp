@@ -1087,6 +1087,25 @@ void Mount::AdjustCalibrationForScopePointing(void)
         GetMountClassName(), DeclinationStr(newDeclination), newPierSide, DeclinationStr(m_cal.declination), m_cal.pierSide,
         RotAngleStr(newRotatorAngle), binning));
 
+    // See if the user has changed mount guide speeds after the last calibration.  If so, raise an alert that can't be avoided
+    if (pPointingSource->CanReportPosition())
+    {
+        CalibrationDetails calDetails;
+        GetCalibrationDetails(&calDetails);
+        if (calDetails.raGuideSpeed > 0 && calDetails.decGuideSpeed > 0)
+        {
+            double currRASpeed;
+            double currDecSpeed;
+            pPointingSource->GetGuideRates(&currRASpeed, &currDecSpeed);
+            if (fabs(1.0 - currRASpeed / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - currDecSpeed / calDetails.decGuideSpeed) > 0.5)
+            {
+                pFrame->Alert(_("Mount guide speeds are different from those used in last calibration.  Do a new calibration or reset mount guide speed settings to previous values. "));
+                Debug.Write(wxString::Format("Guide speeds have changed since calibration.  Orig RA = %0.1f, Orig Dec = %0.1f, "
+                    "Curr RA = %0.1f, Curr Dec = %0.1f, Units are arc-sec/sec\n", calDetails.raGuideSpeed * 3600.0, calDetails.decGuideSpeed * 3600.0,
+                    currRASpeed * 3600.0, currDecSpeed * 3600.0));
+            }
+        }
+    }
     // Compensate for binning change. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
     // the reported pixel size
     if (fabs(pCamera->GetCameraPixelSize() - GuideCamera::GetProfilePixelSize()) >= 1.0)

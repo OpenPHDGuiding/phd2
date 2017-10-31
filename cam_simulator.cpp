@@ -578,6 +578,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
         return true;
     }
 
+    Debug.Write("Sim file opened: " + filename + "\n");
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
 

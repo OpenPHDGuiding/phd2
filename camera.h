@@ -172,6 +172,7 @@ public:
 
     static void GetBinningOpts(int maxBin, wxArrayString *opts);
     void GetBinningOpts(wxArrayString *opts);
+    bool SetBinning(int binning);
 
     virtual void    ShowPropertyDialog() { return; }
     bool            SetCameraPixelSize(double pixel_size);
@@ -206,7 +207,6 @@ protected:
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
     int GetCameraGain(void);
     bool SetCameraGain(int cameraGain);
-    bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
     static bool CamConnectFailed(const wxString& errorMessage);
