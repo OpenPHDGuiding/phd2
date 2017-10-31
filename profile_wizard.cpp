@@ -660,6 +660,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
 
     if (tryConnect)
     {
+        pFrame->ClearAlert();
         cam = TryCameraConnect();
         // Pixel size
         if (cam)

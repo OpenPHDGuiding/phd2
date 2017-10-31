@@ -861,6 +861,52 @@ void Scope::ClearCalibration(void)
     m_calibrationState = CALIBRATION_STATE_CLEARED;
 }
 
+// Handle gross errors in cal_step duration when user changes mount guide speeds or binning.
+void Scope::CheckCalibrationDuration(int currDuration)
+{
+    CalibrationDetails calDetails;
+    double raSpd;
+    double decSpd;
+    int rslt = currDuration;
+    bool noRates;
+    bool binningChange;
+
+    GetCalibrationDetails(&calDetails);
+    binningChange = (pCamera->Binning != calDetails.origBinning);
+    noRates = pPointingSource->GetGuideRates(&raSpd, &decSpd);
+    if (!noRates)
+    {
+
+        if (calDetails.raGuideSpeed > 0 && calDetails.decGuideSpeed > 0)
+        {
+            if (fabs(1.0 - raSpd / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - decSpd / calDetails.decGuideSpeed) > 0.5 ||
+                binningChange)
+            {
+                double const siderealSecsPerSec = 0.9973;
+                double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
+                CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
+                    pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, 0, &rslt);
+                if (rslt != currDuration)
+                {
+                    wxString why = binningChange ? " binning " : " mount guide speed ";
+                    Debug.Write(wxString::Format("CalDuration adjusted at start of calibration because of %s change: from %d to %d\n", why, currDuration, rslt));
+                    SetCalibrationDuration(rslt);
+                }
+            }
+        }
+    }
+    else
+    {
+        if (binningChange)              // a rough scalar adjustment if no guide speeds available
+        {
+            rslt = currDuration * pCamera->Binning / calDetails.origBinning;
+            Debug.Write(wxString::Format("CalDuration roughly adjusted at start of calibration because of binning change: from %d to %d\n", currDuration, rslt));
+            SetCalibrationDuration(rslt);
+        }
+
+    }
+}
+
 bool Scope::BeginCalibration(const PHD_Point& currentLocation)
 {
     bool bError = false;
@@ -877,6 +923,7 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
             throw ERROR_INFO("Must have a valid lock position");
         }
 
+        CheckCalibrationDuration(m_calibrationDuration);          // Make sure guide speeds or binning haven't changed underneath us
         ClearCalibration();
         m_calibrationSteps = 0;
         m_calibrationInitialLocation = currentLocation;
@@ -1767,13 +1814,6 @@ void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
     m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
     m_pDecMode->SetSelection(1);                // 'Auto'
     m_pUseBacklashComp->SetValue(false);
-}
-
-void ScopeConfigDialogCtrlSet::HandleBinningChange(int oldBinVal, int newBinVal)
-{
-    double ratio = (double)newBinVal / (double)oldBinVal;
-    m_pCalibrationDuration->SetValue(ratio * m_prevStepSize);
-    m_prevStepSize = ratio * m_prevStepSize;
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)

@@ -1115,6 +1115,11 @@ void MyFrame::OnAlertButton(wxCommandEvent& evt)
         m_infoBar->Dismiss();
 }
 
+void MyFrame::ClearAlert()
+{
+    m_infoBar->Dismiss();
+}
+
 void MyFrame::OnAlertHelp(wxCommandEvent& evt)
 {
     // Any open help window will be re-directed
