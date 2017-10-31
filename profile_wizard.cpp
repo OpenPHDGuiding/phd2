@@ -673,14 +673,14 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         // Binning
         if (cam)
         {
-            m_pBinningLevel->SetMax(cam->MaxBinning);
+            m_pBinningLevel->SetRange(1, cam->MaxBinning);
         }
         else
-            m_pBinningLevel->SetMax(4);         // We don't know, make it generous
+            m_pBinningLevel->SetRange(1, 4);         // We don't know, make it generous
     }
     else
     {
-        m_pBinningLevel->SetMax(4);
+        m_pBinningLevel->SetRange(1, 4);
         m_pBinningLevel->SetValue(1);
         m_pPixelSize->SetValue(0.);
         m_pPixelSize->Enable(true);
