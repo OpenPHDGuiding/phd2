@@ -113,224 +113,140 @@ Automated mode requires a mount that can slew under computer control
 and report its position. Otherwise manual mode is available for ST-4
 type guiding ('On camera', GPUSB, etc) or for mounts that are manually
 controlled. The SPA tool selects the most appropriate mode according to
-your mount's capabilities.<br><h2>Automated Mode</h2>
-<o:p></o:p>In the automated mode, PHD2 will slew the
-telescope as
-needed to perform the alignment procedure.<span style="">&nbsp;
-</span>To do this, PHD2 must be connected to the mount through
-either an ASCOM
-or INDI interface, and the mount must be initialized and ready to
-perform go-to
-(slewing) operations.<span style="">&nbsp; </span>To
-get started, perform the following steps:<br>
+your mount's capabilities.<br>
+<h2>Automated Mode</h2>
+In the automated mode, PHD2 will slew the telescope as needed to perform
+the alignment procedure. To do this, PHD2 must be connected to the mount through
+either an ASCOM or INDI interface, and the mount must be initialized and ready to
+perform go-to (slewing) operations. To get started, perform the following steps:<br>
 <ul>
-<li><o:p></o:p><span style="">Connect
-PHD2 to
-your camera and to your ASCOM or INDI mount driver<o:p></o:p></span></li>
-<li><span style="">Be
-sure that PHD2
-has already done calibration for this set-up<o:p></o:p></span></li>
-<li><span style="">Manually
-adjust the
-mount&#8217;s RA axis to point within 5 degrees of the apparent pole, then
-slew the
-telescope to point to Dec = +90 or -90.<span style="">&nbsp;
-</span>On a German equatorial mount, it&#8217;s best to start with
-the mount in
-the<span style="">&nbsp; </span>counterweight-down
-orientation,
-pointing at the pole.<span style="">&nbsp; </span>Use
-star alignment
-or plate solving to get as close as practical to Dec = +90 or -90
-degrees.<o:p></o:p></span></li>
-<li><span style="">During
-the alignment process the mount will slew 10 degrees west, so make
-sure there is nothing to obstruct the view or interfere with the
-scope&#8217;s
-rotation.</span></li>
+<li>Connect PHD2 to your camera and to your ASCOM or INDI mount driver</li>
+<li>Be sure that PHD2 has already done calibration for this set-up</li>
+<li>Manually adjust the mount&#8217;s RA axis to point within 5 degrees of the apparent
+pole, then slew the telescope to point to Dec = +90 or -90. On a German equatorial mount,
+it&#8217;s best to start with the mount in the counterweight-down orientation,
+pointing at the pole. Use star alignment or plate solving to get as close as practical
+to Dec = +90 or -90 degrees.</li>
+<li>During the alignment process the mount will slew 10 degrees west, so make
+sure there is nothing to obstruct the view or interfere with the scope&#8217;s
+rotation.</li>
 </ul>
 <br>
 Now open the SPA tool via 'Tools'/'Static Polar Alignment', and the
 first window will open:<br>
 <br>
-<img style="width: 587px; height: 675px;" alt="" src="spa_IMG01.png"><br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG01.png"><br>
 <br>
 The PHD2 main display would look like this (southern pole example):<br>
 <br>
 <img style="width: 757px; height: 469px;" alt="" src="spa_IMG01a.png"><br>
 <br>
-<span style="">The
-helper image at the
-top-right of the SPA window shows the approximate position of the polar
-stars
-oriented according to your PHD2 calibration and mount position. You can
+The star map at the top of the SPA window shows the
+approximate position of the polar stars oriented according to your PHD2
+calibration and mount position. You can
 adjust the &#8216;Hour Angle&#8217; control or use the
 &#8216;Flip Camera&#8217; option to orient the
-helper image to the main display. To pan the helper image you can double click
+star map to the main display. To pan the star map you can double click
 the point you want at the center; or click the &#8216;>&#8217; button to center
-the selected reference star.<o:p></o:p></span>
-<span style="">You have
-the option
-to use manual control by ticking the &#8216;Manual Slew&#8217; checkbox. Refer to
-the
-instructions below for manual-mode alignment.<o:p></o:p></span>
-&nbsp;<span style="">Use
-the image of
-the pole stars to select a &#8216;Reference Star&#8217; on the main PHD2 display.
-Identify
-which star you selected with the drop-down list. Don't worry if you
-don't get
-it right; it can be corrected later.<o:p></o:p></span>
-<span style="">When you
-are ready
-to start aligning, click &#8216;Rotate&#8217;.<o:p></o:p></span>
-&nbsp;<span style="">The
-current
-position is indicated with a small blue circle on the main display, and
-the
-coordinates are displayed in the status bar. Note that the &#8216;Rotate&#8217; button has
-changed to a
-&#8216;Stop&#8217; button. If you want to quit or stop the mount slewing, click the
-&#8216;Stop&#8217;
-button.</span><br>
+the selected reference star.<br>
+The button to the right of the star map lets you toggle between displaying the star
+map or instructions for using the SPA tool.<br>
+You have the option to use manual control by ticking the
+&#8216;Manual Slew&#8217; checkbox. Refer to the instructions below for
+manual-mode alignment.<br>
+Use the star map to select a &#8216;Reference Star&#8217; on
+the main PHD2 display.
+Identify which star you selected with the drop-down list. Don't worry if you
+don't get it right; it can be corrected later.<br>
+When you are ready to start aligning, click &#8216;Rotate&#8217;.
+The current position is indicated with a small blue circle on the main display, and
+the coordinates are displayed in the status bar. Note that the &#8216;Rotate&#8217; button has
+changed to a &#8216;Stop&#8217; button. If you want to quit or stop the mount slewing, click the
+&#8216;Stop&#8217; button.<br>
 <br>
-<img style="width: 592px; height: 673px;" alt="" src="spa_IMG02.png"><br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG02.png"><br>
 <br>
 <img style="width: 747px; height: 411px;" alt="" src="spa_IMG02a.png"><br>
 <br>
-<span style="">After
-you click 'Rotate', the mount will slew
-west in RA in small steps as indicated in the status bar.
-&nbsp;Once two points
-have been recorded, the alignment graphic is overlaid on the PHD2 main
-display.<o:p></o:p></span><br>
+After you click 'Rotate', the mount will slew west in RA in small steps as indicated in the status bar.
+Once two points have been recorded, the alignment graphic is overlaid on the PHD2 main
+display.<br>
 <br>
 <img style="width: 758px; height: 573px;" alt="" src="spa_IMG03.png"><br>
 <br>
-<span style="">If you
-made a
-mistake identifying your &#8216;Reference Star&#8217;, select the correct one in
-the
-drop-down list.</span>
+If you made a mistake identifying your &#8216;Reference Star&#8217;, select the correct one in
+the drop-down list.
 <br>
-<span style="font-weight: normal;">Now
-follow the instructions
-under <span style="font-weight: bold;">Using the Polar
-Alignment Overlay</span> to adjust your mount&#8217;s polar alignment.<o:p></o:p></span><br>
+Now follow the instructions under <span style="font-weight: bold;">Using the Polar
+Alignment Overlay</span> to adjust your mount&#8217;s polar alignment.<br>
 <br>
 <h2>Manual Mode</h2>
 If you don&#8217;t have a mount driver that supports go-to&#8217;s or
 you want to retain manual control of scope slewing, you can use the
-manual mode
-of operation. To get started, perform the following steps:<br>
+manual mode of operation. To get started, perform the following steps:<br>
 <ul>
-<li><o:p></o:p><span style="">Connect
-PHD2 to
-your camera and to your mount&#8217;s guider interface (e.g. ST-4)<o:p></o:p></span></li>
-<li><span style="">Be
-sure that PHD2
-has already done calibration for this set-up<o:p></o:p></span></li>
-<li><span style="">Manually
-adjust the
-RA axis to point within 5 degrees of the apparent pole, then manually
-slew the
-telescope to point to Dec = +90 or -90.<span style="">&nbsp;
-</span>On a German equatorial mount, it&#8217;s best to start with
-the mount in
-the<span style="">&nbsp; </span>counterweight-down
-orientation,
-pointing at the pole.<span style="">&nbsp; </span>Use
-star alignment
-or plate solving to get as close as practical to Dec = +90 or -90
-degrees.<o:p></o:p></span></li>
-<li><span style="">During
-the alignment process you&#8217;ll need to slew the mount up to 15 degrees
+<li>Connect PHD2 to your camera and to your mount&#8217;s guider interface (e.g. ST-4)</li>
+<li>Be sure that PHD2 has already done calibration for this set-up</li>
+<li>Manually adjust the RA axis to point within 5 degrees of the apparent pole, then manually
+slew the telescope to point to Dec = +90 or -90. On a German equatorial mount, it&#8217;s best
+to start with the mount in the counterweight-down orientation, pointing at the pole. Use
+star alignment or plate solving to get as close as practical to Dec = +90 or -90 degrees.</li>
+<li>During the alignment process you&#8217;ll need to slew the mount up to 15 degrees
 west, so make sure there is nothing to obstruct the view or interfere
-with the
-scope&#8217;s rotation.</span></li>
+with the scope&#8217;s rotation.</li>
 </ul>
 <br>
 Now open the SPA tool via 'Tools'/'Static Polar Alignment', and the
 first window will open:<br>
 <br>
-<img style="width: 581px; height: 673px;" alt="" src="spa_IMG04.png"><br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG04.png"><br>
 <br>
-<span style="">The helper
-image at the
-top-right of the SPA window</span><span style=""> shows
-the
-approximate position of the polar stars oriented according to your
-calibration
-and the scope&#8217;s pointing position. You can
+The star map at the top of the SPA window shows the
+approximate position of the polar stars oriented according to your PHD2
+calibration and mount position. You can
 adjust the &#8216;Hour Angle&#8217; control or use the
 &#8216;Flip Camera&#8217; option to orient the
-helper image to the main display. To pan the helper image you can double click
+star map to the main display. To pan the star map you can double click
 the point you want at the center; or click the &#8216;>&#8217; button to center
-the selected reference star.</span>
-<span style="">Use the
-image of
-the pole stars to select a &#8216;Reference Star&#8217; on the main PHD2 display. </span>
-&nbsp;<span style="">Identify
-which star
-you selected with the drop-down list. Don't worry if you don't get it
-right, it
-can be corrected later.</span><br>
+the selected reference star.<br>
+The button to the right of the star map lets you toggle between displaying the star
+map or instructions for using the SPA tool.<br>
+You have the option to use manual control by ticking the
+&#8216;Manual Slew&#8217; checkbox. Refer to the instructions below for
+manual-mode alignment.<br>
+Use the star map to select a &#8216;Reference Star&#8217; on
+the main PHD2 display.
+Identify which star you selected with the drop-down list. Don't worry if you
+don't get it right, it can be corrected later.<br>
 <br>
-<span style="">When
-ready, click
-&#8216;Get first position&#8217;. The current position is indicated with a small
-blue
-circle on the main display, and the coordinates are displayed in the status bar.</span><br>
+When ready, click &#8216;Get first position&#8217;. The current position is indicated with a small
+blue circle on the main display, and the coordinates are displayed in the status bar.<br>
 <br>
 <img style="width: 540px; height: 415px;" alt="" src="spa_IMG04a.png"><br>
 <br>
 <br>
-<span style="">Slew the
-mount at
-least 20 minutes west in<span style="">&nbsp; </span>RA
-(RA
-decreases as you slew west).</span>
+Slew the mount at least 20 minutes west in RA (RA decreases as you slew west).
 <br>
-<span style="">Select
-the same
-reference star on the main display.</span>
+Select the same reference star on the main display.
 <br>
-<span style="">Click
-&#8216;Get second
-position&#8217;. The position is marked with another small blue circle and
-the
-coordinates are displayed in the status bar.<o:p></o:p></span><br>
+Click &#8216;Get second position&#8217;. The position is marked with another small blue circle and
+the coordinates are displayed in the status bar.<br>
 <br>
 <img style="width: 543px; height: 391px;" alt="" src="spa_IMG05.png"><br>
 <br>
-<span style="">Slew
-west another
-20+ minutes in RA and select the same star again.</span>
-&nbsp;<span style=""><br>
-Click
-&#8217;Get third
-position&#8217;.</span>
-&nbsp;<span style=""><br>
+Slew west another 20+ minutes in RA and select the same star again.
 <br>
-After
-a few moments
-the alignment graphic is overlaid on the main display.</span>
-&nbsp;<span style="">If
-you made a
-mistake, select the correct &#8216;Reference Star&#8217; in the drop down list and
-click
-&#8216;Calculate&#8217;.</span>
-&nbsp;<span style="">Similarly,
-if any
-of your alignment points are suspect, slew the mount to the bad point
-and click
-the appropriate button to replace its coordinates. If you had to slew
-eastwards
-then it&#8217;s best to overshoot and make your final slew westwards to clear
-any
-backlash. Alternatively, slew westwards to a new position and replace
-the bad
-point. The points do not have to be in order. </span>
+Click &#8217;Get third position&#8217;.
+<br>
+<br>
+After a few moments the alignment graphic is overlaid on the main display.
+If you made a
+mistake, select the correct &#8216;Reference Star&#8217; in the drop down list.
+Similarly, if any of your alignment points are suspect, slew the
+mount to the bad point and click the appropriate button to replace its coordinates. If
+you had to slew eastwards then it&#8217;s best to overshoot and make your final slew
+westwards to clear any backlash. Alternatively, slew westwards to a new position and
+replace the bad point. The points do not have to be in order. 
 <br>
 <br>
 The corrected alignment graphic updates automatically.
@@ -338,81 +254,46 @@ The corrected alignment graphic updates automatically.
 <img style="width: 539px; height: 456px;" alt="" src="spa_IMG06.png"><br>
 <br>
 <br>
-<span style="">Follow
-the
-instructions in the next section to adjust your mount&#8217;s polar alignment<o:p></o:p></span>.<br>
+Follow the instructions in the next section to adjust your mount&#8217;s polar alignment.<br>
 <br>
 <h2>Using the Polar Alignment Overlay</h2>
-<span style="">The
-polar alignment
-overlay is placed on the main display once enough alignment points have
-been
-collected.<o:p></o:p></span><br>
+The polar alignment overlay is placed on the main display once enough alignment points have
+been collected.<br>
 <br>
 <img style="width: 628px; height: 497px;" alt="" src="spa_IMG07.png"><br>
 <br>
 <ul>
-<li><span style="">The
-center of the
-display is indicated with a grey +.</span></li>
-<li><span style="">The
-<st1:placetype w:st="on"><st1:place w:st="on">Center</st1:place>
-of <st1:place w:st="on">Rotation</st1:place></st1:placetype>
-is indicated with a red +. </span></li>
-<li><span style="">A
-magenta circle
-shows the orbit traced by your reference star.<o:p></o:p></span></li>
-<li><span style="">A
-green circle
-shows the desired orbit of your reference star when the polar alignment
-is
-accurate. <o:p></o:p></span></li>
-<li><span style="">Yellow
-circles show
-the orbits of the other reference stars.</span><span style="">&nbsp;</span></li>
+<li>The center of the display is indicated with a grey +.</li>
+<li>The Center of Rotation is indicated with a red +. </li>
+<li>A magenta circle shows the orbit traced by your reference star.</li>
+<li>A green circle shows the desired orbit of your reference star when the polar alignment
+is accurate. </li>
+<li>Yellow circles show the orbits of the other reference stars.</li>
 </ul>
 
-<span style=""><br>
-Within
-each of the
-green and yellow orbits, a small circle indicates where the star
-should be
-located. A grey line connects your reference star to its target
-circle on
-the green orbit. These positions are dependent on the guide star being
-correctly identified. </span><br>
-<span style="">A blue
-line shows
-the azimuth correction needed to move the reference star and a red line
-shows
-the altitude correction required.<o:p></o:p></span><br>
-<span style=""><br>
+<br>
+Within each of the green and yellow orbits, a small circle indicates where the star
+should be located. A grey line connects your reference star to its target
+circle on the green orbit. These positions are dependent on the guide star being
+correctly identified.<br>
+A blue line shows the azimuth correction needed to move the reference star and a red line
+shows the altitude correction required.<br>
+<br>
 To make the adjusment lines easier to see, the orbits can be shown or
-hidden with the &#8216;Show Orbits&#8217; option.</span><br>
-<span style="">Adjust
-your
-altitude and azimuth knobs to move your reference star to its
-target circle.
-Adjusting in altitude moves the reference star along the red line.
-<span style="">&nbsp; </span>Adjusting in azimuth moves
-the reference star
-along the blue line. &nbsp;As an alternative,
+hidden with the &#8216;Show Orbits&#8217; option.<br>
+Adjust your altitude and azimuth knobs to move your reference star to its
+target circle. Adjusting in altitude moves the reference star along the red line.
+Adjusting in azimuth moves the reference star along the blue line. As an alternative,
 you can position three reference stars on their respective orbits.
-This is
-important when using manual mode.</span><br>
-<span style="">To get the most accurate alignment, adjust the &#8216;Hour Angle&#8217;
+This is important when using manual mode.<br>
+To get the most accurate alignment, adjust the &#8216;Hour Angle&#8217;
 till the stars on the main display are all offset by the same amount and direction
-from their target circles. Then make your adjustments.</span><br>
-<span style="">To
-confirm, you can
-redo the process. You may need to adjust your declination to keep the
-polar
-region centered if you had to make large adjustments. You may also want
-to
-return the mount to the start position if you have limited visibility.
-&nbsp;When finished,
-click &#8216;Close&#8217;. If you made large adjustments you may want to
-re-calibrate. <o:p></o:p></span><br>
+from their target circles. Then make your adjustments.<br>
+To confirm, you can redo the process. You may need to adjust your declination to keep the
+polar region centered if you had to make large adjustments. You may also want
+to return the mount to the start position if you have limited visibility.
+When finished, click &#8216;Close&#8217;. If you made large adjustments you may want to
+re-calibrate. <br>
 <br>
 <br>
 </body></html>
