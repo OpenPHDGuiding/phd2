@@ -129,4 +129,16 @@ public:
     wxDECLARE_EVENT_TABLE();
 };
 
+class ConnectDialog : public wxDialog
+{
+    wxStaticText *m_Instructions;
+    ProfileWizard* m_Parent;
+
+public:
+    ConnectDialog(ProfileWizard* parent, ProfileWizard::DialogState currState);
+
+    void OnYesButton(wxCommandEvent& evt);
+    void OnNoButton(wxCommandEvent& evt);
+    void OnCancelButton(wxCommandEvent& evt);
+};
 #endif
