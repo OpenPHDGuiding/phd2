@@ -286,18 +286,36 @@ wizard...'. &nbsp;<br><br>The wizard asks a number of questions that
 are important for getting your profile built correctly. &nbsp;The
 explanatory text in each pane of the wizard should make clear what is
 being asked and what needs to be done. &nbsp;But here are some
-additional tips to help you through the process:<br><br><div style="margin-left: 40px;">1. <span style="font-weight: bold;">Camera connection pane: unbinned pixel size</span>.
-&nbsp;The 'detect' button next to this field can be used to get the
-pixel size directly from the camera., so you should try this option
-first. &nbsp;However, some cameras and drivers don't provide this
-information, so you'll need to enter it yourself. &nbsp;You should be
+additional tips to help you through the process:<br><br><div style="margin-left: 40px;">1. <span style="font-weight: bold;">Connection Options: </span>As
+you make selections for the various devices, you will usually see a
+prompt
+asking if the device is already connected and ready to communicate with
+PHD2. &nbsp;If you say 'yes', PHD2 will try to connect and then fill in
+some of the data fields with information read from the device.
+&nbsp;Saying 'no' simply means you'll have to enter the data by hand.
+&nbsp;If PHD2 tries to connect with the device and fails, you'll still
+be able to proceed&nbsp;by just entering the data manually. &nbsp;
+Device-connection in the wizard is basically a convenience feature that
+makes it easier to fill in the fields with accurate values. &nbsp;You
+won't see the prompt if PHD2 already knows the device can't return
+useful information - for example, if the mount choice is 'on-camera.'<br><span style="font-weight: bold;">2. Camera connection pane: unbinned pixel size</span>.
+&nbsp;If you said 'yes' to the connection prompt,&nbsp; this
+information will usually be filled in automatically and the control
+will be disabled. &nbsp; If you said 'no' or if the device doesn't
+report its pixel-size, you'll need to enter the value by hand.&nbsp;
+You should be
 able to get the <span style="font-style: italic;">unbinned</span>
 pixel size from the camera spec sheet or the manufacturer's web site.
-&nbsp;If the pixels aren't square, just specify the size on either
-dimension or the average value if you prefer. &nbsp;This won't have any
-effect on your actual guidng results, but it will allow PHD2 to show
-guiding results in units of arc-seconds, which is the best way to look
-at performance.<br>2.&nbsp;<span style="font-weight: bold;">Camera connection pane: guide scope focal length</span>.
+&nbsp;If the pixels aren't square, just specify the larger dimension or
+the average value if you prefer. &nbsp;This won't have any
+effect on your actual guidng results, but it will allow PHD2 to know
+the image-scale for your set-up. &nbsp;This is used for setting
+baseline guiding parameters, doing sanity-checks on calibrations, and
+reporting guiding performance.<br>3. <span style="font-weight: bold;">Camera connection pane: binning level. &nbsp;</span>If
+your guide camera supports binning (many do not), you can specify what
+level of binning you want to use for this equipment profile. &nbsp;If
+you want to use the same equipment set-up with different binning
+levels, it's best to create separate profiles for each binning value. &nbsp;<br>4.&nbsp;<span style="font-weight: bold;">Camera connection pane: guide scope focal length</span>.
 &nbsp;This seems to be a common place for mistakes, so it's worth being
 careful and getting it right. &nbsp;The correct value is not the
 aperture of the
@@ -314,15 +332,13 @@ small threaded focal reducer on the guide camera, so that must also be
 taken into account. &nbsp;Like the pixel-size entry, the focal length
 doesn't demand a great deal of precision, but you should get as close
 as you can. &nbsp;Otherwise, the performance numbers may not reflect
-your actual results.<br>3. <span style="font-weight: bold;">Mount connection pane: &nbsp;mount guide speed</span>. &nbsp;This is another area that seems to cause confusion. &nbsp;The guide speed is a parameter set<span style="font-style: italic;"> in the mount</span> or <span style="font-style: italic;">in the</span> <span style="font-style: italic;">mount driver</span>, it's not something controlled by PHD2. &nbsp;PHD2 never sets the mount guide
+your actual results and the baseline guiding parameters may be sub-optimal.<br>5. <span style="font-weight: bold;">Mount connection pane: &nbsp;mount guide speed</span>. &nbsp;This is another area that seems to cause confusion. &nbsp;The guide speed is a parameter set<span style="font-style: italic;"> in the mount</span> or <span style="font-style: italic;">in the</span> <span style="font-style: italic;">mount driver</span>, it's not something controlled by PHD2. &nbsp;PHD2 never sets the mount guide
 speed, it only reads it. &nbsp;It is usually expressed as a multiple of
 the sidereal rate and is typically in the range of 0.5x - 1x sidereal.
 &nbsp;Despite what you may read elsewhere, it's generally best to use
 guide speeds in this range rather than much lower speeds. &nbsp; Higher
 guide speeds can help to clear backlash more quickly and may help to
-overcome stiction problems. &nbsp;If you have the mount physically
-connected and are using an ASCOM (or Indi) interface, you can click on
-the 'Detect' button and PHD2 will attempt to read the current guide
+overcome stiction problems. &nbsp;If you say 'yes' to the connection option prompt, PHD2 will attempt to read the current guide
 speed from the mount. &nbsp;If this fails for some reason, you'll need
 to enter the guide speed manually. &nbsp;PHD2 uses this value to
 automatically set the calibration step-size and to aid in checking
@@ -330,7 +346,7 @@ calibration results; but the guide speed information is not important
 for the actual guiding. &nbsp;If you're using different guide speeds on
 the RA and Dec axes, enter the larger value. &nbsp; If you really can't
 determine what the guide speed settings are in the mount, leave the
-setting at the default value of 0.5.<br></div><br>In the last pane of the
+setting at the default value of 0.5X.<br></div><br>In the last pane of the
 wizard dialog, you're given the option to build a dark library for the
 profile, &nbsp;You should always do this unless you already have a
 compatible dark library that you're going to import from a different
