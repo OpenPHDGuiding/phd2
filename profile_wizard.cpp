@@ -133,13 +133,13 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
     m_pPixelSize->SetToolTip(_("Get this value from your camera documentation or from an online source.  You can use the up/down control "
-        "or type in a value directly."));
+        "or type in a value directly. If the pixels aren't square, just enter the larger of the X/Y dimensions."));
     AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), m_pPixelSize);
 
     // Binning
     m_pBinningLevel = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxSP_ARROW_KEYS,
         1, 4, 1);
-    m_pBinningLevel->SetToolTip(_("The binning value you plan to use with this profile"));
+    m_pBinningLevel->SetToolTip(_("The camera-binning value you plan to use.  If the camera isn't already connected, you should confirm it supports binning."));
     AddTableEntryPair(this, m_pUserProperties, _("Binning level"), m_pBinningLevel);
 
     // Focal length
@@ -243,14 +243,17 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
-            "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the camera pixel size "
-            "and guide scope focal length so PHD2 can compute reasonable guiding parameters for you.");
+            "it is either not supported by PHD2 or its camera driver is not installed. "
+            " PHD2 needs to know the camera pixel size and guide scope focal length in order to compute reasonable guiding paramters. "
+            " When you choose a camera, you'll be given the option to connect to it now to get the pixel-size automatically. "
+            " You can also choose a binning-level if your camera supports binning." );
         break;
     case STATE_MOUNT:
         hText = _("Select your mount interface from the list.  This determines how PHD2 will send guide commands to the mount. For most modern "
             "mounts, the ASCOM interface is a good choice if you are running MS Windows.  The other interfaces are available for "
-            "cases where ASCOM isn't available or isn't well supported by mount firmware.  You should specify the mount guide speed so "
-            "PHD2 can calibrate efficiently.");
+            "cases where ASCOM isn't available or isn't well supported by mount firmware.  If you know the mount guide speed, you should specify it "
+            " so PHD2 can calibrate more efficiently.  If you don't know the mount guide speed, you can just use the default value of 0.5x.  When you choose a "
+            " mount, you'll usually be given the option to connect to it now so PHD2 can read the guide speed for you." );
         break;
     case STATE_AUXMOUNT:
         hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
@@ -536,15 +539,25 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         camNone = (m_SelectedCamera == _("None"));
         if (!m_alreadyAskedCamera && !camNone)
         {
-            int answer = wxMessageBox(_("Is the camera connected to the computer?"), _("Camera Connected?"),
-                wxYES_NO | wxCANCEL, this);
+            ConnectDialog cnDlg(this, STATE_CAMERA);
+            int answer = cnDlg.ShowModal();
+            if (answer == wxYES)
+            {
+                m_useCamera = true;
+                m_alreadyAskedCamera = true;
+            }
+            else
+            if (answer == wxNO)
+            {
+                m_useCamera = false;
+                m_alreadyAskedCamera = true;
+            }
             if (answer == wxCANCEL)
             {
-                EndModal(wxCANCEL);
-                break;
+                m_SelectedCamera = _("None");
+                UpdateState(0);
+                return;
             }
-            m_useCamera = (answer == wxYES);
-            m_alreadyAskedCamera = true;
         }
         InitCameraProps(m_useCamera && !camNone);
         break;
@@ -557,15 +570,25 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         {
             if (!m_alreadyAskedMount)
             {
-                int answer = wxMessageBox(_("Is the mount connected and ready to communicate with PHD2?"), _("Mount Connected?"),
-                    wxYES_NO | wxCANCEL, this);
+                ConnectDialog cnDlg(this, STATE_MOUNT);
+                int answer = cnDlg.ShowModal();
+                if (answer == wxYES)
+                {
+                    m_useMount = true;
+                    m_alreadyAskedMount = true;
+                }
+                else
+                if (answer == wxNO)
+                {
+                    m_useMount = false;
+                    m_alreadyAskedMount = true;
+                }
                 if (answer == wxCANCEL)
                 {
-                    EndModal(wxCANCEL);
-                    break;
+                    m_SelectedMount = _("None");
+                    UpdateState(-1);
+                    return;
                 }
-                m_useMount = (answer == wxYES);
-                m_alreadyAskedMount = true;
             }
             m_SelectedAuxMount = _("None");
             if (m_useMount)
@@ -589,15 +612,25 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         // Handle setting of guide speed behind the scenes using aux-mount
         if (!m_alreadyAskedMount)
         {
-            int answer = wxMessageBox(_("Is the aux-mount connected and ready to communicate with PHD2?"), _("Aux-Mount Connected?"),
-                wxYES_NO | wxCANCEL, this);
+            ConnectDialog cnDlg(this, STATE_AUXMOUNT);
+            int answer = cnDlg.ShowModal();
+            if (answer == wxYES)
+            {
+                m_useMount = true;
+                m_alreadyAskedMount = true;
+            }
+            else
+            if (answer == wxNO)
+            {
+                m_useMount = false;
+                m_alreadyAskedMount = true;
+            }
             if (answer == wxCANCEL)
             {
-                EndModal(wxCANCEL);
-                break;
+                m_SelectedAuxMount = _("None");
+                UpdateState(-1);
+                return;
             }
-            m_useMount = (answer == wxYES);
-            m_alreadyAskedMount = true;
         }
         if (m_useMount)
             InitMountProps(pMount);
@@ -624,17 +657,19 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 GuideCamera* ProfileWizard::TryCameraConnect()
 {
     GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
+    pFrame->ClearAlert();
     try
     {
         wxBusyCursor busy;
         if (!camera)
-            throw (wxString(_("Could not load camera driver")));
+            throw (wxString(_("PHD2 could not load the camera driver")));
         if (camera->Connect(GuideCamera::DEFAULT_CAMERA_ID))
-            throw (wxString(_("Could not connect to camera")));
+            throw (wxString(_("PHD2 could not connect to the camera")));
     }
     catch (const wxString& msg)
     {
-        wxMessageBox(msg + " - you'll need to enter camera properties manually");
+        pFrame->ClearAlert();
+        wxMessageBox(msg + " so you may want to deal with that later. In the meantime, you can just enter the pixel-size manually along with the focal length and binning levels.");
         camera = NULL;
     }
     this->SetFocus();           // In case driver messages might have caused us to lose it
@@ -646,7 +681,7 @@ double ProfileWizard::GetPixelSize(GuideCamera* cam)
     double rslt;
     if (cam->GetDevicePixelSize(&rslt))
     {
-        wxMessageBox(_("Camera driver can't report pixel size - please enter the correct value manually"));
+        wxMessageBox(_("This camera driver doesn't report the pixel size, so you'll need to enter the value manually"));
         rslt = 0;
     }
     return rslt;
@@ -660,7 +695,6 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
 
     if (tryConnect)
     {
-        pFrame->ClearAlert();
         cam = TryCameraConnect();
         // Pixel size
         if (cam)
@@ -691,8 +725,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
     if (cam)
     {
         if (cam->Connected)
-        if (cam->Disconnect())
-            Debug.AddLine("Camera disconnect failed!");
+            cam->Disconnect();
         delete cam;
     }
 }
@@ -712,7 +745,8 @@ void ProfileWizard::InitMountProps(Scope* theScope)
         ShowStatus(wxEmptyString);
         if (err)
         {
-            wxMessageBox(_("Could not connect to mount - you'll need to enter the guide speed manually"));
+            wxMessageBox(_("PHD2 could not connect to the mount, so you'll probably want to deal with that later.  In the meantime, if you know the mount guide speed setting, you can enter it manually. "
+                " Otherwise, you can just leave it at the default value of 0.5X."));
             speedVal = 0.5;
         }
         else
@@ -722,8 +756,8 @@ void ProfileWizard::InitMountProps(Scope* theScope)
                 speedVal = wxMax(raSpeed, decSpeed) * 3600.0 / (15.0 * siderealSecondPerSec);  // deg/sec -> sidereal multiple
             else
             {
-                wxMessageBox(_("This mount driver doesn't report guide speeds.  You'll need to confirm what the "
-                    "guide speed setting is and enter it manually"));
+                wxMessageBox(_("Apparently, this mount driver doesn't report guide speeds.  If you know the mount guide speed setting, you can enter it manually. "
+                    "Otherwise, you can just leave it at the default value of 0.5X."));
                 speedVal = 0.5;
             }
         }
@@ -764,4 +798,84 @@ void ProfileWizard::OnContextHelp(wxCommandEvent& evt)
 void ProfileWizard::OnPrev(wxCommandEvent& evt)
 {
     UpdateState(-1);
+}
+
+
+// Supporting dialog classes
+ConnectDialog::ConnectDialog(ProfileWizard* parent, ProfileWizard::DialogState currState) :
+wxDialog(parent, wxID_ANY, _("Ask About Connection"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+{
+    static const int DialogWidth = 425;
+    static const int TextWrapPoint = 400;
+
+    m_Parent = parent;
+    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+    // Expanded explanations
+    m_Instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 95), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
+    switch (currState)
+    {
+    case ProfileWizard::STATE_CAMERA:
+        m_Instructions->SetLabelText(
+            _("Is the camera already connected to the PC?   If so, PHD2 can usually determine the camera pixel-size automatically. "
+            " If the camera isn't connected or its driver doesn't report the pixel-size, you can enter the value yourself using information in the camera manual or online. ")
+            );
+        this->SetTitle(_("Camera Already Connected?"));
+        break;
+    case ProfileWizard::STATE_MOUNT:
+        m_Instructions->SetLabelText(
+            _("Is the mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
+            " If not, you can enter the guide-speed manually.  If you don't know what it is, just leave the setting at the default value of 0.5x.")
+            );
+        this->SetTitle(_("Mount Already Connected?"));
+        break;
+    case ProfileWizard::STATE_AUXMOUNT:
+        m_Instructions->SetLabelText(
+            _("Is the aux-mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
+            " If not, you can enter it manually.  If you don't know what it is, just leave the setting at the default value of 0.5x. "
+            " If the guide speed on the previous page doesn't match what is read from the mount, it will be revised automatically." )
+            );
+        this->SetTitle(_("Aux-mount Already Connected?"));
+        break;
+    }
+    m_Instructions->Wrap(TextWrapPoint);
+
+    vSizer->Add(m_Instructions, wxSizerFlags().Border(wxALL, 10));
+
+    // Buttons for yes, no, cancel
+
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxButton* yesBtn = new wxButton(this, wxID_ANY, _("Yes"));
+    yesBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConnectDialog::OnYesButton), NULL, this);
+    wxButton* noBtn = new wxButton(this, wxID_ANY, _("No"));
+    noBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConnectDialog::OnNoButton), NULL, this);
+    wxButton* cancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
+    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConnectDialog::OnCancelButton), NULL, this);
+
+    pButtonSizer->AddStretchSpacer();
+    pButtonSizer->Add(
+        yesBtn,
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
+    pButtonSizer->Add(
+        noBtn,
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
+    pButtonSizer->Add(
+        cancelBtn,
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
+    vSizer->Add(pButtonSizer, wxSizerFlags().Expand().Border(wxALL, 10));
+
+    SetAutoLayout(true);
+    SetSizerAndFit(vSizer);
+}
+
+void ConnectDialog::OnYesButton(wxCommandEvent& evt)
+{
+    EndModal(wxYES);
+}
+void ConnectDialog::OnNoButton(wxCommandEvent& evt)
+{
+    EndModal(wxNO);
+}
+void ConnectDialog::OnCancelButton(wxCommandEvent& evt)
+{
+    EndModal(wxCANCEL);
 }

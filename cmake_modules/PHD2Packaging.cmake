@@ -74,7 +74,7 @@ if(UNIX AND NOT APPLE)
   install(FILES ${phd_src_dir}/phd2.desktop      
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
   install(FILES ${phd_src_dir}/phd2.appdata.xml      
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appdata/ )
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/metainfo/ )
 
   # Make Debian package
   set(CPACK_GENERATOR "DEB")
