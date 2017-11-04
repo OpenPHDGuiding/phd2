@@ -114,9 +114,7 @@ private:
     void InitMountProps(Scope* theScope);
     void SetBinningLevel(int val);
     DialogState m_State;
-    bool m_alreadyAskedCamera;
     bool m_useCamera;
-    bool m_alreadyAskedMount;
     bool m_useMount;
 
 public:
