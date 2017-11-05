@@ -1811,7 +1811,7 @@ static GUIDE_DIRECTION dir_param(const json_value *p)
         { "right", GUIDE_DIRECTION::RIGHT },
     };
 
-    for (int i = 0; i < WXSIZEOF(dirs); i++)
+    for (unsigned i = 0; i < WXSIZEOF(dirs); i++)
         if (wxStricmp(p->string_value, dirs[i].s) == 0)
             return dirs[i].d;
 

@@ -55,7 +55,7 @@ wxDEFINE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
 
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& evt)
 {
-    int idx = Dur_Choice->GetSelection();
+    unsigned idx = Dur_Choice->GetSelection();
 
     if (idx == 0)
     {

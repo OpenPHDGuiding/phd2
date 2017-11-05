@@ -462,7 +462,7 @@ struct Histogram
         for (i = 0; i < 256; i++)
         {
             sum += val[i];
-            if (sum > img.NPixels / 2)
+            if (sum > (unsigned)img.NPixels / 2)
                 break;
         }
         median = i << (img.BitsPerPixel - 8);

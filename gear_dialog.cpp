@@ -910,7 +910,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
 
     wxMenu *menu = new wxMenu();
     int id = MENU_SELECT_CAMERA_BEGIN;
-    for (int idx = 0; idx < names.size(); idx++)
+    for (unsigned idx = 0; idx < names.size(); idx++)
     {
         wxMenuItem *item = menu->AppendRadioItem(id, names.Item(idx));
         if (idx < m_cameraIds.size())
@@ -934,7 +934,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
 
 void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
 {
-    int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
+    unsigned idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
     if (idx >= 0 && idx < m_cameraIds.size())
     {
         wxString key = CameraSelectionKey(m_pCamera);

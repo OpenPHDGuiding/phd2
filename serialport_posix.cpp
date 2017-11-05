@@ -237,7 +237,7 @@ bool SerialPortPosix::Send(const unsigned char *pData, unsigned count)
     bool bError = false;
 
     try {
-        int nBytesWritten = 0;
+        unsigned nBytesWritten = 0;
 
         Debug.AddBytes("SerialPortPosix::Send", pData, count);
 
