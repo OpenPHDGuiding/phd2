@@ -44,7 +44,6 @@ public:
     static bool IsAligning();
     static bool RotateMount();
     static void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-
+    static bool RotateFail(const wxString& msg);
 };
-
 #endif
