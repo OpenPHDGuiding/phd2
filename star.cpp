@@ -899,7 +899,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
         //  first, find the peak pixel overall
         unsigned short maxVal = 0;
-        for (unsigned int i = 0; i < image.NPixels; i++)
+        for (unsigned i = 0; i < (unsigned)image.NPixels; i++)
             if (image.ImageData[i] > maxVal)
                 maxVal = image.ImageData[i];
 
