@@ -312,7 +312,7 @@ static bool ASCOM_Image(IDispatch *cam, usImage& Image, bool takeSubframe, const
     }
     else
     {
-        for (int i = 0; i < Image.NPixels; i++)
+        for (unsigned int i = 0; i < Image.NPixels; i++)
             Image.ImageData[i] = (unsigned short) rawdata[i];
     }
 

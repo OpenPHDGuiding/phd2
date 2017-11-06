@@ -183,7 +183,7 @@ int ConfigDialogCtrlSet::StringArrayWidth(const wxArrayString& ary)
 {
     int width = 0;
 
-    for (unsigned i = 0; i < ary.size(); i++)
+    for (unsigned int i = 0; i < ary.size(); i++)
     {
         int thisWidth = StringWidth(ary[i]);
 

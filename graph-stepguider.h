@@ -40,7 +40,7 @@ class GraphStepguiderWindow;
 
 class GraphStepguiderClient : public wxWindow
 {
-    static const unsigned m_maxHistorySize = 64;
+    static const unsigned int m_maxHistorySize = 64;
 
     struct
     {
@@ -68,7 +68,7 @@ class GraphStepguiderClient : public wxWindow
     GraphStepguiderClient(wxWindow *parent);
     virtual ~GraphStepguiderClient(void);
 
-    void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
+    void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
     void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
 
     friend class GraphStepguiderWindow;
@@ -86,7 +86,7 @@ public:
     void OnMenuLength(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
 
-    void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
+    void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
     void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
     void ShowBump(const PHD_Point& curBump);
     bool SetState(bool is_active);

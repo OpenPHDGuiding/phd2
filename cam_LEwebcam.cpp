@@ -151,7 +151,7 @@ bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRe
         // This is because we are not exactly sure when we will capture the "Long Exposure"
         // frame
 
-        for(int i=0;i < frame1.NPixels; i++)
+        for (unsigned int i = 0;i < frame1.NPixels; i++)
         {
             sum1 += *dptr1++;
             sum2 += *dptr2++;

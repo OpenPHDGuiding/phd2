@@ -40,7 +40,7 @@ bool usImage::Init(const wxSize& size)
     // Allocates space for image and sets params up
     // returns true on error
 
-    int prev = NPixels;
+    unsigned int prev = NPixels;
     NPixels = size.GetWidth() * size.GetHeight();
     Size = size;
     Subframe = wxRect(0, 0, 0, 0);
@@ -88,7 +88,7 @@ void usImage::CalcStats()
         const unsigned short *src;
 
         src = ImageData;
-        for (int i = 0; i < NPixels; i++)
+        for (unsigned int i = 0; i < NPixels; i++)
         {
             int d = (int) *src++;
             if (d < Min) Min = d;
@@ -100,7 +100,7 @@ void usImage::CalcStats()
         Median3(tmpdata, ImageData, Size, wxRect(Size));
 
         src = tmpdata;
-        for (int i = 0; i < NPixels; i++)
+        for (unsigned int i = 0; i < NPixels; i++)
         {
             int d = (int) *src++;
             if (d < FiltMin) FiltMin = d;
@@ -164,7 +164,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     if (power == 1.0 || blevel >= wlevel)
     {
         float range = (float) wxMax(1, wlevel);  // Go 0-max
-        for (int i = 0; i < NPixels; i++, RawPtr++)
+        for (unsigned int i = 0; i < NPixels; i++, RawPtr++)
         {
             float d;
             if (*RawPtr >= range)
@@ -180,7 +180,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     else
     {
         float range = (float) (wlevel - blevel);
-        for (int i = 0; i < NPixels; i++, RawPtr++ )
+        for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
         {
             float d;
             if (*RawPtr <= blevel)
@@ -537,7 +537,7 @@ bool usImage::CopyFromImage(const wxImage& img)
     const unsigned char *pSrc = img.GetData();
     unsigned short *pDest = ImageData;
 
-    for (int i = 0; i < NPixels; i++)
+    for (unsigned int i = 0; i < NPixels; i++)
     {
         *pDest++ = ((unsigned short) *pSrc) << 8;
         pSrc += 3;

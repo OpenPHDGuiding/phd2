@@ -134,8 +134,8 @@ bool GraphStepguiderWindow::SetState(bool is_active)
     return m_visible;
 }
 
-void GraphStepguiderWindow::SetLimits(unsigned xMax, unsigned yMax,
-                                      unsigned xBump, unsigned yBump)
+void GraphStepguiderWindow::SetLimits(unsigned int xMax, unsigned int yMax,
+                                      unsigned int xBump, unsigned int yBump)
 {
     m_pClient->SetLimits(xMax, yMax, xBump, yBump);
 
@@ -218,8 +218,8 @@ GraphStepguiderClient::~GraphStepguiderClient(void)
     }
 }
 
-void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax,
-                                      unsigned xBump, unsigned yBump)
+void GraphStepguiderClient::SetLimits(unsigned int xMax, unsigned int yMax,
+                                      unsigned int xBump, unsigned int yBump)
 {
     m_xMax = xMax;
     m_yMax = yMax;

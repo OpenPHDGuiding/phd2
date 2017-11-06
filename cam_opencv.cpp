@@ -123,7 +123,6 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
     {
         wxStopWatch swatch;
         Mat captured_frame;
-        int i, nframes;
 
         if (!pCapDev)
         {
@@ -149,16 +148,15 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
 
         img.Clear();
 
-        nframes = 0;
-        unsigned char *dptr;
-        dptr = captured_frame.data;
+        int nframes = 0;
+        unsigned char *dptr = captured_frame.data;
         while (swatch.Time() < duration)
         {
             nframes++;
             pCapDev->read(captured_frame);
             cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
             dptr = captured_frame.data;
-            for (i = 0; i < img.NPixels; i++)
+            for (unsigned int i = 0; i < img.NPixels; i++)
             {
                 unsigned int t = (unsigned int) img.ImageData[i] + (unsigned int) dptr[i];
                 if (t > 65535)

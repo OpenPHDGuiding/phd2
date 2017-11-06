@@ -573,7 +573,7 @@ SBStateIndicators::SBStateIndicators(SBPanel* panel, std::vector<int>& fldWidths
 
 SBStateIndicators::~SBStateIndicators()
 {
-    for (unsigned inx = 0; inx < stateItems.size(); inx++)
+    for (unsigned int inx = 0; inx < stateItems.size(); inx++)
         delete stateItems.at(inx);
 }
 

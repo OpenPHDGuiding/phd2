@@ -190,7 +190,7 @@ bool CameraQGuider::Capture(int duration, usImage& img, int options, const wxRec
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();
 
 /*  dptr = img.ImageData;
-    for (i=0; i<img.NPixels; i++,dptr++) {
+    for (unsigned int i=0; i<img.NPixels; i++,dptr++) {
         *dptr = 0;
     }
 */

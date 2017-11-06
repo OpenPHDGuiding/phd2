@@ -487,13 +487,13 @@ struct FloatImg
 {
     float *px;
     wxSize Size;
-    int NPixels;
+    unsigned int NPixels;
 
     FloatImg() : px(0) { }
     FloatImg(const wxSize& size) : px(0) { Init(size); }
     FloatImg(const usImage& img) : px(0) {
         Init(img.Size);
-        for (int i = 0; i < NPixels; i++)
+        for (unsigned int i = 0; i < NPixels; i++)
             px[i] = (float) img.ImageData[i];
     }
     ~FloatImg() { delete[] px; }
@@ -541,7 +541,7 @@ static void SaveImage(const FloatImg& img, const char *name)
     float maxv = img.px[0];
     float minv = img.px[0];
 
-    for (int i = 1; i < img.NPixels; i++)
+    for (unsigned int i = 1; i < img.NPixels; i++)
     {
         if (img.px[i] > maxv)
             maxv = img.px[i];
@@ -551,7 +551,7 @@ static void SaveImage(const FloatImg& img, const char *name)
 
     usImage tmp;
     tmp.Init(img.Size);
-    for (int i = 0; i < tmp.NPixels; i++)
+    for (unsigned int i = 0; i < tmp.NPixels; i++)
     {
         tmp.ImageData[i] = (unsigned short)(((double) img.px[i] - minv) * 65535.0 / (maxv - minv));
     }
@@ -899,7 +899,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
         //  first, find the peak pixel overall
         unsigned short maxVal = 0;
-        for (unsigned i = 0; i < (unsigned)image.NPixels; i++)
+        for (unsigned int i = 0; i < image.NPixels; i++)
             if (image.ImageData[i] > maxVal)
                 maxVal = image.ImageData[i];
 

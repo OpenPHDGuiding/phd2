@@ -902,12 +902,12 @@ void MyFrame::SetupToolBar()
         6000, 7000, 8000, 9000, 10000, 15000,
         30000, // final entry is custom value
     };
-    for (unsigned i = 0; i < WXSIZEOF(dur_values); i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
         exposure_durations.push_back(dur_values[i]);
 
     wxArrayString durs;
     durs.Add(_("Auto"));
-    for (unsigned i = 0; i < WXSIZEOF(dur_values) - 1; i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values) - 1; i++)
         durs.Add(ExposureDurationLabel(dur_values[i]));
     durs.Add(wxString::Format(_("Custom: %g s"), 9999.0));
     durs.Add(_("Edit Custom..."));

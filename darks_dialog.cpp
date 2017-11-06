@@ -446,7 +446,7 @@ struct Histogram
     {
         memset(&val[0], 0, sizeof(val));
         mean = 0.0;
-        for (int i = 0; i < img.NPixels; i++)
+        for (unsigned int i = 0; i < img.NPixels; i++)
         {
             unsigned short v = img.ImageData[i];
             mean += v;
@@ -462,7 +462,7 @@ struct Histogram
         for (i = 0; i < 256; i++)
         {
             sum += val[i];
-            if (sum > (unsigned)img.NPixels / 2)
+            if (sum > img.NPixels / 2)
                 break;
         }
         median = i << (img.BitsPerPixel - 8);
@@ -528,7 +528,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
 
         unsigned int *iptr = avgimg;
         const unsigned short *usptr = darkFrame.ImageData;
-        for (int i = 0; i < darkFrame.NPixels; i++)
+        for (unsigned int i = 0; i < darkFrame.NPixels; i++)
             *iptr++ += *usptr++;
     }
 
@@ -537,7 +537,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         ShowStatus(_("Dark frames complete"), true);
         const unsigned int *iptr = avgimg;
         unsigned short *usptr = darkFrame.ImageData;
-        for (int i = 0; i < darkFrame.NPixels; i++)
+        for (unsigned int i = 0; i < darkFrame.NPixels; i++)
             *usptr++ = (unsigned short)(*iptr++ / frameCount);
     }
 

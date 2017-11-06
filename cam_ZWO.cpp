@@ -582,7 +582,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else
     {
-        for (int i = 0; i < img.NPixels; i++)
+        for (unsigned int i = 0; i < img.NPixels; i++)
             img.ImageData[i] = m_buffer[i];
     }
 
