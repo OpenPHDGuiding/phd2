@@ -935,7 +935,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
 void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
 {
     unsigned int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
-    if (idx >= 0 && idx < m_cameraIds.size())
+    if (idx < m_cameraIds.size())
     {
         wxString key = CameraSelectionKey(m_pCamera);
         pConfig->Profile.SetString(key, m_cameraIds[idx]);
