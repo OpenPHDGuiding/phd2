@@ -844,6 +844,8 @@ wxDialog(parent, wxID_ANY, _("Ask About Connection"), wxDefaultPosition, wxDefau
             );
         this->SetTitle(_("Aux-mount Already Connected?"));
         break;
+    default:
+        break;
     }
     m_Instructions->Wrap(TextWrapPoint);
 

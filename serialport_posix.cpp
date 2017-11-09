@@ -232,12 +232,12 @@ bool SerialPortPosix::SetReceiveTimeout(int timeoutMilliSeconds)
     return bError;
 }
 
-bool SerialPortPosix::Send(const unsigned char *pData, unsigned count)
+bool SerialPortPosix::Send(const unsigned char *pData, unsigned int count)
 {
     bool bError = false;
 
     try {
-        unsigned int nBytesWritten = 0;
+        int nBytesWritten;
 
         Debug.AddBytes("SerialPortPosix::Send", pData, count);
 
