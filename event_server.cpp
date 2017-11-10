@@ -1402,7 +1402,6 @@ static void get_star_image(JObj& response, const json_value *params)
         rect.Intersect(img->Subframe);
 
     int width = rect.GetWidth();
-    size_t size = width * rect.GetHeight() * sizeof(unsigned short);
 
     B64Encode enc;
     for (int y = rect.GetTop(); y <= rect.GetBottom(); y++)

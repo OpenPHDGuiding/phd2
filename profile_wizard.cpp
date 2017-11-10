@@ -461,8 +461,6 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize, double guid
 // Set up some reasonable starting guiding parameters
 static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
 {
-    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
-
     double minMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
 
     // Min moves for hysteresis guiding in RA and resist switch in Dec

@@ -441,7 +441,6 @@ StepGuider::STEP_RESULT StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int step
         unsigned char cmd = 'G';
         unsigned char parameter;
         unsigned char response;
-        int currentPos = 0;
 
         switch (direction)
         {

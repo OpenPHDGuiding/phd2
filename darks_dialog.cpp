@@ -98,7 +98,6 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     if (!buildDarkLib)
         this->SetTitle(_("Acquire Master Dark Frames for Bad Pixel Map Calculation"));
     GetExposureDurationStrings(&m_expStrings);
-    int expCount = m_expStrings.GetCount();
 
     // Create overall vertical sizer
     wxBoxSizer *pvSizer = new wxBoxSizer(wxVERTICAL);

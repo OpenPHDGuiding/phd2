@@ -81,7 +81,6 @@ double GuideAlgorithmLowpass::result(double input)
     sortedHistory.Sort(dbl_sort_func);
 
     m_history.RemoveAt(0);
-    unsigned int numpts = m_history.GetCount();
 
     double median = sortedHistory[sortedHistory.GetCount()/2];
     double slope = CalcSlope(m_history);

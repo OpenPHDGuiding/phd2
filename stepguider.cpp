@@ -767,8 +767,6 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
         {
             if (status1.IsEmpty())
             {
-                double dX = m_calibrationStartingLocation.dX(currentLocation);
-                double dY = m_calibrationStartingLocation.dY(currentLocation);
                 double dist = m_calibrationStartingLocation.Distance(currentLocation);
                 status1.Printf(_T("dist=%4.1f"), dist);
             }

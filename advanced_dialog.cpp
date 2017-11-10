@@ -223,8 +223,6 @@ void AdvancedDialog::ConfirmLayouts()
 // Perform a from-scratch initialization and layout of all the tabs
 void AdvancedDialog::RebuildPanels(void)
 {
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
-
     CleanupCtrlSets();
 
     m_pGlobalPane->Clear(true);

@@ -136,7 +136,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     if (inFocusingMode) {
         //todo: Tuning the scaling factor
-    	int scale = ysize / 50;
+        int scale = ysize / 50;
         largeFont = smallFont.Scaled(scale);
 
         dc.SetFont(largeFont);
@@ -232,7 +232,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     float hfd = pFrame->pGuider->HFD();
-	if (hfd != 0.f) {
+    if (hfd != 0.f) {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
         if (inFocusingMode) {
             dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - labelTextHeight + 5);
@@ -243,7 +243,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             dc.SetFont(largeFont);
             s = wxString::Format(_T("%.2f"), hfd);
-			dc.DrawText(s, x, ysize - largeFontHeight);
+            dc.DrawText(s, x, ysize - largeFontHeight);
             x += dc.GetTextExtent(s).GetWidth();
 
             dc.SetFont(smallFont);
@@ -251,14 +251,14 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
         }
         else {
-			dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
-		}
+            dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
+        }
     }
     else {
         dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
     }
 
-	// JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
+    // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
     if (img) {

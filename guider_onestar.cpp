@@ -967,10 +967,9 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
     : GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
 {
     assert(pGuider);
+    m_pGuiderOneStar = static_cast<GuiderOneStar *>(pGuider);
 
-    m_pGuiderOneStar = (GuiderOneStar *)pGuider;
     int width;
-    wxWindow* parent;
 
     width = StringWidth(_T("0000"));
     m_pSearchRegion = pFrame->MakeSpinCtrl(GetParentWindow(AD_szStarTracking), wxID_ANY, _T(" "), wxDefaultPosition,
@@ -996,7 +995,7 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
     pStarMass->Add(m_pEnableStarMassChangeThresh, wxSizerFlags(0).Border(wxTOP, 3));
     pStarMass->Add(pTolerance, wxSizerFlags(0).Border(wxLEFT, 40));
 
-    parent = GetParentWindow(AD_szStarTracking);
+    wxWindow *parent = GetParentWindow(AD_szStarTracking);
     width = StringWidth(_("65535"));
 
 

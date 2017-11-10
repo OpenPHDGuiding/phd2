@@ -188,7 +188,6 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox->Add(m_pYGuideAlgorithmChoice, def_flags);
         m_pDecBox->Add(m_pYGuideAlgorithmConfigDialogPane, def_flags);
 
-        wxSizerFlags smaller_flags = wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Border(wxTOP, 5).Expand();
         if (!stepGuider)
         {
             wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
