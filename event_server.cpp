@@ -1402,7 +1402,6 @@ static void get_star_image(JObj& response, const json_value *params)
         rect.Intersect(img->Subframe);
 
     int width = rect.GetWidth();
-    size_t size = width * rect.GetHeight() * sizeof(unsigned short);
 
     B64Encode enc;
     for (int y = rect.GetTop(); y <= rect.GetBottom(); y++)
@@ -1811,7 +1810,7 @@ static GUIDE_DIRECTION dir_param(const json_value *p)
         { "right", GUIDE_DIRECTION::RIGHT },
     };
 
-    for (int i = 0; i < WXSIZEOF(dirs); i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dirs); i++)
         if (wxStricmp(p->string_value, dirs[i].s) == 0)
             return dirs[i].d;
 

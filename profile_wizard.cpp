@@ -70,7 +70,7 @@ static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString&
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(true), m_alreadyAskedCamera(false), m_alreadyAskedMount(false)
+    m_launchDarks(true)
 {
     TitlePrefix = _("New Profile Wizard - ");
 
@@ -461,8 +461,6 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize, double guid
 // Set up some reasonable starting guiding parameters
 static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
 {
-    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
-
     double minMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
 
     // Min moves for hysteresis guiding in RA and resist switch in Dec
@@ -531,26 +529,26 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 {
     Scope *pMount;
     bool camNone = false;
+    wxString prevSelection;
 
     switch (m_State)
     {
     case STATE_CAMERA:
+        prevSelection = m_SelectedCamera;
         m_SelectedCamera = m_pGearChoice->GetStringSelection();
         camNone = (m_SelectedCamera == _("None"));
-        if (!m_alreadyAskedCamera && !camNone)
+        if (m_SelectedCamera != prevSelection && !camNone)
         {
             ConnectDialog cnDlg(this, STATE_CAMERA);
             int answer = cnDlg.ShowModal();
             if (answer == wxYES)
             {
                 m_useCamera = true;
-                m_alreadyAskedCamera = true;
             }
             else
             if (answer == wxNO)
             {
                 m_useCamera = false;
-                m_alreadyAskedCamera = true;
             }
             if (answer == wxCANCEL)
             {
@@ -559,29 +557,29 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 return;
             }
         }
-        InitCameraProps(m_useCamera && !camNone);
+        if (m_SelectedCamera != prevSelection)
+            InitCameraProps(m_useCamera && !camNone);
         break;
 
     case STATE_MOUNT:
+        prevSelection = m_SelectedMount;
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
         m_PositionAware = (pMount && pMount->CanReportPosition());
         if (m_PositionAware)
         {
-            if (!m_alreadyAskedMount)
+            if (prevSelection != m_SelectedMount)
             {
                 ConnectDialog cnDlg(this, STATE_MOUNT);
                 int answer = cnDlg.ShowModal();
                 if (answer == wxYES)
                 {
                     m_useMount = true;
-                    m_alreadyAskedMount = true;
                 }
                 else
                 if (answer == wxNO)
                 {
                     m_useMount = false;
-                    m_alreadyAskedMount = true;
                 }
                 if (answer == wxCANCEL)
                 {
@@ -591,13 +589,19 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 }
             }
             m_SelectedAuxMount = _("None");
-            if (m_useMount)
-                InitMountProps(pMount);
-            else
-                InitMountProps(NULL);
+            if (prevSelection != m_SelectedMount)
+            {
+                if (m_useMount)
+                    InitMountProps(pMount);
+                else
+                    InitMountProps(NULL);
+            }
         }
         else
-            InitMountProps(NULL);
+        {
+            if (prevSelection != m_SelectedMount)
+                InitMountProps(NULL);
+        }
 
         if (pMount)
         {
@@ -607,23 +611,22 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         break;
 
     case STATE_AUXMOUNT:
+        prevSelection = m_SelectedAuxMount;
         m_SelectedAuxMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedAuxMount);
         // Handle setting of guide speed behind the scenes using aux-mount
-        if (!m_alreadyAskedMount)
+        if (prevSelection != m_SelectedAuxMount)
         {
             ConnectDialog cnDlg(this, STATE_AUXMOUNT);
             int answer = cnDlg.ShowModal();
             if (answer == wxYES)
             {
                 m_useMount = true;
-                m_alreadyAskedMount = true;
             }
             else
             if (answer == wxNO)
             {
                 m_useMount = false;
-                m_alreadyAskedMount = true;
             }
             if (answer == wxCANCEL)
             {
@@ -632,10 +635,13 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 return;
             }
         }
-        if (m_useMount)
-            InitMountProps(pMount);
-        else
-            InitMountProps(NULL);
+        if (prevSelection != m_SelectedAuxMount)
+        {
+            if (m_useMount)
+                InitMountProps(pMount);
+            else
+                InitMountProps(NULL);
+        }
 
         if (pMount)
         {
@@ -835,6 +841,8 @@ wxDialog(parent, wxID_ANY, _("Ask About Connection"), wxDefaultPosition, wxDefau
             " If the guide speed on the previous page doesn't match what is read from the mount, it will be revised automatically." )
             );
         this->SetTitle(_("Aux-mount Already Connected?"));
+        break;
+    default:
         break;
     }
     m_Instructions->Wrap(TextWrapPoint);

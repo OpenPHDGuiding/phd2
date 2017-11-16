@@ -889,7 +889,7 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
 
     const ImageStats& stats = m_impl->w.stats;
 
-    Debug.Write(wxString::Format("DefectMapBuilder: Dark N = %d Mean = %.f Median = %d Standard Deviation = %.f MAD=%d\n",
+    Debug.Write(wxString::Format("DefectMapBuilder: Dark N = %u Mean = %.f Median = %d Standard Deviation = %.f MAD=%d\n",
                                  darks.masterDark.NPixels, stats.mean, stats.median, stats.stdev, stats.mad));
 
     // load potential defects

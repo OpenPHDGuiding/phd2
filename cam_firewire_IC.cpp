@@ -184,7 +184,8 @@ bool CameraFirewire::Connect(const wxString& camId)
         if (debug) { debugstep = 2; debugfile->AddLine(wxString::Format("12a: Setting SinkType")); debugfile->Write(); }
         retval = m_pGrabber->setSinkType(pSink);
         if (!retval) {
-            return CamConnectFailed(_("Could not set sink type"));
+            Debug.Write("cam_firewire_IC: Could not set sink type\n");
+            return CamConnectFailed(_("FireWire camera setup failed"));
         }
 
         // Get info I need
@@ -276,29 +277,24 @@ void CameraFirewire::InitCapture()
 
 bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    int xsize, ysize, i;
-    unsigned short *dataptr;
-    unsigned char *imgptr;
-    Error err;
-    bool retval;
     static int programmed_dur = 200;
 
-    xsize = FullSize.GetWidth();
-    ysize = FullSize.GetHeight();
+    int xsize = FullSize.GetWidth();
+    int ysize = FullSize.GetHeight();
 
     if (img.Init(FullSize))
     {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
-    dataptr = img.ImageData;
+    unsigned short *dataptr = img.ImageData;
 
     if ((duration != programmed_dur) && (m_pExposureAbs != 0)) {
         m_pExposureAbs->setValue(duration / 1000.0);
         programmed_dur = duration;
     }
 
-    retval = m_pGrabber->startLive(false);
+    bool retval = m_pGrabber->startLive(false);
     if (!retval) {
         pFrame->Alert(_("Could not start video stream"));
         return true;
@@ -309,7 +305,7 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
 
     // grab the next frame
 
-    err = pSink->snapImages( 1,15000 );
+    Error err = pSink->snapImages( 1,15000 );
     if (err.getVal() ==  eTIMEOUT_PREMATURLY_ELAPSED) {
         wxMilliSleep(200);
         err = pSink->snapImages( 1,15000 );
@@ -325,9 +321,9 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
             (int) err.getVal(), (int) eTIMEOUT_PREMATURLY_ELAPSED, wxString(err.c_str())), NO_RECONNECT);
         return true;
     }
-    imgptr = (unsigned char *) pSink->getLastAcqMemBuffer()->getPtr();
+    unsigned char *imgptr = (unsigned char *) pSink->getLastAcqMemBuffer()->getPtr();
 
-    for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
+    for (unsigned int i = 0; i < img.NPixels; i++, dataptr++, imgptr++)
         *dataptr = (unsigned short) *imgptr;
 
 /*  if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe)!=DC1394_SUCCESS) {
@@ -335,7 +331,7 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
         return true;
     }
     imgptr = vpFrame->image;
-    for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
+    for (unsigned int i = 0; i < img.NPixels; i++, dataptr++, imgptr++)
         *dataptr = (unsigned short) *imgptr;
     dc1394_capture_enqueue(camera, vframe);  // release this frame
     */

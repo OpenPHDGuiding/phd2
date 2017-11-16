@@ -553,7 +553,7 @@ bool ServerReqFrame(int duration, usImage& img) {
         ServerEndpoint->Write(&duration,sizeof(int));
         Debug.Write(wxString::Format("Starting %d ms frame\n", duration));
         wxMilliSleep(duration); // might as well wait here nicely at least this long
-        Debug.Write(wxString::Format("Reading frame - looking for %d pixels (%d bytes)\n", img.NPixels, img.NPixels * 2));
+        Debug.Write(wxString::Format("Reading frame - looking for %u pixels (%u bytes)\n", img.NPixels, img.NPixels * 2));
         unsigned short *dataptr;
         dataptr = img.ImageData;
         unsigned short buffer[512];

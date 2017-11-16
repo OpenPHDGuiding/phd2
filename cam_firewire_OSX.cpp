@@ -254,30 +254,25 @@ bool CameraFirewire::Disconnect()
 
 bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    int xsize, ysize, i;
-    unsigned short *dataptr;
-    unsigned char *imgptr;
-    dc1394video_frame_t *vframe;
-    int err;
     static int programmed_dur = 1000;
     wxStopWatch swatch;
 
-    xsize = FullSize.GetWidth();
-    ysize = FullSize.GetHeight();
+    int xsize = FullSize.GetWidth();
+    int ysize = FullSize.GetHeight();
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
+    if (img.NPixels != (unsigned int)(xsize * ysize)) {
+        if (img.Init(xsize, ysize)) {
             DisconnectWithAlert(CAPT_FAIL_MEMORY);
             return true;
         }
     }
     swatch.Start();
-    dataptr = img.ImageData;
+    unsigned short *dataptr = img.ImageData;
 
     if (DCAM_start_stop_mode) {
         dc1394_video_set_transmission(camera, DC1394_ON);
         dc1394switch_t status = DC1394_OFF;
-        for (i=0; i<5; i++) {
+        for (int i=0; i<5; i++) {
             wxMilliSleep(10);
             dc1394_video_get_transmission(camera, &status);
             if (status != DC1394_OFF) break;
@@ -297,10 +292,11 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
         programmed_dur = duration;
     }
 
+    dc1394video_frame_t *vframe = nullptr;
 
     // Flush
     if (DCAM_flush_mode) {
-        vframe = NULL;
+        vframe = nullptr;
         dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &vframe);
         if (vframe) dc1394_capture_enqueue(camera, vframe);
         dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &vframe);
@@ -354,16 +350,16 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
         DisconnectWithAlert(_("Cannot get a frame from the queue"), NO_RECONNECT);
         return true;
     }
-    imgptr = vframe->image;
+    unsigned char *imgptr = vframe->image;
 //  pFrame->StatusMsg(wxString::Format("%d %d %d",(int) vpFrame->frames_behind, (int) vpFrame->size[0], (int) vpFrame->size[1]));
-    for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
+    for (unsigned int i = 0; i < img.NPixels; i++, dataptr++, imgptr++)
         *dataptr = (unsigned short) *imgptr;
     dc1394_capture_enqueue(camera, vframe);  // release this frame
 //  pFrame->StatusMsg(wxString::Format("Behind: %lu Pos: %lu",vpFrame->frames_behind,vpFrame->id));
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     if (DCAM_start_stop_mode)
-        dc1394_video_set_transmission(camera,DC1394_OFF);
+        dc1394_video_set_transmission(camera, DC1394_OFF);
 
     return false;
 }

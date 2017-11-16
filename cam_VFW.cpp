@@ -123,7 +123,7 @@ bool CameraVFW::Disconnect() {
 
 bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    int xsize,ysize, i;
+    int xsize, ysize;
     int NFrames = 0;
     xsize = FullSize.GetWidth();
     ysize = FullSize.GetHeight();
@@ -148,11 +148,12 @@ bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& s
         cap_img = VFW_Window->GetwxImage();
         imgdata = cap_img.GetData();
         dptr = img.ImageData;
-        for (i=0; i<img.NPixels; i++, dptr++, imgdata+=3) {
+        for (unsigned int i = 0; i < img.NPixels; i++, dptr++, imgdata += 3) {
             *dptr = *dptr + (unsigned short) (*imgdata + *(imgdata+1) + *(imgdata+2));
-            }
+        }
         NFrames++;
-        if ((swatch.Time() >= duration) && (NFrames > 2)) still_going=false;
+        if ((swatch.Time() >= duration) && (NFrames > 2))
+            still_going = false;
     }
     pFrame->StatusMsg(wxString::Format("%d frames",NFrames));
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);

@@ -193,7 +193,7 @@ void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
                     more = dir.GetNext(&subdir);
                 }
                 dir.Close();
-                for (int i = 0; i < dirTargets.GetCount(); i++)
+                for (unsigned int i = 0; i < dirTargets.GetCount(); i++)
                 {
                     ++hitCount;
                     subdir = dirRoot + PATHSEPSTR + dirTargets[i];

@@ -271,8 +271,8 @@ struct TextWrapper
 GuidingAsstWin::GuidingAsstWin()
     : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant"))),
       m_measuring(false),
-      m_measurementsTaken(false),
       m_guideOutputDisabled(false),
+      m_measurementsTaken(false),
       m_origSubFrames(-1)
 {
     // Sizer hierarchy:
@@ -781,7 +781,6 @@ void GuidingAsstWin::MakeRecommendations()
 
     double decrms;
     double decmean;
-    bool largeBL = false;
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
 
     double multiplier_ra  = 1.28;  // 80% prediction interval

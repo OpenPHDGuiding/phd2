@@ -98,7 +98,7 @@ bool CameraSAC42::Capture(int duration, usImage& img, int options, const wxRect&
     unsigned char *bptr;
     unsigned short *dptr;
     unsigned char *buffer;
-    int retval, i;
+    int retval;
     bool firstimg = true;
     int chunksize = MaxExposure;  // exp dur of subframes in longer exposures
 
@@ -139,13 +139,13 @@ bool CameraSAC42::Capture(int duration, usImage& img, int options, const wxRect&
         dptr = img.ImageData;
 
         if (firstimg) {
-            for (i = 0; i < img.NPixels; i++, dptr++, bptr++) { // bring in image from camera's buffer
+            for (unsigned int i = 0; i < img.NPixels; i++, dptr++, bptr++) { // bring in image from camera's buffer
                 *dptr = (unsigned short) *bptr;
             }
             firstimg = false;
         }
         else {
-            for (i = 0; i < img.NPixels; i++, dptr++, bptr++) { // add in next image
+            for (unsigned int i = 0; i < img.NPixels; i++, dptr++, bptr++) { // add in next image
                 unsigned int sum = (unsigned int) *dptr + (unsigned short) *bptr;
                 if (sum > 65535)
                     sum = 65535;

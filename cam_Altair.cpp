@@ -309,14 +309,15 @@ inline static int round_up(int v, int m)
 }
 
 
-void __stdcall CameraCallback(unsigned nEvent, void* pCallbackCtx)
+void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 {
-    if (nEvent == ALTAIRCAM_EVENT_IMAGE)
+    if (event == ALTAIRCAM_EVENT_IMAGE)
     {
-        Camera_Altair* pCam = (Camera_Altair*)pCallbackCtx;
+        Camera_Altair *pCam = (Camera_Altair *) pCallbackCtx;
         pCam->FrameReady();
     }
 }
+
 //static void flush_buffered_image(int cameraId, usImage& img)
 //{
 //    enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
@@ -426,7 +427,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         }
     }
 
-    for (int i = 0; i < img.NPixels; i++)
+    for (unsigned int i = 0; i < img.NPixels; i++)
         img.ImageData[i] = m_buffer[i];
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);

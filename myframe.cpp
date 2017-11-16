@@ -902,12 +902,12 @@ void MyFrame::SetupToolBar()
         6000, 7000, 8000, 9000, 10000, 15000,
         30000, // final entry is custom value
     };
-    for (int i = 0; i < WXSIZEOF(dur_values); i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
         exposure_durations.push_back(dur_values[i]);
 
     wxArrayString durs;
     durs.Add(_("Auto"));
-    for (int i = 0; i < WXSIZEOF(dur_values) - 1; i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values) - 1; i++)
         durs.Add(ExposureDurationLabel(dur_values[i]));
     durs.Add(wxString::Format(_("Custom: %g s"), 9999.0));
     durs.Add(_("Edit Custom..."));
@@ -2862,7 +2862,6 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
     AddCtrl(CtrlMap, AD_cbAutoRestoreCal, m_pAutoLoadCalibration, _("For this equipment profile, automatically restore data from last successful calibration after gear is connected."));
 
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     parent = GetParentWindow(AD_szAutoExposure);
 
     m_autoExpDurationMin = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
@@ -3005,7 +3004,6 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
         m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
 
-        const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
         std::vector<int> dur(m_pFrame->GetExposureDurations());
         std::sort(dur.begin(), dur.end());
         int durationMin = dur[m_autoExpDurationMin->GetSelection()];

@@ -651,7 +651,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     }
     else
     {
-        for (int i = 0; i < img.NPixels; i++)
+        for (unsigned int i = 0; i < img.NPixels; i++)
             img.ImageData[i] = (unsigned short) buf[i];
     }
 
@@ -1149,7 +1149,6 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     wxImage disk_image;
     unsigned short *dataptr;
     unsigned char *imgptr;
-    int i;
 
     bool retval = disk_image.LoadFile("/Users/stark/dev/PHD/simimage.bmp");
     if (!retval) {
@@ -1165,7 +1164,7 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
 
     dataptr = img.ImageData;
     imgptr = disk_image.GetData();
-    for (i=0; i<img.NPixels; i++, dataptr++, imgptr++) {
+    for (unsigned int i = 0; i < img.NPixels; i++, dataptr++, imgptr++) {
         *dataptr = (unsigned short) *imgptr;
         imgptr++; imgptr++;
     }

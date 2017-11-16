@@ -41,7 +41,7 @@ public:
     unsigned short     *ImageData;      // Pointer to raw data
     wxSize              Size;           // Dimensions of image
     wxRect              Subframe;       // were the valid data is
-    int                 NPixels;
+    unsigned int        NPixels;
     int                 Min;
     int                 Max;
     int                 FiltMin;

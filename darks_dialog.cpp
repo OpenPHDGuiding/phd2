@@ -98,7 +98,6 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     if (!buildDarkLib)
         this->SetTitle(_("Acquire Master Dark Frames for Bad Pixel Map Calculation"));
     GetExposureDurationStrings(&m_expStrings);
-    int expCount = m_expStrings.GetCount();
 
     // Create overall vertical sizer
     wxBoxSizer *pvSizer = new wxBoxSizer(wxVERTICAL);
@@ -446,7 +445,7 @@ struct Histogram
     {
         memset(&val[0], 0, sizeof(val));
         mean = 0.0;
-        for (int i = 0; i < img.NPixels; i++)
+        for (unsigned int i = 0; i < img.NPixels; i++)
         {
             unsigned short v = img.ImageData[i];
             mean += v;
@@ -528,7 +527,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
 
         unsigned int *iptr = avgimg;
         const unsigned short *usptr = darkFrame.ImageData;
-        for (int i = 0; i < darkFrame.NPixels; i++)
+        for (unsigned int i = 0; i < darkFrame.NPixels; i++)
             *iptr++ += *usptr++;
     }
 
@@ -537,7 +536,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         ShowStatus(_("Dark frames complete"), true);
         const unsigned int *iptr = avgimg;
         unsigned short *usptr = darkFrame.ImageData;
-        for (int i = 0; i < darkFrame.NPixels; i++)
+        for (unsigned int i = 0; i < darkFrame.NPixels; i++)
             *usptr++ = (unsigned short)(*iptr++ / frameCount);
     }
 

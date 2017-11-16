@@ -320,7 +320,6 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 
     for (int i = 0; i < numNorth; i++)
     {
-        wxPoint where = wxPoint(i * xScaleFactor, round(yOrigin - (northSteps.at(i) - minDec) * yScaleFactor));
         dc.DrawCircle(wxPoint(i * xScaleFactor, round(yOrigin - (northSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
     }
 
