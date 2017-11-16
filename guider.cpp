@@ -1190,6 +1190,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     // we had a current position and lost it
                     SetState(STATE_UNINITIALIZED);
                     EvtServer.NotifyStarLost(info);
+                    // See if a Static PA is underway
+                    if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
+                    {
+                        StaticPaTool::RotateFail(_("Static PA rotation failed - star lost"));
+                    }
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:

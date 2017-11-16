@@ -143,6 +143,12 @@ void StaticPaTool::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     return win->PaintHelper(dc, scale);
 }
 
+bool StaticPaTool::RotateFail(const wxString& msg)
+{
+    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
+    return win->RotateFail(msg);
+}
+
 StaticPaToolWin::StaticPaToolWin()
 : wxFrame(pFrame, wxID_ANY, _("Static Polar Alignment"), wxDefaultPosition, wxDefaultSize,
 wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR)
@@ -1241,9 +1247,9 @@ bool StaticPaToolWin::MoveWestBy(double thetadeg)
         Debug.AddLine("StaticPA: MoveWestBy failed to get scope coordinates");
         return false;
     }
-    double slew_ra = cur_ra - thetadeg * 24.0 / 360.0;
-    slew_ra = slew_ra - 24.0 * floor(slew_ra / 24.0);
-
+    double slew_ra = norm_ra(cur_ra - thetadeg * 24.0 / 360.0);
+//    slew_ra = slew_ra - 24.0 * floor(slew_ra / 24.0);
+    Debug.AddLine(wxString::Format("StaticPA: Slewing from RA hrs: %.3f to:%.3f", cur_ra, slew_ra));
     if (pPointingSource->SlewToCoordinatesAsync(slew_ra, cur_dec))
     {
         Debug.AddLine("StaticPA: MoveWestBy: async slew failed");
