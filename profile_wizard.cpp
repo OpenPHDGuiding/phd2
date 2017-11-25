@@ -566,7 +566,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         prevSelection = m_SelectedMount;
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
-        m_PositionAware = (pMount && (pMount->CanReportPosition() || m_SelectedMount.Contains(_("INDI"))));
+        m_PositionAware = pMount && (pMount->CanReportPosition());
         if (m_PositionAware)
         {
             if (prevSelection != m_SelectedMount)
