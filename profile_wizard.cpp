@@ -70,7 +70,7 @@ static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString&
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(true)
+    m_launchDarks(true), m_useCamera(false), m_useMount(false), m_useAuxMount(false)
 {
     TitlePrefix = _("New Profile Wizard - ");
 
@@ -139,7 +139,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Binning
     m_pBinningLevel = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxSP_ARROW_KEYS,
         1, 4, 1);
-    m_pBinningLevel->SetToolTip(_("The camera-binning value you plan to use.  If the camera isn't already connected, you should confirm it supports binning."));
+    m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  With long focal length guide scopes and OAGs, "
+        " binning can allow use of fainter guide stars.  For more common set-ups, it's better to leave binning at 1."));
     AddTableEntryPair(this, m_pUserProperties, _("Binning level"), m_pBinningLevel);
 
     // Focal length
@@ -157,11 +158,11 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pMountProperties = new wxFlexGridSizer(1, 2, 5, 15);
     m_pGuideSpeed = new wxSpinCtrlDouble(this, ID_GUIDESPEED, wxEmptyString, wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 0.2, 1.0, 0.5, 0.1);
-    m_pGuideSpeed->SetValue(0.5);
-    m_GuideSpeed = 0.5;
+    m_GuideSpeed = Scope::DEFAULT_MOUNT_GUIDE_SPEED;
+    m_pGuideSpeed->SetValue(m_GuideSpeed);
     m_pGuideSpeed->SetDigits(2);
-    m_pGuideSpeed->SetToolTip(_("The mount guide speed you will use for calibration and guiding, expressed as a multiple of the sidereal rate. If you "
-        "don't know, leave the setting at the default value (0.5X)"));
+    m_pGuideSpeed->SetToolTip(wxString::Format(_("The mount guide speed you will use for calibration and guiding, expressed as a multiple of the sidereal rate. If you "
+        "don't know, leave the setting at the default value (%0.1fX), which should produce a successful calibration in most cases"), Scope::DEFAULT_MOUNT_GUIDE_SPEED));
     mtSizer->Add(m_pGuideSpeed, 1);
     AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
 
@@ -244,16 +245,16 @@ void ProfileWizard::ShowHelp(DialogState state)
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
             "it is either not supported by PHD2 or its camera driver is not installed. "
-            " PHD2 needs to know the camera pixel size and guide scope focal length in order to compute reasonable guiding paramters. "
-            " When you choose a camera, you'll be given the option to connect to it now to get the pixel-size automatically. "
+            " PHD2 needs to know the camera pixel size and guide scope focal length in order to compute reasonable guiding parameters. "
+            " When you choose a camera, you'll be given the option to connect to it immediately to get the pixel-size automatically. "
             " You can also choose a binning-level if your camera supports binning." );
         break;
     case STATE_MOUNT:
-        hText = _("Select your mount interface from the list.  This determines how PHD2 will send guide commands to the mount. For most modern "
+        hText = wxString::Format(_("Select your mount interface from the list.  This determines how PHD2 will send guide commands to the mount. For most modern "
             "mounts, the ASCOM interface is a good choice if you are running MS Windows.  The other interfaces are available for "
-            "cases where ASCOM isn't available or isn't well supported by mount firmware.  If you know the mount guide speed, you should specify it "
-            " so PHD2 can calibrate more efficiently.  If you don't know the mount guide speed, you can just use the default value of 0.5x.  When you choose a "
-            " mount, you'll usually be given the option to connect to it now so PHD2 can read the guide speed for you." );
+            "cases where ASCOM isn't available or isn't well supported by mount firmware.  If you know the mount guide speed, you can specify it "
+            " so PHD2 can calibrate more efficiently.  If you don't know the mount guide speed, you can just use the default value of %0.1fx.  When you choose a "
+            " mount, you'll usually be given the option to connect to it immediately so PHD2 can read the guide speed for you."), Scope::DEFAULT_MOUNT_GUIDE_SPEED );
         break;
     case STATE_AUXMOUNT:
         hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
@@ -565,7 +566,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         prevSelection = m_SelectedMount;
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
-        m_PositionAware = (pMount && pMount->CanReportPosition());
+        m_PositionAware = (pMount && (pMount->CanReportPosition() || m_SelectedMount.Contains(_("INDI"))));
         if (m_PositionAware)
         {
             if (prevSelection != m_SelectedMount)
@@ -584,7 +585,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 if (answer == wxCANCEL)
                 {
                     m_SelectedMount = _("None");
-                    UpdateState(-1);
+                    UpdateState(0);
                     return;
                 }
             }
@@ -611,34 +612,46 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         break;
 
     case STATE_AUXMOUNT:
+        ShowStatus(wxEmptyString);
         prevSelection = m_SelectedAuxMount;
         m_SelectedAuxMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedAuxMount);
         // Handle setting of guide speed behind the scenes using aux-mount
         if (prevSelection != m_SelectedAuxMount)
         {
-            ConnectDialog cnDlg(this, STATE_AUXMOUNT);
-            int answer = cnDlg.ShowModal();
-            if (answer == wxYES)
+            if (m_SelectedAuxMount != _("None") && !m_SelectedAuxMount.Contains(_("Ask")))
             {
-                m_useMount = true;
+                ConnectDialog cnDlg(this, STATE_AUXMOUNT);
+                int answer = cnDlg.ShowModal();
+                if (answer == wxYES)
+                {
+                    m_useAuxMount = true;
+                }
+                else
+                if (answer == wxNO)
+                {
+                    m_useAuxMount = false;
+                }
+                if (answer == wxCANCEL)
+                {
+                    m_SelectedAuxMount = _("None");
+                    UpdateState(0);
+                    return;
+                }
             }
             else
-            if (answer == wxNO)
-            {
-                m_useMount = false;
-            }
-            if (answer == wxCANCEL)
-            {
-                m_SelectedAuxMount = _("None");
-                UpdateState(-1);
-                return;
-            }
+                m_useAuxMount = false;
         }
+
         if (prevSelection != m_SelectedAuxMount)
         {
-            if (m_useMount)
+            if (m_useAuxMount)
+            {
+                double oldGuideSpeed = m_pGuideSpeed->GetValue();
                 InitMountProps(pMount);
+                if (oldGuideSpeed != m_pGuideSpeed->GetValue())
+                    ShowStatus(wxString::Format(_("Guide speed setting adjusted from %0.1f to %0.1fx"), oldGuideSpeed, m_pGuideSpeed->GetValue()));
+            }
             else
                 InitMountProps(NULL);
         }
@@ -751,9 +764,10 @@ void ProfileWizard::InitMountProps(Scope* theScope)
         ShowStatus(wxEmptyString);
         if (err)
         {
-            wxMessageBox(_("PHD2 could not connect to the mount, so you'll probably want to deal with that later.  In the meantime, if you know the mount guide speed setting, you can enter it manually. "
-                " Otherwise, you can just leave it at the default value of 0.5X."));
-            speedVal = 0.5;
+            wxMessageBox(
+                wxString::Format(_("PHD2 could not connect to the mount, so you'll probably want to deal with that later.  In the meantime, if you know the mount guide speed setting, you can enter it manually. "
+                " Otherwise, you can just leave it at the default value of %0.1fx"), Scope::DEFAULT_MOUNT_GUIDE_SPEED));
+            speedVal = Scope::DEFAULT_MOUNT_GUIDE_SPEED;
         }
         else
         {
@@ -762,14 +776,15 @@ void ProfileWizard::InitMountProps(Scope* theScope)
                 speedVal = wxMax(raSpeed, decSpeed) * 3600.0 / (15.0 * siderealSecondPerSec);  // deg/sec -> sidereal multiple
             else
             {
-                wxMessageBox(_("Apparently, this mount driver doesn't report guide speeds.  If you know the mount guide speed setting, you can enter it manually. "
-                    "Otherwise, you can just leave it at the default value of 0.5X."));
-                speedVal = 0.5;
+                wxMessageBox(
+                    wxString::Format(_("Apparently, this mount driver doesn't report guide speeds.  If you know the mount guide speed setting, you can enter it manually. "
+                    "Otherwise, you can just leave it at the default value of %0.1fx"), Scope::DEFAULT_MOUNT_GUIDE_SPEED));
+                speedVal = Scope::DEFAULT_MOUNT_GUIDE_SPEED;
             }
         }
     }
     else
-        speedVal = 0.5;
+        speedVal = Scope::DEFAULT_MOUNT_GUIDE_SPEED;
     m_pGuideSpeed->SetValue(speedVal);
     wxSpinDoubleEvent dummy;
     OnGuideSpeedChange(dummy);
@@ -829,16 +844,16 @@ wxDialog(parent, wxID_ANY, _("Ask About Connection"), wxDefaultPosition, wxDefau
         break;
     case ProfileWizard::STATE_MOUNT:
         m_Instructions->SetLabelText(
-            _("Is the mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
-            " If not, you can enter the guide-speed manually.  If you don't know what it is, just leave the setting at the default value of 0.5x.")
+            wxString::Format(_("Is the mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
+            " If not, you can enter the guide-speed manually.  If you don't know what it is, just leave the setting at the default value of %0.1fx."), Scope::DEFAULT_MOUNT_GUIDE_SPEED)
             );
         this->SetTitle(_("Mount Already Connected?"));
         break;
     case ProfileWizard::STATE_AUXMOUNT:
         m_Instructions->SetLabelText(
-            _("Is the aux-mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
-            " If not, you can enter it manually.  If you don't know what it is, just leave the setting at the default value of 0.5x. "
-            " If the guide speed on the previous page doesn't match what is read from the mount, it will be revised automatically." )
+            wxString::Format(_("Is the aux-mount already connected and set up to communicate with PHD2?  If so, PHD2 can determine the mount guide speed automatically. "
+            " If not, you can enter it manually.  If you don't know what it is, just leave the setting at the default value of %0.1fx. "
+            " If the guide speed on the previous page doesn't match what is read from the mount, the mount value will be used."), Scope::DEFAULT_MOUNT_GUIDE_SPEED)
             );
         this->SetTitle(_("Aux-mount Already Connected?"));
         break;

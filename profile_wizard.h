@@ -116,6 +116,7 @@ private:
     DialogState m_State;
     bool m_useCamera;
     bool m_useMount;
+    bool m_useAuxMount;
 
 public:
 

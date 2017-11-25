@@ -72,6 +72,8 @@ public:
     void UnloadValues(void) override;
     void ResetRAParameterUI();
     void ResetDecParameterUI();
+    int GetCalStepSizeCtrlValue();
+    void SetCalStepSizeCtrlValue(int newStep);
 };
 
 class Scope : public Mount
@@ -211,6 +213,7 @@ public:
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
 
     static const double DEC_COMP_LIMIT; // declination compensation limit
+    static const double DEFAULT_MOUNT_GUIDE_SPEED;              // Presumptive mount guide speed if no usable mount connection
     void EnableDecCompensation(bool enable);
     bool DecCompensationEnabled() const;
     bool DecCompensationActive(void) const;

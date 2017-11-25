@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "calstep_dialog.h"
 
 #if defined(__WXOSX__)
 # include <wx/choicebk.h>
@@ -518,12 +519,18 @@ void AdvancedDialog::ResetGuidingParams()
     }
 }
 
+// This function only affects UI elements in the various AD panes - nothing is changed in primary classes until user clicks on ok in AD dialog
 void AdvancedDialog::MakeBinningAdjustments(int oldVal, int newVal)
 {
-    // Let the scope adjust the calibration step-size
-    m_pScopeCtrlSet->HandleBinningChange(oldVal, newVal);
-    // Let the current guide algos adjust min-moves or whatever else is needed
-    m_pMountPane->HandleBinningChange(oldVal, newVal);
+    int rslt;
+    double oldStepSize = ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->GetCalStepSizeCtrlValue();
+    // Scale the UI cal step size based on binning delta - may get refined at start of calibration if actual guiding rates are known
+    Debug.Write("CalDuration roughly adjusted in AD because of binning change\n");
+    ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->SetCalStepSizeCtrlValue((int) (oldStepSize * ((double)newVal / (double)oldVal)));
+    // but let the current guide algos make their own adjustments for stuff like min-moves
+    if (m_pMountPane->IsValid())
+        m_pMountPane->HandleBinningChange(oldVal, newVal);
+
 }
 
 int AdvancedDialog::GetBinning(void)

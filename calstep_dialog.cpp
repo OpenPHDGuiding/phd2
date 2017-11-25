@@ -47,8 +47,6 @@
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
 
-const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;       // 50% sidereal rate, apparently a common mount default value
-
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
     wxSpinCtrlDouble *pNewCtrl = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
@@ -72,7 +70,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_iFocalLength = focalLength;
     m_fPixelSize = pixelSize;
     m_binning = binning;
-    m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
+    m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", Scope::DEFAULT_MOUNT_GUIDE_SPEED);
 
     // Now improve on Dec and guide speed if mount/pointing info is available
     if (pPointingSource)

@@ -947,7 +947,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 void CameraConfigDialogCtrlSet::OnBinningChoiceChanged(wxCommandEvent& evt)
 {
     int newVal = m_binning->GetSelection() + 1;
-    // Spinner enforces min/max limits
     if (newVal != m_prevBinning)
     {
         pFrame->pAdvancedDialog->MakeBinningAdjustments(m_prevBinning, newVal);

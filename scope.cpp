@@ -65,6 +65,7 @@ static double NUDGE_TOLERANCE = 2.0;
 
 // enable dec compensation when calibration declination is less than this
 const double Scope::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;   // 60 degrees
+const double Scope::DEFAULT_MOUNT_GUIDE_SPEED = 0.5;
 
 Scope::Scope(void)
     :
@@ -868,42 +869,30 @@ void Scope::CheckCalibrationDuration(int currDuration)
     double raSpd;
     double decSpd;
     int rslt = currDuration;
-    bool noRates;
+    bool haveRates;
     bool binningChange;
+    bool refineStepSize = false;
 
     GetCalibrationDetails(&calDetails);
-    binningChange = (pCamera->Binning != calDetails.origBinning);
-    noRates = pPointingSource->GetGuideRates(&raSpd, &decSpd);
-    if (!noRates)
+    binningChange = (pCamera->Binning != calDetails.origBinning);           // CalDuration will have been roughly adjusted already
+    haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);
+    // Don't check on very first calibration - mount guide speeds might be buggy or user might have some legit reason for his own calibration stepsize
+    if (haveRates && calDetails.raGuideSpeed > 0)
     {
-
-        if (calDetails.raGuideSpeed > 0 && calDetails.decGuideSpeed > 0)
+        refineStepSize = binningChange || (fabs(1.0 - raSpd / calDetails.raGuideSpeed) > 0.05);     // binning change or speed change of > 5%
+        if (refineStepSize)
         {
-            if (fabs(1.0 - raSpd / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - decSpd / calDetails.decGuideSpeed) > 0.5 ||
-                binningChange)
-            {
-                double const siderealSecsPerSec = 0.9973;
-                double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
-                CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
+             double const siderealSecsPerSec = 0.9973;
+             double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
+             CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
                     pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, 0, &rslt);
-                if (rslt != currDuration)
+             if (rslt != currDuration)
                 {
                     wxString why = binningChange ? " binning " : " mount guide speed ";
-                    Debug.Write(wxString::Format("CalDuration adjusted at start of calibration because of %s change: from %d to %d\n", why, currDuration, rslt));
+                    Debug.Write(wxString::Format("CalDuration adjusted at start of calibration from %d to %d because of %s change\n", currDuration, rslt, why));
                     SetCalibrationDuration(rslt);
                 }
-            }
         }
-    }
-    else
-    {
-        if (binningChange)              // a rough scalar adjustment if no guide speeds available
-        {
-            rslt = currDuration * pCamera->Binning / calDetails.origBinning;
-            Debug.Write(wxString::Format("CalDuration roughly adjusted at start of calibration because of binning change: from %d to %d\n", currDuration, rslt));
-            SetCalibrationDuration(rslt);
-        }
-
     }
 }
 
@@ -1814,6 +1803,16 @@ void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
     m_pMaxDecDuration->SetValue(DefaultMaxDecDuration);
     m_pDecMode->SetSelection(1);                // 'Auto'
     m_pUseBacklashComp->SetValue(false);
+}
+
+int ScopeConfigDialogCtrlSet::GetCalStepSizeCtrlValue()
+{
+    return m_pCalibrationDuration->GetValue();
+}
+
+void ScopeConfigDialogCtrlSet::SetCalStepSizeCtrlValue(int newStep)
+{
+    m_pCalibrationDuration->SetValue(newStep);
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)

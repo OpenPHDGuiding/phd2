@@ -995,7 +995,7 @@ bool GearDialog::DoConnectCamera(void)
         wxString cameraId = SelectedCameraId(m_pCamera);
 
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
-
+        int profileBinning = m_pCamera->Binning;
         if (m_pCamera->Connect(cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");
@@ -1006,6 +1006,20 @@ bool GearDialog::DoConnectCamera(void)
         bool err = m_pCamera->GetDevicePixelSize(&pixelSize);
         if (!err)
             m_pCamera->SetCameraPixelSize(pixelSize);
+
+        // See if the profile was created with a binning level that isn't supported by the camera (user mistake) - if so, reset binning to 1
+        // Must be done here because orig binning level is not saved
+        if (profileBinning > m_pCamera->MaxBinning)
+        {
+            int rslt;
+            if (TheScope())
+            {
+                rslt = TheScope()->GetCalibrationDuration() / profileBinning;
+                TheScope()->SetCalibrationDuration(rslt);
+            }
+            m_pCamera->SetBinning(1);
+            Debug.Write(wxString::Format("CamConfigDlg correcting bogus user binning value from %d to 1\n", profileBinning));
+        }
 
         // force re-build of camera tab in case Connect updated any of
         // the camera properties that influence the camera tab. For

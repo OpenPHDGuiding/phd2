@@ -233,6 +233,7 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
     }
 }
 
+// This logic only affects the controls in the UI, nothing permanent here
 void Mount::MountConfigDialogPane::HandleBinningChange(int oldVal, int newVal)
 {
     m_pXGuideAlgorithmConfigDialogPane->HandleBinningChange(oldVal, newVal);
