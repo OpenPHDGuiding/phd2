@@ -58,8 +58,7 @@ ScopeINDI::ScopeINDI()
 
 ScopeINDI::~ScopeINDI() 
 {
-   ready = false;
-   Disconnect();
+    disconnectServer();
 }
 
 void ScopeINDI::ClearStatus()

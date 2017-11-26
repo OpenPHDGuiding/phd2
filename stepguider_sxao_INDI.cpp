@@ -52,8 +52,7 @@ StepGuiderSxAoINDI::StepGuiderSxAoINDI(void)
 
 StepGuiderSxAoINDI::~StepGuiderSxAoINDI(void)
 {
-    ready = false;
-    Disconnect();
+    disconnectServer();
 }
 
 void StepGuiderSxAoINDI::ClearStatus(void)
