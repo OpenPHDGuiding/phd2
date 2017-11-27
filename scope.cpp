@@ -1603,10 +1603,12 @@ wxString Scope::GetSettingsSummary()
             GetMaxDecDuration(),
             DecGuideModeStr(GetDecGuideMode()));
 
-    if (calDetails.raGuideSpeed != -1.0)
+    double raSpeed;
+    double decSpeed;
+    if (!pPointingSource->GetGuideRates(&raSpeed, &decSpeed))
     {
         rtnVal += wxString::Format("RA Guide Speed = %0.1f a-s/s, Dec Guide Speed = %0.1f a-s/s, ",
-            3600.0 * calDetails.raGuideSpeed, 3600.0 * calDetails.decGuideSpeed);
+            3600.0 * raSpeed, 3600.0 * decSpeed);
     }
     else
         rtnVal += "RA Guide Speed = Unknown, Dec Guide Speed = Unknown, ";

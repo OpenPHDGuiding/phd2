@@ -38,6 +38,7 @@
 #define GUIDELOG_VERSION _T("2.5")
 
 const int RetentionPeriod = 60;
+const double INVALID_ALTAZ = -90.0;
 
 GuidingLog::GuidingLog(void)
     :
@@ -229,19 +230,90 @@ static wxString RotatorPosStr(void)
     else
         return wxString::Format("%.1f", norm(pos, 0.0, 360.0));
 }
+// Angles in degrees, ha in hours, return degrees
+static double LocalAltitude(double Latitude, double HA, double Dec)
+{
+    double rslt;
+    const double HrsToRad = 0.2617993881;
+    // sin(Alt) = cos(HA)cos(Dec)cos(Lat) + sin(Dec)sin(Lat)
+    double decRadians = radians(Dec);
+    double latRadians = radians(Latitude);
+    double sinAlt = cos(HA * HrsToRad) * cos(decRadians) * cos(latRadians) + sin(decRadians) * sin(latRadians);
+
+    if (sinAlt >= -1.0 && sinAlt <= 1.0)
+        rslt = degrees(asin(sinAlt));
+    else
+    {
+        Debug.Write(wxString::Format("LocalAltitude error, invalid asin argumemt: %0.2f\n", sinAlt));
+        rslt = INVALID_ALTAZ;
+    }
+
+    return rslt;
+}
+// Angles in degrees, ha in hours, return degrees
+static double LocalAzimuth(double Latitude, double HA, double Dec, double Altitude)
+{
+    double rslt;
+    // cos(az) = (sin(dec) - sin(lat) * sin(alt)) / (cos(lat) * cos(alt))
+    double latRadians = radians(Latitude);
+    double altRadians = Altitude;
+    if (altRadians != INVALID_ALTAZ)
+    {
+        altRadians = radians(altRadians);
+        double cosAz = (sin(radians(Dec)) - sin(latRadians) * sin(altRadians)) / (cos(latRadians) * cos(altRadians));
+        cosAz = wxMax(-1.0, wxMin(1.0, cosAz));
+        if (cosAz >= -1.0 && cosAz <= 1.0)
+        {
+            rslt = degrees(acos(cosAz));
+            if (HA > 0)
+                rslt = 360.0 - rslt;                      // in the west
+        }
+        else
+        {
+            Debug.Write(wxString::Format("LocalAzimuth error, invalid acos argumemt: %0.2f\n", cosAz));
+            rslt = INVALID_ALTAZ;
+        }
+    }
+    else
+        rslt = INVALID_ALTAZ;
+
+    return rslt;
+}
 
 static wxString PointingInfo()
 {
     double cur_ra, cur_dec, cur_st;
+    double latitude, longitude;
+    double alt = INVALID_ALTAZ;
+    double az = INVALID_ALTAZ;
+    double ha;
+    wxString rslt = "";
+    bool pointingError = false;
     if (pPointingSource && !pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
-        return wxString::Format("RA = %0.2f hr, Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s, Rotator pos = %s",
-            cur_ra, cur_dec, HourAngle(cur_ra, cur_st), PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
+        ha = HourAngle(cur_ra, cur_st);
+        rslt = wxString::Format("RA = %0.2f hr, Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s, Rotator pos = %s, ",
+            cur_ra, cur_dec, ha, PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
     }
     else
     {
-        return wxString::Format("RA/Dec = Unknown, Hour angle = Unknown, Pier side = Unknown, Rotator pos = %s", RotatorPosStr());
+        rslt = wxString::Format("RA/Dec = Unknown, Hour angle = Unknown, Pier side = Unknown, Rotator pos = %s, ", RotatorPosStr());
+        pointingError = true;
     }
+    if (pPointingSource && !pointingError && !pPointingSource->GetSiteLatLong(&latitude, &longitude))
+    {
+        alt = LocalAltitude(latitude, ha, cur_dec);
+        if (alt != INVALID_ALTAZ)
+        {
+            az = LocalAzimuth(latitude, ha,cur_dec, alt);
+        }
+    }
+    if (alt != INVALID_ALTAZ && az != INVALID_ALTAZ)
+        rslt += wxString::Format("Alt = %0.1f deg, Az = %0.1f deg", alt, az);
+    else
+        rslt += "Alt = Unknown, Az = Unknown";
+
+    return rslt;
 }
 
 void GuidingLog::StartCalibration(Mount *pCalibrationMount)
@@ -331,11 +403,17 @@ void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxStr
 void GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
 {
     m_isGuiding = false;
+    CalibrationDetails calDetails;
 
     if (!m_enabled)
         return;
 
     assert(m_file.IsOpened());
+    pCalibrationMount->GetCalibrationDetails(&calDetails);
+    if (calDetails.raGuideSpeed > 0)
+        m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n", 3600.0 * calDetails.raGuideSpeed, 3600 * calDetails.decGuideSpeed));
+    else
+        m_file.Write("Calibration guide speeds: RA = Unknown, Dec = Unknown\n");
     m_file.Write(wxString::Format("Calibration complete, mount = %s.\n", pCalibrationMount->Name()));
     Flush();
 }
