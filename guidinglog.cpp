@@ -38,7 +38,6 @@
 #define GUIDELOG_VERSION _T("2.5")
 
 const int RetentionPeriod = 60;
-const double INVALID_ALTAZ = -90.0;
 
 GuidingLog::GuidingLog(void)
     :
@@ -230,62 +229,53 @@ static wxString RotatorPosStr(void)
     else
         return wxString::Format("%.1f", norm(pos, 0.0, 360.0));
 }
-// Angles in degrees, ha in hours, return degrees
-static double LocalAltitude(double Latitude, double HA, double Dec)
+
+// Angles in degrees, HA in hours, results in degrees
+static bool GetAltAz(double Latitude, double HA, double Dec, double& Altitude, double& Azimuth)
 {
-    double rslt;
+    bool err = false;
     const double HrsToRad = 0.2617993881;
+    // Get altitude first
     // sin(Alt) = cos(HA)cos(Dec)cos(Lat) + sin(Dec)sin(Lat)
     double decRadians = radians(Dec);
     double latRadians = radians(Latitude);
+    double altRadians;
     double sinAlt = cos(HA * HrsToRad) * cos(decRadians) * cos(latRadians) + sin(decRadians) * sin(latRadians);
-
     if (sinAlt >= -1.0 && sinAlt <= 1.0)
-        rslt = degrees(asin(sinAlt));
-    else
     {
-        Debug.Write(wxString::Format("LocalAltitude error, invalid asin argumemt: %0.2f\n", sinAlt));
-        rslt = INVALID_ALTAZ;
-    }
-
-    return rslt;
-}
-// Angles in degrees, ha in hours, return degrees
-static double LocalAzimuth(double Latitude, double HA, double Dec, double Altitude)
-{
-    double rslt;
-    // cos(az) = (sin(dec) - sin(lat) * sin(alt)) / (cos(lat) * cos(alt))
-    double latRadians = radians(Latitude);
-    double altRadians = Altitude;
-    if (altRadians != INVALID_ALTAZ)
-    {
-        altRadians = radians(altRadians);
-        double cosAz = (sin(radians(Dec)) - sin(latRadians) * sin(altRadians)) / (cos(latRadians) * cos(altRadians));
+        altRadians = asin(sinAlt);
+        Altitude = degrees(asin(sinAlt));
+        // Now get azimuth
+        // cos(az) = (sin(dec) - sin(lat) * sin(alt)) / (cos(lat) * cos(alt))
+        double cosAz = (sin(decRadians) - sin(latRadians) * sin(altRadians)) / (cos(latRadians) * cos(altRadians));
         cosAz = wxMax(-1.0, wxMin(1.0, cosAz));
         if (cosAz >= -1.0 && cosAz <= 1.0)
         {
-            rslt = degrees(acos(cosAz));
+            Azimuth = degrees(acos(cosAz));
             if (HA > 0)
-                rslt = 360.0 - rslt;                      // in the west
+                Azimuth = 360.0 - Azimuth;                      // in the west
         }
         else
         {
             Debug.Write(wxString::Format("LocalAzimuth error, invalid acos argumemt: %0.2f\n", cosAz));
-            rslt = INVALID_ALTAZ;
+            err = true;
         }
     }
     else
-        rslt = INVALID_ALTAZ;
+    {
+        Debug.Write(wxString::Format("LocalAltitude error, invalid asin argumemt: %0.2f\n", sinAlt));
+        err = true;
+    }
 
-    return rslt;
+    return err;
 }
 
 static wxString PointingInfo()
 {
     double cur_ra, cur_dec, cur_st;
     double latitude, longitude;
-    double alt = INVALID_ALTAZ;
-    double az = INVALID_ALTAZ;
+    double alt;
+    double az;
     double ha;
     wxString rslt = "";
     bool pointingError = false;
@@ -302,13 +292,9 @@ static wxString PointingInfo()
     }
     if (pPointingSource && !pointingError && !pPointingSource->GetSiteLatLong(&latitude, &longitude))
     {
-        alt = LocalAltitude(latitude, ha, cur_dec);
-        if (alt != INVALID_ALTAZ)
-        {
-            az = LocalAzimuth(latitude, ha,cur_dec, alt);
-        }
+        pointingError = GetAltAz(latitude, ha, cur_dec, alt, az);
     }
-    if (alt != INVALID_ALTAZ && az != INVALID_ALTAZ)
+    if (!pointingError)
         rslt += wxString::Format("Alt = %0.1f deg, Az = %0.1f deg", alt, az);
     else
         rslt += "Alt = Unknown, Az = Unknown";
