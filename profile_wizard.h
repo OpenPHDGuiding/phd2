@@ -62,6 +62,8 @@ public:
     };
 
 private:
+    AutoTempProfile m_profile;
+
     // wx UI controls
     wxBoxSizer *m_pvSizer;
     wxStaticBitmap *m_bitmap;
@@ -107,11 +109,11 @@ private:
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
     void WrapUp();
-    GuideCamera* TryCameraConnect();
-    Mount* TryMountConnect();
-    double GetPixelSize(GuideCamera* cam);
+    GuideCamera *TryCameraConnect();
+    Mount *TryMountConnect();
+    double GetPixelSize(GuideCamera *cam);
     void InitCameraProps(bool tryConnect);
-    void InitMountProps(Scope* theScope);
+    void InitMountProps(Scope *theScope);
     void SetBinningLevel(int val);
     DialogState m_State;
     bool m_useCamera;
@@ -134,10 +136,11 @@ class ConnectDialog : public wxDialog
     ProfileWizard* m_Parent;
 
 public:
-    ConnectDialog(ProfileWizard* parent, ProfileWizard::DialogState currState);
+    ConnectDialog(ProfileWizard *parent, ProfileWizard::DialogState currState);
 
     void OnYesButton(wxCommandEvent& evt);
     void OnNoButton(wxCommandEvent& evt);
     void OnCancelButton(wxCommandEvent& evt);
 };
+
 #endif

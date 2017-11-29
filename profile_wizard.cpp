@@ -497,7 +497,7 @@ void ProfileWizard::WrapUp()
                                    m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks));
 
     // create the new profile
-    if (pConfig->SetCurrentProfile(m_ProfileName))
+    if (!m_profile.Commit(m_ProfileName))
     {
         ShowStatus(wxString::Format(_("Could not create profile %s"), m_ProfileName));
         return;

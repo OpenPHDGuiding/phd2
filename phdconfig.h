@@ -142,4 +142,42 @@ public:
 
 extern PhdConfig *pConfig;
 
+// helper class for managing a temporary profile
+// usage:
+//     // crate and activate a new profile
+//     AutoTempProfile profile;
+//     // call Commit() to give the profile a real name and make it permanent
+//     if (!profile.Commit(newName))
+//     { ... /* newName already exists */ }
+//     // if Commit is not called, the temporary profile will be removed and the previous profile will be
+//     // activated when the AutoTempProfile instance is destroyed
+
+class AutoTempProfile
+{
+    wxString m_prev; // previous profile to be restored
+    wxString m_name; // name of the current, temporary profile
+
+    // non-copyable
+    AutoTempProfile(const AutoTempProfile&) = delete;
+    AutoTempProfile& operator=(const AutoTempProfile&) = delete;
+
+public:
+    // constructor, optionally calls Init to create a new profile and
+    // make it the current active profile
+    AutoTempProfile(bool init = true);
+
+    // destructor deletes the temporary profile and reverts to the
+    // previous profile unless the temporary profile has been
+    // committed
+    ~AutoTempProfile();
+
+    // Init creates a new temporary profile and makes it the current
+    // active profile
+    void Init();
+
+    // Commit - make the temporary profile permanent with the given
+    // name. Returns false if a profile with that name already exists.
+    bool Commit(const wxString& name);
+};
+
 #endif /* PHDCONFIG_H_INCLUDED */

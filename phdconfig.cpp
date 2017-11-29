@@ -738,3 +738,47 @@ unsigned int PhdConfig::NumProfiles(void)
 
     return count;
 }
+
+AutoTempProfile::AutoTempProfile(bool init)
+{
+    if (init)
+    {
+        Init();
+    }
+}
+
+AutoTempProfile::~AutoTempProfile()
+{
+    if (m_prev.empty())
+    {
+        // commited or never inited
+        return;
+    }
+
+    pConfig->SetCurrentProfile(m_prev);
+    pConfig->DeleteProfile(m_name);
+}
+
+void AutoTempProfile::Init()
+{
+    if (m_prev.empty())
+        m_prev = pConfig->GetCurrentProfile();
+
+    wxString const tempName(".!temp!profile!name!~");
+    pConfig->DeleteProfile(tempName); // stale temp profile from a crash?
+    pConfig->SetCurrentProfile(tempName); // creates it and make it the current profile
+    m_name = tempName;
+}
+
+bool AutoTempProfile::Commit(const wxString& name)
+{
+    // caller should have validated name is not empty
+    assert(!name.empty());
+
+    bool err = pConfig->RenameProfile(m_name, name);
+    if (err)
+        return false; // named profile already exists
+
+    m_prev.clear(); // signifies committed
+    return true;
+}
