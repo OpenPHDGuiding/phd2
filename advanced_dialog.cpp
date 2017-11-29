@@ -522,7 +522,6 @@ void AdvancedDialog::ResetGuidingParams()
 // This function only affects UI elements in the various AD panes - nothing is changed in primary classes until user clicks on ok in AD dialog
 void AdvancedDialog::MakeBinningAdjustments(int oldVal, int newVal)
 {
-    int rslt;
     double oldStepSize = ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->GetCalStepSizeCtrlValue();
     // Scale the UI cal step size based on binning delta - may get refined at start of calibration if actual guiding rates are known
     Debug.Write("CalDuration roughly adjusted in AD because of binning change\n");
