@@ -16,6 +16,9 @@ SolidCompression=yes
 OutputDir=.
 OutputBaseFilename=phd2-v{#APP_VERSION}-installer
 DirExistsWarning=no
+DisableWelcomPage=no
+DisableDirPage=no
+DisableProgramGroupPage=no
 
 [Files]
 Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion; AfterInstall: UpdateFirewallRules
