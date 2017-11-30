@@ -16,7 +16,7 @@ SolidCompression=yes
 OutputDir=.
 OutputBaseFilename=phd2-v{#APP_VERSION}-installer
 DirExistsWarning=no
-DisableWelcomPage=no
+DisableWelcomePage=no
 DisableDirPage=no
 DisableProgramGroupPage=no
 
