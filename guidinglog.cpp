@@ -231,43 +231,48 @@ static wxString RotatorPosStr(void)
 }
 
 // Angles in degrees, HA in hours, results in degrees
-static bool GetAltAz(double Latitude, double HA, double Dec, double& Altitude, double& Azimuth)
+static void GetAltAz(double Latitude, double HA, double Dec, double& Altitude, double& Azimuth)
 {
-    bool err = false;
     const double HrsToRad = 0.2617993881;
     // Get altitude first
     // sin(Alt) = cos(HA)cos(Dec)cos(Lat) + sin(Dec)sin(Lat)
     double decRadians = radians(Dec);
     double latRadians = radians(Latitude);
+    double haRadians = HA * HrsToRad;
     double altRadians;
-    double sinAlt = cos(HA * HrsToRad) * cos(decRadians) * cos(latRadians) + sin(decRadians) * sin(latRadians);
-    if (sinAlt >= -1.0 && sinAlt <= 1.0)
+    double sinAlt = cos(haRadians) * cos(decRadians) * cos(latRadians) + sin(decRadians) * sin(latRadians);
+    altRadians = asin(sinAlt);
+    Altitude = degrees(asin(sinAlt));
+    // Special handling if we're very close to zenith (very small zenith angle)
+    double zenDist = acos(sinAlt);
+    double zSin = sin(zenDist);
+    if (fabs(zSin) < 1e-5)
     {
-        altRadians = asin(sinAlt);
-        Altitude = degrees(asin(sinAlt));
-        // Now get azimuth
-        // cos(az) = (sin(dec) - sin(lat) * sin(alt)) / (cos(lat) * cos(alt))
-        double cosAz = (sin(decRadians) - sin(latRadians) * sin(altRadians)) / (cos(latRadians) * cos(altRadians));
-        cosAz = wxMax(-1.0, wxMin(1.0, cosAz));
-        if (cosAz >= -1.0 && cosAz <= 1.0)
-        {
-            Azimuth = degrees(acos(cosAz));
-            if (HA > 0)
-                Azimuth = 360.0 - Azimuth;                      // in the west
-        }
+        Altitude = 90.0;
+        // Azimuth values are arbitrary in this situation
+        if (sin(haRadians) >= 0)
+            Azimuth = 270;
         else
-        {
-            Debug.Write(wxString::Format("LocalAzimuth error, invalid acos argumemt: %0.2f\n", cosAz));
-            err = true;
-        }
-    }
-    else
-    {
-        Debug.Write(wxString::Format("LocalAltitude error, invalid asin argumemt: %0.2f\n", sinAlt));
-        err = true;
+            Azimuth = 90;
+        return;
     }
 
-    return err;
+    // Now get azimuth - alternative formula using zSin avoids div-by-zero conditions
+    double As = cos(decRadians) * sin(haRadians) / zSin;
+    double Ac = (sin(latRadians) * cos(decRadians) * cos(haRadians) - cos(latRadians) *
+        sin(decRadians)) / zSin;
+    // atan2 doesn't want both params = 0
+    if (Ac == 0.0 && As == 0.0)
+    {
+        if (Dec > 0)
+            Azimuth = 180.0;
+        else
+            Azimuth = 0.0;
+        return;
+    }
+    // arctan2 handles quadrants automatically but returns result in the range of -180 to +180 - we want 0 to 360
+    double altPrime = atan2(As, Ac);
+    Azimuth = degrees(altPrime) + 180.0;
 }
 
 static wxString PointingInfo()
@@ -292,7 +297,7 @@ static wxString PointingInfo()
     }
     if (pPointingSource && !pointingError && !pPointingSource->GetSiteLatLong(&latitude, &longitude))
     {
-        pointingError = GetAltAz(latitude, ha, cur_dec, alt, az);
+        GetAltAz(latitude, ha, cur_dec, alt, az);
     }
     if (!pointingError)
         rslt += wxString::Format("Alt = %0.1f deg, Az = %0.1f deg", alt, az);

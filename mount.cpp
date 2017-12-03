@@ -1155,6 +1155,8 @@ void Mount::AdjustCalibrationForScopePointing(void)
         }
         else
         {
+            // Don't do a full dec comp too close to pole - xRate will become a huge number and will cause problems downstream
+            newDeclination = wxMax(radians(-89.0), wxMin(radians(89.0), newDeclination));
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
             deccomp = true;
 
