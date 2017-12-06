@@ -152,6 +152,7 @@ class Guider : public wxWindow
     usImage *m_pCurrentImage;
     bool m_scaleImage;
     bool m_lockPosIsSticky;
+    bool m_ignoreLostStarLooping;
     bool m_fastRecenterEnabled;
     LockPosShiftParams m_lockPosShift;
     bool m_measurementMode;
@@ -182,7 +183,7 @@ public:
     };
 
 
-    OVERLAY_MODE GetOverlayMode(void);
+    OVERLAY_MODE GetOverlayMode(void) const;
 
 public:
     virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;
@@ -220,6 +221,7 @@ public:
     bool LockPosShiftEnabled(void) const { return m_lockPosShift.shiftEnabled; }
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
+    void SetIgnoreLostStarLooping(bool ignore);
     const PHD_Point& LockPosition() const;
     const LockPosShiftParams& GetLockPosShiftParams(void) const { return m_lockPosShift; }
     void ForceFullFrame(void);
@@ -309,6 +311,11 @@ inline bool Guider::IsPaused(void) const
 inline PauseType Guider::GetPauseType(void) const
 {
     return m_paused;
+}
+
+inline OVERLAY_MODE Guider::GetOverlayMode(void) const
+{
+    return m_overlayMode;
 }
 
 inline bool Guider::GetScaleImage(void) const

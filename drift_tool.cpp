@@ -414,6 +414,9 @@ repeat:
         // restore subframes setting
         pCamera->UseSubframes = m_save_use_subframes;
 
+        // restore normal guider behavior for star lost events
+        pFrame->pGuider->SetIgnoreLostStarLooping(false);
+
         if (!m_drifting)
         {
             if (!pCamera->Connected ||
@@ -496,6 +499,8 @@ repeat:
 
             // Set the lock position to the where the star has drifted to. This will be the center of the polar align circle.
             pFrame->pGuider->SetLockPosition(pFrame->pGuider->CurrentPosition());
+            // Make sure guider does not react to star lost (like by invalidating the lock position) while adjustment is in progress
+            pFrame->pGuider->SetIgnoreLostStarLooping(true);
             pFrame->pGraphLog->Refresh();  // polar align circle is updated in graph window's OnPaint handler
         }
     }
@@ -509,6 +514,9 @@ repeat:
 
         // restore subframes setting
         pCamera->UseSubframes = m_save_use_subframes;
+
+        // restore normal guider behavior for star lost events
+        pFrame->pGuider->SetIgnoreLostStarLooping(false);
 
         if (pFrame->pGuider->IsGuiding())
         {
@@ -687,6 +695,9 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
 
     // restore subframes setting
     pCamera->UseSubframes = m_save_use_subframes;
+
+    // restore normal guider behavior for star lost events
+    pFrame->pGuider->SetIgnoreLostStarLooping(false);
 
     // save the window position
     int x, y;

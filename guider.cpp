@@ -121,6 +121,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_lockPosShift.shiftUnits = UNIT_ARCSEC;
     m_lockPosShift.shiftIsMountCoords = true;
     m_lockPosIsSticky = false;
+    m_ignoreLostStarLooping = false;
     m_forceFullFrame = false;
     m_measurementMode = false;
     m_searchRegion = 0;
@@ -199,9 +200,13 @@ void Guider::ForceFullFrame(void)
     }
 }
 
-OVERLAY_MODE Guider::GetOverlayMode(void)
+void Guider::SetIgnoreLostStarLooping(bool ignore)
 {
-    return m_overlayMode;
+    if (m_ignoreLostStarLooping != ignore)
+    {
+        Debug.Write(wxString::Format("setting ignore lost star looping = %s\n", ignore ? "true" : "false"));
+        m_ignoreLostStarLooping = ignore;
+    }
 }
 
 bool Guider::SetOverlayMode(int overlayMode)
@@ -1188,8 +1193,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
-                    SetState(STATE_UNINITIALIZED);
-                    EvtServer.NotifyStarLost(info);
+                    if (!m_ignoreLostStarLooping)
+                    {
+                        SetState(STATE_UNINITIALIZED);
+                        EvtServer.NotifyStarLost(info);
+                    }
                     // See if a Static PA is underway
                     if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
                     {
