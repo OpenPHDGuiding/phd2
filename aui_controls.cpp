@@ -84,6 +84,13 @@ class SBPanel : public wxPanel
         return OVERLAY_HPADDING + sz.GetWidth() + OVERLAY_HPADDING;
     }
 
+#ifdef __APPLE__
+    // OSX needs a timer to clear the overlay text since no events are
+    // delivered when menu items are de-selected :(
+    wxTimer m_timer;
+    void OnTimer(wxTimerEvent&);
+#endif
+
 public:
     int emWidth;
 
@@ -100,6 +107,9 @@ public:
 
 wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
   EVT_PAINT(SBPanel::OnPaint)
+#ifdef __APPLE__
+  EVT_TIMER(wxID_ANY, SBPanel::OnTimer)
+#endif
 wxEND_EVENT_TABLE()
 
 // Classes for color-coded state indicators
@@ -194,6 +204,10 @@ SBPanel::SBPanel(wxStatusBar *parent, const wxSize& panelSize)
     parent->GetTextExtent("M", &emWidth, &txtHeight);       // Horizontal spacer used by various controls
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
+#ifdef __APPLE__
+    m_timer.SetOwner(this);
+#endif
+
 #ifndef __APPLE__
     SetDoubleBuffered(true);
 #endif
@@ -246,6 +260,9 @@ void SBPanel::SetOverlayText(const wxString& s)
         // un-hide overlapped controls
         std::for_each(m_hidden.begin(), m_hidden.end(), [](wxWindow *p) { p->Show(true); });
         m_hidden.clear();
+#ifdef __APPLE__
+        m_timer.Stop();
+#endif
     }
     else
     {
@@ -263,10 +280,20 @@ void SBPanel::SetOverlayText(const wxString& s)
                 m_hidden.insert(w);
             }
         }
+#ifdef __APPLE__
+        m_timer.StartOnce(5000);
+#endif
     }
 
     Refresh();
 }
+
+#ifdef __APPLE__
+void SBPanel::OnTimer(wxTimerEvent& evt)
+{
+    SetOverlayText(wxEmptyString);
+}
+#endif // __APPLE__
 
 void SBPanel::OnPaint(wxPaintEvent& evt)
 {
