@@ -75,7 +75,8 @@ wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 
-BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
+    EVT_MENU_HIGHLIGHT(wxID_ANY, MyFrame::OnMenuHighlight)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
     EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
@@ -91,6 +92,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
     EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
+    EVT_MENU(MENU_HELP_ONLINE, MyFrame::OnHelpOnline)
+    EVT_MENU(MENU_HELP_UPLOAD_LOGS, MyFrame::OnHelpUploadLogs)
     EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -160,7 +163,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
 
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 struct FileDropTarget : public wxFileDropTarget
 {
@@ -554,6 +557,8 @@ void MyFrame::SetupMenuBar(void)
     wxMenu *help_menu = new wxMenu;
     help_menu->Append(wxID_ABOUT, _("&About..."), wxString::Format(_("About %s"), APPNAME));
     m_upgradeMenuItem = help_menu->Append(MENU_HELP_UPGRADE, _("&Check for updates"), _("Check for PHD2 software updates"));
+    help_menu->Append(MENU_HELP_ONLINE,_("Online Support"),_("Ask for help in the PHD2 Forum"));
+// TODO:    help_menu->Append(MENU_HELP_UPLOAD_LOGS,_("Upload Log Files..."),_("Upload log files for review"));
     help_menu->Append(wxID_HELP_CONTENTS,_("&Contents...\tF1"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 

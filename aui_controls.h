@@ -3,7 +3,7 @@
 *  PHD Guiding
 *
 *  Created by Bruce Waddington
-*  Copyright (c) 2016 Bruce Waddington and Andy Galasso
+*  Copyright (c) 2016-2017 Bruce Waddington and Andy Galasso
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -36,156 +36,53 @@
 #ifndef _AUI_CONTROLS_H_
 #define _AUI_CONTROLS_H_
 
-// Types of fields in the statusbar
-enum SBFieldTypes
-{
-    Field_StatusMsg,
-    Field_Sat,
-    Field_SNR,
-    Field_RAInfo,
-    Field_DecInfo,
-    Field_Darks,
-    Field_Calib,
-    Field_Gear,
-    Field_Max
-};
-
-class PHDStatusBar;
-
-// Self-drawn panel for hosting controls in the wxStatusBar
-class SBPanel : public wxPanel
-{
-    std::vector<int> fieldOffsets;
-
-public:
-    int emWidth;
-
-    SBPanel(wxStatusBar* parent, const wxSize& panelSize);
-    void OnPaint(wxPaintEvent& evt);
-    void BuildFieldOffsets(const std::vector<int>& fldWidths);
-    wxPoint FieldLoc(int fieldId);
-    int GetMinPanelWidth();
-
-    wxDECLARE_EVENT_TABLE();
-};
-
-// Classes for color-coded state indicators
-class SBStateIndicatorItem; 
-
-class SBStateIndicators
-{
-    std::vector <SBStateIndicatorItem*> stateItems;
-    SBPanel* parentPanel;
-
-public:
-    wxIcon icoGreenLed;
-    wxIcon icoYellowLed;
-    wxIcon icoRedLed;
-
-    SBStateIndicators(SBPanel* panel, std::vector<int>& fldWidths);
-    ~SBStateIndicators();
-    void PositionControls();
-    void UpdateState();
-};
-
-class SBStateIndicatorItem
-{
-public:
-    SBFieldTypes type;
-    int txtHeight;
-    int txtWidth;
-    int fieldId;
-    int lastState;
-    SBPanel* parentPanel;
-    SBStateIndicators* container;
-    wxStaticText* ctrl;
-    wxStaticBitmap* pic;
-    wxString otherInfo;
-
-public:
-    SBStateIndicatorItem(SBPanel* panel, SBStateIndicators* container,
-        int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths);
-    void PositionControl();
-    void UpdateState();
-    wxString IndicatorToolTip(SBFieldTypes indType, int triState);
-};
-
-class SBGuideIndicators
-{
-    wxStaticBitmap* bitmapRA;
-    wxStaticBitmap* bitmapDec;
-    wxStaticText* txtRaAmounts;
-    wxStaticText* txtDecAmounts;
-    wxBitmap arrowLeft;
-    wxBitmap arrowRight;
-    wxBitmap arrowUp;
-    wxBitmap arrowDown;
-    SBPanel* parentPanel;
-
-public:
-    SBGuideIndicators(SBPanel* panel, std::vector<int>& fldWidths);
-    void PositionControls();
-    void UpdateState(int raDirection, int decDirection, double raPx, int raPulse, double decPx, int decPulse);
-    void ClearState() { UpdateState(LEFT, UP, 0, 0, 0, 0); }
-};
-
-class SBStarIndicators
-{
-    wxStaticText* txtMassPct;
-    wxStaticText* txtSNRLabel;
-    wxStaticText* txtSNRValue;
-    wxStaticText* txtSaturated;
-    const wxString massStr = _("Mass");
-    const wxString SNRStr = _("SNR");
-    const wxString satStr = _("SAT");
-    int txtHeight;
-    int snrLabelWidth;
-    SBPanel* parentPanel;
-
-public:
-    SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths);
-    void PositionControls();
-    void UpdateState(double MassPct, double SNR, bool Saturated);
-
-};
+class SBPanel;
+class SBStateIndicators;
+class SBStarIndicators;
+class SBGuideIndicators;
 
 // Child of normal status bar - used for status bar with color-coded messages and state indicators
 class PHDStatusBar : public wxStatusBar
 {
-private:
-    PHDStatusBar(wxWindow *parent, long style = wxSTB_DEFAULT_STYLE);
+    SBPanel *m_ctrlPanel;
+    SBStateIndicators *m_StateIndicators;
+    SBStarIndicators *m_StarIndicators;
+    SBGuideIndicators *m_GuideIndicators;
+    wxStaticText *m_Msg1;
 
+    PHDStatusBar(wxWindow *parent, long style = wxSTB_DEFAULT_STYLE);
     virtual ~PHDStatusBar();
 
 public:
-    static PHDStatusBar* CreateInstance(wxWindow* parent, long style = wxSTB_DEFAULT_STYLE);
+    static PHDStatusBar *CreateInstance(wxWindow *parent, long style = wxSTB_DEFAULT_STYLE);
+
     void StatusMsg(const wxString& text);
+
+    void OverlayMsg(const wxString& text);
+    void ClearOverlayMsg();
+
     void UpdateStates();
+
     void UpdateStarInfo(double SNR, bool Saturated);
     void ClearStarInfo() { UpdateStarInfo(-1, 0); }
+
     void UpdateGuiderInfo(const GuideStepInfo& step);
     void ClearGuiderInfo();
+
     int GetMinSBWidth();
 
     // event handlers
     void OnSize(wxSizeEvent& event);
 
-
 private:
-    SBPanel *m_ctrlPanel;
-    SBStateIndicators* m_StateIndicators;
-    SBStarIndicators* m_StarIndicators;
-    SBGuideIndicators* m_GuideIndicators;
-    wxStaticText* m_Msg1;
-
     wxDECLARE_EVENT_TABLE();
 };
 
 // Minor subclass to force the toolbar background to be what we want
-class PHDToolBarArt :public wxAuiDefaultToolBarArt
+class PHDToolBarArt : public wxAuiDefaultToolBarArt
 {
-    virtual void DrawBackground(wxDC& dc, wxWindow* parent, const wxRect& rect);
-    virtual wxAuiToolBarArt* Clone() { return new PHDToolBarArt(*this); }
+    virtual void DrawBackground(wxDC& dc, wxWindow *parent, const wxRect& rect);
+    virtual wxAuiToolBarArt *Clone() { return new PHDToolBarArt(*this); }
 };
 
 #endif      // AUI_CONTROLS_H

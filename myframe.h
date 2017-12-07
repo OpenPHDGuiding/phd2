@@ -251,6 +251,8 @@ public:
     wxSize m_prevDarkFrameSize;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
+
+    void OnMenuHighlight(wxMenuEvent& evt);
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAbout(wxCommandEvent& evt);
@@ -258,6 +260,8 @@ public:
     void OnOverlay(wxCommandEvent& evt);
     void OnOverlaySlitCoords(wxCommandEvent& evt);
     void OnUpgrade(wxCommandEvent& evt);
+    void OnHelpOnline(wxCommandEvent& evt);
+    void OnHelpUploadLogs(wxCommandEvent& evt);
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
@@ -627,6 +631,8 @@ enum {
     MENU_BOOKMARKS_CLEAR_ALL,
     MENU_STARCROSS_TEST,
     MENU_HELP_UPGRADE,
+    MENU_HELP_ONLINE,
+    MENU_HELP_UPLOAD_LOGS,
 };
 
 enum {

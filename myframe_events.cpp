@@ -33,12 +33,14 @@
  */
 
 #include "phd.h"
+
 #include "about_dialog.h"
-#include "image_math.h"
-#include "darks_dialog.h"
-#include "Refine_DefMap.h"
-#include "camcal_import_dialog.h"
 #include "aui_controls.h"
+#include "camcal_import_dialog.h"
+#include "darks_dialog.h"
+#include "image_math.h"
+#include "log_uploader.h"
+#include "Refine_DefMap.h"
 #include "starcross_test.h"
 
 #include <wx/spinctrl.h>
@@ -129,6 +131,26 @@ int MyFrame::RequestedExposureDuration()
     return m_singleExposure.enabled ? m_singleExposure.duration : m_exposureDuration;
 }
 
+void MyFrame::OnMenuHighlight(wxMenuEvent& evt)
+{
+    wxMenuBar *mb = pFrame->GetMenuBar();
+    wxMenuItem *mi = mb->FindItem(evt.GetMenuId());
+    //    wxMenu *menu = evt.GetMenu(); // this is always null on Linux
+    //    wxPrintf("onmenuhighlight m=%p id=%d mid=%d\n", menu, evt.GetId(), evt.GetMenuId());
+    //    wxMenuItem *mi;
+    //    if (menu && (mi = menu->FindItem(evt.GetMenuId())) != nullptr)
+    static wxWindow *tip;
+    if (mi)
+    {
+        const wxString& help = mi->GetHelp();
+        m_statusbar->OverlayMsg(help);
+    }
+    else
+    {
+        m_statusbar->ClearOverlayMsg();
+    }
+}
+
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close(false);
@@ -160,6 +182,16 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     AboutDialog dlg;
     dlg.ShowModal();
+}
+
+void MyFrame::OnHelpOnline(wxCommandEvent& evt)
+{
+    wxLaunchDefaultBrowser("https://openphdguiding.org/getting-help/");
+}
+
+void MyFrame::OnHelpUploadLogs(wxCommandEvent& evt)
+{
+    LogUploader::UploadLogs();
 }
 
 void MyFrame::OnOverlay(wxCommandEvent& evt)
