@@ -77,9 +77,11 @@ class SBPanel : public wxPanel
     wxString m_overlayText;
     std::unordered_set<wxWindow *> m_hidden;   // controls that are hidden by the overlay text
 
+    enum { OVERLAY_HPADDING = 10 };
+
     int OverlayWidth() const {
         wxSize sz = GetTextExtent(m_overlayText);
-        return 10 + sz.GetWidth() + 10;
+        return OVERLAY_HPADDING + sz.GetWidth() + OVERLAY_HPADDING;
     }
 
 public:
@@ -199,7 +201,7 @@ SBPanel::SBPanel(wxStatusBar *parent, const wxSize& panelSize)
 
 // wxWidgets does not support controls that overlap
 //   our workaround is to hide the controls that are overlapped by the overlay text
-//   m_hidden contains the set of controls that are hidden, but would otherwise be visible if 
+//   m_hidden contains the set of controls that are hidden, but would otherwise be visible if the overlay text were not present
 //
 void SBPanel::ShowControl(wxWindow *ctrl, bool show)
 {
@@ -292,7 +294,7 @@ void SBPanel::OnPaint(wxPaintEvent& evt)
         dc.SetBrush(wxColor(0xe5, 0xdc, 0x62));
         dc.DrawRectangle(0, 0, OverlayWidth(), GetSize().GetHeight());
         dc.SetTextForeground(*wxBLACK);
-        dc.DrawText(m_overlayText, 10, 0);
+        dc.DrawText(m_overlayText, OVERLAY_HPADDING, 1);
     }
 }
 
