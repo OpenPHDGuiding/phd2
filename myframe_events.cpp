@@ -133,13 +133,7 @@ int MyFrame::RequestedExposureDuration()
 
 void MyFrame::OnMenuHighlight(wxMenuEvent& evt)
 {
-    wxMenuBar *mb = pFrame->GetMenuBar();
-    wxMenuItem *mi = mb->FindItem(evt.GetMenuId());
-    //    wxMenu *menu = evt.GetMenu(); // this is always null on Linux
-    //    wxPrintf("onmenuhighlight m=%p id=%d mid=%d\n", menu, evt.GetId(), evt.GetMenuId());
-    //    wxMenuItem *mi;
-    //    if (menu && (mi = menu->FindItem(evt.GetMenuId())) != nullptr)
-    static wxWindow *tip;
+    wxMenuItem *mi = pFrame->GetMenuBar()->FindItem(evt.GetMenuId());
     if (mi)
     {
         const wxString& help = mi->GetHelp();
