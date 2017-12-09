@@ -817,6 +817,7 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
 
         // update average distance right away so GetCurrentDistance reflects the increased distance from the dither
         m_avgDistance += cameraDelta.Distance();
+        m_avgDistanceRA += fabs(mountDelta.X);
 
         if (IsFastRecenterEnabled())
         {
@@ -969,7 +970,7 @@ void Guider::SetState(GUIDER_STATE newState)
     }
 }
 
-void Guider::UpdateCurrentDistance(double distance)
+void Guider::UpdateCurrentDistance(double distance, double distanceRA)
 {
     m_starFoundTimestamp = wxDateTime::GetTimeNow();
 
@@ -978,22 +979,25 @@ void Guider::UpdateCurrentDistance(double distance)
         // update moving average distance
         static double const alpha = .3; // moderately high weighting for latest sample
         m_avgDistance += alpha * (distance - m_avgDistance);
+        m_avgDistanceRA += alpha * (distanceRA - m_avgDistanceRA);
     }
     else
     {
         // not yet guiding, reinitialize average distance
         m_avgDistance = distance;
+        m_avgDistanceRA = distanceRA;
     }
 
     if (m_avgDistanceNeedReset)
     {
         // avg distance history invalidated
         m_avgDistance = distance;
+        m_avgDistanceRA = distanceRA;
         m_avgDistanceNeedReset = false;
     }
 }
 
-double Guider::CurrentError(void)
+double Guider::CurrentError(bool raOnly)
 {
     enum { THRESHOLD_SECONDS = 20 };
     static double const LARGE_DISTANCE = 100.0;
@@ -1008,7 +1012,7 @@ double Guider::CurrentError(void)
         return LARGE_DISTANCE;
     }
 
-    return m_avgDistance;
+    return raOnly ? m_avgDistanceRA : m_avgDistance;
 }
 
 void Guider::StartGuiding(void)
@@ -1170,13 +1174,14 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             NudgeLockTool::UpdateNudgeLockControls();
         }
 
+        GuiderOffset ofs;
         FrameDroppedInfo info;
 
-        if (UpdateCurrentPosition(pImage, &info))           // true means error
+        if (UpdateCurrentPosition(pImage, &ofs, &info))           // true means error
         {
             info.frameNumber = pImage->FrameNum;
             info.time = pFrame->TimeSinceGuidingStarted();
-            info.avgDist = CurrentError();
+            info.avgDist = pFrame->CurrentGuideError();
 
             switch (m_state)
             {
@@ -1207,7 +1212,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pFrame->pGraphLog->AppendData(info);
 
                     // allow guide algorithms to attempt dead reckoning
-                    pFrame->SchedulePrimaryMove(pMount, PHD_Point(0., 0.), MOVETYPE_DEDUCED);
+                    static const GuiderOffset ZERO_OFS;
+                    pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
 
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
@@ -1241,7 +1247,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             if (m_state == STATE_GUIDING)
             {
                 // allow guide algorithms to attempt dead reckoning
-                pFrame->SchedulePrimaryMove(pMount, PHD_Point(0., 0.), MOVETYPE_DEDUCED);
+                static const GuiderOffset ZERO_OFS;
+                pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
             }
 
             statusMessage = _("Paused");
@@ -1363,10 +1370,9 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         m_avgDistanceNeedReset = true;
                     }
 
-                    PHD_Point mountCoords(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
-                    PHD_Point cameraCoords;
-                    pMount->TransformMountCoordinatesToCameraCoordinates(mountCoords, cameraCoords);
-                    pFrame->SchedulePrimaryMove(pMount, cameraCoords, MOVETYPE_DIRECT);
+                    ofs.mountOfs.SetXY(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
+                    pMount->TransformMountCoordinatesToCameraCoordinates(ofs.mountOfs, ofs.cameraOfs);
+                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVETYPE_DIRECT);
                 }
                 else if (m_measurementMode)
                 {
@@ -1376,7 +1382,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 {
                     // ordinary guide step
                     s_deflectionLogger.Log(CurrentPosition());
-                    pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition(), MOVETYPE_ALGO);
+                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVETYPE_ALGO);
                 }
                 break;
 

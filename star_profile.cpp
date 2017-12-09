@@ -76,26 +76,26 @@ void ProfileWindow::SetState(bool is_active)
         Refresh();
 }
 
-void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos)
+void ProfileWindow::UpdateData(const usImage *img, float xpos, float ypos)
 {
     if (this->data == NULL) return;
     int xstart = ROUNDF(xpos) - HALFW;
     int ystart = ROUNDF(ypos) - HALFW;
     if (xstart < 0) xstart = 0;
-    else if (xstart > (pImg->Size.GetWidth() - (FULLW + 1)))
-        xstart = pImg->Size.GetWidth() - (FULLW + 1);
+    else if (xstart > (img->Size.GetWidth() - (FULLW + 1)))
+        xstart = img->Size.GetWidth() - (FULLW + 1);
     if (ystart < 0) ystart = 0;
-    else if (ystart > (pImg->Size.GetHeight() - (FULLW + 1)))
-        ystart = pImg->Size.GetHeight() - (FULLW + 1);
+    else if (ystart > (img->Size.GetHeight() - (FULLW + 1)))
+        ystart = img->Size.GetHeight() - (FULLW + 1);
 
     int x,y;
     unsigned short *uptr = this->data;
-    const int xrowsize = pImg->Size.GetWidth();
+    const int xrowsize = img->Size.GetWidth();
     for (x = 0; x < FULLW; x++)
         horiz_profile[x] = vert_profile[x] = midrow_profile[x] = 0;
     for (y = 0; y < FULLW; y++) {
         for (x = 0; x < FULLW; x++, uptr++) {
-            *uptr = *(pImg->ImageData + xstart + x + (ystart + y) * xrowsize);
+            *uptr = *(img->ImageData + xstart + x + (ystart + y) * xrowsize);
             horiz_profile[x] += (int) *uptr;
             vert_profile[y] += (int) *uptr;
         }

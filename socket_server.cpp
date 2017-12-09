@@ -260,7 +260,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                     throw ERROR_INFO("cannot request distance if not guiding");
                 }
 
-                double currentError = pGuider->CurrentError();
+                double currentError = CurrentGuideError();
 
                 if (currentError > 2.55)
                 {

@@ -214,21 +214,21 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
 {
     m_interruptRequested &= ~INT_STOP;
 
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.Write(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)\n", mount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
+    Debug.Write(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)\n", mount->GetMountClassName(), ofs.cameraOfs.X, ofs.cameraOfs.Y));
 
     message.request                   = REQUEST_MOVE;
-    message.args.move.pMount          = mount;
+    message.args.move.mount           = mount;
     message.args.move.calibrationMove = false;
-    message.args.move.vectorEndpoint  = vectorEndpoint;
+    message.args.move.ofs             = ofs;
     message.args.move.moveType        = moveType;
-    message.args.move.pSemaphore      = NULL;
+    message.args.move.semaphore       = nullptr;
 
     EnqueueMessage(message);
 }
@@ -243,33 +243,33 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRE
     Debug.Write(wxString::Format("Enqueuing Calibration Move request for direction %d\n", direction));
 
     message.request                   = REQUEST_MOVE;
-    message.args.move.pMount          = mount;
+    message.args.move.mount           = mount;
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
     message.args.move.duration        = duration;
     message.args.move.moveType        = MOVETYPE_DIRECT;
-    message.args.move.pSemaphore      = NULL;
+    message.args.move.semaphore       = nullptr;
 
     EnqueueMessage(message);
 }
 
-Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *pArgs)
+Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *req)
 {
     Mount::MOVE_RESULT result = Mount::MOVE_OK;
 
     try
     {
-        if (pArgs->pMount->HasNonGuiMove())
+        if (req->mount->HasNonGuiMove())
         {
             Debug.Write(wxString::Format("Handling move in thread for %s dir=%d\n",
-                    pArgs->pMount->GetMountClassName(),
-                    pArgs->direction));
+                    req->mount->GetMountClassName(),
+                    req->direction));
 
-            if (pArgs->calibrationMove)
+            if (req->calibrationMove)
             {
                 Debug.Write("calibration move\n");
 
-                result = pArgs->pMount->CalibrationMove(pArgs->direction, pArgs->duration);
+                result = req->mount->CalibrationMove(req->direction, req->duration);
                 if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("CalibrationMove failed");
@@ -278,9 +278,9 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *pArgs)
             else
             {
                 Debug.Write(wxString::Format("endpoint = (%.2f, %.2f)\n",
-                    pArgs->vectorEndpoint.X, pArgs->vectorEndpoint.Y));
+                    req->ofs.cameraOfs.X, req->ofs.cameraOfs.Y));
 
-                result = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->moveType);
+                result = req->mount->Move(&req->ofs, req->moveType);
                 if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("Move failed");
@@ -295,17 +295,17 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *pArgs)
             Debug.Write("Sending move to myFrame\n");
 
             wxSemaphore semaphore;
-            pArgs->pSemaphore = &semaphore;
+            req->semaphore = &semaphore;
 
             wxCommandEvent evt(REQUEST_MOUNT_MOVE_EVENT, GetId());
-            evt.SetClientData(pArgs);
+            evt.SetClientData(req);
             wxQueueEvent(m_pFrame, evt.Clone());
 
             // wait for the request to complete
-            pArgs->pSemaphore->Wait();
+            req->semaphore->Wait();
 
-            pArgs->pSemaphore = NULL;
-            result = pArgs->moveResult;
+            req->semaphore = nullptr;
+            result = req->moveResult;
 
             if (result != Mount::MOVE_OK)
             {
@@ -393,10 +393,10 @@ wxThread::ExitCode WorkerThread::Entry()
 
             case REQUEST_MOVE: {
                 Debug.Write(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)\n",
-                    message.args.move.pMount->GetMountClassName(), message.args.move.direction,
-                    message.args.move.vectorEndpoint.X, message.args.move.vectorEndpoint.Y));
+                    message.args.move.mount->GetMountClassName(), message.args.move.direction,
+                    message.args.move.ofs.cameraOfs.X, message.args.move.ofs.cameraOfs.Y));
                 Mount::MOVE_RESULT moveResult = HandleMove(&message.args.move);
-                SendWorkerThreadMoveComplete(message.args.move.pMount, moveResult);
+                SendWorkerThreadMoveComplete(message.args.move.mount, moveResult);
                 break;
             }
 

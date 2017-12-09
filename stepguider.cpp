@@ -987,13 +987,13 @@ static void SuppressSlowBumpWarning(long)
     pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
 }
 
-Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType)
+Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, MountMoveType moveType)
 {
     MOVE_RESULT result = MOVE_OK;
 
     try
     {
-        result = Mount::Move(cameraVectorEndpoint, moveType);
+        result = Mount::Move(ofs, moveType);
         if (result != MOVE_OK)
             Debug.Write(wxString::Format("StepGuider::Move: Mount::Move failed! result %d\n", result));
 
@@ -1134,7 +1134,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 // a conventional guide correction with the mount
                 // 70% of full offset, same as default Hysteresis guide algorithm
 
-                thisBump = cameraVectorEndpoint * 0.70;
+                thisBump = ofs->cameraOfs * 0.70;
 
                 // limit bump size to 50% of the max move distance (search region)
                 // this is large enough to move the star quickly back to the lock position
@@ -1190,8 +1190,8 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
                 // limit the bump size to no larger than the guide star offset;
                 // any larger bump could cause an over-shoot
                 double pixels2 = xBumpSize * xBumpSize + yBumpSize * yBumpSize;
-                double maxDist2 = cameraVectorEndpoint.X * cameraVectorEndpoint.X +
-                    cameraVectorEndpoint.Y * cameraVectorEndpoint.Y;
+                double maxDist2 = ofs->cameraOfs.X * ofs->cameraOfs.X +
+                    ofs->cameraOfs.Y * ofs->cameraOfs.Y;
                 if (pixels2 > maxDist2)
                 {
                     thisBump *= sqrt(maxDist2 / pixels2);
@@ -1209,7 +1209,9 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, Mount
 
             Debug.Write(wxString::Format("Scheduling Mount bump of (%.3f, %.3f)\n", thisBump.X, thisBump.Y));
 
-            pFrame->ScheduleSecondaryMove(pSecondaryMount, thisBump, MOVETYPE_DIRECT);
+            GuiderOffset bumpOfs;
+            bumpOfs.cameraOfs = thisBump;
+            pFrame->ScheduleSecondaryMove(pSecondaryMount, bumpOfs, MOVETYPE_DIRECT);
         }
     }
     catch (const wxString& Msg)

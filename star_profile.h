@@ -36,11 +36,12 @@
 #ifndef STAR_PROFILE_H
 #define STAR_PROFILE_H
 
-class ProfileWindow : public wxWindow {
+class ProfileWindow : public wxWindow
+{
 public:
     ProfileWindow(wxWindow *parent);
     ~ProfileWindow(void);
-    void UpdateData(usImage *pImg, float xpos, float ypos);
+    void UpdateData(const usImage *pImg, float xpos, float ypos);
     void OnPaint(wxPaintEvent& evt);
     void SetState(bool is_active);
     void OnLClick(wxMouseEvent& evt);

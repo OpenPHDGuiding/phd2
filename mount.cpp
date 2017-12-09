@@ -798,14 +798,13 @@ void Mount::LogGuideStepInfo()
     m_lastStep.frameNumber = -1; // invalidate
 }
 
-Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType)
+Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
 {
     MOVE_RESULT result = MOVE_OK;
 
     try
     {
         double xDistance, yDistance;
-        PHD_Point mountVectorEndpoint;
 
         if (moveType == MOVETYPE_DEDUCED)
         {
@@ -813,24 +812,26 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
             yDistance = m_pYGuideAlgorithm ? m_pYGuideAlgorithm->deduceResult() : 0.0;
             if (xDistance == 0.0 && yDistance == 0.0)
                 return result;
-            mountVectorEndpoint.X = xDistance;
-            mountVectorEndpoint.Y = yDistance;
+            ofs->mountOfs.SetXY(xDistance, yDistance);
 
             Debug.Write(wxString::Format("Dead-reckoning move xDistance=%.2f yDistance=%.2f\n",
                 xDistance, yDistance));
         }
         else
         {
-            if (TransformCameraCoordinatesToMountCoordinates(cameraVectorEndpoint, mountVectorEndpoint))
+            if (!ofs->mountOfs.IsValid())
             {
-                throw ERROR_INFO("Unable to transform camera coordinates");
+                if (TransformCameraCoordinatesToMountCoordinates(ofs->cameraOfs, ofs->mountOfs, true))
+                {
+                    throw ERROR_INFO("Unable to transform camera coordinates");
+                }
             }
 
-            xDistance = mountVectorEndpoint.X;
-            yDistance = mountVectorEndpoint.Y;
+            xDistance = ofs->mountOfs.X;
+            yDistance = ofs->mountOfs.Y;
 
             Debug.Write(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f\n",
-                cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
+                ofs->cameraOfs.X, ofs->cameraOfs.Y, xDistance, yDistance));
 
             if (moveType == MOVETYPE_ALGO)
             {
@@ -884,8 +885,8 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         info.moveType = moveType;
         info.frameNumber = pFrame->m_frameCounter;
         info.time = pFrame->TimeSinceGuidingStarted();
-        info.cameraOffset = cameraVectorEndpoint;
-        info.mountOffset = mountVectorEndpoint;
+        info.cameraOffset = ofs->cameraOfs;
+        info.mountOffset = ofs->mountOfs;
         info.guideDistanceRA = xDistance;
         info.guideDistanceDec = yDistance;
         info.durationRA = xMoveResult.amountMoved;
@@ -897,7 +898,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, MountMoveT
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
-        info.avgDist = pFrame->pGuider->CurrentError();
+        info.avgDist = pFrame->CurrentGuideError();
         info.starError = pFrame->pGuider->StarError();
     }
     catch (const wxString& errMsg)

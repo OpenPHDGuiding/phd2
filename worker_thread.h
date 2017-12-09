@@ -68,14 +68,14 @@ struct EXPOSE_REQUEST
 
 struct MOVE_REQUEST
 {
-    Mount             *pMount;
+    Mount             *mount;
     int                duration;
     GUIDE_DIRECTION    direction;
     bool               calibrationMove;
     MountMoveType      moveType;
     Mount::MOVE_RESULT moveResult;
-    PHD_Point          vectorEndpoint;
-    wxSemaphore       *pSemaphore;
+    GuiderOffset       ofs;
+    wxSemaphore       *semaphore;
 };
 
 class WorkerThread : public wxThread
@@ -174,17 +174,17 @@ public:
     void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe);
     void SetSkipExposeComplete();
 protected:
-    bool HandleExpose(EXPOSE_REQUEST *pArgs);
+    bool HandleExpose(EXPOSE_REQUEST *args);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadExposeComplete(wxThreadEvent& event);
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
+    void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType);
+    void EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRECTION direction, int duration);
 protected:
-    Mount::MOVE_RESULT HandleMove(MOVE_REQUEST *pArgs);
-    void SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESULT moveResult);
+    Mount::MOVE_RESULT HandleMove(MOVE_REQUEST *args);
+    void SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
     void EnqueueMessage(const WORKER_THREAD_REQUEST& message);

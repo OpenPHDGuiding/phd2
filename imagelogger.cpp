@@ -209,7 +209,7 @@ void ImageLogger::LogImage(const usImage *img, double distance)
 
         if (frameCount >= MIN_FRAMES_FOR_STATS)
         {
-            double curErr = wxMax(pFrame->pGuider->CurrentError(), 0.001); // prevent divide by zero
+            double curErr = wxMax(pFrame->CurrentGuideError(), 0.001); // prevent divide by zero
             double relErr = distance / curErr;
             double threshPx = s_il.settings.logFramesOverThreshPx ? s_il.settings.guideErrorThreshPx : 99.;
             double threshRel = s_il.settings.logFramesOverThreshRel ? s_il.settings.guideErrorThreshRel : 99.;

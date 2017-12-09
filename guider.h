@@ -129,6 +129,12 @@ public:
 
 };
 
+struct GuiderOffset
+{
+    PHD_Point cameraOfs;
+    PHD_Point mountOfs;
+};
+
 class Guider : public wxWindow
 {
     // Private member data.
@@ -147,6 +153,7 @@ class Guider : public wxWindow
     PHD_Point m_ditherRecenterRemaining;
     time_t m_starFoundTimestamp;  // timestamp when star was last found
     double m_avgDistance;         // averaged distance for distance reporting
+    double m_avgDistanceRA;       // averaged distance, RA only
     bool m_avgDistanceNeedReset;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
@@ -195,7 +202,7 @@ protected:
 
     bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
     void SetState(GUIDER_STATE newState);
-    void UpdateCurrentDistance(double distance);
+    void UpdateCurrentDistance(double distance, double distanceRA);
 
     void ToggleBookmark(const wxRealPoint& pt);
 
@@ -244,7 +251,7 @@ public:
     bool GetScaleImage(void) const;
 
     int GetSearchRegion(void) const;
-    double CurrentError(void);
+    double CurrentError(bool raOnly);
 
     bool GetBookmarksShown(void) const;
     void SetBookmarksShown(bool show);
@@ -271,8 +278,8 @@ public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
 private:
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
-    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo) = 0;
-    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position) = 0;
+    virtual bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) = 0;
+    virtual bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) = 0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;

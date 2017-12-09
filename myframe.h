@@ -377,8 +377,8 @@ public:
 
     void ScheduleExposure(void);
 
-    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
-    void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
+    void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, MountMoveType moveType);
+    void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, MountMoveType moveType);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing(void);
@@ -390,6 +390,8 @@ public:
     bool StartLooping(void); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding(void);
     bool Dither(double amount, bool raOnly);
+
+    double CurrentGuideError(void) const;
 
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);

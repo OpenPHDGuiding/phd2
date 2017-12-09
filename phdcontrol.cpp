@@ -482,7 +482,7 @@ void PhdController::UpdateControllerState(void)
 
         case STATE_SETTLE_WAIT: {
             bool lockedOnStar = pFrame->pGuider->IsLocked();
-            double currentError = pFrame->pGuider->CurrentError();
+            double currentError = pFrame->CurrentGuideError();
             bool inRange = lockedOnStar && currentError <= ctrl.settle.tolerancePx;
             bool aoBumpInProgress = IsAoBumpInProgress();
             long timeInRange = 0;

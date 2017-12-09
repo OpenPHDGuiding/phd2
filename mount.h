@@ -244,7 +244,8 @@ public:
     bool GetGuidingEnabled(void) const;
     void SetGuidingEnabled(bool guidingEnabled);
 
-    virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType);
+    virtual MOVE_RESULT Move(GuiderOffset *guiderOffset, MountMoveType moveType);
+
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint, bool logged = true);
 

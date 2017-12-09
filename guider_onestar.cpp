@@ -297,7 +297,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
     return bError;
 }
 
-bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& position)
+bool GuiderOneStar::SetCurrentPosition(const usImage *pImage, const PHD_Point& position)
 {
     bool bError = true;
 
@@ -588,7 +588,7 @@ struct DistanceChecker
             // traversing the searach region and causing one or more bad frames, but with only the
             // first frame triggering the star rejection.
 
-            double distanceThreshold = 2.0 * pFrame->pGuider->CurrentError();
+            double distanceThreshold = 2.0 * pFrame->pGuider->CurrentError(false);
             if (distance > distanceThreshold)
             {
                 Debug.Write(wxString::Format("DistanceChecker: reject for large offset (%.2f > %.2f)\n", distance, distanceThreshold));
@@ -606,8 +606,7 @@ struct DistanceChecker
 
 static DistanceChecker s_distanceChecker;
 
-
-bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo)
+bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo)
 {
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
     {
@@ -693,7 +692,11 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
 
         if (lockPos.IsValid())
         {
-            UpdateCurrentDistance(distance);
+            ofs->cameraOfs = m_star - lockPos;
+            if (pMount)
+                pMount->TransformCameraCoordinatesToMountCoordinates(ofs->cameraOfs, ofs->mountOfs, true);
+            double distanceRA = ofs->mountOfs.IsValid() ? fabs(ofs->mountOfs.X) : 0.;
+            UpdateCurrentDistance(distance, distanceRA);
         }
 
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);

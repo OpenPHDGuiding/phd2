@@ -1530,20 +1530,20 @@ void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 
 void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 {
-    MOVE_REQUEST *pRequest = (MOVE_REQUEST *) evt.GetClientData();
+    MOVE_REQUEST *request = (MOVE_REQUEST *) evt.GetClientData();
 
     Debug.Write("OnRequestMountMove() begins\n");
 
-    if (pRequest->calibrationMove)
+    if (request->calibrationMove)
     {
-        pRequest->moveResult = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
+        request->moveResult = request->mount->CalibrationMove(request->direction, request->duration);
     }
     else
     {
-        pRequest->moveResult = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->moveType);
+        request->moveResult = request->mount->Move(&request->ofs, request->moveType);
     }
 
-    pRequest->pSemaphore->Post();
+    request->semaphore->Post();
     Debug.Write("OnRequestMountMove() ends\n");
 }
 
@@ -1579,9 +1579,9 @@ void MyFrame::ScheduleExposure(void)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
-void MyFrame::SchedulePrimaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1589,12 +1589,12 @@ void MyFrame::SchedulePrimaryMove(Mount *mount, const PHD_Point& vectorEndpoint,
     mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveType);
 }
 
-void MyFrame::ScheduleSecondaryMove(Mount *mount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
+void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
 {
-    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
+    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1604,14 +1604,14 @@ void MyFrame::ScheduleSecondaryMove(Mount *mount, const PHD_Point& vectorEndpoin
     {
         // some mounts must run on the Primary thread even if the secondary is requested
         // to ensure synchronous ST4 guide / camera exposure
-        SchedulePrimaryMove(mount, vectorEndpoint, moveType);
+        SchedulePrimaryMove(mount, ofs, moveType);
     }
     else
     {
         mount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, vectorEndpoint, moveType);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveType);
     }
 }
 
@@ -1920,6 +1920,13 @@ bool MyFrame::Dither(double amount, bool raOnly)
     }
 
     return error;
+}
+
+double MyFrame::CurrentGuideError(void) const
+{
+    const Scope *const scope = TheScope();
+    bool const raOnly = scope && scope->GetDecGuideMode() == DEC_NONE;
+    return pGuider->CurrentError(raOnly);
 }
 
 void MyFrame::OnClose(wxCloseEvent& event)

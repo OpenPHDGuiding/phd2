@@ -99,30 +99,30 @@ public:
     GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
 
-    void OnPaint(wxPaintEvent& evt);
+    void OnPaint(wxPaintEvent& evt) override;
 
-    bool IsLocked(void);
-    bool AutoSelect(void);
-    const PHD_Point& CurrentPosition(void);
-    wxRect GetBoundingBox(void);
-    int GetMaxMovePixels(void);
-    double StarMass(void);
-    unsigned int StarPeakADU(void);
-    double SNR(void);
-    double HFD(void);
-    int StarError(void);
-    wxString GetSettingsSummary();
+    bool IsLocked(void) override;
+    bool AutoSelect(void) override;
+    const PHD_Point& CurrentPosition(void) override;
+    wxRect GetBoundingBox(void) override;
+    int GetMaxMovePixels(void) override;
+    double StarMass(void) override;
+    unsigned int StarPeakADU(void) override;
+    double SNR(void) override;
+    double HFD(void) override;
+    int StarError(void) override;
+    wxString GetSettingsSummary() override;
 
-    Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
 
     void LoadProfileSettings(void);
 
 private:
-    bool IsValidLockPosition(const PHD_Point& pt);
-    void InvalidateCurrentPosition(bool fullReset = false);
-    bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
-    bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
+    bool IsValidLockPosition(const PHD_Point& pt) final;
+    void InvalidateCurrentPosition(bool fullReset = false) final;
+    bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) final;
+    bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) final;
 
     void OnLClick(wxMouseEvent& evt);
 
