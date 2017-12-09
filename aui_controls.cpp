@@ -268,16 +268,30 @@ void SBPanel::SetOverlayText(const wxString& s)
     {
         int const width = OverlayWidth();
 
-        // hide overlapped controls
-        m_hidden.clear();
+        // hide overlapped controls and un-hide hidden controls that are no longer overlapped
         const wxWindowList& children = GetChildren();
         for (auto it = children.begin(); it != children.end(); ++it)
         {
             wxWindow *w = *it;
-            if (w->IsShown() && w->GetPosition().x < width)
+            if (w->IsShown())
             {
-                w->Show(false);
-                m_hidden.insert(w);
+                if (w->GetPosition().x < width)
+                {
+                    w->Show(false);
+                    m_hidden.insert(w);
+                }
+            }
+            else
+            {
+                if (w->GetPosition().x >= width)
+                {
+                    auto it = m_hidden.find(w);
+                    if (it != m_hidden.end())
+                    {
+                        m_hidden.erase(it);
+                        w->Show(true);
+                    }
+                }
             }
         }
 #ifdef __APPLE__

@@ -77,6 +77,7 @@ wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU_HIGHLIGHT(wxID_ANY, MyFrame::OnMenuHighlight)
+    EVT_MENU(wxID_ANY, MyFrame::OnAnyMenu)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
     EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)

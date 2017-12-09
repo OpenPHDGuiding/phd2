@@ -253,6 +253,7 @@ public:
     void RegisterTextCtrl(wxTextCtrl *ctrl);
 
     void OnMenuHighlight(wxMenuEvent& evt);
+    void OnAnyMenu(wxCommandEvent& evt);
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAbout(wxCommandEvent& evt);
