@@ -1212,7 +1212,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pFrame->pGraphLog->AppendData(info);
 
                     // allow guide algorithms to attempt dead reckoning
-                    static const GuiderOffset ZERO_OFS;
+                    static GuiderOffset ZERO_OFS;
                     pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
 
                     wxColor prevColor = GetBackgroundColour();
@@ -1247,7 +1247,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             if (m_state == STATE_GUIDING)
             {
                 // allow guide algorithms to attempt dead reckoning
-                static const GuiderOffset ZERO_OFS;
+                static GuiderOffset ZERO_OFS;
                 pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
             }
 
