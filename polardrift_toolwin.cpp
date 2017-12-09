@@ -83,20 +83,26 @@ wxWindow *PolarDriftTool::CreatePolarDriftToolWindow()
 
     return new PolarDriftToolWin();
 }
-bool PolarDriftTool::IsDrifting()
-{
-    PolarDriftToolWin *win = static_cast<PolarDriftToolWin *>(pFrame->pPolarDriftTool);
-    return win->IsDrifting();
-}
-bool PolarDriftTool::WatchDrift()
-{
-    PolarDriftToolWin *win = static_cast<PolarDriftToolWin *>(pFrame->pPolarDriftTool);
-    return win->WatchDrift();
-}
 void PolarDriftTool::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
     PolarDriftToolWin *win = static_cast<PolarDriftToolWin *>(pFrame->pPolarDriftTool);
-    return win->PaintHelper(dc, scale);
+    if (win)
+    {
+        win->PaintHelper(dc, scale);
+    }
+}
+bool PolarDriftTool::UpdateState()
+{
+    PolarDriftToolWin *win = static_cast<PolarDriftToolWin *>(pFrame->pPolarDriftTool);
+    if (win && win->IsDrifting())
+    {
+        // Rotate the mount in RA a bit
+        if (!win->WatchDrift())
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 PolarDriftToolWin::PolarDriftToolWin()

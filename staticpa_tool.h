@@ -34,16 +34,14 @@
 #ifndef STATICPA_TOOL_H
 #define STATICPA_TOOL_H
 
-struct StaticPaToolWin;
-
 class StaticPaTool
 {
-    StaticPaTool(); // not implemented
+    StaticPaTool() = delete;
 public:
     static wxWindow *CreateStaticPaToolWindow();
-    static bool IsAligning();
-    static bool RotateMount();
     static void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
-    static bool RotateFail(const wxString& msg);
+    static void NotifyStarLost();
+    static bool UpdateState();
 };
+
 #endif

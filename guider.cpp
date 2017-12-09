@@ -626,17 +626,9 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
 
-        
-         // draw static polar align stuff
-        // Ideally get a pointer to StaticPaTool and let it do the work
-        if (pFrame->pPolarDriftTool)
-        {
-            PolarDriftTool::PaintHelper(dc, m_scaleFactor);
-        }
-        if (pFrame->pStaticPaTool)
-        {
-            StaticPaTool::PaintHelper(dc, m_scaleFactor);
-        }
+        // draw static polar align stuff
+        PolarDriftTool::PaintHelper(dc, m_scaleFactor);
+        StaticPaTool::PaintHelper(dc, m_scaleFactor);
 
         if (IsPaused())
         {
@@ -1198,11 +1190,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         SetState(STATE_UNINITIALIZED);
                         EvtServer.NotifyStarLost(info);
                     }
-                    // See if a Static PA is underway
-                    if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
-                    {
-                        StaticPaTool::RotateFail(_("Static PA rotation failed - star lost"));
-                    }
+                    StaticPaTool::NotifyStarLost();
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
@@ -1270,26 +1258,17 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 SetState(STATE_SELECTED);
                 break;
             case STATE_SELECTED:
-                // See if a Static PA is underway
-                if (pFrame->pStaticPaTool && StaticPaTool::IsAligning())
+                if (!StaticPaTool::UpdateState())
                 {
-                    // Rotate the mount in RA a bit
-                    if (!StaticPaTool::RotateMount())
-                    {
-                        SetState(STATE_UNINITIALIZED);
-                        statusMessage = _("Static PA rotation failed");
-                        throw ERROR_INFO("Static PA rotation failed");
-                    }
+                    SetState(STATE_UNINITIALIZED);
+                    statusMessage = _("Static PA rotation failed");
+                    throw ERROR_INFO("Static PA rotation failed");
                 }
-                if (pFrame->pPolarDriftTool && PolarDriftTool::IsDrifting())
+                if (!PolarDriftTool::UpdateState())
                 {
-                    // Rotate the mount in RA a bit
-                    if (!PolarDriftTool::WatchDrift())
-                    {
-                        SetState(STATE_UNINITIALIZED);
-                        statusMessage = _("Polar Drift PA drift failed");
-                        throw ERROR_INFO("Polar Drift PA drift failed");
-                    }
+                    SetState(STATE_UNINITIALIZED);
+                    statusMessage = _("Polar Drift PA drift failed");
+                    throw ERROR_INFO("Polar Drift PA drift failed");
                 }
                 break;
             case STATE_CALIBRATING_PRIMARY:

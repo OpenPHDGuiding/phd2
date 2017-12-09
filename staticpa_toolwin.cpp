@@ -127,26 +127,36 @@ wxWindow *StaticPaTool::CreateStaticPaToolWindow()
 
     return new StaticPaToolWin();
 }
-bool StaticPaTool::IsAligning()
-{
-    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
-    return win->IsAligning();
-}
-bool StaticPaTool::RotateMount()
-{
-    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
-    return win->RotateMount();
-}
 void StaticPaTool::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
     StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
-    return win->PaintHelper(dc, scale);
+    if (win)
+    {
+        win->PaintHelper(dc, scale);
+    }
 }
 
-bool StaticPaTool::RotateFail(const wxString& msg)
+void StaticPaTool::NotifyStarLost()
+{
+    // See if a Static PA is underway
+    StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
+    if (win && win->IsAligning())
+    {
+        win->RotateFail(_("Static PA rotation failed - star lost"));
+    }
+}
+bool StaticPaTool::UpdateState()
 {
     StaticPaToolWin *win = static_cast<StaticPaToolWin *>(pFrame->pStaticPaTool);
-    return win->RotateFail(msg);
+    if (win && win->IsAligning())
+    {
+        // Rotate the mount in RA a bit
+        if (!win->RotateMount())
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 StaticPaToolWin::StaticPaToolWin()
