@@ -1,11 +1,11 @@
-# 
+#
 #  fr\messages.po
 #  PHD Guiding
-# 
+#
 #  Created by Sylvain Girard
 #  Copyright (c) 2013 Sylvain Girard
 #  All rights reserved.
-# 
+#
 #  This source code is distributed under the following "BSD" license
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 #     contributors may be used to endorse or promote products derived from
 #     this software without specific prior written permission.
-# 
+#
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 #  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,15 +29,15 @@
 #  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 # , 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-29 17:59-0500\n"
-"PO-Revision-Date: 2017-10-26 23:22+0200\n"
+"PO-Revision-Date: 2017-12-10 23:35+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr_FR\n"
@@ -1400,7 +1400,7 @@ msgstr "Impossible de configurer le gestionnaire d'image"
 
 #: cam_firewire_IC.cpp:188
 msgid "FireWire camera setup failed"
-msgstr ""
+msgstr "La configuration de la caméra FireWire a échoué"
 
 #: cam_firewire_IC.cpp:206
 msgid "Could not start Live view"
@@ -2835,6 +2835,12 @@ msgid ""
 "side-of-pier.  If you have already selected an %s driver for your 'mount', "
 "the 'aux' mount parameter will not be used."
 msgstr ""
+"Si vous utilisez une interface de port de guidage (On-camera ou GPXXX) pour "
+"le guidage, vous pouvez également utiliser une connexion 'aux' %s-compatible "
+"à votre monture. Ceci sera utilisé pour faire des ajustements de calibration "
+"automatique basés sur la déclinaison et le côté du méridien. Si vous avez "
+"déjà sélectionné un pilote %s pour votre 'monture', le paramètre de montage "
+"'aux' ne sera pas utilisé."
 
 #: gear_dialog.cpp:299
 msgid "Aux Mount Setup"
@@ -3666,7 +3672,7 @@ msgstr ""
 
 #: guider.cpp:1196
 msgid "Static PA rotation failed - star lost"
-msgstr ""
+msgstr "La rotation de l'AP a échoué - étoile perdue"
 
 #: guider.cpp:1204
 msgid "star lost"
@@ -3682,7 +3688,7 @@ msgstr "La rotation statique de l'alignement polaire a échoué"
 
 #: guider.cpp:1282
 msgid "Polar Drift PA drift failed"
-msgstr ""
+msgstr "Dérive Polaire : Échec de la dérive"
 
 #: guider.cpp:1293
 msgid "AO calibration failed"
@@ -4353,6 +4359,9 @@ msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
+"Les vitesses du guidage de la monture sont différentes de celles utilisées "
+"lors de la dernière calibration. Effectuez un nouveau calibrage ou "
+"réinitialisez les réglages de la vitesse de guidage aux valeurs précédentes. "
 
 #: mount.cpp:1114
 msgid ""
@@ -4505,14 +4514,17 @@ msgstr "Alignement par la Dérive (Drift Align)"
 #: myframe.cpp:504
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
 msgstr ""
+"Alignement en analysant la dérive de l'étoile près de l'équateur céleste "
+"(Précis)"
 
 #: myframe.cpp:505
 msgid "&Polar Drift Align"
-msgstr ""
+msgstr "Alignement par Dérive &Polaire"
 
 #: myframe.cpp:505
 msgid "Align by analysing star drift near the celestial pole (Simple)"
 msgstr ""
+"Alignement en analysant la dérive de l'étoile près du pôle céleste (Simple)"
 
 #: myframe.cpp:506
 msgid "&Static Polar Align"
@@ -4521,6 +4533,8 @@ msgstr "Alignement Polaire &Statique"
 #: myframe.cpp:506
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
 msgstr ""
+"Alignement en mesurant le décalage de l'axe AD par rapport au pôle céleste "
+"(Rapide)"
 
 #: myframe.cpp:508
 msgid "Enable Server"
@@ -5724,6 +5738,16 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
+"L'outil d'Alignement par Dérive Polaire est plus efficace quand PHD2 "
+"connaît\n"
+"la longueur focale de votre lunette guide et la taille des pixels de la "
+"caméra.\n"
+"\n"
+"Veuillez entrer la longueur focale de la lunette guide dans l'onglet Globale "
+"du Cerveau.\n"
+"Veuillez entrer la taille des pixels dans l'onglet Caméra du Cerveau.\n"
+"\n"
+"Voulez-vous quand même utiliser cet outil ?"
 
 #: polardrift_toolwin.cpp:80 staticpa_toolwin.cpp:124
 msgid "Please wait till Calibration is done and stop guiding"
@@ -5731,7 +5755,7 @@ msgstr "Veuillez attendre que la calibration finisse et arrêter le guidage"
 
 #: polardrift_toolwin.cpp:103
 msgid "Polar Drift Alignment"
-msgstr ""
+msgstr "Alignement par Dérive Polaire"
 
 #: polardrift_toolwin.cpp:154
 msgid ""
@@ -5743,6 +5767,13 @@ msgid ""
 "Adjust your mount's altitude and azimuth to placethe guide star in its "
 "target circle\n"
 msgstr ""
+"Pointez à proximité du Pôle Céleste.\n"
+"Sélectionnez une étoile guide sur l'écran principal.\n"
+"Cliquez sur Démarrer\n"
+"Attendez que l'affichage se stabilise\n"
+"Cliquez sur Arrêter\n"
+"Ajustez l'altitude et l'azimut de votre monture pour placer l'étoile guide "
+"dans son cercle cible\n"
 
 #: polardrift_toolwin.cpp:173 staticpa_toolwin.cpp:309
 msgid "Alignment Parameters"
@@ -5762,12 +5793,12 @@ msgstr "Notes d'ajustement"
 
 #: polardrift_toolwin.cpp:253
 msgid "Polar Drift alignment stopped"
-msgstr ""
+msgstr "Alignement de la Dérive Polaire s'est arrêté"
 
 #: polardrift_toolwin.cpp:255
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
-msgstr ""
+msgstr "AP err(arcmin): %.1f Angle (deg): %.1f"
 
 #: polardrift_toolwin.cpp:261 staticpa_toolwin.cpp:531
 msgid "Please wait till Calibration is done and/or stop guiding"
@@ -5780,7 +5811,7 @@ msgstr "Veuillez sélectionner une étoile"
 #: polardrift_toolwin.cpp:384
 #, c-format
 msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
-msgstr ""
+msgstr "Temps %.1f AP err(arcmin): %.1f Angle (deg): %.1f"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -5804,6 +5835,10 @@ msgid ""
 "can use the up/down control or type in a value directly. If the pixels "
 "aren't square, just enter the larger of the X/Y dimensions."
 msgstr ""
+"Obtenez cette valeur à partir de la documentation de votre caméra ou d'une "
+"source en ligne. Vous pouvez utiliser le contrôle haut/bas ou saisir "
+"directement une valeur. Si les pixels ne sont pas carrés, entrez simplement "
+"la plus grande des dimensions X/Y."
 
 #: profile_wizard.cpp:137
 msgid "Guide camera un-binned pixel size (microns)"
@@ -5816,10 +5851,15 @@ msgid ""
 "use of fainter guide stars.  For more common set-ups, it's better to leave "
 "binning at 1."
 msgstr ""
+"Si votre caméra prend en charge le binning (beaucoup ne le font pas), vous "
+"pouvez choisir une valeur de binning > 1. Avec les longues focales de "
+"guidage et les guidages hors axe, le binning peut permettre l'utilisation "
+"d'étoiles guides plus faibles. Pour les configurations plus courantes, il "
+"vaut mieux laisser binning à 1."
 
 #: profile_wizard.cpp:144
 msgid "Binning level"
-msgstr ""
+msgstr "Niveau de binning"
 
 #: profile_wizard.cpp:151
 msgid ""
@@ -5844,6 +5884,10 @@ msgid ""
 "default value (%0.1fX), which should produce a successful calibration in "
 "most cases"
 msgstr ""
+"La vitesse de guidage de la monture que vous utiliserez pour la calibration "
+"et le guidage, exprimée en multiple du taux sidéral. Si vous ne savez pas, "
+"laissez le paramètre à la valeur par défaut (%0.1fX), ce qui devrait aboutir "
+"à un calibrage réussi dans la plupart des cas"
 
 #: profile_wizard.cpp:167
 msgid "Mount guide speed (n.n x sidereal)"
@@ -5915,6 +5959,15 @@ msgid ""
 "automatically.  You can also choose a binning-level if your camera supports "
 "binning."
 msgstr ""
+"Sélectionnez votre caméra dans la liste. Toutes les caméras prises en charge "
+"par PHD2 et toutes les caméras ASCOM installées sont affichées. Si votre "
+"caméra n'est pas affichée, elle n'est pas pris en charge par PHD2 ou son "
+"pilote n'est pas installé. PHD2 doit connaître la taille des pixels de la "
+"caméra et la distance focale de la lunette guide afin de calculer les "
+"paramètres de guidage raisonnables. Lorsque vous choisissez une caméra, vous "
+"avez la possibilité de vous y connecter immédiatement pour obtenir la taille "
+"de pixel automatiquement. Vous pouvez également choisir un niveau de binning "
+"si votre caméra prend en charge le binning."
 
 #: profile_wizard.cpp:253
 #, c-format
@@ -5929,6 +5982,17 @@ msgid ""
 "choose a  mount, you'll usually be given the option to connect to it "
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
+"Sélectionnez votre interface de monture dans la liste. Cela détermine "
+"comment PHD2 enverra des commandes de guidage à la monture. Pour les "
+"montures les plus modernes, l'interface ASCOM est un bon choix si vous "
+"utilisez MS Windows. Les autres interfaces sont disponibles pour les cas où "
+"ASCOM n'est pas disponible ou n'est pas bien supporté par le firmware de la "
+"monture. Si vous connaissez la vitesse de guidage de monture, vous pouvez la "
+"spécifier afin que PHD2 puisse calibrer plus efficacement. Si vous ne "
+"connaissez pas la vitesse de guidage de votre monture, vous pouvez "
+"simplement utiliser la valeur par défaut de %0.1fx. Lorsque vous choisissez "
+"une monture, vous aurez généralement l'option de vous connecter "
+"immédiatement afin que PHD2 puisse lire la vitesse de guidage pour vous."
 
 #: profile_wizard.cpp:260
 msgid ""
@@ -6086,26 +6150,28 @@ msgstr ""
 
 #: profile_wizard.cpp:622
 msgid "Ask"
-msgstr ""
+msgstr "Questionner"
 
 #: profile_wizard.cpp:653
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
-msgstr ""
+msgstr "Réglage de la vitesse de guidage ajusté à partir %0.1f to %0.1fx"
 
 #: profile_wizard.cpp:684
 msgid "PHD2 could not load the camera driver"
-msgstr ""
+msgstr "PHD2 ne peut pas charger le pilote de la caméra"
 
 #: profile_wizard.cpp:686
 msgid "PHD2 could not connect to the camera"
-msgstr ""
+msgstr "PHD2 ne peut pas se connecter à la caméra"
 
 #: profile_wizard.cpp:703
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
+"Ce pilote de caméra ne signale pas la taille de pixel, vous devez donc "
+"entrer la valeur manuellement"
 
 #: profile_wizard.cpp:762
 msgid "Connecting to mount..."
@@ -6119,6 +6185,10 @@ msgid ""
 "can enter it manually.  Otherwise, you can just leave it at the default "
 "value of %0.1fx"
 msgstr ""
+"PHD2 n'a pas pu se connecter à la monture, donc vous voudrez probablement "
+"traiter cela plus tard. En attendant, si vous connaissez le réglage de la "
+"vitesse de guidage de la monture, vous pouvez le saisir manuellement. Sinon, "
+"vous pouvez simplement le laisser à la valeur par défaut de %0.1fx"
 
 #: profile_wizard.cpp:780
 #, c-format
@@ -6127,10 +6197,14 @@ msgid ""
 "mount guide speed setting, you can enter it manually. Otherwise, you can "
 "just leave it at the default value of %0.1fx"
 msgstr ""
+"Apparemment, ce pilote de monture n'indique pas les vitesses de guidage. Si "
+"vous connaissez le réglage de la vitesse de guidage de la monture vous "
+"pouvez le saisir manuellement. Sinon, vous pouvez simplement le laisser à la "
+"valeur par défaut de %0.1fx"
 
 #: profile_wizard.cpp:827
 msgid "Ask About Connection"
-msgstr ""
+msgstr "Questionner à Propos de la Connexion"
 
 #: profile_wizard.cpp:840
 msgid ""
@@ -6139,10 +6213,15 @@ msgid ""
 "connected or its driver doesn't report the pixel-size, you can enter the "
 "value yourself using information in the camera manual or online. "
 msgstr ""
+"La caméra est-elle déjà connecté au PC? Si c'est le cas, PHD2 peut "
+"généralement déterminer la taille de pixel de la caméra automatiquement. Si "
+"la caméra n'est pas connectée ou si son pilote ne signale pas la taille des "
+"pixels, vous pouvez saisir la valeur vous-même à l'aide des informations du "
+"manuel de la caméra ou en ligne."
 
 #: profile_wizard.cpp:843
 msgid "Camera Already Connected?"
-msgstr ""
+msgstr "Caméra Déjà Connectée ?"
 
 #: profile_wizard.cpp:847
 #, c-format
@@ -6152,10 +6231,15 @@ msgid ""
 "enter the guide-speed manually.  If you don't know what it is, just leave "
 "the setting at the default value of %0.1fx."
 msgstr ""
+"La monture est-elle déjà connectée et configurée pour communiquer avec PHD2? "
+"Si c'est le cas, PHD2 peut déterminer automatiquement la vitesse de guidage. "
+"Sinon, vous pouvez entrer la vitesse de guidage manuellement. Si vous ne "
+"savez pas ce que c'est, laissez simplement le paramètre à la valeur par "
+"défaut de %0.1fx."
 
 #: profile_wizard.cpp:850
 msgid "Mount Already Connected?"
-msgstr ""
+msgstr "Monture Déjà Connectée ?"
 
 #: profile_wizard.cpp:854
 #, c-format
@@ -6166,10 +6250,17 @@ msgid ""
 "the default value of %0.1fx.  If the guide speed on the previous page "
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
+"La monture auxiliaire est-elle déjà connectée et configurée pour communiquer "
+"avec PHD2? Si c'est le cas, PHD2 peut déterminer automatiquement la vitesse "
+"de guidage de la monture. Sinon, vous pouvez l'entrer manuellement. Si vous "
+"ne savez pas ce que c'est, laissez simplement le paramètre à la valeur par "
+"défaut de %0.1fx. Si la vitesse de guidage sur la page précédente ne "
+"correspond pas à ce qui est lu sur la monture, la valeur de la monture sera "
+"utilisée."
 
 #: profile_wizard.cpp:858
 msgid "Aux-mount Already Connected?"
-msgstr ""
+msgstr "Monture Auxiliaire Déjà Montée ?"
 
 #: rotator.cpp:146
 msgid "Rotator Settings"
@@ -6815,6 +6906,12 @@ msgid ""
 "<br/>Wait for the adjustments to display.<br/>Adjust your mount's altitude "
 "and azimuth as displayed.<br/>Red=Altitude; Blue=Azimuth<br/>"
 msgstr ""
+"Pointez vers le Pôle Céleste.<br/>Choisissez une Étoile de Référence dans la "
+"liste.<br/>Utilisez la Carte d'Étoiles pour identifier une Étoile de "
+"Référence.<br/>Sélectionnez-la comme étoile guide sur l'écran principal.<br/"
+">Cliquez sur Faire pivoter pour commencer l'alignement.<br/> Attendez que "
+"les réglages s'affichent.<br/>Ajustez l'altitude et l'azimut de votre "
+"monture comme affiché.<br/>Rouge=Altitude; Bleu=Azimut<br/>"
 
 #: staticpa_toolwin.cpp:257
 msgid ""
@@ -6826,6 +6923,15 @@ msgid ""
 "for the adjustments to display.<br/>Adjust your mount's altitude and azimuth "
 "to place three reference stars on their orbits\n"
 msgstr ""
+"Pointez vers le Pôle Céleste.<br/>Choisissez une Étoile de Référence dans la "
+"liste.<br/>Utilisez la Carte d'Étoiles pour identifier une Étoile de "
+"Référence.<br/>Sélectionnez-la comme étoile guide sur l'écran principal.<br/"
+">Cliquez sur Aller à la première position.<br/>Pointez au moins 0h20m à "
+"l'ouest en AD.<br/> Assurez-vous que l'étoile de référence est toujours "
+"sélectionnée.<br/>Cliquez sur Aller à la seconde position.<br/>Répétez pour "
+"la troisième position.<br/> Attendez que les réglages s'affichent.<br/"
+">Ajustez l'altitude et l'azimut de votre monture pour placer trois étoiles "
+"de référence sur leurs orbites.\n"
 
 #: staticpa_toolwin.cpp:321
 msgid "Hour Angle"
@@ -6845,7 +6951,7 @@ msgstr "Sélectionner l'étoile utilisée pour vérifier l'alignement."
 
 #: staticpa_toolwin.cpp:354
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: staticpa_toolwin.cpp:361
 msgid "Camera Angle"
@@ -6901,7 +7007,7 @@ msgstr "Affichage de l'Alignement Polaire Statique effacé"
 
 #: staticpa_toolwin.cpp:613
 msgid "Star Map"
-msgstr ""
+msgstr "Carte d'Étoiles"
 
 #: staticpa_toolwin.cpp:642
 msgid "Get first position"
@@ -6910,38 +7016,41 @@ msgstr "Aller à la position initiale"
 #: staticpa_toolwin.cpp:812
 #, c-format
 msgid "Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f"
-msgstr ""
+msgstr "Erreur de l'Alignement Polaire (arcmin): Alt %.1f; Az %.1f Tot %.1f"
 
 #: staticpa_toolwin.cpp:1041
 #, c-format
 msgid "Reading Star Position #%d"
-msgstr ""
+msgstr "Lecture Position Étoile #%d"
 
 #: staticpa_toolwin.cpp:1049 staticpa_toolwin.cpp:1133
 msgid "Error setting rotation parameters: Stopping"
-msgstr ""
+msgstr "Erreur lors de la définition des paramètres de rotation: Arrêt"
 
 #: staticpa_toolwin.cpp:1055 staticpa_toolwin.cpp:1079
 #: staticpa_toolwin.cpp:1109 staticpa_toolwin.cpp:1163
 #, c-format
 msgid "Error reading star position #%d: Stopping"
-msgstr ""
+msgstr "Erreur lors de la lecture de la position de l'étoile #%d : Arrêt"
 
 #: staticpa_toolwin.cpp:1088
 #, c-format
 msgid "Star Pos#2 Step=%d / %d Rotated=%.1f / %.1f deg"
-msgstr ""
+msgstr "Position Étoile #2 Step=%d / %d Rotation=%.1f / %.1f deg"
 
 #: staticpa_toolwin.cpp:1100
 #, c-format
 msgid "Error moving west step %d: Stopping"
-msgstr ""
+msgstr "Erreur lors du déplacement du pas ouest %d: Arrêt"
 
 #: staticpa_toolwin.cpp:1126
 #, c-format
 msgid "Star Pos#2 Mount did not move. Calculated polar offset=%.1f deg"
 msgstr ""
+"Position Étoile#2 La monture n'a pas bougé. Décalage polaire calculé = %.1f "
+"deg"
 
+# What is CoR?
 #: staticpa_toolwin.cpp:1146
 #, c-format
 msgid "Star is too close to CoR (%.1f deg) - try another reference star"
@@ -6950,7 +7059,7 @@ msgstr ""
 #: staticpa_toolwin.cpp:1214
 #, c-format
 msgid "Read Position #%d: %.0f, %.0f"
-msgstr ""
+msgstr "Lire Position #%d: %.0f, %.0f"
 
 #: statswindow.cpp:70
 msgid "RMS [px]"
