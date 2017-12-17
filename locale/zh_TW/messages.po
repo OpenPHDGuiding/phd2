@@ -1,10 +1,10 @@
 # fr\messages.po
 # PHD Guiding
-# 
+#
 # Created by Sylvain Girard
 # Copyright (c) 2013 Sylvain Girard
 # All rights reserved.
-# 
+#
 # This source code is distributed under the following "BSD" license
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 # Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,14 +28,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-29 17:59-0500\n"
-"PO-Revision-Date: 2017-10-23 14:37+0800\n"
+"PO-Revision-Date: 2017-12-17 17:11+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -1345,7 +1345,7 @@ msgstr "無法設定禎控制器"
 
 #: cam_firewire_IC.cpp:188
 msgid "FireWire camera setup failed"
-msgstr ""
+msgstr "設定 FireWire 相機失敗"
 
 #: cam_firewire_IC.cpp:206
 msgid "Could not start Live view"
@@ -2714,6 +2714,9 @@ msgid ""
 "side-of-pier.  If you have already selected an %s driver for your 'mount', "
 "the 'aux' mount parameter will not be used."
 msgstr ""
+"如果你使用導星埠 (On-Camera 或 GPXXX) 做為導星介面, 你也可以利用 ‘aux’ 連接到"
+"你的 %s-相容赤道儀. 這樣就可以依據赤緯及赤道儀方向(side-of-pier) 進行自動校準"
+"調整. 如果你已經選用赤道儀的 %s 驅動程式, 就不可以再使用 ‘aux’ 參數. "
 
 #: gear_dialog.cpp:299
 msgid "Aux Mount Setup"
@@ -3509,7 +3512,7 @@ msgstr ""
 
 #: guider.cpp:1196
 msgid "Static PA rotation failed - star lost"
-msgstr ""
+msgstr "靜態 PA 旋轉失敗 - 遺失星點"
 
 #: guider.cpp:1204
 msgid "star lost"
@@ -3525,7 +3528,7 @@ msgstr "靜態 PA 旋轉失敗"
 
 #: guider.cpp:1282
 msgid "Polar Drift PA drift failed"
-msgstr ""
+msgstr "極點飄移 PA 飄移失敗"
 
 #: guider.cpp:1293
 msgid "AO calibration failed"
@@ -4149,6 +4152,8 @@ msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
+"赤道儀導星速率與最近一次進行校準所用的不同. 請重新做一次校準或將赤道儀導星速"
+"率設成與前次校準所用的數值."
 
 #: mount.cpp:1114
 msgid ""
@@ -4294,15 +4299,15 @@ msgstr "飄移法極軸校準"
 
 #: myframe.cpp:504
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
-msgstr ""
+msgstr "依據分析天球赤道附近星點進行對準 (精確)"
 
 #: myframe.cpp:505
 msgid "&Polar Drift Align"
-msgstr ""
+msgstr "極點飄移對極軸"
 
 #: myframe.cpp:505
 msgid "Align by analysing star drift near the celestial pole (Simple)"
-msgstr ""
+msgstr "依據分析天球極區附近星點進行對準 (簡易)"
 
 #: myframe.cpp:506
 msgid "&Static Polar Align"
@@ -4310,7 +4315,7 @@ msgstr "&S靜態對極軸"
 
 #: myframe.cpp:506
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
-msgstr ""
+msgstr "依據量測極區附近的赤經軸偏移量來對極軸 (快速)"
 
 #: myframe.cpp:508
 msgid "Enable Server"
@@ -5438,6 +5443,13 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
+"當 PHD2 有導星鏡焦長及相機像素大小等資訊時，\n"
+"“靜態對極軸”工具會是最有效的。\n"
+"\n"
+"在大腦圖示->整體頁籤中，輸入您的導星鏡焦長。\n"
+"在大腦圖示->整體頁籤中，輸入您的導星相機像素大小。\n"
+"\n"
+"您是否要執行飄移校準工具呢?"
 
 #: polardrift_toolwin.cpp:80 staticpa_toolwin.cpp:124
 msgid "Please wait till Calibration is done and stop guiding"
@@ -5445,7 +5457,7 @@ msgstr "請等待校準作業完成並且/或停止導星"
 
 #: polardrift_toolwin.cpp:103
 msgid "Polar Drift Alignment"
-msgstr ""
+msgstr "極點飄移對極軸"
 
 #: polardrift_toolwin.cpp:154
 msgid ""
@@ -5457,6 +5469,12 @@ msgid ""
 "Adjust your mount's altitude and azimuth to placethe guide star in its "
 "target circle\n"
 msgstr ""
+"轉向接近極區的位置.\n"
+"在主影像顯示區中選擇某顆星體做為導星星體.\n"
+"點擊「開始」\n"
+"等待顯示影像穩定\n"
+"點擊「停止」\n"
+"調整赤道儀的仰角與方位角讓星點剛好位於在圓圈中\n"
 
 #: polardrift_toolwin.cpp:173 staticpa_toolwin.cpp:309
 msgid "Alignment Parameters"
@@ -5476,12 +5494,12 @@ msgstr "調整備註"
 
 #: polardrift_toolwin.cpp:253
 msgid "Polar Drift alignment stopped"
-msgstr ""
+msgstr "極點飄移對極軸已停止"
 
 #: polardrift_toolwin.cpp:255
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
-msgstr ""
+msgstr "PA 誤差 (角分): %.1f Angle (deg): %.1f"
 
 #: polardrift_toolwin.cpp:261 staticpa_toolwin.cpp:531
 msgid "Please wait till Calibration is done and/or stop guiding"
@@ -5494,7 +5512,7 @@ msgstr "請選擇一顆星"
 #: polardrift_toolwin.cpp:384
 #, c-format
 msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
-msgstr ""
+msgstr "時間 %1f PA 誤差 (角分): %.1f Angle (度): %.1f"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -5518,6 +5536,8 @@ msgid ""
 "can use the up/down control or type in a value directly. If the pixels "
 "aren't square, just enter the larger of the X/Y dimensions."
 msgstr ""
+"參考相機手冊或網路上文件來取得此數值. 你可以利用上/下控制按鈕或直接輸入數值進"
+"行設定. 如果數值不是平方值的話, 請輸入比 X/Y 稍大一點的值"
 
 #: profile_wizard.cpp:137
 msgid "Guide camera un-binned pixel size (microns)"
@@ -5530,10 +5550,13 @@ msgid ""
 "use of fainter guide stars.  For more common set-ups, it's better to leave "
 "binning at 1."
 msgstr ""
+"如果導星相機有支援影像併合功能(可能沒有), 你可以選擇大於 1 的併合值. 在使用較"
+"長焦距的導星鏡及 OAG 的情況下, 影像併和可以讓你使用較暗的星體來當做導星星體, "
+"大多數的情況下, 此數值設成 1 即可."
 
 #: profile_wizard.cpp:144
 msgid "Binning level"
-msgstr ""
+msgstr "併合程度"
 
 #: profile_wizard.cpp:151
 msgid ""
@@ -5556,6 +5579,8 @@ msgid ""
 "default value (%0.1fX), which should produce a successful calibration in "
 "most cases"
 msgstr ""
+"用來進行校準及導星的導星樹率通常設為恆星時的倍數, 如果不清楚的話, 保持為預設"
+"值 (%0.1fX) 就好, 該數值通常可以讓你成功地完成校準動作"
 
 #: profile_wizard.cpp:167
 msgid "Mount guide speed (n.n x sidereal)"
@@ -5624,6 +5649,11 @@ msgid ""
 "automatically.  You can also choose a binning-level if your camera supports "
 "binning."
 msgstr ""
+"在導星相機列表中選取你所用的相機, PHD2 支援及已經安裝 ASCOM 驅動程式的相機都"
+"會出現在列表中, 如果你所用的相機不在裡頭的話, 表示 PHD2 不支援該相機或未安裝"
+"所相機驅動程式; PHD2 得知道導星相機的像素大小以及導星鏡的焦長以計算出合理的導"
+"星參數; 選擇相機後你可以馬上連接上相機並自動取得像素大小數值, 如果導星相機支"
+"援影像併合功能, 也可以同時設定影像併合參數"
 
 #: profile_wizard.cpp:253
 #, c-format
@@ -5638,6 +5668,12 @@ msgid ""
 "choose a  mount, you'll usually be given the option to connect to it "
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
+"由列表中選擇你所用的赤道儀介面, 這是為了讓 PHD2 知道如何傳送導星命令給赤道"
+"儀, 較近期的赤道儀而言, 如果你使用 MS Windows 作業系統, ASCOM 介面會是個叫好"
+"的選擇, 在赤道儀不支援 ASCOM 驅動程式或驅動程式不妥善的情況下還是可以使用其他"
+"的介面; 如果你已經知道赤道儀的導星速率, 你可以直接設定導星速率, PHD2 會較有效"
+"率地使用此數值進行校準工作, 如果不清楚的話, 可以值解採用預設值 %0.1fx, 選擇赤"
+"道儀後, 通常會馬上與赤道儀連線, 如此 PHD2 可以自動讀取導星速率."
 
 #: profile_wizard.cpp:260
 msgid ""
@@ -5776,26 +5812,26 @@ msgstr "為你的設備配置檔案命名並執行建立暗場影像庫程序"
 
 #: profile_wizard.cpp:622
 msgid "Ask"
-msgstr ""
+msgstr "詢問"
 
 #: profile_wizard.cpp:653
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
-msgstr ""
+msgstr "導星速率設定由 %0.1f 調整為 %0.1fx"
 
 #: profile_wizard.cpp:684
 msgid "PHD2 could not load the camera driver"
-msgstr ""
+msgstr "PHD2 無法載入相機驅動程式"
 
 #: profile_wizard.cpp:686
 msgid "PHD2 could not connect to the camera"
-msgstr ""
+msgstr "PHD2 無法連接此相機"
 
 #: profile_wizard.cpp:703
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
-msgstr ""
+msgstr "導星相機驅動程式無法回報像素大小數值, 你必須手動設定此參數"
 
 #: profile_wizard.cpp:762
 msgid "Connecting to mount..."
@@ -5809,6 +5845,8 @@ msgid ""
 "can enter it manually.  Otherwise, you can just leave it at the default "
 "value of %0.1fx"
 msgstr ""
+"PHD2 無法連接該赤道儀, 你可能得在之後進行調整, 此時, 假如你知道赤道儀的導星速"
+"率為何, 你可以手動輸入此參數; 否則就維持為預設值 %0.1fx 即可"
 
 #: profile_wizard.cpp:780
 #, c-format
@@ -5817,10 +5855,12 @@ msgid ""
 "mount guide speed setting, you can enter it manually. Otherwise, you can "
 "just leave it at the default value of %0.1fx"
 msgstr ""
+"很明顯地, 赤道儀驅動程式不會回報導星速率數值, 如果你知道的話, 請手動輸入該數"
+"值, 否則就維持預設值 %0.1fx"
 
 #: profile_wizard.cpp:827
 msgid "Ask About Connection"
-msgstr ""
+msgstr "詢問關於連接狀態"
 
 #: profile_wizard.cpp:840
 msgid ""
@@ -5829,10 +5869,13 @@ msgid ""
 "connected or its driver doesn't report the pixel-size, you can enter the "
 "value yourself using information in the camera manual or online. "
 msgstr ""
+"導星相機是否已與 PC 連接? 如果已經連好,  PHD2 可以自動讀取導星相機的像素大小"
+"數值, 未連接或驅動程式無法回報像素大小時, 你可以根據相機手冊或網路上文件的資"
+"料手動設定"
 
 #: profile_wizard.cpp:843
 msgid "Camera Already Connected?"
-msgstr ""
+msgstr "已連接相機?"
 
 #: profile_wizard.cpp:847
 #, c-format
@@ -5842,10 +5885,12 @@ msgid ""
 "enter the guide-speed manually.  If you don't know what it is, just leave "
 "the setting at the default value of %0.1fx."
 msgstr ""
+"赤道儀是否已連接並可與 PHD2 溝通? 如果已經連好,  PHD2 可以自動讀取導星速率數"
+"值, 未連接時, 你可以手動設定該參數, 如果不清楚的話, 維持預設數值 %0.1fx 即可"
 
 #: profile_wizard.cpp:850
 msgid "Mount Already Connected?"
-msgstr ""
+msgstr "已經連接赤道儀?"
 
 #: profile_wizard.cpp:854
 #, c-format
@@ -5856,10 +5901,14 @@ msgid ""
 "the default value of %0.1fx.  If the guide speed on the previous page "
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
+"輔助赤道儀是否已連接並可與 PHD2 溝通? 如果已經連好,  PHD2 可以自動讀取導星速"
+"率數值, 未連接時, 你可以手動設定該參數, 如果不清楚的話, 維持預設數值 %0.1fx "
+"即可; 如果前一頁設定的導星速率與由赤道儀讀取到的數值不批配的話, 會採用赤道儀"
+"的數值"
 
 #: profile_wizard.cpp:858
 msgid "Aux-mount Already Connected?"
-msgstr ""
+msgstr "已連接輔助赤道儀?"
 
 #: rotator.cpp:146
 msgid "Rotator Settings"
@@ -6455,6 +6504,10 @@ msgid ""
 "<br/>Wait for the adjustments to display.<br/>Adjust your mount's altitude "
 "and azimuth as displayed.<br/>Red=Altitude; Blue=Azimuth<br/>"
 msgstr ""
+"轉向天球極區附近. <br/>從列表中選擇一棵參考星.<br/>利用星圖來識別該參考星."
+"<br/>在主影像區內選取該參考星作為導星星體.<br/>點擊「旋轉」開始進行對極軸."
+"<br/>等待「調整」提示出現.<br/>依指示調整赤道儀的仰角極方位角.<br/>紅色=仰"
+"角; 藍色=方位角<br/>"
 
 #: staticpa_toolwin.cpp:257
 msgid ""
@@ -6466,6 +6519,11 @@ msgid ""
 "for the adjustments to display.<br/>Adjust your mount's altitude and azimuth "
 "to place three reference stars on their orbits\n"
 msgstr ""
+"轉向天球極區附近. <br/>從列表中選擇一棵參考星.<br/>利用星圖來識別該參考星."
+"<br/>在主影像區內選取該參考星作為導星星體.<br/>點擊「取得第一個位置」.<br/>向"
+"西轉動赤經軸至少 0h20m.<br/>確定參考星仍被選取.<br/>點擊「取得第二個位置」."
+"<br/>重複上面步驟取得第三個位置.<br/>等待「調整」提示出現.<br/>依指示調整赤道"
+"儀的仰角極方位角直到三顆參考星位於該有的軌跡上為止.\n"
 
 #: staticpa_toolwin.cpp:321
 msgid "Hour Angle"
@@ -6485,7 +6543,7 @@ msgstr "選擇用來檢查對極軸時使用的恆星."
 
 #: staticpa_toolwin.cpp:354
 msgid ">"
-msgstr ""
+msgstr "。"
 
 #: staticpa_toolwin.cpp:361
 msgid "Camera Angle"
@@ -6541,7 +6599,7 @@ msgstr "靜態對極軸工具顯示已清除"
 
 #: staticpa_toolwin.cpp:613
 msgid "Star Map"
-msgstr ""
+msgstr "星圖"
 
 #: staticpa_toolwin.cpp:642
 msgid "Get first position"
@@ -6550,47 +6608,47 @@ msgstr "取得第一個位置"
 #: staticpa_toolwin.cpp:812
 #, c-format
 msgid "Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f"
-msgstr ""
+msgstr "極軸對準錯誤 (角分): Alt %.1f; Az %.1f Tot %.1f"
 
 #: staticpa_toolwin.cpp:1041
 #, c-format
 msgid "Reading Star Position #%d"
-msgstr ""
+msgstr "讀取星點位置 #%d"
 
 #: staticpa_toolwin.cpp:1049 staticpa_toolwin.cpp:1133
 msgid "Error setting rotation parameters: Stopping"
-msgstr ""
+msgstr "設定旋轉參數錯誤: 停止中"
 
 #: staticpa_toolwin.cpp:1055 staticpa_toolwin.cpp:1079
 #: staticpa_toolwin.cpp:1109 staticpa_toolwin.cpp:1163
 #, c-format
 msgid "Error reading star position #%d: Stopping"
-msgstr ""
+msgstr "讀取星點位置 #%d 錯誤: 停止中"
 
 #: staticpa_toolwin.cpp:1088
 #, c-format
 msgid "Star Pos#2 Step=%d / %d Rotated=%.1f / %.1f deg"
-msgstr ""
+msgstr "星點位置 #2 步數=%d / %d 轉動=%.1f / %.1f 度"
 
 #: staticpa_toolwin.cpp:1100
 #, c-format
 msgid "Error moving west step %d: Stopping"
-msgstr ""
+msgstr "向西移動 %d 步發生錯誤: 停止中"
 
 #: staticpa_toolwin.cpp:1126
 #, c-format
 msgid "Star Pos#2 Mount did not move. Calculated polar offset=%.1f deg"
-msgstr ""
+msgstr "星點位置#2 赤道儀沒有移動. 計算所得的極點偏差 = %.1f 度"
 
 #: staticpa_toolwin.cpp:1146
 #, c-format
 msgid "Star is too close to CoR (%.1f deg) - try another reference star"
-msgstr ""
+msgstr "星點太靠近 CoR (%.1f 度) - 請選擇其他參考星"
 
 #: staticpa_toolwin.cpp:1214
 #, c-format
 msgid "Read Position #%d: %.0f, %.0f"
-msgstr ""
+msgstr "讀取位置 #%d: %.0f, %.0f"
 
 #: statswindow.cpp:70
 msgid "RMS [px]"
