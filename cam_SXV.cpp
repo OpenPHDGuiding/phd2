@@ -315,7 +315,7 @@ bool CameraSXV::Connect(const wxString& camId)
     if (Interlaced)
     {
         if (SquarePixels)
-            m_devicePixelSize = CCDParams.pix_height / 2.0;
+            m_devicePixelSize = CCDParams.pix_width;
         else
             m_devicePixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height / 2.f);
     }
