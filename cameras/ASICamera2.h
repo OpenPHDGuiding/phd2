@@ -122,13 +122,15 @@ typedef struct _ASI_CAMERA_INFO
 	char Unused[24];
 } ASI_CAMERA_INFO;
 
+#define ASI_BRIGHTNESS ASI_OFFSET
+
 typedef enum ASI_CONTROL_TYPE{ //Control type//
 	ASI_GAIN = 0,
 	ASI_EXPOSURE,
 	ASI_GAMMA,
 	ASI_WB_R,
 	ASI_WB_B,
-	ASI_BRIGHTNESS,
+	ASI_OFFSET,
 	ASI_BANDWIDTHOVERLOAD,	
 	ASI_OVERCLOCK,
 	ASI_TEMPERATURE,// return 10*temperature
@@ -729,7 +731,7 @@ ASI_SUCCESS : Operation is successful
 ASI_ERROR_CAMERA_CLOSED : camera didn't open
 ASI_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
 ***************************************************************************/
-ASICAMERA_API ASI_ERROR_CODE ASIGetGainOffset(int iCameraID, int *Offset_HighestDR, int *Offset_UnityGain, int *Gain_LowestRN, int *Offset_LowestRN);
+ASICAMERA_API ASI_ERROR_CODE ASIGetGainOffset(int iCameraID, int *pOffset_HighestDR, int *pOffset_UnityGain, int *pGain_LowestRN, int *pOffset_LowestRN);
 
 
 #ifdef __cplusplus
