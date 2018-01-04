@@ -114,6 +114,78 @@ inline static void StartRow(int& row, int& column)
     column = 0;
 }
 
+static void MakeBold(wxControl *ctrl)
+{
+    wxFont font = ctrl->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    ctrl->SetFont(font);
+}
+
+// Dialog for making sure sampling period is adequate for reasonable Dec drift measurement
+struct BLTWait : public wxDialog
+{
+    wxStaticText *m_CountdownAmount;
+    wxTimer m_SecondsTimer;
+    int m_SecondsLeft;
+
+    BLTWait(int SamplePeriod);
+    void OnTimer(wxTimerEvent& evt);
+    void OnCancel(wxCommandEvent& event);
+};
+
+BLTWait::BLTWait(int SecondsLeft) : wxDialog(pFrame, wxID_ANY, _("Backlash Test Sampling"))
+{
+    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* amtSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* explanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    explanation->SetLabelText(_("Additional data sampling is being done to better meaure Dec drift. Backlash testing \nwill start automatically when sampling is completed."));
+    MakeBold(explanation);
+    wxStaticText* countDownLabel = new wxStaticText(this, wxID_ANY, _("Seconds remaining: "), wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    m_SecondsLeft = SecondsLeft;
+    m_CountdownAmount = new wxStaticText(this, wxID_ANY, std::to_string(wxMax(0, m_SecondsLeft)));
+    amtSizer->Add(countDownLabel, wxSizerFlags(0).Border(wxALL, 8));
+    amtSizer->Add(m_CountdownAmount, wxSizerFlags(0).Border(wxALL, 8));
+    wxButton* cancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
+    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BLTWait::OnCancel), NULL, this);
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    btnSizer->Add(cancelBtn, wxSizerFlags(0).Border(wxALL, 8).Center());
+
+    vSizer->Add(explanation, wxSizerFlags(0).Border(wxALL, 8).Center());
+    vSizer->Add(amtSizer, wxSizerFlags(0).Border(wxALL, 8).Center());
+    vSizer->Add(btnSizer, wxSizerFlags(0).Border(wxALL, 8).Center());
+
+    SetAutoLayout(true);
+    SetSizerAndFit(vSizer);
+
+    m_SecondsTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(BLTWait::OnTimer), NULL, this);
+    m_SecondsTimer.Start(1000);
+}
+
+void BLTWait::OnTimer(wxTimerEvent& evt)
+{
+    m_SecondsLeft -= 1;
+    if (m_SecondsLeft > 0)
+    {
+        m_CountdownAmount->SetLabelText(std::to_string(m_SecondsLeft));
+        m_CountdownAmount->Update();
+    }
+    else
+    {
+        m_SecondsTimer.Stop();
+        EndDialog(wxOK);
+    }
+}
+
+void BLTWait::OnCancel(wxCommandEvent& event)
+{
+    m_SecondsTimer.Stop();
+    if (wxGetKeyState(WXK_CONTROL))
+        EndDialog(wxOK);
+    else
+        EndDialog(wxCANCEL);
+
+}
+
 // Encapsulated struct for implementing the dialog box
 struct GuidingAsstWin : public wxDialog
 {
@@ -124,7 +196,7 @@ struct GuidingAsstWin : public wxDialog
         STATE_MEASURING = 2,
         STATE_STOPPED = 3
     };
-    enum DlgConstants {MAX_BACKLASH_COMP = 2000};
+    enum DlgConstants {MAX_BACKLASH_COMP = 2000, BLT_MIN_SAMPLING_PERIOD = 120};
 
     wxButton *m_start;
     wxButton *m_stop;
@@ -177,6 +249,7 @@ struct GuidingAsstWin : public wxDialog
     DialogState m_dlgState;
     bool m_measuring;
     wxLongLong_t m_startTime;
+    long m_elapsedSecs;
     PHD_Point m_startPos;
     wxString startStr;
     double m_freqThresh;
@@ -188,7 +261,12 @@ struct GuidingAsstWin : public wxDialog
     double maxRA;
     double m_lastTime;
     double maxRateRA; // arc-sec per second
+    double decDriftPerMin;        // px per minute
     double alignmentError; // arc-minutes
+    double m_backlashPx;
+    int m_backlashMs;
+    double m_backlashSigmaMs;
+    int m_backlashRecommendedMs;
 
     bool m_guideOutputDisabled;
     bool m_savePrimaryMountEnabled;
@@ -227,13 +305,6 @@ struct GuidingAsstWin : public wxDialog
     void EndBacklashTest(bool normal);
     void BacklashError();
 };
-
-static void MakeBold(wxControl *ctrl)
-{
-    wxFont font = ctrl->GetFont();
-    font.SetWeight(wxFONTWEIGHT_BOLD);
-    ctrl->SetFont(font);
-}
 
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
 {
@@ -548,7 +619,7 @@ static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString
         case 304: *s = _("Maximum drift rate in right ascension during sampling period."); break;
         case 305: *s = _("Exposure time to keep maximum RA drift below the recommended min-move level."); break;
         case 306: *s = _("Estimated overall drift rate in declination."); break;
-        case 307: *s = _("Estimate of declination backlash if backlash testing was completed successfully"); break;
+        case 307: *s = _("Estimated declination backlash if test was completed. Results are time to clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty estimate is one unit of standard deviation"); break;
         case 308: *s = _("Estimate of polar alignment error. If the scope declination is unknown, the value displayed is a lower bound and the actual error may be larger."); break;
 
         default: return false;
@@ -589,7 +660,7 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
             instr = m_instructions->GetLabel();
         break;
     case STATE_MEASURING:
-        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS values have stabilized (at least 2 minutes).");
+        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS and polar alignment values have stabilized (at least 2 minutes).");
         break;
     case STATE_STOPPED:
         instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click Start to repeat the measurements, or close the window to continue guiding.");
@@ -615,10 +686,24 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
             BacklashTool::MeasurementResults qual = m_backlashTool->GetMeasurementQuality();
             if (qual != BacklashTool::MEASUREMENT_INVALID)
             {
-                wxString preamble = qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "";
-                m_othergrid->SetCellValue(m_backlash_loc, wxString::Format("%s% .1f %s ( %d %s)",
-                    preamble, m_backlashTool->GetBacklashResultPx(), _("px"), m_backlashTool->GetBacklashResultMs(), _("ms")));
+                double bltSigmaPx;
+                double bltGearAngle;
+                double bltGearAngleSigma;
+                // populate result variables
+                m_backlashPx = m_backlashTool->GetBacklashResultPx();
+                m_backlashMs = m_backlashTool->GetBacklashResultMs();
+                m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
+                bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
+                bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
+                wxString preamble = (qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "");
+                wxString outStr = wxString::Format("%s %d \u00B1 %0.0f ms (%0.1f \u00B1 %0.1f arc-sec)",
+                    preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs,
+                    wxMax(0, bltGearAngle), bltGearAngleSigma);
+                m_othergrid->SetCellValue(m_backlash_loc, outStr);
                 HighlightCell(m_othergrid, m_backlash_loc);
+                outStr += "\n";
+                GuideLog.NotifyGAResult("Backlash=" + outStr);
+                Debug.Write("BLT: Reported result = " + outStr);
                 m_graphBtn->Enable(true);
             }
             else
@@ -686,7 +771,7 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
     BacklashComp *pComp = TheScope()->GetBacklashComp();
 
-    pComp->SetBacklashPulse(m_backlashTool->GetBacklashResultMs());
+    pComp->SetBacklashPulse(m_backlashRecommendedMs);
     pComp->EnableBacklashComp(!pMount->IsStepGuider());
     m_decBacklashButton->Enable(false);
 }
@@ -756,12 +841,6 @@ void GuidingAsstWin::LogResults()
     GuideLog.NotifyGAResult(str);
     Debug.Write(str);
 
-    if (m_backlashTool->GetBacklashResultPx() > 0)
-    {
-        str = wxString::Format("Backlash measures: %0.2f px, %d ms\n", m_backlashTool->GetBacklashResultPx(), m_backlashTool->GetBacklashResultMs());
-        GuideLog.NotifyGAResult(str);
-        Debug.Write(str);
-    }
 }
 
 static wxString SizedMsg(wxString msg)
@@ -928,24 +1007,36 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
-    if (m_backlashTool->GetBacklashResultMs() >= 100)
+    if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
     {
-        bool largeBL = m_backlashTool->GetBacklashResultMs() > MAX_BACKLASH_COMP;
         wxString msg;
 
-        if (!largeBL)
-            msg = wxString::Format(_("Try setting a Dec backlash value of %d ms"), m_backlashTool->GetBacklashResultMs());
+        if (m_backlashMs > 0)
+        {
+            m_backlashRecommendedMs = (int)(floor((m_backlashMs - m_backlashSigmaMs / 2.0) / 10) * 10);        // round down to nearest 10ms
+            m_backlashRecommendedMs = wxMax(m_backlashRecommendedMs, 10);
+        }
         else
-            msg = wxString::Format(_("Backlash is %0.1f px; you may need to guide in only one Dec direction"), m_backlashTool->GetBacklashResultPx());
+            m_backlashRecommendedMs = 0;
+        bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
+        if (m_backlashMs < -500)
+            msg = _("Backlash measurement impaired by bad calibration or mount instability");       // something seriously wrong
+        else if (m_backlashMs < 100)
+            msg = _("Backlash is small, no compensation needed");              // assume it was a small measurement error
+        else if (m_backlashMs <= MAX_BACKLASH_COMP)
+            msg = wxString::Format(_("Try setting a Dec backlash compensation value of %d ms"), m_backlashRecommendedMs);
+        else
+            msg = wxString::Format(_("Backlash is >= %d ms; you may need to guide in only one Dec direction"), m_backlashMs);
+
         if (!m_backlash_msg)
         {
             m_backlash_msg = AddRecommendationEntry(SizedMsg(msg), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
-            m_decBacklashButton->Enable(!largeBL);
+            m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
         }
         else
         {
             m_backlash_msg->SetLabel(SizedMsg(msg));
-            m_decBacklashButton->Enable(!largeBL);
+            m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
         }
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
@@ -955,6 +1046,7 @@ void GuidingAsstWin::MakeRecommendations()
     {
         if (m_backlash_msg)
             m_backlash_msg->SetLabel(wxEmptyString);
+
     }
 
     m_recommend_group->Show(true);
@@ -1069,7 +1161,13 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
 
 void GuidingAsstWin::OnStop(wxCommandEvent& event)
 {
-    if (m_backlashCB->IsChecked())
+    bool performBLT = m_backlashCB->IsChecked();
+    if (performBLT && m_elapsedSecs < BLT_MIN_SAMPLING_PERIOD && !m_measuringBacklash)
+    {
+        BLTWait waitDlg(BLT_MIN_SAMPLING_PERIOD - m_elapsedSecs);
+        performBLT = (waitDlg.ShowModal() == wxOK);
+    }
+    if (performBLT)
     {
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
@@ -1085,7 +1183,7 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
             GetSizer()->Fit(this);
             m_backlashCB->Enable(false);                        // Don't let user turn it off once we've started
             m_measuring = false;
-            m_backlashTool->StartMeasurement();
+            m_backlashTool->StartMeasurement(decDriftPerMin);
             m_instructions->SetLabel(_("Measuring backlash... "));
         }
         else
@@ -1191,10 +1289,10 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     double combined = hypot(rarms, decrms);
 
     wxLongLong_t elapsedms = ::wxGetUTCTimeMillis().GetValue() - m_startTime;
-    double elapsed = (double) elapsedms / 1000.0;
+    m_elapsedSecs = (double) elapsedms / 1000.0;
 
-    double raDriftRate = driftRA / elapsed * 60.0;
-    double decDriftRate = driftDec / elapsed * 60.0;
+    double raDriftRate = driftRA / m_elapsedSecs * 60.0;
+    decDriftPerMin = driftDec / m_elapsedSecs * 60.0;
     double declination = pPointingSource->GetDeclination();
     double cosdec;
     if (declination == UNKNOWN_DECLINATION)
@@ -1203,7 +1301,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
         cosdec = cos(declination);
     // polar alignment error from Barrett:
     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
-    alignmentError = 3.8197 * fabs(decDriftRate) * pxscale / cosdec;
+    alignmentError = 3.8197 * fabs(decDriftPerMin) * pxscale / cosdec;
 
     wxString SEC(_("s"));
     wxString PX(_("px"));
@@ -1233,7 +1331,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     FillResultCell(m_othergrid, m_ra_peak_drift_loc, maxRateRA, maxRateRA * pxscale, PXPERSEC, ARCSECPERSEC);
     m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
         wxString::Format("%6.1f %s ",  1.3 * rarms / maxRateRA, SEC));
-    FillResultCell(m_othergrid, m_dec_drift_loc, decDriftRate, decDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
+    FillResultCell(m_othergrid, m_dec_drift_loc, decDriftPerMin, decDriftPerMin * pxscale, PXPERMIN, ARCSECPERMIN);
     m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
 }
 

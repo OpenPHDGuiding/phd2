@@ -37,8 +37,18 @@
 #define BACKLASH_COMP_H_INCLUDED
 
 class Scope;
+struct RunningStats
+{
+    int count;
+    double currentSS;            // Sum of squares
+    double currentMean;
 
-// Encapsulated struct for handling Dec backlash measurement
+    RunningStats();
+    void AddDelta(double val);
+    void Reset();
+};
+
+// Encapsulated class for handling Dec backlash measurement
 class BacklashTool
 {
     int m_pulseWidth;
@@ -61,7 +71,13 @@ class BacklashTool
     Scope *m_scope;
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;
+    double m_driftPerSec;
+    RunningStats m_stats;
+    wxLongLong_t m_msmtStartTime;
+    wxLongLong_t m_msmtEndTime;
+    wxLongLong_t m_northSampleTime;
     double GetLastDecGuideRate();
+
 
 public:
     enum BLT_STATE
@@ -99,7 +115,7 @@ public:
 public:
 
     BacklashTool();
-    void StartMeasurement();
+    void StartMeasurement(double DriftPerMin);
     void StopMeasurement();
     void DecMeasurementStep(const PHD_Point& currentLoc);
     void CleanUp();
@@ -107,6 +123,7 @@ public:
     MeasurementResults GetMeasurementQuality() const { return m_Rslt; }
     double GetBacklashResultPx() const { return m_backlashResultPx; }
     int GetBacklashResultMs() const { return m_backlashResultMs; }
+    void GetBacklashSigma(double* SigmaPx, double* SigmaMs);
     bool GetBacklashExempted() const { return m_backlashExemption; }
     wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt);
