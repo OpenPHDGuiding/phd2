@@ -368,9 +368,14 @@ you
 can disable guider output in order to see the general shape and
 amplitude of your mount's periodic error or to check the amount of
 drift from polar mis-alignment.</li><li>'<a name="Stop_guiding_on_slew"></a>Stop
-guiding when mount slews' - if guiding through an ASCOM interface, PHD2
-can detect that a slew operation is underway and will stop issuing
-guide commands..</li></ul>Calibration Step Calculator<br><br><img style="width: 319px; height: 525px;" alt="Calc_step_dialog" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
+guiding when mount slews' - a diagnostic option for working with ASCOM
+mount drivers that may report the slewing status incorrectly. &nbsp;The option
+should&nbsp;be left checked unless you know the driver for your mount
+has this problem (highly unlikely). &nbsp; Also,&nbsp; it will
+generally not detect&nbsp;slews that are initiated by the
+hand-controller. &nbsp;In any case, PHD2 will continue to try to track
+the guide star, so slews will typically result in lost-star
+notifications - beeping and flashing of the PHD2 image window.</li></ul>Calibration Step Calculator<br><br><img style="width: 319px; height: 525px;" alt="Calc_step_dialog" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
 To
 use the <a name="Calculator_auto-step-size"></a>calculator,
 be sure the topmost three edit controls are

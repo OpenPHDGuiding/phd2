@@ -100,11 +100,11 @@
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="AO Parameters">
-			<param name="Local" value="Advanced_settings.htm#AO_Tab">
+			<param name="Local" value="Advanced_settings.htm#Other_Devices_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Rotator Parameters">
-			<param name="Local" value="Advanced_settings.htm#Rotator_Tab">
+			<param name="Local" value="Advanced_settings.htm#Other_Devices_Tab">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
@@ -235,6 +235,10 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Static Polar Alignment">
 			<param name="Local" value="Tutorials.htm#Static_polar_alignment">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Polar Drift Alignment">
+			<param name="Local" value="Tutorials.htm#Polar_Drift_Align">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

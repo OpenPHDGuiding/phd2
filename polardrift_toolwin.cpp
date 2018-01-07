@@ -162,7 +162,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "Click Start\n"
         "Wait for the display to stabilise\n"
         "Click Stop\n"
-        "Adjust your mount's altitude and azimuth to place"
+        "Adjust your mount's altitude and azimuth to place "
         "the guide star in its target circle\n"
         );
 

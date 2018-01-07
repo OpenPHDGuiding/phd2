@@ -294,11 +294,13 @@ does require visibility and identification of several stars near the pole, but
 the tool makes that reasonably easy assuming your sky conditions are good
 enough to see the stars.&nbsp; </p><span style=""></span>
 
-<p>The third alignment option, polar drift alignment, is probably the simplest one to perform at the expense of a bit of accuracy and speed. It
-requires a clear view of the northern or southern polar region, and it facilitates adjustment of both mount axes at the same time. 
-Minimal user input is needed so it is very simple to use.
-
-<p class="MsoNormal"><o:p>&nbsp;</o:p>The three techniques are described in detail in the following
+<p>The third alignment option, polar drift alignment, is probably the
+simplest one to perform at the expense of a bit of accuracy and speed.
+It
+requires a clear view of the northern or southern polar region, and it
+facilitates adjustment of both mount axes at the same time. Minimal
+user input is needed so it is very simple to use.
+</p><p class="MsoNormal"><o:p>&nbsp;</o:p>The three techniques are described in detail in the following
 sections.<span style="">&nbsp; </span>Imagers should probably
 experiment with them and choose the one that best suits their
 needs.<span style="">&nbsp; </span>The importance of alignment
@@ -445,13 +447,9 @@ mechanism. &nbsp;You&nbsp;then click
 will appear to wander around on the display - this is entirely normal.
 &nbsp;As guider images are acquired, statistics are computed and
 displayed in real-time in the user interface. Of particular interest
-are the table entries in the "High-frequency Star Motion" section which
-show ongoing results of the averaging process. &nbsp;After about one
-minute of data collection, these numbers will usually stabilize and
-you'll have a reasonable measurement of the high-frequency star
-movement caused by seeing conditions. &nbsp;You'll also have a rough measure of your polar alignment error although the accuracy
-will&nbsp;improve if you let the sampling run for longer periods
-of time. &nbsp;If you want to get an accurate measure of your polar alignment error
+are the table entries for&nbsp;"High-frequency Star Motion" and "Polar Alignment Error". &nbsp;After about two
+minutes of data collection, these numbers will usually stabilize and
+you'll have&nbsp;reasonable measurements. &nbsp;If you want to get a more accurate measure of your polar alignment error
 and any uncorrected periodic error in RA, you'll need to let the
 Guiding Assistant run for up to 10 minutes. When you finally click the 'Stop'
 button, this phase of the measurement process will stop. &nbsp; &nbsp;If
@@ -474,7 +472,10 @@ you've checked the box to 'Measure Declination Backlash',
 that&nbsp;process will begin as soon as the high-frequency measurements
 are completed. &nbsp;In other words, clicking once on the 'Stop' button
 halts the high-frequency measurements and begins the measurement of
-declination backlash. &nbsp;A new group of status messages will be
+declination backlash. &nbsp;However, if the initial sampling period was
+less than 2 minutes, a dialog box will appear and the backlash test
+will continue to sample until the 2-minute period has expired. &nbsp; A
+new group of status messages will be
 shown immediately above the 'Start' and 'Stop' buttons so you can see
 what's being done:<br><br><img style="width: 516px; height: 684px;" alt="" src="Guiding_Assistant_MeasuringBL.png"><br><br>To
 do backlash measurement, PHD2 will move the star by large amounts,
