@@ -1607,10 +1607,12 @@ void GearDialog::OnButtonProfileManage(wxCommandEvent& event)
 
 void GearDialog::OnButtonWizard(wxCommandEvent& event)
 {
-    ProfileWizard wiz(this, event.GetId() == 0);            // Event id of 0 comes from "first light" launch; show first light UI panel only then
-
+    // these variables must be initialized before instantiating the ProfileWizard, since
+    // the instantiation has a side-effect of installing a temporary empty profile
     bool firstLight = IsEmptyProfile();
     wxString current = m_profiles->GetStringSelection();
+
+    ProfileWizard wiz(this, event.GetId() == 0);            // Event id of 0 comes from "first light" launch; show first light UI panel only then
 
     if (wiz.ShowModal() == wxOK)
     {
