@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-19 20:07+0000\n"
+"POT-Creation-Date: 2018-01-17 07:19+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -83,7 +83,7 @@ msgstr "Монтировка"
 msgid "No mount specified"
 msgstr "Монтировка не выбрана"
 
-#: aui_controls.cpp:377 aui_controls.cpp:389 guiding_assistant.cpp:315
+#: aui_controls.cpp:377 aui_controls.cpp:389 guiding_assistant.cpp:386
 msgid "SNR"
 msgstr "Сигнал/шум"
 
@@ -210,37 +210,37 @@ msgstr "cевер"
 msgid "South"
 msgstr "юг"
 
-#: backlash_comp.cpp:358
+#: backlash_comp.cpp:388
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "Люфт не может быть измерен - перезапустите калибровку"
 
-#: backlash_comp.cpp:448
+#: backlash_comp.cpp:480
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 "Невозможно измерить люфт - значение скорости гидирования по склонению "
 "недоступно"
 
-#: backlash_comp.cpp:462
+#: backlash_comp.cpp:494
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "Очистка северного люфта, шаг %d"
 
-#: backlash_comp.cpp:499
+#: backlash_comp.cpp:531
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "Очистка северного люфта, шаг %d (до предела в %d)"
 
-#: backlash_comp.cpp:507
+#: backlash_comp.cpp:539
 msgid "Could not clear North backlash - test failed"
 msgstr "Невозможно сбросить северный люфт - тест прерван"
 
-#: backlash_comp.cpp:534
+#: backlash_comp.cpp:567
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "Движение на север %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:550
+#: backlash_comp.cpp:601
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -248,29 +248,29 @@ msgstr ""
 "Звезда слишком близка к краю для точного измерения люфта, выберите звезду "
 "подальше."
 
-#: backlash_comp.cpp:565
+#: backlash_comp.cpp:616
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "Движение на юг %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:595
+#: backlash_comp.cpp:655
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Пробная поправка люфта %d мсек"
 
-#: backlash_comp.cpp:654
+#: backlash_comp.cpp:721
 msgid "Restoring star position"
 msgstr "Восстановление позиции звезды"
 
-#: backlash_comp.cpp:662
+#: backlash_comp.cpp:729
 msgid "Measurement complete"
 msgstr "Измерение завершено"
 
-#: backlash_comp.cpp:671
+#: backlash_comp.cpp:738
 msgid "Measurement halted"
 msgstr "Измерение остановлено"
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:748
 #, c-format
 msgid "Measurement encountered an error: %s"
 msgstr "При измерении обнаружена ошибка: %s"
@@ -330,7 +330,7 @@ msgstr "Ошибка ортогональности:"
 msgid "a-s/sec"
 msgstr "угл. сек/сек"
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1213
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1311
 msgid "px/sec"
 msgstr "пикс/сек"
 
@@ -980,8 +980,8 @@ msgstr "Последовательный порт не найден"
 #: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
 #: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
-#: gear_dialog.cpp:1231 gear_dialog.cpp:1906 gear_dialog.cpp:1915
-#: gear_dialog.cpp:1922 gear_dialog.cpp:1967 gear_dialog.cpp:1973
+#: gear_dialog.cpp:1231 gear_dialog.cpp:1908 gear_dialog.cpp:1917
+#: gear_dialog.cpp:1924 gear_dialog.cpp:1969 gear_dialog.cpp:1975
 #: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
 #: scope_ascom.cpp:220 scope_ascom.cpp:236 scope_ascom.cpp:243
 #: scope_ascom.cpp:331 scope_ascom.cpp:339 scope_eqmac.cpp:135
@@ -1426,7 +1426,8 @@ msgid "OK"
 msgstr "Принять"
 
 #: cam_simulator.cpp:1690 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
-#: darks_dialog.cpp:368 phdupdate.cpp:776 profile_wizard.cpp:874
+#: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:776
+#: profile_wizard.cpp:874
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -1555,8 +1556,8 @@ msgstr ""
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:227
 #: camera.cpp:364 gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:367
 #: gear_dialog.cpp:371 gear_dialog.cpp:375 gear_dialog.cpp:605
-#: gear_dialog.cpp:967 gear_dialog.cpp:1666 gear_dialog.cpp:1667
-#: gear_dialog.cpp:1668 mount.cpp:134 mount.cpp:171 mount.cpp:712
+#: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
+#: gear_dialog.cpp:1670 mount.cpp:134 mount.cpp:171 mount.cpp:712
 #: myframe.cpp:2697 profile_wizard.cpp:212 profile_wizard.cpp:213
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
 #: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
@@ -1858,7 +1859,7 @@ msgstr "Углы"
 msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:475
+#: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:546
 #: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314
 #: starcross_test.cpp:161
 msgid "Start"
@@ -1868,7 +1869,7 @@ msgstr "Начать"
 msgid "Start training the tracking rate."
 msgstr "Начать проверку скорости слежения."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:480
+#: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:551
 #: polardrift_toolwin.cpp:316 starcross_test.cpp:163 staticpa_toolwin.cpp:644
 msgid "Stop"
 msgstr "Остановить"
@@ -1988,7 +1989,7 @@ msgstr "Больше не спрашивать"
 msgid "Confirm"
 msgstr "Подтвердить"
 
-#: darks_dialog.cpp:62 guiding_assistant.cpp:311
+#: darks_dialog.cpp:62 guiding_assistant.cpp:382
 msgid "Exposure time"
 msgstr "Время экспозиции"
 
@@ -2764,27 +2765,27 @@ msgstr "Сбой подключения поворотного устройст�
 msgid "Rotator Disconnected"
 msgstr "Поворотное устройство отключено"
 
-#: gear_dialog.cpp:1861
+#: gear_dialog.cpp:1863
 msgid "New Equipment Profile"
 msgstr "Новый профиль оборудования"
 
-#: gear_dialog.cpp:1868
+#: gear_dialog.cpp:1870
 msgid "Name"
 msgstr "Название"
 
-#: gear_dialog.cpp:1872
+#: gear_dialog.cpp:1874
 msgid "Enter the name of the new equipment profile"
 msgstr "Ввести название нового профиля оборудования"
 
-#: gear_dialog.cpp:1876
+#: gear_dialog.cpp:1878
 msgid "PHD Defaults"
 msgstr "Значения по умолчанию"
 
-#: gear_dialog.cpp:1879
+#: gear_dialog.cpp:1881
 msgid "Profile initial settings"
 msgstr "Первоначальные настройки профиля"
 
-#: gear_dialog.cpp:1882
+#: gear_dialog.cpp:1884
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2792,48 +2793,48 @@ msgstr ""
 "Выберите умолчания для создания профилями с настройками PHD по умолчанию или "
 "скопируйте настройки из существующего профиля оборудования. "
 
-#: gear_dialog.cpp:1906
+#: gear_dialog.cpp:1908
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "Профиль с названием %s уже существует"
 
-#: gear_dialog.cpp:1915
+#: gear_dialog.cpp:1917
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "Невозможно создать профиль %s из профиля %s"
 
-#: gear_dialog.cpp:1922 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:502
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Невозможно создать профиль %s"
 
-#: gear_dialog.cpp:1938
+#: gear_dialog.cpp:1940
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Удалить профиль %s?"
 
-#: gear_dialog.cpp:1938
+#: gear_dialog.cpp:1940
 msgid "Delete Equipment Profile"
 msgstr "Удалить профиль оборудования"
 
-#: gear_dialog.cpp:1957
+#: gear_dialog.cpp:1959
 #, c-format
 msgid "Rename %s"
 msgstr "Переименовать %s"
 
-#: gear_dialog.cpp:1957
+#: gear_dialog.cpp:1959
 msgid "Rename Equipment Profile"
 msgstr "Переименовать профиль оборудования"
 
-#: gear_dialog.cpp:1973
+#: gear_dialog.cpp:1975
 msgid "Could not rename profile"
 msgstr "Невозможно переименовать профиль"
 
-#: gear_dialog.cpp:1987
+#: gear_dialog.cpp:1989
 msgid "Import PHD Equipment Profiles"
 msgstr "Импорт профилей оборудования PHD"
 
-#: gear_dialog.cpp:2020
+#: gear_dialog.cpp:2022
 msgid "Export PHD Equipment Profile"
 msgstr "Экспортировать профиль оборудования PHD"
 
@@ -3543,115 +3544,130 @@ msgid ""
 "will be ignored."
 msgstr ""
 
-#: guiding_assistant.cpp:272
+#: guiding_assistant.cpp:136
+msgid "Backlash Test Sampling"
+msgstr ""
+
+#: guiding_assistant.cpp:141
+msgid ""
+"Additional data sampling is being done to better meaure Dec drift. Backlash "
+"testing \n"
+"will start automatically when sampling is completed."
+msgstr ""
+
+#: guiding_assistant.cpp:143
+msgid "Seconds remaining: "
+msgstr ""
+
+#: guiding_assistant.cpp:343
 msgid "Guiding Assistant"
 msgstr "Помощник гидирования"
 
-#: guiding_assistant.cpp:294
+#: guiding_assistant.cpp:365
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr " -999.99 пикс/мин (-999.99 угл. сек/мин )"
 
-#: guiding_assistant.cpp:296
+#: guiding_assistant.cpp:367
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr " 9.99 пикс ( 9.99 угл. сек.)"
 
-#: guiding_assistant.cpp:298
+#: guiding_assistant.cpp:369
 msgid "Measurement Status"
 msgstr "Состояние измерений"
 
-#: guiding_assistant.cpp:309
+#: guiding_assistant.cpp:380
 msgid "Start time"
 msgstr "Начальное время"
 
-#: guiding_assistant.cpp:317
+#: guiding_assistant.cpp:388
 msgid "Star mass"
 msgstr "Звёздная величинa"
 
-#: guiding_assistant.cpp:321
+#: guiding_assistant.cpp:392
 msgid "Elapsed time"
 msgstr "Затраченное время"
 
-#: guiding_assistant.cpp:323
+#: guiding_assistant.cpp:394
 msgid "Sample count"
 msgstr "Количество измерений"
 
-#: guiding_assistant.cpp:335
+#: guiding_assistant.cpp:406
 msgid "High-frequency Star Motion"
 msgstr "Высокочастотные движения звезды"
 
-#: guiding_assistant.cpp:346
+#: guiding_assistant.cpp:417
 msgid "Right ascension, RMS"
 msgstr "Прямое восхождение, ср.квадр."
 
-#: guiding_assistant.cpp:350
+#: guiding_assistant.cpp:421
 msgid "Declination, RMS"
 msgstr "Склонение, ср.квадр."
 
-#: guiding_assistant.cpp:354
+#: guiding_assistant.cpp:425
 msgid "Total, RMS"
 msgstr "Всего, ср.квадр."
 
-#: guiding_assistant.cpp:363
+#: guiding_assistant.cpp:434
 msgid "Other Star Motion"
 msgstr "Прочие движения звезды"
 
-#: guiding_assistant.cpp:376
+#: guiding_assistant.cpp:447
 msgid "Right ascension, Peak"
 msgstr "Прямое восхождение, пик"
 
-#: guiding_assistant.cpp:380
+#: guiding_assistant.cpp:451
 msgid "Declination, Peak"
 msgstr "Склонение, пик"
 
-#: guiding_assistant.cpp:384
+#: guiding_assistant.cpp:455
 msgid "Right ascension, Peak-Peak"
 msgstr "Прямое восхождение, разброс"
 
-#: guiding_assistant.cpp:388
+#: guiding_assistant.cpp:459
 msgid "Right ascension Drift Rate"
 msgstr "Скорость дрейфа по прямому восхождению"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:463
 msgid "Right ascension Max Drift Rate"
 msgstr "Максимальная скорость дрейфа по прямому восхождению"
 
-#: guiding_assistant.cpp:396
+#: guiding_assistant.cpp:467
 msgid "Drift-limiting exposure"
 msgstr "Ограничение экспозиции по дрейфу"
 
-#: guiding_assistant.cpp:400
+#: guiding_assistant.cpp:471
 msgid "Declination Drift Rate"
 msgstr "Скорость дрейфа по склонению"
 
-#: guiding_assistant.cpp:404
+#: guiding_assistant.cpp:475
 msgid "Declination Backlash"
 msgstr "Люфт оси склонения"
 
-#: guiding_assistant.cpp:408
+#: guiding_assistant.cpp:479
 msgid "Polar Alignment Error"
 msgstr "Ошибка определения полюса"
 
-#: guiding_assistant.cpp:419
+#: guiding_assistant.cpp:490
 msgid "Recommendations"
 msgstr "Советы"
 
-#: guiding_assistant.cpp:433
+#: guiding_assistant.cpp:504
 msgid "Show Backlash Graph"
 msgstr "Показать график люфта"
 
-#: guiding_assistant.cpp:434
+#: guiding_assistant.cpp:505
 msgid "Show graph of backlash measurement points"
 msgstr "Показать график измерения люфта"
 
-#: guiding_assistant.cpp:438 myframe.cpp:1179 profile_wizard.cpp:187
+#: guiding_assistant.cpp:509 myframe.cpp:1179 profile_wizard.cpp:187
 msgid "Help"
 msgstr "Помощь"
 
-#: guiding_assistant.cpp:451
+#: guiding_assistant.cpp:522
 msgid "Measure Declination Backlash"
 msgstr "Измерение люфта склонения"
 
-#: guiding_assistant.cpp:452
+#: guiding_assistant.cpp:523
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -3662,15 +3678,15 @@ msgstr ""
 "север, затем на юг. Если звезда будет потеряна, увеличьте область поиска как "
 "минимум на 20 пикселей"
 
-#: guiding_assistant.cpp:476
+#: guiding_assistant.cpp:547
 msgid "Start measuring (disables guiding)"
 msgstr "Начать измерения (выключает гидирование)"
 
-#: guiding_assistant.cpp:481
+#: guiding_assistant.cpp:552
 msgid "Stop measuring and re-enable guiding"
 msgstr "Закончить измерения и возобновить гидирование"
 
-#: guiding_assistant.cpp:533
+#: guiding_assistant.cpp:604
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
@@ -3678,7 +3694,7 @@ msgstr ""
 "Соотношение сигнал/шум; определяет, насколько PHD2 может выделить звезду из "
 "фона/шума"
 
-#: guiding_assistant.cpp:535
+#: guiding_assistant.cpp:606
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
@@ -3686,7 +3702,7 @@ msgstr ""
 "Измерение общей яркости звезды. Учитывается при автоматическом выборе звезды "
 "(Alt-S)"
 
-#: guiding_assistant.cpp:540
+#: guiding_assistant.cpp:611
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3694,7 +3710,7 @@ msgstr ""
 "Измерение типичных высокочастотных движений звезды по прямому восхождению; "
 "гидирование обычно не способно их исправить."
 
-#: guiding_assistant.cpp:541
+#: guiding_assistant.cpp:612
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3702,45 +3718,46 @@ msgstr ""
 "Измерение типичных высокочастотных движений звезды по склонению; гидирование "
 "обычно не способно их исправить."
 
-#: guiding_assistant.cpp:544
+#: guiding_assistant.cpp:615
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "Максимальное межкадровое отклонение по прямому восхождению"
 
-#: guiding_assistant.cpp:545
+#: guiding_assistant.cpp:616
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "Максимальное межкадровое отклонение по склонению"
 
-#: guiding_assistant.cpp:546
+#: guiding_assistant.cpp:617
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr "Максимальный разброс по прямому восхождению за выбранный период."
 
-#: guiding_assistant.cpp:547
+#: guiding_assistant.cpp:618
 msgid "Estimated overall drift rate in right ascension."
 msgstr "Оценочная общая скорость дрейфа по прямому восхождению"
 
-#: guiding_assistant.cpp:548
+#: guiding_assistant.cpp:619
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr "Максимальный дрейф по прямому восхождению за период измерений."
 
-#: guiding_assistant.cpp:549
+#: guiding_assistant.cpp:620
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 "Время экспозиции, чтобы достичь максимального дрейфа по α, ниже "
 "рекомендованного минимального движения."
 
-#: guiding_assistant.cpp:550
+#: guiding_assistant.cpp:621
 msgid "Estimated overall drift rate in declination."
 msgstr "Общая скорость дрейфа по склонению."
 
-#: guiding_assistant.cpp:551
+#: guiding_assistant.cpp:622
 msgid ""
-"Estimate of declination backlash if backlash testing was completed "
-"successfully"
-msgstr "Оценка люфта по склонению при успешном тестировании люфта"
+"Estimated declination backlash if test was completed. Results are time to "
+"clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
+"estimate is one unit of standard deviation"
+msgstr ""
 
-#: guiding_assistant.cpp:552
+#: guiding_assistant.cpp:623
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -3749,13 +3766,13 @@ msgstr ""
 "отображается нижнее из возможных значений и на самом деле ошибка может быть "
 "больше"
 
-#: guiding_assistant.cpp:583
+#: guiding_assistant.cpp:654
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 "Выберите не пересвеченную звезду с хорошим соотношением сигнал-шум (>=8) и "
 "приступите к гидированию"
 
-#: guiding_assistant.cpp:587
+#: guiding_assistant.cpp:658
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -3763,15 +3780,13 @@ msgstr ""
 "Нажмите 'Начать', чтобы произвести измерения. В это время гидирование будет "
 "отключено, поэтому звезда будет перемещаться."
 
-#: guiding_assistant.cpp:592
+#: guiding_assistant.cpp:663
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
-"when the RMS values have stabilized (at least 2 minutes)."
+"when the RMS and polar alignment values have stabilized (at least 2 minutes)."
 msgstr ""
-"Гидирование отключено для измерения движений звезды. Нажмите 'Остановить', "
-"когда среднеквадратичные значения стабилизируются (не менее одной минуты)."
 
-#: guiding_assistant.cpp:595
+#: guiding_assistant.cpp:666
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -3781,114 +3796,118 @@ msgstr ""
 "изменения. Чтобы повторить измерения, нажмите 'Начать', чтобы продолжить "
 "гидирование, закройте окно."
 
-#: guiding_assistant.cpp:606 guiding_assistant.cpp:611
+#: guiding_assistant.cpp:677 guiding_assistant.cpp:682
 msgid "Measuring backlash: "
 msgstr "Измерение люфта:"
 
-#: guiding_assistant.cpp:620 guiding_assistant.cpp:1209 statswindow.cpp:276
-msgid "px"
-msgstr "пикс"
-
-#: guiding_assistant.cpp:620
-msgid "ms"
-msgstr "мсек"
-
-#: guiding_assistant.cpp:716 guiding_assistant.cpp:717
+#: guiding_assistant.cpp:801 guiding_assistant.cpp:802
 msgid "Apply"
 msgstr "Применить"
 
-#: guiding_assistant.cpp:833
+#: guiding_assistant.cpp:912
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 "Попробуйте использовать время экспозиции в пределах от %.1f сек до %.1f сек"
 
-#: guiding_assistant.cpp:842
+#: guiding_assistant.cpp:921
 msgid "Consider re-doing your calibration "
 msgstr "Может потребоваться новая калибровка"
 
-#: guiding_assistant.cpp:844
+#: guiding_assistant.cpp:923
 msgid "(Prior alert)"
 msgstr "(до оповещения)"
 
-#: guiding_assistant.cpp:846
+#: guiding_assistant.cpp:925
 msgid "(Backlash clearing)"
 msgstr "(Очистка люфта)"
 
-#: guiding_assistant.cpp:858
+#: guiding_assistant.cpp:937
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "Выберите звезду поярче или выдержку подлиннее"
 
-#: guiding_assistant.cpp:876
+#: guiding_assistant.cpp:955
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "Ошибка определения полюса > 5 угл.сек; она может быть исправлена."
 
-#: guiding_assistant.cpp:877
+#: guiding_assistant.cpp:956
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr ""
 "Ошибка установки полюса > 10 угл. сек; попробуйте улучшить установку дрейфом."
 
-#: guiding_assistant.cpp:897
+#: guiding_assistant.cpp:976
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr ""
 "Попробовать установить минимальное движение по прямому восхождению в %0.2f"
 
-#: guiding_assistant.cpp:915
+#: guiding_assistant.cpp:994
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Попробовать установить минимальное движение по склонению в %0.2f"
 
-#: guiding_assistant.cpp:937
-#, c-format
-msgid "Try setting a Dec backlash value of %d ms"
-msgstr "Попробовать установить величину люфта склонения в %d"
+#: guiding_assistant.cpp:1023
+msgid "Backlash measurement impaired by bad calibration or mount instability"
+msgstr ""
 
-#: guiding_assistant.cpp:939
-#, c-format
-msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
-msgstr "Люфт составляет %0.1f пикс; возможно, придётся гидировать только по δ"
+#: guiding_assistant.cpp:1025
+msgid "Backlash is small, no compensation needed"
+msgstr ""
 
-#: guiding_assistant.cpp:1048
+#: guiding_assistant.cpp:1027
+#, c-format
+msgid "Try setting a Dec backlash compensation value of %d ms"
+msgstr ""
+
+#: guiding_assistant.cpp:1029
+#, c-format
+msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
+msgstr ""
+
+#: guiding_assistant.cpp:1140
 msgid "Backlash test aborted..."
 msgstr "Тест люфта прерван..."
 
-#: guiding_assistant.cpp:1082 guiding_assistant.cpp:1089
+#: guiding_assistant.cpp:1180 guiding_assistant.cpp:1187
 msgid "Measuring backlash... "
 msgstr "Измерение люфта..."
 
-#: guiding_assistant.cpp:1111
+#: guiding_assistant.cpp:1209
 msgid "Guiding stopped"
 msgstr "Гидирование остановлено"
 
-#: guiding_assistant.cpp:1208
+#: guiding_assistant.cpp:1306
 msgid "s"
 msgstr "сек"
 
-#: guiding_assistant.cpp:1210
+#: guiding_assistant.cpp:1307 statswindow.cpp:276
+msgid "px"
+msgstr "пикс"
+
+#: guiding_assistant.cpp:1308
 msgid "arc-sec"
 msgstr "угл. сек"
 
-#: guiding_assistant.cpp:1211
+#: guiding_assistant.cpp:1309
 msgid "arc-min"
 msgstr "угл. мин"
 
-#: guiding_assistant.cpp:1212
+#: guiding_assistant.cpp:1310
 msgid "px/min"
 msgstr "пикс/мин"
 
-#: guiding_assistant.cpp:1214
+#: guiding_assistant.cpp:1312
 msgid "arc-sec/min"
 msgstr "угл. сек/мин"
 
-#: guiding_assistant.cpp:1215
+#: guiding_assistant.cpp:1313
 msgid "arc-sec/sec"
 msgstr "угл. сек/сек"
 
-#: guiding_assistant.cpp:1234 myframe.cpp:2811 myframe.cpp:2821
+#: guiding_assistant.cpp:1332 myframe.cpp:2811 myframe.cpp:2821
 msgid " "
 msgstr ""
 
@@ -5381,7 +5400,7 @@ msgid ""
 "Click Start\n"
 "Wait for the display to stabilise\n"
 "Click Stop\n"
-"Adjust your mount's altitude and azimuth to placethe guide star in its "
+"Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle\n"
 msgstr ""
 
@@ -7180,6 +7199,30 @@ msgstr "Подключение камеры..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
+
+#~ msgid ""
+#~ "Estimate of declination backlash if backlash testing was completed "
+#~ "successfully"
+#~ msgstr "Оценка люфта по склонению при успешном тестировании люфта"
+
+#~ msgid ""
+#~ "Guiding output is disabled and star movement is being measured.  Click "
+#~ "Stop when the RMS values have stabilized (at least 2 minutes)."
+#~ msgstr ""
+#~ "Гидирование отключено для измерения движений звезды. Нажмите "
+#~ "'Остановить', когда среднеквадратичные значения стабилизируются (не менее "
+#~ "одной минуты)."
+
+#~ msgid "ms"
+#~ msgstr "мсек"
+
+#~ msgid "Try setting a Dec backlash value of %d ms"
+#~ msgstr "Попробовать установить величину люфта склонения в %d"
+
+#~ msgid ""
+#~ "Backlash is %0.1f px; you may need to guide in only one Dec direction"
+#~ msgstr ""
+#~ "Люфт составляет %0.1f пикс; возможно, придётся гидировать только по δ"
 
 #~ msgid "Mass"
 #~ msgstr "Масса"
