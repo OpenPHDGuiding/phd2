@@ -877,7 +877,7 @@ bool BgUpload::Entry()
 
     if (len > limit)
     {
-        Debug.Write(wxString::Format("Upload log: upload size %lu bytes exceeds limit of %ld\n", len, limit));
+        Debug.Write(wxString::Format("Upload log: upload size %lu bytes exceeds limit of %ld\n", (unsigned long) len, limit));
         m_err = UPL_SIZE_ERROR;
         return false;
     }
@@ -1056,12 +1056,12 @@ void LogUploadDialog::ExecUpload()
                     err = n->string_value;
             }
         }
-    }
 
-    if (url.empty())
-    {
-        ok = false;
-        upload.m_err = UPL_CONNECTION_ERROR;
+        if (url.empty())
+        {
+            ok = false;
+            upload.m_err = UPL_CONNECTION_ERROR;
+        }
     }
 
     if (ok)
