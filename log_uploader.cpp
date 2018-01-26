@@ -41,7 +41,6 @@
 #include <wx/dir.h>
 #include <wx/regex.h>
 #include <wx/wfstream.h>
-#include <wx/wupdlock.h>
 #include <wx/zipstrm.h>
 
 #if LIBCURL_VERSION_MAJOR < 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR < 32)
@@ -51,6 +50,17 @@
 #ifdef _MSC_VER
 # define strncasecmp strnicmp
 #endif
+
+struct WindowUpdateLocker
+{
+    wxWindow *m_win;
+    WindowUpdateLocker(wxWindow *win) : m_win(win) { win->Freeze(); }
+    ~WindowUpdateLocker()
+    {
+        m_win->Thaw();
+        m_win->Refresh();
+    }
+};
 
 struct Session
 {
@@ -979,10 +989,9 @@ void LogUploadDialog::ConfirmUpload()
     }
     msg += "</pre>";
 
+    WindowUpdateLocker noUpdates(this);
     m_html->SetPage(msg);
     m_html->Show();
-
-    wxWindowUpdateLocker noUpdates(this);
     m_grid->Hide();
     m_back->Show();
     m_upload->Show();
@@ -1057,7 +1066,6 @@ void LogUploadDialog::ExecUpload()
 
     if (ok)
     {
-        SetTitle(STEP3_TITLE_OK);
         wxString msg = wxString::Format(_("The log files have been uploaded and can be accessed at this link:") + "<br>"
             "<br>"
             "<font size=-1>%s</font><br><br>" +
@@ -1065,7 +1073,8 @@ void LogUploadDialog::ExecUpload()
               "Copy and paste the link into your forum post.") + "<br><br>"
               "<a href=\"copy\">" + _("Copy link to clipboard"), url);
         m_url = url;
-        wxWindowUpdateLocker noUpdates(this);
+        WindowUpdateLocker noUpdates(this);
+        SetTitle(STEP3_TITLE_OK);
         m_html->SetPage(msg);
         m_back->Hide();
         m_upload->Hide();
@@ -1095,7 +1104,7 @@ void LogUploadDialog::ExecUpload()
         break;
     }
 
-    wxWindowUpdateLocker noUpdates(this);
+    WindowUpdateLocker noUpdates(this);
     SetTitle(STEP3_TITLE_FAIL);
     m_html->SetPage(msg);
     m_url.clear();
@@ -1109,7 +1118,7 @@ void LogUploadDialog::OnBackClick(wxCommandEvent& event)
 {
     if (m_step == 2)
     {
-        wxWindowUpdateLocker noUpdates(this);
+        WindowUpdateLocker noUpdates(this);
         m_step = 1;
         SetTitle(STEP1_TITLE);
         m_text->Show();
