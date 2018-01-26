@@ -647,6 +647,7 @@ static json_value *json_parse(char *source, const char **error_pos,
 struct JsonParserImpl
 {
     block_allocator alloc;
+    void *tmpbuf;
 
     json_value *root;
 
@@ -654,7 +655,8 @@ struct JsonParserImpl
     const char *error_desc;
     int error_line;
 
-    JsonParserImpl() : alloc(4096) { }
+    JsonParserImpl() : alloc(4096), tmpbuf(nullptr) { }
+    ~JsonParserImpl() { if (tmpbuf) ::free(tmpbuf); }
 };
 
 JsonParser::JsonParser()
@@ -674,6 +676,15 @@ bool JsonParser::Parse(char *str)
     return m_impl->root != 0;
 }
 
+bool JsonParser::Parse(const std::string& str)
+{
+    if (m_impl->tmpbuf)
+        ::free(m_impl->tmpbuf);
+    m_impl->tmpbuf = ::malloc(str.length() + 1);
+    memcpy(m_impl->tmpbuf, str.c_str(), str.length() + 1);
+    return Parse(static_cast<char *>(m_impl->tmpbuf));
+}
+
 const char *JsonParser::ErrorPos() const
 {
     return m_impl->error_pos;
@@ -689,7 +700,7 @@ int JsonParser::ErrorLine() const
     return m_impl->error_line;
 }
 
-json_value *JsonParser::Root()
+const json_value *JsonParser::Root()
 {
     return m_impl->root;
 }

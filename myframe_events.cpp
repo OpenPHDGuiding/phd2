@@ -189,6 +189,22 @@ void MyFrame::OnHelpOnline(wxCommandEvent& evt)
     wxLaunchDefaultBrowser("https://openphdguiding.org/getting-help/");
 }
 
+static void _shell_open(const wxString& loc)
+{
+#if defined(__WXMSW__)
+    ::ShellExecute(NULL, _T("open"), loc.fn_str(), NULL, NULL, SW_SHOWNORMAL);
+#elif defined(__WXOSX__)
+    ::wxExecute("/usr/bin/open '" + loc + "'", wxEXEC_ASYNC);
+#else
+    ::wxExecute("xdg-open '" + loc + "'", wxEXEC_ASYNC);
+#endif
+}
+
+void MyFrame::OnHelpLogFolder(wxCommandEvent& evt)
+{
+    _shell_open(Debug.GetLogDir());
+}
+
 void MyFrame::OnHelpUploadLogs(wxCommandEvent& evt)
 {
     LogUploader::UploadLogs();

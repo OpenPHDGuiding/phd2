@@ -252,7 +252,6 @@ struct GuidingAsstWin : public wxDialog
     long m_elapsedSecs;
     PHD_Point m_startPos;
     wxString startStr;
-    double m_freqThresh;
     Stats m_statsRA;
     Stats m_statsDec;
     double sumSNR;
@@ -1065,7 +1064,6 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
     double lp_cutoff = wxMax(6.0, 3.0 * exposure);
     double hp_cutoff = 1.0;
-    m_freqThresh = 1.0 / hp_cutoff;
     m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
     m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 

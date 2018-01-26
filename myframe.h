@@ -262,6 +262,7 @@ public:
     void OnOverlaySlitCoords(wxCommandEvent& evt);
     void OnUpgrade(wxCommandEvent& evt);
     void OnHelpOnline(wxCommandEvent& evt);
+    void OnHelpLogFolder(wxCommandEvent& evt);
     void OnHelpUploadLogs(wxCommandEvent& evt);
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
@@ -636,6 +637,7 @@ enum {
     MENU_HELP_UPGRADE,
     MENU_HELP_ONLINE,
     MENU_HELP_UPLOAD_LOGS,
+    MENU_HELP_LOG_FOLDER,
 };
 
 enum {

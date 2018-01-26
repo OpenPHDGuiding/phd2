@@ -36,6 +36,7 @@
 
 #include "phdupdate.h"
 
+#include <curl/curl.h>
 #include <wx/cmdline.h>
 #include <wx/snglinst.h>
 
@@ -229,6 +230,8 @@ bool PhdApp::OnInit()
     _configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
 #endif
 
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
     if (m_resetConfig)
     {
         pConfig->DeleteAll();
@@ -291,6 +294,8 @@ int PhdApp::OnExit(void)
 
     delete pConfig;
     pConfig = NULL;
+
+    curl_global_cleanup();
 
     delete m_instanceChecker;
     m_instanceChecker = 0;

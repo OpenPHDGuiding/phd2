@@ -99,12 +99,13 @@ public:
     ~JsonParser();
 
     bool Parse(char *str);
+    bool Parse(const std::string& str);
 
     const char *ErrorPos() const;
     const char *ErrorDesc() const;
     int ErrorLine() const;
 
-    json_value *Root();
+    const json_value *Root();
 };
 
 #endif

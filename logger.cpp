@@ -135,16 +135,14 @@ bool Logger::SetLogDir(const wxString& dir)
 // period.  Files older than that are removed.
 void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
 {
-    wxString dirName = GetLogDir();
-    wxArrayString results;
-    int numFiles;
     int hitCount = 0;
     wxDateTime oldestDate = wxDateTime::UNow() + wxDateSpan::Days(-DaysOld);
     wxString lastFile = "<None>";
 
     try
     {
-        numFiles = wxDir::GetAllFiles(dirName, &results, filePattern, wxDIR_FILES);      // No sub-directories, just files
+        wxArrayString results;
+        int numFiles = wxDir::GetAllFiles(GetLogDir(), &results, filePattern, wxDIR_FILES);      // No sub-directories, just files
 
         for (int inx = 0; inx < numFiles; inx++)
         {

@@ -261,8 +261,6 @@ struct Updater
     {
         LoadSettings();
 
-        curl_global_init(CURL_GLOBAL_DEFAULT);
-
         curl = curl_easy_init();
         if (!curl)
         {
@@ -286,8 +284,6 @@ struct Updater
     {
         if (curl)
             curl_easy_cleanup(curl);
-
-        curl_global_cleanup();
     }
 
     wxString SeriesName()
