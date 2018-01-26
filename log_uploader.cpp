@@ -122,7 +122,7 @@ void DebugLogScanner::FindNextRow()
     }
 }
 
-static wxString FormatTimeSpan(const wxTimeSpan dt)
+static wxString FormatTimeSpan(const wxTimeSpan& dt)
 {
     int days = dt.GetDays();
     if (days > 1)
