@@ -39,7 +39,9 @@
 #include <fstream>
 #include <wx/clipbrd.h>
 #include <wx/dir.h>
+#include <wx/hyperlink.h>
 #include <wx/regex.h>
+#include <wx/tokenzr.h>
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 
@@ -222,12 +224,13 @@ public:
     wxStaticText *m_text;
     wxHtmlWindow *m_html;
     wxGrid *m_grid;
+    wxHyperlinkCtrl *m_recent;
     wxButton *m_back;
     wxButton *m_upload;
-    wxString m_url;
     DebugLogScanner m_scanner;
 
     void OnCellLeftClick(wxGridEvent& event);
+    void OnRecentClicked(wxHyperlinkEvent& event);
     void OnBackClick(wxCommandEvent& event);
     void OnUploadClick(wxCommandEvent& event);
     void OnLinkClicked(wxHtmlLinkEvent& event);
@@ -478,6 +481,59 @@ void LogUploadDialog::OnIdle(wxIdleEvent& event)
     event.RequestMore(more);
 }
 
+struct Uploaded
+{
+    wxString url;
+    time_t when;
+};
+static std::deque<Uploaded> s_recent;
+
+static void LoadRecentUploads()
+{
+    s_recent.clear();
+
+    // url1 timestamp1 ... urlN timestampN
+    wxString s = pConfig->Global.GetString("/log_uploader/recent", wxEmptyString);
+    wxArrayString ary = ::wxStringTokenize(s);
+    for (size_t i = 0; i + 1 < ary.size(); i += 2)
+    {
+        Uploaded t;
+        t.url = ary[i];
+        unsigned long val;
+        if (!ary[i + 1].ToULong(&val))
+            continue;
+        t.when = static_cast<time_t>(val);
+        s_recent.push_back(t);
+    }
+}
+
+static void SaveUploadInfo(const wxString& url, const wxDateTime& time)
+{
+    for (auto it = s_recent.begin();  it != s_recent.end(); ++it)
+    {
+        if (it->url == url)
+        {
+            s_recent.erase(it);
+            break;
+        }
+    }
+    enum { MAX_RECENT = 5 };
+    while (s_recent.size() >= MAX_RECENT)
+        s_recent.pop_front();
+    Uploaded t;
+    t.url = url;
+    t.when = time.GetTicks();
+    s_recent.push_back(t);
+    std::ostringstream os;
+    for (auto it = s_recent.begin(); it != s_recent.end(); ++it)
+    {
+        if (it != s_recent.begin())
+            os << ' ';
+        os << it->url << ' ' << it->when;
+    }
+    pConfig->Global.SetString("/log_uploader/recent", os.str());
+}
+
 #define STEP1_TITLE _("Upload Log Files - Select logs")
 #define STEP2_TITLE _("Upload Log Files - Confirm upload")
 #define STEP3_TITLE_OK _("Upload Log Files - Upload complete")
@@ -554,6 +610,12 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     // Cell Defaults
     m_grid->SetDefaultCellAlignment(wxALIGN_LEFT, wxALIGN_TOP);
 
+    m_recent = new wxHyperlinkCtrl(this, wxID_ANY, _("Recent uploads"), wxEmptyString, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+
+    LoadRecentUploads();
+    if (s_recent.empty())
+        m_recent->Hide();
+
     m_back = new wxButton(this, wxID_ANY, _("< Back"), wxDefaultPosition, wxDefaultSize, 0);
     m_back->Hide();
 
@@ -566,6 +628,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
 
     sizer1->Add(m_grid, 0, wxALL | wxEXPAND, 5);
 
+    sizer2->Add(m_recent, 0, wxALL, 5);
     sizer2->Add(0, 0, 1, wxEXPAND, 5);
     sizer2->Add(m_back, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
     sizer2->Add(m_upload, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
@@ -581,6 +644,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     Centre(wxBOTH);
 
     // Connect Events
+    m_recent->Connect(wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler(LogUploadDialog::OnRecentClicked), nullptr, this);
     m_back->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Connect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
@@ -595,6 +659,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
 LogUploadDialog::~LogUploadDialog()
 {
     // Disconnect Events
+    m_recent->Disconnect(wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler(LogUploadDialog::OnRecentClicked), nullptr, this);
     m_back->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Disconnect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
@@ -961,9 +1026,6 @@ void LogUploadDialog::ConfirmUpload()
 {
     m_step = 2;
 
-    SetTitle(STEP2_TITLE);
-    m_text->Hide();
-
     wxString msg(_("The following log files will be uploaded:") + "<pre>");
 
     for (int r = 0; r < m_grid->GetNumberRows(); r++)
@@ -990,9 +1052,12 @@ void LogUploadDialog::ConfirmUpload()
     msg += "</pre>";
 
     WindowUpdateLocker noUpdates(this);
+    SetTitle(STEP2_TITLE);
+    m_text->Hide();
     m_html->SetPage(msg);
     m_html->Show();
     m_grid->Hide();
+    m_recent->Hide();
     m_back->Show();
     m_upload->Show();
     m_upload->SetLabel(_("Upload"));
@@ -1066,13 +1131,13 @@ void LogUploadDialog::ExecUpload()
 
     if (ok)
     {
+        SaveUploadInfo(url, wxDateTime::Now());
         wxString msg = wxString::Format(_("The log files have been uploaded and can be accessed at this link:") + "<br>"
             "<br>"
             "<font size=-1>%s</font><br><br>" +
             _("You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by posting a message that includes the link. "
-              "Copy and paste the link into your forum post.") + "<br><br>"
-              "<a href=\"copy\">" + _("Copy link to clipboard"), url);
-        m_url = url;
+              "Copy and paste the link into your forum post.") + "<br><br>" +
+              wxString::Format("<a href=\"copy.%u\">", (unsigned int)(s_recent.size() - 1)) + _("Copy link to clipboard"), url);
         WindowUpdateLocker noUpdates(this);
         SetTitle(STEP3_TITLE_OK);
         m_html->SetPage(msg);
@@ -1107,10 +1172,33 @@ void LogUploadDialog::ExecUpload()
     WindowUpdateLocker noUpdates(this);
     SetTitle(STEP3_TITLE_FAIL);
     m_html->SetPage(msg);
-    m_url.clear();
     m_back->Show();
     m_upload->Hide();
     m_step = 3;
+    Layout();
+}
+
+void LogUploadDialog::OnRecentClicked(wxHyperlinkEvent& event)
+{
+    std::ostringstream os;
+    os << "<table><tr><th>Uploaded</th><th>Link</th><th>&nbsp;</th></tr>";
+    int i = s_recent.size() - 1;
+    for (auto it = s_recent.rbegin(); it != s_recent.rend(); ++it, --i)
+    {
+        os << "<tr><td>" << wxDateTime(it->when).Format() << "</td>"
+            << "<td><font size=-1>" << it->url << "</font></td>"
+            << "<td><a href=\"copy." << i << "\">Copy link</a></td></tr>";
+    }
+    os << "</table>";
+
+    WindowUpdateLocker noUpdates(this);
+    SetTitle(_("Recent uploads"));
+    m_text->Hide();
+    m_grid->Hide();
+    m_html->SetPage(os.str());
+    m_html->Show();
+    m_recent->Hide();
+    m_upload->Hide();
     Layout();
 }
 
@@ -1124,6 +1212,7 @@ void LogUploadDialog::OnBackClick(wxCommandEvent& event)
         m_text->Show();
         m_html->Hide();
         m_grid->Show();
+        m_recent->Show(!s_recent.empty());
         m_back->Hide();
         m_upload->SetLabel(_("Next >"));
         Layout();
@@ -1145,11 +1234,14 @@ void LogUploadDialog::OnUploadClick(wxCommandEvent& event)
 void LogUploadDialog::OnLinkClicked(wxHtmlLinkEvent& event)
 {
     wxString href = event.GetLinkInfo().GetHref();
-    if (href == "copy")
+    if (href.StartsWith("copy."))
     {
+        unsigned long val;
+        if (!href.substr(5).ToULong(&val) || val >= s_recent.size())
+            return;
         if (wxTheClipboard->Open())
         {
-            wxTheClipboard->SetData(new wxURLDataObject(m_url));
+            wxTheClipboard->SetData(new wxURLDataObject(s_recent[val].url));
             wxTheClipboard->Close();
         }
     }
