@@ -121,9 +121,8 @@ inline static int gain_pct(int minval, int maxval, int val)
 
 bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-	AltaircamInst ai[ALTAIRCAM_MAX];
-
-    unsigned int numCameras = Altaircam_Enum(ai);
+	AltaircamInstV2 ai[ALTAIRCAM_MAX];
+	unsigned numCameras = Altaircam_EnumV2(ai);
 
     for (int i = 0; i < numCameras; i++)
     {
@@ -136,9 +135,9 @@ bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 
 bool Camera_Altair::Connect(const wxString& camIdArg)
 {
-	AltaircamInst ai[ALTAIRCAM_MAX];
+	AltaircamInstV2 ai[ALTAIRCAM_MAX];
+	unsigned numCameras = Altaircam_EnumV2(ai);
 
-    unsigned int numCameras = Altaircam_Enum(ai);
     if (numCameras == 0)
     {
         return CamConnectFailed(_("No Altair cameras detected"));
