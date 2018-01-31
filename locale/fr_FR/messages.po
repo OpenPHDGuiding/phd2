@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-17 07:19+0000\n"
-"PO-Revision-Date: 2017-12-29 12:10+0100\n"
+"PO-Revision-Date: 2018-02-01 00:02+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -871,10 +871,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1910,8 +1909,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:546
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2127,8 +2125,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:152
 msgid ""
@@ -3218,8 +3216,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3331,8 +3329,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3355,8 +3353,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3673,7 +3671,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:136
 msgid "Backlash Test Sampling"
-msgstr ""
+msgstr "Échantillonnage de test du jeu"
 
 #: guiding_assistant.cpp:141
 msgid ""
@@ -3681,10 +3679,13 @@ msgid ""
 "testing \n"
 "will start automatically when sampling is completed."
 msgstr ""
+"Un échantillonnage de données supplémentaires est en cours pour mieux "
+"mesurer la dérive en déclinaison. \n"
+"Le test du jeu démarre automatiquement lorsque l'échantillonnage est terminé."
 
 #: guiding_assistant.cpp:143
 msgid "Seconds remaining: "
-msgstr ""
+msgstr "Secondes restantes :"
 
 #: guiding_assistant.cpp:343
 msgid "Guiding Assistant"
@@ -3892,6 +3893,10 @@ msgid ""
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
 "estimate is one unit of standard deviation"
 msgstr ""
+"Jeu de déclinaison estimé si le test s'est terminé. Les résultats sont le "
+"temps nécessaire pour effacer le jeu (ms) et l'angle d'engrenage "
+"correspondant (arc-sec). L'estimation de l'incertitude est une unité d'écart-"
+"type"
 
 #: guiding_assistant.cpp:623
 msgid ""
@@ -3921,6 +3926,9 @@ msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
 msgstr ""
+"La sortie de guidage est désactivée et le mouvement des étoiles est mesuré. "
+"Cliquez sur Arrêter lorsque les valeurs d'alignement RMS et polaire sont "
+"stabilisées (au moins 2 minutes)."
 
 #: guiding_assistant.cpp:666
 msgid ""
@@ -3990,20 +3998,23 @@ msgstr "Essaye de définir un mouvement minimal en Dec de %0.2f"
 #: guiding_assistant.cpp:1023
 msgid "Backlash measurement impaired by bad calibration or mount instability"
 msgstr ""
+"La mesure du jeu est altérée par un mauvais étalonnage ou une instabilité de "
+"la monture"
 
 #: guiding_assistant.cpp:1025
 msgid "Backlash is small, no compensation needed"
-msgstr ""
+msgstr "Le jeu est négligeable, aucune compensation nécessaire"
 
 #: guiding_assistant.cpp:1027
 #, c-format
 msgid "Try setting a Dec backlash compensation value of %d ms"
-msgstr ""
+msgstr "Essaye de définir une valeur de compensation de jeu de Dec. de %d ms"
 
 #: guiding_assistant.cpp:1029
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
 msgstr ""
+"Le jeu est >= %d ms ; vous devrez peut-être guider das la seule direction Dec"
 
 #: guiding_assistant.cpp:1140
 msgid "Backlash test aborted..."
@@ -5610,6 +5621,13 @@ msgid ""
 "Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle\n"
 msgstr ""
+"Pointez près du pôle céleste.\n"
+"Sélectionnez une étoile guide dans l'affichage principal.\n"
+"Cliquez sur Démarrer\n"
+"Attendez que l'affichage se stabilise\n"
+"Cliquez sur Stop\n"
+"Ajustez l'altitude et l'azimut de votre monture afin de placer l'étoile "
+"guide dans le cercle cible\n"
 
 #: polardrift_toolwin.cpp:179 staticpa_toolwin.cpp:319
 msgid "Alignment Parameters"
@@ -8314,8 +8332,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
