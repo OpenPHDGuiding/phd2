@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-17 07:19+0000\n"
+"POT-Creation-Date: 2018-02-09 16:34+0000\n"
 "PO-Revision-Date: 2015-03-29 20:22+0100\n"
 "Last-Translator: Jakub Bartas <jakub.bartas@gmail.com>\n"
 "Language-Team: Jakub Bartas <jakub.bartas@gmail.com>\n"
@@ -60,7 +60,7 @@ msgstr "Global"
 msgid "Camera"
 msgstr "Kamera"
 
-#: advanced_dialog.cpp:149 guider.cpp:1337 myframe.cpp:1553
+#: advanced_dialog.cpp:149 guider.cpp:1337 myframe.cpp:1555
 #: scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "Guiding"
@@ -83,7 +83,7 @@ msgstr "Montaż"
 msgid "No mount specified"
 msgstr ""
 
-#: aui_controls.cpp:377 aui_controls.cpp:389 guiding_assistant.cpp:386
+#: aui_controls.cpp:377 aui_controls.cpp:389 guiding_assistant.cpp:385
 msgid "SNR"
 msgstr "SNR"
 
@@ -281,7 +281,7 @@ msgstr "Optyka adaptatywna (AO)"
 msgid "Right Ascension"
 msgstr "Rektascensja"
 
-#: calreview_dialog.cpp:137 comet_tool.cpp:331 myframe_events.cpp:224
+#: calreview_dialog.cpp:137 comet_tool.cpp:331 myframe_events.cpp:240
 msgid "X"
 msgstr "X"
 
@@ -290,7 +290,7 @@ msgstr "X"
 msgid "Declination"
 msgstr "Deklinacja"
 
-#: calreview_dialog.cpp:145 comet_tool.cpp:332 myframe_events.cpp:231
+#: calreview_dialog.cpp:145 comet_tool.cpp:332 myframe_events.cpp:247
 msgid "Y"
 msgstr "Y"
 
@@ -322,7 +322,7 @@ msgstr "Błąd ortogonalności:"
 msgid "a-s/sec"
 msgstr ""
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1311
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1309
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -362,7 +362,8 @@ msgstr ""
 msgid "Created:"
 msgstr ""
 
-#: calreview_dialog.cpp:299 mount.cpp:58 mount.cpp:93 statswindow.cpp:302
+#: calreview_dialog.cpp:299 log_uploader.cpp:122 log_uploader.cpp:368
+#: log_uploader.cpp:375 mount.cpp:58 mount.cpp:93 statswindow.cpp:302
 msgid "Unknown"
 msgstr "Nieznany"
 
@@ -651,7 +652,7 @@ msgstr "Krok kalibracji, ms"
 
 #: calstep_dialog.cpp:179 cam_simulator.cpp:1494 camcal_import_dialog.cpp:47
 #: configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:54
-#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2868
+#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2870
 #: profile_wizard.cpp:59 profile_wizard.cpp:66 Refine_DefMap.cpp:59
 #: starcross_test.cpp:52
 msgid ": "
@@ -673,19 +674,19 @@ msgstr ""
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: cam_Altair.cpp:144
+#: cam_Altair.cpp:143
 msgid "No Altair cameras detected"
 msgstr ""
 
-#: cam_Altair.cpp:162
+#: cam_Altair.cpp:161
 msgid "Specified Altair Camera not found."
 msgstr ""
 
-#: cam_Altair.cpp:168
+#: cam_Altair.cpp:167
 msgid "Failed to open Altair Camera."
 msgstr ""
 
-#: cam_Altair.cpp:190
+#: cam_Altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
 
@@ -1404,7 +1405,7 @@ msgid "OK"
 msgstr "OK"
 
 #: cam_simulator.cpp:1690 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
-#: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:776
+#: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:772
 #: profile_wizard.cpp:874
 msgid "Cancel"
 msgstr "Anuluj"
@@ -1535,7 +1536,7 @@ msgstr "Wybierz profil z bibliteką darków, który chcesz użyć:"
 #: gear_dialog.cpp:371 gear_dialog.cpp:375 gear_dialog.cpp:605
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:134 mount.cpp:171 mount.cpp:712
-#: myframe.cpp:2697 profile_wizard.cpp:212 profile_wizard.cpp:213
+#: myframe.cpp:2699 profile_wizard.cpp:212 profile_wizard.cpp:213
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
 #: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
 #: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
@@ -1817,7 +1818,7 @@ msgstr "Osie"
 msgid "Tracking rate axes"
 msgstr "Prędkość śledzenia osi"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:546
+#: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
 #: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314
 #: starcross_test.cpp:161
 msgid "Start"
@@ -1827,7 +1828,7 @@ msgstr "Start"
 msgid "Start training the tracking rate."
 msgstr "Rozpocznij uczenie dla prędkości śledzenia."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:551
+#: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:550
 #: polardrift_toolwin.cpp:316 starcross_test.cpp:163 staticpa_toolwin.cpp:644
 msgid "Stop"
 msgstr "Stop"
@@ -1947,7 +1948,7 @@ msgstr "Nie pytaj ponownie"
 msgid "Confirm"
 msgstr "Potwierdź"
 
-#: darks_dialog.cpp:62 guiding_assistant.cpp:382
+#: darks_dialog.cpp:62 guiding_assistant.cpp:381
 msgid "Exposure time"
 msgstr "Czas ekspozycji"
 
@@ -2299,7 +2300,7 @@ msgstr "Przesuwanie..."
 msgid "Coordinates saved."
 msgstr "Współrzędne zapisane."
 
-#: drift_tool.cpp:805 eegg.cpp:237 myframe_events.cpp:719
+#: drift_tool.cpp:805 eegg.cpp:237 myframe_events.cpp:735
 #: polardrift_toolwin.cpp:55 staticpa_toolwin.cpp:100
 msgid "Please connect a camera first."
 msgstr ""
@@ -2328,7 +2329,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "Dane kalibracyjne są niedostępne."
 
-#: eegg.cpp:58 eegg.cpp:242 myframe_events.cpp:998 myframe_events.cpp:1015
+#: eegg.cpp:58 eegg.cpp:242 myframe_events.cpp:1014 myframe_events.cpp:1031
 msgid "Please connect a mount first."
 msgstr "Najpierw połącz się z montażem."
 
@@ -2541,7 +2542,7 @@ msgstr "Odłącz wszystko"
 msgid "Disconnect all equipment"
 msgstr "Odłącz wszystko"
 
-#: gear_dialog.cpp:339 myframe.cpp:1174 polardrift_toolwin.cpp:206
+#: gear_dialog.cpp:339 myframe.cpp:1176 polardrift_toolwin.cpp:206
 #: staticpa_toolwin.cpp:426
 msgid "Close"
 msgstr "Zamknij"
@@ -2774,7 +2775,7 @@ msgstr "Importuj profilu sprzętowe PHD"
 msgid "Export PHD Equipment Profile"
 msgstr "Eksportuj profilu sprzętowe PHD"
 
-#: graph-stepguider.cpp:47 myframe.cpp:335 myframe.cpp:404
+#: graph-stepguider.cpp:47 myframe.cpp:336 myframe.cpp:405
 msgid "AO Position"
 msgstr "Pozycja AO"
 
@@ -3290,7 +3291,7 @@ msgstr ""
 msgid "star lost"
 msgstr "gwiazda zgubiona"
 
-#: guider.cpp:1254 myframe.cpp:1719
+#: guider.cpp:1254 myframe.cpp:1721
 msgid "Paused"
 msgstr "Pauza"
 
@@ -3490,115 +3491,115 @@ msgstr ""
 msgid "Seconds remaining: "
 msgstr ""
 
-#: guiding_assistant.cpp:343
+#: guiding_assistant.cpp:342
 msgid "Guiding Assistant"
 msgstr "Asystent guidingu"
 
-#: guiding_assistant.cpp:365
+#: guiding_assistant.cpp:364
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr ""
 
-#: guiding_assistant.cpp:367
+#: guiding_assistant.cpp:366
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr ""
 
-#: guiding_assistant.cpp:369
+#: guiding_assistant.cpp:368
 msgid "Measurement Status"
 msgstr "Status pomiaru"
 
-#: guiding_assistant.cpp:380
+#: guiding_assistant.cpp:379
 msgid "Start time"
 msgstr "Czas startu"
 
-#: guiding_assistant.cpp:388
+#: guiding_assistant.cpp:387
 msgid "Star mass"
 msgstr "Wielkość gwiazdy"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:391
 msgid "Elapsed time"
 msgstr "Czas"
 
-#: guiding_assistant.cpp:394
+#: guiding_assistant.cpp:393
 msgid "Sample count"
 msgstr "Liczba próbek"
 
-#: guiding_assistant.cpp:406
+#: guiding_assistant.cpp:405
 msgid "High-frequency Star Motion"
 msgstr "Szybkie ruchy gwiazdy"
 
-#: guiding_assistant.cpp:417
+#: guiding_assistant.cpp:416
 msgid "Right ascension, RMS"
 msgstr "Rektascensja, RMS"
 
-#: guiding_assistant.cpp:421
+#: guiding_assistant.cpp:420
 msgid "Declination, RMS"
 msgstr "Deklinacja, RMS"
 
-#: guiding_assistant.cpp:425
+#: guiding_assistant.cpp:424
 msgid "Total, RMS"
 msgstr "Łącznie, RMS"
 
-#: guiding_assistant.cpp:434
+#: guiding_assistant.cpp:433
 msgid "Other Star Motion"
 msgstr "Inne ruchy gwiazdy"
 
-#: guiding_assistant.cpp:447
+#: guiding_assistant.cpp:446
 msgid "Right ascension, Peak"
 msgstr "Rektascensja, pik"
 
-#: guiding_assistant.cpp:451
+#: guiding_assistant.cpp:450
 msgid "Declination, Peak"
 msgstr "Deklinacja, pik"
 
-#: guiding_assistant.cpp:455
+#: guiding_assistant.cpp:454
 msgid "Right ascension, Peak-Peak"
 msgstr "Rektascensja, pik-pik"
 
-#: guiding_assistant.cpp:459
+#: guiding_assistant.cpp:458
 msgid "Right ascension Drift Rate"
 msgstr "Prędkość dryfu rektascensji"
 
-#: guiding_assistant.cpp:463
+#: guiding_assistant.cpp:462
 msgid "Right ascension Max Drift Rate"
 msgstr "Maksymalna prędkość dryfu rektascensji"
 
-#: guiding_assistant.cpp:467
+#: guiding_assistant.cpp:466
 msgid "Drift-limiting exposure"
 msgstr ""
 
-#: guiding_assistant.cpp:471
+#: guiding_assistant.cpp:470
 msgid "Declination Drift Rate"
 msgstr "Prędkość dryfu deklinacji"
 
-#: guiding_assistant.cpp:475
+#: guiding_assistant.cpp:474
 msgid "Declination Backlash"
 msgstr ""
 
-#: guiding_assistant.cpp:479
+#: guiding_assistant.cpp:478
 msgid "Polar Alignment Error"
 msgstr ""
 
-#: guiding_assistant.cpp:490
+#: guiding_assistant.cpp:489
 msgid "Recommendations"
 msgstr "Rekomendacje"
 
-#: guiding_assistant.cpp:504
+#: guiding_assistant.cpp:503
 msgid "Show Backlash Graph"
 msgstr ""
 
-#: guiding_assistant.cpp:505
+#: guiding_assistant.cpp:504
 msgid "Show graph of backlash measurement points"
 msgstr ""
 
-#: guiding_assistant.cpp:509 myframe.cpp:1179 profile_wizard.cpp:187
+#: guiding_assistant.cpp:508 myframe.cpp:1181 profile_wizard.cpp:187
 msgid "Help"
 msgstr ""
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:521
 msgid "Measure Declination Backlash"
 msgstr ""
 
-#: guiding_assistant.cpp:523
+#: guiding_assistant.cpp:522
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -3606,22 +3607,22 @@ msgid ""
 "search region to at least 20 px"
 msgstr ""
 
-#: guiding_assistant.cpp:547
+#: guiding_assistant.cpp:546
 msgid "Start measuring (disables guiding)"
 msgstr "Rozpocznij pomiar (wyłącza guiding)"
 
-#: guiding_assistant.cpp:552
+#: guiding_assistant.cpp:551
 msgid "Stop measuring and re-enable guiding"
 msgstr "Zatrzymaj pomiar i włącz guiding"
 
-#: guiding_assistant.cpp:604
+#: guiding_assistant.cpp:603
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
 msgstr ""
 "Stosunek sygnału do szumu; miara zdolności oddzielenia gwiazdy od szumu/tła"
 
-#: guiding_assistant.cpp:606
+#: guiding_assistant.cpp:605
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
@@ -3629,7 +3630,7 @@ msgstr ""
 "Miara całkowitej jasności gwiazdy. Rozważ wykorzystanie 'Auto-wyboru "
 "gwiazdy' (Alt-S), aby wybrać gwiazdę."
 
-#: guiding_assistant.cpp:611
+#: guiding_assistant.cpp:610
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3637,7 +3638,7 @@ msgstr ""
 "Miara typowego, wysokoczęstotliwościowego ruchu gwiazdy w rektascensji; "
 "guiding zazwyczaj nie może wykonywać korekt dla tak małych fluktuacji."
 
-#: guiding_assistant.cpp:612
+#: guiding_assistant.cpp:611
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -3645,54 +3646,54 @@ msgstr ""
 "Miara typowego, wysokoczęstotliwościowego ruchu gwiazdy w deklinacji; "
 "guiding zazwyczaj nie może wykonywać korekt dla tak małych fluktuacji."
 
-#: guiding_assistant.cpp:615
+#: guiding_assistant.cpp:614
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "Maksymalne odchylenie między kolejnymi próbkami w rektascensji."
 
-#: guiding_assistant.cpp:616
+#: guiding_assistant.cpp:615
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "Maksymalne odchylenie między kolejnymi próbkami w deklinacji."
 
-#: guiding_assistant.cpp:617
+#: guiding_assistant.cpp:616
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr "Maksymalne odchylenie pik-pik w rektascensji podczas trwania pomiaru."
 
-#: guiding_assistant.cpp:618
+#: guiding_assistant.cpp:617
 msgid "Estimated overall drift rate in right ascension."
 msgstr "Szacowany całkowity dryf w rektascensji."
 
-#: guiding_assistant.cpp:619
+#: guiding_assistant.cpp:618
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr ""
 
-#: guiding_assistant.cpp:620
+#: guiding_assistant.cpp:619
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 
-#: guiding_assistant.cpp:621
+#: guiding_assistant.cpp:620
 msgid "Estimated overall drift rate in declination."
 msgstr "Szacowany całkowity dryf w deklinacji."
 
-#: guiding_assistant.cpp:622
+#: guiding_assistant.cpp:621
 msgid ""
 "Estimated declination backlash if test was completed. Results are time to "
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
 "estimate is one unit of standard deviation"
 msgstr ""
 
-#: guiding_assistant.cpp:623
+#: guiding_assistant.cpp:622
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
 msgstr ""
 
-#: guiding_assistant.cpp:654
+#: guiding_assistant.cpp:653
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 
-#: guiding_assistant.cpp:658
+#: guiding_assistant.cpp:657
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -3700,13 +3701,13 @@ msgstr ""
 "Naciśniej start, aby rozpocząc pomiary. Guiding zostanie wyłączony, więc "
 "gwiazda może się poruszać."
 
-#: guiding_assistant.cpp:663
+#: guiding_assistant.cpp:662
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
 msgstr ""
 
-#: guiding_assistant.cpp:666
+#: guiding_assistant.cpp:665
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -3715,115 +3716,115 @@ msgstr ""
 "Guiding został wznowiony. Spójrz na rekomendacje i wprowadź zmiany. Naciśnij "
 "Start i powtórz pomiary lub zamknij okno i kontynuuj guiding."
 
-#: guiding_assistant.cpp:677 guiding_assistant.cpp:682
+#: guiding_assistant.cpp:676 guiding_assistant.cpp:681
 msgid "Measuring backlash: "
 msgstr ""
 
-#: guiding_assistant.cpp:801 guiding_assistant.cpp:802
+#: guiding_assistant.cpp:800 guiding_assistant.cpp:801
 msgid "Apply"
 msgstr "Zastosuj"
 
-#: guiding_assistant.cpp:912
+#: guiding_assistant.cpp:911
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 
-#: guiding_assistant.cpp:921
+#: guiding_assistant.cpp:920
 msgid "Consider re-doing your calibration "
 msgstr ""
 
-#: guiding_assistant.cpp:923
+#: guiding_assistant.cpp:922
 msgid "(Prior alert)"
 msgstr ""
 
-#: guiding_assistant.cpp:925
+#: guiding_assistant.cpp:924
 msgid "(Backlash clearing)"
 msgstr ""
 
-#: guiding_assistant.cpp:937
+#: guiding_assistant.cpp:936
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 
-#: guiding_assistant.cpp:955
+#: guiding_assistant.cpp:954
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr ""
 
-#: guiding_assistant.cpp:956
+#: guiding_assistant.cpp:955
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr ""
 
-#: guiding_assistant.cpp:976
+#: guiding_assistant.cpp:975
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "Spróbuj ustawić minimalny ruch RA na %0.2f"
 
-#: guiding_assistant.cpp:994
+#: guiding_assistant.cpp:993
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Spróbuj ustawić minimalny ruch DEC na %0.2f"
 
-#: guiding_assistant.cpp:1023
+#: guiding_assistant.cpp:1022
 msgid "Backlash measurement impaired by bad calibration or mount instability"
 msgstr ""
 
-#: guiding_assistant.cpp:1025
+#: guiding_assistant.cpp:1024
 msgid "Backlash is small, no compensation needed"
 msgstr ""
 
-#: guiding_assistant.cpp:1027
+#: guiding_assistant.cpp:1026
 #, c-format
 msgid "Try setting a Dec backlash compensation value of %d ms"
 msgstr ""
 
-#: guiding_assistant.cpp:1029
+#: guiding_assistant.cpp:1028
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
 msgstr ""
 
-#: guiding_assistant.cpp:1140
+#: guiding_assistant.cpp:1138
 msgid "Backlash test aborted..."
 msgstr ""
 
-#: guiding_assistant.cpp:1180 guiding_assistant.cpp:1187
+#: guiding_assistant.cpp:1178 guiding_assistant.cpp:1185
 msgid "Measuring backlash... "
 msgstr ""
 
-#: guiding_assistant.cpp:1209
+#: guiding_assistant.cpp:1207
 msgid "Guiding stopped"
 msgstr "Guiding zatrzymany"
 
-#: guiding_assistant.cpp:1306
+#: guiding_assistant.cpp:1304
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1307 statswindow.cpp:276
+#: guiding_assistant.cpp:1305 statswindow.cpp:276
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1308
+#: guiding_assistant.cpp:1306
 msgid "arc-sec"
 msgstr "arc-sec"
 
-#: guiding_assistant.cpp:1309
+#: guiding_assistant.cpp:1307
 msgid "arc-min"
 msgstr ""
 
-#: guiding_assistant.cpp:1310
+#: guiding_assistant.cpp:1308
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1312
+#: guiding_assistant.cpp:1310
 msgid "arc-sec/min"
 msgstr "arc-sec/min"
 
-#: guiding_assistant.cpp:1313
+#: guiding_assistant.cpp:1311
 msgid "arc-sec/sec"
 msgstr "arc-sec/sec"
 
-#: guiding_assistant.cpp:1332 myframe.cpp:2811 myframe.cpp:2821
+#: guiding_assistant.cpp:1330 myframe.cpp:2813 myframe.cpp:2823
 msgid " "
 msgstr ""
 
@@ -3844,7 +3845,7 @@ msgid ""
 "newer development release versions at %s"
 msgstr ""
 
-#: htmlmsgbox.cpp:38 myframe.cpp:2765 phdupdate.cpp:920 phdupdate.cpp:926
+#: htmlmsgbox.cpp:38 myframe.cpp:2767 phdupdate.cpp:916 phdupdate.cpp:922
 msgid "Software Update"
 msgstr ""
 
@@ -3858,6 +3859,176 @@ msgstr ""
 #: indi_gui.cpp:708
 msgid "INDI Options"
 msgstr "Konfiguracja ustawień INDI"
+
+#: log_uploader.cpp:130
+msgid "loading..."
+msgstr ""
+
+#: log_uploader.cpp:141
+#, c-format
+msgid "%dd"
+msgstr ""
+
+#: log_uploader.cpp:144
+#, c-format
+msgid "%dhr"
+msgstr ""
+
+#: log_uploader.cpp:149
+#, c-format
+msgid "%dhr%dmin"
+msgstr ""
+
+#: log_uploader.cpp:152
+#, c-format
+msgid "%dmin"
+msgstr ""
+
+#: log_uploader.cpp:154
+#, c-format
+msgid "%dsec"
+msgstr ""
+
+#: log_uploader.cpp:537
+msgid "Upload Log Files - Select logs"
+msgstr ""
+
+#: log_uploader.cpp:538
+msgid "Upload Log Files - Confirm upload"
+msgstr ""
+
+#: log_uploader.cpp:539
+msgid "Upload Log Files - Upload complete"
+msgstr ""
+
+#: log_uploader.cpp:540
+msgid "Upload Log Files - Upload not completed"
+msgstr ""
+
+#: log_uploader.cpp:543
+msgid ""
+"When asking for help in the PHD2 Forum it is important to include your PHD2 "
+"logs. This tool will\n"
+"help you upload your log files so they can be seen in the forum.\n"
+"First you'll need to select which files to upload.\n"
+"If you are looking for help with guiding, select the Guide Log for the "
+"session you need help with.\n"
+"For other issues like equipment connection problems or to report a bug in "
+"PHD2, select the Debug Log."
+msgstr ""
+
+#: log_uploader.cpp:581
+msgid "Session Start"
+msgstr ""
+
+#: log_uploader.cpp:582
+msgid "Duration"
+msgstr ""
+
+#: log_uploader.cpp:583
+msgid "Guide Log"
+msgstr ""
+
+#: log_uploader.cpp:584
+msgid "Debug Log"
+msgstr ""
+
+#: log_uploader.cpp:613 log_uploader.cpp:1195
+msgid "Recent uploads"
+msgstr ""
+
+#: log_uploader.cpp:619 profile_wizard.cpp:184
+msgid "< Back"
+msgstr "< Wróć"
+
+#: log_uploader.cpp:622 log_uploader.cpp:1217 profile_wizard.cpp:189
+#: profile_wizard.cpp:429
+msgid "Next >"
+msgstr "Dalej >"
+
+#: log_uploader.cpp:744 log_uploader.cpp:1063
+msgid "Upload"
+msgstr ""
+
+#: log_uploader.cpp:744
+msgid "Uploading log files ..."
+msgstr ""
+
+#: log_uploader.cpp:773
+#, c-format
+msgid "Uploading ... %.f%%"
+msgstr ""
+
+#: log_uploader.cpp:826
+msgid "Connecting ..."
+msgstr ""
+
+#: log_uploader.cpp:842
+#, c-format
+msgid "Connection failed, will retry in %ds"
+msgstr ""
+
+#: log_uploader.cpp:996
+#, c-format
+msgid "Upload failed, will retry in %ds"
+msgstr ""
+
+#: log_uploader.cpp:1029
+msgid "The following log files will be uploaded:"
+msgstr ""
+
+#: log_uploader.cpp:1044
+msgid "Guide and Debug logs"
+msgstr ""
+
+#: log_uploader.cpp:1046
+msgid "Debug log"
+msgstr ""
+
+#: log_uploader.cpp:1048
+msgid "Guide log"
+msgstr ""
+
+#: log_uploader.cpp:1135
+msgid "The log files have been uploaded and can be accessed at this link:"
+msgstr ""
+
+#: log_uploader.cpp:1138
+msgid ""
+"You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
+"posting a message that includes the link. Copy and paste the link into your "
+"forum post."
+msgstr ""
+
+#: log_uploader.cpp:1140
+msgid "Copy link to clipboard"
+msgstr ""
+
+#: log_uploader.cpp:1156
+msgid ""
+"PHD2 was unable to upload the log files due to an internal error. Please "
+"report the error in the PHD2 Forum."
+msgstr ""
+
+#: log_uploader.cpp:1159
+msgid ""
+"PHD2 was unable to upload the log files. The service may be temproarily "
+"unavailable. You can try again later or you can try another file sharing "
+"service such as Dropbox or Google Drive."
+msgstr ""
+
+#: log_uploader.cpp:1163
+msgid ""
+"PHD2 encountered an error while compressing the log files. Please make sure "
+"the selected logs are available and try again."
+msgstr ""
+
+#: log_uploader.cpp:1167
+msgid ""
+"The total compressed size of the selected log files exceeds the maximum size "
+"allowed. Try selecting fewer files, or use an alternative file sharing "
+"service such as Dropbox or Google Drive."
+msgstr ""
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -3978,525 +4149,541 @@ msgstr ""
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "Pozycja rotatora uległa zmianie, wymagana powtórna kalibracja."
 
-#: myframe.cpp:325 myframe.cpp:402
+#: myframe.cpp:326 myframe.cpp:403
 msgid "History"
 msgstr "Historia"
 
-#: myframe.cpp:330 myframe.cpp:403
+#: myframe.cpp:331 myframe.cpp:404
 msgid "Guide Stats"
 msgstr "Status guidera"
 
-#: myframe.cpp:340 myframe.cpp:405
+#: myframe.cpp:341 myframe.cpp:406
 msgid "Star Profile"
 msgstr "Profil gwiazdy"
 
-#: myframe.cpp:345 myframe.cpp:406 target.cpp:51
+#: myframe.cpp:346 myframe.cpp:407 target.cpp:51
 msgid "Target"
 msgstr "Cel"
 
-#: myframe.cpp:488
+#: myframe.cpp:489
 msgid "&Save Image..."
 msgstr "&Zapisz obraz..."
 
-#: myframe.cpp:488
+#: myframe.cpp:489
 msgid "Save current image"
 msgstr "Zapis aktualny obraz"
 
-#: myframe.cpp:489
+#: myframe.cpp:490
 msgid "E&xit\tAlt-X"
 msgstr "Wyjście\tAlt-X"
 
-#: myframe.cpp:489
+#: myframe.cpp:490
 msgid "Quit this program"
 msgstr "Zamknij program"
 
-#: myframe.cpp:492
+#: myframe.cpp:493
 msgid "&Manual Guide"
 msgstr "Ręczny guiding"
 
-#: myframe.cpp:492
+#: myframe.cpp:493
 msgid "Manual / test guide dialog"
 msgstr "Ręczne / testowe okno guidingu"
 
-#: myframe.cpp:493
+#: myframe.cpp:494
 msgid "&Auto-select Star\tAlt-S"
 msgstr "&Auto-wybór gwiazy\tAlt-S"
 
-#: myframe.cpp:493
+#: myframe.cpp:494
 msgid "Automatically select star"
 msgstr "Automatyczny wybór gwiazdy"
 
-#: myframe.cpp:494
+#: myframe.cpp:495
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "&Przejrzyj dane kalibracyjne\tAlt-C"
 
-#: myframe.cpp:494
+#: myframe.cpp:495
 msgid "Review calibration data from last successful calibration"
 msgstr "Przejrzyj dane z poprzedniej udanej kalibracji"
 
-#: myframe.cpp:497
+#: myframe.cpp:498
 msgid "Restore Calibration Data..."
 msgstr "Przywróć dane kalibracyjne..."
 
-#: myframe.cpp:497
+#: myframe.cpp:498
 msgid "Restore calibration data from last successful calibration"
 msgstr "Przywróć dane kalibracyjne z poprzedniej udanej kalibracji"
 
-#: myframe.cpp:498
+#: myframe.cpp:499
 msgid "Enter Calibration Data..."
 msgstr "Wprowadź dane kalibracyjne..."
 
-#: myframe.cpp:498
+#: myframe.cpp:499
 msgid "Manually calibrate"
 msgstr "Kalibracja ręczna"
 
-#: myframe.cpp:499
+#: myframe.cpp:500
 msgid "Flip Calibration Data"
 msgstr "Odwróć dane kalibracyjne..."
 
-#: myframe.cpp:499
+#: myframe.cpp:500
 msgid "Flip RA calibration vector"
 msgstr "Odwróć wektor kalibracji osi RA"
 
-#: myframe.cpp:500
+#: myframe.cpp:501
 msgid "Clear Calibration Data..."
 msgstr "Wyczyść dane kalibracyjne..."
 
-#: myframe.cpp:500
+#: myframe.cpp:501
 msgid "Clear calibration data currently in use"
 msgstr "Wyczyść aktualnie używane dane kalibracyjne"
 
-#: myframe.cpp:501
+#: myframe.cpp:502
 msgid "Modify Calibration"
 msgstr "Modyfikuj kalibrację"
 
-#: myframe.cpp:504
+#: myframe.cpp:505
 msgid "Adjust &Lock Position"
 msgstr "Dostosuj &blokadę pozycji"
 
-#: myframe.cpp:504
+#: myframe.cpp:505
 msgid "Adjust the lock position"
 msgstr "Dostosuj blokadę pozycji"
 
-#: myframe.cpp:505
+#: myframe.cpp:506
 msgid "&Comet Tracking"
 msgstr "Śledzenie &komety"
 
-#: myframe.cpp:505
+#: myframe.cpp:506
 msgid "Run the Comet Tracking tool"
 msgstr "Uruchom narzędzie śledzenia komety"
 
-#: myframe.cpp:506 myframe_events.cpp:1015 starcross_test.cpp:76
+#: myframe.cpp:507 myframe_events.cpp:1031 starcross_test.cpp:76
 msgid "Star-Cross Test"
 msgstr ""
 
-#: myframe.cpp:506
+#: myframe.cpp:507
 msgid "Run a star-cross test for mount diagnostics"
 msgstr ""
 
-#: myframe.cpp:507
+#: myframe.cpp:508
 msgid "&Guiding Assistant"
 msgstr "Asystent &guidingu"
 
-#: myframe.cpp:507
+#: myframe.cpp:508
 msgid "Run the Guiding Assistant"
 msgstr "Uruchom asystent guidingu"
 
-#: myframe.cpp:508
+#: myframe.cpp:509
 msgid "&Drift Align"
 msgstr "Ustaw metodą &dryfu"
 
-#: myframe.cpp:508
+#: myframe.cpp:509
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
 msgstr ""
 
-#: myframe.cpp:509
+#: myframe.cpp:510
 msgid "&Polar Drift Align"
 msgstr ""
 
-#: myframe.cpp:509
+#: myframe.cpp:510
 msgid "Align by analysing star drift near the celestial pole (Simple)"
 msgstr ""
 
-#: myframe.cpp:510
+#: myframe.cpp:511
 msgid "&Static Polar Align"
 msgstr ""
 
-#: myframe.cpp:510
+#: myframe.cpp:511
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
 msgstr ""
 
-#: myframe.cpp:512
+#: myframe.cpp:513
 msgid "Enable Server"
 msgstr "Włącz serwer"
 
-#: myframe.cpp:512
+#: myframe.cpp:513
 msgid "Enable PHD2 server capability"
 msgstr "Włącz serwer PHD2"
 
-#: myframe.cpp:513 nudge_lock.cpp:159
+#: myframe.cpp:514 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
 msgstr "Stała blokada pozycji"
 
-#: myframe.cpp:513
+#: myframe.cpp:514
 msgid "Keep the same lock position when guiding starts"
 msgstr "Utrzymuj blokadę pozycji, gdy rozpoczyna się guiding"
 
-#: myframe.cpp:516
+#: myframe.cpp:517
 msgid "Display Toolbar"
 msgstr "Wyświetl pasek narzędzi"
 
-#: myframe.cpp:516
+#: myframe.cpp:517
 msgid "Enable / disable tool bar"
 msgstr "Włącz/wyłącz pasek narzędzi"
 
-#: myframe.cpp:517
+#: myframe.cpp:518
 msgid "Display &Graph"
 msgstr "Wyświetl &wykres"
 
-#: myframe.cpp:517
+#: myframe.cpp:518
 msgid "Enable / disable graph"
 msgstr "Włącz/wyłącz wykres"
 
-#: myframe.cpp:518
+#: myframe.cpp:519
 msgid "Display &Stats"
 msgstr "Wyświetl &status"
 
-#: myframe.cpp:518
+#: myframe.cpp:519
 msgid "Enable / disable guide stats"
 msgstr "Włącz/wyłącz status guidingu"
 
-#: myframe.cpp:519
+#: myframe.cpp:520
 msgid "Display &AO Graph"
 msgstr "Wyświetl wykres &AO"
 
-#: myframe.cpp:519
+#: myframe.cpp:520
 msgid "Enable / disable AO graph"
 msgstr "Włącz/wyłącz wykres AO"
 
-#: myframe.cpp:520
+#: myframe.cpp:521
 msgid "Display &Target"
 msgstr "Wyświetl &cel"
 
-#: myframe.cpp:520
+#: myframe.cpp:521
 msgid "Enable / disable target"
 msgstr "Włącz/wyłącz cel"
 
-#: myframe.cpp:521
+#: myframe.cpp:522
 msgid "Display Star &Profile"
 msgstr "Wyświetl &profil gwiazdy"
 
-#: myframe.cpp:521
+#: myframe.cpp:522
 msgid "Enable / disable star profile view"
 msgstr "Włącz/wyłącz widok profilu gwiazdy"
 
-#: myframe.cpp:523
+#: myframe.cpp:524
 msgid "&No Overlay"
 msgstr "&Brak celownika"
 
-#: myframe.cpp:523
+#: myframe.cpp:524
 msgid "No additional crosshairs"
 msgstr "Brak dodatkowych podziałek"
 
-#: myframe.cpp:524
+#: myframe.cpp:525
 msgid "&Bullseye"
 msgstr "Celownik &krzyżowy"
 
-#: myframe.cpp:524
+#: myframe.cpp:525
 msgid "Centered bullseye overlay"
 msgstr "Wycentrowany celownik"
 
-#: myframe.cpp:525
+#: myframe.cpp:526
 msgid "&Fine Grid"
 msgstr "&Gęsta siatka"
 
-#: myframe.cpp:525 myframe.cpp:526
+#: myframe.cpp:526 myframe.cpp:527
 msgid "Grid overlay"
 msgstr "Podziałka prostokątna"
 
-#: myframe.cpp:526
+#: myframe.cpp:527
 msgid "&Coarse Grid"
 msgstr "&Rzadka siatka"
 
-#: myframe.cpp:527
+#: myframe.cpp:528
 msgid "&RA/Dec"
 msgstr "&RA/DEC"
 
-#: myframe.cpp:527
+#: myframe.cpp:528
 msgid "RA and Dec overlay"
 msgstr "Podziałka RA/DEC"
 
-#: myframe.cpp:528
+#: myframe.cpp:529
 msgid "Spectrograph S&lit"
 msgstr "&Szczelina"
 
-#: myframe.cpp:528
+#: myframe.cpp:529
 msgid "Spectrograph slit overlay"
 msgstr "Ustawienia szczeliny"
 
-#: myframe.cpp:530
+#: myframe.cpp:531
 msgid "Slit Position..."
 msgstr "Pozycja szczeliny..."
 
-#: myframe.cpp:532
+#: myframe.cpp:533
 msgid "Restore Window Positions"
 msgstr "Przywróć pozycję okna"
 
-#: myframe.cpp:532
+#: myframe.cpp:533
 msgid "Restore all windows to their default/docked positions"
 msgstr "Przywróć wszystkie okna do domyślnych/przypiętych pozycji"
 
-#: myframe.cpp:535
+#: myframe.cpp:536
 msgid "Dark &Library..."
 msgstr "&Biblioteka Darków..."
 
-#: myframe.cpp:535
+#: myframe.cpp:536
 msgid "Build a dark library for this profile"
 msgstr "Zbuduj bibliotekę darków dla tego profilu"
 
-#: myframe.cpp:536
+#: myframe.cpp:537
 msgid "Bad-pixel &Map..."
 msgstr "&Mapa Bad Pikseli..."
 
-#: myframe.cpp:536
+#: myframe.cpp:537
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "Dostosuj parametry, aby utworzyć lub zmodyfikować mapę Bad Pikseli"
 
-#: myframe.cpp:537
+#: myframe.cpp:538
 msgid "Import From Profile..."
 msgstr "Importuj z profilu..."
 
-#: myframe.cpp:537
+#: myframe.cpp:538
 msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr ""
 "Importuj istniejącą bibliotekę darków/mapę Bad Pikseli z innego profilu"
 
-#: myframe.cpp:539
+#: myframe.cpp:540
 msgid "Use &Dark Library"
 msgstr "Użyj biblioteki &darków"
 
-#: myframe.cpp:539
+#: myframe.cpp:540
 msgid "Use the the dark library for this profile"
 msgstr "Użyj biblioteki darków dla tego profilu"
 
-#: myframe.cpp:540
+#: myframe.cpp:541
 msgid "Use &Bad-pixel Map"
 msgstr "Użyj &mapy Bad Pikseli"
 
-#: myframe.cpp:540
+#: myframe.cpp:541
 msgid "Use the bad-pixel map for this profile"
 msgstr "Użyj mapy Bad Pikseli dla tego profilu"
 
-#: myframe.cpp:545
+#: myframe.cpp:546
 msgid "&Save settings"
 msgstr "Zapisz ustawienia"
 
-#: myframe.cpp:545
+#: myframe.cpp:546
 msgid "Save current camera settings"
 msgstr "Zapis aktualne ustawienia kamery"
 
-#: myframe.cpp:546
+#: myframe.cpp:547
 msgid "&Restore settings"
 msgstr "Przywróć ustawienia"
 
-#: myframe.cpp:546
+#: myframe.cpp:547
 msgid "Restore camera settings"
 msgstr "Przywróć ustawienia kamery"
 
-#: myframe.cpp:550
+#: myframe.cpp:551
 msgid "Show &Bookmarks\tb"
 msgstr "Pokaż znaczniki\tb"
 
-#: myframe.cpp:550
+#: myframe.cpp:551
 msgid "Hide or show bookmarks"
 msgstr "Ukryj lub pokaż znaczniki"
 
-#: myframe.cpp:553
+#: myframe.cpp:554
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "Blokada pozycji znaczników\tShift-B"
 
-#: myframe.cpp:553
+#: myframe.cpp:554
 msgid "Set a bookmark at the current lock position"
 msgstr "Zablokuj znacznik w obecnej pozycji"
 
-#: myframe.cpp:555
+#: myframe.cpp:556
 msgid "Bookmark &Star Pos"
 msgstr "Znacznik pozycji gwiazdy"
 
-#: myframe.cpp:555
+#: myframe.cpp:556
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "Ustaw znacznik na aktualnie wybranej gwieździe"
 
-#: myframe.cpp:556
+#: myframe.cpp:557
 msgid "&Delete all\tCtrl-B"
 msgstr "&Usuń wszystko\tCTRL-B"
 
-#: myframe.cpp:556
+#: myframe.cpp:557
 msgid "Remove all bookmarks"
 msgstr "Usuń wszystkie znaczniki"
 
-#: myframe.cpp:559
+#: myframe.cpp:560
 msgid "&About..."
 msgstr ""
 
-#: myframe.cpp:559
+#: myframe.cpp:560
 #, c-format
 msgid "About %s"
 msgstr "O %s"
 
-#: myframe.cpp:560
+#: myframe.cpp:561
 msgid "&Check for updates"
 msgstr ""
 
-#: myframe.cpp:560
+#: myframe.cpp:561
 msgid "Check for PHD2 software updates"
 msgstr ""
 
-#: myframe.cpp:561
+#: myframe.cpp:562
 msgid "Online Support"
 msgstr ""
 
-#: myframe.cpp:561
+#: myframe.cpp:562
 msgid "Ask for help in the PHD2 Forum"
 msgstr ""
 
 #: myframe.cpp:563
-msgid "&Contents...\tF1"
+msgid "Open Log Folder"
 msgstr ""
 
 #: myframe.cpp:563
+msgid "Open the log folder"
+msgstr ""
+
+#: myframe.cpp:564
+msgid "Upload Log Files..."
+msgstr ""
+
+#: myframe.cpp:564
+msgid "Upload log files for review"
+msgstr ""
+
+#: myframe.cpp:565
+msgid "&Contents...\tF1"
+msgstr ""
+
+#: myframe.cpp:565
 msgid "Full help"
 msgstr "Pełna pomoc"
 
-#: myframe.cpp:564
+#: myframe.cpp:566
 msgid "&Impatient Instructions"
 msgstr "&Instrukcja dla niecierpliwych"
 
-#: myframe.cpp:564
+#: myframe.cpp:566
 msgid "Quick instructions for the impatient"
 msgstr "Skrócona instrukcja dla niecierpliwych"
 
-#: myframe.cpp:567
+#: myframe.cpp:569
 msgid "&File"
 msgstr "Plik"
 
-#: myframe.cpp:576
+#: myframe.cpp:578
 msgid "&Tools"
 msgstr "Narzędzia"
 
-#: myframe.cpp:577
+#: myframe.cpp:579
 msgid "&View"
 msgstr "Widok"
 
-#: myframe.cpp:578
+#: myframe.cpp:580
 msgid "&Darks"
 msgstr "&Darki"
 
-#: myframe.cpp:579
+#: myframe.cpp:581
 msgid "&Bookmarks"
 msgstr "Znaczniki"
 
-#: myframe.cpp:580
+#: myframe.cpp:582
 msgid "&Help"
 msgstr "Pomoc"
 
-#: myframe.cpp:627 myframe.cpp:833 myframe.cpp:918
+#: myframe.cpp:629 myframe.cpp:835 myframe.cpp:920
 #, c-format
 msgid "Custom: %g s"
 msgstr ""
 
-#: myframe.cpp:739
+#: myframe.cpp:741
 #, c-format
 msgid "%g s"
 msgstr ""
 
-#: myframe.cpp:742
+#: myframe.cpp:744
 #, c-format
 msgid "%.*f s"
 msgstr ""
 
-#: myframe.cpp:852 myframe.cpp:915 scope.cpp:222
+#: myframe.cpp:854 myframe.cpp:917 scope.cpp:222
 msgid "Auto"
 msgstr "Auto"
 
-#: myframe.cpp:919
+#: myframe.cpp:921
 msgid "Edit Custom..."
 msgstr ""
 
-#: myframe.cpp:923
+#: myframe.cpp:925
 msgid "Camera exposure duration"
 msgstr "Długość ekspozycji"
 
-#: myframe.cpp:928
+#: myframe.cpp:930
 msgid "Screen gamma (brightness)"
 msgstr "Gamma obrazu (jasność)"
 
-#: myframe.cpp:930
+#: myframe.cpp:932
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
 msgstr ""
 "Połącz ze sprzętem. Kliknij z SHIFTem, aby podłączyć ostatnio używany sprzęt."
 
-#: myframe.cpp:931
+#: myframe.cpp:933
 msgid "Begin looping exposures for frame and focus"
 msgstr "Rozpocznij ciągłe ekspozycje dla klatek i ostrzenia"
 
-#: myframe.cpp:932
+#: myframe.cpp:934
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr "Rozpocznij guiding (PHD). Naciśnij z SHIFTem, aby wymusić kalibrację."
 
-#: myframe.cpp:933
+#: myframe.cpp:935
 msgid "Stop looping and guiding"
 msgstr "Zatrzymaj zapętlanie i guiding"
 
-#: myframe.cpp:935
+#: myframe.cpp:937
 msgid "Exposure duration"
 msgstr "Długość ekspozycji"
 
-#: myframe.cpp:936
+#: myframe.cpp:938
 msgid "Gamma"
 msgstr "Gamma"
 
-#: myframe.cpp:938
+#: myframe.cpp:940
 msgid "Advanced parameters"
 msgstr "Ustawienia zaawansowane"
 
-#: myframe.cpp:939
+#: myframe.cpp:941
 msgid "Camera settings"
 msgstr ""
 
-#: myframe.cpp:992
+#: myframe.cpp:994
 msgid "Could not find help file: "
 msgstr "Nie można znaleźć pliku pomocy: "
 
-#: myframe.cpp:1144
+#: myframe.cpp:1146
 msgid "Trouble-shooting and Analysis"
 msgstr ""
 
-#: myframe.cpp:1164
+#: myframe.cpp:1166
 msgid ""
 "Don't show\n"
 " again"
 msgstr ""
 
-#: myframe.cpp:1555 myframe.cpp:1762
+#: myframe.cpp:1557 myframe.cpp:1764
 msgid "Looping"
 msgstr ""
 
-#: myframe.cpp:1640
+#: myframe.cpp:1642
 msgid "Capturing single exposure"
 msgstr ""
 
-#: myframe.cpp:1687
+#: myframe.cpp:1689
 msgid "Waiting for devices..."
 msgstr "Oczekiwanie na urządzenia..."
 
-#: myframe.cpp:1733
+#: myframe.cpp:1735
 msgid "Resumed"
 msgstr "Wznowiono"
 
-#: myframe.cpp:1780
+#: myframe.cpp:1782
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
@@ -4504,53 +4691,53 @@ msgstr ""
 "Guiding nie jest możliwy podczas poprawiania mapy Bad Pikseli. Proszę "
 "zamknąć okno Popraw mapę Bad Pikseli."
 
-#: myframe.cpp:1897
+#: myframe.cpp:1899
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dithering przez %.2f,%.2f"
 
-#: myframe.cpp:1936
+#: myframe.cpp:1938
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "Czy jesteś pewien, że chcesz wyjść podczas przechwytywania?"
 
-#: myframe.cpp:1937
+#: myframe.cpp:1939
 msgid "Confirm Exit"
 msgstr "Potwierdź wyjście"
 
-#: myframe.cpp:2211 usImage.cpp:432
+#: myframe.cpp:2213 usImage.cpp:432
 msgid "FITS file is not of an image: "
 msgstr "Ten plik FITS nie ma obrazu: "
 
-#: myframe.cpp:2219 usImage.cpp:444
+#: myframe.cpp:2221 usImage.cpp:444
 msgid "Unsupported type or read error loading FITS file "
 msgstr "Nieobsługiwany typ lub błąd podczas odczytu pliku FITS"
 
-#: myframe.cpp:2229
+#: myframe.cpp:2231
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
 msgstr ""
 
-#: myframe.cpp:2240
+#: myframe.cpp:2242
 msgid "Memory allocation error reading FITS file "
 msgstr "Błąd alokacji pamięci podczas odczytu pliku FITS"
 
-#: myframe.cpp:2247
+#: myframe.cpp:2249
 msgid "Error reading data from "
 msgstr "Błąd odczytu danych z "
 
-#: myframe.cpp:2276 usImage.cpp:488
+#: myframe.cpp:2278 usImage.cpp:488
 msgid "Error opening FITS file "
 msgstr "Błąd otwierania pliku FITS"
 
-#: myframe.cpp:2340
+#: myframe.cpp:2342
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
 msgstr ""
 "Biblioteka darkó nie pasuje do kamery dla tego profilu - wymaga zmiany."
 
-#: myframe.cpp:2386
+#: myframe.cpp:2388
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
@@ -4558,73 +4745,73 @@ msgstr ""
 "Biblioteka darków oraz mapa Bad Pikseli jest niekompatybilna z aktualną "
 "kamerą - należy je wymienić"
 
-#: myframe.cpp:2417
+#: myframe.cpp:2419
 msgid "You must connect a camera before loading dark frames"
 msgstr "Musisz połączyć się z kamerą przed wczytaniem klatki dark"
 
-#: myframe.cpp:2424
+#: myframe.cpp:2426
 msgid "Darks not loaded"
 msgstr "Darki nie zostały wczytane"
 
-#: myframe.cpp:2431
+#: myframe.cpp:2433
 msgid "Darks loaded"
 msgstr "Darki zostały wczytane"
 
-#: myframe.cpp:2444
+#: myframe.cpp:2446
 msgid "Error saving darks FITS file "
 msgstr "Błąd podczas zapisu darków do pliku FITS"
 
-#: myframe.cpp:2645
+#: myframe.cpp:2647
 msgid ""
 "Guiding parameters have been reset because the camera binning changed. You "
 "should use separate profiles for different binning values."
 msgstr ""
 
-#: myframe.cpp:2655
+#: myframe.cpp:2657
 msgid "Global Settings"
 msgstr "Ustawienia globalne"
 
-#: myframe.cpp:2690
+#: myframe.cpp:2692
 msgid "Reset Configuration"
 msgstr "Resetuj konfigurację"
 
-#: myframe.cpp:2691
+#: myframe.cpp:2693
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
 msgstr ""
 
-#: myframe.cpp:2692
+#: myframe.cpp:2694
 msgid "Reset \"Don't Show Again\" messages"
 msgstr ""
 
-#: myframe.cpp:2693
+#: myframe.cpp:2695
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr ""
 
-#: myframe.cpp:2697
+#: myframe.cpp:2699
 msgid "2x2 mean"
 msgstr "Średnia 2x2"
 
-#: myframe.cpp:2697
+#: myframe.cpp:2699
 msgid "3x3 median"
 msgstr "Mediana 3x3"
 
-#: myframe.cpp:2704
+#: myframe.cpp:2706
 msgid "Noise Reduction"
 msgstr "Redukcja szumu"
 
-#: myframe.cpp:2705
+#: myframe.cpp:2707
 msgid "Technique to reduce noise in images"
 msgstr "Techniki redukcji szumu obrazu"
 
-#: myframe.cpp:2711
+#: myframe.cpp:2713
 msgid "Time Lapse (ms)"
 msgstr "Time Lapse (ms)"
 
-#: myframe.cpp:2712
+#: myframe.cpp:2714
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -4634,11 +4821,11 @@ msgstr ""
 "podczas korzystania z bardzo krótkich ekspozycji (np. podczas korzystania z "
 "kamer wideo), gdy nie potrzeba bardzo częstych akcji guidera"
 
-#: myframe.cpp:2716
+#: myframe.cpp:2718
 msgid "Focal length (mm)"
 msgstr "Ogniskowa (mm)"
 
-#: myframe.cpp:2717
+#: myframe.cpp:2719
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -4646,224 +4833,224 @@ msgstr ""
 "Ogniskowa guidera. Używana z rozmiarem piksela kamery w celu pokazania "
 "błędów prowadzenia w arc-sec."
 
-#: myframe.cpp:2723 myframe.cpp:2755
+#: myframe.cpp:2725 myframe.cpp:2757
 msgid "System default"
 msgstr "Domyślny systemowy"
 
-#: myframe.cpp:2738
+#: myframe.cpp:2740
 msgid "Language-Name"
 msgstr "Polski"
 
-#: myframe.cpp:2759
+#: myframe.cpp:2761
 msgid "Language"
 msgstr "Język"
 
-#: myframe.cpp:2760
+#: myframe.cpp:2762
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "Język %s. Musisz zrestartować program, aby zastosować zmiany."
 
-#: myframe.cpp:2766
+#: myframe.cpp:2768
 msgid "Automatically check for updates"
 msgstr ""
 
-#: myframe.cpp:2767
+#: myframe.cpp:2769
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr ""
 
-#: myframe.cpp:2769
+#: myframe.cpp:2771
 msgid "Only check for major releases"
 msgstr ""
 
-#: myframe.cpp:2770
+#: myframe.cpp:2772
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr ""
 
-#: myframe.cpp:2777
+#: myframe.cpp:2779
 msgid "Log File Location"
 msgstr "Lokalizacja plików logowania"
 
-#: myframe.cpp:2780
+#: myframe.cpp:2782
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 "Folder plików logowania guidingu oraz debugera; puste pole oznacza powrót do "
 "ustawień domyślnych"
 
-#: myframe.cpp:2781
+#: myframe.cpp:2783
 msgid "Browse..."
 msgstr "Przeszukaj..."
 
-#: myframe.cpp:2794
+#: myframe.cpp:2796
 msgid "Enable diagnostic image logging"
 msgstr ""
 
-#: myframe.cpp:2795
+#: myframe.cpp:2797
 msgid "Save guider images based on options below"
 msgstr ""
 
-#: myframe.cpp:2798
+#: myframe.cpp:2800
 msgid "Save Guider Images"
 msgstr ""
 
-#: myframe.cpp:2801
+#: myframe.cpp:2803
 msgid "For all lost-star frames"
 msgstr ""
 
-#: myframe.cpp:2802
+#: myframe.cpp:2804
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr ""
 
-#: myframe.cpp:2804
+#: myframe.cpp:2806
 msgid "For all Auto-select Star frames"
 msgstr ""
 
-#: myframe.cpp:2805
+#: myframe.cpp:2807
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
 msgstr ""
 
-#: myframe.cpp:2808
+#: myframe.cpp:2810
 msgid "When relative error exceeds"
 msgstr ""
 
-#: myframe.cpp:2809
+#: myframe.cpp:2811
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
 "and the current frame's error is 1.5 pixels, the relative error is 3"
 msgstr ""
 
-#: myframe.cpp:2813
+#: myframe.cpp:2815
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr ""
 
-#: myframe.cpp:2818
+#: myframe.cpp:2820
 msgid "When absolute error exceeds (pixels)"
 msgstr ""
 
-#: myframe.cpp:2819
+#: myframe.cpp:2821
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
 msgstr ""
 
-#: myframe.cpp:2823
+#: myframe.cpp:2825
 msgid "Absolute error threshold in pixels"
 msgstr ""
 
-#: myframe.cpp:2828
+#: myframe.cpp:2830
 msgid "Until this count is reached"
 msgstr ""
 
-#: myframe.cpp:2829
+#: myframe.cpp:2831
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr ""
 
-#: myframe.cpp:2831
+#: myframe.cpp:2833
 msgid "Number of images to save"
 msgstr ""
 
-#: myframe.cpp:2846
+#: myframe.cpp:2848
 msgid "Dither Settings"
 msgstr ""
 
-#: myframe.cpp:2847
+#: myframe.cpp:2849
 msgid "Random"
 msgstr ""
 
-#: myframe.cpp:2848
+#: myframe.cpp:2850
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr ""
 
-#: myframe.cpp:2849
+#: myframe.cpp:2851
 msgid "Spiral"
 msgstr ""
 
-#: myframe.cpp:2850
+#: myframe.cpp:2852
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr ""
 
-#: myframe.cpp:2852
+#: myframe.cpp:2854
 msgid "Mode: "
 msgstr ""
 
-#: myframe.cpp:2857
+#: myframe.cpp:2859
 msgid "RA only"
 msgstr ""
 
-#: myframe.cpp:2858
+#: myframe.cpp:2860
 msgid "Constrain dither to RA only"
 msgstr ""
 
-#: myframe.cpp:2864
+#: myframe.cpp:2866
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "Skalowanie ditheringu. Domyślnie = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:2868 testguide.cpp:119
+#: myframe.cpp:2870 testguide.cpp:119
 msgid "Scale"
 msgstr "Skala"
 
-#: myframe.cpp:2875
+#: myframe.cpp:2877
 msgid "Auto restore calibration"
 msgstr "Auto przywracanie kalibracji"
 
-#: myframe.cpp:2876
+#: myframe.cpp:2878
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr ""
 
-#: myframe.cpp:2893
+#: myframe.cpp:2895
 msgid "Min"
 msgstr "Min"
 
-#: myframe.cpp:2893
+#: myframe.cpp:2895
 msgid "Auto exposure minimum duration"
 msgstr "Minimalna długość automatycznej ekspozycji"
 
-#: myframe.cpp:2894
+#: myframe.cpp:2896
 msgid "Max"
 msgstr "Max"
 
-#: myframe.cpp:2894
+#: myframe.cpp:2896
 msgid "Auto exposure maximum duration"
 msgstr "Maksymalna długość automatycznej ekspozycji"
 
-#: myframe.cpp:2895
+#: myframe.cpp:2897
 msgid "Target SNR"
 msgstr "SNR gwiazdy"
 
-#: myframe.cpp:2895
+#: myframe.cpp:2897
 msgid "Auto exposure target SNR value"
 msgstr "Dobierz czas ekspozycji, aby osiągnąć odpowiedni SNR gwiazdy"
 
-#: myframe.cpp:2896
+#: myframe.cpp:2898
 msgid "Auto Exposure"
 msgstr "Auto ekspozycja"
 
-#: myframe.cpp:2980
+#: myframe.cpp:2982
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr ""
 
-#: myframe.cpp:2980
+#: myframe.cpp:2982
 msgid "Confirmation"
 msgstr "Potwierdzenie"
 
-#: myframe.cpp:3005
+#: myframe.cpp:3007
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
 msgstr ""
 
-#: myframe.cpp:3006
+#: myframe.cpp:3008
 msgid "Restart PHD2"
 msgstr ""
 
@@ -4906,57 +5093,57 @@ msgstr "Instrukcje"
 msgid "Introduction"
 msgstr "Wprowadzenie"
 
-#: myframe_events.cpp:210
+#: myframe_events.cpp:226
 msgid "Spectrograph Slit Overlay"
 msgstr "Ustawienia szczeliny"
 
-#: myframe_events.cpp:220
+#: myframe_events.cpp:236
 msgid "Position (Center)"
 msgstr "Pozycja (srodek)"
 
-#: myframe_events.cpp:221
+#: myframe_events.cpp:237
 msgid "Size"
 msgstr "Rozmiar"
 
-#: myframe_events.cpp:240
+#: myframe_events.cpp:256
 msgid "Width"
 msgstr "Szerokość"
 
-#: myframe_events.cpp:247
+#: myframe_events.cpp:263
 msgid "Height"
 msgstr "Wysokość"
 
-#: myframe_events.cpp:263
+#: myframe_events.cpp:279
 msgid "Angle (degrees)"
 msgstr "Kąt (stopnie)"
 
-#: myframe_events.cpp:324
+#: myframe_events.cpp:340
 msgid "Save FITS Image"
 msgstr "Zapisz plik FITS"
 
-#: myframe_events.cpp:334
+#: myframe_events.cpp:350
 #, c-format
 msgid "The image could not be saved to %s"
 msgstr "Obraz nie może zostać zapisany jako %s"
 
-#: myframe_events.cpp:338
+#: myframe_events.cpp:354
 #, c-format
 msgid "%s saved"
 msgstr "Plik %s został zapisany"
 
-#: myframe_events.cpp:352 myframe_events.cpp:592 myframe_events.cpp:695
+#: myframe_events.cpp:368 myframe_events.cpp:608 myframe_events.cpp:711
 msgid "Please connect to a camera first"
 msgstr "Najpierw połącz się z kamerą"
 
-#: myframe_events.cpp:352 myframe_events.cpp:592 myframe_events.cpp:695
+#: myframe_events.cpp:368 myframe_events.cpp:608 myframe_events.cpp:711
 msgid "Info"
 msgstr "Informacja"
 
-#: myframe_events.cpp:379 myframe_events.cpp:448
+#: myframe_events.cpp:395 myframe_events.cpp:464
 msgid "Stopped."
 msgstr "Zatrzymano."
 
-#: myframe_events.cpp:397
+#: myframe_events.cpp:413
 msgid ""
 "For refining the Bad-pixel Map PHD2 is now displaying raw camera data "
 "frames, which are a different size from ordinary guide frames for this "
@@ -4966,7 +5153,7 @@ msgstr ""
 "który może mieć inny rozmiar od zwyczajnej klatki podczas guidingu dla tej "
 "kamery."
 
-#: myframe_events.cpp:541
+#: myframe_events.cpp:557
 #, c-format
 msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and "
@@ -4974,42 +5161,42 @@ msgid ""
 "lower and try again."
 msgstr ""
 
-#: myframe_events.cpp:550
+#: myframe_events.cpp:566
 #, c-format
 msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and has "
 "been re-centered. Try reducing the AO Travel setting to %d or lower."
 msgstr ""
 
-#: myframe_events.cpp:607
+#: myframe_events.cpp:623
 msgid "You must connect a camera before loading a dark library"
 msgstr "Musisz się połączyć z kamerą przed załadowaniem biblioteki darków"
 
-#: myframe_events.cpp:634
+#: myframe_events.cpp:650
 msgid "Dark library unloaded"
 msgstr "Biblioteka darków odłączona"
 
-#: myframe_events.cpp:650
+#: myframe_events.cpp:666
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr "Musisz się połączyć z kamerą przed załadowaniem mapy Bad Pikseli"
 
-#: myframe_events.cpp:665
+#: myframe_events.cpp:681
 msgid "Defect map loaded"
 msgstr "Mapa defektów wczytana"
 
-#: myframe_events.cpp:669
+#: myframe_events.cpp:685
 msgid "Defect map not loaded"
 msgstr "Mapa defektów nie została wczytana"
 
-#: myframe_events.cpp:681
+#: myframe_events.cpp:697
 msgid "Bad-pixel map unloaded"
 msgstr "Mapa Bad Pikseli odłączona"
 
-#: myframe_events.cpp:829
+#: myframe_events.cpp:845
 msgid "Guider"
 msgstr ""
 
-#: myframe_events.cpp:912
+#: myframe_events.cpp:928
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
@@ -5019,40 +5206,40 @@ msgstr ""
 "guidingu. Pomoże to przed śledzeniem przez PHD hot pikseli. Użyj menu 'Dark' "
 "w celu zbudowania biblioteki darków lub mapy Bad Pikseli."
 
-#: myframe_events.cpp:951
+#: myframe_events.cpp:967
 msgid "Are you sure you want force recalibration?"
 msgstr "Czy jesteś pewien, że chcesz dokonać powtórnej kalibracji?"
 
-#: myframe_events.cpp:952
+#: myframe_events.cpp:968
 msgid "Force Recalibration"
 msgstr "Wymuś kalibrację"
 
-#: myframe_events.cpp:970
+#: myframe_events.cpp:986
 msgid ""
 "Calibration this far from the celestial equator will be error-prone.  For "
 "best results, calibrate at a declination of -20 to +20."
 msgstr ""
 
-#: myframe_events.cpp:971
+#: myframe_events.cpp:987
 msgid "Confirm Calibration at Large Declination"
 msgstr ""
 
-#: myframe_events.cpp:998 testguide.cpp:146
+#: myframe_events.cpp:1014 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "Ręczny guiding"
 
-#: myframe_events.cpp:1079
+#: myframe_events.cpp:1095
 msgid ""
 "With your current setting for Dec guide mode, this version of PHD2 will "
 "dither in Declination. To restore the old behavior you can set the RA-only "
 "option in the Dither Settings of the Advanced Dialog."
 msgstr ""
 
-#: myframe_events.cpp:1083
+#: myframe_events.cpp:1099
 msgid "Set RA-only now"
 msgstr ""
 
-#: myframe_events.cpp:1103
+#: myframe_events.cpp:1119
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -5065,15 +5252,15 @@ msgstr ""
 "a także ustali wyjściowe parametry guidingu dla nowej konfiguracji. \n"
 "Czy chcesz użyć kreatora?"
 
-#: myframe_events.cpp:1106 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:870
 msgid "Yes"
 msgstr "Tak"
 
-#: myframe_events.cpp:1106 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:872
 msgid "No"
 msgstr "Nie"
 
-#: myframe_events.cpp:1106
+#: myframe_events.cpp:1122
 msgid "Setup Wizard Recommendation"
 msgstr "Rekomendowane ustawienia"
 
@@ -5166,7 +5353,7 @@ msgstr "Wybierz port równoległy"
 msgid "Custom Port Address:"
 msgstr "Adres portu użytkownika:"
 
-#: phd.cpp:182
+#: phd.cpp:183
 #, c-format
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
@@ -5179,55 +5366,55 @@ msgstr ""
 msgid "My Equipment"
 msgstr "Mój sprzęt"
 
-#: phdupdate.cpp:659
+#: phdupdate.cpp:655
 #, c-format
 msgid "PHD2 version %s is available at %s"
 msgstr ""
 
-#: phdupdate.cpp:664
+#: phdupdate.cpp:660
 #, c-format
 msgid "PHD2 version %s is ready to install. Update and restart PHD2 now?"
 msgstr ""
 
-#: phdupdate.cpp:704
+#: phdupdate.cpp:700
 #, c-format
 msgid "Downloading PHD2 version %s"
 msgstr ""
 
-#: phdupdate.cpp:724
+#: phdupdate.cpp:720
 msgid "PHD2 Update"
 msgstr ""
 
-#: phdupdate.cpp:724
+#: phdupdate.cpp:720
 msgid "Checking for updates"
 msgstr ""
 
-#: phdupdate.cpp:751
+#: phdupdate.cpp:747
 msgid "PHD2 Update Available"
 msgstr ""
 
-#: phdupdate.cpp:769
+#: phdupdate.cpp:765
 msgid "Web Site"
 msgstr ""
 
-#: phdupdate.cpp:769
+#: phdupdate.cpp:765
 msgid "Install"
 msgstr ""
 
-#: phdupdate.cpp:785
+#: phdupdate.cpp:781
 msgid "Change Log"
 msgstr ""
 
-#: phdupdate.cpp:800 phdupdate.cpp:874
+#: phdupdate.cpp:796 phdupdate.cpp:870
 #, c-format
 msgid "Closing in %d seconds"
 msgstr ""
 
-#: phdupdate.cpp:920
+#: phdupdate.cpp:916
 msgid "PHD2 is up to date"
 msgstr ""
 
-#: phdupdate.cpp:926
+#: phdupdate.cpp:922
 msgid "Unable to check updates"
 msgstr ""
 
@@ -5380,17 +5567,9 @@ msgstr ""
 msgid "Profile Name"
 msgstr "Nazwa profilu"
 
-#: profile_wizard.cpp:184
-msgid "< Back"
-msgstr "< Wróć"
-
 #: profile_wizard.cpp:185
 msgid "Back up to the previous screen"
 msgstr "Wróć do poprzedniego okna"
-
-#: profile_wizard.cpp:189 profile_wizard.cpp:429
-msgid "Next >"
-msgstr "Dalej >"
 
 #: profile_wizard.cpp:190 profile_wizard.cpp:430
 msgid "Move forward to next screen"
