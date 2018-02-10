@@ -196,7 +196,7 @@ struct GuidingAsstWin : public wxDialog
         STATE_MEASURING = 2,
         STATE_STOPPED = 3
     };
-    enum DlgConstants {MAX_BACKLASH_COMP = 2000, BLT_MIN_SAMPLING_PERIOD = 120};
+    enum DlgConstants {MAX_BACKLASH_COMP = 3000, BLT_MIN_SAMPLING_PERIOD = 120};
 
     wxButton *m_start;
     wxButton *m_stop;
@@ -672,6 +672,7 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
 
 void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
 {
+    BacklashTool::MeasurementResults qual;
     m_backlashTool->DecMeasurementStep(camLoc);
     wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
     m_backlashInfo->SetLabel(bl_msg);
@@ -682,8 +683,8 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
         m_backlashInfo->SetLabel(bl_msg);
         if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
-            BacklashTool::MeasurementResults qual = m_backlashTool->GetMeasurementQuality();
-            if (qual != BacklashTool::MEASUREMENT_INVALID)
+            qual = m_backlashTool->GetMeasurementQuality();
+            if (qual == BacklashTool::MEASUREMENT_VALID)
             {
                 double bltSigmaPx;
                 double bltGearAngle;
@@ -694,7 +695,7 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                 m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
                 bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
                 bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
-                wxString preamble = (qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "");
+                wxString preamble = (m_backlashMs >= 5000 ? ">=" : "");
                 wxString outStr = wxString::Format("%s %d \u00B1 %0.0f ms (%0.1f \u00B1 %0.1f arc-sec)",
                     preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs,
                     wxMax(0, bltGearAngle), bltGearAngleSigma);
@@ -709,9 +710,12 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
             {
                 m_othergrid->SetCellValue(m_backlash_loc, "");
             }
-            EndBacklashTest(true);
+            EndBacklashTest(qual == BacklashTool::MEASUREMENT_VALID);
         }
     }
+    else
+    if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_ABORTED)
+        EndBacklashTest(false);
 }
 
 void GuidingAsstWin::BacklashError()
@@ -1012,18 +1016,16 @@ void GuidingAsstWin::MakeRecommendations()
 
         if (m_backlashMs > 0)
         {
-            m_backlashRecommendedMs = (int)(floor((m_backlashMs - m_backlashSigmaMs / 2.0) / 10) * 10);        // round down to nearest 10ms
+            m_backlashRecommendedMs = (int)(floor(m_backlashMs / 10) * 10);        // round down to nearest 10ms
             m_backlashRecommendedMs = wxMax(m_backlashRecommendedMs, 10);
         }
         else
             m_backlashRecommendedMs = 0;
         bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
-        if (m_backlashMs < -500)
-            msg = _("Backlash measurement impaired by bad calibration or mount instability");       // something seriously wrong
-        else if (m_backlashMs < 100)
+        if (m_backlashMs < 100)
             msg = _("Backlash is small, no compensation needed");              // assume it was a small measurement error
         else if (m_backlashMs <= MAX_BACKLASH_COMP)
-            msg = wxString::Format(_("Try setting a Dec backlash compensation value of %d ms"), m_backlashRecommendedMs);
+            msg = wxString::Format(_("Try starting with a Dec backlash compensation of %d ms"), m_backlashRecommendedMs);
         else
             msg = wxString::Format(_("Backlash is >= %d ms; you may need to guide in only one Dec direction"), m_backlashMs);
 
@@ -1141,7 +1143,7 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
 
     m_measuringBacklash = false;
     m_backlashCB->Enable(true);
-    m_backlashInfo->Show(false);
+    m_backlashInfo->Show(!normal);
     Layout();
     GetSizer()->Fit(this);
 
@@ -1186,6 +1188,8 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         }
         else
         {
+            // User hit stop during bl test
+            m_backlashInfo->SetLabelText(wxEmptyString);
             MakeRecommendations();
             EndBacklashTest(false);
         }

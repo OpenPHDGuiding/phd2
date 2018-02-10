@@ -75,9 +75,7 @@ class BacklashTool
     RunningStats m_stats;
     wxLongLong_t m_msmtStartTime;
     wxLongLong_t m_msmtEndTime;
-    wxLongLong_t m_northSampleTime;
     double GetLastDecGuideRate();
-
 
 public:
     enum BLT_STATE
@@ -101,16 +99,20 @@ public:
         MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
         MAX_NORTH_PULSES = 8000,
-        TRIAL_TOLERANCE = 2
+        TRIAL_TOLERANCE_AS = 2              // arc-secs
     };
 
     enum MeasurementResults
     {
-        MEASUREMENT_INVALID,
-        MEASUREMENT_IMPAIRED,
+        MEASUREMENT_TOO_FEW_NORTH,
+        MEASUREMENT_TOO_FEW_SOUTH,
+        MEASUREMENT_BL_NOT_CLEARED,
+        MEASUREMENT_SANITY,
         MEASUREMENT_VALID
     } m_Rslt;
 
+private:
+    MeasurementResults ComputeBacklashPx(double* bltPx, int* bltMs, double* northRate);
 
 public:
 

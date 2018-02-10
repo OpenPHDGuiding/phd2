@@ -435,12 +435,97 @@ static bool OutOfRoom(const wxSize& frameSize, double camX, double camY, int mar
         camY >= frameSize.GetHeight() - margin;
 }
 
+// Measure the apparent backlash by looking at the first south moves, looking to see when the mount moves consistently at the expected rate
+// Goal is to establish a good seed value for backlash compensation, not to accurately measure the hardware performance
+BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, int* bltMs, double* northRate)
+{
+    std::vector <double> sortedNorthMoves;
+    double expectedAmount;
+    double expectedMagnitude;
+    double earlySouthMoves = 0;
+    double blPx;
+    double northDelta = 0;
+    double driftPxPerFrame;
+    double nRate;
+    BacklashTool::MeasurementResults rslt;
+
+    *bltPx = 0;
+    *bltMs = 0;
+    *northRate = m_lastDecGuideRate;
+    if (m_northBLSteps.size() > 3)
+    {
+        // Build a sorted list of north dec deltas to compute a median move amount
+        for (int inx = 1; inx < m_northBLSteps.size(); inx++)
+        {
+            double delta = m_northBLSteps[inx] - m_northBLSteps[inx - 1];
+            sortedNorthMoves.push_back(delta);
+            northDelta += delta;
+        }
+        std::sort(sortedNorthMoves.begin(), sortedNorthMoves.end());
+
+        // figure out the drift-related corrections
+        double driftAmtPx = m_driftPerSec * (m_msmtEndTime - m_msmtStartTime) / 1000;               // amount of drift in px for entire north measurement period
+        int stepCount = sortedNorthMoves.size();
+        nRate = fabs((northDelta - driftAmtPx) / (stepCount * m_pulseWidth));                       // drift-corrected empirical measure of north rate
+        driftPxPerFrame = driftAmtPx / stepCount;
+        Debug.Write(wxString::Format("BLT: Drift correction of %0.2f px applied to total north moves of %0.2f px, %0.3f px/frame\n", driftAmtPx, northDelta, driftPxPerFrame));
+        Debug.Write(wxString::Format("BLT: Empirical north rate = %.2f px/s \n", nRate * 1000));
+
+        // Compute an expected movement of 90% of the median delta north moves (px).  Use the 90% tolerance to avoid situations where the south rate
+        // never matches the north rate yet the mount is moving consistently
+        expectedAmount = 0.9 * sortedNorthMoves[(int)(sortedNorthMoves.size() / 2.0)];
+        expectedMagnitude = fabs(expectedAmount);
+        int goodSouthMoves = 0;
+        for (int step = 1; step < m_southBLSteps.size(); step++)
+        {
+            double southMove = m_southBLSteps[step] - m_southBLSteps[step-1];
+            earlySouthMoves += southMove;
+            if (fabs(southMove) >= expectedMagnitude && southMove < 0)     // Big enough move and in the correct (south) direction
+            {
+                goodSouthMoves++;
+                // We want two consecutive south moves that meet or exceed the expected magnitude.  This sidesteps situations where the mount shows a "false start" south
+                if (goodSouthMoves == 2)
+                {
+                    // bl = sum(expected moves) - sum(actual moves) - (drift correction for that period)
+                    blPx = step * expectedMagnitude - fabs(earlySouthMoves - step * driftPxPerFrame);               // drift-corrected backlash amount
+                    if (blPx * nRate < -200)
+                        rslt = MEASUREMENT_SANITY;              // large negative number
+                    else
+                    if (blPx >= 0.5 * northDelta)
+                        rslt = MEASUREMENT_TOO_FEW_NORTH;       // bl large compared to total north moves
+                    else
+                        rslt = MEASUREMENT_VALID;
+                    if (blPx < 0)
+                    {
+                        Debug.Write(wxString::Format("BLT: Negative measurement = %0.2f px, forcing to zero\n", blPx));
+                        blPx = 0;
+                    }
+                    break;
+                }
+            }
+            else
+            if (goodSouthMoves > 0)
+                goodSouthMoves--;
+        }
+        if (goodSouthMoves < 2)
+            rslt = MEASUREMENT_TOO_FEW_SOUTH;
+    }
+    else
+        rslt = MEASUREMENT_TOO_FEW_NORTH;
+    // Update the ref variables
+    *bltPx = blPx;
+    *bltMs = (int)(blPx / nRate);
+    *northRate = nRate;
+    return rslt;
+}
+
 void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 {
     double decDelta = 0.;
     double amt = 0;
     // double fakeDeltas []= {0, -5, -2, 2, 4, 5, 5, 5, 5 };
     PHD_Point currMountLocation;
+    double tol;
     try
     {
         if (m_scope->TransformCameraCoordinatesToMountCoordinates(currentCamLoc, currMountLocation))
@@ -537,13 +622,12 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 else
                 {
                     m_lastStatus = _("Could not clear North backlash - test failed");
-                    m_Rslt = MEASUREMENT_INVALID;
-                    throw ERROR_INFO("BLT: Could not clear N backlash");
+                    m_Rslt = MEASUREMENT_BL_NOT_CLEARED;
+                    throw (wxString("BLT: Could not clear north backlash"));
                 }
             }
             if (m_acceptedMoves >= BACKLASH_MIN_COUNT || m_backlashExemption || OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))    // Ok to go ahead with actual backlash measurement
             {
-                m_markerPoint = currMountLocation;            // Marker point at start of big Dec move North
                 m_bltState = BLT_STATE_STEP_NORTH;
                 double totalBacklashCleared = m_stepCount * m_pulseWidth;
                 // Want to move the mount North at >=500 ms, regardless of image scale. But reduce pulse width if it would exceed 80% of the tracking rectangle -
@@ -566,16 +650,16 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             {
                 m_lastStatus = wxString::Format(_("Moving North for %d ms, step %d / %d"), m_pulseWidth, m_stepCount + 1, m_northPulseCount);
                 double deltaN;
-                wxLongLong_t thisSampleTime = ::wxGetUTCTimeMillis().GetValue();
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    double driftCorr = m_driftPerSec * (thisSampleTime - m_northSampleTime) / 1000;
-                    m_stats.AddDelta(deltaN - driftCorr);
+                    m_stats.AddDelta(deltaN);
                 }
                 else
+                {
                     deltaN = 0;
-                m_northSampleTime = thisSampleTime;
+                    m_markerPoint = currMountLocation;            // Marker point at start of Dec moves North
+                }
                 Debug.Write(wxString::Format("BLT: %s, DecLoc = %0.2f, DeltaDec = %0.2f\n", m_lastStatus, currMountLocation.Y, deltaN));
                 m_northBLSteps.push_back(currMountLocation.Y);
                 pFrame->ScheduleCalibrationMove(m_scope, NORTH, m_pulseWidth);
@@ -585,12 +669,12 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             else
             {
                 // Either got finished or ran out of room
+                m_msmtEndTime = ::wxGetUTCTimeMillis().GetValue();
                 double deltaN = 0;
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    double driftCorr = m_driftPerSec * (::wxGetUTCTimeMillis().GetValue() - m_northSampleTime) / 1000;  // north pos, south neg, always
-                    m_stats.AddDelta(deltaN - driftCorr);
+                    m_stats.AddDelta(deltaN);
                 }
                 Debug.Write(wxString::Format("BLT: North pulses ended at Dec location %0.2f, TotalDecDelta=%0.2f px, LastDeltaDec = %0.2f\n", currMountLocation.Y, decDelta, deltaN));
                 m_northBLSteps.push_back(currMountLocation.Y);
@@ -598,12 +682,12 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 {
                     if (m_stepCount < 0.5 * m_northPulseCount)
                     {
-                        pFrame->Alert(_("Star too close to edge for accurate measurement of backlash. Choose a star farther from the edge."));
-                        m_Rslt = MEASUREMENT_INVALID;
+                        m_lastStatus = _("Star too close to edge for accurate measurement of backlash. Choose a star farther from the edge.");
+                        m_Rslt = MEASUREMENT_TOO_FEW_NORTH;
+                        throw (wxString("BLT: Too few north moves"));
                     }
                     Debug.Write("BLT: North pulses truncated, too close to frame edge\n");
                 }
-                m_northRate = fabs(decDelta / (m_stepCount * m_pulseWidth));
                 m_northPulseCount = m_stepCount;
                 m_stepCount = 0;
                 m_bltState = BLT_STATE_STEP_SOUTH;
@@ -620,8 +704,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 m_stepCount++;
                 break;
             }
-            m_msmtEndTime = ::wxGetUTCTimeMillis().GetValue();
-            // Now see where we ended up - fall through to testing this correction
+
+            // Now see where we ended up - fall through to computing and testing a correction
             Debug.Write(wxString::Format("BLT: South pulses ended at Dec location %0.2f\n", currMountLocation.Y));
             m_southBLSteps.push_back(currMountLocation.Y);
             m_endSouth = currMountLocation;
@@ -632,20 +716,30 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
         case BLT_STATE_TEST_CORRECTION:
             if (m_stepCount == 0)
             {
-                // decDelta contains the nominal backlash amount
-                double driftCorr = m_driftPerSec * (m_msmtEndTime - m_msmtStartTime) / 1000;
-                Debug.Write(wxString::Format("BLT: Measured bl = %0.1f px, Drift Correction = %0.1f px, Result = %0.1f px\n", decDelta, driftCorr, decDelta - driftCorr));
-                m_backlashResultPx = decDelta - driftCorr;
-                m_backlashResultMs = (int)(m_backlashResultPx / m_northRate);          // our north rate is probably better than the calibration rate
-                if (m_Rslt == MEASUREMENT_VALID)
+                m_Rslt = ComputeBacklashPx(&m_backlashResultPx, &m_backlashResultMs, &m_northRate);
+                if (m_Rslt != MEASUREMENT_VALID)
                 {
-                    if (m_backlashResultMs >= 0.8 * m_northPulseCount * m_pulseWidth)
-                        m_Rslt = MEASUREMENT_IMPAIRED;      // May not have moved far enough north for accurate measurement
+                    // Abort the test and show an explanatory status in the GA dialog
+                    switch (m_Rslt)
+                    {
+                    case MEASUREMENT_SANITY:
+                        m_lastStatus = _("Dec movements too erratic - test failed");
+                        throw (wxString("BLT: Calculation failed sanity check"));
+                        break;
+                    case MEASUREMENT_TOO_FEW_NORTH:
+                        break;                                  // Won't happen, handled above
+                    case MEASUREMENT_TOO_FEW_SOUTH:
+                        m_lastStatus = _("Mount never established consistent south moves - test failed");
+                        throw (wxString("BLT: Too few acceptable south moves"));
+                        break;
+
+                    }
                 }
+
                 double sigmaPx;
                 double sigmaMs;
                 GetBacklashSigma(&sigmaPx, &sigmaMs);
-                Debug.Write(wxString::Format("BLT: Raw backlash amount is %0.2f px, %d ms, sigma = %0.1f px\n", m_backlashResultPx, m_backlashResultMs,
+                Debug.Write(wxString::Format("BLT: Trial backlash amount is %0.2f px, %d ms, sigma = %0.1f px\n", m_backlashResultPx, m_backlashResultMs,
                     sigmaPx));
                 if (m_backlashResultMs > 0)
                 {
@@ -676,23 +770,25 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             }
             // See how close we came, maybe fine-tune a bit
             Debug.Write(wxString::Format("BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location %0.2f\n", decDelta, currMountLocation.Y));
-            if (fabs(decDelta) > TRIAL_TOLERANCE)
+            tol = TRIAL_TOLERANCE_AS / pFrame->GetCameraPixelScale();                           // tolerance in units of px
+            if (fabs(decDelta) > tol)                                                           // decDelta = (current - markerPoint)
             {
-                double pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y);
-                if ((m_endSouth.Y - m_markerPoint.Y) * decDelta < 0)                // Sign change, went too far
+                double pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y);                  // How far we moved with the test pulse
+                double target_delta = fabs(m_markerPoint.Y - m_endSouth.Y);                     // How far we needed to go
+                if ((m_endSouth.Y - m_markerPoint.Y) * decDelta < 0)                            // Sign change, went too far
                 {
-                    m_backlashResultMs *= m_backlashResultPx / pulse_delta;
-                    Debug.Write(wxString::Format("BLT: Trial backlash resulted in overshoot - adjusting pulse size by %0.2f\n", m_backlashResultPx / pulse_delta));
+                    //m_backlashResultMs *= target_delta / pulse_delta;
+                    Debug.Write(wxString::Format("BLT: Nominal backlash value over-shot by %0.2f X\n", target_delta / pulse_delta));
                 }
                 else
                 {
-                    double corr_factor = (m_backlashResultPx / pulse_delta - 1.0) * 0.5 + 1.0;          // apply 50% of the correction to avoid over-shoot
+                    double corr_factor = (target_delta / pulse_delta - 1.0) * 0.5 + 1.0;
                     //m_backlashResultMs *= corr_factor;
-                    Debug.Write(wxString::Format("BLT: Trial backlash resulted in under-correction - under-shot by %0.2f\n", corr_factor));
+                    Debug.Write(wxString::Format("BLT: Nominal backlash value under-shot by %0.2f X\n", target_delta / pulse_delta));
                 }
             }
             else
-                Debug.Write("BLT: Initial backlash pulse resulted in final delta of < 2 px\n");
+                Debug.Write(wxString::Format("BLT: Nominal backlash pulse resulted in final delta of %0.1f a-s\n", fabs(decDelta) * pFrame->GetCameraPixelScale()));
 
             m_bltState = BLT_STATE_RESTORE;
             m_stepCount = 0;
@@ -743,9 +839,9 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
     }
     catch (const wxString& msg)
     {
+        POSSIBLY_UNUSED(msg);
         Debug.Write(wxString::Format("BLT: Exception thrown in logical state %d\n", (int)m_bltState));
         m_bltState = BLT_STATE_ABORTED;
-        m_lastStatus = wxString::Format(_("Measurement encountered an error: %s"), msg);
         Debug.Write("BLT: " + m_lastStatus + "\n");
         CleanUp();
     }
@@ -753,9 +849,10 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
 void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
 {
-    if (m_Rslt != MEASUREMENT_INVALID && m_stats.count > 1)
+    if (m_Rslt == MEASUREMENT_VALID && m_stats.count > 1)
     {
-        *SigmaPx = 2 * sqrt(m_stats.currentSS / (m_stats.count - 1));  // 4 separate measurements added in quatrature
+        // Sigma of mean for north moves + sigma of two measurements going south, added in quadrature
+        *SigmaPx = sqrt((m_stats.currentSS / m_stats.count) + (2 * m_stats.currentSS / (m_stats.count - 1)));
         *SigmaMs = *SigmaPx / m_northRate;
     }
     else
