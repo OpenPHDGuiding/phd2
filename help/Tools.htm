@@ -241,9 +241,9 @@ The location for the files is controlled by the 'Log
 File
 Location' field in the 'Global' tab of the 'Advanced Settings' dialog. &nbsp;By default, log
 files
-are stored in the OS-specific default directory for application data files.
+are stored in the OS-specific default directory for user documents.
 &nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
-sub-folder in the "AppData\Local" location. &nbsp;This may not be a
+sub-folder in the "Documents" directory. &nbsp;This may not be a
 convenient location, so you can specify a different folder using this
 edit field. &nbsp;In order to prevent excessive accumulation of log
 files, PHD2 automatically removes debug logs that are more than 30 days
@@ -259,7 +259,30 @@ be stored in the same location as the other log files. &nbsp;The format
 of these image files is controlled from the 'Global' tab of the
 'Advanced Settings' dialog. &nbsp;If you are trying to document a
 problem you're having, you should choose the 'Raw Fits' format for
-maximum flexibility.<br><br><h3><a name="Polar_alignment_tools"></a>Polar Alignment Tools</h3>
+maximum flexibility.<br><br><span style="font-weight: bold;"><a name="Logging-Automatic_Upload"></a>Automatic Log File Upload<br><br></span>If you need help using PHD2 or improving your guiding results, you'll want to post a request on the Open<span style="font-weight: bold;">-</span>PHD-Guiding
+forum (https://groups.google.com/forum/#!forum/open-phd-guiding).
+&nbsp;Your question should be accompanied by the PHD log files
+associated with the guiding session you're talking about. &nbsp;To make
+that easier, PHD2 has a built-in function to select, compress, and
+automatically upload the relevant log files. &nbsp;That function is
+located on the 'Help' menu. &nbsp;You'll see a dialog box that shows
+all the available log files, including their timestamps and duration:<br><br><img style="width: 579px; height: 378px;" alt="" src="Log_Upload_1.png"><br><br>Just
+select the files you want and start the upload process by clicking on
+'Next'. &nbsp;If PHD2 is generally working for you but you can't
+interpret the guiding performance or you want to improve it, you can
+start by just uploading the guide logs. &nbsp;But if you're having
+trouble with camera or mount connections or otherwise can't get PHD2
+running, you should also include the matching debug log file. &nbsp; Be
+selective about the files you choose - just the files for the session
+you were having trouble with. &nbsp;When the upload process is
+complete, you'll see another window that gives you a link to the files:<br><br><img style="width: 573px; height: 192px;" alt="" src="Log_Upload_2.png"><br><br>You
+need to capture or record that link so it can be included with the
+question you'll post on the forum. &nbsp; Log files will be
+automatically removed on the server after a reasonable amount of time
+has elapsed, so you won't need to worry about that. &nbsp;When you post
+your request for support, please include a full description of what you
+were doing, whatever problem you saw, and roughly what time period you
+want us to focus on.<br><br><h3><a name="Polar_alignment_tools"></a>Polar Alignment Tools</h3>
 
 PHD2 offers three different polar alignment tools.<span style="">&nbsp; </span>The three approaches share the same basic
 objective: to help you physically align the RA axis of your mount to the
@@ -447,12 +470,19 @@ mechanism. &nbsp;You&nbsp;then click
 will appear to wander around on the display - this is entirely normal.
 &nbsp;As guider images are acquired, statistics are computed and
 displayed in real-time in the user interface. Of particular interest
-are the table entries for&nbsp;"High-frequency Star Motion" and "Polar Alignment Error". &nbsp;After about two
+are the table entries for&nbsp;"High-frequency Star Motion" and "Polar
+Alignment Error". &nbsp;After about two
 minutes of data collection, these numbers will usually stabilize and
-you'll have&nbsp;reasonable measurements. &nbsp;If you want to get a more accurate measure of your polar alignment error
+you'll have&nbsp;reasonable measurements. &nbsp;If you want to get a
+more accurate measure of your polar alignment error
 and any uncorrected periodic error in RA, you'll need to let the
-Guiding Assistant run for up to 10 minutes. When you finally click the 'Stop'
-button, this phase of the measurement process will stop. &nbsp; &nbsp;If
+Guiding Assistant run for up to 10 minutes. Also, the computed polar
+alignment error is sensitive to the current scope declination. &nbsp;To
+get the most accurate measurement, you should point the scope to within
+a few degrees of the celestial meridian. &nbsp;When you finally click
+the 'Stop'
+button, this phase of the measurement process will stop. &nbsp;
+&nbsp;If
 you've checked the box to 'Measure Declination Backlash" that process
 will commence (see below). &nbsp;If not, guiding commands will be
 re-enabled and the data collection
@@ -557,9 +587,11 @@ backlash compensation that's supported in some mount firmware
 because&nbsp;the PHD2 implementation is <span style="font-style: italic;">adaptive.</span>
 &nbsp;The greatest risk with backlash compensation is that it will be
 too large and will drive the mount into unstable oscillations in
-declination. &nbsp;PHD2 will watch for this behavior and rapidly and
+declination. &nbsp;PHD2 will watch for this behavior and
 automatically adjust the compensation downward until the oscillation
-disappears. &nbsp;Obviously, backlash compensation is applied&nbsp;only
+disappears. &nbsp;Conversely, if PHD2 sees a pattern of
+under-compensation, it will gradually increase the compensation amount.
+&nbsp;Obviously, backlash compensation is applied&nbsp;only
 when the direction of declination guiding is reversed. &nbsp;When you
 first set a backlash compensation parameter with the Guiding Assistant
 (recommendations section), you should give PHD2 some time to adjust it.
@@ -568,7 +600,12 @@ declination. &nbsp;You can see these pretty easily by watching the
 guiding graph with the option checked to show guiding corrections.
 &nbsp;If you see some initial oscillation and instability in
 declination, let guiding run for awhile to see if PHD2 can stabilize
-the behavior. &nbsp;<br><br>The setting for backlash compensation is shown in the '<a href="Advanced_settings.htm#Algorithms_Tab">Algorithms</a>' tab of&nbsp;<span style="text-decoration: underline;"></span>the Advanced Settings dialog. The value shown there may be smaller than what was computed by
+the behavior. &nbsp;This backlash compensation feature assumes that the
+mount doesn't have other problems like stiction or binding on the axis.
+&nbsp;If these things are present, the backlash compensation feature
+may still drive the mount into instability. &nbsp;If you see these
+sorts of problems, you should disable the feature altogether and
+perhaps try to improve the mechanics of the mount.<br><br>The setting for backlash compensation is shown in the '<a href="Advanced_settings.htm#Algorithms_Tab">Algorithms</a>' tab of&nbsp;<span style="text-decoration: underline;"></span>the Advanced Settings dialog. The value shown there may be smaller than what was computed by
 the Guiding Assistant if PHD2 had to adjust it downward. &nbsp;You can
 modify this parameter directly if you want to experiment with it or you
 can disable backlash compensation altogether using the adjacent

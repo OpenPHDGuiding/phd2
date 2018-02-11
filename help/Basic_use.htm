@@ -159,12 +159,23 @@ mount drivers, while Linux users can take advantage of INDI drivers.
 interface cannot return pointing information - it will otherwise be
 ignored. &nbsp;Note: some mounts (e.g. Celestron and iOptron) have a
 separate hardware port also labeled 'Aux' - DO NOT USE THIS&nbsp; for
-guiding - it is completely unrelated to the 'Aux' connection in PHD2.<br><br>The
+guiding - it is completely unrelated to the 'Aux' connection in PHD2. &nbsp;The
 last entry in the list of 'Aux mount' connections is labeled "Ask for
 coordinates." &nbsp;This can provide a rudimentary aux-mount facility
 if you can't use an ASCOM or INDI connection to your mount. &nbsp;If
 you need to pursue this option, you can read about the details in
-the&nbsp;<a href="Tools.htm#Ask_for_coordinates_aux_mount">Tools</a> section.<br><h4><a name="ASCOM_Benefits"></a>Benefits of Using ASCOM (or INDI) connections</h4>If
+the&nbsp;<a href="Tools.htm#Ask_for_coordinates_aux_mount">Tools</a> section.<br><br>Most ASCOM mount drivers use a serial port interface, so the driver
+expects to use one of the Windows 'COM' ports. &nbsp;Since most
+personal computers no longer have serial port connectors, you can use
+one of the USB ports and a USB-serial adapter. The software that comes
+with the USB-serial adapter will create a software COM port, and that's
+the one you'll use with the ASCOM driver. The first time you connect to
+the mount with ASCOM (either as 'mount' or 'aux-mount'), you'll need to
+tell the driver which COM port to use. &nbsp;That's part of the
+driver's setup dialog, and you can quickly open that window by clicking
+on the 'properties' icon just to the left of the 'Connect' button in
+the above image. &nbsp;Once you've done this, the COM port will be
+saved as part of the equipment profile<br><h4><a name="ASCOM_Benefits"></a>Benefits of Using ASCOM (or INDI) connections</h4>If
 you're running on a Windows platform, you'll probably be better off
 using an ASCOM connection for guiding your mount. &nbsp;On other
 operating systems, your best choice is likely to be an INDI connection
@@ -191,7 +202,7 @@ mount or ask on one of the forums about pulse-guide support. &nbsp;Even
 then, you can use ASCOM for the PHD2 "aux-mount" connection and get
 many of the benefits listed above. &nbsp;A common misconception,
 frequently seen on Web forums, is that ST-4 guiding is hardware-based
-and thus more accurate or responsive. &nbsp;For any of the modern
+and thus more accurate or efficient. &nbsp;For any of the modern
 mounts you're likely to encounter, this is no longer true - there will
 always be software running at each end of the cable, just like ASCOM
 guiding. &nbsp;The bottom line is this: if you have an ASCOM or Indi
@@ -368,13 +379,19 @@ fact, this is the recommended method. &nbsp;It can also be selected
 after looping has been stopped, but this opens the possibility that the
 star might have moved since the last exposure. &nbsp;No great
 precision
-is required in clicking on the star -&nbsp;<span style="font-style: italic;">PHD2</span> will find the
+is required in clicking on the star -&nbsp;<span style="font-style: italic;">PHD2</span>
+will find the
 star
 nearest to the cursor. &nbsp;After you do this, a green box will
 appear to frame the star. &nbsp;If you pick a star that is too
-bright (saturated), the status bar will show a &nbsp;red 'SAT' label&nbsp;&nbsp;and you
-should choose a fainter star if one is available.
-&nbsp;You can adjust the gamma slider to the left to see fainter stars. &nbsp;The choice of exposure time will
+bright (saturated), the status bar will show a &nbsp;red 'SAT'
+label&nbsp;&nbsp;and you
+should choose a fainter star.
+&nbsp;You should adjust the gamma slider to the left to see fainter
+stars. Most new users are fooled by this and often choose the brightest
+star they happen to see in the field of view. &nbsp;But that choice is
+often a saturated star, not a good choice for auto-guiding. &nbsp;The
+choice of exposure time will
 depend entirely on your equipment, sky conditions, and the available
 stars. &nbsp;The exposure time you choose has several
 implications: <br>
@@ -387,28 +404,33 @@ better guiding results so long as it is not saturated.</li>
 <li>It
 also determines the frequency with which guide commands are sent to the
 mount -&nbsp;guide commands cannot be sent any more frequently
-than once for each exposure cycle. &nbsp;Some mounts benefit from
-frequent small guiding adjustments while others do not - you may need
+than once for each exposure cycle. &nbsp;Some mounts need frequent small guiding adjustments while others do not - you may need
 to experiment to understand what works best for your situation.
 &nbsp;</li><li>It
 has a strong effect on the sensitivity of the guide algorithms to
 seeing conditions. &nbsp;As the exposure time is increased up
-through 2-6 seconds, the effects of seeing are smoothed out.
+through 2-4 seconds, the effects of seeing are smoothed out.
 &nbsp;The camera is essentially averaging out the larger,
 high-frequency seeing movements, so the guide algorithms have less
 difficulty distinguishing "seeing jitter" from actual guide star
-displacements that need to be corrected. &nbsp;This is particularly
-noticeable if you are guiding with a long focal length setup.</li>
+displacements that need to be corrected. This is particularly
+noticeable if you are guiding with a long focal length setup.&nbsp;
+Of course, the convenience of using longer exposures must be traded off
+against the need for the mount to get frequent corrections.</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
-of two to four seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
+of two to three seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, it's better to let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
 guide star&nbsp;by using the Alt-S keyboard shortcut after stars are
 visible in the main display. If you want to de-select a star without
 choosing another one, you can do a shift-click anywhere on the image display window. &nbsp; If you are just
 starting with this
 equipment set-up, you'll probably need to focus the guide camera -
 doing so is important for good guiding. &nbsp;You can use&nbsp;the <a href="Tools.htm#Star_Profile">Star Profile tool</a>
-to help with that process. &nbsp; The camera exposure control displays
+to help with that process. &nbsp; If you're using a small guide scope,
+like a finder-scope, the focus may react strongly to small adjustments.
+&nbsp;It's important to spend the time to get a good focus because a
+poorly focused guide star can lead to many other problems. &nbsp;The
+camera exposure control displays
 a wide range of pre-set exposure times. &nbsp;Exposure
 times smaller than one second are intended for use with adaptive
 optics devices or in other special situations - they are generally not
@@ -566,7 +588,7 @@ observatory roof, a tree, etc.</li>
 star may have abruptly moved out of the tracking rectangle because
 something shifted in the mount/camera/cabling infrastructure - cable&nbsp;snags can cause this</li>
 <li>The star may have "faded" for some other reason, perhaps
-because it is overly faint</li>
+because it is overly faint or the camera is not well-focused</li>
 </ol>
 Obviously,
 you'll need to identify the source of the problem and fix it.

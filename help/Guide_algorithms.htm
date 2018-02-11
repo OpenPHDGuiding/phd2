@@ -54,10 +54,17 @@ parameter. &nbsp;This is used to avoid making guide corrections that
 are overly small, are unlikely to have any effect on star shape, and
 are mostly due to transient seeing effects. &nbsp;These values are
 entered in units of pixels, so you need to think about them in the
-context of how large your star images are. &nbsp;The default values
-work well for short-to-medium focal length&nbsp;systems, but you may
-need to increase them if you are working at long focal lengths and
-expect stars&nbsp;to have larger diameters.<br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
+context of your image scale and the typical size of your guide stars.
+&nbsp;If you have used the new-profile-wizard to configure your system,
+the min-move parameters will be set to values that are likely to work
+well for the image scale you're using. &nbsp;The Guiding Assistant can
+also adjust these values based on its measurement of high-frequency
+seeing disturbances. &nbsp;If you are seeing a high rate of guider
+corrections and lots of direction reversals, you may be "chasing the
+seeing" and adjusting the min-move values upward can be a simple way to
+reduce that. &nbsp;Of all the detailed guiding parameters discussed
+here, the two min-move values are the most likely to warrant adjustment
+on a nightly basis depending on seeing conditions.<br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
 algorithms keep a history of the guiding corrections that have been
 made in the recent past, and these are used to help compute the next
 guide correction. &nbsp;The <span style="font-weight: bold;">hysteresis</span>
