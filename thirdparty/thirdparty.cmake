@@ -1218,16 +1218,18 @@ if(UNIX AND NOT APPLE)
  endif()
 
   find_path(ZWO_INCLUDE_DIR ASICamera2.h
-    PATHS
-    ${PHD_PROJECT_ROOT_DIR}/cameras
+     NO_DEFAULT_PATHS
+     PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
   )
 
   find_library(asiCamera2
                 NAMES ASICamera2
+                NO_DEFAULT_PATHS
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${arch})
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
+  message(STATUS "Found ASICamera2 lib ${asiCamera2}")
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
   if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
