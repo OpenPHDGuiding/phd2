@@ -336,3 +336,8 @@ wxString PhdApp::GetLocalesDir() const
 {
     return m_resourcesDir + PATHSEPSTR + _T("locale");
 }
+
+wxString PhdApp::UserAgent() const
+{
+    return _T("phd2/") FULLVER _T(" (") PHD_OSNAME _T(")");
+}

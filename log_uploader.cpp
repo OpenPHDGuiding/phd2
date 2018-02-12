@@ -892,6 +892,8 @@ bool BgUpload::Entry()
         return false;
     }
 
+    curl_easy_setopt(m_curl, CURLOPT_USERAGENT, static_cast<const char *>(wxGetApp().UserAgent().c_str()));
+
     // setup write callback to capture server responses
     curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, writefn);
     curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);

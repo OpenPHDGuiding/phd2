@@ -241,6 +241,7 @@ public:
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
     const wxDateTime& GetInitTime() const { return m_initTime; }
+    wxString UserAgent() const;
 };
 
 wxDECLARE_APP(PhdApp);

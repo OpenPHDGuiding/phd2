@@ -269,6 +269,8 @@ struct Updater
             return;
         }
 
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, static_cast<const char *>(wxGetApp().UserAgent().c_str()));
+
 #if defined(OLD_CURL)
         curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
         curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
