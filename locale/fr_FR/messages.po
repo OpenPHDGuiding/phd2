@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-09 16:34+0000\n"
-"PO-Revision-Date: 2018-02-01 00:02+0100\n"
+"PO-Revision-Date: 2018-02-12 23:10+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -872,10 +872,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1911,8 +1910,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2128,8 +2126,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:152
 msgid ""
@@ -3219,8 +3217,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3332,8 +3330,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3356,8 +3354,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -4104,48 +4102,48 @@ msgstr "Options INDI"
 
 #: log_uploader.cpp:130
 msgid "loading..."
-msgstr ""
+msgstr "chargement..."
 
 #: log_uploader.cpp:141
 #, c-format
 msgid "%dd"
-msgstr ""
+msgstr "%dd"
 
 #: log_uploader.cpp:144
 #, c-format
 msgid "%dhr"
-msgstr ""
+msgstr "%dhr"
 
 #: log_uploader.cpp:149
 #, c-format
 msgid "%dhr%dmin"
-msgstr ""
+msgstr "%dhr%dmin"
 
 #: log_uploader.cpp:152
 #, c-format
 msgid "%dmin"
-msgstr ""
+msgstr "%dmin"
 
 #: log_uploader.cpp:154
 #, c-format
 msgid "%dsec"
-msgstr ""
+msgstr "%dsec"
 
 #: log_uploader.cpp:537
 msgid "Upload Log Files - Select logs"
-msgstr ""
+msgstr "Télécharger les fichiers log - Sélectionnez les logs"
 
 #: log_uploader.cpp:538
 msgid "Upload Log Files - Confirm upload"
-msgstr ""
+msgstr "Télécharger les fichiers log - Confirmer le téléchargement"
 
 #: log_uploader.cpp:539
 msgid "Upload Log Files - Upload complete"
-msgstr ""
+msgstr "Télécharger les fichiers log - Téléchargement complet"
 
 #: log_uploader.cpp:540
 msgid "Upload Log Files - Upload not completed"
-msgstr ""
+msgstr "Télécharger les fichiers log - Téléchargement incomplet"
 
 #: log_uploader.cpp:543
 msgid ""
@@ -4158,26 +4156,35 @@ msgid ""
 "For other issues like equipment connection problems or to report a bug in "
 "PHD2, select the Debug Log."
 msgstr ""
+"Lorsque vous demandez de l'aide sur le forum PHD2, il est important "
+"d'inclure vos logs PHD2. Cet outil vous\n"
+"aidera à télécharger vos fichiers logs afin qu'ils puissent être vus dans le "
+"forum.\n"
+"Vous devez d'abord sélectionner les fichiers à télécharger.\n"
+"Si vous recherchez de l'aide pour le guidage, sélectionnez le log de guidage "
+"pour la session pour laquelle vous avez besoin d'aide.\n"
+"Pour d'autres problèmes tels que les problèmes de connexion d'équipement ou "
+"pour signaler un bogue dans PHD2, sélectionnez le journal de débogage."
 
 #: log_uploader.cpp:581
 msgid "Session Start"
-msgstr ""
+msgstr "Début de Session"
 
 #: log_uploader.cpp:582
 msgid "Duration"
-msgstr ""
+msgstr "Durée"
 
 #: log_uploader.cpp:583
 msgid "Guide Log"
-msgstr ""
+msgstr "Log de Guidage"
 
 #: log_uploader.cpp:584
 msgid "Debug Log"
-msgstr ""
+msgstr "Log de Débogage"
 
 #: log_uploader.cpp:613 log_uploader.cpp:1195
 msgid "Recent uploads"
-msgstr ""
+msgstr "Téléchargements récents"
 
 #: log_uploader.cpp:619 profile_wizard.cpp:184
 msgid "< Back"
@@ -4190,50 +4197,51 @@ msgstr "Suivant >"
 
 #: log_uploader.cpp:744 log_uploader.cpp:1063
 msgid "Upload"
-msgstr ""
+msgstr "Téléchargement"
 
 #: log_uploader.cpp:744
 msgid "Uploading log files ..."
-msgstr ""
+msgstr "Téléchargement des fichiers log ..."
 
 #: log_uploader.cpp:773
 #, c-format
 msgid "Uploading ... %.f%%"
-msgstr ""
+msgstr "Téléchargement ... %.f%%"
 
 #: log_uploader.cpp:826
 msgid "Connecting ..."
-msgstr ""
+msgstr "Connexion ..."
 
 #: log_uploader.cpp:842
 #, c-format
 msgid "Connection failed, will retry in %ds"
-msgstr ""
+msgstr "Échec de la connexion, nouvelle tentative dans %ds"
 
 #: log_uploader.cpp:996
 #, c-format
 msgid "Upload failed, will retry in %ds"
-msgstr ""
+msgstr "Échec du téléchargement, nouvelle tentative dans %ds"
 
 #: log_uploader.cpp:1029
 msgid "The following log files will be uploaded:"
-msgstr ""
+msgstr "Les fichiers logs suivants seront téléchargés :"
 
 #: log_uploader.cpp:1044
 msgid "Guide and Debug logs"
-msgstr ""
+msgstr "Guide et logs de Débogage"
 
 #: log_uploader.cpp:1046
 msgid "Debug log"
-msgstr ""
+msgstr "Log de débogage"
 
 #: log_uploader.cpp:1048
 msgid "Guide log"
-msgstr ""
+msgstr "Log du guidage"
 
 #: log_uploader.cpp:1135
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
+"Les fichiers logs ont été téléchargés et peuvent être consultés sur ce lien :"
 
 #: log_uploader.cpp:1138
 msgid ""
@@ -4241,16 +4249,21 @@ msgid ""
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
+"Vous pouvez partager vos fichiers logs dans le <a href=\"forum\">forum PHD2</"
+"a> en publiant un message incluant le lien. Copiez collez le lien dans votre "
+"message sur le forum."
 
 #: log_uploader.cpp:1140
 msgid "Copy link to clipboard"
-msgstr ""
+msgstr "Copier le lien dans le presse-papiers"
 
 #: log_uploader.cpp:1156
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
+"PHD2 n'a pas pu télécharger les fichiers logs en raison d'une erreur "
+"interne. Veuillez signaler l'erreur dans le forum PHD2."
 
 #: log_uploader.cpp:1159
 msgid ""
@@ -4258,12 +4271,18 @@ msgid ""
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"PHD2 n'a pas pu télécharger les fichiers logs. Le service peut être "
+"temporairement indisponible. Vous pouvez réessayer plus tard ou vous pouvez "
+"essayer un autre service de partage de fichiers tel que Dropbox ou Google "
+"Drive."
 
 #: log_uploader.cpp:1163
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
+"PHD2 a rencontré une erreur lors de la compression des fichiers logs. "
+"Assurez-vous que les logs sélectionnés sont disponibles et réessayez."
 
 #: log_uploader.cpp:1167
 msgid ""
@@ -4271,6 +4290,9 @@ msgid ""
 "allowed. Try selecting fewer files, or use an alternative file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"La taille totale compressée des fichiers log sélectionnés dépasse la taille "
+"maximale autorisée. Essayez de sélectionner moins de fichiers ou utilisez un "
+"autre service de partage de fichiers, tel que Dropbox ou Google Drive."
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -4797,19 +4819,19 @@ msgstr "Demander de l'aide dans le forum PHD2"
 
 #: myframe.cpp:563
 msgid "Open Log Folder"
-msgstr ""
+msgstr "Ouvrir Dossier Logs"
 
 #: myframe.cpp:563
 msgid "Open the log folder"
-msgstr ""
+msgstr "Ouvrir le dossier des logs"
 
 #: myframe.cpp:564
 msgid "Upload Log Files..."
-msgstr ""
+msgstr "Télécharger les Fichiers Logs..."
 
 #: myframe.cpp:564
 msgid "Upload log files for review"
-msgstr ""
+msgstr "Télécharger les fichiers logs pour examen"
 
 #: myframe.cpp:565
 msgid "&Contents...\tF1"
@@ -8513,8 +8535,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
