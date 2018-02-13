@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-09 16:34+0000\n"
-"PO-Revision-Date: 2017-12-17 17:11+0800\n"
+"PO-Revision-Date: 2018-02-13 18:12+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -489,8 +489,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:650
 msgid "Explanation"
@@ -836,10 +836,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:489 cam_INDI.cpp:512 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1832,8 +1831,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:314 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3092,8 +3090,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3197,8 +3195,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:250
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3219,8 +3217,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:310
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3521,7 +3519,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:136
 msgid "Backlash Test Sampling"
-msgstr ""
+msgstr "回差測試取樣"
 
 #: guiding_assistant.cpp:141
 msgid ""
@@ -3529,10 +3527,12 @@ msgid ""
 "testing \n"
 "will start automatically when sampling is completed."
 msgstr ""
+"用以量測赤緯飄移的額外資料取樣在進行中, 完成後會\n"
+"自動測量回差"
 
 #: guiding_assistant.cpp:143
 msgid "Seconds remaining: "
-msgstr ""
+msgstr "剩餘秒數:"
 
 #: guiding_assistant.cpp:342
 msgid "Guiding Assistant"
@@ -3725,6 +3725,8 @@ msgid ""
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
 "estimate is one unit of standard deviation"
 msgstr ""
+"如測試完成就會估算赤緯回差, 其結果為清除回差厎時間 (ms) 及像對應的齒輪轉動角"
+"度 (arc-sec), 未確定的估算值為一個單位的標準偏差"
 
 #: guiding_assistant.cpp:622
 msgid ""
@@ -3749,6 +3751,8 @@ msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
 msgstr ""
+"導星輸出暫時關閉並開始量測星點移動量, 在 RMS 和極軸校準值穩定後 (至少兩分鐘) "
+"點擊「停止」"
 
 #: guiding_assistant.cpp:665
 msgid ""
@@ -3811,21 +3815,21 @@ msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
 #: guiding_assistant.cpp:1022
 msgid "Backlash measurement impaired by bad calibration or mount instability"
-msgstr ""
+msgstr "量測回差因校準不正確或赤道儀不穩定而發生問題"
 
 #: guiding_assistant.cpp:1024
 msgid "Backlash is small, no compensation needed"
-msgstr ""
+msgstr "回差極小, 不需要做回差補償"
 
 #: guiding_assistant.cpp:1026
 #, c-format
 msgid "Try setting a Dec backlash compensation value of %d ms"
-msgstr ""
+msgstr "請嘗試將赤緯回差補償植設定為 %d ms"
 
 #: guiding_assistant.cpp:1028
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
-msgstr ""
+msgstr "回差 >= %d ms; 導星只能在赤緯的某個方向上進行"
 
 #: guiding_assistant.cpp:1138
 msgid "Backlash test aborted..."
@@ -3904,48 +3908,48 @@ msgstr "INDI 選項"
 
 #: log_uploader.cpp:130
 msgid "loading..."
-msgstr ""
+msgstr "載入中..."
 
 #: log_uploader.cpp:141
 #, c-format
 msgid "%dd"
-msgstr ""
+msgstr "%dd"
 
 #: log_uploader.cpp:144
 #, c-format
 msgid "%dhr"
-msgstr ""
+msgstr "%dhr"
 
 #: log_uploader.cpp:149
 #, c-format
 msgid "%dhr%dmin"
-msgstr ""
+msgstr "%dhr%dmin"
 
 #: log_uploader.cpp:152
 #, c-format
 msgid "%dmin"
-msgstr ""
+msgstr "%dmin"
 
 #: log_uploader.cpp:154
 #, c-format
 msgid "%dsec"
-msgstr ""
+msgstr "%dsec"
 
 #: log_uploader.cpp:537
 msgid "Upload Log Files - Select logs"
-msgstr ""
+msgstr "上傳日誌檔案-選擇日誌"
 
 #: log_uploader.cpp:538
 msgid "Upload Log Files - Confirm upload"
-msgstr ""
+msgstr "上傳日誌檔案-確認上傳"
 
 #: log_uploader.cpp:539
 msgid "Upload Log Files - Upload complete"
-msgstr ""
+msgstr "上傳日誌檔案-上傳完成"
 
 #: log_uploader.cpp:540
 msgid "Upload Log Files - Upload not completed"
-msgstr ""
+msgstr "上傳日誌檔案-上傳未完成"
 
 #: log_uploader.cpp:543
 msgid ""
@@ -3961,23 +3965,23 @@ msgstr ""
 
 #: log_uploader.cpp:581
 msgid "Session Start"
-msgstr ""
+msgstr "會議開始"
 
 #: log_uploader.cpp:582
 msgid "Duration"
-msgstr ""
+msgstr "期間"
 
 #: log_uploader.cpp:583
 msgid "Guide Log"
-msgstr ""
+msgstr "導星日誌"
 
 #: log_uploader.cpp:584
 msgid "Debug Log"
-msgstr ""
+msgstr "除錯日誌"
 
 #: log_uploader.cpp:613 log_uploader.cpp:1195
 msgid "Recent uploads"
-msgstr ""
+msgstr "最近上傳"
 
 #: log_uploader.cpp:619 profile_wizard.cpp:184
 msgid "< Back"
@@ -3990,50 +3994,50 @@ msgstr "下個 >"
 
 #: log_uploader.cpp:744 log_uploader.cpp:1063
 msgid "Upload"
-msgstr ""
+msgstr "上傳"
 
 #: log_uploader.cpp:744
 msgid "Uploading log files ..."
-msgstr ""
+msgstr "上傳日誌檔案中..."
 
 #: log_uploader.cpp:773
 #, c-format
 msgid "Uploading ... %.f%%"
-msgstr ""
+msgstr "上傳中... %.f%%"
 
 #: log_uploader.cpp:826
 msgid "Connecting ..."
-msgstr ""
+msgstr "連線中..."
 
 #: log_uploader.cpp:842
 #, c-format
 msgid "Connection failed, will retry in %ds"
-msgstr ""
+msgstr "連線失敗, 在 %ds. 後重連"
 
 #: log_uploader.cpp:996
 #, c-format
 msgid "Upload failed, will retry in %ds"
-msgstr ""
+msgstr "上傳失敗, 在 %ds. 後重傳"
 
 #: log_uploader.cpp:1029
 msgid "The following log files will be uploaded:"
-msgstr ""
+msgstr "將上傳下列檔案"
 
 #: log_uploader.cpp:1044
 msgid "Guide and Debug logs"
-msgstr ""
+msgstr "導星及除錯日誌"
 
 #: log_uploader.cpp:1046
 msgid "Debug log"
-msgstr ""
+msgstr "除錯日誌"
 
 #: log_uploader.cpp:1048
 msgid "Guide log"
-msgstr ""
+msgstr "導星日誌"
 
 #: log_uploader.cpp:1135
 msgid "The log files have been uploaded and can be accessed at this link:"
-msgstr ""
+msgstr "將上傳日誌檔案, 上傳後可以利用此連結存取:"
 
 #: log_uploader.cpp:1138
 msgid ""
@@ -4041,16 +4045,18 @@ msgid ""
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
+"你可以攥寫包含此連結的訊息於 <a href=\"forum\">PHD2 論壇</a> 中來分享你的日誌"
+"檔案, 拷貝並貼上此連結到你在論壇上的文章"
 
 #: log_uploader.cpp:1140
 msgid "Copy link to clipboard"
-msgstr ""
+msgstr "拷貝連結到剪貼簿"
 
 #: log_uploader.cpp:1156
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
-msgstr ""
+msgstr "因發生內部錯誤, PHD2 無法上傳日誌檔案, 請在 PHD2 論壇中提報這個錯誤"
 
 #: log_uploader.cpp:1159
 msgid ""
@@ -4058,12 +4064,14 @@ msgid ""
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"因服務暫時關閉, PHD2 無法上傳日誌檔案, 你可以稍後在試或利用  Dropbox 或  "
+"Google Drive 等檔案分享服務上傳檔案"
 
 #: log_uploader.cpp:1163
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
-msgstr ""
+msgstr "在壓縮日誌檔案時發生錯誤, 請確定日誌檔案是否存在後再試"
 
 #: log_uploader.cpp:1167
 msgid ""
@@ -4568,27 +4576,27 @@ msgstr "檢查 PHD2 軟體更新"
 
 #: myframe.cpp:562
 msgid "Online Support"
-msgstr ""
+msgstr "線上支援"
 
 #: myframe.cpp:562
 msgid "Ask for help in the PHD2 Forum"
-msgstr ""
+msgstr "請在 PHD2 論壇上尋求解答"
 
 #: myframe.cpp:563
 msgid "Open Log Folder"
-msgstr ""
+msgstr "打開日誌檔案夾"
 
 #: myframe.cpp:563
 msgid "Open the log folder"
-msgstr ""
+msgstr "打開該日誌檔案夾"
 
 #: myframe.cpp:564
 msgid "Upload Log Files..."
-msgstr ""
+msgstr "上傳日誌檔案中..."
 
 #: myframe.cpp:564
 msgid "Upload log files for review"
-msgstr ""
+msgstr "上傳日誌檔案以供檢視"
 
 #: myframe.cpp:565
 msgid "&Contents...\tF1"
