@@ -230,9 +230,15 @@ void CameraINDI::newProperty(INDI::Property *property)
         binning_y = IUFindNumber(binning_prop,"VER_BIN");
         newNumber(binning_prop);
     }
-    else if (PropName == "VIDEO_STREAM" && Proptype == INDI_SWITCH) {
+    else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH) {
         //printf("Found Video %s %s\n",DeviName, PropName);
         video_prop = property->getSwitch();
+        has_old_videoprop = false;
+    }
+    else if (((PropName == "VIDEO_STREAM") ) && Proptype == INDI_SWITCH) {
+        //printf("Found Video %s %s\n",DeviName, PropName);
+        video_prop = property->getSwitch();
+        has_old_videoprop = true;
     }
     else if (PropName == "DEVICE_PORT" && Proptype == INDI_TEXT) {
         //printf("Found device port for %s \n",DeviName);
@@ -627,8 +633,16 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
       else if (video_prop){
           takeSubframe = false;
           //printf("Enabling video capture\n");
-          ISwitch *v_on = IUFindSwitch(video_prop,"ON");
-          ISwitch *v_off = IUFindSwitch(video_prop,"OFF");
+          ISwitch *v_on;
+          ISwitch *v_off;
+          if (has_old_videoprop){
+             v_on = IUFindSwitch(video_prop,"ON");
+             v_off = IUFindSwitch(video_prop,"OFF");
+          }
+          else {
+             v_on = IUFindSwitch(video_prop,"STREAM_ON");
+             v_off = IUFindSwitch(video_prop,"STREAM_OFF");
+          }
           v_on->s = ISS_ON;
           v_off->s = ISS_OFF;
           // start capture, every video frame is received as a blob

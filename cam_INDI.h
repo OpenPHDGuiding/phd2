@@ -72,6 +72,7 @@ private:
     IndiGui  *gui ;
     IBLOB    *cam_bp;
     bool     has_blob;
+    bool     has_old_videoprop;
     bool     modal;
     bool     ready;
     wxByte   m_bitsPerPixel;
