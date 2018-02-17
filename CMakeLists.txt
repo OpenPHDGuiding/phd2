@@ -499,7 +499,6 @@ if (WIN32)
 
       ${phd_src_dir}/comdispatch.h
       ${phd_src_dir}/comdispatch.cpp
-      ${phd_src_dir}/phd.rc   # resource file
      )
 endif()
 source_group(src FILES ${phd2_SRC})
@@ -629,6 +628,9 @@ elseif(WIN32)
   )
 
   ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
+  
+  # resource file, some VC do not like the options provided by the precompiled headers
+  set(phd2_WIN_SRC ${phd2_WIN_SRC} ${phd_src_dir}/phd.rc)
   source_group(src FILES precompiled_header.cpp)
 
   link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
