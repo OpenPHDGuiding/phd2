@@ -260,6 +260,15 @@ void PolarDriftToolWin::OnStart(wxCommandEvent& evt)
         Debug.AddLine(wxString::Format("Polar Drift alignment stopped"));
         SetStatusText(wxString::Format(_("PA err(arcmin): %.1f Angle (deg): %.1f"), m_offset*m_pxScale / 60, norm(-m_alpha, -180, 180)));
         FillPanel();
+        if (pMount)
+        {
+            pMount->SetGuidingEnabled(m_savePrimaryMountEnabled);
+        }
+        if (pSecondaryMount)
+        {
+            pSecondaryMount->SetGuidingEnabled(m_saveSecondaryMountEnabled);
+        }
+
         return;
     }
     if (pFrame->pGuider->IsCalibratingOrGuiding())
@@ -347,8 +356,8 @@ void PolarDriftToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 
 bool PolarDriftToolWin::WatchDrift()
 {
-    // Initially, assume an m_offset of 5.0 degrees of the camera from the CoR
-    // Calculate how far to move in RA to get a detectable arc
+    // Monitor the drift of the selected star
+    // Calculate a least squares fit of the drift agains time along each sensor axis
     // Calculate the tangential ditance of that movement
     // Mark the starting position then rotate the mount
     double tnow = ::wxGetUTCTimeMillis().GetValue()/1000.0;
@@ -372,7 +381,7 @@ bool PolarDriftToolWin::WatchDrift()
     m_sumxy += m_current.X * m_current.Y;
 
     if (m_num <= 1) return true;
-    const double factor = 24 * 3600 / 2 / M_PI;
+    const double factor = 24 * 3600 / 2 / M_PI; // approx 13751: seconds per radian
     double xslope = (m_num*m_sumtx - m_sumt*m_sumx) / (m_num*m_sumt2 - m_sumt*m_sumt);
     double yslope = (m_num*m_sumty - m_sumt*m_sumy) / (m_num*m_sumt2 - m_sumt*m_sumt);
 
@@ -385,9 +394,12 @@ bool PolarDriftToolWin::WatchDrift()
     m_offset = hypot(xslope, yslope)*factor;  //polar alignment error in pixels
     m_target = PHD_Point(m_current.X + m_offset*cos(radians(m_alpha)), m_current.Y + m_offset*(sin(radians(m_alpha))));
 
-    Debug.AddLine(wxString::Format("Polar Drift: m_num %d m_t0 %.1f tnow %.1f Pos: %.1f,%.1f PA err(px): %.1f Angle (deg): %.1f", m_num, m_t0, tnow));
-    Debug.AddLine(wxString::Format("Polar Drift: slopex %.1f slopey %.1f m_offset %.1f theta %1f m_alpha %.1f", xslope, yslope, m_offset, theta, m_alpha));
-    SetStatusText(wxString::Format(_("Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"), tnow, m_offset*m_pxScale/60, norm(-m_alpha,-180,180)));
+    Debug.AddLine(wxString::Format("Polar Drift: m_hemi %d m_pxScale %.1f", m_hemi, m_pxScale));
+    Debug.AddLine(wxString::Format("Polar Drift: m_num %d m_t0 %.1f tnow %.1f m_current(X,Y): %.1f,%.1f", m_num, m_t0, tnow,
+        m_current.X, m_current.Y));
+    Debug.AddLine(wxString::Format("Polar Drift: slope(X,Y) %.4f,%.4f m_offset %.1f theta %.1f m_alpha %.1f", xslope, yslope, m_offset, theta, m_alpha));
+    Debug.AddLine(wxString::Format("Polar Drift: m_target(X,Y) %.1f,%.1f", m_target.X, m_target.Y));
+    SetStatusText(wxString::Format(_("Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"), tnow, m_offset*m_pxScale / 60, norm(-m_alpha, -180, 180)));
 
     return true;
 }
