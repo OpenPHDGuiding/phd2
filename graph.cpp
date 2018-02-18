@@ -1300,13 +1300,13 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
                 const S_HISTORY& h = m_history[i];
 
-                if (h.raDur != 0)
-                {
-                    // West corrections => Up on graph
-                    const int raDur = h.ra > 0.0 ? -h.raDur : h.raDur;
-                    wxPoint pt(sctr.pt(j, raDur));
-                    if (raDur < 0)
-                        dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
+                if (h.raDur != 0)
+                {
+                    // West corrections => Up on graph
+                    const int raDur = h.raDir == WEST ? -h.raDur : h.raDur;
+                    wxPoint pt(sctr.pt(j, raDur));
+                    if (raDur < 0)
+                        dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
                     else
                         dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
                 }
@@ -1318,13 +1318,13 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
                 const S_HISTORY& h = m_history[i];
 
-                if (h.decDur != 0)
-                {
-                    // North Corrections => Up on graph
-                    const int decDur = h.dec > 0.0 ? h.decDur : -h.decDur;
-                    wxPoint pt(sctr.pt(j, decDur));
-                    pt.x += 5;
-                    if (decDur < 0)
+                if (h.decDur != 0)
+                {
+                    // North Corrections => Up on graph
+                    const int decDur = h.decDir == SOUTH ? h.decDur : -h.decDur;
+                    wxPoint pt(sctr.pt(j, decDur));
+                    pt.x += 5;
+                    if (decDur < 0)
                         dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
                     else
                         dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
