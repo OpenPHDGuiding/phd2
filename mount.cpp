@@ -537,6 +537,7 @@ GUIDE_ALGORITHM Mount::GetGuideAlgorithm(const GuideAlgorithm *pAlgorithm)
 {
     return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
+
 static GuideAlgorithm *MakeGaussianProcessGuideAlgo(Mount *mount, GuideAxis axis)
 {
     static bool s_gp_debug_inited;
@@ -1600,10 +1601,7 @@ bool Mount::Disconnect(void)
 wxString Mount::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
-    wxString algorithms[] = {
-        _T("None"), _T("Hysteresis"), _T("Lowpass"), _T("Lowpass2"), _T("Resist Switch"),
-        _T("Predictive PEC")
-    };
+
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
     {
@@ -1622,10 +1620,10 @@ wxString Mount::GetSettingsSummary()
             "not calibrated",
         auxMountStr
     ) + wxString::Format("X guide algorithm = %s, %s",
-        algorithms[GetXGuideAlgorithmSelection()],
+        GuideAlgorithmName(GetXGuideAlgorithmSelection()),
         m_pXGuideAlgorithm->GetSettingsSummary()
     ) + wxString::Format("Y guide algorithm = %s, %s",
-        algorithms[GetYGuideAlgorithmSelection()],
+        GuideAlgorithmName(GetYGuideAlgorithmSelection()),
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
 
