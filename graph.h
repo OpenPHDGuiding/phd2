@@ -57,27 +57,27 @@ struct S_HISTORY
 {
     wxLongLong_t timestamp;
     double dx;
-    double dy;
-    double ra;
-    double dec;
-    double starSNR;
-    double starMass;
-    int raDur;
-    int decDur;
-    char raDir;
-    char decDir;
-    bool raLimited;
-    bool decLimited;
-    S_HISTORY() { }
-    S_HISTORY(const GuideStepInfo& step)
-        : timestamp(::wxGetUTCTimeMillis().GetValue()),
-        dx(step.cameraOffset.X), dy(step.cameraOffset.Y), ra(step.mountOffset.X), dec(step.mountOffset.Y),
-        starSNR(step.starSNR), starMass(step.starMass),
-        raDur(step.durationRA), decDur(step.durationDec),
-        raDir(step.directionRA), decDir(step.directionDec),
-        raLimited(step.raLimited), decLimited(step.decLimited) { }
-};
-
+    double dy;
+    double ra;
+    double dec;
+    double starSNR;
+    double starMass;
+    int raDur;
+    int decDur;
+    char raDir;
+    char decDir;
+    bool raLimited;
+    bool decLimited;
+    S_HISTORY() { }
+    S_HISTORY(const GuideStepInfo& step)
+        : timestamp(::wxGetUTCTimeMillis().GetValue()),
+        dx(step.cameraOffset.X), dy(step.cameraOffset.Y), ra(step.mountOffset.X), dec(step.mountOffset.Y),
+        starSNR(step.starSNR), starMass(step.starMass),
+        raDur(step.durationRA), decDur(step.durationDec),
+        raDir(step.directionRA), decDir(step.directionDec),
+        raLimited(step.raLimited), decLimited(step.decLimited) { }
+};
+
 struct DitherInfo
 {
     wxLongLong_t timestamp;
