@@ -58,11 +58,10 @@ GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm() const
 {
     return GUIDE_ALGORITHM_LOWPASS;
 }
-
 void GuideAlgorithmLowpass::reset(void)
 {
     m_history.Empty();
@@ -165,7 +164,7 @@ void GuideAlgorithmLowpass::GetParamNames(wxArrayString& names) const
     names.push_back("slopeWeight");
 }
 
-bool GuideAlgorithmLowpass::GetParam(const wxString& name, double *val)
+bool GuideAlgorithmLowpass::GetParam(const wxString& name, double *val) const
 {
     bool ok = true;
 
@@ -193,7 +192,7 @@ bool GuideAlgorithmLowpass::SetParam(const wxString& name, double val)
     return !err;
 }
 
-wxString GuideAlgorithmLowpass::GetSettingsSummary()
+wxString GuideAlgorithmLowpass::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
     return wxString::Format("Slope weight = %.3f, Minimum move = %.3f\n",

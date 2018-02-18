@@ -113,6 +113,44 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     m_pDecBox = NULL;
 }
 
+GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
+{
+    if (s == _("None"))
+        return GUIDE_ALGORITHM_IDENTITY;
+    if (s == _("Hysteresis"))
+        return GUIDE_ALGORITHM_HYSTERESIS;
+    if (s == _("Lowpass"))
+        return GUIDE_ALGORITHM_LOWPASS;
+    if (s == _("Lowpass2"))
+        return GUIDE_ALGORITHM_LOWPASS2;
+    if (s == _("Resist Switch"))
+        return GUIDE_ALGORITHM_RESIST_SWITCH;
+    if (s ==_("Predictive PEC"))
+        return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
+    return GUIDE_ALGORITHM_NONE;
+}
+
+wxString GuideAlgorithmName(int algo)
+{
+    switch (algo)
+    {
+    case GUIDE_ALGORITHM_NONE:
+    case GUIDE_ALGORITHM_IDENTITY:
+    default:
+        return _("None");
+    case GUIDE_ALGORITHM_HYSTERESIS:
+        return _("Hysteresis");
+    case GUIDE_ALGORITHM_LOWPASS:
+        return _("Lowpass");
+    case GUIDE_ALGORITHM_LOWPASS2:
+        return _("Lowpass2");
+    case GUIDE_ALGORITHM_RESIST_SWITCH:
+        return _("Resist Switch");
+    case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
+        return _("Predictive PEC");
+    }
+}
+
 // Lots of dynamic controls on this pane - keep the creation/management in ConfigDialogPane
 void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
@@ -271,7 +309,7 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
 {
     ConfigDialogPane *oldpane = m_pXGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
-    m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
+    m_pMount->SetXGuideAlgorithm(GuideAlgorithmFromName(m_pXGuideAlgorithmChoice->GetStringSelection()));
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
     m_pRABox->Replace(oldpane, newpane);
     m_pXGuideAlgorithmConfigDialogPane = newpane;
@@ -291,7 +329,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 {
     ConfigDialogPane *oldpane = m_pYGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
-    m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
+    m_pMount->SetYGuideAlgorithm(GuideAlgorithmFromName(m_pYGuideAlgorithmChoice->GetStringSelection()));
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
     m_pDecBox->Replace(oldpane, newpane);
     m_pYGuideAlgorithmConfigDialogPane = newpane;
@@ -310,10 +348,10 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
-    m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
+    m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initXGuideAlgorithmSelection));
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
-    m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
+    m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initYGuideAlgorithmSelection));
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
 
     if (m_pXGuideAlgorithmConfigDialogPane)
@@ -343,8 +381,8 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
         m_pYGuideAlgorithmConfigDialogPane->UnloadValues();
     }
 
-    m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
-    m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
+    m_pMount->SetXGuideAlgorithm(GuideAlgorithmFromName(m_pXGuideAlgorithmChoice->GetStringSelection()));
+    m_pMount->SetYGuideAlgorithm(GuideAlgorithmFromName(m_pYGuideAlgorithmChoice->GetStringSelection()));
 }
 
 // Restore the guide algorithms - all the UI controls will follow correctly if the actual algorithm choices are correct
@@ -362,15 +400,14 @@ void Mount::MountConfigDialogPane::Undo(void)
             m_pYGuideAlgorithmConfigDialogPane->Undo();
         }
         m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
-        m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
+        m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initXGuideAlgorithmSelection));
         wxCommandEvent dummy;
         OnXAlgorithmSelected(dummy);
         m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
-        m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
+        m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initYGuideAlgorithmSelection));
         OnYAlgorithmSelected(dummy);
     }
 }
-
 MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
@@ -496,11 +533,10 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
     }
 }
 
-GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
+GUIDE_ALGORITHM Mount::GetGuideAlgorithm(const GuideAlgorithm *pAlgorithm)
 {
     return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
-
 static GuideAlgorithm *MakeGaussianProcessGuideAlgo(Mount *mount, GuideAxis axis)
 {
     static bool s_gp_debug_inited;

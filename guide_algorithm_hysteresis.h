@@ -56,20 +56,21 @@ protected:
         wxSpinCtrl *m_pAggression;
         wxSpinCtrlDouble *m_pMinMove;
 
+
     public:
         GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm);
-        virtual ~GuideAlgorithmHysteresisConfigDialogPane(void);
+        ~GuideAlgorithmHysteresisConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-        virtual void HandleBinningChange(int oldBinVal, int newBinVal);
+        void LoadValues() override;
+        void UnloadValues() override;
+        void HandleBinningChange(int oldBinVal, int newBinVal) override;
     };
 
     class GuideAlgorithmHysteresisGraphControlPane : public GraphControlPane
     {
     public:
         GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, const wxString& label);
-        ~GuideAlgorithmHysteresisGraphControlPane(void);
+        ~GuideAlgorithmHysteresisGraphControlPane();
 
     private:
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;
@@ -82,11 +83,11 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    double GetMinMove(void);
-    bool SetMinMove(double minMove);
-    double GetHysteresis(void);
+    double GetMinMove() const override;
+    bool SetMinMove(double minMove) override;
+    double GetHysteresis() const;
     bool SetHysteresis(double minMove);
-    double GetAggression(void);
+    double GetAggression() const;
     bool SetAggression(double minMove);
 
     friend class GuideAlgorithmHysteresisConfigDialogPane;
@@ -95,34 +96,33 @@ protected:
 public:
 
     GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmHysteresis(void);
+    ~GuideAlgorithmHysteresis();
 
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual void reset(void);
-    virtual double result(double input);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Hysteresis"; }
-    virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val);
-    virtual bool SetParam(const wxString& name, double val);
+    void reset() override;
+    double result(double input) override;
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
+    wxString GetSettingsSummary() const override;
+    wxString GetGuideAlgorithmClassName() const override { return "Hysteresis"; }
+    void GetParamNames(wxArrayString& names) const override;
+    bool GetParam(const wxString& name, double *val) const override;
+    bool SetParam(const wxString& name, double val) override;
 };
 
-inline double GuideAlgorithmHysteresis::GetMinMove(void)
+inline double GuideAlgorithmHysteresis::GetMinMove() const
 {
     return m_minMove;
 }
 
-inline double GuideAlgorithmHysteresis::GetHysteresis(void)
+inline double GuideAlgorithmHysteresis::GetHysteresis() const
 {
     return m_hysteresis;
 }
 
-inline double GuideAlgorithmHysteresis::GetAggression(void)
+inline double GuideAlgorithmHysteresis::GetAggression() const
 {
     return m_aggression;
 }
-
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

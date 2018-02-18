@@ -36,18 +36,18 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
 
-
-wxString GuideAlgorithm::GetConfigPath()
+wxString GuideAlgorithm::GetConfigPath() const
 {
     return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
         (m_guideAxis == GUIDE_X ? "X/" : "Y/") + GetGuideAlgorithmClassName();
 }
 
-wxString GuideAlgorithm::GetAxis()
+wxString GuideAlgorithm::GetAxis() const
 {
-    return (m_guideAxis == GUIDE_RA ? _("RA") : _("DEC"));
+    return m_guideAxis == GUIDE_RA ? _("RA") : _("DEC");
 }
 
 // Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo 
@@ -131,11 +131,10 @@ void GuideAlgorithm::GetParamNames(wxArrayString& names) const
 {
 }
 
-bool GuideAlgorithm::GetParam(const wxString& name, double *val)
+bool GuideAlgorithm::GetParam(const wxString& name, double *val) const
 {
     return false;
 }
-
 bool GuideAlgorithm::SetParam(const wxString& name, double val)
 {
     return false;

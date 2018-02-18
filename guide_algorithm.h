@@ -75,34 +75,35 @@ protected:
     Mount *m_pMount;
     GuideAxis m_guideAxis;
 
+
 public:
     GuideAlgorithm(Mount *pMount, GuideAxis axis) : m_pMount(pMount), m_guideAxis(axis) {};
-    virtual ~GuideAlgorithm(void) {};
-    virtual GUIDE_ALGORITHM Algorithm(void) = 0;
+    virtual ~GuideAlgorithm() {};
+    virtual GUIDE_ALGORITHM Algorithm() const = 0;
 
-    virtual void reset(void) = 0;
+    virtual void reset() = 0;
     virtual double result(double input) = 0;
-    virtual double deduceResult(void) { return 0.0; }
+    virtual double deduceResult() { return 0.0; }
 
-    virtual void GuidingStopped(void);
-    virtual void GuidingPaused(void);
-    virtual void GuidingResumed(void);
+    virtual void GuidingStopped();
+    virtual void GuidingPaused();
+    virtual void GuidingResumed();
     virtual void GuidingDithered(double amt);
     virtual void GuidingDitherSettleDone(bool success);
-    virtual void GuidingEnabled(void);
-    virtual void GuidingDisabled(void);
+    virtual void GuidingEnabled();
+    virtual void GuidingDisabled();
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return 0; };
-    virtual wxString GetSettingsSummary() { return wxEmptyString; }
-    virtual wxString GetGuideAlgorithmClassName(void) const = 0;
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return nullptr; };
+    virtual wxString GetSettingsSummary() const { return wxEmptyString; }
+    virtual wxString GetGuideAlgorithmClassName() const = 0;
     virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val);
+    virtual bool GetParam(const wxString& name, double *val) const;
     virtual bool SetParam(const wxString& name, double val);
-    virtual double GetMinMove(void) { return -1.0; };
+    virtual double GetMinMove() const { return -1.0; };
     virtual bool SetMinMove(double minMove) { return true; };       // true indicates error
-    wxString GetConfigPath();
-    wxString GetAxis();
+    wxString GetConfigPath() const;
+    wxString GetAxis() const;
     virtual void ResetParams();     // Override if fine-tuned logic is needed by a particular algo
     static void AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl, int oldBinVal, int newBinVal);
     static double SmartDefaultMinMove();

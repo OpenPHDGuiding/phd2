@@ -777,7 +777,7 @@ double GuideAlgorithmGaussianProcess::GetControlGain() const
     return GPG->GetControlGain();
 }
 
-double GuideAlgorithmGaussianProcess::GetMinMove()                          // Must override virtual method in Mount
+double GuideAlgorithmGaussianProcess::GetMinMove() const
 {
     return GPG->GetMinMove();
 }
@@ -823,7 +823,7 @@ bool GuideAlgorithmGaussianProcess::SetDarkTracking(bool value)
     return false;
 }
 
-wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
+wxString GuideAlgorithmGaussianProcess::GetSettingsSummary() const
 {
     static const char* format =
       "Control gain = %.3f\n"
@@ -860,8 +860,7 @@ wxString GuideAlgorithmGaussianProcess::GetSettingsSummary()
         GetBoolComputePeriod() ? "On" : "Off");
 }
 
-
-GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm() const
 {
     return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
 }

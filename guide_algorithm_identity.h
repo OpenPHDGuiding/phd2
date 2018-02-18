@@ -48,22 +48,22 @@ protected:
         GuideAlgorithmIdentity *m_pGuideAlgorithm;
     public:
         GuideAlgorithmIdentityConfigDialogPane(wxWindow *pParent, GuideAlgorithmIdentity *pGuideAlgorithm);
-        virtual ~GuideAlgorithmIdentityConfigDialogPane(void);
+        ~GuideAlgorithmIdentityConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
+        void LoadValues() override;
+        void UnloadValues() override;
     };
 
 public:
     GuideAlgorithmIdentity(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmIdentity(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    ~GuideAlgorithmIdentity();
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual void reset(void);
-    virtual double result(double input);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual wxString GetSettingsSummary() { return "\n"; }
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Identity"; }
+    void reset() override;
+    double result(double input) override;
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    wxString GetSettingsSummary() const override { return "\n"; }
+    wxString GetGuideAlgorithmClassName() const override { return "Identity"; }
 };
 
 #endif /* GUIDE_ALGORITHM_IDENTITY_H_INCLUDED */

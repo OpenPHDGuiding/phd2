@@ -49,11 +49,10 @@ GuideAlgorithmIdentity::~GuideAlgorithmIdentity(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmIdentity::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmIdentity::Algorithm() const
 {
     return GUIDE_ALGORITHM_IDENTITY;
 }
-
 void GuideAlgorithmIdentity::reset(void)
 {
 }

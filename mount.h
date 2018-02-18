@@ -40,9 +40,11 @@
 #include "image_math.h"
 #include "messagebox_proxy.h"
 
+
 class BacklashComp;
 
-enum GUIDE_DIRECTION {
+enum GUIDE_DIRECTION
+{
     NONE  = -1,
     UP = 0,
     NORTH = UP,     // Dec + for eq mounts
@@ -210,7 +212,7 @@ public:
     void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
     void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
 
-    static GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
+    static GUIDE_ALGORITHM GetGuideAlgorithm(const GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
 #ifdef TEST_TRANSFORMS
@@ -338,11 +340,9 @@ public:
     virtual void EndDecDrift(void);
     virtual bool IsDecDrifting(void) const;
 
-protected:
     bool MountIsCalibrated(void) const { return m_calibrated; }
     const Calibration& MountCal(void) const { return m_cal; }
 };
-
 inline bool Mount::GetGuidingEnabled(void) const
 {
     return m_guidingEnabled;

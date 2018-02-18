@@ -61,11 +61,10 @@ GuideAlgorithmResistSwitch::~GuideAlgorithmResistSwitch(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmResistSwitch::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmResistSwitch::Algorithm() const
 {
     return GUIDE_ALGORITHM_RESIST_SWITCH;
 }
-
 void GuideAlgorithmResistSwitch::reset(void)
 {
     m_history.Empty();
@@ -245,7 +244,7 @@ void GuideAlgorithmResistSwitch::GetParamNames(wxArrayString& names) const
     names.push_back("aggression");
 }
 
-bool GuideAlgorithmResistSwitch::GetParam(const wxString& name, double *val)
+bool GuideAlgorithmResistSwitch::GetParam(const wxString& name, double *val) const
 {
     bool ok = true;
 
@@ -265,9 +264,10 @@ bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
 {
     bool err;
 
+
     if (name == "minMove")
         err = SetMinMove(val);
-    else if (name == "fasetSwitch") {
+    else if (name == "fastSwitch") {
         SetFastSwitchEnabled(val != 0.0);
         err = false;
     }
@@ -279,7 +279,7 @@ bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
     return !err;
 }
 
-wxString GuideAlgorithmResistSwitch::GetSettingsSummary()
+wxString GuideAlgorithmResistSwitch::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
     return wxString::Format("Minimum move = %.3f Aggression = %.f%% FastSwitch = %s\n",

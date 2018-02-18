@@ -127,8 +127,8 @@ protected:
     double GetControlGain() const;
     bool SetControlGain(double control_gain);
 
-    double GetMinMove();
-    bool SetMinMove(double min_move);
+    double GetMinMove() const override;
+    bool SetMinMove(double min_move) override;
 
     double GetPeriodLengthsInference() const;
     bool SetPeriodLengthsInference(double);
@@ -153,11 +153,11 @@ protected:
 
 public:
     GuideAlgorithmGaussianProcess(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmGaussianProcess(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    ~GuideAlgorithmGaussianProcess();
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
 
     /**
      * Calculates the control value based on the current input. 1. The input is
@@ -165,59 +165,59 @@ public:
      * is calculated to compensate the gear error and 4. the controller is
      * calculated, consisting of feedback and prediction parts.
      */
-    virtual double result(double input);
+    double result(double input) override;
 
     /**
      * This method provides predictive control if no measurement could be made.
      * A zero measurement is stored with high uncertainty, and then the GP
      * prediction is used for control.
      */
-    virtual double deduceResult(void);
+    double deduceResult() override;
 
     /**
      * This method tells the guider that guiding was stopped, e.g. for
      * slweing. This method resets the internal state of the guider.
      */
-    virtual void GuidingStopped(void);
+    void GuidingStopped() override;
 
     /**
      * This method tells the guider that guiding was paused, e.g. for
      * refocusing. This method keeps the internal state of the guider.
      */
-    virtual void GuidingPaused(void);
+    void GuidingPaused() override;
 
     /**
      * This method tells the guider that guiding was resumed, e.g. after
      * refocusing. This method fills the measurements of the guider with
      * predictions to keep the FFT and the GP in a working state.
      */
-    virtual void GuidingResumed(void);
+    void GuidingResumed() override;
 
     /**
      * This method tells the guider that a dither command was issued. The guider
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.
      */
-    virtual void GuidingDithered(double amt);
+    void GuidingDithered(double amt) override;
 
     /**
      * This method tells the guider that dithering is finished. The guider
      * will resume normal operation.
      */
-    virtual void GuidingDitherSettleDone(bool success);
+    void GuidingDitherSettleDone(bool success) override;
 
     /**
      * Clears the data from the circular buffer and clears the GP data.
      */
-    virtual void reset();
+    void reset() override;
 
     // Tells guider that corrections are/not being sent to mount.  If not, updates should not be applied to the GP algo, specifically to avoid
     // corruption of the period length
-    virtual void GuidingEnabled(void);
-    virtual void GuidingDisabled(void);
+    void GuidingEnabled() override;
+    void GuidingDisabled(void) override;
 
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Predictive PEC"; }
+    wxString GetSettingsSummary() const override;
+    wxString GetGuideAlgorithmClassName(void) const override { return "Predictive PEC"; }
 
 };
 

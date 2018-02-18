@@ -66,11 +66,10 @@ GuideAlgorithmHysteresis::~GuideAlgorithmHysteresis(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmHysteresis::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmHysteresis::Algorithm() const
 {
     return GUIDE_ALGORITHM_HYSTERESIS;
 }
-
 void GuideAlgorithmHysteresis::reset(void)
 {
     m_lastMove = 0;
@@ -172,7 +171,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     return bError;
 }
 
-wxString GuideAlgorithmHysteresis::GetSettingsSummary()
+wxString GuideAlgorithmHysteresis::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
     return wxString::Format("Hysteresis = %.3f, Aggression = %.3f, Minimum move = %.3f\n",
@@ -189,7 +188,7 @@ void GuideAlgorithmHysteresis::GetParamNames(wxArrayString& names) const
     names.push_back("aggression");
 }
 
-bool GuideAlgorithmHysteresis::GetParam(const wxString& name, double *val)
+bool GuideAlgorithmHysteresis::GetParam(const wxString& name, double *val) const
 {
     bool ok = true;
 

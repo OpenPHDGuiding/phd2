@@ -58,20 +58,21 @@ protected:
         wxSpinCtrl *m_pAggression;
         wxCheckBox *m_pFastSwitch;
 
+
     public:
         GuideAlgorithmResistSwitchConfigDialogPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm);
-        virtual ~GuideAlgorithmResistSwitchConfigDialogPane(void);
+        ~GuideAlgorithmResistSwitchConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-        virtual void HandleBinningChange(int oldBinVal, int newBinVal);
+        void LoadValues() override;
+        void UnloadValues() override;
+        void HandleBinningChange(int oldBinVal, int newBinVal) override;
     };
 
     class GuideAlgorithmResistSwitchGraphControlPane : public GraphControlPane
     {
     public:
         GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label);
-        ~GuideAlgorithmResistSwitchGraphControlPane(void);
+        ~GuideAlgorithmResistSwitchGraphControlPane();
 
     private:
         GuideAlgorithmResistSwitch *m_pGuideAlgorithm;
@@ -82,44 +83,43 @@ protected:
         void OnAggressionSpinCtrl(wxSpinEvent& evt);
     };
 
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
-    double GetAggression(void) const;
+    double GetMinMove() const override;
+    bool SetMinMove(double minMove) override;
+    double GetAggression() const;
     bool SetAggression(double aggr);
-    bool GetFastSwitchEnabled(void) const;
+    bool GetFastSwitchEnabled() const;
     void SetFastSwitchEnabled(bool enable);
 
     friend class GuideAlgorithmResistSwitchConfigDialogPane;
 
 public:
     GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmResistSwitch(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    ~GuideAlgorithmResistSwitch();
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual void reset(void);
-    virtual double result(double input);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "ResistSwitch"; }
-    virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val);
-    virtual bool SetParam(const wxString& name, double val);
+    void reset() override;
+    double result(double input) override;
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
+    wxString GetSettingsSummary() const override;
+    wxString GetGuideAlgorithmClassName() const override { return "ResistSwitch"; }
+    void GetParamNames(wxArrayString& names) const override;
+    bool GetParam(const wxString& name, double *val) const override;
+    bool SetParam(const wxString& name, double val) override;
 };
 
-inline double GuideAlgorithmResistSwitch::GetMinMove(void)
+inline double GuideAlgorithmResistSwitch::GetMinMove() const
 {
     return m_minMove;
 }
 
-inline double GuideAlgorithmResistSwitch::GetAggression(void) const
+inline double GuideAlgorithmResistSwitch::GetAggression() const
 {
     return m_aggression;
 }
 
-inline bool GuideAlgorithmResistSwitch::GetFastSwitchEnabled(void) const
+inline bool GuideAlgorithmResistSwitch::GetFastSwitchEnabled() const
 {
     return m_fastSwitchEnabled;
 }
-
 #endif /* GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED */

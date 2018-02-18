@@ -57,18 +57,18 @@ protected:
         wxSpinCtrlDouble *m_pMinMove;
     public:
         GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm);
-        virtual ~GuideAlgorithmLowpass2ConfigDialogPane(void);
+        ~GuideAlgorithmLowpass2ConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-        virtual void HandleBinningChange(int oldBinVal, int newBinVal);
+        void LoadValues() override;
+        void UnloadValues() override;
+        void HandleBinningChange(int oldBinVal, int newBinVal) override;
     };
 
     class GuideAlgorithmLowpass2GraphControlPane : public GraphControlPane
     {
     public:
         GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm, const wxString& label);
-        ~GuideAlgorithmLowpass2GraphControlPane(void);
+        ~GuideAlgorithmLowpass2GraphControlPane();
 
     private:
         GuideAlgorithmLowpass2 *m_pGuideAlgorithm;
@@ -78,37 +78,36 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    double GetAggressiveness(void);
+    double GetAggressiveness() const;
     bool SetAggressiveness(double aggressiveness);
 
     friend class GuideAlgorithmLowpass2ConfigDialogPane;
 
 public:
     GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmLowpass2(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    ~GuideAlgorithmLowpass2();
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual void reset(void);
-    virtual double result(double input);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass2"; }
-    virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val);
-    virtual bool SetParam(const wxString& name, double val);
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
+    void reset() override;
+    double result(double input) override;
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
+    wxString GetSettingsSummary() const override;
+    wxString GetGuideAlgorithmClassName() const override { return "Lowpass2"; }
+    void GetParamNames(wxArrayString& names) const override;
+    bool GetParam(const wxString& name, double *val) const override;
+    bool SetParam(const wxString& name, double val) override;
+    double GetMinMove() const override;
+    bool SetMinMove(double minMove) override;
 };
 
-inline double GuideAlgorithmLowpass2::GetMinMove(void)
+inline double GuideAlgorithmLowpass2::GetMinMove() const
 {
     return m_minMove;
 }
 
-inline double GuideAlgorithmLowpass2::GetAggressiveness(void)
+inline double GuideAlgorithmLowpass2::GetAggressiveness() const
 {
     return m_aggressiveness;
 }
-
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

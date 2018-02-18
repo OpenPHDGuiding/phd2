@@ -58,11 +58,10 @@ GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm() const
 {
     return GUIDE_ALGORITHM_LOWPASS2;
 }
-
 void GuideAlgorithmLowpass2::reset(void)
 {
     m_history.Empty();
@@ -147,7 +146,7 @@ void GuideAlgorithmLowpass2::GetParamNames(wxArrayString& names) const
     names.push_back("aggressiveness");
 }
 
-bool GuideAlgorithmLowpass2::GetParam(const wxString& name, double *val)
+bool GuideAlgorithmLowpass2::GetParam(const wxString& name, double *val) const
 {
     bool ok = true;
 
@@ -205,7 +204,7 @@ ConfigDialogPane *GuideAlgorithmLowpass2::GetConfigDialogPane(wxWindow *pParent)
     return new GuideAlgorithmLowpass2ConfigDialogPane(pParent, this);
 }
 
-wxString GuideAlgorithmLowpass2::GetSettingsSummary()
+wxString GuideAlgorithmLowpass2::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
     return wxString::Format("Aggressiveness = %.3f, Minimum move = %.3f\n",
