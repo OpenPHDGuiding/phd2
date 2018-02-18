@@ -660,6 +660,14 @@ else()
         WORKING_DIRECTORY ${thirdparties_deflate_directory})
     endif()
 
+    # Nova is required for sidereal time computation with Indi driver that not report it.
+    # This is not critical if it is not present but the hour angle computation will be wrong.
+    find_package(Nova)
+    if(NOVA_FOUND)
+      add_definitions("-DLIBNOVA")
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+    endif()
+
     # warning: copied from the indi CMakeLists.txt. This should be updated when
     # updating the archive of libindi
     # those variables should be defined before the configure_files
