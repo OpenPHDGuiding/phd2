@@ -710,7 +710,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
           img.Clear();
           StackImg = &img;
 
-          //printf("Enabling video capture\n");
+          // Find INDI switch
           ISwitch *v_on;
           ISwitch *v_off;
           if (has_old_videoprop){
@@ -721,10 +721,14 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
              v_on = IUFindSwitch(video_prop,"STREAM_ON");
              v_off = IUFindSwitch(video_prop,"STREAM_OFF");
           }
-          v_on->s = ISS_ON;
-          v_off->s = ISS_OFF;
-          // start capture, every video frame is received as a blob
-          sendNewSwitch(video_prop);
+
+          // start streaming if not already active, every video frame is received as a blob
+          if (v_on->s != ISS_ON)
+          {
+            v_on->s = ISS_ON;
+            v_off->s = ISS_OFF;
+            sendNewSwitch(video_prop);
+          }
 
           modal = true;
           stacking = false;
@@ -745,10 +749,13 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                  modal = false;
           }
 
-          //printf("Stop video capture\n");
-          v_on->s = ISS_OFF;
-          v_off->s = ISS_ON;
-          sendNewSwitch(video_prop);
+          if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
+          {
+            // Stop video streaming when Stop button is pressed or exiting the program
+            v_on->s = ISS_OFF;
+            v_off->s = ISS_ON;
+            sendNewSwitch(video_prop);
+          }
 
           if (WorkerThread::TerminateRequested())
               return true;
