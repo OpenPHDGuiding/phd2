@@ -494,7 +494,7 @@ static bool find_eol(char *p, size_t len)
     const char *end = p + len;
     for (; p < end; p++)
     {
-        if (*p == '\r' || *p == '\n')
+        if (*p == '\n')
         {
             *p = 0;
             return true;
