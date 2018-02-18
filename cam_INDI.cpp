@@ -182,7 +182,10 @@ void  CameraINDI::newBLOB(IBLOB *bp)
     }
     else if (video_prop){
         cam_bp = bp;
-        // TODO : cumulate the frames received during exposure
+        if (modal && (!stacking))
+        {
+            StackStream();
+        }
     }
 }
 
@@ -569,6 +572,32 @@ bool CameraINDI::ReadStream(usImage& img)
     return false;
 }
 
+bool CameraINDI::StackStream()
+{
+    unsigned char *inptr;
+    unsigned short *outptr;
+
+    if (StackImg)
+    {
+        // Add new blob to stacked image
+        stacking = true;
+        outptr = StackImg->ImageData;
+        inptr = (unsigned char *) cam_bp->blob;
+
+        for (int i = 0; i < StackImg->NPixels; i++, outptr++, inptr++)
+            *outptr = *outptr + (unsigned short) (*inptr);
+
+        StackFrames++;
+
+        stacking = false;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
   if (Connected) {
@@ -644,10 +673,43 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 }
              }
           }
+
+          //printf("Exposure end\n");
+          first_frame = false;
+
+          // exposure complete, process the file
+          if (strcmp(cam_bp->format, ".fits") == 0) {
+              //printf("Processing fits file\n");
+              // for CCD camera
+              if ( ! ReadFITS(img,takeSubframe,subframe) ) {
+                  if (options & CAPTURE_SUBTRACT_DARK) {
+                  //printf("Subtracting dark\n");
+                  SubtractDark(img);
+                  }
+                  if (options & CAPTURE_RECON) {
+                      if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
+                  }
+                  return false;
+              } else {
+                  return true;
+              }
+          } else {
+              pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
+              return true;
+          }
       }
-      // for video camera without exposure time setting
+      // for video camera without exposure time setting we stack frames for duration of the exposure
       else if (video_prop){
+
           takeSubframe = false;
+
+          if (img.Init(FullSize)) {
+             DisconnectWithAlert(CAPT_FAIL_MEMORY);
+             return true;
+          }
+          img.Clear();
+          StackImg = &img;
+
           //printf("Enabling video capture\n");
           ISwitch *v_on;
           ISwitch *v_off;
@@ -664,52 +726,49 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
           // start capture, every video frame is received as a blob
           sendNewSwitch(video_prop);
 
+          modal = true;
+          stacking = false;
+          StackFrames = 0;
+
+          unsigned long loopwait = duration > 100 ? 10 : 1;
+          wxStopWatch swatch;
+          swatch.Start();
+
           // wait the required time
-          wxMilliSleep(duration); // TODO : add the frames received during exposure
+          while (modal) {
+             wxMilliSleep(loopwait);
+             // test exposure complete
+             if ((swatch.Time() >= duration) && (StackFrames > 2))
+                 modal = false;
+             // test termination request, stop streaming before to return
+             if (WorkerThread::TerminateRequested())
+                 modal = false;
+          }
 
           //printf("Stop video capture\n");
           v_on->s = ISS_OFF;
           v_off->s = ISS_ON;
           sendNewSwitch(video_prop);
+
+          if (WorkerThread::TerminateRequested())
+              return true;
+
+          // wait current frame is processed
+          while (stacking) {
+             wxMilliSleep(loopwait);
+          }
+
+          pFrame->StatusMsg(wxString::Format("%d frames",StackFrames));
+
+          if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+
+          return false;
+
       }
       else {
+          // no capture property, this should not occur.
           return true;
       }
-
-      //printf("Exposure end\n");
-      first_frame = false;
-
-      if (cam_bp)
-      {
-        if (strcmp(cam_bp->format, ".fits") == 0) {
-            //printf("Processing fits file\n");
-            // for CCD camera
-            if ( ! ReadFITS(img,takeSubframe,subframe) ) {
-                if (options & CAPTURE_SUBTRACT_DARK) {
-                //printf("Subtracting dark\n");
-                SubtractDark(img);
-                }
-                if (options & CAPTURE_RECON) {
-                    if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
-                }
-                return false;
-            } else {
-                return true;
-            }
-        } else if (strcmp(cam_bp->format, ".stream") == 0) {
-            //printf("Processing stream file\n");
-            // for video camera
-            return ReadStream(img);
-        } else {
-            pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
-            return true;
-        }
-      }
-      else
-      {
-        DisconnectWithAlert(wxString::Format(_("Camera  %s, exposure error: no video blob received. Try to increase the exposure duration."), INDICameraName),NO_RECONNECT);
-      }
-
   }
   else {
       // in case the camera is not connected

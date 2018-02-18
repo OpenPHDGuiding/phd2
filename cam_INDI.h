@@ -71,6 +71,9 @@ private:
     INumber               *pulseW_prop;
     IndiGui  *gui ;
     IBLOB    *cam_bp;
+    usImage  *StackImg;
+    int      StackFrames;
+    bool     stacking;
     bool     has_blob;
     bool     has_old_videoprop;
     bool     first_frame;
@@ -97,6 +100,7 @@ private:
     void     CameraSetup();
     bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
     bool     ReadStream(usImage& img);
+    bool     StackStream();
     
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
