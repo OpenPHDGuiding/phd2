@@ -166,7 +166,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         "the guide star in its target circle\n"
         );
 
-    m_instructionsText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(240, 240), wxALIGN_LEFT);
+    m_instructionsText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(280, 240), wxALIGN_LEFT);
 #ifdef __WXOSX__
     m_instructionsText->SetFont(*wxSMALL_FONT);
 #endif
@@ -225,6 +225,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     SetSizer(topSizer);
     m_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+    const int sbw[3] = { 60, 100, 110 };
+    m_statusBar->SetFieldsCount(3, sbw);
 
     Layout();
     topSizer->Fit(this);
@@ -399,7 +401,9 @@ bool PolarDriftToolWin::WatchDrift()
         m_current.X, m_current.Y));
     Debug.AddLine(wxString::Format("Polar Drift: slope(X,Y) %.4f,%.4f m_offset %.1f theta %.1f m_alpha %.1f", xslope, yslope, m_offset, theta, m_alpha));
     Debug.AddLine(wxString::Format("Polar Drift: m_target(X,Y) %.1f,%.1f", m_target.X, m_target.Y));
-    SetStatusText(wxString::Format(_("Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"), tnow, m_offset*m_pxScale / 60, norm(-m_alpha, -180, 180)));
+    SetStatusText(wxString::Format(_("Time %.fs"), tnow), 0);
+    SetStatusText(wxString::Format(_("PA Err: %.f min"), m_offset*m_pxScale / 60), 1);
+    SetStatusText(wxString::Format(_("Angle: %.f deg"), norm(-m_alpha, -180, 180)), 2);
 
     return true;
 }
