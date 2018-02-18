@@ -93,6 +93,7 @@ void CameraINDI::ClearStatus()
     ready = false;
     m_hasGuideOutput = false;
     PixSize = PixSizeX = PixSizeY = 0.0;
+    cam_bp = NULL;
 }
 
 void CameraINDI::CheckState()
@@ -102,6 +103,7 @@ void CameraINDI::CheckState()
         if (! ready) {
             //printf("Camera is ready\n");
             ready = true;
+            first_frame = true;
             if (modal) {
                 modal = false;
             }
@@ -624,8 +626,22 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 return true;
              if (watchdog.Expired())
              {
-                DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
-                return true;
+                if (first_frame && video_prop)
+                {
+                    // exposure fail, maybe this is a webcam with only streaming
+                    // try to use video stream instead of exposure
+                    // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
+                    // TODO : check if an updated INDI v4l2 driver offer a better solution
+                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
+                    expose_prop = NULL;
+                    first_frame = false;
+                    return Capture(duration, img,  options, subframeArg);
+                }
+                else{
+                   first_frame = false;
+                   DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                   return true;
+                }
              }
           }
       }
@@ -661,29 +677,37 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
       }
 
       //printf("Exposure end\n");
+      first_frame = false;
 
-      if (strcmp(cam_bp->format, ".fits") == 0) {
-         //printf("Processing fits file\n");
-         // for CCD camera
-         if ( ! ReadFITS(img,takeSubframe,subframe) ) {
-            if (options & CAPTURE_SUBTRACT_DARK) {
-               //printf("Subtracting dark\n");
-               SubtractDark(img);
+      if (cam_bp)
+      {
+        if (strcmp(cam_bp->format, ".fits") == 0) {
+            //printf("Processing fits file\n");
+            // for CCD camera
+            if ( ! ReadFITS(img,takeSubframe,subframe) ) {
+                if (options & CAPTURE_SUBTRACT_DARK) {
+                //printf("Subtracting dark\n");
+                SubtractDark(img);
+                }
+                if (options & CAPTURE_RECON) {
+                    if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
+                }
+                return false;
+            } else {
+                return true;
             }
-            if (options & CAPTURE_RECON) {
-                if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
-            }
-            return false;
-         } else {
+        } else if (strcmp(cam_bp->format, ".stream") == 0) {
+            //printf("Processing stream file\n");
+            // for video camera
+            return ReadStream(img);
+        } else {
+            pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
             return true;
-         }
-      } else if (strcmp(cam_bp->format, ".stream") == 0) {
-         //printf("Processing stream file\n");
-         // for video camera
-         return ReadStream(img);
-      } else {
-         pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
-         return true;
+        }
+      }
+      else
+      {
+        DisconnectWithAlert(wxString::Format(_("Camera  %s, exposure error: no video blob received. Try to increase the exposure duration."), INDICameraName),NO_RECONNECT);
       }
 
   }

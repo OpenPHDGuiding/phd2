@@ -73,6 +73,7 @@ private:
     IBLOB    *cam_bp;
     bool     has_blob;
     bool     has_old_videoprop;
+    bool     first_frame;
     bool     modal;
     bool     ready;
     wxByte   m_bitsPerPixel;
