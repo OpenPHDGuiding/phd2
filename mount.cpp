@@ -167,15 +167,23 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
-        wxString xAlgorithms[] =
+        static GUIDE_ALGORITHM const X_ALGORITHMS[] =
         {
-            _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
-            _("Predictive PEC"),
+            GUIDE_ALGORITHM_IDENTITY,
+            GUIDE_ALGORITHM_HYSTERESIS,
+            GUIDE_ALGORITHM_LOWPASS,
+            GUIDE_ALGORITHM_LOWPASS2,
+            GUIDE_ALGORITHM_RESIST_SWITCH,
+            GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
         };
 
-        width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
+        wxString xAlgorithms[WXSIZEOF(X_ALGORITHMS)];
+        for (int i = 0; i < WXSIZEOF(X_ALGORITHMS); i++)
+            xAlgorithms[i] = GuideAlgorithmName(X_ALGORITHMS[i]);
+
+        width = StringArrayWidth(xAlgorithms, WXSIZEOF(X_ALGORITHMS));
         m_pXGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(xAlgorithms), xAlgorithms);
+            wxSize(width + 35, -1), WXSIZEOF(X_ALGORITHMS), xAlgorithms);
         m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
 
         m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
@@ -204,13 +212,22 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
 
-        wxString yAlgorithms[] =
+        static GUIDE_ALGORITHM const Y_ALGORITHMS[] =
         {
-            _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+            GUIDE_ALGORITHM_IDENTITY,
+            GUIDE_ALGORITHM_HYSTERESIS,
+            GUIDE_ALGORITHM_LOWPASS,
+            GUIDE_ALGORITHM_LOWPASS2,
+            GUIDE_ALGORITHM_RESIST_SWITCH,
         };
-        width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
+
+        wxString yAlgorithms[WXSIZEOF(Y_ALGORITHMS)];
+        for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS); i++)
+            yAlgorithms[i] = GuideAlgorithmName(Y_ALGORITHMS[i]);
+
+        width = StringArrayWidth(yAlgorithms, WXSIZEOF(Y_ALGORITHMS));
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(yAlgorithms), yAlgorithms);
+            wxSize(width + 35, -1), WXSIZEOF(Y_ALGORITHMS), yAlgorithms);
         m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
 
         m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
