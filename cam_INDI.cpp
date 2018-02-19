@@ -58,6 +58,7 @@ CameraINDI::CameraINDI()
     INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
+    INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo",false);
     Name = INDICameraName;
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
@@ -174,7 +175,7 @@ void  CameraINDI::newBLOB(IBLOB *bp)
     // we go here every time a new blob is available
     // this is normally the image from the camera
     //printf("Got camera blob %s \n",bp->name);
-    if (expose_prop) {
+    if ((expose_prop)&&(!INDICameraForceVideo)) {
         if (bp->name == INDICameraBlobName) {
             cam_bp = bp;
             modal = false;
@@ -417,6 +418,7 @@ void CameraINDI::CameraSetup()
     indiDlg->INDIDevName = INDICameraName;
     indiDlg->INDIDevCCD = INDICameraCCD;
     indiDlg->INDIDevPort = INDICameraPort;
+    indiDlg->INDIForceVideo = INDICameraForceVideo;
     // initialize with actual values
     indiDlg->SetSettings();
     // try to connect to server
@@ -429,10 +431,12 @@ void CameraINDI::CameraSetup()
         INDICameraName = indiDlg->INDIDevName;
         INDICameraCCD = indiDlg->INDIDevCCD;
         INDICameraPort = indiDlg->INDIDevPort;
+        INDICameraForceVideo = indiDlg->INDIForceVideo;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
         pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
+        pConfig->Profile.SetBoolean("/indi/INDIcam_forcevideo",INDICameraForceVideo);
         pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
         Name = INDICameraName;
         SetCCDdevice();
@@ -606,7 +610,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
       wxRect subframe(subframeArg);
 
       // we can set the exposure time directly in the camera
-      if (expose_prop) {
+      if ((expose_prop)&&(!INDICameraForceVideo)) {
           if (binning_prop && (Binning != m_curBinning))
           {
               FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
@@ -662,7 +666,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                     // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
                     // TODO : check if an updated INDI v4l2 driver offer a better solution
                     pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
-                    expose_prop = NULL;
+                    INDICameraForceVideo = true;
                     first_frame = false;
                     return Capture(duration, img,  options, subframeArg);
                 }
@@ -702,6 +706,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
       else if (video_prop){
 
           takeSubframe = false;
+          first_frame = false;
 
           if (img.Init(FullSize)) {
              DisconnectWithAlert(CAPT_FAIL_MEMORY);
@@ -773,7 +778,15 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
 
       }
       else {
-          // no capture property, this should not occur.
+          // no capture property.
+          wxString msg;
+          if (INDICameraForceVideo){
+             msg = "Camera as no VIDEO_STREAM property, please uncheck the option: Camera do not support exposure time.";
+          }
+          else{
+             msg = "Camera as no CCD_EXPOSURE or VIDEO_STREAM property";
+          }
+          DisconnectWithAlert(msg,NO_RECONNECT);
           return true;
       }
   }

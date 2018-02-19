@@ -92,6 +92,7 @@ private:
     wxString INDICameraCCDCmd;
     wxString INDICameraBlobName;
     wxString INDICameraPort;
+    bool     INDICameraForceVideo;
     wxRect   m_roi;
     void     SetCCDdevice();
     void     ClearStatus(); 

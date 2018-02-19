@@ -63,6 +63,7 @@ public:
     wxString INDIhost;
     wxString INDIDevName;
     long     INDIDevCCD;
+    bool     INDIForceVideo;
     wxString INDIDevPort;
     void Connect();
     void Disconnect();
@@ -80,6 +81,7 @@ private:
     wxComboBox *dev;
     wxComboBox *ccd;
     wxTextCtrl *devport;
+    wxCheckBox *forcevideo;
     int dev_type;
     DECLARE_EVENT_TABLE()
 

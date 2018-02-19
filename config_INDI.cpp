@@ -133,6 +133,13 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) :
     devport = new wxTextCtrl(this, wxID_ANY);
     gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
+    if (devtype == TYPE_CAMERA) {
+        pos++;
+        forcevideo = new wxCheckBox(this, wxID_ANY, _("Camera do not support exposure time"));
+        forcevideo->SetToolTip(_("Force the use of streaming and frame stacking for the camera that not support to set an absolute exposure time."));
+        gbs->Add(forcevideo,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
+    }
+
     pos ++;
     gbs->Add(new wxStaticText(this, wxID_ANY, _("Other options")),
              POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
@@ -212,6 +219,7 @@ void INDIConfig::SetSettings()
     host->WriteText(INDIhost);
     dev->SetValue(INDIDevName);
     devport->SetValue(INDIDevPort);
+    forcevideo->SetValue(INDIForceVideo);
     if (dev_type == TYPE_CAMERA) {
         ccd->SetSelection(INDIDevCCD);
     }
@@ -223,6 +231,7 @@ void INDIConfig::SaveSettings()
     port->GetLineText(0).ToLong(&INDIport);
     INDIDevName = dev->GetValue();
     INDIDevPort = devport->GetValue();
+    INDIForceVideo = forcevideo->GetValue();
     if (dev_type == TYPE_CAMERA) {
         INDIDevCCD = ccd->GetSelection();
     }
