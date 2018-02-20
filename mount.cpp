@@ -385,6 +385,15 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 {
+    GUIDE_ALGORITHM YGuideAlgorithmChoices[6] =
+    {
+        GUIDE_ALGORITHM_NONE,
+        GUIDE_ALGORITHM_HYSTERESIS,
+        GUIDE_ALGORITHM_LOWPASS,
+        GUIDE_ALGORITHM_LOWPASS2,
+        GUIDE_ALGORITHM_RESIST_SWITCH,
+        GUIDE_ALGORITHM_BUTTERWORTH,
+    };
     ConfigDialogPane *oldpane = m_pYGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
     m_pMount->SetYGuideAlgorithm(GuideAlgorithmFromName(m_pYGuideAlgorithmChoice->GetStringSelection()));
@@ -641,6 +650,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 break;
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = MakeGaussianProcessGuideAlgo(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_BUTTERWORTH:
+                *ppAlgorithm = new GuideAlgorithmButterworth(mount, axis);
                 break;
 
             default:
@@ -1717,7 +1729,6 @@ bool Mount::Disconnect()
 wxString Mount::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-
     wxString auxMountStr = wxEmptyString;
     if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
     {

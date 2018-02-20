@@ -37,17 +37,15 @@
 
 class GuideAlgorithmButterworth : public GuideAlgorithm
 {
-    static const unsigned int HISTORY_SIZE = 10;
+    static const unsigned int max_order = 4;
+    double m_xv[max_order + 1], m_yv[max_order + 1];
 
-    ArrayOfDbl m_history;
-    double m_slopeWeight;
     double m_minMove;
 
 protected:
     class GuideAlgorithmButterworthConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmButterworth *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pSlopeWeight;
         wxSpinCtrlDouble *m_pMinMove;
 
     public:
@@ -67,17 +65,13 @@ protected:
 
     private:
         GuideAlgorithmButterworth *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pSlopeWeight;
         wxSpinCtrlDouble *m_pMinMove;
 
-        void OnSlopeWeightSpinCtrlDouble(wxSpinDoubleEvent& evt);
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
     double GetMinMove(void);
     bool SetMinMove(double minMove);
-    double GetSlopeWeight(void);
-    bool SetSlopeWeight(double SlopeWeight);
 
     friend class GuideAlgorithmButterworthConfigDialogPane;
 
@@ -100,11 +94,6 @@ public:
 inline double GuideAlgorithmButterworth::GetMinMove(void)
 {
     return m_minMove;
-}
-
-inline double GuideAlgorithmButterworth::GetSlopeWeight(void)
-{
-    return m_slopeWeight;
 }
 
 #endif /* GUIDE_ALGORITHM_BUTTERWORTH_H_INCLUDED */

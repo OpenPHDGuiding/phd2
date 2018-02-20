@@ -43,9 +43,6 @@ GuideAlgorithmButterworth::GuideAlgorithmButterworth(Mount *pMount, GuideAxis ax
     double minMove     = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
-    double slopeWeight = pConfig->Profile.GetDouble(GetConfigPath() + "/SlopeWeight", DefaultSlopeWeight);
-    SetSlopeWeight(slopeWeight);
-
     reset();
 }
 
@@ -60,26 +57,16 @@ GUIDE_ALGORITHM GuideAlgorithmButterworth::Algorithm(void)
 
 void GuideAlgorithmButterworth::reset(void)
 {
-    m_history.Empty();
-
-    while (m_history.GetCount() < HISTORY_SIZE)
+    for (int i = 0; i < max_order; i++)
     {
-        m_history.Add(0.0);
+        m_xv[i] = 0;
+        m_yv[i] = 0;
     }
 }
 
 double GuideAlgorithmButterworth::result(double input)
 {
-    m_history.Add(input);
-
-    ArrayOfDbl sortedHistory(m_history);
-    sortedHistory.Sort(dbl_sort_func);
-
-    m_history.RemoveAt(0);
-
-    double median = sortedHistory[sortedHistory.GetCount()/2];
-    double slope = CalcSlope(m_history);
-    double dReturn = median + m_slopeWeight*slope;
+    double dReturn=0; 
 
     if (fabs(dReturn) > fabs(input))
     {
@@ -87,25 +74,30 @@ double GuideAlgorithmButterworth::result(double input)
         dReturn = input;
     }
 
-/* 
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
 //    Command line: /www/usr/fisher/helpers/mkfilter -Bu -Lp -o 2 -a 4.5000000000e-01 0.0000000000e+00 -l 
 
-#define NZEROS 2
-#define NPOLES 2
-#define GAIN   1.249075055e+00
+    const double  gain = 1.591398351e+00;  //First order @ 0.33
+//    const double  gain = 1.249075055e+00;  // For second order 0.49 cutoff
+//    const double  gain = 2.186115579e+00;  // For 2nd order 0.33 cutoff
+//    const double  gain = 3.089143485e+00;  //Third order @ 0.33
 
-    double m_xv[NZEROS + 1], m_yv[NPOLES + 1];
-
+    const int order = 1;
     m_xv[0] = m_xv[1];
     m_xv[1] = m_xv[2];
-    m_xv[2] = input / GAIN;
+    m_xv[2] = m_xv[3];
+    m_xv[order] = input / gain;
     m_yv[0] = m_yv[1]; 
     m_yv[1] = m_yv[2];
-    m_yv[2] = (m_xv[0] + m_xv[2]) + 2 * m_xv[1]
-                + (-0.6413515381 * m_yv[0]) + (-1.5610180758 * m_yv[1]);
-    dReturn = m_yv[2];
-*/
+    m_yv[2] = m_yv[3];
+    m_yv[order] = (m_xv[0] + m_xv[1]) + (-0.2567563604 * m_yv[0]);            // First order at 0.33
+    //    m_yv[order] = (m_xv[0] + m_xv[2]) + 2 * m_xv[1]  // 2nd order
+//                + (-0.6413515381 * m_yv[0]) + (-1.5610180758 * m_yv[1]);    // 2nd order For 0.49 cutoff
+//                + (-0.2348404840 * m_yv[0]) + (-0.5948889401 * m_yv[1]);    // 2nd order For 0.33 cutoff
+//    m_yv[order] = (m_xv[0] + m_xv[3]) + 3 * (m_xv[1] + m_xv[2])             // 3rd order @ 0.33
+//        + (-0.1003075955 * m_yv[0]) + (-0.5626891635 * m_yv[1])             // 3rd order @ 0.33
+//        + (-0.9267178460 * m_yv[2]);                                        // 3rd order @ 0.33
+    dReturn = m_yv[order];
 
     if (fabs(input) < m_minMove)
     {
@@ -143,35 +135,9 @@ bool GuideAlgorithmButterworth::SetMinMove(double minMove)
     return bError;
 }
 
-bool GuideAlgorithmButterworth::SetSlopeWeight(double slopeWeight)
-{
-    bool bError = false;
-
-    try
-    {
-        if (slopeWeight < 0.0)
-        {
-            throw ERROR_INFO("invalid slopeWeight");
-        }
-
-        m_slopeWeight = slopeWeight;
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        m_slopeWeight = DefaultSlopeWeight;
-    }
-
-    pConfig->Profile.SetDouble(GetConfigPath() + "/SlopeWeight", m_slopeWeight);
-
-    return bError;
-}
-
 void GuideAlgorithmButterworth::GetParamNames(wxArrayString& names) const
 {
     names.push_back("minMove");
-    names.push_back("slopeWeight");
 }
 
 bool GuideAlgorithmButterworth::GetParam(const wxString& name, double *val)
@@ -180,8 +146,6 @@ bool GuideAlgorithmButterworth::GetParam(const wxString& name, double *val)
 
     if (name == "minMove")
         *val = GetMinMove();
-    else if (name == "slopeWeight")
-        *val = GetSlopeWeight();
     else
         ok = false;
 
@@ -194,8 +158,6 @@ bool GuideAlgorithmButterworth::SetParam(const wxString& name, double val)
 
     if (name == "minMove")
         err = SetMinMove(val);
-    else if (name == "slopeWeight")
-        err = SetSlopeWeight(val);
     else
         err = true;
 
@@ -205,8 +167,7 @@ bool GuideAlgorithmButterworth::SetParam(const wxString& name, double val)
 wxString GuideAlgorithmButterworth::GetSettingsSummary()
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Slope weight = %.3f, Minimum move = %.3f\n",
-            GetSlopeWeight(),
+    return wxString::Format("Minimum move = %.3f\n",
             GetMinMove()
         );
 }
@@ -224,14 +185,6 @@ GuideAlgorithmButterworth::
     int width;
 
     m_pGuideAlgorithm = pGuideAlgorithm;
-
-    width = StringWidth(_T("000.00"));
-    m_pSlopeWeight = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5, _T("SlopeWeight"));
-    m_pSlopeWeight->SetDigits(2);
-
-    DoAdd(_("Slope Weight"), m_pSlopeWeight,
-        wxString::Format(_("Weighting of slope parameter in lowpass auto-dec. Default = %.1f"), DefaultSlopeWeight));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -254,7 +207,6 @@ void GuideAlgorithmButterworth::
     GuideAlgorithmButterworthConfigDialogPane::
     LoadValues(void)
 {
-    m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
 }
 
@@ -262,7 +214,6 @@ void GuideAlgorithmButterworth::
     GuideAlgorithmButterworthConfigDialogPane::
     UnloadValues(void)
 {
-    m_pGuideAlgorithm->SetSlopeWeight(m_pSlopeWeight->GetValue());
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
@@ -288,14 +239,6 @@ GuideAlgorithmButterworth::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-    m_pSlopeWeight = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5, _T("SlopeWeight"));
-    m_pSlopeWeight->SetDigits(2);
-    m_pSlopeWeight->SetToolTip(wxString::Format(_("Weighting of slope parameter in lowpass auto-dec. Default = %.1f"), DefaultSlopeWeight));
-    m_pSlopeWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmButterworth::GuideAlgorithmButterworthGraphControlPane::OnSlopeWeightSpinCtrlDouble, this);
-    DoAdd(m_pSlopeWeight, _("Sl W"));
-
-    width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
@@ -304,7 +247,6 @@ GuideAlgorithmButterworth::
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmButterworth::GuideAlgorithmButterworthGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
 
-    m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
 }
 
@@ -312,14 +254,6 @@ GuideAlgorithmButterworth::
     GuideAlgorithmButterworthGraphControlPane::
     ~GuideAlgorithmButterworthGraphControlPane(void)
 {
-}
-
-void GuideAlgorithmButterworth::
-    GuideAlgorithmButterworthGraphControlPane::
-    OnSlopeWeightSpinCtrlDouble(wxSpinDoubleEvent& evt)
-{
-    m_pGuideAlgorithm->SetSlopeWeight(m_pSlopeWeight->GetValue());
-    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass slope weight", m_pSlopeWeight->GetValue());
 }
 
 void GuideAlgorithmButterworth::
