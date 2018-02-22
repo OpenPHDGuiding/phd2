@@ -83,8 +83,9 @@ enum BRAIN_CTRL_IDS
     AD_cbSlewDetection,
     AD_cbUseDecComp,
     AD_GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
-    AD_cbDecComp,
-    AD_szDecCompAmt,
+    //AD_cbDecComp,
+    //AD_szDecCompAmt,
+    AD_szBLCompCtrls,
     AD_szMaxRAAmt,
     AD_szMaxDecAmt,
     AD_szDecGuideMode,

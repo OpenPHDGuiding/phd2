@@ -44,7 +44,9 @@ BacklashComp::BacklashComp(Mount *theMount)
     m_pMount = theMount;
     m_pScope = reinterpret_cast<Scope *>(theMount);
     int lastAmt = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", 0);
-    SetCompValues(lastAmt, false);
+    int lastCeiling = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", 0);
+    bool lastFixed = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/DecBacklashFixed", false);
+    SetCompValues(lastAmt, lastFixed, lastCeiling);
     if (m_pulseWidth > 0)
         m_compActive = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", false);
     else
@@ -52,7 +54,8 @@ BacklashComp::BacklashComp(Mount *theMount)
     m_justCompensated = false;
     m_lastDirection = NONE;
     if (m_compActive)
-        Debug.Write(wxString::Format("BLC: Backlash compensation is enabled with correction = %d ms\n", m_pulseWidth));
+        Debug.Write(wxString::Format("BLC: Enabled with correction = %d ms, Ceiling = %d, %s\n", 
+        m_pulseWidth, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
     else
         Debug.Write("BLC: Backlash compensation is disabled\n");
 }
@@ -62,36 +65,51 @@ int BacklashComp::GetBacklashPulseLimit()
     return MAX_COMP_AMOUNT;
 }
 
-// Private method to be sure all comp values are in-synch and don't exceed limits
-// May change max-move value for Dec or ceiling depending on the context
-void BacklashComp::SetCompValues(int requestedSize, bool autoAdjust)
+void BacklashComp::GetBacklashCompSettings(int* pulseWidth, bool* fixedSize, int* ceiling)
 {
-    if (autoAdjust)
-    {
-        // Don't boost ceiling based on automatic adjustments
-        m_pulseWidth = wxMax(0, wxMin(requestedSize, m_adjustmentCeiling));   // should have been done already
-    }
+    *pulseWidth = m_pulseWidth;
+    *fixedSize = m_fixedSize;
+    *ceiling = m_adjustmentCeiling;
+}
+
+// Private method to be sure all comp values are in-synch and don't exceed limits
+// May change max-move value for Dec depending on the context
+void BacklashComp::SetCompValues(int requestedSize, bool fixedSize, int ceiling)
+{
+    m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
+    if (ceiling < m_pulseWidth)
+        m_adjustmentCeiling = wxMin(1.50 * m_pulseWidth, MAX_COMP_AMOUNT);
     else
-    {
-        m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
-        m_adjustmentCeiling = wxMin(2 * m_pulseWidth, MAX_COMP_AMOUNT);
-    }
+        m_adjustmentCeiling = wxMin(ceiling, MAX_COMP_AMOUNT);
+    m_fixedSize = fixedSize;
+    //if (autoAdjust)
+    //{
+    //    // Don't boost ceiling based on automatic adjustments
+    //    m_pulseWidth = wxMax(0, wxMin(requestedSize, m_adjustmentCeiling));   // should have been done already
+    //}
+    //else
+    //{
+    //    m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
+    //    m_adjustmentCeiling = wxMin(2 * m_pulseWidth, MAX_COMP_AMOUNT);
+    //}
     if (m_pulseWidth > m_pScope->GetMaxDecDuration())
         m_pScope->SetMaxDecDuration(m_pulseWidth);
 }
 
-// Public method to ask for a particular backlash comp.  This method will adjust the ceiling to
-// 2x the value
-void BacklashComp::SetBacklashPulse(int ms)
+// Public method to ask for a set of backlash comp settings.  Ceiling == 0 implies compute a default
+void BacklashComp::SetBacklashPulse(int ms, bool fixedSize, int ceiling)
 {
-    if (m_pulseWidth != ms)
+    if (m_pulseWidth != ms || m_fixedSize != fixedSize || m_adjustmentCeiling != ceiling)
     {
-        SetCompValues(ms, false);
+        SetCompValues(ms, fixedSize, ceiling);
         pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
-        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms\n", m_pulseWidth));
+        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Ceiling = %d ms, %s\n", 
+            m_pulseWidth, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
     }
 
     pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
+    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", m_adjustmentCeiling);
+    pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "DecBackLashFixed", m_fixedSize);
 }
 
 void BacklashComp::EnableBacklashComp(bool enable)
@@ -176,9 +194,14 @@ void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRa
             if (newBLC != m_pulseWidth)
             {
                 Debug.Write(wxString::Format("BLC: Adjustment from %d to %d based on avg residual of %.1f px\n", m_pulseWidth, newBLC, avgMiss));
+                if (nominalBLC > m_adjustmentCeiling)
+                    Debug.Write("BLC: Adjustment upward limited by ceiling\n");
                 pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", newBLC);
-                SetCompValues(newBLC, true);
+                SetCompValues(newBLC, false, m_adjustmentCeiling);
             }
+            else 
+            if (nominalBLC > m_adjustmentCeiling)
+                Debug.Write("BLC: Adjustment upward limited by ceiling\n");
 
         }
     }

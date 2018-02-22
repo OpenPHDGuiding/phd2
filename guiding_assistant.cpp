@@ -774,7 +774,7 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
     BacklashComp *pComp = TheScope()->GetBacklashComp();
 
-    pComp->SetBacklashPulse(m_backlashRecommendedMs);
+    pComp->SetBacklashPulse(m_backlashRecommendedMs, false);
     pComp->EnableBacklashComp(!pMount->IsStepGuider());
     m_decBacklashButton->Enable(false);
 }
