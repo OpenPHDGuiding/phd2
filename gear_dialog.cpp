@@ -875,16 +875,16 @@ static void AutoLoadDarks()
     }
 }
 
-static wxString CameraSelectionKey(const GuideCamera *camera)
+static wxString CameraSelectionKey(const wxString& camName)
 {
     std::hash<std::string> hash_fn;
-    std::string name(camera->Name.c_str());
+    std::string name(camName.c_str());
     return wxString::Format("/cam_hash/%lx/whichCamera", (unsigned long) hash_fn(name));
 }
 
-static wxString SelectedCameraId(const GuideCamera *camera)
+static wxString SelectedCameraId(const wxString& camName)
 {
-    wxString key = CameraSelectionKey(camera);
+    wxString key = CameraSelectionKey(camName);
     return pConfig->Profile.GetString(key, GuideCamera::DEFAULT_CAMERA_ID);
 }
 
@@ -906,7 +906,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
         m_cameraIds.clear();
     }
 
-    wxString selectedId = SelectedCameraId(m_pCamera);
+    wxString selectedId = SelectedCameraId(m_lastCamera);
 
     wxMenu *menu = new wxMenu();
     int id = MENU_SELECT_CAMERA_BEGIN;
@@ -937,7 +937,7 @@ void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
     unsigned int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
     if (idx < m_cameraIds.size())
     {
-        wxString key = CameraSelectionKey(m_pCamera);
+        wxString key = CameraSelectionKey(m_lastCamera);
         pConfig->Profile.SetString(key, m_cameraIds[idx]);
     }
 }
@@ -992,7 +992,7 @@ bool GearDialog::DoConnectCamera(void)
         }
         pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
-        wxString cameraId = SelectedCameraId(m_pCamera);
+        wxString cameraId = SelectedCameraId(m_lastCamera);
 
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
         int profileBinning = m_pCamera->Binning;
