@@ -1770,7 +1770,6 @@ void CameraSimulator::ShowPropertyDialog()
         upd.Update(SimCamParams::nr_hot_pixels, dlg.pHotpxSlider->GetValue());
         SimCamParams::noise_multiplier = (double) dlg.pNoiseSlider->GetValue() * NOISE_MAX / 100.0;
         upd.Update(SimCamParams::dec_backlash, dlg.pBacklashSpin->GetValue() / imageScale);    // a-s -> px
-        sim->dec_ofs = BacklashVal(SimCamParams::dec_backlash);
 
         bool use_pe = dlg.pUsePECbx->GetValue();
         SimCamParams::use_pe = use_pe;
