@@ -406,7 +406,7 @@ public:
     void ClearAlert();
     void StatusMsg(const wxString& text);
     void StatusMsgNoTimeout(const wxString& text);
-    wxString GetSettingsSummary();
+    wxString GetSettingsSummary() const;
     wxString ExposureDurationSummary(void) const;
     wxString PixelScaleSummary(void) const;
     void TryReconnect(void);

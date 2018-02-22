@@ -476,7 +476,7 @@ void MountConfigDialogCtrlSet::UnloadValues()
     }
 }
 
-GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
+GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection() const
 {
     return GetGuideAlgorithm(m_pXGuideAlgorithm);
 }
@@ -497,7 +497,7 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
     }
 }
 
-GUIDE_ALGORITHM Mount::GetYGuideAlgorithmSelection(void)
+GUIDE_ALGORITHM Mount::GetYGuideAlgorithmSelection() const
 {
     return GetGuideAlgorithm(m_pYGuideAlgorithm);
 }
@@ -1342,7 +1342,7 @@ const char *Mount::DirectionChar(GUIDE_DIRECTION d)
     }
 }
 
-bool Mount::IsCalibrated()
+bool Mount::IsCalibrated() const
 {
     bool bReturn = false;
 
@@ -1513,7 +1513,7 @@ void Mount::NotifyGuidingDitherSettleDone(bool success)
         m_pYGuideAlgorithm->GuidingDitherSettleDone(success);
 }
 
-void Mount::GetLastCalibration(Calibration *cal)
+void Mount::GetLastCalibration(Calibration *cal) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
@@ -1539,7 +1539,7 @@ void Mount::GetLastCalibration(Calibration *cal)
     }
 }
 
-void Mount::GetCalibrationDetails(CalibrationDetails *details)
+void Mount::GetCalibrationDetails(CalibrationDetails *details) const
 {
     wxStringTokenizer tok;
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
@@ -1615,7 +1615,7 @@ bool Mount::Disconnect(void)
     return false;
 }
 
-wxString Mount::GetSettingsSummary()
+wxString Mount::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
 

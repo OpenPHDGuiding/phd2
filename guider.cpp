@@ -1540,7 +1540,7 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
     m_lockPosition.SetShiftRate(rate.X, rate.Y);
 }
 
-wxString Guider::GetSettingsSummary()
+wxString Guider::GetSettingsSummary() const
 {
     // return a loggable summary of current global configs managed by MyFrame
     return wxEmptyString;

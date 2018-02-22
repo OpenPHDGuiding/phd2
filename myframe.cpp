@@ -2577,7 +2577,7 @@ wxString MyFrame::PixelScaleSummary(void) const
         scaleStr, pCamera->Binning, focalLengthStr);
 }
 
-wxString MyFrame::GetSettingsSummary()
+wxString MyFrame::GetSettingsSummary() const
 {
     // return a loggable summary of current global configs managed by MyFrame
     return wxString::Format("Dither = %s, Dither scale = %.3f, Image noise reduction = %s, Guide-frame time lapse = %d, Server %s\n"

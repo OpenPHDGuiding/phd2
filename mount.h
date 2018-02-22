@@ -206,8 +206,8 @@ public:
         void ResetDecGuidingParams();
     };
 
-    GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);
-    GUIDE_ALGORITHM GetYGuideAlgorithmSelection(void);
+    GUIDE_ALGORITHM GetXGuideAlgorithmSelection() const;
+    GUIDE_ALGORITHM GetYGuideAlgorithmSelection() const;
 
     void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
     void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
@@ -301,8 +301,8 @@ public:
     GuideAlgorithm *GetXGuideAlgorithm(void) const;
     GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
-    void GetLastCalibration(Calibration *cal);
-    BacklashComp *GetBacklashComp() { return m_backlashComp; }
+    void GetLastCalibration(Calibration *cal) const;
+    BacklashComp *GetBacklashComp() const { return m_backlashComp; }
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
@@ -321,18 +321,18 @@ public:
     virtual const char *DirectionStr(GUIDE_DIRECTION d);
     virtual const char *DirectionChar(GUIDE_DIRECTION d);
 
-    virtual bool IsCalibrated(void);
+    virtual bool IsCalibrated(void) const;
     virtual void ClearCalibration(void);
     virtual void SetCalibration(const Calibration& cal);
     virtual void SetCalibrationDetails(const CalibrationDetails& calDetails);
-    void GetCalibrationDetails(CalibrationDetails *calDetails);
+    void GetCalibrationDetails(CalibrationDetails *calDetails) const;
 
     virtual bool IsConnected(void) const;
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
-    virtual wxString GetSettingsSummary();
-    virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
+    virtual wxString GetSettingsSummary() const;
+    virtual wxString CalibrationSettingsSummary() const { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
 

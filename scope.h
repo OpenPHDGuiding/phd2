@@ -194,8 +194,8 @@ public:
     MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
 
     GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
-    wxString GetSettingsSummary() override;
-    wxString CalibrationSettingsSummary() override;
+    wxString GetSettingsSummary() const override;
+    wxString CalibrationSettingsSummary() const override;
     wxString GetMountClassName() const override;
 
     static wxArrayString List(void);
@@ -208,7 +208,7 @@ public:
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
-    virtual bool IsCalibrated(void);
+    virtual bool IsCalibrated(void) const;
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
 

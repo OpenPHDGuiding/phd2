@@ -86,9 +86,9 @@ public:
         void LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap);
     };
 
-    bool GetMassChangeThresholdEnabled(void);
+    bool GetMassChangeThresholdEnabled() const;
     void SetMassChangeThresholdEnabled(bool enable);
-    double GetMassChangeThreshold(void);
+    double GetMassChangeThreshold() const;
     bool SetMassChangeThreshold(double starMassChangeThreshold);
     bool SetSearchRegion(int searchRegion);
 
@@ -111,7 +111,7 @@ public:
     double SNR(void) override;
     double HFD(void) override;
     int StarError(void) override;
-    wxString GetSettingsSummary() override;
+    wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;

@@ -300,7 +300,7 @@ public:
     wxImage *DisplayedImage(void) const;
     double ScaleFactor(void) const;
 
-    virtual wxString GetSettingsSummary();
+    virtual wxString GetSettingsSummary() const;
 
     bool IsFastRecenterEnabled(void) const;
     void EnableFastRecenter(bool enable);

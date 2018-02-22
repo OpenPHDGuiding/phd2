@@ -967,7 +967,7 @@ void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, Calibrati
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
-bool Scope::IsCalibrated(void)
+bool Scope::IsCalibrated(void) const
 {
     if (!Mount::IsCalibrated())
         return false;
@@ -1587,7 +1587,7 @@ PierSide Scope::SideOfPier(void)
     return PIER_SIDE_UNKNOWN;
 }
 
-wxString Scope::GetSettingsSummary()
+wxString Scope::GetSettingsSummary() const
 {
     Calibration calInfo;
     GetLastCalibration(&calInfo);
@@ -1620,7 +1620,7 @@ wxString Scope::GetSettingsSummary()
     return rtnVal;
 }
 
-wxString Scope::CalibrationSettingsSummary()
+wxString Scope::CalibrationSettingsSummary() const
 {
     return wxString::Format("Calibration Step = %d ms, Assume orthogonal axes = %s", GetCalibrationDuration(),
         IsAssumeOrthogonal() ? "yes" : "no");

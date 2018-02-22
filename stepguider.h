@@ -145,16 +145,16 @@ protected:
         virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
     };
 
-    virtual int GetSamplesToAverage(void);
+    virtual int GetSamplesToAverage() const;
     virtual bool SetSamplesToAverage(int samplesToAverage);
 
-    virtual int GetBumpPercentage(void);
+    virtual int GetBumpPercentage() const;
     virtual bool SetBumpPercentage(int bumpPercentage, bool updateGraph=false);
 
-    virtual double GetBumpMaxStepsPerCycle(void);
+    virtual double GetBumpMaxStepsPerCycle() const;
     virtual bool SetBumpMaxStepsPerCycle(double maxBumpPerCycle);
 
-    virtual int GetCalibrationStepsPerIteration(void);
+    virtual int GetCalibrationStepsPerIteration() const;
     virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);
 
     friend class GraphLogWindow;
@@ -164,8 +164,8 @@ protected:
 public:
     MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override { return nullptr; };
-    wxString GetSettingsSummary(void) override;
-    wxString CalibrationSettingsSummary(void) override;
+    wxString GetSettingsSummary(void) const override;
+    wxString CalibrationSettingsSummary(void) const override;
     wxString GetMountClassName(void) const override;
     void AdjustCalibrationForScopePointing(void) override;
     bool IsStepGuider(void) const  override;

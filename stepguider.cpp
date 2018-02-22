@@ -221,7 +221,7 @@ void StepGuider::InitBumpPositions(void)
     Debug.Write(wxString::Format("StepGuider: Bump Limits: X: %d, %d; Y: %d, %d; center: %d\n", m_xBumpPos1, m_xBumpPos2, m_yBumpPos1, m_yBumpPos2, m_bumpCenterTolerance));
 }
 
-int StepGuider::GetSamplesToAverage(void)
+int StepGuider::GetSamplesToAverage() const
 {
     return m_samplesToAverage;
 }
@@ -251,7 +251,7 @@ bool StepGuider::SetSamplesToAverage(int samplesToAverage)
     return bError;
 }
 
-int StepGuider::GetBumpPercentage(void)
+int StepGuider::GetBumpPercentage(void) const
 {
     return m_bumpPercentage;
 }
@@ -287,7 +287,7 @@ bool StepGuider::SetBumpPercentage(int bumpPercentage, bool updateGraph)
     return bError;
 }
 
-double StepGuider::GetBumpMaxStepsPerCycle(void)
+double StepGuider::GetBumpMaxStepsPerCycle() const
 {
     return m_bumpMaxStepsPerCycle;
 }
@@ -323,7 +323,7 @@ void StepGuider::SetBumpOnDither(bool val)
     pConfig->Profile.SetBoolean("/stepguider/BumpOnDither", m_bumpOnDither);
 }
 
-int StepGuider::GetCalibrationStepsPerIteration(void)
+int StepGuider::GetCalibrationStepsPerIteration() const
 {
     return m_calibrationStepsPerIteration;
 }
@@ -1244,7 +1244,7 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
     return bReturn;
 }
 
-wxString StepGuider::GetSettingsSummary()
+wxString StepGuider::GetSettingsSummary() const
 {
     CalibrationDetails calDetail;
     GetCalibrationDetails(&calDetail);
@@ -1257,7 +1257,7 @@ wxString StepGuider::GetSettingsSummary()
         );
 }
 
-wxString StepGuider::CalibrationSettingsSummary()
+wxString StepGuider::CalibrationSettingsSummary() const
 {
     return wxString::Format("Calibration steps = %d, Samples to average = %d",
         GetCalibrationStepsPerIteration(), GetSamplesToAverage());

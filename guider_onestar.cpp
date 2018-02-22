@@ -226,7 +226,7 @@ void GuiderOneStar::LoadProfileSettings(void)
     SetSearchRegion(searchRegion);
 }
 
-bool GuiderOneStar::GetMassChangeThresholdEnabled(void)
+bool GuiderOneStar::GetMassChangeThresholdEnabled() const
 {
     return m_massChangeThresholdEnabled;
 }
@@ -237,7 +237,7 @@ void GuiderOneStar::SetMassChangeThresholdEnabled(bool enable)
     pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", enable);
 }
 
-double GuiderOneStar::GetMassChangeThreshold(void)
+double GuiderOneStar::GetMassChangeThreshold() const
 {
     return m_massChangeThreshold;
 }
@@ -932,7 +932,7 @@ void GuiderOneStar::SaveStarFITS()
     PHD_fits_close_file(fptr);
 }
 
-wxString GuiderOneStar::GetSettingsSummary()
+wxString GuiderOneStar::GetSettingsSummary() const
 {
     // return a loggable summary of guider configs
     wxString s = wxString::Format(_T("Search region = %d px, Star mass tolerance "), GetSearchRegion());
