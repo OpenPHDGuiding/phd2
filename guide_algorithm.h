@@ -90,6 +90,7 @@ public:
     virtual void GuidingResumed();
     virtual void GuidingDithered(double amt);
     virtual void GuidingDitherSettleDone(bool success);
+    virtual void DirectMoveApplied(double amt);
     virtual void GuidingEnabled();
     virtual void GuidingDisabled();
 

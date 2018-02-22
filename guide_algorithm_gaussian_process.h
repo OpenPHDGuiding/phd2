@@ -207,6 +207,13 @@ public:
     void GuidingDitherSettleDone(bool success) override;
 
     /**
+     * This method tells the guider that a direct move has been
+     * applied. The Fast Recovery after Dither option applies direct
+     * moves.
+     */
+    void DirectMoveApplied(double amt) override;
+
+    /**
      * Clears the data from the circular buffer and clears the GP data.
      */
     void reset() override;

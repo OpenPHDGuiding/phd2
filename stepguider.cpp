@@ -818,9 +818,9 @@ void StepGuider::NotifyGuidingResumed(void)
     m_avgOffset.Invalidate();
 }
 
-void StepGuider::NotifyGuidingDithered(double dx, double dy)
+void StepGuider::NotifyGuidingDithered(double dx, double dy, bool mountCoords)
 {
-    Mount::NotifyGuidingDithered(dx, dy);
+    Mount::NotifyGuidingDithered(dx, dy, mountCoords);
     m_avgOffset.Invalidate();
 }
 

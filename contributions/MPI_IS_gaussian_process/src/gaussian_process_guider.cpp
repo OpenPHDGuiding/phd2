@@ -438,12 +438,19 @@ void GaussianProcessGuider::GuidingDitherSettleDone(bool success)
     {
         dither_steps_ = 1; // the last dither step should always be executed by
                            // result(), since it corrects for the time difference
-    }
-}
-
-double GaussianProcessGuider::GetControlGain(void) const
-{
-    return parameters.control_gain_;
+    }
+}
+
+void GaussianProcessGuider::DirectMoveApplied(double amt, double rate)
+{
+    // we store the amount of dither in seconds of gear time
+// todo: validate this:
+    // dither_offset_ += amt / rate; // this is the amount of time offset
+}
+
+double GaussianProcessGuider::GetControlGain(void) const
+{
+    return parameters.control_gain_;
 }
 
 bool GaussianProcessGuider::SetControlGain(double control_gain)

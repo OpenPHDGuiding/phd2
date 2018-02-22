@@ -289,8 +289,9 @@ public:
     virtual void NotifyGuidingStopped(void);
     virtual void NotifyGuidingPaused(void);
     virtual void NotifyGuidingResumed(void);
-    virtual void NotifyGuidingDithered(double dx, double dy);
+    virtual void NotifyGuidingDithered(double dx, double dy, bool mountCoords);
     virtual void NotifyGuidingDitherSettleDone(bool success);
+    virtual void NotifyDirectMove(const PHD_Point& dist);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;

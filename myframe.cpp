@@ -1891,11 +1891,6 @@ bool MyFrame::Dither(double amount, bool raOnly)
             throw ERROR_INFO("move lock failed");
         }
 
-        // Reset guide algorithm history.
-        // For algorithms like Resist Switch, the dither invalidates the state, so start again from scratch.
-        Debug.Write("dither: clearing mount guide algorithm history\n");
-        pMount->NotifyGuidingDithered(dRa, dDec);
-
         StatusMsg(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);

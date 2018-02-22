@@ -713,7 +713,11 @@ bool Guider::SetLockPosition(const PHD_Point& position)
         {
             EvtServer.NotifySetLockPosition(position);
             if (m_state == STATE_GUIDING)
+            {
+                // let guide algorithms react to the updated lock pos
+                pMount->NotifyGuidingDithered(position.X - m_lockPosition.X, position.Y - m_lockPosition.Y, false);
                 GuideLog.NotifySetLockPosition(this);
+            }
             NudgeLockTool::UpdateNudgeLockControls();
         }
 
@@ -1373,6 +1377,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     ofs.mountOfs.SetXY(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
                     pMount->TransformMountCoordinatesToCameraCoordinates(ofs.mountOfs, ofs.cameraOfs);
                     pFrame->SchedulePrimaryMove(pMount, ofs, MOVETYPE_DIRECT);
+                    // let guide algorithms know about the direct move
+                    pMount->NotifyDirectMove(ofs.mountOfs);
                 }
                 else if (m_measurementMode)
                 {

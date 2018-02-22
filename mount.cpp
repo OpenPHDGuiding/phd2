@@ -1493,9 +1493,21 @@ void Mount::NotifyGuidingResumed(void)
         m_pYGuideAlgorithm->GuidingResumed();
 }
 
-void Mount::NotifyGuidingDithered(double dx, double dy)
+void Mount::NotifyGuidingDithered(double dx, double dy, bool mountCoords)
 {
     Debug.Write(wxString::Format("Mount: notify guiding dithered (%.1f, %.1f)\n", dx, dy));
+
+    if (!mountCoords)
+    {
+        PHD_Point cam(dx, dy);
+        PHD_Point mnt;
+        bool err = TransformCameraCoordinatesToMountCoordinates(cam, mnt, false);
+        if (!err)
+        {
+            dx = mnt.X;
+            dy = mnt.Y;
+        }
+    }
 
     if (m_pXGuideAlgorithm)
         m_pXGuideAlgorithm->GuidingDithered(dx);
@@ -1513,11 +1525,19 @@ void Mount::NotifyGuidingDitherSettleDone(bool success)
         m_pYGuideAlgorithm->GuidingDitherSettleDone(success);
 }
 
+void Mount::NotifyDirectMove(const PHD_Point& dist)
+{
+    Debug.Write(wxString::Format("Mount: notify direct move %.2f,%.2f\n", dist.X, dist.Y));
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->DirectMoveApplied(dist.X);
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->DirectMoveApplied(dist.Y);
+}
+
 void Mount::GetLastCalibration(Calibration *cal) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
-
     if (sTimestamp.Length() > 0)
     {
         cal->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);

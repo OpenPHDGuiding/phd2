@@ -116,6 +116,10 @@ void GuideAlgorithm::GuidingDitherSettleDone(bool success)
 {
 }
 
+void GuideAlgorithm::DirectMoveApplied(double amt)
+{
+}
+
 void GuideAlgorithm::GuidingDisabled(void)
 {
     // By default, guide star deflections will be accumulated even with guiding disabled - algo can override if this is a problem

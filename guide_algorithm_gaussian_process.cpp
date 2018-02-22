@@ -930,10 +930,10 @@ void GuideAlgorithmGaussianProcess::GuidingEnabled(void)
     block_updates_ = false;
 }
 
-void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
+static double GetRAGuideRate(const Mount *mount)
 {
     CalibrationDetails calDetails;
-    m_pMount->GetCalibrationDetails(&calDetails);
+    mount->GetCalibrationDetails(&calDetails);
 
     double guide_speed = 1.0; // normalized to 15 a-s per second
                               // 1.0 means 15 a-s/sec,
@@ -947,14 +947,24 @@ void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
     }
 
     // the guide rate here is normalized to seconds and adjusted for the speed
-    double guide_rate = 1000 * m_pMount->xRate() / guide_speed;
+    double guide_rate = 1000. * mount->xRate() / guide_speed;
 
+    return guide_rate;
+}
+
+void GuideAlgorithmGaussianProcess::GuidingDithered(double amt)
+{
     // just hand it on to the guide algorithm, and pass the RA rate
-    GPG->GuidingDithered(amt, guide_rate);
+    GPG->GuidingDithered(amt, GetRAGuideRate(m_pMount));
 }
 
 void GuideAlgorithmGaussianProcess::GuidingDitherSettleDone(bool success)
 {
     // just hand it on to the guide algorithm
     GPG->GuidingDitherSettleDone(success);
+}
+
+void GuideAlgorithmGaussianProcess::DirectMoveApplied(double amt)
+{
+    GPG->DirectMoveApplied(amt, GetRAGuideRate(m_pMount));
 }
