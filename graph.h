@@ -147,7 +147,7 @@ private:
 
 public:
     GraphLogClientWindow(wxWindow *parent);
-    ~GraphLogClientWindow(void);
+    ~GraphLogClientWindow();
 
     bool SetMinLength(unsigned int minLength);
     bool SetMaxLength(unsigned int maxLength);
@@ -160,10 +160,10 @@ public:
 
     unsigned int GetItemCount() const;
 
-    void ResetData(void);
+    void ResetData();
 
 private:
-    void RecalculateTrendLines(void);
+    void RecalculateTrendLines();
     void UpdateStats(unsigned int nr, const S_HISTORY *cur);
 
     void OnPaint(wxPaintEvent& evt);
@@ -199,8 +199,8 @@ class GraphLogWindow : public wxWindow
     GraphLogClientWindow *m_pClient;
 
     int StringWidth(const wxString& string);
-    void UpdateHeightButtonLabel(void);
-    void UpdateRADecDxDyLabels(void);
+    void UpdateHeightButtonLabel();
+    void UpdateRADecDxDyLabels();
 
 public:
 
@@ -212,22 +212,22 @@ public:
     };
 
     GraphLogWindow(wxWindow *parent);
-    ~GraphLogWindow(void);
+    ~GraphLogWindow();
 
     void AppendData(const GuideStepInfo& step);
     void AppendData(const FrameDroppedInfo& info);
     void AppendData(const DitherInfo& info);
 
-    void UpdateControls(void);
+    void UpdateControls();
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);
     GraphLogClientWindow::GRAPH_MODE SetMode(GraphLogClientWindow::GRAPH_MODE newMode);
-    int GetLength(void) const;
+    int GetLength() const;
     void SetLength(int length);
-    int GetHeight(void) const;
+    int GetHeight() const;
     void SetHeight(int height);
-    wxMenu *GetLengthMenu(void);
-    unsigned int GetHistoryItemCount(void) const;
+    wxMenu *GetLengthMenu();
+    unsigned int GetHistoryItemCount() const;
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
@@ -249,11 +249,11 @@ public:
 
     wxStaticText *m_pLabel1, *m_pLabel2;
 
-    const wxColor& GetRaOrDxColor(void);
-    const wxColor& GetDecOrDyColor(void);
+    const wxColor& GetRaOrDxColor();
+    const wxColor& GetDecOrDyColor();
 
-    const SummaryStats& Stats(void) const { return m_pClient->m_stats; }
-    void ResetData(void);
+    const SummaryStats& Stats() const { return m_pClient->m_stats; }
+    void ResetData();
 
     DECLARE_EVENT_TABLE()
 };
@@ -262,7 +262,8 @@ class GraphControlPane : public wxWindow
 {
 public:
     GraphControlPane(wxWindow *pParent, const wxString& label);
-    ~GraphControlPane(void);
+    ~GraphControlPane();
+    virtual void UpdateControls();
 protected:
     wxBoxSizer *m_pControlSizer;
 

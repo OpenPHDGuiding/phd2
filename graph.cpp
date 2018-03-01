@@ -88,22 +88,22 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     }
     else
     {
-        m_pXControlPane = NULL;
-        m_pYControlPane = NULL;
-        m_pScopePane    = NULL;
+        m_pXControlPane = nullptr;
+        m_pYControlPane = nullptr;
+        m_pScopePane    = nullptr;
     }
 
-    if (m_pXControlPane != NULL)
+    if (m_pXControlPane)
     {
         m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
-    if (m_pYControlPane != NULL)
+    if (m_pYControlPane)
     {
         m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
-    if (m_pScopePane != NULL)
+    if (m_pScopePane)
     {
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5));
     }
@@ -239,12 +239,12 @@ GraphLogWindow::~GraphLogWindow()
     delete m_pClient;
 }
 
-const wxColor& GraphLogWindow::GetRaOrDxColor(void)
+const wxColor& GraphLogWindow::GetRaOrDxColor()
 {
     return m_pClient->m_raOrDxColor;
 }
 
-const wxColor& GraphLogWindow::GetDecOrDyColor(void)
+const wxColor& GraphLogWindow::GetDecOrDyColor()
 {
     return m_pClient->m_decOrDyColor;
 }
@@ -312,7 +312,7 @@ void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
     delete menu;
 }
 
-void GraphLogWindow::UpdateRADecDxDyLabels(void)
+void GraphLogWindow::UpdateRADecDxDyLabels()
 {
     switch (m_pClient->m_mode)
     {
@@ -414,7 +414,7 @@ void GraphLogWindow::OnDecDyColor(wxCommandEvent& evt)
     }
 }
 
-wxMenu *GraphLogWindow::GetLengthMenu(void)
+wxMenu *GraphLogWindow::GetLengthMenu()
 {
     wxMenu *menu = new wxMenu();
     unsigned int val = m_pClient->m_minLength;
@@ -450,12 +450,12 @@ void GraphLogWindow::OnMenuLength(wxCommandEvent& evt)
     Refresh();
 }
 
-int GraphLogWindow::GetLength(void) const
+int GraphLogWindow::GetLength() const
 {
     return m_pClient->m_length;
 }
 
-unsigned int GraphLogWindow::GetHistoryItemCount(void) const
+unsigned int GraphLogWindow::GetHistoryItemCount() const
 {
     return m_pClient->GetItemCount();
 }
@@ -503,7 +503,7 @@ void GraphLogWindow::OnMenuHeight(wxCommandEvent& evt)
     Refresh();
 }
 
-int GraphLogWindow::GetHeight(void) const
+int GraphLogWindow::GetHeight() const
 {
     return m_pClient->m_height;
 }
@@ -534,6 +534,13 @@ void GraphLogWindow::EnableTrendLines(bool enable)
 
 void GraphLogWindow::AppendData(const GuideStepInfo& step)
 {
+    if (m_pXControlPane)
+        m_pXControlPane->UpdateControls();
+    if (m_pYControlPane)
+        m_pYControlPane->UpdateControls();
+    if (m_pScopePane)
+        m_pScopePane->UpdateControls();
+
     m_pClient->AppendData(step);
 
     if (m_visible)
@@ -554,19 +561,19 @@ void GraphLogWindow::AppendData(const DitherInfo& info)
 
 void GraphLogWindow::UpdateControls()
 {
-    if (m_pXControlPane != NULL)
+    if (m_pXControlPane)
     {
         m_pControlSizer->Detach(m_pXControlPane);
         m_pXControlPane->Destroy();
     }
 
-    if (m_pYControlPane != NULL)
+    if (m_pYControlPane)
     {
         m_pControlSizer->Detach(m_pYControlPane);
         m_pYControlPane->Destroy();
     }
 
-    if (m_pScopePane != NULL)
+    if (m_pScopePane)
     {
         m_pControlSizer->Detach(m_pScopePane);
         m_pScopePane->Destroy();
@@ -580,22 +587,22 @@ void GraphLogWindow::UpdateControls()
     }
     else
     {
-        m_pXControlPane = NULL;
-        m_pYControlPane = NULL;
-        m_pScopePane    = NULL;
+        m_pXControlPane = nullptr;
+        m_pYControlPane = nullptr;
+        m_pScopePane    = nullptr;
     }
 
-    if (m_pXControlPane != NULL)
+    if (m_pXControlPane)
     {
         m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
-    if (m_pYControlPane != NULL)
+    if (m_pYControlPane)
     {
         m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
-    if (m_pScopePane != NULL)
+    if (m_pScopePane)
     {
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5));
     }
@@ -647,17 +654,17 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int YControlPaneWidth = 0;
     int ScopePaneWidth = 0;
 
-    if (m_pXControlPane != NULL)
+    if (m_pXControlPane)
     {
         XControlPaneWidth = m_pXControlPane->GetSize().GetWidth();
     }
 
-    if (m_pYControlPane != NULL)
+    if (m_pYControlPane)
     {
         YControlPaneWidth = m_pYControlPane->GetSize().GetWidth();
     }
 
-    if (m_pScopePane != NULL)
+    if (m_pScopePane)
     {
         ScopePaneWidth = m_pScopePane->GetSize().GetWidth();
     }
@@ -688,7 +695,7 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 }
 
-void GraphLogWindow::UpdateHeightButtonLabel(void)
+void GraphLogWindow::UpdateHeightButtonLabel()
 {
     int val = m_pClient->m_height;
 
@@ -759,7 +766,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_showStarSNR = pConfig->Global.GetBoolean("/graph/showStarSNR", false);
 }
 
-GraphLogClientWindow::~GraphLogClientWindow(void)
+GraphLogClientWindow::~GraphLogClientWindow()
 {
     delete [] m_line1;
     delete [] m_line2;
@@ -775,7 +782,7 @@ static void reset_trend_accums(TrendLineAccum accums[4])
     }
 }
 
-void GraphLogClientWindow::ResetData(void)
+void GraphLogClientWindow::ResetData()
 {
     m_history.clear();
     reset_trend_accums(m_trendLineAccum);
@@ -1049,7 +1056,7 @@ void GraphLogClientWindow::AppendData(const DitherInfo& info)
     m_dithers.push_back(info);
 }
 
-void GraphLogClientWindow::RecalculateTrendLines(void)
+void GraphLogClientWindow::RecalculateTrendLines()
 {
     reset_trend_accums(m_trendLineAccum);
     unsigned int trend_items = GetItemCount();
@@ -1541,7 +1548,11 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
     SetSizer(m_pControlSizer);
 }
 
-GraphControlPane::~GraphControlPane(void)
+GraphControlPane::~GraphControlPane()
+{
+}
+
+void GraphControlPane::UpdateControls()
 {
 }
 
@@ -1556,12 +1567,14 @@ int GraphControlPane::StringWidth(const wxString& string)
 
 void GraphControlPane::DoAdd(wxControl *pCtrl, const wxString& lbl)
 {
-    wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,lbl);
-    pLabel->SetForegroundColour(*wxWHITE);
-    pLabel->SetBackgroundColour(*wxBLACK);
-
-    m_pControlSizer->Add(pLabel, wxSizerFlags().Right().Align(wxALIGN_CENTER_VERTICAL));
-    m_pControlSizer->AddSpacer(5);
+    if (!lbl.empty())
+    {
+        wxStaticText *pLabel = new wxStaticText(this, wxID_ANY, lbl);
+        pLabel->SetForegroundColour(*wxWHITE);
+        pLabel->SetBackgroundColour(*wxBLACK);
+        m_pControlSizer->Add(pLabel, wxSizerFlags().Right().Align(wxALIGN_CENTER_VERTICAL));
+        m_pControlSizer->AddSpacer(5);
+    }
     m_pControlSizer->Add(pCtrl, wxSizerFlags().Left().Align(wxALIGN_CENTER_VERTICAL));
     m_pControlSizer->AddSpacer(10);
 }
