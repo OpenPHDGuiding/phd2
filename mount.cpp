@@ -40,6 +40,12 @@
 #include <wx/tokenzr.h>
 #include <cstdarg>
 
+enum
+{
+    Algo_RA_Layout_Height = 200,
+    Algo_Dec_Layout_Height = 150
+};
+
 inline static PierSide OppositeSide(PierSide p)
 {
     switch (p) {
@@ -93,12 +99,12 @@ wxString Mount::DeclinationStr(double dec, const wxString& numFormatStr)
     return dec == UNKNOWN_DECLINATION ? _("Unknown") : wxString::Format(numFormatStr, degrees(dec));
 }
 
-static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
+static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent, int fixedHeight)
 {
     // we need to force the guide alogorithm config pane to be large enough for
     // any of the guide algorithms
     ConfigDialogPane *pane = algo->GetConfigDialogPane(parent);
-    pane->SetMinSize(-1, 200);
+    pane->SetMinSize(-1, fixedHeight);
     return pane;
 }
 
@@ -195,13 +201,13 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         }
         else
         {
-            m_pXGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
+            m_pXGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent, Algo_RA_Layout_Height);
         }
         m_pRABox->Add(m_pXGuideAlgorithmChoice, def_flags);
         m_pRABox->Add(m_pXGuideAlgorithmConfigDialogPane, def_flags);
 
         if (!stepGuider)
-            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 37).Center());
+            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
 
         // Parameter resets are applicable to either scope or AO "mounts"
         m_pResetRAParams = new wxButton(m_pParent, wxID_ANY, _("Reset"));
@@ -210,7 +216,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (!stepGuider)
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 52).Center());
         else
-            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 20).Center());
+            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 100).Center());
 
         static GUIDE_ALGORITHM const Y_ALGORITHMS[] =
         {
@@ -238,7 +244,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         }
         else
         {
-            m_pYGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
+            m_pYGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent, Algo_Dec_Layout_Height);
         }
         m_pDecBox->Add(m_pYGuideAlgorithmChoice, def_flags);
         m_pDecBox->Add(m_pYGuideAlgorithmConfigDialogPane, def_flags);
@@ -246,8 +252,8 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (!stepGuider)
         {
             wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
-            pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
-            pSizer->Add(GetSizerCtrl(CtrlMap, AD_szDecCompAmt), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
+            //pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
+            pSizer->Add(GetSizerCtrl(CtrlMap, AD_szBLCompCtrls), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
             m_pDecBox->Add(pSizer);
             m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());
             m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szDecGuideMode), wxSizerFlags(0).Border(wxTOP, 10).Center());
@@ -327,7 +333,7 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     ConfigDialogPane *oldpane = m_pXGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
     m_pMount->SetXGuideAlgorithm(GuideAlgorithmFromName(m_pXGuideAlgorithmChoice->GetStringSelection()));
-    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
+    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent, Algo_RA_Layout_Height);
     m_pRABox->Replace(oldpane, newpane);
     m_pXGuideAlgorithmConfigDialogPane = newpane;
     m_pXGuideAlgorithmConfigDialogPane->LoadValues();
@@ -347,7 +353,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     ConfigDialogPane *oldpane = m_pYGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
     m_pMount->SetYGuideAlgorithm(GuideAlgorithmFromName(m_pYGuideAlgorithmChoice->GetStringSelection()));
-    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
+    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent, Algo_Dec_Layout_Height);
     m_pDecBox->Replace(oldpane, newpane);
     m_pYGuideAlgorithmConfigDialogPane = newpane;
     m_pYGuideAlgorithmConfigDialogPane->LoadValues();
