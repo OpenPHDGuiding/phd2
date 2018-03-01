@@ -309,7 +309,7 @@ GuideAlgorithmResistSwitch::
 
     width = StringWidth(_T("00.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.01, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
