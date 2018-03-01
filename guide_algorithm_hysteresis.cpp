@@ -321,7 +321,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     // Min move
     width = StringWidth(_T("00.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.01, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
         "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
