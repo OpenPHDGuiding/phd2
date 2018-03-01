@@ -694,7 +694,7 @@ static void set_exposure(JObj& response, const json_value *params)
     bool ok = pFrame->SetExposureDuration(exp->int_value);
     if (ok)
     {
-        response << jrpc_result(1);
+        response << jrpc_result(0);
     }
     else
     {
