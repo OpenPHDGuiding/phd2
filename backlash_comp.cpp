@@ -745,7 +745,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                         m_lastStatus = _("Mount never established consistent south moves - test failed");
                         throw (wxString("BLT: Too few acceptable south moves"));
                         break;
-
+                    default:
+			break;
                     }
                 }
 
