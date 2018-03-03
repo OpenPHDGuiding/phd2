@@ -1192,6 +1192,19 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     wxRect subframe(subframeArg);
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
+    // sleep before rendering the image so that any changes made in the middle of a long exposure (e.g. manual guide pulse) shows up in the image
+
+    if (duration > 5)
+    {
+        if (WorkerThread::MilliSleep(duration - 5, WorkerThread::INT_ANY))
+            return true;
+        if (watchdog.Expired())
+        {
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            return true;
+        }
+    }
+
 #if SIMMODE == 1
 
     if (!UseSubframes)
