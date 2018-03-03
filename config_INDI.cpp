@@ -219,8 +219,8 @@ void INDIConfig::SetSettings()
     host->WriteText(INDIhost);
     dev->SetValue(INDIDevName);
     devport->SetValue(INDIDevPort);
-    forcevideo->SetValue(INDIForceVideo);
     if (dev_type == TYPE_CAMERA) {
+        forcevideo->SetValue(INDIForceVideo);
         ccd->SetSelection(INDIDevCCD);
     }
 }
@@ -231,8 +231,8 @@ void INDIConfig::SaveSettings()
     port->GetLineText(0).ToLong(&INDIport);
     INDIDevName = dev->GetValue();
     INDIDevPort = devport->GetValue();
-    INDIForceVideo = forcevideo->GetValue();
     if (dev_type == TYPE_CAMERA) {
+        INDIForceVideo = forcevideo->GetValue();
         INDIDevCCD = ccd->GetSelection();
     }
 }
