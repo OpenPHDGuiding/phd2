@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-02 01:22+0000\n"
-"PO-Revision-Date: 2018-02-13 18:12+0800\n"
+"PO-Revision-Date: 2018-03-07 11:27+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -250,11 +250,11 @@ msgstr "往南移動 %d ms, 步數 %d /%d"
 
 #: backlash_comp.cpp:739
 msgid "Dec movements too erratic - test failed"
-msgstr ""
+msgstr "赤緯移動錯得太離譜, 測試錯誤"
 
 #: backlash_comp.cpp:745
 msgid "Mount never established consistent south moves - test failed"
-msgstr ""
+msgstr "赤道儀從未建立一致的南向移動 - 測試錯誤"
 
 #: backlash_comp.cpp:762
 #, c-format
@@ -392,7 +392,7 @@ msgstr "%d mm"
 
 #: calreview_dialog.cpp:328
 msgid "Image scale:"
-msgstr "影像解析度："
+msgstr "影像比例："
 
 #: calreview_dialog.cpp:331
 #, c-format
@@ -492,8 +492,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:650
 msgid "Explanation"
@@ -652,7 +652,7 @@ msgstr "計算結果數值"
 
 #: calstep_dialog.cpp:157
 msgid "Image scale, arc-sec/px"
-msgstr "影像解析度, 角秒/像素"
+msgstr "影像比例, 角秒/像素"
 
 #: calstep_dialog.cpp:159
 msgid "Calibration step, ms"
@@ -839,10 +839,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -928,7 +927,7 @@ msgstr "CCD 串流: 記憶體配置錯誤"
 #: cam_INDI.cpp:668
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
-msgstr ""
+msgstr "相機 %s, 曝光錯誤. 請以串流取代之"
 
 #: cam_INDI.cpp:701
 msgid "Unknown image format: "
@@ -1840,8 +1839,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -1951,13 +1949,13 @@ msgstr "次要"
 
 #: config_INDI.cpp:138
 msgid "Camera do not support exposure time"
-msgstr ""
+msgstr "相機不支援此曝光時間"
 
 #: config_INDI.cpp:139
 msgid ""
 "Force the use of streaming and frame stacking for the camera that not "
 "support to set an absolute exposure time."
-msgstr ""
+msgstr "於相機不支援某曝光值時, 強制使用串流及影像疊圖"
 
 #: config_INDI.cpp:144
 msgid "Other options"
@@ -2952,11 +2950,11 @@ msgstr "赤緯或 dy 顏色"
 
 #: graph.cpp:710
 msgid "Select the Y-axis scale, pixels per Y division"
-msgstr "選擇 Y-軸尺度, 像素/Y軸間格"
+msgstr "選擇 Y-軸比例, 像素/Y軸間格"
 
 #: graph.cpp:715
 msgid "Select the Y-axis scale, arc-seconds per Y division"
-msgstr "選擇 Y-軸尺度, 角秒/Y軸間格"
+msgstr "選擇 Y-軸比例, 角秒/Y軸間格"
 
 #: graph.cpp:1273
 msgid "GuideNorth"
@@ -3110,8 +3108,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3216,8 +3214,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3239,8 +3237,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3295,25 +3293,25 @@ msgstr "Agg"
 
 #: guide_algorithm_pdrift.cpp:697
 msgid "Predictive Drift Guide Algorithm"
-msgstr ""
+msgstr "預測飄移導星演算法"
 
 #: guide_algorithm_pdrift.cpp:704
 msgid "Prediction Weight"
-msgstr ""
+msgstr "預測權重"
 
 #: guide_algorithm_pdrift.cpp:705
 #, c-format
 msgid ""
 "What percentage of the predictive guide correction should be applied? "
 "Default = %.f%%"
-msgstr ""
+msgstr "該套用多少百分比的預測性導星修正值, 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:712
 #, c-format
 msgid ""
 "What percentage of the reactive guide correction should be applied? Default "
 "= %.f%%"
-msgstr ""
+msgstr "該使用多少百分比的回應式導星修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:724 guide_algorithm_pdrift.cpp:802
 #: myframe.cpp:854 myframe.cpp:917 scope.cpp:222
@@ -3325,17 +3323,17 @@ msgstr "自動"
 msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
-msgstr ""
+msgstr "該使用多少百分比的預測的修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:783
 #, c-format
 msgid ""
 "What percentage of the reactive correction should be applied? Default = %.f%%"
-msgstr ""
+msgstr "該使用多少百分比的回應式修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:804
 msgid "Let PHD2 adjust the min move automatically"
-msgstr ""
+msgstr "讓 PHD2 自動調整最小移動量"
 
 #: guide_algorithm_resistswitch.cpp:297
 msgid "ResistSwitch Guide Algorithm"
@@ -3886,7 +3884,7 @@ msgstr "回差極小, 不需要做回差補償"
 #: guiding_assistant.cpp:1028
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
-msgstr ""
+msgstr "試著開始 %d ms 的赤緯回差補償 "
 
 #: guiding_assistant.cpp:1030
 #, c-format
@@ -4024,6 +4022,11 @@ msgid ""
 "For other issues like equipment connection problems or to report a bug in "
 "PHD2, select the Debug Log."
 msgstr ""
+"在 PHD2 論壇上尋求幫助時, 最重要的是要附上你的導星日誌, 這個工具會幫你將日誌"
+"上傳到論壇\n"
+"首先, 請選取你要上傳的日誌檔案\n"
+"如果你要詢問關於導星的問題, 請選擇相關於問題發生時的導星日誌,\n"
+"像是赤道儀連接或回報 PHD2 程式臭蟲等問題等問題時, 請選擇上傳除錯日誌."
 
 #: log_uploader.cpp:581
 msgid "Session Start"
@@ -4141,6 +4144,8 @@ msgid ""
 "allowed. Try selecting fewer files, or use an alternative file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"所選日誌檔案壓縮後超出論壇所允許大小, 請少選一些檔案或使用如 Dropbox 或 "
+"Google Drive 等檔案分享服務."
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -4405,7 +4410,7 @@ msgstr "依據分析天球極區附近星點進行對準 (簡易)"
 
 #: myframe.cpp:511
 msgid "&Static Polar Align"
-msgstr "&S靜態對極軸"
+msgstr "靜態對極軸"
 
 #: myframe.cpp:511
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
@@ -4630,7 +4635,7 @@ msgstr "關於 %s"
 
 #: myframe.cpp:561
 msgid "&Check for updates"
-msgstr "&C檢查更新"
+msgstr "檢查更新"
 
 #: myframe.cpp:561
 msgid "Check for PHD2 software updates"
@@ -5098,7 +5103,7 @@ msgstr "抖動命令的大小. 預設值 = 1.0 (0.01-100.0)"
 
 #: myframe.cpp:2865 testguide.cpp:119
 msgid "Scale"
-msgstr "尺度"
+msgstr "比例"
 
 #: myframe.cpp:2872
 msgid "Auto restore calibration"
@@ -5579,6 +5584,12 @@ msgid ""
 "Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle\n"
 msgstr ""
+"轉到接近極區附近.\n"
+"在主影像顯示區中選擇一顆星體作為導星星體.\n"
+"點擊「開始」\n"
+"等待顯示穩定為止\n"
+"點擊「停止」\n"
+"調整赤道儀方位角及仰角, 把導星星體歸到目標圈中\n"
 
 #: polardrift_toolwin.cpp:179 staticpa_toolwin.cpp:319
 msgid "Alignment Parameters"
@@ -5724,15 +5735,11 @@ msgid ""
 "please review the 'Impatient Instructions' under the 'Help' menu after the "
 "wizard dialog has finished."
 msgstr ""
-"This short sequence of steps will help you identify the equipment you want "
-"to use for guiding and will associate it with a profile name of your choice. "
-"This profile will then be available any time you run PHD2.  At a minimum, "
-"you will need to choose both the guide camera and the mount interface that "
-"PHD2 will use for guiding.  You will also enter some information about the "
-"optical characteristics of your setup. PHD2 will use this to create a good "
-"'starter set' of guiding and calibration parameters. If you are a new user, "
-"please review the 'Impatient Instructions' under the 'Help' menu after the "
-"wizard dialog has finished."
+"這些簡短的步驟將幫助您確定用於導星的設備，並將其與您選擇的配置文件名稱相關"
+"聯。 之後執行 PHD2 時可隨時使用此配置檔。 您至少得選擇導星相機和 PHD2 將用於"
+"導星的赤道儀。 您還將輸入裝置光學特性相關資料。 PHD2 將會用它來創立一個適當"
+"的“起動設定”以用來進行導星和校準參數。 如果您是新用戶，請在設定精靈對話框完成"
+"後查看“幫助”選單下的簡介說明。"
 
 #: profile_wizard.cpp:246
 msgid ""
@@ -6391,29 +6398,30 @@ msgstr "數量"
 
 #: scope.cpp:1721
 msgid "Size of backlash compensation guide pulse"
-msgstr ""
+msgstr "回差補償導星訊號的長度"
 
 #: scope.cpp:1723
 msgid "Fixed-size"
-msgstr ""
+msgstr "固定大小"
 
 #: scope.cpp:1724
 msgid ""
 "Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC "
 "OSCILLATION, not recommended under normal conditions!"
 msgstr ""
+"強制給定固定的回差補償量, 但, 這樣會造成赤緯震盪, 一般情況下不建議這樣做!"
 
 #: scope.cpp:1730
 msgid "Limit"
-msgstr ""
+msgstr "限制"
 
 #: scope.cpp:1730
 msgid "Maximum length of backlash correction pulse (mSec)."
-msgstr ""
+msgstr "回差修正訊號的最大長度 (mSec)."
 
 #: scope.cpp:1732
 msgid "Backlash Compensation"
-msgstr ""
+msgstr "回差補償"
 
 #: scope.cpp:1737
 msgid "Use Dec compensation"
@@ -7322,7 +7330,7 @@ msgid ""
 "value to get the actual dither amount. Changing the value here affects both "
 "manual dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"抖動尺度參數，此數值乘以實際抖動量獲得的職稱為抖動量型態(Dither amount type)"
+"抖動比例參數，此數值乘以實際抖動量獲得的職稱為抖動量型態(Dither amount type)"
 "變更這個數值同時會影響到手動抖動和連接到 PHD 的影像應用程式所產生的抖動."
 
 #: testguide.cpp:127
