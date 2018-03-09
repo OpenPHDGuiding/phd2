@@ -1,11 +1,11 @@
-# 
+#
 # fr\messages.po
 # PHD Guiding
-# 
+#
 # Created by Sylvain Girard
 # Copyright (c) 2013 Sylvain Girard
 # All rights reserved.
-# 
+#
 # This source code is distributed under the following "BSD" license
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -17,7 +17,7 @@
 # Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,8 +29,8 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
@@ -43,9 +43,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 2.0\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
 msgid "Advanced setup"
@@ -255,11 +255,12 @@ msgstr "Движение на юг %d мсек, шаг %d / %d"
 
 #: backlash_comp.cpp:739
 msgid "Dec movements too erratic - test failed"
-msgstr ""
+msgstr "Сбой теста: движения по склонению слишком хаотичны"
 
 #: backlash_comp.cpp:745
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
+"Сбой теста: монтировка никогда не производила согласованных движений на юг"
 
 #: backlash_comp.cpp:762
 #, c-format
@@ -474,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
-"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
-"периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
+"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
+"большой периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -502,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
-"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
+"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -700,7 +701,7 @@ msgstr "Настройки"
 
 #: cam_Altair.cpp:143
 msgid "No Altair cameras detected"
-msgstr ""
+msgstr "Не найдены камеры Altair"
 
 #: cam_Altair.cpp:161
 msgid "Specified Altair Camera not found."
@@ -708,7 +709,7 @@ msgstr "Выбранная камера Altair не найдена."
 
 #: cam_Altair.cpp:167
 msgid "Failed to open Altair Camera."
-msgstr "Не удалось подключить камеру Altair."
+msgstr "Сбой подключения камеры Altair."
 
 #: cam_Altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
@@ -723,7 +724,7 @@ msgstr "Сбой драйвера ASCOM при проверке IsPulseGuiding, 
 #: cam_ascom.cpp:459
 #, c-format
 msgid "ASCOM Camera Driver missing required property %s"
-msgstr ""
+msgstr "Отсутствует параметр %s, необходимый драйверу камеры ASCOM"
 
 #: cam_ascom.cpp:473
 msgid ""
@@ -742,6 +743,8 @@ msgid ""
 "ASCOM driver missing the %s property. Please report this error to your ASCOM "
 "driver provider."
 msgstr ""
+"Отсутствует параметр %s, необходимый драйверу камеры ASCOM. Сообщите об этом "
+"поставшику драйвера ASCOM."
 
 #: cam_ascom.cpp:686 cam_ascom.cpp:910
 msgid ""
@@ -785,7 +788,7 @@ msgstr "Ошибка чтения изображения"
 #: cam_Atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
-msgstr ""
+msgstr "Невозможно загрузить DLL %s камеры Atik"
 
 #: cam_Atik16.cpp:100
 msgid "DLL error"
@@ -793,12 +796,12 @@ msgstr "Ошибка DLL"
 
 #: cam_Atik16.cpp:133
 msgid "No Atik cameras detected."
-msgstr ""
+msgstr "Не найдены камеры Atik"
 
 #: cam_Atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
-msgstr ""
+msgstr "Сбой подключения камеры Atik - версия драйвера %d"
 
 #: cam_Atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
@@ -806,7 +809,7 @@ msgstr "Невозможно начать съёмку"
 
 #: cam_firewire_IC.cpp:94
 msgid "Cannot initialize ImageCapture library"
-msgstr ""
+msgstr "Невозможно инициализировать библиотеку ImageCapture"
 
 #: cam_firewire_IC.cpp:103
 msgid "No camera found"
@@ -826,23 +829,23 @@ msgstr "Невозможно получить список видеорежим�
 
 #: cam_firewire_IC.cpp:156
 msgid "Cannot find a Y800 mode"
-msgstr ""
+msgstr "Невозможно найти режим Y800"
 
 #: cam_firewire_IC.cpp:171
 msgid "Could not turn off auto-exposure"
-msgstr ""
+msgstr "Невозможно выключить автоэкспозицию"
 
 #: cam_firewire_IC.cpp:178
 msgid "Cannot setup frame handler"
-msgstr ""
+msgstr "Невозможно установить обработчик кадров"
 
 #: cam_firewire_IC.cpp:188
 msgid "FireWire camera setup failed"
-msgstr ""
+msgstr "Сбой установки камеры FireWire"
 
 #: cam_firewire_IC.cpp:206
 msgid "Could not start Live view"
-msgstr ""
+msgstr "Невозможно включить Live view"
 
 #: cam_firewire_IC.cpp:218
 msgid ""
@@ -855,12 +858,11 @@ msgstr ""
 #: cam_firewire_IC.cpp:248
 #, c-format
 msgid "Fatal error at step %d connecting to TIS camera"
-msgstr ""
+msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1223
+#: cam_simulator.cpp:1397 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -875,35 +877,35 @@ msgstr "Ошибка получения изображения: %d (%d) %s"
 
 #: cam_firewire_OSX.cpp:87
 msgid "Error looking for Firewire / IEEE1394 cameras (internal error)"
-msgstr ""
+msgstr "Внутренняя ошибка поиска Firewire/IEEE1394 камеры"
 
 #: cam_firewire_OSX.cpp:93
 msgid "Error looking for Firewire / IEEE1394 cameras"
-msgstr ""
+msgstr "Ошибка поиска Firewire/IEEE1394 камеры"
 
 #: cam_firewire_OSX.cpp:96
 msgid "No Firewire / IEEE1394 camera found"
-msgstr ""
+msgstr "Firewire/IEEE1394 камера не найдена"
 
 #: cam_firewire_OSX.cpp:144
 msgid "Cannot find a suitable monochrome video mode"
-msgstr ""
+msgstr "Невозможно подобрать подходящий монохромный видеорежим"
 
 #: cam_firewire_OSX.cpp:149
 msgid "Cannot set frame rate to 7.5 FPS"
-msgstr ""
+msgstr "Невозможно установить частоту кадров 7.5 кадр/сек"
 
 #: cam_firewire_OSX.cpp:161
 msgid "Cannot setup DMA buffers"
-msgstr ""
+msgstr "Невозможно установить буферы DNA"
 
 #: cam_firewire_OSX.cpp:170
 msgid "Cannot start transmission"
-msgstr ""
+msgstr "Невозможно начать передачу"
 
 #: cam_firewire_OSX.cpp:181
 msgid "Transmission failed to start"
-msgstr ""
+msgstr "Сбой старта привода"
 
 #: cam_firewire_OSX.cpp:350
 msgid "Cannot get a frame from the queue"
@@ -946,7 +948,7 @@ msgstr "Поток CCD: ошибка выделения памяти"
 #: cam_INDI.cpp:668
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
-msgstr ""
+msgstr "Ошибка экспозиции камеры %s. Попробуйте потоковое видео."
 
 #: cam_INDI.cpp:701
 msgid "Unknown image format: "
@@ -967,7 +969,7 @@ msgstr "Ошибка установки чувствительности"
 
 #: cam_KWIQGuider.cpp:68
 msgid "Could not connect to KWIQGuider"
-msgstr ""
+msgstr "Невозможно подключить KWIQGuider"
 
 #: cam_LELXUSBWebcam.cpp:67
 msgid "Unable to open LXUSB device"
@@ -1024,7 +1026,7 @@ msgstr "Настройки вебкамеры"
 
 #: cam_MeadeDSI.cpp:97
 msgid "No DSI cameras found"
-msgstr ""
+msgstr "Не найдены камеры DSI"
 
 #: cam_openssag.cpp:96 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
@@ -1032,15 +1034,15 @@ msgstr "Невозможно проинициализировать библио
 
 #: cam_openssag.cpp:112
 msgid "Could not connect to StarShoot Autoguider"
-msgstr ""
+msgstr "Невозможно подключить StarShoot Autoguider"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
-msgstr ""
+msgstr "Не находится OSPL130RT.dll"
 
 #: cam_OSPL130.cpp:58
 msgid "Cannot init camera"
-msgstr ""
+msgstr "Невозможно подключить камеру"
 
 #: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
 msgid "Cannot start exposure"
@@ -1052,59 +1054,59 @@ msgstr "Нет камеры"
 
 #: cam_qhy.cpp:166
 msgid "Failed to initialize QHY SDK"
-msgstr ""
+msgstr "Сбой инициализации SDK QHY"
 
 #: cam_qhy.cpp:178
 msgid "No compatible QHY cameras found"
-msgstr ""
+msgstr "Не найдено совместимых QHY камер"
 
 #: cam_qhy.cpp:199
 msgid "Failed to connect to camera"
-msgstr ""
+msgstr "Сбой подключения камеры"
 
 #: cam_qhy.cpp:209
 msgid "SetQHYCCDStreamMode failed"
-msgstr ""
+msgstr "Сбой SetQHYCCDStreamMode"
 
 #: cam_qhy.cpp:217 cam_qhy.cpp:307
 msgid "Init camera failed"
-msgstr ""
+msgstr "Сбой инициализации камеры"
 
 #: cam_qhy.cpp:225
 msgid "Failed to get gain range"
-msgstr ""
+msgstr "Сбой получения диапазона чувствительности"
 
 #: cam_qhy.cpp:235
 msgid "Failed to get camera chip info"
-msgstr ""
+msgstr "Сбой получения данных о чипе камеры"
 
 #: cam_qhy.cpp:265
 msgid "Failed to get camera bin info"
-msgstr ""
+msgstr "Сбой получения данных о биннинге камеры"
 
 #: cam_qhy.cpp:284
 msgid "Failed to set camera binning"
-msgstr ""
+msgstr "Сбой установки биннинга"
 
 #: cam_qhy.cpp:444
 msgid "Failed to set camera exposure"
-msgstr ""
+msgstr "Сбой установки выдержки"
 
 #: cam_qhy.cpp:461
 msgid "Failed to set camera gain"
-msgstr ""
+msgstr "Сбой установки чувствительности"
 
 #: cam_qhy.cpp:469
 msgid "QHY exposure failed"
-msgstr ""
+msgstr "Сбой экспозиции QHY"
 
 #: cam_qhy.cpp:489
 msgid "QHY get frame failed"
-msgstr ""
+msgstr "Сбой получения кадров QHY"
 
 #: cam_SAC42.cpp:71
 msgid "Error connecting to SAC4-2"
-msgstr ""
+msgstr "Ошибка подключения SAC4-2"
 
 #: cam_SAC42.cpp:134
 msgid "Error capturing data from camera"
@@ -1112,7 +1114,7 @@ msgstr "Ошибка получения данных с камеры"
 
 #: cam_SACGuide.cpp:82 cam_StarShootDSCI.cpp:82
 msgid "Didn't find openUSB in DLL"
-msgstr ""
+msgstr "Не найден openUSB в DLL"
 
 #: cam_SACGuide.cpp:93 cam_SACGuide.cpp:98 cam_SACGuide.cpp:103
 #: cam_SACGuide.cpp:108 cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101
@@ -1121,11 +1123,11 @@ msgstr ""
 #: cam_StarShootDSCI.cpp:129 cam_StarShootDSCI.cpp:134
 #, c-format
 msgid "Didn't find %s in DLL"
-msgstr ""
+msgstr "Не найдено %s в DLL"
 
 #: cam_SACGuide.cpp:118
 msgid "Can't find cmosDLL.dll"
-msgstr ""
+msgstr "Не находится cmosDLL.dll"
 
 #: cam_SBIG.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
@@ -1158,12 +1160,12 @@ msgstr "Ввести адрес IP"
 #: cam_SBIG.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
-msgstr ""
+msgstr "Невозможно подключить камеру SBIG: код %d"
 
 #: cam_SBIG.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
-msgstr ""
+msgstr "Сбой связи с камерой SBIG, код %d"
 
 #: cam_SBIG.cpp:309
 msgid ""
@@ -1171,6 +1173,9 @@ msgid ""
 "\n"
 "No = use main image CCD"
 msgstr ""
+"Камера слежения найдена , использовать её?\n"
+"\n"
+"Нет = использовать основную камеру"
 
 #: cam_SBIG.cpp:309
 msgid "CCD Choice"
@@ -1447,7 +1452,7 @@ msgstr "Сторона от меридиана: %s"
 
 #: cam_SSPIAG.cpp:131
 msgid "Cannot load astroDLLsspiag.dll"
-msgstr ""
+msgstr "Невозможно загрузить astroDLLsspiag.dll"
 
 #: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
 #: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
@@ -1456,20 +1461,20 @@ msgstr ""
 #: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
-msgstr ""
+msgstr "astroDLLsspiag.dll не содержит %s"
 
 #: cam_SSPIAG.cpp:231
 msgid "Cannot load SSPIAGCAM.dll"
-msgstr ""
+msgstr "Невозможно загрузить SSPIAGCAM.dll"
 
 #: cam_SSPIAG.cpp:237
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
-msgstr ""
+msgstr "SSPIAGCAM.dll не содержит %s"
 
 #: cam_SSPIAG.cpp:244
 msgid "Failed to open the camera"
-msgstr ""
+msgstr "Сбой подключения камеры"
 
 #: cam_StarShootDSCI.cpp:162
 msgid "Problem sending register to StarShoot"
@@ -1532,7 +1537,7 @@ msgstr ""
 
 #: cam_ZWO.cpp:196
 msgid "No ZWO cameras detected."
-msgstr ""
+msgstr "Не найдены камеры ZWO."
 
 #: cam_ZWO.cpp:212 cam_ZWO.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
@@ -1540,7 +1545,7 @@ msgstr "Сбой получения настроек камеры ZWO ASI."
 
 #: cam_ZWO.cpp:218
 msgid "Failed to open ZWO ASI Camera."
-msgstr "Сбой доступа к камере ZWP ASI."
+msgstr "Сбой подключения камеры ZWP ASI."
 
 #: cam_ZWO.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
@@ -1692,6 +1697,8 @@ msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
 "on a very bright star. Not available on all cameras."
 msgstr ""
+"Чувствительность камеры, по умолчанию 95%. При шумах или засветке можно "
+"уменьшить, хотя это можно сделать не для все камер."
 
 #: camera.cpp:879
 msgid "Binning"
@@ -1740,7 +1747,7 @@ msgstr ""
 
 #: camera.cpp:922
 msgid "Saturation by Max-ADU value:"
-msgstr ""
+msgstr "Засветка по максимальной величине ADU:"
 
 #: camera.cpp:923
 msgid "Identify star saturation based on camera maximum-ADU value"
@@ -1748,7 +1755,7 @@ msgstr "Определить засветку на основе максимал
 
 #: camera.cpp:930
 msgid "Saturation via star-profile"
-msgstr ""
+msgstr "Засветка через профиль звезды"
 
 #: camera.cpp:931
 msgid ""
@@ -1869,8 +1876,7 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323 starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -1968,25 +1974,27 @@ msgstr "Драйвер"
 
 #: config_INDI.cpp:122
 msgid "Dual CCD"
-msgstr ""
+msgstr "Двойная CCD"
 
 #: config_INDI.cpp:125
 msgid "Main"
-msgstr ""
+msgstr "Главное"
 
 #: config_INDI.cpp:126
 msgid "Secondary"
-msgstr ""
+msgstr "Вторичный"
 
 #: config_INDI.cpp:138
 msgid "Camera do not support exposure time"
-msgstr ""
+msgstr "Камера не поддерживает выдержку такой длительности"
 
 #: config_INDI.cpp:139
 msgid ""
 "Force the use of streaming and frame stacking for the camera that not "
 "support to set an absolute exposure time."
 msgstr ""
+"Использовать потоковое видео и сложение кадров если камера не поддерживает "
+"абсолютное время экспозиции."
 
 #: config_INDI.cpp:144
 msgid "Other options"
@@ -2219,7 +2227,7 @@ msgstr "Темновые кадры готовы"
 
 #: drift_tool.cpp:134
 msgid "Drift Align"
-msgstr "Установка полюса"
+msgstr "Выравнивание дрейфом"
 
 #: drift_tool.cpp:167 scope_manual_pointing.cpp:54
 msgid "Scope Pointing"
@@ -2232,7 +2240,7 @@ msgstr "Смещение меридиана ("
 #: drift_tool.cpp:176 drift_tool.cpp:180 scope_manual_pointing.cpp:74
 #: scope_manual_pointing.cpp:149 scope_manual_pointing.cpp:161
 msgid ")"
-msgstr ""
+msgstr ")"
 
 #: drift_tool.cpp:180 scope_manual_pointing.cpp:74
 msgid "Declination ("
@@ -2574,6 +2582,9 @@ msgid ""
 "driver, directly from the camera or AO, or via one of the GPxxx devices. An "
 "ASCOM connection is recommended."
 msgstr ""
+"Определите, каким образом команды гидирования будут подаваться на "
+"монтировку: через драйвер ASCOM или INDI, напрямую на камеру или АО или "
+"через одно из устройств GPxxx. Рекомендуется соединение ASCOM."
 
 #: gear_dialog.cpp:276
 msgid "Mount Setup"
@@ -2592,6 +2603,11 @@ msgid ""
 "side-of-pier.  If you have already selected an %s driver for your 'mount', "
 "the 'aux' mount parameter will not be used."
 msgstr ""
+"При использовании порта гидирования (камерного или GPXX) можно также "
+"использовать 'дополнительное' соединение  для %s-совместимой монтировки. Оно "
+"будет использовано для автоматической калибровки, основанной на склонении и "
+"ориентации относительно меридиана. 'Дополнительная' монтировка не нужна, "
+"если уже выбран драйвер %s."
 
 #: gear_dialog.cpp:299
 msgid "Aux Mount Setup"
@@ -2754,7 +2770,7 @@ msgstr "Подключение АО..."
 
 #: gear_dialog.cpp:1428
 msgid "Centering AO ..."
-msgstr ""
+msgstr "Центровка АО..."
 
 #: gear_dialog.cpp:1438
 msgid "AO Connected"
@@ -2877,7 +2893,7 @@ msgstr "Очистить графические данные"
 #: graph-stepguider.cpp:165
 #, c-format
 msgid "%.1f Hz"
-msgstr ""
+msgstr "%.1f Hz"
 
 #: graph-stepguider.cpp:258
 msgid "AO not connected"
@@ -2921,7 +2937,7 @@ msgstr "Показывать коррекцию монтировки"
 
 #: graph.cpp:175
 msgid "RMS Error [px]:"
-msgstr ""
+msgstr "Среднеквадр. ошибка [пикс.]"
 
 #: graph.cpp:210
 msgid "Tot"
@@ -3021,15 +3037,15 @@ msgstr "δ"
 
 #: guide_algorithm_gaussian_process.cpp:84
 msgid "Expert Settings"
-msgstr ""
+msgstr "Настройки для экспертов"
 
 #: guide_algorithm_gaussian_process.cpp:90
 msgid "Warning!  Intended for use by experts"
-msgstr ""
+msgstr "Внимание! Предназначено для использования экспертами"
 
 #: guide_algorithm_gaussian_process.cpp:100
 msgid "Approximation Data Points"
-msgstr ""
+msgstr "Аппроксимационные точки данныз"
 
 #: guide_algorithm_gaussian_process.cpp:101
 #, c-format
@@ -3037,10 +3053,13 @@ msgid ""
 "Number of data points used in the approximation. Both prediction accuracy as "
 "well as runtime rise with the number of datapoints. Default = %d"
 msgstr ""
+"Количество точек данных для аппроксимации. Как точность предсказания, так и "
+"время выполнения возрастают с увеличением числа точек данных. Значение по "
+"умолчанию %d"
 
 #: guide_algorithm_gaussian_process.cpp:108
 msgid "Minimum Worm Cycles (Prediction)"
-msgstr ""
+msgstr "Минимум циклов червя (прогноз)"
 
 #: guide_algorithm_gaussian_process.cpp:109
 #, c-format
@@ -3048,10 +3067,13 @@ msgid ""
 "Minimal number of worm cycles needed to use the prediction. If there are too "
 "little data points, the prediction might be poor. Default = %.2f"
 msgstr ""
+"Минимальное количество оборотов червя, необходимое для прогноза. Если "
+"выбрать малое значение, прогноз может быть ненадёжным. Значение по умолчанию "
+"%.2f"
 
 #: guide_algorithm_gaussian_process.cpp:117
 msgid "Minimum Worm Cycles (Period Estimation)"
-msgstr ""
+msgstr "Минимум циклов червя (оценка периодики)"
 
 #: guide_algorithm_gaussian_process.cpp:118
 #, c-format
@@ -3059,6 +3081,8 @@ msgid ""
 "Minimal number of worm cycles for estimating the period length. If there are "
 "too little data points, the estimation might not work. Default = %d"
 msgstr ""
+"Минимальное количество оборотов червя, необходимое для оценки длины периода. "
+"При малых значениях оценка может не работать. Значение по умолчанию %d"
 
 #: guide_algorithm_gaussian_process.cpp:126
 msgid "Length Scale (Long Range)"
@@ -3071,6 +3095,10 @@ msgid ""
 "essentially a high-pass filter for the periodic error and the length scale "
 "defines the corner frequency. Default = %.2f"
 msgstr ""
+"Шкала в секундах, показывающая отклонения периодической структуры. Чем "
+"меньше масштаб, тем лучше структура может быть изучена. По сути, это фильтр "
+"верхних частот для периодической ошибки, а масштаб длины определяет угловую "
+"частоту. Значение по умолчанию %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:136
 msgid "Signal Variance (Long Range)"
@@ -3093,6 +3121,10 @@ msgid ""
 "If chosen too small, some non-periodic structure might be picked up as well. "
 "Default = %.2f"
 msgstr ""
+"Шкала в секундах, показывающая отклонения периодической структуры. Чем "
+"меньше масштаб, тем лучше структура может быть изучена. При слишком малых "
+"значениях могут наблюдаемы также и непереодические отклонения. Значение по "
+"умолчанию %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:152
 msgid "Signal Variance (Periodic)"
@@ -3115,6 +3147,9 @@ msgid ""
 "error. This is essentially a low-pass filter for the periodic error and the "
 "length scale defines the corner frequency. Default = %.2f"
 msgstr ""
+"Шкала в секундах для коротких непериодических ошибок. По сути, это фильтр "
+"нижних частот для периодической ошибки, а масштаб длины определяет угловую "
+"частоту. Значение по умолчанию %.2f "
 
 #: guide_algorithm_gaussian_process.cpp:169
 msgid "Signal Variance (Short Range)"
@@ -3133,22 +3168,26 @@ msgid ""
 "What percent of the predictive guide correction should be applied? Default = "
 "%.f%%, increase to rely more on the predictions"
 msgstr ""
+"Процент прогностической поправки. По умолчанию %.f%% , можно изменить при "
+"слишком быстром или слишком медленном реагировании"
 
 #: guide_algorithm_gaussian_process.cpp:227 guide_algorithm_pdrift.cpp:776
 msgid "PredWt"
-msgstr ""
+msgstr "Вес Предск."
 
 #: guide_algorithm_gaussian_process.cpp:233
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
+"Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
+"быстром или слишком медленном реагировании"
 
 #: guide_algorithm_gaussian_process.cpp:236 guide_algorithm_pdrift.cpp:785
 msgid "ReactWt"
-msgstr ""
+msgstr "Реакт. Вес"
 
 #: guide_algorithm_gaussian_process.cpp:243
 #: guide_algorithm_gaussian_process.cpp:317
@@ -3159,6 +3198,10 @@ msgid ""
 "size. Note this has no effect on the predictive guide correction. Default = "
 "%.2f"
 msgstr ""
+"Количество пикселей (дробных), которые заставят звезду двигаться в ходе "
+"обратной коррекции гидирования. Если биннинг включен, это дробь от "
+"биннингового размера. Не действует при прогностической коррекции "
+"гидирования. Значение по умолчанию %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:247 guide_algorithm_hysteresis.cpp:329
 #: guide_algorithm_lowpass.cpp:295 guide_algorithm_lowpass2.cpp:301
@@ -3172,11 +3215,11 @@ msgstr "Алгоритм гидирования прогнозируемой п�
 
 #: guide_algorithm_gaussian_process.cpp:301
 msgid "Predictive Weight"
-msgstr ""
+msgstr "Вес предсказания"
 
 #: guide_algorithm_gaussian_process.cpp:308 guide_algorithm_pdrift.cpp:711
 msgid "Reactive Weight"
-msgstr ""
+msgstr "Реактивный вес"
 
 #: guide_algorithm_gaussian_process.cpp:316 guide_algorithm_hysteresis.cpp:256
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass2.cpp:239
@@ -3190,10 +3233,12 @@ msgid ""
 "Auto-adjust the period length based on identified repetitive errors. Default "
 "= %s"
 msgstr ""
+"Автоподсчёт длительности периода, основанный на обнаруженныз повторяющихся "
+"ошибках. Значение по умолчанию %s"
 
 #: guide_algorithm_gaussian_process.cpp:327
 msgid "On"
-msgstr ""
+msgstr "Вкл."
 
 #: guide_algorithm_gaussian_process.cpp:327 scope.cpp:221
 msgid "Off"
@@ -3209,14 +3254,18 @@ msgid ""
 "The period length (in seconds) of the strongest periodic error component.  "
 "Default = %.2f"
 msgstr ""
+"Длительность в секундах наибольшего фактора периодической ошибки. По "
+"умолчанию %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:334
 msgid "Expert..."
-msgstr ""
+msgstr "Эксперт..."
 
 #: guide_algorithm_gaussian_process.cpp:336
 msgid "Change expert options for tuning the predictions. Use at your own risk!"
 msgstr ""
+"Изменить экспертные параметры для подстройки прогнозов. Используйте на свой "
+"страх и риск!"
 
 #: guide_algorithm_hysteresis.cpp:231
 msgid "Hysteresis Guide Algorithm"
@@ -3243,9 +3292,11 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
+"Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
+"слишком быстром или слишком медленном реагировании"
 
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:326
 #: guide_algorithm_lowpass.cpp:232 guide_algorithm_lowpass.cpp:292
@@ -3266,9 +3317,11 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
+"Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
+"слишком быстром или слишком медленном реагировании"
 
 #: guide_algorithm_hysteresis.cpp:311
 msgid "Agr"
@@ -3298,6 +3351,7 @@ msgstr "Коэффициент наклона"
 #, c-format
 msgid "Weighting of slope parameter in lowpass auto-dec. Default = %.1f"
 msgstr ""
+"Коэффициент наклона для сглаживания по склонению Значение по умолчанию %.1f."
 
 #: guide_algorithm_lowpass.cpp:286
 msgid "Sl W"
@@ -3312,7 +3366,7 @@ msgstr "Алгоритм гидирования Сглаживание2"
 #, c-format
 msgid ""
 "What percentage of the computed correction should be applied? Default = %.f%%"
-msgstr ""
+msgstr "Процент вычисленной поправки. По умолчанию %.f%%"
 
 #: guide_algorithm_lowpass2.cpp:292
 msgid "Agg"
@@ -3320,25 +3374,25 @@ msgstr "Агр. "
 
 #: guide_algorithm_pdrift.cpp:697
 msgid "Predictive Drift Guide Algorithm"
-msgstr ""
+msgstr "Прогнозный алгоритм дрейфа"
 
 #: guide_algorithm_pdrift.cpp:704
 msgid "Prediction Weight"
-msgstr ""
+msgstr "Вес предсказания"
 
 #: guide_algorithm_pdrift.cpp:705
 #, c-format
 msgid ""
 "What percentage of the predictive guide correction should be applied? "
 "Default = %.f%%"
-msgstr ""
+msgstr "Процент прогностической поправки гидирования. По умолчанию %.f%% "
 
 #: guide_algorithm_pdrift.cpp:712
 #, c-format
 msgid ""
 "What percentage of the reactive guide correction should be applied? Default "
 "= %.f%%"
-msgstr ""
+msgstr "Процент обратной поправки гидирования. По умолчанию %.f%% "
 
 #: guide_algorithm_pdrift.cpp:724 guide_algorithm_pdrift.cpp:802
 #: myframe.cpp:854 myframe.cpp:917 scope.cpp:222
@@ -3350,17 +3404,17 @@ msgstr "Авто"
 msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
-msgstr ""
+msgstr "Процент прогностической поправки. По умолчанию %.f%% "
 
 #: guide_algorithm_pdrift.cpp:783
 #, c-format
 msgid ""
 "What percentage of the reactive correction should be applied? Default = %.f%%"
-msgstr ""
+msgstr "Процент обратной поправки. По умолчанию %.f%% "
 
 #: guide_algorithm_pdrift.cpp:804
 msgid "Let PHD2 adjust the min move automatically"
-msgstr ""
+msgstr "PHD2 установит минимальный шаг автоматически"
 
 #: guide_algorithm_resistswitch.cpp:297
 msgid "ResistSwitch Guide Algorithm"
@@ -3430,11 +3484,11 @@ msgstr "Остановлено"
 
 #: guider.cpp:1275
 msgid "Static PA rotation failed"
-msgstr ""
+msgstr "Сбой статической установки полюса"
 
 #: guider.cpp:1281
 msgid "Polar Drift PA drift failed"
-msgstr ""
+msgstr "Сбой установки полюса дрейфом"
 
 #: guider.cpp:1291
 msgid "AO calibration failed"
@@ -3608,10 +3662,14 @@ msgid ""
 "threshold a bit higher. When the HFD falls below this level, the hot pixel "
 "will be ignored."
 msgstr ""
+"Минимальное значение HFD для идентифицирования звезды как опорной. "
+"Предохраняет от выбора горячего пикселя в качестве таковой. Для измеоения "
+"HFD горячего пикселя используйте настройку звёздных профилей и установите "
+"для звезды чуть больший HFD. "
 
 #: guiding_assistant.cpp:136
 msgid "Backlash Test Sampling"
-msgstr ""
+msgstr "Тест люфта"
 
 #: guiding_assistant.cpp:141
 msgid ""
@@ -3619,10 +3677,12 @@ msgid ""
 "testing \n"
 "will start automatically when sampling is completed."
 msgstr ""
+"Сделан дополнительный отбор данных для лучшего определения люфта склонения.\n"
+"Автоматическое тестирование люфта начнётся по завершении отбора."
 
 #: guiding_assistant.cpp:143
 msgid "Seconds remaining: "
-msgstr ""
+msgstr "Осталось секунд:"
 
 #: guiding_assistant.cpp:342
 msgid "Guiding Assistant"
@@ -3821,6 +3881,9 @@ msgid ""
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
 "estimate is one unit of standard deviation"
 msgstr ""
+"Подсчитанный в результате тестирования люфт склонения. Результаты "
+"представляют собой время выбора люфта (мсек.) и соответствующий угол "
+"передачи (угл. сек.). "
 
 #: guiding_assistant.cpp:622
 msgid ""
@@ -3850,6 +3913,9 @@ msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
 msgstr ""
+"Вывод гидирования отключен и движение звезды измеряется. Нажмите "
+"'Остановить' когда среднеквадраточное и значения выравнивания полюса "
+"стабилизируются (не менее, чем через 2 минуты)."
 
 #: guiding_assistant.cpp:665
 msgid ""
@@ -3916,17 +3982,17 @@ msgstr "Попробовать установить минимальное дв�
 
 #: guiding_assistant.cpp:1026
 msgid "Backlash is small, no compensation needed"
-msgstr ""
+msgstr "Люфт маленький, компенсация не нужна"
 
 #: guiding_assistant.cpp:1028
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
-msgstr ""
+msgstr "Попробовать установить величину люфта склонения в %d мсек"
 
 #: guiding_assistant.cpp:1030
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
-msgstr ""
+msgstr "Люфт >= %d мсек; возможно, есть смысл гидировать только по склонению"
 
 #: guiding_assistant.cpp:1140
 msgid "Backlash test aborted..."
@@ -3974,13 +4040,15 @@ msgstr ""
 
 #: htmlmsgbox.cpp:29
 msgid "You currently have the latest development version of PHD2"
-msgstr ""
+msgstr "Установлена последняя разработческая версия PHD2"
 
 #: htmlmsgbox.cpp:33
 msgid ""
 "You are currently running a development release but have opted to only check "
 "for major releases, and there are no new major releases available."
 msgstr ""
+"Вы запустили разработческую версию, но хотите проверять только основные "
+"версии, а сейчас новых основных версий нет"
 
 #: htmlmsgbox.cpp:35
 #, c-format
@@ -3988,10 +4056,12 @@ msgid ""
 "You currently have the latest major release version of PHD2. There may be "
 "newer development release versions at %s"
 msgstr ""
+"Сейчас запущена последняя основная версия PHD2. Более новые разработческие "
+"версии могут быть доступны на %s"
 
 #: htmlmsgbox.cpp:38 myframe.cpp:2762 phdupdate.cpp:918 phdupdate.cpp:924
 msgid "Software Update"
-msgstr ""
+msgstr "Обновление ПО"
 
 #: image_math.cpp:1144
 msgid ""
@@ -4007,48 +4077,48 @@ msgstr "Настройки INDI"
 
 #: log_uploader.cpp:130
 msgid "loading..."
-msgstr ""
+msgstr "загрузка..."
 
 #: log_uploader.cpp:141
 #, c-format
 msgid "%dd"
-msgstr ""
+msgstr "%dd"
 
 #: log_uploader.cpp:144
 #, c-format
 msgid "%dhr"
-msgstr ""
+msgstr "%d час"
 
 #: log_uploader.cpp:149
 #, c-format
 msgid "%dhr%dmin"
-msgstr ""
+msgstr "%d час %d мин"
 
 #: log_uploader.cpp:152
 #, c-format
 msgid "%dmin"
-msgstr ""
+msgstr "%d мин"
 
 #: log_uploader.cpp:154
 #, c-format
 msgid "%dsec"
-msgstr ""
+msgstr "%d сек"
 
 #: log_uploader.cpp:537
 msgid "Upload Log Files - Select logs"
-msgstr ""
+msgstr "Выбрать лог-файлы для загрузки"
 
 #: log_uploader.cpp:538
 msgid "Upload Log Files - Confirm upload"
-msgstr ""
+msgstr "Подтвердить загрузку лог-файлов"
 
 #: log_uploader.cpp:539
 msgid "Upload Log Files - Upload complete"
-msgstr ""
+msgstr "Загрузка лог-файлов завершена"
 
 #: log_uploader.cpp:540
 msgid "Upload Log Files - Upload not completed"
-msgstr ""
+msgstr "Загрузка лог-файлов не завершена"
 
 #: log_uploader.cpp:543
 msgid ""
@@ -4061,26 +4131,34 @@ msgid ""
 "For other issues like equipment connection problems or to report a bug in "
 "PHD2, select the Debug Log."
 msgstr ""
+"При обращении за помощью на форум PHD2 важно предоставить лог-файлы. Это "
+"средство\n"
+"поможет вам в их закачке, чтобы они были видны на форуме. Выберите файлы для "
+"закачки.\n"
+"Если нужна помощь по гидировании, приложите лог гидирования по интересующей "
+"вас сессии.\n"
+"В прочих случаях, таких как проблемы с оборудованием или при обнаружении "
+"дефектов в PHD2, выберите журнал отладки."
 
 #: log_uploader.cpp:581
 msgid "Session Start"
-msgstr ""
+msgstr "Начало сессии"
 
 #: log_uploader.cpp:582
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: log_uploader.cpp:583
 msgid "Guide Log"
-msgstr ""
+msgstr "Журнал гидирования"
 
 #: log_uploader.cpp:584
 msgid "Debug Log"
-msgstr ""
+msgstr "Журнал отладки"
 
 #: log_uploader.cpp:613 log_uploader.cpp:1197
 msgid "Recent uploads"
-msgstr ""
+msgstr "Последние закачки"
 
 #: log_uploader.cpp:619 profile_wizard.cpp:184
 msgid "< Back"
@@ -4093,50 +4171,50 @@ msgstr "Дальше >"
 
 #: log_uploader.cpp:744 log_uploader.cpp:1065
 msgid "Upload"
-msgstr ""
+msgstr "Загрузить"
 
 #: log_uploader.cpp:744
 msgid "Uploading log files ..."
-msgstr ""
+msgstr "Загрузка лог файлов..."
 
 #: log_uploader.cpp:773
 #, c-format
 msgid "Uploading ... %.f%%"
-msgstr ""
+msgstr "Загрузка ... %.f%%"
 
 #: log_uploader.cpp:826
 msgid "Connecting ..."
-msgstr ""
+msgstr "Подключение..."
 
 #: log_uploader.cpp:842
 #, c-format
 msgid "Connection failed, will retry in %ds"
-msgstr ""
+msgstr "Сбой соединения, новая попытка через %d сек."
 
 #: log_uploader.cpp:998
 #, c-format
 msgid "Upload failed, will retry in %ds"
-msgstr ""
+msgstr "Сбой загрузки, новая попытка через %d сек."
 
 #: log_uploader.cpp:1031
 msgid "The following log files will be uploaded:"
-msgstr ""
+msgstr "Следующие лог-файлы будут загружены:"
 
 #: log_uploader.cpp:1046
 msgid "Guide and Debug logs"
-msgstr ""
+msgstr "Журналы гидирования и отладки"
 
 #: log_uploader.cpp:1048
 msgid "Debug log"
-msgstr ""
+msgstr "Журнал отладки"
 
 #: log_uploader.cpp:1050
 msgid "Guide log"
-msgstr ""
+msgstr "Журнал гидирования"
 
 #: log_uploader.cpp:1137
 msgid "The log files have been uploaded and can be accessed at this link:"
-msgstr ""
+msgstr "Лог-файл загружен и может быть доступен по ссылке:"
 
 #: log_uploader.cpp:1140
 msgid ""
@@ -4144,16 +4222,20 @@ msgid ""
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
+"Можно поделиться своими лог-файлами на <a href=\"forum\">форуме PHD2</a>, "
+"отправив туда сообщение со ссылкой."
 
 #: log_uploader.cpp:1142
 msgid "Copy link to clipboard"
-msgstr ""
+msgstr "Скопировать ссылку в буфер обмена"
 
 #: log_uploader.cpp:1158
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
+"PHD2 не смогла загрузить лог-файл из-за внутренней ошибки. Сообщите об этой "
+"ошибке на форум PHD2."
 
 #: log_uploader.cpp:1161
 msgid ""
@@ -4161,12 +4243,17 @@ msgid ""
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"PHD2 не смогла загрузить лог-файлы. Возможно, сервис временно недоступен. "
+"Попробуйте ещё раз или переключитесь на другой сервис типа Dropbox или "
+"Google Drive."
 
 #: log_uploader.cpp:1165
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
+"При сжатии лог-файлов произошла ошибка. Убедитесь, что выбранные файлы "
+"доступны и попробуйте снова."
 
 #: log_uploader.cpp:1169
 msgid ""
@@ -4174,6 +4261,9 @@ msgid ""
 "allowed. Try selecting fewer files, or use an alternative file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
+"Общий размер сжатых лог файлов превышает максимально допустимый. Попробуйте "
+"выбрать меньшее количество файлов или используйте альтернативные сервисы "
+"типа Dropbox или Google Drive."
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -4285,6 +4375,9 @@ msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
+"Скорость гидирования камеры отличается от использовавшейся при последней "
+"калибровки. Откалибруйтесь снова или сбросьте скорость гидирования к "
+"прежнему значению."
 
 #: mount.cpp:1175
 msgid ""
@@ -4429,27 +4522,29 @@ msgstr "Запустить помощник гидирования"
 
 #: myframe.cpp:509
 msgid "&Drift Align"
-msgstr "Установка полюса дрейфом"
+msgstr "Выравнивание дрейфом"
 
 #: myframe.cpp:509
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
 msgstr ""
+"Выровнять путём анализа дрейфа звезды у небесного экватора (высокая точность)"
 
 #: myframe.cpp:510
 msgid "&Polar Drift Align"
-msgstr ""
+msgstr "Установка полюса дрейфом"
 
 #: myframe.cpp:510
 msgid "Align by analysing star drift near the celestial pole (Simple)"
 msgstr ""
+"Выровнять путём анализа дрейфа звезды у небесного полюса (приблизительно)"
 
 #: myframe.cpp:511
 msgid "&Static Polar Align"
-msgstr ""
+msgstr "Статическая установка полюса"
 
 #: myframe.cpp:511
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
-msgstr ""
+msgstr "Выровнять путём измерения оси α от небесного полюса (быстро)"
 
 #: myframe.cpp:513
 msgid "Enable Server"
@@ -4672,35 +4767,35 @@ msgstr "О программе %s"
 
 #: myframe.cpp:561
 msgid "&Check for updates"
-msgstr ""
+msgstr "Проверить обновления"
 
 #: myframe.cpp:561
 msgid "Check for PHD2 software updates"
-msgstr ""
+msgstr "Проверить обновления PHD2"
 
 #: myframe.cpp:562
 msgid "Online Support"
-msgstr ""
+msgstr "Онлайн поддержка"
 
 #: myframe.cpp:562
 msgid "Ask for help in the PHD2 Forum"
-msgstr ""
+msgstr "Попросить о помощи на форуме PHD2"
 
 #: myframe.cpp:563
 msgid "Open Log Folder"
-msgstr ""
+msgstr "Открыть папку логов"
 
 #: myframe.cpp:563
 msgid "Open the log folder"
-msgstr ""
+msgstr "Открыть папку логов"
 
 #: myframe.cpp:564
 msgid "Upload Log Files..."
-msgstr ""
+msgstr "Загрузить лог-файлы"
 
 #: myframe.cpp:564
 msgid "Upload log files for review"
-msgstr ""
+msgstr "Загрузить лог-файлы для просмотра"
 
 #: myframe.cpp:565
 msgid "&Contents...\tF1"
@@ -4745,21 +4840,21 @@ msgstr "&Справка"
 #: myframe.cpp:629 myframe.cpp:835 myframe.cpp:920
 #, c-format
 msgid "Custom: %g s"
-msgstr ""
+msgstr "Задано: %g сек."
 
 #: myframe.cpp:741
 #, c-format
 msgid "%g s"
-msgstr ""
+msgstr "%g сек"
 
 #: myframe.cpp:744
 #, c-format
 msgid "%.*f s"
-msgstr ""
+msgstr "%.*f s"
 
 #: myframe.cpp:921
 msgid "Edit Custom..."
-msgstr ""
+msgstr "Изменить..."
 
 #: myframe.cpp:925
 msgid "Camera exposure duration"
@@ -4829,7 +4924,7 @@ msgstr "Серия"
 
 #: myframe.cpp:1642
 msgid "Capturing single exposure"
-msgstr ""
+msgstr "Захват одиночного кадра"
 
 #: myframe.cpp:1689
 msgid "Waiting for devices..."
@@ -4942,10 +5037,12 @@ msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
 msgstr ""
+"Сбросить все настройки для обновление статуса установки. Требует "
+"перезагрузки PHD2"
 
 #: myframe.cpp:2689
 msgid "Reset \"Don't Show Again\" messages"
-msgstr "Сбросить сообщений \"Больше не показывать\""
+msgstr "Сброс сообщений \"Больше не показывать\""
 
 #: myframe.cpp:2690
 msgid ""
@@ -5015,19 +5112,19 @@ msgstr "Язык: %s. Перегрузитесь, чтобы изменения 
 
 #: myframe.cpp:2763
 msgid "Automatically check for updates"
-msgstr ""
+msgstr "Проверять обновления автоматически"
 
 #: myframe.cpp:2764
 msgid "Check for software updates when PHD2 starts (recommended)"
-msgstr ""
+msgstr "Проверять обновления при запуске PHD2"
 
 #: myframe.cpp:2766
 msgid "Only check for major releases"
-msgstr ""
+msgstr "Проверять только основные выпуски"
 
 #: myframe.cpp:2767
 msgid "Ignore minor (development) releases when checking for updates"
-msgstr ""
+msgstr "При проверке обновлений игнорировать разработческие выпуски"
 
 #: myframe.cpp:2774
 msgid "Log File Location"
@@ -5084,6 +5181,9 @@ msgid ""
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
 "and the current frame's error is 1.5 pixels, the relative error is 3"
 msgstr ""
+"Сохранить изображения гидирования если ошибка текущего кадра превышает "
+"среднюю. Например, если среднеквадратичная ошибка равна 0.5 пикселя, а "
+"ошибка текущего кадра 1.5 пикселя, относительная ошибка равна 3"
 
 #: myframe.cpp:2810
 msgid ""
@@ -5102,6 +5202,8 @@ msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
 msgstr ""
+"Сохранить кадры гидирования если расстояние между опорной звездой и "
+"выбранной позицией больше этих пикселей"
 
 #: myframe.cpp:2820
 msgid "Absolute error threshold in pixels"
@@ -5173,6 +5275,8 @@ msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr ""
+"Для этого профиля оборудования после подключения будут восстановлены данные "
+"последней успешной калибровки."
 
 #: myframe.cpp:2890
 msgid "Min"
@@ -5206,7 +5310,7 @@ msgstr "Автоэкспозиция"
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
-msgstr ""
+msgstr "Конфигурация будет сброшена и PHD2 перезагрузится. Вы уверены?"
 
 #: myframe.cpp:2977
 msgid "Confirmation"
@@ -5216,19 +5320,19 @@ msgstr "Подтверждение"
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
-msgstr ""
+msgstr "Перезагрузить PHD2, чтобы смена языка вступила в силу?"
 
 #: myframe.cpp:3003
 msgid "Restart PHD2"
-msgstr ""
+msgstr "Перезагрузить PH2"
 
 #: myframe_events.cpp:76
 msgid "Custom exposure duration (seconds)"
-msgstr ""
+msgstr "Заданная выдержка в секундах"
 
 #: myframe_events.cpp:76
 msgid "Edit custom exposure"
-msgstr ""
+msgstr "Изменить экспозицию"
 
 #: myframe_events.cpp:161
 msgid ""
@@ -5350,6 +5454,8 @@ msgid ""
 "calibration cannot proceed. Try reducing the AO Travel setting to %d or "
 "lower and try again."
 msgstr ""
+"АО превысила предел перемещений с (%d, %d) до (%d, %d) и калибровка не может "
+"быть произведена. Уменьшите предел до %d или ниже и попробуйте снова."
 
 #: myframe_events.cpp:566
 #, c-format
@@ -5357,6 +5463,8 @@ msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and has "
 "been re-centered. Try reducing the AO Travel setting to %d or lower."
 msgstr ""
+"АО превысила предел перемещений с (%d, %d) до (%d, %d) и ,была "
+"перецентрована. Уменьшите предел до %d или ниже."
 
 #: myframe_events.cpp:623
 msgid "You must connect a camera before loading a dark library"
@@ -5568,54 +5676,55 @@ msgstr "Моё оборудование"
 #: phdupdate.cpp:657
 #, c-format
 msgid "PHD2 version %s is available at %s"
-msgstr ""
+msgstr "Версия %s PHD2 доступна на %s"
 
 #: phdupdate.cpp:662
 #, c-format
 msgid "PHD2 version %s is ready to install. Update and restart PHD2 now?"
 msgstr ""
+"Версия PHD %s готова к установке. Обновить и перезагрузить PHD2 сейчас?"
 
 #: phdupdate.cpp:702
 #, c-format
 msgid "Downloading PHD2 version %s"
-msgstr ""
+msgstr "Загрузка PHD2 версии %s"
 
 #: phdupdate.cpp:722
 msgid "PHD2 Update"
-msgstr ""
+msgstr "Обновление PHD2"
 
 #: phdupdate.cpp:722
 msgid "Checking for updates"
-msgstr ""
+msgstr "Проверка обновлений"
 
 #: phdupdate.cpp:749
 msgid "PHD2 Update Available"
-msgstr ""
+msgstr "Обновление доступно"
 
 #: phdupdate.cpp:767
 msgid "Web Site"
-msgstr ""
+msgstr "Веб сайт"
 
 #: phdupdate.cpp:767
 msgid "Install"
-msgstr ""
+msgstr "Установить"
 
 #: phdupdate.cpp:783
 msgid "Change Log"
-msgstr ""
+msgstr "Журнал изменений"
 
 #: phdupdate.cpp:798 phdupdate.cpp:872
 #, c-format
 msgid "Closing in %d seconds"
-msgstr ""
+msgstr "Будет закрыто через %d секунд"
 
 #: phdupdate.cpp:918
 msgid "PHD2 is up to date"
-msgstr ""
+msgstr "Установлена последняя версия"
 
 #: phdupdate.cpp:924
 msgid "Unable to check updates"
-msgstr ""
+msgstr "Невозможно проверить обновления"
 
 #: polardrift_toolwin.cpp:64
 msgid ""
@@ -5627,14 +5736,20 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
+"Установка полюса методом дрейфа наиболее эффективна, когда PHD2 знает\n"
+"фокусное расстояние гидирующего телескопа и размер пикселей камеры.\n"
+"Введите фокусное расстояние гидирующего телескопа во вкладке Общее диалога "
+"'Мозг'.\n"
+"Введите размер пикселей камеры во вкладке Камера диалога 'Мозг'.\n"
+"Или Вы всё-таки хотите запустить Установку полюса? "
 
 #: polardrift_toolwin.cpp:80 staticpa_toolwin.cpp:124
 msgid "Please wait till Calibration is done and stop guiding"
-msgstr ""
+msgstr "Подождите завершения калибровки и остановите гидирование"
 
 #: polardrift_toolwin.cpp:109
 msgid "Polar Drift Alignment"
-msgstr ""
+msgstr "Установка полярной дрейфом"
 
 #: polardrift_toolwin.cpp:160
 msgid ""
@@ -5646,44 +5761,51 @@ msgid ""
 "Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle\n"
 msgstr ""
+"Наведитесь на область у небесного полюса.\n"
+"Выберите на главном экране опорную звезду.\n"
+"Нажмите \"Начать\"\n"
+"Подождите стабилизации изображения\n"
+"Нажмите \"Остановить\"\n"
+"С помощью настроек высоты и азимута расположите звезду в круге мишени\n"
 
 #: polardrift_toolwin.cpp:179 staticpa_toolwin.cpp:319
 msgid "Alignment Parameters"
-msgstr ""
+msgstr "Параметры выравнивания"
 
 #: polardrift_toolwin.cpp:190 staticpa_toolwin.cpp:335
 msgid "Hemisphere"
-msgstr ""
+msgstr "Полушарие"
 
 #: polardrift_toolwin.cpp:198 staticpa_toolwin.cpp:355
 msgid "Select your hemisphere"
-msgstr ""
+msgstr "Выбрать полушарие"
 
 #: polardrift_toolwin.cpp:218 staticpa_toolwin.cpp:438
 msgid "Adjustment notes"
-msgstr ""
+msgstr "Примечания к выравниванию"
 
 #: polardrift_toolwin.cpp:259
 msgid "Polar Drift alignment stopped"
-msgstr ""
+msgstr "Установка полярной дрейфом остановлена"
 
 #: polardrift_toolwin.cpp:261
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
-msgstr ""
+msgstr "Ошибка выравнивания полюса (угл.мин.): %1f угол (град.): %1f"
 
 #: polardrift_toolwin.cpp:276 staticpa_toolwin.cpp:541
 msgid "Please wait till Calibration is done and/or stop guiding"
-msgstr ""
+msgstr "Подождите завершения каоибровки и/или прекратите гидирование"
 
 #: polardrift_toolwin.cpp:281 staticpa_toolwin.cpp:546
 msgid "Please select a star"
-msgstr ""
+msgstr "Выберите звезду"
 
 #: polardrift_toolwin.cpp:402
 #, c-format
 msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
 msgstr ""
+"Время %.1f ошибки определения полюса (угл. мин.): %.1f Угол (град.): %.1f"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -5707,6 +5829,9 @@ msgid ""
 "can use the up/down control or type in a value directly. If the pixels "
 "aren't square, just enter the larger of the X/Y dimensions."
 msgstr ""
+"Возьмите значение из документации к камере или онлайновых источников.  Можно "
+"использовать стрелки 'Вверх' и 'Вниз' или ввести значение напрямую. Если "
+"пиксели не квадратные, введите наибольшее измерение."
 
 #: profile_wizard.cpp:137
 msgid "Guide camera un-binned pixel size (microns)"
@@ -5719,10 +5844,14 @@ msgid ""
 "use of fainter guide stars.  For more common set-ups, it's better to leave "
 "binning at 1."
 msgstr ""
+"Если камера поддерживает биннинг, можно выбрать значение биннинга > 1. При "
+"длинных фокусных расстояниях и использовании внеосевиков биннинг позволит "
+"использовать более тусклые опорные звёзды. В других случаях лучше оставить "
+"уровень биннинга 1."
 
 #: profile_wizard.cpp:144
 msgid "Binning level"
-msgstr ""
+msgstr "Уровень биннинга"
 
 #: profile_wizard.cpp:151
 msgid ""
@@ -5745,6 +5874,9 @@ msgid ""
 "default value (%0.1fX), which should produce a successful calibration in "
 "most cases"
 msgstr ""
+"Скорость гидирования монтировки, кратная солнечной скорости. Если не знаете "
+"её, оставьте значение по умолчанию (%0.1fX), что подходит для большинства "
+"случаев."
 
 #: profile_wizard.cpp:167
 msgid "Mount guide speed (n.n x sidereal)"
@@ -5802,6 +5934,13 @@ msgid ""
 "automatically.  You can also choose a binning-level if your camera supports "
 "binning."
 msgstr ""
+"Выберите свою гидирующую камеру из списка.  Если ваша камера не "
+"отображается, то она не поддерживается PHD2 или же её драйвер не установлен. "
+"Также необходимо указать размер пикселя сенсора камеры, фокусное расстояние "
+"гидирующего телескопа и скорость гидирования монтировки, чтобы PHD2 смог "
+"рассчитать подходящие значения. При выборе камеры можно сразу же подключить "
+"её, чтобы узнать размер пикселей. Также, если камера поддерживает биннинг, "
+"можно задать его уровень."
 
 #: profile_wizard.cpp:253
 #, c-format
@@ -5816,6 +5955,15 @@ msgid ""
 "choose a  mount, you'll usually be given the option to connect to it "
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
+"Выберите интерфейс монтировки из списка, чтобы определить, как PHD2 будет "
+"посылать монтировке команды гидирования.  Если Вы работаете под Windows, то "
+"интерфейс ASCOM - хороший выбор для большинства современных монтировок. Если "
+"ASCOM недоступен или плохо поддерживается ПО монтировки, можно выбрать "
+"другой интерфейс. Если известна скорость гидирования монтировки, её можно "
+"задать в PHD2 и тогда калибровка может быть более точной. Если скорость "
+"гидирования неизвестна, можно оставить значение по умолчанию %0.1fx. При "
+"выборе монтировки обычно можно сразу же подключиться к ней и PHD2 определит "
+"её скорость гидирования."
 
 #: profile_wizard.cpp:260
 msgid ""
@@ -5961,26 +6109,27 @@ msgstr ""
 
 #: profile_wizard.cpp:622
 msgid "Ask"
-msgstr ""
+msgstr "Спросить"
 
 #: profile_wizard.cpp:653
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
-msgstr ""
+msgstr "Скорость гидирования изменена с %0.1f на %0.1fx"
 
 #: profile_wizard.cpp:684
 msgid "PHD2 could not load the camera driver"
-msgstr ""
+msgstr "PHD2 не может загрузить драйвер камеры"
 
 #: profile_wizard.cpp:686
 msgid "PHD2 could not connect to the camera"
-msgstr ""
+msgstr "PHD2 не может подключить камеру"
 
 #: profile_wizard.cpp:703
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
+"Камера не может сообщить размер пикселя, придётся установить его вручную "
 
 #: profile_wizard.cpp:762
 msgid "Connecting to mount..."
@@ -5994,6 +6143,9 @@ msgid ""
 "can enter it manually.  Otherwise, you can just leave it at the default "
 "value of %0.1fx"
 msgstr ""
+"PHD2 не смог подключить монтировку. Если вы знаете скорость гидирования, то, "
+"можете ввести её вручную. В противном случае можно оставить значение по "
+"умолчанию %0.1fx"
 
 #: profile_wizard.cpp:780
 #, c-format
@@ -6002,10 +6154,12 @@ msgid ""
 "mount guide speed setting, you can enter it manually. Otherwise, you can "
 "just leave it at the default value of %0.1fx"
 msgstr ""
+"Видимо, этот драйвер монтировки не передаёт скорость гидирования. Введите её "
+"вручную, если знаете, если же нет, оставьте значение по умолчанию %0.1fx"
 
 #: profile_wizard.cpp:827
 msgid "Ask About Connection"
-msgstr ""
+msgstr "Запрос соединения"
 
 #: profile_wizard.cpp:840
 msgid ""
@@ -6014,10 +6168,13 @@ msgid ""
 "connected or its driver doesn't report the pixel-size, you can enter the "
 "value yourself using information in the camera manual or online. "
 msgstr ""
+"Обычно, если камера подключена к PC, PHD2 определит размер пикселя "
+"автоматически. Если камера не подключена или драйвер не распознаёт размер "
+"пикселя, его можно ввести вручную, взяв из руководства камеры или онлайн."
 
 #: profile_wizard.cpp:843
 msgid "Camera Already Connected?"
-msgstr ""
+msgstr "Камера уже подключена?"
 
 #: profile_wizard.cpp:847
 #, c-format
@@ -6027,10 +6184,14 @@ msgid ""
 "enter the guide-speed manually.  If you don't know what it is, just leave "
 "the setting at the default value of %0.1fx."
 msgstr ""
+"Если монтировка подключена и настроена для взаимодействия с PHD2, монтировка "
+"может определить скорость гидирования автоматически. Если нет, скорость "
+"гидирования можно ввести вручную. Если вы не знаете, что это такое, оставьте "
+"значение по умолчанию %0.1fx."
 
 #: profile_wizard.cpp:850
 msgid "Mount Already Connected?"
-msgstr ""
+msgstr "Монтировка уже подключена?"
 
 #: profile_wizard.cpp:854
 #, c-format
@@ -6041,10 +6202,15 @@ msgid ""
 "the default value of %0.1fx.  If the guide speed on the previous page "
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
+"Если дополнительная монтировка подключена, PHD2 может определить скорость "
+"гидирования автоматически. Если нет, её можно ввести вручную.  Если не "
+"знаете, что вводить, оставьте значение по умолчанию %01.fx. Если скорость "
+"гидирования на предыдущей странице не совпадает с тем, что прочитано из "
+"монтировки, будет использоваться значение  монтировки."
 
 #: profile_wizard.cpp:858
 msgid "Aux-mount Already Connected?"
-msgstr ""
+msgstr "Дополнительная монтировка уже подключена?"
 
 #: Refine_DefMap.cpp:65
 msgid "Refine Bad-pixel Map"
@@ -6140,7 +6306,7 @@ msgstr "Холодных пикселей:"
 
 #: Refine_DefMap.cpp:152
 msgid "Manually added pixels"
-msgstr "Введённых вручную"
+msgstr "Введённые вручную пиксели"
 
 #: Refine_DefMap.cpp:163
 msgid ""
@@ -6453,29 +6619,31 @@ msgstr "Количество"
 
 #: scope.cpp:1721
 msgid "Size of backlash compensation guide pulse"
-msgstr ""
+msgstr "Длительность импульса компенсации люфта"
 
 #: scope.cpp:1723
 msgid "Fixed-size"
-msgstr ""
+msgstr "Фиксированный размер"
 
 #: scope.cpp:1724
 msgid ""
 "Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC "
 "OSCILLATION, not recommended under normal conditions!"
 msgstr ""
+"Задаёт фиксированное значение компенсации люфта. МОЖЕТ ПРИВЕСТИ К КОЛЕБАНИЯМ "
+"ОСИ СКЛОНЕНИЯ, не рекомендуется в нормальных условиях!"
 
 #: scope.cpp:1730
 msgid "Limit"
-msgstr ""
+msgstr "Предел"
 
 #: scope.cpp:1730
 msgid "Maximum length of backlash correction pulse (mSec)."
-msgstr ""
+msgstr "Максимальная длина импульса коррекции люфта в мсек."
 
 #: scope.cpp:1732
 msgid "Backlash Compensation"
-msgstr ""
+msgstr "Компенсация люфта"
 
 #: scope.cpp:1737
 msgid "Use Dec compensation"
@@ -6576,7 +6744,7 @@ msgstr "Ошибка записи в GC USB ST4: %s(%d)"
 
 #: scope_gpusb.cpp:74
 msgid "Please restart PHD2 to re-connect to the GPUSB"
-msgstr ""
+msgstr "Перезагрузите PHD2, чтобы заново подключить GPUSB"
 
 #: scope_manual_pointing.cpp:80
 msgid "Approximate telescope declination, degrees"
@@ -6854,14 +7022,22 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
+"Статическое выравнивание работает эффективнее, когда известны\n"
+"фокусное расстояние телескопа и размер пикселей камеры.\n"
+"\n"
+"Введите фокусное расстояние телескопа во вкладке \"Общие\" по кнопке \"Мозг"
+"\".\n"
+"Введите размер пикселей камеры во вкладке \"Камера\" по кнопке \"Мозг\".\n"
+"\n"
+"Или всё-таки хотите запустить выравнивание без этого?"
 
 #: staticpa_toolwin.cpp:145
 msgid "Static PA rotation failed - star lost"
-msgstr ""
+msgstr "Сбой статической установки полярной из за потери звезды"
 
 #: staticpa_toolwin.cpp:163
 msgid "Static Polar Alignment"
-msgstr ""
+msgstr "Статическая установка полюса"
 
 #: staticpa_toolwin.cpp:257
 msgid ""
@@ -6871,6 +7047,13 @@ msgid ""
 "<br/>Wait for the adjustments to display.<br/>Adjust your mount's altitude "
 "and azimuth as displayed.<br/>Red=Altitude; Blue=Azimuth<br/>"
 msgstr ""
+"Наведитесь ближе к небесному полюсу<br/>Выберите опорную звезду из списка."
+"<br/>Используйте звёздную карту для определения звёзд.<br/> Выберите на "
+"главном экране звезду для гидирования.<br/>Нажмите 'Вращать', чтобы начать "
+"выравнивание.<br/>Подождите поправок на экране.<br/>Подгоните значения "
+"высоты и азимута, как будет показано.<br/>Красный = высота, синий = азимут."
+"<br/>\n"
+" "
 
 #: staticpa_toolwin.cpp:267
 msgid ""
@@ -6882,139 +7065,149 @@ msgid ""
 "for the adjustments to display.<br/>Adjust your mount's altitude and azimuth "
 "to place three reference stars on their orbits\n"
 msgstr ""
+"Наведитесь ближе к небесному полюсу<br/>Выберите опорную звезду из списка."
+"<br/>Используйте звёздную карту для определения звёзд.<br/> Выберите на "
+"главном экране звезду для гидирования.<br/>Нажмите 'Получить первую "
+"позицию'<br/>Уведите телескоп как минимум на 20 минут по прямому восхождению."
+"<br/>Нажмите 'Получить вторую позицию'<br/>Повторите то же самое для третьей "
+"позиции.<br/>Подождите поправок на экране.<br/>Подгоните значения высоты и "
+"азимута таким образом, чтобы разместить три опорные звезды на их орбитах.\n"
 
 #: staticpa_toolwin.cpp:331
 msgid "Hour Angle"
-msgstr ""
+msgstr "Часовой угол"
 
 #: staticpa_toolwin.cpp:340
 msgid "Reference Star"
-msgstr ""
+msgstr "Контрольная звезда"
 
 #: staticpa_toolwin.cpp:347
 msgid "Set your scope hour angle"
-msgstr ""
+msgstr "Установка угла телескопа"
 
 #: staticpa_toolwin.cpp:361
 msgid "Select the star used for checking alignment."
-msgstr ""
+msgstr "Выбрать звезду для проверки выравнивания"
 
 #: staticpa_toolwin.cpp:364
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: staticpa_toolwin.cpp:371
 msgid "Camera Angle"
-msgstr ""
+msgstr "Угол камеры"
 
 #: staticpa_toolwin.cpp:375
 msgid "Arcsec/pixel"
-msgstr ""
+msgstr "Угл.сек./пиксель"
 
 #: staticpa_toolwin.cpp:379
 msgid "Manual Slew"
-msgstr ""
+msgstr "Навестись вручную"
 
 #: staticpa_toolwin.cpp:382
 msgid "Manually slew the mount to three alignment positions"
-msgstr ""
+msgstr "Навестись вручную на три позиции для выравнивания"
 
 #: staticpa_toolwin.cpp:395 staticpa_toolwin.cpp:642
 msgid "Rotate"
-msgstr ""
+msgstr "Вращать"
 
 #: staticpa_toolwin.cpp:401
 msgid "Flip camera"
-msgstr ""
+msgstr "Переложить камеру"
 
 #: staticpa_toolwin.cpp:404
 msgid "Invert the camera angle"
-msgstr ""
+msgstr "Переложить угол камеры"
 
 #: staticpa_toolwin.cpp:406
 msgid "Get second position"
-msgstr ""
+msgstr "Получить вторую позицию"
 
 #: staticpa_toolwin.cpp:412
 msgid "Show Orbits"
-msgstr ""
+msgstr "Показать орбиты"
 
 #: staticpa_toolwin.cpp:415
 msgid "Show or hide the star orbits"
-msgstr ""
+msgstr "Показать или скрыть звёздные орбиты"
 
 #: staticpa_toolwin.cpp:417
 msgid "Get third position"
-msgstr ""
+msgstr "Получить третью позицию"
 
 #: staticpa_toolwin.cpp:534
 msgid "Static alignment stopped"
-msgstr ""
+msgstr "Статическая установка полюса остановлена"
 
 #: staticpa_toolwin.cpp:589
 msgid "Static Polar alignment display cleared"
-msgstr ""
+msgstr "Статическая установка полюса сброшена"
 
 #: staticpa_toolwin.cpp:623
 msgid "Star Map"
-msgstr ""
+msgstr "Звёздная карта"
 
 #: staticpa_toolwin.cpp:652
 msgid "Get first position"
-msgstr ""
+msgstr "Получить первую позицию"
 
 #: staticpa_toolwin.cpp:822
 #, c-format
 msgid "Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f"
-msgstr ""
+msgstr "Ошибка выравнивания полюса (угл. мин.): выс. %.1f; аз. %.1f всего %.1f"
 
 #: staticpa_toolwin.cpp:1051
 #, c-format
 msgid "Reading Star Position #%d"
-msgstr ""
+msgstr "Чтение положения звезды #%d"
 
 #: staticpa_toolwin.cpp:1059 staticpa_toolwin.cpp:1143
 msgid "Error setting rotation parameters: Stopping"
-msgstr ""
+msgstr "Ошибка установки параметра вращения: остановка"
 
 #: staticpa_toolwin.cpp:1065 staticpa_toolwin.cpp:1089
 #: staticpa_toolwin.cpp:1119 staticpa_toolwin.cpp:1173
 #, c-format
 msgid "Error reading star position #%d: Stopping"
-msgstr ""
+msgstr "Ошибка чтения положения звезды #%d: остановка"
 
 #: staticpa_toolwin.cpp:1098
 #, c-format
 msgid "Star Pos#2 Step=%d / %d Rotated=%.1f / %.1f deg"
-msgstr ""
+msgstr "Позиция звезды#2 Шаг=%d / %d Вращение=%.1f / %.1f град."
 
 #: staticpa_toolwin.cpp:1110
 #, c-format
 msgid "Error moving west step %d: Stopping"
-msgstr ""
+msgstr "Ошибка движения на шаг к западу %d : остановка"
 
 #: staticpa_toolwin.cpp:1136
 #, c-format
 msgid "Star Pos#2 Mount did not move. Calculated polar offset=%.1f deg"
 msgstr ""
+"Позиция звезды#2 не изменилась. Подсчитанное смещение полюса=%.1f град."
 
 #: staticpa_toolwin.cpp:1156
 #, c-format
 msgid "Star is too close to CoR (%.1f deg) - try another reference star"
 msgstr ""
+"Опорная звезда слишком близка к центру окружности (%.1f град.) - выберите "
+"другую"
 
 #: staticpa_toolwin.cpp:1224
 #, c-format
 msgid "Read Position #%d: %.0f, %.0f"
-msgstr ""
+msgstr "Чтение позиции #%d: %.0f, %.0f"
 
 #: statswindow.cpp:70
 msgid "RMS [px]"
-msgstr ""
+msgstr "Среднеквадр.[пикс.]"
 
 #: statswindow.cpp:71
 msgid "Peak [px]"
-msgstr ""
+msgstr "Пик [пикс]"
 
 #: statswindow.cpp:75
 msgid " 99.99 (99.99'')"
@@ -7084,16 +7277,16 @@ msgstr "%.f"
 #: statswindow.cpp:237
 #, c-format
 msgid " / %.f"
-msgstr ""
+msgstr " / %.f"
 
 #: statswindow.cpp:237
 #, c-format
 msgid ", %.f%%"
-msgstr ""
+msgstr ", %.f%%"
 
 #: statswindow.cpp:239
 msgid ", Off"
-msgstr ""
+msgstr ", выкл."
 
 #: statswindow.cpp:267
 msgid " arc-min"
@@ -7448,339 +7641,3 @@ msgstr "Подключение камеры..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
-
-#~ msgid "Measurement encountered an error: %s"
-#~ msgstr "При измерении обнаружена ошибка: %s"
-
-#~ msgid "Use backlash comp"
-#~ msgstr "Использовать компенсацию люфта"
-
-#~ msgid ""
-#~ "Length of backlash correction pulse (mSec). This will be automatically "
-#~ "adjusted based on observed performance."
-#~ msgstr ""
-#~ "Продолжительность корректирующего люфт импульса в мсек. Вычисляется "
-#~ "автоматически на основании наблюдаемой производительности."
-
-#~ msgid ""
-#~ "Estimate of declination backlash if backlash testing was completed "
-#~ "successfully"
-#~ msgstr "Оценка люфта по склонению при успешном тестировании люфта"
-
-#~ msgid ""
-#~ "Guiding output is disabled and star movement is being measured.  Click "
-#~ "Stop when the RMS values have stabilized (at least 2 minutes)."
-#~ msgstr ""
-#~ "Гидирование отключено для измерения движений звезды. Нажмите "
-#~ "'Остановить', когда среднеквадратичные значения стабилизируются (не менее "
-#~ "одной минуты)."
-
-#~ msgid "ms"
-#~ msgstr "мсек"
-
-#~ msgid "Try setting a Dec backlash value of %d ms"
-#~ msgstr "Попробовать установить величину люфта склонения в %d"
-
-#~ msgid ""
-#~ "Backlash is %0.1f px; you may need to guide in only one Dec direction"
-#~ msgstr ""
-#~ "Люфт составляет %0.1f пикс; возможно, придётся гидировать только по δ"
-
-#~ msgid "Mass"
-#~ msgstr "Масса"
-
-#~ msgid ""
-#~ "If you are using a guide port (On-camera or GPXXX) interface  for "
-#~ "guiding, you can also use an 'aux' connection to your %s-compatible "
-#~ "mount. This will be used to make automatic calibration adjustments based "
-#~ "on declination and side-of-pier.  If you have already selected an %s "
-#~ "driver for your 'mount', the 'aux' mount parameter will not be used.'"
-#~ msgstr ""
-#~ "Используя порт гида, можно также подключить 'дополнительную' %s- "
-#~ "совместимую монтировку. Если Вы уже выбрали драйвер %s для своей "
-#~ "монтировки, 'дополнительную' монтировку нельзя будет использовать."
-
-#~ msgid "Run the Drift Alignment tool"
-#~ msgstr "Запустить установку полюса"
-
-#~ msgid ""
-#~ "Click Detect to read the pixel size from the camera. Otherwise, you can "
-#~ "get this value from your camera documentation or from an online source.  "
-#~ "You can use the up/down control or type in a value directly."
-#~ msgstr ""
-#~ "Шёлкните \"Определить\", чтобы узнать от камеры размер её пикселей. Это "
-#~ "также можно узнать из документации или сетевых ресурсов. Можно ввести "
-#~ "значение или выбрать его стрелками."
-
-#~ msgid "Detect"
-#~ msgstr "Определить"
-
-#~ msgid "Connect to camera and detect pixel size"
-#~ msgstr "Подключить камеру и определить размер пикселей"
-
-#~ msgid ""
-#~ "The mount guide speed you will use for calibration and guiding, expressed "
-#~ "as a multiple of the sidereal rate. If you don't know, leave the setting "
-#~ "at the default value (0.5X)"
-#~ msgstr ""
-#~ "Скорость, используемая для калибровки и гидирования, по отношению к "
-#~ "солнечной. Если вы её не знаете, оставьте значение по умолчанию (0.5X)"
-
-#~ msgid "Connect to mount and detect guide speed"
-#~ msgstr "Подключиться к монтировке и узнать скорость гидирования"
-
-#~ msgid ""
-#~ "Select your guide camera from the list.  All cameras supported by PHD2 "
-#~ "and all installed ASCOM cameras are shown. If your camera is not shown, "
-#~ "it is either not supported by PHD2 or its camera driver is not installed. "
-#~ "You must also specify the camera pixel size and guide scope focal length "
-#~ "so PHD2 can compute reasonable guiding parameters for you."
-#~ msgstr ""
-#~ "Выберите свою гидирующую камеру из списка.  Если ваша камера не "
-#~ "отображается, то она не поддерживается PHD2 или же её драйвер не "
-#~ "установлен. Также необходимо указать размер пикселя сенсора камеры, "
-#~ "фокусное расстояние гидирующего телескопа и скорость гидирования "
-#~ "монтировки, чтобы PHD2 смог рассчитать подходящие значения по умолчанию."
-
-#~ msgid ""
-#~ "Select your mount interface from the list.  This determines how PHD2 will "
-#~ "send guide commands to the mount. For most modern mounts, the ASCOM "
-#~ "interface is a good choice if you are running MS Windows.  The other "
-#~ "interfaces are available for cases where ASCOM isn't available or isn't "
-#~ "well supported by mount firmware.  You should specify the mount guide "
-#~ "speed so PHD2 can calibrate efficiently."
-#~ msgstr ""
-#~ "Выберите интерфейс монтировки из списка, чтобы определить, как PHD2 будет "
-#~ "управлять телескопом и получать от него информацию. Если Вы работаете под "
-#~ "Windows, то интерфейс ASCOM - хороший выбор для большинства современных "
-#~ "монтировок. Если ASCOM недоступен или плохо поддерживается ПО монтировки, "
-#~ "можно выбрать другой интерфейс."
-
-#~ msgid "Could not initialize camera"
-#~ msgstr "Невозможно инициализировать камеру"
-
-#~ msgid "Connecting to camera..."
-#~ msgstr "Подключение камеры..."
-
-#~ msgid "Could not connect to camera"
-#~ msgstr "Невозможно подключить камеру"
-
-#~ msgid "Camera driver cannot report pixel size"
-#~ msgstr "Драйвер камеры не может сообщить размер пикселя"
-
-#~ msgid "Detect Pixel Size"
-#~ msgstr "Определить размер пикселя"
-
-#~ msgid "Could not initialize mount"
-#~ msgstr "Невозможно проинициализировать монтировку"
-
-#~ msgid "Could not connect to mount"
-#~ msgstr "Невозможно подключиться к монтировке"
-
-#~ msgid "Mount driver cannot report guide speeds"
-#~ msgstr "Драйвер монтировки не может выдать скорость гидирования"
-
-#~ msgid "Detect mount guide speed"
-#~ msgstr "Определить скорость гидирования монтировки"
-
-#~ msgid "ASCOM Camera Driver missing required property "
-#~ msgstr "Отсутствует параметр, необходимый драйверу камеры ASCOM"
-
-#~ msgid ""
-#~ "ASCOM driver missing the CanPulseGuide property. Please report this error "
-#~ "to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр CanPulseGuide. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CanAbortExposure property. Please report this "
-#~ "error to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр CanAbortExposure. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CanStopExposure property. Please report this "
-#~ "error to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр CanStopExposure. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CameraXSize property. Please report this error "
-#~ "to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр CameraXSize. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CameraYSize property. Please report this error "
-#~ "to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр CameraYSize. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the PixelSizeX property. Please report this error to "
-#~ "your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр PixelSizeX. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the PixelSizeY property. Please report this error to "
-#~ "your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит параметр PixelSizeY. Сообщите об ошибке "
-#~ "производителю дрейвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CanSetCCDTemperature property. Please report "
-#~ "this error to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит свойство CanSetCCDTemperature. Сообщите об этом "
-#~ "поставщику драйвера."
-
-#~ msgid ""
-#~ "ASCOM driver missing the CanGetCoolerPower property. Please report this "
-#~ "error to your ASCOM driver provider."
-#~ msgstr ""
-#~ "Драйвер ASCOM не находит свойство CanGetCoolerPower. Сообщите об этом "
-#~ "поставщику драйвера."
-
-#~ msgid "Already connected"
-#~ msgstr "Уже подсоединено"
-
-#~ msgid "RMS Error:"
-#~ msgstr "Среднеквадратичная ошибка:"
-
-#~ msgid "RMS"
-#~ msgstr "RMS"
-
-#~ msgid ""
-#~ ". Please enter the correct un-binned pixel size from the camera "
-#~ "documentation or vendor web site."
-#~ msgstr ""
-#~ "Введите из документации камеры или сайта продавца корректный размер "
-#~ "пикселя при выключенным биннинге."
-
-#~ msgid ". Please enter the correct mount guide speed"
-#~ msgstr ". Введите правильную скорость гидирования монтировки"
-
-#~ msgid ""
-#~ "Specify how guide commands will be sent to the mount - via an ASCOM or "
-#~ "Indi driver, directly from the camera or AO, or via one of the GPxxx "
-#~ "devices. An ASCOM connection is recommended."
-#~ msgstr ""
-#~ "Задать способ посылки монтировке гидирующих команд - через драйвера ASCOM "
-#~ "или Indi, напрямую с камеры или АО или через одно из устройств GPxxx. "
-#~ "Предпочтительнее использовать ASCOM. "
-
-#~ msgid ""
-#~ "Camera gain, default = 95 % , lower if you experience noise or wish to "
-#~ "guide on a very bright star. Not available on all cameras."
-#~ msgstr ""
-#~ "Чувствительность камеры, по умолчанию 95%, уменьшить при шумах или "
-#~ "гидировании по очень яркой звезде. Доступно не для всех камер."
-
-#~ msgid ""
-#~ "What percent of the measured error should be applied? Default = %.f%%, "
-#~ "adjust if responding too much or too slowly"
-#~ msgstr ""
-#~ "Какой процент ошибок изменения приемлем? По умолчанию %.f%%, измените, "
-#~ "если отклик слишком быстрый или медленный"
-
-#~ msgid "Weighting of slope parameter in lowpass auto-dec"
-#~ msgstr "Коэффициент наклона алгоритма сглаживания по склонению"
-
-#~ msgid "Aggressiveness factor, percent. Default = %.f%%"
-#~ msgstr "Коэффициент агрессивности в процентах. По  умолчанию %.f%%"
-
-#~ msgid ""
-#~ "Reset all configuration and program settings to fresh install status -- "
-#~ "Note: this closes PHD2"
-#~ msgstr "Сброс конфигурации и настроек программы  (закроет PHD2)"
-
-#~ msgid ""
-#~ "Automatically restore calibration data from last successful calibration "
-#~ "when connecting equipment."
-#~ msgstr ""
-#~ "Восстановить данные из последней успешной калибровки во время подключения "
-#~ "оборудования."
-
-#~ msgid ""
-#~ "This will reset all PHD2 configuration values and exit the program.  Are "
-#~ "you sure?"
-#~ msgstr ""
-#~ "Все настройки PHD2 сбросятся и программа завершится. Вы уверены, что "
-#~ "хотите этого?"
-
-#~ msgid "You must restart PHD2 for the language change to take effect."
-#~ msgstr "Чтобы сменить язык, необходимо перезапустить PHD2"
-
-#~ msgid "CCD"
-#~ msgstr "CCD"
-
-#~ msgid "Main imager"
-#~ msgstr "Главная камера"
-
-#~ msgid "Camera DLL missing entry %s"
-#~ msgstr "Отсутствует DLL камеры %s"
-
-#~ msgid "Cannot load camera dll %s.dll"
-#~ msgstr "Невозможно загрузить библиотеку камеры %s.dll"
-
-#~ msgid "Prediction"
-#~ msgstr "Прогноз"
-
-#~ msgid "Show expert options"
-#~ msgstr "Показать параметры для продвинутых пользователей"
-
-#~ msgid ""
-#~ "Shows the expert options for tuning the predictions. Use at your own risk!"
-#~ msgstr ""
-#~ "Показывает параметры настройки прогноза для продвинутого пользователя. "
-#~ "Используйте на свой страх и риск!"
-
-#~ msgid "Disables the use of the measurements, useful only for testing."
-#~ msgstr "Без измерений, только для тестирования."
-
-#~ msgid "Camera-specific Properties"
-#~ msgstr "Настройки, зависящие от модели камеры"
-
-#~ msgid "Gaussian Process Guide Algorithm"
-#~ msgstr "Гауссовский Алгоритм Гидирования"
-
-#~ msgid "Control Gain"
-#~ msgstr "Управлять чувствительностью"
-
-#~ msgid "Description of the control gain. Default = 1.0"
-#~ msgstr "Чувствительность, по умолчанию 1.0"
-
-#~ msgid "Mass: %.0f vs %.0f"
-#~ msgstr "Зв. вел.: %.0f вместо %.0f"
-
-#~ msgid "Gaussian Process"
-#~ msgstr "Гауссовский процесс"
-
-#~ msgid "Enable Star Image Logging"
-#~ msgstr "Включить логирование звёздных изображений"
-
-#~ msgid "Enable logging of star images"
-#~ msgstr "Включить логирование звёздных изображений"
-
-#~ msgid "Low Q JPEG"
-#~ msgstr "JPEG низкого качества"
-
-#~ msgid "High Q JPEG"
-#~ msgstr "JPEG высокого качества"
-
-#~ msgid "Raw FITS"
-#~ msgstr "Сырой FITS"
-
-#~ msgid "Image logging format"
-#~ msgstr "Формат логгирования изображений"
-
-#~ msgid "File format of logged images"
-#~ msgstr "Формат файла лога изображений"
