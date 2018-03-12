@@ -35,17 +35,36 @@
 #ifndef GUIDE_ALGORITHM_BUTTERWORTH_H_INCLUDED
 #define GUIDE_ALGORITHM_BUTTERWORTH_H_INCLUDED
 
+#include "filterfactory.h"
+
 class GuideAlgorithmButterworth : public GuideAlgorithm
 {
-    static const unsigned int max_order = 4;
-    double m_xv[max_order + 1], m_yv[max_order + 1];
-
+    int    m_filter;
+    std::vector<double> m_xv, m_yv;  // Historical values up to m_order
+    std::vector<double> m_xcoeff, m_ycoeff;
+    int m_order;
+    double m_gain;
     double m_minMove;
+
+    FilterFactory *m_pFactory;
+    class Filter
+    {
+    public:
+        std::string name;
+        int order;
+        double corner;
+        double gain;
+        std::vector<double> ycoeffs;
+        Filter(const char* a, int o, double c, double g, std::vector<double> y) :name(a), order(o), corner(c), gain(g), ycoeffs(y) {};
+    };
+    std::vector<Filter> c_Filter; // Filter options
+    double calcxcoeff(int order, int n);
 
 protected:
     class GuideAlgorithmButterworthConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmButterworth *m_pGuideAlgorithm;
+        wxChoice         *m_pFilter;  // Listbox for filters
         wxSpinCtrlDouble *m_pMinMove;
 
     public:
@@ -70,6 +89,8 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
+    int GetFilter(void);
+    bool SetFilter(int Order);
     double GetMinMove(void);
     bool SetMinMove(double minMove);
 
@@ -91,9 +112,21 @@ public:
     virtual bool SetParam(const wxString& name, double val);
 };
 
+inline int GuideAlgorithmButterworth::GetFilter(void)
+{
+    return m_filter;
+}
+
 inline double GuideAlgorithmButterworth::GetMinMove(void)
 {
     return m_minMove;
+}
+
+inline double GuideAlgorithmButterworth::calcxcoeff(int order, int n)
+{
+    if (n == 0 || n == order) return 1.0;
+    if (n > order) return 0.0;
+    return calcxcoeff(order - 1, n - 1) + calcxcoeff(order - 1, n);
 }
 
 #endif /* GUIDE_ALGORITHM_BUTTERWORTH_H_INCLUDED */
