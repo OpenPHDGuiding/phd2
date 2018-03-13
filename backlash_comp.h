@@ -159,7 +159,7 @@ public:
     void ResetBaseline();
 
 private:
-    void _TrackBLCResults(unsigned int moveTypeOtions, double yDistance, double minMove, double yRate);
+    void _TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate);
     void SetCompValues(int requestSize, bool fixedSize, int ceiling);
 };
 

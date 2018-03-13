@@ -41,7 +41,7 @@ static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms
 
 BacklashComp::BacklashComp(Scope *scope)
 {
-    m_pScope = reinterpret_cast<Scope *>(scope);
+    m_pScope = scope;
     int lastAmt = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", 0);
     int lastCeiling = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", 0);
     bool lastFixed = pConfig->Profile.GetBoolean("/" + m_pScope->GetMountClassName() + "/DecBacklashFixed", false);
@@ -123,7 +123,7 @@ void BacklashComp::ResetBaseline()
     }
 }
 
-inline void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
+void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
 {
     if (moveTypeOptions & MOVEOPT_USE_BLC)
     {
