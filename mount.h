@@ -118,11 +118,21 @@ struct CalibrationDetails
     wxString origTimestamp;
 };
 
-enum MountMoveType
+enum MountMoveOptionBits
 {
-    MOVETYPE_DIRECT,    // direct move, do not use guide algorithm
-    MOVETYPE_ALGO,      // normal guide move, use guide algorithm
-    MOVETYPE_DEDUCED,   // deduced move (dead-reckoning)
+    MOVEOPT_ALGO_RESULT = (1<<0),    // filter move through guide algorithm
+    MOVEOPT_ALGO_DEDUCE = (1<<1),    // use guide algorithm to deduce the move amount (when paused or star lost)
+    MOVEOPT_USE_BLC     = (1<<2),    // use backlash comp for this move
+    MOVEOPT_GRAPH       = (1<<3),    // display the move on the graphs
+};
+
+enum
+{
+    MOVEOPTS_CALIBRATION_MOVE = 0,
+    MOVEOPTS_GUIDE_STEP       = MOVEOPT_ALGO_RESULT | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
+    MOVEOPTS_DEDUCED_MOVE     = MOVEOPT_ALGO_DEDUCE | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
+    MOVEOPTS_RECOVERY_MOVE    = MOVEOPT_USE_BLC,
+    MOVEOPTS_AO_BUMP          = MOVEOPT_USE_BLC,
 };
 
 struct MoveResultInfo
@@ -246,7 +256,7 @@ public:
     bool GetGuidingEnabled(void) const;
     void SetGuidingEnabled(bool guidingEnabled);
 
-    virtual MOVE_RESULT Move(GuiderOffset *guiderOffset, MountMoveType moveType);
+    virtual MOVE_RESULT Move(GuiderOffset *guiderOffset, unsigned int moveOptions);
 
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint, bool logged = true);
@@ -277,7 +287,7 @@ public:
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
     virtual int CalibrationTotDistance(void) = 0;

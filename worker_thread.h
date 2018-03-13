@@ -72,7 +72,7 @@ struct MOVE_REQUEST
     int                duration;
     GUIDE_DIRECTION    direction;
     bool               calibrationMove;
-    MountMoveType      moveType;
+    unsigned int       moveOptions;
     Mount::MOVE_RESULT moveResult;
     GuiderOffset       ofs;
     wxSemaphore       *semaphore;
@@ -180,8 +180,8 @@ protected:
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType);
-    void EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRECTION direction, int duration);
+    void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
+    void EnqueueWorkerThreadCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration);
 protected:
     Mount::MOVE_RESULT HandleMove(MOVE_REQUEST *args);
     void SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult);

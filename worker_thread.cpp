@@ -214,7 +214,7 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -227,13 +227,13 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffs
     message.args.move.mount           = mount;
     message.args.move.calibrationMove = false;
     message.args.move.ofs             = ofs;
-    message.args.move.moveType        = moveType;
+    message.args.move.moveOptions     = moveOptions;
     message.args.move.semaphore       = nullptr;
 
     EnqueueMessage(message);
 }
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRECTION direction, int duration)
+void WorkerThread::EnqueueWorkerThreadCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -247,7 +247,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *mount, const GUIDE_DIRE
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
     message.args.move.duration        = duration;
-    message.args.move.moveType        = MOVETYPE_DIRECT;
+    message.args.move.moveOptions     = MOVEOPTS_CALIBRATION_MOVE;
     message.args.move.semaphore       = nullptr;
 
     EnqueueMessage(message);
@@ -280,7 +280,7 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *req)
                 Debug.Write(wxString::Format("endpoint = (%.2f, %.2f)\n",
                     req->ofs.cameraOfs.X, req->ofs.cameraOfs.Y));
 
-                result = req->mount->Move(&req->ofs, req->moveType);
+                result = req->mount->Move(&req->ofs, req->moveOptions);
                 if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("Move failed");

@@ -522,7 +522,7 @@ Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duratio
     try
     {
         MoveResultInfo move;
-        result = Move(direction, duration, MOVETYPE_DIRECT, &move);
+        result = Move(direction, duration, MOVEOPTS_CALIBRATION_MOVE, &move);
 
         if (result != MOVE_OK)
         {
@@ -579,14 +579,14 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
     }
 }
 
-Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMoveType moveType, MoveResultInfo *moveResult)
+Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
     bool limitReached = false;
 
     try
     {
-        Debug.Write(wxString::Format("Move(%d, %d, %d)\n", direction, duration, moveType));
+        Debug.Write(wxString::Format("Move(%d, %d, %u)\n", direction, duration, moveOptions));
 
         if (!m_guidingEnabled)
         {
@@ -600,8 +600,8 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
             case NORTH:
             case SOUTH:
 
-                // Do not enforce dec guiding mode and max dec duration for direct moves
-                if (moveType != MOVETYPE_DIRECT)
+                // Enforce dec guide mode and max duration for guide step (or deduced step) moves
+                if (moveOptions & (MOVEOPT_ALGO_RESULT | MOVEOPT_ALGO_DEDUCE))
                 {
                     if ((m_decGuideMode == DEC_NONE) ||
                         (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
@@ -635,8 +635,8 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMov
             case EAST:
             case WEST:
 
-                // Do not enforce max dec duration for direct moves
-                if (moveType != MOVETYPE_DIRECT)
+                // Enforce max duration for guide step (or deduced step) moves
+                if (moveOptions & (MOVEOPT_ALGO_RESULT | MOVEOPT_ALGO_DEDUCE))
                 {
                     if (duration > m_maxRaDuration)
                     {

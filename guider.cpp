@@ -1217,7 +1217,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
                     // allow guide algorithms to attempt dead reckoning
                     static GuiderOffset ZERO_OFS;
-                    pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
+                    pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVEOPTS_DEDUCED_MOVE);
 
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
@@ -1252,7 +1252,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             {
                 // allow guide algorithms to attempt dead reckoning
                 static GuiderOffset ZERO_OFS;
-                pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVETYPE_DEDUCED);
+                pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVEOPTS_DEDUCED_MOVE);
             }
 
             statusMessage = _("Paused");
@@ -1355,7 +1355,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 if (m_ditherRecenterRemaining.IsValid())
                 {
                     // fast recenter after dither taking large steps and bypassing
-                    // guide algorithms (moveType = MOVETYPE_DIRECT)
+                    // guide algorithms
 
                     PHD_Point step(wxMin(m_ditherRecenterRemaining.X, m_ditherRecenterStep.X),
                                    wxMin(m_ditherRecenterRemaining.Y, m_ditherRecenterStep.Y));
@@ -1376,7 +1376,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
                     ofs.mountOfs.SetXY(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
                     pMount->TransformMountCoordinatesToCameraCoordinates(ofs.mountOfs, ofs.cameraOfs);
-                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVETYPE_DIRECT);
+                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVEOPTS_RECOVERY_MOVE);
                     // let guide algorithms know about the direct move
                     pMount->NotifyDirectMove(ofs.mountOfs);
                 }
@@ -1388,7 +1388,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 {
                     // ordinary guide step
                     s_deflectionLogger.Log(CurrentPosition());
-                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVETYPE_ALGO);
+                    pFrame->SchedulePrimaryMove(pMount, ofs, MOVEOPTS_GUIDE_STEP);
                 }
                 break;
 

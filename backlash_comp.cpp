@@ -39,16 +39,15 @@
 static const unsigned int HISTORY_SIZE = 10;
 static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms
 
-BacklashComp::BacklashComp(Mount *theMount)
+BacklashComp::BacklashComp(Scope *scope)
 {
-    m_pMount = theMount;
-    m_pScope = reinterpret_cast<Scope *>(theMount);
-    int lastAmt = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", 0);
-    int lastCeiling = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", 0);
-    bool lastFixed = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/DecBacklashFixed", false);
+    m_pScope = reinterpret_cast<Scope *>(scope);
+    int lastAmt = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", 0);
+    int lastCeiling = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", 0);
+    bool lastFixed = pConfig->Profile.GetBoolean("/" + m_pScope->GetMountClassName() + "/DecBacklashFixed", false);
     SetCompValues(lastAmt, lastFixed, lastCeiling);
     if (m_pulseWidth > 0)
-        m_compActive = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", false);
+        m_compActive = pConfig->Profile.GetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", false);
     else
         m_compActive = false;
     m_justCompensated = false;
@@ -97,9 +96,9 @@ void BacklashComp::SetBacklashPulse(int ms, bool fixedSize, int ceiling)
             m_pulseWidth, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
     }
 
-    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
-    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", m_adjustmentCeiling);
-    pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/DecBackLashFixed", m_fixedSize);
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", m_adjustmentCeiling);
+    pConfig->Profile.SetBoolean("/" + m_pScope->GetMountClassName() + "/DecBackLashFixed", m_fixedSize);
 }
 
 void BacklashComp::EnableBacklashComp(bool enable)
@@ -110,7 +109,7 @@ void BacklashComp::EnableBacklashComp(bool enable)
     }
 
     m_compActive = enable;
-    pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
+    pConfig->Profile.SetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));
 }
 
@@ -124,7 +123,30 @@ void BacklashComp::ResetBaseline()
     }
 }
 
-void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRate)
+inline void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
+{
+    if (moveTypeOptions & MOVEOPT_USE_BLC)
+    {
+        // only track algorithm result moves, do not track "fast
+        // recovery after dither" moves or deduced moves or AO bump
+        // moves
+        // TODO-bw is this right?
+        bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+
+        if (isAlgoResultMove)
+        {
+            if (m_justCompensated && !m_fixedSize)
+                _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
+        }
+    }
+    else
+    {
+        // BLC not allowed -- a calibration move or something like that
+        ResetBaseline();
+    }
+}
+
+void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
 {
     assert(m_justCompensated); // caller checks this
 
@@ -186,7 +208,7 @@ void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRa
                 Debug.Write(wxString::Format("BLC: Adjustment from %d to %d based on avg residual of %.1f px\n", m_pulseWidth, newBLC, avgMiss));
                 if (nominalBLC > m_adjustmentCeiling)
                     Debug.Write("BLC: Adjustment upward limited by ceiling\n");
-                pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", newBLC);
+                pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", newBLC);
                 SetCompValues(newBLC, false, m_adjustmentCeiling);
             }
             else
@@ -200,8 +222,11 @@ void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRa
 }
 
 // Possibly add the backlash comp to the pending guide pulse (yAmount)
-void BacklashComp::ApplyBacklashComp(int dir, double yDist, int *yAmount)
+void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount)
 {
+    if (*yAmount == 0 || !m_pScope->GetGuidingEnabled())
+        return;
+
     m_justCompensated = false;
 
     if (!m_compActive || m_pulseWidth <= 0 || yDist == 0.0)

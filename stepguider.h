@@ -209,8 +209,8 @@ public:
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    MOVE_RESULT Move(GuiderOffset *guiderOffset, MountMoveType moveType) final;
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo) final;
+    MOVE_RESULT Move(GuiderOffset *guiderOffset, unsigned int moveOptions) final;
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps) final;
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);

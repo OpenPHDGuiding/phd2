@@ -848,7 +848,7 @@ void Mount::LogGuideStepInfo()
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
-    if (m_lastStep.moveType != MOVETYPE_DIRECT && m_lastStep.moveType != MOVETYPE_DEDUCED)
+    if (m_lastStep.moveOptions & MOVEOPT_GRAPH)
     {
         pFrame->pGraphLog->AppendData(m_lastStep);
         pFrame->pTarget->AppendData(m_lastStep);
@@ -858,7 +858,7 @@ void Mount::LogGuideStepInfo()
     m_lastStep.frameNumber = -1; // invalidate
 }
 
-Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
+Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
@@ -866,7 +866,7 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
     {
         double xDistance, yDistance;
 
-        if (moveType == MOVETYPE_DEDUCED)
+        if (moveOptions & MOVEOPT_ALGO_DEDUCE)
         {
             xDistance = m_pXGuideAlgorithm ? m_pXGuideAlgorithm->deduceResult() : 0.0;
             yDistance = m_pYGuideAlgorithm ? m_pYGuideAlgorithm->deduceResult() : 0.0;
@@ -879,6 +879,8 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
         }
         else
         {
+            // direct move or guide step
+
             if (!ofs->mountOfs.IsValid())
             {
                 if (TransformCameraCoordinatesToMountCoordinates(ofs->cameraOfs, ofs->mountOfs, true))
@@ -893,7 +895,11 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
             Debug.Write(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f\n",
                 ofs->cameraOfs.X, ofs->cameraOfs.Y, xDistance, yDistance));
 
-            if (moveType == MOVETYPE_ALGO)
+            // Let BLC track the raw offsets in Dec
+            if (m_backlashComp)
+                m_backlashComp->TrackBLCResults(moveOptions, yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+
+            if (moveOptions & MOVEOPT_ALGO_RESULT)
             {
                 // Feed the raw distances to the guide algorithms
                 if (m_pXGuideAlgorithm)
@@ -901,19 +907,10 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
                     xDistance = m_pXGuideAlgorithm->result(xDistance);
                 }
 
-                // Let BLC track the raw offsets in Dec
-                if (m_backlashComp)
-                    m_backlashComp->TrackBLCResults(yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
-
                 if (m_pYGuideAlgorithm)
                 {
                     yDistance = m_pYGuideAlgorithm->result(yDistance);
                 }
-            }
-            else
-            {
-                if (m_backlashComp)
-                    m_backlashComp->ResetBaseline();
             }
         }
 
@@ -923,17 +920,20 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
 
         int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
         MoveResultInfo xMoveResult;
-        result = Move(xDirection, requestedXAmount, moveType, &xMoveResult);
+        result = Move(xDirection, requestedXAmount, moveOptions, &xMoveResult);
 
         MoveResultInfo yMoveResult;
         if (result != MOVE_ERROR_SLEWING && result != MOVE_ERROR_AO_LIMIT_REACHED)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
-            if (requestedYAmount > 0 && !IsStepGuider() && moveType != MOVETYPE_DIRECT && GetGuidingEnabled())
+
+            if (moveOptions & MOVEOPT_USE_BLC)
             {
-                m_backlashComp->ApplyBacklashComp(yDirection, yDistance, &requestedYAmount);
+                if (m_backlashComp)
+                    m_backlashComp->ApplyBacklashComp(moveOptions, yDirection, yDistance, &requestedYAmount);
             }
-            result = Move(yDirection, requestedYAmount, moveType, &yMoveResult);
+
+            result = Move(yDirection, requestedYAmount, moveOptions, &yMoveResult);
         }
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
@@ -942,7 +942,7 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, MountMoveType moveType)
 
         GuideStepInfo& info = m_lastStep;
 
-        info.moveType = moveType;
+        info.moveOptions = moveOptions;
         info.frameNumber = pFrame->m_frameCounter;
         info.time = pFrame->TimeSinceGuidingStarted();
         info.cameraOffset = ofs->cameraOfs;

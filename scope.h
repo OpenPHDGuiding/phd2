@@ -257,7 +257,7 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, MountMoveType moveType, MoveResultInfo *moveResultInfo) override;
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) override;
     int CalibrationMoveSize(void);
     void CheckCalibrationDuration(int currDuration);

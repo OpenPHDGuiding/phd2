@@ -143,31 +143,24 @@ class BacklashComp
     int m_pulseWidth;
     bool m_fixedSize;
     ArrayOfDbl m_residualOffsets;
-    Mount *m_pMount;
     Scope *m_pScope;
 
 public:
 
-    BacklashComp(Mount *theMount);
+    BacklashComp(Scope *scope);
     int GetBacklashPulse() const { return m_pulseWidth; }
     void GetBacklashCompSettings(int* pulseWidth, bool* fixedSize, int* ceiling);
     int GetBacklashPulseLimit();
     void SetBacklashPulse(int ms, bool fixedSize, int ceiling = 0);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }
-    void ApplyBacklashComp(int dir, double yDist, int *yAmount);
-    void TrackBLCResults(double yDistance, double minMove, double yRate);
+    void ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount);
+    void TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate);
     void ResetBaseline();
 
 private:
-    void _TrackBLCResults(double yDistance, double minMove, double yRate);
+    void _TrackBLCResults(unsigned int moveTypeOtions, double yDistance, double minMove, double yRate);
     void SetCompValues(int requestSize, bool fixedSize, int ceiling);
 };
-
-inline void BacklashComp::TrackBLCResults(double yDistance, double minMove, double yRate)
-{
-    if (m_justCompensated && !m_fixedSize)
-        _TrackBLCResults(yDistance, minMove, yRate);
-}
 
 #endif
