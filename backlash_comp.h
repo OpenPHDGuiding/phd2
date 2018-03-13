@@ -134,25 +134,28 @@ public:
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
 };
 
+class BLCHistory;
 class BacklashComp
 {
     bool m_compActive;
     int m_lastDirection;
-    bool m_justCompensated;
+    int m_adjustmentFloor;
     int m_adjustmentCeiling;
     int m_pulseWidth;
     bool m_fixedSize;
     ArrayOfDbl m_residualOffsets;
     Mount *m_pMount;
     Scope *m_pScope;
+    BLCHistory* m_pHistory;
 
 public:
 
     BacklashComp(Mount *theMount);
     int GetBacklashPulse() const { return m_pulseWidth; }
-    void GetBacklashCompSettings(int* pulseWidth, bool* fixedSize, int* ceiling);
-    int GetBacklashPulseLimit();
-    void SetBacklashPulse(int ms, bool fixedSize, int ceiling = 0);
+    void GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling);
+    int GetBacklashPulseMinValue();
+    int GetBacklashPulseMaxValue();
+    void SetBacklashPulse(int ms, int floor = 0, int ceiling = 0);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }
     void ApplyBacklashComp(int dir, double yDist, int *yAmount);
@@ -161,13 +164,7 @@ public:
 
 private:
     void _TrackBLCResults(double yDistance, double minMove, double yRate);
-    void SetCompValues(int requestSize, bool fixedSize, int ceiling);
+    void SetCompValues(int requestSize, int floor, int ceiling);
 };
-
-inline void BacklashComp::TrackBLCResults(double yDistance, double minMove, double yRate)
-{
-    if (m_justCompensated && !m_fixedSize)
-        _TrackBLCResults(yDistance, minMove, yRate);
-}
 
 #endif

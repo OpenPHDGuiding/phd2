@@ -1717,18 +1717,18 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
         pComp1->Add(m_pUseBacklashComp);
         m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, pScope->m_backlashComp->GetBacklashPulseLimit(), 450, 50);
-        pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse")), wxSizerFlags().Border(wxLEFT, 26));
+            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, 50);
+        pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
         wxBoxSizer *pComp2 = new wxBoxSizer(wxHORIZONTAL);
-        m_pBacklashFixed = new wxCheckBox(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, _("Fixed-size"));
-        m_pBacklashFixed->SetToolTip(_("Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC OSCILLATION, not recommended under normal conditions!"));
-        m_pBacklashFixed->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &ScopeConfigDialogCtrlSet::OnFixedBLC, this);
-        pComp2->Add(m_pBacklashFixed);
-        pComp2->AddSpacer(5);
+
+        m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
+            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
         m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, pScope->m_backlashComp->GetBacklashPulseLimit(), 300, 50);
-        pComp2->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Limit"), m_pBacklashCeiling, _("Maximum length of backlash correction pulse (mSec).")), 
-            wxSizerFlags().Border(wxLEFT, 23));
+            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
+        pComp2->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
+            wxSizerFlags().Border(wxLEFT, 0));
+        pComp2->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
+            wxSizerFlags().Border(wxLEFT, 18));
         wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, GetParentWindow(AD_szBLCompCtrls), _("Backlash Compensation"));
         pCompVert->Add(pComp1);
         pCompVert->Add(pComp2);
@@ -1779,13 +1779,12 @@ void ScopeConfigDialogCtrlSet::LoadValues()
         m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
         m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
         int pulseSize;
-        bool fixed;
+        int floor;
         int ceiling;
-        m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &fixed, &ceiling);
+        m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
         m_pBacklashPulse->SetValue(pulseSize);
+        m_pBacklashFloor->SetValue(floor);
         m_pBacklashCeiling->SetValue(ceiling);
-        m_pBacklashFixed->SetValue(fixed);
-        m_pBacklashCeiling->Enable(!m_pBacklashFixed->IsChecked());
         m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
     }
 }
@@ -1804,10 +1803,10 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
         m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
         int newBC = m_pBacklashPulse->GetValue();
+        int newFloor = m_pBacklashFloor->GetValue();
         int newCeiling = m_pBacklashCeiling->GetValue();
-        if (newCeiling < newBC)
-            newCeiling = 0;                         // Let the BLC class figure it out
-        m_pScope->m_backlashComp->SetBacklashPulse(newBC, m_pBacklashFixed->IsChecked(), newCeiling);;
+        // SetBacklashPulse will handle floor/ceiling values that don't make sense
+        m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);;
         m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
         m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
         // Following needed in case user changes max_duration with blc value already set
@@ -1868,12 +1867,6 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
             m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }
-}
-
-
-void ScopeConfigDialogCtrlSet::OnFixedBLC(wxCommandEvent& evt)
-{
-    m_pBacklashCeiling->Enable(!m_pBacklashFixed->IsChecked());
 }
 
 GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, const wxString& label)
