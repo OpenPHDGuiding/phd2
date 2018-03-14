@@ -37,6 +37,8 @@
 #define BACKLASH_COMP_H_INCLUDED
 
 class Scope;
+class BLCHistory;
+
 struct RunningStats
 {
     int count;
@@ -134,7 +136,6 @@ public:
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
 };
 
-class BLCHistory;
 class BacklashComp
 {
     bool m_compActive;
@@ -145,15 +146,16 @@ class BacklashComp
     bool m_fixedSize;
     ArrayOfDbl m_residualOffsets;
     Scope *m_pScope;
-    BLCHistory* m_pHistory;
+    BLCHistory *m_pHistory;
 
 public:
 
     BacklashComp(Scope *scope);
+    ~BacklashComp();
     int GetBacklashPulse() const { return m_pulseWidth; }
-    void GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling);
-    int GetBacklashPulseMinValue();
-    int GetBacklashPulseMaxValue();
+    void GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling) const;
+    int GetBacklashPulseMinValue() const;
+    int GetBacklashPulseMaxValue() const;
     void SetBacklashPulse(int ms, int floor = 0, int ceiling = 0);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }

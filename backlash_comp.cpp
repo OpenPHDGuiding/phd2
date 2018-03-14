@@ -72,12 +72,12 @@ public:
         stictionSeen = false;
     }
 
-    int BLCEvent::InfoCount() const
+    size_t InfoCount() const
     {
         return corrections.size();
     }
 
-    void BLCEvent::AddEventInfo(long TimeSecs, double Amount, double minMove)
+    void AddEventInfo(long TimeSecs, double Amount, double minMove)
     {
         // Correction[0] is the deflection that triggered the BLC in the first place.  Correction[1] is the first delta after the pulse was issued,
         // Correction[2] is the (optional) subsequent delta, needed to detect stiction
@@ -132,29 +132,29 @@ public:
         }
     };
 
-    bool BLCHistory::WindowOpen()
+    bool WindowOpen() const
     {
-        { return windowOpen; }
+        return windowOpen;
     }
 
-    BLCHistory::BLCHistory()
+    BLCHistory()
     {
         windowOpen = false;
         lastIncrease = 0;
         timeBase = wxGetCurrentTime();
     }
 
-    void BLCHistory::LogStatus(wxString Msg)
+    static void LogStatus(const wxString& Msg)
     {
-        Debug.Write("BLC: " + Msg + "\n");
+        Debug.Write(wxString::Format("BLC: %s\n", Msg));
     }
 
-    void BLCHistory::CloseWindow()
+    void CloseWindow()
     {
         windowOpen = false;
     }
 
-    void BLCHistory::RecordNewBLC(long When, double TriggerDeflection)
+    void RecordNewBLC(long When, double TriggerDeflection)
     {
         if (blcEvents.size() >= HISTORY_DEPTH)
         {
@@ -166,7 +166,7 @@ public:
         windowOpen = true;
     }
 
-    bool BLCHistory::AddDeflection(long When, double Amt, double MinMove)
+    bool AddDeflection(long When, double Amt, double MinMove)
     {
         bool added = false;
         if (blcIndex >= 0 && blcEvents[blcIndex].InfoCount() < ENTRY_CAPACITY)
@@ -183,7 +183,7 @@ public:
         return added;
     }
 
-    void BLCHistory::RemoveOldestOvershoots(int howMany)
+    void RemoveOldestOvershoots(int howMany)
     {
         for (int ct = 1; ct <= howMany; ct++)
         {
@@ -199,14 +199,14 @@ public:
         }
     }
 
-    void BLCHistory::ClearHistory()
+    void ClearHistory()
     {
         blcEvents.clear();
         LogStatus("History cleared");
     }
 
     // Stats over some number of recent events, returns the average initial miss
-    double BLCHistory::GetStats(int numEvents, RecentStats* Results)
+    double GetStats(int numEvents, RecentStats* Results) const
     {
         int bottom = std::max(0, blcIndex - (numEvents - 1));
         double sum = 0;
@@ -214,7 +214,7 @@ public:
         int ct = 0;
         for (int inx = blcIndex; inx >= bottom; inx--)
         {
-            BLCEvent& evt = blcEvents[inx];
+            const BLCEvent& evt = blcEvents[inx];
             if (evt.initialOvershoot)
                 Results->longCount++;
             else
@@ -242,24 +242,23 @@ public:
         return Results->avgInitialMiss;
     }
 
-    bool BLCHistory::AdjustmentNeeded(double miss, double minMove, double yRate, double* correction)
+    bool AdjustmentNeeded(double miss, double minMove, double yRate, double* correction)
     {
         bool adjust = false;
-        BLCEvent currEvent;
+        const BLCEvent *currEvent;
         RecentStats stats;
         *correction = 0;
         double avgInitMiss = 0;
         if (blcIndex >= 0)
         {
             avgInitMiss = GetStats(HISTORY_DEPTH, &stats);
-            currEvent = blcEvents[blcIndex];
-            wxString deflections = " Deflections: 0=" + std::to_string(currEvent.corrections[0].miss) + ", 1:" +
-                wxString(std::to_string(currEvent.corrections[1].miss));
-            if (currEvent.InfoCount() > 2)
-                deflections += ", 2:" + std::to_string(currEvent.corrections[2].miss);
+            currEvent = &blcEvents[blcIndex];
+            wxString deflections = " Deflections: 0=" + std::to_string(currEvent->corrections[0].miss) + ", 1:" +
+                wxString(std::to_string(currEvent->corrections[1].miss));
+            if (currEvent->InfoCount() > 2)
+                deflections += ", 2:" + std::to_string(currEvent->corrections[2].miss);
             LogStatus(wxString::Format("History state: CurrMiss=%0.2f, AvgInitMiss=%0.2f, ShCount=%d, LgCount=%d, SticCount=%d, %s",
                 miss, stats.avgInitialMiss, stats.shortCount, stats.longCount, stats.stictionCount, deflections));
-
         }
         else
             return false;
@@ -275,7 +274,7 @@ public:
                 {
                     // Might want to increase the blc value - but check for stiction and history of over-corrections
                     // Don't make any changes before getting two follow-on displacements after last BLC
-                    if (currEvent.InfoCount() == ENTRY_CAPACITY)
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
                     {
                         // Stiction
                         if (stats.stictionCount > 2)
@@ -306,13 +305,13 @@ public:
             else
                 // OVER-SHOOT --------------------------------------
             {
-                if (avgInitMiss < 0 || stats.longCount > stats.shortCount || currEvent.stictionSeen)
+                if (avgInitMiss < 0 || stats.longCount > stats.shortCount || currEvent->stictionSeen)
                 {
                     windowOpen = false;
                     std::string msg = "";
-                    if (currEvent.InfoCount() == ENTRY_CAPACITY)
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
                     {
-                        if (currEvent.stictionSeen)
+                        if (currEvent->stictionSeen)
                         {
                             if (stats.stictionCount > 1)          // Seeing and low min-move can look like stiction, don't react to 1st event
                             {
@@ -352,7 +351,7 @@ public:
                 {
                     correction = 0;
                     std::string msg = "Over-shoot, no adjustment, avgMiss >= 0";
-                    if (currEvent.InfoCount() == ENTRY_CAPACITY)
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
                     {
                         windowOpen = false;
                         msg += ", window closed";
@@ -392,17 +391,22 @@ BacklashComp::BacklashComp(Scope *scope)
         Debug.Write("BLC: Backlash compensation is disabled\n");
 }
 
-int BacklashComp::GetBacklashPulseMaxValue()
+BacklashComp::~BacklashComp()
+{
+    delete m_pHistory;
+}
+
+int BacklashComp::GetBacklashPulseMaxValue() const
 {
     return MAX_COMP_AMOUNT;
 }
 
-int BacklashComp::GetBacklashPulseMinValue()
+int BacklashComp::GetBacklashPulseMinValue() const
 {
     return MIN_COMP_AMOUNT;
 }
-    
-void BacklashComp::GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling)
+
+void BacklashComp::GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling) const
 {
     *pulseWidth = m_pulseWidth;
     *floor = m_adjustmentFloor;
@@ -556,13 +560,13 @@ void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, doub
         if (isAlgoResultMove)
             m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);            // Don't track results or make adjustments for moves like dither recovery
         else
-            Debug.Write("BLC: Compensation needed for dither op\n");
+            Debug.Write("BLC: Compensation needed for non-algo type move\n");
         Debug.Write(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied\n",
             m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
     }
     else
     if (!isAlgoResultMove)
-        Debug.Write("BLC: Dither request will not reverse Dec direction, no blc applied\n");
+        Debug.Write("BLC: non-algo type move will not reverse Dec direction, no blc applied\n");
 
     m_lastDirection = dir;
 }
