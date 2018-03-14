@@ -1583,7 +1583,7 @@ void MyFrame::ScheduleExposure(void)
 
 void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
 {
-    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, opts=u)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveOptions));
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, opts=%u)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveOptions));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 

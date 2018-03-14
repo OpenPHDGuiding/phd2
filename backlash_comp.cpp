@@ -312,13 +312,18 @@ public:
                     std::string msg = "";
                     if (currEvent.InfoCount() == ENTRY_CAPACITY)
                     {
-                        if (currEvent.stictionSeen && stats.stictionCount > 1)          // Seeing and low min-move can look like stiction
+                        if (currEvent.stictionSeen)
                         {
-                            msg = "Over-shoot, stiction seen, ";
-                            double stictionCorr = (int)(floor(abs(stats.avgStictionAmount) / yRate) + 0.5);
-                            *correction = -stictionCorr;
-                            adjust = true;
-                            LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                            if (stats.stictionCount > 1)          // Seeing and low min-move can look like stiction, don't react to 1st event
+                            {
+                                msg = "Over-shoot, stiction seen, ";
+                                double stictionCorr = (int)(floor(abs(stats.avgStictionAmount) / yRate) + 0.5);
+                                *correction = -stictionCorr;
+                                adjust = true;
+                                LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                            }
+                            else
+                                LogStatus("Over-shoot, first stiction event, no adjustment, window closed");
                         }
                     }
                     else
@@ -404,12 +409,12 @@ void BacklashComp::GetBacklashCompSettings(int* pulseWidth, int* floor, int* cei
     *ceiling = m_adjustmentCeiling;
 }
 
-// Private method to be sure all comp values are in-synch and don't exceed limits
+// Private method to be sure all comp values are rational and comply with limits
 // May change max-move value for Dec depending on the context
 void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 {
     m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
-    if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT)                        // Coming from GA
+    if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT)                        // Coming from GA or user input makes no sense
         m_adjustmentFloor = wxMax(0.5 * m_pulseWidth, MIN_COMP_AMOUNT);
     else
         m_adjustmentFloor = floor;
@@ -417,7 +422,7 @@ void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
         m_adjustmentCeiling = wxMin(1.50 * m_pulseWidth, MAX_COMP_AMOUNT);
     else
         m_adjustmentCeiling = wxMin(ceiling, MAX_COMP_AMOUNT);
-    m_fixedSize = abs(m_adjustmentCeiling - m_adjustmentFloor) < 100;
+    m_fixedSize = abs(m_adjustmentCeiling - m_adjustmentFloor) < MIN_COMP_AMOUNT;
     if (m_pulseWidth > m_pScope->GetMaxDecDuration())
         m_pScope->SetMaxDecDuration(m_pulseWidth);
 }
@@ -469,26 +474,29 @@ void BacklashComp::ResetBaseline()
 
 void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
 {
-    if (moveTypeOptions & MOVEOPT_USE_BLC)
+    if (m_compActive)
     {
-        // only track algorithm result moves, do not track "fast
-        // recovery after dither" moves or deduced moves or AO bump
-        // moves
-        // TODO-bw is this right?
-        bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
 
-        if (isAlgoResultMove)
+        if (moveTypeOptions & MOVEOPT_USE_BLC)
         {
-            if (m_pHistory->WindowOpen() && !m_fixedSize)
-                _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
+            // only track algorithm result moves, do not track "fast
+            // recovery after dither" moves or deduced moves or AO bump
+            // moves
+            bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+
+            if (isAlgoResultMove)
+            {
+                if (m_pHistory->WindowOpen() && !m_fixedSize)
+                    _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
+            }
+            else
+                m_pHistory->CloseWindow();                  // non-algo blc move occurred before follow-up data were acquired for previous blc
         }
         else
-            m_pHistory->CloseWindow();
-    }
-    else
-    {
-        // BLC not allowed -- a calibration move or something like that
-        ResetBaseline();
+        {
+            // BLC not allowed -- a calibration move or something like that
+            ResetBaseline();
+        }
     }
 }
 
@@ -496,7 +504,7 @@ void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistan
 {
     assert(m_pHistory->WindowOpen()); // caller checks this
 
-    // The previous Dec correction included a BLC
+    // An earlier BLC was applied and we're tracking follow-up results
 
     // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we
     // needed more correction (+) or less (-)
@@ -506,10 +514,10 @@ void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistan
     double adjustment;
     double nominalBLC;
     if (dir == m_lastDirection)
-        miss = yDistance;            // + => we needed more of the same, under-shoot
+        miss = yDistance;                           // + => we needed more of the same, under-shoot
     else
-        miss = -yDistance;           // over-shoot
-    minMove = fmax(minMove, 0);         // Algo w/ no min-move returns -1
+        miss = -yDistance;                         // over-shoot
+    minMove = fmax(minMove, 0);                    // Algo w/ no min-move returns -1
 
     m_pHistory->AddDeflection(wxGetCurrentTime(), miss, minMove);
     if (m_pHistory->AdjustmentNeeded(miss, minMove, yRate, &adjustment))
@@ -534,27 +542,27 @@ void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistan
 
 }
 
-//void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
-//{
-//    if (m_pHistory->WindowOpen() && !m_fixedSize)
-//        _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
-//}
-
 // Possibly add the backlash comp to the pending guide pulse (yAmount)
 void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount)
 {
 
     if (!m_compActive || m_pulseWidth <= 0 || yDist == 0.0)
         return;
+    bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
 
     if (m_lastDirection != NONE && dir != m_lastDirection)
     {
         *yAmount += m_pulseWidth;
-        m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);
-        
+        if (isAlgoResultMove)
+            m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);            // Don't track results or make adjustments for moves like dither recovery
+        else
+            Debug.Write("BLC: Compensation needed for dither op\n");
         Debug.Write(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied\n",
             m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
     }
+    else
+    if (!isAlgoResultMove)
+        Debug.Write("BLC: Dither request will not reverse Dec direction, no blc applied\n");
 
     m_lastDirection = dir;
 }
