@@ -498,8 +498,7 @@ void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistanc
         }
         else
         {
-            if ((moveTypeOptions & MOVEOPT_USE_BLC) == 0)         // Calibration-type move that can move mount in Dec w/out notifying blc about direction
-                ResetBaseline();
+            ResetBaseline();    // Calibration-type move that can move mount in Dec w/out notifying blc about direction
         }
     }
 }
