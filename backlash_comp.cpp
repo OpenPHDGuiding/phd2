@@ -498,8 +498,8 @@ void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistanc
         }
         else
         {
-            // BLC not allowed -- a calibration move or something like that
-            ResetBaseline();
+            if ((moveTypeOptions & MOVEOPT_USE_BLC) == 0)         // Calibration-type move that can move mount in Dec w/out notifying blc about direction
+                ResetBaseline();
         }
     }
 }
@@ -558,9 +558,12 @@ void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, doub
     {
         *yAmount += m_pulseWidth;
         if (isAlgoResultMove)
-            m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);            // Don't track results or make adjustments for moves like dither recovery
+            m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);     // Only track results or make adjustments for algorithm-controlled blc's
         else
+        {
+            m_pHistory->CloseWindow();
             Debug.Write("BLC: Compensation needed for non-algo type move\n");
+        }
         Debug.Write(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied\n",
             m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
     }
