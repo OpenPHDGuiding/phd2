@@ -5229,7 +5229,7 @@ msgstr "Настройки подвижек"
 
 #: myframe.cpp:2844
 msgid "Random"
-msgstr "Случайно"
+msgstr "Случайный"
 
 #: myframe.cpp:2845
 msgid ""
