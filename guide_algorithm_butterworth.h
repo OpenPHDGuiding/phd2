@@ -50,15 +50,13 @@ class GuideAlgorithmButterworth : public GuideAlgorithm
     class Filter
     {
     public:
-        std::string name;
+        FILTER_DESIGN design;
         int order;
         double corner;
-        double gain;
-        std::vector<double> ycoeffs;
-        Filter(const char* a, int o, double c, double g, std::vector<double> y) :name(a), order(o), corner(c), gain(g), ycoeffs(y) {};
+        Filter(FILTER_DESIGN d, int o, double c) :design(d), order(o), corner(c) {};
+        std::string getname();
     };
     std::vector<Filter> c_Filter; // Filter options
-    double calcxcoeff(int order, int n);
 
 protected:
     class GuideAlgorithmButterworthConfigDialogPane : public ConfigDialogPane
@@ -122,11 +120,14 @@ inline double GuideAlgorithmButterworth::GetMinMove(void)
     return m_minMove;
 }
 
-inline double GuideAlgorithmButterworth::calcxcoeff(int order, int n)
+inline std::string GuideAlgorithmButterworth::Filter::getname()
 {
-    if (n == 0 || n == order) return 1.0;
-    if (n > order) return 0.0;
-    return calcxcoeff(order - 1, n - 1) + calcxcoeff(order - 1, n);
+    switch (design)
+    {
+    case BUTTERWORTH: return "Butterworth";
+    case BESSEL: return "Bessel";
+    case CHEBYCHEV: return "Chebychev";
+    default: return "Unknown filter";
+    }
 }
-
 #endif /* GUIDE_ALGORITHM_BUTTERWORTH_H_INCLUDED */

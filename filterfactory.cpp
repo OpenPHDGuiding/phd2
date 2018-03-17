@@ -1,7 +1,41 @@
-/* mkfilter -- given n, compute recurrence relation
-   to implement Butterworth, Bessel or Chebyshev filter of order n
-   A.J. Fisher, University of York   <fisher@minster.york.ac.uk>
-   September 1992 */
+/*
+*  guide_algorithm_butterworth.h
+*  PHD Guiding
+*
+*  Created by Ken Self
+*  Copyright (c) 2018 Ken Self
+*  All rights reserved.
+*
+*  This source code is distributed under the following "BSD" license
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions are met:
+*    Redistributions of source code must retain the above copyright notice,
+*     this list of conditions and the following disclaimer.
+*    Redistributions in binary form must reproduce the above copyright notice,
+*     this list of conditions and the following disclaimer in the
+*     documentation and/or other materials provided with the distribution.
+*    Neither the name of openphdguiding.org nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+*/
+
+/* Based on mkfilter by A.J. Fisher, University of York    September 1992 
+https://www-users.cs.york.ac.uk/~fisher/mkfilter/
+<fisher@minster.york.ac.uk>
+*/
 
 #include <stdio.h>
 #include <math.h>
@@ -9,7 +43,7 @@
 
 #include "filterfactory.h"
 
-FilterFactory::FilterFactory(std:string name, FILTER_DESIGN f, int o, double p, bool z=false )
+FilterFactory::FilterFactory(FILTER_DESIGN f, int o, double p )
 {
     bessel_poles = {
     /* table produced by /usr/fisher/bessel --  N.B. only one member of each C.Conj. pair is listed */
@@ -44,22 +78,28 @@ FilterFactory::FilterFactory(std:string name, FILTER_DESIGN f, int o, double p, 
         std::complex<double>( -1.36069227838e+00, 1.73350574267e+00),
         std::complex<double>( -8.65756901707e-01, 2.29260483098e+00),
     };
-    assert(o > 0);
-    assert(p > 2.0);
-    order = o;
-    isMzt = z;
-    polemask = ~0;                  // use all poles
-    raw_alpha2 = raw_alpha1 = 1.0/p;
+    if (o <= 0)
+    {
+        throw ERROR_INFO("invalid filter order");
+    }
+    if (p < 2.0)
+    {
+        throw ERROR_INFO("invalid corner period multiplier");
+    }
+    filt = f;
+    m_order = o;
+    raw_alpha2 = raw_alpha1 = 1.0 / p;
+    isMzt = (f==BESSEL)? true: false;
+//    polemask = ~0;                  // use all poles
     spoles.clear();
     szeros.clear();
 
     splane();
     prewarp();
     normalize();
-    zplane(!options & opt_z);
+    zplane();
     expandpoly();
 }
-bool 
 
 void FilterFactory::splane() // compute S-plane poles for prototype LP filter
 {
@@ -67,21 +107,21 @@ void FilterFactory::splane() // compute S-plane poles for prototype LP filter
 // 
     if (filt == BESSEL)                           // Bessel filter
     {
-        int p = (order * order) / 4;                // ptr into table
-        if (order & 1)                              // If order is odd
+        int p = (m_order * m_order) / 4;                // ptr into table
+        if (m_order & 1)                              // If order is odd
             setpole(bessel_poles[p++]);
-        for (int i = 0; i < order / 2; i++)
+        for (int i = 0; i < m_order / 2; i++)
         {
             setpole(bessel_poles[p]);
-            setpole(bessel_poles[p].conj());
+            setpole(std::conj(bessel_poles[p]));
             p++;
         }
     }
-    if (file == BUTTERWORTH || filt == CHEBYCHEV)                // Butterworth filter
+    if (filt == BUTTERWORTH || filt == CHEBYCHEV)                // Butterworth filter
     {
-        for (int i = 0; i < 2 * order; i++) 
+        for (int i = 0; i < 2 * m_order; i++) 
         {
-            double theta = (order & 1) ? (i * PI) / order : ((i + 0.5) * PI) / order;
+            double theta = (m_order & 1) ? (i * PI) / m_order : ((i + 0.5) * PI) / m_order;
             setpole(std::polar(1.0,theta));
         }
     }
@@ -89,16 +129,16 @@ void FilterFactory::splane() // compute S-plane poles for prototype LP filter
     { 
         if (chripple >= 0.0) 
         {
-            fprintf(stderr, "mkfilter: Chebyshev ripple is %g dB; must be .lt. 0.0\n", chebrip);
+            fprintf(stderr, "mkfilter: Chebyshev ripple is %g dB; must be .lt. 0.0\n", chripple);
             exit(1);        
         }
         double rip = pow(10.0, -chripple / 10.0);
         double eps = sqrt(rip - 1.0);
-        double y = asinh(1.0 / eps) / (double) order;
+        double y = asinh(1.0 / eps) / (double) m_order;
         for (int i = 0; i < spoles.size(); i++) 
         {
-            spoles[i].real *= sinh(y);
-            spoles[i].imag *= cosh(y);
+            spoles[i].real(spoles[i].real()*sinh(y));
+            spoles[i].imag(spoles[i].imag()*cosh(y));
         }
     }
 }
@@ -118,7 +158,7 @@ void FilterFactory::prewarp()
     }
 }
 
-void FilterFactory::normalize_lp() /* called for trad, not for -Re or -Pi */
+void FilterFactory::normalize() /* called for trad, not for -Re or -Pi */
 {
     double w1 = TWOPI * warped_alpha1;
     for (int i = 0; i < spoles.size(); i++)
@@ -133,7 +173,7 @@ void FilterFactory::zplane()
     int i;
     zpoles.clear();
     zzeros.clear();
-    if(isMzt)
+    if(!isMzt)
     {
         for (i = 0; i < spoles.size(); i++)
             zpoles.push_back(bilinear(spoles[i]));
@@ -145,43 +185,52 @@ void FilterFactory::zplane()
     else
     {
         for (i = 0; i < spoles.size(); i++)
-            zpoles.push_back(spoles[i].exp());
+            zpoles.push_back(std::exp(spoles[i]));
         for (i = 0; i < szeros.size(); i++)
-            zzeros.push_back(szeros[i].exp());
+            zzeros.push_back(std::exp(szeros[i]));
     }
 }
 
-void FilterFactory::expandpoly() /* given Z-plane poles & zeros, compute top & bot polynomials in Z, and then recurrence relation */
+void FilterFactory::expandpoly() // given Z-plane poles & zeros, compute top & bot polynomials in Z, and then recurrence relation
 {
     std::vector<std::complex<double>> topcoeffs, botcoeffs;
     int i;
     expand(zzeros, topcoeffs);
     expand(zpoles, botcoeffs);
-    dc_gain = eval(topcoeffs, 1.0)/eval(botcoeffs, 1.0);
-    double theta = TWOPI * 0.5 * (raw_alpha1 + raw_alpha2); /* "jwT" for centre freq. */
 
-    fc_gain = eval(topcoeffs, std::polar(1.0, theta))/eval(botcoeffs, std::polar(1.0, theta));
-    hf_gain = eval(topcoeffs, -1.0)/eval(botcoeffs, -1.0);
-    for (i = 0; i <= zzeros.size(); i++)
-        xcoeffs[i] = +(topcoeffs[i].real / botcoeffs.back().real);
-    for (i = 0; i <= botcoeffs.size(); i++)
-        ycoeffs[i] = -(botcoeffs[i].real / botcoeffs.back().real);
+    double theta = TWOPI * 0.5 * (raw_alpha1 + raw_alpha2); /* "jwT" for centre freq. */
+    const std::complex<double> z_one(1.0, 0.0);
+    const std::complex<double> z_minusone(-1.0, 0.0);
+    const std::complex<double> z_theta = std::polar(1.0, theta);
+
+    xcoeffs.clear();
+    ycoeffs.clear();
+    dc_gain = eval(topcoeffs, z_one) / eval(botcoeffs, z_one);
+    fc_gain = eval(topcoeffs, z_theta) / eval(botcoeffs, z_theta);
+    hf_gain = eval(topcoeffs, z_minusone) / eval(botcoeffs, z_minusone);
+    for (i = topcoeffs.size()-1; i >= 0; i--)
+        xcoeffs.push_back( +(topcoeffs[i].real() / botcoeffs.back().real()) );
+    for (i = botcoeffs.size()-1; i >= 0; i--)
+        ycoeffs.push_back( -(botcoeffs[i].real() / botcoeffs.back().real()) );
 }
 
-void FilterFactory::expand(std::vector<std::complex<double>> pz, std::vector<std::complex<double>> coeffs)
+void FilterFactory::expand(std::vector<std::complex<double>> pz, std::vector<std::complex<double>>& coeffs)
 {
-    /* compute product of poles or zeros as a polynomial of z */
+    // compute product of poles or zeros as a polynomial of z 
     int i;
     coeffs.clear();
     coeffs.push_back(1.0);
     for (i = 0; i < pz.size(); i++)
         coeffs.push_back(0.0);
+
+// coeffs now has 1 more element than pz
     for (i = 0; i < pz.size(); i++)
         multin(pz[i], coeffs);
-    /* check computed coeffs of z^k are all real */
-    for (i = 0; i < pz.size() + 1; i++)
+
+// check computed coeffs of z^k are all real
+    for (i = 0; i < coeffs.size(); i++)
     {
-        if (fabs(coeffs[i].imag) > EPS)
+        if (fabs(coeffs[i].imag()) > EPS)
         {
             fprintf(stderr, "mkfilter: coeff of z^%d is not real; poles/zeros are not complex conjugates\n", i);
             exit(1);
@@ -189,7 +238,7 @@ void FilterFactory::expand(std::vector<std::complex<double>> pz, std::vector<std
     }
 }
 
-void FilterFactory::multin(std::complex<double> w, std::vector<std::complex<double>> coeffs)
+void FilterFactory::multin(std::complex<double> w, std::vector<std::complex<double>> &coeffs)
 {
     /* multiply factor (z-w) into coeffs */
     std::complex<double> nw = -w;
@@ -200,51 +249,9 @@ void FilterFactory::multin(std::complex<double> w, std::vector<std::complex<doub
 
 std::complex<double> FilterFactory::eval(std::vector<std::complex<double>> coeffs, std::complex<double> z)
   { /* evaluate polynomial in z, substituting for z */
-    std::complex<double> sum = complex(0.0,0.0);
+    std::complex<double> sum = std::complex<double>(0.0,0.0);
     for (int i = coeffs.size()-1; i >= 0; i--) 
         sum = (sum * z) + coeffs[i];
     return sum;
   }
 
-//*************************************************************************************************************************
-/*
-static void printfilter() {
-    printf("raw alpha1    = %14.10f\n", raw_alpha1);
-    printf("raw alpha2    = %14.10f\n", raw_alpha2);
-
-    if(!(options & (opt_re | opt_w | opt_z)) {
-        printf("warped alpha1 = %14.10f\n", warped_alpha1);
-        printf("warped alpha2 = %14.10f\n", warped_alpha2);
-    }
-    printgain("dc    ", dc_gain);
-    printrecurrence();
-}
-
-static void printgain(char *str, complex gain) {
-    double r = hypot(gain);
-    printf("gain at %s:   mag = %15.9e", str, r);
-    if (r > EPS) printf("   phase = %14.10f pi", atan2(gain) / PI);
-    putchar('\n');
-}
-
-static void printrecurrence() // given (real) Z-plane poles & zeros, compute & print recurrence relation 
-{
-    printf("Recurrence relation:\n");
-    printf("y[n] = ");
-    int i;
-    for (i = 0; i < zplane.numzeros + 1; i++) {
-        if (i > 0) printf("     + ");
-        double x = xcoeffs[i];
-        double f = fmod(fabs(x), 1.0);
-        char *fmt = (f < EPS || f > 1.0 - EPS) ? "%3g" : "%14.10f";
-        putchar('(');
-        printf(fmt, x);
-        printf(" * x[n-%2d])\n", zplane.numzeros - i);
-    }
-    putchar('\n');
-    for (i = 0; i < zplane.numpoles; i++) {
-        printf("     + (%14.10f * y[n-%2d])\n", ycoeffs[i], zplane.numpoles - i);
-    }
-    putchar('\n');
-}
-*/

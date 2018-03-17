@@ -33,7 +33,6 @@
 */
 
 #include "phd.h"
-
 static const int    DefaultFilter = 0;
 static const double DefaultMinMove = 0.2;
 
@@ -41,24 +40,24 @@ GuideAlgorithmButterworth::GuideAlgorithmButterworth(Mount *pMount, GuideAxis ax
     : GuideAlgorithm(pMount, axis)
 {
     c_Filter = {
-        Filter("Butterworth", 1, 2.0, 1.031426266, { -0.9390625 }),
-        Filter("Butterworth", 1, 4.0, 2.000000000, { 0.00000000 }),
-        Filter("Butterworth", 1, 8.0, 3.414213562, { 0.4142135624 }),
-        Filter("Butterworth", 1, 16.0, 6.027339492, { 0.6681786379 }),
-        Filter("Butterworth", 1, 32.0, 11.15317039, { 0.8206787908 }),
-        Filter("Butterworth", 1, 64.0, 21.35546762, { 0.9063471690 }),
-        Filter("Butterworth", 2, 2.0, 1.249075055, { -1.5610180758, -0.641351538 }),
-        Filter("Butterworth", 2, 4.0, 3.414213562, { 0.0000000000, -0.1715728753 }),
-        Filter("Butterworth", 2, 8.0, 10.24264069, { 0.9428090416, -0.3333333333 }),
-        Filter("Butterworth", 2, 16.0, 33.38387406, { 1.4542435863, -0.5740619151 }),
-        Filter("Butterworth", 2, 32.0, 118.4456202, { 1.7237761728, -0.7575469445 }),
-        Filter("Butterworth", 2, 64.0, 41789.58906, { 1.9861162115, -0.9862119292 }),
-        Filter("Bessel", 4, 2.0, 1.068352054, { -3.8683957004, -5.6125864858, -3.6197712265, -0.8755832191 }),
-        Filter("Bessel", 4, 4.0, 6.118884437, { -0.9262820982, -0.5410799111, -0.1325001994, -0.0149935159 }),
-        Filter("Bessel", 4, 8.0, 36.38524126, { 1.015610358, -0.6166927902, 0.1849849897, -0.0236412934 }),
-        Filter("Bessel", 4, 16.0, 295.8252661, { 2.3300930875, -2.156988745, 0.9281300733, -0.1553203977 }),
-        Filter("Bessel", 4, 32.0, 3182.533116, { 3.1171380844, -3.6880192686, 1.9606174935, -0.3947637511 }),
-        Filter("Bessel", 4, 64.0, 41075.70695, { 3.546788926, -4.7307964823, 2.812066557, -0.6284485253 }),
+        Filter(BUTTERWORTH, 1, 2.0), 
+        Filter(BUTTERWORTH, 1, 4.0), 
+        Filter(BUTTERWORTH, 1, 8.0), 
+        Filter(BUTTERWORTH, 1, 16.0), 
+        Filter(BUTTERWORTH, 1, 32.0),
+        Filter(BUTTERWORTH, 1, 64.0),
+        Filter(BUTTERWORTH, 2, 2.0), 
+        Filter(BUTTERWORTH, 2, 4.0),
+        Filter(BUTTERWORTH, 2, 8.0), 
+        Filter(BUTTERWORTH, 2, 16.0),
+        Filter(BUTTERWORTH, 2, 32.0),
+        Filter(BUTTERWORTH, 2, 64.0), 
+        Filter(BESSEL, 4, 2.0),
+        Filter(BESSEL, 4, 4.0), 
+        Filter(BESSEL, 4, 8.0), 
+        Filter(BESSEL, 4, 16.0),
+        Filter(BESSEL, 4, 32.0),
+        Filter(BESSEL, 4, 64.0),
     };
     int filter = pConfig->Profile.GetInt(GetConfigPath() + "/filter", DefaultFilter);
     SetFilter(filter);
@@ -79,45 +78,10 @@ GUIDE_ALGORITHM GuideAlgorithmButterworth::Algorithm(void)
 
 void GuideAlgorithmButterworth::reset(void)
 {
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::reset()\n"));
-    int order = c_Filter.at(m_filter).order;
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::order=%d, filter=%d\n", order, m_filter));
-    m_xcoeff.clear();
-//    m_xcoeff.insert(m_xcoeff.begin(), order + 1, 1.0);
-    m_xcoeff = m_pFactory->xcoeffs;
-
-    FILTER_DESIGN f;
-//    m_pGuideAlgorithm->c_Filter.at(is).name, m_pGuideAlgorithm->c_Filter.at(is).order, m_pGuideAlgorithm->c_Filter.at(is).corner ));
-    if (c_Filter.at(m_filter).name == "Butterworth") f = BUTTERWORTH;
-    if (c_Filter.at(m_filter).name == "Bessel") f = BESSEL;
-    if (c_Filter.at(m_filter).name == "Chebychev") f = CHEBYCHEV;
-    m_pFactory = new FilterFactory(c_Filter.at(m_filter).name, f, c_Filter.at(m_filter).order, c_Filter.at(m_filter).corner, false);
-
-    std::string xdbgMsg = wxString::Format("GuideAlgorithmButterworth::xcoeffs(0,1,2) %.4f", m_xcoeff.at(0));
-    for (int it = 1; it < m_xcoeff.size(); it++)
-    {
-//        m_xcoeff.at(it) = calcxcoeff(order, it);
-        xdbgMsg.append(wxString::Format(",%.4f", m_xcoeff.at(it)));
-    }
-    Debug.Write(wxString::Format("%s\n", xdbgMsg));
-//    if (order > 1) m_xcoeff.at(1) = m_xcoeff.at(order - 1) = order;
-//    if (order > 3) m_xcoeff.at(2) = m_xcoeff.at(order - 2) = ((order - 1)* order) / 2;
-
-    m_ycoeff.clear();
-    m_ycoeff = m_pFactory->ycoeffs;
-//    m_ycoeff = c_Filter.at(m_filter).ycoeffs;
-//    m_ycoeff.insert(m_ycoeff.begin(), 0.0);
-    std::string ydbgMsg = wxString::Format("GuideAlgorithmButterworth::ycoeffs(0,1,2) %.4f", m_ycoeff.at(0));
-    for (int it = 1; it < m_ycoeff.size(); it++)
-    {
-        ydbgMsg.append(wxString::Format(",%.4f", m_ycoeff.at(it)));
-    }
-    Debug.Write(wxString::Format("%s\n", ydbgMsg));
-
     m_xv.clear();
     m_yv.clear();
-    m_xv.insert(m_xv.begin(), order+1, 0.0);
-    m_yv.insert(m_yv.begin(), order+1, 0.0);
+    m_xv.insert(m_xv.begin(), m_xcoeff.size(), 0.0);
+    m_yv.insert(m_yv.begin(), m_ycoeff.size(), 0.0);
 }
 
 double GuideAlgorithmButterworth::result(double input)
@@ -131,30 +95,23 @@ double GuideAlgorithmButterworth::result(double input)
     }
 
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
-//    Command line: /www/usr/fisher/helpers/mkfilter -Bu -Lp -o 2 -a 4.5000000000e-01 0.0000000000e+00 -l 
-    int order = c_Filter.at(m_filter).order;
-    double gain = c_Filter.at(m_filter).gain;
-
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::order=%d, gain=%.6f\n", order, gain));
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::xcoeffs(0,1,2) %.4f,%.4f,%.4f\n", m_xcoeff.at(0), m_xcoeff.at(1), m_xcoeff.at(2)));
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::ycoeffs(0,1,2) %.4f,%.4f,%.4f\n", m_ycoeff.at(0), m_ycoeff.at(1), m_ycoeff.at(2)));
+    int order = m_order;
+    double gain = m_gain;
 
 // Shift readings and results 
     m_xv.insert(m_xv.begin(), input / gain);
     m_xv.pop_back();
     m_yv.insert(m_yv.begin(), 0.0);
     m_yv.pop_back();
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::xv(2,1,0) %.4f,%.4f,%.4f\n", m_xv.at(2), m_xv.at(1), m_xv.at(0)));
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::yv(2,1,0) %.4f,%.4f,%.4f\n", m_yv.at(2), m_yv.at(1), m_yv.at(0)));
 
 // Calculate filtered value
-    for (int i = 0; i <= order; i++){
-        m_yv.at(0) += m_xv.at(i) * m_xcoeff.at(i); 
-        if (i > 0)
-        {
-            m_yv.at(0) += m_yv.at(i) * m_ycoeff.at(i);
-        }
-
+    for (int i = 0; i < m_xcoeff.size(); i++)
+    {
+        m_yv.at(0) += m_xv.at(i) * m_xcoeff.at(i);
+    }
+    for (int i = 1; i < m_ycoeff.size(); i++)
+    {
+        m_yv.at(0) += m_yv.at(i) * m_ycoeff.at(i);
     }
     dReturn = m_yv.at(0);
 
@@ -163,9 +120,14 @@ double GuideAlgorithmButterworth::result(double input)
         dReturn = 0.0;
     }
 
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::xv(2,1,0) %.4f,%.4f,%.4f\n", m_xv.at(2), m_xv.at(1), m_xv.at(0)));
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::yv(2,1,0) %.4f,%.4f,%.4f\n", m_yv.at(2), m_yv.at(1), m_yv.at(0)));
-    Debug.Write(wxString::Format("GuideAlgorithmButterworth::Result() returns %.2f from input %.2f\n", dReturn, input));
+    wxString msg = wxString::Format("GuideAlgorithmButterworth::m_xv ");
+    for (int i = 0; i<m_xcoeff.size(); i++)
+        msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_xv.at(i)));
+    msg.Append(wxString::Format("\nGuideAlgorithmButterworth::m_yv "));
+    for (int i = 0; i<m_ycoeff.size(); i++)
+        msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_yv.at(i)));
+    msg.Append(wxString::Format("\nGuideAlgorithmButterworth::Result() returns %.2f from input %.2f\n", dReturn, input));
+    Debug.Write(msg);
 
     return dReturn;
 }
@@ -182,7 +144,28 @@ bool GuideAlgorithmButterworth::SetFilter(int filter)
         }
 
         m_filter = filter;
+        m_xcoeff.clear();
+        m_ycoeff.clear();
+        m_pFactory = new FilterFactory(c_Filter.at(m_filter).design, c_Filter.at(m_filter).order, c_Filter.at(m_filter).corner);
+        m_order = m_pFactory->order();
+        m_gain = m_pFactory->gain();
+        m_xcoeff = m_pFactory->xcoeffs;
+        m_ycoeff = m_pFactory->ycoeffs;
 
+        Debug.Write(wxString::Format("GuideAlgorithmButterworth::SetFilter()\n"));
+        Debug.Write(wxString::Format("GuideAlgorithmButterworth::order=%d, corner=%f, gain=%f\n",
+            m_order, m_pFactory->corner(), m_gain));
+        wxString msg = wxString::Format("GuideAlgorithmButterworth::m_xcoeffs:");
+        for (int it = 0; it < m_xcoeff.size(); it++)
+        {
+            msg.Append(wxString::Format("%s%.4f", it ? "," : "", m_xcoeff.at(it)));
+        }
+        msg.Append(wxString::Format("\nGuideAlgorithmButterworth::m_ycoeffs:"));
+        for (int it = 1; it < m_ycoeff.size(); it++)
+        {
+            msg.Append(wxString::Format("%s%.4f", it ? "," : "", m_ycoeff.at(it)));
+        }
+        Debug.Write(wxString::Format("%s\n", msg));
     }
     catch (const wxString& Msg)
     {
@@ -223,13 +206,6 @@ bool GuideAlgorithmButterworth::SetMinMove(double minMove)
 
 void GuideAlgorithmButterworth::GetParamNames(wxArrayString& names) const
 {
-/*    names.push_back("order");
-    names.push_back("gain");
-    for (int i = 1; i <= max_order; i++)
-    {
-        names.push_back(wxString::Format("/coeff%d", i));
-    }
-*/
     names.push_back("minMove");
 }
 
@@ -283,7 +259,7 @@ GuideAlgorithmButterworth::
     m_pFilter->Clear();
     for (int is = 0; is < m_pGuideAlgorithm->c_Filter.size(); is++) {
         m_pFilter->AppendString(wxString::Format(_("%s Order %d Corner %.1f"), 
-            m_pGuideAlgorithm->c_Filter.at(is).name, m_pGuideAlgorithm->c_Filter.at(is).order, m_pGuideAlgorithm->c_Filter.at(is).corner ));
+            m_pGuideAlgorithm->c_Filter.at(is).getname(), m_pGuideAlgorithm->c_Filter.at(is).order, m_pGuideAlgorithm->c_Filter.at(is).corner ));
     }
 
     width = StringWidth(_T("000.00"));
@@ -294,7 +270,6 @@ GuideAlgorithmButterworth::
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
         wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
         "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
-
 }
 
 GuideAlgorithmButterworth::
@@ -363,5 +338,5 @@ void GuideAlgorithmButterworth::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Low-pass minimum move", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Butterworth minimum move", m_pMinMove->GetValue());
 }
