@@ -3086,7 +3086,7 @@ msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:126
 msgid "Length Scale (Long Range)"
-msgstr "Масштаб времени (низкочастотные)"
+msgstr "Масштаб времени (низкочастотный)"
 
 #: guide_algorithm_gaussian_process.cpp:127
 #, c-format
