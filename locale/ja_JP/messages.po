@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-02 01:22+0000\n"
+"POT-Creation-Date: 2018-03-20 21:52+0100\n"
 "PO-Revision-Date: 2015-08-27 22:56+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
@@ -53,7 +53,7 @@ msgstr "詳細設定"
 msgid "Global"
 msgstr "全体"
 
-#: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1587
+#: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
 #: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "カメラ"
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Other Devices"
 msgstr ""
 
-#: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1599
+#: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
 #: config_INDI.cpp:107 eegg.cpp:117 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -251,20 +251,20 @@ msgstr ""
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:762
+#: backlash_comp.cpp:763
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr ""
 
-#: backlash_comp.cpp:830
+#: backlash_comp.cpp:831
 msgid "Restoring star position"
 msgstr ""
 
-#: backlash_comp.cpp:838
+#: backlash_comp.cpp:839
 msgid "Measurement complete"
 msgstr ""
 
-#: backlash_comp.cpp:847
+#: backlash_comp.cpp:848
 msgid "Measurement halted"
 msgstr ""
 
@@ -398,12 +398,12 @@ msgstr ""
 msgid "Side-of-pier:"
 msgstr "望遠鏡の位置"
 
-#: calreview_dialog.cpp:337 cam_simulator.cpp:1743 mount.cpp:67
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1756 mount.cpp:67
 #: testguide.cpp:152
 msgid "East"
 msgstr "East"
 
-#: calreview_dialog.cpp:338 cam_simulator.cpp:1743 mount.cpp:68
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1756 mount.cpp:68
 #: testguide.cpp:152
 msgid "West"
 msgstr "West"
@@ -649,7 +649,7 @@ msgstr "画像スケール, 秒角/px"
 msgid "Calibration step, ms"
 msgstr "キャリブレーションステップ, ms"
 
-#: calstep_dialog.cpp:179 cam_simulator.cpp:1494 camcal_import_dialog.cpp:47
+#: calstep_dialog.cpp:179 cam_simulator.cpp:1507 camcal_import_dialog.cpp:47
 #: configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:54
 #: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2865
 #: profile_wizard.cpp:59 profile_wizard.cpp:66 Refine_DefMap.cpp:59
@@ -832,7 +832,7 @@ msgstr ""
 
 #: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
+#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "メモリ割当てエラー"
@@ -891,12 +891,12 @@ msgstr ""
 msgid "Unsupported type or read error loading FITS file"
 msgstr "サポートしていないタイプか、FITSファイル読込みエラー"
 
-#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1380
+#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "FITSファイルが画像ではありません。"
 
 #: cam_INDI.cpp:512 cam_INDI.cpp:533 cam_simulator.cpp:632
-#: cam_simulator.cpp:1402
+#: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "データ読込みエラー"
 
@@ -1225,130 +1225,130 @@ msgstr ""
 msgid "Cannot load simulated image"
 msgstr "シミュレート画像の読込ができません。"
 
-#: cam_simulator.cpp:1392
+#: cam_simulator.cpp:1405
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
 msgstr "サポートしていないタイプか、FITSファイル読込みエラー %d %d"
 
-#: cam_simulator.cpp:1563
+#: cam_simulator.cpp:1576
 msgid "PE amplitude and period must be > 0"
 msgstr "PEの振幅と周期は必ず0以上としてください。"
 
-#: cam_simulator.cpp:1569
+#: cam_simulator.cpp:1582
 msgid "PE amplitude and period must be numbers > 0"
 msgstr "PEの振幅と周期は必ず0以上の数字としてください。"
 
-#: cam_simulator.cpp:1579
+#: cam_simulator.cpp:1592
 msgid "Camera Simulator"
 msgstr "カメラシミュレータ"
 
-#: cam_simulator.cpp:1589
+#: cam_simulator.cpp:1602
 msgid "Number of simulated stars"
 msgstr "シミュレートする星の数"
 
-#: cam_simulator.cpp:1590
+#: cam_simulator.cpp:1603
 msgid "Stars"
 msgstr "星"
 
-#: cam_simulator.cpp:1591
+#: cam_simulator.cpp:1604
 msgid "Number of hot pixels"
 msgstr "ホットピクセル数"
 
-#: cam_simulator.cpp:1592 Refine_DefMap.cpp:168
+#: cam_simulator.cpp:1605 Refine_DefMap.cpp:168
 msgid "Hot pixels"
 msgstr "ホットピクセル"
 
-#: cam_simulator.cpp:1594
+#: cam_simulator.cpp:1607
 #, fuzzy, no-c-format
 msgid "% Simulated noise"
 msgstr "% シミュレートされたノイズ"
 
-#: cam_simulator.cpp:1595
+#: cam_simulator.cpp:1608
 msgid "Noise"
 msgstr "ノイズ"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1614
 msgid "Dec backlash, arc-secs"
 msgstr "赤緯バックラッシュ, 秒角"
 
-#: cam_simulator.cpp:1602
+#: cam_simulator.cpp:1615
 msgid "Dec backlash"
 msgstr "赤緯バックラッシュ"
 
-#: cam_simulator.cpp:1603
+#: cam_simulator.cpp:1616
 msgid "Dec drift, arc-sec/min"
 msgstr "赤緯ドリフト, 秒角/分"
 
-#: cam_simulator.cpp:1604
+#: cam_simulator.cpp:1617
 msgid "Dec drift"
 msgstr "赤緯ドリフト"
 
-#: cam_simulator.cpp:1605
+#: cam_simulator.cpp:1618
 msgid "Guide rate, x sidereal"
 msgstr "ガイドレート, x 恒星時"
 
-#: cam_simulator.cpp:1606
+#: cam_simulator.cpp:1619
 msgid "Guide rate"
 msgstr "ガイドレート"
 
-#: cam_simulator.cpp:1610
+#: cam_simulator.cpp:1623
 msgid "PE"
 msgstr "PE(ピリオデックエラー)"
 
-#: cam_simulator.cpp:1611
+#: cam_simulator.cpp:1624
 msgid "Apply PE"
 msgstr "PE適用"
 
-#: cam_simulator.cpp:1611
+#: cam_simulator.cpp:1624
 msgid "Simulate periodic error"
 msgstr "ピリオデックエラーのシミュレート"
 
-#: cam_simulator.cpp:1615
+#: cam_simulator.cpp:1628
 msgid "Default curve"
 msgstr "デフォルトカーブ"
 
-#: cam_simulator.cpp:1617
+#: cam_simulator.cpp:1630
 msgid "Use a built-in PE curve that has some steep and smooth sections."
 msgstr "急勾配と滑らかな区間をもつ内蔵PEカーブを使用してください。"
 
-#: cam_simulator.cpp:1619
+#: cam_simulator.cpp:1632
 msgid "Amplitude: "
 msgstr "振幅: "
 
-#: cam_simulator.cpp:1620
+#: cam_simulator.cpp:1633
 msgid "PE Amplitude, arc-secs"
 msgstr "PE振幅, 秒角"
 
-#: cam_simulator.cpp:1628
+#: cam_simulator.cpp:1641
 msgid "Custom curve"
 msgstr "カスタムカーブ"
 
-#: cam_simulator.cpp:1630
+#: cam_simulator.cpp:1643
 msgid ""
 "Use a simple sinusoidal curve. You can specify the amplitude and period."
 msgstr "単純な正弦曲線を使用します。振幅と周期を指定することができます。"
 
-#: cam_simulator.cpp:1633
+#: cam_simulator.cpp:1646
 msgid "Amplitude"
 msgstr "振幅"
 
-#: cam_simulator.cpp:1633
+#: cam_simulator.cpp:1646
 msgid "Amplitude, arc-secs"
 msgstr "振幅, 秒角"
 
-#: cam_simulator.cpp:1634
+#: cam_simulator.cpp:1647
 msgid "Period"
 msgstr "周期"
 
-#: cam_simulator.cpp:1634
+#: cam_simulator.cpp:1647
 msgid "Period, seconds"
 msgstr "周期, 秒"
 
-#: cam_simulator.cpp:1646
+#: cam_simulator.cpp:1659
 msgid "Reverse Dec pulse on West side of pier"
 msgstr "子午線を超えたら赤緯パルスを反転する"
 
-#: cam_simulator.cpp:1647
+#: cam_simulator.cpp:1660
 msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
@@ -1356,62 +1356,62 @@ msgstr ""
 "ASCOMでパルスガイドされたマウントのように、子午線越えでガイドパルスの方向を反"
 "転するマウントをシミュレートします。"
 
-#: cam_simulator.cpp:1649
+#: cam_simulator.cpp:1662
 msgid "Side of Pier: MMMMM"
 msgstr "望遠鏡の位置: MMMMM"
 
-#: cam_simulator.cpp:1651
+#: cam_simulator.cpp:1664
 msgid "Pier Flip"
 msgstr "姿勢反転"
 
-#: cam_simulator.cpp:1658
+#: cam_simulator.cpp:1671
 msgid "Session"
 msgstr "セッション"
 
-#: cam_simulator.cpp:1660
+#: cam_simulator.cpp:1673
 msgid "Camera angle, degrees"
 msgstr "カメラアングル, 度"
 
-#: cam_simulator.cpp:1661
+#: cam_simulator.cpp:1674
 msgid "Camera angle"
 msgstr "カメラアングル"
 
-#: cam_simulator.cpp:1662
+#: cam_simulator.cpp:1675
 msgid "Seeing, FWHM arc-sec"
 msgstr "シーイング, FWHM 秒角"
 
-#: cam_simulator.cpp:1663
+#: cam_simulator.cpp:1676
 msgid "Seeing"
 msgstr "シーイング"
 
-#: cam_simulator.cpp:1664
+#: cam_simulator.cpp:1677
 msgid "Comet"
 msgstr "彗星"
 
-#: cam_simulator.cpp:1666
+#: cam_simulator.cpp:1679
 msgid "Star fading due to clouds"
 msgstr "雲に遮られて弱まっている星"
 
-#: cam_simulator.cpp:1678 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
+#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
 #: Refine_DefMap.cpp:175 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr "リセット"
 
-#: cam_simulator.cpp:1679
+#: cam_simulator.cpp:1692
 msgid "Reset all values to application defaults"
 msgstr "すべてのパラメータをデフォルトに戻します。"
 
-#: cam_simulator.cpp:1684 camcal_import_dialog.cpp:119
+#: cam_simulator.cpp:1697 camcal_import_dialog.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: cam_simulator.cpp:1690 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
+#: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
 #: profile_wizard.cpp:874
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: cam_simulator.cpp:1743
+#: cam_simulator.cpp:1756
 #, c-format
 msgid "Side of pier: %s"
 msgstr "望遠鏡の位置: %s"
@@ -3061,7 +3061,7 @@ msgid ""
 "%.f%%, increase to rely more on the predictions"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:227 guide_algorithm_pdrift.cpp:776
+#: guide_algorithm_gaussian_process.cpp:227 guide_algorithm_pdrift.cpp:718
 msgid "PredWt"
 msgstr ""
 
@@ -3073,7 +3073,7 @@ msgid ""
 "f%%, adjust if responding too much or too slowly"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:236 guide_algorithm_pdrift.cpp:785
+#: guide_algorithm_gaussian_process.cpp:236 guide_algorithm_pdrift.cpp:727
 msgid "ReactWt"
 msgstr ""
 
@@ -3089,7 +3089,7 @@ msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:247 guide_algorithm_hysteresis.cpp:329
 #: guide_algorithm_lowpass.cpp:295 guide_algorithm_lowpass2.cpp:301
-#: guide_algorithm_pdrift.cpp:797 guide_algorithm_resistswitch.cpp:385
+#: guide_algorithm_pdrift.cpp:739 guide_algorithm_resistswitch.cpp:385
 msgid "MnMo"
 msgstr ""
 
@@ -3101,15 +3101,19 @@ msgstr ""
 msgid "Predictive Weight"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:308 guide_algorithm_pdrift.cpp:711
+#: guide_algorithm_gaussian_process.cpp:308 guide_algorithm_pdrift.cpp:653
 msgid "Reactive Weight"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:316 guide_algorithm_hysteresis.cpp:256
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass2.cpp:239
-#: guide_algorithm_pdrift.cpp:720 guide_algorithm_resistswitch.cpp:315
+#: guide_algorithm_pdrift.cpp:662 guide_algorithm_resistswitch.cpp:315
 msgid "Minimum Move (pixels)"
 msgstr "最小移動検知量(ピクセル)"
+
+#: guide_algorithm_gaussian_process.cpp:325
+msgid "Auto-adjust period"
+msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:326
 #, c-format
@@ -3177,7 +3181,7 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:326
 #: guide_algorithm_lowpass.cpp:232 guide_algorithm_lowpass.cpp:292
 #: guide_algorithm_lowpass2.cpp:240 guide_algorithm_lowpass2.cpp:298
-#: guide_algorithm_pdrift.cpp:721 guide_algorithm_pdrift.cpp:794
+#: guide_algorithm_pdrift.cpp:663 guide_algorithm_pdrift.cpp:736
 #: guide_algorithm_resistswitch.cpp:316 guide_algorithm_resistswitch.cpp:382
 #, c-format
 msgid ""
@@ -3242,47 +3246,47 @@ msgstr ""
 msgid "Agg"
 msgstr "Agr"
 
-#: guide_algorithm_pdrift.cpp:697
+#: guide_algorithm_pdrift.cpp:639
 msgid "Predictive Drift Guide Algorithm"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:704
+#: guide_algorithm_pdrift.cpp:646
 msgid "Prediction Weight"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:705
+#: guide_algorithm_pdrift.cpp:647
 #, c-format
 msgid ""
 "What percentage of the predictive guide correction should be applied? "
 "Default = %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:712
+#: guide_algorithm_pdrift.cpp:654
 #, c-format
 msgid ""
 "What percentage of the reactive guide correction should be applied? Default "
 "= %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:724 guide_algorithm_pdrift.cpp:802
+#: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
 #: myframe.cpp:854 myframe.cpp:917 scope.cpp:222
 msgid "Auto"
 msgstr "Auto"
 
-#: guide_algorithm_pdrift.cpp:774
+#: guide_algorithm_pdrift.cpp:716
 #, c-format
 msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:783
+#: guide_algorithm_pdrift.cpp:725
 #, c-format
 msgid ""
 "What percentage of the reactive correction should be applied? Default = %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:804
+#: guide_algorithm_pdrift.cpp:746
 msgid "Let PHD2 adjust the min move automatically"
 msgstr ""
 
@@ -3932,23 +3936,23 @@ msgstr ""
 msgid "%dsec"
 msgstr ""
 
-#: log_uploader.cpp:537
+#: log_uploader.cpp:555
 msgid "Upload Log Files - Select logs"
 msgstr ""
 
-#: log_uploader.cpp:538
+#: log_uploader.cpp:556
 msgid "Upload Log Files - Confirm upload"
 msgstr ""
 
-#: log_uploader.cpp:539
+#: log_uploader.cpp:557
 msgid "Upload Log Files - Upload complete"
 msgstr ""
 
-#: log_uploader.cpp:540
+#: log_uploader.cpp:558
 msgid "Upload Log Files - Upload not completed"
 msgstr ""
 
-#: log_uploader.cpp:543
+#: log_uploader.cpp:561
 msgid ""
 "When asking for help in the PHD2 Forum it is important to include your PHD2 "
 "logs. This tool will\n"
@@ -3960,113 +3964,113 @@ msgid ""
 "PHD2, select the Debug Log."
 msgstr ""
 
-#: log_uploader.cpp:581
+#: log_uploader.cpp:599
 msgid "Session Start"
 msgstr ""
 
-#: log_uploader.cpp:582
+#: log_uploader.cpp:600
 msgid "Duration"
 msgstr ""
 
-#: log_uploader.cpp:583
+#: log_uploader.cpp:601
 msgid "Guide Log"
 msgstr ""
 
-#: log_uploader.cpp:584
+#: log_uploader.cpp:602
 msgid "Debug Log"
 msgstr ""
 
-#: log_uploader.cpp:613 log_uploader.cpp:1197
+#: log_uploader.cpp:631 log_uploader.cpp:1215
 msgid "Recent uploads"
 msgstr ""
 
-#: log_uploader.cpp:619 profile_wizard.cpp:184
+#: log_uploader.cpp:637 profile_wizard.cpp:184
 msgid "< Back"
 msgstr "< 戻る"
 
-#: log_uploader.cpp:622 log_uploader.cpp:1219 profile_wizard.cpp:189
+#: log_uploader.cpp:640 log_uploader.cpp:1237 profile_wizard.cpp:189
 #: profile_wizard.cpp:429
 msgid "Next >"
 msgstr "次へ >"
 
-#: log_uploader.cpp:744 log_uploader.cpp:1065
+#: log_uploader.cpp:762 log_uploader.cpp:1083
 msgid "Upload"
 msgstr ""
 
-#: log_uploader.cpp:744
+#: log_uploader.cpp:762
 msgid "Uploading log files ..."
 msgstr ""
 
-#: log_uploader.cpp:773
+#: log_uploader.cpp:791
 #, c-format
 msgid "Uploading ... %.f%%"
 msgstr ""
 
-#: log_uploader.cpp:826
+#: log_uploader.cpp:844
 msgid "Connecting ..."
 msgstr ""
 
-#: log_uploader.cpp:842
+#: log_uploader.cpp:860
 #, c-format
 msgid "Connection failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:998
+#: log_uploader.cpp:1016
 #, c-format
 msgid "Upload failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1031
+#: log_uploader.cpp:1049
 msgid "The following log files will be uploaded:"
 msgstr ""
 
-#: log_uploader.cpp:1046
+#: log_uploader.cpp:1064
 msgid "Guide and Debug logs"
 msgstr ""
 
-#: log_uploader.cpp:1048
+#: log_uploader.cpp:1066
 msgid "Debug log"
 msgstr ""
 
-#: log_uploader.cpp:1050
+#: log_uploader.cpp:1068
 msgid "Guide log"
 msgstr ""
 
-#: log_uploader.cpp:1137
+#: log_uploader.cpp:1155
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
 
-#: log_uploader.cpp:1140
+#: log_uploader.cpp:1158
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
 
-#: log_uploader.cpp:1142
+#: log_uploader.cpp:1160
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: log_uploader.cpp:1158
+#: log_uploader.cpp:1176
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
 
-#: log_uploader.cpp:1161
+#: log_uploader.cpp:1179
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1165
+#: log_uploader.cpp:1183
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
 
-#: log_uploader.cpp:1169
+#: log_uploader.cpp:1187
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
