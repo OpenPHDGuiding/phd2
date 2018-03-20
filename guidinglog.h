@@ -86,19 +86,18 @@ class GuidingLog : public Logger
     bool m_keepFile;
     bool m_isGuiding;
 
-protected:
-    void GuidingHeader(void);
-
 public:
-    GuidingLog(void);
-    ~GuidingLog(void);
+    GuidingLog();
+    ~GuidingLog();
 
-    bool EnableLogging(void);
+    bool EnableLogging();
     bool EnableLogging(bool enabled);
-    void DisableLogging(void);
-    bool IsEnabled(void) const;
-    bool Flush(void);
-    void Close(void);
+    void DisableLogging();
+    bool IsEnabled() const;
+    bool Flush();
+    void Close();
+
+    wxFFile& File();
 
     void StartCalibration(Mount *pCalibrationMount);
     void CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
@@ -128,9 +127,14 @@ public:
     void RemoveOldFiles();
 };
 
-inline bool GuidingLog::IsEnabled(void) const
+inline bool GuidingLog::IsEnabled() const
 {
     return m_enabled;
+}
+
+inline wxFFile& GuidingLog::File()
+{
+    return m_file;
 }
 
 extern GuidingLog GuideLog;

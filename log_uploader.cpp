@@ -383,9 +383,27 @@ static wxString QuickSessionDuration(const Session& s)
         return wxEmptyString;
 }
 
+static void ReallyFlush(const wxFFile& ffile)
+{
+#ifdef __WINDOWS__
+    // On Windows the Flush() calls made by GuidingLog and DebugLog are not sufficient
+    // to get the changes onto the filesystem without some contortions
+    if (ffile.IsOpened())
+        FlushFileBuffers((HANDLE) _get_osfhandle(_fileno(ffile.fp())));
+#endif
+}
+
+static void FlushLogs()
+{
+    ReallyFlush(Debug);
+    ReallyFlush(GuideLog.File());
+}
+
 static void LoadGrid(wxGrid *grid)
 {
     wxBusyCursor spin;
+
+    FlushLogs();
 
     std::map<wxString, Session> logs;
 
