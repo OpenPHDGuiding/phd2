@@ -109,12 +109,8 @@ private:
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
     void WrapUp();
-    GuideCamera *TryCameraConnect();
-    Mount *TryMountConnect();
-    double GetPixelSize(GuideCamera *cam);
     void InitCameraProps(bool tryConnect);
     void InitMountProps(Scope *theScope);
-    void SetBinningLevel(int val);
     DialogState m_State;
     bool m_useCamera;
     bool m_useMount;

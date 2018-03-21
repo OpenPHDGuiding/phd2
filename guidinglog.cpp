@@ -39,7 +39,7 @@
 
 const int RetentionPeriod = 60;
 
-GuidingLog::GuidingLog(void)
+GuidingLog::GuidingLog()
     :
     m_enabled(false),
     m_keepFile(false),
@@ -47,151 +47,8 @@ GuidingLog::GuidingLog(void)
 {
 }
 
-GuidingLog::~GuidingLog(void)
+GuidingLog::~GuidingLog()
 {
-}
-
-bool GuidingLog::EnableLogging(void)
-{
-    if (m_enabled)
-        return false;
-
-    bool bError = false;
-
-    try
-    {
-        const wxDateTime& initTime = wxGetApp().GetInitTime();
-        if (!m_file.IsOpened())
-        {
-            m_fileName = GetLogDir() + PATHSEPSTR + initTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
-
-            if (!m_file.Open(m_fileName, "w"))
-            {
-                throw ERROR_INFO("unable to open file");
-            }
-            m_keepFile = false;             // Don't keep it until something meaningful is logged
-        }
-
-        assert(m_file.IsOpened());
-
-        m_file.Write(_T("PHD2 version ") FULLVER _T(" [") PHD_OSNAME _T("]") _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
-            initTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-        Flush();
-
-        m_enabled = true;
-
-        // persist state
-        pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
-
-        // dump guiding header if logging enabled during guide
-        if (pFrame && pFrame->pGuider->IsGuiding())
-            GuidingHeader();
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-bool GuidingLog::EnableLogging(bool enable)
-{
-    if (enable)
-        return EnableLogging();
-
-    DisableLogging();
-    return false;
-}
-
-void GuidingLog::DisableLogging(void)
-{
-    if (!m_enabled)
-        return;
-
-    assert(m_file.IsOpened());
-    wxDateTime now = wxDateTime::Now();
-
-    m_file.Write("\n");
-    m_file.Write("Log disabled at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-    Flush();
-    m_enabled = false;
-
-    // persist state
-    pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
-}
-
-bool GuidingLog::ChangeDirLog(const wxString& newdir)
-{
-    bool bEnabled = IsEnabled();
-    bool bOk = true;
-
-    if (bEnabled)
-    {
-        Close();
-    }
-    if (!SetLogDir(newdir))
-    {
-        wxMessageBox(wxString::Format("invalid folder name %s, log folder unchanged", newdir));
-        bOk = false;
-    }
-    if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
-    {
-        EnableLogging();             // start fresh...
-    }
-
-    return bOk;
-}
-
-void GuidingLog::RemoveOldFiles()
-{
-    Logger::RemoveMatchingFiles("PHD2_GuideLog*.txt", RetentionPeriod);
-}
-
-bool GuidingLog::Flush(void)
-{
-    if (!m_enabled)
-        return false;
-
-    bool bError = false;
-
-    try
-    {
-        assert(m_file.IsOpened());
-
-        if (!m_file.Flush())
-        {
-            throw ERROR_INFO("unable to flush file");
-        }
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-void GuidingLog::Close(void)
-{
-    if (!m_enabled)
-        return;
-
-    assert(m_file.IsOpened());
-    wxDateTime now = wxDateTime::Now();
-
-    m_file.Write("\n");
-    m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-    Flush();
-    m_file.Close();
-    m_enabled = false;
-
-    if (!m_keepFile)            // Delete the file if nothing useful was logged
-    {
-        wxRemove(m_fileName);
-    }
 }
 
 static wxString PierSideStr(PierSide p)
@@ -219,7 +76,7 @@ static double HourAngle(double ra, double lst)
     return norm(lst - ra, -12.0, 12.0);
 }
 
-static wxString RotatorPosStr(void)
+static wxString RotatorPosStr()
 {
     if (!pRotator)
         return "N/A";
@@ -282,7 +139,7 @@ static wxString PointingInfo()
     double alt;
     double az;
     double ha;
-    wxString rslt = "";
+    wxString rslt;
     bool pointingError = false;
     if (pPointingSource && !pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
@@ -305,6 +162,184 @@ static wxString PointingInfo()
         rslt += "Alt = Unknown, Az = Unknown";
 
     return rslt;
+}
+
+static void GuidingHeader(wxFFile& file)
+// output guiding header to log file
+{
+    file.Write(pFrame->GetSettingsSummary());
+    file.Write(pFrame->pGuider->GetSettingsSummary());
+
+    file.Write("Equipment Profile = " + pConfig->GetCurrentProfile() + "\n");
+
+    if (pCamera)
+    {
+        file.Write(pCamera->GetSettingsSummary());
+        file.Write("Exposure = " + pFrame->ExposureDurationSummary() + "\n");
+    }
+
+    if (pMount)
+        file.Write(pMount->GetSettingsSummary());
+
+    if (pSecondaryMount)
+        file.Write(pSecondaryMount->GetSettingsSummary());
+
+    file.Write(wxString::Format("%s\n", PointingInfo()));
+
+    file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
+        pFrame->pGuider->LockPosition().X,
+        pFrame->pGuider->LockPosition().Y,
+        pFrame->pGuider->CurrentPosition().X,
+        pFrame->pGuider->CurrentPosition().Y,
+        pFrame->pGuider->HFD()));
+
+    file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
+}
+
+bool GuidingLog::EnableLogging()
+{
+    if (m_enabled)
+        return false;
+
+    bool bError = false;
+
+    try
+    {
+        const wxDateTime& initTime = wxGetApp().GetInitTime();
+        if (!m_file.IsOpened())
+        {
+            m_fileName = GetLogDir() + PATHSEPSTR + initTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
+
+            if (!m_file.Open(m_fileName, "w"))
+            {
+                throw ERROR_INFO("unable to open file");
+            }
+            m_keepFile = false;             // Don't keep it until something meaningful is logged
+        }
+
+        assert(m_file.IsOpened());
+
+        m_file.Write(_T("PHD2 version ") FULLVER _T(" [") PHD_OSNAME _T("]") _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
+            initTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+
+        m_enabled = true;
+
+        // persist state
+        pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
+
+        // dump guiding header if logging enabled during guide
+        if (pFrame && pFrame->pGuider->IsGuiding())
+            GuidingHeader(m_file);
+
+        Flush();
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::EnableLogging(bool enable)
+{
+    if (enable)
+        return EnableLogging();
+
+    DisableLogging();
+    return false;
+}
+
+void GuidingLog::DisableLogging()
+{
+    if (!m_enabled)
+        return;
+
+    assert(m_file.IsOpened());
+    wxDateTime now = wxDateTime::Now();
+
+    m_file.Write("\n");
+    m_file.Write("Log disabled at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+    Flush();
+
+    m_enabled = false;
+
+    // persist state
+    pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
+}
+
+bool GuidingLog::ChangeDirLog(const wxString& newdir)
+{
+    bool bEnabled = IsEnabled();
+    bool bOk = true;
+
+    if (bEnabled)
+    {
+        Close();
+    }
+    if (!SetLogDir(newdir))
+    {
+        wxMessageBox(wxString::Format("invalid folder name %s, log folder unchanged", newdir));
+        bOk = false;
+    }
+    if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
+    {
+        EnableLogging();             // start fresh...
+    }
+
+    return bOk;
+}
+
+void GuidingLog::RemoveOldFiles()
+{
+    Logger::RemoveMatchingFiles("PHD2_GuideLog*.txt", RetentionPeriod);
+}
+
+bool GuidingLog::Flush()
+{
+    if (!m_enabled)
+        return false;
+
+    bool bError = false;
+
+    try
+    {
+        assert(m_file.IsOpened());
+
+        if (!m_file.Flush())
+        {
+            throw ERROR_INFO("unable to flush file");
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+void GuidingLog::Close()
+{
+    if (!m_enabled)
+        return;
+
+    assert(m_file.IsOpened());
+    wxDateTime now = wxDateTime::Now();
+
+    m_file.Write("\n");
+    m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+    Flush();
+
+    m_file.Close();
+    m_enabled = false;
+
+    if (!m_keepFile)            // Delete the file if nothing useful was logged
+    {
+        wxRemove(m_fileName);
+    }
 }
 
 void GuidingLog::StartCalibration(Mount *pCalibrationMount)
@@ -346,6 +381,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
                 pFrame->pGuider->CurrentPosition().Y,
                 pFrame->pGuider->HFD()));
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
+
     Flush();
 
     m_keepFile = true;
@@ -359,6 +395,7 @@ void GuidingLog::CalibrationFailed(Mount *pCalibrationMount, const wxString& msg
         return;
 
     assert(m_file.IsOpened());
+
     m_file.Write(msg); m_file.Write("\n");
     Flush();
 }
@@ -370,6 +407,7 @@ void GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direc
         return;
 
     assert(m_file.IsOpened());
+
     // Direction,Step,dx,dy,x,y,Dist
     m_file.Write(wxString::Format("%s,%d,%.3f,%.3f,%.3f,%.3f,%.3f\n",
         direction,
@@ -377,6 +415,7 @@ void GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direc
         dx, dy,
         xy.X, xy.Y,
         dist));
+
     Flush();
 }
 
@@ -386,26 +425,32 @@ void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxStr
         return;
 
     assert(m_file.IsOpened());
+
     m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f px/sec, Parity = %s\n",
         direction, degrees(angle), rate * 1000.0, ParityStr(parity)));
+
     Flush();
 }
 
 void GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
 {
     m_isGuiding = false;
-    CalibrationDetails calDetails;
 
     if (!m_enabled)
         return;
 
     assert(m_file.IsOpened());
+
+    CalibrationDetails calDetails;
     pCalibrationMount->GetCalibrationDetails(&calDetails);
+
     if (calDetails.raGuideSpeed > 0)
         m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n", 3600.0 * calDetails.raGuideSpeed, 3600 * calDetails.decGuideSpeed));
     else
         m_file.Write("Calibration guide speeds: RA = Unknown, Dec = Unknown\n");
+
     m_file.Write(wxString::Format("Calibration complete, mount = %s.\n", pCalibrationMount->Name()));
+
     Flush();
 }
 
@@ -420,13 +465,16 @@ void GuidingLog::StartGuiding()
 
     m_file.Write("\n");
     m_file.Write("Guiding Begins at " + pFrame->m_guidingStarted.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-    m_keepFile = true;
 
     // add common guiding header
-    GuidingHeader();
+    GuidingHeader(m_file);
+
+    Flush();
+
+    m_keepFile = true;
 }
 
-void GuidingLog::StopGuiding(void)
+void GuidingLog::StopGuiding()
 {
     m_isGuiding = false;
 
@@ -434,40 +482,8 @@ void GuidingLog::StopGuiding(void)
         return;
 
     assert(m_file.IsOpened());
+
     m_file.Write("Guiding Ends at " + wxDateTime::Now().Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-}
-
-void GuidingLog::GuidingHeader(void)
-    // output guiding header to log file
-{
-    m_file.Write(pFrame->GetSettingsSummary());
-    m_file.Write(pFrame->pGuider->GetSettingsSummary());
-
-    m_file.Write("Equipment Profile = " + pConfig->GetCurrentProfile() + "\n");
-
-    if (pCamera)
-    {
-        m_file.Write(pCamera->GetSettingsSummary());
-        m_file.Write("Exposure = " + pFrame->ExposureDurationSummary() + "\n");
-    }
-
-    if (pMount)
-        m_file.Write(pMount->GetSettingsSummary());
-
-    if (pSecondaryMount)
-        m_file.Write(pSecondaryMount->GetSettingsSummary());
-
-    m_file.Write(wxString::Format("%s\n", PointingInfo()));
-
-    m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
-                pFrame->pGuider->LockPosition().X,
-                pFrame->pGuider->LockPosition().Y,
-                pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y,
-                pFrame->pGuider->HFD()));
-
-    m_file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
-
     Flush();
 }
 
@@ -522,13 +538,13 @@ void GuidingLog::CalibrationFrameDropped(const FrameDroppedInfo& info)
 {
     if (!m_enabled)
         return;
+
     assert(m_file.IsOpened());
 
     m_file.Write(wxString::Format("INFO: STAR LOST during calibration, Mass= %.f, SNR= %.2f, Error= %d, Status=%s\n",
         info.starMass, info.starSNR, info.starError, info.status));
 
     Flush();
-
 }
 
 void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
@@ -538,6 +554,7 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 
     m_file.Write(wxString::Format("INFO: DITHER by %.3f, %.3f, new lock pos = %.3f, %.3f\n",
         dx, dy, guider->LockPosition().X, guider->LockPosition().Y));
+
     Flush();
 }
 
@@ -561,8 +578,10 @@ void GuidingLog::NotifySetLockPosition(Guider *guider)
 
     m_file.Write(wxString::Format("INFO: SET LOCK POSITION, new lock pos = %.3f, %.3f\n",
         guider->LockPosition().X, guider->LockPosition().Y));
-    m_keepFile = true;
+
     Flush();
+
+    m_keepFile = true;
 }
 
 void GuidingLog::NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate)
@@ -581,9 +600,11 @@ void GuidingLog::NotifyLockShiftParams(const LockPosShiftParams& shiftParams, co
                                     cameraRate.IsValid() ? cameraRate.X * 3600.0 : 0.0,
                                     cameraRate.IsValid() ? cameraRate.Y * 3600.0 : 0.0);
     }
+
     m_file.Write(wxString::Format("INFO: LOCK SHIFT, enabled = %d %s\n", shiftParams.shiftEnabled, details));
-    m_keepFile = true;
     Flush();
+
+    m_keepFile = true;
 }
 
 void GuidingLog::ServerCommand(Guider *guider, const wxString& cmd)
@@ -592,8 +613,9 @@ void GuidingLog::ServerCommand(Guider *guider, const wxString& cmd)
         return;
 
     m_file.Write(wxString::Format("INFO: Server received %s\n", cmd));
-    m_keepFile = true;
     Flush();
+
+    m_keepFile = true;
 }
 
 void GuidingLog::SetGuidingParam(const wxString& name, double val)
@@ -617,6 +639,7 @@ void GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)
         return;
 
     m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %s\n", name, val));
-    m_keepFile = true;
     Flush();
+
+    m_keepFile = true;
 }

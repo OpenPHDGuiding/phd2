@@ -469,17 +469,54 @@ static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
     pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
 }
 
-void ProfileWizard::SetBinningLevel(int val)
+struct AutoConnectCamera
 {
-    GuideCamera* cam = TryCameraConnect();
-    if (cam)
+    GuideCamera *m_camera;
+
+    AutoConnectCamera(wxWindow *parent, const wxString& selection)
     {
-        if (cam->MaxBinning > 1)
-            cam->SetBinning(val);
-        if (cam->Disconnect())
-            Debug.AddLine("Camera disconnect failed!");
-        delete cam;
+        m_camera = GuideCamera::Factory(selection);
+        pFrame->ClearAlert();
+
+        if (m_camera)
+        {
+            wxBusyCursor busy;
+            m_camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
+            pFrame->ClearAlert();
+        }
+
+        if (!m_camera || !m_camera->Connected)
+        {
+            wxMessageBox(_("PHD2 could not connect to the camera so you may want to deal with that later. "
+                "In the meantime, you can just enter the pixel-size manually along with the "
+                "focal length and binning levels."));
+
+            delete m_camera;
+            m_camera = nullptr;
+        }
+
+        parent->SetFocus();    // In case driver messages might have caused us to lose it
     }
+
+    ~AutoConnectCamera()
+    {
+        if (m_camera)
+        {
+            if (m_camera->Connected)
+                m_camera->Disconnect();
+            delete m_camera;
+        }
+    }
+
+    operator GuideCamera*() const  { return m_camera; }
+    GuideCamera *operator->() const { return m_camera; }
+};
+
+static void SetBinningLevel(wxWindow *parent, const wxString& selection, int val)
+{
+    AutoConnectCamera cam(parent, selection);
+    if (cam && cam->MaxBinning > 1)
+        cam->SetBinning(val);
 }
 
 // Wrapup logic - build the new profile, maybe launch the darks dialog
@@ -489,7 +526,7 @@ void ProfileWizard::WrapUp()
 
     int binning = m_pBinningLevel->GetValue();
     if (m_useCamera)
-        SetBinningLevel(binning);
+        SetBinningLevel(this, m_SelectedCamera, binning);
 
     int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning);
 
@@ -528,16 +565,12 @@ void ProfileWizard::WrapUp()
 // Event handlers below
 void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 {
-    Scope *pMount;
-    bool camNone = false;
-    wxString prevSelection;
-
     switch (m_State)
     {
-    case STATE_CAMERA:
-        prevSelection = m_SelectedCamera;
+    case STATE_CAMERA: {
+        wxString prevSelection = m_SelectedCamera;
         m_SelectedCamera = m_pGearChoice->GetStringSelection();
-        camNone = (m_SelectedCamera == _("None"));
+        bool camNone = (m_SelectedCamera == _("None"));
         if (m_SelectedCamera != prevSelection && !camNone)
         {
             ConnectDialog cnDlg(this, STATE_CAMERA);
@@ -546,12 +579,11 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
             {
                 m_useCamera = true;
             }
-            else
-            if (answer == wxNO)
+            else if (answer == wxNO)
             {
                 m_useCamera = false;
             }
-            if (answer == wxCANCEL)
+            else if (answer == wxCANCEL)
             {
                 m_SelectedCamera = _("None");
                 UpdateState(0);
@@ -561,12 +593,13 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         if (m_SelectedCamera != prevSelection)
             InitCameraProps(m_useCamera && !camNone);
         break;
+    }
 
-    case STATE_MOUNT:
-        prevSelection = m_SelectedMount;
+    case STATE_MOUNT: {
+        wxString prevSelection = m_SelectedMount;
         m_SelectedMount = m_pGearChoice->GetStringSelection();
-        pMount = Scope::Factory(m_SelectedMount);
-        m_PositionAware = pMount && (pMount->CanReportPosition());
+        std::unique_ptr<Scope> scope(Scope::Factory(m_SelectedMount));
+        m_PositionAware = scope && scope->CanReportPosition();
         if (m_PositionAware)
         {
             if (prevSelection != m_SelectedMount)
@@ -577,12 +610,11 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 {
                     m_useMount = true;
                 }
-                else
-                if (answer == wxNO)
+                else if (answer == wxNO)
                 {
                     m_useMount = false;
                 }
-                if (answer == wxCANCEL)
+                else if (answer == wxCANCEL)
                 {
                     m_SelectedMount = _("None");
                     UpdateState(0);
@@ -593,29 +625,24 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
             if (prevSelection != m_SelectedMount)
             {
                 if (m_useMount)
-                    InitMountProps(pMount);
+                    InitMountProps(scope.get());
                 else
-                    InitMountProps(NULL);
+                    InitMountProps(nullptr);
             }
         }
         else
         {
             if (prevSelection != m_SelectedMount)
-                InitMountProps(NULL);
-        }
-
-        if (pMount)
-        {
-            delete pMount;
-            pMount = NULL;
+                InitMountProps(nullptr);
         }
         break;
+    }
 
-    case STATE_AUXMOUNT:
+    case STATE_AUXMOUNT: {
         ShowStatus(wxEmptyString);
-        prevSelection = m_SelectedAuxMount;
+        wxString prevSelection = m_SelectedAuxMount;
         m_SelectedAuxMount = m_pGearChoice->GetStringSelection();
-        pMount = Scope::Factory(m_SelectedAuxMount);
+        std::unique_ptr<Scope> scope(Scope::Factory(m_SelectedAuxMount));
         // Handle setting of guide speed behind the scenes using aux-mount
         if (prevSelection != m_SelectedAuxMount)
         {
@@ -627,12 +654,11 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 {
                     m_useAuxMount = true;
                 }
-                else
-                if (answer == wxNO)
+                else if (answer == wxNO)
                 {
                     m_useAuxMount = false;
                 }
-                if (answer == wxCANCEL)
+                else if (answer == wxCANCEL)
                 {
                     m_SelectedAuxMount = _("None");
                     UpdateState(0);
@@ -648,20 +674,15 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
             if (m_useAuxMount)
             {
                 double oldGuideSpeed = m_pGuideSpeed->GetValue();
-                InitMountProps(pMount);
+                InitMountProps(scope.get());
                 if (oldGuideSpeed != m_pGuideSpeed->GetValue())
                     ShowStatus(wxString::Format(_("Guide speed setting adjusted from %0.1f to %0.1fx"), oldGuideSpeed, m_pGuideSpeed->GetValue()));
             }
             else
-                InitMountProps(NULL);
-        }
-
-        if (pMount)
-        {
-            delete pMount;
-            pMount = NULL;
+                InitMountProps(nullptr);
         }
         break;
+    }
 
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
@@ -673,49 +694,24 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     }
 }
 
-GuideCamera* ProfileWizard::TryCameraConnect()
-{
-    GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
-    pFrame->ClearAlert();
-    try
-    {
-        wxBusyCursor busy;
-        if (!camera)
-            throw (wxString(_("PHD2 could not load the camera driver")));
-        if (camera->Connect(GuideCamera::DEFAULT_CAMERA_ID))
-            throw (wxString(_("PHD2 could not connect to the camera")));
-    }
-    catch (const wxString& msg)
-    {
-        pFrame->ClearAlert();
-        wxMessageBox(msg + " so you may want to deal with that later. In the meantime, you can just enter the pixel-size manually along with the focal length and binning levels.");
-        camera = NULL;
-    }
-    this->SetFocus();           // In case driver messages might have caused us to lose it
-    return camera;
-}
-
-double ProfileWizard::GetPixelSize(GuideCamera* cam)
+static double GetPixelSize(GuideCamera *cam)
 {
     double rslt;
     if (cam->GetDevicePixelSize(&rslt))
     {
         wxMessageBox(_("This camera driver doesn't report the pixel size, so you'll need to enter the value manually"));
-        rslt = 0;
+        rslt = 0.;
     }
     return rslt;
 }
 
 void ProfileWizard::InitCameraProps(bool tryConnect)
 {
-    GuideCamera* cam = NULL;
-    double pxSz = 0;
-    wxArrayString opts;
-
     if (tryConnect)
     {
-        cam = TryCameraConnect();
         // Pixel size
+        double pxSz = 0.;
+        AutoConnectCamera cam(this, m_SelectedCamera);
         if (cam)
             pxSz = GetPixelSize(cam);
         m_pPixelSize->SetValue(pxSz);           // Might be zero if driver doesn't report it
@@ -725,9 +721,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pBinningLevel->SetValue(1);
         // Binning
         if (cam)
-        {
             m_pBinningLevel->SetRange(1, cam->MaxBinning);
-        }
         else
             m_pBinningLevel->SetRange(1, 4);         // We don't know, make it generous
     }
@@ -739,13 +733,6 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pPixelSize->Enable(true);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
-    }
-
-    if (cam)
-    {
-        if (cam->Connected)
-            cam->Disconnect();
-        delete cam;
     }
 }
 
@@ -765,7 +752,8 @@ void ProfileWizard::InitMountProps(Scope* theScope)
         if (err)
         {
             wxMessageBox(
-                wxString::Format(_("PHD2 could not connect to the mount, so you'll probably want to deal with that later.  In the meantime, if you know the mount guide speed setting, you can enter it manually. "
+                wxString::Format(_("PHD2 could not connect to the mount, so you'll probably want to deal with that later.  "
+                "In the meantime, if you know the mount guide speed setting, you can enter it manually. "
                 " Otherwise, you can just leave it at the default value of %0.1fx"), Scope::DEFAULT_MOUNT_GUIDE_SPEED));
             speedVal = Scope::DEFAULT_MOUNT_GUIDE_SPEED;
         }

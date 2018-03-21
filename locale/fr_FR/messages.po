@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-02 01:22+0000\n"
+"POT-Creation-Date: 2018-03-21 19:57+0100\n"
 "PO-Revision-Date: 2018-02-12 23:10+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -55,7 +55,7 @@ msgstr "Configuration avancée"
 msgid "Global"
 msgstr "Global"
 
-#: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1587
+#: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
 #: config_INDI.cpp:104 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Caméra"
@@ -73,7 +73,7 @@ msgstr "Algorithmes"
 msgid "Other Devices"
 msgstr "Autres Appareils"
 
-#: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1599
+#: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
 #: config_INDI.cpp:107 eegg.cpp:117 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
@@ -265,20 +265,20 @@ msgstr ""
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:762
+#: backlash_comp.cpp:763
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Produit une correction test du jeu de %d ms"
 
-#: backlash_comp.cpp:830
+#: backlash_comp.cpp:831
 msgid "Restoring star position"
 msgstr "Restaurer la position de l'étoile"
 
-#: backlash_comp.cpp:838
+#: backlash_comp.cpp:839
 msgid "Measurement complete"
 msgstr "Mesure complète"
 
-#: backlash_comp.cpp:847
+#: backlash_comp.cpp:848
 msgid "Measurement halted"
 msgstr "Mesure arrêtée"
 
@@ -412,12 +412,12 @@ msgstr "Binning : %d"
 msgid "Side-of-pier:"
 msgstr "Côté du méridien :"
 
-#: calreview_dialog.cpp:337 cam_simulator.cpp:1743 mount.cpp:67
+#: calreview_dialog.cpp:337 cam_simulator.cpp:1756 mount.cpp:67
 #: testguide.cpp:152
 msgid "East"
 msgstr "Est"
 
-#: calreview_dialog.cpp:338 cam_simulator.cpp:1743 mount.cpp:68
+#: calreview_dialog.cpp:338 cam_simulator.cpp:1756 mount.cpp:68
 #: testguide.cpp:152
 msgid "West"
 msgstr "Ouest"
@@ -681,7 +681,7 @@ msgstr "Échantillonnage, sec d'arc/px"
 msgid "Calibration step, ms"
 msgstr "Pas de calibration, ms"
 
-#: calstep_dialog.cpp:179 cam_simulator.cpp:1494 camcal_import_dialog.cpp:47
+#: calstep_dialog.cpp:179 cam_simulator.cpp:1507 camcal_import_dialog.cpp:47
 #: configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:54
 #: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:2865
 #: profile_wizard.cpp:59 profile_wizard.cpp:66 Refine_DefMap.cpp:59
@@ -877,7 +877,7 @@ msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
 #: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1223 cam_simulator.cpp:1397 image_math.cpp:85
+#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
@@ -937,12 +937,12 @@ msgstr "Impossible de se connecter à la caméra %s"
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Type non supporté ou erreur de lecture au chargement du fichier FITS"
 
-#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1380
+#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "Le fichier FITS n'est pas une image"
 
 #: cam_INDI.cpp:512 cam_INDI.cpp:533 cam_simulator.cpp:632
-#: cam_simulator.cpp:1402
+#: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "Erreur de lecture des données"
 
@@ -1282,134 +1282,134 @@ msgstr ""
 msgid "Cannot load simulated image"
 msgstr "Impossible de charger l'image simulée"
 
-#: cam_simulator.cpp:1392
+#: cam_simulator.cpp:1405
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
 msgstr ""
 "Type non supporté ou erreur de lecture au chargement du fichier FITS %d %d"
 
-#: cam_simulator.cpp:1563
+#: cam_simulator.cpp:1576
 msgid "PE amplitude and period must be > 0"
 msgstr "Amplitude et période de l'EP doivent être > 0"
 
-#: cam_simulator.cpp:1569
+#: cam_simulator.cpp:1582
 msgid "PE amplitude and period must be numbers > 0"
 msgstr "Amplitude et période de l'EP doivent être des nombres > 0"
 
-#: cam_simulator.cpp:1579
+#: cam_simulator.cpp:1592
 msgid "Camera Simulator"
 msgstr "Simulateur de Caméra"
 
-#: cam_simulator.cpp:1589
+#: cam_simulator.cpp:1602
 msgid "Number of simulated stars"
 msgstr "Nombre d'étoiles simulées"
 
-#: cam_simulator.cpp:1590
+#: cam_simulator.cpp:1603
 msgid "Stars"
 msgstr "Etoiles"
 
-#: cam_simulator.cpp:1591
+#: cam_simulator.cpp:1604
 msgid "Number of hot pixels"
 msgstr "Nombre de pixels chauds"
 
-#: cam_simulator.cpp:1592 Refine_DefMap.cpp:168
+#: cam_simulator.cpp:1605 Refine_DefMap.cpp:168
 msgid "Hot pixels"
 msgstr "Pixels chauds"
 
-#: cam_simulator.cpp:1594
+#: cam_simulator.cpp:1607
 #, no-c-format
 msgid "% Simulated noise"
 msgstr "% de bruit simulé"
 
-#: cam_simulator.cpp:1595
+#: cam_simulator.cpp:1608
 msgid "Noise"
 msgstr "Bruit"
 
-#: cam_simulator.cpp:1601
+#: cam_simulator.cpp:1614
 msgid "Dec backlash, arc-secs"
 msgstr "Jeu Dec, arc-sec"
 
-#: cam_simulator.cpp:1602
+#: cam_simulator.cpp:1615
 msgid "Dec backlash"
 msgstr "Jeu Dec"
 
-#: cam_simulator.cpp:1603
+#: cam_simulator.cpp:1616
 msgid "Dec drift, arc-sec/min"
 msgstr "Dérive Dec, arc-sec/min"
 
-#: cam_simulator.cpp:1604
+#: cam_simulator.cpp:1617
 msgid "Dec drift"
 msgstr "Dérive Dec"
 
-#: cam_simulator.cpp:1605
+#: cam_simulator.cpp:1618
 msgid "Guide rate, x sidereal"
 msgstr "Vitesse de guidage, x sidérale"
 
-#: cam_simulator.cpp:1606
+#: cam_simulator.cpp:1619
 msgid "Guide rate"
 msgstr "Taux de Guidage"
 
-#: cam_simulator.cpp:1610
+#: cam_simulator.cpp:1623
 msgid "PE"
 msgstr "EP"
 
-#: cam_simulator.cpp:1611
+#: cam_simulator.cpp:1624
 msgid "Apply PE"
 msgstr "Appliquer l'EP"
 
-#: cam_simulator.cpp:1611
+#: cam_simulator.cpp:1624
 msgid "Simulate periodic error"
 msgstr "Simuler l'erreur périodique"
 
-#: cam_simulator.cpp:1615
+#: cam_simulator.cpp:1628
 msgid "Default curve"
 msgstr "Courbe par défaut"
 
-#: cam_simulator.cpp:1617
+#: cam_simulator.cpp:1630
 msgid "Use a built-in PE curve that has some steep and smooth sections."
 msgstr ""
 "Utiliser une courbe d'EP intégrée qui a quelques sections raides et lisses."
 
-#: cam_simulator.cpp:1619
+#: cam_simulator.cpp:1632
 msgid "Amplitude: "
 msgstr "Amplitude : "
 
-#: cam_simulator.cpp:1620
+#: cam_simulator.cpp:1633
 msgid "PE Amplitude, arc-secs"
 msgstr "Amplitude EP, arc-sec"
 
-#: cam_simulator.cpp:1628
+#: cam_simulator.cpp:1641
 msgid "Custom curve"
 msgstr "Courbe personnalisée"
 
-#: cam_simulator.cpp:1630
+#: cam_simulator.cpp:1643
 msgid ""
 "Use a simple sinusoidal curve. You can specify the amplitude and period."
 msgstr ""
 "Utilisez une simple courbe sinusoïdale. Vous pouvez renseigner l'amplitude "
 "et la période."
 
-#: cam_simulator.cpp:1633
+#: cam_simulator.cpp:1646
 msgid "Amplitude"
 msgstr "Amplitude"
 
-#: cam_simulator.cpp:1633
+#: cam_simulator.cpp:1646
 msgid "Amplitude, arc-secs"
 msgstr "Amplitude, arc-sec"
 
-#: cam_simulator.cpp:1634
+#: cam_simulator.cpp:1647
 msgid "Period"
 msgstr "Période"
 
-#: cam_simulator.cpp:1634
+#: cam_simulator.cpp:1647
 msgid "Period, seconds"
 msgstr "Période, en secondes"
 
-#: cam_simulator.cpp:1646
+#: cam_simulator.cpp:1659
 msgid "Reverse Dec pulse on West side of pier"
 msgstr "Inverser impulsion Dec sur le côté Ouest du méridien"
 
-#: cam_simulator.cpp:1647
+#: cam_simulator.cpp:1660
 msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
@@ -1418,63 +1418,63 @@ msgstr ""
 "un basculement au méridien, comme une monture ASCOM guidée par impulsion "
 "(pulse-guiding)."
 
-#: cam_simulator.cpp:1649
+#: cam_simulator.cpp:1662
 msgid "Side of Pier: MMMMM"
 msgstr "Côté du méridien : MMMMM"
 
-#: cam_simulator.cpp:1651
+#: cam_simulator.cpp:1664
 msgid "Pier Flip"
 msgstr "Retournement au méridien"
 
-#: cam_simulator.cpp:1658
+#: cam_simulator.cpp:1671
 msgid "Session"
 msgstr "Session"
 
-#: cam_simulator.cpp:1660
+#: cam_simulator.cpp:1673
 msgid "Camera angle, degrees"
 msgstr "Angle de la caméra, en degrés"
 
-#: cam_simulator.cpp:1661
+#: cam_simulator.cpp:1674
 msgid "Camera angle"
 msgstr "Angle de la caméra"
 
-#: cam_simulator.cpp:1662
+#: cam_simulator.cpp:1675
 msgid "Seeing, FWHM arc-sec"
 msgstr "Seeing, FWHM arc-sec"
 
-#: cam_simulator.cpp:1663
+#: cam_simulator.cpp:1676
 msgid "Seeing"
 msgstr "Seeing"
 
-#: cam_simulator.cpp:1664
+#: cam_simulator.cpp:1677
 msgid "Comet"
 msgstr "Comète"
 
-#: cam_simulator.cpp:1666
+#: cam_simulator.cpp:1679
 msgid "Star fading due to clouds"
 msgstr "Affaiblissement de l'étoile dû aux nuages"
 
-#: cam_simulator.cpp:1678 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
+#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
 #: Refine_DefMap.cpp:175 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: cam_simulator.cpp:1679
+#: cam_simulator.cpp:1692
 msgid "Reset all values to application defaults"
 msgstr ""
 "Réinitialiser toutes les valeurs aux valeurs par défaut de l'application"
 
-#: cam_simulator.cpp:1684 camcal_import_dialog.cpp:119
+#: cam_simulator.cpp:1697 camcal_import_dialog.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: cam_simulator.cpp:1690 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
+#: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
-#: profile_wizard.cpp:874
+#: profile_wizard.cpp:862
 msgid "Cancel"
 msgstr "Abandon"
 
-#: cam_simulator.cpp:1743
+#: cam_simulator.cpp:1756
 #, c-format
 msgid "Side of pier: %s"
 msgstr "Côté du méridien : %s"
@@ -1603,9 +1603,9 @@ msgstr ""
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
-#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
-#: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
-#: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
+#: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
+#: profile_wizard.cpp:624 profile_wizard.cpp:649 profile_wizard.cpp:663
 #: rotator.cpp:47 rotator.cpp:82 scope.cpp:280 scope.cpp:322 scope.cpp:362
 #: statswindow.cpp:259 stepguider.cpp:93 stepguider.cpp:120
 msgid "None"
@@ -2891,7 +2891,7 @@ msgstr "Impossible de créer le profil %s, il y a déjà un profil avec ce nom"
 msgid "Could not create profile %s from profile %s"
 msgstr "Impossible de créer le profil %s à partir du profil %s"
 
-#: gear_dialog.cpp:1924 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:539
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Impossible de créer le profil %s"
@@ -3229,7 +3229,7 @@ msgstr ""
 "Quel pourcentage de la correction du guide prédictif devrait être appliqué ? "
 "Par défaut = %.f%%, augmentez pour compter davantage sur les prédictions"
 
-#: guide_algorithm_gaussian_process.cpp:227 guide_algorithm_pdrift.cpp:776
+#: guide_algorithm_gaussian_process.cpp:227 guide_algorithm_pdrift.cpp:718
 msgid "PredWt"
 msgstr "PredPd"
 
@@ -3243,7 +3243,7 @@ msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
 
-#: guide_algorithm_gaussian_process.cpp:236 guide_algorithm_pdrift.cpp:785
+#: guide_algorithm_gaussian_process.cpp:236 guide_algorithm_pdrift.cpp:727
 msgid "ReactWt"
 msgstr "ReactPd"
 
@@ -3264,7 +3264,7 @@ msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:247 guide_algorithm_hysteresis.cpp:329
 #: guide_algorithm_lowpass.cpp:295 guide_algorithm_lowpass2.cpp:301
-#: guide_algorithm_pdrift.cpp:797 guide_algorithm_resistswitch.cpp:385
+#: guide_algorithm_pdrift.cpp:739 guide_algorithm_resistswitch.cpp:385
 msgid "MnMo"
 msgstr "MnMo"
 
@@ -3276,15 +3276,19 @@ msgstr "Algorithme de guidage prédictif PEC"
 msgid "Predictive Weight"
 msgstr "Pondération prédictif"
 
-#: guide_algorithm_gaussian_process.cpp:308 guide_algorithm_pdrift.cpp:711
+#: guide_algorithm_gaussian_process.cpp:308 guide_algorithm_pdrift.cpp:653
 msgid "Reactive Weight"
 msgstr "Pondération Réactif"
 
 #: guide_algorithm_gaussian_process.cpp:316 guide_algorithm_hysteresis.cpp:256
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass2.cpp:239
-#: guide_algorithm_pdrift.cpp:720 guide_algorithm_resistswitch.cpp:315
+#: guide_algorithm_pdrift.cpp:662 guide_algorithm_resistswitch.cpp:315
 msgid "Minimum Move (pixels)"
 msgstr "Déplacement Minimum (pixels)"
+
+#: guide_algorithm_gaussian_process.cpp:325
+msgid "Auto-adjust period"
+msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:326
 #, c-format
@@ -3360,7 +3364,7 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:326
 #: guide_algorithm_lowpass.cpp:232 guide_algorithm_lowpass.cpp:292
 #: guide_algorithm_lowpass2.cpp:240 guide_algorithm_lowpass2.cpp:298
-#: guide_algorithm_pdrift.cpp:721 guide_algorithm_pdrift.cpp:794
+#: guide_algorithm_pdrift.cpp:663 guide_algorithm_pdrift.cpp:736
 #: guide_algorithm_resistswitch.cpp:316 guide_algorithm_resistswitch.cpp:382
 #, c-format
 msgid ""
@@ -3434,47 +3438,47 @@ msgstr ""
 msgid "Agg"
 msgstr "Agr"
 
-#: guide_algorithm_pdrift.cpp:697
+#: guide_algorithm_pdrift.cpp:639
 msgid "Predictive Drift Guide Algorithm"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:704
+#: guide_algorithm_pdrift.cpp:646
 msgid "Prediction Weight"
 msgstr "Poids de la Prédiction"
 
-#: guide_algorithm_pdrift.cpp:705
+#: guide_algorithm_pdrift.cpp:647
 #, c-format
 msgid ""
 "What percentage of the predictive guide correction should be applied? "
 "Default = %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:712
+#: guide_algorithm_pdrift.cpp:654
 #, c-format
 msgid ""
 "What percentage of the reactive guide correction should be applied? Default "
 "= %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:724 guide_algorithm_pdrift.cpp:802
+#: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
 #: myframe.cpp:854 myframe.cpp:917 scope.cpp:222
 msgid "Auto"
 msgstr "Auto"
 
-#: guide_algorithm_pdrift.cpp:774
+#: guide_algorithm_pdrift.cpp:716
 #, c-format
 msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:783
+#: guide_algorithm_pdrift.cpp:725
 #, c-format
 msgid ""
 "What percentage of the reactive correction should be applied? Default = %.f%%"
 msgstr ""
 
-#: guide_algorithm_pdrift.cpp:804
+#: guide_algorithm_pdrift.cpp:746
 msgid "Let PHD2 adjust the min move automatically"
 msgstr ""
 
@@ -4189,23 +4193,23 @@ msgstr "%dmin"
 msgid "%dsec"
 msgstr "%dsec"
 
-#: log_uploader.cpp:537
+#: log_uploader.cpp:555
 msgid "Upload Log Files - Select logs"
 msgstr "Télécharger les fichiers log - Sélectionnez les logs"
 
-#: log_uploader.cpp:538
+#: log_uploader.cpp:556
 msgid "Upload Log Files - Confirm upload"
 msgstr "Télécharger les fichiers log - Confirmer le téléchargement"
 
-#: log_uploader.cpp:539
+#: log_uploader.cpp:557
 msgid "Upload Log Files - Upload complete"
 msgstr "Télécharger les fichiers log - Téléchargement complet"
 
-#: log_uploader.cpp:540
+#: log_uploader.cpp:558
 msgid "Upload Log Files - Upload not completed"
 msgstr "Télécharger les fichiers log - Téléchargement incomplet"
 
-#: log_uploader.cpp:543
+#: log_uploader.cpp:561
 msgid ""
 "When asking for help in the PHD2 Forum it is important to include your PHD2 "
 "logs. This tool will\n"
@@ -4226,84 +4230,84 @@ msgstr ""
 "Pour d'autres problèmes tels que les problèmes de connexion d'équipement ou "
 "pour signaler un bogue dans PHD2, sélectionnez le journal de débogage."
 
-#: log_uploader.cpp:581
+#: log_uploader.cpp:599
 msgid "Session Start"
 msgstr "Début de Session"
 
-#: log_uploader.cpp:582
+#: log_uploader.cpp:600
 msgid "Duration"
 msgstr "Durée"
 
-#: log_uploader.cpp:583
+#: log_uploader.cpp:601
 msgid "Guide Log"
 msgstr "Log de Guidage"
 
-#: log_uploader.cpp:584
+#: log_uploader.cpp:602
 msgid "Debug Log"
 msgstr "Log de Débogage"
 
-#: log_uploader.cpp:613 log_uploader.cpp:1197
+#: log_uploader.cpp:631 log_uploader.cpp:1215
 msgid "Recent uploads"
 msgstr "Téléchargements récents"
 
-#: log_uploader.cpp:619 profile_wizard.cpp:184
+#: log_uploader.cpp:637 profile_wizard.cpp:184
 msgid "< Back"
 msgstr "< Précédent"
 
-#: log_uploader.cpp:622 log_uploader.cpp:1219 profile_wizard.cpp:189
+#: log_uploader.cpp:640 log_uploader.cpp:1237 profile_wizard.cpp:189
 #: profile_wizard.cpp:429
 msgid "Next >"
 msgstr "Suivant >"
 
-#: log_uploader.cpp:744 log_uploader.cpp:1065
+#: log_uploader.cpp:762 log_uploader.cpp:1083
 msgid "Upload"
 msgstr "Téléchargement"
 
-#: log_uploader.cpp:744
+#: log_uploader.cpp:762
 msgid "Uploading log files ..."
 msgstr "Téléchargement des fichiers log ..."
 
-#: log_uploader.cpp:773
+#: log_uploader.cpp:791
 #, c-format
 msgid "Uploading ... %.f%%"
 msgstr "Téléchargement ... %.f%%"
 
-#: log_uploader.cpp:826
+#: log_uploader.cpp:844
 msgid "Connecting ..."
 msgstr "Connexion ..."
 
-#: log_uploader.cpp:842
+#: log_uploader.cpp:860
 #, c-format
 msgid "Connection failed, will retry in %ds"
 msgstr "Échec de la connexion, nouvelle tentative dans %ds"
 
-#: log_uploader.cpp:998
+#: log_uploader.cpp:1016
 #, c-format
 msgid "Upload failed, will retry in %ds"
 msgstr "Échec du téléchargement, nouvelle tentative dans %ds"
 
-#: log_uploader.cpp:1031
+#: log_uploader.cpp:1049
 msgid "The following log files will be uploaded:"
 msgstr "Les fichiers logs suivants seront téléchargés :"
 
-#: log_uploader.cpp:1046
+#: log_uploader.cpp:1064
 msgid "Guide and Debug logs"
 msgstr "Guide et logs de Débogage"
 
-#: log_uploader.cpp:1048
+#: log_uploader.cpp:1066
 msgid "Debug log"
 msgstr "Log de débogage"
 
-#: log_uploader.cpp:1050
+#: log_uploader.cpp:1068
 msgid "Guide log"
 msgstr "Log du guidage"
 
-#: log_uploader.cpp:1137
+#: log_uploader.cpp:1155
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
 "Les fichiers logs ont été téléchargés et peuvent être consultés sur ce lien :"
 
-#: log_uploader.cpp:1140
+#: log_uploader.cpp:1158
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
@@ -4313,11 +4317,11 @@ msgstr ""
 "a> en publiant un message incluant le lien. Copiez collez le lien dans votre "
 "message sur le forum."
 
-#: log_uploader.cpp:1142
+#: log_uploader.cpp:1160
 msgid "Copy link to clipboard"
 msgstr "Copier le lien dans le presse-papiers"
 
-#: log_uploader.cpp:1158
+#: log_uploader.cpp:1176
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
@@ -4325,7 +4329,7 @@ msgstr ""
 "PHD2 n'a pas pu télécharger les fichiers logs en raison d'une erreur "
 "interne. Veuillez signaler l'erreur dans le forum PHD2."
 
-#: log_uploader.cpp:1161
+#: log_uploader.cpp:1179
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
@@ -4336,7 +4340,7 @@ msgstr ""
 "essayer un autre service de partage de fichiers tel que Dropbox ou Google "
 "Drive."
 
-#: log_uploader.cpp:1165
+#: log_uploader.cpp:1183
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
@@ -4344,7 +4348,7 @@ msgstr ""
 "PHD2 a rencontré une erreur lors de la compression des fichiers logs. "
 "Assurez-vous que les logs sélectionnés sont disponibles et réessayez."
 
-#: log_uploader.cpp:1169
+#: log_uploader.cpp:1187
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
@@ -5678,11 +5682,11 @@ msgstr ""
 "et paramétrer un guidage de base pour votre nouvelle configuration.\n"
 "Voulez-vous utiliser l'assistant de configuration maintenant?"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:858
 msgid "Yes"
 msgstr "Oui"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:860
 msgid "No"
 msgstr "Non"
 
@@ -6261,24 +6265,23 @@ msgstr ""
 "Entrez un nom pour votre profil et éventuellement lancer le processus de "
 "construction d'une bibliothèque de darks"
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:490
+msgid ""
+"PHD2 could not connect to the camera so you may want to deal with that "
+"later. In the meantime, you can just enter the pixel-size manually along "
+"with the focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:649
 msgid "Ask"
 msgstr "Questionner"
 
-#: profile_wizard.cpp:653
+#: profile_wizard.cpp:679
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "Réglage de la vitesse de guidage ajusté à partir %0.1f to %0.1fx"
 
-#: profile_wizard.cpp:684
-msgid "PHD2 could not load the camera driver"
-msgstr "PHD2 ne peut pas charger le pilote de la caméra"
-
-#: profile_wizard.cpp:686
-msgid "PHD2 could not connect to the camera"
-msgstr "PHD2 ne peut pas se connecter à la caméra"
-
-#: profile_wizard.cpp:703
+#: profile_wizard.cpp:702
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -6286,11 +6289,11 @@ msgstr ""
 "Ce pilote de caméra ne signale pas la taille de pixel, vous devez donc "
 "entrer la valeur manuellement"
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:749
 msgid "Connecting to mount..."
 msgstr "Connexion à la monture..."
 
-#: profile_wizard.cpp:768
+#: profile_wizard.cpp:755
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6303,7 +6306,7 @@ msgstr ""
 "vitesse de guidage de la monture, vous pouvez le saisir manuellement. Sinon, "
 "vous pouvez simplement le laisser à la valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:780
+#: profile_wizard.cpp:768
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6315,11 +6318,11 @@ msgstr ""
 "pouvez le saisir manuellement. Sinon, vous pouvez simplement le laisser à la "
 "valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:827
+#: profile_wizard.cpp:815
 msgid "Ask About Connection"
 msgstr "Questionner à Propos de la Connexion"
 
-#: profile_wizard.cpp:840
+#: profile_wizard.cpp:828
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6332,11 +6335,11 @@ msgstr ""
 "pixels, vous pouvez saisir la valeur vous-même à l'aide des informations du "
 "manuel de la caméra ou en ligne."
 
-#: profile_wizard.cpp:843
+#: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
 msgstr "Caméra Déjà Connectée ?"
 
-#: profile_wizard.cpp:847
+#: profile_wizard.cpp:835
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6350,11 +6353,11 @@ msgstr ""
 "savez pas ce que c'est, laissez simplement le paramètre à la valeur par "
 "défaut de %0.1fx."
 
-#: profile_wizard.cpp:850
+#: profile_wizard.cpp:838
 msgid "Mount Already Connected?"
 msgstr "Monture Déjà Connectée ?"
 
-#: profile_wizard.cpp:854
+#: profile_wizard.cpp:842
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6371,7 +6374,7 @@ msgstr ""
 "correspond pas à ce qui est lu sur la monture, la valeur de la monture sera "
 "utilisée."
 
-#: profile_wizard.cpp:858
+#: profile_wizard.cpp:846
 msgid "Aux-mount Already Connected?"
 msgstr "Monture Auxiliaire Déjà Montée ?"
 
@@ -7852,6 +7855,12 @@ msgstr "Connexion à la caméra..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Connexion au rotateur..."
+
+#~ msgid "PHD2 could not load the camera driver"
+#~ msgstr "PHD2 ne peut pas charger le pilote de la caméra"
+
+#~ msgid "PHD2 could not connect to the camera"
+#~ msgstr "PHD2 ne peut pas se connecter à la caméra"
 
 #~ msgid "Measurement encountered an error: %s"
 #~ msgstr "Une erreur s'est produite lors de la mesure : %s"
