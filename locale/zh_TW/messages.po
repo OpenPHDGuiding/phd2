@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 21:52+0100\n"
+"POT-Creation-Date: 2018-03-21 19:57+0100\n"
 "PO-Revision-Date: 2018-03-07 11:27+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -1417,7 +1417,7 @@ msgstr "確認"
 
 #: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
-#: profile_wizard.cpp:874
+#: profile_wizard.cpp:862
 msgid "Cancel"
 msgstr "取消"
 
@@ -1547,9 +1547,9 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
-#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
-#: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
-#: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
+#: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
+#: profile_wizard.cpp:624 profile_wizard.cpp:649 profile_wizard.cpp:663
 #: rotator.cpp:47 rotator.cpp:82 scope.cpp:280 scope.cpp:322 scope.cpp:362
 #: statswindow.cpp:259 stepguider.cpp:93 stepguider.cpp:120
 msgid "None"
@@ -2778,7 +2778,7 @@ msgstr "無法建立設備配置檔案 %s，已存在相同檔名的配置檔"
 msgid "Could not create profile %s from profile %s"
 msgstr "無法建立設備配置檔案 %s，來源檔案 %s"
 
-#: gear_dialog.cpp:1924 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:539
 #, c-format
 msgid "Could not create profile %s"
 msgstr "無法建立設備配置檔案 %s"
@@ -5392,11 +5392,11 @@ msgstr ""
 "似乎這是第一次連接到你的相機和赤道儀, 設定精靈將會幫助你為你所使用設備\n"
 "設定導星所需的基本參數。是否要使用設定精靈呢?"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:858
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:860
 msgid "No"
 msgstr "否"
 
@@ -5919,34 +5919,33 @@ msgid ""
 "dark library"
 msgstr "為你的設備配置檔案命名並執行建立暗場影像庫程序"
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:490
+msgid ""
+"PHD2 could not connect to the camera so you may want to deal with that "
+"later. In the meantime, you can just enter the pixel-size manually along "
+"with the focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:649
 msgid "Ask"
 msgstr "詢問"
 
-#: profile_wizard.cpp:653
+#: profile_wizard.cpp:679
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "導星速率設定由 %0.1f 調整為 %0.1fx"
 
-#: profile_wizard.cpp:684
-msgid "PHD2 could not load the camera driver"
-msgstr "PHD2 無法載入相機驅動程式"
-
-#: profile_wizard.cpp:686
-msgid "PHD2 could not connect to the camera"
-msgstr "PHD2 無法連接此相機"
-
-#: profile_wizard.cpp:703
+#: profile_wizard.cpp:702
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr "導星相機驅動程式無法回報像素大小數值, 你必須手動設定此參數"
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:749
 msgid "Connecting to mount..."
 msgstr "連接赤道儀中..."
 
-#: profile_wizard.cpp:768
+#: profile_wizard.cpp:755
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -5957,7 +5956,7 @@ msgstr ""
 "PHD2 無法連接該赤道儀, 你可能得在之後進行調整, 此時, 假如你知道赤道儀的導星速"
 "率為何, 你可以手動輸入此參數; 否則就維持為預設值 %0.1fx 即可"
 
-#: profile_wizard.cpp:780
+#: profile_wizard.cpp:768
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -5967,11 +5966,11 @@ msgstr ""
 "很明顯地, 赤道儀驅動程式不會回報導星速率數值, 如果你知道的話, 請手動輸入該數"
 "值, 否則就維持預設值 %0.1fx"
 
-#: profile_wizard.cpp:827
+#: profile_wizard.cpp:815
 msgid "Ask About Connection"
 msgstr "詢問關於連接狀態"
 
-#: profile_wizard.cpp:840
+#: profile_wizard.cpp:828
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -5982,11 +5981,11 @@ msgstr ""
 "數值, 未連接或驅動程式無法回報像素大小時, 你可以根據相機手冊或網路上文件的資"
 "料手動設定"
 
-#: profile_wizard.cpp:843
+#: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
 msgstr "已連接相機?"
 
-#: profile_wizard.cpp:847
+#: profile_wizard.cpp:835
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -5997,11 +5996,11 @@ msgstr ""
 "赤道儀是否已連接並可與 PHD2 溝通? 如果已經連好,  PHD2 可以自動讀取導星速率數"
 "值, 未連接時, 你可以手動設定該參數, 如果不清楚的話, 維持預設數值 %0.1fx 即可"
 
-#: profile_wizard.cpp:850
+#: profile_wizard.cpp:838
 msgid "Mount Already Connected?"
 msgstr "已經連接赤道儀?"
 
-#: profile_wizard.cpp:854
+#: profile_wizard.cpp:842
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6015,7 +6014,7 @@ msgstr ""
 "即可; 如果前一頁設定的導星速率與由赤道儀讀取到的數值不批配的話, 會採用赤道儀"
 "的數值"
 
-#: profile_wizard.cpp:858
+#: profile_wizard.cpp:846
 msgid "Aux-mount Already Connected?"
 msgstr "已連接輔助赤道儀?"
 
@@ -7394,6 +7393,12 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid "PHD2 could not load the camera driver"
+#~ msgstr "PHD2 無法載入相機驅動程式"
+
+#~ msgid "PHD2 could not connect to the camera"
+#~ msgstr "PHD2 無法連接此相機"
 
 #~ msgid "Measurement encountered an error: %s"
 #~ msgstr "測量時發生錯誤: %s"

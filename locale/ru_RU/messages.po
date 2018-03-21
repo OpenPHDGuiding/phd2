@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 21:52+0100\n"
+"POT-Creation-Date: 2018-03-21 19:57+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
-"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
-"большой периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
+"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
+"периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
-"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
+"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,9 +860,10 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
-#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
-#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
+#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
+#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
+#: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -1441,7 +1442,7 @@ msgstr "Принять"
 
 #: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
-#: profile_wizard.cpp:874
+#: profile_wizard.cpp:862
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -1573,9 +1574,9 @@ msgstr ""
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
-#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
-#: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
-#: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
+#: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
+#: profile_wizard.cpp:624 profile_wizard.cpp:649 profile_wizard.cpp:663
 #: rotator.cpp:47 rotator.cpp:82 scope.cpp:280 scope.cpp:322 scope.cpp:362
 #: statswindow.cpp:259 stepguider.cpp:93 stepguider.cpp:120
 msgid "None"
@@ -1876,7 +1877,8 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -2838,7 +2840,7 @@ msgstr "Профиль с названием %s уже существует"
 msgid "Could not create profile %s from profile %s"
 msgstr "Невозможно создать профиль %s из профиля %s"
 
-#: gear_dialog.cpp:1924 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:539
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Невозможно создать профиль %s"
@@ -3179,8 +3181,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3296,8 +3298,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3321,8 +3323,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -5561,11 +5563,11 @@ msgstr ""
 " может помочь установить основные параметры новой конфигурации.\n"
 "Запустить его?"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:858
 msgid "Yes"
 msgstr "Да"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:860
 msgid "No"
 msgstr "Нет"
 
@@ -6111,35 +6113,34 @@ msgstr ""
 "Введите имя профиля и, если хотите, запустите процесс создания темновой "
 "библиотеки"
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:490
+msgid ""
+"PHD2 could not connect to the camera so you may want to deal with that "
+"later. In the meantime, you can just enter the pixel-size manually along "
+"with the focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:649
 msgid "Ask"
 msgstr "Спросить"
 
-#: profile_wizard.cpp:653
+#: profile_wizard.cpp:679
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "Скорость гидирования изменена с %0.1f на %0.1fx"
 
-#: profile_wizard.cpp:684
-msgid "PHD2 could not load the camera driver"
-msgstr "PHD2 не может загрузить драйвер камеры"
-
-#: profile_wizard.cpp:686
-msgid "PHD2 could not connect to the camera"
-msgstr "PHD2 не может подключить камеру"
-
-#: profile_wizard.cpp:703
+#: profile_wizard.cpp:702
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
 "Камера не может сообщить размер пикселя, придётся установить его вручную "
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:749
 msgid "Connecting to mount..."
 msgstr "Подключение монтировки.."
 
-#: profile_wizard.cpp:768
+#: profile_wizard.cpp:755
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6151,7 +6152,7 @@ msgstr ""
 "можете ввести её вручную. В противном случае можно оставить значение по "
 "умолчанию %0.1fx"
 
-#: profile_wizard.cpp:780
+#: profile_wizard.cpp:768
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6161,11 +6162,11 @@ msgstr ""
 "Видимо, этот драйвер монтировки не передаёт скорость гидирования. Введите её "
 "вручную, если знаете, если же нет, оставьте значение по умолчанию %0.1fx"
 
-#: profile_wizard.cpp:827
+#: profile_wizard.cpp:815
 msgid "Ask About Connection"
 msgstr "Запрос соединения"
 
-#: profile_wizard.cpp:840
+#: profile_wizard.cpp:828
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6176,11 +6177,11 @@ msgstr ""
 "автоматически. Если камера не подключена или драйвер не распознаёт размер "
 "пикселя, его можно ввести вручную, взяв из руководства камеры или онлайн."
 
-#: profile_wizard.cpp:843
+#: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
 msgstr "Камера уже подключена?"
 
-#: profile_wizard.cpp:847
+#: profile_wizard.cpp:835
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6193,11 +6194,11 @@ msgstr ""
 "гидирования можно ввести вручную. Если вы не знаете, что это такое, оставьте "
 "значение по умолчанию %0.1fx."
 
-#: profile_wizard.cpp:850
+#: profile_wizard.cpp:838
 msgid "Mount Already Connected?"
 msgstr "Монтировка уже подключена?"
 
-#: profile_wizard.cpp:854
+#: profile_wizard.cpp:842
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6212,7 +6213,7 @@ msgstr ""
 "гидирования на предыдущей странице не совпадает с тем, что прочитано из "
 "монтировки, будет использоваться значение  монтировки."
 
-#: profile_wizard.cpp:858
+#: profile_wizard.cpp:846
 msgid "Aux-mount Already Connected?"
 msgstr "Дополнительная монтировка уже подключена?"
 
@@ -7645,3 +7646,9 @@ msgstr "Подключение камеры..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
+
+#~ msgid "PHD2 could not load the camera driver"
+#~ msgstr "PHD2 не может загрузить драйвер камеры"
+
+#~ msgid "PHD2 could not connect to the camera"
+#~ msgstr "PHD2 не может подключить камеру"

@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 21:52+0100\n"
+"POT-Creation-Date: 2018-03-21 19:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1387,7 +1387,7 @@ msgstr ""
 
 #: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
-#: profile_wizard.cpp:874
+#: profile_wizard.cpp:862
 msgid "Cancel"
 msgstr ""
 
@@ -1515,9 +1515,9 @@ msgstr ""
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
-#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
-#: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
-#: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
+#: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
+#: profile_wizard.cpp:624 profile_wizard.cpp:649 profile_wizard.cpp:663
 #: rotator.cpp:47 rotator.cpp:82 scope.cpp:280 scope.cpp:322 scope.cpp:362
 #: statswindow.cpp:259 stepguider.cpp:93 stepguider.cpp:120
 msgid "None"
@@ -2684,7 +2684,7 @@ msgstr ""
 msgid "Could not create profile %s from profile %s"
 msgstr ""
 
-#: gear_dialog.cpp:1924 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:539
 #, c-format
 msgid "Could not create profile %s"
 msgstr ""
@@ -5179,11 +5179,11 @@ msgid ""
 "Would you like to use the Setup Wizard now?"
 msgstr ""
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:858
 msgid "Yes"
 msgstr ""
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:860
 msgid "No"
 msgstr ""
 
@@ -5653,34 +5653,33 @@ msgid ""
 "dark library"
 msgstr ""
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:490
+msgid ""
+"PHD2 could not connect to the camera so you may want to deal with that "
+"later. In the meantime, you can just enter the pixel-size manually along "
+"with the focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:649
 msgid "Ask"
 msgstr ""
 
-#: profile_wizard.cpp:653
+#: profile_wizard.cpp:679
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:684
-msgid "PHD2 could not load the camera driver"
-msgstr ""
-
-#: profile_wizard.cpp:686
-msgid "PHD2 could not connect to the camera"
-msgstr ""
-
-#: profile_wizard.cpp:703
+#: profile_wizard.cpp:702
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:749
 msgid "Connecting to mount..."
 msgstr ""
 
-#: profile_wizard.cpp:768
+#: profile_wizard.cpp:755
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -5689,7 +5688,7 @@ msgid ""
 "value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:780
+#: profile_wizard.cpp:768
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -5697,11 +5696,11 @@ msgid ""
 "just leave it at the default value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:827
+#: profile_wizard.cpp:815
 msgid "Ask About Connection"
 msgstr ""
 
-#: profile_wizard.cpp:840
+#: profile_wizard.cpp:828
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -5709,11 +5708,11 @@ msgid ""
 "value yourself using information in the camera manual or online. "
 msgstr ""
 
-#: profile_wizard.cpp:843
+#: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
 msgstr ""
 
-#: profile_wizard.cpp:847
+#: profile_wizard.cpp:835
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -5722,11 +5721,11 @@ msgid ""
 "the setting at the default value of %0.1fx."
 msgstr ""
 
-#: profile_wizard.cpp:850
+#: profile_wizard.cpp:838
 msgid "Mount Already Connected?"
 msgstr ""
 
-#: profile_wizard.cpp:854
+#: profile_wizard.cpp:842
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -5736,7 +5735,7 @@ msgid ""
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
 
-#: profile_wizard.cpp:858
+#: profile_wizard.cpp:846
 msgid "Aux-mount Already Connected?"
 msgstr ""
 

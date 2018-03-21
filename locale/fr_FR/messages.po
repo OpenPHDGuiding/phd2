@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 21:52+0100\n"
+"POT-Creation-Date: 2018-03-21 19:57+0100\n"
 "PO-Revision-Date: 2018-02-12 23:10+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -1470,7 +1470,7 @@ msgstr "OK"
 
 #: cam_simulator.cpp:1703 camcal_import_dialog.cpp:124 darks_dialog.cpp:212
 #: darks_dialog.cpp:368 guiding_assistant.cpp:148 phdupdate.cpp:774
-#: profile_wizard.cpp:874
+#: profile_wizard.cpp:862
 msgid "Cancel"
 msgstr "Abandon"
 
@@ -1603,9 +1603,9 @@ msgstr ""
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
 #: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
-#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:516
-#: profile_wizard.cpp:540 profile_wizard.cpp:556 profile_wizard.cpp:587
-#: profile_wizard.cpp:592 profile_wizard.cpp:622 profile_wizard.cpp:637
+#: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
+#: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
+#: profile_wizard.cpp:624 profile_wizard.cpp:649 profile_wizard.cpp:663
 #: rotator.cpp:47 rotator.cpp:82 scope.cpp:280 scope.cpp:322 scope.cpp:362
 #: statswindow.cpp:259 stepguider.cpp:93 stepguider.cpp:120
 msgid "None"
@@ -2891,7 +2891,7 @@ msgstr "Impossible de créer le profil %s, il y a déjà un profil avec ce nom"
 msgid "Could not create profile %s from profile %s"
 msgstr "Impossible de créer le profil %s à partir du profil %s"
 
-#: gear_dialog.cpp:1924 profile_wizard.cpp:502
+#: gear_dialog.cpp:1924 profile_wizard.cpp:539
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Impossible de créer le profil %s"
@@ -5682,11 +5682,11 @@ msgstr ""
 "et paramétrer un guidage de base pour votre nouvelle configuration.\n"
 "Voulez-vous utiliser l'assistant de configuration maintenant?"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:870
+#: myframe_events.cpp:1122 profile_wizard.cpp:858
 msgid "Yes"
 msgstr "Oui"
 
-#: myframe_events.cpp:1122 profile_wizard.cpp:872
+#: myframe_events.cpp:1122 profile_wizard.cpp:860
 msgid "No"
 msgstr "Non"
 
@@ -6265,24 +6265,23 @@ msgstr ""
 "Entrez un nom pour votre profil et éventuellement lancer le processus de "
 "construction d'une bibliothèque de darks"
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:490
+msgid ""
+"PHD2 could not connect to the camera so you may want to deal with that "
+"later. In the meantime, you can just enter the pixel-size manually along "
+"with the focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:649
 msgid "Ask"
 msgstr "Questionner"
 
-#: profile_wizard.cpp:653
+#: profile_wizard.cpp:679
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "Réglage de la vitesse de guidage ajusté à partir %0.1f to %0.1fx"
 
-#: profile_wizard.cpp:684
-msgid "PHD2 could not load the camera driver"
-msgstr "PHD2 ne peut pas charger le pilote de la caméra"
-
-#: profile_wizard.cpp:686
-msgid "PHD2 could not connect to the camera"
-msgstr "PHD2 ne peut pas se connecter à la caméra"
-
-#: profile_wizard.cpp:703
+#: profile_wizard.cpp:702
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -6290,11 +6289,11 @@ msgstr ""
 "Ce pilote de caméra ne signale pas la taille de pixel, vous devez donc "
 "entrer la valeur manuellement"
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:749
 msgid "Connecting to mount..."
 msgstr "Connexion à la monture..."
 
-#: profile_wizard.cpp:768
+#: profile_wizard.cpp:755
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6307,7 +6306,7 @@ msgstr ""
 "vitesse de guidage de la monture, vous pouvez le saisir manuellement. Sinon, "
 "vous pouvez simplement le laisser à la valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:780
+#: profile_wizard.cpp:768
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6319,11 +6318,11 @@ msgstr ""
 "pouvez le saisir manuellement. Sinon, vous pouvez simplement le laisser à la "
 "valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:827
+#: profile_wizard.cpp:815
 msgid "Ask About Connection"
 msgstr "Questionner à Propos de la Connexion"
 
-#: profile_wizard.cpp:840
+#: profile_wizard.cpp:828
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6336,11 +6335,11 @@ msgstr ""
 "pixels, vous pouvez saisir la valeur vous-même à l'aide des informations du "
 "manuel de la caméra ou en ligne."
 
-#: profile_wizard.cpp:843
+#: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
 msgstr "Caméra Déjà Connectée ?"
 
-#: profile_wizard.cpp:847
+#: profile_wizard.cpp:835
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6354,11 +6353,11 @@ msgstr ""
 "savez pas ce que c'est, laissez simplement le paramètre à la valeur par "
 "défaut de %0.1fx."
 
-#: profile_wizard.cpp:850
+#: profile_wizard.cpp:838
 msgid "Mount Already Connected?"
 msgstr "Monture Déjà Connectée ?"
 
-#: profile_wizard.cpp:854
+#: profile_wizard.cpp:842
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6375,7 +6374,7 @@ msgstr ""
 "correspond pas à ce qui est lu sur la monture, la valeur de la monture sera "
 "utilisée."
 
-#: profile_wizard.cpp:858
+#: profile_wizard.cpp:846
 msgid "Aux-mount Already Connected?"
 msgstr "Monture Auxiliaire Déjà Montée ?"
 
@@ -7856,6 +7855,12 @@ msgstr "Connexion à la caméra..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Connexion au rotateur..."
+
+#~ msgid "PHD2 could not load the camera driver"
+#~ msgstr "PHD2 ne peut pas charger le pilote de la caméra"
+
+#~ msgid "PHD2 could not connect to the camera"
+#~ msgstr "PHD2 ne peut pas se connecter à la caméra"
 
 #~ msgid "Measurement encountered an error: %s"
 #~ msgstr "Une erreur s'est produite lors de la mesure : %s"
