@@ -1710,54 +1710,63 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     AddCtrl(CtrlMap, AD_cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 
-    if (pScope && !usingAO)
+    if (pScope)
     {
         wxBoxSizer* pComp1 = new wxBoxSizer(wxHORIZONTAL);
-        m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, _("Enable"));
+        wxWindow* blcHostTab;
+        BRAIN_CTRL_IDS blcCtrlId;
+        if (usingAO)
+            blcCtrlId = AD_szBumpBLCompCtrls;
+        else
+            blcCtrlId = AD_szBLCompCtrls;
+        blcHostTab = GetParentWindow(blcCtrlId);
+        m_pUseBacklashComp = new wxCheckBox(blcHostTab, wxID_ANY, _("Enable"));
         m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
         pComp1->Add(m_pUseBacklashComp);
-        m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, 50);
         pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
         wxBoxSizer *pComp2 = new wxBoxSizer(wxHORIZONTAL);
 
-        m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
-        m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBLCompCtrls), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
-        pComp2->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
+        pComp2->Add(MakeLabeledControl(blcCtrlId, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
             wxSizerFlags().Border(wxLEFT, 0));
-        pComp2->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
+        pComp2->Add(MakeLabeledControl(blcCtrlId, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
             wxSizerFlags().Border(wxLEFT, 18));
-        wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, GetParentWindow(AD_szBLCompCtrls), _("Backlash Compensation"));
+        wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, blcHostTab, usingAO ? _("Mount Backlash Compensation") : _("Backlash Compensation"));
         pCompVert->Add(pComp1);
         pCompVert->Add(pComp2);
-        AddGroup(CtrlMap, AD_szBLCompCtrls, pCompVert);
+        AddGroup(CtrlMap, blcCtrlId, pCompVert);
+        if (!usingAO)
+        {
+            m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Dec compensation"));
+            m_pUseDecComp->Enable(enableCtrls && pPointingSource != NULL);
+            AddCtrl(CtrlMap, AD_cbUseDecComp, m_pUseDecComp, _("Automatically adjust RA guide rate based on scope declination"));
 
-        m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Dec compensation"));
-        m_pUseDecComp->Enable(enableCtrls && pPointingSource != NULL);
-        AddCtrl(CtrlMap, AD_cbUseDecComp, m_pUseDecComp, _("Automatically adjust RA guide rate based on scope declination"));
+            width = StringWidth(_T("00000"));
+            m_pMaxRaDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T(""), wxDefaultPosition,
+                wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
+            AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 2500 ms."));
 
-        width = StringWidth(_T("00000"));
-        m_pMaxRaDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T(""), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
-        AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 2500 ms."));
+            m_pMaxDecDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T(""), wxDefaultPosition,
+                wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
+            AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
-        m_pMaxDecDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T(""), wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
-        AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
+            wxString dec_choices[] = {
+                Scope::DecGuideModeLocaleStr(DEC_NONE),
+                Scope::DecGuideModeLocaleStr(DEC_AUTO),
+                Scope::DecGuideModeLocaleStr(DEC_NORTH),
+                Scope::DecGuideModeLocaleStr(DEC_SOUTH),
+            };
 
-        wxString dec_choices[] = {
-            Scope::DecGuideModeLocaleStr(DEC_NONE),
-            Scope::DecGuideModeLocaleStr(DEC_AUTO),
-            Scope::DecGuideModeLocaleStr(DEC_NORTH),
-            Scope::DecGuideModeLocaleStr(DEC_SOUTH),
-        };
-
-        width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-        m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxDefaultPosition,
-            wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
-        AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+            width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
+            m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxDefaultPosition,
+                wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
+            AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+        }
         m_pScope->currConfigDialogCtrlSet = this;
     }
 }
@@ -1771,6 +1780,14 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
+    int pulseSize;
+    int floor;
+    int ceiling;
+    m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
+    m_pBacklashPulse->SetValue(pulseSize);
+    m_pBacklashFloor->SetValue(floor);
+    m_pBacklashCeiling->SetValue(ceiling);
+    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
     bool usingAO = TheAO() != NULL;
     if (!usingAO)
     {
@@ -1778,14 +1795,6 @@ void ScopeConfigDialogCtrlSet::LoadValues()
         m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
         m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
         m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
-        int pulseSize;
-        int floor;
-        int ceiling;
-        m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
-        m_pBacklashPulse->SetValue(pulseSize);
-        m_pBacklashFloor->SetValue(floor);
-        m_pBacklashCeiling->SetValue(ceiling);
-        m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
     }
 }
 
@@ -1796,24 +1805,26 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
+    int newBC = m_pBacklashPulse->GetValue();
+    int newFloor = m_pBacklashFloor->GetValue();
+    int newCeiling = m_pBacklashCeiling->GetValue();
+    // SetBacklashPulse will handle floor/ceiling values that don't make sense
+    m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);;
+    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+
+    // Following needed in case user changes max_duration with blc value already set
+    if (m_pScope->m_backlashComp->IsEnabled() && m_pScope->GetMaxDecDuration() < newBC)
+        m_pScope->SetMaxDecDuration(newBC);
+    if (pFrame)
+        pFrame->UpdateCalibrationStatus();
     bool usingAO = TheAO() != NULL;
     if (!usingAO)
     {
+        m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
         m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
         m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
         m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-        int newBC = m_pBacklashPulse->GetValue();
-        int newFloor = m_pBacklashFloor->GetValue();
-        int newCeiling = m_pBacklashCeiling->GetValue();
-        // SetBacklashPulse will handle floor/ceiling values that don't make sense
-        m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);;
-        m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
-        m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
-        // Following needed in case user changes max_duration with blc value already set
-        if (m_pScope->m_backlashComp->IsEnabled() && m_pScope->GetMaxDecDuration() < newBC)
-            m_pScope->SetMaxDecDuration(newBC);
-        if (pFrame)
-            pFrame->UpdateCalibrationStatus();
+
     }
     MountConfigDialogCtrlSet::UnloadValues();
 }

@@ -167,10 +167,10 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
     {
         stepGuider = m_pMount->IsStepGuider();
         m_pAlgoBox = new wxStaticBoxSizer(wxHORIZONTAL, m_pParent, wxEmptyString);
-        m_pRABox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Right Ascension"));
+        m_pRABox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, stepGuider ? _("AO X-Axis") : _("Right Ascension"));
         if (m_pDecBox)
             m_pDecBox->Clear(true);
-        m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
+        m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, stepGuider ? _("AO Y-Axis") : _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
         static GUIDE_ALGORITHM const X_ALGORITHMS[] =
@@ -252,7 +252,6 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (!stepGuider)
         {
             wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
-            //pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
             pSizer->Add(GetSizerCtrl(CtrlMap, AD_szBLCompCtrls), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
             m_pDecBox->Add(pSizer);
             m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());

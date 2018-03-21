@@ -1373,7 +1373,7 @@ AOConfigDialogPane::AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuide
 
 void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
-    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
+    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(4, 3, 15, 15);
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_AOTravel));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
@@ -1381,6 +1381,7 @@ void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMa
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpBLCompCtrls));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
     this->Add(pAoDetailSizer, def_flags);
