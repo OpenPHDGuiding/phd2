@@ -309,6 +309,11 @@ void PolarDriftToolWin::OnCloseBtn(wxCommandEvent& evt)
 
 void PolarDriftToolWin::OnClose(wxCloseEvent& evt)
 {
+    if (m_drifting) // STOP drifting before closing
+    {
+        wxCommandEvent dummy;
+        OnStart(dummy);
+    }
     // save the window position
     int x, y;
     GetPosition(&x, &y);
