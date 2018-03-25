@@ -4494,7 +4494,7 @@ msgstr "Изменение калибровки"
 
 #: myframe.cpp:505
 msgid "Adjust &Lock Position"
-msgstr "Подтверждение выбранного положения"
+msgstr "Уточнение положения звезды"
 
 #: myframe.cpp:505
 msgid "Adjust the lock position"
@@ -4839,7 +4839,7 @@ msgstr "&Закладки"
 
 #: myframe.cpp:582
 msgid "&Help"
-msgstr "&Справка"
+msgstr "&Помощь"
 
 #: myframe.cpp:629 myframe.cpp:835 myframe.cpp:920
 #, c-format
@@ -5575,7 +5575,7 @@ msgstr "Совет помощника установки"
 
 #: nudge_lock.cpp:117
 msgid "Adjust Lock Position"
-msgstr "Подтвердить выбранное положение"
+msgstr "Уточнить положение звезды"
 
 #: nudge_lock.cpp:120
 msgid "Always on top"

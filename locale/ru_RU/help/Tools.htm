@@ -13,7 +13,7 @@
     <a href="#PHD2_Server">Сервер PHD2</a><br>
     <a href="#Dithering_Ops">Подвижки</a><br>
     <a href="#Logging_and_Debug_Output">Аудит и отладка</a><br>
-    <a href="#Drift_Align">Установка полюса</a><br>
+    <a href="#Polar_alignment_tools">Установка полюса</a><br>
     <a href="#Lock_Positions">Сохранение положения звезды</a><br>
     <a href="#Comet_Tracking">Отслеживание комет</a><br>
     <a href="#Guiding_Assistant">Помощник гидирования</a><br>
@@ -24,6 +24,7 @@
       симуляторов</a><br>
     <a href="#Multiple_Executions">Запуск нескольких копий программы</a><br>
     <a href="#Keyboard_Shortcuts">Горячие клавиши</a><br>
+    <a href="#Software_Update">Обновление программы</a><br>
     <h3><a name="Manual_Guide"></a>Ручное гидирование<br>
     </h3>
     <br>
@@ -38,6 +39,19 @@
     (например, при экспериментах с подвижками).&nbsp; Выбрав пункт
     'Ручное гидирование' в меню 'Инструменты', <span
       style="font-weight: bold;"><span style="font-weight: bold;"></span></span>вы
+
+
+
+
+
+
+
+
+
+
+
+
+
     увидите окно, инструменты которого позволят перемещать монтировку со
     скоростью гидирования в любом направлении. При наличии подключенных
     устройств адаптивной оптики вы увидите отдельные инструменты
@@ -75,20 +89,20 @@
     Нажатие кнопки 'Автоматический выбор звезды' в меню 'Инструменты'
     или горячих клавиш &lt;Alt&gt;S запустит процесс сканирования
     изображения на предмет определения пригодной для гидирования звезды.
-    &nbsp;PHD2 попытается найти не пересвеченную звезду подходящей яркости,
-    находящуюся не очень близко от края кадра и других звёзд.&nbsp;
-    Выбранная звезда может показаться слишком тусклой, что, при
-    использовании ползунка яркости главного экрана, обычно не является
-    проблемой.&nbsp; Функция автоматического выбора звезды обычно
-    работает лучше, чем ручной выбор по дисплею. Во многих случаях
-    выбранная вручную звезда оказывается пересвеченной, что даёт
+    &nbsp;PHD2 попытается найти не пересвеченную звезду подходящей
+    яркости, находящуюся не очень близко от края кадра и других
+    звёзд.&nbsp; Выбранная звезда может показаться слишком тусклой, что,
+    при использовании ползунка яркости главного экрана, обычно не
+    является проблемой.&nbsp; Функция автоматического выбора звезды
+    обычно работает лучше, чем ручной выбор по дисплею. Во многих
+    случаях выбранная вручную звезда оказывается пересвеченной, что даёт
     неудовлетворительные результаты. Инструмент <a
       href="Visualization.htm#Star_Profile_and_Target_Displays">Профиль
       звезды</a> показывает её свойства -звезда должна быть резкой и не
-    пересвеченной,так же, как и при ручном выборе.&nbsp; При автоматическом
-    выборе лучше использовать карту плохих пикселей или темновую
-    библиотеку, чтобы уменьшить вероятность выбора горячего пикселя
-    вместо звезды.
+    пересвеченной,так же, как и при ручном выборе.&nbsp; При
+    автоматическом выборе лучше использовать карту плохих пикселей или
+    темновую библиотеку, чтобы уменьшить вероятность выбора горячего
+    пикселя вместо звезды.
     <h3><a name="Manual_Control_of_Calibration_Data"></a>Калибровочные
       данные<br>
     </h3>
@@ -130,60 +144,34 @@
     астрофотографов, которые используют монтировки высшего класса,
     поэтому проверить никогда не помешает.<br>
     <br>
-    <br>
-    <span style="font-weight: bold;"><a name="Declination_Backlash"></a>Люфт
-      склонения</span><br>
-    &nbsp;Общим источником проблем калибровки является люфт склонения,
-    который в той или иной степени присутствует во многих монтировках с
-    зубчатой передачей. Для некоторых монтировок эта проблема является
-    существенной и может привести к посредственным калибровке и
-    результатам гидирования.&nbsp; Рассмотрим следующее окно проверки
-    калибровки: <br>
-    <br>
-    <img style="width: 727px; height: 382px;" alt=""
-      src="Calib_Review_Backlash.png"><br>
-    <br>
-    Первый слой проблем находится при сравнении скоростей
-    гидирования.&nbsp; В данном случае скорость по склонению едва
-    достигает 1/2 скорости по прямому восхождению, чего быть не
-    должно.&nbsp; В таком случае появится окно с предупредительным
-    сообщением.&nbsp; Теперь посмотрим на график точек склонения
-    (синие), и отметим скопление точек у нулевой точки графика.&nbsp;
-    Хотя всего по склонению было сделано 16 шагов, только 9 из них на
-    самом деле перемещали монтировку - первые 7 ничего не выполнили
-    из-за люфта. &nbsp; Здесь есть две проблемы.&nbsp; Первая
-    заключается в неудовлетворительных результатах калибровки, которые
-    которая должна быть проведена заново с целю более точного измерения
-    скорости гидирования по склонению.&nbsp; Вторая может&nbsp;
-    заключаться в плохом поведении монтировки во время смены направления
-    по склонению даже при корректной скорости гидирования.&nbsp;
-    Калибровка может быть улучшена, во-первых, вручную движением на
-    север со скоростью гидирования на протяжении 10-20 секунд пока
-    движения звёзд в главном окне не станут достоверными.&nbsp; Это
-    можно сделать с помощью инструмента 'Ручное гидирование' или с
-    помощью пульта монтировки.&nbsp; После этого люфт в основном будет
-    преодолён.&nbsp; Затем калибровку можно повторить; после этого
-    скорость гидирования по склонению станет, вероятно, более
-    правдоподобной.&nbsp; Вторая проблема обычно решается механической
-    регулировкой монтировки.&nbsp; Можно попытаться использовать
-    компенсацию люфта, но это вряд ли сработает при люфте более 2-3
-    секунд.&nbsp; Если невозможно не только исправить люфт, но хотя бы
-    довести его до приемлемого уровня, нужно выбрать гидирование в одном
-    направлении по склонению. Для этого надо определить, в каком
-    направлении монтировка дрейфует из-за ошибки наведения на полюс и
-    сказать PHD2 гидировать только в противоположном.&nbsp; Например,
-    при дрейфе на север ограничьте гидирование по склонению только южным
-    направлением.&nbsp; Разумеется, такое решение неидеально, но
-    позволяет делать длинные экспозиции и достигать хороших результатов
-    гидирования - многие снимки сделаны при использовании такой техники.<font
-      style="color: rgb(0, 0, 3);" color="navy"><span style="font-size:
-        10pt;"></span></font><br>
+    Если вы испытываете постоянные проблемы с калибровкой, обратитесь к
+    разделу <a
+href="file:///D:/repositories/phd2/help/Trouble_shooting.htm#Problems-_Mount_Control"
+      style="background-color: transparent; color: rgb(0, 102, 204);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: underline;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;">Поиск неисправностей</a>.<br>
     <br>
     <span style="font-weight: bold;">Другие пункты меню, имеющие
       отношение к калибровке</span><br>
     Калибровочные данные сохраняются автоматически при успешном
     завершении последовательности калибровки.&nbsp; Использование
     калибровочных данных описано в другом месте (<a href="Basic_use.htm">Использование
+
+
+
+
+
+
+
+
+
+
+
+
+
       PHD Guiding</a>), включая возможности восстановления старых
     калибровочных данных или их инвертирование при перекладке
     меридиана.&nbsp; Эти функции доступны из меню 'Инструменты', подменю
@@ -206,6 +194,19 @@
     <span style="font-style: italic;">PHD2</span> позволяет внешним
     приложениям управлять процессом гидирования. Первой из таких
     программ была&nbsp; <span style="font-style: italic;">Nebulosity </span>компании
+
+
+
+
+
+
+
+
+
+
+
+
+
     Stark Labs, но в настоящее время существуют и другие.&nbsp;
     Используя сервер <span style="font-style: italic;">PHD2</span>
     можно управлять подвижками между экспозициями или приостанавливать
@@ -217,6 +218,19 @@
     позволяет внешним приложениям управлять большинством аспектов
     гидирования.&nbsp; Документация по программному интерфейсу сервера
     находится на <a href="https://github.com/OpenPHDGuiding/phd2/wiki">PHD2
+
+
+
+
+
+
+
+
+
+
+
+
+
       Wiki</a>.<br>
     <br>
     <h3><a name="Dithering_Ops"></a>Подвижки</h3>
@@ -275,7 +289,17 @@
       гидирования и дополнительное время для перевода гидируемой звезды
       в новое положение.&nbsp; Поэтому для PHD2 существует возможность
       осуществления подвижек только по прямому восхождению, также
-      задаваемая параметром во вкладке&nbsp; 'Общие'.</p>
+      задаваемая параметром во вкладке&nbsp; 'Общие'.<br>
+    </p>
+    <p>Если у монтировки есть существенный люфт оси склонения, можно
+      гидировать только в одном направлении по склонению: северном или
+      южном.&nbsp; Если при работе в этом режиме PHD2 получает команду
+      сделать подвижки по склонению, то, на то время, в течение которого
+      эти подвижки будут совершены, разрешается гидирование по склонению
+      в обоих направлениях.&nbsp; Затем PHD2 возвратится к
+      первоначальному однонаправленному режиму гидирования по
+      склонению.&nbsp; Если вас такое поведение не устраивает, можно
+      ограничить гидирование прямым восхождением (раздел 'Общие').</p>
     <h3><a name="Logging_and_Debug_Output"></a>Аудит и отладка</h3>
     <span style="font-style: italic;">PHD2</span> может иметь два типа
     лог-файлов: отладочный и гидирования. &nbsp;Лог гидирования похож на
@@ -286,6 +310,19 @@
     графики и считать статистику на основе данных лога гидирования PHD2.<span
       style="">&nbsp;&nbsp; </span>Кроме того, лог легко может быть
     экспортирован в Excel и другие приложения.<span style="">&nbsp; </span>При
+
+
+
+
+
+
+
+
+
+
+
+
+
     экспорте в Excel нужно указать, что для разделения полей
     используется запятая. &nbsp;Лог отладки содержит сведения о всех
     событиях сессии <span style="font-style: italic;">PHD2</span>
@@ -295,12 +332,15 @@
     проблеме, вас почти всегда попросят предъявить отладочный
     лог-файл,&nbsp;без которого вам вряд ли смогут помочь.<br>
     <br>
-    Местоположение лога задаётся в поле 'Расположение лог-файла'.
-    &nbsp;По умолчанию лог-файлы записываются в каталоге файлов данных
-    используемой операционной системы. &nbsp;Например, в Windows7 файлы
-    будут сохранены в подкаталоге '<span style="font-style: italic;">PHD2</span>'
-    каталога "AppData\Local". &nbsp;С помощью этого поля можно задать
-    иное местонахождение лог-файлов.<br>
+    Местоположение лога задаётся в поле 'Расположение лог-файла' раздела
+    'Общее'. &nbsp;По умолчанию лог-файлы записываются в каталоге файлов
+    данных используемой операционной системы. &nbsp;Например, в Windows7
+    файлы будут сохранены в каталоге "Documents"("Документы"). &nbsp;С
+    помощью этого поля можно задать иное местонахождение лог-файлов.
+    Чтобы избежать излишнего накапливания файлов PHD2 периодически
+    удаляет логи отладки старше 30 дней и логи гидирования старше 60
+    дней. Вы можете сохранить интересующие вас логи, предварительно
+    скопировав их в другое место.<br>
     <br>
     В некоторых особенных случаях может понадобиться сохранить кадры
     гидирования, как правило для выявления проблем с графическим
@@ -311,112 +351,202 @@
     вы хотите разобраться в имеющихся проблемах, используйте формат
     'Сырой Fits'.<br>
     <br>
-    <h3><a name="Drift_Align"></a>Установка полюса</h3>
-    Метод дрейфа - хорошо известный способ установки полюса, "золотой
-    стандарт" по мнению многих.&nbsp; Инструмент Установка Полюса&nbsp;
-    - это последовательность диалогов, которые облегчают процесс
-    установки полюса дрейфом.&nbsp; После завершения калибровки выберите
-    пункт 'Установка полюса' в меню 'Инструменты'.&nbsp; Появится первый
-    диалог, предлагающий установить азимут монтировки.&nbsp; В случае
-    совместимой с ASCOM монтировки вам будет предоставлена возможность
-    навестись на область у небесного экватора и небесного меридиана; в
-    противном случае наводиться придётся вручную.&nbsp; После этого,
-    если на экране видны подходящие звёзды, нажмите кнопку
-    'Дрейф'.&nbsp; Появится окно с графиком, показывающим отклонения
-    звезды и их корректировки и, что самое главное, две направляющие.
-    Когда полюс выставлен точно по азимуту, направляющая склонения будет
-    идеально горизонтальной.&nbsp; Подождите, пока направляющая
-    склонения стабилизируется и перестанет прыгать туда-сюда с каждым
-    новым кадром. Вокруг гидируемой звезды вы увидите пурпурную
-    окружность, а в нижней части экрана сообщение о величине ошибки
-    выравнивания по азимуту. Окружность показывает максимальное
-    значение, на которое можно переместить звезду, чтобы выровнять
-    азимут (в начале выравнивания окружность может быть настолько
-    большой, что не поместится на экране, пока вы не выравняете азимут
-    ближе к полюсу).<br>
+    <span style="font-weight: bold;"><a name="Logging-Automatic_Upload"></a>Автоматическая
+
+
+
+
+
+
+
+
+
+      отправка лог файлов<br>
+      <br>
+    </span>Если у вас есть вопросы по использованию PHD2 или улучшению
+    качества гидирования, можно обратиться на форум Open<span
+      style="font-weight: bold;">-</span>PHD-Guiding
+    (https://groups.google.com/forum/#!forum/open-phd-guiding).&nbsp;
+    Хорошо бы, чтоб вопрос сопровождался лог-файлом сессии, о которой
+    идёт речь.&nbsp; PHD2 может выбрать, упаковать и отправить
+    соответствующие лог-файлы.&nbsp; Эта функция находится в меню
+    'Помощь'.&nbsp; При выборе пункта меню 'Загрузить лог-файлы появится
+    окно, показывающее информацию о существующих файлах, включающую их
+    имя, время и продолжительность сессии:<br>
     <br>
-    Нажмите кнопку&nbsp; 'Установить', чтобы прервать гидирование и
-    выровняйте полюс по азимуту. Звезда должна переместиться в
-    направлении окружности, но не выходя за неё. Затем снова нажмите
-    кнопку 'Дрейф', чтобы повторить изменения. Если предыдущее
-    выравнивание было в правильном направлении, направляющая склонения
-    станет более горизонтальной.&nbsp; Продолжайте итерации до тех пор,
-    пока качество выравнивания вас не удовлетворит.&nbsp; По ходу
-    действия вы можете оставлять примечания о результатах выравнивания;
-    например, что при вращении ручки регулировки азимута против часовой
-    стрелки линия дрейфа "поднимается". Поскольку эти заметки
-    сохранятся,&nbsp; выравнивание в последующих сессиях сможет пройти
-    быстрее.<br>
+    <img style="width: 579px; height: 378px;" alt=""
+      src="Log_Upload_1.png"><br>
     <br>
-    Пока вы не приобретёте опыт установки полюса дрейфом на своей
-    монтировке, выравнивание может показаться довольно нудным
-    делом.&nbsp; Для начала определитесь с ручками: в каком направлении
-    и насколько нужно их крутить, чтобы добиться нужного эффекта.&nbsp;
-    Для облегчения процесса вы можете воспользоваться
-    "закладками".&nbsp; Это удобный способ записать положения гидируемой
-    звезды.&nbsp; <a name="Bookmarks"></a>Закладки доступны через
-    соответствующее меню или с помощью горячих клавиш:<br>
-    <ul>
-      <li>b&nbsp;: показать/скрыть закладки<br>
-      </li>
-      <li>Shift-b : запомнить текущее положение звезды</li>
-      <li>Ctrl-b : сбросить все закладки <br>
-      </li>
-      <li>Ctrl-click где-нибудь на изображении: установить закладку на
-        эту позицию или сбросить если закладка была уже здесь
-        установлена</li>
-    </ul>
-    Установленные вами закладки наглядно показывают, как двигалась
-    звезда в процессе выравнивания. <br>
+    Выберите файлы, которые хотите загрузить и нажмите кнопку
+    'Дальше'.&nbsp; Если PHD2 работает нормально, а вы хотите
+    разобраться с производительностью гидирования или улучшить её,
+    отправьте журналы гидирования.&nbsp; Но при таких проблемах, когда
+    PHD2 работать не может, непример, при невозможности подключить
+    камеру или монтировку, следует прислать также и журнал отладки.
+    &nbsp; Отправляйте только файлы, относящиеся к проблемной
+    сессии.&nbsp; По завершении отправки появится окно с ссылкой на
+    файлы:<br>
     <br>
-    После завершения выравнивания по азимуту нажмите кнопку
-    'Высота'.&nbsp; Затем наведитесь на область у небесного экватора на
-    высоте 25-30 градусов от горизонта.&nbsp; Нажатие кнопки 'Высота'
-    начинает сбор данных для второй части установки полюса -
-    выравнивания по высоте.&nbsp; Как и прежде, процесс состоит из
-    итераций сдвигов монтировки и замеров результатов выравнивания до
-    тех пор, пока вы не будете удовлетворены результатом.&nbsp; После
-    значительного выравнивания по высоте нужно вернуться к измерению
-    азимута и повторить процедуру.&nbsp; Систематически повторяя эти
-    действия, вы получите хорошо установленный полюс.&nbsp; Аккуратное
-    полярное выравнивание улучшит производительность гидирования,
-    особенно по склонению.<br>
+    <img style="width: 573px; height: 192px;" alt=""
+      src="Log_Upload_2.png"><br>
     <br>
-    Проще всего проводить выравнивание дрейфом, если монтировка
-    совместима с&nbsp; ASCOM (включая 'дополнительное'
-    соединение).&nbsp; Даже если вы хотите гидировать чере порт ST-4,
-    для выравнивания дрейфом следует использовать соединение ASCOM,
-    поскольку, в противном случае, вы столкнётесь со следующими
-    проблемами:<br>
-    <ul>
-      <li>Данные о положении телескопа и функции наведения будут
-        недоступны - наводиться придётся вручную</li>
-      <li>Пурпурная окружность, обозначающая цель для движения звезды,
-        будет приблизительной и потому будет нарисована пунктиром.&nbsp;
-        Она обозначит только верхнюю границу выравнивания, а потому
-        придётся делать небольшие выравнивания, чтобы избежать&nbsp;
-        избыточного сдвига.<br>
-      </li>
-    </ul>
-    Очень подробное руководство по выравниванию дрейфом доступно на
-    веб-сайте Openphdguiding, и новичкам крайне желательно было бы его
-    изучить (<a
-      href="https://sites.google.com/site/openphdguiding/phd2-drift-alignment">https://sites.google.com/site/openphdguiding/phd2-drift-alignment</a>)<br>
+    Укажите эту ссылку при публикации&nbsp; своего вопроса на форуме.
+    &nbsp; Не нужно беспокоиться об удалении лог-файлов с сервера,
+    поскольку через некоторое время они будут удалены
+    автоматически.&nbsp; Представьте в своём сообщении полную информацию
+    о том, что вы делали, с какой проблемой столкнулись и примерное
+    время, которое хотите ей уделить.
+    <h3><a name="Polar_alignment_tools"></a>Установка полюса</h3>
+    PHD2 использует три различных метода установки полюса, которые
+    выполняют одну и ту же задачу: физически настроить ось прямого
+    восхождения на небесный полюс. Они отличаются от используемых в
+    пультах алгоритмах выравнивания монтировки по двум или трём звёздам
+    тем, что последние оптимизируют операции наведения, не затрагивая
+    обычно физических параметров азимута и высоты, которые важны для
+    успешных гидирования и съёмки.<br>
+    <p>Первоначально использовавшийся алгоритм - метод дрейфа - хорошо
+      известный способ установки полюса, "золотой стандарт" по мнению
+      многих, отчасти потому, что непосредственно измеряет величину
+      отклонения оси прямого восхождения.&nbsp; Для реализации алгоритма
+      необходима только одна звезда в единицу времени, причём
+      идентифицировать её не нужно. Однако, сама процедура требует
+      большого времени, особенно для новичков, поскольку каждая ось
+      настраивается отдельно и телескоп должен перемещаться в широких
+      пределах. Кроме того, для лучшей производительности должен быть
+      обзор точки пересечения небесного экватора и меридиана и область
+      на востоке или западе (азимут 90 или 270 градусов) примерно на 30
+      градусов выше горизонта. Такие требования вряд ли понравятся тем,
+      кто хочет сэкономить время на установку или не имеет обзора
+      требуемых областей неба. </p>
+    <p>Второй метод, статическая установка полюса, позволяет избежать
+      этих ограничений.<span>&nbsp; </span>Он сознательно немного
+      жертвует точностью ради ускорения процесса, при котором обе оси
+      настраиваются одновременно. Нужны лишь обзор полярной области, и
+      достаточно чистое небо, чтобы программа проидентифицировала
+      несколько звёзд вблизи полюса. <br>
+    </p>
+    <p>Третий метод, полярный дрейф, вероятно, является самым простым.
+      Настройка обеих осей происходит одновременно при минимуме ручного
+      вмешательства. Необходим обзор полярной области. </p>
+    <p>Эти три алгоритма описаны в соответствующих разделах.
+      Поэкспериментируйте с ними и выберите наиболее для вас подходящий.
+      Важность точной установки полюса часто преувеличивается, но, тем
+      не менее, важна. Хотя в большинстве случаев дрейф по склонению
+      хорошо компенсируется PHD2. но слишком большая неточность
+      установки полюса&nbsp; может привести к вращению поля, которое не
+      может быть скорректировано. Оно проявляет себя тем сильнее, чем
+      больше размер сенсора камеры и чем ближе объект находится к
+      полюсу. Ожидаемую величину вращения поля можно подсчитать онлайн,
+      например, здесь: </p>
+    <p class="MsoNormal" style="background-color: transparent; color:
+      rgb(0, 0, 0); font-family: Times New Roman; font-size: 16px;
+      font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;"><a
+        href="http://celestialwonders.com/tools/rotationMaxErrorCalc.html">http://celestialwonders.com/tools/rotationMaxErrorCalc.html</a></p>
+    <p>Калькулятор поможет понять, выходит ли вращение за пределы
+      допустимого в конкретной ситуации. Кроме того, следует помнить,
+      что точность установки может ограничиваться конструкцией узлов
+      монтировки. <br>
+    </p>
+    <h3 style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 18.73px; font-style:
+      normal; font-variant: normal; font-weight: 700; letter-spacing:
+      normal; orphans: 2; text-align: left; text-decoration: none;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;"><a
+        href="file:///D:/repositories/phd2/help/Tutorials.htm#Drift_Align">Drift
+
+
+
+
+
+
+
+
+
+        Alignment Tool</a></h3>
+    <h3 style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 18.73px; font-style:
+      normal; font-variant: normal; font-weight: 700; letter-spacing:
+      normal; orphans: 2; text-align: left; text-decoration: none;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;"><a
+href="file:///D:/repositories/phd2/help/Tutorials.htm#Static_polar_alignment">Static
+
+
+
+
+
+
+
+
+
+        Polar Alignment Tool</a></h3>
+    <h3 style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 18.73px; font-style:
+      normal; font-variant: normal; font-weight: 700; letter-spacing:
+      normal; orphans: 2; text-align: left; text-decoration: none;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;"><a
+        href="file:///D:/repositories/phd2/help/Tutorials.htm#Polar_Drift_Align">Polar
+
+
+
+
+
+
+
+
+
+        Drift Alignment Tool</a></h3>
     <h3><a name="Lock_Positions"></a>Сохранение положения звезды<br>
     </h3>
-    В зависимости от особенностей последовательности действий при
-    калибровке положение звезды после её завершения может отличаться от
-    её начального положения на несколько пикселей.&nbsp; Если Вы хотите,
-    чтобы положение звезды оставалось неизменным, в меню 'Инструменты'
-    установите флажок 'Сохранять положение звезды'.&nbsp; При этом после
-    завершения калибровки возможна небольшая задержка, когда&nbsp; <span
-      style="font-style: italic;">PHD2</span> со скоростью гидирования
-    восстанавливает положение звезды.&nbsp; Оно останется неизменным
-    даже при остановке и возобновлении гидирования.&nbsp; Строгое
-    позиционирование опорной звезды осуществляется за счёт задержек, во
-    время которых&nbsp; <span style="font-style: italic;">PHD2</span>
-    компенсирует её смещение; при этом на монтировку подаются
-    соответствующие команды.
+    <span style="font-style: italic; font-variant: normal; font-weight:
+      400"></span>Положение звезды после калибровки может отличаться от
+    исходного на несколько пикселей.&nbsp; Если вы хотите, чтобы оно
+    осталось прежним, то, после выбора опорной звезды перед калибровкой
+    выберите пункт 'Сохранить положение звезды' меню
+    'Инструменты'.&nbsp; После завершения калибровки <span
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: italic;
+      font-variant: normal; font-weight: 400">PHD2</span> продолжит
+    двигать монтировку, пока опорная звезда не окажется в начальном
+    положении.&nbsp; Поэтому вы можете заметить некоторую задержку по
+    окончании калибровки, пока&nbsp; <span style="background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: italic">PHD2</span> со скоростью
+    гидирования позиционирует опорную звезду.&nbsp; Положение звезды
+    запоминается и может быть восстановлено и после остановки и
+    возобновления гидирования.&nbsp; <br>
+    <br>
+    &nbsp;При необходимости уточнить положение опорной звезды на сенсоре
+    камеры после начала гидирования можно использовать пункт 'Уточнение
+    положения звезды' меню 'Инструменты': <br>
+    <br>
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 190px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 354px;
+      word-spacing: 0px;" alt=""
+      src="file:///D:/repositories/phd2/help/Adjust_Lock_Position.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br>
+    Звезду можно перемещать со скоростью гидирования или же задать
+    координаты её нового положения.&nbsp; Ползунок 'Шаг' задаёт величину
+    перемещения.&nbsp; При вводе координат есть риск увести её из
+    области поиска..&nbsp; Инструмент может быть полезен для точного
+    позиционирования опорной звезды или фотографируемого объекта,
+    например, для спектроскопии..
     <h3><a name="Comet_Tracking"></a>Отслеживание комет</h3>
     Одним из способов получить неподвижное изображение кометы для съёмки
     является использование в качестве гидируемой "звезды"её самой. К
@@ -509,18 +639,24 @@
     измерения, нужно начать обычное гидирование, чтобы определить звезду
     и сделать доступным (но не запускать) механизм сбора данных.&nbsp;
     Затем, нажатием на кнопку 'Начать'. приступить к измерениям.&nbsp;
-    После этого, когда гидирование будет выключено, звезда будет
-    двигаться по экрану, что является совершенно нормальным.&nbsp; На
-    основании полученных изображений статистика подсчитывается и
-    отображается в реальном времени. Особый интерес представляет раздел
-    "Высокочастотные движения звезды".&nbsp; Приблизительно после минуты
-    сбора данных их значения стабилизируются и измерения дрожания
-    звезды, вызванного турбулентностью становятся достоверными.&nbsp;
-    После нажатия кнопки 'Остановить' процесс сбора данных будет
-    завершён и гидирование возобновится.&nbsp; Остальные полученные
-    результаты, включая дрейф, отобразятся в нижней таблице.&nbsp; Все
-    значения будут представлены как в угловых секундах, так и в
-    пикселях.&nbsp; Окно будет выглядеть примерно так:<br>
+    После этого гидирование будет выключено и звезда будет перемещаться
+    по экрану, что является совершенно нормальным.&nbsp; На основании
+    полученных изображений статистика подсчитывается и отображается в
+    реальном времени. Особый интерес представляют разделы
+    'Высокочастотные движения звезды' и 'Ошибка определения
+    полюса'.&nbsp; Приблизительно после пары минут сбора данных их
+    значения стабилизируются и измерения становятся достоверными.&nbsp;
+    Для получения более точных значений требуется время до 10 минут.
+    Кроме того, полученная ошибка определения полюса зависит от текущего
+    склонения телескопа. Чтобы измерения были как можно более точными,
+    следует навести телескоп вблизи меридиана. После нажатия кнопки
+    'Остановить' эта фаза процесса сбора данных будет завершена.&nbsp;
+    Если выбрано 'Измерение люфта склонения'&nbsp; этот процесс
+    запустится (см. ниже). Если нет, сбор данных завершится и
+    гидирование возобновится. Остальные полученные результаты, включая
+    дрейф, отобразятся в нижней таблице.&nbsp; Все значения будут
+    представлены как в угловых секундах, так и в пикселях.&nbsp; Окно
+    будет выглядеть примерно так:<br>
     <br>
     <img style="width: 1059px; height: 479px;" alt=""
       src="Guiding_Assistant_Finish.png"><br>
@@ -530,10 +666,245 @@
     поддерживает настройку минимального хода гидирования, у вас будет
     возможность установить это значение автоматически на основании
     полученных результатов.&nbsp; Вы также можете произвести измерения
-    повторно или же закрыть окно. Со временем мы сможем дать советы и
-    относительно других настроек гидирования.<br>
+    повторно или же закрыть окно, чтобы продолжить гидирование.<br>
     <br>
-    <br>
+    <span style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 700; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Измерение люфта склонения<br>
+    </span>При выборе элемента 'Измерение люфта склонения' этот процесс
+    будет запущен после завершения высокочастотных измерений. <span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">Иными словами, нажатие кнопки 'Остановить'
+      прекратит высокочастотные измерения и начнёт измерять люфт
+      склонения. &nbsp;However, if the initial sampling period was
+      less than 2 minutes, a dialog box will appear and the backlash
+      test
+      will continue to sample until the 2-minute period has expired.
+      &nbsp; A
+      new group of status messages will be
+      shown immediately above the 'Start' and 'Stop' buttons so you can
+      see
+      what's being done:</span><br style="background-color: transparent;
+      color: rgb(0, 0, 0); font-family: Times New Roman; font-size:
+      16px; font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 684px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 516px;
+      word-spacing: 0px;" alt=""
+src="file:///D:/repositories/phd2/help/Guiding_Assistant_MeasuringBL.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">To
+      do backlash measurement, PHD2 will move the star by large amounts,
+      first in the north direction, then back to the south. &nbsp;There
+      is
+      some risk the star will be lost during this process or the star
+      might
+      already be&nbsp; too close to the north edge of the sensor.
+      &nbsp;You
+      should choose a guide star that has plenty of room to
+      move&nbsp;north
+      to get the best accuracy. &nbsp;If the star is lost because it's
+      been
+      moved outside the search region, you can temporarily increase the
+      size of that region from
+      the '</span><a
+href="file:///D:/repositories/phd2/help/Advanced_settings.htm#Guiding_Tab"
+      style="background-color: transparent; color: rgb(0, 102, 204);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: underline;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;">Guiding</a><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">'
+      tab of the Advanced Settings dialog.
+      &nbsp;A search region size of 20 pixels should work for most
+      configurations - just be sure you don't have multiple
+      stars&nbsp;inside the
+      search region. &nbsp;The first phase of backlash measurement
+      involves
+      an initial attempt to clear whatever backlash is present in the
+      north
+      direction. &nbsp;The Guiding Assistant (GA) will continue with
+      these
+      clearing commands until it sees a significant and consistent
+      movement
+      of the
+      guide star in one direction. &nbsp;Once this is done, the GA will
+      issue
+      another sequence of commands to continue moving the star north by
+      a
+      large amount.
+      &nbsp;This will take at least 16 seconds and may take longer
+      depending
+      on the configuration - you can watch the status update to see
+      what's
+      being done. &nbsp;When the north steps are finished, the GA will
+      issue
+      an identical number of steps in the south direction. &nbsp;If
+      there's
+      significant backlash in the mount, it may take a long time for the
+      star
+      to start moving south, but that will usually be handled.
+      &nbsp;Once the
+      south steps are done, regardless of how far the star has actually
+      moved, &nbsp;the backlash amount will be computed. &nbsp;</span><span
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: &amp;quot;Times New Roman&amp;quot;; font-size: 16px;
+      font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;">However, if the star hasn’t moved at all in the south
+      direction, the computed backlash amount will be too small. <span>&nbsp;</span>At
+      that point, you can know your declination
+      backlash exceeds 8 seconds, which is a very large amount.</span><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">
+      The Guiding Assistant will then try to move the star back to its
+      starting position and will re-enable guiding. &nbsp;Again, there
+      is
+      some risk the star may be lost, but this won't affect the
+      calculations
+      - you can simply stop and resume guiding as you normally would.
+      &nbsp;Unlike the first process for measuring high-frequency star
+      movement, you don't need to click on the 'Stop' button once
+      backlash
+      measurement has begun. &nbsp;The measurement process will
+      terminate
+      when all the steps have been completed, and normal guiding will be
+      resumed. &nbsp;However, you can click on the 'Stop' button if
+      something
+      has gone wrong - such as a lost-star condition - and then restart
+      when
+      you're ready.&nbsp; When the backlash tests are finished, you'll
+      see
+      the results
+      displayed as before, with the addition of entries for the amount
+      of
+      declination backlash in units of both pixels and time (ms):</span><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 628px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 773px;
+      word-spacing: 0px;" alt=""
+      src="file:///D:/repositories/phd2/help/Guiding_Assistant_Finish.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Depending
+      on the amount of backlash, you may see a recommendation for
+      setting a
+      backlash compensation factor - 100 ms in the example shown above.
+      &nbsp;If the measured amount is less than 100 ms, no
+      recommendation
+      will be made because such a small amount probably doesn't warrant
+      any
+      compensation. &nbsp;If the backlash is very large, over 3 seconds,
+      you'll see a different recommendation to use uni-directional
+      guiding in
+      declination. &nbsp;That's because trying to compensate for such
+      large
+      values probably won't work very well, and the mount will probably
+      not
+      be able to reverse directions quickly enough to support
+      bi-directional
+      guiding. Obviously, you can reach your own conclusions based on
+      your
+      experience with how the mount behaves. &nbsp;Before doing these
+      measurements, be sure to disable any backlash compensation that's
+      previously been
+      enabled in the mount software. &nbsp;If this isn't done, the
+      measurements and
+      any subsequent attempts at compensation by PHD2 will be invalid.
+      &nbsp;If you want to try uni-directional guiding, you can find
+      instructions here: &nbsp;</span><a
+href="file:///D:/repositories/phd2/help/Advanced_settings.htm#Declination-Uni-directional_guiding"
+      style="background-color: transparent; color: rgb(0, 102, 204);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: underline;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;">Uni-directional
+      guiding</a><br>
+    &nbsp;<br>
     Чтобы лучше понять, как работает монтировка, можно посмотреть график
     измерения люфта.&nbsp; Щёлкните по кнопке 'Показать график' и вы
     увидите что-то типа такой картинки: <br>
@@ -581,6 +952,94 @@
     запуске Помощника Гидирования, поэтому сделайте параметр 'Изменение
     люфта склонения' неактивным.<br>
     <br>
+    <h3 style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 18.73px; font-style:
+      normal; font-variant: normal; font-weight: 700; letter-spacing:
+      normal; orphans: 2; text-align: left; text-decoration: none;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;"><a
+        name="Star_cross_tool"></a>Перекрёстный звёздный тест<br>
+    </h3>
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Тест может помочь
+      проверить отклик монтировки на команды гидирования, как описано в
+      разделе&nbsp; </span><a
+href="file:///D:/repositories/phd2/help/Trouble_shooting.htm#Star_cross_test"
+      style="background-color: transparent; color: rgb(0, 102, 204);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: underline;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;">trouble-shooting</a><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">. Хотя тест легко провести вручную, можно
+      воспольщоваться этой возможностью PHD2.&nbsp; Диалоговое окно
+      теста выглядит так: </span><br style="background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 309px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 603px;
+      word-spacing: 0px;" alt=""
+      src="file:///D:/repositories/phd2/help/Star_cross_tool.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 700; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Предполагается, что
+      основная камера используется для съёмкиt</span><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">, и PHD2 не знает масштаба получаемых
+      изображений.&nbsp; Убедитесь, что настройки обеспечивают получение
+      хороших образцов на основной камере, но не позволяют звёздам уйти
+      из поля зрения.&nbsp; В большинстве случаев достаточно настроек по
+      умолчанию. Важно получить чистую запись движения с основной камеры
+      и сохранить её в сыром формате без сжатия(например, FITs или
+      несжатый TIF).&nbsp; Во время теста проводится серийная съёмка без
+      выбора опорной звезды, при этом не имеет значения, если отдельные
+      звёзды окажутся вне кадра. Серия проводится, чтобы дать обратную
+      связь о движениях монтировки.</span><br>
     <h3><a name="Managing_Equipment_Profiles"></a>Управление профилями
       оборудования</h3>
     Профили оборудования были представлены в разделе <a
@@ -604,6 +1063,201 @@
     импортировать и экспортировать для отладки, резервного копирования
     или даже обмена с другими пользователями <span style="font-style:
       italic;">PHD2</span>.<br>
+    <br>
+    <h3 style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 18.73px; font-style:
+      normal; font-variant: normal; font-weight: 700; letter-spacing:
+      normal; orphans: 2; text-align: left; text-decoration: none;
+      text-indent: 0px; text-transform: none; -webkit-text-stroke-width:
+      0px; white-space: normal; word-spacing: 0px;"><a
+        name="Ask_for_coordinates_aux_mount"></a>Дополнительное
+      подключение с заданием координат</h3>
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Если не удаётся
+      подключить монтировку через драйвера ASCOM или INDI drivers, то
+      для дополнительного подключения монтировки можно задать координаты
+      вручную - это лучше, чем ничего.&nbsp; Для этого необходимо перед
+      каждым гидированием ввести или подтвердить данные о положении
+      телескопа: </span><br style="background-color: transparent;
+      color: rgb(0, 0, 0); font-family: Times New Roman; font-size:
+      16px; font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 248px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 212px;
+      word-spacing: 0px;" alt=""
+      src="file:///D:/repositories/phd2/help/Manual_mount.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Тогда&nbsp; PHD2 проведёт
+      калибовку в соответствии с этими данными.&nbsp; Не обязательно
+      быть очень точным, отклонения в несколько градусов </span><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;"><span style="display: inline !important;
+        float: none; background-color: transparent; color: rgb(0, 0, 0);
+        font-family: Times New Roman; font-size: 16px; font-style:
+        normal; font-variant: normal; font-weight: 400; letter-spacing:
+        normal; orphans: 2; text-align: left; text-decoration: none;
+        text-indent: 0px; text-transform: none;
+        -webkit-text-stroke-width: 0px; white-space: normal;
+        word-spacing: 0px;">допустимы</span>.&nbsp; После этого вам уже
+      не нужно повторять калибровку при наведении на ноый объект.
+      Например, можно откалиброваться у экватора, а при наведении на
+      объект с большим склонением ввести данные о новом положении
+      телескопа.&nbsp; Скорее всего, результат будет лучше, чем попытка
+      откалиброваться в околополярной области.&nbsp; Это диалоговое окно
+      не появится, если начальное положение для гидирования является
+      результатом подвижек или серверной команды из
+      астрофотопрограммы.&nbsp; Для корректной работы </span><span
+      style="display: inline !important; float: none; background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;"><span style="background-color: transparent;
+        color: rgb(0, 0, 0); font-family: Times New Roman; font-size:
+        16px; font-style: normal; font-variant: normal; font-weight:
+        700; letter-spacing: normal; orphans: 2; text-align: left;
+        text-decoration: none; text-indent: 0px; text-transform: none;
+        -webkit-text-stroke-width: 0px; white-space: normal;
+        word-spacing: 0px;">необходимо</span>, чтобы предыдущая
+      калибовка завершилась корректно</span><span style="display: inline
+      !important; float: none; background-color: transparent; color:
+      rgb(0, 0, 0); font-family: Times New Roman; font-size: 16px;
+      font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;">. &nbsp;</span><br style="background-color: transparent;
+      color: rgb(0, 0, 0); font-family: Times New Roman; font-size:
+      16px; font-style: normal; font-variant: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
+      0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">При выравнивании дрейфом
+      диалоговое окно будет выглядеть немного по-другому: </span><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <img style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; height: 350px;
+      letter-spacing: normal; orphans: 2; text-align: left;
+      text-decoration: none; text-indent: 0px; text-transform: none;
+      -webkit-text-stroke-width: 0px; white-space: normal; width: 327px;
+      word-spacing: 0px;" alt=""
+      src="file:///D:/repositories/phd2/help/Manual_mount_drift.png"><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Если ввести
+      дополнительные данные для прямого восхождения, широты и долготы,
+      пурпурная мишень будет отражать более точную информацию. В
+      противном случае она покажет только верхнюю оценку ошибки
+      позиционирования. &nbsp;</span><br style="background-color:
+      transparent; color: rgb(0, 0, 0); font-family: Times New Roman;
+      font-size: 16px; font-style: normal; font-variant: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      left; text-decoration: none; text-indent: 0px; text-transform:
+      none; -webkit-text-stroke-width: 0px; white-space: normal;
+      word-spacing: 0px;">
+    <br style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
+    <span style="display: inline !important; float: none;
+      background-color: transparent; color: rgb(0, 0, 0); font-family:
+      Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">Включение и выключение
+      'Запроса координат' не оказывает какого-либо воздействия на
+      соединение с камерой или монтировкой.&nbsp; </span><br
+      style="background-color: transparent; color: rgb(0, 0, 0);
+      font-family: Times New Roman; font-size: 16px; font-style: normal;
+      font-variant: normal; font-weight: 400; letter-spacing: normal;
+      orphans: 2; text-align: left; text-decoration: none; text-indent:
+      0px; text-transform: none; -webkit-text-stroke-width: 0px;
+      white-space: normal; word-spacing: 0px;">
     <br>
     <h3><a name="Advanced_Settings_for_the_Simulators"></a>Настройки
       симуляторов</h3>
@@ -651,9 +1305,60 @@
     Кавычки вокруг названия в третьей строке необходимы, поскольку
     пробелы являются частью имени папки.<br>
     <br>
-    <h3><a name="Keyboard_Shortcuts"></a>Горячие клавиши<br>
-    </h3>
-    Горячие клавиши широко используются в PHD2.&nbsp; Их список
-    находится в разделе <a href="KeyboardShortcuts.htm">Горячие клавиши</a>.
+    <h3><a name="Keyboard_Shortcuts"></a>Горячие клавиши</h3>
+    <p><span style="display: inline !important; float: none;
+        background-color: transparent; color: rgb(0, 0, 0); font-family:
+        Times New Roman; font-size: 16px; font-style: normal;
+        font-variant: normal; font-weight: 400; letter-spacing: normal;
+        orphans: 2; text-align: left; text-decoration: none;
+        text-indent: 0px; text-transform: none;
+        -webkit-text-stroke-width: 0px; white-space: normal;
+        word-spacing: 0px;">Используемые PHD2 для различных инструментов
+        и действий горячие клавиши перечислены в </span><a
+        href="file:///D:/repositories/phd2/help/KeyboardShortcuts.htm"
+        style="background-color: transparent; color: rgb(0, 102, 204);
+        font-family: Times New Roman; font-size: 16px; font-style:
+        normal; font-variant: normal; font-weight: 400; letter-spacing:
+        normal; orphans: 2; text-align: left; text-decoration:
+        underline; text-indent: 0px; text-transform: none;
+        -webkit-text-stroke-width: 0px; white-space: normal;
+        word-spacing: 0px;">соответствующем</a><span style="display:
+        inline !important; float: none; background-color: transparent;
+        color: rgb(0, 0, 0); font-family: Times New Roman; font-size:
+        16px; font-style: normal; font-variant: normal; font-weight:
+        400; letter-spacing: normal; orphans: 2; text-align: left;
+        text-decoration: none; text-indent: 0px; text-transform: none;
+        -webkit-text-stroke-width: 0px; white-space: normal;
+        word-spacing: 0px;"> разделе. </span></p>
+    <h3><a name="Software_Update"></a>Обновление программы</h3>
+    <p> Как правило, пользователей, попросивших о помощи на форуме PHD2
+      просят обновиться до последней версии и проверить, не исчезла ли
+      проблема. Оно и понятно: если версия старая, то, скорее всего, о
+      проблеме уже сообщили и, вероятно, она уже была устранена в новой
+      версии. Разработчики PHD2 на своей шкуре ощущают, как важно
+      использовать новейшую версию программы. </p>
+    <p>В условиях ограниченного количества ночей с ясным небом
+      обновление программы несёт определённые риски. Разработчики PHD2
+      признают это - мы же тоже астрофотографы! Необходим компромисс
+      между использованием стабильной версии и обновлением, включающим в
+      себя исправления ошибок и новые возможности. Этот компромисс
+      достигается использовнием двух серий выпусков программы.
+      Разработческие выпуски содержат последние исправления ошибок и
+      улушения и тестируются разработчиками - обычно в полевых условиях
+      - перед выпуском. Они получают названия вроде"2.6.3dev6", что
+      означает 6й разработческий выпуск после основного выпуска 2.6.3.</p>
+    <p>Периодически, после более продолжительного тестирования
+      разработческий выпуск становится основным как, например, 2.6.3dev6
+      стал 2.6.4.</p>
+    <h4>Проверка обновлений</h4>
+    <p>PHD2 может проверять обновления автоматически. Мы советуем
+      включить этот параметр в настройках. Тогда&nbsp; PHD2 после старта
+      будет проверять обновления в фоновом режиме. При обнаружении новой
+      версии PHD2 предоставит возможность её установить. Включение
+      проверки обновлений не оказывает влияние на текущие операции. Если
+      нет соединения с Интернетом, программа попытается проверить
+      обновления при следующем запуске.</p>
+    <p>Кроме этого, обновления можно проверить вручную, выбрав пункт
+      'Проверить обновления' меню 'Помощь'.</p>
   </body>
 </html>
