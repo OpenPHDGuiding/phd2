@@ -671,6 +671,8 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
 
     LoadGrid(m_grid);
 
+    m_grid->AutoSizeColumns();
+
     m_scanner.Init(m_grid);
 }
 
