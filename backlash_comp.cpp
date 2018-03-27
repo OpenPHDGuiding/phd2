@@ -528,16 +528,24 @@ void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistan
         int newBLC;
         nominalBLC = m_pulseWidth + adjustment;
         if (nominalBLC > m_pulseWidth)
-            newBLC = ROUND(fmin(m_pulseWidth * 1.1, wxMin(m_adjustmentCeiling, nominalBLC)));
+        {
+            newBLC = ROUND(fmin(m_pulseWidth * 1.1, nominalBLC));
+            if (newBLC > m_adjustmentCeiling)
+            {
+                Debug.Write(wxString::Format("BLC: Pulse increase limited by ceiling of %d\n", m_adjustmentCeiling));
+                newBLC = m_adjustmentCeiling;
+            }
+        }
         else
-            newBLC = ROUND(fmax(0.8 * m_pulseWidth, wxMax(0, nominalBLC)));
-        if (nominalBLC < m_adjustmentFloor)
-            Debug.Write(wxString::Format("BLC: Pulse decrease limited by floor of %d\n", m_adjustmentFloor));
-        else
-        if (nominalBLC > m_adjustmentCeiling)
-            Debug.Write(wxString::Format("BLC: Pulse increase limited by ceiling of %d\n", m_adjustmentCeiling));
-        else
-            Debug.Write(wxString::Format("BLC: Pulse adjusted to %d\n", newBLC));
+        {
+            newBLC = ROUND(fmax(0.8 * m_pulseWidth, nominalBLC));
+            if (newBLC < m_adjustmentFloor)
+            {
+                Debug.Write(wxString::Format("BLC: Pulse decrease limited by floor of %d\n", m_adjustmentFloor));
+                newBLC = m_adjustmentFloor;
+            }
+        }
+        Debug.Write(wxString::Format("BLC: Pulse adjusted to %d\n", newBLC));
         pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", newBLC);
         SetCompValues(newBLC, m_adjustmentFloor, m_adjustmentCeiling);
 

@@ -1726,19 +1726,23 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, 50);
         pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
-        wxBoxSizer *pComp2 = new wxBoxSizer(wxHORIZONTAL);
 
-        m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
-        m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
-        pComp2->Add(MakeLabeledControl(blcCtrlId, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
-            wxSizerFlags().Border(wxLEFT, 0));
-        pComp2->Add(MakeLabeledControl(blcCtrlId, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
-            wxSizerFlags().Border(wxLEFT, 18));
         wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, blcHostTab, usingAO ? _("Mount Backlash Compensation") : _("Backlash Compensation"));
         pCompVert->Add(pComp1);
-        pCompVert->Add(pComp2);
+        if (!usingAO)                       // AO doesn't use auto-adjustments, so don't show min/max controls
+        {
+            wxBoxSizer *pComp2 = new wxBoxSizer(wxHORIZONTAL);
+
+            m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
+            m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
+            pComp2->Add(MakeLabeledControl(blcCtrlId, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
+                wxSizerFlags().Border(wxLEFT, 0));
+            pComp2->Add(MakeLabeledControl(blcCtrlId, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
+                wxSizerFlags().Border(wxLEFT, 18));
+            pCompVert->Add(pComp2);
+        }
         AddGroup(CtrlMap, blcCtrlId, pCompVert);
         if (!usingAO)
         {
@@ -1785,12 +1789,12 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     int ceiling;
     m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
     m_pBacklashPulse->SetValue(pulseSize);
-    m_pBacklashFloor->SetValue(floor);
-    m_pBacklashCeiling->SetValue(ceiling);
     m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
     bool usingAO = TheAO() != NULL;
     if (!usingAO)
     {
+        m_pBacklashFloor->SetValue(floor);
+        m_pBacklashCeiling->SetValue(ceiling);
         m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
         m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
         m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
@@ -1800,16 +1804,27 @@ void ScopeConfigDialogCtrlSet::LoadValues()
 
 void ScopeConfigDialogCtrlSet::UnloadValues()
 {
+    bool usingAO = TheAO() != NULL;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
     int newBC = m_pBacklashPulse->GetValue();
-    int newFloor = m_pBacklashFloor->GetValue();
-    int newCeiling = m_pBacklashCeiling->GetValue();
+    int newFloor;
+    int newCeiling;
+    if (!usingAO)
+    {
+        newFloor = m_pBacklashFloor->GetValue();
+        newCeiling = m_pBacklashCeiling->GetValue();
+    }
+    else
+    {
+        newFloor = newBC;
+        newCeiling = newBC;
+    }
     // SetBacklashPulse will handle floor/ceiling values that don't make sense
-    m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);;
+    m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);
     m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
 
     // Following needed in case user changes max_duration with blc value already set
@@ -1817,7 +1832,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         m_pScope->SetMaxDecDuration(newBC);
     if (pFrame)
         pFrame->UpdateCalibrationStatus();
-    bool usingAO = TheAO() != NULL;
+
     if (!usingAO)
     {
         m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
