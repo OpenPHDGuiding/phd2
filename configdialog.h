@@ -94,6 +94,7 @@ enum BRAIN_CTRL_IDS
     AD_szBumpPercentage,
     AD_szBumpSteps,
     AD_cbBumpOnDither,
+    AD_szBumpBLCompCtrls,
     AD_cbClearAOCalibration,
     AD_cbEnableAOGuiding,
     AD_cbRotatorReverse,

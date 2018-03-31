@@ -60,13 +60,12 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxChoice   *m_pDecMode;
     wxCheckBox *m_pUseBacklashComp;
     wxSpinCtrlDouble *m_pBacklashPulse;
-    wxCheckBox *m_pBacklashFixed;
+    wxSpinCtrlDouble *m_pBacklashFloor;
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
 
     int m_prevStepSize;
     void OnCalcCalibrationStep(wxCommandEvent& evt);
-    void OnFixedBLC(wxCommandEvent& evt);
 
 public:
     ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -257,7 +256,7 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, MountMoveType moveType, MoveResultInfo *moveResultInfo) override;
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) override;
     int CalibrationMoveSize(void);
     void CheckCalibrationDuration(int currDuration);

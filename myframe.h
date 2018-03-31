@@ -378,8 +378,8 @@ public:
 
     void ScheduleExposure(void);
 
-    void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, MountMoveType moveType);
-    void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, MountMoveType moveType);
+    void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
+    void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing(void);

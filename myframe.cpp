@@ -1542,7 +1542,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
     else
     {
-        request->moveResult = request->mount->Move(&request->ofs, request->moveType);
+        request->moveResult = request->mount->Move(&request->ofs, request->moveOptions);
     }
 
     request->semaphore->Post();
@@ -1581,9 +1581,9 @@ void MyFrame::ScheduleExposure(void)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
-void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
+void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
 {
-    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveType));
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, opts=%u)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveOptions));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1591,12 +1591,12 @@ void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, MountMo
     mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveType);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveOptions);
 }
 
-void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, MountMoveType moveType)
+void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
 {
-    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveType));
+    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, opts=%u)\n", mount, ofs.cameraOfs.X, ofs.cameraOfs.Y, moveOptions));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1606,14 +1606,14 @@ void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, Mount
     {
         // some mounts must run on the Primary thread even if the secondary is requested
         // to ensure synchronous ST4 guide / camera exposure
-        SchedulePrimaryMove(mount, ofs, moveType);
+        SchedulePrimaryMove(mount, ofs, moveOptions);
     }
     else
     {
         mount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveType);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveOptions);
     }
 }
 
@@ -1626,7 +1626,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direct
     mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, direction, duration);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadCalibrationMove(mount, direction, duration);
 }
 
 bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)

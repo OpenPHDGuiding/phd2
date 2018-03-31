@@ -37,69 +37,420 @@
 #include "backlash_comp.h"
 
 static const unsigned int HISTORY_SIZE = 10;
+static const unsigned int MIN_COMP_AMOUNT = 50;               // min pulse in ms
 static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms
 
-BacklashComp::BacklashComp(Mount *theMount)
+
+class CorrectionTuple
 {
-    m_pMount = theMount;
-    m_pScope = reinterpret_cast<Scope *>(theMount);
-    int lastAmt = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", 0);
-    int lastCeiling = pConfig->Profile.GetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", 0);
-    bool lastFixed = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/DecBacklashFixed", false);
-    SetCompValues(lastAmt, lastFixed, lastCeiling);
+public:
+    long timeSeconds;
+    double miss;
+
+    CorrectionTuple(long TimeInSecs, double Amount)
+    {
+        timeSeconds = TimeInSecs;
+        miss = Amount;
+    }
+};
+
+class BLCEvent
+{
+public:
+    std::vector<CorrectionTuple> corrections;
+    bool initialOvershoot;
+    bool initialUndershoot;
+    bool stictionSeen;
+
+    BLCEvent() {};
+
+    BLCEvent(long TimeSecs, double Amount)
+    {
+        corrections.push_back(CorrectionTuple(TimeSecs, Amount));
+        initialOvershoot = false;
+        initialUndershoot = false;
+        stictionSeen = false;
+    }
+
+    size_t InfoCount() const
+    {
+        return corrections.size();
+    }
+
+    void AddEventInfo(long TimeSecs, double Amount, double minMove)
+    {
+        // Correction[0] is the deflection that triggered the BLC in the first place.  Correction[1] is the first delta after the pulse was issued,
+        // Correction[2] is the (optional) subsequent delta, needed to detect stiction
+        if (InfoCount() < 3)
+        {
+            corrections.push_back(CorrectionTuple(TimeSecs, Amount));
+            if (fabs(Amount) > minMove)
+            {
+                if (InfoCount() == 2)
+                {
+                    if (Amount > 0)
+                        initialUndershoot = true;
+                    else
+                        initialOvershoot = true;
+
+                }
+                else
+                {
+                    if (InfoCount() == 3)
+                    {
+                        stictionSeen = initialUndershoot && Amount < 0;           // 2nd follow-on miss was an over-shoot
+                    }
+                }
+            }
+        }
+    }
+
+};
+
+class BLCHistory
+{
+    //List<BLCEvent> blcEvents;
+    std::vector<BLCEvent> blcEvents;
+    int blcIndex = 0;
+    const int ENTRY_CAPACITY = 3;
+    const unsigned int HISTORY_DEPTH = 10;
+    bool windowOpen;
+    long timeBase;
+    int lastIncrease;
+
+public:
+    struct RecentStats
+    {
+        int shortCount;
+        int longCount;
+        int stictionCount;
+        double avgInitialMiss;
+        double avgStictionAmount;
+
+        RecentStats() :shortCount(0), longCount(0), stictionCount(0), avgInitialMiss(0), avgStictionAmount(0)
+        {
+        }
+    };
+
+    bool WindowOpen() const
+    {
+        return windowOpen;
+    }
+
+    BLCHistory()
+    {
+        windowOpen = false;
+        lastIncrease = 0;
+        timeBase = wxGetCurrentTime();
+    }
+
+    static void LogStatus(const wxString& Msg)
+    {
+        Debug.Write(wxString::Format("BLC: %s\n", Msg));
+    }
+
+    void CloseWindow()
+    {
+        windowOpen = false;
+    }
+
+    void RecordNewBLC(long When, double TriggerDeflection)
+    {
+        if (blcEvents.size() >= HISTORY_DEPTH)
+        {
+            blcEvents.erase(blcEvents.begin());
+            LogStatus("Oldest BLC event removed");
+        }
+        blcEvents.push_back(BLCEvent((When - timeBase), TriggerDeflection));
+        blcIndex = blcEvents.size() - 1;
+        windowOpen = true;
+    }
+
+    bool AddDeflection(long When, double Amt, double MinMove)
+    {
+        bool added = false;
+        if (blcIndex >= 0 && blcEvents[blcIndex].InfoCount() < ENTRY_CAPACITY)
+        {
+            blcEvents[blcIndex].AddEventInfo(When-timeBase, Amt, MinMove);
+            added = true;
+            //LogStatus("Deflection entry added for event " + std::to_string(blcIndex));
+        }
+        else
+        {
+            windowOpen = false;
+            LogStatus("History window closed");
+        }
+        return added;
+    }
+
+    void RemoveOldestOvershoots(int howMany)
+    {
+        for (int ct = 1; ct <= howMany; ct++)
+        {
+            for (unsigned int inx = 0; inx < blcEvents.size() - 1; inx++)
+            {
+                if (blcEvents[inx].initialOvershoot)
+                {
+                    blcEvents.erase(blcEvents.begin() + inx);
+                    blcIndex = blcEvents.size() - 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    void ClearHistory()
+    {
+        blcEvents.clear();
+        LogStatus("History cleared");
+    }
+
+    // Stats over some number of recent events, returns the average initial miss
+    double GetStats(int numEvents, RecentStats* Results) const
+    {
+        int bottom = std::max(0, blcIndex - (numEvents - 1));
+        double sum = 0;
+        double stictionSum = 0;
+        int ct = 0;
+        for (int inx = blcIndex; inx >= bottom; inx--)
+        {
+            const BLCEvent& evt = blcEvents[inx];
+            if (evt.initialOvershoot)
+                Results->longCount++;
+            else
+                Results->shortCount++;
+            if (evt.stictionSeen)
+            {
+                Results->stictionCount++;
+                stictionSum += evt.corrections[2].miss;
+            }
+            // Average only the initial misses immediately following the blcs
+            if (evt.InfoCount() > 1)
+            {
+                sum += evt.corrections[1].miss;
+                ct++;
+            }
+        }
+        if (ct > 0)
+            Results->avgInitialMiss = sum / ct;
+        else
+            Results->avgInitialMiss = 0;
+        if (Results->stictionCount > 0)
+            Results->avgStictionAmount = stictionSum / Results->stictionCount;
+        else
+            Results->avgStictionAmount = 0;
+        return Results->avgInitialMiss;
+    }
+
+    bool AdjustmentNeeded(double miss, double minMove, double yRate, double* correction)
+    {
+        bool adjust = false;
+        const BLCEvent *currEvent;
+        RecentStats stats;
+        *correction = 0;
+        double avgInitMiss = 0;
+        if (blcIndex >= 0)
+        {
+            avgInitMiss = GetStats(HISTORY_DEPTH, &stats);
+            currEvent = &blcEvents[blcIndex];
+            wxString deflections = " Deflections: 0=" + std::to_string(currEvent->corrections[0].miss) + ", 1:" +
+                wxString(std::to_string(currEvent->corrections[1].miss));
+            if (currEvent->InfoCount() > 2)
+                deflections += ", 2:" + std::to_string(currEvent->corrections[2].miss);
+            LogStatus(wxString::Format("History state: CurrMiss=%0.2f, AvgInitMiss=%0.2f, ShCount=%d, LgCount=%d, SticCount=%d, %s",
+                miss, stats.avgInitialMiss, stats.shortCount, stats.longCount, stats.stictionCount, deflections));
+        }
+        else
+            return false;
+
+        if (fabs(miss) >= minMove)                      // Most recent miss was big enough to look at
+        {
+            int corr;
+            corr = (int)(floor(abs(avgInitMiss) / yRate) + 0.5);                          // unsigned correction value
+            if (miss > 0)
+                // UNDER-SHOOT-------------------------------
+            {
+                if (avgInitMiss > 0)
+                {
+                    // Might want to increase the blc value - but check for stiction and history of over-corrections
+                    // Don't make any changes before getting two follow-on displacements after last BLC
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
+                    {
+                        // Stiction
+                        if (stats.stictionCount > 2)
+                            LogStatus("Under-shoot, no adjustment because of stiction history, window closed");
+                        else
+                        {
+                            if (stats.longCount >= 2)             // 2 or more over-shoots in window
+                                LogStatus("Under-shoot; no adjustment because of over-shoot history, window closed");
+                            else
+                            {
+                                adjust = true;
+                                *correction = corr;
+                                lastIncrease = corr;
+                                LogStatus("Under-shoot: nominal increase by " + std::to_string(corr) + ", window closed");
+                            }
+                        }
+                        windowOpen = false;
+                    }
+                    else
+                        LogStatus("Under-shoot, no adjustment, waiting for more data");
+                }
+                else
+                {
+                    LogStatus("Under-shoot, no adjustment, avgInitialMiss <= 0, window closed");
+                    windowOpen = false;
+                }
+            }
+            else
+                // OVER-SHOOT --------------------------------------
+            {
+                if (avgInitMiss < 0 || stats.longCount > stats.shortCount || currEvent->stictionSeen)
+                {
+                    windowOpen = false;
+                    std::string msg = "";
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
+                    {
+                        if (currEvent->stictionSeen)
+                        {
+                            if (stats.stictionCount > 1)          // Seeing and low min-move can look like stiction, don't react to 1st event
+                            {
+                                msg = "Over-shoot, stiction seen, ";
+                                double stictionCorr = (int)(floor(abs(stats.avgStictionAmount) / yRate) + 0.5);
+                                *correction = -stictionCorr;
+                                adjust = true;
+                                LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                            }
+                            else
+                                LogStatus("Over-shoot, first stiction event, no adjustment, window closed");
+                        }
+                    }
+                    else
+                    if (stats.longCount > stats.shortCount && blcIndex >= 4)
+                    {
+                        msg = "Recent history of over-shoots, ";
+                        *correction = -corr;
+                        RemoveOldestOvershoots(2);
+                        adjust = true;
+                        LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                    }
+                    else
+                    if (fabs(avgInitMiss) > minMove)
+                    {
+                        msg = "Average miss indicates over-shooting, ";
+                        *correction = -corr;                     // just the usual average of misses
+                        adjust = true;
+                        LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                    }
+                    else
+                    {
+                        LogStatus("Over-shoot, no correction because of small average miss, window closed.");
+                    }
+                }                           // end of over-shoot cases that warrant attention
+                else
+                {
+                    correction = 0;
+                    std::string msg = "Over-shoot, no adjustment, avgMiss >= 0";
+                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
+                    {
+                        windowOpen = false;
+                        msg += ", window closed";
+                    }
+                    LogStatus(msg);
+                }
+
+            }
+        }
+        else
+        {
+            windowOpen = false;
+            LogStatus("No correction, Miss < min_move, window closed");
+        }
+
+        return adjust;
+    }
+};
+
+BacklashComp::BacklashComp(Scope *scope)
+{
+    m_pScope = scope;
+    m_pHistory = new BLCHistory();
+    int lastAmt = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", 0);
+    int lastFloor = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashFloor", 0);
+    int lastCeiling = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", 0);
+    SetCompValues(lastAmt, lastFloor, lastCeiling);
     if (m_pulseWidth > 0)
-        m_compActive = pConfig->Profile.GetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", false);
+        m_compActive = pConfig->Profile.GetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", false);
     else
         m_compActive = false;
-    m_justCompensated = false;
     m_lastDirection = NONE;
     if (m_compActive)
-        Debug.Write(wxString::Format("BLC: Enabled with correction = %d ms, Ceiling = %d, %s\n",
-        m_pulseWidth, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
+        Debug.Write(wxString::Format("BLC: Enabled with correction = %d ms, Floor = %d, Ceiling = %d, %s\n",
+        m_pulseWidth, m_adjustmentFloor, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
     else
         Debug.Write("BLC: Backlash compensation is disabled\n");
 }
 
-int BacklashComp::GetBacklashPulseLimit()
+BacklashComp::~BacklashComp()
+{
+    delete m_pHistory;
+}
+
+int BacklashComp::GetBacklashPulseMaxValue() const
 {
     return MAX_COMP_AMOUNT;
 }
 
-void BacklashComp::GetBacklashCompSettings(int* pulseWidth, bool* fixedSize, int* ceiling)
+int BacklashComp::GetBacklashPulseMinValue() const
+{
+    return MIN_COMP_AMOUNT;
+}
+
+void BacklashComp::GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling) const
 {
     *pulseWidth = m_pulseWidth;
-    *fixedSize = m_fixedSize;
+    *floor = m_adjustmentFloor;
     *ceiling = m_adjustmentCeiling;
 }
 
-// Private method to be sure all comp values are in-synch and don't exceed limits
+// Private method to be sure all comp values are rational and comply with limits
 // May change max-move value for Dec depending on the context
-void BacklashComp::SetCompValues(int requestedSize, bool fixedSize, int ceiling)
+void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 {
     m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
+    if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT)                        // Coming from GA or user input makes no sense
+        m_adjustmentFloor = wxMax(0.5 * m_pulseWidth, MIN_COMP_AMOUNT);
+    else
+        m_adjustmentFloor = floor;
     if (ceiling < m_pulseWidth)
         m_adjustmentCeiling = wxMin(1.50 * m_pulseWidth, MAX_COMP_AMOUNT);
     else
         m_adjustmentCeiling = wxMin(ceiling, MAX_COMP_AMOUNT);
-    m_fixedSize = fixedSize;
+    m_fixedSize = abs(m_adjustmentCeiling - m_adjustmentFloor) < MIN_COMP_AMOUNT;
     if (m_pulseWidth > m_pScope->GetMaxDecDuration())
         m_pScope->SetMaxDecDuration(m_pulseWidth);
 }
 
 // Public method to ask for a set of backlash comp settings.  Ceiling == 0 implies compute a default
-void BacklashComp::SetBacklashPulse(int ms, bool fixedSize, int ceiling)
+void BacklashComp::SetBacklashPulse(int ms, int floor, int ceiling)
 {
-    if (m_pulseWidth != ms || m_fixedSize != fixedSize || m_adjustmentCeiling != ceiling)
+    if (m_pulseWidth != ms || m_adjustmentFloor != floor|| m_adjustmentCeiling != ceiling)
     {
-        SetCompValues(ms, fixedSize, ceiling);
+        int oldBLC = m_pulseWidth;
+        SetCompValues(ms, floor, ceiling);
         pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
-        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Ceiling = %d ms, %s\n", 
-            m_pulseWidth, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
+        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Floor = %d ms,Ceiling = %d ms, %s\n", 
+            m_pulseWidth, m_adjustmentFloor, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
+        if (abs(m_pulseWidth - oldBLC) > 100)
+        {
+            m_pHistory->ClearHistory();
+            m_pHistory->CloseWindow();
+        }
     }
 
-    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
-    pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashCeiling", m_adjustmentCeiling);
-    pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/DecBackLashFixed", m_fixedSize);
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", m_pulseWidth);
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashFloor", m_adjustmentFloor);
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", m_adjustmentCeiling);
 }
 
 void BacklashComp::EnableBacklashComp(bool enable)
@@ -110,7 +461,8 @@ void BacklashComp::EnableBacklashComp(bool enable)
     }
 
     m_compActive = enable;
-    pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
+    ResetBaseline();
+    pConfig->Profile.SetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));
 }
 
@@ -119,102 +471,112 @@ void BacklashComp::ResetBaseline()
     if (m_compActive)
     {
         m_lastDirection = NONE;
-        m_justCompensated = false;
+        m_pHistory->CloseWindow();
         Debug.Write("BLC: Last direction was reset\n");
     }
 }
 
-void BacklashComp::_TrackBLCResults(double yDistance, double minMove, double yRate)
+void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
 {
-    assert(m_justCompensated); // caller checks this
+    if (m_compActive)
+    {
 
-    // The previous Dec correction included a BLC
+        if (moveTypeOptions & MOVEOPT_USE_BLC)
+        {
+            // only track algorithm result moves, do not track "fast
+            // recovery after dither" moves or deduced moves or AO bump
+            // moves
+            bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+
+            if (isAlgoResultMove)
+            {
+                if (m_pHistory->WindowOpen() && !m_fixedSize)
+                    _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
+            }
+            else
+                m_pHistory->CloseWindow();                  // non-algo blc move occurred before follow-up data were acquired for previous blc
+        }
+        else
+        {
+            ResetBaseline();    // Calibration-type move that can move mount in Dec w/out notifying blc about direction
+        }
+    }
+}
+
+void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
+{
+    assert(m_pHistory->WindowOpen()); // caller checks this
+
+    // An earlier BLC was applied and we're tracking follow-up results
 
     // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we
     // needed more correction (+) or less (-)
     GUIDE_DIRECTION dir = yDistance > 0.0 ? DOWN : UP;
     yDistance = fabs(yDistance);
     double miss;
+    double adjustment;
+    double nominalBLC;
     if (dir == m_lastDirection)
-        miss = yDistance;            // + => we needed more of the same, under-shoot
+        miss = yDistance;                           // + => we needed more of the same, under-shoot
     else
-        miss = -yDistance;           // over-shoot
-    minMove = fmax(minMove, 0);         // Algo w/ no min-move returns -1
-    if (m_residualOffsets.GetCount() == HISTORY_SIZE)
-    {
-        m_residualOffsets.RemoveAt(0);
-    }
-    m_residualOffsets.Add(miss);
+        miss = -yDistance;                         // over-shoot
+    minMove = fmax(minMove, 0);                    // Algo w/ no min-move returns -1
 
-    if (yDistance >= minMove)           // Don't adjust for a residual error < min_move_equivalent
+    m_pHistory->AddDeflection(wxGetCurrentTime(), miss, minMove);
+    if (m_pHistory->AdjustmentNeeded(miss, minMove, yRate, &adjustment))
     {
-        // Compute the average residual error
-        int numPoints = m_residualOffsets.GetCount();
-        double avgMiss = 0.;
-        for (int inx = 0; inx < numPoints; inx++)
-            avgMiss += m_residualOffsets.Item(inx);
-        avgMiss = avgMiss / numPoints;
-
-        if (fabs(avgMiss) > minMove)                        // Don't make micro-adjustments
+        int newBLC;
+        nominalBLC = m_pulseWidth + adjustment;
+        if (nominalBLC > m_pulseWidth)
         {
-            int corr = (int)floor(fabs(avgMiss / yRate) + 0.5);
-            int nominalBLC;
-            int newBLC;
-            if (miss >= 0)                                  // We under-shot the target
+            newBLC = ROUND(fmin(m_pulseWidth * 1.1, nominalBLC));
+            if (newBLC > m_adjustmentCeiling)
             {
-                if (avgMiss > 0)
-                    nominalBLC = m_pulseWidth + corr;
-                else
-                    nominalBLC = m_pulseWidth;              // Need more evidence of under-shooting
-                // Don't increase by more than 10% or go above ceiling
-                newBLC = ROUND(fmin(m_pulseWidth * 1.1, wxMin(m_adjustmentCeiling, nominalBLC)));
+                Debug.Write(wxString::Format("BLC: Pulse increase limited by ceiling of %d\n", m_adjustmentCeiling));
+                newBLC = m_adjustmentCeiling;
             }
-            else
-            {                                              // we over-shot the target
-                if (avgMiss < 0)
-                    nominalBLC = m_pulseWidth - corr;
-                else
-                    nominalBLC = m_pulseWidth;            // Need more evidence of over-shooting
-                // Don't decrease by more than 20% or go below zero
-                newBLC = ROUND(fmax(0.8 * m_pulseWidth, wxMax(0, nominalBLC)));
-            }
-
-            if (newBLC != m_pulseWidth && numPoints > 2)
-                m_residualOffsets.RemoveAt(0);               // Don't let initial big deflection dominate adjustments
-            if (newBLC != m_pulseWidth)
-            {
-                Debug.Write(wxString::Format("BLC: Adjustment from %d to %d based on avg residual of %.1f px\n", m_pulseWidth, newBLC, avgMiss));
-                if (nominalBLC > m_adjustmentCeiling)
-                    Debug.Write("BLC: Adjustment upward limited by ceiling\n");
-                pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", newBLC);
-                SetCompValues(newBLC, false, m_adjustmentCeiling);
-            }
-            else
-            if (nominalBLC > m_adjustmentCeiling)
-                Debug.Write("BLC: Adjustment upward limited by ceiling\n");
-
         }
+        else
+        {
+            newBLC = ROUND(fmax(0.8 * m_pulseWidth, nominalBLC));
+            if (newBLC < m_adjustmentFloor)
+            {
+                Debug.Write(wxString::Format("BLC: Pulse decrease limited by floor of %d\n", m_adjustmentFloor));
+                newBLC = m_adjustmentFloor;
+            }
+        }
+        Debug.Write(wxString::Format("BLC: Pulse adjusted to %d\n", newBLC));
+        pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", newBLC);
+        SetCompValues(newBLC, m_adjustmentFloor, m_adjustmentCeiling);
+
     }
 
-    m_justCompensated = false;
 }
 
 // Possibly add the backlash comp to the pending guide pulse (yAmount)
-void BacklashComp::ApplyBacklashComp(int dir, double yDist, int *yAmount)
+void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount)
 {
-    m_justCompensated = false;
 
     if (!m_compActive || m_pulseWidth <= 0 || yDist == 0.0)
         return;
+    bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
 
     if (m_lastDirection != NONE && dir != m_lastDirection)
     {
         *yAmount += m_pulseWidth;
-        m_justCompensated = true;
-
+        if (isAlgoResultMove)
+            m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);     // Only track results or make adjustments for algorithm-controlled blc's
+        else
+        {
+            m_pHistory->CloseWindow();
+            Debug.Write("BLC: Compensation needed for non-algo type move\n");
+        }
         Debug.Write(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied\n",
             m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
     }
+    else
+    if (!isAlgoResultMove)
+        Debug.Write("BLC: non-algo type move will not reverse Dec direction, no blc applied\n");
 
     m_lastDirection = dir;
 }

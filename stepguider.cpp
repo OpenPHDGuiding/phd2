@@ -370,7 +370,7 @@ bool StepGuider::MoveToCenter()
         if (positionUpDown > 0)
         {
             MoveResultInfo result;
-            Move(DOWN, positionUpDown, MOVETYPE_DIRECT, &result);
+            Move(DOWN, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step DOWN");
@@ -381,7 +381,7 @@ bool StepGuider::MoveToCenter()
             positionUpDown = -positionUpDown;
 
             MoveResultInfo result;
-            Move(UP, positionUpDown, MOVETYPE_DIRECT, &result);
+            Move(UP, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step UP");
@@ -393,7 +393,7 @@ bool StepGuider::MoveToCenter()
         if (positionLeftRight > 0)
         {
             MoveResultInfo result;
-            Move(RIGHT, positionLeftRight, MOVETYPE_DIRECT, &result);
+            Move(RIGHT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
@@ -404,7 +404,7 @@ bool StepGuider::MoveToCenter()
             positionLeftRight = -positionLeftRight;
 
             MoveResultInfo result;
-            Move(LEFT, positionLeftRight, MOVETYPE_DIRECT, &result);
+            Move(LEFT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step LEFT");
@@ -838,7 +838,7 @@ Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int st
     try
     {
         MoveResultInfo move;
-        result = Move(direction, steps, MOVETYPE_DIRECT, &move);
+        result = Move(direction, steps, MOVEOPTS_CALIBRATION_MOVE, &move);
 
         if (move.amountMoved != steps)
         {
@@ -869,14 +869,14 @@ int StepGuider::CalibrationTotDistance(void)
     return AO_CALIBRATION_PIXELS_NEEDED;
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, MountMoveType moveType, MoveResultInfo *moveResult)
+Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
     bool limitReached = false;
 
     try
     {
-        Debug.Write(wxString::Format("Move(%d, %d, %d)\n", direction, steps, moveType));
+        Debug.Write(wxString::Format("Move(%d, %d, %u)\n", direction, steps, moveOptions));
 
         // Compute the required guide steps
         if (!m_guidingEnabled)
@@ -987,13 +987,13 @@ static void SuppressSlowBumpWarning(long)
     pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, MountMoveType moveType)
+Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
     try
     {
-        result = Mount::Move(ofs, moveType);
+        result = Mount::Move(ofs, moveOptions);
         if (result != MOVE_OK)
             Debug.Write(wxString::Format("StepGuider::Move: Mount::Move failed! result %d\n", result));
 
@@ -1002,10 +1002,10 @@ Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, MountMoveType moveType)
             throw THROW_INFO("Guiding disabled");
         }
 
-        if (moveType == MOVETYPE_DEDUCED)
+        if (moveOptions & MOVEOPT_ALGO_DEDUCE)
         {
             if (m_bumpInProgress)
-                Debug.Write("StepGuider: deferring bump, MOVETYPE_DEDUCED\n");
+                Debug.Write("StepGuider: deferring bump for deduced move\n");
             return result;
         }
 
@@ -1025,8 +1025,8 @@ Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, MountMoveType moveType)
 
         bool secondaryIsBusy = pSecondaryMount && pSecondaryMount->IsBusy();
 
-        // consider bumping the secondary mount if this is a normal move
-        if (moveType == MOVETYPE_ALGO && pSecondaryMount && pSecondaryMount->IsConnected())
+        // consider bumping the secondary mount if this is a normal guide step move
+        if ((moveOptions & MOVEOPT_ALGO_RESULT) != 0 && pSecondaryMount && pSecondaryMount->IsConnected())
         {
             int absX = abs(CurrentPosition(RIGHT));
             int absY = abs(CurrentPosition(UP));
@@ -1211,7 +1211,7 @@ Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, MountMoveType moveType)
 
             GuiderOffset bumpOfs;
             bumpOfs.cameraOfs = thisBump;
-            pFrame->ScheduleSecondaryMove(pSecondaryMount, bumpOfs, MOVETYPE_DIRECT);
+            pFrame->ScheduleSecondaryMove(pSecondaryMount, bumpOfs, MOVEOPTS_AO_BUMP);
         }
     }
     catch (const wxString& Msg)
@@ -1373,7 +1373,7 @@ AOConfigDialogPane::AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuide
 
 void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
-    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
+    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(4, 3, 15, 15);
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_AOTravel));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
@@ -1381,6 +1381,7 @@ void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMa
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpBLCompCtrls));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
     this->Add(pAoDetailSizer, def_flags);
