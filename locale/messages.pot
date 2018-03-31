@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-21 19:57+0100\n"
+"POT-Creation-Date: 2018-03-31 18:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -182,89 +182,89 @@ msgstr ""
 msgid "Selected star at (999.9, 999.9)"
 msgstr ""
 
-#: backlash_comp.cpp:232
+#: backlash_comp.cpp:594
 msgid "Backlash Results"
 msgstr ""
 
-#: backlash_comp.cpp:317
+#: backlash_comp.cpp:679
 msgid "Ideal"
 msgstr ""
 
-#: backlash_comp.cpp:319
+#: backlash_comp.cpp:681
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:320 polardrift_toolwin.cpp:195 scope.cpp:223
+#: backlash_comp.cpp:682 polardrift_toolwin.cpp:195 scope.cpp:223
 #: staticpa_toolwin.cpp:352 testguide.cpp:152
 msgid "North"
 msgstr ""
 
-#: backlash_comp.cpp:321 polardrift_toolwin.cpp:196 scope.cpp:224
+#: backlash_comp.cpp:683 polardrift_toolwin.cpp:196 scope.cpp:224
 #: staticpa_toolwin.cpp:353 testguide.cpp:152
 msgid "South"
 msgstr ""
 
-#: backlash_comp.cpp:401
+#: backlash_comp.cpp:763
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 
-#: backlash_comp.cpp:578
+#: backlash_comp.cpp:940
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 
-#: backlash_comp.cpp:592
+#: backlash_comp.cpp:954
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr ""
 
-#: backlash_comp.cpp:629
+#: backlash_comp.cpp:991
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr ""
 
-#: backlash_comp.cpp:637
+#: backlash_comp.cpp:999
 msgid "Could not clear North backlash - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:664
+#: backlash_comp.cpp:1026
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:698
+#: backlash_comp.cpp:1060
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr ""
 
-#: backlash_comp.cpp:713
+#: backlash_comp.cpp:1075
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:739
+#: backlash_comp.cpp:1101
 msgid "Dec movements too erratic - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:745
+#: backlash_comp.cpp:1107
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:763
+#: backlash_comp.cpp:1125
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr ""
 
-#: backlash_comp.cpp:831
+#: backlash_comp.cpp:1193
 msgid "Restoring star position"
 msgstr ""
 
-#: backlash_comp.cpp:839
+#: backlash_comp.cpp:1201
 msgid "Measurement complete"
 msgstr ""
 
-#: backlash_comp.cpp:848
+#: backlash_comp.cpp:1210
 msgid "Measurement halted"
 msgstr ""
 
@@ -1372,7 +1372,7 @@ msgstr ""
 msgid "Star fading due to clouds"
 msgstr ""
 
-#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
+#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:261
 #: Refine_DefMap.cpp:175 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr ""
@@ -1513,7 +1513,7 @@ msgstr ""
 #: camera.cpp:364 gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:367
 #: gear_dialog.cpp:371 gear_dialog.cpp:375 gear_dialog.cpp:605
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
-#: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
+#: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:771
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
 #: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
@@ -1750,7 +1750,7 @@ msgstr ""
 msgid "Comet Tracking - Active"
 msgstr ""
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:984 scope.cpp:1716
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:984 scope.cpp:1723
 msgid "Enable"
 msgstr ""
 
@@ -1795,7 +1795,7 @@ msgid "Tracking rate axes"
 msgstr ""
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
 #: starcross_test.cpp:161
 msgid "Start"
 msgstr ""
@@ -1805,7 +1805,7 @@ msgid "Start training the tracking rate."
 msgstr ""
 
 #: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:550
-#: polardrift_toolwin.cpp:325 starcross_test.cpp:163 staticpa_toolwin.cpp:644
+#: polardrift_toolwin.cpp:332 starcross_test.cpp:163 staticpa_toolwin.cpp:644
 msgid "Stop"
 msgstr ""
 
@@ -3890,7 +3890,7 @@ msgstr ""
 msgid "Debug Log"
 msgstr ""
 
-#: log_uploader.cpp:631 log_uploader.cpp:1215
+#: log_uploader.cpp:631 log_uploader.cpp:1217
 msgid "Recent uploads"
 msgstr ""
 
@@ -3898,89 +3898,89 @@ msgstr ""
 msgid "< Back"
 msgstr ""
 
-#: log_uploader.cpp:640 log_uploader.cpp:1237 profile_wizard.cpp:189
+#: log_uploader.cpp:640 log_uploader.cpp:1239 profile_wizard.cpp:189
 #: profile_wizard.cpp:429
 msgid "Next >"
 msgstr ""
 
-#: log_uploader.cpp:762 log_uploader.cpp:1083
+#: log_uploader.cpp:764 log_uploader.cpp:1085
 msgid "Upload"
 msgstr ""
 
-#: log_uploader.cpp:762
+#: log_uploader.cpp:764
 msgid "Uploading log files ..."
 msgstr ""
 
-#: log_uploader.cpp:791
+#: log_uploader.cpp:793
 #, c-format
 msgid "Uploading ... %.f%%"
 msgstr ""
 
-#: log_uploader.cpp:844
+#: log_uploader.cpp:846
 msgid "Connecting ..."
 msgstr ""
 
-#: log_uploader.cpp:860
+#: log_uploader.cpp:862
 #, c-format
 msgid "Connection failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1016
+#: log_uploader.cpp:1018
 #, c-format
 msgid "Upload failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1049
+#: log_uploader.cpp:1051
 msgid "The following log files will be uploaded:"
 msgstr ""
 
-#: log_uploader.cpp:1064
+#: log_uploader.cpp:1066
 msgid "Guide and Debug logs"
 msgstr ""
 
-#: log_uploader.cpp:1066
+#: log_uploader.cpp:1068
 msgid "Debug log"
 msgstr ""
 
-#: log_uploader.cpp:1068
+#: log_uploader.cpp:1070
 msgid "Guide log"
 msgstr ""
 
-#: log_uploader.cpp:1155
+#: log_uploader.cpp:1157
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
 
-#: log_uploader.cpp:1158
+#: log_uploader.cpp:1160
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
 
-#: log_uploader.cpp:1160
+#: log_uploader.cpp:1162
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: log_uploader.cpp:1176
+#: log_uploader.cpp:1178
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
 
-#: log_uploader.cpp:1179
+#: log_uploader.cpp:1181
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1183
+#: log_uploader.cpp:1185
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
 
-#: log_uploader.cpp:1187
+#: log_uploader.cpp:1189
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
@@ -4031,6 +4031,14 @@ msgstr ""
 msgid "Predictive PEC"
 msgstr ""
 
+#: mount.cpp:170
+msgid "AO X-Axis"
+msgstr ""
+
+#: mount.cpp:173
+msgid "AO Y-Axis"
+msgstr ""
+
 #: mount.cpp:193
 msgid "Which Guide Algorithm to use for Right Ascension"
 msgstr ""
@@ -4045,62 +4053,62 @@ msgstr ""
 msgid "Which Guide Algorithm to use for Declination"
 msgstr ""
 
-#: mount.cpp:263
+#: mount.cpp:262
 msgid ""
 "Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
 "values"
 msgstr ""
 
-#: mount.cpp:450
+#: mount.cpp:449
 msgid "Clear mount calibration"
 msgstr ""
 
-#: mount.cpp:453
+#: mount.cpp:452
 msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: mount.cpp:454
+#: mount.cpp:453
 msgid "Enable mount guide output"
 msgstr ""
 
-#: mount.cpp:456
+#: mount.cpp:455
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
 msgstr ""
 
-#: mount.cpp:829
+#: mount.cpp:828
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr ""
 
-#: mount.cpp:1114
+#: mount.cpp:1113
 msgid "RA:"
 msgstr ""
 
-#: mount.cpp:1119
+#: mount.cpp:1118
 msgid "DEC:"
 msgstr ""
 
-#: mount.cpp:1163
+#: mount.cpp:1162
 msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
 
-#: mount.cpp:1175
+#: mount.cpp:1174
 msgid ""
 "Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
 "guiding."
 msgstr ""
 
-#: mount.cpp:1211
+#: mount.cpp:1210
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1246
+#: mount.cpp:1245
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 
@@ -4943,7 +4951,7 @@ msgid ""
 "calibration after gear is connected."
 msgstr ""
 
-#: myframe.cpp:2890
+#: myframe.cpp:2890 scope.cpp:1740
 msgid "Min"
 msgstr ""
 
@@ -4951,7 +4959,7 @@ msgstr ""
 msgid "Auto exposure minimum duration"
 msgstr ""
 
-#: myframe.cpp:2891
+#: myframe.cpp:2891 scope.cpp:1742
 msgid "Max"
 msgstr ""
 
@@ -5385,26 +5393,36 @@ msgstr ""
 msgid "Adjustment notes"
 msgstr ""
 
-#: polardrift_toolwin.cpp:259
+#: polardrift_toolwin.cpp:261
 msgid "Polar Drift alignment stopped"
 msgstr ""
 
-#: polardrift_toolwin.cpp:261
+#: polardrift_toolwin.cpp:263
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
 msgstr ""
 
-#: polardrift_toolwin.cpp:276 staticpa_toolwin.cpp:541
+#: polardrift_toolwin.cpp:278 staticpa_toolwin.cpp:541
 msgid "Please wait till Calibration is done and/or stop guiding"
 msgstr ""
 
-#: polardrift_toolwin.cpp:281 staticpa_toolwin.cpp:546
+#: polardrift_toolwin.cpp:283 staticpa_toolwin.cpp:546
 msgid "Please select a star"
 msgstr ""
 
-#: polardrift_toolwin.cpp:402
+#: polardrift_toolwin.cpp:409
 #, c-format
-msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
+msgid "Time %.fs"
+msgstr ""
+
+#: polardrift_toolwin.cpp:410
+#, c-format
+msgid "PA Err: %.f min"
+msgstr ""
+
+#: polardrift_toolwin.cpp:411
+#, c-format
+msgid "Angle: %.f deg"
 msgstr ""
 
 #: profile_wizard.cpp:72
@@ -6098,83 +6116,77 @@ msgid ""
 "effect when calibrating DEC."
 msgstr ""
 
-#: scope.cpp:1717
+#: scope.cpp:1724
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr ""
 
-#: scope.cpp:1721
+#: scope.cpp:1728
 msgid "Amount"
 msgstr ""
 
-#: scope.cpp:1721
-msgid "Size of backlash compensation guide pulse"
-msgstr ""
-
-#: scope.cpp:1723
-msgid "Fixed-size"
-msgstr ""
-
-#: scope.cpp:1724
-msgid ""
-"Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC "
-"OSCILLATION, not recommended under normal conditions!"
+#: scope.cpp:1728
+msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr ""
 
 #: scope.cpp:1730
-msgid "Limit"
+msgid "Mount Backlash Compensation"
 msgstr ""
 
 #: scope.cpp:1730
-msgid "Maximum length of backlash correction pulse (mSec)."
-msgstr ""
-
-#: scope.cpp:1732
 msgid "Backlash Compensation"
 msgstr ""
 
-#: scope.cpp:1737
+#: scope.cpp:1740
+msgid "Minimum length of backlash compensation pulse (mSec)."
+msgstr ""
+
+#: scope.cpp:1742
+msgid "Maximum length of backlash compensation pulse (mSec)."
+msgstr ""
+
+#: scope.cpp:1749
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1739
+#: scope.cpp:1751
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1744
+#: scope.cpp:1756
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1744 scope.cpp:1894
+#: scope.cpp:1756 scope.cpp:1913
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1748
+#: scope.cpp:1760
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1748 scope.cpp:1901
+#: scope.cpp:1760 scope.cpp:1920
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1760
+#: scope.cpp:1772
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:1760
+#: scope.cpp:1772
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:1896
+#: scope.cpp:1915
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:1903
+#: scope.cpp:1922
 msgid "Mx DEC"
 msgstr ""
 
@@ -6789,81 +6801,81 @@ msgstr ""
 msgid "AO Settings"
 msgstr ""
 
-#: stepguider.cpp:1402
+#: stepguider.cpp:1403
 msgid "AO Travel"
 msgstr ""
 
-#: stepguider.cpp:1402
+#: stepguider.cpp:1403
 msgid "Maximum number of steps the AO can move in each direction"
 msgstr ""
 
-#: stepguider.cpp:1405
+#: stepguider.cpp:1406
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 msgstr ""
 
-#: stepguider.cpp:1408
+#: stepguider.cpp:1409
 msgid "Cal steps"
 msgstr ""
 
-#: stepguider.cpp:1411
+#: stepguider.cpp:1412
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
 "increase for worse seeing and small imaging scales"
 msgstr ""
 
-#: stepguider.cpp:1414
+#: stepguider.cpp:1415
 msgid "Samples to average"
 msgstr ""
 
-#: stepguider.cpp:1417
+#: stepguider.cpp:1418
 #, c-format
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
 msgstr ""
 
-#: stepguider.cpp:1420
+#: stepguider.cpp:1421
 msgid "Bump percentage"
 msgstr ""
 
-#: stepguider.cpp:1423
+#: stepguider.cpp:1424
 #, c-format
 msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
 
-#: stepguider.cpp:1426
+#: stepguider.cpp:1427
 msgid "Bump steps"
 msgstr ""
 
-#: stepguider.cpp:1428
+#: stepguider.cpp:1429
 msgid "Bump on dither"
 msgstr ""
 
-#: stepguider.cpp:1429
+#: stepguider.cpp:1430
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr ""
 
-#: stepguider.cpp:1431
+#: stepguider.cpp:1432
 msgid "Clear AO calibration"
 msgstr ""
 
-#: stepguider.cpp:1434
+#: stepguider.cpp:1435
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 
-#: stepguider.cpp:1435
+#: stepguider.cpp:1436
 msgid "Enable AO corrections"
 msgstr ""
 
-#: stepguider.cpp:1437
+#: stepguider.cpp:1438
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"

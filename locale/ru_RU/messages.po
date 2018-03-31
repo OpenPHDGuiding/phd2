@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-21 19:57+0100\n"
+"POT-Creation-Date: 2018-03-31 18:31+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
@@ -188,59 +188,59 @@ msgstr "Откалибровано"
 msgid "Selected star at (999.9, 999.9)"
 msgstr "Выбранная звезда (999.9, 999.9)"
 
-#: backlash_comp.cpp:232
+#: backlash_comp.cpp:594
 msgid "Backlash Results"
 msgstr "Результаты люфта"
 
-#: backlash_comp.cpp:317
+#: backlash_comp.cpp:679
 msgid "Ideal"
 msgstr "Идеал"
 
-#: backlash_comp.cpp:319
+#: backlash_comp.cpp:681
 msgid "Measured"
 msgstr "Измерено"
 
-#: backlash_comp.cpp:320 polardrift_toolwin.cpp:195 scope.cpp:223
+#: backlash_comp.cpp:682 polardrift_toolwin.cpp:195 scope.cpp:223
 #: staticpa_toolwin.cpp:352 testguide.cpp:152
 msgid "North"
 msgstr "cевер"
 
-#: backlash_comp.cpp:321 polardrift_toolwin.cpp:196 scope.cpp:224
+#: backlash_comp.cpp:683 polardrift_toolwin.cpp:196 scope.cpp:224
 #: staticpa_toolwin.cpp:353 testguide.cpp:152
 msgid "South"
 msgstr "юг"
 
-#: backlash_comp.cpp:401
+#: backlash_comp.cpp:763
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "Люфт не может быть измерен - перезапустите калибровку"
 
-#: backlash_comp.cpp:578
+#: backlash_comp.cpp:940
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 "Невозможно измерить люфт - значение скорости гидирования по склонению "
 "недоступно"
 
-#: backlash_comp.cpp:592
+#: backlash_comp.cpp:954
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "Очистка северного люфта, шаг %d"
 
-#: backlash_comp.cpp:629
+#: backlash_comp.cpp:991
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "Очистка северного люфта, шаг %d (до предела в %d)"
 
-#: backlash_comp.cpp:637
+#: backlash_comp.cpp:999
 msgid "Could not clear North backlash - test failed"
 msgstr "Невозможно сбросить северный люфт - тест прерван"
 
-#: backlash_comp.cpp:664
+#: backlash_comp.cpp:1026
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "Движение на север %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:698
+#: backlash_comp.cpp:1060
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -248,34 +248,34 @@ msgstr ""
 "Звезда слишком близка к краю для точного измерения люфта, выберите звезду "
 "подальше."
 
-#: backlash_comp.cpp:713
+#: backlash_comp.cpp:1075
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "Движение на юг %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:739
+#: backlash_comp.cpp:1101
 msgid "Dec movements too erratic - test failed"
 msgstr "Сбой теста: движения по склонению слишком хаотичны"
 
-#: backlash_comp.cpp:745
+#: backlash_comp.cpp:1107
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 "Сбой теста: монтировка никогда не производила согласованных движений на юг"
 
-#: backlash_comp.cpp:763
+#: backlash_comp.cpp:1125
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Пробная поправка люфта %d мсек"
 
-#: backlash_comp.cpp:831
+#: backlash_comp.cpp:1193
 msgid "Restoring star position"
 msgstr "Восстановление позиции звезды"
 
-#: backlash_comp.cpp:839
+#: backlash_comp.cpp:1201
 msgid "Measurement complete"
 msgstr "Измерение завершено"
 
-#: backlash_comp.cpp:848
+#: backlash_comp.cpp:1210
 msgid "Measurement halted"
 msgstr "Измерение остановлено"
 
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
-"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
-"большой периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
+"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
+"периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
-"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
+"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,9 +860,10 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
-#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
-#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
+#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
+#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
+#: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -1426,7 +1427,7 @@ msgstr "Комета"
 msgid "Star fading due to clouds"
 msgstr "Звёзды скрыты облаками"
 
-#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:262
+#: cam_simulator.cpp:1691 darks_dialog.cpp:204 mount.cpp:213 mount.cpp:261
 #: Refine_DefMap.cpp:175 starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
 msgstr "Сбросить"
@@ -1571,7 +1572,7 @@ msgstr ""
 #: camera.cpp:364 gear_dialog.cpp:359 gear_dialog.cpp:363 gear_dialog.cpp:367
 #: gear_dialog.cpp:371 gear_dialog.cpp:375 gear_dialog.cpp:605
 #: gear_dialog.cpp:967 gear_dialog.cpp:1668 gear_dialog.cpp:1669
-#: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:772
+#: gear_dialog.cpp:1670 mount.cpp:124 mount.cpp:146 mount.cpp:771
 #: myframe.cpp:2694 profile_wizard.cpp:212 profile_wizard.cpp:213
 #: profile_wizard.cpp:306 profile_wizard.cpp:311 profile_wizard.cpp:553
 #: profile_wizard.cpp:573 profile_wizard.cpp:588 profile_wizard.cpp:619
@@ -1831,7 +1832,7 @@ msgstr "Обучение отслеживанию кометы - активно"
 msgid "Comet Tracking - Active"
 msgstr "Отслеживание кометы - активно"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:984 scope.cpp:1716
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:984 scope.cpp:1723
 msgid "Enable"
 msgstr "Включить"
 
@@ -1876,7 +1877,8 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:323 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -1885,7 +1887,7 @@ msgid "Start training the tracking rate."
 msgstr "Начать проверку скорости слежения."
 
 #: comet_tool.cpp:117 darks_dialog.cpp:246 guiding_assistant.cpp:550
-#: polardrift_toolwin.cpp:325 starcross_test.cpp:163 staticpa_toolwin.cpp:644
+#: polardrift_toolwin.cpp:332 starcross_test.cpp:163 staticpa_toolwin.cpp:644
 msgid "Stop"
 msgstr "Остановить"
 
@@ -3179,8 +3181,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3296,8 +3298,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3321,8 +3323,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -4160,7 +4162,7 @@ msgstr "Журнал гидирования"
 msgid "Debug Log"
 msgstr "Журнал отладки"
 
-#: log_uploader.cpp:631 log_uploader.cpp:1215
+#: log_uploader.cpp:631 log_uploader.cpp:1217
 msgid "Recent uploads"
 msgstr "Последние закачки"
 
@@ -4168,59 +4170,59 @@ msgstr "Последние закачки"
 msgid "< Back"
 msgstr "< Назад"
 
-#: log_uploader.cpp:640 log_uploader.cpp:1237 profile_wizard.cpp:189
+#: log_uploader.cpp:640 log_uploader.cpp:1239 profile_wizard.cpp:189
 #: profile_wizard.cpp:429
 msgid "Next >"
 msgstr "Дальше >"
 
-#: log_uploader.cpp:762 log_uploader.cpp:1083
+#: log_uploader.cpp:764 log_uploader.cpp:1085
 msgid "Upload"
 msgstr "Загрузить"
 
-#: log_uploader.cpp:762
+#: log_uploader.cpp:764
 msgid "Uploading log files ..."
 msgstr "Загрузка лог файлов..."
 
-#: log_uploader.cpp:791
+#: log_uploader.cpp:793
 #, c-format
 msgid "Uploading ... %.f%%"
 msgstr "Загрузка ... %.f%%"
 
-#: log_uploader.cpp:844
+#: log_uploader.cpp:846
 msgid "Connecting ..."
 msgstr "Подключение..."
 
-#: log_uploader.cpp:860
+#: log_uploader.cpp:862
 #, c-format
 msgid "Connection failed, will retry in %ds"
 msgstr "Сбой соединения, новая попытка через %d сек."
 
-#: log_uploader.cpp:1016
+#: log_uploader.cpp:1018
 #, c-format
 msgid "Upload failed, will retry in %ds"
 msgstr "Сбой загрузки, новая попытка через %d сек."
 
-#: log_uploader.cpp:1049
+#: log_uploader.cpp:1051
 msgid "The following log files will be uploaded:"
 msgstr "Следующие лог-файлы будут загружены:"
 
-#: log_uploader.cpp:1064
+#: log_uploader.cpp:1066
 msgid "Guide and Debug logs"
 msgstr "Журналы гидирования и отладки"
 
-#: log_uploader.cpp:1066
+#: log_uploader.cpp:1068
 msgid "Debug log"
 msgstr "Журнал отладки"
 
-#: log_uploader.cpp:1068
+#: log_uploader.cpp:1070
 msgid "Guide log"
 msgstr "Журнал гидирования"
 
-#: log_uploader.cpp:1155
+#: log_uploader.cpp:1157
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr "Лог-файл загружен и может быть доступен по ссылке:"
 
-#: log_uploader.cpp:1158
+#: log_uploader.cpp:1160
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
@@ -4229,11 +4231,11 @@ msgstr ""
 "Можно поделиться своими лог-файлами на <a href=\"forum\">форуме PHD2</a>, "
 "отправив туда сообщение со ссылкой."
 
-#: log_uploader.cpp:1160
+#: log_uploader.cpp:1162
 msgid "Copy link to clipboard"
 msgstr "Скопировать ссылку в буфер обмена"
 
-#: log_uploader.cpp:1176
+#: log_uploader.cpp:1178
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
@@ -4241,7 +4243,7 @@ msgstr ""
 "PHD2 не смогла загрузить лог-файл из-за внутренней ошибки. Сообщите об этой "
 "ошибке на форум PHD2."
 
-#: log_uploader.cpp:1179
+#: log_uploader.cpp:1181
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
@@ -4251,7 +4253,7 @@ msgstr ""
 "Попробуйте ещё раз или переключитесь на другой сервис типа Dropbox или "
 "Google Drive."
 
-#: log_uploader.cpp:1183
+#: log_uploader.cpp:1185
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
@@ -4259,7 +4261,7 @@ msgstr ""
 "При сжатии лог-файлов произошла ошибка. Убедитесь, что выбранные файлы "
 "доступны и попробуйте снова."
 
-#: log_uploader.cpp:1187
+#: log_uploader.cpp:1189
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
@@ -4313,6 +4315,14 @@ msgstr "Минимум переключений"
 msgid "Predictive PEC"
 msgstr "Прогноз периодической ошибки"
 
+#: mount.cpp:170
+msgid "AO X-Axis"
+msgstr ""
+
+#: mount.cpp:173
+msgid "AO Y-Axis"
+msgstr ""
+
 #: mount.cpp:193
 msgid "Which Guide Algorithm to use for Right Ascension"
 msgstr "Алгоритм гидирования по оси прямого восхождения"
@@ -4329,7 +4339,7 @@ msgstr ""
 msgid "Which Guide Algorithm to use for Declination"
 msgstr "Алгоритм гидирования по оси склонения"
 
-#: mount.cpp:263
+#: mount.cpp:262
 msgid ""
 "Causes an IMMEDIATE reset of the DEC algorithm parameters to their default "
 "values"
@@ -4337,11 +4347,11 @@ msgstr ""
 "Вызывает НЕМЕДЛЕННЫЙ сброс параметров гидирования по склонению до их "
 "значений по умолчанию"
 
-#: mount.cpp:450
+#: mount.cpp:449
 msgid "Clear mount calibration"
 msgstr "Сбросить калибровку монтировки"
 
-#: mount.cpp:453
+#: mount.cpp:452
 msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
@@ -4349,11 +4359,11 @@ msgstr ""
 "Сбросить текущую калибровку - она будет проведена снова при начале "
 "гидирования"
 
-#: mount.cpp:454
+#: mount.cpp:453
 msgid "Enable mount guide output"
 msgstr "Включить гидирующие импульсы"
 
-#: mount.cpp:456
+#: mount.cpp:455
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
@@ -4361,20 +4371,20 @@ msgstr ""
 "Для гидирования необходимо отметить этот пункт. Снятие отметки отменит все "
 "команды гидирования."
 
-#: mount.cpp:829
+#: mount.cpp:828
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "Калибр:: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:1114
+#: mount.cpp:1113
 msgid "RA:"
 msgstr "α:"
 
-#: mount.cpp:1119
+#: mount.cpp:1118
 msgid "DEC:"
 msgstr "δ:"
 
-#: mount.cpp:1163
+#: mount.cpp:1162
 msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
@@ -4383,7 +4393,7 @@ msgstr ""
 "калибровки. Откалибруйтесь снова или сбросьте скорость гидирования к "
 "прежнему значению."
 
-#: mount.cpp:1175
+#: mount.cpp:1174
 msgid ""
 "Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
 "guiding."
@@ -4391,11 +4401,11 @@ msgstr ""
 "Количество пикселей камеры неожиданно изменилось. Перекалибруйтесь, чтобы "
 "вернуться к корректному гидированию."
 
-#: mount.cpp:1211
+#: mount.cpp:1210
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr "Откалибровано слишком далеко от экватора, нужно повторить."
 
-#: mount.cpp:1246
+#: mount.cpp:1245
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 "Положение поворотного устройства изменилось, нужна повторная калибровка."
@@ -5282,7 +5292,7 @@ msgstr ""
 "Для этого профиля оборудования после подключения будут восстановлены данные "
 "последней успешной калибровки."
 
-#: myframe.cpp:2890
+#: myframe.cpp:2890 scope.cpp:1740
 msgid "Min"
 msgstr "Мин."
 
@@ -5290,7 +5300,7 @@ msgstr "Мин."
 msgid "Auto exposure minimum duration"
 msgstr "Минимальная продолжительность автоэкспозиции"
 
-#: myframe.cpp:2891
+#: myframe.cpp:2891 scope.cpp:1742
 msgid "Max"
 msgstr "Макс."
 
@@ -5788,28 +5798,37 @@ msgstr "Выбрать полушарие"
 msgid "Adjustment notes"
 msgstr "Примечания к выравниванию"
 
-#: polardrift_toolwin.cpp:259
+#: polardrift_toolwin.cpp:261
 msgid "Polar Drift alignment stopped"
 msgstr "Установка полярной дрейфом остановлена"
 
-#: polardrift_toolwin.cpp:261
+#: polardrift_toolwin.cpp:263
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
 msgstr "Ошибка выравнивания полюса (угл.мин.): %1f угол (град.): %1f"
 
-#: polardrift_toolwin.cpp:276 staticpa_toolwin.cpp:541
+#: polardrift_toolwin.cpp:278 staticpa_toolwin.cpp:541
 msgid "Please wait till Calibration is done and/or stop guiding"
 msgstr "Подождите завершения каоибровки и/или прекратите гидирование"
 
-#: polardrift_toolwin.cpp:281 staticpa_toolwin.cpp:546
+#: polardrift_toolwin.cpp:283 staticpa_toolwin.cpp:546
 msgid "Please select a star"
 msgstr "Выберите звезду"
 
-#: polardrift_toolwin.cpp:402
+#: polardrift_toolwin.cpp:409
 #, c-format
-msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
+msgid "Time %.fs"
 msgstr ""
-"Время %.1f ошибки определения полюса (угл. мин.): %.1f Угол (град.): %.1f"
+
+#: polardrift_toolwin.cpp:410
+#, c-format
+msgid "PA Err: %.f min"
+msgstr ""
+
+#: polardrift_toolwin.cpp:411
+#, c-format
+msgid "Angle: %.f deg"
+msgstr ""
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -6610,7 +6629,7 @@ msgstr ""
 "Считаем оси δ и α перпендикулярными, независимо от калибровки. Предохраняет "
 "периодическую ошибку α от воздействия калибровки по оси δ."
 
-#: scope.cpp:1717
+#: scope.cpp:1724
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -6618,53 +6637,45 @@ msgstr ""
 "Выберите, если хотите применить импульсы компенсации люфта при реверсе "
 "направления склонения."
 
-#: scope.cpp:1721
+#: scope.cpp:1728
 msgid "Amount"
 msgstr "Количество"
 
-#: scope.cpp:1721
-msgid "Size of backlash compensation guide pulse"
-msgstr "Длительность импульса компенсации люфта"
-
-#: scope.cpp:1723
-msgid "Fixed-size"
-msgstr "Фиксированный размер"
-
-#: scope.cpp:1724
-msgid ""
-"Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC "
-"OSCILLATION, not recommended under normal conditions!"
+#: scope.cpp:1728
+msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr ""
-"Задаёт фиксированное значение компенсации люфта. МОЖЕТ ПРИВЕСТИ К КОЛЕБАНИЯМ "
-"ОСИ СКЛОНЕНИЯ, не рекомендуется в нормальных условиях!"
 
 #: scope.cpp:1730
-msgid "Limit"
-msgstr "Предел"
+msgid "Mount Backlash Compensation"
+msgstr ""
 
 #: scope.cpp:1730
-msgid "Maximum length of backlash correction pulse (mSec)."
-msgstr "Максимальная длина импульса коррекции люфта в мсек."
-
-#: scope.cpp:1732
 msgid "Backlash Compensation"
 msgstr "Компенсация люфта"
 
-#: scope.cpp:1737
+#: scope.cpp:1740
+msgid "Minimum length of backlash compensation pulse (mSec)."
+msgstr ""
+
+#: scope.cpp:1742
+msgid "Maximum length of backlash compensation pulse (mSec)."
+msgstr ""
+
+#: scope.cpp:1749
 msgid "Use Dec compensation"
 msgstr "Использовать компенсацию по δ"
 
-#: scope.cpp:1739
+#: scope.cpp:1751
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 "Автоматический выбор скорости гидирования по прямому восхождению на основе "
 "склонения телескопа"
 
-#: scope.cpp:1744
+#: scope.cpp:1756
 msgid "Max RA duration"
 msgstr "Наибольшее время по α"
 
-#: scope.cpp:1744 scope.cpp:1894
+#: scope.cpp:1756 scope.cpp:1913
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -6672,11 +6683,11 @@ msgstr ""
 "Максимальная продолжительность импульса по α\n"
 "По умолчанию 2500 мсек."
 
-#: scope.cpp:1748
+#: scope.cpp:1760
 msgid "Max Dec duration"
 msgstr "Наибольшее время по δ"
 
-#: scope.cpp:1748 scope.cpp:1901
+#: scope.cpp:1760 scope.cpp:1920
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -6684,19 +6695,19 @@ msgstr ""
 "Максимальная продолжительность импульса по склонению \n"
 "По умолчанию 2500 мсек. Увеличьте при быстром дрейфе."
 
-#: scope.cpp:1760
+#: scope.cpp:1772
 msgid "Dec guide mode"
 msgstr "Режим гидирования по δ"
 
-#: scope.cpp:1760
+#: scope.cpp:1772
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "Направления гидирующих импульсов по склонению"
 
-#: scope.cpp:1896
+#: scope.cpp:1915
 msgid "Mx RA"
 msgstr "Макс. α"
 
-#: scope.cpp:1903
+#: scope.cpp:1922
 msgid "Mx DEC"
 msgstr "Макс. δ"
 
@@ -7348,17 +7359,17 @@ msgstr "Алгоритмы гидирования АО"
 msgid "AO Settings"
 msgstr "Настройки АО"
 
-#: stepguider.cpp:1402
+#: stepguider.cpp:1403
 msgid "AO Travel"
 msgstr "Смещение АО"
 
-#: stepguider.cpp:1402
+#: stepguider.cpp:1403
 msgid "Maximum number of steps the AO can move in each direction"
 msgstr ""
 "Максимальное количество шагов, на которое АО может двигаться в каждом "
 "направлении"
 
-#: stepguider.cpp:1405
+#: stepguider.cpp:1406
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -7367,11 +7378,11 @@ msgstr ""
 "Количество шагов цикла калибровки. По умолчанию %d, увеличьте для "
 "короткофокусных телескопов и уменьшите для длиннофокусных"
 
-#: stepguider.cpp:1408
+#: stepguider.cpp:1409
 msgid "Cal steps"
 msgstr "Шаги калибровки"
 
-#: stepguider.cpp:1411
+#: stepguider.cpp:1412
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -7380,22 +7391,22 @@ msgstr ""
 "Количество образцов, усредняемых при калибровке. По умолчанию %d, увеличьте "
 "при сильной турбулентности и малом масштабе изображения"
 
-#: stepguider.cpp:1414
+#: stepguider.cpp:1415
 msgid "Samples to average"
 msgstr "Образцы для усреднения"
 
-#: stepguider.cpp:1417
+#: stepguider.cpp:1418
 #, c-format
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
 msgstr "Процент смещения АО до удара монтировки. По умолчанию %d"
 
-#: stepguider.cpp:1420
+#: stepguider.cpp:1421
 msgid "Bump percentage"
 msgstr "Процент толчка"
 
-#: stepguider.cpp:1423
+#: stepguider.cpp:1424
 #, c-format
 msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
@@ -7404,34 +7415,34 @@ msgstr ""
 "Насколько толчок должен переместить монтировку между кадрами (в шагах АО). "
 "По умолчанию %2f, уменьшите если толчок вызывает всплески на графике"
 
-#: stepguider.cpp:1426
+#: stepguider.cpp:1427
 msgid "Bump steps"
 msgstr "Шаги толчка"
 
-#: stepguider.cpp:1428
+#: stepguider.cpp:1429
 msgid "Bump on dither"
 msgstr "Толчок при подвижке"
 
-#: stepguider.cpp:1429
+#: stepguider.cpp:1430
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr "Толкнуть монтировку, чтобы вернуть АО к центру при каждой подвижке"
 
-#: stepguider.cpp:1431
+#: stepguider.cpp:1432
 msgid "Clear AO calibration"
 msgstr "Сбросить калибровку АО"
 
-#: stepguider.cpp:1434
+#: stepguider.cpp:1435
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
 "Сбросить калибровку АО - она будет проведена заново при начале гидирования"
 
-#: stepguider.cpp:1435
+#: stepguider.cpp:1436
 msgid "Enable AO corrections"
 msgstr "Включить поправки АО"
 
-#: stepguider.cpp:1437
+#: stepguider.cpp:1438
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -7646,6 +7657,29 @@ msgstr "Подключение камеры..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
+
+#~ msgid "Time %.1f PA err(arcmin): %.1f Angle (deg): %.1f"
+#~ msgstr ""
+#~ "Время %.1f ошибки определения полюса (угл. мин.): %.1f Угол (град.): %.1f"
+
+#~ msgid "Size of backlash compensation guide pulse"
+#~ msgstr "Длительность импульса компенсации люфта"
+
+#~ msgid "Fixed-size"
+#~ msgstr "Фиксированный размер"
+
+#~ msgid ""
+#~ "Forces a fixed-size backlash compensation amount.  THIS CAN CREATE DEC "
+#~ "OSCILLATION, not recommended under normal conditions!"
+#~ msgstr ""
+#~ "Задаёт фиксированное значение компенсации люфта. МОЖЕТ ПРИВЕСТИ К "
+#~ "КОЛЕБАНИЯМ ОСИ СКЛОНЕНИЯ, не рекомендуется в нормальных условиях!"
+
+#~ msgid "Limit"
+#~ msgstr "Предел"
+
+#~ msgid "Maximum length of backlash correction pulse (mSec)."
+#~ msgstr "Максимальная длина импульса коррекции люфта в мсек."
 
 #~ msgid "PHD2 could not load the camera driver"
 #~ msgstr "PHD2 не может загрузить драйвер камеры"
