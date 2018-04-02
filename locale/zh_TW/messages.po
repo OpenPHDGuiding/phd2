@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-31 18:31+0100\n"
-"PO-Revision-Date: 2018-03-07 11:27+0800\n"
+"PO-Revision-Date: 2018-04-02 17:32+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -322,7 +322,7 @@ msgstr "相機角度:"
 
 #: calreview_dialog.cpp:220 calreview_dialog.cpp:684
 msgid "Orthogonality error:"
-msgstr "垂直誤差:"
+msgstr "正交誤差:"
 
 #: calreview_dialog.cpp:238
 msgid "a-s/sec"
@@ -465,7 +465,7 @@ msgid ""
 "error was %s degrees, which is often caused by poor polar alignment, large "
 "Dec backlash, or a large periodic error in RA."
 msgstr ""
-"由校準計算所得的赤經及赤緯角度有問題，通常這個角度會接近於垂直(正直誤差需小"
+"由校準計算所得的赤經及赤緯角度有問題，通常這個角度會接近於垂直(正交誤差需小"
 "於 10 度)，校準後所得的結果為 %s 度，通常是因為沒有對好極軸、赤緯軸回差太大或"
 "赤經軸上有很大的週期性誤差。"
 
@@ -492,8 +492,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:650
 msgid "Explanation"
@@ -513,7 +513,7 @@ msgstr "步數, 赤緯:"
 
 #: calreview_dialog.cpp:686
 msgid "Previous orthogonality error:"
-msgstr "先前的正直誤差:"
+msgstr "先前的正交誤差:"
 
 #: calreview_dialog.cpp:698
 msgid "This declination rate:"
@@ -839,10 +839,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
+#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1840,8 +1839,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3110,8 +3108,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3159,7 +3157,7 @@ msgstr "星點最少移動量 (像素)"
 
 #: guide_algorithm_gaussian_process.cpp:325
 msgid "Auto-adjust period"
-msgstr ""
+msgstr "自動調整時間"
 
 #: guide_algorithm_gaussian_process.cpp:326
 #, c-format
@@ -3220,8 +3218,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3243,8 +3241,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4199,11 +4197,11 @@ msgstr "預測的 PEC"
 
 #: mount.cpp:170
 msgid "AO X-Axis"
-msgstr ""
+msgstr "AO X-軸"
 
 #: mount.cpp:173
 msgid "AO Y-Axis"
-msgstr ""
+msgstr "AO Y-軸"
 
 #: mount.cpp:193
 msgid "Which Guide Algorithm to use for Right Ascension"
@@ -5641,17 +5639,17 @@ msgstr "請選擇一顆星"
 #: polardrift_toolwin.cpp:409
 #, c-format
 msgid "Time %.fs"
-msgstr ""
+msgstr "時間 %.fs"
 
 #: polardrift_toolwin.cpp:410
 #, c-format
 msgid "PA Err: %.f min"
-msgstr ""
+msgstr "PA Err: %.f 分"
 
 #: polardrift_toolwin.cpp:411
 #, c-format
 msgid "Angle: %.f deg"
-msgstr ""
+msgstr "角度: %.f 度"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -5943,6 +5941,8 @@ msgid ""
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
+"PHD2 無法連接相機, 你可能想要稍後再予處理, 現在你只要手動輸入像素大小、導星鏡"
+"焦長及影像併合值即可."
 
 #: profile_wizard.cpp:649
 msgid "Ask"
@@ -6421,11 +6421,11 @@ msgstr "數量"
 
 #: scope.cpp:1728
 msgid "Size of backlash compensation guide pulse (mSec)"
-msgstr ""
+msgstr "回差補償導星脈衝長度 (mSec)"
 
 #: scope.cpp:1730
 msgid "Mount Backlash Compensation"
-msgstr ""
+msgstr "赤道儀回差補償"
 
 #: scope.cpp:1730
 msgid "Backlash Compensation"
@@ -6433,11 +6433,11 @@ msgstr "回差補償"
 
 #: scope.cpp:1740
 msgid "Minimum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "回差補償脈衝最小長度 (mSec)."
 
 #: scope.cpp:1742
 msgid "Maximum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "回差補償脈衝最大長度 (mSec)."
 
 #: scope.cpp:1749
 msgid "Use Dec compensation"
