@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
-"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
-"периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
+"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
+"большой периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
-"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
+"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,10 +860,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
+#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -1877,8 +1876,7 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -3181,8 +3179,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3298,8 +3296,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3323,8 +3321,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -4137,14 +4135,15 @@ msgid ""
 "For other issues like equipment connection problems or to report a bug in "
 "PHD2, select the Debug Log."
 msgstr ""
-"При обращении за помощью на форум PHD2 важно предоставить лог-файлы. Это "
-"средство\n"
-"поможет вам в их закачке, чтобы они были видны на форуме. Выберите файлы для "
-"закачки.\n"
-"Если нужна помощь по гидировании, приложите лог гидирования по интересующей "
+"При обращении за помощью на форум PHD2 важно предоставить лог-файлы. \n"
+"С помощью этого инструмента вы сможете их загрузить, чтобы они были видны на "
+"форуме. \n"
+"Выберите файлы для закачки.\n"
+"Если нужна помощь по гидированию, приложите лог гидирования по интересующей "
 "вас сессии.\n"
 "В прочих случаях, таких как проблемы с оборудованием или при обнаружении "
-"дефектов в PHD2, выберите журнал отладки."
+"дефектов в PHD2, \n"
+"выберите журнал отладки."
 
 #: log_uploader.cpp:599
 msgid "Session Start"
@@ -4317,11 +4316,11 @@ msgstr "Прогноз периодической ошибки"
 
 #: mount.cpp:170
 msgid "AO X-Axis"
-msgstr ""
+msgstr "АО ось X"
 
 #: mount.cpp:173
 msgid "AO Y-Axis"
-msgstr ""
+msgstr "АО ось Y"
 
 #: mount.cpp:193
 msgid "Which Guide Algorithm to use for Right Ascension"
@@ -5818,17 +5817,17 @@ msgstr "Выберите звезду"
 #: polardrift_toolwin.cpp:409
 #, c-format
 msgid "Time %.fs"
-msgstr ""
+msgstr "Время %.fs"
 
 #: polardrift_toolwin.cpp:410
 #, c-format
 msgid "PA Err: %.f min"
-msgstr ""
+msgstr "Ошибка α: %.f мин"
 
 #: polardrift_toolwin.cpp:411
 #, c-format
 msgid "Angle: %.f deg"
-msgstr ""
+msgstr "Угол: %.f град."
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -6643,11 +6642,11 @@ msgstr "Количество"
 
 #: scope.cpp:1728
 msgid "Size of backlash compensation guide pulse (mSec)"
-msgstr ""
+msgstr "Длительность импульса компенсации люфта (мсек)"
 
 #: scope.cpp:1730
 msgid "Mount Backlash Compensation"
-msgstr ""
+msgstr "Компенсация люфта монтировки"
 
 #: scope.cpp:1730
 msgid "Backlash Compensation"
@@ -6655,11 +6654,11 @@ msgstr "Компенсация люфта"
 
 #: scope.cpp:1740
 msgid "Minimum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "Минимальная длительность импульса компенсации люфта (мсек)"
 
 #: scope.cpp:1742
 msgid "Maximum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "Максимальная длительность импульса компенсации люфта (мсек)"
 
 #: scope.cpp:1749
 msgid "Use Dec compensation"
