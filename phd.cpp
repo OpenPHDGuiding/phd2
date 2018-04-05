@@ -38,6 +38,7 @@
 
 #include <curl/curl.h>
 #include <wx/cmdline.h>
+#include <wx/evtloop.h>
 #include <wx/snglinst.h>
 
 #ifdef  __linux__
@@ -144,21 +145,36 @@ void PhdApp::RestartApp()
     TerminateApp();
 }
 
+static void IdleClosing(wxIdleEvent& evt)
+{
+    Debug.Write("IdleClosing\n");
+
+    // If a modal dialog box is up then the app will crash if we try to close pFrame,
+    // As a workaround keep exiting any nested event loops until we get back to the
+    // main event loop, then close pFrame
+
+    wxEventLoopBase *el = wxEventLoopBase::GetActive();
+    if (!el->IsMain())
+    {
+        el->Exit(-1);
+        evt.RequestMore();
+        return;
+    }
+
+    wxGetApp().Unbind(wxEVT_IDLE, &IdleClosing);
+    pFrame->Close(true /*force*/);
+}
+
 void PhdApp::TerminateApp()
 {
-#if defined(__WINDOWS__)
-
-    // The wxEVT_CLOSE_WINDOW message may not be processed on Windows if phd2 is sitting idle
+    // The wxEVT_CLOSE_WINDOW message may not be processed if phd2 is sitting idle
     // when the client invokes shutdown. As a workaround pump some timer event messages to
     // keep the event loop from stalling and ensure that the wxEVT_CLOSE_WINDOW is processed.
 
     (new wxTimer(&wxGetApp()))->Start(20); // this object leaks but we don't care
 
-#endif // __WINDOWS__
-
-    wxCloseEvent *evt = new wxCloseEvent(wxEVT_CLOSE_WINDOW);
-    evt->SetCanVeto(false);
-    wxQueueEvent(pFrame, evt);
+    wxGetApp().Bind(wxEVT_IDLE, &IdleClosing);
+    wxGetApp().WakeUpIdle();
 }
 
 bool PhdApp::OnInit()
