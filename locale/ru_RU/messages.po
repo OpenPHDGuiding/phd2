@@ -631,7 +631,7 @@ msgstr "Биннинг пикселей гидирующей камеры"
 
 #: calstep_dialog.cpp:134
 msgid "Guide speed, n.nn x sidereal"
-msgstr "Скорость гидирования, n.nn звёздной"
+msgstr "Скорость гидирования от звёздной"
 
 #: calstep_dialog.cpp:135 starcross_test.cpp:109
 #, no-c-format
@@ -6904,7 +6904,7 @@ msgstr "Конфигурация"
 
 #: starcross_test.cpp:111
 msgid "Guide speed, n.n x sidereal"
-msgstr "Скорость гидирования n.n от солнечной"
+msgstr "Скорость гидирования от солнечной"
 
 #: starcross_test.cpp:116
 msgid "Test Summary"
