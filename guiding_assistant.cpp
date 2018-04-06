@@ -696,9 +696,11 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                 bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
                 bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
                 wxString preamble = (m_backlashMs >= 5000 ? ">=" : "");
-                wxString outStr = wxString::Format("%s %d \u00B1 %0.0f ms (%0.1f \u00B1 %0.1f arc-sec)",
-                    preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs,
-                    wxMax(0, bltGearAngle), bltGearAngleSigma);
+                wxString MSEC(_("ms"));
+                wxString ARCSEC(_("arc-sec"));
+                wxString outStr = wxString::Format("%s %d \u00B1 %0.0f %s (%0.1f \u00B1 %0.1f %s)",
+                    preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs, MSEC,
+                    wxMax(0, bltGearAngle), bltGearAngleSigma, ARCSEC);
                 m_othergrid->SetCellValue(m_backlash_loc, outStr);
                 HighlightCell(m_othergrid, m_backlash_loc);
                 outStr += "\n";
@@ -1306,6 +1308,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     alignmentError = 3.8197 * fabs(decDriftPerMin) * pxscale / cosdec;
 
     wxString SEC(_("s"));
+    wxString MSEC(_("ms"));
     wxString PX(_("px"));
     wxString ARCSEC(_("arc-sec"));
     wxString ARCMIN(_("arc-min"));

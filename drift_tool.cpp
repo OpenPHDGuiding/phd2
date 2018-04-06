@@ -173,15 +173,15 @@ DriftToolWin::DriftToolWin()
 
     wxStaticText *txt;
 
-    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, wxString::Format(_("Meridian Offset (%s)"), DEGREES_SYMBOL));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Declination (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, wxString::Format(_("Declination (%s)"), DEGREES_SYMBOL));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Current"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Current"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL, 5);
 
@@ -191,7 +191,7 @@ DriftToolWin::DriftToolWin()
     m_decCurrent = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     gbSizer->Add(m_decCurrent, wxGBPosition(1, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    txt = new wxStaticText(this, wxID_ANY, _("Slew To"), wxDefaultPosition, wxDefaultSize, 0);
+    txt = new wxStaticText(this, wxID_ANY, _("Slew To"));
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL, 5);
 
@@ -201,7 +201,7 @@ DriftToolWin::DriftToolWin()
     m_decSlew = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90);
     gbSizer->Add(m_decSlew, wxGBPosition(2, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
-    m_slew = new wxButton(this, ID_SLEW, _("Slew"), wxDefaultPosition, wxDefaultSize, 0);
+    m_slew = new wxButton(this, ID_SLEW, _("Slew"));
     m_slew->SetToolTip(_("Click to slew to given coordinates."));
     gbSizer->Add(m_slew, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL, 5);
 
@@ -222,7 +222,7 @@ DriftToolWin::DriftToolWin()
     // add some padding below the static sizer
     topSizer->Add(0, 3, 0, wxEXPAND, 3);
 
-    m_notesLabel = new wxStaticText(this, wxID_ANY, _("Altitude adjustment notes"), wxDefaultPosition, wxDefaultSize, 0);
+    m_notesLabel = new wxStaticText(this, wxID_ANY, _("Altitude adjustment notes"));
     m_notesLabel->Wrap(-1);
     topSizer->Add(m_notesLabel, 0, wxEXPAND|wxTOP|wxLEFT, 8);
 
@@ -237,19 +237,19 @@ DriftToolWin::DriftToolWin()
     // proportional pad on left of Drift button
     hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
-    m_drift = new wxButton(this, ID_DRIFT, _("Drift"), wxDefaultPosition, wxDefaultSize, 0);
+    m_drift = new wxButton(this, ID_DRIFT, _("Drift"));
     hSizer->Add(m_drift, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     // proportional pad on right of Drift button
     hSizer->Add(0, 0, 1, wxEXPAND, 5);
 
-    m_adjust = new wxButton(this, ID_ADJUST, _("Adjust"), wxDefaultPosition, wxDefaultSize, 0);
+    m_adjust = new wxButton(this, ID_ADJUST, _("Adjust"));
     hSizer->Add(m_adjust, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     // proportional pad on right of Align button
     hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
-    m_phaseBtn = new wxButton(this, ID_PHASE, wxT("???"), wxDefaultPosition, wxDefaultSize, 0);
+    m_phaseBtn = new wxButton(this, ID_PHASE, wxT("???"));
     hSizer->Add(m_phaseBtn, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
 
     // add button sizer to top level sizer

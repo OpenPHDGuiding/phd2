@@ -234,9 +234,9 @@ static wxString CamCoolerStatus()
     if (err)
         return _("Camera error");
     else if (on)
-        return wxString::Format(_("%.f" DEGREES_SYMBOL " / %.f" DEGREES_SYMBOL ", %.f%%"), temp, setpt, power);
+        return wxString::Format(_("%.f%s / %.f%s, %.f%%"), temp, DEGREES_SYMBOL, setpt, DEGREES_SYMBOL, power);
     else
-        return wxString::Format(_("%.f" DEGREES_SYMBOL ", Off"), temp);
+        return wxString::Format(_("%.f%s, Off"), temp, DEGREES_SYMBOL);
 }
 
 void StatsWindow::UpdateCooler()

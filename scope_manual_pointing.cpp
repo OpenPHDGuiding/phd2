@@ -71,7 +71,8 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
     wxBoxSizer* bSizer3;
     bSizer3 = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *staticText1 = new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY, _("Declination (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *staticText1 = new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY,
+        wxString::Format(_("Declination (%s)"), DEGREES_SYMBOL), wxDefaultPosition, wxDefaultSize, 0);
     staticText1->Wrap(-1);
     bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -146,7 +147,8 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
         wxBoxSizer* bSizer8;
         bSizer8 = new wxBoxSizer(wxHORIZONTAL);
 
-        wxStaticText *staticText13 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("Latitude (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText13 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY,
+            wxString::Format(_("Latitude (%s)"), DEGREES_SYMBOL));
         staticText13->Wrap(-1);
         bSizer8->Add(staticText13, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -158,7 +160,8 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
 
         bSizer8->Add(m_latitude, 0, wxALL, 5);
 
-        wxStaticText *staticText131 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("Longitude (" DEGREES_SYMBOL ")"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText131 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY,
+            wxString::Format(_("Longitude (%s)"), DEGREES_SYMBOL));
         staticText131->Wrap(-1);
         bSizer8->Add(staticText131, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
