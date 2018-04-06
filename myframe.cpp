@@ -623,8 +623,11 @@ bool MyFrame::SetCustomExposureDuration(int ms)
     for (auto it = exposure_durations.begin(); it != end; ++it)
         if (ms == *it)
             return true; // error, duplicate value
-    if (m_exposureDuration == *end)
+    if (m_exposureDuration == *end && *end != ms)
+    {
         m_exposureDuration = ms;
+        NotifyExposureChanged();
+    }
     *end = ms;
     Dur_Choice->SetString(1 + exposure_durations.size() - 1, wxString::Format(_("Custom: %g s"), (double) ms / 1000.));
     pConfig->Profile.SetInt("/CustomExposureDuration", ms);
@@ -673,7 +676,7 @@ bool MyFrame::SetExposureDuration(int val)
     return true;
 }
 
-void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
+bool MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
 {
     Debug.Write(wxString::Format("AutoExp: config min = %d max = %d snr = %.2f\n", minExp, maxExp, targetSNR));
 
@@ -681,9 +684,16 @@ void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
     pConfig->Profile.SetInt("/auto_exp/exposure_max", maxExp);
     pConfig->Profile.SetDouble("/auto_exp/target_snr", targetSNR);
 
+    bool changed =
+            m_autoExp.minExposure != minExp ||
+            m_autoExp.maxExposure != maxExp ||
+            m_autoExp.targetSNR != targetSNR;
+
     m_autoExp.minExposure = minExp;
     m_autoExp.maxExposure = maxExp;
     m_autoExp.targetSNR = targetSNR;
+
+    return changed;
 }
 
 wxString MyFrame::ExposureDurationSummary(void) const
@@ -3020,7 +3030,9 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         int durationMax = dur[m_autoExpDurationMax->GetSelection()];
         if (durationMax < durationMin)
             durationMax = durationMin;
-        m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
+        bool cfg_changed = m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
+        if (m_pFrame->m_autoExp.enabled && cfg_changed)
+            m_pFrame->NotifyExposureChanged();
 
         ImageLoggerSettings imlSettings;
         ImageLogger::GetSettings(&imlSettings);

@@ -66,6 +66,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& evt)
         {
             Debug.AddLine("AutoExp: enabled");
             m_autoExp.enabled = true;
+            NotifyExposureChanged();
         }
     }
     else if (idx == Dur_Choice->GetCount() - 1)
@@ -106,20 +107,27 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& evt)
         const std::vector<int>& dur(GetExposureDurations());
         int duration = dur[idx - 1];
 
-        Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
-
-        m_exposureDuration = duration;
-        m_autoExp.enabled = false;
-
-        if (pCamera)
+        if (m_autoExp.enabled || m_exposureDuration != duration)
         {
-            // select the best matching dark frame
-            pCamera->SelectDark(m_exposureDuration);
+            Debug.Write(wxString::Format("OnExposureDurationSelected: duration = %d\n", duration));
+
+            m_exposureDuration = duration;
+            m_autoExp.enabled = false;
+
+            NotifyExposureChanged();
+
+            if (pCamera)
+            {
+                // select the best matching dark frame
+                pCamera->SelectDark(m_exposureDuration);
+            }
         }
     }
+}
 
-    GuideLog.SetGuidingParam("Exposure", ExposureDurationSummary());
-
+void MyFrame::NotifyExposureChanged()
+{
+    NotifyGuidingParam("Exposure", ExposureDurationSummary());
     pConfig->Profile.SetInt("/ExposureDurationMs", m_autoExp.enabled ? -1 : m_exposureDuration);
 }
 

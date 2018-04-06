@@ -330,7 +330,7 @@ public:
     void GetExposureInfo(int *currExpMs, bool *autoExp);
     bool SetExposureDuration(int val);
     const AutoExposureCfg& GetAutoExposureCfg(void) const { return m_autoExp; }
-    void SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
+    bool SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
     void ResetAutoExposure(void);
     void AdjustAutoExposure(double curSNR);
     static wxString ExposureDurationLabel(int exposure);
@@ -423,6 +423,8 @@ public:
     void NotifyGuidingParam(const wxString& name, int val);
     void NotifyGuidingParam(const wxString& name, bool val);
     void NotifyGuidingParam(const wxString& name, const wxString& val);
+
+    void NotifyExposureChanged();
 
     void NotifyUpdaterStateChanged();
 
