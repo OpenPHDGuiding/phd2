@@ -2227,7 +2227,7 @@ msgstr "Темновые кадры готовы"
 
 #: drift_tool.cpp:134
 msgid "Drift Align"
-msgstr "Выравнивание дрейфом"
+msgstr "Установить полюс дрейфом"
 
 #: drift_tool.cpp:167 scope_manual_pointing.cpp:54
 msgid "Scope Pointing"
@@ -2340,7 +2340,7 @@ msgstr "Пожалуйста выберите камеру и монтировк
 
 #: drift_tool.cpp:432
 msgid "Please calibrate before starting drift alignment"
-msgstr "Пожалуйста, откалибруйиесь, прежде чем начать поиск полюса"
+msgstr "Пожалуйста, откалибруйтесь, прежде чем начать поиск полюса дрейфом"
 
 #: drift_tool.cpp:440 polardrift_toolwin.cpp:148 staticpa_toolwin.cpp:252
 msgid "Start Looping..."
@@ -4536,7 +4536,7 @@ msgstr "Запустить помощник гидирования"
 
 #: myframe.cpp:509
 msgid "&Drift Align"
-msgstr "Выравнивание дрейфом"
+msgstr "Установка полюса дрейфом"
 
 #: myframe.cpp:509
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
@@ -4545,7 +4545,7 @@ msgstr ""
 
 #: myframe.cpp:510
 msgid "&Polar Drift Align"
-msgstr "Установка полюса дрейфом"
+msgstr "Установка полюса полярным дрейфом"
 
 #: myframe.cpp:510
 msgid "Align by analysing star drift near the celestial pole (Simple)"
@@ -5763,7 +5763,7 @@ msgstr "Подождите завершения калибровки и оста
 
 #: polardrift_toolwin.cpp:109
 msgid "Polar Drift Alignment"
-msgstr "Установка полярной дрейфом"
+msgstr "Установка полюса полярным дрейфом"
 
 #: polardrift_toolwin.cpp:160
 msgid ""
@@ -5800,7 +5800,7 @@ msgstr "Примечания к выравниванию"
 
 #: polardrift_toolwin.cpp:261
 msgid "Polar Drift alignment stopped"
-msgstr "Установка полярной дрейфом остановлена"
+msgstr "Полярный дрейф остановлен"
 
 #: polardrift_toolwin.cpp:263
 #, c-format
@@ -6804,7 +6804,7 @@ msgstr ""
 
 #: scope_manual_pointing.cpp:116
 msgid "Drift Alignment"
-msgstr "Выравнивание дрейфом"
+msgstr "Установка полюса дрейфом"
 
 #: scope_manual_pointing.cpp:125
 msgid "hr"
@@ -7145,7 +7145,7 @@ msgstr "Получить вторую позицию"
 
 #: staticpa_toolwin.cpp:412
 msgid "Show Orbits"
-msgstr "Показать орбиты"
+msgstr "Показывать траектории"
 
 #: staticpa_toolwin.cpp:415
 msgid "Show or hide the star orbits"
