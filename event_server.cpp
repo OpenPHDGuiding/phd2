@@ -1659,6 +1659,8 @@ static void get_algo_param_names(JObj& response, const json_value *params)
         return;
     }
     wxArrayString ary;
+    ary.push_back("algorithmName");
+
     if (pMount)
     {
         GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
@@ -1692,6 +1694,11 @@ static void get_algo_param(JObj& response, const json_value *params)
     if (pMount)
     {
         GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+        if (strcmp(name->string_value, "algorithmName") == 0)
+        {
+            response << jrpc_result(alg->GetGuideAlgorithmClassName());
+            return;
+        }
         ok = alg->GetParam(name->string_value, &val);
     }
     if (ok)
