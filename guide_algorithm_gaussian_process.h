@@ -225,6 +225,9 @@ public:
 
     wxString GetSettingsSummary() const override;
     wxString GetGuideAlgorithmClassName(void) const override { return "Predictive PEC"; }
+    void GetParamNames(wxArrayString& names) const override;
+    bool GetParam(const wxString& name, double *val) const override;
+    bool SetParam(const wxString& name, double val) override;
 
 };
 

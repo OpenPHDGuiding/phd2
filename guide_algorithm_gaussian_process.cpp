@@ -482,6 +482,60 @@ GraphControlPane *GuideAlgorithmGaussianProcess::GetGraphControlPane(wxWindow *p
     return new GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane(pParent, this, label);
 }
 
+void GuideAlgorithmGaussianProcess::GetParamNames(wxArrayString& names) const
+{
+    names.push_back("minMove");
+    names.push_back("predictiveWeight");
+    names.push_back("reactiveWeight");
+    names.push_back("periodLength");
+}
+
+bool GuideAlgorithmGaussianProcess::GetParam(const wxString& name, double *val) const
+{
+    bool ok = true;
+
+    if (name == "minMove")
+        *val = GetMinMove();
+    else if (name == "predictiveWeight")
+        *val = GetPredictionGain();
+    else if (name == "reactiveWeight")
+        *val = GetControlGain();
+    else
+    if (name == "periodLength")
+    {
+        std::vector<double> hyperparameters = GetGPHyperparameters();
+        assert(hyperparameters.size() == NumParameters);
+        *val = hyperparameters[PKPeriodLength];
+    }
+    else
+        ok = false;
+
+    return ok;
+}
+
+bool GuideAlgorithmGaussianProcess::SetParam(const wxString& name, double val)
+{
+    bool err;
+
+    if (name == "minMove")
+        err = SetMinMove(val);
+    else if (name == "predictiveWeight")
+        err = SetPredictionGain(val);
+    else if (name == "reactiveWeight")
+        err = SetControlGain(val);
+    else
+    if (name == "periodLength")
+    {
+        std::vector<double> hyperparameters(NumParameters);
+        hyperparameters[PKPeriodLength] = val;
+        err = SetGPHyperparameters(hyperparameters);
+    }
+    else
+        err = true;
+
+    return !err;
+}
+
 bool GuideAlgorithmGaussianProcess::SetControlGain(double control_gain)
 {
     bool error = false;
