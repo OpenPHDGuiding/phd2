@@ -132,7 +132,7 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
         else {
             if (ready) {
                ClearStatus();
-               DisconnectWithAlert("INDI camera disconnected",NO_RECONNECT);
+               DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
             }
         }
     }
@@ -375,14 +375,14 @@ void CameraINDI::serverDisconnected(int exit_code)
    // after disconnection we reset the connection status and the properties pointers
    ClearStatus();
    // in case the connection lost we must reset the client socket
-   if (exit_code==-1) DisconnectWithAlert("INDI server disconnected",NO_RECONNECT);
+   if (exit_code==-1) DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
 }
 
 #ifndef INDI_PRE_1_0_0
 void CameraINDI::removeDevice(INDI::BaseDevice *dp)
 {
    ClearStatus();
-   DisconnectWithAlert("INDI camera disconnected",NO_RECONNECT);
+   DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
 }
 #endif
 
@@ -773,7 +773,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
              wxMilliSleep(loopwait);
           }
 
-          pFrame->StatusMsg(wxString::Format("%d frames",StackFrames));
+          pFrame->StatusMsg(wxString::Format(_("%d frames"),StackFrames));
 
           if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
@@ -783,11 +783,11 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
       else {
           // no capture property.
           wxString msg;
-          if (INDICameraForceVideo){
-             msg = "Camera as no VIDEO_STREAM property, please uncheck the option: Camera do not support exposure time.";
+          if (INDICameraForceVideo) {
+             msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera do not support exposure time.");
           }
-          else{
-             msg = "Camera as no CCD_EXPOSURE or VIDEO_STREAM property";
+          else {
+             msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
           }
           DisconnectWithAlert(msg,NO_RECONNECT);
           return true;
@@ -838,7 +838,7 @@ bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
                 sendNewNumber(pulseGuideNS_prop);
                 break;
             case NONE:
-                printf("error CameraINDI::Guide NONE\n");
+                Debug.Write("error CameraINDI::Guide NONE\n");
                 break;
         }
         wxMilliSleep(duration);
