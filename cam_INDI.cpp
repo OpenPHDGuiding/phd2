@@ -375,7 +375,8 @@ void CameraINDI::serverDisconnected(int exit_code)
    // after disconnection we reset the connection status and the properties pointers
    ClearStatus();
    // in case the connection lost we must reset the client socket
-   if (exit_code==-1) DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
+   if (exit_code == -1)
+       DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
 }
 
 #ifndef INDI_PRE_1_0_0
@@ -784,7 +785,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
           // no capture property.
           wxString msg;
           if (INDICameraForceVideo) {
-             msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera do not support exposure time.");
+             msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
           }
           else {
              msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
