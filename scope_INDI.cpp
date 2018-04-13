@@ -259,7 +259,11 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
             Scope::Connect();
         }
         else {
-            if (ready) ScopeINDI::Disconnect();
+            if (ready) {
+               ClearStatus(); 
+               Scope::Disconnect();
+            }
+    
         }
     }
 }

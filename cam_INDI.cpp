@@ -130,7 +130,10 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
             Connected = true;
         }
         else {
-            if (ready) Disconnect();
+            if (ready) {
+               ClearStatus();
+               DisconnectWithAlert("INDI camera disconnected",NO_RECONNECT);
+            }
         }
     }
 }
