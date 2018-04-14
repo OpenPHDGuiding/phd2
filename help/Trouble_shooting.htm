@@ -90,8 +90,10 @@ option to 'Assume Dec orthogonal to RA' in the 'Guiding' tab of the
 Advanced Setup dialog. But you should do this only if the error is
 fairly small - otherwise, you are simply ignoring a serious problem.
 &nbsp; </li><li>Suspicious
-RA and Dec rates - the guide rate for right ascension should be related
-to the declination guiding rate by approximately a factor
+RA and Dec rates - assuming the guide speeds in the mount are the same
+for both axes, the measured guide rate for right ascension should be
+related
+to the declination guide rate by approximately a factor
 of&nbsp;cosine (Declination). &nbsp;In other words, the RA rate gets
 smaller as you move the scope further away from the celestial equator
 (Dec=0). &nbsp;PHD2 won't try to identify
@@ -101,8 +103,15 @@ yourself quite simply. &nbsp;If you are guiding at 1X sidereal rate,
 your declination guide rate should be approximately 15 arc-sec/sec;
 with a guide rate of 0.5X sidereal, the declination rate would be 7.5
 arc-sec/sec,
-etc. &nbsp;A declination rate that is significantly smaller than the RA
-rate is often an indication of substantial declination backlash. &nbsp;</li><li>Inconsistent results - if the calibration results are
+etc. &nbsp;<span style="font-weight: bold;">A declination rate that is significantly smaller than the RA
+rate is often an indication of substantial declination backlash</span>.
+&nbsp;Using a calibration that triggered this alert can lead to
+over-shooting in Dec guiding because the actual guide rate is probably
+larger than the measured one. &nbsp;To work around this problem, you
+should manually clear the Dec backlash before starting calibration.
+&nbsp;You can do this in either of two ways: 1) make sure the mount's
+last slew direction was north or 2) use the hand controller to manually
+move the mount north at guide speed for 20 seconds. &nbsp;</li><li>Inconsistent results - if the calibration results are
 significantly different from your last-used calibration, an alert
 message will be generated. &nbsp;This may happen because you've made a
 change in your configuration. &nbsp;That doesn't imply a real problem,
@@ -124,7 +133,7 @@ isn't&nbsp;a problem, you can use the 'don't show' checkbox to block
 future alerts of that type. &nbsp;But you should be aware that the
 sanity-checking used by PHD2 works well for a wide range of equipment,
 and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;"><a name="Declination_backlash"></a>Declination Backlash</span><span style="font-weight: bold;"></span><br>By
-far the most common source of calibration problems is declination
+far the most common source of calibration problems&nbsp;is declination
 backlash, which is present to some degree in most geared mounts.
 &nbsp;With many less-expensive mounts, however, the problem can
 be&nbsp;severe and
@@ -227,7 +236,7 @@ find it helpful to use the test results to communicate with the mount
 manufacturer or other users who understand that specific mount and its typical&nbsp; problems.<br><br><span style="font-weight: bold;"><a name="Measuring_Mount_Behavior"></a>Measuring the Mount's Behavior<br></span>If you're having<span style="font-weight: bold;"> </span>trouble
 getting decent guiding results, your first instinct will probably be to
 try making wild changes to the guiding parameters in the hope of
-finding a magic solution. &nbsp;Thiis almost never works, and you're
+finding a magic solution. &nbsp;This almost never works, and you're
 more likely to just make things worse. &nbsp;If the default parameters
 from the new-profile-wizard aren't producing reasonable results, the
 fault is probably with the hardware and you'll need to determine the

@@ -413,7 +413,7 @@ result in an accurate calibration without wasting too much time.
 nothing magic about the choice of 12 steps as a target. &nbsp;As long
 as you are getting successful calibrations without alert messages, the
 calibration step-size is probably good enough.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 527px;" alt="" src="Advanced_algorithms.png"><br><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 593px; height: 571px;" alt="" src="Advanced_algorithms.png"><br><br>
 The algorithms tab can be used to select the guiding algorithms you
 want to use and to fine-tune the parameters associated with them. &nbsp;The parameters displayed will change significantly if
 you
@@ -427,27 +427,11 @@ algorithm selections, are described below. &nbsp;
 guide pulse duration for right ascension. &nbsp;You might reduce
 this
 below the default value if you want to avoid&nbsp;chasing a large
-deflection that could be caused by a spurious event (e.g. wind gust, hot pixel, etc.) .'</li><li>'<a name="Declination_backlash_comp"></a>Use
+deflection that could be caused by a spurious event (e.g. wind gust, hot pixel, etc.) .'</li><li>'Use
 backlash comp' - this
 controls whether PHD2 will apply a compensation factor when the
 direction of declination guiding needs to be reversed.
-&nbsp;Measurement of backlash and calculation of a good starting value
-for the compensation factor is done in the Guiding Assistant. &nbsp;The
-size of the additional guide correction (compensation value) is shown
-in the 'Amount' field adjacent to the checkbox. &nbsp;This amount may
-be adjusted upward or downward by PHD2 if necessary to tune the guiding
-results. &nbsp;In either case, the adjustments are made conservatively
-in order to avoid making guiding unstable. &nbsp;Since
-PHD2 has the ability to detect and adapt to over-corrections, the
-backlash compensation available here should work better than the
-fixed&nbsp;backlash compensation available in many mount controllers.
-&nbsp;If you use the PHD2 backlash compensation, you should disable
-any&nbsp; backlash compensation in the mount. &nbsp;See the help
-section on the <a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a>
-for more details. &nbsp;The 'Max Dec duration' parameter may be
-adjusted automatically to avoid truncating the backlash compensation
-pulse. &nbsp;That said, you shouldn't expect backlash compensation to
-work well if your mount has many seconds of backlash.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
+&nbsp;See section below.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
 maximum allowed guide pulse duration for declination (same as above but
 for declination).</li><li>'<a name="Dec_guide_mode"></a>Declination guide mode' -&nbsp;gives you additional control over declination
 guiding. &nbsp;Declination guiding is not like RA guiding because the
@@ -471,7 +455,43 @@ altogether.</li><li>'Reset'
 their default values. &nbsp;Min-move settings will be set using the
 same algorithm employed in the new-profile-wizard. &nbsp;If you
 previously used the Guiding Assistant to adjust the min-move settings,
-you should probably repeat that procedure.</li></ul><h4><a name="Declination-Uni-directional_guiding"></a>Uni-directional Declination Guiding</h4>As
+you should probably repeat that procedure.</li></ul><h4><a name="Declination_backlash_comp"></a>Declination Backlash Compensation</h4>Most
+commonly-used mounts have some amount of backlash in declination.
+&nbsp;This causes a delay whenever there is a change in direction of
+the Dec guide commands. &nbsp;During this interval, the declination
+gears aren't fully engaged and the axis doesn't move in response to the
+guide commands. &nbsp;Many mounts have settings for backlash
+compensation but these should not be used for guiding - they are
+typically intended for visual use where high precision isn't required.
+&nbsp;Because the actual amount of compensation needed at any given
+time may depend on the pointing position and the mechanical load on the
+system, a fixed value will usually result in oscillations that never
+stabilize. &nbsp;The backlash compensation implemented by PHD2 is
+adaptive, meaning that the compensation amount is adjusted up or down
+depending on the measured results. &nbsp;Before enabling this feature,
+you should run the Guiding Assistant and measure the declination
+backlash - the time delay required to fully reverse direction in
+declination. &nbsp;Keep in mind, the higher the guide speed setting in
+the mount (e.g. 0.9x sidereal), the smaller this delay will be.
+&nbsp;If the measured amount is 3 seconds or less, the Guiding
+Assistant will recommend trying backlash compensation. &nbsp;If you
+apply that recommendation, the backlash compensation settings will be
+handled for you automatically. &nbsp;The UI controls for backlash
+compensation include settings for 'minimum' and 'maximum' compensation
+amounts. &nbsp;These effectively limit the range of the adjustments
+that are made to the starting compensation value. &nbsp;If you're
+experienced with your mount's behavior, you can adjust these settings
+manually to be sure that the compensation stays within a range that you
+know works well. &nbsp;Otherwise, you should just leave these at their
+default values. &nbsp;The backlash compensation algorithm will
+generally work well if the backlash is less than a few seconds and the
+mount doesn't have other significant mechanical problems. &nbsp;You
+should expect a short period of&nbsp; instability when guiding starts
+because the initial state of the Dec gear system is unknown - just let
+it stabilize before you actually start imaging. &nbsp;If you see
+recurring periods of Dec oscillation or the axis won't settle down,
+disable the compensation feature and submit your debug log file to the
+PHD2 support forum. &nbsp;<h4><a name="Declination-Uni-directional_guiding"></a>Uni-directional Declination Guiding</h4>As
 discussed elsewhere, some mounts have too much declination backlash to
 support guiding in both&nbsp;north and south directions. &nbsp;This
 situation can be mitigated by configuring PHD2 to guide in only one of

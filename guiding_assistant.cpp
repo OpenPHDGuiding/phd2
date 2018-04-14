@@ -869,8 +869,8 @@ void GuidingAsstWin::MakeRecommendations()
 
     double multiplier_ra  = 1.28;  // 80% prediction interval
     double multiplier_dec = 1.64;  // 90% prediction interval
-    double min_rec_exposure;
-    double max_rec_exposure;
+    double ideal_min_exposure;
+    double ideal_max_exposure;
     double min_rec_range = 2.0;
     // round up to next multiple of .05, but do not go below 0.10 pixel
     double const unit = 0.05;
@@ -882,16 +882,6 @@ void GuidingAsstWin::MakeRecommendations()
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
-    if (pFrame->GetCameraPixelScale() >= 2.0)
-    {
-        min_rec_exposure = 1.5;
-        max_rec_exposure = 4.0;
-    }
-    else
-    {
-        min_rec_exposure = 2.0;
-        max_rec_exposure = 4.0;
-    }
     m_ra_val_rec = rounded_rarms;
     m_dec_val_rec = rounded_decrms;
     // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
@@ -900,15 +890,18 @@ void GuidingAsstWin::MakeRecommendations()
     LogResults();               // Dump the raw statistics
 
     // Clump the no-button messages at the top
-
-    double drift_exp = round(rarms * multiplier_ra / maxRateRA + 0.4);
-    m_min_exp_rec = std::max(1.0, std::min(drift_exp, min_rec_exposure));
+    // ideal exposure ranges in general
+    ideal_min_exposure = 2.0;
+    ideal_max_exposure = 4.0;
+    // adjust the min-exposure downward if drift limiting exposure is lower; then adjust range accordingly
+    double drift_exp = ceil((multiplier_ra * rarms / maxRateRA) / 0.5) * 0.5;                       // Rounded up to nearest 0.5 sec
+    m_min_exp_rec = std::max(1.0, std::min(drift_exp, ideal_min_exposure));                         // smaller of drift and ideal, never less than 1.0
     if (drift_exp > m_min_exp_rec)
     {
-        if (drift_exp < max_rec_exposure)
+        if (drift_exp < ideal_max_exposure)
             m_max_exp_rec = std::max(drift_exp, m_min_exp_rec + min_rec_range);
         else
-            m_max_exp_rec = max_rec_exposure;
+            m_max_exp_rec = ideal_max_exposure;
     }
     else
         m_max_exp_rec = m_min_exp_rec + min_rec_range;

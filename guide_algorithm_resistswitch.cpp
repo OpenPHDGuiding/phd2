@@ -397,7 +397,7 @@ void GuideAlgorithmResistSwitch::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
-    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum move", m_pMinMove->GetValue());
 }
 
 void GuideAlgorithmResistSwitch::
