@@ -894,7 +894,11 @@ void GuidingAsstWin::MakeRecommendations()
     ideal_min_exposure = 2.0;
     ideal_max_exposure = 4.0;
     // adjust the min-exposure downward if drift limiting exposure is lower; then adjust range accordingly
-    double drift_exp = ceil((multiplier_ra * rarms / maxRateRA) / 0.5) * 0.5;                       // Rounded up to nearest 0.5 sec
+    double drift_exp;
+    if (maxRateRA > 0)
+        drift_exp = ceil((multiplier_ra * rarms / maxRateRA) / 0.5) * 0.5;                       // Rounded up to nearest 0.5 sec
+    else
+        drift_exp = ideal_min_exposure;
     m_min_exp_rec = std::max(1.0, std::min(drift_exp, ideal_min_exposure));                         // smaller of drift and ideal, never less than 1.0
     if (drift_exp > m_min_exp_rec)
     {
