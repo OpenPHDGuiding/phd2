@@ -37,7 +37,7 @@
 #include "backlash_comp.h"
 
 static const unsigned int HISTORY_SIZE = 10;
-static const unsigned int MIN_COMP_AMOUNT = 50;               // min pulse in ms
+static const unsigned int MIN_COMP_AMOUNT = 20;               // min pulse in ms, must be small enough to effectively disable blc
 static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms
 
 
@@ -419,7 +419,7 @@ void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 {
     m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
     if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT)                        // Coming from GA or user input makes no sense
-        m_adjustmentFloor = wxMax(0.5 * m_pulseWidth, MIN_COMP_AMOUNT);
+        m_adjustmentFloor = MIN_COMP_AMOUNT;
     else
         m_adjustmentFloor = floor;
     if (ceiling < m_pulseWidth)

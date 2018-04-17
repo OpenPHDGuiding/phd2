@@ -1724,7 +1724,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
         pComp1->Add(m_pUseBacklashComp);
         m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, 50);
+            wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, pScope->m_backlashComp->GetBacklashPulseMinValue());
         pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
 
         wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, blcHostTab, usingAO ? _("Mount Backlash Compensation") : _("Backlash Compensation"));
@@ -1732,11 +1732,11 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         if (!usingAO)                       // AO doesn't use auto-adjustments, so don't show min/max controls
         {
             wxBoxSizer *pComp2 = new wxBoxSizer(wxHORIZONTAL);
-
+            double minVal = pScope->m_backlashComp->GetBacklashPulseMinValue();
             m_pBacklashFloor = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
+                wxSize(width, -1), wxSP_ARROW_KEYS, minVal, pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, minVal);
             m_pBacklashCeiling = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, 50);
+                wxSize(width, -1), wxSP_ARROW_KEYS, minVal, pScope->m_backlashComp->GetBacklashPulseMaxValue(), 300, minVal);
             pComp2->Add(MakeLabeledControl(blcCtrlId, _("Min"), m_pBacklashFloor, _("Minimum length of backlash compensation pulse (mSec).")),
                 wxSizerFlags().Border(wxLEFT, 0));
             pComp2->Add(MakeLabeledControl(blcCtrlId, _("Max"), m_pBacklashCeiling, _("Maximum length of backlash compensation pulse (mSec).")),
