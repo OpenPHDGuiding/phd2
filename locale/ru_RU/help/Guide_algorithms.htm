@@ -89,20 +89,13 @@
     размеры звёзд на изображениях.&nbsp; Если для конфигурирования
     системы используется помощник нового оборудования, он подберёт
     значения, которые, скорее всего, будут оптимальными для
-    используемого увеличения.&nbsp;<span style="display: inline
-      !important; float: none; background-color: transparent; color:
-      rgb(0, 0, 0); font-family: Times New Roman; font-size: 16px;
-      font-style: normal; font-variant: normal; font-weight: 400;
-      letter-spacing: normal; orphans: 2; text-align: left;
-      text-decoration: none; text-indent: 0px; text-transform: none;
-      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
-      0px;"> Помощник гидирования тоже может, основываясь на измерении
+    используемого увеличения. Помощник гидирования тоже может, основываясь на измерении
       высокочастотных возмущений турбулентности, подобрать эти
       параметры.&nbsp; При излишне больших величинах подвижек и их
       постоянном инвертировании можно не поспевать корректировать
       турбулентность и тогда есть смысл увеличить значение минимального
       движения.&nbsp; Параметры минимального движения могут быть разными
-      в разные ночи в зависимости от турбулентности.</span><br>
+      в разные ночи в зависимости от турбулентности.<br>
     <br>
     Алгоритм <a name="hysteresis"></a><span style="font-weight: bold;">гистерезис</span>
     помнит о предыдущих поправках и использует их при вычислении
@@ -132,14 +125,7 @@
     гидирования должно иметь убедительную причину.&nbsp; Он используется
     по умолчанию для гидирования по склонению, где смена направления
     нежелательна из-за люфта, в отличие от прямого восхождения, где
-    смена направления движения ожидаема. <span style="display: inline
-      !important; float: none; background-color: transparent; color:
-      rgb(0, 0, 0); font-family: Times New Roman; font-size: 16px;
-      font-style: normal; font-variant: normal; font-weight: 400;
-      letter-spacing: normal; orphans: 2; text-align: left;
-      text-decoration: none; text-indent: 0px; text-transform: none;
-      -webkit-text-stroke-width: 0px; white-space: normal; word-spacing:
-      0px;">Первый из параметров - "агрессивность" - задаёт в процентах,
+    смена направления движения ожидаема. Первый из параметров - "агрессивность" - задаёт в процентах,
       насколько сильной должна быть коррекция.&nbsp; Уменьшение значения
       этого параметра может избавить от излишней коррекции для
       монтировок с небольшим люфтом или без люфта. Если включен параметр
@@ -155,7 +141,7 @@
       настройкой минимального перемещения или отключить "быстрое
       переключение".&nbsp; Помните, что в отношении гидирования по
       склонению справедливо ленинское "лучше меньше, да лучше" и не
-      злоупотребляйте излишней настройкой.</span><br>
+      злоупотребляйте излишней настройкой.<br>
     <br>
     Алгоритм <a name="LowPass"></a><span style="font-weight: bold;">сглаживания
     </span>также использует для вычисления текущей поправки
@@ -164,26 +150,8 @@
     звезды на текущем кадре играет весьма небольшую роль и алгоритм
     очень устойчив к быстрым изменениям. По истории поправок можно также
     определить, действуют ли ли отклонения в нужном направлении, или
-    становятся "всё хуже". <span style="display: inline !important;
-      float: none; background-color: transparent; color: rgb(0, 0, 0);
-      font-family: Times New Roman; font-size: 16px; font-style: normal;
-      font-variant: normal; font-weight: 400; letter-spacing: normal;
-      orphans: 2; text-align: left; text-decoration: none; text-indent:
-      0px; text-transform: none; -webkit-text-stroke-width: 0px;
-      white-space: normal; word-spacing: 0px;">Параметр </span><span
-      style="background-color: transparent; color: rgb(0, 0, 0);
-      font-family: Times New Roman; font-size: 16px; font-style: normal;
-      font-variant: normal; font-weight: 700; letter-spacing: normal;
-      orphans: 2; text-align: left; text-decoration: none; text-indent:
-      0px; text-transform: none; -webkit-text-stroke-width: 0px;
-      white-space: normal; word-spacing: 0px;"><a name="slope_weight_"></a>коэффициент
-      наклона</span><span style="display: inline !important; float:
-      none; background-color: transparent; color: rgb(0, 0, 0);
-      font-family: Times New Roman; font-size: 16px; font-style: normal;
-      font-variant: normal; font-weight: 400; letter-spacing: normal;
-      orphans: 2; text-align: left; text-decoration: none; text-indent:
-      0px; text-transform: none; -webkit-text-stroke-width: 0px;
-      white-space: normal; word-spacing: 0px;">, выраженный в процентах,
+    становятся "всё хуже". Параметр коэффициент
+      наклона, выраженный в процентах,
       определяет степень влияния в подсчётах гидирующих движений.&nbsp;
       Если он установлен в ноль, величина импульса всегда будет средней
       относительно недавней истории.&nbsp; Если нет -&nbsp; среднее
