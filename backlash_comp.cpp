@@ -458,10 +458,11 @@ void BacklashComp::EnableBacklashComp(bool enable)
     if (m_compActive != enable)
     {
         pFrame->NotifyGuidingParam("Backlash comp enabled", enable);
+        if (enable)
+            ResetBaseline();
     }
 
     m_compActive = enable;
-    ResetBaseline();
     pConfig->Profile.SetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));
 }
