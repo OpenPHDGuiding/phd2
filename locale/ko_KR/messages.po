@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-06 06:43+0100\n"
+"POT-Creation-Date: 2018-04-30 21:28+0100\n"
 "PO-Revision-Date: 2016-12-03 17:30+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -186,58 +186,58 @@ msgstr "Cal"
 msgid "Selected star at (999.9, 999.9)"
 msgstr "선택된 별(999.9, 999.9)"
 
-#: backlash_comp.cpp:594
+#: backlash_comp.cpp:595
 msgid "Backlash Results"
 msgstr "백래시 결과"
 
-#: backlash_comp.cpp:679
+#: backlash_comp.cpp:680
 msgid "Ideal"
 msgstr "이상적인 "
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:682
 msgid "Measured"
 msgstr "측정 "
 
-#: backlash_comp.cpp:682 polardrift_toolwin.cpp:195 scope.cpp:223
+#: backlash_comp.cpp:683 polardrift_toolwin.cpp:195 scope.cpp:223
 #: staticpa_toolwin.cpp:352 testguide.cpp:152
 msgid "North"
 msgstr "북쪽 "
 
-#: backlash_comp.cpp:683 polardrift_toolwin.cpp:196 scope.cpp:224
+#: backlash_comp.cpp:684 polardrift_toolwin.cpp:196 scope.cpp:224
 #: staticpa_toolwin.cpp:353 testguide.cpp:152
 msgid "South"
 msgstr "남쪽"
 
-#: backlash_comp.cpp:763
+#: backlash_comp.cpp:764
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 "백래시 측정을 실행할 수 없습니다. 마운트 캘리브레이션을 다시 실행하십시오."
 
-#: backlash_comp.cpp:940
+#: backlash_comp.cpp:941
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 
-#: backlash_comp.cpp:954
+#: backlash_comp.cpp:955
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "북쪽 백래시 제거,  단계  %d"
 
-#: backlash_comp.cpp:991
+#: backlash_comp.cpp:992
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "북쪽 백래시 제거, 단계 %d (최대한계 %d)"
 
-#: backlash_comp.cpp:999
+#: backlash_comp.cpp:1000
 msgid "Could not clear North backlash - test failed"
 msgstr "북쪽 백래시 제거실패 "
 
-#: backlash_comp.cpp:1026
+#: backlash_comp.cpp:1027
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "북쪽으로 이동 중  %d ms, 단계 %d / %d"
 
-#: backlash_comp.cpp:1060
+#: backlash_comp.cpp:1061
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -245,33 +245,33 @@ msgstr ""
 "별이 가장자리에 너무 가까이 있습니다. 정확한 백래시 측정을 위해  가장자리에"
 "서 멀리 떨어진 별을 선택하십시오."
 
-#: backlash_comp.cpp:1075
+#: backlash_comp.cpp:1076
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "남쪽으로 이동 중  %d ms, 단계 %d / %d"
 
-#: backlash_comp.cpp:1101
+#: backlash_comp.cpp:1102
 msgid "Dec movements too erratic - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:1107
+#: backlash_comp.cpp:1108
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:1125
+#: backlash_comp.cpp:1126
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "테스트 백래시 캘리브레이션 중  %d ms"
 
-#: backlash_comp.cpp:1193
+#: backlash_comp.cpp:1194
 msgid "Restoring star position"
 msgstr "별 위치 복원 "
 
-#: backlash_comp.cpp:1201
+#: backlash_comp.cpp:1202
 msgid "Measurement complete"
 msgstr "측정 완료 "
 
-#: backlash_comp.cpp:1210
+#: backlash_comp.cpp:1211
 msgid "Measurement halted"
 msgstr "측정 중지 "
 
@@ -330,7 +330,7 @@ msgstr "직교 오차:"
 msgid "a-s/sec"
 msgstr "아크초/초 "
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1316
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1313
 msgid "px/sec"
 msgstr "픽셀/초 "
 
@@ -856,7 +856,7 @@ msgstr "경고 - 노출 시간을 직접 제어 할 수 없음 - 자동 노출�
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr ""
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:508 cam_INDI.cpp:531
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
 #: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
@@ -908,49 +908,72 @@ msgstr ""
 msgid "Cannot get a frame from the queue"
 msgstr "프레임을 가져올 수 없습니다."
 
-#: cam_INDI.cpp:364
+#: cam_INDI.cpp:135 cam_INDI.cpp:386
+msgid "INDI camera disconnected"
+msgstr ""
+
+#: cam_INDI.cpp:367
 #, c-format
 msgid "Cannot connect to camera %s"
 msgstr "카메라에 연결할 수 없습니다. %s"
 
-#: cam_INDI.cpp:482 cam_INDI.cpp:498 cam_simulator.cpp:602
+#: cam_INDI.cpp:379
+msgid "INDI server disconnected"
+msgstr ""
+
+#: cam_INDI.cpp:486 cam_INDI.cpp:502 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr ""
 "FITS 파일을로드하는 중 지원되지 않는 유형 또는 읽기 오류가 발생했습니다."
 
-#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_INDI.cpp:490 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "FITS 파일에 이미지가 없습니다."
 
-#: cam_INDI.cpp:512 cam_INDI.cpp:533 cam_simulator.cpp:632
+#: cam_INDI.cpp:516 cam_INDI.cpp:537 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "데이터 읽기 오류"
 
-#: cam_INDI.cpp:550
+#: cam_INDI.cpp:554
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "CCD_FRAME 특성이 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:555
+#: cam_INDI.cpp:559
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "WIDTH 값 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:561
+#: cam_INDI.cpp:565
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "HEIGHT 값 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:568
+#: cam_INDI.cpp:572
 msgid "CCD stream: memory allocation error"
 msgstr "CCD 스트림 : 메모리 할당 오류"
 
-#: cam_INDI.cpp:668
+#: cam_INDI.cpp:672
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr ""
 
-#: cam_INDI.cpp:701
+#: cam_INDI.cpp:705
 msgid "Unknown image format: "
 msgstr "알수없는 이미지 형식:"
+
+#: cam_INDI.cpp:777
+#, c-format
+msgid "%d frames"
+msgstr ""
+
+#: cam_INDI.cpp:788
+msgid ""
+"Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
+"not support exposure time."
+msgstr ""
+
+#: cam_INDI.cpp:791
+msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
+msgstr ""
 
 #: cam_INovaPLC.cpp:60
 #, c-format
@@ -3831,11 +3854,11 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "백래시 측정:"
 
-#: guiding_assistant.cpp:699 guiding_assistant.cpp:1311
+#: guiding_assistant.cpp:699 guiding_assistant.cpp:1308
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:700 guiding_assistant.cpp:1313
+#: guiding_assistant.cpp:700 guiding_assistant.cpp:1310
 msgid "arc-sec"
 msgstr "아크초"
 
@@ -3843,99 +3866,99 @@ msgstr "아크초"
 msgid "Apply"
 msgstr "적용 "
 
-#: guiding_assistant.cpp:917
+#: guiding_assistant.cpp:914
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr "노출 시간 유지. 범위 %.1fs to %.1fs"
 
-#: guiding_assistant.cpp:926
+#: guiding_assistant.cpp:923
 msgid "Consider re-doing your calibration "
 msgstr "캘리브레이션 재실행을 고려하십시오."
 
-#: guiding_assistant.cpp:928
+#: guiding_assistant.cpp:925
 msgid "(Prior alert)"
 msgstr "(사전 경고)"
 
-#: guiding_assistant.cpp:930
+#: guiding_assistant.cpp:927
 msgid "(Backlash clearing)"
 msgstr "(백래시 제거)"
 
-#: guiding_assistant.cpp:942
+#: guiding_assistant.cpp:939
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "더 밝은 별을 사용하거나 노출 시간을 늘리는 것을 고려하십시오."
 
-#: guiding_assistant.cpp:960
+#: guiding_assistant.cpp:957
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "극축 오차 > 5아크분; 아마도 개선 될 수 있습니다."
 
-#: guiding_assistant.cpp:961
+#: guiding_assistant.cpp:958
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr "극축 오차 > 10아크분 ; 표류이탈 도구를 사용하여 재 정렬을 하십시오."
 
-#: guiding_assistant.cpp:981
+#: guiding_assistant.cpp:978
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "RA min-move를 % 0.2f로 설정해보십시오."
 
-#: guiding_assistant.cpp:999
+#: guiding_assistant.cpp:996
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Dec min-move를 % 0.2f로 설정해보십시오."
 
-#: guiding_assistant.cpp:1028
+#: guiding_assistant.cpp:1025
 msgid "Backlash is small, no compensation needed"
 msgstr ""
 
-#: guiding_assistant.cpp:1030
+#: guiding_assistant.cpp:1027
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr ""
 
-#: guiding_assistant.cpp:1032
+#: guiding_assistant.cpp:1029
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
 msgstr ""
 
-#: guiding_assistant.cpp:1142
+#: guiding_assistant.cpp:1139
 msgid "Backlash test aborted..."
 msgstr "백래시 테스터 중지... "
 
-#: guiding_assistant.cpp:1182 guiding_assistant.cpp:1189
+#: guiding_assistant.cpp:1179 guiding_assistant.cpp:1186
 msgid "Measuring backlash... "
 msgstr "백래시 측정 중..."
 
-#: guiding_assistant.cpp:1213
+#: guiding_assistant.cpp:1210
 msgid "Guiding stopped"
 msgstr "가이딩 중지 "
 
-#: guiding_assistant.cpp:1310
+#: guiding_assistant.cpp:1307
 msgid "s"
 msgstr "초 "
 
-#: guiding_assistant.cpp:1312 statswindow.cpp:276
+#: guiding_assistant.cpp:1309 statswindow.cpp:276
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1314
+#: guiding_assistant.cpp:1311
 msgid "arc-min"
 msgstr "아크분 "
 
-#: guiding_assistant.cpp:1315
+#: guiding_assistant.cpp:1312
 msgid "px/min"
 msgstr "픽셀/분 "
 
-#: guiding_assistant.cpp:1317
+#: guiding_assistant.cpp:1314
 msgid "arc-sec/min"
 msgstr "아므코/분 "
 
-#: guiding_assistant.cpp:1318
+#: guiding_assistant.cpp:1315
 msgid "arc-sec/sec"
 msgstr "아크초/초 "
 
-#: guiding_assistant.cpp:1337 myframe.cpp:2818 myframe.cpp:2828
+#: guiding_assistant.cpp:1334 myframe.cpp:2818 myframe.cpp:2828
 msgid " "
 msgstr ""
 

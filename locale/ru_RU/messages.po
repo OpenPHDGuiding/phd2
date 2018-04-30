@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-06 06:43+0100\n"
+"POT-Creation-Date: 2018-04-30 21:28+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
@@ -188,59 +188,59 @@ msgstr "Откалибровано"
 msgid "Selected star at (999.9, 999.9)"
 msgstr "Выбранная звезда (999.9, 999.9)"
 
-#: backlash_comp.cpp:594
+#: backlash_comp.cpp:595
 msgid "Backlash Results"
 msgstr "Результаты люфта"
 
-#: backlash_comp.cpp:679
+#: backlash_comp.cpp:680
 msgid "Ideal"
 msgstr "Идеал"
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:682
 msgid "Measured"
 msgstr "Измерено"
 
-#: backlash_comp.cpp:682 polardrift_toolwin.cpp:195 scope.cpp:223
+#: backlash_comp.cpp:683 polardrift_toolwin.cpp:195 scope.cpp:223
 #: staticpa_toolwin.cpp:352 testguide.cpp:152
 msgid "North"
 msgstr "cевер"
 
-#: backlash_comp.cpp:683 polardrift_toolwin.cpp:196 scope.cpp:224
+#: backlash_comp.cpp:684 polardrift_toolwin.cpp:196 scope.cpp:224
 #: staticpa_toolwin.cpp:353 testguide.cpp:152
 msgid "South"
 msgstr "юг"
 
-#: backlash_comp.cpp:763
+#: backlash_comp.cpp:764
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "Люфт не может быть измерен - перезапустите калибровку"
 
-#: backlash_comp.cpp:940
+#: backlash_comp.cpp:941
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 "Невозможно измерить люфт - значение скорости гидирования по склонению "
 "недоступно"
 
-#: backlash_comp.cpp:954
+#: backlash_comp.cpp:955
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "Очистка северного люфта, шаг %d"
 
-#: backlash_comp.cpp:991
+#: backlash_comp.cpp:992
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "Очистка северного люфта, шаг %d (до предела в %d)"
 
-#: backlash_comp.cpp:999
+#: backlash_comp.cpp:1000
 msgid "Could not clear North backlash - test failed"
 msgstr "Невозможно сбросить северный люфт - тест прерван"
 
-#: backlash_comp.cpp:1026
+#: backlash_comp.cpp:1027
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "Движение на север %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:1060
+#: backlash_comp.cpp:1061
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -248,34 +248,34 @@ msgstr ""
 "Звезда слишком близка к краю для точного измерения люфта, выберите звезду "
 "подальше."
 
-#: backlash_comp.cpp:1075
+#: backlash_comp.cpp:1076
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "Движение на юг %d мсек, шаг %d / %d"
 
-#: backlash_comp.cpp:1101
+#: backlash_comp.cpp:1102
 msgid "Dec movements too erratic - test failed"
 msgstr "Сбой теста: движения по склонению слишком хаотичны"
 
-#: backlash_comp.cpp:1107
+#: backlash_comp.cpp:1108
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 "Сбой теста: монтировка никогда не производила согласованных движений на юг"
 
-#: backlash_comp.cpp:1125
+#: backlash_comp.cpp:1126
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Пробная поправка люфта %d мсек"
 
-#: backlash_comp.cpp:1193
+#: backlash_comp.cpp:1194
 msgid "Restoring star position"
 msgstr "Восстановление позиции звезды"
 
-#: backlash_comp.cpp:1201
+#: backlash_comp.cpp:1202
 msgid "Measurement complete"
 msgstr "Измерение завершено"
 
-#: backlash_comp.cpp:1210
+#: backlash_comp.cpp:1211
 msgid "Measurement halted"
 msgstr "Измерение остановлено"
 
@@ -334,7 +334,7 @@ msgstr "Ошибка ортогональности:"
 msgid "a-s/sec"
 msgstr "угл. сек/сек"
 
-#: calreview_dialog.cpp:239 guiding_assistant.cpp:1316
+#: calreview_dialog.cpp:239 guiding_assistant.cpp:1313
 msgid "px/sec"
 msgstr "пикс/сек"
 
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
-"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
-"большой периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
+"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
+"периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
-"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
+"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,9 +860,10 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:504 cam_INDI.cpp:527 cam_opencv.cpp:145
-#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
-#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:508 cam_INDI.cpp:531
+#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
+#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
+#: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -911,48 +912,71 @@ msgstr "Сбой старта привода"
 msgid "Cannot get a frame from the queue"
 msgstr "Невозможно взять кадр из очереди"
 
-#: cam_INDI.cpp:364
+#: cam_INDI.cpp:135 cam_INDI.cpp:386
+msgid "INDI camera disconnected"
+msgstr ""
+
+#: cam_INDI.cpp:367
 #, c-format
 msgid "Cannot connect to camera %s"
 msgstr "Невозможно подключиться к камере %s"
 
-#: cam_INDI.cpp:482 cam_INDI.cpp:498 cam_simulator.cpp:602
+#: cam_INDI.cpp:379
+msgid "INDI server disconnected"
+msgstr ""
+
+#: cam_INDI.cpp:486 cam_INDI.cpp:502 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Неподдерживаемый тип или ошибка чтения файла FITS"
 
-#: cam_INDI.cpp:486 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_INDI.cpp:490 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "Файл FITS не содержит изображение"
 
-#: cam_INDI.cpp:512 cam_INDI.cpp:533 cam_simulator.cpp:632
+#: cam_INDI.cpp:516 cam_INDI.cpp:537 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "Ошибка чтения данных"
 
-#: cam_INDI.cpp:550
+#: cam_INDI.cpp:554
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "Не найдено свойство CCD_FRAME, сбой определения размера изображения"
 
-#: cam_INDI.cpp:555
+#: cam_INDI.cpp:559
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "Не задано значение WIDTH, невозможно определить размер изображения"
 
-#: cam_INDI.cpp:561
+#: cam_INDI.cpp:565
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "Не задано значение HEIGHT, невозможно определить размер изображения"
 
-#: cam_INDI.cpp:568
+#: cam_INDI.cpp:572
 msgid "CCD stream: memory allocation error"
 msgstr "Поток CCD: ошибка выделения памяти"
 
-#: cam_INDI.cpp:668
+#: cam_INDI.cpp:672
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "Ошибка экспозиции камеры %s. Попробуйте потоковое видео."
 
-#: cam_INDI.cpp:701
+#: cam_INDI.cpp:705
 msgid "Unknown image format: "
 msgstr "Неизвестный формат изображения:"
+
+#: cam_INDI.cpp:777
+#, c-format
+msgid "%d frames"
+msgstr ""
+
+#: cam_INDI.cpp:788
+msgid ""
+"Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
+"not support exposure time."
+msgstr ""
+
+#: cam_INDI.cpp:791
+msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
+msgstr ""
 
 #: cam_INovaPLC.cpp:60
 #, c-format
@@ -1876,7 +1900,8 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -3176,8 +3201,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3293,8 +3318,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3318,8 +3343,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3932,11 +3957,11 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "Измерение люфта:"
 
-#: guiding_assistant.cpp:699 guiding_assistant.cpp:1311
+#: guiding_assistant.cpp:699 guiding_assistant.cpp:1308
 msgid "ms"
 msgstr "мсек"
 
-#: guiding_assistant.cpp:700 guiding_assistant.cpp:1313
+#: guiding_assistant.cpp:700 guiding_assistant.cpp:1310
 msgid "arc-sec"
 msgstr "угл. сек"
 
@@ -3944,102 +3969,102 @@ msgstr "угл. сек"
 msgid "Apply"
 msgstr "Применить"
 
-#: guiding_assistant.cpp:917
+#: guiding_assistant.cpp:914
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 "Попробуйте использовать время экспозиции в пределах от %.1f сек до %.1f сек"
 
-#: guiding_assistant.cpp:926
+#: guiding_assistant.cpp:923
 msgid "Consider re-doing your calibration "
 msgstr "Может потребоваться новая калибровка"
 
-#: guiding_assistant.cpp:928
+#: guiding_assistant.cpp:925
 msgid "(Prior alert)"
 msgstr "(до оповещения)"
 
-#: guiding_assistant.cpp:930
+#: guiding_assistant.cpp:927
 msgid "(Backlash clearing)"
 msgstr "(Очистка люфта)"
 
-#: guiding_assistant.cpp:942
+#: guiding_assistant.cpp:939
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "Выберите звезду поярче или выдержку подлиннее"
 
-#: guiding_assistant.cpp:960
+#: guiding_assistant.cpp:957
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "Ошибка определения полюса > 5 угл.сек; она может быть исправлена."
 
-#: guiding_assistant.cpp:961
+#: guiding_assistant.cpp:958
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr ""
 "Ошибка установки полюса > 10 угл. сек; попробуйте улучшить установку дрейфом."
 
-#: guiding_assistant.cpp:981
+#: guiding_assistant.cpp:978
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr ""
 "Попробовать установить минимальное движение по прямому восхождению в %0.2f"
 
-#: guiding_assistant.cpp:999
+#: guiding_assistant.cpp:996
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Попробовать установить минимальное движение по склонению в %0.2f"
 
-#: guiding_assistant.cpp:1028
+#: guiding_assistant.cpp:1025
 msgid "Backlash is small, no compensation needed"
 msgstr "Люфт небольшой, компенсация не нужна"
 
-#: guiding_assistant.cpp:1030
+#: guiding_assistant.cpp:1027
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "Попробовать установить величину люфта склонения в %d мсек"
 
-#: guiding_assistant.cpp:1032
+#: guiding_assistant.cpp:1029
 #, c-format
 msgid "Backlash is >= %d ms; you may need to guide in only one Dec direction"
 msgstr "Люфт >= %d мсек; возможно, есть смысл гидировать только по склонению"
 
-#: guiding_assistant.cpp:1142
+#: guiding_assistant.cpp:1139
 msgid "Backlash test aborted..."
 msgstr "Тест люфта прерван..."
 
-#: guiding_assistant.cpp:1182 guiding_assistant.cpp:1189
+#: guiding_assistant.cpp:1179 guiding_assistant.cpp:1186
 msgid "Measuring backlash... "
 msgstr "Измерение люфта..."
 
-#: guiding_assistant.cpp:1213
+#: guiding_assistant.cpp:1210
 msgid "Guiding stopped"
 msgstr "Гидирование остановлено"
 
-#: guiding_assistant.cpp:1310
+#: guiding_assistant.cpp:1307
 msgid "s"
 msgstr "сек"
 
-#: guiding_assistant.cpp:1312 statswindow.cpp:276
+#: guiding_assistant.cpp:1309 statswindow.cpp:276
 msgid "px"
 msgstr "пикс"
 
-#: guiding_assistant.cpp:1314
+#: guiding_assistant.cpp:1311
 msgid "arc-min"
 msgstr "угл. мин"
 
-#: guiding_assistant.cpp:1315
+#: guiding_assistant.cpp:1312
 msgid "px/min"
 msgstr "пикс/мин"
 
-#: guiding_assistant.cpp:1317
+#: guiding_assistant.cpp:1314
 msgid "arc-sec/min"
 msgstr "угл. сек/мин"
 
-#: guiding_assistant.cpp:1318
+#: guiding_assistant.cpp:1315
 msgid "arc-sec/sec"
 msgstr "угл. сек/сек"
 
-#: guiding_assistant.cpp:1337 myframe.cpp:2818 myframe.cpp:2828
+#: guiding_assistant.cpp:1334 myframe.cpp:2818 myframe.cpp:2828
 msgid " "
 msgstr ""
 
