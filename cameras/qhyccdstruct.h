@@ -189,7 +189,11 @@ enum CONTROL_ID
 
 	CAM_QHY5II_GUIDE_MODE,
 	DDR_BUFFER_CAPACITY,
-	DDR_BUFFER_READ_THRESHOLD
+	DDR_BUFFER_READ_THRESHOLD,
+    DefaultGain,
+	DefaultOffset,
+	OutputDataActualBits,
+	OutputDataAlignment
 };
 
 /**

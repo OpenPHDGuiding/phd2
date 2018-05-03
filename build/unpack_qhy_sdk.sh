@@ -24,9 +24,17 @@ for f in qhyccd.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
     cp "$sdk/include/$f" "$SRC"/cameras/
 done
 
-cp "$sdk"/Linux/i386/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_32/
-cp "$sdk"/Linux/x86-64/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
-cp "$sdk"/Linux/armv6/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/armv6/
-cp "$sdk"/OSX/universal/libqhy.a "$SRC"/cameras/qhyccdlibs/mac/x86_32/
-cp "$sdk"/Windows/x86/vc12/qhyccd.dll    "$SRC"/WinLibs/
-cp "$sdk"/Windows/x86/vc12/qhyccd.lib    "$SRC"/cameras/
+if [ -d "$sdk"/Windows ]; then
+    # LZR's style packaging
+    cp "$sdk"/Linux/i386/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_32/
+    cp "$sdk"/Linux/x86-64/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
+    cp "$sdk"/Linux/armv6/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/armv6/
+    cp "$sdk"/OSX/universal/libqhy.a "$SRC"/cameras/qhyccdlibs/mac/x86_32/
+    cp "$sdk"/Windows/x86/vc12/qhyccd.dll    "$SRC"/WinLibs/
+    cp "$sdk"/Windows/x86/vc12/qhyccd.lib    "$SRC"/cameras/
+elif [ -f "$sdk"/qhyccd.dll ]; then
+    # QXX's style packaging (Windows only)
+    cp "$sdk"/qhyccd.dll "$SRC"/WinLibs/
+    cp "$sdk"/tbb.dll "$SRC"/WinLibs/
+    cp "$sdk"/lib/qhyccd.lib "$SRC"/Cameras/
+fi
