@@ -1026,7 +1026,10 @@ void GuidingAsstWin::MakeRecommendations()
         else if (m_backlashMs <= MAX_BACKLASH_COMP)
             msg = wxString::Format(_("Try starting with a Dec backlash compensation of %d ms"), m_backlashRecommendedMs);
         else
-            msg = wxString::Format(_("Backlash is >= %d ms; you may need to guide in only one Dec direction"), m_backlashMs);
+        {
+            msg = wxString::Format(_("Backlash is >= %d ms; you may need to guide in only one Dec direction (currently %s)"), m_backlashMs,
+                decDriftPerMin >= 0 ? _("South") : _("North"));
+        }
 
         if (!m_backlash_msg)
         {
