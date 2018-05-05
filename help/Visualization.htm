@@ -80,14 +80,22 @@ dithering commands are issued, usually by an external imaging
 application, a 'dithering' label will be superimposed on the graph in
 the appropriate time interval. &nbsp;This tells you&nbsp;the star
 displacements being graphed are being influenced by the dithering
-operation. &nbsp;If you are using an ASCOM connection for either the
-'mount' or 'aux-mount', PHD2 will also show the directions (GuideNorth,
+operation. &nbsp;<br><br>The
+guiding graph will also show the directions (GuideNorth,
 GuideEast) associated with the guide commands, as shown in the example
-above. &nbsp;This can be helpful if you are looking at overall drift
+above. This can be helpful if you are looking at overall drift
 and want to determine how to set uni-directional guiding for
-declination. &nbsp;The up/down convention used in this graph has
-nothing to do with the camera orientation or N-S-E-W movements in the
-field of view.<br><br>The recommended way to look at guiding
+declination. &nbsp;These directions show how the guide star is drifting
+away from the lock position. &nbsp;For example, if the Dec position of
+the guide star is moving upward in the graph, the guide star appears to be
+drifting "north" on the camera sensor. &nbsp;This means that&nbsp;south guide
+pulses will be needed to move it back to the lock position.
+&nbsp;Similarly, a downward drift in RA location means the the guide
+star is moving "east" on the camera sensor and west guide pulses will be
+applied. &nbsp;For the purpose of setting up uni-directional Dec
+guiding, these rules apply:<br>&nbsp; &nbsp; Dec drifting upward =&gt; select Dec guide mode = South<br>&nbsp; &nbsp; Dec drifting downward =&gt; select Dec guide mode = North<br>For
+various mount and hardware reasons, these directions may not correspond
+to actual directions in the sky, particularly for Dec.<br><br>The recommended way to look at guiding
 performance is to use units of arc-seconds rather than pixels.
 &nbsp;Doing this allows an equipment-independent way of evaluating
 performance because it transcends questions of focal length and image
