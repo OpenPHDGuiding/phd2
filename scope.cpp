@@ -1725,7 +1725,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         pComp1->Add(m_pUseBacklashComp);
         m_pBacklashPulse = pFrame->MakeSpinCtrlDouble(blcHostTab, wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width, -1), wxSP_ARROW_KEYS, pScope->m_backlashComp->GetBacklashPulseMinValue(), pScope->m_backlashComp->GetBacklashPulseMaxValue(), 450, pScope->m_backlashComp->GetBacklashPulseMinValue());
-        pComp1->Add(MakeLabeledControl(AD_szBLCompCtrls, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
+        pComp1->Add(MakeLabeledControl(blcCtrlId, _("Amount"), m_pBacklashPulse, _("Size of backlash compensation guide pulse (mSec)")), wxSizerFlags().Border(wxLEFT, 26));
 
         wxBoxSizer* pCompVert = new wxStaticBoxSizer(wxVERTICAL, blcHostTab, usingAO ? _("Mount Backlash Compensation") : _("Backlash Compensation"));
         pCompVert->Add(pComp1);

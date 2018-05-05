@@ -182,15 +182,32 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             GUIDE_ALGORITHM_RESIST_SWITCH,
             GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
         };
+        static GUIDE_ALGORITHM const X_ALGORITHMS_AO[] =                // Keep it clear re which algos make sense for AO
+        {
+            GUIDE_ALGORITHM_IDENTITY,
+            GUIDE_ALGORITHM_HYSTERESIS,
+            GUIDE_ALGORITHM_LOWPASS,
+            GUIDE_ALGORITHM_LOWPASS2,
+        };
+        std::vector <wxString> xAlgorithms;
+        if (!stepGuider)
+        {
+            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS); i++)
+                xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS[i]));
+        }
+        else
+        {
+            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS_AO); i++)
+                xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS_AO[i]));
+        }
 
-        wxString xAlgorithms[WXSIZEOF(X_ALGORITHMS)];
-        for (int i = 0; i < WXSIZEOF(X_ALGORITHMS); i++)
-            xAlgorithms[i] = GuideAlgorithmName(X_ALGORITHMS[i]);
-
-        width = StringArrayWidth(xAlgorithms, WXSIZEOF(X_ALGORITHMS));
+        width = StringArrayWidth(&xAlgorithms[0], xAlgorithms.size());
         m_pXGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(X_ALGORITHMS), xAlgorithms);
-        m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
+            wxSize(width + 35, -1), xAlgorithms.size(), &xAlgorithms[0]);
+        if (!stepGuider)
+            m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
+        else
+            m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for X-axis"));
 
         m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
             wxCommandEventHandler(Mount::MountConfigDialogPane::OnXAlgorithmSelected), 0, this);
@@ -216,7 +233,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (!stepGuider)
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 52).Center());
         else
-            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 100).Center());
+            m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 30).Center());
 
         static GUIDE_ALGORITHM const Y_ALGORITHMS[] =
         {
@@ -226,15 +243,33 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             GUIDE_ALGORITHM_LOWPASS2,
             GUIDE_ALGORITHM_RESIST_SWITCH,
         };
+        static GUIDE_ALGORITHM const Y_ALGORITHMS_AO[] =
+        {
+            GUIDE_ALGORITHM_IDENTITY,
+            GUIDE_ALGORITHM_HYSTERESIS,
+            GUIDE_ALGORITHM_LOWPASS,
+            GUIDE_ALGORITHM_LOWPASS2,
+        };
 
-        wxString yAlgorithms[WXSIZEOF(Y_ALGORITHMS)];
-        for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS); i++)
-            yAlgorithms[i] = GuideAlgorithmName(Y_ALGORITHMS[i]);
+        std::vector <wxString> yAlgorithms;
+        if (!stepGuider)
+        {
+            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS); i++)
+                yAlgorithms.push_back(GuideAlgorithmName(Y_ALGORITHMS[i]));
+        }
+        else
+        {
+            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS_AO); i++)
+                yAlgorithms.push_back(GuideAlgorithmName(Y_ALGORITHMS_AO[i]));
+        }
 
-        width = StringArrayWidth(yAlgorithms, WXSIZEOF(Y_ALGORITHMS));
+        width = StringArrayWidth(&yAlgorithms[0], yAlgorithms.size());
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(Y_ALGORITHMS), yAlgorithms);
-        m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
+            wxSize(width + 35, -1), yAlgorithms.size(), &yAlgorithms[0]);
+        if (!stepGuider)
+            m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
+        else
+            m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Y-axis"));
 
         m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
 
