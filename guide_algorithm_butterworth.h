@@ -97,7 +97,7 @@ protected:
 public:
     GuideAlgorithmButterworth(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmButterworth(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    virtual GUIDE_ALGORITHM Algorithm(void) const;
 
     virtual void reset(void);
     virtual double result(double input);

@@ -71,7 +71,7 @@ GuideAlgorithmButterworth::~GuideAlgorithmButterworth(void)
 {
 }
 
-GUIDE_ALGORITHM GuideAlgorithmButterworth::Algorithm(void)
+GUIDE_ALGORITHM GuideAlgorithmButterworth::Algorithm(void) const
 {
     return GUIDE_ALGORITHM_BUTTERWORTH;
 }
