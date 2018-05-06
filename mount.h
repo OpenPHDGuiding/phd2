@@ -200,15 +200,17 @@ public:
         wxButton* m_pResetDecParams;
         void OnResetRAParams(wxCommandEvent& evt);
         void OnResetDecParams(wxCommandEvent& evt);
-        class GuideAlgorithmOption
-        {
-        public:
-            GUIDE_ALGORITHM opt;
-            wxString        desc;
-            GuideAlgorithmOption(GUIDE_ALGORITHM o, wxString d) : opt(o), desc(d){};
-        };
-        std::vector<GuideAlgorithmOption> m_XGuideAlgorithmOptions;
-        std::vector<GuideAlgorithmOption> m_YGuideAlgorithmOptions;
+//        class GuideAlgorithmOption
+//        {
+//        public:
+//            GUIDE_ALGORITHM opt;
+//            wxString        desc;
+//            GuideAlgorithmOption(GUIDE_ALGORITHM o, wxString d) : opt(o), desc(d){};
+//        };
+//        std::vector<GuideAlgorithmOption> m_XGuideAlgorithmOptions;
+//        std::vector<GuideAlgorithmOption> m_YGuideAlgorithmOptions;
+        std::vector<GUIDE_ALGORITHM> m_xAlgorithms;
+        std::vector<GUIDE_ALGORITHM> m_yAlgorithms;
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
         ~MountConfigDialogPane();

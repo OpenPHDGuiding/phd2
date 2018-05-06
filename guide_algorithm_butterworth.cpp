@@ -166,6 +166,7 @@ bool GuideAlgorithmButterworth::SetFilter(int filter)
             msg.Append(wxString::Format("%s%.4f", it ? "," : "", m_ycoeff.at(it)));
         }
         Debug.Write(wxString::Format("%s\n", msg));
+        reset();
     }
     catch (const wxString& Msg)
     {

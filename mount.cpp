@@ -178,51 +178,37 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, stepGuider ? _("AO Y-Axis") : _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
-        static GUIDE_ALGORITHM const X_ALGORITHMS[] =                // Keep it clear re which algos make sense for AO
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-            GUIDE_ALGORITHM_RESIST_SWITCH,
-            GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
-            GUIDE_ALGORITHM_BUTTERWORTH,
-        };
-        static GUIDE_ALGORITHM const X_ALGORITHMS_AO[] =                // Keep it clear re which algos make sense for AO
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-        };
-//        std::vector <wxString> xAlgorithms;
+        m_xAlgorithms.clear();
         if (!stepGuider)
         {
-            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS); i++)
-                m_XGuideAlgorithmOptions.push_back( GuideAlgorithmOption(
-                    X_ALGORITHMS[i], GuideAlgorithmName(X_ALGORITHMS[i])));
-//                xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS[i]));
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_IDENTITY);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_HYSTERESIS);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS2);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_RESIST_SWITCH);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_GAUSSIAN_PROCESS);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_BUTTERWORTH);
         }
         else
         {
-            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS_AO); i++)
-                m_XGuideAlgorithmOptions.push_back(GuideAlgorithmOption(
-                X_ALGORITHMS_AO[i], GuideAlgorithmName(X_ALGORITHMS_AO[i])));
-//            xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS_AO[i]));
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_IDENTITY);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_HYSTERESIS);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS);
+            m_xAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS2);
         }
 
         width = 0;
-        for (int is = 0; is < m_XGuideAlgorithmOptions.size(); is++) 
+        for (int is = 0; is < m_xAlgorithms.size(); is++)
         {
-            if(StringWidth(m_XGuideAlgorithmOptions.at(is).desc) > width)
-                width = StringWidth(m_XGuideAlgorithmOptions.at(is).desc);
+            if (StringWidth(GuideAlgorithmName(m_xAlgorithms.at(is))) > width)
+                width = StringWidth(GuideAlgorithmName(m_xAlgorithms.at(is)));
         }
         m_pXGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1), wxSize(width + 35, -1));
         m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
 
         m_pXGuideAlgorithmChoice->Clear();
-        for (int is = 0; is < m_XGuideAlgorithmOptions.size(); is++) {
-            m_pXGuideAlgorithmChoice->AppendString(m_XGuideAlgorithmOptions.at(is).desc);
+        for (int is = 0; is < m_xAlgorithms.size(); is++) {
+            m_pXGuideAlgorithmChoice->AppendString(GuideAlgorithmName(m_xAlgorithms.at(is)));
         }
 
         m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
@@ -251,51 +237,36 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 30).Center());
 
-//        width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
-//        m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-//            wxSize(width + 35, -1), WXSIZEOF(yAlgorithms), yAlgorithms);
-        static GUIDE_ALGORITHM const Y_ALGORITHMS[] =                // Keep it clear re which algos make sense for AO
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-            GUIDE_ALGORITHM_RESIST_SWITCH,
-            GUIDE_ALGORITHM_BUTTERWORTH,
-        };
-        static GUIDE_ALGORITHM const Y_ALGORITHMS_AO[] =
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-        };
-
+        m_yAlgorithms.clear();
         if (!stepGuider)
         {
-            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS); i++)
-                m_YGuideAlgorithmOptions.push_back(GuideAlgorithmOption(
-                Y_ALGORITHMS[i], GuideAlgorithmName(Y_ALGORITHMS[i])));
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_IDENTITY);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_HYSTERESIS);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS2);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_RESIST_SWITCH);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_BUTTERWORTH);
         }
         else
         {
-            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS_AO); i++)
-                m_YGuideAlgorithmOptions.push_back(GuideAlgorithmOption(
-                Y_ALGORITHMS_AO[i], GuideAlgorithmName(Y_ALGORITHMS_AO[i])));
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_IDENTITY);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_HYSTERESIS);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS);
+            m_yAlgorithms.push_back(GUIDE_ALGORITHM_LOWPASS2);
         }
 
         width = 0;
-        for (int is = 0; is < m_YGuideAlgorithmOptions.size(); is++)
+        for (int is = 0; is < m_yAlgorithms.size(); is++)
         {
-            if (StringWidth(m_YGuideAlgorithmOptions.at(is).desc) > width)
-                width = StringWidth(m_YGuideAlgorithmOptions.at(is).desc);
+            if (StringWidth(GuideAlgorithmName(m_yAlgorithms.at(is))) > width)
+                width = StringWidth(GuideAlgorithmName(m_yAlgorithms.at(is)));
         }
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1), wxSize(width + 35, -1));
         m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
 
         m_pYGuideAlgorithmChoice->Clear();
-        for (int is = 0; is < m_YGuideAlgorithmOptions.size(); is++) {
-            m_pYGuideAlgorithmChoice->AppendString(m_YGuideAlgorithmOptions.at(is).desc);
+        for (int is = 0; is < m_yAlgorithms.size(); is++) {
+            m_pYGuideAlgorithmChoice->AppendString(GuideAlgorithmName(m_yAlgorithms.at(is)));
         }
 
         m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
@@ -393,8 +364,7 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
 {
     ConfigDialogPane *oldpane = m_pXGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
-    m_pMount->SetXGuideAlgorithm(m_XGuideAlgorithmOptions.at(m_pXGuideAlgorithmChoice->GetSelection()).opt);
-//    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
+    m_pMount->SetXGuideAlgorithm(m_xAlgorithms.at(m_pXGuideAlgorithmChoice->GetSelection()));
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent, Algo_RA_Layout_Height);
     m_pRABox->Replace(oldpane, newpane);
     m_pXGuideAlgorithmConfigDialogPane = newpane;
@@ -414,8 +384,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 {
     ConfigDialogPane *oldpane = m_pYGuideAlgorithmConfigDialogPane;
     oldpane->Clear(true);
-    m_pMount->SetYGuideAlgorithm(m_YGuideAlgorithmOptions.at(m_pYGuideAlgorithmChoice->GetSelection()).opt);
-//    ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
+    m_pMount->SetYGuideAlgorithm(m_yAlgorithms.at(m_pYGuideAlgorithmChoice->GetSelection()));
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent, Algo_Dec_Layout_Height);
     m_pDecBox->Replace(oldpane, newpane);
     m_pYGuideAlgorithmConfigDialogPane = newpane;
@@ -434,17 +403,17 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 void Mount::MountConfigDialogPane::LoadValues()
 {
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
-    for (int it=0; it < m_XGuideAlgorithmOptions.size(); it++)
+    for (int it=0; it < m_xAlgorithms.size(); it++)
     {
-        if (m_XGuideAlgorithmOptions.at(it).opt == m_initXGuideAlgorithmSelection)
+        if (m_xAlgorithms.at(it) == m_initXGuideAlgorithmSelection)
             m_pXGuideAlgorithmChoice->SetSelection(it);
     }    
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
 
     m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
-    for (int it = 0; it < m_YGuideAlgorithmOptions.size(); it++)
+    for (int it = 0; it < m_yAlgorithms.size(); it++)
     {
-        if (m_YGuideAlgorithmOptions.at(it).opt == m_initYGuideAlgorithmSelection)
+        if (m_yAlgorithms.at(it) == m_initYGuideAlgorithmSelection)
             m_pYGuideAlgorithmChoice->SetSelection(it);
     }
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
@@ -476,10 +445,8 @@ void Mount::MountConfigDialogPane::UnloadValues()
         m_pYGuideAlgorithmConfigDialogPane->UnloadValues();
     }
 
-    m_pMount->SetXGuideAlgorithm(m_XGuideAlgorithmOptions.at(m_pXGuideAlgorithmChoice->GetSelection()).opt);
-    m_pMount->SetYGuideAlgorithm(m_YGuideAlgorithmOptions.at(m_pYGuideAlgorithmChoice->GetSelection()).opt);
-//    m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
-//    m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
+    m_pMount->SetXGuideAlgorithm(m_xAlgorithms.at(m_pXGuideAlgorithmChoice->GetSelection()));
+    m_pMount->SetYGuideAlgorithm(m_yAlgorithms.at(m_pYGuideAlgorithmChoice->GetSelection()));
 }
 
 // Restore the guide algorithms - all the UI controls will follow correctly if the actual algorithm choices are correct
@@ -497,18 +464,18 @@ void Mount::MountConfigDialogPane::Undo()
             m_pYGuideAlgorithmConfigDialogPane->Undo();
         }
         m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
-        for (int it = 0; it < m_XGuideAlgorithmOptions.size(); it++)
+        for (int it = 0; it < m_xAlgorithms.size(); it++)
         {
-            if (m_XGuideAlgorithmOptions.at(it).opt == m_initXGuideAlgorithmSelection)
+            if (m_xAlgorithms.at(it) == m_initXGuideAlgorithmSelection)
                 m_pXGuideAlgorithmChoice->SetSelection(it);
         }
 //        m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
         wxCommandEvent dummy;
         OnXAlgorithmSelected(dummy);
         m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
-        for (int it = 0; it < m_YGuideAlgorithmOptions.size(); it++)
+        for (int it = 0; it < m_yAlgorithms.size(); it++)
         {
-            if (m_YGuideAlgorithmOptions.at(it).opt == m_initYGuideAlgorithmSelection)
+            if (m_yAlgorithms.at(it) == m_initYGuideAlgorithmSelection)
                 m_pYGuideAlgorithmChoice->SetSelection(it);
         }
 //        m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
