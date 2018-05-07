@@ -214,6 +214,7 @@ TestGuideDialog::TestGuideDialog() :
         pOuterSizer->Add(pWrapperSizer,wxSizerFlags().Border(wxALL,3).Center().Expand());
     }
 
+    pOuterSizer->AddSpacer(30);
     pOuterSizer->SetSizeHints(this);
     SetSizerAndFit(pOuterSizer);
 }
