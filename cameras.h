@@ -109,7 +109,9 @@
 #  define QHY_CAMERA
 # endif
 # define INDI_CAMERA
-# define ZWO_ASI
+# ifdef HAVE_ZWO_CAMERA
+#  define ZWO_ASI
+# endif
 # define SXV
 # ifdef HAVE_SBIG_CAMERA
 #   define SBIG
