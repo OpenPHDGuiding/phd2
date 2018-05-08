@@ -248,6 +248,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             GUIDE_ALGORITHM_LOWPASS,
             GUIDE_ALGORITHM_LOWPASS2,
             GUIDE_ALGORITHM_RESIST_SWITCH,
+            GUIDE_ALGORITHM_BUTTERWORTH,
         };
         static GUIDE_ALGORITHM const Y_ALGORITHMS_AO[] =
         {

@@ -82,6 +82,7 @@ void GuideAlgorithmButterworth::reset(void)
     m_yv.clear();
     m_xv.insert(m_xv.begin(), m_xcoeff.size(), 0.0);
     m_yv.insert(m_yv.begin(), m_ycoeff.size(), 0.0);
+    m_sumCorr = 0.0;
 }
 
 double GuideAlgorithmButterworth::result(double input)
@@ -99,7 +100,7 @@ double GuideAlgorithmButterworth::result(double input)
     double gain = m_gain;
 
 // Shift readings and results 
-    m_xv.insert(m_xv.begin(), input / gain);
+    m_xv.insert(m_xv.begin(), (input + m_sumCorr) / gain); // Add total guide output to input to get uncorrected waveform
     m_xv.pop_back();
     m_yv.insert(m_yv.begin(), 0.0);
     m_yv.pop_back();
@@ -113,20 +114,24 @@ double GuideAlgorithmButterworth::result(double input)
     {
         m_yv.at(0) += m_yv.at(i) * m_ycoeff.at(i);
     }
-    dReturn = m_yv.at(0);
+    dReturn = m_yv.at(0) -  m_sumCorr; // Return the difference from the uncorrected waveform
 
     if (fabs(input) < m_minMove)
     {
         dReturn = 0.0;
     }
+    m_sumCorr += dReturn;
 
     wxString msg = wxString::Format("GuideAlgorithmButterworth::m_xv ");
     for (int i = 0; i<m_xcoeff.size(); i++)
         msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_xv.at(i)));
-    msg.Append(wxString::Format("\nGuideAlgorithmButterworth::m_yv "));
+    Debug.Write(msg);
+    msg = wxString::Format("GuideAlgorithmButterworth::m_yv ");
     for (int i = 0; i<m_ycoeff.size(); i++)
         msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_yv.at(i)));
-    msg.Append(wxString::Format("\nGuideAlgorithmButterworth::Result() returns %.2f from input %.2f\n", dReturn, input));
+    msg.Append(wxString::Format("\n"));
+    Debug.Write(msg);
+    msg.Append(wxString::Format("GuideAlgorithmButterworth::Result() returns %.2f, input %.2f, m_sumCorr=%.2f\n", dReturn, input, m_sumCorr));
     Debug.Write(msg);
 
     return dReturn;
@@ -152,7 +157,7 @@ bool GuideAlgorithmButterworth::SetFilter(int filter)
         m_xcoeff = m_pFactory->xcoeffs;
         m_ycoeff = m_pFactory->ycoeffs;
 
-        Debug.Write(wxString::Format("GuideAlgorithmButterworth::SetFilter()\n"));
+        Debug.Write(wxString::Format("GuideAlgorithmButterworth::SetFilter(%s)\n", c_Filter.at(m_filter).getname()));
         Debug.Write(wxString::Format("GuideAlgorithmButterworth::order=%d, corner=%f, gain=%f\n",
             m_order, m_pFactory->corner(), m_gain));
         wxString msg = wxString::Format("GuideAlgorithmButterworth::m_xcoeffs:");

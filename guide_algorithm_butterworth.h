@@ -45,6 +45,7 @@ class GuideAlgorithmButterworth : public GuideAlgorithm
     int m_order;
     double m_gain;
     double m_minMove;
+    double m_sumCorr; // Sum of all corrections issued
 
     FilterFactory *m_pFactory;
     class Filter
