@@ -45,6 +45,8 @@
   #include <libnova/julian_day.h>
 #endif  
 
+static bool s_verbose = false;
+
 ScopeINDI::ScopeINDI() 
 {
     ClearStatus();
@@ -92,7 +94,10 @@ void ScopeINDI::CheckState()
 	(pulseGuideNS_prop && pulseGuideEW_prop)))
     {
         if (! ready) {
-            //printf("Telescope is ready\n");
+            Debug.Write(wxString::Format("INDI Telescope is ready "
+                                         "MotionRate=%d moveNS=%d moveEW=%d guideNS=%d guideEW=%d\n",
+                                         MotionRate_prop ? 1 : 0, moveNS_prop ? 1 : 0, moveEW_prop ? 1 : 0,
+                                         pulseGuideNS_prop ? 1 : 0, pulseGuideEW_prop ? 1 : 0));
             ready = true;
             if (modal) {
                 modal = false;
@@ -139,6 +144,8 @@ void ScopeINDI::SetupDialog()
 
 bool ScopeINDI::Connect()
 {
+    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
+
     // If not configured open the setup dialog
     if (INDIMountName == wxT("INDI Mount")) {
         SetupDialog();
@@ -243,16 +250,19 @@ void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {
+    Debug.Write(wxString::Format("INDI Mount: new device %s\n", dp->getDeviceName()));
     if (strcmp(dp->getDeviceName(), INDIMountName.mb_str(wxConvUTF8)) == 0) {
 	// The mount object
 	scope_device = dp;
+    Debug.Write(wxString::Format("INDI Mount: accepted device %s\n", dp->getDeviceName()));
     }
 }
 
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    //printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Mount: Receiving Switch: %s = %i\n", svp->name, svp->sp->s));
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
 	if (connectswitch->s == ISS_ON) {
@@ -271,19 +281,25 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the mount driver send a message
-    //printf("Mount Receving message: %s\n", dp->messageQueue(messageID));
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Mount: Receiving message: %s\n", dp->messageQueue(messageID)));
 }
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
-    //printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np->value);
+    if (s_verbose)
+    {
+        if (strcmp(nvp->name, "EQUATORIAL_EOD_COORD") != 0) // too noisy
+            Debug.Write(wxString::Format("INDI Mount: Receiving Number: %s = %g\n", nvp->name, nvp->np->value));
+    }
 }
 
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    //printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Mount: Receiving Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
 void ScopeINDI::newProperty(INDI::Property *property) 
@@ -298,7 +314,7 @@ void ScopeINDI::newProperty(INDI::Property *property)
       INDI_PROPERTY_TYPE Proptype = property->getType();
     #endif 
     
-    //printf("Mount Property: %s\n",PropName);
+    Debug.Write(wxString::Format("INDI Mount: Received property: %s\n", PropName));
     
     if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){
 	// Epoch of date
@@ -371,9 +387,12 @@ void ScopeINDI::newProperty(INDI::Property *property)
 
 Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration) 
 {
-  // guide using timed pulse guide 
-    if (pulseGuideNS_prop && pulseGuideEW_prop) {
-    // despite what is said in INDI standard properties description, every telescope driver expect the guided time in msec.
+    if (pulseGuideNS_prop && pulseGuideEW_prop)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Mount: timed pulse dir %d dur %d ms\n", direction, duration));
+
+        // despite what is said in INDI standard properties description, every telescope driver expect the guided time in msec.
     switch (direction) {
         case EAST:
 	    pulseE_prop->value = duration;
@@ -396,15 +415,22 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 	    sendNewNumber(pulseGuideNS_prop);
             break;
         case NONE:
-	    printf("error ScopeINDI::Guide NONE\n");
+	    Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
             break;
     }
+
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Mount: Guide sleep %d\n", duration));
+
     wxMilliSleep(duration);
+
     return MOVE_OK;
   }
   // guide using motion rate and telescope motion
   // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
   else if (MotionRate_prop && moveNS_prop && moveEW_prop) {
+      if (s_verbose)
+          Debug.Write(wxString::Format("INDI Mount: motion rate guide dir %d dur %d ms\n", direction, duration));
       MotionRate_prop->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec
       sendNewNumber(MotionRate_prop);
       switch (direction) {
@@ -445,12 +471,16 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 	      sendNewSwitch(moveNS_prop);
 	      break;
 	  case NONE:
-	      printf("error ScopeINDI::Guide NONE\n");
+	      Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
 	      break;
       }
       return MOVE_OK;
   }    
-  else return MOVE_ERROR;
+  else
+  {
+      Debug.Write(wxString::Format("INDI Mount: pulse guide properties unavailable!\n"));
+      return MOVE_ERROR;
+  }
 }
 
 double ScopeINDI::GetDeclination(void)
@@ -619,7 +649,7 @@ PierSide ScopeINDI::SideOfPier(void)
         POSSIBLY_UNUSED(Msg);
     }
     
-    Debug.Write(wxString::Format("ScopeINDI::SideOfPier() returns %d\n", pierSide));
+    Debug.Write(wxString::Format("INDI Mount: SideOfPier returns %d\n", pierSide));
     
     return pierSide;
 }
