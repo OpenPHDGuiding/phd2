@@ -132,7 +132,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pGuideSpeed = NewSpinner(this, textWidth, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
     m_pGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed,
-        /* xgettext:no-c-format */ _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
+        /* xgettext:no-c-format */ _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5."
+        " NOTE: Changing this setting has no effect on the guide speed used by the mount - that must be changed via driver UI or hand-controller."));
 
     // Number of steps
     m_pNumSteps = NewSpinner(this, textWidth, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
