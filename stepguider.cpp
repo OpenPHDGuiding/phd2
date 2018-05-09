@@ -730,7 +730,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                 m_calibration.binning = pCamera->Binning;
                 SetCalibration(m_calibration);
                 SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
-                status0 = _T("Calibration complete");
+                status0 = _("Calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.Write("Calibration Complete\n");
                 break;
@@ -768,22 +768,20 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
             if (status1.IsEmpty())
             {
                 double dist = m_calibrationStartingLocation.Distance(currentLocation);
-                status1.Printf(_T("dist=%4.1f"), dist);
+                status1.Printf(_("distance %4.1f px"), dist);
             }
         }
 
         if (!status0.IsEmpty())
         {
             if (!status1.IsEmpty())
-                status0 += ", " + status1;
+                status0 = wxString::Format(_("%s, %s"), status0, status1);
+
             pFrame->StatusMsg(status0);
         }
-        else
+        else if (!status1.IsEmpty())
         {
-            if (!status1.IsEmpty())
-            {
-                pFrame->StatusMsg(status1);
-            }
+            pFrame->StatusMsg(status1);
         }
     }
     catch (const wxString& Msg)

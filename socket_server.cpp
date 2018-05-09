@@ -158,7 +158,7 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
 
     if (client)
     {
-        pFrame->StatusMsg("New connection");
+        pFrame->StatusMsg(_("New server connection"));
         Debug.AddLine("SOCKSVR: New connection");
     }
     else
@@ -298,7 +298,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 if (!pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x,y)))
                 {
                     Debug.Write(wxString::Format("processing socket request SETLOCKPOSITION for (%d, %d) succeeded\n", x, y));
-                    pFrame->StatusMsg(wxString::Format("Lock set to %d,%d", x, y));
+                    pFrame->StatusMsg(wxString::Format(_("Lock set to %d,%d"), x, y));
                     GuideLog.NotifySetLockPosition(pGuider);
                 }
                 else
