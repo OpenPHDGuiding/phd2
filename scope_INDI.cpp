@@ -41,13 +41,17 @@
 #include "config_INDI.h"
 
 #ifdef LIBNOVA
-  #include <libnova/sidereal_time.h>
-  #include <libnova/julian_day.h>
-#endif  
+# include <libnova/sidereal_time.h>
+# include <libnova/julian_day.h>
+#endif
+
+#ifdef INDI_PRE_1_1_0
+typedef INDI_TYPE INDI_PROPERTY_TYPE;
+#endif
 
 static bool s_verbose = false;
 
-ScopeINDI::ScopeINDI() 
+ScopeINDI::ScopeINDI()
 {
     ClearStatus();
     // load the values from the current profile
@@ -58,64 +62,68 @@ ScopeINDI::ScopeINDI()
     m_Name = INDIMountName;
 }
 
-ScopeINDI::~ScopeINDI() 
+ScopeINDI::~ScopeINDI()
 {
     disconnectServer();
 }
 
 void ScopeINDI::ClearStatus()
 {
-    // reset properties pointer
-    connection_prop = NULL;
-    coord_prop = NULL;
-    AbortMotion_prop = NULL;
-    MotionRate_prop = NULL;
-    moveNS_prop = NULL;
-    moveEW_prop = NULL;
-    GuideRate_prop = NULL;
-    pulseGuideNS_prop = NULL;
-    pulseGuideEW_prop = NULL;
-    oncoordset_prop = NULL;
-    GeographicCoord_prop = NULL;
-    SiderealTime_prop = NULL;
-    scope_device = NULL;
-    scope_port = NULL;
-    pierside_prop = NULL;
+    // reset properties pointers
+    connection_prop = nullptr;
+    coord_prop = nullptr;
+    AbortMotion_prop = nullptr;
+    MotionRate_prop = nullptr;
+    moveNS_prop = nullptr;
+    moveEW_prop = nullptr;
+    GuideRate_prop = nullptr;
+    pulseGuideNS_prop = nullptr;
+    pulseGuideEW_prop = nullptr;
+    oncoordset_prop = nullptr;
+    GeographicCoord_prop = nullptr;
+    SiderealTime_prop = nullptr;
+    scope_device = nullptr;
+    scope_port = nullptr;
+    pierside_prop = nullptr;
     // reset connection status
     ready = false;
     eod_coord = false;
 }
 
-void ScopeINDI::CheckState() 
+void ScopeINDI::CheckState()
 {
     // Check if the device has all the required properties for our usage.
-    if(IsConnected() && (
-	(MotionRate_prop && moveNS_prop && moveEW_prop) ||
-	(pulseGuideNS_prop && pulseGuideEW_prop)))
+    if (IsConnected() &&
+        ((MotionRate_prop && moveNS_prop && moveEW_prop) ||
+         (pulseGuideNS_prop && pulseGuideEW_prop)))
     {
-        if (! ready) {
+        if (!ready)
+        {
             Debug.Write(wxString::Format("INDI Telescope is ready "
                                          "MotionRate=%d moveNS=%d moveEW=%d guideNS=%d guideEW=%d\n",
                                          MotionRate_prop ? 1 : 0, moveNS_prop ? 1 : 0, moveEW_prop ? 1 : 0,
                                          pulseGuideNS_prop ? 1 : 0, pulseGuideEW_prop ? 1 : 0));
+
             ready = true;
-            if (modal) {
+
+            if (modal)
                 modal = false;
-            }
         }
     }
 }
 
-bool ScopeINDI::HasSetupDialog(void) const
+bool ScopeINDI::HasSetupDialog() const
 {
     return true;
 }
 
-void ScopeINDI::SetupDialog() 
+void ScopeINDI::SetupDialog()
 {
-    // contrary to camera the telescope setup dialog is called only when not connected
-    // show the server and device configuration
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_MOUNT);
+    // contrary to camera the telescope setup dialog is called only
+    // when not connected show the server and device configuration
+
+    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(), TYPE_MOUNT);
+
     indiDlg->INDIhost = INDIhost;
     indiDlg->INDIport = INDIport;
     indiDlg->INDIDevName = INDIMountName;
@@ -124,21 +132,25 @@ void ScopeINDI::SetupDialog()
     indiDlg->SetSettings();
     // try to connect to server
     indiDlg->Connect();
-    if (indiDlg->ShowModal() == wxID_OK) {
-	// if OK save the values to the current profile
-	indiDlg->SaveSettings();
-	INDIhost = indiDlg->INDIhost;
-	INDIport = indiDlg->INDIport;
-	INDIMountName = indiDlg->INDIDevName;
-	INDIMountPort = indiDlg->INDIDevPort;
-	pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
-	pConfig->Profile.SetLong("/indi/INDIport", INDIport);
-	pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
-	pConfig->Profile.SetString("/indi/INDImount_port",INDIMountPort);
-	m_Name = INDIMountName;
+
+    if (indiDlg->ShowModal() == wxID_OK)
+    {
+        // if OK save the values to the current profile
+        indiDlg->SaveSettings();
+        INDIhost = indiDlg->INDIhost;
+        INDIport = indiDlg->INDIport;
+        INDIMountName = indiDlg->INDIDevName;
+        INDIMountPort = indiDlg->INDIDevPort;
+        pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
+        pConfig->Profile.SetLong("/indi/INDIport", INDIport);
+        pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
+        pConfig->Profile.SetString("/indi/INDImount_port",INDIMountPort);
+        m_Name = INDIMountName;
     }
+
     indiDlg->Disconnect();
     indiDlg->Destroy();
+
     delete indiDlg;
 }
 
@@ -147,83 +159,101 @@ bool ScopeINDI::Connect()
     s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
 
     // If not configured open the setup dialog
-    if (INDIMountName == wxT("INDI Mount")) {
+    if (INDIMountName == wxT("INDI Mount"))
+    {
         SetupDialog();
     }
+
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+
     // Receive messages only for our mount.
     watchDevice(INDIMountName.mb_str(wxConvUTF8));
+
     // Connect to server.
-    if (connectServer()) {
+    if (connectServer())
+    {
         return !ready;
     }
-    else {
-        // last chance to fix the setup
-        SetupDialog();
-        setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-        watchDevice(INDIMountName.mb_str(wxConvUTF8));
-        if (connectServer()) {
-            return !ready;
-        }
-        else {
-            return true;
-        }
+
+    // last chance to fix the setup
+    SetupDialog();
+
+    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    watchDevice(INDIMountName.mb_str(wxConvUTF8));
+
+    if (connectServer())
+    {
+        return !ready;
     }
+
+    return true;
 }
 
-bool ScopeINDI::Disconnect() 
+bool ScopeINDI::Disconnect()
 {
-    if (ready) {
-       // Disconnect from server
-       if (disconnectServer()){
-          ClearStatus(); 
-          Scope::Disconnect();
-          return false;
-       }
-       else return true;
+    if (!ready)
+        return true;
+
+    // Disconnect from server
+    if (disconnectServer())
+    {
+        ClearStatus();
+        Scope::Disconnect();
+        return false;
     }
-    else return true;
+
+    return true;
 }
 
 void ScopeINDI::serverConnected()
 {
     // After connection to the server
     // set option to receive only the messages, no blob
-    setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), NULL);
-    modal = true; 
+    setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), nullptr);
+    modal = true;
+
     // wait for the device port property
     wxLongLong msec;
+
     msec = wxGetUTCTimeMillis();
-    if (INDIMountPort.Length()) {    // the mount port is not mandatory
+    if (INDIMountPort.Length())    // the mount port is not mandatory
+    {
         // wait for Port property
-        while ((!scope_port) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+        while ((!scope_port) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+        {
             ::wxSafeYield();
         }
         // Set the port, this must be done before to try to connect the device
-        if (scope_port) {
-            char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
+        if (scope_port)
+        {
+            char *porttext = const_cast<char*>((const char*)INDIMountPort.mb_str());
             scope_port->tp->text = porttext;
-            sendNewText(scope_port); 
+            sendNewText(scope_port);
         }
     }
     // Connect the mount device
-    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
-         ::wxSafeYield();
+    while (!connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000)
+    {
+        ::wxSafeYield();
     }
     connectDevice(INDIMountName.mb_str(wxConvUTF8));
-    
+
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000) {
-	::wxSafeYield();
+    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
+    {
+        ::wxSafeYield();
     }
     modal = false;
+
     // In case we not get all the required properties or connection to the device failed
-    if( ready) {
-       Scope::Connect();
+    if (ready)
+    {
+        Scope::Connect();
     }
-    else {
-       Disconnect();
+    else
+    {
+        Disconnect();
     }
 }
 
@@ -231,30 +261,33 @@ void ScopeINDI::serverDisconnected(int exit_code)
 {
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
+
     // in case the connection lost we must reset the client socket
-    if (exit_code==-1) {
-       Disconnect();
-       Scope::Disconnect();
+    if (exit_code == -1)
+    {
+        Disconnect();
+        Scope::Disconnect();
     }
 }
 
 #ifndef INDI_PRE_1_0_0
 void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 {
-   ClearStatus();
-   Disconnect();
-   Scope::Disconnect();
+    ClearStatus();
+    Disconnect();
+    Scope::Disconnect();
 }
 #endif
-
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {
     Debug.Write(wxString::Format("INDI Mount: new device %s\n", dp->getDeviceName()));
-    if (strcmp(dp->getDeviceName(), INDIMountName.mb_str(wxConvUTF8)) == 0) {
-	// The mount object
-	scope_device = dp;
-    Debug.Write(wxString::Format("INDI Mount: accepted device %s\n", dp->getDeviceName()));
+
+    if (strcmp(dp->getDeviceName(), INDIMountName.mb_str(wxConvUTF8)) == 0)
+    {
+        // The mount object
+        scope_device = dp;
+        Debug.Write(wxString::Format("INDI Mount: accepted device %s\n", dp->getDeviceName()));
     }
 }
 
@@ -263,17 +296,22 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
     // we go here every time a Switch state change
     if (s_verbose)
         Debug.Write(wxString::Format("INDI Mount: Receiving Switch: %s = %i\n", svp->name, svp->sp->s));
-    if (strcmp(svp->name, "CONNECTION") == 0) {
-	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-	if (connectswitch->s == ISS_ON) {
+
+    if (strcmp(svp->name, "CONNECTION") == 0)
+    {
+        ISwitch *connectswitch = IUFindSwitch(svp, "CONNECT");
+
+        if (connectswitch->s == ISS_ON)
+        {
             Scope::Connect();
         }
-        else {
-            if (ready) {
-               ClearStatus(); 
-               Scope::Disconnect();
+        else
+        {
+            if (ready)
+            {
+                ClearStatus();
+                Scope::Disconnect();
             }
-    
         }
     }
 }
@@ -302,90 +340,104 @@ void ScopeINDI::newText(ITextVectorProperty *tvp)
         Debug.Write(wxString::Format("INDI Mount: Receiving Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
-void ScopeINDI::newProperty(INDI::Property *property) 
+void ScopeINDI::newProperty(INDI::Property *property)
 {
     // Here we receive a list of all the properties after the connection
     // Updated values are not received here but in the newTYPE() functions above.
     // We keep the vector for each interesting property to send some data later.
-    const char* PropName = property->getName();
-    #ifdef INDI_PRE_1_1_0
-      INDI_TYPE Proptype = property->getType();
-    #else
-      INDI_PROPERTY_TYPE Proptype = property->getType();
-    #endif 
-    
+    const char *PropName = property->getName();
+
+    INDI_PROPERTY_TYPE Proptype = property->getType();
+
     Debug.Write(wxString::Format("INDI Mount: Received property: %s\n", PropName));
-    
-    if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){
-	// Epoch of date
-	coord_prop = property->getNumber();
-	eod_coord = true;
+
+    if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER)
+    {
+        // Epoch of date
+        coord_prop = property->getNumber();
+        eod_coord = true;
     }
-    else if ((strcmp(PropName, "EQUATORIAL_COORD") == 0) && (!coord_prop) && Proptype == INDI_NUMBER){
-	// Epoch J2000, used only if epoch of date is not available
-	coord_prop = property->getNumber();
-	eod_coord = false;
+    else if ((strcmp(PropName, "EQUATORIAL_COORD") == 0) && (!coord_prop) && Proptype == INDI_NUMBER)
+    {
+        // Epoch J2000, used only if epoch of date is not available
+        coord_prop = property->getNumber();
+        eod_coord = false;
     }
-    else if ((strcmp(PropName, "ON_COORD_SET") == 0) && Proptype == INDI_SWITCH){
-	oncoordset_prop = property->getSwitch();
-	setslew_prop = IUFindSwitch(oncoordset_prop,"SLEW");
-	settrack_prop = IUFindSwitch(oncoordset_prop,"TRACK");
-	setsync_prop = IUFindSwitch(oncoordset_prop,"SYNC");
+    else if ((strcmp(PropName, "ON_COORD_SET") == 0) && Proptype == INDI_SWITCH)
+    {
+        oncoordset_prop = property->getSwitch();
+        setslew_prop = IUFindSwitch(oncoordset_prop,"SLEW");
+        settrack_prop = IUFindSwitch(oncoordset_prop,"TRACK");
+        setsync_prop = IUFindSwitch(oncoordset_prop,"SYNC");
     }
-    else if ((strcmp(PropName, "TELESCOPE_ABORT_MOTION") == 0) && Proptype == INDI_SWITCH){
-       AbortMotion_prop = property->getSwitch();
-       Abort_prop = IUFindSwitch(AbortMotion_prop,"ABORT");
+    else if ((strcmp(PropName, "TELESCOPE_ABORT_MOTION") == 0) && Proptype == INDI_SWITCH)
+    {
+        AbortMotion_prop = property->getSwitch();
+        Abort_prop = IUFindSwitch(AbortMotion_prop,"ABORT");
     }
-    else if ((strcmp(PropName, "TELESCOPE_MOTION_RATE") == 0) && Proptype == INDI_NUMBER){
-	MotionRate_prop = property->getNumber();
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_RATE") == 0) && Proptype == INDI_NUMBER)
+    {
+        MotionRate_prop = property->getNumber();
     }
-    else if ((strcmp(PropName, "TELESCOPE_MOTION_NS") == 0) && Proptype == INDI_SWITCH){
-	moveNS_prop = property->getSwitch();
-	moveN_prop = IUFindSwitch(moveNS_prop,"MOTION_NORTH");
-	moveS_prop = IUFindSwitch(moveNS_prop,"MOTION_SOUTH");
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_NS") == 0) && Proptype == INDI_SWITCH)
+    {
+        moveNS_prop = property->getSwitch();
+        moveN_prop = IUFindSwitch(moveNS_prop,"MOTION_NORTH");
+        moveS_prop = IUFindSwitch(moveNS_prop,"MOTION_SOUTH");
     }
-    else if ((strcmp(PropName, "TELESCOPE_MOTION_WE") == 0) && Proptype == INDI_SWITCH){
-	moveEW_prop = property->getSwitch();
-	moveE_prop = IUFindSwitch(moveEW_prop,"MOTION_EAST");
-	moveW_prop = IUFindSwitch(moveEW_prop,"MOTION_WEST");
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_WE") == 0) && Proptype == INDI_SWITCH)
+    {
+        moveEW_prop = property->getSwitch();
+        moveE_prop = IUFindSwitch(moveEW_prop,"MOTION_EAST");
+        moveW_prop = IUFindSwitch(moveEW_prop,"MOTION_WEST");
     }
-    else if ((strcmp(PropName, "GUIDE_RATE") == 0) && Proptype == INDI_NUMBER){
-	GuideRate_prop = property->getNumber();
+    else if ((strcmp(PropName, "GUIDE_RATE") == 0) && Proptype == INDI_NUMBER)
+    {
+        GuideRate_prop = property->getNumber();
     }
-    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER){
-	pulseGuideNS_prop = property->getNumber();
-	pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
-	pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER)
+    {
+        pulseGuideNS_prop = property->getNumber();
+        pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
+        pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
     }
-    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER){
-	pulseGuideEW_prop = property->getNumber();
-       pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
-       pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER)
+    {
+        pulseGuideEW_prop = property->getNumber();
+        pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
+        pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
-    else if ((strcmp(PropName, "TELESCOPE_PIER_SIDE") == 0) && Proptype == INDI_SWITCH){
+    else if ((strcmp(PropName, "TELESCOPE_PIER_SIDE") == 0) && Proptype == INDI_SWITCH)
+    {
         pierside_prop = property->getSwitch();
         piersideEast_prop = IUFindSwitch(pierside_prop,"PIER_EAST");
         piersideWest_prop = IUFindSwitch(pierside_prop,"PIER_WEST");
     }
-    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {    
-	scope_port = property->getText();
+    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT)
+    {
+        scope_port = property->getText();
     }
-    else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
-	// Check the value here in case the device is already connected
+    else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH)
+    {
+        // Check the value here in case the device is already connected
         connection_prop = property->getSwitch();
-	ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
-	if (connectswitch->s == ISS_ON) Scope::Connect();
+        ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
+        if (connectswitch->s == ISS_ON)
+            Scope::Connect();
     }
-    else if ((strcmp(PropName, "GEOGRAPHIC_COORD") == 0) && Proptype == INDI_NUMBER){
-	GeographicCoord_prop = property->getNumber();
+    else if ((strcmp(PropName, "GEOGRAPHIC_COORD") == 0) && Proptype == INDI_NUMBER)
+    {
+        GeographicCoord_prop = property->getNumber();
     }
-    else if ((strcmp(PropName, "TIME_LST") == 0) && Proptype == INDI_NUMBER){
-	SiderealTime_prop = property->getNumber();
+    else if ((strcmp(PropName, "TIME_LST") == 0) && Proptype == INDI_NUMBER)
+    {
+        SiderealTime_prop = property->getNumber();
     }
+
     CheckState();
 }
 
-Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration) 
+Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 {
     if (pulseGuideNS_prop && pulseGuideEW_prop)
     {
@@ -393,268 +445,294 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
             Debug.Write(wxString::Format("INDI Mount: timed pulse dir %d dur %d ms\n", direction, duration));
 
         // despite what is said in INDI standard properties description, every telescope driver expect the guided time in msec.
-    switch (direction) {
+        switch (direction) {
         case EAST:
-	    pulseE_prop->value = duration;
-	    pulseW_prop->value = 0;
-	    sendNewNumber(pulseGuideEW_prop);
+            pulseE_prop->value = duration;
+            pulseW_prop->value = 0;
+            sendNewNumber(pulseGuideEW_prop);
             break;
         case WEST:
-	    pulseE_prop->value = 0;
-	    pulseW_prop->value = duration;
-	    sendNewNumber(pulseGuideEW_prop);
+            pulseE_prop->value = 0;
+            pulseW_prop->value = duration;
+            sendNewNumber(pulseGuideEW_prop);
             break;
         case NORTH:
-	    pulseN_prop->value = duration;
-	    pulseS_prop->value = 0;
-	    sendNewNumber(pulseGuideNS_prop);
+            pulseN_prop->value = duration;
+            pulseS_prop->value = 0;
+            sendNewNumber(pulseGuideNS_prop);
             break;
         case SOUTH:
-	    pulseN_prop->value = 0;
-	    pulseS_prop->value = duration;
-	    sendNewNumber(pulseGuideNS_prop);
+            pulseN_prop->value = 0;
+            pulseS_prop->value = duration;
+            sendNewNumber(pulseGuideNS_prop);
             break;
         case NONE:
-	    Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
+            Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
             break;
+        }
+
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Mount: Guide sleep %d\n", duration));
+
+        wxMilliSleep(duration);
+
+        return MOVE_OK;
     }
+    // guide using motion rate and telescope motion
+    // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
+    else if (MotionRate_prop && moveNS_prop && moveEW_prop)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Mount: motion rate guide dir %d dur %d ms\n", direction, duration));
 
-    if (s_verbose)
-        Debug.Write(wxString::Format("INDI Mount: Guide sleep %d\n", duration));
+        MotionRate_prop->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec
+        sendNewNumber(MotionRate_prop);
 
-    wxMilliSleep(duration);
+        switch (direction) {
+        case EAST:
+            moveW_prop->s = ISS_OFF;
+            moveE_prop->s = ISS_ON;
+            sendNewSwitch(moveEW_prop);
+            wxMilliSleep(duration);
+            moveW_prop->s = ISS_OFF;
+            moveE_prop->s = ISS_OFF;
+            sendNewSwitch(moveEW_prop);
+            break;
+        case WEST:
+            moveW_prop->s = ISS_ON;
+            moveE_prop->s = ISS_OFF;
+            sendNewSwitch(moveEW_prop);
+            wxMilliSleep(duration);
+            moveW_prop->s = ISS_OFF;
+            moveE_prop->s = ISS_OFF;
+            sendNewSwitch(moveEW_prop);
+            break;
+        case NORTH:
+            moveN_prop->s = ISS_ON;
+            moveS_prop->s = ISS_OFF;
+            sendNewSwitch(moveNS_prop);
+            wxMilliSleep(duration);
+            moveN_prop->s = ISS_OFF;
+            moveS_prop->s = ISS_OFF;
+            sendNewSwitch(moveNS_prop);
+            break;
+        case SOUTH:
+            moveN_prop->s = ISS_OFF;
+            moveS_prop->s = ISS_ON;
+            sendNewSwitch(moveNS_prop);
+            wxMilliSleep(duration);
+            moveN_prop->s = ISS_OFF;
+            moveS_prop->s = ISS_OFF;
+            sendNewSwitch(moveNS_prop);
+            break;
+        case NONE:
+            Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
+            break;
+        }
 
-    return MOVE_OK;
-  }
-  // guide using motion rate and telescope motion
-  // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
-  else if (MotionRate_prop && moveNS_prop && moveEW_prop) {
-      if (s_verbose)
-          Debug.Write(wxString::Format("INDI Mount: motion rate guide dir %d dur %d ms\n", direction, duration));
-      MotionRate_prop->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec
-      sendNewNumber(MotionRate_prop);
-      switch (direction) {
-	  case EAST:
-	      moveW_prop->s = ISS_OFF;
-	      moveE_prop->s = ISS_ON;
-	      sendNewSwitch(moveEW_prop);
-	      wxMilliSleep(duration);
-	      moveW_prop->s = ISS_OFF;
-	      moveE_prop->s = ISS_OFF;
-	      sendNewSwitch(moveEW_prop);
-	      break;
-	  case WEST:
-	      moveW_prop->s = ISS_ON;
-	      moveE_prop->s = ISS_OFF;
-	      sendNewSwitch(moveEW_prop);
-	      wxMilliSleep(duration);
-	      moveW_prop->s = ISS_OFF;
-	      moveE_prop->s = ISS_OFF;
-	      sendNewSwitch(moveEW_prop);
-	      break;
-	  case NORTH:
-	      moveN_prop->s = ISS_ON;
-	      moveS_prop->s = ISS_OFF;
-	      sendNewSwitch(moveNS_prop);
-	      wxMilliSleep(duration);
-	      moveN_prop->s = ISS_OFF;
-	      moveS_prop->s = ISS_OFF;
-	      sendNewSwitch(moveNS_prop);
-	      break;
-	  case SOUTH:
-	      moveN_prop->s = ISS_OFF;
-	      moveS_prop->s = ISS_ON;
-	      sendNewSwitch(moveNS_prop);
-	      wxMilliSleep(duration);
-	      moveN_prop->s = ISS_OFF;
-	      moveS_prop->s = ISS_OFF;
-	      sendNewSwitch(moveNS_prop);
-	      break;
-	  case NONE:
-	      Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
-	      break;
-      }
-      return MOVE_OK;
-  }    
-  else
-  {
-      Debug.Write(wxString::Format("INDI Mount: pulse guide properties unavailable!\n"));
-      return MOVE_ERROR;
-  }
+        return MOVE_OK;
+    }
+    else
+    {
+        Debug.Write(wxString::Format("INDI Mount: pulse guide properties unavailable!\n"));
+        return MOVE_ERROR;
+    }
 }
 
-double ScopeINDI::GetDeclination(void)
+double ScopeINDI::GetDeclination()
 {
-    if (coord_prop) {
-        INumber *decprop = IUFindNumber(coord_prop,"DEC");
-        if (decprop) {
+    if (coord_prop)
+    {
+        INumber *decprop = IUFindNumber(coord_prop, "DEC");
+        if (decprop)
+        {
             double dec = decprop->value;     // Degrees
-	        if (dec > 89.0) dec = 89.0;     // avoid crash when dividing by cos(dec) 
-            if (dec < -89.0) dec = -89.0; 
+            if (dec > 89.0) dec = 89.0;     // avoid crash when dividing by cos(dec)
+            if (dec < -89.0) dec = -89.0;
             return radians(dec);
         }
     }
+
     return UNKNOWN_DECLINATION;
 }
 
-bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
-{
-    const double dSiderealSecondPerSec = 0.9973;
-    bool err;
-    double gra,gdec;
-    err = true;
-    if (GuideRate_prop) {
-	INumber *ratera = IUFindNumber(GuideRate_prop,"GUIDE_RATE_WE");
-	INumber *ratedec = IUFindNumber(GuideRate_prop,"GUIDE_RATE_NS");
-	if (ratera && ratedec) {
-	    gra =  ratera->value;  // sidereal rate
-	    gdec = ratedec->value;
-	    gra = gra * (15.0 * dSiderealSecondPerSec)/3600;    // ASCOM compatible
-	    gdec = gdec * (15.0 * dSiderealSecondPerSec)/3600;  // Degrees/sec
-	    *pRAGuideRate =  gra;
-	    *pDecGuideRate = gdec;
-	    err = false;
-	}
-    }
-    return err;
-}
-
-bool   ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
+bool ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     bool err = true;
-    if (coord_prop) {
-	INumber *raprop = IUFindNumber(coord_prop,"RA");
-	INumber *decprop = IUFindNumber(coord_prop,"DEC");
-	if (raprop && decprop) {
-	    *ra = raprop->value;   // hours
-	    *dec = decprop->value; // degrees
-	    err = false;
-	}
-	if (SiderealTime_prop) {   // LX200 only
-	    INumber *stprop = IUFindNumber(SiderealTime_prop,"LST"); 
-	    if (stprop){
-		*siderealTime = stprop->value;
-	    }
-	}
-	else {
-	   #ifdef LIBNOVA
-	   double lat,lon;
-	   double jd = ln_get_julian_from_sys();
-	   *siderealTime = ln_get_apparent_sidereal_time (jd);
-	   if (!GetSiteLatLong(&lat,&lon)) 
-	      *siderealTime = *siderealTime + (lon/15);
-	   #else
-	   *siderealTime = 0;
-	   #endif
-	}
+
+    if (GuideRate_prop)
+    {
+        INumber *ratera = IUFindNumber(GuideRate_prop, "GUIDE_RATE_WE");
+        INumber *ratedec = IUFindNumber(GuideRate_prop, "GUIDE_RATE_NS");
+        if (ratera && ratedec)
+        {
+            const double dSiderealSecondPerSec = 0.9973;
+            double gra = ratera->value;  // sidereal rate
+            double gdec = ratedec->value;
+            gra *= (15.0 * dSiderealSecondPerSec) / 3600.;   // ASCOM compatible
+            gdec *= (15.0 * dSiderealSecondPerSec) / 3600.;  // Degrees/sec
+            *pRAGuideRate =  gra;
+            *pDecGuideRate = gdec;
+            err = false;
+        }
     }
+
     return err;
 }
 
-bool   ScopeINDI::GetSiteLatLong(double *latitude, double *longitude)
+bool ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
     bool err = true;
-    if (GeographicCoord_prop) {
-       INumber *latprop = IUFindNumber(GeographicCoord_prop,"LAT");
-       INumber *lonprop = IUFindNumber(GeographicCoord_prop,"LONG");
-	if (latprop && lonprop) {
-	    *latitude = latprop->value;
-	    *longitude = lonprop->value;
-	    err = false;
-	}
+
+    if (coord_prop)
+    {
+        INumber *raprop = IUFindNumber(coord_prop, "RA");
+        INumber *decprop = IUFindNumber(coord_prop, "DEC");
+        if (raprop && decprop)
+        {
+            *ra = raprop->value;   // hours
+            *dec = decprop->value; // degrees
+            err = false;
+        }
+
+        if (SiderealTime_prop)   // LX200 only
+        {
+            INumber *stprop = IUFindNumber(SiderealTime_prop, "LST");
+            if (stprop)
+                *siderealTime = stprop->value;
+        }
+        else
+        {
+#ifdef LIBNOVA
+            double jd = ln_get_julian_from_sys();
+            *siderealTime = ln_get_apparent_sidereal_time(jd);
+            double lat,lon;
+            if (!GetSiteLatLong(&lat,&lon))
+                *siderealTime += (lon / 15.);
+#else
+            *siderealTime = 0;
+#endif
+        }
     }
+
     return err;
 }
 
-bool   ScopeINDI::CanSlewAsync()
+bool ScopeINDI::GetSiteLatLong(double *latitude, double *longitude)
+{
+    bool err = true;
+
+    if (GeographicCoord_prop)
+    {
+        INumber *latprop = IUFindNumber(GeographicCoord_prop,"LAT");
+        INumber *lonprop = IUFindNumber(GeographicCoord_prop,"LONG");
+        if (latprop && lonprop)
+        {
+            *latitude = latprop->value;
+            *longitude = lonprop->value;
+            err = false;
+        }
+    }
+
+    return err;
+}
+
+bool ScopeINDI::CanSlewAsync()
 {
     // INDI slew is always async
     return true;
 }
 
-bool   ScopeINDI::SlewToCoordinates(double ra, double dec)
+bool ScopeINDI::SlewToCoordinates(double ra, double dec)
 {
     bool err = true;
-    if (coord_prop && oncoordset_prop) {
-        err = SlewToCoordinatesAsync(ra, dec);
-        wxLongLong msec;
-        msec = wxGetUTCTimeMillis();
-        while ((coord_prop->s == IPS_BUSY) && wxGetUTCTimeMillis() - msec < 90 * 1000) {
-            ::wxSafeYield();
-        } 
-    }
-    return err; 
-}
 
-bool   ScopeINDI::SlewToCoordinatesAsync(double ra, double dec)
-{
-    bool err = true;
-    if (coord_prop && oncoordset_prop) {
-	setslew_prop->s = ISS_ON;
-	settrack_prop->s = ISS_OFF;
-	setsync_prop->s = ISS_OFF;
-	sendNewSwitch(oncoordset_prop);
-	INumber *raprop = IUFindNumber(coord_prop,"RA");
-	INumber *decprop = IUFindNumber(coord_prop,"DEC");
-	raprop->value = ra;
-	decprop->value = dec;
-	sendNewNumber(coord_prop);
-	err = false;
+    if (coord_prop && oncoordset_prop)
+    {
+        err = SlewToCoordinatesAsync(ra, dec);
+        wxLongLong msec = wxGetUTCTimeMillis();
+        while (coord_prop->s == IPS_BUSY && wxGetUTCTimeMillis() - msec < 90 * 1000)
+        {
+            ::wxSafeYield();
+        }
+        if (coord_prop->s != IPS_BUSY)
+            err = false;
     }
+
     return err;
 }
 
-void   ScopeINDI::AbortSlew(void)
+bool ScopeINDI::SlewToCoordinatesAsync(double ra, double dec)
 {
-    if (AbortMotion_prop && Abort_prop) {
-        Abort_prop->s = ISS_ON;
-        sendNewSwitch(AbortMotion_prop);
-    }    
+    bool err = true;
+
+    if (coord_prop && oncoordset_prop)
+    {
+        setslew_prop->s = ISS_ON;
+        settrack_prop->s = ISS_OFF;
+        setsync_prop->s = ISS_OFF;
+        sendNewSwitch(oncoordset_prop);
+        INumber *raprop = IUFindNumber(coord_prop, "RA");
+        INumber *decprop = IUFindNumber(coord_prop, "DEC");
+        raprop->value = ra;
+        decprop->value = dec;
+        sendNewNumber(coord_prop);
+        err = false;
+    }
+
+    return err;
 }
 
-bool   ScopeINDI::Slewing(void)
+void ScopeINDI::AbortSlew()
+{
+    if (AbortMotion_prop && Abort_prop)
+    {
+        Abort_prop->s = ISS_ON;
+        sendNewSwitch(AbortMotion_prop);
+    }
+}
+
+bool ScopeINDI::Slewing()
 {
     return coord_prop && coord_prop->s == IPS_BUSY;
 }
 
-PierSide ScopeINDI::SideOfPier(void)
+PierSide ScopeINDI::SideOfPier()
 {
     PierSide pierSide = PIER_SIDE_UNKNOWN;
-    
+
     try
     {
         if (!IsConnected())
         {
             throw ERROR_INFO("INDI Scope: cannot get side of pier when not connected");
         }
-        
-        if (pierside_prop == NULL)
+
+        if (!pierside_prop)
         {
             throw THROW_INFO("INDI Scope: not capable of getting side of pier");
         }
-        else
+
+        if (piersideEast_prop->s == ISS_ON)
         {
-            if (piersideEast_prop->s == ISS_ON) {
-                pierSide = PIER_SIDE_EAST;
-                
-            }
-            if (piersideWest_prop->s == ISS_ON) {
-                pierSide = PIER_SIDE_WEST;
-                
-            }
+            pierSide = PIER_SIDE_EAST;
+        }
+        else if (piersideWest_prop->s == ISS_ON)
+        {
+            pierSide = PIER_SIDE_WEST;
         }
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
-    
+
     Debug.Write(wxString::Format("INDI Mount: SideOfPier returns %d\n", pierSide));
-    
+
     return pierSide;
 }
 
-bool ScopeINDI::HasNonGuiMove(void)
+bool ScopeINDI::HasNonGuiMove()
 {
     return true;
 }
