@@ -412,11 +412,14 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
 
                 m_scaleFactor = newScaleFactor;
 
-                Debug.Write(wxString::Format("Resizing image to %d,%d\n", newWidth, newHeight));
-
-                if (newWidth > 0 && newHeight > 0)
+                if (imageWidth != newWidth || imageHeight != newHeight)
                 {
-                    m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
+//                    Debug.Write(wxString::Format("Resizing image to %d,%d\n", newWidth, newHeight));
+
+                    if (newWidth > 0 && newHeight > 0)
+                    {
+                        m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
+                    }
                 }
             }
             else
@@ -657,8 +660,8 @@ void Guider::UpdateImageDisplay(usImage *pImage)
         pImage = m_pCurrentImage;
     }
 
-    Debug.Write(wxString::Format("UpdateImageDisplay: Size=(%d,%d) min=%d, max=%d, FiltMin=%d, FiltMax=%d\n",
-        pImage->Size.x, pImage->Size.y, pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax));
+    Debug.Write(wxString::Format("UpdateImageDisplay: Size=(%d,%d) min=%d, max=%d, FiltMin=%d, FiltMax=%d, Gamma=%.3f\n",
+        pImage->Size.x, pImage->Size.y, pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax, pFrame->Stretch_gamma));
 
     Refresh();
     Update();
