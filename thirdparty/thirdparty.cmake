@@ -605,7 +605,7 @@ if(WIN32)
   if(NOT EXISTS ${indiclient_dir})
     # unzip the dependency
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-b330012b-win32.zip --format=zip
+      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip --format=zip
         WORKING_DIRECTORY ${indiclient_root})
   endif()
   include_directories(${indiclient_dir}/include)

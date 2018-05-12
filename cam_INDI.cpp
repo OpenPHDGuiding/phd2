@@ -49,6 +49,8 @@
 #include "image_math.h"
 #include "cam_INDI.h"
 
+static bool s_verbose = false;
+
 CameraINDI::CameraINDI()
 {
     ClearStatus();
@@ -75,34 +77,36 @@ CameraINDI::~CameraINDI()
 void CameraINDI::ClearStatus()
 {
     // reset properties pointer
-    connection_prop = NULL;
-    expose_prop = NULL;
-    frame_prop = NULL;
-    frame_type_prop = NULL;
-    ccdinfo_prop = NULL;
-    binning_prop = NULL;
-    video_prop = NULL;
-    camera_port = NULL;
-    camera_device = NULL;
-    pulseGuideNS_prop = NULL;
-    pulseGuideEW_prop = NULL;
+    connection_prop = nullptr;
+    expose_prop = nullptr;
+    frame_prop = nullptr;
+    frame_type_prop = nullptr;
+    ccdinfo_prop = nullptr;
+    binning_prop = nullptr;
+    video_prop = nullptr;
+    camera_port = nullptr;
+    camera_device = nullptr;
+    pulseGuideNS_prop = nullptr;
+    pulseGuideEW_prop = nullptr;
     // gui self destroy on lost connection
-    gui = NULL;
+    gui = nullptr;
     // reset connection status
     has_blob = false;
     Connected = false;
     ready = false;
     m_hasGuideOutput = false;
     PixSize = PixSizeX = PixSizeY = 0.0;
-    cam_bp = NULL;
+    cam_bp = nullptr;
 }
 
 void CameraINDI::CheckState()
 {
     // Check if the device has all the required properties for our usage.
-    if (has_blob && camera_device && Connected && (expose_prop || video_prop)) {
-        if (! ready) {
-            //printf("Camera is ready\n");
+    if (has_blob && camera_device && Connected && (expose_prop || video_prop))
+    {
+        if (! ready)
+        {
+            Debug.Write(wxString::Format("INDI Camera is ready\n"));
             ready = true;
             first_frame = true;
             if (modal) {
@@ -114,7 +118,8 @@ void CameraINDI::CheckState()
 
 void CameraINDI::newDevice(INDI::BaseDevice *dp)
 {
-    if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0) {
+    if (strcmp(dp->getDeviceName(), INDICameraName.mb_str(wxConvUTF8)) == 0)
+    {
         // The camera object
         camera_device = dp;
     }
@@ -123,16 +128,23 @@ void CameraINDI::newDevice(INDI::BaseDevice *dp)
 void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    //printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
-    if (strcmp(svp->name, "CONNECTION") == 0) {
+
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Camera Receive Switch: %s = %i\n", svp->name, svp->sp->s));
+
+    if (strcmp(svp->name, "CONNECTION") == 0)
+    {
         ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-        if (connectswitch->s == ISS_ON) {
+        if (connectswitch->s == ISS_ON)
+        {
             Connected = true;
         }
-        else {
-            if (ready) {
-               ClearStatus();
-               DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
+        else
+        {
+            if (ready)
+            {
+                ClearStatus();
+                DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
             }
         }
     }
@@ -141,14 +153,30 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
 void CameraINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the camera driver send a message
-    //printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
+
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Camera Receive message: %s\n", dp->messageQueue(messageID)));
 }
 
 void CameraINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
-    //printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
-    if (nvp == ccdinfo_prop) {
+
+    if (s_verbose)
+    {
+        if (strcmp(nvp->name, "CCD_EXPOSURE") == 0 )
+        {
+            // rate limit this one, it's too noisy
+            static double s_lastval;
+            if (nvp->np->value > 0.0 && fabs(nvp->np->value - s_lastval) < 0.5)
+                return;
+            s_lastval = nvp->np->value;
+        }
+        Debug.Write(wxString::Format("INDI Camera Receive Number: %s = %g\n", nvp->name, nvp->np->value));
+    }
+
+    if (nvp == ccdinfo_prop)
+    {
         PixSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
         PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
         PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
@@ -157,7 +185,8 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
     }
-    if (nvp == binning_prop) {
+    if (nvp == binning_prop)
+    {
         MaxBinning = wxMin(binning_x->max, binning_y->max);
         Binning = wxMin(binning_x->value, binning_y->value);
         if (Binning > MaxBinning)
@@ -170,112 +199,152 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
 void CameraINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    //printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Camera Receive Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
 void  CameraINDI::newBLOB(IBLOB *bp)
 {
     // we go here every time a new blob is available
     // this is normally the image from the camera
-    //printf("Got camera blob %s \n",bp->name);
-    if ((expose_prop)&&(!INDICameraForceVideo)) {
-        if (bp->name == INDICameraBlobName) {
+
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Camera Got camera blob %s\n", bp->name));
+
+    if (expose_prop && !INDICameraForceVideo)
+    {
+        if (bp->name == INDICameraBlobName)
+        {
             cam_bp = bp;
             modal = false;
         }
     }
-    else if (video_prop){
+    else if (video_prop)
+    {
         cam_bp = bp;
-        if (modal && (!stacking))
+        if (modal && !stacking)
         {
             StackStream();
         }
     }
 }
 
+#ifdef INDI_PRE_1_1_0
+typedef INDI_PROPERTY_TYPE INDI_TYPE;
+#endif
+
 void CameraINDI::newProperty(INDI::Property *property)
 {
     // Here we receive a list of all the properties after the connection
     // Updated values are not received here but in the newTYPE() functions above.
     // We keep the vector for each interesting property to send some data later.
-    //const char* DeviName = property->getDeviceName();
+
     wxString PropName(property->getName());
-    #ifdef INDI_PRE_1_1_0
-      INDI_TYPE Proptype = property->getType();
-    #else
-      INDI_PROPERTY_TYPE Proptype = property->getType();
-    #endif
+    INDI_PROPERTY_TYPE Proptype = property->getType();
 
-    //printf("Camera Property: %s\n",property->getName());
+    if (s_verbose)
+        Debug.Write(wxString::Format("INDI Camera Property: %s\n", property->getName()));
 
-    if (Proptype == INDI_BLOB) {
-        //printf("Found BLOB property for %s %s\n", DeviName, PropName);
-        if (PropName==INDICameraBlobName) {
-           has_blob = 1;
-           // set option to receive blob and messages for the selected CCD
-           setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));       
+    if (Proptype == INDI_BLOB)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found BLOB property for %s %s\n", property->getDeviceName(), PropName));
+
+        if (PropName == INDICameraBlobName)
+        {
+            has_blob = 1;
+            // set option to receive blob and messages for the selected CCD
+            setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
         }
     }
-    else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER) {
-        //printf("Found CCD_EXPOSURE for %s %s\n", DeviName, PropName);
+    else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CCD_EXPOSURE for %s %s\n", property->getDeviceName(), PropName));
+
         expose_prop = property->getNumber();
     }
-    else if (PropName == INDICameraCCDCmd + "FRAME" && Proptype == INDI_NUMBER) {
-        //printf("Found CCD_FRAME for %s %s\n", DeviName, PropName);
+    else if (PropName == INDICameraCCDCmd + "FRAME" && Proptype == INDI_NUMBER)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CCD_FRAME for %s %s\n", property->getDeviceName(), PropName));
+
         frame_prop = property->getNumber();
         frame_x = IUFindNumber(frame_prop,"X");
         frame_y = IUFindNumber(frame_prop,"Y");
         frame_width = IUFindNumber(frame_prop,"WIDTH");
         frame_height = IUFindNumber(frame_prop,"HEIGHT");
     }
-    else if (PropName == INDICameraCCDCmd + "FRAME_TYPE" && Proptype == INDI_SWITCH) {
-        //printf("Found CCD_FRAME_TYPE for %s %s\n", DeviName, PropName);
+    else if (PropName == INDICameraCCDCmd + "FRAME_TYPE" && Proptype == INDI_SWITCH)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CCD_FRAME_TYPE for %s %s\n", property->getDeviceName(), PropName));
+
         frame_type_prop = property->getSwitch();
     }
-    else if (PropName == INDICameraCCDCmd + "BINNING" && Proptype == INDI_NUMBER) {
-        //printf("Found CCD_BINNING for %s %s\n",DeviName, PropName);
+    else if (PropName == INDICameraCCDCmd + "BINNING" && Proptype == INDI_NUMBER)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CCD_BINNING for %s %s\n", property->getDeviceName(), PropName));
+
         binning_prop = property->getNumber();
         binning_x = IUFindNumber(binning_prop,"HOR_BIN");
         binning_y = IUFindNumber(binning_prop,"VER_BIN");
         newNumber(binning_prop);
     }
-    else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH) {
-        //printf("Found Video %s %s\n",DeviName, PropName);
+    else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format(("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName)));
+
         video_prop = property->getSwitch();
         has_old_videoprop = false;
     }
-    else if (((PropName == "VIDEO_STREAM") ) && Proptype == INDI_SWITCH) {
-        //printf("Found Video %s %s\n",DeviName, PropName);
+    else if (((PropName == "VIDEO_STREAM") ) && Proptype == INDI_SWITCH)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName));
+
         video_prop = property->getSwitch();
         has_old_videoprop = true;
     }
-    else if (PropName == "DEVICE_PORT" && Proptype == INDI_TEXT) {
-        //printf("Found device port for %s \n",DeviName);
+    else if (PropName == "DEVICE_PORT" && Proptype == INDI_TEXT)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found device port for %s \n", property->getDeviceName()));
+
         camera_port = property->getText();
     }
-    else if (PropName == "CONNECTION" && Proptype == INDI_SWITCH) {
-        //printf("Found CONNECTION for %s %s\n",DeviName, PropName);
+    else if (PropName == "CONNECTION" && Proptype == INDI_SWITCH)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CONNECTION for %s %s\n", property->getDeviceName(), PropName));
+
         // Check the value here in case the device is already connected
         connection_prop = property->getSwitch();
         ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
         Connected = (connectswitch->s == ISS_ON);
     }
-    else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT) {
-        if (camera_device && (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE)) {
+    else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT)
+    {
+        if (camera_device && (camera_device->getDriverInterface() & INDI::BaseDevice::GUIDER_INTERFACE))
             m_hasGuideOutput = true; // Device supports guiding
-        }
     }
-    else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER){
+    else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER)
+    {
         pulseGuideNS_prop = property->getNumber();
         pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
         pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
     }
-    else if (PropName == "TELESCOPE_TIMED_GUIDE_WE" && Proptype == INDI_NUMBER){
+    else if (PropName == "TELESCOPE_TIMED_GUIDE_WE" && Proptype == INDI_NUMBER)
+    {
         pulseGuideEW_prop = property->getNumber();
         pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
         pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
-    else if (PropName == INDICameraCCDCmd + "INFO" && Proptype == INDI_NUMBER) {
+    else if (PropName == INDICameraCCDCmd + "INFO" && Proptype == INDI_NUMBER)
+    {
         ccdinfo_prop = property->getNumber();
         newNumber(ccdinfo_prop);
     }
@@ -285,31 +354,38 @@ void CameraINDI::newProperty(INDI::Property *property)
 
 bool CameraINDI::Connect(const wxString& camId)
 {
+    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
+
     // If not configured open the setup dialog
-    if (INDICameraName == wxT("INDI Camera")) {
+    if (INDICameraName == wxT("INDI Camera"))
+    {
         CameraSetup();
     }
+
     Debug.Write(wxString::Format("INDI Camera connecting to device [%s]\n", INDICameraName));
+
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+
     // Receive messages only for our camera.
     watchDevice(INDICameraName.mb_str(wxConvUTF8));
+
     // Connect to server.
-    if (connectServer()) {
+    if (connectServer())
+    {
        return !ready;
     }
-    else {
-       // last chance to fix the setup
-       CameraSetup();
-       setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-       watchDevice(INDICameraName.mb_str(wxConvUTF8));
-       if (connectServer()) {
-          return !ready;
-       }
-       else {
-          return true;
-      }
+
+    // last chance to fix the setup
+    CameraSetup();
+    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    watchDevice(INDICameraName.mb_str(wxConvUTF8));
+    if (connectServer())
+    {
+        return !ready;
     }
+
+    return true;
 }
 
 wxByte CameraINDI::BitsPerPixel()
@@ -468,7 +544,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
     int hdutype, naxis;
-    int nhdus=0;
+    int nhdus = 0;
     long fits_size[2];
     long fpixel[3] = {1,1,1};
     size_t bsize = static_cast<size_t>(cam_bp->bloblen);
@@ -480,13 +556,15 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
             &(cam_bp->blob),
             &bsize,
             0,
-            NULL,
-            &status) )
+            nullptr,
+            &status))
     {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
     }
-    if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
+
+    if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
+    {
         pFrame->Alert(_("FITS file is not of an image"));
         PHD_fits_close_file(fptr);
         return true;
@@ -498,25 +576,36 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     xsize = (int) fits_size[0];
     ysize = (int) fits_size[1];
     fits_get_num_hdus(fptr,&nhdus,&status);
-    if ((nhdus != 1) || (naxis != 2)) {
+
+    if ((nhdus != 1) || (naxis != 2))
+    {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         PHD_fits_close_file(fptr);
         return true;
     }
-    if (takeSubframe) {
-        if (img.Init(FullSize)) {
+
+    if (takeSubframe)
+    {
+        if (img.Init(FullSize))
+        {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
             return true;
         }
+
         img.Clear();
         img.Subframe = subframe;
+
         unsigned short *rawdata = new unsigned short[xsize*ysize];
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, rawdata, NULL, &status) ) {
+
+        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, nullptr, rawdata, nullptr, &status))
+        {
             pFrame->Alert(_("Error reading data"));
             PHD_fits_close_file(fptr);
+            delete[] rawdata;
             return true;
         }
+
         int i = 0;
         for (int y = 0; y < subframe.height; y++)
         {
@@ -524,16 +613,21 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
             memcpy(dataptr, &rawdata[i], subframe.width * sizeof(unsigned short));
             i += subframe.width;
         }
+
         delete[] rawdata;
     }
-    else {
-        if (img.Init(xsize,ysize)) {
+    else
+    {
+        if (img.Init(xsize,ysize))
+        {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
             return true;
         }
+
         // Read image
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) {
+        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, nullptr, img.ImageData, nullptr, &status))
+        {
             pFrame->Alert(_("Error reading data"));
             PHD_fits_close_file(fptr);
             return true;
@@ -608,198 +702,220 @@ bool CameraINDI::StackStream()
 
 bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
-  if (Connected) {
+    if (Connected)
+    {
+        bool takeSubframe = UseSubframes;
+        wxRect subframe(subframeArg);
 
-      bool takeSubframe = UseSubframes;
-      wxRect subframe(subframeArg);
+        // we can set the exposure time directly in the camera
+        if (expose_prop && !INDICameraForceVideo)
+        {
+            if (binning_prop && (Binning != m_curBinning))
+            {
+                FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+                binning_x->value = Binning;
+                binning_y->value = Binning;
+                sendNewNumber(binning_prop);
+                m_curBinning = Binning;
+                takeSubframe = false; // subframe may be out of bounds now
+            }
 
-      // we can set the exposure time directly in the camera
-      if ((expose_prop)&&(!INDICameraForceVideo)) {
-          if (binning_prop && (Binning != m_curBinning))
-          {
-              FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-              binning_x->value = Binning;
-              binning_y->value = Binning;
-              sendNewNumber(binning_prop);
-              m_curBinning = Binning;
-              takeSubframe = false; // subframe may be out of bounds now
-          }
+            if (!frame_prop || subframe.width <= 0 || subframe.height <= 0)
+            {
+                takeSubframe = false;
+            }
 
-          if (! frame_prop || subframe.width <= 0 || subframe.height <= 0)
-          {
-              takeSubframe = false;
-          }
+            // Program the size
+            if (!takeSubframe)
+            {
+                subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+            }
 
-          // Program the size
-          if (!takeSubframe)
-          {
-              subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
-          }
+            if (frame_prop && (subframe != m_roi))
+            {
+                frame_x->value = subframe.x*Binning;
+                frame_y->value = subframe.y*Binning;
+                frame_width->value = subframe.width*Binning;
+                frame_height->value = subframe.height*Binning;
+                sendNewNumber(frame_prop);
+                m_roi = subframe;
+            }
 
-          if (frame_prop && (subframe != m_roi))
-          {
-             frame_x->value = subframe.x*Binning;
-             frame_y->value = subframe.y*Binning;
-             frame_width->value = subframe.width*Binning;
-             frame_height->value = subframe.height*Binning;
-             sendNewNumber(frame_prop);
-             m_roi = subframe;
-          }
-          //printf("Exposing for %d(ms)\n", duration);
+            if (s_verbose)
+                Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
 
-          // set the exposure time, this immediately start the exposure
-          expose_prop->np->value = (double)duration/1000;
-          sendNewNumber(expose_prop);
+            // set the exposure time, this immediately start the exposure
+            expose_prop->np->value = (double)duration/1000;
+            sendNewNumber(expose_prop);
 
-          modal = true;  // will be reset when the image blob is received
+            modal = true;  // will be reset when the image blob is received
 
-          unsigned long loopwait = duration > 100 ? 10 : 1;
+            unsigned long loopwait = duration > 100 ? 10 : 1;
 
-          CameraWatchdog watchdog(duration, GetTimeoutMs());
+            CameraWatchdog watchdog(duration, GetTimeoutMs());
 
-          while (modal) {
-             wxMilliSleep(loopwait);
-             if (WorkerThread::TerminateRequested())
-                return true;
-             if (watchdog.Expired())
-             {
-                if (first_frame && video_prop)
+            while (modal)
+            {
+                wxMilliSleep(loopwait);
+                if (WorkerThread::TerminateRequested())
+                    return true;
+                if (watchdog.Expired())
                 {
-                    // exposure fail, maybe this is a webcam with only streaming
-                    // try to use video stream instead of exposure
-                    // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
-                    // TODO : check if an updated INDI v4l2 driver offer a better solution
-                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
-                    INDICameraForceVideo = true;
-                    first_frame = false;
-                    return Capture(duration, img,  options, subframeArg);
+                    if (first_frame && video_prop)
+                    {
+                        // exposure fail, maybe this is a webcam with only streaming
+                        // try to use video stream instead of exposure
+                        // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
+                        // TODO : check if an updated INDI v4l2 driver offer a better solution
+                        pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
+                        INDICameraForceVideo = true;
+                        first_frame = false;
+                        return Capture(duration, img,  options, subframeArg);
+                    }
+                    else
+                    {
+                        first_frame = false;
+                        DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                        return true;
+                    }
                 }
-                else{
-                   first_frame = false;
-                   DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
-                   return true;
+            }
+
+            if (s_verbose)
+                Debug.Write(wxString::Format("INDI Camera Exposure end\n"));
+
+            first_frame = false;
+
+            // exposure complete, process the file
+            if (strcmp(cam_bp->format, ".fits") == 0)
+            {
+                if (s_verbose)
+                    Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
+
+                // for CCD camera
+                if (!ReadFITS(img, takeSubframe, subframe))
+                {
+                    if (options & CAPTURE_SUBTRACT_DARK)
+                    {
+                        if (s_verbose)
+                            Debug.Write(wxString::Format("INDI Camera Subtracting dark\n"));
+
+                        SubtractDark(img);
+                    }
+                    if (options & CAPTURE_RECON)
+                    {
+                        if (PixSizeX != PixSizeY)
+                            SquarePixels(img, PixSizeX, PixSizeY);
+                    }
+                    return false;
                 }
-             }
-          }
 
-          //printf("Exposure end\n");
-          first_frame = false;
+                return true;
+            }
 
-          // exposure complete, process the file
-          if (strcmp(cam_bp->format, ".fits") == 0) {
-              //printf("Processing fits file\n");
-              // for CCD camera
-              if ( ! ReadFITS(img,takeSubframe,subframe) ) {
-                  if (options & CAPTURE_SUBTRACT_DARK) {
-                  //printf("Subtracting dark\n");
-                  SubtractDark(img);
-                  }
-                  if (options & CAPTURE_RECON) {
-                      if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
-                  }
-                  return false;
-              } else {
-                  return true;
-              }
-          } else {
-              pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
-              return true;
-          }
-      }
-      // for video camera without exposure time setting we stack frames for duration of the exposure
-      else if (video_prop){
+            pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(cam_bp->format)));
+            return true;
+        }
+        // for video camera without exposure time setting we stack frames for duration of the exposure
+        else if (video_prop)
+        {
+            takeSubframe = false;
+            first_frame = false;
 
-          takeSubframe = false;
-          first_frame = false;
+            if (img.Init(FullSize))
+            {
+                DisconnectWithAlert(CAPT_FAIL_MEMORY);
+                return true;
+            }
 
-          if (img.Init(FullSize)) {
-             DisconnectWithAlert(CAPT_FAIL_MEMORY);
-             return true;
-          }
-          img.Clear();
-          StackImg = &img;
+            img.Clear();
+            StackImg = &img;
 
-          // Find INDI switch
-          ISwitch *v_on;
-          ISwitch *v_off;
-          if (has_old_videoprop){
-             v_on = IUFindSwitch(video_prop,"ON");
-             v_off = IUFindSwitch(video_prop,"OFF");
-          }
-          else {
-             v_on = IUFindSwitch(video_prop,"STREAM_ON");
-             v_off = IUFindSwitch(video_prop,"STREAM_OFF");
-          }
+            // Find INDI switch
+            ISwitch *v_on;
+            ISwitch *v_off;
+            if (has_old_videoprop)
+            {
+                v_on = IUFindSwitch(video_prop,"ON");
+                v_off = IUFindSwitch(video_prop,"OFF");
+            }
+            else
+            {
+                v_on = IUFindSwitch(video_prop,"STREAM_ON");
+                v_off = IUFindSwitch(video_prop,"STREAM_OFF");
+            }
 
-          // start streaming if not already active, every video frame is received as a blob
-          if (v_on->s != ISS_ON)
-          {
-            v_on->s = ISS_ON;
-            v_off->s = ISS_OFF;
-            sendNewSwitch(video_prop);
-          }
+            // start streaming if not already active, every video frame is received as a blob
+            if (v_on->s != ISS_ON)
+            {
+                v_on->s = ISS_ON;
+                v_off->s = ISS_OFF;
+                sendNewSwitch(video_prop);
+            }
 
-          modal = true;
-          stacking = false;
-          StackFrames = 0;
+            modal = true;
+            stacking = false;
+            StackFrames = 0;
 
-          unsigned long loopwait = duration > 100 ? 10 : 1;
-          wxStopWatch swatch;
-          swatch.Start();
+            unsigned long loopwait = duration > 100 ? 10 : 1;
+            wxStopWatch swatch;
+            swatch.Start();
 
-          // wait the required time
-          while (modal) {
-             wxMilliSleep(loopwait);
-             // test exposure complete
-             if ((swatch.Time() >= duration) && (StackFrames > 2))
-                 modal = false;
-             // test termination request, stop streaming before to return
-             if (WorkerThread::TerminateRequested())
-                 modal = false;
-          }
+            // wait the required time
+            while (modal)
+            {
+                wxMilliSleep(loopwait);
+                // test exposure complete
+                if ((swatch.Time() >= duration) && (StackFrames > 2))
+                    modal = false;
+                // test termination request, stop streaming before to return
+                if (WorkerThread::TerminateRequested())
+                    modal = false;
+            }
 
-          if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
-          {
-            // Stop video streaming when Stop button is pressed or exiting the program
-            v_on->s = ISS_OFF;
-            v_off->s = ISS_ON;
-            sendNewSwitch(video_prop);
-          }
+            if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
+            {
+                // Stop video streaming when Stop button is pressed or exiting the program
+                v_on->s = ISS_OFF;
+                v_off->s = ISS_ON;
+                if (video_prop) // can get cleared asynchronously if server disconnects
+                    sendNewSwitch(video_prop);
+            }
 
-          if (WorkerThread::TerminateRequested())
-              return true;
+            if (WorkerThread::TerminateRequested())
+                return true;
 
-          // wait current frame is processed
-          while (stacking) {
-             wxMilliSleep(loopwait);
-          }
+            // wait current frame is processed
+            while (stacking)
+            {
+                wxMilliSleep(loopwait);
+            }
 
-          pFrame->StatusMsg(wxString::Format(_("%d frames"),StackFrames));
+            pFrame->StatusMsg(wxString::Format(_("%d frames"), StackFrames));
 
-          if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+            if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
-          return false;
+            return false;
+        }
+        else
+        {
+            // no capture property.
+            wxString msg;
+            if (INDICameraForceVideo)
+                msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
+            else
+                msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
 
-      }
-      else {
-          // no capture property.
-          wxString msg;
-          if (INDICameraForceVideo) {
-             msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
-          }
-          else {
-             msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
-          }
-          DisconnectWithAlert(msg,NO_RECONNECT);
-          return true;
-      }
-  }
-  else {
-      // in case the camera is not connected
-      return true;
-  }
-  // we must never go here
-  return true;
+            DisconnectWithAlert(msg, NO_RECONNECT);
+            return true;
+        }
+    }
+    else {
+        // in case the camera is not connected
+        return true;
+    }
+    // we must never go here
+    return true;
 }
 
 bool CameraINDI::HasNonGuiCapture(void)
@@ -816,36 +932,38 @@ bool CameraINDI::ST4HasNonGuiMove(void)
 
 bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
 {
-    if (pulseGuideNS_prop && pulseGuideEW_prop) {
+    if (pulseGuideNS_prop && pulseGuideEW_prop)
+    {
         switch (direction) {
-            case EAST:
-                pulseE_prop->value = duration;
-                pulseW_prop->value = 0;
-                sendNewNumber(pulseGuideEW_prop);
-                break;
-            case WEST:
-                pulseE_prop->value = 0;
-                pulseW_prop->value = duration;
-                sendNewNumber(pulseGuideEW_prop);
-                break;
-            case NORTH:
-                pulseN_prop->value = duration;
-                pulseS_prop->value = 0;
-                sendNewNumber(pulseGuideNS_prop);
-                break;
-            case SOUTH:
-                pulseN_prop->value = 0;
-                pulseS_prop->value = duration;
-                sendNewNumber(pulseGuideNS_prop);
-                break;
-            case NONE:
-                Debug.Write("error CameraINDI::Guide NONE\n");
-                break;
+        case EAST:
+            pulseE_prop->value = duration;
+            pulseW_prop->value = 0;
+            sendNewNumber(pulseGuideEW_prop);
+            break;
+        case WEST:
+            pulseE_prop->value = 0;
+            pulseW_prop->value = duration;
+            sendNewNumber(pulseGuideEW_prop);
+            break;
+        case NORTH:
+            pulseN_prop->value = duration;
+            pulseS_prop->value = 0;
+            sendNewNumber(pulseGuideNS_prop);
+            break;
+        case SOUTH:
+            pulseN_prop->value = 0;
+            pulseS_prop->value = duration;
+            sendNewNumber(pulseGuideNS_prop);
+            break;
+        case NONE:
+            Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
+            break;
         }
         wxMilliSleep(duration);
         return false;
     }
-    else return true;
+
+    return true;
 }
 
 bool CameraINDI::GetDevicePixelSize(double *devPixelSize)
