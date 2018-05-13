@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: advanced_dialog.cpp:89
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
-"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
-"периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
+"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
+"большой периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
-"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
+"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,10 +860,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:508 cam_INDI.cpp:531
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:508 cam_INDI.cpp:531 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
+#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -914,7 +913,7 @@ msgstr "Невозможно взять кадр из очереди"
 
 #: cam_INDI.cpp:135 cam_INDI.cpp:386
 msgid "INDI camera disconnected"
-msgstr ""
+msgstr "Камера INDI отключена"
 
 #: cam_INDI.cpp:367
 #, c-format
@@ -923,7 +922,7 @@ msgstr "Невозможно подключиться к камере %s"
 
 #: cam_INDI.cpp:379
 msgid "INDI server disconnected"
-msgstr ""
+msgstr "Сервер INDI отключен"
 
 #: cam_INDI.cpp:486 cam_INDI.cpp:502 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
@@ -940,7 +939,7 @@ msgstr "Ошибка чтения данных"
 
 #: cam_INDI.cpp:554
 msgid "No CCD_FRAME property, failed to determine image dimensions"
-msgstr "Не найдено свойство CCD_FRAME, сбой определения размера изображения"
+msgstr "Не найден параметр CCD_FRAME, сбой определения размера изображения"
 
 #: cam_INDI.cpp:559
 msgid "No WIDTH value, failed to determine image dimensions"
@@ -966,17 +965,19 @@ msgstr "Неизвестный формат изображения:"
 #: cam_INDI.cpp:777
 #, c-format
 msgid "%d frames"
-msgstr ""
+msgstr "%d кадров"
 
 #: cam_INDI.cpp:788
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
+"Нет задан параметр камеры VIDEO_STREAM, пожалуйста, отключите параметр "
+"'Камера не поддерживает время экспозиции'"
 
 #: cam_INDI.cpp:791
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
-msgstr ""
+msgstr "Не задан параметр камеры CCD_EXPOSURE или VIDEO_STREAM"
 
 #: cam_INovaPLC.cpp:60
 #, c-format
@@ -1900,8 +1901,7 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -3201,8 +3201,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3318,8 +3318,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3343,8 +3343,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
