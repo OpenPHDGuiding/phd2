@@ -119,28 +119,32 @@ bool ScopeINDI::HasSetupDialog() const
 
 void ScopeINDI::SetupDialog()
 {
-    // contrary to camera the telescope setup dialog is called only
-    // when not connected show the server and device configuration
+    wxString title;
+    bool isAuxMount = pFrame->pGearDialog->AuxScope() == this;
+    if (isAuxMount)
+        title = _("INDI Aux Mount Selection");
+    else
+        title = _("INDI Mount Selection");
 
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(), TYPE_MOUNT);
+    INDIConfig indiDlg(wxGetActiveWindow(), title, TYPE_MOUNT);
 
-    indiDlg->INDIhost = INDIhost;
-    indiDlg->INDIport = INDIport;
-    indiDlg->INDIDevName = INDIMountName;
-    indiDlg->INDIDevPort = INDIMountPort;
+    indiDlg.INDIhost = INDIhost;
+    indiDlg.INDIport = INDIport;
+    indiDlg.INDIDevName = INDIMountName;
+    indiDlg.INDIDevPort = INDIMountPort;
     // initialize with actual values
-    indiDlg->SetSettings();
+    indiDlg.SetSettings();
     // try to connect to server
-    indiDlg->Connect();
+    indiDlg.Connect();
 
-    if (indiDlg->ShowModal() == wxID_OK)
+    if (indiDlg.ShowModal() == wxID_OK)
     {
         // if OK save the values to the current profile
-        indiDlg->SaveSettings();
-        INDIhost = indiDlg->INDIhost;
-        INDIport = indiDlg->INDIport;
-        INDIMountName = indiDlg->INDIDevName;
-        INDIMountPort = indiDlg->INDIDevPort;
+        indiDlg.SaveSettings();
+        INDIhost = indiDlg.INDIhost;
+        INDIport = indiDlg.INDIport;
+        INDIMountName = indiDlg.INDIDevName;
+        INDIMountPort = indiDlg.INDIDevPort;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
@@ -148,10 +152,7 @@ void ScopeINDI::SetupDialog()
         m_Name = INDIMountName;
     }
 
-    indiDlg->Disconnect();
-    indiDlg->Destroy();
-
-    delete indiDlg;
+    indiDlg.Disconnect();
 }
 
 bool ScopeINDI::Connect()

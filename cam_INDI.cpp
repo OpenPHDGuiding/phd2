@@ -492,26 +492,27 @@ void CameraINDI::CameraDialog()
 void CameraINDI::CameraSetup()
 {
     // show the server and device configuration
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_CAMERA);
-    indiDlg->INDIhost = INDIhost;
-    indiDlg->INDIport = INDIport;
-    indiDlg->INDIDevName = INDICameraName;
-    indiDlg->INDIDevCCD = INDICameraCCD;
-    indiDlg->INDIDevPort = INDICameraPort;
-    indiDlg->INDIForceVideo = INDICameraForceVideo;
+    INDIConfig indiDlg(wxGetActiveWindow(), _("INDI Camera Selection"), TYPE_CAMERA);
+    indiDlg.INDIhost = INDIhost;
+    indiDlg.INDIport = INDIport;
+    indiDlg.INDIDevName = INDICameraName;
+    indiDlg.INDIDevCCD = INDICameraCCD;
+    indiDlg.INDIDevPort = INDICameraPort;
+    indiDlg.INDIForceVideo = INDICameraForceVideo;
     // initialize with actual values
-    indiDlg->SetSettings();
+    indiDlg.SetSettings();
     // try to connect to server
-    indiDlg->Connect();
-    if (indiDlg->ShowModal() == wxID_OK) {
+    indiDlg.Connect();
+    if (indiDlg.ShowModal() == wxID_OK)
+    {
         // if OK save the values to the current profile
-        indiDlg->SaveSettings();
-        INDIhost = indiDlg->INDIhost;
-        INDIport = indiDlg->INDIport;
-        INDICameraName = indiDlg->INDIDevName;
-        INDICameraCCD = indiDlg->INDIDevCCD;
-        INDICameraPort = indiDlg->INDIDevPort;
-        INDICameraForceVideo = indiDlg->INDIForceVideo;
+        indiDlg.SaveSettings();
+        INDIhost = indiDlg.INDIhost;
+        INDIport = indiDlg.INDIport;
+        INDICameraName = indiDlg.INDIDevName;
+        INDICameraCCD = indiDlg.INDIDevCCD;
+        INDICameraPort = indiDlg.INDIDevPort;
+        INDICameraForceVideo = indiDlg.INDIForceVideo;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
@@ -521,9 +522,7 @@ void CameraINDI::CameraSetup()
         Name = INDICameraName;
         SetCCDdevice();
     }
-    indiDlg->Disconnect();
-    indiDlg->Destroy();
-    delete indiDlg;
+    indiDlg.Disconnect();
 }
 
 void  CameraINDI::SetCCDdevice()

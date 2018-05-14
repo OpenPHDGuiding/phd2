@@ -44,36 +44,21 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 #ifndef INDI_PRE_1_1_0
-   #include <libindi/indibasetypes.h>
+# include <libindi/indibasetypes.h>
 #endif
 
 #include "indi_gui.h"
 
-enum {
+enum
+{
     TYPE_CAMERA,
     TYPE_MOUNT,
     TYPE_AO,
 };
 
-class INDIConfig : public wxDialog , public INDI::BaseClient {
-public:
-    INDIConfig(wxWindow *parent, int devtype);
-    ~INDIConfig();
-    long     INDIport;
-    wxString INDIhost;
-    wxString INDIDevName;
-    long     INDIDevCCD;
-    bool     INDIForceVideo;
-    wxString INDIDevPort;
-    void Connect();
-    void Disconnect();
-    void SetSettings();
-    void SaveSettings();
-
-private:
-    void OnConnectButton(wxCommandEvent& evt);
-    void OnIndiGui(wxCommandEvent& evt);
-    IndiGui  *gui ;
+class INDIConfig : public wxDialog, public INDI::BaseClient
+{
+    IndiGui *gui;
     wxTextCtrl *host;
     wxTextCtrl *port;
     wxStaticText *connect_status;
@@ -83,14 +68,31 @@ private:
     wxTextCtrl *devport;
     wxCheckBox *forcevideo;
     int dev_type;
-    DECLARE_EVENT_TABLE()
+
+public:
+
+    INDIConfig(wxWindow *parent, const wxString& title, int devtype);
+    ~INDIConfig();
+
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDIDevName;
+    long     INDIDevCCD;
+    bool     INDIForceVideo;
+    wxString INDIDevPort;
+
+    void Connect();
+    void Disconnect();
+    void SetSettings();
+    void SaveSettings();
 
 protected:
+
     void newDevice(INDI::BaseDevice *dp) override;
 #ifndef INDI_PRE_1_0_0
     void removeDevice(INDI::BaseDevice *dp) override {};
 #endif
-    void newProperty(INDI::Property *property) override {}
+    void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {}
     void newBLOB(IBLOB *bp) override {}
     void newSwitch(ISwitchVectorProperty *svp) override {}
@@ -101,6 +103,11 @@ protected:
     void serverConnected() override {}
     void serverDisconnected(int exit_code) override {}
 
+private:
+
+    void OnConnectButton(wxCommandEvent& evt);
+    void OnIndiGui(wxCommandEvent& evt);
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif

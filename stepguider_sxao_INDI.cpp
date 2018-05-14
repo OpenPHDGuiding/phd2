@@ -251,31 +251,31 @@ bool StepGuiderSxAoINDI::HasSetupDialog(void) const
 void StepGuiderSxAoINDI::SetupDialog()
 {
     // show the server and device configuration
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_AO);
-    indiDlg->INDIhost = INDIhost;
-    indiDlg->INDIport = INDIport;
-    indiDlg->INDIDevName = INDIaoDeviceName;
-    indiDlg->INDIDevPort = INDIaoDevicePort;
+    INDIConfig indiDlg(wxGetActiveWindow(), _("INDI AO Selection"), TYPE_AO);
+    indiDlg.INDIhost = INDIhost;
+    indiDlg.INDIport = INDIport;
+    indiDlg.INDIDevName = INDIaoDeviceName;
+    indiDlg.INDIDevPort = INDIaoDevicePort;
     // initialize with actual values
-    indiDlg->SetSettings();
+    indiDlg.SetSettings();
     // try to connect to server
-    indiDlg->Connect();
-    if (indiDlg->ShowModal() == wxID_OK) {
+    indiDlg.Connect();
+    if (indiDlg.ShowModal() == wxID_OK)
+    {
         // if OK save the values to the current profile
-        indiDlg->SaveSettings();
-        INDIhost = indiDlg->INDIhost;
-        INDIport = indiDlg->INDIport;
-        INDIaoDeviceName = indiDlg->INDIDevName;
-        INDIaoDevicePort = indiDlg->INDIDevPort;
+        indiDlg.SaveSettings();
+        INDIhost = indiDlg.INDIhost;
+        INDIport = indiDlg.INDIport;
+        INDIaoDeviceName = indiDlg.INDIDevName;
+        INDIaoDevicePort = indiDlg.INDIDevPort;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIao", INDIaoDeviceName);
         pConfig->Profile.SetString("/indi/INDIao_port",INDIaoDevicePort);
         m_Name = INDIaoDeviceName;
     }
-    indiDlg->Disconnect();
-    indiDlg->Destroy();
-    delete indiDlg;
+
+    indiDlg.Disconnect();
 }
 
 void StepGuiderSxAoINDI::ShowPropertyDialog(void)
