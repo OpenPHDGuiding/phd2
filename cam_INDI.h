@@ -69,7 +69,7 @@ private:
     INumberVectorProperty *pulseGuideEW_prop;
     INumber               *pulseE_prop;
     INumber               *pulseW_prop;
-    IndiGui  *gui ;
+    IndiGui  *gui;
     IBLOB    *cam_bp;
     usImage  *StackImg;
     int      StackFrames;
@@ -85,6 +85,7 @@ private:
     double   PixSizeY;
     wxRect   m_maxSize;
     wxByte   m_curBinning;
+    bool     HasBayer;
     long     INDIport;
     wxString INDIhost;
     wxString INDICameraName;
@@ -94,6 +95,7 @@ private:
     wxString INDICameraPort;
     bool     INDICameraForceVideo;
     wxRect   m_roi;
+
     void     SetCCDdevice();
     void     ClearStatus(); 
     void     CheckState();

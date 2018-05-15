@@ -67,6 +67,7 @@ CameraINDI::CameraINDI()
     FullSize = wxSize(640,480);
     HasSubframes = true;
     m_bitsPerPixel = 0;
+    HasBayer = false;
 }
 
 CameraINDI::~CameraINDI()
@@ -293,6 +294,21 @@ void CameraINDI::newProperty(INDI::Property *property)
         binning_y = IUFindNumber(binning_prop,"VER_BIN");
         newNumber(binning_prop);
     }
+    else if (PropName == INDICameraCCDCmd + "CFA" && Proptype == INDI_TEXT)
+    {
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Found CCD_CFA for %s %s\n", property->getDeviceName(), PropName));
+
+        ITextVectorProperty *cfa_prop = property->getText();
+        IText *cfa_type = IUFindText(cfa_prop, "CFA_TYPE");
+        if (cfa_type && cfa_type->text && *cfa_type->text)
+        {
+            if (s_verbose)
+                Debug.Write(wxString::Format("INDI Camera CFA_TYPE is %s\n", cfa_type->text));
+
+            HasBayer = true;
+        }
+    }
     else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH)
     {
         if (s_verbose)
@@ -395,14 +411,14 @@ wxByte CameraINDI::BitsPerPixel()
 
 bool CameraINDI::Disconnect()
 {
-    if (ready) {
-       // Disconnect from server
-       if (disconnectServer()){
-          return false;
-       }
-       else return true;
-    }
-    else return true;
+    if (!ready)
+        return true;
+
+    // Disconnect from server
+    if (disconnectServer())
+        return false;
+
+    return true;
 }
 
 void CameraINDI::serverConnected()
@@ -410,27 +426,31 @@ void CameraINDI::serverConnected()
     // After connection to the server
     modal = true;
     // wait for the device port property
-    wxLongLong msec;
-    msec = wxGetUTCTimeMillis();
-    if (INDICameraPort.Length()) {  // the camera port is not mandatory
-        while ((!camera_port) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+    wxLongLong msec = wxGetUTCTimeMillis();
+    if (INDICameraPort.Length())   // the camera port is not mandatory
+    {
+        while ((!camera_port) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+        {
             ::wxSafeYield();
         }
         // Set the port, this must be done before to try to connect the device
-        if (camera_port) {
-            char* porttext = (const_cast<char*>((const char*)INDICameraPort.mb_str()));
+        if (camera_port)
+        {
+            char *porttext = const_cast<char *>((const char *)INDICameraPort.mb_str());
             camera_port->tp->text = porttext;
             sendNewText(camera_port);
         }
     }
     // Connect the camera device
-    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000) {
+    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+    {
          ::wxSafeYield();
     }
     connectDevice(INDICameraName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000) {
+    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
+    {
         ::wxSafeYield();
     }
     modal = false;
@@ -438,7 +458,8 @@ void CameraINDI::serverConnected()
     {
         Connected = true;
     }
-    else {
+    else
+    {
         // In case we not get all the required properties or connection to the device failed
         pFrame->Alert(wxString::Format(_("Cannot connect to camera %s"), INDICameraName));
         Connected = false;
@@ -465,11 +486,13 @@ void CameraINDI::removeDevice(INDI::BaseDevice *dp)
 
 void CameraINDI::ShowPropertyDialog()
 {
-    if (Connected) {
+    if (Connected)
+    {
         // show the devices INDI dialog
         CameraDialog();
     }
-    else {
+    else
+    {
         // show the server and device configuration
         CameraSetup();
     }
@@ -477,10 +500,12 @@ void CameraINDI::ShowPropertyDialog()
 
 void CameraINDI::CameraDialog()
 {
-   if (gui) {
+   if (gui)
+   {
       gui->Show();
    }
-   else {
+   else
+   {
       gui = new IndiGui();
       gui->child_window = true;
       gui->allow_connect_disconnect = false;
@@ -795,12 +820,9 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 if (!ReadFITS(img, takeSubframe, subframe))
                 {
                     if (options & CAPTURE_SUBTRACT_DARK)
-                    {
-                        if (s_verbose)
-                            Debug.Write(wxString::Format("INDI Camera Subtracting dark\n"));
-
                         SubtractDark(img);
-                    }
+                    if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
+                        QuickLRecon(img);
                     if (options & CAPTURE_RECON)
                     {
                         if (PixSizeX != PixSizeY)
