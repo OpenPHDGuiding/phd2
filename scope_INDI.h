@@ -8,7 +8,7 @@
  *  Redraw for libindi/baseclient by Patrick Chevalley
  *  Copyright (c) 2014 Patrick Chevalley
  *  All rights reserved.
- * 
+ *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ class ScopeINDI : public Scope, public INDI::BaseClient
 {
 private:
     ISwitchVectorProperty *connection_prop;
-    INumberVectorProperty *coord_prop;    
+    INumberVectorProperty *coord_prop;
     INumberVectorProperty *MotionRate_prop;
     ISwitchVectorProperty *moveNS_prop;
     ISwitch               *moveN_prop;
@@ -86,7 +86,7 @@ private:
     bool     eod_coord;
     void     ClearStatus();
     void     CheckState();
-    
+
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
 #ifndef INDI_PRE_1_0_0
@@ -102,7 +102,7 @@ protected:
     void newLight(ILightVectorProperty *lvp) override {}
     void serverConnected() override;
     void serverDisconnected(int exit_code) override;
-    
+
 public:
     ScopeINDI();
     ~ScopeINDI();

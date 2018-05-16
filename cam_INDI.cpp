@@ -114,7 +114,8 @@ void CameraINDI::CheckState()
             Debug.Write(wxString::Format("INDI Camera is ready\n"));
             ready = true;
             first_frame = true;
-            if (modal) {
+            if (modal)
+            {
                 modal = false;
             }
         }
@@ -584,13 +585,15 @@ void CameraINDI::CameraSetup()
     indiDlg.Disconnect();
 }
 
-void  CameraINDI::SetCCDdevice()
+void CameraINDI::SetCCDdevice()
 {
-    if (INDICameraCCD == 0) {
+    if (INDICameraCCD == 0)
+    {
         INDICameraBlobName = "CCD1";
         INDICameraCCDCmd = "CCD_";
     }
-    else {
+    else
+    {
         INDICameraBlobName = "CCD2";
         INDICameraCCDCmd = "GUIDER_";
     }
@@ -702,33 +705,39 @@ bool CameraINDI::ReadStream(usImage& img)
     unsigned char *inptr;
     unsigned short *outptr;
 
-    if (! frame_prop) {
+    if (!frame_prop)
+    {
         pFrame->Alert(_("No CCD_FRAME property, failed to determine image dimensions"));
         return true;
     }
 
-    if (! (frame_width)) {
+    if (!frame_width)
+    {
         pFrame->Alert(_("No WIDTH value, failed to determine image dimensions"));
         return true;
     }
     xsize = frame_width->value;
 
-    if (! (frame_height)) {
+    if (!frame_height)
+    {
         pFrame->Alert(_("No HEIGHT value, failed to determine image dimensions"));
         return true;
     }
     ysize = frame_height->value;
 
     // allocate image
-    if (img.Init(xsize,ysize)) {
+    if (img.Init(xsize,ysize))
+    {
         pFrame->Alert(_("CCD stream: memory allocation error"));
         return true;
     }
+
     // copy image
     outptr = img.ImageData;
     inptr = (unsigned char *) cam_bp->blob;
     for (int i = 0; i < xsize * ysize; i++)
         *outptr ++ = *inptr++;
+
     return false;
 }
 
@@ -760,227 +769,221 @@ bool CameraINDI::StackStream()
 
 bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
-    if (Connected)
+    if (!Connected)
+        return true;
+
+    bool takeSubframe = UseSubframes;
+    wxRect subframe(subframeArg);
+
+    // we can set the exposure time directly in the camera
+    if (expose_prop && !INDICameraForceVideo)
     {
-        bool takeSubframe = UseSubframes;
-        wxRect subframe(subframeArg);
-
-        // we can set the exposure time directly in the camera
-        if (expose_prop && !INDICameraForceVideo)
+        if (binning_prop && (Binning != m_curBinning))
         {
-            if (binning_prop && (Binning != m_curBinning))
-            {
-                FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-                binning_x->value = Binning;
-                binning_y->value = Binning;
-                sendNewNumber(binning_prop);
-                m_curBinning = Binning;
-                takeSubframe = false; // subframe may be out of bounds now
-            }
-
-            if (!frame_prop || subframe.width <= 0 || subframe.height <= 0)
-            {
-                takeSubframe = false;
-            }
-
-            // Program the size
-            if (!takeSubframe)
-            {
-                subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
-            }
-
-            if (frame_prop && (subframe != m_roi))
-            {
-                frame_x->value = subframe.x*Binning;
-                frame_y->value = subframe.y*Binning;
-                frame_width->value = subframe.width*Binning;
-                frame_height->value = subframe.height*Binning;
-                sendNewNumber(frame_prop);
-                m_roi = subframe;
-            }
-
-            if (s_verbose)
-                Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
-
-            // set the exposure time, this immediately start the exposure
-            expose_prop->np->value = (double)duration/1000;
-            sendNewNumber(expose_prop);
-
-            modal = true;  // will be reset when the image blob is received
-
-            unsigned long loopwait = duration > 100 ? 10 : 1;
-
-            CameraWatchdog watchdog(duration, GetTimeoutMs());
-
-            while (modal)
-            {
-                wxMilliSleep(loopwait);
-                if (WorkerThread::TerminateRequested())
-                    return true;
-                if (watchdog.Expired())
-                {
-                    if (first_frame && video_prop)
-                    {
-                        // exposure fail, maybe this is a webcam with only streaming
-                        // try to use video stream instead of exposure
-                        // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
-                        // TODO : check if an updated INDI v4l2 driver offer a better solution
-                        pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
-                        INDICameraForceVideo = true;
-                        first_frame = false;
-                        return Capture(duration, img,  options, subframeArg);
-                    }
-                    else
-                    {
-                        first_frame = false;
-                        DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
-                        return true;
-                    }
-                }
-            }
-
-            if (s_verbose)
-                Debug.Write(wxString::Format("INDI Camera Exposure end\n"));
-
-            first_frame = false;
-
-            // exposure complete, process the file
-            if (strcmp(cam_bp->format, ".fits") == 0)
-            {
-                if (s_verbose)
-                    Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
-
-                // for CCD camera
-                if (!ReadFITS(img, takeSubframe, subframe))
-                {
-                    if (options & CAPTURE_SUBTRACT_DARK)
-                        SubtractDark(img);
-                    if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
-                        QuickLRecon(img);
-                    if (options & CAPTURE_RECON)
-                    {
-                        if (PixSizeX != PixSizeY)
-                            SquarePixels(img, PixSizeX, PixSizeY);
-                    }
-                    return false;
-                }
-
-                return true;
-            }
-
-            pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(cam_bp->format)));
-            return true;
+            FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            binning_x->value = Binning;
+            binning_y->value = Binning;
+            sendNewNumber(binning_prop);
+            m_curBinning = Binning;
+            takeSubframe = false; // subframe may be out of bounds now
         }
-        // for video camera without exposure time setting we stack frames for duration of the exposure
-        else if (video_prop)
+
+        if (!frame_prop || subframe.width <= 0 || subframe.height <= 0)
         {
             takeSubframe = false;
-            first_frame = false;
+        }
 
-            if (img.Init(FullSize))
-            {
-                DisconnectWithAlert(CAPT_FAIL_MEMORY);
-                return true;
-            }
+        // Program the size
+        if (!takeSubframe)
+        {
+            subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+        }
 
-            img.Clear();
-            StackImg = &img;
+        if (frame_prop && (subframe != m_roi))
+        {
+            frame_x->value = subframe.x*Binning;
+            frame_y->value = subframe.y*Binning;
+            frame_width->value = subframe.width*Binning;
+            frame_height->value = subframe.height*Binning;
+            sendNewNumber(frame_prop);
+            m_roi = subframe;
+        }
 
-            // Find INDI switch
-            ISwitch *v_on;
-            ISwitch *v_off;
-            if (has_old_videoprop)
-            {
-                v_on = IUFindSwitch(video_prop,"ON");
-                v_off = IUFindSwitch(video_prop,"OFF");
-            }
-            else
-            {
-                v_on = IUFindSwitch(video_prop,"STREAM_ON");
-                v_off = IUFindSwitch(video_prop,"STREAM_OFF");
-            }
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
 
-            // start streaming if not already active, every video frame is received as a blob
-            if (v_on->s != ISS_ON)
-            {
-                v_on->s = ISS_ON;
-                v_off->s = ISS_OFF;
-                sendNewSwitch(video_prop);
-            }
+        // set the exposure time, this immediately start the exposure
+        expose_prop->np->value = (double)duration/1000;
+        sendNewNumber(expose_prop);
 
-            modal = true;
-            stacking = false;
-            StackFrames = 0;
+        modal = true;  // will be reset when the image blob is received
 
-            unsigned long loopwait = duration > 100 ? 10 : 1;
-            wxStopWatch swatch;
-            swatch.Start();
+        unsigned long loopwait = duration > 100 ? 10 : 1;
 
-            // wait the required time
-            while (modal)
-            {
-                wxMilliSleep(loopwait);
-                // test exposure complete
-                if ((swatch.Time() >= duration) && (StackFrames > 2))
-                    modal = false;
-                // test termination request, stop streaming before to return
-                if (WorkerThread::TerminateRequested())
-                    modal = false;
-            }
+        CameraWatchdog watchdog(duration, GetTimeoutMs());
 
-            if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
-            {
-                // Stop video streaming when Stop button is pressed or exiting the program
-                v_on->s = ISS_OFF;
-                v_off->s = ISS_ON;
-                if (video_prop) // can get cleared asynchronously if server disconnects
-                    sendNewSwitch(video_prop);
-            }
-
+        while (modal)
+        {
+            wxMilliSleep(loopwait);
             if (WorkerThread::TerminateRequested())
                 return true;
-
-            // wait current frame is processed
-            while (stacking)
+            if (watchdog.Expired())
             {
-                wxMilliSleep(loopwait);
+                if (first_frame && video_prop)
+                {
+                    // exposure fail, maybe this is a webcam with only streaming
+                    // try to use video stream instead of exposure
+                    // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
+                    // TODO : check if an updated INDI v4l2 driver offer a better solution
+                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
+                    INDICameraForceVideo = true;
+                    first_frame = false;
+                    return Capture(duration, img,  options, subframeArg);
+                }
+                else
+                {
+                    first_frame = false;
+                    DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                    return true;
+                }
+            }
+        }
+
+        if (s_verbose)
+            Debug.Write(wxString::Format("INDI Camera Exposure end\n"));
+
+        first_frame = false;
+
+        // exposure complete, process the file
+        if (strcmp(cam_bp->format, ".fits") == 0)
+        {
+            if (s_verbose)
+                Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
+
+            // for CCD camera
+            if (!ReadFITS(img, takeSubframe, subframe))
+            {
+                if (options & CAPTURE_SUBTRACT_DARK)
+                    SubtractDark(img);
+                if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
+                    QuickLRecon(img);
+                if (options & CAPTURE_RECON)
+                {
+                    if (PixSizeX != PixSizeY)
+                        SquarePixels(img, PixSizeX, PixSizeY);
+                }
+                return false;
             }
 
-            pFrame->StatusMsg(wxString::Format(_("%d frames"), StackFrames));
+            return true;
+        }
 
-            if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+        pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(cam_bp->format)));
+        return true;
+    }
+    // for video camera without exposure time setting we stack frames for duration of the exposure
+    else if (video_prop)
+    {
+        takeSubframe = false;
+        first_frame = false;
 
-            return false;
+        if (img.Init(FullSize))
+        {
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+
+        img.Clear();
+        StackImg = &img;
+
+        // Find INDI switch
+        ISwitch *v_on;
+        ISwitch *v_off;
+        if (has_old_videoprop)
+        {
+            v_on = IUFindSwitch(video_prop,"ON");
+            v_off = IUFindSwitch(video_prop,"OFF");
         }
         else
         {
-            // no capture property.
-            wxString msg;
-            if (INDICameraForceVideo)
-                msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
-            else
-                msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
-
-            DisconnectWithAlert(msg, NO_RECONNECT);
-            return true;
+            v_on = IUFindSwitch(video_prop,"STREAM_ON");
+            v_off = IUFindSwitch(video_prop,"STREAM_OFF");
         }
+
+        // start streaming if not already active, every video frame is received as a blob
+        if (v_on->s != ISS_ON)
+        {
+            v_on->s = ISS_ON;
+            v_off->s = ISS_OFF;
+            sendNewSwitch(video_prop);
+        }
+
+        modal = true;
+        stacking = false;
+        StackFrames = 0;
+
+        unsigned long loopwait = duration > 100 ? 10 : 1;
+        wxStopWatch swatch;
+        swatch.Start();
+
+        // wait the required time
+        while (modal)
+        {
+            wxMilliSleep(loopwait);
+            // test exposure complete
+            if ((swatch.Time() >= duration) && (StackFrames > 2))
+                modal = false;
+            // test termination request, stop streaming before to return
+            if (WorkerThread::TerminateRequested())
+                modal = false;
+        }
+
+        if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
+        {
+            // Stop video streaming when Stop button is pressed or exiting the program
+            v_on->s = ISS_OFF;
+            v_off->s = ISS_ON;
+            if (video_prop) // can get cleared asynchronously if server disconnects
+                sendNewSwitch(video_prop);
+        }
+
+        if (WorkerThread::TerminateRequested())
+            return true;
+
+        // wait current frame is processed
+        while (stacking)
+        {
+            wxMilliSleep(loopwait);
+        }
+
+        pFrame->StatusMsg(wxString::Format(_("%d frames"), StackFrames));
+
+        if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+
+        return false;
     }
-    else {
-        // in case the camera is not connected
+    else
+    {
+        // no capture property.
+        wxString msg;
+        if (INDICameraForceVideo)
+            msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
+        else
+            msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
+
+        DisconnectWithAlert(msg, NO_RECONNECT);
         return true;
     }
-    // we must never go here
-    return true;
 }
 
-bool CameraINDI::HasNonGuiCapture(void)
+bool CameraINDI::HasNonGuiCapture()
 {
     return true;
 }
 
 // Camera ST4 port
 
-bool CameraINDI::ST4HasNonGuiMove(void)
+bool CameraINDI::ST4HasNonGuiMove()
 {
     return true;
 }
