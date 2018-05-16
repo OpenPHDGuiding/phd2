@@ -129,7 +129,7 @@ void ScopeINDI::SetupDialog()
     else
         title = _("INDI Mount Selection");
 
-    INDIConfig indiDlg(wxGetActiveWindow(), title, TYPE_MOUNT);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, TYPE_MOUNT);
 
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;

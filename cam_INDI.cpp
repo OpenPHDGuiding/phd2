@@ -552,7 +552,7 @@ void CameraINDI::CameraDialog()
 void CameraINDI::CameraSetup()
 {
     // show the server and device configuration
-    INDIConfig indiDlg(wxGetActiveWindow(), _("INDI Camera Selection"), TYPE_CAMERA);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), _("INDI Camera Selection"), TYPE_CAMERA);
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDICameraName;
