@@ -52,6 +52,8 @@
 static bool s_verbose = false;
 
 CameraINDI::CameraINDI()
+    :
+    sync_cond(sync_lock)
 {
     ClearStatus();
     // load the values from the current profile
@@ -98,6 +100,8 @@ void CameraINDI::ClearStatus()
     m_hasGuideOutput = false;
     PixSize = PixSizeX = PixSizeY = 0.0;
     cam_bp = nullptr;
+    guide_active = false;
+    sync_cond.Broadcast(); // just in case worker thread was blocked waiting for guide pulse to complete
 }
 
 void CameraINDI::CheckState()
@@ -159,6 +163,16 @@ void CameraINDI::newMessage(INDI::BaseDevice *dp, int messageID)
         Debug.Write(wxString::Format("INDI Camera Receive message: %s\n", dp->messageQueue(messageID)));
 }
 
+inline static const char *StateStr(IPState st)
+{
+    switch (st) {
+    default: case IPS_IDLE: return "Idle";
+    case IPS_OK: return "Ok";
+    case IPS_BUSY: return "Busy";
+    case IPS_ALERT: return "Alert";
+    }
+}
+
 void CameraINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
@@ -173,7 +187,7 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
                 return;
             s_lastval = nvp->np->value;
         }
-        Debug.Write(wxString::Format("INDI Camera Receive Number: %s = %g\n", nvp->name, nvp->np->value));
+        Debug.Write(wxString::Format("INDI Camera Receive Number: %s = %g state = %s\n", nvp->name, nvp->np->value, StateStr(nvp->s)));
     }
 
     if (nvp == ccdinfo_prop)
@@ -186,7 +200,7 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
     }
-    if (nvp == binning_prop)
+    else if (nvp == binning_prop)
     {
         MaxBinning = wxMin(binning_x->max, binning_y->max);
         Binning = wxMin(binning_x->value, binning_y->value);
@@ -194,6 +208,26 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
             Binning = MaxBinning;
         m_curBinning = Binning;
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    }
+    else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
+    {
+        bool notify = false;
+        {
+            wxMutexLocker lck(sync_lock);
+            if (guide_active && nvp->s != IPS_BUSY &&
+                ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) || (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
+            {
+                guide_active = false;
+                notify = true;
+            }
+            else if (!guide_active && nvp->s == IPS_BUSY)
+            {
+                guide_active = true;
+                guide_active_axis = nvp == pulseGuideEW_prop ? GUIDE_RA : GUIDE_DEC;
+            }
+        }
+        if (notify)
+            sync_cond.Broadcast();
     }
 }
 
@@ -953,38 +987,83 @@ bool CameraINDI::ST4HasNonGuiMove(void)
 
 bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
 {
-    if (pulseGuideNS_prop && pulseGuideEW_prop)
-    {
-        switch (direction) {
-        case EAST:
-            pulseE_prop->value = duration;
-            pulseW_prop->value = 0;
-            sendNewNumber(pulseGuideEW_prop);
-            break;
-        case WEST:
-            pulseE_prop->value = 0;
-            pulseW_prop->value = duration;
-            sendNewNumber(pulseGuideEW_prop);
-            break;
-        case NORTH:
-            pulseN_prop->value = duration;
-            pulseS_prop->value = 0;
-            sendNewNumber(pulseGuideNS_prop);
-            break;
-        case SOUTH:
-            pulseN_prop->value = 0;
-            pulseS_prop->value = duration;
-            sendNewNumber(pulseGuideNS_prop);
-            break;
-        case NONE:
-            Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
-            break;
-        }
-        wxMilliSleep(duration);
-        return false;
+    switch (direction) {
+    case EAST:
+    case WEST:
+    case NORTH:
+    case SOUTH:
+        break;
+    default:
+        Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
+        return true;
     }
 
-    return true;
+    if (!pulseGuideNS_prop || !pulseGuideEW_prop)
+    {
+        Debug.Write("INDI Camera missing pulse guide properties!\n");
+        return true;
+    }
+
+    // set guide active before initiating the pulse
+
+    {
+        wxMutexLocker lck(sync_lock);
+
+        if (guide_active)
+        {
+            // todo: try to abort it?
+            Debug.Write("Cannot guide with guide pulse in progress!\n");
+            return true;
+        }
+
+        guide_active = true;
+        guide_active_axis = direction == EAST || direction == WEST ? GUIDE_RA : GUIDE_DEC;
+
+    } // lock scope
+
+    switch (direction) {
+    case EAST:
+        pulseE_prop->value = duration;
+        pulseW_prop->value = 0;
+        sendNewNumber(pulseGuideEW_prop);
+        break;
+    case WEST:
+        pulseE_prop->value = 0;
+        pulseW_prop->value = duration;
+        sendNewNumber(pulseGuideEW_prop);
+        break;
+    case NORTH:
+        pulseN_prop->value = duration;
+        pulseS_prop->value = 0;
+        sendNewNumber(pulseGuideNS_prop);
+        break;
+    case SOUTH:
+        pulseN_prop->value = 0;
+        pulseS_prop->value = duration;
+        sendNewNumber(pulseGuideNS_prop);
+        break;
+    }
+
+    if (s_verbose)
+        Debug.Write("INDI Camera: wait for move complete\n");
+
+    { // lock scope
+        wxMutexLocker lck(sync_lock);
+        while (guide_active)
+        {
+            sync_cond.WaitTimeout(100);
+            if (WorkerThread::InterruptRequested())
+            {
+                Debug.Write("interrupt requested\n");
+                return true;
+            }
+        }
+    } // lock scope
+
+    if (s_verbose)
+        Debug.Write("INDI Camera: move completed\n");
+
+    return false;
 }
 
 bool CameraINDI::GetDevicePixelSize(double *devPixelSize)

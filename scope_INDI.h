@@ -71,7 +71,12 @@ private:
     ISwitch               *piersideWest_prop;
     ISwitchVectorProperty *AbortMotion_prop;
     ISwitch               *Abort_prop;
-    INDI::BaseDevice      *scope_device;
+
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
+
     long     INDIport;
     wxString INDIhost;
     wxString INDIMountName;

@@ -69,6 +69,12 @@ private:
     INumberVectorProperty *pulseGuideEW_prop;
     INumber               *pulseE_prop;
     INumber               *pulseW_prop;
+
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
+
     IndiGui  *gui;
     IBLOB    *cam_bp;
     usImage  *StackImg;
