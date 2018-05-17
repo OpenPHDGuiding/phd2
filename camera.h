@@ -140,7 +140,7 @@ public:
     ExposureImgMap  Darks; // map exposure => dark frame
     DefectMap      *CurrentDefectMap;
 
-    static wxArrayString List(void);
+    static wxArrayString GuideCameraList(void);
     static GuideCamera *Factory(const wxString& choice);
 
     GuideCamera(void);

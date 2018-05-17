@@ -49,7 +49,7 @@ static const int DefaultGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
 // we will pop up a warning message with a suggestion to increase the MaxStepsPerCycle setting
 static const int BumpWarnTime = 240;
 
-StepGuider::StepGuider(void)
+StepGuider::StepGuider()
 {
     m_xOffset = 0;
     m_yOffset = 0;
@@ -82,11 +82,11 @@ StepGuider::StepGuider(void)
     m_bumpOnDither = pConfig->Profile.GetBoolean("/stepguider/BumpOnDither", true);
 }
 
-StepGuider::~StepGuider(void)
+StepGuider::~StepGuider()
 {
 }
 
-wxArrayString StepGuider::List(void)
+wxArrayString StepGuider::AOList()
 {
     wxArrayString AoList;
 
@@ -148,7 +148,7 @@ StepGuider *StepGuider::Factory(const wxString& choice)
     return pReturn;
 }
 
-bool StepGuider::Connect(void)
+bool StepGuider::Connect()
 {
     bool bError = false;
 
@@ -171,7 +171,7 @@ bool StepGuider::Connect(void)
     return bError;
 }
 
-bool StepGuider::Disconnect(void)
+bool StepGuider::Disconnect()
 {
     bool bError = false;
 
@@ -193,7 +193,7 @@ bool StepGuider::Disconnect(void)
     return bError;
 }
 
-void StepGuider::ForceStartBump(void)
+void StepGuider::ForceStartBump()
 {
     Debug.Write("StepGuider: force bump");
     m_forceStartBump = true;
@@ -206,7 +206,7 @@ static int IntegerPercent(int percentage, int number)
     return (int) value;
 }
 
-void StepGuider::InitBumpPositions(void)
+void StepGuider::InitBumpPositions()
 {
     int limit2Pct = (100 + m_bumpPercentage) / 2;
 
@@ -251,7 +251,7 @@ bool StepGuider::SetSamplesToAverage(int samplesToAverage)
     return bError;
 }
 
-int StepGuider::GetBumpPercentage(void) const
+int StepGuider::GetBumpPercentage() const
 {
     return m_bumpPercentage;
 }
@@ -451,7 +451,7 @@ int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
     return ret;
 }
 
-void StepGuider::ClearCalibration(void)
+void StepGuider::ClearCalibration()
 {
     Mount::ClearCalibration();
 
@@ -795,7 +795,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
     return bError;
 }
 
-void StepGuider::NotifyGuidingStopped(void)
+void StepGuider::NotifyGuidingStopped()
 {
     // We have stopped guiding.  Reset bump state and recenter the stepguider
 
@@ -810,7 +810,7 @@ void StepGuider::NotifyGuidingStopped(void)
     MoveToCenter(); // ignore failure
 }
 
-void StepGuider::NotifyGuidingResumed(void)
+void StepGuider::NotifyGuidingResumed()
 {
     Mount::NotifyGuidingResumed();
     m_avgOffset.Invalidate();
@@ -822,7 +822,7 @@ void StepGuider::NotifyGuidingDithered(double dx, double dy, bool mountCoords)
     m_avgOffset.Invalidate();
 }
 
-void StepGuider::ShowPropertyDialog(void)
+void StepGuider::ShowPropertyDialog()
 {
 }
 
@@ -853,12 +853,12 @@ Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int st
     return result;
 }
 
-int StepGuider::CalibrationMoveSize(void)
+int StepGuider::CalibrationMoveSize()
 {
     return m_calibrationStepsPerIteration;
 }
 
-int StepGuider::CalibrationTotDistance(void)
+int StepGuider::CalibrationTotDistance()
 {
     // we really have no way of knowing how many pixels calibration will
     // require, since calibration is step-based and not pixel-based.
@@ -1266,12 +1266,12 @@ wxString StepGuider::GetMountClassName() const
     return wxString("stepguider");
 }
 
-bool StepGuider::IsStepGuider(void) const
+bool StepGuider::IsStepGuider() const
 {
     return true;
 }
 
-void StepGuider::AdjustCalibrationForScopePointing(void)
+void StepGuider::AdjustCalibrationForScopePointing()
 {
     // compensate for binning change
 
@@ -1299,12 +1299,12 @@ void StepGuider::AdjustCalibrationForScopePointing(void)
     }
 }
 
-wxPoint StepGuider::GetAoPos(void) const
+wxPoint StepGuider::GetAoPos() const
 {
     return wxPoint(m_xOffset, m_yOffset);
 }
 
-wxPoint StepGuider::GetAoMaxPos(void) const
+wxPoint StepGuider::GetAoMaxPos() const
 {
     return wxPoint(MaxPosition(RIGHT), MaxPosition(UP));
 }
@@ -1353,12 +1353,12 @@ void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel *pParent, Br
 
 }
 
-void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
+void StepGuider::StepGuiderConfigDialogPane::LoadValues()
 {
     MountConfigDialogPane::LoadValues();
 }
 
-void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
+void StepGuider::StepGuiderConfigDialogPane::UnloadValues()
 {
     MountConfigDialogPane::UnloadValues();
 }

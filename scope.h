@@ -200,7 +200,7 @@ public:
     wxString CalibrationSettingsSummary() const override;
     wxString GetMountClassName() const override;
 
-    static wxArrayString List(void);
+    static wxArrayString MountList(void);
     static wxArrayString AuxMountList(void);
     static Scope *Factory(const wxString& choice);
 

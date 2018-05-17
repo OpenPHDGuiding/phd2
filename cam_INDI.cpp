@@ -105,14 +105,13 @@ void CameraINDI::CheckState()
     // Check if the device has all the required properties for our usage.
     if (has_blob && camera_device && Connected && (expose_prop || video_prop))
     {
-        if (! ready)
+        if (!ready)
         {
             Debug.Write(wxString::Format("INDI Camera is ready\n"));
             ready = true;
             first_frame = true;
-            if (modal) {
+            if (modal)
                 modal = false;
-            }
         }
     }
 }
@@ -389,15 +388,19 @@ bool CameraINDI::Connect(const wxString& camId)
     // Connect to server.
     if (connectServer())
     {
-       return !ready;
+        Debug.Write(wxString::Format("INDI Camera: connectServer done ready = %d\n", ready));
+        return !ready;
     }
 
     // last chance to fix the setup
     CameraSetup();
+
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     watchDevice(INDICameraName.mb_str(wxConvUTF8));
+
     if (connectServer())
     {
+        Debug.Write(wxString::Format("INDI Camera: connectServer [2] done ready = %d\n", ready));
         return !ready;
     }
 
@@ -411,69 +414,124 @@ wxByte CameraINDI::BitsPerPixel()
 
 bool CameraINDI::Disconnect()
 {
-    if (!ready)
-        return true;
-
-    // Disconnect from server
-    if (disconnectServer())
-        return false;
-
-    return true;
+    // Disconnect from server (no-op if not connected)
+    disconnectServer();
+    return false;
 }
 
-void CameraINDI::serverConnected()
+bool CameraINDI::ConnectToDriver(RunInBg *r)
 {
-    // After connection to the server
     modal = true;
+
     // wait for the device port property
+
     wxLongLong msec = wxGetUTCTimeMillis();
-    if (INDICameraPort.Length())   // the camera port is not mandatory
+
+    if (INDICameraPort.Length())   // the camera port is optional
     {
-        while ((!camera_port) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+        while (!camera_port && wxGetUTCTimeMillis() - msec < 15 * 1000)
         {
-            ::wxSafeYield();
+            if (r->IsCanceled())
+            {
+                modal = false;
+                return false;
+            }
+
+            wxMilliSleep(20);
         }
-        // Set the port, this must be done before to try to connect the device
-        if (camera_port)
+        if (!camera_port)
         {
-            char *porttext = const_cast<char *>((const char *)INDICameraPort.mb_str());
-            camera_port->tp->text = porttext;
-            sendNewText(camera_port);
+            r->SetErrorMsg(_("Connection timed-out"));
+            modal = false;
+            return false;
         }
+
+        // Set the port before to trying to connect the device
+
+        char *porttext = const_cast<char *>((const char *)INDICameraPort.mb_str());
+        camera_port->tp->text = porttext;
+        sendNewText(camera_port);
     }
+
     // Connect the camera device
-    while ((!connection_prop) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+    while (!connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000)
     {
-         ::wxSafeYield();
+        if (r->IsCanceled())
+        {
+            modal = false;
+            return false;
+        }
+
+        wxMilliSleep(20);
     }
+    if (!connection_prop)
+    {
+        r->SetErrorMsg(_("connection timed-out"));
+        modal = false;
+        return false;
+    }
+
     connectDevice(INDICameraName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
     while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
     {
-        ::wxSafeYield();
+        if (r->IsCanceled())
+        {
+            modal = false;
+            return false;
+        }
+
+        wxMilliSleep(20);
     }
-    modal = false;
-    if (ready)
+    if (!ready)
     {
-        Connected = true;
+        r->SetErrorMsg(_("Connection timed-out"));
+    }
+
+    modal = false;
+    return ready;
+}
+
+void CameraINDI::serverConnected()
+{
+    // After connection to the server
+
+    struct ConnectInBg : public ConnectCameraInBg
+    {
+        CameraINDI *cam;
+        ConnectInBg(CameraINDI *cam_) : cam(cam_) { }
+        bool Entry()
+        {
+            return !cam->ConnectToDriver(this);
+        }
+    };
+    ConnectInBg bg(this);
+
+    if (bg.Run())
+    {
+        Debug.Write(wxString::Format("INDI Camera bg connection failed canceled=%d\n", bg.IsCanceled()));
+        CamConnectFailed(wxString::Format(_("Cannot connect to camera %s: %s"), INDICameraName, bg.GetErrorMsg()));
+        Connected = false;
+        Disconnect();
     }
     else
     {
-        // In case we not get all the required properties or connection to the device failed
-        pFrame->Alert(wxString::Format(_("Cannot connect to camera %s"), INDICameraName));
-        Connected = false;
-        Disconnect();
+        Debug.Write("INDI Camera bg connection succeeded\n");
+        Connected = true;
     }
 }
 
 void CameraINDI::serverDisconnected(int exit_code)
 {
-   // after disconnection we reset the connection status and the properties pointers
-   ClearStatus();
-   // in case the connection lost we must reset the client socket
-   if (exit_code == -1)
-       DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
+    Debug.Write("INDI Camera: serverDisconnected\n");
+
+    // after disconnection we reset the connection status and the properties pointers
+    ClearStatus();
+
+    // in case the connection lost we must reset the client socket
+    if (exit_code == -1)
+        DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
 }
 
 #ifndef INDI_PRE_1_0_0

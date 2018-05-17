@@ -96,6 +96,7 @@ private:
     bool     INDICameraForceVideo;
     wxRect   m_roi;
 
+    bool     ConnectToDriver(RunInBg *ctx);
     void     SetCCDdevice();
     void     ClearStatus(); 
     void     CheckState();

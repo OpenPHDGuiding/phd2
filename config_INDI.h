@@ -58,15 +58,20 @@ enum
 
 class INDIConfig : public wxDialog, public INDI::BaseClient
 {
-    IndiGui *gui;
     wxTextCtrl *host;
     wxTextCtrl *port;
+    wxButton *connect;
     wxStaticText *connect_status;
     wxStaticText *devlabel;
     wxComboBox *dev;
-    wxComboBox *ccd;
     wxTextCtrl *devport;
+    wxComboBox *ccd;
     wxCheckBox *forcevideo;
+    wxButton *guiBtn;
+    wxButton *okBtn;
+
+    bool connected;
+    IndiGui *gui;
     int dev_type;
 
 public:
@@ -77,9 +82,9 @@ public:
     long     INDIport;
     wxString INDIhost;
     wxString INDIDevName;
+    wxString INDIDevPort;
     long     INDIDevCCD;
     bool     INDIForceVideo;
-    wxString INDIDevPort;
 
     void Connect();
     void Disconnect();
@@ -107,6 +112,9 @@ private:
 
     void OnConnectButton(wxCommandEvent& evt);
     void OnIndiGui(wxCommandEvent& evt);
+    void OnDevSelected(wxCommandEvent& evt);
+    void UpdateControlStates();
+
     wxDECLARE_EVENT_TABLE();
 };
 

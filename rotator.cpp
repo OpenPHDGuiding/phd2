@@ -40,7 +40,7 @@ const float Rotator::POSITION_UNKNOWN = -888.f;
 
 Rotator *pRotator;
 
-wxArrayString Rotator::List(void)
+wxArrayString Rotator::RotatorList()
 {
     wxArrayString rotatorList;
 
@@ -103,35 +103,35 @@ Rotator *Rotator::Factory(const wxString& choice)
     return rotator;
 }
 
-Rotator::Rotator(void)
+Rotator::Rotator()
     : m_connected(false)
 {
     m_isReversed = pConfig->Profile.GetBoolean("/rotator/isReversed", false);
     Debug.Write(wxString::Format("Rotator:ctor: isReversed = %d\n", m_isReversed));
 }
 
-Rotator::~Rotator(void)
+Rotator::~Rotator()
 {
 }
 
-bool Rotator::Connect(void)
+bool Rotator::Connect()
 {
     m_connected = true;
     return false;
 }
 
-bool Rotator::Disconnect(void)
+bool Rotator::Disconnect()
 {
     m_connected = false;
     return false;
 }
 
-bool Rotator::IsConnected(void) const
+bool Rotator::IsConnected() const
 {
     return m_connected;
 }
 
-void Rotator::ShowPropertyDialog(void)
+void Rotator::ShowPropertyDialog()
 {
 }
 
