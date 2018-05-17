@@ -40,6 +40,8 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
+class RunInBg;
+
 class ScopeINDI : public Scope, public INDI::BaseClient
 {
 private:
@@ -84,6 +86,8 @@ private:
     bool     modal;
     bool     ready;
     bool     eod_coord;
+
+    bool     ConnectToDriver(RunInBg *ctx);
     void     ClearStatus();
     void     CheckState();
 

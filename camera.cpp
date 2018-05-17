@@ -220,7 +220,13 @@ static int CompareNoCase(const wxString& first, const wxString& second)
     return first.CmpNoCase(second);
 }
 
-wxArrayString GuideCamera::List(void)
+static wxString INDICamName()
+{
+    wxString indicam = pConfig->Profile.GetString("/indi/INDIcam", wxEmptyString);
+    return indicam.empty() ? _T("INDI Camera") : wxString::Format("INDI Camera [%s]", indicam);
+}
+
+wxArrayString GuideCamera::GuideCameraList(void)
 {
     wxArrayString CameraList;
 
@@ -319,7 +325,7 @@ wxArrayString GuideCamera::List(void)
     CameraList.Add(_T("Long exposure Serial webcam"));
 #endif
 #if defined (INDI_CAMERA)
-    CameraList.Add(_T("INDI Camera"));
+    CameraList.Add(INDICamName());
 #endif
 #if defined (V4L_CAMERA)
     if (true == Camera_VIDEODEVICE.ProbeDevices()) {
@@ -355,24 +361,29 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         if (false) // so else ifs can follow
         {
         }
+
+        // Chack ASCOM and INDI first since those choices may match match other choices below (like Simulator)
 #if defined (ASCOM_CAMERA)
-        // do ascom first since it includes many choices, some of which match other choices below (like Simulator)
-        else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
+        else if (choice.Contains(_T("ASCOM"))) {
             pReturn = new CameraASCOM(choice);
         }
 #endif
-        else if (choice.Find(_("None")) + 1) {
-        }
-        else if (choice.Find(_T("Simulator")) + 1) {
-            pReturn = new CameraSimulator();
-        }
-#if defined (SAC42)
-        else if (choice.Find(_T("SAC4-2")) + 1) {
-            pReturn = new CameraSAC42();
+#if defined (INDI_CAMERA)
+        else if (choice.Contains(_T("INDI"))) {
+            pReturn = new CameraINDI();
         }
 #endif
+        else if (choice == _("None"))
+            pReturn = nullptr;
+        else if (choice == _T("Simulator"))
+            pReturn = new CameraSimulator();
+#if defined (SAC42)
+        else if (choice.Contains(_T("SAC4-2")))
+            pReturn = new CameraSAC42();
+#endif
 #if defined (ATIK16)
-        else if (choice.Find(_T("Atik 16 series")) + 1) {
+        else if (choice.StartsWith("Atik 16 series"))
+        {
             CameraAtik16 *pNewGuideCamera = new CameraAtik16();
             pNewGuideCamera->HSModel = false;
             if (choice.Find(_T("color")))
@@ -383,7 +394,8 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (ATIK_GEN3)
-        else if (choice.Find(_T("Atik Gen3")) + 1) {
+        else if (choice.StartsWith(_T("Atik Gen3")))
+        {
             CameraAtik16 *pNewGuideCamera = new CameraAtik16();
             pNewGuideCamera->HSModel = true;
             if (choice.Find(_T("color")))
@@ -394,66 +406,58 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (QGUIDE)
-        else if (choice.Find(_T("CCD Labs Q-Guider")) + 1) {
+        else if (choice.Contains(_T("CCD Labs Q-Guider")))
+        {
             pReturn = new CameraQGuider();
             pReturn->Name = _T("Q-Guider");
         }
-        else if (choice.Find(_T("MagZero MZ-5")) + 1) {
+        else if (choice.Contains(_T("MagZero MZ-5")))
+        {
             pReturn = new CameraQGuider();
             pReturn->Name = _T("MagZero MZ-5");
         }
 #endif
 #if defined (QHY_CAMERA)
-        else if (choice.Find(_T("QHY Camera")) != wxNOT_FOUND) {
+        else if (choice.Contains(_T("QHY Camera")))
             pReturn = new Camera_QHY();
-        }
 #endif
 #if defined(ALTAIR)
-		else if (choice.Find(_T("Altair Camera")) + 1)
-		{
+		else if (choice.Contains(_T("Altair Camera")))
 			pReturn = new Camera_Altair();
-		}
 #endif
 #if defined(ZWO_ASI)
-        else if (choice.Find(_T("ZWO ASI Camera")) + 1)
-        {
+        else if (choice.Contains(_T("ZWO ASI Camera")))
             pReturn = new Camera_ZWO();
-        }
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
-        else if (choice.Find(_T("QHY 5")) + 1) {
+        else if (choice.Contains(_T("QHY 5")))
             pReturn = new CameraQHY5();
-        }
 #endif
 #if defined (OPENSSAG)
-        else if (choice.Find(_T("Orion StarShoot Autoguider")) + 1) {
+        else if (choice.Contains(_T("Orion StarShoot Autoguider")))
             pReturn = new CameraOpenSSAG();
-        }
 #endif
 #if defined (KWIQGUIDER)
-        else if (choice.Find(_T("KWIQGuider")) + 1) {
+        else if (choice.Contains(_T("KWIQGuider")))
             pReturn = new CameraKWIQGuider();
-        }
 #endif
 #if defined (SSAG)
-        else if (choice.Find(_T("StarShoot Autoguider")) + 1) {
+        else if (choice.Contains(_T("StarShoot Autoguider")))
             pReturn = new CameraSSAG();
-        }
 #endif
 #if defined (SSPIAG)
-        else if (choice.Find(_T("StarShoot Planetary Imager & Autoguider")) + 1) {
+        else if (choice.Contains(_T("StarShoot Planetary Imager & Autoguider")))
             pReturn = new CameraSSPIAG();
-        }
 #endif
 #if defined (ORION_DSCI)
-        else if (choice.Find(_T("Orion StarShoot DSCI")) + 1) {
+        else if (choice.Contains(_T("Orion StarShoot DSCI")))
             pReturn = new CameraStarShootDSCI();
-        }
 #endif
 #if defined (OPENCV_CAMERA)
-        else if (choice.Find(_T("OpenCV webcam")) + 1) {
+        else if (choice.Contains(_T("OpenCV webcam")))
+        {
             int dev = 0;
-            if (choice.Find(_T("2")) + 1)
+            if (choice.Contains(_T("2")))
             {
                 dev = 1;
             }
@@ -461,94 +465,80 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (WDM_CAMERA)
-        else if (choice.Find(_T("Windows WDM")) + 1) {
+        else if (choice.Contains(_T("Windows WDM")))
             pReturn = new CameraWDM();
-        }
 #endif
 #if defined (VFW_CAMERA)
-        else if (choice.Find(_T("Windows VFW")) + 1) {
+        else if (choice.Contains(_T("Windows VFW")))
             pReturn = new CameraVFW();
-        }
 #endif
 #if defined (LE_SERIAL_CAMERA)
-        else if (choice.Find(_T("Long exposure Serial webcam")) + 1) {
+        else if (choice.Contains(_T("Long exposure Serial webcam")))
             pReturn = new CameraLESerialWebcam();
-        }
 #endif
 #if defined (LE_PARALLEL_CAMERA)
-        else if (choice.Find( _T("Long exposure Parallel webcam")) + 1) {
+        else if (choice.Contains( _T("Long exposure Parallel webcam")))
             pReturn = new CameraLEParallelWebcam();
-        }
 #endif
 #if defined (LE_LXUSB_CAMERA)
-        else if (choice.Find( _T("Long exposure LXUSB webcam")) + 1) {
+        else if (choice.Contains(_T("Long exposure LXUSB webcam")))
             pReturn = new CameraLELxUsbWebcam();
-        }
 #endif
 #if defined (MEADE_DSI)
-        else if (choice.Find(_T("Meade DSI I, II, or III")) + 1) {
+        else if (choice.Contains(_T("Meade DSI I, II, or III")))
             pReturn = new CameraDSI();
-        }
 #endif
 #if defined (STARFISH)
-        else if (choice.Find(_T("Fishcamp Starfish")) + 1) {
+        else if (choice.Contains(_T("Fishcamp Starfish")))
             pReturn = new CameraStarfish();
-        }
 #endif
 #if defined (SXV)
-        else if (choice.Find(_T("Starlight Xpress SXV")) + 1) {
+        else if (choice.Contains(_T("Starlight Xpress SXV")))
             pReturn = new CameraSXV();
-        }
 #endif
 #if defined (OS_PL130)
-        else if (choice.Find(_T("Opticstar PL-130M")) + 1) {
-            Camera_OSPL130.Color=false;
-            Camera_OSPL130.Name=_T("Opticstar PL-130M");
+        else if (choice.Contains(_T("Opticstar PL-130M")))
+        {
+            Camera_OSPL130.Color = false;
+            Camera_OSPL130.Name = _T("Opticstar PL-130M");
             pReturn = new Camera_OSPL130Class();
         }
-        else if (choice.Find(_T("Opticstar PL-130C")) + 1) {
-            Camera_OSPL130.Color=true;
-            Camera_OSPL130.Name=_T("Opticstar PL-130C");
+        else if (choice.Contains(_T("Opticstar PL-130C")))
+        {
+            Camera_OSPL130.Color = true;
+            Camera_OSPL130.Name = _T("Opticstar PL-130C");
             pReturn = new Camera_OSPL130Class();
         }
 #endif
 #if defined (NEB_SBIG)
-        else if (choice.Find(_T("Nebulosity")) + 1) {
+        else if (choice.Contains(_T("Nebulosity")))
             pReturn = new CameraNebSBIG();
-        }
 #endif
 #if defined (SBIGROTATOR_CAMERA)
         // must go above SBIG
-        else if (choice.Find(_T("SBIG Rotator")) + 1) {
+        else if (choice.Contains(_T("SBIG Rotator")))
             pReturn = new CameraSBIGRotator();
-        }
 #endif
 #if defined (SBIG)
-        else if (choice.Find(_T("SBIG")) + 1) {
+        else if (choice.Contains(_T("SBIG")))
             pReturn = new CameraSBIG();
-        }
 #endif
 #if defined (FIREWIRE)
-        else if (choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1) {
+        else if (choice.Contains(_T("The Imaging Source (DCAM Firewire)")))
             pReturn = new CameraFirewire();
-        }
 #endif
 #if defined (INOVA_PLC)
-        else if (choice.Find(_T("i-Nova PLC-M")) + 1) {
+        else if (choice.Contains(_T("i-Nova PLC-M")))
             pReturn = new CameraINovaPLC();
-        }
-#endif
-#if defined (INDI_CAMERA)
-        else if (choice.Find(_T("INDI Camera")) + 1) {
-            pReturn = new CameraINDI();
-        }
 #endif
 #if defined (V4L_CAMERA)
-        else if (choice.Find(_T("V4L(2) Camera")) + 1) {
+        else if (choice.Contains(_T("V4L(2) Camera")))
+        {
             // There is at least ONE V4L(2) device ... let's find out exactly
             DeviceInfo *deviceInfo = nullptr;
 
-            if (1 == Camera_VIDEODEVICE.NumberOfDevices()) {
+            if (Camera_VIDEODEVICE.NumberOfDevices() == 1)
+            {
                 deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(0);
 
                 Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
@@ -556,11 +546,14 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
                 Camera_VIDEODEVICE.SetModel(deviceInfo->getModelId());
 
                 Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
-            } else {
+            }
+            else
+            {
                 wxArrayString choices;
                 int choice = 0;
 
-                if (-1 != (choice = wxGetSinglechoiceIndex(_("Select your camera"), _T("V4L(2) devices"), Camera_VIDEODEVICE.GetProductArray(choices)))) {
+                if ((choice = wxGetSinglechoiceIndex(_("Select your camera"), _T("V4L(2) devices"), Camera_VIDEODEVICE.GetProductArray(choices))) != -1)
+                {
                     deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(choice);
 
                     Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
@@ -568,15 +561,18 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
                     Camera_VIDEODEVICE.SetModel(deviceInfo->getModelId());
 
                     Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
-                } else {
-                    throw ERROR_INFO("Camerafactory invalid V4L choice");
+                }
+                else
+                {
+                    throw ERROR_INFO("CameraFactory invalid V4L choice");
                 }
             }
 
             pReturn = new Camera_VIDEODEVICEClass();
         }
 #endif
-        else {
+        else
+        {
             throw ERROR_INFO("CameraFactory: Unknown camera choice");
         }
     }

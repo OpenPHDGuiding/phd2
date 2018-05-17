@@ -124,30 +124,30 @@ GearDialog::GearDialog(wxWindow *pParent) :
     m_rotatorUpdated(false),
     m_showDarksDialog(false)
 {
-    m_pCamera              = NULL;
-    m_pScope               = NULL;
-    m_pAuxScope = NULL;
-    m_pStepGuider = NULL;
-    m_pRotator = NULL;
+    m_pCamera              = nullptr;
+    m_pScope               = nullptr;
+    m_pAuxScope = nullptr;
+    m_pStepGuider = nullptr;
+    m_pRotator = nullptr;
 
-    m_pCameras             = NULL;
-    m_pScopes              = NULL;
-    m_pAuxScopes           = NULL;
-    m_pStepGuiders         = NULL;
-    m_pRotators = NULL;
+    m_pCameras             = nullptr;
+    m_pScopes              = nullptr;
+    m_pAuxScopes           = nullptr;
+    m_pStepGuiders         = nullptr;
+    m_pRotators = nullptr;
 
-    m_pConnectCameraButton      = NULL;
-    m_pConnectScopeButton       = NULL;
-    m_pConnectAuxScopeButton    = NULL;
-    m_pConnectStepGuiderButton = NULL;
-    m_pConnectRotatorButton = NULL;
+    m_pConnectCameraButton      = nullptr;
+    m_pConnectScopeButton       = nullptr;
+    m_pConnectAuxScopeButton    = nullptr;
+    m_pConnectStepGuiderButton = nullptr;
+    m_pConnectRotatorButton = nullptr;
 
-    m_pConnectAllButton = NULL;
-    m_pDisconnectAllButton = NULL;
+    m_pConnectAllButton = nullptr;
+    m_pDisconnectAllButton = nullptr;
 
-    m_profiles = NULL;
-    m_btnProfileManage = NULL;
-    m_menuProfileManage = NULL;
+    m_profiles = nullptr;
+    m_btnProfileManage = nullptr;
+    m_menuProfileManage = nullptr;
 
     Initialize();
 
@@ -165,11 +165,11 @@ GearDialog::~GearDialog(void)
     delete m_pRotator;
 
     // prevent double frees
-    pCamera         = NULL;
-    pMount          = NULL;
-    pSecondaryMount = NULL;
-    pPointingSource = NULL;
-    pRotator = NULL;
+    pCamera         = nullptr;
+    pMount          = nullptr;
+    pSecondaryMount = nullptr;
+    pPointingSource = nullptr;
+    pRotator = nullptr;
 
     delete m_menuProfileManage;
 }
@@ -248,7 +248,7 @@ void GearDialog::Initialize(void)
     // Camera
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize), wxGBPosition(0, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
-                              GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
+                              0, nullptr, 0, wxDefaultValidator, _("Camera"));
     m_gearSizer->Add(m_pCameras, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
 #   include "icons/select.png.h"
@@ -268,7 +268,7 @@ void GearDialog::Initialize(void)
     // mount
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
-                             Scope::List(), 0, wxDefaultValidator, _("Mount"));
+                             0, nullptr, 0, wxDefaultValidator, _("Mount"));
     m_pScopes->SetToolTip(_("Specify how guide commands will be sent to the mount - via an ASCOM or INDI driver, directly from the camera or AO, "
         "or via one of the GPxxx devices. An ASCOM connection is recommended."));
     m_gearSizer->Add(m_pScopes, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
@@ -281,7 +281,7 @@ void GearDialog::Initialize(void)
     // aux mount - used for position/state information when not guiding through ASCOM interface
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Aux Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pAuxScopes = new wxChoice(this, GEAR_CHOICE_AUXSCOPE, wxDefaultPosition, wxDefaultSize,
-        Scope::AuxMountList(), 0, wxDefaultValidator, _("Aux Mount"));
+        0, nullptr, 0, wxDefaultValidator, _("Aux Mount"));
 
 #if defined(GUIDE_ASCOM) || defined(GUIDE_INDI)
 #ifdef GUIDE_ASCOM
@@ -307,7 +307,7 @@ void GearDialog::Initialize(void)
     // ao
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("AO"), wxDefaultPosition, wxDefaultSize), wxGBPosition(4, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
-                                  StepGuider::List(), 0, wxDefaultValidator, _("AO"));
+                                  0, nullptr, 0, wxDefaultValidator, _("AO"));
     m_gearSizer->Add(m_pStepGuiders, wxGBPosition(4, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, setup_bmp);
     m_pSetupStepGuiderButton->SetToolTip(_("AO Setup"));
@@ -317,7 +317,7 @@ void GearDialog::Initialize(void)
 
     // rotator
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Rotator"), wxDefaultPosition, wxDefaultSize), wxGBPosition(5, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pRotators = new wxChoice(this, GEAR_CHOICE_ROTATOR, wxDefaultPosition, wxDefaultSize, Rotator::List(), 0, wxDefaultValidator, _("Rotator"));
+    m_pRotators = new wxChoice(this, GEAR_CHOICE_ROTATOR, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator, _("Rotator"));
     m_gearSizer->Add(m_pRotators, wxGBPosition(5, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupRotatorButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_ROTATOR, setup_bmp);
     m_pSetupRotatorButton->SetToolTip(_("Rotator Setup"));
@@ -353,29 +353,92 @@ void GearDialog::Initialize(void)
     UpdateAdvancedDialog(false);
 }
 
+static bool DeviceSelectionMatches(const wxString& val, const wxString& item)
+{
+    if (val.Contains("INDI"))
+        return item.Contains("INDI");
+    return val == item;
+}
+
+static void SetMatchingSelection(wxChoice *ctrl, const wxString& val)
+{
+    if (ctrl->SetStringSelection(val))
+        return;
+
+    // special case for INDI:  INDI device selection will be "INDI Camera" or "INDI Camera [indi driver name]"
+    // allow either one to match
+    for (int i = 0; i < ctrl->GetCount(); ++i)
+    {
+        const wxString& item = ctrl->GetString(i);
+        if (DeviceSelectionMatches(val, item))
+        {
+            ctrl->SetSelection(i);
+            return;
+        }
+    }
+}
+
+static void LoadChoices(wxChoice *ctl, const wxArrayString& ary)
+{
+    ctl->Freeze();
+    ctl->Clear();
+    ctl->Append(ary);
+    ctl->Thaw();
+}
+
+static void LoadCameras(wxChoice *cameras)
+{
+    LoadChoices(cameras, GuideCamera::GuideCameraList());
+}
+
+static void LoadMounts(wxChoice *mounts)
+{
+    LoadChoices(mounts, Scope::MountList());
+}
+
+static void LoadAuxMounts(wxChoice *auxMounts)
+{
+    LoadChoices(auxMounts, Scope::AuxMountList());
+}
+
+static void LoadAOs(wxChoice *aos)
+{
+    LoadChoices(aos, StepGuider::AOList());
+}
+
+static void LoadRotators(wxChoice *aos)
+{
+    LoadChoices(aos, StepGuider::AOList());
+}
+
 void GearDialog::LoadGearChoices(void)
 {
+    LoadCameras(m_pCameras);
+    LoadMounts(m_pScopes);
+    LoadAuxMounts(m_pAuxScopes);
+    LoadAOs(m_pStepGuiders);
+    LoadRotators(m_pRotators);
+
     wxCommandEvent dummyEvent;
-    m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
-    m_pCameras->SetStringSelection(m_lastCamera);
+    m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", _("None"));
+    SetMatchingSelection(m_pCameras, m_lastCamera);
     OnChoiceCamera(dummyEvent);
 
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
-    m_pScopes->SetStringSelection(lastScope);
+    SetMatchingSelection(m_pScopes, lastScope);
     OnChoiceScope(dummyEvent);
 
     wxString lastAuxScope = pConfig->Profile.GetString("/scope/LastAuxMenuChoice", _("None"));
-    m_pAuxScopes->SetStringSelection(lastAuxScope);
+    SetMatchingSelection(m_pAuxScopes, lastAuxScope);
     OnChoiceAuxScope(dummyEvent);
 
     wxString lastStepGuider = pConfig->Profile.GetString("/stepguider/LastMenuChoice", _("None"));
-    m_pStepGuiders->SetStringSelection(lastStepGuider);
+    SetMatchingSelection(m_pStepGuiders, lastStepGuider);
     OnChoiceStepGuider(dummyEvent);
 
     wxString lastRotator = pConfig->Profile.GetString("/rotator/LastMenuChoice", _("None"));
-    m_pRotators->SetStringSelection(lastRotator);
+    SetMatchingSelection(m_pRotators, lastRotator);
     OnChoiceRotator(dummyEvent);
-
 }
 
 int GearDialog::ShowGearDialog(bool autoConnect)
@@ -383,19 +446,19 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     int ret = wxID_OK;
     int callSuper = true;
 
-    assert(pCamera == NULL || pCamera == m_pCamera);
+    assert(pCamera == nullptr || pCamera == m_pCamera);
 
     m_camWarningIssued = false;
 
     if (m_pStepGuider)
     {
-        assert(pMount == NULL || pMount == m_pStepGuider);
-        assert(pSecondaryMount == NULL || pSecondaryMount == m_pScope);
+        assert(pMount == nullptr || pMount == m_pStepGuider);
+        assert(pSecondaryMount == nullptr || pSecondaryMount == m_pScope);
     }
     else
     {
-        assert(pMount == NULL || pMount == m_pScope);
-        assert(pSecondaryMount == NULL);
+        assert(pMount == nullptr || pMount == m_pScope);
+        assert(pSecondaryMount == nullptr);
     }
 
     if (autoConnect)
@@ -455,7 +518,7 @@ void GearDialog::EndModal(int retCode)
     else
     {
         assert(pMount == m_pScope);
-        assert(pSecondaryMount == NULL);
+        assert(pSecondaryMount == nullptr);
     }
 
     pFrame->UpdateButtonsStatus();
@@ -504,6 +567,11 @@ void GearDialog::EndModal(int retCode)
     }
 }
 
+static bool UseSelectCameraButton(const wxString& selection)
+{
+    return !selection.Contains(_T("INDI"));
+}
+
 void GearDialog::UpdateCameraButtonState(void)
 {
     // Now set up the buttons to match our current state
@@ -537,7 +605,7 @@ void GearDialog::UpdateCameraButtonState(void)
         }
         else
         {
-            m_selectCameraButton->Enable(true);
+            m_selectCameraButton->Enable(UseSelectCameraButton(m_pCameras->GetStringSelection()));
             m_pConnectCameraButton->SetLabel(_("Connect"));
             m_pConnectCameraButton->SetValue(false);
             m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
@@ -610,7 +678,7 @@ void GearDialog::UpdateAuxScopeButtonState(void)
 
         if (m_pAuxScope && m_pAuxScope != m_pScope)
             delete m_pAuxScope;
-        m_pAuxScope = NULL;
+        m_pAuxScope = nullptr;
     }
     else
     {
@@ -824,7 +892,6 @@ void GearDialog::OnChar(wxKeyEvent& evt)
     }
 }
 
-
 void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 {
     try
@@ -832,7 +899,7 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
         wxString choice = m_pCameras->GetStringSelection();
 
         delete m_pCamera;
-        m_pCamera = NULL;
+        m_pCamera = nullptr;
 
         UpdateGearPointers();
 
@@ -945,6 +1012,11 @@ void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
 void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
 {
     m_pCamera->ShowPropertyDialog();
+
+    // camera setup may have changed camera name so re-load the camera list
+    wxString selection = m_pCameras->GetStringSelection();
+    LoadCameras(m_pCameras);
+    SetMatchingSelection(m_pCameras, selection);
 }
 
 bool GearDialog::DoConnectCamera(void)
@@ -953,7 +1025,7 @@ bool GearDialog::DoConnectCamera(void)
 
     try
     {
-        if (m_pCamera == NULL)
+        if (!m_pCamera)
         {
             throw ERROR_INFO("DoConnectCamera called with m_pCamera == NULL");
         }
@@ -964,7 +1036,8 @@ bool GearDialog::DoConnectCamera(void)
         }
 
         wxString newCam = m_pCameras->GetStringSelection();
-        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && m_lastCamera != newCam)
+
+        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam))
         {
             int currProfileId = pConfig->GetCurrentProfileId();
             wxString darkName = MyFrame::DarkLibFileName(currProfileId);
@@ -982,7 +1055,7 @@ bool GearDialog::DoConnectCamera(void)
                 }
                 else
                 {
-                    m_pCameras->SetStringSelection(m_lastCamera);
+                    SetMatchingSelection(m_pCameras, m_lastCamera);
                     wxCommandEvent dummy;
                     OnChoiceCamera(dummy);
                     canceled = true;
@@ -990,6 +1063,7 @@ bool GearDialog::DoConnectCamera(void)
                 }
             }
         }
+
         pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
         wxString cameraId = SelectedCameraId(m_lastCamera);
@@ -1081,7 +1155,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
 {
     try
     {
-        if (m_pCamera == NULL)
+        if (!m_pCamera)
         {
             throw ERROR_INFO("OnButtonDisconnectCamera called with m_pCamera == NULL");
         }
@@ -1123,7 +1197,7 @@ void GearDialog::UpdateGearPointers(void)
     else
     {
         pMount = m_pScope;
-        pSecondaryMount = NULL;
+        pSecondaryMount = nullptr;
     }
 
     pPointingSource = m_pScope && (!m_pAuxScope || m_pScope->CanReportPosition()) ?
@@ -1139,7 +1213,7 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
         wxString choice = m_pScopes->GetStringSelection();
 
         delete m_pScope;
-        m_pScope = NULL;
+        m_pScope = nullptr;
         UpdateGearPointers();
 
         m_pScope = Scope::Factory(choice);
@@ -1172,7 +1246,7 @@ void GearDialog::OnChoiceAuxScope(wxCommandEvent& event)
 
         if (m_pAuxScope != m_pScope)
             delete m_pAuxScope;
-        m_pAuxScope = NULL;
+        m_pAuxScope = nullptr;
         UpdateGearPointers();
 
         m_pAuxScope = Scope::Factory(choice);
@@ -1196,11 +1270,21 @@ void GearDialog::OnChoiceAuxScope(wxCommandEvent& event)
 void GearDialog::OnButtonSetupScope(wxCommandEvent& event)
 {
     m_pScope->SetupDialog();
+
+    // scope setup may have changed the scope name so re-load the scope list
+    wxString selection = m_pScopes->GetStringSelection();
+    LoadMounts(m_pScopes);
+    SetMatchingSelection(m_pScopes, selection);
 }
 
 void GearDialog::OnButtonSetupAuxScope(wxCommandEvent& event)
 {
     m_pAuxScope->SetupDialog();
+
+    // scope setup may have changed scope name so re-load the aux scope list
+    wxString selection = m_pAuxScopes->GetStringSelection();
+    LoadAuxMounts(m_pAuxScopes);
+    SetMatchingSelection(m_pAuxScopes, selection);
 }
 
 void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
@@ -1292,7 +1376,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
 {
     try
     {
-        if (m_pScope == NULL)
+        if (!m_pScope)
         {
             throw ERROR_INFO("OnButtonDisconnectScope called with m_pScope == NULL");
         }
@@ -1323,7 +1407,7 @@ void GearDialog::OnButtonDisconnectAuxScope(wxCommandEvent& event)
 {
     try
     {
-        if (m_pAuxScope == NULL)
+        if (!m_pAuxScope)
         {
             throw ERROR_INFO("OnButtonDisconnectAuxScope called with m_pAuxScope == NULL");
         }
@@ -1401,6 +1485,11 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
 void GearDialog::OnButtonSetupStepGuider(wxCommandEvent& event)
 {
     m_pStepGuider->ShowPropertyDialog();
+
+    // setup dialog may have changed device name so re-load the list
+    wxString selection = m_pStepGuiders->GetStringSelection();
+    LoadAOs(m_pStepGuiders);
+    SetMatchingSelection(m_pStepGuiders, selection);
 }
 
 void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
@@ -1525,6 +1614,11 @@ void GearDialog::OnChoiceRotator(wxCommandEvent& event)
 void GearDialog::OnButtonSetupRotator(wxCommandEvent& event)
 {
     m_pRotator->ShowPropertyDialog();
+
+    // setup dialog may have changed device name so re-load the list
+    wxString selection = m_pRotators->GetStringSelection();
+    LoadRotators(m_pRotators);
+    SetMatchingSelection(m_pRotators, selection);
 }
 
 void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
@@ -1665,7 +1759,7 @@ void GearDialog::ShowProfileWizard(wxCommandEvent& evt)
 
 bool GearDialog::IsEmptyProfile(void)
 {
-    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", _("None"));
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
     return lastCamera == _("None") && lastScope == _("None");
 }

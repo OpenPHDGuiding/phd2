@@ -168,6 +168,8 @@ bool ScopeINDI::Connect()
         SetupDialog();
     }
 
+    Debug.Write(wxString::Format("INDI Mount connecting to device [%s]\n", INDIMountName));
+
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
 
@@ -177,6 +179,7 @@ bool ScopeINDI::Connect()
     // Connect to server.
     if (connectServer())
     {
+        Debug.Write(wxString::Format("INDI Mount: connectServer done ready = %d\n", ready));
         return !ready;
     }
 
@@ -188,6 +191,7 @@ bool ScopeINDI::Connect()
 
     if (connectServer())
     {
+        Debug.Write(wxString::Format("INDI Mount: connectServer [2] done ready = %d\n", ready));
         return !ready;
     }
 
@@ -196,79 +200,130 @@ bool ScopeINDI::Connect()
 
 bool ScopeINDI::Disconnect()
 {
-    if (!ready)
-        return true;
-
-    // Disconnect from server
-    if (disconnectServer())
-    {
-        ClearStatus();
-        Scope::Disconnect();
-        return false;
-    }
-
-    return true;
+    // Disconnect from server - no-op if not connected
+    disconnectServer();
+    ClearStatus();
+    Scope::Disconnect();
+    return false;
 }
 
-void ScopeINDI::serverConnected()
+bool ScopeINDI::ConnectToDriver(RunInBg *r)
 {
-    // After connection to the server
-    // set option to receive only the messages, no blob
-    setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), nullptr);
     modal = true;
 
-    // wait for the device port property
-    wxLongLong msec;
+    // set option to receive only the messages, no blob
+    setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), nullptr);
 
-    msec = wxGetUTCTimeMillis();
-    if (INDIMountPort.Length())    // the mount port is not mandatory
+    // wait for the device port property
+
+    wxLongLong msec = wxGetUTCTimeMillis();
+
+    if (INDIMountPort.Length())    // the mount port is optional
     {
-        // wait for Port property
-        while ((!scope_port) && wxGetUTCTimeMillis() - msec < 15 * 1000)
+        while (!scope_port && wxGetUTCTimeMillis() - msec < 15 * 1000)
         {
-            ::wxSafeYield();
+            if (r->IsCanceled())
+            {
+                modal = false;
+                return false;
+            }
+
+            wxMilliSleep(20);
         }
-        // Set the port, this must be done before to try to connect the device
-        if (scope_port)
+        if (!scope_port)
         {
-            char *porttext = const_cast<char*>((const char*)INDIMountPort.mb_str());
-            scope_port->tp->text = porttext;
-            sendNewText(scope_port);
+            r->SetErrorMsg(_("Connection timed-out"));
+            modal = false;
+            return false;
         }
+
+        // Set the port before to try to connect the device
+
+        char *porttext = const_cast<char*>((const char*)INDIMountPort.mb_str());
+        scope_port->tp->text = porttext;
+        sendNewText(scope_port);
     }
+
     // Connect the mount device
     while (!connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000)
     {
-        ::wxSafeYield();
+        if (r->IsCanceled())
+        {
+            modal = false;
+            return false;
+        }
+
+        wxMilliSleep(20);
     }
+    if (!connection_prop)
+    {
+        r->SetErrorMsg(_("Connection timed-out"));
+        modal = false;
+        return false;
+    }
+
     connectDevice(INDIMountName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
     while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
     {
-        ::wxSafeYield();
-    }
-    modal = false;
+        if (r->IsCanceled())
+        {
+            modal = false;
+            return false;
+        }
 
-    // In case we not get all the required properties or connection to the device failed
-    if (ready)
+        wxMilliSleep(20);
+    }
+
+    if (!ready)
     {
-        Scope::Connect();
+        r->SetErrorMsg(_("Connection timed-out"));
+    }
+
+    modal = false;
+    return ready;
+}
+
+void ScopeINDI::serverConnected()
+{
+    // After connection to the server
+
+    struct ConnectInBg : public ConnectMountInBg
+    {
+        ScopeINDI *scope;
+        ConnectInBg(ScopeINDI *scope_) : scope(scope_) { }
+        bool Entry()
+        {
+            return !scope->ConnectToDriver(this);
+        }
+    };
+    ConnectInBg bg(this);
+
+    if (bg.Run())
+    {
+        Debug.Write(wxString::Format("INDI Mount bg connection failed canceled=%d\n", bg.IsCanceled()));
+        pFrame->Alert(wxString::Format(_("Cannot connect to mount %s: %s"), INDIMountName, bg.GetErrorMsg()));
+        Disconnect();
     }
     else
     {
-        Disconnect();
+        Debug.Write("INDI Mount bg connection succeeded\n");
+        Scope::Connect();
     }
 }
 
 void ScopeINDI::serverDisconnected(int exit_code)
 {
+    Debug.Write("INDI Mount: serverDisconnected\n");
+
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
 
     // in case the connection lost we must reset the client socket
     if (exit_code == -1)
     {
+        pFrame->Alert(_("INDI server disconnected"));
         Disconnect();
         Scope::Disconnect();
     }
@@ -719,6 +774,7 @@ bool ScopeINDI::SlewToCoordinates(double ra, double dec)
         wxLongLong msec = wxGetUTCTimeMillis();
         while (coord_prop->s == IPS_BUSY && wxGetUTCTimeMillis() - msec < 90 * 1000)
         {
+            wxMilliSleep(20);
             ::wxSafeYield();
         }
         if (coord_prop->s != IPS_BUSY)

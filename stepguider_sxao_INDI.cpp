@@ -231,16 +231,11 @@ bool StepGuiderSxAoINDI::Connect(void)
 
 bool StepGuiderSxAoINDI::Disconnect(void)
 {
-    if (ready) {
-       if (disconnectServer() ) { // Disconnect from INDI server
-          Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Disconnect"));
-          ClearStatus();
-          StepGuider::Disconnect();
-          return false;
-       } 
-       else return true;
-    }
-    else return true;
+    Debug.Write("StepGuiderSxAoINDI::Disconnect\n");
+    disconnectServer(); // Disconnect from INDI server (no-op of not connected)
+    ClearStatus();
+    StepGuider::Disconnect();
+    return false;
 }
 
 bool StepGuiderSxAoINDI::HasSetupDialog(void) const
@@ -289,7 +284,9 @@ void StepGuiderSxAoINDI::serverConnected(void)
     modal = true;
     wxLongLong msec;
     msec = wxGetUTCTimeMillis();
-    while ( (! ao_port) && wxGetUTCTimeMillis() - msec < MaxDeviceInitWaitMilliSeconds) {
+    while (!ao_port && wxGetUTCTimeMillis() - msec < MaxDeviceInitWaitMilliSeconds)
+    {
+        wxMilliSleep(20);
         ::wxSafeYield();
     }
     // connect to the device, first set its port
@@ -302,7 +299,9 @@ void StepGuiderSxAoINDI::serverConnected(void)
 
     // wait for all defined properties in CheckState
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < MaxDevicePropertiesWaitMilliSeconds) {
+    while (modal && wxGetUTCTimeMillis() - msec < MaxDevicePropertiesWaitMilliSeconds)
+    {
+        wxMilliSleep(20);
         ::wxSafeYield();
     }
     modal = false; // even if CheckState still says no

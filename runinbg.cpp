@@ -112,9 +112,10 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
                 thread->Kill();
                 thread = 0;
                 err = true;
-                m_errorMsg = _("The operation was canceled");
             }
         }
+        if (m_canceled && m_errorMsg.empty())
+            m_errorMsg = _("The operation was canceled");
         if (m_win)
         {
             delete m_win;

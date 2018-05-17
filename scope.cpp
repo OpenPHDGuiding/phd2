@@ -67,7 +67,7 @@ static double NUDGE_TOLERANCE = 2.0;
 const double Scope::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;   // 60 degrees
 const double Scope::DEFAULT_MOUNT_GUIDE_SPEED = 0.5;
 
-Scope::Scope(void)
+Scope::Scope()
     :
     m_maxDecDuration(0),
     m_maxRaDuration(0),
@@ -78,7 +78,7 @@ Scope::Scope(void)
     m_decLimitReachedCount(0)
 {
     m_calibrationSteps = 0;
-    m_graphControlPane = NULL;
+    m_graphControlPane = nullptr;
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -111,11 +111,11 @@ Scope::Scope(void)
     m_backlashComp = new BacklashComp(this);
 }
 
-Scope::~Scope(void)
+Scope::~Scope()
 {
     if (m_graphControlPane)
     {
-        m_graphControlPane->m_pScope = NULL;
+        m_graphControlPane->m_pScope = nullptr;
     }
 }
 
@@ -273,7 +273,13 @@ static int CompareNoCase(const wxString& first, const wxString& second)
     return first.CmpNoCase(second);
 }
 
-wxArrayString Scope::List(void)
+static wxString INDIMountName()
+{
+    wxString val = pConfig->Profile.GetString("/indi/INDImount", wxEmptyString);
+    return val.empty() ? _("INDI Mount") : wxString::Format(_("INDI Mount [%s]"), val);
+}
+
+wxArrayString Scope::MountList()
 {
     wxArrayString ScopeList;
 
@@ -308,7 +314,7 @@ wxArrayString Scope::List(void)
     ScopeList.Add(_T("GC USB ST4"));
 #endif
 #ifdef GUIDE_INDI
-    ScopeList.Add(_("INDI Mount"));
+    ScopeList.Add(INDIMountName());
 #endif
 
     ScopeList.Sort(&CompareNoCase);
@@ -329,7 +335,7 @@ wxArrayString Scope::AuxMountList()
 #endif
 
 #ifdef GUIDE_INDI
-    scopeList.Add(_("INDI Mount"));
+    scopeList.Add(INDIMountName());
 #endif
 
     scopeList.Add(ScopeManualPointing::GetDisplayName());
@@ -339,7 +345,7 @@ wxArrayString Scope::AuxMountList()
 
 Scope *Scope::Factory(const wxString& choice)
 {
-    Scope *pReturn = NULL;
+    Scope *pReturn = nullptr;
 
     try
     {
@@ -353,71 +359,61 @@ Scope *Scope::Factory(const wxString& choice)
         if (false) // so else ifs can follow
         {
         }
+        // do ASCOM and INDI first since they includes choices that could match stings below like Simulator
 #ifdef GUIDE_ASCOM
-        // do ASCOM first since it includes choices that could match stings belop like Simulator
-        else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
+        else if (choice.Contains(_T("ASCOM")))
             pReturn = new ScopeASCOM(choice);
-        }
 #endif
-        else if (choice.Find(_("None")) + 1) {
-        }
+#ifdef GUIDE_INDI
+        else if (choice.Contains(_("INDI")))
+            pReturn = new ScopeINDI();
+#endif
+        else if (choice == _("None"))
+            pReturn = nullptr;
 #ifdef GUIDE_ONCAMERA
-        else if (choice.Find(_T("On-camera")) + 1) {
+        else if (choice == _T("On-camera"))
             pReturn = new ScopeOnCamera();
-        }
 #endif
 #ifdef GUIDE_ONSTEPGUIDER
-        else if (choice.Find(_T("On-AO")) + 1) {
+        else if (choice == _T("On-AO"))
             pReturn = new ScopeOnStepGuider();
-        }
 #endif
 #ifdef GUIDE_GPUSB
-        else if (choice.Find(_T("GPUSB")) + 1) {
+        else if (choice.Contains(_T("GPUSB")))
             pReturn = new ScopeGpUsb();
-        }
 #endif
 #ifdef GUIDE_GPINT
-        else if (choice.Find(_T("GPINT 3BC")) + 1) {
+        else if (choice.Contains(_T("GPINT 3BC")))
             pReturn = new ScopeGpInt((short) 0x3BC);
-        }
-        else if (choice.Find(_T("GPINT 378")) + 1) {
+        else if (choice.Contains(_T("GPINT 378")))
             pReturn = new ScopeGpInt((short) 0x378);
-        }
-        else if (choice.Find(_T("GPINT 278")) + 1) {
+        else if (choice.Contains(_T("GPINT 278")))
             pReturn = new ScopeGpInt((short) 0x278);
-        }
 #endif
 #ifdef GUIDE_VOYAGER
-        else if (choice.Find(_T("Voyager")) + 1) {
+        else if (choice.Contains(_T("Voyager")))
+        {
             This needs work.  We have to move the setting of the IP address
                 into the connect routine
             ScopeVoyager *pVoyager = new ScopeVoyager();
         }
 #endif
 #ifdef GUIDE_EQUINOX
-        else if (choice.Find(_T("Equinox 6")) + 1) {
+        else if (choice.Contains(_T("Equinox 6")))
             pReturn = new ScopeEquinox();
-        }
 #endif
 #ifdef GUIDE_EQMAC
-        else if (choice.Find(_T("EQMAC")) + 1) {
+        else if (choice.Contains(_T("EQMAC")))
             pReturn = new ScopeEQMac();
-        }
 #endif
 #ifdef GUIDE_GCUSBST4
-        else if (choice.Find(_T("GC USB ST4")) + 1) {
+        else if (choice.Contains(_T("GC USB ST4")))
             pReturn = new ScopeGCUSBST4();
-        }
 #endif
-#ifdef GUIDE_INDI
-        else if (choice.Find(_T("INDI")) + 1) {
-            pReturn = new ScopeINDI();
-        }
-#endif
-        else if (choice.Find(ScopeManualPointing::GetDisplayName()) != wxNOT_FOUND) {
+        else if (choice.Contains(ScopeManualPointing::GetDisplayName()))
             pReturn = new ScopeManualPointing();
-        }
-        else {
+        else
+        {
             throw ERROR_INFO("ScopeFactory: Unknown Scope choice");
         }
 
@@ -434,24 +430,24 @@ Scope *Scope::Factory(const wxString& choice)
         if (pReturn)
         {
             delete pReturn;
-            pReturn = NULL;
+            pReturn = nullptr;
         }
     }
 
     return pReturn;
 }
 
-bool Scope::RequiresCamera(void)
+bool Scope::RequiresCamera()
 {
     return false;
 }
 
-bool Scope::RequiresStepGuider(void)
+bool Scope::RequiresStepGuider()
 {
     return false;
 }
 
-bool Scope::CalibrationFlipRequiresDecFlip(void)
+bool Scope::CalibrationFlipRequiresDecFlip()
 {
     return m_calibrationFlipRequiresDecFlip;
 }
@@ -479,7 +475,7 @@ void Scope::EnableStopGuidingWhenSlewing(bool enable)
     m_stopGuidingWhenSlewing = enable;
 }
 
-void Scope::StartDecDrift(void)
+void Scope::StartDecDrift()
 {
     m_saveDecGuideMode = m_decGuideMode;
     m_decGuideMode = DEC_NONE;
@@ -494,7 +490,7 @@ void Scope::StartDecDrift(void)
     }
 }
 
-void Scope::EndDecDrift(void)
+void Scope::EndDecDrift()
 {
     m_decGuideMode = m_saveDecGuideMode;
 
@@ -508,7 +504,7 @@ void Scope::EndDecDrift(void)
     }
 }
 
-bool Scope::IsDecDrifting(void) const
+bool Scope::IsDecDrifting() const
 {
     return m_decGuideMode == DEC_NONE;
 }
@@ -537,7 +533,7 @@ Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duratio
     return result;
 }
 
-int Scope::CalibrationMoveSize(void)
+int Scope::CalibrationMoveSize()
 {
     return m_calibrationDuration;
 }
@@ -855,7 +851,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
     }
 }
 
-void Scope::ClearCalibration(void)
+void Scope::ClearCalibration()
 {
     Mount::ClearCalibration();
 
@@ -967,7 +963,7 @@ void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, Calibrati
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
-bool Scope::IsCalibrated(void) const
+bool Scope::IsCalibrated() const
 {
     if (!Mount::IsCalibrated())
         return false;
@@ -996,19 +992,19 @@ void Scope::EnableDecCompensation(bool enable)
     pConfig->Profile.SetBoolean(prefix + "/UseDecComp", enable);
 }
 
-bool Scope::DecCompensationActive(void) const
+bool Scope::DecCompensationActive() const
 {
     return DecCompensationEnabled() &&
         MountCal().declination != UNKNOWN_DECLINATION &&
         pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition();
 }
 
-static double CalibrationDistance(void)
+static double CalibrationDistance()
 {
     return wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
 }
 
-int Scope::CalibrationTotDistance(void)
+int Scope::CalibrationTotDistance()
 {
     return (int) ceil(CalibrationDistance());
 }
@@ -1511,7 +1507,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
 // Get a value of declination, in radians, that can be used for adjusting the RA guide rate,
 // or UNKNOWN_DECLINATION if the declination is not known.
-double Scope::GetDeclination(void)
+double Scope::GetDeclination()
 {
     return UNKNOWN_DECLINATION;
 }
@@ -1533,17 +1529,17 @@ bool Scope::GetSiteLatLong(double *latitude, double *longitude)
     return true; // error
 }
 
-bool Scope::CanSlew(void)
+bool Scope::CanSlew()
 {
     return false;
 }
 
-bool Scope::CanSlewAsync(void)
+bool Scope::CanSlewAsync()
 {
     return false;
 }
 
-bool Scope::PreparePositionInteractive(void)
+bool Scope::PreparePositionInteractive()
 {
     return false; // no error
 }
@@ -1568,21 +1564,21 @@ bool Scope::SlewToCoordinatesAsync(double ra, double dec)
     return true; // error
 }
 
-void Scope::AbortSlew(void)
+void Scope::AbortSlew()
 {
 }
 
-bool Scope::CanCheckSlewing(void)
-{
-    return false;
-}
-
-bool Scope::Slewing(void)
+bool Scope::CanCheckSlewing()
 {
     return false;
 }
 
-PierSide Scope::SideOfPier(void)
+bool Scope::Slewing()
+{
+    return false;
+}
+
+PierSide Scope::SideOfPier()
 {
     return PIER_SIDE_UNKNOWN;
 }
@@ -1648,12 +1644,12 @@ void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 }
 
-void Scope::ScopeConfigDialogPane::LoadValues(void)
+void Scope::ScopeConfigDialogPane::LoadValues()
 {
     MountConfigDialogPane::LoadValues();
 }
 
-void Scope::ScopeConfigDialogPane::UnloadValues(void)
+void Scope::ScopeConfigDialogPane::UnloadValues()
 {
     MountConfigDialogPane::UnloadValues();
 }
@@ -1667,7 +1663,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     : MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
 {
     int width;
-    bool enableCtrls = pScope != NULL;
+    bool enableCtrls = pScope != nullptr;
 
     m_pScope = pScope;
     width = StringWidth(_T("00000"));
@@ -1694,7 +1690,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     m_pNeedFlipDec->Enable(enableCtrls);
 
 
-    bool usingAO = TheAO() != NULL;
+    bool usingAO = TheAO() != nullptr;
     if (pScope && pScope->CanCheckSlewing())
     {
         m_pStopGuidingWhenSlewing = new wxCheckBox(GetParentWindow(AD_cbSlewDetection), wxID_ANY, _("Stop guiding when mount slews"));
@@ -1747,7 +1743,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         if (!usingAO)
         {
             m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Dec compensation"));
-            m_pUseDecComp->Enable(enableCtrls && pPointingSource != NULL);
+            m_pUseDecComp->Enable(enableCtrls && pPointingSource);
             AddCtrl(CtrlMap, AD_cbUseDecComp, m_pUseDecComp, _("Automatically adjust RA guide rate based on scope declination"));
 
             width = StringWidth(_T("00000"));
@@ -1790,7 +1786,7 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     m_pScope->m_backlashComp->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
     m_pBacklashPulse->SetValue(pulseSize);
     m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
-    bool usingAO = TheAO() != NULL;
+    bool usingAO = TheAO() != nullptr;
     if (!usingAO)
     {
         m_pBacklashFloor->SetValue(floor);
@@ -1804,7 +1800,7 @@ void ScopeConfigDialogCtrlSet::LoadValues()
 
 void ScopeConfigDialogCtrlSet::UnloadValues()
 {
-    bool usingAO = TheAO() != NULL;
+    bool usingAO = TheAO() != nullptr;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
@@ -1941,7 +1937,7 @@ Scope::ScopeGraphControlPane::~ScopeGraphControlPane()
 {
     if (m_pScope)
     {
-        m_pScope->m_graphControlPane = NULL;
+        m_pScope->m_graphControlPane = nullptr;
     }
 }
 

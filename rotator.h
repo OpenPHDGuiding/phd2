@@ -73,7 +73,7 @@ public:
     static const float POSITION_UNKNOWN;
     static const float POSITION_ERROR;
 
-    static wxArrayString List(void);
+    static wxArrayString RotatorList(void);
     static Rotator *Factory(const wxString& choice);
 
     static double RotatorPosition();

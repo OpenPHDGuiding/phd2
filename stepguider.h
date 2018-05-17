@@ -178,7 +178,7 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
-    static wxArrayString List(void);
+    static wxArrayString AOList(void);
     static StepGuider *Factory(const wxString& choice);
 
     void SetCalibration(const Calibration& cal) override;
