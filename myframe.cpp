@@ -874,6 +874,7 @@ void MyFrame::LoadProfileSettings(void)
     Gamma_Slider->SetValue(val);
 
     LoadImageLoggerSettings();
+    INDIConfig::LoadProfileSettings();
 }
 
 void MyFrame::SetupToolBar()

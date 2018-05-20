@@ -49,8 +49,6 @@
 #include "image_math.h"
 #include "cam_INDI.h"
 
-static bool s_verbose = false;
-
 CameraINDI::CameraINDI()
     :
     sync_cond(sync_lock)
@@ -133,7 +131,7 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Camera Receive Switch: %s = %i\n", svp->name, svp->sp->s));
 
     if (strcmp(svp->name, "CONNECTION") == 0)
@@ -158,7 +156,7 @@ void CameraINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the camera driver send a message
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Camera Receive message: %s\n", dp->messageQueue(messageID)));
 }
 
@@ -176,7 +174,7 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
     {
         if (strcmp(nvp->name, "CCD_EXPOSURE") == 0 )
         {
@@ -234,7 +232,7 @@ void CameraINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Camera Receive Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
@@ -243,7 +241,7 @@ void  CameraINDI::newBLOB(IBLOB *bp)
     // we go here every time a new blob is available
     // this is normally the image from the camera
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Camera Got camera blob %s\n", bp->name));
 
     if (expose_prop && !INDICameraForceVideo)
@@ -277,12 +275,12 @@ void CameraINDI::newProperty(INDI::Property *property)
     wxString PropName(property->getName());
     INDI_PROPERTY_TYPE Proptype = property->getType();
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Camera Property: %s\n", property->getName()));
 
     if (Proptype == INDI_BLOB)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found BLOB property for %s %s\n", property->getDeviceName(), PropName));
 
         if (PropName == INDICameraBlobName)
@@ -294,14 +292,14 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CCD_EXPOSURE for %s %s\n", property->getDeviceName(), PropName));
 
         expose_prop = property->getNumber();
     }
     else if (PropName == INDICameraCCDCmd + "FRAME" && Proptype == INDI_NUMBER)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CCD_FRAME for %s %s\n", property->getDeviceName(), PropName));
 
         frame_prop = property->getNumber();
@@ -312,14 +310,14 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (PropName == INDICameraCCDCmd + "FRAME_TYPE" && Proptype == INDI_SWITCH)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CCD_FRAME_TYPE for %s %s\n", property->getDeviceName(), PropName));
 
         frame_type_prop = property->getSwitch();
     }
     else if (PropName == INDICameraCCDCmd + "BINNING" && Proptype == INDI_NUMBER)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CCD_BINNING for %s %s\n", property->getDeviceName(), PropName));
 
         binning_prop = property->getNumber();
@@ -329,14 +327,14 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (PropName == INDICameraCCDCmd + "CFA" && Proptype == INDI_TEXT)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CCD_CFA for %s %s\n", property->getDeviceName(), PropName));
 
         ITextVectorProperty *cfa_prop = property->getText();
         IText *cfa_type = IUFindText(cfa_prop, "CFA_TYPE");
         if (cfa_type && cfa_type->text && *cfa_type->text)
         {
-            if (s_verbose)
+            if (INDIConfig::Verbose())
                 Debug.Write(wxString::Format("INDI Camera CFA_TYPE is %s\n", cfa_type->text));
 
             HasBayer = true;
@@ -344,7 +342,7 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format(("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName)));
 
         video_prop = property->getSwitch();
@@ -352,7 +350,7 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (((PropName == "VIDEO_STREAM") ) && Proptype == INDI_SWITCH)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName));
 
         video_prop = property->getSwitch();
@@ -360,14 +358,14 @@ void CameraINDI::newProperty(INDI::Property *property)
     }
     else if (PropName == "DEVICE_PORT" && Proptype == INDI_TEXT)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found device port for %s \n", property->getDeviceName()));
 
         camera_port = property->getText();
     }
     else if (PropName == "CONNECTION" && Proptype == INDI_SWITCH)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found CONNECTION for %s %s\n", property->getDeviceName(), PropName));
 
         // Check the value here in case the device is already connected
@@ -403,8 +401,6 @@ void CameraINDI::newProperty(INDI::Property *property)
 
 bool CameraINDI::Connect(const wxString& camId)
 {
-    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
-
     // If not configured open the setup dialog
     if (INDICameraName == wxT("INDI Camera"))
     {
@@ -866,7 +862,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             m_roi = subframe;
         }
 
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
 
         // set the exposure time, this immediately start the exposure
@@ -906,7 +902,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             }
         }
 
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Exposure end\n"));
 
         first_frame = false;
@@ -914,7 +910,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         // exposure complete, process the file
         if (strcmp(cam_bp->format, ".fits") == 0)
         {
-            if (s_verbose)
+            if (INDIConfig::Verbose())
                 Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
 
             // for CCD camera
@@ -1104,7 +1100,7 @@ bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
         break;
     }
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write("INDI Camera: wait for move complete\n");
 
     { // lock scope
@@ -1120,7 +1116,7 @@ bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
         }
     } // lock scope
 
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write("INDI Camera: move completed\n");
 
     return false;

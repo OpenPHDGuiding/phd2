@@ -49,8 +49,6 @@
 typedef INDI_TYPE INDI_PROPERTY_TYPE;
 #endif
 
-static bool s_verbose = false;
-
 ScopeINDI::ScopeINDI()
     :
     sync_cond(sync_lock)
@@ -160,8 +158,6 @@ void ScopeINDI::SetupDialog()
 
 bool ScopeINDI::Connect()
 {
-    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
-
     // If not configured open the setup dialog
     if (INDIMountName == wxT("INDI Mount"))
     {
@@ -346,7 +342,7 @@ void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving Switch: %s = %i\n", svp->name, svp->sp->s));
 
     if (strcmp(svp->name, "CONNECTION") == 0)
@@ -371,7 +367,7 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the mount driver send a message
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving message: %s\n", dp->messageQueue(messageID)));
 }
 
@@ -387,7 +383,7 @@ inline static const char *StateStr(IPState st)
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
-    if (s_verbose)
+    if (INDIConfig::Verbose())
     {
         if (strcmp(nvp->name, "EQUATORIAL_EOD_COORD") != 0) // too noisy
             Debug.Write(wxString::Format("INDI Mount: Receiving Number: %s = %g  state = %s\n", nvp->name, nvp->np->value, StateStr(nvp->s)));
@@ -418,7 +414,7 @@ void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
@@ -523,7 +519,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 {
     if (pulseGuideNS_prop && pulseGuideEW_prop)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Mount: timed pulse dir %d dur %d ms\n", direction, duration));
 
         switch (direction) {
@@ -578,7 +574,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
             break;
         }
 
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write("INDI Mount: wait for move complete\n");
 
         { // lock scope
@@ -594,7 +590,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
             }
         } // lock scope
 
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write("INDI Mount: move completed\n");
 
         return MOVE_OK;
@@ -603,7 +599,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
     // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
     else if (MotionRate_prop && moveNS_prop && moveEW_prop)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Mount: motion rate guide dir %d dur %d ms\n", direction, duration));
 
         MotionRate_prop->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec
