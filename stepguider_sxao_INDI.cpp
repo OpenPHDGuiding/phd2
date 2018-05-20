@@ -246,7 +246,7 @@ bool StepGuiderSxAoINDI::HasSetupDialog(void) const
 void StepGuiderSxAoINDI::SetupDialog()
 {
     // show the server and device configuration
-    INDIConfig indiDlg(wxGetActiveWindow(), _("INDI AO Selection"), TYPE_AO);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), _("INDI AO Selection"), TYPE_AO);
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDIaoDeviceName;

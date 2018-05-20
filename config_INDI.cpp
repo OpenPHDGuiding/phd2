@@ -57,10 +57,13 @@ enum
     MCONNECT = 101,
     MINDIGUI = 102,
     MDEV = 103,
+    VERBOSE = 104,
 };
 
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
+
+bool INDIConfig::s_verbose;
 
 INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     :
@@ -153,7 +156,13 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     guiBtn = new wxButton(this, MINDIGUI, _("INDI"));
     gbs->Add(guiBtn, POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
 
-    sizer = new wxBoxSizer(wxVERTICAL) ;
+    ++pos;
+    wxCheckBox *cb = new wxCheckBox(this, VERBOSE, _("Verbose logging"));
+    cb->SetToolTip(_("Enable more detailed INDI information in the PHD2 Debug Log."));
+    cb->SetValue(INDIConfig::Verbose());
+    gbs->Add(cb, POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
+
+    sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(gbs);
     sizer->AddSpacer(10);
     sizer->Add(CreateButtonSizer(wxOK | wxCANCEL));
@@ -219,6 +228,7 @@ wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
   EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
   EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
   EVT_COMBOBOX(MDEV, INDIConfig::OnDevSelected)
+  EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
 wxEND_EVENT_TABLE()
 
 INDIConfig::~INDIConfig()
@@ -253,6 +263,26 @@ void INDIConfig::OnConnectButton(wxCommandEvent& WXUNUSED(event))
 void INDIConfig::OnDevSelected(wxCommandEvent& WXUNUSED(event))
 {
     okBtn->Enable(true);
+}
+
+void INDIConfig::LoadProfileSettings()
+{
+    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
+}
+
+void INDIConfig::SetVerbose(bool val)
+{
+    if (s_verbose != val)
+    {
+        Debug.Write(wxString::Format("INDI Verbose Logging %s\n", val ? "enabled" : "disabled"));
+        INDIConfig::s_verbose = val;
+        pConfig->Profile.SetBoolean("/indi/VerboseLogging", val);
+    }
+}
+
+void INDIConfig::OnVerboseChecked(wxCommandEvent& evt)
+{
+    INDIConfig::SetVerbose(evt.IsChecked());
 }
 
 void INDIConfig::Connect()

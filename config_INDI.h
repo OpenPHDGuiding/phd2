@@ -58,6 +58,8 @@ enum
 
 class INDIConfig : public wxDialog, public INDI::BaseClient
 {
+    static bool s_verbose;
+
     wxTextCtrl *host;
     wxTextCtrl *port;
     wxButton *connect;
@@ -91,6 +93,10 @@ public:
     void SetSettings();
     void SaveSettings();
 
+    static void LoadProfileSettings();
+    static bool Verbose();
+    static void SetVerbose(bool val);
+
 protected:
 
     void newDevice(INDI::BaseDevice *dp) override;
@@ -113,9 +119,15 @@ private:
     void OnConnectButton(wxCommandEvent& evt);
     void OnIndiGui(wxCommandEvent& evt);
     void OnDevSelected(wxCommandEvent& evt);
+    void OnVerboseChecked(wxCommandEvent& evt);
     void UpdateControlStates();
 
     wxDECLARE_EVENT_TABLE();
 };
+
+inline bool INDIConfig::Verbose()
+{
+    return INDIConfig::s_verbose;
+}
 
 #endif

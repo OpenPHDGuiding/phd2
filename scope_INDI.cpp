@@ -49,9 +49,9 @@
 typedef INDI_TYPE INDI_PROPERTY_TYPE;
 #endif
 
-static bool s_verbose = false;
-
 ScopeINDI::ScopeINDI()
+    :
+    sync_cond(sync_lock)
 {
     ClearStatus();
     // load the values from the current profile
@@ -82,12 +82,13 @@ void ScopeINDI::ClearStatus()
     oncoordset_prop = nullptr;
     GeographicCoord_prop = nullptr;
     SiderealTime_prop = nullptr;
-    scope_device = nullptr;
     scope_port = nullptr;
     pierside_prop = nullptr;
     // reset connection status
     ready = false;
     eod_coord = false;
+    guide_active = false;
+    sync_cond.Broadcast(); // just in case worker thread was blocked waiting for guide pulse to complete
 }
 
 void ScopeINDI::CheckState()
@@ -126,7 +127,7 @@ void ScopeINDI::SetupDialog()
     else
         title = _("INDI Mount Selection");
 
-    INDIConfig indiDlg(wxGetActiveWindow(), title, TYPE_MOUNT);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, TYPE_MOUNT);
 
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
@@ -157,8 +158,6 @@ void ScopeINDI::SetupDialog()
 
 bool ScopeINDI::Connect()
 {
-    s_verbose = pConfig->Profile.GetBoolean("/indi/VerboseLogging", false);
-
     // If not configured open the setup dialog
     if (INDIMountName == wxT("INDI Mount"))
     {
@@ -338,19 +337,12 @@ void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {
     Debug.Write(wxString::Format("INDI Mount: new device %s\n", dp->getDeviceName()));
-
-    if (strcmp(dp->getDeviceName(), INDIMountName.mb_str(wxConvUTF8)) == 0)
-    {
-        // The mount object
-        scope_device = dp;
-        Debug.Write(wxString::Format("INDI Mount: accepted device %s\n", dp->getDeviceName()));
-    }
 }
 
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving Switch: %s = %i\n", svp->name, svp->sp->s));
 
     if (strcmp(svp->name, "CONNECTION") == 0)
@@ -375,24 +367,54 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the mount driver send a message
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving message: %s\n", dp->messageQueue(messageID)));
+}
+
+inline static const char *StateStr(IPState st)
+{
+    switch (st) {
+    default: case IPS_IDLE: return "Idle";
+    case IPS_OK: return "Ok";
+    case IPS_BUSY: return "Busy";
+    case IPS_ALERT: return "Alert";
+    }
 }
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
-    // we go here every time a Number value change
-    if (s_verbose)
+    if (INDIConfig::Verbose())
     {
         if (strcmp(nvp->name, "EQUATORIAL_EOD_COORD") != 0) // too noisy
-            Debug.Write(wxString::Format("INDI Mount: Receiving Number: %s = %g\n", nvp->name, nvp->np->value));
+            Debug.Write(wxString::Format("INDI Mount: Receiving Number: %s = %g  state = %s\n", nvp->name, nvp->np->value, StateStr(nvp->s)));
+    }
+
+    if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
+    {
+        bool notify = false;
+        {
+            wxMutexLocker lck(sync_lock);
+            if (guide_active && nvp->s != IPS_BUSY &&
+                ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) || (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
+            {
+                guide_active = false;
+                notify = true;
+            }
+            else if (!guide_active && nvp->s == IPS_BUSY)
+            {
+                guide_active = true;
+                guide_active_axis = nvp == pulseGuideEW_prop ? GUIDE_RA : GUIDE_DEC;
+            }
+        }
+        if (notify)
+            sync_cond.Broadcast();
     }
 }
 
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    if (s_verbose)
+    if (INDIConfig::Verbose())
         Debug.Write(wxString::Format("INDI Mount: Receiving Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
@@ -497,8 +519,36 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
 {
     if (pulseGuideNS_prop && pulseGuideEW_prop)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Mount: timed pulse dir %d dur %d ms\n", direction, duration));
+
+        switch (direction) {
+        case EAST:
+        case WEST:
+        case NORTH:
+        case SOUTH:
+            break;
+        default:
+            Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
+            return MOVE_ERROR;
+        }
+
+        // set guide active before initiating the pulse
+
+        {
+            wxMutexLocker lck(sync_lock);
+
+            if (guide_active)
+            {
+                // todo: try to abort it?
+                Debug.Write("Cannot guide with guide pulse in progress!\n");
+                return MOVE_ERROR;
+            }
+
+            guide_active = true;
+            guide_active_axis = direction == EAST || direction == WEST ? GUIDE_RA : GUIDE_DEC;
+
+        } // lock scope
 
         // despite what is said in INDI standard properties description, every telescope driver expect the guided time in msec.
         switch (direction) {
@@ -522,15 +572,26 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
             pulseS_prop->value = duration;
             sendNewNumber(pulseGuideNS_prop);
             break;
-        case NONE:
-            Debug.Write("INDI Mount: error ScopeINDI::Guide NONE\n");
-            break;
         }
 
-        if (s_verbose)
-            Debug.Write(wxString::Format("INDI Mount: Guide sleep %d\n", duration));
+        if (INDIConfig::Verbose())
+            Debug.Write("INDI Mount: wait for move complete\n");
 
-        wxMilliSleep(duration);
+        { // lock scope
+            wxMutexLocker lck(sync_lock);
+            while (guide_active)
+            {
+                sync_cond.WaitTimeout(100);
+                if (WorkerThread::InterruptRequested())
+                {
+                    Debug.Write("interrupt requested\n");
+                    return MOVE_ERROR;
+                }
+            }
+        } // lock scope
+
+        if (INDIConfig::Verbose())
+            Debug.Write("INDI Mount: move completed\n");
 
         return MOVE_OK;
     }
@@ -538,7 +599,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
     // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
     else if (MotionRate_prop && moveNS_prop && moveEW_prop)
     {
-        if (s_verbose)
+        if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Mount: motion rate guide dir %d dur %d ms\n", direction, duration));
 
         MotionRate_prop->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec

@@ -5,7 +5,7 @@
  *  Created by Geoffrey Hausheer.
  *  Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
- * 
+ *
  *  Redraw for libindi/baseclient by Patrick Chevalley
  *  Copyright (c) 2014 Patrick Chevalley
  *  All rights reserved.
@@ -69,6 +69,12 @@ private:
     INumberVectorProperty *pulseGuideEW_prop;
     INumber               *pulseE_prop;
     INumber               *pulseW_prop;
+
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
+
     IndiGui  *gui;
     IBLOB    *cam_bp;
     usImage  *StackImg;
@@ -98,14 +104,14 @@ private:
 
     bool     ConnectToDriver(RunInBg *ctx);
     void     SetCCDdevice();
-    void     ClearStatus(); 
+    void     ClearStatus();
     void     CheckState();
     void     CameraDialog();
     void     CameraSetup();
     bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
     bool     ReadStream(usImage& img);
     bool     StackStream();
-    
+
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
 #ifndef INDI_PRE_1_0_0
@@ -135,7 +141,7 @@ public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
 
     bool    ST4PulseGuideScope(int direction, int duration);
-    bool    ST4HasNonGuiMove(void);
+    bool    ST4HasNonGuiMove();
 };
 
 #endif
