@@ -378,11 +378,11 @@ BacklashComp::BacklashComp(Scope *scope)
     int lastAmt = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", 0);
     int lastFloor = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashFloor", 0);
     int lastCeiling = pConfig->Profile.GetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashCeiling", 0);
-    SetCompValues(lastAmt, lastFloor, lastCeiling);
-    if (m_pulseWidth > 0)
+    if (lastAmt > 0)
         m_compActive = pConfig->Profile.GetBoolean("/" + m_pScope->GetMountClassName() + "/BacklashCompEnabled", false);
     else
         m_compActive = false;
+    SetCompValues(lastAmt, lastFloor, lastCeiling);
     m_lastDirection = NONE;
     if (m_compActive)
         Debug.Write(wxString::Format("BLC: Enabled with correction = %d ms, Floor = %d, Ceiling = %d, %s\n",
@@ -427,7 +427,7 @@ void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
     else
         m_adjustmentCeiling = wxMin(ceiling, MAX_COMP_AMOUNT);
     m_fixedSize = abs(m_adjustmentCeiling - m_adjustmentFloor) < MIN_COMP_AMOUNT;
-    if (m_pulseWidth > m_pScope->GetMaxDecDuration())
+    if (m_pulseWidth > m_pScope->GetMaxDecDuration() && m_compActive)
         m_pScope->SetMaxDecDuration(m_pulseWidth);
 }
 

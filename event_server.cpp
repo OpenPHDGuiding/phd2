@@ -1051,7 +1051,7 @@ static void clear_calibration(JObj& response, const json_value *params)
 
 static void flip_calibration(JObj& response, const json_value *params)
 {
-    bool error = pFrame->FlipRACal();
+    bool error = pFrame->FlipCalibrationData();
 
     if (error)
         response << jrpc_error(1, "could not flip calibration");

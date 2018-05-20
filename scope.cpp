@@ -558,13 +558,49 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
         s_lastLogged = now;
         if (duration < MAX_DURATION_MAX)
         {
-            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-            pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
-                wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                "Increase the %s to allow PHD2 to make the needed corrections."), s, s),
-                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+            int defaultVal = axis == GUIDE_RA ? DefaultMaxRaDuration : DefaultMaxDecDuration;
+            if (duration >= defaultVal)          // Max duration is probably ok, some other kind of problem
+            {
+                wxString msg;
+                if (axis == GUIDE_RA)
+                {
+                    if (CanPulseGuide())
+                    {
+                        msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
+                            "check for problems with the mount mechanics.");
+                    }
+                    else
+                    {
+                        msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
+                            "confirm the ST-4 cable is working properly.");
+                    }
+                }
+                else                          // Dec axis problems
+                {
+                    if (CanPulseGuide())
+                    {
+                        msg = _("PHD2 is not able to make sufficient corrections in Dec.  If you have just done a meridian flip, "
+                            "check to see if the 'Reverse Dec output option' on the Advanced Dialog guiding tab is wrong.  Otherwise, "
+                            "check for cable snags, try re-doing your calibration, and check for problems with the mount mechanics.");
+                    }
+                    else
+                    {
+                        msg = _("PHD2 is not able to make sufficient corrections in Dec.  Check for cable snags, try re-doing your calibration and "
+                            "confirm the ST-4 cable is working properly.");
+                    }
+                }
+                pFrame->SuppressableAlert(LimitReachedWarningKey(axis), msg, SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+            }
+            else                              // Max duration has been decreased by user, start by recommending use of default value
+            {
+                wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+                pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+                    wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                    "Try restoring %s to its default value to allow PHD2 to make larger corrections."), s, s),
+                    SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+            }
         }
-        else
+        else                       // Already at maximum allowed value
         {
             wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
             pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
@@ -1820,8 +1856,8 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         newCeiling = newBC;
     }
     // SetBacklashPulse will handle floor/ceiling values that don't make sense
-    m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);
     m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+    m_pScope->m_backlashComp->SetBacklashPulse(newBC, newFloor, newCeiling);
 
     // Following needed in case user changes max_duration with blc value already set
     if (m_pScope->m_backlashComp->IsEnabled() && m_pScope->GetMaxDecDuration() < newBC)
@@ -1833,7 +1869,8 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     {
         m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
         m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-        m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+        if (!m_pScope->m_backlashComp->IsEnabled())                       // handled above
+            m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
         m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
 
     }

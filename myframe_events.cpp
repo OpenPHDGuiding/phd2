@@ -865,7 +865,7 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
         pNudgeLock->Center();
 }
 
-bool MyFrame::FlipRACal()
+bool MyFrame::FlipCalibrationData()
 {
     bool bError = false;
     Mount *scope = TheScope();

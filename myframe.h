@@ -345,7 +345,7 @@ public:
     bool SetRawImageMode(bool force);
 
     bool StartServer(bool state);
-    bool FlipRACal();
+    bool FlipCalibrationData();
     int RequestedExposureDuration();
     int GetFocalLength(void);
     int GetLanguage(void);
@@ -629,7 +629,7 @@ enum {
     EEGG_MANUALLOCK,
     EEGG_COMET_TOOL,
     EEGG_STICKY_LOCK,
-    EEGG_FLIPRACAL,
+    EEGG_FLIPCAL,
     STAR_MASS_ENABLE,
     MENU_BOOKMARKS_SHOW,
     MENU_BOOKMARKS_SET_AT_LOCK,

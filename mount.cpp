@@ -1200,6 +1200,10 @@ void Mount::AdjustCalibrationForScopePointing(void)
                     currRASpeed * 3600.0, currDecSpeed * 3600.0));
             }
         }
+    if (newPierSide != PIER_SIDE_UNKNOWN && m_cal.pierSide == PIER_SIDE_UNKNOWN)
+        pFrame->Alert(_("Current calibration did not have side-of-pier information, so PHD2 can't automatically correct for meridian flips. "
+        "You should do a fresh calibration to correct this problem."));
+
     }
     // Compensate for binning change. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
     // the reported pixel size

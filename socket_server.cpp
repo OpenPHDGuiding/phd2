@@ -314,7 +314,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 PauseType prev = pGuider->SetPaused(PAUSE_GUIDING);
                 // return 1 for success, 0 for failure
                 rval = 1;
-                if (FlipRACal())
+                if (FlipCalibrationData())
                 {
                     rval = 0;
                 }

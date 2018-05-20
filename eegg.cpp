@@ -42,6 +42,17 @@
 #include "comet_tool.h"
 #include "guiding_assistant.h"
 
+static wxString FlipCalEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/FlipCalWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressFlipCalAlert(long)
+{
+    pConfig->Global.SetBoolean(FlipCalEnabledKey(), false);
+}
+
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
     if (evt.GetId() == EEGG_RESTORECAL || evt.GetId() == EEGG_REVIEWCAL)
@@ -134,7 +145,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             }
 	}
     }
-    else if (evt.GetId() == EEGG_FLIPRACAL)
+    else if (evt.GetId() == EEGG_FLIPCAL)
     {
         Mount *scope = TheScope();
 
@@ -143,18 +154,37 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             double xorig = degrees(scope->xAngle());
             double yorig = degrees(scope->yAngle());
 
-            Debug.AddLine("User-requested FlipRACal");
-
-            if (FlipRACal())
+            Debug.AddLine("User-requested FlipCal");
+            if (!TheScope()->IsCalibrated())
             {
-                wxMessageBox(_("Failed to flip RA calibration"));
+                wxMessageBox(_("Scope has no current calibration data - you should just do a fresh calibration."));
             }
             else
             {
-                double xnew = degrees(scope->xAngle());
-                double ynew = degrees(scope->yAngle());
-                wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
-                    xorig, yorig, xnew, ynew));
+                Calibration lastCal;
+                TheScope()->GetLastCalibration(&lastCal);
+                if (pPointingSource->CanReportPosition() && pPointingSource->SideOfPier() != PIER_SIDE_UNKNOWN &&
+                    lastCal.pierSide != PIER_SIDE_UNKNOWN)
+                {
+                    pFrame->SuppressableAlert(FlipCalEnabledKey(),
+                        _("This is unnecessary because PHD2 has pointing info from the mount.  If you are seeing run-away Dec guiding "
+                        "after a meridian flip, use Help and look in the index for 'Reverse Dec output'."),
+                        SuppressFlipCalAlert, 0, true);
+                }
+                else
+                {
+                    if (FlipCalibrationData())
+                    {
+                        wxMessageBox(_("Failed to flip calibration - please upload debug log file to PHD2 forum for assistance."));
+                    }
+                    else
+                    {
+                        double xnew = degrees(scope->xAngle());
+                        double ynew = degrees(scope->yAngle());
+                        wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
+                            xorig, yorig, xnew, ynew));
+                    }
+                }
             }
         }
     }
