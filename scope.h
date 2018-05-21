@@ -99,10 +99,12 @@ class Scope : public Mount
     PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
     PHD_Point m_calibrationStartingCoords;    // ra,dec coordinates at start of calibration measurement
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
+    PHD_Point m_eastStartingLocation;         // For basic sanity check that east moves worked at all
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
     double m_northDirCosX;
     double m_northDirCosY;
+    bool m_eastAlertShown;
 
     // backlash-related variables
     PHD_Point m_blMarkerPoint;

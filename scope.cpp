@@ -956,6 +956,7 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
         m_raSteps = 0;
         m_decSteps = 0;
         m_calibrationDetails.lastIssue = CI_None;
+        m_eastAlertShown = false;
     }
     catch (const wxString& Msg)
     {
@@ -1066,6 +1067,17 @@ static void GetRADecCoordinates(PHD_Point *coords)
         coords->SetXY(ra, dec);
 }
 
+static wxString DecBacklashAlertKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/DecBacklashWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressDecBacklashAlert(long)
+{
+    pConfig->Global.SetBoolean(DecBacklashAlertKey(), false);
+}
+
 bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
@@ -1094,6 +1106,9 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         double nudgeDirCosY;
         double cos_theta;
         double theta;
+        double southDistMoved;
+        double northDistMoved;
+        double southAngle;
 
         switch (m_calibrationState)
         {
@@ -1170,6 +1185,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
+                m_eastStartingLocation = currentLocation;
 
                 // fall through
                 Debug.AddLine("Falling Through to state GO_EAST");
@@ -1195,6 +1211,23 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
 
+                // If not pulse-guiding check for obvious guide cable problem and no useful east moves
+                if (!CanPulseGuide())
+                {
+                    double eastDistMoved = m_eastStartingLocation.Distance(currentLocation);
+                    double westDistMoved = m_calibrationStartingLocation.Distance(m_eastStartingLocation);
+                    double eastAngle = m_eastStartingLocation.Angle(currentLocation);
+                    // Want a significant east movement that re-traces the west vector to within 30 degrees
+                    if (fabs(eastDistMoved) < 0.25 * westDistMoved || fabs(norm_angle(eastAngle - (m_calibration.xAngle + M_PI))) > radians(30))
+                    {
+                        wxString msg(wxTRANSLATE("Little or no east movement was measured, so guiding will probably be impaired. "
+                            "Check the guide cable and use the Manual Guide tool to confirm basic operation of the mount."));
+                        const wxString& translated(wxGetTranslation(msg));
+                        pFrame->Alert(translated, 0, wxEmptyString, 0, 0, true);
+                        Debug.Write("Calibration alert: " + msg + "\n");
+                        m_eastAlertShown = true;
+                    }
+                }
                 // setup for clear backlash
 
                 m_calibrationSteps = 0;
@@ -1446,6 +1479,40 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
                     break;
                 }
+
+                // Check for obvious guide cable problem and no useful south moves
+                southDistMoved = m_southStartingLocation.Distance(currentLocation);
+                northDistMoved = m_calibrationStartingLocation.Distance(m_southStartingLocation);
+                southAngle = currentLocation.Angle(m_southStartingLocation);
+                // Want a significant south movement that re-traces the north vector to within 30 degrees
+                if (fabs(southDistMoved) < 0.25 * northDistMoved || fabs(norm_angle(southAngle - (m_calibration.yAngle + M_PI))) > radians(30))
+                {
+                    wxString msg;
+                    if (!CanPulseGuide())
+                    {
+                        if (fabs(southDistMoved) < 0.10 * northDistMoved)
+                            msg = wxTRANSLATE("Little or no south movement was measured, so guiding will probably be impaired. "
+                                "This is usually caused by a faulty guide cable or extremely large Dec backlash. "
+                                "Check the guide cable and read the online Help for how to identify these types of problems (Manual Guide, Declination backlash).");
+                        else
+                            msg = wxTRANSLATE("Little south movement was measured, so guiding will probably be impaired. "
+                            "This is usually caused by very large Dec backlash or other problems with the mount mechanics. "
+                            "Read the online Help for how to identify these types of problems (Manual Guide, Declination backlash).");
+                    }
+                    else
+                        msg = wxTRANSLATE("Little south movement was measured, so guiding will probably be impaired. "
+                        "This is usually caused by very large Dec backlash or other problems with the mount mechanics. "
+                        "Read the online help for how to deal with this type of problem (Declination backlash).");
+
+                    if (!m_eastAlertShown)
+                    {
+                        const wxString& translated(wxGetTranslation(msg));
+                        //pFrame->Alert(translated);
+                        pFrame->SuppressableAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
+                    }
+                    Debug.Write("Calibration alert: " + msg + "\n");
+                    }
+
                 m_lastLocation = currentLocation;
                 // Compute the vector for the north moves we made - use it to make sure any nudging is going in the correct direction
                 // These are the direction cosines of the vector

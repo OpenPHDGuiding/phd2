@@ -1182,7 +1182,7 @@ void MyFrame::DoAlert(const alert_params& params)
         m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
         buttonSpace += 80;
     }
-    if (params.fnSpecial || params.fnDontShow)
+    if (params.fnSpecial || params.fnDontShow || params.showHelp)
     {
         m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
         buttonSpace += 80;

@@ -107,6 +107,7 @@ inline static double norm(double val, double start, double end)
     return val - floor(ofs / range) * range;
 }
 
+// Param in radians, return equivalent angle value in units of radians within range of -PI to PI
 inline static double norm_angle(double val)
 {
     return norm(val, -M_PI, M_PI);
