@@ -64,7 +64,7 @@ ScopeINDI::ScopeINDI()
 
 ScopeINDI::~ScopeINDI()
 {
-    disconnectServer();
+    DisconnectIndiServer();
 }
 
 void ScopeINDI::ClearStatus()
@@ -197,7 +197,7 @@ bool ScopeINDI::Connect()
 bool ScopeINDI::Disconnect()
 {
     // Disconnect from server - no-op if not connected
-    disconnectServer();
+    DisconnectIndiServer();
     ClearStatus();
     Scope::Disconnect();
     return false;
@@ -309,7 +309,7 @@ void ScopeINDI::serverConnected()
     }
 }
 
-void ScopeINDI::serverDisconnected(int exit_code)
+void ScopeINDI::IndiServerDisconnected(int exit_code)
 {
     Debug.Write("INDI Mount: serverDisconnected\n");
 

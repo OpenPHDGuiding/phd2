@@ -37,14 +37,13 @@
 
 #if defined(STEPGUIDER_SXAO_INDI)
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
-//#include <libindi/indiguiderinterface.h>
 
 #include "config_INDI.h"
 
-class StepGuiderSxAoINDI : public StepGuider, public INDI::BaseClient
+class StepGuiderSxAoINDI : public StepGuider, public PhdIndiClient
 {
 private:
     // INDI parts
@@ -123,7 +122,7 @@ protected:
     void newText(ITextVectorProperty *tvp) override {};
     void newLight(ILightVectorProperty *lvp) override {};
     void serverConnected() override;
-    void serverDisconnected(int exit_code) override;
+    void IndiServerDisconnected(int exit_code) override;
 
 public:
     StepGuiderSxAoINDI(void);

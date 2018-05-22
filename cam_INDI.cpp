@@ -51,7 +51,8 @@
 
 CameraINDI::CameraINDI()
     :
-    sync_cond(sync_lock)
+    sync_cond(sync_lock),
+    m_gui(nullptr)
 {
     ClearStatus();
     // load the values from the current profile
@@ -72,7 +73,10 @@ CameraINDI::CameraINDI()
 
 CameraINDI::~CameraINDI()
 {
-    disconnectServer();
+    if (m_gui)
+        IndiGui::DestroyIndiGui(&m_gui);
+
+    DisconnectIndiServer();
 }
 
 void CameraINDI::ClearStatus()
@@ -89,8 +93,6 @@ void CameraINDI::ClearStatus()
     camera_device = nullptr;
     pulseGuideNS_prop = nullptr;
     pulseGuideEW_prop = nullptr;
-    // gui self destroy on lost connection
-    gui = nullptr;
     // reset connection status
     has_blob = false;
     Connected = false;
@@ -445,7 +447,7 @@ wxByte CameraINDI::BitsPerPixel()
 bool CameraINDI::Disconnect()
 {
     // Disconnect from server (no-op if not connected)
-    disconnectServer();
+    DisconnectIndiServer();
     return false;
 }
 
@@ -552,7 +554,7 @@ void CameraINDI::serverConnected()
     }
 }
 
-void CameraINDI::serverDisconnected(int exit_code)
+void CameraINDI::IndiServerDisconnected(int exit_code)
 {
     Debug.Write("INDI Camera: serverDisconnected\n");
 
@@ -588,18 +590,14 @@ void CameraINDI::ShowPropertyDialog()
 
 void CameraINDI::CameraDialog()
 {
-   if (gui)
-   {
-      gui->Show();
-   }
-   else
-   {
-      gui = new IndiGui();
-      gui->child_window = true;
-      gui->allow_connect_disconnect = false;
-      gui->ConnectServer(INDIhost, INDIport);
-      gui->Show();
-   }
+    if (m_gui)
+    {
+        m_gui->Show();
+    }
+    else
+    {
+        IndiGui::ShowIndiGui(&m_gui, INDIhost, INDIport, false, false);
+    }
 }
 
 void CameraINDI::CameraSetup()

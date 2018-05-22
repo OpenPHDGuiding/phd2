@@ -39,13 +39,13 @@
 #ifndef _CAM_INDI_H_
 #define _CAM_INDI_H_
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
 #include "indi_gui.h"
 
-class CameraINDI : public GuideCamera, public INDI::BaseClient
+class CameraINDI : public GuideCamera, public PhdIndiClient
 {
 private:
     ISwitchVectorProperty *connection_prop;
@@ -75,7 +75,7 @@ private:
     bool guide_active;
     GuideAxis guide_active_axis;
 
-    IndiGui  *gui;
+    IndiGui  *m_gui;
     IBLOB    *cam_bp;
     usImage  *StackImg;
     int      StackFrames;
@@ -126,7 +126,7 @@ protected:
     void newText(ITextVectorProperty *tvp) override;
     void newLight(ILightVectorProperty *lvp) override {}
     void serverConnected() override;
-    void serverDisconnected(int exit_code) override;
+    void IndiServerDisconnected(int exit_code) override;
 
 public:
     CameraINDI();

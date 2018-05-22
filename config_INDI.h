@@ -40,7 +40,7 @@
 #ifndef _CONFIG_INDI_H_
 #define _CONFIG_INDI_H_
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 #ifndef INDI_PRE_1_1_0
@@ -56,7 +56,7 @@ enum
     TYPE_AO,
 };
 
-class INDIConfig : public wxDialog, public INDI::BaseClient
+class INDIConfig : public wxDialog, public PhdIndiClient
 {
     static bool s_verbose;
 
@@ -72,8 +72,7 @@ class INDIConfig : public wxDialog, public INDI::BaseClient
     wxButton *guiBtn;
     wxButton *okBtn;
 
-    bool connected;
-    IndiGui *gui;
+    IndiGui *m_gui;
     int dev_type;
 
 public:
@@ -97,6 +96,8 @@ public:
     static bool Verbose();
     static void SetVerbose(bool val);
 
+    void OnUpdateFromThread(wxThreadEvent& event);
+
 protected:
 
     void newDevice(INDI::BaseDevice *dp) override;
@@ -111,8 +112,8 @@ protected:
     void newMessage(INDI::BaseDevice *dp, int messageID) override {}
     void newText(ITextVectorProperty *tvp) override {}
     void newLight(ILightVectorProperty *lvp) override {}
-    void serverConnected() override {}
-    void serverDisconnected(int exit_code) override {}
+    void serverConnected() override;
+    void IndiServerDisconnected(int exit_code) override;
 
 private:
 

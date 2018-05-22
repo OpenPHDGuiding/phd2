@@ -500,16 +500,6 @@ void GearDialog::EndModal(int retCode)
 {
     assert(pCamera == m_pCamera);
 
-    if (pCamera &&
-        (pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected)
-    {
-        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, true);
-    }
-    else
-    {
-        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
-    }
-
     if (m_pStepGuider)
     {
         assert(pMount == m_pStepGuider);

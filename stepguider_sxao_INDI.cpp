@@ -52,7 +52,7 @@ StepGuiderSxAoINDI::StepGuiderSxAoINDI(void)
 
 StepGuiderSxAoINDI::~StepGuiderSxAoINDI(void)
 {
-    disconnectServer();
+    DisconnectIndiServer();
 }
 
 void StepGuiderSxAoINDI::ClearStatus(void)
@@ -232,7 +232,7 @@ bool StepGuiderSxAoINDI::Connect(void)
 bool StepGuiderSxAoINDI::Disconnect(void)
 {
     Debug.Write("StepGuiderSxAoINDI::Disconnect\n");
-    disconnectServer(); // Disconnect from INDI server (no-op of not connected)
+    DisconnectIndiServer();
     ClearStatus();
     StepGuider::Disconnect();
     return false;
@@ -318,7 +318,7 @@ void StepGuiderSxAoINDI::serverConnected(void)
     }
 }
 
-void StepGuiderSxAoINDI::serverDisconnected(int exit_code)
+void StepGuiderSxAoINDI::IndiServerDisconnected(int exit_code)
 {
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();

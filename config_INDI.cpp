@@ -67,8 +67,7 @@ bool INDIConfig::s_verbose;
 
 INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     :
-    wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-    connected(false)
+    wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     auto sizerLabelFlags  = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL;
     auto sizerButtonFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
@@ -77,7 +76,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     int border = 2;
 
     dev_type = devtype;
-    gui = nullptr;
+    m_gui = nullptr;
 
     int pos;
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
@@ -175,9 +174,14 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     UpdateControlStates();
 }
 
+void INDIConfig::OnUpdateFromThread(wxThreadEvent& event)
+{
+    UpdateControlStates();
+}
+
 void INDIConfig::UpdateControlStates()
 {
-    if (connected)
+    if (isServerConnected())
     {
         host->Enable(false);
         port->Enable(false);
@@ -224,37 +228,39 @@ void INDIConfig::UpdateControlStates()
     }
 }
 
+wxDEFINE_EVENT(THREAD_UPDATE_EVENT, wxThreadEvent);
+
 wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
   EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
   EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
   EVT_COMBOBOX(MDEV, INDIConfig::OnDevSelected)
   EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
+  EVT_THREAD(THREAD_UPDATE_EVENT, INDIConfig::OnUpdateFromThread)
 wxEND_EVENT_TABLE()
 
 INDIConfig::~INDIConfig()
 {
-    disconnectServer();
+    if (m_gui)
+        IndiGui::DestroyIndiGui(&m_gui);
+
+    DisconnectIndiServer();
 }
 
 void INDIConfig::OnIndiGui(wxCommandEvent& WXUNUSED(event))
 {
-    if (gui)
+    if (m_gui)
     {
-        gui->ShowModal();
+        m_gui->ShowModal();
     }
     else
     {
-        gui = new IndiGui();
-        gui->child_window = true;
-        gui->allow_connect_disconnect = true;
-        gui->ConnectServer(INDIhost, INDIport);
-        gui->ShowModal();
+        IndiGui::ShowIndiGui(&m_gui, INDIhost, INDIport, true, true);
     }
 }
 
 void INDIConfig::OnConnectButton(wxCommandEvent& WXUNUSED(event))
 {
-    if (connected)
+    if (isServerConnected())
         Disconnect();
     else
         Connect();
@@ -287,34 +293,42 @@ void INDIConfig::OnVerboseChecked(wxCommandEvent& evt)
 
 void INDIConfig::Connect()
 {
-    wxASSERT(!connected);
+    wxASSERT(!isServerConnected());
 
     INDIhost = host->GetLineText(0);
     port->GetLineText(0).ToLong(&INDIport);
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
 
-    if (connectServer())
-    {
-        connected = true;
-        UpdateControlStates();
-    }
+    connectServer();
 }
 
 void INDIConfig::Disconnect()
 {
-    if (!connected)
-        return;
+    DisconnectIndiServer();
+}
 
-    disconnectServer();
-
-    if (gui)
+void INDIConfig::serverConnected()
+{
+    if (wxThread::IsMain())
     {
-        gui->Destroy();
-        gui = nullptr;
+        UpdateControlStates();
     }
+    else
+    {
+        wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, THREAD_UPDATE_EVENT));
+    }
+}
 
-    connected = false;
-    UpdateControlStates();
+void INDIConfig::IndiServerDisconnected(int exit_code)
+{
+    if (wxThread::IsMain())
+    {
+        UpdateControlStates();
+    }
+    else
+    {
+        wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, THREAD_UPDATE_EVENT));
+    }
 }
 
 void INDIConfig::newDevice(INDI::BaseDevice *dp)

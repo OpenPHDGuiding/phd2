@@ -36,13 +36,13 @@
  */
 #ifdef  GUIDE_INDI
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
 class RunInBg;
 
-class ScopeINDI : public Scope, public INDI::BaseClient
+class ScopeINDI : public Scope, public PhdIndiClient
 {
 private:
     ISwitchVectorProperty *connection_prop;
@@ -105,7 +105,7 @@ protected:
     void newText(ITextVectorProperty *tvp) override;
     void newLight(ILightVectorProperty *lvp) override {}
     void serverConnected() override;
-    void serverDisconnected(int exit_code) override;
+    void IndiServerDisconnected(int exit_code) override;
 
 public:
     ScopeINDI();

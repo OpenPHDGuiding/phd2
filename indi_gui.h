@@ -28,7 +28,7 @@
 #ifndef _INDIGUI_H_
 #define _INDIGUI_H_
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
@@ -47,90 +47,14 @@
 #include <wx/choice.h>
 #include <wx/menu.h>
 
-WX_DECLARE_STRING_HASH_MAP( void *, ptrHash );
+WX_DECLARE_STRING_HASH_MAP(void *, PtrHash);
 
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWDEVICE_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWPROPERTY_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWNUMBER_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWTEXT_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWSWITCH_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_NEWMESSAGE_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
-
-/*
- *  Status LED
- */
-class IndiStatus : public wxLed
-{
-public:
-    IndiStatus(wxWindow *parent, wxWindowID id, IPState state) : wxLed(parent, id)
-    {
-        SetState(state);
-        Enable();
-    }
-
-    void SetState(int state)
-    {
-        static const char indi_state[4][6] = {
-            "Idle",
-            "Ok",
-            "Busy",
-            "Alert",
-        };
-        switch(state) {
-            case IPS_IDLE:  SetColor("808080"); break;
-            case IPS_OK:    SetColor("008000"); break;
-            case IPS_BUSY:  SetColor("FFFF00"); break;
-            case IPS_ALERT: SetColor("FF0000"); break;
-        }
-        SetToolTip(wxString::FromAscii(indi_state[state]));
-    }
-};
-
-enum {
-    SWITCH_CHECKBOX,
-    SWITCH_BUTTON,
-    SWITCH_COMBOBOX,
-};
-
-enum {
-    ID_Save = 1,
-};
-
-/*
- *  A device page and related properties
- */
-class IndiDev
-{
-public:
-    wxNotebook		*page;
-    INDI::BaseDevice	*dp;
-    ptrHash		groups;
-    ptrHash		properties;
-};
-
-/*
- *  Property Information
- */
-class IndiProp
-{
-public:
-    wxString             PropName;
-    ptrHash		ctrl;
-    ptrHash		entry;
-    IndiStatus		*state;
-    wxStaticText		*name;
-    wxPanel		*page;
-    wxPanel		*panel;
-    wxGridBagSizer	*gbs;
-    INDI::Property	*property;
-    IndiDev		*idev;
-};
+class IndiProp;
 
 /*
  *  INDI gui windows
  */
-class IndiGui : public wxDialog , public INDI::BaseClient
+class IndiGui : public wxDialog , public PhdIndiClient
 {
 
 private:
@@ -158,22 +82,30 @@ private:
     void CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp);
 
     // Button events
-    void SetButtonEvent(wxCommandEvent & event);
-    void SetComboboxEvent(wxCommandEvent & event);
-    void SetToggleButtonEvent(wxCommandEvent & event);
-    void SetCheckboxEvent(wxCommandEvent & event);
+    void SetButtonEvent(wxCommandEvent& event);
+    void SetComboboxEvent(wxCommandEvent& event);
+    void SetToggleButtonEvent(wxCommandEvent& event);
+    void SetCheckboxEvent(wxCommandEvent& event);
 
-    void OnQuit(wxCloseEvent& WXUNUSED(event));
+    void OnQuit(wxCloseEvent& event);
+
+    void ConnectServer(const wxString& INDIhost, long INDIport);
+    bool allow_connect_disconnect;
 
     wxPanel *panel;
     wxBoxSizer *sizer;
     wxNotebook *parent_notebook;
     wxTextCtrl *textbuffer;
+    wxLongLong m_lastUpdate;
 
-    ptrHash	devlist;
-    bool		ready;
+    PtrHash devlist;
+
+    bool m_deleted;
+    IndiGui **m_holder;
 
     DECLARE_EVENT_TABLE()
+
+    IndiGui();
 
 protected:
     //////////////////////////////////////////////////////////////////////
@@ -192,17 +124,13 @@ protected:
     void newText(ITextVectorProperty *tvp) override;
     void newLight(ILightVectorProperty *lvp) override {}
     void serverConnected() override;
-    void serverDisconnected(int exit_code) override;
+    void IndiServerDisconnected(int exit_code) override;
 
 public:
-    IndiGui();
     ~IndiGui();
 
-    void ConnectServer(wxString INDIhost, long INDIport);
-    void ShowMessage(const char *message);
-    void DeleteProp(INDI::Property *property);
-    bool child_window;
-    bool allow_connect_disconnect;
+    static void ShowIndiGui(IndiGui **ret, const wxString& host, long port, bool allow_connect_disconnect, bool modal);
+    static void DestroyIndiGui(IndiGui **holder);
 };
 
 #endif //_INDIGUI_H_

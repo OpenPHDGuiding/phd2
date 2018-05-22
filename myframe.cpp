@@ -1009,7 +1009,8 @@ void MyFrame::SetupHelpFile(void)
 static bool cond_update_tool(wxAuiToolBar *tb, int toolId, bool enable)
 {
     bool ret = false;
-    if (tb->GetToolEnabled(toolId) != enable) {
+    if (tb->GetToolEnabled(toolId) != enable)
+    {
         tb->EnableTool(toolId, enable);
         ret = true;
     }
@@ -1065,6 +1066,12 @@ void MyFrame::UpdateButtonsStatus(void)
         pMount && pMount->IsConnected();
 
     if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))
+        need_update = true;
+
+    bool cam_props = pCamera &&
+        (pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected;
+
+    if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, cam_props))
         need_update = true;
 
     if (pDriftTool)
