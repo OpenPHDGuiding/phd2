@@ -181,7 +181,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                     {
                         double xnew = degrees(scope->xAngle());
                         double ynew = degrees(scope->yAngle());
-                        wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
+                        wxMessageBox(wxString::Format(_("Calibration angles flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
                             xorig, yorig, xnew, ynew));
                     }
                 }
