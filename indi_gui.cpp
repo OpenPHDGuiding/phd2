@@ -29,6 +29,7 @@
 #pragma warning(disable: 4996)
 #endif
 
+#include "phd.h"
 #include "indi_gui.h"
 
 #include <stdlib.h>

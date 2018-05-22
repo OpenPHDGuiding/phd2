@@ -649,7 +649,7 @@ else()
     # cd indi
     # git archive --format=tar.gz --prefix=libindi/ --output=libindi-`git rev-parse HEAD`.tar.gz HEAD
     set(libindi "libindi")
-    set(libindi_file libindi-a07680cf4ea5d4ffbd1b2851732e9ee3a9fd6e65)
+    set(libindi_file libindi-58b26c584049e1b9ecd55aa5f4a225677a417898)
     message(STATUS "Using project provided libindi '${thirdparty_dir}/${libindi_file}.tar.gz'")
     set(libindi_root "${thirdparties_deflate_directory}/${libindi}")
     if(NOT EXISTS ${libindi_root})
