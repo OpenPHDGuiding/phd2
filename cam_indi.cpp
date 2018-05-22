@@ -1,5 +1,5 @@
 /*
- *  cam_INDI.cpp
+ *  cam_indi.cpp
  *  PHD Guiding
  *
  *  Created by Geoffrey Hausheer.
@@ -43,11 +43,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "config_INDI.h"
+#include "config_indi.h"
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
-#include "cam_INDI.h"
+#include "cam_indi.h"
 
 CameraINDI::CameraINDI()
     :

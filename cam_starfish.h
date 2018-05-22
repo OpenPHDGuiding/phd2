@@ -1,9 +1,9 @@
 /*
- *  cam_SXV.h
+ *  cam_starfish.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2008-2010 Craig Stark.
+ *  Copyright (c) 2007-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,59 +31,36 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
-#ifndef SXVDEF
-#define SXVDEF
-
-#include "camera.h"
+#ifndef STARFISHDEF
+#define STARFISHDEF
 
 #if defined (__WINDOWS__)
-# include "cameras/SXUSB.h"
-typedef struct t_sxccd_params sxccd_params_t;
-typedef HANDLE sxccd_handle_t;
-# define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME
-# define SXCCD_EXP_FLAGS_FIELD_ODD    CCD_EXP_FLAGS_FIELD_ODD
-# define SXCCD_EXP_FLAGS_FIELD_BOTH   CCD_EXP_FLAGS_FIELD_BOTH
+#include "cameras/FcLib.h"
 #else
-# include "cameras/SXMacLib.h"
-typedef void *sxccd_handle_t;
+#include <fcCamFw/fcCamFw.h>
 #endif
 
-class CameraSXV : public GuideCamera
+class CameraStarfish : public GuideCamera
 {
-    sxccd_handle_t hCam;
-    sxccd_params_t CCDParams;
-    unsigned short *RawData;
-    unsigned int RawDataSize;
-    usImage tmpImg;
-    unsigned short CameraModel;
-    unsigned short m_prevBin;
-    bool Interlaced;
-    bool ColorSensor;
-    bool SquarePixels;
-    wxSize m_darkFrameSize;
-    double m_devicePixelSize;
+    int CamNum;
+    int NCams;
+    bool DriverLoaded;
+    usImage subImage;
+    wxRect lastSubFrame;
 
 public:
+    CameraStarfish();
 
-    CameraSXV();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+    void    InitCapture();
 
-    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    void ShowPropertyDialog();
-    const wxSize& DarkFrameSize() { return m_darkFrameSize; }
+    bool    ST4PulseGuideScope(int direction, int duration);
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    bool ST4PulseGuideScope(int direction, int duration);
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
-
-private:
-    void InitFrameSizes(void);
+    bool    HasNonGuiCapture() { return true; }
+    bool    ST4HasNonGuiMove() { return true; }
+    wxByte  BitsPerPixel();
 };
 
-#endif  //SXVDEF
+#endif  //STARFISHDEF

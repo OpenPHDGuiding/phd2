@@ -155,16 +155,17 @@ set(cam_KWIQGuider_SRC
 source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
 
 set(cam_SRC
+  ${phd_src_dir}/cam_altair.cpp
+  ${phd_src_dir}/cam_altair.h
   ${phd_src_dir}/cam_ascom.cpp
   ${phd_src_dir}/cam_ascom.h
-
-  ${phd_src_dir}/cam_Atik16.cpp
-  ${phd_src_dir}/cam_Atik16.h
+  ${phd_src_dir}/cam_atik16.cpp
+  ${phd_src_dir}/cam_atik16.h
   ${phd_src_dir}/cam_firewire.h
   ${phd_src_dir}/cam_firewire_IC.cpp
   ${phd_src_dir}/cam_firewire_OSX.cpp
-  ${phd_src_dir}/cam_INDI.cpp
-  ${phd_src_dir}/cam_INDI.h
+  ${phd_src_dir}/cam_indi.cpp
+  ${phd_src_dir}/cam_indi.h
   ${phd_src_dir}/cam_INovaPLC.cpp
   ${phd_src_dir}/cam_INovaPLC.h
   ${phd_src_dir}/cam_KWIQGuider.cpp
@@ -181,38 +182,37 @@ set(cam_SRC
   ${phd_src_dir}/cam_openssag.h
   ${phd_src_dir}/cam_OSPL130.cpp
   ${phd_src_dir}/cam_OSPL130.h
-  ${phd_src_dir}/cam_QGuide.cpp
-  ${phd_src_dir}/cam_QGuide.h
+  ${phd_src_dir}/cam_qguide.cpp
+  ${phd_src_dir}/cam_qguide.h
   ${phd_src_dir}/cam_qhy.cpp
   ${phd_src_dir}/cam_qhy.h
   ${phd_src_dir}/cam_SAC42.cpp
   ${phd_src_dir}/cam_SAC42.h
   ${phd_src_dir}/cam_SACGuide.cpp
   ${phd_src_dir}/cam_SACGuide.h
-  ${phd_src_dir}/cam_SBIG.cpp
-  ${phd_src_dir}/cam_SBIG.h
+  ${phd_src_dir}/cam_sbig.cpp
+  ${phd_src_dir}/cam_sbig.h
   ${phd_src_dir}/cam_sbigrotator.cpp
   ${phd_src_dir}/cam_sbigrotator.h
   ${phd_src_dir}/cam_simulator.cpp
   ${phd_src_dir}/cam_simulator.h
-  ${phd_src_dir}/cam_SSAG.cpp
-  ${phd_src_dir}/cam_SSAG.h
-  ${phd_src_dir}/cam_SSPIAG.cpp
-  ${phd_src_dir}/cam_SSPIAG.h
-  ${phd_src_dir}/cam_Starfish.cpp
-  ${phd_src_dir}/cam_Starfish.h
-  ${phd_src_dir}/cam_Altair.cpp
-  ${phd_src_dir}/cam_Altair.h
+  ${phd_src_dir}/cam_ssag.cpp
+  ${phd_src_dir}/cam_ssag.h
+  ${phd_src_dir}/cam_sspiag.cpp
+  ${phd_src_dir}/cam_sspiag.h
+  ${phd_src_dir}/cam_starfish.cpp
+  ${phd_src_dir}/cam_starfish.h
   ${phd_src_dir}/cam_StarShootDSCI.cpp
   ${phd_src_dir}/cam_StarShootDSCI.h
-  ${phd_src_dir}/cam_SXV.cpp
-  ${phd_src_dir}/cam_SXV.h
-  ${phd_src_dir}/cam_VFW.cpp
-  ${phd_src_dir}/cam_VFW.h
+  ${phd_src_dir}/cam_sxv.cpp
+  ${phd_src_dir}/cam_sxv.h
+  ${phd_src_dir}/cam_vfw.cpp
+  ${phd_src_dir}/cam_vfw.h
   ${phd_src_dir}/cam_wdm.cpp
-  ${phd_src_dir}/cam_WDM.h
-  ${phd_src_dir}/cam_ZWO.cpp
-  ${phd_src_dir}/cam_ZWO.h
+  ${phd_src_dir}/cam_wdm.h
+  ${phd_src_dir}/cam_zwo.cpp
+  ${phd_src_dir}/cam_zwo.h
+
   ${phd_src_dir}/camera.cpp
   ${phd_src_dir}/camera.h
   ${phd_src_dir}/cameras.h
@@ -229,8 +229,8 @@ if(WIN32)
     ${phd_src_dir}/cam_LELXUSBWebcam.cpp
     ${phd_src_dir}/cam_LELXUSBWebcam.h
 
-    ${phd_src_dir}/cam_Atik16.cpp
-    ${phd_src_dir}/cam_Atik16.h
+    ${phd_src_dir}/cam_atik16.cpp
+    ${phd_src_dir}/cam_atik16.h
 
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
@@ -288,14 +288,14 @@ set(scopes_SRC
   ${phd_src_dir}/scope_onstepguider.h
   ${phd_src_dir}/scope_voyager.cpp
   ${phd_src_dir}/scope_voyager.h
-  ${phd_src_dir}/scope_INDI.h
-  ${phd_src_dir}/scope_INDI.cpp
+  ${phd_src_dir}/scope_indi.h
+  ${phd_src_dir}/scope_indi.cpp
   ${phd_src_dir}/scopes.h
   ${phd_src_dir}/stepguider_simulator.h
   ${phd_src_dir}/stepguider_sxao.cpp
   ${phd_src_dir}/stepguider_sxao.h
-  ${phd_src_dir}/stepguider_sxao_INDI.cpp
-  ${phd_src_dir}/stepguider_sxao_INDI.h
+  ${phd_src_dir}/stepguider_sxao_indi.cpp
+  ${phd_src_dir}/stepguider_sxao_indi.h
   ${phd_src_dir}/stepguider.cpp
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
@@ -353,8 +353,8 @@ set(phd2_SRC
   ${phd_src_dir}/comet_tool.cpp
   ${phd_src_dir}/comet_tool.h
 
-  ${phd_src_dir}/config_INDI.cpp
-  ${phd_src_dir}/config_INDI.h
+  ${phd_src_dir}/config_indi.cpp
+  ${phd_src_dir}/config_indi.h
   ${phd_src_dir}/configdialog.cpp
   ${phd_src_dir}/configdialog.h
   ${phd_src_dir}/confirm_dialog.cpp

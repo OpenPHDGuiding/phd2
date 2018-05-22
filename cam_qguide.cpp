@@ -1,5 +1,5 @@
 /*
- *  cam_QGuide.cpp
+ *  cam_qguide.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -32,9 +32,10 @@
  *
  */
 
-
 #include "phd.h"
+
 #if defined (QGUIDE)
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -51,7 +52,7 @@ int ushort_compare (const void * a, const void * b) {
 }
 
 #define QGDEBUG 0
-#include "cam_QGuide.h"
+#include "cam_qguide.h"
 // QHY CMOS guide camera version
 // Tom's driver
 

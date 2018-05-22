@@ -1,5 +1,5 @@
 /*
- *  cam_SBIG.cpp
+ *  cam_sbig.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -37,7 +37,7 @@
 
 #if defined(SBIG)
 
-#include "cam_SBIG.h"
+#include "cam_sbig.h"
 #include "camera.h"
 #include "image_math.h"
 

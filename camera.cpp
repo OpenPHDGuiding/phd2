@@ -50,7 +50,7 @@ static const bool DefaultLoadDMap = false;
 wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
 #if defined (ATIK16)
- #include "cam_ATIK16.h"
+ #include "cam_atik16.h"
 #endif
 
 #if defined (LE_SERIAL_CAMERA)
@@ -70,7 +70,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (QGUIDE)
- #include "cam_QGuide.h"
+ #include "cam_qguide.h"
 #endif
 
 #if defined (CAM_QHY5)
@@ -82,11 +82,11 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (ZWO_ASI)
- #include "cam_ZWO.h"
+ #include "cam_zwo.h"
 #endif
 
 #if defined (ALTAIR)
-#include "cam_Altair.h"
+#include "cam_altair.h"
 #endif
 
 #if defined (ORION_DSCI)
@@ -98,7 +98,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (VFW_CAMERA)
- #include "cam_VFW.h"
+ #include "cam_vfw.h"
 #endif
 
 #if defined (OPENCV_CAMERA)
@@ -106,19 +106,19 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (WDM_CAMERA)
- #include "cam_WDM.h"
+ #include "cam_wdm.h"
 #endif
 
 #if defined (STARFISH)
- #include "cam_Starfish.h"
+ #include "cam_starfish.h"
 #endif
 
 #if defined (SXV)
-#include "cam_SXV.h"
+#include "cam_sxv.h"
 #endif
 
 #if defined (SBIG)
- #include "cam_SBIG.h"
+ #include "cam_sbig.h"
 #endif
 
 #if defined (NEB_SBIG)
@@ -138,7 +138,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (SSAG)
-#include "cam_SSAG.h"
+#include "cam_ssag.h"
 #endif
 
 #if defined (OPENSSAG)
@@ -150,7 +150,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (SSPIAG)
-#include "cam_SSPIAG.h"
+#include "cam_sspiag.h"
 #endif
 
 #if defined (INOVA_PLC)
@@ -162,7 +162,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (INDI_CAMERA)
-#include "cam_INDI.h"
+#include "cam_indi.h"
 #endif
 
 #if defined(SBIGROTATOR_CAMERA)

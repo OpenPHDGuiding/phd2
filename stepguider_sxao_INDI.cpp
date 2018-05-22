@@ -1,5 +1,5 @@
 /*
- *  stepguider_sxao_INDI.cpp
+ *  stepguider_sxao_indi.cpp
  *  PHD Guiding
  *
  *  Created by Hans Lambermont

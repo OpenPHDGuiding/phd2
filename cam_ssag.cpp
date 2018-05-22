@@ -1,5 +1,5 @@
 /*
- *  cam_SSAG.cpp
+ *  cam_ssag.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -43,7 +43,8 @@
 #include <wx/textfile.h>
 //wxTextFile *qglogfile;
 
-#include "cam_SSAG.h"
+#include "cam_ssag.h"
+
 // QHY CMOS guide camera version
 // Tom's driver
 

@@ -1,5 +1,5 @@
 /*
- *  cam_INDI.h
+ *  cam_indi.h
  *  PHD Guiding
  *
  *  Created by Geoffrey Hausheer.

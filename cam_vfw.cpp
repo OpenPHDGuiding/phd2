@@ -1,5 +1,5 @@
 /*
- *  cam_VFW.cpp
+ *  cam_vfw.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,14 +31,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
+
 #ifdef VFW_CAMERA
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include <wx/timer.h>
 //#include "vcapwin.h"
-#include "cam_VFW.h"
+#include "cam_vfw.h"
 
 CameraVFW::CameraVFW()
 {

@@ -1,5 +1,5 @@
 /*
- *  cam_Starfish.cpp
+ *  cam_starfish.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -37,7 +37,7 @@
 #include "time.h"
 #include "image_math.h"
 
-#include "cam_Starfish.h"
+#include "cam_starfish.h"
 
 #if defined (__WINDOWS__)
 #define kIOReturnSuccess 0

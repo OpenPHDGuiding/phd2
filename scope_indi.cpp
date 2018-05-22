@@ -1,5 +1,5 @@
 /*
- *  scope_INDI.cpp
+ *  scope_indi.cpp
  *  PHD Guiding
  *
  *  Ported by Hans Lambermont in 2014 from tele_INDI.cpp which has Copyright (c) 2009 Geoffrey Hausheer.
@@ -38,7 +38,7 @@
 
 #ifdef GUIDE_INDI
 
-#include "config_INDI.h"
+#include "config_indi.h"
 
 #ifdef LIBNOVA
 # include <libnova/sidereal_time.h>

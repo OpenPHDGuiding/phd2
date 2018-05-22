@@ -31,7 +31,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-// SSAG imported functions for dynamic loading, see cam_SSAG.cpp
+// SSAG imported functions for dynamic loading, see cam_ssag.cpp
 F1(int,    _SSAG_openUSB,           void)
 F1(void,   _SSAG_SETBUFFERMODE,     DWORD)
 F2(DWORD,  _SSAG_GuideCommand,      DWORD, DWORD)

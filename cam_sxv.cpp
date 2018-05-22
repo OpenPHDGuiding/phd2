@@ -1,5 +1,5 @@
 /*
- *  cam_SXV.cpp
+ *  cam_sxv.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -37,7 +37,7 @@
 
 #if defined (SXV)
 
-#include "cam_SXV.h"
+#include "cam_sxv.h"
 #include "image_math.h"
 
 #include <wx/choicdlg.h>

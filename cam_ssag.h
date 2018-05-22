@@ -1,9 +1,9 @@
 /*
- *  cam_SBIG.h
+ *  cam_ssag.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2007-2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,44 +31,29 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef SSAGDEF
+#define SSAGDEF
 
-
-#ifndef SBIGDEF
-#define SBIGDEF
-
-#if defined (__APPLE__)
-#include <SBIGUDrv/sbigudrv.h>
-#elif defined(__LINUX__)
-    #include <sbigudrv.h>
-#else
-#include "cameras/Sbigudrv.h"
-#endif
-
-class CameraSBIG : public GuideCamera
+class CameraSSAG : public GuideCamera
 {
-    bool UseTrackingCCD;
-    bool m_driverLoaded;
-    wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
-    double m_devicePixelSize;
-    bool IsColor;
-
 public:
-    CameraSBIG();
-    ~CameraSBIG();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+    void    InitCapture();
 
-    bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    void InitCapture();
-    bool ST4PulseGuideScope(int direction, int duration);
-    bool ST4HasNonGuiMove() { return true; }
+    bool    ST4PulseGuideScope(int direction, int duration);
+    void    ClearGuidePort();
+
     bool HasNonGuiCapture() { return true; }
+    bool ST4HasNonGuiMove() { return true; }
     wxByte BitsPerPixel();
     virtual bool    GetDevicePixelSize(double* devPixelSize);
 
+    CameraSSAG();
+
 private:
-    bool LoadDriver();
+    void RemoveLines(usImage& img);
 };
 
-#endif
+#endif  // SSAGDEF

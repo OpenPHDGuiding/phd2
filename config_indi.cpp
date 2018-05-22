@@ -1,5 +1,5 @@
 /*
- *  config_INDI.cpp
+ *  config_indi.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark
@@ -43,7 +43,7 @@
 
 #if defined (INDI_CAMERA) || defined (GUIDE_INDI)
 
-#include "config_INDI.h"
+#include "config_indi.h"
 
 #include <wx/sizer.h>
 #include <wx/gbsizer.h>

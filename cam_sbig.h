@@ -1,9 +1,9 @@
 /*
- *  cam_VFW.h
+ *  cam_sbig.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2007-2009 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,24 +31,44 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef VFWDEF
-#define VFWDEF
 
-#include "vcapwin.h"
-#include <wx/splitter.h>
 
-class CameraVFW : public GuideCamera
+#ifndef SBIGDEF
+#define SBIGDEF
+
+#if defined (__APPLE__)
+#include <SBIGUDrv/sbigudrv.h>
+#elif defined(__LINUX__)
+    #include <sbigudrv.h>
+#else
+#include "cameras/Sbigudrv.h"
+#endif
+
+class CameraSBIG : public GuideCamera
 {
-    wxVideoCaptureWindow *VFW_Window;
-    wxSplitterWindow     *Extra_Window;
+    bool UseTrackingCCD;
+    bool m_driverLoaded;
+    wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
+    double m_devicePixelSize;
+    bool IsColor;
 
 public:
-    CameraVFW();
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    void    ShowPropertyDialog();
-    wxByte  BitsPerPixel();
+    CameraSBIG();
+    ~CameraSBIG();
+
+    bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool Connect(const wxString& camId);
+    bool Disconnect();
+    void InitCapture();
+    bool ST4PulseGuideScope(int direction, int duration);
+    bool ST4HasNonGuiMove() { return true; }
+    bool HasNonGuiCapture() { return true; }
+    wxByte BitsPerPixel();
+    virtual bool    GetDevicePixelSize(double* devPixelSize);
+
+private:
+    bool LoadDriver();
 };
 
 #endif

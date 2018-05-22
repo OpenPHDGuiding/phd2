@@ -1,5 +1,5 @@
 /*
-*  cam_ZWO.cpp
+*  cam_zwo.cpp
 *  PHD Guiding
 *
 *  Created by Robin Glover.
@@ -36,7 +36,7 @@
 
 #ifdef ZWO_ASI
 
-#include "cam_ZWO.h"
+#include "cam_zwo.h"
 #include "cameras/ASICamera2.h"
 
 #ifdef __WINDOWS__

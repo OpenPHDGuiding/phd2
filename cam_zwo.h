@@ -1,5 +1,5 @@
 /*
-*  cam_Altair.h
+*  cam_zwo.h
 *  PHD Guiding
 *
 *  Created by Robin Glover.
@@ -31,45 +31,47 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-#ifndef CAM_Altair_H_INCLUDED
-#define CAM_Altair_H_INCLUDED
+#ifndef CAM_ZWO_H_INCLUDED
+#define CAM_ZWO_H_INCLUDED
 
 #include "camera.h"
-#include "cameras/altaircamsdk.h"
 
-class Camera_Altair : public GuideCamera
+class Camera_ZWO : public GuideCamera
 {
+    wxRect m_maxSize;
     wxRect m_frame;
+    unsigned short m_prevBinning;
     unsigned char *m_buffer;
     bool m_capturing;
+    int m_cameraId;
     int m_minGain;
     int m_maxGain;
+    bool m_isColor;
     double m_devicePixelSize;
-	HAltairCam m_handle;
-    volatile bool m_frameReady;
-    bool ReduceResolution;
+
 public:
-    Camera_Altair();
-    ~Camera_Altair();
+    Camera_ZWO();
+    ~Camera_ZWO();
 
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration) override;
     void    ClearGuidePort();
 
-    void    FrameReady();
-    void    ShowPropertyDialog();
-
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double* devPixelSize) override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
 
 private:
-    bool StopCapture();
+    bool StopCapture(void);
 };
 
 #endif

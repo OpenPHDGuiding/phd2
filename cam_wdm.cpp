@@ -39,7 +39,7 @@
 
 #ifdef WDM_CAMERA
 
-#include "cam_WDM.h"
+#include "cam_wdm.h"
 
 #include "camera.h"
 #include "time.h"

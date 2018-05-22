@@ -1,13 +1,9 @@
 /*
- *  cam_WDM.h
+ *  cam_vfw.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2006-2010 Craig Stark.
- *  All rights reserved.
- *
- *  Refactored by Bret McKee
- *  Copyright (c) 2013 Dad Dog Development Ltd.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -35,51 +31,24 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef VFWDEF
+#define VFWDEF
 
-#ifndef WDM_H_INCLUDED
-#define WDM_H_INCLUDED
+#include "vcapwin.h"
+#include <wx/splitter.h>
 
-#include <opencv/cv.h>
-
-#define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
-#include "VidCapture.h"  // For DirectShow
-
-class CameraWDM : public GuideCamera
+class CameraVFW : public GuideCamera
 {
-    int m_deviceNumber;
-    int m_deviceMode;
-
-protected:
-    volatile int m_nFrames;
-    volatile int m_nAttempts;
-    unsigned short *m_stackptr;
-    volatile enum E_CAPTURE_MODE
-    {
-        NOT_CAPTURING = 0,
-        STOP_CAPTURING,
-        CAPTURE_ONE_FRAME,
-        CAPTURE_STACKING,
-        CAPTURE_STACK_FRAMES
-    } m_captureMode;
-    CVVidCapture* m_pVidCap;
+    wxVideoCaptureWindow *VFW_Window;
+    wxSplitterWindow     *Extra_Window;
 
 public:
-    CameraWDM();
-
-    bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool CaptureOneFrame(usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    void ShowPropertyDialog();
-    bool HasNonGuiCapture() { return true; }
-    wxByte BitsPerPixel();
-
-protected:
-    bool SelectDeviceAndMode();
-    static bool CaptureCallback(CVRES status, CVImage *imagePtr, void *userParam);
-    bool BeginCapture(usImage& img, E_CAPTURE_MODE captureMode);
-    void EndCapture(void);
+    CameraVFW();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+    void    ShowPropertyDialog();
+    wxByte  BitsPerPixel();
 };
 
-#endif // WDM_H_INCLUDED
+#endif

@@ -1,5 +1,5 @@
 /*
- *  config_INDI.cpp
+ *  config_indi.h
  *  PHD Guiding
  *
  *  Created by Craig Stark

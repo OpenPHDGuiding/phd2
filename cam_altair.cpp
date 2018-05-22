@@ -1,5 +1,5 @@
 /*
-*  cam_Altair.cpp
+*  cam_altair.cpp
 *  PHD Guiding
 *
 *  Created by Robin Glover.
@@ -35,7 +35,7 @@
 
 #ifdef ALTAIR
 
-#include "cam_Altair.h"
+#include "cam_altair.h"
 
 #ifdef __WINDOWS__
 

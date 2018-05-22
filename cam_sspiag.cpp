@@ -1,5 +1,5 @@
 /*
- *  cam_SSPAIG.cpp
+ *  cam_sspiag.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -43,7 +43,8 @@
 
 */
 
-#include "cam_SSPIAG.h"
+#include "cam_sspiag.h"
+
 // Orion SS PI AG camera (aka QHY5V)
 //extern "C" __declspec(dllexport) __stdcall void setDevName(PCHAR i);
 typedef void (CALLBACK* Q5V_PCHAR)(char*);

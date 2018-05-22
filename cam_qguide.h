@@ -1,5 +1,5 @@
 /*
- *  cam_Atik16.h
+ *  cam_qguide.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,38 +31,31 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef ATIK16DEF
-#define ATIK16DEF
+#ifndef QGUIDEDEF
+#define QGUIDEDEF
 
-#include "ArtemisHSCAPI.h"
+#include "cmosDLL.h"
 
-class CameraAtik16 : public GuideCamera
+class CameraQGuider : public GuideCamera
 {
-    bool m_dllLoaded;
-    ArtemisHandle Cam_Handle;
-    ARTEMISPROPERTIES m_properties;
-    wxByte m_curBin;
+    unsigned char *buffer;
 
 public:
-    CameraAtik16();
-    ~CameraAtik16();
+    CameraQGuider();
 
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture(void);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
+    void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
+    bool    HasNonGuiCapture(void) { return true; }
+    bool    ST4HasNonGuiMove(void) { return true; }
     wxByte  BitsPerPixel();
 
-    bool    Color;
-    bool    HSModel;
-
 private:
-    bool ST4HasNonGuiMove(void);
-    bool LoadDLL(wxString *err);
+    void RemoveLines(usImage& img);
 };
 
-#endif  //ATIK16DEF
+#endif  //QGUIDEDEF

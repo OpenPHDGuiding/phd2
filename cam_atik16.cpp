@@ -35,7 +35,7 @@
 
 #if defined(ATIK16)
 
-#include "cam_Atik16.h"
+#include "cam_atik16.h"
 #include "camera.h"
 #include "image_math.h"
 

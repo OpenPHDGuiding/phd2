@@ -1,5 +1,5 @@
 /*
- *  stepguider_sxao_INDI.h
+ *  stepguider_sxao_indi.h
  *  PHD Guiding
  *
  *  Created by Hans Lambermont
@@ -41,7 +41,7 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
-#include "config_INDI.h"
+#include "config_indi.h"
 
 class StepGuiderSxAoINDI : public StepGuider, public PhdIndiClient
 {

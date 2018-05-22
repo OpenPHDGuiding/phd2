@@ -1,9 +1,9 @@
 /*
- *  cam_SSAG.cpp
+ *  cam_atik16.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2007-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,29 +31,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef SSAGDEF
-#define SSAGDEF
+#ifndef ATIK16DEF
+#define ATIK16DEF
 
-class CameraSSAG : public GuideCamera
+#include "ArtemisHSCAPI.h"
+
+class CameraAtik16 : public GuideCamera
 {
+    bool m_dllLoaded;
+    ArtemisHandle Cam_Handle;
+    ARTEMISPROPERTIES m_properties;
+    wxByte m_curBin;
+
 public:
+    CameraAtik16();
+    ~CameraAtik16();
+
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture(void);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
-    void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
+    wxByte  BitsPerPixel();
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
-    virtual bool    GetDevicePixelSize(double* devPixelSize);
-
-    CameraSSAG();
+    bool    Color;
+    bool    HSModel;
 
 private:
-    void RemoveLines(usImage& img);
+    bool ST4HasNonGuiMove(void);
+    bool LoadDLL(wxString *err);
 };
 
-#endif  // SSAGDEF
+#endif  //ATIK16DEF
