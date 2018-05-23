@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 05:48+0100\n"
+"POT-Creation-Date: 2018-05-23 19:53+0100\n"
 "PO-Revision-Date: 2018-05-12 20:06+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -54,7 +54,7 @@ msgid "Global"
 msgstr "전체"
 
 #: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
-#: config_INDI.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
+#: config_indi.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "카메라"
 
@@ -72,7 +72,7 @@ msgid "Other Devices"
 msgstr "기타장치"
 
 #: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
-#: config_INDI.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
+#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "마운트"
@@ -278,7 +278,7 @@ msgstr "측정 중지됨"
 msgid "N/A"
 msgstr ""
 
-#: calreview_dialog.cpp:101 config_INDI.cpp:117 eegg.cpp:126
+#: calreview_dialog.cpp:101 config_indi.cpp:117 eegg.cpp:126
 #: gear_dialog.cpp:308 gear_dialog.cpp:310 testguide.cpp:161
 msgid "AO"
 msgstr ""
@@ -679,27 +679,27 @@ msgstr "초점 거리를 입력하십시오. 최소 50 이상"
 msgid "Please enter a pixel size greater than zero."
 msgstr "픽셀 크기를 입력하십시오(0보다 큰 값을 입력 해야 함)."
 
-#: cam_Altair.cpp:56
+#: cam_altair.cpp:56
 msgid "Altair Camera Settings"
 msgstr "Altair카메라 설정"
 
-#: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
+#: cam_altair.cpp:69 cam_sxv.cpp:164 graph.cpp:125
 msgid "Settings"
 msgstr "설정"
 
-#: cam_Altair.cpp:143
+#: cam_altair.cpp:143
 msgid "No Altair cameras detected"
 msgstr "Altair카메라가 없습니다"
 
-#: cam_Altair.cpp:161
+#: cam_altair.cpp:161
 msgid "Specified Altair Camera not found."
 msgstr "지정된 Altair 카메라가 없습니다."
 
-#: cam_Altair.cpp:167
+#: cam_altair.cpp:167
 msgid "Failed to open Altair Camera."
 msgstr "Altair 카메라를 열수 없습니다."
 
-#: cam_Altair.cpp:189
+#: cam_altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Altair 카메라에 대한 해상도 정보를 얻는데 실패."
 
@@ -779,25 +779,25 @@ msgstr ""
 msgid "Error reading image"
 msgstr "이미지 읽기 오류"
 
-#: cam_Atik16.cpp:77
+#: cam_atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
 msgstr "Atik camera DLL %s을 열수 없습니다"
 
-#: cam_Atik16.cpp:100
+#: cam_atik16.cpp:100
 msgid "DLL error"
 msgstr "DLL 오류"
 
-#: cam_Atik16.cpp:133
+#: cam_atik16.cpp:133
 msgid "No Atik cameras detected."
 msgstr "Atik 카메라가 없습니다."
 
-#: cam_Atik16.cpp:146
+#: cam_atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
 msgstr "Atik 카메라 연결 실패-Driver version %d"
 
-#: cam_Atik16.cpp:320
+#: cam_atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
 msgstr "노출을 시작할 수 없습니다- 중단합니다"
 
@@ -852,7 +852,7 @@ msgstr "경고- 노출 시간을 제어 할 수 없음- 자동 노출로 실행 
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "TIS 카메라에 연결하는 %d 단계에서 치명적인 오류가 발생했습니다"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
 #: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
@@ -904,78 +904,78 @@ msgstr "전송 실패"
 msgid "Cannot get a frame from the queue"
 msgstr "대기열에서 프레임을 가져올 수 없습니다"
 
-#: cam_INDI.cpp:151 cam_INDI.cpp:573
+#: cam_indi.cpp:151 cam_indi.cpp:573
 msgid "INDI camera disconnected"
 msgstr "INDI 카메라 연결해제"
 
-#: cam_INDI.cpp:476 cam_INDI.cpp:521 scope_INDI.cpp:231 scope_INDI.cpp:256
-#: scope_INDI.cpp:277
+#: cam_indi.cpp:476 cam_indi.cpp:521 scope_indi.cpp:231 scope_indi.cpp:256
+#: scope_indi.cpp:277
 msgid "Connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:501
+#: cam_indi.cpp:501
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:546
+#: cam_indi.cpp:546
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr ""
 
-#: cam_INDI.cpp:566 scope_INDI.cpp:322
+#: cam_indi.cpp:566 scope_indi.cpp:322
 msgid "INDI server disconnected"
 msgstr "INDI 서버 연결이 끊어졌습니다"
 
-#: cam_INDI.cpp:606
+#: cam_indi.cpp:606
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_INDI.cpp:674 cam_INDI.cpp:694 cam_simulator.cpp:602
+#: cam_indi.cpp:674 cam_indi.cpp:694 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr ""
 "FITS 파일을 로드하는 중에 지원되지 않는 유형 또는 읽기 오류가 발생했습니다"
 
-#: cam_INDI.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_indi.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "FITS 파일이 이미지가 아닙니다"
 
-#: cam_INDI.cpp:715 cam_INDI.cpp:743 cam_simulator.cpp:632
+#: cam_indi.cpp:715 cam_indi.cpp:743 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "데이터 읽기 오류"
 
-#: cam_INDI.cpp:761
+#: cam_indi.cpp:761
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "CCD_FRAME 특성 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:767
+#: cam_indi.cpp:767
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "WIDTH 값 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:774
+#: cam_indi.cpp:774
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "HEIGHT 값 없음, 이미지 크기 결정 실패"
 
-#: cam_INDI.cpp:782
+#: cam_indi.cpp:782
 msgid "CCD stream: memory allocation error"
 msgstr "CCD 스트림 : 메모리 할당 오류"
 
-#: cam_INDI.cpp:889
+#: cam_indi.cpp:889
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "카메라 %s, 노출 오류. 대신 스트리밍을 사용하려고합니다."
 
-#: cam_INDI.cpp:932
+#: cam_indi.cpp:932
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_INDI.cpp:1010 cam_wdm.cpp:424
+#: cam_indi.cpp:1010 cam_wdm.cpp:424
 #, c-format
 msgid "%d frames"
 msgstr "%d 프레임"
 
-#: cam_INDI.cpp:1021
+#: cam_indi.cpp:1021
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
@@ -983,7 +983,7 @@ msgstr ""
 "카메라에 VIDEO_STREAM 속성이 없습니다. 카메라가 노출 시간을 지원하지 않습니"
 "다. 옵션에서 선택을 해제하십시오."
 
-#: cam_INDI.cpp:1023
+#: cam_indi.cpp:1023
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "카메라에 CCD_EXPOSURE 또는 VIDEO_STREAM 속성이 없습니다"
 
@@ -1021,9 +1021,9 @@ msgid "No serial ports found"
 msgstr "직렬 포트가 없습니다"
 
 #: cam_LESerialWebcam.cpp:294 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
+#: cam_sbig.cpp:286 cam_sbig.cpp:296 cam_sbig.cpp:319 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_zwo.cpp:154
 #: gear_dialog.cpp:1305 gear_dialog.cpp:1992 gear_dialog.cpp:2001
 #: gear_dialog.cpp:2008 gear_dialog.cpp:2053 gear_dialog.cpp:2059
 #: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
@@ -1033,7 +1033,7 @@ msgstr "직렬 포트가 없습니다"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:103 stepguider_sxao_INDI.cpp:114
+#: stepguider_sxao_indi.cpp:103 stepguider_sxao_indi.cpp:114
 msgid "Error"
 msgstr "오류"
 
@@ -1077,11 +1077,11 @@ msgstr "OSPL130RT.dll을 찾을 수 없습니다"
 msgid "Cannot init camera"
 msgstr "카메라를 초기화 할 수 없습니다"
 
-#: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
+#: cam_OSPL130.cpp:83 cam_sbig.cpp:454
 msgid "Cannot start exposure"
 msgstr "노출을 시작할 수 없습니다"
 
-#: cam_QGuide.cpp:77
+#: cam_qguide.cpp:78
 msgid "No camera"
 msgstr "카메라 없음"
 
@@ -1162,45 +1162,45 @@ msgstr "DLL에서 %s을 찾지 못했습니다"
 msgid "Can't find cmosDLL.dll"
 msgstr "DLL(cmosDLL.dll)을 찾을 수 없습니다"
 
-#: cam_SBIG.cpp:114
+#: cam_sbig.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "SBIG 드라이버 및/또는 DLL 로드 오류"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Select interface"
 msgstr "인터페이스 선택"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Interface"
 msgstr "인터페이스"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Select USB camera"
 msgstr "USB 카메라 선택"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Camera name"
 msgstr "카메라 이름"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "IP address"
 msgstr "IP 주소"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "Enter IP address"
 msgstr "IP 주소 입력"
 
-#: cam_SBIG.cpp:286
+#: cam_sbig.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
 msgstr "SBIG 카메라를 열 수 없습니다 : 코드 %d"
 
-#: cam_SBIG.cpp:296
+#: cam_sbig.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
 msgstr "SBIG 카메라 링크 실패 : 코드 %d"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid ""
 "Tracking CCD found, use it?\n"
 "\n"
@@ -1210,31 +1210,31 @@ msgstr ""
 "\n"
 "아니오 = 메인 이미지 CCD 사용"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid "CCD Choice"
 msgstr "CCD 선택"
 
-#: cam_SBIG.cpp:319
+#: cam_sbig.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "메인 CCD에서 정보를 가져 오는 중 오류가 발생했습니다"
 
-#: cam_SBIG.cpp:478
+#: cam_sbig.cpp:478
 msgid "Cannot poll exposure"
 msgstr "노출을 폴링 할 수 없음"
 
-#: cam_SBIG.cpp:501
+#: cam_sbig.cpp:501
 msgid "Cannot stop exposure"
 msgstr "노출을 멈출 수 없다"
 
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+#: cam_sbig.cpp:527 cam_sbig.cpp:543
 msgid "Error downloading data"
 msgstr "데이터 다운로드 중 오류가 발생했습니다"
 
-#: cam_SBIG.cpp:584
+#: cam_sbig.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "SBIG 릴레이 상태를 확인할 수 없습니다"
 
-#: cam_SBIG.cpp:593
+#: cam_sbig.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "가이드 펄스 완료를 위한 대기 시간이 만료되었습니다."
 
@@ -1483,29 +1483,29 @@ msgstr "취소"
 msgid "Side of pier: %s"
 msgstr ""
 
-#: cam_SSPIAG.cpp:131
+#: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
 msgstr "DLL(astroDLLsspiag.dll)을로드 할 수 없습니다"
 
-#: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
-#: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
-#: cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:181 cam_SSPIAG.cpp:186 cam_SSPIAG.cpp:191
-#: cam_SSPIAG.cpp:196 cam_SSPIAG.cpp:201 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:216
-#: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
+#: cam_sspiag.cpp:137 cam_sspiag.cpp:142 cam_sspiag.cpp:147 cam_sspiag.cpp:152
+#: cam_sspiag.cpp:157 cam_sspiag.cpp:162 cam_sspiag.cpp:167 cam_sspiag.cpp:172
+#: cam_sspiag.cpp:177 cam_sspiag.cpp:182 cam_sspiag.cpp:187 cam_sspiag.cpp:192
+#: cam_sspiag.cpp:197 cam_sspiag.cpp:202 cam_sspiag.cpp:207 cam_sspiag.cpp:217
+#: cam_sspiag.cpp:222 cam_sspiag.cpp:227
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
 msgstr "astroDLLsspiag.dll에 %s이 없습니다"
 
-#: cam_SSPIAG.cpp:231
+#: cam_sspiag.cpp:232
 msgid "Cannot load SSPIAGCAM.dll"
 msgstr "SSPIAGCAM.dll을로드 할 수 없습니다"
 
-#: cam_SSPIAG.cpp:237
+#: cam_sspiag.cpp:238
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
 msgstr "SSPIAGCAM.dll에 %s이 없습니다"
 
-#: cam_SSPIAG.cpp:244
+#: cam_sspiag.cpp:245
 msgid "Failed to open the camera"
 msgstr "카메라를 열지 못했습니다"
 
@@ -1517,27 +1517,27 @@ msgstr "StarShoot에 레지스터 전송 문제"
 msgid "Error starting exposure"
 msgstr "노출 시작 오류"
 
-#: cam_SXV.cpp:153
+#: cam_sxv.cpp:153
 msgid "SX Camera Settings"
 msgstr "SX 카메라 설정"
 
-#: cam_SXV.cpp:261
+#: cam_sxv.cpp:261
 msgid "No SX cameras found"
 msgstr "SX 카메라가 없습니다"
 
-#: cam_SXV.cpp:284
+#: cam_sxv.cpp:284
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "연결 실패 : 카메라 매개 변수를 검색 할 수 없습니다."
 
-#: cam_SXV.cpp:775
+#: cam_sxv.cpp:775
 msgid "Lost connection to camera"
 msgstr "카메라와의 연결이 끊어졌습니다"
 
-#: cam_VFW.cpp:88
+#: cam_vfw.cpp:91
 msgid "Select capture device"
 msgstr "캡처 장치 선택"
 
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
+#: cam_vfw.cpp:91 cam_wdm.cpp:168
 msgid "Camera choice"
 msgstr "카메라 선택"
 
@@ -1558,12 +1558,12 @@ msgstr "카메라 모드"
 msgid "%d x %d mode activated"
 msgstr ""
 
-#: cam_ZWO.cpp:106
+#: cam_zwo.cpp:106
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "DLL %s을 로드 할 수 없습니다"
 
-#: cam_ZWO.cpp:109
+#: cam_zwo.cpp:109
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -1572,19 +1572,19 @@ msgstr ""
 "ASI 카메라 라이브러리에는 Microsoft Visual C ++ 2008 재배포 가능 패키지 (x86)"
 "가 필요합니다 (http://www.microsoft.com/en-us/download/details.aspx?id=29)"
 
-#: cam_ZWO.cpp:196
+#: cam_zwo.cpp:196
 msgid "No ZWO cameras detected."
 msgstr "ZWO 카메라가 감지되지 않았습니다."
 
-#: cam_ZWO.cpp:212 cam_ZWO.cpp:267
+#: cam_zwo.cpp:212 cam_zwo.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "ZWO ASI 카메라의 카메라 속성을 가져 오는데 실패했습니다."
 
-#: cam_ZWO.cpp:218
+#: cam_zwo.cpp:218
 msgid "Failed to open ZWO ASI Camera."
 msgstr "ZWO ASI 카메라를 열지 못했습니다."
 
-#: cam_ZWO.cpp:225
+#: cam_zwo.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr "ZWO ASI 카메라를 초기화하지 못했습니다."
 
@@ -1968,23 +1968,23 @@ msgstr "적경"
 msgid "Dec"
 msgstr "적위"
 
-#: config_INDI.cpp:86
+#: config_indi.cpp:86
 msgid "INDI Server"
 msgstr "INDI 서버"
 
-#: config_INDI.cpp:90
+#: config_indi.cpp:90
 msgid "Hostname"
 msgstr "호스트 이름"
 
-#: config_INDI.cpp:96 config_INDI.cpp:138
+#: config_indi.cpp:96 config_indi.cpp:138
 msgid "Port"
 msgstr "포트"
 
-#: config_INDI.cpp:102 config_INDI.cpp:211
+#: config_indi.cpp:102 config_indi.cpp:211
 msgid "Disconnected"
 msgstr "연결 해제"
 
-#: config_INDI.cpp:104 config_INDI.cpp:212 gear_dialog.cpp:573
+#: config_indi.cpp:104 config_indi.cpp:212 gear_dialog.cpp:573
 #: gear_dialog.cpp:599 gear_dialog.cpp:615 gear_dialog.cpp:636
 #: gear_dialog.cpp:680 gear_dialog.cpp:701 gear_dialog.cpp:718
 #: gear_dialog.cpp:739 gear_dialog.cpp:756 gear_dialog.cpp:777 runinbg.h:85
@@ -1992,59 +1992,59 @@ msgstr "연결 해제"
 msgid "Connect"
 msgstr "연결"
 
-#: config_INDI.cpp:110
+#: config_indi.cpp:110
 msgid "Device"
 msgstr "장치"
 
-#: config_INDI.cpp:122
+#: config_indi.cpp:122
 msgid "Driver"
 msgstr "드라이버"
 
-#: config_INDI.cpp:131
+#: config_indi.cpp:131
 msgid "Dual CCD"
 msgstr "듀얼 CCD"
 
-#: config_INDI.cpp:147
+#: config_indi.cpp:147
 msgid "Camera does not support exposure time"
 msgstr ""
 
-#: config_INDI.cpp:148
+#: config_indi.cpp:148
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
 
-#: config_INDI.cpp:153
+#: config_indi.cpp:153
 msgid "Other options"
 msgstr "기타옵션"
 
-#: config_INDI.cpp:155 indi_gui.cpp:785 scope.cpp:368
+#: config_indi.cpp:155 indi_gui.cpp:786 scope.cpp:368
 msgid "INDI"
 msgstr ""
 
-#: config_INDI.cpp:159
+#: config_indi.cpp:159
 msgid "Verbose logging"
 msgstr ""
 
-#: config_INDI.cpp:160
+#: config_indi.cpp:160
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
 
-#: config_INDI.cpp:188
+#: config_indi.cpp:188
 msgid "Connected"
 msgstr "연결"
 
-#: config_INDI.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
+#: config_indi.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
 #: gear_dialog.cpp:628 gear_dialog.cpp:693 gear_dialog.cpp:730
 #: gear_dialog.cpp:768
 msgid "Disconnect"
 msgstr "연결 해제"
 
-#: config_INDI.cpp:196
+#: config_indi.cpp:196
 msgid "Main"
 msgstr "메인"
 
-#: config_INDI.cpp:197
+#: config_indi.cpp:197
 msgid "Secondary"
 msgstr ""
 
@@ -4086,15 +4086,15 @@ msgid ""
 msgstr ""
 "불량화소 지도가 이 프로파일의 카메라와 일치하지 않습니다. 교체해야 합니다."
 
-#: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
 msgstr "설정"
 
-#: indi_gui.cpp:785
+#: indi_gui.cpp:786
 msgid "Loading INDI properties..."
 msgstr ""
 
-#: indi_gui.cpp:817
+#: indi_gui.cpp:818
 msgid "INDI Options"
 msgstr "INDI 옵션"
 
@@ -6823,15 +6823,15 @@ msgstr "GC USB ST4에 쓰는 중 오류가 발생했습니다 : %s(%d)"
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr "GPUSB에 다시 연결하려면 PHD2를 다시 시작하십시오"
 
-#: scope_INDI.cpp:126
+#: scope_indi.cpp:126
 msgid "INDI Aux Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:128
+#: scope_indi.cpp:128
 msgid "INDI Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:302
+#: scope_indi.cpp:302
 #, c-format
 msgid "Cannot connect to mount %s: %s"
 msgstr ""
@@ -7586,7 +7586,7 @@ msgstr "직렬 포트 선택"
 msgid "Serial Port"
 msgstr "직렬 포트"
 
-#: stepguider_sxao_INDI.cpp:102
+#: stepguider_sxao_indi.cpp:102
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
@@ -7595,7 +7595,7 @@ msgstr ""
 "펌웨어 버전과 제한 스위치 상태를 얻으려면 최소한 INDI 드라이버 %s 버전 1.12"
 "가 필요합니다."
 
-#: stepguider_sxao_INDI.cpp:111
+#: stepguider_sxao_indi.cpp:111
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -7609,7 +7609,7 @@ msgstr ""
 "이상 \n"
 "에는 펌웨어가 포함되어 있습니다."
 
-#: stepguider_sxao_INDI.cpp:249
+#: stepguider_sxao_indi.cpp:249
 msgid "INDI AO Selection"
 msgstr ""
 

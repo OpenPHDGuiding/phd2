@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 05:48+0100\n"
+"POT-Creation-Date: 2018-05-23 19:53+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -56,7 +56,7 @@ msgid "Global"
 msgstr "Общие"
 
 #: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
-#: config_INDI.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
+#: config_indi.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Камера"
 
@@ -74,7 +74,7 @@ msgid "Other Devices"
 msgstr "Другие устройства"
 
 #: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
-#: config_INDI.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
+#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Монтировка"
@@ -283,7 +283,7 @@ msgstr "Измерение остановлено"
 msgid "N/A"
 msgstr "нет"
 
-#: calreview_dialog.cpp:101 config_INDI.cpp:117 eegg.cpp:126
+#: calreview_dialog.cpp:101 config_indi.cpp:117 eegg.cpp:126
 #: gear_dialog.cpp:308 gear_dialog.cpp:310 testguide.cpp:161
 msgid "AO"
 msgstr "АО"
@@ -691,27 +691,27 @@ msgstr "Введите фокусное расcтояние (минимум 50)"
 msgid "Please enter a pixel size greater than zero."
 msgstr "Пожалуйста введите размер пикселя больше ноля"
 
-#: cam_Altair.cpp:56
+#: cam_altair.cpp:56
 msgid "Altair Camera Settings"
 msgstr "Настройки камеры Altair"
 
-#: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
+#: cam_altair.cpp:69 cam_sxv.cpp:164 graph.cpp:125
 msgid "Settings"
 msgstr "Настройки"
 
-#: cam_Altair.cpp:143
+#: cam_altair.cpp:143
 msgid "No Altair cameras detected"
 msgstr "Не найдены камеры Altair"
 
-#: cam_Altair.cpp:161
+#: cam_altair.cpp:161
 msgid "Specified Altair Camera not found."
 msgstr "Выбранная камера Altair не найдена."
 
-#: cam_Altair.cpp:167
+#: cam_altair.cpp:167
 msgid "Failed to open Altair Camera."
 msgstr "Сбой подключения камеры Altair."
 
-#: cam_Altair.cpp:189
+#: cam_altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Сбой установки разрешения для камеры Altair"
 
@@ -785,25 +785,25 @@ msgstr "Ошибка при попытке проверить статус эк�
 msgid "Error reading image"
 msgstr "Ошибка чтения изображения"
 
-#: cam_Atik16.cpp:77
+#: cam_atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
 msgstr "Невозможно загрузить DLL %s камеры Atik"
 
-#: cam_Atik16.cpp:100
+#: cam_atik16.cpp:100
 msgid "DLL error"
 msgstr "Ошибка DLL"
 
-#: cam_Atik16.cpp:133
+#: cam_atik16.cpp:133
 msgid "No Atik cameras detected."
 msgstr "Не найдены камеры Atik"
 
-#: cam_Atik16.cpp:146
+#: cam_atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
 msgstr "Сбой подключения камеры Atik - версия драйвера %d"
 
-#: cam_Atik16.cpp:320
+#: cam_atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
 msgstr "Невозможно начать съёмку"
 
@@ -860,7 +860,7 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
 #: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
@@ -912,77 +912,77 @@ msgstr "Сбой старта привода"
 msgid "Cannot get a frame from the queue"
 msgstr "Невозможно взять кадр из очереди"
 
-#: cam_INDI.cpp:151 cam_INDI.cpp:573
+#: cam_indi.cpp:151 cam_indi.cpp:573
 msgid "INDI camera disconnected"
 msgstr "Камера INDI отключена"
 
-#: cam_INDI.cpp:476 cam_INDI.cpp:521 scope_INDI.cpp:231 scope_INDI.cpp:256
-#: scope_INDI.cpp:277
+#: cam_indi.cpp:476 cam_indi.cpp:521 scope_indi.cpp:231 scope_indi.cpp:256
+#: scope_indi.cpp:277
 msgid "Connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:501
+#: cam_indi.cpp:501
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:546
+#: cam_indi.cpp:546
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr ""
 
-#: cam_INDI.cpp:566 scope_INDI.cpp:322
+#: cam_indi.cpp:566 scope_indi.cpp:322
 msgid "INDI server disconnected"
 msgstr "Сервер INDI отключен"
 
-#: cam_INDI.cpp:606
+#: cam_indi.cpp:606
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_INDI.cpp:674 cam_INDI.cpp:694 cam_simulator.cpp:602
+#: cam_indi.cpp:674 cam_indi.cpp:694 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Неподдерживаемый тип или ошибка чтения файла FITS"
 
-#: cam_INDI.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_indi.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "Файл FITS не содержит изображение"
 
-#: cam_INDI.cpp:715 cam_INDI.cpp:743 cam_simulator.cpp:632
+#: cam_indi.cpp:715 cam_indi.cpp:743 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "Ошибка чтения данных"
 
-#: cam_INDI.cpp:761
+#: cam_indi.cpp:761
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "Не найден параметр CCD_FRAME, сбой определения размера изображения"
 
-#: cam_INDI.cpp:767
+#: cam_indi.cpp:767
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "Не задано значение WIDTH, невозможно определить размер изображения"
 
-#: cam_INDI.cpp:774
+#: cam_indi.cpp:774
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "Не задано значение HEIGHT, невозможно определить размер изображения"
 
-#: cam_INDI.cpp:782
+#: cam_indi.cpp:782
 msgid "CCD stream: memory allocation error"
 msgstr "Поток CCD: ошибка выделения памяти"
 
-#: cam_INDI.cpp:889
+#: cam_indi.cpp:889
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "Ошибка экспозиции камеры %s. Попробуйте потоковое видео."
 
-#: cam_INDI.cpp:932
+#: cam_indi.cpp:932
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_INDI.cpp:1010 cam_wdm.cpp:424
+#: cam_indi.cpp:1010 cam_wdm.cpp:424
 #, c-format
 msgid "%d frames"
 msgstr "%d кадров"
 
-#: cam_INDI.cpp:1021
+#: cam_indi.cpp:1021
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
@@ -990,7 +990,7 @@ msgstr ""
 "Нет задан параметр камеры VIDEO_STREAM, пожалуйста, отключите параметр "
 "'Камера не поддерживает время экспозиции'"
 
-#: cam_INDI.cpp:1023
+#: cam_indi.cpp:1023
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "Не задан параметр камеры CCD_EXPOSURE или VIDEO_STREAM"
 
@@ -1028,9 +1028,9 @@ msgid "No serial ports found"
 msgstr "Последовательный порт не найден"
 
 #: cam_LESerialWebcam.cpp:294 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
+#: cam_sbig.cpp:286 cam_sbig.cpp:296 cam_sbig.cpp:319 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_zwo.cpp:154
 #: gear_dialog.cpp:1305 gear_dialog.cpp:1992 gear_dialog.cpp:2001
 #: gear_dialog.cpp:2008 gear_dialog.cpp:2053 gear_dialog.cpp:2059
 #: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
@@ -1040,7 +1040,7 @@ msgstr "Последовательный порт не найден"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:103 stepguider_sxao_INDI.cpp:114
+#: stepguider_sxao_indi.cpp:103 stepguider_sxao_indi.cpp:114
 msgid "Error"
 msgstr "Ошибка"
 
@@ -1084,11 +1084,11 @@ msgstr "Не находится OSPL130RT.dll"
 msgid "Cannot init camera"
 msgstr "Невозможно подключить камеру"
 
-#: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
+#: cam_OSPL130.cpp:83 cam_sbig.cpp:454
 msgid "Cannot start exposure"
 msgstr "Невозможно начать экспозицию"
 
-#: cam_QGuide.cpp:77
+#: cam_qguide.cpp:78
 msgid "No camera"
 msgstr "Нет камеры"
 
@@ -1169,45 +1169,45 @@ msgstr "Не найдено %s в DLL"
 msgid "Can't find cmosDLL.dll"
 msgstr "Не находится cmosDLL.dll"
 
-#: cam_SBIG.cpp:114
+#: cam_sbig.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "Ошибка загрузки драйвера и/или DLL SBIG"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Select interface"
 msgstr "Выбрать интерфейс"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Select USB camera"
 msgstr "Выбрать камеру USB"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Camera name"
 msgstr "Название камеры"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "IP address"
 msgstr "Адрес IP"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "Enter IP address"
 msgstr "Ввести адрес IP"
 
-#: cam_SBIG.cpp:286
+#: cam_sbig.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
 msgstr "Невозможно подключить камеру SBIG: код %d"
 
-#: cam_SBIG.cpp:296
+#: cam_sbig.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
 msgstr "Сбой связи с камерой SBIG, код %d"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid ""
 "Tracking CCD found, use it?\n"
 "\n"
@@ -1217,31 +1217,31 @@ msgstr ""
 "\n"
 "Нет = использовать основную камеру"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid "CCD Choice"
 msgstr "Выбор CCD"
 
-#: cam_SBIG.cpp:319
+#: cam_sbig.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "Ошибка получения информации с главной CCD"
 
-#: cam_SBIG.cpp:478
+#: cam_sbig.cpp:478
 msgid "Cannot poll exposure"
 msgstr "Невозможно проверить, завершена ли экспозиция"
 
-#: cam_SBIG.cpp:501
+#: cam_sbig.cpp:501
 msgid "Cannot stop exposure"
 msgstr "Невозможно завершить экспозицию"
 
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+#: cam_sbig.cpp:527 cam_sbig.cpp:543
 msgid "Error downloading data"
 msgstr "Ошибка при загрузке данных"
 
-#: cam_SBIG.cpp:584
+#: cam_sbig.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "Невозможно проверить состояние реле SBIG"
 
-#: cam_SBIG.cpp:593
+#: cam_sbig.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "Истекло время ожидания завершения гидирующего импульса."
 
@@ -1490,29 +1490,29 @@ msgstr "Отменить"
 msgid "Side of pier: %s"
 msgstr "Сторона от меридиана: %s"
 
-#: cam_SSPIAG.cpp:131
+#: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
 msgstr "Невозможно загрузить astroDLLsspiag.dll"
 
-#: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
-#: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
-#: cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:181 cam_SSPIAG.cpp:186 cam_SSPIAG.cpp:191
-#: cam_SSPIAG.cpp:196 cam_SSPIAG.cpp:201 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:216
-#: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
+#: cam_sspiag.cpp:137 cam_sspiag.cpp:142 cam_sspiag.cpp:147 cam_sspiag.cpp:152
+#: cam_sspiag.cpp:157 cam_sspiag.cpp:162 cam_sspiag.cpp:167 cam_sspiag.cpp:172
+#: cam_sspiag.cpp:177 cam_sspiag.cpp:182 cam_sspiag.cpp:187 cam_sspiag.cpp:192
+#: cam_sspiag.cpp:197 cam_sspiag.cpp:202 cam_sspiag.cpp:207 cam_sspiag.cpp:217
+#: cam_sspiag.cpp:222 cam_sspiag.cpp:227
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
 msgstr "astroDLLsspiag.dll не содержит %s"
 
-#: cam_SSPIAG.cpp:231
+#: cam_sspiag.cpp:232
 msgid "Cannot load SSPIAGCAM.dll"
 msgstr "Невозможно загрузить SSPIAGCAM.dll"
 
-#: cam_SSPIAG.cpp:237
+#: cam_sspiag.cpp:238
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
 msgstr "SSPIAGCAM.dll не содержит %s"
 
-#: cam_SSPIAG.cpp:244
+#: cam_sspiag.cpp:245
 msgid "Failed to open the camera"
 msgstr "Сбой подключения камеры"
 
@@ -1524,27 +1524,27 @@ msgstr "Проблема соединения со StarShoot"
 msgid "Error starting exposure"
 msgstr "Ошибка начала экспозиции"
 
-#: cam_SXV.cpp:153
+#: cam_sxv.cpp:153
 msgid "SX Camera Settings"
 msgstr "Настройки камеры SX"
 
-#: cam_SXV.cpp:261
+#: cam_sxv.cpp:261
 msgid "No SX cameras found"
 msgstr "Камера SX не найдена"
 
-#: cam_SXV.cpp:284
+#: cam_sxv.cpp:284
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "Сбой подключения: невозможно получить параметры камеры."
 
-#: cam_SXV.cpp:775
+#: cam_sxv.cpp:775
 msgid "Lost connection to camera"
 msgstr "Соединение с камерой утеряно"
 
-#: cam_VFW.cpp:88
+#: cam_vfw.cpp:91
 msgid "Select capture device"
 msgstr "Выбрать устройство захвата"
 
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
+#: cam_vfw.cpp:91 cam_wdm.cpp:168
 msgid "Camera choice"
 msgstr "Выбор камеры"
 
@@ -1565,12 +1565,12 @@ msgstr "Режим камеры"
 msgid "%d x %d mode activated"
 msgstr ""
 
-#: cam_ZWO.cpp:106
+#: cam_zwo.cpp:106
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "Невозможно загрузить DLL %s"
 
-#: cam_ZWO.cpp:109
+#: cam_zwo.cpp:109
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -1580,19 +1580,19 @@ msgstr ""
 "Package (x86), доступный на at http://www.microsoft.com/en-us/download/"
 "details.aspx?id=29"
 
-#: cam_ZWO.cpp:196
+#: cam_zwo.cpp:196
 msgid "No ZWO cameras detected."
 msgstr "Не найдены камеры ZWO."
 
-#: cam_ZWO.cpp:212 cam_ZWO.cpp:267
+#: cam_zwo.cpp:212 cam_zwo.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "Сбой получения настроек камеры ZWO ASI."
 
-#: cam_ZWO.cpp:218
+#: cam_zwo.cpp:218
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Сбой подключения камеры ZWP ASI."
 
-#: cam_ZWO.cpp:225
+#: cam_zwo.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr "Сбой инициализации камеры ZWO."
 
@@ -1982,23 +1982,23 @@ msgstr "α"
 msgid "Dec"
 msgstr "δ"
 
-#: config_INDI.cpp:86
+#: config_indi.cpp:86
 msgid "INDI Server"
 msgstr "Сервер INDI"
 
-#: config_INDI.cpp:90
+#: config_indi.cpp:90
 msgid "Hostname"
 msgstr "Имя хоста"
 
-#: config_INDI.cpp:96 config_INDI.cpp:138
+#: config_indi.cpp:96 config_indi.cpp:138
 msgid "Port"
 msgstr "Порт"
 
-#: config_INDI.cpp:102 config_INDI.cpp:211
+#: config_indi.cpp:102 config_indi.cpp:211
 msgid "Disconnected"
 msgstr "Отключено"
 
-#: config_INDI.cpp:104 config_INDI.cpp:212 gear_dialog.cpp:573
+#: config_indi.cpp:104 config_indi.cpp:212 gear_dialog.cpp:573
 #: gear_dialog.cpp:599 gear_dialog.cpp:615 gear_dialog.cpp:636
 #: gear_dialog.cpp:680 gear_dialog.cpp:701 gear_dialog.cpp:718
 #: gear_dialog.cpp:739 gear_dialog.cpp:756 gear_dialog.cpp:777 runinbg.h:85
@@ -2006,59 +2006,59 @@ msgstr "Отключено"
 msgid "Connect"
 msgstr "Подключить"
 
-#: config_INDI.cpp:110
+#: config_indi.cpp:110
 msgid "Device"
 msgstr "Устройство"
 
-#: config_INDI.cpp:122
+#: config_indi.cpp:122
 msgid "Driver"
 msgstr "Драйвер"
 
-#: config_INDI.cpp:131
+#: config_indi.cpp:131
 msgid "Dual CCD"
 msgstr "Двойная CCD"
 
-#: config_INDI.cpp:147
+#: config_indi.cpp:147
 msgid "Camera does not support exposure time"
 msgstr ""
 
-#: config_INDI.cpp:148
+#: config_indi.cpp:148
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
 
-#: config_INDI.cpp:153
+#: config_indi.cpp:153
 msgid "Other options"
 msgstr "Другие параметры"
 
-#: config_INDI.cpp:155 indi_gui.cpp:785 scope.cpp:368
+#: config_indi.cpp:155 indi_gui.cpp:786 scope.cpp:368
 msgid "INDI"
 msgstr "INDI"
 
-#: config_INDI.cpp:159
+#: config_indi.cpp:159
 msgid "Verbose logging"
 msgstr ""
 
-#: config_INDI.cpp:160
+#: config_indi.cpp:160
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
 
-#: config_INDI.cpp:188
+#: config_indi.cpp:188
 msgid "Connected"
 msgstr "Подключено"
 
-#: config_INDI.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
+#: config_indi.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
 #: gear_dialog.cpp:628 gear_dialog.cpp:693 gear_dialog.cpp:730
 #: gear_dialog.cpp:768
 msgid "Disconnect"
 msgstr "Отключить"
 
-#: config_INDI.cpp:196
+#: config_indi.cpp:196
 msgid "Main"
 msgstr "Главное"
 
-#: config_INDI.cpp:197
+#: config_indi.cpp:197
 msgid "Secondary"
 msgstr "Вторичный"
 
@@ -4142,15 +4142,15 @@ msgstr ""
 "Карта дефектных пикселей не соответствует камере профиля - необходимо её  "
 "перестроить."
 
-#: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
 msgstr "Установить"
 
-#: indi_gui.cpp:785
+#: indi_gui.cpp:786
 msgid "Loading INDI properties..."
 msgstr ""
 
-#: indi_gui.cpp:817
+#: indi_gui.cpp:818
 msgid "INDI Options"
 msgstr "Настройки INDI"
 
@@ -6910,15 +6910,15 @@ msgstr "Ошибка записи в GC USB ST4: %s(%d)"
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr "Перезагрузите PHD2, чтобы заново подключить GPUSB"
 
-#: scope_INDI.cpp:126
+#: scope_indi.cpp:126
 msgid "INDI Aux Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:128
+#: scope_indi.cpp:128
 msgid "INDI Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:302
+#: scope_indi.cpp:302
 #, c-format
 msgid "Cannot connect to mount %s: %s"
 msgstr ""
@@ -7676,7 +7676,7 @@ msgstr "Выбрать последовательный порт"
 msgid "Serial Port"
 msgstr "Последовательный порт"
 
-#: stepguider_sxao_INDI.cpp:102
+#: stepguider_sxao_indi.cpp:102
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
@@ -7685,7 +7685,7 @@ msgstr ""
 "Нужен драйвер INDI %s как минимум версии 1.12, чтобы получить версию "
 "прошивки и предел переключения состояний."
 
-#: stepguider_sxao_INDI.cpp:111
+#: stepguider_sxao_indi.cpp:111
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -7699,7 +7699,7 @@ msgstr ""
 "Утилита SXV-AO версии104 или новее, содержащая прошивки,  доступна на http://"
 "www.sxccd.com/drivers-downloads."
 
-#: stepguider_sxao_INDI.cpp:249
+#: stepguider_sxao_indi.cpp:249
 msgid "INDI AO Selection"
 msgstr ""
 

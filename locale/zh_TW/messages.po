@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 05:48+0100\n"
+"POT-Creation-Date: 2018-05-23 19:53+0100\n"
 "PO-Revision-Date: 2018-04-23 22:39+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -55,7 +55,7 @@ msgid "Global"
 msgstr "整體"
 
 #: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
-#: config_INDI.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
+#: config_indi.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "相機"
 
@@ -73,7 +73,7 @@ msgid "Other Devices"
 msgstr "其他裝置"
 
 #: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
-#: config_INDI.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
+#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "赤道儀"
@@ -277,7 +277,7 @@ msgstr "測量中斷"
 msgid "N/A"
 msgstr "N/A"
 
-#: calreview_dialog.cpp:101 config_INDI.cpp:117 eegg.cpp:126
+#: calreview_dialog.cpp:101 config_indi.cpp:117 eegg.cpp:126
 #: gear_dialog.cpp:308 gear_dialog.cpp:310 testguide.cpp:161
 msgid "AO"
 msgstr "AO"
@@ -674,27 +674,27 @@ msgstr "焦長值需大於 50"
 msgid "Please enter a pixel size greater than zero."
 msgstr "像素大小需大於 0."
 
-#: cam_Altair.cpp:56
+#: cam_altair.cpp:56
 msgid "Altair Camera Settings"
 msgstr "Altair 相機設定"
 
-#: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
+#: cam_altair.cpp:69 cam_sxv.cpp:164 graph.cpp:125
 msgid "Settings"
 msgstr "設定"
 
-#: cam_Altair.cpp:143
+#: cam_altair.cpp:143
 msgid "No Altair cameras detected"
 msgstr "找不到 Altair 相機"
 
-#: cam_Altair.cpp:161
+#: cam_altair.cpp:161
 msgid "Specified Altair Camera not found."
 msgstr "找不到所指定的 Altair 相機。"
 
-#: cam_Altair.cpp:167
+#: cam_altair.cpp:167
 msgid "Failed to open Altair Camera."
 msgstr "開啟 Altair 相機失敗。"
 
-#: cam_Altair.cpp:189
+#: cam_altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
@@ -766,25 +766,25 @@ msgstr "對相機送出異常訊號"
 msgid "Error reading image"
 msgstr "影像讀取錯誤"
 
-#: cam_Atik16.cpp:77
+#: cam_atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
 msgstr "無法載入Atik 相機 DLL %s"
 
-#: cam_Atik16.cpp:100
+#: cam_atik16.cpp:100
 msgid "DLL error"
 msgstr "DLL 錯誤"
 
-#: cam_Atik16.cpp:133
+#: cam_atik16.cpp:133
 msgid "No Atik cameras detected."
 msgstr "找不到 Atik 相機."
 
-#: cam_Atik16.cpp:146
+#: cam_atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
 msgstr "連接 Atik 相機失敗 - 驅動程式版本 %d"
 
-#: cam_Atik16.cpp:320
+#: cam_atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
 msgstr "無法開始曝光 - 中斷"
 
@@ -839,7 +839,7 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735
 #: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
 #: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
 #: image_math.cpp:545
@@ -891,83 +891,83 @@ msgstr "傳輸無法開始"
 msgid "Cannot get a frame from the queue"
 msgstr "無法由佇列中取得影像"
 
-#: cam_INDI.cpp:151 cam_INDI.cpp:573
+#: cam_indi.cpp:151 cam_indi.cpp:573
 msgid "INDI camera disconnected"
 msgstr ""
 
-#: cam_INDI.cpp:476 cam_INDI.cpp:521 scope_INDI.cpp:231 scope_INDI.cpp:256
-#: scope_INDI.cpp:277
+#: cam_indi.cpp:476 cam_indi.cpp:521 scope_indi.cpp:231 scope_indi.cpp:256
+#: scope_indi.cpp:277
 msgid "Connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:501
+#: cam_indi.cpp:501
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_INDI.cpp:546
+#: cam_indi.cpp:546
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr ""
 
-#: cam_INDI.cpp:566 scope_INDI.cpp:322
+#: cam_indi.cpp:566 scope_indi.cpp:322
 msgid "INDI server disconnected"
 msgstr ""
 
-#: cam_INDI.cpp:606
+#: cam_indi.cpp:606
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_INDI.cpp:674 cam_INDI.cpp:694 cam_simulator.cpp:602
+#: cam_indi.cpp:674 cam_indi.cpp:694 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
 
-#: cam_INDI.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_indi.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "該 FITS 檔案不是影像檔"
 
-#: cam_INDI.cpp:715 cam_INDI.cpp:743 cam_simulator.cpp:632
+#: cam_indi.cpp:715 cam_indi.cpp:743 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "讀取資料錯誤"
 
-#: cam_INDI.cpp:761
+#: cam_indi.cpp:761
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "無法決定影像尺寸, CCD_FRAME 屬性不存在"
 
-#: cam_INDI.cpp:767
+#: cam_indi.cpp:767
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "無法決定影像尺寸, WIDTH 屬性不存在"
 
-#: cam_INDI.cpp:774
+#: cam_indi.cpp:774
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "無法決定影像尺寸, HIGHT 屬性不存在"
 
-#: cam_INDI.cpp:782
+#: cam_indi.cpp:782
 msgid "CCD stream: memory allocation error"
 msgstr "CCD 串流: 記憶體配置錯誤"
 
-#: cam_INDI.cpp:889
+#: cam_indi.cpp:889
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "相機 %s, 曝光錯誤. 請以串流取代之."
 
-#: cam_INDI.cpp:932
+#: cam_indi.cpp:932
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_INDI.cpp:1010 cam_wdm.cpp:424
+#: cam_indi.cpp:1010 cam_wdm.cpp:424
 #, c-format
 msgid "%d frames"
 msgstr ""
 
-#: cam_INDI.cpp:1021
+#: cam_indi.cpp:1021
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
 
-#: cam_INDI.cpp:1023
+#: cam_indi.cpp:1023
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr ""
 
@@ -1005,9 +1005,9 @@ msgid "No serial ports found"
 msgstr "找不到序列埠"
 
 #: cam_LESerialWebcam.cpp:294 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
+#: cam_sbig.cpp:286 cam_sbig.cpp:296 cam_sbig.cpp:319 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_zwo.cpp:154
 #: gear_dialog.cpp:1305 gear_dialog.cpp:1992 gear_dialog.cpp:2001
 #: gear_dialog.cpp:2008 gear_dialog.cpp:2053 gear_dialog.cpp:2059
 #: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
@@ -1017,7 +1017,7 @@ msgstr "找不到序列埠"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:103 stepguider_sxao_INDI.cpp:114
+#: stepguider_sxao_indi.cpp:103 stepguider_sxao_indi.cpp:114
 msgid "Error"
 msgstr "錯誤"
 
@@ -1061,11 +1061,11 @@ msgstr "找不到 OSPL130RT.dll"
 msgid "Cannot init camera"
 msgstr "無法啟用相機"
 
-#: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
+#: cam_OSPL130.cpp:83 cam_sbig.cpp:454
 msgid "Cannot start exposure"
 msgstr "無法開始曝光"
 
-#: cam_QGuide.cpp:77
+#: cam_qguide.cpp:78
 msgid "No camera"
 msgstr "無相機"
 
@@ -1146,45 +1146,45 @@ msgstr "在 DLL 中找不到 %s"
 msgid "Can't find cmosDLL.dll"
 msgstr "找不到 cmosDLL.dll 檔案"
 
-#: cam_SBIG.cpp:114
+#: cam_sbig.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "載入 SBIG 驅動程式發生錯誤"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Select interface"
 msgstr "選擇介面"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Interface"
 msgstr "介面"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Select USB camera"
 msgstr "選擇 USB 相機"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Camera name"
 msgstr "相機名稱"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "IP address"
 msgstr "IP 地址"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "Enter IP address"
 msgstr "輸入 IP 地址"
 
-#: cam_SBIG.cpp:286
+#: cam_sbig.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
 msgstr "找不到 SBIG 相機: 錯誤碼 %d"
 
-#: cam_SBIG.cpp:296
+#: cam_sbig.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
 msgstr "連接到 SBIG 相機發生錯誤: 錯誤碼 %d"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid ""
 "Tracking CCD found, use it?\n"
 "\n"
@@ -1194,31 +1194,31 @@ msgstr ""
 "\n"
 "否 = 使用主要影像 CCD"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid "CCD Choice"
 msgstr "選擇 CCD"
 
-#: cam_SBIG.cpp:319
+#: cam_sbig.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "取得主 CCD 資訊時發生錯誤"
 
-#: cam_SBIG.cpp:478
+#: cam_sbig.cpp:478
 msgid "Cannot poll exposure"
 msgstr "無法發出曝光命令"
 
-#: cam_SBIG.cpp:501
+#: cam_sbig.cpp:501
 msgid "Cannot stop exposure"
 msgstr "無法停止曝光"
 
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+#: cam_sbig.cpp:527 cam_sbig.cpp:543
 msgid "Error downloading data"
 msgstr "下載資料失敗"
 
-#: cam_SBIG.cpp:584
+#: cam_sbig.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "無法檢查 SBIG 繼電器狀態"
 
-#: cam_SBIG.cpp:593
+#: cam_sbig.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "超過逾時時間, 等待導星訊號完成."
 
@@ -1463,29 +1463,29 @@ msgstr "取消"
 msgid "Side of pier: %s"
 msgstr "赤道儀方向: %s"
 
-#: cam_SSPIAG.cpp:131
+#: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
 msgstr "無法載入 astroDLLsspiag.dll"
 
-#: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
-#: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
-#: cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:181 cam_SSPIAG.cpp:186 cam_SSPIAG.cpp:191
-#: cam_SSPIAG.cpp:196 cam_SSPIAG.cpp:201 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:216
-#: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
+#: cam_sspiag.cpp:137 cam_sspiag.cpp:142 cam_sspiag.cpp:147 cam_sspiag.cpp:152
+#: cam_sspiag.cpp:157 cam_sspiag.cpp:162 cam_sspiag.cpp:167 cam_sspiag.cpp:172
+#: cam_sspiag.cpp:177 cam_sspiag.cpp:182 cam_sspiag.cpp:187 cam_sspiag.cpp:192
+#: cam_sspiag.cpp:197 cam_sspiag.cpp:202 cam_sspiag.cpp:207 cam_sspiag.cpp:217
+#: cam_sspiag.cpp:222 cam_sspiag.cpp:227
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
 msgstr "astroDLLsspiag.dll 沒有 %s"
 
-#: cam_SSPIAG.cpp:231
+#: cam_sspiag.cpp:232
 msgid "Cannot load SSPIAGCAM.dll"
 msgstr "無法載入 SSPIAGCAM.dll"
 
-#: cam_SSPIAG.cpp:237
+#: cam_sspiag.cpp:238
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
 msgstr "SSPIAGCAM.dll 沒有 %s"
 
-#: cam_SSPIAG.cpp:244
+#: cam_sspiag.cpp:245
 msgid "Failed to open the camera"
 msgstr "無法開啟相機"
 
@@ -1497,27 +1497,27 @@ msgstr "向 StarShoot 發送註冊訊號時發生錯誤"
 msgid "Error starting exposure"
 msgstr "開始曝光時發生錯誤"
 
-#: cam_SXV.cpp:153
+#: cam_sxv.cpp:153
 msgid "SX Camera Settings"
 msgstr "SX 相機設定"
 
-#: cam_SXV.cpp:261
+#: cam_sxv.cpp:261
 msgid "No SX cameras found"
 msgstr "找不到 SX 相機"
 
-#: cam_SXV.cpp:284
+#: cam_sxv.cpp:284
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "連接錯誤: 無法讀取相機參數."
 
-#: cam_SXV.cpp:775
+#: cam_sxv.cpp:775
 msgid "Lost connection to camera"
 msgstr "與相機連接中斷"
 
-#: cam_VFW.cpp:88
+#: cam_vfw.cpp:91
 msgid "Select capture device"
 msgstr "選擇拍攝裝置"
 
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
+#: cam_vfw.cpp:91 cam_wdm.cpp:168
 msgid "Camera choice"
 msgstr "選擇相機"
 
@@ -1538,12 +1538,12 @@ msgstr "相機模式"
 msgid "%d x %d mode activated"
 msgstr ""
 
-#: cam_ZWO.cpp:106
+#: cam_zwo.cpp:106
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "無法載入 DLL %s"
 
-#: cam_ZWO.cpp:109
+#: cam_zwo.cpp:109
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -1552,19 +1552,19 @@ msgstr ""
 "ASI 相機程式庫需要 Microsoft Visual C++ 2008 可轉發套件 (x86), 此套件可以由 "
 "http://www.microsoft.com/en-us/download/details.aspx?id=29 取得"
 
-#: cam_ZWO.cpp:196
+#: cam_zwo.cpp:196
 msgid "No ZWO cameras detected."
 msgstr "偵測不到 ZWO 相機."
 
-#: cam_ZWO.cpp:212 cam_ZWO.cpp:267
+#: cam_zwo.cpp:212 cam_zwo.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "無法取得供 ZWO ASI 相機的屬性."
 
-#: cam_ZWO.cpp:218
+#: cam_zwo.cpp:218
 msgid "Failed to open ZWO ASI Camera."
 msgstr "無法開啟 ZWO ASI 相機."
 
-#: cam_ZWO.cpp:225
+#: cam_zwo.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr "無法啟用 ZWO ASI 相機."
 
@@ -1943,23 +1943,23 @@ msgstr "赤經"
 msgid "Dec"
 msgstr "赤緯"
 
-#: config_INDI.cpp:86
+#: config_indi.cpp:86
 msgid "INDI Server"
 msgstr "INDI 伺服器"
 
-#: config_INDI.cpp:90
+#: config_indi.cpp:90
 msgid "Hostname"
 msgstr "主機名稱"
 
-#: config_INDI.cpp:96 config_INDI.cpp:138
+#: config_indi.cpp:96 config_indi.cpp:138
 msgid "Port"
 msgstr "通訊埠"
 
-#: config_INDI.cpp:102 config_INDI.cpp:211
+#: config_indi.cpp:102 config_indi.cpp:211
 msgid "Disconnected"
 msgstr "斷開連線"
 
-#: config_INDI.cpp:104 config_INDI.cpp:212 gear_dialog.cpp:573
+#: config_indi.cpp:104 config_indi.cpp:212 gear_dialog.cpp:573
 #: gear_dialog.cpp:599 gear_dialog.cpp:615 gear_dialog.cpp:636
 #: gear_dialog.cpp:680 gear_dialog.cpp:701 gear_dialog.cpp:718
 #: gear_dialog.cpp:739 gear_dialog.cpp:756 gear_dialog.cpp:777 runinbg.h:85
@@ -1967,59 +1967,59 @@ msgstr "斷開連線"
 msgid "Connect"
 msgstr "連接"
 
-#: config_INDI.cpp:110
+#: config_indi.cpp:110
 msgid "Device"
 msgstr "設備"
 
-#: config_INDI.cpp:122
+#: config_indi.cpp:122
 msgid "Driver"
 msgstr "驅動程式"
 
-#: config_INDI.cpp:131
+#: config_indi.cpp:131
 msgid "Dual CCD"
 msgstr "雙 CCD"
 
-#: config_INDI.cpp:147
+#: config_indi.cpp:147
 msgid "Camera does not support exposure time"
 msgstr ""
 
-#: config_INDI.cpp:148
+#: config_indi.cpp:148
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
 
-#: config_INDI.cpp:153
+#: config_indi.cpp:153
 msgid "Other options"
 msgstr "其他選項"
 
-#: config_INDI.cpp:155 indi_gui.cpp:785 scope.cpp:368
+#: config_indi.cpp:155 indi_gui.cpp:786 scope.cpp:368
 msgid "INDI"
 msgstr "INDI"
 
-#: config_INDI.cpp:159
+#: config_indi.cpp:159
 msgid "Verbose logging"
 msgstr ""
 
-#: config_INDI.cpp:160
+#: config_indi.cpp:160
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
 
-#: config_INDI.cpp:188
+#: config_indi.cpp:188
 msgid "Connected"
 msgstr "已連接"
 
-#: config_INDI.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
+#: config_indi.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
 #: gear_dialog.cpp:628 gear_dialog.cpp:693 gear_dialog.cpp:730
 #: gear_dialog.cpp:768
 msgid "Disconnect"
 msgstr "中斷"
 
-#: config_INDI.cpp:196
+#: config_indi.cpp:196
 msgid "Main"
 msgstr "主要"
 
-#: config_INDI.cpp:197
+#: config_indi.cpp:197
 msgid "Secondary"
 msgstr "次要"
 
@@ -4033,15 +4033,15 @@ msgid ""
 "replaced."
 msgstr "壞點影像與設備組態檔中的相機不符, 必需重新建立壞點影像。"
 
-#: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
 msgstr "Set"
 
-#: indi_gui.cpp:785
+#: indi_gui.cpp:786
 msgid "Loading INDI properties..."
 msgstr ""
 
-#: indi_gui.cpp:817
+#: indi_gui.cpp:818
 msgid "INDI Options"
 msgstr "INDI 選項"
 
@@ -6686,15 +6686,15 @@ msgstr "寫入錯誤 - GC USB ST4: %s(%d)"
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr "請重啟 PHD2 以重新連接 GPUSB"
 
-#: scope_INDI.cpp:126
+#: scope_indi.cpp:126
 msgid "INDI Aux Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:128
+#: scope_indi.cpp:128
 msgid "INDI Mount Selection"
 msgstr ""
 
-#: scope_INDI.cpp:302
+#: scope_indi.cpp:302
 #, c-format
 msgid "Cannot connect to mount %s: %s"
 msgstr ""
@@ -7431,14 +7431,14 @@ msgstr "選擇序列埠"
 msgid "Serial Port"
 msgstr "序列埠"
 
-#: stepguider_sxao_INDI.cpp:102
+#: stepguider_sxao_indi.cpp:102
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
 "the Limit switch states."
 msgstr "INDI 驅動程式 %s 至少需為 1.12 版才能取得韌體版本及 Limit 開關狀態。"
 
-#: stepguider_sxao_INDI.cpp:111
+#: stepguider_sxao_indi.cpp:111
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -7452,7 +7452,7 @@ msgstr ""
 "downloads,\n"
 "取得, 該工具程式同時也包含新的韌體。"
 
-#: stepguider_sxao_INDI.cpp:249
+#: stepguider_sxao_indi.cpp:249
 msgid "INDI AO Selection"
 msgstr ""
 
