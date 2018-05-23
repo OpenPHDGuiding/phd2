@@ -37,6 +37,7 @@ Source: Release\opencv_core2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_highgui2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_imgproc2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
