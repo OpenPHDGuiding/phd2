@@ -408,7 +408,7 @@ static void LoadAOs(wxChoice *aos)
 
 static void LoadRotators(wxChoice *aos)
 {
-    LoadChoices(aos, StepGuider::AOList());
+    LoadChoices(aos, Rotator::RotatorList());
 }
 
 void GearDialog::LoadGearChoices(void)
