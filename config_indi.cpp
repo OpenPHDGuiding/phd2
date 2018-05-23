@@ -188,7 +188,10 @@ void INDIConfig::UpdateControlStates()
         connect_status->SetLabel(_("Connected"));
         connect->SetLabel(_("Disconnect"));
 
+        // device gets selected when driver property arrives
         dev->Enable(true);
+
+        devport->SetValue(INDIDevPort);
         devport->Enable(true);
 
         if (dev_type == TYPE_CAMERA)
@@ -420,13 +423,6 @@ void INDIConfig::SetSettings()
 {
     host->WriteText(INDIhost);
     port->WriteText(wxString::Format("%ld", INDIport));
-    dev->SetValue(INDIDevName);
-    devport->SetValue(INDIDevPort);
-    if (dev_type == TYPE_CAMERA)
-    {
-        ccd->SetSelection(INDIDevCCD);
-        forcevideo->SetValue(INDIForceVideo);
-    }
 }
 
 void INDIConfig::SaveSettings()
