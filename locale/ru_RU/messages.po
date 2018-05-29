@@ -43,9 +43,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 2.0.6\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 2.0.7\n"
 
 #: advanced_dialog.cpp:89
 msgid "Advanced setup"
@@ -475,9 +475,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
-"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
-"периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
+"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
+"большой периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -503,8 +503,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
-"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
+"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:650
@@ -860,10 +860,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
+#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -919,16 +918,16 @@ msgstr "Камера INDI отключена"
 #: cam_INDI.cpp:476 cam_INDI.cpp:521 scope_INDI.cpp:231 scope_INDI.cpp:256
 #: scope_INDI.cpp:277
 msgid "Connection timed-out"
-msgstr ""
+msgstr "Время соединения истекло"
 
 #: cam_INDI.cpp:501
 msgid "connection timed-out"
-msgstr ""
+msgstr "время соединения истекло"
 
 #: cam_INDI.cpp:546
 #, c-format
 msgid "Cannot connect to camera %s: %s"
-msgstr ""
+msgstr "Невозможно подключиться к камере %s: %s"
 
 #: cam_INDI.cpp:566 scope_INDI.cpp:322
 msgid "INDI server disconnected"
@@ -936,7 +935,7 @@ msgstr "Сервер INDI отключен"
 
 #: cam_INDI.cpp:606
 msgid "INDI Camera Selection"
-msgstr ""
+msgstr "Выбор камеры INDI"
 
 #: cam_INDI.cpp:674 cam_INDI.cpp:694 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
@@ -975,7 +974,7 @@ msgstr "Ошибка экспозиции камеры %s. Попробуйте 
 #: cam_INDI.cpp:932
 #, c-format
 msgid "Unknown image format: %s"
-msgstr ""
+msgstr "Неизвестный формат изображения: %s"
 
 #: cam_INDI.cpp:1010 cam_wdm.cpp:424
 #, c-format
@@ -1563,7 +1562,7 @@ msgstr "Режим камеры"
 #: cam_wdm.cpp:309
 #, c-format
 msgid "%d x %d mode activated"
-msgstr ""
+msgstr "%d x %d режим активирован"
 
 #: cam_ZWO.cpp:106
 #, c-format
@@ -1921,8 +1920,7 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -2020,7 +2018,7 @@ msgstr "Двойная CCD"
 
 #: config_INDI.cpp:147
 msgid "Camera does not support exposure time"
-msgstr ""
+msgstr "Камера не поддерживает установку времени экспозиции"
 
 #: config_INDI.cpp:148
 msgid ""
@@ -2038,11 +2036,11 @@ msgstr "INDI"
 
 #: config_INDI.cpp:159
 msgid "Verbose logging"
-msgstr ""
+msgstr "Подробный отчёт"
 
 #: config_INDI.cpp:160
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
-msgstr ""
+msgstr "Включить в журнал отладки более подробную информацию об INDI."
 
 #: config_INDI.cpp:188
 msgid "Connected"
@@ -2497,7 +2495,7 @@ msgstr "Сбросить калибровку"
 msgid ""
 "Scope has no current calibration data - you should just do a fresh "
 "calibration."
-msgstr ""
+msgstr "Нет текущих калибровочных данных - откалибруйтесь заново."
 
 #: eegg.cpp:170
 msgid ""
@@ -2515,7 +2513,7 @@ msgstr ""
 #: eegg.cpp:184
 #, c-format
 msgid "Calibration angles flipped: (%.2f, %.2f) to (%.2f, %.2f)"
-msgstr ""
+msgstr "Углы калибровки переложены: (%.2f, %.2f) в (%.2f, %.2f)"
 
 #: eegg.cpp:283
 msgid ""
@@ -3240,8 +3238,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3357,8 +3355,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3382,8 +3380,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -4068,6 +4066,8 @@ msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
 "(currently %s)"
 msgstr ""
+"Люфт is >= %d мсек; возможно, есть смысл гидировать по склонению только в "
+"одном направлении (сейчас %s)"
 
 #: guiding_assistant.cpp:1142
 msgid "Backlash test aborted..."
@@ -4148,7 +4148,7 @@ msgstr "Установить"
 
 #: indi_gui.cpp:785
 msgid "Loading INDI properties..."
-msgstr ""
+msgstr "Загрузка параметров INDI..."
 
 #: indi_gui.cpp:817
 msgid "INDI Options"
@@ -4403,7 +4403,7 @@ msgstr "Алгоритм гидирования по оси прямого во�
 
 #: mount.cpp:210
 msgid "Which Guide Algorithm to use for X-axis"
-msgstr ""
+msgstr "Какой алгоритм использовать при гидировании по оси X"
 
 #: mount.cpp:231
 msgid ""
@@ -4419,7 +4419,7 @@ msgstr "Алгоритм гидирования по оси склонения"
 
 #: mount.cpp:272
 msgid "Which Guide Algorithm to use for Y-axis"
-msgstr ""
+msgstr "Какой алгоритм использовать при гидировании по оси Y"
 
 #: mount.cpp:297
 msgid ""
@@ -4577,7 +4577,7 @@ msgstr "Переложить откалиброванные данные"
 
 #: myframe.cpp:500
 msgid "Flip RA calibration vector and Dec direction if needed"
-msgstr ""
+msgstr "Если нужно, поменяйте вектор калибровки по α и направление по δ"
 
 #: myframe.cpp:501
 msgid "Clear Calibration Data..."
@@ -6555,7 +6555,7 @@ msgstr "Монтировка INDI"
 #: scope.cpp:279
 #, c-format
 msgid "INDI Mount [%s]"
-msgstr ""
+msgstr "Монтировка INDI [%s]"
 
 #: scope.cpp:569
 msgid ""
@@ -6585,6 +6585,9 @@ msgid ""
 "snags, try re-doing your calibration and confirm the ST-4 cable is working "
 "properly."
 msgstr ""
+"PHD2 не в состоянии сделать нужную поправку по склонению. Проверьте "
+"подключение кабелей, повторите калибровку и удостоверьтесь, что кабель ST-4 "
+"работает как надо."
 
 #: scope.cpp:596
 msgid "Max RA Duration setting"
@@ -6912,16 +6915,16 @@ msgstr "Перезагрузите PHD2, чтобы заново подключ�
 
 #: scope_INDI.cpp:126
 msgid "INDI Aux Mount Selection"
-msgstr ""
+msgstr "Выбор доп. монтировки INDI"
 
 #: scope_INDI.cpp:128
 msgid "INDI Mount Selection"
-msgstr ""
+msgstr "Выбор монтировки INDI"
 
 #: scope_INDI.cpp:302
 #, c-format
 msgid "Cannot connect to mount %s: %s"
-msgstr ""
+msgstr "Невозможно подключиться к монтировке %s: %s"
 
 #: scope_manual_pointing.cpp:81
 msgid "Approximate telescope declination, degrees"
@@ -7026,7 +7029,7 @@ msgstr "Сервер остановлен"
 
 #: socket_server.cpp:161
 msgid "New server connection"
-msgstr ""
+msgstr "Новое соединение с сервером"
 
 #: socket_server.cpp:301
 #, c-format
@@ -7516,12 +7519,12 @@ msgstr "Перецентровка: %3d"
 #: stepguider.cpp:771
 #, c-format
 msgid "distance %4.1f px"
-msgstr ""
+msgstr "расстояние %4.1f пикс"
 
 #: stepguider.cpp:778
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: stepguider.cpp:1087
 msgid ""
@@ -7701,7 +7704,7 @@ msgstr ""
 
 #: stepguider_sxao_INDI.cpp:249
 msgid "INDI AO Selection"
-msgstr ""
+msgstr "Выбор АО INDI"
 
 #: target.cpp:71
 msgid "Zoom in"
