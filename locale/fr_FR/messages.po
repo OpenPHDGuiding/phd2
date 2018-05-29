@@ -36,8 +36,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 05:48+0100\n"
-"PO-Revision-Date: 2018-02-12 23:10+0100\n"
+"POT-Creation-Date: 2018-05-23 19:53+0100\n"
+"PO-Revision-Date: 2018-05-28 17:24+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 2.0.7\n"
 
 #: advanced_dialog.cpp:89
 msgid "Advanced setup"
@@ -56,7 +56,7 @@ msgid "Global"
 msgstr "Global"
 
 #: advanced_dialog.cpp:144 cam_firewire_IC.cpp:115 cam_simulator.cpp:1600
-#: config_INDI.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
+#: config_indi.cpp:113 gear_dialog.cpp:249 gear_dialog.cpp:251
 msgid "Camera"
 msgstr "Caméra"
 
@@ -74,7 +74,7 @@ msgid "Other Devices"
 msgstr "Autres Appareils"
 
 #: advanced_dialog.cpp:342 calreview_dialog.cpp:93 cam_simulator.cpp:1612
-#: config_INDI.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
+#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:269 gear_dialog.cpp:271
 #: testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Monture"
@@ -259,11 +259,12 @@ msgstr "Déplacement vers le Sud pour %d ms, pas %d / %d"
 
 #: backlash_comp.cpp:1102
 msgid "Dec movements too erratic - test failed"
-msgstr ""
+msgstr "Les mouvements Dec sont trop erratiques - le test a échoué"
 
 #: backlash_comp.cpp:1108
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
+"Le mont n'a jamais établi de mouvements sud cohérents - le test a échoué"
 
 #: backlash_comp.cpp:1126
 #, c-format
@@ -286,7 +287,7 @@ msgstr "Mesure arrêtée"
 msgid "N/A"
 msgstr "N/A"
 
-#: calreview_dialog.cpp:101 config_INDI.cpp:117 eegg.cpp:126
+#: calreview_dialog.cpp:101 config_indi.cpp:117 eegg.cpp:126
 #: gear_dialog.cpp:308 gear_dialog.cpp:310 testguide.cpp:161
 msgid "AO"
 msgstr "OA"
@@ -647,6 +648,11 @@ msgid ""
 "guide speed used by the mount - that must be changed via driver UI or hand-"
 "controller."
 msgstr ""
+"Vitesse de guidage, multiple du taux sidéral; Si la vitesse de guidage de "
+"votre monture est de 50% de la vitesse sidérale, entrez 0.5. REMARQUE: La "
+"modification de ce paramètre n'a aucun effet sur la vitesse de guidage "
+"utilisée par la monture, qui doit être modifiée via l'interface utilisateur "
+"du pilote ou le contrôleur manuel."
 
 #: calstep_dialog.cpp:142
 msgid "Calibration steps"
@@ -697,27 +703,27 @@ msgstr "Veuillez entrer une longueur focale d'au moins 50"
 msgid "Please enter a pixel size greater than zero."
 msgstr "Veuillez entrer une taille de pixels supérieure à zéro."
 
-#: cam_Altair.cpp:56
+#: cam_altair.cpp:56
 msgid "Altair Camera Settings"
 msgstr "Paramètres de la Caméra Altair"
 
-#: cam_Altair.cpp:69 cam_SXV.cpp:164 graph.cpp:125
+#: cam_altair.cpp:69 cam_sxv.cpp:164 graph.cpp:125
 msgid "Settings"
 msgstr "Réglages"
 
-#: cam_Altair.cpp:143
+#: cam_altair.cpp:143
 msgid "No Altair cameras detected"
 msgstr "Aucune caméra Altair détectée"
 
-#: cam_Altair.cpp:161
+#: cam_altair.cpp:161
 msgid "Specified Altair Camera not found."
 msgstr "Caméra Altair spécifiée non trouvée."
 
-#: cam_Altair.cpp:167
+#: cam_altair.cpp:167
 msgid "Failed to open Altair Camera."
 msgstr "Impossible de connecter la caméra Altair."
 
-#: cam_Altair.cpp:189
+#: cam_altair.cpp:189
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Impossible d'obtenir la résolution de la caméra Altair Camera."
 
@@ -800,25 +806,25 @@ msgstr "Exception levée pendant la consultation de la caméra"
 msgid "Error reading image"
 msgstr "Erreur à la lecture de l'image"
 
-#: cam_Atik16.cpp:77
+#: cam_atik16.cpp:77
 #, c-format
 msgid "Cannot load Atik camera DLL %s"
 msgstr "Impossible de charger la DLL de la caméra Atik %s"
 
-#: cam_Atik16.cpp:100
+#: cam_atik16.cpp:100
 msgid "DLL error"
 msgstr "Erreur DLL"
 
-#: cam_Atik16.cpp:133
+#: cam_atik16.cpp:133
 msgid "No Atik cameras detected."
 msgstr "Aucune caméra Atik détectée."
 
-#: cam_Atik16.cpp:146
+#: cam_atik16.cpp:146
 #, c-format
 msgid "Atik camera connection failed - Driver version %d"
 msgstr "La connexion de la caméra Atik a échoué - Version du pilote %d"
 
-#: cam_Atik16.cpp:320
+#: cam_atik16.cpp:320
 msgid "Couldn't start exposure - aborting"
 msgstr "Impossible de démarrer la pose"
 
@@ -875,10 +881,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_INDI.cpp:703 cam_INDI.cpp:735
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1161
-#: cam_simulator.cpp:1236 cam_simulator.cpp:1410 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1161 cam_simulator.cpp:1236
+#: cam_simulator.cpp:1410 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -928,89 +933,91 @@ msgstr "La transmission échoue à démarrer"
 msgid "Cannot get a frame from the queue"
 msgstr "Impossible d'obtenir une image de la file d'attente"
 
-#: cam_INDI.cpp:151 cam_INDI.cpp:573
+#: cam_indi.cpp:151 cam_indi.cpp:573
 msgid "INDI camera disconnected"
-msgstr ""
+msgstr "Caméra INDI déconnectée"
 
-#: cam_INDI.cpp:476 cam_INDI.cpp:521 scope_INDI.cpp:231 scope_INDI.cpp:256
-#: scope_INDI.cpp:277
+#: cam_indi.cpp:476 cam_indi.cpp:521 scope_indi.cpp:231 scope_indi.cpp:256
+#: scope_indi.cpp:277
 msgid "Connection timed-out"
-msgstr ""
+msgstr "La connexion a expiré"
 
-#: cam_INDI.cpp:501
+#: cam_indi.cpp:501
 msgid "connection timed-out"
-msgstr ""
+msgstr "connexion expirée"
 
-#: cam_INDI.cpp:546
+#: cam_indi.cpp:546
 #, c-format
 msgid "Cannot connect to camera %s: %s"
-msgstr ""
+msgstr "Impossible de se connecter à la caméra %s : %s"
 
-#: cam_INDI.cpp:566 scope_INDI.cpp:322
+#: cam_indi.cpp:566 scope_indi.cpp:322
 msgid "INDI server disconnected"
-msgstr ""
+msgstr "Serveur INDI déconnecté"
 
-#: cam_INDI.cpp:606
+#: cam_indi.cpp:606
 msgid "INDI Camera Selection"
-msgstr ""
+msgstr "Sélection de la caméra INDI"
 
-#: cam_INDI.cpp:674 cam_INDI.cpp:694 cam_simulator.cpp:602
+#: cam_indi.cpp:674 cam_indi.cpp:694 cam_simulator.cpp:602
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Type non supporté ou erreur de lecture au chargement du fichier FITS"
 
-#: cam_INDI.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
+#: cam_indi.cpp:680 cam_simulator.cpp:591 cam_simulator.cpp:1393
 msgid "FITS file is not of an image"
 msgstr "Le fichier FITS n'est pas une image"
 
-#: cam_INDI.cpp:715 cam_INDI.cpp:743 cam_simulator.cpp:632
+#: cam_indi.cpp:715 cam_indi.cpp:743 cam_simulator.cpp:632
 #: cam_simulator.cpp:1415
 msgid "Error reading data"
 msgstr "Erreur de lecture des données"
 
-#: cam_INDI.cpp:761
+#: cam_indi.cpp:761
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr ""
 "Aucune propriété CCD_FRAME, impossible de déterminer les dimensions de "
 "l'image"
 
-#: cam_INDI.cpp:767
+#: cam_indi.cpp:767
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr ""
 "Aucune valeur WIDTH, impossible de déterminer les dimensions de l'image"
 
-#: cam_INDI.cpp:774
+#: cam_indi.cpp:774
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr ""
 "Aucune valeur HEIGHT, impossible de déterminer les dimensions de l'image"
 
-#: cam_INDI.cpp:782
+#: cam_indi.cpp:782
 msgid "CCD stream: memory allocation error"
 msgstr "Flux CCD : erreur d'allocation mémoire"
 
-#: cam_INDI.cpp:889
+#: cam_indi.cpp:889
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
-msgstr ""
+msgstr "Caméra %s, erreur d'exposition. Essayer d'utiliser le flux à la place."
 
-#: cam_INDI.cpp:932
+#: cam_indi.cpp:932
 #, c-format
 msgid "Unknown image format: %s"
-msgstr ""
+msgstr "Format d'image inconnu : %s"
 
-#: cam_INDI.cpp:1010 cam_wdm.cpp:424
+#: cam_indi.cpp:1010 cam_wdm.cpp:424
 #, c-format
 msgid "%d frames"
-msgstr ""
+msgstr "%d images"
 
-#: cam_INDI.cpp:1021
+#: cam_indi.cpp:1021
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
+"La caméra n'a pas de propriété VIDEO_STREAM, veuillez décocher l'option: La "
+"caméra ne prend pas en charge le temps d'exposition."
 
-#: cam_INDI.cpp:1023
+#: cam_indi.cpp:1023
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
-msgstr ""
+msgstr "La caméra n'a pas de propriété CCD_EXPOSURE ou VIDEO_STREAM"
 
 #: cam_INovaPLC.cpp:60
 #, c-format
@@ -1046,9 +1053,9 @@ msgid "No serial ports found"
 msgstr "Aucun port série trouvé"
 
 #: cam_LESerialWebcam.cpp:294 cam_qhy5.cpp:117 cam_qhy5.cpp:124
-#: cam_SBIG.cpp:286 cam_SBIG.cpp:296 cam_SBIG.cpp:319 cam_wdm.cpp:132
+#: cam_sbig.cpp:286 cam_sbig.cpp:296 cam_sbig.cpp:319 cam_wdm.cpp:132
 #: cam_wdm.cpp:141 cam_wdm.cpp:179 cam_wdm.cpp:257 cam_wdm.cpp:280
-#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_ZWO.cpp:154
+#: cam_wdm.cpp:286 cam_wdm.cpp:294 cam_wdm.cpp:305 cam_zwo.cpp:154
 #: gear_dialog.cpp:1305 gear_dialog.cpp:1992 gear_dialog.cpp:2001
 #: gear_dialog.cpp:2008 gear_dialog.cpp:2053 gear_dialog.cpp:2059
 #: scope_ascom.cpp:188 scope_ascom.cpp:203 scope_ascom.cpp:211
@@ -1058,7 +1065,7 @@ msgstr "Aucun port série trouvé"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sxao.cpp:107 stepguider_sxao.cpp:146
-#: stepguider_sxao_INDI.cpp:103 stepguider_sxao_INDI.cpp:114
+#: stepguider_sxao_indi.cpp:103 stepguider_sxao_indi.cpp:114
 msgid "Error"
 msgstr "Erreur"
 
@@ -1102,11 +1109,11 @@ msgstr "Impossible de trouver OSPL130RT.dll"
 msgid "Cannot init camera"
 msgstr "Impossible d'initialiser la caméra"
 
-#: cam_OSPL130.cpp:83 cam_SBIG.cpp:454
+#: cam_OSPL130.cpp:83 cam_sbig.cpp:454
 msgid "Cannot start exposure"
 msgstr "Impossible de démarrer la pose"
 
-#: cam_QGuide.cpp:77
+#: cam_qguide.cpp:78
 msgid "No camera"
 msgstr "Pas de caméra"
 
@@ -1187,45 +1194,45 @@ msgstr "N'a pas trouvé %s dans la DLL"
 msgid "Can't find cmosDLL.dll"
 msgstr "Impossible de trouver cmosDLL.dll"
 
-#: cam_SBIG.cpp:114
+#: cam_sbig.cpp:114
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "Erreur de chargement du driver SBIG et/ou de la DLL"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Select interface"
 msgstr "Sélectionnez l'interface"
 
-#: cam_SBIG.cpp:137
+#: cam_sbig.cpp:137
 msgid "Interface"
 msgstr "Interface"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Select USB camera"
 msgstr "Sélectionnez la caméra USB"
 
-#: cam_SBIG.cpp:169
+#: cam_sbig.cpp:169
 msgid "Camera name"
 msgstr "Nom de la caméra"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "IP address"
 msgstr "Adresse IP"
 
-#: cam_SBIG.cpp:180
+#: cam_sbig.cpp:180
 msgid "Enter IP address"
 msgstr "Entrez l'adresse IP"
 
-#: cam_SBIG.cpp:286
+#: cam_sbig.cpp:286
 #, c-format
 msgid "Cannot open SBIG camera: Code %d"
 msgstr "Impossible d'ouvrir la caméra SBIG : Code %d"
 
-#: cam_SBIG.cpp:296
+#: cam_sbig.cpp:296
 #, c-format
 msgid "Link to SBIG camera failed: Code %d"
 msgstr "Le lien vers la caméra SBIG a échoué : Code %d"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid ""
 "Tracking CCD found, use it?\n"
 "\n"
@@ -1235,31 +1242,31 @@ msgstr ""
 "\n"
 "Non = utiliser l'image CCD principale"
 
-#: cam_SBIG.cpp:309
+#: cam_sbig.cpp:309
 msgid "CCD Choice"
 msgstr "Choix CCD"
 
-#: cam_SBIG.cpp:319
+#: cam_sbig.cpp:319
 msgid "Error getting info on main CCD"
 msgstr "Erreur de récupération des infos de la CCD principale"
 
-#: cam_SBIG.cpp:478
+#: cam_sbig.cpp:478
 msgid "Cannot poll exposure"
 msgstr "Impossible de poser en boucle"
 
-#: cam_SBIG.cpp:501
+#: cam_sbig.cpp:501
 msgid "Cannot stop exposure"
 msgstr "Impossible d'arrêter la pose"
 
-#: cam_SBIG.cpp:527 cam_SBIG.cpp:543
+#: cam_sbig.cpp:527 cam_sbig.cpp:543
 msgid "Error downloading data"
 msgstr "Erreur au téléchargement des données"
 
-#: cam_SBIG.cpp:584
+#: cam_sbig.cpp:584
 msgid "Cannot check SBIG relay status"
 msgstr "Impossible de récupérer le statut des relais"
 
-#: cam_SBIG.cpp:593
+#: cam_sbig.cpp:593
 msgid "Timeout expired waiting for guide pulse to complete."
 msgstr "Délai d'attente dépassé pour l'impulsion de guidage."
 
@@ -1516,29 +1523,29 @@ msgstr "Abandon"
 msgid "Side of pier: %s"
 msgstr "Côté du méridien : %s"
 
-#: cam_SSPIAG.cpp:131
+#: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
 msgstr "Impossible de charger astroDLLsspiag.dll"
 
-#: cam_SSPIAG.cpp:136 cam_SSPIAG.cpp:141 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:151
-#: cam_SSPIAG.cpp:156 cam_SSPIAG.cpp:161 cam_SSPIAG.cpp:166 cam_SSPIAG.cpp:171
-#: cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:181 cam_SSPIAG.cpp:186 cam_SSPIAG.cpp:191
-#: cam_SSPIAG.cpp:196 cam_SSPIAG.cpp:201 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:216
-#: cam_SSPIAG.cpp:221 cam_SSPIAG.cpp:226
+#: cam_sspiag.cpp:137 cam_sspiag.cpp:142 cam_sspiag.cpp:147 cam_sspiag.cpp:152
+#: cam_sspiag.cpp:157 cam_sspiag.cpp:162 cam_sspiag.cpp:167 cam_sspiag.cpp:172
+#: cam_sspiag.cpp:177 cam_sspiag.cpp:182 cam_sspiag.cpp:187 cam_sspiag.cpp:192
+#: cam_sspiag.cpp:197 cam_sspiag.cpp:202 cam_sspiag.cpp:207 cam_sspiag.cpp:217
+#: cam_sspiag.cpp:222 cam_sspiag.cpp:227
 #, c-format
 msgid "astroDLLsspiag.dll does not have %s"
 msgstr "astroDLLsspiag.dll n'a pas %s"
 
-#: cam_SSPIAG.cpp:231
+#: cam_sspiag.cpp:232
 msgid "Cannot load SSPIAGCAM.dll"
 msgstr "Impossible de charger SSPIAGCAM.dll"
 
-#: cam_SSPIAG.cpp:237
+#: cam_sspiag.cpp:238
 #, c-format
 msgid "SSPIAGCAM.dll does not have %s"
 msgstr "SSPIAGCAM.dll n'a pas %s"
 
-#: cam_SSPIAG.cpp:244
+#: cam_sspiag.cpp:245
 msgid "Failed to open the camera"
 msgstr "Impossible d'ouvrir la caméra"
 
@@ -1550,28 +1557,28 @@ msgstr "Problème d'envoi de registre à la StarShoot (OCP_sendRegister)"
 msgid "Error starting exposure"
 msgstr "Erreur au démarrage de la pose"
 
-#: cam_SXV.cpp:153
+#: cam_sxv.cpp:153
 msgid "SX Camera Settings"
 msgstr "Réglages Caméra SX"
 
-#: cam_SXV.cpp:261
+#: cam_sxv.cpp:261
 msgid "No SX cameras found"
 msgstr "Aucune caméra SX trouvée"
 
-#: cam_SXV.cpp:284
+#: cam_sxv.cpp:284
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr ""
 "Erreur de connexion :  impossible de récupérer les paramètres de la caméra."
 
-#: cam_SXV.cpp:775
+#: cam_sxv.cpp:775
 msgid "Lost connection to camera"
 msgstr "Connexion à la caméra perdue"
 
-#: cam_VFW.cpp:88
+#: cam_vfw.cpp:91
 msgid "Select capture device"
 msgstr "Sélectionnez périphérique de capture"
 
-#: cam_VFW.cpp:88 cam_wdm.cpp:168
+#: cam_vfw.cpp:91 cam_wdm.cpp:168
 msgid "Camera choice"
 msgstr "Choix caméra"
 
@@ -1590,14 +1597,14 @@ msgstr "Mode caméra"
 #: cam_wdm.cpp:309
 #, c-format
 msgid "%d x %d mode activated"
-msgstr ""
+msgstr "%d x %d mode activé"
 
-#: cam_ZWO.cpp:106
+#: cam_zwo.cpp:106
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "Impossible de charger la DLL %s"
 
-#: cam_ZWO.cpp:109
+#: cam_zwo.cpp:109
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -1607,19 +1614,19 @@ msgstr ""
 "2008 Redistributable Package (x86)', disponible depuis: http://www.microsoft."
 "com/en-us/download/details.aspx?id=29"
 
-#: cam_ZWO.cpp:196
+#: cam_zwo.cpp:196
 msgid "No ZWO cameras detected."
 msgstr "Aucune caméra ZWO détectée."
 
-#: cam_ZWO.cpp:212 cam_ZWO.cpp:267
+#: cam_zwo.cpp:212 cam_zwo.cpp:267
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "Impossible d'obtenir les propriétés de la caméra ZWO ASI."
 
-#: cam_ZWO.cpp:218
+#: cam_zwo.cpp:218
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Impossible de connecter la caméra ZWO ASI."
 
-#: cam_ZWO.cpp:225
+#: cam_zwo.cpp:225
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr "Impossible d'initialiser la caméra ZWO ASI."
 
@@ -1961,8 +1968,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:208 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2023,23 +2029,23 @@ msgstr "AD"
 msgid "Dec"
 msgstr "Dec"
 
-#: config_INDI.cpp:86
+#: config_indi.cpp:86
 msgid "INDI Server"
 msgstr "Serveur INDI"
 
-#: config_INDI.cpp:90
+#: config_indi.cpp:90
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: config_INDI.cpp:96 config_INDI.cpp:138
+#: config_indi.cpp:96 config_indi.cpp:138
 msgid "Port"
 msgstr "Port"
 
-#: config_INDI.cpp:102 config_INDI.cpp:211
+#: config_indi.cpp:102 config_indi.cpp:211
 msgid "Disconnected"
 msgstr "Déconnecté"
 
-#: config_INDI.cpp:104 config_INDI.cpp:212 gear_dialog.cpp:573
+#: config_indi.cpp:104 config_indi.cpp:212 gear_dialog.cpp:573
 #: gear_dialog.cpp:599 gear_dialog.cpp:615 gear_dialog.cpp:636
 #: gear_dialog.cpp:680 gear_dialog.cpp:701 gear_dialog.cpp:718
 #: gear_dialog.cpp:739 gear_dialog.cpp:756 gear_dialog.cpp:777 runinbg.h:85
@@ -2047,59 +2053,63 @@ msgstr "Déconnecté"
 msgid "Connect"
 msgstr "Connecter"
 
-#: config_INDI.cpp:110
+#: config_indi.cpp:110
 msgid "Device"
 msgstr "Appareil"
 
-#: config_INDI.cpp:122
+#: config_indi.cpp:122
 msgid "Driver"
 msgstr "Pilote"
 
-#: config_INDI.cpp:131
+#: config_indi.cpp:131
 msgid "Dual CCD"
 msgstr "Dual CCD"
 
-#: config_INDI.cpp:147
+#: config_indi.cpp:147
 msgid "Camera does not support exposure time"
-msgstr ""
+msgstr "La caméra ne prend pas en charge le temps d'exposition"
 
-#: config_INDI.cpp:148
+#: config_indi.cpp:148
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
+"Forcer l'utilisation du flux et de l'empilement d'images pour les caméras "
+"qui ne prennent pas en charge le réglage d'une durée d'exposition absolue."
 
-#: config_INDI.cpp:153
+#: config_indi.cpp:153
 msgid "Other options"
 msgstr "Autres options"
 
-#: config_INDI.cpp:155 indi_gui.cpp:785 scope.cpp:368
+#: config_indi.cpp:155 indi_gui.cpp:786 scope.cpp:368
 msgid "INDI"
 msgstr "INDI"
 
-#: config_INDI.cpp:159
+#: config_indi.cpp:159
 msgid "Verbose logging"
-msgstr ""
+msgstr "Journalisation bavarde"
 
-#: config_INDI.cpp:160
+#: config_indi.cpp:160
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
+"Active des informations INDI plus détaillées dans le journal de débogage de "
+"PHD2."
 
-#: config_INDI.cpp:188
+#: config_indi.cpp:188
 msgid "Connected"
 msgstr "Connecté"
 
-#: config_INDI.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
+#: config_indi.cpp:189 gear_dialog.cpp:184 gear_dialog.cpp:590
 #: gear_dialog.cpp:628 gear_dialog.cpp:693 gear_dialog.cpp:730
 #: gear_dialog.cpp:768
 msgid "Disconnect"
 msgstr "Déconnecter"
 
-#: config_INDI.cpp:196
+#: config_indi.cpp:196
 msgid "Main"
 msgstr "Principale"
 
-#: config_INDI.cpp:197
+#: config_indi.cpp:197
 msgid "Secondary"
 msgstr "Secondaire"
 
@@ -2198,8 +2208,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:152
 msgid ""
@@ -2332,12 +2342,12 @@ msgstr "Pointage Scope"
 #: drift_tool.cpp:176
 #, c-format
 msgid "Meridian Offset (%s)"
-msgstr ""
+msgstr "Décalage au méridien (%s)"
 
 #: drift_tool.cpp:180 scope_manual_pointing.cpp:75
 #, c-format
 msgid "Declination (%s)"
-msgstr ""
+msgstr "Déclinaison (%s)"
 
 #: drift_tool.cpp:184
 msgid "Current"
@@ -2539,6 +2549,8 @@ msgid ""
 "Scope has no current calibration data - you should just do a fresh "
 "calibration."
 msgstr ""
+"Le télescope n'a actuellement pas de données de calibration - vous devriez "
+"faire une nouvelle calibration."
 
 #: eegg.cpp:170
 msgid ""
@@ -2546,17 +2558,22 @@ msgid ""
 "are seeing run-away Dec guiding after a meridian flip, use Help and look in "
 "the index for 'Reverse Dec output'."
 msgstr ""
+"Ceci est inutile car PHD2 a des informations de pointage de la monture. Si "
+"vous observez un mauvais suivi en Dec après un retournement de méridien, "
+"utilisez Aide et recherchez dans l'index pour 'Retourner la sortie Dec'."
 
 #: eegg.cpp:178
 msgid ""
 "Failed to flip calibration - please upload debug log file to PHD2 forum for "
 "assistance."
 msgstr ""
+"Impossible de retourner la calibration - veuillez télécharger le fichier du "
+"journal de débogage sur le forum PHD2 pour obtenir de l'aide."
 
 #: eegg.cpp:184
 #, c-format
 msgid "Calibration angles flipped: (%.2f, %.2f) to (%.2f, %.2f)"
-msgstr ""
+msgstr "Angles de la calibration retournés : (%.2f, %.2f) à (%.2f, %.2f)"
 
 #: eegg.cpp:283
 msgid ""
@@ -3296,8 +3313,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:309
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3347,7 +3364,7 @@ msgstr "Déplacement Minimum (pixels)"
 
 #: guide_algorithm_gaussian_process.cpp:325
 msgid "Auto-adjust period"
-msgstr ""
+msgstr "Période d'auto-ajustement"
 
 #: guide_algorithm_gaussian_process.cpp:326
 #, c-format
@@ -3414,8 +3431,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3439,8 +3456,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3499,7 +3516,7 @@ msgstr "Agr"
 
 #: guide_algorithm_pdrift.cpp:639
 msgid "Predictive Drift Guide Algorithm"
-msgstr ""
+msgstr "Algorithme de prédiction de la dérive de guidage"
 
 #: guide_algorithm_pdrift.cpp:646
 msgid "Prediction Weight"
@@ -3511,6 +3528,8 @@ msgid ""
 "What percentage of the predictive guide correction should be applied? "
 "Default = %.f%%"
 msgstr ""
+"Quel pourcentage de la correction prédictive du guidage doit être appliqué? "
+"Par défaut = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:654
 #, c-format
@@ -3518,6 +3537,8 @@ msgid ""
 "What percentage of the reactive guide correction should be applied? Default "
 "= %.f%%"
 msgstr ""
+"Quel pourcentage de la correction du guidage réactive doit être appliqué? "
+"Par défaut = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
 #: myframe.cpp:864 myframe.cpp:928 scope.cpp:222
@@ -3530,16 +3551,20 @@ msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
 msgstr ""
+"Quel pourcentage de la correction prédictive doit être appliqué? Par défaut "
+"= %.f%%"
 
 #: guide_algorithm_pdrift.cpp:725
 #, c-format
 msgid ""
 "What percentage of the reactive correction should be applied? Default = %.f%%"
 msgstr ""
+"Quel pourcentage de la correction réactive doit être appliqué? Par défaut = "
+"%.f%%"
 
 #: guide_algorithm_pdrift.cpp:746
 msgid "Let PHD2 adjust the min move automatically"
-msgstr ""
+msgstr "Laisser PHD2 ajuster le mouvement min automatiquement"
 
 #: guide_algorithm_resistswitch.cpp:297
 msgid "ResistSwitch Guide Algorithm"
@@ -3815,7 +3840,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:143
 msgid "Seconds remaining: "
-msgstr "Secondes restantes :"
+msgstr "Secondes restantes : "
 
 #: guiding_assistant.cpp:342
 msgid "Guiding Assistant"
@@ -4140,7 +4165,7 @@ msgstr "Le jeu est négligeable, aucune compensation nécessaire"
 #: guiding_assistant.cpp:1027
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
-msgstr ""
+msgstr "Essayez de commencer avec une compensation de jeu en Dec de %d ms"
 
 #: guiding_assistant.cpp:1030
 #, c-format
@@ -4148,6 +4173,8 @@ msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
 "(currently %s)"
 msgstr ""
+"Le jeu est >= %d ms; vous devrez peut-être guider dans la seule direction "
+"Dec (actuellement %s)"
 
 #: guiding_assistant.cpp:1142
 msgid "Backlash test aborted..."
@@ -4224,15 +4251,15 @@ msgstr ""
 "La carte des pixels défectueux ne correspond pas à la caméra de ce profil - "
 "elle doit être remplacée."
 
-#: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
 msgstr "Fixer"
 
-#: indi_gui.cpp:785
+#: indi_gui.cpp:786
 msgid "Loading INDI properties..."
-msgstr ""
+msgstr "Chargement des propriétés INDI..."
 
-#: indi_gui.cpp:817
+#: indi_gui.cpp:818
 msgid "INDI Options"
 msgstr "Options INDI"
 
@@ -4476,11 +4503,11 @@ msgstr "PEC prédictif"
 
 #: mount.cpp:170
 msgid "AO X-Axis"
-msgstr ""
+msgstr "OA Axe X"
 
 #: mount.cpp:173
 msgid "AO Y-Axis"
-msgstr ""
+msgstr "OA Axe Y"
 
 #: mount.cpp:208
 msgid "Which Guide Algorithm to use for Right Ascension"
@@ -4488,7 +4515,7 @@ msgstr "Quel algorithme de guidage utiliser en Ascension Droite"
 
 #: mount.cpp:210
 msgid "Which Guide Algorithm to use for X-axis"
-msgstr ""
+msgstr "Quel algorithme de guidage utiliser pour l'axe X"
 
 #: mount.cpp:231
 msgid ""
@@ -4504,7 +4531,7 @@ msgstr "Quel algorithme de guidage utiliser en Déclinaison"
 
 #: mount.cpp:272
 msgid "Which Guide Algorithm to use for Y-axis"
-msgstr ""
+msgstr "Quel algorithme de guidage utiliser pour l'axe Y"
 
 #: mount.cpp:297
 msgid ""
@@ -4566,6 +4593,9 @@ msgid ""
 "automatically correct for meridian flips. You should do a fresh calibration "
 "to correct this problem."
 msgstr ""
+"La calibration actuelle n'a pas d'information sur le côté du méridien, donc "
+"PHD2 ne peut pas corriger automatiquement les retournements de méridiens. "
+"Vous devriez faire une nouvelle calibration pour corriger ce problème."
 
 #: mount.cpp:1216
 msgid ""
@@ -4666,6 +4696,8 @@ msgstr "Inverser les données de calibration"
 #: myframe.cpp:500
 msgid "Flip RA calibration vector and Dec direction if needed"
 msgstr ""
+"Retourner les directions des vecteurs de calibration en AD et Dec si "
+"nécessaire"
 
 #: myframe.cpp:501
 msgid "Clear Calibration Data..."
@@ -5432,7 +5464,7 @@ msgstr "Nombre d'images à enregistrer"
 
 #: myframe.cpp:2861
 msgid "Dither Settings"
-msgstr "Paramètres de \"Dithering\""
+msgstr "Paramètres de Dithering"
 
 #: myframe.cpp:2862
 msgid "Random"
@@ -5591,7 +5623,7 @@ msgstr ""
 "bouton 'Cerveau' pour afficher le panneau de 'Configuration Avancée'. "
 "utilisez le menu 'Vue' pour visualiser vos performances de guidage. Si vous "
 "avez des problèmes, lisez le document de 'Bonnes Pratiques' et les fichiers "
-"d'aide!"
+"d'aide! "
 
 #: myframe_events.cpp:180 staticpa_toolwin.cpp:313 staticpa_toolwin.cpp:629
 msgid "Instructions"
@@ -6027,17 +6059,17 @@ msgstr "Veuillez sélectionner une étoile"
 #: polardrift_toolwin.cpp:409
 #, c-format
 msgid "Time %.fs"
-msgstr ""
+msgstr "Temps %.fs"
 
 #: polardrift_toolwin.cpp:410
 #, c-format
 msgid "PA Err: %.f min"
-msgstr ""
+msgstr "PA Err: %.f min"
 
 #: polardrift_toolwin.cpp:411
 #, c-format
 msgid "Angle: %.f deg"
-msgstr ""
+msgstr "Angle: %.f deg"
 
 #: profile_wizard.cpp:72
 msgid "New Profile Wizard"
@@ -6372,6 +6404,9 @@ msgid ""
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
+"PHD2 n'a pas pu se connecter à la caméra et vous voudrez peut-être vous en "
+"occuper plus tard. En attendant, vous pouvez simplement entrer la taille de "
+"pixel manuellement avec la longueur focale et les niveaux de binning."
 
 #: profile_wizard.cpp:649
 msgid "Ask"
@@ -6434,7 +6469,7 @@ msgstr ""
 "généralement déterminer la taille de pixel de la caméra automatiquement. Si "
 "la caméra n'est pas connectée ou si son pilote ne signale pas la taille des "
 "pixels, vous pouvez saisir la valeur vous-même à l'aide des informations du "
-"manuel de la caméra ou en ligne."
+"manuel de la caméra ou en ligne. "
 
 #: profile_wizard.cpp:831
 msgid "Camera Already Connected?"
@@ -6719,7 +6754,7 @@ msgstr "Monture INDI"
 #: scope.cpp:279
 #, c-format
 msgid "INDI Mount [%s]"
-msgstr ""
+msgstr "Monture INDI [%s]"
 
 #: scope.cpp:569
 msgid ""
@@ -6727,6 +6762,9 @@ msgid ""
 "snags, try re-doing your calibration, and check for problems with the mount "
 "mechanics."
 msgstr ""
+"PHD2 n'est pas capable de faire des corrections suffisantes en AD. Vérifiez "
+"les accrocs de câble, essayez de refaire votre calibration et vérifiez les "
+"éventuels problèmes avec les mécanismes de la monture."
 
 #: scope.cpp:574
 msgid ""
@@ -6734,6 +6772,9 @@ msgid ""
 "snags, try re-doing your calibration, and confirm the ST-4 cable is working "
 "properly."
 msgstr ""
+"PHD2 n'est pas capable de faire des corrections suffisantes en AD. Vérifiez "
+"les accrocs de câble, essayez de refaire votre calibration et vérifier que "
+"le câble ST-4 fonctionne correctement."
 
 #: scope.cpp:582
 msgid ""
@@ -6742,6 +6783,11 @@ msgid ""
 "Advanced Dialog guiding tab is wrong.  Otherwise, check for cable snags, try "
 "re-doing your calibration, and check for problems with the mount mechanics."
 msgstr ""
+"PHD2 n'est pas capable de faire des corrections suffisantes en Dec. Si vous "
+"venez juste de faire un retournement au méridien, vérifiez si l'option "
+"'Inverser la sortie Dec' dans la boite de dialogue avancée est fausse. "
+"Sinon, vérifiez les accrocs de câble, essayez de refaire votre calibration "
+"et vérifiez les éventuels problèmes avec les mécanismes de la monture."
 
 #: scope.cpp:588
 msgid ""
@@ -6749,6 +6795,9 @@ msgid ""
 "snags, try re-doing your calibration and confirm the ST-4 cable is working "
 "properly."
 msgstr ""
+"PHD2 n'est pas capable de faire des corrections suffisantes en Dec. Vérifiez "
+"les accrocs de câble, essayez de refaire votre calibration et vérifier que "
+"le câble ST-4 fonctionne correctement."
 
 #: scope.cpp:596
 msgid "Max RA Duration setting"
@@ -6765,6 +6814,9 @@ msgid ""
 "star locked. Try restoring %s to its default value to allow PHD2 to make "
 "larger corrections."
 msgstr ""
+"Votre %s empêche le PHD d'effectuer les corrections adéquates pour maintenir "
+"l'étoile guide verrouillée. Essayez de restaurer %s à sa valeur par défaut "
+"pour permettre à PHD2 d'effectuer des corrections plus importantes."
 
 #: scope.cpp:607
 #, c-format
@@ -6823,6 +6875,9 @@ msgid ""
 "impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
+"Peu ou pas de mouvement Est mesurés, donc le guidage sera probablement "
+"altéré. Vérifiez le câble de guidage et utilisez l'outil Manuel de Guidage "
+"pour vérifier le fonctionnement de base de la monture."
 
 #: scope.cpp:1282
 msgid "Clearing backlash step 1"
@@ -6858,6 +6913,11 @@ msgid ""
 "Dec backlash. Check the guide cable and read the online Help for how to "
 "identify these types of problems (Manual Guide, Declination backlash)."
 msgstr ""
+"Peu ou pas de mouvement Est mesurés, donc le guidage sera probablement "
+"altéré. Ceci est généralement causé par un câble de guidage défectueux ou un "
+"jeu de décentrage extrêmement important. Vérifiez le câble guide et lisez "
+"l'aide en ligne pour savoir comment identifier ces types de problèmes (Guide "
+"manuel, jeu de déclinaison)."
 
 #: scope.cpp:1498
 msgid ""
@@ -6866,6 +6926,10 @@ msgid ""
 "mount mechanics. Read the online Help for how to identify these types of "
 "problems (Manual Guide, Declination backlash)."
 msgstr ""
+"Faible mouvement Sud mesuré, donc le guidage sera probablement altéré. Ceci "
+"est généralement causé par un très grand jeu en Dec ou d'autres problèmes "
+"avec la monture. Lisez l'aide en ligne pour savoir comment identifier ces "
+"types de problèmes (Manuel de Guidage, jeu en déclinaison)."
 
 #: scope.cpp:1503
 msgid ""
@@ -6874,6 +6938,10 @@ msgid ""
 "mount mechanics. Read the online help for how to deal with this type of "
 "problem (Declination backlash)."
 msgstr ""
+"Faible mouvement Sud mesuré, donc le guidage sera probablement altéré. Ceci "
+"est généralement causé par un très grand jeu en Dec ou d'autres problèmes "
+"avec la monture. Lisez l'aide en ligne pour savoir comment gérer ces types "
+"de problèmes (Manuel de Guidage, jeu en déclinaison)."
 
 #: scope.cpp:1562
 #, c-format
@@ -6960,23 +7028,23 @@ msgstr "Quantité"
 
 #: scope.cpp:1827
 msgid "Size of backlash compensation guide pulse (mSec)"
-msgstr ""
+msgstr "Taille de l'impulsion de guidage de la compensation du jeu (mSec)"
 
 #: scope.cpp:1829
 msgid "Mount Backlash Compensation"
-msgstr ""
+msgstr "Compensation du jeu de la Monture"
 
 #: scope.cpp:1829
 msgid "Backlash Compensation"
-msgstr ""
+msgstr "Compensation du jeu"
 
 #: scope.cpp:1839
 msgid "Minimum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "Longueur minimale de l'impulsion de compensation du jeu (mSec)."
 
 #: scope.cpp:1841
 msgid "Maximum length of backlash compensation pulse (mSec)."
-msgstr ""
+msgstr "Longueur maximale de l'impulsion de compensation du jeu (mSec)."
 
 #: scope.cpp:1848
 msgid "Use Dec compensation"
@@ -7089,18 +7157,18 @@ msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr ""
 "Veuillez redémarrer PHD2 afin de reconnecter l'interface de guidage USB"
 
-#: scope_INDI.cpp:126
+#: scope_indi.cpp:126
 msgid "INDI Aux Mount Selection"
-msgstr ""
+msgstr "Sélection de la Monture Auxiliaire INDI"
 
-#: scope_INDI.cpp:128
+#: scope_indi.cpp:128
 msgid "INDI Mount Selection"
-msgstr ""
+msgstr "Sélection de la Monture INDI"
 
-#: scope_INDI.cpp:302
+#: scope_indi.cpp:302
 #, c-format
 msgid "Cannot connect to mount %s: %s"
-msgstr ""
+msgstr "Impossible de se connecter à la monture %s: %s"
 
 #: scope_manual_pointing.cpp:81
 msgid "Approximate telescope declination, degrees"
@@ -7169,7 +7237,7 @@ msgstr "Ascension Droite du Télescope, minutes"
 #: scope_manual_pointing.cpp:151
 #, c-format
 msgid "Latitude (%s)"
-msgstr ""
+msgstr "Latitude (%s)"
 
 #: scope_manual_pointing.cpp:158
 msgid "Site latitude"
@@ -7178,7 +7246,7 @@ msgstr "Latitude du site"
 #: scope_manual_pointing.cpp:164
 #, c-format
 msgid "Longitude (%s)"
-msgstr ""
+msgstr "Longitude (%s)"
 
 #: scope_manual_pointing.cpp:171
 msgid ""
@@ -7210,12 +7278,12 @@ msgstr "Serveur arrêté"
 
 #: socket_server.cpp:161
 msgid "New server connection"
-msgstr ""
+msgstr "Nouvelle connexion au serveur"
 
 #: socket_server.cpp:301
 #, c-format
 msgid "Lock set to %d,%d"
-msgstr ""
+msgstr "Verrouillage défini à %d, %d"
 
 #: star_profile.cpp:50
 msgid "Profile"
@@ -7665,12 +7733,12 @@ msgstr "Erreur caméra"
 #: statswindow.cpp:237
 #, c-format
 msgid "%.f%s / %.f%s, %.f%%"
-msgstr ""
+msgstr "%.f%s / %.f%s, %.f%%"
 
 #: statswindow.cpp:239
 #, c-format
 msgid "%.f%s, Off"
-msgstr ""
+msgstr "%.f%s, Off"
 
 #: statswindow.cpp:267
 msgid " arc-min"
@@ -7712,12 +7780,12 @@ msgstr "Re-centrage : %3d"
 #: stepguider.cpp:771
 #, c-format
 msgid "distance %4.1f px"
-msgstr ""
+msgstr "distance %4.1f px"
 
 #: stepguider.cpp:778
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: stepguider.cpp:1087
 msgid ""
@@ -7879,7 +7947,7 @@ msgstr "Sélectionner le port série"
 msgid "Serial Port"
 msgstr "Port Série"
 
-#: stepguider_sxao_INDI.cpp:102
+#: stepguider_sxao_indi.cpp:102
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
@@ -7888,7 +7956,7 @@ msgstr ""
 "Nous avons au moins besoin de la version 1.12 du pilote INDI %s afin "
 "d'obtenir la version du Firmware et l'état du switch."
 
-#: stepguider_sxao_INDI.cpp:111
+#: stepguider_sxao_indi.cpp:111
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -7903,9 +7971,9 @@ msgstr ""
 "drivers-downloads,\n"
 "contient ce firmware."
 
-#: stepguider_sxao_INDI.cpp:249
+#: stepguider_sxao_indi.cpp:249
 msgid "INDI AO Selection"
-msgstr ""
+msgstr "Sélection des OA INDI"
 
 #: target.cpp:71
 msgid "Zoom in"
@@ -8890,8 +8958,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
