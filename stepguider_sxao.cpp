@@ -229,7 +229,7 @@ bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int 
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
-        Debug.AddBytes(wxString::Format("StepGuiderSxAO::SendThenReceive received %c, sent", receivedChar), pBuffer, bufferSize);
+        Debug.AddBytes(wxString::Format("StepGuiderSxAO::SendThenReceive received %c, sent", *receivedChar), pBuffer, bufferSize);
 
         if (*receivedChar == 'W') // TODO: meaning
         {
