@@ -346,7 +346,7 @@ void StarCrossDialog::ExecuteTest()
                 logMsg = wxString::Format("Star-cross move %d/%d, %s for %d ms", count, totalPulses, dirString, m_Amount );
                 Debug.Write(logMsg + "\n");
                 m_Explanations->SetLabel(Explanation(currStep, dirCount));
-                moveRslt = theMount->CalibrationMove(currStep.direction, m_Amount);
+                moveRslt = theMount->MoveAxis(currStep.direction, m_Amount, MOVEOPTS_CALIBRATION_MOVE);
                 m_Progress->SetValue(count);
                 wxYield();
                 if (moveRslt != Mount::MOVE_OK)

@@ -71,7 +71,7 @@ struct MOVE_REQUEST
     Mount             *mount;
     int                duration;
     GUIDE_DIRECTION    direction;
-    bool               calibrationMove;
+    bool               axisMove;
     unsigned int       moveOptions;
     Mount::MOVE_RESULT moveResult;
     GuiderOffset       ofs;
@@ -181,7 +181,7 @@ protected:
     /*************      Guide       **************************/
 public:
     void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
-    void EnqueueWorkerThreadCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration);
+    void EnqueueWorkerThreadAxisMove(Mount *mount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
 protected:
     Mount::MOVE_RESULT HandleMove(MOVE_REQUEST *args);
     void SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult);

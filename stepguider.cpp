@@ -370,7 +370,7 @@ bool StepGuider::MoveToCenter()
         if (positionUpDown > 0)
         {
             MoveResultInfo result;
-            Move(DOWN, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
+            MoveAxis(DOWN, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step DOWN");
@@ -381,7 +381,7 @@ bool StepGuider::MoveToCenter()
             positionUpDown = -positionUpDown;
 
             MoveResultInfo result;
-            Move(UP, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
+            MoveAxis(UP, positionUpDown, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step UP");
@@ -393,7 +393,7 @@ bool StepGuider::MoveToCenter()
         if (positionLeftRight > 0)
         {
             MoveResultInfo result;
-            Move(RIGHT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
+            MoveAxis(RIGHT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
@@ -404,7 +404,7 @@ bool StepGuider::MoveToCenter()
             positionLeftRight = -positionLeftRight;
 
             MoveResultInfo result;
-            Move(LEFT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
+            MoveAxis(LEFT, positionLeftRight, MOVEOPTS_CALIBRATION_MOVE, &result);
             if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step LEFT");
@@ -742,25 +742,25 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
         if (moveUp)
         {
             assert(!moveDown);
-            pFrame->ScheduleCalibrationMove(this, UP, wxMin(stepsRemainingUp, m_calibrationStepsPerIteration));
+            pFrame->ScheduleAxisMove(this, UP, wxMin(stepsRemainingUp, m_calibrationStepsPerIteration), MOVEOPTS_CALIBRATION_MOVE);
         }
 
         if (moveDown)
         {
             assert(!moveUp);
-            pFrame->ScheduleCalibrationMove(this, DOWN, wxMin(stepsRemainingDown, m_calibrationStepsPerIteration));
+            pFrame->ScheduleAxisMove(this, DOWN, wxMin(stepsRemainingDown, m_calibrationStepsPerIteration), MOVEOPTS_CALIBRATION_MOVE);
         }
 
         if (moveRight)
         {
             assert(!moveLeft);
-            pFrame->ScheduleCalibrationMove(this, RIGHT, wxMin(stepsRemainingRight, m_calibrationStepsPerIteration));
+            pFrame->ScheduleAxisMove(this, RIGHT, wxMin(stepsRemainingRight, m_calibrationStepsPerIteration), MOVEOPTS_CALIBRATION_MOVE);
         }
 
         if (moveLeft)
         {
             assert(!moveRight);
-            pFrame->ScheduleCalibrationMove(this, LEFT, wxMin(stepsRemainingLeft, m_calibrationStepsPerIteration));
+            pFrame->ScheduleAxisMove(this, LEFT, wxMin(stepsRemainingLeft, m_calibrationStepsPerIteration), MOVEOPTS_CALIBRATION_MOVE);
         }
 
         if (m_calibrationState != CALIBRATION_STATE_COMPLETE)
@@ -826,17 +826,17 @@ void StepGuider::ShowPropertyDialog()
 {
 }
 
-Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
+Mount::MOVE_RESULT StepGuider::MoveAxis(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
-    Debug.Write(wxString::Format("stepguider calibration move dir= %d steps= %d\n",
-        direction, steps));
+    Debug.Write(wxString::Format("stepguider move axis dir= %d steps= %d opts= 0x%x\n",
+                                 direction, steps, moveOptions));
 
     try
     {
         MoveResultInfo move;
-        result = Move(direction, steps, MOVEOPTS_CALIBRATION_MOVE, &move);
+        result = MoveAxis(direction, steps, moveOptions, &move);
 
         if (move.amountMoved != steps)
         {
@@ -867,17 +867,17 @@ int StepGuider::CalibrationTotDistance()
     return AO_CALIBRATION_PIXELS_NEEDED;
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions, MoveResultInfo *moveResult)
+Mount::MOVE_RESULT StepGuider::MoveAxis(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
     bool limitReached = false;
 
     try
     {
-        Debug.Write(wxString::Format("Move(%d, %d, %u)\n", direction, steps, moveOptions));
+        Debug.Write(wxString::Format("MoveAxis(%s, %d, %s)\n", DirectionChar(direction), steps, DumpMoveOptionBits(moveOptions)));
 
         // Compute the required guide steps
-        if (!m_guidingEnabled)
+        if (!m_guidingEnabled && (moveOptions & MOVEOPT_MANUAL) == 0)
         {
             throw THROW_INFO("Guiding disabled");
         }
@@ -985,13 +985,13 @@ static void SuppressSlowBumpWarning(long)
     pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GuiderOffset *ofs, unsigned int moveOptions)
+Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
     try
     {
-        result = Mount::Move(ofs, moveOptions);
+        result = Mount::MoveOffset(ofs, moveOptions);
         if (result != MOVE_OK)
             Debug.Write(wxString::Format("StepGuider::Move: Mount::Move failed! result %d\n", result));
 
@@ -1309,7 +1309,7 @@ wxPoint StepGuider::GetAoMaxPos() const
     return wxPoint(MaxPosition(RIGHT), MaxPosition(UP));
 }
 
-const char *StepGuider::DirectionStr(GUIDE_DIRECTION d)
+const char *StepGuider::DirectionStr(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
     switch (d) {
@@ -1322,7 +1322,7 @@ const char *StepGuider::DirectionStr(GUIDE_DIRECTION d)
     }
 }
 
-const char *StepGuider::DirectionChar(GUIDE_DIRECTION d)
+const char *StepGuider::DirectionChar(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
     switch (d) {

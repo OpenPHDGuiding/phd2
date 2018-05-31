@@ -380,7 +380,7 @@ public:
 
     void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
     void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
-    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
+    void ScheduleAxisMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
 
     void StartCapturing(void);
     bool StopCapturing(void);

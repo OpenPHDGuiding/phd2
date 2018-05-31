@@ -509,16 +509,16 @@ bool Scope::IsDecDrifting() const
     return m_decGuideMode == DEC_NONE;
 }
 
-Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
+Mount::MOVE_RESULT Scope::MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
-    Debug.AddLine(wxString::Format("scope calibration move dir= %d dur= %d", direction, duration));
+    Debug.AddLine(wxString::Format("scope move axis dir= %d dur= %d opts= 0x%x", direction, duration, moveOptions));
 
     try
     {
         MoveResultInfo move;
-        result = Move(direction, duration, MOVEOPTS_CALIBRATION_MOVE, &move);
+        result = MoveAxis(direction, duration, moveOptions, &move);
 
         if (result != MOVE_OK)
         {
@@ -611,16 +611,16 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
     }
 }
 
-Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions, MoveResultInfo *moveResult)
+Mount::MOVE_RESULT Scope::MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
     bool limitReached = false;
 
     try
     {
-        Debug.Write(wxString::Format("Move(%d, %d, %u)\n", direction, duration, moveOptions));
+        Debug.Write(wxString::Format("MoveAxis(%s, %d, %s)\n", DirectionChar(direction), duration, DumpMoveOptionBits(moveOptions)));
 
-        if (!m_guidingEnabled)
+        if (!m_guidingEnabled && (moveOptions & MOVEOPT_MANUAL) == 0)
         {
             throw THROW_INFO("Guiding disabled");
         }
@@ -1134,7 +1134,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("RA calibration failed");
                     }
                     pFrame->StatusMsg(wxString::Format(_("West step %3d, dist=%4.1f"), m_calibrationSteps, dist));
-                    pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
+                    pFrame->ScheduleAxisMove(this, WEST, m_calibrationDuration, MOVEOPTS_CALIBRATION_MOVE);
                     break;
                 }
 
@@ -1207,7 +1207,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     --m_calibrationSteps;
                     m_lastLocation = currentLocation;
 
-                    pFrame->ScheduleCalibrationMove(this, EAST, duration);
+                    pFrame->ScheduleAxisMove(this, EAST, duration, MOVEOPTS_CALIBRATION_MOVE);
                     break;
                 }
 
@@ -1277,7 +1277,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     // Get things moving with the first clearing pulse
                     Debug.AddLine(wxString::Format("Backlash: Starting north clearing using pulse width of %d",
                         m_calibrationDuration));
-                    pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
+                    pFrame->ScheduleAxisMove(this, NORTH, m_calibrationDuration, MOVEOPTS_CALIBRATION_MOVE);
                     m_calibrationSteps = 1;
                     pFrame->StatusMsg(_("Clearing backlash step 1"));
                     break;
@@ -1311,7 +1311,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 {
                     if (m_calibrationSteps < m_blMaxClearingPulses && blCumDelta < dist_crit)
                     {   // Still have attempts left, haven't moved the star by 25 px yet
-                        pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
+                        pFrame->ScheduleAxisMove(this, NORTH, m_calibrationDuration, MOVEOPTS_CALIBRATION_MOVE);
                         m_calibrationSteps++;
                         m_blMarkerPoint = currentLocation;
                         GetRADecCoordinates(&m_calibrationStartingCoords);
@@ -1388,7 +1388,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("Dec calibration failed");
                     }
                     pFrame->StatusMsg(wxString::Format(_("North step %3d, dist=%4.1f"), m_calibrationSteps, dist));
-                    pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
+                    pFrame->ScheduleAxisMove(this, NORTH, m_calibrationDuration, MOVEOPTS_CALIBRATION_MOVE);
                     break;
                 }
 
@@ -1476,7 +1476,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
 
-                    pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
+                    pFrame->ScheduleAxisMove(this, SOUTH, duration, MOVEOPTS_CALIBRATION_MOVE);
                     break;
                 }
 
@@ -1560,7 +1560,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                             Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
                             ++m_calibrationSteps;
                             pFrame->StatusMsg(wxString::Format(_("Nudge South %3d"), m_calibrationSteps));
-                            pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
+                            pFrame->ScheduleAxisMove(this, SOUTH, pulseAmt, MOVEOPTS_CALIBRATION_MOVE);
                             break;
                         }
                     }

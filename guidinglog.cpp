@@ -618,6 +618,20 @@ void GuidingLog::ServerCommand(Guider *guider, const wxString& cmd)
     m_keepFile = true;
 }
 
+void GuidingLog::NotifyManualGuide(const Mount *mount, int direction, int duration)
+{
+    if (!m_enabled || !m_isGuiding)
+        return;
+
+    m_file.Write(wxString::Format("INFO: Manual guide (%s) %s %d %s\n",
+                                  mount->IsStepGuider() ? "AO" : "Mount",
+                                  mount->DirectionStr(static_cast<GUIDE_DIRECTION>(direction)), duration,
+                                  mount->IsStepGuider() ? (duration != 1 ? "steps" : "step") : "ms"));
+    Flush();
+
+    m_keepFile = true;
+}
+
 void GuidingLog::SetGuidingParam(const wxString& name, double val)
 {
     SetGuidingParam(name, wxString::Format("%.2f", val));

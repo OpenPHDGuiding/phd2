@@ -70,8 +70,8 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 public:
     ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~ScopeConfigDialogCtrlSet() {};
-    void LoadValues(void) override;
-    void UnloadValues(void) override;
+    void LoadValues() override;
+    void UnloadValues() override;
     void ResetRAParameterUI();
     void ResetDecParameterUI();
     int GetCalStepSizeCtrlValue();
@@ -150,10 +150,10 @@ protected:
 
     public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
-        ~ScopeConfigDialogPane(void) {};
+        ~ScopeConfigDialogPane() {};
 
-        void LoadValues(void) override;
-        void UnloadValues(void) override;
+        void LoadValues() override;
+        void UnloadValues() override;
         void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap) override;
     };
 
@@ -161,7 +161,7 @@ protected:
     {
     public:
         ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, const wxString& label);
-        ~ScopeGraphControlPane(void);
+        ~ScopeGraphControlPane();
 
     private:
         friend class Scope;
@@ -182,13 +182,13 @@ protected:
 
 public:
 
-    int GetCalibrationDuration(void) const;
+    int GetCalibrationDuration() const;
     bool SetCalibrationDuration(int calibrationDuration);
-    int GetMaxDecDuration(void) const;
+    int GetMaxDecDuration() const;
     bool SetMaxDecDuration(int maxDecDuration);
-    int GetMaxRaDuration(void) const;
+    int GetMaxRaDuration() const;
     bool SetMaxRaDuration(int maxRaDuration);
-    DEC_GUIDE_MODE GetDecGuideMode(void) const;
+    DEC_GUIDE_MODE GetDecGuideMode() const;
     bool SetDecGuideMode(int decGuideMode);
 
     static wxString DecGuideModeStr(DEC_GUIDE_MODE m);
@@ -202,17 +202,17 @@ public:
     wxString CalibrationSettingsSummary() const override;
     wxString GetMountClassName() const override;
 
-    static wxArrayString MountList(void);
-    static wxArrayString AuxMountList(void);
+    static wxArrayString MountList();
+    static wxArrayString AuxMountList();
     static Scope *Factory(const wxString& choice);
 
-    Scope(void);
-    virtual ~Scope(void);
+    Scope();
+    virtual ~Scope();
 
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
-    virtual bool IsCalibrated(void) const;
+    virtual bool IsCalibrated() const;
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
 
@@ -220,51 +220,51 @@ public:
     static const double DEFAULT_MOUNT_GUIDE_SPEED;              // Presumptive mount guide speed if no usable mount connection
     void EnableDecCompensation(bool enable);
     bool DecCompensationEnabled() const;
-    bool DecCompensationActive(void) const;
+    bool DecCompensationActive() const;
 
-    virtual bool RequiresCamera(void);
-    virtual bool RequiresStepGuider(void);
-    virtual bool CalibrationFlipRequiresDecFlip(void);
+    virtual bool RequiresCamera();
+    virtual bool RequiresStepGuider();
+    virtual bool CalibrationFlipRequiresDecFlip();
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
-    bool IsStopGuidingWhenSlewingEnabled(void) const;
+    bool IsStopGuidingWhenSlewingEnabled() const;
     void SetAssumeOrthogonal(bool val);
-    bool IsAssumeOrthogonal(void) const;
+    bool IsAssumeOrthogonal() const;
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
 
-    virtual double GetDeclination(void); // declination in radians, or UNKNOWN_DECLINATION
+    virtual double GetDeclination(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
-    virtual bool CanSlew(void);
-    virtual bool CanSlewAsync(void);
+    virtual bool CanSlew();
+    virtual bool CanSlewAsync();
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool SlewToCoordinatesAsync(double ra, double dec);
-    virtual void AbortSlew(void);
-    virtual bool CanCheckSlewing(void);
-    virtual bool Slewing(void);
-    virtual PierSide SideOfPier(void);
-    virtual bool CanReportPosition(void);  // Can report RA, Dec, side-of-pier, etc.
+    virtual void AbortSlew();
+    virtual bool CanCheckSlewing();
+    virtual bool Slewing();
+    virtual PierSide SideOfPier();
+    virtual bool CanReportPosition();  // Can report RA, Dec, side-of-pier, etc.
     // Will be called before guiding starts, before any call to GetCoordinates, GetDeclination, or SideOfPier.
     // Does not get called unless guiding was started interactively (by clicking the guide button)
-    virtual bool PreparePositionInteractive(void);
-    virtual bool CanPulseGuide(void);
+    virtual bool PreparePositionInteractive();
+    virtual bool CanPulseGuide();
 
-    virtual void StartDecDrift(void);
-    virtual void EndDecDrift(void);
-    virtual bool IsDecDrifting(void) const;
+    virtual void StartDecDrift();
+    virtual void EndDecDrift();
+    virtual bool IsDecDrifting() const;
 
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
-    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) override;
-    int CalibrationMoveSize(void);
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) override;
+    int CalibrationMoveSize();
     void CheckCalibrationDuration(int currDuration);
-    int CalibrationTotDistance(void);
+    int CalibrationTotDistance();
 
-    void ClearCalibration(void) override;
+    void ClearCalibration() override;
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
     void SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails);
 
@@ -275,12 +275,12 @@ private:
     virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) = 0;
 };
 
-inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
+inline bool Scope::IsStopGuidingWhenSlewingEnabled() const
 {
     return m_stopGuidingWhenSlewing;
 }
 
-inline bool Scope::IsAssumeOrthogonal(void) const
+inline bool Scope::IsAssumeOrthogonal() const
 {
     return m_assumeOrthogonal;
 }
@@ -290,22 +290,22 @@ inline bool Scope::DecCompensationEnabled() const
     return m_useDecCompensation;
 }
 
-inline int Scope::GetCalibrationDuration(void) const
+inline int Scope::GetCalibrationDuration() const
 {
     return m_calibrationDuration;
 }
 
-inline int Scope::GetMaxDecDuration(void) const
+inline int Scope::GetMaxDecDuration() const
 {
     return m_maxDecDuration;
 }
 
-inline int Scope::GetMaxRaDuration(void) const
+inline int Scope::GetMaxRaDuration() const
 {
     return m_maxRaDuration;
 }
 
-inline DEC_GUIDE_MODE Scope::GetDecGuideMode(void) const
+inline DEC_GUIDE_MODE Scope::GetDecGuideMode() const
 {
     return m_decGuideMode;
 }

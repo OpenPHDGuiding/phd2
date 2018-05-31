@@ -892,7 +892,7 @@ void Mount::LogGuideStepInfo()
     m_lastStep.frameNumber = -1; // invalidate
 }
 
-Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, unsigned int moveOptions)
+Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
 
@@ -954,7 +954,7 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, unsigned int moveOptions)
 
         int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
         MoveResultInfo xMoveResult;
-        result = Move(xDirection, requestedXAmount, moveOptions, &xMoveResult);
+        result = MoveAxis(xDirection, requestedXAmount, moveOptions, &xMoveResult);
 
         MoveResultInfo yMoveResult;
         if (result != MOVE_ERROR_SLEWING && result != MOVE_ERROR_AO_LIMIT_REACHED)
@@ -967,7 +967,7 @@ Mount::MOVE_RESULT Mount::Move(GuiderOffset *ofs, unsigned int moveOptions)
                     m_backlashComp->ApplyBacklashComp(moveOptions, yDirection, yDistance, &requestedYAmount);
             }
 
-            result = Move(yDirection, requestedYAmount, moveOptions, &yMoveResult);
+            result = MoveAxis(yDirection, requestedYAmount, moveOptions, &yMoveResult);
         }
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
@@ -1363,7 +1363,7 @@ wxPoint Mount::GetAoMaxPos(void) const
     return wxPoint();
 }
 
-const char *Mount::DirectionStr(GUIDE_DIRECTION d)
+const char *Mount::DirectionStr(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
     switch (d) {
@@ -1376,7 +1376,7 @@ const char *Mount::DirectionStr(GUIDE_DIRECTION d)
     }
 }
 
-const char *Mount::DirectionChar(GUIDE_DIRECTION d)
+const char *Mount::DirectionChar(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
     switch (d) {
@@ -1387,6 +1387,26 @@ const char *Mount::DirectionChar(GUIDE_DIRECTION d)
     case WEST:  return "W";
     default:    return "?";
     }
+}
+
+wxString DumpMoveOptionBits(unsigned int moveOptions)
+{
+    if (!moveOptions)
+        return "-";
+    char buf[16];
+    char *p = &buf[0];
+    if (moveOptions & MOVEOPT_ALGO_RESULT)
+        *p++ = 'A';
+    if (moveOptions & MOVEOPT_ALGO_DEDUCE)
+        *p++ = 'D';
+    if (moveOptions & MOVEOPT_USE_BLC)
+        *p++ = 'B';
+    if (moveOptions & MOVEOPT_GRAPH)
+        *p++ = 'G';
+    if (moveOptions & MOVEOPT_MANUAL)
+        *p++ = 'M';
+    *p = 0;
+    return buf;
 }
 
 bool Mount::IsCalibrated() const

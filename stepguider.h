@@ -54,10 +54,10 @@ class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
 
 public:
     AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
-    ~AOConfigDialogCtrlSet(void) {};
+    ~AOConfigDialogCtrlSet() {};
 
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
 };
 
 class AOConfigDialogPane : public ConfigDialogPane
@@ -66,10 +66,10 @@ class AOConfigDialogPane : public ConfigDialogPane
 
 public:
     AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
-    ~AOConfigDialogPane(void) {};
+    ~AOConfigDialogPane() {};
 
-    virtual void LoadValues(void) {};
-    virtual void UnloadValues(void) {};
+    virtual void LoadValues() {};
+    virtual void UnloadValues() {};
     virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
 };
 
@@ -138,10 +138,10 @@ protected:
 
     public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
-        ~StepGuiderConfigDialogPane(void) {};
+        ~StepGuiderConfigDialogPane() {};
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
+        virtual void LoadValues();
+        virtual void UnloadValues();
         virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
     };
 
@@ -164,61 +164,61 @@ protected:
 public:
     MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override { return nullptr; };
-    wxString GetSettingsSummary(void) const override;
-    wxString CalibrationSettingsSummary(void) const override;
-    wxString GetMountClassName(void) const override;
-    void AdjustCalibrationForScopePointing(void) override;
-    bool IsStepGuider(void) const  override;
-    wxPoint GetAoPos(void) const override;
-    wxPoint GetAoMaxPos(void) const override;
-    const char *DirectionStr(GUIDE_DIRECTION d) override;
-    const char *DirectionChar(GUIDE_DIRECTION d) override;
+    wxString GetSettingsSummary() const override;
+    wxString CalibrationSettingsSummary() const override;
+    wxString GetMountClassName() const override;
+    void AdjustCalibrationForScopePointing() override;
+    bool IsStepGuider() const  override;
+    wxPoint GetAoPos() const override;
+    wxPoint GetAoMaxPos() const override;
+    const char *DirectionStr(GUIDE_DIRECTION d) const override;
+    const char *DirectionChar(GUIDE_DIRECTION d) const override;
 
 public:
-    StepGuider(void);
-    virtual ~StepGuider(void);
+    StepGuider();
+    virtual ~StepGuider();
 
-    static wxArrayString AOList(void);
+    static wxArrayString AOList();
     static StepGuider *Factory(const wxString& choice);
 
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     bool BeginCalibration(const PHD_Point& currentLocation) override;
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
-    void ClearCalibration(void) override;
+    void ClearCalibration() override;
 
-    bool Connect(void) override;
-    bool Disconnect(void) override;
+    bool Connect() override;
+    bool Disconnect() override;
 
-    virtual bool Center(void) = 0;
+    virtual bool Center() = 0;
 
 
-    void NotifyGuidingStopped(void) override;
-    void NotifyGuidingResumed(void) override;
+    void NotifyGuidingStopped() override;
+    void NotifyGuidingResumed() override;
     void NotifyGuidingDithered(double dx, double dy, bool mountCoords) override;
 
-    virtual void ShowPropertyDialog(void);
+    virtual void ShowPropertyDialog();
 
-    bool GetBumpOnDither(void) const;
+    bool GetBumpOnDither() const;
     void SetBumpOnDither(bool val);
-    void ForceStartBump(void);
-    bool IsBumpInProgress(void) const;
+    void ForceStartBump();
+    bool IsBumpInProgress() const;
 
     const StepInfo& GetFailedStepInfo() const;
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    MOVE_RESULT Move(GuiderOffset *guiderOffset, unsigned int moveOptions) final;
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
-    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps) final;
-    int CalibrationMoveSize(void);
-    int CalibrationTotDistance(void);
-    void InitBumpPositions(void);
+    MOVE_RESULT MoveOffset(GuiderOffset *guiderOffset, unsigned int moveOptions) final;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions) final;
+    int CalibrationMoveSize();
+    int CalibrationTotDistance();
+    void InitBumpPositions();
 
     double CalibrationTime(int nCalibrationSteps);
 protected:
-    void ZeroCurrentPosition(void);
+    void ZeroCurrentPosition();
 
     enum STEP_RESULT {
         STEP_OK,              // step succeeded
@@ -239,15 +239,15 @@ public:
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool MoveToCenter(void);
+    virtual bool MoveToCenter();
 };
 
-inline bool StepGuider::IsBumpInProgress(void) const
+inline bool StepGuider::IsBumpInProgress() const
 {
     return m_bumpInProgress;
 }
 
-inline bool StepGuider::GetBumpOnDither(void) const
+inline bool StepGuider::GetBumpOnDither() const
 {
     return m_bumpOnDither;
 }

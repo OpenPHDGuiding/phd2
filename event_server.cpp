@@ -1907,7 +1907,9 @@ static void guide_pulse(JObj& response, const json_value *params)
         dir = opposite(dir);
     }
 
-    Mount::MOVE_RESULT res = m->CalibrationMove(dir, duration);
+    GuideLog.NotifyManualGuide(m, dir, duration);
+    Mount::MOVE_RESULT res = m->MoveAxis(dir, duration, MOVEOPT_MANUAL);
+
     if (res == Mount::MOVE_OK)
         response << jrpc_result(0);
     else

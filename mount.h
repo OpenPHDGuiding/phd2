@@ -124,6 +124,7 @@ enum MountMoveOptionBits
     MOVEOPT_ALGO_DEDUCE = (1<<1),    // use guide algorithm to deduce the move amount (when paused or star lost)
     MOVEOPT_USE_BLC     = (1<<2),    // use backlash comp for this move
     MOVEOPT_GRAPH       = (1<<3),    // display the move on the graphs
+    MOVEOPT_MANUAL      = (1<<4),    // manual move - allow even when guiding disabled
 };
 
 enum
@@ -134,6 +135,8 @@ enum
     MOVEOPTS_RECOVERY_MOVE    = MOVEOPT_USE_BLC,
     MOVEOPTS_AO_BUMP          = MOVEOPT_USE_BLC,
 };
+
+extern wxString DumpMoveOptionBits(unsigned int moveOptions);
 
 struct MoveResultInfo
 {
@@ -152,8 +155,8 @@ class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
 public:
     MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MountConfigDialogCtrlSet() {};
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
 };
 
 class Mount : public wxMessageBoxProxy
@@ -200,15 +203,15 @@ public:
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
-        ~MountConfigDialogPane(void);
+        ~MountConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
+        virtual void LoadValues();
+        virtual void UnloadValues();
         virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
         virtual void HandleBinningChange(int oldVal, int newVal);
         bool IsValid() { return m_pMount != nullptr; }
 
-        virtual void Undo(void);
+        virtual void Undo();
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
@@ -226,7 +229,7 @@ public:
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
 #ifdef TEST_TRANSFORMS
-    void Mount::TestTransforms(void);
+    void Mount::TestTransforms();
 #endif
 
     // functions with an implementation in Mount that cannot be over-ridden
@@ -240,23 +243,23 @@ public:
         MOVE_ERROR_AO_LIMIT_REACHED, // move failed due to AO limit
     };
 
-    Mount(void);
-    virtual ~Mount(void);
+    Mount();
+    virtual ~Mount();
 
     static const wxString& GetIssueString(CalibrationIssueType issue) { return CalibrationIssueString[issue]; };
 
-    double yAngle(void) const;
-    double yRate(void) const;
-    double xAngle(void) const;
-    double xRate(void) const;
-    GuideParity RAParity(void) const;
-    GuideParity DecParity(void) const;
+    double yAngle() const;
+    double yRate() const;
+    double xAngle() const;
+    double xRate() const;
+    GuideParity RAParity() const;
+    GuideParity DecParity() const;
 
-    bool FlipCalibration(void);
-    bool GetGuidingEnabled(void) const;
+    bool FlipCalibration();
+    bool GetGuidingEnabled() const;
     void SetGuidingEnabled(bool guidingEnabled);
 
-    virtual MOVE_RESULT Move(GuiderOffset *guiderOffset, unsigned int moveOptions);
+    virtual MOVE_RESULT MoveOffset(GuiderOffset *guiderOffset, unsigned int moveOptions);
 
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint, bool logged = true);
@@ -264,41 +267,41 @@ public:
     bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
                                                       PHD_Point& cameraVectorEndpoint, bool logged = true);
 
-    void LogGuideStepInfo(void);
+    void LogGuideStepInfo();
 
     GraphControlPane *GetXGuideAlgorithmControlPane(wxWindow *pParent);
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
-    virtual bool DecCompensationEnabled(void) const;
-    virtual void AdjustCalibrationForScopePointing(void);
+    virtual bool DecCompensationEnabled() const;
+    virtual void AdjustCalibrationForScopePointing();
 
     static wxString DeclinationStr(double dec, const wxString& numFormatStr = "%.1f");
     static wxString PierSideStr(PierSide side);
 
-    bool IsBusy(void) const;
-    void IncrementRequestCount(void);
-    void DecrementRequestCount(void);
+    bool IsBusy() const;
+    void IncrementRequestCount();
+    void DecrementRequestCount();
 
-    int ErrorCount(void) const;
-    void IncrementErrorCount(void);
-    void ResetErrorCount(void);
+    int ErrorCount() const;
+    void IncrementErrorCount();
+    void ResetErrorCount();
 
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) = 0;
-    virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
-    virtual int CalibrationMoveSize(void) = 0;
-    virtual int CalibrationTotDistance(void) = 0;
+    virtual MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) = 0;
+    virtual MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) = 0;
+    virtual int CalibrationMoveSize() = 0;
+    virtual int CalibrationTotDistance() = 0;
 
     // Calibration related routines
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
 
-    virtual void NotifyGuidingStopped(void);
-    virtual void NotifyGuidingPaused(void);
-    virtual void NotifyGuidingResumed(void);
+    virtual void NotifyGuidingStopped();
+    virtual void NotifyGuidingPaused();
+    virtual void NotifyGuidingResumed();
     virtual void NotifyGuidingDithered(double dx, double dy, bool mountCoords);
     virtual void NotifyGuidingDitherSettleDone(bool success);
     virtual void NotifyDirectMove(const PHD_Point& dist);
@@ -309,8 +312,8 @@ public:
 
     virtual wxString GetMountClassName() const = 0;
 
-    GuideAlgorithm *GetXGuideAlgorithm(void) const;
-    GuideAlgorithm *GetYGuideAlgorithm(void) const;
+    GuideAlgorithm *GetXGuideAlgorithm() const;
+    GuideAlgorithm *GetYGuideAlgorithm() const;
 
     void GetLastCalibration(Calibration *cal) const;
     BacklashComp *GetBacklashComp() const { return m_backlashComp; }
@@ -320,71 +323,71 @@ public:
     // their operation
 public:
 
-    virtual bool HasNonGuiMove(void);
-    virtual bool SynchronousOnly(void);
-    virtual bool HasSetupDialog(void) const;
-    virtual void SetupDialog(void);
+    virtual bool HasNonGuiMove();
+    virtual bool SynchronousOnly();
+    virtual bool HasSetupDialog() const;
+    virtual void SetupDialog();
 
-    virtual const wxString& Name(void) const;
-    virtual bool IsStepGuider(void) const;
-    virtual wxPoint GetAoPos(void) const;
-    virtual wxPoint GetAoMaxPos(void) const;
-    virtual const char *DirectionStr(GUIDE_DIRECTION d);
-    virtual const char *DirectionChar(GUIDE_DIRECTION d);
+    virtual const wxString& Name() const;
+    virtual bool IsStepGuider() const;
+    virtual wxPoint GetAoPos() const;
+    virtual wxPoint GetAoMaxPos() const;
+    virtual const char *DirectionStr(GUIDE_DIRECTION d) const;
+    virtual const char *DirectionChar(GUIDE_DIRECTION d) const;
 
-    virtual bool IsCalibrated(void) const;
-    virtual void ClearCalibration(void);
+    virtual bool IsCalibrated() const;
+    virtual void ClearCalibration();
     virtual void SetCalibration(const Calibration& cal);
     virtual void SetCalibrationDetails(const CalibrationDetails& calDetails);
     void GetCalibrationDetails(CalibrationDetails *calDetails) const;
 
-    virtual bool IsConnected(void) const;
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    virtual bool IsConnected() const;
+    virtual bool Connect();
+    virtual bool Disconnect();
 
     virtual wxString GetSettingsSummary() const;
     virtual wxString CalibrationSettingsSummary() const { return wxEmptyString; }
 
-    virtual bool CalibrationFlipRequiresDecFlip(void);
+    virtual bool CalibrationFlipRequiresDecFlip();
 
-    virtual void StartDecDrift(void);
-    virtual void EndDecDrift(void);
-    virtual bool IsDecDrifting(void) const;
+    virtual void StartDecDrift();
+    virtual void EndDecDrift();
+    virtual bool IsDecDrifting() const;
 
-    bool MountIsCalibrated(void) const { return m_calibrated; }
-    const Calibration& MountCal(void) const { return m_cal; }
+    bool MountIsCalibrated() const { return m_calibrated; }
+    const Calibration& MountCal() const { return m_cal; }
 };
-inline bool Mount::GetGuidingEnabled(void) const
+inline bool Mount::GetGuidingEnabled() const
 {
     return m_guidingEnabled;
 }
 
-inline bool Mount::IsBusy(void) const
+inline bool Mount::IsBusy() const
 {
     return m_requestCount > 0;
 }
 
-inline int Mount::ErrorCount(void) const
+inline int Mount::ErrorCount() const
 {
     return m_errorCount;
 }
 
-inline void Mount::IncrementErrorCount(void)
+inline void Mount::IncrementErrorCount()
 {
     ++m_errorCount;
 }
 
-inline void Mount::ResetErrorCount(void)
+inline void Mount::ResetErrorCount()
 {
     m_errorCount = 0;
 }
 
-inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
+inline GuideAlgorithm *Mount::GetXGuideAlgorithm() const
 {
     return m_pXGuideAlgorithm;
 }
 
-inline GuideAlgorithm *Mount::GetYGuideAlgorithm(void) const
+inline GuideAlgorithm *Mount::GetYGuideAlgorithm() const
 {
     return m_pYGuideAlgorithm;
 }
@@ -394,12 +397,12 @@ inline bool Mount::IsConnected() const
     return m_connected;
 }
 
-inline GuideParity Mount::RAParity(void) const
+inline GuideParity Mount::RAParity() const
 {
     return m_calibrated ? m_cal.raGuideParity : GUIDE_PARITY_UNKNOWN;
 }
 
-inline GuideParity Mount::DecParity(void) const
+inline GuideParity Mount::DecParity() const
 {
     return m_calibrated ? m_cal.decGuideParity : GUIDE_PARITY_UNKNOWN;
 }

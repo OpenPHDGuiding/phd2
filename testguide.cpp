@@ -261,71 +261,53 @@ void TestGuideDialog::OnDither(wxCommandEvent& evt)
     PhdController::DitherCompat(pFrame->GetDitherAmount(ditherType), &errMsg);
 }
 
+inline static void ManualMove(Mount *mount, GUIDE_DIRECTION dir, int dur)
+{
+    if (mount && mount->IsConnected())
+    {
+        if (mount->IsStepGuider())
+        {
+            dur = 1;
+            Debug.Write(wxString::Format("Manual Guide: %s %d step(s)\n", mount->DirectionStr(dir), dur));
+        }
+        else
+            Debug.Write(wxString::Format("Manual Guide: %s %d ms\n", mount->DirectionStr(dir), dur));
+        GuideLog.NotifyManualGuide(mount, dir, dur);
+        mount->MoveAxis(dir, dur, MOVEOPT_MANUAL);
+    }
+}
+
 void TestGuideDialog::OnButton(wxCommandEvent &evt)
 {
     int duration = (int) floor(pulseDurationSpinCtrl->GetValue());
-    wxString logMsg = "Manual Guide: ";
 
     switch (evt.GetId())
     {
         case MGUIDE1_UP:
-            if (pMount && pMount->IsConnected())
-            {
-                pMount->CalibrationMove(UP, duration);
-                logMsg += wxString::Format("North %d ms", duration);
-            }
+            ManualMove(pMount, UP, duration);
             break;
         case MGUIDE1_DOWN:
-            if (pMount && pMount->IsConnected())
-            {
-                pMount->CalibrationMove(DOWN, duration);
-                logMsg += wxString::Format("South %d ms", duration);
-            }
+            ManualMove(pMount, DOWN, duration);
             break;
         case MGUIDE1_RIGHT:
-            if (pMount && pMount->IsConnected())
-            {
-                pMount->CalibrationMove(RIGHT, duration);
-                logMsg += wxString::Format("East %d ms", duration);
-            }
+            ManualMove(pMount, RIGHT, duration);
             break;
         case MGUIDE1_LEFT:
-            if (pMount && pMount->IsConnected())
-            {
-                pMount->CalibrationMove(LEFT, duration);
-                logMsg += wxString::Format("West %d ms", duration);
-            }
+            ManualMove(pMount, LEFT, duration);
             break;
         case MGUIDE2_UP:
-            if (pSecondaryMount && pSecondaryMount->IsConnected())
-            {
-                pSecondaryMount->CalibrationMove(UP, duration);
-                logMsg += wxString::Format("North %d ms", duration);
-            }
+            ManualMove(pSecondaryMount, UP, duration);
             break;
         case MGUIDE2_DOWN:
-            if (pSecondaryMount && pSecondaryMount->IsConnected())
-            {
-                pSecondaryMount->CalibrationMove(DOWN, duration);
-                logMsg += wxString::Format("South %d ms", duration);
-            }
+            ManualMove(pSecondaryMount, DOWN, duration);
             break;
         case MGUIDE2_RIGHT:
-            if (pSecondaryMount && pSecondaryMount->IsConnected())
-            {
-                pSecondaryMount->CalibrationMove(RIGHT, duration);
-                logMsg += wxString::Format("East %d ms", duration);
-            }
+            ManualMove(pSecondaryMount, RIGHT, duration);
             break;
         case MGUIDE2_LEFT:
-            if (pSecondaryMount && pSecondaryMount->IsConnected())
-            {
-                pSecondaryMount->CalibrationMove(LEFT, duration);
-                logMsg += wxString::Format("West %d ms", duration);
-            }
+            ManualMove(pSecondaryMount, LEFT, duration);
             break;
     }
-    Debug.AddLine(logMsg);
 }
 
 wxWindow *TestGuide::CreateManualGuideWindow()

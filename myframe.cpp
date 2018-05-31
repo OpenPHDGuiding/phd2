@@ -1554,13 +1554,13 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
     Debug.Write("OnRequestMountMove() begins\n");
 
-    if (request->calibrationMove)
+    if (request->axisMove)
     {
-        request->moveResult = request->mount->CalibrationMove(request->direction, request->duration);
+        request->moveResult = request->mount->MoveAxis(request->direction, request->duration, request->moveOptions);
     }
     else
     {
-        request->moveResult = request->mount->Move(&request->ofs, request->moveOptions);
+        request->moveResult = request->mount->MoveOffset(&request->ofs, request->moveOptions);
     }
 
     request->semaphore->Post();
@@ -1635,7 +1635,7 @@ void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, unsig
     }
 }
 
-void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direction, int duration)
+void MyFrame::ScheduleAxisMove(Mount *mount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1644,7 +1644,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *mount, const GUIDE_DIRECTION direct
     mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadCalibrationMove(mount, direction, duration);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadAxisMove(mount, direction, duration, moveOptions);
 }
 
 bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
