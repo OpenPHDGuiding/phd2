@@ -600,14 +600,17 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
+  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
   set(indiclient_root ${thirdparties_deflate_directory})
   set(indiclient_dir ${indiclient_root}/indiclient)
-  if(NOT EXISTS ${indiclient_dir})
-    # unzip the dependency
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip --format=zip
-        WORKING_DIRECTORY ${indiclient_root})
-  endif()
+  add_custom_target(unzip_indi ALL)
+  add_custom_command(TARGET unzip_indi PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${indiclient_dir}
+    COMMAND ${CMAKE_COMMAND} -E tar xvf ${indi_zip} --format=zip
+    WORKING_DIRECTORY ${indiclient_root}
+    DEPENDS ${indi_zip}
+    COMMENT "Unpacking INDI Client sources"
+    VERBATIM)
   include_directories(${indiclient_dir}/include)
   set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
   set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
@@ -625,7 +628,7 @@ else()
     if(INDI_VERSION VERSION_LESS "1.4")
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
     else(INDI_VERSION VERSION_LESS "1.4")
-        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
     endif(INDI_VERSION VERSION_LESS "1.4")
     if(INDI_VERSION VERSION_LESS "1.1")
       add_definitions("-DINDI_PRE_1_1_0")
@@ -633,7 +636,6 @@ else()
     if(INDI_VERSION VERSION_LESS "1.0")
       add_definitions("-DINDI_PRE_1_0_0")
     endif()
-
 
     # INDI depends on libz
     find_package(ZLIB REQUIRED)
@@ -648,28 +650,40 @@ else()
     # git clone https://github.com/indilib/indi.git
     # cd indi
     # git archive --format=tar.gz --prefix=libindi/ --output=libindi-`git rev-parse HEAD`.tar.gz HEAD
-    set(libindi "libindi")
-    set(libindi_file libindi-58b26c584049e1b9ecd55aa5f4a225677a417898)
-    message(STATUS "Using project provided libindi '${thirdparty_dir}/${libindi_file}.tar.gz'")
-    set(libindi_root "${thirdparties_deflate_directory}/${libindi}")
+
+    set(indi_zip ${thirdparty_dir}/libindi-58b26c584049e1b9ecd55aa5f4a225677a417898.tar.gz)
+    message(STATUS "Using project provided libindi '${indi_zip}'")
+    set(libindi_root "${thirdparties_deflate_directory}/libindi")
+
+    # this does not work because of the configure_file commands below
+    # that want to run at camke time, but this woudl extract the
+    # libindi files at build time
+#    add_custom_target(unzip_indi ALL)
+#    add_custom_command(TARGET unzip_indi PRE_BUILD
+#      COMMAND ${CMAKE_COMMAND} -E remove_directory ${libindi_root}
+#      COMMAND ${CMAKE_COMMAND} -E tar xvf ${indi_zip}
+#      WORKING_DIRECTORY ${thirdparties_deflate_directory}
+#      DEPENDS ${indi_zip}
+#      COMMENT "Unpacking INDI Client sources"
+#      VERBATIM)
     if(NOT EXISTS ${libindi_root})
-      # unzip the dependency
-      message(STATUS "[thirdparty] Untarring libindi")
+      message(STATUS "[thirdparty] extracting libindi sources")
       execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${libindi_file}.tar.gz
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
         WORKING_DIRECTORY ${thirdparties_deflate_directory})
     endif()
 
     if(NOT APPLE)
       # todo: OSX build fails when Nova is found. I think it needs the include dir
       # punting for now to get the build un-broken
-    # Nova is required for sidereal time computation with Indi driver that not report it.
-    # This is not critical if it is not present but the hour angle computation will be wrong.
-    find_package(Nova)
-    if(NOVA_FOUND)
-      add_definitions("-DLIBNOVA")
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-    endif()
+
+      # Nova is required for sidereal time computation with Indi driver that not report it.
+      # This is not critical if it is not present but the hour angle computation will be wrong.
+      find_package(Nova)
+      if(NOVA_FOUND)
+        add_definitions("-DLIBNOVA")
+        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+      endif()
     endif()
 
     # warning: copied from the indi CMakeLists.txt. This should be updated when
@@ -689,7 +703,7 @@ else()
     set(LIBINDI_DIRECTORY "${libindi_root}/libindi")
 
     # separate folder for the configurations
-    set(libindi_root_config "${thirdparties_deflate_directory}/${libindi}_configuration")
+    set(libindi_root_config "${thirdparties_deflate_directory}/libindi_configuration")
     if(NOT EXISTS ${libindi_root_config})
       file(MAKE_DIRECTORY "${libindi_root_config}")
     endif()
