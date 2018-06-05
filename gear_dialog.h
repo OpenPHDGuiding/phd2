@@ -90,13 +90,13 @@ class GearDialog : public wxDialog
 
 public:
     GearDialog(wxWindow *pParent);
-    ~GearDialog(void);
+    ~GearDialog();
 
-    void Initialize(void);
+    void Initialize();
     int ShowGearDialog(bool autoConnect);
     void EndModal(int retCode);
 
-    void ShowProfileWizard(void);
+    void ShowProfileWizard();
     void ShowProfileWizard(wxCommandEvent& evt);
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
@@ -107,17 +107,17 @@ public:
     Scope *AuxScope() const;
 
 private:
-    void LoadGearChoices(void);
-    void UpdateGearPointers(void);
+    void LoadGearChoices();
+    void UpdateGearPointers();
 
-    void UpdateCameraButtonState(void);
-    void UpdateScopeButtonState(void);
-    void UpdateAuxScopeButtonState(void);
-    void UpdateStepGuiderButtonState(void);
-    void UpdateRotatorButtonState(void);
-    void UpdateConnectAllButtonState(void);
-    void UpdateDisconnectAllButtonState(void);
-    void UpdateButtonState(void);
+    void UpdateCameraButtonState();
+    void UpdateScopeButtonState();
+    void UpdateAuxScopeButtonState();
+    void UpdateStepGuiderButtonState();
+    void UpdateRotatorButtonState();
+    void UpdateConnectAllButtonState();
+    void UpdateDisconnectAllButtonState();
+    void UpdateButtonState();
     void UpdateAdvancedDialog(bool preLoad);
 
     void OnProfileChoice(wxCommandEvent& event);
@@ -138,7 +138,7 @@ private:
     void OnMenuSelectCamera(wxCommandEvent& evt);
 
     void OnButtonSetupCamera(wxCommandEvent& event);
-    bool DoConnectCamera(void);
+    bool DoConnectCamera();
     void OnButtonConnectCamera(wxCommandEvent& event);
     void OnButtonDisconnectCamera(wxCommandEvent& event);
 

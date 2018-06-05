@@ -258,7 +258,7 @@ void TestGuideDialog::OnDither(wxCommandEvent& evt)
 {
     int ditherType = ditherTypeChoice->GetSelection() + 1;
     wxString errMsg;
-    PhdController::DitherCompat(pFrame->GetDitherAmount(ditherType), &errMsg);
+    PhdController::DitherCompat(MyFrame::GetDitherAmount(ditherType), &errMsg);
 }
 
 inline static void ManualMove(Mount *mount, GUIDE_DIRECTION dir, int dur)

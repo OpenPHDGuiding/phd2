@@ -63,7 +63,7 @@ public:
     void NotifyLoopingStopped();
     void NotifyStarSelected(const PHD_Point& pos);
     void NotifyStarLost(const FrameDroppedInfo& info);
-    void NotifyStartGuiding();
+    void NotifyGuidingStarted();
     void NotifyGuidingStopped();
     void NotifyPaused();
     void NotifyResumed();

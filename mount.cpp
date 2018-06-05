@@ -307,7 +307,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
     }
 }
 
-Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
+Mount::MountConfigDialogPane::~MountConfigDialogPane()
 {
 }
 
@@ -402,7 +402,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     adv->GetSizer()->Fit(adv);
 }
 
-void Mount::MountConfigDialogPane::LoadValues(void)
+void Mount::MountConfigDialogPane::LoadValues()
 {
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
     m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initXGuideAlgorithmSelection));
@@ -422,7 +422,7 @@ void Mount::MountConfigDialogPane::LoadValues(void)
     }
 }
 
-void Mount::MountConfigDialogPane::UnloadValues(void)
+void Mount::MountConfigDialogPane::UnloadValues()
 {
 
     // note these two have to be before the SetXxxAlgorithm calls, because if we
@@ -443,7 +443,7 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
 }
 
 // Restore the guide algorithms - all the UI controls will follow correctly if the actual algorithm choices are correct
-void Mount::MountConfigDialogPane::Undo(void)
+void Mount::MountConfigDialogPane::Undo()
 {
     if (pMount)
     {
@@ -663,7 +663,7 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
  * to work
  *
  */
-void Mount::TestTransforms(void)
+void Mount::TestTransforms()
 {
     static bool bTested = false;
 
@@ -752,7 +752,7 @@ void Mount::TestTransforms(void)
 }
 #endif
 
-Mount::Mount(void)
+Mount::Mount()
 {
     m_connected = false;
     m_requestCount = 0;
@@ -807,7 +807,7 @@ static wxString RotAngleStr(double rotAngle)
     return wxString::Format("%.1f", rotAngle);
 }
 
-bool Mount::FlipCalibration(void)
+bool Mount::FlipCalibration()
 {
     bool bError = false;
 
@@ -1158,7 +1158,7 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
     return NULL;
 };
 
-bool Mount::DecCompensationEnabled(void) const
+bool Mount::DecCompensationEnabled() const
 {
     return false;
 }
@@ -1171,7 +1171,7 @@ bool Mount::DecCompensationEnabled(void) const
  * the calibration data if the mount is known to be on the other side of the
  * pier from where calibration was done.
  */
-void Mount::AdjustCalibrationForScopePointing(void)
+void Mount::AdjustCalibrationForScopePointing()
 {
     double newDeclination = pPointingSource->GetDeclination();
     PierSide newPierSide = pPointingSource->SideOfPier();
@@ -1308,7 +1308,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
     }
 }
 
-void Mount::IncrementRequestCount(void)
+void Mount::IncrementRequestCount()
 {
     m_requestCount++;
 
@@ -1318,47 +1318,47 @@ void Mount::IncrementRequestCount(void)
     assert(m_requestCount <= 2);
 }
 
-void Mount::DecrementRequestCount(void)
+void Mount::DecrementRequestCount()
 {
     assert(m_requestCount > 0);
     m_requestCount--;
 }
 
-bool Mount::HasNonGuiMove(void)
+bool Mount::HasNonGuiMove()
 {
     return false;
 }
 
-bool Mount::SynchronousOnly(void)
+bool Mount::SynchronousOnly()
 {
     return false;
 }
 
-bool Mount::HasSetupDialog(void) const
+bool Mount::HasSetupDialog() const
 {
     return false;
 }
 
-void Mount::SetupDialog(void)
+void Mount::SetupDialog()
 {
 }
 
-const wxString& Mount::Name(void) const
+const wxString& Mount::Name() const
 {
     return m_Name;
 }
 
-bool Mount::IsStepGuider(void) const
+bool Mount::IsStepGuider() const
 {
     return false;
 }
 
-wxPoint Mount::GetAoPos(void) const
+wxPoint Mount::GetAoPos() const
 {
     return wxPoint();
 }
 
-wxPoint Mount::GetAoMaxPos(void) const
+wxPoint Mount::GetAoMaxPos() const
 {
     return wxPoint();
 }
@@ -1421,7 +1421,7 @@ bool Mount::IsCalibrated() const
     return bReturn;
 }
 
-void Mount::ClearCalibration(void)
+void Mount::ClearCalibration()
 {
     m_calibrated = false;
     if (pFrame) pFrame->UpdateCalibrationStatus();
@@ -1524,7 +1524,18 @@ inline static GuideParity guide_parity(int val)
     }
 }
 
-void Mount::NotifyGuidingStopped(void)
+void Mount::NotifyGuidingStarted()
+{
+    Debug.Write("Mount: notify guiding started\n");
+
+    if (m_pXGuideAlgorithm)
+        m_pXGuideAlgorithm->GuidingStarted();
+
+    if (m_pYGuideAlgorithm)
+        m_pYGuideAlgorithm->GuidingStarted();
+}
+
+void Mount::NotifyGuidingStopped()
 {
     Debug.Write("Mount: notify guiding stopped\n");
 
@@ -1538,7 +1549,7 @@ void Mount::NotifyGuidingStopped(void)
         m_backlashComp->ResetBaseline();
 }
 
-void Mount::NotifyGuidingPaused(void)
+void Mount::NotifyGuidingPaused()
 {
     Debug.Write("Mount: notify guiding paused\n");
 
@@ -1549,7 +1560,7 @@ void Mount::NotifyGuidingPaused(void)
         m_pYGuideAlgorithm->GuidingPaused();
 }
 
-void Mount::NotifyGuidingResumed(void)
+void Mount::NotifyGuidingResumed()
 {
     Debug.Write("Mount: notify guiding resumed\n");
 
@@ -1681,7 +1692,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details) const
     }
 }
 
-bool Mount::Connect(void)
+bool Mount::Connect()
 {
     m_connected = true;
     ResetErrorCount();
@@ -1694,7 +1705,7 @@ bool Mount::Connect(void)
     return false;
 }
 
-bool Mount::Disconnect(void)
+bool Mount::Disconnect()
 {
     m_connected = false;
     if (pFrame) pFrame->UpdateCalibrationStatus();
@@ -1741,20 +1752,20 @@ wxString Mount::GetSettingsSummary() const
     return s;
 }
 
-bool Mount::CalibrationFlipRequiresDecFlip(void)
+bool Mount::CalibrationFlipRequiresDecFlip()
 {
     return false;
 }
 
-void Mount::StartDecDrift(void)
+void Mount::StartDecDrift()
 {
 }
 
-void Mount::EndDecDrift(void)
+void Mount::EndDecDrift()
 {
 }
 
-bool Mount::IsDecDrifting(void) const
+bool Mount::IsDecDrifting() const
 {
     return false;
 }

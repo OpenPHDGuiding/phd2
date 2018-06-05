@@ -93,16 +93,20 @@ void GuideAlgorithm::AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl, int ol
     minMoveCtrl->SetValue(smartMove);
 }
 
-void GuideAlgorithm::GuidingStopped(void)
+void GuideAlgorithm::GuidingStarted()
+{
+}
+
+void GuideAlgorithm::GuidingStopped()
 {
     reset();
 }
 
-void GuideAlgorithm::GuidingPaused(void)
+void GuideAlgorithm::GuidingPaused()
 {
 }
 
-void GuideAlgorithm::GuidingResumed(void)
+void GuideAlgorithm::GuidingResumed()
 {
     reset();
 }
@@ -120,12 +124,12 @@ void GuideAlgorithm::DirectMoveApplied(double amt)
 {
 }
 
-void GuideAlgorithm::GuidingDisabled(void)
+void GuideAlgorithm::GuidingDisabled()
 {
     // By default, guide star deflections will be accumulated even with guiding disabled - algo can override if this is a problem
 }
 
-void GuideAlgorithm::GuidingEnabled(void)
+void GuideAlgorithm::GuidingEnabled()
 {
     // Discard whatever history was accumulated with guiding disabled
     reset();

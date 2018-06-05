@@ -454,7 +454,7 @@ void GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
     Flush();
 }
 
-void GuidingLog::StartGuiding()
+void GuidingLog::GuidingStarted()
 {
     m_isGuiding = true;
 
@@ -474,7 +474,7 @@ void GuidingLog::StartGuiding()
     m_keepFile = true;
 }
 
-void GuidingLog::StopGuiding()
+void GuidingLog::GuidingStopped()
 {
     m_isGuiding = false;
 

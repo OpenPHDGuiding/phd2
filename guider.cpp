@@ -1341,11 +1341,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_CALIBRATED:
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
-                pFrame->StatusMsg(_("Guiding"));
-                pFrame->m_guidingStarted = wxDateTime::UNow();
-                pFrame->m_frameCounter = 0;
-                GuideLog.StartGuiding();
-                EvtServer.NotifyStartGuiding();
+
+                pFrame->NotifyGuidingStarted();
 
                 // camera angle is known, so ok to calculate shift rate camera coords
                 UpdateLockPosShiftCameraCoords();

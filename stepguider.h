@@ -192,7 +192,6 @@ public:
 
     virtual bool Center() = 0;
 
-
     void NotifyGuidingStopped() override;
     void NotifyGuidingResumed() override;
     void NotifyGuidingDithered(double dx, double dy, bool mountCoords) override;

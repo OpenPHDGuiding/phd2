@@ -79,11 +79,11 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
 
 public:
     MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
-    virtual ~MyFrameConfigDialogPane(void) {};
+    virtual ~MyFrameConfigDialogPane() {};
 
     void LayoutControls(BrainCtrlIdMap& CtrlMap);
-    virtual void LoadValues(void) {};
-    virtual void UnloadValues(void) {};
+    virtual void LoadValues() {};
+    virtual void UnloadValues() {};
 };
 
 enum DitherMode
@@ -147,25 +147,25 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 
 public:
     MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
-    virtual ~MyFrameConfigDialogCtrlSet(void) {};
+    virtual ~MyFrameConfigDialogCtrlSet() {};
 
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
-    int GetFocalLength(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
+    int GetFocalLength() const;
     void SetFocalLength(int val);
 };
 
 class MyFrame : public wxFrame
 {
 protected:
-    NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
+    NOISE_REDUCTION_METHOD GetNoiseReductionMethod() const;
     bool SetNoiseReductionMethod(int noiseReductionMethod);
 
-    bool GetServerMode(void);
+    bool GetServerMode() const;
     bool SetServerMode(bool val);
 
     bool SetTimeLapse(int timeLapse);
-    int GetTimeLapse(void);
+    int GetTimeLapse() const;
 
     bool SetFocalLength(int focalLength);
 
@@ -322,36 +322,36 @@ public:
     void OnExposeComplete(wxThreadEvent& evt);
     void OnExposeComplete(usImage *image, bool err);
     void OnMoveComplete(wxThreadEvent& evt);
-    void LoadProfileSettings(void);
-    void UpdateTitle(void);
+    void LoadProfileSettings();
+    void UpdateTitle();
 
-    const std::vector<int>& GetExposureDurations();
+    const std::vector<int>& GetExposureDurations() const;
     bool SetCustomExposureDuration(int ms);
-    void GetExposureInfo(int *currExpMs, bool *autoExp);
+    void GetExposureInfo(int *currExpMs, bool *autoExp) const;
     bool SetExposureDuration(int val);
-    const AutoExposureCfg& GetAutoExposureCfg(void) const { return m_autoExp; }
+    const AutoExposureCfg& GetAutoExposureCfg() const { return m_autoExp; }
     bool SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
-    void ResetAutoExposure(void);
+    void ResetAutoExposure();
     void AdjustAutoExposure(double curSNR);
     static wxString ExposureDurationLabel(int exposure);
-    double GetDitherScaleFactor(void);
+    double GetDitherScaleFactor() const;
     bool SetDitherScaleFactor(double ditherScaleFactor);
-    bool GetDitherRaOnly(void);
+    bool GetDitherRaOnly() const;
     bool SetDitherRaOnly(bool ditherRaOnly);
-    double GetDitherAmount(int ditherType);
-    Star::FindMode GetStarFindMode(void) const;
+    static double GetDitherAmount(int ditherType);
+    Star::FindMode GetStarFindMode() const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
-    bool GetRawImageMode(void) const;
+    bool GetRawImageMode() const;
     bool SetRawImageMode(bool force);
 
     bool StartServer(bool state);
     bool FlipCalibrationData();
     int RequestedExposureDuration();
-    int GetFocalLength(void);
-    int GetLanguage(void);
-    bool GetAutoLoadCalibration(void);
+    int GetFocalLength() const;
+    int GetLanguage() const;
+    bool GetAutoLoadCalibration() const;
     void SetAutoLoadCalibration(bool val);
-    void LoadCalibration(void);
+    void LoadCalibration();
     int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();
     static wxString GetDarksDir();
@@ -376,29 +376,29 @@ public:
     void OnRequestExposure(wxCommandEvent& evt);
     void OnRequestMountMove(wxCommandEvent& evt);
 
-    void ScheduleExposure(void);
+    void ScheduleExposure();
 
     void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
     void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
     void ScheduleAxisMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
 
-    void StartCapturing(void);
-    bool StopCapturing(void);
+    void StartCapturing();
+    bool StopCapturing();
     bool StartSingleExposure(int duration, const wxRect& subframe);
 
     void SetPaused(PauseType pause);
 
-    bool StartLooping(void); // stop guiding and continue capturing, or, start capturing
-    bool StartGuiding(void);
+    bool StartLooping(); // stop guiding and continue capturing, or, start capturing
+    bool StartGuiding();
     bool Dither(double amount, bool raOnly);
 
-    double CurrentGuideError(void) const;
+    double CurrentGuideError() const;
 
-    void UpdateButtonsStatus(void);
-    void UpdateCalibrationStatus(void);
+    void UpdateButtonsStatus();
+    void UpdateCalibrationStatus();
 
     static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);
-    double GetCameraPixelScale(void) const;
+    double GetCameraPixelScale() const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
     void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
@@ -407,15 +407,17 @@ public:
     void StatusMsg(const wxString& text);
     void StatusMsgNoTimeout(const wxString& text);
     wxString GetSettingsSummary() const;
-    wxString ExposureDurationSummary(void) const;
-    wxString PixelScaleSummary(void) const;
-    void TryReconnect(void);
+    wxString ExposureDurationSummary() const;
+    wxString PixelScaleSummary() const;
+    void TryReconnect();
 
-    double TimeSinceGuidingStarted(void) const;
-    void NotifyGuidingStopped(void);
+    double TimeSinceGuidingStarted() const;
+
+    void NotifyGuidingStarted();
+    void NotifyGuidingStopped();
 
     void SetDitherMode(DitherMode mode);
-    DitherMode GetDitherMode(void) const;
+    DitherMode GetDitherMode() const;
 
     void HandleBinningChange();
 
@@ -465,15 +467,15 @@ private:
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
     void OnUpdaterStateChanged(wxThreadEvent& event);
     void OnMessageBoxProxy(wxCommandEvent& evt);
-    void SetupMenuBar(void);
-    void SetupStatusBar(void);
+    void SetupMenuBar();
+    void SetupStatusBar();
     void SetupToolBar();
-    void SetupKeyboardShortcuts(void);
-    void SetupHelpFile(void);
+    void SetupKeyboardShortcuts();
+    void SetupHelpFile();
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
-    void FinishStop(void);
-    void DoTryReconnect(void);
+    void FinishStop();
+    void DoTryReconnect();
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
@@ -668,24 +670,59 @@ inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm,
     return 206.265 * pixelSizeMicrons * (double) binning / (double) focalLengthMm;
 }
 
-inline double MyFrame::TimeSinceGuidingStarted(void) const
+inline double MyFrame::TimeSinceGuidingStarted() const
 {
     return (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
 }
 
-inline Star::FindMode MyFrame::GetStarFindMode(void) const
+inline Star::FindMode MyFrame::GetStarFindMode() const
 {
     return m_starFindMode;
 }
 
-inline bool MyFrame::GetRawImageMode(void) const
+inline bool MyFrame::GetRawImageMode() const
 {
     return m_rawImageMode;
 }
 
-inline DitherMode MyFrame::GetDitherMode(void) const
+inline DitherMode MyFrame::GetDitherMode() const
 {
     return m_ditherMode;
+}
+
+inline NOISE_REDUCTION_METHOD MyFrame::GetNoiseReductionMethod() const
+{
+    return m_noiseReductionMethod;
+}
+
+inline double MyFrame::GetDitherScaleFactor() const
+{
+    return m_ditherScaleFactor;
+}
+
+inline bool MyFrame::GetDitherRaOnly() const
+{
+    return m_ditherRaOnly;
+}
+
+inline bool MyFrame::GetAutoLoadCalibration() const
+{
+    return m_autoLoadCalibration;
+}
+
+inline bool MyFrame::GetServerMode() const
+{
+    return m_serverMode;
+}
+
+inline int MyFrame::GetTimeLapse() const
+{
+    return m_timeLapse;
+}
+
+inline int MyFrame::GetFocalLength() const
+{
+    return m_focalLength;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

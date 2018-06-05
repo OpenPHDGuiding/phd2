@@ -299,6 +299,7 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
 
+    virtual void NotifyGuidingStarted();
     virtual void NotifyGuidingStopped();
     virtual void NotifyGuidingPaused();
     virtual void NotifyGuidingResumed();

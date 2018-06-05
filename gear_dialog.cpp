@@ -154,7 +154,7 @@ GearDialog::GearDialog(wxWindow *pParent) :
     Centre(wxBOTH);
 }
 
-GearDialog::~GearDialog(void)
+GearDialog::~GearDialog()
 {
     delete m_pCamera;
     delete m_pScope;
@@ -198,7 +198,7 @@ static wxToggleButton *MakeConnectBtn(wxWindow *parent, wxWindowID id)
     return btn;
 }
 
-void GearDialog::Initialize(void)
+void GearDialog::Initialize()
 {
     wxSizerFlags sizerFlags       = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2).Expand();
     wxSizerFlags sizerTextFlags   = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2).Expand();
@@ -406,12 +406,12 @@ static void LoadAOs(wxChoice *aos)
     LoadChoices(aos, StepGuider::AOList());
 }
 
-static void LoadRotators(wxChoice *aos)
+static void LoadRotators(wxChoice *rots)
 {
-    LoadChoices(aos, Rotator::RotatorList());
+    LoadChoices(rots, Rotator::RotatorList());
 }
 
-void GearDialog::LoadGearChoices(void)
+void GearDialog::LoadGearChoices()
 {
     LoadCameras(m_pCameras);
     LoadMounts(m_pScopes);
@@ -562,7 +562,7 @@ static bool UseSelectCameraButton(const wxString& selection)
     return !selection.Contains(_T("INDI"));
 }
 
-void GearDialog::UpdateCameraButtonState(void)
+void GearDialog::UpdateCameraButtonState()
 {
     // Now set up the buttons to match our current state
     if (!m_pCamera)
@@ -605,7 +605,7 @@ void GearDialog::UpdateCameraButtonState(void)
     }
 }
 
-void GearDialog::UpdateScopeButtonState(void)
+void GearDialog::UpdateScopeButtonState()
 {
     // Now set up the buttons to match our current state
     if (!m_pScope)
@@ -655,7 +655,7 @@ void GearDialog::UpdateScopeButtonState(void)
     }
 }
 
-void GearDialog::UpdateAuxScopeButtonState(void)
+void GearDialog::UpdateAuxScopeButtonState()
 {
     // Now set up the buttons to match our current state
     if (m_pScope && m_pScope->CanReportPosition())
@@ -708,7 +708,7 @@ void GearDialog::UpdateAuxScopeButtonState(void)
     }
 }
 
-void GearDialog::UpdateStepGuiderButtonState(void)
+void GearDialog::UpdateStepGuiderButtonState()
 {
     // Now set up the buttons to match our current state
     if (!m_pStepGuider)
@@ -746,7 +746,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     }
 }
 
-void GearDialog::UpdateRotatorButtonState(void)
+void GearDialog::UpdateRotatorButtonState()
 {
     // Now set up the buttons to match our current state
     if (!m_pRotator)
@@ -784,7 +784,7 @@ void GearDialog::UpdateRotatorButtonState(void)
     }
 }
 
-void GearDialog::UpdateConnectAllButtonState(void)
+void GearDialog::UpdateConnectAllButtonState()
 {
     if ((m_pCamera     && !m_pCamera->Connected) ||
         (m_pScope      && !m_pScope->IsConnected()) ||
@@ -800,7 +800,7 @@ void GearDialog::UpdateConnectAllButtonState(void)
     }
 }
 
-void GearDialog::UpdateDisconnectAllButtonState(void)
+void GearDialog::UpdateDisconnectAllButtonState()
 {
     if ((m_pCamera     && m_pCamera->Connected) ||
         (m_pScope      && m_pScope->IsConnected()) ||
@@ -821,7 +821,7 @@ void GearDialog::UpdateDisconnectAllButtonState(void)
     }
 }
 
-void GearDialog::UpdateButtonState(void)
+void GearDialog::UpdateButtonState()
 {
     UpdateGearPointers();
 
@@ -1009,7 +1009,7 @@ void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
     SetMatchingSelection(m_pCameras, selection);
 }
 
-bool GearDialog::DoConnectCamera(void)
+bool GearDialog::DoConnectCamera()
 {
     bool canceled = false;
 
@@ -1175,7 +1175,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
     UpdateButtonState();
 }
 
-void GearDialog::UpdateGearPointers(void)
+void GearDialog::UpdateGearPointers()
 {
     pCamera = m_pCamera;
 
@@ -1728,7 +1728,7 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
     }
 }
 
-void GearDialog::ShowProfileWizard(void)
+void GearDialog::ShowProfileWizard()
 {
     wxCommandEvent dummy;
     OnButtonWizard(dummy);
@@ -1747,7 +1747,7 @@ void GearDialog::ShowProfileWizard(wxCommandEvent& evt)
     }
 }
 
-bool GearDialog::IsEmptyProfile(void)
+bool GearDialog::IsEmptyProfile()
 {
     wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", _("None"));
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));

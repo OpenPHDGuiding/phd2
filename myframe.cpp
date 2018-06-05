@@ -468,7 +468,7 @@ MyFrame::~MyFrame()
     delete m_bookmarkLockPosAccel;
 }
 
-void MyFrame::UpdateTitle(void)
+void MyFrame::UpdateTitle()
 {
     wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
 
@@ -482,7 +482,7 @@ void MyFrame::UpdateTitle(void)
     SetTitle(title);
 }
 
-void MyFrame::SetupMenuBar(void)
+void MyFrame::SetupMenuBar()
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
@@ -612,7 +612,7 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 
 static std::vector<int> exposure_durations;
 
-const std::vector<int>& MyFrame::GetExposureDurations()
+const std::vector<int>& MyFrame::GetExposureDurations() const
 {
     return exposure_durations;
 }
@@ -634,7 +634,7 @@ bool MyFrame::SetCustomExposureDuration(int ms)
     return false;
 }
 
-void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp)
+void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp) const
 {
     if (!pCamera || !pCamera->Connected)
     {
@@ -696,7 +696,7 @@ bool MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
     return changed;
 }
 
-wxString MyFrame::ExposureDurationSummary(void) const
+wxString MyFrame::ExposureDurationSummary() const
 {
     if (m_autoExp.enabled)
         return wxString::Format("Auto (min = %d ms, max = %d ms, SNR = %.2f)", m_autoExp.minExposure, m_autoExp.maxExposure, m_autoExp.targetSNR);
@@ -704,7 +704,7 @@ wxString MyFrame::ExposureDurationSummary(void) const
         return wxString::Format("%d ms", m_exposureDuration);
 }
 
-void MyFrame::ResetAutoExposure(void)
+void MyFrame::ResetAutoExposure()
 {
     if (m_autoExp.enabled)
     {
@@ -806,7 +806,7 @@ enum {
     GAMMA_DEFAULT = 100,
 };
 
-void MyFrame::LoadProfileSettings(void)
+void MyFrame::LoadProfileSettings()
 {
     int noiseReductionMethod = pConfig->Profile.GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
     SetNoiseReductionMethod(noiseReductionMethod);
@@ -959,7 +959,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->SetArtProvider(new PHDToolBarArt);             // Get the custom background we want
 }
 
-void MyFrame::SetupStatusBar(void)
+void MyFrame::SetupStatusBar()
 {
     m_statusbar = PHDStatusBar::CreateInstance(this, wxSTB_DEFAULT_STYLE);
     SetStatusBar(m_statusbar);
@@ -967,7 +967,7 @@ void MyFrame::SetupStatusBar(void)
     UpdateCalibrationStatus();
 }
 
-void MyFrame::SetupKeyboardShortcuts(void)
+void MyFrame::SetupKeyboardShortcuts()
 {
     wxAcceleratorEntry entries[] = {
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
@@ -984,7 +984,7 @@ void MyFrame::SetupKeyboardShortcuts(void)
     SetAcceleratorTable(accel);
 }
 
-void MyFrame::SetupHelpFile(void)
+void MyFrame::SetupHelpFile()
 {
     wxFileSystem::AddHandler(new wxZipFSHandler);
     bool retval;
@@ -1017,7 +1017,7 @@ static bool cond_update_tool(wxAuiToolBar *tb, int toolId, bool enable)
     return ret;
 }
 
-void MyFrame::UpdateButtonsStatus(void)
+void MyFrame::UpdateButtonsStatus()
 {
     bool need_update = false;
 
@@ -1409,7 +1409,7 @@ void MyFrame::UpdateStateLabels()
         QueueStatusbarUpdateMsg(this, THR_SB_STATE_LABELS);
 }
 
-void MyFrame::UpdateCalibrationStatus(void)
+void MyFrame::UpdateCalibrationStatus()
 {
     if (wxThread::IsMain())
     {
@@ -1577,7 +1577,7 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
         m_statusbar->StatusMsg(wxEmptyString);
 }
 
-void MyFrame::ScheduleExposure(void)
+void MyFrame::ScheduleExposure()
 {
     int exposureDuration = RequestedExposureDuration();
     int exposureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
@@ -1696,7 +1696,7 @@ void MyFrame::StartCapturing()
     }
 }
 
-bool MyFrame::StopCapturing(void)
+bool MyFrame::StopCapturing()
 {
     Debug.Write(wxString::Format("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
@@ -1756,7 +1756,7 @@ void MyFrame::SetPaused(PauseType pause)
     }
 }
 
-bool MyFrame::StartLooping(void)
+bool MyFrame::StartLooping()
 {
     bool error = false;
 
@@ -1791,7 +1791,7 @@ bool MyFrame::StartLooping(void)
     return error;
 }
 
-bool MyFrame::StartGuiding(void)
+bool MyFrame::StartGuiding()
 {
     bool error = true;
 
@@ -1937,7 +1937,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
     return error;
 }
 
-double MyFrame::CurrentGuideError(void) const
+double MyFrame::CurrentGuideError() const
 {
     const Scope *const scope = TheScope();
     bool const raOnly = scope && scope->GetDecGuideMode() == DEC_NONE;
@@ -1990,11 +1990,6 @@ void MyFrame::OnClose(wxCloseEvent& event)
     Destroy();
 }
 
-NOISE_REDUCTION_METHOD MyFrame::GetNoiseReductionMethod(void)
-{
-    return m_noiseReductionMethod;
-}
-
 bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
 {
     bool bError = false;
@@ -2025,11 +2020,6 @@ bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
     return bError;
 }
 
-double MyFrame::GetDitherScaleFactor(void)
-{
-    return m_ditherScaleFactor;
-}
-
 bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
 {
     bool bError = false;
@@ -2054,11 +2044,6 @@ bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
     return bError;
 }
 
-bool MyFrame::GetDitherRaOnly(void)
-{
-    return m_ditherRaOnly;
-}
-
 bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
 {
     bool bError = false;
@@ -2070,7 +2055,23 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
     return bError;
 }
 
-void MyFrame::NotifyGuidingStopped(void)
+void MyFrame::NotifyGuidingStarted()
+{
+    StatusMsg(_("Guiding"));
+
+    m_guidingStarted = wxDateTime::UNow();
+    m_frameCounter = 0;
+
+    if (pMount)
+        pMount->NotifyGuidingStarted();
+    if (pSecondaryMount)
+        pSecondaryMount->NotifyGuidingStarted();
+
+    GuideLog.GuidingStarted();
+    EvtServer.NotifyGuidingStarted();
+}
+
+void MyFrame::NotifyGuidingStopped()
 {
     assert(!pMount || !pMount->IsBusy());
     assert(!pSecondaryMount || !pSecondaryMount->IsBusy());
@@ -2081,12 +2082,7 @@ void MyFrame::NotifyGuidingStopped(void)
         pSecondaryMount->NotifyGuidingStopped();
 
     EvtServer.NotifyGuidingStopped();
-    GuideLog.StopGuiding();
-}
-
-bool MyFrame::GetAutoLoadCalibration(void)
-{
-    return m_autoLoadCalibration;
+    GuideLog.GuidingStopped();
 }
 
 void MyFrame::SetAutoLoadCalibration(bool val)
@@ -2131,7 +2127,7 @@ static void load_calibration(Mount *mnt)
     mnt->SetCalibration(cal);
 }
 
-void MyFrame::LoadCalibration(void)
+void MyFrame::LoadCalibration()
 {
     if (pMount)
     {
@@ -2474,11 +2470,6 @@ void MyFrame::DeleteDarkLibraryFiles(int profileId)
     DefectMap::DeleteDefectMap(profileId);
 }
 
-bool MyFrame::GetServerMode(void)
-{
-    return m_serverMode;
-}
-
 bool MyFrame::SetServerMode(bool serverMode)
 {
     bool bError = false;
@@ -2488,11 +2479,6 @@ bool MyFrame::SetServerMode(bool serverMode)
     pConfig->Global.SetBoolean("/ServerMode", m_serverMode);
 
     return bError;
-}
-
-int MyFrame::GetTimeLapse(void)
-{
-    return m_timeLapse;
 }
 
 bool MyFrame::SetTimeLapse(int timeLapse)
@@ -2518,11 +2504,6 @@ bool MyFrame::SetTimeLapse(int timeLapse)
     pConfig->Profile.SetInt("/frame/timeLapse", m_timeLapse);
 
     return bError;
-}
-
-int MyFrame::GetFocalLength(void)
-{
-    return m_focalLength;
 }
 
 bool MyFrame::SetFocalLength(int focalLength)
@@ -2564,7 +2545,7 @@ wxString MyFrame::GetDefaultFileDir()
     return rslt;
 }
 
-double MyFrame::GetCameraPixelScale(void) const
+double MyFrame::GetCameraPixelScale() const
 {
     if (!pCamera || pCamera->GetCameraPixelSize() == 0.0 || m_focalLength == 0)
         return 1.0;
@@ -2572,7 +2553,7 @@ double MyFrame::GetCameraPixelScale(void) const
     return GetPixelScale(pCamera->GetCameraPixelSize(), m_focalLength, pCamera->Binning);
 }
 
-wxString MyFrame::PixelScaleSummary(void) const
+wxString MyFrame::PixelScaleSummary() const
 {
     double pixelScale = GetCameraPixelScale();
     wxString scaleStr;
@@ -2604,7 +2585,7 @@ wxString MyFrame::GetSettingsSummary() const
     );
 }
 
-int MyFrame::GetLanguage(void)
+int MyFrame::GetLanguage() const
 {
     int language = pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
     return language;
@@ -3073,7 +3054,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 }
 
 // Following are needed by step-size calculator to keep the UIs in-synch
-int MyFrameConfigDialogCtrlSet::GetFocalLength(void)
+int MyFrameConfigDialogCtrlSet::GetFocalLength() const
 {
     long val = 0;
     m_pFocalLength->GetValue().ToLong(&val);

@@ -105,8 +105,8 @@ public:
     void CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity);
     void CalibrationComplete(Mount *pCalibrationMount);
 
-    void StartGuiding();
-    void StopGuiding();
+    void GuidingStarted();
+    void GuidingStopped();
     void GuideStep(const GuideStepInfo& info);
     void FrameDropped(const FrameDroppedInfo& info);
     void CalibrationFrameDropped(const FrameDroppedInfo& info);

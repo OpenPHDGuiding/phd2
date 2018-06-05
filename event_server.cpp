@@ -2401,7 +2401,7 @@ void EventServer::NotifyStarLost(const FrameDroppedInfo& info)
     do_notify(m_eventServerClients, ev);
 }
 
-void EventServer::NotifyStartGuiding()
+void EventServer::NotifyGuidingStarted()
 {
     SIMPLE_NOTIFY_EV(ev_start_guiding());
 }

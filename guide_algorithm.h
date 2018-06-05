@@ -85,6 +85,7 @@ public:
     virtual double result(double input) = 0;
     virtual double deduceResult() { return 0.0; }
 
+    virtual void GuidingStarted();
     virtual void GuidingStopped();
     virtual void GuidingPaused();
     virtual void GuidingResumed();
