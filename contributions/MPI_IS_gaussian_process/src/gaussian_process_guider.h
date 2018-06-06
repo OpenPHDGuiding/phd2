@@ -214,8 +214,8 @@ public:
     bool GetBoolComputePeriod() const;
     bool SetBoolComputePeriod(bool active);
 
-    std::vector< double > GetGPHyperparameters() const;
-    bool SetGPHyperparameters(const std::vector< double >& hyperparameters);
+    std::vector<double> GetGPHyperparameters() const;
+    bool SetGPHyperparameters(const std::vector<double>& hyperparameters);
 
     double GetPredictionGain() const;
     bool SetPredictionGain(double);
@@ -243,19 +243,19 @@ public:
      * will stop collecting measurements and uses predictions instead, to keep
      * the FFT and the GP working.
      */
-    void GuidingDithered(double amt, double rate);
-
-    /**
-     * This method tells the guider that a direct move was
-     * issued. This has the opposite effect of a dither on the dither
-     * offset.
-     */
-    void DirectMoveApplied(double amt, double rate);
-
-    /**
-     * This method tells the guider that dithering is finished. The guider
-     * will resume normal operation.
-     */
+    void GuidingDithered(double amt, double rate);
+
+    /**
+     * This method tells the guider that a direct move was
+     * issued. This has the opposite effect of a dither on the dither
+     * offset.
+     */
+    void DirectMoveApplied(double amt, double rate);
+
+    /**
+     * This method tells the guider that dithering is finished. The guider
+     * will resume normal operation.
+     */
     void GuidingDitherSettleDone(bool success);
 
     /**

@@ -47,8 +47,6 @@
 #include <ctime>
 
 #include "math_tools.h"
-
-#include "math_tools.h"
 #include "gaussian_process.h"
 #include "covariance_functions.h"
 
@@ -69,6 +67,13 @@ static const double DefaultSignalVarianceSE1Ker          = 10.0; // signal varia
 static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengts for PL estimation
 static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 static const double DefaultPredictionGain                  = 0.5; // amount of GP prediction to blend in
+
+static const double DefaultNoresetMaxRaDelta = 10.; // max RA delta in seconds to skip resetting the model when guiding is stopped and resumed
+#if 0 // TODO: enable this after live testing
+static const double DefaultNoresetMaxPctPeriod = 40.; // max percent of worm period elapsed to skip resetting the model when guiding is stopped and resumed
+#else
+static const double DefaultNoresetMaxPctPeriod = 0.; // disabled
+#endif
 
 static const bool   DefaultComputePeriod                 = true;
 
@@ -340,7 +345,7 @@ public:
             m_pGuideAlgorithm->m_expertDialog = new GPExpertDialog(m_pParent);      // Do this here so the parent window has been built
     }
 
-    virtual ~GuideAlgorithmGaussianProcessDialogPane(void)
+    virtual ~GuideAlgorithmGaussianProcessDialogPane()
     {
       // no need to destroy the widgets, this is done by the parent...
     }
@@ -348,7 +353,7 @@ public:
     /* Fill the GUI with the parameters that are currently configured in the
      * guiding algorithm.
      */
-    virtual void LoadValues(void)
+    virtual void LoadValues()
     {
         m_pControlGain->SetValue(100 * m_pGuideAlgorithm->GetControlGain());
         m_pPredictionGain->SetValue(100 * m_pGuideAlgorithm->GetPredictionGain());
@@ -368,7 +373,7 @@ public:
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
-    virtual void UnloadValues(void)
+    virtual void UnloadValues()
     {
         m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue() / 100.0);
         m_pGuideAlgorithm->SetPredictionGain(m_pPredictionGain->GetValue() / 100.0);
@@ -458,10 +463,11 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     SetBoolComputePeriod(compute_period);
     m_expertDialog = NULL;
     block_updates_ = !(m_pMount->GetGuidingEnabled());
+    guiding_ra_ = math_tools::NaN;
     reset();
 }
 
-GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess(void)
+GuideAlgorithmGaussianProcess::~GuideAlgorithmGaussianProcess()
 {
     if (m_expertDialog)
     {
@@ -661,28 +667,30 @@ bool GuideAlgorithmGaussianProcess::SetNumPointsForApproximation(int num_points)
     return error;
 }
 
-bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyperparameters)
+bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(const std::vector<double>& _hyperparameters)
 {
-    if(hyperparameters.size() != NumParameters)
+    if (_hyperparameters.size() != NumParameters)
         return false;
 
     bool error = false;
+
+    std::vector<double> hyperparameters(_hyperparameters);
 
     // we do this check in sequence: maybe there would be additional checks on this later.
 
     // length scale short SE kernel
     try
     {
-      if (hyperparameters[SE0KLengthScale] < 1.0) // zero length scale is unstable
-      {
-        throw ERROR_INFO("invalid length scale for short SE kernel");
-      }
+        if (hyperparameters[SE0KLengthScale] < 1.0) // zero length scale is unstable
+        {
+            throw ERROR_INFO("invalid length scale for short SE kernel");
+        }
     }
     catch (const wxString& Msg)
     {
-      POSSIBLY_UNUSED(Msg);
-      error = true;
-      hyperparameters[SE0KLengthScale] = DefaultLengthScaleSE0Ker;
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[SE0KLengthScale] = DefaultLengthScaleSE0Ker;
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se0_kern", hyperparameters[SE0KLengthScale]);
@@ -690,16 +698,16 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // signal variance short SE kernel
     try
     {
-      if (hyperparameters[SE0KSignalVariance] < 0.0)
-      {
-        throw ERROR_INFO("invalid signal variance for the short SE kernel");
-      }
+        if (hyperparameters[SE0KSignalVariance] < 0.0)
+        {
+            throw ERROR_INFO("invalid signal variance for the short SE kernel");
+        }
     }
     catch (const wxString& Msg)
     {
-      POSSIBLY_UNUSED(Msg);
-      error = true;
-      hyperparameters[SE0KSignalVariance] = DefaultSignalVarianceSE0Ker;
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[SE0KSignalVariance] = DefaultSignalVarianceSE0Ker;
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_se0_kern", hyperparameters[SE0KSignalVariance]);
@@ -738,7 +746,6 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_sigvar_per_kern", hyperparameters[PKSignalVariance]);
 
-
     // length scale long SE kernel
     try
     {
@@ -776,16 +783,16 @@ bool GuideAlgorithmGaussianProcess::SetGPHyperparameters(std::vector<double> hyp
     // period length periodic kernel
     try
     {
-      if (hyperparameters[PKPeriodLength] < 1.0) // zero period length is unstable
-      {
-        throw ERROR_INFO("invalid period length for periodic kernel");
-      }
+        if (hyperparameters[PKPeriodLength] < 1.0) // zero period length is unstable
+        {
+            throw ERROR_INFO("invalid period length for periodic kernel");
+        }
     }
     catch (const wxString& Msg)
     {
-      POSSIBLY_UNUSED(Msg);
-      error = true;
-      hyperparameters[PKPeriodLength] = DefaultPeriodLengthPerKer;
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        hyperparameters[PKPeriodLength] = DefaultPeriodLengthPerKer;
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", hyperparameters[PKPeriodLength]);
@@ -866,7 +873,7 @@ bool GuideAlgorithmGaussianProcess::GetBoolComputePeriod() const
     return GPG->GetBoolComputePeriod();
 }
 
-bool GuideAlgorithmGaussianProcess::GetDarkTracking()
+bool GuideAlgorithmGaussianProcess::GetDarkTracking() const
 {
     return dark_tracking_mode_;
 }
@@ -950,27 +957,96 @@ double GuideAlgorithmGaussianProcess::deduceResult()
 
 void GuideAlgorithmGaussianProcess::reset()
 {
+    Debug.Write("PPEC: reset GP model\n");
     GPG->reset();
 }
 
-void GuideAlgorithmGaussianProcess::GuidingStopped(void)
+static double CurrentRA()
+{
+    if (pPointingSource)
+    {
+        double ra, dec, st;
+        bool err = pPointingSource->GetCoordinates(&ra, &dec, &st);
+        if (!err)
+        {
+            return ra;
+        }
+    }
+
+    return math_tools::NaN;
+}
+
+void GuideAlgorithmGaussianProcess::GuidingStarted()
+{
+    bool need_reset = true;
+    double gear_time_offset;
+
+    double prev_ra = guiding_ra_;
+    guiding_ra_ = CurrentRA();
+
+    Debug.Write(wxString::Format("PPEC: guiding starts RA = %.4f hr, prev RA = %.4f hr\n", guiding_ra_, prev_ra));
+
+    // retain the model (do not reset) if:
+    //    ra has changed by less than 10 seconds (about 2.5 arc-minutes), i.e. mount was not slewed in RA, and
+    //    elapsed time is less than 40% of the worm period
+
+    if (!math_tools::isNaN(guiding_ra_) && !math_tools::isNaN(prev_ra))
+    {
+        wxString configPath = GetConfigPath();
+        double max_ra_delta = pConfig->Profile.GetDouble(configPath + "/noreset_max_ra_delta", DefaultNoresetMaxRaDelta);
+
+        const double SECONDS_PER_HOUR = 60. * 60.;
+        if (fabs(guiding_ra_ - prev_ra) * SECONDS_PER_HOUR < max_ra_delta)
+        {
+            double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
+            double elapsed = std::chrono::duration<double>(std::chrono::system_clock::now() - guiding_stopped_time_).count();
+
+            double max_pct_period = pConfig->Profile.GetDouble(configPath + "/noreset_max_pct_period", DefaultNoresetMaxPctPeriod);
+
+            Debug.Write(wxString::Format("PPEC: guiding was stopped for %.1f seconds, %.1f%% of period (%.1fs), limit %.1f%% (%.1fs)\n",
+                                         elapsed, elapsed / period_length * 100., period_length, max_pct_period,
+                                         max_pct_period / 100. * period_length));
+
+            if (elapsed < max_pct_period / 100. * period_length)
+            {
+                const double SIDEREAL_SECONDS_PER_SEC = 0.9973;
+                need_reset = false;
+                gear_time_offset = (guiding_ra_ - prev_ra) * SECONDS_PER_HOUR / SIDEREAL_SECONDS_PER_SEC; // seconds
+            }
+        }
+    }
+
+    if (need_reset)
+    {
+        reset();
+    }
+    else
+    {
+        Debug.Write(wxString::Format("PPEC: resume guiding with gear time offset %.1f seconds\n", gear_time_offset));
+
+        // update gear time offset like dither
+        GPG->GuidingDithered(gear_time_offset, 1.0);
+    }
+}
+
+void GuideAlgorithmGaussianProcess::GuidingStopped()
 {
     // need to store the estimated period length in case the user exits the application
     double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
-    reset(); // reset is only done when guiding is stopped or disabled
+    guiding_stopped_time_ = std::chrono::system_clock::now();
 }
 
-void GuideAlgorithmGaussianProcess::GuidingPaused(void)
+void GuideAlgorithmGaussianProcess::GuidingPaused()
 {
 }
 
-void GuideAlgorithmGaussianProcess::GuidingResumed(void)
+void GuideAlgorithmGaussianProcess::GuidingResumed()
 {
 }
 
-void GuideAlgorithmGaussianProcess::GuidingDisabled(void)
+void GuideAlgorithmGaussianProcess::GuidingDisabled()
 {
     // Don't submit guide star movements to the GP while guiding is disabled
     Debug.Write("PPEC model updates disabled\n");
@@ -978,7 +1054,7 @@ void GuideAlgorithmGaussianProcess::GuidingDisabled(void)
     GuidingStopped();               // Keep our last state and reset
 }
 
-void GuideAlgorithmGaussianProcess::GuidingEnabled(void)
+void GuideAlgorithmGaussianProcess::GuidingEnabled()
 {
     Debug.Write("PPEC model updates enabled\n");
     block_updates_ = false;

@@ -120,6 +120,8 @@ namespace math_tools
         return x != x;
     }
 
+    static const double NaN = std::numeric_limits<double>::quiet_NaN();
+
     /*!
      * Checks if a double is infinite via std::numeric_limits<double> functions.
      *

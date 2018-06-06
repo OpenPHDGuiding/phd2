@@ -107,7 +107,8 @@ void GaussianProcessGuider::SetTimestamp()
 }
 
 // adds a new measurement to the circular buffer that holds the data.
-void GaussianProcessGuider::HandleGuiding(double input, double SNR) {
+void GaussianProcessGuider::HandleGuiding(double input, double SNR)
+{
     SetTimestamp();
     get_last_point().measurement = input;
     get_last_point().variance = CalculateVariance(SNR);
@@ -438,19 +439,19 @@ void GaussianProcessGuider::GuidingDitherSettleDone(bool success)
     {
         dither_steps_ = 1; // the last dither step should always be executed by
                            // result(), since it corrects for the time difference
-    }
-}
-
-void GaussianProcessGuider::DirectMoveApplied(double amt, double rate)
-{
-    // we store the amount of dither in seconds of gear time
-// todo: validate this:
-    // dither_offset_ += amt / rate; // this is the amount of time offset
-}
-
-double GaussianProcessGuider::GetControlGain(void) const
-{
-    return parameters.control_gain_;
+    }
+}
+
+void GaussianProcessGuider::DirectMoveApplied(double amt, double rate)
+{
+    // we store the amount of dither in seconds of gear time
+// todo: validate this:
+    // dither_offset_ += amt / rate; // this is the amount of time offset
+}
+
+double GaussianProcessGuider::GetControlGain(void) const
+{
+    return parameters.control_gain_;
 }
 
 bool GaussianProcessGuider::SetControlGain(double control_gain)
@@ -483,7 +484,8 @@ std::vector<double> GaussianProcessGuider::GetGPHyperparameters() const
                                hyperparameters.data() + NumParameters);
 }
 
-bool GaussianProcessGuider::SetGPHyperparameters(std::vector<double> const &hyperparameters) {
+bool GaussianProcessGuider::SetGPHyperparameters(std::vector<double> const &hyperparameters)
+{
     Eigen::VectorXd hyperparameters_eig = Eigen::VectorXd::Map(&hyperparameters[0], hyperparameters.size());
 
     // prevent length scales from becoming too small (makes GP unstable)
@@ -645,7 +647,8 @@ double GaussianProcessGuider::EstimatePeriodLength(const Eigen::VectorXd& time, 
     return period_length;
 }
 
-void GaussianProcessGuider::UpdatePeriodLength(double period_length) {
+void GaussianProcessGuider::UpdatePeriodLength(double period_length)
+{
     std::vector<double> hypers = GetGPHyperparameters();
 
     // assert for the developers...

@@ -45,8 +45,6 @@
 #include "guide_algorithm.h"
 #include "gaussian_process_guider.h"
 
-class wxStopWatch;
-
 /**
  * This class provides a guiding algorithm for the right ascension axis that
  * learns and predicts the periodic gear error with a Gaussian process. This
@@ -54,8 +52,6 @@ class wxStopWatch;
  * error. Further it is able to perform tracking without measurement to increase
  * robustness of the overall guiding system.
  */
-
-
 
 class GuideAlgorithmGaussianProcess : public GuideAlgorithm
 {
@@ -98,9 +94,10 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    GPExpertDialog   *m_expertDialog;       // Exactly one per GP instance independent from ConfigDialogPane lifetimes
+    GPExpertDialog *m_expertDialog;       // Exactly one per GP instance independent from ConfigDialogPane lifetimes
 
 private:
+
     /**
      * Holds all data that is needed for the GP guiding.
      */
@@ -111,17 +108,18 @@ private:
      */
     class GuideAlgorithmGaussianProcessDialogPane;
 
-
     /**
      * Pointer to the class that does the actual work.
      */
-    GaussianProcessGuider* GPG;
+    GaussianProcessGuider *GPG;
 
     /**
      * Dark tracking mode is for debugging: only deduceResult is called if enabled.
      */
     bool dark_tracking_mode_;
     bool block_updates_;             // Don't update GP if guiding is disabled
+    double guiding_ra_;              // allow resuming guiding after guiding stopped if there is no change in RA
+    std::chrono::system_clock::time_point guiding_stopped_time_; // time guiding stopped
 
 protected:
     double GetControlGain() const;
@@ -143,12 +141,12 @@ protected:
     bool SetBoolComputePeriod(bool);
 
     std::vector<double> GetGPHyperparameters() const;
-    bool SetGPHyperparameters(std::vector< double > hyperparameters);
+    bool SetGPHyperparameters(const std::vector<double>& hyperparameters);
 
     double GetPredictionGain() const;
     bool SetPredictionGain(double);
 
-    bool GetDarkTracking();
+    bool GetDarkTracking() const;
     bool SetDarkTracking(bool value);
 
 public:
@@ -175,8 +173,12 @@ public:
     double deduceResult() override;
 
     /**
-     * This method tells the guider that guiding was stopped, e.g. for
-     * slweing. This method resets the internal state of the guider.
+     * This method tells the guider that guiding has started.
+     */
+    void GuidingStarted() override;
+
+    /**
+     * This method tells the guider that guiding was stopped.
      */
     void GuidingStopped() override;
 
@@ -218,13 +220,14 @@ public:
      */
     void reset() override;
 
-    // Tells guider that corrections are/not being sent to mount.  If not, updates should not be applied to the GP algo, specifically to avoid
-    // corruption of the period length
+    // Tells guider that corrections are/not being sent to mount.  If
+    // not, updates should not be applied to the GP algo, specifically
+    // to avoid corruption of the period length
     void GuidingEnabled() override;
-    void GuidingDisabled(void) override;
+    void GuidingDisabled() override;
 
     wxString GetSettingsSummary() const override;
-    wxString GetGuideAlgorithmClassName(void) const override { return "Predictive PEC"; }
+    wxString GetGuideAlgorithmClassName() const override { return "Predictive PEC"; }
     void GetParamNames(wxArrayString& names) const override;
     bool GetParam(const wxString& name, double *val) const override;
     bool SetParam(const wxString& name, double val) override;
