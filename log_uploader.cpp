@@ -37,6 +37,7 @@
 
 #include <curl/curl.h>
 #include <fstream>
+#include <sstream>
 #include <wx/clipbrd.h>
 #include <wx/dir.h>
 #include <wx/hyperlink.h>

@@ -40,8 +40,8 @@
 #include "image_math.h"
 #include "messagebox_proxy.h"
 
-
 class BacklashComp;
+struct GuiderOffset;
 
 enum GUIDE_DIRECTION
 {

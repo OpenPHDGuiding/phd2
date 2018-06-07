@@ -43,6 +43,9 @@
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
 
+#include <algorithm>
+#include <memory>
+
 #include <wx/spinctrl.h>
 #include <wx/stdpaths.h>
 #include <wx/textdlg.h>
@@ -50,8 +53,6 @@
 #include <wx/txtstrm.h>
 #include <wx/utils.h>
 #include <wx/wfstream.h>
-
-#include <memory>
 
 wxDEFINE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
 

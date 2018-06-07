@@ -36,6 +36,8 @@
 #include "phd.h"
 #include "backlash_comp.h"
 
+#include <algorithm>
+
 static const unsigned int HISTORY_SIZE = 10;
 static const unsigned int MIN_COMP_AMOUNT = 20;               // min pulse in ms, must be small enough to effectively disable blc
 static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms

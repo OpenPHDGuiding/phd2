@@ -43,7 +43,8 @@
 #include "phd.h"
 
 #include "guide_algorithm_gaussian_process.h"
-#include <wx/stopwatch.h>
+#include "gaussian_process_guider.h"
+
 #include <ctime>
 
 #include "math_tools.h"
@@ -464,6 +465,7 @@ GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcess(Mount *pMount, Guid
     m_expertDialog = NULL;
     block_updates_ = !(m_pMount->GetGuidingEnabled());
     guiding_ra_ = math_tools::NaN;
+    guiding_pier_side_ = PIER_SIDE_UNKNOWN;
     reset();
 }
 
@@ -976,6 +978,16 @@ static double CurrentRA()
     return math_tools::NaN;
 }
 
+static PierSide CurrentPierSide()
+{
+    return pPointingSource ? pPointingSource->SideOfPier() : PIER_SIDE_UNKNOWN;
+}
+
+inline static wxString FormatRA(double ra)
+{
+    return math_tools::isNaN(ra) ? _T("unknown") : wxString::Format("%.4f hr", ra);
+}
+
 void GuideAlgorithmGaussianProcess::GuidingStarted()
 {
     bool need_reset = true;
@@ -984,13 +996,20 @@ void GuideAlgorithmGaussianProcess::GuidingStarted()
     double prev_ra = guiding_ra_;
     guiding_ra_ = CurrentRA();
 
-    Debug.Write(wxString::Format("PPEC: guiding starts RA = %.4f hr, prev RA = %.4f hr\n", guiding_ra_, prev_ra));
+    PierSide prev_side = guiding_pier_side_;
+    guiding_pier_side_ = CurrentPierSide();
+
+    Debug.Write(wxString::Format("PPEC: guiding starts RA = %s, pier %s, prev RA = %s, pier %s\n",
+                                 FormatRA(guiding_ra_), Mount::PierSideStr(guiding_pier_side_),
+                                 FormatRA(prev_ra), Mount::PierSideStr(prev_side)));
 
     // retain the model (do not reset) if:
-    //    ra has changed by less than 10 seconds (about 2.5 arc-minutes), i.e. mount was not slewed in RA, and
-    //    elapsed time is less than 40% of the worm period
+    //   - ra has changed by less than 10 seconds (about 2.5 arc-minutes), i.e. mount was not slewed in RA, and
+    //   - guiding on the same side of pier, and
+    //   - elapsed time is less than 40% of the worm period
 
-    if (!math_tools::isNaN(guiding_ra_) && !math_tools::isNaN(prev_ra))
+    if (!math_tools::isNaN(guiding_ra_) && !math_tools::isNaN(prev_ra) &&
+        prev_side != PIER_SIDE_UNKNOWN && prev_side == guiding_pier_side_)
     {
         wxString configPath = GetConfigPath();
         double max_ra_delta = pConfig->Profile.GetDouble(configPath + "/noreset_max_ra_delta", DefaultNoresetMaxRaDelta);

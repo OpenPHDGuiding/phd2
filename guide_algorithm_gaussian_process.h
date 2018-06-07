@@ -43,7 +43,11 @@
 #define GUIDE_GAUSSIAN_PROCESS
 
 #include "guide_algorithm.h"
-#include "gaussian_process_guider.h"
+#include "mount.h" // for PierSide
+
+#include <chrono>
+
+class GaussianProcessGuider;
 
 /**
  * This class provides a guiding algorithm for the right ascension axis that
@@ -119,6 +123,7 @@ private:
     bool dark_tracking_mode_;
     bool block_updates_;             // Don't update GP if guiding is disabled
     double guiding_ra_;              // allow resuming guiding after guiding stopped if there is no change in RA
+    PierSide guiding_pier_side_;
     std::chrono::system_clock::time_point guiding_stopped_time_; // time guiding stopped
 
 protected:
