@@ -36,6 +36,8 @@
 #include "profile_wizard.h"
 #include "calstep_dialog.h"
 
+#include <memory>
+
 wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
 EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
 EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)

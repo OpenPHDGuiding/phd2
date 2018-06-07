@@ -37,6 +37,7 @@
 #include "phdupdate.h"
 
 #include <curl/curl.h>
+#include <memory>
 #include <wx/cmdline.h>
 #include <wx/evtloop.h>
 #include <wx/snglinst.h>
