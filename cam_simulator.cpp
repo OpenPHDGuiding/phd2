@@ -916,7 +916,24 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     long const delta_time_ms = last_exposure_time - cur_time;
     last_exposure_time = cur_time;
 
-    double const now = cur_time / 1000.;
+    // simulate worm phase changing with RA slew
+    double ra, dec, st;
+    bool err = pPointingSource->GetCoordinates(&ra, &dec, &st);
+    if (err)
+        ra = 0.;
+    static double s_prev_ra;
+    double dra = norm(ra - s_prev_ra, -12.0, 12.0);
+    s_prev_ra = ra;
+
+    // convert RA hours to SI seconds
+    const double SECONDS_PER_HOUR = 60. * 60.;
+    const double SIDEREAL_SECONDS_PER_SEC = 0.9973;
+    dra *= SECONDS_PER_HOUR / SIDEREAL_SECONDS_PER_SEC;
+    static double s_ra_offset;
+    s_ra_offset += dra;
+
+    // an increase in RA means the worm moved backwards
+    double const now = cur_time / 1000. - s_ra_offset;
 
     // Compute PE - canned PE terms create some "steep" sections of the curve
     static double const max_amp = 4.85;         // max amplitude of canned PE
