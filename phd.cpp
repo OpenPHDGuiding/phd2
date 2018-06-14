@@ -50,12 +50,12 @@
 
 // Globals
 
-PhdConfig *pConfig=NULL;
-Mount *pMount = NULL;
-Mount *pSecondaryMount = NULL;
-Scope *pPointingSource = NULL;
-MyFrame *pFrame = NULL;
-GuideCamera *pCamera = NULL;
+PhdConfig *pConfig = nullptr;
+Mount *pMount = nullptr;
+Mount *pSecondaryMount = nullptr;
+Scope *pPointingSource = nullptr;
+MyFrame *pFrame = nullptr;
+GuideCamera *pCamera = nullptr;
 
 DebugLog Debug;
 GuidingLog GuideLog;
@@ -236,7 +236,7 @@ bool PhdApp::OnInit()
 #endif
 
 #if defined(__WINDOWS__)
-    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     Debug.Write(wxString::Format("CoInitializeEx returns %x\n", hr));
 #endif
 
@@ -301,21 +301,21 @@ bool PhdApp::OnInit()
 
 int PhdApp::OnExit(void)
 {
-    assert(pMount == NULL);
-    assert(pSecondaryMount == NULL);
-    assert(pCamera == NULL);
+    assert(!pMount);
+    assert(!pSecondaryMount);
+    assert(!pCamera);
 
     ImageLogger::Destroy();
 
     PhdController::OnAppExit();
 
     delete pConfig;
-    pConfig = NULL;
+    pConfig = nullptr;
 
     curl_global_cleanup();
 
     delete m_instanceChecker;
-    m_instanceChecker = 0;
+    m_instanceChecker = nullptr;
 
     return wxApp::OnExit();
 }

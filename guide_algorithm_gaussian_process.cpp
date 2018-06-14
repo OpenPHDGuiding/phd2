@@ -281,6 +281,16 @@ void GuideAlgorithmGaussianProcess::GuideAlgorithmGPGraphControlPane::OnMinMoveS
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC minimum move", m_pMinMove->GetValue());
 }
 
+static double GetRetainModelPct(const GuideAlgorithm *algo)
+{
+    return pConfig->Profile.GetDouble(algo->GetConfigPath() + "/noreset_max_pct_period", DefaultNoresetMaxPctPeriod);
+}
+
+static void SetRetainModelPct(const GuideAlgorithm *algo, double val)
+{
+    pConfig->Profile.SetDouble(algo->GetConfigPath() + "/noreset_max_pct_period", val);
+}
+
 class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : public wxEvtHandler, public ConfigDialogPane
 {
     GuideAlgorithmGaussianProcess *m_pGuideAlgorithm;
@@ -289,16 +299,14 @@ class GuideAlgorithmGaussianProcess::GuideAlgorithmGaussianProcessDialogPane : p
     wxSpinCtrlDouble *m_pPKPeriodLength;
     wxSpinCtrl *m_pPredictionGain;
     wxCheckBox       *m_checkboxComputePeriod;
+    wxSpinCtrlDouble *m_retainModelPct;
     wxButton         *m_btnExpertOptions;
 
 public:
     GuideAlgorithmGaussianProcessDialogPane(wxWindow *pParent, GuideAlgorithmGaussianProcess *pGuideAlgorithm)
-      : ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent), m_pGuideAlgorithm(pGuideAlgorithm),
-      m_pControlGain(0), m_pMinMove(0),
-      m_pPKPeriodLength(0), 
-      m_pPredictionGain(0), m_checkboxComputePeriod(0)
+        :
+        ConfigDialogPane(_("Predictive PEC Guide Algorithm"),pParent), m_pGuideAlgorithm(pGuideAlgorithm)
     {
-
         int width;
 
         width = StringWidth(_T("0.00"));
@@ -337,6 +345,14 @@ public:
             DefaultPeriodLengthPerKer));
         DoAdd(m_checkboxComputePeriod);
 
+        width = StringWidth(_T("888"));
+        m_retainModelPct = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                                                      wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 80.0, DefaultNoresetMaxPctPeriod, 1.0);
+        m_retainModelPct->SetDigits(0);
+        DoAdd(wxString::Format(_("Retain model (%% period)")), m_retainModelPct,
+            wxString::Format(_("Enter a percentage greater than 0 to retain the PPEC model after guiding stops. "
+                               "Default = %.f%% of the period length."), DefaultNoresetMaxPctPeriod));
+
         m_btnExpertOptions = new wxButton(pParent, wxID_ANY, _("Expert..."));
         m_btnExpertOptions->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &GuideAlgorithmGaussianProcessDialogPane::OnExpertButton, this);
         m_btnExpertOptions->SetToolTip(_("Change expert options for tuning the predictions. Use at your own risk!"));
@@ -367,6 +383,7 @@ public:
         m_pPKPeriodLength->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
         m_checkboxComputePeriod->SetValue(m_pGuideAlgorithm->GetBoolComputePeriod());
         m_checkboxComputePeriod->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
+        m_retainModelPct->SetValue(GetRetainModelPct(m_pGuideAlgorithm));
 
         m_pGuideAlgorithm->m_expertDialog->LoadExpertValues(m_pGuideAlgorithm, hyperparameters);
 
@@ -388,6 +405,8 @@ public:
         if (pFrame->pGuider->IsGuiding() && m_pGuideAlgorithm->GetBoolComputePeriod() != m_checkboxComputePeriod->GetValue())
             pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " PPEC Adjust Period Length", m_checkboxComputePeriod->GetValue());
         m_pGuideAlgorithm->SetBoolComputePeriod(m_checkboxComputePeriod->GetValue());
+
+        SetRetainModelPct(m_pGuideAlgorithm, m_retainModelPct->GetValue());
     }
 
     virtual void HandleBinningChange(int oldBinVal, int newBinVal)
@@ -830,9 +849,9 @@ bool GuideAlgorithmGaussianProcess::SetPredictionGain(double prediction_gain)
 
 bool GuideAlgorithmGaussianProcess::SetBoolComputePeriod(bool active)
 {
-  GPG->SetBoolComputePeriod(active);
-  pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", active);
-  return true;
+    GPG->SetBoolComputePeriod(active);
+    pConfig->Profile.SetBoolean(GetConfigPath() + "/gp_compute_period", active);
+    return true;
 }
 
 double GuideAlgorithmGaussianProcess::GetControlGain() const
@@ -991,7 +1010,9 @@ inline static wxString FormatRA(double ra)
 void GuideAlgorithmGaussianProcess::GuidingStarted()
 {
     bool need_reset = true;
-    double gear_time_offset;
+    double ra_offset;    // RA delta in SI seconds
+
+    auto now = std::chrono::system_clock::now();
 
     double prev_ra = guiding_ra_;
     guiding_ra_ = CurrentRA();
@@ -1004,34 +1025,45 @@ void GuideAlgorithmGaussianProcess::GuidingStarted()
                                  FormatRA(prev_ra), Mount::PierSideStr(prev_side)));
 
     // retain the model (do not reset) if:
-    //   - ra has changed by less than 10 seconds (about 2.5 arc-minutes), i.e. mount was not slewed in RA, and
     //   - guiding on the same side of pier, and
-    //   - elapsed time is less than 40% of the worm period
+    //   - worm rotation is less than 40% of the worm period
 
     if (!math_tools::isNaN(guiding_ra_) && !math_tools::isNaN(prev_ra) &&
         prev_side != PIER_SIDE_UNKNOWN && prev_side == guiding_pier_side_)
     {
-        wxString configPath = GetConfigPath();
-        double max_ra_delta = pConfig->Profile.GetDouble(configPath + "/noreset_max_ra_delta", DefaultNoresetMaxRaDelta);
-
         const double SECONDS_PER_HOUR = 60. * 60.;
-        if (fabs(guiding_ra_ - prev_ra) * SECONDS_PER_HOUR < max_ra_delta)
+        const double SIDEREAL_SECONDS_PER_SEC = 0.9973;
+
+        // Calculate ra shift, handling 0/24 boundary.
+        // An increase in RA corresponds to a negative shift in "gear
+        // time", i.e., an increase in RA means the worm moved
+        // backwards relative to ordinary tracking
+        ra_offset = norm(prev_ra - guiding_ra_, -12., 12.);
+        ra_offset *= SECONDS_PER_HOUR / SIDEREAL_SECONDS_PER_SEC; // RA hours to SI seconds
+
+        double elapsed_time = std::chrono::duration<double>(now - guiding_stopped_time_).count();
+        double worm_offset = elapsed_time + ra_offset;
+
+        double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
+        double max_pct_period = GetRetainModelPct(this);
+
+        Debug.Write(wxString::Format("PPEC: guiding was stopped for %.1f seconds, deltaRA %+.1fs, worm delta %+.1fs, %.1f%% of period "
+                                     "(%.1fs), limit %.1f%% (%.1fs)\n",
+                                     elapsed_time, -ra_offset, worm_offset,
+                                     fabs(worm_offset) / period_length * 100., period_length,
+                                     max_pct_period, max_pct_period / 100. * period_length));
+
+        if (fabs(worm_offset) < max_pct_period / 100. * period_length)
         {
-            double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
-            double elapsed = std::chrono::duration<double>(std::chrono::system_clock::now() - guiding_stopped_time_).count();
-
-            double max_pct_period = pConfig->Profile.GetDouble(configPath + "/noreset_max_pct_period", DefaultNoresetMaxPctPeriod);
-
-            Debug.Write(wxString::Format("PPEC: guiding was stopped for %.1f seconds, %.1f%% of period (%.1fs), limit %.1f%% (%.1fs)\n",
-                                         elapsed, elapsed / period_length * 100., period_length, max_pct_period,
-                                         max_pct_period / 100. * period_length));
-
-            if (elapsed < max_pct_period / 100. * period_length)
-            {
-                const double SIDEREAL_SECONDS_PER_SEC = 0.9973;
-                need_reset = false;
-                gear_time_offset = (guiding_ra_ - prev_ra) * SECONDS_PER_HOUR / SIDEREAL_SECONDS_PER_SEC; // seconds
-            }
+            need_reset = false;
+        }
+        // TODO: the GP Guider cannot currently handle the case of the
+        // worm moving backwards. The expectation is that measurements
+        // proceed with gear time monotonically increasing.
+        if (!need_reset && worm_offset < 0.)
+        {
+            Debug.Write("PPEC: worm offset is negative, model reset required\n");
+            need_reset = true;
         }
     }
 
@@ -1041,10 +1073,10 @@ void GuideAlgorithmGaussianProcess::GuidingStarted()
     }
     else
     {
-        Debug.Write(wxString::Format("PPEC: resume guiding with gear time offset %.1f seconds\n", gear_time_offset));
+        Debug.Write(wxString::Format("PPEC: resume guiding with gear time offset %.1f seconds\n", ra_offset));
 
         // update gear time offset like dither
-        GPG->GuidingDithered(gear_time_offset, 1.0);
+        GPG->GuidingDithered(ra_offset, 1.0);
     }
 }
 

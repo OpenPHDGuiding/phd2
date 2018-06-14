@@ -157,7 +157,7 @@ void GaussianProcessGuider::UpdateGP(double prediction_point /*= std::numeric_li
     double sum_control = 0;
 
     // transfer the data from the circular buffer to the Eigen::Vectors
-    for(size_t i = 0; i < N-1; i++)
+    for (size_t i = 0; i < N-1; i++)
     {
         sum_control += circular_buffer_data_[i].control; // sum over the control signals
         timestamps(i) = circular_buffer_data_[i].timestamp;
@@ -382,8 +382,8 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
         {
             prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
         }
-        // the point of highest precision shoud be between now and the next step
-        UpdateGP(prediction_point + 0.5*time_step);
+        // the point of highest precision should be between now and the next step
+        UpdateGP(prediction_point + 0.5 * time_step);
 
         // the prediction should end after one time step
         prediction_ = PredictGearError(prediction_point + time_step);
