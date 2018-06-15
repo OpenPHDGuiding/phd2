@@ -345,7 +345,7 @@ void CameraINDI::newProperty(INDI::Property *property)
     else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH)
     {
         if (INDIConfig::Verbose())
-            Debug.Write(wxString::Format(("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName)));
+            Debug.Write(wxString::Format("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName));
 
         video_prop = property->getSwitch();
         has_old_videoprop = false;
