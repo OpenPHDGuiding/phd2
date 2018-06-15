@@ -39,8 +39,9 @@
 
 /* Orion Telescopes VID */
 #define SSAG_LOADER_VENDOR_ID 0x1856
-/* Loader PID for loading firmware */
-#define SSAG_LOADER_PRODUCT_ID 0x0011
+/* Loader PIDs for loading firmware */
+#define SSAG_LOADER_PRODUCT_ID_1 0x0011
+#define SSAG_LOADER_PRODUCT_ID_2 0xba11
 
 
 /* Opens a usb_dev_handle based on the vendor id and product id */
