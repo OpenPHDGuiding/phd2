@@ -55,9 +55,9 @@ class GuideAlgorithmButterworth : public GuideAlgorithm
         int order;
         double corner;
         Filter(FILTER_DESIGN d, int o, double c) :design(d), order(o), corner(c) {};
-        std::string getname();
+        std::string getname() const;
     };
-    std::vector<Filter> c_Filter; // Filter options
+    std::vector<Filter> m_FilterList; // Filter options
 
 protected:
     class GuideAlgorithmButterworthConfigDialogPane : public ConfigDialogPane
@@ -90,8 +90,8 @@ protected:
 
     int GetFilter(void);
     bool SetFilter(int Order);
-    double GetMinMove(void);
-    bool SetMinMove(double minMove);
+    virtual double GetMinMove(void) const;
+    virtual bool SetMinMove(double minMove);
 
     friend class GuideAlgorithmButterworthConfigDialogPane;
 
@@ -104,10 +104,10 @@ public:
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary();
+    virtual wxString GetSettingsSummary() const;
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Butterworth"; }
     virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val);
+    virtual bool GetParam(const wxString& name, double *val) const;
     virtual bool SetParam(const wxString& name, double val);
 };
 
@@ -116,12 +116,12 @@ inline int GuideAlgorithmButterworth::GetFilter(void)
     return m_filter;
 }
 
-inline double GuideAlgorithmButterworth::GetMinMove(void)
+inline double GuideAlgorithmButterworth::GetMinMove(void) const
 {
     return m_minMove;
 }
 
-inline std::string GuideAlgorithmButterworth::Filter::getname()
+inline std::string GuideAlgorithmButterworth::Filter::getname() const
 {
     switch (design)
     {

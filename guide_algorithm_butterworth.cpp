@@ -39,25 +39,22 @@ static const double DefaultMinMove = 0.2;
 GuideAlgorithmButterworth::GuideAlgorithmButterworth(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
 {
-    c_Filter = {
-        Filter(BUTTERWORTH, 1, 2.0), 
+    m_FilterList = {
         Filter(BUTTERWORTH, 1, 4.0), 
         Filter(BUTTERWORTH, 1, 8.0), 
         Filter(BUTTERWORTH, 1, 16.0), 
         Filter(BUTTERWORTH, 1, 32.0),
-        Filter(BUTTERWORTH, 1, 64.0),
-        Filter(BUTTERWORTH, 2, 2.0), 
-        Filter(BUTTERWORTH, 2, 4.0),
-        Filter(BUTTERWORTH, 2, 8.0), 
-        Filter(BUTTERWORTH, 2, 16.0),
-        Filter(BUTTERWORTH, 2, 32.0),
-        Filter(BUTTERWORTH, 2, 64.0), 
-        Filter(BESSEL, 4, 2.0),
-        Filter(BESSEL, 4, 4.0), 
-        Filter(BESSEL, 4, 8.0), 
-        Filter(BESSEL, 4, 16.0),
-        Filter(BESSEL, 4, 32.0),
-        Filter(BESSEL, 4, 64.0),
+        Filter(BUTTERWORTH, 1, 64.0), 
+        Filter(BESSEL, 1, 4.0),
+        Filter(BESSEL, 1, 8.0), 
+        Filter(BESSEL, 1, 16.0),
+        Filter(BESSEL, 1, 32.0),
+        Filter(BESSEL, 1, 64.0),
+        Filter(BESSEL, 2, 4.0),
+        Filter(BESSEL, 2, 8.0),
+        Filter(BESSEL, 2, 16.0),
+        Filter(BESSEL, 2, 32.0),
+        Filter(BESSEL, 2, 64.0),
     };
     int filter = pConfig->Profile.GetInt(GetConfigPath() + "/filter", DefaultFilter);
     SetFilter(filter);
@@ -143,7 +140,7 @@ bool GuideAlgorithmButterworth::SetFilter(int filter)
 
     try
     {
-        if (filter < 0 || filter >= c_Filter.size())
+        if (filter < 0 || filter >= m_FilterList.size())
         {
             throw ERROR_INFO("invalid filter");
         }
@@ -151,13 +148,13 @@ bool GuideAlgorithmButterworth::SetFilter(int filter)
         m_filter = filter;
         m_xcoeff.clear();
         m_ycoeff.clear();
-        m_pFactory = new FilterFactory(c_Filter.at(m_filter).design, c_Filter.at(m_filter).order, c_Filter.at(m_filter).corner);
+        m_pFactory = new FilterFactory(m_FilterList.at(m_filter).design, m_FilterList.at(m_filter).order, m_FilterList.at(m_filter).corner);
         m_order = m_pFactory->order();
         m_gain = m_pFactory->gain();
         m_xcoeff = m_pFactory->xcoeffs;
         m_ycoeff = m_pFactory->ycoeffs;
 
-        Debug.Write(wxString::Format("GuideAlgorithmButterworth::SetFilter(%s)\n", c_Filter.at(m_filter).getname()));
+        Debug.Write(wxString::Format("GuideAlgorithmButterworth::SetFilter(%s)\n", m_FilterList.at(m_filter).getname()));
         Debug.Write(wxString::Format("GuideAlgorithmButterworth::order=%d, corner=%f, gain=%f\n",
             m_order, m_pFactory->corner(), m_gain));
         wxString msg = wxString::Format("GuideAlgorithmButterworth::m_xcoeffs:");
@@ -215,7 +212,7 @@ void GuideAlgorithmButterworth::GetParamNames(wxArrayString& names) const
     names.push_back("minMove");
 }
 
-bool GuideAlgorithmButterworth::GetParam(const wxString& name, double *val)
+bool GuideAlgorithmButterworth::GetParam(const wxString& name, double *val) const
 {
     bool ok = true;
 
@@ -239,11 +236,11 @@ bool GuideAlgorithmButterworth::SetParam(const wxString& name, double val)
     return !err;
 }
 
-wxString GuideAlgorithmButterworth::GetSettingsSummary()
+wxString GuideAlgorithmButterworth::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Minimum move = %.3f\n", GetMinMove()
-        );
+    return wxString::Format("Type=%s, order=%d, corner=%.1f, Minimum move = %.3f\n", 
+        m_FilterList.at(m_filter).getname(), m_order, m_pFactory->corner(), GetMinMove());
 }
 
 ConfigDialogPane *GuideAlgorithmButterworth::GetConfigDialogPane(wxWindow *pParent)
@@ -263,9 +260,9 @@ GuideAlgorithmButterworth::
     m_pFilter = new wxChoice(pParent, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     DoAdd(_("Filter Type"), m_pFilter, _("Choose a filter"));
     m_pFilter->Clear();
-    for (int is = 0; is < m_pGuideAlgorithm->c_Filter.size(); is++) {
+    for (int is = 0; is < m_pGuideAlgorithm->m_FilterList.size(); is++) {
         m_pFilter->AppendString(wxString::Format(_("%s Order %d Corner %.1f"), 
-            m_pGuideAlgorithm->c_Filter.at(is).getname(), m_pGuideAlgorithm->c_Filter.at(is).order, m_pGuideAlgorithm->c_Filter.at(is).corner ));
+            m_pGuideAlgorithm->m_FilterList.at(is).getname(), m_pGuideAlgorithm->m_FilterList.at(is).order, m_pGuideAlgorithm->m_FilterList.at(is).corner ));
     }
 
     width = StringWidth(_T("000.00"));

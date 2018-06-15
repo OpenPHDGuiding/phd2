@@ -34,6 +34,7 @@
 
 #ifndef FILTER_FACTORY_H_INCLUDED
 #define FILTER_FACTORY_H_INCLUDED
+#include <complex>
 
 enum FILTER_DESIGN
 {
