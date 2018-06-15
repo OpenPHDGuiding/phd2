@@ -154,11 +154,12 @@ static bool SelectInterfaceAndDevice()
     case 0:
         //          wxMessageBox("2: USB selected");
         odp.deviceType = DEV_USB;
-        QueryUSBResults usbp;
+        QueryUSBResults2 usbp;
         //          wxMessageBox("3: Sending Query USB");
-        err = SBIGUnivDrvCommand(CC_QUERY_USB, 0, &usbp);
+        err = SBIGUnivDrvCommand(CC_QUERY_USB2, 0, &usbp);
         //          wxMessageBox("4: Query sent");
         //          wxMessageBox(wxString::Format("5: %u cams found",usbp.camerasFound));
+        Debug.Write(wxString::Format("SBIG: CC_QUERY_USB2 returns %hd, camerasFound = %hu\n", err, usbp.camerasFound));
         if (usbp.camerasFound > 1)
         {
             //              wxMessageBox("5a: Enumerating cams");
@@ -169,10 +170,7 @@ static bool SelectInterfaceAndDevice()
             i = wxGetSingleChoiceIndex(_("Select USB camera"), _("Camera name"), USBNames);
             if (i == -1)
                 return true;
-            if (i == 0) odp.deviceType = DEV_USB1;
-            else if (i == 1) odp.deviceType = DEV_USB2;
-            else if (i == 2) odp.deviceType = DEV_USB3;
-            else odp.deviceType = DEV_USB4;
+            odp.deviceType = DEV_USB1 + i;
         }
         break;
     case 1: {
@@ -350,7 +348,7 @@ bool CameraSBIG::Connect(const wxString& camId)
 
     Name = gcir0.name;
     IsColor = Name.Find("Color") != wxNOT_FOUND;
-   
+
     Connected = true;
     return false;
 }
