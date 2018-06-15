@@ -572,6 +572,8 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
             pulseS_prop->value = duration;
             sendNewNumber(pulseGuideNS_prop);
             break;
+        default:
+            break;
         }
 
         if (INDIConfig::Verbose())
