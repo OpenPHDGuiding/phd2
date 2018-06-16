@@ -301,7 +301,7 @@ struct GuidingAsstWin : public wxDialog
     void MakeRecommendations();
     void LogResults();
     void BacklashStep(const PHD_Point& camLoc);
-    void EndBacklashTest(bool normal);
+    void EndBacklashTest(bool completed);
     void BacklashError();
 };
 
@@ -684,7 +684,7 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
         if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
             qual = m_backlashTool->GetMeasurementQuality();
-            if (qual == BacklashTool::MEASUREMENT_VALID)
+            if (qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH)
             {
                 double bltSigmaPx;
                 double bltGearAngle;
@@ -695,12 +695,17 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                 m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
                 bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
                 bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
-                wxString preamble = (m_backlashMs >= 5000 ? ">=" : "");
+                wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
                 wxString MSEC(_("ms"));
                 wxString ARCSEC(_("arc-sec"));
-                wxString outStr = wxString::Format("%s %d \u00B1 %0.0f %s (%0.1f \u00B1 %0.1f %s)",
+                wxString outStr;
+                if (qual == BacklashTool::MEASUREMENT_VALID)
+                    outStr = wxString::Format("%s %d \u00B1 %0.0f %s (%0.1f \u00B1 %0.1f %s)",
                     preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs, MSEC,
                     wxMax(0, bltGearAngle), bltGearAngleSigma, ARCSEC);
+                else
+                    outStr = wxString::Format("%s %d \u00B1 %s",
+                        preamble, wxMax(0, m_backlashMs), MSEC + _(" (test impaired)"));
                 m_othergrid->SetCellValue(m_backlash_loc, outStr);
                 HighlightCell(m_othergrid, m_backlash_loc);
                 outStr += "\n";
@@ -712,7 +717,7 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
             {
                 m_othergrid->SetCellValue(m_backlash_loc, "");
             }
-            EndBacklashTest(qual == BacklashTool::MEASUREMENT_VALID);
+            EndBacklashTest(qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH);
         }
     }
     else
@@ -1134,9 +1139,9 @@ void GuidingAsstWin::DoStop(const wxString& status)
     }
 }
 
-void GuidingAsstWin::EndBacklashTest(bool normal)
+void GuidingAsstWin::EndBacklashTest(bool completed)
 {
-    if (!normal)
+    if (!completed)
     {
         m_backlashTool->StopMeasurement();
         m_othergrid->SetCellValue(m_backlash_loc, _("Backlash test aborted..."));
@@ -1145,18 +1150,17 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
 
     m_measuringBacklash = false;
     m_backlashCB->Enable(true);
-    m_backlashInfo->Show(!normal);
+    m_backlashInfo->Show(!completed);
     Layout();
     GetSizer()->Fit(this);
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
     m_stop->Enable(false);
-    if (normal)
-        MakeRecommendations();
-    else
+    MakeRecommendations();
+    if (!completed)
     {
         wxCommandEvent dummy;
-        OnAppStateNotify(dummy);                    // Need to get the UI back in synch
+        OnAppStateNotify(dummy);            // Make sure UI is in synch
     }
     DoStop();
 }

@@ -821,7 +821,7 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
     double expectedAmount;
     double expectedMagnitude;
     double earlySouthMoves = 0;
-    double blPx;
+    double blPx = 0;
     double northDelta = 0;
     double driftPxPerFrame;
     double nRate;
@@ -869,7 +869,7 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
                     if (blPx * nRate < -200)
                         rslt = MEASUREMENT_SANITY;              // large negative number
                     else
-                    if (blPx >= 0.5 * northDelta)
+                    if (blPx >= 0.7 * northDelta)
                         rslt = MEASUREMENT_TOO_FEW_NORTH;       // bl large compared to total north moves
                     else
                         rslt = MEASUREMENT_VALID;
@@ -1105,13 +1105,14 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                         throw (wxString("BLT: Calculation failed sanity check"));
                         break;
                     case MEASUREMENT_TOO_FEW_NORTH:
-                        break;                                  // Won't happen, handled above
+                        // Don't throw an exception - the test was completed but the bl result is not accurate - handle it in the GA UI
+                        break;
                     case MEASUREMENT_TOO_FEW_SOUTH:
                         m_lastStatus = _("Mount never established consistent south moves - test failed");
                         throw (wxString("BLT: Too few acceptable south moves"));
                         break;
                     default:
-			break;
+			            break;
                     }
                 }
 
@@ -1228,7 +1229,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
 void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
 {
-    if (m_Rslt == MEASUREMENT_VALID && m_stats.count > 1)
+    if ((m_Rslt == MEASUREMENT_VALID || m_Rslt == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) && m_stats.count > 1)
     {
         // Sigma of mean for north moves + sigma of two measurements going south, added in quadrature
         *SigmaPx = sqrt((m_stats.currentSS / m_stats.count) + (2 * m_stats.currentSS / (m_stats.count - 1)));
