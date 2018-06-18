@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libusb.h>
-#ifdef __APPLE__
-  #include <unistd.h>
+#if !defined(_MSC_VER)
+# include <unistd.h>
 #endif
 
 #include "openssag.h"
@@ -38,22 +38,31 @@ static unsigned char firmware[] = { SSAG_FIRMWARE };
 /* EEPROM data (shouldn't be needed) */
 static unsigned char eeprom[] = { SSAG_EEPROM };
 
-bool Loader::Connect()
+Loader::Loader()
+    :
+    handle(NULL)
 {
-    if (usb_open_device(&this->handle, SSAG_LOADER_VENDOR_ID, SSAG_LOADER_PRODUCT_ID_1, NULL)) {
+}
+
+Loader::~Loader()
+{
+    Disconnect();
+}
+
+bool Loader::Connect(int loader_vid, int loader_pid)
+{
+    if (usb_open_device(&this->handle, loader_vid, loader_pid, NULL))
         return true;
-    }
-    if (usb_open_device(&this->handle, SSAG_LOADER_VENDOR_ID, SSAG_LOADER_PRODUCT_ID_2, NULL)) {
-        return true;
-    }
+
     return false;
 }
 
 void Loader::Disconnect()
 {
-    if (this->handle)
+    if (this->handle) {
         libusb_close(this->handle);
-    this->handle = NULL;
+        this->handle = NULL;
+    }
 }
 
 void Loader::EnterResetMode()

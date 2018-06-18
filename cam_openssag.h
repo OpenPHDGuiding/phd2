@@ -36,7 +36,9 @@
 #ifndef CAM_OPENSSAG_H_INCLUDED
 #define CAM_OPENSSAG_H_INCLUDED
 
-#include <openssag.h>
+namespace OpenSSAG {
+    class SSAG;
+}
 
 class CameraOpenSSAG : public GuideCamera
 {
@@ -44,14 +46,15 @@ class CameraOpenSSAG : public GuideCamera
 public:
     CameraOpenSSAG();
     ~CameraOpenSSAG();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    bool ST4PulseGuideScope(int direction, int duration);
-    bool HasNonGuiCapture(void) { return true; }
-    bool ST4HasNonGuiMove(void) { return true; }
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+    void ShowPropertyDialog() override;
 };
 
 #endif // CAM_OPENSSAG_H_INCLUDED

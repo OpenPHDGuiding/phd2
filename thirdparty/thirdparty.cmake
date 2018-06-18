@@ -1282,6 +1282,22 @@ if(UNIX AND NOT APPLE)
 
   endif()  # OPENSOURCE_ONLY
 
+  set(LIBOPENSSAG openssag)
+  set(libopenssag_dir ${thirdparty_dir}/${LIBOPENSSAG}/src)
+  include_directories(${libopenssag_dir})
+  set(libOPENSSAG_SRC
+    ${libopenssag_dir}/firmware.h
+    ${libopenssag_dir}/loader.cpp
+    ${libopenssag_dir}/openssag_priv.h
+    ${libopenssag_dir}/openssag.cpp
+    ${libopenssag_dir}/openssag.h
+    )
+  add_library(OpenSSAG ${libOPENSSAG_SRC})
+  target_link_libraries(OpenSSAG openphd_libusb)
+  target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
+  set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
+
   # math library is needed, and should be one of the last things to link to here
   find_library(mathlib NAMES m)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})

@@ -40,8 +40,7 @@
 /* Orion Telescopes VID */
 #define SSAG_LOADER_VENDOR_ID 0x1856
 /* Loader PIDs for loading firmware */
-#define SSAG_LOADER_PRODUCT_ID_1 0x0011
-#define SSAG_LOADER_PRODUCT_ID_2 0xba11
+#define SSAG_LOADER_PRODUCT_ID 0x0011
 
 
 /* Opens a usb_dev_handle based on the vendor id and product id */
@@ -54,7 +53,7 @@ static inline int usb_open_device(libusb_device_handle **device, int vendorID, i
     ssize_t cnt = libusb_get_device_list(NULL, &list);
     if (cnt < 0)
     {
-        DBG("No USB device found.");
+        DBG("No USB device found.\n");
         return 0;
     }
 
@@ -66,16 +65,16 @@ static inline int usb_open_device(libusb_device_handle **device, int vendorID, i
         int r = libusb_get_device_descriptor(device, &desc);
         if (r < 0)
         {
-            DBG("Device description querying failed for device %d.", i);
+            DBG("Device description querying failed for device %zd.\n", i);
             continue;
         }
         
         if (desc.idVendor == vendorID && desc.idProduct == productId) 
         {
             r = libusb_open(device, &handle);
-            if(r < 0 || handle == 0)
+            if (r < 0 || handle == 0)
             {
-                DBG("Device #%d opening error (serial %d).", i, desc.iSerialNumber);
+                DBG("Device #%zd opening error (serial %d).\n", i, desc.iSerialNumber);
                 continue;
             }
             
@@ -94,7 +93,7 @@ static inline int usb_open_device(libusb_device_handle **device, int vendorID, i
                     (int) sizeof(devserial));
             if (len < 0)
             {
-                DBG("Device open failed: cannot get the serial from the handle.");
+                DBG("Device open failed: cannot get the serial from the handle.\n");
                 libusb_close(handle);
                 handle = 0;
                 continue;
@@ -121,7 +120,7 @@ havedevice:
     int r = libusb_claim_interface(handle, 0);
     if (r != 0) 
     {
-      DBG("USB error in claiming the interface");
+      DBG("USB error in claiming the interface\n");
     }    
     
     
