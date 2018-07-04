@@ -73,7 +73,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_fPixelSize = pixelSize;
     m_binning = binning;
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", Scope::DEFAULT_MOUNT_GUIDE_SPEED);
-	m_dDistance = pConfig->Profile.GetDouble("/scope/CalibrationDistance", DEFAULT_DISTANCE);
+    m_dDistance = pConfig->Profile.GetDouble("/scope/CalibrationDistance", DEFAULT_DISTANCE);
 
     // Now improve on Dec and guide speed if mount/pointing info is available
     if (pPointingSource)
@@ -145,12 +145,12 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps,
                    wxString::Format(_("Targeted number of steps in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_STEPS));
 
-	// Distance for calibration (arcsec)
-	m_pDistance = NewSpinner(this, textWidth, m_dDistance, MIN_DISTANCE, MAX_DISTANCE, 1.0);
-	m_pDistance->SetDigits(0);
-	m_pDistance->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
-	AddTableEntry(m_pInputTableSizer, _("Calibration distance, arc-sec"), m_pDistance,
-		wxString::Format(_("Targeted distance in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_DISTANCE));
+    // Distance for calibration (arcsec)
+    m_pDistance = NewSpinner(this, textWidth, m_dDistance, MIN_DISTANCE, MAX_DISTANCE, 1.0);
+    m_pDistance->SetDigits(0);
+    m_pDistance->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
+    AddTableEntry(m_pInputTableSizer, _("Calibration distance, px"), m_pDistance,
+        wxString::Format(_("Targeted distance in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_DISTANCE));
 
     // Calibration declination
     m_pDeclination = NewSpinner(this, textWidth, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
@@ -211,7 +211,7 @@ void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, in
     double Declination, double distance, double *pImageScale, int *pStepSize)
 {
     double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength, binning); // arc-sec per pixel
-	double totalDuration = distance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
+    double totalDuration = distance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
     double MaxPulse = totalDuration / MIN_STEPS * 1000.0;            // max pulse size to still get MIN steps
     Pulse = wxMin(MaxPulse, Pulse / cos(radians(Declination))); // UI forces abs(Dec) <= 60 degrees
@@ -245,7 +245,7 @@ void CalstepDialog::DoRecalc(void)
         m_pGuideSpeed->SetValue(m_fGuideSpeed);
         m_iNumSteps = m_pNumSteps->GetValue();
         m_dDeclination = std::abs(m_pDeclination->GetValue());
-		m_dDistance = m_pDistance->GetValue();
+        m_dDistance = m_pDistance->GetValue();
 
         if (m_iFocalLength < 50)
         {
@@ -261,7 +261,7 @@ void CalstepDialog::DoRecalc(void)
 
             // Spin controls enforce numeric ranges
             GetCalibrationStepSize(m_iFocalLength, m_fPixelSize, m_binning, m_fGuideSpeed, m_iNumSteps,
-				m_dDeclination, m_dDistance, &m_fImageScale, &m_iStepSize);
+                m_dDeclination, m_dDistance, &m_fImageScale, &m_iStepSize);
 
             m_bValidResult = true;
         }
@@ -293,7 +293,7 @@ bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *binning
         *pixelSize = m_fPixelSize;
         *binning = m_binning;
         *stepSize = m_iStepSize;
-		*distance = m_dDistance;
+        *distance = m_dDistance;
         long lval;
         if (m_pRslt->GetValue().ToLong(&lval) && lval > 0)
             *stepSize = (int) lval;

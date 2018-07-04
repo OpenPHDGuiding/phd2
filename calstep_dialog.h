@@ -52,7 +52,7 @@ private:
     wxChoice *m_binningChoice;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxSpinCtrlDouble *m_pNumSteps;
-	wxSpinCtrlDouble *m_pDistance;
+    wxSpinCtrlDouble *m_pDistance;
     wxSpinCtrlDouble *m_pDeclination;
     wxStaticText *m_status;
     wxTextCtrl *m_pRslt;
@@ -68,7 +68,7 @@ private:
     int m_iStepSize;
     bool m_bValidResult;
     double m_dDeclination;
-	double m_dDistance;
+    double m_dDistance;
 
 public:
 
@@ -80,7 +80,7 @@ public:
     bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, double *distance);
 
     static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed,
-		int desiredSteps, double declination, double distance, double *imageScale, int *stepSize);
+        int desiredSteps, double declination, double distance, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);

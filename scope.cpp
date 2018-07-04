@@ -84,8 +84,8 @@ Scope::Scope()
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
     SetCalibrationDuration(calibrationDuration);
 
-	double calibrationDistance = pConfig->Profile.GetDouble(prefix + "/CalibrationDistance", CalstepDialog::DEFAULT_DISTANCE);
-	SetCalibrationDistance(calibrationDistance);
+    double calibrationDistance = pConfig->Profile.GetDouble(prefix + "/CalibrationDistance", CalstepDialog::DEFAULT_DISTANCE);
+    SetCalibrationDistance(calibrationDistance);
 
     int maxRaDuration  = pConfig->Profile.GetInt(prefix + "/MaxRaDuration", DefaultMaxRaDuration);
     SetMaxRaDuration(maxRaDuration);
@@ -149,27 +149,26 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
 
 bool Scope::SetCalibrationDistance(double calibrationDistance)
 {
-	bool bError = false;
+    bool bError = false;
 
-	try
-	{
-		if (calibrationDistance <= 0)
-		{
-			throw ERROR_INFO("invalid calibrationDistance");
-		}
+    try
+    {
+        if (calibrationDistance <= 0)
+        {
+            throw ERROR_INFO("invalid calibrationDistance");
+        }
 
-		m_calibrationDistance = calibrationDistance;
-	}
-	catch (const wxString& Msg)
-	{
-		POSSIBLY_UNUSED(Msg);
-		bError = true;
-		m_calibrationDistance = CalstepDialog::DEFAULT_DISTANCE;
-	}
+        m_calibrationDistance = calibrationDistance;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_calibrationDistance = CalstepDialog::DEFAULT_DISTANCE;
+    }
 
-	pConfig->Profile.SetDouble("/scope/CalibrationDistance", m_calibrationDistance);
-
-	return bError;
+    pConfig->Profile.SetDouble("/scope/CalibrationDistance", m_calibrationDistance);
+    return bError;
 }
 
 bool Scope::SetMaxDecDuration(int maxDecDuration)
@@ -944,8 +943,8 @@ void Scope::CheckCalibrationDuration(int currDuration)
         {
              double const siderealSecsPerSec = 0.9973;
              double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
-             CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-				 pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, CalstepDialog::DEFAULT_DISTANCE, 0, &rslt);
+            CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
+                pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, CalstepDialog::DEFAULT_DISTANCE, 0, &rslt);
              if (rslt != currDuration)
                 {
                     wxString why = binningChange ? " binning " : " mount guide speed ";
@@ -1066,7 +1065,7 @@ bool Scope::DecCompensationActive() const
 
 int Scope::CalibrationTotDistance()
 {
-	return (int) ceil(GetCalibrationDistance());
+    return (int) ceil(GetCalibrationDistance());
 }
 
 // Convert camera coords to mount coords
@@ -1744,8 +1743,8 @@ wxString Scope::GetSettingsSummary() const
 
 wxString Scope::CalibrationSettingsSummary() const
 {
-	return wxString::Format("Calibration Step = %d ms, Calibration Distance = %d arc-sec, Assume orthogonal axes = %s", GetCalibrationDuration(),
-		GetCalibrationDistance(), IsAssumeOrthogonal() ? "yes" : "no");
+    return wxString::Format("Calibration Step = %d ms, Calibration Distance = %.1f px, Assume orthogonal axes = %s", GetCalibrationDuration(),
+        GetCalibrationDistance(), IsAssumeOrthogonal() ? "yes" : "no");
 }
 
 wxString Scope::GetMountClassName() const
@@ -1793,7 +1792,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 
     m_pScope = pScope;
     width = StringWidth(_T("00000"));
-	
+
     wxBoxSizer* pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pCalibrationDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dur"));
@@ -1809,18 +1808,18 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 
     pCalibSizer->Add(pAutoDuration);
 
-	wxBoxSizer* pCalibDistanceSizer = new wxBoxSizer(wxHORIZONTAL);
-	m_pCalibrationDistance = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
-		wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dist"));
-	pCalibDistanceSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration distance (arc-sec)"), m_pCalibrationDistance,
-		_("How far should the scope move for all calibration steps?")));
-	m_pCalibrationDistance->Enable(enableCtrls);
+    wxBoxSizer* pCalibDistanceSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pCalibrationDistance = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dist"));
+    pCalibDistanceSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration distance (px)"), m_pCalibrationDistance,
+        _("How far should the scope move for all calibration steps?")));
+    m_pCalibrationDistance->Enable(enableCtrls);
 
-	wxBoxSizer* pCalibGroupSizer = new wxBoxSizer(wxVERTICAL);
-	pCalibGroupSizer->Add(pCalibSizer);
-	pCalibGroupSizer->Add(pCalibDistanceSizer);
+    wxBoxSizer* pCalibGroupSizer = new wxBoxSizer(wxVERTICAL);
+    pCalibGroupSizer->Add(pCalibSizer);
+    pCalibGroupSizer->Add(pCalibDistanceSizer);
 
-	AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibGroupSizer);
+    AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibGroupSizer);
 
     m_pNeedFlipDec = new wxCheckBox(GetParentWindow(AD_cbReverseDecOnFlip), wxID_ANY, _("Reverse Dec output after meridian flip"));
     AddCtrl(CtrlMap, AD_cbReverseDecOnFlip, m_pNeedFlipDec,
@@ -1913,9 +1912,9 @@ void ScopeConfigDialogCtrlSet::LoadValues()
 {
     MountConfigDialogCtrlSet::LoadValues();
     m_prevStepSize = m_pScope->GetCalibrationDuration();
-	m_prevCalDistance = m_pScope->GetCalibrationDistance();
+    m_prevCalDistance = m_pScope->GetCalibrationDistance();
     m_pCalibrationDuration->SetValue(m_prevStepSize);
-	m_pCalibrationDistance->SetValue(m_prevCalDistance);
+    m_pCalibrationDistance->SetValue(m_prevCalDistance);
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
@@ -1942,7 +1941,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
 {
     bool usingAO = TheAO() != nullptr;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
-	m_pScope->SetCalibrationDistance(m_pCalibrationDistance->GetValue());
+    m_pScope->SetCalibrationDistance(m_pCalibrationDistance->GetValue());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
@@ -2006,12 +2005,12 @@ void ScopeConfigDialogCtrlSet::SetCalStepSizeCtrlValue(int newStep)
 
 double ScopeConfigDialogCtrlSet::GetCalDistanceCtrlValue()
 {
-	return m_pCalibrationDistance->GetValue();
+    return m_pCalibrationDistance->GetValue();
 }
 
 void ScopeConfigDialogCtrlSet::SetCalDistanceCtrlValue(double newDistance)
 {
-	m_pCalibrationDistance->SetValue(newDistance);
+    m_pCalibrationDistance->SetValue(newDistance);
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
@@ -2019,7 +2018,7 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
     int focalLength = 0;
     double pixelSize = 0;
     int binning = 1;
-	double distance = 0;
+    double distance = 0;
     AdvancedDialog *pAdvancedDlg = pFrame->pAdvancedDialog;
 
     if (pAdvancedDlg)
@@ -2033,14 +2032,14 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
     if (calc.ShowModal() == wxID_OK)
     {
         int calibrationStep;
-		if (calc.GetResults(&focalLength, &pixelSize, &binning, &calibrationStep, &distance))
+        if (calc.GetResults(&focalLength, &pixelSize, &binning, &calibrationStep, &distance))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
             pAdvancedDlg->SetFocalLength(focalLength);
             pAdvancedDlg->SetPixelSize(pixelSize);
             pAdvancedDlg->SetBinning(binning);
             m_pCalibrationDuration->SetValue(calibrationStep);
-			m_pCalibrationDistance->SetValue(distance);
+            m_pCalibrationDistance->SetValue(distance);
         }
     }
 }

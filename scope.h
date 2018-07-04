@@ -52,7 +52,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 {
     Scope* m_pScope;
     wxSpinCtrl *m_pCalibrationDuration;
-	wxSpinCtrl *m_pCalibrationDistance;
+    wxSpinCtrl *m_pCalibrationDistance;
     wxCheckBox *m_pNeedFlipDec;
     wxCheckBox *m_pStopGuidingWhenSlewing;
     wxCheckBox *m_assumeOrthogonal;
@@ -66,7 +66,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxCheckBox *m_pUseDecComp;
 
     int m_prevStepSize;
-	double m_prevCalDistance;
+    double m_prevCalDistance;
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
 public:
@@ -78,8 +78,8 @@ public:
     void ResetDecParameterUI();
     int GetCalStepSizeCtrlValue();
     void SetCalStepSizeCtrlValue(int newStep);
-	double GetCalDistanceCtrlValue();
-	void SetCalDistanceCtrlValue(double newDistance);
+    double GetCalDistanceCtrlValue();
+    void SetCalDistanceCtrlValue(double newDistance);
 };
 
 class Scope : public Mount
@@ -97,7 +97,7 @@ class Scope : public Mount
 
     // Calibration variables
     int m_calibrationSteps;
-	double m_calibrationDistance;
+    double m_calibrationDistance;
     int m_recenterRemaining;
     int m_recenterDuration;
     PHD_Point m_calibrationInitialLocation;   // initial position of guide star
@@ -188,9 +188,9 @@ protected:
 public:
 
     int GetCalibrationDuration() const;
-	double GetCalibrationDistance() const;
+    double GetCalibrationDistance() const;
     bool SetCalibrationDuration(int calibrationDuration);
-	bool SetCalibrationDistance(double calibrationDistance);
+    bool SetCalibrationDistance(double calibrationDistance);
     int GetMaxDecDuration() const;
     bool SetMaxDecDuration(int maxDecDuration);
     int GetMaxRaDuration() const;
@@ -304,7 +304,7 @@ inline int Scope::GetCalibrationDuration() const
 
 inline double Scope::GetCalibrationDistance() const
 {
-	return m_calibrationDistance;
+    return m_calibrationDistance;
 }
 
 inline int Scope::GetMaxDecDuration() const
