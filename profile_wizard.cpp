@@ -457,7 +457,7 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize, double guid
     int calibrationStep;
     double const declination = 0.0;
     CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeed,
-        CalstepDialog::DEFAULT_STEPS, declination, 0, &calibrationStep);
+		CalstepDialog::DEFAULT_STEPS, declination, CalstepDialog::DEFAULT_DISTANCE, 0, &calibrationStep);
     return calibrationStep;
 }
 
