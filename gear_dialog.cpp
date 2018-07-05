@@ -1113,7 +1113,7 @@ bool GearDialog::DoConnectCamera()
         pFrame->SetDarkMenuState();
 
         pFrame->StatusMsg(_("Camera Connected"));
-        
+
         pFrame->UpdateStateLabels();
         pFrame->pStatsWin->UpdateCooler();
     }

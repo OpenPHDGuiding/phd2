@@ -441,7 +441,7 @@ void BacklashComp::SetBacklashPulse(int ms, int floor, int ceiling)
         int oldBLC = m_pulseWidth;
         SetCompValues(ms, floor, ceiling);
         pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
-        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Floor = %d ms,Ceiling = %d ms, %s\n", 
+        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Floor = %d ms, Ceiling = %d ms, %s\n",
             m_pulseWidth, m_adjustmentFloor, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
         if (abs(m_pulseWidth - oldBLC) > 100)
         {

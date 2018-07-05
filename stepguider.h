@@ -38,7 +38,7 @@
 
 class StepGuider;
 
-// The AO has two representations in AdvancedDialog.  One is as a 'mount' sub-class where the AO algorithms are shown in the Algos tab.  The second 
+// The AO has two representations in AdvancedDialog.  One is as a 'mount' sub-class where the AO algorithms are shown in the Algos tab.  The second
 // is as a unique device appearing on the Other_Devices tab.  So there are two distinct ConfigDialogCtrlSet classes to support these two views
 class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
 {
@@ -212,7 +212,7 @@ private:
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions) final;
     int CalibrationMoveSize();
-    int CalibrationTotDistance();
+    int CalibrationTotDistance() override;
     void InitBumpPositions();
 
     double CalibrationTime(int nCalibrationSteps);

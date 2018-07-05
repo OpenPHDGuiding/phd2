@@ -68,7 +68,7 @@ private:
     int m_iStepSize;
     bool m_bValidResult;
     double m_dDeclination;
-    double m_dDistance;
+    int m_calibrationDistance;
 
 public:
 
@@ -77,10 +77,10 @@ public:
 
     CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning);
     ~CalstepDialog(void);
-    bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, double *distance);
+    bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, int *distance);
 
     static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed,
-        int desiredSteps, double declination, double distance, double *imageScale, int *stepSize);
+        int desiredSteps, double declination, int distance, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);

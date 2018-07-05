@@ -50,7 +50,7 @@ enum DEC_GUIDE_MODE
 
 class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 {
-    Scope* m_pScope;
+    Scope *m_pScope;
     wxSpinCtrl *m_pCalibrationDuration;
     wxSpinCtrl *m_pCalibrationDistance;
     wxCheckBox *m_pNeedFlipDec;
@@ -65,8 +65,6 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
 
-    int m_prevStepSize;
-    double m_prevCalDistance;
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
 public:
@@ -78,8 +76,8 @@ public:
     void ResetDecParameterUI();
     int GetCalStepSizeCtrlValue();
     void SetCalStepSizeCtrlValue(int newStep);
-    double GetCalDistanceCtrlValue();
-    void SetCalDistanceCtrlValue(double newDistance);
+    int GetCalDistanceCtrlValue();
+    void SetCalDistanceCtrlValue(int newDistance);
 };
 
 class Scope : public Mount
@@ -97,7 +95,7 @@ class Scope : public Mount
 
     // Calibration variables
     int m_calibrationSteps;
-    double m_calibrationDistance;
+    int m_calibrationDistance;
     int m_recenterRemaining;
     int m_recenterDuration;
     PHD_Point m_calibrationInitialLocation;   // initial position of guide star
@@ -187,10 +185,10 @@ protected:
 
 public:
 
-    int GetCalibrationDuration() const;
-    double GetCalibrationDistance() const;
+    int GetCalibrationDuration() const;  // calibration step size, ms
     bool SetCalibrationDuration(int calibrationDuration);
-    bool SetCalibrationDistance(double calibrationDistance);
+    int GetCalibrationDistance() const;  // calibration distance, px
+    bool SetCalibrationDistance(int calibrationDistance);
     int GetMaxDecDuration() const;
     bool SetMaxDecDuration(int maxDecDuration);
     int GetMaxRaDuration() const;
@@ -269,7 +267,7 @@ private:
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) override;
     int CalibrationMoveSize();
     void CheckCalibrationDuration(int currDuration);
-    int CalibrationTotDistance();
+    int CalibrationTotDistance() override;
 
     void ClearCalibration() override;
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
@@ -302,7 +300,7 @@ inline int Scope::GetCalibrationDuration() const
     return m_calibrationDuration;
 }
 
-inline double Scope::GetCalibrationDistance() const
+inline int Scope::GetCalibrationDistance() const
 {
     return m_calibrationDistance;
 }
