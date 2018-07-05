@@ -457,7 +457,7 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize, double guid
     int calibrationStep;
     double const declination = 0.0;
     CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeed,
-        CalstepDialog::DEFAULT_STEPS, declination, 0, &calibrationStep);
+        CalstepDialog::DEFAULT_STEPS, declination, CalstepDialog::DEFAULT_DISTANCE, 0, &calibrationStep);
     return calibrationStep;
 }
 
@@ -532,8 +532,12 @@ void ProfileWizard::WrapUp()
 
     int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning);
 
-    Debug.AddLine(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d",
-                                   m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks));
+    double pixelScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+    double defaultDistancePx = CalstepDialog::DEFAULT_DISTANCE;
+    double calibrationDistancePx = (int)ceil(std::max(defaultDistancePx, defaultDistancePx / pixelScale));
+
+    Debug.AddLine(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d, CalDist=%d",
+        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks, calibrationDistancePx));
 
     // create the new profile
     if (!m_profile.Commit(m_ProfileName))
@@ -551,6 +555,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/camera/binning", binning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+    pConfig->Profile.SetDouble("/scope/CalibrationDistance", calibrationDistancePx);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     if (m_PositionAware || m_SelectedAuxMount != _("None"))
         pConfig->Profile.SetBoolean("/AutoLoadCalibration", true);
