@@ -79,6 +79,7 @@ public:
     ~CalstepDialog(void);
     bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, int *distance);
 
+    static int GetCalibrationDistance(int focalLength, double pixelSize, int binning);
     static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed,
         int desiredSteps, double declination, int distance, double *imageScale, int *stepSize);
 

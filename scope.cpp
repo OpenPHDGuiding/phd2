@@ -926,15 +926,33 @@ void Scope::CheckCalibrationDuration(int currDuration)
     CalibrationDetails calDetails;
     GetCalibrationDetails(&calDetails);
 
+    bool binningChange = pCamera->Binning != calDetails.origBinning;
+
+    // if binning changed, may need to update the calibration distance
+    if (binningChange)
+    {
+        int prevDistance = GetCalibrationDistance();
+        int newDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
+            pCamera->Binning);
+
+        if (newDistance != prevDistance)
+        {
+            Debug.Write(wxString::Format("CalDistance adjusted at start of calibration from %d to %d because of binning change\n",
+                prevDistance, newDistance));
+
+            SetCalibrationDistance(newDistance);
+        }
+    }
+
     double raSpd;
     double decSpd;
     bool haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);
 
-    // Don't check on very first calibration - mount guide speeds might be buggy or user might have some legit reason for his own calibration stepsize
+    // Don't check the step size on very first calibration - mount guide speeds might be buggy or
+    // user might have some legit reason for his own calibration stepsize
     if (!haveRates || calDetails.raGuideSpeed <= 0)
         return;
 
-    bool binningChange = (pCamera->Binning != calDetails.origBinning);           // CalDuration will have been roughly adjusted already
     bool refineStepSize = binningChange || (fabs(1.0 - raSpd / calDetails.raGuideSpeed) > 0.05);     // binning change or speed change of > 5%
     if (!refineStepSize)
         return;
@@ -943,13 +961,15 @@ void Scope::CheckCalibrationDuration(int currDuration)
     double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
     int rslt = currDuration;
     CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-        pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, CalstepDialog::DEFAULT_DISTANCE, 0, &rslt);
+        pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
 
     if (rslt == currDuration)
         return;
 
     wxString why = binningChange ? " binning " : " mount guide speed ";
-    Debug.Write(wxString::Format("CalDuration adjusted at start of calibration from %d to %d because of %s change\n", currDuration, rslt, why));
+    Debug.Write(wxString::Format("CalDuration adjusted at start of calibration from %d to %d because of %s change\n",
+        currDuration, rslt, why));
+
     SetCalibrationDuration(rslt);
 }
 

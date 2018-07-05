@@ -193,6 +193,16 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, const wxString& labe
     pControl->SetToolTip (toolTip);
 }
 
+// the recommended calibration distance is 20 arc-seconds or 25 pixels, whichever is greater
+// (25 pixels when the image scale is unknown)
+int CalstepDialog::GetCalibrationDistance(int focalLength, double pixelSize, int binning)
+{
+    double pixelScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
+    double nominalDistanceArcsecs = 20.0;
+    double MinDistancePx = CalstepDialog::DEFAULT_DISTANCE;
+    return (int) ceil(std::max(MinDistancePx, nominalDistanceArcsecs / pixelScale));
+}
+
 // Based on computed image scale, compute an RA calibration pulse direction that will result in DesiredSteps
 //  for a "travel" distance of <distance> pixels in each direction, adjusted for declination.
 //  Result will be rounded up to the nearest 50 ms and is constrained to insure Dec calibration is at least

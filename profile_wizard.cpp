@@ -452,12 +452,12 @@ void ProfileWizard::UpdateState(const int change)
     ShowHelp(m_State);
 }
 
-static int GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int binning)
+static int GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int binning, int distance)
 {
     int calibrationStep;
     double const declination = 0.0;
     CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeed,
-        CalstepDialog::DEFAULT_STEPS, declination, CalstepDialog::DEFAULT_DISTANCE, 0, &calibrationStep);
+        CalstepDialog::DEFAULT_STEPS, declination, distance, 0, &calibrationStep);
     return calibrationStep;
 }
 
@@ -530,16 +530,13 @@ void ProfileWizard::WrapUp()
     if (m_useCamera)
         SetBinningLevel(this, m_SelectedCamera, binning);
 
-    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning);
-
-    double pixelScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
-    double defaultDistancePx = CalstepDialog::DEFAULT_DISTANCE;
-    int calibrationDistancePx = (int) ceil(std::max(defaultDistancePx, defaultDistancePx / pixelScale));
+    int calibrationDistance = CalstepDialog::GetCalibrationDistance(m_FocalLength, m_PixelSize, binning);
+    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning, calibrationDistance);
 
     Debug.Write(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, "
-        "AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d, CalDist=%d\n",
+        "AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, CalDist=%d, LaunchDarks=%d\n",
         m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO,
-        m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks, calibrationDistancePx));
+        m_PixelSize, m_FocalLength, calibrationStepSize, calibrationDistance, m_launchDarks));
 
     // create the new profile
     if (!m_profile.Commit(m_ProfileName))
@@ -557,7 +554,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/camera/binning", binning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
-    pConfig->Profile.SetInt("/scope/CalibrationDistance", calibrationDistancePx);
+    pConfig->Profile.SetInt("/scope/CalibrationDistance", calibrationDistance);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     if (m_PositionAware || m_SelectedAuxMount != _("None"))
         pConfig->Profile.SetBoolean("/AutoLoadCalibration", true);
