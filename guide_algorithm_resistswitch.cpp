@@ -209,7 +209,7 @@ bool GuideAlgorithmResistSwitch::SetAggression(double aggr)
 
     try
     {
-        if (aggr <= 0.0 || aggr > 1.0)
+        if (aggr < 0.0 || aggr > 1.0)
         {
             throw ERROR_INFO("invalid aggression");
         }
