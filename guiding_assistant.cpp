@@ -35,6 +35,7 @@
 #include "phd.h"
 #include "guiding_assistant.h"
 #include "backlash_comp.h"
+#include "guiding_stats.h"
 
 #include <wx/textwrapper.h>
 
@@ -253,6 +254,12 @@ struct GuidingAsstWin : public wxDialog
     PHD_Point m_startPos;
     wxString startStr;
     Stats m_statsRA;
+    DescriptiveStats* m_hpfRAStats;
+    DescriptiveStats* m_hpfDecStats;
+    AxisStats* m_decStats;
+    long m_decTimebase;
+    HighPassFilter* m_raHPF;
+    HighPassFilter* m_decHPF;
     Stats m_statsDec;
     double sumSNR;
     double sumMass;
@@ -303,6 +310,7 @@ struct GuidingAsstWin : public wxDialog
     void BacklashStep(const PHD_Point& camLoc);
     void EndBacklashTest(bool completed);
     void BacklashError();
+    void StatsCleanup();
 };
 
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
@@ -343,7 +351,12 @@ GuidingAsstWin::GuidingAsstWin()
       m_measuring(false),
       m_guideOutputDisabled(false),
       m_measurementsTaken(false),
-      m_origSubFrames(-1)
+      m_origSubFrames(-1),
+      m_hpfRAStats(0),
+      m_hpfDecStats(0), 
+      m_raHPF(0),
+      m_decHPF(0),
+      m_decStats(0)
 {
     // Sizer hierarchy:
     // m_vSizer has {instructions, vResultsSizer, m_backlashInfo, btnSizer}
@@ -582,6 +595,21 @@ GuidingAsstWin::~GuidingAsstWin(void)
 {
     pFrame->pGuidingAssistant = 0;
     delete m_backlashTool;
+    StatsCleanup();
+}
+
+void GuidingAsstWin::StatsCleanup()
+{
+    if (m_hpfRAStats)
+        delete m_hpfRAStats;
+    if (m_hpfDecStats)
+        delete m_hpfDecStats;
+    if (m_raHPF)
+        delete m_raHPF;
+    if (m_decHPF)
+        delete m_decHPF;
+    if (m_decStats)
+        delete m_decStats;
 }
 
 static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
@@ -867,6 +895,15 @@ void GuidingAsstWin::MakeRecommendations()
     double rarms;
     double ramean;
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
+    double test_rarms = m_hpfRAStats->GetSigma();
+    double test_ramean = m_hpfDecStats->GetMean();
+    double test_decrms = m_decStats->GetSigma();
+    double test_slope;
+    double test_constrainedSlope;
+    double test_intcpt;
+    double test_corrRms;
+    double test_decMax = m_decStats->GetMaxDisplacement();
+    m_decStats->GetLinearFitResults(&test_slope, &test_constrainedSlope, &test_intcpt, &test_corrRms);
 
     double decrms;
     double decmean;
@@ -893,6 +930,8 @@ void GuidingAsstWin::MakeRecommendations()
     m_ra_val_rec = wxMin(wxMax(m_ra_val_rec, 0.8 * m_dec_val_rec), 1.2 * m_dec_val_rec);        // within 20% of dec recommendation
 
     LogResults();               // Dump the raw statistics
+    Debug.Write(wxString::Format("TESTSTATS: NewDecRMS=%0.3fpx, MaxDec=%0.2fpx, Drift=%0.3f px/min, filteredRaRMS=%0.3fpx\n", test_corrRms, test_decMax, test_slope * 60.0, test_rarms));
+
 
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
@@ -1076,6 +1115,14 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
     m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 
+    // Test Code
+    StatsCleanup();
+    m_hpfRAStats = new DescriptiveStats();
+    m_hpfDecStats = new DescriptiveStats();
+    m_decStats = new AxisStats(false);
+    m_raHPF = new HighPassFilter(hp_cutoff, exposure);
+    m_decHPF = new HighPassFilter(hp_cutoff, exposure);
+
     sumSNR = sumMass = 0.0;
 
     m_start->Enable(false);
@@ -1257,6 +1304,12 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_statsRA.AddSample(ra);
     m_statsDec.AddSample(dec);
 
+    m_hpfRAStats->AddValue(m_raHPF->AddValue(ra));
+    m_hpfDecStats->AddValue(m_decHPF->AddValue(dec));
+    if (m_decStats->GetCount() == 0)
+        m_decTimebase = wxGetCurrentTime();
+    m_decStats->AddGuideInfo(wxGetCurrentTime() - m_decTimebase, dec, 0);
+
     if (m_statsRA.n == 1)
     {
         minRA = maxRA = ra;
@@ -1292,6 +1345,11 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
+    // Test code
+    double test_rarms = m_hpfRAStats->GetSigma();
+    double test_ramean = m_hpfRAStats->GetMean();
+    double test_decrms = m_hpfDecStats->GetSigma();
+    double test_decmean = m_hpfDecStats->GetMean();
 
     double n = (double) m_statsRA.n;
     double combined = hypot(rarms, decrms);

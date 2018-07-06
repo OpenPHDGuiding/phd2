@@ -111,7 +111,6 @@ public:
 
 class BLCHistory
 {
-    //List<BLCEvent> blcEvents;
     std::vector<BLCEvent> blcEvents;
     int blcIndex = 0;
     const int ENTRY_CAPACITY = 3;
