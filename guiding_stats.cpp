@@ -275,7 +275,7 @@ StarDisplacement AxisStats::GetEntry(unsigned int inx)
     if (inx < guidingEntries.size())
         return guidingEntries[inx];
     else
-        throw ("Invalid index");
+        throw ERROR_INFO("Invalid index");
 }
 
 // Private function to re-compute min and max values when guide entries are removed
@@ -292,8 +292,8 @@ void AxisStats::FindMinMaxValues()
     }
 }
 
-// Remove oldest entry in the list, update stats accordingly.  No-op if windowing was set to false
-void AxisStats::RemoveOldestEntry()
+// Remove oldest entry in the list, update stats accordingly.  Returns false if windowing was set to false
+bool AxisStats::RemoveOldestEntry()
 {
     double val;
     double deltaT;
@@ -314,7 +314,9 @@ void AxisStats::RemoveOldestEntry()
         guidingEntries.pop_front();
         if (minDisplacement == target.StarPos || maxDisplacement == target.StarPos)
             FindMinMaxValues();
+        return true;
     }
+    return false;
 }
 
 // DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day 

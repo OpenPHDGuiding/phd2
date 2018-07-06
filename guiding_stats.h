@@ -127,7 +127,7 @@ public:
     ~AxisStats();
     void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
     StarDisplacement GetEntry(unsigned int index);
-    void RemoveOldestEntry();
+    bool RemoveOldestEntry();
     unsigned int GetCount();
     double GetMaxDisplacement();
     double GetMinDisplacement();

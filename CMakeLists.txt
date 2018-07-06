@@ -382,6 +382,8 @@ set(phd2_SRC
   ${phd_src_dir}/guiding_assistant.h
   ${phd_src_dir}/guidinglog.cpp
   ${phd_src_dir}/guidinglog.h
+  ${phd_src_dir}/guiding_stats.cpp
+  ${phd_src_dir}/guiding_stats.h
   ${phd_src_dir}/image_math.cpp
   ${phd_src_dir}/image_math.h
   ${phd_src_dir}/imagelogger.cpp
