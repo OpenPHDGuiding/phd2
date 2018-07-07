@@ -36,7 +36,7 @@
 #include "phdupdate.h"
 #include "sha1.h"
 
-#include <wx/tokenzr.h> 
+#include <wx/tokenzr.h>
 #include <curl/curl.h>
 
 #if LIBCURL_VERSION_MAJOR < 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR < 32)
@@ -295,7 +295,7 @@ struct Updater
         case UPD_SERIES_DEV: default: return _T("dev");
         }
     }
- 
+
     wxString ReleaseInfoURL()
     {
         return wxString::Format(_T("https://openphdguiding.org/release-%s-") OSNAME _T(".txt"), SeriesName());
@@ -315,7 +315,7 @@ struct Updater
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
-        curl_easy_setopt(curl, CURLOPT_URL, (const char *) url);
+        curl_easy_setopt(curl, CURLOPT_URL, static_cast<const char *>(url.c_str()));
 
         CURLcode res = curl_easy_perform(curl);
 
@@ -492,7 +492,7 @@ struct Updater
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_file_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-        curl_easy_setopt(curl, CURLOPT_URL, (const char *) installer_url);
+        curl_easy_setopt(curl, CURLOPT_URL, static_cast<const char *>(installer_url.c_str()));
 
         if (!m_interactive)
         {
