@@ -113,25 +113,23 @@ void CalReviewDialog::AddButtons(CalReviewDialog* parentDialog, wxBoxSizer* pare
 }
 
 // Populate one of the panels in the wxNotebook
-void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
+void CalReviewDialog::CreatePanel(wxPanel *thisPanel, bool AO)
 {
-    wxBoxSizer* panelHSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *panelHSizer = new wxBoxSizer(wxHORIZONTAL);
     thisPanel->SetSizer(panelHSizer);
 
     // Put the graph and its legend on the left side
-    wxBoxSizer* panelGraphVSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *panelGraphVSizer = new wxBoxSizer(wxVERTICAL);
     panelHSizer->Add(panelGraphVSizer, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
     // Use a bitmap button so we don't have to fool with Paint events
     wxBitmap theGraph = CreateGraph(AO);
-    wxBitmapButton* graphButton = new wxBitmapButton(thisPanel, wxID_ANY, theGraph, wxDefaultPosition, wxSize(250, 250), wxBU_AUTODRAW | wxBU_EXACTFIT);
-    panelGraphVSizer->Add(graphButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
-    graphButton->SetBitmapDisabled(theGraph);
-    graphButton->Enable(false);
+    wxStaticBitmap *graph = new wxStaticBitmap(thisPanel, wxID_ANY, theGraph, wxDefaultPosition, wxDefaultSize, 0);
+    panelGraphVSizer->Add(graph, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
 
-    wxBoxSizer* graphLegendGroup = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *graphLegendGroup = new wxBoxSizer(wxHORIZONTAL);
     panelGraphVSizer->Add(graphLegendGroup, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
-    wxStaticText* labelRA = new wxStaticText(thisPanel, wxID_STATIC, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *labelRA = new wxStaticText(thisPanel, wxID_STATIC, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
     labelRA->SetForegroundColour(pFrame->pGraphLog->GetRaOrDxColor());
     if (AO)
         labelRA->SetLabelText(_("X"));
@@ -139,7 +137,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
         labelRA->SetLabelText(_("Right Ascension"));
     graphLegendGroup->Add(labelRA, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    wxStaticText* labelDec = new wxStaticText(thisPanel, wxID_STATIC, _("Declination"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *labelDec = new wxStaticText(thisPanel, wxID_STATIC, _("Declination"), wxDefaultPosition, wxDefaultSize, 0);
     labelDec->SetForegroundColour(pFrame->pGraphLog->GetDecOrDyColor());
     if (AO)
         labelDec->SetLabelText(_("Y"));
@@ -396,18 +394,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 // Build the calibration "step" graph which will appear on the lefthand side of the panels
 wxBitmap CalReviewDialog::CreateGraph(bool AO)
 {
-    wxMemoryDC memDC;
-    wxBitmap bmp(CALREVIEW_BITMAP_SIZE, CALREVIEW_BITMAP_SIZE, -1);
-    wxPen axisPen("GREY", 3, wxCROSS_HATCH);
-    wxColour raColor = pFrame->pGraphLog->GetRaOrDxColor();
-    wxColour decColor = pFrame->pGraphLog->GetDecOrDyColor();
-    wxPen raPen(raColor, 3, wxSOLID);
-    wxPen decPen(decColor, 3, wxSOLID);
-    wxBrush raBrush(raColor, wxSOLID);
-    wxBrush decBrush(decColor, wxSOLID);
     CalibrationDetails calDetails;
-    double scaleFactor;
-    int ptRadius;
 
     if (!pSecondaryMount)
     {
@@ -439,14 +426,18 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         biggestVal = wxMax(biggestVal, fabs(it->y));
     }
 
+    double scaleFactor;
     if (biggestVal > 0.0)
         scaleFactor = ((CALREVIEW_BITMAP_SIZE - 5) / 2) / biggestVal;           // Leave room for circular point
     else
         scaleFactor = 1.0;
 
+    wxMemoryDC memDC;
+    wxBitmap bmp(CALREVIEW_BITMAP_SIZE, CALREVIEW_BITMAP_SIZE, -1);
     memDC.SelectObject(bmp);
     memDC.SetBackground(*wxBLACK_BRUSH);
     memDC.Clear();
+    wxPen axisPen("GREY", 3, wxCROSS_HATCH);
     memDC.SetPen(axisPen);
     // Draw the axes
     memDC.SetDeviceOrigin(wxCoord(CALREVIEW_BITMAP_SIZE / 2), wxCoord(CALREVIEW_BITMAP_SIZE / 2));
@@ -455,10 +446,14 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
 
     if (calDetails.raStepCount > 0)
     {
+        const wxColour& raColor = pFrame->pGraphLog->GetRaOrDxColor();
+        wxPen raPen(raColor, 3, wxSOLID);
+        wxBrush raBrush(raColor, wxSOLID);
+
         // Draw the RA data
         memDC.SetPen(raPen);
         memDC.SetBrush(raBrush);
-        ptRadius = 2;
+        int ptRadius = 2;
 
         // Scale the points, then plot them individually
         for (int i = 0; i < (int) calDetails.raSteps.size(); i++)
@@ -480,12 +475,15 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     }
 
     // Handle the Dec data
+    const wxColour& decColor = pFrame->pGraphLog->GetDecOrDyColor();
+    wxPen decPen(decColor, 3, wxSOLID);
+    wxBrush decBrush(decColor, wxSOLID);
     memDC.SetPen(decPen);
     memDC.SetBrush(decBrush);
-    ptRadius = 2;
+    int ptRadius = 2;
     if (calDetails.decStepCount > 0 && calDetails.decSteps.size() > 0)      // redundant, protection against old bug
     {
-    for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
+        for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
         {
             if (i == calDetails.decStepCount + 2)
             {
@@ -503,7 +501,6 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount - 1), scaleFactor));
     }
 
-    memDC.SelectObject(wxNullBitmap);
     return bmp;
 }
 
