@@ -40,11 +40,11 @@ GuideAlgorithmButterworth::GuideAlgorithmButterworth(Mount *pMount, GuideAxis ax
     : GuideAlgorithm(pMount, axis)
 {
     m_FilterList = {
-        Filter(BUTTERWORTH, 1, 4.0), 
-        Filter(BUTTERWORTH, 1, 8.0), 
-        Filter(BUTTERWORTH, 1, 16.0), 
-        Filter(BUTTERWORTH, 1, 32.0),
-        Filter(BUTTERWORTH, 1, 64.0), 
+//        Filter(BUTTERWORTH, 1, 4.0), 
+//        Filter(BUTTERWORTH, 1, 8.0), 
+//        Filter(BUTTERWORTH, 1, 16.0), 
+//        Filter(BUTTERWORTH, 1, 32.0),
+//        Filter(BUTTERWORTH, 1, 64.0), 
         Filter(BESSEL, 1, 4.0),
         Filter(BESSEL, 1, 8.0), 
         Filter(BESSEL, 1, 16.0),
@@ -55,6 +55,11 @@ GuideAlgorithmButterworth::GuideAlgorithmButterworth(Mount *pMount, GuideAxis ax
         Filter(BESSEL, 2, 16.0),
         Filter(BESSEL, 2, 32.0),
         Filter(BESSEL, 2, 64.0),
+        Filter(BESSEL, 4, 4.0),
+        Filter(BESSEL, 4, 8.0),
+        Filter(BESSEL, 4, 16.0),
+        Filter(BESSEL, 4, 32.0),
+        Filter(BESSEL, 4, 64.0),
     };
     int filter = pConfig->Profile.GetInt(GetConfigPath() + "/filter", DefaultFilter);
     SetFilter(filter);
@@ -113,7 +118,7 @@ double GuideAlgorithmButterworth::result(double input)
     }
     dReturn = m_yv.at(0) -  m_sumCorr; // Return the difference from the uncorrected waveform
 
-    if (fabs(input) < m_minMove)
+    if (fabs(dReturn) < m_minMove)
     {
         dReturn = 0.0;
     }
