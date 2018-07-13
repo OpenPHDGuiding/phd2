@@ -1,5 +1,5 @@
 /*
-*  guide_algorithm_butterworth.h
+*  filterfactory.h
 *  PHD Guiding
 *
 *  Created by Ken Self
