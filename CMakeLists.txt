@@ -305,10 +305,10 @@ source_group(Scopes FILES ${scopes_SRC})
 set(guiding_SRC
   ${phd_src_dir}/backlash_comp.cpp
   ${phd_src_dir}/backlash_comp.h
-  ${phd_src_dir}/filterfactory.cpp
-  ${phd_src_dir}/filterfactory.h
-  ${phd_src_dir}/guide_algorithm_butterworth.cpp
-  ${phd_src_dir}/guide_algorithm_butterworth.h
+  ${phd_src_dir}/zfilterfactory.cpp
+  ${phd_src_dir}/zfilterfactory.h
+  ${phd_src_dir}/guide_algorithm_zfilter.cpp
+  ${phd_src_dir}/guide_algorithm_zfilter.h
   ${phd_src_dir}/guide_algorithm_gaussian_process.cpp # MPI.IS PEC Guider: requires link to the GP target (contrib)
   ${phd_src_dir}/guide_algorithm_gaussian_process.h
   ${phd_src_dir}/guide_algorithm_hysteresis.cpp
