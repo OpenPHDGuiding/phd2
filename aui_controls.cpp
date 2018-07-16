@@ -925,8 +925,8 @@ void PHDStatusBar::UpdateStarInfo(double SNR, bool Saturated)
 
 void PHDStatusBar::UpdateGuiderInfo(const GuideStepInfo& info)
 {
-    m_GuideIndicators->UpdateState(info.directionRA, info.directionDec, fabs(info.mountOffset.X),
-        info.durationRA, fabs(info.mountOffset.Y), info.durationDec);
+    m_GuideIndicators->UpdateState(info.directionRA, info.directionDec, fabs(info.guideDistanceRA),
+        info.durationRA, fabs(info.guideDistanceDec), info.durationDec);
 }
 
 void PHDStatusBar::ClearGuiderInfo()
