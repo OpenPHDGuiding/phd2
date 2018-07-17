@@ -41,7 +41,6 @@
 #include <wx/dcbuffer.h>
 #include <wx/utils.h>
 #include <wx/colordlg.h>
-#include <algorithm>
 
 wxBEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
@@ -785,7 +784,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 GraphLogClientWindow::~GraphLogClientWindow()
 {
     delete [] m_line1;
-    delete[] m_line2;
+    delete [] m_line2;
 }
 
 static void reset_trend_accums(TrendLineAccum accums[4])
@@ -858,7 +857,7 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
     delete [] m_line1;
     m_line1 = new wxPoint[maxLength];
 
-    delete[] m_line2;
+    delete [] m_line2;
     m_line2 = new wxPoint[maxLength];
 
     pConfig->Global.SetInt("/graph/maxLength", m_history.capacity());
@@ -1415,18 +1414,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             case MODE_RADEC:
                 m_line1[j] = sctr.pt(j, h.ra);
                 m_line2[j] = sctr.pt(j, -h.dec); // North corrections Up, North offsets down
-                int j1, j2;
-                int ord;
-                ord = 2;
-                j1 = std::max<int>(i - ord, start_item);
-                j2 = std::min<int>(i + ord, m_history.size()-1);
-                double lr, ld;
-                lr = ld = 0.0;
-                for (int jj = j1; jj <= j2; jj++)
-                {
-                    lr += m_history[jj].ra;
-                    ld -= m_history[jj].dec;
-                }
                 break;
             case MODE_DXDY:
                 m_line1[j] = sctr.pt(j, h.dx);
