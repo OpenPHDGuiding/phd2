@@ -777,8 +777,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
     m_showStarMass = pConfig->Global.GetBoolean("/graph/showStarMass", false);
     m_showStarSNR = pConfig->Global.GetBoolean("/graph/showStarSNR", false);
-
-    m_correctionsToScale = pConfig->Global.GetBoolean("/graph/correctionsToScale", true);
+    m_correctionsToScale = pConfig->Global.GetBoolean("/graph/correctionsToScale", false);
 }
 
 GraphLogClientWindow::~GraphLogClientWindow()
