@@ -41,12 +41,14 @@
 #include <wx/dcbuffer.h>
 #include <wx/utils.h>
 #include <wx/colordlg.h>
+#include <algorithm>
 
 wxBEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
     EVT_BUTTON(BUTTON_GRAPH_SETTINGS,GraphLogWindow::OnButtonSettings)
     EVT_MENU_RANGE(GRAPH_RADEC, GRAPH_DXDY, GraphLogWindow::OnRADecDxDy)
     EVT_MENU_RANGE(GRAPH_ARCSECS, GRAPH_PIXELS, GraphLogWindow::OnArcsecsPixels)
+    EVT_MENU(GRAPH_SCALE_CORR, GraphLogWindow::OnCorrectionScale)
     EVT_MENU(GRAPH_RADX_COLOR, GraphLogWindow::OnRADxColor)
     EVT_MENU(GRAPH_DECDY_COLOR, GraphLogWindow::OnDecDyColor)
     EVT_MENU(GRAPH_STAR_MASS, GraphLogWindow::OnMenuStarMass)
@@ -288,6 +290,11 @@ void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
         item2->Check();
     menu->AppendSeparator();
 
+    // setup Correction styles
+    item1 = menu->AppendCheckItem(GRAPH_SCALE_CORR, _("Corrections to Scale"));
+    item1->Check(m_pClient->m_correctionsToScale);
+    menu->AppendSeparator();
+
     item1 = menu->AppendCheckItem(GRAPH_STAR_MASS, _("Star Mass"));
     item1->Check(m_pClient->m_showStarMass);
     item1 = menu->AppendCheckItem(GRAPH_STAR_SNR, _("Star SNR"));
@@ -365,6 +372,13 @@ void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
         break;
     }
     pConfig->Global.SetInt("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
+    Refresh();
+}
+
+void GraphLogWindow::OnCorrectionScale(wxCommandEvent& evt)
+{
+    m_pClient->m_correctionsToScale = evt.IsChecked();
+    pConfig->Global.SetBoolean("/graph/correctionsToScale", m_pClient->m_correctionsToScale);
     Refresh();
 }
 
@@ -764,12 +778,14 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
     m_showStarMass = pConfig->Global.GetBoolean("/graph/showStarMass", false);
     m_showStarSNR = pConfig->Global.GetBoolean("/graph/showStarSNR", false);
+
+    m_correctionsToScale = pConfig->Global.GetBoolean("/graph/correctionsToScale", true);
 }
 
 GraphLogClientWindow::~GraphLogClientWindow()
 {
     delete [] m_line1;
-    delete [] m_line2;
+    delete[] m_line2;
 }
 
 static void reset_trend_accums(TrendLineAccum accums[4])
@@ -842,7 +858,7 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
     delete [] m_line1;
     m_line1 = new wxPoint[maxLength];
 
-    delete [] m_line2;
+    delete[] m_line2;
     m_line2 = new wxPoint[maxLength];
 
     pConfig->Global.SetInt("/graph/maxLength", m_history.capacity());
@@ -1297,8 +1313,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         {
             int maxDur = GetMaxDuration(m_history, start_item);
 
-            const double ymag = (size.y - 10) * 0.5 / (double) maxDur;
-            ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
+            const double ymagc = !m_correctionsToScale ? (size.y - 10) * 0.5 / (double)maxDur : ymag;
+            ScaleAndTranslate sctr(xorig, yorig, xmag, ymagc);
 
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             dc.SetPen(wxPen(m_raOrDxColor.ChangeLightness(60)));
@@ -1310,7 +1326,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 if (h.raDur != 0)
                 {
                     // West corrections => Up on graph
-                    const int raDur = h.raDir == WEST ? -h.raDur : h.raDur;
+                    const double raDur = !m_correctionsToScale ?
+                        (h.raDir == WEST ? -h.raDur : h.raDur) : -h.racorr; 
                     wxPoint pt(sctr.pt(j, raDur));
                     if (raDur < 0)
                         dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
@@ -1328,7 +1345,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 if (h.decDur != 0)
                 {
                     // North Corrections => Up on graph
-                    const int decDur = h.decDir == SOUTH ? h.decDur : -h.decDur;
+                    const double decDur = !m_correctionsToScale ?
+                        (h.decDir == SOUTH ? h.decDur : -h.decDur) : h.deccorr; 
                     wxPoint pt(sctr.pt(j, decDur));
                     pt.x += 5;
                     if (decDur < 0)
@@ -1397,6 +1415,18 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             case MODE_RADEC:
                 m_line1[j] = sctr.pt(j, h.ra);
                 m_line2[j] = sctr.pt(j, -h.dec); // North corrections Up, North offsets down
+                int j1, j2;
+                int ord;
+                ord = 2;
+                j1 = std::max<int>(i - ord, start_item);
+                j2 = std::min<int>(i + ord, m_history.size()-1);
+                double lr, ld;
+                lr = ld = 0.0;
+                for (int jj = j1; jj <= j2; jj++)
+                {
+                    lr += m_history[jj].ra;
+                    ld -= m_history[jj].dec;
+                }
                 break;
             case MODE_DXDY:
                 m_line1[j] = sctr.pt(j, h.dx);
