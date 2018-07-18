@@ -134,6 +134,8 @@ GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
         return GUIDE_ALGORITHM_RESIST_SWITCH;
     if (s ==_("Predictive PEC"))
         return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
+    if (s == _("ZFilter"))
+        return GUIDE_ALGORITHM_ZFILTER;
     return GUIDE_ALGORITHM_NONE;
 }
 
@@ -155,6 +157,8 @@ wxString GuideAlgorithmName(int algo)
         return _("Resist Switch");
     case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
         return _("Predictive PEC");
+    case GUIDE_ALGORITHM_ZFILTER:
+        return _("ZFilter");
     }
 }
 
@@ -182,6 +186,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             GUIDE_ALGORITHM_LOWPASS2,
             GUIDE_ALGORITHM_RESIST_SWITCH,
             GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
+            GUIDE_ALGORITHM_ZFILTER,
         };
         static GUIDE_ALGORITHM const X_ALGORITHMS_AO[] =                // Keep it clear re which algos make sense for AO
         {
@@ -243,6 +248,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
             GUIDE_ALGORITHM_LOWPASS,
             GUIDE_ALGORITHM_LOWPASS2,
             GUIDE_ALGORITHM_RESIST_SWITCH,
+            GUIDE_ALGORITHM_ZFILTER,
         };
         static GUIDE_ALGORITHM const Y_ALGORITHMS_AO[] =
         {
@@ -641,6 +647,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 break;
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = MakeGaussianProcessGuideAlgo(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_ZFILTER:
+                *ppAlgorithm = new GuideAlgorithmZFilter(mount, axis);
                 break;
 
             default:
