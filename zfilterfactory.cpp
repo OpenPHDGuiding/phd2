@@ -37,11 +37,13 @@ https://www-users.cs.york.ac.uk/~fisher/mkfilter/
 <fisher@minster.york.ac.uk>
 */
 
+#include "phd.h"
+
+#include "zfilterfactory.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-
-#include "zfilterfactory.h"
 
 ZFilterFactory::ZFilterFactory(FILTER_DESIGN f, int o, double p )
 {
@@ -213,7 +215,7 @@ void ZFilterFactory::expandpoly() // given Z-plane poles & zeros, compute top & 
         ycoeffs.push_back( -(botcoeffs[i].real() / botcoeffs.back().real()) );
 }
 
-void ZFilterFactory::expand(std::vector<std::complex<double>> pz, std::vector<std::complex<double>>& coeffs)
+void ZFilterFactory::expand(const std::vector<std::complex<double>>& pz, std::vector<std::complex<double>>& coeffs)
 {
     // compute product of poles or zeros as a polynomial of z 
     int i;
@@ -237,7 +239,7 @@ void ZFilterFactory::expand(std::vector<std::complex<double>> pz, std::vector<st
     }
 }
 
-void ZFilterFactory::multin(std::complex<double> w, std::vector<std::complex<double>> &coeffs)
+void ZFilterFactory::multin(const std::complex<double>& w, std::vector<std::complex<double>>& coeffs)
 {
     /* multiply factor (z-w) into coeffs */
     std::complex<double> nw = -w;
@@ -246,11 +248,10 @@ void ZFilterFactory::multin(std::complex<double> w, std::vector<std::complex<dou
     coeffs[0] = nw * coeffs[0];
 }
 
-std::complex<double> ZFilterFactory::eval(std::vector<std::complex<double>> coeffs, std::complex<double> z)
-  { /* evaluate polynomial in z, substituting for z */
+std::complex<double> ZFilterFactory::eval(const std::vector<std::complex<double>>& coeffs, const std::complex<double>& z)
+{ /* evaluate polynomial in z, substituting for z */
     std::complex<double> sum = std::complex<double>(0.0,0.0);
     for (int i = coeffs.size()-1; i >= 0; i--) 
         sum = (sum * z) + coeffs[i];
     return sum;
-  }
-
+}

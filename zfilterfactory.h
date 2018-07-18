@@ -34,8 +34,10 @@
 
 #ifndef ZFILTER_FACTORY_H_INCLUDED
 #define ZFILTER_FACTORY_H_INCLUDED
+
 #include <complex>
 #include <math.h>
+#include <vector>
 
 enum FILTER_DESIGN
 {
@@ -68,25 +70,26 @@ private:
     std::vector<std::complex<double>> zpoles, zzeros;
 
     void splane();
-    void setpole(std::complex<double>);
+    void setpole(const std::complex<double>&);
     void prewarp();
     void normalize();
     void zplane();
-    std::complex<double> bilinear(std::complex<double>);
+    std::complex<double> bilinear(const std::complex<double>&);
     void expandpoly();
-    void expand(std::vector<std::complex<double>>, std::vector<std::complex<double>>&);
-    void multin(std::complex<double>, std::vector<std::complex<double>>&);
-    std::complex<double> eval(std::vector<std::complex<double>> coeffs, std::complex<double> z);
+    void expand(const std::vector<std::complex<double>>&, std::vector<std::complex<double>>&);
+    void multin(const std::complex<double>&, std::vector<std::complex<double>>&);
+    std::complex<double> eval(const std::vector<std::complex<double>>& coeffs, const std::complex<double>& z);
 };
 
-inline void ZFilterFactory::setpole(std::complex<double> z)
+inline void ZFilterFactory::setpole(const std::complex<double>& z)
 {
     if (z.real() < 0.0)
     {
-            spoles.push_back(z);
+        spoles.push_back(z);
     }
 }
-inline std::complex<double> ZFilterFactory::bilinear(std::complex<double> pz)
+
+inline std::complex<double> ZFilterFactory::bilinear(const std::complex<double>& pz)
 {
     return (2.0 + pz) / (2.0 - pz);
 }
