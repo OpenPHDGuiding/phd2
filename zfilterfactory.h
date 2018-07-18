@@ -35,6 +35,7 @@
 #ifndef ZFILTER_FACTORY_H_INCLUDED
 #define ZFILTER_FACTORY_H_INCLUDED
 #include <complex>
+#include <math.h>
 
 enum FILTER_DESIGN
 {
@@ -52,8 +53,7 @@ public:
     int order() { return m_order;  };
     ZFilterFactory( FILTER_DESIGN f, int o, double p );
 private:
-    const double  PI = 3.14159265358979323846;  // Microsoft C++ does not define M_PI ! 
-    const double TWOPI = (2.0 * PI);
+    const double TWOPI = (2.0 * M_PI);
     const double EPS = 1e-10;
     FILTER_DESIGN filt;
     int m_order;

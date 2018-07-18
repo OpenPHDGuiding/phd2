@@ -91,12 +91,6 @@ double GuideAlgorithmZFilter::result(double input)
 {
     double dReturn=0; 
 
-    if (fabs(dReturn) > fabs(input))
-    {
-        Debug.Write(wxString::Format("GuideAlgorithmZFilter::Result() input %.2f is < calculated value %.2f, using input\n", input, dReturn));
-        dReturn = input;
-    }
-
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
     int order = m_order;
     double gain = m_gain;
@@ -124,14 +118,14 @@ double GuideAlgorithmZFilter::result(double input)
     }
     m_sumCorr += dReturn;
 
-    wxString msg = wxString::Format("GuideAlgorithmZFilter::m_xv ");
+    wxString msg = "GuideAlgorithmZFilter::m_xv ";
     for (int i = 0; i<m_xcoeff.size(); i++)
         msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_xv.at(i)));
     Debug.Write(msg);
-    msg = wxString::Format("GuideAlgorithmZFilter::m_yv ");
+    msg = "GuideAlgorithmZFilter::m_yv ";
     for (int i = 0; i<m_ycoeff.size(); i++)
         msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_yv.at(i)));
-    msg.Append(wxString::Format("\n"));
+    msg.Append("\n");
     Debug.Write(msg);
     msg.Append(wxString::Format("GuideAlgorithmZFilter::Result() returns %.2f, input %.2f, m_sumCorr=%.2f\n", dReturn, input, m_sumCorr));
     Debug.Write(msg);

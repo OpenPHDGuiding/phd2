@@ -120,7 +120,7 @@ void ZFilterFactory::splane() // compute S-plane poles for prototype LP filter
     {
         for (int i = 0; i < 2 * m_order; i++) 
         {
-            double theta = (m_order & 1) ? (i * PI) / m_order : ((i + 0.5) * PI) / m_order;
+            double theta = (m_order & 1) ? (i * M_PI) / m_order : ((i + 0.5) * M_PI) / m_order;
             setpole(std::polar(1.0,theta));
         }
     }
@@ -152,8 +152,8 @@ void ZFilterFactory::prewarp()
     }
     else 
     {
-        warped_alpha1 = tan(PI * raw_alpha1) / PI;
-        warped_alpha2 = tan(PI * raw_alpha2) / PI;
+        warped_alpha1 = tan(M_PI * raw_alpha1) / M_PI;
+        warped_alpha2 = tan(M_PI * raw_alpha2) / M_PI;
     }
 }
 
