@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-02 18:29+0100\n"
-"PO-Revision-Date: 2018-05-24 21:31+0800\n"
+"PO-Revision-Date: 2018-07-18 11:06+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: zh_TW\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 1.8.7\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -492,8 +492,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:650
 msgid "Explanation"
@@ -842,10 +842,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1178
-#: cam_simulator.cpp:1253 cam_simulator.cpp:1427 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:703 cam_indi.cpp:735 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1178 cam_simulator.cpp:1253
+#: cam_simulator.cpp:1427 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1058,25 +1057,25 @@ msgstr "無法連接 StarShoot 自動導星器"
 
 #: cam_openssag.cpp:226
 msgid "SSAG Camera Settings"
-msgstr ""
+msgstr "SSAG 相機設定值"
 
 #: cam_openssag.cpp:238
 msgid "Loader VID:"
-msgstr ""
+msgstr "裝載 VID:"
 
 #: cam_openssag.cpp:240
 #, c-format
 msgid "SSAG Loader USB Vendor ID. Default = 0x%04x"
-msgstr ""
+msgstr "SSAG 裝載器 USB 供應商 ID. 默認值 = 0x%04x"
 
 #: cam_openssag.cpp:248
 msgid "Loader PID:"
-msgstr ""
+msgstr "裝載 PID:"
 
 #: cam_openssag.cpp:250
 #, c-format
 msgid "SSAG Loader USB Product ID. Default = 0x%04x"
-msgstr ""
+msgstr "SSAG 裝載器 USB 產品 ID. 默認值 = 0x%04x"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
@@ -1907,8 +1906,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:545
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3196,8 +3194,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3276,7 +3274,7 @@ msgstr "最大周期性誤差的周期長度 (以秒為單位)，預設值 = %.2
 #: guide_algorithm_gaussian_process.cpp:352
 #, c-format
 msgid "Retain model (%% period)"
-msgstr ""
+msgstr "保留樣板 (%% 週期)"
 
 #: guide_algorithm_gaussian_process.cpp:353
 #, c-format
@@ -3284,6 +3282,7 @@ msgid ""
 "Enter a percentage greater than 0 to retain the PPEC model after guiding "
 "stops. Default = %.f%% of the period length."
 msgstr ""
+"輸入大於 0 的百分比以在導星停止後保留 PPEC 樣板, 默認值 = 週期長度的 %.f%% ."
 
 #: guide_algorithm_gaussian_process.cpp:356
 msgid "Expert..."
@@ -3318,8 +3317,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3341,8 +3340,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3945,7 +3944,7 @@ msgstr "角秒"
 
 #: guiding_assistant.cpp:708
 msgid " (test impaired)"
-msgstr ""
+msgstr "(測試失敗)"
 
 #: guiding_assistant.cpp:811 guiding_assistant.cpp:812
 msgid "Apply"
