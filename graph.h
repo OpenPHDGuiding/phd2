@@ -60,8 +60,6 @@ struct S_HISTORY
     double dy;
     double ra;
     double dec;
-    double racorr;
-    double deccorr;
     double starSNR;
     double starMass;
     int raDur;
@@ -74,7 +72,6 @@ struct S_HISTORY
     S_HISTORY(const GuideStepInfo& step)
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset.X), dy(step.cameraOffset.Y), ra(step.mountOffset.X), dec(step.mountOffset.Y),
-        racorr(step.guideDistanceRA), deccorr(step.guideDistanceDec),
         starSNR(step.starSNR), starMass(step.starMass),
         raDur(step.durationRA), decDur(step.durationDec),
         raDir(step.directionRA), decDir(step.directionDec),

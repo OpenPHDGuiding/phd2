@@ -1309,13 +1309,22 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         if (m_showCorrections)
         {
-            int maxDur = GetMaxDuration(m_history, start_item);
-
-            const double ymagc = !m_correctionsToScale ? (size.y - 10) * 0.5 / (double)maxDur : ymag;
+            double ymagc;
+            if (m_correctionsToScale)
+            {
+                ymagc = ymag;
+            }
+            else
+            {
+                int maxDur = GetMaxDuration(m_history, start_item);
+                ymagc = (size.y - 10) * 0.5 / (double) maxDur;
+            }
             ScaleAndTranslate sctr(xorig, yorig, xmag, ymagc);
 
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             dc.SetPen(wxPen(m_raOrDxColor.ChangeLightness(60)));
+
+            double const xRate = pMount ? pMount->xRate() : 1.0;
 
             for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
             {
@@ -1324,8 +1333,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 if (h.raDur != 0)
                 {
                     // West corrections => Up on graph
-                    const double raDur = !m_correctionsToScale ?
-                        (h.raDir == WEST ? -h.raDur : h.raDur) : -h.racorr; 
+                    double raDur = h.raDir == WEST ? -h.raDur : h.raDur;
+                    if (m_correctionsToScale)
+                        raDur *= xRate;
                     wxPoint pt(sctr.pt(j, raDur));
                     if (raDur < 0)
                         dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
@@ -1336,6 +1346,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             dc.SetPen(wxPen(m_decOrDyColor.ChangeLightness(60)));
 
+            double const yRate = pMount ? pMount->yRate() : 1.0;
+
             for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
             {
                 const S_HISTORY& h = m_history[i];
@@ -1343,8 +1355,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 if (h.decDur != 0)
                 {
                     // North Corrections => Up on graph
-                    const double decDur = !m_correctionsToScale ?
-                        (h.decDir == SOUTH ? h.decDur : -h.decDur) : h.deccorr; 
+                    double decDur = h.decDir == SOUTH ? h.decDur : -h.decDur;
+                    if (m_correctionsToScale)
+                        decDur *= yRate;
                     wxPoint pt(sctr.pt(j, decDur));
                     pt.x += 5;
                     if (decDur < 0)
