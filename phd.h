@@ -72,6 +72,7 @@
 #include <wx/thread.h>
 #include <wx/utils.h>
 
+#include <functional>
 #include <map>
 #include <math.h>
 #include <stdarg.h>
@@ -238,6 +239,7 @@ public:
     void RestartApp(void);
     void HandleRestart(void);
     virtual bool Yield(bool onlyIfNeeded=false);
+    static void ExecInMainThread(std::function<void()> func);
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
     const wxDateTime& GetInitTime() const { return m_initTime; }

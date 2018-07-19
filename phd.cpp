@@ -93,6 +93,18 @@ static void DisableOSXAppNap(void)
 }
 
 // ------------------------  Phd App stuff -----------------------------
+
+struct ExecFuncThreadEvent;
+wxDEFINE_EVENT(EXEC_IN_MAIN_THREAD_EVENT, ExecFuncThreadEvent);
+
+struct ExecFuncThreadEvent : public wxThreadEvent
+{
+    std::function<void()> func;
+    ExecFuncThreadEvent(std::function<void()> func_)
+            : wxThreadEvent(EXEC_IN_MAIN_THREAD_EVENT), func(func_)
+    { }
+};
+
 PhdApp::PhdApp(void)
 {
     m_resetConfig = false;
@@ -100,6 +112,8 @@ PhdApp::PhdApp(void)
 #ifdef  __linux__
     XInitThreads();
 #endif // __linux__
+
+    Bind(EXEC_IN_MAIN_THREAD_EVENT, [](ExecFuncThreadEvent& evt) { evt.func(); });
 };
 
 void PhdApp::HandleRestart()
@@ -347,6 +361,18 @@ bool PhdApp::Yield(bool onlyIfNeeded)
     }
 
     return bReturn;
+}
+
+void PhdApp::ExecInMainThread(std::function<void()> func)
+{
+    if (wxThread::IsMain())
+    {
+        func();
+    }
+    else
+    {
+        wxQueueEvent(&wxGetApp(), new ExecFuncThreadEvent(func));
+    }
 }
 
 wxString PhdApp::GetLocalesDir() const

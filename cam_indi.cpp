@@ -148,7 +148,15 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
             if (ready)
             {
                 ClearStatus();
-                DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
+
+                // call Disconnect in the main thread since that will
+                // want to join the INDI worker thread which is
+                // probably the current thread
+
+                PhdApp::ExecInMainThread(
+                    [this]() {
+                        DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
+                    });
             }
         }
     }

@@ -321,7 +321,6 @@ void ScopeINDI::IndiServerDisconnected(int exit_code)
     {
         pFrame->Alert(_("INDI server disconnected"));
         Disconnect();
-        Scope::Disconnect();
     }
 }
 
@@ -330,7 +329,6 @@ void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 {
     ClearStatus();
     Disconnect();
-    Scope::Disconnect();
 }
 #endif
 
@@ -358,7 +356,16 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
             if (ready)
             {
                 ClearStatus();
-                Scope::Disconnect();
+
+                // call Disconnect in the main thread since that will
+                // want to join the INDI worker thread which is
+                // probably the current thread
+
+                PhdApp::ExecInMainThread(
+                    [this]() {
+                        pFrame->Alert(_("INDI mount was disconnected"));
+                        Disconnect();
+                    });
             }
         }
     }

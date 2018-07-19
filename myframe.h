@@ -301,8 +301,8 @@ public:
 #endif
     void OnPanelClose(wxAuiManagerEvent& evt);
 #if defined (V4L_CAMERA)
-     void OnSaveSettings(wxCommandEvent& evt);
-     void OnRestoreSettings(wxCommandEvent& evt);
+    void OnSaveSettings(wxCommandEvent& evt);
+    void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
     void OnStats(wxCommandEvent& evt);
