@@ -128,24 +128,29 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
-// Dialog for making sure sampling period is adequate for reasonable Dec drift measurement
-struct BLTWait : public wxDialog
+// Dialog for making sure sampling period is adequate for decent measurements
+struct SampleWait : public wxDialog
 {
     wxStaticText *m_CountdownAmount;
     wxTimer m_SecondsTimer;
     int m_SecondsLeft;
 
-    BLTWait(int SamplePeriod);
+    SampleWait(int SamplePeriod, bool BltNeeded);
     void OnTimer(wxTimerEvent& evt);
     void OnCancel(wxCommandEvent& event);
 };
 
-BLTWait::BLTWait(int SecondsLeft) : wxDialog(pFrame, wxID_ANY, _("Backlash Test Sampling"))
+SampleWait::SampleWait(int SecondsLeft, bool BltNeeded) : wxDialog(pFrame, wxID_ANY, _("Extended Sampling"))
 {
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* amtSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* explanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
-    explanation->SetLabelText(_("Additional data sampling is being done to better meaure Dec drift. Backlash testing \nwill start automatically when sampling is completed."));
+    wxString msg;
+    if (BltNeeded)
+        msg = _("Additional data sampling is being done to better meaure Dec drift. Backlash testing \nwill start automatically when sampling is completed.");
+    else
+        msg = _("Additional sampling is being done for accurate measurements.  Results will be shown when sampling is complete.");
+    explanation->SetLabelText(msg);
     MakeBold(explanation);
     wxStaticText* countDownLabel = new wxStaticText(this, wxID_ANY, _("Seconds remaining: "), wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
     m_SecondsLeft = SecondsLeft;
@@ -153,7 +158,7 @@ BLTWait::BLTWait(int SecondsLeft) : wxDialog(pFrame, wxID_ANY, _("Backlash Test 
     amtSizer->Add(countDownLabel, wxSizerFlags(0).Border(wxALL, 8));
     amtSizer->Add(m_CountdownAmount, wxSizerFlags(0).Border(wxALL, 8));
     wxButton* cancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
-    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BLTWait::OnCancel), NULL, this);
+    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SampleWait::OnCancel), NULL, this);
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(cancelBtn, wxSizerFlags(0).Border(wxALL, 8).Center());
 
@@ -164,11 +169,11 @@ BLTWait::BLTWait(int SecondsLeft) : wxDialog(pFrame, wxID_ANY, _("Backlash Test 
     SetAutoLayout(true);
     SetSizerAndFit(vSizer);
 
-    m_SecondsTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(BLTWait::OnTimer), NULL, this);
+    m_SecondsTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(SampleWait::OnTimer), NULL, this);
     m_SecondsTimer.Start(1000);
 }
 
-void BLTWait::OnTimer(wxTimerEvent& evt)
+void SampleWait::OnTimer(wxTimerEvent& evt)
 {
     m_SecondsLeft -= 1;
     if (m_SecondsLeft > 0)
@@ -183,7 +188,7 @@ void BLTWait::OnTimer(wxTimerEvent& evt)
     }
 }
 
-void BLTWait::OnCancel(wxCommandEvent& event)
+void SampleWait::OnCancel(wxCommandEvent& event)
 {
     m_SecondsTimer.Stop();
     if (wxGetKeyState(WXK_CONTROL))
@@ -203,7 +208,7 @@ struct GuidingAsstWin : public wxDialog
         STATE_MEASURING = 2,
         STATE_STOPPED = 3
     };
-    enum DlgConstants {MAX_BACKLASH_COMP = 3000, BLT_MIN_SAMPLING_PERIOD = 120};
+    enum DlgConstants {MAX_BACKLASH_COMP = 3000, GA_MIN_SAMPLING_PERIOD = 120};
 
     wxButton *m_start;
     wxButton *m_stop;
@@ -1175,12 +1180,15 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
 void GuidingAsstWin::OnStop(wxCommandEvent& event)
 {
     bool performBLT = m_backlashCB->IsChecked();
-    if (performBLT && m_elapsedSecs < BLT_MIN_SAMPLING_PERIOD && !m_measuringBacklash)
+    bool longEnough;
+    if (m_elapsedSecs < GA_MIN_SAMPLING_PERIOD && !m_measuringBacklash)
     {
-        BLTWait waitDlg(BLT_MIN_SAMPLING_PERIOD - m_elapsedSecs);
-        performBLT = (waitDlg.ShowModal() == wxOK);
+        SampleWait waitDlg(GA_MIN_SAMPLING_PERIOD - m_elapsedSecs, performBLT);
+        longEnough = (waitDlg.ShowModal() == wxOK);
     }
-    if (performBLT)
+    else
+        longEnough = true;
+    if (longEnough && performBLT)
     {
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
@@ -1209,7 +1217,8 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
     }
     else
     {
-        MakeRecommendations();
+        if (longEnough)
+            MakeRecommendations();
         DoStop();
     }
 }
