@@ -39,76 +39,6 @@
 
 #include <wx/textwrapper.h>
 
-struct Stats
-{
-    double alpha_lp;
-    double alpha_hp;
-    unsigned int n;
-    double a;
-    double q;
-    double hpf;
-    double lpf;
-    double xprev;
-    double peakRawDx;
-
-    void InitStats(double hpfCutoffPeriod, double lpfCutoffPeriod, double samplePeriod)
-    {
-        alpha_hp = hpfCutoffPeriod / (hpfCutoffPeriod + wxMax(1.0, samplePeriod));
-        alpha_lp = 1.0 - (lpfCutoffPeriod / (lpfCutoffPeriod + wxMax(1.0, samplePeriod)));
-        Reset();
-    }
-
-    void Reset()
-    {
-        n = 0;
-        a = 0.0;
-        q = 0.0;
-        peakRawDx = 0.0;
-    }
-
-    void AddSample(double x)
-    {
-        if (n == 0)
-        {
-            // first point
-            hpf = lpf = x;
-        }
-        else
-        {
-            hpf = alpha_hp * (hpf + x - xprev);
-            lpf += alpha_lp * (x - lpf);
-        }
-
-        if (n >= 1)
-        {
-            double const dx = fabs(x - xprev);
-            if (dx > peakRawDx)
-                peakRawDx = dx;
-        }
-
-        xprev = x;
-
-        x = hpf;
-        ++n;
-        double const k = (double) n;
-        double const a0 = a;
-        a += (x - a) / k;
-        q += (x - a0) * (x - a);
-    }
-
-    void GetMeanAndStdev(double *mean, double *stdev)
-    {
-        if (n == 0)
-        {
-            *mean = *stdev = 0.0;
-            return;
-        }
-
-        *mean = a;
-        *stdev = sqrt(q / (double) n);
-    }
-};
-
 inline static void StartRow(int& row, int& column)
 {
     ++row;
@@ -242,8 +172,8 @@ struct GuidingAsstWin : public wxDialog
     wxStaticText *m_backlash_msg;
     wxStaticText *m_exposure_msg;
     wxStaticText *m_calibration_msg;
-    double m_ra_val_rec;  // recommended value
-    double m_dec_val_rec; // recommended value
+    double m_ra_minmove_rec;  // recommended value
+    double m_dec_minmove_rec; // recommended value
     double m_min_exp_rec;
     double m_max_exp_rec;
 
@@ -253,22 +183,23 @@ struct GuidingAsstWin : public wxDialog
     long m_elapsedSecs;
     PHD_Point m_startPos;
     wxString startStr;
-    Stats m_statsRA;
+    //Stats m_statsRA;
     DescriptiveStats* m_hpfRAStats;
+    DescriptiveStats* m_lpfRAStats;
     DescriptiveStats* m_hpfDecStats;
-    AxisStats* m_decStats;
-    long m_decTimebase;
+    AxisStats* m_decAxisStats;
+    AxisStats* m_raAxisStats;
+    long m_axisTimebase;
     HighPassFilter* m_raHPF;
+    LowPassFilter* m_raLPF;
     HighPassFilter* m_decHPF;
-    Stats m_statsDec;
     double sumSNR;
     double sumMass;
-    double minRA;
-    double maxRA;
     double m_lastTime;
-    double maxRateRA; // arc-sec per second
-    double decDriftPerMin;        // px per minute
-    double alignmentError; // arc-minutes
+    double maxRateRA;               // arc-sec per second
+    double decDriftPerMin;          // px per minute
+    double decCorrectedRMS;         // RMS of drift-corrected Dec dataset
+    double alignmentError;          // arc-minutes
     double m_backlashPx;
     int m_backlashMs;
     double m_backlashSigmaMs;
@@ -353,10 +284,13 @@ GuidingAsstWin::GuidingAsstWin()
       m_measurementsTaken(false),
       m_origSubFrames(-1),
       m_hpfRAStats(0),
+      m_lpfRAStats(0),
       m_hpfDecStats(0), 
       m_raHPF(0),
+      m_raLPF(0),
       m_decHPF(0),
-      m_decStats(0)
+      m_decAxisStats(0),
+      m_raAxisStats(0)
 {
     // Sizer hierarchy:
     // m_vSizer has {instructions, vResultsSizer, m_backlashInfo, btnSizer}
@@ -602,14 +536,20 @@ void GuidingAsstWin::StatsCleanup()
 {
     if (m_hpfRAStats)
         delete m_hpfRAStats;
+    if (m_lpfRAStats)
+        delete m_lpfRAStats;
     if (m_hpfDecStats)
         delete m_hpfDecStats;
     if (m_raHPF)
         delete m_raHPF;
+    if (m_raLPF)
+        delete m_raLPF;
     if (m_decHPF)
         delete m_decHPF;
-    if (m_decStats)
-        delete m_decStats;
+    if (m_decAxisStats)
+        delete m_decAxisStats;
+    if (m_raAxisStats)
+        delete m_raAxisStats;
 }
 
 static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
@@ -768,11 +708,11 @@ void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
 
     if (raAlgo->GetMinMove() >= 0.0)
     {
-        if (!raAlgo->SetMinMove(m_ra_val_rec))
+        if (!raAlgo->SetMinMove(m_ra_minmove_rec))
         {
-            Debug.Write(wxString::Format("GuideAssistant changed RA_MinMove to %0.2f\n", m_ra_val_rec));
+            Debug.Write(wxString::Format("GuideAssistant changed RA_MinMove to %0.2f\n", m_ra_minmove_rec));
             pFrame->pGraphLog->UpdateControls();
-            pFrame->NotifyGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_ra_val_rec);
+            pFrame->NotifyGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_ra_minmove_rec);
             m_raMinMoveButton->Enable(false);
         }
         else
@@ -791,11 +731,11 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 
     if (decAlgo->GetMinMove() >= 0.0)
     {
-        if (!decAlgo->SetMinMove(m_dec_val_rec))
+        if (!decAlgo->SetMinMove(m_dec_minmove_rec))
         {
-            Debug.Write(wxString::Format("GuideAssistant changed Dec_MinMove to %0.2f\n", m_dec_val_rec));
+            Debug.Write(wxString::Format("GuideAssistant changed Dec_MinMove to %0.2f\n", m_dec_minmove_rec));
             pFrame->pGraphLog->UpdateControls();
-            pFrame->NotifyGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_dec_val_rec);
+            pFrame->NotifyGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_dec_minmove_rec);
             m_decMinMoveButton->Enable(false);
         }
         else
@@ -892,46 +832,40 @@ static wxString SizedMsg(wxString msg)
 
 void GuidingAsstWin::MakeRecommendations()
 {
-    double rarms;
-    double ramean;
-    m_statsRA.GetMeanAndStdev(&ramean, &rarms);
-    double test_rarms = m_hpfRAStats->GetSigma();
-    double test_ramean = m_hpfDecStats->GetMean();
-    double test_decrms = m_decStats->GetSigma();
-    double test_slope;
-    double test_constrainedSlope;
-    double test_intcpt;
-    double test_corrRms;
-    double test_decMax = m_decStats->GetMaxDisplacement();
-    m_decStats->GetLinearFitResults(&test_slope, &test_constrainedSlope, &test_intcpt, &test_corrRms);
+    double pxscale = pFrame->GetCameraPixelScale();
+    double rarms = m_hpfRAStats->GetSigma();
+    double ramean = m_hpfDecStats->GetMean();
+    // Using linear-fit, get the drift-corrected Dec rms for things like min-move estimates
+    double slope;
+    double intcpt;
+    m_decAxisStats->GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
 
-    double decrms;
-    double decmean;
-    m_statsDec.GetMeanAndStdev(&decmean, &decrms);
-
-    double multiplier_ra  = 1.28;  // 80% prediction interval
-    double multiplier_dec = 1.64;  // 90% prediction interval
+    double multiplier_ra  = 1.0;  // 66% prediction interval
+    double multiplier_dec = 1.28;  // 80% prediction interval
     double ideal_min_exposure;
     double ideal_max_exposure;
     double min_rec_range = 2.0;
     // round up to next multiple of .05, but do not go below 0.10 pixel
     double const unit = 0.05;
-    double rounded_rarms = std::max(round(rarms * multiplier_ra / unit + 0.5) * unit, 0.10);
-    double rounded_decrms = std::max(round(decrms * multiplier_dec / unit + 0.5) * unit, 0.10);
+    //double rounded_rarms = std::max(round(rarms * multiplier_ra / unit + 0.5) * unit, 0.10);
+    double rounded_decrms = std::max(round(decCorrectedRMS * multiplier_dec / unit + 0.5) * unit, 0.10);
     CalibrationDetails calDetails;
     wxString logStr;
 
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
-    m_ra_val_rec = rounded_rarms;
-    m_dec_val_rec = rounded_decrms;
+    //m_ra_val_rec = rounded_rarms;
+    m_dec_minmove_rec = rounded_decrms;
+    m_ra_minmove_rec = m_dec_minmove_rec * multiplier_ra / multiplier_dec;
     // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
-    m_ra_val_rec = wxMin(wxMax(m_ra_val_rec, 0.8 * m_dec_val_rec), 1.2 * m_dec_val_rec);        // within 20% of dec recommendation
+    m_ra_minmove_rec = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
+    // Refine the drift-limiting exposure value based on the ra_min_move recommendation
+    m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
+        wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
 
     LogResults();               // Dump the raw statistics
-    Debug.Write(wxString::Format("TESTSTATS: NewDecRMS=%0.3fpx, MaxDec=%0.2fpx, Drift=%0.3f px/min, filteredRaRMS=%0.3fpx\n", test_corrRms, test_decMax, test_slope * 60.0, test_rarms));
-
+    Debug.Write(wxString::Format("Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec RMS=%0.3fpx\n", decDriftPerMin, decCorrectedRMS));
 
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
@@ -978,7 +912,7 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
-    if ((sumSNR / (double)m_statsRA.n) < 5.0)
+    if ((sumSNR / (double)m_lpfRAStats->GetCount()) < 5.0)
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
         if (!m_snr_msg)
@@ -1019,7 +953,7 @@ void GuidingAsstWin::MakeRecommendations()
 
     if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0.0)
     {
-        wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_val_rec);
+        wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_minmove_rec);
         if (!m_ra_msg)
         {
             m_ra_msg = AddRecommendationEntry(SizedMsg(msgText),
@@ -1037,7 +971,7 @@ void GuidingAsstWin::MakeRecommendations()
 
     if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0.0)
     {
-        wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_val_rec);
+        wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_minmove_rec);
         if (!m_dec_msg)
         {
             m_dec_msg = AddRecommendationEntry(SizedMsg(msgText),
@@ -1112,15 +1046,18 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
     double lp_cutoff = wxMax(6.0, 3.0 * exposure);
     double hp_cutoff = 1.0;
-    m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
-    m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
+    //m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
+    //m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 
     // Test Code
     StatsCleanup();
     m_hpfRAStats = new DescriptiveStats();
+    m_lpfRAStats = new DescriptiveStats();
     m_hpfDecStats = new DescriptiveStats();
-    m_decStats = new AxisStats(false);
+    m_decAxisStats = new AxisStats(false);
+    m_raAxisStats = new AxisStats(false);
     m_raHPF = new HighPassFilter(hp_cutoff, exposure);
+    m_raLPF = new LowPassFilter(lp_cutoff, exposure);
     m_decHPF = new HighPassFilter(hp_cutoff, exposure);
 
     sumSNR = sumMass = 0.0;
@@ -1220,6 +1157,7 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         BLTWait waitDlg(BLT_MIN_SAMPLING_PERIOD - m_elapsedSecs);
         performBLT = (waitDlg.ShowModal() == wxOK);
     }
+
     if (performBLT)
     {
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
@@ -1299,75 +1237,54 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
     double ra = info.mountOffset.X;
     double dec = info.mountOffset.Y;
-    double prevRAlpf = m_statsRA.lpf;
-
-    m_statsRA.AddSample(ra);
-    m_statsDec.AddSample(dec);
+    // Update the time measures
+    wxLongLong_t elapsedms = ::wxGetUTCTimeMillis().GetValue() - m_startTime;
+    m_elapsedSecs = (double)elapsedms / 1000.0;
 
     m_hpfRAStats->AddValue(m_raHPF->AddValue(ra));
+    double prevRAlpf = m_raLPF->GetCurrentLPF();
+    double newRAlpf = m_raLPF->AddValue(ra);
+    if (m_lpfRAStats->GetCount() == 0)
+        prevRAlpf = newRAlpf;
+    m_lpfRAStats->AddValue(newRAlpf);
     m_hpfDecStats->AddValue(m_decHPF->AddValue(dec));
-    if (m_decStats->GetCount() == 0)
-        m_decTimebase = wxGetCurrentTime();
-    m_decStats->AddGuideInfo(wxGetCurrentTime() - m_decTimebase, dec, 0);
+    Debug.Write(wxString::Format("TEST_FILTERS:, RA_Low,%0.2f, RA_High,%0.2f, RA_Total,%0.2f\n",
+        newRAlpf, m_raHPF->GetCurrentHPF(), ra));
 
-    if (m_statsRA.n == 1)
+    if (m_decAxisStats->GetCount() == 0)
+        m_axisTimebase = wxGetCurrentTime();
+    m_decAxisStats->AddGuideInfo(wxGetCurrentTime() - m_axisTimebase, dec, 0);
+    m_raAxisStats->AddGuideInfo(wxGetCurrentTime() - m_axisTimebase, ra, 0);
+
+    // Compute the maximum interval RA movement rate using low-passed-filtered data
+    if (m_lpfRAStats->GetCount() == 1)
     {
-        minRA = maxRA = ra;
         m_startPos = info.mountOffset;
         maxRateRA = 0.0;
     }
     else
     {
-        if (ra < minRA)
-            minRA = ra;
-        if (ra > maxRA)
-            maxRA = ra;
-
         double dt = info.time - m_lastTime;
         if (dt > 0.0001)
         {
-            double raRate = fabs(m_statsRA.lpf - prevRAlpf) / dt;
+            double raRate = fabs(newRAlpf - prevRAlpf) / dt;
             if (raRate > maxRateRA)
                 maxRateRA = raRate;
         }
+
     }
-    double rangeRA = maxRA - minRA;
-    double driftRA = ra - m_startPos.X;
-    double driftDec = dec - m_startPos.Y;
+    double rangeRA = m_lpfRAStats->GetMaximum() - m_lpfRAStats->GetMinimum();
+    double driftRA = ra - m_startPos.X;             // Raw max-min, can't smooth this one reliably
 
     m_lastTime = info.time;
     sumSNR += info.starSNR;
     sumMass += info.starMass;
 
-    double ramean, rarms;
-    double decmean, decrms;
-    double pxscale = pFrame->GetCameraPixelScale();
-
-    m_statsRA.GetMeanAndStdev(&ramean, &rarms);
-    m_statsDec.GetMeanAndStdev(&decmean, &decrms);
-    // Test code
-    double test_rarms = m_hpfRAStats->GetSigma();
-    double test_ramean = m_hpfRAStats->GetMean();
-    double test_decrms = m_hpfDecStats->GetSigma();
-    double test_decmean = m_hpfDecStats->GetMean();
-
-    double n = (double) m_statsRA.n;
+    // Update the realtime high-frequency stats
+    double rarms = m_hpfRAStats->GetSigma();
+    double decrms = m_hpfDecStats->GetSigma();
+    double n = (double)m_lpfRAStats->GetCount();
     double combined = hypot(rarms, decrms);
-
-    wxLongLong_t elapsedms = ::wxGetUTCTimeMillis().GetValue() - m_startTime;
-    m_elapsedSecs = (double) elapsedms / 1000.0;
-
-    double raDriftRate = driftRA / m_elapsedSecs * 60.0;
-    decDriftPerMin = driftDec / m_elapsedSecs * 60.0;
-    double declination = pPointingSource->GetDeclination();
-    double cosdec;
-    if (declination == UNKNOWN_DECLINATION)
-        cosdec = 1.0; // assume declination 0
-    else
-        cosdec = cos(declination);
-    // polar alignment error from Barrett:
-    // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
-    alignmentError = 3.8197 * fabs(decDriftPerMin) * pxscale / cosdec;
 
     wxString SEC(_("s"));
     wxString MSEC(_("ms"));
@@ -1378,7 +1295,24 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     wxString PXPERSEC(_("px/sec"));
     wxString ARCSECPERMIN(_("arc-sec/min"));
     wxString ARCSECPERSEC(_("arc-sec/sec"));
-    //wxString HZ(_("Hz"));
+
+    // Update the running estimate of polar alignment error using linear-fit dec drift rate
+    double pxscale = pFrame->GetCameraPixelScale();
+    double declination = pPointingSource->GetDeclination();
+    double cosdec;
+    if (declination == UNKNOWN_DECLINATION)
+        cosdec = 1.0; // assume declination 0
+    else
+        cosdec = cos(declination);
+    if (n > 1)
+    {
+        // polar alignment error from Barrett:
+        // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
+        double intcpt;
+        m_decAxisStats->GetLinearFitResults(&decDriftPerMin, &intcpt);
+        decDriftPerMin = 60.0 * decDriftPerMin;
+        alignmentError = 3.8197 * fabs(decDriftPerMin) * pxscale / cosdec;
+    }
 
     m_statusgrid->SetCellValue(m_timestamp_loc, startStr);
     m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%g%s", (double)pFrame->RequestedExposureDuration() / 1000.0, SEC));
@@ -1390,16 +1324,22 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     FillResultCell(m_displacementgrid, m_ra_rms_loc, rarms, rarms * pxscale, PX, ARCSEC);
     FillResultCell(m_displacementgrid, m_dec_rms_loc, decrms, decrms * pxscale, PX, ARCSEC);
     FillResultCell(m_displacementgrid, m_total_rms_loc, combined, combined * pxscale, PX, ARCSEC);
-
-    FillResultCell(m_othergrid, m_ra_peak_loc, m_statsRA.peakRawDx, m_statsRA.peakRawDx * pxscale, PX, ARCSEC);
-    FillResultCell(m_othergrid, m_dec_peak_loc, m_statsDec.peakRawDx, m_statsDec.peakRawDx * pxscale, PX, ARCSEC);
-    FillResultCell(m_othergrid, m_ra_peakpeak_loc, rangeRA, rangeRA * pxscale, PX, ARCSEC);
-    FillResultCell(m_othergrid, m_ra_drift_loc, raDriftRate, raDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
-    FillResultCell(m_othergrid, m_ra_peak_drift_loc, maxRateRA, maxRateRA * pxscale, PXPERSEC, ARCSECPERSEC);
-    m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
-        wxString::Format("%6.1f %s ",  1.3 * rarms / maxRateRA, SEC));
-    FillResultCell(m_othergrid, m_dec_drift_loc, decDriftPerMin, decDriftPerMin * pxscale, PXPERMIN, ARCSECPERMIN);
-    m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
+    if (n > 1)
+    {
+        FillResultCell(m_othergrid, m_ra_peak_loc, 
+            m_raAxisStats->GetMaxDelta(), m_raAxisStats->GetMaxDelta() * pxscale, PX, ARCSEC);
+        FillResultCell(m_othergrid, m_dec_peak_loc,
+            m_decAxisStats->GetMaxDelta(), m_decAxisStats->GetMaxDelta() * pxscale, PX, ARCSEC);
+        double raPkPk = m_lpfRAStats->GetMaximum() - m_lpfRAStats->GetMinimum();
+        FillResultCell(m_othergrid, m_ra_peakpeak_loc, raPkPk, raPkPk * pxscale, PX, ARCSEC);
+        double raDriftRate = driftRA / m_elapsedSecs * 60.0;
+        FillResultCell(m_othergrid, m_ra_drift_loc, raDriftRate, raDriftRate * pxscale, PXPERMIN, ARCSECPERMIN);
+        FillResultCell(m_othergrid, m_ra_peak_drift_loc, maxRateRA, maxRateRA * pxscale, PXPERSEC, ARCSECPERSEC);
+        m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
+            wxString::Format("%6.1f %s ", 1.3 * rarms / maxRateRA, SEC));              // Will get revised when min-move is computed
+        FillResultCell(m_othergrid, m_dec_drift_loc, decDriftPerMin, decDriftPerMin * pxscale, PXPERMIN, ARCSECPERMIN);
+        m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
+    }
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()
