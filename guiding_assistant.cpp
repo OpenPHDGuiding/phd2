@@ -43,6 +43,7 @@ struct Stats
     double alpha_lp;
     double alpha_hp;
     unsigned int n;
+    double x0;             // initial offset
     double a;
     double q;
     double hpf;
@@ -70,10 +71,16 @@ struct Stats
         if (n == 0)
         {
             // first point
-            hpf = lpf = x;
+
+            // The high pass filter standard deviation is only valid
+            // if we subtract out the starting offset
+            x0 = x; // starting offset
+
+            x = hpf = lpf = 0.0;
         }
         else
         {
+            x -= x0;
             hpf = alpha_hp * (hpf + x - xprev);
             lpf += alpha_lp * (x - lpf);
         }
