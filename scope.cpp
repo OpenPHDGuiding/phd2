@@ -833,8 +833,10 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
         }
         else
         {
-            // RA/Dec rates should be related by cos(dec) but don't check if Dec is too high or Dec guiding is disabled
-            if (newCal.declination != UNKNOWN_DECLINATION && newCal.yRate != CALIBRATION_RATE_UNCALIBRATED && fabs(newCal.declination) <= Scope::DEC_COMP_LIMIT)
+            // RA/Dec rates should be related by cos(dec) but don't check if Dec is too high or Dec guiding is disabled.  Also don't check if DecComp
+            // is disabled because a Sitech controller might be monkeying around with the apparent rates
+            if (newCal.declination != UNKNOWN_DECLINATION && newCal.yRate != CALIBRATION_RATE_UNCALIBRATED &&
+                fabs(newCal.declination) <= Scope::DEC_COMP_LIMIT && DecCompensationEnabled())
             {
                 double expectedRatio = cos(newCal.declination);
                 double speedRatio;

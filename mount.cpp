@@ -134,7 +134,7 @@ GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
         return GUIDE_ALGORITHM_RESIST_SWITCH;
     if (s ==_("Predictive PEC"))
         return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
-    if (s == _("ZFilter"))
+    if (s.StartsWith(_("ZFilter")))
         return GUIDE_ALGORITHM_ZFILTER;
     return GUIDE_ALGORITHM_NONE;
 }
@@ -158,7 +158,7 @@ wxString GuideAlgorithmName(int algo)
     case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
         return _("Predictive PEC");
     case GUIDE_ALGORITHM_ZFILTER:
-        return _("ZFilter");
+        return _("ZFilter - Experimental only!");
     }
 }
 
