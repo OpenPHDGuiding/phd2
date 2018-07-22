@@ -46,6 +46,7 @@ class Camera_ZWO : public GuideCamera
     int m_cameraId;
     int m_minGain;
     int m_maxGain;
+    int m_defaultGainPct;
     bool m_isColor;
     double m_devicePixelSize;
 
@@ -65,6 +66,7 @@ public:
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
     bool GetDevicePixelSize(double* devPixelSize) override;
+    int GetDefaultCameraGain() override;
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;
     bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
