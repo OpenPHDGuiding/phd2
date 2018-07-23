@@ -250,8 +250,9 @@ void CalstepDialog::OnSpinCtrlDouble(wxSpinDoubleEvent& evt)
 
 void CalstepDialog::OnReset(wxCommandEvent& evt)
 {
+    int bestDistance = GetCalibrationDistance(m_iFocalLength, m_pPixelSize->GetValue(), m_binningChoice->GetSelection() + 1);
+    m_pDistance->SetValue(bestDistance);
     m_pNumSteps->SetValue(DEFAULT_STEPS);
-    m_pDistance->SetValue(DEFAULT_DISTANCE);
     DoRecalc();
 }
 
