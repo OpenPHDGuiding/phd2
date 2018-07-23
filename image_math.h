@@ -42,7 +42,7 @@ class DefectMap : public std::vector<wxPoint>
     DefectMap(int profileId);
 public:
     static void DeleteDefectMap(int profileId);
-    static bool DefectMapExists(int profileId, bool showAlert = true);
+    static bool DefectMapExists(int profileId, bool showAlert);
     static DefectMap *LoadDefectMap(int profileId);
     static wxString DefectMapFileName(int profileId);
     static bool ImportFromProfile(int sourceId, int destId);
