@@ -248,7 +248,7 @@ for
 each of those profiles. &nbsp;When you want to change binning factors,
 just switch to the profile that has the setting you want, and a dark
 library and/or bad-pixel map will be available. &nbsp; If you want to
-check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a> window to confirm the firame size and current on-camera bin settings.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 567px;" alt="" src="Advanced_guiding.png"><br><br>The
+check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a> window to confirm the firame size and current on-camera bin settings.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 596px; height: 575px;" alt="" src="Advanced_guiding.png"><br><br>The
 guiding tab shows the&nbsp; parameters used for calibration,
 star-tracking, and guiding behavior shared by all of the guide algorithms..<br><br>Guide Star Tracking<br><ul><li>'<a name="Search_region"></a>Search
 region' - specifies the size of the "tracking rectangle", in units of
@@ -393,16 +393,15 @@ has this problem (highly unlikely). &nbsp; Also,&nbsp; it will
 generally not detect&nbsp;slews that are initiated by the
 hand-controller. &nbsp;In any case, PHD2 will continue to try to track
 the guide star, so slews will typically result in lost-star
-notifications - beeping and flashing of the PHD2 image window.</li></ul>Calibration Step Calculator<br><br><img style="width: 319px; height: 525px;" alt="Calc_step_dialog" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
-To
-use the <a name="Calculator_auto-step-size"></a>calculator,
-be sure the topmost three edit controls are
+notifications - beeping and flashing of the PHD2 image window.</li></ul><a name="Calculator_auto-step-size"></a>Detailed Calibration Parameters<br><br><img style="width: 592px; height: 426px;" alt="" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
+To review or change&nbsp;calibration parameters,
+be sure the topmost four edit controls are
 correctly filled in. &nbsp;If you have already specified the focal
 length and
 the camera pixel size in the 'Global' and 'Camera' tabs respectively,
 those fields will already be populated in this form. &nbsp;If you are
 using an ASCOM connection to your mount, the fields for "Guide speed"
-and "Calibration declination" will also have the correct values.
+and "Calibration declination" will also show the correct values.
 &nbsp;Otherwise, you'll need to supply them yourself. &nbsp;The guide
 speed is specified as a multiple of sidereal speed - most mounts will
 use something
@@ -411,12 +410,15 @@ like
 changing the guide speed setting here never changes the guide speed
 setting in the mount - that can only be done via the mount driver or
 the hand-controller. &nbsp; If this field is already filled in,
-changing it will have no useful effect.</span> You
+changing it will have no useful effect.</span>
+You
 can
 leave the 'calibration steps' field at the default value of 12, which
 is likely to result in a good calibration. &nbsp;Use of a significantly
 smaller value raises the likelihood that seeing errors or small mount
-errors will cause calibration errors . &nbsp;As you change the values
+errors will cause calibration errors . &nbsp;You can also change the
+total calibration distance if you have some reason to think the default
+value of 25px is inadequate. &nbsp;As you change the values
 in these fields,&nbsp; <span style="font-style: italic;">PHD2</span>
 will recalculate your current image scale and a recommended value for
 the
@@ -427,14 +429,17 @@ be inserted into the calibration step-size field of the 'Guiding' dialog.
 pixel size fields in the 'Guiding' and 'Camera' tabs, so any changes you
 made in the calculator will be reflected there as well. &nbsp;However,
 this will not be done if you click on 'Cancel' in the calculator
-dialog. &nbsp;Note that PHD2 never changes the guide speed setting in
+dialog. &nbsp;Again, PHD2 never changes the guide speed setting in
 your mount regardless of what may be entered in the 'Guide Speed' field.<br><br>The
 goal of the calculator is to recommend a step-size that is likely to
 result in an accurate calibration without wasting too much time.
 &nbsp;There is no great precision involved in any of this, and there is
 nothing magic about the choice of 12 steps as a target. &nbsp;As long
 as you are getting successful calibrations without alert messages, the
-calibration step-size is probably good enough.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
+calibration parameters can be left alone. &nbsp;If you've used the
+new-profile-wizard to build your equipment profile, there's rarely any
+reason to use the 'Advanced" button and the Calibration Parameters
+dialog.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
 <span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 593px; height: 571px;" alt="" src="Advanced_algorithms.png"><br><br>
 The algorithms tab can be used to select the guiding algorithms you
 want to use and to fine-tune the parameters associated with them. &nbsp;The parameters displayed will change significantly if
@@ -513,7 +518,11 @@ because the initial state of the Dec gear system is unknown - just let
 it stabilize before you actually start imaging. &nbsp;If you see
 recurring periods of Dec oscillation or the axis won't settle down,
 disable the compensation feature and submit your debug log file to the
-PHD2 support forum. &nbsp;<h4><a name="Declination-Uni-directional_guiding"></a>Uni-directional Declination Guiding</h4>As
+PHD2 support forum. &nbsp;It's important to note that the correct
+amount of Dec backlash compensation will often change depending on the
+scope pointing position. &nbsp;This can be caused by uneven gear wear
+on the Dec axis or by differences in the gravitational load being
+applied to the axis.<h4><a name="Declination-Uni-directional_guiding"></a>Uni-directional Declination Guiding</h4>As
 discussed elsewhere, some mounts have too much declination backlash to
 support guiding in both&nbsp;north and south directions. &nbsp;This
 situation can be mitigated by configuring PHD2 to guide in only one of
@@ -564,11 +573,11 @@ just steadily drifting&nbsp;off-target. &nbsp;Over the course of
 minutes or hours, you may notice the amount of drift is decreasing.
 &nbsp;This means you are slowly approaching the point of
 declination reversal and you should be prepared to change the Dec guide
-mode accordingly.</li><li>If you are dithering, set the dithering parameters to "RA-only" to avoid disrupting the Dec guiding.</li></ol><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 591px; height: 451px;" alt="" src="Advanced_other.png"><br><br>If
+mode accordingly.</li><li>If you are dithering, set the dithering parameters to "RA-only" to avoid disrupting the Dec guiding.</li></ol><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
 Devices" tab will be shown. &nbsp;The upper section deals with the AO
 device if one is being used. &nbsp;You
-can use the first four parameters&nbsp;to control the
+can use these parameters&nbsp;to control the
 calibration process and the manner in which 'bump' operations are done.
 &nbsp;The 'calibration step' field tells <span style="font-style: italic;">PHD2</span> the amount to move the
 tip/tilt element&nbsp;in each of the up/down/left/right directions, in
@@ -588,12 +597,18 @@ these increments. &nbsp;If the bump operation has begun and the guide
 star remains outside the "bump percentage" area, <span style="font-style: italic;">PHD2</span>
 will increase the
 bump size until the guide star is back within that range.
-&nbsp;Additional movement from that point to the&nbsp;center position will
+&nbsp;Additional movement from that point to the&nbsp;center position
+will
 continue at the specified "bump step size". &nbsp;This complexity is
 required in order to maintain good guiding, with no elongated stars,
 even as the mount is being bumped. &nbsp;During the bump operation, the
 AO is continuing to make corrections, so the long "mount bump" is
-continuously&nbsp;offset by adjustments in the AO.<br><br>The
+continuously&nbsp;offset by adjustments in the AO. &nbsp;The 'AO
+Travel' field specifies the number of steps the AO can make on each
+axis. &nbsp;The default value works well for most SX AO devices but in
+some cases it may be too large. &nbsp;If you encounter problems during
+AO calibration where the AO hits its limits, you can adjust the 'AO
+Travel' amount downward. &nbsp; <br><br>The
 'Bump on dither' option tells PHD2 to bump the mount when a dither
 command is received and thus move the guide star back closer to the
 center position of the AO. &nbsp;The
@@ -604,7 +619,13 @@ independently enable/disable either the guide commands to the tip/tilt
 device or the
 'bump' guide commands to the mount. &nbsp;The same principle holds for
 the 'Clear AO calibration' option - that will force a recalibration of
-the AO without affecting calibration of the mount.<br><br>When an AO is in use, the 'Algorithms' tab will only show choices for controlling the tip/tilt optical element in the AO
+the AO without affecting calibration of the mount. &nbsp;The 'Mount
+Backlash Compensation' controls let you apply PHD2 Dec backlash
+compensation when mount bumps are done. &nbsp;This can help speed up
+large dither operations, but it's only appropriate if the mount has a
+limited amount of Dec backlash. You should use the Guiding Assistant to
+measure your Dec backlash and see what it recommends with regard to
+using Dec backlash compensation.<br><br>When an AO is in use, the 'Algorithms' tab will only show choices for controlling the tip/tilt optical element in the AO
 device
 itself.<br><br><img style="width: 590px; height: 450px;" alt="" src="Advanced_other_Algo.png"><br><br>Since
 the
