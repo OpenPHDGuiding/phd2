@@ -58,7 +58,7 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
 }
 
 CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning) :
-    wxDialog(parent, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("Detailed Calibration Parameters"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
@@ -97,8 +97,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // Create the sizers we're going to need
     m_pVSizer = new wxBoxSizer(wxVERTICAL);
-    m_pInputTableSizer = new wxFlexGridSizer(3, 2, 15, 15);
-    m_pOutputTableSizer = new wxFlexGridSizer(2, 2, 15, 15);
+    m_pInputTableSizer = new wxFlexGridSizer(4, 4, 15, 15);
+    m_pOutputTableSizer = new wxFlexGridSizer(1, 4, 15, 15);
 
     // Build the group of input fields
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
@@ -157,6 +157,12 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pDeclination->SetDigits(0);
     m_pDeclination->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Calibration declination, degrees"), m_pDeclination, _("Approximate declination where you will do calibration"));
+
+    // Button for doing a 'reset'
+    wxButton* pResetButton = new wxButton(this, wxID_DEFAULT, _("Reset"));
+    pResetButton->SetToolTip(_("Reset the calibration parameters to defaults"));
+    pResetButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalstepDialog::OnReset, this);
+    m_pInputTableSizer->Add(pResetButton, 1, wxALL, 5);
 
     // Build the group of output fields
     m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Computed Values"));
@@ -221,13 +227,13 @@ void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, in
     double Declination, int distance, double *pImageScale, int *pStepSize)
 {
     double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength, binning); // arc-sec per pixel
-    double totalDuration = (double) distance / (15.0 * GuideSpeed);           // 15 arc-sec/sec approx sidereal rate
+    double totalDuration = (double) distance * ImageScale / (15.0 * GuideSpeed);           // 15 arc-sec/sec is sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
     double MaxPulse = totalDuration / MIN_STEPS * 1000.0;            // max pulse size to still get MIN steps
     Pulse = wxMin(MaxPulse, Pulse / cos(radians(Declination)));      // UI forces abs(Dec) <= 60 degrees
     if (pImageScale)
         *pImageScale = ImageScale;
-    *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms
+    *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms, too-small pulses can lead to calibration problems
 }
 
 void CalstepDialog::OnText(wxCommandEvent& evt)
@@ -240,6 +246,13 @@ void CalstepDialog::OnSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     DoRecalc();
     evt.Skip();
+}
+
+void CalstepDialog::OnReset(wxCommandEvent& evt)
+{
+    m_pNumSteps->SetValue(DEFAULT_STEPS);
+    m_pDistance->SetValue(DEFAULT_DISTANCE);
+    DoRecalc();
 }
 
 void CalstepDialog::DoRecalc(void)

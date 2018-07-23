@@ -52,7 +52,6 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 {
     Scope *m_pScope;
     wxSpinCtrl *m_pCalibrationDuration;
-    wxSpinCtrl *m_pCalibrationDistance;
     wxCheckBox *m_pNeedFlipDec;
     wxCheckBox *m_pStopGuidingWhenSlewing;
     wxCheckBox *m_assumeOrthogonal;
@@ -64,6 +63,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashFloor;
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
+    int m_calibrationDistance;
 
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -76,8 +76,6 @@ public:
     void ResetDecParameterUI();
     int GetCalStepSizeCtrlValue();
     void SetCalStepSizeCtrlValue(int newStep);
-    int GetCalDistanceCtrlValue();
-    void SetCalDistanceCtrlValue(int newDistance);
 };
 
 class Scope : public Mount

@@ -1823,23 +1823,15 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     m_pCalibrationDuration->Enable(enableCtrls);
 
     // create the 'auto' button and bind it to the associated event-handler
-    wxButton *pAutoDuration = new wxButton(GetParentWindow(AD_szCalibrationDuration), wxID_OK, _("Calculate...") );
-    pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
+    wxButton *pAutoDuration = new wxButton(GetParentWindow(AD_szCalibrationDuration), wxID_OK, _("Advanced...") );
+    pAutoDuration->SetToolTip(_("Click to open the Calibration Parameters Dialog to review or change all calibration parameters"));
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &ScopeConfigDialogCtrlSet::OnCalcCalibrationStep, this);
     pAutoDuration->Enable(enableCtrls);
 
     pCalibSizer->Add(pAutoDuration);
 
-    wxBoxSizer* pCalibDistanceSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pCalibrationDistance = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 10, 200, CalstepDialog::DEFAULT_DISTANCE, _T("Cal_Dist"));
-    pCalibDistanceSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration distance (px)"), m_pCalibrationDistance,
-        _("How far should the scope move for all calibration steps?")));
-    m_pCalibrationDistance->Enable(enableCtrls);
-
     wxBoxSizer* pCalibGroupSizer = new wxBoxSizer(wxVERTICAL);
     pCalibGroupSizer->Add(pCalibSizer);
-    pCalibGroupSizer->Add(pCalibDistanceSizer);
 
     AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibGroupSizer);
 
@@ -1934,8 +1926,7 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     MountConfigDialogCtrlSet::LoadValues();
     int stepSize = m_pScope->GetCalibrationDuration();
     m_pCalibrationDuration->SetValue(stepSize);
-    int calDistance = m_pScope->GetCalibrationDistance();
-    m_pCalibrationDistance->SetValue(calDistance);
+    m_calibrationDistance = m_pScope->GetCalibrationDistance();
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
@@ -1962,7 +1953,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
 {
     bool usingAO = TheAO() != nullptr;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
-    m_pScope->SetCalibrationDistance(m_pCalibrationDistance->GetValue());
+    m_pScope->SetCalibrationDistance(m_calibrationDistance);
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
@@ -2024,16 +2015,6 @@ void ScopeConfigDialogCtrlSet::SetCalStepSizeCtrlValue(int newStep)
     m_pCalibrationDuration->SetValue(newStep);
 }
 
-int ScopeConfigDialogCtrlSet::GetCalDistanceCtrlValue()
-{
-    return m_pCalibrationDistance->GetValue();
-}
-
-void ScopeConfigDialogCtrlSet::SetCalDistanceCtrlValue(int newDistance)
-{
-    m_pCalibrationDistance->SetValue(newDistance);
-}
-
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
 {
     int focalLength = 0;
@@ -2060,7 +2041,7 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
             pAdvancedDlg->SetPixelSize(pixelSize);
             pAdvancedDlg->SetBinning(binning);
             m_pCalibrationDuration->SetValue(calibrationStep);
-            m_pCalibrationDistance->SetValue(distance);
+            m_calibrationDistance = distance;
         }
     }
 }

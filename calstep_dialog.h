@@ -70,6 +70,8 @@ private:
     double m_dDeclination;
     int m_calibrationDistance;
 
+    void OnReset(wxCommandEvent& evt);
+
 public:
 
     enum { DEFAULT_STEPS = 12, DEFAULT_DISTANCE = 25 };
