@@ -43,7 +43,7 @@ static const int DefaultSamplesToAverage = 3;
 static const int DefaultBumpPercentage = 80;
 static const double DefaultBumpMaxStepsPerCycle = 1.00;
 static const int DefaultCalibrationStepsPerIteration = 4;
-static const int DefaultGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
+static const GUIDE_ALGORITHM DefaultGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
 
 // Time limit for bump to complete. If bump does not complete in this amount of time (seconds),
 // we will pop up a warning message with a suggestion to increase the MaxStepsPerCycle setting
@@ -84,6 +84,16 @@ StepGuider::StepGuider()
 
 StepGuider::~StepGuider()
 {
+}
+
+GUIDE_ALGORITHM StepGuider::DefaultXGuideAlgorithm() const
+{
+    return DefaultGuideAlgorithm;
+}
+
+GUIDE_ALGORITHM StepGuider::DefaultYGuideAlgorithm() const
+{
+    return DefaultGuideAlgorithm;
 }
 
 wxArrayString StepGuider::AOList()

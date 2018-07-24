@@ -222,8 +222,11 @@ public:
     GUIDE_ALGORITHM GetXGuideAlgorithmSelection() const;
     GUIDE_ALGORITHM GetYGuideAlgorithmSelection() const;
 
-    void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
-    void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
+    void SetXGuideAlgorithm(int guideAlgorithm);
+    void SetYGuideAlgorithm(int guideAlgorithm);
+
+    virtual GUIDE_ALGORITHM DefaultXGuideAlgorithm() const = 0;
+    virtual GUIDE_ALGORITHM DefaultYGuideAlgorithm() const = 0;
 
     static GUIDE_ALGORITHM GetGuideAlgorithm(const GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);

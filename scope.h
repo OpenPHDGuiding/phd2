@@ -181,6 +181,9 @@ protected:
     friend class GraphLogWindow;
     friend class ScopeConfigDialogCtrlSet;
 
+    GUIDE_ALGORITHM DefaultXGuideAlgorithm() const override;
+    GUIDE_ALGORITHM DefaultYGuideAlgorithm() const override;
+
 public:
 
     int GetCalibrationDuration() const;  // calibration step size, ms
@@ -261,8 +264,8 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
-    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) override;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) final;
     int CalibrationMoveSize();
     void CheckCalibrationDuration(int currDuration);
     int CalibrationTotDistance() override;

@@ -121,6 +121,16 @@ Scope::~Scope()
     }
 }
 
+GUIDE_ALGORITHM Scope::DefaultXGuideAlgorithm() const
+{
+    return DefaultRaGuideAlgorithm;
+}
+
+GUIDE_ALGORITHM Scope::DefaultYGuideAlgorithm() const
+{
+    return DefaultDecGuideAlgorithm;
+}
+
 bool Scope::SetCalibrationDuration(int calibrationDuration)
 {
     bool bError = false;
