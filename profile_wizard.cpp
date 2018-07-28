@@ -259,9 +259,18 @@ void ProfileWizard::ShowHelp(DialogState state)
             " mount, you'll usually be given the option to connect to it immediately so PHD2 can read the guide speed for you."), Scope::DEFAULT_MOUNT_GUIDE_SPEED );
         break;
     case STATE_AUXMOUNT:
-        hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
-            "guiding for side-of-pier and declination. You can enable these features by choosing an 'Aux Mount' connection that does provide pointing "
-            "information.  The Aux Mount interface will be used only for that purpose and not for sending guide commands.");
+        if (m_SelectedCamera == _("Simulator"))
+        {
+            hText = _("The 'simulator' camera/mount interface doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
+                "guiding for side-of-pier and declination. You can enable these features by choosing an 'Aux Mount' connection that does provide pointing "
+                "information.");
+        }
+        else
+        {
+            hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
+                "guiding for side-of-pier and declination. You can enable these features by choosing an 'Aux Mount' connection that does provide pointing "
+                "information.  The Aux Mount interface will be used only for that purpose and not for sending guide commands.");
+        }
         break;
     case STATE_AO:
         hText = _("If you have an adaptive optics (AO) device, you can select it here.  The AO device will be used for high speed, small guiding corrections, "
@@ -292,12 +301,96 @@ void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
     else
         m_pStatusBar->SetStatusText(msg);
 }
+enum PoorChoiceResults
+{
+    eProceed,
+    eBack,
+    eDontAsk
+};
+enum ConfigWarningTypes
+{
+    eNoPointingInfo
+    // Room for future warnings if needed
+};
+// Dialog for warning user about poor config choices
+struct PoorChoiceDlg : public wxDialog
+{
+    PoorChoiceDlg(ConfigWarningTypes Type);
+    PoorChoiceResults UserChoice;
+    void OnBack(wxCommandEvent& evt);
+    void OnProceed(wxCommandEvent& evt);
+    void OnDontAsk(wxCommandEvent& evt);
+};
+
+PoorChoiceDlg::PoorChoiceDlg(ConfigWarningTypes Type) : wxDialog(pFrame, wxID_ANY, _("Questionable Configuration Choice"))
+{
+    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticText* explanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    wxString msg;
+    if (Type == eNoPointingInfo)
+        msg = _("This configuration doesn't provide PHD2 with any information about the scope's pointing position.  This means you will need to recalibrate\n"
+        "whenever the scope is slewed, and some PHD2 features will be disabled.  You should choose an ASCOM or INDI mount connection\n"
+        "for either 'mount' or 'aux-mount' unless there are no drivers available for your mount.\n"
+        "Please review the Help guide on 'Equipment Connections' for more details.");
+    explanation->SetLabelText(msg);
+
+    wxButton* backBtn = new wxButton(this, wxID_ANY, _("Go Back"));
+    backBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnBack), NULL, this);
+    wxButton* proceedBtn = new wxButton(this, wxID_ANY, _("Proceed"));
+    proceedBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnProceed), NULL, this);
+    wxButton* dontAskBtn = new wxButton(this, wxID_ANY, _("Don't Ask"));
+    dontAskBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnDontAsk), NULL, this);
+
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    btnSizer->Add(backBtn, wxSizerFlags(0).Border(wxALL, 8));
+    btnSizer->Add(proceedBtn, wxSizerFlags(0).Border(wxALL, 8));
+    btnSizer->Add(dontAskBtn, wxSizerFlags(0).Border(wxALL, 8));
+
+    vSizer->Add(explanation, wxSizerFlags(0).Border(wxALL, 8).Center());
+    vSizer->Add(btnSizer, wxSizerFlags(0).Border(wxALL, 8).Center());
+
+    SetAutoLayout(true);
+    SetSizerAndFit(vSizer);
+}
+
+void PoorChoiceDlg::OnProceed(wxCommandEvent& evt)
+{
+    UserChoice = eProceed;
+    EndDialog(wxOK);
+}
+void PoorChoiceDlg::OnBack(wxCommandEvent& evt)
+{
+    UserChoice = eBack;
+    EndDialog(wxCANCEL);
+}
+void PoorChoiceDlg::OnDontAsk(wxCommandEvent& evt)
+{
+    UserChoice = eDontAsk;
+    EndDialog(wxOK);
+}
+
+static wxString ProfWizWarningKey(ConfigWarningTypes Type)
+{
+    wxString which;
+    if (Type == eNoPointingInfo)
+        which = wxString("NoPointingInfo");
+    return wxString::Format("/Confirm/%d/ProfileWizWarning_%s", pConfig->GetCurrentProfileId(), which);
+}
+
+static bool WarningAllowed(ConfigWarningTypes Type)
+{
+    bool rslt = pConfig->Global.GetBoolean(ProfWizWarningKey(Type), true);
+    return rslt;
+}
+static void BlockWarning(ConfigWarningTypes Type)
+{
+    pConfig->Global.SetBoolean(ProfWizWarningKey(Type), false);
+}
 
 // Do semantic checks for 'next' commands
 bool ProfileWizard::SemanticCheck(DialogState state, int change)
 {
     bool bOk = true;            // Only 'next' commands could have problems
-
     if (change > 0)
     {
         switch (state)
@@ -315,6 +408,25 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
                 ShowStatus(_("Please select a mount type to handle guider commands"));
             break;
         case STATE_AUXMOUNT:
+            {
+            // Check for absence of pointing info
+            if (m_SelectedAuxMount == _("None") && !m_PositionAware && WarningAllowed(eNoPointingInfo))
+                {
+                    PoorChoiceDlg userAlert(eNoPointingInfo);
+                    int userRspns = userAlert.ShowModal();
+                    if (userRspns == wxOK)
+                    {
+                        // Could be either 'proceed' or 'dontAsk'
+                        if (userAlert.UserChoice == eDontAsk)
+                        {
+                            BlockWarning(eNoPointingInfo);
+                        }
+                        bOk = true;
+                    }
+                    else
+                        bOk = false;
+                }
+            }
             break;
         case STATE_AO:
             break;
@@ -390,16 +502,26 @@ void ProfileWizard::UpdateState(const int change)
             m_pInstructions->Wrap(TextWrapPoint);
             break;
         case STATE_MOUNT:
-            SetTitle(TitlePrefix + _("Choose a Mount Connection"));
-            m_pPrevBtn->Enable(true);
-            m_pGearLabel->SetLabel(_("Mount:"));
-            m_pGearChoice->Clear();
-            m_pGearChoice->Append(Scope::MountList());
-            if (m_SelectedMount.length() > 0)
-                m_pGearChoice->SetStringSelection(m_SelectedMount);
-            m_pUserProperties->Show(false);
-            m_pMountProperties->Show(true);
-            m_pInstructions->SetLabel(_("Select your mount connection - this will determine how guide signals are transmitted"));
+            if (m_SelectedCamera == _("Simulator"))
+            {
+                m_pMountProperties->Show(false);
+                m_SelectedMount = _("On-camera");
+                m_PositionAware = false;
+                UpdateState(change);
+            }
+            else
+            {
+                SetTitle(TitlePrefix + _("Choose a Mount Connection"));
+                m_pPrevBtn->Enable(true);
+                m_pGearLabel->SetLabel(_("Mount:"));
+                m_pGearChoice->Clear();
+                m_pGearChoice->Append(Scope::MountList());
+                if (m_SelectedMount.length() > 0)
+                    m_pGearChoice->SetStringSelection(m_SelectedMount);
+                m_pUserProperties->Show(false);
+                m_pMountProperties->Show(true);
+                m_pInstructions->SetLabel(_("Select your mount connection - this will determine how guide signals are transmitted"));
+            }
             break;
         case STATE_AUXMOUNT:
             m_pMountProperties->Show(false);
