@@ -76,8 +76,14 @@ static wxString json_escape(const wxString& s)
     static const wxString BACKSLASHBACKSLASH("\\\\");
     static const wxString DQUOT("\"");
     static const wxString BACKSLASHDQUOT("\\\"");
+    static const wxString CR("\r");
+    static const wxString BACKSLASHCR("\\r");
+    static const wxString LF("\n");
+    static const wxString BACKSLASHLF("\\n");
     t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
     t.Replace(DQUOT, BACKSLASHDQUOT);
+    t.Replace(CR, BACKSLASHCR);
+    t.Replace(LF, BACKSLASHLF);
     return t;
 }
 
