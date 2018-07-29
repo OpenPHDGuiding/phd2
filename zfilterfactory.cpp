@@ -45,7 +45,9 @@ https://www-users.cs.york.ac.uk/~fisher/mkfilter/
 #include <math.h>
 #include <string.h>
 
-ZFilterFactory::ZFilterFactory(FILTER_DESIGN f, int o, double p )
+#include "zfilterfactory.h"
+
+ZFilterFactory::ZFilterFactory(FILTER_DESIGN f, int o, double p, bool mzt )
 {
     bessel_poles = {
     /* table produced by /usr/fisher/bessel --  N.B. only one member of each C.Conj. pair is listed */
@@ -91,7 +93,7 @@ ZFilterFactory::ZFilterFactory(FILTER_DESIGN f, int o, double p )
     filt = f;
     m_order = o;
     raw_alpha2 = raw_alpha1 = 1.0 / p;
-    isMzt = (f==BESSEL)? true: false;
+    isMzt = (f == BESSEL) ? mzt : false; // mzt only applies to BESSEL filter
     spoles.clear();
     szeros.clear();
 

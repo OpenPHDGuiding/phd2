@@ -53,7 +53,7 @@ public:
     double gain() { return ::hypot(dc_gain.imag(), dc_gain.real()); };
     double corner() { return 1 / raw_alpha1; };
     int order() { return m_order;  };
-    ZFilterFactory( FILTER_DESIGN f, int o, double p );
+    ZFilterFactory( FILTER_DESIGN f, int o, double p, bool mzt=false );
 private:
     const double TWOPI = (2.0 * M_PI);
     const double EPS = 1e-10;
