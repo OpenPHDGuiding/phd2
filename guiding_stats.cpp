@@ -240,7 +240,7 @@ StarDisplacement::StarDisplacement(double When, double Where)
 }
 
 AxisStats::AxisStats(bool Windowing, int AutoWindowSize) : axisMoves(0), axisReversals(0), sumY(0), sumYSq(0), sumX(0), sumXY(0), sumXSq(0), 
-prevPosition(0), prevMove()
+prevPosition(0), prevMove(0)
 {
     if (!Windowing)
     {
@@ -472,44 +472,28 @@ double AxisStats::GetMean()
         throw ERROR_INFO("Empty data set");
 }
 
-// Return standard deviation of dataset, windowed or not.  Throws excepton for empty data set
+// Return standard deviation of dataset, windowed or not.  Throws exception for empty data set
 double AxisStats::GetSigma()
 {
     if (guidingEntries.size() > 0)
     {
         if (!windowing)
-            return descStats->GetSigma();           // high-speed version, no windowing
+            return descStats->GetSigma();
         else
         {
-            // process the current data set
-            double count = 0;
-            double runningS = 0;
-            double newS = 0;
-            double runningMean = 0;
-            double newMean = 0;
-            double val;
-
-            for (unsigned int i = 0; i < guidingEntries.size(); i++)
+            double rslt;
+            if (guidingEntries.size() > 1)
             {
-                val = guidingEntries[i].StarPos;
-                count++;
-                if (count == 1)
-                {
-                    runningMean = val;
-                    newMean = val;
-                }
+                double entryCount = guidingEntries.size();
+                double variance = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
+                if (variance >= 0)
+                    rslt = sqrt(variance);
                 else
-                {
-                    newMean = runningMean + (val - runningMean) / count;
-                    newS = runningS + (val - runningMean) * (val - newMean);
-                    runningMean = newMean;
-                    runningS = newS;
-                }
+                    rslt = 0;
             }
-            if (count > 1)
-                return sqrt(runningS / (count - 1));
             else
-                return 0;
+                rslt = 0;
+            return rslt;
         }
     }
     else
