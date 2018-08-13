@@ -122,12 +122,19 @@ void ScopeINDI::SetupDialog()
 {
     wxString title;
     bool isAuxMount = pFrame->pGearDialog->AuxScope() == this;
+    IndiDevType devtype;
     if (isAuxMount)
+    {
         title = _("INDI Aux Mount Selection");
+        devtype = INDI_TYPE_AUX_MOUNT;
+    }
     else
+    {
         title = _("INDI Mount Selection");
+        devtype = INDI_TYPE_MOUNT;
+    }
 
-    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, TYPE_MOUNT);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, devtype);
 
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;

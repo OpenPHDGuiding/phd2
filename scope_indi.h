@@ -120,7 +120,7 @@ public:
     bool HasNonGuiMove(void) override;
 
     bool   CanPulseGuide() override { return (pulseGuideNS_prop && pulseGuideEW_prop); }
-    bool   CanReportPosition(void) override { return true; }
+    bool   CanReportPosition(void) override { return coord_prop ? true : false; }
     bool   CanSlew(void) override { return coord_prop ? true : false; }
     bool   CanSlewAsync(void) override;
     bool   CanCheckSlewing(void) override { return coord_prop ? true : false; }

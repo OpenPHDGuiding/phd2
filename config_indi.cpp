@@ -65,18 +65,17 @@ enum
 
 bool INDIConfig::s_verbose;
 
-INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
+INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype)
     :
-    wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+    wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+    m_gui(nullptr),
+    dev_type(devtype)
 {
     auto sizerLabelFlags  = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL;
     auto sizerButtonFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
     auto sizerSectionFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
     auto sizerTextFlags = wxALIGN_LEFT | wxALL | wxEXPAND;
     int border = 2;
-
-    dev_type = devtype;
-    m_gui = nullptr;
 
     int pos;
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
@@ -109,11 +108,13 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
              POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
     devlabel = new wxStaticText(this, wxID_ANY, _("Device"));
 
-    if (devtype == TYPE_CAMERA)
+    if (dev_type == INDI_TYPE_CAMERA)
         devlabel->SetLabel(_("Camera"));
-    else if (devtype == TYPE_MOUNT)
+    else if (dev_type == INDI_TYPE_MOUNT)
         devlabel->SetLabel(_("Mount"));
-    else if (devtype == TYPE_AO)
+    else if (dev_type == INDI_TYPE_AUX_MOUNT)
+        devlabel->SetLabel(_("Aux Mount"));
+    else if (dev_type == INDI_TYPE_AO)
         devlabel->SetLabel(_("AO"));
 
     gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
@@ -125,7 +126,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     gbs->Add(dev, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     ccd = nullptr;
-    if (devtype == TYPE_CAMERA)
+    if (dev_type == INDI_TYPE_CAMERA)
     {
         ++pos;
         gbs->Add(new wxStaticText(this, wxID_ANY, _("Dual CCD")),
@@ -141,7 +142,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, int devtype)
     gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     forcevideo = nullptr;
-    if (devtype == TYPE_CAMERA)
+    if (dev_type == INDI_TYPE_CAMERA)
     {
         ++pos;
         forcevideo = new wxCheckBox(this, wxID_ANY, _("Camera does not support exposure time"));
@@ -194,7 +195,7 @@ void INDIConfig::UpdateControlStates()
         devport->SetValue(INDIDevPort);
         devport->Enable(true);
 
-        if (dev_type == TYPE_CAMERA)
+        if (dev_type == INDI_TYPE_CAMERA)
         {
             ccd->Append(_("Main"));
             ccd->Append(_("Secondary"));
@@ -219,7 +220,7 @@ void INDIConfig::UpdateControlStates()
         devport->Clear();
         devport->Enable(false);
 
-        if (dev_type == TYPE_CAMERA)
+        if (dev_type == INDI_TYPE_CAMERA)
         {
             ccd->Clear();
             ccd->Enable(false);
@@ -395,16 +396,20 @@ void INDIConfig::newProperty(INDI::Property *property)
 
         bool include = false;
 
-        if (dev_type == TYPE_CAMERA)
+        if (dev_type == INDI_TYPE_CAMERA)
             include = (di & INDI::BaseDevice::CCD_INTERFACE) != 0;
-        else if (dev_type == TYPE_MOUNT)
+        else if (dev_type == INDI_TYPE_MOUNT)
             include = (di & INDI::BaseDevice::CCD_INTERFACE) == 0 && (di & INDI::BaseDevice::GUIDER_INTERFACE) != 0;
-        else if (dev_type == TYPE_AO)
+        else if (dev_type == INDI_TYPE_AUX_MOUNT)
+            include = (di & INDI::BaseDevice::TELESCOPE_INTERFACE) != 0;
+        else if (dev_type == INDI_TYPE_AO)
             include = (di & INDI::BaseDevice::AO_INTERFACE) != 0;
 
         if (!include)
         {
-            Debug.Write(wxString::Format("exclude device %s not a %s\n", devname, dev_type == TYPE_CAMERA ? "camera" : dev_type == TYPE_MOUNT ? "mount" : "AO"));
+            Debug.Write(wxString::Format("exclude device %s not a valid %s\n", devname,
+                dev_type == INDI_TYPE_CAMERA ? "camera" : dev_type == INDI_TYPE_MOUNT ? "mount" : dev_type == INDI_TYPE_AUX_MOUNT ? "aux mount" : "AO"));
+
             int n = dev->FindString(devname, true);
             if (n != wxNOT_FOUND)
             {
@@ -431,7 +436,7 @@ void INDIConfig::SaveSettings()
     port->GetLineText(0).ToLong(&INDIport);
     INDIDevName = dev->GetValue();
     INDIDevPort = devport->GetValue();
-    if (dev_type == TYPE_CAMERA)
+    if (dev_type == INDI_TYPE_CAMERA)
     {
         INDIForceVideo = forcevideo->GetValue();
         INDIDevCCD = ccd->GetSelection();
