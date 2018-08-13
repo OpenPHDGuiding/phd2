@@ -112,6 +112,12 @@ unsigned int DescriptiveStats::GetCount()
     return count;
 }
 
+// Raw variance for those who need it
+double DescriptiveStats::GetVariance()
+{
+    return runningS;
+}
+
 // Return standard deviation of data values. Throws exception for empty data set.
 double DescriptiveStats::GetSigma()
 {
@@ -126,6 +132,17 @@ double DescriptiveStats::GetMean()
 {
     if (count > 0)
         return runningMean;
+    else
+        throw ERROR_INFO("Empty data set");
+}
+
+// Compute/return the sum of all values
+double DescriptiveStats::GetSum()
+{
+    if (count > 0)
+    {
+        return runningMean * count;
+    }
     else
         throw ERROR_INFO("Empty data set");
 }
@@ -239,9 +256,9 @@ StarDisplacement::StarDisplacement(double When, double Where)
     Reversal = false;
 }
 
-AxisStats::AxisStats(bool Windowing, int AutoWindowSize) : axisMoves(0), axisReversals(0), sumY(0), sumYSq(0), sumX(0), sumXY(0), sumXSq(0), 
-prevPosition(0), prevMove(0)
+AxisStats::AxisStats(bool Windowing, int AutoWindowSize)
 {
+    InitializeScalars();
     if (!Windowing)
     {
         windowing = false;
@@ -263,6 +280,30 @@ AxisStats::~AxisStats()
 {
     if (!windowing)
         delete descStats;
+}
+
+void AxisStats::ClearAll()
+{
+    InitializeScalars();
+    guidingEntries.clear();
+    if (descStats != NULL)
+        descStats->ClearValues();
+}
+
+void AxisStats::InitializeScalars()
+{
+    axisMoves = 0;
+    axisReversals = 0;
+    sumY = 0;
+    sumYSq = 0;
+    sumX = 0;
+    sumXY = 0;
+    sumXSq = 0;
+    prevPosition = 0;
+    prevMove = 0;
+    minDisplacement = std::numeric_limits<double>::max();
+    maxDisplacement = std::numeric_limits<double>::min();
+    maxDelta = 0;
 }
 
 // Change the window size for a windowed instance of AxisStats - trim older entries if necessary
@@ -456,6 +497,20 @@ unsigned int AxisStats::GetCount()
     return guidingEntries.size();
 }
 
+// Return sum
+double AxisStats::GetSum()
+{
+    if (guidingEntries.size() > 0)
+    {
+        if (!windowing)
+            return descStats->GetSum();
+        else
+            return sumY;
+    }
+    else
+        throw ERROR_INFO("Empty data set");
+}
+
 // Return mean of dataset, windowed or not.  Throws exception for empty data set
 double AxisStats::GetMean()
 {
@@ -470,6 +525,25 @@ double AxisStats::GetMean()
     }
     else
         throw ERROR_INFO("Empty data set");
+}
+
+// Return raw variance for clients who need it
+double AxisStats::GetVariance()
+{
+    if (!windowing)
+        return descStats->GetVariance();
+    else
+    {
+        double rslt;
+        if (guidingEntries.size() > 1)
+        {
+            double entryCount = guidingEntries.size();
+            rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
+        }
+        else
+            rslt = 0;
+        return rslt;
+    }
 }
 
 // Return standard deviation of dataset, windowed or not.  Throws exception for empty data set

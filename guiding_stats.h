@@ -63,8 +63,10 @@ public:
     unsigned int GetCount();            // Returns the count of the dataset
     double GetLastValue();              // Returns the immediately previous value added to the dataset
     double GetMean();                   // Returns the mean value of the dataset
+    double GetSum();                    // Sum of all added vars
     double GetMinimum();                // Returns the min value
     double GetMaximum();                // Returns the max value
+    double GetVariance();               // Variance for those who need it
     double GetSigma();                  // Returns the standard deviation
     double GetMaxDelta();               // Returns max of absolute delta(new - previous) values
 };
@@ -141,6 +143,7 @@ class AxisStats
     double maxDelta;                                            // maximum absolute delta of incremental star deltas
     int maxDeltaInx;
     void AdjustMinMaxValues();                                  // required for windowing
+    void InitializeScalars();
 
 public:
     // Constructor for 3 types of instance: non-windowed, windowed with automatic trimming of size, windowed but with client controlling actual window size
@@ -152,6 +155,7 @@ public:
     StarDisplacement GetEntry(unsigned int index);
     // Remove the oldest entry in the current dataset
     void RemoveOldestEntry();
+    void ClearAll();
     // Return the count of elements in the dataset
     unsigned int GetCount();
     // Get the last entry added to the dataset - useful if client needs to do difference operations for time, star position, or guide amount
@@ -160,8 +164,10 @@ public:
     double GetMaxDisplacement();
     // Get the minimum y value in the dataset
     double GetMinDisplacement();
-    // Return stats for current dataset - min, max, mean, standard deviation (sigma) 
+    // Return stats for current dataset - min, max, sum, mean, variance, standard deviation (sigma) 
+    double GetSum();
     double GetMean();
+    double GetVariance();
     double GetSigma();
     double GetMedian();
     double GetMaxDelta();
@@ -173,7 +179,7 @@ public:
     // the slope when the y-intercept is forced to zero.  Optionally, apply the fit to the original data values and computed the 
     // standard deviation (Sigma) of the resulting drift-removed dataset.  Drift-removed data values are discarded, original data elements are unmodified
     // Example 1: do a linear fit during calibration to compute an angle - "Sigma" is not needed
-    // Example 2: do a linear fit on Dec values during a GA run - use the slope to compute a polar alignment error, use Sigma to estimate seeing
+    // Example 2: do a linear fit on Dec values during a GA run - use the slope to compute a polar alignment error, use Sigma to estimate seeing of drift-corrected Dec values
     void GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL);
     // Change the window size of an active dataset - all stats will be adjusted accordingly to reflect the most recent <NewSize> elements
     bool ChangeWindowSize(unsigned int NewWSize);

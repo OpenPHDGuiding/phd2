@@ -723,35 +723,6 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 
 // -------------------  BacklashTool Implementation
 
-// Support class (struct) for computing on-the-fly mean and variance
-RunningStats::RunningStats() : count(0), currentSS(0), currentMean(0)
-{
-}
-
-void RunningStats::Reset()
-{
-    count = 0;
-    currentSS = 0;
-    currentMean = 0;
-}
-
-void RunningStats::AddDelta(double val)
-{
-    count++;
-    if (count == 1)
-    {
-        currentMean = val;
-    }
-    else
-    {
-        double newMean = currentMean + (val - currentMean) / count;
-        currentSS = currentSS + (val - currentMean) * (val - newMean);
-
-        currentMean = newMean;
-    }
-
-};
-
 BacklashTool::BacklashTool()
 {
     m_scope = TheScope();
@@ -769,6 +740,13 @@ BacklashTool::BacklashTool()
     m_backlashResultMs = 0;
     m_cumClearingDistance = 0;
     m_backlashExemption = false;
+    m_northStats = new AxisStats(false, 0);
+}
+
+BacklashTool::~BacklashTool()
+{
+    if (m_northStats)
+        delete m_northStats;
 }
 
 double BacklashTool::GetLastDecGuideRate()
@@ -794,7 +772,7 @@ void BacklashTool::StartMeasurement(double DriftPerMin)
     m_driftPerSec = DriftPerMin / 60.0;
     m_northBLSteps.clear();
     m_southBLSteps.clear();
-    m_stats.Reset();
+    m_northStats->ClearAll();
     DecMeasurementStep(pFrame->pGuider->CurrentPosition());
 }
 
@@ -816,7 +794,6 @@ static bool OutOfRoom(const wxSize& frameSize, double camX, double camY, int mar
 // Goal is to establish a good seed value for backlash compensation, not to accurately measure the hardware performance
 BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, int* bltMs, double* northRate)
 {
-    std::vector <double> sortedNorthMoves;
     double expectedAmount;
     double expectedMagnitude;
     double earlySouthMoves = 0;
@@ -831,18 +808,10 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
     *northRate = m_lastDecGuideRate;
     if (m_northBLSteps.size() > 3)
     {
-        // Build a sorted list of north dec deltas to compute a median move amount
-        for (int inx = 1; inx < m_northBLSteps.size(); inx++)
-        {
-            double delta = m_northBLSteps[inx] - m_northBLSteps[inx - 1];
-            sortedNorthMoves.push_back(delta);
-            northDelta += delta;
-        }
-        std::sort(sortedNorthMoves.begin(), sortedNorthMoves.end());
-
         // figure out the drift-related corrections
         double driftAmtPx = m_driftPerSec * (m_msmtEndTime - m_msmtStartTime) / 1000;               // amount of drift in px for entire north measurement period
-        int stepCount = sortedNorthMoves.size();
+        int stepCount = m_northStats->GetCount();
+        northDelta = m_northStats->GetSum();
         nRate = fabs((northDelta - driftAmtPx) / (stepCount * m_pulseWidth));                       // drift-corrected empirical measure of north rate
         driftPxPerFrame = driftAmtPx / stepCount;
         Debug.Write(wxString::Format("BLT: Drift correction of %0.2f px applied to total north moves of %0.2f px, %0.3f px/frame\n", driftAmtPx, northDelta, driftPxPerFrame));
@@ -850,7 +819,7 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
 
         // Compute an expected movement of 90% of the median delta north moves (px).  Use the 90% tolerance to avoid situations where the south rate
         // never matches the north rate yet the mount is moving consistently
-        expectedAmount = 0.9 * sortedNorthMoves[(int)(sortedNorthMoves.size() / 2.0)];
+        expectedAmount = 0.9 * m_northStats->GetMedian();
         expectedMagnitude = fabs(expectedAmount);
         int goodSouthMoves = 0;
         for (int step = 1; step < m_southBLSteps.size(); step++)
@@ -1030,7 +999,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    m_stats.AddDelta(deltaN);
+                    m_northStats->AddGuideInfo(m_stepCount, deltaN, 0);
                 }
                 else
                 {
@@ -1051,7 +1020,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    m_stats.AddDelta(deltaN);
+                    m_northStats->AddGuideInfo(m_stepCount, deltaN, 0);
                 }
                 Debug.Write(wxString::Format("BLT: North pulses ended at Dec location %0.2f, TotalDecDelta=%0.2f px, LastDeltaDec = %0.2f\n", currMountLocation.Y, decDelta, deltaN));
                 m_northBLSteps.push_back(currMountLocation.Y);
@@ -1228,10 +1197,12 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
 void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
 {
-    if ((m_Rslt == MEASUREMENT_VALID || m_Rslt == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) && m_stats.count > 1)
+    if ((m_Rslt == MEASUREMENT_VALID || m_Rslt == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) && m_northStats->GetCount() > 1)
     {
         // Sigma of mean for north moves + sigma of two measurements going south, added in quadrature
-        *SigmaPx = sqrt((m_stats.currentSS / m_stats.count) + (2 * m_stats.currentSS / (m_stats.count - 1)));
+        double variance = m_northStats->GetVariance();
+        int count = m_northStats->GetCount();
+        *SigmaPx = sqrt((variance / count) + (2 * variance / (count - 1)));
         *SigmaMs = *SigmaPx / m_northRate;
     }
     else

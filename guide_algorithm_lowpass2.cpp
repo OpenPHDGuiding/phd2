@@ -51,11 +51,16 @@ GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis)
     double aggr = pConfig->Profile.GetDouble(GetConfigPath() + "/Aggressiveness", DefaultAggressiveness);
     SetAggressiveness(aggr);
 
+    m_axisStats = new AxisStats(true, HISTORY_SIZE);            // auto-windowed
+    m_timeBase = 0;
+
     reset();
 }
 
 GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
 {
+    if (m_axisStats)
+        delete m_axisStats;
 }
 
 GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm() const
@@ -64,14 +69,15 @@ GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm() const
 }
 void GuideAlgorithmLowpass2::reset(void)
 {
-    m_history.Empty();
+    m_axisStats->ClearAll();
+    m_timeBase = 0;
     m_rejects = 0;
 }
 
 double GuideAlgorithmLowpass2::result(double input)
 {
-    m_history.Add(input);
-    unsigned int numpts = m_history.GetCount();
+    m_axisStats->AddGuideInfo(m_timeBase++, input, 0);              // AxisStats instance is auto-windowed
+    unsigned int numpts = m_axisStats->GetCount();
     double dReturn;
     double attenuation = m_aggressiveness / 100.;
 
@@ -87,11 +93,13 @@ double GuideAlgorithmLowpass2::result(double input)
             Debug.Write("Lowpass2 history cleared, outlier deflection\n");
         }
         else
-            dReturn = CalcSlope(m_history) * (double) numpts * attenuation;
+        {
+            double newSlope;
+            double intcpt;
+            m_axisStats->GetLinearFitResults(&newSlope, &intcpt);
+            dReturn = newSlope * (double)numpts * attenuation;
+        }
     }
-
-    if (numpts == HISTORY_SIZE)                 // History is fully populated
-        m_history.RemoveAt(0);
 
     if (fabs(dReturn) > fabs(input))            // Keep guide pulses below magnitude of last deflection
     {

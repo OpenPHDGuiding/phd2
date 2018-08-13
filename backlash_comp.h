@@ -36,6 +36,8 @@
 #ifndef BACKLASH_COMP_H_INCLUDED
 #define BACKLASH_COMP_H_INCLUDED
 
+#include "guiding_stats.h"
+
 class Scope;
 class BLCHistory;
 
@@ -74,7 +76,7 @@ class BacklashTool
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;
     double m_driftPerSec;
-    RunningStats m_stats;
+    AxisStats* m_northStats;
     wxLongLong_t m_msmtStartTime;
     wxLongLong_t m_msmtEndTime;
     double GetLastDecGuideRate();
@@ -119,6 +121,7 @@ private:
 public:
 
     BacklashTool();
+    ~BacklashTool();
     void StartMeasurement(double DriftPerMin);
     void StopMeasurement();
     void DecMeasurementStep(const PHD_Point& currentLoc);

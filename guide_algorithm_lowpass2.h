@@ -40,14 +40,16 @@
 #ifndef GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
 #define GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
 
+#include "guiding_stats.h"
+
 class GuideAlgorithmLowpass2 : public GuideAlgorithm
 {
     static const unsigned int HISTORY_SIZE = 10;
-
-    ArrayOfDbl m_history;
     double m_aggressiveness;
     double m_minMove;
     int m_rejects;
+    AxisStats* m_axisStats;
+    int m_timeBase;
 
 protected:
     class GuideAlgorithmLowpass2ConfigDialogPane : public ConfigDialogPane

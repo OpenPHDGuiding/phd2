@@ -51,11 +51,16 @@ GuideAlgorithmLowpass::GuideAlgorithmLowpass(Mount *pMount, GuideAxis axis)
     double slopeWeight = pConfig->Profile.GetDouble(GetConfigPath() + "/SlopeWeight", DefaultSlopeWeight);
     SetSlopeWeight(slopeWeight);
 
+    m_axisStats = new AxisStats(true, 0);           // self-managed window
+    m_timeBase = 0;
+
     reset();
 }
 
 GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
 {
+    if (m_axisStats)
+        delete m_axisStats;
 }
 
 GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm() const
@@ -64,38 +69,33 @@ GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm() const
 }
 void GuideAlgorithmLowpass::reset(void)
 {
-    m_history.Empty();
+    m_axisStats->ClearAll();
+    m_timeBase = 0;
 
-    while (m_history.GetCount() < HISTORY_SIZE)
+    // Needs to be zero-filled to start
+    while (m_axisStats->GetCount() < HISTORY_SIZE)
     {
-        m_history.Add(0.0);
+        m_axisStats->AddGuideInfo(m_timeBase++, 0, 0);
     }
+
 }
 
 double GuideAlgorithmLowpass::result(double input)
 {
-    m_history.Add(input);
-
-    ArrayOfDbl sortedHistory(m_history);
-    sortedHistory.Sort(dbl_sort_func);
-
-    m_history.RemoveAt(0);
-
-    double median = sortedHistory[sortedHistory.GetCount()/2];
-    double slope = CalcSlope(m_history);
-    double dReturn = median + m_slopeWeight*slope;
+    // Manual trimming of window (instead of auto-size) is done for full backward compatibility with original algo
+    m_axisStats->AddGuideInfo(m_timeBase++, input, 0);
+    double median = m_axisStats->GetMedian();
+    m_axisStats->RemoveOldestEntry();
+    double slope;
+    double intcpt;
+    m_axisStats->GetLinearFitResults(&slope, &intcpt);
+    double dReturn = median + m_slopeWeight * slope;
 
     if (fabs(dReturn) > fabs(input))
     {
         Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is < calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
     }
-
-    //TODO: Undertand this. I think this is wrong, since it divides the orignial input
-    //      by 11 if it was less than the computed value.  And since the computed
-    //      value is median + slope, I'm not sure that it should be divided by 11
-    //      either.  But the goal of this exercise is to be bug for bug compatible
-    //      with PHD 1.x
 
     if (fabs(input) < m_minMove)
     {
