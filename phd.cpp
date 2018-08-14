@@ -192,8 +192,73 @@ void PhdApp::TerminateApp()
     wxGetApp().WakeUpIdle();
 }
 
+struct LogToStderr
+{
+    wxLog *m_prev;
+    LogToStderr()
+    {
+        m_prev = wxLog::SetActiveTarget(new wxLogStderr());
+    }
+    ~LogToStderr()
+    {
+        delete wxLog::SetActiveTarget(m_prev);
+    }
+};
+
+// A log class for duplicating wxWidgets error messages to the debug log
+//
+struct EarlyLogger : public wxLog
+{
+    bool m_closed;
+    wxLog *m_prev;
+    wxString m_buf;
+    EarlyLogger()
+        : m_closed(false)
+    {
+        wxASSERT(wxThread::IsMain());
+        m_prev = wxLog::SetActiveTarget(this);
+        DisableTimestamp();
+    }
+    ~EarlyLogger()
+    {
+        Close();
+    }
+    void Close()
+    {
+        if (m_closed)
+            return;
+
+        wxLog::SetActiveTarget(m_prev);
+        m_prev = nullptr;
+
+        if (Debug.IsOpened())
+            Debug.Write(wxString::Format("wx error: %s\n", m_buf));
+
+        wxLogError(m_buf);
+
+        m_buf.clear();
+        m_closed = true;
+    }
+    void DoLogText(const wxString& msg) override
+    {
+        if (!m_buf.empty() && *m_buf.rbegin() != '\n')
+            m_buf += '\n';
+        m_buf += msg;
+    }
+};
+
 bool PhdApp::OnInit()
 {
+#ifdef __APPLE__
+    // for newer versions of OSX the app will hang if the wx log code
+    // tries to display a message box in OnOnit.  As a workaround send
+    // wxLog output to stderr instead
+    LogToStderr _logstderr;
+#endif
+
+    // capture wx error messages until the debug log has been opened
+    EarlyLogger logger;
+
     if (argc > 1 && argv[1] == _T("restart"))
         HandleRestart(); // exits
 
@@ -248,6 +313,8 @@ bool PhdApp::OnInit()
 #if defined(CV_VERSION)
     Debug.Write(wxString::Format("   opencv %s\n", CV_VERSION));
 #endif
+
+    logger.Close(); // writes any deferrred error messages to the debug log
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);

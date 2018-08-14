@@ -109,21 +109,21 @@ class PhdConfig
     void Initialize(const wxString& baseConfigName, int instance);
 
 public:
-    PhdConfig(void);
+    PhdConfig();
     PhdConfig(const wxString& baseConfigName, int instance);
-    ~PhdConfig(void);
+    ~PhdConfig();
 
     static wxString DefaultProfileName;
 
-    void DeleteAll(void);
+    void DeleteAll();
 
-    void InitializeProfile(void);
-    wxString GetCurrentProfile(void);
-    int GetCurrentProfileId(void) { return m_currentProfileId; }
+    void InitializeProfile();
+    wxString GetCurrentProfile();
+    int GetCurrentProfileId() { return m_currentProfileId; }
     bool SetCurrentProfile(const wxString& name);
 
     int GetProfileId(const wxString& name);
-    int FirstProfile(void);
+    int FirstProfile();
     wxString GetProfileName(int profileId);
     bool ProfileExists(int profileId);
     bool CreateProfile(const wxString& name);
@@ -132,9 +132,9 @@ public:
     bool RenameProfile(const wxString& oldname, const wxString& newname);
     bool WriteProfile(const wxString& filename);
     bool ReadProfile(const wxString& filename);
-    wxArrayString ProfileNames(void);
-    unsigned int NumProfiles(void);
-    bool IsNewInstance(void) const { return m_isNewInstance; }
+    wxArrayString ProfileNames();
+    unsigned int NumProfiles();
+    bool IsNewInstance() const { return m_isNewInstance; }
 
     ConfigSection Global;
     ConfigSection Profile;

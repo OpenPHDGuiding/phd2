@@ -45,12 +45,12 @@ wxString PhdConfig::DefaultProfileName = wxTRANSLATE("My Equipment");
 
 #define PROFILE_STREAM_VERSION "1"
 
-ConfigSection::ConfigSection(void)
-    : m_pConfig(NULL)
+ConfigSection::ConfigSection()
+    : m_pConfig(nullptr)
 {
 }
 
-ConfigSection::~ConfigSection(void)
+ConfigSection::~ConfigSection()
 {
 }
 
@@ -186,7 +186,7 @@ void ConfigSection::DeleteGroup(const wxString& name)
     m_pConfig->DeleteGroup(m_prefix + name);
 }
 
-PhdConfig::PhdConfig(void)
+PhdConfig::PhdConfig()
 {
 }
 
@@ -195,7 +195,7 @@ PhdConfig::PhdConfig(const wxString& baseConfigName, int instance)
     Initialize(baseConfigName, instance);
 }
 
-PhdConfig::~PhdConfig(void)
+PhdConfig::~PhdConfig()
 {
     delete Global.m_pConfig;
 }
@@ -218,7 +218,7 @@ struct AutoConfigPath
     }
 };
 
-int PhdConfig::FirstProfile(void)
+int PhdConfig::FirstProfile()
 {
     AutoConfigPath changer(Profile.m_pConfig, "/profile");
 
@@ -265,7 +265,7 @@ void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
     }
 }
 
-void PhdConfig::InitializeProfile(void)
+void PhdConfig::InitializeProfile()
 {
     // select initial profile
     int currentProfile = Global.GetInt("/currentProfile", 0);
@@ -281,7 +281,7 @@ void PhdConfig::InitializeProfile(void)
     Global.SetInt("/currentProfile", currentProfile); // in case we just created it
 }
 
-void PhdConfig::DeleteAll(void)
+void PhdConfig::DeleteAll()
 {
     if (Global.m_pConfig)
     {
@@ -296,7 +296,7 @@ void PhdConfig::DeleteAll(void)
     m_isNewInstance = true;
 }
 
-wxString PhdConfig::GetCurrentProfile(void)
+wxString PhdConfig::GetCurrentProfile()
 {
     return GetProfileName(m_currentProfileId);
 }
@@ -468,6 +468,7 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     {
         return true; // ??? should never happen
     }
+
     CopyGroup(Global.m_pConfig, wxString::Format("/profile/%d", srcId), wxString::Format("/profile/%d", dstId));
     // name was overwritten by copy
     Global.SetString(wxString::Format("/profile/%d/name", dstId), dest);
@@ -691,7 +692,7 @@ bool PhdConfig::WriteProfile(const wxString& filename)
     return false;
 }
 
-wxArrayString PhdConfig::ProfileNames(void)
+wxArrayString PhdConfig::ProfileNames()
 {
     AutoConfigPath changer(Profile.m_pConfig, "/profile");
 
@@ -715,7 +716,7 @@ wxArrayString PhdConfig::ProfileNames(void)
     return ary;
 }
 
-unsigned int PhdConfig::NumProfiles(void)
+unsigned int PhdConfig::NumProfiles()
 {
     AutoConfigPath changer(Profile.m_pConfig, "/profile");
 
