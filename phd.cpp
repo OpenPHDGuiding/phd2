@@ -231,12 +231,16 @@ struct EarlyLogger : public wxLog
         wxLog::SetActiveTarget(m_prev);
         m_prev = nullptr;
 
-        if (Debug.IsOpened())
-            Debug.Write(wxString::Format("wx error: %s\n", m_buf));
+        if (!m_buf.empty())
+        {
+            if (Debug.IsOpened())
+                Debug.Write(wxString::Format("wx error: %s\n", m_buf));
 
-        wxLogError(m_buf);
+            wxLogError(m_buf);
 
-        m_buf.clear();
+            m_buf.clear();
+        }
+
         m_closed = true;
     }
     void DoLogText(const wxString& msg) override
