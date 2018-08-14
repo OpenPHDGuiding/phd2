@@ -126,8 +126,7 @@ static void LoadBookmarks(std::vector<wxRealPoint> *vec)
     while (true)
     {
         double x, y;
-        is >> x;
-        is >> y;
+        is >> x >> y;
         if (!is.good())
             break;
         vec->push_back(wxRealPoint(x, y));
@@ -175,8 +174,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 
     s_deflectionLogger.Init();
-
-    LoadBookmarks(&m_bookmarks);
 }
 
 Guider::~Guider(void)
@@ -197,6 +194,8 @@ void Guider::LoadProfileSettings(void)
 
     double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", 0.);
     SetMinStarHFD(minHFD);
+
+    LoadBookmarks(&m_bookmarks);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
