@@ -106,6 +106,34 @@ BEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_ERASE_BACKGROUND(Guider::OnErase)
 END_EVENT_TABLE()
 
+static void SaveBookmarks(const std::vector<wxRealPoint>& vec)
+{
+    std::ostringstream os;
+    os.setf(std::ios::fixed);
+    os.precision(5);
+    for (auto it = vec.begin(); it != vec.end(); ++it)
+        os << it->x << ' ' << it->y << ' ';
+    pConfig->Profile.SetString("/guider/bookmarks", os.str().c_str());
+}
+
+static void LoadBookmarks(std::vector<wxRealPoint> *vec)
+{
+    wxString s(pConfig->Profile.GetString("/guider/bookmarks", wxEmptyString));
+    std::istringstream is((const char *) s);
+
+    vec->clear();
+
+    while (true)
+    {
+        double x, y;
+        is >> x;
+        is >> y;
+        if (!is.good())
+            break;
+        vec->push_back(wxRealPoint(x, y));
+    }
+}
+
 Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
 {
@@ -147,6 +175,8 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 
     s_deflectionLogger.Init();
+
+    LoadBookmarks(&m_bookmarks);
 }
 
 Guider::~Guider(void)
@@ -1721,6 +1751,7 @@ void Guider::DeleteAllBookmarks()
         if (confirmed)
         {
             m_bookmarks.clear();
+            SaveBookmarks(m_bookmarks);
             if (m_showBookmarks)
             {
                 Refresh();
@@ -1749,10 +1780,13 @@ static std::vector<wxRealPoint>::iterator FindBookmark(const wxRealPoint& pos, s
 void Guider::ToggleBookmark(const wxRealPoint& pos)
 {
     std::vector<wxRealPoint>::iterator it = FindBookmark(pos, m_bookmarks);
+
     if (it == m_bookmarks.end())
         m_bookmarks.push_back(pos);
     else
         m_bookmarks.erase(it);
+
+    SaveBookmarks(m_bookmarks);
 }
 
 static bool BookmarkPos(const PHD_Point& pos, std::vector<wxRealPoint>& vec)
@@ -1764,6 +1798,7 @@ static bool BookmarkPos(const PHD_Point& pos, std::vector<wxRealPoint>& vec)
         if (it != vec.end())
             vec.erase(it);
         vec.push_back(pt);
+        SaveBookmarks(vec);
         return true;
     }
     return false;
