@@ -120,11 +120,9 @@ struct StarDisplacement
 // AxisStats and the StarDisplacement class can be used to collect and evaluate typical guiding data.  Datasets can be windowed or not.
 // Windowing means the data collection is limited to the most recent <n> entries.  
 // Windowed datasets will be automatically trimmed if AutoWindowSize > 0 or can be manually trimmed by client using RemoveOldestEntry()
-// LinearFit will work on either windowed or non-windowed datasets
 class AxisStats
 {
     std::deque <StarDisplacement> guidingEntries;               // queue of elements in dataset
-    DescriptiveStats* descStats;                                // used to compute stats for non-windowed datasets
     unsigned int axisMoves;                                     // number of times in window when guide pulse was non-zero
     unsigned int axisReversals;                                 // number of times in window when guide pulse caused a direction reversal
     double prevMove;                                            // value of guide pulse in next-to-last entry                                           

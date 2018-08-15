@@ -262,13 +262,11 @@ AxisStats::AxisStats(bool Windowing, int AutoWindowSize)
     if (!Windowing)
     {
         windowing = false;
-        descStats = new DescriptiveStats();
         windowSize = 0;
     }
     else
     {
         windowing = true;
-        descStats = NULL;
         windowSize = AutoWindowSize;
         minDisplacement = std::numeric_limits<double>::max();
         maxDisplacement = std::numeric_limits<double>::min();
@@ -278,16 +276,13 @@ AxisStats::AxisStats(bool Windowing, int AutoWindowSize)
 
 AxisStats::~AxisStats()
 {
-    if (!windowing)
-        delete descStats;
+
 }
 
 void AxisStats::ClearAll()
 {
     InitializeScalars();
     guidingEntries.clear();
-    if (descStats != NULL)
-        descStats->ClearValues();
 }
 
 void AxisStats::InitializeScalars()
@@ -424,14 +419,10 @@ void AxisStats::RemoveOldestEntry()
 void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
 {
     StarDisplacement starInfo(DeltaT, StarPos);
-    if (!windowing)
-        descStats->AddValue(StarPos);
-    else
-    {
-        minDisplacement = std::min(StarPos, minDisplacement);
-        maxDisplacement = std::max(StarPos, maxDisplacement);
-    }
-    // Following needed to support linear fit regardless of windowing
+
+    minDisplacement = std::min(StarPos, minDisplacement);
+    maxDisplacement = std::max(StarPos, maxDisplacement);
+
     sumX += DeltaT;
     sumXY += DeltaT * StarPos;
     sumXSq += DeltaT * DeltaT;
@@ -482,10 +473,7 @@ double AxisStats::GetMaxDelta()
 {
     if (guidingEntries.size() > 1)
     {
-        if (!windowing)
-            return descStats->GetMaxDelta();
-        else
-            return maxDelta;
+        return maxDelta;
     }
     else
         throw ERROR_INFO("Data set too small");
@@ -502,10 +490,7 @@ double AxisStats::GetSum()
 {
     if (guidingEntries.size() > 0)
     {
-        if (!windowing)
-            return descStats->GetSum();
-        else
-            return sumY;
+        return sumY;
     }
     else
         throw ERROR_INFO("Empty data set");
@@ -516,12 +501,7 @@ double AxisStats::GetMean()
 {
     if (guidingEntries.size() > 0)
     {
-        if (!windowing)
-            return descStats->GetMean();
-        else
-        {
-            return sumY / guidingEntries.size();
-        }
+        return sumY / guidingEntries.size();
     }
     else
         throw ERROR_INFO("Empty data set");
@@ -530,20 +510,15 @@ double AxisStats::GetMean()
 // Return raw variance for clients who need it
 double AxisStats::GetVariance()
 {
-    if (!windowing)
-        return descStats->GetVariance();
-    else
+    double rslt;
+    if (guidingEntries.size() > 1)
     {
-        double rslt;
-        if (guidingEntries.size() > 1)
-        {
-            double entryCount = guidingEntries.size();
-            rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
-        }
-        else
-            rslt = 0;
-        return rslt;
+        double entryCount = guidingEntries.size();
+        rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
     }
+    else
+        rslt = 0;
+    return rslt;
 }
 
 // Return standard deviation of dataset, windowed or not.  Throws exception for empty data set
@@ -551,24 +526,19 @@ double AxisStats::GetSigma()
 {
     if (guidingEntries.size() > 0)
     {
-        if (!windowing)
-            return descStats->GetSigma();
-        else
+        double rslt;
+        if (guidingEntries.size() > 1)
         {
-            double rslt;
-            if (guidingEntries.size() > 1)
-            {
-                double entryCount = guidingEntries.size();
-                double variance = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
-                if (variance >= 0)
-                    rslt = sqrt(variance);
-                else
-                    rslt = 0;
-            }
+            double entryCount = guidingEntries.size();
+            double variance = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
+            if (variance >= 0)
+                rslt = sqrt(variance);
             else
                 rslt = 0;
-            return rslt;
         }
+        else
+            rslt = 0;
+        return rslt;
     }
     else
         throw ERROR_INFO("Empty data set");
@@ -583,24 +553,20 @@ double AxisStats::GetMedian()
         // Need a copy of guidingEntries to do a sort
         std::vector <double> sortedEntries;
 
-        if (guidingEntries.size() > 0)
+        for (unsigned int inx = 0; inx < guidingEntries.size(); inx++)
         {
-
-            for (unsigned int inx = 0; inx < guidingEntries.size(); inx++)
-            {
-                sortedEntries.push_back(guidingEntries[inx].StarPos);
-            }
-            std::sort(sortedEntries.begin(), sortedEntries.end());
-            int ctr = (int)(sortedEntries.size() / 2);
-            if (sortedEntries.size() % 2 == 1)
-            {
-                rslt = sortedEntries[ctr];
-            }
-            else
-            {
-                // even number of entries => take average of two entires adjacent to center
-                rslt = (sortedEntries[ctr] + sortedEntries[ctr - 1]) / 2.0;
-            }
+            sortedEntries.push_back(guidingEntries[inx].StarPos);
+        }
+        std::sort(sortedEntries.begin(), sortedEntries.end());
+        int ctr = (int)(sortedEntries.size() / 2);
+        if (sortedEntries.size() % 2 == 1)
+        {
+            rslt = sortedEntries[ctr];
+        }
+        else
+        {
+            // even number of entries => take average of two entires adjacent to center
+            rslt = (sortedEntries[ctr] + sortedEntries[ctr - 1]) / 2.0;
         }
         return rslt;
     }
@@ -613,10 +579,7 @@ double AxisStats::GetMinDisplacement()
 {
     if (guidingEntries.size() > 0)
     {
-        if (!windowing)
-            return descStats->GetMinimum();
-        else
-            return minDisplacement;
+        return minDisplacement;
     }
     else
         throw ERROR_INFO("Empty data set");
@@ -627,10 +590,7 @@ double AxisStats::GetMaxDisplacement()
 {
     if (guidingEntries.size() > 0)
     {
-        if (!windowing)
-            return descStats->GetMaximum();
-        else
-            return maxDisplacement;
+        return maxDisplacement;
     }
     else
         throw ERROR_INFO("Empty data set");
