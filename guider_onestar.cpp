@@ -693,7 +693,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
         if (lockPos.IsValid())
         {
             ofs->cameraOfs = m_star - lockPos;
-            if (pMount)
+            if (pMount && pMount->IsCalibrated())
                 pMount->TransformCameraCoordinatesToMountCoordinates(ofs->cameraOfs, ofs->mountOfs, true);
             double distanceRA = ofs->mountOfs.IsValid() ? fabs(ofs->mountOfs.X) : 0.;
             UpdateCurrentDistance(distance, distanceRA);

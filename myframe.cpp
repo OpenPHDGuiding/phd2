@@ -2413,7 +2413,7 @@ void MyFrame::SetDarkMenuState()
     m_useDarksMenuItem->Enable(haveDarkLib);
     if (!haveDarkLib)
         m_useDarksMenuItem->Check(false);
-    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
+    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), true);
     m_useDefectMapMenuItem->Enable(haveDefectMap);
     if (!haveDefectMap)
         m_useDefectMapMenuItem->Check(false);

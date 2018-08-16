@@ -4,7 +4,7 @@
 *
 *  Created by Robin Glover.
 *  Copyright (c) 2014 Robin Glover.
-*  Copyright (c) 2017 Andy Galasso
+*  Copyright (c) 2017-2018 Andy Galasso
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -58,7 +58,8 @@ Camera_ZWO::Camera_ZWO()
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will frash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
 }
 
 Camera_ZWO::~Camera_ZWO()
@@ -307,7 +308,14 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     }
 
-    wxYield();
+    if (HasGainControl)
+    {
+        Debug.Write(wxString::Format("ZWO: gain range = %d .. %d\n", m_minGain, m_maxGain));
+        int Offset_HighestDR, Offset_UnityGain, Gain_LowestRN, Offset_LowestRN;
+        ASIGetGainOffset(m_cameraId, &Offset_HighestDR, &Offset_UnityGain, &Gain_LowestRN, &Offset_LowestRN);
+        m_defaultGainPct = gain_pct(m_minGain, m_maxGain, Gain_LowestRN);
+        Debug.Write(wxString::Format("ZWO: lowest RN gain = %d (%d%%)\n", Gain_LowestRN, m_defaultGainPct));
+    }
 
     m_frame = wxRect(FullSize);
     Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
@@ -349,6 +357,11 @@ bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
 
     *devPixelSize = m_devicePixelSize;
     return false;
+}
+
+int Camera_ZWO::GetDefaultCameraGain()
+{
+    return m_defaultGainPct;
 }
 
 bool Camera_ZWO::SetCoolerOn(bool on)

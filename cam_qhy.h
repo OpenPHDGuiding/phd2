@@ -69,6 +69,7 @@ public:
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
     bool GetDevicePixelSize(double *devPixelSize) override;
+    int GetDefaultCameraGain() override;
 };
 
 #endif // QHY5IIBASE_H_INCLUDED

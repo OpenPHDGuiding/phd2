@@ -133,6 +133,7 @@ private:
     SummaryStats m_stats;
 
     GRAPH_MODE m_mode;
+    bool m_correctionsToScale;
 
     unsigned int m_length;
     unsigned int m_height;
@@ -233,6 +234,7 @@ public:
     void OnButtonSettings(wxCommandEvent& evt);
     void OnRADecDxDy(wxCommandEvent& evt);
     void OnArcsecsPixels(wxCommandEvent& evt);
+    void OnCorrectionScale(wxCommandEvent& evt);
     void OnRADxColor(wxCommandEvent& evt);
     void OnDecDyColor(wxCommandEvent& evt);
     void OnMenuStarMass(wxCommandEvent& evt);

@@ -18,8 +18,8 @@
 #include "openssag.h"
 #include "openssag_priv.h"
 
-#ifdef __APPLE__
-  #include <unistd.h>
+#if !defined(_MSC_VER)
+# include <unistd.h>
 #endif
 
 
@@ -124,7 +124,7 @@ struct device_info *SSAG::EnumerateDevices()
     ssize_t cnt = libusb_get_device_list(NULL, &list);
     if (cnt < 0)
     {
-        DBG("No USB device found.");
+        DBG("No USB device found.\n");
         return head;
     }
 
@@ -135,11 +135,9 @@ struct device_info *SSAG::EnumerateDevices()
         int r = libusb_get_device_descriptor(device, &desc);
         if (r < 0)
         {
-            DBG("Device description querying failed for device %d.", i);
+            DBG("Device description querying failed for device %zd.\n", i);
             continue;
         }
-
-
 
         if (desc.idVendor == SSAG_VENDOR_ID && desc.idProduct == SSAG_PRODUCT_ID) 
         {
@@ -149,36 +147,35 @@ struct device_info *SSAG::EnumerateDevices()
             {
                 if (r == LIBUSB_ERROR_ACCESS) 
                 {
-                    DBG("Device open failed due to a permission denied error.");
-                    DBG("libusb requires write access to USB device nodes.");
+                    DBG("Device open failed due to a permission denied error.\n");
+                    DBG("libusb requires write access to USB device nodes.\n");
                 }
-                DBG("could not open device, error %d", r);
+                DBG("could not open device, error %d\n", r);
                 continue;
             }    
         
-            if(handle == NULL)
+            if (handle == NULL)
             {
-                DBG("Device open failed: handle null while not an error in opening the device.");
+                DBG("Device open failed: handle null while not an error in opening the device.\n");
                 continue;
             }
 
-            current = (struct device_info *)malloc(sizeof(struct device_info *));
+            current = (struct device_info *)malloc(sizeof(*current));
             current->next = NULL;
-
 
             /* Copy serial */
             r = libusb_get_string_descriptor_ascii(
                     handle, 
                     desc.iSerialNumber & 0xff, 
-                    (unsigned char*)current->serial, 
+                    (unsigned char*)&current->serial[0], 
                     (int) sizeof(current->serial));
             if (r < 0)
             {
-                DBG("Device open failed: cannot get the serial from the handle.");
+                DBG("Device open failed: cannot get the serial from the handle.\n");
+                free(current);
                 libusb_close(handle);
                 continue;
             }
-            
             
             libusb_close(handle);
 
@@ -201,47 +198,54 @@ struct device_info *SSAG::EnumerateDevices()
     return head;
 }
 
-bool SSAG::Connect(bool bootload)
+void SSAG::GetDefaultLoaderUSBIds(int *vid, int *pid)
 {
+    *vid = SSAG_VENDOR_ID;
+    *pid = SSAG_LOADER_PRODUCT_ID;
+}
+
+bool SSAG::Connect(bool bootload, int loader_vid, int loader_pid)
+{
+    DBG("SSAG::Connect(%d, %04x, %04x)\n", bootload, loader_vid, loader_pid);
     if (!usb_open_device(&this->handle, SSAG_VENDOR_ID, SSAG_PRODUCT_ID, NULL)) {
         if (bootload) {
-            Loader *loader = new Loader();
-            if (loader->Connect()) {
-                if (!loader->LoadFirmware()) {
+            { // scope
+                Loader loader;
+                DBG("connect to loader VID %04x pid %04x\n", loader_vid, loader_pid);
+                if (!loader.Connect(loader_vid, loader_pid)) {
+                    DBG("ERROR: loader connect failed\n");
+                    return false;
+                }
+                if (!loader.LoadFirmware()) {
                     fprintf(stderr, "ERROR:  Failed to upload firmware to the device\n");
                     return false;
                 }
-                loader->Disconnect();
-                for (time_t t = time(NULL) + RENUMERATE_TIMEOUT; time(NULL) < t;) {
-                    DBG("Checking if camera has renumerated...");
-                    if (EnumerateDevices()) {
-                        DBG("Yes\n");
-                        return this->Connect(false);
-                    }
-                    DBG("No\n");
-                    sleep(1);
+            } // scope
+
+            for (time_t t = time(NULL) + RENUMERATE_TIMEOUT; time(NULL) < t;) {
+                sleep(1);
+                DBG("Checking if camera has renumerated...\n");
+                if (usb_open_device(&this->handle, SSAG_VENDOR_ID, SSAG_PRODUCT_ID, NULL)) {
+                    DBG("Got it\n");
+                    goto found;
                 }
-                DBG("ERROR:  Device did not renumerate. Timed out.\n");
-                /* Timed out */
-                return false;
-            } else {
-                return false;
+                DBG("No\n");
             }
+            DBG("ERROR:  Device did not renumerate. Timed out.\n");
+            /* Timed out */
+            return false;
         } else {
+            DBG("SSAG::Connect: usb_open_device(%04x, %04x) failed\n", SSAG_VENDOR_ID, SSAG_PRODUCT_ID);
             return false;
         }
     }
 
+found:
     this->SetBufferMode();
     this->SetGain(1);
     this->InitSequence();
 
     return true;
-}
-
-bool SSAG::Connect()
-{
-    return this->Connect(true);
 }
 
 void SSAG::Disconnect()
@@ -268,7 +272,7 @@ void SSAG::SetBufferMode()
 
     if (r < 0)
     {
-        DBG("SSAG::SetBufferMode: error sending command");
+        DBG("SSAG::SetBufferMode: error sending command\n");
     }
 
     DBG("Buffer Mode Data: %02x%02x%02x%02x\n", data[0], data[1], data[2], data[3]);
@@ -296,12 +300,12 @@ struct raw_image *SSAG::Expose(int duration)
         USB_TIMEOUT);
     if (r < 0)
     {
-        DBG("SSAG::Expose: error sending command");
+        DBG("SSAG::Expose: error sending command\n");
     }
 
     
 
-    struct raw_image *image = (raw_image *)malloc(sizeof(struct raw_image));
+    struct raw_image *image = (raw_image *)malloc(sizeof(*image));
     image->width = IMAGE_WIDTH;
     image->height = IMAGE_HEIGHT;
     image->data = this->ReadBuffer(duration + USB_TIMEOUT);
@@ -337,7 +341,7 @@ void SSAG::CancelExposure()
      * read. FIXME: is this how libusb-0.1 works? */
     if (r == 0 || (r == LIBUSB_ERROR_TIMEOUT && actual_length > 0))
     {
-        DBG("SSAG::CancelExposure: read %d bytes but received a timeout", actual_length);
+        DBG("SSAG::CancelExposure: read %d bytes but received a timeout\n", actual_length);
     }
         
 }
@@ -368,7 +372,7 @@ void SSAG::Guide(int direction, int yduration, int xduration)
     
     if (r < 0)
     {
-        DBG("SSAG::Guide: error sending command");
+        DBG("SSAG::Guide: error sending command\n");
     }        
 }
 
@@ -413,7 +417,7 @@ void SSAG::InitSequence()
         USB_TIMEOUT);    
     if (r < 0)
     {
-        DBG("SSAG::InitSequence: error sending command");
+        DBG("SSAG::InitSequence: error sending command\n");
     }       
     
     
@@ -431,7 +435,7 @@ void SSAG::InitSequence()
     
     if (r < 0)
     {
-        DBG("SSAG::InitSequence: error sending command (2)");
+        DBG("SSAG::InitSequence: error sending command (2)\n");
     }      
 }
 
@@ -456,7 +460,7 @@ unsigned char *SSAG::ReadBuffer(int timeout)
 
     if (ret < 0)
     {
-        DBG("SSAG::ReadBuffer: error sending command");
+        DBG("SSAG::ReadBuffer: error sending command\n");
         free(data);
         return NULL;
     }    

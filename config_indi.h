@@ -49,11 +49,12 @@
 
 #include "indi_gui.h"
 
-enum
+enum IndiDevType
 {
-    TYPE_CAMERA,
-    TYPE_MOUNT,
-    TYPE_AO,
+    INDI_TYPE_CAMERA,
+    INDI_TYPE_MOUNT,
+    INDI_TYPE_AUX_MOUNT,
+    INDI_TYPE_AO,
 };
 
 class INDIConfig : public wxDialog, public PhdIndiClient
@@ -73,11 +74,11 @@ class INDIConfig : public wxDialog, public PhdIndiClient
     wxButton *okBtn;
 
     IndiGui *m_gui;
-    int dev_type;
+    IndiDevType dev_type;
 
 public:
 
-    INDIConfig(wxWindow *parent, const wxString& title, int devtype);
+    INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype);
     ~INDIConfig();
 
     long     INDIport;

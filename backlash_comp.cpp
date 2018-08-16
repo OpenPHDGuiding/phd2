@@ -440,7 +440,7 @@ void BacklashComp::SetBacklashPulse(int ms, int floor, int ceiling)
         int oldBLC = m_pulseWidth;
         SetCompValues(ms, floor, ceiling);
         pFrame->NotifyGuidingParam("Backlash comp amount", m_pulseWidth);
-        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Floor = %d ms,Ceiling = %d ms, %s\n", 
+        Debug.Write(wxString::Format("BLC: Comp pulse set to %d ms, Floor = %d ms, Ceiling = %d ms, %s\n",
             m_pulseWidth, m_adjustmentFloor, m_adjustmentCeiling, m_fixedSize ? "Fixed" : "Adjustable"));
         if (abs(m_pulseWidth - oldBLC) > 100)
         {
@@ -600,11 +600,9 @@ BacklashGraph::BacklashGraph(wxDialog *parent, BacklashTool *pBL)
     // Just but a big button area for the graph with a button below it
     wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
     // Use a bitmap button so we don't waste cycles in paint events
-    wxBitmap theGraph = CreateGraph(450, 300);
-    wxBitmapButton *graphButton = new wxBitmapButton(this, wxID_ANY, theGraph, wxDefaultPosition, wxSize(450, 300), wxBU_AUTODRAW | wxBU_EXACTFIT);
-    vSizer->Add(graphButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
-    graphButton->SetBitmapDisabled(theGraph);
-    graphButton->Enable(false);
+    wxBitmap graph_bitmap = CreateGraph(450, 300);
+    wxStaticBitmap *graph = new wxStaticBitmap(this, wxID_ANY, graph_bitmap, wxDefaultPosition, wxDefaultSize, 0);
+    vSizer->Add(graph, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
 
     // ok button because we're modal
     vSizer->Add(

@@ -317,6 +317,8 @@ set(guiding_SRC
   ${phd_src_dir}/guide_algorithm_lowpass2.h
   ${phd_src_dir}/guide_algorithm_resistswitch.cpp
   ${phd_src_dir}/guide_algorithm_resistswitch.h
+  ${phd_src_dir}/guide_algorithm_zfilter.cpp
+  ${phd_src_dir}/guide_algorithm_zfilter.h
   ${phd_src_dir}/guide_algorithm.cpp
   ${phd_src_dir}/guide_algorithm.h
   ${phd_src_dir}/guide_algorithms.h
@@ -325,6 +327,8 @@ set(guiding_SRC
   ${phd_src_dir}/guider.cpp
   ${phd_src_dir}/guider.h
   ${phd_src_dir}/guiders.h
+  ${phd_src_dir}/zfilterfactory.cpp
+  ${phd_src_dir}/zfilterfactory.h
 )
 source_group(Guiding FILES ${guiding_SRC})
 

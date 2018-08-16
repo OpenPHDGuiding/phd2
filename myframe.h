@@ -301,8 +301,8 @@ public:
 #endif
     void OnPanelClose(wxAuiManagerEvent& evt);
 #if defined (V4L_CAMERA)
-     void OnSaveSettings(wxCommandEvent& evt);
-     void OnRestoreSettings(wxCommandEvent& evt);
+    void OnSaveSettings(wxCommandEvent& evt);
+    void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
     void OnStats(wxCommandEvent& evt);
@@ -612,6 +612,7 @@ enum {
         GRAPH_STAR_SNR,
         GRAPH_RADX_COLOR,
         GRAPH_DECDY_COLOR,
+        GRAPH_SCALE_CORR,
     BUTTON_GRAPH_CLEAR,
     TARGET_ENABLE_REF_CIRCLE,
     TARGET_REF_CIRCLE_RADIUS,

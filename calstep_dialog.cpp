@@ -46,6 +46,8 @@
 #define MAX_STEPS 60.0
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
+#define MIN_DISTANCE 10 // pixels
+#define MAX_DISTANCE 200 // pixels
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
@@ -56,7 +58,7 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
 }
 
 CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning) :
-    wxDialog(parent, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("Detailed Calibration Parameters"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
@@ -71,6 +73,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_fPixelSize = pixelSize;
     m_binning = binning;
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", Scope::DEFAULT_MOUNT_GUIDE_SPEED);
+    m_calibrationDistance = pConfig->Profile.GetInt("/scope/CalibrationDistance", DEFAULT_DISTANCE);
 
     // Now improve on Dec and guide speed if mount/pointing info is available
     if (pPointingSource)
@@ -94,8 +97,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // Create the sizers we're going to need
     m_pVSizer = new wxBoxSizer(wxVERTICAL);
-    m_pInputTableSizer = new wxFlexGridSizer(3, 2, 15, 15);
-    m_pOutputTableSizer = new wxFlexGridSizer(2, 2, 15, 15);
+    m_pInputTableSizer = new wxFlexGridSizer(4, 4, 15, 15);
+    m_pOutputTableSizer = new wxFlexGridSizer(1, 4, 15, 15);
 
     // Build the group of input fields
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
@@ -142,11 +145,24 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps,
                    wxString::Format(_("Targeted number of steps in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_STEPS));
 
+    // Distance for calibration (arcsec)
+    m_pDistance = NewSpinner(this, textWidth, m_calibrationDistance, MIN_DISTANCE, MAX_DISTANCE, 1.0);
+    m_pDistance->SetDigits(0);
+    m_pDistance->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
+    AddTableEntry(m_pInputTableSizer, _("Calibration distance, px"), m_pDistance,
+        wxString::Format(_("Targeted distance in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_DISTANCE));
+
     // Calibration declination
     m_pDeclination = NewSpinner(this, textWidth, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
     m_pDeclination->SetDigits(0);
     m_pDeclination->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Calibration declination, degrees"), m_pDeclination, _("Approximate declination where you will do calibration"));
+
+    // Button for doing a 'reset'
+    wxButton* pResetButton = new wxButton(this, wxID_DEFAULT, _("Reset"));
+    pResetButton->SetToolTip(_("Reset the calibration parameters to defaults"));
+    pResetButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalstepDialog::OnReset, this);
+    m_pInputTableSizer->Add(pResetButton, 1, wxALL, 5);
 
     // Build the group of output fields
     m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Computed Values"));
@@ -183,8 +199,18 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, const wxString& labe
     pControl->SetToolTip (toolTip);
 }
 
+// the recommended calibration distance is 20 arc-seconds or 25 pixels, whichever is greater
+// (25 pixels when the image scale is unknown)
+int CalstepDialog::GetCalibrationDistance(int focalLength, double pixelSize, int binning)
+{
+    double pixelScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
+    double nominalDistanceArcsecs = 20.0;
+    double MinDistancePx = CalstepDialog::DEFAULT_DISTANCE;
+    return (int) ceil(std::max(MinDistancePx, nominalDistanceArcsecs / pixelScale));
+}
+
 // Based on computed image scale, compute an RA calibration pulse direction that will result in DesiredSteps
-//  for a "travel" distance of MAX_CALIBRATION_DISTANCE in each direction, adjusted for declination.
+//  for a "travel" distance of <distance> pixels in each direction, adjusted for declination.
 //  Result will be rounded up to the nearest 50 ms and is constrained to insure Dec calibration is at least
 //  MIN_STEPs
 //
@@ -198,18 +224,16 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, const wxString& labe
 //  pStepSize = address of computed calibration step size, milliseconds
 //
 void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, int binning, double GuideSpeed, int DesiredSteps,
-    double Declination, double *pImageScale, int *pStepSize)
+    double Declination, int distance, double *pImageScale, int *pStepSize)
 {
-    enum { CALIBRATION_PIXELS = 25 };
     double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength, binning); // arc-sec per pixel
-    double totalDistance = (double) CALIBRATION_PIXELS * ImageScale; // arc-seconds
-    double totalDuration = totalDistance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
+    double totalDuration = (double) distance * ImageScale / (15.0 * GuideSpeed);           // 15 arc-sec/sec is sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
     double MaxPulse = totalDuration / MIN_STEPS * 1000.0;            // max pulse size to still get MIN steps
-    Pulse = wxMin(MaxPulse, Pulse / cos(radians(Declination))); // UI forces abs(Dec) <= 60 degrees
+    Pulse = wxMin(MaxPulse, Pulse / cos(radians(Declination)));      // UI forces abs(Dec) <= 60 degrees
     if (pImageScale)
         *pImageScale = ImageScale;
-    *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms
+    *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms, too-small pulses can lead to calibration problems
 }
 
 void CalstepDialog::OnText(wxCommandEvent& evt)
@@ -222,6 +246,14 @@ void CalstepDialog::OnSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     DoRecalc();
     evt.Skip();
+}
+
+void CalstepDialog::OnReset(wxCommandEvent& evt)
+{
+    int bestDistance = GetCalibrationDistance(m_iFocalLength, m_pPixelSize->GetValue(), m_binningChoice->GetSelection() + 1);
+    m_pDistance->SetValue(bestDistance);
+    m_pNumSteps->SetValue(DEFAULT_STEPS);
+    DoRecalc();
 }
 
 void CalstepDialog::DoRecalc(void)
@@ -237,6 +269,7 @@ void CalstepDialog::DoRecalc(void)
         m_pGuideSpeed->SetValue(m_fGuideSpeed);
         m_iNumSteps = m_pNumSteps->GetValue();
         m_dDeclination = std::abs(m_pDeclination->GetValue());
+        m_calibrationDistance = (int) m_pDistance->GetValue();
 
         if (m_iFocalLength < 50)
         {
@@ -252,7 +285,7 @@ void CalstepDialog::DoRecalc(void)
 
             // Spin controls enforce numeric ranges
             GetCalibrationStepSize(m_iFocalLength, m_fPixelSize, m_binning, m_fGuideSpeed, m_iNumSteps,
-                m_dDeclination, &m_fImageScale, &m_iStepSize);
+                m_dDeclination, m_calibrationDistance, &m_fImageScale, &m_iStepSize);
 
             m_bValidResult = true;
         }
@@ -271,7 +304,7 @@ void CalstepDialog::DoRecalc(void)
 }
 
 // Public function for client to get the computed step-size along with possibly modified values for focal length and pixel size
-bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize)
+bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, int *distance)
 {
     if (m_bValidResult)
     {
@@ -284,6 +317,7 @@ bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *binning
         *pixelSize = m_fPixelSize;
         *binning = m_binning;
         *stepSize = m_iStepSize;
+        *distance = m_calibrationDistance;
         long lval;
         if (m_pRslt->GetValue().ToLong(&lval) && lval > 0)
             *stepSize = (int) lval;

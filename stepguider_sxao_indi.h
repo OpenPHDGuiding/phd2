@@ -90,7 +90,7 @@ private:
 
     // StepGuider parts
     static const int DefaultMaxSteps = 45;
-	wxString m_Name;
+    wxString m_Name;
     int m_maxSteps;
     int SxAoVersion;
 

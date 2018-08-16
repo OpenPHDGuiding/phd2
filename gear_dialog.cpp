@@ -1071,6 +1071,14 @@ bool GearDialog::DoConnectCamera()
         if (!err)
             m_pCamera->SetCameraPixelSize(pixelSize);
 
+        // update default gain setting from the driver
+        if (m_pCamera->HasGainControl && !pConfig->Profile.HasEntry("/camera/gain"))
+        {
+            int defaultGain = m_pCamera->GetDefaultCameraGain();
+            Debug.Write(wxString::Format("Initializing camera gain to %d%%\n", defaultGain));
+            m_pCamera->SetCameraGain(defaultGain);
+        }
+
         // See if the profile was created with a binning level that isn't supported by the camera (user mistake) - if so, reset binning to 1
         // Must be done here because orig binning level is not saved
         if (profileBinning > m_pCamera->MaxBinning)
@@ -1113,7 +1121,7 @@ bool GearDialog::DoConnectCamera()
         pFrame->SetDarkMenuState();
 
         pFrame->StatusMsg(_("Camera Connected"));
-        
+
         pFrame->UpdateStateLabels();
         pFrame->pStatsWin->UpdateCooler();
     }

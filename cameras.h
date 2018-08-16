@@ -116,6 +116,8 @@
 # ifdef HAVE_SBIG_CAMERA
 #   define SBIG
 # endif
+// this should work ... needs testing
+//# define OPENSSAG
 
 #endif
 

@@ -273,7 +273,17 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
         // grab the subframe
         wxBitmap dBmp(*img);
-        wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(ROUND(LockX)-15, ROUND(LockY)-15, 30, 30));
+        int lkx = ROUND(LockX);
+        int l = std::max(0, lkx - 15);
+        int r = std::min(dBmp.GetWidth() - 1, lkx + 15);
+        int w = std::min(lkx - l, r - lkx);
+        int lky = ROUND(LockY);
+        int t = std::max(0, lky - 15);
+        int b = std::min(dBmp.GetHeight() - 1, lky + 15);
+        int h = std::min(lky - t, b - lky);
+        int sz = std::min(w, h);
+
+        wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(lkx - sz, lky - sz, sz * 2, sz * 2));
         wxImage subDImg = subDBmp.ConvertToImage();
         // scale by 2
         wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH));
@@ -282,15 +292,18 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         // blit into profile DC
         dc.Blit(xoffset, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
         // lines for the lock pos + red dot at star centroid
-        dc.SetPen(wxPen(wxColor(0,200,0),1,wxDOT));
+        dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxDOT));
         dc.DrawLine(xoffset, midwidth, xoffset + width, midwidth);
         dc.DrawLine(xoffset + midwidth, 0, xoffset + midwidth, width);
-        // and a small cross at the centroid
-        double starX = xoffset + midwidth - dStarX * (width / 30.0) + 1, starY = midwidth - dStarY * (width / 30.0) + 1;
-        if (starX >= xoffset) {
-            dc.SetPen(RedPen);
-            dc.DrawLine(starX - 3, starY, starX + 3, starY);
-            dc.DrawLine(starX, starY - 3, starX, starY + 3);
+        if (sz > 0)
+        {
+            // and a small cross at the centroid
+            double starX = xoffset + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1;
+            if (starX >= xoffset) {
+                dc.SetPen(RedPen);
+                dc.DrawLine(starX - 3, starY, starX + 3, starY);
+                dc.DrawLine(starX, starY - 3, starX, starY + 3);
+            }
         }
     }
 }

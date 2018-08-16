@@ -178,12 +178,12 @@ extern "C" {
 
 const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
-double GuideCamera::GetProfilePixelSize(void)
+double GuideCamera::GetProfilePixelSize()
 {
     return pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
 }
 
-GuideCamera::GuideCamera(void)
+GuideCamera::GuideCamera()
 {
     Connected = false;
     m_hasGuideOutput = false;
@@ -209,7 +209,7 @@ GuideCamera::GuideCamera(void)
     CurrentDefectMap = nullptr;
 }
 
-GuideCamera::~GuideCamera(void)
+GuideCamera::~GuideCamera()
 {
     ClearDarks();
     ClearDefectMap();
@@ -226,7 +226,7 @@ static wxString INDICamName()
     return indicam.empty() ? _T("INDI Camera") : wxString::Format("INDI Camera [%s]", indicam);
 }
 
-wxArrayString GuideCamera::GuideCameraList(void)
+wxArrayString GuideCamera::GuideCameraList()
 {
     wxArrayString CameraList;
 
@@ -610,11 +610,6 @@ bool GuideCamera::CamConnectFailed(const wxString& errorMessage)
     return true; // error
 }
 
-int GuideCamera::GetCameraGain(void)
-{
-    return GuideCameraGain;
-}
-
 bool GuideCamera::SetCameraGain(int cameraGain)
 {
     bool bError = false;
@@ -624,6 +619,10 @@ bool GuideCamera::SetCameraGain(int cameraGain)
         if (cameraGain <= 0)
         {
             throw ERROR_INFO("cameraGain <= 0");
+        }
+        else if (cameraGain > 100)
+        {
+            throw ERROR_INFO("cameraGain > 100");
         }
         GuideCameraGain = cameraGain;
     }
@@ -637,6 +636,11 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     pConfig->Profile.SetInt("/camera/gain", GuideCameraGain);
 
     return bError;
+}
+
+int GuideCamera::GetDefaultCameraGain()
+{
+    return DefaultGuideCameraGain;
 }
 
 bool GuideCamera::SetBinning(int binning)
@@ -1392,7 +1396,7 @@ static void InitiateReconnect()
 
 void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 {
-    switch (type) 
+    switch (type)
     {
     case CAPT_FAIL_MEMORY:
         DisconnectWithAlert(_("Memory allocation error during capture"), NO_RECONNECT);
@@ -1444,17 +1448,17 @@ bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int c
     return err;
 }
 
-bool GuideCamera::ST4HasGuideOutput(void)
+bool GuideCamera::ST4HasGuideOutput()
 {
     return m_hasGuideOutput;
 }
 
-bool GuideCamera::ST4HostConnected(void)
+bool GuideCamera::ST4HostConnected()
 {
     return Connected;
 }
 
-bool GuideCamera::ST4HasNonGuiMove(void)
+bool GuideCamera::ST4HasNonGuiMove()
 {
     // should never be called
 

@@ -134,6 +134,8 @@ GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
         return GUIDE_ALGORITHM_RESIST_SWITCH;
     if (s ==_("Predictive PEC"))
         return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
+    if (s.StartsWith(_("ZFilter")))
+        return GUIDE_ALGORITHM_ZFILTER;
     return GUIDE_ALGORITHM_NONE;
 }
 
@@ -155,6 +157,8 @@ wxString GuideAlgorithmName(int algo)
         return _("Resist Switch");
     case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
         return _("Predictive PEC");
+    case GUIDE_ALGORITHM_ZFILTER:
+        return _("ZFilter - Experimental only!");
     }
 }
 
@@ -174,41 +178,51 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, stepGuider ? _("AO Y-Axis") : _("Declination"));
         wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
-        static GUIDE_ALGORITHM const X_ALGORITHMS[] =
+        static GUIDE_ALGORITHM const RA_ALGORITHMS[] =
         {
-            GUIDE_ALGORITHM_IDENTITY,
             GUIDE_ALGORITHM_HYSTERESIS,
             GUIDE_ALGORITHM_LOWPASS,
             GUIDE_ALGORITHM_LOWPASS2,
             GUIDE_ALGORITHM_RESIST_SWITCH,
             GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
+            GUIDE_ALGORITHM_ZFILTER,
         };
-        static GUIDE_ALGORITHM const X_ALGORITHMS_AO[] =                // Keep it clear re which algos make sense for AO
+        static GUIDE_ALGORITHM const DEC_ALGORITHMS[] =
         {
-            GUIDE_ALGORITHM_IDENTITY,
             GUIDE_ALGORITHM_HYSTERESIS,
             GUIDE_ALGORITHM_LOWPASS,
             GUIDE_ALGORITHM_LOWPASS2,
+            GUIDE_ALGORITHM_RESIST_SWITCH,
+            GUIDE_ALGORITHM_ZFILTER,
         };
-        std::vector <wxString> xAlgorithms;
-        if (!stepGuider)
+        static GUIDE_ALGORITHM const AO_ALGORITHMS[] =
         {
-            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS); i++)
-                xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS[i]));
+            GUIDE_ALGORITHM_HYSTERESIS,
+            GUIDE_ALGORITHM_LOWPASS,
+            GUIDE_ALGORITHM_LOWPASS2,
+            GUIDE_ALGORITHM_ZFILTER,
+        };
+
+        wxArrayString xAlgorithms;
+        if (stepGuider)
+        {
+            for (int i = 0; i < WXSIZEOF(AO_ALGORITHMS); i++)
+                xAlgorithms.push_back(GuideAlgorithmName(AO_ALGORITHMS[i]));
         }
         else
         {
-            for (int i = 0; i < WXSIZEOF(X_ALGORITHMS_AO); i++)
-                xAlgorithms.push_back(GuideAlgorithmName(X_ALGORITHMS_AO[i]));
+            for (int i = 0; i < WXSIZEOF(RA_ALGORITHMS); i++)
+                xAlgorithms.push_back(GuideAlgorithmName(RA_ALGORITHMS[i]));
         }
 
         width = StringArrayWidth(&xAlgorithms[0], xAlgorithms.size());
         m_pXGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), xAlgorithms.size(), &xAlgorithms[0]);
-        if (!stepGuider)
-            m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
-        else
+            wxSize(width + 35, -1), xAlgorithms);
+
+        if (stepGuider)
             m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for X-axis"));
+        else
+            m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
 
         m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
             wxCommandEventHandler(Mount::MountConfigDialogPane::OnXAlgorithmSelected), 0, this);
@@ -236,41 +250,27 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         else
             m_pRABox->Add(m_pResetRAParams, wxSizerFlags(0).Border(wxTOP, 30).Center());
 
-        static GUIDE_ALGORITHM const Y_ALGORITHMS[] =
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-            GUIDE_ALGORITHM_RESIST_SWITCH,
-        };
-        static GUIDE_ALGORITHM const Y_ALGORITHMS_AO[] =
-        {
-            GUIDE_ALGORITHM_IDENTITY,
-            GUIDE_ALGORITHM_HYSTERESIS,
-            GUIDE_ALGORITHM_LOWPASS,
-            GUIDE_ALGORITHM_LOWPASS2,
-        };
+        wxArrayString yAlgorithms;
 
-        std::vector <wxString> yAlgorithms;
-        if (!stepGuider)
+        if (stepGuider)
         {
-            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS); i++)
-                yAlgorithms.push_back(GuideAlgorithmName(Y_ALGORITHMS[i]));
+            for (int i = 0; i < WXSIZEOF(AO_ALGORITHMS); i++)
+                yAlgorithms.push_back(GuideAlgorithmName(AO_ALGORITHMS[i]));
         }
         else
         {
-            for (int i = 0; i < WXSIZEOF(Y_ALGORITHMS_AO); i++)
-                yAlgorithms.push_back(GuideAlgorithmName(Y_ALGORITHMS_AO[i]));
+            for (int i = 0; i < WXSIZEOF(DEC_ALGORITHMS); i++)
+                yAlgorithms.push_back(GuideAlgorithmName(DEC_ALGORITHMS[i]));
         }
 
         width = StringArrayWidth(&yAlgorithms[0], yAlgorithms.size());
         m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), yAlgorithms.size(), &yAlgorithms[0]);
-        if (!stepGuider)
-            m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
-        else
+            wxSize(width + 35, -1), yAlgorithms);
+
+        if (stepGuider)
             m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Y-axis"));
+        else
+            m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
 
         m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
 
@@ -522,7 +522,7 @@ GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection() const
     return GetGuideAlgorithm(m_pXGuideAlgorithm);
 }
 
-void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
+void Mount::SetXGuideAlgorithm(int guideAlgorithm)
 {
     if (!m_pXGuideAlgorithm || m_pXGuideAlgorithm->Algorithm() != guideAlgorithm)
     {
@@ -530,6 +530,7 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
 
         if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm))
         {
+            GUIDE_ALGORITHM defaultAlgorithm = DefaultXGuideAlgorithm();
             CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm);
             guideAlgorithm = defaultAlgorithm;
         }
@@ -543,7 +544,7 @@ GUIDE_ALGORITHM Mount::GetYGuideAlgorithmSelection() const
     return GetGuideAlgorithm(m_pYGuideAlgorithm);
 }
 
-void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
+void Mount::SetYGuideAlgorithm(int guideAlgorithm)
 {
     if (!m_pYGuideAlgorithm || m_pYGuideAlgorithm->Algorithm() != guideAlgorithm)
     {
@@ -551,6 +552,7 @@ void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
 
         if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm))
         {
+            GUIDE_ALGORITHM defaultAlgorithm = DefaultYGuideAlgorithm();
             CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm);
             guideAlgorithm = defaultAlgorithm;
         }
@@ -641,6 +643,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
                 break;
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 *ppAlgorithm = MakeGaussianProcessGuideAlgo(mount, axis);
+                break;
+            case GUIDE_ALGORITHM_ZFILTER:
+                *ppAlgorithm = new GuideAlgorithmZFilter(mount, axis);
                 break;
 
             default:

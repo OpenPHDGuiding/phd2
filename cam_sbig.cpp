@@ -344,10 +344,28 @@ bool CameraSBIG::Connect(const wxString& camId)
 
     FullSize = m_imageSize[Binning - 1];
 
-    Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d\n", gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y));
+    IsColor = false;
+
+    if (!UseTrackingCCD)
+    {
+        GetCCDInfoResults6 gcir6;
+        gcip.request = CCD_INFO_EXTENDED3;
+        err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir6);
+        if (err == CE_NO_ERROR)
+        {
+            IsColor = gcir6.ccdBits & 1;  // b0 set indicates color CCD
+        }
+    }
 
     Name = gcir0.name;
-    IsColor = Name.Find("Color") != wxNOT_FOUND;
+    if (Name.Find("Color") != wxNOT_FOUND)
+    {
+        IsColor = true;
+    }
+
+    Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
+        gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y,
+        IsColor));
 
     Connected = true;
     return false;

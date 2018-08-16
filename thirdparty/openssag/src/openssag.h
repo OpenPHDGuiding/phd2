@@ -66,11 +66,13 @@ namespace OpenSSAG
          * StarShoot Autoguiders. If there are no cameras connected, returns NULL */
         struct device_info *EnumerateDevices();
 
-        /* Connect to the autoguider. If bootload is set to true and the camera
-         * cannot be found, it will attempt to connect to the base device and
-         * load the firmware. Defaults to true. */
-        bool Connect(bool bootload);
-        bool Connect();
+        /* Connect to the autoguider. If bootload is set to true and
+         * the camera cannot be found, it will attempt to connect to
+         * the base device using the specified VID and PID and load
+         * the firmware. Defaults to true. */
+        bool Connect(bool bootload, int loader_vid, int loader_pid);
+
+        static void GetDefaultLoaderUSBIds(int *vid, int *pid);
 
         /* Disconnect from the autoguider */
         void Disconnect();
@@ -119,8 +121,11 @@ namespace OpenSSAG
         /* Handle to the cypress device */
         libusb_device_handle *handle;
     public:
+        Loader();
+        ~Loader();
+
         /* Connects to SSAG Base */
-        bool Connect();
+        bool Connect(int loader_vid, int loader_pid);
 
         /* Disconnects from SSAG Base */
         void Disconnect();

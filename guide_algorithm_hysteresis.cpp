@@ -151,7 +151,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
 
     try
     {
-        if (aggression <= 0.0 || aggression > MaxAggression)
+        if (aggression < 0.0 || aggression > MaxAggression)
         {
             throw ERROR_INFO("invalid aggression");
         }
@@ -162,7 +162,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_aggression = wxMin(wxMax(aggression, 0.1), MaxAggression);
+        m_aggression = DefaultAggression;
     }
 
     m_lastMove = 0.0;

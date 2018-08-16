@@ -76,8 +76,14 @@ static wxString json_escape(const wxString& s)
     static const wxString BACKSLASHBACKSLASH("\\\\");
     static const wxString DQUOT("\"");
     static const wxString BACKSLASHDQUOT("\\\"");
+    static const wxString CR("\r");
+    static const wxString BACKSLASHCR("\\r");
+    static const wxString LF("\n");
+    static const wxString BACKSLASHLF("\\n");
     t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
     t.Replace(DQUOT, BACKSLASHDQUOT);
+    t.Replace(CR, BACKSLASHCR);
+    t.Replace(LF, BACKSLASHLF);
     return t;
 }
 
@@ -2018,29 +2024,51 @@ static void get_sensor_temperature(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
-static void dump_request(const wxSocketClient *cli, const json_value *req)
+struct JRpcCall
 {
-    Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", cli, json_format(req)));
-}
-
-static void dump_response(const wxSocketClient *cli, const JRpcResponse& resp)
-{
-    Debug.Write(wxString::Format("evsrv: cli %p response: %s\n", cli, const_cast<JRpcResponse&>(resp).str()));
-}
-
-static bool handle_request(const wxSocketClient *cli, JObj& response, const json_value *req)
-{
+    wxSocketClient *cli;
+    const json_value *req;
     const json_value *method;
+    JRpcResponse response;
+
+    JRpcCall(wxSocketClient *cli_, const json_value *req_) : cli(cli_), req(req_), method(nullptr) { }
+};
+
+static void dump_request(const JRpcCall& call)
+{
+    Debug.Write(wxString::Format("evsrv: cli %p request: %s\n", call.cli, json_format(call.req)));
+}
+
+static void dump_response(const JRpcCall& call)
+{
+    wxString s(const_cast<JRpcResponse&>(call.response).str());
+
+    // trim output for huge responses
+
+    // this is very hacky operating directly on the string, but it's not
+    // worth bothering to parse and reformat the response
+    if (call.method && strcmp(call.method->string_value, "get_star_image") == 0)
+    {
+        size_t p0, p1;
+        if ((p0 = s.find("\"pixels\":\"")) != wxString::npos && (p1 = s.find('"', p0 + 10)) != wxString::npos)
+            s.replace(p0 + 10, p1 - (p0 + 10), "...");
+    }
+
+    Debug.Write(wxString::Format("evsrv: cli %p response: %s\n", call.cli, s));
+}
+
+static bool handle_request(JRpcCall& call)
+{
     const json_value *params;
     const json_value *id;
 
-    dump_request(cli, req);
+    dump_request(call);
 
-    parse_request(req, &method, &params, &id);
+    parse_request(call.req, &call.method, &params, &id);
 
-    if (!method)
+    if (!call.method)
     {
-        response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request") << jrpc_id(0);
+        call.response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request") << jrpc_id(0);
         return true;
     }
 
@@ -2099,12 +2127,12 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
     {
-        if (strcmp(method->string_value, methods[i].name) == 0)
+        if (strcmp(call.method->string_value, methods[i].name) == 0)
         {
-            (*methods[i].fn)(response, params);
+            (*methods[i].fn)(call.response, params);
             if (id)
             {
-                response << jrpc_id(id);
+                call.response << jrpc_id(id);
                 return true;
             }
             else
@@ -2116,7 +2144,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
 
     if (id)
     {
-        response << jrpc_error(JSONRPC_METHOD_NOT_FOUND, "method not found") << jrpc_id(id);
+        call.response << jrpc_error(JSONRPC_METHOD_NOT_FOUND, "method not found") << jrpc_id(id);
         return true;
     }
     else
@@ -2129,10 +2157,10 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
 {
     if (!parser.Parse(input))
     {
-        JRpcResponse response;
-        response << jrpc_error(JSONRPC_PARSE_ERROR, parser_error(parser)) << jrpc_id(0);
-        dump_response(cli, response);
-        do_notify1(cli, response);
+        JRpcCall call(cli, nullptr);
+        call.response << jrpc_error(JSONRPC_PARSE_ERROR, parser_error(parser)) << jrpc_id(0);
+        dump_response(call);
+        do_notify1(cli, call.response);
         return;
     }
 
@@ -2147,11 +2175,11 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
         bool found = false;
         json_for_each (req, root)
         {
-            JRpcResponse response;
-            if (handle_request(cli, response, req))
+            JRpcCall call(cli, req);
+            if (handle_request(call))
             {
-                dump_response(cli, response);
-                ary << response;
+                dump_response(call);
+                ary << call.response;
                 found = true;
             }
         }
@@ -2164,11 +2192,11 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
         // a single request
 
         const json_value *const req = root;
-        JRpcResponse response;
-        if (handle_request(cli, response, req))
+        JRpcCall call(cli, req);
+        if (handle_request(call))
         {
-            dump_response(cli, response);
-            do_notify1(cli, response);
+            dump_response(call);
+            do_notify1(cli, call.response);
         }
     }
 }

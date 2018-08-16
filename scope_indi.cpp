@@ -122,12 +122,19 @@ void ScopeINDI::SetupDialog()
 {
     wxString title;
     bool isAuxMount = pFrame->pGearDialog->AuxScope() == this;
+    IndiDevType devtype;
     if (isAuxMount)
+    {
         title = _("INDI Aux Mount Selection");
+        devtype = INDI_TYPE_AUX_MOUNT;
+    }
     else
+    {
         title = _("INDI Mount Selection");
+        devtype = INDI_TYPE_MOUNT;
+    }
 
-    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, TYPE_MOUNT);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), title, devtype);
 
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
@@ -321,7 +328,6 @@ void ScopeINDI::IndiServerDisconnected(int exit_code)
     {
         pFrame->Alert(_("INDI server disconnected"));
         Disconnect();
-        Scope::Disconnect();
     }
 }
 
@@ -330,7 +336,6 @@ void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 {
     ClearStatus();
     Disconnect();
-    Scope::Disconnect();
 }
 #endif
 
@@ -358,7 +363,16 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
             if (ready)
             {
                 ClearStatus();
-                Scope::Disconnect();
+
+                // call Disconnect in the main thread since that will
+                // want to join the INDI worker thread which is
+                // probably the current thread
+
+                PhdApp::ExecInMainThread(
+                    [this]() {
+                        pFrame->Alert(_("INDI mount was disconnected"));
+                        Disconnect();
+                    });
             }
         }
     }

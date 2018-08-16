@@ -148,7 +148,15 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
             if (ready)
             {
                 ClearStatus();
-                DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
+
+                // call Disconnect in the main thread since that will
+                // want to join the INDI worker thread which is
+                // probably the current thread
+
+                PhdApp::ExecInMainThread(
+                    [this]() {
+                        DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
+                    });
             }
         }
     }
@@ -603,7 +611,7 @@ void CameraINDI::CameraDialog()
 void CameraINDI::CameraSetup()
 {
     // show the server and device configuration
-    INDIConfig indiDlg(wxGetApp().GetTopWindow(), _("INDI Camera Selection"), TYPE_CAMERA);
+    INDIConfig indiDlg(wxGetApp().GetTopWindow(), _("INDI Camera Selection"), INDI_TYPE_CAMERA);
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDICameraName;

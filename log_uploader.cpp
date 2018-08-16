@@ -244,25 +244,22 @@ public:
     ~LogUploadDialog();
 };
 
+inline static wxDateTime::wxDateTime_t Val(const wxString& s, size_t start, size_t len)
+{
+    unsigned long val = 0;
+    wxString(s, start, len).ToULong(&val);
+    return val;
+}
+
 static wxDateTime SessionStart(const wxString& timestamp)
 {
-    wxDateTime t;
-    unsigned long val;
-
-    wxString(timestamp, 0, 4).ToULong(&val);
-    t.SetYear(val);
-    wxString(timestamp, 5, 2).ToULong(&val);
-    t.SetMonth(static_cast<wxDateTime::Month>(wxDateTime::Jan + val - 1));
-    wxString(timestamp, 8, 2).ToULong(&val);
-    t.SetDay(val);
-    wxString(timestamp, 11, 2).ToULong(&val);
-    t.SetHour(val);
-    wxString(timestamp, 13, 2).ToULong(&val);
-    t.SetMinute(val);
-    wxString(timestamp, 15, 2).ToULong(&val);
-    t.SetSecond(val);
-
-    return t;
+    wxDateTime::wxDateTime_t day = Val(timestamp, 8, 2);
+    wxDateTime::Month month = static_cast<wxDateTime::Month>(wxDateTime::Jan + Val(timestamp, 5, 2) - 1);
+    wxDateTime::wxDateTime_t year = Val(timestamp, 0, 4);
+    wxDateTime::wxDateTime_t hour = Val(timestamp, 11, 2);
+    wxDateTime::wxDateTime_t minute = Val(timestamp, 13, 2);
+    wxDateTime::wxDateTime_t second = Val(timestamp, 15, 2);
+    return wxDateTime(day, month, year, hour, minute, second);
 }
 
 static wxString FormatTimestamp(const wxDateTime& t)

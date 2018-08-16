@@ -98,10 +98,6 @@ Camera_QHY::Camera_QHY()
     Color = false;
     HasSubframes = true;
     m_camhandle = 0;
-
-    // Override gain setting from base class
-    enum { DefaultQHYCameraGain = 40 };
-    GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultQHYCameraGain);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -122,6 +118,12 @@ bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
 
     *devPixelSize = m_devicePixelSize;
     return false;
+}
+
+int Camera_QHY::GetDefaultCameraGain()
+{
+    enum { DefaultQHYCameraGain = 40 };
+    return DefaultQHYCameraGain;
 }
 
 bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)

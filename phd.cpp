@@ -93,6 +93,18 @@ static void DisableOSXAppNap(void)
 }
 
 // ------------------------  Phd App stuff -----------------------------
+
+struct ExecFuncThreadEvent;
+wxDEFINE_EVENT(EXEC_IN_MAIN_THREAD_EVENT, ExecFuncThreadEvent);
+
+struct ExecFuncThreadEvent : public wxThreadEvent
+{
+    std::function<void()> func;
+    ExecFuncThreadEvent(std::function<void()> func_)
+            : wxThreadEvent(EXEC_IN_MAIN_THREAD_EVENT), func(func_)
+    { }
+};
+
 PhdApp::PhdApp(void)
 {
     m_resetConfig = false;
@@ -100,6 +112,8 @@ PhdApp::PhdApp(void)
 #ifdef  __linux__
     XInitThreads();
 #endif // __linux__
+
+    Bind(EXEC_IN_MAIN_THREAD_EVENT, [](ExecFuncThreadEvent& evt) { evt.func(); });
 };
 
 void PhdApp::HandleRestart()
@@ -178,8 +192,289 @@ void PhdApp::TerminateApp()
     wxGetApp().WakeUpIdle();
 }
 
+#ifdef __WINDOWS__
+# if wxCHECK_VERSION(3, 1, 0)
+#  error obsolete code -- remove and use wxGetOsDescription()
+# endif
+#include <wx/dynlib.h>
+static OSVERSIONINFOEXW wx_3_1_wxGetWindowsVersionInfo()
+{
+    OSVERSIONINFOEXW info;
+    memset(&info, 0, sizeof(info));
+    info.dwOSVersionInfoSize = sizeof(info);
+
+    // The simplest way to get the version is to call the kernel
+    // RtlGetVersion() directly, if it is available.
+#if wxUSE_DYNLIB_CLASS
+    wxDynamicLibrary dllNtDll;
+    if ( dllNtDll.Load(wxS("ntdll.dll"), wxDL_VERBATIM | wxDL_QUIET) )
+    {
+        typedef LONG /* NTSTATUS */ (WINAPI *RtlGetVersion_t)(OSVERSIONINFOEXW*);
+
+        RtlGetVersion_t wxDL_INIT_FUNC(pfn, RtlGetVersion, dllNtDll);
+        if ( pfnRtlGetVersion &&
+             (pfnRtlGetVersion(&info) == 0 /* STATUS_SUCCESS */) )
+        {
+            return info;
+        }
+    }
+#endif // wxUSE_DYNLIB_CLASS
+
+#ifdef __VISUALC__
+#pragma warning(push)
+#pragma warning(disable:4996) // 'xxx': was declared deprecated
+#endif
+
+    if ( !::GetVersionExW(reinterpret_cast<OSVERSIONINFOW *>(&info)) )
+    {
+        // This really shouldn't ever happen.
+        wxFAIL_MSG( "GetVersionEx() unexpectedly failed" );
+    }
+
+#ifdef __VISUALC__
+#pragma warning(pop)
+#endif
+
+    return info;
+}
+
+static int wxIsWindowsServer()
+{
+#ifdef VER_NT_WORKSTATION
+    switch ( wx_3_1_wxGetWindowsVersionInfo().wProductType )
+    {
+        case VER_NT_WORKSTATION:
+            return false;
+
+        case VER_NT_SERVER:
+        case VER_NT_DOMAIN_CONTROLLER:
+            return true;
+    }
+#endif // VER_NT_WORKSTATION
+
+    return -1;
+}
+
+static wxString wx_3_1_wxGetOsDescription()
+{
+    wxString str;
+
+    const OSVERSIONINFOEXW info = wx_3_1_wxGetWindowsVersionInfo();
+    switch (info.dwPlatformId)
+    {
+    case VER_PLATFORM_WIN32s:
+        str = _("Win32s on Windows 3.1");
+        break;
+
+    case VER_PLATFORM_WIN32_WINDOWS:
+        switch (info.dwMinorVersion)
+        {
+        case 0:
+            if (info.szCSDVersion[1] == 'B' ||
+                info.szCSDVersion[1] == 'C')
+            {
+                str = _("Windows 95 OSR2");
+            }
+            else
+            {
+                str = _("Windows 95");
+            }
+            break;
+        case 10:
+            if (info.szCSDVersion[1] == 'B' ||
+                info.szCSDVersion[1] == 'C')
+            {
+                str = _("Windows 98 SE");
+            }
+            else
+            {
+                str = _("Windows 98");
+            }
+            break;
+        case 90:
+            str = _("Windows ME");
+            break;
+        default:
+            str.Printf(_("Windows 9x (%d.%d)"),
+                info.dwMajorVersion,
+                info.dwMinorVersion);
+            break;
+        }
+        if (!wxIsEmpty(info.szCSDVersion))
+        {
+            str << wxT(" (") << info.szCSDVersion << wxT(')');
+        }
+        break;
+
+    case VER_PLATFORM_WIN32_NT:
+        switch (info.dwMajorVersion)
+        {
+        case 5:
+            switch (info.dwMinorVersion)
+            {
+            case 0:
+                str = _("Windows 2000");
+                break;
+
+            case 2:
+                // we can't distinguish between XP 64 and 2003
+                // as they both are 5.2, so examine the product
+                // type to resolve this ambiguity
+                if (wxIsWindowsServer() == 1)
+                {
+                    str = _("Windows Server 2003");
+                    break;
+                }
+                //else: must be XP, fall through
+
+            case 1:
+                str = _("Windows XP");
+                break;
+            }
+            break;
+
+        case 6:
+            switch (info.dwMinorVersion)
+            {
+            case 0:
+                str = wxIsWindowsServer() == 1
+                    ? _("Windows Server 2008")
+                    : _("Windows Vista");
+                break;
+
+            case 1:
+                str = wxIsWindowsServer() == 1
+                    ? _("Windows Server 2008 R2")
+                    : _("Windows 7");
+                break;
+
+            case 2:
+                str = wxIsWindowsServer() == 1
+                    ? _("Windows Server 2012")
+                    : _("Windows 8");
+                break;
+
+            case 3:
+                str = wxIsWindowsServer() == 1
+                    ? _("Windows Server 2012 R2")
+                    : _("Windows 8.1");
+                break;
+            }
+            break;
+
+        case 10:
+            str = wxIsWindowsServer() == 1
+                ? _("Windows Server 2016")
+                : _("Windows 10");
+            break;
+        }
+
+        if (str.empty())
+        {
+            str.Printf(_("Windows NT %lu.%lu"),
+                info.dwMajorVersion,
+                info.dwMinorVersion);
+        }
+
+        str << wxT(" (")
+            << wxString::Format(_("build %lu"), info.dwBuildNumber);
+        if (!wxIsEmpty(info.szCSDVersion))
+        {
+            str << wxT(", ") << info.szCSDVersion;
+        }
+        str << wxT(')');
+
+        if (wxIsPlatform64Bit())
+            str << _(", 64-bit edition");
+        break;
+    }
+
+    return str;
+}
+#endif // __WINDOWS__
+
+static wxString GetOsDescription()
+{
+#ifdef __WINDOWS__
+    // wxGetOsDescription in wxWidgets versions prior to 3.1.0 on Windows uses GetVersionEx which does not
+    // report versions past Windows 8.1
+    return wx_3_1_wxGetOsDescription();
+#else
+    return wxGetOsDescription();
+#endif
+}
+
+struct LogToStderr
+{
+    wxLog *m_prev;
+    LogToStderr()
+    {
+        m_prev = wxLog::SetActiveTarget(new wxLogStderr());
+    }
+    ~LogToStderr()
+    {
+        delete wxLog::SetActiveTarget(m_prev);
+    }
+};
+
+// A log class for duplicating wxWidgets error messages to the debug log
+//
+struct EarlyLogger : public wxLog
+{
+    bool m_closed;
+    wxLog *m_prev;
+    wxString m_buf;
+    EarlyLogger()
+        : m_closed(false)
+    {
+        wxASSERT(wxThread::IsMain());
+        m_prev = wxLog::SetActiveTarget(this);
+        DisableTimestamp();
+    }
+    ~EarlyLogger()
+    {
+        Close();
+    }
+    void Close()
+    {
+        if (m_closed)
+            return;
+
+        wxLog::SetActiveTarget(m_prev);
+        m_prev = nullptr;
+
+        if (!m_buf.empty())
+        {
+            if (Debug.IsOpened())
+                Debug.Write(wxString::Format("wx error: %s\n", m_buf));
+
+            wxLogError(m_buf);
+
+            m_buf.clear();
+        }
+
+        m_closed = true;
+    }
+    void DoLogText(const wxString& msg) override
+    {
+        if (!m_buf.empty() && *m_buf.rbegin() != '\n')
+            m_buf += '\n';
+        m_buf += msg;
+    }
+};
+
 bool PhdApp::OnInit()
 {
+#ifdef __APPLE__
+    // for newer versions of OSX the app will hang if the wx log code
+    // tries to display a message box in OnOnit.  As a workaround send
+    // wxLog output to stderr instead
+    LogToStderr _logstderr;
+#endif
+
+    // capture wx error messages until the debug log has been opened
+    EarlyLogger logger;
+
     if (argc > 1 && argv[1] == _T("restart"))
         HandleRestart(); // exits
 
@@ -224,7 +519,7 @@ bool PhdApp::OnInit()
     Debug.Init(GetInitTime(), true);
 
     Debug.Write(wxString::Format("PHD2 version %s begins execution with:\n", FULLVER));
-    Debug.Write(wxString::Format("   %s\n", wxGetOsDescription()));
+    Debug.Write(wxString::Format("   %s\n", GetOsDescription()));
 #if defined(__linux__)
     Debug.Write(wxString::Format("   %s\n", wxGetLinuxDistributionInfo().Description));
 #endif
@@ -234,6 +529,8 @@ bool PhdApp::OnInit()
 #if defined(CV_VERSION)
     Debug.Write(wxString::Format("   opencv %s\n", CV_VERSION));
 #endif
+
+    logger.Close(); // writes any deferrred error messages to the debug log
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
@@ -347,6 +644,18 @@ bool PhdApp::Yield(bool onlyIfNeeded)
     }
 
     return bReturn;
+}
+
+void PhdApp::ExecInMainThread(std::function<void()> func)
+{
+    if (wxThread::IsMain())
+    {
+        func();
+    }
+    else
+    {
+        wxQueueEvent(&wxGetApp(), new ExecFuncThreadEvent(func));
+    }
 }
 
 wxString PhdApp::GetLocalesDir() const

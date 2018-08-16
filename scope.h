@@ -50,7 +50,7 @@ enum DEC_GUIDE_MODE
 
 class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 {
-    Scope* m_pScope;
+    Scope *m_pScope;
     wxSpinCtrl *m_pCalibrationDuration;
     wxCheckBox *m_pNeedFlipDec;
     wxCheckBox *m_pStopGuidingWhenSlewing;
@@ -63,8 +63,8 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashFloor;
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
+    int m_calibrationDistance;
 
-    int m_prevStepSize;
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
 public:
@@ -93,6 +93,7 @@ class Scope : public Mount
 
     // Calibration variables
     int m_calibrationSteps;
+    int m_calibrationDistance;
     int m_recenterRemaining;
     int m_recenterDuration;
     PHD_Point m_calibrationInitialLocation;   // initial position of guide star
@@ -180,10 +181,15 @@ protected:
     friend class GraphLogWindow;
     friend class ScopeConfigDialogCtrlSet;
 
+    GUIDE_ALGORITHM DefaultXGuideAlgorithm() const override;
+    GUIDE_ALGORITHM DefaultYGuideAlgorithm() const override;
+
 public:
 
-    int GetCalibrationDuration() const;
+    int GetCalibrationDuration() const;  // calibration step size, ms
     bool SetCalibrationDuration(int calibrationDuration);
+    int GetCalibrationDistance() const;  // calibration distance, px
+    bool SetCalibrationDistance(int calibrationDistance);
     int GetMaxDecDuration() const;
     bool SetMaxDecDuration(int maxDecDuration);
     int GetMaxRaDuration() const;
@@ -258,11 +264,11 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) override;
-    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) override;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
+    MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) final;
     int CalibrationMoveSize();
     void CheckCalibrationDuration(int currDuration);
-    int CalibrationTotDistance();
+    int CalibrationTotDistance() override;
 
     void ClearCalibration() override;
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
@@ -293,6 +299,11 @@ inline bool Scope::DecCompensationEnabled() const
 inline int Scope::GetCalibrationDuration() const
 {
     return m_calibrationDuration;
+}
+
+inline int Scope::GetCalibrationDistance() const
+{
+    return m_calibrationDistance;
 }
 
 inline int Scope::GetMaxDecDuration() const
