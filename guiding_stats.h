@@ -35,8 +35,6 @@
 
 #ifndef _GUIDING_STATS_H
 #define _GUIDING_STATS_H
-// Following is Windows-only
-//#include "stdafx.h"
 #include <vector>
 #include <deque>
 

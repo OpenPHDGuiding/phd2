@@ -33,10 +33,7 @@
 *
 */
 
-// Following is Windows-only unit testing
-//#include "stdafx.h"
-//#define ERROR_INFO(msg) std::string(msg)
-
+#include "phd.h"
 #include <math.h>
 #include <algorithm>
 #include "guiding_stats.h"
