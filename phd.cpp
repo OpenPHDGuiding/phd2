@@ -194,7 +194,7 @@ void PhdApp::TerminateApp()
 
 #ifdef __WINDOWS__
 # if wxCHECK_VERSION(3, 1, 0)
-#  error obsolete code -- remove and use wxGetOsDescription()
+#  pragma message ("FIXME: obsolete code -- remove and use wxGetOsDescription()")
 # endif
 #include <wx/dynlib.h>
 static OSVERSIONINFOEXW wx_3_1_wxGetWindowsVersionInfo()
