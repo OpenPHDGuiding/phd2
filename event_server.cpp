@@ -1009,6 +1009,30 @@ inline static const char *string_val(const json_value *j)
     return j->type == JSON_STRING ? j->string_value : "";
 }
 
+enum WHICH_MOUNT
+{
+    MOUNT, AO, WHICH_MOUNT_BOTH, WHICH_MOUNT_ERR
+};
+
+static WHICH_MOUNT which_mount(const json_value *p)
+{
+    WHICH_MOUNT r = MOUNT;
+    if (p)
+    {
+        r = WHICH_MOUNT_ERR;
+        if (p->type == JSON_STRING)
+        {
+            if (wxStricmp(p->string_value, "ao") == 0)
+                r = AO;
+            else if (wxStricmp(p->string_value, "mount") == 0)
+                r = MOUNT;
+            else if (wxStricmp(p->string_value, "both") == 0)
+                r = WHICH_MOUNT_BOTH;
+        }
+    }
+    return r;
+}
+
 static void clear_calibration(JObj& response, const json_value *params)
 {
     bool clear_mount;
@@ -1020,31 +1044,24 @@ static void clear_calibration(JObj& response, const json_value *params)
     }
     else
     {
+        Params p("which", params);
+
         clear_mount = clear_ao = false;
 
-        json_for_each (val, params)
+        WHICH_MOUNT which = which_mount(p.param("which"));
+        switch (which)
         {
-            const char *which = string_val(val);
-            if (wxStricmp(which, "mount") == 0)
-                clear_mount = true;
-            else if (wxStricmp(which, "ao") == 0)
-                clear_ao = true;
-            else if (wxStricmp(which, "both") == 0)
-                clear_mount = clear_ao = true;
-            else
-            {
-                response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected param \"mount\", \"ao\", or \"both\"");
-                return;
-            }
+        case MOUNT: clear_mount = true; break;
+        case AO: clear_ao = true; break;
+        case WHICH_MOUNT_BOTH: clear_mount = clear_ao = true; break;
+        case WHICH_MOUNT_ERR:
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected param \"mount\", \"ao\", or \"both\"");
+            return;
         }
     }
 
-    Mount *mount;
-    Mount *ao;
-    if (pMount && pMount->IsStepGuider())
-        ao = pMount, mount = pSecondaryMount;
-    else
-        ao = 0, mount = pMount;
+    Mount *mount = TheScope();
+    Mount *ao = TheAO();
 
     if (mount && clear_mount)
         mount->ClearCalibration();
@@ -1177,7 +1194,7 @@ static bool parse_lock_shift_params(LockPosShiftParams *shift, const json_value 
     shift->shiftIsMountCoords = true;
 
     const json_value *j;
-    
+
     j = p.param("rate");
     if (!j || !parse_point(&shift->shiftRate, j))
     {
@@ -1841,28 +1858,6 @@ static GUIDE_DIRECTION opposite(GUIDE_DIRECTION d)
     }
 }
 
-enum WHICH_MOUNT
-{
-    MOUNT, AO, WHICH_MOUNT_ERR
-};
-
-static WHICH_MOUNT which_mount(const json_value *p)
-{
-    WHICH_MOUNT r = MOUNT;
-    if (p)
-    {
-        r = WHICH_MOUNT_ERR;
-        if (p->type == JSON_STRING)
-        {
-            if (wxStricmp(p->string_value, "ao") == 0)
-                r = AO;
-            else if (wxStricmp(p->string_value, "mount") == 0)
-                r = MOUNT;
-        }
-    }
-    return r;
-}
-
 static void guide_pulse(JObj& response, const json_value *params)
 {
     Params p("amount", "direction", "which", params);
@@ -1887,11 +1882,10 @@ static void guide_pulse(JObj& response, const json_value *params)
     {
     case MOUNT: m = TheScope(); break;
     case AO: m = TheAO(); break;
+    case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
-        {
-            response << jrpc_error(1, "invalid 'which' param");
-            return;
-        }
+        response << jrpc_error(1, "invalid 'which' param");
+        return;
     }
 
     if (!m || !m->IsConnected())
@@ -2068,7 +2062,14 @@ static bool handle_request(JRpcCall& call)
 
     if (!call.method)
     {
-        call.response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request") << jrpc_id(0);
+        call.response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request - missing method") << jrpc_id(0);
+        return true;
+    }
+
+    if (params && !(params->type == JSON_ARRAY || params->type == JSON_OBJECT))
+    {
+        call.response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request - params must be an array or object")
+                      << jrpc_id(0);
         return true;
     }
 
