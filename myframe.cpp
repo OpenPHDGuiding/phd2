@@ -497,8 +497,8 @@ void MyFrame::SetupMenuBar()
 
     wxMenu *calib_menu = new wxMenu;
     calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
-    calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
-    calib_menu->Append(EEGG_FLIPCAL, _("Flip Calibration Data"), _("Flip RA calibration vector and Dec direction if needed"));
+    calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually enter the calibration data"));
+    calib_menu->Append(EEGG_FLIPCAL, _("Flip Calibration Now"), _("Flip the calibration data now"));
     calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
     m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
     m_calibrationMenuItem->Enable(false);
