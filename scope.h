@@ -225,8 +225,7 @@ public:
     static const double DEC_COMP_LIMIT; // declination compensation limit
     static const double DEFAULT_MOUNT_GUIDE_SPEED;              // Presumptive mount guide speed if no usable mount connection
     void EnableDecCompensation(bool enable);
-    bool DecCompensationEnabled() const;
-    bool DecCompensationActive() const;
+    bool DecCompensationEnabled() const override;
 
     virtual bool RequiresCamera();
     virtual bool RequiresStepGuider();

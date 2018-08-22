@@ -113,7 +113,7 @@ wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
 wxEND_EVENT_TABLE()
 
 // Classes for color-coded state indicators
-class SBStateIndicatorItem; 
+class SBStateIndicatorItem;
 
 class SBStateIndicators
 {
@@ -149,7 +149,8 @@ public:
         int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths);
     void PositionControl();
     void UpdateState();
-    wxString IndicatorToolTip(SBFieldTypes indType, int triState);
+    wxString GearToolTip(int quadState);
+    wxString DarksToolTip(int quadState);
 };
 
 class SBGuideIndicators
@@ -186,9 +187,9 @@ public:
 
 };
 
-// How this works: 
-// PHDStatusBar is a child of wxStatusBar and is composed of various control groups - properties of the guide star, info about 
-// current guide commands, and state information about the current app session.  Each group is managed by its own class, and that class 
+// How this works:
+// PHDStatusBar is a child of wxStatusBar and is composed of various control groups - properties of the guide star, info about
+// current guide commands, and state information about the current app session.  Each group is managed by its own class, and that class
 // is responsible for building, positioning, and updating its controls. The various controls are positioned (via the OnSize event) on top of the SBPanel that
 // is the single underlying field in the base-class statusbar.  The SBPanel class handles its own Paint event in order to render
 // the borders and field separators the way we want.
@@ -581,24 +582,86 @@ void SBStateIndicatorItem::PositionControl()
         ctrl->SetPosition(m_parentPanel->FieldLoc(fieldId));
 }
 
+static int CalibrationQuadState(wxString *tip)
+{
+    // For calib quad state: -1 => no cal, 0 => cal but no pointing compensation, 1 => golden
+
+    bool calibrated = (pMount || pSecondaryMount) &&
+        (!pMount || pMount->IsCalibrated()) && (!pSecondaryMount || pSecondaryMount->IsCalibrated());
+
+    if (!calibrated)
+    {
+        *tip = _("Not calibrated");
+        return -1;
+    }
+
+    const Scope *scope = TheScope();
+    if (!scope && TheAO())
+    {
+        *tip = _("Calibrated"); // just an AO, we don't care about dec compensation
+        return 1;
+    }
+
+    if (!pPointingSource || !pPointingSource->IsConnected() || !pPointingSource->CanReportPosition())
+    {
+        *tip = _("Calibrated, scope pointing information not available");
+        return 0;
+    }
+
+    if (!scope->DecCompensationEnabled())
+    {
+        *tip = _("Calibrated, declination compensation disabled");
+        return 0;
+    }
+
+    if (scope->MountCal().declination == UNKNOWN_DECLINATION)
+    {
+        *tip = _("Calibrated, but a new calibration is required to activate declination compensation");
+        return 0;
+    }
+
+    *tip = _("Calibrated, scope pointing info in use");
+    return 1;
+}
+
+static wxString Join(const wxString& delim, const std::vector<wxString>& vec)
+{
+    if (vec.size() == 0)
+        return wxEmptyString;
+
+    size_t l = 0;
+    std::for_each(vec.begin(), vec.end(), [&l](const wxString& s) { l += s.length(); });
+    wxString buf;
+    buf.reserve(l + delim.length() * (vec.size() - 1));
+    std::for_each(vec.begin(), vec.end(),
+                  [&buf, &delim](const wxString& s) {
+                      if (!buf.empty())
+                          buf += delim;
+                      buf += s;
+                  });
+    return buf;
+}
+
 void SBStateIndicatorItem::UpdateState()
 {
     int quadState = -1;
-    bool cameraOk = true;
-    bool problems = false;
-    bool partials = false;
-    wxString MIAs;
+    wxString cal_tooltip;
 
     switch (m_type)
     {
-    case Field_Gear:
+    case Field_Gear: {
+        std::vector<wxString> MIAs;
+        bool cameraOk = true;
+        bool problems = false;
+        bool partials = false;
+
         if (pCamera && pCamera->Connected)
         {
             partials = true;
         }
         else
         {
-            MIAs += _("Camera, ");
+            MIAs.push_back(_("Camera"));
             cameraOk = false;
             problems = true;
         }
@@ -607,7 +670,7 @@ void SBStateIndicatorItem::UpdateState()
             partials = true;
         else
         {
-            MIAs += _("Mount, ");
+            MIAs.push_back(_("Mount"));
             problems = true;
         }
 
@@ -615,7 +678,7 @@ void SBStateIndicatorItem::UpdateState()
             partials = true;
         else
         {
-            MIAs += _("Aux Mount, ");
+            MIAs.push_back(_("Aux Mount"));
             problems = true;
         }
 
@@ -625,7 +688,7 @@ void SBStateIndicatorItem::UpdateState()
                 partials = true;
             else
             {
-                MIAs += _("AO, ");
+                MIAs.push_back(_("AO"));
                 problems = true;
             }
         }
@@ -636,7 +699,7 @@ void SBStateIndicatorItem::UpdateState()
                 partials = true;
             else
             {
-                MIAs += _("Rotator, ");
+                MIAs.push_back(_("Rotator"));
                 problems = true;
             }
         }
@@ -647,7 +710,7 @@ void SBStateIndicatorItem::UpdateState()
             {
                 pic->SetIcon(wxIcon(container->icoGreenLed));
                 quadState = 1;
-                otherInfo = "";
+                otherInfo.clear();
             }
             else
             {
@@ -656,8 +719,8 @@ void SBStateIndicatorItem::UpdateState()
                 else
                     pic->SetIcon(container->icoRedLed);     // What good are we without a camera
                 quadState = 0;
-                otherInfo = MIAs.Mid(0, MIAs.Length() - 2);
-                pic->SetToolTip(IndicatorToolTip(m_type, quadState));
+                otherInfo = Join(_(", "), MIAs);
+                pic->SetToolTip(GearToolTip(quadState));
             }
         }
         else
@@ -667,6 +730,7 @@ void SBStateIndicatorItem::UpdateState()
         }
 
         break;
+    }
 
     case Field_Darks:
         if (pFrame)
@@ -679,7 +743,7 @@ void SBStateIndicatorItem::UpdateState()
                 if (lastLabel != currLabel)
                 {
                     ctrl->SetLabelText(currLabel);
-                    ctrl->SetToolTip(IndicatorToolTip(m_type, quadState));
+                    ctrl->SetToolTip(DarksToolTip(quadState));
                 }
             }
         }
@@ -687,14 +751,8 @@ void SBStateIndicatorItem::UpdateState()
         break;
 
     case Field_Calib: {
-        // For calib: -1 => no cal, 0 => cal but no pointing compensation, 1 => golden
-        bool calibrated = (!pMount || pMount->IsCalibrated()) && (!pSecondaryMount || pSecondaryMount->IsCalibrated());
-        if (calibrated)
-        {
-            Scope *scope = TheScope();
-            bool deccomp = scope && scope->DecCompensationActive();
-            quadState = deccomp ? 1 : 0;
-        }
+        quadState = CalibrationQuadState(&cal_tooltip);
+        lastState = -2; // force tool-tip update even if state did not change
         break;
       }
 
@@ -725,58 +783,39 @@ void SBStateIndicatorItem::UpdateState()
             ctrl->Refresh();
 
             if (quadState != -2)
-                ctrl->SetToolTip(IndicatorToolTip(m_type, quadState));
+            {
+                if (m_type == Field_Darks)
+                    ctrl->SetToolTip(DarksToolTip(quadState));
+                else if (m_type == Field_Calib)
+                    ctrl->SetToolTip(cal_tooltip);
+            }
         }
         else if (quadState != -2)
         {
-            pic->SetToolTip(IndicatorToolTip(m_type, quadState));
+            // m_type == Field_Gear
+            pic->SetToolTip(GearToolTip(quadState));
         }
 
         lastState = quadState;
     }
 }
 
-wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triState)
+wxString SBStateIndicatorItem::GearToolTip(int quadState)
 {
-    wxString rslt;
+    if (quadState == 1)
+        return _("All devices connected");
+    else if (quadState == -1)
+        return _("No devices connected");
+    else
+        return wxString::Format(_("Devices not connected: %s"), otherInfo);
+}
 
-    switch (indType)
-    {
-    case Field_Gear:
-        if (triState == 1)
-            rslt = _("All devices connected");
-        else
-        if (triState == -1)
-            rslt = _("No devices connected");
-        else
-            rslt = _("Devices not connected: " + otherInfo);
-        break;
-
-    case Field_Darks:
-        if (ctrl->GetLabelText() == _("Dark"))
-            rslt = _("Dark library: ") + (triState == 1 ? _("In-use") : _("Not in-use"));
-        else
-            rslt = _("Bad pixel map: ") + (triState == 1 ? _("In-use") : _("Not in-use"));
-        break;
-    case Field_Calib:
-        rslt = _("Calibration: ");
-        switch (triState)
-        {
-        case -1:
-            rslt += _("Not completed");
-            break;
-        case 0:
-            rslt += _("Completed, but scope pointing info not available/not in-use");
-            break;
-        case 1:
-            rslt += _("Completed, scope pointing info in-use");
-            break;
-        }
-    default:
-        break;
-    }
-
-    return rslt;
+wxString SBStateIndicatorItem::DarksToolTip(int quadState)
+{
+    if (ctrl->GetLabelText() == _("Dark"))
+        return quadState == 1 ? _("Dark library in use") : _("Dark library not in use");
+    else
+        return quadState == 1 ? _("Bad-pixel map in use") : _("Bad-pixel map not in use");
 }
 
 //--------------------------------------------------------------------------------------
@@ -785,7 +824,7 @@ wxString SBStateIndicatorItem::IndicatorToolTip(SBFieldTypes indType, int triSta
 SBStateIndicators::SBStateIndicators(SBPanel *panel, std::vector<int>& fldWidths)
 {
     m_parentPanel = panel;
-    wxString labels[] = { _("Dark"), _("Cal"), wxEmptyString};
+    wxString labels[] = { _("Dark"), _("Cal"), wxEmptyString };
 
 #ifdef ICON_DEV
     icoGreenLed = wxIcon("SB_led_green.ico", wxBITMAP_TYPE_ICO, 16, 16);

@@ -1086,13 +1086,6 @@ void Scope::EnableDecCompensation(bool enable)
     pConfig->Profile.SetBoolean(prefix + "/UseDecComp", enable);
 }
 
-bool Scope::DecCompensationActive() const
-{
-    return DecCompensationEnabled() &&
-        MountCal().declination != UNKNOWN_DECLINATION &&
-        pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition();
-}
-
 int Scope::CalibrationTotDistance()
 {
     return GetCalibrationDistance();
