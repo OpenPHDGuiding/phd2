@@ -845,8 +845,8 @@ void GuidingAsstWin::MakeRecommendations()
     double intcpt;
     m_decAxisStats->GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
 
-    double multiplier_ra  = 1.0;  // 66% prediction interval
-    double multiplier_dec = 1.28;  // 80% prediction interval
+    double multiplier_ra  = 1.0;   // 66% prediction interval
+    double multiplier_dec = 1.65;  // 90% prediction interval
     double ideal_min_exposure;
     double ideal_max_exposure;
     double min_rec_range = 2.0;
