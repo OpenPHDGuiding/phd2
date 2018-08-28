@@ -127,7 +127,7 @@ static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers,
     return lDisposition;
 }
 
-static bool TryLoadDll(wxString *err)
+static bool DoTryLoadDll(wxString *err)
 {
     __try {
         ASIGetNumOfConnectedCameras();
@@ -140,12 +140,28 @@ static bool TryLoadDll(wxString *err)
 
 #else // __WINDOWS__
 
-static bool TryLoadDll(wxString *err)
+static bool DoTryLoadDll(wxString *err)
 {
     return true;
 }
 
 #endif // __WINDOWS__
+
+static bool TryLoadDll(wxString *err)
+{
+    if (!DoTryLoadDll(err))
+        return false;
+
+    static bool s_logged;
+    if (!s_logged)
+    {
+        const char *ver = ASIGetSDKVersion();
+        Debug.Write(wxString::Format("ZWO: SDK Version = [%s]\n", ver));
+        s_logged = true;
+    }
+
+    return true;
+}
 
 bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
@@ -168,11 +184,94 @@ bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
                 names.Add(wxString::Format("%d: %s", i + 1, info.Name));
             else
                 names.Add(info.Name);
-            ids.Add(wxString::Format("%d", i));
+            ids.Add(wxString::Format("%d,%s", info.CameraID, info.Name));
         }
     }
 
     return false;
+}
+
+static int FindCamera(const wxString& camId, wxString *err)
+{
+    int numCameras = ASIGetNumOfConnectedCameras();
+
+    Debug.Write(wxString::Format("ZWO: find camera id: [%s], ncams = %d\n", camId, numCameras));
+
+    if (numCameras <= 0)
+    {
+        *err = _("No ZWO cameras detected.");
+        return -1;
+    }
+
+    if (camId == GuideCamera::DEFAULT_CAMERA_ID)
+    {
+        // no model or index specified, connect to the first camera
+        return 0;
+    }
+
+    long idx = -1;
+    wxString model;
+
+    // camId is of the form
+    //    <idx>          (older PHD2 versions)
+    // or
+    //    <idx>,<model>
+    int pos = 0;
+    while (pos < camId.length() && camId[pos] >= '0' && camId[pos] <= '9')
+        ++pos;
+    camId.substr(0, pos).ToLong(&idx);
+    if (pos < camId.length() && camId[pos] == ',')
+        ++pos;
+    model = camId.substr(pos);
+
+    if (model.empty())
+    {
+        // we have an index, but no model specified
+        if (idx < 0 || idx >= numCameras)
+        {
+            Debug.Write(wxString::Format("ZWO: invalid camera id: '%s', ncams = %d\n", camId, numCameras));
+            *err = wxString::Format(_("ZWO camera #%d not found"), idx + 1);
+            return -1;
+        }
+        return idx;
+    }
+
+    // we have a model and an index. Does the camera at that index match the model name?
+    if (idx >= 0 && idx < numCameras)
+    {
+        ASI_CAMERA_INFO info;
+        if (ASIGetCameraProperty(&info, idx) == ASI_SUCCESS)
+        {
+            wxString name(info.Name);
+            if (name == model)
+            {
+                Debug.Write(wxString::Format("ZWO: found matching camera at idx %d\n", info.CameraID));
+                return info.CameraID;
+            }
+        }
+    }
+    Debug.Write(wxString::Format("ZWO: no matching camera at idx %d, try to match model name ...\n", idx));
+
+    // find the first camera matching the model name
+
+    for (int i = 0; i < numCameras; i++)
+    {
+        ASI_CAMERA_INFO info;
+        if (ASIGetCameraProperty(&info, idx) == ASI_SUCCESS)
+        {
+            wxString name(info.Name);
+            Debug.Write(wxString::Format("ZWO: cam [%d] %s\n", info.CameraID, name));
+            if (name == model)
+            {
+                Debug.Write(wxString::Format("ZWO: found first matching camera at idx %d\n", info.CameraID));
+                return info.CameraID;
+            }
+        }
+    }
+
+    Debug.Write("ZWO: no matching cameras\n");
+    *err = wxString::Format(_("Camera %s not found"), model);
+    return -1;
 }
 
 bool Camera_ZWO::Connect(const wxString& camId)
@@ -183,27 +282,11 @@ bool Camera_ZWO::Connect(const wxString& camId)
         return CamConnectFailed(err);
     }
 
-    long idx = -1;
-    if (camId == DEFAULT_CAMERA_ID)
-        idx = 0;
-    else
-        camId.ToLong(&idx);
-
-    // Find available cameras
-    int numCameras = ASIGetNumOfConnectedCameras();
-
-    if (numCameras == 0)
+    int selected = FindCamera(camId, &err);
+    if (selected == -1)
     {
-        return CamConnectFailed(_("No ZWO cameras detected."));
+        return CamConnectFailed(err);
     }
-
-    if (idx < 0 || idx >= numCameras)
-    {
-        Debug.AddLine(wxString::Format("ZWO: invalid camera id: '%s', ncams = %d", camId, numCameras));
-        return true;
-    }
-
-    int selected = (int) idx;
 
     ASI_ERROR_CODE r;
     ASI_CAMERA_INFO info;
@@ -330,7 +413,7 @@ bool Camera_ZWO::StopCapture(void)
 {
     if (m_capturing)
     {
-        Debug.AddLine("ZWO: stopcapture");
+        Debug.Write("ZWO: stopcapture\n");
         ASIStopVideoCapture(m_cameraId);
         m_capturing = false;
     }
@@ -548,7 +631,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (!m_capturing)
     {
-        Debug.AddLine("ZWO: startcapture");
+        Debug.Write("ZWO: startcapture\n");
         ASIStartVideoCapture(m_cameraId);
         m_capturing = true;
     }
