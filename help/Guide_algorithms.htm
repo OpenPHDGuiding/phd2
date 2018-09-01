@@ -148,28 +148,26 @@ users with good seeing conditions and well-behaved mounts with little or no decl
 
 
 The <a name="Z-filter"></a><span style="font-weight: bold;">Z-filter </span>algorithm is a variation on the LowPass algorithms 
-but operates in the discrete frequency or "Z" domain. In terms of guiding it applies full correction to the long period components 
-caused by mount periodic error. The corner period is corrected with 50% aggression and shorter periods are corrected with aggression 
-progressively reducing down to zero.<br>
-The Z-filter algorithm allows you to use shorter guide camera exposure times (e.g. 1s or 0.5s) without chasing the short period seeing. 
+but operates in the discrete frequency or "Z" domain. In terms of guiding it applies full correction to the low frequency components 
+caused by mount periodic error. Higher frequencies are corrected with aggression progressively reducing down to zero.<br>
+The Z-filter algorithm allows you to use shorter guide camera exposure times (e.g. 1s or 0.5s) without chasing the high frequency seeing. 
 The advantages of shorter guide exposure time are reduced lag time for applying corrections and smaller corrrections.<br>
 
-The algorithm offers a selection of Bessel filters. Testing has shown these to be the most effective. They are offered in a range
-of Orders. The Order of the filter determines the sharpness of the transition from  full aggression correction of long period deviations to 
-zero aggression for correcting short period deviations. Higher order leads to a sharper transition. Order 4 is recommended as a default. 
-With longer guide exposures a lower order may work better.<br>
-
-
-The Z-filter algorithm also offers a range of Corner factors. The Corner period is defined as the guide exposure time  multipled by the 
-Corner factor to give the period and defines where aggressiveness drops to 50%. For example, a guide exposure time of 2s 
-with Corner factor of 8 will have an aggressiveness of 100% at 30s period, 50% at 16s and then reducing rapidly at shorter periods.
-An exposure time of 1s with Corner factor of 16 will have the same response, as will a 4s exposure time with a Corner factor 4.<br>
-This feature lets you adjust the guide exposure time to optimise the guide star SNR and guide latency, then adjust the Corner factor to get a 
-consistent guiding response from PHD2. A value of 4s to 8s for Corner x Exposure is a reasonable default.<br>
+The Z-filter algorithm offers just two adjustments: Exposure Factor (XFac)and Minimum Movement (MinMo). The virtual guide exposure
+time is given by the actual exposure time multiplied by the Exposure Factor. A given virtual expsoure time will perform
+simiarly to an unfiltered algorithm using the same actual guide exposure time. For example, an exposure time of 1s with Exposure Factor of 4 
+gives a virtual expsoure time of 4s (4 x 1s) and performs similarly to Hysteresis with Agression 100% and Hysteresis 0.0 using an exposure time of 4s.
+An exposure time of 2s with an Exposure Factor of 2 also has a virtual exxpsoure time of 4s (2 x 2s)and thus performs much the same. 
+The main difference is that the shorter actual exposures allow the corrections to be applied sooner and more frequently so they are smaller.<br>
+This feature lets you adjust the guide exposure time to optimise the guide star SNR and guide latency. You can then adjust the Exposure factor 
+to get the desired guiding response. A virtual exposure time of 2s to 4s per the usual recommendation is a good starting point for the RA axis. 
+On the Dec axis, longer virtual exposures can be used and can help minimise reversals tha can result in backlash.<br>
 Note that when using short exposures the movement from seeing will be more visible on the guiding graph. This does not mean the guiding is worse.
-Other algorithms rely on guide expsosure time to filter out the movement from seeing. The Z-filter algorithm with its corner value performs the 
+Other algorithms rely on guide exposure time to filter out the movement from seeing. The Z-filter Exposure Factor performs the 
 same function.<br>
-The Z-filter also has a MinMo setting. The value should be chosen to match the ability of the mount to accurately make small corrections.<br>
+The Z-filter also has a MinMo setting. The value should be chosen to match the ability of the mount to accurately make small corrections. With
+other algorithms MinMo is sometimes recommended to provide some filtering e.g to prevent reversals of the Dec axis. With the Z-filter the 
+recommended approach is to increase the Exposure factor.<br>
 </br>
 </br>
 <a name="Predictive_PEC"></a>PHD2 Predictive PEC Guide
