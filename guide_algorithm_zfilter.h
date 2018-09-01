@@ -39,31 +39,21 @@
 
 class GuideAlgorithmZFilter : public GuideAlgorithm
 {
-    int    m_filter;
+    FILTER_DESIGN m_design;
     std::vector<double> m_xv, m_yv;  // Historical values up to m_order
     std::vector<double> m_xcoeff, m_ycoeff;
     int m_order;
     double m_gain;
     double m_minMove;
     double m_sumCorr; // Sum of all corrections issued
+    double m_expFactor;
 
     ZFilterFactory *m_pFactory;
-    class Filter
-    {
-    public:
-        FILTER_DESIGN design;
-        int order;
-        double corner;
-        Filter(FILTER_DESIGN d, int o, double c) :design(d), order(o), corner(c) {};
-        std::string getname() const;
-    };
-    std::vector<Filter> m_FilterList; // Filter options
-
 protected:
     class GuideAlgorithmZFilterConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmZFilter *m_pGuideAlgorithm;
-        wxChoice         *m_pFilter;  // Listbox for filters
+        wxSpinCtrlDouble *m_pExpFactor;
         wxSpinCtrlDouble *m_pMinMove;
 
     public:
@@ -84,14 +74,17 @@ protected:
     private:
         GuideAlgorithmZFilter *m_pGuideAlgorithm;
         wxSpinCtrlDouble *m_pMinMove;
+        wxSpinCtrlDouble *m_pExpFactor;
 
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnExpFactorSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    int GetFilter(void);
-    bool SetFilter(int Order);
+    bool BuildFilter();
     virtual double GetMinMove(void) const;
     virtual bool SetMinMove(double minMove);
+    virtual double GetExpFactor(void) const;
+    virtual bool SetExpFactor(double expfactor);
 
     friend class GuideAlgorithmZFilterConfigDialogPane;
 
@@ -111,24 +104,14 @@ public:
     virtual bool SetParam(const wxString& name, double val);
 };
 
-inline int GuideAlgorithmZFilter::GetFilter(void)
-{
-    return m_filter;
-}
-
 inline double GuideAlgorithmZFilter::GetMinMove(void) const
 {
     return m_minMove;
 }
 
-inline std::string GuideAlgorithmZFilter::Filter::getname() const
+inline double GuideAlgorithmZFilter::GetExpFactor(void) const
 {
-    switch (design)
-    {
-    case BUTTERWORTH: return "Butterworth";
-    case BESSEL: return "Bessel";
-    case CHEBYCHEV: return "Chebychev";
-    default: return "Unknown filter";
-    }
+    return m_expFactor;
 }
+
 #endif /* GUIDE_ALGORITHM_ZFILTER_H_INCLUDED */
