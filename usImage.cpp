@@ -326,6 +326,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             hdr.write("YPIXSZ", sz, "pixel size in microns (with binning)");
             unsigned int g = (unsigned int) pCamera->GuideCameraGain;
             hdr.write("GAIN", g, "PHD Gain Value (0-100)");
+            unsigned int bpp = pCamera->BitsPerPixel();
+            hdr.write("CAMBPP", bpp, "Camera resolution, bits per pixel");
         }
 
         if (pPointingSource)

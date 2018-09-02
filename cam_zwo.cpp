@@ -51,25 +51,80 @@
 #endif
 
 Camera_ZWO::Camera_ZWO()
-    : m_buffer(0),
+    :
+    m_buffer(nullptr),
     m_capturing(false)
 {
     Name = _T("ZWO ASI Camera");
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = true;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
+    int value = pConfig->Profile.GetInt("/camera/ZWO/bpp", 8);
+    m_bpp = value == 8 ? 8 : 16;
 }
 
 Camera_ZWO::~Camera_ZWO()
 {
-    delete[] m_buffer;
+    ::free(m_buffer);
 }
 
 wxByte Camera_ZWO::BitsPerPixel()
 {
-    return 8;
+    return m_bpp;
+}
+
+struct ZWOCameraDlg : public wxDialog
+{
+    wxRadioButton *m_bpp8;
+    wxRadioButton *m_bpp16;
+    ZWOCameraDlg();
+};
+
+ZWOCameraDlg::ZWOCameraDlg()
+    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ZWO Camera Properties"))
+{
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
+
+    m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
+    m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
+    sbSizer3->Add(m_bpp8, 0, wxALL, 5);
+    sbSizer3->Add(m_bpp16, 0, wxALL, 5);
+    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
+    wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
+    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    sdbSizer2->AddButton(sdbSizer2OK);
+    sdbSizer2->AddButton(sdbSizer2Cancel);
+    sdbSizer2->Realize();
+    bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+
+    SetSizer(bSizer12);
+    Layout();
+    Fit();
+
+    Centre(wxBOTH);
+}
+
+void Camera_ZWO::ShowPropertyDialog()
+{
+    ZWOCameraDlg dlg;
+    int value = pConfig->Profile.GetInt("/camera/ZWO/bpp", m_bpp);
+    if (value == 8)
+        dlg.m_bpp8->SetValue(true);
+    else
+        dlg.m_bpp16->SetValue(true);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
+        pConfig->Profile.SetInt("/camera/ZWO/bpp", m_bpp);
+    }
 }
 
 inline static int cam_gain(int minval, int maxval, int pct)
@@ -309,6 +364,8 @@ bool Camera_ZWO::Connect(const wxString& camId)
         return CamConnectFailed(_("Failed to initizlize ZWO ASI Camera."));
     }
 
+    Debug.Write(wxString::Format("ZWO: using mode BPP = %u\n", (unsigned int) m_bpp));
+
     m_cameraId = selected;
     Connected = true;
     Name = info.Name;
@@ -336,8 +393,9 @@ bool Camera_ZWO::Connect(const wxString& camId)
     FullSize.y = m_maxSize.y / Binning;
     m_prevBinning = Binning;
 
-    delete[] m_buffer;
-    m_buffer = new unsigned char[info.MaxWidth * info.MaxHeight];
+    ::free(m_buffer);
+    m_buffer_size = info.MaxWidth * info.MaxHeight * (m_bpp == 8 ? 1 : 2);
+    m_buffer = ::malloc(m_buffer_size);
 
     m_devicePixelSize = info.PixelSize;
 
@@ -404,7 +462,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
-    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, ASI_IMG_RAW8);
+    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, m_bpp == 8 ? ASI_IMG_RAW8 : ASI_IMG_RAW16);
 
     return false;
 }
@@ -427,8 +485,8 @@ bool Camera_ZWO::Disconnect()
 
     Connected = false;
 
-    delete[] m_buffer;
-    m_buffer = 0;
+    ::free(m_buffer);
+    m_buffer = nullptr;
 
     return false;
 }
@@ -521,7 +579,7 @@ inline static int round_up(int v, int m)
     return round_down(v + m - 1, m);
 }
 
-static void flush_buffered_image(int cameraId, usImage& img)
+static void flush_buffered_image(int cameraId, void *buf, size_t size)
 {
     enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
 
@@ -529,7 +587,7 @@ static void flush_buffered_image(int cameraId, usImage& img)
 
     for (unsigned int num_cleared = 0; num_cleared < NUM_IMAGE_BUFFERS; num_cleared++)
     {
-        ASI_ERROR_CODE status = ASIGetVideoData(cameraId, (unsigned char *) img.ImageData, img.NPixels * sizeof(unsigned short), 0);
+        ASI_ERROR_CODE status = ASIGetVideoData(cameraId, (unsigned char *) buf, size, 0);
         if (status != ASI_SUCCESS)
             break; // no more buffered frames
 
@@ -611,7 +669,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         StopCapture();
 
-        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, ASI_IMG_RAW8);
+        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, m_bpp == 8 ? ASI_IMG_RAW8 : ASI_IMG_RAW16);
         if (status != ASI_SUCCESS)
             Debug.Write(wxString::Format("ZWO: setImageFormat(%d,%d,%hu) => %d\n", frame.GetWidth(), frame.GetHeight(), Binning, status));
     }
@@ -627,7 +685,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     // which could be quite stale. read out all buffered frames so the frame we
     // get is current
 
-    flush_buffered_image(m_cameraId, img);
+    flush_buffered_image(m_cameraId, m_buffer, m_buffer_size);
 
     if (!m_capturing)
     {
@@ -636,15 +694,16 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         m_capturing = true;
     }
 
-    int frameSize = frame.GetWidth() * frame.GetHeight();
-
     int poll = wxMin(duration, 100);
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
+    unsigned char *const buffer =
+        m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
+
     while (true)
     {
-        ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, m_buffer, frameSize, poll);
+        ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, buffer, m_buffer_size, poll);
         if (status == ASI_SUCCESS)
             break;
         if (WorkerThread::InterruptRequested())
@@ -668,18 +727,38 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         // Clear out the image
         img.Clear();
 
-        for (int y = 0; y < subframe.height; y++)
+        if (m_bpp == 8)
         {
-            const unsigned char *src = m_buffer + (y + subframePos.y) * frame.width + subframePos.x;
-            unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
-            for (int x = 0; x < subframe.width; x++)
-                *dst++ = *src++;
+            for (int y = 0; y < subframe.height; y++)
+            {
+                const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                for (int x = 0; x < subframe.width; x++)
+                    *dst++ = *src++;
+            }
+        }
+        else
+        {
+            for (int y = 0; y < subframe.height; y++)
+            {
+                const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                for (int x = 0; x < subframe.width; x++)
+                    *dst++ = *src++;
+            }
         }
     }
     else
     {
-        for (unsigned int i = 0; i < img.NPixels; i++)
-            img.ImageData[i] = m_buffer[i];
+        if (m_bpp == 8)
+        {
+            for (unsigned int i = 0; i < img.NPixels; i++)
+                img.ImageData[i] = buffer[i];
+        }
+        else
+        {
+            // 16-bit mode and no subframe: data is already in img.ImageData
+        }
     }
 
     if (options & CAPTURE_SUBTRACT_DARK)
