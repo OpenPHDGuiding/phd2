@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-23 05:35+0100\n"
-"PO-Revision-Date: 2018-07-18 11:06+0800\n"
+"PO-Revision-Date: 2018-09-03 11:08+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -492,8 +492,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:647
 msgid "Explanation"
@@ -583,7 +583,7 @@ msgstr "先前恢復的校準"
 
 #: calstep_dialog.cpp:61
 msgid "Detailed Calibration Parameters"
-msgstr ""
+msgstr "詳細的校準參數"
 
 #: calstep_dialog.cpp:104
 msgid "Input Parameters"
@@ -643,14 +643,14 @@ msgstr ""
 
 #: calstep_dialog.cpp:152
 msgid "Calibration distance, px"
-msgstr ""
+msgstr "校準距離, px"
 
 #: calstep_dialog.cpp:153
 #, c-format
 msgid ""
 "Targeted distance in each direction. The default value (%d) works fine for "
 "most setups."
-msgstr ""
+msgstr "每個方向的目標距離. 默認值 (%d) 適用於大多數使用環境"
 
 #: calstep_dialog.cpp:159
 msgid "Calibration declination, degrees"
@@ -668,7 +668,7 @@ msgstr "重設"
 
 #: calstep_dialog.cpp:163
 msgid "Reset the calibration parameters to defaults"
-msgstr ""
+msgstr "將校準參數重置為默認值"
 
 #: calstep_dialog.cpp:168
 msgid "Computed Values"
@@ -863,10 +863,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1178
-#: cam_simulator.cpp:1253 cam_simulator.cpp:1427 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1178 cam_simulator.cpp:1253
+#: cam_simulator.cpp:1427 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1923,8 +1922,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:557
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3014,7 +3012,7 @@ msgstr "像素"
 
 #: graph.cpp:293
 msgid "Corrections to Scale"
-msgstr ""
+msgstr "縮放比例"
 
 #: graph.cpp:297
 msgid "Star Mass"
@@ -3216,8 +3214,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3341,8 +3339,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3365,8 +3363,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3484,20 +3482,20 @@ msgstr ""
 
 #: guide_algorithm_zfilter.cpp:253
 msgid "ZFilter Guide Algorithm"
-msgstr ""
+msgstr "ZFilter 導星演算法"
 
 #: guide_algorithm_zfilter.cpp:260
 msgid "Filter Type"
-msgstr ""
+msgstr "濾鏡型式"
 
 #: guide_algorithm_zfilter.cpp:260
 msgid "Choose a filter"
-msgstr ""
+msgstr "選擇濾鏡"
 
 #: guide_algorithm_zfilter.cpp:263
 #, c-format
 msgid "%s Order %d Corner %.1f"
-msgstr ""
+msgstr "%s 順序 %d 角落 %.1f"
 
 #: guider.cpp:500
 msgid "E"
@@ -3728,7 +3726,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:143
 msgid "Extended Sampling"
-msgstr ""
+msgstr "擴增取樣"
 
 #: guiding_assistant.cpp:150
 msgid ""
@@ -3743,7 +3741,7 @@ msgstr ""
 msgid ""
 "Additional sampling is being done for accurate measurements.  Results will "
 "be shown when sampling is complete."
-msgstr ""
+msgstr "正進行擴增取樣樣以利精確測量, 結果會在取樣完成後顯示"
 
 #: guiding_assistant.cpp:155
 msgid "Seconds remaining: "
@@ -4362,11 +4360,11 @@ msgstr "預測的 PEC"
 
 #: mount.cpp:137
 msgid "ZFilter"
-msgstr ""
+msgstr "ZFilter"
 
 #: mount.cpp:161
 msgid "ZFilter - Experimental only!"
-msgstr ""
+msgstr "ZFilter - 實驗性質"
 
 #: mount.cpp:175
 msgid "AO X-Axis"
@@ -6643,13 +6641,13 @@ msgstr ""
 
 #: scope.cpp:1826
 msgid "Advanced..."
-msgstr ""
+msgstr "進階的..."
 
 #: scope.cpp:1827
 msgid ""
 "Click to open the Calibration Parameters Dialog to review or change all "
 "calibration parameters"
-msgstr ""
+msgstr "點擊以打開“校準參數”對話框以檢視或更改所有校準參數"
 
 #: scope.cpp:1838
 msgid "Reverse Dec output after meridian flip"
@@ -6822,7 +6820,7 @@ msgstr "無法連接到赤道儀 %s: %s"
 
 #: scope_indi.cpp:366
 msgid "INDI mount was disconnected"
-msgstr ""
+msgstr "AUX 赤道儀連線已中斷"
 
 #: scope_manual_pointing.cpp:81
 msgid "Approximate telescope declination, degrees"
