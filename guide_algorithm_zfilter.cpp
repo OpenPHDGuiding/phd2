@@ -70,13 +70,13 @@ void GuideAlgorithmZFilter::reset(void)
 
 double GuideAlgorithmZFilter::result(double input)
 {
-    double dReturn=0; 
+    double dReturn=0;
 
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
     int order = m_order;
     double gain = m_gain;
 
-// Shift readings and results 
+// Shift readings and results
     m_xv.insert(m_xv.begin(), (input + m_sumCorr) / gain); // Add total guide output to input to get uncorrected waveform
     m_xv.pop_back();
     m_yv.insert(m_yv.begin(), 0.0);
@@ -256,7 +256,7 @@ bool GuideAlgorithmZFilter::SetParam(const wxString& name, double val)
 wxString GuideAlgorithmZFilter::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Type=%s-%d, Exp-factor=%.1f, Minimum move = %.3f\n", 
+    return wxString::Format("Type=%s-%d, Exp-factor=%.1f, Minimum move = %.3f\n",
         m_pFactory->getname(), m_order, m_pFactory->corner() / 4.0, GetMinMove());
 }
 
@@ -279,7 +279,7 @@ GuideAlgorithmZFilter::
     m_pExpFactor->SetDigits(1);
 
     DoAdd(_("Exposure Factor"), m_pExpFactor,
-        wxString::Format(_("Multiplied by exposure time gives the equivalent exposure time after filtering? \n"
+        wxString::Format(_("Multiplied by exposure time gives the equivalent exposure time after filtering. "
         "Default = %.1f"), DefaultExpFactor));
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
@@ -338,7 +338,8 @@ GuideAlgorithmZFilter::
     m_pExpFactor = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
     m_pExpFactor->SetDigits(1);
-    m_pExpFactor->SetToolTip(wxString::Format(_("Multiplied by exposure time gives the equivalent expsoure time after filtering? \n"
+    m_pExpFactor->SetToolTip(
+        wxString::Format(_("Multiplied by exposure time gives the equivalent expsoure time after filtering. "
         "Default = %.1f"), DefaultExpFactor));
     m_pExpFactor->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnExpFactorSpinCtrlDouble, this);
     DoAdd(m_pExpFactor, _("XFac"));

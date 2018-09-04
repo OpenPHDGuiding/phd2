@@ -158,7 +158,7 @@ wxString GuideAlgorithmName(int algo)
     case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
         return _("Predictive PEC");
     case GUIDE_ALGORITHM_ZFILTER:
-        return _("ZFilter - Experimental only!");
+        return _("ZFilter");
     }
 }
 
@@ -471,7 +471,7 @@ MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount
     return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
 }
 
-// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in 
+// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in
 // ConfigDialogPane
 MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
