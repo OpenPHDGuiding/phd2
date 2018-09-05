@@ -1051,10 +1051,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
     double lp_cutoff = wxMax(6.0, 3.0 * exposure);
     double hp_cutoff = 1.0;
-    //m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
-    //m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 
-    // Test Code
     StatsCleanup();
     m_hpfRAStats = new DescriptiveStats();
     m_lpfRAStats = new DescriptiveStats();
@@ -1134,7 +1131,7 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
     {
         m_backlashTool->StopMeasurement();
         m_othergrid->SetCellValue(m_backlash_loc, _("Backlash test aborted..."));
-        m_graphBtn->Enable(false);
+        m_graphBtn->Enable(m_backlashTool->IsGraphable());
     }
 
     m_measuringBacklash = false;

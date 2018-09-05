@@ -666,7 +666,7 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     // Since we get mount coordinates, north steps will always be in ascending order
     numNorth = northSteps.size();
     northInc = (northSteps.at(numNorth - 1) - northSteps.at(0)) / numNorth;
-    numSouth = southSteps.size();       // Should be same as numNorth but be careful
+    numSouth = southSteps.size();       // May not be the same as numNorth if some sort of problem occurred
 
     dc.SelectObject(bmp);
     dc.SetBackground(*wxBLACK_BRUSH);
@@ -691,7 +691,7 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     // Draw the north steps
     dc.SetPen(decPen);
     dc.SetBrush(decBrush);
-    ptRadius = 2;
+    ptRadius = 1;
 
     for (int i = 0; i < numNorth; i++)
     {
@@ -745,6 +745,11 @@ BacklashTool::~BacklashTool()
 {
     if (m_northStats)
         delete m_northStats;
+}
+
+bool BacklashTool::IsGraphable()
+{
+    return m_southBLSteps.size() > 0;
 }
 
 double BacklashTool::GetLastDecGuideRate()

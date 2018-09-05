@@ -135,6 +135,7 @@ public:
     wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt);
     void ShowGraph(wxDialog *pGA);
+    bool IsGraphable();
     const std::vector<double>& GetNorthSteps() const { return m_northBLSteps; }
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
 };
