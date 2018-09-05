@@ -119,7 +119,7 @@ static void SaveBookmarks(const std::vector<wxRealPoint>& vec)
 static void LoadBookmarks(std::vector<wxRealPoint> *vec)
 {
     wxString s(pConfig->Profile.GetString("/guider/bookmarks", wxEmptyString));
-    std::istringstream is((const char *) s);
+    std::istringstream is(static_cast<const char *>(s.c_str()));
 
     vec->clear();
 

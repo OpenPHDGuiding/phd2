@@ -15,7 +15,7 @@ MAC=
 WIN=
 while [ $# -gt 0 ]; do
     case $1 in
-        *ASI_linux_mac_SDK_*.tar) MAC=$1; shift ;;
+        *ASI_linux_mac_SDK_*.tar.bz2) MAC=$1; shift ;;
         *ASI_Windows_SDK_*.zip) WIN=$1; shift ;;
         *) usage ;;
     esac
@@ -49,8 +49,7 @@ fi
 
 # osx and linux
 if [ -n "$MAC" ]; then
-    tar xf "$MAC" -C "$TMP"
-    tar xfj "$TMP"/ASI_linux_mac_SDK*.tar.bz2 -C "$TMP"
+    tar xfj "$MAC" -C "$TMP"
     for d in armv6 armv7 armv8 mac x64 x86; do
         cp "$TMP"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
     done

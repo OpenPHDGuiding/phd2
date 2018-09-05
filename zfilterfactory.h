@@ -52,8 +52,10 @@ public:
     std::vector<double> xcoeffs, ycoeffs;
     double gain() { return ::hypot(dc_gain.imag(), dc_gain.real()); };
     double corner() { return 1 / raw_alpha1; };
+    FILTER_DESIGN design() { return filt; }
+    std::string getname() const;
     int order() { return m_order;  };
-    ZFilterFactory( FILTER_DESIGN f, int o, double p );
+    ZFilterFactory( FILTER_DESIGN f, int o, double p, bool mzt=false );
 private:
     const double TWOPI = (2.0 * M_PI);
     const double EPS = 1e-10;
@@ -92,6 +94,17 @@ inline void ZFilterFactory::setpole(const std::complex<double>& z)
 inline std::complex<double> ZFilterFactory::bilinear(const std::complex<double>& pz)
 {
     return (2.0 + pz) / (2.0 - pz);
+}
+
+inline std::string ZFilterFactory::getname() const
+{
+    switch (filt)
+    {
+    case BUTTERWORTH: return "Butterworth";
+    case BESSEL: return "Bessel";
+    case CHEBYCHEV: return "Chebychev";
+    default: return "Unknown filter";
+    }
 }
 
 #endif /* ZFILTER_FACTORY_H_INCLUDED */

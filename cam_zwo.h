@@ -41,7 +41,9 @@ class Camera_ZWO : public GuideCamera
     wxRect m_maxSize;
     wxRect m_frame;
     unsigned short m_prevBinning;
-    unsigned char *m_buffer;
+    void *m_buffer;
+    size_t m_buffer_size;
+    wxByte m_bpp;  // bits per pixel: 8 or 16
     bool m_capturing;
     int m_cameraId;
     int m_minGain;
@@ -59,9 +61,10 @@ public:
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-    void    ClearGuidePort();
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void ClearGuidePort();
 
+    void ShowPropertyDialog() override;
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;

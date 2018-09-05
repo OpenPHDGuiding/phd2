@@ -33,38 +33,19 @@
 */
 
 #include "phd.h"
-static const int    DefaultFilter = 0;
-static const double DefaultMinMove = 0.2;
+static const double DefaultMinMove = 0.1;
+static const double DefaultExpFactor = 2.0;
 
 GuideAlgorithmZFilter::GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
 {
-    m_FilterList = {
-//        Filter(BUTTERWORTH, 1, 4.0), 
-//        Filter(BUTTERWORTH, 1, 8.0), 
-//        Filter(BUTTERWORTH, 1, 16.0), 
-//        Filter(BUTTERWORTH, 1, 32.0),
-//        Filter(BUTTERWORTH, 1, 64.0), 
-        Filter(BESSEL, 1, 4.0),
-        Filter(BESSEL, 1, 8.0), 
-        Filter(BESSEL, 1, 16.0),
-        Filter(BESSEL, 1, 32.0),
-        Filter(BESSEL, 1, 64.0),
-        Filter(BESSEL, 2, 4.0),
-        Filter(BESSEL, 2, 8.0),
-        Filter(BESSEL, 2, 16.0),
-        Filter(BESSEL, 2, 32.0),
-        Filter(BESSEL, 2, 64.0),
-        Filter(BESSEL, 4, 4.0),
-        Filter(BESSEL, 4, 8.0),
-        Filter(BESSEL, 4, 16.0),
-        Filter(BESSEL, 4, 32.0),
-        Filter(BESSEL, 4, 64.0),
-    };
-    int filter = pConfig->Profile.GetInt(GetConfigPath() + "/filter", DefaultFilter);
-    SetFilter(filter);
+    m_expFactor = DefaultExpFactor;
+    m_design = BESSEL;
+    m_order = 4;
     double minMove = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
     SetMinMove(minMove);
+    double expFactor = pConfig->Profile.GetDouble(GetConfigPath() + "/expFactor", DefaultExpFactor);
+    SetExpFactor(expFactor);
 
     reset();
 }
@@ -89,13 +70,13 @@ void GuideAlgorithmZFilter::reset(void)
 
 double GuideAlgorithmZFilter::result(double input)
 {
-    double dReturn=0; 
+    double dReturn=0;
 
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
     int order = m_order;
     double gain = m_gain;
 
-// Shift readings and results 
+// Shift readings and results
     m_xv.insert(m_xv.begin(), (input + m_sumCorr) / gain); // Add total guide output to input to get uncorrected waveform
     m_xv.pop_back();
     m_yv.insert(m_yv.begin(), 0.0);
@@ -118,53 +99,60 @@ double GuideAlgorithmZFilter::result(double input)
     }
     m_sumCorr += dReturn;
 
-    wxString msg = "GuideAlgorithmZFilter::m_xv ";
+/*    wxString msg = "GuideAlgorithmZFilter::m_xv ";
     for (int i = 0; i<m_xcoeff.size(); i++)
-        msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_xv.at(i)));
-    Debug.Write(msg);
+        msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_xv.at(i)));
+    Debug.Write(wxString::Format("%s\n",msg));
     msg = "GuideAlgorithmZFilter::m_yv ";
     for (int i = 0; i<m_ycoeff.size(); i++)
-        msg.Append(wxString::Format("%s%.4f", i ? "," : "", m_yv.at(i)));
-    msg.Append("\n");
-    Debug.Write(msg);
-    msg.Append(wxString::Format("GuideAlgorithmZFilter::Result() returns %.2f, input %.2f, m_sumCorr=%.2f\n", dReturn, input, m_sumCorr));
-    Debug.Write(msg);
+        msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_yv.at(i)));
+    Debug.Write(wxString::Format("%s\n", msg));
+    */
+    Debug.Write(wxString::Format("GuideAlgorithmZFilter::Result() returns %.2f, input %.2f, m_sumCorr=%.2lg\n", dReturn, input, m_sumCorr));
 
     return dReturn;
 }
 
-bool GuideAlgorithmZFilter::SetFilter(int filter)
+bool GuideAlgorithmZFilter::BuildFilter()
 {
     bool bError = false;
 
     try
     {
-        if (filter < 0 || filter >= m_FilterList.size())
+        Debug.Write(wxString::Format("GuideAlgorithmZFilter::order=%d, expFactor=%lf\n",
+            m_order, m_expFactor));
+        if (m_order < 1)
         {
-            throw ERROR_INFO("invalid filter");
+            throw ERROR_INFO("invalid order");
+        }
+        if (m_expFactor < 1.0)
+        {
+            throw ERROR_INFO("invalid expFactor");
         }
 
-        m_filter = filter;
+        double corner = m_expFactor * 4.0;
+        FILTER_DESIGN design = (corner < 6.0) ? BUTTERWORTH : m_design;
+
         m_xcoeff.clear();
         m_ycoeff.clear();
-        m_pFactory = new ZFilterFactory(m_FilterList.at(m_filter).design, m_FilterList.at(m_filter).order, m_FilterList.at(m_filter).corner);
+        m_pFactory = new ZFilterFactory(design, m_order, corner);
         m_order = m_pFactory->order();
         m_gain = m_pFactory->gain();
         m_xcoeff = m_pFactory->xcoeffs;
         m_ycoeff = m_pFactory->ycoeffs;
 
-        Debug.Write(wxString::Format("GuideAlgorithmZFilter::SetFilter(%s)\n", m_FilterList.at(m_filter).getname()));
-        Debug.Write(wxString::Format("GuideAlgorithmZFilter::order=%d, corner=%f, gain=%f\n",
-            m_order, m_pFactory->corner(), m_gain));
+        Debug.Write(wxString::Format("GuideAlgorithmZFilter::type=%s order=%d, corner=%lf, gain=%lg\n",
+            m_pFactory->getname(), m_order, m_pFactory->corner(), m_gain));
         wxString msg = wxString::Format("GuideAlgorithmZFilter::m_xcoeffs:");
         for (int it = 0; it < m_xcoeff.size(); it++)
         {
-            msg.Append(wxString::Format("%s%.4f", it ? "," : "", m_xcoeff.at(it)));
+            msg.Append(wxString::Format("%s%.3lg", it ? "," : "", m_xcoeff.at(it)));
         }
-        msg.Append(wxString::Format("\nGuideAlgorithmZFilter::m_ycoeffs:"));
+        Debug.Write(wxString::Format("%s\n", msg));
+        msg = wxString::Format("GuideAlgorithmZFilter::m_ycoeffs:");
         for (int it = 1; it < m_ycoeff.size(); it++)
         {
-            msg.Append(wxString::Format("%s%.4f", it ? "," : "", m_ycoeff.at(it)));
+            msg.Append(wxString::Format("%s%.3lg", it ? "," : "", m_ycoeff.at(it)));
         }
         Debug.Write(wxString::Format("%s\n", msg));
         reset();
@@ -173,10 +161,7 @@ bool GuideAlgorithmZFilter::SetFilter(int filter)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_filter = DefaultFilter;
     }
-
-    pConfig->Profile.SetInt(GetConfigPath() + "/filter", m_filter);
 
     return bError;
 }
@@ -202,6 +187,34 @@ bool GuideAlgorithmZFilter::SetMinMove(double minMove)
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
+    BuildFilter();
+
+    return bError;
+}
+
+bool GuideAlgorithmZFilter::SetExpFactor(double expFactor)
+{
+    bool bError = false;
+
+    try
+    {
+        if (expFactor < 1.0)
+        {
+            throw ERROR_INFO("invalid expFactor");
+        }
+
+        m_expFactor = expFactor;
+
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_expFactor = DefaultExpFactor;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/expFactor", m_expFactor);
+    BuildFilter();
 
     return bError;
 }
@@ -209,6 +222,7 @@ bool GuideAlgorithmZFilter::SetMinMove(double minMove)
 void GuideAlgorithmZFilter::GetParamNames(wxArrayString& names) const
 {
     names.push_back("minMove");
+    names.push_back("expFactor");
 }
 
 bool GuideAlgorithmZFilter::GetParam(const wxString& name, double *val) const
@@ -217,6 +231,8 @@ bool GuideAlgorithmZFilter::GetParam(const wxString& name, double *val) const
 
     if (name == "minMove")
         *val = GetMinMove();
+    else if (name == "expFactor")
+        *val = GetExpFactor();
     else
         ok = false;
 
@@ -229,6 +245,8 @@ bool GuideAlgorithmZFilter::SetParam(const wxString& name, double val)
 
     if (name == "minMove")
         err = SetMinMove(val);
+    else if (name == "expFactor")
+        err = SetExpFactor(val);
     else
         err = true;
 
@@ -238,8 +256,8 @@ bool GuideAlgorithmZFilter::SetParam(const wxString& name, double val)
 wxString GuideAlgorithmZFilter::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Type=%s, order=%d, corner=%.1f, Minimum move = %.3f\n", 
-        m_FilterList.at(m_filter).getname(), m_order, m_pFactory->corner(), GetMinMove());
+    return wxString::Format("Type=%s-%d, Exp-factor=%.1f, Minimum move = %.3f\n",
+        m_pFactory->getname(), m_order, m_pFactory->corner() / 4.0, GetMinMove());
 }
 
 ConfigDialogPane *GuideAlgorithmZFilter::GetConfigDialogPane(wxWindow *pParent)
@@ -255,15 +273,14 @@ GuideAlgorithmZFilter::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     int width;
+    width = StringWidth(_T("00.0"));
+    m_pExpFactor = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
+    m_pExpFactor->SetDigits(1);
 
-    m_pFilter = new wxChoice(pParent, wxID_ANY, wxDefaultPosition, wxDefaultSize);
-    DoAdd(_("Filter Type"), m_pFilter, _("Choose a filter"));
-    m_pFilter->Clear();
-    for (int is = 0; is < m_pGuideAlgorithm->m_FilterList.size(); is++) {
-        m_pFilter->AppendString(wxString::Format(_("%s Order %d Corner %.1f"), 
-            m_pGuideAlgorithm->m_FilterList.at(is).getname(), m_pGuideAlgorithm->m_FilterList.at(is).order, m_pGuideAlgorithm->m_FilterList.at(is).corner ));
-    }
-
+    DoAdd(_("Exposure Factor"), m_pExpFactor,
+        wxString::Format(_("Multiplied by exposure time gives the equivalent exposure time after filtering. "
+        "Default = %.1f"), DefaultExpFactor));
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
@@ -272,6 +289,7 @@ GuideAlgorithmZFilter::
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
         wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
         "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
+
 }
 
 GuideAlgorithmZFilter::
@@ -284,18 +302,17 @@ void GuideAlgorithmZFilter::
     GuideAlgorithmZFilterConfigDialogPane::
     LoadValues(void)
 {
-    m_pFilter->SetSelection(m_pGuideAlgorithm->GetFilter());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+    m_pExpFactor->SetValue(m_pGuideAlgorithm->GetExpFactor());
 }
 
 void GuideAlgorithmZFilter::
     GuideAlgorithmZFilterConfigDialogPane::
     UnloadValues(void)
 {
-    m_pGuideAlgorithm->SetFilter(m_pFilter->GetSelection());
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+    m_pGuideAlgorithm->SetExpFactor(m_pExpFactor->GetValue());
 }
-
 
 void GuideAlgorithmZFilter::
 GuideAlgorithmZFilterConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
@@ -317,6 +334,18 @@ GuideAlgorithmZFilter::
 
     m_pGuideAlgorithm = pGuideAlgorithm;
 
+    width = StringWidth(_T("00.0"));
+    m_pExpFactor = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
+    m_pExpFactor->SetDigits(1);
+    m_pExpFactor->SetToolTip(
+        wxString::Format(_("Multiplied by exposure time gives the equivalent expsoure time after filtering. "
+        "Default = %.1f"), DefaultExpFactor));
+    m_pExpFactor->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnExpFactorSpinCtrlDouble, this);
+    DoAdd(m_pExpFactor, _("XFac"));
+
+    m_pExpFactor->SetValue(m_pGuideAlgorithm->GetExpFactor());
+
     width = StringWidth(_T("000.00"));
     m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
@@ -327,6 +356,7 @@ GuideAlgorithmZFilter::
     DoAdd(m_pMinMove, _("MnMo"));
 
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+
 }
 
 GuideAlgorithmZFilter::
@@ -336,9 +366,17 @@ GuideAlgorithmZFilter::
 }
 
 void GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterGraphControlPane::
-    OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
+GuideAlgorithmZFilterGraphControlPane::
+OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " ZFilter minimum move", m_pMinMove->GetValue());
+}
+
+void GuideAlgorithmZFilter::
+GuideAlgorithmZFilterGraphControlPane::
+OnExpFactorSpinCtrlDouble(wxSpinDoubleEvent& evt)
+{
+    m_pGuideAlgorithm->SetExpFactor(m_pExpFactor->GetValue());
+    pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " ZFilter exposure factor", m_pExpFactor->GetValue());
 }
