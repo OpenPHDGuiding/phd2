@@ -145,7 +145,7 @@ struct GuidingAsstWin : public wxDialog
     wxBoxSizer *m_vSizer;
     wxStaticBoxSizer *m_recommend_group;
     wxCheckBox *m_backlashCB;
-    wxStaticText *m_backlashInfo;
+    wxStaticText *m_gaStatus;
     wxButton *m_graphBtn;
 
     wxGridCellCoords m_timestamp_loc;
@@ -188,7 +188,6 @@ struct GuidingAsstWin : public wxDialog
     long m_elapsedSecs;
     PHD_Point m_startPos;
     wxString startStr;
-    //Stats m_statsRA;
     DescriptiveStats* m_hpfRAStats;
     DescriptiveStats* m_lpfRAStats;
     DescriptiveStats* m_hpfDecStats;
@@ -298,7 +297,7 @@ GuidingAsstWin::GuidingAsstWin()
       m_raAxisStats(0)
 {
     // Sizer hierarchy:
-    // m_vSizer has {instructions, vResultsSizer, m_backlashInfo, btnSizer}
+    // m_vSizer has {instructions, vResultsSizer, m_gaStatus, btnSizer}
     // vResultsSizer has {hTopSizer, hBottomSizer}
     // hTopSizer has {status_group, displacement_group}
     // hBottomSizer has {other_group, m_recommendation_group}
@@ -484,10 +483,9 @@ GuidingAsstWin::GuidingAsstWin()
         m_backlashCB->Enable(false);
     }
     // Text area for showing backlash measuring steps
-    m_backlashInfo = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_CENTER);
-    MakeBold(m_backlashInfo);
-    m_vSizer->Add(m_backlashInfo, wxSizerFlags(0).Border(wxALL, 8).Center());
-    m_backlashInfo->Show(false);
+    m_gaStatus = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_CENTER);
+    MakeBold(m_gaStatus);
+    m_vSizer->Add(m_gaStatus, wxSizerFlags(0).Border(wxALL, 8).Center());
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(10, 0);       // a little spacing left of Start button
@@ -648,12 +646,12 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
     BacklashTool::MeasurementResults qual;
     m_backlashTool->DecMeasurementStep(camLoc);
     wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
-    m_backlashInfo->SetLabel(bl_msg);
+    m_gaStatus->SetLabel(bl_msg);
     if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
     {
         m_backlashTool->DecMeasurementStep(camLoc);
         wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
-        m_backlashInfo->SetLabel(bl_msg);
+        m_gaStatus->SetLabel(bl_msg);
         if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
             qual = m_backlashTool->GetMeasurementQuality();
@@ -1068,6 +1066,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     m_stop->Enable(true);
     m_dlgState = STATE_MEASURING;
     FillInstructions(m_dlgState);
+    m_gaStatus->SetLabel(_("Measuring..."));
     m_recommend_group->Show(false);
     HighlightCell(m_displacementgrid, m_ra_rms_loc);
     HighlightCell(m_displacementgrid, m_dec_rms_loc);
@@ -1136,7 +1135,6 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
 
     m_measuringBacklash = false;
     m_backlashCB->Enable(true);
-    m_backlashInfo->Show(!completed);
     Layout();
     GetSizer()->Fit(this);
 
@@ -1163,6 +1161,7 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
     else
         longEnough = true;
 
+    m_gaStatus->SetLabel(wxEmptyString);
     if (longEnough && performBLT)
     {
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
@@ -1173,8 +1172,7 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
                 m_origSubFrames = pCamera->UseSubframes ? 1 : 0;
             pCamera->UseSubframes = false;
 
-            m_backlashInfo->SetLabelText(_("Measuring backlash... ") + m_backlashTool->GetLastStatus());
-            m_backlashInfo->Show(true);
+            m_gaStatus->SetLabelText(_("Measuring backlash... ") + m_backlashTool->GetLastStatus());
             Layout();
             GetSizer()->Fit(this);
             m_backlashCB->Enable(false);                        // Don't let user turn it off once we've started
@@ -1185,7 +1183,7 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         else
         {
             // User hit stop during bl test
-            m_backlashInfo->SetLabelText(wxEmptyString);
+            m_gaStatus->SetLabelText(wxEmptyString);
             MakeRecommendations();
             EndBacklashTest(false);
         }
