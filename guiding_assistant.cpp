@@ -802,7 +802,7 @@ void GuidingAsstWin::LogResults()
 {
     wxString str;
     Debug.Write("Guiding Assistant results follow:\n");
-    str = wxString::Format("SNR=%s, Samples=%s, Elapsed Time=%s, RA RMS=%s, Dec RMS=%s, Total RMS=%s\n",
+    str = wxString::Format("SNR=%s, Samples=%s, Elapsed Time=%s, RA HPF-RMS=%s, Dec HPF-RMS=%s, Total HPF-RMS=%s\n",
         m_statusgrid->GetCellValue(m_snr_loc), m_statusgrid->GetCellValue(m_samplecount_loc), m_statusgrid->GetCellValue(m_elapsedtime_loc),
         m_displacementgrid->GetCellValue(m_ra_rms_loc),
         m_displacementgrid->GetCellValue(m_dec_rms_loc), m_displacementgrid->GetCellValue(m_total_rms_loc));
@@ -844,7 +844,7 @@ void GuidingAsstWin::MakeRecommendations()
     m_decAxisStats->GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
 
     double multiplier_ra  = 1.0;   // 66% prediction interval
-    double multiplier_dec = 1.65;  // 90% prediction interval
+    double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
     double ideal_min_exposure;
     double ideal_max_exposure;
     double min_rec_range = 2.0;
@@ -868,7 +868,7 @@ void GuidingAsstWin::MakeRecommendations()
         wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
 
     LogResults();               // Dump the raw statistics
-    Debug.Write(wxString::Format("Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec RMS=%0.3fpx\n", decDriftPerMin, decCorrectedRMS));
+    Debug.Write(wxString::Format("Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec(raw) RMS=%0.3fpx\n", decDriftPerMin, decCorrectedRMS));
 
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
