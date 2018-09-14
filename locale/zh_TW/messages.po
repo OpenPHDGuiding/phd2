@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-09-05 00:24+0100\n"
-"PO-Revision-Date: 2018-09-03 11:08+0800\n"
+"PO-Revision-Date: 2018-09-14 10:55+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -110,29 +110,29 @@ msgstr "%d ms, %0.1f px"
 
 #: aui_controls.cpp:594
 msgid "Not calibrated"
-msgstr ""
+msgstr "未校準"
 
 #: aui_controls.cpp:601
 msgid "Calibrated"
-msgstr ""
+msgstr "已校準"
 
 #: aui_controls.cpp:607
 msgid "Calibrated, scope pointing information not available"
-msgstr ""
+msgstr "以校準, 無導星鏡指向相關資訊"
 
 #: aui_controls.cpp:613
 msgid "Calibrated, declination compensation disabled"
-msgstr ""
+msgstr "以校準, 取消赤緯補償"
 
 #: aui_controls.cpp:619
 msgid ""
 "Calibrated, but a new calibration is required to activate declination "
 "compensation"
-msgstr ""
+msgstr "以校準, 但執行一回校準以啟用赤緯補償"
 
 #: aui_controls.cpp:623
 msgid "Calibrated, scope pointing info in use"
-msgstr ""
+msgstr "已校準, 使用導星鏡指向資訊"
 
 #: aui_controls.cpp:681 config_indi.cpp:116 gear_dialog.cpp:282
 #: gear_dialog.cpp:284
@@ -150,7 +150,7 @@ msgstr "相場旋轉器"
 
 #: aui_controls.cpp:722
 msgid ", "
-msgstr ""
+msgstr ", "
 
 #: aui_controls.cpp:742
 msgid "BPM"
@@ -171,23 +171,23 @@ msgstr "沒有連接任何裝置"
 #: aui_controls.cpp:810
 #, c-format
 msgid "Devices not connected: %s"
-msgstr ""
+msgstr "裝置尚未連接: %s"
 
 #: aui_controls.cpp:816
 msgid "Dark library in use"
-msgstr ""
+msgstr "已使用暗場影像庫"
 
 #: aui_controls.cpp:816
 msgid "Dark library not in use"
-msgstr ""
+msgstr "未使用暗場影像庫"
 
 #: aui_controls.cpp:818
 msgid "Bad-pixel map in use"
-msgstr ""
+msgstr "已使用壞點影像庫"
 
 #: aui_controls.cpp:818
 msgid "Bad-pixel map not in use"
-msgstr ""
+msgstr "未使用壞點影像庫"
 
 #: aui_controls.cpp:827
 msgid "Cal"
@@ -497,8 +497,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:647
 msgid "Explanation"
@@ -868,10 +868,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 cam_simulator.cpp:614 cam_simulator.cpp:1178
-#: cam_simulator.cpp:1253 cam_simulator.cpp:1427 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: cam_simulator.cpp:614 cam_simulator.cpp:1178 cam_simulator.cpp:1253
+#: cam_simulator.cpp:1427 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1586,19 +1585,19 @@ msgstr "%d x %d 已啟用"
 
 #: cam_zwo.cpp:87
 msgid "ZWO Camera Properties"
-msgstr ""
+msgstr "ZWO 相機特性參數"
 
 #: cam_zwo.cpp:92
 msgid "Camera Mode"
-msgstr ""
+msgstr "相機型號"
 
 #: cam_zwo.cpp:94
 msgid "8-bit"
-msgstr ""
+msgstr "8 位元"
 
 #: cam_zwo.cpp:95
 msgid "16-bit"
-msgstr ""
+msgstr "16 位元"
 
 #: cam_zwo.cpp:162
 #, c-format
@@ -1621,12 +1620,12 @@ msgstr "偵測不到 ZWO 相機."
 #: cam_zwo.cpp:288
 #, c-format
 msgid "ZWO camera #%d not found"
-msgstr ""
+msgstr "找不到 ZWO 相機 #%d"
 
 #: cam_zwo.cpp:328
 #, c-format
 msgid "Camera %s not found"
-msgstr ""
+msgstr "找不到相機 %s"
 
 #: cam_zwo.cpp:351 cam_zwo.cpp:409
 msgid "Failed to get camera properties for ZWO ASI Camera."
@@ -1955,8 +1954,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:557
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3240,8 +3238,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3365,8 +3363,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3389,8 +3387,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3512,25 +3510,25 @@ msgstr "ZFilter 導星演算法"
 
 #: guide_algorithm_zfilter.cpp:281
 msgid "Exposure Factor"
-msgstr ""
+msgstr "曝光參數"
 
 #: guide_algorithm_zfilter.cpp:282
 #, c-format
 msgid ""
 "Multiplied by exposure time gives the equivalent exposure time after "
 "filtering. Default = %.1f"
-msgstr ""
+msgstr "乘以曝光時間得出加上濾鏡後的等效曝光時間. 默認值 = %.1f"
 
 #: guide_algorithm_zfilter.cpp:342
 #, c-format
 msgid ""
 "Multiplied by exposure time gives the equivalent expsoure time after "
 "filtering. Default = %.1f"
-msgstr ""
+msgstr "乘以曝光時間得出加上濾鏡後的等效曝光時間. 默認值 = %.1f"
 
 #: guide_algorithm_zfilter.cpp:345
 msgid "XFac"
-msgstr ""
+msgstr "XFac"
 
 #: guider.cpp:529
 msgid "E"
@@ -4569,15 +4567,15 @@ msgstr "輸入校準資料..."
 
 #: myframe.cpp:500
 msgid "Manually enter the calibration data"
-msgstr ""
+msgstr "手動輸入校準資料"
 
 #: myframe.cpp:501
 msgid "Flip Calibration Now"
-msgstr ""
+msgstr "翻轉校準資料"
 
 #: myframe.cpp:501
 msgid "Flip the calibration data now"
-msgstr ""
+msgstr "翻轉校準資料"
 
 #: myframe.cpp:502
 msgid "Clear Calibration Data..."
@@ -5712,98 +5710,98 @@ msgstr "自定通訊埠位址:"
 
 #: phd.cpp:266
 msgid "Win32s on Windows 3.1"
-msgstr ""
+msgstr "Win32s on Windows 3.1"
 
 #: phd.cpp:276
 msgid "Windows 95 OSR2"
-msgstr ""
+msgstr "Windows 95 OSR2"
 
 #: phd.cpp:280
 msgid "Windows 95"
-msgstr ""
+msgstr "Windows 95"
 
 #: phd.cpp:287
 msgid "Windows 98 SE"
-msgstr ""
+msgstr "Windows 98 SE"
 
 #: phd.cpp:291
 msgid "Windows 98"
-msgstr ""
+msgstr "Windows 98"
 
 #: phd.cpp:295
 msgid "Windows ME"
-msgstr ""
+msgstr "Windows ME"
 
 #: phd.cpp:298
 #, c-format
 msgid "Windows 9x (%d.%d)"
-msgstr ""
+msgstr "Windows 9x (%d.%d)"
 
 #: phd.cpp:316
 msgid "Windows 2000"
-msgstr ""
+msgstr "Windows 2000"
 
 #: phd.cpp:325
 msgid "Windows Server 2003"
-msgstr ""
+msgstr "Windows Server 2003"
 
 #: phd.cpp:331
 msgid "Windows XP"
-msgstr ""
+msgstr "Windows XP"
 
 #: phd.cpp:341
 msgid "Windows Server 2008"
-msgstr ""
+msgstr "Windows Server 2008"
 
 #: phd.cpp:342
 msgid "Windows Vista"
-msgstr ""
+msgstr "Windows Vista"
 
 #: phd.cpp:347
 msgid "Windows Server 2008 R2"
-msgstr ""
+msgstr "Windows Server 2008 R2"
 
 #: phd.cpp:348
 msgid "Windows 7"
-msgstr ""
+msgstr "Windows 7"
 
 #: phd.cpp:353
 msgid "Windows Server 2012"
-msgstr ""
+msgstr "Windows Server 2012"
 
 #: phd.cpp:354
 msgid "Windows 8"
-msgstr ""
+msgstr "Windows 8"
 
 #: phd.cpp:359
 msgid "Windows Server 2012 R2"
-msgstr ""
+msgstr "Windows Server 2012 R2"
 
 #: phd.cpp:360
 msgid "Windows 8.1"
-msgstr ""
+msgstr "Windows 8.1"
 
 #: phd.cpp:367
 msgid "Windows Server 2016"
-msgstr ""
+msgstr "Windows Server 2016"
 
 #: phd.cpp:368
 msgid "Windows 10"
-msgstr ""
+msgstr "Windows 10"
 
 #: phd.cpp:374
 #, c-format
 msgid "Windows NT %lu.%lu"
-msgstr ""
+msgstr "Windows NT %lu.%lu"
 
 #: phd.cpp:380
 #, c-format
 msgid "build %lu"
-msgstr ""
+msgstr "build %lu"
 
 #: phd.cpp:388
 msgid ", 64-bit edition"
-msgstr ""
+msgstr ", 64 位元版"
 
 #: phd.cpp:495
 #, c-format
@@ -6112,7 +6110,7 @@ msgstr ""
 
 #: profile_wizard.cpp:262 profile_wizard.cpp:505
 msgid "Simulator"
-msgstr ""
+msgstr "模擬器"
 
 #: profile_wizard.cpp:264
 msgid ""
@@ -6121,6 +6119,8 @@ msgid ""
 "and declination. You can enable these features by choosing an 'Aux Mount' "
 "connection that does provide pointing information."
 msgstr ""
+"相機/赤道儀“模擬器”界面不提供指向信息, 因此 PHD2 無法自動依赤道儀方向和赤緯進"
+"行導星, 您可以經由選擇能提供指向信息的“Aux Mount”來啟用這些功能"
 
 #: profile_wizard.cpp:270
 msgid ""
@@ -6163,7 +6163,7 @@ msgstr ""
 
 #: profile_wizard.cpp:325
 msgid "Questionable Configuration Choice"
-msgstr ""
+msgstr "選擇了有問題的設定值"
 
 #: profile_wizard.cpp:331
 msgid ""
@@ -6175,18 +6175,24 @@ msgid ""
 "your mount.\n"
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
+"此設置不會向 PHD2 提供有關望遠鏡指向位置的任何信息, 因此您必需要重新校準\\ "
+"n\n"
+"每當望遠鏡轉動時, 某些 PHD2 功能將被禁用, 除非你的赤道儀沒有相關可用的驅動程"
+"式, \n"
+"否則, 您應該在 “赤道儀” 或 “輔助赤道儀” 中選擇 ASCOM 或I NDI 赤道儀\\ n\n"
+"詳細信息，請查看“設備連接”的幫助指南"
 
 #: profile_wizard.cpp:337
 msgid "Go Back"
-msgstr ""
+msgstr "返回"
 
 #: profile_wizard.cpp:339
 msgid "Proceed"
-msgstr ""
+msgstr "已處理"
 
 #: profile_wizard.cpp:341
 msgid "Don't Ask"
-msgstr ""
+msgstr "不再詢問"
 
 #: profile_wizard.cpp:403
 msgid ""
@@ -6226,7 +6232,7 @@ msgstr "選擇您的導星相機並指定你的導星設備光學屬性"
 
 #: profile_wizard.cpp:508
 msgid "On-camera"
-msgstr ""
+msgstr "On-camera"
 
 #: profile_wizard.cpp:514
 msgid "Choose a Mount Connection"
