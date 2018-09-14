@@ -80,6 +80,7 @@ double GuideAlgorithmLowpass2::result(double input)
     unsigned int numpts = m_axisStats->GetCount();
     double dReturn;
     double attenuation = m_aggressiveness / 100.;
+    double newSlope = 0;
 
     if (numpts < 4)
         dReturn = input * attenuation;                    // Don't fall behind while we're figuring things out
@@ -94,10 +95,12 @@ double GuideAlgorithmLowpass2::result(double input)
         }
         else
         {
-            double newSlope;
             double intcpt;
             m_axisStats->GetLinearFitResults(&newSlope, &intcpt);
             dReturn = newSlope * (double)numpts * attenuation;
+            // Don't return a result that will push the star further in the wrong direction
+            if (input * dReturn < 0)
+                dReturn = 0;
         }
     }
 
@@ -118,7 +121,7 @@ double GuideAlgorithmLowpass2::result(double input)
     if (fabs(input) < m_minMove)
         dReturn = 0.0;
 
-    Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() returns %.2f from input %.2f\n", dReturn, input));
+    Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() returns %.2f from input %.2f, slope = %.2f\n", dReturn, input, newSlope));
     return dReturn;
 }
 
