@@ -119,7 +119,16 @@ but you should probably consider creating a separate profile for the
 new configuration. &nbsp;By doing so,&nbsp; PHD2 will remember settings
 for each of your profiles, letting you switch between them easily.
 &nbsp;If you haven't made a configuration change, you will probably
-want to determine why the results are so different.</li></ul>With
+want to determine why the results are so different.</li><li>Too
+little east or south movement - The calibration process uses only the
+west and north moves to compute the camera angle and rates of movement.
+&nbsp;The east and south moves are done primarily to restore the guide
+star somewhere close to its starting position. &nbsp;If little or no
+east or south movement is seen, you may see an alert message advising
+you of the situation. &nbsp;The calibration hasn't failed, but guiding
+is likely to be impaired. &nbsp;The most common causes are a defective
+guide cable if using ST-4 guiding or very large Declination backlash if
+the alert is related to south moves.</li></ul>With
 any
 of these alerts, the relevant data field will be highlighted based on
 the
