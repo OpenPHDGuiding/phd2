@@ -312,7 +312,7 @@ static int FindCamera(const wxString& camId, wxString *err)
     for (int i = 0; i < numCameras; i++)
     {
         ASI_CAMERA_INFO info;
-        if (ASIGetCameraProperty(&info, idx) == ASI_SUCCESS)
+        if (ASIGetCameraProperty(&info, i) == ASI_SUCCESS)
         {
             wxString name(info.Name);
             Debug.Write(wxString::Format("ZWO: cam [%d] %s\n", info.CameraID, name));
