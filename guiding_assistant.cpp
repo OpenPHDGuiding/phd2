@@ -858,7 +858,6 @@ void GuidingAsstWin::MakeRecommendations()
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
-    //m_ra_val_rec = rounded_rarms;
     m_dec_minmove_rec = rounded_decrms;
     m_ra_minmove_rec = m_dec_minmove_rec * multiplier_ra / multiplier_dec;
     // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
@@ -1252,8 +1251,6 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
         prevRAlpf = newRAlpf;
     m_lpfRAStats->AddValue(newRAlpf);
     m_hpfDecStats->AddValue(m_decHPF->AddValue(dec));
-    Debug.Write(wxString::Format("TEST_FILTERS:, RA_Low,%0.2f, RA_High,%0.2f, RA_Total,%0.2f\n",
-        newRAlpf, m_raHPF->GetCurrentHPF(), ra));
 
     if (m_decAxisStats->GetCount() == 0)
         m_axisTimebase = wxGetCurrentTime();
