@@ -144,7 +144,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     }
 
     wxString camId(camIdArg);
-    if (camId == DEFAULT_CAMERA_ID || numCameras == 1)
+    if (camId == DEFAULT_CAMERA_ID)
         camId = ai[0].id;
 
 	bool found = false;
@@ -189,7 +189,7 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
         return CamConnectFailed(_("Failed to get camera resolution for Altair Camera."));
     }
 
-	delete[] m_buffer; 
+	delete[] m_buffer;
 	m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
 
 
@@ -371,7 +371,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
     unsigned int width, height;
     while (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
     {
-        
+
     }
 
 
@@ -407,7 +407,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         if (m_frameReady)
         {
             m_frameReady = false;
-            
+
             if (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
                 break;
         }
