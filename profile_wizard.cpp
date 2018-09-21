@@ -44,6 +44,7 @@ EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+EVT_CHOICE(ID_BINNING, ProfileWizard::OnBinningChange)
 EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
 EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
 wxEND_EVENT_TABLE()
@@ -129,7 +130,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Pixel-size
-    m_pUserProperties = new wxFlexGridSizer(3, 2, 5, 15);
+    m_pUserProperties = new wxFlexGridSizer(4, 2, 5, 15);
     m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
                                           wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
@@ -139,10 +140,13 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), m_pPixelSize);
 
     // Binning
-    m_pBinningLevel = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxSP_ARROW_KEYS,
-        1, 4, 1);
-    m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  With long focal length guide scopes and OAGs, "
-        " binning can allow use of fainter guide stars.  For more common set-ups, it's better to leave binning at 1."));
+    wxArrayString opts;
+    GuideCamera::GetBinningOpts(4, &opts);
+    m_pBinningLevel = new wxChoice(this, ID_BINNING, wxDefaultPosition, wxDefaultSize, opts);
+    m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  "
+                                  "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
+                                  "stars.  For more common set-ups, it's better to leave binning at 1."));
+    m_pBinningLevel->SetSelection(0);
     AddTableEntryPair(this, m_pUserProperties, _("Binning level"), m_pBinningLevel);
 
     // Focal length
@@ -154,6 +158,13 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
+
+    // pixel scale
+    m_pixelScale = new wxStaticText(this, wxID_ANY, wxString::Format(_("Pixel scale: %8.2f\"/px"), 99.99));
+    m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
+    m_pUserProperties->Add(m_pixelScale, 1, wxALL, 5);
+
+    UpdatePixelScale();
 
     // controls for the mount pane
     wxBoxSizer *mtSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -648,7 +659,7 @@ void ProfileWizard::WrapUp()
 {
     m_launchDarks = m_pLaunchDarks->GetValue();
 
-    int binning = m_pBinningLevel->GetValue();
+    int binning = m_pBinningLevel->GetSelection() + 1;
     if (m_useCamera)
         SetBinningLevel(this, m_SelectedCamera, binning);
 
@@ -846,17 +857,21 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pPixelSize->Enable(pxSz == 0);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
-        m_pBinningLevel->SetValue(1);
         // Binning
+        wxArrayString opts;
         if (cam)
-            m_pBinningLevel->SetRange(1, cam->MaxBinning);
+            cam->GetBinningOpts(&opts);
         else
-            m_pBinningLevel->SetRange(1, 4);         // We don't know, make it generous
+            GuideCamera::GetBinningOpts(4, &opts);
+        m_pBinningLevel->Set(opts);
+        m_pBinningLevel->SetSelection(0);
     }
     else
     {
-        m_pBinningLevel->SetRange(1, 4);
-        m_pBinningLevel->SetValue(1);
+        wxArrayString opts;
+        GuideCamera::GetBinningOpts(4, &opts);
+        m_pBinningLevel->Set(opts);
+        m_pBinningLevel->SetSelection(0);
         m_pPixelSize->SetValue(0.);
         m_pPixelSize->Enable(true);
         wxSpinDoubleEvent dummy;
@@ -910,18 +925,33 @@ void ProfileWizard::InitMountProps(Scope* theScope)
 void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
 {
     m_PixelSize = m_pPixelSize->GetValue();
+    UpdatePixelScale();
 }
 
 void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
 {
     m_FocalLength = (int) m_pFocalLength->GetValue();
     m_pFocalLength->SetValue(m_FocalLength);                        // Rounding
+    UpdatePixelScale();
+}
+
+void ProfileWizard::OnBinningChange(wxCommandEvent& evt)
+{
+    UpdatePixelScale();
+}
+
+void ProfileWizard::UpdatePixelScale()
+{
+    int binning = m_pBinningLevel->GetSelection() + 1;
+    double scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+    m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
 }
 
 void ProfileWizard::OnGuideSpeedChange(wxSpinDoubleEvent& evt)
 {
     m_GuideSpeed = m_pGuideSpeed->GetValue();
 }
+
 void ProfileWizard::OnNext(wxCommandEvent& evt)
 {
     UpdateState(1);

@@ -55,6 +55,7 @@ public:
         ID_PIXELSIZE,
         ID_DETECT_GUIDESPEED,
         ID_FOCALLENGTH,
+        ID_BINNING,
         ID_GUIDESPEED,
         ID_PREV,
         ID_HELP,
@@ -71,7 +72,8 @@ private:
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
-    wxSpinCtrl *m_pBinningLevel;
+    wxStaticText *m_pixelScale;
+    wxChoice *m_pBinningLevel;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxButton *m_pPrevBtn;
@@ -102,6 +104,8 @@ private:
     void OnGearChoice(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
+    void OnBinningChange(wxCommandEvent& evt);
+    void UpdatePixelScale();
     void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
     void OnContextHelp(wxCommandEvent& evt);
     void ShowStatus(const wxString& msg, bool appending = false);
