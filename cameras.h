@@ -52,31 +52,32 @@
 # define SSPIAG
 
 #elif defined (__WINDOWS__)  // Windows cameras
-# define QGUIDE
-# define ORION_DSCI
-# define WDM_CAMERA
-# define SAC42
+# define ALTAIR
+# define ASCOM_CAMERA
 # define ATIK16
-# define SSAG
-# define SSPIAG
-# define MEADE_DSI
-# define STARFISH
-# define SIMULATOR
-# define SXV
 # define ATIK_GEN3
 # define INDI_CAMERA
 # define INOVA_PLC
-# define ASCOM_CAMERA
-# define SBIG
-# define SBIGROTATOR_CAMERA // must follow SBIG
-# define QHY_CAMERA
-# define OPENCV_CAMERA
 # define LE_CAMERA
-# define LE_SERIAL_CAMERA
-# define LE_PARALLEL_CAMERA
 # define LE_LXUSB_CAMERA
+# define LE_PARALLEL_CAMERA
+# define LE_SERIAL_CAMERA
+# define MEADE_DSI
+# define OPENCV_CAMERA
+# define ORION_DSCI
+# define QGUIDE
+# define QHY_CAMERA
+# define SAC42
+# define SBIG
+# define SBIGROTATOR_CAMERA
+# define SIMULATOR
+# define SSAG
+# define SSPIAG
+# define STARFISH
+# define SXV
+# define TOUPTEK_CAMERA
+# define WDM_CAMERA
 # define ZWO_ASI
-# define ALTAIR
 
 #ifdef CLOSED_SOURCE
 # define OS_PL130  // Opticstar's library is closed

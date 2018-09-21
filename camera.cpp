@@ -50,27 +50,27 @@ static const bool DefaultLoadDMap = false;
 wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
 #if defined (ATIK16)
- #include "cam_atik16.h"
+# include "cam_atik16.h"
 #endif
 
 #if defined (LE_SERIAL_CAMERA)
- #include "cam_LESerialWebcam.h"
+# include "cam_LESerialWebcam.h"
 #endif
 
 #if defined (LE_PARALLEL_CAMERA)
- #include "cam_LEParallelwebcam.h"
+# include "cam_LEParallelwebcam.h"
 #endif
 
 #if defined (LE_LXUSB_CAMERA)
- #include "cam_LELXUSBwebcam.h"
+# include "cam_LELXUSBwebcam.h"
 #endif
 
 #if defined (SAC42)
- #include "cam_SAC42.h"
+# include "cam_SAC42.h"
 #endif
 
 #if defined (QGUIDE)
- #include "cam_qguide.h"
+# include "cam_qguide.h"
 #endif
 
 #if defined (CAM_QHY5)
@@ -78,55 +78,59 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #endif
 
 #if defined (QHY_CAMERA)
- #include "cam_qhy.h"
+# include "cam_qhy.h"
 #endif
 
 #if defined (ZWO_ASI)
- #include "cam_zwo.h"
+# include "cam_zwo.h"
+#endif
+
+#if defined (TOUPTEK_CAMERA)
+# include "cam_touptek.h"
 #endif
 
 #if defined (ALTAIR)
-#include "cam_altair.h"
+# include "cam_altair.h"
 #endif
 
 #if defined (ORION_DSCI)
- #include "cam_StarShootDSCI.h"
+# include "cam_StarShootDSCI.h"
 #endif
 
 #if defined (OS_PL130)
-#include "cam_OSPL130.h"
+# include "cam_OSPL130.h"
 #endif
 
 #if defined (VFW_CAMERA)
- #include "cam_vfw.h"
+# include "cam_vfw.h"
 #endif
 
 #if defined (OPENCV_CAMERA)
-#include "cam_opencv.h"
+# include "cam_opencv.h"
 #endif
 
 #if defined (WDM_CAMERA)
- #include "cam_wdm.h"
+# include "cam_wdm.h"
 #endif
 
 #if defined (STARFISH)
- #include "cam_starfish.h"
+# include "cam_starfish.h"
 #endif
 
 #if defined (SXV)
-#include "cam_sxv.h"
+# include "cam_sxv.h"
 #endif
 
 #if defined (SBIG)
- #include "cam_sbig.h"
+# include "cam_sbig.h"
 #endif
 
 #if defined (NEB_SBIG)
-#include "cam_NebSBIG.h"
+# include "cam_NebSBIG.h"
 #endif
 
 #if defined (FIREWIRE)
-#include "cam_firewire.h"
+# include "cam_firewire.h"
 #endif
 
 //#if defined (SIMULATOR)
@@ -134,43 +138,43 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 //#endif
 
 #if defined (MEADE_DSI)
-#include "cam_MeadeDSI.h"
+# include "cam_MeadeDSI.h"
 #endif
 
 #if defined (SSAG)
-#include "cam_ssag.h"
+# include "cam_ssag.h"
 #endif
 
 #if defined (OPENSSAG)
-#include "cam_openssag.h"
+# include "cam_openssag.h"
 #endif
 
 #if defined (KWIQGUIDER)
-#include "cam_KWIQGuider.h"
+# include "cam_KWIQGuider.h"
 #endif
 
 #if defined (SSPIAG)
-#include "cam_sspiag.h"
+# include "cam_sspiag.h"
 #endif
 
 #if defined (INOVA_PLC)
-#include "cam_INovaPLC.h"
+# include "cam_INovaPLC.h"
 #endif
 
 #if defined (ASCOM_CAMERA)
- #include "cam_ascom.h"
+# include "cam_ascom.h"
 #endif
 
 #if defined (INDI_CAMERA)
-#include "cam_indi.h"
+# include "cam_indi.h"
 #endif
 
 #if defined(SBIGROTATOR_CAMERA)
-#include "cam_sbigrotator.h"
+# include "cam_sbigrotator.h"
 #endif
 
 #if defined (V4L_CAMERA)
-#include "cam_VIDEODEVICE.h"
+# include "cam_VIDEODEVICE.h"
 extern "C" {
 #include <libudev.h>
 }
@@ -289,6 +293,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #endif
 #if defined (ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
+#endif
+#if defined (TOUPTEK_CAMERA)
+    CameraList.Add(_T("ToupTek Camera"));
 #endif
 #if defined (SAC42)
     CameraList.Add(_T("SAC4-2"));
@@ -428,6 +435,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined(ZWO_ASI)
         else if (choice.Contains(_T("ZWO ASI Camera")))
             pReturn = new Camera_ZWO();
+#endif
+#if defined(TOUPTEK_CAMERA)
+        else if (choice.Contains(_T("ToupTek Camera")))
+            pReturn = new CameraToupTek();
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
         else if (choice.Contains(_T("QHY 5")))
@@ -616,9 +627,9 @@ bool GuideCamera::SetCameraGain(int cameraGain)
 
     try
     {
-        if (cameraGain <= 0)
+        if (cameraGain < 0)
         {
-            throw ERROR_INFO("cameraGain <= 0");
+            throw ERROR_INFO("cameraGain < 0");
         }
         else if (cameraGain > 100)
         {
@@ -861,7 +872,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     // Gain control
     if (m_pCamera->HasGainControl)
     {
-        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), textWidth, 100, 1, 100, 1);
+        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), textWidth, 100, 0, 100, 1);
         AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain,
             /* xgettext:no-c-format */ _("Camera gain, default = 95%, lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
     }

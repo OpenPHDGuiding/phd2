@@ -206,6 +206,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_StarShootDSCI.h
   ${phd_src_dir}/cam_sxv.cpp
   ${phd_src_dir}/cam_sxv.h
+  ${phd_src_dir}/cam_touptek.cpp
+  ${phd_src_dir}/cam_touptek.h
   ${phd_src_dir}/cam_vfw.cpp
   ${phd_src_dir}/cam_vfw.h
   ${phd_src_dir}/cam_wdm.cpp
