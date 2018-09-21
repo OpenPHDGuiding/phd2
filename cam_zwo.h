@@ -76,7 +76,7 @@ public:
     bool GetSensorTemperature(double *temperature) override;
 
 private:
-    bool StopCapture(void);
+    bool StopCapture();
 };
 
 #endif
