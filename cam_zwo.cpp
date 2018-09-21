@@ -467,7 +467,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_ZWO::StopCapture(void)
+bool Camera_ZWO::StopCapture()
 {
     if (m_capturing)
     {
