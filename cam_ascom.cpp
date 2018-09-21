@@ -60,7 +60,7 @@ static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
 
 inline static void LogExcep(HRESULT hr, const wxString& prefix, const EXCEPINFO& excep)
 {
-    Debug.AddLine(wxString::Format("%s: [%x] %s", prefix, hr, _com_error(hr).ErrorMessage()));
+    Debug.Write(wxString::Format("%s: [%x] %s\n", prefix, hr, _com_error(hr).ErrorMessage()));
     if (hr == DISP_E_EXCEPTION)
         Debug.AddLine(ExcepMsg(prefix, excep));
 }
@@ -500,7 +500,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (driver.GetProp(&vname, L"Name"))
     {
         Name = vname.bstrVal;
-        Debug.AddLine(wxString::Format("setting camera Name = %s", Name));
+        Debug.Write(wxString::Format("setting camera Name = %s\n", Name));
     }
 
     // See if we have an onboard guider output
@@ -699,7 +699,7 @@ bool CameraASCOM::Disconnect()
 {
     if (!Connected)
     {
-        Debug.AddLine("ASCOM camera: attempt to disconnect when not connected");
+        Debug.Write("ASCOM camera: attempt to disconnect when not connected\n");
         return false;
     }
 
@@ -1026,7 +1026,7 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
                 return true;
             if (watchdog.Expired())
             {
-                Debug.AddLine("Mount watchdog timed-out waiting for ASCOM_IsMoving to clear");
+                Debug.Write("Mount watchdog timed-out waiting for ASCOM_IsMoving to clear\n");
                 return true;
             }
         }
