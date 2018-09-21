@@ -177,7 +177,7 @@ public:
         return reject;
     }
 
-    void Reset(void)
+    void Reset()
     {
         m_data.clear();
         m_highMass = 0.;
@@ -211,7 +211,7 @@ GuiderOneStar::~GuiderOneStar()
     delete m_massChecker;
 }
 
-void GuiderOneStar::LoadProfileSettings(void)
+void GuiderOneStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
 
@@ -374,7 +374,7 @@ static wxString StarStatus(const Star& star)
     return status;
 }
 
-bool GuiderOneStar::AutoSelect(void)
+bool GuiderOneStar::AutoSelect()
 {
     bool error = false;
 
@@ -453,12 +453,12 @@ bool GuiderOneStar::AutoSelect(void)
     return error;
 }
 
-bool GuiderOneStar::IsLocked(void)
+bool GuiderOneStar::IsLocked()
 {
     return m_star.WasFound();
 }
 
-const PHD_Point& GuiderOneStar::CurrentPosition(void)
+const PHD_Point& GuiderOneStar::CurrentPosition()
 {
     return m_star;
 }
@@ -471,7 +471,7 @@ inline static wxRect SubframeRect(const PHD_Point& pos, int halfwidth)
                   2 * halfwidth + 1);
 }
 
-wxRect GuiderOneStar::GetBoundingBox(void)
+wxRect GuiderOneStar::GetBoundingBox()
 {
     enum { SUBFRAME_BOUNDARY_PX = 0 };
 
@@ -519,32 +519,32 @@ wxRect GuiderOneStar::GetBoundingBox(void)
     }
 }
 
-int GuiderOneStar::GetMaxMovePixels(void)
+int GuiderOneStar::GetMaxMovePixels()
 {
     return m_searchRegion;
 }
 
-double GuiderOneStar::StarMass(void)
+double GuiderOneStar::StarMass()
 {
     return m_star.Mass;
 }
 
-unsigned int GuiderOneStar::StarPeakADU(void)
+unsigned int GuiderOneStar::StarPeakADU()
 {
     return m_star.IsValid() ? m_star.PeakVal : 0;
 }
 
-double GuiderOneStar::SNR(void)
+double GuiderOneStar::SNR()
 {
     return m_star.SNR;
 }
 
-double GuiderOneStar::HFD(void)
+double GuiderOneStar::HFD()
 {
     return m_star.HFD;
 }
 
-int GuiderOneStar::StarError(void)
+int GuiderOneStar::StarError()
 {
     return m_star.GetError();
 }

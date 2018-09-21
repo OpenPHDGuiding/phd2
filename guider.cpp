@@ -176,7 +176,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     s_deflectionLogger.Init();
 }
 
-Guider::~Guider(void)
+Guider::~Guider()
 {
     delete m_displayedImage;
     delete m_pCurrentImage;
@@ -184,7 +184,7 @@ Guider::~Guider(void)
     s_deflectionLogger.Uninit();
 }
 
-void Guider::LoadProfileSettings(void)
+void Guider::LoadProfileSettings()
 {
     bool enableFastRecenter = pConfig->Profile.GetBoolean("/guider/FastRecenter", true);
     EnableFastRecenter(enableFastRecenter);
@@ -196,6 +196,14 @@ void Guider::LoadProfileSettings(void)
     SetMinStarHFD(minHFD);
 
     LoadBookmarks(&m_bookmarks);
+
+    // clear the display
+    if (m_pCurrentImage->ImageData)
+    {
+        delete m_displayedImage;
+        m_displayedImage = new wxImage(XWinSize, YWinSize, true);
+        DisplayImage(new usImage());
+    }
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -220,7 +228,7 @@ PauseType Guider::SetPaused(PauseType pause)
     return prev;
 }
 
-void Guider::ForceFullFrame(void)
+void Guider::ForceFullFrame()
 {
     if (!m_forceFullFrame)
     {
@@ -708,7 +716,7 @@ bool Guider::SaveCurrentImage(const wxString& fileName)
     return m_pCurrentImage->Save(fileName);
 }
 
-void Guider::InvalidateLockPosition(void)
+void Guider::InvalidateLockPosition()
 {
     if (m_lockPosition.IsValid())
         EvtServer.NotifyLockPositionLost();
@@ -1051,7 +1059,7 @@ double Guider::CurrentError(bool raOnly)
     return raOnly ? m_avgDistanceRA : m_avgDistance;
 }
 
-void Guider::StartGuiding(void)
+void Guider::StartGuiding()
 {
     // we set the state to calibrating.  The state machine will
     // automatically move from calibrating->calibrated->guiding
@@ -1059,7 +1067,7 @@ void Guider::StartGuiding(void)
     SetState(STATE_CALIBRATING_PRIMARY);
 }
 
-void Guider::StopGuiding(void)
+void Guider::StopGuiding()
 {
     // first, send a notification that we stopped
     switch (m_state)
@@ -1137,7 +1145,7 @@ void Guider::DisplayImage(usImage *img)
 {
     if (IsCalibratingOrGuiding())
         return;
- 
+
     // switch in the new image
     usImage *prev = m_pCurrentImage;
     m_pCurrentImage = img;
@@ -1451,7 +1459,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     Debug.AddLine("UpdateGuideState exits: " + statusMessage);
 }
 
-bool Guider::ShiftLockPosition(void)
+bool Guider::ShiftLockPosition()
 {
     m_lockPosition.UpdateShift();
     bool isValid = IsValidLockPosition(m_lockPosition);
@@ -1500,7 +1508,7 @@ void Guider::EnableLockPosShift(bool enable)
     }
 }
 
-void Guider::UpdateLockPosShiftCameraCoords(void)
+void Guider::UpdateLockPosShiftCameraCoords()
 {
     if (!m_lockPosShift.shiftRate.IsValid())
     {
@@ -1661,7 +1669,7 @@ void GuiderConfigDialogCtrlSet::UnloadValues()
     m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
 }
 
-EXPOSED_STATE Guider::GetExposedState(void)
+EXPOSED_STATE Guider::GetExposedState()
 {
     EXPOSED_STATE rval;
     Guider *guider = pFrame->pGuider;

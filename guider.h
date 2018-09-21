@@ -124,8 +124,8 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
 public:
     GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderConfigDialogCtrlSet() {};
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
 
 };
 
@@ -182,15 +182,15 @@ public:
 
     public:
         GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
-        ~GuiderConfigDialogPane(void) {};
+        ~GuiderConfigDialogPane() {};
 
-        void LoadValues(void) {};
-        void UnloadValues(void) {};
+        void LoadValues() {};
+        void UnloadValues() {};
         virtual void LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap);
     };
 
 
-    OVERLAY_MODE GetOverlayMode(void) const;
+    OVERLAY_MODE GetOverlayMode() const;
 
 public:
     virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;
@@ -198,7 +198,7 @@ public:
 
 protected:
     Guider(wxWindow *parent, int xSize, int ySize);
-    virtual ~Guider(void);
+    virtual ~Guider();
 
     bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
     void SetState(GUIDER_STATE newState);
@@ -207,14 +207,14 @@ protected:
     void ToggleBookmark(const wxRealPoint& pt);
 
 public:
-    bool IsPaused(void) const;
-    PauseType GetPauseType(void) const;
+    bool IsPaused() const;
+    PauseType GetPauseType() const;
     PauseType SetPaused(PauseType pause);
-    GUIDER_STATE GetState(void) const;
-    static EXPOSED_STATE GetExposedState(void);
-    bool IsCalibratingOrGuiding(void) const;
-    bool IsCalibrating(void) const;
-    bool IsGuiding(void) const;
+    GUIDER_STATE GetState() const;
+    static EXPOSED_STATE GetExposedState();
+    bool IsCalibratingOrGuiding() const;
+    bool IsCalibrating() const;
+    bool IsGuiding() const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage = nullptr);
@@ -222,16 +222,16 @@ public:
     bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
-    bool ShiftLockPosition(void);
+    bool ShiftLockPosition();
     void EnableLockPosShift(bool enable);
     void SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords, bool updateToolWin);
-    bool LockPosShiftEnabled(void) const { return m_lockPosShift.shiftEnabled; }
+    bool LockPosShiftEnabled() const { return m_lockPosShift.shiftEnabled; }
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
-    bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
+    bool LockPosIsSticky() const { return m_lockPosIsSticky; }
     void SetIgnoreLostStarLooping(bool ignore);
     const PHD_Point& LockPosition() const;
-    const LockPosShiftParams& GetLockPosShiftParams(void) const { return m_lockPosShift; }
-    void ForceFullFrame(void);
+    const LockPosShiftParams& GetLockPosShiftParams() const { return m_lockPosShift; }
+    void ForceFullFrame();
 
     bool SetOverlayMode(int newMode);
     void GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle);
@@ -239,39 +239,39 @@ public:
     void SetDefectMapPreview(const DefectMap *preview);
     void SetPolarAlignCircle(const PHD_Point& center, double radius);
     void SetPolarAlignCircleCorrection(double val);
-    double GetPolarAlignCircleCorrection(void) const;
+    double GetPolarAlignCircleCorrection() const;
     bool SaveCurrentImage(const wxString& fileName);
 
-    void StartGuiding(void);
-    void StopGuiding(void);
+    void StartGuiding();
+    void StopGuiding();
     void UpdateGuideState(usImage *pImage, bool bStopping=false);
     void DisplayImage(usImage *img);
 
     bool SetScaleImage(bool newScaleValue);
-    bool GetScaleImage(void) const;
+    bool GetScaleImage() const;
 
-    int GetSearchRegion(void) const;
+    int GetSearchRegion() const;
     double CurrentError(bool raOnly);
 
-    bool GetBookmarksShown(void) const;
+    bool GetBookmarksShown() const;
     void SetBookmarksShown(bool show);
-    void ToggleShowBookmarks(void);
-    void DeleteAllBookmarks(void);
+    void ToggleShowBookmarks();
+    void DeleteAllBookmarks();
     void BookmarkLockPosition();
     void BookmarkCurPosition();
 
     void Reset(bool fullReset);
     void EnableMeasurementMode(bool enabled);
     void SetMinStarHFD(double val);
-    double GetMinStarHFD(void) const;
+    double GetMinStarHFD() const;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
 private:
-    virtual void InvalidateLockPosition(void);
+    virtual void InvalidateLockPosition();
 public:
-    virtual void LoadProfileSettings(void);
+    virtual void LoadProfileSettings();
 
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
@@ -284,48 +284,48 @@ private:
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
 
-    virtual bool IsLocked(void) = 0;
-    virtual bool AutoSelect(void) = 0;
+    virtual bool IsLocked() = 0;
+    virtual bool AutoSelect() = 0;
 
-    virtual const PHD_Point& CurrentPosition(void) = 0;
-    virtual wxRect GetBoundingBox(void) = 0;
-    virtual int GetMaxMovePixels(void) = 0;
-    virtual double StarMass(void) = 0;
-    virtual unsigned int StarPeakADU(void) = 0;
-    virtual double SNR(void) = 0;
-    virtual double HFD(void) = 0;
-    virtual int StarError(void) = 0;
+    virtual const PHD_Point& CurrentPosition() = 0;
+    virtual wxRect GetBoundingBox() = 0;
+    virtual int GetMaxMovePixels() = 0;
+    virtual double StarMass() = 0;
+    virtual unsigned int StarPeakADU() = 0;
+    virtual double SNR() = 0;
+    virtual double HFD() = 0;
+    virtual int StarError() = 0;
 
-    usImage *CurrentImage(void) const;
-    wxImage *DisplayedImage(void) const;
-    double ScaleFactor(void) const;
+    usImage *CurrentImage() const;
+    wxImage *DisplayedImage() const;
+    double ScaleFactor() const;
 
     virtual wxString GetSettingsSummary() const;
 
-    bool IsFastRecenterEnabled(void) const;
+    bool IsFastRecenterEnabled() const;
     void EnableFastRecenter(bool enable);
 
 private:
-    void UpdateLockPosShiftCameraCoords(void);
+    void UpdateLockPosShiftCameraCoords();
     DECLARE_EVENT_TABLE()
 };
 
-inline bool Guider::IsPaused(void) const
+inline bool Guider::IsPaused() const
 {
     return m_paused != PAUSE_NONE;
 }
 
-inline PauseType Guider::GetPauseType(void) const
+inline PauseType Guider::GetPauseType() const
 {
     return m_paused;
 }
 
-inline OVERLAY_MODE Guider::GetOverlayMode(void) const
+inline OVERLAY_MODE Guider::GetOverlayMode() const
 {
     return m_overlayMode;
 }
 
-inline bool Guider::GetScaleImage(void) const
+inline bool Guider::GetScaleImage() const
 {
     return m_scaleImage;
 }
@@ -335,37 +335,37 @@ inline const PHD_Point& Guider::LockPosition() const
     return m_lockPosition;
 }
 
-inline GUIDER_STATE Guider::GetState(void) const
+inline GUIDER_STATE Guider::GetState() const
 {
     return m_state;
 }
 
-inline bool Guider::IsGuiding(void) const
+inline bool Guider::IsGuiding() const
 {
     return m_state == STATE_GUIDING;
 }
 
-inline bool Guider::IsCalibratingOrGuiding(void) const
+inline bool Guider::IsCalibratingOrGuiding() const
 {
     return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
 }
 
-inline bool Guider::IsCalibrating(void) const
+inline bool Guider::IsCalibrating() const
 {
     return m_state >= STATE_CALIBRATING_PRIMARY && m_state < STATE_CALIBRATED;
 }
 
-inline int Guider::GetSearchRegion(void) const
+inline int Guider::GetSearchRegion() const
 {
     return m_searchRegion;
 }
 
-inline bool Guider::IsFastRecenterEnabled(void) const
+inline bool Guider::IsFastRecenterEnabled() const
 {
     return m_fastRecenterEnabled;
 }
 
-inline double Guider::GetPolarAlignCircleCorrection(void) const
+inline double Guider::GetPolarAlignCircleCorrection() const
 {
     return m_polarAlignCircleCorrection;
 }
@@ -375,27 +375,27 @@ inline void Guider::SetPolarAlignCircleCorrection(double val)
     m_polarAlignCircleCorrection = val;
 }
 
-inline usImage *Guider::CurrentImage(void) const
+inline usImage *Guider::CurrentImage() const
 {
     return m_pCurrentImage;
 }
 
-inline wxImage *Guider::DisplayedImage(void) const
+inline wxImage *Guider::DisplayedImage() const
 {
     return m_displayedImage;
 }
 
-inline double Guider::ScaleFactor(void) const
+inline double Guider::ScaleFactor() const
 {
     return m_scaleFactor;
 }
 
-inline bool Guider::GetBookmarksShown(void) const
+inline bool Guider::GetBookmarksShown() const
 {
     return m_showBookmarks;
 }
 
-inline double Guider::GetMinStarHFD(void) const
+inline double Guider::GetMinStarHFD() const
 {
     return m_minStarHFD;
 }
