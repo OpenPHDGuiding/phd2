@@ -44,6 +44,7 @@ class StatsWindow : public wxWindow
     OptionsButton *m_pLengthButton;
     wxTimer m_coolerTimer;
     int m_frameSizeRow;
+    int m_pixelScaleRow;
     int m_coolerRow;
     wxSize m_lastFrameSize;
 

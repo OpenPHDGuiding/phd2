@@ -84,7 +84,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(11, 2);
+    m_grid2->CreateGrid(12, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -113,6 +113,9 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid2->SetCellValue(row, col++, _("Image size"));
     m_frameSizeRow = row;
     ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Pixel scale"));
+    m_pixelScaleRow = row;
+    ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Field of View"));
     // Make sure the column is big enough
     m_grid2->SetCellValue(row, col, _("nnn.n x nnn.n arc-min"));
@@ -122,8 +125,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_coolerRow = row;
 
     m_grid2->AutoSize();
-    m_grid2->SetCellValue(3, 1, _T(""));
-    m_grid2->SetCellValue(m_frameSizeRow + 1, 1, _T(""));
+    m_grid2->SetCellValue(3, 1, wxEmptyString);
+    m_grid2->SetCellValue(m_pixelScaleRow + 1, 1, wxEmptyString); // field of view row
     m_grid2->ClearSelection();
 
     wxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
@@ -276,7 +279,8 @@ void StatsWindow::UpdateImageSize(const wxSize& frameSize)
         wxString sensorStr = wxString::Format("%d x %d %s", frameSize.x, frameSize.y, _("px"));
         m_grid2->SetCellValue(m_frameSizeRow, 1, sensorStr);
         const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
-        m_grid2->SetCellValue(m_frameSizeRow + 1, 1, fov(frameSize, sampling));
+        m_grid2->SetCellValue(m_pixelScaleRow, 1, wxString::Format(_("%.1f\"/%s"), sampling, _("px")));
+        m_grid2->SetCellValue(m_pixelScaleRow + 1, 1, fov(frameSize, sampling));
         m_lastFrameSize = frameSize;
     }
 }
@@ -285,7 +289,8 @@ void StatsWindow::ResetImageSize()
 {
     m_lastFrameSize = wxDefaultSize;
     m_grid2->SetCellValue(m_frameSizeRow, 1, wxEmptyString);
-    m_grid2->SetCellValue(m_frameSizeRow + 1, 1, wxEmptyString);
+    m_grid2->SetCellValue(m_pixelScaleRow, 1, wxEmptyString);
+    m_grid2->SetCellValue(m_pixelScaleRow + 1, 1, wxEmptyString);
 }
 
 void StatsWindow::OnTimerCooler(wxTimerEvent&)
