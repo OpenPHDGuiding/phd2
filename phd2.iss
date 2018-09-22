@@ -25,6 +25,9 @@ Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion; AfterInstal
 Source: Release\locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
 Source: Release\PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
 Source: ..\README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
+Source: Release\altaircamsdk.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\astroDLLQHY5V.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\astroDLLsspiag.dll; DestDir: {app}; Flags: replacesameversion
@@ -37,7 +40,6 @@ Source: Release\opencv_core2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_highgui2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_imgproc2410.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
@@ -45,9 +47,8 @@ Source: Release\SSAGIFv4.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\altaircamsdk.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\toupcam.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\LIBCURL.DLL; DestDir: {app}; Flags: replacesameversion
 Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
