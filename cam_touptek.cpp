@@ -166,6 +166,30 @@ struct ToupCam
         return false;
     }
 
+    static unsigned int ToupcamBinning(unsigned int binning)
+    {
+        switch (binning)
+        {
+        default:
+        case 1:
+            return 1;
+        case 2:
+            return 0x82;
+        case 3:
+            return 0x83;
+        case 4:
+            return 0x84;
+        }
+    }
+
+    bool SetBinning(unsigned int binning)
+    {
+        if (!SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)))
+            return false;
+        m_curBin = binning;
+        return true;
+    }
+
     bool SetRoi(const wxRect& roi)
     {
         unsigned int x, y, w, h;
@@ -293,9 +317,18 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         return CamConnectFailed(_("Failed to get camera resolution for ToupTek camera."));
     }
 
+    if (!m_cam->SetBinning(Binning))
+    {
+        Binning = 1;
+        if (!m_cam->SetBinning(Binning))
+        {
+            Disconnect();
+            return CamConnectFailed(_("Failed to initialize camera binning."));
+        }
+    }
+
     FullSize.x = m_cam->m_maxSize.x / Binning;
     FullSize.y = m_cam->m_maxSize.y / Binning;
-    m_cam->m_curBin = Binning;
 
     m_cam->m_buffer_size = m_cam->m_maxSize.x * m_cam->m_maxSize.y;
     if (m_cam->m_bpp != 8)
@@ -365,7 +398,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam->SetOption(TOUPCAM_OPTION_COLORMATIX, 0);
     m_cam->SetOption(TOUPCAM_OPTION_WBGAIN, 0);
     m_cam->SetOption(TOUPCAM_OPTION_TRIGGER, 1);  // software trigger
-    m_cam->SetOption(TOUPCAM_OPTION_BINNING, Binning);
     m_cam->SetOption(TOUPCAM_OPTION_ROTATE, 0);
     m_cam->SetOption(TOUPCAM_OPTION_FFC, 0);
     m_cam->SetOption(TOUPCAM_OPTION_DFC, 0);
@@ -432,11 +464,10 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     if (Binning != m_cam->m_curBin)
     {
-        if (m_cam->SetOption(TOUPCAM_OPTION_BINNING, Binning))
+        if (m_cam->SetBinning(Binning))
         {
             FullSize.x = m_cam->m_maxSize.x / Binning;
             FullSize.y = m_cam->m_maxSize.y / Binning;
-            m_cam->m_curBin = Binning;
             useSubframe = false; // subframe pos is now invalid
         }
     }
@@ -613,7 +644,12 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_cam->m_isColor && m_cam->m_curBin == 1 && (options & CAPTURE_RECON))
+#if 1 // bayer array artifacts are visibile when pixels are binned
+    // 2018-09-20 ag - I have asked ToupTek for an explantion of why this is, but have not heard back from them.
+    // In the meantime we will debayer even when binning is enabled.
+    enum { DEBAYER_WEHN_BINNED = true };
+#endif
+    if (m_cam->m_isColor && (m_cam->m_curBin == 1 || DEBAYER_WEHN_BINNED) && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;
