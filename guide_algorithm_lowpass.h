@@ -47,7 +47,7 @@ class GuideAlgorithmLowpass : public GuideAlgorithm
     static const unsigned int HISTORY_SIZE = 10;
     double m_slopeWeight;
     double m_minMove;
-    AxisStats* m_axisStats;
+    WindowedAxisStats m_axisStats;
     int m_timeBase;
 
 protected:
@@ -114,4 +114,5 @@ inline double GuideAlgorithmLowpass::GetSlopeWeight() const
 {
     return m_slopeWeight;
 }
-#endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */
+
+#endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

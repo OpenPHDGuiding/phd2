@@ -44,11 +44,11 @@
 
 class GuideAlgorithmLowpass2 : public GuideAlgorithm
 {
-    static const unsigned int HISTORY_SIZE = 10;
+    static const int HISTORY_SIZE = 10;
     double m_aggressiveness;
     double m_minMove;
     int m_rejects;
-    AxisStats* m_axisStats;
+    WindowedAxisStats m_axisStats;
     int m_timeBase;
 
 protected:
