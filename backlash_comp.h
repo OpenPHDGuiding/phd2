@@ -76,7 +76,7 @@ class BacklashTool
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;
     double m_driftPerSec;
-    AxisStats* m_northStats;
+    AxisStats m_northStats;
     wxLongLong_t m_msmtStartTime;
     wxLongLong_t m_msmtEndTime;
     double GetLastDecGuideRate();

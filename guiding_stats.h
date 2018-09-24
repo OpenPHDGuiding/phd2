@@ -145,7 +145,7 @@ public:
     AxisStats();
     ~AxisStats();
     // Add a guiding info element of relative time, guide star position, guide pulse amount
-    virtual void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
+    void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
     // Return a particular element from the current dataset
     StarDisplacement GetEntry(unsigned int index);
     void ClearAll();

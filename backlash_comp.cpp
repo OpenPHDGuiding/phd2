@@ -738,13 +738,12 @@ BacklashTool::BacklashTool()
     m_backlashResultMs = 0;
     m_cumClearingDistance = 0;
     m_backlashExemption = false;
-    m_northStats = new AxisStats();
+    m_northStats = AxisStats();
 }
 
 BacklashTool::~BacklashTool()
 {
-    if (m_northStats)
-        delete m_northStats;
+
 }
 
 bool BacklashTool::IsGraphable()
@@ -775,7 +774,7 @@ void BacklashTool::StartMeasurement(double DriftPerMin)
     m_driftPerSec = DriftPerMin / 60.0;
     m_northBLSteps.clear();
     m_southBLSteps.clear();
-    m_northStats->ClearAll();
+    m_northStats.ClearAll();
     DecMeasurementStep(pFrame->pGuider->CurrentPosition());
 }
 
@@ -813,8 +812,8 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
     {
         // figure out the drift-related corrections
         double driftAmtPx = m_driftPerSec * (m_msmtEndTime - m_msmtStartTime) / 1000;               // amount of drift in px for entire north measurement period
-        int stepCount = m_northStats->GetCount();
-        northDelta = m_northStats->GetSum();
+        int stepCount = m_northStats.GetCount();
+        northDelta = m_northStats.GetSum();
         nRate = fabs((northDelta - driftAmtPx) / (stepCount * m_pulseWidth));                       // drift-corrected empirical measure of north rate
         driftPxPerFrame = driftAmtPx / stepCount;
         Debug.Write(wxString::Format("BLT: Drift correction of %0.2f px applied to total north moves of %0.2f px, %0.3f px/frame\n", driftAmtPx, northDelta, driftPxPerFrame));
@@ -822,7 +821,7 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
 
         // Compute an expected movement of 90% of the median delta north moves (px).  Use the 90% tolerance to avoid situations where the south rate
         // never matches the north rate yet the mount is moving consistently
-        expectedAmount = 0.9 * m_northStats->GetMedian();
+        expectedAmount = 0.9 * m_northStats.GetMedian();
         expectedMagnitude = fabs(expectedAmount);
         int goodSouthMoves = 0;
         for (int step = 1; step < m_southBLSteps.size(); step++)
@@ -1002,7 +1001,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    m_northStats->AddGuideInfo(m_stepCount, deltaN, 0);
+                    m_northStats.AddGuideInfo(m_stepCount, deltaN, 0);
                 }
                 else
                 {
@@ -1023,7 +1022,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 if (m_stepCount >= 1)
                 {
                     deltaN = currMountLocation.Y - m_northBLSteps.back();
-                    m_northStats->AddGuideInfo(m_stepCount, deltaN, 0);
+                    m_northStats.AddGuideInfo(m_stepCount, deltaN, 0);
                 }
                 Debug.Write(wxString::Format("BLT: North pulses ended at Dec location %0.2f, TotalDecDelta=%0.2f px, LastDeltaDec = %0.2f\n", currMountLocation.Y, decDelta, deltaN));
                 m_northBLSteps.push_back(currMountLocation.Y);
@@ -1200,11 +1199,11 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
 void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
 {
-    if ((m_Rslt == MEASUREMENT_VALID || m_Rslt == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) && m_northStats->GetCount() > 1)
+    if ((m_Rslt == MEASUREMENT_VALID || m_Rslt == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) && m_northStats.GetCount() > 1)
     {
         // Sigma of mean for north moves + sigma of two measurements going south, added in quadrature
-        double variance = m_northStats->GetVariance();
-        int count = m_northStats->GetCount();
+        double variance = m_northStats.GetVariance();
+        int count = m_northStats.GetCount();
         *SigmaPx = sqrt((variance / count) + (2 * variance / (count - 1)));
         *SigmaMs = *SigmaPx / m_northRate;
     }
