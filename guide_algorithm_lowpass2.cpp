@@ -50,8 +50,7 @@ GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis)
 
     double aggr = pConfig->Profile.GetDouble(GetConfigPath() + "/Aggressiveness", DefaultAggressiveness);
     SetAggressiveness(aggr);
-
-    m_axisStats = new AxisStats(true, HISTORY_SIZE);            // auto-windowed
+    m_axisStats = WindowedAxisStats(HISTORY_SIZE);          // Auto-windowed
     m_timeBase = 0;
 
     reset();
@@ -59,25 +58,25 @@ GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis)
 
 GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
 {
-    if (m_axisStats)
-        delete m_axisStats;
+
 }
 
 GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm() const
 {
     return GUIDE_ALGORITHM_LOWPASS2;
 }
+
 void GuideAlgorithmLowpass2::reset(void)
 {
-    m_axisStats->ClearAll();
+    m_axisStats.ClearAll();
     m_timeBase = 0;
     m_rejects = 0;
 }
 
 double GuideAlgorithmLowpass2::result(double input)
 {
-    m_axisStats->AddGuideInfo(m_timeBase++, input, 0);              // AxisStats instance is auto-windowed
-    unsigned int numpts = m_axisStats->GetCount();
+    m_axisStats.AddGuideInfo(m_timeBase++, input, 0);              // AxisStats instance is auto-windowed
+    unsigned int numpts = m_axisStats.GetCount();
     double dReturn;
     double attenuation = m_aggressiveness / 100.;
     double newSlope = 0;
@@ -96,7 +95,7 @@ double GuideAlgorithmLowpass2::result(double input)
         else
         {
             double intcpt;
-            m_axisStats->GetLinearFitResults(&newSlope, &intcpt);
+            m_axisStats.GetLinearFitResults(&newSlope, &intcpt);
             dReturn = newSlope * (double)numpts * attenuation;
             // Don't return a result that will push the star further in the wrong direction
             if (input * dReturn < 0)

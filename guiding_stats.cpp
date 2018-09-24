@@ -49,7 +49,7 @@
 // Applicable to any double values, no semantic assumptions made.  Does not retain a list of values
 DescriptiveStats::DescriptiveStats()
 {
-    ClearValues();
+    ClearAll();
 }
 
 DescriptiveStats::~DescriptiveStats()
@@ -84,7 +84,7 @@ void DescriptiveStats::AddValue(double Val)
 }
 
 // Reset all stats
-void DescriptiveStats::ClearValues()
+void DescriptiveStats::ClearAll()
 {
     count = 0;
     runningS = 0;
@@ -97,9 +97,11 @@ void DescriptiveStats::ClearValues()
     maxDelta = 0;
 }
 
-// Get the previous value added. Throws exception for empty data set.
+// Get the previous value added. Caller must insure count > 0
 double DescriptiveStats::GetLastValue()
 {
+    assert(count > 0);
+
     return lastValue;
 }
 
@@ -109,65 +111,80 @@ unsigned int DescriptiveStats::GetCount()
     return count;
 }
 
-// Raw variance for those who need it
+// Raw variance for those who need it. Caller must insure count > 1
 double DescriptiveStats::GetVariance()
 {
+    assert(count > 1);
+
     return runningS;
 }
 
-// Return standard deviation of data values. Throws exception for empty data set.
+// Return standard deviation of data values. Caller must insure count > 1.
 double DescriptiveStats::GetSigma()
 {
-    if (count > 1)
+    assert(count > 1);
+
+    if (count > 0)
         return sqrt(runningS / (count - 1));
     else
-        throw ERROR_INFO("Too few data elements");
+        return 0;
 }
 
-// Return mean of data values. Throws exception for empty data set.
+// Return mean of data values. Caller must insure count > 0.
 double DescriptiveStats::GetMean()
 {
+    assert(count > 0);
+
     if (count > 0)
         return runningMean;
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Compute/return the sum of all values
+// Compute/return the sum of all values; Caller must insure count > 0
 double DescriptiveStats::GetSum()
 {
+    assert(count > 0);
+
     if (count > 0)
     {
         return runningMean * count;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Return minimum of data values. Throws exception for empty data set.
+// Return minimum of data values. Caller must insure count > 0
 double DescriptiveStats::GetMinimum()
 {
+    assert(count > 0);
+
     if (count > 0)
         return minValue;
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
-// Return maximum of data values. Throws exception for empty data set.
+
+// Return maximum of data values. Caller must insure count > 0
 double DescriptiveStats::GetMaximum()
 {
+    assert(count > 0);
+
     if (count > 0)
         return maxValue;
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Returns maximum of absolute value of sample to sample differences. Throws exception if count < 2.
+// Returns maximum of absolute value of sample-to-sample differences. Caller must insure count > 1
 double DescriptiveStats::GetMaxDelta()
 {
+    assert(count > 1);
+
     if (count > 1)
         return maxDelta;
     else
-        throw ERROR_INFO("Too few data elements");
+        return 0;
 }
 
 // Applies a high-pass filter to a stream of data, one sample point at a time.  Samples are not retained, client can use DescriptiveStats or AxisStats
@@ -178,6 +195,7 @@ HighPassFilter::HighPassFilter(double CutoffPeriod, double SamplePeriod)
     Reset();
 }
 
+// Add a raw data value, get an updated value for HPF
 double HighPassFilter::AddValue(double NewVal)
 {
     if (count == 0)
@@ -215,6 +233,7 @@ LowPassFilter::LowPassFilter(double CutoffPeriod, double SamplePeriod)
     Reset();
 }
 
+// Add a raw data value, get an updated value for LPF
 double LowPassFilter::AddValue(double NewVal)
 {
     if (count == 0)
@@ -241,10 +260,9 @@ void LowPassFilter::Reset()
     lpfResult = 0;
 }
 
-// AxisStats and the StarDisplacement class can be used to collect and evaluate typical guiding data.  Datasets can be windowed or not.
+// AxisStats, WindowedAxisStats, and the StarDisplacement classes can be used to collect and evaluate typical guiding data.
 // Windowed datasets will be automatically trimmed if AutoWindowSize > 0 or can be manually trimmed by client via RemoveOldestEntry()
 // Timestamps are intended to be incremental, i.e seconds since start of guiding, and are used only for linear fit operations
-// LinearFit will work on either windowed or non-windowed datasets
 StarDisplacement::StarDisplacement(double When, double Where)
 {
     StarPos = Where;
@@ -253,22 +271,9 @@ StarDisplacement::StarDisplacement(double When, double Where)
     Reversal = false;
 }
 
-AxisStats::AxisStats(bool Windowing, int AutoWindowSize)
+AxisStats::AxisStats()
 {
     InitializeScalars();
-    if (!Windowing)
-    {
-        windowing = false;
-        windowSize = 0;
-    }
-    else
-    {
-        windowing = true;
-        windowSize = AutoWindowSize;
-        minDisplacement = std::numeric_limits<double>::max();
-        maxDisplacement = std::numeric_limits<double>::min();
-        maxDelta = 0;
-    }
 }
 
 AxisStats::~AxisStats()
@@ -298,26 +303,6 @@ void AxisStats::InitializeScalars()
     maxDelta = 0;
 }
 
-// Change the window size for a windowed instance of AxisStats - trim older entries if necessary
-bool AxisStats::ChangeWindowSize(unsigned int NewSize)
-{
-    bool success;
-    if (windowing && NewSize > 0)
-    {
-        int numDeletes = GetCount() - NewSize;
-        while (numDeletes > 0)
-        {
-            RemoveOldestEntry();
-            numDeletes--;
-        }
-        windowSize = NewSize;
-        success = true;
-    }
-    else
-        success = false;
-    return success;
-}
-
 // Return number of guide steps where GuideAmount was non-zero
 unsigned int AxisStats::GetMoveCount()
 {
@@ -330,86 +315,15 @@ unsigned int AxisStats::GetReversalCount()
     return axisReversals;
 }
 
+// Returns the guiding entry at index = 'inx';  Caller must insure inx is within bounds of data-set
 StarDisplacement AxisStats::GetEntry(unsigned int inx)
 {
-    if (inx < guidingEntries.size())
+    assert(inx >= 0 && inx < guidingEntries.size());
+
+    if (inx >= 0 && inx < guidingEntries.size())
         return guidingEntries[inx];
     else
-        throw ERROR_INFO("Empty data set");
-}
-
-// Private function to re-compute min, max, and maxDelta values when a guide entry is going to be removed.  With an auto-windowed instance of AxisStats, an entry
-// removal can happen for every addition, so we avoid iterating through the entire collection unless it's required because of the entry
-// that's being aged out.  This function must be called before entry[0] (the oldest) is actually removed.
-void AxisStats::AdjustMinMaxValues()
-{
-    StarDisplacement target = guidingEntries.front();           // Entry that's about to be removed
-    bool recalNeeded;
-    double prev = target.StarPos;
-
-    if (guidingEntries.size() > 1)
-    {
-        // Minimize recalculations
-        recalNeeded = target.StarPos == maxDisplacement || target.StarPos == minDisplacement || maxDeltaInx == 0;
-        if (recalNeeded)
-        {
-            minDisplacement = std::numeric_limits<double>::max();
-            maxDisplacement = std::numeric_limits<double>::min();
-            maxDelta = 0;
-        }
-    }
-
-    if (recalNeeded)
-    {
-        for (unsigned int inx = 1; inx < guidingEntries.size(); inx++)          // Dont start at zero, that will be removed
-        {
-            StarDisplacement entry = guidingEntries[inx];
-            minDisplacement = std::min(minDisplacement, entry.StarPos);
-            maxDisplacement = std::max(maxDisplacement, entry.StarPos);
-            if (inx > 1)
-            {
-                if (fabs(entry.StarPos - prev) > maxDelta)
-                {
-                    maxDelta = fabs(entry.StarPos - prev);
-                    maxDeltaInx = inx;
-                }
-            }
-            prev = entry.StarPos;
-        }
-    }
-
-}
-
-// Remove oldest entry in the list, update stats accordingly. Throws an exception if data set is empty
-void AxisStats::RemoveOldestEntry()
-{
-    double val;
-    double deltaT;
-    if (windowing && guidingEntries.size() > 0)
-    {
-        StarDisplacement target = guidingEntries.front();
-        val = target.StarPos;
-        deltaT = target.DeltaTime;
-        sumY -= val;
-        sumYSq -= val * val;
-        sumX -= deltaT;
-        sumXSq -= deltaT * deltaT;
-        sumXY -= deltaT * val;
-        if (target.Reversal)
-            axisReversals--;
-        if (target.Guided)
-            axisMoves--;
-        AdjustMinMaxValues();                   // Will process list only if required
-        guidingEntries.pop_front();
-        maxDeltaInx--;
-    }
-    else
-    {
-        if (guidingEntries.size() == 0)
-            throw ERROR_INFO("Empty data set");
-        else
-            throw ERROR_INFO("Window functions not supported");
-    }
+        return StarDisplacement(0, 0);
 }
 
 // DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day 
@@ -448,32 +362,32 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
     }
     guidingEntries.push_back(starInfo);
     prevPosition = StarPos;
-    if (windowSize > 0 && guidingEntries.size() > windowSize)
-    {
-        RemoveOldestEntry();
-    }
 }
 
-// Get the last entry added - makes it easier for clients to use delta() operations on data values. Throws an exception for an empty data set
+// Get the last entry added - makes it easier for clients to use delta() operations on data values. Caller must insure count > 0
 StarDisplacement AxisStats::GetLastEntry()
 {
     int sz = guidingEntries.size();
+    assert(sz > 0);
+
     if (sz > 0)
         return guidingEntries[sz - 1];
     else
-        throw ERROR_INFO("Empty data set");
+        return StarDisplacement(0, 0);
 }
 
-// Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.  Throws an exception for
-// an empty data set
+// Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.  Caller must insure count > 1
 double AxisStats::GetMaxDelta()
 {
-    if (guidingEntries.size() > 1)
+    int sz = guidingEntries.size();
+    assert(sz > 1);
+
+    if (sz > 1)
     {
         return maxDelta;
     }
     else
-        throw ERROR_INFO("Data set too small");
+        return 0;
 }
 
 // Return count of entries currently in window
@@ -482,33 +396,42 @@ unsigned int AxisStats::GetCount()
     return guidingEntries.size();
 }
 
-// Return sum
+// Return sum.  Caller must insure count > 0
 double AxisStats::GetSum()
 {
-    if (guidingEntries.size() > 0)
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz > 0)
     {
         return sumY;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Return mean of dataset, windowed or not.  Throws exception for empty data set
+// Return mean of dataset. Caller must insure count > 0
 double AxisStats::GetMean()
 {
-    if (guidingEntries.size() > 0)
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz > 0)
     {
-        return sumY / guidingEntries.size();
+        return sumY / sz;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Return raw variance for clients who need it
+// Return raw variance for clients who need it. Caller must insure count > 1
 double AxisStats::GetVariance()
 {
     double rslt;
-    if (guidingEntries.size() > 1)
+    int sz = guidingEntries.size();
+    assert(sz > 1);
+
+    if (sz > 1)
     {
         double entryCount = guidingEntries.size();
         rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
@@ -518,33 +441,32 @@ double AxisStats::GetVariance()
     return rslt;
 }
 
-// Return standard deviation of dataset, windowed or not.  Throws exception for empty data set
+// Return standard deviation of dataset. Caller must insure count > 1
 double AxisStats::GetSigma()
 {
-    if (guidingEntries.size() > 0)
+    double rslt;
+    int sz = guidingEntries.size();
+
+    if (sz > 1)
     {
-        double rslt;
-        if (guidingEntries.size() > 1)
-        {
-            double entryCount = guidingEntries.size();
-            double variance = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
-            if (variance >= 0)
-                rslt = sqrt(variance);
-            else
-                rslt = 0;
-        }
+        double variance = (sz * sumYSq - sumY * sumY) / (sz * (sz - 1));
+        if (variance >= 0)
+            rslt = sqrt(variance);
         else
             rslt = 0;
-        return rslt;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        rslt = 0;
+    return rslt;
 }
 
-// Return median guidestar displacement.  Throws exception for empty data set.
+// Return median guidestar displacement. Caller must insure count > 0
 double AxisStats::GetMedian()
 {
-    if (guidingEntries.size() > 0)
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz> 1)
     {
         double rslt = 0;
         // Need a copy of guidingEntries to do a sort
@@ -568,34 +490,45 @@ double AxisStats::GetMedian()
         return rslt;
     }
     else
-        throw ERROR_INFO("Empty data set");
+    {
+        if (sz == 1)
+            return guidingEntries[0].StarPos;
+        else
+            return 0;
+    }
 }
 
-// Return the minimum (signed) guidestar displacement. Throws exception for empty data set.
+// Return the minimum (signed) guidestar displacement. Caller must insure count > 0
 double AxisStats::GetMinDisplacement()
 {
-    if (guidingEntries.size() > 0)
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz > 0)
     {
         return minDisplacement;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
-// Return the maximum (signed) guidestar displacement. Throws exception for empty data set.
+// Return the maximum (signed) guidestar displacement. Caller must insure count > 0
 double AxisStats::GetMaxDisplacement()
 {
-    if (guidingEntries.size() > 0)
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz > 0)
     {
         return maxDisplacement;
     }
     else
-        throw ERROR_INFO("Empty data set");
+        return 0;
 }
 
 // Return linear fit results for dataset, windowed or not.  This is inexpensive unless Sigma is needed
 // (Optional) Sigma is standard deviation of dataset after linear fit (drift) has been removed
-// Throws exception if data count < 2.
+// Caller must insure count > 1
 void AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Sigma)
 {
     int numVals = guidingEntries.size();
@@ -633,5 +566,126 @@ void AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Si
         *Intercept = intcpt;
     }
     else
-        throw ERROR_INFO("Too few data point for linear fit");
+    {
+        *Slope = 0;
+        *Intercept = 0;
+    }
+}
+
+WindowedAxisStats::WindowedAxisStats(int AutoWindowSize) : AxisStats()
+{
+    autoWindowing = AutoWindowSize > 0;
+    windowSize = AutoWindowSize;
+}
+
+WindowedAxisStats::~WindowedAxisStats()
+{
+
+}
+
+// Change the auto-window size - trim older entries if necessary. Setting size to zero disables auto-windowing but does not discard data
+bool WindowedAxisStats::ChangeWindowSize(unsigned int NewSize)
+{
+    bool success = false;
+    if (NewSize > 0)
+    {
+        int numDeletes = GetCount() - NewSize;
+        while (numDeletes > 0)
+        {
+            RemoveOldestEntry();
+            numDeletes--;
+        }
+        windowSize = NewSize;
+        autoWindowing = true;
+        success = true;
+    }
+    else
+    {
+        if (NewSize == 0)
+        {
+            autoWindowing = false;
+            windowSize = 0;
+            success = true;
+        }
+    }
+    return success;
+}
+
+// Private function to re-compute min, max, and maxDelta values when a guide entry is going to be removed.  With an auto-windowed instance of AxisStats, an entry
+// removal can happen for every addition, so we avoid iterating through the entire collection unless it's required because of the entry
+// that's being aged out.  This function must be called before entry[0] (the oldest) is actually removed.
+void WindowedAxisStats::AdjustMinMaxValues()
+{
+    StarDisplacement target = guidingEntries.front();           // Entry that's about to be removed
+    bool recalNeeded = false;
+    double prev = target.StarPos;
+
+    if (guidingEntries.size() > 1)
+    {
+        // Minimize recalculations
+        recalNeeded = target.StarPos == maxDisplacement || target.StarPos == minDisplacement || maxDeltaInx == 0;
+        if (recalNeeded)
+        {
+            minDisplacement = std::numeric_limits<double>::max();
+            maxDisplacement = std::numeric_limits<double>::min();
+            maxDelta = 0;
+        }
+    }
+
+    if (recalNeeded)
+    {
+        for (unsigned int inx = 1; inx < guidingEntries.size(); inx++)          // Dont start at zero, that will be removed
+        {
+            StarDisplacement entry = guidingEntries[inx];
+            minDisplacement = std::min(minDisplacement, entry.StarPos);
+            maxDisplacement = std::max(maxDisplacement, entry.StarPos);
+            if (inx > 1)
+            {
+                if (fabs(entry.StarPos - prev) > maxDelta)
+                {
+                    maxDelta = fabs(entry.StarPos - prev);
+                    maxDeltaInx = inx;
+                }
+            }
+            prev = entry.StarPos;
+        }
+    }
+}
+
+// Remove oldest entry in the list, update stats accordingly. Caller must insure count > 0
+void WindowedAxisStats::RemoveOldestEntry()
+{
+    double val;
+    double deltaT;
+    int sz = guidingEntries.size();
+    assert(sz > 0);
+
+    if (sz > 0)
+    {
+        StarDisplacement target = guidingEntries.front();
+        val = target.StarPos;
+        deltaT = target.DeltaTime;
+        sumY -= val;
+        sumYSq -= val * val;
+        sumX -= deltaT;
+        sumXSq -= deltaT * deltaT;
+        sumXY -= deltaT * val;
+        if (target.Reversal)
+            axisReversals--;
+        if (target.Guided)
+            axisMoves--;
+        AdjustMinMaxValues();                   // Will process list only if required
+        guidingEntries.pop_front();
+        maxDeltaInx--;
+    }
+}
+
+// DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day
+void WindowedAxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
+{
+    AxisStats::AddGuideInfo(DeltaT, StarPos, GuideAmt);
+    if (autoWindowing && guidingEntries.size() > windowSize)
+    {
+        RemoveOldestEntry();
+    }
 }

@@ -35,10 +35,9 @@
 
 #ifndef _GUIDING_STATS_H
 #define _GUIDING_STATS_H
-#include <vector>
 #include <deque>
 
-// DescriptiveStats is used for non-windowed datasets.  Max, min, sigma and variance are computed on-the-fly as values are added to a dataset
+// DescriptiveStats is used for basic statistics.  Max, min, sigma and variance are computed on-the-fly as values are added to a dataset
 // Applicable to any double values, no semantic assumptions made.  Does not retain a list of values
 class DescriptiveStats
 {
@@ -57,7 +56,7 @@ public:
     DescriptiveStats();
     ~DescriptiveStats();
     void AddValue(double Val);          // Add a double value to the dataset
-    void ClearValues();                 // Start over, reset all variables
+    void ClearAll();                    // Start over, reset all variables
     unsigned int GetCount();            // Returns the count of the dataset
     double GetLastValue();              // Returns the immediately previous value added to the dataset
     double GetMean();                   // Returns the mean value of the dataset
@@ -77,12 +76,13 @@ public:
 class HighPassFilter
 {
 private:
-    double alphaCutoff;
+    double alphaCutoff = 1.0;
     double count;
     double prevVal;
     double hpfResult;
 
 public:
+    HighPassFilter() {};
     HighPassFilter(double CutoffPeriod, double SamplePeriod);
     double AddValue(double NewVal);
     double GetCurrentHPF();
@@ -92,11 +92,12 @@ public:
 class LowPassFilter
 {
 private:
-    double alphaCutoff;
+    double alphaCutoff = 1.0;
     double count;
     double lpfResult;
 
 public:
+    LowPassFilter() {};
     LowPassFilter(double CutoffPeriod, double SamplePeriod);
     double AddValue(double NewVal);
     double GetCurrentLPF();
@@ -120,13 +121,12 @@ struct StarDisplacement
 // Windowed datasets will be automatically trimmed if AutoWindowSize > 0 or can be manually trimmed by client using RemoveOldestEntry()
 class AxisStats
 {
+protected:
     std::deque <StarDisplacement> guidingEntries;               // queue of elements in dataset
     unsigned int axisMoves;                                     // number of times in window when guide pulse was non-zero
     unsigned int axisReversals;                                 // number of times in window when guide pulse caused a direction reversal
     double prevMove;                                            // value of guide pulse in next-to-last entry                                           
     double prevPosition;                                        // value of guide star location in next-to-last entry
-    bool windowing;                                             // AxisStats instance is windowed
-    unsigned int windowSize;                                    // Maximum number of entries in dataset
     // Variables used to compute stats in windowed AxisStats
     double sumX;                                                // Sum of the x values (deltaT values)     
     double sumY;                                                // Sum of the y values (star position)
@@ -138,19 +138,16 @@ class AxisStats
     double minDisplacement;                                     // minimum star position value in current dataset
     double maxDelta;                                            // maximum absolute delta of incremental star deltas
     int maxDeltaInx;
-    void AdjustMinMaxValues();                                  // required for windowing
     void InitializeScalars();
 
 public:
     // Constructor for 3 types of instance: non-windowed, windowed with automatic trimming of size, windowed but with client controlling actual window size
-    AxisStats(bool Windowing, int AutoWindowSize = 0);
+    AxisStats();
     ~AxisStats();
     // Add a guiding info element of relative time, guide star position, guide pulse amount
-    void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
+    virtual void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
     // Return a particular element from the current dataset
     StarDisplacement GetEntry(unsigned int index);
-    // Remove the oldest entry in the current dataset
-    void RemoveOldestEntry();
     void ClearAll();
     // Return the count of elements in the dataset
     unsigned int GetCount();
@@ -177,8 +174,24 @@ public:
     // Example 1: do a linear fit during calibration to compute an angle - "Sigma" is not needed
     // Example 2: do a linear fit on Dec values during a GA run - use the slope to compute a polar alignment error, use Sigma to estimate seeing of drift-corrected Dec values
     void GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL);
+
+};
+
+class WindowedAxisStats : public AxisStats
+{
+    bool autoWindowing = false;
+    int windowSize = 0;
+    void AdjustMinMaxValues();
+
+public:
+    WindowedAxisStats() {};
+    WindowedAxisStats(int AutoWindowSize);
+    ~WindowedAxisStats();
+
     // Change the window size of an active dataset - all stats will be adjusted accordingly to reflect the most recent <NewSize> elements
     bool ChangeWindowSize(unsigned int NewWSize);
+    void RemoveOldestEntry();
+    void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
 };
 
 #endif

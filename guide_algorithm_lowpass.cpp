@@ -51,7 +51,7 @@ GuideAlgorithmLowpass::GuideAlgorithmLowpass(Mount *pMount, GuideAxis axis)
     double slopeWeight = pConfig->Profile.GetDouble(GetConfigPath() + "/SlopeWeight", DefaultSlopeWeight);
     SetSlopeWeight(slopeWeight);
 
-    m_axisStats = new AxisStats(true, 0);           // self-managed window
+    m_axisStats = WindowedAxisStats(0);           // self-managed window
     m_timeBase = 0;
 
     reset();
@@ -59,8 +59,7 @@ GuideAlgorithmLowpass::GuideAlgorithmLowpass(Mount *pMount, GuideAxis axis)
 
 GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
 {
-    if (m_axisStats)
-        delete m_axisStats;
+
 }
 
 GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm() const
@@ -69,13 +68,13 @@ GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm() const
 }
 void GuideAlgorithmLowpass::reset(void)
 {
-    m_axisStats->ClearAll();
+    m_axisStats.ClearAll();
     m_timeBase = 0;
 
     // Needs to be zero-filled to start
-    while (m_axisStats->GetCount() < HISTORY_SIZE)
+    while (m_axisStats.GetCount() < HISTORY_SIZE)
     {
-        m_axisStats->AddGuideInfo(m_timeBase++, 0, 0);
+        m_axisStats.AddGuideInfo(m_timeBase++, 0, 0);
     }
 
 }
@@ -83,12 +82,12 @@ void GuideAlgorithmLowpass::reset(void)
 double GuideAlgorithmLowpass::result(double input)
 {
     // Manual trimming of window (instead of auto-size) is done for full backward compatibility with original algo
-    m_axisStats->AddGuideInfo(m_timeBase++, input, 0);
-    double median = m_axisStats->GetMedian();
-    m_axisStats->RemoveOldestEntry();
+    m_axisStats.AddGuideInfo(m_timeBase++, input, 0);
+    double median = m_axisStats.GetMedian();
+    m_axisStats.RemoveOldestEntry();
     double slope;
     double intcpt;
-    m_axisStats->GetLinearFitResults(&slope, &intcpt);
+    m_axisStats.GetLinearFitResults(&slope, &intcpt);
     double dReturn = median + m_slopeWeight * slope;
 
     if (fabs(dReturn) > fabs(input))
