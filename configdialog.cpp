@@ -196,9 +196,9 @@ int ConfigDialogCtrlSet::StringArrayWidth(const wxArrayString& ary)
     return width;
 }
 
-wxWindow* ConfigDialogCtrlSet::GetParentWindow(BRAIN_CTRL_IDS id) 
-{ 
-    return m_pAdvDlg->GetTabLocation(id); 
+wxWindow *ConfigDialogCtrlSet::GetParentWindow(BRAIN_CTRL_IDS id)
+{
+    return m_pAdvDlg->GetTabLocation(id);
 }
 
 void ConfigDialogCtrlSet::HandleBinningChange(int oldVal, int newVal)

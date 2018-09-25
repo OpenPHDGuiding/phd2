@@ -36,12 +36,24 @@
 
 #if defined(__WINDOWS__)
 
+class _com_error;
+
 wxString ExcepMsg(const EXCEPINFO& excep);
 wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep);
 
 struct Variant : public VARIANT
 {
     Variant() { VariantInit(this); }
+};
+
+class ExcepInfo : public EXCEPINFO
+{
+    ExcepInfo& operator=(const ExcepInfo& rhs) = delete;
+public:
+    ExcepInfo();
+    ~ExcepInfo();
+    void Assign(HRESULT hr, const wxString& source);
+    void Assign(const _com_error& err, const wxString& source);
 };
 
 typedef Variant VariantArg;
@@ -53,15 +65,15 @@ class DispatchClass
 public:
     DispatchClass() { }
     ~DispatchClass() { }
-    static bool dispid(DISPID *ret, IDispatch *idisp, OLECHAR *name);
-    bool dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *name);
+    static bool dispid(DISPID *ret, IDispatch *idisp, OLECHAR *name, ExcepInfo *excep);
+    bool dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *name, ExcepInfo *excep);
 };
 
 class DispatchObj
 {
     DispatchClass *m_class;
     IDispatch *m_idisp;
-    EXCEPINFO m_excep;
+    ExcepInfo m_excep;
 public:
     DispatchObj();
     DispatchObj(DispatchClass *cls);

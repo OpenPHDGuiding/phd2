@@ -53,15 +53,59 @@ wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep)
     return prefix + ":\n" + ExcepMsg(excep);
 }
 
-bool DispatchClass::dispid(DISPID *ret, IDispatch *idisp, OLECHAR *wname)
+ExcepInfo::ExcepInfo()
+{
+    memset(this, 0, sizeof(*this));
+}
+
+inline static void FreeExcep(EXCEPINFO& ex)
+{
+    if (ex.bstrSource)
+        SysFreeString(ex.bstrSource);
+    if (ex.bstrDescription)
+        SysFreeString(ex.bstrDescription);
+    if (ex.bstrHelpFile)
+        SysFreeString(ex.bstrHelpFile);
+}
+
+void ExcepInfo::Assign(const _com_error& err, const wxString& source)
+{
+    FreeExcep(*this);
+
+    wCode = 0;
+    wReserved = 0;
+    bstrSource = SysAllocString(source.wc_str());
+    bstrDescription = SysAllocString(err.ErrorMessage());
+    bstrHelpFile = nullptr;
+    dwHelpContext = 0;
+    pvReserved = nullptr;
+    pfnDeferredFillIn = nullptr;
+    scode = err.Error();
+}
+
+void ExcepInfo::Assign(HRESULT hr, const wxString& source)
+{
+    Assign(_com_error(hr), source);
+}
+
+ExcepInfo::~ExcepInfo()
+{
+    FreeExcep(*this);
+}
+
+bool DispatchClass::dispid(DISPID *ret, IDispatch *idisp, OLECHAR *wname, ExcepInfo *excep)
 {
     HRESULT hr = idisp->GetIDsOfNames(IID_NULL, &wname, 1, LOCALE_USER_DEFAULT, ret);
     if (FAILED(hr))
-        Debug.AddLine(wxString::Format("dispid(%s): [%x] %s", wname, hr, _com_error(hr).ErrorMessage()));
+    {
+        _com_error err(hr);
+        Debug.AddLine(wxString::Format("dispid(%s): [%x] %s", wname, hr, err.ErrorMessage()));
+        excep->Assign(err, wxString::Format(_("Driver error preparing to call %s"), wname));
+    }
     return SUCCEEDED(hr);
 }
 
-bool DispatchClass::dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *wname)
+bool DispatchClass::dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *wname, ExcepInfo *excep)
 {
     wxString name(wname);
 
@@ -72,7 +116,7 @@ bool DispatchClass::dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *wname)
         return true;
     }
 
-    if (!dispid(ret, idisp, wname))
+    if (!dispid(ret, idisp, wname, excep))
         return false;
 
     m_idmap[name] = *ret;
@@ -83,22 +127,18 @@ DispatchObj::DispatchObj()
     : m_class(0),
       m_idisp(0)
 {
-    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(DispatchClass *cls)
     : m_class(cls),
       m_idisp(0)
 {
-    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(IDispatch *idisp, DispatchClass *cls)
     : m_class(cls),
       m_idisp(idisp)
 {
-    memset(&m_excep, 0, sizeof(m_excep));
-
     if (m_idisp)
         m_idisp->AddRef();
 }
@@ -136,9 +176,9 @@ bool DispatchObj::Create(OLECHAR *progid)
 bool DispatchObj::GetDispatchId(DISPID *ret, OLECHAR *name)
 {
     if (m_class)
-        return m_class->dispid_cached(ret, m_idisp, name);
+        return m_class->dispid_cached(ret, m_idisp, name, &m_excep);
     else
-        return DispatchClass::dispid(ret, m_idisp, name);
+        return DispatchClass::dispid(ret, m_idisp, name, &m_excep);
 }
 
 bool DispatchObj::GetProp(Variant *res, DISPID dispid)

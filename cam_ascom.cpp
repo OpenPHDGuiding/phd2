@@ -331,7 +331,7 @@ static bool ASCOM_IsMoving(IDispatch *cam)
     dispParms.rgdispidNamedArgs = NULL;
 
     HRESULT hr;
-    EXCEPINFO excep;
+    ExcepInfo excep;
     Variant vRes;
 
     if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
@@ -677,7 +677,7 @@ bool CameraASCOM::Connect(const wxString& camId)
         return CamConnectFailed(err);
 
     // Program some defaults -- full size and binning
-    EXCEPINFO excep;
+    ExcepInfo excep;
     if (ASCOM_SetBin(driver.IDisp(), Binning, &excep))
     {
         // only make this error fatal if the camera supports binning > 1
@@ -852,7 +852,7 @@ bool CameraASCOM::AbortExposure(void)
         return false;
 
     GITObjRef cam(m_gitEntry);
-    EXCEPINFO excep;
+    ExcepInfo excep;
 
     if (m_canAbortExposure)
     {
@@ -901,7 +901,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
 
     GITObjRef cam(m_gitEntry);
 
-    EXCEPINFO excep;
+    ExcepInfo excep;
 
     if (binning_changed)
     {
@@ -945,7 +945,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     {
         wxMilliSleep(20);
         bool ready;
-        EXCEPINFO excep;
+        ExcepInfo excep;
         if (ASCOM_ImageReady(cam.IDisp(), &ready, &excep))
         {
             Debug.AddLine(ExcepMsg("ASCOM_ImageReady failed", excep));
@@ -1006,7 +1006,7 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
 
     MountWatchdog watchdog(duration, 5000);
 
-    EXCEPINFO excep;
+    ExcepInfo excep;
     Variant vRes;
     HRESULT hr;
 

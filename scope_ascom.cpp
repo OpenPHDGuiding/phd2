@@ -184,8 +184,10 @@ void ScopeASCOM::SetupDialog(void)
         Variant res;
         if (!scope.InvokeMethod(&res, L"SetupDialog"))
         {
-            wxMessageBox(wxString(scope.Excep().bstrSource) + ":\n" +
-                scope.Excep().bstrDescription, _("Error"), wxOK | wxICON_ERROR);
+            wxString msg(scope.Excep().bstrSource);
+            if (scope.Excep().bstrDescription)
+                msg += ":\n" + wxString(scope.Excep().bstrDescription);
+            wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
 }
@@ -542,7 +544,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         wxStopWatch swatch;
 
         HRESULT hr;
-        EXCEPINFO excep;
+        ExcepInfo excep;
         Variant vRes;
 
         if (FAILED(hr = scope.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
