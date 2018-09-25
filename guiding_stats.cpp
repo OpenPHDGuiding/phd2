@@ -318,9 +318,9 @@ unsigned int AxisStats::GetReversalCount()
 // Returns the guiding entry at index = 'inx';  Caller must insure inx is within bounds of data-set
 StarDisplacement AxisStats::GetEntry(unsigned int inx)
 {
-    assert(inx >= 0 && inx < guidingEntries.size());
+    assert(inx < guidingEntries.size());
 
-    if (inx >= 0 && inx < guidingEntries.size())
+    if (inx < guidingEntries.size())
         return guidingEntries[inx];
     else
         return StarDisplacement(0, 0);

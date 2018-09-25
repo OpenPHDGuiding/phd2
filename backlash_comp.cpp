@@ -738,7 +738,6 @@ BacklashTool::BacklashTool()
     m_backlashResultMs = 0;
     m_cumClearingDistance = 0;
     m_backlashExemption = false;
-    m_northStats = AxisStats();
 }
 
 BacklashTool::~BacklashTool()
