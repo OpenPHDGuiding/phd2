@@ -60,7 +60,7 @@ bool usImage::Init(const wxSize& size)
             }
         }
         else
-            ImageData = NULL;
+            ImageData = nullptr;
     }
 
     return false;
@@ -223,10 +223,7 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double
 
     img = *rawimg;
     if ((!img->Ok()) || (img->GetWidth() != (full_xsize/2)) || (img->GetHeight() != (full_ysize/2)) ) {  // can't reuse bitmap
-        if (img->Ok()) {
-            delete img;  // Clear out current image if it exists
-            img = (wxImage *) NULL;
-        }
+        delete img;  // Clear out current image if it exists
         img = new wxImage(full_xsize/2, full_ysize/2, false);
     }
     ImgPtr = img->GetData();
@@ -408,7 +405,7 @@ static bool fhdr_int(fitsfile *fptr, const char *key, int *val)
 {
     char *k = const_cast<char *>(key);
     int status = 0;
-    fits_read_key(fptr, TINT, k, val, NULL, &status);
+    fits_read_key(fptr, TINT, k, val, nullptr, &status);
     return status == 0;
 }
 
@@ -452,7 +449,7 @@ bool usImage::Load(const wxString& fname)
                 throw ERROR_INFO("Memory Allocation failure");
             }
             long fpixel[3] = { 1, 1, 1 };
-            if (fits_read_pix(fptr, TUSHORT, fpixel, (int)(fsize[0] * fsize[1]), NULL, ImageData, NULL, &status)) { // Read image
+            if (fits_read_pix(fptr, TUSHORT, fpixel, (int)(fsize[0] * fsize[1]), nullptr, ImageData, nullptr, &status)) { // Read image
                 pFrame->Alert(_("Error reading data from FITS file ") + fname);
                 throw ERROR_INFO("Error reading");
             }
@@ -460,7 +457,7 @@ bool usImage::Load(const wxString& fname)
             char *key = const_cast<char *>("EXPOSURE");
             float exposure;
             status = 0;
-            fits_read_key(fptr, TFLOAT, key, &exposure, NULL, &status);
+            fits_read_key(fptr, TFLOAT, key, &exposure, nullptr, &status);
             if (status == 0)
                 ImgExpDur = (int) (exposure * 1000.0);
 

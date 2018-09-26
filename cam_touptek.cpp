@@ -39,11 +39,96 @@
 #include "cam_touptek.h"
 #include "cameras/toupcam.h"
 
+template<typename T>
+static void BinPixels(T *dst, const T *src, const wxSize& srcsize, unsigned int binning)
+{
+    int const srcw = srcsize.x;
+    int const srch = srcsize.y;
+
+    T *dstp = dst;
+
+    if (binning == 2)
+    {
+        for (int srcy = 0; srcy < srch; srcy += 2)
+        {
+            for (int srcx = 0; srcx < srcw; srcx += 2)
+            {
+                *dstp++ =
+                    ((unsigned int) src[srcy * srcw + srcx] +
+                     (unsigned int) src[srcy * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1]) / 4;
+            }
+        }
+    }
+    else if (binning == 3)
+    {
+        int tw = (srcw / binning) * binning;
+        int th = (srch / binning) * binning;
+        for (int srcy = 0; srcy < th; srcy += 3)
+        {
+            for (int srcx = 0; srcx < tw; srcx += 3)
+            {
+                *dstp++ =
+                    ((unsigned int) src[srcy * srcw + srcx] +
+                     (unsigned int) src[srcy * srcw + srcx + 1] +
+                     (unsigned int) src[srcy * srcw + srcx + 2] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 2] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx + 2]) / 9;
+            }
+        }
+    }
+    else if (binning == 4)
+    {
+        for (int srcy = 0; srcy < srch; srcy += 4)
+        {
+            for (int srcx = 0; srcx < srcw; srcx += 4)
+            {
+                *dstp++ =
+                    ((unsigned int) src[srcy * srcw + srcx] +
+                     (unsigned int) src[srcy * srcw + srcx + 1] +
+                     (unsigned int) src[srcy * srcw + srcx + 2] +
+                     (unsigned int) src[srcy * srcw + srcx + 3] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 2] +
+                     (unsigned int) src[(srcy + 1) * srcw + srcx + 3] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx + 2] +
+                     (unsigned int) src[(srcy + 2) * srcw + srcx + 3] +
+                     (unsigned int) src[(srcy + 3) * srcw + srcx] +
+                     (unsigned int) src[(srcy + 3) * srcw + srcx + 1] +
+                     (unsigned int) src[(srcy + 3) * srcw + srcx + 2] +
+                     (unsigned int) src[(srcy + 3) * srcw + srcx + 3]) / 16;
+            }
+        }
+    }
+}
+
+inline static void BinPixels8(void *dst, const void *src, const wxSize& srcsize, unsigned int binning)
+{
+    BinPixels(static_cast<unsigned char *>(dst),
+              static_cast<const unsigned char *>(src),
+              srcsize, binning);
+}
+
+inline static void BinPixels16(void *dst, const void *src, const wxSize& srcsize, unsigned int binning)
+{
+    BinPixels(static_cast<unsigned short *>(dst),
+              static_cast<const unsigned short *>(src),
+              srcsize, binning);
+}
+
 struct ToupCam
 {
     HToupCam m_h;
     void *m_buffer;
-    size_t m_buffer_size;
+    void *m_tmpbuf;
     wxByte m_bpp;  // bits per pixel: 8 or 16
     bool m_isColor;
     bool m_hasGuideOutput;
@@ -62,6 +147,7 @@ struct ToupCam
     ToupCam() :
         m_h(nullptr),
         m_buffer(nullptr),
+        m_tmpbuf(nullptr),
         m_started(false),
         m_cond(m_lock)
     { }
@@ -69,6 +155,7 @@ struct ToupCam
     ~ToupCam()
     {
         ::free(m_buffer);
+        ::free(m_tmpbuf);
     }
 
     int gain_pct(int val) const
@@ -134,7 +221,7 @@ struct ToupCam
         m_started = true;
     }
 
-    bool PullImage(void *buf, wxSize *sz)
+    bool _PullImage(void *buf, wxSize *sz)
     {
         HRESULT hr;
         unsigned int width, height;
@@ -146,6 +233,23 @@ struct ToupCam
         }
         Debug.Write(wxString::Format("TOUPTEK: PullImage failed with status 0x%x\n", hr));
         return false;
+    }
+
+    bool PullImage(void *buf, wxSize *sz)
+    {
+        if (m_curBin == 1 || !SoftwareBinning())
+            return _PullImage(buf, sz);
+
+        // software binning
+        if (!_PullImage(m_tmpbuf, sz))
+            return false;
+        if (m_bpp == 8)
+            BinPixels8(buf, m_tmpbuf, *sz, m_curBin);
+        else
+            BinPixels16(buf, m_tmpbuf, *sz, m_curBin);
+        sz->x /= m_curBin;
+        sz->y /= m_curBin;
+        return true;
     }
 
     bool GetOption(unsigned int option, int *val)
@@ -182,9 +286,19 @@ struct ToupCam
         }
     }
 
+    bool SoftwareBinning() const
+    {
+        return m_isColor;
+    }
+
+    bool SetHwBinning(unsigned int binning)
+    {
+        return SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning));
+    }
+
     bool SetBinning(unsigned int binning)
     {
-        if (!SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)))
+        if (!SoftwareBinning() && !SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)))
             return false;
         m_curBin = binning;
         return true;
@@ -309,6 +423,12 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
 
     Name = info->displayname;
     HasSubframes = (info->model->flag & TOUPCAM_FLAG_ROI_HARDWARE) != 0;
+    m_cam->m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
+    HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
+    m_cam->m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
+
+    Debug.Write(wxString::Format("TOUPTEK: isColor = %d, hasCooler = %d, hasST4 = %d\n",
+        m_cam->m_isColor, HasCooler, m_cam->m_hasGuideOutput));
 
     if (FAILED(Toupcam_get_Resolution(m_cam->m_h, 0, &m_cam->m_maxSize.x, &m_cam->m_maxSize.y)))
     {
@@ -317,25 +437,44 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         return CamConnectFailed(_("Failed to get camera resolution for ToupTek camera."));
     }
 
-    if (!m_cam->SetBinning(Binning))
+    if (m_cam->SoftwareBinning())
     {
-        Binning = 1;
-        if (!m_cam->SetBinning(Binning))
+        if (!m_cam->SetHwBinning(1))
         {
             Disconnect();
             return CamConnectFailed(_("Failed to initialize camera binning."));
+        }
+        m_cam->SetBinning(Binning);
+    }
+    else
+    {
+        // hardware binning
+        if (!m_cam->SetBinning(Binning))
+        {
+            Binning = 1;
+            if (!m_cam->SetBinning(Binning))
+            {
+                Disconnect();
+                return CamConnectFailed(_("Failed to initialize camera binning."));
+            }
         }
     }
 
     FullSize.x = m_cam->m_maxSize.x / Binning;
     FullSize.y = m_cam->m_maxSize.y / Binning;
 
-    m_cam->m_buffer_size = m_cam->m_maxSize.x * m_cam->m_maxSize.y;
+    size_t buffer_size = m_cam->m_maxSize.x * m_cam->m_maxSize.y;
     if (m_cam->m_bpp != 8)
-        m_cam->m_buffer_size *= 2;
+        buffer_size *= 2;
 
     ::free(m_cam->m_buffer);
-    m_cam->m_buffer = ::malloc(m_cam->m_buffer_size);
+    m_cam->m_buffer = ::malloc(buffer_size);
+
+    if (m_cam->SoftwareBinning())
+    {
+        ::free(m_cam->m_tmpbuf);
+        m_cam->m_tmpbuf = ::malloc(buffer_size);
+    }
 
     float xSize, ySize;
     m_cam->m_devicePixelSize = 3.75;
@@ -371,13 +510,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
 
     if (FAILED(Toupcam_put_RealTime(m_cam->m_h, 1)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_RealTime(1) failed with status 0x%x\n", hr));
-
-    m_cam->m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
-    HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
-    m_cam->m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
-
-    Debug.Write(wxString::Format("TOUPTEK: isColor = %d, hasCooler = %d, hasST4 = %d\n",
-        m_cam->m_isColor, HasCooler, m_cam->m_hasGuideOutput));
 
     m_cam->SetRoi(wxRect()); // reset ROI
 
@@ -478,6 +610,8 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
         return true;
     }
 
+    unsigned int const binning = m_cam->m_curBin;
+
     wxRect roi;     // un-binned coordinates
 
     if (useSubframe)
@@ -485,10 +619,10 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
         // ROI x and y offsets must be even
         // ROI width and height must be even and >= 16
 
-        roi.SetLeft(round_down(subframe.GetLeft() * m_cam->m_curBin, 16));
-        roi.SetRight(round_up((subframe.GetRight() + 1) * m_cam->m_curBin, 16) - 1);
-        roi.SetTop(round_down(subframe.GetTop() * m_cam->m_curBin, 16));
-        roi.SetBottom(round_up((subframe.GetBottom() + 1) * m_cam->m_curBin, 16) - 1);
+        roi.SetLeft(round_down(subframe.GetLeft() * binning, 16));
+        roi.SetRight(round_up((subframe.GetRight() + 1) * binning, 16) - 1);
+        roi.SetTop(round_down(subframe.GetTop() * binning, 16));
+        roi.SetBottom(round_up((subframe.GetBottom() + 1) * binning, 16) - 1);
     }
 
     if (roi != m_cam->m_roi)
@@ -595,8 +729,8 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
         img.Subframe = subframe;
         img.Clear();
 
-        int xofs = (subframe.GetLeft() * m_cam->m_curBin - roi.GetLeft()) / m_cam->m_curBin;
-        int yofs = (subframe.GetTop() * m_cam->m_curBin - roi.GetTop()) / m_cam->m_curBin;
+        int xofs = (subframe.GetLeft() * binning - roi.GetLeft()) / binning;
+        int yofs = (subframe.GetTop() * binning - roi.GetTop()) / binning;
 
         int dxr = sz.x - subframe.width - xofs;
         if (m_cam->m_bpp == 8)
@@ -644,12 +778,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-#if 1 // bayer array artifacts are visibile when pixels are binned
-    // 2018-09-20 ag - I have asked ToupTek for an explantion of why this is, but have not heard back from them.
-    // In the meantime we will debayer even when binning is enabled.
-    enum { DEBAYER_WEHN_BINNED = true };
-#endif
-    if (m_cam->m_isColor && (m_cam->m_curBin == 1 || DEBAYER_WEHN_BINNED) && (options & CAPTURE_RECON))
+    if (m_cam->m_isColor && binning == 1 && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;
