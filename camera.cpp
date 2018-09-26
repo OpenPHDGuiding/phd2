@@ -872,9 +872,22 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     // Gain control
     if (m_pCamera->HasGainControl)
     {
-        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), textWidth, 100, 0, 100, 1);
-        AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain,
+        wxWindow *parent = GetParentWindow(AD_szGain);
+        wxStaticText *label = new wxStaticText(parent, wxID_ANY, _("Camera gain") + _(": "));
+        m_pCameraGain = NewSpinnerInt(parent, textWidth, 100, 0, 100, 1);
+        m_pCameraGain->SetToolTip(
             /* xgettext:no-c-format */ _("Camera gain, default = 95%, lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        m_resetGain = new wxButton(GetParentWindow(AD_szGain), wxID_ANY, _("Reset"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+        m_resetGain->SetToolTip(_("Reset gain to camera's default value (disabled when camera is not connected)"));
+        m_resetGain->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this](wxCommandEvent& evt) {
+                m_pCameraGain->SetValue(::pCamera->GetDefaultCameraGain());
+            }
+        );
+        wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+        sizer->Add(label, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+        sizer->Add(m_pCameraGain, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+        sizer->Add(m_resetGain, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+        AddGroup(CtrlMap, AD_szGain, sizer);
     }
 
     // Binning
@@ -987,6 +1000,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
     if (m_pCamera->HasGainControl)
     {
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
+        m_resetGain->Enable(m_pCamera->Connected);
     }
 
     if (m_binning)

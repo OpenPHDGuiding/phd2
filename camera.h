@@ -66,6 +66,7 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     GuideCamera *m_pCamera;
     wxCheckBox *m_pUseSubframes;
     wxSpinCtrl *m_pCameraGain;
+    wxButton *m_resetGain;
     wxSpinCtrl *m_timeoutVal;
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
