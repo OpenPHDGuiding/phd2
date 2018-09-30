@@ -1704,9 +1704,9 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
     bool firstLight = IsEmptyProfile();
     wxString current = m_profiles->GetStringSelection();
 
-    ProfileWizard wiz(this, event.GetId() == 0);            // Event id of 0 comes from "first light" launch; show first light UI panel only then
-
-    if (wiz.ShowModal() == wxOK)
+    bool showGreeting = event.GetId() == 0; // Event id of 0 comes from "first light" launch; show first light UI panel only then
+    bool darks_requested;
+    if (EquipmentProfileWizard::ShowModal(this, showGreeting, &darks_requested))
     {
         // a new profile was created and set as the current profile
         // if this was a first-light run, we may have left an empty "My Equipment" profile behind - if so, delete it
@@ -1723,7 +1723,7 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
         wxCommandEvent dummy;
         OnProfileChoice(dummy);
 
-        if (wiz.m_launchDarks)
+        if (darks_requested)
         {
             m_showDarksDialog = true;
             // if wizard was launched from dialog and darks are requested, connect-all and close dialog

@@ -32,115 +32,15 @@
  *
  */
 
-#ifndef ProfileWizard_h_included
-#define ProfileWizard_h_included
+#ifndef PROFILE_WIZARD_INCLUDED
+#define PROFILE_WIZARD_INCLUDED
 
-class ProfileWizard : public wxDialog
+class wxWindow;
+
+class EquipmentProfileWizard
 {
 public:
-    enum DialogState
-    {
-        STATE_GREETINGS = 0,
-        STATE_CAMERA,
-        STATE_MOUNT,
-        STATE_AUXMOUNT,
-        STATE_AO,
-        STATE_WRAPUP,
-        STATE_DONE, NUM_PAGES = STATE_DONE
-    };
-
-    enum CtrlIds
-    {
-        ID_COMBO = 10001,
-        ID_PIXELSIZE,
-        ID_DETECT_GUIDESPEED,
-        ID_FOCALLENGTH,
-        ID_BINNING,
-        ID_GUIDESPEED,
-        ID_PREV,
-        ID_HELP,
-        ID_NEXT
-    };
-
-private:
-    AutoTempProfile m_profile;
-
-    // wx UI controls
-    wxBoxSizer *m_pvSizer;
-    wxStaticBitmap *m_bitmap;
-    wxStaticText *m_pInstructions;
-    wxStaticText *m_pGearLabel;
-    wxChoice *m_pGearChoice;
-    wxSpinCtrlDouble *m_pPixelSize;
-    wxStaticText *m_pixelScale;
-    wxChoice *m_pBinningLevel;
-    wxSpinCtrlDouble *m_pFocalLength;
-    wxSpinCtrlDouble *m_pGuideSpeed;
-    wxButton *m_pPrevBtn;
-    wxButton *m_pNextBtn;
-    wxStaticBoxSizer *m_pHelpGroup;
-    wxStaticText *m_pHelpText;
-    wxFlexGridSizer *m_pGearGrid;
-    wxFlexGridSizer *m_pUserProperties;
-    wxFlexGridSizer *m_pMountProperties;
-    wxFlexGridSizer *m_pWrapUp;
-    wxTextCtrl *m_pProfileName;
-    wxCheckBox *m_pLaunchDarks;
-    wxStatusBar *m_pStatusBar;
-
-    wxString m_SelectedCamera;
-    wxString m_SelectedMount;
-    bool m_PositionAware;
-    wxString m_SelectedAuxMount;
-    wxString m_SelectedAO;
-    int m_FocalLength;
-    double m_GuideSpeed;
-    double m_PixelSize;
-    wxString m_ProfileName;
-    wxBitmap *m_bitmaps[NUM_PAGES];
-
-    void OnNext(wxCommandEvent& evt);
-    void OnPrev(wxCommandEvent& evt);
-    void OnGearChoice(wxCommandEvent& evt);
-    void OnPixelSizeChange(wxSpinDoubleEvent& evt);
-    void OnFocalLengthChange(wxSpinDoubleEvent& evt);
-    void OnBinningChange(wxCommandEvent& evt);
-    void UpdatePixelScale();
-    void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
-    void OnContextHelp(wxCommandEvent& evt);
-    void ShowStatus(const wxString& msg, bool appending = false);
-    void UpdateState(const int change);
-    bool SemanticCheck(DialogState state, int change);
-    void ShowHelp(DialogState state);
-    void WrapUp();
-    void InitCameraProps(bool tryConnect);
-    void InitMountProps(Scope *theScope);
-    DialogState m_State;
-    bool m_useCamera;
-    bool m_useMount;
-    bool m_useAuxMount;
-
-public:
-
-    bool m_launchDarks;
-
-    ProfileWizard(wxWindow *parent, bool firstLight);
-    ~ProfileWizard(void);
-
-    wxDECLARE_EVENT_TABLE();
-};
-
-class ConnectDialog : public wxDialog
-{
-    wxStaticText *m_Instructions;
-    ProfileWizard* m_Parent;
-
-public:
-    ConnectDialog(ProfileWizard *parent, ProfileWizard::DialogState currState);
-
-    void OnYesButton(wxCommandEvent& evt);
-    void OnNoButton(wxCommandEvent& evt);
-    void OnCancelButton(wxCommandEvent& evt);
+    static bool ShowModal(wxWindow *parent, bool showGreeting, bool *darks_requested);
 };
 
 #endif

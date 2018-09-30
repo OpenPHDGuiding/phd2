@@ -38,12 +38,110 @@
 
 #include <memory>
 
+class ProfileWizard : public wxDialog
+{
+public:
+    enum DialogState
+    {
+        STATE_GREETINGS = 0,
+        STATE_CAMERA,
+        STATE_MOUNT,
+        STATE_AUXMOUNT,
+        STATE_AO,
+        STATE_WRAPUP,
+        STATE_DONE, NUM_PAGES = STATE_DONE
+    };
+
+    enum CtrlIds
+    {
+        ID_COMBO = 10001,
+        ID_PIXELSIZE,
+        ID_DETECT_GUIDESPEED,
+        ID_FOCALLENGTH,
+        ID_BINNING,
+        ID_GUIDESPEED,
+        ID_PREV,
+        ID_HELP,
+        ID_NEXT
+    };
+
+private:
+    AutoTempProfile m_profile;
+
+    // wx UI controls
+    wxBoxSizer *m_pvSizer;
+    wxStaticBitmap *m_bitmap;
+    wxStaticText *m_pInstructions;
+    wxStaticText *m_pGearLabel;
+    wxChoice *m_pGearChoice;
+    wxSpinCtrlDouble *m_pPixelSize;
+    wxStaticBitmap *m_scaleIcon;
+    wxStaticText *m_pixelScale;
+    wxChoice *m_pBinningLevel;
+    wxSpinCtrlDouble *m_pFocalLength;
+    wxSpinCtrlDouble *m_pGuideSpeed;
+    wxButton *m_pPrevBtn;
+    wxButton *m_pNextBtn;
+    wxStaticBoxSizer *m_pHelpGroup;
+    wxStaticText *m_pHelpText;
+    wxFlexGridSizer *m_pGearGrid;
+    wxGridBagSizer *m_pUserProperties;
+    wxFlexGridSizer *m_pMountProperties;
+    wxFlexGridSizer *m_pWrapUp;
+    wxTextCtrl *m_pProfileName;
+    wxCheckBox *m_pLaunchDarks;
+    wxStatusBar *m_pStatusBar;
+
+    wxString m_SelectedCamera;
+    wxString m_SelectedMount;
+    bool m_PositionAware;
+    wxString m_SelectedAuxMount;
+    wxString m_SelectedAO;
+    int m_FocalLength;
+    double m_GuideSpeed;
+    double m_PixelSize;
+    wxString m_ProfileName;
+    wxBitmap *m_bitmaps[NUM_PAGES];
+
+    void OnNext(wxCommandEvent& evt);
+    void OnPrev(wxCommandEvent& evt);
+    void OnGearChoice(wxCommandEvent& evt);
+    void OnPixelSizeChange(wxSpinDoubleEvent& evt);
+    void OnFocalLengthChange(wxSpinDoubleEvent& evt);
+    void OnFocalLengthText(wxCommandEvent& evt);
+    void OnBinningChange(wxCommandEvent& evt);
+    void UpdatePixelScale();
+    void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
+    void OnContextHelp(wxCommandEvent& evt);
+    void ShowStatus(const wxString& msg, bool appending = false);
+    void UpdateState(const int change);
+    bool SemanticCheck(DialogState state, int change);
+    void ShowHelp(DialogState state);
+    void WrapUp();
+    void InitCameraProps(bool tryConnect);
+    void InitMountProps(Scope *theScope);
+    DialogState m_State;
+    bool m_useCamera;
+    bool m_useMount;
+    bool m_useAuxMount;
+
+public:
+
+    bool m_launchDarks;
+
+    ProfileWizard(wxWindow *parent, bool showGreeting);
+    ~ProfileWizard(void);
+
+    wxDECLARE_EVENT_TABLE();
+};
+
 wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
 EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
 EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
 EVT_CHOICE(ID_BINNING, ProfileWizard::OnBinningChange)
 EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
 EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
@@ -56,22 +154,33 @@ static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
 static wxString TitlePrefix;
 
+static const double MIN_FOCAL_LENGTH = 50.0;
+
+static wxStaticText *Label(wxWindow *parent, const wxString& txt)
+{
+    return new wxStaticText(parent, wxID_ANY, wxString::Format(_("%s:"), txt));
+}
+
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxWindow *pControl)
 {
-    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "));
-    pTable->Add(pLabel, 1, wxALL, 5);
-    pTable->Add(pControl, 1, wxALL, 5);
+    pTable->Add(Label(parent, label), 0, wxALL, 5);
+    pTable->Add(pControl, 0, wxALL, 5);
 }
 
 static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxSizer *group)
 {
-    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "));
-    pTable->Add(pLabel, 1, wxALL, 5);
-    pTable->Add(group, 1, wxALL, 5);
+    pTable->Add(Label(parent, label), 0, wxALL, 5);
+    pTable->Add(group, 0, wxALL, 5);
 }
 
-ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
+static void AddCellPair(wxWindow *parent, wxGridBagSizer *gbs, int row, const wxString& label, wxWindow *ctrl)
+{
+    gbs->Add(Label(parent, label), wxGBPosition(row, 1), wxDefaultSpan, wxALL, 5);
+    gbs->Add(ctrl, wxGBPosition(row, 2), wxDefaultSpan, wxALL, 5);
+}
+
+ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
     m_launchDarks(true), m_useCamera(false), m_useMount(false), m_useAuxMount(false)
 {
@@ -120,6 +229,10 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
     m_pvSizer->Add(m_pHelpGroup, wxSizerFlags().Border(wxALL, 5));
 
+    // Status bar for error messages
+    m_pStatusBar = new wxStatusBar(this, -1);
+    m_pStatusBar->SetFieldsCount(1);
+
     // Gear label and combo box
     m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 15);
     m_pGearLabel = new wxStaticText(this, wxID_ANY, "Temp:", wxDefaultPosition, wxDefaultSize);
@@ -129,40 +242,50 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
+    m_pUserProperties = new wxGridBagSizer(5, 5);
+
     // Pixel-size
-    m_pUserProperties = new wxFlexGridSizer(4, 2, 5, 15);
-    m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
-                                          wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
+    m_pPixelSize = pFrame->MakeSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
+        wxSize(StringWidth(this, _T("888.88")), -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.1);
     m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
     m_pPixelSize->SetToolTip(_("Get this value from your camera documentation or from an online source.  You can use the up/down control "
         "or type in a value directly. If the pixels aren't square, just enter the larger of the X/Y dimensions."));
-    AddTableEntryPair(this, m_pUserProperties, _("Guide camera un-binned pixel size (microns)"), m_pPixelSize);
+    AddCellPair(this, m_pUserProperties, 0, wxString::Format(_("Guide camera un-binned pixel size (%s)"), MICRONS_SYMBOL), m_pPixelSize);
 
     // Binning
     wxArrayString opts;
     GuideCamera::GetBinningOpts(4, &opts);
     m_pBinningLevel = new wxChoice(this, ID_BINNING, wxDefaultPosition, wxDefaultSize, opts);
     m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  "
-                                  "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
-                                  "stars.  For more common set-ups, it's better to leave binning at 1."));
+        "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
+        "stars.  For more common set-ups, it's better to leave binning at 1."));
     m_pBinningLevel->SetSelection(0);
-    AddTableEntryPair(this, m_pUserProperties, _("Binning level"), m_pBinningLevel);
+    wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
+    sz->Add(Label(this, _("Binning level")), 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sz->Add(m_pBinningLevel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_pUserProperties->Add(sz, wxGBPosition(1, 1), wxDefaultSpan, 0, 0);
 
     // Focal length
-    m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
-        wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
+    m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
+        wxSize(StringWidth(this, _T("88888")), -1), wxSP_ARROW_KEYS, MIN_FOCAL_LENGTH, 3000.0, 300.0, 50.0);
     m_pFocalLength->SetValue(300);
     m_pFocalLength->SetDigits(0);
     m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
-    m_FocalLength = (int) m_pFocalLength->GetValue();
-    AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
+    m_FocalLength = (int)m_pFocalLength->GetValue();
+    AddCellPair(this, m_pUserProperties, 2, _("Guide scope focal length (mm)"), m_pFocalLength);
 
     // pixel scale
+
+#   include "icons/transparent24.png.h"
+    wxBitmap transparent(wxBITMAP_PNG_FROM_DATA(transparent24));
+    m_scaleIcon = new wxStaticBitmap(this, wxID_ANY, transparent);
+    m_pUserProperties->Add(m_scaleIcon, wxGBPosition(3, 0));
+
     m_pixelScale = new wxStaticText(this, wxID_ANY, wxString::Format(_("Pixel scale: %8.2f\"/px"), 99.99));
     m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
-    m_pUserProperties->Add(m_pixelScale, 1, wxALL, 5);
+    m_pUserProperties->Add(m_pixelScale, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 5);
 
     UpdatePixelScale();
 
@@ -214,9 +337,6 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         wxSizerFlags(0).Align(0).Border(wxALL, 5));
     m_pvSizer->Add(pButtonSizer, wxSizerFlags().Expand().Border(wxALL, 10));
 
-    // Status bar for error messages
-    m_pStatusBar = new wxStatusBar(this, -1);
-    m_pStatusBar->SetFieldsCount(1);
     m_pvSizer->Add(m_pStatusBar, 0, wxGROW);
 
     SetAutoLayout(true);
@@ -224,7 +344,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Special cases - neither AuxMount nor AO requires an explicit user choice
     m_SelectedAuxMount = _("None");
     m_SelectedAO = _("None");
-    if (firstLight)
+    if (showGreeting)
         m_State = STATE_GREETINGS;
     else
         m_State = STATE_CAMERA;
@@ -302,7 +422,6 @@ void ProfileWizard::ShowHelp(DialogState state)
     m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10).Expand());
     m_pHelpGroup->Layout();
     SetSizerAndFit(m_pvSizer);
-
 }
 
 void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
@@ -700,6 +819,18 @@ void ProfileWizard::WrapUp()
     EndModal(wxOK);
 }
 
+class ConnectDialog : public wxDialog
+{
+    wxStaticText *m_Instructions;
+    ProfileWizard* m_Parent;
+
+public:
+    ConnectDialog(ProfileWizard *parent, ProfileWizard::DialogState currState);
+
+    void OnYesButton(wxCommandEvent& evt);
+    void OnNoButton(wxCommandEvent& evt);
+    void OnCancelButton(wxCommandEvent& evt);
+};
 
 // Event handlers below
 void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
@@ -935,9 +1066,25 @@ void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
     UpdatePixelScale();
 }
 
+void ProfileWizard::OnFocalLengthText(wxCommandEvent& evt)
+{
+    unsigned long val;
+    if (evt.GetString().ToULong(&val) && val >= MIN_FOCAL_LENGTH)
+    {
+        m_FocalLength = val;
+        UpdatePixelScale();
+    }
+}
+
 void ProfileWizard::OnBinningChange(wxCommandEvent& evt)
 {
     UpdatePixelScale();
+}
+
+inline static double round2(double x)
+{
+    // round x to 2 decimal places
+    return floor(x * 100. + 0.5) / 100.;
 }
 
 void ProfileWizard::UpdatePixelScale()
@@ -945,6 +1092,33 @@ void ProfileWizard::UpdatePixelScale()
     int binning = m_pBinningLevel->GetSelection() + 1;
     double scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
     m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
+    static const double MIN_SCALE = 0.50;
+    if (scale != 0.0 && round2(scale) < MIN_SCALE)
+    {
+        if (!m_scaleIcon->GetClientData())
+        {
+            m_scaleIcon->SetClientData((void *)-1); // so we only do this once
+#   include "icons/alert24.png.h"
+            wxBitmap alert(wxBITMAP_PNG_FROM_DATA(alert24));
+            m_scaleIcon->SetBitmap(alert);
+            m_scaleIcon->SetToolTip(_("Guide star identification works best when the pixel scale is above 0.5\"/px. "
+                "Select binning level 2 to increase the pixel scale."));
+            m_scaleIcon->Hide();
+        }
+        if (!m_scaleIcon->IsShown())
+        {
+            m_scaleIcon->ShowWithEffect(wxSHOW_EFFECT_BLEND, 2000);
+            ShowStatus(_("Low pixel scale"));
+        }
+    }
+    else
+    {
+        if (m_scaleIcon->IsShown())
+        {
+            m_scaleIcon->Hide();
+            ShowStatus(wxEmptyString);
+        }
+    }
 }
 
 void ProfileWizard::OnGuideSpeedChange(wxSpinDoubleEvent& evt)
@@ -1047,4 +1221,13 @@ void ConnectDialog::OnNoButton(wxCommandEvent& evt)
 void ConnectDialog::OnCancelButton(wxCommandEvent& evt)
 {
     EndModal(wxCANCEL);
+}
+
+bool EquipmentProfileWizard::ShowModal(wxWindow *parent, bool showGreeting, bool *darks_requested)
+{
+    ProfileWizard wiz(parent, showGreeting);
+    if (wiz.ShowModal() != wxOK)
+        return false;
+    *darks_requested = wiz.m_launchDarks;
+    return true;
 }

@@ -115,6 +115,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #endif
 
 #define DEGREES_SYMBOL "\u00B0"
+#define MICRONS_SYMBOL "\u00B5m"
 
 //#define TEST_TRANSFORMS
 
