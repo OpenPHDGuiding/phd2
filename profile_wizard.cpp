@@ -341,6 +341,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
 
     SetAutoLayout(true);
     SetSizerAndFit(m_pvSizer);
+    CentreOnScreen();
+
     // Special cases - neither AuxMount nor AO requires an explicit user choice
     m_SelectedAuxMount = _("None");
     m_SelectedAO = _("None");
