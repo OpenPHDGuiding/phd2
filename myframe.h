@@ -231,10 +231,11 @@ public:
     wxWindow *pPolarDriftTool;
     wxWindow *pStaticPaTool;
     wxWindow *pManualGuide;
-    wxDialog * pStarCrossDlg;
+    wxDialog *pStarCrossDlg;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
     wxWindow *pGuidingAssistant;
+    wxWindow *pierFlipToolWin;
     RefineDefMap *pRefineDefMap;
     wxDialog *pCalSanityCheckDlg;
     wxDialog *pCalReviewDlg;
@@ -279,6 +280,7 @@ public:
     void OnIdle(wxIdleEvent& evt);
     void OnTestGuide(wxCommandEvent& evt);
     void OnStarCrossTest(wxCommandEvent& evt);
+    void OnPierFlipTool(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnPolarDriftTool(wxCommandEvent& evt);
@@ -639,6 +641,7 @@ enum {
     MENU_BOOKMARKS_SET_AT_STAR,
     MENU_BOOKMARKS_CLEAR_ALL,
     MENU_STARCROSS_TEST,
+    MENU_PIERFLIP_TOOL,
     MENU_HELP_UPGRADE,
     MENU_HELP_ONLINE,
     MENU_HELP_UPLOAD_LOGS,

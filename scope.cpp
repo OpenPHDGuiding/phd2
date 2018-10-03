@@ -1838,7 +1838,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 
     AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibGroupSizer);
 
-    m_pNeedFlipDec = new wxCheckBox(GetParentWindow(AD_cbReverseDecOnFlip), wxID_ANY, _("Reverse Dec output after meridian flip"));
+    m_pNeedFlipDec = new wxCheckBox(GetParentWindow(AD_cbReverseDecOnFlip), wxID_ANY,
+        _("Reverse Dec output after meridian flip"));
     AddCtrl(CtrlMap, AD_cbReverseDecOnFlip, m_pNeedFlipDec,
         _("Check if your mount needs Dec output reversed after a meridian flip"));
     m_pNeedFlipDec->Enable(enableCtrls);

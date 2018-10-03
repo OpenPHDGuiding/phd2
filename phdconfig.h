@@ -96,6 +96,8 @@ public:
 
     void DeleteEntry(const wxString& name);
     void DeleteGroup(const wxString& name);
+
+    wxConfig *GetWxConfig() const { return m_pConfig; }
 };
 
 class PhdConfig

@@ -322,16 +322,23 @@ void PhdController::UpdateControllerState(void)
             }
             else if (pFrame->pGuider->IsCalibratingOrGuiding())
             {
-                GUIDER_STATE state = pFrame->pGuider->GetState();
-                Debug.Write(wxString::Format("PhdController: guider state = %d\n", state));
-                if (state == STATE_CALIBRATED || state == STATE_GUIDING)
+                if (ctrl.forceCalibration)
                 {
-                    SETSTATE(STATE_SETTLE_BEGIN);
+                    SETSTATE(STATE_CALIBRATE);
                 }
                 else
                 {
-                    SETSTATE(STATE_CALIBRATION_WAIT);
-                    done = true;
+                    GUIDER_STATE state = pFrame->pGuider->GetState();
+                    Debug.Write(wxString::Format("PhdController: guider state = %d\n", state));
+                    if (state == STATE_CALIBRATED || state == STATE_GUIDING)
+                    {
+                        SETSTATE(STATE_SETTLE_BEGIN);
+                    }
+                    else
+                    {
+                        SETSTATE(STATE_CALIBRATION_WAIT);
+                        done = true;
+                    }
                 }
             }
             else if (!pFrame->CaptureActive)

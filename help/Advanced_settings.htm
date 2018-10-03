@@ -356,27 +356,30 @@ of this checkbox is completely optional. &nbsp;If you find that
 calibration often fails because the star is lost during the fast re-center,
 you should disable this option. &nbsp;That sort of problem may
 indicate that you have a large polar alignment error or excessive periodic
-error in RA. &nbsp;You can run the Guiding Assistant to help see what's causing the problem.</li><li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
-output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
+error in RA. &nbsp;You can run the Guiding Assistant to help see what's causing the problem.</li>
+
+  <li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec output after meridian flip' -&nbsp;
+    tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data after a meridian flip. &nbsp;Some
 mounts track their 'side of pier' state and automatically reverse the
 direction of the declination motor. &nbsp;Most&nbsp;mounts do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span>
-needs to know if
-the
-mount will automatically change its behavior based on
+needs to know if the mount will automatically change its behavior based on
 side-of-pier. &nbsp;You may have difficulty finding information about
-how your mount behaves in this respect, so it's probably easiest to
-just run a quick experiment. &nbsp;With the checkbox disabled,
-calibrate on one side of the pier, then move the mount to the other
-side. &nbsp;If you are guiding via ASCOM or Indi or are using an 'aux
-mount' connection, just start guiding. &nbsp;If you're guiding only via
-ST-4 and PHD2 has no scope pointing information, first select
-&nbsp;'Flip Calibration' under the 'Tools' menu, and
-then start guiding. &nbsp;In either case, if the guiding works
-normally, leave the box
-un-checked; but if you see run-away <span style="font-weight: bold; font-style: italic;">in declination</span>, check the box and
-repeat the entire procedure, including calibration.</li><li>'<a name="Enable_guide_output"></a>Enable
-mount guide output'
+    how your mount behaves in this respect, so PHD2 provides the <a href="Tools.htm#pierflip_cal_tool">Meridian flip calibration tool</a> to determine the correct setting automatically.
+    It's also easy to figure out the setting manually with this quick experiment:
+
+    <ul>
+      <li>With the checkbox disabled, calibrate on one side of the pier, then move the mount to the other
+        side.</li>
+      <li>If you are guiding via ASCOM or Indi or are using an 'aux mount' connection, just start guiding.</li>
+      <li>If you're guiding only via ST-4 and PHD2 has no scope pointing information, first select 'Flip Calibration' under the 'Tools' menu, and then start guiding.</li>
+      <li>In either case, if the guiding works normally, leave the box un-checked; but</li>
+      <li>if you see guiding run-away <span style="font-weight: bold; font-style: italic;">in
+          declination</span>, check the box and repeat the entire procedure, including calibration.</li>
+    </ul>
+  </li>
+
+  <li>'<a name="Enable_guide_output"></a>Enable mount guide output'
 - this is normally checked because it tells <span style="font-style: italic;">PHD2</span> to send guide
 commands&nbsp;to the mount. &nbsp;But there are some
 circumstances

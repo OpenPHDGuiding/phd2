@@ -40,6 +40,7 @@
 #include "darks_dialog.h"
 #include "image_math.h"
 #include "log_uploader.h"
+#include "pierflip_tool.h"
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
 
@@ -862,6 +863,8 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
         pDriftTool->Center();
     if (pGuidingAssistant)
         pGuidingAssistant->Center();
+    if (pierFlipToolWin)
+        pierFlipToolWin->Center();
     if (pNudgeLock)
         pNudgeLock->Center();
 }
@@ -1046,6 +1049,17 @@ void MyFrame::OnStarCrossTest(wxCommandEvent& evt)
         pStarCrossDlg = new StarCrossDialog(this);
 
     pStarCrossDlg->Show();
+}
+
+void MyFrame::OnPierFlipTool(wxCommandEvent& evt)
+{
+    wxString error;
+    if (!PierFlipTool::CanRunTool(&error))
+    {
+        wxMessageBox(error, _("Meridian Flip Calibration Tool"));
+        return;
+    }
+    PierFlipTool::ShowPierFlipCalTool();
 }
 
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)

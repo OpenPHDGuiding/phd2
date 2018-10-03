@@ -85,6 +85,23 @@ void AdvancedDialog::CleanupCtrlSets(void)
     m_pRotatorCtrlSet = NULL;
 }
 
+static wxString HelpLink(wxBookCtrlBase *nb)
+{
+    const wxString& txt = nb->GetPageText(nb->GetSelection());
+    if (txt == _("Global"))
+        return _T("Advanced_settings.htm#Global_Tab");
+    else if (txt == _("Camera"))
+        return _T("Advanced_settings.htm#Camera_Tab");
+    else if (txt == _("Guiding"))
+        return _T("Advanced_settings.htm#Guiding_Tab");
+    else if (txt == _("Algorithms"))
+        return _T("Advanced_settings.htm#Algorithms_Tab");
+    else if (txt == _("Other Devices"))
+        return _T("Advanced_settings.htm#Other_Devices_Tab");
+    else
+        return wxEmptyString;
+}
+
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
@@ -96,11 +113,11 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
      *
      * Each tab of the notebook contains one or more ConfigDialogPane(s) which are basically vertical
      * sizers to hold a bunch of UI controls.  The UI controls are constructed and managed by ConfigDialogCtrlSet
-     * objects.  These reflect the internal organization of the app and generally bind one-to-one with the major internal 
+     * objects.  These reflect the internal organization of the app and generally bind one-to-one with the major internal
      * classes: MyFrame, Guider, Camera, Mount, Scope, AO, Rotator, etc.  The controls created by the ConfigDialogCtrlSet
      * objects are laid out on the various panes by the ConfigDialogPane instances.  So there is a level of indirection here
      * such that the controls can generally be placed anywhere, and the ConfigDialogCtrlSet objects don't care.  This means the
-     * overall UI can be optimized for end-users while allowing the underlying controls to reside where they should from an 
+     * overall UI can be optimized for end-users while allowing the underlying controls to reside where they should from an
      * internal architecture perspective.
      * +------------------------------------+------------------------------------+
      * | |   Notebook tabs                                                    |  |
@@ -186,7 +203,17 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     // Ok and cancel buttons for the entire dialog box
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
     pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
-    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
+    wxSizer *bsz = CreateButtonSizer(wxOK | wxCANCEL);
+    bsz->PrependStretchSpacer();
+    wxButton *helpbtn = new wxButton(this, wxID_ANY, _("Help"));
+#   include "icons/help22.png.h"
+    wxBitmap help_bmp(wxBITMAP_PNG_FROM_DATA(help22));
+    helpbtn->SetBitmap(help_bmp, wxLEFT);
+    helpbtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this](wxCommandEvent& evt) {
+            ::pFrame->help->Display(HelpLink(m_pNotebook));
+        });
+    bsz->Prepend(helpbtn);
+    pTopLevelSizer->Add(bsz, wxSizerFlags(0).Expand().Border(wxALL, 5));
     SetSizerAndFit(pTopLevelSizer);
 
     m_rebuildPanels = false;
@@ -228,7 +255,7 @@ void AdvancedDialog::RebuildPanels(void)
 
     m_pGlobalPane->Clear(true);
     m_pCameraPane->Clear(true);
-    
+
     m_pCameraSettingsPanel->GetSizer()->Clear(true);
     m_pGuiderPane->Clear(true);
 
@@ -259,7 +286,7 @@ void AdvancedDialog::RebuildPanels(void)
 
     m_pGuiderPane->LayoutControls(m_pFrame->pGuider, m_brainCtrls);     // Guider pane doesn't have specific device dependencies
     m_pGuiderPane->Layout();
- 
+
     AddMountPage();
 
     AddAoPage();            // Will handle no AO case

@@ -40,6 +40,7 @@
 #include "comet_tool.h"
 #include "guiding_assistant.h"
 #include "phdupdate.h"
+#include "pierflip_tool.h"
 #include "Refine_DefMap.h"
 
 #include <algorithm>
@@ -105,7 +106,8 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_LOADDEFECTMAP,MyFrame::OnLoadDefectMap)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
     EVT_MENU(MENU_STARCROSS_TEST, MyFrame::OnStarCrossTest)
-    EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
+    EVT_MENU(MENU_PIERFLIP_TOOL, MyFrame::OnPierFlipTool)
+    EVT_MENU(MENU_XHAIR0, MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
@@ -362,6 +364,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pRefineDefMap = nullptr;
     pCalSanityCheckDlg = nullptr;
     pCalReviewDlg = nullptr;
+    pierFlipToolWin = nullptr;
     m_starFindMode = Star::FIND_CENTROID;
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
@@ -453,7 +456,6 @@ MyFrame::~MyFrame()
         pPolarDriftTool->Destroy();
     if (pStaticPaTool)
         pStaticPaTool->Destroy();
-
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
     if (pCalSanityCheckDlg)
@@ -462,6 +464,8 @@ MyFrame::~MyFrame()
         pCalReviewDlg->Destroy();
     if (pStarCrossDlg)
         pStarCrossDlg->Destroy();
+    if (pierFlipToolWin)
+        pierFlipToolWin->Destroy();
 
     m_mgr.UnInit();
 
@@ -506,6 +510,7 @@ void MyFrame::SetupMenuBar()
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
+    tools_menu->Append(MENU_PIERFLIP_TOOL, _("Calibrate meridian flip"), _("Automatically determine the correct meridian flip settings"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Align by analysing star drift near the celestial equator (Accurate)"));
     tools_menu->Append(MENU_POLARDRIFTTOOL, _("&Polar Drift Align"), _("Align by analysing star drift near the celestial pole (Simple)"));
@@ -985,6 +990,14 @@ void MyFrame::SetupKeyboardShortcuts()
     SetAcceleratorTable(accel);
 }
 
+struct PHDHelpController : public wxHtmlHelpController
+{
+    PHDHelpController()
+    {
+        UseConfig(pConfig->Global.GetWxConfig(), "/help");
+    }
+};
+
 void MyFrame::SetupHelpFile()
 {
     wxFileSystem::AddHandler(new wxZipFSHandler);
@@ -999,7 +1012,7 @@ void MyFrame::SetupHelpFile()
         filename = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
             + _T("PHD2GuideHelp.zip");
     }
-    help = new wxHtmlHelpController;
+    help = new PHDHelpController();
     retval = help->AddBook(filename);
     if (!retval)
     {
@@ -1102,6 +1115,9 @@ void MyFrame::UpdateButtonsStatus()
 
     if (pGuidingAssistant)
         GuidingAssistant::UpdateUIControls();
+
+    if (pierFlipToolWin)
+        PierFlipTool::UpdateUIControls();
 
     if (need_update)
     {
@@ -1235,7 +1251,7 @@ void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& b
     }
 }
 
-// Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is made if 
+// Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is made if
 // the user has blocked the alert for this type of problem
 void MyFrame::SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton, int flags)
 {
@@ -2084,6 +2100,7 @@ void MyFrame::NotifyGuidingStopped()
 
     EvtServer.NotifyGuidingStopped();
     GuideLog.GuidingStopped();
+    PhdController::AbortController("Guiding stopped");
 }
 
 void MyFrame::SetAutoLoadCalibration(bool val)
@@ -2619,7 +2636,7 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
     ctrl->Bind(wxEVT_KILL_FOCUS, &MyFrame::OnTextControlKillFocus, this);
 }
 
-// Reset the guiding parameters and the various graphical displays when binning changes.  This should be done when guiding starts 
+// Reset the guiding parameters and the various graphical displays when binning changes.  This should be done when guiding starts
 // so the user can experiment with binning without losing guider settings
 void MyFrame::HandleBinningChange()
 {
@@ -2686,7 +2703,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_pFrame = pFrame;
     m_pResetConfiguration = new wxCheckBox(GetParentWindow(AD_cbResetConfig), wxID_ANY, _("Reset Configuration"));
     AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status. This will require restarting PHD2"));
-    m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Show Again\" messages")); 
+    m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Show Again\" messages"));
     AddCtrl(CtrlMap, AD_cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't show this again\"."));
 
     wxString nralgo_choices[] =
@@ -3109,7 +3126,7 @@ inline static void AdjustSpinnerWidth(wxSize *sz)
 #endif
 }
 
-// The spin control factories allow clients to specify a width based on the max width of the numeric values without having 
+// The spin control factories allow clients to specify a width based on the max width of the numeric values without having
 // to make guesses about the additional space required by the other parts of the control
 wxSpinCtrl* MyFrame::MakeSpinCtrl(wxWindow *parent, wxWindowID id, const wxString& value,
     const wxPoint& pos, const wxSize& size, long style,

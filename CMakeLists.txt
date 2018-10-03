@@ -417,28 +417,22 @@ set(phd2_SRC
   ${phd_src_dir}/optionsbutton.h
   ${phd_src_dir}/phd.cpp
   ${phd_src_dir}/phd.h
-
   ${phd_src_dir}/phdconfig.cpp
   ${phd_src_dir}/phdconfig.h
-
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
-
   ${phd_src_dir}/phdindiclient.cpp
   ${phd_src_dir}/phdindiclient.h
-
   ${phd_src_dir}/phdupdate.cpp
   ${phd_src_dir}/phdupdate.h
-
+  ${phd_src_dir}/pierflip_tool.cpp
+  ${phd_src_dir}/pierflip_tool.h
   ${phd_src_dir}/polardrift_tool.h
   ${phd_src_dir}/polardrift_toolwin.h
   ${phd_src_dir}/polardrift_toolwin.cpp
-
   ${phd_src_dir}/profile_wizard.h
   ${phd_src_dir}/profile_wizard.cpp
-
   ${phd_src_dir}/point.h
-
   ${phd_src_dir}/Refine_DefMap.cpp
   ${phd_src_dir}/Refine_DefMap.h
 
