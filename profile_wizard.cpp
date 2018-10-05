@@ -637,6 +637,7 @@ void ProfileWizard::UpdateState(const int change)
             if (m_SelectedCamera == _("Simulator"))
             {
                 m_pMountProperties->Show(false);
+                m_pUserProperties->Show(false);
                 m_SelectedMount = _("On-camera");
                 m_PositionAware = false;
                 UpdateState(change);
