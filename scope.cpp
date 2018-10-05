@@ -289,7 +289,12 @@ bool Scope::SetDecGuideMode(int decGuideMode)
             pFrame->NotifyGuidingParam("Dec Guide Mode", s);
             BacklashComp* blc = GetBacklashComp();
             if (blc)
-                blc->ResetBaseline();
+            {
+                if (decGuideMode != DEC_AUTO)
+                    blc->EnableBacklashComp(false);             // Can't do blc in uni-direction mode because there's no recovery from over-shoots
+                else
+                    blc->ResetBaseline();
+            }
             pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
             if (pFrame)
                 pFrame->UpdateCalibrationStatus();
@@ -1920,6 +1925,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
             m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxDefaultPosition,
                 wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
             AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+            m_pDecMode->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &ScopeConfigDialogCtrlSet::OnDecModeChoice, this);
         }
         m_pScope->currConfigDialogCtrlSet = this;
     }
@@ -1948,8 +1954,21 @@ void ScopeConfigDialogCtrlSet::LoadValues()
         m_pBacklashCeiling->SetValue(ceiling);
         m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
         m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
-        m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
-        m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
+        int whichDecMode = m_pScope->GetDecGuideMode();
+        m_pDecMode->SetSelection(whichDecMode);
+        m_origBLCEnabled = m_pScope->m_backlashComp->IsEnabled();
+        if (whichDecMode == DEC_AUTO)
+        {
+            m_pUseBacklashComp->SetValue(m_origBLCEnabled);
+            m_pUseBacklashComp->Enable(true);
+        }
+        else
+        {
+            m_pUseBacklashComp->SetValue(false);
+            m_pUseBacklashComp->Enable(false);
+        }
+
+
     }
 }
 
@@ -2017,6 +2036,21 @@ int ScopeConfigDialogCtrlSet::GetCalStepSizeCtrlValue()
 void ScopeConfigDialogCtrlSet::SetCalStepSizeCtrlValue(int newStep)
 {
     m_pCalibrationDuration->SetValue(newStep);
+}
+
+void ScopeConfigDialogCtrlSet::OnDecModeChoice(wxCommandEvent& evt)
+{
+    int which = m_pDecMode->GetSelection();
+    if (which != DEC_AUTO)
+    {
+        m_pUseBacklashComp->SetValue(false);
+        m_pUseBacklashComp->Enable(false);
+    }
+    else
+    {
+        m_pUseBacklashComp->SetValue(m_origBLCEnabled);
+        m_pUseBacklashComp->Enable(true);
+    }
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
