@@ -51,6 +51,7 @@ struct PierFlipCalToolWin : public wxFrame
     wxTextCtrl *m_dec;
     wxTextCtrl *m_ha;
     wxTextCtrl *m_pierSide;
+    wxSizer *m_scopePosCtrls;
     wxButton *m_restart;
     wxButton *m_next;
     wxTimer m_timer;
@@ -74,15 +75,19 @@ struct PierFlipCalToolWin : public wxFrame
 
 PierFlipCalToolWin::PierFlipCalToolWin()
     :
-    wxFrame(pFrame, wxID_ANY, _("Meridian Flip Calibration Tool"), wxDefaultPosition, wxSize(334, 350), wxCAPTION|wxCLOSE_BOX|wxFRAME_NO_TASKBAR|wxTAB_TRAVERSAL)
+    wxFrame(pFrame, wxID_ANY, _("Meridian Flip Calibration Tool"), wxDefaultPosition, wxSize(334, 350),
+            wxCAPTION|wxCLOSE_BOX|wxFRAME_NO_TASKBAR|wxTAB_TRAVERSAL)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     wxBoxSizer *sz1 = new wxBoxSizer(wxVERTICAL);
 
-    m_instructions = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+    wxSize sz = GetTextExtent(_T("M"));
+
+    m_instructions = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(31 * sz.GetWidth(), 19 * sz.GetHeight() / 2),
         wxTE_MULTILINE | wxTE_NO_VSCROLL | wxTE_READONLY | wxTE_WORDWRAP);
-    sz1->Add(m_instructions, 1, wxALL|wxEXPAND, 5);
+    sz1->Add(m_instructions, 0, wxALL|wxEXPAND, 5);
 
     wxFlexGridSizer *sz2 = new wxFlexGridSizer(3, 2, 0, 0);
     sz2->SetFlexibleDirection(wxBOTH);
@@ -105,6 +110,8 @@ PierFlipCalToolWin::PierFlipCalToolWin()
 
     m_pierSide = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     sz2->Add(m_pierSide, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_scopePosCtrls = sz2;
 
     sz1->Add(sz2, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
@@ -234,12 +241,19 @@ void PierFlipCalToolWin::SetState(State state)
             "telescope when needed.\n\n"
             "Click Next to begin");
         m_next->SetLabel(_("Next"));
+        m_scopePosCtrls->ShowItems(false);
+        Fit();
         break;
     case ST_SLEW_1:
         s = _("Point the telescope in the direction of the intersection of the meridian and the celestial "
             "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
         m_next->SetLabel(_("Calibrate"));
         m_status->SetStatusText(wxEmptyString);
+        if (!m_scopePosCtrls->AreAnyItemsShown())
+        {
+            m_scopePosCtrls->ShowItems(true);
+            Fit();
+        }
         break;
     case ST_CALIBRATE_1:
         s = _("Wait for the first calibration to complete.");
