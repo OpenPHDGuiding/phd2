@@ -64,8 +64,10 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
     int m_calibrationDistance;
+    bool m_origBLCEnabled;
 
     void OnCalcCalibrationStep(wxCommandEvent& evt);
+    void OnDecModeChoice(wxCommandEvent& evt);
 
 public:
     ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);

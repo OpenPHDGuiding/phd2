@@ -1956,6 +1956,7 @@ void ScopeConfigDialogCtrlSet::LoadValues()
         m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
         int whichDecMode = m_pScope->GetDecGuideMode();
         m_pDecMode->SetSelection(whichDecMode);
+        m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
         m_origBLCEnabled = m_pScope->m_backlashComp->IsEnabled();
         if (whichDecMode == DEC_AUTO)
         {
