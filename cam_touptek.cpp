@@ -338,6 +338,8 @@ CameraToupTek::CameraToupTek()
     :
     m_cam(new ToupCam())
 {
+    Debug.Write(wxString::Format("TOUPTEK: ToupCam SDK version %s\n", Toupcam_Version()));
+
     Name = _T("ToupTek Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;

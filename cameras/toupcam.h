@@ -1,7 +1,7 @@
 #ifndef __toupcam_h__
 #define __toupcam_h__
 
-/* Version: 30.12838.2018.0905 */
+/* Version: 30.13059.2018.1003 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -236,7 +236,7 @@ typedef struct {
 }ToupcamInstV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 30.12838.2018.0905
+    get the version of this dll/so/dylib, which is: 30.13059.2018.1003
 */
 #ifdef _WIN32
 toupcam_ports(const wchar_t*)   Toupcam_Version();
@@ -554,7 +554,7 @@ toupcam_ports(HRESULT)  Toupcam_Flush(HToupCam h);
 */
 toupcam_ports(HRESULT)  Toupcam_get_Temperature(HToupCam h, short* pTemperature);
 
-/* set the target temperature of the sensor, in 0.1 degrees Celsius (32 means 3.2 degrees Celsius, -35 means -3.5 degree Celsius)
+/* set the target temperature of the sensor or TEC, in 0.1 degrees Celsius (32 means 3.2 degrees Celsius, -35 means -3.5 degree Celsius)
     return E_NOTIMPL if not supported
 */
 toupcam_ports(HRESULT)  Toupcam_put_Temperature(HToupCam h, short nTemperature);
