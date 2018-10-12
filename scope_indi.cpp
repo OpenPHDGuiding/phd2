@@ -39,6 +39,7 @@
 #ifdef GUIDE_INDI
 
 #include "config_indi.h"
+#include "phdindiclient.h"
 
 #ifdef LIBNOVA
 # include <libnova/sidereal_time.h>
@@ -48,6 +49,105 @@
 #ifdef INDI_PRE_1_1_0
 typedef INDI_TYPE INDI_PROPERTY_TYPE;
 #endif
+
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
+
+class RunInBg;
+
+class ScopeINDI : public Scope, public PhdIndiClient
+{
+private:
+    ISwitchVectorProperty *connection_prop;
+    INumberVectorProperty *coord_prop;
+    INumberVectorProperty *MotionRate_prop;
+    ISwitchVectorProperty *moveNS_prop;
+    ISwitch               *moveN_prop;
+    ISwitch               *moveS_prop;
+    ISwitchVectorProperty *moveEW_prop;
+    ISwitch               *moveE_prop;
+    ISwitch               *moveW_prop;
+    INumberVectorProperty *GuideRate_prop;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber               *pulseN_prop;
+    INumber               *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber               *pulseE_prop;
+    INumber               *pulseW_prop;
+    ISwitchVectorProperty *oncoordset_prop;
+    ISwitch               *setslew_prop;
+    ISwitch               *settrack_prop;
+    ISwitch               *setsync_prop;
+    INumberVectorProperty *GeographicCoord_prop;
+    INumberVectorProperty *SiderealTime_prop;
+    ITextVectorProperty   *scope_port;
+    ISwitchVectorProperty *pierside_prop;
+    ISwitch               *piersideEast_prop;
+    ISwitch               *piersideWest_prop;
+    ISwitchVectorProperty *AbortMotion_prop;
+    ISwitch               *Abort_prop;
+
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
+
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDIMountName;
+    wxString INDIMountPort;
+    bool     m_modal;
+    bool     m_ready;
+    bool     eod_coord;
+
+    bool     ConnectToDriver(RunInBg *ctx);
+    void     ClearStatus();
+    void     CheckState();
+
+protected:
+    void newDevice(INDI::BaseDevice *dp) override;
+#ifndef INDI_PRE_1_0_0
+    void removeDevice(INDI::BaseDevice *dp) override;
+#endif
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {}
+    void newBLOB(IBLOB *bp) override {}
+    void newSwitch(ISwitchVectorProperty *svp) override;
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override;
+    void newLight(ILightVectorProperty *lvp) override {}
+    void serverConnected() override;
+    void IndiServerDisconnected(int exit_code) override;
+
+public:
+    ScopeINDI();
+    ~ScopeINDI();
+
+    bool     Connect() override;
+    bool     Disconnect() override;
+    bool     HasSetupDialog() const override;
+    void     SetupDialog() override;
+
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
+    bool HasNonGuiMove() override;
+
+    bool   CanPulseGuide() override { return (pulseGuideNS_prop && pulseGuideEW_prop); }
+    bool   CanReportPosition() override { return coord_prop ? true : false; }
+    bool   CanSlew() override { return coord_prop ? true : false; }
+    bool   CanSlewAsync() override;
+    bool   CanCheckSlewing() override { return coord_prop ? true : false; }
+
+    double GetDeclination() override;
+    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
+    bool   GetCoordinates(double *ra, double *dec, double *siderealTime) override;
+    bool   GetSiteLatLong(double *latitude, double *longitude) override;
+    bool   SlewToCoordinates(double ra, double dec) override;
+    bool   SlewToCoordinatesAsync(double ra, double dec) override;
+    void   AbortSlew() override;
+    bool   Slewing() override;
+    PierSide SideOfPier() override;
+};
 
 ScopeINDI::ScopeINDI()
     :
@@ -85,7 +185,7 @@ void ScopeINDI::ClearStatus()
     scope_port = nullptr;
     pierside_prop = nullptr;
     // reset connection status
-    ready = false;
+    m_ready = false;
     eod_coord = false;
     guide_active = false;
     sync_cond.Broadcast(); // just in case worker thread was blocked waiting for guide pulse to complete
@@ -93,24 +193,43 @@ void ScopeINDI::ClearStatus()
 
 void ScopeINDI::CheckState()
 {
-    // Check if the device has all the required properties for our usage.
-    if (IsConnected() &&
-        ((MotionRate_prop && moveNS_prop && moveEW_prop) ||
-         (pulseGuideNS_prop && pulseGuideEW_prop)))
+    // Check if the device has all the required properties
+
+    if (!IsConnected())
+        return;
+
+    if (m_ready)
+        return;
+
+    bool isAuxMount = pFrame->pGearDialog->AuxScope() == this;
+
+    if (isAuxMount)
     {
-        if (!ready)
+        // aux mount just needs the coord prop
+        if (!coord_prop)
+            return;
+    }
+    else
+    {
+        // guiding mount requires guiding props
+        if (!(MotionRate_prop && moveNS_prop && moveEW_prop) &&
+            !(pulseGuideNS_prop && pulseGuideEW_prop))
         {
-            Debug.Write(wxString::Format("INDI Telescope is ready "
-                                         "MotionRate=%d moveNS=%d moveEW=%d guideNS=%d guideEW=%d\n",
-                                         MotionRate_prop ? 1 : 0, moveNS_prop ? 1 : 0, moveEW_prop ? 1 : 0,
-                                         pulseGuideNS_prop ? 1 : 0, pulseGuideEW_prop ? 1 : 0));
-
-            ready = true;
-
-            if (modal)
-                modal = false;
+            return;
         }
     }
+
+    Debug.Write(wxString::Format("INDI Telescope%s is ready "
+                                 "MotionRate=%d moveNS=%d moveEW=%d guideNS=%d guideEW=%d coord=%d\n",
+                                 isAuxMount ? " (AUX)" : "",
+                                 MotionRate_prop ? 1 : 0, moveNS_prop ? 1 : 0, moveEW_prop ? 1 : 0,
+                                 pulseGuideNS_prop ? 1 : 0, pulseGuideEW_prop ? 1 : 0,
+                                 coord_prop ? 1 : 0));
+
+    m_ready = true;
+
+    if (m_modal)
+        m_modal = false;
 }
 
 bool ScopeINDI::HasSetupDialog() const
@@ -120,8 +239,8 @@ bool ScopeINDI::HasSetupDialog() const
 
 void ScopeINDI::SetupDialog()
 {
-    wxString title;
     bool isAuxMount = pFrame->pGearDialog->AuxScope() == this;
+    wxString title;
     IndiDevType devtype;
     if (isAuxMount)
     {
@@ -182,8 +301,8 @@ bool ScopeINDI::Connect()
     // Connect to server.
     if (connectServer())
     {
-        Debug.Write(wxString::Format("INDI Mount: connectServer done ready = %d\n", ready));
-        return !ready;
+        Debug.Write(wxString::Format("INDI Mount: connectServer done ready = %d\n", m_ready));
+        return !m_ready;
     }
 
     // last chance to fix the setup
@@ -194,8 +313,8 @@ bool ScopeINDI::Connect()
 
     if (connectServer())
     {
-        Debug.Write(wxString::Format("INDI Mount: connectServer [2] done ready = %d\n", ready));
-        return !ready;
+        Debug.Write(wxString::Format("INDI Mount: connectServer [2] done ready = %d\n", m_ready));
+        return !m_ready;
     }
 
     return true;
@@ -212,7 +331,7 @@ bool ScopeINDI::Disconnect()
 
 bool ScopeINDI::ConnectToDriver(RunInBg *r)
 {
-    modal = true;
+    m_modal = true;
 
     // set option to receive only the messages, no blob
     setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), nullptr);
@@ -227,7 +346,7 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
         {
             if (r->IsCanceled())
             {
-                modal = false;
+                m_modal = false;
                 return false;
             }
 
@@ -236,7 +355,7 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
         if (!scope_port)
         {
             r->SetErrorMsg(_("Connection timed-out"));
-            modal = false;
+            m_modal = false;
             return false;
         }
 
@@ -252,7 +371,7 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
     {
         if (r->IsCanceled())
         {
-            modal = false;
+            m_modal = false;
             return false;
         }
 
@@ -261,31 +380,31 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
     if (!connection_prop)
     {
         r->SetErrorMsg(_("Connection timed-out"));
-        modal = false;
+        m_modal = false;
         return false;
     }
 
     connectDevice(INDIMountName.mb_str(wxConvUTF8));
 
     msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
+    while (m_modal && wxGetUTCTimeMillis() - msec < 30 * 1000)
     {
         if (r->IsCanceled())
         {
-            modal = false;
+            m_modal = false;
             return false;
         }
 
         wxMilliSleep(20);
     }
 
-    if (!ready)
+    if (!m_ready)
     {
         r->SetErrorMsg(_("Connection timed-out"));
     }
 
-    modal = false;
-    return ready;
+    m_modal = false;
+    return m_ready;
 }
 
 void ScopeINDI::serverConnected()
@@ -360,7 +479,7 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
         }
         else
         {
-            if (ready)
+            if (m_ready)
             {
                 ClearStatus();
 
@@ -869,6 +988,11 @@ PierSide ScopeINDI::SideOfPier()
 bool ScopeINDI::HasNonGuiMove()
 {
     return true;
+}
+
+Scope *INDIScopeFactory::MakeINDIScope()
+{
+    return new ScopeINDI();
 }
 
 #endif /* GUIDE_INDI */

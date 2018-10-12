@@ -34,106 +34,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef  GUIDE_INDI
 
-#include "phdindiclient.h"
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#ifndef SCOPE_INDI_INCLUDED
+#define SCOPE_INDI_INCLUDED
 
-class RunInBg;
-
-class ScopeINDI : public Scope, public PhdIndiClient
+class INDIScopeFactory
 {
-private:
-    ISwitchVectorProperty *connection_prop;
-    INumberVectorProperty *coord_prop;
-    INumberVectorProperty *MotionRate_prop;
-    ISwitchVectorProperty *moveNS_prop;
-    ISwitch               *moveN_prop;
-    ISwitch               *moveS_prop;
-    ISwitchVectorProperty *moveEW_prop;
-    ISwitch               *moveE_prop;
-    ISwitch               *moveW_prop;
-    INumberVectorProperty *GuideRate_prop;
-    INumberVectorProperty *pulseGuideNS_prop;
-    INumber               *pulseN_prop;
-    INumber               *pulseS_prop;
-    INumberVectorProperty *pulseGuideEW_prop;
-    INumber               *pulseE_prop;
-    INumber               *pulseW_prop;
-    ISwitchVectorProperty *oncoordset_prop;
-    ISwitch               *setslew_prop;
-    ISwitch               *settrack_prop;
-    ISwitch               *setsync_prop;
-    INumberVectorProperty *GeographicCoord_prop;
-    INumberVectorProperty *SiderealTime_prop;
-    ITextVectorProperty   *scope_port;
-    ISwitchVectorProperty *pierside_prop;
-    ISwitch               *piersideEast_prop;
-    ISwitch               *piersideWest_prop;
-    ISwitchVectorProperty *AbortMotion_prop;
-    ISwitch               *Abort_prop;
-
-    wxMutex sync_lock;
-    wxCondition sync_cond;
-    bool guide_active;
-    GuideAxis guide_active_axis;
-
-    long     INDIport;
-    wxString INDIhost;
-    wxString INDIMountName;
-    wxString INDIMountPort;
-    bool     modal;
-    bool     ready;
-    bool     eod_coord;
-
-    bool     ConnectToDriver(RunInBg *ctx);
-    void     ClearStatus();
-    void     CheckState();
-
-protected:
-    void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
-    void removeDevice(INDI::BaseDevice *dp) override;
-#endif
-    void newProperty(INDI::Property *property) override;
-    void removeProperty(INDI::Property *property) override {}
-    void newBLOB(IBLOB *bp) override {}
-    void newSwitch(ISwitchVectorProperty *svp) override;
-    void newNumber(INumberVectorProperty *nvp) override;
-    void newMessage(INDI::BaseDevice *dp, int messageID) override;
-    void newText(ITextVectorProperty *tvp) override;
-    void newLight(ILightVectorProperty *lvp) override {}
-    void serverConnected() override;
-    void IndiServerDisconnected(int exit_code) override;
-
 public:
-    ScopeINDI();
-    ~ScopeINDI();
-
-    bool     Connect(void) override;
-    bool     Disconnect(void) override;
-    bool     HasSetupDialog(void) const override;
-    void     SetupDialog() override;
-
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
-    bool HasNonGuiMove(void) override;
-
-    bool   CanPulseGuide() override { return (pulseGuideNS_prop && pulseGuideEW_prop); }
-    bool   CanReportPosition(void) override { return coord_prop ? true : false; }
-    bool   CanSlew(void) override { return coord_prop ? true : false; }
-    bool   CanSlewAsync(void) override;
-    bool   CanCheckSlewing(void) override { return coord_prop ? true : false; }
-
-    double GetDeclination(void) override;
-    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
-    bool   GetCoordinates(double *ra, double *dec, double *siderealTime) override;
-    bool   GetSiteLatLong(double *latitude, double *longitude) override;
-    bool   SlewToCoordinates(double ra, double dec) override;
-    bool   SlewToCoordinatesAsync(double ra, double dec) override;
-    void   AbortSlew(void) override;
-    bool   Slewing(void) override;
-    PierSide SideOfPier(void) override;
+    static Scope *MakeINDIScope();
 };
 
-#endif /* GUIDE_INDI */
+#endif

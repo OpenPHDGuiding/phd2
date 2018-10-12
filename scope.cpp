@@ -407,7 +407,7 @@ Scope *Scope::Factory(const wxString& choice)
 #endif
 #ifdef GUIDE_INDI
         else if (choice.Contains(_("INDI")))
-            pReturn = new ScopeINDI();
+            pReturn = INDIScopeFactory::MakeINDIScope();
 #endif
         else if (choice == _("None"))
             pReturn = nullptr;
