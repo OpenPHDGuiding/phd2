@@ -137,8 +137,6 @@ struct GuiderOffset
 
 class Guider : public wxWindow
 {
-    // Private member data.
-
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
     OverlaySlitCoords m_overlaySlitCoords;
@@ -154,6 +152,9 @@ class Guider : public wxWindow
     time_t m_starFoundTimestamp;  // timestamp when star was last found
     double m_avgDistance;         // averaged distance for distance reporting
     double m_avgDistanceRA;       // averaged distance, RA only
+    double m_avgDistanceLong;     // averaged distance, more smoothed
+    double m_avgDistanceLongRA;   // averaged distance, more smoothed, RA only
+    unsigned int m_avgDistanceCnt;
     bool m_avgDistanceNeedReset;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
@@ -252,6 +253,8 @@ public:
 
     int GetSearchRegion() const;
     double CurrentError(bool raOnly);
+    double CurrentErrorSmoothed(bool raOnly);
+    unsigned int CurrentErrorFrameCount() const { return m_avgDistanceCnt; }
 
     bool GetBookmarksShown() const;
     void SetBookmarksShown(bool show);

@@ -222,6 +222,10 @@ void GuiderOneStar::LoadProfileSettings()
     bool massChangeThreshEnabled = pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", massChangeThreshold != 1.0);
     SetMassChangeThresholdEnabled(massChangeThreshEnabled);
 
+    bool tolerateJumps = pConfig->Profile.GetBoolean("/guider/onestar/TolerateJumpsEnabled", false);
+    double tolerateJumpsThresh = pConfig->Profile.GetDouble("/guider/onestar/TolerateJumpsThreshold", 4.0);
+    SetTolerateJumps(tolerateJumps, tolerateJumpsThresh);
+
     int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DEFAULT_SEARCH_REGION);
     SetSearchRegion(searchRegion);
 }
@@ -266,6 +270,17 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
     pConfig->Profile.SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
 
     return bError;
+}
+
+bool GuiderOneStar::SetTolerateJumps(bool enable, double threshold)
+{
+    m_tolerateJumpsEnabled = enable;
+    pConfig->Profile.SetBoolean("/guider/onestar/TolerateJumpsEnabled", enable);
+
+    m_tolerateJumpsThreshold = threshold;
+    pConfig->Profile.SetDouble("/guider/onestar/TolerateJumpsThreshold", threshold);
+
+    return false;
 }
 
 bool GuiderOneStar::SetSearchRegion(int searchRegion)
@@ -561,46 +576,100 @@ void GuiderOneStar::InvalidateCurrentPosition(bool fullReset)
 
 struct DistanceChecker
 {
-    bool enabled;
-    wxLongLong_t expires;
+    enum State
+    {
+        ST_GUIDING,
+        ST_WAITING,
+        ST_RECOVERING,
+    };
+    State m_state;
+    wxLongLong_t m_expires;
+    double m_forceTolerance;
 
-    enum { ENABLED_INTERVAL_MS = 6 * 1000 };
+    enum { WAIT_INTERVAL_MS = 5000 };
+
+    DistanceChecker() : m_state(ST_GUIDING) { }
 
     void Activate()
     {
-        if (!enabled)
+        if (m_state == ST_GUIDING)
+        {
             Debug.Write("DistanceChecker: activated\n");
-
-        enabled = true;
-        expires = ::wxGetUTCTimeMillis().GetValue() + ENABLED_INTERVAL_MS;
+            m_state = ST_WAITING;
+            m_expires = ::wxGetUTCTimeMillis().GetValue() + WAIT_INTERVAL_MS;
+            m_forceTolerance = 2.0;
+        }
     }
 
-    bool CheckDistance(double distance)
+    static bool _CheckDistance(double distance, bool raOnly, double tolerance)
     {
-        if (!enabled)
-            return true;
-
-        wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
-        if (now < expires)
+        enum { MIN_FRAMES_FOR_STATS = 10 };
+        Guider *guider = pFrame->pGuider;
+        if (!guider->IsGuiding() || guider->IsPaused() || PhdController::IsSettling() ||
+            guider->CurrentErrorFrameCount() < MIN_FRAMES_FOR_STATS)
         {
-            // Star was recently rejected. Check the guide error and reject the frame if the guide
-            // error is large. This helps to handle the case of an object like a satellite
-            // traversing the searach region and causing one or more bad frames, but with only the
-            // first frame triggering the star rejection.
+            return true;
+        }
+        double avgDist = pFrame->pGuider->CurrentErrorSmoothed(raOnly);
+        double threshold = tolerance * avgDist;
+        if (distance > threshold)
+        {
+            Debug.Write(wxString::Format("DistanceChecker: reject for large offset (%.2f > %.2f) avgDist = %.2f count = %u\n",
+                                         distance, threshold, avgDist, guider->CurrentErrorFrameCount()));
+            return false;
+        }
+        return true;
+    }
 
-            double distanceThreshold = 2.0 * pFrame->pGuider->CurrentError(false);
-            if (distance > distanceThreshold)
+    bool CheckDistance(double distance, bool raOnly, double tolerance)
+    {
+        if (m_forceTolerance != 0.)
+            tolerance = m_forceTolerance;
+
+        bool small_offset = _CheckDistance(distance, raOnly, tolerance);
+
+        switch (m_state)
+        {
+        default:
+        case ST_GUIDING:
+            if (small_offset)
+                return true;
+
+            Debug.Write("DistanceChecker: activated\n");
+            m_state = ST_WAITING;
+            m_expires = ::wxGetUTCTimeMillis().GetValue() + WAIT_INTERVAL_MS;
+            return false;
+
+        case ST_WAITING:
+        {
+            if (small_offset)
             {
-                Debug.Write(wxString::Format("DistanceChecker: reject for large offset (%.2f > %.2f)\n", distance, distanceThreshold));
+                Debug.Write("DistanceChecker: deactivated\n");
+                m_state = ST_GUIDING;
+                m_forceTolerance = 0.;
+                return true;
+            }
+            // large distance
+            wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
+            if (now < m_expires)
+            {
+                // reject frame
                 return false;
             }
+            // timed-out
+            Debug.Write("DistanceChecker: begin recovering\n");
+            m_state = ST_RECOVERING;
+            // fall through
         }
 
-        // "small" offset, safe to assume recovery complete
-        Debug.Write("DistanceChecker: deactivated\n");
-        enabled = false;
-
-        return true;
+        case ST_RECOVERING:
+            if (small_offset)
+            {
+                Debug.Write("DistanceChecker: deactivated\n");
+                m_state = ST_GUIDING;
+            }
+            return true;
+        }
     }
 };
 
@@ -657,7 +726,10 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
                 errorInfo->starSNR = newStar.SNR;
                 errorInfo->status = StarStatusStr(m_star);
                 pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
-                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% limits=(%.1f, %.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2], limits[3]));
+
+                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% limits=(%.1f, %.1f, %.1f)\n",
+                    newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2], limits[3]));
+
                 m_massChecker->AppendData(newStar.Mass);
 
                 s_distanceChecker.Activate();
@@ -668,9 +740,21 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
         }
 
         const PHD_Point& lockPos = LockPosition();
-        double distance = lockPos.IsValid() ? newStar.Distance(lockPos) : -1.;
+        double distance;
+        bool raOnly = MyFrame::GuidingRAOnly();
+        if (lockPos.IsValid())
+        {
+            if (raOnly)
+                distance = fabs(newStar.X - lockPos.X);
+            else
+                distance = newStar.Distance(lockPos);
+        }
+        else
+            distance = 0.;
 
-        if (!s_distanceChecker.CheckDistance(distance))
+        double tolerance = m_tolerateJumpsEnabled ? m_tolerateJumpsThreshold : 9e99;
+
+        if (!s_distanceChecker.CheckDistance(distance, raOnly, tolerance))
         {
             m_star.SetError(Star::STAR_ERROR);
             errorInfo->starError = Star::STAR_ERROR;

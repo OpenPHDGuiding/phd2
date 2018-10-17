@@ -35,7 +35,9 @@
 // General camera routines not specific to any one cam
 
 #include "phd.h"
+
 #include "camera.h"
+#include "gear_simulator.h"
 
 #include <wx/stdpaths.h>
 
@@ -132,10 +134,6 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #if defined (FIREWIRE)
 # include "cam_firewire.h"
 #endif
-
-//#if defined (SIMULATOR)
-#include "cam_simulator.h"
-//#endif
 
 #if defined (MEADE_DSI)
 # include "cam_MeadeDSI.h"
@@ -290,6 +288,7 @@ wxArrayString GuideCamera::GuideCameraList()
 #endif
 #if defined (ALTAIR)
 	CameraList.Add(_T("Altair Camera"));
+    CameraList.Add(_T("Altair Camera (2015/2016)"));
 #endif
 #if defined (ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
@@ -383,7 +382,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice == _("None"))
             pReturn = nullptr;
         else if (choice == _T("Simulator"))
-            pReturn = new CameraSimulator();
+            pReturn = GearSimulator::MakeCamSimulator();
 #if defined (SAC42)
         else if (choice.Contains(_T("SAC4-2")))
             pReturn = new CameraSAC42();
@@ -425,20 +424,22 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (QHY_CAMERA)
-        else if (choice.Contains(_T("QHY Camera")))
+        else if (choice == _T("QHY Camera"))
             pReturn = new Camera_QHY();
 #endif
 #if defined(ALTAIR)
-		else if (choice.Contains(_T("Altair Camera")))
-			pReturn = new Camera_Altair();
+        else if (choice == _T("Altair Camera"))
+            pReturn = AltairCameraFactory::MakeAltairCamera(ALTAIR_CAM_CURRENT);
+        else if (choice == _T("Altair Camera (2015/2016)"))
+            pReturn = AltairCameraFactory::MakeAltairCamera(ALTAIR_CAM_LEGACY);
 #endif
 #if defined(ZWO_ASI)
-        else if (choice.Contains(_T("ZWO ASI Camera")))
-            pReturn = new Camera_ZWO();
+        else if (choice == _T("ZWO ASI Camera"))
+            pReturn = ZWOCameraFactory::MakeZWOCamera();
 #endif
 #if defined(TOUPTEK_CAMERA)
-        else if (choice.Contains(_T("ToupTek Camera")))
-            pReturn = new CameraToupTek();
+        else if (choice == _T("ToupTek Camera"))
+            pReturn = ToupTekCameraFactory::MakeToupTekCamera();
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
         else if (choice.Contains(_T("QHY 5")))
@@ -505,7 +506,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (SXV)
         else if (choice.Contains(_T("Starlight Xpress SXV")))
-            pReturn = new CameraSXV();
+            pReturn = SXVCameraFactory::MakeSXVCamera();
 #endif
 #if defined (OS_PL130)
         else if (choice.Contains(_T("Opticstar PL-130M")))

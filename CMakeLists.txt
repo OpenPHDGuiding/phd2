@@ -194,8 +194,6 @@ set(cam_SRC
   ${phd_src_dir}/cam_sbig.h
   ${phd_src_dir}/cam_sbigrotator.cpp
   ${phd_src_dir}/cam_sbigrotator.h
-  ${phd_src_dir}/cam_simulator.cpp
-  ${phd_src_dir}/cam_simulator.h
   ${phd_src_dir}/cam_ssag.cpp
   ${phd_src_dir}/cam_ssag.h
   ${phd_src_dir}/cam_sspiag.cpp
@@ -246,8 +244,6 @@ if(WIN32)
 elseif(UNIX AND (NOT APPLE))
   set(cam_SRC
       ${cam_SRC}
-      #${phd_src_dir}/cam_simulator.h
-      #${phd_src_dir}/cam_simulator.cpp
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
       ${phd_src_dir}/cameras/SXMacLib.h
@@ -293,7 +289,6 @@ set(scopes_SRC
   ${phd_src_dir}/scope_indi.h
   ${phd_src_dir}/scope_indi.cpp
   ${phd_src_dir}/scopes.h
-  ${phd_src_dir}/stepguider_simulator.h
   ${phd_src_dir}/stepguider_sxao.cpp
   ${phd_src_dir}/stepguider_sxao.h
   ${phd_src_dir}/stepguider_sxao_indi.cpp
@@ -333,8 +328,6 @@ set(guiding_SRC
   ${phd_src_dir}/zfilterfactory.h
 )
 source_group(Guiding FILES ${guiding_SRC})
-
-
 
 
 
@@ -380,6 +373,8 @@ set(phd2_SRC
 
   ${phd_src_dir}/gear_dialog.cpp
   ${phd_src_dir}/gear_dialog.h
+  ${phd_src_dir}/gear_simulator.h
+  ${phd_src_dir}/gear_simulator.cpp
   ${phd_src_dir}/graph-stepguider.cpp
   ${phd_src_dir}/graph-stepguider.h
   ${phd_src_dir}/graph.cpp
@@ -445,7 +440,6 @@ set(phd2_SRC
   ${phd_src_dir}/rotator_ascom.cpp
   ${phd_src_dir}/rotator_ascom.h
 
-  ${phd_src_dir}/rotator_simulator.h
   ###
 
   ${phd_src_dir}/runinbg.cpp

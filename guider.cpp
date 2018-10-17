@@ -143,6 +143,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
     m_avgDistanceNeedReset = false;
+    m_avgDistanceCnt = 0;
     m_lockPosShift.shiftEnabled = false;
     m_lockPosShift.shiftRate.SetXY(0., 0.);
     m_lockPosShift.shiftUnits = UNIT_ARCSEC;
@@ -505,6 +506,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                         dc.DrawLine(0,i,XImgSize,i);
                     break;
                 }
+
                 case OVERLAY_RADEC:
                 {
                     Mount *mount = TheScope();
@@ -860,8 +862,11 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
         }
 
         // update average distance right away so GetCurrentDistance reflects the increased distance from the dither
-        m_avgDistance += cameraDelta.Distance();
-        m_avgDistanceRA += fabs(mountDelta.X);
+        double dist = cameraDelta.Distance(), distRA = fabs(mountDelta.X);
+        m_avgDistance += dist;
+        m_avgDistanceLong += dist;
+        m_avgDistanceRA += distRA;
+        m_avgDistanceLongRA += distRA;
 
         if (IsFastRecenterEnabled())
         {
@@ -1024,39 +1029,66 @@ void Guider::UpdateCurrentDistance(double distance, double distanceRA)
         static double const alpha = .3; // moderately high weighting for latest sample
         m_avgDistance += alpha * (distance - m_avgDistance);
         m_avgDistanceRA += alpha * (distanceRA - m_avgDistanceRA);
+
+        ++m_avgDistanceCnt;
+
+        if (m_avgDistanceCnt < 10)
+        {
+            // initialize smoothed running avg with mean of first 10 pts
+            m_avgDistanceLong += (distance - m_avgDistanceLong) / m_avgDistanceCnt;
+            m_avgDistanceLongRA += (distance - m_avgDistanceLongRA) / m_avgDistanceCnt;
+        }
+        else
+        {
+            static double const alpha_long = .045; // heavy smoothing, low weighting for latest sample .045 => 15 frame half-life
+            m_avgDistanceLong += alpha_long * (distance - m_avgDistanceLong);
+            m_avgDistanceLongRA += alpha_long * (distance - m_avgDistanceLongRA);
+        }
     }
     else
     {
         // not yet guiding, reinitialize average distance
-        m_avgDistance = distance;
-        m_avgDistanceRA = distanceRA;
+        m_avgDistance = m_avgDistanceLong = distance;
+        m_avgDistanceRA = m_avgDistanceLongRA = distanceRA;
+        m_avgDistanceCnt = 1;
     }
 
     if (m_avgDistanceNeedReset)
     {
         // avg distance history invalidated
-        m_avgDistance = distance;
-        m_avgDistanceRA = distanceRA;
+        m_avgDistance = m_avgDistanceLong = distance;
+        m_avgDistanceRA = m_avgDistanceLongRA = distanceRA;
+        m_avgDistanceCnt = 1;
         m_avgDistanceNeedReset = false;
     }
 }
 
-double Guider::CurrentError(bool raOnly)
+inline static double CurrentError(time_t starFoundTimestamp, double avgDist)
 {
     enum { THRESHOLD_SECONDS = 20 };
     static double const LARGE_DISTANCE = 100.0;
 
-    if (!m_starFoundTimestamp)
+    if (!starFoundTimestamp)
     {
         return LARGE_DISTANCE;
     }
 
-    if (wxDateTime::GetTimeNow() - m_starFoundTimestamp > THRESHOLD_SECONDS)
+    if (wxDateTime::GetTimeNow() - starFoundTimestamp > THRESHOLD_SECONDS)
     {
         return LARGE_DISTANCE;
     }
 
-    return raOnly ? m_avgDistanceRA : m_avgDistance;
+    return avgDist;
+}
+
+double Guider::CurrentError(bool raOnly)
+{
+    return ::CurrentError(m_starFoundTimestamp, raOnly ? m_avgDistanceRA : m_avgDistance);
+}
+
+double Guider::CurrentErrorSmoothed(bool raOnly)
+{
+    return ::CurrentError(m_starFoundTimestamp, raOnly ? m_avgDistanceLongRA : m_avgDistanceLong);
 }
 
 void Guider::StartGuiding()

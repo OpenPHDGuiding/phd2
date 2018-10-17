@@ -1,9 +1,9 @@
 /*
- *  stepguider_sxAO.h
+ *  altaircam_sdk.h
  *  PHD Guiding
  *
- *  Created by Andy Galasso, based on work by Bret McKee
- *  Copyright (c) 2013 Andy Galasso
+ *  Created by Andy Galasso
+ *  Copyright (c) 2018 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,28 +31,26 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef STEPGUIDER_SIMULATOR_INCLUDED
-#define STEPGUIDER_SIMULATOR_INCLUDED
-
-#ifdef STEPGUIDER_SIMULATOR
-
-class StepGuiderSimulator : public StepGuider
-{
-public:
-    StepGuiderSimulator(void);
-    virtual ~StepGuiderSimulator(void);
-
-    bool Connect(void) override;
-    bool Disconnect(void) override;
-
-private:
-    bool Center(void) override;
-    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
-    int MaxPosition(GUIDE_DIRECTION direction) const override;
-    bool SetMaxPosition(int steps) override;
-    bool HasNonGuiMove(void) override;
-};
-
-#endif // STEPGUIDER_SIMULATOR
-#endif // STEPGUIDER_SIMULATOR_INCLUDED
+// AltairCam.DLL imported functions for dynamic loading, see cam_altair.cpp
+SDK(Close)
+SDK(Enum)
+SDK_OPT(EnumV2)
+SDK(Open)
+SDK(PullImage)
+SDK(ST4PlusGuide)
+SDK(StartPullModeWithCallback)
+SDK(Stop)
+SDK(Version)
+SDK(get_ExpoAGain)
+SDK(get_ExpoAGainRange)
+SDK(get_ExpoTime)
+SDK(get_PixelSize)
+SDK(get_Resolution)
+SDK(put_AutoExpoEnable)
+SDK(put_ExpoAGain)
+SDK(put_ExpoTime)
+SDK(put_Mode)
+SDK(put_Option)
+SDK(put_RealTime)
+SDK(put_Roi)
+SDK(put_Speed)

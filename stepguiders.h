@@ -57,6 +57,5 @@
 #include "stepguider.h"
 #include "stepguider_sxao.h"
 #include "stepguider_sxao_indi.h"
-#include "stepguider_simulator.h"
 
 #endif /* STEPGUIDERS_H_INCLUDED */

@@ -394,7 +394,9 @@ public:
     bool StartGuiding();
     bool Dither(double amount, bool raOnly);
 
+    static bool GuidingRAOnly();
     double CurrentGuideError() const;
+    double CurrentGuideErrorSmoothed() const;
 
     void UpdateButtonsStatus();
     void UpdateCalibrationStatus();

@@ -1954,11 +1954,20 @@ bool MyFrame::Dither(double amount, bool raOnly)
     return error;
 }
 
-double MyFrame::CurrentGuideError() const
+bool MyFrame::GuidingRAOnly()
 {
     const Scope *const scope = TheScope();
-    bool const raOnly = scope && scope->GetDecGuideMode() == DEC_NONE;
-    return pGuider->CurrentError(raOnly);
+    return scope && scope->GetDecGuideMode() == DEC_NONE;
+}
+
+double MyFrame::CurrentGuideError() const
+{
+    return pGuider->CurrentError(GuidingRAOnly());
+}
+
+double MyFrame::CurrentGuideErrorSmoothed() const
+{
+    return pGuider->CurrentErrorSmoothed(GuidingRAOnly());
 }
 
 void MyFrame::OnClose(wxCloseEvent& event)

@@ -71,6 +71,8 @@ private:
     // parameters
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
+    bool m_tolerateJumpsEnabled;
+    double m_tolerateJumpsThreshold;
 
 public:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
@@ -90,6 +92,7 @@ public:
     void SetMassChangeThresholdEnabled(bool enable);
     double GetMassChangeThreshold() const;
     bool SetMassChangeThreshold(double starMassChangeThreshold);
+    bool SetTolerateJumps(bool enable, double threshold);
     bool SetSearchRegion(int searchRegion);
 
     friend class GuiderOneStarConfigDialogPane;

@@ -3,7 +3,8 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2008-2010 Craig Stark.
+ *  Copyright (c) 2008-2010 Craig Stark
+ *  Copyright (c) 2016-2018 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +15,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,7 +33,6 @@
  *
  */
 
-
 #include "phd.h"
 
 #if defined (SXV)
@@ -42,13 +42,54 @@
 
 #include <wx/choicdlg.h>
 
-#if defined(__WINDOWS__)
-typedef HANDLE SXHandle;
+#if defined (__WINDOWS__)
+# include "cameras/SXUSB.h"
+typedef struct t_sxccd_params sxccd_params_t;
+typedef HANDLE sxccd_handle_t;
+# define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME
+# define SXCCD_EXP_FLAGS_FIELD_ODD    CCD_EXP_FLAGS_FIELD_ODD
+# define SXCCD_EXP_FLAGS_FIELD_BOTH   CCD_EXP_FLAGS_FIELD_BOTH
 #else
-typedef void* SXHandle;
+# include "cameras/SXMacLib.h"
+typedef void *sxccd_handle_t;
 #endif
 
-extern CameraSXV Camera_SXV;
+class CameraSXV : public GuideCamera
+{
+    sxccd_handle_t hCam;
+    sxccd_params_t CCDParams;
+    unsigned short *RawData;
+    unsigned int RawDataSize;
+    usImage tmpImg;
+    unsigned short CameraModel;
+    unsigned short m_prevBin;
+    bool Interlaced;
+    bool ColorSensor;
+    bool SquarePixels;
+    wxSize m_darkFrameSize;
+    double m_devicePixelSize;
+
+public:
+
+    CameraSXV();
+    ~CameraSXV();
+
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool Connect(const wxString& camId);
+    bool Disconnect();
+    void ShowPropertyDialog();
+    const wxSize& DarkFrameSize() { return m_darkFrameSize; }
+
+    bool HasNonGuiCapture() { return true; }
+    bool ST4HasNonGuiMove() { return true; }
+    bool ST4PulseGuideScope(int direction, int duration);
+    wxByte BitsPerPixel();
+    bool GetDevicePixelSize(double *devPixelSize);
+
+private:
+    void InitFrameSizes(void);
+};
 
 enum {
     SX_CMOS_GUIDER = 39,
@@ -133,11 +174,16 @@ CameraSXV::CameraSXV()
     HasGainControl = false;
     m_hasGuideOutput = true;
     Interlaced = false;
-    RawData = NULL;
+    RawData = nullptr;
     RawDataSize = 0;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     SquarePixels = pConfig->Profile.GetBoolean("/camera/SXV/SquarePixels", false);
+}
+
+CameraSXV::~CameraSXV()
+{
+    delete[] RawData;
 }
 
 wxByte CameraSXV::BitsPerPixel()
@@ -194,7 +240,7 @@ void CameraSXV::ShowPropertyDialog()
 
 bool CameraSXV::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-    SXHandle hCams[SXCCD_MAX_CAMS];
+    sxccd_handle_t hCams[SXCCD_MAX_CAMS];
 
     int ncams = sxOpen(hCams);
 
@@ -246,14 +292,14 @@ bool CameraSXV::Connect(const wxString& camId)
 #if defined (__APPLE__) || defined (__linux__)
     sxSetTimeoutMS(m_timeoutMs);
 #endif
-    
+
     long idx = -1;
     if (camId == DEFAULT_CAMERA_ID)
         idx = 0;
     else
         camId.ToLong(&idx);
 
-    SXHandle hCams[SXCCD_MAX_CAMS];
+    sxccd_handle_t hCams[SXCCD_MAX_CAMS];
 
     int ncams = sxOpen(hCams);
     if (ncams == 0)
@@ -365,13 +411,13 @@ bool CameraSXV::Connect(const wxString& camId)
 bool CameraSXV::Disconnect()
 {
     delete[] RawData;
-    RawData = NULL;
+    RawData = nullptr;
     RawDataSize = 0;
     Connected = false;
     sxReset(hCam);
     sxClose(hCam);
 
-    hCam = NULL;
+    hCam = nullptr;
 
     return false;
 }
@@ -891,6 +937,11 @@ bool CameraSXV::ST4PulseGuideScope(int direction, int duration)
     sxSetSTAR2000(hCam,dircmd);
 
     return false;
+}
+
+GuideCamera *SXVCameraFactory::MakeSXVCamera()
+{
+    return new CameraSXV();
 }
 
 #endif // SXV

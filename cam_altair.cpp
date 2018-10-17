@@ -1,52 +1,165 @@
 /*
-*  cam_altair.cpp
-*  PHD Guiding
-*
-*  Created by Robin Glover.
-*  Copyright (c) 2014 Robin Glover.
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_altair.cpp
+ *  PHD Guiding
+ *
+ *  Created by Robin Glover.
+ *  Copyright (c) 2014 Robin Glover
+ *  Copyright (c) 2018 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #include "phd.h"
 
 #ifdef ALTAIR
 
 #include "cam_altair.h"
+#include "altaircam.h"
 
 #ifdef __WINDOWS__
 
-#ifdef OS_WINDOWS
-// troubleshooting with the libusb definitions
-#  undef OS_WINDOWS
-#endif
+struct SDKLib
+{
+    HMODULE m_module;
 
-# include <Shlwapi.h>
-# include <DelayImp.h>
-#endif
+#define SDK(f) \
+    decltype(Altaircam_ ## f) *f;
+#define SDK_OPT(f) SDK(f)
+# include "cameras/altaircam_sdk.h"
+#undef SDK
+#undef SDK_OPT
+
+    SDKLib() : m_module(nullptr) { }
+    ~SDKLib() { Unload(); }
+
+    bool _Load(LPCTSTR filename, const char *prefix)
+    {
+        if (m_module)
+            return true;
+
+        Debug.Write(wxString::Format("Altair: loading %s\n", filename));
+
+        m_module = LoadLibrary(filename);
+        if (!m_module)
+        {
+            Debug.Write(wxString::Format("Altair: could not load library %s\n", filename));
+            return false;
+        }
+
+        try
+        {
+#define _GPA(f) \
+            std::ostringstream os; \
+            os << prefix << #f; \
+            std::string name = os.str(); \
+            f = reinterpret_cast<decltype(Altaircam_ ## f) *>(GetProcAddress(m_module, name.c_str()))
+#define SDK(f) do { \
+            _GPA(f); \
+            if (!f) \
+                throw name; \
+        } while (false);
+#define SDK_OPT(f) do { \
+            _GPA(f); \
+        } while (false);
+# include "cameras/altaircam_sdk.h"
+#undef SDK
+#undef SDK_OPT
+#undef _GPA
+        }
+        catch (const std::string& name)
+        {
+            Debug.Write(wxString::Format("Altair: %s missing symbol %s\n", filename, name.c_str()));
+            Unload();
+            return false;
+        }
+
+        Debug.Write(wxString::Format("Altair: SDK version %s\n", Version()));
+
+        return true;
+    }
+
+    bool Load()
+    {
+        return _Load(_T("AltairCam.dll"), "Altaircam_");
+    }
+
+    bool LoadLegacy()
+    {
+        return _Load(_T("AltairCam_legacy.dll"), "Toupcam_");
+    }
+
+    void Unload()
+    {
+        if (m_module)
+        {
+            FreeLibrary(m_module);
+            m_module = nullptr;
+        }
+    }
+};
+
+#endif // __WINDOWS__
+
+struct AltairCamera : public GuideCamera
+{
+    AltairCamType m_type;
+    SDKLib m_sdk;
+    wxRect m_frame;
+    unsigned char *m_buffer;
+    bool m_capturing;
+    int m_minGain;
+    int m_maxGain;
+    double m_devicePixelSize;
+    HAltairCam m_handle;
+    volatile bool m_frameReady;
+    bool ReduceResolution;
+
+    AltairCamera(AltairCamType type);
+    ~AltairCamera();
+
+    bool LoadSDK();
+
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void ClearGuidePort();
+
+    void ShowPropertyDialog() override;
+
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+
+    void StopCapture();
+};
 
 class AltairCameraDlg : public wxDialog
 {
@@ -61,8 +174,6 @@ public:
 AltairCameraDlg::AltairCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
-
-
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
@@ -86,25 +197,26 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent, wxWindowID id, const wxString
     Centre(wxBOTH);
 }
 
-Camera_Altair::Camera_Altair()
-    : m_buffer(0),
+AltairCamera::AltairCamera(AltairCamType type)
+    :
+    m_type(type),
+    m_buffer(nullptr),
     m_capturing(false)
 {
-    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
-
     Name = _T("Altair Camera");
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = false;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will frash if we start false then change to true later when the camera is connected
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
 }
 
-Camera_Altair::~Camera_Altair()
+AltairCamera::~AltairCamera()
 {
     delete[] m_buffer;
 }
 
-wxByte Camera_Altair::BitsPerPixel()
+wxByte AltairCamera::BitsPerPixel()
 {
     return 8;
 }
@@ -119,10 +231,55 @@ inline static int gain_pct(int minval, int maxval, int val)
     return (val - minval) * 100 / (maxval - minval);
 }
 
-bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
+static unsigned int Enum(const SDKLib& sdk, AltaircamInstV2 inst[ALTAIRCAM_MAX])
 {
-	AltaircamInstV2 ai[ALTAIRCAM_MAX];
-	unsigned numCameras = Altaircam_EnumV2(ai);
+    if (sdk.EnumV2)
+        return sdk.EnumV2(inst);
+
+    static AltaircamModelV2 s_model[ALTAIRCAM_MAX];
+    static AltaircamInst s_inst1[ALTAIRCAM_MAX];
+
+    unsigned int count = sdk.Enum(s_inst1);
+    for (unsigned int i = 0; i < count; i++)
+    {
+        memcpy(&inst[i].displayname[0], &s_inst1[i].displayname[0], sizeof(inst[i].displayname));
+        memcpy(&inst[i].id[0], &s_inst1[i].id[0], sizeof(inst[i].id));
+        s_model[i].name = s_inst1[i].model->name;
+        s_model[i].flag = s_inst1[i].model->flag;
+        s_model[i].maxspeed = s_inst1[i].model->maxspeed;
+        s_model[i].preview = s_inst1[i].model->preview;
+        s_model[i].still = 0; // unknwown
+        s_model[i].maxfanspeed = 0; // unknown
+        s_model[i].ioctrol = 0;
+        s_model[i].xpixsz = 0.f;
+        s_model[i].ypixsz = 0.f;
+        memcpy(&s_model[i].res[0], &s_inst1[i].model->res[0], sizeof(s_model[i].res));
+        inst[i].model = &s_model[i];
+    }
+
+    return count;
+}
+
+bool AltairCamera::LoadSDK()
+{
+    switch (m_type)
+    {
+    default:
+    case ALTAIR_CAM_CURRENT:
+        return m_sdk.Load();
+
+    case ALTAIR_CAM_LEGACY:
+        return m_sdk.LoadLegacy();
+    }
+}
+
+bool AltairCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
+{
+    if (!LoadSDK())
+        return true;
+
+    AltaircamInstV2 ai[ALTAIRCAM_MAX];
+	unsigned numCameras = Enum(m_sdk, ai);
 
     for (int i = 0; i < numCameras; i++)
     {
@@ -133,10 +290,13 @@ bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-bool Camera_Altair::Connect(const wxString& camIdArg)
+bool AltairCamera::Connect(const wxString& camIdArg)
 {
-	AltaircamInstV2 ai[ALTAIRCAM_MAX];
-	unsigned numCameras = Altaircam_EnumV2(ai);
+    if (!LoadSDK())
+        return true;
+
+    AltaircamInstV2 ainst[ALTAIRCAM_MAX];
+    unsigned int numCameras = Enum(m_sdk, ainst);
 
     if (numCameras == 0)
     {
@@ -145,53 +305,43 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
 
     wxString camId(camIdArg);
     if (camId == DEFAULT_CAMERA_ID)
-        camId = ai[0].id;
+        camId = ainst[0].id;
 
-	bool found = false;
-	for (int i=0; i<numCameras; i++)
+    const AltaircamInstV2 *pai = nullptr;
+	for (unsigned int i = 0; i < numCameras; i++)
 	{
-		if (camId == ai[i].id)
+		if (camId == ainst[i].id)
 		{
-			found = true;
+			pai = &ainst[i];
 			break;
 		}
 	}
-	if (!found)
+	if (!pai)
 	{
         return CamConnectFailed(_("Specified Altair Camera not found."));
 	}
 
-    m_handle = Altaircam_Open(camId);
-    if (m_handle == nullptr)
+    m_handle = m_sdk.Open(camId);
+    if (!m_handle)
     {
         return CamConnectFailed(_("Failed to open Altair Camera."));
     }
 
     Connected = true;
-    bool hasROI = false;
-    bool hasSkip = false;
 
-    for (int i = 0; i < numCameras; i++)
-    {
-        if (ai[i].id == camId)
-        {
-            Name = ai[i].displayname;
-            hasROI = (ai[i].model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
-            hasSkip = (ai[i].model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
-            break;
-        }
-    }
+    Name = pai->displayname;
+    bool hasROI = (pai->model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
+    bool hasSkip = (pai->model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
 
     int width, height;
-    if (FAILED(Altaircam_get_Resolution(m_handle, 0, &width, &height)))
+    if (FAILED(m_sdk.get_Resolution(m_handle, 0, &width, &height)))
     {
         Disconnect();
         return CamConnectFailed(_("Failed to get camera resolution for Altair Camera."));
     }
 
-	delete[] m_buffer;
-	m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
-
+    delete[] m_buffer;
+    m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
 
     ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
     if (hasROI && ReduceResolution)
@@ -203,67 +353,58 @@ bool Camera_Altair::Connect(const wxString& camIdArg)
     FullSize.x = width;
     FullSize.y = height;
 
-
     float xSize, ySize;
     m_devicePixelSize = 3.75; // for all cameras so far....
-    if (Altaircam_get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
+    if (m_sdk.get_PixelSize(m_handle, 0, &xSize, &ySize) == 0)
     {
         m_devicePixelSize = xSize;
     }
 
-    wxYield();
-
     HasGainControl = false;
 
     unsigned short min, max, def;
-    if (SUCCEEDED(Altaircam_get_ExpoAGainRange(m_handle, &min, &max, &def)))
+    if (SUCCEEDED(m_sdk.get_ExpoAGainRange(m_handle, &min, &max, &def)))
     {
         m_minGain = min;
         m_maxGain = max;
         HasGainControl = max > min;
     }
 
-	Altaircam_put_AutoExpoEnable(m_handle, FALSE);
+    m_sdk.put_AutoExpoEnable(m_handle, FALSE);
 
-    Altaircam_put_Speed(m_handle, 0);
-    Altaircam_put_RealTime(m_handle, TRUE);
-
-    wxYield();
+    m_sdk.put_Speed(m_handle, 0);
+    m_sdk.put_RealTime(m_handle, TRUE);
 
     m_frame = wxRect(FullSize);
-    Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
+
+    Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n",
+        m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     if (hasROI && ReduceResolution)
     {
-        Altaircam_put_Roi(m_handle, 0, 0, width, height);
+        m_sdk.put_Roi(m_handle, 0, 0, width, height);
     }
 
     if (hasSkip)
-        Altaircam_put_Mode(m_handle, 0);
+        m_sdk.put_Mode(m_handle, 0);
 
-    Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
-	Altaircam_put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
 
     return false;
 }
 
-bool Camera_Altair::StopCapture(void)
+void AltairCamera::StopCapture()
 {
     if (m_capturing)
     {
         Debug.AddLine("Altair: stopcapture");
-        Altaircam_Stop(m_handle);
+        m_sdk.Stop(m_handle);
         m_capturing = false;
     }
-    return true;
 }
 
-void Camera_Altair::FrameReady(void)
-{
-    m_frameReady = true;
-}
-
-bool Camera_Altair::GetDevicePixelSize(double *devPixelSize)
+bool AltairCamera::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;
@@ -272,7 +413,7 @@ bool Camera_Altair::GetDevicePixelSize(double *devPixelSize)
     return false;                               // Pixel size is known in any case
 }
 
-void Camera_Altair::ShowPropertyDialog()
+void AltairCamera::ShowPropertyDialog()
 {
     AltairCameraDlg dlg(wxGetApp().GetTopWindow());
     bool value = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
@@ -284,15 +425,15 @@ void Camera_Altair::ShowPropertyDialog()
     }
 }
 
-bool Camera_Altair::Disconnect()
+bool AltairCamera::Disconnect()
 {
     StopCapture();
-    Altaircam_Close(m_handle);
+    m_sdk.Close(m_handle);
 
     Connected = false;
 
     delete[] m_buffer;
-    m_buffer = 0;
+    m_buffer = nullptr;
 
     return false;
 }
@@ -312,8 +453,8 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 {
     if (event == ALTAIRCAM_EVENT_IMAGE)
     {
-        Camera_Altair *pCam = (Camera_Altair *) pCallbackCtx;
-        pCam->FrameReady();
+        AltairCamera *cam = (AltairCamera *) pCallbackCtx;
+        cam->m_frameReady = true;
     }
 }
 
@@ -333,7 +474,7 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 //    }
 //}
 
-bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (img.Init(FullSize))
     {
@@ -346,20 +487,20 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;
-    if (Altaircam_get_ExpoTime(m_handle, &cur_exp) == 0 &&
+    if (m_sdk.get_ExpoTime(m_handle, &cur_exp) == 0 &&
         cur_exp != exposureUS)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_EXPOSURE %d\n", exposureUS));
-        Altaircam_put_ExpoTime(m_handle, exposureUS);
+        m_sdk.put_ExpoTime(m_handle, exposureUS);
     }
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     unsigned short cur_gain;
-    if (Altaircam_get_ExpoAGain(m_handle, &cur_gain) == 0 &&
+    if (m_sdk.get_ExpoAGain(m_handle, &cur_gain) == 0 &&
         new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
-        Altaircam_put_ExpoAGain(m_handle, new_gain);
+        m_sdk.put_ExpoAGain(m_handle, new_gain);
     }
 
 
@@ -369,23 +510,22 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     //flush_buffered_image(m_handle, img);
     unsigned int width, height;
-    while (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
+    while (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
     {
 
     }
 
-
     if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-        HRESULT result = Altaircam_StartPullModeWithCallback(m_handle, CameraCallback, this);
+        m_frameReady = false;
+        HRESULT result = m_sdk.StartPullModeWithCallback(m_handle, CameraCallback, this);
         if (result != 0)
         {
             Debug.Write(wxString::Format("Altaircam_StartPullModeWithCallback failed with code %d\n", result));
             return true;
         }
         m_capturing = true;
-		m_frameReady = false;
 	}
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
@@ -408,7 +548,7 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
         {
             m_frameReady = false;
 
-            if (SUCCEEDED(Altaircam_PullImage(m_handle, m_buffer, 8, &width, &height)))
+            if (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
                 break;
         }
         WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
@@ -450,17 +590,22 @@ inline static int GetAltairDirection(int direction)
     }
 }
 
-bool Camera_Altair::ST4PulseGuideScope(int direction, int duration)
+bool AltairCamera::ST4PulseGuideScope(int direction, int duration)
 {
     int d = GetAltairDirection(direction);
-    Altaircam_ST4PlusGuide(m_handle, d, duration);
+    m_sdk.ST4PlusGuide(m_handle, d, duration);
 
     return false;
 }
 
-void  Camera_Altair::ClearGuidePort()
+void AltairCamera::ClearGuidePort()
 {
-    Altaircam_ST4PlusGuide(m_handle, 0,0);
+    m_sdk.ST4PlusGuide(m_handle, 0, 0);
+}
+
+GuideCamera *AltairCameraFactory::MakeAltairCamera(AltairCamType type)
+{
+    return new AltairCamera(type);
 }
 
 #endif // Altaircam_ASI

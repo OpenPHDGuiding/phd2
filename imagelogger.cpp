@@ -205,11 +205,11 @@ void ImageLogger::LogImage(const usImage *img, double distance)
         !PhdController::IsSettling())
     {
         enum { MIN_FRAMES_FOR_STATS = 10 };
-        unsigned int frameCount = pFrame->m_frameCounter; // do not use img->FrameNum since the image may have been captured before guiding started
+        unsigned int frameCount = pFrame->pGuider->CurrentErrorFrameCount();
 
         if (frameCount >= MIN_FRAMES_FOR_STATS)
         {
-            double curErr = wxMax(pFrame->CurrentGuideError(), 0.001); // prevent divide by zero
+            double curErr = wxMax(pFrame->CurrentGuideErrorSmoothed(), 0.001); // prevent divide by zero
             double relErr = distance / curErr;
             double threshPx = s_il.settings.logFramesOverThreshPx ? s_il.settings.guideErrorThreshPx : 99.;
             double threshRel = s_il.settings.logFramesOverThreshRel ? s_il.settings.guideErrorThreshRel : 99.;

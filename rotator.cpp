@@ -33,6 +33,8 @@
 */
 
 #include "phd.h"
+
+#include "gear_simulator.h"
 #include "rotator_ascom.h"
 
 const float Rotator::POSITION_ERROR = -999.f;
@@ -83,7 +85,7 @@ Rotator *Rotator::Factory(const wxString& choice)
         }
 #ifdef ROTATOR_SIMULATOR
         else if (choice.Find(_T("Simulator")) != wxNOT_FOUND) {
-            rotator = new RotatorSimulator();
+            rotator = GearSimulator::MakeRotatorSimulator();
         }
 #endif
         else {

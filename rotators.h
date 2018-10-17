@@ -43,6 +43,5 @@
 
 #include "rotator.h"
 #include "rotator_ascom.h"
-#include "rotator_simulator.h"
 
 #endif // ROTATORS_INCLUDED

@@ -35,34 +35,12 @@
 #ifndef CAM_TOUPTEK_INCLUDED
 #define CAM_TOUPTEK_INCLUDED
 
-#include "camera.h"
+class GuideCamera;
 
-struct ToupCam;
-
-class CameraToupTek : public GuideCamera
+class ToupTekCameraFactory
 {
-    ToupCam *m_cam;
-
 public:
-
-    CameraToupTek();
-    ~CameraToupTek();
-    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool HasNonGuiCapture() override;
-    wxByte BitsPerPixel() override;
-    bool Capture(int duration, usImage&, int, const wxRect& subframe) override;
-    bool Connect(const wxString& camId) override;
-    bool Disconnect() override;
-    bool ST4HasGuideOutput() override;
-    bool ST4HasNonGuiMove() override;
-    bool ST4PulseGuideScope(int direction, int duration) override;
-    void ShowPropertyDialog() override;
-    bool GetDevicePixelSize(double *devPixelSize) override;
-    int GetDefaultCameraGain() override;
-    bool SetCoolerOn(bool on) override;
-    bool SetCoolerSetpoint(double temperature) override;
-    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
-    bool GetSensorTemperature(double *temperature) override;
+    static GuideCamera *MakeToupTekCamera();
 };
 
 #endif

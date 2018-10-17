@@ -34,6 +34,7 @@
  */
 #include "phd.h"
 
+#include "gear_simulator.h"
 #include "image_math.h"
 #include "socket_server.h"
 
@@ -141,7 +142,7 @@ StepGuider *StepGuider::Factory(const wxString& choice)
 #endif
 #ifdef STEPGUIDER_SIMULATOR
         else if (choice.CmpNoCase(_T("Simulator")) == 0) {
-            pReturn = new StepGuiderSimulator();
+            pReturn = GearSimulator::MakeAOSimulator();
         }
 #endif
     }

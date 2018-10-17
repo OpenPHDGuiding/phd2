@@ -1,9 +1,8 @@
 /*
- *  cam_simulator.h
+ *  gear_simulator.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2018 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +13,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,33 +31,20 @@
  *
  */
 
+#ifndef GEAR_SIMULATOR_INCLUDED
+#define GEAR_SIMULATOR_INCLUDED
 
-#ifndef SIMDEF
-#define SIMDEF
+class GuideCamera;
+class StepGuider;
+class Rotator;
 
-struct SimCamState;
-
-class CameraSimulator : public GuideCamera
+class GearSimulator
 {
-    SimCamState *sim;
 public:
-    CameraSimulator();
-    ~CameraSimulator();
-    bool     Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool     Connect(const wxString& camId) override;
-    bool     Disconnect() override;
-    void     ShowPropertyDialog() override;
-    bool     HasNonGuiCapture() override { return true; }
-    wxByte   BitsPerPixel() override;
-    bool     SetCoolerOn(bool on) override;
-    bool     SetCoolerSetpoint(double temperature) override;
-    bool     GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
-    bool     GetSensorTemperature(double *temperature) override;
-    bool     ST4HasNonGuiMove() override { return true; }
-    bool     ST4SynchronousOnly() override;
-    bool     ST4PulseGuideScope(int direction, int duration) override;
-    PierSide SideOfPier() const;
-    void     FlipPierSide();
+    static GuideCamera *MakeCamSimulator();
+    static void FlipPierSide(GuideCamera *camera);
+    static StepGuider *MakeAOSimulator();
+    static Rotator *MakeRotatorSimulator();
 };
 
 #endif

@@ -50,6 +50,49 @@
 # include <DelayImp.h>
 #endif
 
+class Camera_ZWO : public GuideCamera
+{
+    wxRect m_maxSize;
+    wxRect m_frame;
+    unsigned short m_prevBinning;
+    void *m_buffer;
+    size_t m_buffer_size;
+    wxByte m_bpp;  // bits per pixel: 8 or 16
+    bool m_capturing;
+    int m_cameraId;
+    int m_minGain;
+    int m_maxGain;
+    int m_defaultGainPct;
+    bool m_isColor;
+    double m_devicePixelSize;
+
+public:
+    Camera_ZWO();
+    ~Camera_ZWO();
+
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void ClearGuidePort();
+
+    void ShowPropertyDialog() override;
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double* devPixelSize) override;
+    int GetDefaultCameraGain() override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
+
+private:
+    bool StopCapture();
+};
+
 Camera_ZWO::Camera_ZWO()
     :
     m_buffer(nullptr),
@@ -801,6 +844,11 @@ void  Camera_ZWO::ClearGuidePort()
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_SOUTH);
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_EAST);
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_WEST);
+}
+
+GuideCamera *ZWOCameraFactory::MakeZWOCamera()
+{
+    return new Camera_ZWO();
 }
 
 #if defined(__APPLE__)

@@ -1,10 +1,11 @@
 /*
- *  cam_simulator.cpp
+ *  gear_simulator.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
  *  Reimplemented for PHD2 by Andy Galasso.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark
+ *  Copyright (c) 2015-2018 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -15,7 +16,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -38,8 +39,8 @@
 #ifdef SIMULATOR
 
 #include "camera.h"
+#include "gear_simulator.h"
 #include "image_math.h"
-#include "cam_simulator.h"
 
 #include <wx/dir.h>
 #include <wx/gdicmn.h>
@@ -209,19 +210,36 @@ unsigned int SimAoParams::max_position = 45;
 double SimAoParams::scale = 0.10;
 double SimAoParams::angle = 35.0;
 
+class StepGuiderSimulator : public StepGuider
+{
+public:
+    StepGuiderSimulator();
+    virtual ~StepGuiderSimulator();
+
+    bool Connect() override;
+    bool Disconnect() override;
+
+private:
+    bool Center() override;
+    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool HasNonGuiMove() override;
+};
+
 static StepGuiderSimulator *s_sim_ao;
 
-StepGuiderSimulator::StepGuiderSimulator(void)
+StepGuiderSimulator::StepGuiderSimulator()
 {
     m_Name = _("AO-Simulator");
     SimAoParams::max_position = pConfig->Profile.GetInt("/SimAo/max_steps", 45);
 }
 
-StepGuiderSimulator::~StepGuiderSimulator(void)
+StepGuiderSimulator::~StepGuiderSimulator()
 {
 }
 
-bool StepGuiderSimulator::Connect(void)
+bool StepGuiderSimulator::Connect()
 {
     if (StepGuider::Connect())
         return true;
@@ -240,7 +258,7 @@ bool StepGuiderSimulator::Connect(void)
     return false;
 }
 
-bool StepGuiderSimulator::Disconnect(void)
+bool StepGuiderSimulator::Disconnect()
 {
     if (StepGuider::Disconnect())
         return true;
@@ -288,7 +306,7 @@ bool StepGuiderSimulator::SetMaxPosition(int steps)
     return false;
 }
 
-bool StepGuiderSimulator::HasNonGuiMove(void)
+bool StepGuiderSimulator::HasNonGuiMove()
 {
     return true;
 }
@@ -297,15 +315,31 @@ bool StepGuiderSimulator::HasNonGuiMove(void)
 
 #ifdef ROTATOR_SIMULATOR
 
-RotatorSimulator::RotatorSimulator(void)
+class RotatorSimulator : public Rotator
+{
+public:
+    RotatorSimulator();
+    virtual ~RotatorSimulator();
+
+    bool Connect() override;
+    bool Disconnect() override;
+
+    // get the display name of the rotator device
+    wxString Name() const override;
+
+    // get the rotator position in degrees
+    float Position() const override;
+};
+
+RotatorSimulator::RotatorSimulator()
 {
 }
 
-RotatorSimulator::~RotatorSimulator(void)
+RotatorSimulator::~RotatorSimulator()
 {
 }
 
-bool RotatorSimulator::Connect(void)
+bool RotatorSimulator::Connect()
 {
     if (!pCamera || pCamera->Name != _T("Simulator"))
     {
@@ -317,18 +351,18 @@ bool RotatorSimulator::Connect(void)
     return false;
 }
 
-bool RotatorSimulator::Disconnect(void)
+bool RotatorSimulator::Disconnect()
 {
     Rotator::Disconnect();
     return false;
 }
 
-wxString RotatorSimulator::Name(void) const
+wxString RotatorSimulator::Name() const
 {
     return _T("Simulator");
 }
 
-float RotatorSimulator::Position(void) const
+float RotatorSimulator::Position() const
 {
     assert(IsConnected());
     return SimCamParams::cam_angle;
@@ -1085,8 +1119,30 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 }
 
+class CameraSimulator : public GuideCamera
+{
+    SimCamState sim;
+public:
+    CameraSimulator();
+    ~CameraSimulator();
+    bool     Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool     Connect(const wxString& camId) override;
+    bool     Disconnect() override;
+    void     ShowPropertyDialog() override;
+    bool     HasNonGuiCapture() override { return true; }
+    wxByte   BitsPerPixel() override;
+    bool     SetCoolerOn(bool on) override;
+    bool     SetCoolerSetpoint(double temperature) override;
+    bool     GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool     GetSensorTemperature(double *temperature) override;
+    bool     ST4HasNonGuiMove() override { return true; }
+    bool     ST4SynchronousOnly() override;
+    bool     ST4PulseGuideScope(int direction, int duration) override;
+    PierSide SideOfPier() const;
+    void     FlipPierSide();
+};
+
 CameraSimulator::CameraSimulator()
-    : sim(new SimCamState())
 {
     Connected = false;
     Name = _T("Simulator");
@@ -1111,7 +1167,7 @@ wxByte CameraSimulator::BitsPerPixel()
 bool CameraSimulator::Connect(const wxString& camId)
 {
     load_sim_params();
-    sim->Initialize();
+    sim.Initialize();
 
     struct ConnectInBg : public ConnectCameraInBg
     {
@@ -1148,15 +1204,14 @@ bool CameraSimulator::Disconnect()
 CameraSimulator::~CameraSimulator()
 {
 #ifdef SIMDEBUG
-    sim->DebugFile.Close();
+    sim.DebugFile.Close();
 #endif
 #ifdef SIM_FILE_DISPLACEMENTS
-    if (sim->pText)
-        delete sim->pText;
-    if (sim->pIStream)
-        delete sim->pIStream;
+    if (sim.pText)
+        delete sim.pText;
+    if (sim.pIStream)
+        delete sim.pIStream;
 #endif
-    delete sim;
 }
 
 #if SIMMODE==2
@@ -1227,15 +1282,15 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     if (!UseSubframes)
         subframe = wxRect();
 
-    if (sim->ReadNextImage(img, subframe))
+    if (sim.ReadNextImage(img, subframe))
         return true;
 
     FullSize = img.Size;
 
 #else
 
-    int width = sim->width / Binning;
-    int height = sim->height / Binning;
+    int width = sim.width / Binning;
+    int height = sim.height / Binning;
     FullSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
@@ -1259,7 +1314,7 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
 
     fill_noise(img, subframe, exptime, gain, offset);
 
-    sim->FillImage(img, subframe, exptime, gain, offset);
+    sim.FillImage(img, subframe, exptime, gain, offset);
 
     if (usingSubframe)
         img.Subframe = subframe;
@@ -1308,10 +1363,10 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
     }
 
     switch (direction) {
-    case WEST:    sim->ra_ofs += d;      break;
-    case EAST:    sim->ra_ofs -= d;      break;
-    case NORTH:   sim->dec_ofs.incr(d);  break;
-    case SOUTH:   sim->dec_ofs.incr(-d); break;
+    case WEST:    sim.ra_ofs += d;      break;
+    case EAST:    sim.ra_ofs -= d;      break;
+    case NORTH:   sim.dec_ofs.incr(d);  break;
+    case SOUTH:   sim.dec_ofs.incr(-d); break;
     default: return true;
     }
     WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
@@ -1321,32 +1376,32 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
 bool CameraSimulator::SetCoolerOn(bool on)
 {
     if (on)
-        sim->cooler.TurnOn();
+        sim.cooler.TurnOn();
     else
-        sim->cooler.TurnOff();
+        sim.cooler.TurnOff();
 
     return false; // no error
 }
 
 bool CameraSimulator::SetCoolerSetpoint(double temperature)
 {
-    if (!sim->cooler.on)
+    if (!sim.cooler.on)
         return true; // error
 
-    sim->cooler.SetTemp(temperature);
+    sim.cooler.SetTemp(temperature);
     return false;
 }
 
 bool CameraSimulator::GetCoolerStatus(bool *onp, double *setpoint, double *power, double *temperature)
 {
-    bool on = sim->cooler.on;
-    double cur = sim->cooler.CurrentTemp();
+    bool on = sim.cooler.on;
+    double cur = sim.cooler.CurrentTemp();
 
     *onp = on;
 
     if (on)
     {
-        *setpoint = sim->cooler.setTemp;
+        *setpoint = sim.cooler.setTemp;
         *power = cur < MIN_COOLER_TEMP ? 100. : cur >= AMBIENT_TEMP ? 0. : (AMBIENT_TEMP - cur) * 100. / (AMBIENT_TEMP - MIN_COOLER_TEMP);
         *temperature = cur;
     }
@@ -1365,12 +1420,12 @@ bool CameraSimulator::GetSensorTemperature(double *temperature)
     return GetCoolerStatus(&on, &setpt, &powr, temperature);
 }
 
-PierSide CameraSimulator::SideOfPier(void) const
+PierSide CameraSimulator::SideOfPier() const
 {
     return SimCamParams::pier_side;
 }
 
-bool CameraSimulator::ST4SynchronousOnly(void)
+bool CameraSimulator::ST4SynchronousOnly()
 {
     return !SimCamParams::allow_async_st4;
 }
@@ -1380,7 +1435,7 @@ static PierSide OtherSide(PierSide side)
     return side == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST;
 }
 
-void CameraSimulator::FlipPierSide(void)
+void CameraSimulator::FlipPierSide()
 {
     SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
     Debug.Write(wxString::Format("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f\n", SimCamParams::pier_side, SimCamParams::cam_angle));
@@ -1825,8 +1880,32 @@ void CameraSimulator::ShowPropertyDialog()
         save_sim_params();
 
         if (upd.WasModified())
-            sim->Initialize();
+            sim.Initialize();
     }
+}
+
+GuideCamera *GearSimulator::MakeCamSimulator()
+{
+    return new CameraSimulator();
+}
+
+void GearSimulator::FlipPierSide(GuideCamera *camera)
+{
+    if (camera && camera->Name == _T("Simulator"))
+    {
+        CameraSimulator *simcam = static_cast<CameraSimulator *>(camera);
+        simcam->FlipPierSide();
+    }
+}
+
+StepGuider *GearSimulator::MakeAOSimulator()
+{
+    return new StepGuiderSimulator();
+}
+
+Rotator *GearSimulator::MakeRotatorSimulator()
+{
+    return new RotatorSimulator();
 }
 
 #endif // SIMULATOR

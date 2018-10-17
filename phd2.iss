@@ -25,8 +25,8 @@ Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion; AfterInstal
 Source: Release\locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
 Source: Release\PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
 Source: ..\README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
-Source: Release\altaircamsdk.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\AltairCam_legacy.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\astroDLLQHY5V.dll; DestDir: {app}; Flags: replacesameversion
