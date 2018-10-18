@@ -627,9 +627,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                     moveLeft  = true;
                     x_dist = m_calibrationStartingLocation.dX(currentLocation);
                     y_dist = m_calibrationStartingLocation.dY(currentLocation);
-                    GuideLog.CalibrationStep(this, "Left", iterRemainingLeft,
-                        x_dist,  y_dist,
-                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
+                    CalibrationStepInfo info(this, _T("Left"), iterRemainingLeft, x_dist, y_dist,
+                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation),
+                        status0);
+                    GuideLog.CalibrationStep(info);
+                    EvtServer.NotifyCalibrationStep(info);
                     m_calibrationDetails.raSteps.push_back(wxRealPoint(x_dist, y_dist));            // Just put "left" in "ra" steps
                     break;
                 }
@@ -677,9 +679,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                     moveUp = true;
                     x_dist = m_calibrationStartingLocation.dX(currentLocation);
                     y_dist = m_calibrationStartingLocation.dY(currentLocation);
-                    GuideLog.CalibrationStep(this, "Up", iterRemainingUp,
-                        x_dist,  y_dist,
-                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
+                    CalibrationStepInfo info(this, _T("Up"), iterRemainingUp, x_dist, y_dist,
+                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation),
+                        status0);
+                    GuideLog.CalibrationStep(info);
+                    EvtServer.NotifyCalibrationStep(info);
                     m_calibrationDetails.decSteps.push_back(wxRealPoint(x_dist, y_dist));                   // Just put "up" in "dec" steps
                     break;
                 }

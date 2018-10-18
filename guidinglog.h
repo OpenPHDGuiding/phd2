@@ -42,6 +42,23 @@ class Mount;
 class Guider;
 struct LockPosShiftParams;
 
+struct CalibrationStepInfo
+{
+    Mount *mount;
+    wxString direction;
+    int stepNumber;
+    double dx;
+    double dy;
+    PHD_Point pos;
+    double dist;
+    wxString msg;
+
+    CalibrationStepInfo(Mount *mount_, const wxString& dir_, int stepNumber_, double dx_,
+        double dy_, const PHD_Point& pos_, double dist_, const wxString& msg_ = wxEmptyString)
+        : mount(mount_), direction(dir_), stepNumber(stepNumber_), dx(dx_), dy(dy_), pos(pos_),
+        dist(dist_), msg(msg_) { }
+};
+
 struct GuideStepInfo
 {
     Mount *mount;
@@ -99,11 +116,12 @@ public:
 
     wxFFile& File();
 
-    void StartCalibration(Mount *pCalibrationMount);
-    void CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
-    void CalibrationStep(Mount *pCalibrationMount, const wxString& direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
-    void CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity);
-    void CalibrationComplete(Mount *pCalibrationMount);
+    void StartCalibration(const Mount *pCalibrationMount);
+    void CalibrationFailed(const Mount *pCalibrationMount, const wxString& msg);
+    void CalibrationStep(const CalibrationStepInfo& info);
+    void CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction,
+        double angle, double rate, int parity);
+    void CalibrationComplete(const Mount *pCalibrationMount);
 
     void GuidingStarted();
     void GuidingStopped();

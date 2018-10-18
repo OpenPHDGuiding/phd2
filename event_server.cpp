@@ -257,7 +257,7 @@ static Ev ev_set_lock_position(const PHD_Point& xy)
     return ev;
 }
 
-static Ev ev_calibration_complete(Mount *mount)
+static Ev ev_calibration_complete(const Mount *mount)
 {
     Ev ev("CalibrationComplete");
     ev << NVMount(mount);
@@ -287,7 +287,7 @@ static Ev ev_paused()
     return Ev("Paused");
 }
 
-static Ev ev_start_calibration(Mount *mount)
+static Ev ev_start_calibration(const Mount *mount)
 {
     Ev ev("StartCalibration");
     ev << NVMount(mount);
@@ -2352,12 +2352,33 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
     }
 }
 
-void EventServer::NotifyStartCalibration(Mount *mount)
+void EventServer::NotifyStartCalibration(const Mount *mount)
 {
     SIMPLE_NOTIFY_EV(ev_start_calibration(mount));
 }
 
-void EventServer::NotifyCalibrationFailed(Mount *mount, const wxString& msg)
+void EventServer::NotifyCalibrationStep(const CalibrationStepInfo& info)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("Calibrating");
+
+    ev << NVMount(info.mount)
+        << NV("dir", info.direction)
+        << NV("dist", info.dist)
+        << NV("dx", info.dx)
+        << NV("dy", info.dy)
+        << NV("pos", info.pos)
+        << NV("step", info.stepNumber);
+
+    if (!info.msg.empty())
+        ev << NV("State", info.msg);
+
+    do_notify(m_eventServerClients, ev);
+}
+
+void EventServer::NotifyCalibrationFailed(const Mount *mount, const wxString& msg)
 {
     if (m_eventServerClients.empty())
         return;
@@ -2368,7 +2389,7 @@ void EventServer::NotifyCalibrationFailed(Mount *mount, const wxString& msg)
     do_notify(m_eventServerClients, ev);
 }
 
-void EventServer::NotifyCalibrationComplete(Mount *mount)
+void EventServer::NotifyCalibrationComplete(const Mount *mount)
 {
     if (m_eventServerClients.empty())
         return;
@@ -2376,7 +2397,7 @@ void EventServer::NotifyCalibrationComplete(Mount *mount)
     do_notify(m_eventServerClients, ev_calibration_complete(mount));
 }
 
-void EventServer::NotifyCalibrationDataFlipped(Mount *mount)
+void EventServer::NotifyCalibrationDataFlipped(const Mount *mount)
 {
     if (m_eventServerClients.empty())
         return;

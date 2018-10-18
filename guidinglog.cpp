@@ -342,7 +342,7 @@ void GuidingLog::Close()
     }
 }
 
-void GuidingLog::StartCalibration(Mount *pCalibrationMount)
+void GuidingLog::StartCalibration(const Mount *pCalibrationMount)
 {
     m_isGuiding = true;
 
@@ -387,7 +387,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
     m_keepFile = true;
 }
 
-void GuidingLog::CalibrationFailed(Mount *pCalibrationMount, const wxString& msg)
+void GuidingLog::CalibrationFailed(const Mount *pCalibrationMount, const wxString& msg)
 {
     m_isGuiding = false;
 
@@ -400,8 +400,7 @@ void GuidingLog::CalibrationFailed(Mount *pCalibrationMount, const wxString& msg
     Flush();
 }
 
-void GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direction,
-    int steps, double dx, double dy, const PHD_Point& xy, double dist)
+void GuidingLog::CalibrationStep(const CalibrationStepInfo& info)
 {
     if (!m_enabled)
         return;
@@ -410,16 +409,16 @@ void GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direc
 
     // Direction,Step,dx,dy,x,y,Dist
     m_file.Write(wxString::Format("%s,%d,%.3f,%.3f,%.3f,%.3f,%.3f\n",
-        direction,
-        steps,
-        dx, dy,
-        xy.X, xy.Y,
-        dist));
+        info.direction,
+        info.stepNumber,
+        info.dx, info.dy,
+        info.pos.X, info.pos.Y,
+        info.dist));
 
     Flush();
 }
 
-void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity)
+void GuidingLog::CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity)
 {
     if (!m_enabled)
         return;
@@ -432,7 +431,7 @@ void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxStr
     Flush();
 }
 
-void GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
+void GuidingLog::CalibrationComplete(const Mount *pCalibrationMount)
 {
     m_isGuiding = false;
 

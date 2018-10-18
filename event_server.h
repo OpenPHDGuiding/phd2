@@ -55,10 +55,11 @@ public:
     bool EventServerStart(unsigned int instanceId);
     void EventServerStop();
 
-    void NotifyStartCalibration(Mount *pCalibrationMount);
-    void NotifyCalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
-    void NotifyCalibrationComplete(Mount *pCalibrationMount);
-    void NotifyCalibrationDataFlipped(Mount *mount);
+    void NotifyStartCalibration(const Mount *mount);
+    void NotifyCalibrationStep(const CalibrationStepInfo& info);
+    void NotifyCalibrationFailed(const Mount *mount, const wxString& msg);
+    void NotifyCalibrationComplete(const Mount *mount);
+    void NotifyCalibrationDataFlipped(const Mount *mount);
     void NotifyLooping(unsigned int exposure);
     void NotifyLoopingStopped();
     void NotifyStarSelected(const PHD_Point& pos);
