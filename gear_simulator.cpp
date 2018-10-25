@@ -83,6 +83,7 @@ struct SimCamParams
     static double comet_rate_x;
     static double comet_rate_y;
     static bool allow_async_st4;
+    static unsigned int frame_download_ms;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -109,6 +110,7 @@ bool SimCamParams::show_comet;
 double SimCamParams::comet_rate_x;
 double SimCamParams::comet_rate_y;
 bool SimCamParams::allow_async_st4 = true;
+unsigned int SimCamParams::frame_download_ms;    // frame download time, ms
 
 // Note: these are all in units appropriate for the UI
 #define NR_STARS_DEFAULT 20
@@ -173,6 +175,8 @@ static void load_sim_params()
     SimCamParams::show_comet = pConfig->Profile.GetBoolean("/SimCam/show_comet", SHOW_COMET_DEFAULT);
     SimCamParams::comet_rate_x = pConfig->Profile.GetDouble("/SimCam/comet_rate_x", COMET_RATE_X_DEFAULT);
     SimCamParams::comet_rate_y = pConfig->Profile.GetDouble("/SimCam/comet_rate_y", COMET_RATE_Y_DEFAULT);
+
+    SimCamParams::frame_download_ms = pConfig->Profile.GetInt("/SimCam/frame_download_ms", 50);
 }
 
 static void save_sim_params()
@@ -195,6 +199,7 @@ static void save_sim_params()
     pConfig->Profile.SetBoolean("/SimCam/show_comet", SimCamParams::show_comet);
     pConfig->Profile.SetDouble("/SimCam/comet_rate_x", SimCamParams::comet_rate_x);
     pConfig->Profile.SetDouble("/SimCam/comet_rate_y", SimCamParams::comet_rate_y);
+    pConfig->Profile.SetInt("/SimCam/frame_download_ms", SimCamParams::frame_download_ms);
 }
 
 #ifdef STEPGUIDER_SIMULATOR
@@ -1323,10 +1328,11 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
 
 #endif // SIMMODE == 1
 
+    unsigned int tot_dur = duration + SimCamParams::frame_download_ms;
     long elapsed = watchdog.Time();
-    if (elapsed < duration)
+    if (elapsed < tot_dur)
     {
-        if (WorkerThread::MilliSleep(duration - elapsed, WorkerThread::INT_ANY))
+        if (WorkerThread::MilliSleep(tot_dur - elapsed, WorkerThread::INT_ANY))
             return true;
         if (watchdog.Expired())
         {
