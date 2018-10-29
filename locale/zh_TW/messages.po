@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-26 01:52+0100\n"
-"PO-Revision-Date: 2018-09-14 10:55+0800\n"
+"PO-Revision-Date: 2018-10-29 15:45+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -503,8 +503,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:647
 msgid "Explanation"
@@ -873,10 +873,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 gear_simulator.cpp:653 gear_simulator.cpp:1238
-#: gear_simulator.cpp:1313 gear_simulator.cpp:1488 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: gear_simulator.cpp:653 gear_simulator.cpp:1238 gear_simulator.cpp:1313
+#: gear_simulator.cpp:1488 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1346,47 +1345,47 @@ msgstr "與相機連接中斷"
 
 #: cam_touptek.cpp:409
 msgid "No ToupTek cameras detected"
-msgstr ""
+msgstr "偵測不到 ToupTek 相機"
 
 #: cam_touptek.cpp:429
 msgid "Selected ToupTek camera not found."
-msgstr ""
+msgstr "找不到所選用的 ToupTek 相機"
 
 #: cam_touptek.cpp:434
 msgid "Camera does not support software trigger"
-msgstr ""
+msgstr "相機不支援軟體觸發"
 
 #: cam_touptek.cpp:440
 msgid "Failed to open ToupTek camera."
-msgstr ""
+msgstr "開啟 ToupTek 相激失敗"
 
 #: cam_touptek.cpp:463
 msgid "Failed to get camera resolution for ToupTek camera."
-msgstr ""
+msgstr "無法取得 ToupTek 相機解析度資訊"
 
 #: cam_touptek.cpp:471 cam_touptek.cpp:484
 msgid "Failed to initialize camera binning."
-msgstr ""
+msgstr "啟用相機併合功能失敗"
 
 #: cam_touptek.cpp:711
 msgid "Capture failed: the camera disconnected"
-msgstr ""
+msgstr "無法拍攝: 相機失聯"
 
 #: cam_touptek.cpp:714
 msgid "Capture failed: the camera reported a timeout"
-msgstr ""
+msgstr "無法拍攝: 相機回報逾時"
 
 #: cam_touptek.cpp:718
 msgid "Capture failed: the camera repoted an error"
-msgstr ""
+msgstr "無法拍攝: 相機回報錯誤"
 
 #: cam_touptek.cpp:749
 msgid "Capture failed, unable to pull image data from camera"
-msgstr ""
+msgstr "無法拍攝: 無法由相機取得影像"
 
 #: cam_touptek.cpp:875
 msgid "ToupTek Camera Properties"
-msgstr ""
+msgstr "ToupTek 相機屬性"
 
 #: cam_touptek.cpp:880 cam_zwo.cpp:135
 msgid "Camera Mode"
@@ -1622,7 +1621,7 @@ msgstr ""
 #: camera.cpp:882
 msgid ""
 "Reset gain to camera's default value (disabled when camera is not connected)"
-msgstr ""
+msgstr "將增益值設為預設值(當相機連線中斷時停用)"
 
 #: camera.cpp:904
 msgid "Binning"
@@ -1745,7 +1744,7 @@ msgstr "COM 埠發生錯誤, 請檢視除錯日誌中的詳細資訊。"
 #: comdispatch.cpp:103
 #, c-format
 msgid "Driver error preparing to call %s"
-msgstr ""
+msgstr "準備被呼叫 %s 時發生驅動程式錯誤"
 
 #: comet_tool.cpp:79
 msgid "Comet Tracking"
@@ -1804,8 +1803,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:487
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3299,8 +3297,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3424,8 +3422,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3448,8 +3446,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4155,7 +4153,7 @@ msgstr "回差 >= %d ms; 你可能必須僅在單一赤緯方向導星 (目前�
 
 #: guiding_assistant.cpp:1044
 msgid "Measuring..."
-msgstr ""
+msgstr "測量中..."
 
 #: guiding_assistant.cpp:1107
 msgid "Backlash test aborted..."
@@ -4677,11 +4675,11 @@ msgstr "執行一次十字星點移動測試來檢測赤道儀"
 
 #: myframe.cpp:513
 msgid "Calibrate meridian flip"
-msgstr ""
+msgstr "過中天翻轉校準"
 
 #: myframe.cpp:513
 msgid "Automatically determine the correct meridian flip settings"
-msgstr ""
+msgstr "自動決定過中天翻轉設定"
 
 #: myframe.cpp:514
 msgid "&Guiding Assistant"
@@ -5663,7 +5661,7 @@ msgstr "手動導星"
 
 #: myframe_events.cpp:1059 pierflip_tool.cpp:78
 msgid "Meridian Flip Calibration Tool"
-msgstr ""
+msgstr "過中天翻轉校準工具"
 
 #: myframe_events.cpp:1118
 msgid ""
@@ -5952,11 +5950,11 @@ msgstr "赤道儀方向"
 
 #: pierflip_tool.cpp:120
 msgid "Start over"
-msgstr ""
+msgstr "重來"
 
 #: pierflip_tool.cpp:125 pierflip_tool.cpp:250
 msgid "Calibrate"
-msgstr ""
+msgstr "校準"
 
 #: pierflip_tool.cpp:237
 msgid ""
@@ -5969,10 +5967,16 @@ msgid ""
 "\n"
 "Click Next to begin"
 msgstr ""
+"這個工具將自動決定 “過中天翻轉後反向赤緯輸出” 設定的正確值\n"
+"\n"
+"該程序需要進行兩次校準 -  一次於望遠鏡位在赤道儀座的東側，另一次在西側, 此工"
+"具於需要時會要球你將望遠鏡翻轉到適當的位面\n"
+"\n"
+"點擊下一步以開始"
 
 #: pierflip_tool.cpp:243
 msgid "Next"
-msgstr ""
+msgstr "下一步"
 
 #: pierflip_tool.cpp:248 pierflip_tool.cpp:267
 msgid ""
@@ -5981,77 +5985,80 @@ msgid ""
 "\n"
 "Click Calibrate when ready."
 msgstr ""
+"將望遠鏡指向接近時角= 0和傾角= 0 的子午線和天球赤道交叉點的方向\n"
+"\n"
+"準備好後點擊校準"
 
 #: pierflip_tool.cpp:259
 msgid "Wait for the first calibration to complete."
-msgstr ""
+msgstr "等候完成第一次校準"
 
 #: pierflip_tool.cpp:260 pierflip_tool.cpp:273
 #, c-format
 msgid "Calibrating on the %s side of pier"
-msgstr ""
+msgstr "於赤道儀架台的 %s 面進行校準"
 
 #: pierflip_tool.cpp:264
 #, c-format
 msgid ""
 "Flip to the other side of the pier, so the telescope is on the %s side of "
 "the pier."
-msgstr ""
+msgstr "翻轉到另一面, 因此望遠鏡位於赤道儀架台的 %s 面"
 
 #: pierflip_tool.cpp:272
 msgid "Wait for the second calibration to complete."
-msgstr ""
+msgstr "等候完成第二次校準"
 
 #: pierflip_tool.cpp:279
 msgid "Meridian flip calibration completed sucessfully."
-msgstr ""
+msgstr "完成過中天翻轉校準"
 
 #: pierflip_tool.cpp:281
 #, c-format
 msgid ""
 "The correct setting for 'Reverse Dec output after meridian flip' for this "
 "mount is: %s"
-msgstr ""
+msgstr "此赤道儀的 “過中天翻轉後反向赤緯輸出” 的正確設定為: %s"
 
 #: pierflip_tool.cpp:283
 msgid "enabled"
-msgstr ""
+msgstr "啟用"
 
 #: pierflip_tool.cpp:283
 msgid "disabled"
-msgstr ""
+msgstr "停用"
 
 #: pierflip_tool.cpp:285
 msgid "Click Apply to accept the setting"
-msgstr ""
+msgstr "點擊套用以接受此設定"
 
 #: pierflip_tool.cpp:289
 msgid "Meridian flip calibration failed."
-msgstr ""
+msgstr "過中天翻轉校準失敗"
 
 #: pierflip_tool.cpp:291
 msgid "Resolve any calibration issues and try again"
-msgstr ""
+msgstr "解決與校準相關的問題後再試"
 
 #: pierflip_tool.cpp:462
 msgid "The RA calibration angles varied by an unexpected amount."
-msgstr ""
+msgstr "赤經校準角度因意外的量而有所變動"
 
 #: pierflip_tool.cpp:478
 msgid "The declination calibration angles varied by an unexpected amount."
-msgstr ""
+msgstr "赤緯校準角度因意外的量而有所變動"
 
 #: pierflip_tool.cpp:492
 msgid ""
 "The meridian flip calibration tool requires an equipment profile without an "
 "AO"
-msgstr ""
+msgstr "過中天翻轉校準工具需要沒有 AO 設備存在的裝置配置檔"
 
 #: pierflip_tool.cpp:498
 msgid ""
 "The meridian flip calibration tool requires a mount. Click the Connect "
 "Equipment button to select your mount."
-msgstr ""
+msgstr "過中天翻轉校準工具需要安裝, 單擊 “連接設備” 按鈕以選擇赤道儀"
 
 #: pierflip_tool.cpp:505
 msgid ""
@@ -6059,6 +6066,8 @@ msgid ""
 "disabled. If your mount can guide in Declination, set your Dec guide mode to "
 "Auto and try again."
 msgstr ""
+"過中天翻轉校準工具無法在停用赤緯導星的情況下運行, 如果您的赤道儀可以做赤緯導"
+"星, 請將赤緯島星模式設置為自動, 然後再重試"
 
 #: polardrift_toolwin.cpp:64
 msgid ""
@@ -6154,7 +6163,7 @@ msgstr "角度: %.f 度"
 #: profile_wizard.cpp:161
 #, c-format
 msgid "%s:"
-msgstr ""
+msgstr "%s:"
 
 #: profile_wizard.cpp:184
 msgid "New Profile Wizard"
@@ -6184,7 +6193,7 @@ msgstr ""
 #: profile_wizard.cpp:254
 #, c-format
 msgid "Guide camera un-binned pixel size (%s)"
-msgstr ""
+msgstr "導星相機未併合的像素大小 (%s)"
 
 #: profile_wizard.cpp:260
 msgid ""
@@ -6193,6 +6202,9 @@ msgid ""
 "use of fainter guide stars.  For more common set-ups, it's better to leave "
 "binning at 1."
 msgstr ""
+"如果導星相機有支援影像併合功能(可能沒有), 你可以選擇大於 1 的併合值. 在使用較"
+"長焦距的導星鏡及 OAG 的情況下, 影像併和可以讓你使用較暗的星體來當做導星星體, "
+"大多數的情況下, 此數值設成 1 即可."
 
 #: profile_wizard.cpp:265
 msgid "Binning level"
@@ -6214,11 +6226,11 @@ msgstr "導星鏡焦長 (mm)"
 #: profile_wizard.cpp:286 profile_wizard.cpp:1097
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
-msgstr ""
+msgstr "像素比例: %8.2f\"/px"
 
 #: profile_wizard.cpp:287
 msgid "The pixel scale of your guide configuration, arc-seconds per pixel"
-msgstr ""
+msgstr "導星組態設定中的像素比例, 角秒/像素"
 
 #: profile_wizard.cpp:300
 #, c-format
@@ -6552,10 +6564,12 @@ msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
+"當像素比例高於 0.5“/ px 時, 導星識別效果最佳, 請選擇 2 的影像併合值以增加像素"
+"比例"
 
 #: profile_wizard.cpp:1114
 msgid "Low pixel scale"
-msgstr ""
+msgstr "低像素比例"
 
 #: profile_wizard.cpp:1150
 msgid "Ask About Connection"
@@ -7712,7 +7726,7 @@ msgstr "影像大小"
 
 #: statswindow.cpp:116
 msgid "Pixel scale"
-msgstr ""
+msgstr "像素大小"
 
 #: statswindow.cpp:119
 msgid "Field of View"
@@ -7755,7 +7769,7 @@ msgstr " 角分"
 #: statswindow.cpp:282
 #, c-format
 msgid "%.1f\"/%s"
-msgstr ""
+msgstr "%.1f\"/%s"
 
 #: stepguider.cpp:547
 msgid ""
