@@ -366,10 +366,11 @@ public:
     bool LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
     void CheckDarkFrameGeometry();
-    void UpdateStateLabels();
-    void UpdateStarInfo(double SNR, bool Saturated);
-    void UpdateGuiderInfo(const GuideStepInfo& info);
-    void ClearGuiderInfo();
+    void UpdateStatusBarCalibrationStatus();
+    void UpdateStatusBarStateLabels();
+    void UpdateStatusBarStarInfo(double SNR, bool Saturated);
+    void UpdateStatusBarGuiderInfo(const GuideStepInfo& info);
+    void ClearStatusBarGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
@@ -380,9 +381,10 @@ public:
 
     void ScheduleExposure();
 
-    void SchedulePrimaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
-    void ScheduleSecondaryMove(Mount *pMount, const GuiderOffset& ofs, unsigned int moveOptions);
-    void ScheduleAxisMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
+    void SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
+    void ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
+    void ScheduleAxisMove(Mount *mount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
+    void ScheduleManualMove(Mount *mount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing();
     bool StopCapturing();
@@ -399,7 +401,6 @@ public:
     double CurrentGuideErrorSmoothed() const;
 
     void UpdateButtonsStatus();
-    void UpdateCalibrationStatus();
 
     static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);
     double GetCameraPixelScale() const;
@@ -468,7 +469,7 @@ private:
     void OnAlertHelp(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
     void OnReconnectCameraFromThread(wxThreadEvent& event);
-    void OnStatusbarTimerEvent(wxTimerEvent& evt);
+    void OnStatusBarTimerEvent(wxTimerEvent& evt);
     void OnUpdaterStateChanged(wxThreadEvent& event);
     void OnMessageBoxProxy(wxCommandEvent& evt);
     void SetupMenuBar();

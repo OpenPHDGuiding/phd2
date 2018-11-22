@@ -1122,14 +1122,14 @@ bool GearDialog::DoConnectCamera()
 
         pFrame->StatusMsg(_("Camera Connected"));
 
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
         pFrame->pStatsWin->UpdateCooler();
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("Camera Connect Failed"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
     }
 
     UpdateButtonState();
@@ -1171,7 +1171,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
         }
 
         pFrame->StatusMsg(_("Camera Disconnected"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
         pFrame->pStatsWin->UpdateCooler();
         pFrame->pStatsWin->ResetImageSize();
     }
@@ -1315,11 +1315,11 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
             }
 
             pFrame->StatusMsg(_("Mount Connected"));
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
         else
         {
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
 
         Debug.AddLine("Connected Scope:" + (m_pScope ? m_pScope->Name() : "None"));
@@ -1328,7 +1328,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
     {
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("Mount Connect Failed"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
     }
 
     UpdateButtonState();
@@ -1385,8 +1385,9 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
         }
 
         m_pScope->Disconnect();
+
         pFrame->StatusMsg(_("Mount Disconnected"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
 
         if (pFrame->pManualGuide)
         {
@@ -1523,11 +1524,11 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
         if (m_pStepGuider)
         {
             pFrame->StatusMsg(_("AO Connected"));
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
         else
         {
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
 
         Debug.AddLine("Connected AO:" + (m_pStepGuider ? m_pStepGuider->Name() : "None"));
@@ -1536,7 +1537,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
     {
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("AO Connect Failed"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
     }
 
     UpdateButtonState();
@@ -1564,7 +1565,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
         }
 
         pFrame->StatusMsg(_("AO Disconnected"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
 
         if (pFrame->pManualGuide)
         {
@@ -1645,11 +1646,11 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
         if (m_pRotator)
         {
             pFrame->StatusMsg(_("Rotator Connected"));
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
         else
         {
-            pFrame->UpdateStateLabels();
+            pFrame->UpdateStatusBarStateLabels();
         }
 
         Debug.AddLine("Connected Rotator:" + (m_pRotator ? m_pRotator->Name() : "None"));
@@ -1658,7 +1659,7 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
     {
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("Rotator Connect Failed"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
     }
 
     UpdateButtonState();
@@ -1681,7 +1682,7 @@ void GearDialog::OnButtonDisconnectRotator(wxCommandEvent& event)
         m_pRotator->Disconnect();
 
         pFrame->StatusMsg(_("Rotator Disconnected"));
-        pFrame->UpdateStateLabels();
+        pFrame->UpdateStatusBarStateLabels();
     }
     catch (const wxString& Msg)
     {

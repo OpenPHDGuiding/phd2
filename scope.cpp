@@ -297,7 +297,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
             }
             pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
             if (pFrame)
-                pFrame->UpdateCalibrationStatus();
+                pFrame->UpdateStatusBarCalibrationStatus();
         }
     }
     catch (const wxString& Msg)
@@ -2023,7 +2023,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     if (m_pScope->m_backlashComp->IsEnabled() && m_pScope->GetMaxDecDuration() < newBC)
         m_pScope->SetMaxDecDuration(newBC);
     if (pFrame)
-        pFrame->UpdateCalibrationStatus();
+        pFrame->UpdateStatusBarCalibrationStatus();
 
     if (!usingAO)
     {

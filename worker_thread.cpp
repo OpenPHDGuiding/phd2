@@ -253,7 +253,7 @@ void WorkerThread::EnqueueWorkerThreadAxisMove(Mount *mount, const GUIDE_DIRECTI
     EnqueueMessage(message);
 }
 
-Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *req)
+void WorkerThread::HandleMove(MOVE_REQUEST *req)
 {
     Mount::MOVE_RESULT result = Mount::MOVE_OK;
 
@@ -323,15 +323,21 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MOVE_REQUEST *req)
 
     Debug.Write(wxString::Format("move complete, result=%d\n", result));
 
-    return result;
+    req->moveResult = result;
 }
 
-void WorkerThread::SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult)
+MoveCompleteEvent::MoveCompleteEvent(const MOVE_REQUEST& move)
+    :
+    wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE),
+    moveOptions(move.moveOptions),
+    result(move.moveResult),
+    mount(move.mount)
 {
-    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
-    event->SetInt(moveResult);
-    event->SetPayload<Mount *>(mount);
-    wxQueueEvent(m_pFrame, event);
+}
+
+void WorkerThread::SendWorkerThreadMoveComplete(const MOVE_REQUEST& move)
+{
+    wxQueueEvent(m_pFrame, new MoveCompleteEvent(move));
 }
 
 /*
@@ -405,8 +411,8 @@ wxThread::ExitCode WorkerThread::Entry()
                                                  message.args.move.ofs.cameraOfs.X, message.args.move.ofs.cameraOfs.Y,
                                                  message.args.move.moveOptions));
 
-                Mount::MOVE_RESULT moveResult = HandleMove(&message.args.move);
-                SendWorkerThreadMoveComplete(message.args.move.mount, moveResult);
+                HandleMove(&message.args.move);
+                SendWorkerThreadMoveComplete(message.args.move);
                 break;
             }
 
