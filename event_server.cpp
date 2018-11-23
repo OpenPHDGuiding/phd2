@@ -1931,6 +1931,7 @@ static void get_calibration_data(JObj& response, const json_value *params)
     {
     case MOUNT: m = TheScope(); break;
     case AO: m = TheAO(); break;
+    case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
         {
             response << jrpc_error(1, "invalid 'which' param");
