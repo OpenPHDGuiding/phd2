@@ -3,7 +3,7 @@
  *  Open PHD Guiding
  *
  *  Created by Andy Galasso
- *  Copyright (c) 2017 Andy Galasso.
+ *  Copyright (c) 2017-2018 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -252,34 +252,43 @@ struct Updater
         pConfig->Global.SetInt("/Update/series", m_settings.series);
     }
 
+    bool init_curl()
+    {
+        if (m_curl)
+            return true;
+
+        CURL *curl = curl_easy_init();
+        if (!curl)
+        {
+            Debug.Write("UPD: curl init failed!\n");
+            return false;
+        }
+
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, static_cast<const char *>(wxGetApp().UserAgent().c_str()));
+
+#if defined(OLD_CURL)
+        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
+        curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
+#else // modern libcurl
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress_callback);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, this);
+#endif
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+        curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail on 404 etc
+
+        m_curl = curl;
+        return true;
+    }
+
     Updater()
         :
         m_status(UPD_NOT_STARTED),
         m_thread(nullptr),
+        m_curl(nullptr),
         m_updatenow(nullptr),
         abort(false)
     {
         LoadSettings();
-
-        m_curl = curl_easy_init();
-        if (!m_curl)
-        {
-            Debug.Write("UPD: curl init failed!\n");
-            m_status = UPD_ABORTED;
-            return;
-        }
-
-        curl_easy_setopt(m_curl, CURLOPT_USERAGENT, static_cast<const char *>(wxGetApp().UserAgent().c_str()));
-
-#if defined(OLD_CURL)
-        curl_easy_setopt(m_curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
-        curl_easy_setopt(m_curl, CURLOPT_PROGRESSDATA, this);
-#else // modern libcurl
-        curl_easy_setopt(m_curl, CURLOPT_XFERINFOFUNCTION, progress_callback);
-        curl_easy_setopt(m_curl, CURLOPT_XFERINFODATA, this);
-#endif
-        curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, 0);
-        curl_easy_setopt(m_curl, CURLOPT_FAILONERROR, 1); // fail on 404 etc
     }
 
     ~Updater()
@@ -308,7 +317,7 @@ struct Updater
 
     bool FetchURL(wxString *buf, const wxString& url)
     {
-        if (!m_curl)
+        if (!init_curl())
             return false;
 
         Debug.Write(wxString::Format("UPD: fetch %s\n", url));
@@ -490,6 +499,9 @@ struct Updater
             return false;
         }
 
+        if (!init_curl())
+            return false;
+
         curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_file_callback);
         curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &file);
         curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(installer_url.c_str()));
@@ -540,6 +552,19 @@ struct Updater
         abort = false;
 
         SetStatus(UPD_CHECKING_VERSION);
+
+        struct AutoCleanupCurl
+        {
+            CURL **m_pp;
+            AutoCleanupCurl(CURL **pp) : m_pp(pp) { }
+            ~AutoCleanupCurl() {
+                if (*m_pp)
+                {
+                    curl_easy_cleanup(*m_pp);
+                    *m_pp = nullptr;
+                }
+            }
+        } _cleanup(&m_curl);
 
         if (!FetchVersionInfo())
         {
