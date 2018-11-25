@@ -586,21 +586,18 @@ void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, doub
 // Class for implementing the backlash graph dialog
 class BacklashGraph : public wxDialog
 {
-    BacklashTool *m_BLT;
 public:
-    BacklashGraph(wxDialog *parent, BacklashTool *pBL);
-    wxBitmap CreateGraph(int graphicWidth, int graphicHeight);
+    BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps);
+    wxBitmap CreateGraph(int graphicWidth, int graphicHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps);
 };
 
-BacklashGraph::BacklashGraph(wxDialog *parent, BacklashTool *pBL)
+BacklashGraph::BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
     : wxDialog(parent, wxID_ANY, wxGetTranslation(_("Backlash Results")), wxDefaultPosition, wxSize(500, 400))
 {
-    m_BLT = pBL;
-
     // Just but a big button area for the graph with a button below it
     wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
     // Use a bitmap button so we don't waste cycles in paint events
-    wxBitmap graph_bitmap = CreateGraph(450, 300);
+    wxBitmap graph_bitmap = CreateGraph(450, 300, northSteps, southSteps);
     wxStaticBitmap *graph = new wxStaticBitmap(this, wxID_ANY, graph_bitmap, wxDefaultPosition, wxDefaultSize, 0);
     vSizer->Add(graph, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
 
@@ -612,7 +609,7 @@ BacklashGraph::BacklashGraph(wxDialog *parent, BacklashTool *pBL)
     SetSizerAndFit(vSizer);
 }
 
-wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
+wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
 {
     wxMemoryDC dc;
     wxBitmap bmp(bmpWidth, bmpHeight, -1);
@@ -623,14 +620,6 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     wxPen idealPen(idealColor, 3, wxSOLID);
     wxBrush decBrush(decColor, wxSOLID);
     wxBrush idealBrush(idealColor, wxSOLID);
-    //double fakeNorthPoints[] =
-    //{152.04, 164.77, 176.34, 188.5, 200.25, 212.36, 224.21, 236.89, 248.62, 260.25, 271.34, 283.54, 294.79, 307.56, 319.22, 330.87, 343.37, 355.75, 367.52, 379.7, 391.22, 403.89, 415.34, 427.09, 439.41, 450.36, 462.6};
-    //double fakeSouthPoints[] =
-    //{474.84, 474.9, 464.01, 451.83, 438.08, 426, 414.68, 401.15, 390.39, 377.22, 366.17, 353.45, 340.75, 328.31, 316.93, 304.55, 292.42, 280.45, 269.03, 255.02, 243.76, 231.53, 219.43, 207.35, 195.22, 183.06, 169.47};
-    //std::vector <double> northSteps(fakeNorthPoints, fakeNorthPoints + 27);
-    //std::vector <double> southSteps(fakeSouthPoints, fakeSouthPoints + 27);
-    std::vector <double> northSteps = m_BLT->GetNorthSteps();
-    std::vector <double> southSteps = m_BLT->GetSouthSteps();
 
     double xScaleFactor;
     double yScaleFactor;
@@ -1212,10 +1201,11 @@ void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
         *SigmaMs = 0;
     }
 }
-// Launch modal dialog to show the BLT graph
-void BacklashTool::ShowGraph(wxDialog *pGA)
+
+// Launch odal dlg to show backlash test
+void BacklashTool::ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
 {
-    BacklashGraph dlg(pGA, this);
+    BacklashGraph dlg(pGA, northSteps, southSteps);
     dlg.ShowModal();
 }
 

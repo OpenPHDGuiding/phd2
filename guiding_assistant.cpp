@@ -38,6 +38,36 @@
 #include "guiding_stats.h"
 
 #include <wx/textwrapper.h>
+#include <wx/tokenzr.h>
+
+struct GADetails
+{
+    wxString TimeStamp;
+    wxString SNR;
+    wxString SampleCount;
+    wxString ElapsedTime;
+    wxString ExposureTime;
+    wxString RA_HPF_RMS;
+    wxString Dec_HPF_RMS;
+    wxString Total_HPF_RMS;
+    wxString RAPeak;
+    wxString RAPeak_Peak;
+    wxString RADriftRate;
+    wxString RAMaxDriftRate;
+    wxString DriftLimitingExposure;
+    wxString DecDriftRate;
+    wxString DecPeak;
+    wxString PAError;
+    wxString BackLashInfo;
+    wxString Dec_LF_DriftRate;
+    wxString DecCorrectedRMS;
+    wxString RecRAMinMove;
+    wxString RecDecMinMove;
+    std::vector<double> BLTNorthMoves;
+    std::vector<double> BLTSouthMoves;
+    wxString BLTAmount;
+    wxString Recommendations;
+};
 
 inline static void StartRow(int& row, int& column)
 {
@@ -136,6 +166,7 @@ struct GuidingAsstWin : public wxDialog
 
     wxButton *m_start;
     wxButton *m_stop;
+    wxButton* btnReviewPrev;
     wxTextCtrl *m_report;
     wxStaticText *m_instructions;
     wxGrid *m_statusgrid;
@@ -217,8 +248,9 @@ struct GuidingAsstWin : public wxDialog
     bool m_suspectCalibration;
 
     bool m_measuringBacklash;
-
     BacklashTool *m_backlashTool;
+    bool reviewMode;
+    GADetails gaDetails;
 
     GuidingAsstWin();
     ~GuidingAsstWin();
@@ -234,18 +266,23 @@ struct GuidingAsstWin : public wxDialog
     void OnDecBacklash(wxCommandEvent& event);
     void OnGraph(wxCommandEvent& event);
     void OnHelp(wxCommandEvent& event);
+    void OnReviewPrevious(wxCommandEvent& event);
 
     wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
     wxStaticText *AddRecommendationEntry(const wxString& msg);
     void FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, double pxVal, double asVal, const wxString& units1, const wxString& units2, const wxString& extraInfo = wxEmptyString);
     void UpdateInfo(const GuideStepInfo& info);
+    void DisplayStaticResults(const GADetails& details);
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
+    void DisplayStaticRecommendations(const GADetails& details);
     void LogResults();
     void BacklashStep(const PHD_Point& camLoc);
     void EndBacklashTest(bool completed);
     void BacklashError();
     void StatsReset();
+    void LoadGAResults(GADetails* Details);
+    void SaveGAResults(const wxString* AllRecommendations);
 };
 
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
@@ -307,6 +344,7 @@ GuidingAsstWin::GuidingAsstWin()
         _(" -999.99 px/min (-999.99 arc-sec/min )")) + 6;
     double minRightCol = 1.25 * (StringWidth(this,
         _(" 9.99 px ( 9.99 arc-sec)")) + 6);
+    double statusMinLeftCol = StringWidth(this, wxDateTime::Now().FormatISOCombined(' '));
     // Start of status group
     wxStaticBoxSizer *status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
     m_statusgrid = new wxGrid(this, wxID_ANY);
@@ -489,6 +527,10 @@ GuidingAsstWin::GuidingAsstWin()
     btnSizer->Add(m_start, 0, wxALL, 5);
     m_start->Enable(false);
 
+    btnReviewPrev = new wxButton(this, wxID_ANY, _("Review previous"), wxDefaultPosition, wxDefaultSize, 0);
+    btnReviewPrev->SetToolTip(_("Review previous GA results"));
+    btnSizer->Add(btnReviewPrev, 0, wxALL, 5);
+
     m_stop = new wxButton(this, wxID_ANY, _("Stop"), wxDefaultPosition, wxDefaultSize, 0);
     m_stop->SetToolTip(_("Stop measuring and re-enable guiding"));
     m_stop->Enable(false);
@@ -503,6 +545,7 @@ GuidingAsstWin::GuidingAsstWin()
     Connect(APPSTATE_NOTIFY_EVENT, wxCommandEventHandler(GuidingAsstWin::OnAppStateNotify));
     m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
     m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
+    btnReviewPrev->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnReviewPrevious), NULL, this);
 
     m_backlashTool = new BacklashTool();
     m_measuringBacklash = false;
@@ -514,6 +557,7 @@ GuidingAsstWin::GuidingAsstWin()
     wxCommandEvent dummy;
     OnAppStateNotify(dummy); // init state-dependent controls
 
+    reviewMode = false;
     if (pFrame->pGuider->IsGuiding())
     {
         OnStart(dummy);             // Auto-start if we're already guiding
@@ -739,7 +783,10 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
-    m_backlashTool->ShowGraph(this);
+    if (reviewMode)
+        m_backlashTool->ShowGraph(this, gaDetails.BLTNorthMoves, gaDetails.BLTSouthMoves);
+    else
+        m_backlashTool->ShowGraph(this, m_backlashTool->GetNorthSteps(), m_backlashTool->GetSouthSteps());
 }
 
 void GuidingAsstWin::OnHelp(wxCommandEvent& event)
@@ -786,6 +833,7 @@ void GuidingAsstWin::LogResults()
         m_statusgrid->GetCellValue(m_snr_loc), m_statusgrid->GetCellValue(m_samplecount_loc), m_statusgrid->GetCellValue(m_elapsedtime_loc),
         m_displacementgrid->GetCellValue(m_ra_rms_loc),
         m_displacementgrid->GetCellValue(m_dec_rms_loc), m_displacementgrid->GetCellValue(m_total_rms_loc));
+
     GuideLog.NotifyGAResult(str);
     Debug.Write(str);
     str = wxString::Format("RA Peak=%s, RA Peak-Peak %s, RA Drift Rate=%s, Max RA Drift Rate=%s, Drift-Limiting Exp=%s\n",
@@ -801,7 +849,107 @@ void GuidingAsstWin::LogResults()
         m_othergrid->GetCellValue(m_pae_loc));
     GuideLog.NotifyGAResult(str);
     Debug.Write(str);
+}
 
+void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
+{
+    pConfig->Profile.SetString("/GA/timestamp", m_statusgrid->GetCellValue(m_timestamp_loc));
+    pConfig->Profile.SetString("/GA/snr", m_statusgrid->GetCellValue(m_snr_loc));
+    pConfig->Profile.SetString("/GA/sample_count", m_statusgrid->GetCellValue(m_samplecount_loc));
+    pConfig->Profile.SetString("/GA/elapsed_time", m_statusgrid->GetCellValue(m_elapsedtime_loc));
+    pConfig->Profile.SetString("/GA/exposure_time", m_statusgrid->GetCellValue(m_exposuretime_loc));
+    pConfig->Profile.SetString("/GA/ra_hpf_rms", m_displacementgrid->GetCellValue(m_ra_rms_loc));
+    pConfig->Profile.SetString("/GA/dec_hpf_rms", m_displacementgrid->GetCellValue(m_dec_rms_loc));
+    pConfig->Profile.SetString("/GA/total_hpf_rms", m_displacementgrid->GetCellValue(m_total_rms_loc));
+    pConfig->Profile.SetString("/GA/ra_peak", m_othergrid->GetCellValue(m_ra_peak_loc));
+    pConfig->Profile.SetString("/GA/ra_peak_peak", m_othergrid->GetCellValue(m_ra_peakpeak_loc));
+    pConfig->Profile.SetString("/GA/ra_drift_rate", m_othergrid->GetCellValue(m_ra_drift_loc));
+    pConfig->Profile.SetString("/GA/ra_peak_drift_rate", m_othergrid->GetCellValue(m_ra_peak_drift_loc));
+    pConfig->Profile.SetString("/GA/ra_drift_exposure", m_othergrid->GetCellValue(m_ra_drift_exp_loc));
+    pConfig->Profile.SetString("/GA/dec_drift_rate", m_othergrid->GetCellValue(m_dec_drift_loc));
+    pConfig->Profile.SetString("/GA/dec_peak", m_othergrid->GetCellValue(m_dec_peak_loc));
+    pConfig->Profile.SetString("/GA/pa_error", m_othergrid->GetCellValue(m_pae_loc));
+    pConfig->Profile.SetString("/GA/dec_corrected_rms", std::to_string(decCorrectedRMS));
+    pConfig->Profile.SetString("/GA/backlash_info", m_othergrid->GetCellValue(m_backlash_loc));
+    pConfig->Profile.SetString("/GA/dec_lf_drift_rate", std::to_string(decDriftPerMin));
+    pConfig->Profile.SetString("/GA/rec_ra_minmove", std::to_string(m_ra_minmove_rec));
+    pConfig->Profile.SetString("/GA/rec_dec_minmove", std::to_string(m_dec_minmove_rec));
+    if (m_backlashRecommendedMs > 0)
+        pConfig->Profile.SetString("/GA/BLT_pulse", std::to_string(m_backlashMs));
+    pConfig->Profile.SetString("/GA/recommendations", *AllRecommendations);
+    if (m_backlashTool && m_backlashTool->IsGraphable())
+    {
+        std::vector<double> northSteps = m_backlashTool->GetNorthSteps();
+        std::vector<double> southSteps = m_backlashTool->GetSouthSteps();
+        wxString stepStr = "";
+
+        for (std::vector<double>::const_iterator it = northSteps.begin(); it != northSteps.end(); ++it)
+        {
+            stepStr += wxString::Format("%0.1f,", *it);
+        }
+        stepStr = stepStr.Left(stepStr.length() - 2);
+        pConfig->Profile.SetString("/GA/BLT_north", stepStr);
+
+        stepStr = "";
+
+        for (std::vector<double>::const_iterator it = southSteps.begin(); it != southSteps.end(); ++it)
+        {
+            stepStr += wxString::Format("%0.1f,", *it);
+        }
+        stepStr = stepStr.Left(stepStr.length() - 2);
+        pConfig->Profile.SetString("/GA/BLT_South", stepStr);
+    }
+}
+
+void GuidingAsstWin::LoadGAResults(GADetails* Details)
+{
+    *Details = {};              // Reset all vars
+    Details->TimeStamp = pConfig->Profile.GetString("/GA/timestamp", wxEmptyString);
+    Details->SNR = pConfig->Profile.GetString("/GA/snr", wxEmptyString);
+    Details->SampleCount = pConfig->Profile.GetString("/GA/sample_count", wxEmptyString);
+    Details->ExposureTime = pConfig->Profile.GetString("/GA/exposure_time", wxEmptyString);
+    Details->ElapsedTime = pConfig->Profile.GetString("/GA/elapsed_time", wxEmptyString);
+    Details->RA_HPF_RMS = pConfig->Profile.GetString("/GA/ra_hpf_rms", wxEmptyString);
+    Details->Dec_HPF_RMS = pConfig->Profile.GetString("/GA/dec_hpf_rms", wxEmptyString);
+    Details->Total_HPF_RMS = pConfig->Profile.GetString("/GA/total_hpf_rms", wxEmptyString);
+    Details->RAPeak = pConfig->Profile.GetString("/GA/ra_peak", wxEmptyString);
+    Details->RAPeak_Peak = pConfig->Profile.GetString("/GA/ra_peak_peak", wxEmptyString);
+    Details->RADriftRate = pConfig->Profile.GetString("/GA/ra_drift_rate", wxEmptyString);
+    Details->RAMaxDriftRate = pConfig->Profile.GetString("/GA/ra_peak_drift_rate", wxEmptyString);
+    Details->DriftLimitingExposure = pConfig->Profile.GetString("/GA/ra_drift_exposure", wxEmptyString);
+    Details->DecDriftRate = pConfig->Profile.GetString("/GA/dec_drift_rate", wxEmptyString);
+    Details->DecPeak = pConfig->Profile.GetString("/GA/dec_peak", wxEmptyString);
+    Details->PAError = pConfig->Profile.GetString("/GA/pa_error", wxEmptyString);
+    Details->DecCorrectedRMS = pConfig->Profile.GetString("/GA/dec_corrected_rms", wxEmptyString);
+    Details->BackLashInfo = pConfig->Profile.GetString("/GA/backlash_info", wxEmptyString);
+    Details->Dec_LF_DriftRate = pConfig->Profile.GetString("/GA/dec_lf_drift_rate", wxEmptyString);
+    Details->RecRAMinMove = pConfig->Profile.GetString("/GA/rec_ra_minmove", wxEmptyString);
+    Details->RecDecMinMove = pConfig->Profile.GetString("/GA/rec_dec_minmove", wxEmptyString);
+    Details->BLTAmount = pConfig->Profile.GetString("/GA/BLT_pulse", wxEmptyString);
+    Details->Recommendations = pConfig->Profile.GetString("/GA/recommendations", wxEmptyString);
+    wxString northBLT = pConfig->Profile.GetString("/GA/BLT_North", wxEmptyString);
+    wxString southBLT = pConfig->Profile.GetString("/GA/BLT_South", wxEmptyString);
+    if (northBLT.Length() > 0 && southBLT.Length() > 0)
+    {
+        wxStringTokenizer tok;
+        wxString strVal;
+        double ptVal;
+        tok.SetString(northBLT, ",");
+        while (tok.HasMoreTokens())
+        {
+            strVal = tok.GetNextToken();
+            strVal.ToDouble(&ptVal);
+            Details->BLTNorthMoves.push_back(ptVal);
+        }
+
+        tok.SetString(southBLT, ",");
+        while (tok.HasMoreTokens())
+        {
+            strVal = tok.GetNextToken();
+            strVal.ToDouble(&ptVal);
+            Details->BLTSouthMoves.push_back(ptVal);
+        }
+    }
 }
 
 static wxString SizedMsg(wxString msg)
@@ -835,6 +983,7 @@ void GuidingAsstWin::MakeRecommendations()
     double rounded_decrms = std::max(round(decCorrectedRMS * multiplier_dec / unit + 0.5) * unit, 0.10);
     CalibrationDetails calDetails;
     wxString logStr;
+    wxString allRecommendations = "";
 
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
@@ -873,6 +1022,7 @@ void GuidingAsstWin::MakeRecommendations()
 
     // Always make a recommendation on exposure times
     wxString msg = wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
+    allRecommendations += "Exp:" + msg + "\n";
     if (!m_exposure_msg)
         m_exposure_msg = AddRecommendationEntry(SizedMsg(msg));
     else
@@ -886,6 +1036,7 @@ void GuidingAsstWin::MakeRecommendations()
             msg += _("(Prior alert)");
         else
             msg += _("(Backlash clearing)");
+        allRecommendations += "Cal:" + msg + "\n";
         if (!m_calibration_msg)
             m_calibration_msg = AddRecommendationEntry(SizedMsg(msg));
         else
@@ -898,6 +1049,7 @@ void GuidingAsstWin::MakeRecommendations()
     if ((sumSNR / (double)m_lpfRAStats.GetCount()) < 5.0)
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
+        allRecommendations += "Star:" + msg + "\n";
         if (!m_snr_msg)
             m_snr_msg = AddRecommendationEntry(SizedMsg(msg));
         else
@@ -917,6 +1069,7 @@ void GuidingAsstWin::MakeRecommendations()
         wxString msg = alignmentError < 10.0 ?
             _("Polar alignment error > 5 arc-min; that could probably be improved.") :
             _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
+        allRecommendations += "PA:" +  msg + "\n";
         if (!m_pae_msg)
             m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
         else
@@ -937,6 +1090,7 @@ void GuidingAsstWin::MakeRecommendations()
     if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_minmove_rec);
+        allRecommendations += "RAMinMove:" + msgText + "\n";
         if (!m_ra_msg)
         {
             m_ra_msg = AddRecommendationEntry(SizedMsg(msgText),
@@ -955,6 +1109,7 @@ void GuidingAsstWin::MakeRecommendations()
     if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_minmove_rec);
+        allRecommendations += "DecMinMove:" + msgText + "\n";
         if (!m_dec_msg)
         {
             m_dec_msg = AddRecommendationEntry(SizedMsg(msgText),
@@ -991,7 +1146,7 @@ void GuidingAsstWin::MakeRecommendations()
             msg = wxString::Format(_("Backlash is >= %d ms; you may need to guide in only one Dec direction (currently %s)"), m_backlashMs,
                 decDriftPerMin >= 0 ? _("South") : _("North"));
         }
-
+        allRecommendations += "BLT:" + msg + "\n";
         if (!m_backlash_msg)
         {
             m_backlash_msg = AddRecommendationEntry(SizedMsg(msg), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
@@ -1013,12 +1168,114 @@ void GuidingAsstWin::MakeRecommendations()
 
     }
 
+    SaveGAResults(&allRecommendations);
     m_recommend_group->Show(true);
 
     m_statusgrid->Layout();
     Layout();
     GetSizer()->Fit(this);
     Debug.Write("End of Guiding Assistant output....\n");
+}
+
+void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
+{
+    std::vector<wxString> recList;
+    wxString allRecs = details.Recommendations;
+    bool done = false;
+    size_t end;
+
+    while (!done)
+    {
+        end = allRecs.find_first_of("\n");
+        if (end > 0)
+        {
+            wxString rec = allRecs.Left(end);
+            size_t colPos = rec.find_first_of(":");
+            wxString which = rec.SubString(0, colPos - 1);
+            wxString what = rec.SubString(colPos + 1, end);
+            if (which == "Exp")
+            {
+                if (!m_exposure_msg)
+                    m_exposure_msg = AddRecommendationEntry(SizedMsg(what));
+                else
+                    m_exposure_msg->SetLabel(SizedMsg(what));
+            }
+            else if (which == "Cal")
+            {
+                if (!m_calibration_msg)
+                    m_calibration_msg = AddRecommendationEntry(SizedMsg(what));
+                else
+                    m_calibration_msg->SetLabel(SizedMsg(what));
+            }
+            else if (which == "Star")
+            {
+                if (!m_snr_msg)
+                    m_snr_msg = AddRecommendationEntry(SizedMsg(what));
+                else
+                    m_snr_msg->SetLabel(SizedMsg(what));
+            }
+            else if (which == "PA")
+            {
+                if (!m_pae_msg)
+                    m_pae_msg = AddRecommendationEntry(SizedMsg(what));
+                else
+                {
+                    m_pae_msg->SetLabel(SizedMsg(what));
+                    m_pae_msg->Wrap(400);
+                }
+            }
+            else if (which == "RAMinMove")
+            {
+                details.RecRAMinMove.ToDouble(&m_ra_minmove_rec);
+                if (!m_ra_msg)
+                {
+                    m_ra_msg = AddRecommendationEntry(SizedMsg(what),
+                        wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
+                }
+                else
+                {
+                    m_ra_msg->SetLabel(SizedMsg(what));
+                    m_raMinMoveButton->Enable(true);
+                }
+            }
+            else if (which == "DecMinMove")
+            {
+                details.RecDecMinMove.ToDouble(&m_dec_minmove_rec);
+                if (!m_dec_msg)
+                {
+                    m_dec_msg = AddRecommendationEntry(SizedMsg(what),
+                        wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+                }
+                else
+                {
+                    m_dec_msg->SetLabel(SizedMsg(what));
+                    m_decMinMoveButton->Enable(true);
+                }
+            }
+            else if (which == "BLT")
+            {
+                m_backlashMs = wxAtoi(details.BLTAmount);
+                bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
+                if (!m_backlash_msg)
+                {
+                    m_backlash_msg = AddRecommendationEntry(SizedMsg(what), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+                    m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
+                }
+                else
+                {
+                    m_backlash_msg->SetLabel(SizedMsg(what));
+                    m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
+                }
+            }
+            allRecs = allRecs.Mid(end + 1);
+            done = allRecs.size() == 0;
+        }
+    }
+    m_recommend_group->Show(true);
+
+    m_statusgrid->Layout();
+    Layout();
+    GetSizer()->Fit(this);
 }
 
 void GuidingAsstWin::OnStart(wxCommandEvent& event)
@@ -1039,6 +1296,8 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
 
     m_start->Enable(false);
     m_stop->Enable(true);
+    btnReviewPrev->Enable(false);
+    reviewMode = false;
     m_dlgState = STATE_MEASURING;
     FillInstructions(m_dlgState);
     m_gaStatus->SetLabel(_("Measuring..."));
@@ -1068,6 +1327,14 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     SetSizerAndFit(m_vSizer);
 }
 
+void GuidingAsstWin::OnReviewPrevious(wxCommandEvent& event)
+{
+    reviewMode = true;
+    LoadGAResults(&gaDetails);
+    m_graphBtn->Enable(gaDetails.BLTNorthMoves.size() > 0);
+    DisplayStaticResults(gaDetails);
+}
+
 void GuidingAsstWin::DoStop(const wxString& status)
 {
     m_measuring = false;
@@ -1091,6 +1358,7 @@ void GuidingAsstWin::DoStop(const wxString& status)
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
     m_stop->Enable(false);
+    btnReviewPrev->Enable(true);
 
     if (m_origSubFrames != -1)
     {
@@ -1212,6 +1480,44 @@ void GuidingAsstWin::FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, 
     pGrid->SetCellValue(loc, wxString::Format("%6.2f %s (%6.2f %s %s)", pxVal, units1, asVal, units2, extraInfo));
 }
 
+void GuidingAsstWin::DisplayStaticResults(const GADetails& details)
+{
+    wxString SEC(_("s"));
+    wxString MSEC(_("ms"));
+    wxString PX(_("px"));
+    wxString ARCSEC(_("arc-sec"));
+    wxString ARCMIN(_("arc-min"));
+    wxString PXPERMIN(_("px/min"));
+    wxString PXPERSEC(_("px/sec"));
+    wxString ARCSECPERMIN(_("arc-sec/min"));
+    wxString ARCSECPERSEC(_("arc-sec/sec"));
+
+    // Display high-freq stats
+    m_statusgrid->SetCellValue(m_timestamp_loc, details.TimeStamp);
+    m_statusgrid->SetCellValue(m_exposuretime_loc, details.ExposureTime);
+    m_statusgrid->SetCellValue(m_snr_loc, details.SNR);
+    //m_statusgrid->SetCellValue(m_starmass_loc, details.);
+    m_statusgrid->SetCellValue(m_elapsedtime_loc, details.ElapsedTime);
+    m_statusgrid->SetCellValue(m_samplecount_loc, details.SampleCount);
+
+    // Fill other grids
+    m_displacementgrid->SetCellValue(m_ra_rms_loc, details.RA_HPF_RMS);
+    m_displacementgrid->SetCellValue(m_dec_rms_loc, details.Dec_HPF_RMS);
+    m_displacementgrid->SetCellValue(m_total_rms_loc, details.Total_HPF_RMS);
+    m_othergrid->SetCellValue(m_ra_peak_loc, details.RAPeak);
+    m_othergrid->SetCellValue(m_dec_peak_loc, details.DecPeak);
+    m_othergrid->SetCellValue(m_ra_peakpeak_loc, details.RAPeak_Peak);
+    m_othergrid->SetCellValue(m_ra_drift_loc, details.RADriftRate);
+    m_othergrid->SetCellValue(m_ra_peak_drift_loc, details.RAMaxDriftRate);
+    m_othergrid->SetCellValue(m_ra_drift_exp_loc, details.DriftLimitingExposure);
+    m_othergrid->SetCellValue(m_dec_drift_loc, details.DecDriftRate);
+    m_othergrid->SetCellValue(m_backlash_loc, details.BackLashInfo);
+    m_othergrid->SetCellValue(m_pae_loc, details.PAError);
+
+    if (details.Recommendations.size() > 0)
+        DisplayStaticRecommendations(details);
+}
+
 void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
     double ra = info.mountOffset.X;
@@ -1311,6 +1617,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
         FillResultCell(m_othergrid, m_dec_drift_loc, decDriftPerMin, decDriftPerMin * pxscale, PXPERMIN, ARCSECPERMIN);
         m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == UNKNOWN_DECLINATION ? "> " : "", alignmentError, ARCMIN));
     }
+
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()
