@@ -447,8 +447,9 @@ bool GuiderOneStar::AutoSelect()
         }
 
         UpdateImageDisplay();
+
         pFrame->StatusMsg(wxString::Format(_("Auto-selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
-        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
+        pFrame->UpdateStatusBarStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         pFrame->pProfile->UpdateData(image, m_star.X, m_star.Y);
     }
     catch (const wxString& Msg)
@@ -786,7 +787,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
         pFrame->AdjustAutoExposure(m_star.SNR);
-        pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
+        pFrame->UpdateStatusBarStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
         errorInfo->status = StarStatus(m_star);
     }
     catch (const wxString& Msg)
@@ -869,7 +870,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             {
                 SetLockPosition(m_star);
                 pFrame->StatusMsg(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y));
-                pFrame->UpdateStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
+                pFrame->UpdateStatusBarStarInfo(m_star.SNR, m_star.GetError() == Star::STAR_SATURATED);
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();

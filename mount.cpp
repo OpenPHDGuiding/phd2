@@ -884,7 +884,7 @@ void Mount::LogGuideStepInfo()
     if (m_lastStep.frameNumber < 0)
         return;
 
-    pFrame->UpdateGuiderInfo(m_lastStep);
+    pFrame->UpdateStatusBarGuiderInfo(m_lastStep);
     GuideLog.GuideStep(m_lastStep);
     EvtServer.NotifyGuideStep(m_lastStep);
 
@@ -1430,7 +1430,8 @@ bool Mount::IsCalibrated() const
 void Mount::ClearCalibration()
 {
     m_calibrated = false;
-    if (pFrame) pFrame->UpdateCalibrationStatus();
+    if (pFrame)
+        pFrame->UpdateStatusBarCalibrationStatus();
 }
 
 void Mount::SetCalibration(const Calibration& cal)
@@ -1465,7 +1466,8 @@ void Mount::SetCalibration(const Calibration& cal)
 
     m_calibrated = true;
 
-    if (pFrame) pFrame->UpdateCalibrationStatus();
+    if (pFrame)
+        pFrame->UpdateStatusBarCalibrationStatus();
 
     // store calibration data
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
@@ -1704,9 +1706,7 @@ bool Mount::Connect()
     ResetErrorCount();
 
     if (pFrame)
-    {
-        pFrame->UpdateCalibrationStatus();
-    }
+        pFrame->UpdateStatusBarCalibrationStatus();
 
     return false;
 }
@@ -1714,7 +1714,9 @@ bool Mount::Connect()
 bool Mount::Disconnect()
 {
     m_connected = false;
-    if (pFrame) pFrame->UpdateCalibrationStatus();
+
+    if (pFrame)
+        pFrame->UpdateStatusBarCalibrationStatus();
 
     return false;
 }

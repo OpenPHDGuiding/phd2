@@ -527,15 +527,24 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     OnExposeComplete(image, err);
 }
 
-void MyFrame::OnMoveComplete(wxThreadEvent& event)
+void MyFrame::OnMoveComplete(wxThreadEvent& event_)
 {
     try
     {
-        Mount *mount = event.GetPayload<Mount *>();
+        MoveCompleteEvent& event = static_cast<MoveCompleteEvent&>(event_);
+
+        if (event.moveOptions & MOVEOPT_MANUAL)
+        {
+            Debug.Write(wxString::Format("Manual Move completed, result = %d\n", event.result));
+            ClearStatusBarGuiderInfo();
+            return;
+        }
+
+        Mount *mount = event.mount;
         assert(mount->IsBusy());
         mount->DecrementRequestCount();
 
-        Mount::MOVE_RESULT moveResult = static_cast<Mount::MOVE_RESULT>(event.GetInt());
+        Mount::MOVE_RESULT moveResult = event.result;
 
         mount->LogGuideStepInfo();
 
@@ -665,7 +674,7 @@ bool MyFrame::LoadDarkHandler(bool checkIt)
 void MyFrame::OnLoadDark(wxCommandEvent& evt)
 {
     LoadDarkHandler(evt.IsChecked());
-    pFrame->UpdateStateLabels();
+    pFrame->UpdateStatusBarStateLabels();
 }
 
 // Outside event handler because loading a defect map will automatically unload a dark library
@@ -711,7 +720,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
 void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
     LoadDefectMapHandler(evt.IsChecked());
-    pFrame->UpdateStateLabels();
+    pFrame->UpdateStatusBarStateLabels();
 }
 
 void MyFrame::OnRefineDefMap(wxCommandEvent& evt)

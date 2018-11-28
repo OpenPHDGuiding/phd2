@@ -986,7 +986,7 @@ void Guider::SetState(GUIDER_STATE newState)
                     pSecondaryMount->AdjustCalibrationForScopePointing();
                 }
 
-                pFrame->UpdateCalibrationStatus();
+                pFrame->UpdateStatusBarCalibrationStatus();
 
                 if (m_lockPosition.IsValid() && m_lockPosIsSticky)
                 {

@@ -165,7 +165,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
     EVT_THREAD(UPDATER_EVENT, MyFrame::OnUpdaterStateChanged)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
-    EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
+    EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusBarTimerEvent)
 
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
 wxEND_EVENT_TABLE()
@@ -970,7 +970,7 @@ void MyFrame::SetupStatusBar()
     m_statusbar = PHDStatusBar::CreateInstance(this, wxSTB_DEFAULT_STYLE);
     SetStatusBar(m_statusbar);
     PositionStatusBar();
-    UpdateCalibrationStatus();
+    UpdateStatusBarCalibrationStatus();
 }
 
 void MyFrame::SetupKeyboardShortcuts()
@@ -1319,7 +1319,7 @@ void MyFrame::DoTryReconnect()
     else
     {
         Debug.Write("Camera Re-connect succeeded, resume exposures\n");
-        UpdateStateLabels();
+        UpdateStatusBarStateLabels();
         m_exposurePending = false; // exposure no longer pending
         ScheduleExposure();
     }
@@ -1336,7 +1336,7 @@ void MyFrame::DoTryReconnect()
  */
 
 // Use a timer to show a status message for 10 seconds, then revert back to basic state info
-static void StartStatusbarTimer(wxTimer& timer)
+static void StartStatusBarTimer(wxTimer& timer)
 {
     const int DISPLAY_MS = 10000;
     timer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
@@ -1348,14 +1348,14 @@ static void SetStatusMsg(PHDStatusBar *statusbar, const wxString& text)
     statusbar->StatusMsg(text);
 }
 
-enum StatusbarThreadMsgType
+enum StatusBarThreadMsgType
 {
     THR_SB_MSG_TEXT,
     THR_SB_STATE_LABELS,
     THR_SB_CALIBRATION,
 };
 
-static void QueueStatusbarTextMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
+static void QueueStatusBarTextMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
     event->SetExtraLong(THR_SB_MSG_TEXT);
@@ -1364,7 +1364,7 @@ static void QueueStatusbarTextMsg(wxEvtHandler *frame, const wxString& text, boo
     wxQueueEvent(frame, event);
 }
 
-static void QueueStatusbarUpdateMsg(wxEvtHandler *frame, StatusbarThreadMsgType type)
+static void QueueStatusBarUpdateMsg(wxEvtHandler *frame, StatusBarThreadMsgType type)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
     event->SetExtraLong(type);
@@ -1376,10 +1376,10 @@ void MyFrame::StatusMsg(const wxString& text)
     if (wxThread::IsMain())
     {
         SetStatusMsg(m_statusbar, text);
-        StartStatusbarTimer(m_statusbarTimer);
+        StartStatusBarTimer(m_statusbarTimer);
     }
     else
-        QueueStatusbarTextMsg(this, text, true);
+        QueueStatusBarTextMsg(this, text, true);
 }
 
 void MyFrame::StatusMsgNoTimeout(const wxString& text)
@@ -1387,7 +1387,7 @@ void MyFrame::StatusMsgNoTimeout(const wxString& text)
     if (wxThread::IsMain())
         SetStatusMsg(m_statusbar, text);
     else
-        QueueStatusbarTextMsg(this, text, false);
+        QueueStatusBarTextMsg(this, text, false);
 }
 
 void MyFrame::OnStatusMsg(wxThreadEvent& event)
@@ -1400,33 +1400,33 @@ void MyFrame::OnStatusMsg(wxThreadEvent& event)
         SetStatusMsg(m_statusbar, msg);
 
         if (withTimeout)
-            StartStatusbarTimer(m_statusbarTimer);
+            StartStatusBarTimer(m_statusbarTimer);
         break;
     }
     case THR_SB_STATE_LABELS:
         m_statusbar->UpdateStates();
         break;
     case THR_SB_CALIBRATION:
-        UpdateCalibrationStatus();
+        UpdateStatusBarCalibrationStatus();
         break;
     }
 }
 
-void MyFrame::UpdateStarInfo(double SNR, bool Saturated)
+void MyFrame::UpdateStatusBarStarInfo(double SNR, bool Saturated)
 {
     assert(wxThread::IsMain());
     m_statusbar->UpdateStarInfo(SNR, Saturated);
 }
 
-void MyFrame::UpdateStateLabels()
+void MyFrame::UpdateStatusBarStateLabels()
 {
     if (wxThread::IsMain())
         m_statusbar->UpdateStates();
     else
-        QueueStatusbarUpdateMsg(this, THR_SB_STATE_LABELS);
+        QueueStatusBarUpdateMsg(this, THR_SB_STATE_LABELS);
 }
 
-void MyFrame::UpdateCalibrationStatus()
+void MyFrame::UpdateStatusBarCalibrationStatus()
 {
     if (wxThread::IsMain())
     {
@@ -1436,20 +1436,21 @@ void MyFrame::UpdateCalibrationStatus()
     }
     else
     {
-        QueueStatusbarUpdateMsg(this, THR_SB_CALIBRATION);
+        QueueStatusBarUpdateMsg(this, THR_SB_CALIBRATION);
     }
 }
 
-void MyFrame::UpdateGuiderInfo(const GuideStepInfo& info)
+void MyFrame::UpdateStatusBarGuiderInfo(const GuideStepInfo& info)
 {
-    Debug.Write(wxString::Format("GuideStep: %.1f px %d ms %s, %.1f px %d ms %s\n", info.mountOffset.X, info.durationRA, info.directionRA == EAST ? "EAST" : "WEST",
-        info.mountOffset.Y, info.durationDec, info.directionRA == NORTH ? "NORTH" : "SOUTH"));
+    Debug.Write(wxString::Format("GuideStep: %.1f px %d ms %s, %.1f px %d ms %s\n",
+        info.mountOffset.X, info.durationRA, info.directionRA == EAST ? "EAST" : "WEST",
+        info.mountOffset.Y, info.durationDec, info.directionDec == NORTH ? "NORTH" : "SOUTH"));
 
     assert(wxThread::IsMain());
     m_statusbar->UpdateGuiderInfo(info);
 }
 
-void MyFrame::ClearGuiderInfo()
+void MyFrame::ClearStatusBarGuiderInfo()
 {
     assert(wxThread::IsMain());
     m_statusbar->ClearGuiderInfo();
@@ -1584,7 +1585,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     Debug.Write("OnRequestMountMove() ends\n");
 }
 
-void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
+void MyFrame::OnStatusBarTimerEvent(wxTimerEvent& evt)
 {
     if (pGuider->IsGuiding())
         m_statusbar->StatusMsg(_("Guiding"));
@@ -1623,7 +1624,10 @@ void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigne
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(mount);
-    mount->IncrementRequestCount();
+
+    // Manual moves do not affect the request count for IsBusy()
+    if ((moveOptions & MOVEOPT_MANUAL) == 0)
+        mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveOptions);
@@ -1645,7 +1649,8 @@ void MyFrame::ScheduleSecondaryMove(Mount *mount, const GuiderOffset& ofs, unsig
     }
     else
     {
-        mount->IncrementRequestCount();
+        if ((moveOptions & MOVEOPT_MANUAL) == 0)
+            mount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
         m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(mount, ofs, moveOptions);
@@ -1658,10 +1663,39 @@ void MyFrame::ScheduleAxisMove(Mount *mount, const GUIDE_DIRECTION direction, in
 
     assert(mount);
 
-    mount->IncrementRequestCount();
+    if ((moveOptions & MOVEOPT_MANUAL) == 0)
+        mount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadAxisMove(mount, direction, duration, moveOptions);
+}
+
+void MyFrame::ScheduleManualMove(Mount *mount, const GUIDE_DIRECTION direction, int duration)
+{
+    GuideLog.NotifyManualGuide(mount, direction, duration);
+
+    GuideStepInfo step = { 0 };
+    step.mount = mount;
+    step.moveOptions = MOVEOPT_MANUAL;
+    step.mountOffset.SetXY(0., 0.);
+    switch (direction)
+    {
+    case GUIDE_DIRECTION::NORTH:
+    case GUIDE_DIRECTION::SOUTH:
+        step.durationDec = duration;
+        step.directionDec = direction;
+        break;
+    case GUIDE_DIRECTION::EAST:
+    case GUIDE_DIRECTION::WEST:
+        step.durationRA = duration;
+        step.directionRA = direction;
+        break;
+    default:
+        break;
+    }
+    UpdateStatusBarGuiderInfo(step);
+
+    ScheduleAxisMove(mount, direction, duration, MOVEOPT_MANUAL);
 }
 
 bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)

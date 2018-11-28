@@ -3,7 +3,7 @@
  *  Open PHD Guiding
  *
  *  Created by Andy Galasso
- *  Copyright (c) 2017 Andy Galasso.
+ *  Copyright (c) 2017-2018 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -211,7 +211,7 @@ struct Updater
     volatile UpdaterStatus m_status;
     wxThread *m_thread;
     wxCriticalSection m_cs;
-    CURL *curl;
+    CURL *m_curl;
     wxString newver;
     wxString installer_url;
     wxString installer_sha1;
@@ -252,21 +252,16 @@ struct Updater
         pConfig->Global.SetInt("/Update/series", m_settings.series);
     }
 
-    Updater()
-        :
-        m_status(UPD_NOT_STARTED),
-        m_thread(nullptr),
-        m_updatenow(nullptr),
-        abort(false)
+    bool init_curl()
     {
-        LoadSettings();
+        if (m_curl)
+            return true;
 
-        curl = curl_easy_init();
+        CURL *curl = curl_easy_init();
         if (!curl)
         {
             Debug.Write("UPD: curl init failed!\n");
-            m_status = UPD_ABORTED;
-            return;
+            return false;
         }
 
         curl_easy_setopt(curl, CURLOPT_USERAGENT, static_cast<const char *>(wxGetApp().UserAgent().c_str()));
@@ -280,12 +275,26 @@ struct Updater
 #endif
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
         curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail on 404 etc
+
+        m_curl = curl;
+        return true;
+    }
+
+    Updater()
+        :
+        m_status(UPD_NOT_STARTED),
+        m_thread(nullptr),
+        m_curl(nullptr),
+        m_updatenow(nullptr),
+        abort(false)
+    {
+        LoadSettings();
     }
 
     ~Updater()
     {
-        if (curl)
-            curl_easy_cleanup(curl);
+        if (m_curl)
+            curl_easy_cleanup(m_curl);
     }
 
     wxString SeriesName()
@@ -308,16 +317,16 @@ struct Updater
 
     bool FetchURL(wxString *buf, const wxString& url)
     {
-        if (!curl)
+        if (!init_curl())
             return false;
 
         Debug.Write(wxString::Format("UPD: fetch %s\n", url));
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
-        curl_easy_setopt(curl, CURLOPT_URL, static_cast<const char *>(url.c_str()));
+        curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_buf_callback);
+        curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, buf);
+        curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.c_str()));
 
-        CURLcode res = curl_easy_perform(curl);
+        CURLcode res = curl_easy_perform(m_curl);
 
         if (res != CURLE_OK)
         {
@@ -490,21 +499,24 @@ struct Updater
             return false;
         }
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_file_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-        curl_easy_setopt(curl, CURLOPT_URL, static_cast<const char *>(installer_url.c_str()));
+        if (!init_curl())
+            return false;
+
+        curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_file_callback);
+        curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &file);
+        curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(installer_url.c_str()));
 
         if (!m_interactive)
         {
             // limit download speed for background download
-            curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, (curl_off_t) DownloadBgMaxBPS);
+            curl_easy_setopt(m_curl, CURLOPT_MAX_RECV_SPEED_LARGE, (curl_off_t)DownloadBgMaxBPS);
         }
 
         Debug.Write(wxString::Format("UPD: begin download %s to %s\n", installer_url, filename));
 
-        CURLcode res = curl_easy_perform(curl);
+        CURLcode res = curl_easy_perform(m_curl);
 
-        curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, (curl_off_t) 0); // restore unlimited rate
+        curl_easy_setopt(m_curl, CURLOPT_MAX_RECV_SPEED_LARGE, (curl_off_t)0); // restore unlimited rate
 
         if (res != CURLE_OK)
         {
@@ -540,6 +552,19 @@ struct Updater
         abort = false;
 
         SetStatus(UPD_CHECKING_VERSION);
+
+        struct AutoCleanupCurl
+        {
+            CURL **m_pp;
+            AutoCleanupCurl(CURL **pp) : m_pp(pp) { }
+            ~AutoCleanupCurl() {
+                if (*m_pp)
+                {
+                    curl_easy_cleanup(*m_pp);
+                    *m_pp = nullptr;
+                }
+            }
+        } _cleanup(&m_curl);
 
         if (!FetchVersionInfo())
         {

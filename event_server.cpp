@@ -1907,13 +1907,9 @@ static void guide_pulse(JObj& response, const json_value *params)
         dir = opposite(dir);
     }
 
-    GuideLog.NotifyManualGuide(m, dir, duration);
-    Mount::MOVE_RESULT res = m->MoveAxis(dir, duration, MOVEOPT_MANUAL);
+    pFrame->ScheduleManualMove(m, dir, duration);
 
-    if (res == Mount::MOVE_OK)
-        response << jrpc_result(0);
-    else
-        response << jrpc_error(1, "move failed");
+    response << jrpc_result(0);
 }
 
 static const char *parity_str(GuideParity p)
@@ -1935,6 +1931,7 @@ static void get_calibration_data(JObj& response, const json_value *params)
     {
     case MOUNT: m = TheScope(); break;
     case AO: m = TheAO(); break;
+    case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
         {
             response << jrpc_error(1, "invalid 'which' param");

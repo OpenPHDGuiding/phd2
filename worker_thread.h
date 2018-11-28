@@ -78,6 +78,15 @@ struct MOVE_REQUEST
     wxSemaphore       *semaphore;
 };
 
+struct MoveCompleteEvent : public wxThreadEvent
+{
+    unsigned int moveOptions;
+    Mount::MOVE_RESULT result;
+    Mount *mount;
+
+    MoveCompleteEvent(const MOVE_REQUEST& move);
+};
+
 class WorkerThread : public wxThread
 {
     // types and routines for the server->worker message queue
@@ -183,9 +192,9 @@ public:
     void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
     void EnqueueWorkerThreadAxisMove(Mount *mount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
 protected:
-    Mount::MOVE_RESULT HandleMove(MOVE_REQUEST *args);
-    void SendWorkerThreadMoveComplete(Mount *mount, Mount::MOVE_RESULT moveResult);
-    // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
+    void HandleMove(MOVE_REQUEST *args);
+    void SendWorkerThreadMoveComplete(const MOVE_REQUEST& move);
+    // in the frame class: void MyFrame::OnMoveComplete(wxThreadEvent& event);
 
     void EnqueueMessage(const WORKER_THREAD_REQUEST& message);
 };

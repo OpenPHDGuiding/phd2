@@ -272,8 +272,8 @@ inline static void ManualMove(Mount *mount, GUIDE_DIRECTION dir, int dur)
         }
         else
             Debug.Write(wxString::Format("Manual Guide: %s %d ms\n", mount->DirectionStr(dir), dur));
-        GuideLog.NotifyManualGuide(mount, dir, dur);
-        mount->MoveAxis(dir, dur, MOVEOPT_MANUAL);
+
+        pFrame->ScheduleManualMove(mount, dir, dur);
     }
 }
 
