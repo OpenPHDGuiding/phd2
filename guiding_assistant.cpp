@@ -36,6 +36,7 @@
 #include "guiding_assistant.h"
 #include "backlash_comp.h"
 #include "guiding_stats.h"
+#include "optionsbutton.h"
 
 #include <wx/textwrapper.h>
 #include <wx/tokenzr.h>
@@ -166,7 +167,7 @@ struct GuidingAsstWin : public wxDialog
 
     wxButton *m_start;
     wxButton *m_stop;
-    wxButton* btnReviewPrev;
+    OptionsButton* btnReviewPrev;
     wxTextCtrl *m_report;
     wxStaticText *m_instructions;
     wxGrid *m_statusgrid;
@@ -267,6 +268,7 @@ struct GuidingAsstWin : public wxDialog
     void OnGraph(wxCommandEvent& event);
     void OnHelp(wxCommandEvent& event);
     void OnReviewPrevious(wxCommandEvent& event);
+    void OnGAReviewSelection(wxCommandEvent& evt);
 
     wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
     wxStaticText *AddRecommendationEntry(const wxString& msg);
@@ -281,7 +283,7 @@ struct GuidingAsstWin : public wxDialog
     void EndBacklashTest(bool completed);
     void BacklashError();
     void StatsReset();
-    void LoadGAResults(GADetails* Details);
+    void LoadGAResults(const wxString& TimeStamp, GADetails* Details);
     void SaveGAResults(const wxString* AllRecommendations);
 };
 
@@ -527,7 +529,7 @@ GuidingAsstWin::GuidingAsstWin()
     btnSizer->Add(m_start, 0, wxALL, 5);
     m_start->Enable(false);
 
-    btnReviewPrev = new wxButton(this, wxID_ANY, _("Review previous"), wxDefaultPosition, wxDefaultSize, 0);
+    btnReviewPrev = new OptionsButton(this, GA_REVIEW_BUTTON, _("Review previous"), wxDefaultPosition, wxDefaultSize, 0);
     btnReviewPrev->SetToolTip(_("Review previous GA results"));
     btnSizer->Add(btnReviewPrev, 0, wxALL, 5);
 
@@ -545,7 +547,8 @@ GuidingAsstWin::GuidingAsstWin()
     Connect(APPSTATE_NOTIFY_EVENT, wxCommandEventHandler(GuidingAsstWin::OnAppStateNotify));
     m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
     m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
-    btnReviewPrev->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnReviewPrevious), NULL, this);
+    Bind(wxEVT_BUTTON, &GuidingAsstWin::OnReviewPrevious, this, GA_REVIEW_BUTTON, GA_REVIEW_BUTTON);
+    Bind(wxEVT_MENU, &GuidingAsstWin::OnGAReviewSelection, this, GA_REVIEW_ITEMS_BASE, GA_REVIEW_ITEMS_LIMIT);
 
     m_backlashTool = new BacklashTool();
     m_measuringBacklash = false;
@@ -851,33 +854,79 @@ void GuidingAsstWin::LogResults()
     Debug.Write(str);
 }
 
+// Get info regarding any saved GA sessions that include a BLT
+static void GetBLTHistory(const std::vector<wxString>&Timestamps, int* oldestBLTInx, int* BLTCount)
+{
+    int oldestInx = -1;
+    int bltCount = 0;
+    for (int inx = 0; inx < Timestamps.size(); inx++)
+    {
+        wxString northBLT = "/GA/" + Timestamps[inx] + "/BLT_north";
+        if (pConfig->Profile.GetString(northBLT, wxEmptyString) != wxEmptyString)
+        {
+            bltCount++;
+            if (oldestInx < 0)
+                oldestInx = inx;
+        }
+    }
+    *oldestBLTInx = oldestInx;
+    *BLTCount = bltCount;
+}
+
+// Insure that no more than 3 GA sessions are kept in the profile while also keeping at least one BLT measurement if one exists
+static void TrimGAHistory(bool FreshBLT)
+{
+    int bltCount;
+    int oldestBLTInx;
+    int totalGAs;
+    wxString targetEntry;
+
+    std::vector<wxString> timeStamps;
+    timeStamps = pConfig->Profile.GetGroupNames("/GA");
+    totalGAs = timeStamps.size();
+    GetBLTHistory(timeStamps, &oldestBLTInx, &bltCount);
+    if (totalGAs > 3)
+    {
+        if (FreshBLT || bltCount == 0 || oldestBLTInx > 0 || bltCount > 1 || bltCount == totalGAs)
+            targetEntry = timeStamps[0];
+        else
+            targetEntry = timeStamps[1];
+        pConfig->Profile.DeleteGroup("/GA/" + targetEntry);
+        Debug.Write(wxString::Format("GA-History: removed entry for %s\n", targetEntry));
+    }
+}
+
+// Save the results from the most recent GA run in the profile
 void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
 {
-    pConfig->Profile.SetString("/GA/timestamp", m_statusgrid->GetCellValue(m_timestamp_loc));
-    pConfig->Profile.SetString("/GA/snr", m_statusgrid->GetCellValue(m_snr_loc));
-    pConfig->Profile.SetString("/GA/sample_count", m_statusgrid->GetCellValue(m_samplecount_loc));
-    pConfig->Profile.SetString("/GA/elapsed_time", m_statusgrid->GetCellValue(m_elapsedtime_loc));
-    pConfig->Profile.SetString("/GA/exposure_time", m_statusgrid->GetCellValue(m_exposuretime_loc));
-    pConfig->Profile.SetString("/GA/ra_hpf_rms", m_displacementgrid->GetCellValue(m_ra_rms_loc));
-    pConfig->Profile.SetString("/GA/dec_hpf_rms", m_displacementgrid->GetCellValue(m_dec_rms_loc));
-    pConfig->Profile.SetString("/GA/total_hpf_rms", m_displacementgrid->GetCellValue(m_total_rms_loc));
-    pConfig->Profile.SetString("/GA/ra_peak", m_othergrid->GetCellValue(m_ra_peak_loc));
-    pConfig->Profile.SetString("/GA/ra_peak_peak", m_othergrid->GetCellValue(m_ra_peakpeak_loc));
-    pConfig->Profile.SetString("/GA/ra_drift_rate", m_othergrid->GetCellValue(m_ra_drift_loc));
-    pConfig->Profile.SetString("/GA/ra_peak_drift_rate", m_othergrid->GetCellValue(m_ra_peak_drift_loc));
-    pConfig->Profile.SetString("/GA/ra_drift_exposure", m_othergrid->GetCellValue(m_ra_drift_exp_loc));
-    pConfig->Profile.SetString("/GA/dec_drift_rate", m_othergrid->GetCellValue(m_dec_drift_loc));
-    pConfig->Profile.SetString("/GA/dec_peak", m_othergrid->GetCellValue(m_dec_peak_loc));
-    pConfig->Profile.SetString("/GA/pa_error", m_othergrid->GetCellValue(m_pae_loc));
-    pConfig->Profile.SetString("/GA/dec_corrected_rms", std::to_string(decCorrectedRMS));
-    pConfig->Profile.SetString("/GA/backlash_info", m_othergrid->GetCellValue(m_backlash_loc));
-    pConfig->Profile.SetString("/GA/dec_lf_drift_rate", std::to_string(decDriftPerMin));
-    pConfig->Profile.SetString("/GA/rec_ra_minmove", std::to_string(m_ra_minmove_rec));
-    pConfig->Profile.SetString("/GA/rec_dec_minmove", std::to_string(m_dec_minmove_rec));
+    wxString prefix = "/GA/" + startStr;
+
+    pConfig->Profile.SetString(prefix + "/timestamp", m_statusgrid->GetCellValue(m_timestamp_loc));
+    pConfig->Profile.SetString(prefix + "/snr", m_statusgrid->GetCellValue(m_snr_loc));
+    pConfig->Profile.SetString(prefix + "/sample_count", m_statusgrid->GetCellValue(m_samplecount_loc));
+    pConfig->Profile.SetString(prefix + "/elapsed_time", m_statusgrid->GetCellValue(m_elapsedtime_loc));
+    pConfig->Profile.SetString(prefix + "/exposure_time", m_statusgrid->GetCellValue(m_exposuretime_loc));
+    pConfig->Profile.SetString(prefix + "/ra_hpf_rms", m_displacementgrid->GetCellValue(m_ra_rms_loc));
+    pConfig->Profile.SetString(prefix + "/dec_hpf_rms", m_displacementgrid->GetCellValue(m_dec_rms_loc));
+    pConfig->Profile.SetString(prefix + "/total_hpf_rms", m_displacementgrid->GetCellValue(m_total_rms_loc));
+    pConfig->Profile.SetString(prefix + "/ra_peak", m_othergrid->GetCellValue(m_ra_peak_loc));
+    pConfig->Profile.SetString(prefix + "/GA/ra_peak_peak", m_othergrid->GetCellValue(m_ra_peakpeak_loc));
+    pConfig->Profile.SetString(prefix + "/ra_drift_rate", m_othergrid->GetCellValue(m_ra_drift_loc));
+    pConfig->Profile.SetString(prefix + "/ra_peak_drift_rate", m_othergrid->GetCellValue(m_ra_peak_drift_loc));
+    pConfig->Profile.SetString(prefix + "/ra_drift_exposure", m_othergrid->GetCellValue(m_ra_drift_exp_loc));
+    pConfig->Profile.SetString(prefix + "/dec_drift_rate", m_othergrid->GetCellValue(m_dec_drift_loc));
+    pConfig->Profile.SetString(prefix + "/dec_peak", m_othergrid->GetCellValue(m_dec_peak_loc));
+    pConfig->Profile.SetString(prefix + "/pa_error", m_othergrid->GetCellValue(m_pae_loc));
+    pConfig->Profile.SetString(prefix + "/dec_corrected_rms", std::to_string(decCorrectedRMS));
+    pConfig->Profile.SetString(prefix + "/backlash_info", m_othergrid->GetCellValue(m_backlash_loc));
+    pConfig->Profile.SetString(prefix + "/dec_lf_drift_rate", std::to_string(decDriftPerMin));
+    pConfig->Profile.SetString(prefix + "/rec_ra_minmove", std::to_string(m_ra_minmove_rec));
+    pConfig->Profile.SetString(prefix + "/rec_dec_minmove", std::to_string(m_dec_minmove_rec));
     if (m_backlashRecommendedMs > 0)
-        pConfig->Profile.SetString("/GA/BLT_pulse", std::to_string(m_backlashMs));
-    pConfig->Profile.SetString("/GA/recommendations", *AllRecommendations);
-    if (m_backlashTool && m_backlashTool->IsGraphable())
+        pConfig->Profile.SetString(prefix + "/BLT_pulse", std::to_string(m_backlashMs));
+    pConfig->Profile.SetString(prefix + "/recommendations", *AllRecommendations);
+    bool freshBLT = m_backlashTool && m_backlashTool->IsGraphable();        // Just did a BLT that is viewable
+    if (freshBLT)
     {
         std::vector<double> northSteps = m_backlashTool->GetNorthSteps();
         std::vector<double> southSteps = m_backlashTool->GetSouthSteps();
@@ -888,7 +937,7 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
             stepStr += wxString::Format("%0.1f,", *it);
         }
         stepStr = stepStr.Left(stepStr.length() - 2);
-        pConfig->Profile.SetString("/GA/BLT_north", stepStr);
+        pConfig->Profile.SetString(prefix + "/BLT_north", stepStr);
 
         stepStr = "";
 
@@ -897,38 +946,41 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
             stepStr += wxString::Format("%0.1f,", *it);
         }
         stepStr = stepStr.Left(stepStr.length() - 2);
-        pConfig->Profile.SetString("/GA/BLT_South", stepStr);
+        pConfig->Profile.SetString(prefix + "/BLT_South", stepStr);
     }
+    TrimGAHistory(freshBLT);
 }
 
-void GuidingAsstWin::LoadGAResults(GADetails* Details)
+// Reload GA results for the passed timestamp
+void GuidingAsstWin::LoadGAResults(const wxString& TimeStamp, GADetails* Details)
 {
+    wxString prefix = "/GA/" + TimeStamp;
     *Details = {};              // Reset all vars
-    Details->TimeStamp = pConfig->Profile.GetString("/GA/timestamp", wxEmptyString);
-    Details->SNR = pConfig->Profile.GetString("/GA/snr", wxEmptyString);
-    Details->SampleCount = pConfig->Profile.GetString("/GA/sample_count", wxEmptyString);
-    Details->ExposureTime = pConfig->Profile.GetString("/GA/exposure_time", wxEmptyString);
-    Details->ElapsedTime = pConfig->Profile.GetString("/GA/elapsed_time", wxEmptyString);
-    Details->RA_HPF_RMS = pConfig->Profile.GetString("/GA/ra_hpf_rms", wxEmptyString);
-    Details->Dec_HPF_RMS = pConfig->Profile.GetString("/GA/dec_hpf_rms", wxEmptyString);
-    Details->Total_HPF_RMS = pConfig->Profile.GetString("/GA/total_hpf_rms", wxEmptyString);
-    Details->RAPeak = pConfig->Profile.GetString("/GA/ra_peak", wxEmptyString);
-    Details->RAPeak_Peak = pConfig->Profile.GetString("/GA/ra_peak_peak", wxEmptyString);
-    Details->RADriftRate = pConfig->Profile.GetString("/GA/ra_drift_rate", wxEmptyString);
-    Details->RAMaxDriftRate = pConfig->Profile.GetString("/GA/ra_peak_drift_rate", wxEmptyString);
-    Details->DriftLimitingExposure = pConfig->Profile.GetString("/GA/ra_drift_exposure", wxEmptyString);
-    Details->DecDriftRate = pConfig->Profile.GetString("/GA/dec_drift_rate", wxEmptyString);
-    Details->DecPeak = pConfig->Profile.GetString("/GA/dec_peak", wxEmptyString);
-    Details->PAError = pConfig->Profile.GetString("/GA/pa_error", wxEmptyString);
-    Details->DecCorrectedRMS = pConfig->Profile.GetString("/GA/dec_corrected_rms", wxEmptyString);
-    Details->BackLashInfo = pConfig->Profile.GetString("/GA/backlash_info", wxEmptyString);
-    Details->Dec_LF_DriftRate = pConfig->Profile.GetString("/GA/dec_lf_drift_rate", wxEmptyString);
-    Details->RecRAMinMove = pConfig->Profile.GetString("/GA/rec_ra_minmove", wxEmptyString);
-    Details->RecDecMinMove = pConfig->Profile.GetString("/GA/rec_dec_minmove", wxEmptyString);
-    Details->BLTAmount = pConfig->Profile.GetString("/GA/BLT_pulse", wxEmptyString);
-    Details->Recommendations = pConfig->Profile.GetString("/GA/recommendations", wxEmptyString);
-    wxString northBLT = pConfig->Profile.GetString("/GA/BLT_North", wxEmptyString);
-    wxString southBLT = pConfig->Profile.GetString("/GA/BLT_South", wxEmptyString);
+    Details->TimeStamp = pConfig->Profile.GetString(prefix + "/timestamp", wxEmptyString);
+    Details->SNR = pConfig->Profile.GetString(prefix + "/snr", wxEmptyString);
+    Details->SampleCount = pConfig->Profile.GetString(prefix + "/sample_count", wxEmptyString);
+    Details->ExposureTime = pConfig->Profile.GetString(prefix + "/exposure_time", wxEmptyString);
+    Details->ElapsedTime = pConfig->Profile.GetString(prefix + "/elapsed_time", wxEmptyString);
+    Details->RA_HPF_RMS = pConfig->Profile.GetString(prefix + "/ra_hpf_rms", wxEmptyString);
+    Details->Dec_HPF_RMS = pConfig->Profile.GetString(prefix + "/dec_hpf_rms", wxEmptyString);
+    Details->Total_HPF_RMS = pConfig->Profile.GetString(prefix + "/total_hpf_rms", wxEmptyString);
+    Details->RAPeak = pConfig->Profile.GetString(prefix + "/ra_peak", wxEmptyString);
+    Details->RAPeak_Peak = pConfig->Profile.GetString(prefix + "/ra_peak_peak", wxEmptyString);
+    Details->RADriftRate = pConfig->Profile.GetString(prefix + "/ra_drift_rate", wxEmptyString);
+    Details->RAMaxDriftRate = pConfig->Profile.GetString(prefix + "/ra_peak_drift_rate", wxEmptyString);
+    Details->DriftLimitingExposure = pConfig->Profile.GetString(prefix + "/ra_drift_exposure", wxEmptyString);
+    Details->DecDriftRate = pConfig->Profile.GetString(prefix + "/dec_drift_rate", wxEmptyString);
+    Details->DecPeak = pConfig->Profile.GetString(prefix + "/dec_peak", wxEmptyString);
+    Details->PAError = pConfig->Profile.GetString(prefix + "/pa_error", wxEmptyString);
+    Details->DecCorrectedRMS = pConfig->Profile.GetString(prefix + "/dec_corrected_rms", wxEmptyString);
+    Details->BackLashInfo = pConfig->Profile.GetString(prefix + "/backlash_info", wxEmptyString);
+    Details->Dec_LF_DriftRate = pConfig->Profile.GetString(prefix + "/dec_lf_drift_rate", wxEmptyString);
+    Details->RecRAMinMove = pConfig->Profile.GetString(prefix + "/rec_ra_minmove", wxEmptyString);
+    Details->RecDecMinMove = pConfig->Profile.GetString(prefix + "/rec_dec_minmove", wxEmptyString);
+    Details->BLTAmount = pConfig->Profile.GetString(prefix + "/BLT_pulse", wxEmptyString);
+    Details->Recommendations = pConfig->Profile.GetString(prefix + "/recommendations", wxEmptyString);
+    wxString northBLT = pConfig->Profile.GetString(prefix + "/BLT_North", wxEmptyString);
+    wxString southBLT = pConfig->Profile.GetString(prefix + "/BLT_South", wxEmptyString);
     if (northBLT.Length() > 0 && southBLT.Length() > 0)
     {
         wxStringTokenizer tok;
@@ -961,6 +1013,7 @@ static wxString SizedMsg(wxString msg)
         return msg;
 }
 
+// Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
 {
     double pxscale = pFrame->GetCameraPixelScale();
@@ -1177,6 +1230,7 @@ void GuidingAsstWin::MakeRecommendations()
     Debug.Write("End of Guiding Assistant output....\n");
 }
 
+// Show recommendations from a previous GA that is being reviewed
 void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
 {
     std::vector<wxString> recList;
@@ -1327,10 +1381,33 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     SetSizerAndFit(m_vSizer);
 }
 
+// For a mouse-click on the 'Review Previous' options button, show a pop-up menu for whatever saved GAs are available
 void GuidingAsstWin::OnReviewPrevious(wxCommandEvent& event)
 {
+    std::vector<wxString> entryNames;
+    entryNames = pConfig->Profile.GetGroupNames("/GA");
+
+    wxMenu* reviewList = new wxMenu();
+    for (int inx = 0; inx < entryNames.size(); inx++)
+    {
+        reviewList->Append(GA_REVIEW_ITEMS_BASE + inx, entryNames[inx]);
+    }
+    PopupMenu(reviewList, btnReviewPrev->GetPosition().x,
+        btnReviewPrev->GetPosition().y + btnReviewPrev->GetSize().GetHeight());
+
+    wxDELETE(reviewList);
+}
+
+// Handle the user's choice of a GA entry for review (see above)
+void GuidingAsstWin::OnGAReviewSelection(wxCommandEvent& evt)
+{
+    int id = evt.GetId();
+    wxObject* which = evt.GetEventObject();
+    wxMenu* menu = (wxMenu*)evt.GetEventObject();
+    wxString timeStamp = menu->GetLabelText(id);
+
     reviewMode = true;
-    LoadGAResults(&gaDetails);
+    LoadGAResults(timeStamp, &gaDetails);
     m_graphBtn->Enable(gaDetails.BLTNorthMoves.size() > 0);
     DisplayStaticResults(gaDetails);
 }

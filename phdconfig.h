@@ -97,6 +97,8 @@ public:
     void DeleteEntry(const wxString& name);
     void DeleteGroup(const wxString& name);
 
+    std::vector<wxString> GetGroupNames(const wxString& baseName);
+
     wxConfig *GetWxConfig() const { return m_pConfig; }
 };
 

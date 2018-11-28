@@ -186,6 +186,27 @@ void ConfigSection::DeleteGroup(const wxString& name)
     m_pConfig->DeleteGroup(m_prefix + name);
 }
 
+// Return a list of node names (group names) for the current profile, starting at the level specified by baseName
+// e.g. baseName = "scope" would enumerate all the nodes in the profile whose parent is "scope"
+std::vector<wxString> ConfigSection::GetGroupNames(const wxString& baseName)
+{
+    wxString oldPath = m_pConfig->GetPath();
+    m_pConfig->SetPath(m_prefix + baseName);
+    long lInx;
+    wxString grpName;
+    bool more;
+    std::vector<wxString> entries;
+
+    more = m_pConfig->GetFirstGroup(grpName, lInx);
+    while (more)
+    {
+        entries.push_back(grpName);
+        more = m_pConfig->GetNextGroup(grpName, lInx);
+    }
+    m_pConfig->SetPath(oldPath);
+    return entries;
+}
+
 PhdConfig::PhdConfig()
 {
 }
