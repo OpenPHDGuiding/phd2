@@ -285,6 +285,7 @@ struct GuidingAsstWin : public wxDialog
     void StatsReset();
     void LoadGAResults(const wxString& TimeStamp, GADetails* Details);
     void SaveGAResults(const wxString* AllRecommendations);
+    int GetGAHistoryCount();
 };
 
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
@@ -530,7 +531,8 @@ GuidingAsstWin::GuidingAsstWin()
     m_start->Enable(false);
 
     btnReviewPrev = new OptionsButton(this, GA_REVIEW_BUTTON, _("Review previous"), wxDefaultPosition, wxDefaultSize, 0);
-    btnReviewPrev->SetToolTip(_("Review previous GA results"));
+    btnReviewPrev->SetToolTip(_("Review up to 3 previous GA results"));
+    btnReviewPrev->Enable(GetGAHistoryCount() > 0);
     btnSizer->Add(btnReviewPrev, 0, wxALL, 5);
 
     m_stop = new wxButton(this, wxID_ANY, _("Stop"), wxDefaultPosition, wxDefaultSize, 0);
@@ -873,6 +875,12 @@ static void GetBLTHistory(const std::vector<wxString>&Timestamps, int* oldestBLT
     *BLTCount = bltCount;
 }
 
+int GuidingAsstWin::GetGAHistoryCount()
+{
+    std::vector<wxString> timeStamps = pConfig->Profile.GetGroupNames("/GA");
+    return timeStamps.size();
+}
+
 // Insure that no more than 3 GA sessions are kept in the profile while also keeping at least one BLT measurement if one exists
 static void TrimGAHistory(bool FreshBLT)
 {
@@ -910,7 +918,7 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
     pConfig->Profile.SetString(prefix + "/dec_hpf_rms", m_displacementgrid->GetCellValue(m_dec_rms_loc));
     pConfig->Profile.SetString(prefix + "/total_hpf_rms", m_displacementgrid->GetCellValue(m_total_rms_loc));
     pConfig->Profile.SetString(prefix + "/ra_peak", m_othergrid->GetCellValue(m_ra_peak_loc));
-    pConfig->Profile.SetString(prefix + "/GA/ra_peak_peak", m_othergrid->GetCellValue(m_ra_peakpeak_loc));
+    pConfig->Profile.SetString(prefix + "/ra_peak_peak", m_othergrid->GetCellValue(m_ra_peakpeak_loc));
     pConfig->Profile.SetString(prefix + "/ra_drift_rate", m_othergrid->GetCellValue(m_ra_drift_loc));
     pConfig->Profile.SetString(prefix + "/ra_peak_drift_rate", m_othergrid->GetCellValue(m_ra_peak_drift_loc));
     pConfig->Profile.SetString(prefix + "/ra_drift_exposure", m_othergrid->GetCellValue(m_ra_drift_exp_loc));
@@ -1434,8 +1442,8 @@ void GuidingAsstWin::DoStop(const wxString& status)
     }
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
+    btnReviewPrev->Enable(GetGAHistoryCount() > 0);
     m_stop->Enable(false);
-    btnReviewPrev->Enable(true);
 
     if (m_origSubFrames != -1)
     {
