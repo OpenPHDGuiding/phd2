@@ -72,7 +72,8 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
 {
     bool bError = false;
 
-    try {
+    try
+    {
         if ((m_fd = open(portName.mb_str(), O_RDWR|O_NOCTTY)) < 0) {
             wxString exposeToUser = wxString::Format("open %s failed %s(%d)", portName, strerror((int)errno), (int)errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + exposeToUser);
@@ -80,7 +81,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
 
         struct termios attr;
 
-        if (tcgetattr(m_fd, &attr) < 0 ) {
+        if (tcgetattr(m_fd, &attr) < 0) {
             wxString errorWxs = wxString::Format("tcgetattr failed %s(%d)", strerror((int)errno), (int)errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + errorWxs);
         }
@@ -89,7 +90,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
         m_originalAttrs = attr;
         cfmakeraw(&attr);
 #endif
-        
+
         attr.c_iflag = 0; // input modes
         attr.c_oflag = 0; // output modes
         attr.c_cflag = CLOCAL;  // CLOCAL == Ignore modem control lines.
@@ -148,7 +149,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
             throw ERROR_INFO("SerialPortPosix::Connect unsupported baudrate");
             break;
         }
-        if ((cfsetispeed(&attr, speed) < 0) || (cfsetospeed(&attr, speed) <0)) {
+        if (cfsetispeed(&attr, speed) < 0 || cfsetospeed(&attr, speed) < 0) {
             throw ERROR_INFO("cfsetispeed failed");
         }
 
@@ -160,7 +161,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
         int ioctl_ret = 0;
         unsigned int argp;
 
-        if ((ioctl_ret = ioctl(m_fd, TIOCMGET, &argp) < 0)) {
+        if ((ioctl_ret = ioctl(m_fd, TIOCMGET, &argp)) < 0) {
             throw ERROR_INFO("ioctl TIOCMGET");
         }
         if (useDTR) {
@@ -169,7 +170,7 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
         if (useRTS) {
             argp |= TIOCM_RTS;
         }
-        if ((ioctl_ret = ioctl(m_fd, TIOCMSET, &argp) < 0)) {
+        if ((ioctl_ret = ioctl(m_fd, TIOCMSET, &argp)) < 0) {
             throw ERROR_INFO("ioctl TIOCMSET");
         }
     }
@@ -186,19 +187,22 @@ bool SerialPortPosix::Disconnect(void)
 {
     bool bError = false;
 
-    try {
+    try
+    {
 #if defined (__APPLE__)
-        if (tcdrain(m_fd) == -1){
+        if (tcdrain(m_fd) == -1) {
             fprintf(stderr,"Error waiting for drain - %s(%d).\n",strerror(errno), errno);
         }
-        if (tcsetattr(m_fd, TCSANOW, &m_originalAttrs) == -1){
+        if (tcsetattr(m_fd, TCSANOW, &m_originalAttrs) == -1) {
             fprintf(stderr,"Error resetting tty attributes - %s(%d).\n",strerror(errno),errno);
         }
 #endif
-        if (close(m_fd) == -1){
+        if (close(m_fd) == -1) {
             throw ERROR_INFO("SerialPortPosix: close failed");
         }
-    } catch (const wxString& Msg) {
+    }
+    catch (const wxString& Msg)
+    {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -212,19 +216,23 @@ bool SerialPortPosix::SetReceiveTimeout(int timeoutMilliSeconds)
 {
     bool bError = false;
 
-    Debug.AddLine(wxString::Format("SerialPortPosix::SetReceiveTimeout %d ms", timeoutMilliSeconds));
-    try {
+    Debug.Write(wxString::Format("SerialPortPosix::SetReceiveTimeout %d ms\n", timeoutMilliSeconds));
+
+    try
+    {
         struct termios attr;
 
-        if (tcgetattr(m_fd, &attr) < 0 ) {
+        if (tcgetattr(m_fd, &attr) < 0) {
             throw ERROR_INFO("tcgetattr failed");
         }
         int timeoutDeciSeconds = (timeoutMilliSeconds + 99) / 100;
         attr.c_cc[VTIME] = (uint8_t)timeoutDeciSeconds;
-        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0 ) {
+        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0) {
             throw ERROR_INFO("tcsetattr failed");
         }
-    } catch (const wxString& Msg) {
+    }
+    catch (const wxString& Msg)
+    {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -236,20 +244,24 @@ bool SerialPortPosix::Send(const unsigned char *pData, unsigned int count)
 {
     bool bError = false;
 
-    try {
-        int nBytesWritten;
-
+    try
+    {
         Debug.AddBytes("SerialPortPosix::Send", pData, count);
 
-        if ((nBytesWritten = write(m_fd, pData, count)) < 0) {
-            throw ERROR_INFO("SerialPortPosix: write failed");
-        }
+        size_t rem = count;
+        while (rem > 0)
+        {
+            ssize_t const nBytesWritten = write(m_fd, pData, rem);
 
-        if (nBytesWritten != count) {
-            throw ERROR_INFO("SerialPortPosix: nBytesWritten != count");
-        }
+            if (nBytesWritten < 0)
+                throw ERROR_INFO("SerialPortPosix: write failed");
 
-    } catch (const wxString& Msg) {
+            rem -= nBytesWritten;
+            pData += nBytesWritten;
+        }
+    }
+    catch (const wxString& Msg)
+    {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
@@ -257,32 +269,36 @@ bool SerialPortPosix::Send(const unsigned char *pData, unsigned int count)
     return bError;
 }
 
-bool SerialPortPosix::Receive(unsigned char *pData, unsigned count)
+bool SerialPortPosix::Receive(unsigned char *pData, unsigned int count)
 {
     bool bError = false;
 
-    try {
-        
-        const unsigned int originalCount = count;
-        
-        do {
-            const ssize_t receiveCount = read(m_fd, pData, count);
-            if (receiveCount == -1){
+    try
+    {
+        size_t rem = count;
+
+        while (rem > 0)
+        {
+            ssize_t const receiveCount = read(m_fd, pData, rem);
+
+            if (receiveCount == -1)
                 throw ERROR_INFO("SerialPortPosix: read Failed");
-            }
-            if (receiveCount == 0){
+
+            if (receiveCount == 0)
                 break; // eof
-            }
+
             Debug.AddBytes("SerialPortPosix::Receive", pData, receiveCount);
-            count -= receiveCount;
+
+            rem -= receiveCount;
             pData += receiveCount;
-        } while(count > 0);
-        
-        if (count > 0){
-            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"),count) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"),originalCount));
         }
-        
-    } catch (const wxString& Msg) {
+
+        if (rem > 0) {
+            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"), rem) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"), count));
+        }
+    }
+    catch (const wxString& Msg)
+    {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
