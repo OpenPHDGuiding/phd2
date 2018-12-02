@@ -116,6 +116,7 @@ struct CalibrationDetails
     int decStepCount;
     CalibrationIssueType lastIssue;
     wxString origTimestamp;
+    PierSide origPierSide;
 };
 
 enum MountMoveOptionBits

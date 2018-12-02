@@ -196,7 +196,10 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     wxGrid* calGrid = new wxGrid(parentPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxHSCROLL | wxVSCROLL);
     calGrid->SetColLabelSize(0);
     calGrid->SetRowLabelSize(0);
-    calGrid->CreateGrid(5, 4);
+    if (!AO)
+        calGrid->CreateGrid(6, 4);
+    else
+        calGrid->CreateGrid(5, 4);
 
     calGrid->EnableEditing(false);
 
@@ -263,12 +266,10 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     else
         calGrid->SetCellValue(row, col++, NA_STR);
 
-
-    row++;
-    col = 0;
-
     if (validDetails && calBaseline.yRate > 0)
     {
+        row++;
+        col = 0;
         calGrid->SetCellValue(row, col++, _("Expected RA rate:"));
         if (validBaselineDeclination && guideRaSiderealX != -1.0 && fabs(degrees(calBaseline.declination)) < 65.0)
         {
@@ -295,6 +296,16 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     calGrid->SetCellValue(row, col++, wxString::Format("%d", (int)calBaseline.binning));
     calGrid->SetCellValue(row, col++, _("Created:"));
     calGrid->SetCellValue(row, col++, validDetails ? calDetails.origTimestamp : _("Unknown"));
+
+    if (validDetails && !AO)
+    {
+        row++;
+        col = 0;
+        calGrid->SetCellValue(row, col++, _("Side of pier:"));
+        wxString side = calDetails.origPierSide  == PIER_SIDE_EAST ? _("East") :
+            calDetails.origPierSide == PIER_SIDE_WEST ? _("West") : NA_STR;
+        calGrid->SetCellValue(row, col++, side);
+    }
 
     calGrid->AutoSize();
     calibFrame->Add(calGrid, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);

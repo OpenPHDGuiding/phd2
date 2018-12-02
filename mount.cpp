@@ -1496,6 +1496,7 @@ void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails)
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
     pConfig->Profile.SetDouble(prefix + "orig_binning", calDetails.origBinning);
     pConfig->Profile.SetString(prefix + "orig_timestamp", calDetails.origTimestamp);
+    pConfig->Profile.SetInt(prefix + "orig_pierside", calDetails.origPierSide);
 
     for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
     {
@@ -1662,6 +1663,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details) const
     details->origBinning = pConfig->Profile.GetDouble(prefix + "orig_binning", 1.0);
     details->lastIssue = (CalibrationIssueType) pConfig->Profile.GetInt(prefix + "last_issue", 0);
     details->origTimestamp = pConfig->Profile.GetString(prefix + "orig_timestamp", "Unknown");
+    details->origPierSide = pier_side(pConfig->Profile.GetInt(prefix + "orig_pierside", PIER_SIDE_UNKNOWN));
     // Populate raSteps
     stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
     tok.SetString(stepStr, "},", wxTOKEN_STRTOK);

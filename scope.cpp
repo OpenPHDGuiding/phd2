@@ -1052,6 +1052,7 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
     m_calibrationDetails.origBinning = binning;
     m_calibrationDetails.origTimestamp = wxDateTime::Now().Format();
+    m_calibrationDetails.origPierSide = pPointingSource->SideOfPier();
     Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
