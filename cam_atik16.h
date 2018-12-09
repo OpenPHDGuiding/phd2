@@ -34,35 +34,10 @@
 #ifndef ATIK16DEF
 #define ATIK16DEF
 
-#include "ArtemisHSCAPI.h"
-
-class CameraAtik16 : public GuideCamera
+class AtikCameraFactory
 {
-    bool m_dllLoaded;
-    ArtemisHandle Cam_Handle;
-    ARTEMISPROPERTIES m_properties;
-    wxByte m_curBin;
-
 public:
-    CameraAtik16();
-    ~CameraAtik16();
-
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture(void);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-
-    bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-    wxByte  BitsPerPixel();
-
-    bool    Color;
-    bool    HSModel;
-
-private:
-    bool ST4HasNonGuiMove(void);
-    bool LoadDLL(wxString *err);
+    static GuideCamera *MakeAtikCamera(bool hsModel, bool color);
 };
 
 #endif  //ATIK16DEF

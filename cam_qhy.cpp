@@ -36,7 +36,44 @@
 
 #if defined(QHY_CAMERA)
 
+#include "camera.h"
 #include "cam_qhy.h"
+#include "qhyccd.h"
+
+class Camera_QHY : public GuideCamera
+{
+    qhyccd_handle *m_camhandle;
+    double m_gainMin;
+    double m_gainMax;
+    double m_gainStep;
+    double m_devicePixelSize;
+    unsigned char *RawBuffer;
+    wxSize m_maxSize;
+    int m_curGain;
+    int m_curExposure;
+    unsigned short m_curBin;
+    wxRect m_roi;
+    bool Color;
+
+public:
+
+    Camera_QHY();
+    ~Camera_QHY();
+
+    bool CanSelectCamera() const override { return true; }
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+
+    bool ST4PulseGuideScope(int direction, int duration) override;
+
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+    int GetDefaultCameraGain() override;
+};
 
 static bool s_qhySdkInitDone = false;
 
@@ -201,8 +238,8 @@ bool Camera_QHY::Connect(const wxString& camId)
         return CamConnectFailed(_("Failed to connect to camera"));
 
     // before calling InitQHYCCD() we must call SetQHYCCDStreamMode(camhandle, 0 or 1)
-    //   0: single frame mode  
-    //   1: live frame mode 
+    //   0: single frame mode
+    //   1: live frame mode
     uint32_t ret = SetQHYCCDStreamMode(m_camhandle, 0);
     if (ret != QHYCCD_SUCCESS)
     {
@@ -439,7 +476,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         if (ret == QHYCCD_SUCCESS)
         {
             m_curExposure = duration;
-        } 
+        }
         else
         {
             Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int)ret));
@@ -553,6 +590,11 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         QuickLRecon(img);
 
     return false;
+}
+
+GuideCamera *QHYCameraFactory::MakeQHYCamera()
+{
+    return new Camera_QHY();
 }
 
 #endif

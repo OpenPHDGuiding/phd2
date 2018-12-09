@@ -35,26 +35,10 @@
 #if defined(SBIG) && defined(SBIGROTATOR_CAMERA) && !defined(SBIGROTATOR_CAMERA_H_INCLUDED)
 #define SBIGROTATOR_CAMERA_H_INCLUDED
 
-#include "cam_sbig.h"
-
-class CameraSBIGRotator : public GuideCamera
+class SBIGRotatorCameraFactory
 {
-private:
-    CameraSBIG *m_pSubcamera;
-    double m_raAngle;
-    bool m_mirror;
-
 public:
-    CameraSBIGRotator();
-    ~CameraSBIGRotator();
-
-    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool   ST4PulseGuideScope(int direction, int duration);
-    bool   Connect(const wxString& camId);
-    bool   Disconnect();
-    bool ST4HasNonGuiMove();
-    bool HasNonGuiCapture();
-    wxByte BitsPerPixel();
+    static GuideCamera *MakeSBIGRotatorCamera();
 };
 
 #endif //defined(SBIGROTATOR_CAMERA_H_INCLUDED) and defined(SBIG)

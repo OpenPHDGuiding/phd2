@@ -74,6 +74,7 @@ public:
     CameraSXV();
     ~CameraSXV();
 
+    bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool Connect(const wxString& camId);

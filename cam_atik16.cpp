@@ -41,7 +41,39 @@
 
 #include <wx/stopwatch.h>
 
-CameraAtik16::CameraAtik16()
+#include "ArtemisHSCAPI.h"
+
+class CameraAtik16 : public GuideCamera
+{
+    bool m_dllLoaded;
+    ArtemisHandle Cam_Handle;
+    ARTEMISPROPERTIES m_properties;
+    wxByte m_curBin;
+
+public:
+    CameraAtik16(bool hsmodel, bool color);
+    ~CameraAtik16();
+
+    bool CanSelectCamera() const override { return true; }
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture(void);
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+
+    bool    ST4PulseGuideScope(int direction, int duration);
+    void    ClearGuidePort();
+    wxByte  BitsPerPixel();
+
+    bool    Color;
+    bool    HSModel;
+
+private:
+    bool ST4HasNonGuiMove(void);
+    bool LoadDLL(wxString *err);
+};
+
+CameraAtik16::CameraAtik16(bool hsmodel, bool color)
     : m_dllLoaded(false)
 {
     Connected = false;
@@ -49,9 +81,9 @@ CameraAtik16::CameraAtik16()
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
-    Color = false;
+    Color = color;
     Cam_Handle = NULL;
-    HSModel = false;
+    HSModel = hsmodel;
     HasSubframes = true;
 }
 
@@ -417,6 +449,11 @@ bool CameraAtik16::HasNonGuiCapture(void)
 bool CameraAtik16::ST4HasNonGuiMove(void)
 {
     return true;
+}
+
+GuideCamera *AtikCameraFactory::MakeAtikCamera(bool hsmodel, bool color)
+{
+    return new CameraAtik16(hsmodel, color);
 }
 
 #endif

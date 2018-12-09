@@ -35,41 +35,10 @@
 #ifndef CAM_QHY_INCLUDED
 #define CAM_QHY_INCLUDED
 
-#include "camera.h"
-#include "qhyccd.h"
-
-class Camera_QHY : public GuideCamera
+class QHYCameraFactory
 {
-    qhyccd_handle *m_camhandle;
-    double m_gainMin;
-    double m_gainMax;
-    double m_gainStep;
-    double m_devicePixelSize;
-    unsigned char *RawBuffer;
-    wxSize m_maxSize;
-    int m_curGain;
-    int m_curExposure;
-    unsigned short m_curBin;
-    wxRect m_roi;
-    bool Color;
-
 public:
-
-    Camera_QHY();
-    ~Camera_QHY();
-
-    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool Connect(const wxString& camId) override;
-    bool Disconnect() override;
-
-    bool ST4PulseGuideScope(int direction, int duration) override;
-
-    bool HasNonGuiCapture() override { return true; }
-    bool ST4HasNonGuiMove() override { return true; }
-    wxByte BitsPerPixel() override;
-    bool GetDevicePixelSize(double *devPixelSize) override;
-    int GetDefaultCameraGain() override;
+    static GuideCamera *MakeQHYCamera();
 };
 
 #endif // QHY5IIBASE_H_INCLUDED

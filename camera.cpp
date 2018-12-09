@@ -390,25 +390,17 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined (ATIK16)
         else if (choice.StartsWith("Atik 16 series"))
         {
-            CameraAtik16 *pNewGuideCamera = new CameraAtik16();
-            pNewGuideCamera->HSModel = false;
-            if (choice.Find(_T("color")))
-                pNewGuideCamera->Color = true;
-            else
-                pNewGuideCamera->Color = false;
-            pReturn = pNewGuideCamera;
+            bool hsmodel = false;
+            bool color = choice.Find(_T("color")) != wxNOT_FOUND;
+            pReturn = AtikCameraFactory::MakeAtikCamera(hsmodel, color);
         }
 #endif
 #if defined (ATIK_GEN3)
         else if (choice.StartsWith(_T("Atik Gen3")))
         {
-            CameraAtik16 *pNewGuideCamera = new CameraAtik16();
-            pNewGuideCamera->HSModel = true;
-            if (choice.Find(_T("color")))
-                pNewGuideCamera->Color = true;
-            else
-                pNewGuideCamera->Color = false;
-            pReturn = pNewGuideCamera;
+            bool hsmodel = true;
+            bool color = choice.Find(_T("color")) != wxNOT_FOUND;
+            pReturn = AtikCameraFactory::MakeAtikCamera(hsmodel, color);
         }
 #endif
 #if defined (QGUIDE)
@@ -425,7 +417,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (QHY_CAMERA)
         else if (choice == _T("QHY Camera"))
-            pReturn = new Camera_QHY();
+            pReturn = QHYCameraFactory::MakeQHYCamera();
 #endif
 #if defined(ALTAIR)
         else if (choice == _T("Altair Camera"))
@@ -498,7 +490,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (MEADE_DSI)
         else if (choice.Contains(_T("Meade DSI I, II, or III")))
-            pReturn = new CameraDSI();
+            pReturn = DSICameraFactory::MakeDSICamera();
 #endif
 #if defined (STARFISH)
         else if (choice.Contains(_T("Fishcamp Starfish")))
@@ -529,11 +521,11 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined (SBIGROTATOR_CAMERA)
         // must go above SBIG
         else if (choice.Contains(_T("SBIG Rotator")))
-            pReturn = new CameraSBIGRotator();
+            pReturn = SBIGRotatorCameraFactory::MakeSBIGRotatorCamera();
 #endif
 #if defined (SBIG)
         else if (choice.Contains(_T("SBIG")))
-            pReturn = new CameraSBIG();
+            pReturn = SBIGCameraFactory::MakeSBIGCamera();
 #endif
 #if defined (FIREWIRE)
         else if (choice.Contains(_T("The Imaging Source (DCAM Firewire)")))
@@ -608,12 +600,7 @@ bool GuideCamera::HandleSelectCameraButtonClick(wxCommandEvent&)
 
 bool GuideCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-    names.clear();
-    names.push_back(wxString::Format(_("Camera %d"), 1));
-    ids.clear();
-    ids.push_back(DEFAULT_CAMERA_ID);
-
-    return false;
+    return true; // error
 }
 
 bool GuideCamera::CamConnectFailed(const wxString& errorMessage)
