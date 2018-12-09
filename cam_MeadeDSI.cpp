@@ -41,11 +41,11 @@
 #include "image_math.h"
 #include "cam_MeadeDSI.h"
 
-#include "DsiDevice.h"
-
-#if defined (__APPLE__)
-#include <IOKit/usb/IOUSBLib.h>
+#if defined(__APPLE__)
+# include <IOKit/usb/IOUSBLib.h>
 #endif
+
+#include "DsiDevice.h"
 
 class DsiDevice;
 
