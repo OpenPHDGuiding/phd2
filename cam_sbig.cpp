@@ -32,7 +32,6 @@
  *
  */
 
-
 #include "phd.h"
 
 #if defined(SBIG)
@@ -43,6 +42,42 @@
 
 #include <time.h>
 #include <wx/textdlg.h>
+
+#if defined (__APPLE__)
+#include <SBIGUDrv/sbigudrv.h>
+#elif defined(__LINUX__)
+#include <sbigudrv.h>
+#else
+#include "cameras/Sbigudrv.h"
+#endif
+
+class CameraSBIG : public GuideCamera
+{
+    bool UseTrackingCCD;
+    bool m_driverLoaded;
+    wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
+    double m_devicePixelSize;
+    bool IsColor;
+
+public:
+    CameraSBIG();
+    ~CameraSBIG();
+
+    bool CanSelectCamera() const override { return true; }
+    bool HandleSelectCameraButtonClick(wxCommandEvent& evt) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void InitCapture() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasNonGuiMove() override { return true; }
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+
+private:
+    bool LoadDriver();
+};
 
 static unsigned long bcd2long(unsigned long bcd)
 {
@@ -612,6 +647,11 @@ bool CameraSBIG::ST4PulseGuideScope(int direction, int duration)
     }
 
     return false;
+}
+
+GuideCamera *SBIGCameraFactory::MakeSBIGCamera()
+{
+    return new CameraSBIG();
 }
 
 #endif

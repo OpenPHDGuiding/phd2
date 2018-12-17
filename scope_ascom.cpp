@@ -190,6 +190,11 @@ void ScopeASCOM::SetupDialog(void)
             wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
+    // destroy the COM object now as this reduces the likelhood of getting into a
+    // state where the user has killed the ASCOM local server instance and PHD2 is
+    // holding a reference to the defunct driver instance in the global interface
+    // table
+    m_gitEntry.Unregister();
 }
 
 bool ScopeASCOM::Connect(void)

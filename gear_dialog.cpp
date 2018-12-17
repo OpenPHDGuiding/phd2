@@ -258,6 +258,7 @@ void GearDialog::Initialize()
 
     m_selectCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SELECT_CAMERA, select_bmp);
     m_selectCameraButton->SetToolTip(_("Select which camera to connect to when there are multiple cameras of the same type."));
+    m_selectCameraButton->Enable(false);
     m_gearSizer->Add(m_selectCameraButton, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_CAMERA, setup_bmp);
     m_pSetupCameraButton->SetToolTip(_("Camera Setup"));
@@ -557,11 +558,6 @@ void GearDialog::EndModal(int retCode)
     }
 }
 
-static bool UseSelectCameraButton(const wxString& selection)
-{
-    return !selection.Contains(_T("INDI"));
-}
-
 void GearDialog::UpdateCameraButtonState()
 {
     // Now set up the buttons to match our current state
@@ -595,7 +591,6 @@ void GearDialog::UpdateCameraButtonState()
         }
         else
         {
-            m_selectCameraButton->Enable(UseSelectCameraButton(m_pCameras->GetStringSelection()));
             m_pConnectCameraButton->SetLabel(_("Connect"));
             m_pConnectCameraButton->SetValue(false);
             m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
@@ -899,6 +894,8 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 
         pConfig->Profile.SetString("/camera/LastMenuChoice", choice);
 
+        m_selectCameraButton->Enable(m_pCamera && m_pCamera->CanSelectCamera());
+
         if (!m_pCamera)
         {
             throw THROW_INFO("OnChoiceCamera: m_pCamera == NULL");
@@ -947,7 +944,7 @@ static wxString SelectedCameraId(const wxString& camName)
 
 void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
 {
-    if (!m_pCamera)
+    if (!m_pCamera || !m_pCamera->CanSelectCamera())
         return;
 
     if (m_pCamera->HandleSelectCameraButtonClick(event))

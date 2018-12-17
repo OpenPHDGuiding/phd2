@@ -34,27 +34,10 @@
 #ifndef DSIDEF
 #define DSIDEF
 
-#if defined (__APPLE__)
-#include <IOKit/usb/IOUSBLib.h>
-#endif
-
-class DsiDevice;
-
-class CameraDSI : public GuideCamera
+class DSICameraFactory
 {
-    DsiDevice *MeadeCam;
-
 public:
-    CameraDSI();
-    ~CameraDSI();
-
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture();
-    wxByte  BitsPerPixel();
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    virtual bool GetDevicePixelSize(double* devPixelSize);
+    static GuideCamera *MakeDSICamera();
 };
 
 #endif

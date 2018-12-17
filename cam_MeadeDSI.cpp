@@ -32,9 +32,6 @@
  *
  */
 
-//#pragma unmanaged
-
-
 #include "phd.h"
 
 #ifdef MEADE_DSI
@@ -44,7 +41,31 @@
 #include "image_math.h"
 #include "cam_MeadeDSI.h"
 
+#if defined(__APPLE__)
+# include <IOKit/usb/IOUSBLib.h>
+#endif
+
 #include "DsiDevice.h"
+
+class DsiDevice;
+
+class CameraDSI : public GuideCamera
+{
+    DsiDevice *MeadeCam;
+
+public:
+    CameraDSI();
+    ~CameraDSI();
+
+    bool CanSelectCamera() const override { return true; }
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture();
+    wxByte  BitsPerPixel();
+    bool    Connect(const wxString& camId);
+    bool    Disconnect();
+    virtual bool GetDevicePixelSize(double* devPixelSize);
+};
 
 CameraDSI::CameraDSI()
     : MeadeCam(0)
@@ -228,6 +249,11 @@ bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& s
 bool CameraDSI::HasNonGuiCapture(void)
 {
     return true;
+}
+
+GuideCamera *DSICameraFactory::MakeDSICamera()
+{
+    return new CameraDSI();
 }
 
 #endif // MEADE_DSI

@@ -37,15 +37,36 @@
 #if defined(SBIG) && defined(SBIGROTATOR_CAMERA)
 
 #include "cam_sbigrotator.h"
+#include "cam_sbig.h"
+
+class CameraSBIGRotator : public GuideCamera
+{
+private:
+    GuideCamera *m_pSubcamera;
+    double m_raAngle;
+    bool m_mirror;
+
+public:
+    CameraSBIGRotator();
+    ~CameraSBIGRotator();
+
+    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool   ST4PulseGuideScope(int direction, int duration);
+    bool   Connect(const wxString& camId);
+    bool   Disconnect();
+    bool ST4HasNonGuiMove();
+    bool HasNonGuiCapture();
+    wxByte BitsPerPixel();
+};
 
 CameraSBIGRotator::CameraSBIGRotator()
 {
-    m_pSubcamera = NULL;
+    m_pSubcamera = nullptr;
     m_raAngle = 0.0;
     m_mirror = false;
 
-    Connected = FALSE;
-    Name=_T("SBIG Rotator Camera");
+    Connected = false;
+    Name = _T("SBIG Rotator Camera");
 }
 
 CameraSBIGRotator::~CameraSBIGRotator()
@@ -79,7 +100,7 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
 
         m_mirror = (idx == 1);
 
-        m_pSubcamera = new CameraSBIG();
+        m_pSubcamera = SBIGCameraFactory::MakeSBIGCamera();
 
         bError = m_pSubcamera->Connect(camId);
         Connected = m_pSubcamera->Connected;
@@ -131,6 +152,11 @@ bool CameraSBIGRotator::Capture(int duration, usImage& img, int options, const w
 bool CameraSBIGRotator::ST4PulseGuideScope (int direction, int duration)
 {
     return m_pSubcamera->ST4PulseGuideScope(direction, duration);
+}
+
+GuideCamera *SBIGRotatorCameraFactory::MakeSBIGRotatorCamera()
+{
+    return new CameraSBIGRotator();
 }
 
 #endif // SBIGROTATOR_CAMERA_H_INCLUDED

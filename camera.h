@@ -104,7 +104,7 @@ enum CaptureOptionBits
     CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK,
 };
 
-class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
+class GuideCamera : public wxMessageBoxProxy, public OnboardST4
 {
     friend class CameraConfigDialogPane;
     friend class CameraConfigDialogCtrlSet;
@@ -153,9 +153,10 @@ public:
     static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
     static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions) { return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
 
+    virtual bool CanSelectCamera() const { return false; }
     virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     static const wxString DEFAULT_CAMERA_ID;
-    virtual bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
+    virtual bool EnumCameras(wxArrayString& names, wxArrayString& ids);
 
     // Opens up and connects to camera. cameraId identifies which camera to connect to if
     // there is more than one camera present
@@ -207,9 +208,9 @@ public:
     bool SetCameraGain(int cameraGain);
     virtual int GetDefaultCameraGain();
 
-protected:
-
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
+
+protected:
 
     int GetTimeoutMs() const;
     void SetTimeoutMs(int timeoutMs);

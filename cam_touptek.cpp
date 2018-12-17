@@ -343,6 +343,7 @@ public:
     CameraToupTek();
     ~CameraToupTek();
 
+    bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;

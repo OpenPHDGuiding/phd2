@@ -143,6 +143,7 @@ struct AltairCamera : public GuideCamera
 
     bool LoadSDK();
 
+    bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
     bool Connect(const wxString& camId) override;

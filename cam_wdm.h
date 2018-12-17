@@ -39,9 +39,10 @@
 #ifndef WDM_H_INCLUDED
 #define WDM_H_INCLUDED
 
+#include "camera.h"
 #include <opencv/cv.h>
 
-#define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
+#define CVRES_VIDCAP_OFFSET wxID_HIGHEST + 1
 #include "VidCapture.h"  // For DirectShow
 
 class CameraWDM : public GuideCamera
@@ -61,11 +62,12 @@ protected:
         CAPTURE_STACKING,
         CAPTURE_STACK_FRAMES
     } m_captureMode;
-    CVVidCapture* m_pVidCap;
+    CVVidCapture *m_pVidCap;
 
 public:
     CameraWDM();
 
+    bool CanSelectCamera() const override { return true; }
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool CaptureOneFrame(usImage& img, int options, const wxRect& subframe);
