@@ -173,7 +173,8 @@ public:
     // standard deviation (Sigma) of the resulting drift-removed dataset.  Drift-removed data values are discarded, original data elements are unmodified
     // Example 1: do a linear fit during calibration to compute an angle - "Sigma" is not needed
     // Example 2: do a linear fit on Dec values during a GA run - use the slope to compute a polar alignment error, use Sigma to estimate seeing of drift-corrected Dec values
-    void GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL);
+    // Returns a coefficient of determination, R-Squared, a form of correlation assessment
+    double GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL);
 
 };
 

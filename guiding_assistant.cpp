@@ -206,6 +206,7 @@ struct GuidingAsstWin : public wxDialog
     wxStaticText *m_dec_msg;
     wxStaticText *m_snr_msg;
     wxStaticText *m_pae_msg;
+    wxStaticText *m_hfd_msg;
     wxStaticText *m_backlash_msg;
     wxStaticText *m_exposure_msg;
     wxStaticText *m_calibration_msg;
@@ -478,6 +479,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_snr_msg = NULL;
     m_backlash_msg = NULL;
     m_pae_msg = NULL;
+    m_hfd_msg = NULL;
     m_exposure_msg = NULL;
     m_calibration_msg = NULL;
 
@@ -1026,12 +1028,15 @@ void GuidingAsstWin::MakeRecommendations()
 {
     double pxscale = pFrame->GetCameraPixelScale();
     double rarms = m_hpfRAStats.GetSigma();
-    double ramean = m_hpfDecStats.GetMean();
+    double decHPFRms = m_hpfDecStats.GetSigma();
     // Using linear-fit, get the drift-corrected Dec rms for things like min-move estimates
     double slope = 0;
     double intcpt = 0;
+    double rSquared;
     if (m_decAxisStats.GetCount() > 1)
-        m_decAxisStats.GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
+    {
+        rSquared = m_decAxisStats.GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
+    }
 
     double multiplier_ra  = 1.0;   // 66% prediction interval
     double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
@@ -1040,8 +1045,14 @@ void GuidingAsstWin::MakeRecommendations()
     double min_rec_range = 2.0;
     // round up to next multiple of .05, but do not go below 0.10 pixel
     double const unit = 0.05;
-    //double rounded_rarms = std::max(round(rarms * multiplier_ra / unit + 0.5) * unit, 0.10);
-    double rounded_decrms = std::max(round(decCorrectedRMS * multiplier_dec / unit + 0.5) * unit, 0.10);
+    // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected 
+    // RMS unless the linear fit correlation is strong
+    double decRMSEstimate;
+    if (rSquared >= 0.75 && decCorrectedRMS < m_decAxisStats.GetSigma())
+        decRMSEstimate = decCorrectedRMS;
+    else
+        decRMSEstimate = wxMin(m_decAxisStats.GetSigma(), 4.0 * decHPFRms);     // Protect against wild Dec RMS from orthogonality error
+    double rounded_decrms = std::max(round(decRMSEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
     CalibrationDetails calDetails;
     wxString logStr;
     wxString allRecommendations = "";
@@ -1058,7 +1069,8 @@ void GuidingAsstWin::MakeRecommendations()
         wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
 
     LogResults();               // Dump the raw statistics
-    Debug.Write(wxString::Format("Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec(raw) RMS=%0.3fpx\n", decDriftPerMin, decCorrectedRMS));
+    Debug.Write(wxString::Format("Uncorrected Dec RMS=%0.3fpx, Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec(raw) RMS=%0.3fpx, R-sq=%0.3f\n",
+        m_decAxisStats.GetSigma() , decDriftPerMin, decCorrectedRMS, rSquared));
 
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
@@ -1106,7 +1118,7 @@ void GuidingAsstWin::MakeRecommendations()
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
     }
-
+    // SNR
     if ((sumSNR / (double)m_lpfRAStats.GetCount()) < 5.0)
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
@@ -1124,7 +1136,7 @@ void GuidingAsstWin::MakeRecommendations()
         if (m_snr_msg)
             m_snr_msg->SetLabel(wxEmptyString);
     }
-
+    // Alignment error
     if (alignmentError > 5.0)
     {
         wxString msg = alignmentError < 10.0 ?
@@ -1147,7 +1159,24 @@ void GuidingAsstWin::MakeRecommendations()
         if (m_pae_msg)
             m_pae_msg->SetLabel(wxEmptyString);
     }
-
+    // Star HFD
+    if (pxscale > 1.0 && pFrame->pGuider->HFD() > 4.5)
+    {
+        wxString msg(_("Consider trying to improve focus on the guide camera"));
+        allRecommendations += "StarHFD:" + msg + "\n";
+        if (!m_hfd_msg)
+        {
+            m_hfd_msg = AddRecommendationEntry(SizedMsg(msg));
+        }
+        else
+            m_hfd_msg->SetLabel(SizedMsg(msg));
+    }
+    else
+    {
+        if (m_hfd_msg)
+            m_hfd_msg->SetLabel(wxEmptyString);
+    }
+    // RA min-move
     if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_minmove_rec);
@@ -1166,7 +1195,7 @@ void GuidingAsstWin::MakeRecommendations()
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
     }
-
+    // Dec min-move
     if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_minmove_rec);

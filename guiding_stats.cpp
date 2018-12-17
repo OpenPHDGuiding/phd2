@@ -529,7 +529,8 @@ double AxisStats::GetMaxDisplacement()
 // Return linear fit results for dataset, windowed or not.  This is inexpensive unless Sigma is needed
 // (Optional) Sigma is standard deviation of dataset after linear fit (drift) has been removed
 // Caller must insure count > 1
-void AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Sigma)
+// Returns R-Squared, a measure of correlation between the linear fit and the original data set
+double AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Sigma)
 {
     int numVals = guidingEntries.size();
     double slope = 0;
@@ -564,6 +565,13 @@ void AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Si
         
         *Slope = slope;
         *Intercept = intcpt;
+        // Compute R-Squared coefficient of determination
+        double Syy = sumYSq - (sumY * sumY) / numVals;
+        double Sxy = sumXY - (sumX * sumY) / numVals;
+        double Sxx = sumXSq - (sumX * sumX) / numVals;
+        double SSE = Syy - (Sxy * Sxy) / Sxx;
+        double rSquared = (Syy - SSE) / Syy;
+        return rSquared;
     }
     else
     {
