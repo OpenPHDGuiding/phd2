@@ -210,6 +210,7 @@ struct GuidingAsstWin : public wxDialog
     wxStaticText *m_backlash_msg;
     wxStaticText *m_exposure_msg;
     wxStaticText *m_calibration_msg;
+    wxStaticText *m_binning_msg;
     double m_ra_minmove_rec;  // recommended value
     double m_dec_minmove_rec; // recommended value
     double m_min_exp_rec;
@@ -482,6 +483,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_hfd_msg = NULL;
     m_exposure_msg = NULL;
     m_calibration_msg = NULL;
+    m_binning_msg = NULL;
 
     m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
     // Add buttons for viewing the Dec backlash graph or getting help
@@ -1094,15 +1096,21 @@ void GuidingAsstWin::MakeRecommendations()
     else
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
+    m_recommendgrid->Clear(true);
     // Always make a recommendation on exposure times
     wxString msg = wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
     allRecommendations += "Exp:" + msg + "\n";
-    if (!m_exposure_msg)
-        m_exposure_msg = AddRecommendationEntry(SizedMsg(msg));
-    else
-        m_exposure_msg->SetLabel(SizedMsg(msg));
+    m_exposure_msg = AddRecommendationEntry(SizedMsg(msg));
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
-
+    // Binning opportunity if image scale is < 0.5
+    if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxBinning > 1)
+    {
+        wxString msg = _("Try binning your guide camera");
+        allRecommendations += "Bin:" + msg + "\n";
+        m_binning_msg = AddRecommendationEntry(SizedMsg(msg));
+        Debug.Write(wxString::Format("Recommendation: %s\n", msg));
+    }
+    // Previous calibration alert
     if (m_suspectCalibration)
     {
         wxString msg = _("Consider re-doing your calibration ");
@@ -1111,10 +1119,7 @@ void GuidingAsstWin::MakeRecommendations()
         else
             msg += _("(Backlash clearing)");
         allRecommendations += "Cal:" + msg + "\n";
-        if (!m_calibration_msg)
-            m_calibration_msg = AddRecommendationEntry(SizedMsg(msg));
-        else
-            m_calibration_msg->SetLabel(SizedMsg(msg));
+        m_calibration_msg = AddRecommendationEntry(SizedMsg(msg));
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1124,19 +1129,12 @@ void GuidingAsstWin::MakeRecommendations()
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
         allRecommendations += "Star:" + msg + "\n";
-        if (!m_snr_msg)
-            m_snr_msg = AddRecommendationEntry(SizedMsg(msg));
-        else
-            m_snr_msg->SetLabel(SizedMsg(msg));
+        m_snr_msg = AddRecommendationEntry(SizedMsg(msg));
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
     }
-    else
-    {
-        if (m_snr_msg)
-            m_snr_msg->SetLabel(wxEmptyString);
-    }
+
     // Alignment error
     if (alignmentError > 5.0)
     {
@@ -1144,73 +1142,42 @@ void GuidingAsstWin::MakeRecommendations()
             _("Polar alignment error > 5 arc-min; that could probably be improved.") :
             _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
         allRecommendations += "PA:" +  msg + "\n";
-        if (!m_pae_msg)
-            m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
-        else
-        {
-            m_pae_msg->SetLabel(SizedMsg(msg));
-            m_pae_msg->Wrap(400);
-        }
+        m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
     }
-    else
-    {
-        if (m_pae_msg)
-            m_pae_msg->SetLabel(wxEmptyString);
-    }
+
     // Star HFD
     if (pxscale > 1.0 && pFrame->pGuider->HFD() > 4.5)
     {
         wxString msg(_("Consider trying to improve focus on the guide camera"));
         allRecommendations += "StarHFD:" + msg + "\n";
-        if (!m_hfd_msg)
-        {
-            m_hfd_msg = AddRecommendationEntry(SizedMsg(msg));
-        }
-        else
-            m_hfd_msg->SetLabel(SizedMsg(msg));
+        m_hfd_msg = AddRecommendationEntry(SizedMsg(msg));
+        logStr = wxString::Format("Recommendation: %s\n", msg);
+        Debug.Write(logStr);
+        GuideLog.NotifyGAResult(logStr);
     }
-    else
-    {
-        if (m_hfd_msg)
-            m_hfd_msg->SetLabel(wxEmptyString);
-    }
+
     // RA min-move
     if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_minmove_rec);
         allRecommendations += "RAMinMove:" + msgText + "\n";
-        if (!m_ra_msg)
-        {
-            m_ra_msg = AddRecommendationEntry(SizedMsg(msgText),
-                wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
-        }
-        else
-        {
-            m_ra_msg->SetLabel(SizedMsg(msgText));
-            m_raMinMoveButton->Enable(true);
-        }
+        m_ra_msg = AddRecommendationEntry(SizedMsg(msgText),
+            wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
         logStr = wxString::Format("Recommendation: %s\n", msgText);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
     }
+
     // Dec min-move
     if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0.0)
     {
         wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_minmove_rec);
         allRecommendations += "DecMinMove:" + msgText + "\n";
-        if (!m_dec_msg)
-        {
-            m_dec_msg = AddRecommendationEntry(SizedMsg(msgText),
+        m_dec_msg = AddRecommendationEntry(SizedMsg(msgText),
                 wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
-        }
-        else
-        {
-            m_dec_msg->SetLabel(SizedMsg(msgText));
-            m_decMinMoveButton->Enable(true);
-        }
         logStr = wxString::Format("Recommendation: %s\n", msgText);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1238,25 +1205,11 @@ void GuidingAsstWin::MakeRecommendations()
                 decDriftPerMin >= 0 ? _("South") : _("North"));
         }
         allRecommendations += "BLT:" + msg + "\n";
-        if (!m_backlash_msg)
-        {
-            m_backlash_msg = AddRecommendationEntry(SizedMsg(msg), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
-            m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
-        }
-        else
-        {
-            m_backlash_msg->SetLabel(SizedMsg(msg));
-            m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
-        }
+        m_backlash_msg = AddRecommendationEntry(SizedMsg(msg), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+        m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
-    }
-    else
-    {
-        if (m_backlash_msg)
-            m_backlash_msg->SetLabel(wxEmptyString);
-
     }
 
     SaveGAResults(&allRecommendations);
@@ -1289,6 +1242,10 @@ void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
             if (which == "Exp")
             {
                 m_exposure_msg = AddRecommendationEntry(SizedMsg(what));
+            }
+            else if (which == "Bin")
+            {
+                m_binning_msg = AddRecommendationEntry(SizedMsg(what));
             }
             else if (which == "Cal")
             {
