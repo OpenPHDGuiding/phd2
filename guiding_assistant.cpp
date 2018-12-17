@@ -1072,6 +1072,7 @@ void GuidingAsstWin::MakeRecommendations()
     Debug.Write(wxString::Format("Uncorrected Dec RMS=%0.3fpx, Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec(raw) RMS=%0.3fpx, R-sq=%0.3f\n",
         m_decAxisStats.GetSigma() , decDriftPerMin, decCorrectedRMS, rSquared));
 
+    // REMINDER: Any new recommendations must also be done in 'DisplayStaticRecommendations'
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
     ideal_min_exposure = 2.0;
@@ -1275,6 +1276,7 @@ void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
     bool done = false;
     size_t end;
 
+    m_recommendgrid->Clear(true);               // Always start fresh, delete any child buttons
     while (!done)
     {
         end = allRecs.find_first_of("\n");
@@ -1286,77 +1288,42 @@ void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
             wxString what = rec.SubString(colPos + 1, end);
             if (which == "Exp")
             {
-                if (!m_exposure_msg)
-                    m_exposure_msg = AddRecommendationEntry(SizedMsg(what));
-                else
-                    m_exposure_msg->SetLabel(SizedMsg(what));
+                m_exposure_msg = AddRecommendationEntry(SizedMsg(what));
             }
             else if (which == "Cal")
             {
-                if (!m_calibration_msg)
-                    m_calibration_msg = AddRecommendationEntry(SizedMsg(what));
-                else
-                    m_calibration_msg->SetLabel(SizedMsg(what));
+                m_calibration_msg = AddRecommendationEntry(SizedMsg(what));
             }
             else if (which == "Star")
             {
-                if (!m_snr_msg)
-                    m_snr_msg = AddRecommendationEntry(SizedMsg(what));
-                else
-                    m_snr_msg->SetLabel(SizedMsg(what));
+                m_snr_msg = AddRecommendationEntry(SizedMsg(what));
             }
             else if (which == "PA")
             {
-                if (!m_pae_msg)
-                    m_pae_msg = AddRecommendationEntry(SizedMsg(what));
-                else
-                {
-                    m_pae_msg->SetLabel(SizedMsg(what));
-                    m_pae_msg->Wrap(400);
-                }
+                m_pae_msg = AddRecommendationEntry(SizedMsg(what));
+            }
+            else if (which == "StarHFD")
+            {
+                m_hfd_msg = AddRecommendationEntry(SizedMsg(what));
             }
             else if (which == "RAMinMove")
             {
                 details.RecRAMinMove.ToDouble(&m_ra_minmove_rec);
-                if (!m_ra_msg)
-                {
-                    m_ra_msg = AddRecommendationEntry(SizedMsg(what),
-                        wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
-                }
-                else
-                {
-                    m_ra_msg->SetLabel(SizedMsg(what));
-                    m_raMinMoveButton->Enable(true);
-                }
+                m_ra_msg = AddRecommendationEntry(SizedMsg(what),
+                    wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
             }
             else if (which == "DecMinMove")
             {
                 details.RecDecMinMove.ToDouble(&m_dec_minmove_rec);
-                if (!m_dec_msg)
-                {
-                    m_dec_msg = AddRecommendationEntry(SizedMsg(what),
+                m_dec_msg = AddRecommendationEntry(SizedMsg(what),
                         wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
-                }
-                else
-                {
-                    m_dec_msg->SetLabel(SizedMsg(what));
-                    m_decMinMoveButton->Enable(true);
-                }
             }
             else if (which == "BLT")
             {
                 m_backlashMs = wxAtoi(details.BLTAmount);
                 bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
-                if (!m_backlash_msg)
-                {
-                    m_backlash_msg = AddRecommendationEntry(SizedMsg(what), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
-                    m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
-                }
-                else
-                {
-                    m_backlash_msg->SetLabel(SizedMsg(what));
-                    m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
-                }
+                m_backlash_msg = AddRecommendationEntry(SizedMsg(what), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+                m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
             }
             allRecs = allRecs.Mid(end + 1);
             done = allRecs.size() == 0;
