@@ -45,6 +45,7 @@ struct GADetails
 {
     wxString TimeStamp;
     wxString SNR;
+    wxString StarMass;
     wxString SampleCount;
     wxString ElapsedTime;
     wxString ExposureTime;
@@ -915,6 +916,7 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
 
     pConfig->Profile.SetString(prefix + "/timestamp", m_statusgrid->GetCellValue(m_timestamp_loc));
     pConfig->Profile.SetString(prefix + "/snr", m_statusgrid->GetCellValue(m_snr_loc));
+    pConfig->Profile.SetString(prefix + "/star_mass", m_statusgrid->GetCellValue(m_starmass_loc));
     pConfig->Profile.SetString(prefix + "/sample_count", m_statusgrid->GetCellValue(m_samplecount_loc));
     pConfig->Profile.SetString(prefix + "/elapsed_time", m_statusgrid->GetCellValue(m_elapsedtime_loc));
     pConfig->Profile.SetString(prefix + "/exposure_time", m_statusgrid->GetCellValue(m_exposuretime_loc));
@@ -970,6 +972,7 @@ void GuidingAsstWin::LoadGAResults(const wxString& TimeStamp, GADetails* Details
     *Details = {};              // Reset all vars
     Details->TimeStamp = pConfig->Profile.GetString(prefix + "/timestamp", wxEmptyString);
     Details->SNR = pConfig->Profile.GetString(prefix + "/snr", wxEmptyString);
+    Details->StarMass = pConfig->Profile.GetString(prefix + "/star_mass", wxEmptyString);
     Details->SampleCount = pConfig->Profile.GetString(prefix + "/sample_count", wxEmptyString);
     Details->ExposureTime = pConfig->Profile.GetString(prefix + "/exposure_time", wxEmptyString);
     Details->ElapsedTime = pConfig->Profile.GetString(prefix + "/elapsed_time", wxEmptyString);
@@ -1534,7 +1537,7 @@ void GuidingAsstWin::DisplayStaticResults(const GADetails& details)
     m_statusgrid->SetCellValue(m_timestamp_loc, details.TimeStamp);
     m_statusgrid->SetCellValue(m_exposuretime_loc, details.ExposureTime);
     m_statusgrid->SetCellValue(m_snr_loc, details.SNR);
-    //m_statusgrid->SetCellValue(m_starmass_loc, details.);
+    m_statusgrid->SetCellValue(m_starmass_loc, details.StarMass);
     m_statusgrid->SetCellValue(m_elapsedtime_loc, details.ElapsedTime);
     m_statusgrid->SetCellValue(m_samplecount_loc, details.SampleCount);
 

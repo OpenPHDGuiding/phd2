@@ -458,15 +458,22 @@ measuring them can be helpful if you want to improve the underlying
 performance of the mount - for example, by improving your polar
 alignment if the declination drift rate is high. &nbsp;The Guiding
 Assistant can also measure the declination backlash in your system if
-you select that option in the user interface.<br><br>When the Guiding Assistant is first started, you'll see a dialog box like this: <br><br><img style="width: 770px; height: 453px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
-upper message area in the Guiding Assistant dialog box displays usage
-instructions, much like a wizard interface. &nbsp;In order for the
-Guiding Assistant to start measurement, you first need to start guiding
-in the usual way. &nbsp;This identifies the target star in the frame
-and enables (but does not start) the underlying data collection
-mechanism. &nbsp;You&nbsp;then click
-'Start' in the Guiding Assistant to begin the measurement process.
-&nbsp;Once you do this, guiding commands will be disabled, so the star
+you select that option in the user interface.<br><br>When
+you start the Guiding Assistant (GA), its behavior depends on whether
+you are already guiding. &nbsp;If guiding is active, the initial screen
+will look like this (with different data values of course):<br><br><img style="width: 776px; height: 517px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
+topmost field in the form always shows what the GA is doing and what
+action you should take, so you should always look there first if you
+don't know what's happening. &nbsp;In this case, the measurement
+process has been started automatically and you should simply let it run
+for at least two minutes. &nbsp;The text field immediately above the
+buttons also summarizes what's happening. &nbsp;The three buttons are
+enabled or disabled based on the operating state of the GA. &nbsp;In
+this case, 'Start' is disabled because the measurement is already
+underway.<br><br>If you launch the GA when guiding is inactive, the initial form will look different:<br><br><img style="width: 780px; height: 521px;" alt="" src="Guiding_Assistant_Start_a.png"><br><br>In
+this case, you'll need to first start guiding in PHD2 - start looping,
+select a star, and guide. &nbsp;Once that's done, the 'Start' button in
+the GA will be enabled and you can begin measurement.<br><br>When GA measurement is active, guiding commands will be disabled, so the star
 will appear to wander around on the display - this is entirely normal.
 &nbsp;As guider images are acquired, statistics are computed and
 displayed in real-time in the user interface. Of particular interest
@@ -490,7 +497,7 @@ process will end. &nbsp;Other computed results will&nbsp;be displayed
 in the lower area of the table showing overall drift rates and various
 other measurements. &nbsp;All of these values are displayed in
 units of both arc-seconds and pixels. &nbsp;The dialog box will look
-something like this:<br><br><img style="width: 774px; height: 474px;" alt="" src="Guiding_Assistant_Finish_NoBL.png"><br><br>The
+something like this:<br><br><img style="width: 780px; height: 540px;" alt="" src="Guiding_Assistant_Finish_NoBL.png"><br><br>The
 contents of the 'Recommendations' group on the right side of the window
 reflect the results of the statistical measurements. &nbsp;Assuming
 your chosen guide algorithms support a minimum-move property, you have
@@ -550,9 +557,9 @@ has gone wrong - such as a lost-star condition - and then restart when
 you're ready.&nbsp; When the backlash tests are finished, you'll see
 the results
 displayed as before, with the addition of entries for the amount of
-declination backlash and the measurement uncertainty::<br><br><img style="width: 772px; height: 517px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>Depending
+declination backlash and the measurement uncertainty::<br><br><img style="width: 776px; height: 622px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>Depending
 on the amount of backlash, you may see a recommendation for setting a
-backlash compensation factor - 390 ms in the example shown above.
+backlash compensation factor - 230 ms in the example shown above.
 This type of backlash compensation is different from the feature offered in many mount controllers and is described here: &nbsp;<a href="Advanced_settings.htm#Declination_backlash_comp">PHD2 backlash compensation</a> &nbsp; &nbsp;If the measured amount is less than 100 ms, no recommendation
 will be made because such a small amount probably doesn't warrant any
 compensation. &nbsp;If the backlash is very large, over 3 seconds,
@@ -572,14 +579,33 @@ instructions here: &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directio
 can look at a graphical display of the backlash measurement results to
 get a better understanding of how the mount performed. &nbsp;Just click
 on the 'Show Graph' button to see a graph that might look something like
-this: <br><br><img style="width: 460px; height: 382px;" alt="" src="Guiding_Assistant_BL_Small.png"><br><br>The
-red points show the measured declination positions, shown left to
+this: <br><br><img style="width: 472px; height: 391px;" alt="" src="Guiding_Assistant_BL_Small.png"><br><br>The
+green points show the measured declination positions, shown left to
 right, beginning with the north moves and ending with the south
-(return) moves. &nbsp;The blue points show the south-return behavior
-for a perfect mount with zero backlash. &nbsp;In this example, there is only a
-modest amount of backlash as evidenced by the flattened top of the red
-points. However, the flattened top will be much more pronounced when
-there is significantly more declination backlash in the mount, as in the following example:<br><br><img style="width: 460px; height: 378px;" alt="" src="Guiding_Assistant_BL_Large.png"><br><br><span style="font-weight: bold;"></span><br>
+(return) moves. &nbsp;The white points show the south-return behavior
+for a perfect mount with zero backlash. &nbsp;In this example, there is
+only a small amount of backlash as evidenced by the flattened top of
+the green
+points. However, the flattened top will be&nbsp;more pronounced when
+there is significantly more declination backlash in the mount, as in
+the following example:<br><br><img style="width: 471px; height: 393px;" alt="" src="Guiding_Assistant_BL_Large.png"><br><br>In
+some cases, the backlash measurement will report a failure and
+won't&nbsp;display a numerical&nbsp;result. &nbsp;This can happen if
+the guide star is lost, but a more likely cause is a combination of
+large backlash and stiction (static friction) on the Dec axis or a
+large imbalance in Dec. &nbsp;In those case, the south moves may never
+show a consistent movement of the expected size so the measurement will
+simply be too inaccurate. Even if the test fails, you'll still be able
+to look at the graph so you'll be able to see how the mount performed
+during the test.<br><br>The 'Review Previous' button at the bottom of
+the window lets you review the previous three GA results. &nbsp;If
+you've run backlash tests at any time, at least one of the three
+sessions will include a backlash measurement result. &nbsp;Clicking on
+the 'Review' button displays a list of timestamps when a GA was run for
+the current profile, so you can just select the date/time you want.
+&nbsp;All the grid values and recommendations will be filled with the
+results from the selected GA run, including active buttons for applying
+the recommendations.<br><span style="font-weight: bold;"></span><br>
 <h3><a name="Star_cross_tool"></a>Star-Cross Tool</h3>
 The star-cross tool can help you test the mount's response to guide commands as described in this <a href="Trouble_shooting.htm#Star_cross_test">trouble-shooting</a>
 section. Although the test is easy to perform manually, you may prefer
