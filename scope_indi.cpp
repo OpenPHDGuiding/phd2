@@ -361,7 +361,7 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
 
         // Set the port before to try to connect the device
 
-        char *porttext = const_cast<char*>((const char*)INDIMountPort.mb_str());
+        char *porttext = strdup(INDIMountPort.mb_str());
         scope_port->tp->text = porttext;
         sendNewText(scope_port);
     }

@@ -291,7 +291,7 @@ void StepGuiderSxAoINDI::serverConnected(void)
     }
     // connect to the device, first set its port
     if (ao_port && INDIaoDevicePort.Length()) {
-        char* porttext = (const_cast<char*>((const char*)INDIaoDevicePort.mb_str()));
+        char *porttext = strdup(INDIaoDevicePort.mb_str());
         ao_port->tp->text = porttext;
         sendNewText(ao_port);
     }

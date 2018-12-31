@@ -488,7 +488,7 @@ bool CameraINDI::ConnectToDriver(RunInBg *r)
 
         // Set the port before to trying to connect the device
 
-        char *porttext = const_cast<char *>((const char *)INDICameraPort.mb_str());
+        char *porttext = strdup(INDICameraPort.mb_str());
         camera_port->tp->text = porttext;
         sendNewText(camera_port);
     }
