@@ -76,6 +76,7 @@ struct SimCamParams
     static unsigned int clouds_inten;
     static double image_scale; // arc-sec per pixel
     static bool use_pe;
+    static bool use_stiction;
     static bool use_default_pe_params;
     static double custom_pe_amp;
     static double custom_pe_period;
@@ -103,6 +104,7 @@ bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west 
 unsigned int SimCamParams::clouds_inten;         // clouds intensity blocking out stars
 double SimCamParams::image_scale;                // arc-sec per pixel
 bool SimCamParams::use_pe;
+bool SimCamParams::use_stiction;
 bool SimCamParams::use_default_pe_params;
 double SimCamParams::custom_pe_amp;
 double SimCamParams::custom_pe_period;
@@ -131,6 +133,7 @@ unsigned int SimCamParams::frame_download_ms;    // frame download time, ms
 #define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
 #define CLOUDS_INTEN_DEFAULT 10
 #define USE_PE_DEFAULT true
+#define USE_STICTION_DEFAULT false
 #define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
 #define PE_SCALE_MAX 30.0
 #define USE_PE_DEFAULT_PARAMS true
@@ -155,6 +158,7 @@ static void load_sim_params()
     SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
     SimCamParams::noise_multiplier = pConfig->Profile.GetDouble("/SimCam/noise", NOISE_DEFAULT);
     SimCamParams::use_pe = pConfig->Profile.GetBoolean("/SimCam/use_pe", USE_PE_DEFAULT);
+    SimCamParams::use_stiction = pConfig->Profile.GetBoolean("/SimCam/use_stiction", USE_STICTION_DEFAULT);
     SimCamParams::use_default_pe_params = pConfig->Profile.GetBoolean("/SimCam/use_default_pe", USE_PE_DEFAULT_PARAMS);
     SimCamParams::custom_pe_amp = pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT);
     SimCamParams::custom_pe_period = pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT);
@@ -186,6 +190,7 @@ static void save_sim_params()
     pConfig->Profile.SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
     pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash * SimCamParams::image_scale);
     pConfig->Profile.SetBoolean("/SimCam/use_pe", SimCamParams::use_pe);
+    pConfig->Profile.SetBoolean("/SimCam/use_stiction", SimCamParams::use_stiction);
     pConfig->Profile.SetBoolean("/SimCam/use_default_pe", SimCamParams::use_default_pe_params);
     pConfig->Profile.SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
     pConfig->Profile.SetDouble("/SimCam/pe_cust_amp", SimCamParams::custom_pe_amp);
@@ -412,6 +417,50 @@ struct SimStar
     double inten;
 };
 
+struct StictionSim
+{
+    int lastDirection;
+    bool pending;
+    double adjustment;
+
+    StictionSim()
+    {
+        lastDirection = NONE;
+        pending = false;
+        adjustment = 0.;
+    }
+
+    double GetAdjustment(int Direction, int Duration, double Distance)
+    {
+        double rslt = 0;
+        if (lastDirection != NONE)
+        {
+            if (Duration > 300 && Direction != lastDirection && !pending)
+            {
+                adjustment = Distance / 3.0;
+                pending = true;
+                Debug.Write(wxString::Format("Stiction: reduced distance by %0.2f\n", adjustment));
+                rslt = -adjustment;
+            }
+            else
+            {
+                if (pending)
+                {
+                    if (Direction == lastDirection)
+                    {
+                        rslt = adjustment;
+                        Debug.Write(wxString::Format("Stiction: increased distance by %0.2f\n", adjustment));
+                        adjustment = 0;
+                    }
+                    pending = false;
+                }
+            }
+        }
+        lastDirection = Direction;
+        return rslt;
+    }
+};
+
 static const double AMBIENT_TEMP = 15.;
 static const double MIN_COOLER_TEMP = -15.;
 
@@ -484,6 +533,7 @@ struct SimCamState
     wxStopWatch timer;       // platform-independent timer
     long last_exposure_time; // last expoure time, milliseconds
     Cooler cooler;           // simulated cooler
+    StictionSim stictionSim;
 
 #ifdef SIMDEBUG
     wxFFile DebugFile;
@@ -1344,6 +1394,8 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     return false;
 }
 
+
+
 bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
 {
     // Following must take into account how the render_star function works.  Render_star uses camera binning explicitly, so
@@ -1358,6 +1410,10 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
             dec = radians(25.0); // some arbitrary declination
         d *= cos(dec);
     }
+
+    // simulate stiction if option selected
+    if (SimCamParams::use_stiction && (direction == NORTH || direction == SOUTH))
+        d += sim.stictionSim.GetAdjustment(direction, duration, d);
 
     if (SimCamParams::pier_side == PIER_SIDE_WEST && SimCamParams::reverse_dec_pulse_on_west_side)
     {
@@ -1524,6 +1580,7 @@ struct SimCamDialog : public wxDialog
     wxCheckBox* showComet;
     wxCheckBox* pCloudsCbx;
     wxCheckBox *pUsePECbx;
+    wxCheckBox *pUseStiction;
     wxCheckBox *pReverseDecPulseCbx;
     PierSide pPierSide;
     wxStaticText *pPiersideLabel;
@@ -1620,6 +1677,7 @@ static void SetControlStates(SimCamDialog *dlg, bool captureActive)
     dlg->pPECustomPeriod->Enable(enable);
     dlg->pPECustomRb->Enable(enable);
     dlg->pUsePECbx->Enable(enable);
+    dlg->pUseStiction->Enable(false);                           // no good for end-users
     dlg->pPierFlip->Enable(enable);
     dlg->pReverseDecPulseCbx->Enable(enable);
     dlg->pResetBtn->Enable(enable);
@@ -1688,13 +1746,16 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
 
     // Mount group controls
     wxStaticBoxSizer *pMountGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Mount"));
-    wxFlexGridSizer *pMountTable = new wxFlexGridSizer(1, 6, 15, 15);
+    wxFlexGridSizer *pMountTable = new wxFlexGridSizer(2, 6, 5, 15);
     pBacklashSpin = NewSpinner(this, SimCamParams::dec_backlash * imageScale, 0, DEC_BACKLASH_MAX, 0.1, _("Dec backlash, arc-secs"));
     AddTableEntryPair(this, pMountTable, _("Dec backlash"), pBacklashSpin);
     pDriftSpin = NewSpinner(this, SimCamParams::dec_drift_rate * 60.0 * imageScale, -DEC_DRIFT_MAX, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
     AddTableEntryPair(this, pMountTable, _("Dec drift"), pDriftSpin);
     pGuideRateSpin = NewSpinner(this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
     AddTableEntryPair(this, pMountTable, _("Guide rate"), pGuideRateSpin);
+    pUseStiction = NewCheckBox(this, SimCamParams::use_stiction, _("Apply stiction"), _("Simulate dec axis stiction"));
+    pUseStiction->Enable(false);                            // too crude to put in hands of users
+    pMountTable->Add(pUseStiction, 1, wxBOTTOM, 15);
     pMountGroup->Add(pMountTable);
 
     // Add embedded group for PE info (still within mount group)
@@ -1806,6 +1867,7 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     pGuideRateSpin->SetValue(GUIDE_RATE_DEFAULT / GUIDE_RATE_MAX);
     pReverseDecPulseCbx->SetValue(REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
     pUsePECbx->SetValue(USE_PE_DEFAULT);
+    pUseStiction->SetValue(USE_STICTION_DEFAULT);
     pPEDefaultRb->SetValue(USE_PE_DEFAULT_PARAMS);
     pPECustomRb->SetValue(!USE_PE_DEFAULT_PARAMS);
     pPEDefScale->SetValue(PE_SCALE_DEFAULT);
@@ -1864,6 +1926,7 @@ void CameraSimulator::ShowPropertyDialog()
 
         bool use_pe = dlg.pUsePECbx->GetValue();
         SimCamParams::use_pe = use_pe;
+        SimCamParams::use_stiction = dlg.pUseStiction->GetValue();
         bool use_default_pe_params = dlg.pPEDefaultRb->GetValue();
         SimCamParams::use_default_pe_params = use_default_pe_params;
         if (SimCamParams::use_default_pe_params)

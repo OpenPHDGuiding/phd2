@@ -85,7 +85,7 @@ public:
         // Correction[2] is the (optional) subsequent delta, needed to detect stiction
         if (InfoCount() < 3)
         {
-            corrections.push_back(CorrectionTuple(TimeSecs, Amount));
+            corrections.push_back(CorrectionTuple(TimeSecs, Amount));               // Regardless of size relative to min-move
             if (fabs(Amount) > minMove)
             {
                 if (InfoCount() == 2)
@@ -100,7 +100,7 @@ public:
                 {
                     if (InfoCount() == 3)
                     {
-                        stictionSeen = initialUndershoot && Amount < 0;           // 2nd follow-on miss was an over-shoot
+                        stictionSeen = Amount < 0 && corrections[1].miss > 0;           // 2nd follow-on miss was an over-shoot
                     }
                 }
             }
@@ -109,6 +109,12 @@ public:
 
 };
 
+// Basic operation
+// Keep a record of the last <HISTORY_DEPTH> BLC events.  Each event entry holds the initial BLC deflection and either one or two immediate follow-on
+// deflections.  The deflections are raw Dec amounts, unfiltered by min-move or guiding algorithm decisions.
+// Recording of follow-on deflections is determined by windowOpen.  The window is opened when the BLC is initially triggered and is then
+// closed if a) A pulse-size adjustment is made based on the first follow-on deflection or b) 2 follow-on events have been recorded
+// Algorithm behavior for adjusting BLC pulse size is in AdjustmentNeeded()
 class BLCHistory
 {
     std::vector<BLCEvent> blcEvents;
@@ -153,6 +159,7 @@ public:
     void CloseWindow()
     {
         windowOpen = false;
+        Debug.Write("BLC: window closed\n");
     }
 
     void RecordNewBLC(long When, double TriggerDeflection)
@@ -178,8 +185,7 @@ public:
         }
         else
         {
-            windowOpen = false;
-            LogStatus("History window closed");
+            CloseWindow();
         }
         return added;
     }
@@ -200,9 +206,26 @@ public:
         }
     }
 
+    void RemoveOldestStictions(int howMany)
+    {
+        for (int ct = 1; ct <= howMany; ct++)
+        {
+            for (unsigned int inx = 0; inx < blcEvents.size() - 1; inx++)
+            {
+                if (blcEvents[inx].stictionSeen)
+                {
+                    blcEvents.erase(blcEvents.begin() + inx);
+                    blcIndex = blcEvents.size() - 1;
+                    break;
+                }
+            }
+        }
+    }
+
     void ClearHistory()
     {
         blcEvents.clear();
+        CloseWindow();
         LogStatus("History cleared");
     }
 
@@ -277,97 +300,81 @@ public:
                     // Don't make any changes before getting two follow-on displacements after last BLC
                     if (currEvent->InfoCount() == ENTRY_CAPACITY)
                     {
-                        // Stiction
+                        // Check for stiction history
                         if (stats.stictionCount > 2)
-                            LogStatus("Under-shoot, no adjustment because of stiction history, window closed");
+                            LogStatus("Under-shoot, no adjustment because of stiction history");
                         else
                         {
+                            // Check for over-shoot history
                             if (stats.longCount >= 2)             // 2 or more over-shoots in window
-                                LogStatus("Under-shoot; no adjustment because of over-shoot history, window closed");
+                                LogStatus("Under-shoot; no adjustment because of over-shoot history");
                             else
                             {
                                 adjust = true;
                                 *correction = corr;
                                 lastIncrease = corr;
-                                LogStatus("Under-shoot: nominal increase by " + std::to_string(corr) + ", window closed");
+                                LogStatus("Under-shoot: nominal increase by " + std::to_string(corr));
                             }
                         }
-                        windowOpen = false;
                     }
                     else
                         LogStatus("Under-shoot, no adjustment, waiting for more data");
                 }
                 else
                 {
-                    LogStatus("Under-shoot, no adjustment, avgInitialMiss <= 0, window closed");
-                    windowOpen = false;
+                    LogStatus("Under-shoot, no adjustment, avgInitialMiss <= 0");
+                    CloseWindow();
                 }
             }
             else
-                // OVER-SHOOT --------------------------------------
+                // OVER-SHOOT, miss < 0--------------------------------------
             {
-                if (avgInitMiss < 0 || stats.longCount > stats.shortCount || currEvent->stictionSeen)
+                std::string msg = "";
+                if (currEvent->stictionSeen)
                 {
-                    windowOpen = false;
-                    std::string msg = "";
-                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
+                    if (stats.stictionCount > 1)          // Seeing and low min-move can look like stiction, don't over-react
                     {
-                        if (currEvent->stictionSeen)
-                        {
-                            if (stats.stictionCount > 1)          // Seeing and low min-move can look like stiction, don't react to 1st event
-                            {
-                                msg = "Over-shoot, stiction seen, ";
-                                double stictionCorr = (int)(floor(abs(stats.avgStictionAmount) / yRate) + 0.5);
-                                *correction = -stictionCorr;
-                                adjust = true;
-                                LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
-                            }
-                            else
-                                LogStatus("Over-shoot, first stiction event, no adjustment, window closed");
-                        }
-                    }
-                    else
-                    if (stats.longCount > stats.shortCount && blcIndex >= 4)
-                    {
-                        msg = "Recent history of over-shoots, ";
-                        *correction = -corr;
-                        RemoveOldestOvershoots(2);
+                        msg = "Over-shoot, stiction seen, ";
+                        double stictionCorr = (int)(floor(abs(stats.avgStictionAmount) / yRate) + 0.5);
+                        *correction = -stictionCorr;
+                        RemoveOldestStictions(1);
                         adjust = true;
-                        LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
+                        LogStatus(msg + "nominal decrease by " + std::to_string(*correction));
                     }
                     else
-                    if (fabs(avgInitMiss) > minMove)
-                    {
-                        msg = "Average miss indicates over-shooting, ";
-                        *correction = -corr;                     // just the usual average of misses
-                        adjust = true;
-                        LogStatus(msg + "nominal decrease by " + std::to_string(*correction) + ", window closed.");
-                    }
-                    else
-                    {
-                        LogStatus("Over-shoot, no correction because of small average miss, window closed.");
-                    }
-                }                           // end of over-shoot cases that warrant attention
+                        LogStatus("Over-shoot, first stiction event, no adjustment");
+                }
+                else if (stats.longCount > stats.shortCount && blcIndex >= 4)
+                {
+                    msg = "Recent history of over-shoots, ";
+                    *correction = -corr;
+                    RemoveOldestOvershoots(2);
+                    adjust = true;
+                    LogStatus(msg + "nominal decrease by " + std::to_string(*correction));
+                }
+                else if (avgInitMiss <= -0.1)
+                {
+                    msg = "Average miss indicates over-shooting, ";
+                    *correction = -corr;
+                    adjust = true;
+                    LogStatus(msg + "nominal decrease by " + std::to_string(*correction));
+                }
                 else
                 {
                     correction = 0;
-                    std::string msg = "Over-shoot, no adjustment, avgMiss >= 0";
-                    if (currEvent->InfoCount() == ENTRY_CAPACITY)
-                    {
-                        windowOpen = false;
-                        msg += ", window closed";
-                    }
+                    std::string msg = "Over-shoot, no adjustment based on avgInitialMiss";
                     LogStatus(msg);
+                    CloseWindow();
                 }
-
             }
         }
         else
         {
-            windowOpen = false;
-            LogStatus("No correction, Miss < min_move, window closed");
+            LogStatus("No correction, Miss < min_move");
         }
 
+        if (adjust)
+            CloseWindow();
         return adjust;
     }
 };
