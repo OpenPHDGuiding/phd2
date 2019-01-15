@@ -41,8 +41,8 @@
 // Descriptive stats and axial stats classes
 
 // All variance calculations use the Knuth algorithm, which is more robust than the naive approach
-// It avoids numerical processing problems associated with large data values and small 
-// differences, which can lead to things like negative variances 
+// It avoids numerical processing problems associated with large data values and small
+// differences, which can lead to things like negative variances
 // See: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
 
 // DescriptiveStats is used for non-windowed datasets.  Max, min, sigma and variance are computed on-the-fly as values are added to dataset
@@ -54,7 +54,7 @@ DescriptiveStats::DescriptiveStats()
 
 DescriptiveStats::~DescriptiveStats()
 {
-    
+
 }
 
 // Add a new double value, update stats
@@ -326,7 +326,7 @@ StarDisplacement AxisStats::GetEntry(unsigned int inx)
         return StarDisplacement(0, 0);
 }
 
-// DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day 
+// DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day
 void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
 {
     StarDisplacement starInfo(DeltaT, StarPos);
@@ -532,52 +532,52 @@ double AxisStats::GetMaxDisplacement()
 // Returns R-Squared, a measure of correlation between the linear fit and the original data set
 double AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Sigma)
 {
-    int numVals = guidingEntries.size();
-    double slope = 0;
-    double intcpt = 0;
-    double constrainedSlope = 0;
-    double currentVariance = 0;
-    double currentMean = 0;
+    size_t const numVals = guidingEntries.size();
 
-    if (numVals > 1)
-    {
-        slope = ((numVals * sumXY) - (sumX * sumY)) / ((numVals * sumXSq) - (sumX * sumX));
-        //constrainedSlope = sumXY / sumXSq;          // Possible future use, slope value if intercept is constrained to be zero
-        intcpt = (sumY - (slope * sumX)) / numVals;
-        if (Sigma != NULL)
-        {
-            // Apply the linear fit to the data points and compute their resultant sigma
-            for (int inx = 0; inx < numVals; inx++)
-            {
-                double newVal = guidingEntries[inx].StarPos - (guidingEntries[inx].DeltaTime * slope + intcpt);
-                if (inx == 0)
-                    currentMean = newVal;
-                else
-                {
-                    double delta = newVal - currentMean;
-                    double newMean = currentMean + delta / numVals;
-                    currentVariance += delta * delta;
-                    currentMean = newMean;
-                }
-            }
-        *Sigma = sqrt(currentVariance / (numVals - 1));
-        }
-        
-        *Slope = slope;
-        *Intercept = intcpt;
-        // Compute R-Squared coefficient of determination
-        double Syy = sumYSq - (sumY * sumY) / numVals;
-        double Sxy = sumXY - (sumX * sumY) / numVals;
-        double Sxx = sumXSq - (sumX * sumX) / numVals;
-        double SSE = Syy - (Sxy * Sxy) / Sxx;
-        double rSquared = (Syy - SSE) / Syy;
-        return rSquared;
-    }
-    else
+    if (numVals <= 1)
     {
         *Slope = 0;
         *Intercept = 0;
+        if (Sigma)
+            *Sigma = 0.;
+        return 0.;
     }
+
+    double currentVariance = 0;
+    double currentMean = 0;
+
+    double slope = ((numVals * sumXY) - (sumX * sumY)) / ((numVals * sumXSq) - (sumX * sumX));
+    //double constrainedSlope = sumXY / sumXSq;          // Possible future use, slope value if intercept is constrained to be zero
+    double intcpt = (sumY - (slope * sumX)) / numVals;
+
+    if (Sigma)
+    {
+        // Apply the linear fit to the data points and compute their resultant sigma
+        for (size_t inx = 0; inx < numVals; inx++)
+        {
+            double newVal = guidingEntries[inx].StarPos - (guidingEntries[inx].DeltaTime * slope + intcpt);
+            if (inx == 0)
+                currentMean = newVal;
+            else
+            {
+                double delta = newVal - currentMean;
+                double newMean = currentMean + delta / numVals;
+                currentVariance += delta * delta;
+                currentMean = newMean;
+            }
+        }
+        *Sigma = sqrt(currentVariance / (numVals - 1));
+    }
+
+    *Slope = slope;
+    *Intercept = intcpt;
+    // Compute R-Squared coefficient of determination
+    double Syy = sumYSq - (sumY * sumY) / numVals;
+    double Sxy = sumXY - (sumX * sumY) / numVals;
+    double Sxx = sumXSq - (sumX * sumX) / numVals;
+    double SSE = Syy - (Sxy * Sxy) / Sxx;
+    double rSquared = (Syy - SSE) / Syy;
+    return rSquared;
 }
 
 WindowedAxisStats::WindowedAxisStats(int AutoWindowSize) : AxisStats()
