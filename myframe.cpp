@@ -2328,7 +2328,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                     Debug.Write(wxString::Format("missing EXPOSURE value, assume %.3f\n", exposure));
                     status = 0;
                 }
-                img->ImgExpDur = (int)(exposure * 1000.0);
+                img->ImgExpDur = ROUNDF(exposure * 1000.0);
 
                 Debug.Write(wxString::Format("loaded dark frame exposure = %d\n", img->ImgExpDur));
                 camera->AddDark(img.release());
