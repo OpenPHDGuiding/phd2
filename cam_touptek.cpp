@@ -563,7 +563,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
     m_cam.SetOption(TOUPCAM_OPTION_AGAIN, 0);
-    
+
     unsigned short speed;
     if (SUCCEEDED(hr = Toupcam_get_Speed(m_cam.m_h, &speed)))
     {
