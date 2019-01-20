@@ -1266,6 +1266,16 @@ if(UNIX AND NOT APPLE)
     add_definitions(-DHAVE_ZWO_CAMERA=1)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
+    find_library(toupcam
+                 NAMES toupcam)
+#                 NO_DEFAULT_PATHS)
+    if(NOT toupcam)
+      message(FATAL_ERROR "Cannot find the toupcam drivers")
+    endif()
+    message(STATUS "Found toupcam lib ${toupcam}")
+    add_definitions(-DHAVE_TOUP_CAMERA=1)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+
     if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
       add_definitions(-DHAVE_QHY_CAMERA=1)
 

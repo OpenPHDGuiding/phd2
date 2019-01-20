@@ -851,7 +851,7 @@ bool CameraToupTek::ST4PulseGuideScope(int direction, int duration)
         long elapsed = watchdog.Time();
         unsigned long delay = elapsed < duration ? wxMin(duration - elapsed, 200) : 10;
         wxMilliSleep(delay);
-        if (Toupcam_ST4PlusGuideState(m_cam.m_h) != S_OK)
+        if (Toupcam_ST4PlusGuideState(m_cam.m_h) != 0)
             return false; // pulse completed
         if (WorkerThread::TerminateRequested())
             return true;
