@@ -21,8 +21,14 @@ unzip "$zip"
 # includes
 cp ./inc/toupcam.h "$SRC"/cameras/
 
-# libs
+# Windows libs
 cp ./win/x86/toupcam.dll "$SRC"/WinLibs/
 cp ./win/x86/toupcam.lib "$SRC"/cameras/
 
-# TODO: linux, Mac
+# Linux libs
+for arch in x86 x64 armhf armel arm64; do
+    cp ./linux/$arch/libtoupcam.so "$SRC"/cameras/toupcam/linux/$arch/
+done
+
+# TODO: Mac
+#   Touptek stopped providing 32-bit Mac SDK libs

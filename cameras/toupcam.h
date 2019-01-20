@@ -1,13 +1,15 @@
 #ifndef __toupcam_h__
 #define __toupcam_h__
 
-/* Version: 30.13059.2018.1003 */
+/* Version: 33.13814.2019.0120 */
 /*
    Platform & Architecture:
        (1) Win32:
               (a) x86: XP SP3 or above; CPU supports SSE2 instruction set or above
               (b) x64: Win7 or above
-       (2) WinRT: x86 and x64; Win10 or above
+              (c) arm: Win10 or above
+              (d) arm64: Win10 or above
+       (2) WinRT: x86, x64, arm, arm64; Win10 or above
        (3) macOS: x86 and x64 bundle; macOS 10.10 or above
        (4) Linux: kernel 2.6.27 or above
               (a) x86: CPU supports SSE3 instruction set or above; GLIBC 2.8 or above
@@ -15,6 +17,11 @@
               (c) armel: GLIBC 2.17 or above; built by toolchain arm-linux-gnueabi (version 4.9.2)
               (d) armhf: GLIBC 2.17 or above; built by toolchain arm-linux-gnueabihf (version 4.9.2)
               (e) arm64: GLIBC 2.17 or above; built by toolchain aarch64-linux-gnu (version 4.9.2)
+*/
+/*
+    doc:
+       (1) en.html, English
+       (2) hans.html, Simplified Chinese
 */
 
 #ifdef _WIN32
@@ -51,7 +58,7 @@ extern "C" {
 #else   /* Linux or macOS */
 
 #define toupcam_ports(x)    x
-#ifndef HRESULT
+#if (!defined(HRESULT)) && (!defined(__COREFOUNDATION_CFPLUGINCOM__)) /* CFPlugInCOM.h */
 #define HRESULT int
 #endif
 #ifndef SUCCEEDED
@@ -151,10 +158,11 @@ typedef struct ToupcamT { int unused; } *HToupCam;
 #define TOUPCAM_FLAG_YUV444             0x20000000  /* pixel format, yuv444 */
 #define TOUPCAM_FLAG_RGB888             0x40000000  /* pixel format, RGB888 */
 #define TOUPCAM_FLAG_RAW8               0x80000000  /* pixel format, RAW 8 bits */
-#define TOUPCAM_FLAG_GMCY8      0x0000000100000000  /* pixel format, GMCY, 8bits */
-#define TOUPCAM_FLAG_GMCY12     0x0000000200000000  /* pixel format, GMCY, 12bits */
-#define TOUPCAM_FLAG_UYVY       0x0000000400000000  /* pixel format, yuv422, UYVY */
-#define TOUPCAM_FLAG_CGHDR      0x0000000800000000  /* Conversion Gain: HCG, LCG, HDR */
+#define TOUPCAM_FLAG_GMCY8              0x0000000100000000  /* pixel format, GMCY, 8bits */
+#define TOUPCAM_FLAG_GMCY12             0x0000000200000000  /* pixel format, GMCY, 12bits */
+#define TOUPCAM_FLAG_UYVY               0x0000000400000000  /* pixel format, yuv422, UYVY */
+#define TOUPCAM_FLAG_CGHDR              0x0000000800000000  /* Conversion Gain: HCG, LCG, HDR */
+#define TOUPCAM_FLAG_GLOBALSHUTTER      0x0000001000000000  /* global shutter */
 
 #define TOUPCAM_TEMP_DEF                 6503    /* temp */
 #define TOUPCAM_TEMP_MIN                 2000    /* temp */
@@ -236,7 +244,7 @@ typedef struct {
 }ToupcamInstV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 30.13059.2018.1003
+    get the version of this dll/so/dylib, which is: 33.13814.2019.0120
 */
 #ifdef _WIN32
 toupcam_ports(const wchar_t*)   Toupcam_Version();
@@ -299,7 +307,7 @@ typedef void (__stdcall* PTOUPCAM_EVENT_CALLBACK)(unsigned nEvent, void* pCallba
 toupcam_ports(HRESULT)  Toupcam_StartPullModeWithCallback(HToupCam h, PTOUPCAM_EVENT_CALLBACK pEventCallback, void* pCallbackContext);
 
 #define TOUPCAM_FRAMEINFO_FLAG_SEQ          0x01 /* sequence number */
-#define TOUPCAM_FRAMEINFO_FLAG_TIMESTAMP    0x02
+#define TOUPCAM_FRAMEINFO_FLAG_TIMESTAMP    0x02 /* timestamp */
 
 typedef struct {
     unsigned            width;
@@ -312,7 +320,7 @@ typedef struct {
 /*
     bits: 24 (RGB24), 32 (RGB32), 8 (Gray) or 16 (Gray). In RAW mode, this parameter is ignored.
     pnWidth, pnHeight: OUT parameter
-    rowPitch: The distance from one row of to the next row. rowPitch = 0 means using the default row pitch.
+    rowPitch: The distance from one row to the next row. rowPitch = 0 means using the default row pitch.
 */
 toupcam_ports(HRESULT)  Toupcam_PullImageV2(HToupCam h, void* pImageData, int bits, ToupcamFrameInfoV2* pInfo);
 toupcam_ports(HRESULT)  Toupcam_PullStillImageV2(HToupCam h, void* pImageData, int bits, ToupcamFrameInfoV2* pInfo);
@@ -425,14 +433,15 @@ toupcam_ports(HRESULT)  Toupcam_put_AutoExpoEnable(HToupCam h, int bAutoExposure
 toupcam_ports(HRESULT)  Toupcam_get_AutoExpoTarget(HToupCam h, unsigned short* Target);
 toupcam_ports(HRESULT)  Toupcam_put_AutoExpoTarget(HToupCam h, unsigned short Target);
 
-#define TOUPCAM_MAX_AE_EXPTIME  350000  /* default: 350 ms */
-#define TOUPCAM_MAX_AE_AGAIN    500
-
-/*set the maximum auto exposure time and analog agin. The default maximum auto exposure time is 350ms */
+/*set the maximum/minimal auto exposure time and analog agin. The default maximum auto exposure time is 350ms */
 toupcam_ports(HRESULT)  Toupcam_put_MaxAutoExpoTimeAGain(HToupCam h, unsigned maxTime, unsigned short maxAGain);
+toupcam_ports(HRESULT)  Toupcam_get_MaxAutoExpoTimeAGain(HToupCam h, unsigned* maxTime, unsigned short* maxAGain);
+toupcam_ports(HRESULT)  Toupcam_put_MinAutoExpoTimeAGain(HToupCam h, unsigned minTime, unsigned short minAGain);
+toupcam_ports(HRESULT)  Toupcam_get_MinAutoExpoTimeAGain(HToupCam h, unsigned* minTime, unsigned short* minAGain);
 
 toupcam_ports(HRESULT)  Toupcam_get_ExpoTime(HToupCam h, unsigned* Time); /* in microseconds */
 toupcam_ports(HRESULT)  Toupcam_put_ExpoTime(HToupCam h, unsigned Time); /* in microseconds */
+toupcam_ports(HRESULT)  Toupcam_get_RealExpoTime(HToupCam h, unsigned* Time); /* in microseconds, based on 50HZ/60HZ/DC */
 toupcam_ports(HRESULT)  Toupcam_get_ExpTimeRange(HToupCam h, unsigned* nMin, unsigned* nMax, unsigned* nDef);
 
 toupcam_ports(HRESULT)  Toupcam_get_ExpoAGain(HToupCam h, unsigned short* AGain); /* percent, such as 300 */
@@ -620,88 +629,99 @@ toupcam_ports(HRESULT)  Toupcam_read_Pipe(HToupCam h, unsigned pipeNum, void* pB
 toupcam_ports(HRESULT)  Toupcam_write_Pipe(HToupCam h, unsigned pipeNum, const void* pBuffer, unsigned nBufferLen);
 toupcam_ports(HRESULT)  Toupcam_feed_Pipe(HToupCam h, unsigned pipeNum);
 
-#define TOUPCAM_TEC_TARGET_MIN      (-300) /* -30.0 degrees Celsius */
-#define TOUPCAM_TEC_TARGET_DEF      0      /* 0.0 degrees Celsius */
-#define TOUPCAM_TEC_TARGET_MAX      300    /* 30.0 degrees Celsius */
+#define TOUPCAM_TEC_TARGET_MIN          (-300) /* -30.0 degrees Celsius */
+#define TOUPCAM_TEC_TARGET_DEF          0      /* 0.0 degrees Celsius */
+#define TOUPCAM_TEC_TARGET_MAX          300    /* 30.0 degrees Celsius */
 
-#define TOUPCAM_OPTION_NOFRAME_TIMEOUT      0x01    /* 1 = enable; 0 = disable. default: disable */
-#define TOUPCAM_OPTION_THREAD_PRIORITY      0x02    /* set the priority of the internal thread which grab data from the usb device. iValue: 0 = THREAD_PRIORITY_NORMAL; 1 = THREAD_PRIORITY_ABOVE_NORMAL; 2 = THREAD_PRIORITY_HIGHEST; default: 0; see: msdn SetThreadPriority */
-#define TOUPCAM_OPTION_PROCESSMODE          0x03    /* 0 = better image quality, more cpu usage. this is the default value
-                                                       1 = lower image quality, less cpu usage */
-#define TOUPCAM_OPTION_RAW                  0x04    /* raw data mode, read the sensor "raw" data. This can be set only BEFORE Toupcam_StartXXX(). 0 = rgb, 1 = raw, default value: 0 */
-#define TOUPCAM_OPTION_HISTOGRAM            0x05    /* 0 = only one, 1 = continue mode */
-#define TOUPCAM_OPTION_BITDEPTH             0x06    /* 0 = 8 bits mode, 1 = 16 bits mode, subset of TOUPCAM_OPTION_PIXEL_FORMAT */
-#define TOUPCAM_OPTION_FAN                  0x07    /* 0 = turn off the cooling fan, [1, max] = fan speed */
-#define TOUPCAM_OPTION_TEC                  0x08    /* 0 = turn off the thermoelectric cooler, 1 = turn on the thermoelectric cooler */
-#define TOUPCAM_OPTION_LINEAR               0x09    /* 0 = turn off the builtin linear tone mapping, 1 = turn on the builtin linear tone mapping, default value: 1 */
-#define TOUPCAM_OPTION_CURVE                0x0a    /* 0 = turn off the builtin curve tone mapping, 1 = turn on the builtin polynomial curve tone mapping, 2 = logarithmic curve tone mapping, default value: 2 */
-#define TOUPCAM_OPTION_TRIGGER              0x0b    /* 0 = video mode, 1 = software or simulated trigger mode, 2 = external trigger mode, default value = 0 */
-#define TOUPCAM_OPTION_RGB                  0x0c    /* 0 => RGB24; 1 => enable RGB48 format when bitdepth > 8; 2 => RGB32; 3 => 8 Bits Gray (only for mono camera); 4 => 16 Bits Gray (only for mono camera when bitdepth > 8) */
-#define TOUPCAM_OPTION_COLORMATIX           0x0d    /* enable or disable the builtin color matrix, default value: 1 */
-#define TOUPCAM_OPTION_WBGAIN               0x0e    /* enable or disable the builtin white balance gain, default value: 1 */
-#define TOUPCAM_OPTION_TECTARGET            0x0f    /* get or set the target temperature of the thermoelectric cooler, in 0.1 degree Celsius. For example, 125 means 12.5 degree Celsius, -35 means -3.5 degree Celsius */
-#define TOUPCAM_OPTION_AGAIN                0x10    /* enable or disable adjusting the analog gain when auto exposure is enabled. default value: enable */
-#define TOUPCAM_OPTION_FRAMERATE            0x11    /* limit the frame rate, range=[0, 63], the default value 0 means no limit */
-#define TOUPCAM_OPTION_DEMOSAIC             0x12    /* demosaic method for both video and still image: BILINEAR = 0, VNG(Variable Number of Gradients interpolation) = 1, PPG(Patterned Pixel Grouping interpolation) = 2, AHD(Adaptive Homogeneity-Directed interpolation) = 3, see https://en.wikipedia.org/wiki/Demosaicing, default value: 0 */
-#define TOUPCAM_OPTION_DEMOSAIC_VIDEO       0x13    /* demosaic method for video */
-#define TOUPCAM_OPTION_DEMOSAIC_STILL       0x14    /* demosaic method for still image */
-#define TOUPCAM_OPTION_BLACKLEVEL           0x15    /* black level */
-#define TOUPCAM_OPTION_MULTITHREAD          0x16    /* multithread image processing */
-#define TOUPCAM_OPTION_BINNING              0x17    /* binning, 0x01 (no binning), 0x02 (add, 2*2), 0x03 (add, 3*3), 0x04 (add, 4*4), 0x82 (average, 2*2), 0x83 (average, 3*3), 0x84 (average, 4*4) */
-#define TOUPCAM_OPTION_ROTATE               0x18    /* rotate clockwise: 0, 90, 180, 270 */
-#define TOUPCAM_OPTION_CG                   0x19    /* Conversion Gain: 0 = LCG, 1 = HCG, 2 = HDR */
-#define TOUPCAM_OPTION_PIXEL_FORMAT         0x1a    /* pixel format, TOUPCAM_PIXELFORMAT_xxxx */
-#define TOUPCAM_OPTION_FFC                  0x1b    /* flat field correction
-                                                        set:
-                                                             0: disable
-                                                             1: enable
-                                                            -1: reset
-                                                            (0xff000000 | n): set the average number to n, [1~255]
-                                                        get:
-                                                             (val & 0xff): 0 -> disable, 1 -> enable, 2 -> inited
-                                                             ((val & 0xff00) >> 8): sequence
-                                                             ((val & 0xff0000) >> 8): average number
-                                                    */
-#define TOUPCAM_OPTION_DDR_DEPTH            0x1c    /* the number of the frames that DDR can cache
-                                                            1: DDR cache only one frame
-                                                            0: Auto:
-                                                                    ->one for video mode when auto exposure is enabled
-                                                                    ->full capacity for others
-                                                           -1: DDR can cache frames to full capacity
-                                                    */
-#define TOUPCAM_OPTION_DFC                  0x1d    /* dark field correction
-                                                        set:
-                                                            0: disable
-                                                            1: enable
-                                                           -1: reset
-                                                            (0xff000000 | n): set the average number to n, [1~255]
-                                                        get:
-                                                            (val & 0xff): 0 -> disable, 1 -> enable, 2 -> inited
-                                                            ((val & 0xff00) >> 8): sequence
-                                                            ((val & 0xff0000) >> 8): average number
-                                                    */
-#define TOUPCAM_OPTION_SHARPENING           0x1e    /* Sharpening: (threshold << 24) | (radius << 16) | strength)
-                                                        strength: [0, 500], default: 0 (disable)
-                                                        radius: [1, 10]
-                                                        threshold: [0, 255]
-                                                    */
-#define TOUPCAM_OPTION_FACTORY              0x1f    /* restore the factory settings */
-#define TOUPCAM_OPTION_TEC_VOLTAGE          0x20    /* get the current TEC voltage in 0.1V, 59 mean 5.9V; readonly */
-#define TOUPCAM_OPTION_TEC_VOLTAGE_MAX      0x21    /* get the TEC maximum voltage in 0.1V; readonly */
-#define TOUPCAM_OPTION_DEVICE_RESET         0x22    /* reset usb device, simulate a replug */
+#define TOUPCAM_OPTION_NOFRAME_TIMEOUT  0x01    /* 1 = enable; 0 = disable. default: disable */
+#define TOUPCAM_OPTION_THREAD_PRIORITY  0x02    /* set the priority of the internal thread which grab data from the usb device. iValue: 0 = THREAD_PRIORITY_NORMAL; 1 = THREAD_PRIORITY_ABOVE_NORMAL; 2 = THREAD_PRIORITY_HIGHEST; default: 0; see: msdn SetThreadPriority */
+#define TOUPCAM_OPTION_PROCESSMODE      0x03    /* 0 = better image quality, more cpu usage. this is the default value
+                                                   1 = lower image quality, less cpu usage */
+#define TOUPCAM_OPTION_RAW              0x04    /* raw data mode, read the sensor "raw" data. This can be set only BEFORE Toupcam_StartXXX(). 0 = rgb, 1 = raw, default value: 0 */
+#define TOUPCAM_OPTION_HISTOGRAM        0x05    /* 0 = only one, 1 = continue mode */
+#define TOUPCAM_OPTION_BITDEPTH         0x06    /* 0 = 8 bits mode, 1 = 16 bits mode, subset of TOUPCAM_OPTION_PIXEL_FORMAT */
+#define TOUPCAM_OPTION_FAN              0x07    /* 0 = turn off the cooling fan, [1, max] = fan speed */
+#define TOUPCAM_OPTION_TEC              0x08    /* 0 = turn off the thermoelectric cooler, 1 = turn on the thermoelectric cooler */
+#define TOUPCAM_OPTION_LINEAR           0x09    /* 0 = turn off the builtin linear tone mapping, 1 = turn on the builtin linear tone mapping, default value: 1 */
+#define TOUPCAM_OPTION_CURVE            0x0a    /* 0 = turn off the builtin curve tone mapping, 1 = turn on the builtin polynomial curve tone mapping, 2 = logarithmic curve tone mapping, default value: 2 */
+#define TOUPCAM_OPTION_TRIGGER          0x0b    /* 0 = video mode, 1 = software or simulated trigger mode, 2 = external trigger mode, default value = 0 */
+#define TOUPCAM_OPTION_RGB              0x0c    /* 0 => RGB24; 1 => enable RGB48 format when bitdepth > 8; 2 => RGB32; 3 => 8 Bits Gray (only for mono camera); 4 => 16 Bits Gray (only for mono camera when bitdepth > 8) */
+#define TOUPCAM_OPTION_COLORMATIX       0x0d    /* enable or disable the builtin color matrix, default value: 1 */
+#define TOUPCAM_OPTION_WBGAIN           0x0e    /* enable or disable the builtin white balance gain, default value: 1 */
+#define TOUPCAM_OPTION_TECTARGET        0x0f    /* get or set the target temperature of the thermoelectric cooler, in 0.1 degree Celsius. For example, 125 means 12.5 degree Celsius, -35 means -3.5 degree Celsius */
+#define TOUPCAM_OPTION_AUTOEXP_POLICY   0x10    /* auto exposure policy:
+                                                    0: Exposure Only
+                                                    1: Exposure Preferred
+                                                    2: Analog Gain Only
+                                                    3: Analog Gain Preferred
+                                                    default value: 1
+                                                */
+#define TOUPCAM_OPTION_FRAMERATE        0x11    /* limit the frame rate, range=[0, 63], the default value 0 means no limit */
+#define TOUPCAM_OPTION_DEMOSAIC         0x12    /* demosaic method for both video and still image: BILINEAR = 0, VNG(Variable Number of Gradients interpolation) = 1, PPG(Patterned Pixel Grouping interpolation) = 2, AHD(Adaptive Homogeneity-Directed interpolation) = 3, see https://en.wikipedia.org/wiki/Demosaicing, default value: 0 */
+#define TOUPCAM_OPTION_DEMOSAIC_VIDEO   0x13    /* demosaic method for video */
+#define TOUPCAM_OPTION_DEMOSAIC_STILL   0x14    /* demosaic method for still image */
+#define TOUPCAM_OPTION_BLACKLEVEL       0x15    /* black level */
+#define TOUPCAM_OPTION_MULTITHREAD      0x16    /* multithread image processing */
+#define TOUPCAM_OPTION_BINNING          0x17    /* binning, 0x01 (no binning), 0x02 (add, 2*2), 0x03 (add, 3*3), 0x04 (add, 4*4), 0x82 (average, 2*2), 0x83 (average, 3*3), 0x84 (average, 4*4) */
+#define TOUPCAM_OPTION_ROTATE           0x18    /* rotate clockwise: 0, 90, 180, 270 */
+#define TOUPCAM_OPTION_CG               0x19    /* Conversion Gain: 0 = LCG, 1 = HCG, 2 = HDR */
+#define TOUPCAM_OPTION_PIXEL_FORMAT     0x1a    /* pixel format, TOUPCAM_PIXELFORMAT_xxxx */
+#define TOUPCAM_OPTION_FFC              0x1b    /* flat field correction
+                                                    set:
+                                                         0: disable
+                                                         1: enable
+                                                        -1: reset
+                                                        (0xff000000 | n): set the average number to n, [1~255]
+                                                    get:
+                                                         (val & 0xff): 0 -> disable, 1 -> enable, 2 -> inited
+                                                         ((val & 0xff00) >> 8): sequence
+                                                         ((val & 0xff0000) >> 8): average number
+                                                */
+#define TOUPCAM_OPTION_DDR_DEPTH        0x1c    /* the number of the frames that DDR can cache
+                                                        1: DDR cache only one frame
+                                                        0: Auto:
+                                                                ->one for video mode when auto exposure is enabled
+                                                                ->full capacity for others
+                                                       -1: DDR can cache frames to full capacity
+                                                */
+#define TOUPCAM_OPTION_DFC              0x1d    /* dark field correction
+                                                    set:
+                                                        0: disable
+                                                        1: enable
+                                                       -1: reset
+                                                        (0xff000000 | n): set the average number to n, [1~255]
+                                                    get:
+                                                        (val & 0xff): 0 -> disable, 1 -> enable, 2 -> inited
+                                                        ((val & 0xff00) >> 8): sequence
+                                                        ((val & 0xff0000) >> 8): average number
+                                                */
+#define TOUPCAM_OPTION_SHARPENING       0x1e    /* Sharpening: (threshold << 24) | (radius << 16) | strength)
+                                                    strength: [0, 500], default: 0 (disable)
+                                                    radius: [1, 10]
+                                                    threshold: [0, 255]
+                                                */
+#define TOUPCAM_OPTION_FACTORY          0x1f    /* restore the factory settings */
+#define TOUPCAM_OPTION_TEC_VOLTAGE      0x20    /* get the current TEC voltage in 0.1V, 59 mean 5.9V; readonly */
+#define TOUPCAM_OPTION_TEC_VOLTAGE_MAX  0x21    /* get the TEC maximum voltage in 0.1V; readonly */
+#define TOUPCAM_OPTION_DEVICE_RESET     0x22    /* reset usb device, simulate a replug */
+#define TOUPCAM_OPTION_UPSIDE_DOWN      0x23    /* upsize down:
+                                                    1: yes
+                                                    0: no
+                                                    default: 1 (win), 0 (linux/macos)
+                                                */
 
-#define TOUPCAM_PIXELFORMAT_RAW8            0x00
-#define TOUPCAM_PIXELFORMAT_RAW10           0x01
-#define TOUPCAM_PIXELFORMAT_RAW12           0x02
-#define TOUPCAM_PIXELFORMAT_RAW14           0x03
-#define TOUPCAM_PIXELFORMAT_RAW16           0x04
-#define TOUPCAM_PIXELFORMAT_YUV411          0x05
-#define TOUPCAM_PIXELFORMAT_VUYY            0x06
-#define TOUPCAM_PIXELFORMAT_YUV444          0x07
-#define TOUPCAM_PIXELFORMAT_RGB888          0x08
-#define TOUPCAM_PIXELFORMAT_GMCY8           0x09   /* map to RGGB 8 bits */
-#define TOUPCAM_PIXELFORMAT_GMCY12          0x0a   /* map to RGGB 12 bits */
-#define TOUPCAM_PIXELFORMAT_UYVY            0x0b
+#define TOUPCAM_PIXELFORMAT_RAW8        0x00
+#define TOUPCAM_PIXELFORMAT_RAW10       0x01
+#define TOUPCAM_PIXELFORMAT_RAW12       0x02
+#define TOUPCAM_PIXELFORMAT_RAW14       0x03
+#define TOUPCAM_PIXELFORMAT_RAW16       0x04
+#define TOUPCAM_PIXELFORMAT_YUV411      0x05
+#define TOUPCAM_PIXELFORMAT_VUYY        0x06
+#define TOUPCAM_PIXELFORMAT_YUV444      0x07
+#define TOUPCAM_PIXELFORMAT_RGB888      0x08
+#define TOUPCAM_PIXELFORMAT_GMCY8       0x09   /* map to RGGB 8 bits */
+#define TOUPCAM_PIXELFORMAT_GMCY12      0x0a   /* map to RGGB 12 bits */
+#define TOUPCAM_PIXELFORMAT_UYVY        0x0b
 
 toupcam_ports(HRESULT)  Toupcam_put_Option(HToupCam h, unsigned iOption, int iValue);
 toupcam_ports(HRESULT)  Toupcam_get_Option(HToupCam h, unsigned iOption, int* piValue);
@@ -710,9 +730,8 @@ toupcam_ports(HRESULT)  Toupcam_put_Roi(HToupCam h, unsigned xOffset, unsigned y
 toupcam_ports(HRESULT)  Toupcam_get_Roi(HToupCam h, unsigned* pxOffset, unsigned* pyOffset, unsigned* pxWidth, unsigned* pyHeight);
 
 #define TOUPCAM_IOCONTROLTYPE_GET_SUPPORTEDMODE           0x01 /* 0x01->Input, 0x02->Output, (0x01 | 0x02)->support both Input and Output */
-#define TOUPCAM_IOCONTROLTYPE_GET_ALLSTATUS               0x02 /* a single bit field indicating the current logical state of all available line signals at time of polling */
-#define TOUPCAM_IOCONTROLTYPE_GET_MODE                    0x03 /* 0x01->Input, 0x02->Output */
-#define TOUPCAM_IOCONTROLTYPE_SET_MODE                    0x04
+#define TOUPCAM_IOCONTROLTYPE_GET_GPIODIR                 0x03 /* 0x01->Input, 0x02->Output */
+#define TOUPCAM_IOCONTROLTYPE_SET_GPIODIR                 0x04
 #define TOUPCAM_IOCONTROLTYPE_GET_FORMAT                  0x05 /*
                                                                    0x00-> not connected
                                                                    0x01-> Tri-state: Tri-state mode (Not driven)
@@ -722,35 +741,55 @@ toupcam_ports(HRESULT)  Toupcam_get_Roi(HToupCam h, unsigned* pxOffset, unsigned
                                                                    0x05-> Opto-coupled
                                                                */
 #define TOUPCAM_IOCONTROLTYPE_SET_FORMAT                  0x06
-#define TOUPCAM_IOCONTROLTYPE_GET_INVERTER                0x07 /* boolean */
-#define TOUPCAM_IOCONTROLTYPE_SET_INVERTER                0x08
-#define TOUPCAM_IOCONTROLTYPE_GET_LOGIC                   0x09 /* 0x01->Positive, 0x02->Negative */
-#define TOUPCAM_IOCONTROLTYPE_SET_LOGIC                   0x0a
-#define TOUPCAM_IOCONTROLTYPE_GET_MINIMUMOUTPUTPULSEWIDTH 0x0b /* minimum signal width of an output signal (in microseconds) */
-#define TOUPCAM_IOCONTROLTYPE_SET_MINIMUMOUTPUTPULSEWIDTH 0x0c
-#define TOUPCAM_IOCONTROLTYPE_GET_OVERLOADSTATUS          0x0d /* boolean */
-#define TOUPCAM_IOCONTROLTYPE_SET_OVERLOADSTATUS          0x0e
-#define TOUPCAM_IOCONTROLTYPE_GET_PITCH                   0x0f /* Number of bytes separating the starting pixels of two consecutive lines */
-#define TOUPCAM_IOCONTROLTYPE_SET_PITCH                   0x10
-#define TOUPCAM_IOCONTROLTYPE_GET_PITCHENABLE             0x11 /* boolean */
-#define TOUPCAM_IOCONTROLTYPE_SET_PITCHENABLE             0x12
-#define TOUPCAM_IOCONTROLTYPE_GET_SOURCE                  0x13 /*
-                                                                   0->ExposureActive
-                                                                   1->TimerActive
-                                                                   2->UserOutput
-                                                                   3->TriggerReady
-                                                                   4->SerialTx
-                                                                   5->AcquisitionTriggerReady
+#define TOUPCAM_IOCONTROLTYPE_GET_OUTPUTINVERTER          0x07 /* boolean, only support output signal */
+#define TOUPCAM_IOCONTROLTYPE_SET_OUTPUTINVERTER          0x08
+#define TOUPCAM_IOCONTROLTYPE_GET_INPUTACTIVATION         0x09 /* 0x01->Positive, 0x02->Negative */
+#define TOUPCAM_IOCONTROLTYPE_SET_INPUTACTIVATION         0x0a
+#define TOUPCAM_IOCONTROLTYPE_GET_DEBOUNCERTIME           0x0b /* debouncer time in microseconds */
+#define TOUPCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME           0x0c
+#define TOUPCAM_IOCONTROLTYPE_GET_TRIGGERSOURCE           0x0d /*
+                                                                  0x00-> Opto-isolated input
+                                                                  0x01-> GPIO0
+                                                                  0x02-> GPIO1
+                                                                  0x03-> Counter
+                                                                  0x04-> PWM
+                                                                  0x05-> Software
                                                                */
-#define TOUPCAM_IOCONTROLTYPE_SET_SOURCE                  0x14
-#define TOUPCAM_IOCONTROLTYPE_GET_STATUS                  0x15 /* boolean */
-#define TOUPCAM_IOCONTROLTYPE_SET_STATUS                  0x16
-#define TOUPCAM_IOCONTROLTYPE_GET_DEBOUNCERTIME           0x17 /* debouncer time in microseconds */
-#define TOUPCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME           0x18
+#define TOUPCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE           0x0e
+#define TOUPCAM_IOCONTROLTYPE_GET_TRIGGERDELAY            0x0f /* Trigger delay time in microseconds */
+#define TOUPCAM_IOCONTROLTYPE_SET_TRIGGERDELAY            0x10
+#define TOUPCAM_IOCONTROLTYPE_GET_BURSTCOUNTER            0x11 /* Burst Counter: 1, 2, 3 ... 1023 */
+#define TOUPCAM_IOCONTROLTYPE_SET_BURSTCOUNTER            0x12
+#define TOUPCAM_IOCONTROLTYPE_GET_COUNTERSOURCE           0x13 /* 0x00-> Opto-isolated input, 0x01-> GPIO0, 0x02-> GPIO1 */
+#define TOUPCAM_IOCONTROLTYPE_SET_COUNTERSOURCE           0x14
+#define TOUPCAM_IOCONTROLTYPE_GET_COUNTERVALUE            0x15 /* Counter Value: 1, 2, 3 ... 1023 */
+#define TOUPCAM_IOCONTROLTYPE_SET_COUNTERVALUE            0x16
+#define TOUPCAM_IOCONTROLTYPE_SET_RESETCOUNTER            0x18
 #define TOUPCAM_IOCONTROLTYPE_GET_PWM_FREQ                0x19
 #define TOUPCAM_IOCONTROLTYPE_SET_PWM_FREQ                0x1a
 #define TOUPCAM_IOCONTROLTYPE_GET_PWM_DUTYRATIO           0x1b
 #define TOUPCAM_IOCONTROLTYPE_SET_PWM_DUTYRATIO           0x1c
+#define TOUPCAM_IOCONTROLTYPE_GET_PWMSOURCE               0x1d /* 0x00-> Opto-isolated input, 0x01-> GPIO0, 0x02-> GPIO1 */
+#define TOUPCAM_IOCONTROLTYPE_SET_PWMSOURCE               0x1e
+#define TOUPCAM_IOCONTROLTYPE_GET_OUTPUTMODE              0x1f /*
+                                                                  0x00-> Frame Trigger Wait
+                                                                  0x01-> Exposure Active
+                                                                  0x02-> Strobe
+                                                                  0x03-> User output
+                                                               */
+#define TOUPCAM_IOCONTROLTYPE_SET_OUTPUTMODE              0x20
+#define TOUPCAM_IOCONTROLTYPE_GET_STROBEDELAYMODE         0x21 /* boolean, 1 -> delay, 0 -> pre-delay; compared to exposure active signal */
+#define TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYMODE         0x22
+#define TOUPCAM_IOCONTROLTYPE_GET_STROBEDELAYTIME         0x23 /* Strobe delay or pre-delay time in microseconds */
+#define TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYTIME         0x24
+#define TOUPCAM_IOCONTROLTYPE_GET_STROBEDURATION          0x25 /* Strobe duration time in microseconds */
+#define TOUPCAM_IOCONTROLTYPE_SET_STROBEDURATION          0x26
+#define TOUPCAM_IOCONTROLTYPE_GET_USERVALUE               0x27 /* 
+                                                                  bit0-> Opto-isolated output
+                                                                  bit1-> GPIO0 output
+                                                                  bit2-> GPIO1 output
+                                                               */
+#define TOUPCAM_IOCONTROLTYPE_SET_USERVALUE               0x28
 
 toupcam_ports(HRESULT)  Toupcam_IoControl(HToupCam h, unsigned index, unsigned nType, int outVal, int* inVal);
 
@@ -807,6 +846,22 @@ toupcam_ports(HRESULT)  Toupcam_StartOclWithSharedTexture(HToupCam h, const Toup
 */
 toupcam_ports(double)   Toupcam_calc_ClarityFactor(const void* pImageData, int bits, unsigned nImgWidth, unsigned nImgHeight);
 
+/*
+    nBitCount: output bitmap bit count
+    when nBitDepth == 8:
+        nBitCount must be 24 or 32
+    when nBitDepth > 8
+        nBitCount:  24 -> RGB24
+                    32 -> RGB32
+                    48 -> RGB48
+                    64 -> RGB64
+*/
+toupcam_ports(void)     Toupcam_deBayerV2(unsigned nBayer, int nW, int nH, const void* input, void* output, unsigned char nBitDepth, unsigned char nBitCount);
+
+/*
+    obsolete, please use Toupcam_deBayerV2
+*/
+toupcam_deprecated
 toupcam_ports(void)     Toupcam_deBayer(unsigned nBayer, int nW, int nH, const void* input, void* output, unsigned char nBitDepth);
 
 typedef void (__stdcall* PTOUPCAM_DEMOSAIC_CALLBACK)(unsigned nBayer, int nW, int nH, const void* input, void* output, unsigned char nBitDepth, void* pCallbackCtx);

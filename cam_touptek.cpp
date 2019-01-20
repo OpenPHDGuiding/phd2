@@ -39,6 +39,12 @@
 #include "cam_touptek.h"
 #include "cameras/toupcam.h"
 
+// Touptek API uses these Windows definitions even on non-Windows platforms
+#ifndef S_OK
+#define S_OK    ((HRESULT)0L)
+#define S_FALSE ((HRESULT)1L)
+#endif
+
 template<typename T>
 static void BinPixels(T *dst, const T *src, const wxSize& srcsize, unsigned int binning)
 {
@@ -529,9 +535,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_ExpoAGainRange failed with status 0x%x\n", hr));
     }
 
-    if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
-        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpoEnable(0) failed with status 0x%x\n", hr));
-
     if (FAILED(hr = Toupcam_put_Speed(m_cam.m_h, 0)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Speed(0) failed with status 0x%x\n", hr));
 
@@ -546,9 +549,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
             Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Mode(0) failed with status 0x%x\n", hr));
     }
 
-    if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
-        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpEnable(0) failed with status 0x%x\n", hr));
-
     m_cam.SetOption(TOUPCAM_OPTION_PROCESSMODE, 0);
     m_cam.SetOption(TOUPCAM_OPTION_RAW, 1);
     m_cam.SetOption(TOUPCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
@@ -557,11 +557,16 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_COLORMATIX, 0);
     m_cam.SetOption(TOUPCAM_OPTION_WBGAIN, 0);
     m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 1);  // software trigger
+    m_cam.SetOption(TOUPCAM_OPTION_AUTOEXP_POLICY, 0); // 0="Exposure Only" 1="Exposure Preferred"
     m_cam.SetOption(TOUPCAM_OPTION_ROTATE, 0);
+    m_cam.SetOption(TOUPCAM_OPTION_UPSIDE_DOWN, 0);
+    //m_cam.SetOption(TOUPCAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
     m_cam.SetOption(TOUPCAM_OPTION_FFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
-    m_cam.SetOption(TOUPCAM_OPTION_AGAIN, 0);
+
+    if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpoEnable(0) failed with status 0x%x\n", hr));
 
     unsigned short speed;
     if (SUCCEEDED(hr = Toupcam_get_Speed(m_cam.m_h, &speed)))
@@ -851,7 +856,7 @@ bool CameraToupTek::ST4PulseGuideScope(int direction, int duration)
         long elapsed = watchdog.Time();
         unsigned long delay = elapsed < duration ? wxMin(duration - elapsed, 200) : 10;
         wxMilliSleep(delay);
-        if (Toupcam_ST4PlusGuideState(m_cam.m_h) != 0)
+        if (Toupcam_ST4PlusGuideState(m_cam.m_h) != S_OK)
             return false; // pulse completed
         if (WorkerThread::TerminateRequested())
             return true;
