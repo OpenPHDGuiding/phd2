@@ -556,8 +556,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     //m_cam.SetOption(TOUPCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
     m_cam.SetOption(TOUPCAM_OPTION_COLORMATIX, 0);
     m_cam.SetOption(TOUPCAM_OPTION_WBGAIN, 0);
-    m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 0);  // video mode
-//    m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 1);  // software trigger
+    m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 1);  // software trigger
     m_cam.SetOption(TOUPCAM_OPTION_ROTATE, 0);
     m_cam.SetOption(TOUPCAM_OPTION_FFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
@@ -686,8 +685,8 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
     m_cam.StartCapture();
 
     //Debug.Write("TOUPTEK: capture: trigger\n");
-//    if (FAILED(hr = Toupcam_Trigger(m_cam.m_h, 1)))
-//        Debug.Write(wxString::Format("TOUPTEK: Toupcam_Trigger(1) failed with status 0x%x\n", hr));
+    if (FAILED(hr = Toupcam_Trigger(m_cam.m_h, 1)))
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_Trigger(1) failed with status 0x%x\n", hr));
 
     // "The timeout is recommended for not less than (Exposure Time * 102% + 8 Seconds)."
     CameraWatchdog watchdog(duration * 102 / 100, GetTimeoutMs());
