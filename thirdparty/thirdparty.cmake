@@ -1274,7 +1274,8 @@ if(UNIX AND NOT APPLE)
     find_library(toupcam
                  NAMES toupcam
                  NO_DEFAULT_PATHS
-                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/${toupcam_arch})
+                 NO_CMAKE_SYSTEM_PATH
+                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/linux/${toupcam_arch})
     if(NOT toupcam)
       message(FATAL_ERROR "Cannot find the toupcam drivers")
     endif()
