@@ -113,7 +113,7 @@
 # ifdef HAVE_ZWO_CAMERA
 #  define ZWO_ASI
 # endif
-# ifdef HAVE_TOUP_CAMERA
+# ifdef HAVE_TOUPTEK_CAMERA
 #  define TOUPTEK_CAMERA
 # endif
 # define SXV
