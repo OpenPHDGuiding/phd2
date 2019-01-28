@@ -1282,6 +1282,7 @@ if(UNIX AND NOT APPLE)
     message(STATUS "Found toupcam lib ${toupcam}")
     add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+    set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
 
     if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
       add_definitions(-DHAVE_QHY_CAMERA=1)
@@ -1299,9 +1300,6 @@ if(UNIX AND NOT APPLE)
 
     # temporarily disable qhy camera pending fix for link error on Ubuntu Trusty
     remove_definitions(-DHAVE_QHY_CAMERA=1)
-
-    # temporarily disable touptek camera pending fix for touptek shared library dependency issue (#745)
-    remove_definitions(-DHAVE_TOUPTEK_CAMERA=1)
 
   endif()  # OPENSOURCE_ONLY
 

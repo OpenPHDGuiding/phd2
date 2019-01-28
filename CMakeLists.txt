@@ -671,7 +671,7 @@ elseif(UNIX)
   set_target_properties(
     phd2
     PROPERTIES
-      OUTPUT_NAME phd2  # lower case on linux
+      OUTPUT_NAME phd2.bin
     )
 
 else()

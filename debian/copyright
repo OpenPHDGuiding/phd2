@@ -7,8 +7,8 @@ Copyright: 2006-2013 Craig Stark
            2009 Geoffrey Hausheer
            2012-2013 Bret McKee
            2013 Sylvain Girard
-           2013-2014 Andy Galasso
-           2013-2014 Bruce Waddington
+           2013-2019 Andy Galasso
+           2013-2019 Bruce Waddington
            2014 Hans Lambermont
            2014 Robin Glover
 License: BSD-3-clause
@@ -20,7 +20,7 @@ License: BSD-3-clause
      Redistributions in binary form must reproduce the above copyright notice,
       this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-     Neither the name of Craig Stark, Stark Labs nor the names of its
+     Neither the name of openphdguiding.org nor the names of its
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
  .

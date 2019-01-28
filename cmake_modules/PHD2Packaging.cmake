@@ -66,8 +66,13 @@ if(WIN32 AND FALSE)
 endif()
 
 if(UNIX AND NOT APPLE)
-  install(TARGETS phd2 
+  install(TARGETS phd2
           RUNTIME DESTINATION bin)
+  install(PROGRAMS phd2.sh
+          DESTINATION bin
+          RENAME phd2)
+  install(FILES ${PHD_INSTALL_LIBS}
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/phd2/)
   install(FILES ${phd_src_dir}/icons/phd2_48.png
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ 
           RENAME "phd2.png")
