@@ -280,7 +280,7 @@ bool AltairCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
         return true;
 
     AltaircamInstV2 ai[ALTAIRCAM_MAX];
-	unsigned numCameras = Enum(m_sdk, ai);
+    unsigned numCameras = Enum(m_sdk, ai);
 
     for (int i = 0; i < numCameras; i++)
     {
@@ -309,18 +309,18 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         camId = ainst[0].id;
 
     const AltaircamInstV2 *pai = nullptr;
-	for (unsigned int i = 0; i < numCameras; i++)
-	{
-		if (camId == ainst[i].id)
-		{
-			pai = &ainst[i];
-			break;
-		}
-	}
-	if (!pai)
-	{
+    for (unsigned int i = 0; i < numCameras; i++)
+    {
+        if (camId == ainst[i].id)
+        {
+            pai = &ainst[i];
+            break;
+        }
+    }
+    if (!pai)
+    {
         return CamConnectFailed(_("Specified Altair Camera not found."));
-	}
+    }
 
     m_handle = m_sdk.Open(camId);
     if (!m_handle)
@@ -504,7 +504,6 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
         m_sdk.put_ExpoAGain(m_handle, new_gain);
     }
 
-
     // the camera and/or driver will buffer frames and return the oldest frame,
     // which could be quite stale. read out all buffered frames so the frame we
     // get is current
@@ -513,7 +512,6 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
     unsigned int width, height;
     while (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
     {
-
     }
 
     if (!m_capturing)
@@ -527,7 +525,7 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
             return true;
         }
         m_capturing = true;
-	}
+    }
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
 
@@ -535,13 +533,12 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-	// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
-
-  /*  if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-        (WorkerThread::TerminateRequested() || StopCapture()))
-    {
-        return true;
-    }*/
+// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
+//    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+//        (WorkerThread::TerminateRequested() || StopCapture()))
+//    {
+//        return true;
+//    }
 
     while (true)
     {

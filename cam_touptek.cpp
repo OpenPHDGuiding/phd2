@@ -169,7 +169,7 @@ struct ToupCam
         return (val - m_minGain) * 100 / (m_maxGain - m_minGain);
     }
 
-    int cam_gain(int pct)
+    int cam_gain(int pct) const
     {
         return m_minGain + pct * (m_maxGain - m_minGain) / 100;
     }
