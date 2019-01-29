@@ -50,6 +50,12 @@
 # include <DelayImp.h>
 #endif
 
+enum CaptureMode
+{
+    CM_SNAP,
+    CM_VIDEO,
+};
+
 class Camera_ZWO : public GuideCamera
 {
     wxRect m_maxSize;
@@ -58,6 +64,7 @@ class Camera_ZWO : public GuideCamera
     void *m_buffer;
     size_t m_buffer_size;
     wxByte m_bpp;  // bits per pixel: 8 or 16
+    CaptureMode m_mode;
     bool m_capturing;
     int m_cameraId;
     int m_minGain;
@@ -91,13 +98,13 @@ public:
     bool GetSensorTemperature(double *temperature) override;
 
 private:
-    bool StopCapture();
+    void StopCapture();
+    bool StopExposure();
 };
 
 Camera_ZWO::Camera_ZWO()
     :
-    m_buffer(nullptr),
-    m_capturing(false)
+    m_buffer(nullptr)
 {
     Name = _T("ZWO ASI Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
@@ -410,11 +417,33 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     Debug.Write(wxString::Format("ZWO: using mode BPP = %u\n", (unsigned int) m_bpp));
 
+    bool is_mini = wxString(info.Name).Lower().Find(_T("mini")) != wxNOT_FOUND;
+    bool is_usb3 = info.IsUSB3Camera == ASI_TRUE;
+
+    Debug.Write(wxString::Format("ZWO: usb3 = %d, is_mini = %d, name = [%s]\n", is_usb3, is_mini, info.Name));
+
+    if (is_usb3 || is_mini)
+    {
+        Debug.Write("ZWO: selecting snap mode");
+        m_mode = CM_SNAP;
+    }
+    else
+    {
+        Debug.Write("ZWO: selecting video mode");
+        m_mode = CM_VIDEO;
+    }
+
     m_cameraId = selected;
     Connected = true;
     Name = info.Name;
     m_isColor = info.IsColorCam != ASI_FALSE;
     Debug.Write(wxString::Format("ZWO: IsColorCam = %d\n", m_isColor));
+
+    if (m_mode == CM_SNAP && info.MechanicalShutter != ASI_FALSE)
+    {
+        HasShutter = true;
+        Debug.Write(wxString::Format("ZWO: HasShutter = %d\n", HasShutter));
+    }
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)
@@ -508,10 +537,14 @@ bool Camera_ZWO::Connect(const wxString& camId)
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
     ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, m_bpp == 8 ? ASI_IMG_RAW8 : ASI_IMG_RAW16);
 
+    ASIStopExposure(m_cameraId);
+    ASIStopVideoCapture(m_cameraId);
+    m_capturing = false;
+
     return false;
 }
 
-bool Camera_ZWO::StopCapture()
+void Camera_ZWO::StopCapture()
 {
     if (m_capturing)
     {
@@ -519,6 +552,12 @@ bool Camera_ZWO::StopCapture()
         ASIStopVideoCapture(m_cameraId);
         m_capturing = false;
     }
+}
+
+bool Camera_ZWO::StopExposure()
+{
+    Debug.Write("ZWO: stopexposure\n");
+    ASIStopExposure(m_cameraId);
     return true;
 }
 
@@ -557,7 +596,6 @@ bool Camera_ZWO::SetCoolerOn(bool on)
 bool Camera_ZWO::SetCoolerSetpoint(double temperature)
 {
     return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
-
 }
 
 bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
@@ -725,41 +763,122 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             Debug.Write(wxString::Format("ZWO: setStartPos(%d,%d) => %d\n", frame.GetLeft(), frame.GetTop(), status));
     }
 
-    // the camera and/or driver will buffer frames and return the oldest frame,
-    // which could be quite stale. read out all buffered frames so the frame we
-    // get is current
-
-    flush_buffered_image(m_cameraId, m_buffer, m_buffer_size);
-
-    if (!m_capturing)
-    {
-        Debug.Write("ZWO: startcapture\n");
-        ASIStartVideoCapture(m_cameraId);
-        m_capturing = true;
-    }
-
     int poll = wxMin(duration, 100);
-
-    CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
     unsigned char *const buffer =
         m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
 
-    while (true)
+    if (m_mode == CM_VIDEO)
     {
-        ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, buffer, m_buffer_size, poll);
-        if (status == ASI_SUCCESS)
-            break;
-        if (WorkerThread::InterruptRequested())
+        // the camera and/or driver will buffer frames and return the oldest frame,
+        // which could be quite stale. read out all buffered frames so the frame we
+        // get is current
+
+        flush_buffered_image(m_cameraId, m_buffer, m_buffer_size);
+
+        if (!m_capturing)
         {
-            StopCapture();
+            Debug.Write("ZWO: startcapture\n");
+            ASIStartVideoCapture(m_cameraId);
+            m_capturing = true;
+        }
+
+        CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
+
+        while (true)
+        {
+            ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, buffer, m_buffer_size, poll);
+            if (status == ASI_SUCCESS)
+                break;
+            if (WorkerThread::InterruptRequested())
+            {
+                StopCapture();
+                return true;
+            }
+            if (watchdog.Expired())
+            {
+                Debug.Write(wxString::Format("ZWO: getimagedata ret %d\n", status));
+                StopCapture();
+                DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                return true;
+            }
+        }
+    }
+    else
+    {
+        // CM_SNAP
+
+        ASI_BOOL is_dark = HasShutter && ShutterClosed ? ASI_TRUE : ASI_FALSE;
+
+        bool frame_ready = false;
+
+        for (int tries = 1; tries <= 3 && !frame_ready; tries++)
+        {
+            if (tries > 1)
+                Debug.Write("ZWO: getexpstatus EXP_FAILED, retry exposure\n");
+
+            ASIStartExposure(m_cameraId, is_dark);
+
+            CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
+
+            if (duration > 100)
+            {
+                // wait until near end of exposure
+                if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+                    (WorkerThread::TerminateRequested() || StopExposure()))
+                {
+                    StopExposure();
+                    return true;
+                }
+            }
+
+            while (true)
+            {
+                ASI_ERROR_CODE status;
+                ASI_EXPOSURE_STATUS expstatus;
+                if ((status = ASIGetExpStatus(m_cameraId, &expstatus)) != ASI_SUCCESS)
+                {
+                    Debug.Write(wxString::Format("ZWO: getexpstatus ret %d\n", status));
+                    DisconnectWithAlert(_("Lost connection to camera"), RECONNECT);
+                    return true;
+                }
+                if (expstatus == ASI_EXP_SUCCESS)
+                {
+                    frame_ready = true;
+                    break;
+                }
+                else if (expstatus != ASI_EXP_WORKING)
+                {
+                    break; // failed, retry exposure
+                }
+                // ASI_EXP_WORKING
+                wxMilliSleep(poll);
+                if (WorkerThread::InterruptRequested())
+                {
+                    StopExposure();
+                    return true;
+                }
+                if (watchdog.Expired())
+                {
+                    StopExposure();
+                    DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                    return true;
+                }
+            }
+        }
+
+        if (!frame_ready)
+        {
+            Debug.Write("ZWO: getexpstatus EXP_FAILED, giving up\n");
+            DisconnectWithAlert(_("Lost connection to camera"), RECONNECT);
             return true;
         }
-        if (watchdog.Expired())
+
+        ASI_ERROR_CODE status = ASIGetDataAfterExp(m_cameraId, buffer, m_buffer_size);
+        if (status != ASI_SUCCESS)
         {
-            Debug.Write(wxString::Format("ZWO: getimagedata ret %d\n", status));
-            StopCapture();
-            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            Debug.Write(wxString::Format("ZWO: getdataafterexp ret %d\n", status));
+            DisconnectWithAlert(_("Lost connection to camera"), RECONNECT);
             return true;
         }
     }
