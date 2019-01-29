@@ -261,6 +261,7 @@ public:
 
     void OnMenuHighlight(wxMenuEvent& evt);
     void OnAnyMenu(wxCommandEvent& evt);
+    void OnAnyMenuClose(wxMenuEvent& evt);
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAbout(wxCommandEvent& evt);

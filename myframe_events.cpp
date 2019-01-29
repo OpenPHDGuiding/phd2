@@ -161,6 +161,12 @@ void MyFrame::OnAnyMenu(wxCommandEvent& evt)
     evt.Skip();
 }
 
+void MyFrame::OnAnyMenuClose(wxMenuEvent& evt)
+{
+    m_statusbar->ClearOverlayMsg();
+    evt.Skip();
+}
+
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close(false);
