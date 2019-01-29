@@ -138,17 +138,18 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_RESTORE_WINDOWS, MyFrame::OnRestoreWindows)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_TOOL(BUTTON_GEAR,MyFrame::OnSelectGear)
-    EVT_MENU(BUTTON_GEAR,MyFrame::OnSelectGear) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(MENU_CONNECT,MyFrame::OnSelectGear)
     EVT_TOOL(BUTTON_LOOP, MyFrame::OnLoopExposure)
-    EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(MENU_LOOP, MyFrame::OnLoopExposure)
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
-    EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
-    EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
-    EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(MENU_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
+    EVT_MENU(MENU_CAM_SETTINGS, MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
     EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
@@ -489,10 +490,21 @@ void MyFrame::UpdateTitle()
 
 void MyFrame::SetupMenuBar()
 {
-    wxMenu *file_menu = new wxMenu;
-    file_menu->AppendSeparator();
+    wxMenu *file_menu = new wxMenu();
     file_menu->Append(wxID_SAVE, _("&Save Image..."), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
+
+    wxMenu *guide_menu = new wxMenu();
+    m_connectMenuItem = guide_menu->Append(MENU_CONNECT, _("&Connect Equipment\tCtrl-C"), _("Connect or disconnect equipment"));
+    m_loopMenuItem = guide_menu->Append(MENU_LOOP, _("&Loop Exposures\tCtrl-L"), _("Begin looping exposures"));
+    m_loopMenuItem->Enable(false);
+    m_guideMenuItem = guide_menu->Append(MENU_GUIDE, _("&Guide\tCtrl-G"), _("Begin guiding"));
+    m_guideMenuItem->Enable(false);
+    m_stopMenuItem = guide_menu->Append(MENU_STOP, _("&Stop\tCtrl-S"), _("Stop looping and guiding"));
+    m_stopMenuItem->Enable(false);
+    m_brainMenuItem = guide_menu->Append(MENU_BRAIN, _("&Advanced Settings\tCtrl-A"), _("Advanced parameters"));
+    m_cameraMenuItem = guide_menu->Append(MENU_CAM_SETTINGS, _("&Camera Settings"), _("Camera settings"));
+    m_cameraMenuItem->Enable(false);
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
@@ -573,6 +585,7 @@ void MyFrame::SetupMenuBar()
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
+    Menubar->Append(guide_menu, _("&Guide"));
 
 #if defined (V4L_CAMERA)
     Menubar->Append(v4l_menu, _T("&V4L"));
@@ -957,10 +970,10 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
     MainToolbar->AddTool(BUTTON_CAM_PROPERTIES, cam_setup_bmp, cam_setup_bmp_disabled, false, 0, _("Camera settings"));
     MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
-    MainToolbar->Realize();
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
     MainToolbar->EnableTool(BUTTON_STOP, false);
+    MainToolbar->Realize();
 
     MainToolbar->SetArtProvider(new PHDToolBarArt);             // Get the custom background we want
 }
@@ -977,13 +990,13 @@ void MyFrame::SetupKeyboardShortcuts()
 {
     wxAcceleratorEntry entries[] = {
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', BUTTON_ADVANCED),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_GEAR),
-        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_GEAR),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', MENU_BRAIN),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', MENU_CONNECT),
+        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', MENU_CONNECT),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', MENU_GUIDE),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', MENU_LOOP),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', MENU_STOP),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_ALERT_CLOSE),
     };
     wxAcceleratorTable accel(WXSIZEOF(entries), entries);
@@ -1020,12 +1033,13 @@ void MyFrame::SetupHelpFile()
     }
 }
 
-static bool cond_update_tool(wxAuiToolBar *tb, int toolId, bool enable)
+static bool cond_update_tool(wxAuiToolBar *tb, int toolId, wxMenuItem *mi, bool enable)
 {
     bool ret = false;
     if (tb->GetToolEnabled(toolId) != enable)
     {
         tb->EnableTool(toolId, enable);
+        mi->Enable(enable);
         ret = true;
     }
     return ret;
@@ -1039,13 +1053,13 @@ void MyFrame::UpdateButtonsStatus()
         (!CaptureActive || pGuider->IsCalibratingOrGuiding()) &&
         pCamera && pCamera->Connected;
 
-    if (cond_update_tool(MainToolbar, BUTTON_LOOP, loop_enabled))
+    if (cond_update_tool(MainToolbar, BUTTON_LOOP, m_loopMenuItem, loop_enabled))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_GEAR, !CaptureActive))
+    if (cond_update_tool(MainToolbar, BUTTON_GEAR, m_connectMenuItem, !CaptureActive))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_STOP, CaptureActive))
+    if (cond_update_tool(MainToolbar, BUTTON_STOP, m_stopMenuItem, CaptureActive))
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
@@ -1079,13 +1093,13 @@ void MyFrame::UpdateButtonsStatus()
     bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
         pMount && pMount->IsConnected();
 
-    if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))
+    if (cond_update_tool(MainToolbar, BUTTON_GUIDE, m_guideMenuItem, bGuideable))
         need_update = true;
 
     bool cam_props = pCamera &&
         (pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected;
 
-    if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, cam_props))
+    if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, m_cameraMenuItem, cam_props))
         need_update = true;
 
     if (pDriftTool)

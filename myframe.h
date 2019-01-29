@@ -206,6 +206,12 @@ public:
     wxMenuItem *m_bookmarkLockPosMenuItem;
     wxAcceleratorEntry *m_showBookmarksAccel;
     wxAcceleratorEntry *m_bookmarkLockPosAccel;
+    wxMenuItem *m_connectMenuItem;
+    wxMenuItem *m_loopMenuItem;
+    wxMenuItem *m_guideMenuItem;
+    wxMenuItem *m_stopMenuItem;
+    wxMenuItem *m_brainMenuItem;
+    wxMenuItem *m_cameraMenuItem;
     wxMenuItem *m_autoSelectStarMenuItem;
     wxMenuItem *m_takeDarksMenuItem;
     wxMenuItem *m_useDarksMenuItem;
@@ -573,6 +579,12 @@ enum {
     MGUIDE2_DOWN,
     MGUIDE2_RIGHT,
     MGUIDE2_LEFT,
+    MENU_CONNECT,
+    MENU_LOOP,
+    MENU_GUIDE,
+    MENU_STOP,
+    MENU_BRAIN,
+    MENU_CAM_SETTINGS,
     MENU_MANGUIDE,
     MENU_XHAIR0,
     MENU_XHAIR1,
