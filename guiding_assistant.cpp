@@ -536,7 +536,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_start->Enable(false);
 
     btnReviewPrev = new OptionsButton(this, GA_REVIEW_BUTTON, _("Review previous"), wxDefaultPosition, wxDefaultSize, 0);
-    btnReviewPrev->SetToolTip(_("Review up to 3 previous GA results"));
+    btnReviewPrev->SetToolTip(_("Review previous Guiding Assistant results"));
     btnReviewPrev->Enable(GetGAHistoryCount() > 0);
     btnSizer->Add(btnReviewPrev, 0, wxALL, 5);
 
@@ -1050,7 +1050,7 @@ void GuidingAsstWin::MakeRecommendations()
     double min_rec_range = 2.0;
     // round up to next multiple of .05, but do not go below 0.10 pixel
     double const unit = 0.05;
-    // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected 
+    // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected
     // RMS unless the linear fit correlation is strong
     double decRMSEstimate;
     if (rSquared >= 0.75 && decCorrectedRMS < m_decAxisStats.GetSigma())
@@ -1644,7 +1644,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
         FillResultCell(m_displacementgrid, m_ra_rms_loc, rarms, rarms * pxscale, PX, ARCSEC);
         FillResultCell(m_displacementgrid, m_dec_rms_loc, decrms, decrms * pxscale, PX, ARCSEC);
         FillResultCell(m_displacementgrid, m_total_rms_loc, combined, combined * pxscale, PX, ARCSEC);
-        FillResultCell(m_othergrid, m_ra_peak_loc, 
+        FillResultCell(m_othergrid, m_ra_peak_loc,
             m_raAxisStats.GetMaxDelta(), m_raAxisStats.GetMaxDelta() * pxscale, PX, ARCSEC);
         FillResultCell(m_othergrid, m_dec_peak_loc,
             m_decAxisStats.GetMaxDelta(), m_decAxisStats.GetMaxDelta() * pxscale, PX, ARCSEC);
