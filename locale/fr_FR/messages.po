@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-29 08:20+0000\n"
-"PO-Revision-Date: 2018-12-03 13:55+0100\n"
+"PO-Revision-Date: 2019-01-30 16:45+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: advanced_dialog.cpp:91 advanced_dialog.cpp:156
 msgid "Global"
@@ -397,7 +397,7 @@ msgstr "Inconnu"
 
 #: calreview_dialog.cpp:304
 msgid "Side of pier:"
-msgstr ""
+msgstr "Côté du méridien :"
 
 #: calreview_dialog.cpp:305 calreview_dialog.cpp:346 gear_simulator.cpp:1896
 #: mount.cpp:68 testguide.cpp:152
@@ -919,10 +919,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1881,8 +1880,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:533
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2122,8 +2120,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:154
 msgid ""
@@ -3017,11 +3015,11 @@ msgstr "Taux de Guidage"
 
 #: gear_simulator.cpp:1756
 msgid "Apply stiction"
-msgstr ""
+msgstr "Appliquer la friction"
 
 #: gear_simulator.cpp:1756
 msgid "Simulate dec axis stiction"
-msgstr ""
+msgstr "Simulez la friction de l'axe de déc."
 
 #: gear_simulator.cpp:1762
 msgid "PE"
@@ -3453,8 +3451,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3587,8 +3585,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3613,8 +3611,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -4160,11 +4158,11 @@ msgstr "Commencer les mesures (désactive le guidage)"
 
 #: guiding_assistant.cpp:538
 msgid "Review previous"
-msgstr ""
+msgstr "Voir précédents"
 
 #: guiding_assistant.cpp:539
 msgid "Review up to 3 previous GA results"
-msgstr ""
+msgstr "Voir les résultats précédents de l'Assistant de Guidage"
 
 #: guiding_assistant.cpp:544
 msgid "Stop measuring and re-enable guiding"
@@ -4333,7 +4331,7 @@ msgstr "Essayez de maintenir vos temps de pose dans la plage de %.1fs à %.1fs"
 
 #: guiding_assistant.cpp:1111
 msgid "Try binning your guide camera"
-msgstr ""
+msgstr "Essayez le binning sur votre caméra de guidage"
 
 #: guiding_assistant.cpp:1119
 msgid "Consider re-doing your calibration "
@@ -4370,6 +4368,7 @@ msgstr ""
 #: guiding_assistant.cpp:1157
 msgid "Consider trying to improve focus on the guide camera"
 msgstr ""
+"Envisagez d'essayer d'améliorer la mise au point sur la caméra de guidage"
 
 #: guiding_assistant.cpp:1168
 #, c-format
@@ -4873,31 +4872,31 @@ msgstr "Quitter ce programme"
 
 #: myframe.cpp:499
 msgid "&Connect Equipment\tCtrl-C"
-msgstr ""
+msgstr "&Connecter l'Équipement\tCtrl-C"
 
 #: myframe.cpp:499
 msgid "Connect or disconnect equipment"
-msgstr ""
+msgstr "Connecter ou déconnecter l'équipement"
 
 #: myframe.cpp:500
 msgid "&Loop Exposures\tCtrl-L"
-msgstr ""
+msgstr "Expositions en &Boucle\tCtrl-L"
 
 #: myframe.cpp:500
 msgid "Begin looping exposures"
-msgstr ""
+msgstr "Commencer les expositions en boucle"
 
 #: myframe.cpp:502
 msgid "&Guide\tCtrl-G"
-msgstr ""
+msgstr "&Guide\tCtrl-G"
 
 #: myframe.cpp:502
 msgid "Begin guiding"
-msgstr ""
+msgstr "Commence le guidage"
 
 #: myframe.cpp:504
 msgid "&Stop\tCtrl-S"
-msgstr ""
+msgstr "&Stop\tCtrl-S"
 
 #: myframe.cpp:504 myframe.cpp:966
 msgid "Stop looping and guiding"
@@ -4905,7 +4904,7 @@ msgstr "Arrête les poses en boucle et le guidage"
 
 #: myframe.cpp:506
 msgid "&Advanced Settings\tCtrl-A"
-msgstr ""
+msgstr "Réglages &Avancés\tCtrl-A"
 
 #: myframe.cpp:506 myframe.cpp:971
 msgid "Advanced parameters"
@@ -4913,7 +4912,7 @@ msgstr "Paramètres avancés"
 
 #: myframe.cpp:507
 msgid "&Camera Settings"
-msgstr ""
+msgstr "&Réglages Caméra"
 
 #: myframe.cpp:507 myframe.cpp:972
 msgid "Camera settings"
@@ -5326,7 +5325,7 @@ msgstr "&Fichier"
 
 #: myframe.cpp:589
 msgid "&Guide"
-msgstr ""
+msgstr "&Guide"
 
 #: myframe.cpp:598
 msgid "&Tools"
@@ -9653,8 +9652,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
