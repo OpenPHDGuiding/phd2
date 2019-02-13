@@ -591,6 +591,7 @@ void GearDialog::UpdateCameraButtonState()
         }
         else
         {
+            m_selectCameraButton->Enable(m_pCamera->CanSelectCamera());
             m_pConnectCameraButton->SetLabel(_("Connect"));
             m_pConnectCameraButton->SetValue(false);
             m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
