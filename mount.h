@@ -258,6 +258,7 @@ public:
     double xRate() const;
     GuideParity RAParity() const;
     GuideParity DecParity() const;
+    double GetCalibrationDeclination() const; // in radians
 
     bool FlipCalibration();
     bool GetGuidingEnabled() const;
@@ -410,6 +411,11 @@ inline GuideParity Mount::RAParity() const
 inline GuideParity Mount::DecParity() const
 {
     return m_calibrated ? m_cal.decGuideParity : GUIDE_PARITY_UNKNOWN;
+}
+
+inline double Mount::GetCalibrationDeclination() const
+{
+    return m_calibrated ? m_cal.declination : UNKNOWN_DECLINATION;
 }
 
 #endif /* MOUNT_H_INCLUDED */

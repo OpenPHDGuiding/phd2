@@ -1955,7 +1955,8 @@ static void get_calibration_data(JObj& response, const json_value *params)
             << NV("xParity", parity_str(m->RAParity()))
             << NV("yAngle", degrees(m->yAngle()), 1)
             << NV("yRate", m->yRate() * 1000.0, 3)
-            << NV("yParity", parity_str(m->DecParity()));
+            << NV("yParity", parity_str(m->DecParity()))
+            << NV("declination", degrees(m->GetCalibrationDeclination()));
     }
 
     response << jrpc_result(rslt);
