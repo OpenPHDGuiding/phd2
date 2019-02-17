@@ -143,7 +143,7 @@ public:
 class BacklashComp
 {
     bool m_compActive;
-    int m_lastDirection;
+    GUIDE_DIRECTION m_lastDirection;
     int m_adjustmentFloor;
     int m_adjustmentCeiling;
     int m_pulseWidth;
@@ -152,24 +152,29 @@ class BacklashComp
     Scope *m_pScope;
     BLCHistory *m_pHistory;
 
+    void SetCompValues(int requestSize, int floor, int ceiling);
+
 public:
 
     BacklashComp(Scope *scope);
     ~BacklashComp();
-    int GetBacklashPulse() const { return m_pulseWidth; }
-    void GetBacklashCompSettings(int* pulseWidth, int* floor, int* ceiling) const;
-    int GetBacklashPulseMinValue() const;
-    int GetBacklashPulseMaxValue() const;
-    void SetBacklashPulse(int ms, int floor = 0, int ceiling = 0);
+
+    static int GetBacklashPulseMinValue();
+    static int GetBacklashPulseMaxValue();
+
+    void GetBacklashCompSettings(int *pulseWidth, int *floor, int *ceiling) const;
+    int GetBacklashPulseWidth() const { return m_pulseWidth; }
+    void SetBacklashPulseWidth(int ms, int floor, int ceiling);
     void EnableBacklashComp(bool enable);
     bool IsEnabled() const { return m_compActive; }
-    void ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount);
-    void TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate);
-    void ResetBaseline();
 
-private:
-    void _TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate);
-    void SetCompValues(int requestSize, int floor, int ceiling);
+    // notify BLC about current raw dec offset, the result of prior moves
+    void TrackBLCResults(unsigned int moveOptions, double yRawOffset);
+
+    // apply a BLC adjustment to the given guide pulse (yAmount) if needed
+    void ApplyBacklashComp(unsigned int moveOptions, double yGuideDistance, int *yAmount);
+
+    void ResetBLCState();
 };
 
 #endif

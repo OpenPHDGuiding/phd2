@@ -110,11 +110,14 @@ public:
 };
 
 // Basic operation
-// Keep a record of the last <HISTORY_DEPTH> BLC events.  Each event entry holds the initial BLC deflection and either one or two immediate follow-on
-// deflections.  The deflections are raw Dec amounts, unfiltered by min-move or guiding algorithm decisions.
-// Recording of follow-on deflections is determined by windowOpen.  The window is opened when the BLC is initially triggered and is then
-// closed if a) A pulse-size adjustment is made based on the first follow-on deflection or b) 2 follow-on events have been recorded
+// Keep a record of the last <HISTORY_DEPTH> BLC events.  Each event entry holds the initial BLC
+// deflection and either one or two immediate follow-on deflections.  The deflections are raw Dec
+// amounts, unfiltered by min-move or guiding algorithm decisions. Recording of follow-on
+// deflections is determined by windowOpen.  The window is opened when the BLC is initially
+// triggered and is then closed if a) A pulse-size adjustment is made based on the first follow-on
+// deflection or b) 2 follow-on events have been recorded
 // Algorithm behavior for adjusting BLC pulse size is in AdjustmentNeeded()
+
 class BLCHistory
 {
     std::vector<BLCEvent> blcEvents;
@@ -134,7 +137,7 @@ public:
         double avgInitialMiss;
         double avgStictionAmount;
 
-        RecentStats() :shortCount(0), longCount(0), stictionCount(0), avgInitialMiss(0), avgStictionAmount(0)
+        RecentStats() : shortCount(0), longCount(0), stictionCount(0), avgInitialMiss(0), avgStictionAmount(0)
         {
         }
     };
@@ -162,14 +165,14 @@ public:
         Debug.Write("BLC: window closed\n");
     }
 
-    void RecordNewBLC(long When, double TriggerDeflection)
+    void RecordNewBLCPulse(long when, double triggerDeflection)
     {
         if (blcEvents.size() >= HISTORY_DEPTH)
         {
             blcEvents.erase(blcEvents.begin());
             LogStatus("Oldest BLC event removed");
         }
-        blcEvents.push_back(BLCEvent((When - timeBase), TriggerDeflection));
+        blcEvents.push_back(BLCEvent((when - timeBase), triggerDeflection));
         blcIndex = blcEvents.size() - 1;
         windowOpen = true;
     }
@@ -404,12 +407,12 @@ BacklashComp::~BacklashComp()
     delete m_pHistory;
 }
 
-int BacklashComp::GetBacklashPulseMaxValue() const
+int BacklashComp::GetBacklashPulseMaxValue()
 {
     return MAX_COMP_AMOUNT;
 }
 
-int BacklashComp::GetBacklashPulseMinValue() const
+int BacklashComp::GetBacklashPulseMinValue()
 {
     return MIN_COMP_AMOUNT;
 }
@@ -440,9 +443,9 @@ void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 }
 
 // Public method to ask for a set of backlash comp settings.  Ceiling == 0 implies compute a default
-void BacklashComp::SetBacklashPulse(int ms, int floor, int ceiling)
+void BacklashComp::SetBacklashPulseWidth(int ms, int floor, int ceiling)
 {
-    if (m_pulseWidth != ms || m_adjustmentFloor != floor|| m_adjustmentCeiling != ceiling)
+    if (m_pulseWidth != ms || m_adjustmentFloor != floor || m_adjustmentCeiling != ceiling)
     {
         int oldBLC = m_pulseWidth;
         SetCompValues(ms, floor, ceiling);
@@ -467,7 +470,7 @@ void BacklashComp::EnableBacklashComp(bool enable)
     {
         pFrame->NotifyGuidingParam("Backlash comp enabled", enable);
         if (enable)
-            ResetBaseline();
+            ResetBLCState();
     }
 
     m_compActive = enable;
@@ -475,7 +478,7 @@ void BacklashComp::EnableBacklashComp(bool enable)
     Debug.Write(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d ms\n", m_compActive ? "enabled" : "disabled", m_pulseWidth));
 }
 
-void BacklashComp::ResetBaseline()
+void BacklashComp::ResetBLCState()
 {
     if (m_compActive)
     {
@@ -485,107 +488,109 @@ void BacklashComp::ResetBaseline()
     }
 }
 
-void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
+void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yRawOffset)
 {
-    if (m_compActive)
+    if (!m_compActive)
+        return;
+
+    if (!(moveTypeOptions & MOVEOPT_USE_BLC))
     {
-
-        if (moveTypeOptions & MOVEOPT_USE_BLC)
-        {
-            // only track algorithm result moves, do not track "fast
-            // recovery after dither" moves or deduced moves or AO bump
-            // moves
-            bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
-
-            if (isAlgoResultMove)
-            {
-                if (m_pHistory->WindowOpen() && !m_fixedSize)
-                    _TrackBLCResults(moveTypeOptions, yDistance, minMove, yRate);
-            }
-            else
-                m_pHistory->CloseWindow();                  // non-algo blc move occurred before follow-up data were acquired for previous blc
-        }
-        else
-        {
-            ResetBaseline();    // Calibration-type move that can move mount in Dec w/out notifying blc about direction
-        }
+        // Calibration-type move that can move mount in Dec w/out notifying blc about direction
+        ResetBLCState();
+        return;
     }
-}
 
-void BacklashComp::_TrackBLCResults(unsigned int moveTypeOptions, double yDistance, double minMove, double yRate)
-{
-    assert(m_pHistory->WindowOpen()); // caller checks this
+    // only track algorithm result moves, do not track "fast
+    // recovery after dither" moves or deduced moves or AO bump
+    // moves
+    bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+    if (!isAlgoResultMove)
+    {
+        // non-algo blc move occurred before follow-up data were acquired for previous blc
+        m_pHistory->CloseWindow();
+        return;
+    }
+
+    if (!m_pHistory->WindowOpen() || m_fixedSize)
+        return;
 
     // An earlier BLC was applied and we're tracking follow-up results
 
     // Record the history even if residual error is zero. Sign convention has nothing to do with N or S direction - only whether we
     // needed more correction (+) or less (-)
-    GUIDE_DIRECTION dir = yDistance > 0.0 ? DOWN : UP;
-    yDistance = fabs(yDistance);
+    GUIDE_DIRECTION dir = yRawOffset > 0.0 ? DOWN : UP;
+    double yDistance = fabs(yRawOffset);
     double miss;
-    double adjustment;
-    double nominalBLC;
     if (dir == m_lastDirection)
         miss = yDistance;                           // + => we needed more of the same, under-shoot
     else
         miss = -yDistance;                         // over-shoot
-    minMove = fmax(minMove, 0);                    // Algo w/ no min-move returns -1
+
+    double minMove = fmax(m_pScope->GetYGuideAlgorithm()->GetMinMove(), 0.); // Algo w/ no min-move returns -1
 
     m_pHistory->AddDeflection(wxGetCurrentTime(), miss, minMove);
-    if (m_pHistory->AdjustmentNeeded(miss, minMove, yRate, &adjustment))
+
+    double adjustment;
+    if (!m_pHistory->AdjustmentNeeded(miss, minMove, m_pScope->MountCal().yRate, &adjustment))
+        return;
+
+    int newBLC;
+    double nominalBLC = m_pulseWidth + adjustment;
+    if (nominalBLC > m_pulseWidth)
     {
-        int newBLC;
-        nominalBLC = m_pulseWidth + adjustment;
-        if (nominalBLC > m_pulseWidth)
+        newBLC = ROUND(fmin(m_pulseWidth * 1.1, nominalBLC));
+        if (newBLC > m_adjustmentCeiling)
         {
-            newBLC = ROUND(fmin(m_pulseWidth * 1.1, nominalBLC));
-            if (newBLC > m_adjustmentCeiling)
-            {
-                Debug.Write(wxString::Format("BLC: Pulse increase limited by ceiling of %d\n", m_adjustmentCeiling));
-                newBLC = m_adjustmentCeiling;
-            }
+            Debug.Write(wxString::Format("BLC: Pulse increase limited by ceiling of %d\n", m_adjustmentCeiling));
+            newBLC = m_adjustmentCeiling;
         }
-        else
-        {
-            newBLC = ROUND(fmax(0.8 * m_pulseWidth, nominalBLC));
-            if (newBLC < m_adjustmentFloor)
-            {
-                Debug.Write(wxString::Format("BLC: Pulse decrease limited by floor of %d\n", m_adjustmentFloor));
-                newBLC = m_adjustmentFloor;
-            }
-        }
-        Debug.Write(wxString::Format("BLC: Pulse adjusted to %d\n", newBLC));
-        pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", newBLC);
-        SetCompValues(newBLC, m_adjustmentFloor, m_adjustmentCeiling);
-
     }
-
+    else
+    {
+        newBLC = ROUND(fmax(0.8 * m_pulseWidth, nominalBLC));
+        if (newBLC < m_adjustmentFloor)
+        {
+            Debug.Write(wxString::Format("BLC: Pulse decrease limited by floor of %d\n", m_adjustmentFloor));
+            newBLC = m_adjustmentFloor;
+        }
+    }
+    Debug.Write(wxString::Format("BLC: Pulse adjusted to %d\n", newBLC));
+    pConfig->Profile.SetInt("/" + m_pScope->GetMountClassName() + "/DecBacklashPulse", newBLC);
+    SetCompValues(newBLC, m_adjustmentFloor, m_adjustmentCeiling);
 }
 
-// Possibly add the backlash comp to the pending guide pulse (yAmount)
-void BacklashComp::ApplyBacklashComp(unsigned int moveTypeOptions, int dir, double yDist, int *yAmount)
+void BacklashComp::ApplyBacklashComp(unsigned int moveOptions, double yGuideDistance, int *yAmount)
 {
-
-    if (!m_compActive || m_pulseWidth <= 0 || yDist == 0.0)
+    if (!(moveOptions & MOVEOPT_USE_BLC))
         return;
-    bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+    if (!m_compActive || m_pulseWidth <= 0 || yGuideDistance == 0.0)
+        return;
+
+    GUIDE_DIRECTION dir = yGuideDistance > 0.0 ? DOWN : UP;
+    bool isAlgoResultMove = (moveOptions & MOVEOPT_ALGO_RESULT) != 0;
 
     if (m_lastDirection != NONE && dir != m_lastDirection)
     {
         *yAmount += m_pulseWidth;
+
         if (isAlgoResultMove)
-            m_pHistory->RecordNewBLC(wxGetCurrentTime(), yDist);     // Only track results or make adjustments for algorithm-controlled blc's
+        {
+            // Only track results or make adjustments for algorithm-controlled blc's
+            m_pHistory->RecordNewBLCPulse(wxGetCurrentTime(), yGuideDistance);
+        }
         else
         {
             m_pHistory->CloseWindow();
             Debug.Write("BLC: Compensation needed for non-algo type move\n");
         }
+
         Debug.Write(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied\n",
-            m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", m_pulseWidth));
+            m_pScope->DirectionStr(m_lastDirection), m_pScope->DirectionStr(dir), m_pulseWidth));
     }
-    else
-    if (!isAlgoResultMove)
+    else if (!isAlgoResultMove)
+    {
         Debug.Write("BLC: non-algo type move will not reverse Dec direction, no blc applied\n");
+    }
 
     m_lastDirection = dir;
 }
@@ -1218,7 +1223,7 @@ void BacklashTool::ShowGraph(wxDialog *pGA, const std::vector<double> &northStep
 
 void BacklashTool::CleanUp()
 {
-    m_scope->GetBacklashComp()->ResetBaseline();        // Normal guiding will start, don't want old BC state applied
+    m_scope->GetBacklashComp()->ResetBLCState();        // Normal guiding will start, don't want old BC state applied
     pFrame->pGuider->EnableMeasurementMode(false);
 }
 

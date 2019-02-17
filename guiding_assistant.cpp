@@ -783,14 +783,13 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 }
 
 void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
-{
-    BacklashComp *pComp = TheScope()->GetBacklashComp();
-
-    pComp->SetBacklashPulse(m_backlashRecommendedMs, false);
-    pComp->EnableBacklashComp(!pMount->IsStepGuider());
-    m_decBacklashButton->Enable(false);
-}
-
+{
+    BacklashComp *pComp = TheScope()->GetBacklashComp();
+
+    pComp->SetBacklashPulseWidth(m_backlashRecommendedMs, 0. /* floor */, 0. /* ceiling */);
+    pComp->EnableBacklashComp(!pMount->IsStepGuider());
+    m_decBacklashButton->Enable(false);
+}
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
     if (reviewMode)

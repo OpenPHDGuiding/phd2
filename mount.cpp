@@ -115,9 +115,9 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     // int width;
     m_pMount = pMount;
     m_pParent = pParent;
-    m_pAlgoBox = NULL;
-    m_pRABox = NULL;
-    m_pDecBox = NULL;
+    m_pAlgoBox = nullptr;
+    m_pRABox = nullptr;
+    m_pDecBox = nullptr;
 }
 
 GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
@@ -229,7 +229,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
 
         if (!m_pMount->m_pXGuideAlgorithm)
         {
-            m_pXGuideAlgorithmConfigDialogPane = NULL;
+            m_pXGuideAlgorithmConfigDialogPane = nullptr;
         }
         else
         {
@@ -276,7 +276,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
 
         if (!m_pMount->m_pYGuideAlgorithm)
         {
-            m_pYGuideAlgorithmConfigDialogPane = NULL;
+            m_pYGuideAlgorithmConfigDialogPane = nullptr;
         }
         else
         {
@@ -318,7 +318,7 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
     GuideAlgorithm* currRAAlgo = m_pMount->m_pXGuideAlgorithm;
     currRAAlgo->ResetParams();                  // Default is to remove the keys in the registry
     delete m_pMount->m_pXGuideAlgorithm;        // force creation of a new algo instance
-    m_pMount->m_pXGuideAlgorithm = NULL;
+    m_pMount->m_pXGuideAlgorithm = nullptr;
     wxCommandEvent dummy;
     OnXAlgorithmSelected(dummy);                // Update the UI
     // Re-initialize any other RA guiding parameters not part of algos
@@ -347,7 +347,7 @@ void Mount::MountConfigDialogPane::ResetDecGuidingParams()
     GuideAlgorithm* currDecAlgo = m_pMount->m_pYGuideAlgorithm;
     currDecAlgo->ResetParams();
     delete m_pMount->m_pYGuideAlgorithm;
-    m_pMount->m_pYGuideAlgorithm = NULL;
+    m_pMount->m_pYGuideAlgorithm = nullptr;
     wxCommandEvent dummy;
     OnYAlgorithmSelected(dummy);
     // Re-initialize any other Dec guiding parameters not part of algos
@@ -476,7 +476,7 @@ MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount
 MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
-    bool enableCtrls = pMount != NULL;
+    bool enableCtrls = pMount != nullptr;
     m_pMount = pMount;
     if (m_pMount)
     {
@@ -764,11 +764,11 @@ Mount::Mount()
     m_requestCount = 0;
     m_errorCount = 0;
 
-    m_pYGuideAlgorithm = NULL;
-    m_pXGuideAlgorithm = NULL;
+    m_pYGuideAlgorithm = nullptr;
+    m_pXGuideAlgorithm = nullptr;
     m_guidingEnabled = true;
 
-    m_backlashComp = NULL;
+    m_backlashComp = nullptr;
     m_lastStep.mount = this;
     m_lastStep.frameNumber = -1; // invalidate
 
@@ -937,7 +937,7 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
 
             // Let BLC track the raw offsets in Dec
             if (m_backlashComp)
-                m_backlashComp->TrackBLCResults(moveOptions, yDistance, m_pYGuideAlgorithm->GetMinMove(), m_cal.yRate);
+                m_backlashComp->TrackBLCResults(moveOptions, yDistance);
 
             if (moveOptions & MOVEOPT_ALGO_RESULT)
             {
@@ -958,20 +958,17 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
         GUIDE_DIRECTION xDirection = xDistance > 0.0 ? LEFT : RIGHT;
         GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
-        int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
+        int requestedXAmount = ROUND(fabs(xDistance / m_xRate));
         MoveResultInfo xMoveResult;
         result = MoveAxis(xDirection, requestedXAmount, moveOptions, &xMoveResult);
 
         MoveResultInfo yMoveResult;
         if (result != MOVE_ERROR_SLEWING && result != MOVE_ERROR_AO_LIMIT_REACHED)
         {
-            int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
+            int requestedYAmount = ROUND(fabs(yDistance / m_cal.yRate));
 
-            if (moveOptions & MOVEOPT_USE_BLC)
-            {
-                if (m_backlashComp)
-                    m_backlashComp->ApplyBacklashComp(moveOptions, yDirection, yDistance, &requestedYAmount);
-            }
+            if (m_backlashComp)
+                m_backlashComp->ApplyBacklashComp(moveOptions, yDistance, &requestedYAmount);
 
             result = MoveAxis(yDirection, requestedYAmount, moveOptions, &yMoveResult);
         }
@@ -1161,7 +1158,7 @@ GraphControlPane *Mount::GetYGuideAlgorithmControlPane(wxWindow *pParent)
 
 GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
-    return NULL;
+    return nullptr;
 };
 
 bool Mount::DecCompensationEnabled() const
@@ -1555,7 +1552,7 @@ void Mount::NotifyGuidingStopped()
         m_pYGuideAlgorithm->GuidingStopped();
 
     if (m_backlashComp)
-        m_backlashComp->ResetBaseline();
+        m_backlashComp->ResetBLCState();
 }
 
 void Mount::NotifyGuidingPaused()
@@ -1756,7 +1753,7 @@ wxString Mount::GetSettingsSummary() const
     {
         s += wxString::Format("Backlash comp = %s, pulse = %d ms\n",
             m_backlashComp->IsEnabled() ? "enabled" : "disabled",
-            m_backlashComp->GetBacklashPulse());
+            m_backlashComp->GetBacklashPulseWidth());
     }
 
     return s;

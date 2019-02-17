@@ -360,12 +360,13 @@ public:
     virtual void EndDecDrift();
     virtual bool IsDecDrifting() const;
 
-    bool MountIsCalibrated() const { return m_calibrated; }
-    const Calibration& MountCal() const { return m_cal; }
-};
-inline bool Mount::GetGuidingEnabled() const
-{
-    return m_guidingEnabled;
+    bool MountIsCalibrated() const { return m_calibrated; }
+    const Calibration& MountCal() const { return m_cal; }
+};
+
+inline bool Mount::GetGuidingEnabled() const
+{
+    return m_guidingEnabled;
 }
 
 inline bool Mount::IsBusy() const
