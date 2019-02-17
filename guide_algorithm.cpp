@@ -47,20 +47,20 @@ wxString GuideAlgorithm::GetConfigPath() const
 
 wxString GuideAlgorithm::GetAxis() const
 {
-    return m_guideAxis == GUIDE_RA ? _("RA") : _("DEC");
-}
-
-// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo
-// class will then use default values for everything.  If this is too brute-force for a particular algo, the function can be overridden.
-// For algos that use a min-move parameter, a smart value will be applied based on image scale
-void GuideAlgorithm::ResetParams()
-{
-    wxString configPath = GetConfigPath();
-    pConfig->Profile.DeleteGroup(configPath);
-    if (GetMinMove() >= 0.)
-        SetMinMove(SmartDefaultMinMove());
-}
-
+    return m_guideAxis == GUIDE_RA ? _("RA") : _("DEC");
+}
+
+// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo
+// class will then use default values for everything.  If this is too brute-force for a particular algo, the function can be overridden.
+// For algos that use a min-move parameter, a smart value will be applied based on image scale
+void GuideAlgorithm::ResetParams()
+{
+    wxString configPath = GetConfigPath();
+    pConfig->Profile.DeleteGroup(configPath);
+    if (GetMinMove() >= 0.)
+        SetMinMove(SmartDefaultMinMove());
+}
+
 double GuideAlgorithm::SmartDefaultMinMove(int focalLength, double pixelSize, int binning)
 {
     double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
