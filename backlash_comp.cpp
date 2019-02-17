@@ -488,12 +488,12 @@ void BacklashComp::ResetBLCState()
     }
 }
 
-void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yRawOffset)
+void BacklashComp::TrackBLCResults(unsigned int moveOptions, double yRawOffset)
 {
     if (!m_compActive)
         return;
 
-    if (!(moveTypeOptions & MOVEOPT_USE_BLC))
+    if (!(moveOptions & MOVEOPT_USE_BLC))
     {
         // Calibration-type move that can move mount in Dec w/out notifying blc about direction
         ResetBLCState();
@@ -503,7 +503,7 @@ void BacklashComp::TrackBLCResults(unsigned int moveTypeOptions, double yRawOffs
     // only track algorithm result moves, do not track "fast
     // recovery after dither" moves or deduced moves or AO bump
     // moves
-    bool isAlgoResultMove = (moveTypeOptions & MOVEOPT_ALGO_RESULT) != 0;
+    bool isAlgoResultMove = (moveOptions & MOVEOPT_ALGO_RESULT) != 0;
     if (!isAlgoResultMove)
     {
         // non-algo blc move occurred before follow-up data were acquired for previous blc
