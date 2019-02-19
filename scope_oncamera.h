@@ -40,13 +40,13 @@
 class ScopeOnCamera : public ScopeOnboardST4
 {
 public:
-    ScopeOnCamera(void);
-    virtual ~ScopeOnCamera(void);
+    ScopeOnCamera();
+    virtual ~ScopeOnCamera();
 
-    bool Connect(void) override;
+    bool Connect() override;
 
-    bool RequiresCamera(void) override;
-    bool HasNonGuiMove(void) override;
+    bool RequiresCamera() override;
+    bool HasNonGuiMove() override;
 };
 
 #endif // GUIDE_ONCAMERA

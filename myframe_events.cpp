@@ -375,27 +375,29 @@ void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event))
 {
 }
 
-void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
+void MyFrame::StartLoopingInteractive(const wxString& context)
 {
-    try
-    {
-        if (!pCamera || !pCamera->Connected)
-        {
-            wxMessageBox(_("Please connect to a camera first"),_("Info"));
-            throw ERROR_INFO("Camera not connected");
-        }
+    Debug.Write(wxString::Format("StartLoopingInteractive: %s\n", context));
 
-        if (CaptureActive && !pGuider->IsCalibratingOrGuiding())
-        {
-            throw ERROR_INFO("cannot start looping when capture active");
-        }
-
-        StartLooping();
-    }
-    catch (const wxString& Msg)
+    if (!pCamera || !pCamera->Connected)
     {
-        POSSIBLY_UNUSED(Msg);
+        Debug.Write(_T("Camera not connected\n"));
+        wxMessageBox(_("Please connect to a camera first"), _("Info"));
+        return;
     }
+
+    if (CaptureActive && !pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write(_T("cannot start looping when capture active\n"));
+        return;
+    }
+
+    StartLooping();
+}
+
+void MyFrame::OnButtonLoop(wxCommandEvent& WXUNUSED(event))
+{
+    StartLoopingInteractive(_T("Loop button clicked"));
 }
 
 void MyFrame::FinishStop(void)
@@ -958,8 +960,10 @@ static void ValidateDarksLoaded(void)
     }
 }
 
-void MyFrame::GuideButtonClick(bool interactive)
+void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 {
+    Debug.Write(wxString::Format(_T("GuideButtonClick i=%d ctx=%s\n"), interactive, context));
+
     try
     {
         if (pMount == NULL)
@@ -1027,9 +1031,9 @@ void MyFrame::GuideButtonClick(bool interactive)
     }
 }
 
-void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+void MyFrame::OnButtonGuide(wxCommandEvent& WXUNUSED(event))
 {
-    GuideButtonClick(true);
+    GuideButtonClick(true, _T("Guide button clicked"));
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))

@@ -114,7 +114,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_num = 0;
     m_offset = m_alpha = 0.0;
     m_drifting = false;
-    
+
 //Fairly convoluted way to get the camera size in pixels
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -144,9 +144,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     if (!pFrame->CaptureActive)
     {
         // loop exposures
-        wxCommandEvent dummy;
         SetStatusText(_("Start Looping..."));
-        pFrame->OnLoopExposure(dummy);
+        pFrame->StartLoopingInteractive(_T("PolarDrift:start"));
     }
     SetBackgroundColour(wxColor(0xcccccc));
     SetSizeHints(wxDefaultSize, wxDefaultSize);

@@ -464,6 +464,8 @@ int GearDialog::ShowGearDialog(bool autoConnect)
 
     if (autoConnect)
     {
+        Debug.Write("gear_dialog: connect all (auto) calls OnButtonConnectAll\n");
+
         wxCommandEvent dummyEvent;
         OnButtonConnectAll(dummyEvent);
 
@@ -832,6 +834,8 @@ void GearDialog::UpdateButtonState()
 
 void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectAll\n");
+
     bool canceled = DoConnectCamera();
     if (canceled)
         return;
@@ -858,6 +862,8 @@ void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
 
 void GearDialog::OnButtonDisconnectAll(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectAll\n");
+
     OnButtonDisconnectScope(event);
     OnButtonDisconnectAuxScope(event);
     OnButtonDisconnectCamera(event);
@@ -1025,6 +1031,8 @@ bool GearDialog::DoConnectCamera()
 
         wxString newCam = m_pCameras->GetStringSelection();
 
+        Debug.Write(wxString::Format(_T("gear_dialog: DoConnectCamera [%s]\n"), newCam));
+
         if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam))
         {
             int currProfileId = pConfig->GetCurrentProfileId();
@@ -1137,11 +1145,13 @@ bool GearDialog::DoConnectCamera()
 
 void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectCamera\n");
     DoConnectCamera();
 }
 
 bool GearDialog::ReconnectCamera()
 {
+    Debug.Write("gear_dialog: ReconnectCamera\n");
     DoConnectCamera();
     bool err = !m_pCamera || !m_pCamera->Connected;
     return err;
@@ -1149,6 +1159,8 @@ bool GearDialog::ReconnectCamera()
 
 void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectCamera\n");
+
     try
     {
         if (!m_pCamera)
@@ -1165,6 +1177,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
 
         if (m_pScope && m_pScope->RequiresCamera() && m_pScope->IsConnected())
         {
+            Debug.Write("gear_dialog: scope requires camera so disconnecting scope\n");
             OnButtonDisconnectScope(event);
         }
 
@@ -1285,6 +1298,8 @@ void GearDialog::OnButtonSetupAuxScope(wxCommandEvent& event)
 
 void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectScope\n");
+
     try
     {
         // m_pScope is NULL when scope selection is "None"
@@ -1334,6 +1349,8 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 
 void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectAuxScope\n");
+
     try
     {
         // m_pAuxScope is NULL when scope selection is "None"
@@ -1370,6 +1387,8 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
 
 void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectScope\n");
+
     try
     {
         if (!m_pScope)
@@ -1402,6 +1421,8 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
 
 void GearDialog::OnButtonDisconnectAuxScope(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectAuxScope\n");
+
     try
     {
         if (!m_pAuxScope)
@@ -1491,6 +1512,8 @@ void GearDialog::OnButtonSetupStepGuider(wxCommandEvent& event)
 
 void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectStepGuider\n");
+
     try
     {
         // m_pStepGuider is NULL when stepguider selection is "None"
@@ -1543,6 +1566,8 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 
 void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectStepGuider\n");
+
     try
     {
         if (m_pStepGuider == NULL)
@@ -1559,6 +1584,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
 
         if (m_pScope && m_pScope->RequiresStepGuider() && m_pScope->IsConnected())
         {
+            Debug.Write("gear_dialog: scope requires stepguider so disconnecting scope\n");
             OnButtonDisconnectScope(event);
         }
 
@@ -1620,6 +1646,8 @@ void GearDialog::OnButtonSetupRotator(wxCommandEvent& event)
 
 void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonConnectRotator\n");
+
     try
     {
         // m_pRotator is NULL when stepguider selection is "None"
@@ -1665,6 +1693,8 @@ void GearDialog::OnButtonConnectRotator(wxCommandEvent& event)
 
 void GearDialog::OnButtonDisconnectRotator(wxCommandEvent& event)
 {
+    Debug.Write("gear_dialog: OnButtonDisconnectRotator\n");
+
     try
     {
         if (m_pRotator == NULL)
@@ -1728,6 +1758,7 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
             // if wizard was launched from dialog and darks are requested, connect-all and close dialog
             if (IsVisible())
             {
+                Debug.Write("gear_dialog: wizard connecting all gear\n");
                 wxCommandEvent dummyEvent;
                 OnButtonConnectAll(dummyEvent);
             }
@@ -1843,6 +1874,8 @@ bool GearDialog::ConnectAll(wxString *error)
         return true;
     }
 
+    Debug.Write("gear_dialog: ConnectAll calls OnButtonConnectAll\n");
+
     wxCommandEvent dummyEvent;
     OnButtonConnectAll(dummyEvent);
 
@@ -1896,6 +1929,8 @@ bool GearDialog::DisconnectAll(wxString *error)
         *error = "cannot disconnect equipment when Connect Equipment dialog is open";
         return true;
     }
+
+    Debug.Write("gear_dialog: DisconnectAll calls OnButtonDisconnectAll\n");
 
     wxCommandEvent dummy;
     OnButtonDisconnectAll(dummy);

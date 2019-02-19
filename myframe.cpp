@@ -140,14 +140,14 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_TOOL(BUTTON_GEAR,MyFrame::OnSelectGear)
     EVT_MENU(MENU_CONNECT,MyFrame::OnSelectGear)
-    EVT_TOOL(BUTTON_LOOP, MyFrame::OnLoopExposure)
-    EVT_MENU(MENU_LOOP, MyFrame::OnLoopExposure)
+    EVT_TOOL(BUTTON_LOOP, MyFrame::OnButtonLoop)
+    EVT_MENU(MENU_LOOP, MyFrame::OnButtonLoop)
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
     EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
     EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
-    EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
-    EVT_MENU(MENU_GUIDE,MyFrame::OnGuide)
+    EVT_TOOL(BUTTON_GUIDE,MyFrame::OnButtonGuide)
+    EVT_MENU(MENU_GUIDE,MyFrame::OnButtonGuide)
     EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_MENU(MENU_CAM_SETTINGS, MyFrame::OnSetupCamera)
@@ -1845,6 +1845,7 @@ bool MyFrame::StartLooping()
                 throw ERROR_INFO("cannot start looping when capture active");
             }
         }
+
         StatusMsg(_("Looping"));
         StartCapturing();
     }

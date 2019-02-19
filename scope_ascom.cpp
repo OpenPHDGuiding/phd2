@@ -203,7 +203,7 @@ bool ScopeASCOM::Connect(void)
 
     try
     {
-        Debug.Write("Connecting\n");
+        Debug.Write("ASCOM Scope: Connecting\n");
 
         if (IsConnected())
         {
@@ -394,7 +394,7 @@ bool ScopeASCOM::Connect(void)
 
         Scope::Connect();
 
-        Debug.Write("Connect success\n");
+        Debug.Write("ASCOM Scope: Connect success\n");
     }
     catch (const wxString& Msg)
     {
@@ -411,7 +411,7 @@ bool ScopeASCOM::Disconnect(void)
 
     try
     {
-        Debug.Write("Disconnecting\n");
+        Debug.Write("ASCOM Scope: Disconnecting\n");
 
         if (!IsConnected())
         {
@@ -435,7 +435,7 @@ bool ScopeASCOM::Disconnect(void)
 
         m_gitEntry.Unregister();
 
-        Debug.Write("Disconnected Successfully\n");
+        Debug.Write("ASCOM Scope: Disconnected Successfully\n");
     }
     catch (const wxString& Msg)
     {

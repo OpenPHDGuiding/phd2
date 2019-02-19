@@ -276,13 +276,13 @@ public:
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
     void OnSelectGear(wxCommandEvent& evt);
-    void OnLoopExposure(wxCommandEvent& evt);
+    void OnButtonLoop(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
     void OnLoadDefectMap(wxCommandEvent& evt);
-    void GuideButtonClick(bool interactive);
-    void OnGuide(wxCommandEvent& evt);
+    void GuideButtonClick(bool interactive, const wxString& context);
+    void OnButtonGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
     void OnTestGuide(wxCommandEvent& evt);
@@ -398,6 +398,8 @@ public:
     bool StartSingleExposure(int duration, const wxRect& subframe);
 
     void SetPaused(PauseType pause);
+
+    void StartLoopingInteractive(const wxString& context);
 
     bool StartLooping(); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding();

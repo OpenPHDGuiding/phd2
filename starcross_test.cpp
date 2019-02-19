@@ -44,7 +44,7 @@ wxEND_EVENT_TABLE()
 #define SCT_DEFAULT_PULSE_SIZE 1000
 #define SCT_DEFAULT_PULSE_COUNT 25
 #define SCT_DEFAULT_GUIDESPEED 0.5
- 
+
 
  // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
@@ -85,13 +85,13 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
     const double siderealSecondPerSec = 0.9973;
     int width = StringWidth(this, _("88888"));
     bool knownGuideSpeed = false;
-  
-    // Populate top flex grid with parameters relating to image scale and mount properties - these are needed 
+
+    // Populate top flex grid with parameters relating to image scale and mount properties - these are needed
     // for future use of the guide camera instead of the main camera
     // Focal length
     wxStaticBoxSizer* configGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Configuration"));
-  
-    // Guide speed - use best available info, either from ASCOM if available or from whatever the user entered in the new-profile-wizard  
+
+    // Guide speed - use best available info, either from ASCOM if available or from whatever the user entered in the new-profile-wizard
     guideSpeedMultiple = pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", SCT_DEFAULT_GUIDESPEED);
     if (pPointingSource && pPointingSource->CanReportPosition())
     {
@@ -110,7 +110,7 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
     m_CtlGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &StarCrossDialog::OnGuideSpeedChange, this);
     AddTableEntryPair(this, mountSpecSizer, _("Guide speed, n.n x sidereal"), m_CtlGuideSpeed);
     configGroup->Add(mountSpecSizer, wxSizerFlags().Border(wxALL, 5));
-    
+
     // Add the controls for doing the test
     // Test summary - leg duration, details button
     wxStaticBoxSizer* summaryGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Test Summary"));
@@ -133,13 +133,13 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
 
     // Test details - pulse size, #pulses
     m_DetailsGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Test Details"));
-    m_CtlNumPulses = NewSpinner(this, width, 
+    m_CtlNumPulses = NewSpinner(this, width,
         pulseCount, 5, 40, 1, 0, _("Number of guide pulses in EACH direction"));     // Default of 20 pulses
     m_CtlNumPulses->Bind(wxEVT_SPINCTRLDOUBLE, &StarCrossDialog::OnPulseCountChange, this);
 
     AddTableEntryPair(this, testSpecSizer, _("Number of guide pulses"), m_CtlNumPulses);
     // Pulse size
-    m_CtlPulseSize = NewSpinner(this, width, 
+    m_CtlPulseSize = NewSpinner(this, width,
         pulseSize, 500, 5000, 50, 0, _("Guide pulse size (ms)"));       // Default of 1-sec pulse
     m_CtlPulseSize->Bind(wxEVT_SPINCTRLDOUBLE, &StarCrossDialog::OnPulseSizeChange, this);
 
@@ -169,7 +169,7 @@ StarCrossDialog::StarCrossDialog(wxWindow *parent) :
     btnSizer->Add(
         m_StopBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    
+
     // Stack up the UI elements in the vertical sizer
     m_ShowDetails = false;
     m_DetailsGroup->Show(false);
@@ -296,7 +296,7 @@ void StarCrossDialog::ExecuteTest()
     wxString logMsg;
     SCT_StepInfo currStep = { 0, NONE, SCT_STATE_NONE };
     Mount* theMount;
-    
+
     m_Amount = m_CtlPulseSize->GetValue();   // Don't allow changes until done
     m_DirectionalPulseCount = m_CtlNumPulses->GetValue();
     totalPulses = 8 * m_DirectionalPulseCount;
@@ -310,8 +310,7 @@ void StarCrossDialog::ExecuteTest()
     // This will also cleanly stop guiding if it's active
     if (pCamera && pCamera->Connected)
     {
-        wxCommandEvent dummy;
-        pFrame->OnLoopExposure(dummy);
+        pFrame->StartLoopingInteractive(_T("PolarDrift:execute"));
     }
     m_CancelTest = false;
     // Leave plenty of room for camera exposure and mount response overhead

@@ -167,7 +167,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_devpx = 5;
     ClearState();
     m_aligning = false;
-    
+
     //Fairly convoluted way to get the camera size in pixels
     usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
@@ -248,9 +248,8 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     if (!pFrame->CaptureActive)
     {
         // loop exposures
-        wxCommandEvent dummy;
         SetStatusText(_("Start Looping..."));
-        pFrame->OnLoopExposure(dummy);
+        pFrame->StartLoopingInteractive(_T("StaticPA:start"));
     }
     m_instr = false;
     c_autoInstr = _(
@@ -797,7 +796,7 @@ void StaticPaToolWin::CalcAdjustments(void)
     // At the meridian, HA=0 Alt aligns with dec so Rotation is +/-90
     // Let harot =  camera rotation from Alt axis
     // Alt axis is at HA+90
-    // This is camera rotation from RA minus(?) LST angle 
+    // This is camera rotation from RA minus(?) LST angle
     double    hcor_r = hypot((xt - xs), (yt - ys)); //xt,yt: target, xs,ys: measured
     double    hcor_a = degrees(atan2((yt - ys), (xt - xs)));
     double ra_hrs, dec_deg, st_hrs, ha_deg;
@@ -855,7 +854,7 @@ PHD_Point StaticPaToolWin::Radec2Px(const PHD_Point& radec)
         ra_deg = norm((280.46061837 + 360.98564736629 * since - hadeg),0,360);
     }
 
-    // Target hour angle - or rather the rotation needed to correct. 
+    // Target hour angle - or rather the rotation needed to correct.
     // HA = LST - RA
     // In NH HA decreases clockwise; RA increases clockwise
     // "Up" is HA=0
@@ -886,7 +885,7 @@ PHD_Point StaticPaToolWin::J2000Now(const PHD_Point& radec)
     j2000_info.tm_isdst = 0;
     time_t j2000 = mktime(&j2000_info);
     time_t nowutc = time(NULL);
-    double JDnow = difftime(nowutc, j2000) / 86400.0; 
+    double JDnow = difftime(nowutc, j2000) / 86400.0;
 
     /*
     This code is adapted from paper
@@ -1042,7 +1041,7 @@ void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
     }
 }
 
-bool StaticPaToolWin::RotateMount() 
+bool StaticPaToolWin::RotateMount()
 {
     // Initially, assume an offset of 5.0 degrees of the camera from the CoR
     // Calculate how far to move in RA to get a detectable arc
@@ -1124,7 +1123,7 @@ bool StaticPaToolWin::RotateMount()
             // So theta is the total rotation needed for the current offset;
             // And prevtheta is how we have already moved;
             // Recalculate the offset based on the actual movement;
-            // CAUTION: This might end up in an endless loop. 
+            // CAUTION: This might end up in an endless loop.
             double actpix = hypot((m_pxPos[1].X - m_pxPos[0].X), (m_pxPos[1].Y - m_pxPos[0].Y));
             double actsec = actpix * m_pxScale;
             double actoffsetdeg = 90 - degrees(acos(actsec / 3600 / m_reqRot));
@@ -1190,7 +1189,7 @@ bool StaticPaToolWin::RotateFail(const wxString& msg)
     SetStatusText(msg);
     m_aligning = false;
     if (m_auto) // STOP rotating
-    { 
+    {
         pPointingSource->AbortSlew();
         m_numPos = 0;
         ClearState();

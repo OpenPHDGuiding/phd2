@@ -37,26 +37,26 @@
 
 #ifdef GUIDE_ONCAMERA
 
-ScopeOnCamera::ScopeOnCamera(void)
+ScopeOnCamera::ScopeOnCamera()
 {
     m_Name =  "On Camera";
 }
 
-ScopeOnCamera::~ScopeOnCamera(void)
+ScopeOnCamera::~ScopeOnCamera()
 {
 }
 
-bool ScopeOnCamera::Connect(void)
+bool ScopeOnCamera::Connect()
 {
     return ScopeOnboardST4::ConnectOnboardST4(pCamera);
 }
 
-bool ScopeOnCamera::RequiresCamera(void)
+bool ScopeOnCamera::RequiresCamera()
 {
     return true;
 }
 
-bool ScopeOnCamera::HasNonGuiMove(void)
+bool ScopeOnCamera::HasNonGuiMove()
 {
     return true;
 }

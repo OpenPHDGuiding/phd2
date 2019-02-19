@@ -400,7 +400,6 @@ void DriftToolWin::UpdatePhaseState()
 
 void DriftToolWin::UpdateModeState()
 {
-    wxCommandEvent dummy;
     wxString idleStatus;
 
 repeat:
@@ -438,7 +437,7 @@ repeat:
             {
                 // loop exposures
                 SetStatusText(_("Start Looping..."));
-                pFrame->OnLoopExposure(dummy);
+                pFrame->StartLoopingInteractive(_T("DriftTool:drift"));
                 return;
             }
 
@@ -450,6 +449,7 @@ repeat:
                 if (!pFrame->pGuider->IsLocked())
                 {
                     SetStatusText(_("Auto-selecting a star"));
+                    wxCommandEvent dummy;
                     pFrame->OnAutoStar(dummy);
                 }
                 return;
@@ -460,9 +460,9 @@ repeat:
                 return;
             case STATE_SELECTED:
                 SetStatusText(_("Start guiding..."));
-                pFrame->GuideButtonClick(false);
+                pFrame->GuideButtonClick(false, _T("DriftTool:drift"));
                 return;
-            case STATE_GUIDING:
+            case STATE_GUIDING: {
                 // turn of dec guiding
                 if (!m_need_end_dec_drift)
                 {
@@ -471,10 +471,12 @@ repeat:
                 }
                 // clear graph data
                 SetStatusText(_("Drifting... click Adjust when done drifting"));
+                wxCommandEvent dummy;
                 pFrame->pGraphLog->OnButtonClear(dummy);
                 pFrame->pGraphLog->EnableTrendLines(true);
                 m_drifting = true;
                 return;
+            }
             case STATE_STOP:
                 return;
             }
@@ -495,7 +497,7 @@ repeat:
         if (pFrame->pGuider->IsGuiding())
         {
             // stop guiding but continue looping
-            pFrame->OnLoopExposure(dummy);
+            pFrame->StartLoopingInteractive(_T("DriftTool:adjust"));
 
             // Set the lock position to the where the star has drifted to. This will be the center of the polar align circle.
             pFrame->pGuider->SetLockPosition(pFrame->pGuider->CurrentPosition());
@@ -521,7 +523,7 @@ repeat:
         if (pFrame->pGuider->IsGuiding())
         {
             // stop guiding but continue looping
-            pFrame->OnLoopExposure(dummy);
+            pFrame->StartLoopingInteractive(_T("DriftTool:idle"));
         }
     }
 }
