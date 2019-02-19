@@ -295,6 +295,8 @@ set(scopes_SRC
   ${phd_src_dir}/stepguider_sxao.h
   ${phd_src_dir}/stepguider_sxao_indi.cpp
   ${phd_src_dir}/stepguider_sxao_indi.h
+  ${phd_src_dir}/stepguider_sbigao_indi.cpp
+  ${phd_src_dir}/stepguider_sbigao_indi.h
   ${phd_src_dir}/stepguider.cpp
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
@@ -634,7 +636,7 @@ elseif(WIN32)
   )
 
   ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
-  
+
   # resource file, some VC do not like the options provided by the precompiled headers
   set(phd2_WIN_SRC ${phd2_WIN_SRC} ${phd_src_dir}/phd.rc)
   source_group(src FILES precompiled_header.cpp)
