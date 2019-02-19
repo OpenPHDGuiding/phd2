@@ -412,6 +412,18 @@ static void LoadRotators(wxChoice *rots)
     LoadChoices(rots, Rotator::RotatorList());
 }
 
+#if 1 // TODO: remove after a couple releases - added 2019/02/19
+static wxString NewAoName(const wxString& oldname)
+{
+    // we renamed the AOs when we added the INDI SBIG AO
+    // temporary code to convert the old names to the new
+    // this should be removed after a release or two
+    if (oldname == _T("sxAO")) return _T("SX AO");
+    if (oldname == _T("INDI sxAO")) return _T("SX AO (INDI)");
+    return oldname;
+}
+#endif
+
 void GearDialog::LoadGearChoices()
 {
     LoadCameras(m_pCameras);
@@ -434,7 +446,7 @@ void GearDialog::LoadGearChoices()
     OnChoiceAuxScope(dummyEvent);
 
     wxString lastStepGuider = pConfig->Profile.GetString("/stepguider/LastMenuChoice", _("None"));
-    SetMatchingSelection(m_pStepGuiders, lastStepGuider);
+    SetMatchingSelection(m_pStepGuiders, NewAoName(lastStepGuider));
     OnChoiceStepGuider(dummyEvent);
 
     wxString lastRotator = pConfig->Profile.GetString("/rotator/LastMenuChoice", _("None"));

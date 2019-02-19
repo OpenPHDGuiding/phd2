@@ -104,13 +104,13 @@ wxArrayString StepGuider::AOList()
 
     AoList.Add(_("None"));
 #ifdef STEPGUIDER_SXAO
-    AoList.Add(_T("sxAO"));
+    AoList.Add(_T("SX AO"));
 #endif
 #ifdef STEPGUIDER_SXAO_INDI
-    AoList.Add(_T("INDI sxAO"));
+    AoList.Add(_T("SX AO (INDI)"));
 #endif
 #ifdef STEPGUIDER_SBIGAO_INDI
-    AoList.Add(_T("INDI SBIG AO"));
+    AoList.Add(_T("SBIG AO (INDI)"));
 #endif
 #ifdef STEPGUIDER_SIMULATOR
     AoList.Add(_T("Simulator"));
@@ -121,56 +121,42 @@ wxArrayString StepGuider::AOList()
 
 StepGuider *StepGuider::Factory(const wxString& choice)
 {
-    StepGuider *pReturn = nullptr;
+    Debug.Write(wxString::Format("StepGuiderFactory(%s)\n", choice));
 
-    try
+    if (choice.CmpNoCase(_("None")) == 0)
     {
-        if (choice.IsEmpty())
-        {
-            throw ERROR_INFO("StepGuiderFactory called with choice.IsEmpty()");
-        }
+        return nullptr;
+    }
 
-        Debug.Write(wxString::Format("StepGuiderFactory(%s)\n", choice));
-
-        if (choice.CmpNoCase(_("None")) == 0)
-        {
-        }
 #ifdef STEPGUIDER_SXAO
-        else if (choice.CmpNoCase(_T("sxAO")) == 0)
-        {
-            pReturn = StepGuiderSxAoFactory::MakeStepGuiderSxAo();
-        }
-#endif
-#ifdef STEPGUIDER_SXAO_INDI
-        else if (choice.CmpNoCase(_T("INDI sxAO")) == 0)
-        {
-            pReturn = StepGuiderSxAoIndiFactory::MakeStepGuiderSxAoIndi();
-        }
-#endif
-#ifdef STEPGUIDER_SBIGAO_INDI
-        else if (choice.CmpNoCase(_T("INDI SBIG AO")) == 0)
-        {
-            pReturn = StepGuiderSbigAoIndiFactory::MakeStepGuiderSbigAoIndi();
-        }
-#endif
-#ifdef STEPGUIDER_SIMULATOR
-        else if (choice.CmpNoCase(_T("Simulator")) == 0)
-        {
-            pReturn = GearSimulator::MakeAOSimulator();
-        }
-#endif
-    }
-    catch (const wxString& Msg)
+    if (choice == _T("SX AO"))
     {
-        POSSIBLY_UNUSED(Msg);
-        if (pReturn)
-        {
-            delete pReturn;
-            pReturn = nullptr;
-        }
+        return StepGuiderSxAoFactory::MakeStepGuiderSxAo();
     }
+#endif
 
-    return pReturn;
+#ifdef STEPGUIDER_SXAO_INDI
+    if (choice == _T("SX AO (INDI)"))
+    {
+        return StepGuiderSxAoIndiFactory::MakeStepGuiderSxAoIndi();
+    }
+#endif
+
+#ifdef STEPGUIDER_SBIGAO_INDI
+    if (choice == _T("SBIG AO (INDI)"))
+    {
+        return StepGuiderSbigAoIndiFactory::MakeStepGuiderSbigAoIndi();
+    }
+#endif
+
+#ifdef STEPGUIDER_SIMULATOR
+    if (choice == _T("Simulator"))
+    {
+        return GearSimulator::MakeAOSimulator();
+    }
+#endif
+
+    return nullptr;
 }
 
 bool StepGuider::Connect()
