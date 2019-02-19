@@ -194,6 +194,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_sbig.h
   ${phd_src_dir}/cam_sbigrotator.cpp
   ${phd_src_dir}/cam_sbigrotator.h
+  ${phd_src_dir}/cam_skyraider.cpp
+  ${phd_src_dir}/cam_skyraider.h
   ${phd_src_dir}/cam_ssag.cpp
   ${phd_src_dir}/cam_ssag.h
   ${phd_src_dir}/cam_sspiag.cpp
@@ -568,8 +570,9 @@ if(APPLE)
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
 
     # extra frameworks
-    ${sbigudFramework}
     ${fcCamFramework}
+    ${sbigudFramework}
+    ${mallincamFramework}
   )
   set_target_properties(
     phd2
@@ -592,19 +595,23 @@ if(APPLE)
   if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
     get_filename_component(framework1 ${fcCamFramework} NAME)
     get_filename_component(framework2 ${sbigudFramework} NAME)
+    get_filename_component(framework3 ${mallincamFramework} NAME)
     add_custom_command(
       TARGET phd2
       POST_BUILD
       # the copy_directory kills the symlinks
       #COMMAND ${CMAKE_COMMAND} -E copy_directory ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}/
       #COMMAND ${CMAKE_COMMAND} -E copy_directory ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}/
+      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework3}/
       COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND cp -R ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}
       COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}
+      COMMAND cp -R ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework3}
     )
   else()
     set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    set_source_files_properties(${mallincamFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
   endif()
 
   # Bundling qhyfirmware

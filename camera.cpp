@@ -91,6 +91,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_touptek.h"
 #endif
 
+#if defined (SKYRAIDER_CAMERA)
+# include "cam_skyraider.h"
+#endif
+
 #if defined (ALTAIR)
 # include "cam_altair.h"
 #endif
@@ -296,6 +300,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (TOUPTEK_CAMERA)
     CameraList.Add(_T("ToupTek Camera"));
 #endif
+#if defined (SKYRAIDER_CAMERA)
+    CameraList.Add(_T("MallinCam SkyRaider"));
+#endif
 #if defined (SAC42)
     CameraList.Add(_T("SAC4-2"));
 #endif
@@ -432,6 +439,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined(TOUPTEK_CAMERA)
         else if (choice == _T("ToupTek Camera"))
             pReturn = ToupTekCameraFactory::MakeToupTekCamera();
+#endif
+#if defined(SKYRAIDER_CAMERA)
+        else if (choice == _T("MallinCam SkyRaider"))
+            pReturn = SkyraiderCameraFactory::MakeSkyraiderCamera();
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
         else if (choice.Contains(_T("QHY 5")))

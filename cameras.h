@@ -98,6 +98,7 @@
 # define QHY_CAMERA
 # define SBIG
 # define SIMULATOR
+# define SKYRAIDER_CAMERA
 # define STARFISH
 # define SXV
 # define ZWO_ASI

@@ -1066,7 +1066,6 @@ if(APPLE)
   if(NOT dsiMeadeLibrary)
     message(FATAL_ERROR "Cannot find the dsiMeadeLibrary drivers")
   endif()
-  #include_directories(${fcCamFramework})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dsiMeadeLibrary})
 
   find_library( asiCamera2
@@ -1085,6 +1084,14 @@ if(APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
+  find_library( mallincamFramework
+                NAMES MallincamGuider
+                PATHS ${thirdparty_dir}/frameworks)
+  if(NOT mallincamFramework)
+    message(FATAL_ERROR "Cannot find the Mallincam framework")
+  endif()
+  include_directories(${mallincamFramework})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mallincamFramework})
 
   #############################################
   # libDC
