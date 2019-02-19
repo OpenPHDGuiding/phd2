@@ -47,6 +47,7 @@
 
 #if defined (GUIDE_INDI)
 #define STEPGUIDER_SXAO_INDI
+#define STEPGUIDER_SBIGAO_INDI
 #endif
 
 #ifndef STEPGUIDERS_H_INCLUDED
@@ -57,5 +58,6 @@
 #include "stepguider.h"
 #include "stepguider_sxao.h"
 #include "stepguider_sxao_indi.h"
+#include "stepguider_sbigao_indi.h"
 
 #endif /* STEPGUIDERS_H_INCLUDED */

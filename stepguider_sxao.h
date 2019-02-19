@@ -40,45 +40,45 @@
 
 class StepGuiderSxAO : public StepGuider
 {
-    static const int DefaultMaxSteps = 45;
-    static const int DefaultTimeout =  1*1000;
-    static const int CenterTimeout  = 45*1000;
+        static const int DefaultMaxSteps = 45;
+        static const int DefaultTimeout =  1 * 1000;
+        static const int CenterTimeout  = 45 * 1000;
 
-    wxString m_serialPortName;
-    SerialPort *m_pSerialPort;
-    int m_maxSteps;
+        wxString m_serialPortName;
+        SerialPort *m_pSerialPort;
+        int m_maxSteps;
 
-public:
-    StepGuiderSxAO(void);
-    virtual ~StepGuiderSxAO(void);
+    public:
+        StepGuiderSxAO(void);
+        virtual ~StepGuiderSxAO(void);
 
-    bool Connect(void) override;
-    bool Disconnect(void) override;
+        bool Connect(void) override;
+        bool Disconnect(void) override;
 
-    bool HasNonGuiMove(void) override;
+        bool HasNonGuiMove(void) override;
 
-private:
-    bool Center(void) override;
-    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
-    int MaxPosition(GUIDE_DIRECTION direction) const override;
-    bool SetMaxPosition(int steps) override;
-    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
+    private:
+        bool Center(void) override;
+        STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
+        int MaxPosition(GUIDE_DIRECTION direction) const override;
+        bool SetMaxPosition(int steps) override;
+        bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
 
-    void ShowPropertyDialog(void) override;
+        void ShowPropertyDialog(void) override;
 
-    bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
-    bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
+        bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
+        bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
 
-    bool SendShortCommand(unsigned char command, unsigned char *response);
-    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
+        bool SendShortCommand(unsigned char command, unsigned char *response);
+        bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
 
-    bool FirmwareVersion(unsigned int *version);
-    bool Center(unsigned char cmd);
+        bool FirmwareVersion(unsigned int *version);
+        bool Center(unsigned char cmd);
 
-    bool    ST4HasGuideOutput(void) override;
-    bool    ST4HostConnected(void) override;
-    bool    ST4HasNonGuiMove(void) override;
-    bool    ST4PulseGuideScope(int direction, int duration) override;
+        bool    ST4HasGuideOutput(void) override;
+        bool    ST4HostConnected(void) override;
+        bool    ST4HasNonGuiMove(void) override;
+        bool    ST4PulseGuideScope(int direction, int duration) override;
 };
 
 #endif // if defined(STEPGUIDER_SXAO)
