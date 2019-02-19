@@ -193,7 +193,7 @@ else(USE_SYSTEM_CFITSIO)
   if(NOT EXISTS ${libcfitsio_root})
     # untar the dependency
     message(STATUS "[thirdparty] untarring cfitsio")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3450.tar.gz
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3450-patched.tar.gz
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()
 
@@ -249,11 +249,11 @@ else(USE_SYSTEM_CFITSIO)
   if(WIN32)
     target_compile_definitions(
       cfitsio
+      PRIVATE BUILDING_CFITSIO
       PRIVATE FF_NO_UNISTD_H
       PRIVATE _CRT_SECURE_NO_WARNINGS
       PRIVATE _CRT_SECURE_NO_DEPRECATE)
   endif()
-
 
   set_target_properties(cfitsio PROPERTIES
                         VERSION ${CFITSIO_VERSION}

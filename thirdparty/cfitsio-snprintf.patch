@@ -1,0 +1,21 @@
+This patch allows cftisio to compile on MSVC 2013 which lacks snprintf
+
+diff -urp a/fitsio.h b/fitsio.h
+--- cfitsio.0/fitsio.h	2018-05-09 15:16:01.000000000 -0400
++++ cfitsio/fitsio.h	2019-02-19 01:39:04.959041900 -0500
+@@ -60,6 +60,15 @@ SERVICES PROVIDED HEREUNDER."
+ 
+ #include <stdio.h>
+ 
++#if defined(BUILDING_CFITSIO)
++/* only need this hack for building cfitsio, otherwise don't pollute global namespace */
++# if defined(_MSC_VER)
++#  if _MSC_VER < 1900
++#    define snprintf _snprintf
++#  endif
++# endif
++#endif
++
+ /* the following was provided by Michael Greason (GSFC) to fix a */
+ /*  C/Fortran compatibility problem on an SGI Altix system running */
+ /*  SGI ProPack 4 [this is a Novell SuSE Enterprise 9 derivative]  */
