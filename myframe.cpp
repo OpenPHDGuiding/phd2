@@ -38,6 +38,7 @@
 
 #include "aui_controls.h"
 #include "comet_tool.h"
+#include "config_indi.h"
 #include "guiding_assistant.h"
 #include "phdupdate.h"
 #include "pierflip_tool.h"

@@ -37,6 +37,7 @@
 #include "calstep_dialog.h"
 
 #include <memory>
+#include <wx/gbsizer.h>
 
 class ProfileWizard : public wxDialog
 {

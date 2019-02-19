@@ -1,5 +1,5 @@
 /*
- *  stepguider_SxAO.cpp
+ *  stepguider_sxao.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,7 +37,50 @@
 
 #ifdef STEPGUIDER_SXAO
 
-StepGuiderSxAO::StepGuiderSxAO(void)
+class StepGuiderSxAO : public StepGuider
+{
+    static const int DefaultMaxSteps = 45;
+    static const int DefaultTimeout =  1 * 1000;
+    static const int CenterTimeout  = 45 * 1000;
+
+    wxString m_serialPortName;
+    SerialPort *m_pSerialPort;
+    int m_maxSteps;
+
+  public:
+    StepGuiderSxAO();
+    virtual ~StepGuiderSxAO();
+
+    bool Connect() override;
+    bool Disconnect() override;
+
+    bool HasNonGuiMove() override;
+
+  private:
+    bool Center() override;
+    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
+
+    void ShowPropertyDialog() override;
+
+    bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
+    bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
+
+    bool SendShortCommand(unsigned char command, unsigned char *response);
+    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
+
+    bool FirmwareVersion(unsigned int *version);
+    bool Center(unsigned char cmd);
+
+    bool ST4HasGuideOutput() override;
+    bool ST4HostConnected() override;
+    bool ST4HasNonGuiMove() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+};
+
+StepGuiderSxAO::StepGuiderSxAO()
 {
     m_Name = "SXV-AO";
 
@@ -51,12 +94,12 @@ StepGuiderSxAO::StepGuiderSxAO(void)
     m_maxSteps = pConfig->Profile.GetInt("/stepguider/sxao/MaxSteps", DefaultMaxSteps);
 }
 
-StepGuiderSxAO::~StepGuiderSxAO(void)
+StepGuiderSxAO::~StepGuiderSxAO()
 {
     delete m_pSerialPort;
 }
 
-bool StepGuiderSxAO::Connect(void)
+bool StepGuiderSxAO::Connect()
 {
     bool bError = false;
 
@@ -131,7 +174,7 @@ bool StepGuiderSxAO::Connect(void)
     return bError;
 }
 
-void StepGuiderSxAO::ShowPropertyDialog(void)
+void StepGuiderSxAO::ShowPropertyDialog()
 {
     try
     {
@@ -162,7 +205,7 @@ void StepGuiderSxAO::ShowPropertyDialog(void)
     }
 }
 
-bool StepGuiderSxAO::Disconnect(void)
+bool StepGuiderSxAO::Disconnect()
 {
     if (StepGuider::Disconnect())
     {
@@ -548,17 +591,17 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
     return bError;
 }
 
-bool StepGuiderSxAO::ST4HasGuideOutput(void)
+bool StepGuiderSxAO::ST4HasGuideOutput()
 {
     return true;
 }
 
-bool StepGuiderSxAO::ST4HostConnected(void)
+bool StepGuiderSxAO::ST4HostConnected()
 {
     return IsConnected();
 }
 
-bool StepGuiderSxAO::ST4HasNonGuiMove(void)
+bool StepGuiderSxAO::ST4HasNonGuiMove()
 {
     return true;
 }
@@ -615,9 +658,14 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
     return bError;
 }
 
-bool StepGuiderSxAO::HasNonGuiMove(void)
+bool StepGuiderSxAO::HasNonGuiMove()
 {
     return true;
+}
+
+StepGuider *StepGuiderSxAoFactory::MakeStepGuiderSxAo()
+{
+    return new StepGuiderSxAO();
 }
 
 #endif // STEPGUIDER_SXAO

@@ -37,6 +37,7 @@
 #include "gear_simulator.h"
 #include "image_math.h"
 #include "socket_server.h"
+#include "stepguiders.h"
 
 #include <wx/textfile.h>
 
@@ -109,7 +110,7 @@ wxArrayString StepGuider::AOList()
     AoList.Add(_T("INDI sxAO"));
 #endif
 #ifdef STEPGUIDER_SBIGAO_INDI
-    AoList.Add(_T("INDI sbigAO"));
+    AoList.Add(_T("INDI SBIG AO"));
 #endif
 #ifdef STEPGUIDER_SIMULATOR
     AoList.Add(_T("Simulator"));
@@ -118,7 +119,7 @@ wxArrayString StepGuider::AOList()
     return AoList;
 }
 
-StepGuider *StepGuider::Factory(const wxString &choice)
+StepGuider *StepGuider::Factory(const wxString& choice)
 {
     StepGuider *pReturn = nullptr;
 
@@ -137,19 +138,19 @@ StepGuider *StepGuider::Factory(const wxString &choice)
 #ifdef STEPGUIDER_SXAO
         else if (choice.CmpNoCase(_T("sxAO")) == 0)
         {
-            pReturn = new StepGuiderSxAO();
+            pReturn = StepGuiderSxAoFactory::MakeStepGuiderSxAo();
         }
 #endif
 #ifdef STEPGUIDER_SXAO_INDI
         else if (choice.CmpNoCase(_T("INDI sxAO")) == 0)
         {
-            pReturn = new StepGuiderSxAoINDI();
+            pReturn = StepGuiderSxAoIndiFactory::MakeStepGuiderSxAoIndi();
         }
 #endif
 #ifdef STEPGUIDER_SBIGAO_INDI
-        else if (choice.CmpNoCase(_T("INDI sbigAO")) == 0)
+        else if (choice.CmpNoCase(_T("INDI SBIG AO")) == 0)
         {
-            pReturn = new StepGuiderSbigAoINDI();
+            pReturn = StepGuiderSbigAoIndiFactory::MakeStepGuiderSbigAoIndi();
         }
 #endif
 #ifdef STEPGUIDER_SIMULATOR
@@ -159,7 +160,7 @@ StepGuider *StepGuider::Factory(const wxString &choice)
         }
 #endif
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (pReturn)
@@ -186,7 +187,7 @@ bool StepGuider::Connect()
         InitBumpPositions();
         pFrame->pStepGuiderGraph->SetLimits(MaxPosition(LEFT), MaxPosition(UP), m_xBumpPos1, m_yBumpPos1);
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -208,7 +209,7 @@ bool StepGuider::Disconnect()
             throw ERROR_INFO("Mount::Disconnect() failed");
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -263,7 +264,7 @@ bool StepGuider::SetSamplesToAverage(int samplesToAverage)
 
         m_samplesToAverage = samplesToAverage;
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -293,7 +294,7 @@ bool StepGuider::SetBumpPercentage(int bumpPercentage, bool updateGraph)
 
         m_bumpPercentage = bumpPercentage;
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -329,7 +330,7 @@ bool StepGuider::SetBumpMaxStepsPerCycle(double bumpStepsPerCycle)
 
         m_bumpMaxStepsPerCycle = bumpStepsPerCycle;
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -365,7 +366,7 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
 
         m_calibrationStepsPerIteration = calibrationStepsPerIteration;
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -438,7 +439,7 @@ bool StepGuider::MoveToCenter()
         assert(m_xOffset == 0);
         assert(m_yOffset == 0);
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -482,7 +483,7 @@ void StepGuider::ClearCalibration()
     m_calibrationState = CALIBRATION_STATE_CLEARED;
 }
 
-bool StepGuider::BeginCalibration(const PHD_Point &currentLocation)
+bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -505,7 +506,7 @@ bool StepGuider::BeginCalibration(const PHD_Point &currentLocation)
         m_calibrationDetails.decSteps.clear();
         m_calibrationDetails.lastIssue = CI_None;
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -514,13 +515,13 @@ bool StepGuider::BeginCalibration(const PHD_Point &currentLocation)
     return bError;
 }
 
-void StepGuider::SetCalibration(const Calibration &cal)
+void StepGuider::SetCalibration(const Calibration& cal)
 {
     m_calibration = cal;
     Mount::SetCalibration(cal);
 }
 
-void StepGuider::SetCalibrationDetails(const CalibrationDetails &calDetails, double xAngle, double yAngle, double binning)
+void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
 {
     m_calibrationDetails = calDetails;
 
@@ -528,7 +529,8 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails &calDetails, dou
     m_calibrationDetails.decGuideSpeed = -1.0;
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
-    m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
+    // Delta from the nearest multiple of 90 degrees
+    m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));
     m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
     m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
     m_calibrationDetails.origBinning = binning;
@@ -548,7 +550,7 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails &calDetails, dou
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
-bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
+bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -558,14 +560,18 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
         if (ErrorCount() > MAX_CALIBRATION_MOVE_ERRORS)
         {
             pFrame->Alert(_("The AO is failing to move and calibration cannot complete. Check the Debug Log for more information."));
+
             Debug.Write(wxString::Format("stepguider calibration failure, current pos = %+d,%+d, required range = %+d..%+d,%+d..%+d\n",
-                                         m_xOffset, m_yOffset, -(MaxPosition(LEFT) - 1), MaxPosition(RIGHT) - 1, -(MaxPosition(DOWN) - 1), MaxPosition(UP) - 1));
+                                         m_xOffset, m_yOffset, -(MaxPosition(LEFT) - 1), MaxPosition(RIGHT) - 1, -(MaxPosition(DOWN) - 1),
+                                         MaxPosition(UP) - 1));
+
             throw ERROR_INFO("too many move errors during calibration");
         }
 
         if (!m_calibrationStartingLocation.IsValid())
         {
             m_calibrationStartingLocation = currentLocation;
+
             Debug.Write(wxString::Format("Stepguider::UpdateCalibrationstate: starting location = %.2f,%.2f\n",
                                          currentLocation.X, currentLocation.Y));
         }
@@ -614,7 +620,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationAverageSamples = 0;
                 m_calibrationAveragedLocation.SetXY(0.0, 0.0);
                 m_calibrationState = CALIBRATION_STATE_AVERAGE_STARTING_LOCATION;
-            // fall through
+                // fall through
             case CALIBRATION_STATE_AVERAGE_STARTING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
@@ -631,7 +637,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                              m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
 
                 m_calibrationState = CALIBRATION_STATE_GO_LEFT;
-            // fall through
+                // fall through
             case CALIBRATION_STATE_GO_LEFT:
                 if (stepsRemainingLeft > 0)
                 {
@@ -645,7 +651,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                              status0);
                     GuideLog.CalibrationStep(info);
                     EvtServer.NotifyCalibrationStep(info);
-                    m_calibrationDetails.raSteps.push_back(wxRealPoint(x_dist, y_dist));            // Just put "left" in "ra" steps
+                    m_calibrationDetails.raSteps.push_back(wxRealPoint(x_dist, y_dist)); // Just put "left" in "ra" steps
                     break;
                 }
 
@@ -655,7 +661,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationAverageSamples = 0;
                 m_calibrationAveragedLocation.SetXY(0.0, 0.0);
                 m_calibrationState = CALIBRATION_STATE_AVERAGE_CENTER_LOCATION;
-            // fall through
+                // fall through
             case CALIBRATION_STATE_AVERAGE_CENTER_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
@@ -675,7 +681,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 Debug.Write(wxString::Format("LEFT calibration completes with angle=%.1f rate=%.2f\n",
                                              degrees(m_calibration.xAngle), m_calibration.xRate));
                 Debug.Write(wxString::Format("distance=%.2f iterations=%d\n",
-                                             m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
+                                             m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation),
+                                             m_calibrationIterations));
 
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -683,7 +690,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.Write(wxString::Format("Falling through to state GO_UP, startinglocation=(%.2f, %.2f)\n",
                                              m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
-            // fall through
+                // fall through
             case CALIBRATION_STATE_GO_UP:
                 if (stepsRemainingUp > 0)
                 {
@@ -697,7 +704,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                              status0);
                     GuideLog.CalibrationStep(info);
                     EvtServer.NotifyCalibrationStep(info);
-                    m_calibrationDetails.decSteps.push_back(wxRealPoint(x_dist, y_dist));                   // Just put "up" in "dec" steps
+                    m_calibrationDetails.decSteps.push_back(wxRealPoint(x_dist, y_dist)); // Just put "up" in "dec" steps
                     break;
                 }
 
@@ -707,7 +714,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationAverageSamples = 0;
                 m_calibrationAveragedLocation.SetXY(0.0, 0.0);
                 m_calibrationState = CALIBRATION_STATE_AVERAGE_ENDING_LOCATION;
-            // fall through
+                // fall through
             case CALIBRATION_STATE_AVERAGE_ENDING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
@@ -734,7 +741,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.Write(wxString::Format("Falling through to state RECENTER, position=(%.2f, %.2f)\n",
                                              currentLocation.X, currentLocation.Y));
-            // fall through
+                // fall through
             case CALIBRATION_STATE_RECENTER:
                 status0.Printf(_("Re-centering: %3d"), iterRemainingDownAndRight / 2);
                 moveRight = (CurrentPosition(LEFT) >= m_calibrationStepsPerIteration);
@@ -749,7 +756,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.Write(wxString::Format("Falling through to state COMPLETE, position=(%.2f, %.2f)\n",
                                              currentLocation.X, currentLocation.Y));
-            // fall through
+                // fall through
             case CALIBRATION_STATE_COMPLETE:
                 m_calibration.declination = UNKNOWN_DECLINATION;
                 m_calibration.pierSide = PIER_SIDE_UNKNOWN;
@@ -812,7 +819,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             pFrame->StatusMsg(status1);
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -871,7 +878,7 @@ Mount::MOVE_RESULT StepGuider::MoveAxis(GUIDE_DIRECTION direction, int steps, un
             throw THROW_INFO("stepsTaken != stepsRequested");
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (result == MOVE_OK)
@@ -985,7 +992,7 @@ Mount::MOVE_RESULT StepGuider::MoveAxis(GUIDE_DIRECTION direction, int steps, un
             }
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         steps = 0;
@@ -1240,7 +1247,7 @@ Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOp
             pFrame->ScheduleSecondaryMove(pSecondaryMount, bumpOfs, MOVEOPTS_AO_BUMP);
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (result == MOVE_OK)
@@ -1274,13 +1281,12 @@ wxString StepGuider::GetSettingsSummary() const
 {
     CalibrationDetails calDetail;
     GetCalibrationDetails(&calDetail);
-    // return a loggable summary of current mount settings
+
     return Mount::GetSettingsSummary() +
            wxString::Format("Bump percentage = %d, Bump step = %.2f, Timestamp = %s\n",
                             GetBumpPercentage(),
                             GetBumpMaxStepsPerCycle(),
-                            calDetail.origTimestamp
-                           );
+                            calDetail.origTimestamp);
 }
 
 wxString StepGuider::CalibrationSettingsSummary() const
@@ -1321,7 +1327,8 @@ void StepGuider::AdjustCalibrationForScopePointing()
         cal.binning = binning;
 
         Debug.Write(wxString::Format("Stepguider Cal: Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)\n",
-                                     m_calibration.binning, binning, m_calibration.xRate, m_calibration.yRate, cal.xRate, cal.yRate));
+                                     m_calibration.binning, binning, m_calibration.xRate, m_calibration.yRate,
+                                     cal.xRate, cal.yRate));
 
         SetCalibration(cal);
     }
@@ -1340,40 +1347,26 @@ wxPoint StepGuider::GetAoMaxPos() const
 const char *StepGuider::DirectionStr(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
-    switch (d)
-    {
-        case NONE:
-            return "None";
-        case UP:
-            return "Up";
-        case DOWN:
-            return "Down";
-        case RIGHT:
-            return "Right";
-        case LEFT:
-            return "Left";
-        default:
-            return "?";
+    switch (d) {
+    case NONE:  return "None";
+    case UP:    return "Up";
+    case DOWN:  return "Down";
+    case RIGHT: return "Right";
+    case LEFT:  return "Left";
+    default:    return "?";
     }
 }
 
 const char *StepGuider::DirectionChar(GUIDE_DIRECTION d) const
 {
     // these are used internally in the guide log and event server and are not translated
-    switch (d)
-    {
-        case NONE:
-            return "-";
-        case UP:
-            return "U";
-        case DOWN:
-            return "D";
-        case RIGHT:
-            return "R";
-        case LEFT:
-            return "L";
-        default:
-            return "?";
+    switch (d) {
+    case NONE:  return "-";
+    case UP:    return "U";
+    case DOWN:  return "D";
+    case RIGHT: return "R";
+    case LEFT:  return "L";
+    default:    return "?";
     }
 }
 
@@ -1388,11 +1381,10 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     m_pStepGuider = pStepGuider;
 }
 
-void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap &CtrlMap)
+void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     // UI controls for step-guider are just algos - laid out in Mount
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
-
 }
 
 void StepGuider::StepGuiderConfigDialogPane::LoadValues()
@@ -1411,7 +1403,7 @@ AOConfigDialogPane::AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuide
     m_pStepGuider = pStepGuider;
 }
 
-void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap &CtrlMap)
+void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(4, 3, 15, 15);
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
@@ -1428,9 +1420,9 @@ void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap &CtrlMa
 
 }
 
-
 // UI controls for properties unique to step-guider.  Mount controls for guide algos are handled by MountConfigDialogPane
-AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap &CtrlMap)
+AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog,
+                                             BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     int width;
@@ -1440,30 +1432,44 @@ AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuid
     width = StringWidth(_T("000"));
     m_travel = pFrame->MakeSpinCtrl(GetParentWindow(AD_AOTravel), wxID_ANY, wxEmptyString, wxDefaultPosition,
                                     wxSize(width, -1), wxSP_ARROW_KEYS, 10, 45, 1);
-    AddGroup(CtrlMap, AD_AOTravel, MakeLabeledControl(AD_AOTravel, _("AO Travel"), m_travel, _("Maximum number of steps the AO can move in each direction")));
+    AddGroup(CtrlMap, AD_AOTravel, MakeLabeledControl(AD_AOTravel, _("AO Travel"), m_travel,
+                                                      _("Maximum number of steps the AO can move in each direction")));
 
     width = StringWidth(_T("000"));
-    wxString tip = wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration);
-    m_pCalibrationStepsPerIteration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalStepsPerIteration), wxID_ANY, wxEmptyString, wxDefaultPosition,
-                                      wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10, 3, _T("Cal_Steps"));
-    AddGroup(CtrlMap, AD_szCalStepsPerIteration, MakeLabeledControl(AD_szCalStepsPerIteration, _("Cal steps"), m_pCalibrationStepsPerIteration, tip));
+    wxString tip = wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, "
+                                      "increase for short f/l scopes and decrease for longer f/l scopes"),
+                                    DefaultCalibrationStepsPerIteration);
+    m_pCalibrationStepsPerIteration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalStepsPerIteration), wxID_ANY,
+                                                           wxEmptyString, wxDefaultPosition, wxSize(width, -1),
+                                                           wxSP_ARROW_KEYS, 0, 10, 3, _T("Cal_Steps"));
+    AddGroup(CtrlMap, AD_szCalStepsPerIteration, MakeLabeledControl(AD_szCalStepsPerIteration, _("Cal steps"),
+                                                                    m_pCalibrationStepsPerIteration, tip));
 
     width = StringWidth(_T("000"));
-    tip = wxString::Format(_("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales"), DefaultSamplesToAverage);
-    m_pSamplesToAverage = pFrame->MakeSpinCtrl(GetParentWindow(AD_szSamplesToAverage), wxID_ANY, wxEmptyString, wxDefaultPosition,
-                          wxSize(width, -1), wxSP_ARROW_KEYS, 0, 9, 0, _T("Samples_To_Average"));
-    AddGroup(CtrlMap, AD_szSamplesToAverage, MakeLabeledControl(AD_szSamplesToAverage, _("Samples to average"), m_pSamplesToAverage, tip));
+    tip = wxString::Format(_("When calibrating, how many samples should be averaged. Default = %d, increase "
+                             "for worse seeing and small imaging scales"), DefaultSamplesToAverage);
+    m_pSamplesToAverage = pFrame->MakeSpinCtrl(GetParentWindow(AD_szSamplesToAverage), wxID_ANY, wxEmptyString,
+                                               wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 0, 9, 0,
+                                               _T("Samples_To_Average"));
+    AddGroup(CtrlMap, AD_szSamplesToAverage, MakeLabeledControl(AD_szSamplesToAverage, _("Samples to average"),
+                                                                m_pSamplesToAverage, tip));
 
     width = StringWidth(_T("000"));
-    tip = wxString::Format(_("What percentage of the AO travel can be used before bumping the mount. Default = %d"), DefaultBumpPercentage);
-    m_pBumpPercentage = pFrame->MakeSpinCtrl(GetParentWindow(AD_szBumpPercentage), wxID_ANY, wxEmptyString, wxDefaultPosition,
-                        wxSize(width, -1), wxSP_ARROW_KEYS, 0, 99, 0, _T("Bump_Percentage"));
-    AddGroup(CtrlMap, AD_szBumpPercentage, MakeLabeledControl(AD_szBumpPercentage, _("Bump percentage"), m_pBumpPercentage, tip));
+    tip = wxString::Format(_("What percentage of the AO travel can be used before bumping the mount. Default = %d"),
+                           DefaultBumpPercentage);
+    m_pBumpPercentage = pFrame->MakeSpinCtrl(GetParentWindow(AD_szBumpPercentage), wxID_ANY, wxEmptyString,
+                                             wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 0, 99, 0,
+                                             _T("Bump_Percentage"));
+    AddGroup(CtrlMap, AD_szBumpPercentage, MakeLabeledControl(AD_szBumpPercentage, _("Bump percentage"),
+                                                              m_pBumpPercentage, tip));
 
     width = StringWidth(_T("00.00"));
-    tip = wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle);
-    m_pBumpMaxStepsPerCycle = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBumpSteps), wxID_ANY, _T(""), wxDefaultPosition,
-                              wxSize(width, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
+    tip = wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). "
+                             "Default = %.2f, decrease if mount bumps cause spikes on the graph"),
+                           DefaultBumpMaxStepsPerCycle);
+    m_pBumpMaxStepsPerCycle = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szBumpSteps), wxID_ANY, wxEmptyString,
+                                                         wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS,
+                                                         0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
     AddGroup(CtrlMap, AD_szBumpSteps, MakeLabeledControl(AD_szBumpSteps, _("Bump steps"), m_pBumpMaxStepsPerCycle, tip));
 
     m_bumpOnDither = new wxCheckBox(GetParentWindow(AD_cbBumpOnDither), wxID_ANY, _("Bump on dither"));
@@ -1500,6 +1506,7 @@ void AOConfigDialogCtrlSet::UnloadValues()
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
     m_pStepGuider->SetBumpOnDither(m_bumpOnDither->GetValue());
+
     if (m_pClearAOCalibration->IsChecked())
     {
         m_pStepGuider->ClearCalibration();

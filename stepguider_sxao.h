@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -36,50 +35,10 @@
 #ifndef STEPGUIDER_SXAO_H_INCLUDED
 #define STEPGUIDER_SXAO_H_INCLUDED
 
-#if defined(STEPGUIDER_SXAO)
-
-class StepGuiderSxAO : public StepGuider
+class StepGuiderSxAoFactory
 {
-        static const int DefaultMaxSteps = 45;
-        static const int DefaultTimeout =  1 * 1000;
-        static const int CenterTimeout  = 45 * 1000;
-
-        wxString m_serialPortName;
-        SerialPort *m_pSerialPort;
-        int m_maxSteps;
-
-    public:
-        StepGuiderSxAO(void);
-        virtual ~StepGuiderSxAO(void);
-
-        bool Connect(void) override;
-        bool Disconnect(void) override;
-
-        bool HasNonGuiMove(void) override;
-
-    private:
-        bool Center(void) override;
-        STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
-        int MaxPosition(GUIDE_DIRECTION direction) const override;
-        bool SetMaxPosition(int steps) override;
-        bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
-
-        void ShowPropertyDialog(void) override;
-
-        bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
-        bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
-
-        bool SendShortCommand(unsigned char command, unsigned char *response);
-        bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
-
-        bool FirmwareVersion(unsigned int *version);
-        bool Center(unsigned char cmd);
-
-        bool    ST4HasGuideOutput(void) override;
-        bool    ST4HostConnected(void) override;
-        bool    ST4HasNonGuiMove(void) override;
-        bool    ST4PulseGuideScope(int direction, int duration) override;
+public:
+    static StepGuider *MakeStepGuiderSxAo();
 };
 
-#endif // if defined(STEPGUIDER_SXAO)
 #endif // if !defined(STEPGUIDER_SXAO_H_INCLUDED)
