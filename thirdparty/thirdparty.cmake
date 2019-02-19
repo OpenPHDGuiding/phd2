@@ -193,7 +193,7 @@ else(USE_SYSTEM_CFITSIO)
   if(NOT EXISTS ${libcfitsio_root})
     # untar the dependency
     message(STATUS "[thirdparty] untarring cfitsio")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3370.tar.gz
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3450.tar.gz
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()
 
@@ -202,7 +202,7 @@ else(USE_SYSTEM_CFITSIO)
 
   # Define project version
   set(CFITSIO_MAJOR_VERSION 3)
-  set(CFITSIO_MINOR_VERSION 37)
+  set(CFITSIO_MINOR_VERSION 45)
   set(CFITSIO_VERSION ${CFITSIO_MAJOR_VERSION}.${CFITSIO_MINOR_VERSION})
 
   file(GLOB CFTSIO_H_FILES "${libcfitsio_root}/*.h")
@@ -211,33 +211,21 @@ else(USE_SYSTEM_CFITSIO)
   # Raffi: these should also be cleaned (link against zlib of the system)
 
   set(CFTSIO_SRC_FILES
-      buffers.c cfileio.c checksum.c drvrfile.c drvrmem.c
-      drvrnet.c drvrsmem.c drvrgsiftp.c editcol.c edithdu.c eval_l.c
-      eval_y.c eval_f.c fitscore.c getcol.c getcolb.c getcold.c getcole.c
-      getcoli.c getcolj.c getcolk.c getcoll.c getcols.c getcolsb.c
-      getcoluk.c getcolui.c getcoluj.c getkey.c group.c grparser.c
-      histo.c iraffits.c
-      modkey.c putcol.c putcolb.c putcold.c putcole.c putcoli.c
-      putcolj.c putcolk.c putcoluk.c putcoll.c putcols.c putcolsb.c
-      putcolu.c putcolui.c putcoluj.c putkey.c region.c scalnull.c
-      swapproc.c wcssub.c wcsutil.c imcompress.c quantize.c ricecomp.c
-      pliocomp.c fits_hcompress.c fits_hdecompress.c
-
-      zlib/zuncompress.c
-      zlib/zcompress.c
-      zlib/adler32.c
-      zlib/crc32.c
-      zlib/inffast.c
-      zlib/inftrees.c
-      zlib/trees.c
-      zlib/zutil.c
-      zlib/deflate.c
-      zlib/infback.c
-      zlib/inflate.c
-      zlib/uncompr.c
-
-      simplerng.c
-      f77_wrap1.c f77_wrap2.c f77_wrap3.c f77_wrap4.c
+    buffers.c cfileio.c checksum.c drvrfile.c drvrmem.c
+    drvrnet.c drvrsmem.c drvrgsiftp.c editcol.c edithdu.c eval_l.c
+    eval_y.c eval_f.c fitscore.c getcol.c getcolb.c getcold.c getcole.c
+    getcoli.c getcolj.c getcolk.c getcoll.c getcols.c getcolsb.c
+    getcoluk.c getcolui.c getcoluj.c getkey.c group.c grparser.c
+    histo.c iraffits.c
+    modkey.c putcol.c putcolb.c putcold.c putcole.c putcoli.c
+    putcolj.c putcolk.c putcoluk.c putcoll.c putcols.c putcolsb.c
+    putcolu.c putcolui.c putcoluj.c putkey.c region.c scalnull.c
+    swapproc.c wcssub.c wcsutil.c imcompress.c quantize.c ricecomp.c
+    pliocomp.c fits_hcompress.c fits_hdecompress.c zlib/zuncompress.c
+    zlib/zcompress.c zlib/adler32.c zlib/crc32.c zlib/inffast.c
+    zlib/inftrees.c zlib/trees.c zlib/zutil.c zlib/deflate.c
+    zlib/infback.c zlib/inflate.c zlib/uncompr.c simplerng.c
+    f77_wrap1.c f77_wrap2.c f77_wrap3.c f77_wrap4.c
   )
 
   foreach(_src_file IN LISTS CFTSIO_SRC_FILES)
@@ -246,7 +234,6 @@ else(USE_SYSTEM_CFITSIO)
 
   add_library(cfitsio STATIC ${CFTSIO_H_FILES} ${CFTSIO_SRC_FILES_rooted})
   target_include_directories(cfitsio PUBLIC ${libcfitsio_root}/)
-
 
   # OpenPhdGuiding MODIFICATION HERE: we link against math library only on UNIX
   if(UNIX)
