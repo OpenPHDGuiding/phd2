@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-29 08:20+0000\n"
-"PO-Revision-Date: 2018-10-29 15:45+0800\n"
+"PO-Revision-Date: 2019-02-19 18:16+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -387,7 +387,7 @@ msgstr "未知"
 
 #: calreview_dialog.cpp:304
 msgid "Side of pier:"
-msgstr ""
+msgstr "Side of Pier:"
 
 #: calreview_dialog.cpp:305 calreview_dialog.cpp:346 gear_simulator.cpp:1896
 #: mount.cpp:68 testguide.cpp:152
@@ -508,8 +508,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:658
 msgid "Explanation"
@@ -878,10 +878,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1804,8 +1803,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:533
-#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:201 polardrift_toolwin.cpp:330 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -2892,11 +2890,11 @@ msgstr "導星速率"
 
 #: gear_simulator.cpp:1756
 msgid "Apply stiction"
-msgstr ""
+msgstr "套用靜摩擦"
 
 #: gear_simulator.cpp:1756
 msgid "Simulate dec axis stiction"
-msgstr ""
+msgstr "模擬赤緯軸靜摩擦"
 
 #: gear_simulator.cpp:1762
 msgid "PE"
@@ -3307,8 +3305,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:323
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3432,8 +3430,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3456,8 +3454,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3970,11 +3968,11 @@ msgstr "開始測量 (停用導星)"
 
 #: guiding_assistant.cpp:538
 msgid "Review previous"
-msgstr ""
+msgstr "檢視之前的"
 
 #: guiding_assistant.cpp:539
 msgid "Review up to 3 previous GA results"
-msgstr ""
+msgstr "檢視之前的 3 個 GA 結果"
 
 #: guiding_assistant.cpp:544
 msgid "Stop measuring and re-enable guiding"
@@ -4121,7 +4119,7 @@ msgstr "請將曝光時間維持在 %.1fs 至 %.1fs 範圍"
 
 #: guiding_assistant.cpp:1111
 msgid "Try binning your guide camera"
-msgstr ""
+msgstr "嘗試導星相機影像併合"
 
 #: guiding_assistant.cpp:1119
 msgid "Consider re-doing your calibration "
@@ -4152,7 +4150,7 @@ msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準�
 
 #: guiding_assistant.cpp:1157
 msgid "Consider trying to improve focus on the guide camera"
-msgstr ""
+msgstr "請考慮加強導星相機的對焦"
 
 #: guiding_assistant.cpp:1168
 #, c-format
@@ -4621,31 +4619,31 @@ msgstr "離開本程式"
 
 #: myframe.cpp:499
 msgid "&Connect Equipment\tCtrl-C"
-msgstr ""
+msgstr "&C連接裝置\tCtrl-C"
 
 #: myframe.cpp:499
 msgid "Connect or disconnect equipment"
-msgstr ""
+msgstr "連接或斷開裝置"
 
 #: myframe.cpp:500
 msgid "&Loop Exposures\tCtrl-L"
-msgstr ""
+msgstr "&L連續曝光\tCtrl-L"
 
 #: myframe.cpp:500
 msgid "Begin looping exposures"
-msgstr ""
+msgstr "開始連續曝光"
 
 #: myframe.cpp:502
 msgid "&Guide\tCtrl-G"
-msgstr ""
+msgstr "&G導星\tCtrl-G"
 
 #: myframe.cpp:502
 msgid "Begin guiding"
-msgstr ""
+msgstr "開始導星"
 
 #: myframe.cpp:504
 msgid "&Stop\tCtrl-S"
-msgstr ""
+msgstr "&S停止導星\tCtrl-S"
 
 #: myframe.cpp:504 myframe.cpp:966
 msgid "Stop looping and guiding"
@@ -4653,7 +4651,7 @@ msgstr "停止曝光及導星"
 
 #: myframe.cpp:506
 msgid "&Advanced Settings\tCtrl-A"
-msgstr ""
+msgstr "&A進階設定\tCtrl-A"
 
 #: myframe.cpp:506 myframe.cpp:971
 msgid "Advanced parameters"
@@ -4661,7 +4659,7 @@ msgstr "進階參數"
 
 #: myframe.cpp:507
 msgid "&Camera Settings"
-msgstr ""
+msgstr "&C設定相機"
 
 #: myframe.cpp:507 myframe.cpp:972
 msgid "Camera settings"
@@ -5062,7 +5060,7 @@ msgstr "檔案"
 
 #: myframe.cpp:589
 msgid "&Guide"
-msgstr ""
+msgstr "&G導星"
 
 #: myframe.cpp:598
 msgid "&Tools"
