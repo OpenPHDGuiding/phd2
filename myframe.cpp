@@ -53,6 +53,7 @@
 #include <wx/dirdlg.h>
 #include <wx/dnd.h>
 #include <wx/textwrapper.h>
+#include "wx/valnum.h"
 
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
@@ -2786,7 +2787,10 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
     parent = GetParentWindow(AD_szFocalLength);
-    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1));
+    // Put a validator on this field to be sure that only digits are entered - avoids problem where user face-plant on keyboard results in a focal length of zero
+    wxIntegerValidator <int> valFocalLength(0, 0);
+    valFocalLength.SetRange(0, 5000);
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1), 0, valFocalLength);
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
