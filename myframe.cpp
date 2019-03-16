@@ -2729,7 +2729,6 @@ MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
     : ConfigDialogPane(_("Global Settings"), pParent)
 {
-
 }
 
 void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
@@ -2754,6 +2753,34 @@ MyFrameConfigDialogCtrlSet *MyFrame::GetConfigDlgCtrlSet(MyFrame *pFrame, Advanc
 {
     return new MyFrameConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap);
 }
+
+struct FocalLengthValidator : public wxIntegerValidator<int>
+{
+    typedef wxIntegerValidator<int> Super;
+    AdvancedDialog *m_dlg;
+    FocalLengthValidator(AdvancedDialog *dlg) : Super(nullptr, 0), m_dlg(dlg) { }
+    wxObject *Clone() const override {
+        return new FocalLengthValidator(*this);
+    }
+    bool Validate(wxWindow *parent) override {
+        bool ok = false;
+        if (Super::Validate(parent))
+        {
+            long val;
+            wxTextCtrl *ctrl = static_cast<wxTextCtrl *>(GetWindow());
+            if (ctrl->GetValue().ToLong(&val))
+                ok = val <= AdvancedDialog::MAX_FOCAL_LENGTH && (val == 0 || val >= AdvancedDialog::MIN_FOCAL_LENGTH);
+        }
+        if (!ok)
+        {
+            m_dlg->ShowInvalid(GetWindow(),
+                wxString::Format(_("Enter a focal length in millimeters, between %.f and %.f,\n"
+                "or enter 0 if the focal length is not known"),
+                AdvancedDialog::MIN_FOCAL_LENGTH, AdvancedDialog::MAX_FOCAL_LENGTH));
+        }
+        return ok;
+    }
+};
 
 MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
@@ -2787,10 +2814,10 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
     parent = GetParentWindow(AD_szFocalLength);
-    // Put a validator on this field to be sure that only digits are entered - avoids problem where user face-plant on keyboard results in a focal length of zero
-    wxIntegerValidator <int> valFocalLength(0, 0);
-    valFocalLength.SetRange(0, 5000);
-    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1), 0, valFocalLength);
+    // Put a validator on this field to be sure that only digits are entered - avoids problem where
+    // user face-plant on keyboard results in a focal length of zero
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width + 30, -1), 0,
+        FocalLengthValidator(pAdvancedDialog));
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 

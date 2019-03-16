@@ -41,6 +41,7 @@ class MyFrameConfigDialogCtrlSet;
 class MountConfigDialogCtrlSet;
 class CameraConfigDialogPane;
 class GuiderConfigDialogPane;
+class wxTipWindow;
 
 enum TAB_PAGES {
     AD_GLOBAL_PAGE,
@@ -78,41 +79,50 @@ class AdvancedDialog : public wxDialog
     wxPanel *m_pGuiderSettingsPanel;
     wxPanel *m_pScopeSettingsPanel;
     wxPanel *m_pDevicesSettingsPanel;
+    wxTipWindow *m_tip;
+    wxTimer *m_tipTimer;
 
 public:
+
+    static const double MIN_FOCAL_LENGTH;
+    static const double MAX_FOCAL_LENGTH;
+
     AdvancedDialog(MyFrame *pFrame);
     ~AdvancedDialog();
 
     void EndModal(int retCode);
 
-    void UpdateCameraPage(void);
-    void UpdateMountPage(void);
-    void UpdateAoPage(void);
-    void UpdateRotatorPage(void);
+    void UpdateCameraPage();
+    void UpdateMountPage();
+    void UpdateAoPage();
+    void UpdateRotatorPage();
 
-    void LoadValues(void);
-    void UnloadValues(void);
-    void Undo(void);
+    void LoadValues();
+    void UnloadValues();
+    void Undo();
     void Preload();
 
-    int GetFocalLength(void);
+    bool Validate() override;
+    void ShowInvalid(wxWindow *ctrl, const wxString& message);
+
+    int GetFocalLength();
     void SetFocalLength(int val);
-    double GetPixelSize(void);
+    double GetPixelSize();
     void SetPixelSize(double val);
-    int GetBinning(void);
+    int GetBinning();
     void SetBinning(int binning);
     void MakeBinningAdjustments(int oldVal, int newVal);
     void ResetGuidingParams();
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
 
-
 private:
-    void AddCameraPage(void);
-    void AddMountPage(void);
-    void AddAoPage(void);
-    void AddRotatorPage(void);
-    void RebuildPanels(void);
+    void AddCameraPage();
+    void AddMountPage();
+    void AddAoPage();
+    void AddRotatorPage();
+    size_t FindPage(wxWindow *ctrl);
+    void RebuildPanels();
     void BuildCtrlSets();
     void CleanupCtrlSets();
     void ConfirmLayouts();

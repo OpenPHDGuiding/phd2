@@ -155,8 +155,6 @@ static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
 static wxString TitlePrefix;
 
-static const double MIN_FOCAL_LENGTH = 50.0;
-
 static wxStaticText *Label(wxWindow *parent, const wxString& txt)
 {
     return new wxStaticText(parent, wxID_ANY, wxString::Format(_("%s:"), txt));
@@ -269,7 +267,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
 
     // Focal length
     m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(this, _T("88888")), -1), wxSP_ARROW_KEYS, MIN_FOCAL_LENGTH, 3000.0, 300.0, 50.0);
+        wxSize(StringWidth(this, _T("88888")), -1), wxSP_ARROW_KEYS,
+        AdvancedDialog::MIN_FOCAL_LENGTH, AdvancedDialog::MAX_FOCAL_LENGTH, 300.0, 50.0);
     m_pFocalLength->SetValue(300);
     m_pFocalLength->SetDigits(0);
     m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
@@ -1073,7 +1072,9 @@ void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
 void ProfileWizard::OnFocalLengthText(wxCommandEvent& evt)
 {
     unsigned long val;
-    if (evt.GetString().ToULong(&val) && val >= MIN_FOCAL_LENGTH)
+    if (evt.GetString().ToULong(&val) &&
+        val >= AdvancedDialog::MIN_FOCAL_LENGTH &&
+        val <= AdvancedDialog::MAX_FOCAL_LENGTH)
     {
         m_FocalLength = val;
         UpdatePixelScale();

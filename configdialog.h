@@ -48,6 +48,7 @@
 enum BRAIN_CTRL_IDS
 {
     AD_UNASSIGNED,
+
     AD_cbResetConfig,
     AD_cbDontAsk,
     AD_szLanguage,
@@ -57,6 +58,7 @@ enum BRAIN_CTRL_IDS
     AD_szImageLoggingOptions,
     AD_szDither,
     AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
+
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
     AD_szAutoExposure,
@@ -70,6 +72,7 @@ enum BRAIN_CTRL_IDS
     AD_szBinning,
     AD_szCooler,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+
     AD_cbScaleImages,
     AD_szFocalLength,
     AD_cbAutoRestoreCal,
@@ -83,11 +86,13 @@ enum BRAIN_CTRL_IDS
     AD_cbSlewDetection,
     AD_cbUseDecComp,
     AD_GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
+
     AD_szBLCompCtrls,
     AD_szMaxRAAmt,
     AD_szMaxDecAmt,
     AD_szDecGuideMode,
     AD_MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+
     AD_AOTravel,
     AD_szCalStepsPerIteration,
     AD_szSamplesToAverage,
