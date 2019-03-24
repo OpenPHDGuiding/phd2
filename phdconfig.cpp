@@ -69,7 +69,7 @@ bool ConfigSection::GetBoolean(const wxString& name, bool defaultValue)
         m_pConfig->Read(path, &bReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetBoolean(\"%s\", %d) returns %d", path, defaultValue, bReturn));
+    Debug.Write(wxString::Format("GetBoolean(\"%s\", %d) returns %d\n", path, defaultValue, bReturn));
 
     return bReturn;
 }
@@ -84,7 +84,7 @@ wxString ConfigSection::GetString(const wxString& name, const wxString& defaultV
         m_pConfig->Read(path, &sReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetString(\"%s\", \"%s\") returns \"%s\"", path, defaultValue, sReturn));
+    Debug.Write(wxString::Format("GetString(\"%s\", \"%s\") returns \"%s\"\n", path, defaultValue, sReturn));
 
     return sReturn;
 }
@@ -99,7 +99,7 @@ double ConfigSection::GetDouble(const wxString& name, double defaultValue)
         m_pConfig->Read(path, &dReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetDouble(\"%s\", %lf) returns %lf", path, defaultValue, dReturn));
+    Debug.Write(wxString::Format("GetDouble(\"%s\", %f) returns %f\n", path, defaultValue, dReturn));
 
     return dReturn;
 }
@@ -114,7 +114,7 @@ long ConfigSection::GetLong(const wxString& name, long defaultValue)
         m_pConfig->Read(path, &lReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetLong(\"%s\", %ld) returns %ld", path, defaultValue, lReturn));
+    Debug.Write(wxString::Format("GetLong(\"%s\", %ld) returns %ld\n", path, defaultValue, lReturn));
 
     return lReturn;
 }
@@ -129,7 +129,7 @@ int ConfigSection::GetInt(const wxString& name, int defaultValue)
         m_pConfig->Read(path, &lReturn, defaultValue);
     }
 
-    Debug.AddLine(wxString::Format("GetInt(\"%s\", %d) returns %d", path, defaultValue, (int)lReturn));
+    Debug.Write(wxString::Format("GetInt(\"%s\", %d) returns %d\n", path, defaultValue, (int)lReturn));
 
     return (int)lReturn;
 }
@@ -207,13 +207,33 @@ std::vector<wxString> ConfigSection::GetGroupNames(const wxString& baseName)
     return entries;
 }
 
-PhdConfig::PhdConfig()
+static wxString ConfigName(int instance)
 {
+    wxString configName = _T("PHDGuidingV2");
+    if (instance > 1)
+    {
+        configName += wxString::Format("-instance%d", instance);
+    }
+    return configName;
 }
 
-PhdConfig::PhdConfig(const wxString& baseConfigName, int instance)
+PhdConfig::PhdConfig(int instance)
 {
-    Initialize(baseConfigName, instance);
+    wxConfig *config = new wxConfig(ConfigName(instance));
+    Global.m_pConfig = Profile.m_pConfig = config;
+
+    m_isNewInstance = false;
+
+    m_configVersion = Global.GetLong("ConfigVersion", 0);
+    if (m_configVersion == 0)
+    {
+        m_isNewInstance = true;
+
+        Debug.Write(wxString::Format("Initializing a new config, m_pConfig=%p\n", Global.m_pConfig));
+
+        Global.SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
+        m_configVersion = CURRENT_CONFIG_VERSION;
+    }
 }
 
 PhdConfig::~PhdConfig()
@@ -260,32 +280,6 @@ int PhdConfig::FirstProfile()
     return (int) id;
 }
 
-void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
-{
-    wxString configName = baseConfigName;
-
-    if (instance > 1)
-    {
-        configName += wxString::Format("-instance%d", instance);
-    }
-
-    wxConfig *config = new wxConfig(configName);
-    Global.m_pConfig = Profile.m_pConfig = config;
-
-    m_isNewInstance = false;
-
-    m_configVersion = Global.GetLong("ConfigVersion", 0);
-    if (m_configVersion == 0)
-    {
-        m_isNewInstance = true;
-
-        Debug.AddLine(wxString::Format("Initializing a new config, m_pConfig=%p", Global.m_pConfig));
-
-        Global.SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
-        m_configVersion = CURRENT_CONFIG_VERSION;
-    }
-}
-
 void PhdConfig::InitializeProfile()
 {
     // select initial profile
@@ -306,11 +300,7 @@ void PhdConfig::DeleteAll()
 {
     if (Global.m_pConfig)
     {
-        Debug.AddLine(wxString::Format("Deleting all configuration data"));
-
-        for (unsigned int i = 0; i < NumProfiles(); i++)
-            pFrame->DeleteDarkLibraryFiles(i);
-
+        Debug.Write(wxString::Format("Deleting all configuration data\n"));
         Global.m_pConfig->DeleteAll();
         InitializeProfile();
     }
@@ -334,7 +324,7 @@ bool PhdConfig::SetCurrentProfile(const wxString& name)
         id = GetProfileId(name);
         if (id <= 0)
         {
-            Debug.AddLine(wxString::Format("failed to create profile [%s]!", name));
+            Debug.Write(wxString::Format("failed to create profile [%s]!\n", name));
             return true;
         }
     }
@@ -468,14 +458,14 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     int srcId = GetProfileId(source);
     if (srcId <= 0)
     {
-        Debug.AddLine(wxString::Format("Clone profile could not clone %s: profile not found", source));
+        Debug.Write(wxString::Format("Clone profile could not clone %s: profile not found\n", source));
         return true;
     }
 
     int dstId = GetProfileId(dest);
     if (dstId > 0)
     {
-        Debug.AddLine(wxString::Format("Clone profile could not clone %s: destination profile %s already exists", source, dest));
+        Debug.Write(wxString::Format("Clone profile could not clone %s: destination profile %s already exists\n", source, dest));
         return true;
     }
 
@@ -499,7 +489,7 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
 
 void PhdConfig::DeleteProfile(const wxString& name)
 {
-    Debug.AddLine(wxString::Format("Delete profile %s", name));
+    Debug.Write(wxString::Format("Delete profile %s\n", name));
 
     int id = GetProfileId(name);
     if (id <= 0)
@@ -509,7 +499,7 @@ void PhdConfig::DeleteProfile(const wxString& name)
 
     if (NumProfiles() == 0)
     {
-        Debug.AddLine("Last profile deleted... create a new one");
+        Debug.Write("Last profile deleted... create a new one\n");
         CreateProfile(wxGetTranslation(DefaultProfileName));
     }
     if (id == m_currentProfileId)
@@ -524,13 +514,13 @@ bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
 {
     if (GetProfileId(newname) > 0)
     {
-        Debug.AddLine(wxString::Format("error renaming profile %s to %s: new name already exists", oldname, newname));
+        Debug.Write(wxString::Format("error renaming profile %s to %s: new name already exists\n", oldname, newname));
         return true;
     }
     int id = GetProfileId(oldname);
     if (id <= 0)
     {
-        Debug.AddLine(wxString::Format("error renaming profile %s to %s: profile does not exist", oldname, newname));
+        Debug.Write(wxString::Format("error renaming profile %s to %s: profile does not exist\n", oldname, newname));
         return true;
     }
 
@@ -538,12 +528,122 @@ bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
     return false;
 }
 
+static wxString escape_string(const wxString& s)
+{
+    wxString t(s);
+    static const wxString BACKSLASH("\\");
+    static const wxString BACKSLASH_BACKSLASH("\\\\");
+    static const wxString TAB("\t");
+    static const wxString BACKSLASH_T("\\t");
+    static const wxString CR("\r");
+    static const wxString BACKSLASH_R("\\r");
+    static const wxString LF("\n");
+    static const wxString BACKSLASH_N("\\n");
+    t.Replace(BACKSLASH, BACKSLASH_BACKSLASH);
+    t.Replace(TAB, BACKSLASH_T);
+    t.Replace(CR, BACKSLASH_R);
+    t.Replace(LF, BACKSLASH_N);
+    return t;
+}
+
+static wxString unescape_string(const wxString& s)
+{
+    size_t const len = s.length();
+    wxString d;
+    for (size_t i = 0; i < len; i++)
+    {
+        auto ch = s[i];
+        if (ch.GetValue() == '\\' && i < len - 1)
+        {
+            switch (s[i + 1].GetValue())
+            {
+            case '\\': d.Append('\\'); ++i; break;
+            case 't':  d.Append('\t'); ++i; break;
+            case 'r':  d.Append('\r'); ++i; break;
+            case 'n':  d.Append('\n'); ++i; break;
+            default:   d.Append(ch);        break;
+            }
+        }
+        else
+            d.Append(ch);
+    }
+    return d;
+}
+
+static bool ParseLine(const wxString& s, wxString *name, wxString *typestr, wxString *val)
+{
+    if (s.IsEmpty())
+        return false;
+    wxStringTokenizer tokenizer(s, "\t\r\n");
+    *name = tokenizer.GetNextToken();
+    *typestr = tokenizer.GetNextToken();
+    *val = tokenizer.GetString();
+    val->Trim();
+    return true;
+}
+
+static void LoadVal(ConfigSection& section, const wxString& s, const wxString& name,
+    const wxString& typestr, const wxString& val)
+{
+    long type;
+    if (!typestr.ToLong(&type))
+    {
+        Debug.Write(wxString::Format("bad type '%s' in file; line = %s\n", typestr, s));
+        return;
+    }
+    switch ((wxConfigBase::EntryType) type)
+    {
+    case wxConfigBase::Type_String:
+        section.SetString(name, unescape_string(val));
+        break;
+    case wxConfigBase::Type_Boolean: {
+        long lval;
+        if (!val.ToLong(&lval))
+        {
+            Debug.Write(wxString::Format("bad bool val '%s' in file; line = %s\n", val, s));
+        }
+        else
+        {
+            section.SetBoolean(name, lval ? true : false);
+        }
+        break;
+    }
+    case wxConfigBase::Type_Integer: {
+        long lval;
+        if (!val.ToLong(&lval))
+        {
+            Debug.Write(wxString::Format("bad int val '%s' in file; line = %s\n", val, s));
+        }
+        else
+        {
+            section.SetLong(name, lval);
+        }
+        break;
+    }
+    case wxConfigBase::Type_Float: {
+        double dval;
+        if (!val.ToDouble(&dval))
+        {
+            Debug.Write(wxString::Format("bad float val '%s' in file; line = %s\n", val, s));
+        }
+        else
+        {
+            section.SetDouble(name, dval);
+        }
+        break;
+    }
+    default:
+        Debug.Write(wxString::Format("bad type '%s' in file; line = %s\n", typestr, s));
+        break;
+    }
+}
+
 bool PhdConfig::ReadProfile(const wxString& filename)
 {
     wxFileInputStream is(filename);
     if (!is.IsOk())
     {
-        Debug.AddLine(wxString::Format("Cannot open file '%s'.", filename));
+        Debug.Write(wxString::Format("Cannot open file '%s'\n", filename));
         return true;
     }
     wxTextInputStream tis(is);
@@ -551,7 +651,7 @@ bool PhdConfig::ReadProfile(const wxString& filename)
     wxString s = tis.ReadLine();
     if (s != "PHD Profile " PROFILE_STREAM_VERSION)
     {
-        Debug.AddLine(wxString::Format("invalid profile file '%s'", filename));
+        Debug.Write(wxString::Format("invalid profile file '%s'\n", filename));
         return true;
     }
 
@@ -573,67 +673,13 @@ bool PhdConfig::ReadProfile(const wxString& filename)
     while (!is.Eof())
     {
         wxString s = tis.ReadLine();
-        if (s.IsEmpty())
+        wxString name, typestr, val;
+        if (!ParseLine(s, &name, &typestr, &val))
             continue;
-        wxStringTokenizer tokenizer(s, "\t\r\n");
-        wxString name = tokenizer.GetNextToken();
         // skip the stored name as we are using the file name for the profile name
         if (name == "/name")
             continue;
-        wxString typestr = tokenizer.GetNextToken();
-        long type;
-        if (!typestr.ToLong(&type))
-        {
-            Debug.AddLine(wxString::Format("bad type '%s' in file; line = %s", typestr, s));
-            continue;
-        }
-        wxString val = tokenizer.GetString();
-        val.Trim();
-        switch ((wxConfigBase::EntryType) type)
-        {
-        case wxConfigBase::Type_String:
-            Profile.SetString(name, val);
-            break;
-        case wxConfigBase::Type_Boolean: {
-            long lval;
-            if (!val.ToLong(&lval))
-            {
-                Debug.AddLine(wxString::Format("bad bool val '%s' in file; line = %s", val, s));
-            }
-            else
-            {
-                Profile.SetBoolean(name, lval ? true : false);
-            }
-            break;
-        }
-        case wxConfigBase::Type_Integer: {
-            long lval;
-            if (!val.ToLong(&lval))
-            {
-                Debug.AddLine(wxString::Format("bad int val '%s' in file; line = %s", val, s));
-            }
-            else
-            {
-                Profile.SetLong(name, lval);
-            }
-            break;
-        }
-        case wxConfigBase::Type_Float: {
-            double dval;
-            if (!val.ToDouble(&dval))
-            {
-                Debug.AddLine(wxString::Format("bad float val '%s' in file; line = %s", val, s));
-            }
-            else
-            {
-                Profile.SetDouble(name, dval);
-            }
-            break;
-        }
-        default:
-            Debug.AddLine(wxString::Format("bad type '%s' in file; line = %s", typestr, s));
-            break;
-        }
+        LoadVal(Profile, s, name, typestr, val);
     }
 
     return false;
@@ -647,7 +693,7 @@ static void WriteVal(wxTextOutputStream& os, wxConfigBase *cfg, const wxString& 
     case wxConfigBase::Type_String: {
         wxString val;
         cfg->Read(key, &val);
-        sval = val;
+        sval = escape_string(val);
         break;
     }
     case wxConfigBase::Type_Boolean: {
@@ -709,6 +755,52 @@ bool PhdConfig::WriteProfile(const wxString& filename)
     tos.WriteString("PHD Profile " PROFILE_STREAM_VERSION "\n");
     wxString profile = wxString::Format("/profile/%d", m_currentProfileId);
     WriteGroup(tos, Profile.m_pConfig, profile, profile);
+
+    return false;
+}
+
+bool PhdConfig::SaveAll(const wxString& filename)
+{
+    wxFileOutputStream os(filename);
+    if (!os.IsOk())
+    {
+        return true;
+    }
+    wxTextOutputStream tos(os);
+
+    tos.WriteString("PHD Config " PROFILE_STREAM_VERSION "\n");
+    WriteGroup(tos, Global.m_pConfig, wxEmptyString, wxEmptyString);
+
+    return false;
+}
+
+bool PhdConfig::RestoreAll(const wxString& filename)
+{
+    wxFileInputStream is(filename);
+    if (!is.IsOk())
+    {
+        Debug.Write(wxString::Format("Cannot open file '%s'\n", filename));
+        return true;
+    }
+    wxTextInputStream tis(is);
+
+    wxString s = tis.ReadLine();
+    if (s != "PHD Config " PROFILE_STREAM_VERSION)
+    {
+        Debug.Write(wxString::Format("invalid config file '%s'\n", filename));
+        return true;
+    }
+
+    Global.m_pConfig->DeleteAll();
+
+    while (!is.Eof())
+    {
+        wxString s = tis.ReadLine();
+        wxString name, typestr, val;
+        if (!ParseLine(s, &name, &typestr, &val))
+            continue;
+        LoadVal(Global, s, name, typestr, val);
+    }
 
     return false;
 }

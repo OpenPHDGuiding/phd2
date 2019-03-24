@@ -116,6 +116,8 @@ struct DriftToolWin : public wxFrame
 
     void UpdateScopeCoordinates(void);
 
+    void SetStatusText(const wxString &text, int number = 0) override;
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -441,7 +443,8 @@ repeat:
                 return;
             }
 
-            switch (pFrame->pGuider->GetState())
+            GUIDER_STATE st = pFrame->pGuider->GetState();
+            switch (st)
             {
             case STATE_UNINITIALIZED:
             case STATE_CALIBRATED:
@@ -449,8 +452,8 @@ repeat:
                 if (!pFrame->pGuider->IsLocked())
                 {
                     SetStatusText(_("Auto-selecting a star"));
-                    wxCommandEvent dummy;
-                    pFrame->OnAutoStar(dummy);
+                    // call Guider's AutoSelect directly to skip MyFrame::AutoSelectStar guide state check
+                    pFrame->pGuider->AutoSelect();
                 }
                 return;
             case STATE_CALIBRATING_PRIMARY:
@@ -542,7 +545,7 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
 
     double slew_ra = norm_ra(cur_st + (raSlew * 24.0 / 360.0));
 
-    Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f",
+    Debug.AddLine(wxString::Format("Drift tool: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f",
         cur_ra, cur_dec, slew_ra, decSlew));
 
     if (pPointingSource->CanSlewAsync())
@@ -623,6 +626,8 @@ void DriftToolWin::OnNotesText(wxCommandEvent& evt)
 
 void DriftToolWin::OnDrift(wxCommandEvent& evt)
 {
+    Debug.Write("Drift tool: Drift\n");
+
     if (!m_location_prompt_done)
     {
         if (pPointingSource && pPointingSource->IsConnected())
@@ -640,6 +645,7 @@ void DriftToolWin::OnDrift(wxCommandEvent& evt)
 
 void DriftToolWin::OnAdjust(wxCommandEvent& evt)
 {
+    Debug.Write("Drift tool: Adjust\n");
     m_mode = MODE_ADJUST;
     UpdateModeState();
 }
@@ -650,6 +656,8 @@ void DriftToolWin::OnPhase(wxCommandEvent& evt)
         m_phase = PHASE_ADJUST_AZ;
     else
         m_phase = PHASE_ADJUST_ALT;
+
+    Debug.Write(wxString::Format("Drift tool: Phase %s\n", m_phase == PHASE_ADJUST_ALT ? wxS("Alt") : wxS("Az")));
 
     m_location_prompt_done = false;
 
@@ -669,7 +677,7 @@ void DriftToolWin::OnAppStateNotify(wxCommandEvent& evt)
 
 void DriftToolWin::OnClose(wxCloseEvent& evt)
 {
-    Debug.AddLine("Close DriftTool");
+    Debug.AddLine("Drift tool: Close DriftTool");
 
     if (m_need_end_dec_drift)
     {
@@ -798,6 +806,12 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
             GetStatusBar()->PopStatusText(); // clear "slewing" message
         }
     }
+}
+
+void DriftToolWin::SetStatusText(const wxString &text, int number)
+{
+    Debug.Write(wxString::Format("Drift tool: status: %s\n", text));
+    wxFrame::SetStatusText(text, number);
 }
 
 wxWindow *DriftTool::CreateDriftToolWindow()

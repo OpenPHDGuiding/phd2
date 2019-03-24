@@ -391,6 +391,8 @@ static wxString StarStatus(const Star& star)
 
 bool GuiderOneStar::AutoSelect()
 {
+    Debug.Write("GuiderOneStar::AutoSelect enter\n");
+
     bool error = false;
 
     usImage *image = CurrentImage();
@@ -400,11 +402,6 @@ bool GuiderOneStar::AutoSelect()
         if (!image || !image->ImageData)
         {
             throw ERROR_INFO("No Current Image");
-        }
-
-        if (pFrame->pGuider->IsCalibratingOrGuiding())
-        {
-            throw ERROR_INFO("cannot auto-select star while calibrating or guiding");
         }
 
         // If mount is not calibrated, we need to chose a star a bit farther
@@ -611,7 +608,7 @@ struct DistanceChecker
         {
             return true;
         }
-        double avgDist = pFrame->pGuider->CurrentErrorSmoothed(raOnly);
+        double avgDist = guider->CurrentErrorSmoothed(raOnly);
         double threshold = tolerance * avgDist;
         if (distance > threshold)
         {
@@ -838,6 +835,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
         if (mevent.GetModifiers() == wxMOD_SHIFT)
         {
             // Deselect guide star
+            Debug.Write(wxS("manual deselect\n"));
             InvalidateCurrentPosition(true);
         }
         else

@@ -1738,6 +1738,17 @@ bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
     return false;
 }
 
+bool MyFrame::AutoSelectStar()
+{
+    if (pGuider->IsCalibratingOrGuiding())
+    {
+        Debug.Write("cannot auto-select star while calibrating or guiding\n");
+        return true; // error
+    }
+
+    return pGuider->AutoSelect();
+}
+
 void MyFrame::StartCapturing()
 {
     Debug.Write(wxString::Format("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
@@ -3086,7 +3097,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
             if (choice == wxYES)
             {
-                pConfig->DeleteAll();
+                wxGetApp().ResetConfiguration();
                 wxGetApp().RestartApp();
             }
         }

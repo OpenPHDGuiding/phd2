@@ -278,7 +278,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_AUTOFINDSTAR:
                 Debug.AddLine("processing socket request AUTOFINDSTAR");
                 bool error;
-                error = pFrame->pGuider->AutoSelect();
+                error = pFrame->AutoSelectStar();
                 rval = error ? 0 : 1;
                 if (!error)
                 {

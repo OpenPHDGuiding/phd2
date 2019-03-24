@@ -133,10 +133,26 @@ static void LoadBookmarks(std::vector<wxRealPoint> *vec)
     }
 }
 
+static const wxStringCharType *StateStr(GUIDER_STATE st)
+{
+    switch (st) {
+    case STATE_UNINITIALIZED: return wxS("UNINITIALIZED");
+    case STATE_SELECTING: return wxS("SELECTING");
+    case STATE_SELECTED: return wxS("SELECTED");
+    case STATE_CALIBRATING_PRIMARY: return wxS("CALIBRATING_PRIMARY");
+    case STATE_CALIBRATING_SECONDARY: return wxS("CALIBRATING_SECONDARY");
+    case STATE_CALIBRATED: return wxS("CALIBRATED");
+    case STATE_GUIDING: return wxS("GUIDING");
+    case STATE_STOP: return wxS("STOP");
+    default: return wxS("??");
+    }
+}
+
 Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
 {
     m_state = STATE_UNINITIALIZED;
+    Debug.Write(wxString::Format("guider state => %s\n", StateStr(m_state)));
     m_scaleFactor = 1.0;
     m_showBookmarks = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
@@ -891,7 +907,7 @@ void Guider::SetState(GUIDER_STATE newState)
 {
     try
     {
-        Debug.Write(wxString::Format("Changing from state %d to %d\n", m_state, newState));
+        Debug.Write(wxString::Format("Changing from state %s to %s\n", StateStr(m_state), StateStr(newState)));
 
         if (newState == STATE_STOP)
         {
@@ -923,7 +939,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
         if (newState > m_state + 1)
         {
-            Debug.Write(wxString::Format("Cannot transition from %d to  newState=%d\n", m_state, newState));
+            Debug.Write(wxString::Format("Cannot transition from %s to newState=%s\n", StateStr(m_state), StateStr(newState)));
             throw ERROR_INFO("Illegal state transition");
         }
 
@@ -1007,9 +1023,11 @@ void Guider::SetState(GUIDER_STATE newState)
         if (newState >= requestedState)
         {
             m_state = newState;
+            Debug.Write(wxString::Format("guider state => %s\n", StateStr(m_state)));
         }
         else
         {
+            Debug.Write(wxString::Format("SetState recurses newState %s\n", StateStr(newState)));
             SetState(newState);
         }
     }

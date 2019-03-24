@@ -66,9 +66,20 @@ int YWinSize = 512;
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
     { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
-    { wxCMD_LINE_SWITCH, "R", "Reset", "Reset all PHD2 settings to default values"},
+    { wxCMD_LINE_OPTION, "l", "load", "load settings from file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+    { wxCMD_LINE_SWITCH, "R", "Reset", "Reset all PHD2 settings to default values" },
+    { wxCMD_LINE_OPTION, "s", "save", "save settings to file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
     { wxCMD_LINE_NONE }
 };
+
+enum ConfigOp
+{
+    CONFIG_OP_NONE,
+    CONFIG_OP_SAVE,
+    CONFIG_OP_LOAD,
+};
+static ConfigOp s_configOp = CONFIG_OP_NONE;
+static wxString s_configPath;
 
 wxIMPLEMENT_APP(PhdApp);
 
@@ -500,9 +511,9 @@ bool PhdApp::OnInit()
     }
 
 #ifndef DEBUG
-    #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
+# if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();
-    #endif
+# endif
 #endif
 
     SetVendorName(_T("StarkLabs"));
@@ -512,7 +523,20 @@ bool PhdApp::OnInit()
 #else
     SetAppName(_T("phd2"));
 #endif
-    pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
+    pConfig = new PhdConfig(m_instanceNumber);
+
+    if (s_configOp == CONFIG_OP_LOAD)
+    {
+        bool err = pConfig->RestoreAll(s_configPath);
+        ::exit(err ? 1 : 0);
+        return false;
+    }
+    else if (s_configOp == CONFIG_OP_SAVE)
+    {
+        bool err = pConfig->SaveAll(s_configPath);
+        ::exit(err ? 1 : 0);
+        return false;
+    }
 
     m_initTime = wxDateTime::Now();
 
@@ -548,7 +572,7 @@ bool PhdApp::OnInit()
 
     if (m_resetConfig)
     {
-        pConfig->DeleteAll();
+        ResetConfiguration();
     }
 
 #ifdef __linux__
@@ -627,7 +651,12 @@ bool PhdApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
     bool bReturn = true;
 
-    (void)parser.Found("i", &m_instanceNumber);
+    parser.Found("i", &m_instanceNumber);
+
+    if (parser.Found("l", &s_configPath))
+        s_configOp = CONFIG_OP_LOAD;
+    if (parser.Found("s", &s_configPath))
+        s_configOp = CONFIG_OP_SAVE;
 
     m_resetConfig = parser.Found("R");
 
@@ -666,4 +695,12 @@ wxString PhdApp::GetLocalesDir() const
 wxString PhdApp::UserAgent() const
 {
     return _T("phd2/") FULLVER _T(" (") PHD_OSNAME _T(")");
+}
+
+void PhdApp::ResetConfiguration()
+{
+    for (unsigned int i = 0; i < pConfig->NumProfiles(); i++)
+        MyFrame::DeleteDarkLibraryFiles(i);
+
+    pConfig->DeleteAll();
 }

@@ -373,7 +373,7 @@ void PhdController::UpdateControllerState(void)
         }
 
         case STATE_SELECT_STAR: {
-            bool error = pFrame->pGuider->AutoSelect();
+            bool error = pFrame->AutoSelectStar();
             if (error)
             {
                 Debug.Write(wxString::Format("auto find star failed, attempts remaining = %d\n", ctrl.autoFindAttemptsRemaining));

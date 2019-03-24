@@ -920,7 +920,7 @@ static void find_star(JObj& response, const json_value *params)
 {
     VERIFY_GUIDER(response);
 
-    bool error = pFrame->pGuider->AutoSelect();
+    bool error = pFrame->AutoSelectStar();
 
     if (!error)
     {
@@ -2016,6 +2016,23 @@ static void get_sensor_temperature(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
+static void export_config_settings(JObj& response, const json_value *params)
+{
+    wxString filename(MyFrame::GetDefaultFileDir() + PATHSEPSTR + "phd2_settings.txt");
+    bool err = pConfig->SaveAll(filename);
+
+    if (err)
+    {
+        response << jrpc_error(1, "export settings failed");
+        return;
+    }
+
+    JObj rslt;
+    rslt << NV("filename", filename);
+
+    response << jrpc_result(rslt);
+}
+
 struct JRpcCall
 {
     wxSocketClient *cli;
@@ -2122,6 +2139,7 @@ static bool handle_request(JRpcCall& call)
         { "capture_single_frame", &capture_single_frame, },
         { "get_cooler_status", &get_cooler_status, },
         { "get_ccd_temperature", &get_sensor_temperature, },
+        { "export_config_settings", &export_config_settings, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

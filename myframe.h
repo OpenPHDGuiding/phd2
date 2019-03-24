@@ -331,6 +331,7 @@ public:
     void OnExposeComplete(wxThreadEvent& evt);
     void OnExposeComplete(usImage *image, bool err);
     void OnMoveComplete(wxThreadEvent& evt);
+
     void LoadProfileSettings();
     void UpdateTitle();
 
@@ -367,7 +368,7 @@ public:
     bool DarkLibExists(int profileId, bool showAlert);
     bool LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
-    void DeleteDarkLibraryFiles(int profileID);
+    static void DeleteDarkLibraryFiles(int profileID);
     static wxString DarkLibFileName(int profileId);
     void SetDarkMenuState();
     bool LoadDarkHandler(bool checkIt);         // Use to also set menu item states
@@ -396,6 +397,8 @@ public:
     void StartCapturing();
     bool StopCapturing();
     bool StartSingleExposure(int duration, const wxRect& subframe);
+
+    bool AutoSelectStar();
 
     void SetPaused(PauseType pause);
 

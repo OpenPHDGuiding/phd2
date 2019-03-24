@@ -203,12 +203,12 @@ extern Mount *pSecondaryMount;
 extern Scope *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
 
-inline static Scope *TheScope(void)
+inline static Scope *TheScope()
 {
     return static_cast<Scope *>(pMount && pMount->IsStepGuider() ? pSecondaryMount : pMount);
 }
 
-inline static StepGuider *TheAO(void)
+inline static StepGuider *TheAO()
 {
     return static_cast<StepGuider *>(pMount && pMount->IsStepGuider() ? pMount : 0);
 }
@@ -231,15 +231,16 @@ protected:
 
 public:
 
-    PhdApp(void);
-    bool OnInit(void);
-    int OnExit(void);
+    PhdApp();
+    bool OnInit();
+    int OnExit();
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
-    void TerminateApp(void);
-    void RestartApp(void);
-    void HandleRestart(void);
-    virtual bool Yield(bool onlyIfNeeded=false);
+    void TerminateApp();
+    void RestartApp();
+    void HandleRestart();
+    void ResetConfiguration();
+    virtual bool Yield(bool onlyIfNeeded = false);
     static void ExecInMainThread(std::function<void()> func);
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;

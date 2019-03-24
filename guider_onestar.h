@@ -57,8 +57,8 @@ public:
     wxSpinCtrlDouble *m_pMassChangeThreshold;
     wxSpinCtrlDouble *m_MinHFD;
 
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
     void OnStarMassEnableChecked(wxCommandEvent& event);
 };
 
@@ -81,10 +81,10 @@ public:
 
         public:
         GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider);
-        ~GuiderOneStarConfigDialogPane(void) {};
+        ~GuiderOneStarConfigDialogPane() {};
 
-        virtual void LoadValues(void) {};
-        virtual void UnloadValues(void) {};
+        virtual void LoadValues() {};
+        virtual void UnloadValues() {};
         void LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap);
     };
 
@@ -100,26 +100,26 @@ public:
 
 public:
     GuiderOneStar(wxWindow *parent);
-    virtual ~GuiderOneStar(void);
+    virtual ~GuiderOneStar();
 
     void OnPaint(wxPaintEvent& evt) override;
 
-    bool IsLocked(void) override;
-    bool AutoSelect(void) override;
-    const PHD_Point& CurrentPosition(void) override;
-    wxRect GetBoundingBox(void) override;
-    int GetMaxMovePixels(void) override;
-    double StarMass(void) override;
-    unsigned int StarPeakADU(void) override;
-    double SNR(void) override;
-    double HFD(void) override;
-    int StarError(void) override;
+    bool IsLocked() override;
+    bool AutoSelect() override;
+    const PHD_Point& CurrentPosition() override;
+    wxRect GetBoundingBox() override;
+    int GetMaxMovePixels() override;
+    double StarMass() override;
+    unsigned int StarPeakADU() override;
+    double SNR() override;
+    double HFD() override;
+    int StarError() override;
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
 
-    void LoadProfileSettings(void);
+    void LoadProfileSettings();
 
 private:
     bool IsValidLockPosition(const PHD_Point& pt) final;

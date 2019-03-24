@@ -906,7 +906,7 @@ bool MyFrame::FlipCalibrationData()
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt))
 {
-    pFrame->pGuider->AutoSelect();
+    AutoSelectStar();
 }
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))

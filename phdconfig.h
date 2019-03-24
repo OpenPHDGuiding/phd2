@@ -110,16 +110,16 @@ class PhdConfig
     bool m_isNewInstance;
     int m_currentProfileId;
 
-    void Initialize(const wxString& baseConfigName, int instance);
-
 public:
-    PhdConfig();
-    PhdConfig(const wxString& baseConfigName, int instance);
+
+    PhdConfig(int instance);
     ~PhdConfig();
 
     static wxString DefaultProfileName;
 
     void DeleteAll();
+    bool SaveAll(const wxString& filename);
+    bool RestoreAll(const wxString& filename);
 
     void InitializeProfile();
     wxString GetCurrentProfile();
