@@ -646,7 +646,7 @@ bool PhdConfig::ReadProfile(const wxString& filename)
         Debug.Write(wxString::Format("Cannot open file '%s'\n", filename));
         return true;
     }
-    wxTextInputStream tis(is);
+    wxTextInputStream tis(is, wxS("\t"), wxMBConvUTF8());
 
     wxString s = tis.ReadLine();
     if (s != "PHD Profile " PROFILE_STREAM_VERSION)
@@ -750,7 +750,7 @@ bool PhdConfig::WriteProfile(const wxString& filename)
     {
         return true;
     }
-    wxTextOutputStream tos(os);
+    wxTextOutputStream tos(os, wxEOL_NATIVE, wxMBConvUTF8());
 
     tos.WriteString("PHD Profile " PROFILE_STREAM_VERSION "\n");
     wxString profile = wxString::Format("/profile/%d", m_currentProfileId);
@@ -766,7 +766,7 @@ bool PhdConfig::SaveAll(const wxString& filename)
     {
         return true;
     }
-    wxTextOutputStream tos(os);
+    wxTextOutputStream tos(os, wxEOL_NATIVE, wxMBConvUTF8());
 
     tos.WriteString("PHD Config " PROFILE_STREAM_VERSION "\n");
     WriteGroup(tos, Global.m_pConfig, wxEmptyString, wxEmptyString);
@@ -782,7 +782,7 @@ bool PhdConfig::RestoreAll(const wxString& filename)
         Debug.Write(wxString::Format("Cannot open file '%s'\n", filename));
         return true;
     }
-    wxTextInputStream tis(is);
+    wxTextInputStream tis(is, wxS("\t"), wxMBConvUTF8());
 
     wxString s = tis.ReadLine();
     if (s != "PHD Config " PROFILE_STREAM_VERSION)
