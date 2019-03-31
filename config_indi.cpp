@@ -136,9 +136,12 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     }
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Port")),
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Device port")),
              POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     devport = new wxTextCtrl(this, wxID_ANY);
+    devport->SetToolTip(_("Device connection port. Additional driver-specific device "
+                          "connection options may be available in the INDI Options "
+                          "window (click Other options)."));
     gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     forcevideo = nullptr;
