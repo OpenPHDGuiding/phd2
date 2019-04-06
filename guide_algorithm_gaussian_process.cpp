@@ -70,11 +70,7 @@ static const int    DefaultNumPointsForApproximation        = 100; // number of 
 static const double DefaultPredictionGain                  = 0.5; // amount of GP prediction to blend in
 
 static const double DefaultNoresetMaxRaDelta = 10.; // max RA delta in seconds to skip resetting the model when guiding is stopped and resumed
-#if 0 // TODO: enable this after live testing
 static const double DefaultNoresetMaxPctPeriod = 40.; // max percent of worm period elapsed to skip resetting the model when guiding is stopped and resumed
-#else
-static const double DefaultNoresetMaxPctPeriod = 0.; // disabled
-#endif
 
 static const bool   DefaultComputePeriod                 = true;
 
@@ -337,7 +333,7 @@ public:
             wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 2000.0, DefaultPeriodLengthPerKer, 1);
         m_pPKPeriodLength->SetDigits(2);
         m_checkboxComputePeriod = new wxCheckBox(pParent, wxID_ANY, _("Auto-adjust period"));
-        m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length based on identified repetitive errors. Default = %s"), 
+        m_checkboxComputePeriod->SetToolTip(wxString::Format(_("Auto-adjust the period length based on identified repetitive errors. Default = %s"),
             DefaultComputePeriod ? _("On") : _("Off")));
 
         DoAdd(_("Period Length"), m_pPKPeriodLength,
