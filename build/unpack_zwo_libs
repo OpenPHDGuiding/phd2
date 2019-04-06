@@ -5,7 +5,7 @@ set -x
 # usage: unpack_zwo_libs ASI_linux_mac_SDK_<version>.tar ASI_Windows_SDK_<version>.zip
 
 usage () {
-    echo 'usage: unpack_zwo_libs ASI_linux_mac_SDK_<version>.tar ASI_Windows_SDK_<version>.zip' >&2
+    echo 'usage: unpack_zwo_libs ASI_linux_mac_SDK_<version>.tar.bz2 ASI_Windows_SDK_<version>.zip' >&2
     exit 1
 }
 
