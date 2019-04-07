@@ -832,39 +832,54 @@ bool ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
     return err;
 }
 
+static double libnova_LST(ScopeINDI *scope)
+{
+#ifdef LIBNOVA
+
+    double jd = ln_get_julian_from_sys();
+    double lst = ln_get_apparent_sidereal_time(jd);
+
+    double lat, lon;
+    bool const err = scope->GetSiteLatLong(&lat, &lon);
+    if (err)
+        return 0.0;
+
+    return norm(lst + lon / 15.0, 0.0, 24.0);
+
+#else
+    return 0.0;
+#endif
+}
+
 bool ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
+    if (!coord_prop)
+        return true;
+
     bool err = true;
-
-    if (coord_prop)
+    INumber *raprop = IUFindNumber(coord_prop, "RA");
+    INumber *decprop = IUFindNumber(coord_prop, "DEC");
+    if (raprop && decprop)
     {
-        INumber *raprop = IUFindNumber(coord_prop, "RA");
-        INumber *decprop = IUFindNumber(coord_prop, "DEC");
-        if (raprop && decprop)
-        {
-            *ra = raprop->value;   // hours
-            *dec = decprop->value; // degrees
-            err = false;
-        }
+        *ra = raprop->value;   // hours
+        *dec = decprop->value; // degrees
+        err = false;
+    }
 
-        if (SiderealTime_prop)   // LX200 only
+    bool found = false;
+    if (SiderealTime_prop)
+    {
+        INumber *stprop = IUFindNumber(SiderealTime_prop, "LST");
+        if (stprop)
         {
-            INumber *stprop = IUFindNumber(SiderealTime_prop, "LST");
-            if (stprop)
-                *siderealTime = stprop->value;
+            *siderealTime = stprop->value;
+            found = true;
         }
-        else
-        {
-#ifdef LIBNOVA
-            double jd = ln_get_julian_from_sys();
-            *siderealTime = ln_get_apparent_sidereal_time(jd);
-            double lat,lon;
-            if (!GetSiteLatLong(&lat,&lon))
-                *siderealTime += (lon / 15.);
-#else
-            *siderealTime = 0;
-#endif
-        }
+    }
+
+    if (!found)
+    {
+        *siderealTime = libnova_LST(this);
     }
 
     return err;
