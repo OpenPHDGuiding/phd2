@@ -424,12 +424,12 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     if (is_usb3 || is_mini)
     {
-        Debug.Write("ZWO: selecting snap mode");
+        Debug.Write("ZWO: selecting snap mode\n");
         m_mode = CM_SNAP;
     }
     else
     {
-        Debug.Write("ZWO: selecting video mode");
+        Debug.Write("ZWO: selecting video mode\n");
         m_mode = CM_VIDEO;
     }
 
