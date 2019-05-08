@@ -299,6 +299,7 @@ wxArrayString GuideCamera::GuideCameraList()
 #endif
 #if defined (TOUPTEK_CAMERA)
     CameraList.Add(_T("ToupTek Camera"));
+    CameraList.Add(_T("Omegon Pro Camera"));
 #endif
 #if defined (SKYRAIDER_CAMERA)
     CameraList.Add(_T("MallinCam SkyRaider"));
@@ -437,8 +438,11 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn = ZWOCameraFactory::MakeZWOCamera();
 #endif
 #if defined(TOUPTEK_CAMERA)
-        else if (choice == _T("ToupTek Camera"))
+        else if (choice == _T("ToupTek Camera") ||
+                 choice == _T("Omegon Pro Camera"))
+        {
             pReturn = ToupTekCameraFactory::MakeToupTekCamera();
+        }
 #endif
 #if defined(SKYRAIDER_CAMERA)
         else if (choice == _T("MallinCam SkyRaider"))
