@@ -697,7 +697,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 {
     if (!image.Subframe.IsEmpty())
     {
-        Debug.AddLine("Autofind called on subframe, returning error");
+        Debug.AddLine("AutoFind called on subframe, returning error");
         return false; // not found
     }
 
@@ -971,7 +971,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                 {
                     if (tmp.PeakVal > sat_thresh)
                     {
-                        Debug.Write(wxString::Format("Autofind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
+                        Debug.Write(wxString::Format("AutoFind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
                         continue;
                     }
                     if (tmp.GetError() == STAR_SATURATED || tmp.SNR < 6.0)
@@ -981,14 +981,14 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                 {
                     if (tmp.GetError() == STAR_SATURATED)
                     {
-                        Debug.Write(wxString::Format("Autofind: star saturated [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                        Debug.Write(wxString::Format("AutoFind: star saturated [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                         continue;
                     }
                 }
 
                 // star accepted
                 SetXY(it->x, it->y);
-                Debug.Write(wxString::Format("Autofind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                 return true;
             }
         }
@@ -999,6 +999,6 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
             Debug.Write("AutoFind: could not find a non-saturated star!\n");
     }
 
-    Debug.Write("Autofind: no star found\n");
+    Debug.Write("AutoFind: no star found\n");
     return false;
 }
