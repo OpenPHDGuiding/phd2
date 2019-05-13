@@ -251,6 +251,7 @@ public:
     wxLocale *m_pLocale;
     unsigned int m_frameCounter;
     wxDateTime m_guidingStarted;
+    wxStopWatch m_guidingElapsed;
     Star::FindMode m_starFindMode;
     double m_minStarHFD;
     bool m_rawImageMode;
@@ -700,7 +701,7 @@ inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm,
 
 inline double MyFrame::TimeSinceGuidingStarted() const
 {
-    return (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
+    return (double) m_guidingElapsed.Time() / 1000.0;
 }
 
 inline Star::FindMode MyFrame::GetStarFindMode() const

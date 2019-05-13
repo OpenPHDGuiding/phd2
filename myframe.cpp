@@ -2149,6 +2149,7 @@ void MyFrame::NotifyGuidingStarted()
     StatusMsg(_("Guiding"));
 
     m_guidingStarted = wxDateTime::UNow();
+    m_guidingElapsed.Start();
     m_frameCounter = 0;
 
     if (pMount)
