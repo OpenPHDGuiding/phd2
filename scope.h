@@ -232,6 +232,7 @@ public:
     virtual bool RequiresCamera();
     virtual bool RequiresStepGuider();
     virtual bool CalibrationFlipRequiresDecFlip();
+    virtual bool HasHPDecEncoder();
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled() const;

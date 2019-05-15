@@ -203,6 +203,7 @@ struct GuidingAsstWin : public wxDialog
     wxButton *m_raMinMoveButton;
     wxButton *m_decMinMoveButton;
     wxButton *m_decBacklashButton;
+    wxButton *m_decAlgoButton;
     wxStaticText *m_ra_msg;
     wxStaticText *m_dec_msg;
     wxStaticText *m_snr_msg;
@@ -212,6 +213,7 @@ struct GuidingAsstWin : public wxDialog
     wxStaticText *m_exposure_msg;
     wxStaticText *m_calibration_msg;
     wxStaticText *m_binning_msg;
+    wxStaticText *m_decAlgo_msg;
     double m_ra_minmove_rec;  // recommended value
     double m_dec_minmove_rec; // recommended value
     double m_min_exp_rec;
@@ -268,6 +270,7 @@ struct GuidingAsstWin : public wxDialog
     void OnRAMinMove(wxCommandEvent& event);
     void OnDecMinMove(wxCommandEvent& event);
     void OnDecBacklash(wxCommandEvent& event);
+    void OnDecAlgoChange(wxCommandEvent& event);
     void OnGraph(wxCommandEvent& event);
     void OnHelp(wxCommandEvent& event);
     void OnReviewPrevious(wxCommandEvent& event);
@@ -289,6 +292,7 @@ struct GuidingAsstWin : public wxDialog
     void LoadGAResults(const wxString& TimeStamp, GADetails* Details);
     void SaveGAResults(const wxString* AllRecommendations);
     int GetGAHistoryCount();
+    const int MAX_GA_HISTORY = 3;
 };
 
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
@@ -782,6 +786,35 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
         Debug.Write("GuideAssistant logic flaw, Dec algorithm has no MinMove property\n");
 }
 
+void GuidingAsstWin::OnDecAlgoChange(wxCommandEvent& event)
+{
+    if (pMount->IsStepGuider())
+        return;                         // should never happen
+    pMount->SetGuidingEnabled(false);
+    // Need to make algo change through AD UI controls to keep everything in-synch
+    Mount::MountConfigDialogPane* currMountPane = pFrame->pAdvancedDialog->GetCurrentMountPane();
+    currMountPane->ChangeYAlgorithm("Lowpass2");
+    Debug.Write("GuideAssistant changed Dec algo to Lowpass2\n");
+    GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();
+    if (!decAlgo || decAlgo->GetGuideAlgorithmClassName() != "Lowpass2")
+    {
+        Debug.Write("GuideAssistant could not set Dec algo to Lowpass2\n");
+        return;
+    }
+
+    double newAggr = 80.0;
+    decAlgo->SetParam("aggressiveness", newAggr);
+    decAlgo->SetParam("minMove", m_dec_minmove_rec);
+    Debug.Write(wxString::Format("GuideAssistant set Lowpass2 aggressiveness = %0.2f, min-move = %0.2f\n", newAggr, m_dec_minmove_rec));
+    pFrame->pGraphLog->UpdateControls();
+    pMount->SetGuidingEnabled(true);
+    pFrame->NotifyGuidingParam("Declination algorithm", wxString("Lowpass2"));
+    pFrame->NotifyGuidingParam("Declination Lowpass2 aggressivness", newAggr);
+    pFrame->NotifyGuidingParam("Declination Lowpass2 MinMove", m_dec_minmove_rec);
+
+    m_decAlgoButton->Enable(false);
+}
+
 void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
     BacklashComp *pComp = TheScope()->GetBacklashComp();
@@ -886,7 +919,7 @@ int GuidingAsstWin::GetGAHistoryCount()
 }
 
 // Insure that no more than 3 GA sessions are kept in the profile while also keeping at least one BLT measurement if one exists
-static void TrimGAHistory(bool FreshBLT)
+static void TrimGAHistory(bool FreshBLT, int HistoryDepth)
 {
     int bltCount;
     int oldestBLTInx;
@@ -897,7 +930,7 @@ static void TrimGAHistory(bool FreshBLT)
     timeStamps = pConfig->Profile.GetGroupNames("/GA");
     totalGAs = timeStamps.size();
     GetBLTHistory(timeStamps, &oldestBLTInx, &bltCount);
-    if (totalGAs > 3)
+    if (totalGAs > HistoryDepth)
     {
         if (FreshBLT || bltCount == 0 || oldestBLTInx > 0 || bltCount > 1 || bltCount == totalGAs)
             targetEntry = timeStamps[0];
@@ -961,7 +994,7 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
         stepStr = stepStr.Left(stepStr.length() - 2);
         pConfig->Profile.SetString(prefix + "/BLT_South", stepStr);
     }
-    TrimGAHistory(freshBLT);
+    TrimGAHistory(freshBLT, MAX_GA_HISTORY);
 }
 
 // Reload GA results for the passed timestamp
@@ -1185,6 +1218,8 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
+    // Backlash comp
+    bool smallBacklash = false;
     if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
     {
         wxString msg;
@@ -1198,7 +1233,10 @@ void GuidingAsstWin::MakeRecommendations()
             m_backlashRecommendedMs = 0;
         bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
         if (m_backlashMs < 100)
+        {
             msg = _("Backlash is small, no compensation needed");              // assume it was a small measurement error
+            smallBacklash = true;
+        }
         else if (m_backlashMs <= MAX_BACKLASH_COMP)
             msg = wxString::Format(_("Try starting with a Dec backlash compensation of %d ms"), m_backlashRecommendedMs);
         else
@@ -1212,6 +1250,23 @@ void GuidingAsstWin::MakeRecommendations()
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
+    }
+
+    bool hasEncoders = pMount->HasHPDecEncoder();
+    if (hasEncoders || smallBacklash)               // Uses encoders or has zero backlash
+    {
+        GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();
+        wxString algoChoice = decAlgo->GetGuideAlgorithmClassName();
+        if (algoChoice == "ResistSwitch")           // automatically rules out AO's
+        {
+            wxString msgText = _("Try using Lowpass2 for Dec guiding");
+            allRecommendations += "DecAlgo:" + msgText + "\n";
+            m_decAlgo_msg = AddRecommendationEntry(SizedMsg(msgText),
+                wxCommandEventHandler(GuidingAsstWin::OnDecAlgoChange), &m_decAlgoButton);
+            logStr = wxString::Format("Recommendation: %s\n", msgText);
+            Debug.Write(logStr);
+            GuideLog.NotifyGAResult(logStr);
+        }
     }
 
     SaveGAResults(&allRecommendations);
@@ -1276,6 +1331,11 @@ void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
                 details.RecDecMinMove.ToDouble(&m_dec_minmove_rec);
                 m_dec_msg = AddRecommendationEntry(SizedMsg(what),
                         wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+            }
+            else if (which == "DecAlgo")
+            {
+                m_decAlgo_msg = AddRecommendationEntry(SizedMsg(what),
+                    wxCommandEventHandler(GuidingAsstWin::OnDecAlgoChange), &m_decAlgoButton);
             }
             else if (which == "BLT")
             {

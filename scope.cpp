@@ -493,6 +493,11 @@ bool Scope::CalibrationFlipRequiresDecFlip()
     return m_calibrationFlipRequiresDecFlip;
 }
 
+bool Scope::HasHPDecEncoder()
+{
+    return pConfig->Profile.GetBoolean("/scope/HiResEncoders", false);
+}
+
 void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
 {
     m_calibrationFlipRequiresDecFlip = val;

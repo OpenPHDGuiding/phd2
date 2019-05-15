@@ -403,6 +403,20 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     adv->GetSizer()->Fit(adv);
 }
 
+void Mount::MountConfigDialogPane::ChangeYAlgorithm(wxString algoName)
+{
+    if (m_pMount)
+    {
+        int choiceInx = m_pYGuideAlgorithmChoice->FindString(algoName);
+        if (choiceInx >= 0)
+        {
+            m_pYGuideAlgorithmChoice->SetSelection(choiceInx);
+            wxCommandEvent dummy;
+            OnYAlgorithmSelected(dummy);
+        }
+    }
+}
+
 void Mount::MountConfigDialogPane::LoadValues()
 {
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();

@@ -113,6 +113,7 @@ public:
     void SetBinning(int binning);
     void MakeBinningAdjustments(int oldVal, int newVal);
     void ResetGuidingParams();
+    Mount::MountConfigDialogPane* GetCurrentMountPane() { return m_pMountPane; }
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
 

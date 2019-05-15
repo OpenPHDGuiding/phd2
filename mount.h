@@ -216,6 +216,7 @@ public:
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
+        void ChangeYAlgorithm(wxString algoName);
         void ResetRAGuidingParams();
         void ResetDecGuidingParams();
     };
@@ -355,6 +356,7 @@ public:
     virtual wxString CalibrationSettingsSummary() const { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip();
+    virtual bool HasHPDecEncoder() { return false; }
 
     virtual void StartDecDrift();
     virtual void EndDecDrift();

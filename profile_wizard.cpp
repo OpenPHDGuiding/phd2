@@ -81,6 +81,7 @@ private:
     wxChoice *m_pBinningLevel;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
+    wxCheckBox *m_pDecEncoder;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
     wxStaticBoxSizer *m_pHelpGroup;
@@ -277,7 +278,6 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     AddCellPair(this, m_pUserProperties, 2, _("Guide scope focal length (mm)"), m_pFocalLength);
 
     // pixel scale
-
 #   include "icons/transparent24.png.h"
     wxBitmap transparent(wxBITMAP_PNG_FROM_DATA(transparent24));
     m_scaleIcon = new wxStaticBitmap(this, wxID_ANY, transparent);
@@ -301,6 +301,12 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
         "don't know, leave the setting at the default value (%0.1fX), which should produce a successful calibration in most cases"), Scope::DEFAULT_MOUNT_GUIDE_SPEED));
     mtSizer->Add(m_pGuideSpeed, 1);
     AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
+
+    m_pDecEncoder = new wxCheckBox(this, wxID_ANY, _("Declination axis has high-precision encoder (a few high-end mounts)"));
+    m_pDecEncoder->SetToolTip(_("Mount has high-precision encoders on both axes with little or no Dec backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end mounts"));
+    m_pDecEncoder->SetValue(false);
+
+    m_pMountProperties->Add(m_pDecEncoder);
 
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
     m_pvSizer->Add(m_pMountProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -717,13 +723,16 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize, double guid
 }
 
 // Set up some reasonable starting guiding parameters
-static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
+static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning, bool highResEncoders)
 {
     double minMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
 
-    // Min moves for hysteresis guiding in RA and resist switch in Dec
+    // Typically Min moves for hysteresis guiding in RA and resist switch in Dec, but Dec Lowpass2 for mounts with high-end encoders
     pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Hysteresis/minMove", minMove);
-    pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
+    if (!highResEncoders)
+        pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
+    else
+        pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/Lowpass2/minMove", minMove);
 }
 
 struct AutoConnectCamera
@@ -788,9 +797,9 @@ void ProfileWizard::WrapUp()
     int calibrationDistance = CalstepDialog::GetCalibrationDistance(m_FocalLength, m_PixelSize, binning);
     int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning, calibrationDistance);
 
-    Debug.Write(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, "
+    Debug.Write(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, High-res encoders=%s, AuxMount=%s, "
         "AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, CalDist=%d, LaunchDarks=%d\n",
-        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO,
+        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_pDecEncoder->GetValue() ? "True" : "False", m_SelectedAuxMount, m_SelectedAO,
         m_PixelSize, m_FocalLength, calibrationStepSize, calibrationDistance, m_launchDarks));
 
     // create the new profile
@@ -810,6 +819,10 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/camera/binning", binning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     pConfig->Profile.SetInt("/scope/CalibrationDistance", calibrationDistance);
+    bool highResEncoders = m_pDecEncoder->GetValue();
+    pConfig->Profile.SetBoolean("/scope/HiResEncoders", highResEncoders);
+    if (highResEncoders)
+        pConfig->Profile.SetInt("/scope/YGuideAlgorithm", GUIDE_ALGORITHM_LOWPASS2);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     if (m_PositionAware || m_SelectedAuxMount != _("None"))
         pConfig->Profile.SetBoolean("/AutoLoadCalibration", true);
@@ -817,7 +830,7 @@ void ProfileWizard::WrapUp()
     GuideLog.EnableLogging();               // Especially for newbies
 
     // Construct a good baseline set of guiding parameters based on image scale
-    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning);
+    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning, m_pDecEncoder->GetValue());
 
     EndModal(wxOK);
 }
