@@ -1006,10 +1006,10 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     last_exposure_time = cur_time;
 
     // simulate worm phase changing with RA slew
-    double ra, dec, st;
-    bool err = pPointingSource->GetCoordinates(&ra, &dec, &st);
-    if (err)
-        ra = 0.;
+    double dec, st, ra = 0.;
+    if (pPointingSource)
+        pPointingSource->GetCoordinates(&ra, &dec, &st);
+
     static double s_prev_ra;
     double dra = norm(ra - s_prev_ra, -12.0, 12.0);
     s_prev_ra = ra;
