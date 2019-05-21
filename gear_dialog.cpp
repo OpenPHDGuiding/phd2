@@ -462,6 +462,7 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     assert(pCamera == nullptr || pCamera == m_pCamera);
 
     m_camWarningIssued = false;
+    m_camChanged = false;
 
     if (m_pStepGuider)
     {
@@ -530,7 +531,7 @@ void GearDialog::EndModal(int retCode)
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
 
-    if (pFrame->GetAutoLoadCalibration())
+    if (pFrame->GetAutoLoadCalibration() && !m_camChanged)
     {
         if (pMount && pMount->IsConnected() &&
             (!pSecondaryMount || pSecondaryMount->IsConnected()))
@@ -542,7 +543,13 @@ void GearDialog::EndModal(int retCode)
     else
     {
         // if user is loading/unloading the same profile, the calibration will hang around unless we clear it
-        Debug.Write("Clearing calibration data because auto-load is false\n");
+        if (m_camChanged)
+        {
+            Debug.Write("Clearing calibration data because camera was changed\n");
+            m_camChanged = false;
+        }
+        else
+            Debug.Write("Clearing calibration data because auto-load is false\n");
         if (m_pStepGuider)
         {
             if (m_pStepGuider->IsConnected())
@@ -1059,6 +1066,7 @@ bool GearDialog::DoConnectCamera()
                 if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
                 {
                     m_camWarningIssued = true;
+                    m_camChanged = true;
                     m_lastCamera = newCam;          // make consistent with what's in the UI
                 }
                 else

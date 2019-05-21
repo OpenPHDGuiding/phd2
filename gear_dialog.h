@@ -53,6 +53,7 @@ class GearDialog : public wxDialog
     bool m_ascomScopeSelected;
     wxString m_lastCamera;
     bool m_camWarningIssued;
+    bool m_camChanged;
     wxArrayString m_cameraIds;
 
     wxGridBagSizer *m_gearSizer;
