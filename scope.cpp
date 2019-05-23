@@ -287,7 +287,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
             wxString s = DecGuideModeStr(m_decGuideMode);
             Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", s, decGuideMode));
             pFrame->NotifyGuidingParam("Dec Guide Mode", s);
-            BacklashComp* blc = GetBacklashComp();
+            BacklashComp *blc = GetBacklashComp();
             if (blc)
             {
                 if (decGuideMode != DEC_AUTO)
@@ -1774,7 +1774,7 @@ wxString Scope::GetSettingsSummary() const
     // return a loggable summary of current mount settings
     wxString rtnVal = Mount::GetSettingsSummary() +
         wxString::Format(
-            "Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
+            "Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetMaxRaDuration(),
             GetMaxDecDuration(),
             DecGuideModeStr(GetDecGuideMode()));
@@ -1848,7 +1848,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     m_pScope = pScope;
     width = StringWidth(_T("00000"));
 
-    wxBoxSizer* pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pCalibrationDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dur"));
     pCalibSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration,
@@ -1863,7 +1863,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 
     pCalibSizer->Add(pAutoDuration);
 
-    wxBoxSizer* pCalibGroupSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pCalibGroupSizer = new wxBoxSizer(wxVERTICAL);
     pCalibGroupSizer->Add(pCalibSizer);
 
     AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibGroupSizer);
@@ -1892,14 +1892,13 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 
     if (pScope)
     {
-        wxBoxSizer* pComp1 = new wxBoxSizer(wxHORIZONTAL);
-        wxWindow* blcHostTab;
+        wxBoxSizer *pComp1 = new wxBoxSizer(wxHORIZONTAL);
         BRAIN_CTRL_IDS blcCtrlId;
         if (usingAO)
             blcCtrlId = AD_szBumpBLCompCtrls;
         else
             blcCtrlId = AD_szBLCompCtrls;
-        blcHostTab = GetParentWindow(blcCtrlId);
+        wxWindow *blcHostTab = GetParentWindow(blcCtrlId);
         m_pUseBacklashComp = new wxCheckBox(blcHostTab, wxID_ANY, _("Enable"));
         m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
         pComp1->Add(m_pUseBacklashComp);

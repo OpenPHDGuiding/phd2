@@ -1399,11 +1399,12 @@ void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMa
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
     pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
-    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpBLCompCtrls));
+    wxSizer *blBumpSizer = GetSizerCtrl(CtrlMap, AD_szBumpBLCompCtrls);
+    if (blBumpSizer)
+        pAoDetailSizer->Add(blBumpSizer);
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
     pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
     this->Add(pAoDetailSizer, def_flags);
-
 }
 
 // UI controls for properties unique to step-guider.  Mount controls for guide algos are handled by MountConfigDialogPane
