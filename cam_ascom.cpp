@@ -737,6 +737,12 @@ bool CameraASCOM::SetCoolerOn(bool on)
         return true; // error
     }
 
+    if (!Connected)
+    {
+        Debug.Write("camera cannot set cooler on/off when not connected\n");
+        return true;
+    }
+
     GITObjRef cam(m_gitEntry);
 
     if (!cam.PutProp(dispid_cooleron, on))
@@ -755,6 +761,12 @@ bool CameraASCOM::SetCoolerSetpoint(double temperature)
     {
         Debug.Write("camera cannot set cooler temperature\n");
         return true; // error
+    }
+
+    if (!Connected)
+    {
+        Debug.Write("camera cannot set cooler setpoint when not connected\n");
+        return true;
     }
 
     GITObjRef cam(m_gitEntry);
