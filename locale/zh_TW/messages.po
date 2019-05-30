@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-23 21:23+0100\n"
-"PO-Revision-Date: 2019-02-19 18:16+0800\n"
+"PO-Revision-Date: 2019-05-30 09:46+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:658
 msgid "Explanation"
@@ -883,10 +883,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1308,11 +1307,11 @@ msgstr "赤緯角度"
 
 #: cam_skyraider.cpp:150
 msgid "Failed to open SkyRaider Camera."
-msgstr ""
+msgstr "無法開啟 SkyRaider 相機."
 
 #: cam_skyraider.cpp:159
 msgid "Failed to get camera resolution for SkyRaider Camera."
-msgstr ""
+msgstr "無法取得 SkyRaider 相機的解析度."
 
 #: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
@@ -1819,8 +1818,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:537
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:329
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:329 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -1918,13 +1916,15 @@ msgstr "雙 CCD"
 
 #: config_indi.cpp:139
 msgid "Device port"
-msgstr ""
+msgstr "設備通訊埠"
 
 #: config_indi.cpp:142
 msgid ""
 "Device connection port. Additional driver-specific device connection options "
 "may be available in the INDI Options window (click Other options)."
 msgstr ""
+"設備連接通訊埠. 在 INDI 選項視窗 (點擊 [其他] 選項) 中可能有額外與驅動程式相"
+"關的連接選項."
 
 #: config_indi.cpp:151
 msgid "Camera does not support exposure time"
@@ -3332,8 +3332,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3457,8 +3457,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3481,8 +3481,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3999,7 +3999,7 @@ msgstr "檢視之前的"
 
 #: guiding_assistant.cpp:543
 msgid "Review previous Guiding Assistant results"
-msgstr ""
+msgstr "檢視之前導星小幫手的結果"
 
 #: guiding_assistant.cpp:548
 msgid "Stop measuring and re-enable guiding"
@@ -4207,7 +4207,7 @@ msgstr "回差 >= %d ms; 你可能必須僅在單一赤緯方向導星 (目前�
 
 #: guiding_assistant.cpp:1262
 msgid "Try using Lowpass2 for Dec guiding"
-msgstr ""
+msgstr "嘗試使用 Lowpass2 進行赤緯導星"
 
 #: guiding_assistant.cpp:1380
 msgid "Measuring..."
@@ -5278,6 +5278,8 @@ msgid ""
 "Enter a focal length in millimeters, between %.f and %.f,\n"
 "or enter 0 if the focal length is not known"
 msgstr ""
+"以毫米為單位輸入焦長, 輸入數值在 %.f 與 %.f 之間,\n"
+"如果不知道焦長的話, 請輸入 0 "
 
 #: myframe.cpp:2804
 msgid "Reset Configuration"
@@ -6350,7 +6352,7 @@ msgstr "赤道儀導星速率 (n.n x 恆星時)"
 
 #: profile_wizard.cpp:305
 msgid "Declination axis has high-precision encoder (a few high-end mounts)"
-msgstr ""
+msgstr "赤緯軸有高解析度編碼器 (某些高階赤道儀)"
 
 #: profile_wizard.cpp:306
 msgid ""
@@ -6358,6 +6360,8 @@ msgid ""
 "backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end "
 "mounts"
 msgstr ""
+"赤道儀雙軸都有高精度編碼器 (如 10Micron, Astro-Physics AE, iOptron EC2 或其他"
+"高階赤道儀), 這些赤道儀幾乎不會有回差"
 
 #: profile_wizard.cpp:317
 msgid "Build dark library"
@@ -8030,7 +8034,7 @@ msgstr "維持 AO 導星的檢查動作, 核銷該選項會關閉 AO 修正, 僅
 #: stepguider_sbigao_indi.cpp:190
 #, c-format
 msgid "We need at least INDI driver %s version 2.1 to get AO support."
-msgstr ""
+msgstr "INDI 驅動程式 %s 2.1 版以上才能支援 AO."
 
 #: stepguider_sbigao_indi.cpp:335 stepguider_sxao_indi.cpp:352
 msgid "INDI AO Selection"
