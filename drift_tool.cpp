@@ -539,13 +539,13 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
     double cur_ra, cur_dec, cur_st;
     if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
-        Debug.AddLine("Drift tool: slew failed to get scope coordinates");
+        Debug.Write("Drift tool: slew failed to get scope coordinates\n");
         return;
     }
 
     double slew_ra = norm_ra(cur_st + (raSlew * 24.0 / 360.0));
 
-    Debug.AddLine(wxString::Format("Drift tool: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f",
+    Debug.Write(wxString::Format("Drift tool: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f\n",
         cur_ra, cur_dec, slew_ra, decSlew));
 
     if (pPointingSource->CanSlewAsync())
@@ -596,7 +596,7 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
             GetStatusBar()->PopStatusText();
             m_slewing = false;
             m_slew->Enable(true);
-            Debug.AddLine("Drift tool: slew failed");
+            Debug.Write("Drift tool: slew failed\n");
         }
     }
 
@@ -677,7 +677,7 @@ void DriftToolWin::OnAppStateNotify(wxCommandEvent& evt)
 
 void DriftToolWin::OnClose(wxCloseEvent& evt)
 {
-    Debug.AddLine("Drift tool: Close DriftTool");
+    Debug.Write("Drift tool: Close DriftTool\n");
 
     if (m_need_end_dec_drift)
     {
