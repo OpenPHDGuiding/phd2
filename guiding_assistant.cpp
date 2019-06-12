@@ -705,16 +705,14 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                 bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
                 bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
                 wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
-                wxString MSEC(_("ms"));
-                wxString ARCSEC(_("arc-sec"));
                 wxString outStr;
                 if (qual == BacklashTool::MEASUREMENT_VALID)
-                    outStr = wxString::Format("%s %d \u00B1 %0.0f %s (%0.1f \u00B1 %0.1f %s)",
-                    preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs, MSEC,
-                    wxMax(0, bltGearAngle), bltGearAngleSigma, ARCSEC);
+                    outStr = wxString::Format("%s %d %s %0.0f %s (%0.1f %s %0.1f %s)",
+                    preamble, wxMax(0, m_backlashMs), " +/- " , m_backlashSigmaMs, _("ms"),
+                    wxMax(0, bltGearAngle), " +/- ", bltGearAngleSigma, _("arc-sec"));
                 else
-                    outStr = wxString::Format("%s %d \u00B1 %s",
-                        preamble, wxMax(0, m_backlashMs), MSEC + _(" (test impaired)"));
+                    outStr = wxString::Format("%s %d %s %s",
+                        preamble, wxMax(0, m_backlashMs), " +/- ", _("ms (test impaired)"));
                 m_othergrid->SetCellValue(m_backlash_loc, outStr);
                 HighlightCell(m_othergrid, m_backlash_loc);
                 outStr += "\n";
