@@ -134,7 +134,7 @@ struct AltairCamera : public GuideCamera
     int m_minGain;
     int m_maxGain;
     double m_devicePixelSize;
-    HAltairCam m_handle;
+    HAltaircam m_handle;
     volatile bool m_frameReady;
     bool ReduceResolution;
 
@@ -390,7 +390,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         m_sdk.put_Mode(m_handle, 0);
 
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
-    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_AGAIN, 0);
+    m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     return false;
 }
