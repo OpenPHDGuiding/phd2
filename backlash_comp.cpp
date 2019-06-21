@@ -1236,8 +1236,6 @@ void BacklashTool::ShowGraph(wxDialog *pGA, const std::vector<double> &northStep
 
 void BacklashTool::CleanUp()
 {
-    BacklashComp* blc;
-    blc = m_scope->GetBacklashComp();
     m_scope->GetBacklashComp()->ResetBLCState();        // Normal guiding will start, don't want old BC state applied
     pFrame->pGuider->EnableMeasurementMode(false);
     Debug.Write("BLT: Cleanup completed\n");
