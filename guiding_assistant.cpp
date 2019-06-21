@@ -1113,10 +1113,22 @@ void GuidingAsstWin::MakeRecommendations()
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
-    m_dec_minmove_rec = rounded_decrms;
-    m_ra_minmove_rec = m_dec_minmove_rec * multiplier_ra / multiplier_dec;
-    // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
-    m_ra_minmove_rec = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
+    // The mount may have behaved badly or measurement may have been disrupted, so put a ceiling of 1.25 arc-sec on the min-moves
+    if (pxscale * rounded_decrms <= 1.25)
+    {
+        m_dec_minmove_rec = rounded_decrms;
+        m_ra_minmove_rec = m_dec_minmove_rec * multiplier_ra / multiplier_dec;
+        // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
+        m_ra_minmove_rec = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
+    }
+    else
+    {
+        // Just reiterate the estimates made in the new-profile-wiz
+        m_dec_minmove_rec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        m_ra_minmove_rec = m_dec_minmove_rec;
+    }
+
+
     // Refine the drift-limiting exposure value based on the ra_min_move recommendation
     m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
         wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
