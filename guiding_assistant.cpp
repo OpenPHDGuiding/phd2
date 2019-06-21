@@ -252,6 +252,7 @@ struct GuidingAsstWin : public wxDialog
     bool m_measurementsTaken;
     int  m_origSubFrames;
     bool m_suspectCalibration;
+    bool inBLTWrapUp = false;
 
     bool m_measuringBacklash;
     BacklashTool *m_backlashTool;
@@ -687,49 +688,66 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
     m_gaStatus->SetLabel(bl_msg);
     if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
     {
-        m_backlashTool->DecMeasurementStep(camLoc);
         wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
         m_gaStatus->SetLabel(bl_msg);
         if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
-            qual = m_backlashTool->GetMeasurementQuality();
-            if (qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH)
+            try
             {
-                double bltSigmaPx;
-                double bltGearAngle;
-                double bltGearAngleSigma;
-                // populate result variables
-                m_backlashPx = m_backlashTool->GetBacklashResultPx();
-                m_backlashMs = m_backlashTool->GetBacklashResultMs();
-                m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
-                bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
-                bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
-                wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
-                wxString outStr;
-                if (qual == BacklashTool::MEASUREMENT_VALID)
-                    outStr = wxString::Format("%s %d %s %0.0f %s (%0.1f %s %0.1f %s)",
-                    preamble, wxMax(0, m_backlashMs), " +/- " , m_backlashSigmaMs, _("ms"),
-                    wxMax(0, bltGearAngle), " +/- ", bltGearAngleSigma, _("arc-sec"));
+                if (inBLTWrapUp)
+                {
+                    Debug.Write("GA-BLT: Re-entrancy in Backlash step!\n");
+                    return;
+                }
                 else
-                    outStr = wxString::Format("%s %d %s %s",
+                    inBLTWrapUp = true;
+                Debug.Write("GA-BLT: state = completed\n");
+                qual = m_backlashTool->GetMeasurementQuality();
+                if (qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH)
+                {
+                    double bltSigmaPx;
+                    double bltGearAngle;
+                    double bltGearAngleSigma;
+                    Debug.Write("GA-BLT: Wrap-up after normal completion\n");
+                    // populate result variables
+                    m_backlashPx = m_backlashTool->GetBacklashResultPx();
+                    m_backlashMs = m_backlashTool->GetBacklashResultMs();
+                    m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
+                    bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
+                    bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
+                    wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
+                    wxString outStr;
+                    if (qual == BacklashTool::MEASUREMENT_VALID)
+                        outStr = wxString::Format("%s %d %s %0.0f %s (%0.1f %s %0.1f %s)",
+                        preamble, wxMax(0, m_backlashMs), " +/- ", m_backlashSigmaMs, _("ms"),
+                        wxMax(0, bltGearAngle), " +/- ", bltGearAngleSigma, _("arc-sec"));
+                    else
+                        outStr = wxString::Format("%s %d %s %s",
                         preamble, wxMax(0, m_backlashMs), " +/- ", _("ms (test impaired)"));
-                m_othergrid->SetCellValue(m_backlash_loc, outStr);
-                HighlightCell(m_othergrid, m_backlash_loc);
-                outStr += "\n";
-                GuideLog.NotifyGAResult("Backlash=" + outStr);
-                Debug.Write("BLT: Reported result = " + outStr);
-                m_graphBtn->Enable(true);
+                    m_othergrid->SetCellValue(m_backlash_loc, outStr);
+                    HighlightCell(m_othergrid, m_backlash_loc);
+                    outStr += "\n";
+                    GuideLog.NotifyGAResult("Backlash=" + outStr);
+                    Debug.Write("BLT: Reported result = " + outStr);
+                    m_graphBtn->Enable(true);
+                }
+                else
+                {
+                    m_othergrid->SetCellValue(m_backlash_loc, "");
+                }
+                EndBacklashTest(qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH);
             }
-            else
+            catch (const wxString& msg)
             {
-                m_othergrid->SetCellValue(m_backlash_loc, "");
+                Debug.Write(wxString::Format("GA-BLT: fault in completion-processing at %d, %s\n", __LINE__, msg));
+                EndBacklashTest(false);
             }
-            EndBacklashTest(qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH);
         }
     }
     else
     if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_ABORTED)
         EndBacklashTest(false);
+    inBLTWrapUp = false;
 }
 
 void GuidingAsstWin::BacklashError()
