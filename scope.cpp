@@ -900,16 +900,16 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
         switch (m_lastCalibrationIssue)
         {
         case CI_Steps:
-            alertMsg = _("Calibration is based on very few steps, so accuracy is questionable");
+            alertMsg = _("Advisory: Calibration completed but few guide steps were used, so accuracy is questionable");
             break;
         case CI_Angle:
-            alertMsg = _("Calibration computed RA/Dec axis angles that are questionable");
+            alertMsg = _("Advisory: Calibration completed but RA/Dec axis angles are questionable and guiding may be impaired");
             break;
         case CI_Different:
-            alertMsg = _("This calibration is substantially different from the previous one - have you changed configurations?");
+            alertMsg = _("Advisory: This calibration is substantially different from the previous one - have you changed configurations?");
             break;
         case CI_Rates:
-            alertMsg = _("The RA and Dec rates vary by an unexpected amount");
+            alertMsg = _("Advisory: Calibration completed but RA and Dec rates vary by an unexpected amount (often caused by large Dec backlash)");
         default:
             break;
         }
@@ -1285,7 +1285,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     // Want a significant east movement that re-traces the west vector to within 30 degrees
                     if (fabs(eastDistMoved) < 0.25 * westDistMoved || fabs(norm_angle(eastAngle - (m_calibration.xAngle + M_PI))) > radians(30))
                     {
-                        wxString msg(wxTRANSLATE("Little or no east movement was measured, so guiding will probably be impaired. "
+                        wxString msg(wxTRANSLATE("Advisory: Little or no east movement was measured, so guiding will probably be impaired. "
                             "Check the guide cable and use the Manual Guide tool to confirm basic operation of the mount."));
                         const wxString& translated(wxGetTranslation(msg));
                         pFrame->Alert(translated, 0, wxEmptyString, 0, 0, true);
@@ -1564,23 +1564,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (!CanPulseGuide())
                     {
                         if (fabs(southDistMoved) < 0.10 * northDistMoved)
-                            msg = wxTRANSLATE("Little or no south movement was measured, so guiding will probably be impaired. "
-                            "This is usually caused by a faulty guide cable or extremely large Dec backlash. "
+                            msg = wxTRANSLATE("Advisory: Calibration succeessful but little or no south movement was measured, so guiding will probably be impaired.\n "
+                            "This is usually caused by a faulty guide cable or very large Dec backlash. \n"
                             "Check the guide cable and read the online Help for how to identify these types of problems (Manual Guide, Declination backlash).");
                         else
-                            msg = wxTRANSLATE("Little south movement was measured, so guiding will probably be impaired. "
-                            "This is usually caused by very large Dec backlash or other problems with the mount mechanics. "
+                            msg = wxTRANSLATE("Advisory: Calibration successful but little south movement was measured, so guiding will probably be impaired. \n"
+                            "This is usually caused by very large Dec backlash or other problems with the mount mechanics. \n"
                             "Read the online Help for how to identify these types of problems (Manual Guide, Declination backlash).");
                     }
                     else
-                        msg = wxTRANSLATE("Little south movement was measured, so guiding will probably be impaired. "
-                        "This is usually caused by very large Dec backlash or other problems with the mount mechanics. "
+                        msg = wxTRANSLATE("Advisory: Calibration successful but little south movement was measured, so guiding may be impaired.\n "
+                        "This is usually caused by very large Dec backlash or other problems with the mount mechanics. \n"
                         "Read the online help for how to deal with this type of problem (Declination backlash).");
 
                     if (!m_eastAlertShown)
                     {
                         const wxString& translated(wxGetTranslation(msg));
-                        //pFrame->Alert(translated);
                         pFrame->SuppressableAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
                     }
                     Debug.Write("Calibration alert: " + msg + "\n");
