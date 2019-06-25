@@ -230,9 +230,13 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     Layout();
     topSizer->Fit(this);
 
-    int xpos = pConfig->Global.GetInt("/PolarDriftTool/pos.x", -1);
-    int ypos = pConfig->Global.GetInt("/PolarDriftTool/pos.y", -1);
-    MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
+    int x = pConfig->Global.GetInt("/PolarDriftTool/pos.x", -1);
+    int y = pConfig->Global.GetInt("/PolarDriftTool/pos.y", -1);
+    MyFrame::PlaceWindowOnScreen(this, x, y);
+
+    x = pConfig->Global.GetInt("/PolarDriftTool/size.x", -1);
+    y = pConfig->Global.GetInt("/PolarDriftTool/size.y", -1);
+    SetSize(x, y);
 
     FillPanel();
 }
@@ -318,6 +322,12 @@ void PolarDriftToolWin::OnClose(wxCloseEvent& evt)
     GetPosition(&x, &y);
     pConfig->Global.SetInt("/PolarDriftTool/pos.x", x);
     pConfig->Global.SetInt("/PolarDriftTool/pos.y", y);
+
+    // save the window size
+    GetSize(&x, &y);
+    pConfig->Global.SetInt("/PolarDriftTool/size.x", x);
+    pConfig->Global.SetInt("/PolarDriftTool/size.y", y);
+
     Debug.AddLine("Close PolarDriftTool");
     Destroy();
 }
