@@ -107,7 +107,7 @@ bool PolarDriftTool::UpdateState()
 
 PolarDriftToolWin::PolarDriftToolWin()
 : wxFrame(pFrame, wxID_ANY, _("Polar Drift Alignment"), wxDefaultPosition, wxDefaultSize,
-wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR)
+wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR | wxRESIZE_BORDER )
 {
     m_t0 = 0;
     m_sumt = m_sumt2 = m_sumx = m_sumx2 = m_sumy = m_sumy2 = m_sumtx = m_sumty = m_sumxy = 0.0;
@@ -224,7 +224,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
 
     SetSizer(topSizer);
     m_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
-    const int sbw[3] = { 60, 100, 110 };
+    const int sbw[3] = { -2, -1, -1 };
     m_statusBar->SetFieldsCount(3, sbw);
 
     Layout();
