@@ -293,6 +293,7 @@ struct GuidingAsstWin : public wxDialog
     void LoadGAResults(const wxString& TimeStamp, GADetails* Details);
     void SaveGAResults(const wxString* AllRecommendations);
     int GetGAHistoryCount();
+    void GetMinMoveRecs(double& RecRA, double& RecDec);
     const int MAX_GA_HISTORY = 3;
 };
 
@@ -1076,36 +1077,140 @@ static wxString SizedMsg(wxString msg)
         return msg;
 }
 
+// Compute a drift-corrected value for Dec RMS and use that as a seeing estimate.  For long GA runs, compute values for overlapping
+// 2-minute intervals and use the smallest result
+// Perform suitable sanity checks, revert to default "smart" recommendations if things look wonky
+void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
+{
+    AxisStats decVals;
+    double bestEstimate = 1000;
+    double slope = 0;
+    double intcpt = 0;
+    double rSquared = 0;
+    double selRSquared = 0;
+    double selSlope = 0;
+    double correctedRMS;
+    const int MEASUREMENT_WINDOW_SIZE = 120;     // seconds
+    const int WINDOW_ADJUSTMENT = MEASUREMENT_WINDOW_SIZE / 2;
+
+    int lastInx = m_decAxisStats.GetCount() - 1;
+    double pxscale = pFrame->GetCameraPixelScale();
+    StarDisplacement val = m_decAxisStats.GetEntry(0);
+    double tStart = val.DeltaTime;
+    double multiplier_ra = 1.0;   // 66% prediction interval
+    double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
+
+    try
+    {
+        if (m_decAxisStats.GetLastEntry().DeltaTime - tStart > 1.2 * MEASUREMENT_WINDOW_SIZE)           //Long GA run, more than 2.4 minutes
+        {
+            bool done = false;
+            int inx = 0;
+            while (!done)
+            {
+                val = m_decAxisStats.GetEntry(inx);
+                decVals.AddGuideInfo(val.DeltaTime, val.StarPos, 0);
+                // Compute the minimum sigma for sliding, overlapping 2-min elapsed time intervals. Include the final interval if it's >= 1.6 minutes
+                if (val.DeltaTime - tStart >= MEASUREMENT_WINDOW_SIZE || (inx == lastInx && val.DeltaTime - tStart >= 0.8 * MEASUREMENT_WINDOW_SIZE))
+                {
+                    if (decVals.GetCount() > 1)
+                    {
+                        double simpleSigma = decVals.GetSigma();
+                        rSquared = decVals.GetLinearFitResults(&slope, &intcpt, &correctedRMS);
+                        // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected
+                        // RMS unless it's smaller than the simple sigma
+                        if (correctedRMS < simpleSigma)
+                        {
+                            if (correctedRMS < bestEstimate)            // Keep track of the smallest value seen
+                            {
+                                bestEstimate = correctedRMS;
+                                selRSquared = rSquared;
+                                selSlope = slope;
+                            }
+                        }
+                        else
+                            bestEstimate = wxMin(bestEstimate, simpleSigma);
+                        Debug.Write(wxString::Format("GA long series, window start=%0.0f, window end=%0.0f, Uncorrected RMS=%0.3f, Drift=%0.3f, Corrected RMS=%0.3f, R-sq=%0.3f\n",
+                            tStart, val.DeltaTime, simpleSigma, slope * 60, correctedRMS, rSquared));
+                    }
+                    // Move the start of the next window earlier by 1 minute
+                    int lastInx = inx;
+                    double targetTime = val.DeltaTime - WINDOW_ADJUSTMENT;
+                    while (m_decAxisStats.GetEntry(inx).DeltaTime > targetTime)
+                        inx--;
+                    tStart = m_decAxisStats.GetEntry(inx).DeltaTime;
+
+                    decVals.ClearAll();
+                }
+                else
+                {
+                    inx++;
+                }
+                done = (inx > lastInx);
+            }
+            Debug.Write(wxString::Format("Full uncorrected RMS=%0.3fpx, Selected Dec drift=%0.3f px/min, Best seeing estimate=%0.3fpx, R-sq=%0.3f\n",
+                m_decAxisStats.GetSigma(), selSlope * 60, bestEstimate, selRSquared));
+        }
+        else         // Normal GA run of <= 2.4 minutes, just use the entire interval for stats
+        {
+            if (m_decAxisStats.GetCount() > 1)
+            {
+                double simpleSigma = m_decAxisStats.GetSigma();
+                rSquared = m_decAxisStats.GetLinearFitResults(&slope, &intcpt, &correctedRMS);
+                // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected
+                // RMS unless it's smaller than the simple sigma
+                if (correctedRMS < simpleSigma)
+                    bestEstimate = correctedRMS;
+                else
+                    bestEstimate = simpleSigma;
+                Debug.Write(wxString::Format("Uncorrected Dec RMS=%0.3fpx, Dec drift=%0.3f px/min, Best seeing estimate=%0.3fpx, R-sq=%0.3f\n",
+                    simpleSigma, slope * 60, bestEstimate, rSquared));
+            }
+        }
+
+        // round up to next multiple of .05, but do not go below 0.10 pixel
+        double const unit = 0.05;
+        double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
+        // Now apply a sanity check - there are still numerous things that could have gone wrong during the GA
+        if (pxscale * roundUpEst <= 1.25)           // Min-move above 1.25 arc-sec is probably bogus
+        {
+            RecDec = roundUpEst;
+            RecRA = RecDec * multiplier_ra / multiplier_dec;
+            // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
+            RecRA = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
+            Debug.Write(wxString::Format("GA Min-Move recommendations are seeing-based: Dec=%0.3f, RA=%0.3f\n", RecDec, RecRA));
+        }
+        else
+        {
+            // Just reiterate the estimates made in the new-profile-wiz
+            RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+            RecRA = RecDec * multiplier_ra / multiplier_dec;
+            Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, RA-HPF-Sigma=%0.3f\n", roundUpEst, m_hpfDecStats.GetSigma()));
+            Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
+        }
+    }
+    catch (const wxString& msg)
+    {
+        Debug.Write("Exception thrown in GA min-move calcs: " + msg + "\n");
+        // Punt by reiterating estimates made by new-profile-wiz
+        RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        RecRA = RecDec * multiplier_ra / multiplier_dec;
+        Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
+    }
+}
+
 // Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
 {
     double pxscale = pFrame->GetCameraPixelScale();
     double rarms = m_hpfRAStats.GetSigma();
     double decHPFRms = m_hpfDecStats.GetSigma();
-    // Using linear-fit, get the drift-corrected Dec rms for things like min-move estimates
-    double slope = 0;
-    double intcpt = 0;
-    double rSquared;
-    if (m_decAxisStats.GetCount() > 1)
-    {
-        rSquared = m_decAxisStats.GetLinearFitResults(&slope, &intcpt, &decCorrectedRMS);
-    }
 
     double multiplier_ra  = 1.0;   // 66% prediction interval
     double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
     double ideal_min_exposure;
     double ideal_max_exposure;
     double min_rec_range = 2.0;
-    // round up to next multiple of .05, but do not go below 0.10 pixel
-    double const unit = 0.05;
-    // If there is little drift relative to the random movements, the drift-correction is irrelevant and can actually degrade the result.  So don't use the drift-corrected
-    // RMS unless the linear fit correlation is strong
-    double decRMSEstimate;
-    if (rSquared >= 0.75 && decCorrectedRMS < m_decAxisStats.GetSigma())
-        decRMSEstimate = decCorrectedRMS;
-    else
-        decRMSEstimate = wxMin(m_decAxisStats.GetSigma(), 4.0 * decHPFRms);     // Protect against wild Dec RMS from orthogonality error
-    double rounded_decrms = std::max(round(decRMSEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
     CalibrationDetails calDetails;
     wxString logStr;
     wxString allRecommendations = "";
@@ -1113,29 +1218,13 @@ void GuidingAsstWin::MakeRecommendations()
     TheScope()->GetCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
-    // The mount may have behaved badly or measurement may have been disrupted, so put a ceiling of 1.25 arc-sec on the min-moves
-    if (pxscale * rounded_decrms <= 1.25)
-    {
-        m_dec_minmove_rec = rounded_decrms;
-        m_ra_minmove_rec = m_dec_minmove_rec * multiplier_ra / multiplier_dec;
-        // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
-        m_ra_minmove_rec = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
-    }
-    else
-    {
-        // Just reiterate the estimates made in the new-profile-wiz
-        m_dec_minmove_rec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
-        m_ra_minmove_rec = m_dec_minmove_rec;
-    }
-
+    GetMinMoveRecs(m_ra_minmove_rec, m_dec_minmove_rec);
 
     // Refine the drift-limiting exposure value based on the ra_min_move recommendation
     m_othergrid->SetCellValue(m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") :
         wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
 
     LogResults();               // Dump the raw statistics
-    Debug.Write(wxString::Format("Uncorrected Dec RMS=%0.3fpx, Linear-fit Dec drift=%0.3f px/min, Drift-corrected Dec(raw) RMS=%0.3fpx, R-sq=%0.3f\n",
-        m_decAxisStats.GetSigma() , decDriftPerMin, decCorrectedRMS, rSquared));
 
     // REMINDER: Any new recommendations must also be done in 'DisplayStaticRecommendations'
     // Clump the no-button messages at the top
