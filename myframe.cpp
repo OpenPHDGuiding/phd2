@@ -2669,7 +2669,7 @@ wxString MyFrame::GetSettingsSummary() const
         "%s\n",
         m_ditherRaOnly ? "RA only" : "both axes",
         m_ditherScaleFactor,
-        m_noiseReductionMethod == NR_NONE ? "none" : m_noiseReductionMethod == NR_2x2MEAN ? "2x2 mean" : "3x3 mean",
+        m_noiseReductionMethod == NR_NONE ? "none" : m_noiseReductionMethod == NR_2x2MEAN ? "2x2 mean" : "3x3 median",
         m_timeLapse,
         m_serverMode ? "enabled" : "disabled",
         PixelScaleSummary()
