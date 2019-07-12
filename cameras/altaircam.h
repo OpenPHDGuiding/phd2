@@ -1,7 +1,7 @@
 #ifndef __altaircam_h__
 #define __altaircam_h__
 
-/* Version: 38.14891.2019.0616 */
+/* Version: 38.15031.2019.0706 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -120,6 +120,7 @@ typedef struct {
 /*    | E_UNEXPECTED   |   Unexpected failure                  | 0x8000FFFF |   */
 /*    | E_OUTOFMEMORY  |   Out of memory                       | 0x8007000E |   */
 /*    | E_WRONG_THREAD |   call function in the wrong thread   | 0x8001010E |   */
+/*    | E_GEN_FAILURE  |   device not functioning              | 0x8007001F |   */
 /*    |----------------|---------------------------------------|------------|   */
 /********************************************************************************/
 
@@ -250,7 +251,7 @@ typedef struct {
 }AltaircamInstV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 38.14891.2019.0616
+    get the version of this dll/so/dylib, which is: 38.15031.2019.0706
 */
 #ifdef _WIN32
 ALTAIRCAM_API(const wchar_t*)   Altaircam_Version();
