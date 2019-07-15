@@ -345,6 +345,12 @@ static json_value *json_parse(char *source, const char **error_pos,
 
     int escaped_newlines = 0;
 
+    // skip leading whitespace
+    while (*it == '\x20' || *it == '\x9' || *it == '\xD' || *it == '\xA')
+    {
+        ++it;
+    }
+
     while (*it)
     {
         switch (*it)

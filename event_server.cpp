@@ -37,6 +37,7 @@
 #include <wx/sstream.h>
 #include <wx/sckstrm.h>
 #include <sstream>
+#include <string.h>
 
 EventServer EvtServer;
 
@@ -335,12 +336,14 @@ static Ev ev_settle_done(const wxString& errorMsg, int settleFrames, int dropped
 struct ClientReadBuf
 {
     enum { SIZE = 1024 };
-    char buf[SIZE];
+    char m_buf[SIZE];
     char *dest;
 
     ClientReadBuf() { reset(); }
-    size_t avail() const { return &buf[SIZE] - dest; }
-    void reset() { dest = &buf[0]; }
+    char *buf() { return &m_buf[0]; }
+    size_t len() const { return dest - &m_buf[0]; }
+    size_t avail() const { return &m_buf[SIZE] - dest; }
+    void reset() { dest = &m_buf[0]; }
 };
 
 struct ClientData
@@ -493,20 +496,6 @@ static void drain_input(wxSocketInputStream& sis)
         if (sis.Read(buf, sizeof(buf)).LastRead() == 0)
             break;
     }
-}
-
-static bool find_eol(char *p, size_t len)
-{
-    const char *end = p + len;
-    for (; p < end; p++)
-    {
-        if (*p == '\n')
-        {
-            *p = 0;
-            return true;
-        }
-    }
-    return false;
 }
 
 enum {
@@ -2231,11 +2220,10 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
     ClientReadBuf *rdbuf = &clidata->rdbuf;
 
     wxSocketInputStream sis(*cli);
-    size_t avail = rdbuf->avail();
 
     while (sis.CanRead())
     {
-        if (avail == 0)
+        if (rdbuf->avail() == 0)
         {
             drain_input(sis);
 
@@ -2246,20 +2234,27 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
             rdbuf->reset();
             break;
         }
-        size_t n = sis.Read(rdbuf->dest, avail).LastRead();
+        size_t n = sis.Read(rdbuf->dest, rdbuf->avail()).LastRead();
         if (n == 0)
             break;
 
-        if (find_eol(rdbuf->dest, n))
-        {
-            drain_input(sis);
-            handle_cli_input_complete(cli, &rdbuf->buf[0], parser);
-            rdbuf->reset();
-            break;
-        }
-
         rdbuf->dest += n;
-        avail -= n;
+
+        char *end;
+        while ((end = static_cast<char *>(memchr(rdbuf->buf(), '\n', rdbuf->len()))) != nullptr)
+        {
+            *end = 0;
+            handle_cli_input_complete(cli, rdbuf->buf(), parser);
+            char *next = end + 1;
+            size_t len = rdbuf->dest - next;
+            if (len == 0)
+            {
+                rdbuf->reset();
+                break;
+            }
+            memmove(rdbuf->buf(), next, len);
+            rdbuf->dest = rdbuf->buf() + len;
+        }
     }
 }
 
