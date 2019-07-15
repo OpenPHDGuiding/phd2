@@ -159,7 +159,7 @@ ScopeINDI::ScopeINDI()
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIMountName = pConfig->Profile.GetString("/indi/INDImount", _T("INDI Mount"));
     INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
-    m_Name = INDIMountName;
+    m_Name = wxString::Format("INDI Mount [%s]", INDIMountName);
 }
 
 ScopeINDI::~ScopeINDI()
@@ -276,7 +276,7 @@ void ScopeINDI::SetupDialog()
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
         pConfig->Profile.SetString("/indi/INDImount_port",INDIMountPort);
-        m_Name = INDIMountName;
+        m_Name = wxString::Format("INDI Mount [%s]", INDIMountName);
     }
 
     indiDlg.Disconnect();

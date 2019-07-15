@@ -499,7 +499,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     Variant vname;
     if (driver.GetProp(&vname, L"Name"))
     {
-        Name = vname.bstrVal;
+        Name = displayName(vname.bstrVal);
         Debug.Write(wxString::Format("setting camera Name = %s\n", Name));
     }
 

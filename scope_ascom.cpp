@@ -72,7 +72,7 @@ ScopeASCOM::ScopeASCOM(const wxString& choice)
     dispid_abortslew = DISPID_UNKNOWN;
 }
 
-ScopeASCOM::~ScopeASCOM(void)
+ScopeASCOM::~ScopeASCOM()
 {
 }
 
@@ -171,12 +171,12 @@ bool ScopeASCOM::Create(DispatchObj& obj)
     return true;
 }
 
-bool ScopeASCOM::HasSetupDialog(void) const
+bool ScopeASCOM::HasSetupDialog() const
 {
     return true;
 }
 
-void ScopeASCOM::SetupDialog(void)
+void ScopeASCOM::SetupDialog()
 {
     DispatchObj scope;
     if (Create(scope))
@@ -197,7 +197,7 @@ void ScopeASCOM::SetupDialog(void)
     m_gitEntry.Unregister();
 }
 
-bool ScopeASCOM::Connect(void)
+bool ScopeASCOM::Connect()
 {
     bool bError = false;
 
@@ -347,13 +347,13 @@ bool ScopeASCOM::Connect(void)
             throw ERROR_INFO("ASCOM Scope: Could not get the scope name: " + ExcepMsg(pScopeDriver.Excep()));
         }
 
-        m_Name = vRes.bstrVal;
+        m_Name = displayName(vRes.bstrVal);
 
         Debug.Write(wxString::Format("Scope reports its name as %s\n", m_Name));
 
         m_abortSlewWhenGuidingStuck = false;
 
-        if (m_Name == _T("Gemini Telescope .NET"))
+        if (m_Name.Find(_T("Gemini Telescope .NET")) != wxNOT_FOUND)
         {
             // Gemini2 firmware (2013 Oct 13 version, perhaps others) has been found to contain a
             // bug where a pulse guide command can fail to complete, with the Guiding property
@@ -405,7 +405,7 @@ bool ScopeASCOM::Connect(void)
     return bError;
 }
 
-bool ScopeASCOM::Disconnect(void)
+bool ScopeASCOM::Disconnect()
 {
     bool bError = false;
 
@@ -715,12 +715,12 @@ void ScopeASCOM::AbortSlew(DispatchObj *scope)
     }
 }
 
-bool ScopeASCOM::CanCheckSlewing(void)
+bool ScopeASCOM::CanCheckSlewing()
 {
     return true;
 }
 
-bool ScopeASCOM::Slewing(void)
+bool ScopeASCOM::Slewing()
 {
     bool bReturn = true;
 
@@ -743,13 +743,13 @@ bool ScopeASCOM::Slewing(void)
     return bReturn;
 }
 
-bool ScopeASCOM::HasNonGuiMove(void)
+bool ScopeASCOM::HasNonGuiMove()
 {
     return true;
 }
 
 // return the declination in radians, or UNKNOWN_DECLINATION
-double ScopeASCOM::GetDeclination(void)
+double ScopeASCOM::GetDeclination()
 {
     double dReturn = UNKNOWN_DECLINATION;
 
@@ -928,7 +928,7 @@ bool ScopeASCOM::GetSiteLatLong(double *latitude, double *longitude)
     return bError;
 }
 
-bool ScopeASCOM::CanSlew(void)
+bool ScopeASCOM::CanSlew()
 {
     try
     {
@@ -946,7 +946,7 @@ bool ScopeASCOM::CanSlew(void)
     }
 }
 
-bool ScopeASCOM::CanSlewAsync(void)
+bool ScopeASCOM::CanSlewAsync()
 {
     try
     {
@@ -964,12 +964,12 @@ bool ScopeASCOM::CanSlewAsync(void)
     }
 }
 
-bool ScopeASCOM::CanReportPosition(void)
+bool ScopeASCOM::CanReportPosition()
 {
     return true;
 }
 
-bool ScopeASCOM::CanPulseGuide(void)
+bool ScopeASCOM::CanPulseGuide()
 {
     return m_canPulseGuide;
 }
@@ -1042,14 +1042,14 @@ bool ScopeASCOM::SlewToCoordinatesAsync(double ra, double dec)
     return bError;
 }
 
-void ScopeASCOM::AbortSlew(void)
+void ScopeASCOM::AbortSlew()
 {
     GITObjRef scope(m_gitEntry);
     Variant vRes;
     scope.InvokeMethod(&vRes, L"AbortSlew");
 }
 
-PierSide ScopeASCOM::SideOfPier(void)
+PierSide ScopeASCOM::SideOfPier()
 {
     PierSide pierSide = PIER_SIDE_UNKNOWN;
 

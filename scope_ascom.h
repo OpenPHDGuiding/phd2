@@ -84,33 +84,33 @@ class ScopeASCOM : public Scope
 
 public:
     ScopeASCOM(const wxString& choice);
-    virtual ~ScopeASCOM(void);
-    static wxArrayString EnumAscomScopes(void);
+    virtual ~ScopeASCOM();
+    static wxArrayString EnumAscomScopes();
 
-    bool Connect(void) override;
-    bool Disconnect(void) override;
+    bool Connect() override;
+    bool Disconnect() override;
 
-    bool HasSetupDialog(void) const override;
-    void SetupDialog(void) override;
+    bool HasSetupDialog() const override;
+    void SetupDialog() override;
 
-    bool HasNonGuiMove(void) override;
+    bool HasNonGuiMove() override;
 
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
-    double GetDeclination(void) override;
+    double GetDeclination() override;
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
     bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
     bool GetSiteLatLong(double *latitude, double *longitude) override;
-    bool CanSlew(void) override;
-    bool CanSlewAsync(void) override;
-    bool CanReportPosition(void) override;
-    bool CanPulseGuide(void) override;
+    bool CanSlew() override;
+    bool CanSlewAsync() override;
+    bool CanReportPosition() override;
+    bool CanPulseGuide() override;
     bool SlewToCoordinates(double ra, double dec) override;
     bool SlewToCoordinatesAsync(double ra, double dec) override;
-    void AbortSlew(void) override;
-    bool CanCheckSlewing(void) override;
-    bool Slewing(void) override;
-    PierSide SideOfPier(void) override;
+    void AbortSlew() override;
+    bool CanCheckSlewing() override;
+    bool Slewing() override;
+    PierSide SideOfPier() override;
 };
 
 #endif // GUIDE_ASCOM

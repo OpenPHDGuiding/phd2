@@ -62,7 +62,7 @@ CameraINDI::CameraINDI()
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
     INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo",false);
-    Name = INDICameraName;
+    Name = wxString::Format("INDI Camera [%s]", INDICameraName);
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
