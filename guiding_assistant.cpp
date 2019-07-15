@@ -294,6 +294,7 @@ struct GuidingAsstWin : public wxDialog
     void SaveGAResults(const wxString* AllRecommendations);
     int GetGAHistoryCount();
     void GetMinMoveRecs(double& RecRA, double& RecDec);
+    bool LikelyBacklash(const CalibrationDetails& calDetails);
     const int MAX_GA_HISTORY = 3;
 };
 
@@ -1199,6 +1200,53 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
     }
 }
 
+// See if the mount probably has large Dec backlash, using either blt results or from inference.
+bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
+{
+    bool likely = false;
+    BacklashComp* blc = TheScope()->GetBacklashComp();              // Always valid
+
+    try
+    {
+        if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED && m_backlashMs > MAX_BACKLASH_COMP)
+        {
+            // Just ran the BLT and the result is too big for BLC
+            likely = true;
+        }
+        if (!likely)
+        {
+            // May have tried BLC in the past with a too-large pulse size
+            int pulseSize;
+            int floor;
+            int ceiling;
+            blc->GetBacklashCompSettings(&pulseSize, &floor, &ceiling);
+            likely = (pulseSize > MAX_BACKLASH_COMP);
+        }
+        if (!likely)
+        {
+            // If guide mode isn't 'Auto', user is probably dealing with the problem already
+            DEC_GUIDE_MODE decMode = TheScope()->GetDecGuideMode();
+            likely = (decMode != DEC_AUTO);
+        }
+        if (!likely && calDetails.decStepCount > 0)
+        {
+            // See if the last calibration showed little or no Dec movement to the south
+            wxRealPoint northStart = calDetails.decSteps[0];
+            wxRealPoint northEnd = calDetails.decSteps[calDetails.decStepCount - 1];
+            double northDist = sqrt(pow(northStart.x - northEnd.x, 2) + pow(northStart.y - northEnd.y, 2));
+            wxRealPoint southEnd = calDetails.decSteps[calDetails.decSteps.size() - 1];
+            double southDist = sqrt(pow(northEnd.x - southEnd.x, 2) + pow(northEnd.y - southEnd.y, 2));
+            likely = (southDist <= 0.1 * northDist);
+        }
+    }
+    catch (const wxString& msg)
+    {
+        Debug.Write(wxString::Format("GA-LikelyBacklash: exception at %d, %s\n", __LINE__, msg));
+    }
+
+    return likely;
+}
+
 // Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
 {
@@ -1290,14 +1338,27 @@ void GuidingAsstWin::MakeRecommendations()
     // Alignment error
     if (alignmentError > 5.0)
     {
-        wxString msg = alignmentError < 10.0 ?
-            _("Polar alignment error > 5 arc-min; that could probably be improved.") :
-            _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
-        allRecommendations += "PA:" +  msg + "\n";
-        m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
-        logStr = wxString::Format("Recommendation: %s\n", msg);
-        Debug.Write(logStr);
-        GuideLog.NotifyGAResult(logStr);
+        wxString msg = "";
+        // If the mount looks like it has large Dec backlash, ignore alignment error below 10 arc-min
+        if (LikelyBacklash(calDetails))
+        {
+            if (alignmentError > 10.0)
+                msg = _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
+        }
+        else
+        {
+            msg = alignmentError < 10.0 ?
+                _("Polar alignment error > 5 arc-min; that could probably be improved.") :
+                _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
+        }
+        if (msg != "")
+        {
+            allRecommendations += "PA:" + msg + "\n";
+            m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
+            logStr = wxString::Format("Recommendation: %s\n", msg);
+            Debug.Write(logStr);
+            GuideLog.NotifyGAResult(logStr);
+        }
     }
 
     // Star HFD
