@@ -340,6 +340,7 @@ struct ClientReadBuf
 
     ClientReadBuf() { reset(); }
     size_t avail() const { return &buf[SIZE] - dest; }
+    size_t size() const { return dest - buf; }
     void reset() { dest = &buf[0]; }
 };
 
@@ -495,14 +496,16 @@ static void drain_input(wxSocketInputStream& sis)
     }
 }
 
-static bool find_eol(char *p, size_t len)
+static bool find_eol(char *p, size_t len, size_t & offset)
 {
+    char * start = p;
     const char *end = p + len;
     for (; p < end; p++)
     {
         if (*p == '\n')
         {
             *p = 0;
+            offset = (p - start) + 1;
             return true;
         }
     }
@@ -2250,12 +2253,17 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
         if (n == 0)
             break;
 
-        if (find_eol(rdbuf->dest, n))
+        size_t eofoffset = 0;
+        while (find_eol(rdbuf->dest, n, eofoffset))
         {
-            drain_input(sis);
             handle_cli_input_complete(cli, &rdbuf->buf[0], parser);
+
+            size_t buffeoloffset = rdbuf->size() + eofoffset;
+            n = rdbuf->size() + n - buffeoloffset;
+
             rdbuf->reset();
-            break;
+            avail = rdbuf->avail();
+            memmove(rdbuf->dest, rdbuf->dest + buffeoloffset, n);
         }
 
         rdbuf->dest += n;
