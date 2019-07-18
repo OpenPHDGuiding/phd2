@@ -247,6 +247,7 @@ static Ev ev_message_version()
     Ev ev("Version");
     ev << NV("PHDVersion", PHDVERSION)
         << NV("PHDSubver", PHDSUBVER)
+        << NV("OverlapSupport", true)
         << NV("MsgVersion", MSG_PROTOCOL_VERSION);
     return ev;
 }
