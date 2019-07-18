@@ -154,7 +154,7 @@ AboutDialog::AboutDialog()
         "</tr>"
         "<tr>"
         "<td>Thomas Stibor</td>"
-        "<td></td>"
+        "<td>Ludovic Pollet</td>"
         "<td></td>"
         "<td></td>"
         "</tr>"
