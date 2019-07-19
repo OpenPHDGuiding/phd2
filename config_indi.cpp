@@ -58,6 +58,7 @@ enum
     MINDIGUI = 102,
     MDEV = 103,
     VERBOSE = 104,
+    FORCEVIDEO = 105,
 };
 
 #define POS(r, c)        wxGBPosition(r,c)
@@ -145,12 +146,18 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     forcevideo = nullptr;
+    forceexposure = nullptr;
     if (dev_type == INDI_TYPE_CAMERA)
     {
         ++pos;
-        forcevideo = new wxCheckBox(this, wxID_ANY, _("Camera does not support exposure time"));
+        forcevideo = new wxCheckBox(this, FORCEVIDEO, _("Camera does not support exposure time"));
         forcevideo->SetToolTip(_("Force the use of streaming and frame stacking for cameras that do not support setting an absolute exposure time."));
         gbs->Add(forcevideo,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
+
+        ++pos;
+        forceexposure = new wxCheckBox(this, wxID_ANY, _("Camera does not support streaming"));
+        forceexposure->SetToolTip(_("Force the use of exposure time for cameras that do not support streaming."));
+        gbs->Add(forceexposure,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
     }
 
     ++pos;
@@ -206,6 +213,8 @@ void INDIConfig::UpdateControlStates()
             ccd->Enable(true);
             forcevideo->SetValue(INDIForceVideo);
             forcevideo->Enable(true);
+            forceexposure->SetValue(INDIForceExposure);
+            forceexposure->Enable(!INDIForceVideo);
         }
         guiBtn->Enable(true);
 
@@ -229,6 +238,8 @@ void INDIConfig::UpdateControlStates()
             ccd->Enable(false);
             forcevideo->SetValue(false);
             forcevideo->Enable(false);
+            forceexposure->SetValue(false);
+            forceexposure->Enable(false);
         }
         guiBtn->Enable(false);
         okBtn->Enable(false);
@@ -242,6 +253,7 @@ wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
   EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
   EVT_COMBOBOX(MDEV, INDIConfig::OnDevSelected)
   EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
+  EVT_CHECKBOX(FORCEVIDEO, INDIConfig::OnForceVideoChecked)
   EVT_THREAD(THREAD_UPDATE_EVENT, INDIConfig::OnUpdateFromThread)
 wxEND_EVENT_TABLE()
 
@@ -296,6 +308,14 @@ void INDIConfig::SetVerbose(bool val)
 void INDIConfig::OnVerboseChecked(wxCommandEvent& evt)
 {
     INDIConfig::SetVerbose(evt.IsChecked());
+}
+
+void INDIConfig::OnForceVideoChecked(wxCommandEvent& evt)
+{
+    forceexposure->Enable(!evt.IsChecked());
+    if (evt.IsChecked()) {
+        forceexposure->SetValue(false);
+    }
 }
 
 void INDIConfig::Connect()
@@ -442,6 +462,7 @@ void INDIConfig::SaveSettings()
     if (dev_type == INDI_TYPE_CAMERA)
     {
         INDIForceVideo = forcevideo->GetValue();
+        INDIForceExposure = forceexposure->GetValue();
         INDIDevCCD = ccd->GetSelection();
     }
 }

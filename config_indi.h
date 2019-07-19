@@ -70,6 +70,7 @@ class INDIConfig : public wxDialog, public PhdIndiClient
     wxTextCtrl *devport;
     wxComboBox *ccd;
     wxCheckBox *forcevideo;
+    wxCheckBox *forceexposure;
     wxButton *guiBtn;
     wxButton *okBtn;
 
@@ -87,6 +88,7 @@ public:
     wxString INDIDevPort;
     long     INDIDevCCD;
     bool     INDIForceVideo;
+    bool     INDIForceExposure;
 
     void Connect();
     void Disconnect();
@@ -122,6 +124,7 @@ private:
     void OnIndiGui(wxCommandEvent& evt);
     void OnDevSelected(wxCommandEvent& evt);
     void OnVerboseChecked(wxCommandEvent& evt);
+    void OnForceVideoChecked(wxCommandEvent& evt);
     void UpdateControlStates();
 
     wxDECLARE_EVENT_TABLE();
