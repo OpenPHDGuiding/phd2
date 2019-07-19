@@ -2244,21 +2244,16 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
         char *end;
         while ((end = static_cast<char *>(memchr(rdbuf->buf(), '\n', rdbuf->len()))) != nullptr)
         {
-            // Copy to temporary buffer to avoir rentrancy pb
-            size_t off = end - rdbuf->buf();
-            char line[off + 1];
-            memcpy(line, rdbuf->buf(), off);
-            line[off] = 0;
+            // Copy to temporary buffer to avoid rentrancy problem
+            char line[ClientReadBuf::SIZE];
+            size_t len1 = end - rdbuf->buf();
+            memcpy(line, rdbuf->buf(), len1);
+            line[len1] = 0;
 
             char *next = end + 1;
-            size_t len = rdbuf->dest - next;
-            if (len == 0)
-            {
-                rdbuf->reset();
-            } else {
-                memmove(rdbuf->buf(), next, len);
-                rdbuf->dest = rdbuf->buf() + len;
-            }
+            size_t len2 = rdbuf->dest - next;
+            memmove(rdbuf->buf(), next, len2);
+            rdbuf->dest = rdbuf->buf() + len2;
 
             handle_cli_input_complete(cli, line, parser);
         }
