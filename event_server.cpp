@@ -2262,6 +2262,7 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
 
 EventServer::EventServer()
 {
+    m_configEventDebouncer = NULL;
 }
 
 EventServer::~EventServer()
@@ -2293,6 +2294,8 @@ bool EventServer::EventServerStart(unsigned int instanceId)
     m_serverSocket->SetNotify(wxSOCKET_CONNECTION_FLAG);
     m_serverSocket->Notify(true);
 
+    m_configEventDebouncer = new wxTimer();
+
     Debug.Write(wxString::Format("event server started, listening on port %u\n", port));
 
     return false;
@@ -2312,6 +2315,9 @@ void EventServer::EventServerStop()
 
     delete m_serverSocket;
     m_serverSocket = NULL;
+
+    delete m_configEventDebouncer;
+    m_configEventDebouncer = NULL;
 
     Debug.AddLine("event server stopped");
 }
@@ -2657,4 +2663,14 @@ void EventServer::NotifyGuidingParam(const wxString& name, bool val)
 void EventServer::NotifyGuidingParam(const wxString& name, const wxString& val)
 {
     ::NotifyGuidingParam(m_eventServerClients, name, val);
+}
+
+void EventServer::NotifyConfigurationChange()
+{
+    if (m_configEventDebouncer == NULL || m_configEventDebouncer->IsRunning()) {
+        return;
+    }
+    Ev ev("ConfigurationChange");
+    do_notify(m_eventServerClients, ev);
+    m_configEventDebouncer->StartOnce(0);
 }
