@@ -867,18 +867,22 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             sendNewNumber(frame_prop);
             m_roi = subframe;
         }
-        if (expose_prop->s == IPS_BUSY) {
+
+        if (expose_prop->s == IPS_BUSY)
+        {
             if (INDIConfig::Verbose())
                 Debug.Write(wxString::Format("INDI Camera Exposure is busy. Waiting\n"));
 
             CameraWatchdog watchdog(duration, GetTimeoutMs());
-            while(1) {
+            while (true)
+            {
                 wxMilliSleep(10);
-                if (expose_prop->s != IPS_BUSY) {
+                if (expose_prop->s != IPS_BUSY)
                     break;
-                }
+
                 if (WorkerThread::TerminateRequested())
                     return true;
+
                 if (watchdog.Expired())
                 {
                     first_frame = false;
