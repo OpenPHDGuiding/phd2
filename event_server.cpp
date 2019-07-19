@@ -2244,17 +2244,23 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
         char *end;
         while ((end = static_cast<char *>(memchr(rdbuf->buf(), '\n', rdbuf->len()))) != nullptr)
         {
-            *end = 0;
-            handle_cli_input_complete(cli, rdbuf->buf(), parser);
+            // Copy to temporary buffer to avoir rentrancy pb
+            size_t off = end - rdbuf->buf();
+            char line[off + 1];
+            memcpy(line, rdbuf->buf(), off);
+            line[off] = 0;
+
             char *next = end + 1;
             size_t len = rdbuf->dest - next;
             if (len == 0)
             {
                 rdbuf->reset();
-                break;
+            } else {
+                memmove(rdbuf->buf(), next, len);
+                rdbuf->dest = rdbuf->buf() + len;
             }
-            memmove(rdbuf->buf(), next, len);
-            rdbuf->dest = rdbuf->buf() + len;
+
+            handle_cli_input_complete(cli, line, parser);
         }
     }
 }
