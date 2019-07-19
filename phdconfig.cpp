@@ -340,7 +340,9 @@ bool PhdConfig::SetCurrentProfile(const wxString& name)
     m_currentProfileId = id;
     Profile.SelectProfile(id);
     Global.SetInt("/currentProfile", id);
+
     EvtServer.NotifyConfigurationChange();
+
     return false;
 }
 
@@ -402,7 +404,9 @@ bool PhdConfig::CreateProfile(const wxString& name)
         ;
 
     Profile.m_pConfig->Write(wxString::Format("/profile/%d/name", id), name);
+
     EvtServer.NotifyConfigurationChange();
+
     return false;
 }
 
@@ -491,7 +495,9 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     CopyGroup(Global.m_pConfig, wxString::Format("/profile/%d", srcId), wxString::Format("/profile/%d", dstId));
     // name was overwritten by copy
     Global.SetString(wxString::Format("/profile/%d/name", dstId), dest);
+
     EvtServer.NotifyConfigurationChange();
+
     return false;
 }
 
@@ -534,7 +540,9 @@ bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
     }
 
     Profile.m_pConfig->Write(wxString::Format("/profile/%d/name", id), newname);
+
     EvtServer.NotifyConfigurationChange();
+
     return false;
 }
 
@@ -811,7 +819,9 @@ bool PhdConfig::RestoreAll(const wxString& filename)
             continue;
         LoadVal(Global, s, name, typestr, val);
     }
+
     EvtServer.NotifyConfigurationChange();
+
     return false;
 }
 

@@ -48,6 +48,7 @@ private:
     wxSocketServer *m_serverSocket;
     CliSockSet m_eventServerClients;
     wxTimer *m_configEventDebouncer;
+
 public:
     EventServer();
     ~EventServer(void);
