@@ -100,6 +100,7 @@ private:
     wxString INDICameraBlobName;
     wxString INDICameraPort;
     bool     INDICameraForceVideo;
+    bool     INDICameraForceExposure;
     wxRect   m_roi;
 
     bool     ConnectToDriver(RunInBg *ctx);

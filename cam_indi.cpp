@@ -62,6 +62,7 @@ CameraINDI::CameraINDI()
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
     INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo",false);
+    INDICameraForceExposure = pConfig->Profile.GetBoolean("/indi/INDIcam_forceexposure",false);
     Name = wxString::Format("INDI Camera [%s]", INDICameraName);
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
@@ -618,6 +619,7 @@ void CameraINDI::CameraSetup()
     indiDlg.INDIDevCCD = INDICameraCCD;
     indiDlg.INDIDevPort = INDICameraPort;
     indiDlg.INDIForceVideo = INDICameraForceVideo;
+    indiDlg.INDIForceExposure = INDICameraForceExposure;
     // initialize with actual values
     indiDlg.SetSettings();
     // try to connect to server
@@ -632,11 +634,13 @@ void CameraINDI::CameraSetup()
         INDICameraCCD = indiDlg.INDIDevCCD;
         INDICameraPort = indiDlg.INDIDevPort;
         INDICameraForceVideo = indiDlg.INDIForceVideo;
+        INDICameraForceExposure = indiDlg.INDIForceExposure;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
         pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
         pConfig->Profile.SetBoolean("/indi/INDIcam_forcevideo",INDICameraForceVideo);
+        pConfig->Profile.SetBoolean("/indi/INDIcam_forceexposure",INDICameraForceExposure);
         pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
         Name = INDICameraName;
         SetCCDdevice();
@@ -912,7 +916,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 return true;
             if (watchdog.Expired())
             {
-                if (first_frame && video_prop)
+                if (first_frame && video_prop && !INDICameraForceExposure)
                 {
                     // exposure fail, maybe this is a webcam with only streaming
                     // try to use video stream instead of exposure
@@ -1051,6 +1055,8 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         wxString msg;
         if (INDICameraForceVideo)
             msg = _("Camera has no VIDEO_STREAM property, please uncheck the option: Camera does not support exposure time.");
+        else if (INDICameraForceExposure)
+            msg = _("Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does not support stream.");
         else
             msg = _("Camera has no CCD_EXPOSURE or VIDEO_STREAM property");
 
