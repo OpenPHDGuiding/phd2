@@ -47,7 +47,7 @@ private:
     JsonParser m_parser;
     wxSocketServer *m_serverSocket;
     CliSockSet m_eventServerClients;
-
+    wxTimer *m_configEventDebouncer;
 public:
     EventServer();
     ~EventServer(void);
@@ -81,6 +81,7 @@ public:
     void NotifyGuidingParam(const wxString& name, int val);
     void NotifyGuidingParam(const wxString& name, bool val);
     void NotifyGuidingParam(const wxString& name, const wxString& val);
+    void NotifyConfigurationChange();
 
 private:
     void OnEventServerEvent(wxSocketEvent& evt);

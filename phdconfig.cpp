@@ -35,6 +35,7 @@
  */
 
 #include "phd.h"
+#include "event_server.h"
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/tokenzr.h>
@@ -139,6 +140,7 @@ void ConfigSection::SetBoolean(const wxString& name, bool value)
     if (m_pConfig)
     {
         m_pConfig->Write(m_prefix + name, value);
+        EvtServer.NotifyConfigurationChange();
     }
 }
 
@@ -147,6 +149,7 @@ void ConfigSection::SetString(const wxString& name, const wxString& value)
     if (m_pConfig)
     {
         m_pConfig->Write(m_prefix + name, value);
+        EvtServer.NotifyConfigurationChange();
     }
 }
 
@@ -155,6 +158,7 @@ void ConfigSection::SetDouble(const wxString& name, double value)
     if (m_pConfig)
     {
         m_pConfig->Write(m_prefix + name, value);
+        EvtServer.NotifyConfigurationChange();
     }
 }
 
@@ -163,6 +167,7 @@ void ConfigSection::SetLong(const wxString& name, long value)
     if (m_pConfig)
     {
         m_pConfig->Write(m_prefix + name, value);
+        EvtServer.NotifyConfigurationChange();
     }
 }
 
@@ -179,11 +184,13 @@ bool ConfigSection::HasEntry(const wxString& name) const
 void ConfigSection::DeleteEntry(const wxString& name)
 {
     m_pConfig->DeleteEntry(m_prefix + name);
+    EvtServer.NotifyConfigurationChange();
 }
 
 void ConfigSection::DeleteGroup(const wxString& name)
 {
     m_pConfig->DeleteGroup(m_prefix + name);
+    EvtServer.NotifyConfigurationChange();
 }
 
 // Return a list of node names (group names) for the current profile, starting at the level specified by baseName
@@ -294,6 +301,7 @@ void PhdConfig::InitializeProfile()
     m_currentProfileId = currentProfile;
     Profile.SelectProfile(currentProfile);
     Global.SetInt("/currentProfile", currentProfile); // in case we just created it
+    EvtServer.NotifyConfigurationChange();
 }
 
 void PhdConfig::DeleteAll()
@@ -332,7 +340,7 @@ bool PhdConfig::SetCurrentProfile(const wxString& name)
     m_currentProfileId = id;
     Profile.SelectProfile(id);
     Global.SetInt("/currentProfile", id);
-
+    EvtServer.NotifyConfigurationChange();
     return false;
 }
 
@@ -394,7 +402,7 @@ bool PhdConfig::CreateProfile(const wxString& name)
         ;
 
     Profile.m_pConfig->Write(wxString::Format("/profile/%d/name", id), name);
-
+    EvtServer.NotifyConfigurationChange();
     return false;
 }
 
@@ -483,7 +491,7 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     CopyGroup(Global.m_pConfig, wxString::Format("/profile/%d", srcId), wxString::Format("/profile/%d", dstId));
     // name was overwritten by copy
     Global.SetString(wxString::Format("/profile/%d/name", dstId), dest);
-
+    EvtServer.NotifyConfigurationChange();
     return false;
 }
 
@@ -508,6 +516,7 @@ void PhdConfig::DeleteProfile(const wxString& name)
         Profile.SelectProfile(m_currentProfileId);
         Global.SetInt("/currentProfile", m_currentProfileId);
     }
+    EvtServer.NotifyConfigurationChange();
 }
 
 bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
@@ -525,6 +534,7 @@ bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
     }
 
     Profile.m_pConfig->Write(wxString::Format("/profile/%d/name", id), newname);
+    EvtServer.NotifyConfigurationChange();
     return false;
 }
 
@@ -801,7 +811,7 @@ bool PhdConfig::RestoreAll(const wxString& filename)
             continue;
         LoadVal(Global, s, name, typestr, val);
     }
-
+    EvtServer.NotifyConfigurationChange();
     return false;
 }
 
