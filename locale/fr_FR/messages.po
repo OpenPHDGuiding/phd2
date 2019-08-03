@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-23 21:23+0100\n"
-"PO-Revision-Date: 2019-05-20 13:35+0200\n"
+"PO-Revision-Date: 2019-08-03 13:42+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: about_dialog.cpp:45 myframe.cpp:581
 #, c-format
@@ -924,10 +924,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:711 cam_indi.cpp:743 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1896,8 +1895,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:537
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:329
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:329 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -1996,13 +1994,16 @@ msgstr "Dual CCD"
 
 #: config_indi.cpp:139
 msgid "Device port"
-msgstr ""
+msgstr "Port du périphérique"
 
 #: config_indi.cpp:142
 msgid ""
 "Device connection port. Additional driver-specific device connection options "
 "may be available in the INDI Options window (click Other options)."
 msgstr ""
+"Port de connexion du périphérique. Des options de connexion de périphérique "
+"spécifiques au pilote peuvent être disponibles dans la fenêtre d'Options "
+"INDI (cliquez sur Autres options)."
 
 #: config_indi.cpp:151
 msgid "Camera does not support exposure time"
@@ -2147,8 +2148,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:154
 msgid ""
@@ -3478,8 +3479,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3612,8 +3613,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3638,8 +3639,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -4427,7 +4428,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:1262
 msgid "Try using Lowpass2 for Dec guiding"
-msgstr ""
+msgstr "Essayez d'utiliser Lowpass2 pour le guidage Dec"
 
 #: guiding_assistant.cpp:1380
 msgid "Measuring..."
@@ -6720,6 +6721,8 @@ msgstr "Vitesse de guidage de la monture (n.n x sidéral)"
 #: profile_wizard.cpp:305
 msgid "Declination axis has high-precision encoder (a few high-end mounts)"
 msgstr ""
+"L'axe de déclinaison est doté d'un codeur de haute précision (concerne "
+"quelques montures haut de gamme)"
 
 #: profile_wizard.cpp:306
 msgid ""
@@ -6727,6 +6730,9 @@ msgid ""
 "backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end "
 "mounts"
 msgstr ""
+"La monture comporte des codeurs de haute précision sur les deux axes avec "
+"peu ou pas de jeu (par exemple 10Micron, Astro-Physics AE, iOptron EC2 ou "
+"autres montures haut de gamme)"
 
 #: profile_wizard.cpp:317
 msgid "Build dark library"
@@ -9708,8 +9714,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
