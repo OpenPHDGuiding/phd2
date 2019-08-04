@@ -92,6 +92,7 @@ private:
     wxFlexGridSizer *m_pWrapUp;
     wxTextCtrl *m_pProfileName;
     wxCheckBox *m_pLaunchDarks;
+    wxCheckBox *m_pAutoRestore;
     wxStatusBar *m_pStatusBar;
 
     wxString m_SelectedCamera;
@@ -126,6 +127,7 @@ private:
     bool m_useCamera;
     bool m_useMount;
     bool m_useAuxMount;
+    bool m_autoRestore;
 
 public:
 
@@ -182,7 +184,7 @@ static void AddCellPair(wxWindow *parent, wxGridBagSizer *gbs, int row, const wx
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(true), m_useCamera(false), m_useMount(false), m_useAuxMount(false)
+    m_launchDarks(true), m_useCamera(false), m_useMount(false), m_useAuxMount(false), m_autoRestore(false)
 {
     TitlePrefix = _("New Profile Wizard - ");
 
@@ -259,7 +261,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_pBinningLevel = new wxChoice(this, ID_BINNING, wxDefaultPosition, wxDefaultSize, opts);
     m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  "
         "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
-        "stars.  For more common set-ups, it's better to leave binning at 1."));
+        "stars.  For more common setups, it's better to leave binning at 1."));
     m_pBinningLevel->SetSelection(0);
     wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
     sz->Add(Label(this, _("Binning level")), 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -317,8 +319,13 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_pLaunchDarks = new wxCheckBox(this, wxID_ANY, _("Build dark library"));
     m_pLaunchDarks->SetValue(m_launchDarks);
     m_pLaunchDarks->SetToolTip(_("Check this to automatically start the process of building a dark library for this profile."));
+    m_pAutoRestore = new wxCheckBox(this, wxID_ANY, _("Auto restore calibration"));
+    m_pAutoRestore->SetValue(m_autoRestore);
+    m_pAutoRestore->SetToolTip(_("Check this to automatically re-use the last calibration when the profile is loaded. "
+        "For this to work, the rotational orientation of the guide camera and all other optical properties of the guiding setup must remain the same between imaging sessions."));
     AddTableEntryPair(this, m_pWrapUp, _("Profile Name"), m_pProfileName);
     m_pWrapUp->Add(m_pLaunchDarks, wxSizerFlags().Border(wxTOP, 5).Border(wxLEFT, 10));
+    m_pWrapUp->Add(m_pAutoRestore, wxSizerFlags().Align(wxALIGN_RIGHT));
     m_pvSizer->Add(m_pWrapUp, wxSizerFlags().Border(wxALL, 10).Expand().Center());
 
     // Row of buttons for prev, help, next
@@ -381,7 +388,7 @@ void ProfileWizard::ShowHelp(DialogState state)
             "This profile will then be available any time you run PHD2.  At a minimum, you will need to choose both the guide camera and the mount interface that PHD2 will use for guiding.  "
             "You will also enter some information about the optical characteristics of your setup. "
             "PHD2 will use this to create a good 'starter set' of guiding and calibration "
-            "parameters. If you are a new user, please review the 'Impatient Instructions' under the 'Help' menu after the wizard dialog has finished.");
+            "parameters. If you are a new user, please review the 'Basic Use' section of the 'Help' guide after the wizard dialog has finished.");
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
@@ -416,9 +423,9 @@ void ProfileWizard::ShowHelp(DialogState state)
             "while the mount interface you chose earlier will be used for larger ('bump') corrections. Calibration of both interfaces will be handled automatically.");
         break;
     case STATE_WRAPUP:
-        hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it.  This is strongly "
-            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 USB "
-            "icon, selecting the profile name you just entered, and making your changes there. If you are new to PHD2 or encounter problems, please use the 'Help' function for assistance.");
+        hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it. This is strongly "
+            "recommended for best results. If your setup is stable from one night to the next, you can choose to automatically "
+            "re-use the last calibration when you load this profile. If you are new to PHD2 or encounter problems, please use the 'Help' function for assistance.");
     case STATE_DONE:
         break;
     }
@@ -636,7 +643,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pWrapUp->Show(false);
             m_pHelpText->SetSizeHints(wxSize(-1, NormalHelpHeight));
             SetSizerAndFit(m_pvSizer);
-            m_pInstructions->SetLabel(_("Select your guide camera and specify the optical properties of your guiding set-up"));
+            m_pInstructions->SetLabel(_("Select your guide camera and specify the optical properties of your guiding setup"));
             m_pInstructions->Wrap(TextWrapPoint);
             break;
         case STATE_MOUNT:
@@ -700,8 +707,10 @@ void ProfileWizard::UpdateState(const int change)
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
             m_pNextBtn->SetToolTip(_("Finish creating the equipment profile"));
-            m_pLaunchDarks->SetValue(m_useCamera);
+            m_pLaunchDarks->SetValue(m_useCamera || m_pLaunchDarks);
             m_pInstructions->SetLabel(_("Enter a name for your profile and optionally launch the process to build a dark library"));
+            m_pAutoRestore->Show((m_PositionAware || m_SelectedAuxMount != _("None")));
+            m_pAutoRestore->SetValue(m_autoRestore);
             SetSizerAndFit(m_pvSizer);
             break;
         case STATE_DONE:
@@ -789,6 +798,7 @@ static void SetBinningLevel(wxWindow *parent, const wxString& selection, int val
 void ProfileWizard::WrapUp()
 {
     m_launchDarks = m_pLaunchDarks->GetValue();
+    m_autoRestore = m_pAutoRestore->GetValue();
 
     int binning = m_pBinningLevel->GetSelection() + 1;
     if (m_useCamera)
@@ -824,8 +834,7 @@ void ProfileWizard::WrapUp()
     if (highResEncoders)
         pConfig->Profile.SetInt("/scope/YGuideAlgorithm", GUIDE_ALGORITHM_LOWPASS2);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
-    if (m_PositionAware || m_SelectedAuxMount != _("None"))
-        pConfig->Profile.SetBoolean("/AutoLoadCalibration", true);
+    pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoRestore);
 
     GuideLog.EnableLogging();               // Especially for newbies
 
@@ -1156,6 +1165,11 @@ void ProfileWizard::OnContextHelp(wxCommandEvent& evt)
 
 void ProfileWizard::OnPrev(wxCommandEvent& evt)
 {
+    if (m_State == ProfileWizard::STATE_WRAPUP)             // Special handling for basic controls with no event-handlers
+    {
+        m_autoRestore = m_pAutoRestore->GetValue();
+        m_launchDarks = m_pLaunchDarks->GetValue();
+    }
     UpdateState(-1);
 }
 
