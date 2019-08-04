@@ -1200,7 +1200,8 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
     }
 }
 
-// See if the mount probably has large Dec backlash, using either blt results or from inference.
+// See if the mount probably has large Dec backlash, using either blt results or from inference. If so, we should relax the recommendations regarding
+// polar alignment error
 bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
 {
     bool likely = false;
@@ -1224,9 +1225,9 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
         }
         if (!likely)
         {
-            // If guide mode isn't 'Auto', user is probably dealing with the problem already
+            // If guide mode isn't 'Auto' or 'None', user can benefit from larger polar alignment error
             DEC_GUIDE_MODE decMode = TheScope()->GetDecGuideMode();
-            likely = (decMode != DEC_AUTO);
+            likely = (decMode != DEC_AUTO && decMode != DEC_NONE);
         }
         if (!likely && calDetails.decStepCount > 0)
         {
