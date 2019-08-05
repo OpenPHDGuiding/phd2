@@ -504,11 +504,6 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
 }
 
-bool Scope::GetCalibrationFlipRequiresDecFlip()
-{
-    return m_calibrationFlipRequiresDecFlip;
-}
-
 void Scope::SetAssumeOrthogonal(bool val)
 {
     m_assumeOrthogonal = val;
@@ -2018,7 +2013,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     bool usingAO = TheAO() != nullptr;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetCalibrationDistance(m_calibrationDistance);
-    bool oldFlip = m_pScope->GetCalibrationFlipRequiresDecFlip();
+    bool oldFlip = m_pScope->CalibrationFlipRequiresDecFlip();
     bool newFlip = m_pNeedFlipDec->GetValue();
     m_pScope->SetCalibrationFlipRequiresDecFlip(newFlip);
     if (oldFlip != newFlip)

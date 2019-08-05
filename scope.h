@@ -234,7 +234,6 @@ public:
     virtual bool CalibrationFlipRequiresDecFlip();
     virtual bool HasHPDecEncoder();
     void SetCalibrationFlipRequiresDecFlip(bool val);
-    bool GetCalibrationFlipRequiresDecFlip();
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled() const;
     void SetAssumeOrthogonal(bool val);
