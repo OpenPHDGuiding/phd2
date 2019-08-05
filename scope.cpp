@@ -504,6 +504,11 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
 }
 
+bool Scope::GetCalibrationFlipRequiresDecFlip()
+{
+    return m_calibrationFlipRequiresDecFlip;
+}
+
 void Scope::SetAssumeOrthogonal(bool val)
 {
     m_assumeOrthogonal = val;
@@ -1870,7 +1875,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     m_pNeedFlipDec = new wxCheckBox(GetParentWindow(AD_cbReverseDecOnFlip), wxID_ANY,
         _("Reverse Dec output after meridian flip"));
     AddCtrl(CtrlMap, AD_cbReverseDecOnFlip, m_pNeedFlipDec,
-        _("Check if your mount needs Dec output reversed after a meridian flip"));
+        _("Check if your mount needs Dec output reversed after a meridian flip. Changing this setting will clear the existing calibration data"));
     m_pNeedFlipDec->Enable(enableCtrls);
 
     bool usingAO = TheAO() != nullptr;
@@ -2013,7 +2018,14 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     bool usingAO = TheAO() != nullptr;
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetCalibrationDistance(m_calibrationDistance);
-    m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
+    bool oldFlip = m_pScope->GetCalibrationFlipRequiresDecFlip();
+    bool newFlip = m_pNeedFlipDec->GetValue();
+    m_pScope->SetCalibrationFlipRequiresDecFlip(newFlip);
+    if (oldFlip != newFlip)
+    {
+        m_pScope->ClearCalibration();
+        Debug.Write(wxString::Format("User changed 'Dec-Flip' setting from %d to %d, calibration cleared\n", oldFlip, newFlip));
+    }
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
