@@ -95,7 +95,7 @@ static int sign(double x)
 
 double GuideAlgorithmResistSwitch::result(double input)
 {
-    double dReturn = input;
+    double rslt = input;
 
     m_history.Add(input);
     m_history.RemoveAt(0);
@@ -167,12 +167,14 @@ double GuideAlgorithmResistSwitch::result(double input)
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        dReturn = 0.0;
+        rslt = 0.0;
     }
 
-    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::Result() returns %.2f from input %.2f\n", dReturn, input));
+    rslt *= m_aggression;
 
-    return dReturn * m_aggression;
+    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::result() returns %.2f from input %.2f\n", rslt, input));
+
+    return rslt;
 }
 
 bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
