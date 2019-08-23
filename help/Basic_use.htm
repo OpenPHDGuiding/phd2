@@ -33,10 +33,43 @@ order to begin guiding, <span style="font-style: italic;">PHD2</span>
 must first connect to your hardware: the
 guide camera, the mount, and, optionally, an 'aux' mount, an adaptive optics
 (AO) device, or a rotator. &nbsp;When you click on the USB
-icon, you'll see a dialog that looks like this: <br>
+icon, you'll see a dialog that looks like this - the various choices in this dialog are discussed below.<br>
 <br>
 <img style="width: 503px; height: 308px;" alt="" src="GearDialog_Basic.png"><br>
-<br>
+<br><h4><a name="Equipment_Profile"></a>Equipment Profiles</h4>
+At the top of
+the 'Connect Equipment' dialog are controls for
+managing equipment profiles. &nbsp;All of the guider settings in <span style="font-style: italic;">PHD2</span>,
+default or otherwise, are automatically stored as part of an equipment
+profile. &nbsp;If you have only one guiding setup - you use the
+same
+camera and guide scope combination each time - you will only need one
+profile. &nbsp;But you
+may
+have multiple equipment configurations - for example, an
+off-axis-guiding arrangement for a long focal length scope and a
+separate guide scope/camera configuration for a shorter focal length
+imaging scope. &nbsp;The <span style="font-style: italic;">PHD2</span>
+guide settings for those configurations
+are likely to be different, so you would want to use separate equipment
+profiles &nbsp;The controls at the top of the 'Connect Equipment'
+dialog let you choose the profile you want to use and to
+create/edit/remove profiles as you see fit. &nbsp;When you select a
+profile and connect to its associated equipment, all of the
+settings&nbsp;last used with that profile are automatically
+reloaded.
+&nbsp;Once you've established the profiles you need - perhaps only
+the
+default one - you can simply click on the 'Connect All' button and
+you're ready to move ahead. &nbsp;
+If
+you already have a suitable default equipment profile and you simply
+want to connect to the equipment&nbsp;just as before, you can do a
+&lt;shift&gt;-click on the main screen 'USB' button and <span style="font-style: italic;">PHD2</span> will
+automatically re-connect to your hardware.<br><br>For new users especially, the most important option in the 'Manage Profiles' list is the&nbsp; <a href="Basic_use.htm#New_profile_wizard">New Profile Wizard</a>.
+&nbsp;Using this wizard is the easiest way to be sure you've specified
+all the required parameters and have a coherent profile definition for
+your gear.<br>
 <h4><a name="Camera_Selection"></a>Camera Selection</h4>
 The
 Camera drop-down list shows all the camera types currently supported by
@@ -50,7 +83,11 @@ probably don't have the ASCOM driver installed. Neither the ASCOM nor
 OS-level drivers are included with PHD2, so they must be located,
 downloaded, and installed separately. &nbsp;For non-ASCOM cameras, the
 PHD2 distribution does include the additional application libraries
-needed by PHD2 to use the camera..<br><br>It
+needed by PHD2 to use the camera. &nbsp;In some cases, the camera may
+have both ASCOM and proprietary interfaces and you're free to choose
+whichever you prefer. &nbsp;In some cases, the two different versions
+may operate the camera in a slightly different way or expose diffeent
+sets of camera properties.<br><br>It
 is not practical to provide an exhaustive list of cameras that are
 supported by PHD2. &nbsp;In many cases, camera vendors extend their
 product lines by updating their lower-level drivers without having to
@@ -64,7 +101,7 @@ there are unresolved problems with the vendor's drivers<br>3. &nbsp;If the speci
 the PHD2 download is free, the simplest course of action is to&nbsp;
 install it and see if your camera is shown in the PHD2 drop-down list.
 &nbsp;Alternatively, you can check for camera support info in the Wiki on the PHD2 Google forum: &nbsp;<a href="https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport">https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport</a><br><br>Finally, you can always post a message on the&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> asking if anyone has experience with the camera. &nbsp;<br><br>
-Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG Dual-chip Cameras</h4>Many
+Baseline list of supported cameras:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Altair</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>OpenCV</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>ToupTek</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>Support for SBIG Dual-chip Cameras</h4>Many
 cameras from the Santa Barbara Instrument Group (SBIG) have
 two&nbsp;sensors - a primary one for imaging and a second, smaller one
 for guiding. &nbsp;While the two sensors are physically separate, they
@@ -81,7 +118,7 @@ interface for PHD2&nbsp;to get data from the guide chip - essentially,
 a "side door" mechanism that won't violate any of the above rules.
 &nbsp;With this arrangement, the image capture application is acting as
 a traffic cop to coordinate access to the two camera sensors. &nbsp;At
-the time of this writing (October 2015), the only imaging
+the time of this writing (2019), the only imaging
 application that does this is Sequence Generator Pro (SGP). &nbsp;If you
 use SGP as your main imaging application, you can also use their "SGP
 API Guider" module, which allows PHD2 to access the guide chip on the
@@ -96,13 +133,15 @@ the right of the camera drop-down list: <br><br><img style="width: 506px; height
 this button will show a list of the available cameras and you can
 choose the one you want. &nbsp;PHD2 will remember the choice and save
 it as part of your equipment profile, so you should only need to do
-this once.
+this once. &nbsp;An alternative is to simply connect one of the
+cameras, the intended guide camera, at the time you build your
+equipment profile.
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
 <ol>
 <li>Use
-an ASCOM-compatible telescope driver that sends guide commands to the
+an ASCOM-compatible (or INDI) telescope driver that sends guide commands to the
 mount over a serial cable (or more commonly, &nbsp;a USB/Serial
 connection)</li>
 <li>Use
@@ -126,7 +165,7 @@ firmware into the appropriate motor control signals to execute the
 command. &nbsp;With the ASCOM interface, <span style="font-style: italic;">PHD2</span> can also
 obtain the
 pointing position of the mount, especially the declination and side-of-pier, which can
-be used as&nbsp;factors in guider calibration.<br>
+be used as&nbsp;factors in guider calibration and provide greatly improved ease-of-use.<br>
 <p>The "Guide-port"
 interfaces use a specialized, hardware-level control port available on
 most mounts. &nbsp;To use this type of interface, there must be
@@ -151,7 +190,7 @@ position of the telescope. &nbsp;As a consequence, &nbsp;guider
 calibration won't be automatically adjusted for declination, nor will
 it be automatically&nbsp;flipped when the side-of-pier changes. &nbsp;You
 can restore these features by specifying an "aux" mount connection that
-will be used only to get the telescope pointing information. &nbsp;An
+will be used&nbsp;to get the telescope pointing information. &nbsp;An
 example is shown below: <br><br><img style="width: 503px; height: 308px;" alt="" src="GearDialog_AuxMount.png"><br><br>For
 Windows users, the "aux" mount can use any of the ASCOM-compatible
 mount drivers, while Linux users can take advantage of INDI drivers.
@@ -200,7 +239,7 @@ cases, you may get better guiding results using the ST-4 guiding
 interface. &nbsp;If you're in doubt, check the documentation for your
 mount or ask on one of the forums about pulse-guide support. &nbsp;Even
 then, you can use ASCOM for the PHD2 "aux-mount" connection and get
-many of the benefits listed above. &nbsp;A common misconception,
+most of the benefits listed above. &nbsp;A common misconception,
 frequently seen on Web forums, is that ST-4 guiding is hardware-based
 and thus more accurate or efficient. &nbsp;For any of the modern
 mounts you're likely to encounter, this is no longer true - there will
@@ -249,38 +288,7 @@ order to diagnose problems or otherwise get your gear calibrated and
 working. &nbsp;In that sense, what you see when using the simulators is
 realistic but "fake" behavior. &nbsp;The simulators can be useful in some cases
 for reproducing PHD2 application problems, but not for anything having
-to do with your actual guiding equipment.<br>
-<h4><a name="Equipment_Profile"></a>Equipment Profiles</h4>
-At the top of
-the 'Connect Equipment' dialog are some additional controls for
-managing equipment profiles. &nbsp;All of the guider settings in <span style="font-style: italic;">PHD2</span>,
-default or otherwise, are automatically stored as part of an equipment
-profile. &nbsp;If you have only one guiding setup - you use the
-same
-camera and guide scope combination each time - you will only need one
-profile; and you can just use the default profile. &nbsp;But you
-may
-have multiple equipment configurations - for example, an
-off-axis-guiding arrangement for a long focal length scope and a
-separate guide scope/camera configuration for a shorter focal length
-imaging scope. &nbsp;The <span style="font-style: italic;">PHD2</span>
-guide settings for those configurations
-are likely to be different, so you would want to use separate equipment
-profiles &nbsp;The controls at the top of the 'Connect Equipment'
-dialog let you choose the profile you want to use and to
-create/edit/remove profiles as you see fit. &nbsp;When you select a
-profile and connect to its associated equipment, all of the
-settings&nbsp;last used with that profile are automatically
-reloaded.
-&nbsp;Once you've established the profiles you need - perhaps only
-the
-default one - you can simply click on the 'Connect All' button and
-you're ready to move ahead. &nbsp;
-If
-you already have a suitable default equipment profile and you simply
-want to connect to the equipment&nbsp;just as before, you can do a
-&lt;shift&gt;-click on the main screen 'USB' button and <span style="font-style: italic;">PHD2</span> will
-automatically re-connect to your hardware.<br><h4><a name="New_profile_wizard"></a>New-Profile-Wizard</h4>The
+to do with your actual guiding equipment.<br><br><h4><a name="New_profile_wizard"></a>New-Profile-Wizard</h4>The
 best way to create a new profile is to use the "Wizard"
 capability. &nbsp;The wizard takes you through a sequence of windows
 that&nbsp;explain the various settings and help you decide how to set
@@ -321,12 +329,16 @@ pixel size from the camera spec sheet or the manufacturer's web site.
 the average value if you prefer. &nbsp;This won't have any
 effect on your actual guidng results, but it will allow PHD2 to know
 the image-scale for your set-up. &nbsp;This is used for setting
-baseline guiding parameters, doing sanity-checks on calibrations, and
-reporting guiding performance.<br>3. <span style="font-weight: bold;">Camera connection pane: binning level. &nbsp;</span>If
+baseline guiding parameters, doing sanity-checks on calibrations,
+reporting guiding performance, and getting support on our forum..<br>3. <span style="font-weight: bold;">Camera connection pane: binning level. &nbsp;</span>If
 your guide camera supports binning (many do not), you can specify what
 level of binning you want to use for this equipment profile. &nbsp;If
 you want to use the same equipment set-up with different binning
-levels, it's best to create separate profiles for each binning value. &nbsp;<br>4.&nbsp;<span style="font-weight: bold;">Camera connection pane: guide scope focal length</span>.
+levels, it's best to create separate profiles for each binning value.
+&nbsp;If your guide camera has very small pixels and you have also
+specified a long focal length, you may see a 'warning' icon next to the
+Pixel Scale field. &nbsp;That is telling you that the specified image
+scale is probably too small and you should bin the camera if possible.<br>4.&nbsp;<span style="font-weight: bold;">Camera connection pane: guide scope focal length</span>.
 &nbsp;This seems to be a common place for mistakes, so it's worth being
 careful and getting it right. &nbsp;The correct value is not the
 aperture of the
@@ -343,13 +355,16 @@ small threaded focal reducer on the guide camera, so that must also be
 taken into account. &nbsp;Like the pixel-size entry, the focal length
 doesn't demand a great deal of precision, but you should get as close
 as you can. &nbsp;Otherwise, the performance numbers may not reflect
-your actual results and the baseline guiding parameters may be sub-optimal.<br>5. <span style="font-weight: bold;">Mount connection pane: &nbsp;mount guide speed</span>. &nbsp;This is another area that seems to cause confusion. &nbsp;The guide speed is a parameter set<span style="font-style: italic;"> in the mount</span> or <span style="font-style: italic;">in the</span> <span style="font-style: italic;">mount driver</span>, it's not something controlled by PHD2. &nbsp;PHD2 never sets the mount guide
+your actual results and the baseline guiding parameters may be sub-optimal.<br>5. <span style="font-weight: bold;">Mount connection pane: &nbsp;mount guide speed</span>. &nbsp;This is another area that seems to cause confusion. &nbsp;The guide speed is a parameter set<span style="font-style: italic;"> in the mount</span> or <span style="font-style: italic;">in the</span> <span style="font-style: italic;">mount driver</span>,
+it's not something controlled by PHD2. &nbsp;PHD2 never sets the mount
+guide
 speed, it only reads it. &nbsp;It is usually expressed as a multiple of
 the sidereal rate and is typically in the range of 0.5x - 1x sidereal.
-&nbsp;Despite what you may read elsewhere, it's generally best to use
+&nbsp;Despite what you may read elsewhere, it's usually best to use
 guide speeds in this range rather than much lower speeds. &nbsp; Higher
 guide speeds can help to clear backlash more quickly and may help to
-overcome stiction problems. &nbsp;If you say 'yes' to the connection option prompt, PHD2 will attempt to read the current guide
+overcome stiction problems. &nbsp;If you say 'yes' to the connection
+option prompt, PHD2 will attempt to read the current guide
 speed from the mount. &nbsp;If this fails for some reason, you'll need
 to enter the guide speed manually. &nbsp;PHD2 uses this value to
 automatically set the calibration step-size and to aid in checking
@@ -357,9 +372,23 @@ calibration results; but the guide speed information is not important
 for the actual guiding. &nbsp;If you're using different guide speeds on
 the RA and Dec axes, enter the larger value. &nbsp; If you really can't
 determine what the guide speed settings are in the mount, leave the
-setting at the default value of 0.5X.<br></div><br>In the last pane of the
-wizard dialog, you're given the option to build a dark library for the
-profile, &nbsp;You should always do this unless you already have a
+setting at the default value of 0.5X. &nbsp;This pane also has a
+checkbox regarding the presence of high-precision encoders in the
+mount. &nbsp;These devices are somewhat rare but are sometimes included
+on expensive, high-precision mounts, and you are likely to know if you
+have them. &nbsp;Most users will leave this box unchecked.<br></div><br>In
+the last pane of the
+wizard dialog, you're given two options: 1) To automatically restore
+the PHD2 calibration whenever the profile is loaded and 2) to immediately
+build a dark library when the new profile is saved and the wizard completes. &nbsp;The first
+option is only presented if your profile uses an ASCOM or INDI mount.
+&nbsp;It is a convenience item especially for users with permanent
+setups. &nbsp;You can also use this option if you can insure that the
+guide camera orientation in its adapter tube remains the same from one
+night to the next. &nbsp;If you're in doubt or don't want to bother
+with how the guide camera is oriented, leave the box unchecked.&nbsp;
+You should always select the option to build a dark library unless you
+already have a
 compatible dark library that you're going to import from a different
 profile. &nbsp;If you are changing cameras and want to keep the dark
 libraries and bad-pixel maps associated with the old camera, you should
@@ -374,15 +403,15 @@ the dark library and bad-pixel maps depend on the binning factor.<br>
 <h3><a name="Exposure_Time_and_Star_Selection"></a>Exposure
 Time and Star Selection</h3>
 The
-guide star can be selected (clicked on) while "looping" is active - in
-fact, this is the recommended method. &nbsp;It can also be selected
-after looping has been stopped, but this opens the possibility that the
-star might have moved since the last exposure. &nbsp;No great
-precision
-is required in clicking on the star -&nbsp;<span style="font-style: italic;">PHD2</span>
-will find the
-star
-nearest to the cursor. &nbsp;After you do this, a green box will
+guide star is selected&nbsp;while "looping" is active. &nbsp;The best approach&nbsp;is to let PHD2&nbsp;<a href="Tools.htm#Auto-Select_Star">Auto-select</a>
+the guide star for you via the Alt-S keyboard shortcut or by using the
+Tools/Auto-select star menu item. &nbsp;In nearly all cases, it will do
+a better job of star selection that you can do manually because it
+takes a number of things into account - for example,&nbsp; lack of
+saturation, qualification as a "real" star, proximity to other stars
+and to the edge of the field, etc. &nbsp;If you choose to not use the
+auto-select feature, you can select a guide star candidate by clicking
+on it. &nbsp;After you do this, a green box will
 appear to frame the star. &nbsp;If you pick a star that is too
 bright (saturated), the status bar will show a &nbsp;red 'SAT'
 label&nbsp;&nbsp;and you
@@ -419,9 +448,7 @@ Of course, the convenience of using longer exposures must be traded off
 against the need for the mount to get frequent corrections.</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
-of two to three seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, it's better to let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the
-guide star&nbsp;by using the Alt-S keyboard shortcut after stars are
-visible in the main display. If you want to de-select a star without
+of one to three seconds. &nbsp;If you want to de-select a star without
 choosing another one, you can do a shift-click anywhere on the image display window. &nbsp; If you are just
 starting with this
 equipment set-up, you'll probably need to focus the guide camera -
@@ -443,18 +470,22 @@ time is
 needed.<br><br>
 There is also an Auto exposure time selection available. When exposure
 is set to Auto, PHD2 will attempt to adjust the exposure to keep the
-selected guide star at a constant signal-to-noise ratio (SNR) value.
+selected guide star at a constant signal-to-noise ratio (SNR) value
+while working within the exposure limits you choose.
 This is a specialized measurement used by PHD2 to determine how well
 the star can be distinguished from the background - it is similar but
 not identical to the signal-to-noise ratio used in photometry.
 &nbsp;The Auto setting is primarily intended for AO users who
 want to
-minimize exposure time without losing the guide star. The settings to
+minimize exposure time without losing the guide star. It is also useful
+for automated operations where a meridian flip will force the selection
+of a new guide star, and failure to find a bright-enough star will
+cause the automated session to fail. &nbsp;In such cases, a "long"
+exposure time may be preferable to finding no guide star at all.
+&nbsp;The settings to
 control
 Auto-exposure are on the <a href="Advanced_settings.htm#Camera_Tab">Camera Tab</a>
-of the Advanced Dialog. &nbsp;Non-AO users should probably not use the
-"Auto' exposure setting because it complicates&nbsp;interpretation of
-the guiding results.
+of the Advanced Dialog. &nbsp;
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
@@ -493,12 +524,18 @@ north movements are actually used to compute the guide rates and camera
 angle. The east and south moves are used only to restore the star
 roughly to its starting position. &nbsp;Before the north moves are
 begun, you will see a&nbsp;sequence of pulses that are intended to
-clear backlash. &nbsp;PHD2 takes a fairly
-aggressive approach to clearing this backlash, watching for a clear
-pattern of movement in a single direction with no reversals. &nbsp;Even
-so, these pulses may still not clear all the declination
-backlash in your mount, particularly if you are significantly affected
-by seeing conditions. &nbsp; In that case, the computed declination
+clear backlash. &nbsp;PHD2 takes only a moderate approach to clearing
+this backlash, watching for a clear
+pattern of movement in a single direction with no reversals. &nbsp;If
+your mount has a large amount of Dec backlash or you're guiding at a
+long focal length in poor seeing conditions, this phase of calibration
+may not remove all the backlash. &nbsp;Your best option for avoiding
+this problem is to make sure the last move of the mount prior to the
+calibration is <span style="font-weight: bold;">north</span>.
+&nbsp; You can accomplish this with a short slew or by using the
+hand-controller to get the mount moving north as evidenced by obvious
+movement of the guide star in the PHD2 display. &nbsp; If the backlash
+is not cleared adequately, the computed declination
 rate may be too
 low, a situation that is discussed further in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a>
 section. &nbsp;You may also see that the south pulses leave the guide
@@ -509,7 +546,17 @@ tool and measure it directly.<br>
 <br>
 In
 most cases, calibration will complete automatically without any user
-involvement. &nbsp;If you get frequent failures during calibration, you should consult the <a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section.</a><br><br>If
+involvement. &nbsp;If the mount doesn't move sufficiently in the west
+or north directions, you will get an alert saying the calibration has <span style="font-weight: bold;">"failed"</span>.
+&nbsp;Failures of ths type are pretty uncommon but they can occur if
+some part of the hardware is simply not working (e.g. a bad guide
+cable). &nbsp;Unless you see a "failed" message, the calibration
+actually completed. &nbsp;You may see other alert messages advising you
+that the calibration results look suspect or show mount behavior that
+is likely to cause problems during guiding. &nbsp;These are advisory
+messages only, they don't mean that the calibration itself failed.
+&nbsp;If you get frequent messages like this during calibration, you
+should consult the&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section of the manual</a>. &nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control"></a><br><br>If
 you're using an ASCOM (or Indi) connection for either the 'mount' or
 'aux-mount', a good calibration can be re-used for a long&nbsp;time,
 and that is the preferred way to operate. &nbsp;These &nbsp;connection
@@ -519,17 +566,18 @@ as you slew to different targets. &nbsp;The old method of having to
 re-calibrate whenever you slewed the scope or switched the side-of-pier
 is a thing of the past so long as PHD2 has pointing information.
 &nbsp;With this type of set-up, you would only re-calibrate if
-you rotate the position of the guide camera by more than about 5
+you rotate the position of the guide camera by more than a few
 degrees or make other major changes to the hardware configuration.
 &nbsp;In general, the best practice is to get a good calibration within
 about +/- 20 degrees of the celestrial equator and high enough in the
-sky to avoid major seeing (turbulence) problems. &nbsp;Since PHD2 has
-pointing information for this type of configuration, the&nbsp; 'Auto
-restore calibration' option in the Guiding tab of the Advanced Dialog
-will be checked automatically.
-&nbsp;From this point forward, you can simply connect to your
+sky to avoid major seeing (turbulence) problems. &nbsp;If you chose
+'auto-restore calibration' when you built your profile or chose that
+option in the Guiding tab of the Advanced Dialog, you can simply
+connect to your
 gear,&nbsp;choose a guide star, then begin guiding immediately.
-&nbsp;Finally, if you're using an instrument rotator as part of your
+&nbsp;Beginners will probably have better success if they do a fresh
+calibration at the start of each night's session.&nbsp; Finally, if
+you're using an instrument rotator as part of your
 equipment
 profile, PHD2 can use the 'Rotator' connection to adjust the
 calibration data based on the angular position of the guide camera -
@@ -551,7 +599,7 @@ conditions, especially wind and bad seeing. &nbsp;<br>
 <br>After
 a calibration is completed, PHD2 will&nbsp;<a href="Trouble_shooting.htm#Calibration_sanity_check">"sanity check"</a> the results to be
 sure the calculations at least look reasonable. &nbsp;If they don't,
-you will see an 'alert' message at the top of the main window that
+you will see an advisory message at the top of the main window that
 describes the calibration result that looks questionable. &nbsp;You can
 choose to ignore the alert or click on 'Details' to get more
 information. &nbsp;It is generally advisable to pay attention to these
@@ -560,7 +608,7 @@ alerts because there is no point in trying to guide using a significantly bad ca
 If
 you are using an adaptive optics device, there are actually two
 calibration processes that must complete. &nbsp;The first handles
-calibration of the tip/tilt mirror in the AO and calculates the
+calibration of the tip/tilt element in the AO and calculates the
 magnitude and direction of the adjustments as they relate to
 displacements of the guide star. &nbsp;The second calibration is
 the
@@ -575,7 +623,7 @@ Once guiding has begun,
 diagnostic messages will be displayed in the status bar to show what
 guide commanda are being sent to the mount. <span style="font-style: italic;">PHD2</span>
 will continue guiding until you click on the 'Stop' icon. &nbsp;To
-resume guiding, simply start looping exposures again, select your star,
+resume guiding, simply start looping exposures again, auto-select your star,
 and click on the 'Guide' button. &nbsp;You will not need to repeat
 the
 calibration in order to resume guiding. &nbsp;In some cases, <span style="font-style: italic;">PHD2</span> may&nbsp;lose the guide star and
@@ -647,10 +695,11 @@ for measuring and displaying your performance, as described in the <a href="Visu
 &nbsp;Several of the guiding algorithms have limit settings for the
 maximum guide correction that can be issued with a single command.
 &nbsp;If these values are smaller than what is needed to correct the
-mount's position, you will see an alert dialog at the top of the main window
-advising you of the situation. &nbsp;If this is a recurring problem,
-you may want to increase the values for these settings or otherwise
-solve the underlying problem.<br>
+mount's position, you will see an alert dialog at the top of the main
+window
+advising you of the situation. &nbsp;If this is a recurring problem and
+you haven't reduced the max-move parameters below their default values,
+the source of the problem probably lies with the mount. .<br>
 <br>
 &nbsp;<br>
 <br>

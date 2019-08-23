@@ -36,7 +36,7 @@ guide star for each guide exposure, plotted left-to-right.
 &nbsp;Normally, one line shows displacements in right ascension while
 the second line shows declination displacements. &nbsp;However, you can
 use the 'Settings' button to the left of the graph to switch to camera
-(X/Y) axes if you prefer. &nbsp;You can also use the 'Settings' button
+(X/Y) axes if you prefer (not recommended). &nbsp;You can also use the 'Settings' button
 to switch between display units of arc-seconds vs. camera pixels or to
 change the colors of the two graph lines. &nbsp;The range of the
 vertical axis is controlled by the second button from the top, labelled
@@ -58,7 +58,7 @@ error, the score would be 0.5 &nbsp;Taking periodic error into account,
 the ideal value would be closer to 0.3 or 0.4. &nbsp;If this score gets very
 low (e.g. 0.1), you may want to increase the RA aggressivness or
 decrease the hysteresis. &nbsp;If it gets quite high (e.g. 0.8), you
-may want adjust aggressivness/hysteresis in the opposite
+may want to adjust aggressivness/hysteresis in the opposite
 direction.&nbsp;There are two
 other checkboxes to the left that can help you evaluate guider
 performance. &nbsp;Clicking on the '<a name="Corrections"></a>Corrections' box results in an
@@ -67,7 +67,7 @@ along with their direction and magnitude. &nbsp;In this example, these
 are shown as the vertical red and green lines appearing at irregular
 intervals along the horizontal axis. &nbsp;This shows you how "busy"
 the guiding is - under optimal conditions, you should expect to see
-extended intervals when no guide commands are sent at all. &nbsp;The
+extended intervals when no guide commands are sent at all in Declination. &nbsp;The
 other checkbox, labelled '<a name="Trendlines"></a>Trendlines',
 will superimpose trend lines in
 both axes to show if there is a consistent overall drift in the star
@@ -95,21 +95,25 @@ star is moving "east" on the camera sensor and west guide pulses will be
 applied. &nbsp;For the purpose of setting up uni-directional Dec
 guiding, these rules apply:<br>&nbsp; &nbsp; Dec drifting upward =&gt; select Dec guide mode = South<br>&nbsp; &nbsp; Dec drifting downward =&gt; select Dec guide mode = North<br>For
 various mount and hardware reasons, these directions may not correspond
-to actual directions in the sky, particularly for Dec.<br><br>The recommended way to look at guiding
+to actual directions in the sky, particularly for Dec, but that doesn't matter.<br><br>The recommended way to look at guiding
 performance is to use units of arc-seconds rather than pixels.
 &nbsp;Doing this allows an equipment-independent way of evaluating
 performance because it transcends questions of focal length and image
 scale. &nbsp;To do this, you&nbsp;need to provide <span style="font-style: italic;">PHD2</span> with sufficient
 information to determine your guider image scale: namely, the focal
-length of the guide scope and the size of the guide camera pixels.
+length of the guide scope, the size of the guide camera pixels, and whatever binning level you're using.
 &nbsp;These parameters are set in the 'Brain' dialog, on the 'Global'
 and 'Camera' tabs, respectively. &nbsp;If they are not specified, <span style="font-style: italic;">PHD2</span>
-will use default values of 1.0, and the guiding performance numbers
-will effectively be reported in units of pixels.<br><br>At
+will use a default image scale of 1 arc-sec/px, and the guiding
+performance numbers
+will effectively be reported in units of pixels. &nbsp;As mentioned in
+the Basic Use section, the best approach is to use the
+new-profile-wizard when you create your profile, in which case all
+these parameters will be set for you.<br><br>At
 the bottom
 of the graph window are active controls for adjusting guiding
 parameters "on the fly". &nbsp;The guiding algorithm selections you've
-made will control which controls are shown. &nbsp;These controls have
+made will determine which controls are shown. &nbsp;These controls have
 the same
 effect as those in the 'Brain' dialog, and they eliminate the
 need&nbsp;to stop guiding and navigate to another window to adjust
@@ -132,8 +136,8 @@ shape of the star image. &nbsp;That's why automated focusing
 applications like FocusMax use it. &nbsp;If you
 see substantial fluctuations in this parameter or wildly varying star
 profiles, it may be an indication
-that the star is too faint or the exposure time is too short.
-&nbsp;<a name="Focusing"></a>This tool can also help with focusing the
+that the star is too faint,&nbsp;the exposure time is too short, or the camera is out-of-focus.
+&nbsp;<a name="Focusing"></a>This tool can&nbsp; help with focusing the
 guide camera, a
 procedure that can be a bit tedious if you're using an off-axis-guider
 at a fairly long focal length. &nbsp;For that purpose, the HFD number

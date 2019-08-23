@@ -11,7 +11,7 @@ for doing this are as follows:<br>
 <li>Connect to your guide camera and mount</li>
 <li>Start a sequence of guide exposures to see what stars are
 available in the field of view</li>
-<li>Choose a guide star and calibrate the guider</li>
+<li>Let PHD2 auto-select a suitable star and calibrate the guider</li>
 <li>Continue guiding on the target star while using various
 display tools to see how things are going</li>
 <li>Stop and resume guiding as necessary</li>
@@ -57,12 +57,20 @@ dimmer for your viewing. <span style="font-style: italic;">PHD2</span>
 always uses the raw pixels from the camera for guiding, and moving the
 gamma slider has no effect on guiding. &nbsp;A display of "completely
 white" or "completely black" is usually an indication that no stars are
-available in the field of view.</p>
+available in the field of view. &nbsp;The automatic gamma-stretching of
+the image is a very common source of confusion for users because they
+don't adjust the gamma slider properly to see faint stars on the
+display. &nbsp;The stars that PHD2 auto-selects may appear to be overly
+faint and inferior to bright stars you see in the display. &nbsp;These
+results are illusory because PHD2 can generally do a better job of
+selecting a guide star than you can accomplish by eye. &nbsp;As a rule
+of thumb, if you've chosen a star whose name is known to you, it is
+almost certainly too bright to be a good choice as a guide star.</p>
 <p>Next to the gamma slider is the&nbsp;"brain button." &nbsp;This button brings up an <a href="Advanced_settings.htm">Advanced Dialog </a>for making detailed adjustments to <span style="font-style: italic;">PHD2</span>'s
 guiding operations. &nbsp;An important
 design goal of the program is to minimize your need to change these
 parameters, but "the brain" is&nbsp;nothing to be feared - there are
-adjustments available here that can significantly improve your guiding
+adjustments available there that can&nbsp;improve your guiding
 results and make your life easier. &nbsp;Over a period of time, you
 should take a look at this
 dialog and learn what it can do for you.
@@ -72,7 +80,9 @@ to provide access to a configuration dialog&nbsp;unique to the camera.
 &nbsp;However, common camera properties such as gain and binning will
 normally be set in the 'Camera' tab of the PHD2 Advanced Dialog.&nbsp;
 If the button is disabled, any&nbsp;available properties can be set in
-the PHD2 Advanced Dialog..<br>
+the PHD2 Advanced Dialog. &nbsp;With the newer class of guide cameras,
+this button is often disabled because it adds no capabilities beyond
+what is available in the PHD2 Advanced Dialog.<br>
 <h3><a name="Menus"></a>Menus</h3>The pull-down menus above the main guider display are used to access a variety of functions. &nbsp;These are described in the <a href="Darks_BadPixel_Maps.htm">Darks</a>, <a href="Tools.htm">Tools and Utilities</a><big><big><span style="font-weight: bold;">, </span></big></big>and <a href="Visualization.htm">Visualization&nbsp;</a><span style="font-weight: bold;"></span>sections of this help document.
 <h3><a name="Status_Bar"></a>Status Bar</h3><img style="width: 704px; height: 30px;" alt="" src="Main_Status.png"><br><br>The status bar at the
 bottom of the main window is
@@ -85,8 +95,9 @@ events. &nbsp;If the guide star is saturated, the field to the left of
 SNR will show 'Saturated' in a red typeface.<br><br>To
 the right of the
 star status fields are two text fields showing the latest RA and Dec
-guide commands. &nbsp;These show the size of the guide pulse, the
-correction amount in pixels, and an arrow showing the direction.
+guide commands. &nbsp;These show the size of the guide pulse, the guide
+star displacement size&nbsp;in pixels, and an arrow showing the
+direction.
 &nbsp;The arrows follow the usual compass conventions: Dec up/down
 corresponds to north/south, RA left/right corresponds to west/east.
 &nbsp;All of this information is captured in the log files and

@@ -23,9 +23,42 @@
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Connection">
-			<param name="Local" value="Basic_use.htm#Equipment_Connection">
-			<param name="URL" value="Basic_use.htm">
 			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Camera Selection">
+				<param name="Local" value="Basic_Use.htm#Camera_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Mount Selection">
+				<param name="Local" value="Basic_Use.htm#Mount_Selection">
+				<param name="URL" value="Basic_use.htm#Mount_Connection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Aux_mounts">
+				<param name="Local" value="Basic_Use.htm#Aux_mount_selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ASCOM Benefits">
+				<param name="Local" value="Basic_use.htm#ASCOM_Benefits">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="AO Devices">
+				<param name="Local" value="Basic_use.htm#AO_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Rotators">
+				<param name="Local" value="Basic_use.htm#Rotator_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Equipment Profiles">
+				<param name="Local" value="Basic_use.htm#Equipment_Profile">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="New Profile Wizard">
+				<param name="Local" value="Basic_use.htm#New_profile_wizard">
+				</OBJECT>
+		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Profiles">
 			<param name="Local" value="Basic_use.htm#Equipment_Profile">
@@ -42,11 +75,11 @@
 			<param name="Name" value="Guiding">
 			<param name="Local" value="Basic_use.htm#Guiding">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Darks and Bad-pixel Maps">
+			<param name="Local" value="Darks_BadPixel_Maps.htm">
+			</OBJECT>
 	</UL>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Darks and Bad-pixel Maps">
-		<param name="Local" value="Darks_BadPixel_Maps.htm">
-		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Visualization Tools">
 		<param name="Local" value="Visualization.htm">

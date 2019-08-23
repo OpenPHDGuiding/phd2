@@ -3,8 +3,8 @@
 <body>
 <h2>Advanced Settings</h2>
 Advanced settings are accessed by clicking on
-the 'Brain button', a feature well-known to users of the original PHD.
-&nbsp;<span style="font-style: italic;">PHD2</span> has a considerably larger set of parameters that can be
+the 'Brain button' in the main display.
+&nbsp;<span style="font-style: italic;">PHD2</span> has a large set of parameters that can be
 adjusted to optimize your guiding performance. &nbsp;Although these
 are
 called "advanced" settings, they are not particularly difficult to
@@ -15,8 +15,7 @@ that describe each&nbsp;field in some detail. &nbsp;Simply
 "hover" the
 cursor over the field to see the tool-tip. &nbsp;In many cases,
 this
-will provide all the information you need. &nbsp; Because there are
-many more settings available, the Advanced Dialog in <span style="font-style: italic;">PHD2</span>
+will provide all the information you need. &nbsp; Because there are so many parameters available, the Advanced Dialog in <span style="font-style: italic;">PHD2</span>
 is organized
 into notebook tabs that are activated by clicking on the tab names.
 &nbsp;All of the tabs share a common set of 'Ok' and 'Cancel' buttons
@@ -40,8 +39,10 @@ used in the <span style="font-style: italic;">PHD2</span> user interface, subjec
   </ul>
 See the <a href="Tools.htm#Software_Update">Software Update</a> section for more information about <span style="font-style: italic;">PHD2</span> software updates.
 <li>'<a name="Log_File_Location"></a>Log
-File Location' - specifies a file directory where PHD2 guide logs,
-debug logs, and any diagnostic image files will be stored.</li><li><a name="Dither_Settings"></a>Dither Settings</li><ul><li><a name="Dither_Random_Mode"></a>'Random
+File Location' - specifies a&nbsp;directory where PHD2 guide logs,
+debug logs, and any diagnostic image files will be stored. The default
+location on Windows is the "My Documents" folder associated with the
+logged-in user..</li><li><a name="Dither_Settings"></a>Dither Settings</li><ul><li><a name="Dither_Random_Mode"></a>'Random
 mode' - tells PHD2 to use a random-number generator to compute both the
 size and the direction of the dither, subject to any constraints
 imposed by RA-only mode or by the Dec guiding mode being set to 'None'.</li><li><a name="Dither_Spiral_Mode"></a>'Spiral mode' - tells PHD2 to dither with fixed-size amounts in a clockwise spiral pattern.
@@ -53,9 +54,8 @@ of Dec backlash.</li></ul>
 RA only' - tells PHD2 to dither&nbsp;only on the RA axis.</li></ul>
 <ul><li>'<a name="Dither_scale"></a>Dither scale' - an optional multiplier used to adjust the maximum-dither amount specified by the image application. See <a href="Tools.htm#Dithering_Ops">Dithering Operations</a>&nbsp;</li></ul><li><a name="Image_Logging"></a>'Enable
 diagnostic image logging' - used primarily for product support and
-diagnosis of problems dealing with PHD2 star-recognition and
-measurement. &nbsp;However, it can be used to examine and analyze guide
-frame images for any other purpose as well. &nbsp;Guide frame images
+diagnosis of problems dealing with the guide camera or PHD2 star-recognition and
+measurement. &nbsp;Guide frame images
 are captured and logged in a FITs format subject to the filter/trigger
 controls in the group-box. &nbsp;Images are saved in sub-folders of the
 PHD2 logging directory with the date and time encoded as part of the
@@ -127,15 +127,14 @@ are
 very short and you don't want to overload either the mount or the
 camera
 link with very high traffic rates.</li><li><a name="Auto_exposure_settings"></a>'Auto Exposure' - these are the settings that control Auto exposure time.</li><ul><li>Min
-Exposure - the minimum exposure time. PHD2 will not set the exposure
+Exposure - the minimum exposure time - PHD2 will not set the exposure
 time
 less than this value, even if the guide star SNR is higher than the
 target SNR value.
 If the min exposure time is set too low, you are likely to chase seeing
 effects and thereby get poor guiding results. Users of AO
-units will usually set this to a lower value, since rapid small
-corrections are often
-desirable with an AO.</li><li>Max Exposure - the maximum exposure time. Before a guide star is selected, PHD2
+units might set this to a lower value since rapid small
+corrections are more manageable with an AO.</li><li>Max Exposure - the maximum exposure time. Before a guide star is selected, PHD2
 will set the exposure time to the maximum value. Once a guide star is selected, PHD2
 will then incrementally decrease the exposure time until the desired SNR is reached.</li><li>Target SNR - this is the average SNR value that PHD2 will attempt
 to achieve
@@ -147,7 +146,7 @@ value. PHD2 will reject frames when SNR drops below 3.0. The default
 value of 6.0
 should provide enough of a cushion to prevent fluctuations from causing
 the SNR to
-go below 3.0. &nbsp;As mentioned in the 'Basic Use' section, SNR is
+go below 3.0 but a higher value is desirable. &nbsp;As mentioned in the 'Basic Use' section, SNR is
 similar but not identical to the signal-to-noise ratio used in
 photometry.</li></ul><li>'<a name="Pixel_size"></a>Pixel
 size' - The guide camera pixel size in microns. This is the second of two parameters needed by <span style="font-style: italic;">PHD2</span>
@@ -175,7 +174,12 @@ below).</li><li>'<a name="Camera_gain"></a>Camera
 gain' - Sets the gain level for the many cameras
 that support this feature. &nbsp;Reducing this parameter can help to
 reduce the noise level or may allow use of a bright star without
-saturation.</li><li>'<a name="Disconnect_nonresponsive_camera"></a>Disconnect
+saturation. &nbsp;The range of values and their specific effects are
+dependent on the individual camera, so this PHD2 parameter is treated
+as a percentage of the range between the minimum and maximum gain
+values supported by the camera. &nbsp;For example, if the camera uses absolute
+gain values in the range of 40 to 80, a PHD2 gain value of 50% would
+translate to a camera gain of 60.</li><li>'<a name="Disconnect_nonresponsive_camera"></a>Disconnect
 nonresponsive camera after (seconds) - Camera malfunctions will
 sometimes occur, often because of faulty USB connections. &nbsp;In many
 cases, the camera will not return the requested image data, and PHD2
@@ -226,8 +230,8 @@ won't degrade the accuracy of computing the&nbsp;guide star location.
 &nbsp;Choosing a binning factor greater than one will have the
 following effects:<br><ol><li>Star images will have a higher SNR and
 will be easier to detect above the background noise level. &nbsp;This
-is only beneficial if you are limited to a choice among faint stars
-(i.e. with SNR values near the threshold of 3).</li><li>The amount of
+is especially helpful if you are limited to using faint stars
+(i.e. with SNR values below about 10).</li><li>The amount of
 data downloaded from the camera will&nbsp;be reduced by the square of
 the binning factor. &nbsp;This can be helpful if you are using a camera
 that&nbsp;makes heavy use of USB resources even if star brightness and
@@ -236,12 +240,12 @@ using sub-frames can achieve the same result once a star has been
 selected.</li><li>The resolution (image scale) of your guider image
 will be reduced by the binning factor. &nbsp;This is not likely to be a
 problem if the un-binned image scale is below 1 arc-sec/pixel, but your
-guiding results may suffer if the un-binned image scale is well above 1
+guiding results may suffer if the un-binned image scale is&nbsp;above 3
 arc-sec/pixel. &nbsp;You may need to experiment because the results
 will also depend on the image scale of your main camera system.</li></ol>Each
 binning level requires its own&nbsp;dark frames and bad-pixel map -
 they are not interchangeable, nor can a transform be done
-automatically. &nbsp;If you foresee the need to switch back and forth
+automatically. &nbsp;If you want the flexibility of switching back and forth
 between binning settings, you should create separate profiles for each
 binning value. &nbsp;Then build&nbsp;a dark library and a bad-pixel map
 for
@@ -260,8 +264,12 @@ pole. &nbsp;You may also want to increase it temporarily while using
 the Guiding Assistant so that backlash measurement can be done without
 losing the guide star. &nbsp;Just remember that an overly large search
 region also increases the likelihood that multiple stars will live
-within its boundaries, which could lead to guiding problems.</li><li>'<a name="Star_mass_change_detection"></a>Star mass&nbsp;detection' - tells <span style="font-style: italic;">PHD2</span> to monitor the
-brightness and size of the guide star compared to the sky background.&nbsp;</li><li>'<a name="Star_mass_tolerance"></a>Star mass tolerance' - if the 'Enable' box
+within its boundaries, which could lead to guiding problems.</li><li>'<a name="Star_mass_change_detection"></a>Star mass&nbsp;detection' - tells <span style="font-style: italic;">PHD2</span>
+to monitor the
+brightness and size of the guide star compared to the sky background.
+&nbsp; You may need to disable this feature or set the tolerance to a
+higher number if you're using a fine image scale and are getting too
+many lost-star events because of &nbsp;this feature.</li><li>'<a name="Star_mass_tolerance"></a>Star mass tolerance' - if the 'Enable' box
 is checked, <span style="font-style: italic;">PHD2</span> will trigger a 'lost star' error if the measured
 brightness and size vary by more than this percentage. &nbsp;This
 might be useful if you have two stars inside the tracking rectangle and
@@ -284,11 +292,19 @@ determine a suitable value for your system by manually selecting
 some&nbsp;small stars that you know are not just hot pixels, then use
 the star-profile tool to see the HFD values of those stars.
 &nbsp;You'll want to specify a minimum HFD value that allows selection
-of legitimate faint stars but not hot pixels.</li></ul>Calibration<br><ul><li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
-two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the image scale and thus
+of legitimate faint stars but not hot pixels. &nbsp;If you encounter
+situations where PHD2 is trying to guide on a hot pixel, be sure to set
+this parameter.</li></ul>Calibration<br><ul><li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
+two parameters needed by <span style="font-style: italic;">PHD2</span>
+to compute the image scale and thus
 report guiding performance in units of arc-seconds. &nbsp;The other
-parameter required for this is the guide camera pixel size, located on the
-'Camera' tab.</li><li>'<a name="Calibration_step-size"></a>Calibration
+parameter required for this is the guide camera pixel size, located on
+the
+'Camera' tab. &nbsp;If these two parameters aren't set properly, some
+of the default guiding parameters may not be set correctly, and we will
+be handicapped in trying to assess your guiding performance and help
+you resolve problems. &nbsp;If you use the new-profile-wizard, these
+values will probably be correct.</li><li>'<a name="Calibration_step-size"></a>Calibration
 step-size' -&nbsp;specifes the duration of the guide pulse that
 <span style="font-style: italic;">PHD2</span>
 will use during calibration. &nbsp;Its use is described in the
@@ -300,7 +316,7 @@ or&nbsp;too slowly during calibration. &nbsp;As a general guideline, it
 is
 good to calibrate within about 30 degrees of the celestial equator
 (declination = 0), and to use a calibration step size that will result
-in 8-14&nbsp;steps in each direction. &nbsp; The 'calculate...' button
+in 8-14&nbsp;steps in each direction. &nbsp; The 'Advanced...' button
 to
 the right of this control will launch a dialog that can help you
 compute an appropriate value (see below)&nbsp;</li><li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
@@ -308,16 +324,18 @@ compute an appropriate value (see below)&nbsp;</li><li>'<a name="Auto_restore_ca
 the most recent calibration data as soon
 as the equipment is connected. &nbsp;If
 you're using an ASCOM (or Indi) mount connection or have an 'aux-mount'
-connection, you'll probably want to have this option set.
+connection, you may want to set this option.
 &nbsp;Conversely, if PHD2 has no scope pointing
 information available, this option will normally be reset.
-&nbsp;The new-profile wizard will choose a default setting
-for&nbsp;this option&nbsp;based on the configuration you define.
+&nbsp;The new-profile wizard will ask you how you want to set this
+option.
 &nbsp;Note that auto-restore is remembered for each separate equipment
 profile,&nbsp;and it only has an effect when you load the profile and
 connect to the equipment. &nbsp;If you want to force a recalibration
 before an individual guiding session begins, you can simply clear the
-mount calibration (see below).</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
+mount calibration (see below). &nbsp;If you have set the auto-restore
+option, you must be sure that the guide camera is not rotated with
+respect to the guide scope or the sky.</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
 Dec orthogonal to RA' - Normally, the calibration process independently
 computes the camera angles for both right ascension and declination.
 &nbsp;There is no need for great precision on these values, and the
@@ -341,7 +359,7 @@ the mount via an ASCOM connection ('Mount' or 'Aux'), it will
 automatically adjust the RA guide rate based on the current
 declination.
 &nbsp;This box should normally be left checked except in&nbsp;unusual
-cases. &nbsp;For example, SiTech mount controllers evidently apply a
+cases. &nbsp;For example, SiTech mount controllers may apply a
 compensation automatically, in which case the box should be left
 un-checked. &nbsp;Don't confuse this option with 'Declination backlash
 compensation', which is an entirely different feature.</li></ul>Shared Guiding Parameters<ul><li>'<a name="Fast_Re-center"></a>Fast
@@ -361,8 +379,8 @@ error in RA. &nbsp;You can run the Guiding Assistant to help see what's causing 
   <li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec output after meridian flip' -&nbsp;
     tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data after a meridian flip. &nbsp;Some
-mounts track their 'side of pier' state and automatically reverse the
-direction of the declination motor. &nbsp;Most&nbsp;mounts do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span>
+newer mounts track their 'side of pier' state and automatically reverse the
+direction of the declination motor. &nbsp;Older mounts do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span>
 needs to know if the mount will automatically change its behavior based on
 side-of-pier. &nbsp;You may have difficulty finding information about
     how your mount behaves in this respect, so PHD2 provides the <a href="Tools.htm#pierflip_cal_tool">Meridian flip calibration tool</a> to determine the correct setting automatically.
@@ -372,7 +390,10 @@ side-of-pier. &nbsp;You may have difficulty finding information about
       <li>With the checkbox disabled, calibrate on one side of the pier, then move the mount to the other
         side.</li>
       <li>If you are guiding via ASCOM or Indi or are using an 'aux mount' connection, just start guiding.</li>
-      <li>If you're guiding only via ST-4 and PHD2 has no scope pointing information, first select 'Flip Calibration' under the 'Tools' menu, and then start guiding.</li>
+      <li>If
+you're guiding only via ST-4 and PHD2 has no scope pointing
+information, first select 'Flip Calibration' under the 'Tools' menu,
+and then start guiding.</li>
       <li>In either case, if the guiding works normally, leave the box un-checked; but</li>
       <li>if you see guiding run-away <span style="font-weight: bold; font-style: italic;">in
           declination</span>, check the box and repeat the entire procedure, including calibration.</li>
@@ -380,7 +401,8 @@ side-of-pier. &nbsp;You may have difficulty finding information about
   </li>
 
   <li>'<a name="Enable_guide_output"></a>Enable mount guide output'
-- this is normally checked because it tells <span style="font-style: italic;">PHD2</span> to send guide
+- this is normally checked because it tells <span style="font-style: italic;">PHD2</span>
+to send guide
 commands&nbsp;to the mount. &nbsp;But there are some
 circumstances
 where you might want to disable this, usually because you want to
@@ -388,7 +410,9 @@ observe the uncorrected behavior of the mount. &nbsp;For example,
 you
 can disable guider output in order to see the general shape and
 amplitude of your mount's periodic error or to check the amount of
-drift from polar mis-alignment.</li><li>'<a name="Stop_guiding_on_slew"></a>Stop
+drift from polar mis-alignment. &nbsp;In most cases, you will be better
+off running the Guiding Assistant for these purposes, which
+automatically handles this setting for you.</li><li>'<a name="Stop_guiding_on_slew"></a>Stop
 guiding when mount slews' - a diagnostic option for working with ASCOM
 mount drivers that may report the slewing status incorrectly. &nbsp;The option
 should&nbsp;be left checked unless you know the driver for your mount
@@ -396,15 +420,15 @@ has this problem (highly unlikely). &nbsp; Also,&nbsp; it will
 generally not detect&nbsp;slews that are initiated by the
 hand-controller. &nbsp;In any case, PHD2 will continue to try to track
 the guide star, so slews will typically result in lost-star
-notifications - beeping and flashing of the PHD2 image window.</li></ul><a name="Calculator_auto-step-size"></a>Detailed Calibration Parameters<br><br><img style="width: 592px; height: 426px;" alt="" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
+notifications - beeping and flashing of the PHD2 image window.</li></ul><a name="Calculator_auto-step-size"></a>Advanced Calibration Parameters<br><br><img style="width: 592px; height: 426px;" alt="" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
 To review or change&nbsp;calibration parameters,
 be sure the topmost four edit controls are
 correctly filled in. &nbsp;If you have already specified the focal
 length and
-the camera pixel size in the 'Global' and 'Camera' tabs respectively,
+the camera pixel size in the 'Global' and 'Camera' tabs respectively (or via the new-profile-wizard),
 those fields will already be populated in this form. &nbsp;If you are
 using an ASCOM connection to your mount, the fields for "Guide speed"
-and "Calibration declination" will also show the correct values.
+and "Calibration declination" will usually show the correct values unless the driver doesn't report them correctly.
 &nbsp;Otherwise, you'll need to supply them yourself. &nbsp;The guide
 speed is specified as a multiple of sidereal speed - most mounts will
 use something
@@ -421,7 +445,11 @@ is likely to result in a good calibration. &nbsp;Use of a significantly
 smaller value raises the likelihood that seeing errors or small mount
 errors will cause calibration errors . &nbsp;You can also change the
 total calibration distance if you have some reason to think the default
-value of 25px is inadequate. &nbsp;As you change the values
+value of 25px is inadequate. You should be careful with this because
+"bigger" is not always "better". &nbsp;With larger required calibration
+distances, the calibration is more likely to be affected by large
+uncorrected periodic error in RA or large drift in Dec. &nbsp; As you
+change the values
 in these fields,&nbsp; <span style="font-style: italic;">PHD2</span>
 will recalculate your current image scale and a recommended value for
 the
@@ -435,15 +463,14 @@ this will not be done if you click on 'Cancel' in the calculator
 dialog. &nbsp;Again, PHD2 never changes the guide speed setting in
 your mount regardless of what may be entered in the 'Guide Speed' field.<br><br>The
 goal of the calculator is to recommend a step-size that is likely to
-result in an accurate calibration without wasting too much time.
-&nbsp;There is no great precision involved in any of this, and there is
-nothing magic about the choice of 12 steps as a target. &nbsp;As long
+result in an accurate calibration without wasting too much time, and
+the automatically computed values will usually work well. &nbsp;As long
 as you are getting successful calibrations without alert messages, the
-calibration parameters can be left alone. &nbsp;If you've used the
+calibration parameters should be left alone. &nbsp;If you've used the
 new-profile-wizard to build your equipment profile, there's rarely any
 reason to use the 'Advanced" button and the Calibration Parameters
 dialog.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 593px; height: 571px;" alt="" src="Advanced_algorithms.png"><br><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 633px; height: 610px;" alt="" src="Advanced_algorithms.png"><br><br>
 The algorithms tab can be used to select the guiding algorithms you
 want to use and to fine-tune the parameters associated with them. &nbsp;The parameters displayed will change significantly if
 you
@@ -453,11 +480,15 @@ separate section.<br>
 <br>
 The remaining controls, the ones that are independent of the guiding
 algorithm selections, are described below. &nbsp;
-<ul><li>'<a name="Max_Duration_RA"></a>Max RA duration' - specifies the maximum allowed
+<ul><li>'<a name="Max_Duration_RA"></a>Max RA duration' - specifies the
+maximum allowed
 guide pulse duration for right ascension. &nbsp;You might reduce
 this
 below the default value if you want to avoid&nbsp;chasing a large
-deflection that could be caused by a spurious event (e.g. wind gust, hot pixel, etc.) .'</li><li>'Use
+deflection that could be caused by a spurious event (e.g. wind gust,
+hot pixel, etc.) .' &nbsp;However, there is rarely a good reason for
+changing it if you have protected yourself against hot pixels (Minimum
+star HFD).</li><li>'Use
 backlash comp' - this
 controls whether PHD2 will apply a compensation factor when the
 direction of declination guiding needs to be reversed.
@@ -469,18 +500,22 @@ errors are not caused
 by imperfections in your mount's gears. &nbsp;Instead, deflections in
 declination are primarily the result of imperfect polar alignment or flexure.
 &nbsp;The result is an error that should be smooth and mostly uni-directional, assuming there is no&nbsp;over-shoot from an
-earlier correction. &nbsp;The default value of 'auto' tells <span style="font-style: italic;">PHD2</span> that
+earlier correction. &nbsp;The default value of 'auto' tells <span style="font-style: italic;">PHD2</span>
+that
 some reversals in direction are acceptable, subject to the behavior of
 the various guiding algorithms. &nbsp;However, if your mount has severe
 declination backlash, you may want to prevent&nbsp;direction reversal
-altogether. &nbsp;If so, you can select either 'north' or 'south' to
-restrict corrections to only that direction. &nbsp;Keep in mind,
+altogether. You could&nbsp;then&nbsp;select either 'north' or 'south'
+to
+restrict corrections to only that direction (uni-directional Dec
+guiding). &nbsp;Keep in mind,
 however, that an&nbsp;over-shoot in correction with one of these modes
-will leave the star positoned off-target for an extended period of
+might leave the star positoned off-target for an extended period of
 time. So you'll probably want to use conservative parameters for
 aggressiveness if you are disallowing direction reversals.
 &nbsp;Finally, a choice of 'off'' here disables declination guiding
-altogether.</li><li>'Reset'
+altogether, an appropriate choice for simple tracking mounts that don't
+support Dec guiding.</li><li>'Reset'
 - resets the guiding parameters for the selected RA or Dec algorithm to
 their default values. &nbsp;Min-move settings will be set using the
 same algorithm employed in the new-profile-wizard. &nbsp;If you
@@ -492,7 +527,7 @@ the Dec guide commands. &nbsp;During this interval, the declination
 gears aren't fully engaged and the axis doesn't move in response to the
 guide commands. &nbsp;Many mounts have settings for backlash
 compensation but these should not be used for guiding - they are
-typically intended for visual use where high precision isn't required.
+typically intended for visual use only.
 &nbsp;Because the actual amount of compensation needed at any given
 time may depend on the pointing position and the mechanical load on the
 system, a fixed value will usually result in oscillations that never
@@ -541,7 +576,7 @@ within
 reason, doesn't usually degrade guiding performance. &nbsp;Instead, it
 may introduce field rotation if you're imaging near the pole and have a
 large camera sensor. &nbsp;A good first step would be to polar align to
-within a few arc-minutes of the pole before setting up for
+within 5-10 arc-min of the pole before setting up for
 uni-directional
 guiding. &nbsp;You can always go back later and check for field
 rotation. &nbsp;Just take a sample image with your main camera at the
@@ -557,14 +592,13 @@ and altitude alignment errors. &nbsp;You may even have a situation
 where
 the reversal point is near enough to the horizon that you don't
 encounter it during normal imaging.<br><br>To set up for uni-directional guiding, you can follow these steps:<br><ol><li>Move
-to a field with a good guide star and open the Guiding Graph window.
-&nbsp;Disable Dec guiding entirely by setting the Dec guide mode to
-'off', then start guiding. &nbsp;Now watch the graph until you can see
-a clear trend in the way the guide star is drifting either north or
+to a field with a good guide star and run the Guiding Assistant for
+several minutes. &nbsp;Look at the guiding graph and note whether the
+guide star is drifting&nbsp;north or
 south. &nbsp;Once you see this, reset the Dec guide mode to issue
-corrections in the right direction. &nbsp;For example, if the star is
-drifting north, set the Guide mode to 'south.'</li><li>Try using the
-'LowPass' or 'LowPass2' guiding algorithms for declination and start
+corrections in the appropriate direction. &nbsp;For example, if the
+star is
+drifting north, set the Guide mode to 'south.'</li><li>Try using the&nbsp;'LowPass2' guiding algorithm for declination and start
 with a fairly low aggressiveness factor, say 50%. &nbsp;If the
 aggressiveness is too high, the correction may push the star to the
 "wrong" side of the lock position, where it will remain until the slow
@@ -576,7 +610,7 @@ just steadily drifting&nbsp;off-target. &nbsp;Over the course of
 minutes or hours, you may notice the amount of drift is decreasing.
 &nbsp;This means you are slowly approaching the point of
 declination reversal and you should be prepared to change the Dec guide
-mode accordingly.</li><li>If you are dithering, set the dithering parameters to "RA-only" to avoid disrupting the Dec guiding.</li></ol><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>If
+mode accordingly.</li><li>If you are dithering, you may want to set the dithering parameters to "RA-only" to avoid disrupting the Dec guiding.</li></ol><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
 Devices" tab will be shown. &nbsp;The upper section deals with the AO
 device if one is being used. &nbsp;You
@@ -590,7 +624,7 @@ average' parameter tells <span style="font-style: italic;">PHD2</span>
 how many samples to take at each of these
 points. &nbsp;Averaging images is important because the seeing will
 always cause the guide star to "bounce around" a bit. &nbsp;As
-discussed earlier, the AO unit can make corrections
+discussed elsewhere, the AO unit can make corrections
 only within a limited range of guide star movement. &nbsp;You
 will&nbsp;want to initiate mount 'bump' corrections before these limits
 are actually reached, and the 'bump percentage' field is used for that
@@ -630,18 +664,15 @@ limited amount of Dec backlash. You should use the Guiding Assistant to
 measure your Dec backlash and see what it recommends with regard to
 using Dec backlash compensation.<br><br>When an AO is in use, the 'Algorithms' tab will only show choices for controlling the tip/tilt optical element in the AO
 device
-itself.<br><br><img style="width: 590px; height: 450px;" alt="" src="Advanced_other_Algo.png"><br><br>Since
+itself.<br><br><img style="width: 635px; height: 574px;" alt="" src="Advanced_other_Algo.png"><br><br>Since
 the
 AO is not trying to move a heavy piece of equipment, you can
 afford to be more aggressive in your guide algorithm choices.
-&nbsp;The default algorithms for an AO are&nbsp;'None', which means
-there will be
-no damping or history-based calculations applied at all. &nbsp;In that
-case, each correction will be based only on the most recent guide frame
-and will make a 100% correction of the most recent deflection. &nbsp;If
+&nbsp;The default algorithms for an AO are&nbsp;'Hysteresis'', which
+gives you an easy way to control damping and
+aggressiveness.&nbsp;&nbsp;If
 you use a different algorithm,&nbsp;you should
-probably start with a high level of aggressiveness there as well,
-perhaps 100%.
+probably start with a high level of aggressiveness there as well.
 &nbsp; The other, shared guiding parameters normally displayed on the
 'Algorithms' tab will not be shown for the AO because they aren't used
 to control the device.<br><br>The rotator device has only

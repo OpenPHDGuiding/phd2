@@ -4,7 +4,7 @@
 used for guiding are typically not temperature-regulated and may
 produce&nbsp;images that appear quite&nbsp;noisy. &nbsp;As a result, guide
 exposures frequently show obvious&nbsp;defects in the form of &nbsp;hot
-("stuck") pixels or regions with spurious brightness levels. &nbsp;If
+(or "warm") pixels or regions with spurious brightness levels. &nbsp;If
 there are too many of these defects, you may have trouble identifying
 and selecting a good guide star - trying to calibrate on a hot pixel is
 a common problem for beginners. &nbsp;Even after guiding has begun, a
@@ -79,13 +79,13 @@ times, you can simply acquire the missing data and it will be added to
 the existing dark library - there is no need to start over. &nbsp;By
 changing the setting of the 'Use Dark Library' menu item, you'll be
 able to see the effect of using the dark library and determine whether your guider images are sufficiently improved.<br><br>Remember
-that a dark library is associated with a particular camera. &nbsp;PHD2
+that a dark library is associated with a particular camera and binning level. &nbsp;PHD2
 will check to be sure that the dark library matches the camera you are
 currently using. &nbsp;If it does not, you will see an alert message
 telling you the dark library can't be used and must be rebuilt.
 &nbsp;This can happen when you've changed cameras inside an existing
 equipment profile, something you shouldn't do unless you have upgraded
-your guide camera and have no plan to revert to use of the old camera.<br><h3><a name="Bad-pixel_Maps"></a>Bad-pixel Maps (<a name="Defect_Maps"></a>Defect Maps)</h3>For
+your guide camera and have no plan to return to using the old camera.<br><h3><a name="Bad-pixel_Maps"></a>Bad-pixel Maps (<a name="Defect_Maps"></a>Defect Maps)</h3>For
 some guide cameras, dark frames don't do an adequate job of removing
 the defective pixels that are visible in the guide frame. &nbsp;In
 those situations, you can probably get better results by building and
@@ -187,7 +187,7 @@ need to refine the map as you did before until you're happy with the
 results. &nbsp;There is no reason you should need to interact with
 either the dark libarary or bad-pixel map data files, but you can find
 them located in the 'AppData\Local' logical directory used by your
-operating system.<br><br>Like dark libraries, bad-pixel maps are&nbsp;associated with a particular camera.
+operating system.<br><br>Like dark libraries, bad-pixel maps are&nbsp;associated with a particular camera and binning level.
 &nbsp;PHD2 will check to be sure that the bad-pixel map matches the camera
 you are currently using. &nbsp;If it does not, you will see an alert message telling you the bad-pixel map can't be
 used and must be rebuilt. &nbsp;This can happen when you've changed cameras
@@ -206,9 +206,9 @@ connect your gear using Profile2, then use the 'Import From Profile...'
 menu item under the top-level 'Darks' menu. &nbsp;You would select
 Profile1 as the source of the import function for the dark library,
 bad-pixel map, or both. &nbsp;You will be shown only those profiles
-that have a camera with compatible sensor geometry (size and pixel
-size). &nbsp;Clicking on 'Ok' will copy the dark/bad-pixel map files
-and will associated them with your new profile, Profile2. &nbsp;Since
+that have a camera with compatible sensor geometry (sensor size, pixel
+size, binning). &nbsp;Clicking on 'Ok' will copy the dark/bad-pixel map files
+and will associate them with your new profile, Profile2. &nbsp;Since
 they are copies, changing the data files in one profile will not affect
 other profiles. &nbsp;Keeping them synchronized, if that is what you
 want to do, will require a subsequent 'import' operation.<br></body></html>
