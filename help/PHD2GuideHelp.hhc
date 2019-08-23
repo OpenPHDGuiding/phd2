@@ -27,16 +27,16 @@
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Camera Selection">
-				<param name="Local" value="Basic_Use.htm#Camera_Selection">
+				<param name="Local" value="Basic_use.htm#Camera_Selection">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Mount Selection">
-				<param name="Local" value="Basic_Use.htm#Mount_Selection">
+				<param name="Local" value="Basic_use.htm#Mount_Selection">
 				<param name="URL" value="Basic_use.htm#Mount_Connection">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Aux_mounts">
-				<param name="Local" value="Basic_Use.htm#Aux_mount_selection">
+				<param name="Local" value="Basic_use.htm#Aux_mount_selection">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="ASCOM Benefits">
