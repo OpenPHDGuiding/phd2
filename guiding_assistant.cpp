@@ -517,7 +517,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Declination Backlash"));
     m_backlashCB->SetToolTip(_("PHD2 will move the guide star a considerable distance north, then south to measure backlash. Be sure the selected star has "
         "plenty of room to move in the north direction.  If the guide star is lost, increase the size of the search region to at least 20 px"));
-    if (TheScope() != nullptr)
+    if (!pMount->IsStepGuider())
     {
         m_backlashCB->SetValue(true);
         m_backlashCB->Enable(true);
@@ -564,10 +564,7 @@ GuidingAsstWin::GuidingAsstWin()
     Bind(wxEVT_BUTTON, &GuidingAsstWin::OnReviewPrevious, this, GA_REVIEW_BUTTON, GA_REVIEW_BUTTON);
     Bind(wxEVT_MENU, &GuidingAsstWin::OnGAReviewSelection, this, GA_REVIEW_ITEMS_BASE, GA_REVIEW_ITEMS_LIMIT);
 
-    if (m_backlashCB->IsEnabled())
-        m_backlashTool = new BacklashTool();
-    else
-        m_backlashTool = nullptr;
+    m_backlashTool = new BacklashTool();
     m_measuringBacklash = false;
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
@@ -587,8 +584,7 @@ GuidingAsstWin::GuidingAsstWin()
 GuidingAsstWin::~GuidingAsstWin(void)
 {
     pFrame->pGuidingAssistant = 0;
-    if (m_backlashTool != nullptr)
-        delete m_backlashTool;
+    delete m_backlashTool;
 }
 
 void GuidingAsstWin::StatsReset()
@@ -1805,13 +1801,6 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
     double ra = info.mountOffset.X;
     double dec = info.mountOffset.Y;
-    if (pMount->IsStepGuider())
-    {
-        PHD_Point mountLoc;
-        TheScope()->TransformCameraCoordinatesToMountCoordinates(info.cameraOffset, mountLoc);
-        ra = mountLoc.X;
-        dec = mountLoc.Y;
-    }
     // Update the time measures
     wxLongLong_t elapsedms = ::wxGetUTCTimeMillis().GetValue() - m_startTime;
     m_elapsedSecs = (double)elapsedms / 1000.0;
