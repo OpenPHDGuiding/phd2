@@ -52,7 +52,7 @@ if(WIN32 AND FALSE)
   install (FILES ${phd_src_dir}/README-PHD2.txt DESTINATION . )
   install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION . )
   install (DIRECTORY ${phd_src_dir}/locale DESTINATION . )
-  
+
   # Make NSIS package
   set(CPACK_GENERATOR "NSIS")
   set(CPACK_PACKAGE_FILE_NAME "phd2-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${cdate}.${HOST_NAME}-win32")
@@ -74,11 +74,11 @@ if(UNIX AND NOT APPLE)
   install(FILES ${PHD_INSTALL_LIBS}
           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/phd2/)
   install(FILES ${phd_src_dir}/icons/phd2_48.png
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ 
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/
           RENAME "phd2.png")
-  install(FILES ${phd_src_dir}/phd2.desktop      
+  install(FILES ${phd_src_dir}/phd2.desktop
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
-  install(FILES ${phd_src_dir}/phd2.appdata.xml      
+  install(FILES ${phd_src_dir}/phd2.appdata.xml
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/metainfo/ )
 
   # Make Debian package
@@ -103,7 +103,7 @@ if(UNIX AND NOT APPLE)
   # set version and arch compatible file name
   set(CPACK_PACKAGE_FILE_NAME "phd2_${CPACK_DEBIAN_PACKAGE_VERSION}_${debarch}")
   # Ubuntu 14.04 compatible minimal dependency
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.17), libgcc1 (>= 1:4.1.1), indi-bin (>= 0.9.7), libnova-0.14-0 | libnova-0.16-0, libstdc++6 (>= 4.2.1), libusb-1.0-0 (>= 2:1.0.8), libwxbase3.0-0 (>= 3.0.0), libwxgtk3.0-0 (>=3.0.0), libx11-6, zlib1g (>= 1:1.1.4)")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.17), libgcc1 (>= 1:4.1.1), libnova-0.14-0 | libnova-0.16-0, libstdc++6 (>= 4.2.1), libusb-1.0-0 (>= 2:1.0.8), libwxbase3.0-0 | libwxbase3.0-0v5 (>= 3.0.0), libwxgtk3.0-0 | libwxgtk3.0-0v5 (>=3.0.0), libx11-6, zlib1g (>= 1:1.1.4)")
   set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "PHD2 auto-guiding software")
   # same section as many astronomy packages
   set(CPACK_DEBIAN_PACKAGE_SECTION "education")
