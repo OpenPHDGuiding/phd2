@@ -279,6 +279,7 @@ public:
     void OnSelectGear(wxCommandEvent& evt);
     void OnButtonLoop(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
+    void OnButtonAutoStar(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
     void OnLoadDefectMap(wxCommandEvent& evt);
@@ -526,6 +527,7 @@ enum {
     BUTTON_LOOP,
     BUTTON_GUIDE,
     BUTTON_STOP,
+    BUTTON_AUTOSTAR,
     BUTTON_DURATION,
     BUTTON_ADVANCED,
     BUTTON_CAM_PROPERTIES,

@@ -145,6 +145,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_TOOL(BUTTON_LOOP, MyFrame::OnButtonLoop)
     EVT_MENU(MENU_LOOP, MyFrame::OnButtonLoop)
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
+    EVT_TOOL(BUTTON_AUTOSTAR, MyFrame::OnButtonAutoStar)
     EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
     EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
@@ -921,6 +922,12 @@ void MyFrame::SetupToolBar()
 #   include "icons/stop_disabled.png.h"
     wxBitmap stop_bmp_disabled(wxBITMAP_PNG_FROM_DATA(stop_disabled));
 
+#   include "icons/auto_select.png.h"
+    wxBitmap auto_select_bmp(wxBITMAP_PNG_FROM_DATA(auto_select));
+
+#   include "icons/auto_select_disabled.png.h"
+    wxBitmap auto_select_disabled_bmp(wxBITMAP_PNG_FROM_DATA(auto_select_disabled));
+
 #   include "icons/connect.png.h"
     wxBitmap connect_bmp(wxBITMAP_PNG_FROM_DATA(connect));
 
@@ -965,6 +972,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_GEAR, connect_bmp, connect_bmp_disabled, false, 0, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
     MainToolbar->AddTool(BUTTON_LOOP, loop_bmp, loop_bmp_disabled, false, 0, _("Begin looping exposures for frame and focus"));
     MainToolbar->AddTool(BUTTON_GUIDE, guide_bmp, guide_bmp_disabled, false, 0, _("Begin guiding (PHD). Shift-click to force calibration."));
+    MainToolbar->AddTool(BUTTON_AUTOSTAR, auto_select_bmp, auto_select_disabled_bmp, false, 0, _("Auto-select Star"));
     MainToolbar->AddTool(BUTTON_STOP, stop_bmp, stop_bmp_disabled, false, 0, _("Stop looping and guiding"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
@@ -975,6 +983,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
+    MainToolbar->EnableTool(BUTTON_AUTOSTAR, false);
     MainToolbar->EnableTool(BUTTON_STOP, false);
     MainToolbar->Realize();
 
@@ -1063,6 +1072,9 @@ void MyFrame::UpdateButtonsStatus()
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_STOP, m_stopMenuItem, CaptureActive))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, BUTTON_AUTOSTAR, m_autoSelectStarMenuItem, CaptureActive))
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
