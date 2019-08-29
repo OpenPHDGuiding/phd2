@@ -400,6 +400,12 @@ void MyFrame::OnButtonLoop(wxCommandEvent& WXUNUSED(event))
     StartLoopingInteractive(_T("Loop button clicked"));
 }
 
+void MyFrame::OnButtonAutoStarToggle(wxCommandEvent& evt)
+{
+    m_autoStarToggle = evt.IsChecked();
+    pConfig->Global.SetBoolean("/AutoStarToggle", m_autoStarToggle);
+}
+
 void MyFrame::FinishStop(void)
 {
     assert(!CaptureActive);
@@ -984,7 +990,12 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 
         if (pGuider->GetState() < STATE_SELECTED)
         {
-            AutoSelectStar();
+            if (m_autoStarToggle) {
+                AutoSelectStar();
+            } else {
+                wxMessageBox(_T("Please select a guide star before attempting to guide"));
+                throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
+            }
         }
 
         ValidateDarksLoaded();

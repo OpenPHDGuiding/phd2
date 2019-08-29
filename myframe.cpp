@@ -61,6 +61,7 @@ static const bool DefaultDitherRaOnly = false;
 static const DitherMode DefaultDitherMode = DITHER_RANDOM;
 static const bool DefaultDitherDecModeOverride = false;
 static const bool DefaultServerMode = true;
+static const bool DefaultAutoStarToggle = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
 static const int DefaultFocalLength = 0;
@@ -144,6 +145,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_CONNECT,MyFrame::OnSelectGear)
     EVT_TOOL(BUTTON_LOOP, MyFrame::OnButtonLoop)
     EVT_MENU(MENU_LOOP, MyFrame::OnButtonLoop)
+    EVT_MENU(MENU_AUTOSELECT, MyFrame::OnButtonAutoStarToggle)
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
     EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
@@ -230,6 +232,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
+
+    bool autoStarToggle = pConfig->Global.GetBoolean("/AutoStarToggle", DefaultAutoStarToggle);
+    SetAutoStarToggle(autoStarToggle);
 
     GuideLog.EnableLogging(true);
 
@@ -501,6 +506,8 @@ void MyFrame::SetupMenuBar()
     m_connectMenuItem = guide_menu->Append(MENU_CONNECT, _("&Connect Equipment\tCtrl-C"), _("Connect or disconnect equipment"));
     m_loopMenuItem = guide_menu->Append(MENU_LOOP, _("&Loop Exposures\tCtrl-L"), _("Begin looping exposures"));
     m_loopMenuItem->Enable(false);
+    m_autoSelectStarMenuItem = guide_menu->AppendCheckItem(MENU_AUTOSELECT, _("Auto-selec&t star after clicking Guide button\tCtrl-T"), _("Automatically select a star after starting guiding"));
+    m_autoSelectStarMenuItem->Enable(true);
     m_guideMenuItem = guide_menu->Append(MENU_GUIDE, _("&Guide\tCtrl-G"), _("Begin guiding"));
     m_guideMenuItem->Enable(false);
     m_stopMenuItem = guide_menu->Append(MENU_STOP, _("&Stop\tCtrl-S"), _("Stop looping and guiding"));
@@ -508,6 +515,11 @@ void MyFrame::SetupMenuBar()
     m_brainMenuItem = guide_menu->Append(MENU_BRAIN, _("&Advanced Settings\tCtrl-A"), _("Advanced parameters"));
     m_cameraMenuItem = guide_menu->Append(MENU_CAM_SETTINGS, _("&Camera Settings"), _("Camera settings"));
     m_cameraMenuItem->Enable(false);
+
+    if (m_autoStarToggle)
+    {
+        guide_menu->Check(MENU_AUTOSELECT,true);
+    }
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
@@ -2567,6 +2579,17 @@ bool MyFrame::SetServerMode(bool serverMode)
     m_serverMode = serverMode;
 
     pConfig->Global.SetBoolean("/ServerMode", m_serverMode);
+
+    return bError;
+}
+
+bool MyFrame::SetAutoStarToggle(bool autoStarToggle)
+{
+    bool bError = false;
+
+    m_autoStarToggle = autoStarToggle;
+
+    pConfig->Global.SetBoolean("/AutoStarToggle", m_autoStarToggle);
 
     return bError;
 }

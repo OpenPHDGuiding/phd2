@@ -163,6 +163,7 @@ protected:
 
     bool GetServerMode() const;
     bool SetServerMode(bool val);
+    bool SetAutoStarToggle(bool val);
 
     bool SetTimeLapse(int timeLapse);
     int GetTimeLapse() const;
@@ -188,6 +189,7 @@ private:
     double m_sampling;
     bool m_autoLoadCalibration;
     int m_instanceNumber;
+    bool m_autoStarToggle = false;
 
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
@@ -278,6 +280,7 @@ public:
     void OnSettings(wxCommandEvent& evt);
     void OnSelectGear(wxCommandEvent& evt);
     void OnButtonLoop(wxCommandEvent& evt);
+    void OnButtonAutoStarToggle(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
@@ -588,6 +591,7 @@ enum {
     MGUIDE2_LEFT,
     MENU_CONNECT,
     MENU_LOOP,
+    MENU_AUTOSELECT,
     MENU_GUIDE,
     MENU_STOP,
     MENU_BRAIN,
