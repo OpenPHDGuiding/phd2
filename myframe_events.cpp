@@ -984,8 +984,7 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 
         if (pGuider->GetState() < STATE_SELECTED)
         {
-            wxMessageBox(_T("Please select a guide star before attempting to guide"));
-            throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
+            AutoSelectStar();
         }
 
         ValidateDarksLoaded();

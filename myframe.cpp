@@ -1093,8 +1093,7 @@ void MyFrame::UpdateButtonsStatus()
         need_update = true;
     }
 
-    bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
-        pMount && pMount->IsConnected();
+    bool bGuideable = pMount && pMount->IsConnected() && CaptureActive;
 
     if (cond_update_tool(MainToolbar, BUTTON_GUIDE, m_guideMenuItem, bGuideable))
         need_update = true;
