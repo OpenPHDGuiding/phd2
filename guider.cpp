@@ -1312,7 +1312,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
                     ClearBackground();
-                    wxBell();
+                    if (pFrame->GetBeepForLostStar())
+                        wxBell();
                     wxMilliSleep(100);
                     SetBackgroundColour(prevColor);
                     break;

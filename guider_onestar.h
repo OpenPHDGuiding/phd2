@@ -56,6 +56,7 @@ public:
     wxCheckBox *m_pEnableStarMassChangeThresh;
     wxSpinCtrlDouble *m_pMassChangeThreshold;
     wxSpinCtrlDouble *m_MinHFD;
+    wxCheckBox *m_pBeepForLostStarCtrl;
 
     virtual void LoadValues();
     virtual void UnloadValues();

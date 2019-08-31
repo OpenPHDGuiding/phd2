@@ -185,6 +185,7 @@ private:
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
+    bool m_beepForLostStar;
     double m_sampling;
     bool m_autoLoadCalibration;
     int m_instanceNumber;
@@ -381,6 +382,8 @@ public:
     void UpdateStatusBarGuiderInfo(const GuideStepInfo& info);
     void ClearStatusBarGuiderInfo();
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
+    bool GetBeepForLostStar();
+    void SetBeepForLostStar(bool beep);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);

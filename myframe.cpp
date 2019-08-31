@@ -888,6 +888,7 @@ void MyFrame::LoadProfileSettings()
         pConfig->Profile.DeleteEntry("/ExposureDuration");
     }
     SetExposureDuration(exposureDuration);
+    m_beepForLostStar = pConfig->Profile.GetBoolean("/BeepForLostStar", true);
 
     int val = pConfig->Profile.GetInt("/Gamma", GAMMA_DEFAULT);
     if (val < GAMMA_MIN) val = GAMMA_MIN;
@@ -2660,6 +2661,18 @@ wxString MyFrame::PixelScaleSummary() const
 
     return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s",
         scaleStr, pCamera->Binning, focalLengthStr);
+}
+
+bool MyFrame::GetBeepForLostStar()
+{
+    return m_beepForLostStar;
+}
+
+void MyFrame::SetBeepForLostStar(bool beep)
+{
+    m_beepForLostStar = beep;
+    pConfig->Profile.SetBoolean("/BeepForLostStar", beep);
+    Debug.Write(wxString::Format("Beep for lost star set to %s\n", beep ? "true" : "false"));
 }
 
 wxString MyFrame::GetSettingsSummary() const

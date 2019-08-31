@@ -1093,10 +1093,15 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
           "This setting can be used to prevent PHD2 from guiding on a hot pixel. "
           "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
           "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
+
+    m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
+    m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
+
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
     pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));
     pTrackingParams->Add(pHFD, wxSizerFlags().Border(wxTOP, 3));
+    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxLEFT, 75));
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 }
@@ -1114,6 +1119,7 @@ void GuiderOneStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderOneStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
     m_MinHFD->SetValue(m_pGuiderOneStar->GetMinStarHFD());
+    m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
 
     GuiderConfigDialogCtrlSet::LoadValues();
 }
@@ -1124,6 +1130,8 @@ void GuiderOneStarConfigDialogCtrlSet::UnloadValues()
     m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
     m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
     m_pGuiderOneStar->SetMinStarHFD(m_MinHFD->GetValue());
+    if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
+        pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
 
