@@ -620,6 +620,11 @@ void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
     StopCapturing();
 }
 
+void MyFrame::OnButtonAutoStar(wxCommandEvent& WXUNUSED(event))
+{
+    AutoSelectStar();
+}
+
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
 {
     int val = Gamma_Slider->GetValue();
