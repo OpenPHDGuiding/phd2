@@ -336,7 +336,8 @@ GuidingAsstWin::GuidingAsstWin()
       m_measuring(false),
       m_guideOutputDisabled(false),
       m_measurementsTaken(false),
-      m_origSubFrames(-1)
+      m_origSubFrames(-1),
+      m_backlashTool(nullptr)
 {
     // Sizer hierarchy:
     // m_vSizer has {instructions, vResultsSizer, m_gaStatus, btnSizer}
@@ -517,7 +518,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Declination Backlash"));
     m_backlashCB->SetToolTip(_("PHD2 will move the guide star a considerable distance north, then south to measure backlash. Be sure the selected star has "
         "plenty of room to move in the north direction.  If the guide star is lost, increase the size of the search region to at least 20 px"));
-    if (TheScope() != nullptr)
+    if (TheScope())
     {
         m_backlashCB->SetValue(true);
         m_backlashCB->Enable(true);
@@ -566,8 +567,7 @@ GuidingAsstWin::GuidingAsstWin()
 
     if (m_backlashCB->IsEnabled())
         m_backlashTool = new BacklashTool();
-    else
-        m_backlashTool = nullptr;
+
     m_measuringBacklash = false;
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
@@ -587,8 +587,7 @@ GuidingAsstWin::GuidingAsstWin()
 GuidingAsstWin::~GuidingAsstWin(void)
 {
     pFrame->pGuidingAssistant = 0;
-    if (m_backlashTool != nullptr)
-        delete m_backlashTool;
+    delete m_backlashTool;
 }
 
 void GuidingAsstWin::StatsReset()
