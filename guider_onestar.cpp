@@ -681,6 +681,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
         errorInfo->starError = Star::STAR_ERROR;
         errorInfo->starMass = 0.0;
         errorInfo->starSNR = 0.0;
+        errorInfo->starHFD = 0.0;
         errorInfo->status = _("No star selected");
         ImageLogger::LogImageStarDeselected(pImage);
         return true;
@@ -698,6 +699,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
             errorInfo->starSNR = 0.0;
+            errorInfo->starHFD = 0.0;
             errorInfo->status = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
 
@@ -722,6 +724,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
                 errorInfo->starError = Star::STAR_MASSCHANGE;
                 errorInfo->starMass = newStar.Mass;
                 errorInfo->starSNR = newStar.SNR;
+                errorInfo->starHFD = newStar.HFD;
                 errorInfo->status = StarStatusStr(m_star);
                 pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
 
@@ -758,6 +761,7 @@ bool GuiderOneStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *o
             errorInfo->starError = Star::STAR_ERROR;
             errorInfo->starMass = newStar.Mass;
             errorInfo->starSNR = newStar.SNR;
+            errorInfo->starHFD = newStar.HFD;
             errorInfo->status = StarStatusStr(m_star);
             pFrame->StatusMsg(_("Recovering"));
 

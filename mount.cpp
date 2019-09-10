@@ -1009,6 +1009,7 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
+        info.starHFD = pFrame->pGuider->HFD();
         info.avgDist = pFrame->CurrentGuideError();
         info.starError = pFrame->pGuider->StarError();
     }
