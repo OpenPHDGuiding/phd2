@@ -283,9 +283,9 @@ UnloadValues(void)
 }
 
 void GuideAlgorithmHysteresis::
-GuideAlgorithmHysteresisConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+GuideAlgorithmHysteresisConfigDialogPane::OnImageScaleChange()
 {
-    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
 GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, const wxString& label)

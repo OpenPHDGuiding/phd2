@@ -275,9 +275,9 @@ UnloadValues(void)
 
 
 void GuideAlgorithmLowpass2::
-GuideAlgorithmLowpass2ConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+GuideAlgorithmLowpass2ConfigDialogPane::OnImageScaleChange()
 {
-    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
 GraphControlPane *GuideAlgorithmLowpass2::GetGraphControlPane(wxWindow *pParent, const wxString& label)

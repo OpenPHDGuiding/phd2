@@ -64,7 +64,7 @@ protected:
 
         void LoadValues() override;
         void UnloadValues() override;
-        void HandleBinningChange(int oldBinVal, int newBinVal) override;
+        void OnImageScaleChange() override;
     };
 
     class GuideAlgorithmLowpassGraphControlPane : public GraphControlPane

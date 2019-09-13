@@ -347,9 +347,9 @@ void GuideAlgorithmResistSwitch::
 }
 
 void GuideAlgorithmResistSwitch::
-GuideAlgorithmResistSwitchConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+GuideAlgorithmResistSwitchConfigDialogPane::OnImageScaleChange()
 {
-    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
 GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, const wxString& label)

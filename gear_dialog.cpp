@@ -122,7 +122,9 @@ GearDialog::GearDialog(wxWindow *pParent) :
     m_mountUpdated(false),
     m_stepGuiderUpdated(false),
     m_rotatorUpdated(false),
-    m_showDarksDialog(false)
+    m_showDarksDialog(false),
+    m_camWarningIssued(false),
+    m_imageScaleRatio(1.0)
 {
     m_pCamera              = nullptr;
     m_pScope               = nullptr;
@@ -462,6 +464,7 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     assert(pCamera == nullptr || pCamera == m_pCamera);
 
     m_camWarningIssued = false;
+    m_imageScaleRatio = 1.0;
     m_camChanged = false;
 
     if (m_pStepGuider)
@@ -527,6 +530,8 @@ void GearDialog::EndModal(int retCode)
         assert(pSecondaryMount == nullptr);
     }
 
+    if (m_imageScaleRatio != 1.0)
+        pFrame->HandleImageScaleChange(m_imageScaleRatio);
     pFrame->UpdateButtonsStatus();
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
@@ -1092,10 +1097,14 @@ bool GearDialog::DoConnectCamera()
         }
 
         // update camera pixel size from the driver
+        double profPixelSize = m_pCamera->GetProfilePixelSize();
         double pixelSize;
         bool err = m_pCamera->GetDevicePixelSize(&pixelSize);
         if (!err)
+        {
             m_pCamera->SetCameraPixelSize(pixelSize);
+            m_imageScaleRatio *= pixelSize / profPixelSize;
+        }
 
         // update default gain setting from the driver
         if (m_pCamera->HasGainControl && !pConfig->Profile.HasEntry("/camera/gain"))
@@ -2216,7 +2225,9 @@ void GearDialog::UpdateAdvancedDialog(bool preLoad)
     }
 
     if (preLoad)
+    {
         frame->pAdvancedDialog->Preload();
+    }
 }
 
 void GearDialog::OnAdvanced(wxCommandEvent& event)

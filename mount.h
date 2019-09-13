@@ -209,7 +209,7 @@ public:
         virtual void LoadValues();
         virtual void UnloadValues();
         virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
-        virtual void HandleBinningChange(int oldVal, int newVal);
+        virtual void OnImageScaleChange();
         bool IsValid() { return m_pMount != nullptr; }
 
         virtual void Undo();

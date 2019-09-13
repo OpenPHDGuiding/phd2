@@ -405,9 +405,9 @@ public:
         SetRetainModelPct(m_pGuideAlgorithm, m_retainModelPct->GetValue());
     }
 
-    virtual void HandleBinningChange(int oldBinVal, int newBinVal)
+    virtual void OnImageScaleChange()
     {
-        GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+        GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
     }
 
     virtual void OnExpertButton(wxCommandEvent& evt)

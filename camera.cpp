@@ -902,7 +902,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         int width = StringArrayWidth(opts);
         m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), opts);
-        m_binning->Bind(wxEVT_CHOICE, &CameraConfigDialogCtrlSet::OnBinningChoiceChanged, this);
         AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
     }
 
@@ -968,17 +967,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
         wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
         "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
-}
-
-// Adjust other controls in the AD panes when user changes binning
-void CameraConfigDialogCtrlSet::OnBinningChoiceChanged(wxCommandEvent& evt)
-{
-    int newVal = m_binning->GetSelection() + 1;
-    if (newVal != m_prevBinning)
-    {
-        pFrame->pAdvancedDialog->MakeBinningAdjustments(m_prevBinning, newVal);
-        m_prevBinning = newVal;
-    }
 }
 
 void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
@@ -1172,6 +1160,10 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     if (m_binning)
     {
+        int oldBin = m_pCamera->Binning;
+        int newBin = m_binning->GetSelection() + 1;
+        if (oldBin != newBin)
+            pFrame->pAdvancedDialog->MakeImageScaleAdjustments();           // Do this now to preserve old (device value) and new (UI value) for scale adjustment
         m_pCamera->SetBinning(m_binning->GetSelection() + 1);
     }
 
@@ -1211,6 +1203,10 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         }
     }
 
+    double oldPxSz = m_pCamera->GetCameraPixelSize();
+    double newPxSz = m_pPixelSize->GetValue();
+    if (oldPxSz != newPxSz)
+        pFrame->pAdvancedDialog->MakeImageScaleAdjustments();       // Preserve old (device value) and new (UI value) for scale adjustment
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
 
     bool saturationByADU = m_SaturationByADU->GetValue();

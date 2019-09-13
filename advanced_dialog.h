@@ -111,7 +111,7 @@ public:
     void SetPixelSize(double val);
     int GetBinning();
     void SetBinning(int binning);
-    void MakeBinningAdjustments(int oldVal, int newVal);
+    void MakeImageScaleAdjustments();
     void ResetGuidingParams();
     Mount::MountConfigDialogPane* GetCurrentMountPane() { return m_pMountPane; }
 

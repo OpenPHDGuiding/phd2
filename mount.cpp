@@ -316,7 +316,7 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
 {
     // Re-initialize the algorithm params
     GuideAlgorithm* currRAAlgo = m_pMount->m_pXGuideAlgorithm;
-    currRAAlgo->ResetParams();                  // Default is to remove the keys in the registry
+    currRAAlgo->ResetParams();                  // Default is to remove the Registry entries below the "X" or "Y" guide algo name
     delete m_pMount->m_pXGuideAlgorithm;        // force creation of a new algo instance
     m_pMount->m_pXGuideAlgorithm = nullptr;
     wxCommandEvent dummy;
@@ -330,10 +330,10 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
 }
 
 // This logic only affects the controls in the UI, nothing permanent here
-void Mount::MountConfigDialogPane::HandleBinningChange(int oldVal, int newVal)
+void Mount::MountConfigDialogPane::OnImageScaleChange()
 {
-    m_pXGuideAlgorithmConfigDialogPane->HandleBinningChange(oldVal, newVal);
-    m_pYGuideAlgorithmConfigDialogPane->HandleBinningChange(oldVal, newVal);
+    m_pXGuideAlgorithmConfigDialogPane->OnImageScaleChange();
+    m_pYGuideAlgorithmConfigDialogPane->OnImageScaleChange();
 }
 
 void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
@@ -542,6 +542,9 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm)
     {
         delete m_pXGuideAlgorithm;
 
+        if (guideAlgorithm == GUIDE_ALGORITHM_NONE)
+            guideAlgorithm = DefaultXGuideAlgorithm();
+
         if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm))
         {
             GUIDE_ALGORITHM defaultAlgorithm = DefaultXGuideAlgorithm();
@@ -563,6 +566,9 @@ void Mount::SetYGuideAlgorithm(int guideAlgorithm)
     if (!m_pYGuideAlgorithm || m_pYGuideAlgorithm->Algorithm() != guideAlgorithm)
     {
         delete m_pYGuideAlgorithm;
+
+        if (guideAlgorithm == GUIDE_ALGORITHM_NONE)
+            guideAlgorithm = DefaultYGuideAlgorithm();
 
         if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm))
         {
@@ -640,6 +646,12 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
         switch (guideAlgorithm)
         {
             case GUIDE_ALGORITHM_NONE:
+                // This is a dead algo but the default value of -1 can arise from a missing profile key.  So just fix it
+                if (axis == GUIDE_RA)
+                    *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
+                else
+                    *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
+                break;
             case GUIDE_ALGORITHM_IDENTITY:
                 *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
                 break;
@@ -1226,23 +1238,27 @@ void Mount::AdjustCalibrationForScopePointing()
             "You should do a fresh calibration to correct this problem."));
     }
 
-    // Compensate for binning change. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
+    // Compensate for binning or pixel size changes. At least one cam driver (ASCOM/Lodestar) can lie about the binning while changing
     // the reported pixel size
+    double scaleAdjustment = 1.0;
     if (fabs(pCamera->GetCameraPixelSize() - GuideCamera::GetProfilePixelSize()) >= 1.0)
     {
-        // Punt on this, it's a cockpit error to be changing binning properties outside of the PHD2 UI
-        pFrame->Alert(_("Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct guiding."));
+        // Punt on this, it probably means the user-supplied pixel size doesn't match what the camera is reporting
+        pFrame->Alert(_("Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate to restore correct guiding."));
         Debug.Write(wxString::Format("Camera pixel size changed from %0.1f to %0.1f\n",
             GuideCamera::GetProfilePixelSize(), pCamera->GetCameraPixelSize()));
-        // Update profile value to avoid repetitive alerts
+        scaleAdjustment = pCamera->GetCameraPixelSize() / GuideCamera::GetProfilePixelSize();
         pCamera->SetCameraPixelSize(pCamera->GetCameraPixelSize());
     }
 
-    if (binning != m_cal.binning)
+    // The following won't happen unless the camera binning is changed outside the AD UI. Goal is to revert to baseline guiding params
+    // while keeping the UI consistent with the apparent image scale
+    if (binning != m_cal.binning && m_cal.isValid)
     {
         Calibration cal(m_cal);
 
-        double adj = (double) m_cal.binning / (double) binning;
+        scaleAdjustment *= binning / m_cal.binning;
+        double adj = (double)m_cal.binning / (double)binning;
         cal.xRate *= adj;
         cal.yRate *= adj;
         cal.binning = binning;
@@ -1251,9 +1267,16 @@ void Mount::AdjustCalibrationForScopePointing()
             m_cal.binning, binning, m_cal.xRate * 1000., m_cal.yRate * 1000., cal.xRate * 1000., cal.yRate * 1000.));
 
         SetCalibration(cal);
-        pFrame->HandleBinningChange();
     }
-
+    // If the image scale has changed, make some other adjustments
+    if (scaleAdjustment != 1.0)
+    {
+        // Device-specified pixel size and binning will be reflected in AD when LoadValues() occurs
+        pFrame->HandleImageScaleChange(scaleAdjustment);          // Revert the guide params, get the various UIs sorted out
+        // Force a fresh calibration when guiding is started next
+        if (IsCalibrated())
+            ClearCalibration();
+    }
     // compensate RA guide rate for declination if the declination changed and we know both the
     // calibration declination and the current declination
 

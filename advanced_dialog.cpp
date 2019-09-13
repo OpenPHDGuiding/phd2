@@ -544,33 +544,38 @@ void AdvancedDialog::SetPixelSize(double val)
         m_pCameraCtrlSet->SetPixelSize(val);
 }
 
-// Needed to handle reset if the camera binning changes on the fly
+// Needed to handle reset if the image scale changes on the fly
 void AdvancedDialog::ResetGuidingParams()
 {
+    LoadValues();           // Insure that control values reflect actual device properties and any changes made outside the AD
     m_pMountPane->ResetRAGuidingParams();
     m_pMountPane->ResetDecGuidingParams();
-    // No dialog active, so we need to make these changes take effect
-    if (TheAO())
-    {
-        m_pAOCtrlSet->UnloadValues();
-    }
-    if (TheScope())
-    {
-        m_pScopeCtrlSet->UnloadValues();
-        m_pMountPane->UnloadValues();
-    }
+    UnloadValues();
 }
 
-// This function only affects UI elements in the various AD panes - nothing is changed in primary classes until user clicks on ok in AD dialog
-void AdvancedDialog::MakeBinningAdjustments(int oldVal, int newVal)
+// This function only affects UI elements in the various AD panes and is intended for use only by the various ConfigCtrl classes
+void AdvancedDialog::MakeImageScaleAdjustments()
 {
+    double origImageScale = pFrame->GetPixelScale(pCamera->GetCameraPixelSize(), pFrame->GetFocalLength(), pCamera->Binning);       // Profile values
+    double newImageScale = pFrame->GetPixelScale(GetPixelSize(), GetFocalLength(), GetBinning());                                   // Current UI ctrl values
     double oldStepSize = ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->GetCalStepSizeCtrlValue();
-    // Scale the UI cal step size based on binning delta - may get refined at start of calibration if actual guiding rates are known
-    Debug.Write("CalDuration roughly adjusted in AD because of binning change\n");
-    ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->SetCalStepSizeCtrlValue((int) (oldStepSize * ((double)newVal / (double)oldVal)));
-    // but let the current guide algos make their own adjustments for stuff like min-moves
-    if (m_pMountPane->IsValid())
-        m_pMountPane->HandleBinningChange(oldVal, newVal);
+    if (origImageScale != newImageScale)
+    {
+        // Scale the UI cal step size based on image scale ratio - may get refined at start of calibration if actual guiding rates are known
+        Debug.Write("Image scale has changed via AD UI - step-size and algo adjustments made\n");
+        ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->SetCalStepSizeCtrlValue((int)(oldStepSize * ((double)newImageScale / (double)origImageScale)));
+        // but let the current guide algos make their own adjustments for stuff like min-moves
+        if (m_pMountPane->IsValid())
+            m_pMountPane->OnImageScaleChange();
+        if (pMount)
+        {
+            pMount->ClearCalibration();
+            if (pMount->IsStepGuider() && pSecondaryMount)
+                pSecondaryMount->ClearCalibration();
+            Debug.Write("Calibrations cleared because of image scale change\n");
+        }
+    }
+
 
 }
 
