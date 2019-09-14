@@ -2742,12 +2742,13 @@ void MyFrame::HandleImageScaleChange(double NewToOldRatio)
 {
     if (pMount)
     {
-        // Adjust the calibration step-size to facilitate a reasonable calibration
-        if (!pMount->IsStepGuider())
+        // Adjust the calibration step-size to facilitate a reasonable calibration of the real mount
+        Scope *scope = TheScope();
+        if (scope)
         {
             int stepSize = ((Scope*)pMount)->GetCalibrationDuration();
             stepSize *= NewToOldRatio;              // Larger scale => larger step-size because calibration is targeted on fixed-size total pixel displacements
-            ((Scope*)pMount)->SetCalibrationDuration(stepSize);
+            scope->SetCalibrationDuration(stepSize);
 
         }
         // Leave the algo choices in place but force a reversion to default guiding params for in-use algos
