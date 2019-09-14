@@ -463,8 +463,6 @@ int GearDialog::ShowGearDialog(bool autoConnect)
 
     assert(pCamera == nullptr || pCamera == m_pCamera);
 
-    m_camWarningIssued = false;
-    m_imageScaleRatio = 1.0;
     m_camChanged = false;
 
     if (m_pStepGuider)

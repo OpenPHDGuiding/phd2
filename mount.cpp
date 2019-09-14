@@ -646,12 +646,6 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
         switch (guideAlgorithm)
         {
             case GUIDE_ALGORITHM_NONE:
-                // This is a dead algo but the default value of -1 can arise from a missing profile key.  So just fix it
-                if (axis == GUIDE_RA)
-                    *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
-                else
-                    *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
-                break;
             case GUIDE_ALGORITHM_IDENTITY:
                 *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
                 break;
@@ -1274,8 +1268,7 @@ void Mount::AdjustCalibrationForScopePointing()
         // Device-specified pixel size and binning will be reflected in AD when LoadValues() occurs
         pFrame->HandleImageScaleChange(scaleAdjustment);          // Revert the guide params, get the various UIs sorted out
         // Force a fresh calibration when guiding is started next
-        if (IsCalibrated())
-            ClearCalibration();
+        ClearCalibration();
     }
     // compensate RA guide rate for declination if the declination changed and we know both the
     // calibration declination and the current declination
