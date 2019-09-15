@@ -54,6 +54,7 @@ class GearDialog : public wxDialog
     wxString m_lastCamera;
     bool m_camWarningIssued;
     bool m_camChanged;
+    double m_imageScaleRatio;
     wxArrayString m_cameraIds;
 
     wxGridBagSizer *m_gearSizer;

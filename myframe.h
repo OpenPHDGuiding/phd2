@@ -441,7 +441,7 @@ public:
     void SetDitherMode(DitherMode mode);
     DitherMode GetDitherMode() const;
 
-    void HandleBinningChange();
+    void HandleImageScaleChange(double NewToOldRatio);
 
     void NotifyGuidingParam(const wxString& name, double val);
     void NotifyGuidingParam(const wxString& name, int val);

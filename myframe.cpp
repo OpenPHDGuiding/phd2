@@ -2735,28 +2735,37 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
     ctrl->Bind(wxEVT_KILL_FOCUS, &MyFrame::OnTextControlKillFocus, this);
 }
 
-// Reset the guiding parameters and the various graphical displays when binning changes.  This should be done when guiding starts
-// so the user can experiment with binning without losing guider settings
-void MyFrame::HandleBinningChange()
+// Reset the guiding parameters and the various graphical displays when image scale is changed outside the AD UI.  Goal is to restore basic guiding behavior
+// until a fresh calibration is done.  Ratio of image scales is used because 1) info like mount guide speed may not be available and 2) the user may have already 
+// adjusted the calibration step-size in the profile to get the results he wants.
+void MyFrame::HandleImageScaleChange(double NewToOldRatio)
 {
-    if (pMount)
+    // Adjust the calibration step-size to facilitate a reasonable calibration of the real mount
+    Scope *scope = TheScope();
+    if (scope)
     {
-        pAdvancedDialog->ResetGuidingParams();
-        wxCommandEvent dummyEvt;
-        if (pGraphLog)
-        {
-            pGraphLog->OnButtonClear(dummyEvt);
-            pGraphLog->UpdateControls();
-        }
-        if (pStepGuiderGraph)
-            pStepGuiderGraph->OnButtonClear(dummyEvt);
-        if (pTarget)
-        {
-            pTarget->OnButtonClear(dummyEvt);
-            pTarget->UpdateControls();
-        }
-        Alert(_("Guiding parameters have been reset because the camera binning changed. You should use separate profiles for different binning values."));
+        int stepSize = scope->GetCalibrationDuration();
+        stepSize *= NewToOldRatio;              // Larger scale => larger step-size because calibration is targeted on fixed-size total pixel displacements
+        scope->SetCalibrationDuration(stepSize);
+
     }
+    // Leave the algo choices in place but force a reversion to default guiding params for in-use algos
+    pAdvancedDialog->ResetGuidingParams();
+    wxCommandEvent dummyEvt;
+    if (pGraphLog)
+    {
+        pGraphLog->OnButtonClear(dummyEvt);
+        pGraphLog->UpdateControls();
+    }
+    // Give the image-scale dependent windows a chance to reset
+    if (pStepGuiderGraph)
+        pStepGuiderGraph->OnButtonClear(dummyEvt);
+    if (pTarget)
+    {
+        pTarget->OnButtonClear(dummyEvt);
+        pTarget->UpdateControls();
+    }
+    Alert(_("Guiding parameters have been reset because the binning or pixel size changed unexpectedly. You should use separate profiles for different image scales."));
 }
 
 MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
@@ -3139,6 +3148,10 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         m_pFrame->SetDitherRaOnly(m_ditherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_ditherScaleFactor->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
+        int oldFL = m_pFrame->GetFocalLength();
+        int newFL = GetFocalLength();               // From UI control
+        if (oldFL != newFL)
+            m_pFrame->pAdvancedDialog->MakeImageScaleAdjustments();
         m_pFrame->SetFocalLength(GetFocalLength());
 
         int language = m_pLanguage->GetSelection();

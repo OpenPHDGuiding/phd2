@@ -91,7 +91,6 @@ public:
     int GetBinning();
     void SetBinning(int val);
     void OnSaturationChoiceChanged(wxCommandEvent& event);
-    void OnBinningChoiceChanged(wxCommandEvent& evt);
 };
 
 enum CaptureOptionBits

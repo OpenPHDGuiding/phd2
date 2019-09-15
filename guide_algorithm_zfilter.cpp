@@ -315,9 +315,9 @@ void GuideAlgorithmZFilter::
 }
 
 void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterConfigDialogPane::HandleBinningChange(int oldBinVal, int newBinVal)
+GuideAlgorithmZFilterConfigDialogPane::OnImageScaleChange()
 {
-    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove, oldBinVal, newBinVal);
+    GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
 GraphControlPane *GuideAlgorithmZFilter::GetGraphControlPane(wxWindow *pParent, const wxString& label)
