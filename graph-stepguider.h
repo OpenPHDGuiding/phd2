@@ -36,45 +36,7 @@
 #ifndef GRAPH_STEPGUIDER_H_INCLUDED
 #define GRAPH_STEPGUIDER_H_INCLUDED
 
-class GraphStepguiderWindow;
-
-class GraphStepguiderClient : public wxWindow
-{
-    static const unsigned int m_maxHistorySize = 64;
-
-    struct
-    {
-        int dx;
-        int dy;
-    } m_history[m_maxHistorySize];
-
-    PHD_Point m_avgPos;
-    PHD_Point m_curBump;
-
-    wxPen   *m_pPens[m_maxHistorySize];
-    wxBrush *m_pBrushes[m_maxHistorySize];
-
-    unsigned int m_nItems;    // # of items in the history
-    unsigned int m_length;     // # of items to display
-
-    int m_xMax;
-    int m_yMax;
-
-    int m_xBump;
-    int m_yBump;
-
-    void OnPaint(wxPaintEvent& evt);
-
-    GraphStepguiderClient(wxWindow *parent);
-    virtual ~GraphStepguiderClient(void);
-
-    void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
-    void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
-
-    friend class GraphStepguiderWindow;
-
-    DECLARE_EVENT_TABLE()
-};
+class GraphStepguiderClient;
 
 class GraphStepguiderWindow : public wxWindow
 {
@@ -87,8 +49,9 @@ public:
     void OnButtonClear(wxCommandEvent& evt);
 
     void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
-    void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
+    void AppendData(const wxPoint& pos, const PHD_Point& avgPos);
     void ShowBump(const PHD_Point& curBump);
+
     bool SetState(bool is_active);
 
 private:

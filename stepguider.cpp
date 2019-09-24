@@ -432,7 +432,7 @@ bool StepGuider::MoveToCenter()
     }
 
     // show updated position on graph
-    pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
+    pFrame->pStepGuiderGraph->AppendData(wxPoint(m_xOffset, m_yOffset), m_avgOffset);
 
     return bError;
 }
@@ -1006,6 +1006,13 @@ static void SuppressSlowBumpWarning(long)
     pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
 }
 
+inline static void UpdateAOGraphPos(const wxPoint& pos, const PHD_Point& avgpos)
+{
+    PhdApp::ExecInMainThread([pos, avgpos]() {
+        pFrame->pStepGuiderGraph->AppendData(pos, avgpos);
+    });
+}
+
 Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -1040,7 +1047,7 @@ Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOp
             m_avgOffset.SetXY((double) m_xOffset, (double) m_yOffset);
         }
 
-        pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
+        UpdateAOGraphPos(wxPoint(m_xOffset, m_yOffset), m_avgOffset);
 
         bool secondaryIsBusy = pSecondaryMount && pSecondaryMount->IsBusy();
 
@@ -1131,7 +1138,9 @@ Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOp
                 {
                     Debug.Write("Stop bumping, close enough to center -- clearing m_bumpInProgress\n");
                     m_bumpInProgress = false;
-                    pFrame->pStepGuiderGraph->ShowBump(PHD_Point());
+                    PhdApp::ExecInMainThread([]() {
+                        pFrame->pStepGuiderGraph->ShowBump(PHD_Point());
+                    });
                 }
             }
         }
@@ -1223,7 +1232,9 @@ Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOp
                 TransformCameraCoordinatesToMountCoordinates(thisBump, tcur, false);
                 tcur.X /= xRate();
                 tcur.Y /= yRate();
-                pFrame->pStepGuiderGraph->ShowBump(tcur);
+                PhdApp::ExecInMainThread([tcur]() {
+                    pFrame->pStepGuiderGraph->ShowBump(tcur);
+                });
             }
 
             Debug.Write(wxString::Format("Scheduling Mount bump of (%.3f, %.3f)\n", thisBump.X, thisBump.Y));

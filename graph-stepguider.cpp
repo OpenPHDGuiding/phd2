@@ -33,9 +33,48 @@
  */
 
 #include "phd.h"
+#include <assert.h>
 #include <wx/dcbuffer.h>
 #include <wx/utils.h>
 #include <wx/colordlg.h>
+
+class GraphStepguiderClient : public wxWindow
+{
+public:
+
+    static const unsigned int m_maxHistorySize = 64;
+
+    struct
+    {
+        int dx;
+        int dy;
+    } m_history[m_maxHistorySize];
+
+    PHD_Point m_avgPos;
+    PHD_Point m_curBump;
+
+    wxPen   *m_pPens[m_maxHistorySize];
+    wxBrush *m_pBrushes[m_maxHistorySize];
+
+    unsigned int m_nItems;    // # of items in the history
+    unsigned int m_length;     // # of items to display
+
+    int m_xMax;
+    int m_yMax;
+
+    int m_xBump;
+    int m_yBump;
+
+    void OnPaint(wxPaintEvent& evt);
+
+    GraphStepguiderClient(wxWindow *parent);
+    virtual ~GraphStepguiderClient(void);
+
+    void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
+    void AppendData(const wxPoint& pos, const PHD_Point& avgPos);
+
+    DECLARE_EVENT_TABLE()
+};
 
 BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphStepguiderWindow::OnButtonLength)
@@ -137,9 +176,11 @@ bool GraphStepguiderWindow::SetState(bool is_active)
 void GraphStepguiderWindow::SetLimits(unsigned int xMax, unsigned int yMax,
                                       unsigned int xBump, unsigned int yBump)
 {
+    assert(wxThread::IsMain());
+
     m_pClient->SetLimits(xMax, yMax, xBump, yBump);
 
-    if (this->m_visible)
+    if (m_visible)
     {
         Refresh();
     }
@@ -155,8 +196,10 @@ void GraphStepguiderWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
+void GraphStepguiderWindow::AppendData(const wxPoint& pos, const PHD_Point& avgPos)
 {
+    assert(wxThread::IsMain());
+
     wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
 
     if (m_pClient->m_nItems > 0)
@@ -169,9 +212,9 @@ void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
 
     m_prevTimestamp = now;
 
-    m_pClient->AppendData(dx, dy, avgPos);
+    m_pClient->AppendData(pos, avgPos);
 
-    if (this->m_visible)
+    if (m_visible)
     {
         Refresh();
     }
@@ -179,6 +222,8 @@ void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
 
 void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump)
 {
+    assert(wxThread::IsMain());
+
     m_pClient->m_curBump = curBump;
 
     if (m_visible)
@@ -228,12 +273,12 @@ void GraphStepguiderClient::SetLimits(unsigned int xMax, unsigned int yMax,
     m_yBump = yBump;
 }
 
-void GraphStepguiderClient::AppendData(int dx, int dy, const PHD_Point& avgPos)
+void GraphStepguiderClient::AppendData(const wxPoint& pos, const PHD_Point& avgPos)
 {
     memmove(&m_history, &m_history[1], sizeof(m_history[0]) * (m_maxHistorySize - 1));
 
-    m_history[m_maxHistorySize - 1].dx = dx;
-    m_history[m_maxHistorySize - 1].dy = dy;
+    m_history[m_maxHistorySize - 1].dx = pos.x;
+    m_history[m_maxHistorySize - 1].dy = pos.y;
 
     if (m_nItems < m_maxHistorySize)
     {
