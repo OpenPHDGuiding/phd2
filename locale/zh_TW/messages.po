@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-10 04:35+0100\n"
-"PO-Revision-Date: 2019-05-30 09:46+0800\n"
+"PO-Revision-Date: 2019-09-25 12:25+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:658
 msgid "Explanation"
@@ -883,10 +883,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:715 cam_indi.cpp:747
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:715 cam_indi.cpp:747 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1015,7 +1014,7 @@ msgstr "相機不支援 VIDEO_STREAM 功能, 請反選這個選項: 相機不支
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
-msgstr ""
+msgstr "相機不具備 CCD_EXPOSURE 屬性參數, 請反選「相機不支援串流」選項."
 
 #: cam_indi.cpp:1061
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
@@ -1825,8 +1824,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:541
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -1946,12 +1944,12 @@ msgstr "強制不支援設定曝光時間的相機使用串流及疊圖."
 
 #: config_indi.cpp:158
 msgid "Camera does not support streaming"
-msgstr ""
+msgstr "相機不支援串流"
 
 #: config_indi.cpp:159
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
-msgstr ""
+msgstr "強制不支援串流功能的相機使用曝光時間"
 
 #: config_indi.cpp:164
 msgid "Other options"
@@ -3349,8 +3347,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3474,8 +3472,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3498,8 +3496,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3870,11 +3868,11 @@ msgstr ""
 
 #: guider_onestar.cpp:1101
 msgid "Beep on lost star"
-msgstr ""
+msgstr "在星點遺失時發出嗶聲"
 
 #: guider_onestar.cpp:1102
 msgid "Issue an audible alarm any time the guide star is lost"
-msgstr ""
+msgstr "當導星星體遺失時都發出告警聲"
 
 #: guiding_assistant.cpp:99
 msgid "Extended Sampling"
@@ -4148,7 +4146,7 @@ msgstr "角秒"
 
 #: guiding_assistant.cpp:731
 msgid "ms (test impaired)"
-msgstr ""
+msgstr "ms (測試失敗)"
 
 #: guiding_assistant.cpp:872 guiding_assistant.cpp:873 pierflip_tool.cpp:293
 msgid "Apply"
@@ -5172,7 +5170,7 @@ msgstr "開始連續曝光以對焦及對準影像"
 
 #: myframe.cpp:975
 msgid "Auto-select Star"
-msgstr ""
+msgstr "自動選星"
 
 #: myframe.cpp:976
 msgid "Begin guiding (PHD). Shift-click to force calibration."
@@ -6334,6 +6332,9 @@ msgid ""
 "use of fainter guide stars.  For more common setups, it's better to leave "
 "binning at 1."
 msgstr ""
+"如果導星相機有支援影像併合功能(可能沒有), 你可以選擇大於 1 的併合值. 在使用較"
+"長焦距的導星鏡及 OAG 的情況下, 影像併和可以讓你使用較暗的星體來當做導星星體, "
+"大多數的情況下, 此數值設成 1 即可."
 
 #: profile_wizard.cpp:267
 msgid "Binning level"
@@ -6406,6 +6407,8 @@ msgid ""
 "all other optical properties of the guiding setup must remain the same "
 "between imaging sessions."
 msgstr ""
+"勾選這個選項讓程式載入設定檔後自動自動採用最後的校準資料, 但導星相機的旋轉角"
+"度和所有導星相關的設定必須要與之前的一致才能讓這個功能可以正常運作"
 
 #: profile_wizard.cpp:326
 msgid "Profile Name"
@@ -6431,6 +6434,11 @@ msgid ""
 "please review the 'Basic Use' section of the 'Help' guide after the wizard "
 "dialog has finished."
 msgstr ""
+"這些簡短的步驟將幫助您確定用於導星的設備，並將其與您選擇的配置文件名稱相關"
+"聯。 之後執行 PHD2 時可隨時使用此配置檔。 您至少得選擇導星相機和 PHD2 將用於"
+"導星的赤道儀。 您還將輸入裝置光學特性相關資料。 PHD2 將會用它來創立一個適當"
+"的“起動設定”以用來進行導星和校準參數。 如果您是新用戶，請在設定精靈對話框完成"
+"後查看“幫助”選單下的簡介說明。"
 
 #: profile_wizard.cpp:394
 msgid ""
@@ -6517,6 +6525,10 @@ msgid ""
 "you are new to PHD2 or encounter problems, please use the 'Help' function "
 "for assistance."
 msgstr ""
+"您的設定檔已完成並可以保存, 命名並選擇地為其建立一個暗場影像庫, 強烈建議您這"
+"樣做以獲得最佳效果, 如果您的設定跑一兩天都是很穩定, 就可以選擇在載入此設定檔"
+"時自動重用上一次校準的結果, 如果您不熟悉 PHD2 或遇到問題，請使用“幫助”功能獲"
+"得協助"
 
 #: profile_wizard.cpp:470
 msgid "Questionable Configuration Choice"
@@ -6585,7 +6597,7 @@ msgstr "導星相機:"
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
-msgstr ""
+msgstr "選擇您的導星相機並指定你的導星設備光學屬性"
 
 #: profile_wizard.cpp:654
 msgid "On-camera"
@@ -7058,25 +7070,26 @@ msgstr ""
 msgid ""
 "Advisory: Calibration completed but few guide steps were used, so accuracy "
 "is questionable"
-msgstr ""
+msgstr "提示: 校準已經完成, 但因為採用很少的導星步數可能會導致不精確的結果"
 
 #: scope.cpp:906
 msgid ""
 "Advisory: Calibration completed but RA/Dec axis angles are questionable and "
 "guiding may be impaired"
-msgstr ""
+msgstr "提示: 校準已完成, 但 RA/Dec 軸角度有問題, 可能會影響導星"
 
 #: scope.cpp:909
 msgid ""
 "Advisory: This calibration is substantially different from the previous one "
 "- have you changed configurations?"
-msgstr ""
+msgstr "提示: 這次校準與前次的結果有差異, 您是否有改變組態設定?"
 
 #: scope.cpp:912
 msgid ""
 "Advisory: Calibration completed but RA and Dec rates vary by an unexpected "
 "amount (often caused by large Dec backlash)"
 msgstr ""
+"提示: 校準已完成, 但赤經及赤緯速率有異常變動 (通常是因為有較大的回差所致)"
 
 #: scope.cpp:922
 msgid "Details..."
@@ -7102,6 +7115,8 @@ msgid ""
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
+"提示: 幾乎或完全沒有東向位移, 導星工作會因此受到到影響, 請檢查導星線並利用手"
+"動導星工具來檢查赤道儀的基本運作是否正常."
 
 #: scope.cpp:1349
 msgid "Clearing backlash step 1"
@@ -7139,6 +7154,11 @@ msgid ""
 "Check the guide cable and read the online Help for how to identify these "
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
+"提示: 校準成功, 但測量極小甚至於沒有往南方向的移動, 因此可能會影響導星的運"
+"作\n"
+"這通常是因為導星線有問題或者有非常大的赤緯軸回差所引起的\n"
+"請檢查導星線, 並閱讀線上輔助文件, 以了解如何識別這些類型的問題 (手冊指南, 赤"
+"緯回差)"
 
 #: scope.cpp:1571
 msgid ""
@@ -7149,6 +7169,10 @@ msgid ""
 "Read the online Help for how to identify these types of problems (Manual "
 "Guide, Declination backlash)."
 msgstr ""
+"提示: 校準成功, 但只測量到極小甚至於沒有往南方向的移動, 因此可能會影響導星的"
+"運作\n"
+"這通常是因為有非常大的赤緯軸回差或相關於赤道儀機械方面問題所引起的\n"
+"請閱讀線上輔助文件, 以了解如何識別這些類型的問題 (手冊指南, 赤緯回差)"
 
 #: scope.cpp:1576
 msgid ""
@@ -7159,6 +7183,10 @@ msgid ""
 "Read the online help for how to deal with this type of problem (Declination "
 "backlash)."
 msgstr ""
+"提示: 校準成功, 但只測量到極小甚至於沒有往南方向的移動, 因此可能會影響導星的"
+"運作\n"
+"這通常是因為有非常大的赤緯軸回差或相關於赤道儀機械方面問題所引起的\n"
+"請閱讀線上輔助文件, 以了解如何識別這些類型的問題 (赤緯回差)"
 
 #: scope.cpp:1636
 #, c-format
@@ -7203,6 +7231,8 @@ msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
 msgstr ""
+"如所用的赤道儀需要在過中天翻轉後做赤緯反向輸出, 請勾選這個選項, 改動後會清除"
+"目前的校準結果"
 
 #: scope.cpp:1879
 msgid "Stop guiding when mount slews"
