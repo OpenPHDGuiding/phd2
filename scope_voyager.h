@@ -41,19 +41,19 @@ private:
     wxSocketClient VoyagerClient;
 
 public:
-    ScopeVoyager(void)
+    ScopeVoyager()
     {
     }
 
-    virtual ~ScopeVoyager(void)
+    virtual ~ScopeVoyager()
     {
         VoyagerClient.Close();
     }
 
-    virtual bool Connect(const wxString& hostname);
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
+    bool Connect(const wxString& hostname);
+    bool Connect() override;
+    bool Disconnect() override;
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 };
 
 #endif /* GUIDE_VOYAGER */

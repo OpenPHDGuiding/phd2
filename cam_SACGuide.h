@@ -56,15 +56,15 @@ public:
 
     CameraSACGuider();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    void    InitCapture();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    InitCapture() override;
 
     bool    SetGlobalGain(unsigned char gain);
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration) override;
     void    ClearGuidePort();
-    wxByte  BitsPerPixel();
+    wxByte  BitsPerPixel() override;
 
 private:
     bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);

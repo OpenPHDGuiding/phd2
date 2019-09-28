@@ -39,10 +39,10 @@
 class OnboardST4
 {
 public:
-    virtual bool    ST4HasGuideOutput(void);
-    virtual bool    ST4HostConnected(void);
-    virtual bool    ST4HasNonGuiMove(void);
-    virtual bool    ST4SynchronousOnly(void);
+    virtual bool    ST4HasGuideOutput();
+    virtual bool    ST4HostConnected();
+    virtual bool    ST4HasNonGuiMove();
+    virtual bool    ST4SynchronousOnly();
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 };
 

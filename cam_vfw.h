@@ -44,11 +44,11 @@ class CameraVFW : public GuideCamera
 
 public:
     CameraVFW();
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    void    ShowPropertyDialog();
-    wxByte  BitsPerPixel();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
+    wxByte  BitsPerPixel() override;
 };
 
 #endif

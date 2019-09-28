@@ -41,8 +41,7 @@
 class SerialPortMac : public SerialPortPosix
 {
 public:
-
-    wxArrayString GetSerialPortList(void);
+    wxArrayString GetSerialPortList() override;
 };
 
 #endif  // SERIALPORT_MAC_H_INCLUDED

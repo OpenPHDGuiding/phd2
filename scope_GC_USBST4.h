@@ -39,15 +39,15 @@ class ScopeGCUSBST4 : public Scope
 
 public:
 
-    ScopeGCUSBST4(void) {
+    ScopeGCUSBST4() {
         m_Name = wxString("GCUSB-ST4");
     }
 
-    virtual bool Connect(void);
+    bool Connect() override;
 
-    virtual bool Disconnect(void);
+    bool Disconnect() override;
 
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
 };
 
 #endif /* GUIDE_GCUSBST4 */

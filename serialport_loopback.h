@@ -43,18 +43,18 @@ class SerialPortLoopback : public SerialPort
 
 public:
 
-    wxArrayString GetSerialPortList(void);
+    wxArrayString GetSerialPortList() override;
 
-    SerialPortLoopback(void);
-    virtual ~SerialPortLoopback(void);
+    SerialPortLoopback();
+    virtual ~SerialPortLoopback();
 
-    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
-    virtual bool Disconnect(void);
+    bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) override;
+    bool Disconnect() override;
 
-    virtual bool Send(const unsigned char *pData, unsigned count);
+    bool Send(const unsigned char *pData, unsigned count) override;
 
-    virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, unsigned count);
+    bool SetReceiveTimeout(int timeoutMs) override;
+    bool Receive(unsigned char *pData, unsigned count) override;
 };
 
 #endif // SERIALPORT_LOOPBACK_H_INCLUDED

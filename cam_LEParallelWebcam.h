@@ -45,11 +45,11 @@ private:
     virtual bool LEControl(int actions);
     ParallelPort *m_pParallelPort;
 public:
-    CameraLEParallelWebcam(void);
-    virtual ~CameraLEParallelWebcam(void);
+    CameraLEParallelWebcam();
+    virtual ~CameraLEParallelWebcam();
 
-    virtual bool    Connect(const wxString& camId);
-    virtual bool    Disconnect();
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 };
 
 #endif // CAM_LEPARALLELWEBCAM_H_INCLUDED

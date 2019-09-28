@@ -120,7 +120,7 @@ public:
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
 
-    void LoadProfileSettings();
+    void LoadProfileSettings() override;
 
 private:
     bool IsValidLockPosition(const PHD_Point& pt) final;

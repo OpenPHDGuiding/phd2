@@ -50,13 +50,13 @@ public:
     CameraSBIGRotator();
     ~CameraSBIGRotator();
 
-    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool   ST4PulseGuideScope(int direction, int duration);
-    bool   Connect(const wxString& camId);
-    bool   Disconnect();
-    bool ST4HasNonGuiMove();
-    bool HasNonGuiCapture();
-    wxByte BitsPerPixel();
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool ST4HasNonGuiMove() override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
 };
 
 CameraSBIGRotator::CameraSBIGRotator()

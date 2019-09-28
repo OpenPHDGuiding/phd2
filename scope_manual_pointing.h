@@ -45,14 +45,14 @@ class ScopeManualPointing : public Scope
 
 public:
     static wxString GetDisplayName();
-    bool Connect();
-    MOVE_RESULT Guide(GUIDE_DIRECTION, int);
-    double GetDeclination();
-    bool GetCoordinates(double *ra, double *dec, double *siderealTime);
-    bool GetSiteLatLong(double *latitude, double *longitude);
-    PierSide SideOfPier();
-    bool PreparePositionInteractive();
-    bool CanReportPosition();
+    bool Connect() override;
+    MOVE_RESULT Guide(GUIDE_DIRECTION, int) override;
+    double GetDeclination() override;
+    bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
+    bool GetSiteLatLong(double *latitude, double *longitude) override;
+    PierSide SideOfPier() override;
+    bool PreparePositionInteractive() override;
+    bool CanReportPosition() override;
 };
 
 #endif

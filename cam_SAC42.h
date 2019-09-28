@@ -47,12 +47,12 @@ protected:
 
 public:
     CameraSAC42();
-    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool   Connect(const wxString& camId);
-    bool   Disconnect();
-    void   InitCapture();
-    bool HasNonGuiCapture() { return true; }
-    wxByte BitsPerPixel();
+    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool   Connect(const wxString& camId) override;
+    bool   Disconnect() override;
+    void   InitCapture() override;
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
 };
 
 #endif

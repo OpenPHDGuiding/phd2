@@ -187,7 +187,7 @@ public:
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     bool BeginCalibration(const PHD_Point& currentLocation) override;
-    bool UpdateCalibrationState(const PHD_Point& currentLocation);
+    bool UpdateCalibrationState(const PHD_Point& currentLocation) override;
     void ClearCalibration() override;
 
     bool Connect() override;
@@ -214,7 +214,7 @@ private:
     MOVE_RESULT MoveOffset(GuiderOffset *guiderOffset, unsigned int moveOptions) final;
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int steps, unsigned int moveOptions) final;
-    int CalibrationMoveSize();
+    int CalibrationMoveSize() override;
     int CalibrationTotDistance() override;
     void InitBumpPositions();
 

@@ -90,7 +90,7 @@ public:
     AdvancedDialog(MyFrame *pFrame);
     ~AdvancedDialog();
 
-    void EndModal(int retCode);
+    void EndModal(int retCode) override;
 
     void UpdateCameraPage();
     void UpdateMountPage();

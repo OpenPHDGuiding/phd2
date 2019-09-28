@@ -96,7 +96,7 @@ public:
 
     void Initialize();
     int ShowGearDialog(bool autoConnect);
-    void EndModal(int retCode);
+    void EndModal(int retCode) override;
 
     void ShowProfileWizard();
     void ShowProfileWizard(wxCommandEvent& evt);

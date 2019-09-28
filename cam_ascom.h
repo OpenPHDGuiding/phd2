@@ -70,10 +70,10 @@ public:
     ~CameraASCOM();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    HasNonGuiCapture(void) override;
+    bool    HasNonGuiCapture() override;
     bool    Connect(const wxString& camId) override;
-    bool    Disconnect(void) override;
-    void    ShowPropertyDialog(void) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
     bool    ST4PulseGuideScope(int direction, int duration) override;
     wxByte  BitsPerPixel() override;
     bool    GetDevicePixelSize(double* devPixelSize) override;
@@ -88,9 +88,9 @@ private:
 
     bool Create(DispatchObj *obj, DispatchClass *cls);
 
-    bool AbortExposure(void);
+    bool AbortExposure();
 
-    bool ST4HasNonGuiMove(void);
+    bool ST4HasNonGuiMove() override;
 
 #endif
 };

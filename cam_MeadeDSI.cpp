@@ -57,14 +57,14 @@ public:
     CameraDSI();
     ~CameraDSI();
 
-    bool CanSelectCamera() const override { return true; }
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture();
-    wxByte  BitsPerPixel();
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    virtual bool GetDevicePixelSize(double* devPixelSize);
+    bool   CanSelectCamera() const override { return true; }
+    bool   EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool   HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool   Connect(const wxString& camId) override;
+    bool   Disconnect() override;
+    bool   GetDevicePixelSize(double* devPixelSize) override;
 };
 
 CameraDSI::CameraDSI()

@@ -44,16 +44,16 @@ class CameraINovaPLC : public GuideCamera
 public:
     CameraINovaPLC();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool HasNonGuiCapture();
-    wxByte BitsPerPixel();
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    bool ST4PulseGuideScope(int direction, int duration);
-    void InitCapture();
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void InitCapture() override;
 
 private:
-    bool ST4HasNonGuiMove(void);
+    bool ST4HasNonGuiMove() override;
 };
 
 #endif // CAM_INOVA

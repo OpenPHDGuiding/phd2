@@ -50,13 +50,12 @@ class CameraLESerialWebcam : public CameraLEWebcam
     bool m_Amp;
 
 public:
-    CameraLESerialWebcam(void);
-    virtual ~CameraLESerialWebcam(void);
+    CameraLESerialWebcam();
+    virtual ~CameraLESerialWebcam();
 
-    virtual bool    Connect(const wxString& camId);
-    virtual bool    Disconnect();
-
-    void    ShowPropertyDialog();
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
 
 private:
     bool LEControl(int actions);

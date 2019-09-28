@@ -69,19 +69,19 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
     bool CaptureOneFrame(usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    void ShowPropertyDialog();
-    bool HasNonGuiCapture() { return true; }
-    wxByte BitsPerPixel();
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void ShowPropertyDialog() override;
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
 
 protected:
     bool SelectDeviceAndMode();
     static bool CaptureCallback(CVRES status, CVImage *imagePtr, void *userParam);
     bool BeginCapture(usImage& img, E_CAPTURE_MODE captureMode);
-    void EndCapture(void);
+    void EndCapture();
 };
 
 #endif // WDM_H_INCLUDED

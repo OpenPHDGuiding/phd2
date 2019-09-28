@@ -48,21 +48,21 @@ class SerialPortPosix : public SerialPort
     
 public:
 
-    wxArrayString GetSerialPortList(void);
+    wxArrayString GetSerialPortList() override;
 
-    SerialPortPosix(void);
-    virtual ~SerialPortPosix(void);
+    SerialPortPosix();
+    virtual ~SerialPortPosix();
 
-    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
-    virtual bool Disconnect(void);
+    bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) override;
+    bool Disconnect() override;
 
-    virtual bool Send(const unsigned char *pData, unsigned count);
+    bool Send(const unsigned char *pData, unsigned count) override;
 
-    virtual bool SetReceiveTimeout(int timeoutMilliSeconds);
-    virtual bool Receive(unsigned char *pData, unsigned count);
+    bool SetReceiveTimeout(int timeoutMilliSeconds) override;
+    bool Receive(unsigned char *pData, unsigned count) override;
 
-    virtual bool SetRTS(bool asserted);
-    virtual bool SetDTR(bool asserted);
+    bool SetRTS(bool asserted) override;
+    bool SetDTR(bool asserted) override;
 };
 
 #endif // __linux__ || __APPLE__

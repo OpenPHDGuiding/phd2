@@ -57,12 +57,14 @@ protected:
     };
 
 public:
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    CameraLEWebcam(void);
-    ~CameraLEWebcam(void);
-    virtual bool HasNonGuiCapture(void) { return true; }
+
+    CameraLEWebcam();
+    ~CameraLEWebcam();
+
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool HasNonGuiCapture() override { return true; }
 
 private:
     virtual bool LEControl(int actions) = 0;

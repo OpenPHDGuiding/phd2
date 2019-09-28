@@ -75,21 +75,21 @@ public:
     ~CameraSXV();
 
     bool CanSelectCamera() const override { return true; }
-    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    void ShowPropertyDialog();
-    const wxSize& DarkFrameSize() { return m_darkFrameSize; }
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void ShowPropertyDialog() override;
+    const wxSize& DarkFrameSize() override { return m_darkFrameSize; }
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    bool ST4PulseGuideScope(int direction, int duration);
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
 
 private:
-    void InitFrameSizes(void);
+    void InitFrameSizes();
 };
 
 enum {
@@ -259,7 +259,7 @@ bool CameraSXV::EnumCameras(wxArrayString& names, wxArrayString& ids)
     return false;
 }
 
-void CameraSXV::InitFrameSizes(void)
+void CameraSXV::InitFrameSizes()
 {
     if (Interlaced)
     {

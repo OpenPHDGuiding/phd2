@@ -37,18 +37,18 @@
 class CameraSSAG : public GuideCamera
 {
 public:
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    void    InitCapture();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    InitCapture() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration) override;
     void    ClearGuidePort();
 
-    bool HasNonGuiCapture() { return true; }
-    bool ST4HasNonGuiMove() { return true; }
-    wxByte BitsPerPixel();
-    virtual bool    GetDevicePixelSize(double* devPixelSize);
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool    GetDevicePixelSize(double* devPixelSize) override;
 
     CameraSSAG();
 

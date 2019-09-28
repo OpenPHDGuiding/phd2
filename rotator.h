@@ -45,8 +45,8 @@ class RotatorConfigDialogCtrlSet : ConfigDialogCtrlSet
 public:
     RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~RotatorConfigDialogCtrlSet() {};
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues();
+    virtual void UnloadValues();
 };
 
 class RotatorConfigDialogPane : public ConfigDialogPane
@@ -56,10 +56,10 @@ class RotatorConfigDialogPane : public ConfigDialogPane
 
 public:
     RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator);
-    ~RotatorConfigDialogPane(void) {};
+    ~RotatorConfigDialogPane() {};
 
-    void LoadValues(void) {};
-    void UnloadValues(void) {};
+    void LoadValues() {};
+    void UnloadValues() {};
     virtual void LayoutControls(wxPanel* pParent, BrainCtrlIdMap& CtrlMap);
 };
 
@@ -73,29 +73,29 @@ public:
     static const float POSITION_UNKNOWN;
     static const float POSITION_ERROR;
 
-    static wxArrayString RotatorList(void);
+    static wxArrayString RotatorList();
     static Rotator *Factory(const wxString& choice);
 
     static double RotatorPosition();
 
-    Rotator(void);
-    virtual ~Rotator(void);
+    Rotator();
+    virtual ~Rotator();
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-    virtual bool IsConnected(void) const;
+    virtual bool Connect();
+    virtual bool Disconnect();
+    virtual bool IsConnected() const;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
-    virtual void ShowPropertyDialog(void);
+    virtual void ShowPropertyDialog();
 
     // get the display name of the rotator device
-    virtual wxString Name(void) const = 0;
+    virtual wxString Name() const = 0;
 
     // get the rotator position in degrees, or POSITION_ERROR in case of error
-    virtual float Position(void) const = 0;
+    virtual float Position() const = 0;
 
-    bool IsReversed(void) const;
+    bool IsReversed() const;
     void SetReversed(bool val);
 };
 
@@ -109,7 +109,7 @@ inline double Rotator::RotatorPosition()
     return pRotator->IsReversed() ? -pos : pos;
 }
 
-inline bool Rotator::IsReversed(void) const
+inline bool Rotator::IsReversed() const
 {
     return m_isReversed;
 }

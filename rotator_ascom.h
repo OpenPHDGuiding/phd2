@@ -46,20 +46,20 @@ class RotatorAscom : public Rotator
 public:
 
     RotatorAscom(const wxString& name);
-    virtual ~RotatorAscom(void);
+    virtual ~RotatorAscom();
 
-    static wxArrayString EnumAscomRotators(void);
+    static wxArrayString EnumAscomRotators();
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    bool Connect() override;
+    bool Disconnect() override;
 
-    virtual void ShowPropertyDialog(void);
+    void ShowPropertyDialog() override;
 
     // get the display name of the rotator device
-    virtual wxString Name(void) const;
+    wxString Name() const override;
 
     // get the rotator position in degrees
-    virtual float Position(void) const;
+    float Position() const override;
 };
 
 #endif // ROTATOR_ASCOM

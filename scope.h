@@ -220,9 +220,9 @@ public:
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
-    virtual bool IsCalibrated() const;
-    virtual bool BeginCalibration(const PHD_Point &currentLocation);
-    virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
+    bool IsCalibrated() const override;
+    bool BeginCalibration(const PHD_Point &currentLocation) override;
+    bool UpdateCalibrationState(const PHD_Point &currentLocation) override;
 
     static const double DEC_COMP_LIMIT; // declination compensation limit
     static const double DEFAULT_MOUNT_GUIDE_SPEED;              // Presumptive mount guide speed if no usable mount connection
@@ -231,8 +231,8 @@ public:
 
     virtual bool RequiresCamera();
     virtual bool RequiresStepGuider();
-    virtual bool CalibrationFlipRequiresDecFlip();
-    virtual bool HasHPDecEncoder();
+    bool CalibrationFlipRequiresDecFlip() override;
+    bool HasHPDecEncoder() override;
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled() const;
@@ -259,16 +259,16 @@ public:
     virtual bool PreparePositionInteractive();
     virtual bool CanPulseGuide();
 
-    virtual void StartDecDrift();
-    virtual void EndDecDrift();
-    virtual bool IsDecDrifting() const;
+    void StartDecDrift() override;
+    void EndDecDrift() override;
+    bool IsDecDrifting() const override;
 
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int durationMs, unsigned int moveOptions, MoveResultInfo *moveResultInfo) final;
     MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) final;
-    int CalibrationMoveSize();
+    int CalibrationMoveSize() override;
     void CheckCalibrationDuration(int currDuration);
     int CalibrationTotDistance() override;
 

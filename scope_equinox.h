@@ -40,18 +40,18 @@
 class ScopeEquinox : public Scope
 {
 public:
-    ScopeEquinox(void) {
+    ScopeEquinox() {
         m_Name = wxString("Equinox");
     }
 
-    virtual bool Connect(void);
+    bool Connect() override;
 
-    virtual bool Disconnect(void)
+    bool Disconnect() override
     {
         return false;
     }
 
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
 private:
     AppleEvent E6Return;

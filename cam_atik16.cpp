@@ -55,21 +55,21 @@ public:
     ~CameraAtik16();
 
     bool CanSelectCamera() const override { return true; }
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    HasNonGuiCapture(void);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    HasNonGuiCapture() override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-    wxByte  BitsPerPixel();
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    void    ClearGuidePort() override;
+    wxByte  BitsPerPixel() override;
 
     bool    Color;
     bool    HSModel;
 
 private:
-    bool ST4HasNonGuiMove(void);
+    bool ST4HasNonGuiMove();
     bool LoadDLL(wxString *err);
 };
 
@@ -441,12 +441,12 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
     }
 }*/
 
-bool CameraAtik16::HasNonGuiCapture(void)
+bool CameraAtik16::HasNonGuiCapture()
 {
     return true;
 }
 
-bool CameraAtik16::ST4HasNonGuiMove(void)
+bool CameraAtik16::ST4HasNonGuiMove()
 {
     return true;
 }

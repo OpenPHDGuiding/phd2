@@ -132,17 +132,17 @@ protected:
 public:
     CameraINDI();
     ~CameraINDI();
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
-    bool    HasNonGuiCapture();
-    wxByte  BitsPerPixel();
-    bool    GetDevicePixelSize(double *pixSize);
-    void    ShowPropertyDialog();
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    bool    HasNonGuiCapture() override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double *pixSize) override;
+    void    ShowPropertyDialog() override;
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
 
-    bool    ST4PulseGuideScope(int direction, int duration);
-    bool    ST4HasNonGuiMove();
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    bool    ST4HasNonGuiMove() override;
 };
 
 #endif

@@ -44,21 +44,21 @@ class SerialPortWin32 : public SerialPort
 
 public:
 
-    wxArrayString GetSerialPortList(void);
+    wxArrayString GetSerialPortList() override;
 
-    SerialPortWin32(void);
-    virtual ~SerialPortWin32(void);
+    SerialPortWin32();
+    virtual ~SerialPortWin32();
 
-    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
-    virtual bool Disconnect(void);
+    bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) override;
+    bool Disconnect() override;
 
-    virtual bool Send(const unsigned char *pData, unsigned count);
+    bool Send(const unsigned char *pData, unsigned count) override;
 
-    virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, unsigned count);
+    bool SetReceiveTimeout(int timeoutMs) override;
+    bool Receive(unsigned char *pData, unsigned count) override;
 
-    virtual bool SetRTS(bool asserted);
-    virtual bool SetDTR(bool asserted);
+    bool SetRTS(bool asserted) override;
+    bool SetDTR(bool asserted) override;
 };
 
 #endif // SERIALPORT_WIN32_H_INCLUDED

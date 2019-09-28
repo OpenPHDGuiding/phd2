@@ -44,14 +44,14 @@ class CameraKWIQGuider : public GuideCamera
     KWIQ::KWIQGuider *KWIQguider;
 public:
     CameraKWIQGuider();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect(const wxString& camId);
-    bool Disconnect();
-    bool ST4PulseGuideScope(int direction, int duration);
-    bool ST4HasNonGuiMove() { return true; }
-    bool HasNonGuiCapture() { return true; }
-    wxByte BitsPerPixel();
-    bool GetDevicePixelSize(double *devPixelSize);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasNonGuiMove() override { return true; }
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
 };
 
 

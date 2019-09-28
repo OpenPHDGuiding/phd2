@@ -43,11 +43,11 @@ class CameraLELxUsbWebcam : public CameraLEWebcam
 {
     bool m_isOpen;
 public:
-    CameraLELxUsbWebcam(void);
-    virtual ~CameraLELxUsbWebcam(void);
+    CameraLELxUsbWebcam();
+    virtual ~CameraLELxUsbWebcam();
 
-    virtual bool    Connect(const wxString& camId);
-    virtual bool    Disconnect();
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 private:
     virtual bool LEControl(int actions);
 };
