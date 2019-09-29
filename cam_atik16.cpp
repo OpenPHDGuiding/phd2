@@ -62,7 +62,7 @@ public:
     bool    Disconnect() override;
 
     bool    ST4PulseGuideScope(int direction, int duration) override;
-    void    ClearGuidePort() override;
+    void    ClearGuidePort();
     wxByte  BitsPerPixel() override;
 
     bool    Color;
