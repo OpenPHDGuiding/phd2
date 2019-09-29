@@ -31,8 +31,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef DSIDEF
-#define DSIDEF
+#ifndef CAM_MEADEDSI_INCLUDED
+#define CAM_MEADEDSI_INCLUDED
 
 class DSICameraFactory
 {
@@ -40,4 +40,4 @@ public:
     static GuideCamera *MakeDSICamera();
 };
 
-#endif
+#endif // CAM_MEADEDSI_INCLUDED

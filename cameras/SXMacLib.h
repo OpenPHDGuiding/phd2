@@ -33,11 +33,15 @@
 
 #if defined (__APPLE__) || defined (__linux__)
 
-//#include <MacTypes.h>
 typedef unsigned short UInt16;
 typedef unsigned char Boolean;
-typedef unsigned long UInt32;
 typedef unsigned char UInt8;
+// match definition from MacTypes.h
+#if __LP64__
+typedef unsigned int                    UInt32;
+#else
+typedef unsigned long                   UInt32;
+#endif
 
 /***************************************************************************\
  *                                                                           *

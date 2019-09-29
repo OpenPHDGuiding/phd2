@@ -32,12 +32,43 @@
  *
  */
 #include "phd.h"
-#if defined (STARFISH)
+
+#if defined(STARFISH_CAMERA)
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 
 #include "cam_starfish.h"
+
+#if defined (__WINDOWS__)
+# include "cameras/FcLib.h"
+#else
+# include <fcCamFw/fcCamFw.h>
+#endif
+
+class CameraStarfish : public GuideCamera
+{
+    int CamNum;
+    int NCams;
+    bool DriverLoaded;
+    usImage subImage;
+    wxRect lastSubFrame;
+
+public:
+    CameraStarfish();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    InitCapture() override;
+
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+
+    bool    HasNonGuiCapture() override { return true; }
+    bool    ST4HasNonGuiMove() override { return true; }
+    wxByte  BitsPerPixel() override;
+};
 
 #if defined (__WINDOWS__)
 #define kIOReturnSuccess 0
@@ -251,4 +282,9 @@ bool CameraStarfish::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-#endif
+GuideCamera *StarfishCameraFactory::MakeStarfishCamera()
+{
+    return new CameraStarfish();
+}
+
+#endif // STARFISH_CAMERA

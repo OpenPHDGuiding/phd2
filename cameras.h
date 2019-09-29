@@ -62,7 +62,7 @@
 # define LE_LXUSB_CAMERA
 # define LE_PARALLEL_CAMERA
 # define LE_SERIAL_CAMERA
-# define MEADE_DSI
+# define MEADE_DSI_CAMERA
 # define OPENCV_CAMERA
 # define ORION_DSCI
 # define QGUIDE
@@ -73,7 +73,7 @@
 # define SIMULATOR
 # define SSAG
 # define SSPIAG
-# define STARFISH
+# define STARFISH_CAMERA
 # define SXV
 # define TOUPTEK_CAMERA
 # define WDM_CAMERA
@@ -93,13 +93,19 @@
 # define FIREWIRE
 # define INDI_CAMERA
 # define KWIQGUIDER
-# define MEADE_DSI
 # define OPENSSAG
 # define QHY_CAMERA
 # define SBIG
 # define SIMULATOR
-# define SKYRAIDER_CAMERA
-# define STARFISH
+# ifdef HAVE_MEADE_DSI_CAMERA
+#  define MEADE_DSI_CAMERA
+# endif
+# ifdef HAVE_SKYRAIDER_CAMERA
+#  define SKYRAIDER_CAMERA
+# endif
+# ifdef HAVE_STARFISH_CAMERA
+#  define STARFISH_CAMERA
+# endif
 # define SXV
 # define ZWO_ASI
 

@@ -31,36 +31,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef STARFISHDEF
-#define STARFISHDEF
+#ifndef CAM_STARFISH_INCLUDED
+#define CAM_STARFISH_INCLUDED
 
-#if defined (__WINDOWS__)
-#include "cameras/FcLib.h"
-#else
-#include <fcCamFw/fcCamFw.h>
-#endif
-
-class CameraStarfish : public GuideCamera
+class StarfishCameraFactory
 {
-    int CamNum;
-    int NCams;
-    bool DriverLoaded;
-    usImage subImage;
-    wxRect lastSubFrame;
-
 public:
-    CameraStarfish();
-
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    InitCapture() override;
-
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-
-    bool    HasNonGuiCapture() override { return true; }
-    bool    ST4HasNonGuiMove() override { return true; }
-    wxByte  BitsPerPixel() override;
+    static GuideCamera *MakeStarfishCamera();
 };
 
-#endif  //STARFISHDEF
+#endif  // CAM_STARFISH_INCLUDED

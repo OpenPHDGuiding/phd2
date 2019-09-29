@@ -175,11 +175,6 @@ endmacro(copy_dependency_with_config)
 #############################################
 
 
-# thread programs (see cmake documentation)
-# this might be needed by the
-find_package(Threads REQUIRED)
-
-
 ##############################################
 # cfitsio
 
@@ -1036,24 +1031,31 @@ if(APPLE)
   endif()
   include_directories(${sbigudFramework})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sbigudFramework})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${sbigudFramework})
 
-  ###
-  find_library( fcCamFramework
-                NAMES fcCamFw
-                PATHS ${thirdparty_dir}/frameworks)
-  if(NOT fcCamFramework)
-    message(FATAL_ERROR "Cannot find the fcCamFw drivers")
+  if(APPLE32)
+    find_library( fcCamFramework
+                  NAMES fcCamFw
+                  PATHS ${thirdparty_dir}/frameworks)
+    if(NOT fcCamFramework)
+      message(FATAL_ERROR "Cannot find the fcCamFw drivers")
+    endif()
+    include_directories(${fcCamFramework})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${fcCamFramework})
+    add_definitions(-DHAVE_STARFISH_CAMERA=1)
+    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${fcCamFramework})
   endif()
-  include_directories(${fcCamFramework})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${fcCamFramework})
 
-  find_library( dsiMeadeLibrary
-                NAMES DsiDevice
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
-  if(NOT dsiMeadeLibrary)
-    message(FATAL_ERROR "Cannot find the dsiMeadeLibrary drivers")
+  if(APPLE32)
+    find_library( dsiMeadeLibrary
+                  NAMES DsiDevice
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
+    if(NOT dsiMeadeLibrary)
+      message(FATAL_ERROR "Cannot find the dsiMeadeLibrary drivers")
+    endif()
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dsiMeadeLibrary})
+    add_definitions(-DHAVE_MEADE_DSI_CAMERA=1)
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dsiMeadeLibrary})
 
   find_library( asiCamera2
                 NAMES ASICamera2
@@ -1071,14 +1073,18 @@ if(APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
-  find_library( mallincamFramework
-                NAMES MallincamGuider
-                PATHS ${thirdparty_dir}/frameworks)
-  if(NOT mallincamFramework)
-    message(FATAL_ERROR "Cannot find the Mallincam framework")
+  if(APPLE32)
+    find_library( mallincamFramework
+                  NAMES MallincamGuider
+                  PATHS ${thirdparty_dir}/frameworks)
+    if(NOT mallincamFramework)
+      message(FATAL_ERROR "Cannot find the Mallincam framework")
+    endif()
+    include_directories(${mallincamFramework})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mallincamFramework})
+    add_definitions(-DHAVE_SKYRAIDER_CAMERA=1)
+    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${mallincamFramework})
   endif()
-  include_directories(${mallincamFramework})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mallincamFramework})
 
   #############################################
   # libDC

@@ -119,7 +119,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_wdm.h"
 #endif
 
-#if defined (STARFISH)
+#if defined (STARFISH_CAMERA)
 # include "cam_starfish.h"
 #endif
 
@@ -139,7 +139,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_firewire.h"
 #endif
 
-#if defined (MEADE_DSI)
+#if defined (MEADE_DSI_CAMERA)
 # include "cam_MeadeDSI.h"
 #endif
 
@@ -253,7 +253,7 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (QGUIDE)
     CameraList.Add(_T("CCD Labs Q-Guider"));
 #endif
-#if defined (STARFISH)
+#if defined (STARFISH_CAMERA)
     CameraList.Add(_T("Fishcamp Starfish"));
 #endif
 #if defined (INOVA_PLC)
@@ -281,7 +281,7 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (QGUIDE)
     CameraList.Add(_T("MagZero MZ-5"));
 #endif
-#if defined (MEADE_DSI)
+#if defined (MEADE_DSI_CAMERA)
     CameraList.Add(_T("Meade DSI I, II, or III"));
 #endif
 #if defined (CAM_QHY5)
@@ -503,13 +503,13 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice.Contains(_T("Long exposure LXUSB webcam")))
             pReturn = new CameraLELxUsbWebcam();
 #endif
-#if defined (MEADE_DSI)
+#if defined (MEADE_DSI_CAMERA)
         else if (choice.Contains(_T("Meade DSI I, II, or III")))
             pReturn = DSICameraFactory::MakeDSICamera();
 #endif
-#if defined (STARFISH)
+#if defined (STARFISH_CAMERA)
         else if (choice.Contains(_T("Fishcamp Starfish")))
-            pReturn = new CameraStarfish();
+            pReturn = StarfishCameraFactory::MakeStarfishCamera();
 #endif
 #if defined (SXV)
         else if (choice.Contains(_T("Starlight Xpress SXV")))

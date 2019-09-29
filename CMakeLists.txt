@@ -32,8 +32,23 @@ cmake_minimum_required(VERSION 3.4)
 
 # this must come before any enable_language() or project()
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "Minimum OSX deployment version")
+  set(APPLE_ARCH "i386" CACHE STRING "Apple architecture: i386 or x86_64")
+  if(APPLE_ARCH MATCHES "^i386")
+    message(STATUS "configuring to build a 32-bit PHD2")
+    set(APPLE32 1)
+  elseif(APPLE_ARCH MATCHES "^x86_64")
+    message(STATUS "configuring to build a 64-bit PHD2")
+    SET(APPLE32 0)
+  else()
+    message(FATAL_ERROR "APPLE_ARCH must be i386 or x86_64")
+  endif()
+  if(APPLE32)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "Minimum OSX deployment version")
+  else()
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OSX deployment version")
+  endif()
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+  set(CMAKE_CXX_STANDARD 11)
 endif()
 
 enable_language(C CXX)
@@ -572,9 +587,7 @@ if(APPLE)
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
 
     # extra frameworks
-    ${fcCamFramework}
-    ${sbigudFramework}
-    ${mallincamFramework}
+    ${phd2_OSX_FRAMEWORKS}
   )
   set_target_properties(
     phd2
@@ -595,25 +608,42 @@ if(APPLE)
 
   # this is a workaround to what looks like a bug on cmake for Makefile generators
   if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
-    get_filename_component(framework1 ${fcCamFramework} NAME)
-    get_filename_component(framework2 ${sbigudFramework} NAME)
-    get_filename_component(framework3 ${mallincamFramework} NAME)
+    get_filename_component(frameworkfn ${sbigudFramework} NAME)
     add_custom_command(
       TARGET phd2
       POST_BUILD
-      # the copy_directory kills the symlinks
-      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}/
-      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}/
-      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework3}/
+      # cannot use copy_directory as it kills the symlinks
       COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
-      COMMAND cp -R ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}
-      COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}
-      COMMAND cp -R ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework3}
+      COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
     )
+    if(fcCamFramework)
+      get_filename_component(frameworkfn ${fcCamFramework} NAME)
+      add_custom_command(
+        TARGET phd2
+        POST_BUILD
+        # cannot use copy_directory as it kills the symlinks
+        COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND cp -R ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
+      )
+    endif()
+    if(mallincamFramework)
+      get_filename_component(frameworkfn ${mallincamFramework} NAME)
+      add_custom_command(
+        TARGET phd2
+        POST_BUILD
+        # cannot use copy_directory as it kills the symlinks
+        COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND cp -R ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
+      )
+    endif()
   else()
-    set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
-    set_source_files_properties(${mallincamFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    if(fcCamFramework)
+      set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    endif()
+    if(mallincamFramework)
+      set_source_files_properties(${mallincamFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    endif()
   endif()
 
   # Bundling qhyfirmware
@@ -691,6 +721,10 @@ endif()
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
+if(NOT APPLE32)
+  # suppress warnings about "overrides a member function but is not marked 'override'" with wxDECLARE_EVENT_TABLE
+  target_compile_options(phd2 PRIVATE "-Wno-inconsistent-missing-override")
+endif()
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 
 if (PHD_LINK_EXTERNAL_RELEASE)

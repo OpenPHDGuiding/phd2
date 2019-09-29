@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#ifdef MEADE_DSI
+#ifdef MEADE_DSI_CAMERA
 
 #include "camera.h"
 #include "time.h"
@@ -256,4 +256,4 @@ GuideCamera *DSICameraFactory::MakeDSICamera()
     return new CameraDSI();
 }
 
-#endif // MEADE_DSI
+#endif // MEADE_DSI_CAMERA

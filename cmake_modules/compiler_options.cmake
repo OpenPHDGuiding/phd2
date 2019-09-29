@@ -30,10 +30,10 @@
 
 
 if(APPLE)
-  # should be done *before* declaring project.
-  set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "build architecture for OSX" FORCE)
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -m32"   CACHE STRING "Flags used by the compiler during all build types")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32" CACHE STRING "Flags used by the compiler during all build types")
+  if(APPLE32)
+    # should be done *before* declaring project.
+    set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "build architecture for OSX" FORCE)
+  endif()
   set(CMAKE_MACOSX_RPATH TRUE)
 endif()
 
