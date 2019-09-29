@@ -721,7 +721,7 @@ endif()
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
-if(NOT APPLE32)
+if(APPLE AND NOT APPLE32)
   # suppress warnings about "overrides a member function but is not marked 'override'" with wxDECLARE_EVENT_TABLE
   target_compile_options(phd2 PRIVATE "-Wno-inconsistent-missing-override")
 endif()
