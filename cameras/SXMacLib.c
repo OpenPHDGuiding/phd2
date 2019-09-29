@@ -283,7 +283,7 @@ UInt32 sxReadPixels(void* sxHandle, UInt16 *pixels, UInt32 count)
     
     if (ReadFile(sxHandle, (UInt8 *)pixels, byteCount, &bytes_read, NULL)){
         if (bytes_read != byteCount){
-            fprintf(stderr,"SXMacLib: Error reading pixels, expected %ld but got %ld\n",byteCount,bytes_read);
+	  fprintf(stderr,"SXMacLib: Error reading pixels, expected %ld but got %ld\n",(long)byteCount,(long)bytes_read);
         }
         return bytes_read;
     }
@@ -982,8 +982,8 @@ void* sxOpenByModel(UInt16 nModelNumber)
 
 void sxSetTimeoutMS(UInt32 timeoutMS)
 {
-    printf("SXMacLib: setting timeout to %ldms\n",timeoutMS);
-    ioTimeout = timeoutMS;
+  printf("SXMacLib: setting timeout to %ldms\n",(long)timeoutMS);
+  ioTimeout = timeoutMS;
 }
 
 #endif // __APPLE__
