@@ -528,8 +528,12 @@ void GearDialog::EndModal(int retCode)
         assert(pSecondaryMount == nullptr);
     }
 
-    if (m_imageScaleRatio != 1.0)
+    if (fabs(m_imageScaleRatio - 1.0) >= 0.01)
+    {
+        Debug.Write("GearDialog::EndModal: imageScaleRatio changed\n");
         pFrame->HandleImageScaleChange(m_imageScaleRatio);
+    }
+
     pFrame->UpdateButtonsStatus();
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();

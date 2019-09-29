@@ -216,7 +216,7 @@ public:
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);
-        void ChangeYAlgorithm(wxString algoName);
+        void ChangeYAlgorithm(const wxString& algoName);
         void ResetRAGuidingParams();
         void ResetDecGuidingParams();
     };

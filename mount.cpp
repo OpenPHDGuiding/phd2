@@ -109,11 +109,11 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
     return pane;
 }
 
-Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount)
+Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *mount)
     : ConfigDialogPane(title, pParent)
 {
     // int width;
-    m_pMount = pMount;
+    m_pMount = mount;
     m_pParent = pParent;
     m_pAlgoBox = nullptr;
     m_pRABox = nullptr;
@@ -403,7 +403,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     adv->GetSizer()->Fit(adv);
 }
 
-void Mount::MountConfigDialogPane::ChangeYAlgorithm(wxString algoName)
+void Mount::MountConfigDialogPane::ChangeYAlgorithm(const wxString& algoName)
 {
     if (m_pMount)
     {
@@ -480,21 +480,21 @@ void Mount::MountConfigDialogPane::Undo()
         OnYAlgorithmSelected(dummy);
     }
 }
-MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *mount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
-    return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
+    return new MountConfigDialogCtrlSet(pParent, mount, pAdvancedDialog, CtrlMap);
 }
 
 // These are only controls that are exported to other panes - all the other dynamically updated controls are handled in
 // ConfigDialogPane
-MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
+MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *mount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
-    bool enableCtrls = pMount != nullptr;
-    m_pMount = pMount;
+    bool enableCtrls = mount != nullptr;
+    m_pMount = mount;
     if (m_pMount)
     {
-        if (!pMount->IsStepGuider())
+        if (!mount->IsStepGuider())
         {
             m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearCalibration), wxID_ANY, _("Clear mount calibration"));
             m_pClearCalibration->Enable(enableCtrls);
@@ -1262,9 +1262,12 @@ void Mount::AdjustCalibrationForScopePointing()
 
         SetCalibration(cal);
     }
+
     // If the image scale has changed, make some other adjustments
-    if (scaleAdjustment != 1.0)
+    if (fabs(scaleAdjustment - 1.0) >= 0.01)
     {
+        Debug.Write("Mount::AdjustCalibrationForScopePointing: imageScaleRatio changed\n");
+
         // Device-specified pixel size and binning will be reflected in AD when LoadValues() occurs
         pFrame->HandleImageScaleChange(scaleAdjustment);          // Revert the guide params, get the various UIs sorted out
         // Force a fresh calibration when guiding is started next

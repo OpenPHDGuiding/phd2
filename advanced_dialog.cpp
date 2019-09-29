@@ -558,15 +558,25 @@ void AdvancedDialog::MakeImageScaleAdjustments()
 {
     double origImageScale = pFrame->GetPixelScale(pCamera->GetCameraPixelSize(), pFrame->GetFocalLength(), pCamera->Binning);       // Profile values
     double newImageScale = pFrame->GetPixelScale(GetPixelSize(), GetFocalLength(), GetBinning());                                   // Current UI ctrl values
-    double oldStepSize = ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->GetCalStepSizeCtrlValue();
-    if (origImageScale != newImageScale)
+    if (fabs((origImageScale - newImageScale) / newImageScale) >= 0.01)
     {
         // Scale the UI cal step size based on image scale ratio - may get refined at start of calibration if actual guiding rates are known
         Debug.Write("Image scale has changed via AD UI - step-size and algo adjustments made\n");
-        ((ScopeConfigDialogCtrlSet*)m_pScopeCtrlSet)->SetCalStepSizeCtrlValue((int)(oldStepSize * ((double)newImageScale / (double)origImageScale)));
+        Debug.Write(wxString::Format("  fl %d => %d, px %.3fu => %.3fu, bin %d => %d\n",
+                                     pFrame->GetFocalLength(), GetFocalLength(),
+                                     pCamera->GetCameraPixelSize(), GetPixelSize(),
+                                     pCamera->Binning, GetBinning()));
+
+        ScopeConfigDialogCtrlSet *cfgset = static_cast<ScopeConfigDialogCtrlSet *>(m_pScopeCtrlSet);
+        int oldStepSize = cfgset->GetCalStepSizeCtrlValue();
+        int newCalStep = (int)((double)oldStepSize * (newImageScale / origImageScale));
+        cfgset->SetCalStepSizeCtrlValue(newCalStep);
+
         // but let the current guide algos make their own adjustments for stuff like min-moves
         if (m_pMountPane->IsValid())
+        {
             m_pMountPane->OnImageScaleChange();
+        }
         if (pMount)
         {
             pMount->ClearCalibration();

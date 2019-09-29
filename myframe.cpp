@@ -2749,23 +2749,29 @@ void MyFrame::HandleImageScaleChange(double NewToOldRatio)
         scope->SetCalibrationDuration(stepSize);
 
     }
+
     // Leave the algo choices in place but force a reversion to default guiding params for in-use algos
     pAdvancedDialog->ResetGuidingParams();
+
     wxCommandEvent dummyEvt;
     if (pGraphLog)
     {
         pGraphLog->OnButtonClear(dummyEvt);
         pGraphLog->UpdateControls();
     }
+
     // Give the image-scale dependent windows a chance to reset
     if (pStepGuiderGraph)
         pStepGuiderGraph->OnButtonClear(dummyEvt);
+
     if (pTarget)
     {
         pTarget->OnButtonClear(dummyEvt);
         pTarget->UpdateControls();
     }
-    Alert(_("Guiding parameters have been reset because the binning or pixel size changed unexpectedly. You should use separate profiles for different image scales."));
+
+    Alert(_("Guiding parameters have been reset because the binning or pixel size changed unexpectedly. "
+	    "You should use separate profiles for different image scales."));
 }
 
 MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
