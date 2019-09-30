@@ -476,7 +476,21 @@ if(WIN32)
   include_directories(${libcurl_dir}/include)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libcurl_dir}/lib/LIBCURL.LIB)
 else()
-  find_package(CURL REQUIRED)
+  if(APPLE)
+    # make sure to pick up the macos curl, not the mapcports curl in /opt/local/lib
+    find_library(CURL_LIBRARIES
+                 NAMES curl
+		 PATHS /usr/lib
+		 NO_DEFAULT_PATH)
+    if(NOT CURL_LIBRARIES)
+      message(FATAL_ERROR "libcurl not found")
+    endif()
+    set(CURL_FOUND True)
+    set(CURL_INCLUDE_DIRS /usr/include)
+  else()
+    find_package(CURL REQUIRED)
+  endif()
+  message(STATUS "using libcurl ${CURL_LIBRARIES}")
   include_directories(${CURL_INCLUDE_DIRS})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CURL_LIBRARIES})
 endif()
@@ -624,7 +638,18 @@ else()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
   else()
 
-    find_package(ZLIB REQUIRED)
+    if(APPLE)
+      # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
+      find_library(ZLIB_LIBRARIES
+                   NAMES z
+		   PATHS /usr/lib
+		   NO_DEFAULT_PATH)
+      if(NOT ZLIB_LIBRARIES)
+        message(FATAL_ERROR "libz not found")
+      endif()
+    else()
+      find_package(ZLIB REQUIRED)
+    endif()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
 
     # to recreate a package of libindi:
@@ -1084,6 +1109,18 @@ if(APPLE)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mallincamFramework})
     add_definitions(-DHAVE_SKYRAIDER_CAMERA=1)
     set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${mallincamFramework})
+  endif()
+
+  if(NOT APPLE32)
+    find_library( toupcam
+                  NAMES toupcam
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/mac)
+    if(NOT toupcam)
+      message(FATAL_ERROR "Cannot find the toupcam drivers")
+    endif()
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+    add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
+    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
   endif()
 
   #############################################

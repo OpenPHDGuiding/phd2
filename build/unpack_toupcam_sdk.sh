@@ -30,5 +30,5 @@ for arch in x86 x64 armhf armel arm64; do
     cp ./linux/$arch/libtoupcam.so "$SRC"/cameras/toupcam/linux/$arch/
 done
 
-# TODO: Mac
-#   Touptek stopped providing 32-bit Mac SDK libs
+# Mac
+cp ./mac/libtoupcam.dylib "$SRC"/cameras/toupcam/mac/

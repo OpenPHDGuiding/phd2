@@ -645,6 +645,17 @@ if(APPLE)
       set_source_files_properties(${mallincamFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     endif()
   endif()
+  if(toupcam)
+    set_source_files_properties(${toupcam} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    # there's got to be a better way, but damfino. This works though.
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change toupcam_mac/touptek/libtoupcam.dylib
+                   @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
+      COMMENT "Updating dylib path for libtoupcam.dylib"
+    )
+  endif()
 
   # Bundling qhyfirmware
   add_custom_command(

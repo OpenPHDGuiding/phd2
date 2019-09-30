@@ -107,6 +107,9 @@
 #  define STARFISH_CAMERA
 # endif
 # define SXV
+# ifdef HAVE_TOUPTEK_CAMERA
+#  define TOUPTEK_CAMERA
+# endif
 # define ZWO_ASI
 
 #elif defined (__linux__)
