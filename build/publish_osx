@@ -36,11 +36,11 @@ shift $((OPTIND-1))
 case "$1" in
   "")
       # auto-detect: 64-bits on 10.14 mojave or later
-      os=$(sysctl -n kern.osproductversion | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
-      if [ "$os" -ge "010014" ]; then
-	  bits=64
-      else
+      os=$(sysctl -n kern.osproductversion 2>/dev/null | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
+      if [ "$os" \< "010014" ]; then
 	  bits=32
+      else
+	  bits=64
       fi
       ;;
   32) bits=32 ;;
