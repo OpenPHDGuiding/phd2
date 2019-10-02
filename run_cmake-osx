@@ -1,0 +1,36 @@
+#!/bin/bash
+
+here=$(cd $(dirname "$0"); /bin/pwd)
+
+# usage: run_cmake-osx [-g] 32|64
+
+tmp="tmp"
+buildtype="Release"
+
+if [ "$1" = "-g" ]; then
+    tmp="tmp_debug"
+    buildtype="Debug"
+    shift
+fi
+    
+case "$1" in
+    32)   APPLE_ARCH=i386 ; shift ;;
+    64)   APPLE_ARCH=x86_64 ; shift ;;
+    *)    echo "usage: $0 32|64" >&2; exit 1 ;;
+esac
+
+WXWIN=$(wx-config --prefix)
+[ -d "$WXWIN" ] || {
+    echo "could not find wxWidgets insalltation" >&2
+    exit 1
+}
+
+cd $here
+mkdir -p $tmp
+cd $tmp
+
+cmake -G "Unix Makefiles" \
+    -DwxWidgets_PREFIX_DIRECTORY=$WXWIN \
+    -DAPPLE_ARCH=$APPLE_ARCH \
+    -DCMAKE_BUILD_TYPE=$buildtype \
+    ${1+"$@"} ..

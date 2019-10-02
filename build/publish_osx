@@ -1,0 +1,105 @@
+#!/bin/bash
+
+SCPDST=openphdguiding.org:/var/www/phd2
+
+do_build=1
+do_clean=1
+do_upload=
+do_release=
+series=
+
+while getopts "Cnurd" o; do
+    case "${o}" in
+        C)
+            do_clean=
+            ;;
+        n)
+            do_build=
+            do_clean=
+            ;;
+        u)
+            do_upload=1
+            ;;
+        r)
+	    do_build=
+	    do_clean=
+            do_upload=
+            do_release=1
+            ;;
+        d)
+            series="dev"
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+case "$1" in
+  "")
+      # auto-detect: 64-bits on 10.14 mojave or later
+      os=$(sysctl -n kern.osproductversion | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
+      if [ "$os" -ge "010014" ]; then
+	  bits=64
+      else
+	  bits=32
+      fi
+      ;;
+  32) bits=32 ;;
+  64) bits=64 ;;
+  *)  echo "usage?" >&2 ; exit 1 ;;
+esac
+
+set -ex
+
+D=$(cd $(dirname "$0"); /bin/pwd)
+
+# run from the top of the source tree (this script is in <top>/build/)
+cd $D/..
+
+V=$(perl -ne '
+ /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
+ /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
+
+[ -n "$V" ] || {
+    echo "could not get version from phd.h!" >&2
+    exit 1
+}
+
+if [ -n "$do_clean" ]; then
+    rm -rf tmp
+    ./run_cmake-osx $bits
+fi
+
+cd tmp
+
+if [ -n "$do_build" ]; then
+    rm -rf PHD2.app
+    cores=$(sysctl -n hw.logicalcpu)
+    make -j$cores
+fi
+
+SCPFILES=
+
+if [ -n "$do_upload" ]; then
+    case $bits in
+	32) Z=PHD2-${V}-OSX.zip ;;
+	64) Z=PHD2-${V}-OSX-64.zip ;;
+    esac
+    zip -r "$Z" PHD2.app
+    SCPFILES="$SCPFILES $Z"
+fi
+
+if [ -n "$do_release" ]; then
+    if [ -z "$series" ]; then
+        case $V in
+            *dev*) series="dev" ;;
+            *) series="main" ;;
+        esac
+    fi
+    R="release-${series}-osx.txt"
+    echo "${V}" > $R
+    SCPFILES="$SCPFILES $R"
+fi
+
+if [ -n "$SCPFILES" ]; then
+    scp $SCPFILES $SCPDST/
+fi
