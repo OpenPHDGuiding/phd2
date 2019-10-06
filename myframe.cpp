@@ -1794,8 +1794,18 @@ bool MyFrame::StopCapturing()
     Debug.Write(wxString::Format("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
     bool finished = true;
+    bool continueCapturing = m_continueCapturing;
 
-    if (m_continueCapturing || m_exposurePending)
+    if (pGuider->IsPaused())
+    {
+        // setting m_continueCapturing to false before calling
+        // SetPaused(PAUSE_NONE) ensures that SetPaused(PAUSE_NONE)
+        // does not schedule another exposure
+        m_continueCapturing = false;
+        SetPaused(PAUSE_NONE);
+    }
+
+    if (continueCapturing || m_exposurePending)
     {
         StatusMsgNoTimeout(_("Waiting for devices..."));
         m_continueCapturing = false;
