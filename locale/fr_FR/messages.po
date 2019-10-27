@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-10 04:35+0100\n"
-"PO-Revision-Date: 2019-08-03 13:42+0200\n"
+"PO-Revision-Date: 2019-10-27 22:40+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: about_dialog.cpp:45 myframe.cpp:582
 #, c-format
@@ -924,10 +924,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:715 cam_indi.cpp:747
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:545
+#: cam_firewire_IC.cpp:287 cam_indi.cpp:715 cam_indi.cpp:747 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1064,6 +1063,8 @@ msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr ""
+"La caméra n'a pas de propriété CCD_EXPOSURE, veuillez décocher l'option: la "
+"caméra ne supporte pas le flux."
 
 #: cam_indi.cpp:1061
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
@@ -1902,8 +1903,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:541
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2027,12 +2027,14 @@ msgstr ""
 
 #: config_indi.cpp:158
 msgid "Camera does not support streaming"
-msgstr ""
+msgstr "La caméra ne supporte pas le streaming"
 
 #: config_indi.cpp:159
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
 msgstr ""
+"Forcer l'utilisation du temps d'exposition pour les caméras ne prenant pas "
+"en charge le streaming."
 
 #: config_indi.cpp:164
 msgid "Other options"
@@ -2165,8 +2167,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:154
 msgid ""
@@ -3064,7 +3066,7 @@ msgstr "Appliquer la friction"
 
 #: gear_simulator.cpp:1756
 msgid "Simulate dec axis stiction"
-msgstr "Simulez la friction de l'axe de déc."
+msgstr "Simulez la friction de l'axe de déclinaison"
 
 #: gear_simulator.cpp:1762
 msgid "PE"
@@ -3496,8 +3498,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3630,8 +3632,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3656,8 +3658,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -4056,11 +4058,11 @@ msgstr ""
 
 #: guider_onestar.cpp:1101
 msgid "Beep on lost star"
-msgstr ""
+msgstr "Biper à la perte de l'étoile"
 
 #: guider_onestar.cpp:1102
 msgid "Issue an audible alarm any time the guide star is lost"
-msgstr ""
+msgstr "Émettre une alarme sonore chaque fois que l'étoile guide est perdue"
 
 #: guiding_assistant.cpp:99
 msgid "Extended Sampling"
@@ -4361,7 +4363,7 @@ msgstr "arc-sec"
 
 #: guiding_assistant.cpp:731
 msgid "ms (test impaired)"
-msgstr ""
+msgstr "ms (test altéré)"
 
 #: guiding_assistant.cpp:872 guiding_assistant.cpp:873 pierflip_tool.cpp:293
 msgid "Apply"
@@ -5440,7 +5442,7 @@ msgstr "Démarre les poses en continue pour le cadrage et la mise au point"
 
 #: myframe.cpp:975
 msgid "Auto-select Star"
-msgstr ""
+msgstr "Étoile sélectionnée automatiquement"
 
 #: myframe.cpp:976
 msgid "Begin guiding (PHD). Shift-click to force calibration."
@@ -6694,6 +6696,11 @@ msgid ""
 "use of fainter guide stars.  For more common setups, it's better to leave "
 "binning at 1."
 msgstr ""
+"Si votre caméra prend en charge le binning (beaucoup ne le font pas), vous "
+"pouvez choisir une valeur de binning > 1. Avec les longues focales de "
+"guidage, le binning peut permettre l'utilisation d'étoiles de guidage plus "
+"faibles. Pour des configurations plus courantes, il est préférable de "
+"laisser le binning à 1."
 
 #: profile_wizard.cpp:267
 msgid "Binning level"
@@ -6777,6 +6784,11 @@ msgid ""
 "all other optical properties of the guiding setup must remain the same "
 "between imaging sessions."
 msgstr ""
+"Cochez cette case pour réutiliser automatiquement la dernière calibtation "
+"lorsque le profil est chargé. Pour que cela fonctionne, l'orientation en "
+"rotation de la caméra de guidage et toutes les autres propriétés optiques de "
+"la configuration de guidage doivent rester les mêmes entre les sessions "
+"d'imagerie."
 
 #: profile_wizard.cpp:326
 msgid "Profile Name"
@@ -6802,6 +6814,16 @@ msgid ""
 "please review the 'Basic Use' section of the 'Help' guide after the wizard "
 "dialog has finished."
 msgstr ""
+"Cette courte séquence d’étapes vous aidera à identifier l’équipement que "
+"vous souhaitez utiliser pour le guidage et l’associera à un nom de profil de "
+"votre choix. Ce profil sera alors disponible chaque fois que vous exécuterez "
+"PHD2. Au minimum, vous devrez choisir à la fois la caméra de guidage et "
+"l'interface de la monture que PHD2 utilisera pour le guidage. Vous allez "
+"également entrer des informations sur les caractéristiques optiques de votre "
+"configuration. PHD2 l'utilisera pour créer un bon \"ensemble de départ\" de "
+"paramètres de guidage et d'étalonnage. Si vous êtes un nouvel utilisateur, "
+"veuillez consulter la section \"Utilisation de base\" de la section \"Aide\" "
+"une fois la boîte de dialogue de l'assistant terminée."
 
 #: profile_wizard.cpp:394
 msgid ""
@@ -6905,6 +6927,13 @@ msgid ""
 "you are new to PHD2 or encounter problems, please use the 'Help' function "
 "for assistance."
 msgstr ""
+"Votre profil est complet et prêt à être sauvegardé. Donnez-lui un nom et, "
+"éventuellement, créez-lui une bibliothèque de darks. Ceci est fortement "
+"recommandé pour de meilleurs résultats. Si votre configuration est stable "
+"d'une nuit à l'autre, vous pouvez choisir de réutiliser automatiquement le "
+"dernier étalonnage lorsque vous chargez ce profil. Si vous êtes nouveau sur "
+"PHD2 ou si vous rencontrez des problèmes, veuillez utiliser la fonction "
+"'Aide' pour obtenir de l'aide."
 
 #: profile_wizard.cpp:470
 msgid "Questionable Configuration Choice"
@@ -6980,6 +7009,8 @@ msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
 msgstr ""
+"Sélectionnez votre caméra de guidage et spécifiez les propriétés optiques de "
+"votre configuration de guidage"
 
 #: profile_wizard.cpp:654
 msgid "On-camera"
@@ -7498,24 +7529,33 @@ msgid ""
 "Advisory: Calibration completed but few guide steps were used, so accuracy "
 "is questionable"
 msgstr ""
+"Attention : L'étalonnage est terminé, mais peu d'étapes du guidage ont été "
+"utilisées. La précision est donc douteuse"
 
 #: scope.cpp:906
 msgid ""
 "Advisory: Calibration completed but RA/Dec axis angles are questionable and "
 "guiding may be impaired"
 msgstr ""
+"Attention : L'étalonnage est terminé mais les angles des axes RA / Dec sont "
+"discutables et le guidage peut être altéré"
 
 #: scope.cpp:909
 msgid ""
 "Advisory: This calibration is substantially different from the previous one "
 "- have you changed configurations?"
 msgstr ""
+"Attention : Cet étalonnage est substantiellement différent du précédent - "
+"avez-vous changé de configuration?"
 
 #: scope.cpp:912
 msgid ""
 "Advisory: Calibration completed but RA and Dec rates vary by an unexpected "
 "amount (often caused by large Dec backlash)"
 msgstr ""
+"Avis: L'étalonnage est terminé, mais les taux de AD et de Dec varient d'une "
+"quantité inattendue (souvent causée par un large jeu sur l'axe de "
+"Declinaison)"
 
 #: scope.cpp:922
 msgid "Details..."
@@ -7541,6 +7581,9 @@ msgid ""
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
+"Attention : Peu ou pas de mouvement d'Est a été mesuré, donc le guidage sera "
+"probablement altéré. Vérifiez le câble de guidage et utilisez l'outil Guide "
+"manuel pour confirmer le fonctionnement de base du support."
 
 #: scope.cpp:1349
 msgid "Clearing backlash step 1"
@@ -7578,6 +7621,12 @@ msgid ""
 "Check the guide cable and read the online Help for how to identify these "
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
+"Attention : Calibration réussie mais peu ou pas de mouvement sud a été "
+"mesuré, donc le guidage sera probablement altéré.\n"
+"  Cela est généralement dû à un câble de guidage défectueux ou à un très "
+"grand jeu sur l'axe de Déclinaison.\n"
+"Vérifiez le câble du guide et lisez l’aide en ligne pour savoir comment "
+"identifier ces types de problèmes (Guide manuel, Déclinaison)."
 
 #: scope.cpp:1571
 msgid ""
@@ -7588,6 +7637,12 @@ msgid ""
 "Read the online Help for how to identify these types of problems (Manual "
 "Guide, Declination backlash)."
 msgstr ""
+"Attention : L'étalonnage a été réussi, mais peu de mouvement sud a été "
+"mesuré, le guidage sera donc probablement altéré. \n"
+"Cela est généralement dû à un très grand jeu de décalage sur l'axe de "
+"Déclinaison ou à d’autres problèmes de la monture. \n"
+"Lisez l’aide en ligne pour savoir comment identifier ces types de problèmes "
+"(Manuel, Déclinaison)."
 
 #: scope.cpp:1576
 msgid ""
@@ -7598,6 +7653,12 @@ msgid ""
 "Read the online help for how to deal with this type of problem (Declination "
 "backlash)."
 msgstr ""
+"Attention : L'étalonnage a été réussi, mais peu de mouvement sud a été "
+"mesuré, ce qui peut altérer le guidage.\n"
+"  Cela est généralement dû à un très grand jeu sur l'axe de Déclinaison ou à "
+"d’autres problèmes de monture.\n"
+"Lisez l'aide en ligne pour savoir comment traiter ce type de problème (jeu "
+"de déclinaison)."
 
 #: scope.cpp:1636
 #, c-format
@@ -7645,6 +7706,9 @@ msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
 msgstr ""
+"Vérifiez si votre monture a besoin que la sortie Dec soit inversée après un "
+"basculement de méridien. Changer ce réglage effacera les données "
+"d'étalonnage existantes"
 
 #: scope.cpp:1879
 msgid "Stop guiding when mount slews"
@@ -8486,7 +8550,7 @@ msgstr ""
 
 #: stepguider.cpp:1432
 msgid "Cal steps"
-msgstr "Pas de Calib."
+msgstr "Étape de calibration"
 
 #: stepguider.cpp:1436
 #, c-format
@@ -9847,8 +9911,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
