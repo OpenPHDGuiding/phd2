@@ -942,7 +942,7 @@ PHD_Point StaticPaToolWin::J2000Now(const PHD_Point& radec)
 void StaticPaToolWin::PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale)
 {
     double intens = 255;
-    dc.SetPen(wxPen(wxColour(0, intens, intens), 1, wxSOLID));
+    dc.SetPen(wxPen(wxColour(0, intens, intens), 1, wxPENSTYLE_SOLID));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     for (int i = 0; i < 3; i++)

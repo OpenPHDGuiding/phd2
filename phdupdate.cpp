@@ -782,7 +782,7 @@ UpdaterDialog::UpdaterDialog(Updater *updater, Mode mode, Interactive interactiv
     m_text = new wxTextCtrl(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
         wxTE_READONLY | wxTE_CENTRE | wxNO_BORDER);
     wxFont fnt = m_text->GetFont();
-    fnt.SetWeight(wxBOLD);
+    fnt.SetWeight(wxFONTWEIGHT_BOLD);
     m_text->SetFont(fnt);
     m_text->SetMinClientSize(m_text->GetTextExtent(text) + wxSize(16, 0));
     sz1->Add(m_text, 0, wxALL | wxEXPAND, 5);

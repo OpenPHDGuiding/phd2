@@ -638,7 +638,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
 
         if (m_defectMapPreview)
         {
-            dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxSOLID));
+            dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxPENSTYLE_SOLID));
             for (DefectMap::const_iterator it = m_defectMapPreview->begin(); it != m_defectMapPreview->end(); ++it)
             {
                 const wxPoint& pt = *it;
@@ -661,7 +661,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
-                    dc.SetPen(wxPen(wxColor(255,255,0),1, wxDOT));
+                    dc.SetPen(wxPen(wxColor(255,255,0),1, wxPENSTYLE_DOT));
                     break;
                 case STATE_CALIBRATED:
                 case STATE_GUIDING:

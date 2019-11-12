@@ -292,7 +292,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         // blit into profile DC
         dc.Blit(xoffset, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
         // lines for the lock pos + red dot at star centroid
-        dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxDOT));
+        dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxPENSTYLE_DOT));
         dc.DrawLine(xoffset, midwidth, xoffset + width, midwidth);
         dc.DrawLine(xoffset + midwidth, 0, xoffset + midwidth, width);
         if (sz > 0)

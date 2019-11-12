@@ -271,8 +271,8 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.Clear();
 
     wxColour Grey(128,128,128);
-    wxPen GreySolidPen = wxPen(Grey,1, wxSOLID);
-    wxPen GreyDashPen = wxPen(Grey,1, wxDOT);
+    wxPen GreySolidPen = wxPen(Grey,1, wxPENSTYLE_SOLID);
+    wxPen GreyDashPen = wxPen(Grey,1, wxPENSTYLE_DOT);
 
     dc.SetTextForeground(wxColour(200,200,200));
     dc.SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
@@ -369,7 +369,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     else if (decParity == GUIDE_PARITY_ODD)
         dc.DrawText(_("SkyN"), center.x + 5, size.y - 15);  // sky N = mount S
 
-    dc.SetPen(wxPen(wxColour(127, 127, 255), 1, wxSOLID));
+    dc.SetPen(wxPen(wxColour(127, 127, 255), 1, wxPENSTYLE_SOLID));
     for (unsigned int i = startPoint; i < m_maxHistorySize; i++)
     {
         int ximpact = center.x + m_history[i].ra * scale * m_zoom * raSign;

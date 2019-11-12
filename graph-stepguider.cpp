@@ -248,7 +248,7 @@ GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent) :
     {
         int color = (int)(i * 255 / m_maxHistorySize);
         m_pPens[i] = new wxPen(wxColor(color,color,color));
-        m_pBrushes[i] = new wxBrush(wxColor(color,color,color), wxSOLID);
+        m_pBrushes[i] = new wxBrush(wxColor(color,color,color), wxBRUSHSTYLE_SOLID);
     }
 
     SetLimits(0, 0, 0, 0);
@@ -307,8 +307,8 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
         return;
     }
 
-    wxPen GreySolidPen = wxPen(wxColour(200,200,200),2, wxSOLID);
-    wxPen GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
+    wxPen GreySolidPen = wxPen(wxColour(200,200,200),2, wxPENSTYLE_SOLID);
+    wxPen GreyDashPen = wxPen(wxColour(200,200,200),1, wxPENSTYLE_DOT);
 
     const int stepsPerDivision = 10;
 

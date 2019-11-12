@@ -914,7 +914,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         // display bookmarks
         if (m_showBookmarks && m_bookmarks.size() > 0)
         {
-            dc.SetPen(wxPen(wxColour(0,255,255),1,wxSOLID));
+            dc.SetPen(wxPen(wxColour(0, 255, 255), 1, wxPENSTYLE_SOLID));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
             for (std::vector<wxRealPoint>::const_iterator it = m_bookmarks.begin();
@@ -933,24 +933,24 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         if (state == STATE_SELECTED)
         {
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(100,255,90), 1, wxSOLID));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(100,255,90), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxDOT));
+                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxPENSTYLE_DOT));
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
         {
             // in the calibration process
-            dc.SetPen(wxPen(wxColour(32,196,32), 1, wxSOLID));  // Draw the box around the star
+            dc.SetPen(wxPen(wxColour(32,196,32), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
         {
             // locked and guiding
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(32,196,32), 1, wxSOLID));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(32,196,32), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxDOT));
+                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxPENSTYLE_DOT));
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
     }

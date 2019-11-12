@@ -1236,7 +1236,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetBackground(*wxBLACK_BRUSH);
     dc.Clear();
 
-    wxPen GreyDashPen(wxColour(200,200,200),1, wxDOT);
+    wxPen GreyDashPen(wxColour(200,200,200),1, wxPENSTYLE_DOT);
 
     // Draw axes
     dc.SetPen(*wxGREY_PEN);
@@ -1470,11 +1470,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             lineDecOrDy[0] = sctr.pt(0.0, trendDecOrDy.second);
             lineDecOrDy[1] = sctr.pt(m_length, trendDecOrDy.first * m_length + trendDecOrDy.second);
 
-            raOrDxPen.SetStyle(wxLONG_DASH);
+            raOrDxPen.SetStyle(wxPENSTYLE_LONG_DASH);
             dc.SetPen(raOrDxPen);
             dc.DrawLines(2, lineRaOrDx, 0, 0);
 
-            decOrDyPen.SetStyle(wxLONG_DASH);
+            decOrDyPen.SetStyle(wxPENSTYLE_LONG_DASH);
             dc.SetPen(decOrDyPen);
             dc.DrawLines(2, lineDecOrDy, 0, 0);
 
@@ -1568,7 +1568,7 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
     int width  = StringWidth(label);
     wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,label, wxDefaultPosition, wxSize(width + 5, -1));
     wxFont f = pLabel->GetFont();
-    f.SetWeight(wxBOLD);
+    f.SetWeight(wxFONTWEIGHT_BOLD);
     pLabel->SetFont(f);
     pLabel->SetForegroundColour(*wxWHITE);
     pLabel->SetBackgroundColour(*wxBLACK);

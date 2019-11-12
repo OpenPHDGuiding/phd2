@@ -448,7 +448,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     memDC.SelectObject(bmp);
     memDC.SetBackground(*wxBLACK_BRUSH);
     memDC.Clear();
-    wxPen axisPen("GREY", 3, wxCROSS_HATCH);
+    wxPen axisPen("GREY", 3, wxPENSTYLE_CROSS_HATCH);
     memDC.SetPen(axisPen);
     // Draw the axes
     memDC.SetDeviceOrigin(wxCoord(CALREVIEW_BITMAP_SIZE / 2), wxCoord(CALREVIEW_BITMAP_SIZE / 2));
@@ -458,8 +458,8 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     if (calDetails.raStepCount > 0)
     {
         const wxColour& raColor = pFrame->pGraphLog->GetRaOrDxColor();
-        wxPen raPen(raColor, 3, wxSOLID);
-        wxBrush raBrush(raColor, wxSOLID);
+        wxPen raPen(raColor, 3, wxPENSTYLE_SOLID);
+        wxBrush raBrush(raColor, wxBRUSHSTYLE_SOLID);
 
         // Draw the RA data
         memDC.SetPen(raPen);
@@ -487,8 +487,8 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
 
     // Handle the Dec data
     const wxColour& decColor = pFrame->pGraphLog->GetDecOrDyColor();
-    wxPen decPen(decColor, 3, wxSOLID);
-    wxBrush decBrush(decColor, wxSOLID);
+    wxPen decPen(decColor, 3, wxPENSTYLE_SOLID);
+    wxBrush decBrush(decColor, wxBRUSHSTYLE_SOLID);
     memDC.SetPen(decPen);
     memDC.SetBrush(decBrush);
     int ptRadius = 2;
