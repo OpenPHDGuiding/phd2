@@ -50,7 +50,13 @@ fi
 # osx and linux
 if [ -n "$MAC" ]; then
     tar xfj "$MAC" -C "$TMP"
-    for d in armv6 armv7 armv8 mac x64 x86; do
+    # linux: use static libs
+    for d in armv6 armv7 armv8 x64 x86; do
         cp "$TMP"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
+    done
+    # mac: use dynamic libs
+    for d in mac; do
+        # follow symbolic link
+        cp "$TMP"/lib/$d/libASICamera2.dylib "$TOP"/cameras/zwolibs/$d/
     done
 fi

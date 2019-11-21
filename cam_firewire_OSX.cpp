@@ -32,7 +32,8 @@
  *
  */
 
-#if defined (__APPLE__)
+#if defined(__APPLE__) && defined(FIREWIRE_CAMERA)
+
 #include "phd.h"
 #include "camera.h"
 #include "time.h"

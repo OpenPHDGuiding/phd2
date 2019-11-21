@@ -34,25 +34,15 @@
  */
 
 
-#ifndef CAM_KWIQGUIDER_H_INCLUDED
-#define CAM_KWIQGUIDER_H_INCLUDED
+#ifndef CAM_KWIQGUIDER_INCLUDED
+#define CAM_KWIQGUIDER_INCLUDED
 
-#include <KWIQGuider.h>
+class GuideCamera;
 
-class CameraKWIQGuider : public GuideCamera
+class KWIQGuiderCameraFactory
 {
-    KWIQ::KWIQGuider *KWIQguider;
 public:
-    CameraKWIQGuider();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool Connect(const wxString& camId) override;
-    bool Disconnect() override;
-    bool ST4PulseGuideScope(int direction, int duration) override;
-    bool ST4HasNonGuiMove() override { return true; }
-    bool HasNonGuiCapture() override { return true; }
-    wxByte BitsPerPixel() override;
-    bool GetDevicePixelSize(double *devPixelSize) override;
+    static GuideCamera *MakeKWIQGuiderCamera();
 };
 
-
-#endif // CAM_KWIQGUIDER_H_INCLUDED
+#endif // CAM_KWIQGUIDER_INCLUDED

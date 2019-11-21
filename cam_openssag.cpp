@@ -36,7 +36,7 @@
 
 #include "phd.h"
 
-#ifdef OPENSSAG
+#ifdef OPENSSAG_CAMERA
 
 #include "camera.h"
 #include "image_math.h"

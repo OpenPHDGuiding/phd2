@@ -35,22 +35,36 @@
 
 
 #include "phd.h"
-// These two are order sensitive.
-#ifdef KWIQGUIDER
-#include "camera.h"
-#include "image_math.h"
+
+#ifdef KWIQGUIDER_CAMERA
+
 #include "cam_KWIQGuider.h"
+#include "camera.h"
 
 #include <KWIQGuider.h>
 
 using namespace KWIQ;
 
+class CameraKWIQGuider : public GuideCamera
+{
+    KWIQ::KWIQGuider *KWIQguider;
+public:
+    CameraKWIQGuider();
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasNonGuiMove() override { return true; }
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+};
+
 CameraKWIQGuider::CameraKWIQGuider()
 {
-    Connected = FALSE;
-    Name=_T("KWIQGuider (KWIQGuider)");
-    //Name=_T("KWIQGuider");    //Initially got an error on above line, now don't???
-    FullSize = wxSize(1280,1024);  // Current size of a full frame
+    Connected = false;
+    Name = _T("KWIQGuider (KWIQGuider)");
+    FullSize = wxSize(1280, 1024);  // Current size of a full frame
     m_hasGuideOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
 
@@ -133,4 +147,9 @@ bool CameraKWIQGuider::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
-#endif // KWIQGUIDER (Apple-only)
+GuideCamera *KWIQGuiderCameraFactory::MakeKWIQGuiderCamera()
+{
+    return new CameraKWIQGuider();
+}
+
+#endif // KWIQGUIDER_CAMERA

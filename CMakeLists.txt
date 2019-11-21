@@ -151,7 +151,6 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 # Global include directories
 # WxWidgets inclusion narrowed to PHD2 project only
 # include_directories(${wxWidgets_INCLUDE_DIRS})
-include_directories(${phd_src_dir}/cam_KWIQGuider/)
 include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
 
@@ -160,14 +159,10 @@ include_directories(${phd_src_dir})
 #################################################################################
 #
 # main project
-set(cam_KWIQGuider_SRC
-  ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
-  ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.h
-  ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_firmware.h
-  ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_loader.cpp
-  ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_priv.h
-)
-source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
+
+if(KWIQGuider_PLATFORM_SRC)
+  source_group(Cameras\\cam_KWIQGuider FILES ${KWIQGuider_PLATFORM_SRC})
+endif()
 
 set(cam_SRC
   ${phd_src_dir}/cam_altair.cpp
@@ -185,6 +180,7 @@ set(cam_SRC
   ${phd_src_dir}/cam_INovaPLC.h
   ${phd_src_dir}/cam_KWIQGuider.cpp
   ${phd_src_dir}/cam_KWIQGuider.h
+  ${KWIQGuider_PLATFORM_SRC}
   ${phd_src_dir}/cam_LEwebcam.cpp
   ${phd_src_dir}/cam_LEwebcam.h
   ${phd_src_dir}/cam_MeadeDSI.cpp
@@ -221,6 +217,7 @@ set(cam_SRC
   ${phd_src_dir}/cam_StarShootDSCI.h
   ${phd_src_dir}/cam_sxv.cpp
   ${phd_src_dir}/cam_sxv.h
+  ${SXV_PLATFORM_SRC}
   ${phd_src_dir}/cam_touptek.cpp
   ${phd_src_dir}/cam_touptek.h
   ${phd_src_dir}/cam_vfw.cpp
@@ -251,26 +248,16 @@ if(WIN32)
 
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
-
-    # ascom, not there in the sln project -> commented for now
-    # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
-    #${phd_src_dir}/cam_ascom.cpp
-    #${phd_src_dir}/ascom.cpp
-    #${phd_src_dir}/extras/cam_ascom.cpp
   )
 elseif(UNIX AND (NOT APPLE))
   set(cam_SRC
       ${cam_SRC}
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
-      ${phd_src_dir}/cameras/SXMacLib.h
-      ${phd_src_dir}/cameras/SXMacLib.c
      )
 elseif(APPLE)
   set(cam_SRC
       ${cam_SRC}
-      ${phd_src_dir}/cameras/SXMacLib.h
-      ${phd_src_dir}/cameras/SXMacLib.c
   )
 endif()
 
@@ -567,11 +554,11 @@ if(APPLE)
   set(MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
   set(MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
   set(MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2015 Open-phd-guiding team" )
+  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2019 openphdguiding.org" )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
   set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set(MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
+  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2019 openphdguiding.org" )
 
   # main target
   add_executable(
@@ -579,7 +566,6 @@ if(APPLE)
     MACOSX_BUNDLE
     ${scopes_SRC}
     ${cam_SRC}
-    ${cam_KWIQGuider_SRC}
     ${guiding_SRC}
     ${phd2_SRC}
 
@@ -608,14 +594,16 @@ if(APPLE)
 
   # this is a workaround to what looks like a bug on cmake for Makefile generators
   if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
-    get_filename_component(frameworkfn ${sbigudFramework} NAME)
-    add_custom_command(
-      TARGET phd2
-      POST_BUILD
-      # cannot use copy_directory as it kills the symlinks
-      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
-      COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
-    )
+    if(sbigudFramework)
+      get_filename_component(frameworkfn ${sbigudFramework} NAME)
+      add_custom_command(
+        TARGET phd2
+        POST_BUILD
+        # cannot use copy_directory as it kills the symlinks
+        COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
+      )
+    endif()
     if(fcCamFramework)
       get_filename_component(frameworkfn ${fcCamFramework} NAME)
       add_custom_command(
@@ -645,6 +633,22 @@ if(APPLE)
       set_source_files_properties(${mallincamFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     endif()
   endif()
+
+  if(asiCamera2)
+    set_source_files_properties(${asiCamera2} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    # there's got to be a better way, but damfino. This works though.
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change @loader_path/libASICamera2.dylib
+                   @executable_path/../Frameworks/libASICamera2.dylib $<TARGET_FILE:phd2>
+      COMMAND install_name_tool -change @loader_path/libusb-1.0.0.dylib
+                   @executable_path/../Frameworks/libusb_openphd.dylib
+                   $<TARGET_FILE_DIR:phd2>/../Frameworks/libASICamera2.dylib
+      COMMENT "Updating dylib path for libASICamera2.dylib"
+    )
+  endif()
+
   if(toupcam)
     set_source_files_properties(${toupcam} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     # there's got to be a better way, but damfino. This works though.
@@ -654,6 +658,17 @@ if(APPLE)
       COMMAND install_name_tool -change toupcam_mac/touptek/libtoupcam.dylib
                    @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libtoupcam.dylib"
+    )
+  endif()
+
+  if(APPLE)
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp libusb_openphd.dylib $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND install_name_tool -change @rpath/libusb_openphd.dylib
+                   @executable_path/../Frameworks/libusb_openphd.dylib $<TARGET_FILE:phd2>
     )
   endif()
 
@@ -671,7 +686,6 @@ elseif(WIN32)
   set(phd2_WIN_SRC
     ${scopes_SRC}
     ${cam_SRC}
-    #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
     ${phd2_SRC}
   )

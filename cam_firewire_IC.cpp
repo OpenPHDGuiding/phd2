@@ -33,7 +33,8 @@
  */
 
 #include "phd.h"
-#if defined (__WINDOWS__) && defined (FIREWIRE)
+
+#if defined (__WINDOWS__) && defined (FIREWIRE_CAMERA)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"

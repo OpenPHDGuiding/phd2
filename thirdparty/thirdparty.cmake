@@ -167,7 +167,17 @@ macro(copy_dependency_with_config target_name dependency_list_all dependency_lis
 
 endmacro(copy_dependency_with_config)
 
-
+if(APPLE)
+  find_library(quicktimeFramework      QuickTime)
+  find_library(iokitFramework          IOKit)
+  find_library(carbonFramework         Carbon)
+  find_library(cocoaFramework          Cocoa)
+  find_library(systemFramework         System)
+  find_library(webkitFramework         Webkit)
+  find_library(audioToolboxFramework   AudioToolbox)
+  find_library(openGLFramework         OpenGL)
+  find_library(coreFoundationFramework CoreFoundation)
+endif()
 
 #
 # external rules common to all platforms
@@ -332,11 +342,12 @@ if(NOT WIN32)
 set(LIBUSB libusb-1.0.21)
 set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
 set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
+set(LIBUSB_static TRUE)  # true for static lib, dynamic lib otherwise
 
 if(NOT EXISTS ${libusb_root})
   # untar the dependency
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${LIBUSB}.tar.bz2
+    COMMAND ${CMAKE_COMMAND} -E tar xf ${thirdparty_dir}/${LIBUSB}.tar.bz2
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
@@ -350,7 +361,6 @@ set(libUSB_SRC
   ${libusb_dir}/sync.c
   ${libusb_dir}/libusb.h
   ${libusb_dir}/libusbi.h
-
   )
 
 # platform dependent files
@@ -368,9 +378,11 @@ if(APPLE)
     ${libusb_dir}/os/threads_posix.c
 
     ${libusb_dir}/os/poll_posix.c
-   )
+  )
   set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1")
   set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
+  # need to build a dynamic libusb since the ZWO SDK requires libusb
+  set(LIBUSB_static FALSE)
 elseif(WIN32)
   set(libUSB_SRC ${libUSB_SRC}
 
@@ -395,7 +407,7 @@ elseif(UNIX)
   # libUSB is already an indirect requirement/dependency for phd2 (through libindi).
   # I (Raffi) personally prefer having the same version
   # for all platforms, but it should in theory always be better to link against existing libraries
-  # compiled ans shipped by skilled people.
+  # compiled and shipped by skilled people.
 
   # this would find the libUSB module that is installed on the system.
   # It requires "sudo apt-get install libusb-1.0-0-dev"
@@ -407,7 +419,7 @@ elseif(UNIX)
       include_directories(${USB_pkg_INCLUDE_DIRS})
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
       set(USB_build FALSE)
-      set(openphd_libusb ${USB_pkg_LIBRARIES})
+      set(usb_openphd ${USB_pkg_LIBRARIES})
       message(STATUS "Using system's libUSB.")
     endif()
   else(USE_SYSTEM_LIBUSB)
@@ -443,18 +455,33 @@ if(${USB_build})
   include_directories(${libusb_dir})
 
   # libUSB compilation if OSX or Win32 or not installed on Linux
-  add_library(openphd_libusb ${libUSB_SRC})
-  target_include_directories(openphd_libusb PRIVATE ${${LIBUSB}_additional_include_dir})
-  target_compile_definitions(openphd_libusb PUBLIC ${${LIBUSB}_additional_compile_definition})
-
-  if(NOT WIN32)
-    target_compile_definitions(openphd_libusb PRIVATE LIBUSB_DESCRIBE "")
+  if(LIBUSB_static)
+    add_library(usb_openphd ${libUSB_SRC})
   else()
-    # silencing the warnings on externals for win32
-    target_compile_definitions(openphd_libusb PRIVATE _CRT_SECURE_NO_WARNINGS)
+    add_library(usb_openphd SHARED ${libUSB_SRC})
+    # target_link_options requires newer cmake, so fall back to the old LINK_FLAGS target property
+    #   target_link_options(usb_openphd -compatibility_version 2 -current_version 2)
+    set_target_properties(usb_openphd PROPERTIES LINK_FLAGS "-compatibility_version 2 -current_version 2")
+    if(APPLE32)
+      set(libUSB_link_objc "objc")
+    endif()
+    target_link_libraries(usb_openphd
+      ${coreFoundationFramework}
+      ${iokitFramework}
+      ${libUSB_link_objc}
+    )
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} openphd_libusb)
-  set_property(TARGET openphd_libusb PROPERTY FOLDER "Thirdparty/")
+  target_include_directories(usb_openphd PRIVATE ${${LIBUSB}_additional_include_dir})
+  target_compile_definitions(usb_openphd PUBLIC ${${LIBUSB}_additional_compile_definition})
+  set_property(TARGET usb_openphd PROPERTY FOLDER "Thirdparty/")
+
+  if(WIN32)
+    # silence the warnings on externals for win32
+    target_compile_definitions(usb_openphd PRIVATE _CRT_SECURE_NO_WARNINGS)
+  else()
+    target_compile_definitions(usb_openphd PRIVATE LIBUSB_DESCRIBE "")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} usb_openphd)
 endif()
 
 endif() # NOT WIN32
@@ -1031,14 +1058,6 @@ endif()
 #
 #############################################
 if(APPLE)
-  find_library(quicktimeFramework QuickTime)
-  find_library(iokitFramework     IOKit)
-  find_library(carbonFramework    Carbon)
-  find_library(cocoaFramework     Cocoa)
-  find_library(systemFramework    System)
-  find_library(webkitFramework    Webkit)
-  find_library(audioToolboxFramework AudioToolbox)
-  find_library(openGLFramework    OpenGL)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
 
   find_path(CARBON_INCLUDE_DIR Carbon.h)
@@ -1055,6 +1074,7 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
   endif()
   include_directories(${sbigudFramework})
+  add_definitions(-DHAVE_SBIG_CAMERA=1)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sbigudFramework})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${sbigudFramework})
 
@@ -1088,7 +1108,9 @@ if(APPLE)
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
+  add_definitions(-DHAVE_ZWO_CAMERA=1)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
   find_library( qhylib
                 NAMES qhy
@@ -1096,6 +1118,7 @@ if(APPLE)
   if(NOT qhylib)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
+  add_definitions(-DHAVE_QHY_CAMERA=1)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
 
   if(APPLE32)
@@ -1123,6 +1146,8 @@ if(APPLE)
     set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
   endif()
 
+#  libDC does not seem to be used by anything, disabling it (2019/11/20 - remove in next release)
+if(0)
   #############################################
   # libDC
   #
@@ -1203,6 +1228,7 @@ if(APPLE)
   # the following line generated too many warnings. The macros are already defined in the config.h of this library
   # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
+endif()
 
 
 
@@ -1221,7 +1247,7 @@ if(APPLE)
   ### does not work on x64
   #find_library( openssag
   #              NAMES openssag
-  #              PATHS ${PHD_PROJECT_ROOT_DIR}/cameras	)
+  #              PATHS ${PHD_PROJECT_ROOT_DIR}/cameras )
   #if(NOT openssag)
   #  message(FATAL_ERROR "Cannot find the openssag drivers")
   #endif()
@@ -1238,9 +1264,9 @@ if(APPLE)
     ${libopenssag_dir}/openssag.h
     )
   add_library(OpenSSAG ${libOPENSSAG_SRC})
-  target_link_libraries(OpenSSAG openphd_libusb)
   target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
+  add_definitions(-DHAVE_OPENSSAG_CAMERA=1)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
 
 endif()  # APPLE
@@ -1349,8 +1375,8 @@ if(UNIX AND NOT APPLE)
       ${libopenssag_dir}/openssag.h
       )
     add_library(OpenSSAG ${libOPENSSAG_SRC})
-    target_link_libraries(OpenSSAG openphd_libusb)
     target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
+    add_definitions(-DHAVE_OPENSSAG_CAMERA=1)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
     set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
 
@@ -1362,6 +1388,35 @@ if(UNIX AND NOT APPLE)
 
 endif()
 
+#############################################
+# Starlight Xpress
+#############################################
+
+if(WIN32)
+  add_definitions(-DHAVE_SXV_CAMERA=1)
+elseif(UNIX OR APPLE)
+  add_definitions(-DHAVE_SXV_CAMERA=1)
+  set(SXV_PLATFORM_SRC
+      ${phd_src_dir}/cameras/SXMacLib.h
+      ${phd_src_dir}/cameras/SXMacLib.c)
+endif()
+
+
+#############################################
+# KwiqGuider
+#############################################
+
+if(APPLE)
+  add_definitions(-DHAVE_KWIQGUIDER_CAMERA=1)
+  include_directories(${phd_src_dir}/cam_KWIQGuider/)
+  set(KWIQGuider_PLATFORM_SRC
+    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
+    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.h
+    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_firmware.h
+    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_loader.cpp
+    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_priv.h
+  )
+endif()
 
 
 #############################################

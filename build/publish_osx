@@ -101,5 +101,5 @@ if [ -n "$do_release" ]; then
 fi
 
 if [ -n "$SCPFILES" ]; then
-    scp $SCPFILES $SCPDST/
+    scp -p $SCPFILES $SCPDST/
 fi

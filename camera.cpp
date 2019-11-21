@@ -135,7 +135,7 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_NebSBIG.h"
 #endif
 
-#if defined (FIREWIRE)
+#if defined (FIREWIRE_CAMERA)
 # include "cam_firewire.h"
 #endif
 
@@ -147,11 +147,11 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_ssag.h"
 #endif
 
-#if defined (OPENSSAG)
+#if defined (OPENSSAG_CAMERA)
 # include "cam_openssag.h"
 #endif
 
-#if defined (KWIQGUIDER)
+#if defined (KWIQGUIDER_CAMERA)
 # include "cam_KWIQGuider.h"
 #endif
 
@@ -272,10 +272,10 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (ORION_DSCI)
     CameraList.Add(_T("Orion StarShoot DSCI"));
 #endif
-#if defined (OPENSSAG)
+#if defined (OPENSSAG_CAMERA)
     CameraList.Add(_T("Orion StarShoot Autoguider"));
 #endif
-#if defined (KWIQGUIDER)
+#if defined (KWIQGUIDER_CAMERA)
     CameraList.Add(_T("KWIQGuider"));
 #endif
 #if defined (QGUIDE)
@@ -316,7 +316,7 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (SXV)
     CameraList.Add(_T("Starlight Xpress SXV"));
 #endif
-#if defined (FIREWIRE)
+#if defined (FIREWIRE_CAMERA)
     CameraList.Add(_T("The Imaging Source (DCAM Firewire)"));
 #endif
 #if defined (OPENCV_CAMERA)
@@ -452,13 +452,13 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice.Contains(_T("QHY 5")))
             pReturn = new CameraQHY5();
 #endif
-#if defined (OPENSSAG)
+#if defined (OPENSSAG_CAMERA)
         else if (choice.Contains(_T("Orion StarShoot Autoguider")))
             pReturn = new CameraOpenSSAG();
 #endif
-#if defined (KWIQGUIDER)
+#if defined (KWIQGUIDER_CAMERA)
         else if (choice.Contains(_T("KWIQGuider")))
-            pReturn = new CameraKWIQGuider();
+            pReturn = KWIQGuiderCameraFactory::MakeKWIQGuiderCamera();
 #endif
 #if defined (SSAG)
         else if (choice.Contains(_T("StarShoot Autoguider")))
@@ -542,7 +542,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice.Contains(_T("SBIG")))
             pReturn = SBIGCameraFactory::MakeSBIGCamera();
 #endif
-#if defined (FIREWIRE)
+#if defined (FIREWIRE_CAMERA)
         else if (choice.Contains(_T("The Imaging Source (DCAM Firewire)")))
             pReturn = new CameraFirewire();
 #endif
