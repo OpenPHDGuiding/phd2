@@ -854,7 +854,8 @@ CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, G
 }
 
 CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
-    : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+    : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap),
+      m_pUseSubframes(nullptr)
 {
     int textWidth = StringWidth(_T("0000"));
     assert(pCamera);
