@@ -1112,14 +1112,21 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
-  find_library( qhylib
-                NAMES qhy
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
+  if(APPLE32)
+    find_library( qhylib
+                  NAMES qhyccd
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
+  else()
+    find_library( qhylib
+                  NAMES qhyccd
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_64)
+  endif()
   if(NOT qhylib)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
   add_definitions(-DHAVE_QHY_CAMERA=1)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${qhylib})
 
   if(APPLE32)
     find_library( mallincamFramework
