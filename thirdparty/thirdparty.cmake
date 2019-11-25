@@ -1010,20 +1010,6 @@ endif()
 
 
 #############################################
-#
-# qhyccd specific dependencies
-#
-#############################################
-set(qhyccd_root ${thirdparties_deflate_directory}/qhyccdlibs)
-if(NOT EXISTS ${qhyccd_root})
-  # unzip the dependency
-  file(MAKE_DIRECTORY ${qhyccd_root})
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
-    WORKING_DIRECTORY ${qhyccd_root})
-endif()
-
-#############################################
 # SBIG specific dependencies if installed part of system
 #############################################
 if(SBIG_SYSTEM AND UNIX)

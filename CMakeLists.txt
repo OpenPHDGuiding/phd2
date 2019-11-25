@@ -671,7 +671,7 @@ if(APPLE)
     )
   endif()
 
-if(toupcam)
+  if(toupcam)
     set_source_files_properties(${toupcam} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
     # there's got to be a better way, but damfino. This works though.
     add_custom_command(
@@ -683,24 +683,13 @@ if(toupcam)
     )
   endif()
 
-  if(APPLE)
-    add_custom_command(
-      TARGET phd2
-      POST_BUILD
-      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
-      COMMAND cp libusb_openphd.dylib $<TARGET_FILE_DIR:phd2>/../Frameworks/
-      COMMAND install_name_tool -change @rpath/libusb_openphd.dylib
-                   @executable_path/../Frameworks/libusb_openphd.dylib $<TARGET_FILE:phd2>
-    )
-  endif()
-
-  # Bundling qhyfirmware
   add_custom_command(
     TARGET phd2
     POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware/
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${qhyccd_root}/ $<TARGET_FILE_DIR:phd2>/../Resources/qhyfirmware/
-    COMMENT "Bundling the qhyfirmware"
+    COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+    COMMAND cp libusb_openphd.dylib $<TARGET_FILE_DIR:phd2>/../Frameworks/
+    COMMAND install_name_tool -change @rpath/libusb_openphd.dylib
+                 @executable_path/../Frameworks/libusb_openphd.dylib $<TARGET_FILE:phd2>
   )
 
 elseif(WIN32)
