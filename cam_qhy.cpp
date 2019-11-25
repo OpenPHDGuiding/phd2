@@ -99,7 +99,7 @@ static bool QHYSDKInit()
         return true;
     }
 
-#if 0 // defined (__APPLE__)
+#if defined (__APPLE__)
     wxString fwpath = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
         + _T("qhyfirmware");
 
