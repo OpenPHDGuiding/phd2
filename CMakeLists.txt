@@ -601,6 +601,7 @@ if(APPLE)
         POST_BUILD
         # cannot use copy_directory as it kills the symlinks
         COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND rm -rf $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
         COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
       )
     endif()
@@ -611,6 +612,7 @@ if(APPLE)
         POST_BUILD
         # cannot use copy_directory as it kills the symlinks
         COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND rm -rf $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
         COMMAND cp -R ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
       )
     endif()
@@ -621,6 +623,7 @@ if(APPLE)
         POST_BUILD
         # cannot use copy_directory as it kills the symlinks
         COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+        COMMAND rm -rf $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
         COMMAND cp -R ${mallincamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${frameworkfn}
       )
     endif()
