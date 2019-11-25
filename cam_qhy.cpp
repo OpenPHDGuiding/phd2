@@ -77,10 +77,19 @@ public:
 
 static bool s_qhySdkInitDone = false;
 
+static wxString GetQHYSDKVersion()
+{
+    uint32_t YMDS[4] = {};
+    GetQHYCCDSDKVersion(&YMDS[0], &YMDS[1], &YMDS[2], &YMDS[3]);
+    return wxString::Format("V20%02d%02d%02d_%d", YMDS[0], YMDS[1], YMDS[2], YMDS[3]);
+}
+
 static bool QHYSDKInit()
 {
     if (s_qhySdkInitDone)
         return false;
+
+    Debug.Write(wxString::Format("QHYCCD: SDK Version %s\n", GetQHYSDKVersion()));
 
     uint32_t ret;
 
@@ -90,7 +99,7 @@ static bool QHYSDKInit()
         return true;
     }
 
-#if defined (__APPLE__)
+#if 0 // defined (__APPLE__)
     wxString fwpath = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
         + _T("qhyfirmware");
 
