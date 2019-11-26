@@ -25,7 +25,7 @@ system_profiler SPUSBDataType
 
 #if defined (_WIN32)
 #define QHYCCD_OPENCV_SUPPORT
-#define QHYCCD_PCIE_SUPPORT			1
+#define QHYCCD_PCIE_SUPPORT 0
 #define QHYCCD_WINPCAP_SUPPORT		0
 #define WINDOWS_PTHREAD_SUPPORT		1
 #define CYUSB_MODE_SUPPORT  		1

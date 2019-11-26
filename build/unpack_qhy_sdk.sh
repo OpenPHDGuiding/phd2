@@ -18,9 +18,14 @@ unpack_win () {
 
     sdk=$TMP/$(ls $TMP | head -1)
 
-    for f in qhyccd.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
-        cp "$sdk/include/$f" "$SRC"/cameras/
-    done
+    (
+        cd "$sdk"/include
+        sed -E 's/^#define QHYCCD_PCIE_SUPPORT[[:space:]]+1[[:space:]]*$/#define QHYCCD_PCIE_SUPPORT 0/' \
+            <config.h >qhyccd_config.h
+        for f in qhyccd.h qhyccd_config.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
+            sed -e s/config.h/qhyccd_config.h/ $f > "$SRC"/cameras/$f
+        done
+    )
 
     if [ -d "$sdk"/Windows ]; then
         # LZR's style packaging
@@ -35,6 +40,11 @@ unpack_win () {
         cp "$sdk"/qhyccd.dll "$SRC"/WinLibs/
         cp "$sdk"/tbb.dll "$SRC"/WinLibs/
         cp "$sdk"/lib/qhyccd.lib "$SRC"/Cameras/
+    elif [ -f "$sdk"/x86/qhyccd.dll ]; then
+        # MYQ's style packaging
+        cp "$sdk"/x86/qhyccd.dll "$SRC"/WinLibs/
+        cp "$sdk"/x86/tbb.dll "$SRC"/WinLibs/
+        cp "$sdk"/x86/qhyccd.lib "$SRC"/Cameras/
     fi
 }
 
@@ -43,12 +53,15 @@ unpack_mac () {
     dir=$2
 
     tar xfz $f
-    cd *
+
+    sdk=$TMP/$(ls $TMP | head -1)
+    cd $sdk
 
     (
         cd usr/local/include
-        mv config.h qhyccd_config.h
-        for f in *.h; do
+        sed -E 's/^#define QHYCCD_PCIE_SUPPORT[[:space:]]+1[[:space:]]*$/#define QHYCCD_PCIE_SUPPORT 0/' \
+            <config.h >qhyccd_config.h
+        for f in qhyccd.h qhyccd_config.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
             sed -e s/config.h/qhyccd_config.h/ $f > "$SRC"/cameras/$f
         done
     )
