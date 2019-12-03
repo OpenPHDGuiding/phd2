@@ -3,7 +3,7 @@
 *  Open PHD Guiding
 *
 *  Created by Andy Galasso.
-*  Copyright (c) 2015 Andy Galasso.
+*  Copyright (c) 2015-2019 Andy Galasso.
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -104,26 +104,23 @@ static bool QHYSDKInit()
     }
 
 #if defined (__APPLE__)
-    wxString fwpath = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
-        + _T("qhyfirmware");
-
-    const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(fwpath);
-    const char *temp = (const char *)tmp_buf;
-    size_t const len = strlen(temp) + 1;
-    char *destImgPath = new char[len];
-    memcpy(destImgPath, temp, len);
-
-    ret = OSXInitQHYCCDFirmware(destImgPath);
-    Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) returns %d\n", destImgPath, ret));
+    Debug.Write("QHY: call OSXInitQHYCCDFirmwareArray()\n");
+    ret = OSXInitQHYCCDFirmwareArray();
+    Debug.Write(wxString::Format("QHY: OSXInitQHYCCDFirmwareArray() returns %d\n", ret));
 
     if (ret == 0)
     {
-        // wait 5s for firmware download to complete
-        WorkerThread::MilliSleep(5000);
+        // firmware download succeeded, try scanning for cameras until they show up
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            int num_cams = ScanQHYCCD();
+            Debug.Write(wxString::Format("QHY: found %d cameras\n", num_cams));
+            if (num_cams > 0)
+                break;
+            WorkerThread::MilliSleep(500);
+        }
     }
     // non-zero result indicates camera already has firmware
-
-    delete[] destImgPath;
 #endif
 
     s_qhySdkInitDone = true;
@@ -364,10 +361,20 @@ bool Camera_QHY::Connect(const wxString& camId)
     return false;
 }
 
+static void StopCapture(qhyccd_handle *handle)
+{
+    uint32_t ret = CancelQHYCCDExposingAndReadout(handle);
+    if (ret != QHYCCD_SUCCESS)
+        Debug.Write(wxString::Format("QHY: CancelQHYCCDExposingAndReadout returns status %u\n", ret));
+}
+
 bool Camera_QHY::Disconnect()
 {
-    CancelQHYCCDExposingAndReadout(m_camhandle);  // for single frame mode use this to stop
+    StopCapture(m_camhandle);
+#if !defined(__APPLE__)
+    // this crashes on macOS, but seems to work ok without it
     CloseQHYCCD(m_camhandle);
+#endif
     m_camhandle = 0;
     Connected = false;
     delete[] RawBuffer;
@@ -392,13 +399,6 @@ bool Camera_QHY::ST4PulseGuideScope(int direction, int duration)
     ControlQHYCCDGuide(m_camhandle, qdir, static_cast<uint16_t>(duration));
     WorkerThread::MilliSleep(duration + 10);
     return false;
-}
-
-static bool StopExposure()
-{
-    Debug.AddLine("QHY5: cancel exposure");
-    // todo
-    return true;
 }
 
 inline static int round_down(int v, int m)
@@ -521,6 +521,11 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
+    if (WorkerThread::InterruptRequested())
+    {
+        StopCapture(m_camhandle);
+        return true;
+    }
     if (ret == QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY: 200ms delay needed\n"));
@@ -536,9 +541,16 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ret != QHYCCD_SUCCESS || (bpp != 8 && bpp != 16))
     {
         Debug.Write(wxString::Format("QHY get single frame ret %d bpp %u\n", ret, bpp));
+        StopCapture(m_camhandle);
         // users report that reconnecting the camera after this failure allows
         // them to resume guiding so we'll try to reconnect automatically
         DisconnectWithAlert(_("QHY get frame failed"), RECONNECT);
+        return true;
+    }
+
+    if (WorkerThread::InterruptRequested())
+    {
+        StopCapture(m_camhandle);
         return true;
     }
 

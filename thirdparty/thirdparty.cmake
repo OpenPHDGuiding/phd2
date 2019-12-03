@@ -1010,20 +1010,6 @@ endif()
 
 
 #############################################
-#
-# qhyccd specific dependencies
-#
-#############################################
-set(qhyccd_root ${thirdparties_deflate_directory}/qhyccdlibs)
-if(NOT EXISTS ${qhyccd_root})
-  # unzip the dependency
-  file(MAKE_DIRECTORY ${qhyccd_root})
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/cameras/qhyccdlibs/qhyfirmware.zip --format=zip
-    WORKING_DIRECTORY ${qhyccd_root})
-endif()
-
-#############################################
 # SBIG specific dependencies if installed part of system
 #############################################
 if(SBIG_SYSTEM AND UNIX)
@@ -1112,14 +1098,21 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
-  find_library( qhylib
-                NAMES qhy
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
+  if(APPLE32)
+    find_library( qhylib
+                  NAMES qhyccd
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
+  else()
+    find_library( qhylib
+                  NAMES qhyccd
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_64)
+  endif()
   if(NOT qhylib)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
   add_definitions(-DHAVE_QHY_CAMERA=1)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${qhylib})
 
   if(APPLE32)
     find_library( mallincamFramework
