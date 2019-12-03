@@ -3,7 +3,7 @@
 *  Open PHD Guiding
 *
 *  Created by Andy Galasso.
-*  Copyright (c) 2015 Andy Galasso.
+*  Copyright (c) 2015-2019 Andy Galasso.
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -79,9 +79,13 @@ static bool s_qhySdkInitDone = false;
 
 static wxString GetQHYSDKVersion()
 {
+#if defined (__APPLE__)
+    return "V7.4.16.4"; // FIXME - remove this when we update to the newer SDK that implements GetQHYCCDSDKVersion
+#else
     uint32_t YMDS[4] = {};
     GetQHYCCDSDKVersion(&YMDS[0], &YMDS[1], &YMDS[2], &YMDS[3]);
     return wxString::Format("V20%02d%02d%02d_%d", YMDS[0], YMDS[1], YMDS[2], YMDS[3]);
+#endif
 }
 
 static bool QHYSDKInit()
