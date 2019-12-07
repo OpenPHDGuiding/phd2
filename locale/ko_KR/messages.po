@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-10 04:35+0100\n"
+"POT-Creation-Date: 2019-12-07 05:19+0000\n"
 "PO-Revision-Date: 2018-05-12 20:06+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -55,13 +55,13 @@ msgid "Global"
 msgstr "전체"
 
 #: advanced_dialog.cpp:100 advanced_dialog.cpp:177 aui_controls.cpp:664
-#: cam_firewire_IC.cpp:115 config_indi.cpp:113 gear_dialog.cpp:249
-#: gear_dialog.cpp:251 gear_simulator.cpp:1736
+#: cam_firewire_IC.cpp:116 config_indi.cpp:113 gear_dialog.cpp:251
+#: gear_dialog.cpp:253 gear_simulator.cpp:1736
 msgid "Camera"
 msgstr "카메라"
 
 #: advanced_dialog.cpp:102 advanced_dialog.cpp:182 myframe.cpp:1622
-#: myframe.cpp:2163 scope_manual_pointing.cpp:66
+#: myframe.cpp:2174 scope_manual_pointing.cpp:66
 msgid "Guiding"
 msgstr "가이딩"
 
@@ -78,12 +78,12 @@ msgid "Advanced setup"
 msgstr "고급설정"
 
 #: advanced_dialog.cpp:224 guiding_assistant.cpp:505 myframe.cpp:1247
-#: profile_wizard.cpp:336
+#: profile_wizard.cpp:328
 msgid "Help"
 msgstr "도움말"
 
 #: advanced_dialog.cpp:384 aui_controls.cpp:673 calreview_dialog.cpp:93
-#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:270 gear_dialog.cpp:272
+#: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:272 gear_dialog.cpp:274
 #: gear_simulator.cpp:1748 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "마운트"
@@ -143,17 +143,17 @@ msgstr ""
 msgid "Calibrated, scope pointing info in use"
 msgstr ""
 
-#: aui_controls.cpp:681 config_indi.cpp:117 gear_dialog.cpp:283
-#: gear_dialog.cpp:285
+#: aui_controls.cpp:681 config_indi.cpp:117 gear_dialog.cpp:285
+#: gear_dialog.cpp:287
 msgid "Aux Mount"
 msgstr "Aux 마운트"
 
 #: aui_controls.cpp:691 calreview_dialog.cpp:101 config_indi.cpp:119
-#: eegg.cpp:126 gear_dialog.cpp:309 gear_dialog.cpp:311 testguide.cpp:161
+#: eegg.cpp:126 gear_dialog.cpp:311 gear_dialog.cpp:313 testguide.cpp:161
 msgid "AO"
 msgstr ""
 
-#: aui_controls.cpp:702 gear_dialog.cpp:320 gear_dialog.cpp:321
+#: aui_controls.cpp:702 gear_dialog.cpp:322 gear_dialog.cpp:323
 msgid "Rotator"
 msgstr "로테이터"
 
@@ -683,7 +683,7 @@ msgstr "적위교정, 도"
 msgid "Approximate declination where you will do calibration"
 msgstr "교정을 수행 할 대략적인 적위"
 
-#: calstep_dialog.cpp:162 camera.cpp:883 darks_dialog.cpp:206
+#: calstep_dialog.cpp:162 camera.cpp:884 darks_dialog.cpp:206
 #: gear_simulator.cpp:1830 mount.cpp:245 mount.cpp:297 Refine_DefMap.cpp:175
 #: starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
@@ -705,10 +705,10 @@ msgstr "이미지 스케일, 아크초/픽셀"
 msgid "Calibration step, ms"
 msgstr "교정 단계, 밀리초"
 
-#: calstep_dialog.cpp:196 camcal_import_dialog.cpp:47 camera.cpp:879
-#: configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:56
+#: calstep_dialog.cpp:196 camcal_import_dialog.cpp:47 camera.cpp:880
+#: configdialog.cpp:61 configdialog.cpp:231 darks_dialog.cpp:56
 #: gear_simulator.cpp:1642 guide_algorithm_gaussian_process.cpp:180
-#: myframe.cpp:3011 Refine_DefMap.cpp:59 starcross_test.cpp:52
+#: myframe.cpp:3037 Refine_DefMap.cpp:59 starcross_test.cpp:52
 msgid ": "
 msgstr ""
 
@@ -842,106 +842,106 @@ msgstr "Atik 카메라 연결 실패-Driver version %d"
 msgid "Couldn't start exposure - aborting"
 msgstr "노출을 시작할 수 없습니다- 중단합니다"
 
-#: cam_firewire_IC.cpp:94
+#: cam_firewire_IC.cpp:95
 msgid "Cannot initialize ImageCapture library"
 msgstr "ImageCapture 라이브러리를 초기화 할 수 없습니다"
 
-#: cam_firewire_IC.cpp:103
+#: cam_firewire_IC.cpp:104
 msgid "No camera found"
 msgstr "카메라를 찾지 못했습니다"
 
-#: cam_firewire_IC.cpp:115
+#: cam_firewire_IC.cpp:116
 msgid "Select Camera"
 msgstr "카메라 선택"
 
-#: cam_firewire_IC.cpp:124
+#: cam_firewire_IC.cpp:125
 msgid "Cannot open camera"
 msgstr "카메라를 열 수 없습니다"
 
-#: cam_firewire_IC.cpp:133
+#: cam_firewire_IC.cpp:134
 msgid "Cannot get list of video modes"
 msgstr "비디오 모드 목록을 가져올 수 없습니다"
 
-#: cam_firewire_IC.cpp:156
+#: cam_firewire_IC.cpp:157
 msgid "Cannot find a Y800 mode"
 msgstr "Y800 모드를 찾을 수 없습니다"
 
-#: cam_firewire_IC.cpp:171
+#: cam_firewire_IC.cpp:172
 msgid "Could not turn off auto-exposure"
 msgstr "자동 노출을 끌 수 없음"
 
-#: cam_firewire_IC.cpp:178
+#: cam_firewire_IC.cpp:179
 msgid "Cannot setup frame handler"
 msgstr "프레임 핸들러를 설정할 수 없음"
 
-#: cam_firewire_IC.cpp:188
+#: cam_firewire_IC.cpp:189
 msgid "FireWire camera setup failed"
 msgstr "FireWire 카메라 설정 실패"
 
-#: cam_firewire_IC.cpp:206
+#: cam_firewire_IC.cpp:207
 msgid "Could not start Live view"
 msgstr "라이브 뷰를 시작할 수 없습니다"
 
-#: cam_firewire_IC.cpp:218
+#: cam_firewire_IC.cpp:219
 msgid ""
 "Warning - cannot directly control exposure duration - running in auto-"
 "exposure"
 msgstr "경고- 노출 시간을 제어 할 수 없음- 자동 노출로 실행 중"
 
-#: cam_firewire_IC.cpp:248
+#: cam_firewire_IC.cpp:249
 #, c-format
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "TIS 카메라에 연결하는 %d 단계에서 치명적인 오류가 발생했습니다"
 
-#: cam_firewire_IC.cpp:287 cam_indi.cpp:715 cam_indi.cpp:747
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747
 #: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
 #: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
 #: image_math.cpp:545
 msgid "Memory allocation error"
 msgstr "메모리 할당 오류"
 
-#: cam_firewire_IC.cpp:299
+#: cam_firewire_IC.cpp:300
 msgid "Could not start video stream"
 msgstr "비디오 스트림을 시작할 수 없습니다"
 
-#: cam_firewire_IC.cpp:320
+#: cam_firewire_IC.cpp:321
 #, c-format
 msgid "Error capturing image: %d (%d) %s"
 msgstr "이미지 캡처 오류 : %d (%d) %s"
 
-#: cam_firewire_OSX.cpp:87
+#: cam_firewire_OSX.cpp:88
 msgid "Error looking for Firewire / IEEE1394 cameras (internal error)"
 msgstr "Firewire / IEEE1394 카메라 검색 중 오류 발생 (내부 오류)"
 
-#: cam_firewire_OSX.cpp:93
+#: cam_firewire_OSX.cpp:94
 msgid "Error looking for Firewire / IEEE1394 cameras"
 msgstr "Firewire / IEEE1394 카메라 검색 중 오류 발생"
 
-#: cam_firewire_OSX.cpp:96
+#: cam_firewire_OSX.cpp:97
 msgid "No Firewire / IEEE1394 camera found"
 msgstr "파이어 와이어 / IEEE1394 카메라 없음"
 
-#: cam_firewire_OSX.cpp:144
+#: cam_firewire_OSX.cpp:145
 msgid "Cannot find a suitable monochrome video mode"
 msgstr "적합한 흑백 비디오 모드를 찾을 수 없습니다"
 
-#: cam_firewire_OSX.cpp:149
+#: cam_firewire_OSX.cpp:150
 msgid "Cannot set frame rate to 7.5 FPS"
 msgstr "프레임 속도를 7.5 FPS로 설정할 수 없음"
 
-#: cam_firewire_OSX.cpp:161
+#: cam_firewire_OSX.cpp:162
 msgid "Cannot setup DMA buffers"
 msgstr "DMA 버퍼를 설정할 수 없음"
 
-#: cam_firewire_OSX.cpp:170
+#: cam_firewire_OSX.cpp:171
 msgid "Cannot start transmission"
 msgstr "전송을 시작할 수 없습니다"
 
-#: cam_firewire_OSX.cpp:181
+#: cam_firewire_OSX.cpp:182
 msgid "Transmission failed to start"
 msgstr "전송 실패"
 
-#: cam_firewire_OSX.cpp:350
+#: cam_firewire_OSX.cpp:351
 msgid "Cannot get a frame from the queue"
 msgstr "대기열에서 프레임을 가져올 수 없습니다"
 
@@ -1047,7 +1047,7 @@ msgstr "노출 지속 시간 설정 오류"
 msgid "Error setting gain"
 msgstr "게인 설정 오류"
 
-#: cam_KWIQGuider.cpp:68
+#: cam_KWIQGuider.cpp:82
 msgid "Could not connect to KWIQGuider"
 msgstr "KWIQGuider에 연결할 수 없습니다"
 
@@ -1071,9 +1071,9 @@ msgstr "직렬 포트가 없습니다"
 #: cam_sbig.cpp:319 cam_sbig.cpp:329 cam_sbig.cpp:352 cam_skyraider.cpp:150
 #: cam_skyraider.cpp:159 cam_wdm.cpp:132 cam_wdm.cpp:141 cam_wdm.cpp:179
 #: cam_wdm.cpp:257 cam_wdm.cpp:280 cam_wdm.cpp:286 cam_wdm.cpp:294
-#: cam_wdm.cpp:305 cam_zwo.cpp:277 gear_dialog.cpp:1346 gear_dialog.cpp:2054
-#: gear_dialog.cpp:2063 gear_dialog.cpp:2070 gear_dialog.cpp:2115
-#: gear_dialog.cpp:2121 scope_ascom.cpp:190 scope_ascom.cpp:210
+#: cam_wdm.cpp:305 cam_zwo.cpp:277 gear_dialog.cpp:1357 gear_dialog.cpp:2065
+#: gear_dialog.cpp:2074 gear_dialog.cpp:2081 gear_dialog.cpp:2126
+#: gear_dialog.cpp:2132 scope_ascom.cpp:190 scope_ascom.cpp:210
 #: scope_ascom.cpp:218 scope_ascom.cpp:227 scope_ascom.cpp:243
 #: scope_ascom.cpp:250 scope_ascom.cpp:338 scope_ascom.cpp:346
 #: scope_eqmac.cpp:135 scope_eqmac.cpp:139 scope_equinox.cpp:138
@@ -1156,55 +1156,55 @@ msgstr "노출을 시작할 수 없습니다"
 msgid "No camera"
 msgstr "카메라 없음"
 
-#: cam_qhy.cpp:205
+#: cam_qhy.cpp:215
 msgid "Failed to initialize QHY SDK"
 msgstr "QHY SDK를 초기화하지 못했습니다"
 
-#: cam_qhy.cpp:217
+#: cam_qhy.cpp:227
 msgid "No compatible QHY cameras found"
 msgstr "호환 가능한 QHY 카메라가 없습니다"
 
-#: cam_qhy.cpp:238
+#: cam_qhy.cpp:248
 msgid "Failed to connect to camera"
 msgstr "카메라에 연결하지 못했습니다"
 
-#: cam_qhy.cpp:248
+#: cam_qhy.cpp:258
 msgid "SetQHYCCDStreamMode failed"
 msgstr "SetQHYCCDStreamMode 실패"
 
-#: cam_qhy.cpp:256 cam_qhy.cpp:346
+#: cam_qhy.cpp:266 cam_qhy.cpp:356
 msgid "Init camera failed"
 msgstr "카메라 초기화 실패"
 
-#: cam_qhy.cpp:264
+#: cam_qhy.cpp:274
 msgid "Failed to get gain range"
 msgstr "게인 범위를 얻지 못했습니다"
 
-#: cam_qhy.cpp:274
+#: cam_qhy.cpp:284
 msgid "Failed to get camera chip info"
 msgstr "카메라 칩 정보를 얻지 못했습니다"
 
-#: cam_qhy.cpp:304
+#: cam_qhy.cpp:314
 msgid "Failed to get camera bin info"
 msgstr "카메라 비닝 정보를 얻지 못했습니다"
 
-#: cam_qhy.cpp:323
+#: cam_qhy.cpp:333
 msgid "Failed to set camera binning"
 msgstr "카메라 비닝 설정을 하지 못했습니다"
 
-#: cam_qhy.cpp:483
+#: cam_qhy.cpp:496
 msgid "Failed to set camera exposure"
 msgstr "카메라 노출 설정을 하지 못했습니다"
 
-#: cam_qhy.cpp:500
+#: cam_qhy.cpp:513
 msgid "Failed to set camera gain"
 msgstr "카메라 게인 설정을 하지 못했습니다"
 
-#: cam_qhy.cpp:508
+#: cam_qhy.cpp:521
 msgid "QHY exposure failed"
 msgstr "QHY 노출 실패"
 
-#: cam_qhy.cpp:528
+#: cam_qhy.cpp:547
 msgid "QHY get frame failed"
 msgstr "QHY 프레임 가져 오기 실패"
 
@@ -1524,15 +1524,15 @@ msgstr "사용하려는 다크 라이브러리가있는 프로파일을 선택:"
 #: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
 #: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
 #: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:239
-#: camera.cpp:390 gear_dialog.cpp:436 gear_dialog.cpp:440 gear_dialog.cpp:444
-#: gear_dialog.cpp:448 gear_dialog.cpp:452 gear_dialog.cpp:680
-#: gear_dialog.cpp:1055 gear_dialog.cpp:1810 gear_dialog.cpp:1811
-#: gear_dialog.cpp:1812 mount.cpp:125 mount.cpp:149 mount.cpp:826
-#: myframe.cpp:2837 profile_wizard.cpp:360 profile_wizard.cpp:361
-#: profile_wizard.cpp:546 profile_wizard.cpp:551 profile_wizard.cpp:558
-#: profile_wizard.cpp:712 profile_wizard.cpp:868 profile_wizard.cpp:883
-#: profile_wizard.cpp:914 profile_wizard.cpp:919 profile_wizard.cpp:944
-#: profile_wizard.cpp:958 rotator.cpp:49 rotator.cpp:84 scope.cpp:327
+#: camera.cpp:390 gear_dialog.cpp:438 gear_dialog.cpp:442 gear_dialog.cpp:446
+#: gear_dialog.cpp:450 gear_dialog.cpp:454 gear_dialog.cpp:687
+#: gear_dialog.cpp:1062 gear_dialog.cpp:1821 gear_dialog.cpp:1822
+#: gear_dialog.cpp:1823 mount.cpp:125 mount.cpp:149 mount.cpp:832
+#: myframe.cpp:2863 profile_wizard.cpp:352 profile_wizard.cpp:353
+#: profile_wizard.cpp:538 profile_wizard.cpp:543 profile_wizard.cpp:550
+#: profile_wizard.cpp:704 profile_wizard.cpp:860 profile_wizard.cpp:875
+#: profile_wizard.cpp:906 profile_wizard.cpp:911 profile_wizard.cpp:936
+#: profile_wizard.cpp:950 rotator.cpp:49 rotator.cpp:84 scope.cpp:327
 #: scope.cpp:369 scope.cpp:412 statswindow.cpp:262 stepguider.cpp:105
 #: stepguider.cpp:126
 msgid "None"
@@ -1576,7 +1576,7 @@ msgstr "확인"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:214 darks_dialog.cpp:370
 #: gear_simulator.cpp:1842 guiding_assistant.cpp:116 phdupdate.cpp:799
-#: profile_wizard.cpp:1226
+#: profile_wizard.cpp:1218
 msgid "Cancel"
 msgstr "취소"
 
@@ -1620,11 +1620,11 @@ msgstr ""
 msgid "Star Saturation Detection"
 msgstr "별 포화 감지"
 
-#: camera.cpp:866
+#: camera.cpp:867
 msgid "Use Subframes"
 msgstr "서브 프레임 사용"
 
-#: camera.cpp:867
+#: camera.cpp:868
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
@@ -1632,7 +1632,7 @@ msgstr ""
 "서브 프레임 (ROI) 만 다운로드하도록 선택하십시오. 서브 프레임 크기는 검색 영"
 "역 크기와 같습니다."
 
-#: camera.cpp:872
+#: camera.cpp:873
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
@@ -1640,15 +1640,15 @@ msgstr ""
 "가이드 카메라의 비닝 픽셀 크기(마이크론). 가이드 망원경 초점 거리와 함께 사용"
 "하여 가이드 오차를 아크 초 단위로 표시합니다."
 
-#: camera.cpp:873
+#: camera.cpp:874
 msgid "Pixel size"
 msgstr "픽셀 크기"
 
-#: camera.cpp:879
+#: camera.cpp:880
 msgid "Camera gain"
 msgstr "카메라 게인"
 
-#: camera.cpp:882
+#: camera.cpp:883
 #, no-c-format
 msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
@@ -1657,7 +1657,7 @@ msgstr ""
 "노이즈를 경험하거나 매우 밝은 별을 가이드하고 싶다면 카메라 게인 (기본값 = "
 "95 %)을 낮추세요. 모든 카메라에서 사용할 수있는 것은 아닙니다."
 
-#: camera.cpp:884
+#: camera.cpp:885
 msgid ""
 "Reset gain to camera's default value (disabled when camera is not connected)"
 msgstr ""
@@ -1741,20 +1741,20 @@ msgstr ""
 "카메라가 오랫동안 응답하지 않으면 카메라의 연결이 끊어집니다. 기본값인 %d초"
 "는 대부분의 카메라에 적합합니다."
 
-#: camera.cpp:1287
+#: camera.cpp:1284
 msgid "unspecified"
 msgstr "지정되지 않은"
 
-#: camera.cpp:1289
+#: camera.cpp:1286
 #, c-format
 msgid "%0.1f um"
 msgstr ""
 
-#: camera.cpp:1430
+#: camera.cpp:1427
 msgid "Memory allocation error during capture"
 msgstr "캡처 중 메모리 할당 오류"
 
-#: camera.cpp:1435
+#: camera.cpp:1432
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
@@ -1766,11 +1766,11 @@ msgstr ""
 "기 위해 연결이 끊어졌습니다. 하드웨어가 올바르게 작동한다고 생각되면 고급 설"
 "정 대화 상자의 카메라 탭에서 제한 시간을 늘릴 수 있습니다."
 
-#: camera.cpp:1457
+#: camera.cpp:1454
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr "PHD가 여러번 카메라를 다시 연결하려고 시도합니다."
 
-#: camera.cpp:1462
+#: camera.cpp:1459
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1920,10 +1920,10 @@ msgstr "포트"
 msgid "Disconnected"
 msgstr "연결 해제"
 
-#: config_indi.cpp:104 config_indi.cpp:228 gear_dialog.cpp:590
-#: gear_dialog.cpp:616 gear_dialog.cpp:632 gear_dialog.cpp:653
-#: gear_dialog.cpp:697 gear_dialog.cpp:718 gear_dialog.cpp:735
-#: gear_dialog.cpp:756 gear_dialog.cpp:773 gear_dialog.cpp:794 runinbg.h:85
+#: config_indi.cpp:104 config_indi.cpp:228 gear_dialog.cpp:597
+#: gear_dialog.cpp:623 gear_dialog.cpp:639 gear_dialog.cpp:660
+#: gear_dialog.cpp:704 gear_dialog.cpp:725 gear_dialog.cpp:742
+#: gear_dialog.cpp:763 gear_dialog.cpp:780 gear_dialog.cpp:801 runinbg.h:85
 #: runinbg.h:91 runinbg.h:97 runinbg.h:103
 msgid "Connect"
 msgstr "연결"
@@ -1989,9 +1989,9 @@ msgstr ""
 msgid "Connected"
 msgstr "연결"
 
-#: config_indi.cpp:200 gear_dialog.cpp:184 gear_dialog.cpp:607
-#: gear_dialog.cpp:645 gear_dialog.cpp:710 gear_dialog.cpp:747
-#: gear_dialog.cpp:785
+#: config_indi.cpp:200 gear_dialog.cpp:186 gear_dialog.cpp:614
+#: gear_dialog.cpp:652 gear_dialog.cpp:717 gear_dialog.cpp:754
+#: gear_dialog.cpp:792
 msgid "Disconnect"
 msgstr "연결 해제"
 
@@ -2465,11 +2465,11 @@ msgstr "가이딩 사용 안함 확인"
 msgid "Connect Equipment"
 msgstr "장비 연결"
 
-#: gear_dialog.cpp:211
+#: gear_dialog.cpp:213
 msgid "Equipment profile"
 msgstr "장비 프로파일"
 
-#: gear_dialog.cpp:213
+#: gear_dialog.cpp:215
 msgid ""
 "Select the Equipment Profile you would like to use. PHD stores all of your "
 "settings and equipment selections in an Equipment Profile. You can create "
@@ -2478,74 +2478,74 @@ msgstr ""
 "사용할 장비 프로파일을 선택하십시오. PHD는 모든 설정과 장비 선택을 장비 프로"
 "파일에 저장합니다. 여러 개의 프로파일을 만들고 앞뒤로 전환 할 수 있습니다."
 
-#: gear_dialog.cpp:219
+#: gear_dialog.cpp:221
 msgid "New using Wizard..."
 msgstr "마법사를 사용하여 새로 만들기..."
 
-#: gear_dialog.cpp:219
+#: gear_dialog.cpp:221
 msgid "Run the first-light wizard to create a new profile"
 msgstr "마법사를 실행하여 새 프로파일 만들기"
 
-#: gear_dialog.cpp:220
+#: gear_dialog.cpp:222
 msgid "New"
 msgstr "새로만들기"
 
-#: gear_dialog.cpp:220
+#: gear_dialog.cpp:222
 msgid "Create a new profile, optionally copying from another profile"
 msgstr "새 프로필 만들기, 선택적으로 다른 프로파일에서 복사"
 
-#: gear_dialog.cpp:221
+#: gear_dialog.cpp:223
 msgid "Delete"
 msgstr "지우기"
 
-#: gear_dialog.cpp:221
+#: gear_dialog.cpp:223
 msgid "Delete the selected profile"
 msgstr "선택된 프로파일 지우기"
 
-#: gear_dialog.cpp:222
+#: gear_dialog.cpp:224
 msgid "Rename"
 msgstr "이름 바꾸기"
 
-#: gear_dialog.cpp:222
+#: gear_dialog.cpp:224
 msgid "Rename the selected profile"
 msgstr "선택된 프로파일 이름 바꾸기"
 
-#: gear_dialog.cpp:223
+#: gear_dialog.cpp:225
 msgid "Import..."
 msgstr "거져오기..."
 
-#: gear_dialog.cpp:223
+#: gear_dialog.cpp:225
 msgid "Load a profile from a file"
 msgstr "파일에서 프로파일 가져 오기"
 
-#: gear_dialog.cpp:224
+#: gear_dialog.cpp:226
 msgid "Export..."
 msgstr "내보내기..."
 
-#: gear_dialog.cpp:224
+#: gear_dialog.cpp:226
 msgid "Save the selected profile to a file"
 msgstr "선택한 프로파일을 파일에 저장"
 
-#: gear_dialog.cpp:225
+#: gear_dialog.cpp:227
 msgid "Settings..."
 msgstr "설정..."
 
-#: gear_dialog.cpp:225
+#: gear_dialog.cpp:227
 msgid "Open the advanced settings dialog"
 msgstr "고급 설정 대화 상자 열기"
 
-#: gear_dialog.cpp:227
+#: gear_dialog.cpp:229
 msgid "Manage Profiles"
 msgstr "프로파일 관리"
 
-#: gear_dialog.cpp:228
+#: gear_dialog.cpp:230
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
 msgstr ""
 "새 장비 프로파일을 만들거나 선택한 장비 프로파일을 삭제하거나 이름을 바꿉니다"
 
-#: gear_dialog.cpp:239
+#: gear_dialog.cpp:241
 msgid ""
 "Select your equipment below and click Connect All to connect, or click "
 "Disconnect All to disconnect. You can also connect or disconnect individual "
@@ -2555,17 +2555,17 @@ msgstr ""
 "릭하여 연결을 끊습니다. 항목 옆의 버튼을 클릭하여 개별 장비 항목을 연결하거"
 "나 연결 해제 할 수도 있습니다."
 
-#: gear_dialog.cpp:260
+#: gear_dialog.cpp:262
 msgid ""
 "Select which camera to connect to when there are multiple cameras of the "
 "same type."
 msgstr "같은 종류의 카메라가 여러 대 있을 때 연결할 카메라를 선택하십시오."
 
-#: gear_dialog.cpp:264
+#: gear_dialog.cpp:266
 msgid "Camera Setup"
 msgstr "카메라 설정"
 
-#: gear_dialog.cpp:273
+#: gear_dialog.cpp:275
 msgid ""
 "Specify how guide commands will be sent to the mount - via an ASCOM or INDI "
 "driver, directly from the camera or AO, or via one of the GPxxx devices. An "
@@ -2575,11 +2575,11 @@ msgstr ""
 "통해 가이드 명령을 마운트에 전송하는 방법을 지정하십시오. ASCOM 연결이 권장됩"
 "니다."
 
-#: gear_dialog.cpp:277
+#: gear_dialog.cpp:279
 msgid "Mount Setup"
 msgstr "마운트 설정"
 
-#: gear_dialog.cpp:293
+#: gear_dialog.cpp:295
 #, c-format
 msgid ""
 "If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
@@ -2593,84 +2593,84 @@ msgstr ""
 "동 교정 조정을 수행하는 데 사용됩니다. '마운트'에 대한 %s 드라이버를 이미 선"
 "택했다면 'aux'마운트 매개 변수는 사용되지 않습니다."
 
-#: gear_dialog.cpp:300
+#: gear_dialog.cpp:302
 msgid "Aux Mount Setup"
 msgstr "Aux 마운트 설정"
 
-#: gear_dialog.cpp:314
+#: gear_dialog.cpp:316
 msgid "AO Setup"
 msgstr "AO 설정"
 
-#: gear_dialog.cpp:324
+#: gear_dialog.cpp:326
 msgid "Rotator Setup"
 msgstr "로테이터 설정"
 
-#: gear_dialog.cpp:332
+#: gear_dialog.cpp:334
 msgid "Connect All"
 msgstr "모두 연결"
 
-#: gear_dialog.cpp:333
+#: gear_dialog.cpp:335
 msgid "Connect all equipment and close the equipment selection window"
 msgstr "모든 장비를 연결하고 장비 선택 창을 닫습니다"
 
-#: gear_dialog.cpp:336
+#: gear_dialog.cpp:338
 msgid "Disconnect All"
 msgstr "모든 연결 해제"
 
-#: gear_dialog.cpp:337
+#: gear_dialog.cpp:339
 msgid "Disconnect all equipment"
 msgstr "모든 장비 연결 해제"
 
-#: gear_dialog.cpp:340 myframe.cpp:1242 polardrift_toolwin.cpp:205
+#: gear_dialog.cpp:342 myframe.cpp:1242 polardrift_toolwin.cpp:205
 #: staticpa_toolwin.cpp:425
 msgid "Close"
 msgstr "닫기"
 
-#: gear_dialog.cpp:592 gear_dialog.cpp:618
+#: gear_dialog.cpp:599 gear_dialog.cpp:625
 msgid "Connect to camera"
 msgstr "카메라 연결"
 
-#: gear_dialog.cpp:609
+#: gear_dialog.cpp:616
 msgid "Disconnect from camera"
 msgstr "카메라 연결 해제"
 
-#: gear_dialog.cpp:634 gear_dialog.cpp:655
+#: gear_dialog.cpp:641 gear_dialog.cpp:662
 msgid "Connect to mount"
 msgstr "마운트 연결"
 
-#: gear_dialog.cpp:647
+#: gear_dialog.cpp:654
 msgid "Disconnect from mount"
 msgstr "마운트 연결 해제"
 
-#: gear_dialog.cpp:699 gear_dialog.cpp:720
+#: gear_dialog.cpp:706 gear_dialog.cpp:727
 msgid "Connect to aux mount"
 msgstr "Aux 마운트 연결"
 
-#: gear_dialog.cpp:712
+#: gear_dialog.cpp:719
 msgid "Disconnect from aux mount"
 msgstr "Aux 마운트 연결 해제"
 
-#: gear_dialog.cpp:737 gear_dialog.cpp:758
+#: gear_dialog.cpp:744 gear_dialog.cpp:765
 msgid "Connect to AO"
 msgstr "AO 연결"
 
-#: gear_dialog.cpp:749
+#: gear_dialog.cpp:756
 msgid "Disconnect from AO"
 msgstr "AO 연결 해제"
 
-#: gear_dialog.cpp:775 gear_dialog.cpp:796
+#: gear_dialog.cpp:782 gear_dialog.cpp:803
 msgid "Connect to Rotator"
 msgstr "로테이터 연결"
 
-#: gear_dialog.cpp:787
+#: gear_dialog.cpp:794
 msgid "Disconnect from Rotator"
 msgstr "로테이터 연결 해제"
 
-#: gear_dialog.cpp:985
+#: gear_dialog.cpp:992
 msgid "No cameras found"
 msgstr "카메라가 없습니다"
 
-#: gear_dialog.cpp:1064
+#: gear_dialog.cpp:1071
 msgid ""
 "By changing cameras in this profile, you won't be able to use the existing "
 "dark library or bad-pixel maps. You should consider creating a new profile "
@@ -2680,127 +2680,127 @@ msgstr ""
 "는 사용할 수 없습니다. 이 설정을 위해 새 프로파일을 만드는 것을 고려해야합니"
 "다. 이 프로파일을 변경 하시겠습니까?"
 
-#: gear_dialog.cpp:1066
+#: gear_dialog.cpp:1073
 msgid "Camera Change Warning"
 msgstr "카메라 변경 경고"
 
-#: gear_dialog.cpp:1083
+#: gear_dialog.cpp:1090
 msgid "Connecting to Camera ..."
 msgstr "카메라에 연결 중..."
 
-#: gear_dialog.cpp:1149
+#: gear_dialog.cpp:1160
 msgid "Camera Connected"
 msgstr "카메라 연결됨"
 
-#: gear_dialog.cpp:1157
+#: gear_dialog.cpp:1168
 msgid "Camera Connect Failed"
 msgstr "카메라 연결 실패"
 
-#: gear_dialog.cpp:1204
+#: gear_dialog.cpp:1215
 msgid "Camera Disconnected"
 msgstr "카메라 연결 해제"
 
-#: gear_dialog.cpp:1334
+#: gear_dialog.cpp:1345
 msgid "Connecting to Mount ..."
 msgstr "마운트에 연결 중..."
 
-#: gear_dialog.cpp:1346
+#: gear_dialog.cpp:1357
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "마운트는 펄스가이드 인터페이스를 지원하지 않습니다"
 
-#: gear_dialog.cpp:1350
+#: gear_dialog.cpp:1361
 msgid "Mount Connected"
 msgstr "마운트 연결됨"
 
-#: gear_dialog.cpp:1363
+#: gear_dialog.cpp:1374
 msgid "Mount Connect Failed"
 msgstr "마운트 연결 실패"
 
-#: gear_dialog.cpp:1385
+#: gear_dialog.cpp:1396
 msgid "Connecting to Aux Mount ..."
 msgstr "Aux 마운트에 연결 중..."
 
-#: gear_dialog.cpp:1394
+#: gear_dialog.cpp:1405
 msgid "Aux Mount Connected"
 msgstr "Aux 마운트 연결됨"
 
-#: gear_dialog.cpp:1402
+#: gear_dialog.cpp:1413
 msgid "Aux Mount Connect Failed"
 msgstr "Aux 마운트 연결 실패"
 
-#: gear_dialog.cpp:1426
+#: gear_dialog.cpp:1437
 msgid "Mount Disconnected"
 msgstr "마운트 연결 해제"
 
-#: gear_dialog.cpp:1459
+#: gear_dialog.cpp:1470
 msgid "Aux Mount Disconnected"
 msgstr "Aux 마운트 연결 해제"
 
-#: gear_dialog.cpp:1475
+#: gear_dialog.cpp:1486
 msgid "Hide"
 msgstr "숨김"
 
-#: gear_dialog.cpp:1481
+#: gear_dialog.cpp:1492
 msgid "More Equipment ..."
 msgstr "더 많은 장비..."
 
-#: gear_dialog.cpp:1548
+#: gear_dialog.cpp:1559
 msgid "Connecting to AO ..."
 msgstr "AO에 연결 중..."
 
-#: gear_dialog.cpp:1557
+#: gear_dialog.cpp:1568
 msgid "Centering AO ..."
 msgstr "AO 센터링..."
 
-#: gear_dialog.cpp:1567
+#: gear_dialog.cpp:1578
 msgid "AO Connected"
 msgstr "AO 연결됨"
 
-#: gear_dialog.cpp:1580
+#: gear_dialog.cpp:1591
 msgid "AO Connect Failed"
 msgstr "AO 연결 실패"
 
-#: gear_dialog.cpp:1611
+#: gear_dialog.cpp:1622
 msgid "AO Disconnected"
 msgstr "AO 연결 해제"
 
-#: gear_dialog.cpp:1682
+#: gear_dialog.cpp:1693
 msgid "Connecting to Rotator ..."
 msgstr "로테이터에 연결 중..."
 
-#: gear_dialog.cpp:1694
+#: gear_dialog.cpp:1705
 msgid "Rotator Connected"
 msgstr "로테이터에 연결 됨"
 
-#: gear_dialog.cpp:1707
+#: gear_dialog.cpp:1718
 msgid "Rotator Connect Failed"
 msgstr "로테이터에 연결 실패"
 
-#: gear_dialog.cpp:1732
+#: gear_dialog.cpp:1743
 msgid "Rotator Disconnected"
 msgstr "로테이터에 연결 해제"
 
-#: gear_dialog.cpp:2009
+#: gear_dialog.cpp:2020
 msgid "New Equipment Profile"
 msgstr "새 장비 프로파일"
 
-#: gear_dialog.cpp:2016
+#: gear_dialog.cpp:2027
 msgid "Name"
 msgstr "이름"
 
-#: gear_dialog.cpp:2020
+#: gear_dialog.cpp:2031
 msgid "Enter the name of the new equipment profile"
 msgstr "새 장비 프로파일의 이름을 입력하십시오"
 
-#: gear_dialog.cpp:2024
+#: gear_dialog.cpp:2035
 msgid "PHD Defaults"
 msgstr "PHD 기본값"
 
-#: gear_dialog.cpp:2027
+#: gear_dialog.cpp:2038
 msgid "Profile initial settings"
 msgstr "프로파일 초기 설정"
 
-#: gear_dialog.cpp:2030
+#: gear_dialog.cpp:2041
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2808,49 +2808,49 @@ msgstr ""
 "기본 PHD 설정으로 프로파일을 생성하려면 PHD 기본값을 선택하고, 기존 장비 프로"
 "파일을 선택하여 새 프로파일에 설정을 복사하십시오."
 
-#: gear_dialog.cpp:2054
+#: gear_dialog.cpp:2065
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr ""
 "프로파일 %s을 만들 수 없습니다. 이미 그 이름을 가진 프로파일이 있습니다"
 
-#: gear_dialog.cpp:2063
+#: gear_dialog.cpp:2074
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "프로파일 %s로 부터 프로파일 %s을 만들 수 없습니다"
 
-#: gear_dialog.cpp:2070 profile_wizard.cpp:818
+#: gear_dialog.cpp:2081 profile_wizard.cpp:810
 #, c-format
 msgid "Could not create profile %s"
 msgstr "프로파일 %s을 만들 수 없습니다"
 
-#: gear_dialog.cpp:2086
+#: gear_dialog.cpp:2097
 #, c-format
 msgid "Delete profile %s?"
 msgstr "프로파일 %s을 삭제 하시겠습니까?"
 
-#: gear_dialog.cpp:2086
+#: gear_dialog.cpp:2097
 msgid "Delete Equipment Profile"
 msgstr "장비 프로파일 삭제"
 
-#: gear_dialog.cpp:2105
+#: gear_dialog.cpp:2116
 #, c-format
 msgid "Rename %s"
 msgstr "%s 이름 변경"
 
-#: gear_dialog.cpp:2105
+#: gear_dialog.cpp:2116
 msgid "Rename Equipment Profile"
 msgstr "장비 프로파일 이름 변경"
 
-#: gear_dialog.cpp:2121
+#: gear_dialog.cpp:2132
 msgid "Could not rename profile"
 msgstr "프로파일 이름을 바꿀 수 없습니다"
 
-#: gear_dialog.cpp:2135
+#: gear_dialog.cpp:2146
 msgid "Import PHD Equipment Profiles"
 msgstr "PHD 장비 프로파일 가져 오기"
 
-#: gear_dialog.cpp:2168
+#: gear_dialog.cpp:2179
 msgid "Export PHD Equipment Profile"
 msgstr "PHD 장비 프로파일 내보내기"
 
@@ -3076,29 +3076,29 @@ msgstr "모든 값을 응용 프로그램 기본값으로 재설정"
 msgid "Side of pier: %s"
 msgstr ""
 
-#: graph-stepguider.cpp:47 myframe.cpp:344 myframe.cpp:414
+#: graph-stepguider.cpp:86 myframe.cpp:344 myframe.cpp:414
 msgid "AO Position"
 msgstr "AO 위치"
 
-#: graph-stepguider.cpp:62 target.cpp:66
+#: graph-stepguider.cpp:101 target.cpp:66
 msgid "Select the number of frames of history to display"
 msgstr "표시 할 기록의 프레임 수를 선택하십시오"
 
-#: graph-stepguider.cpp:65 graph.cpp:130 staticpa_toolwin.cpp:422
+#: graph-stepguider.cpp:104 graph.cpp:130 staticpa_toolwin.cpp:422
 #: statswindow.cpp:134 target.cpp:79
 msgid "Clear"
 msgstr "지우기"
 
-#: graph-stepguider.cpp:66 target.cpp:80
+#: graph-stepguider.cpp:105 target.cpp:80
 msgid "Clear graph data"
 msgstr "그래프 데이터 지우기"
 
-#: graph-stepguider.cpp:165
+#: graph-stepguider.cpp:208
 #, c-format
 msgid "%.1f Hz"
 msgstr ""
 
-#: graph-stepguider.cpp:258
+#: graph-stepguider.cpp:303
 msgid "AO not connected"
 msgstr "AO 연결되지 않음"
 
@@ -3714,7 +3714,7 @@ msgstr ""
 msgid "star lost"
 msgstr "별이 사라짐"
 
-#: guider.cpp:1349 myframe.cpp:1832
+#: guider.cpp:1349 myframe.cpp:1843
 msgid "Paused"
 msgstr "일시중지"
 
@@ -4193,8 +4193,8 @@ msgstr ""
 msgid "Apply"
 msgstr "적용"
 
-#: guiding_assistant.cpp:1276 guiding_assistant.cpp:1904 myframe.cpp:2954
-#: myframe.cpp:2964
+#: guiding_assistant.cpp:1276 guiding_assistant.cpp:1904 myframe.cpp:2980
+#: myframe.cpp:2990
 msgid " "
 msgstr ""
 
@@ -4332,7 +4332,7 @@ msgstr ""
 "현재 PHD2의 최신 주요 릴리스 버전이 있습니다. %s에 최신 개발 버전이 있을 수 "
 "있습니다"
 
-#: htmlmsgbox.cpp:38 myframe.cpp:2908 phdupdate.cpp:943 phdupdate.cpp:949
+#: htmlmsgbox.cpp:38 myframe.cpp:2934 phdupdate.cpp:943 phdupdate.cpp:949
 msgid "Software Update"
 msgstr "소프트웨어 업데이트"
 
@@ -4439,12 +4439,12 @@ msgstr "디버그 로그"
 msgid "Recent uploads"
 msgstr "최근 업로드"
 
-#: log_uploader.cpp:635 profile_wizard.cpp:333
+#: log_uploader.cpp:635 profile_wizard.cpp:325
 msgid "< Back"
 msgstr "<뒤로"
 
-#: log_uploader.cpp:638 log_uploader.cpp:1237 profile_wizard.cpp:338
-#: profile_wizard.cpp:699
+#: log_uploader.cpp:638 log_uploader.cpp:1237 profile_wizard.cpp:330
+#: profile_wizard.cpp:691
 msgid "Next >"
 msgstr "다음>"
 
@@ -4651,20 +4651,20 @@ msgstr ""
 "가이딩을 위해 이 설정을 유지하십시오. 모든 마운트 가이드 명령을 비활성화하고 "
 "마운트가 가이드되지 않은 상태로 실행되도록하려면 선택을 취소하십시오"
 
-#: mount.cpp:883
+#: mount.cpp:889
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "교정: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:1166
+#: mount.cpp:1172
 msgid "RA:"
 msgstr "적경:"
 
-#: mount.cpp:1171
+#: mount.cpp:1177
 msgid "DEC:"
 msgstr "적위:"
 
-#: mount.cpp:1215
+#: mount.cpp:1221
 msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
@@ -4672,26 +4672,24 @@ msgstr ""
 "마운트 가이드 속도가 마지막 교정에서 사용된 것과 다릅니다. 새로운 교정을하거"
 "나 마운트 가이드 속도 설정을 이전 값으로 재설정하십시오. "
 
-#: mount.cpp:1225
+#: mount.cpp:1231
 msgid ""
 "Current calibration did not have side-of-pier information, so PHD2 can't "
 "automatically correct for meridian flips. You should do a fresh calibration "
 "to correct this problem."
 msgstr ""
 
-#: mount.cpp:1234
+#: mount.cpp:1241
 msgid ""
-"Camera pixel size has changed unexpectedly.  Re-calibrate to restore correct "
-"guiding."
+"Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
+"to restore correct guiding."
 msgstr ""
-"카메라 픽셀 크기가 예기치 않게 변경되었습니다. 올바른 지침을 복원하려면 다시 "
-"교정하십시오."
 
-#: mount.cpp:1270
+#: mount.cpp:1289
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr "교정이 적도에서 너무 멀면 재 교정이 필요합니다."
 
-#: mount.cpp:1305
+#: mount.cpp:1324
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "로테이터 위치가 변경되면 재 교정이 필요합니다."
 
@@ -5257,23 +5255,23 @@ msgid ""
 " again"
 msgstr "다시 표시하지 않음"
 
-#: myframe.cpp:1624 myframe.cpp:1876
+#: myframe.cpp:1624 myframe.cpp:1887
 msgid "Looping"
 msgstr "루핑"
 
-#: myframe.cpp:1742
+#: myframe.cpp:1743
 msgid "Capturing single exposure"
 msgstr "단일 노출 캡처"
 
-#: myframe.cpp:1800
+#: myframe.cpp:1811
 msgid "Waiting for devices..."
 msgstr "장비 대기중..."
 
-#: myframe.cpp:1846
+#: myframe.cpp:1857
 msgid "Resumed"
 msgstr "재개됨"
 
-#: myframe.cpp:1894
+#: myframe.cpp:1905
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
@@ -5281,29 +5279,29 @@ msgstr ""
 "불량 화소지도를 개선하는 동안 가이드 할 수 없습니다. 불량화소 지도 수정 창을 "
 "닫으십시오."
 
-#: myframe.cpp:2006
+#: myframe.cpp:2017
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr ""
 
-#: myframe.cpp:2054
+#: myframe.cpp:2065
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "캡쳐가 활성화되어있는 동안 종료 하시겠습니까?"
 
-#: myframe.cpp:2055
+#: myframe.cpp:2066
 msgid "Confirm Exit"
 msgstr "종료 확인"
 
-#: myframe.cpp:2327 usImage.cpp:431
+#: myframe.cpp:2338 usImage.cpp:431
 msgid "FITS file is not of an image: "
 msgstr "FITS 파일이 이미지가 아닙니다: "
 
-#: myframe.cpp:2335 usImage.cpp:443
+#: myframe.cpp:2346 usImage.cpp:443
 msgid "Unsupported type or read error loading FITS file "
 msgstr ""
 "FITS 파일을로드하는 중에 지원되지 않는 유형 또는 읽기 오류가 발생했습니다 "
 
-#: myframe.cpp:2345
+#: myframe.cpp:2356
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
@@ -5311,26 +5309,26 @@ msgstr ""
 "기존의 다크 라이브러리에는 호환되지 않는 형식의 프레임이 있습니다. 다크 라이"
 "브러리를 처음부터 다시 작성하십시오."
 
-#: myframe.cpp:2356
+#: myframe.cpp:2367
 msgid "Memory allocation error reading FITS file "
 msgstr "FITS 파일을 읽는 중 메모리 할당 오류가 발생했습니다 "
 
-#: myframe.cpp:2363
+#: myframe.cpp:2374
 msgid "Error reading data from "
 msgstr "데이터를 읽는 중에 오류가 발생했습니다 "
 
-#: myframe.cpp:2392 usImage.cpp:487
+#: myframe.cpp:2403 usImage.cpp:487
 msgid "Error opening FITS file "
 msgstr "FITS 파일을 여는 중 오류가 발생했습니다 "
 
-#: myframe.cpp:2456
+#: myframe.cpp:2467
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
 msgstr ""
 "다크 라이브러리가 이 프로파일의 카메라와 일치하지 않습니다. 교체해야합니다."
 
-#: myframe.cpp:2502
+#: myframe.cpp:2513
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
@@ -5338,46 +5336,44 @@ msgstr ""
 "다크 라이브러리 및 불량화소 지도는 현재 카메라와 호환되지 않습니다. 둘 다 교"
 "체해야합니다"
 
-#: myframe.cpp:2533
+#: myframe.cpp:2544
 msgid "You must connect a camera before loading dark frames"
 msgstr "다크 프레임을 로드하기 전에 카메라를 연결해야합니다"
 
-#: myframe.cpp:2540
+#: myframe.cpp:2551
 msgid "Darks not loaded"
 msgstr "다크 로드되지 않음"
 
-#: myframe.cpp:2547
+#: myframe.cpp:2558
 msgid "Darks loaded"
 msgstr "다크 로드됨"
 
-#: myframe.cpp:2560
+#: myframe.cpp:2571
 msgid "Error saving darks FITS file "
 msgstr "FITS 파일을 저장하는 동안 오류가 발생했습니다 "
 
-#: myframe.cpp:2758
+#: myframe.cpp:2784
 msgid ""
-"Guiding parameters have been reset because the camera binning changed. You "
-"should use separate profiles for different binning values."
+"Guiding parameters have been reset because the binning or pixel size changed "
+"unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
-"카메라 비닝이 변경 되었기 때문에 가이드 매개 변수가 재설정되었습니다. 다른 비"
-"닝값에 대해 별도의 프로파일을 사용해야합니다."
 
-#: myframe.cpp:2768
+#: myframe.cpp:2794
 msgid "Global Settings"
 msgstr "전체 설정"
 
-#: myframe.cpp:2815
+#: myframe.cpp:2841
 #, c-format
 msgid ""
 "Enter a focal length in millimeters, between %.f and %.f,\n"
 "or enter 0 if the focal length is not known"
 msgstr ""
 
-#: myframe.cpp:2830
+#: myframe.cpp:2856
 msgid "Reset Configuration"
 msgstr "구정 재설정"
 
-#: myframe.cpp:2831
+#: myframe.cpp:2857
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
@@ -5385,37 +5381,37 @@ msgstr ""
 "모든 구성 및 프로그램 설정을 새로 설치 상태로 재설정하십시오. PHD2를 다시 시"
 "작해야합니다"
 
-#: myframe.cpp:2832
+#: myframe.cpp:2858
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "\"다시 표시하지 않음\" 메시지 다시 설정"
 
-#: myframe.cpp:2833
+#: myframe.cpp:2859
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr "\"다시 표시하지 않음\"을 선택했을 때 숨겨진 메시지를 복원하십시오."
 
-#: myframe.cpp:2837
+#: myframe.cpp:2863
 msgid "2x2 mean"
 msgstr "2x2 평균"
 
-#: myframe.cpp:2837
+#: myframe.cpp:2863
 msgid "3x3 median"
 msgstr "3x3 중간값"
 
-#: myframe.cpp:2844
+#: myframe.cpp:2870
 msgid "Noise Reduction"
 msgstr "노이즈 감소"
 
-#: myframe.cpp:2845
+#: myframe.cpp:2871
 msgid "Technique to reduce noise in images"
 msgstr "이미지 노이즈 감소 기술"
 
-#: myframe.cpp:2851
+#: myframe.cpp:2877
 msgid "Time Lapse (ms)"
 msgstr "시간 경과 (밀리 초)"
 
-#: myframe.cpp:2852
+#: myframe.cpp:2878
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -5425,11 +5421,11 @@ msgstr ""
 "출 (예 : 비디오 카메라 사용)을 사용할 때 유용하지만 가이드 명령을 덜 자주 전"
 "송하려는 경우"
 
-#: myframe.cpp:2859
+#: myframe.cpp:2885
 msgid "Focal length (mm)"
 msgstr "초점 거리 (mm)"
 
-#: myframe.cpp:2860
+#: myframe.cpp:2886
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -5437,77 +5433,77 @@ msgstr ""
 "가이드 망원경 초점 거리, 가이드 오류를 아크초로 표시하기 위해 카메라 픽셀 크"
 "기와 함께 사용됩니다."
 
-#: myframe.cpp:2866 myframe.cpp:2898
+#: myframe.cpp:2892 myframe.cpp:2924
 msgid "System default"
 msgstr "시스템 기본값"
 
-#: myframe.cpp:2881
+#: myframe.cpp:2907
 msgid "Language-Name"
 msgstr "언어 이름"
 
-#: myframe.cpp:2902
+#: myframe.cpp:2928
 msgid "Language"
 msgstr "언어"
 
-#: myframe.cpp:2903
+#: myframe.cpp:2929
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s 언어. 적용하려면 PHD를 다시 시작해야합니다."
 
-#: myframe.cpp:2909
+#: myframe.cpp:2935
 msgid "Automatically check for updates"
 msgstr "자동 업데이트 확인"
 
-#: myframe.cpp:2910
+#: myframe.cpp:2936
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr "PHD2가 시작될 때 소프트웨어 업데이트 확인 (권장)"
 
-#: myframe.cpp:2912
+#: myframe.cpp:2938
 msgid "Only check for major releases"
 msgstr "주요 출시 만 확인"
 
-#: myframe.cpp:2913
+#: myframe.cpp:2939
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr "업데이트 확인시 사소한 (개발) 릴리스 무시"
 
-#: myframe.cpp:2920
+#: myframe.cpp:2946
 msgid "Log File Location"
 msgstr "로그 파일 위치"
 
-#: myframe.cpp:2923
+#: myframe.cpp:2949
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "가이드 및 디버그 로그를위한 폴더; 빈 문자열을 사용하여 기본 위치 복원"
 
-#: myframe.cpp:2924
+#: myframe.cpp:2950
 msgid "Browse..."
 msgstr "찾기..."
 
-#: myframe.cpp:2937
+#: myframe.cpp:2963
 msgid "Enable diagnostic image logging"
 msgstr "진단 이미지 로깅 사용"
 
-#: myframe.cpp:2938
+#: myframe.cpp:2964
 msgid "Save guider images based on options below"
 msgstr "아래의 옵션에 따라 가이드 이미지 저장"
 
-#: myframe.cpp:2941
+#: myframe.cpp:2967
 msgid "Save Guider Images"
 msgstr "가이드 이미지 저장"
 
-#: myframe.cpp:2944
+#: myframe.cpp:2970
 msgid "For all lost-star frames"
 msgstr "모든 잃어버린 별 프레임"
 
-#: myframe.cpp:2945
+#: myframe.cpp:2971
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr "잃어버린 별 이벤트가 발생할 때마다 가이드 이미지 저장"
 
-#: myframe.cpp:2947
+#: myframe.cpp:2973
 msgid "For all Auto-select Star frames"
 msgstr "모든 자동 선택 별"
 
-#: myframe.cpp:2948
+#: myframe.cpp:2974
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
@@ -5515,11 +5511,11 @@ msgstr ""
 "별 자동 선택이 이루어지면 가이드 이미지를 저장하십시오. 참고 :이 설정에 관계"
 "없이 별 자동 선택에 실패하면 이미지가 항상 저장됩니다."
 
-#: myframe.cpp:2951
+#: myframe.cpp:2977
 msgid "When relative error exceeds"
 msgstr "상대 오차가 초과하면"
 
-#: myframe.cpp:2952
+#: myframe.cpp:2978
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
@@ -5529,18 +5525,18 @@ msgstr ""
 "오. 예를 들어 평균 (RMS) 오류가 0.5 픽셀이고 현재 프레임의 오류가 1.5 픽셀이"
 "면 상대 오류는 3입니다"
 
-#: myframe.cpp:2956
+#: myframe.cpp:2982
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr ""
 "상대 오류 임계 값. 상대 오차는 현재 프레임의 오차와 평균 오차의 비율입니다"
 
-#: myframe.cpp:2961
+#: myframe.cpp:2987
 msgid "When absolute error exceeds (pixels)"
 msgstr "절대 오차가 초과하면 (픽셀)"
 
-#: myframe.cpp:2962
+#: myframe.cpp:2988
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
@@ -5548,69 +5544,69 @@ msgstr ""
 "가이드 별과 잠금 위치 사이의 거리가 많은 픽셀을 초과하면 가이드 이미지를 저장"
 "하십시오"
 
-#: myframe.cpp:2966
+#: myframe.cpp:2992
 msgid "Absolute error threshold in pixels"
 msgstr "픽셀 단위의 절대 오류 임계값"
 
-#: myframe.cpp:2971
+#: myframe.cpp:2997
 msgid "Until this count is reached"
 msgstr "이 횟수에 도달 할 때까지"
 
-#: myframe.cpp:2972
+#: myframe.cpp:2998
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr "지정된 수의 이미지가 저장 될 때까지 각 가이드 이미지를 저장하십시오"
 
-#: myframe.cpp:2974
+#: myframe.cpp:3000
 msgid "Number of images to save"
 msgstr "저장할 이미지 수"
 
-#: myframe.cpp:2989
+#: myframe.cpp:3015
 msgid "Dither Settings"
 msgstr "디더 설정"
 
-#: myframe.cpp:2990
+#: myframe.cpp:3016
 msgid "Random"
 msgstr "랜덤"
 
-#: myframe.cpp:2991
+#: myframe.cpp:3017
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "각 디더 명령은 잠금 위치를 각 축에서 임의의 거리만큼 이동시킵니다"
 
-#: myframe.cpp:2992
+#: myframe.cpp:3018
 msgid "Spiral"
 msgstr "나선"
 
-#: myframe.cpp:2993
+#: myframe.cpp:3019
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "각 디더 명령은 나선형 경로를 따라 잠금 위치를 이동합니다"
 
-#: myframe.cpp:2995
+#: myframe.cpp:3021
 msgid "Mode: "
 msgstr "모드: "
 
-#: myframe.cpp:3000
+#: myframe.cpp:3026
 msgid "RA only"
 msgstr ""
 
-#: myframe.cpp:3001
+#: myframe.cpp:3027
 msgid "Constrain dither to RA only"
 msgstr "적경에만 디더를 제한하십시오"
 
-#: myframe.cpp:3007
+#: myframe.cpp:3033
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "디더 명령의 스케일링. 기본값 = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:3011 testguide.cpp:119
+#: myframe.cpp:3037 testguide.cpp:119
 msgid "Scale"
 msgstr "스케일"
 
-#: myframe.cpp:3018 profile_wizard.cpp:322
+#: myframe.cpp:3044 profile_wizard.cpp:314
 msgid "Auto restore calibration"
 msgstr "자동 복원 교정"
 
-#: myframe.cpp:3019
+#: myframe.cpp:3045
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
@@ -5618,35 +5614,35 @@ msgstr ""
 "이 장비 프로파일의 경우 기기가 연결된 후 마지막으로 성공적으로 교정 한 데이터"
 "를 자동으로 복원합니다."
 
-#: myframe.cpp:3036 scope.cpp:1925
+#: myframe.cpp:3062 scope.cpp:1925
 msgid "Min"
 msgstr "최소"
 
-#: myframe.cpp:3036
+#: myframe.cpp:3062
 msgid "Auto exposure minimum duration"
 msgstr "자동 노출 최소 지속 시간"
 
-#: myframe.cpp:3037 scope.cpp:1927
+#: myframe.cpp:3063 scope.cpp:1927
 msgid "Max"
 msgstr "최대"
 
-#: myframe.cpp:3037
+#: myframe.cpp:3063
 msgid "Auto exposure maximum duration"
 msgstr "자동 노출 최대 지속 시간"
 
-#: myframe.cpp:3038
+#: myframe.cpp:3064
 msgid "Target SNR"
 msgstr "목표 SNR"
 
-#: myframe.cpp:3038
+#: myframe.cpp:3064
 msgid "Auto exposure target SNR value"
 msgstr "자동 노출 목표 SNR 값"
 
-#: myframe.cpp:3039
+#: myframe.cpp:3065
 msgid "Auto Exposure"
 msgstr "자동 노출"
 
-#: myframe.cpp:3123
+#: myframe.cpp:3149
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
@@ -5654,11 +5650,11 @@ msgstr ""
 "이렇게하면 모든 PHD2 구성 값이 재설정되고 프로그램이 다시 시작됩니다. 확실합"
 "니까?"
 
-#: myframe.cpp:3123
+#: myframe.cpp:3149
 msgid "Confirmation"
 msgstr "확인"
 
-#: myframe.cpp:3148
+#: myframe.cpp:3178
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
@@ -5666,7 +5662,7 @@ msgstr ""
 "언어 변경 사항을 적용하려면 PHD2를 다시 시작해야합니다. \n"
 "PHD2를 지금 재시작 하시겠습니까?"
 
-#: myframe.cpp:3149
+#: myframe.cpp:3179
 msgid "Restart PHD2"
 msgstr "PHD2 다시 시작"
 
@@ -5722,7 +5718,7 @@ msgstr ""
 msgid "Instructions"
 msgstr "절차"
 
-#: myframe_events.cpp:194 profile_wizard.cpp:620
+#: myframe_events.cpp:194 profile_wizard.cpp:612
 msgid "Introduction"
 msgstr "소개"
 
@@ -5897,11 +5893,11 @@ msgstr ""
 "있으며 새 구성에 대한 기본 가이드 매개 변수를 설정합니다. \n"
 "지금 설치 마법사를 사용 하시겠습니까?"
 
-#: myframe_events.cpp:1169 profile_wizard.cpp:1222
+#: myframe_events.cpp:1169 profile_wizard.cpp:1214
 msgid "Yes"
 msgstr "예"
 
-#: myframe_events.cpp:1169 profile_wizard.cpp:1224
+#: myframe_events.cpp:1169 profile_wizard.cpp:1216
 msgid "No"
 msgstr "아니오"
 
@@ -6377,15 +6373,15 @@ msgstr "새 프로파일 마법사"
 msgid "New Profile Wizard - "
 msgstr "새 프로파일 마법사- "
 
-#: profile_wizard.cpp:228
+#: profile_wizard.cpp:220
 msgid "More Info"
 msgstr "더 많은 정보"
 
-#: profile_wizard.cpp:242
+#: profile_wizard.cpp:234
 msgid "Gear"
 msgstr "장비"
 
-#: profile_wizard.cpp:254
+#: profile_wizard.cpp:246
 msgid ""
 "Get this value from your camera documentation or from an online source.  You "
 "can use the up/down control or type in a value directly. If the pixels "
@@ -6395,12 +6391,12 @@ msgstr ""
 "용하거나 값을 직접 입력 할 수 있습니다. 픽셀이 정사각형이 아닌 경우 X /Y 치"
 "수 중 더 큰 치수를 입력하면됩니다."
 
-#: profile_wizard.cpp:256
+#: profile_wizard.cpp:248
 #, c-format
 msgid "Guide camera un-binned pixel size (%s)"
 msgstr ""
 
-#: profile_wizard.cpp:262
+#: profile_wizard.cpp:254
 msgid ""
 "If your camera supports binning (many do not), you can choose a binning "
 "value > 1.  With long focal length guide scopes and OAGs, binning can allow "
@@ -6408,11 +6404,11 @@ msgid ""
 "binning at 1."
 msgstr ""
 
-#: profile_wizard.cpp:267
+#: profile_wizard.cpp:259
 msgid "Binning level"
 msgstr "비닝 수준"
 
-#: profile_wizard.cpp:277
+#: profile_wizard.cpp:269
 msgid ""
 "This is the focal length of the guide scope - or the imaging scope if you "
 "are using an off-axis-guider or an adaptive optics device.  You can use the "
@@ -6421,20 +6417,20 @@ msgstr ""
 "이것은 OAG 또는 AO를 사용하는 경우 가이드 망원경 또는 이미징 망원경의 초점 거"
 "리입니다. 위/아래 컨트롤을 사용하거나 값을 직접 입력 할 수 있습니다."
 
-#: profile_wizard.cpp:280
+#: profile_wizard.cpp:272
 msgid "Guide scope focal length (mm)"
 msgstr "가이드 망원경 초점 거리 (mm)"
 
-#: profile_wizard.cpp:288 profile_wizard.cpp:1121
+#: profile_wizard.cpp:280 profile_wizard.cpp:1113
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr ""
 
-#: profile_wizard.cpp:289
+#: profile_wizard.cpp:281
 msgid "The pixel scale of your guide configuration, arc-seconds per pixel"
 msgstr ""
 
-#: profile_wizard.cpp:302
+#: profile_wizard.cpp:294
 #, c-format
 msgid ""
 "The mount guide speed you will use for calibration and guiding, expressed as "
@@ -6446,26 +6442,26 @@ msgstr ""
 "다. 모르는 경우 설정을 기본값 (%0.1fX)으로두면 대부분의 경우 성공적인 교정이 "
 "이루어집니다"
 
-#: profile_wizard.cpp:305
+#: profile_wizard.cpp:297
 msgid "Mount guide speed (n.n x sidereal)"
 msgstr "마운트 가이드 속도(n.n x 항성속도)"
 
-#: profile_wizard.cpp:307
+#: profile_wizard.cpp:299
 msgid "Declination axis has high-precision encoder (a few high-end mounts)"
 msgstr ""
 
-#: profile_wizard.cpp:308
+#: profile_wizard.cpp:300
 msgid ""
 "Mount has high-precision encoders on both axes with little or no Dec "
 "backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end "
 "mounts"
 msgstr ""
 
-#: profile_wizard.cpp:319
+#: profile_wizard.cpp:311
 msgid "Build dark library"
 msgstr "다크 라이브러리 만들기"
 
-#: profile_wizard.cpp:321
+#: profile_wizard.cpp:313
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
@@ -6473,7 +6469,7 @@ msgstr ""
 "이 프로파일에 대한 다크 라이브러리를 작성하는 프로세스를 자동으로 시작하려면"
 "이 옵션을 선택하십시오."
 
-#: profile_wizard.cpp:324
+#: profile_wizard.cpp:316
 msgid ""
 "Check this to automatically re-use the last calibration when the profile is "
 "loaded. For this to work, the rotational orientation of the guide camera and "
@@ -6481,19 +6477,19 @@ msgid ""
 "between imaging sessions."
 msgstr ""
 
-#: profile_wizard.cpp:326
+#: profile_wizard.cpp:318
 msgid "Profile Name"
 msgstr "프로파일 이름"
 
-#: profile_wizard.cpp:334
+#: profile_wizard.cpp:326
 msgid "Back up to the previous screen"
 msgstr "이전 화면으로 돌아 가기"
 
-#: profile_wizard.cpp:339 profile_wizard.cpp:700
+#: profile_wizard.cpp:331 profile_wizard.cpp:692
 msgid "Move forward to next screen"
 msgstr "다음 화면으로 이동"
 
-#: profile_wizard.cpp:387
+#: profile_wizard.cpp:379
 msgid ""
 "This short sequence of steps will help you identify the equipment you want "
 "to use for guiding and will associate it with a profile name of your choice. "
@@ -6506,7 +6502,7 @@ msgid ""
 "dialog has finished."
 msgstr ""
 
-#: profile_wizard.cpp:394
+#: profile_wizard.cpp:386
 msgid ""
 "Select your guide camera from the list.  All cameras supported by PHD2 and "
 "all installed ASCOM cameras are shown. If your camera is not shown, it is "
@@ -6524,7 +6520,7 @@ msgstr ""
 "를 선택하면 즉시 연결하여 픽셀 크기를 자동으로 얻을 수있는 옵션이 제공됩니"
 "다. 카메라에서 비닝을 ​​지원하는 경우 비닝 수준을 선택할 수도 있습니다."
 
-#: profile_wizard.cpp:401
+#: profile_wizard.cpp:393
 #, c-format
 msgid ""
 "Select your mount interface from the list.  This determines how PHD2 will "
@@ -6545,11 +6541,11 @@ msgstr ""
 "드 속도를 모르는 경우 %0.1fx의 기본값을 사용할 수 있습니다. 마운트를 선택하"
 "면 보통 PHD2가 가이드 속도를 읽을 수 있도록 즉시 마운트 옵션이 제공됩니다."
 
-#: profile_wizard.cpp:408 profile_wizard.cpp:650
+#: profile_wizard.cpp:400 profile_wizard.cpp:642
 msgid "Simulator"
 msgstr ""
 
-#: profile_wizard.cpp:410
+#: profile_wizard.cpp:402
 msgid ""
 "The 'simulator' camera/mount interface doesn't provide pointing information, "
 "so PHD2 will not be able to automatically adjust guiding for side-of-pier "
@@ -6557,7 +6553,7 @@ msgid ""
 "connection that does provide pointing information."
 msgstr ""
 
-#: profile_wizard.cpp:416
+#: profile_wizard.cpp:408
 msgid ""
 "The mount interface you chose in the previous step doesn't provide pointing "
 "information, so PHD2 will not be able to automatically adjust guiding for "
@@ -6572,7 +6568,7 @@ msgstr ""
 "다. Aux 마운트 인터페이스는 해당 용도로만 사용되며 가이드 명령을 전송하는 용"
 "도로는 사용되지 않습니다."
 
-#: profile_wizard.cpp:422
+#: profile_wizard.cpp:414
 msgid ""
 "If you have an adaptive optics (AO) device, you can select it here.  The AO "
 "device will be used for high speed, small guiding corrections, while the "
@@ -6583,7 +6579,7 @@ msgstr ""
 "정에 사용되며 이전에 선택한 마운트 인터페이스는 더 큰 ( '범프') 교정에 사용됩"
 "니다. 두 인터페이스의 교정은 자동으로 처리됩니다."
 
-#: profile_wizard.cpp:426
+#: profile_wizard.cpp:418
 msgid ""
 "Your profile is complete and ready to save.  Give it a name and, optionally, "
 "build a dark-frame library for it. This is strongly recommended for best "
@@ -6593,11 +6589,11 @@ msgid ""
 "for assistance."
 msgstr ""
 
-#: profile_wizard.cpp:470
+#: profile_wizard.cpp:462
 msgid "Questionable Configuration Choice"
 msgstr ""
 
-#: profile_wizard.cpp:476
+#: profile_wizard.cpp:468
 msgid ""
 "This configuration doesn't provide PHD2 with any information about the "
 "scope's pointing position.  This means you will need to recalibrate\n"
@@ -6608,82 +6604,82 @@ msgid ""
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
 
-#: profile_wizard.cpp:482
+#: profile_wizard.cpp:474
 msgid "Go Back"
 msgstr ""
 
-#: profile_wizard.cpp:484
+#: profile_wizard.cpp:476
 msgid "Proceed"
 msgstr ""
 
-#: profile_wizard.cpp:486
+#: profile_wizard.cpp:478
 msgid "Don't Ask"
 msgstr ""
 
-#: profile_wizard.cpp:548
+#: profile_wizard.cpp:540
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
 msgstr ""
 "카메라 유형, 가이드의 초점 길이 및 가이드 카메라 픽셀 크기를 지정하십시오"
 
-#: profile_wizard.cpp:553
+#: profile_wizard.cpp:545
 msgid "Please select a mount type to handle guider commands"
 msgstr "가이드 명령을 처리 할 마운트 유형을 선택하십시오"
 
-#: profile_wizard.cpp:582
+#: profile_wizard.cpp:574
 msgid "Please specify a name for the profile."
 msgstr "프로파일의 이름을 지정하십시오."
 
-#: profile_wizard.cpp:586
+#: profile_wizard.cpp:578
 msgid ""
 "There is already a profile with that name. Please choose a different name."
 msgstr "해당 이름의 프로파일이 이미 있습니다. 다른 이름을 선택하십시오."
 
-#: profile_wizard.cpp:627
+#: profile_wizard.cpp:619
 msgid "Welcome to the PHD2 'first light' wizard"
 msgstr "PHD2 마법사에 오신 것을 환영합니다"
 
-#: profile_wizard.cpp:632
+#: profile_wizard.cpp:624
 msgid "Choose a Guide Camera"
 msgstr "가이드 카메라 선택"
 
-#: profile_wizard.cpp:634
+#: profile_wizard.cpp:626
 msgid "Guide Camera:"
 msgstr "가이드 카메라:"
 
-#: profile_wizard.cpp:646
+#: profile_wizard.cpp:638
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
 msgstr ""
 
-#: profile_wizard.cpp:654
+#: profile_wizard.cpp:646
 msgid "On-camera"
 msgstr ""
 
-#: profile_wizard.cpp:660
+#: profile_wizard.cpp:652
 msgid "Choose a Mount Connection"
 msgstr "마운트 연결 선택"
 
-#: profile_wizard.cpp:662
+#: profile_wizard.cpp:654
 msgid "Mount:"
 msgstr "마운트:"
 
-#: profile_wizard.cpp:669
+#: profile_wizard.cpp:661
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
 msgstr "마운트 연결 선택- 가이드 신호를 전송하는 방법을 결정합니다"
 
-#: profile_wizard.cpp:680
+#: profile_wizard.cpp:672
 msgid "Choose an Auxiliary Mount Connection (optional)"
 msgstr "Aux 마운트 연결 선택 (선택 사항)"
 
-#: profile_wizard.cpp:681
+#: profile_wizard.cpp:673
 msgid "Aux Mount:"
 msgstr "Aux 마운트:"
 
-#: profile_wizard.cpp:685
+#: profile_wizard.cpp:677
 msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
@@ -6691,31 +6687,31 @@ msgstr ""
 "기본 마운트 연결이 포인팅 위치를보고하지 않기 때문에 'Aux 마운트'연결을 선택"
 "할 수 있습니다"
 
-#: profile_wizard.cpp:689
+#: profile_wizard.cpp:681
 msgid "Choose an Adaptive Optics Device (optional)"
 msgstr "AO 선택 (선택 사항)"
 
-#: profile_wizard.cpp:690
+#: profile_wizard.cpp:682
 msgid "AO:"
 msgstr ""
 
-#: profile_wizard.cpp:694
+#: profile_wizard.cpp:686
 msgid "Specify your adaptive optics device if desired"
 msgstr "원하는 경우 AO를 지정하십시오"
 
-#: profile_wizard.cpp:705
+#: profile_wizard.cpp:697
 msgid "Finish Creating Your New Profile"
 msgstr "새 프로파일 작성 완료"
 
-#: profile_wizard.cpp:708
+#: profile_wizard.cpp:700
 msgid "Finish"
 msgstr "완료"
 
-#: profile_wizard.cpp:709
+#: profile_wizard.cpp:701
 msgid "Finish creating the equipment profile"
 msgstr "장비 프로파일 작성 완료"
 
-#: profile_wizard.cpp:711
+#: profile_wizard.cpp:703
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
@@ -6723,7 +6719,7 @@ msgstr ""
 "프로파일의 이름을 입력하고 필요에 따라 다크 라이브러리를 작성하는 프로세스를 "
 "시작하십시오"
 
-#: profile_wizard.cpp:765
+#: profile_wizard.cpp:757
 msgid ""
 "PHD2 could not connect to the camera so you may want to deal with that "
 "later. In the meantime, you can just enter the pixel-size manually along "
@@ -6732,16 +6728,16 @@ msgstr ""
 "PHD2를 카메라에 연결할 수 없으므로 나중에 처리 할 수 ​​있습니다. 그 동안 초점 "
 "거리와 비닝 레벨과 함께 수동으로 픽셀 크기를 입력 할 수 있습니다."
 
-#: profile_wizard.cpp:944
+#: profile_wizard.cpp:936
 msgid "Ask"
 msgstr "질문"
 
-#: profile_wizard.cpp:974
+#: profile_wizard.cpp:966
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "가이드 속도 설정이 %0.1f에서 %0.1fx로 조정되었습니다"
 
-#: profile_wizard.cpp:997
+#: profile_wizard.cpp:989
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -6749,11 +6745,11 @@ msgstr ""
 "이 카메라 드라이버는 픽셀 크기를보고하지 않으므로 수동으로 값을 입력해야합니"
 "다"
 
-#: profile_wizard.cpp:1048
+#: profile_wizard.cpp:1040
 msgid "Connecting to mount..."
 msgstr "마운트에 연결 중..."
 
-#: profile_wizard.cpp:1054
+#: profile_wizard.cpp:1046
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6765,7 +6761,7 @@ msgstr ""
 "설정을 알고 있으면 수동으로 입력 할 수 있습니다. 그렇지 않으면 %0.1fx의 기본"
 "값으로두면됩니다"
 
-#: profile_wizard.cpp:1067
+#: profile_wizard.cpp:1059
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6776,21 +6772,21 @@ msgstr ""
 "도 설정을 알고있는 경우 수동으로 입력 할 수 있습니다. 그렇지 않으면 %0.1fx의 "
 "기본값으로두면됩니다"
 
-#: profile_wizard.cpp:1131
+#: profile_wizard.cpp:1123
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
 
-#: profile_wizard.cpp:1138
+#: profile_wizard.cpp:1130
 msgid "Low pixel scale"
 msgstr ""
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1171
 msgid "Ask About Connection"
 msgstr "연결에 대해 묻기"
 
-#: profile_wizard.cpp:1192
+#: profile_wizard.cpp:1184
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6802,11 +6798,11 @@ msgstr ""
 "픽셀 크기를보고하지 않으면 카메라 설명서 또는 온라인상의 정보를 사용하여 직"
 "접 값을 입력 할 수 있습니다. "
 
-#: profile_wizard.cpp:1195
+#: profile_wizard.cpp:1187
 msgid "Camera Already Connected?"
 msgstr "카메라가 이미 연결되어 있습니까?"
 
-#: profile_wizard.cpp:1199
+#: profile_wizard.cpp:1191
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6819,11 +6815,11 @@ msgstr ""
 "입력 할 수 있습니다. 그것이 무엇인지 모르는 경우 기본값을 %0.1fx로 그대로 두"
 "십시오."
 
-#: profile_wizard.cpp:1202
+#: profile_wizard.cpp:1194
 msgid "Mount Already Connected?"
 msgstr "마운트는 이미 연결되어 있습니까?"
 
-#: profile_wizard.cpp:1206
+#: profile_wizard.cpp:1198
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6838,7 +6834,7 @@ msgstr ""
 "그대로 두십시오. 이전 페이지의 가이드 속도가 마운트에서 읽은 속도와 일치하지 "
 "않으면 마운트 값이 사용됩니다."
 
-#: profile_wizard.cpp:1210
+#: profile_wizard.cpp:1202
 msgid "Aux-mount Already Connected?"
 msgstr "Aux 마운트가 이미 연결 되었습니까?"
 
@@ -8053,7 +8049,7 @@ msgstr ""
 msgid "%s, %s"
 msgstr ""
 
-#: stepguider.cpp:1108
+#: stepguider.cpp:1115
 msgid ""
 "A mount \"bump\" was needed to bring the AO back to its center position,\n"
 "but the bump did not complete in a reasonable amount of time.\n"
@@ -8063,23 +8059,23 @@ msgstr ""
 "했지만 합리적인 시간 내에 범프가 완료되지 않았습니다. \n"
 "AO Bump Step 설정을 늘려야합니다."
 
-#: stepguider.cpp:1365
+#: stepguider.cpp:1376
 msgid "AO Guide Algorithms"
 msgstr "AO 가이드 알고리즘"
 
-#: stepguider.cpp:1387
+#: stepguider.cpp:1398
 msgid "AO Settings"
 msgstr "AO 설정"
 
-#: stepguider.cpp:1422
+#: stepguider.cpp:1433
 msgid "AO Travel"
 msgstr "AO 이동"
 
-#: stepguider.cpp:1423
+#: stepguider.cpp:1434
 msgid "Maximum number of steps the AO can move in each direction"
 msgstr "AO가 각 방향으로 이동할 수있는 최대 단계 수"
 
-#: stepguider.cpp:1426
+#: stepguider.cpp:1437
 #, c-format
 msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
@@ -8088,11 +8084,11 @@ msgstr ""
 "교정 사이클 당 몇 단계 씩 발급되어야합니다. 기본값 = %d, 짧은 초점거리의 망원"
 "경에서는 증가하고 더 긴 초점거리의 망원경에서는 감소합니다"
 
-#: stepguider.cpp:1432
+#: stepguider.cpp:1443
 msgid "Cal steps"
 msgstr "교정 단계"
 
-#: stepguider.cpp:1436
+#: stepguider.cpp:1447
 #, c-format
 msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
@@ -8101,11 +8097,11 @@ msgstr ""
 "교정 할 때, 얼마나 많은 샘플을 평균화해야합니까. 기본값 = %d, 보기에 더 안 좋"
 "고 이미지 크기가 작을 때 증가합니다"
 
-#: stepguider.cpp:1441
+#: stepguider.cpp:1452
 msgid "Samples to average"
 msgstr "평균 샘플"
 
-#: stepguider.cpp:1445
+#: stepguider.cpp:1456
 #, c-format
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
@@ -8113,11 +8109,11 @@ msgid ""
 msgstr ""
 "AO 이동의 몇 퍼센트가 마운트에 bumping 전에 사용될 수 있습니다. 기본값 = %d"
 
-#: stepguider.cpp:1450
+#: stepguider.cpp:1461
 msgid "Bump percentage"
 msgstr "Bump 비율"
 
-#: stepguider.cpp:1454
+#: stepguider.cpp:1465
 #, c-format
 msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
@@ -8126,33 +8122,33 @@ msgstr ""
 "마운트 범프가 이미지 사이의 마운트를 얼마나 멀리 움직여야합니까? (AO 단계). "
 "기본값 = %.2f, 마운트 범프가 그래프에 스파이크를 일으키는 경우 감소"
 
-#: stepguider.cpp:1460
+#: stepguider.cpp:1471
 msgid "Bump steps"
 msgstr "Bump 단계"
 
-#: stepguider.cpp:1462
+#: stepguider.cpp:1473
 msgid "Bump on dither"
 msgstr ""
 
-#: stepguider.cpp:1463
+#: stepguider.cpp:1474
 msgid "Bump the mount to return the AO to center at each dither"
 msgstr "AO를 각 디더의 중심으로 되돌리려면 마운트를 Bump ㅎ십시오"
 
-#: stepguider.cpp:1465
+#: stepguider.cpp:1476
 msgid "Clear AO calibration"
 msgstr "AO 교정 지우기"
 
-#: stepguider.cpp:1468
+#: stepguider.cpp:1479
 msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr "현재 AO 교정 데이터 지우기- 가이드가 시작되면 교정이 다시 수행됩니다"
 
-#: stepguider.cpp:1469
+#: stepguider.cpp:1480
 msgid "Enable AO corrections"
 msgstr "AO 교정 사용"
 
-#: stepguider.cpp:1471
+#: stepguider.cpp:1482
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
@@ -8379,6 +8375,20 @@ msgstr "카메라에 연결 중..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "로테이터에 연결 중..."
+
+#~ msgid ""
+#~ "Camera pixel size has changed unexpectedly.  Re-calibrate to restore "
+#~ "correct guiding."
+#~ msgstr ""
+#~ "카메라 픽셀 크기가 예기치 않게 변경되었습니다. 올바른 지침을 복원하려면 다"
+#~ "시 교정하십시오."
+
+#~ msgid ""
+#~ "Guiding parameters have been reset because the camera binning changed. "
+#~ "You should use separate profiles for different binning values."
+#~ msgstr ""
+#~ "카메라 비닝이 변경 되었기 때문에 가이드 매개 변수가 재설정되었습니다. 다"
+#~ "른 비닝값에 대해 별도의 프로파일을 사용해야합니다."
 
 #~ msgid ""
 #~ "This short sequence of steps will help you identify the equipment you "
