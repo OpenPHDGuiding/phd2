@@ -620,6 +620,11 @@ bool CameraASCOM::Connect(const wxString& camId)
         }
         m_canGetCoolerPower = vRes.boolVal != VARIANT_FALSE ? true : false;
     }
+    else
+    {
+        Debug.AddLine(ExcepMsg("CoolerOn", driver.Excep()));
+        Debug.Write("ASCOM camera: CoolerOn threw exception => no cooler present\n");
+    }
 
     // Get the dispids we'll need for more routine things
 
