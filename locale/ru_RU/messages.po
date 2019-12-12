@@ -129,21 +129,21 @@ msgstr "Откалибровано"
 
 #: aui_controls.cpp:607
 msgid "Calibrated, scope pointing information not available"
-msgstr ""
+msgstr "Откалибровано, координаты наведения недоступны"
 
 #: aui_controls.cpp:613
 msgid "Calibrated, declination compensation disabled"
-msgstr ""
+msgstr "Откалибровано, компенсация склонения отключена"
 
 #: aui_controls.cpp:619
 msgid ""
 "Calibrated, but a new calibration is required to activate declination "
 "compensation"
-msgstr ""
+msgstr "Откалибровано, но для компенсации склонения нужна новая калибровка"
 
 #: aui_controls.cpp:623
 msgid "Calibrated, scope pointing info in use"
-msgstr ""
+msgstr "Откалибровано, используются координаты наведения"
 
 #: aui_controls.cpp:681 config_indi.cpp:117 gear_dialog.cpp:285
 #: gear_dialog.cpp:287
@@ -186,11 +186,11 @@ msgstr "Устройство не подключено: %s"
 
 #: aui_controls.cpp:816
 msgid "Dark library in use"
-msgstr ""
+msgstr "Темновая библиотека используется"
 
 #: aui_controls.cpp:816
 msgid "Dark library not in use"
-msgstr ""
+msgstr "Темновая библиотека не используется"
 
 #: aui_controls.cpp:818
 msgid "Bad-pixel map in use"
@@ -398,7 +398,7 @@ msgstr "Неизвестно"
 
 #: calreview_dialog.cpp:304
 msgid "Side of pier:"
-msgstr ""
+msgstr "Сторона меридиана:"
 
 #: calreview_dialog.cpp:305 calreview_dialog.cpp:346 gear_simulator.cpp:1896
 #: mount.cpp:68 testguide.cpp:152
@@ -682,7 +682,7 @@ msgstr ""
 
 #: calstep_dialog.cpp:152
 msgid "Calibration distance, px"
-msgstr ""
+msgstr "Калибровочное расстояние, пикс"
 
 #: calstep_dialog.cpp:153
 #, c-format
@@ -690,6 +690,8 @@ msgid ""
 "Targeted distance in each direction. The default value (%d) works fine for "
 "most setups."
 msgstr ""
+"Целевое расстояние в каждом направлении. По умолчанию %d, подходит для "
+"большинства систем."
 
 #: calstep_dialog.cpp:159
 msgid "Calibration declination, degrees"
@@ -707,7 +709,7 @@ msgstr "Сбросить"
 
 #: calstep_dialog.cpp:163
 msgid "Reset the calibration parameters to defaults"
-msgstr ""
+msgstr "Сброcить параметры калибровки к используемым по умолчанию"
 
 #: calstep_dialog.cpp:168
 msgid "Computed Values"
@@ -1039,6 +1041,8 @@ msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr ""
+"У камеры нет свойства CCD_EXPOSURE, пожалуйста, отключите параметр, "
+"поскольку камера не поддерживает потоковое видео."
 
 #: cam_indi.cpp:1061
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
@@ -1134,21 +1138,21 @@ msgstr "Настройки камеры SSAG"
 
 #: cam_openssag.cpp:238
 msgid "Loader VID:"
-msgstr ""
+msgstr "VID загрузчика:"
 
 #: cam_openssag.cpp:240
 #, c-format
 msgid "SSAG Loader USB Vendor ID. Default = 0x%04x"
-msgstr ""
+msgstr "Идентификатор производителя USB загрузчика SSAG. По умолчанию 0x%04x"
 
 #: cam_openssag.cpp:248
 msgid "Loader PID:"
-msgstr ""
+msgstr "PID загрузчика:"
 
 #: cam_openssag.cpp:250
 #, c-format
 msgid "SSAG Loader USB Product ID. Default = 0x%04x"
-msgstr ""
+msgstr "Идентификатор продукта USB загрузчика SSAG. По умолчанию 0x%04x"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
@@ -1341,7 +1345,7 @@ msgstr "Ошибка подключения камеры SkyRaider."
 
 #: cam_skyraider.cpp:159
 msgid "Failed to get camera resolution for SkyRaider Camera."
-msgstr ""
+msgstr "Ошибка определения разрешения камеры SkyRider"
 
 #: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
@@ -1403,7 +1407,7 @@ msgstr "Выбранная камера ToupTek не найдена."
 
 #: cam_touptek.cpp:441
 msgid "Camera does not support software trigger"
-msgstr ""
+msgstr "Камера не поддерживает проограммную установку экспозиции"
 
 #: cam_touptek.cpp:447
 msgid "Failed to open ToupTek camera."
@@ -1411,27 +1415,27 @@ msgstr "Ошибка подключения камеры ToupTek."
 
 #: cam_touptek.cpp:470
 msgid "Failed to get camera resolution for ToupTek camera."
-msgstr ""
+msgstr "Ошибка определения разрешения камеры ToupTek"
 
 #: cam_touptek.cpp:478 cam_touptek.cpp:491
 msgid "Failed to initialize camera binning."
-msgstr ""
+msgstr "Ошибка инициализации биннинга камеры."
 
 #: cam_touptek.cpp:717
 msgid "Capture failed: the camera disconnected"
-msgstr ""
+msgstr "Ошибка захвата: камера отключена"
 
 #: cam_touptek.cpp:720
 msgid "Capture failed: the camera reported a timeout"
-msgstr ""
+msgstr "Ошибка захвата: таймаут камеры"
 
 #: cam_touptek.cpp:724
 msgid "Capture failed: the camera repoted an error"
-msgstr ""
+msgstr "Ошибка захвата: камера сообщила об ошибке"
 
 #: cam_touptek.cpp:755
 msgid "Capture failed, unable to pull image data from camera"
-msgstr ""
+msgstr "Ошибка захвата: невозможно получить изображение с камеры"
 
 #: cam_touptek.cpp:881
 msgid "ToupTek Camera Properties"
@@ -1803,7 +1807,7 @@ msgstr "Ошибка COM-порта. Подробности могут быть 
 #: comdispatch.cpp:103
 #, c-format
 msgid "Driver error preparing to call %s"
-msgstr ""
+msgstr "Ошибка драйвера, подготовка вызова %s"
 
 #: comet_tool.cpp:79
 msgid "Comet Tracking"
@@ -1967,6 +1971,8 @@ msgid ""
 "Device connection port. Additional driver-specific device connection options "
 "may be available in the INDI Options window (click Other options)."
 msgstr ""
+"Порт подключения устройства. Дополнительные настройки драйвера порта могут "
+"быть доступны в окне настроек INDI (см. другие настройки)."
 
 #: config_indi.cpp:153
 msgid "Camera does not support exposure time"
@@ -1982,12 +1988,14 @@ msgstr ""
 
 #: config_indi.cpp:158
 msgid "Camera does not support streaming"
-msgstr ""
+msgstr "Камера не поддерживает потоковое видео"
 
 #: config_indi.cpp:159
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
 msgstr ""
+"Принудительное использование времени экспозиции для камер, которые не "
+"поддерживают потоковое видео."
 
 #: config_indi.cpp:164
 msgid "Other options"
@@ -2997,11 +3005,11 @@ msgstr "Скорость гидирования"
 
 #: gear_simulator.cpp:1756
 msgid "Apply stiction"
-msgstr ""
+msgstr "Применить прилипание"
 
 #: gear_simulator.cpp:1756
 msgid "Simulate dec axis stiction"
-msgstr ""
+msgstr "Имитировать прилипание оси склонения"
 
 #: gear_simulator.cpp:1762
 msgid "PE"
@@ -3215,7 +3223,7 @@ msgstr "Пиксели"
 
 #: graph.cpp:293
 msgid "Corrections to Scale"
-msgstr ""
+msgstr "Приведение к масштабу"
 
 #: graph.cpp:297
 msgid "Star Mass"
@@ -3395,7 +3403,7 @@ msgid ""
 msgstr ""
 "Шкала в секундах для коротких непериодических ошибок. По сути, это фильтр "
 "нижних частот для периодической ошибки, а масштаб длины определяет угловую "
-"частоту. Значение по умолчанию %.2f "
+"частоту. Значение по умолчанию %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:171
 msgid "Signal Variance (Short Range)"
@@ -3512,7 +3520,7 @@ msgstr ""
 #: guide_algorithm_gaussian_process.cpp:348
 #, c-format
 msgid "Retain model (%% period)"
-msgstr ""
+msgstr "Сохранить модель (%% длительность)"
 
 #: guide_algorithm_gaussian_process.cpp:349
 #, c-format
@@ -3520,6 +3528,8 @@ msgid ""
 "Enter a percentage greater than 0 to retain the PPEC model after guiding "
 "stops. Default = %.f%% of the period length."
 msgstr ""
+"Чтобы сохранить модель PPEC после завершения гидирования, введите процент "
+"больше 0. По умолчанию %.f%% от длительности."
 
 #: guide_algorithm_gaussian_process.cpp:352
 msgid "Expert..."
@@ -3968,11 +3978,11 @@ msgstr "Гудок при потере звезды"
 
 #: guider_onestar.cpp:1102
 msgid "Issue an audible alarm any time the guide star is lost"
-msgstr ""
+msgstr "Выдавать звуковой сигнал при потере опорной звезды"
 
 #: guiding_assistant.cpp:99
 msgid "Extended Sampling"
-msgstr ""
+msgstr "Расширенный сбор данных"
 
 #: guiding_assistant.cpp:106
 msgid ""
@@ -4258,7 +4268,7 @@ msgstr "угл. сек"
 
 #: guiding_assistant.cpp:731
 msgid "ms (test impaired)"
-msgstr ""
+msgstr "мсек (тест неудачен)"
 
 #: guiding_assistant.cpp:872 guiding_assistant.cpp:873 pierflip_tool.cpp:293
 msgid "Apply"
@@ -4267,7 +4277,7 @@ msgstr "Применить"
 #: guiding_assistant.cpp:1276 guiding_assistant.cpp:1904 myframe.cpp:2980
 #: myframe.cpp:2990
 msgid " "
-msgstr ""
+msgstr " "
 
 #: guiding_assistant.cpp:1277 guiding_assistant.cpp:1767
 #: guiding_assistant.cpp:1852
@@ -4314,7 +4324,7 @@ msgstr "Ошибка определения полюса > 5 угл.сек; он
 
 #: guiding_assistant.cpp:1371
 msgid "Consider trying to improve focus on the guide camera"
-msgstr ""
+msgstr "Попробуйте исправить фокус гидирующей камеры"
 
 #: guiding_assistant.cpp:1382
 #, c-format
@@ -4771,6 +4781,8 @@ msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
 msgstr ""
+"Указанный в профиле размер пикселей не соответствует полученному от камеры. "
+"Для правильности гидирования необходима повторная калибровка. "
 
 #: mount.cpp:1289
 msgid "Calibration was too far from equator, recalibration is needed."
@@ -4819,7 +4831,7 @@ msgstr "&Подключение оборудования\tCtrl-C"
 
 #: myframe.cpp:502
 msgid "Connect or disconnect equipment"
-msgstr ""
+msgstr "Подключить или отключить оборудование"
 
 #: myframe.cpp:503
 msgid "&Loop Exposures\tCtrl-L"
@@ -4827,7 +4839,7 @@ msgstr "&Серийная съёмка\tCtrl-L"
 
 #: myframe.cpp:503
 msgid "Begin looping exposures"
-msgstr ""
+msgstr "Начать серийную съёмку"
 
 #: myframe.cpp:505
 msgid "&Guide\tCtrl-G"
@@ -4835,7 +4847,7 @@ msgstr "&Гидирование\tCtrl-G"
 
 #: myframe.cpp:505
 msgid "Begin guiding"
-msgstr ""
+msgstr "Начать гидирование"
 
 #: myframe.cpp:507
 msgid "&Stop\tCtrl-S"
@@ -4907,7 +4919,7 @@ msgstr "Переложить калибровку"
 
 #: myframe.cpp:521
 msgid "Flip the calibration data now"
-msgstr ""
+msgstr "Переложить калибровочные данные"
 
 #: myframe.cpp:522
 msgid "Clear Calibration Data..."
@@ -4951,7 +4963,7 @@ msgstr "Калибровка перекладки меридиана"
 
 #: myframe.cpp:529
 msgid "Automatically determine the correct meridian flip settings"
-msgstr ""
+msgstr "Автоматическое определение правильных настроек перекладки меридиана"
 
 #: myframe.cpp:530
 msgid "&Guiding Assistant"
@@ -5453,6 +5465,9 @@ msgid ""
 "Guiding parameters have been reset because the binning or pixel size changed "
 "unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
+"Настройки гидирования были сброшены из-за непредсказуемого изменения "
+"биннинга или размера пикселей. Используйте разные профайлы для разных "
+"масштабов изображений."
 
 #: myframe.cpp:2794
 msgid "Global Settings"
@@ -5970,7 +5985,7 @@ msgstr "Ручное гидирование"
 
 #: myframe_events.cpp:1083 pierflip_tool.cpp:78
 msgid "Meridian Flip Calibration Tool"
-msgstr ""
+msgstr "Калибровка перекладки меридиана"
 
 #: myframe_events.cpp:1142
 msgid ""
@@ -6188,7 +6203,7 @@ msgstr "Windows NT %lu.%lu"
 #: phd.cpp:391
 #, c-format
 msgid "build %lu"
-msgstr ""
+msgstr "сборка %lu"
 
 #: phd.cpp:399
 msgid ", 64-bit edition"
@@ -6287,6 +6302,13 @@ msgid ""
 "\n"
 "Click Next to begin"
 msgstr ""
+"Автоматическое определение правильного значения для настройки 'Инвертировать "
+"импульсы по δ после перекладки меридиана'.\n"
+"Требуются две калибровки - одна для восточного положения телескопа от "
+"меридиана, другая для западного. Вам предложат навести телескоп, когда это "
+"будет необходимо.\n"
+"\n"
+"Нажмите кнопку 'Далее'ю"
 
 #: pierflip_tool.cpp:243
 msgid "Next"
@@ -6299,6 +6321,9 @@ msgid ""
 "\n"
 "Click Calibrate when ready."
 msgstr ""
+"Наведите телескоп поближе к пересечению меридиана и небесного экватора.\n"
+"\n"
+"Затем проведите калибровку."
 
 #: pierflip_tool.cpp:259
 msgid "Wait for the first calibration to complete."
@@ -6307,14 +6332,14 @@ msgstr "Ждите завершения первой калибровки."
 #: pierflip_tool.cpp:260 pierflip_tool.cpp:273
 #, c-format
 msgid "Calibrating on the %s side of pier"
-msgstr ""
+msgstr "Калибровка на %s стороне меридиана"
 
 #: pierflip_tool.cpp:264
 #, c-format
 msgid ""
 "Flip to the other side of the pier, so the telescope is on the %s side of "
 "the pier."
-msgstr ""
+msgstr "Перекладка меридиана, телескоп на %s стороне от меридиана."
 
 #: pierflip_tool.cpp:272
 msgid "Wait for the second calibration to complete."
@@ -6322,7 +6347,7 @@ msgstr "Ждите завершения второй калибровки."
 
 #: pierflip_tool.cpp:279
 msgid "Meridian flip calibration completed sucessfully."
-msgstr ""
+msgstr "Калибровка перекладки меридиана завершилась успешно."
 
 #: pierflip_tool.cpp:281
 #, c-format
@@ -6330,6 +6355,8 @@ msgid ""
 "The correct setting for 'Reverse Dec output after meridian flip' for this "
 "mount is: %s"
 msgstr ""
+"Правильное значение для \"Инвертировать импульсы по δ после перекладки "
+"меридиана\": %s"
 
 #: pierflip_tool.cpp:283
 msgid "enabled"
@@ -6341,35 +6368,35 @@ msgstr "выключено"
 
 #: pierflip_tool.cpp:285
 msgid "Click Apply to accept the setting"
-msgstr ""
+msgstr "Нажать 'Применить' для сохранения настроек"
 
 #: pierflip_tool.cpp:289
 msgid "Meridian flip calibration failed."
-msgstr ""
+msgstr "Ошибка калибровки перекладки меридиана "
 
 #: pierflip_tool.cpp:291
 msgid "Resolve any calibration issues and try again"
-msgstr ""
+msgstr "Решите проблемы с калибровкой и попробуйте снова"
 
 #: pierflip_tool.cpp:462
 msgid "The RA calibration angles varied by an unexpected amount."
-msgstr ""
+msgstr "Углы калибровки по α изменились на непредсказуемую величину."
 
 #: pierflip_tool.cpp:478
 msgid "The declination calibration angles varied by an unexpected amount."
-msgstr ""
+msgstr "Углы калибровки по склонению изменяются непредсказуемо."
 
 #: pierflip_tool.cpp:492
 msgid ""
 "The meridian flip calibration tool requires an equipment profile without an "
 "AO"
-msgstr ""
+msgstr "Для калибровки перекладки меридиана нужен профиль оборудования без АО"
 
 #: pierflip_tool.cpp:498
 msgid ""
 "The meridian flip calibration tool requires a mount. Click the Connect "
 "Equipment button to select your mount."
-msgstr ""
+msgstr "Для перекладки меридиана нужна монтировка. Подключите её."
 
 #: pierflip_tool.cpp:505
 msgid ""
@@ -6377,6 +6404,9 @@ msgid ""
 "disabled. If your mount can guide in Declination, set your Dec guide mode to "
 "Auto and try again."
 msgstr ""
+"Калибровка перекладки меридиана невозможна при выключенном гидировании по "
+"склонению. Если монтировка может гидироваться по склонению, включите его в "
+"автоматический режим и попробуйте снова. "
 
 #: polardrift_toolwin.cpp:64
 msgid ""
@@ -6511,6 +6541,10 @@ msgid ""
 "use of fainter guide stars.  For more common setups, it's better to leave "
 "binning at 1."
 msgstr ""
+"Если камера поддерживает биннинг, можно выбрать значение биннинга > 1. \n"
+"При длинных фокусных расстояниях и использовании внеосевиков биннинг \n"
+"позволит использовать более тусклые опорные звёзды. В других случаях \n"
+"лучше оставить уровень биннинга 1."
 
 #: profile_wizard.cpp:259
 msgid "Binning level"
@@ -6536,7 +6570,7 @@ msgstr "Масштаб пикселей %8.2f\"/пикс"
 
 #: profile_wizard.cpp:281
 msgid "The pixel scale of your guide configuration, arc-seconds per pixel"
-msgstr ""
+msgstr "Масштаб пикселей для вашей конфигурации в угловых секундах на пиксель"
 
 #: profile_wizard.cpp:294
 #, c-format
@@ -6557,6 +6591,8 @@ msgstr "Скорость гидирования монтировки (к сол�
 #: profile_wizard.cpp:299
 msgid "Declination axis has high-precision encoder (a few high-end mounts)"
 msgstr ""
+"На оси склонения установлен высокоточный энкодер (у некоторых монтировок "
+"высшего класса)"
 
 #: profile_wizard.cpp:300
 msgid ""
@@ -6564,6 +6600,9 @@ msgid ""
 "backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end "
 "mounts"
 msgstr ""
+"У монтировки есть высокоточные энкодеры пр обеим осям с минимальным люфтом "
+"по δ (например, 10Micron, Astro-Physics AE, iOptron EC2 или другие "
+"монтировки высшего класса)"
 
 #: profile_wizard.cpp:311
 msgid "Build dark library"
@@ -6582,6 +6621,9 @@ msgid ""
 "all other optical properties of the guiding setup must remain the same "
 "between imaging sessions."
 msgstr ""
+"Выберите для автоматического переиспользования последней калибровки при "
+"загрузке профиля. При этом ориентация поворота гидирующей камеры и остальные "
+"оптические параметры не должны изменяться между фотосессиями."
 
 #: profile_wizard.cpp:318
 msgid "Profile Name"
@@ -6727,6 +6769,11 @@ msgid ""
 "your mount.\n"
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
+"Эта конфигурация не предоставляет PHD2 каких-либо данных о координатах "
+"наведения телекопа. Это значит, что после наведения телескопа необходима "
+"повторная калибровка. Ч тобы избежать этого, используете соединения ASCOM "
+"или INDI. если соответствующие драйверы существуют для вашей монтировки. "
+"Подробнее в справочном разделе 'Подключение оборудования'. "
 
 #: profile_wizard.cpp:474
 msgid "Go Back"
@@ -6779,7 +6826,7 @@ msgstr ""
 
 #: profile_wizard.cpp:646
 msgid "On-camera"
-msgstr ""
+msgstr "На камере"
 
 #: profile_wizard.cpp:652
 msgid "Choose a Mount Connection"
@@ -6901,10 +6948,12 @@ msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
+"Опорная звезда лучше опознаётся при масштабе пикселей больше 0.5\"/пикс. Для "
+"увеличения масштаба пикселей выберите биннинг 2го уровня."
 
 #: profile_wizard.cpp:1130
 msgid "Low pixel scale"
-msgstr ""
+msgstr "Мелкий масштаб калибровки"
 
 #: profile_wizard.cpp:1171
 msgid "Ask About Connection"
@@ -7271,24 +7320,32 @@ msgid ""
 "Advisory: Calibration completed but few guide steps were used, so accuracy "
 "is questionable"
 msgstr ""
+"Предупреждение: калибровка завершена, но из-за малого количества шагов "
+"гидирования её точность сомнительна"
 
 #: scope.cpp:906
 msgid ""
 "Advisory: Calibration completed but RA/Dec axis angles are questionable and "
 "guiding may be impaired"
 msgstr ""
+"Предупреждение: калибровка завершена, но ортогональность осей α и δ "
+"сомнительна, поэтому гидирование может быть нарушено"
 
 #: scope.cpp:909
 msgid ""
 "Advisory: This calibration is substantially different from the previous one "
 "- have you changed configurations?"
 msgstr ""
+"Предупреждение: калибровка значительно отличается от предыдущей - возможно, "
+"конфигурация была изменена?"
 
 #: scope.cpp:912
 msgid ""
 "Advisory: Calibration completed but RA and Dec rates vary by an unexpected "
 "amount (often caused by large Dec backlash)"
 msgstr ""
+"Предупреждение: калибровка завершена, но скорости по α изменяются "
+"непредсказуемо, что часто бывает при большом люфте склонения"
 
 #: scope.cpp:922
 msgid "Details..."
@@ -7314,6 +7371,10 @@ msgid ""
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
+"Предупреждение: не хватает измерений в восточном направлении, поэтому "
+"гидирование может быть нарушено. Проверьте кабель для гидирования и для "
+"подтверждения основных операций с монтировкой используйте ручное "
+"гидирование. "
 
 #: scope.cpp:1349
 msgid "Clearing backlash step 1"
@@ -7351,6 +7412,12 @@ msgid ""
 "Check the guide cable and read the online Help for how to identify these "
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
+"Предупреждение: калибровка успешна, но слишком мало измерено движений в "
+"южном направлении, поэтому гидирование может быть нарушено.\n"
+"Обычно это происходит из-за проблем с кабелем для гидирования или очень "
+"большого люфта склонения. \n"
+"Проверьте кабель и обратитесь к онлайн-документации (Manual Guide, "
+"Declination backlash)."
 
 #: scope.cpp:1571
 msgid ""
@@ -7361,6 +7428,11 @@ msgid ""
 "Read the online Help for how to identify these types of problems (Manual "
 "Guide, Declination backlash)."
 msgstr ""
+"Предупреждение: калибровка успешна, но в южном направлении было измерено "
+"мало данных, поэтому гидирование может быть нарушено.\n"
+"Обычно это происходит при большом люфте склонения или других проблемах с "
+"механикой монтировки\n"
+"Для исправления люфта склонения обратитесь к онлайн руководству."
 
 #: scope.cpp:1576
 msgid ""
@@ -7371,6 +7443,11 @@ msgid ""
 "Read the online help for how to deal with this type of problem (Declination "
 "backlash)."
 msgstr ""
+"Предупреждение: калибровка успешна, но в южном направлении было измерено "
+"мало данных, поэтому гидирование может быть нарушено.\n"
+"Обычно это происходит при большом люфте склонения или других проблемах с "
+"механикой монтировки\n"
+"Для исправления люфта склонения обратитесь к онлайн руководству."
 
 #: scope.cpp:1636
 #, c-format
@@ -7405,7 +7482,7 @@ msgstr "Дополнительные..."
 msgid ""
 "Click to open the Calibration Parameters Dialog to review or change all "
 "calibration parameters"
-msgstr ""
+msgstr "Выбор настроек калибровки"
 
 #: scope.cpp:1871
 msgid "Reverse Dec output after meridian flip"
@@ -7416,6 +7493,8 @@ msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
 msgstr ""
+"Проверка необходимости реверса импульсов по δ после перекладки меридиана. "
+"Изменение этого параметра повлечёт сброс существующих калибровочных данных"
 
 #: scope.cpp:1879
 msgid "Stop guiding when mount slews"
@@ -8610,17 +8689,6 @@ msgstr "Подключение к поворотному устройству...
 #~ msgid "Guide camera un-binned pixel size (microns)"
 #~ msgstr ""
 #~ "Размер пикселя гидирующей камеры в микронах при выключенном биннинге"
-
-#~ msgid ""
-#~ "If your camera supports binning (many do not), you can choose a binning "
-#~ "value > 1.  With long focal length guide scopes and OAGs,  binning can "
-#~ "allow use of fainter guide stars.  For more common set-ups, it's better "
-#~ "to leave binning at 1."
-#~ msgstr ""
-#~ "Если камера поддерживает биннинг, можно выбрать значение биннинга > 1. "
-#~ "При длинных фокусных расстояниях и использовании внеосевиков биннинг "
-#~ "позволит использовать более тусклые опорные звёзды. В других случаях "
-#~ "лучше оставить уровень биннинга 1."
 
 #~ msgid "Camera, "
 #~ msgstr "Камера,"
