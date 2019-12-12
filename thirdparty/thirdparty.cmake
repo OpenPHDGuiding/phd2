@@ -281,14 +281,7 @@ endif(USE_SYSTEM_CFITSIO)
 
 if(WIN32)
 
-  set(libvidcap_root ${thirdparties_deflate_directory}/VidCapture)
-
-  if(NOT EXISTS ${libvidcap_root})
-    # untar the dependency
-    message(STATUS "Untarring VidCapture")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/VidCapture-20161026.zip
-                    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-  endif()
+  set(libvidcap_root ${thirdparty_dir}/VidCapture)
 
   # copied and adapted from the CMakeLists.txt of cftsio project. The
   # sources of the project are left untouched
