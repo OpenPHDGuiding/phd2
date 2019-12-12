@@ -80,7 +80,7 @@ void _CVTrace(const char* msg, const char* file, int line)
    if (dbgMsgBuf)
    {
       sprintf(dbgMsgBuf,"%s(%d) : %s\n", file, line, msg);
-      ::OutputDebugString(dbgMsgBuf);
+      ::OutputDebugStringA(dbgMsgBuf);
       delete [] dbgMsgBuf;
    }
 
@@ -119,10 +119,10 @@ void _CVAssert(const char *expression,
                            line, 
                            expression);
 
-      ::OutputDebugString(dbgMsgBuf);
+      ::OutputDebugStringA(dbgMsgBuf);
 
       sprintf(dbgMsgBuf,"%s\n",description);
-      ::OutputDebugString(dbgMsgBuf);
+      ::OutputDebugStringA(dbgMsgBuf);
       
       delete [] dbgMsgBuf;
    }
@@ -194,7 +194,7 @@ void _CVInitTicks()
    sprintf(dbgMsg,"Initialized RTDSC: Processor seems to be %dMHz\n",
            (int)CVTicksPerSec/1000000);
 
-   ::OutputDebugString(dbgMsg);
+   ::OutputDebugStringA(dbgMsg);
 
    CVTickInitialized = true;  
 }
@@ -249,7 +249,7 @@ void _CVEndTime()
    double  seconds = (double)resultTick / CVTicksPerSec;
    char dbgMsg[255];
    sprintf(dbgMsg, "CVTickCount: %f sec\n",seconds);
-   ::OutputDebugString(dbgMsg);
+   ::OutputDebugStringA(dbgMsg);
 }
 
 #endif // WIN32
