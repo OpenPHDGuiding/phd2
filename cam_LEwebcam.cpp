@@ -36,12 +36,9 @@
 
 #include "phd.h"
 
-#if defined(OPENCV_CAMERA) && defined(LE_CAMERA)
+#if defined(LE_CAMERA)
 
-#include "camera.h"
-#include "cam_LEWebcam.h"
-
-using namespace cv;
+#include "cam_wdm_base.h"
 
 CameraLEWebcam::CameraLEWebcam(void)
      : CameraWDM()
@@ -190,4 +187,4 @@ bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRe
     return bError;
 }
 
-#endif // defined(OPENCV_CAMERA) && defined(LE_SERIAL_CAMERA)
+#endif // defined(LE_CAMERA)

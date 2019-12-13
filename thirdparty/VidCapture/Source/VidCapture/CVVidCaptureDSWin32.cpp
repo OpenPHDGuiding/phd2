@@ -1590,7 +1590,8 @@ CVRES CVVidCaptureDSWin32::SetProperty(   CAMERA_PROPERTY   property,
 // SetMode()
 //    Set mode for stream config
 //---------------------------------------------------------------------------
-CVRES CVVidCaptureDSWin32::SetMode(  VIDCAP_MODE& newMode )
+CVRES CVVidCaptureDSWin32::SetMode(  VIDCAP_MODE& newMode,
+                                     bool         rawYUY2 )
 {
    AM_MEDIA_TYPE* mt = (AM_MEDIA_TYPE*)newMode.InternalRef;
 
@@ -1607,15 +1608,28 @@ CVRES CVVidCaptureDSWin32::SetMode(  VIDCAP_MODE& newMode )
       VIDEOINFOHEADER infoHdr;
       memcpy(&infoHdr,fVideoHeader,sizeof(VIDEOINFOHEADER));
       fMediaType.majortype    = MEDIATYPE_Video;
-      fMediaType.subtype      = MEDIASUBTYPE_RGB24;
+      fMediaType.subtype      = rawYUY2 ?
+                                    MEDIASUBTYPE_YUY2 :
+                                    MEDIASUBTYPE_RGB24;
+      fMediaType.formattype   = FORMAT_VideoInfo;
       fMediaType.cbFormat     = sizeof(VIDEOINFOHEADER);
       fMediaType.pbFormat     = (BYTE*)&infoHdr;
       
-      infoHdr.bmiHeader.biCompression  = 0;
+      if (rawYUY2)
+      {
+         infoHdr.bmiHeader.biCompression  = MAKEFOURCC('Y','U','Y','2');
+         infoHdr.bmiHeader.biBitCount     = 16;
+         infoHdr.bmiHeader.biSizeImage    = infoHdr.bmiHeader.biWidth * 
+                                            infoHdr.bmiHeader.biHeight * 2;
+      }
+      else
+      {
+         infoHdr.bmiHeader.biCompression  = 0;
+         infoHdr.bmiHeader.biBitCount     = 24;
+         infoHdr.bmiHeader.biSizeImage    = infoHdr.bmiHeader.biWidth * 
+                                            infoHdr.bmiHeader.biHeight * 3;
+      }
       infoHdr.bmiHeader.biPlanes       = 1;
-      infoHdr.bmiHeader.biBitCount     = 24;
-      infoHdr.bmiHeader.biSizeImage    = infoHdr.bmiHeader.biWidth * 
-                                         infoHdr.bmiHeader.biHeight * 3;
       infoHdr.bmiHeader.biClrImportant = 0;
       infoHdr.bmiHeader.biClrUsed      = 0;
       infoHdr.bmiHeader.biSize         = sizeof(BITMAPINFOHEADER);

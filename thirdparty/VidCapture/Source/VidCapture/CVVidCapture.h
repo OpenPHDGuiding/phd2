@@ -537,10 +537,12 @@ class CVVidCapture
       /// modes for the connected device before calling this function.
       ///
       /// \param index - index into mode list
+      /// \param rawYUY2 - PHD2 hack, do not convert to RGB
       /// \return CVRES result code
       /// \sa GetNumSupportedModes(), GetModeInfo(), GetCurrentMode()
       /// \sa VIDCAP_MODE, CVRes.h, CVResVidCap.h
-      virtual CVRES  SetMode              (  int                  index   );
+      virtual CVRES  SetMode              (  int                  index,
+                                             bool                 rawYUY2 );
 
       /// GetCurrentMode() retrieves the current or last-used video 
       /// capture mode.
@@ -578,10 +580,12 @@ class CVVidCapture
       /// modes for the connected device before calling this function.
       /// 
       /// \param newMode - new mode to use for connected device.
+      /// \param rawYUY2 - PHD2 hack, do not convert to RGB
       /// \return CVRES result code
       /// \sa GetNumSupportedModes(), GetModeInfo(), GetCurrentMode()
       /// \sa VIDCAP_MODE, CVRes.h, CVResVidCap.h
-      virtual CVRES  SetMode              (  VIDCAP_MODE&         newMode );
+      virtual CVRES  SetMode              (  VIDCAP_MODE&         newMode,
+                                             bool                 rawYUY2 );
 
    //-------------------------------------------------------------------------
    // Protected interface - overrideables

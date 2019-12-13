@@ -39,11 +39,9 @@
 
 #ifdef WDM_CAMERA
 
+#include "cam_wdm_base.h"
 #include "cam_wdm.h"
-
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
+#include "CVPlatform.h"
 
 CameraWDM::CameraWDM()
 {
@@ -56,7 +54,8 @@ CameraWDM::CameraWDM()
     HasDelayParam = false;
     HasPortNum = false;
     m_captureMode = NOT_CAPTURING;
-    m_pVidCap = NULL;
+    m_pVidCap = nullptr;
+    m_rawYUY2 = false;
 }
 
 wxByte CameraWDM::BitsPerPixel()
@@ -65,66 +64,112 @@ wxByte CameraWDM::BitsPerPixel()
     return 16;
 }
 
-bool CameraWDM::CaptureCallback(CVRES status, CVImage* imagePtr, void* userParam)
+inline static uint16_t sat_sum(uint16_t a, uint8_t b)
 {
-    CameraWDM* cam = (CameraWDM*)userParam;
-    bool bReturn = CVSUCCESS(status);
+    uint16_t c = a + b;
+    if (c < a) // overflow
+        c = -1;
+    return c;
+}
 
-    cam->m_nAttempts++;
-
-    if (cam->m_captureMode == STOP_CAPTURING)
+static bool stack(usImage *stack, const unsigned char *src)
+{
+    // check for blank frame
+    bool blank = true;
+    unsigned int sum = 0;
+    const uint8_t *p = src;
+    for (int i = 0; i < stack->NPixels; i++)
     {
-        cam->m_captureMode = NOT_CAPTURING;
+        if ((sum += *p++) > 100)
+        {
+            blank = false;
+            break;
+        }
     }
 
-    if (bReturn && cam->m_captureMode != NOT_CAPTURING)
+    unsigned short *dst = stack->ImageData;
+    unsigned short *const end = dst + stack->NPixels;
+    while (dst < end)
+        *dst++ = sat_sum(*dst, *src++);
+
+    return !blank;
+}
+
+bool CameraWDM::OnCapture(const cbdata& p)
+{
+    bool keepgoing = CVSUCCESS(p.status);
+
+    ++m_nAttempts;
+
+    if (m_captureMode == STOP_CAPTURING)
     {
-        int i;
-        unsigned int sum = 0;
-        unsigned char *imgdata = imagePtr->GetRawDataPtr();
-        int npixels = cam->FullSize.GetWidth() * cam->FullSize.GetHeight();
-        unsigned short *dptr = cam->m_stackptr;
+        m_captureMode = NOT_CAPTURING;
+    }
 
-        for (i = 0; i < npixels; i++, dptr++)
+    if (keepgoing && m_captureMode != NOT_CAPTURING)
+    {
+        const unsigned char *src = p.raw ? p.buf : p.cvimage->GetRawDataPtr();
+        bool found = stack(m_stack, src);
+        if (found)
         {
-            unsigned short pixelValue = *imgdata++;
-            unsigned int newval = (unsigned int) *dptr + pixelValue;
-            if (newval > 65535)
-                newval = 65535;
-            *dptr = (unsigned short) newval;
-            sum += pixelValue;
-        }
+            // non-blank frame
 
-        if (sum > 100) // non-black
-        {
-            cam->m_nFrames++;
+            ++m_nFrames;
 
             // change the state if needed
-            switch (cam->m_captureMode)
+            switch (m_captureMode)
             {
-                case CAPTURE_ONE_FRAME:
-                    cam->m_captureMode = NOT_CAPTURING;
-                    break;
-                case CAPTURE_STACK_FRAMES:
-                    cam->m_captureMode = CAPTURE_STACKING;
-                    break;
+            case CAPTURE_ONE_FRAME:
+                m_captureMode = NOT_CAPTURING;
+                break;
+            case CAPTURE_STACK_FRAMES:
+                m_captureMode = CAPTURE_STACKING;
+                break;
             }
         }
     }
 
-    return bReturn;
+    return keepgoing;
 }
 
-bool CameraWDM::SelectDeviceAndMode()
+static bool CaptureCallback(CVRES status, CVImage *cvimage, void *userParam)
 {
+    struct cbdata p;
+    p.status = status;
+    p.raw = false;
+    p.cvimage = cvimage;
+    return static_cast<CameraWDM *>(userParam)->OnCapture(p);
+}
+
+static bool RawCaptureCallback(CVRES status, const VIDEOINFOHEADER *hdr, unsigned char *buf, void *userParam)
+{
+    struct cbdata p;
+    p.status = status;
+    p.raw = true;
+    p.hdr = hdr;
+    p.buf = buf;
+    return static_cast<CameraWDM *>(userParam)->OnCapture(p);
+}
+
+bool CameraWDM::SelectDeviceAndMode(SelectionContext ctx)
+{
+    if (ctx == CTX_CONNECT)
+    {
+        // when the Connect button is clicked, reuse the prior device and mode without any prompting
+        m_deviceNumber = pConfig->Profile.GetInt("/camera/WDM/deviceNumber", -1);
+        m_deviceMode = pConfig->Profile.GetInt("/camera/WDM/deviceMode", -1);
+        if (m_deviceNumber != -1 && m_deviceMode != -1)
+            return false; // no error
+    }
+
     bool error = false;
-    CVVidCapture *vidCap = 0;
+    CVVidCapture *vidCap = nullptr;
     bool inited = false;
     bool connected = false;
 
     try
     {
-        vidCap = CVPlatform::GetPlatform()->AcquireVideoCapture();
+        vidCap = new CVVidCaptureDSWin32();
 
         // Init the library
         if (CVFAILED(vidCap->Init()))
@@ -142,7 +187,7 @@ bool CameraWDM::SelectDeviceAndMode()
             throw ERROR_INFO("CVFAILED(m_pVidCap->GetNumDevices(nDevices))");
         }
 
-        int deviceNumber;
+        int deviceNumber = pConfig->Profile.GetInt("/camera/WDM/deviceNumber", -1);
 
         if (nDevices == 0)
         {
@@ -161,11 +206,13 @@ bool CameraWDM::SelectDeviceAndMode()
                 }
                 else
                 {
-                    devices.Add(wxString::Format("%d: Not available"),i);
+                    devices.Add(wxString::Format("%d: Not available"), i);
                 }
             }
 
-            deviceNumber = wxGetSingleChoiceIndex(_("Select WDM camera"), _("Camera choice"), devices);
+            if (deviceNumber < 0 || deviceNumber >= nDevices)
+                deviceNumber = 0;
+            deviceNumber = wxGetSingleChoiceIndex(_("Select WDM camera"), _("Camera choice"), devices, deviceNumber);
 
             if (deviceNumber == -1)
             {
@@ -197,7 +244,10 @@ bool CameraWDM::SelectDeviceAndMode()
         }
 
         // Let user choose mode
-        int deviceMode = wxGetSingleChoiceIndex(_("Select camera mode"), _("Camera mode"), modeNames);
+        int deviceMode = pConfig->Profile.GetInt("/camera/WDM/deviceMode", -1);
+        if (deviceMode < 0 || deviceMode >= numModes)
+            deviceMode = 0;
+        deviceMode = wxGetSingleChoiceIndex(_("Select camera mode"), _("Camera mode"), modeNames, deviceMode);
 
         if (deviceMode == -1)
         {
@@ -208,8 +258,8 @@ bool CameraWDM::SelectDeviceAndMode()
         m_deviceNumber = deviceNumber;
         m_deviceMode = deviceMode;
 
-        pConfig->Profile.SetInt("/camera/WDM/deviceNumber", m_deviceNumber);
-        pConfig->Profile.SetInt("/camera/WDM/deviceMode", m_deviceMode);
+        pConfig->Profile.SetInt("/camera/WDM/deviceNumber", deviceNumber);
+        pConfig->Profile.SetInt("/camera/WDM/deviceMode", deviceMode);
     }
     catch (const wxString& msg)
     {
@@ -231,7 +281,7 @@ bool CameraWDM::SelectDeviceAndMode()
 
 bool CameraWDM::HandleSelectCameraButtonClick(wxCommandEvent& evt)
 {
-    SelectDeviceAndMode();
+    SelectDeviceAndMode(CTX_SELECT);
     return true; // handled
 }
 
@@ -241,20 +291,16 @@ bool CameraWDM::Connect(const wxString& camId)
 
     try
     {
-        m_deviceNumber = pConfig->Profile.GetInt("/camera/WDM/deviceNumber", -1);
-        m_deviceMode = pConfig->Profile.GetInt("/camera/WDM/deviceMode", -1);
-
-        if (m_deviceNumber == -1 || m_deviceMode == -1)
-            if (SelectDeviceAndMode())
-                throw ERROR_INFO("SelectDeviceAndMode failed");
+        if (SelectDeviceAndMode(CTX_CONNECT))
+            throw ERROR_INFO("SelectDeviceAndMode failed");
 
         // Setup VidCap library
-        m_pVidCap = CVPlatform::GetPlatform()->AcquireVideoCapture();
+        m_pVidCap = new CVVidCaptureDSWin32();
 
         // Init the library
         if (CVFAILED(m_pVidCap->Init()))
         {
-            wxMessageBox(_T("Error initializing WDM services"),_("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Error initializing WDM services"), _("Error"),wxOK | wxICON_ERROR);
             throw ERROR_INFO("CVFAILED(VidCap->Init())");
         }
 
@@ -264,7 +310,7 @@ bool CameraWDM::Connect(const wxString& camId)
             int devNameLen = 0;
 
             // find the length of the name
-            m_pVidCap->GetDeviceName(NULL, devNameLen);
+            m_pVidCap->GetDeviceName(nullptr, devNameLen);
             ++devNameLen;
 
             // now get the name
@@ -281,7 +327,7 @@ bool CameraWDM::Connect(const wxString& camId)
             throw ERROR_INFO("Error connecting to WDM device");
         }
 
-        if (CVFAILED(m_pVidCap->SetMode(m_deviceMode)))
+        if (CVFAILED(static_cast<CVVidCapture *>(m_pVidCap)->SetMode(m_deviceMode, m_rawYUY2)))
         {
             wxMessageBox(wxString::Format("Error activating video mode %d", m_deviceMode), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("setmode() failed");
@@ -295,15 +341,30 @@ bool CameraWDM::Connect(const wxString& camId)
             throw ERROR_INFO("GetCurrentMode() failed");
         }
 
-        FullSize = wxSize(modeInfo.XRes, modeInfo.YRes);
+        // RAW YUY2 format encodes two 8-bit greyscale pixels per pseudo-YUY2 value
+        // so the width is twice the video mode's advertised width
+        FullSize = m_rawYUY2 ?
+            wxSize(modeInfo.XRes * 2, modeInfo.YRes) :
+            wxSize(modeInfo.XRes, modeInfo.YRes);
 
         // Start the stream
         m_captureMode = NOT_CAPTURING; // Make sure we don't start saving yet
 
-        if (CVFAILED(m_pVidCap->StartImageCap(CVImage::CVIMAGE_GREY, CaptureCallback, this)))
+        if (m_rawYUY2)
         {
-            wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
-            throw ERROR_INFO("StartImageCap() failed");
+            if (CVFAILED(m_pVidCap->StartRawCap(RawCaptureCallback, this)))
+            {
+                wxMessageBox(_T("Failed to start raw image capture!"), _("Error"), wxOK | wxICON_ERROR);
+                throw ERROR_INFO("StartRawCap() failed");
+            }
+        }
+        else
+        {
+            if (CVFAILED(m_pVidCap->StartImageCap(CVImage::CVIMAGE_GREY, CaptureCallback, this)))
+            {
+                wxMessageBox(_T("Failed to start image capture!"), _("Error"), wxOK | wxICON_ERROR);
+                throw ERROR_INFO("StartImageCap() failed");
+            }
         }
 
         pFrame->StatusMsg(wxString::Format(_("%d x %d mode activated"), modeInfo.XRes, modeInfo.YRes));
@@ -318,9 +379,8 @@ bool CameraWDM::Connect(const wxString& camId)
         if (m_pVidCap)
         {
             m_pVidCap->Uninit();
-            CVPlatform::GetPlatform()->Release(m_pVidCap);
-
-            m_pVidCap = NULL;
+            delete m_pVidCap;
+            m_pVidCap = nullptr;
         }
     }
 
@@ -335,15 +395,14 @@ bool CameraWDM::Disconnect()
         m_pVidCap->Stop();
         m_pVidCap->Disconnect();
         m_pVidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(m_pVidCap);
-
-        m_pVidCap = NULL;
+        delete m_pVidCap;
+        m_pVidCap = nullptr;
     }
+
     Connected = false;
 
     return false;
 }
-
 
 bool CameraWDM::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 {
@@ -363,7 +422,7 @@ bool CameraWDM::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 
         m_nFrames = 0;
         m_nAttempts = 0;
-        m_stackptr = img.ImageData;
+        m_stack = &img;
         m_captureMode = captureMode;
     }
     catch (const wxString& Msg)
@@ -376,7 +435,7 @@ bool CameraWDM::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
     return bError;
 }
 
-void CameraWDM::EndCapture(void)
+void CameraWDM::EndCapture()
 {
     int iterations = 0;
 
@@ -473,10 +532,11 @@ void CameraWDM::ShowPropertyDialog()
             m_pVidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
         }
     }
-    else
-    {
-        SelectDeviceAndMode();
-    }
+}
+
+GuideCamera *WDMCameraFactory::MakeWDMCamera()
+{
+    return new CameraWDM();
 }
 
 #endif // WDM_CAMERA defined

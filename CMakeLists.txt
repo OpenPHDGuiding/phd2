@@ -178,11 +178,12 @@ set(cam_SRC
   ${phd_src_dir}/cam_indi.h
   ${phd_src_dir}/cam_INovaPLC.cpp
   ${phd_src_dir}/cam_INovaPLC.h
+  ${phd_src_dir}/cam_ioptron.cpp
+  ${phd_src_dir}/cam_ioptron.h
   ${phd_src_dir}/cam_KWIQGuider.cpp
   ${phd_src_dir}/cam_KWIQGuider.h
   ${KWIQGuider_PLATFORM_SRC}
   ${phd_src_dir}/cam_LEwebcam.cpp
-  ${phd_src_dir}/cam_LEwebcam.h
   ${phd_src_dir}/cam_MeadeDSI.cpp
   ${phd_src_dir}/cam_MeadeDSI.h
   ${phd_src_dir}/cam_NebSBIG.cpp
@@ -222,6 +223,7 @@ set(cam_SRC
   ${phd_src_dir}/cam_touptek.h
   ${phd_src_dir}/cam_vfw.cpp
   ${phd_src_dir}/cam_vfw.h
+  ${phd_src_dir}/cam_wdm_base.h
   ${phd_src_dir}/cam_wdm.cpp
   ${phd_src_dir}/cam_wdm.h
   ${phd_src_dir}/cam_zwo.cpp

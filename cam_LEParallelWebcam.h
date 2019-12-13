@@ -37,19 +37,12 @@
 #ifndef CAM_LEPARALLELWEBCAM_H_INCLUDED
 #define CAM_LEPARALLELWEBCAM_H_INCLUDED
 
-#include "cam_LEWebcam.h"
+class GuideCamera;
 
-class CameraLEParallelWebcam : public CameraLEWebcam
+class LEParallelWebcamCameraFactory
 {
-private:
-    virtual bool LEControl(int actions);
-    ParallelPort *m_pParallelPort;
 public:
-    CameraLEParallelWebcam();
-    virtual ~CameraLEParallelWebcam();
-
-    bool Connect(const wxString& camId) override;
-    bool Disconnect() override;
+    static GuideCamera *MakeLEParallelWebcamCamera();
 };
 
 #endif // CAM_LEPARALLELWEBCAM_H_INCLUDED

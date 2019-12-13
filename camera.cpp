@@ -55,6 +55,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_atik16.h"
 #endif
 
+#if defined (IOPTRON_CAMERA)
+# include "cam_ioptron.h"
+#endif
+
 #if defined (LE_SERIAL_CAMERA)
 # include "cam_LESerialWebcam.h"
 #endif
@@ -259,6 +263,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (INOVA_PLC)
     CameraList.Add(_T("i-Nova PLC-M"));
 #endif
+#if defined (IOPTRON_CAMERA)
+    CameraList.Add(_T("iOptron iGuider"));
+#endif
 #if defined (SSAG)
     CameraList.Add(_T("StarShoot Autoguider"));
 #endif
@@ -387,6 +394,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn = new CameraINDI();
         }
 #endif
+#if defined (IOPTRON_CAMERA)
+        else if (choice == _T("iOptron iGuider"))
+            pReturn = IoptronCameraFactory::MakeIoptronCamera();
+#endif
         else if (choice == _("None"))
             pReturn = nullptr;
         else if (choice == _T("Simulator"))
@@ -485,7 +496,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (WDM_CAMERA)
         else if (choice.Contains(_T("Windows WDM")))
-            pReturn = new CameraWDM();
+            pReturn = WDMCameraFactory::MakeWDMCamera();
 #endif
 #if defined (VFW_CAMERA)
         else if (choice.Contains(_T("Windows VFW")))
@@ -493,15 +504,15 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (LE_SERIAL_CAMERA)
         else if (choice.Contains(_T("Long exposure Serial webcam")))
-            pReturn = new CameraLESerialWebcam();
+            pReturn = LESerialWebcamCameraFactory::MakeLESerialWebcamCamera();
 #endif
 #if defined (LE_PARALLEL_CAMERA)
         else if (choice.Contains( _T("Long exposure Parallel webcam")))
-            pReturn = new CameraLEParallelWebcam();
+            pReturn = LEParallelWebcamCameraFactory::MakeLEParallelWebcamCamera();
 #endif
 #if defined (LE_LXUSB_CAMERA)
         else if (choice.Contains(_T("Long exposure LXUSB webcam")))
-            pReturn = new CameraLELxUsbWebcam();
+            pReturn = LELxUsbWebcamCameraFactory::MakeLELxUsbWebcamCamera();
 #endif
 #if defined (MEADE_DSI_CAMERA)
         else if (choice.Contains(_T("Meade DSI I, II, or III")))

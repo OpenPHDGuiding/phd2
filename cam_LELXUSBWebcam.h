@@ -37,19 +37,12 @@
 #ifndef CAM_LEUSBWEBCAM_H_INCLUDED
 #define CAM_LEUSBWEBCAM_H_INCLUDED
 
-#include "cam_LEWebcam.h"
+class GuideCamera;
 
-class CameraLELxUsbWebcam : public CameraLEWebcam
+class LELxUsbWebcamCameraFactory
 {
-    bool m_isOpen;
 public:
-    CameraLELxUsbWebcam();
-    virtual ~CameraLELxUsbWebcam();
-
-    bool Connect(const wxString& camId) override;
-    bool Disconnect() override;
-private:
-    virtual bool LEControl(int actions);
+    static GuideCamera *MakeLELxUsbWebcamCamera();
 };
 
 #endif // CAM_LEUSBWEBCAM_H_INCLUDED

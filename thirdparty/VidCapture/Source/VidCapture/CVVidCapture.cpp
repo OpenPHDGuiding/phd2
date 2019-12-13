@@ -455,7 +455,8 @@ CVRES CVVidCapture::GetModeInfo(  int                 index,
 //    index is the index into the list (max from GetNumSupportedModes)
 //    sets the capture mode.
 //---------------------------------------------------------------------------
-CVRES CVVidCapture::SetMode(  int   index )
+CVRES CVVidCapture::SetMode(  int   index,
+                              bool  rawYUY2 )
 {
    if (fConnected != true)
    {
@@ -472,7 +473,7 @@ CVRES CVVidCapture::SetMode(  int   index )
 
    if (curMode != 0)
    {
-      return SetMode(*curMode);     
+      return SetMode(*curMode, rawYUY2);
    }
 
    return CVRES_VIDCAP_MODE_NOT_SUPPORTED;
@@ -499,7 +500,8 @@ CVRES CVVidCapture::GetCurrentMode( VIDCAP_MODE& curMode )
 //    Set the mode to a specific mode.
 //    Override in child classes!
 //---------------------------------------------------------------------------
-CVRES CVVidCapture::SetMode( VIDCAP_MODE& curMode)
+CVRES CVVidCapture::SetMode( VIDCAP_MODE& curMode,
+                             bool rawYUY2 )
 {
    return CVRES_VIDCAP_MODE_NOT_SUPPORTED;
 }

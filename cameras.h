@@ -47,6 +47,7 @@
 # define ATIK_GEN3
 # define INDI_CAMERA
 # define INOVA_PLC
+# define IOPTRON_CAMERA
 # define LE_CAMERA
 # define LE_LXUSB_CAMERA
 # define LE_PARALLEL_CAMERA

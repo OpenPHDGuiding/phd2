@@ -36,10 +36,32 @@
 
 #include "phd.h"
 
-#if defined(OPENCV_CAMERA) && defined(LE_SERIAL_CAMERA)
+#if defined(LE_SERIAL_CAMERA)
 
-#include "camera.h"
 #include "cam_LESerialWebcam.h"
+#include "cam_wdm_base.h"
+
+class CameraLESerialWebcam : public CameraLEWebcam
+{
+    SerialPort *m_pSerialPort;
+    bool m_InvertedLogic;
+    bool m_UseAmp;
+
+    int m_signalConfig;
+    bool m_Expo;
+    bool m_Amp;
+
+public:
+    CameraLESerialWebcam();
+    virtual ~CameraLESerialWebcam();
+
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
+
+private:
+    bool LEControl(int actions);
+};
 
 #define LE_MASK_DTR     1
 #define LE_MASK_RTS     2
@@ -51,8 +73,6 @@
 #define LE_AMP_RTS      128
 
 #define LE_DEFAULT      (LE_MASK_DTR | LE_MASK_RTS | /*LE_INIT_DTR | LE_INIT_RTS |*/ LE_EXPO_RTS | LE_AMP_DTR)
-
-using namespace cv;
 
 CameraLESerialWebcam::CameraLESerialWebcam(void)
     : CameraLEWebcam()
@@ -411,4 +431,9 @@ void CameraLESerialWebcam::ShowPropertyDialog()
     }
 }
 
-#endif // defined(OPENCV_CAMERA) && defined(LE_SERIAL_CAMERA)
+GuideCamera *LESerialWebcamCameraFactory::MakeLESerialWebcamCamera()
+{
+    return new CameraLESerialWebcam();
+}
+
+#endif // defined(LE_SERIAL_CAMERA)

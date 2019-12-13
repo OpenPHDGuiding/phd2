@@ -36,16 +36,27 @@
 
 #include "phd.h"
 
-#if defined(OPENCV_CAMERA) && defined(LE_PARALLEL_CAMERA)
+#if defined(LE_PARALLEL_CAMERA)
 
-#include "camera.h"
 #include "cam_LEParallelWebcam.h"
+#include "cam_wdm_base.h"
+
+class CameraLEParallelWebcam : public CameraLEWebcam
+{
+private:
+    virtual bool LEControl(int actions);
+    ParallelPort *m_pParallelPort;
+public:
+    CameraLEParallelWebcam();
+    virtual ~CameraLEParallelWebcam();
+
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+};
 
 /* ----Prototypes of Inp and Out32--- */
 short _stdcall Inp32(short PortAddress);
 void _stdcall Out32(short PortAddress, short data);
-
-using namespace cv;
 
 CameraLEParallelWebcam::CameraLEParallelWebcam(void)
     : CameraLEWebcam()
@@ -194,4 +205,9 @@ bool CameraLEParallelWebcam::LEControl(int actions)
     return bError;
 }
 
-#endif // defined(OPENCV_CAMERA) && defined(LE_SERIAL_CAMERA)
+GuideCamera *LEParallelWebcamCameraFactory::MakeLEParallelWebcamCamera()
+{
+    return new CameraLEParallelWebcam();
+}
+
+#endif // defined(LE_PARALLEL_CAMERA)

@@ -356,10 +356,12 @@ class CVVidCaptureDSWin32 : public CVVidCapture, private ISampleGrabberCB
       /// modes for the connected device before calling this function.
       /// 
       /// \param newMode - new mode to use for connected device.
+      /// \param rawYUY2 - PHD2 hack - do not convert to RGB
       /// \return CVRES result code
       /// \sa GetNumSupportedModes(), GetModeInfo(), GetCurrentMode()
       /// \sa VIDCAP_MODE, CVRes.h, CVResVidCap.h
-      virtual CVRES  SetMode              (  VIDCAP_MODE&         newMode );
+      virtual CVRES  SetMode              (  VIDCAP_MODE&         newMode,
+                                             bool                 rawYUY2 );
 
    protected:
       /// ClearModes() - clears the mode list.

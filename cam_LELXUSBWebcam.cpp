@@ -36,13 +36,24 @@
 
 #include "phd.h"
 
-#if defined(OPENCV_CAMERA) && defined(LE_LXUSB_CAMERA)
+#if defined(LE_LXUSB_CAMERA)
 
-#include "camera.h"
 #include "cam_LELXUSBWebcam.h"
+#include "cam_wdm_base.h"
 #include "cameras/ShoestringLXUSB_DLL.h"
 
-using namespace cv;
+class CameraLELxUsbWebcam : public CameraLEWebcam
+{
+    bool m_isOpen;
+public:
+    CameraLELxUsbWebcam();
+    virtual ~CameraLELxUsbWebcam();
+
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+private:
+    virtual bool LEControl(int actions);
+};
 
 CameraLELxUsbWebcam::CameraLELxUsbWebcam(void)
     : CameraLEWebcam()
@@ -189,4 +200,9 @@ bool CameraLELxUsbWebcam::LEControl(int actions)
     return bError;
 }
 
-#endif // defined(OPENCV_CAMERA) && defined(LE_SERIAL_CAMERA)
+GuideCamera *LELxUsbWebcamCameraFactory::MakeLELxUsbWebcamCamera()
+{
+    return new CameraLELxUsbWebcam();
+}
+
+#endif // defined(LE_SERIAL_CAMERA)

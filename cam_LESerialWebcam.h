@@ -37,28 +37,12 @@
 #ifndef CAM_LESERIALWEBCAM_H_INCLUDED
 #define CAM_LESERIALWEBCAM_H_INCLUDED
 
-#include "cam_LEWebcam.h"
+class GuideCamera;
 
-class CameraLESerialWebcam : public CameraLEWebcam
+class LESerialWebcamCameraFactory
 {
-    SerialPort *m_pSerialPort;
-    bool m_InvertedLogic;
-    bool m_UseAmp;
-
-    int m_signalConfig;
-    bool m_Expo;
-    bool m_Amp;
-
 public:
-    CameraLESerialWebcam();
-    virtual ~CameraLESerialWebcam();
-
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    ShowPropertyDialog() override;
-
-private:
-    bool LEControl(int actions);
+    static GuideCamera *MakeLESerialWebcamCamera();
 };
 
 #endif //CAM_LESERIALWEBCAM_H_INCLUDED

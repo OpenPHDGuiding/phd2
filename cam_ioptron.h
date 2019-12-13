@@ -1,5 +1,5 @@
 /*
- *  cam_wdm.h
+ *  cam_ioptron.h
  *  Open PHD Guiding
  *
  *  Created by Andy Galasso
@@ -32,15 +32,15 @@
  *
  */
 
-#ifndef CAM_WDM_INCLUDED
-#define CAM_WDM_INCLUDED
+#ifndef CAM_IOPTRON_INCLUDED
+#define CAM_IOPTRON_INCLUDED
 
 class GuideCamera;
 
-class WDMCameraFactory
+class IoptronCameraFactory
 {
 public:
-    static GuideCamera *MakeWDMCamera();
+    static GuideCamera *MakeIoptronCamera();
 };
 
-#endif // CAM_WDM_INCLUDED
+#endif // CAM_IOPTRON_INCLUDED
