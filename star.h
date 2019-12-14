@@ -76,7 +76,7 @@ public:
      */
     bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation);
     bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation);
-    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
+    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion, const wxRect& roi);
 
     bool WasFound(FindResult result);
     bool WasFound(void);

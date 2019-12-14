@@ -67,6 +67,7 @@ struct ControllerState
     int waitSelectedRemaining;
     SettleOp settleOp;
     SettleParams settle;
+    wxRect roi;
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
     wxStopWatch *settleInRange;
@@ -109,7 +110,7 @@ static wxString ReentrancyError(const char *op)
     return wxString::Format("Cannot initiate %s while %s is in progress", op, ctrl.settleOp == OP_DITHER ? "dither" : "guide");
 }
 
-bool PhdController::Guide(bool recalibrate, const SettleParams& settle, wxString *error)
+bool PhdController::Guide(bool recalibrate, const SettleParams& settle, const wxRect& roi, wxString *error)
 {
     if (ctrl.state != STATE_IDLE)
     {
@@ -122,6 +123,7 @@ bool PhdController::Guide(bool recalibrate, const SettleParams& settle, wxString
     ctrl.forceCalibration = recalibrate;
     ctrl.settleOp = OP_GUIDE;
     ctrl.settle = settle;
+    ctrl.roi = roi;
     SETSTATE(STATE_SETUP);
     UpdateControllerState();
     return true;
@@ -373,7 +375,7 @@ void PhdController::UpdateControllerState(void)
         }
 
         case STATE_SELECT_STAR: {
-            bool error = pFrame->AutoSelectStar();
+            bool error = pFrame->AutoSelectStar(ctrl.roi);
             if (error)
             {
                 Debug.Write(wxString::Format("auto find star failed, attempts remaining = %d\n", ctrl.autoFindAttemptsRemaining));

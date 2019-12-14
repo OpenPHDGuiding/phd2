@@ -693,7 +693,7 @@ static void RemoveItems(std::set<Peak>& stars, const std::set<int>& to_erase)
     }
 }
 
-bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion)
+bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi)
 {
     if (!image.Subframe.IsEmpty())
     {
@@ -703,11 +703,34 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     wxBusyCursor busy;
 
-    Debug.Write(wxString::Format("Star::AutoFind called with edgeAllowance = %d searchRegion = %d\n", extraEdgeAllowance, searchRegion));
+    Debug.Write(wxString::Format("Star::AutoFind called with edgeAllowance = %d "
+                                 "searchRegion = %d roi = %dx%d@%d,%d\n",
+                                 extraEdgeAllowance, searchRegion, roi.width, roi.height,
+                                 roi.x, roi.y));
 
     // run a 3x3 median first to eliminate hot pixels
     usImage smoothed;
     smoothed.CopyFrom(image);
+    if (!roi.IsEmpty())
+    {
+        // set the subrame to the roi so that the Median3
+        // operation blanks pixels outside the ROI.
+        smoothed.Subframe = roi;
+        smoothed.Subframe.Intersect(wxRect(smoothed.Size));
+
+        Debug.Write(wxString::Format("AutoFind: using ROI %dx%d@%d,%d\n",
+                                     smoothed.Subframe.width, smoothed.Subframe.height,
+                                     smoothed.Subframe.x, smoothed.Subframe.y));
+
+        if (smoothed.Subframe.width < searchRegion ||
+            smoothed.Subframe.height < searchRegion)
+        {
+            Debug.Write(wxString::Format("AutoFind: bad ROI %dx%d\n",
+                                         smoothed.Subframe.width,
+                                         smoothed.Subframe.height));
+            return false;
+        }
+    }
     Median3(smoothed);
 
     // convert to floating point
@@ -914,7 +937,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                 if ((maxVal - tmp.PeakVal) * 255U > maxVal)
                 {
                     // false positive saturation, flat top but below maxVal
-                    Debug.Write(wxString::Format("AutoSelect: false positive saturation peak = %hu, max = %hu\n", tmp.PeakVal, maxVal));
+                    Debug.Write(wxString::Format("AutoFind: false positive saturation peak = %hu, max = %hu\n", tmp.PeakVal, maxVal));
                 }
                 else
                 {
@@ -928,14 +951,14 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         if (foundSaturated)
         {
             // use the peak overall pixel value as the saturation limit
-            Debug.Write(wxString::Format("AutoSelect: using saturation level peakVal = %hu\n", maxVal));
+            Debug.Write(wxString::Format("AutoFind: using saturation level peakVal = %hu\n", maxVal));
             sat_level = maxVal; // includes pedestal
         }
         else
         {
             // no staurated stars found, can't make any assumption about whether the max val is saturated
 
-            Debug.Write(wxString::Format("AutoSelect: using saturation level from BPP %u and pedestal %hu\n",
+            Debug.Write(wxString::Format("AutoFind: using saturation level from BPP %u and pedestal %hu\n",
                 image.BitsPerPixel, image.Pedestal));
 
             sat_level = ((1U << image.BitsPerPixel) - 1) + image.Pedestal;
@@ -948,7 +971,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     if (tmp > 65535) tmp = 65535;
     unsigned short sat_thresh = (unsigned short) tmp;
 
-    Debug.Write(wxString::Format("AutoSelect: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
+    Debug.Write(wxString::Format("AutoFind: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
         image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
 
     // Final star selection
@@ -959,7 +982,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     for (int pass = 1; pass <= 3; pass++)
     {
-        Debug.Write(wxString::Format("AutoSelect: finding best star pass %d\n", pass));
+        Debug.Write(wxString::Format("AutoFind: finding best star pass %d\n", pass));
 
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {

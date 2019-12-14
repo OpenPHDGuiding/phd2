@@ -150,22 +150,26 @@ bool QuickLRecon(usImage& img)
 bool Median3(usImage& img)
 {
     usImage tmp;
-    tmp.Init(img.Size);
 
-    bool err;
+    if (tmp.Init(img.Size))
+    {
+        Debug.Write("Median3: ERROR: memory allocation failure!\n");
+        return true;
+    }
 
     if (img.Subframe.IsEmpty())
     {
-        err = Median3(tmp.ImageData, img.ImageData, img.Size, wxRect(img.Size));
+        Median3(tmp.ImageData, img.ImageData, img.Size, wxRect(img.Size));
     }
     else
     {
         tmp.Clear();
-        err = Median3(tmp.ImageData, img.ImageData, img.Size, img.Subframe);
+        Median3(tmp.ImageData, img.ImageData, img.Size, img.Subframe);
     }
 
     img.SwapImageData(tmp);
-    return err;
+
+    return false;
 }
 
 inline static void swap(unsigned short& a, unsigned short& b)
@@ -316,7 +320,7 @@ inline static unsigned short median3(const unsigned short l[3])
     return l0;
 }
 
-bool Median3(unsigned short *dst, const unsigned short *src, const wxSize& size, const wxRect& rect)
+void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size, const wxRect& rect)
 {
     int const W = size.GetWidth();
     int const RX = rect.GetX();
@@ -425,8 +429,6 @@ bool Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
     *d = median4(a);
 
 #undef IX
-
-    return false;
 }
 
 static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)

@@ -106,7 +106,7 @@ public:
     void OnPaint(wxPaintEvent& evt) override;
 
     bool IsLocked() override;
-    bool AutoSelect() override;
+    bool AutoSelect(const wxRect& roi) override;
     const PHD_Point& CurrentPosition() override;
     wxRect GetBoundingBox() override;
     int GetMaxMovePixels() override;

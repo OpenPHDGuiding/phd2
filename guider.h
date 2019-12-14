@@ -288,7 +288,7 @@ public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
 
     virtual bool IsLocked() = 0;
-    virtual bool AutoSelect() = 0;
+    virtual bool AutoSelect(const wxRect& roi = wxRect()) = 0;
 
     virtual const PHD_Point& CurrentPosition() = 0;
     virtual wxRect GetBoundingBox() = 0;

@@ -186,6 +186,7 @@ struct NV
     NV(const wxString& n_, const json_value *v_) : n(n_), v(json_format(v_)) { }
     NV(const wxString& n_, const PHD_Point& p) : n(n_) { JAry ary; ary << p.X << p.Y; v = ary.str(); }
     NV(const wxString& n_, const wxPoint& p) : n(n_) { JAry ary; ary << p.x << p.y; v = ary.str(); }
+    NV(const wxString& n_, const wxSize& s) : n(n_) { JAry ary; ary << s.x << s.y; v = ary.str(); }
     NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
@@ -906,11 +907,46 @@ static void stop_capture(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static bool parse_rect(wxRect *r, const json_value *j)
+{
+    if (j->type != JSON_ARRAY)
+        return false;
+
+    int a[4];
+    const json_value *jv = j->first_child;
+    for (int i = 0; i < 4; i++)
+    {
+        if (!jv || jv->type != JSON_INT)
+            return false;
+        a[i] = jv->int_value;
+        jv = jv->next_sibling;
+    }
+    if (jv)
+        return false; // extra value
+
+    r->x = a[0];
+    r->y = a[1];
+    r->width = a[2];
+    r->height = a[3];
+
+    return true;
+}
+
 static void find_star(JObj& response, const json_value *params)
 {
     VERIFY_GUIDER(response);
 
-    bool error = pFrame->AutoSelectStar();
+    Params p("roi", params);
+
+    wxRect roi;
+    const json_value *j = p.param("roi");
+    if (j && !parse_rect(&roi, j))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid ROI param");
+        return;
+    }
+
+    bool error = pFrame->AutoSelectStar(roi);
 
     if (!error)
     {
@@ -1177,31 +1213,6 @@ static bool parse_point(PHD_Point *pt, const json_value *j)
     if (!get_double(&x, jx) || !get_double(&y, jy))
         return false;
     pt->SetXY(x, y);
-    return true;
-}
-
-static bool parse_rect(wxRect *r, const json_value *j)
-{
-    if (j->type != JSON_ARRAY)
-        return false;
-
-    int a[4];
-    const json_value *jv = j->first_child;
-    for (int i = 0; i < 4; i++)
-    {
-        if (!jv || jv->type != JSON_INT)
-            return false;
-        a[i] = jv->int_value;
-        jv = jv->next_sibling;
-    }
-    if (jv)
-        return false; // extra value
-
-    r->x = a[0];
-    r->y = a[1];
-    r->width = a[2];
-    r->height = a[3];
-
     return true;
 }
 
@@ -1529,7 +1540,7 @@ static void guide(JObj& response, const json_value *params)
 
     SettleParams settle;
 
-    Params p("settle", "recalibrate", params);
+    Params p("settle", "recalibrate", "roi", params);
     const json_value *p0 = p.param("settle");
     if (!p0 || p0->type != JSON_OBJECT)
     {
@@ -1554,6 +1565,14 @@ static void guide(JObj& response, const json_value *params)
         }
     }
 
+    wxRect roi;
+    const json_value *p2 = p.param("roi");
+    if (p2 && !parse_rect(&roi, p2))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid ROI param");
+        return;
+    }
+
     if (recalibrate && !pConfig->Global.GetBoolean("/server/guide_allow_recalibrate", true))
     {
         Debug.AddLine("ignoring client recalibration request since guide_allow_recalibrate = false");
@@ -1564,7 +1583,7 @@ static void guide(JObj& response, const json_value *params)
 
     if (!PhdController::CanGuide(&err))
         response << jrpc_error(1, err);
-    else if (PhdController::Guide(recalibrate, settle, &err))
+    else if (PhdController::Guide(recalibrate, settle, roi, &err))
         response << jrpc_result(0);
     else
         response << jrpc_error(1, err);
@@ -1643,6 +1662,16 @@ static void get_camera_binning(JObj& response, const json_value *params)
     {
         int binning = pCamera->Binning;
         response << jrpc_result(binning);
+    }
+    else
+        response << jrpc_error(1, "camera not connected");
+}
+
+static void get_camera_frame_size(JObj& response, const json_value *params)
+{
+    if (pCamera && pCamera->Connected)
+    {
+        response << jrpc_result(pCamera->FullSize);
     }
     else
         response << jrpc_error(1, "camera not connected");
@@ -2151,6 +2180,7 @@ static bool handle_request(JRpcCall& call)
         { "get_search_region", &get_search_region, },
         { "shutdown", &shutdown, },
         { "get_camera_binning", &get_camera_binning, },
+        { "get_camera_frame_size", &get_camera_frame_size, },
         { "get_current_equipment", &get_current_equipment, },
         { "get_guide_output_enabled", &get_guide_output_enabled, },
         { "set_guide_output_enabled", &set_guide_output_enabled, },

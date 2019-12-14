@@ -403,7 +403,7 @@ public:
     bool StopCapturing();
     bool StartSingleExposure(int duration, const wxRect& subframe);
 
-    bool AutoSelectStar();
+    bool AutoSelectStar(const wxRect& roi = wxRect());
 
     void SetPaused(PauseType pause);
 

@@ -1753,7 +1753,7 @@ bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
     return false;
 }
 
-bool MyFrame::AutoSelectStar()
+bool MyFrame::AutoSelectStar(const wxRect& roi)
 {
     if (pGuider->IsCalibratingOrGuiding())
     {
@@ -1761,7 +1761,7 @@ bool MyFrame::AutoSelectStar()
         return true; // error
     }
 
-    return pGuider->AutoSelect();
+    return pGuider->AutoSelect(roi);
 }
 
 void MyFrame::StartCapturing()
@@ -1880,7 +1880,8 @@ bool MyFrame::StartLooping()
             }
             else
             {
-                throw ERROR_INFO("cannot start looping when capture active");
+                // already looping, nothing to do
+                return false;
             }
         }
 

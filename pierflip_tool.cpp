@@ -164,7 +164,7 @@ static bool StartCalibration(wxString *err)
     settle.timeoutSec = 90.0;
     settle.tolerancePx = 99.0;
 
-    return PhdController::Guide(true /* recalibrate */, settle, err);
+    return PhdController::Guide(true /* recalibrate */, settle, wxRect(), err);
 }
 
 void PierFlipCalToolWin::OnRestartClick(wxCommandEvent& event)

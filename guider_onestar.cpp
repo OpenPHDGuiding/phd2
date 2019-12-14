@@ -389,7 +389,7 @@ static wxString StarStatus(const Star& star)
     return status;
 }
 
-bool GuiderOneStar::AutoSelect()
+bool GuiderOneStar::AutoSelect(const wxRect& roi)
 {
     Debug.Write("GuiderOneStar::AutoSelect enter\n");
 
@@ -415,7 +415,7 @@ bool GuiderOneStar::AutoSelect()
             edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
 
         Star newStar;
-        if (!newStar.AutoFind(*image, edgeAllowance, m_searchRegion))
+        if (!newStar.AutoFind(*image, edgeAllowance, m_searchRegion, roi))
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
