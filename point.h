@@ -55,17 +55,17 @@ public:
     {
     }
 
-    PHD_Point(void)
+    PHD_Point()
     {
         Invalidate();
     }
 
-    bool IsValid(void) const
+    bool IsValid() const
     {
         return m_valid;
     }
 
-    void Invalidate(void)
+    void Invalidate()
     {
         m_valid = false;
     }
@@ -116,7 +116,7 @@ public:
         return Distance(*pPoint);
     }
 
-    double Distance(void) const
+    double Distance() const
     {
         return hypot(X, Y);
     }
@@ -137,7 +137,7 @@ public:
         return dRet;
     }
 
-    double Angle(void) const
+    double Angle() const
     {
         PHD_Point origin(0,0);
 
@@ -260,7 +260,7 @@ public:
         BeginShift();
     }
 
-    const PHD_Point& ShiftRate(void) const { return m_rate; }
+    const PHD_Point& ShiftRate() const { return m_rate; }
 };
 
 #endif /* POINT_H_INCLUDED */
