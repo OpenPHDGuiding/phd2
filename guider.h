@@ -230,7 +230,7 @@ public:
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky() const { return m_lockPosIsSticky; }
     void SetIgnoreLostStarLooping(bool ignore);
-    const PHD_Point& LockPosition() const;
+    const ShiftPoint& LockPosition() const;
     const LockPosShiftParams& GetLockPosShiftParams() const { return m_lockPosShift; }
     void ForceFullFrame();
 
@@ -333,7 +333,7 @@ inline bool Guider::GetScaleImage() const
     return m_scaleImage;
 }
 
-inline const PHD_Point& Guider::LockPosition() const
+inline const ShiftPoint& Guider::LockPosition() const
 {
     return m_lockPosition;
 }

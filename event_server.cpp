@@ -1097,18 +1097,54 @@ static void set_lock_shift_enabled(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static bool is_camera_shift_req(const json_value *params)
+{
+    Params p("axes", params);
+    const json_value *j = p.param("axes");
+    if (j)
+    {
+        const char *axes = string_val(j);
+        if (wxStricmp(axes, "x/y") == 0 ||
+            wxStricmp(axes, "camera") == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+static JObj& operator<<(JObj& j, const LockPosShiftParams& l)
+{
+    j << NV("enabled", l.shiftEnabled);
+    if (l.shiftRate.IsValid())
+    {
+        j << NV("rate", l.shiftRate)
+          << NV("units", l.shiftUnits == UNIT_ARCSEC ? "arcsec/hr" : "pixels/hr")
+          << NV("axes", l.shiftIsMountCoords ? "RA/Dec" : "X/Y");
+    }
+    return j;
+}
+
 static void get_lock_shift_params(JObj& response, const json_value *params)
 {
     VERIFY_GUIDER(response);
+
     const LockPosShiftParams& lockShift = pFrame->pGuider->GetLockPosShiftParams();
     JObj rslt;
-    rslt << NV("enabled", lockShift.shiftEnabled);
-    if (lockShift.shiftRate.IsValid())
+
+    if (is_camera_shift_req(params))
     {
-        rslt << NV("rate", lockShift.shiftRate)
-             << NV("units", lockShift.shiftUnits == UNIT_ARCSEC ? "arcsec/hr" : "pixels/hr")
-             << NV("axes", lockShift.shiftIsMountCoords ? "RA/Dec" : "X/Y");
+        LockPosShiftParams tmp;
+        tmp.shiftEnabled = lockShift.shiftEnabled;
+        const ShiftPoint& lock = pFrame->pGuider->LockPosition();
+        tmp.shiftRate = lock.ShiftRate() * 3600; // px/sec => px/hr
+        tmp.shiftUnits = UNIT_PIXELS;
+        tmp.shiftIsMountCoords = false;
+        rslt << tmp;
     }
+    else
+        rslt << lockShift;
+
     response << jrpc_result(rslt);
 }
 
