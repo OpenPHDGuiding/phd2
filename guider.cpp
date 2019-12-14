@@ -1262,6 +1262,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             if (ShiftLockPosition())
             {
+                EvtServer.NotifyLockShiftLimitReached();
                 pFrame->Alert(_("Shifted lock position outside allowable area. Lock Position Shift disabled."));
                 EnableLockPosShift(false);
             }

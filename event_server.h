@@ -73,6 +73,7 @@ public:
     void NotifyGuidingDithered(double dx, double dy);
     void NotifySetLockPosition(const PHD_Point& xy);
     void NotifyLockPositionLost();
+    void NotifyLockShiftLimitReached();
     void NotifyAppState();
     void NotifySettleBegin();
     void NotifySettling(double distance, double time, double settleTime, bool starLocked);

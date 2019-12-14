@@ -2602,6 +2602,11 @@ void EventServer::NotifyLockPositionLost()
     SIMPLE_NOTIFY("LockPositionLost");
 }
 
+void EventServer::NotifyLockShiftLimitReached()
+{
+    SIMPLE_NOTIFY("LockPositionShiftLimitReached");
+}
+
 void EventServer::NotifyAppState()
 {
     if (m_eventServerClients.empty())
