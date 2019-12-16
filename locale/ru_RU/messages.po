@@ -620,7 +620,7 @@ msgstr "Предыдущая калибровка восстановлена"
 
 #: calstep_dialog.cpp:61
 msgid "Detailed Calibration Parameters"
-msgstr "Совместные параметры"
+msgstr "Параметры калибровки"
 
 #: calstep_dialog.cpp:104
 msgid "Input Parameters"
