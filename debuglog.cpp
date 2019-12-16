@@ -76,13 +76,13 @@ bool DebugLog::Init(const wxDateTime& logFileTime, bool bEnable, bool bForceOpen
         m_bEnabled = false;
     }
 
-    if (bEnable && (m_pPathName.IsEmpty() || bForceOpen))
+    if (bEnable && (m_path.IsEmpty() || bForceOpen))
     {
-        m_pPathName = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_DebugLog_%Y-%m-%d_%H%M%S.txt"));
+        m_path = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_DebugLog_%Y-%m-%d_%H%M%S.txt"));
 
-        if (!wxFFile::Open(m_pPathName, "a"))
+        if (!wxFFile::Open(m_path, "a"))
         {
-            wxMessageBox(wxString::Format("unable to open file %s", m_pPathName));
+            wxMessageBox(wxString::Format("unable to open file %s", m_path));
         }
     }
 

@@ -44,7 +44,7 @@ private:
     bool m_bEnabled;
     wxCriticalSection m_criticalSection;
     wxDateTime m_lastWriteTime;
-    wxString m_pPathName;
+    wxString m_path;
 
     void InitVars();
 
