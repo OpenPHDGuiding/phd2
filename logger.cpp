@@ -79,8 +79,8 @@ const wxString& Logger::GetLogDir()
 
         if (pConfig)
         {
-            rslt = pConfig->Global.GetString("/frame/LogDir", "");
-            if (rslt.length() == 0)
+            rslt = pConfig->Global.GetString("/frame/LogDir", wxEmptyString);
+            if (rslt.empty())
                 rslt = DefaultDir();                // user has never even looked at it
             else
                 if (!wxDirExists(rslt))        // user might have deleted our old directories
