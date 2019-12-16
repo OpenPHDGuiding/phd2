@@ -38,18 +38,18 @@
 #define ALWAYS_FLUSH_DEBUGLOG
 const int RetentionPeriod = 30;
 
-void DebugLog::InitVars(void)
+void DebugLog::InitVars()
 {
     m_bEnabled = false;
     m_lastWriteTime = wxDateTime::UNow();
 }
 
-DebugLog::DebugLog(void)
+DebugLog::DebugLog()
 {
     InitVars();
 }
 
-DebugLog::~DebugLog(void)
+DebugLog::~DebugLog()
 {
     wxFFile::Flush();
     wxFFile::Close();
@@ -130,7 +130,7 @@ wxString DebugLog::AddBytes(const wxString& str, const unsigned char *pBytes, un
     return Write(Line + "\n");
 }
 
-bool DebugLog::Flush(void)
+bool DebugLog::Flush()
 {
     bool bReturn = true;
 

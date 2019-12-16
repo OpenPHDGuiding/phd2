@@ -38,7 +38,7 @@
 class Logger
 {
     wxString m_CurrentDir;
-    bool m_Initialized;                // internal state check - eliminates need for "init" method
+    bool m_Initialized;
 
 protected:
 
@@ -47,9 +47,10 @@ protected:
 
 public:
 
-    Logger(void);
-    ~Logger(void);
-    const wxString& GetLogDir(void);
+    Logger();
+    virtual ~Logger();
+
+    const wxString& GetLogDir();
 
     void RemoveMatchingFiles(const wxString& filePattern, int DaysOld);
     void RemoveOldDirectories(const wxString& dirPattern, int DaysOld);

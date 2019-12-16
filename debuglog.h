@@ -46,21 +46,21 @@ private:
     wxDateTime m_lastWriteTime;
     wxString m_pPathName;
 
-    void InitVars(void);
+    void InitVars();
 
 public:
-    DebugLog(void);
-    ~DebugLog(void);
+    DebugLog();
+    ~DebugLog();
 
     bool Enable(bool bEnabled);
-    bool IsEnabled(void);
+    bool IsEnabled() const;
     bool Init(const wxDateTime& logFileTime, bool bEnable, bool bForceOpen = false);
     wxString AddLine(const wxString& str); // adds a newline
     wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
     wxString Write(const wxString& str);
-    bool Flush(void);
+    bool Flush();
 
-    bool ChangeDirLog(const wxString& newdir);
+    bool ChangeDirLog(const wxString& newdir) override;
     void RemoveOldFiles();
 };
 
@@ -69,7 +69,7 @@ extern DebugLog& operator<< (DebugLog& out, const char *str);
 extern DebugLog& operator<< (DebugLog& out, const int i);
 extern DebugLog& operator<< (DebugLog& out, const double d);
 
-inline bool DebugLog::IsEnabled(void)
+inline bool DebugLog::IsEnabled() const
 {
     return m_bEnabled;
 }

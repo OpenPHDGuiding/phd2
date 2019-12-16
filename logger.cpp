@@ -39,12 +39,12 @@
 #include "wx/dir.h"
 #include "wx/filefn.h"
 
-Logger::Logger(void)
+Logger::Logger()
 {
     m_Initialized = false;
 }
 
-Logger::~Logger(void)
+Logger::~Logger()
 {
 }
 
@@ -54,8 +54,9 @@ bool Logger::ChangeDirLog(const wxString& newdir)
     return false;
 }
 
-// Return a valid default directory location for log files.  On Windows, this will normally be "My Documents\PHD2"
-static wxString DefaultDir(void)
+// Return a valid default directory location for log files.  On
+// Windows, this will normally be "My Documents\PHD2"
+static wxString DefaultDir()
 {
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
     wxString rslt = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD2";
@@ -67,8 +68,9 @@ static wxString DefaultDir(void)
     return rslt;
 }
 
-// Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-const wxString& Logger::GetLogDir(void)
+// Return the current logging directory.  Design invaraint: returned
+// string must always be a valid directory
+const wxString& Logger::GetLogDir()
 {
     if (!m_Initialized)
     {
@@ -83,7 +85,8 @@ const wxString& Logger::GetLogDir(void)
             else
                 if (!wxDirExists(rslt))        // user might have deleted our old directories
                 {
-                    if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
+                    // will build entire hierarchy if needed
+                    if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
                         rslt = DefaultDir();
                 }
         }
@@ -97,8 +100,9 @@ const wxString& Logger::GetLogDir(void)
     return m_CurrentDir;
 }
 
-// Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
-// and the current directory will be left unchanged.
+// Change the current logging directory, creating a new directory if
+// needed. File system errors will result in a 'false' return and the
+// current directory will be left unchanged.
 bool Logger::SetLogDir(const wxString& dir)
 {
     wxString newdir(dir);
@@ -110,7 +114,7 @@ bool Logger::SetLogDir(const wxString& dir)
         newdir = newdir.substr(0, newdir.length() - stemp.length());
     }
 
-    if (newdir.length() == 0)                // Empty-string shorthand for "default location"
+    if (newdir.empty())                // Empty-string shorthand for "default location"
     {
         newdir = DefaultDir();
     }
@@ -118,7 +122,8 @@ bool Logger::SetLogDir(const wxString& dir)
     {
         if (!wxDirExists(newdir))
         {
-            bOk = wxFileName::Mkdir(newdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);        // will build entire hierarchy; client handles errors
+            // will build entire hierarchy; client handles errors
+            bOk = wxFileName::Mkdir(newdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
         }
     }
 
@@ -131,8 +136,9 @@ bool Logger::SetLogDir(const wxString& dir)
     return bOk;
 }
 
-// Clean up old log files in the directory.  Caller gives us the file glob - like PHD2_DebugLog*.txt - and the retention
-// period.  Files older than that are removed.
+// Clean up old log files in the directory.  Caller gives us the file
+// glob - like PHD2_DebugLog*.txt - and the retention period.  Files
+// older than that are removed.
 void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
 {
     int hitCount = 0;
@@ -164,8 +170,9 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
         Debug.Write(wxString::Format("Removed %d files of pattern: %s\n", hitCount, filePattern));
 }
 
-// Same as RemoveMatchingFiles but this applies to subdirectories in the logging directory.  Implemented to clean up the "CameraFrames..." diagnostic
-// directories for image logging
+// Same as RemoveMatchingFiles but this applies to subdirectories in
+// the logging directory.  Implemented to clean up the
+// "CameraFrames..." diagnostic directories for image logging
 void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
 {
     wxString dirRoot = GetLogDir();
