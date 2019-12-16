@@ -538,9 +538,9 @@ bool PhdApp::OnInit()
         return false;
     }
 
-    m_initTime = wxDateTime::Now();
+    m_logFileTime = wxDateTime::Now();
 
-    Debug.Init(GetInitTime(), true);
+    Debug.Init(GetLogFileTime(), true);
 
     Debug.Write(wxString::Format("PHD2 version %s begins execution with:\n", FULLVER));
     Debug.Write(wxString::Format("   %s\n", GetOsDescription()));

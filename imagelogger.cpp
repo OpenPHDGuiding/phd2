@@ -85,7 +85,7 @@ struct IL
         {
             // first time through or debug log changed
             debugLogDir = dir;
-            subdir = dir + PATHSEPSTR + wxGetApp().GetInitTime().Format("PHD2_CameraFrames_%Y-%m-%d-%H%M%S");
+            subdir = dir + PATHSEPSTR + wxGetApp().GetLogFileTime().Format("PHD2_CameraFrames_%Y-%m-%d-%H%M%S");
             if (!wxFileName::Mkdir(subdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
             {
                 Debug.Write(wxString::Format("Error: Could not create frame logging directory %s\n", subdir));

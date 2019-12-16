@@ -223,7 +223,7 @@ class PhdApp : public wxApp
     long m_instanceNumber;
     bool m_resetConfig;
     wxString m_resourcesDir;
-    wxDateTime m_initTime;
+    wxDateTime m_logFileTime;
 
 protected:
 
@@ -244,7 +244,7 @@ public:
     static void ExecInMainThread(std::function<void()> func);
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
-    const wxDateTime& GetInitTime() const { return m_initTime; }
+    const wxDateTime& GetLogFileTime() const { return m_logFileTime; }
     wxString UserAgent() const;
 };
 

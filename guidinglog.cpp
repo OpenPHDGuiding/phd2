@@ -205,10 +205,10 @@ bool GuidingLog::EnableLogging()
 
     try
     {
-        const wxDateTime& initTime = wxGetApp().GetInitTime();
+        const wxDateTime& logFileTime = wxGetApp().GetLogFileTime();
         if (!m_file.IsOpened())
         {
-            m_fileName = GetLogDir() + PATHSEPSTR + initTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
+            m_fileName = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
 
             if (!m_file.Open(m_fileName, "w"))
             {
@@ -220,7 +220,7 @@ bool GuidingLog::EnableLogging()
         assert(m_file.IsOpened());
 
         m_file.Write(_T("PHD2 version ") FULLVER _T(" [") PHD_OSNAME _T("]") _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
-            initTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            logFileTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
 
         m_enabled = true;
 
