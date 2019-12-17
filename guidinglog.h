@@ -105,16 +105,17 @@ class GuidingLog : public Logger
     bool m_keepFile;
     bool m_isGuiding;
 
+    void EnableLogging();
+    void DisableLogging();
+
 public:
     GuidingLog();
     ~GuidingLog();
 
-    bool EnableLogging();
-    bool EnableLogging(bool enabled);
-    void DisableLogging();
+    void EnableLogging(bool enabled);
     bool IsEnabled() const;
     bool Flush();
-    void Close();
+    void CloseGuideLog();
 
     wxFFile& File();
 

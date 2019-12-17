@@ -232,8 +232,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
 
-    GuideLog.EnableLogging(true);
-
     m_sampling = 1.0;
 
     #include "icons/phd2_128.png.h"
@@ -1907,6 +1905,8 @@ bool MyFrame::StartGuiding()
         return error;
     }
 
+    wxGetApp().CheckLogRollover();
+
     if (pMount && pMount->IsConnected() &&
         pCamera && pCamera->Connected &&
         pGuider->GetState() >= STATE_SELECTED)
@@ -2088,7 +2088,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
     // stop the socket server and event server
     StartServer(false);
 
-    GuideLog.Close();
+    GuideLog.CloseGuideLog();
 
     pConfig->Global.SetString("/perspective", m_mgr.SavePerspective());
     wxString geometry = wxString::Format("%c;%d;%d;%d;%d",

@@ -35,18 +35,16 @@
 
 #include "phd.h"
 
+#include <wx/dir.h>
+
 #define ALWAYS_FLUSH_DEBUGLOG
 const int RetentionPeriod = 30;
 
-void DebugLog::InitVars()
-{
-    m_bEnabled = false;
-    m_lastWriteTime = wxDateTime::UNow();
-}
-
 DebugLog::DebugLog()
+    :
+    m_enabled(false),
+    m_lastWriteTime(wxDateTime::UNow())
 {
-    InitVars();
 }
 
 DebugLog::~DebugLog()
@@ -55,56 +53,98 @@ DebugLog::~DebugLog()
     wxFFile::Close();
 }
 
-bool DebugLog::Enable(bool bEnabled)
+static bool ParseLogTimestamp(wxDateTime *p, const wxString& s)
 {
-    bool prevState = m_bEnabled;
+    wxDateTime dt;
+    wxString::const_iterator iter;
+    if (dt.ParseFormat(s, "%Y-%m-%d_%H%M%S", wxDateTime(), &iter) &&
+        iter == s.end())
+    {
+        *p = dt;
+        return true;
+    }
+    return false;
+}
 
-    m_bEnabled = bEnabled;
+wxDateTime DebugLog::GetLogFileTime()
+{
+    // find the latest log file time
+    wxDir dir(Debug.GetLogDir());
+    wxString filename;
+    // PHD2_DebugLog_YYYY-mm-dd_HHMMSS.txt
+    bool cont = dir.GetFirst(&filename, "PHD2_DebugLog_*.txt", wxDIR_FILES);
+    wxDateTime latest;
+    while (cont)
+    {
+        wxDateTime dt;
+        if (filename.length() == 35 &&
+            ParseLogTimestamp(&dt, filename.substr(14, 17))
+            && (!latest.IsValid() || dt.IsLaterThan(latest)))
+        {
+            latest = dt;
+        }
+        cont = dir.GetNext(&filename);
+    }
+
+    wxDateTime res = wxDateTime::Now();
+    if (latest.IsValid() && PhdApp::IsSameImagingDay(latest, res))
+        res = latest;
+
+    return res;
+}
+
+bool DebugLog::Enable(bool enable)
+{
+    bool prevState = m_enabled;
+
+    m_enabled = enable;
 
     return prevState;
 }
 
-bool DebugLog::Init(const wxDateTime& logFileTime, bool bEnable, bool bForceOpen)
+void DebugLog::InitDebugLog(bool enable, bool forceOpen)
 {
+    const wxDateTime& logFileTime = wxGetApp().GetLogFileTime();
+
     wxCriticalSectionLocker lock(m_criticalSection);
 
-    if (m_bEnabled)
+    if (m_enabled)
     {
         wxFFile::Flush();
         wxFFile::Close();
 
-        m_bEnabled = false;
+        m_enabled = false;
     }
 
-    if (bEnable && (m_path.IsEmpty() || bForceOpen))
+    if (enable && (m_path.IsEmpty() || forceOpen))
     {
         m_path = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_DebugLog_%Y-%m-%d_%H%M%S.txt"));
 
         if (!wxFFile::Open(m_path, "a"))
         {
-            wxMessageBox(wxString::Format("unable to open file %s", m_path));
+            wxMessageBox(wxString::Format(_("unable to open file %s"), m_path));
         }
     }
 
-    m_bEnabled = bEnable;
-
-    return m_bEnabled;
+    m_enabled = enable;
 }
 
 bool DebugLog::ChangeDirLog(const wxString& newdir)
 {
-    bool bEnabled = IsEnabled();
-    bool bOk = true;
+    bool enabled = IsEnabled();
+    bool ok = true;
 
     if (!SetLogDir(newdir))
     {
+        Debug.Write(wxString::Format("Error: unable to set new log dir %s\n", newdir));
         wxMessageBox(wxString::Format("invalid folder name %s, debug log folder unchanged", newdir));
-        bOk = false;
+        ok = false;
     }
 
-    Init(wxGetApp().GetLogFileTime(), bEnabled, true);        // lots of side effects, but all good...
+    Debug.Write(wxString::Format("Changed log dir to %s\n", newdir));
+    InitDebugLog(enabled, true);
 
-    return bOk;
+    return ok;
 }
 
 void DebugLog::RemoveOldFiles()
@@ -132,21 +172,21 @@ wxString DebugLog::AddBytes(const wxString& str, const unsigned char *pBytes, un
 
 bool DebugLog::Flush()
 {
-    bool bReturn = true;
+    bool ret = true;
 
-    if (m_bEnabled)
+    if (m_enabled)
     {
         wxCriticalSectionLocker lock(m_criticalSection);
 
-        bReturn = wxFFile::Flush();
+        ret = wxFFile::Flush();
     }
 
-    return bReturn;
+    return ret;
 }
 
 wxString DebugLog::Write(const wxString& str)
 {
-    if (m_bEnabled)
+    if (m_enabled)
     {
         wxCriticalSectionLocker lock(m_criticalSection);
 

@@ -196,12 +196,10 @@ static void GuidingHeader(wxFFile& file)
     file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 }
 
-bool GuidingLog::EnableLogging()
+void GuidingLog::EnableLogging()
 {
     if (m_enabled)
-        return false;
-
-    bool bError = false;
+        return;
 
     try
     {
@@ -210,11 +208,12 @@ bool GuidingLog::EnableLogging()
         {
             m_fileName = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
 
-            if (!m_file.Open(m_fileName, "w"))
+            if (!m_file.Open(m_fileName, "a"))
             {
                 throw ERROR_INFO("unable to open file");
             }
-            m_keepFile = false;             // Don't keep it until something meaningful is logged
+            // If we are starting a new log, don't keep it until something meaningful is logged
+            m_keepFile = m_file.Length() > 0;
         }
 
         assert(m_file.IsOpened());
@@ -236,19 +235,15 @@ bool GuidingLog::EnableLogging()
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
     }
-
-    return bError;
 }
 
-bool GuidingLog::EnableLogging(bool enable)
+void GuidingLog::EnableLogging(bool enable)
 {
     if (enable)
-        return EnableLogging();
-
-    DisableLogging();
-    return false;
+        EnableLogging();
+    else
+        DisableLogging();
 }
 
 void GuidingLog::DisableLogging()
@@ -256,12 +251,14 @@ void GuidingLog::DisableLogging()
     if (!m_enabled)
         return;
 
-    assert(m_file.IsOpened());
-    wxDateTime now = wxDateTime::Now();
+    if (m_file.IsOpened())
+    {
+        wxDateTime now = wxDateTime::Now();
 
-    m_file.Write("\n");
-    m_file.Write("Log disabled at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-    Flush();
+        m_file.Write("\n");
+        m_file.Write("Log disabled at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+        Flush();
+    }
 
     m_enabled = false;
 
@@ -271,24 +268,23 @@ void GuidingLog::DisableLogging()
 
 bool GuidingLog::ChangeDirLog(const wxString& newdir)
 {
-    bool bEnabled = IsEnabled();
-    bool bOk = true;
+    bool enabled = IsEnabled();
+    bool ok = true;
 
-    if (bEnabled)
-    {
-        Close();
-    }
+    CloseGuideLog();
+
     if (!SetLogDir(newdir))
     {
         wxMessageBox(wxString::Format("invalid folder name %s, log folder unchanged", newdir));
-        bOk = false;
-    }
-    if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
-    {
-        EnableLogging();             // start fresh...
+        ok = false;
     }
 
-    return bOk;
+    if (enabled)             // if SetLogDir failed, no harm no foul, stay with original. Otherwise
+    {
+        EnableLogging();     // start fresh...
+    }
+
+    return ok;
 }
 
 void GuidingLog::RemoveOldFiles()
@@ -301,7 +297,7 @@ bool GuidingLog::Flush()
     if (!m_enabled)
         return false;
 
-    bool bError = false;
+    bool error = false;
 
     try
     {
@@ -315,25 +311,25 @@ bool GuidingLog::Flush()
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        error = true;
     }
 
-    return bError;
+    return error;
 }
 
-void GuidingLog::Close()
+void GuidingLog::CloseGuideLog()
 {
-    if (!m_enabled)
-        return;
+    if (m_file.IsOpened())
+    {
+        wxDateTime now = wxDateTime::Now();
 
-    assert(m_file.IsOpened());
-    wxDateTime now = wxDateTime::Now();
+        m_file.Write("\n");
+        m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+        Flush();
 
-    m_file.Write("\n");
-    m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-    Flush();
+        m_file.Close();
+    }
 
-    m_file.Close();
     m_enabled = false;
 
     if (!m_keepFile)            // Delete the file if nothing useful was logged

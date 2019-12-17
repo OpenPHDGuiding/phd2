@@ -415,6 +415,35 @@ static wxString GetOsDescription()
 #endif
 }
 
+static void OpenLogs(bool rollover)
+{
+    bool debugEnabled = rollover ? Debug.IsEnabled() : true;
+    bool forceDebugOpen = rollover ? true : false;
+    Debug.InitDebugLog(debugEnabled, forceDebugOpen);
+
+    Debug.Write(wxString::Format("PHD2 version %s %s execution with:\n", FULLVER,
+                                 rollover ? "continues" : "begins"));
+    Debug.Write(wxString::Format("   %s\n", GetOsDescription()));
+#if defined(__linux__)
+    Debug.Write(wxString::Format("   %s\n", wxGetLinuxDistributionInfo().Description));
+#endif
+    Debug.Write(wxString::Format("   %s\n", wxVERSION_STRING));
+    float dummy;
+    Debug.Write(wxString::Format("   cfitsio %.2lf\n", ffvers(&dummy)));
+#if defined(CV_VERSION)
+    Debug.Write(wxString::Format("   opencv %s\n", CV_VERSION));
+#endif
+
+    if (rollover)
+    {
+        bool guideEnabled = GuideLog.IsEnabled();
+        GuideLog.CloseGuideLog();
+        GuideLog.EnableLogging(guideEnabled);
+    }
+    else
+        GuideLog.EnableLogging(true);
+}
+
 struct LogToStderr
 {
     wxLog *m_prev;
@@ -538,21 +567,8 @@ bool PhdApp::OnInit()
         return false;
     }
 
-    m_logFileTime = wxDateTime::Now();
-
-    Debug.Init(GetLogFileTime(), true);
-
-    Debug.Write(wxString::Format("PHD2 version %s begins execution with:\n", FULLVER));
-    Debug.Write(wxString::Format("   %s\n", GetOsDescription()));
-#if defined(__linux__)
-    Debug.Write(wxString::Format("   %s\n", wxGetLinuxDistributionInfo().Description));
-#endif
-    Debug.Write(wxString::Format("   %s\n", wxVERSION_STRING));
-    float dummy;
-    Debug.Write(wxString::Format("   cfitsio %.2lf\n", ffvers(&dummy)));
-#if defined(CV_VERSION)
-    Debug.Write(wxString::Format("   opencv %s\n", CV_VERSION));
-#endif
+    m_logFileTime = DebugLog::GetLogFileTime();
+    OpenLogs(false /* not for rollover */);
 
     logger.Close(); // writes any deferrred error messages to the debug log
 
@@ -690,6 +706,33 @@ void PhdApp::ExecInMainThread(std::function<void()> func)
 wxString PhdApp::GetLocalesDir() const
 {
     return m_resourcesDir + PATHSEPSTR + _T("locale");
+}
+
+// get the imaging date for a given date-time
+//    log files started after midnight belong to the prior imaging day
+//    imgaging day rolls over at 9am
+static wxDateTime ImagingDay(const wxDateTime& dt)
+{
+    if (dt.GetHour() >= 9)
+        return dt.GetDateOnly();
+    // midnight .. 9am belongs to previous day
+    static wxDateSpan ONE_DAY(0 /* years */, 0 /* months */, 0 /* weeks */, 1 /* days */);
+    return dt.GetDateOnly().Subtract(ONE_DAY);
+}
+
+bool PhdApp::IsSameImagingDay(const wxDateTime& a, const wxDateTime& b)
+{
+    return ImagingDay(a).IsSameDate(ImagingDay(b));
+}
+
+void PhdApp::CheckLogRollover()
+{
+    wxDateTime now = wxDateTime::Now();
+    if (IsSameImagingDay(m_logFileTime, now))
+        return;
+
+    m_logFileTime = now;
+    OpenLogs(true /* rollover */);
 }
 
 wxString PhdApp::UserAgent() const

@@ -828,7 +828,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoRestore);
 
-    GuideLog.EnableLogging();               // Especially for newbies
+    GuideLog.EnableLogging(true);       // Especially for newbies
 
     // Construct a good baseline set of guiding parameters based on image scale
     SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning, m_pDecEncoder->GetValue());

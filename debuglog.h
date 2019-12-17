@@ -40,23 +40,22 @@
 
 class DebugLog : public wxFFile, public Logger
 {
-private:
-    bool m_bEnabled;
+    bool m_enabled;
     wxCriticalSection m_criticalSection;
     wxDateTime m_lastWriteTime;
     wxString m_path;
-
-    void InitVars();
 
 public:
     DebugLog();
     ~DebugLog();
 
-    bool Enable(bool bEnabled);
+    static wxDateTime GetLogFileTime();
+
+    bool Enable(bool enable);
     bool IsEnabled() const;
-    bool Init(const wxDateTime& logFileTime, bool bEnable, bool bForceOpen = false);
+    void InitDebugLog(bool enable, bool forceOpen);
     wxString AddLine(const wxString& str); // adds a newline
-    wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
+    wxString AddBytes(const wxString& str, const unsigned char *bytes, unsigned count);
     wxString Write(const wxString& str);
     bool Flush();
 
@@ -71,7 +70,7 @@ extern DebugLog& operator<< (DebugLog& out, const double d);
 
 inline bool DebugLog::IsEnabled() const
 {
-    return m_bEnabled;
+    return m_enabled;
 }
 
 extern DebugLog Debug;
