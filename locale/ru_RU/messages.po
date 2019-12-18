@@ -82,7 +82,7 @@ msgstr "Настройки"
 #: advanced_dialog.cpp:224 guiding_assistant.cpp:505 myframe.cpp:1247
 #: profile_wizard.cpp:328
 msgid "Help"
-msgstr "Помощь"
+msgstr "Справка"
 
 #: advanced_dialog.cpp:384 aui_controls.cpp:673 calreview_dialog.cpp:93
 #: config_indi.cpp:115 eegg.cpp:128 gear_dialog.cpp:272 gear_dialog.cpp:274
@@ -3520,7 +3520,7 @@ msgstr ""
 #: guide_algorithm_gaussian_process.cpp:348
 #, c-format
 msgid "Retain model (%% period)"
-msgstr "Сохранить модель (%% длительность)"
+msgstr "Сохранить модель (%% периода)"
 
 #: guide_algorithm_gaussian_process.cpp:349
 #, c-format
@@ -5287,7 +5287,7 @@ msgstr "&Закладки"
 
 #: myframe.cpp:605
 msgid "&Help"
-msgstr "&Помощь"
+msgstr "&Справка"
 
 #: myframe.cpp:655 myframe.cpp:868 myframe.cpp:961
 #, c-format
