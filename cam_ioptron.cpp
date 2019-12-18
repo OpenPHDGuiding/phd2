@@ -47,8 +47,14 @@ public:
     {
         m_rawYUY2 = true;
     }
-    bool CanSelectCamera() const override {
+    bool CanSelectCamera() const override
+    {
         // TODO: we could probably hanlde multiple cameras, but would need 2 cameras to test
+        return false;
+    }
+    bool GetDevicePixelSize(double *devPixelSize) override
+    {
+        *devPixelSize = 3.75;
         return false;
     }
 
