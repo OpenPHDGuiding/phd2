@@ -245,6 +245,7 @@ public:
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
     const wxDateTime& GetLogFileTime() const { return m_logFileTime; }
+    static wxDateTime ImagingDay(const wxDateTime& dt);
     static bool IsSameImagingDay(const wxDateTime& a, const wxDateTime& b);
     void CheckLogRollover();
     wxString UserAgent() const;

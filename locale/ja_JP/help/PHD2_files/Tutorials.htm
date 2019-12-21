@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Tutorials</title></head>
+<body>
+<h1><br>
+</h1>
+<h1><a name="Drift_Align"></a>PHD2 Drift Alignment Tool</h1>
+<span style="">The drift align tool in PHD2 can be used to quickly
+obtain a precise polar alignment of your equatorial mount. The process
+takes a little bit of practice, but after doing it a few times, you
+should be able to obtain an accurate polar alignment in minutes.<br></span>
+<br><h2>Preparation</h2><ul><li>Make sure your mount is reasonably level.</li><li>Make sure your scope is balanced and ready for guiding.</li><li>Try
+to get your mount's polar axis roughly aligned by using your mount's
+polar alignment scope if it has one. Otherwise, make sure the mount's
+polar axis is pointing towards the pole, and the altitude setting
+corresponds to your local latitude.</li><li>&nbsp;Make sure you can see your computer screen when you are standing at the mount.</li><li>&nbsp;Start PHD2 and connect your equipment.</li><li>&nbsp;&nbsp;You should be using an up-to-date version of PHD2..</li><li>&nbsp;&nbsp;These
+instructions assume you have an ASCOM connection to your mount so PHD2
+knows where your scope is pointing. You can still drift align without
+an ASCOM connection, see <a href="#Drift_Align_ASCOM">Note about ASCOM</a>.</li><li>&nbsp;Calibrate on any convenient guide star, preferably at a low declination.</li><li>&nbsp;Make
+sure your PHD2 settings have the correct values for your guide scope
+focal length and your guide camera pixel size. (Brain =&gt; Global tab
+for focal length, Camera tab for pixel size)</li></ul><br>Now you are ready for drift aligning.<br><br>
+
+<h2>Azimuth Alignment</h2>Open the Drift Align Tool:<br><br><img style="width: 608px; height: 554px;" alt="" src="da_IMG01.png"><br><br>You will see a window like this:<br><br><img style="width: 403px; height: 358px;" alt="" src="da_IMG02.png"><br><br>Position
+your scope for the Azimuth axis adjustment. Point near the Meridian and
+the celestial equator. You can either click the 'Slew' button, or move
+the mount manually.&nbsp; Your scope should now be pointing something
+like this:<br><br><img style="width: 362px; height: 478px;" alt="" src="da_IMG03.png"><br><br>And the Drift Align window will look like this:<br><br><img style="width: 458px; height: 409px;" alt="" src="da_IMG04.png"><br><br>Notice we are only a few degrees off the meridian ("Meridian offset"), and close to the equator (small value of Declination.)<br><br>You
+are going to alternate between measuring the error ('Drift'), and
+adjusting the mount ('Adjust'). The rate of declination drift tells us
+the amount of alignment error. Each adjustment will reduce the error,
+and you repeat the process as many times as you need to get the error
+close to zero.<br><br>Click 'Drift' to start measuring the declination
+drift. PHD2 will select a guide star and start guiding. After a few
+moments you should see something like this:<br><br><img style="width: 607px; height: 645px;" alt="" src="da_IMG05.png"><br><br>Pay
+particular attention to the Declination trend line (Red). At first the
+Dec trend line will be jumping up and down, but soon the noise should
+"average out" and the slope of the line will become somewhat stable.
+When that happens you are ready to adjust the mount's Azimuth.<br><br>Our
+goal is to make the Dec trend line "flat" -- neither trending up nor
+down over time.&nbsp; By adjusting the mount's azimuth, you will change
+the slope of the Dec trend line.<br><br>If this is your first time
+adjusting Azimuth, you will not know which way to go--East or West?
+PHD2 does not know either, so you just have to guess, and you have a
+50-50 chance of getting it right.&nbsp; If you choose correctly, the
+new drift line will be flatter (less steep, closer to horizontal)&nbsp;
+If you choose incorrectly, the drift rate will increase (more steeply
+downward in the example above.)<br><br>Click the 'Adjust' button. PHD2 will stop guiding, and you can make your adjustment. You'll see something like this:<br><br><img style="width: 606px; height: 642px;" alt="" src="da_IMG06.png"><br><br>Slowly
+turn your mount's Azimuth adjustment, watching the screen and moving
+the guide star towards the magenta circle. The magenta circle shows how
+far the guide star needs to move. The magenta circle is larger when the
+Dec slope is steeper, and it may initially be so large that it is not
+visible on the screen. That's to be expected; if it is not visible,
+just move the guide star approximately the width of the screen.&nbsp;
+If you do see the magenta circle, you should move the guide star to the
+circle, like this:<br><br><img style="width: 608px; height: 645px;" alt="" src="da_IMG07.png"><br><br>After
+moving the guide star, click 'Drift' to make another measurement.&nbsp;
+Before you click 'Drift', it's OK to nudge the mount to re-center the
+star, or to find a different star, or to get back closer to the
+meridian.&nbsp; Also, you can choose your own guide star by clicking on
+it, or just let PHD2 choose.<br><br>After a short time drifting, you
+will have another Dec trend line. Did it get better (closer to
+horizontal) or worse (away from horizontal)? Make a note to yourself in
+the "Azimuth adjustment notes" area, recording how you adjusted azimuth
+and which direction the Dec slope moved.&nbsp; You can use this
+information next time you drift align so you do not have to guess which
+way to make the azimuth adjustment.&nbsp; For example, with my setup,
+turning the azimuth knob clockwise makes the slope go down. Having the
+note there reminds me that I need to turn the azimuth knob
+counter-clockwise to make the slope go up.<br><br>Repeat the measurement and adjustment of the mount until you achieve a good flat horizontal dec trend line, like this:<br><br><img style="width: 606px; height: 645px;" alt="" src="da_IMG08.png"><br><br><h2>Altitude Alignment</h2>Now,
+you will need to repeat the process for the mount's Altitude
+adjustment.&nbsp; Click the Altitude button; the Drift tool will now
+look like this:<br><br><img style="width: 459px; height: 413px;" alt="" src="da_IMG09.png"><br><br>Click 'Slew' or manually slew your mount toward the horizon (east or west):<br><br><img style="width: 348px; height: 475px;" alt="" src="da_IMG10.png"><br><br>The exact position is not important, but 23-35 degrees above the horizon works well.<br><br>Click 'Drift' to start drifting.<br><br><img style="width: 603px; height: 642px;" alt="" src="da_IMG11.png"><br><br>Drift
+until you have a stable Dec slope. Click Adjust, then turn the mount's
+Altitude adjustment knob.&nbsp; Use your notes recorded in the
+"Altitude adjustment notes" area from a previous session to determine
+which way to turn the knob to move the slope in the desired
+direction.&nbsp; For example, with my setup I turn the altitude knob
+clockwise to make the slope go "down".<br><br>Just as with the Azimuth
+adjustment, repeat cycles of Drift and Adjust making the measurements
+and moving the guide star to the magenta circle. Again, the goal is to
+get the dec drift line to be horizontal.<br><br><h3>Using Bookmarks</h3>
+Until you are experienced with drift aligning your particular mount, the
+'adjustment' part of the process can be a bit tedious. &nbsp;At first,
+you'll have to determine how to adjust a knob on the mount to achieve
+the desired effect: "how much" and "what direction." &nbsp;To help with
+this, the <span style="font-style: italic;">PHD2</span> drift align
+tool supports "bookmarks". &nbsp;These are a handy way to record the
+positions of the guide star before and after you've made an adjustment.
+&nbsp;<a name="Bookmarks"></a>Bookmarks are accessed using the Bookmarks menu, or keyboard shortcuts, as follows: <br>
+<ul><li>b&nbsp;: toggle/show bookmarks&nbsp;</li><li>Shift-b : set a bookark at the current guide star position (the "lock position")</li><li>Ctrl-b : clear all bookmarks&nbsp;</li><li>Ctrl-click somewhere on the image: set a bookmark at that position, or remove the bookmark that's already there</li></ul>
+By setting a bookmark before you make a mount adjustment, you can get a
+clear view of how the adjustment has moved the star on the guide frame.<h3><a name="Drift_Align_ASCOM"></a>Notes about ASCOM</h3>The
+instructions and screenshots above correspond to what you see in PHD2
+with an ASCOM or INDI connection to the mount.&nbsp; There are a couple
+of differences if you do not have one of those connections. <br><br><ul><li>Scope
+position data and slewing functions will not be available - you'll have
+to slew the scope yourself. &nbsp;Keep in mind, the target
+altitude/azimuth positions are only approximate - you don't need to be
+particularly concerned about accuracy - just get reasonably close with
+a good guide star available in the field of view.</li><li>The
+solid magenta circle becomes a dashed-line magenta circle. The dashed
+magenta circle represents a limit to how far the guide star needs to
+move, not the exact distance. We only know that the star should not
+move past the circle. Rather than moving the star all the way to the
+circle, you may want to only move it half-way or so as an initial
+guess.&nbsp; You can use Bookmarks to keep track of where the guide
+star was in each Drift/Adjust iteration.</li></ul>
+<h1><a name="Static_polar_alignment"></a>PHD2
+Static Polar Alignment (SPA) Tool</h1>
+The Static Polar Alignment tool provides two modes of operation.
+Automated mode requires a mount that can slew under computer control
+and report its position. Otherwise manual mode is available for ST-4
+type guiding ('On camera', GPUSB, etc) or for mounts that are manually
+controlled. The SPA tool selects the most appropriate mode according to
+your mount's capabilities.<br>
+<h2>Automated Mode</h2>
+In the automated mode, PHD2 will slew the telescope as needed to perform
+the alignment procedure. To do this, PHD2 must be connected to the mount through
+either an ASCOM or INDI interface, and the mount must be initialized and ready to
+perform go-to (slewing) operations. To get started, perform the following steps:<br>
+<ul>
+<li>Connect PHD2 to your camera and to your ASCOM or INDI mount driver</li>
+<li>Be sure that PHD2 has already done calibration for this set-up</li>
+<li>Manually adjust the mount&#8217;s RA axis to point within 5 degrees of the apparent
+pole, then slew the telescope to point to Dec = +90 or -90. On a German equatorial mount,
+it&#8217;s best to start with the mount in the counterweight-down orientation,
+pointing at the pole. Use star alignment or plate solving to get as close as practical
+to Dec = +90 or -90 degrees.</li>
+<li>During the alignment process the mount will slew 10 degrees west, so make
+sure there is nothing to obstruct the view or interfere with the scope&#8217;s
+rotation.</li>
+</ul>
+<br>
+Now open the SPA tool via 'Tools'/'Static Polar Alignment', and the
+first window will open:<br><br>
+<br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG01.png"><br>
+<br>
+The PHD2 main display would look like this (southern pole example):<br><br>
+<br>
+<img style="width: 757px; height: 469px;" alt="" src="spa_IMG01a.png"><br>
+<br>
+The star map at the top of the SPA window shows the
+approximate position of the polar stars oriented according to your PHD2
+calibration and mount position. You can
+adjust the &#8216;Hour Angle&#8217; control or use the
+&#8216;Flip Camera&#8217; option to orient the
+star map to the main display. To pan the star map you can double click
+the point you want at the center; or click the &#8216;&gt;&#8217; button to center
+the selected reference star.<br>
+The button to the right of the star map lets you toggle between displaying the star
+map or instructions for using the SPA tool.<br>
+You have the option to use manual control by ticking the
+&#8216;Manual Slew&#8217; checkbox. Refer to the instructions below for
+manual-mode alignment.<br>
+Use the star map to select a &#8216;Reference Star&#8217; on
+the main PHD2 display.
+Identify which star you selected with the drop-down list. Don't worry if you
+don't get it right; it can be corrected later.<br>
+When you are ready to start aligning, click &#8216;Rotate&#8217;.
+The current position is indicated with a small blue circle on the main display, and
+the coordinates are displayed in the status bar. Note that the &#8216;Rotate&#8217; button has
+changed to a &#8216;Stop&#8217; button. If you want to quit or stop the mount slewing, click the
+&#8216;Stop&#8217; button.<br><br>
+<br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG02.png"><br><br>
+<br>
+<img style="width: 747px; height: 411px;" alt="" src="spa_IMG02a.png"><br>
+<br>
+After you click 'Rotate', the mount will slew west in RA in small steps as indicated in the status bar.
+Once two points have been recorded, the alignment graphic is overlaid on the PHD2 main
+display.<br><br>
+<br>
+<img style="width: 758px; height: 573px;" alt="" src="spa_IMG03.png"><br>
+<br>
+If you made a mistake identifying your &#8216;Reference Star&#8217;, select the correct one in
+the drop-down list.
+<br>
+Now follow the instructions under <span style="font-weight: bold;">Using the Polar
+Alignment Overlay</span> to adjust your mount&#8217;s polar alignment.<br>
+<br>
+<h2>Manual Mode</h2>
+If you don&#8217;t have a mount driver that supports go-to&#8217;s or
+you want to retain manual control of scope slewing, you can use the
+manual mode of operation. To get started, perform the following steps:<br>
+<ul>
+<li>Connect PHD2 to your camera and to your mount&#8217;s guider interface (e.g. ST-4)</li>
+<li>Be sure that PHD2 has already done calibration for this set-up</li>
+<li>Manually adjust the RA axis to point within 5 degrees of the apparent pole, then manually
+slew the telescope to point to Dec = +90 or -90. On a German equatorial mount, it&#8217;s best
+to start with the mount in the counterweight-down orientation, pointing at the pole. Use
+star alignment or plate solving to get as close as practical to Dec = +90 or -90 degrees.</li>
+<li>During the alignment process you&#8217;ll need to slew the mount up to 15 degrees
+west, so make sure there is nothing to obstruct the view or interfere
+with the scope&#8217;s rotation.</li>
+</ul>
+<br>
+Now open the SPA tool via 'Tools'/'Static Polar Alignment', and the
+first window will open:<br><br>
+<br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG04.png"><br>
+<br>
+The star map at the top of the SPA window shows the
+approximate position of the polar stars oriented according to your PHD2
+calibration and mount position. You can
+adjust the &#8216;Hour Angle&#8217; control or use the
+&#8216;Flip Camera&#8217; option to orient the
+star map to the main display. To pan the star map you can double click
+the point you want at the center; or click the &#8216;&gt;&#8217; button to center
+the selected reference star.<br>
+The button to the right of the star map lets you toggle between displaying the star
+map or instructions for using the SPA tool.<br>
+You have the option to use manual control by ticking the
+&#8216;Manual Slew&#8217; checkbox. Refer to the instructions below for
+manual-mode alignment.<br>
+Use the star map to select a &#8216;Reference Star&#8217; on
+the main PHD2 display.
+Identify which star you selected with the drop-down list. Don't worry if you
+don't get it right, it can be corrected later.<br>
+<br>
+When ready, click &#8216;Get first position&#8217;. The current position is indicated with a small
+blue circle on the main display, and the coordinates are displayed in the status bar.<br><br>
+<br>
+<img style="width: 540px; height: 415px;" alt="" src="spa_IMG04a.png"><br>
+<br>
+<br>
+Slew the mount at least 20 minutes west in RA (RA decreases as you slew west).
+<br>
+Select the same reference star on the main display.
+<br>
+Click &#8216;Get second position&#8217;. The position is marked with another small blue circle and
+the coordinates are displayed in the status bar.<br><br>
+<br>
+<img style="width: 543px; height: 391px;" alt="" src="spa_IMG05.png"><br>
+<br>
+Slew west another 20+ minutes in RA and select the same star again.
+<br>
+Click &#8217;Get third position&#8217;.
+<br>
+<br>
+After a few moments the alignment graphic is overlaid on the main display.
+If you made a
+mistake, select the correct &#8216;Reference Star&#8217; in the drop down list.
+Similarly, if any of your alignment points are suspect, slew the
+mount to the bad point and click the appropriate button to replace its coordinates. If
+you had to slew eastwards then it&#8217;s best to overshoot and make your final slew
+westwards to clear any backlash. Alternatively, slew westwards to a new position and
+replace the bad point. The points do not have to be in order. 
+<br>
+<br>
+The corrected alignment graphic updates automatically.
+<br><br>
+<img style="width: 539px; height: 456px;" alt="" src="spa_IMG06.png"><br>
+<br>
+<br>
+Follow the instructions in the next section to adjust your mount&#8217;s polar alignment.<br>
+<br>
+<h2>Using the Polar Alignment Overlay</h2>
+The polar alignment overlay is placed on the main display once enough alignment points have
+been collected.<br><br>
+<br>
+<img style="width: 628px; height: 497px;" alt="" src="spa_IMG07.png"><br>
+<br>
+<ul>
+<li>The center of the display is indicated with a grey +.</li>
+<li>The Center of Rotation is indicated with a red +. </li>
+<li>A magenta circle shows the orbit traced by your reference star.</li>
+<li>A green circle shows the desired orbit of your reference star when the polar alignment
+is accurate. </li>
+<li>Yellow circles show the orbits of the other reference stars.</li>
+</ul>
+
+<br>
+Within each of the green and yellow orbits, a small circle indicates where the star
+should be located. A grey line connects your reference star to its target
+circle on the green orbit. These positions are dependent on the guide star being
+correctly identified.<br>
+A blue line shows the azimuth correction needed to move the reference star and a red line
+shows the altitude correction required.<br>
+<br>
+To make the adjusment lines easier to see, the orbits can be shown or
+hidden with the &#8216;Show Orbits&#8217; option.<br>
+Adjust your altitude and azimuth knobs to move your reference star to its
+target circle. Adjusting in altitude moves the reference star along the red line.
+Adjusting in azimuth moves the reference star along the blue line. As an alternative,
+you can position three reference stars on their respective orbits.
+This is important when using manual mode.<br>
+To get the most accurate alignment, adjust the &#8216;Hour Angle&#8217;
+till the stars on the main display are all offset by the same amount and direction
+from their target circles. Then make your adjustments.<br>
+To confirm, you can redo the process. You may need to adjust your declination to keep the
+polar region centered if you had to make large adjustments. You may also want
+to return the mount to the start position if you have limited visibility.
+When finished, click &#8216;Close&#8217;. If you made large adjustments you may want to
+re-calibrate. <br>
+<br>
+<br>
+<h1><a name="Polar_Drift_Align"></a>PHD2 Polar Drift Alignment Tool</h1>
+The Polar Drift Alignment tool operates on a similar principle to the
+regular Drift Alignment tool.
+The difference is that the drift is measured near the celestial pole to
+calculate the adjustments needed
+in both Azimuth and Altitude at the same time. However, it&nbsp;becomes
+less accurate as the distance of the
+drift star from the pole increases. Also, it may take some time for the
+adjustment to settle so Static
+Polar Alignment can be faster. The main advantages of Polar Drift
+Alignment are that any star can be chosen and&nbsp;the tool only needs
+to know which hemisphere you're in.<br>
+To get started, perform the following steps:<br>
+<ul>
+<li>Connect PHD2 to your camera</li>
+<li>Be sure that PHD2 has already done a calibration for this set-up</li>
+<li>Manually adjust the mount&#8217;s RA axis to point within 5 degrees of the apparent pole, then
+slew the telescope to point to Dec = +90 or -90. On a German equatorial mount, it&#8217;s best to start with
+the mount in the counterweight-down orientation, pointing at the pole.</li>
+<li>Check that your hemisphere is correctly identified and adjust if necessary</li>
+<li>Select a suitable guide star on the main display</li>
+</ul>
+Click the &#8216;Start&#8217; button to start the drift.<br><br>
+<img style="width: 262px; height: 491px;" alt="" src="pd_IMG01.png"><br><br>
+You will soon see a red line appear on the main display. This shows the adjustment needed on the guide star 
+to minimise the drift. At first it will move around a lot until it settles onto a stable adjustment.<br>
+When it has settled, click the &#8216;Stop&#8217; button. The adjustment will remain on the main display.<br>
+Adjust the altitude and azimuth knobs to move the guide star into the red circle at the end of the red line.<br><br><br>
+<img style="width: 587px; height: 500px;" alt="" src="pd_IMG02.png"><br>
+
+</body></html>

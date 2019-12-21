@@ -97,6 +97,26 @@ struct FrameDroppedInfo
     wxString status;
 };
 
+struct GuideLogSummaryInfo
+{
+    bool valid;
+    unsigned int cal_cnt;
+    unsigned int guide_cnt;
+    double guide_dur;
+    unsigned int ga_cnt;
+
+    void Clear()
+    {
+        valid = false;
+        cal_cnt = 0;
+        guide_cnt = 0;
+        guide_dur = 0.;
+        ga_cnt = 0;
+    }
+    GuideLogSummaryInfo() { Clear(); }
+    void LoadSummaryInfo(wxFFile& guidelog);
+};
+
 class GuidingLog : public Logger
 {
     bool m_enabled;
@@ -104,6 +124,7 @@ class GuidingLog : public Logger
     wxString m_fileName;
     bool m_keepFile;
     bool m_isGuiding;
+    GuideLogSummaryInfo m_summary;
 
     void EnableLogging();
     void DisableLogging();
@@ -137,6 +158,7 @@ public:
     void NotifySetLockPosition(Guider *guider);
     void NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate);
     void NotifySettlingStateChange(const wxString& msg);
+    void NotifyGACompleted();
     void NotifyGAResult(const wxString& msg);
     void NotifyManualGuide(const Mount *whichMount, int direction, int duration);
 

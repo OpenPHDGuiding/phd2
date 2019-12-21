@@ -35,6 +35,9 @@
 
 #include "phd.h"
 
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
+
 #define GUIDELOG_VERSION _T("2.5")
 
 const int RetentionPeriod = 60;
@@ -196,6 +199,54 @@ static void GuidingHeader(wxFFile& file)
     file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 }
 
+static void WriteSummaryInfo(wxFFile& file, const GuideLogSummaryInfo& summary)
+{
+    if (!summary.valid)
+        return;
+
+    file.Write(wxString::Format("Log Summary: calcnt:%u gcnt:%u gdur:%.f gacnt:%u\n",
+                                summary.cal_cnt, summary.guide_cnt, summary.guide_dur,
+                                summary.ga_cnt));
+}
+
+void GuideLogSummaryInfo::LoadSummaryInfo(wxFFile& file)
+{
+    Clear();
+
+    wxFFileInputStream is(file);
+    if (is.IsOk())
+    {
+        struct RestorePos {
+            wxFFile& f;
+            wxFileOffset o;
+            RestorePos(wxFFile& f_) : f(f_) { o = f.Tell(); }
+            ~RestorePos() { try { f.Seek(o); } catch (...) {} }
+        } restore(file);
+        wxFileOffset ofs = wxMax(file.Length() - 128, 0LL);
+        is.SeekI(ofs);
+        wxTextInputStream tis(is, wxS(" "), wxMBConvUTF8());
+        while (!is.Eof())
+        {
+            wxString s = tis.ReadLine();
+            if (s.StartsWith(wxS("Log Summary: ")))
+            {
+                size_t pos;
+                wxStringCharType *e;
+                if ((pos = s.find(wxS("calcnt:"))) != wxString::npos)
+                    cal_cnt = wxStrtoul(s.substr(pos + 7), &e, 10);
+                if ((pos = s.find(wxS("gcnt:"))) != wxString::npos)
+                    guide_cnt = wxStrtoul(s.substr(pos + 5), &e, 10);
+                if ((pos = s.find(wxS("gdur:"))) != wxString::npos)
+                    guide_dur = wxStrtod(s.substr(pos + 5), &e);
+                if ((pos = s.find(wxS("gacnt:"))) != wxString::npos)
+                    ga_cnt = wxStrtoul(s.substr(pos + 6), &e, 10);
+                valid = true;
+                return;
+            }
+        }
+    }
+}
+
 void GuidingLog::EnableLogging()
 {
     if (m_enabled)
@@ -208,12 +259,21 @@ void GuidingLog::EnableLogging()
         {
             m_fileName = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
 
-            if (!m_file.Open(m_fileName, "a"))
+            if (!m_file.Open(m_fileName, "a+"))
             {
                 throw ERROR_INFO("unable to open file");
             }
-            // If we are starting a new log, don't keep it until something meaningful is logged
-            m_keepFile = m_file.Length() > 0;
+            if (m_file.Length() > 0)
+            {
+                m_keepFile = true;
+                m_summary.LoadSummaryInfo(m_file);
+            }
+            else
+            {
+                // starting a new log, don't keep it until something meaningful is logged
+                m_keepFile = false;
+                m_summary.valid = true;
+            }
         }
 
         assert(m_file.IsOpened());
@@ -321,11 +381,15 @@ void GuidingLog::CloseGuideLog()
 {
     if (m_file.IsOpened())
     {
-        wxDateTime now = wxDateTime::Now();
+        if (m_keepFile)
+        {
+            wxDateTime now = wxDateTime::Now();
 
-        m_file.Write("\n");
-        m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-        Flush();
+            m_file.Write("\n");
+            WriteSummaryInfo(m_file, m_summary);
+            m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            Flush();
+        }
 
         m_file.Close();
     }
@@ -434,13 +498,16 @@ void GuidingLog::CalibrationComplete(const Mount *pCalibrationMount)
     if (!m_enabled)
         return;
 
+    ++m_summary.cal_cnt;
+
     assert(m_file.IsOpened());
 
     CalibrationDetails calDetails;
     pCalibrationMount->GetCalibrationDetails(&calDetails);
 
     if (calDetails.raGuideSpeed > 0)
-        m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n", 3600.0 * calDetails.raGuideSpeed, 3600 * calDetails.decGuideSpeed));
+        m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n",
+                                      3600. * calDetails.raGuideSpeed, 3600. * calDetails.decGuideSpeed));
     else
         m_file.Write("Calibration guide speeds: RA = Unknown, Dec = Unknown\n");
 
@@ -477,6 +544,9 @@ void GuidingLog::GuidingStopped()
         return;
 
     assert(m_file.IsOpened());
+
+    ++m_summary.guide_cnt;
+    m_summary.guide_dur += pFrame->TimeSinceGuidingStarted();
 
     m_file.Write("Guiding Ends at " + wxDateTime::Now().Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
     Flush();
@@ -555,12 +625,25 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 
 void GuidingLog::NotifySettlingStateChange(const wxString& msg)
 {
+    if (!m_enabled)
+        return;
     m_file.Write(wxString::Format("INFO: SETTLING STATE CHANGE, %s\n", msg));
     Flush();
 }
 
+void GuidingLog::NotifyGACompleted()
+{
+    if (!m_enabled)
+        return;
+
+    ++m_summary.ga_cnt;
+}
+
 void GuidingLog::NotifyGAResult(const wxString& msg)
 {
+    if (!m_enabled)
+        return;
+
     // Client needs to handle end-of-line formatting
     m_file.Write(wxString::Format("INFO: GA Result - %s", msg));
     Flush();

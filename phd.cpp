@@ -710,8 +710,8 @@ wxString PhdApp::GetLocalesDir() const
 
 // get the imaging date for a given date-time
 //    log files started after midnight belong to the prior imaging day
-//    imgaging day rolls over at 9am
-static wxDateTime ImagingDay(const wxDateTime& dt)
+//    imaging day rolls over at 9am
+wxDateTime PhdApp::ImagingDay(const wxDateTime& dt)
 {
     if (dt.GetHour() >= 9)
         return dt.GetDateOnly();

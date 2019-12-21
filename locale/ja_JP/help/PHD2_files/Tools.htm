@@ -1,0 +1,772 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Tools and Utilities</title></head>
+<body>
+  <h2>Tools and Utilities</h2><a href="#Manual_Guide">Manual Guide</a><br>
+  <a href="#Auto-Select_Star">Auto-Select Star</a><br>
+  <a href="#Calibration_Details">Calibration Details</a><br>
+  <a href="#PHD2_Server">PHD2 Server</a><br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Logging_and_Debug_Output">Logging and Debug Output</a><br>
+  <a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;">Polar Alignment Tools</span></a><br>
+  <a href="#Lock_Positions">Lock Positions</a><br>
+  <a href="#Comet_Tracking">Comet Tracking</a><br><a href="#Guiding_Assistant">Guiding Assistant</a><br>
+  <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br><a href="#Ask_for_coordinates_aux_mount">Ask for Coordinates Aux Mount</a><br>
+  <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br><a href="#Multiple_Executions">Multiple Program Instances</a><br><a href="#Keyboard_Shortcuts">Keyboard Shortcuts</a><br>
+  
+  <a href="#Software_Update">Software Update</a><br>
+<h3><a name="Manual_Guide"></a>Manual Guide</h3><br>
+<img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png"><br>
+<br>
+If you are connecting to a new mount and are encountering calibration
+problems, you will probably want to be sure that <span style="font-style: italic;">PHD2</span>'s
+commands are
+actually getting to the mount. Or you may want to nudge the mount or
+experiment with manual dithering. &nbsp;In the 'Tools' menu, click on
+'Manual
+Guide'&nbsp;<span style="font-weight: bold;"><span style="font-weight: bold;"></span></span>and
+a dialog will appear to let you move the mount at guide speed in any
+direction. If you have an
+adaptive optics device attached, you'll see separate move buttons for
+both the AO and the secondary mount. &nbsp;Each time you press the button, a pulse of the&nbsp;duration
+specified in the 'Guide Pulse Duration' field will
+be sent. &nbsp;The default value is the 'calibration step-sze' set in
+the Advanced Options dialog. &nbsp;If you are debugging mount/calibration
+problems in the daytime, listen to (rather than watch) your mount to determine if it is getting
+the commands from <span style="font-style: italic;">PHD2</span>. The idea here is just to figure out if the
+mount is responding
+to <span style="font-style: italic;">PHD2</span>'s
+signals. You won't be able to see the mount move (it's moving
+at guide speed)
+but you may be able to hear the motors. Other options include watching
+the
+motors and gears or
+attaching a laser pointer to your scope and aiming it at something
+fairly far away (to amplify your motions). &nbsp;A better&nbsp;approach
+for nighttime testing is to run the "star-cross" test described <a href="Trouble_shooting.htm#Star_cross_test">here</a>.&nbsp; &nbsp;<br>
+<br>
+<a name="Dithering_Manual"></a>Dithering
+is used primarily with image capture or automation applications through the PHD2 server interface. &nbsp;However, you can do
+manual dithering or experiment with dither settings using the controls
+at the bottom of the dialog. &nbsp;The 'dither' amount field at the
+left controls the&nbsp;amount the mount will be moved , in units of
+pixels. &nbsp;You can scale this amount - i.e. multiply it by a
+constant - by using the 'scale' spin control to the right. &nbsp;These
+two controls establish a maximum amount of movement that will be used
+for dithering - the product of 'scale' X 'dither'.&nbsp; When you click
+on the 'Dither' button, PHD2 will move the mount by a random amount
+that is less than or equal to the limit you have set, in one of the
+north/south/east/west directions. &nbsp;The 'RA Only' checkbox will
+constrain the dither adjustments to only east or west. &nbsp;Obviously,
+if you are doing a manual dither in this way, you'll want to be sure
+your imaging camera is not in the middle of an exposure.<br>
+<h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>
+Clicking on 'Auto-select Star' under the 'Tools' menu, or using the keyboard
+shortcut of &lt;Alt&gt;S, tells <span style="font-style: italic;">PHD2</span>
+to scan the current guide image
+and identify a star suitable for guiding. &nbsp;PHD2 will try to select
+a star of sufficient brightness that is not
+saturated, not near another star, and not too close to the edge of the
+frame. &nbsp;The
+selected star may appear fairly dim on the screen, but that's usually
+not important - just adjust the gamma slider on the main window.
+&nbsp;The auto-select function will usually do a better job&nbsp;than
+you can just looking at the display. &nbsp;In many cases, a star
+you choose interactively is at or near saturation and will produce
+sub-par results. &nbsp;You can use the&nbsp;<a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile</a>&nbsp;tool
+to examine the properties of the selected star, however it was chosen. &nbsp;If you want to use Auto-Select, you should
+definitely use either a bad-pixel map or dark library to reduce the
+likelihood of PHD2 mistakenly choosing a hot pixel.
+<h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 747px; height: 369px;" alt="" src="Calib_Review.png"><br><br>The
+first thing to look at is the graph to the left, which shows what star
+movements resulted from the guide pulses that PHD2 sent during
+calibration. &nbsp;The lines represent the RA and Dec guide rates that
+were computed as a result of the calibration, and these lines should be
+roughly perpendicular. &nbsp;The data points will never be perfectly
+aligned, but they should not have major&nbsp;curves, sharp inflections,
+or reversals in direction. Particularly with longer focal length scopes, the
+points will often show considerable scatter around the lines, but this
+is normal. &nbsp;The solid points (west and north pulses) are used to
+compute the RA and declination rates, while the hollow points show the
+"return" paths of the east and south moves. &nbsp;These can help you
+see how much fluctuation occurred due to seeing and also whether there
+is a significant amount of backlash. &nbsp;If you are using the
+"fast-recenter" option in the Advanced Settings, there may be many
+fewer points shown in the east and north paths. &nbsp;The tabular
+information to the right
+shows what was known about the pointing position of the scope and the
+various ASCOM settings that relate to guiding. &nbsp;If you are not
+using an ASCOM mount and don't have an "Aux mount" specified, some of
+this information will be missing. The table will also show
+the&nbsp;expected guiding rates&nbsp;for a "perfect" calibration using
+the same sky position and guide speed settings you used. &nbsp;You will
+almost never achieve these ideal values, and you shouldn't worry about
+them unless your values are very different. &nbsp;If you didn't see an
+alert message when the calibration completed, your results are probably
+good enough. &nbsp; If you want to re-use a calibration for an extended
+time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
+information and confirm that the calibration went
+reasonably well and produced sensible results. &nbsp;Bad calibrations
+can occur even for very experienced imagers using high-end mounts, so
+it is good to check.<br><br><span style="font-weight: bold;"></span>If you are having consistent problems getting alert-free calibrations, you should review the material in the&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section</a> . <br><br><span style="font-weight: bold;">Other Calibration-Related Menu Options</span><br>
+Calibration data are saved automatically each time a calibration sequence completes
+successfully. &nbsp;The use of the calibration data has been described
+elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
+including &nbsp;options for restoring calibration data from an earlier
+time or "flipping" it after a meridian flip. &nbsp;You access these
+functions using the 'Modify Calibration' sub-menu under the 'Tools' menu. &nbsp;Two other
+calibration-related items are&nbsp; shown there, namely the options to
+clear the current data or to enter calibration data manually. &nbsp;The
+"clear" option accomplishes the same thing as the 'Clear calibration'
+checkbox in the Advanced Dialog - it will force a recalibration
+whenever guiding is resumed. &nbsp;The 'Enter calibration data'
+option&nbsp;should be used&nbsp;only under
+very unusual circumstances and only if you're sure you know what you're
+doing; but it is available as a matter of completeness. &nbsp;If you
+click on the 'Enter calibration data' item, you'll see a dialog box
+that allows input of relatively low-level calibration data. &nbsp;This
+data might come from a much earlier session, perhaps extracted from the
+<span style="font-style: italic;">PHD2</span> guiding log file.
+&nbsp;Keep in mind, if you are using an ASCOM driver for either the
+'mount' or 'aux mount' connections, you should have little need for
+these calibration data controls.<br>
+<h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3>
+<span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
+was the first to do this, but other applications have subsequently been
+produced. &nbsp;By using the <span style="font-style: italic;">PHD2</span> server process, image capture
+programs can control dithering between exposures or suspend guide
+exposures while the primary imaging camera is downloading data.
+&nbsp;To use these capabilities with a compatible application, you
+should click on&nbsp; the '<a name="Enable_Server"></a>Enable Server' option under the 'Tools'
+menu. &nbsp;The server interface has been reworked substantially in
+<span style="font-style: italic;">PHD2</span>, and it's now possible
+for an application to control most aspects of <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the
+server API is available on
+the <a href="https://github.com/OpenPHDGuiding/phd2/wiki">PHD2
+Wiki</a>.<br>
+<br><h3><a name="Dithering_Ops"></a>Dithering</h3><big></big><p>The primary purpose of dithering&nbsp;is
+to make post-processing easier by removing some kinds of fixed-pattern
+noise in the images, especially hot pixels.&nbsp; This is almost purely
+a function of the camera you're using and to a lesser extent, the
+sophistication of the post-processing software.&nbsp; For imagers
+with&nbsp;temperature-regulated, low-noise cameras, dithering is mostly
+a convenient way to eliminate&nbsp;hot pixels that aren't getting
+removed by the dark frames.&nbsp; Hot pixel positions change as sensors
+age, so dark libraries don't usually correct for all of them. Those hot
+pixels can also be also removed in post-processing, but that becomes
+tedious if there are lots of them.&nbsp; It's also possible that
+dithering can help with some other kinds of sensor behavior such as
+column defects, and it's particularly helpful if there is no
+temperature regulation on the sensor and therefore no good way to use a
+dark library.&nbsp; DSLR imagers often use aggressive dithering for
+those reasons.&nbsp;In the PHD2 implementation, &nbsp; automated
+dithering is accomplished through the server interface, so make sure
+you have 'Enable Server' checked under the 'Tools' menu. &nbsp;You
+first specify a maximum dither size you want to use during the
+guiding session - this will be set in your imaging application.. Then,
+when that application issues a dither command, PHD2
+uses a random number generator to decide how large the dither will
+actually be for that command.&nbsp; The actual dither mount will be
+&gt; 0
+and &lt;= the maximum amount allowed. You want to use pseudo-random
+dither amounts like this to be sure that dithering doesn't follow a
+consistent pattern or shift the frame back to a location where it has
+previously been.&nbsp; But for some of the applications that do PHD2
+dithering, you
+can't specify the maximum amount directly - you are perhaps limited to
+choices like small/medium/large and the max dither amounts will have
+preset values.&nbsp; For that reason, PHD2 has a dither scaling
+parameter in the 'Global' tab of the Brain dialog.&nbsp; It is
+basically a multiplier term that lets you adjust the range of dither
+amounts that are possible.&nbsp; So a scale factor of 1 doesn't change
+the
+preset value at all, a value of 10 multiplies it by 10X, etc.&nbsp; If
+you're using an app that lets you specify the maximum amount directly
+(e.g. PHD_Dither), you should leave the dither scale set to 1.0.&nbsp;
+Otherwise, you can adjust the scale factor if you aren't
+happy with the overall range of dithering you're getting with one of
+the small/medium/large type imaging apps.</p><p>There are typically
+two costs associated with dithering: 1) the extra time and uncertainty
+required for "settling" and 2) the need to crop the final stacked frame
+in order to remove the low-signal margins. &nbsp;Settling is the term
+used for a period of stabilization after the mount has been moved by a
+dither command. &nbsp; The imaging app that starts the dither will also
+decide when the guiding has stabilized enough to continue
+imaging.&nbsp; The app can let PHD2 determine this by specifying the
+settling parameters or the app can do the calculations itself.&nbsp;
+You'll need to look at your imaging/dithering app to see what control
+you have over this process.&nbsp; If the app uses the latest PHD2
+server interfaces, it can specify a settling requirement that might
+look like "guiding errors must be less than 1.5 pixels for a period of
+at least 10 seconds."&nbsp; This is a process that can consume some
+time, depending on how tight the requirements are for settling.&nbsp;
+It is likely to take more time if you are dithering in declination and
+the dither forces a change in direction.&nbsp; Most mounts have some
+declination backlash, so it can take a number of guide commands to get
+the mount moving in the right direction, and then more time for the
+process to converge on the new target location for the guide
+star.&nbsp; That's why PHD2 also offers the option to dither only in
+right ascension. &nbsp;Again, this is an option on the 'Global' tab,
+right next to the dither scaling parameter.</p><p>If
+your mount has a substantial amount of declination backlash in the
+mount, you may be guiding in only the north or south Dec direction.
+&nbsp;If PHD2 receives a command to dither in declination while you're
+operating in this mode, it will temporarily allow guiding in both Dec
+directions until the dither and settling are completed. &nbsp;It will
+then revert to the original north/south-only guiding mode. &nbsp;If you
+don't want this behavior, you should restrict dithering to 'RA-only'
+('Global tab of the Brain dialog).</p><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
+<span style="font-style: italic;">PHD2</span> automatically creates two types of log files: a debug log and a
+guiding log. &nbsp;Both are very useful for different reasons.
+&nbsp;The guiding log is similar to the one produced by PHD, but
+with
+extended information. The guide log is intentionally formatted to
+allow easy interpretation by either a human reader or an external
+application.<span style="">&nbsp; </span>For example, the very capable PHDLogView application (not
+part of the PHD2 release) can produce a variety of graphs and summary
+statistics based on data in the PHD2 guide log.<span style="">&nbsp;&nbsp; </span>But the log can also be easily imported into
+Excel or other applications for analysis and graphing.<span style="">&nbsp;
+</span>When importing into Excel, just specify that a comma should be used as a
+column separator. &nbsp;The
+debug log
+has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
+session, &nbsp;so it is very helpful in isolating any problems
+you&nbsp; have. &nbsp;It also employs a human-friendly (albeit verbose)
+text format, so it's
+not
+difficult to examine the debug log to see what happened. &nbsp;If
+you
+need to report a problem with the software, you will almost certainly
+be asked to provide the debug log file. &nbsp;If you have neither log
+file available, you are unlikely to get any&nbsp;help.<br>
+<br>
+The location for the files is controlled by the 'Log
+File
+Location' field in the 'Global' tab of the 'Advanced Settings' dialog. &nbsp;By default, log
+files
+are stored in the OS-specific default directory for user documents.
+&nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
+sub-folder in the "Documents" directory. &nbsp;This may not be a
+convenient location, so you can specify a different folder using this
+edit field. &nbsp;In order to prevent excessive accumulation of log
+files, PHD2 automatically removes debug logs that are more than 30 days
+old and guide logs that are more than 60 days old. &nbsp;If you want to
+retain the files for longer periods, you should move or copy them to a
+different folder location, one not used by PHD2.<br>
+<br>
+In some unusual cases, you may need to capture guide
+camera images, usually to support debugging and problem resolution.
+&nbsp;This can be done by clicking the 'Enable Star Imaging Logging'
+menu item under the 'Tools' menu. &nbsp;The resultant image files will
+be stored in the same location as the other log files. &nbsp;The format
+of these image files is controlled from the 'Global' tab of the
+'Advanced Settings' dialog. &nbsp;If you are trying to document a
+problem you're having, you should choose the 'Raw Fits' format for
+maximum flexibility.<br><br><span style="font-weight: bold;"><a name="Logging-Automatic_Upload"></a>Automatic Log File Upload<br><br></span>If you need help using PHD2 or improving your guiding results, you'll want to post a request on the Open<span style="font-weight: bold;">-</span>PHD-Guiding
+forum (https://groups.google.com/forum/#!forum/open-phd-guiding).
+&nbsp;Your question should be accompanied by the PHD log files
+associated with the guiding session you're talking about. &nbsp;To make
+that easier, PHD2 has a built-in function to select, compress, and
+automatically upload the relevant log files. &nbsp;That function is
+located on the 'Help' menu. &nbsp;You'll see a dialog box that shows
+all the available log files, including their timestamps and duration:<br><br><img style="width: 579px; height: 378px;" alt="" src="Log_Upload_1.png"><br><br>Just
+select the files you want and start the upload process by clicking on
+'Next'. &nbsp;If PHD2 is generally working for you but you can't
+interpret the guiding performance or you want to improve it, you can
+start by just uploading the guide logs. &nbsp;But if you're having
+trouble with camera or mount connections or otherwise can't get PHD2
+running, you should also include the matching debug log file. &nbsp; Be
+selective about the files you choose - just the files for the session
+you were having trouble with. &nbsp;When the upload process is
+complete, you'll see another window that gives you a link to the files:<br><br><img style="width: 573px; height: 192px;" alt="" src="Log_Upload_2.png"><br><br>You
+need to capture or record that link so it can be included with the
+question you'll post on the forum. &nbsp; Log files will be
+automatically removed on the server after a reasonable amount of time
+has elapsed, so you won't need to worry about that. &nbsp;When you post
+your request for support, please include a full description of what you
+were doing, whatever problem you saw, and roughly what time period you
+want us to focus on.<br><br><h3><a name="Polar_alignment_tools"></a>Polar Alignment Tools</h3>
+
+PHD2 offers three different polar alignment tools.<span style="">&nbsp; </span>The three approaches share the same basic
+objective: to help you physically align the RA axis of your mount to the
+celestial pole.<span style="">&nbsp; </span>These polar alignment
+tools are different from the &#8220;two-star&#8221; or &#8220;three-star&#8221; alignment procedures
+that are part of most popular go-to mounts.<span style="">&nbsp;
+</span>The mount software routines are generally focused on optimizing go-to
+operations, correcting the slewing/pointing operations for a variety of errors
+in the mount, including polar alignment error.<span style="">&nbsp;
+</span>They generally don&#8217;t involve physical adjustment of the mount&#8217;s azimuth
+and altitude controls, which is what is necessary for successful imaging and
+guiding.<br>
+<br>The original polar alignment routine, drift alignment, is
+still considered by most to be the &#8220;gold standard&#8221; for accuracy.<span style="">&nbsp; </span>Partly, this is because it directly measures
+the thing you&#8217;re interested in: the amount of drift that will be caused by
+mis-alignment of the RA axis on the celestial pole.<span style="">&nbsp; </span>The drift alignment tool requires use of only
+one visible star at a time, and identification of the star is unnecessary.<span style="">&nbsp; </span>But the procedure can be time-consuming,
+especially for beginners, because each mount axis must be adjusted separately
+and the telescope will need to slew over a fairly wide area.<span style="">&nbsp; </span>Also, it works best if you have clear views
+of the celestial equator/meridian intersection and an area around 30 degrees
+above either the eastern or western horizon (azimuth 90 or 270 degrees).<span style="">&nbsp;&nbsp; </span>For imagers who are rushing to set up each
+night or have a limited view of the sky, these requirements may be
+unattractive. 
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The second alignment option, static polar alignment,
+addresses these concerns by taking a different approach.<span style="">&nbsp; </span>It specifically trades off a bit of accuracy
+to optimize the speed of the process.<span style="">&nbsp; </span>It
+requires only a clear view of the northern or southern polar region, and it
+facilitates adjustment of both mount axes at the same time.<span style="">&nbsp; </span>It is therefore a bit more intuitive and quite
+likely to be quicker to complete.<span style="">&nbsp; </span>It
+does require visibility and identification of several stars near the pole, but
+the tool makes that reasonably easy assuming your sky conditions are good
+enough to see the stars.&nbsp; </p><span style=""></span>
+
+<p>The third alignment option, polar drift alignment, is probably the
+simplest one to perform at the expense of a bit of accuracy and speed.
+It
+requires a clear view of the northern or southern polar region, and it
+facilitates adjustment of both mount axes at the same time. Minimal
+user input is needed so it is very simple to use.
+</p><p class="MsoNormal"><o:p>&nbsp;</o:p>The three techniques are described in detail in the following
+sections.<span style="">&nbsp; </span>Imagers should probably
+experiment with them and choose the one that best suits their
+needs.<span style="">&nbsp; </span>The importance of alignment
+accuracy is often over-emphasized, so users need to keep things in
+perspective.<span style="">&nbsp; </span>Most declination drift can
+be well-managed by PHD2 guiding assuming the mount behaves well and doesn&#8217;t
+have a lot of declination backlash.<span style="">&nbsp;&nbsp;
+</span>However, at some point, the amount of polar alignment error can create
+field rotation in the images, something that can&#8217;t be corrected.<span style="">&nbsp; </span>The larger the imaging sensor and the closer
+to the pole the target is, the more field rotation can be an issue.<span style="">&nbsp; </span>You can compute the expected field rotation
+using an online calculator such as this one:
+
+</p><p class="MsoNormal"><a href="http://celestialwonders.com/tools/rotationMaxErrorCalc.html">http://celestialwonders.com/tools/rotationMaxErrorCalc.html</a></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The calculator can help you decide how much accuracy is
+&#8220;good enough&#8221; for your situation.<span style="">&nbsp; </span>It&#8217;s
+also important to remember that either procedure can be limited by the
+precision of the adjustment mechanisms on the mount.<br></p>
+
+<h3><a href="Tutorials.htm#Drift_Align">Drift Alignment Tool</a></h3>
+<h3><a href="Tutorials.htm#Static_polar_alignment">Static Polar Alignment Tool</a></h3>
+<h3><a href="Tutorials.htm#Polar_Drift_Align">Polar Drift Alignment Tool</a></h3>
+<h3><a name="Lock_Positions"></a>Lock Positions</h3>
+<span style="font-style: italic;">PHD2</span> normally
+sets a 'lock position' where the guide star is located at the end of
+calibration. &nbsp;Depending on the details of the calibration
+sequence, this may not be exactly where the star was located at the
+start of calibration - it could be off by a few pixels. &nbsp;If you
+are trying to precisely center your target, you may want to use a
+'sticky lock position.' &nbsp;You do this by clicking on your guide
+star <span style="font-style: italic;">before calibration</span>, then
+setting the 'Sticky Lock Position' under the 'Tools' menu. &nbsp;After
+calibration is complete, <span style="font-style: italic;">PHD2</span> will continue to move the mount until the
+star is located at the sticky lock&nbsp;position. &nbsp;So you may see
+an additional delay after the calibration while <span style="font-style: italic;">PHD2</span> repositions the
+scope at guide speed. &nbsp;The sticky lock position will continue to
+be used even as guiding is stopped and subsequently resumed.
+&nbsp;Again, this insures a rigorous positioning of the guide star (and
+presumably your image target) at the expense of delays needed for <span style="font-style: italic;">PHD2</span>
+to reposition the mount.<br><br>If
+you need to &nbsp;fine-tune the position of the guide star on the
+camera sensor after guiding has begun, you can use the 'Adjust Lock
+Position' function under the Tools menu: <br><br><img style="width: 354px; height: 190px;" alt="" src="Adjust_Lock_Position.png"><br><br>You
+can nudge the guide star in small increments (at guide speed) or you
+can move it by a larger amount by typing in a new&nbsp;lock position
+and clicking 'Set'.
+&nbsp;Clicking on the up/down/left/right buttons will cause the lock
+position to be shifted in the corresponding direction by the amount
+shown in 'Step', and the revised lock position will be displayed &nbsp;
+If you type in a new lock position,&nbsp;you run the risk of losing
+the guide star if the new&nbsp;position falls outside the current
+search region. &nbsp;This tool is&nbsp;useful if you need to achieve
+precise positioning of either the guide star or the imaging target, for
+example with spectroscopy..
+<h3><a name="Comet_Tracking"></a>Comet Tracking</h3>
+
+One way to image a comet is to have PHD2 use the comet as the guide
+"star", but this approach may not always work. For example, the head
+of the comet may not present a star-like center suitable for
+guiding. Or, when using an off-axis guider, the comet may not even be
+visible in the guide camera.<br>
+<br>
+PHD2 provides a Comet Tracking tool for use when guiding on the comet
+itself is not feasible.  The idea is to guide on an ordinary star, but
+to gradually shift the lock position to match the comet's motion,
+or <i>tracking rate</i>.<br>
+<br>
+There are a three different ways to provide the comet tracking rate to PHD2.<br>
+<br>
+<ul>
+  <li>Some planetarium applications, like Cartes du Ciel, can send the rate directly to PHD2;</li>
+  <li>You can enter the tracking rate manually, or,</li>
+  <li>You can train the rate in PHD2 by following the comet for a period of time in the imaging camera.</li>
+</ul>
+<br>
+<br>
+<img style="width: 426px; height: 408px;" alt="" src="CometTrackingTool.png"><br>
+<br>
+<br>
+To enter the rate manually, you would select "Arcsec/hr" for units and
+"RA/Dec" for axes, then enter the rates from the comet's ephemeris.<br>
+<br>
+Comet rate training works like this:<br>
+<br>
+First, center the comet in your imaging camera. If your imaging
+application has some kind of reticle display, you should use that to
+note the precise position of the comet on the imaging sensor. Once
+this is ready, select a guide star in PHD2 and start guiding. Next
+click "Start" in the Comet Tracking tool to begin training.<br>
+<br>
+Take a continuous series of short exposures in your imaging camera
+using your imaging application's Frame and Focus feature. Over time,
+the comet will drift away from the starting location. Use PHD2's
+"Adjust Lock Position" controls to move the comet back to the starting
+location. You may have to experiment a bit to determine which way the
+comet moves on the imaging camera sensor in response to the
+Up/Down/Left/Right controls in PHD2. You may find it useful to enable
+the "Always on top" button in the Adjust Lock Position window so the
+controls stay visible on top of your imaging application.<br>
+<br>
+PHD2 will quickly learn the comet tracking rate as you re-center the
+comet. Once you are satisfied that PHD2 is tracking the comet, you can
+click Stop to end the training. PHD2 will continue shifting the lock
+position to track the comet until you disable comet tracking by
+toggling the Enable/Disable button.<br>
+<br>
+You can practice the comet training technique using the built-in
+camera simulator. Check the "Comet" option in the Cam Dialog, and the
+simulator will display a comet. Use a bookmark to mark the comet's
+starting location, and use the Adjust Lock Position controls to move
+the comet back to the bookmark location.
+<br><h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
+Guiding Assistant is an instructional tool to help you measure
+current seeing conditions and the general behavior of your mount and
+guiding
+subsystem. &nbsp;When it's run, it temporarily disables guiding output
+and measures the ensuing motion of the guide star. This&nbsp;can help
+you
+see the high-frequency motions&nbsp;caused by seeing (atmospheric)
+conditions. &nbsp;These cannot&nbsp;be corrected by conventional
+guiding because they occur at a much higher frequency than you can
+typically even measure. Trying to correct for them with conventional
+guiding&nbsp;is often called "chasing the seeing" and usually leads to
+poor results. &nbsp;Avoiding it is best accomplished by
+setting a minimum-move level that will cause PHD2 to ignore most of
+this high-frequency behavior. &nbsp;The Guiding Assistant can also show
+you other behavior of your system such as overall drift
+rates in right ascension and declination as well as peak-to-peak and
+maximum-rate-of-change measurements in
+right ascension,. &nbsp;While these things can usually be "guided out",
+measuring them can be helpful if you want to improve the underlying
+performance of the mount - for example, by improving your polar
+alignment if the declination drift rate is high. &nbsp;The Guiding
+Assistant can also measure the declination backlash in your system if
+you select that option in the user interface.<br><br>When
+you start the Guiding Assistant (GA), its behavior depends on whether
+you are already guiding. &nbsp;If guiding is active, the initial screen
+will look like this (with different data values of course):<br><br><img style="width: 776px; height: 517px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
+topmost field in the form always shows what the GA is doing and what
+action you should take, so you should always look there first if you
+don't know what's happening. &nbsp;In this case, the measurement
+process has been started automatically and you should simply let it run
+for at least two minutes. &nbsp;The text field immediately above the
+buttons also summarizes what's happening. &nbsp;The three buttons are
+enabled or disabled based on the operating state of the GA. &nbsp;In
+this case, 'Start' is disabled because the measurement is already
+underway.<br><br>If you launch the GA when guiding is inactive, the initial form will look different:<br><br><img style="width: 780px; height: 521px;" alt="" src="Guiding_Assistant_Start_a.png"><br><br>In
+this case, you'll need to first start guiding in PHD2 - start looping,
+select a star, and guide. &nbsp;Once that's done, the 'Start' button in
+the GA will be enabled and you can begin measurement.<br><br>When GA measurement is active, guiding commands will be disabled, so the star
+will appear to wander around on the display - this is entirely normal.
+&nbsp;As guider images are acquired, statistics are computed and
+displayed in real-time in the user interface. Of particular interest
+are the table entries for&nbsp;"High-frequency Star Motion" and "Polar
+Alignment Error". &nbsp;After about two
+minutes of data collection, these numbers will usually stabilize and
+you'll have&nbsp;reasonable measurements. &nbsp;If you want to get a
+more accurate measure of your polar alignment error
+and any uncorrected periodic error in RA, you'll need to let the
+Guiding Assistant run for up to 10 minutes. Also, the computed polar
+alignment error is sensitive to the current scope declination. &nbsp;To
+get the most accurate measurement, you should point the scope to within
+a few degrees of the celestial meridian. &nbsp;When you finally click
+the 'Stop'
+button, this phase of the measurement process will stop. &nbsp;
+&nbsp;If
+you've checked the box to 'Measure Declination Backlash" that process
+will commence (see below). &nbsp;If not, guiding commands will be
+re-enabled and the data collection
+process will end. &nbsp;Other computed results will&nbsp;be displayed
+in the lower area of the table showing overall drift rates and various
+other measurements. &nbsp;All of these values are displayed in
+units of both arc-seconds and pixels. &nbsp;The dialog box will look
+something like this:<br><br><img style="width: 780px; height: 540px;" alt="" src="Guiding_Assistant_Finish_NoBL.png"><br><br>The
+contents of the 'Recommendations' group on the right side of the window
+reflect the results of the statistical measurements. &nbsp;Assuming
+your chosen guide algorithms support a minimum-move property, you have
+the option of automatically setting those parameters based on the
+results. &nbsp;You can also decide to re-run the measurements or close
+the dialog box altogether if you want to proceed with normal guiding
+operations. <br><br><span style="font-weight: bold;">Measuring Declination Backlash</span><br>If
+you've checked the box to 'Measure Declination Backlash',
+that&nbsp;process will begin as soon as the high-frequency measurements
+are completed. &nbsp;In other words, clicking once on the 'Stop' button
+halts the high-frequency measurements and begins the measurement of
+declination backlash. &nbsp;However, if the initial sampling period was
+less than 2 minutes, a dialog box will appear and the backlash test
+will continue to sample until the 2-minute period has expired. &nbsp; A
+new group of status messages will be
+shown immediately above the 'Start' and 'Stop' buttons so you can see
+what's being done:<br><br><img style="width: 772px; height: 511px;" alt="" src="Guiding_Assistant_MeasuringBL.png"><br><br>To
+do backlash measurement, PHD2 will move the star by large amounts,
+first in the north direction, then back to the south. &nbsp;There is
+some risk the star will be lost during this process or the star might
+already be&nbsp; too close to the north edge of the sensor. &nbsp;You
+should choose a guide star that has plenty of room to move&nbsp;north
+to get the best accuracy. &nbsp;If the star is lost because it's been
+moved outside the search region, you can temporarily increase the size of that region from
+the '<a href="Advanced_settings.htm#Guiding_Tab">Guiding</a>'
+tab of the Advanced Settings dialog.
+&nbsp;A search region size of 20 pixels should work for most
+configurations - just be sure you don't have multiple stars&nbsp;inside the
+search region. &nbsp;The first phase of backlash measurement involves
+an initial attempt to clear whatever backlash is present in the north
+direction. &nbsp;The Guiding Assistant (GA) will continue with these
+clearing commands until it sees a significant and consistent movement
+of the
+guide star in one direction. &nbsp;Once this is done, the GA will issue
+another sequence of commands to continue moving the star north by a
+large amount.
+&nbsp;This will take at least 16 seconds and may take longer depending
+on the configuration - you can watch the status update to see what's
+being done. &nbsp;When the north steps are finished, the GA will issue
+an identical number of steps in the south direction. &nbsp;If there's
+significant backlash in the mount, it may take a long time for the star
+to start moving south, but that will usually be handled. &nbsp;Once the
+south steps are done, regardless of how far the star has actually
+moved, &nbsp;the backlash amount will be computed. &nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;">However, if the star hasn&#8217;t moved at all in the south
+direction, the computed backlash amount will be too small. <span style="">&nbsp;</span>At that point, you can know your declination
+backlash exceeds 8 seconds, which is a very large amount.</span>
+The Guiding Assistant will then try to move the star back to its
+starting position and will re-enable guiding. &nbsp;Again, there is
+some risk the star may be lost, but this won't affect the calculations
+- you can simply stop and resume guiding as you normally would.
+&nbsp;Unlike the first process for measuring high-frequency star
+movement, you don't need to click on the 'Stop' button once backlash
+measurement has begun. &nbsp;The measurement process will terminate
+when all the steps have been completed, and normal guiding will be
+resumed. &nbsp;However, you can click on the 'Stop' button if something
+has gone wrong - such as a lost-star condition - and then restart when
+you're ready.&nbsp; When the backlash tests are finished, you'll see
+the results
+displayed as before, with the addition of entries for the amount of
+declination backlash and the measurement uncertainty::<br><br><img style="width: 776px; height: 622px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>Depending
+on the amount of backlash, you may see a recommendation for setting a
+backlash compensation factor - 230 ms in the example shown above.
+This type of backlash compensation is different from the feature offered in many mount controllers and is described here: &nbsp;<a href="Advanced_settings.htm#Declination_backlash_comp">PHD2 backlash compensation</a> &nbsp; &nbsp;If the measured amount is less than 100 ms, no recommendation
+will be made because such a small amount probably doesn't warrant any
+compensation. &nbsp;If the backlash is very large, over 3 seconds,
+you'll see a different recommendation to use uni-directional guiding in
+declination. &nbsp;That's because trying to compensate for such large
+values probably won't work very well, and the mount will probably not
+be able to reverse directions quickly enough to support bi-directional
+guiding. Obviously, you can reach your own conclusions based on your
+experience with how the mount behaves. &nbsp;Before doing these
+measurements, be sure to disable any backlash compensation that's
+previously been
+enabled in the mount software. &nbsp;If this isn't done, the
+measurements and
+any subsequent attempts at compensation by PHD2 will be invalid.
+&nbsp;If you want to try uni-directional guiding, you can find
+instructions here: &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a><br><br>You
+can look at a graphical display of the backlash measurement results to
+get a better understanding of how the mount performed. &nbsp;Just click
+on the 'Show Graph' button to see a graph that might look something like
+this: <br><br><img style="width: 472px; height: 391px;" alt="" src="Guiding_Assistant_BL_Small.png"><br><br>The
+green points show the measured declination positions, shown left to
+right, beginning with the north moves and ending with the south
+(return) moves. &nbsp;The white points show the south-return behavior
+for a perfect mount with zero backlash. &nbsp;In this example, there is
+only a small amount of backlash as evidenced by the flattened top of
+the green
+points. However, the flattened top will be&nbsp;more pronounced when
+there is significantly more declination backlash in the mount, as in
+the following example:<br><br><img style="width: 471px; height: 393px;" alt="" src="Guiding_Assistant_BL_Large.png"><br><br>In
+some cases, the backlash measurement will report a failure and
+won't&nbsp;display a numerical&nbsp;result. &nbsp;This can happen if
+the guide star is lost, but a more likely cause is a combination of
+large backlash and stiction (static friction) on the Dec axis or a
+large imbalance in Dec. &nbsp;In those case, the south moves may never
+show a consistent movement of the expected size so the measurement will
+simply be too inaccurate. Even if the test fails, you'll still be able
+to look at the graph so you'll be able to see how the mount performed
+during the test.<br><br>The 'Review Previous' button at the bottom of
+the window lets you review the previous three GA results. &nbsp;If
+you've run backlash tests at any time, at least one of the three
+sessions will include a backlash measurement result. &nbsp;Clicking on
+the 'Review' button displays a list of timestamps when a GA was run for
+the current profile, so you can just select the date/time you want.
+&nbsp;All the grid values and recommendations will be filled with the
+results from the selected GA run, including active buttons for applying
+the recommendations.<br><span style="font-weight: bold;"></span><br>
+<h3><a name="Star_cross_tool"></a>Star-Cross Tool</h3>
+The star-cross tool can help you test the mount's response to guide commands as described in this <a href="Trouble_shooting.htm#Star_cross_test">trouble-shooting</a>
+section. Although the test is easy to perform manually, you may prefer
+to use this tool. &nbsp;The star-cross tool will show the following
+dialog: <br><br><img style="width: 603px; height: 309px;" alt="" src="Star_cross_tool.png"><br><br><span style="font-weight: bold;">This test presumes you're using the main image camera to expose the image</span>,
+so PHD2 doesn't know what image scale is being used for that.
+&nbsp;You'll need to be sure the settings are large enough to show a
+distinct
+pattern on the main camera but not so large that the stars will move
+out of the field of view. &nbsp;The default settings should work well
+for most set-ups but you can adjust them as needed. &nbsp;The important
+thing is to get a clear record of the movement of the stars in the main
+camera image and to save that image in a raw, uncompressed format (eg.
+FITs or uncompressed TIF). &nbsp;During this test, looping will be
+active but no guide star will be selected, and it doesn't matter if
+individual stars move out of the guide camera frame. &nbsp;Looping is
+activiated just so you get some quick visual feedback on whether the
+mount
+is moving.
+<h3><a name="pierflip_cal_tool"></a>Meridian flip calibration Tool</h3>
+
+The meridian flip calibration tool is used to automatically determine
+the correct value for the setting <a href="Advanced_settings.htm#Reverse_Dec_output_after_meridian_flip">Reverse Dec output after meridian flip</a>.
+
+Running the tool involves two calibrations -- one with the telescope
+on the East side of the pier, and one on the West. You will be
+instructed to slew the telescope when needed.
+
+<h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>
+Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
+where they are used as part of the 'Connect Equipment' dialog. &nbsp;If
+you want to manage multiple profiles, you will probably want to use the
+'Manage Profiles' button in the 'Connect Equipment' dialog. &nbsp;Using
+the menu items there, you can create a new profile
+or&nbsp;edit/rename/delete an existing one. &nbsp;Each profile holds
+all the settings that were active at the time the profile was last
+used. &nbsp;If you create a new profile, you can import these settings
+from either the <span style="font-style: italic;">PHD2</span>
+generic defaults or from an existing profile. &nbsp;You can also use the
+'Wizard' option to have PHD2 establish settings that are specific to
+your equipment configuration. &nbsp;To
+edit the settings in an existing profile, you first select it in the
+equipment profile drop-down list, then click on 'Settings' under the
+'<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the 'Brain'
+dialog, where you can make whatever changes you want. &nbsp;Remember
+than profiles are automatically updated anytime settings are changed
+during a <span style="font-style: italic;">PHD2</span> session. &nbsp;Finally, you can import and export
+profiles for purposes of debugging, backup, or even exchange with other
+<span style="font-style: italic;">PHD2</span> users.<br>
+<br><h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount Connection using "Ask for coordinates"</h3>If
+you can't connect to your mount using either ASCOM or INDI drivers, you
+still have a better-than-nothing alternative by using the&nbsp;"Ask for
+coordinates" aux-mount connection. &nbsp;With this option, you'll be asked
+to enter or confirm the scope position each time&nbsp;guiding is going
+to begin:: <br><br><img style="width: 212px; height: 248px;" alt="" src="Manual_mount.png"><br><br>If
+you enter your scope's current declination and side-of-pier values,
+&nbsp;PHD2 will automatically adjust the calibration to match&nbsp;that
+pointing position. &nbsp;You don't need to be&nbsp;precise, a
+Declination value that's within a few degrees will work. &nbsp;This
+means you won't need to recalibrate as you slew to different targets
+so long as you update these values each time. &nbsp;For
+example,&nbsp; you can do a calibration near Declination=0 then enter
+new position values when you've slewed to a high declination imaging
+target.
+&nbsp;This is likely to produce a better result than trying to
+calibrate at a near-pole position. &nbsp;This dialog will not be
+displayed if the start of guiding is the result of a dither operation
+or a server command from an imaging application. &nbsp;In order for the
+calibration adjustment to work correctly, your previous calibration <span style="font-weight: bold;">must </span>have been completed&nbsp;with correct positioning data available. &nbsp;<br><br>If you're using this option with the Drift Alignment tool, the dialog will look a bit different: <br><br><img style="width: 327px; height: 350px;" alt="" src="Manual_mount_drift.png"><br><br>If
+you enter the additional information for Right Ascension, latitude, and
+longitude, the Drift Alignment tool can more accurately adjust its
+magenta target circle. &nbsp;Otherwise, the circle will show only an
+upper-bound estimate of the pointing error during the 'adjustment'
+phases. &nbsp;<br><br>You
+can connect or disconnect&nbsp;the "Ask for
+coordinates" aux-mount&nbsp;without affecting the camera or mount
+connections. &nbsp;So you might decide to use the option for drift
+alignment or for an initial slew to your imaging target, then
+disconnect from it in order to avoid
+the repetitive dialog displays. &nbsp;Regardless of how you choose to
+use it, you're
+responsible for having the correct values in place, and you should
+remember that significantly wrong values can result in poor guiding
+results.<br><br><h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>
+The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
+section as useful tools&nbsp;for you to experiment with <span style="font-style: italic;">PHD2</span> and become
+famliar with its features. &nbsp;Remember that you must choose
+'Simulator' as the camera type and 'On-camera' as the mount type in
+order to get the benefits of simulation. &nbsp;As you become more
+interested in the details of the simulation, you can use the 'Cam
+Dialog' button on the main display to adjust the simulation parameters:<br>
+<br>
+<img style="width: 775px; height: 428px;" alt="" src="Tools_simulator.png"><br>
+<br>
+<br>
+You can adjust simulated mount behaviors for declination backlash, drift
+due to polar mis-alignment, and periodic error. &nbsp;You can also
+adjust the 'seeing' level, which will create fairly realistic guide
+star deflections that look like seeing effects. &nbsp;If you adjust
+these parameters one-by-one, you'll see how they affect star
+deflections and how the different guide algorithms react to those
+movements. &nbsp;Of course, you're dealing with a "nearly perfect" mount in
+these scenarios (except for backlash), so the simulation can't be entirely realistic.<br><h3><a name="Multiple_Executions"></a>Multiple Program Executions</h3>In
+some situations, you may want to run multiple instances of PHD2 at the
+same time. &nbsp;To start the second instance of PHD2, you need to
+supply a command-line parameter of -i 2; the third instance would be
+started with -i 3, etc. &nbsp;You can accomplish this in Windows by
+running PHD2 from a command line using the Windows cmd.exe utility.
+&nbsp;Or you can create a Windows desktop shortcut by doing the
+following: <br><br><div style="margin-left: 40px;">Right-click on your desktop<br>Select: New/Shortcut<br>Enter the following string to identify the location of the program: "C:\Program File (x86)\PHDBuiding2\PHD2.exe" -i2<br>Click Next<br>Enter a name for the shortcut, e.g.&nbsp;PHD2 #2<br>Click Finish<br></div><br>Note the quotes around the name in the 3rd line are required by Windows because there are blanks embedded in the directory name.<br><h3><a name="Keyboard_Shortcuts"></a>Keyboard Shortcuts</h3>Keyboard
+shortcuts are available for many of the more commonly used tools and
+functions in PHD2. &nbsp;These are enumerated in the <a href="KeyboardShortcuts.htm">Keyboard Shortcuts</a> section.
+
+<h3><a name="Software_Update"></a>Software Update</h3>
+
+<p>
+One of the most common responses to a request for support in the PHD2
+Forum is: please upgrade to the latest version and see if the problem
+still exists. If you are seeing an issue in an older version of PHD2
+it is quite likely that you are not the first person to encounter it,
+and that it has already been reported and fixed in a newer version of
+PHD2. For this reason, the developers of PHD2 feel that it is
+important to be running the most up to date version of the program.
+</p>
+
+<p>Upgrading a program that you rely on for unattended imaging in our
+limited available clear sky time can sometimes be perceived as a risky
+proposition. The developers of PHD2 recognize this sentiment--we are
+imagers too! There is a necessary trade-off between maintinaing a
+stable software installation, and of updating to receive the latest
+bug fixes and other improvements.</p>
+
+<p>PHD2 achieves a balance between these two opposing needs by
+publishing two series of software releases. The development releases
+contain the latest ongoing bug fixes and feature improvements, and are
+tested by the developers--usually during actual imaging time--before
+being released. Users who choose to run the development releases will
+get the latest bug fixes and newest features. Development releases
+have names like "2.6.3dev6" indicating, for example, the 6th
+development release after the 2.6.3 major release.</p>
+
+<p>Periodically, after a development release has received more test
+time, it will be published as a major release. For example, 2.6.3dev6
+could be published as major release 2.6.4.</p>
+
+<h4>Checking for updates</h4>
+
+<p>PHD2 has an option to automatically check for software updates. We
+recommend enabling this option to help keep your version of
+PHD2 up to date. When the automatic check option is enabled, PHD2 will
+quietly check for updates in the background when PHD2 starts. If new
+updates are available, PHD2 will give you the option to install the
+new version. Enabling the automatic check for updates will not
+interfere with the ordinary operation of PHD2, including automated
+operation. It is also safe to leave the option enabled if you are
+imaging in the field without internet connectivity. If PHD2 cannot
+check for updates, it will wait until next time it is started before
+trying to check again.</p>
+
+<p>Regardless of whether you allow PHD2 to automatically check for
+updates at startup, you can always manually check for updates by
+clicking "Check for updates" from the Help menu.</p>
+
+</body></html>
