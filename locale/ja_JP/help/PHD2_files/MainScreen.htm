@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html><head>
+<meta name="GENERATOR" content="Microsoft® HTML Help Workshop 4.1"><title>Main Screen</title></head>
+<body>
+<h2>Main Screen</h2>
+The <span style="font-style: italic;">PHD2</span> main window is designed for ease of use and clarity.
+&nbsp;Its intent is to support a quick and natural sequence of
+interactions to start and control guiding. &nbsp;The basic steps
+for doing this are as follows:<br>
+<ol>
+<li>Connect to your guide camera and mount</li>
+<li>Start a sequence of guide exposures to see what stars are
+available in the field of view</li>
+<li>Choose a guide star and calibrate the guider</li>
+<li>Continue guiding on the target star while using various
+display tools to see how things are going</li>
+<li>Stop and resume guiding as necessary</li>
+</ol>
+<img style="width: 670px; height: 522px;" alt="" src="Main_Screen.png"><br>
+<p>The majority of the screen is taken up by the display of the star
+field from your guide camera. &nbsp;The display is automatically
+adjusted for size, brightness, and contrast so you can have a clear
+view of available stars. &nbsp;However, these adjustments are done only
+for display purposes. &nbsp;Internally, <span style="font-style: italic;">PHD2</span>
+operates on the raw,
+un-adjusted data in order to maximize guiding accuracy. &nbsp;This
+display is also used to select a guide star by simply clicking on it.
+&nbsp;You should definitely adjust the slider control so you can see
+even the faintest stars in the field.<br></p>
+<h3><a name="Basic_control"></a>Basic control</h3>Near the bottom of the screen are the main
+controls. &nbsp;<span style="font-style: italic;">PHD2</span> is largely controlled by these buttons and
+sliders, with additional pull-down menus at the top of the window for
+more detailed functions. &nbsp;Moving from left to right in the
+window, the primary buttons are as follows: <br><ol><li>The USB connector icon - used to connect to your camera and mount devices</li><li>The Loop icon - used to start a sequence of repeated exposures with the
+guide camera ("looping"), with each resultant image (guide frame) being
+displayed in the main window. &nbsp;If guiding is subsequently started,
+clicking on the 'loop' icon again will pause guiding while continuing
+to take guide exposures.</li><li>The PHD2/Guide icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The Stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
+</ol>To the right of the stop icon is a pull-down list of exposure
+durations (0.01s - 15s). &nbsp;You use this control to quickly set the guide
+camera's exposure duration. &nbsp;If your camera does not support an
+exposure duration, <span style="font-style: italic;">PHD2</span> will do its best to emulate that duration.
+&nbsp;For example, if you use a short-exposure webcam, your maximum
+true exposure duration might be only 1/30th of a second. &nbsp;If you
+select one second as the desired exposure time, <span style="font-style: italic;">PHD2</span> will automatically
+acquire images for one second and stack them on the fly to create a
+composite image for guiding.
+<p>The next control to the right is a slider for adjusting screen
+stretch and contrast, essentially a "gamma" adjustment. &nbsp;<span style="font-style: italic;">PHD2</span>
+automatically adjusts the display accounting for the darkest and
+brightest pixels in the image, and the slider is used to fine-tune the
+display to better see the stars in the field of view.
+&nbsp;This may be useful, for example, if you are trying to focus the
+guide camera for the first time and need to see the large, out-of-focus
+star image. Moving the gamma slider only makes the display brighter or
+dimmer for your viewing. <span style="font-style: italic;">PHD2</span>
+always uses the raw pixels from the camera for guiding, and moving the
+gamma slider has no effect on guiding. &nbsp;A display of "completely
+white" or "completely black" is usually an indication that no stars are
+available in the field of view.</p>
+<p>Next to the gamma slider is the&nbsp;"brain button." &nbsp;This button brings up an <a href="Advanced_settings.htm">Advanced Dialog </a>for making detailed adjustments to <span style="font-style: italic;">PHD2</span>'s
+guiding operations. &nbsp;An important
+design goal of the program is to minimize your need to change these
+parameters, but "the brain" is&nbsp;nothing to be feared - there are
+adjustments available here that can significantly improve your guiding
+results and make your life easier. &nbsp;Over a period of time, you
+should take a look at this
+dialog and learn what it can do for you.
+</p>The rightmost control in this row is a "camera properties" button.
+&nbsp; Depending on the particular camera, this button may be enabled
+to provide access to a configuration dialog&nbsp;unique to the camera.
+&nbsp;However, common camera properties such as gain and binning will
+normally be set in the 'Camera' tab of the PHD2 Advanced Dialog.&nbsp;
+If the button is disabled, any&nbsp;available properties can be set in
+the PHD2 Advanced Dialog..<br>
+<h3><a name="Menus"></a>Menus</h3>The pull-down menus above the main guider display are used to access a variety of functions. &nbsp;These are described in the <a href="Darks_BadPixel_Maps.htm">Darks</a>, <a href="Tools.htm">Tools and Utilities</a><big><big><span style="font-weight: bold;">, </span></big></big>and <a href="Visualization.htm">Visualization&nbsp;</a><span style="font-weight: bold;"></span>sections of this help document.
+<h3><a name="Status_Bar"></a>Status Bar</h3><img style="width: 704px; height: 30px;" alt="" src="Main_Status.png"><br><br>The status bar at the
+bottom of the main window is
+used to display messages and status information that will help you keep
+track of guiding operations. &nbsp; <br><br>Near
+the center of the status bar are fields showing the current state of
+the guide star. &nbsp;If the SNR value drops below 10, its value will
+be shown in yellow as a warning that you may encounter some 'lost-star'
+events. &nbsp;If the guide star is saturated, the field to the left of
+SNR will show 'Saturated' in a red typeface.<br><br>To
+the right of the
+star status fields are two text fields showing the latest RA and Dec
+guide commands. &nbsp;These show the size of the guide pulse, the
+correction amount in pixels, and an arrow showing the direction.
+&nbsp;The arrows follow the usual compass conventions: Dec up/down
+corresponds to north/south, RA left/right corresponds to west/east.
+&nbsp;All of this information is captured in the log files and
+displayed in the various graphical tools, and those are what you should
+use for visualizing your guide performance. &nbsp;But these status
+fields may give you a quick visual clue when something is behaving
+unusally.<br><br>The rightmost panels in the status
+bar show icons that give you visual clues about the current state of
+PHD2:. &nbsp;These icons are color-coded to give you a dashboard view of current status and have the following meanings:<br><br>'Dark'
+- red means neither a dark library nor a bad-pixel map is being used,
+green means one or the other is&nbsp;in-use. &nbsp;If you're
+using a bad-pixel map, the text will say 'BPM' rather than 'Dark'<br><br>'Cal'
+- shows the state of calibration. &nbsp;Red means the mount is
+currently uncalibrated, while yellow means there is a calibration but it
+isn't being adjusted automatically to account for scope pointing
+position. &nbsp;This will happen when you aren't using either an ASCOM
+or 'aux' mount connection in PHD2. &nbsp;If the icon is yellow, you
+will generally need to recalibrate when you move the scope to different
+declination positions.<br><br>"The Ball" - shows whether all the
+equipment in your profile has been successfully connected. &nbsp;If the
+ball is yellow, some components are not connected, while green means
+everything is connected.<br><br>If you hover the mouse cursor over any of these status icons, you'll see details about the current state.<br><br>
+<p></p>
+</body></html>

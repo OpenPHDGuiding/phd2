@@ -1,0 +1,587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Trouble-shooting</title></head>
+<body>
+<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_Mount_Control"></a>Calibration and Mount Control Problems</h3>If
+you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
+for the first time, you may have trouble getting the guider calibration
+done. &nbsp;This problem usually takes one of two forms, each requiring
+different responses: <br><ol><li>The
+star moves during calibration but
+it moves "too far" or "too little." &nbsp;If you've used the
+new-profile wizard and have provided correct values for focal length,
+camera pixel-size, and mount guide speed setting, the "step-size" used
+in calibration should
+already be correct. &nbsp;But if you've configured your profile by hand
+or have changed guide speed settings in the mount, you may need
+to&nbsp;adjust the 'calibration step-size' parameter in the 'Guiding'
+tab of <a href="Advanced_settings.htm">Advanced Settings</a>.
+The help content there describes how this parameter is used, and you
+should be able to resolve the problem quickly. &nbsp;But if you've used
+the new profile wizard and are seeing problems with "too far" or "too
+little" guide star movement, the problem probably lies elsewhere.</li><li>The
+star doesn't move enough during&nbsp;RA calibration,&nbsp;declination
+backlash clearing, or Dec calibration. &nbsp;These problems
+are announced by<span style="font-weight: bold;"> alert messages </span>at
+the top of the display window. &nbsp;With longer focal
+lengths,&nbsp;small movements&nbsp;may even be the result of seeing
+deflections, and the mount isn't
+really moving at all. &nbsp;Dealing with this sort of problem is
+described next.</li></ol>In
+nearly all cases, the "no movement" problem is caused by failures in
+the hardware or, even more likely, problems in the cabling and
+connections. &nbsp;The best tool for trouble-shooting this is the
+'Manual Guide' option under the 'Tools' menu, as described in the <a href="Tools.htm">Tools</a>
+section of this help document. &nbsp;Simply use the directional
+controls in the 'Manual Guide' window to send commands directly to the
+mount while watching a star in the image display window. &nbsp;Use
+fairly large guide pulse amounts - at least several seconds - so you
+can clearly see if the mount is moving. &nbsp;Try to move the mount
+in all four directions and verify the target star is moving by roughly
+equal amounts. &nbsp;If the mount does not respond, you know you have
+either
+hardware or connectivity problems to resolve - nothing to do with <span style="font-style: italic;">PHD2</span>.
+&nbsp;If you're using a Shoestring device to connect to the mount,
+watch its indicator lights to see if the commands are reaching it.
+&nbsp;Similarly, your ST-4 compatible guide camera may have indicator
+lights to show when guide commands are being received. &nbsp;If you're
+using an ASCOM connection to the mount, be sure the COM port
+assignments are correct. &nbsp;You can also use some of the
+ASCOM-supplied tools like POTH to be sure the ASCOM driver is
+communicating correctly with the mount. &nbsp;It is best to use the
+latest version of the ASCOM driver for your mount because older
+versions of these drivers often had bugs associated with pulse-guiding.<br><br><a name="Calibration_sanity_check"></a><span style="font-weight: bold;">Calibration Sanity-Checks</span> <span style="font-weight: bold;">and Alerts</span><br>It
+is also possible that the calibration process will complete but PHD2
+will post a calibration alert message saying that some of the results
+are
+questionable. &nbsp;This "sanity check" dialog will show an explanation
+of the issue and some details of the calibration results: <br><br><img style="width: 797px; height: 426px;" alt="" src="Calib_Sanity.png"><br><br>Starting with the 2.4.0 release, there are four things checked by PHD2: <br><ul><li>Too
+few steps (shown above) - resolving this issue can be easy assuming the
+mount is actually working correctly.
+&nbsp;Just adjust the calibration step-size downward until you get at
+least 8 steps in both the west and north calibrations. &nbsp;If you
+used the new profile wizard to set up your configuration, a good
+starting value for calibration step-size will already be set. &nbsp;If
+you find that the number of steps in RA and Declination is
+substantially different, &nbsp;you are probably seeing evidence of
+declination backlash&nbsp;unless you are using different guide speed
+settings on
+the two axes.</li><li>Non-orthogonal
+camera axes - the camera axes are normally computed independently even
+though they&nbsp;<span style="font-style: italic;">should</span>
+be perpendicular. &nbsp;The angle calculations do not require
+great precision, but if they are signfiicantly non-orthogonal, you
+should repeat the calibration. &nbsp;If you see repetitive alerts of
+this type and the axes are significantly non-orthogonal, you'll need to
+identify the&nbsp;problem and fix it. &nbsp;Common causes are
+bad polar alignment, large declination backlash, or large periodic error in RA. &nbsp;Any of
+these problems can cause the guide star to move significantly on one
+axis while PHD2 is trying to measure its motion on the other axis. If
+you suspect these problems, go ahead and accept the calibration, then
+run the Guiding Assistant to measure&nbsp;your polar alignment error, declination backlash,
+and&nbsp;RA tracking error. &nbsp;In other cases, the mount
+may not be moving at all, and the measured
+displacements of the star are just caused by seeing effects.
+&nbsp;This sort of problem should be obvious in the calibration graph
+at the left of the dialog. &nbsp;If the axis error is relatively small
+and you are convinced the
+hardware is working properly, you can avoid further alerts of this type
+by setting the
+option to 'Assume Dec orthogonal to RA' in the 'Guiding' tab of the
+Advanced Setup dialog. But you should do this only if the error is
+fairly small - otherwise, you are simply ignoring a serious problem.
+&nbsp; </li><li>Suspicious
+RA and Dec rates - assuming the guide speeds in the mount are the same
+for both axes, the measured guide rate for right ascension should be
+related
+to the declination guide rate by approximately a factor
+of&nbsp;cosine (Declination). &nbsp;In other words, the RA rate gets
+smaller as you move the scope further away from the celestial equator
+(Dec=0). &nbsp;PHD2 won't try to identify
+which rate is incorrect - it is simply alerting you that something
+looks wrong with the rates. &nbsp;You can sanity check these rates
+yourself quite simply. &nbsp;If you are guiding at 1X sidereal rate,
+your declination guide rate should be approximately 15 arc-sec/sec;
+with a guide rate of 0.5X sidereal, the declination rate would be 7.5
+arc-sec/sec,
+etc. &nbsp;<span style="font-weight: bold;">A declination rate that is significantly smaller than the RA
+rate is often an indication of substantial declination backlash</span>.
+&nbsp;Using a calibration that triggered this alert can lead to
+over-shooting in Dec guiding because the actual guide rate is probably
+larger than the measured one. &nbsp;To work around this problem, you
+should manually clear the Dec backlash before starting calibration.
+&nbsp;You can do this in either of two ways: 1) make sure the mount's
+last slew direction was north or 2) use the hand controller to manually
+move the mount north at guide speed for 20 seconds. &nbsp;</li><li>Inconsistent results - if the calibration results are
+significantly different from your last-used calibration, an alert
+message will be generated. &nbsp;This may happen because you've made a
+change in your configuration. &nbsp;That doesn't imply a real problem,
+but you should probably consider creating a separate profile for the
+new configuration. &nbsp;By doing so,&nbsp; PHD2 will remember settings
+for each of your profiles, letting you switch between them easily.
+&nbsp;If you haven't made a configuration change, you will probably
+want to determine why the results are so different.</li><li>Too
+little east or south movement - The calibration process uses only the
+west and north moves to compute the camera angle and rates of movement.
+&nbsp;The east and south moves are done primarily to restore the guide
+star somewhere close to its starting position. &nbsp;If little or no
+east or south movement is seen, you may see an alert message advising
+you of the situation. &nbsp;The calibration hasn't failed, but guiding
+is likely to be impaired. &nbsp;The most common causes are a defective
+guide cable if using ST-4 guiding or very large Declination backlash if
+the alert is related to south moves.</li></ul>With
+any
+of these alerts, the relevant data field will be highlighted based on
+the
+type of message. &nbsp;You can choose to ignore the warning ('Accept
+calibration'), re-run the calibration ('Discard calibration'), or
+restore your last good calibration ('Restore old calibration').
+&nbsp;With the third option, you can defer calibration until later and
+start guiding with your last good calibration data. &nbsp;If you see
+repeated alerts on the same topic and are convinced there really
+isn't&nbsp;a problem, you can use the 'don't show' checkbox to block
+future alerts of that type. &nbsp;But you should be aware that the
+sanity-checking used by PHD2 works well for a wide range of equipment,
+and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;"><a name="Declination_backlash"></a>Declination Backlash</span><span style="font-weight: bold;"></span><br>By
+far the most common source of calibration problems&nbsp;is declination
+backlash, which is present to some degree in most geared mounts.
+&nbsp;With many less-expensive mounts, however, the problem can
+be&nbsp;severe and
+can lead to poor calibration and guiding results. &nbsp;Consider the
+following
+example of a calibration review dialog: <br><br><img style="width: 767px; height: 399px;" alt="" src="Calib_Review_Backlash.png"><br><br>The
+first clue to the problem is found by comparing the number of steps
+required for calibration on the two axes - 10 for RA but 42 for Dec.
+&nbsp;This shows&nbsp;the mount was not moving consistently in
+declination, probably&nbsp;because the backlash had not been
+effectively cleared. &nbsp;This also explains the "wandering" behavior
+of the declination points (light green) when the guide commands were
+reversed from north to south. Finally, the computed declination rate is
+much smaller than the RA rate even though the guide speed settings on
+the two axes were identical. &nbsp;In fact, this would have triggered a
+calibration alert dialog.
+&nbsp;There are
+actually two problems to be addressed here. &nbsp;First, the
+calibration result is poor and should be repeated in order to get a
+more accurate measure of the declination guide rate. &nbsp;Second, the
+mount is likely to behave badly during direction reversals in
+declination even if the dec guide rate is correct. &nbsp;The
+calibration can be improved by first manually moving the mount&nbsp;
+north at
+guide speed for&nbsp;10-20 seconds&nbsp;until consistent star
+movement is seen&nbsp;in the main window. &nbsp;You can do this with
+the 'Manual Guide'
+tool or by using the hand-controller on your mount. &nbsp;Once this is
+done, most of the declination backlash in your mount should have been
+overcome. &nbsp;You can then repeat the calibration procedure
+and&nbsp;probably get a declination guiding rate that is more
+reasonable.
+&nbsp;The underlying backlash problem generally requires some mechanical adjustment
+to the mount. &nbsp;You can try using a backlash compensation setting,
+but this is not likely to work well&nbsp;if the backlash is large -
+more&nbsp; than 2-3 seconds, for example. &nbsp;If you can't correct
+the
+backlash or reduce
+it to manageable levels, you should consider choosing uni-directional
+guiding&nbsp;for declination. To do this, you&nbsp;determine
+which way the mount drifts due to polar alignment error, and tell PHD2
+to guide only in the opposite direction (see &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a>). This is controlled by the 'Dec
+guide mode' control on the'Algorithms' tab of the Advanced Dialog.
+&nbsp;For example, if the
+mount tends to drift north overall, restrict guide commands to
+south-only. This is not an ideal solution, obviously, but you can
+still use reasonably long exposures and achieve decent guiding results
+- and there are plenty of imagers out there who use this technique
+effectively.<font style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;"></span></font>
+&nbsp;If you have an unusual circumstance, such as a mount with no
+declination control at all, you can set the 'Dec guide mode' choice to
+'Off'. &nbsp;<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
+problems getting calibration to complete without alert messages, you
+should run a very simple test to see if the mount is responding to
+guide commands. &nbsp;This test basically mimics what is done during
+calibration, but it is more direct and can give you a better feel for
+what's going on. &nbsp;We'll call it the "star-cross" test. &nbsp;The
+idea is to open the shutter on the main imaging camera, then send guide
+commands that should cause the stars in the field to trace out a
+distinctive cross pattern. &nbsp;In other words, you want to get an
+image that looks something like this: <br><br><img style="width: 360px; height: 382px;" alt="" src="Star_cross_1.png"><br><br>The angular orientation doesn't matter, that's just a function of how you
+have the guide camera rotated. &nbsp;What is important is that the
+lines in the cross are perpendicular and have roughly equal lengths in
+each of the four directions relative to the starting point in the
+center. &nbsp;If the image you get doesn't have this approximate
+appearance, guiding will either be impaired or perhaps impossible.
+&nbsp;For example, consider the following poor result:<br><br><img style="width: 360px; height: 347px;" alt="" src="Bad_Star_Cross_1.png"><br><br>You
+can see the star has moved along only one axis&nbsp; -&nbsp;only
+in right ascension in this example. &nbsp;The declination guide
+commands sent to the mount did nothing at all. &nbsp;Until this is
+fixed in the mount, you won't be able to guide in declination at all
+and will have to disable declination guiding to even complete a
+calibration. &nbsp;There are&nbsp; many other permutations of bad
+results, each suggesting a particular problem in the mount, the guide
+cable, or much less likely, the ASCOM driver for the mount. &nbsp;You
+can safely assume it has nothing to do with PHD2.<br><br>Here are the steps for running the test: <br>
+
+<ol><li>Set the mount guide speed to 1X sidereal.&nbsp; Bring up
+the 'Manual Guide' tool in PHD2 and choose an initial pulse size - start with,
+say, 5 seconds.</li><li>Start a 60 second exposure on the main camera.</li><li>Send
+a 5-second pulse west, then two 5-second pulses east, then a final
+5-second pulse west. &nbsp;This should return the star to its
+approximate starting position. &nbsp;You should&nbsp;wait about 5
+seconds after sending each guide pulse to give the command time to
+complete before sending the next pulse. <span style="font-family: Arial;"></span></li><li>Now send a 5 second pulse north, then two 5-second pulses south, then a final
+5-second pulse north. &nbsp;This should again return the star to its starting position.<br></li><li><span style="font-size: 10pt; font-family: Arial;">
+Wait for the main camera image to download and see what you get.</span></li></ol>You
+can use different pulse lengths if you want, perhaps using smaller
+values to confirm the mount will respond to them. &nbsp;Just be sure
+the total exposure time on the main imaging camera is longer than the
+total&nbsp; of guide durations plus a margin for error. On most mounts,
+the star will not return to its exact center because of some
+declination backlash - you can see that in the first example&nbsp;image. &nbsp;But
+it should be fairly close or you'll need to look more carefully at how
+much declination backlash you have in the mount. &nbsp;PHD2 also has a star-cross test tool, descibed here: <a href="Tools.htm#Star_cross_tool">Star-cross Tool</a>. &nbsp;You can use that to automatically perform the test steps described in 1-5 above.<br><br>One benefit to
+using this test is that it reduces things to the absolute basics: will
+the mount move as directed or not. &nbsp;It has nothing to do with PHD2
+guide settings because they aren't involved in the test. &nbsp;You may
+find it helpful to use the test results to communicate with the mount
+manufacturer or other users who understand that specific mount and its typical&nbsp; problems.<br><br><span style="font-weight: bold;"><a name="Measuring_Mount_Behavior"></a>Measuring the Mount's Behavior<br></span>If you're having<span style="font-weight: bold;"> </span>trouble
+getting decent guiding results, your first instinct will probably be to
+try making wild changes to the guiding parameters in the hope of
+finding a magic solution. &nbsp;This almost never works, and you're
+more likely to just make things worse. &nbsp;If the default parameters
+from the new-profile-wizard aren't producing reasonable results, the
+fault is probably with the hardware and you'll need to determine the
+underlying cause. &nbsp;Once you understand the cause, you can probably
+improve your guiding results even if no actual repairs can be made -
+but understanding the underlying problem is important. &nbsp;To
+understand what the mount is doing, perform the following steps:<br><br><div style="margin-left: 40px;">1. Use the new-profile-wizard to create a new equipment profile for the test, being sure the <span style="font-style: italic;">guide scope</span> focal length and camera pixel size are correct. &nbsp;Don't guess at them, look them up if you aren't sure. <br>2. Use an ASCOM connection to the mount if one is available.<br>3.
+Perform a fresh calibration near Dec=0 with the scope pointing at least
+40 degrees above the horizon to minimize seeing effects. <br>4. Make
+sure there are no backlash compensation settings active in the mount,
+and set the mount guide speed to 0.5x - 1x sidereal.<br>5. Run the
+Guiding Assistant for 10-15 minutes and apply whatever recommendations
+it makes, particularly with respect to min-move values. &nbsp;Let it
+measure your declination backlash. &nbsp;You may need to use a large
+tracking region to avoid losing the guide star during this part of the
+process - just be sure there aren't multiple stars in the tracking
+rectangle. &nbsp;The backlash test will move the star a long distance
+north, so choose a guide star that is nearer the southern edge of your
+camera frame to give yourself plenty of room.<br>6. Do not change any of the guide parameters beyond what is recommended by the Guiding Assistant.<br>7.
+Take a careful look at the results shown in the Guiding Assistant
+table. &nbsp;Each entry in the table can tell you something useful
+about the mount's performance. &nbsp;These results are also written to
+the guiding log, so they are available for later analysis.<br>8.
+If you got calibration alert messages in step 3, you should probably
+remedy those problems before proceeding. &nbsp;Guiding with a bad
+calibration is not likely to produce good results. &nbsp;Also, if your
+polar alignment error is 10 arc-min or more, you should improve on that
+and then repeat the above steps.<br>9. Let PHD2 guide for another 10-15
+minutes, just letting it run so long as there aren't gross errors from
+wind or other "mistakes." &nbsp;<span style="font-weight: bold;">Do NOT</span> change any of the guiding parameters while this is being done.<br></div><br>If
+you want to analyze the results yourself, use the PHDLogView tool and
+the tutorial on Analyzing PHD2 Guiding Results. &nbsp;You should also
+consult the document on PHD2 Best Practices. &nbsp;All of these
+references are available on the OpenPHDGuiding.org web site under the
+'News' tab. &nbsp;If you'd like some help understanding the results,
+post both the guiding and debug log files on the OpenPHD2 Google forum
+and we'll be glad to help you out.<br><span style="font-weight: bold;"><br><span style="font-weight: bold;"></span></span><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+that the image displayed in the main window is extremely noisy or is
+almost all-white or all-black. &nbsp;Assuming the camera is
+functioning and actually downloading images, the display issues are
+often caused by the absence of any usable stars in the frame. &nbsp;For
+example, trying to test the camera indoors or in daylight will almost always create
+these conditions. &nbsp;The appearance of the image display window in
+these situations provides no useful information and should be
+discounted. &nbsp;PHD2 uses an automatic screen-stretching function
+that is intended to help you see real stars under a nightime sky.
+&nbsp;When no stars are present, the display will be stretched to show
+the range of minimum-to-maximum brightness values of whatever is in the
+frame - which is often nothing at all. &nbsp;This is usually what
+causes the noisy/all-white/all-black display results. &nbsp;You may
+also encounter display problems if the guider is not well-focused.
+&nbsp;Focusing the guider can be a tedious and frustrating experience
+but it's critical to getting good guiding results. &nbsp;A good
+technique is to start with a bright <span style="font-style: italic;">but unsaturated</span> star and try to reach focus with that. &nbsp;Then move to successively fainter stars to fine-tune the focus position. &nbsp;<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel Problems</h3>Even
+with some high-quality guide cameras, you may encounter problems where
+clumps of hot pixels are mistaken by PHD2 as guide stars. &nbsp;This
+can be especially annoying if you're using automation tools and&nbsp;
+the 'auto-select' guide star selection is mistakenly choosing hot pixels. &nbsp;For many cameras, a
+simple dark frame will suffice for reducing or eliminating hot-pixel
+problems, and dark frames should always be used as a starting-point.
+&nbsp;But for other cameras, you will need to build a bad-pixel map and
+update it as necessary when you see changes in the locations and sizes
+of defective pixels. &nbsp;Camera sensors change over time and may
+react to changing temperatures, so bad-pixel map maintenance is a small
+task you should be able to perform. &nbsp;Step-by-step instructions can
+be found in the&nbsp;<a href="Darks_BadPixel_Maps.htm#Bad-pixel_Maps">Bad-pixel map</a>
+chapter of this document. &nbsp;These problems are different from
+transient hot pixels, which can be caused by cosmic ray strikes on the
+sensor. &nbsp;Although cosmic ray hits can disrupt guiding, there's
+really nothing you can do about them.<br><br><h3><a name="Problems-Restore_Guiding_Parameters"></a>Restoring a Working Baseline</h3>Despite&nbsp;advice to the contrary, you may have made rapid, uninformed
+changes to your guiding parameters only to find the performance stayed
+the same or even got worse. &nbsp;Before proceeding, you should restore the
+settings to their default values. &nbsp;If you used the
+new-profile-wizard to build your profiles, the parameters will have
+been set based on the specifics of your configuration, and they are
+likely to be pretty close. &nbsp;If you encounter&nbsp;significant
+guiding problems using those settings, you are probably having
+issues with the mount or other hardware. Blindly changing guiding
+parameters almost never solves these problems and quite often makes
+things worse. &nbsp;You have several options for restoring the settings
+to their default values: <br><ol><li>On the 'Algorithm' tab of the
+Advanced Dialog, you can individually reset parameters by looking at
+the tool-tip for each field. &nbsp;Hover your mouse cursor over the
+field and the default value will be displayed. &nbsp;Note that this is
+not accurate for the min-move settings, which depend on your image
+scale. &nbsp;This approach is best when you want to restore only a few
+settings.</li><li>Click the 'reset' buttons on the 'Algorithm' tab for
+the selected RA and Dec guide algorithms. &nbsp;This is the recommended
+approach for resetting all the guiding parameters. &nbsp;The min-move
+settings will be reset to the values originally calculated by the
+new-profile-wizard. &nbsp;If you subsequently adjusted those settings
+by running the Guiding Assistant, you should repeat that process.</li><li>Run the new-profile-wizard, accessed by clicking on the 'Manage Profiles' button in the 'Connection' dialog.
+&nbsp;Use the same camera and mount choices you already have and give
+the profile a new name. &nbsp;If you want to re-use the dark library
+and bad-pixel map from the old profile, connect to the new profile and
+use the 'Darks' menu to import those files from the old profile.
+&nbsp;Once you are satisfied with the new profile settings, you can
+delete the old one.</li></ol> <h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>In
+some cases, you may experience problems where guider images aren't
+downloaded or displayed. &nbsp;In extreme cases, this may even cause
+<span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to
+"hang"). &nbsp;Again, this is almost always due to hardware, camera
+driver, or&nbsp;connectivity issues, with one of the most common
+culprits being a faulty USB cable or device. &nbsp;It is highly
+unlikely to be caused by an application like <span style="font-style: italic;">PHD2</span>,
+so you should begin
+your investigation at the lower levels of the system. You can start by
+confirming that the guide camera is working - try using a short, direct
+cable from the camera to the computer and taking exposures with
+the&nbsp;native&nbsp;or test application that came with the camera.
+&nbsp;If the
+camera is functional, you can start looking at&nbsp;USB
+hubs and cables, swapping them one at a time to see if you can isolate
+the problem. &nbsp;It's worth remembering that we work in
+a&nbsp;hostile
+environment while doing our imaging, and many of the components we use
+are not designed for cold, outdoor conditions. So something that worked
+just last week or last month may no longer be reliable.<br><br>Starting
+with the 2.3 release, PHD2 uses a camera timeout property to protect
+against&nbsp;hang conditions. &nbsp;This property is set in the Camera tab
+of&nbsp;<a href="Advanced_settings.htm">Advanced Settings</a>. and uses a default value of &nbsp;15 seconds. &nbsp;This means that PHD2 will wait up to 15 seconds <span style="font-style: italic;">after the completion of the exposure</span>
+to receive the image from the camera. &nbsp;This is a very generous
+amount of time and should work well for the majority of cameras.
+&nbsp;However, some cameras are known to create problems&nbsp;by
+making&nbsp;large bandwith or power demands on the USB subsystem.
+&nbsp;If you are getting timeouts of this sort and are convinced the
+camera is working properly, you can increase this timeout value. &nbsp;You can even change it&nbsp;to a very
+high number - even 1000 seconds or more - so that timeout errors are never shown. &nbsp;Doing so leaves you
+vulnerable to apparent hangs in the user interface and erratic guiding
+behavior, but it is a choice you can make for yourself. &nbsp;A larger
+value for the timeout will not create extra delays during normal camera
+operations - once the image is downloaded from the camera, the timer is cancelled and guiding will proceed immediately.<h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance</h3>Once
+you've gotten everything running, you will probably get reasonably good
+guiding results almost immediately. You will have to decide what
+"good enough" means, and everyone's standard is likely to be different.
+&nbsp;But if you find&nbsp;your imaging results are not acceptable
+because the stars are streaked or elongated, you'll need to take a
+systematic approach to correcting the problems. &nbsp;It is often
+tempting to just start blindly adjusting the various guide parameters
+in an effort to make things better. &nbsp;There is nothing wrong with
+adjusting the parameters - that's why they're there - but it should be
+done carefully based on an understanding of what they do. &nbsp;The
+PHD2 default settings are carefully chosen to produce reasonable
+results for most amateur equipment and locations. &nbsp;Optimal
+settings are entirely dependent on the image scale, seeing conditions,
+and behavior of your specific mount. &nbsp;In other words, they are
+unique to your situation - there is no magic "red book" of correct
+guiding parameters, and settings you get from other users may be
+completely irrelevant to your situation. &nbsp;If you got started by
+using the New-Profile wizard, the default settings will already be
+tuned somewhat to match your image scale. &nbsp;By using the Guiding
+Assistant, you can get more specifics about your situation - how the
+seeing conditions look and how you might adjust the minimum-move
+settings to avoid chasing the seeing. &nbsp;You can also use either the
+Guiding Assistant or the Manual Guiding tool to see how much backlash
+is present in your mount, something that can be important to understanding your declination guiding results.<br><br>Achieving the best possible guiding performance can be a
+complex task and not something that can be covered here. However, you
+can get help on the web from a variety of sources, with the document by
+Craig Stark being a very good place to start: &nbsp;<br><span style="font-weight: bold;">http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677</span>.<span style="font-weight: bold;"></span><h3><a name="Problems-_Alerts"></a>Alert Messages</h3>PHD2
+will sometimes display alert messages at the top of the main display
+window. &nbsp;These generally show error or diagnostic information that
+warrant your attention. &nbsp;During normal operation, you probably
+won't see any of these, but if you do, this section can help you decide
+what to do about them.<br><br><span style="font-weight: bold;">Dark-library and Bad-pixel Map Alerts</span><br><br><span style="font-weight: bold;">"Use a Dark Library or a Bad-pixel Map"</span>
+- using a dark library or bad-pixel map reduces the likelihood that
+PHD2 will mistakenly identify hot pixels or some other image defect as
+a star. &nbsp;If you choose to ignore this message, you'll be
+vulnerable to situations where PHD2 inadvertently switches from the
+guide star to a hot pixel and no longer guides correctly.<br><br><span style="font-weight: bold;">Format/geometry mismatches</span>
+- dark frames and bad-pixel maps must match the format of the sensor in
+the camera being used. &nbsp;If you've changed the camera in an
+existing profile, the existing dark/bpm files will not be usable and
+you'll&nbsp;see this alert message. &nbsp;To avoid seeing the message,
+you should
+instead create a new profile when you change cameras. You'll still need
+to shoot new darks or bpms, but you can keep the old files for use with
+the original camera. In very unusual
+circumstances, you may&nbsp;see this message&nbsp;when either the
+driver or&nbsp;PHD2 code for handling the camera has changed. You might
+also
+see&nbsp;a
+format-incompatibility alert message if you have an old dark library
+that has somehow accumulated frames with different sensor formats. <br><br>In
+any of these cases, you should rebuild the dark library or bad-pixel
+map from scratch - more information can be found here: &nbsp;<span style="font-weight: bold;"></span><a href="Darks_BadPixel_Maps.htm">Dark Frames and Bad-pixel Maps</a><br><span style="font-weight: bold;"><br>ASCOM Alerts</span><br>When
+you first connect to a mount, camera, or other ASCOM-controlled device,
+you may see an alert message saying that a required capability is not
+supported by the driver. &nbsp;One example would be lack of support for
+pulse-guiding by an ASCOM telescope/mount driver, something that can
+occur with outdated drivers. &nbsp;In these situations, your only
+recourse is to update the ASCOM driver. &nbsp;These drivers are
+generally available from the ASCOM web site or, in some cases, from the
+device manufacturer. <span style="font-weight: bold;">&nbsp;</span>As
+a rule, the best practice is to use the latest versions of these
+drivers so you don't encounter problems that have already been
+identified and fixed.<br><br>You might also see other alert messages associated with the ASCOM driver for the mount: <br><div style="margin-left: 40px;">1.
+"PulseGuide command to mount has failed - guiding is likely to be
+ineffective." &nbsp;This is usually caused by a bug or timing
+sensitivity in the ASCOM mount driver, and there is generally no way to
+know if the guide command was executed properly or not. &nbsp;If
+you&nbsp;rarely see the alert and your guiding results are acceptable,
+you can probably ignore it. &nbsp;Despite the alert condition, PHD2
+will continue to issue guide commands, so you don't need to take any
+immediate action. &nbsp;If you see the alert frequently, you should
+send us your debug log so we can understand the details of the problem
+and possibly help you describe it to the author of the ASCOM driver.<br>2.
+"Guiding stopped: the scope started slewing." &nbsp;This is pretty
+self-explanatory, but the determination that the scope was slewing is
+something reported to PHD2 by the ASCOM mount driver. &nbsp;Whether it
+was actually slewing isn't known to PHD2. &nbsp;Assuming you didn't
+mistakenly slew the scope with guiding active, there is probably a
+timing problem in the driver. &nbsp;If you want to sidestep the problem
+temporarily, you can disable the logic to check for slewing - go into
+the 'Guiding' tab of the brain dialog, and un-check the box that says
+"Stop guiding when mount slews." &nbsp;This will let you continue
+guiding, but the results might be suspect. &nbsp;The debug log should
+provide the details needed to describe the problem to the author of the
+ASCOM driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
+normal guiding, you may see an alert message saying that your settings
+for maximum-duration limits in RA or Dec&nbsp;are preventing
+PHD2 from keeping the guide star locked. &nbsp;If you've decreased
+these parameters from their default values, you should consider
+increasing them. &nbsp;However, if the limits are well above one second,
+this alert probably indicates you've encountered a mechanical problem
+that needs to be corrected. &nbsp;In the simplest cases, you may have
+suffered a cable snag, wind gust, mount bump, or other external event
+that caused the guide star to move by a large amount. &nbsp;In such
+cases, you simply need to correct the problem if you can and proceed
+with guiding. &nbsp;But in other cases, the alert may be triggered by a
+steadily growing guide star displacement that is not being corrected at all.
+&nbsp;For example, if PHD2 can't move the mount correctly in either the
+north or south directions, the cumulative uncorrected error will
+eventually reach a point that triggers the alert. &nbsp;These sorts of
+problems will require careful diagnosis and correction and simply
+increasing the maximum-duration limits will not help.<br><h3><a name="Log_analysis"></a>Log Analysis</h3>Any
+sort of problem isolation or&nbsp;tuning will invariably require use of
+the PHD2 log files. &nbsp;Both are formatted for straightforward
+interpretation by a human reader, and the guide log is constructed to
+enable easy import into other applications. &nbsp;As mentioned in the
+'Tools' section, applications such as PHDLogViewer or Excel
+can
+be used to visualize overall&nbsp;performance, compute performance
+statistics, and examine time periods when guiding was problematic.
+&nbsp;With Excel or similar applications, simply specify that the guide
+log uses a comma as a column separator.<br><h4>Guiding Log Contents</h4>The
+contents of the guiding log will continue to evolve as new capabilities
+are added. &nbsp;But the basic content is stable, and considerable care
+is taken to not "break" applications that parse it. &nbsp;If you wish
+to analyze the log yourself, the following information will be helpful.
+&nbsp;<br><br>
+
+<p class="MsoNormal">The PHD2 guide log will contain zero or more sequences of
+calibration and zero or more sequences of guiding.<span style="">&nbsp; </span>Each of these&nbsp;sections has a
+header that provides most of the information about the guiding algorithms being
+used and the internal parameters used by PHD2 for guiding.<span style="">&nbsp;&nbsp;</span>At the start of either a calibration run or
+a guiding sequence, the last line of the header information defines a set of
+column headings.<span style="">&nbsp;&nbsp; </span>The meanings of those
+columns are shown below:</p>
+
+
+
+<p class="MsoNormal"><b style=""><o:p>&nbsp;</o:p>Calibration columns:<o:p></o:p></b></p>
+
+
+
+
+
+<ul><li>dx, dy<span style="">&nbsp;
+</span>are offsets from the starting position, in pixels, in the camera coordinate
+system</li><li>x, y are the camera x/y coordinates of the guide
+star at the end of each calibration step</li><li>Dist is the total distance moved in the camera
+coordinate system (dist = sqrt(dx*dx + dy*dy).<span style="">&nbsp;
+</span>This is the value used by PHD2 to compute the calibration parameters<o:p></o:p></li></ul><o:p>&nbsp;</o:p><b style="">Guiding columns:<o:p></o:p></b>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>dx, dy are the same as for calibration - offsets
+from the "lock position" of the guide star in the camera coordinate
+system</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RARawDistance and DECRawDistance - these are the
+transforms of dx and dy into the mount coordinates - in other words, they use
+the arbitrary angle of the guide camera to map from X/Y on the camera to RA/Dec
+on the mount</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RAGuideDistance and DECGuideDistance - these are
+the outputs from the various guiding algorithms.<span style="">&nbsp; </span>The guide algorithms operate on the
+"raw" distances and decide how far, if any, the telescope position
+should be adjusted in each axis.<span style="">&nbsp; </span>For
+example, with a "minimum move" parameter set, the "guide"
+distances can be zero even when the "raw" distances are non-zero.</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>RADuration, RADirection, DECDuration, DECDirection
+- these are the values determined by the two "guide" distances
+above.<span style="">&nbsp; </span>The "durations" are the
+lengths of the guide pulses, in milliseconds, needed to move the mount by the
+distances specified by RAGuideDistance and DECGuideDistance</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>XStep, YStep - step-adjustment durations for the
+adaptive optics device if one is being used</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>StarMass - a brightness measure of the guide
+star image</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>SNR
+- an internal "star-detection ratio"&nbsp;used by PHD2 - essentially a
+measure of how well the star can be distinguished from the sky
+background</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an integer value representing the quality of the guide star measurement:</li><ul><li>0 - no error</li><li>1 - star is saturated</li><li>2 - star has low SNR</li><li>3 - star mass is too low for accurate measurement</li><li>4 - star has drifted too near the edge of the frame</li><li>5 - star mass has changed beyond the specified amount</li><li>6 - unexpected error</li></ul></ul>
+
+
+
+<p class="MsoNormal">All&nbsp;distance values are in units of pixels.<span style="">&nbsp; </span>The header for the guiding section will show
+the image scale as it is known by PHD2, and that can be used to scale the pixel
+distance values into units of arc-seconds if desired.</p><h3><a name="Problem_Reporting"></a>Problem Reporting</h3>If
+you encounter application problems that&nbsp;are specific to <span style="font-style: italic;">PHD2</span>, you
+are encouraged to report them to the open-phd-guiding Google group: <span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.
+&nbsp;Obviously, the more information you can provide, the more likely
+we will be able to resolve the problem. &nbsp;Using the following
+guidelines will help in that regard: <br><ol><li>Try to reproduce the
+problem - if we have a clear set of steps to follow, we are more likely
+to find a solution quickly. &nbsp;If you can reproduce it, try to
+reduce things to the minimum number of steps. &nbsp;Remember, we won't
+have your hardware or computer environment when we try to reproduce it
+ourselves.</li><li>Try to be complete about describing your configuration - operating system, equipment types, <span style="font-style: italic;">PHD2</span> version, etc.</li><li>Attach
+the <span style="font-style: italic;">PHD2</span>
+debug log from the session in which you encountered the
+problem. &nbsp;You can find the debug log in the PHD2 folder in your
+Documents folder.&nbsp;If you can't reproduce the problem, try to
+estimate the
+time of day when you first saw it - this could help us find evidence in
+the debug log without having to sift through hundreds of lines of
+output. &nbsp;The 'Upload log files' function on the 'Help' menu can help you find and upload the log files.</li></ol>
+<br>
+&nbsp;&nbsp;
+</body></html>

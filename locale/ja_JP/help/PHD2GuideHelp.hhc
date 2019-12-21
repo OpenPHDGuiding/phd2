@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="前書き">
+		<param name="Local" value="Introduction.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="メインスクリーン">
+		<param name="Local" value="MainScreen.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="PHD2 ガイドの使用">
+		<param name="Local" value="Basic_use.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="機器の接続">
+			<param name="Local" value="Basic_use.html#Equipment_Connection">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="機器プロファイル">
+			<param name="Local" value="Basic_use.html#Equipment_Profile">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="露出時間と星の選択">
+			<param name="Local" value="Basic_use.html#Exposure_Time_and_Star_Selection">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="キャリブレーション">
+			<param name="Local" value="Basic_use.html#Automatic_Calibration">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ガイド">
+			<param name="Local" value="Basic_use.html#Guiding">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ダークフレームと不良ピクセルマップ">
+		<param name="Local" value="Darks_BadPixel_Maps.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="視覚化ツール">
+		<param name="Local" value="Visualization.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="オーバーレイ">
+			<param name="Local" value="Visualization.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ガイド性能グラフ">
+			<param name="Local" value="Visualization.html#Graphical_Display">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="スタープロファイル表示">
+			<param name="Local" value="Visualization.html#Star_Profile_and_Target_Displays">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ターゲット表示">
+			<param name="Local" value="Visualization.html#Star_Profile_and_Target_Displays">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AOグラフ">
+			<param name="Local" value="Visualization.html#Adaptive_Optics_AO_Graph">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ドッキング可能なウィンドウ">
+			<param name="Local" value="Visualization.html#DockableMoveable_Graphical_Windows">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="詳細設定">
+		<param name="Local" value="Advanced_settings.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="グローバルパラメータ">
+			<param name="Local" value="Advanced_settings.html#Global_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ガイドパラメーター">
+			<param name="Local" value="Advanced_settings.html#Guiding_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="カメラパラメーター">
+			<param name="Local" value="Advanced_settings.html#Camera_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="アルゴリズム">
+			<param name="Local" value="Advanced_settings.html#Algorithms_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AOパラメータ">
+			<param name="Local" value="Advanced_settings.html#Other_Devices_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ローテーターパラメーター">
+			<param name="Local" value="Advanced_settings.html#Other_Devices_Tab">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ガイドアルゴリズム">
+		<param name="Local" value="Guide_algorithms.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ツールとユーティリティ">
+		<param name="Local" value="Tools.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="手動マウント制御">
+			<param name="Local" value="Tools.html#Manual_Guide">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="スター自動選択">
+			<param name="Local" value="Tools.html#Auto-Select_Star">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="キャリブレーション詳細">
+			<param name="Local" value="Tools.html#Calibration_Details">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="サーバー">
+			<param name="Local" value="Tools.html#PHD2_Server">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ログ">
+			<param name="Local" value="Tools.html#Logging_and_Debug_Output">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="極整列ツール">
+			<param name="Local" value="Tools.html#Polar_alignment_tools">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ロック位置">
+			<param name="Local" value="Tools.html#Lock_Positions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="彗星追跡">
+			<param name="Local" value="Tools.html#Comet_Tracking">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ガイドアシスタント">
+			<param name="Local" value="Tools.html#Guiding_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="スタークロステストツール">
+			<param name="Local" value="Tools.html#Star_cross_tool">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="メリディアンフリップキャリブレーションツール">
+			<param name="Local" value="Tools.html#pierflip_cal_tool">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="機器プロファイル">
+			<param name="Local" value="Tools.html#Managing_Equipment_Profiles">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="シミュレーター制御">
+			<param name="Local" value="Tools.html#Advanced_Settings_for_the_Simulators">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="キーボードショートカット">
+			<param name="Local" value="Tools.html#Keyboard_Shortcuts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ソフトウェア更新">
+			<param name="Local" value="Tools.html#Software_Update">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="キーボードショートカット">
+		<param name="Local" value="KeyboardShortcuts.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="トラブルシューティングと分析">
+		<param name="Local" value="Trouble_shooting.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="キャリブレーションの問題">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Mount_Control">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="マウント動作の測定">
+			<param name="Local" value="Trouble_shooting.html#Measuring_Mount_Behavior">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="表示ウィンドウの問題">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Display_Window">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="カメラのタイムアウトとダウンロードの問題">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Camera_Timeouts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ホットピクセルの問題">
+			<param name="Local" value="Trouble_shooting.html#Problems-Hot_Pixels">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ガイドパラメータ復元の問題">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Poor_Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="悪いガイドパフォーマンス">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Poor_Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="警告メッセージ">
+			<param name="Local" value="Trouble_shooting.html#Problems-_Alerts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ログファイルの使用">
+			<param name="Local" value="Trouble_shooting.html#Log_analysis">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="問題報告">
+			<param name="Local" value="Trouble_shooting.html#Problem_Reporting">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="チュートリアル">
+		<param name="Local" value="Tutorials.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ドリフトアライメント">
+			<param name="Local" value="Tutorials.html#Drift_Align">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="静的極配置">
+			<param name="Local" value="Tutorials.html#Static_polar_alignment">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ポーラードリフトアライメント">
+			<param name="Local" value="Tutorials.html#Polar_Drift_Align">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="用語集">
+		<param name="Local" value="Glossary.html">
+		</OBJECT>
+</UL>
+</BODY></HTML>

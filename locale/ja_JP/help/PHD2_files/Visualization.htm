@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Visualization Tools</title></head>
+<body>
+<h2>Visualization Tools</h2>
+<span style="font-style: italic;">PHD2</span> provides numerous&nbsp;visualization and
+display tools to help you see how your guider is performing.
+&nbsp;All
+of these tools are accessed under the 'View' pull-down menu and are described below.<br><ul><li><a href="#Overlays">Overlays</a></li><li><a href="#Graphical_Display">Graphical Display</a></li><li><a href="#Stats_Display">Stats Display</a></li><li><a href="#Star_Profile_and_Target_Displays">Star Profile and Target Displays</a></li><li><a href="#Adaptive_Optics_AO_Graph">AO Graph</a></li><li><a href="#DockableMoveable_Graphical_Windows">Dockable Windows</a></li></ul>
+<h3><a name="Overlays"></a>Overlays</h3>
+The
+simplest display tools are&nbsp;grid overlays superimposed over the
+main guider display window. &nbsp;These are quite straightforward
+and
+include the following choices:<br>
+<ul>
+<li>Bullseye target</li>
+<li>Fine grid</li>
+<li>Coarse grid</li>
+<li>RA/Dec - this shows how the telescope axes are aligned
+relative to the axes of the camera sensor</li><li>Spectrograph
+slit/slit position - for spectroscopy users, this will overlay a
+spectrograph slit graphic on the main display window. &nbsp;The size,
+position, and&nbsp;angle of the graphic can be adusted to match the
+optical configuration.</li>
+<li>None</li>
+</ul>
+You can just click on the various overlay options under the 'View' menu
+and choose one that suits you.
+<h3><a name="Graphical_Display"></a>Graphical Display</h3>
+The
+graphical display window is one of the more powerful tools for judging
+guiding performance, and you will probably learn to rely on it.
+&nbsp;A typical example is shown below: <br><br><img style="width: 1101px; height: 281px;" alt="" src="Guider_Graph.png"><br><br><br>The
+major portion of the window shows the detailed displacements of the
+guide star for each guide exposure, plotted left-to-right.
+&nbsp;Normally, one line shows displacements in right ascension while
+the second line shows declination displacements. &nbsp;However, you can
+use the 'Settings' button to the left of the graph to switch to camera
+(X/Y) axes if you prefer. &nbsp;You can also use the 'Settings' button
+to switch between display units of arc-seconds vs. camera pixels or to
+change the colors of the two graph lines. &nbsp;The range of the
+vertical axis is controlled by the second button from the top, labelled
+y:+/-4" in this example. &nbsp;The range of the horizontal axis - the
+number of guide exposures being plotted -&nbsp; is controlled by the
+topmost button, labelled x:50 in this example. &nbsp;This scale also
+controls the sample size used for calculating the
+<a name="statistics"></a>statistics you see in the lower left part of the graph window.
+&nbsp;These values show the root-mean-square (RMS or standard
+deviation) of the motions in each axis along with the total for both
+axes. &nbsp;These are probably your&nbsp; best estimators of guiding
+performance because they can be directly compared to star sizes and
+seeing conditions. &nbsp;The '<a name="RA_Osc"></a>RA Osc'&nbsp; value shows the odds that
+the current RA move is in the opposite direction as the last RA move.
+&nbsp;If you are too aggressive in your guiding and over-shooting the
+mark each time, this number will trend toward 1.0. &nbsp;If you were
+perfect and not over- or under-shooting and your mount had no periodic
+error, the score would be 0.5 &nbsp;Taking periodic error into account,
+the ideal value would be closer to 0.3 or 0.4. &nbsp;If this score gets very
+low (e.g. 0.1), you may want to increase the RA aggressivness or
+decrease the hysteresis. &nbsp;If it gets quite high (e.g. 0.8), you
+may want adjust aggressivness/hysteresis in the opposite
+direction.&nbsp;There are two
+other checkboxes to the left that can help you evaluate guider
+performance. &nbsp;Clicking on the '<a name="Corrections"></a>Corrections' box results in an
+overlay showing when guide commands are actually sent to the mount,
+along with their direction and magnitude. &nbsp;In this example, these
+are shown as the vertical red and green lines appearing at irregular
+intervals along the horizontal axis. &nbsp;This shows you how "busy"
+the guiding is - under optimal conditions, you should expect to see
+extended intervals when no guide commands are sent at all. &nbsp;The
+other checkbox, labelled '<a name="Trendlines"></a>Trendlines',
+will superimpose trend lines in
+both axes to show if there is a consistent overall drift in the star
+position. &nbsp;This is primarily useful for drift aligning where the
+declination trendline is used extensively. &nbsp;But the RA trendline
+can show if your mount is tracking systematically slow or fast (or is
+seeing the effects of flexure) and can
+help if you are trying to set up custom tracking rates. &nbsp;If
+dithering commands are issued, usually by an external imaging
+application, a 'dithering' label will be superimposed on the graph in
+the appropriate time interval. &nbsp;This tells you&nbsp;the star
+displacements being graphed are being influenced by the dithering
+operation. &nbsp;<br><br>The
+guiding graph will also show the directions (GuideNorth,
+GuideEast) associated with the guide commands, as shown in the example
+above. This can be helpful if you are looking at overall drift
+and want to determine how to set uni-directional guiding for
+declination. &nbsp;These directions show how the guide star is drifting
+away from the lock position. &nbsp;For example, if the Dec position of
+the guide star is moving upward in the graph, the guide star appears to be
+drifting "north" on the camera sensor. &nbsp;This means that&nbsp;south guide
+pulses will be needed to move it back to the lock position.
+&nbsp;Similarly, a downward drift in RA location means the the guide
+star is moving "east" on the camera sensor and west guide pulses will be
+applied. &nbsp;For the purpose of setting up uni-directional Dec
+guiding, these rules apply:<br>&nbsp; &nbsp; Dec drifting upward =&gt; select Dec guide mode = South<br>&nbsp; &nbsp; Dec drifting downward =&gt; select Dec guide mode = North<br>For
+various mount and hardware reasons, these directions may not correspond
+to actual directions in the sky, particularly for Dec.<br><br>The recommended way to look at guiding
+performance is to use units of arc-seconds rather than pixels.
+&nbsp;Doing this allows an equipment-independent way of evaluating
+performance because it transcends questions of focal length and image
+scale. &nbsp;To do this, you&nbsp;need to provide <span style="font-style: italic;">PHD2</span> with sufficient
+information to determine your guider image scale: namely, the focal
+length of the guide scope and the size of the guide camera pixels.
+&nbsp;These parameters are set in the 'Brain' dialog, on the 'Global'
+and 'Camera' tabs, respectively. &nbsp;If they are not specified, <span style="font-style: italic;">PHD2</span>
+will use default values of 1.0, and the guiding performance numbers
+will effectively be reported in units of pixels.<br><br>At
+the bottom
+of the graph window are active controls for adjusting guiding
+parameters "on the fly". &nbsp;The guiding algorithm selections you've
+made will control which controls are shown. &nbsp;These controls have
+the same
+effect as those in the 'Brain' dialog, and they eliminate the
+need&nbsp;to stop guiding and navigate to another window to adjust
+guiding parameters.<br><h3><a name="Stats_Display"></a>Stats</h3><img style="width: 326px; height: 448px;" alt="" src="StatsWindow.png"><br><br>If
+you want to monitor guiding performance without necessarily having the
+graph window open, you can click on&nbsp; the "Stats" menu item.
+&nbsp;That will display the salient statistics with controls for
+clearing the data or changing the number of guide exposures used to
+compute the statistics. &nbsp;This window is also useful for
+confirming&nbsp;camera binning, monitoring the guide camera
+temperature, and getting a quick calculation of your guide camera's
+field of view.
+<h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 297px; height: 305px;" alt="" src="Star_profile.png"><br><br>The
+star profile display shows the cross-section of the guide star along
+with measurements for its full-width-half-maximum (<a name="FWHM"></a>FWHM)
+and half-flux-diameter (HFD).
+&nbsp;HFD is generaly a more stable measure of the star size since
+it doesn't require curve fitting or any assumption about the overall
+shape of the star image. &nbsp;That's why automated focusing
+applications like FocusMax use it. &nbsp;If you
+see substantial fluctuations in this parameter or wildly varying star
+profiles, it may be an indication
+that the star is too faint or the exposure time is too short.
+&nbsp;<a name="Focusing"></a>This tool can also help with focusing the
+guide camera, a
+procedure that can be a bit tedious if you're using an off-axis-guider
+at a fairly long focal length. &nbsp;For that purpose, the HFD number
+is shown in a large font so you can see it from a distance while
+focusing your guide scope/camera. &nbsp;Just un-dock the Star Profile
+window and expand it until you can see the HFD number easily. &nbsp;If
+you are starting well out-of-focus, you'll probably see only a few
+fuzzy stars in the frame, so just choose the smallest one that is
+clearly visible. &nbsp;Use exposure times of at least 2 seconds if
+possible so you don't chase the seeing. &nbsp;At the same time, don't
+let the star become saturated, showing a distinctive flat top.
+&nbsp;Now adjust the focus so the HFD gets consistently
+smaller - but stop as soon as HFD reverses direction or seems to
+plateau. &nbsp;At that point, the star may be saturated, so move to a
+dimmer star in the field. &nbsp;Since you have already improved the
+focus, you can hopefully see a dimmer star. &nbsp;Continue in this way
+until you've reached a focus point that shows a minimum level of HFD
+for the faintest star you can use. &nbsp;At each point in the focusing
+process, you'll probably want to watch the HFD values for a few frames
+so&nbsp;you can mentally average out the effects of seeing. &nbsp;Bad
+focus is a common issue for beginners, leading to problems in
+calibration or generally poor guiding results. &nbsp;Use the Star
+Profile tool to be sure the star doesn't have a flat top (saturation)
+and shows a tapered shape like the example shown above.<br><br><br><img style="width: 622px; height: 489px;" alt="" src="Target_display.png"><br><br>The
+target display is another useful way to visualize overall guider
+performance. &nbsp;The red 'X' shows the star displacement for the most
+recent guide exposure, while the blue dots show the recent history.
+&nbsp;You can zoom in or out with the controls at the upper left of the
+window, as well as change the number of points shown in the history.
+&nbsp;&nbsp;If you are using an ASCOM connection for either the 'mount' or
+'aux-mount', PHD2 will also show the directions (SkyNorth, SkyEast)
+associated with the star movement, as shown in the example above.
+&nbsp;This can be helpful if you are looking at overall drift and want to
+determine how to set uni-directional guiding for declination. &nbsp;The
+up/down convention used in this graph has nothing to do with the camera
+orientation or N-S-E-W movements in the field of view.
+<h3><a name="Adaptive_Optics_AO_Graph"></a>Adaptive Optics (AO) Graph</h3><img style="width: 426px; height: 354px;" alt="AO Graph Image" src="AO_graph.png"><br><br>The
+AO graph is equivalent to the 'target' display, but shows the history
+of corrections relative to the axes of the adaptive optics device.
+&nbsp;The red rectangle indicates the outer edges of the AO device,
+while the interior yellow rectangle shows the "bump" region. &nbsp;If
+the star moves outside the yellow rectangle, <span style="font-style: italic;">PHD2</span> will send a sequence
+of&nbsp;move commands to the mount - the "bump" - to smoothly place the guide star back
+near the center position. &nbsp;When this occurs, green and blue lines
+will show the incremental bump and the remaining bump respectively.
+&nbsp;The white dot on the display shows the current AO position, and
+the green circle (red when a bump is in progress) shows the averaged AO position. &nbsp;The button in
+the upper left controls how many points will be
+plotted in the history.
+<h3><a name="DockableMoveable_Graphical_Windows"></a>Dockable/Moveable Graphical Windows</h3>When
+the various performance windows are initially displayed, they are
+"docked" in the main window. &nbsp;This means they are sized in a
+particular way and are aligned with two edges of the window - they are
+entirely contained within the bounds of the main <span style="font-style: italic;">PHD2</span> window.
+&nbsp;However, you can move them around and resize them by clicking and
+dragging on the title bar of the window you want to examine. &nbsp;This
+will often let you get a better view of the details being shown in the
+graphs. &nbsp;They can be&nbsp;re-docked by dragging the title bar to the
+general region in which you want them docked - bottom, right, etc.
+&nbsp;With just a bit of practice, it's easy to place them where they
+are most convenient.<br><br>There is also a menu item under the 'View" pulldown menu&nbsp;labeled <a name="Restore_window_positions"></a>'Restore
+window positions.' &nbsp;Clicking on this menu item will automatically
+restore all of the dockable/moveable windows to their default, docked
+positions. &nbsp;This can be useful , for example, if you are switching
+between screens with different resolutions and one or more of the
+dockable windows has been "lost." &nbsp;This function also restores the
+main PHD2 window to its default size, with a position near the upper
+lefthand corner of the screen.
+</body></html>

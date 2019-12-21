@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Guide Algorithms</title></head>
+<body>
+<h2>Guide Algorithms</h2><a href="#Guiding_Theory">Guiding Theory</a><br><a href="#Guide_Algorithm_Parameters">Guide Algorithm Parameters</a><br><br><h3><a name="Guiding_Theory"></a>Guiding Theory</h3>The default guiding
+algorithms in <span style="font-style: italic;">PHD2</span> are well-established and should work well for most
+users. &nbsp;Unless you already have some experience with guiding and
+understand the basics, you should probably be cautious about changing
+algorithms. &nbsp;However, you may have some special circumstances that
+require changes or you may simply want to experiment with the different
+algorithm choices. &nbsp;The Advanced Dialog settings in <span style="font-style: italic;">PHD2</span> make it
+easy to do that. &nbsp;Each algorithm has a set of parameters that
+controls how observed changes in guide star position (star deflections)
+are translated into guiding commands that are&nbsp;most likely to restore
+the star to its initial position. <br><br>Before
+discussing the
+details of these parameters, it is worth reviewing a little guiding
+theory and looking at what these algorithms are trying to accomplish.
+&nbsp;Setting aside
+adaptive optics devices, which are entirely different, conventional
+guiding faces enormous challenges. &nbsp;The problem at hand is how to
+move machinery that weighs tens or even hundreds of pounds with a level
+of precision that will not cause streaked or oblong stars. &nbsp;This
+type of guiding can only hope to deal with tracking errors that are
+"slow and steady", not "fast and random." &nbsp;Sources of slow and
+steady (correctable) errors include the following: <br><ul><li>Certain kinds of mechanical imperfections in right ascension gears, including those that cause&nbsp;periodic error.</li><li>Smalll errors in the sidereal tracking rate of the mount</li><li>Atmospheric refraction - stars appear to&nbsp;move more slowly as they near the horizon</li><li>Limited kinds of mechanical deflection and flexure - but <span style="font-weight: bold;">not </span>differential flexure</li><li>Mis-alignment of the right ascension axis on the celestial pole</li></ul>So
+what isn't included in the above and isn't correctable by conventional
+guiding? &nbsp;Unfortunately, it's a very long list, of which a few
+are: <br><ul><li>Atmospheric seeing ("turbulence")</li><li>Gear&nbsp;noise, roughness, and vibration</li><li>Differential flexure - relative movement between the imaging scope and the guide scope</li><li>Wind gusts, cable snags, grit in the drive gears</li><li>And lots more...</li></ul>The
+common denominator shared by the guide algorithms is the need to
+somehow react to the slow and steady deflections while ignoring the
+rest. &nbsp;This is a difficult problem at best because any given guide
+star
+deflection is likely to have contributions from many of these sources.
+&nbsp;And if that isn't hard enough, remember that real-world&nbsp;
+mounts are never perfect - so the move you ask for will not be exactly
+the move you get. &nbsp;Usually, the most important requirement
+for&nbsp;any algorithm is
+to avoid over-correcting, wherein the mount is being pushed back and
+forth and the guiding never stabilizes. &nbsp;A typical
+approach in these algorithms is to apply "inertia" or "impedance" to
+the guiding
+corrections. &nbsp;That means making corrections that follow a pattern
+and are generally consistent with corrections that have been made
+before, while being&nbsp;reluctant to make corrections that require a big
+change in direction or amplitude. &nbsp;Resistance to changes in
+direction is particularly important in declination, where gear backlash
+is a common problem. &nbsp;Hopefully, this background will give you
+enough insight into the basics of guiding so that the various guiding
+parameters used in <span style="font-style: italic;">PHD2</span> will make sense.<br><h3><a name="Guide_Algorithm_Parameters"></a>Guide Algorithm Parameters</h3>In
+<span style="font-style: italic;">PHD2</span>, the various guide algorithms can be applied to either the right
+ascension or declination axes. &nbsp;Most of these&nbsp;algorithms
+include a&nbsp;<span style="font-weight: bold;"><a name="minimum_move"></a>minimum move</span>
+parameter. &nbsp;This is used to avoid making guide corrections that
+are overly small, are unlikely to have any effect on star shape, and
+are mostly due to transient seeing effects. &nbsp;These values are
+entered in units of pixels, so you need to think about them in the
+context of your image scale and the typical size of your guide stars.
+&nbsp;If you have used the new-profile-wizard to configure your system,
+the min-move parameters will be set to values that are likely to work
+well for the image scale you're using. &nbsp;The Guiding Assistant can
+also adjust these values based on its measurement of high-frequency
+seeing disturbances. &nbsp;If you are seeing a high rate of guider
+corrections and lots of direction reversals, you may be "chasing the
+seeing" and adjusting the min-move values upward can be a simple way to
+reduce that. &nbsp;Of all the detailed guiding parameters discussed
+here, the two min-move values are the most likely to warrant adjustment
+on a nightly basis depending on seeing conditions.<br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
+algorithms keep a history of the guiding corrections that have been
+made in the recent past, and these are used to help compute the next
+guide correction. &nbsp;The <span style="font-weight: bold;">hysteresis</span>
+parameter, expressed as a percentage, specifies the "weight" that
+should be given to this history as opposed to&nbsp; looking only at the
+star deflection in the current guide frame. &nbsp;Consider an example
+where the hysteresis parameter is 10%. &nbsp;In that case, the next
+guiding correction will be 90% influenced by the star movement seen in
+the current guide frame and 10% by the corrections that have been made
+in the recent past. &nbsp;Increasing the hysteresis value will smooth
+out the corrections at the risk of being too slow to react to a
+legitimate change in direction. &nbsp;The hysteresis algorithms also
+include an <a name="aggressiveness"></a><span style="font-weight: bold;">aggressiveness </span>parameter,
+again expressed as a percentage,&nbsp; that is&nbsp;used to reduce
+over-correcting. &nbsp; On each frame, <span style="font-style: italic;">PHD2</span> computes how far it thinks the mount
+should move and in what direction(s) it should move. The aggressivness
+parameter scales this. For example, take a case where the star deflection
+has been evaluated and a corrective move of 0.5 pixels is warranted.
+&nbsp;If the aggressiveness is set to 100%, a guider command will be
+issued to move the mount the full 0.5 pixels. &nbsp;But if the
+aggressiveness is set to 60%, the mount will be asked to move only 60%
+of that amount, or 0.3 pixels. If you find your mount is always overshooting
+the star, decrease this value slightly (say, by 10% steps). If you find <span style="font-style: italic;">PHD2</span> always seems to be lagging
+behind the star's motion, increase this by a little bit. A little can
+go a long way here. &nbsp;<br><br>The&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">ResistSwitch</span>
+algorithm behaves much as its name implies. &nbsp;Like the hysteresis
+algorithms, it also maintains a
+history of past guide corrections, and any change of direction must be
+"compelling" in order to issue a reversing guide command. &nbsp;This
+is&nbsp;appropriate for declination guiding, where reversals in
+direction are both&nbsp;suspect and&nbsp;likely to trigger&nbsp;backlash
+in the gears. &nbsp;For that reason, ResistSwitch is the default
+algorithm for declination but not for right ascension, where valid
+direction reversals are expected. &nbsp;Starting with Release 2.4.1,
+two additional parameters are available for fine-tuning the
+ResistSwitch algorithm. &nbsp;The first is "aggression", a percentage
+amount that controls how much of the computed guide correction will be
+issued. &nbsp;Reducing this parameter can help to avoid over-shooting
+with mounts that have little or no backlash. The second parameter is a
+checkbox labeled "Fast switch for large deflections." &nbsp;If this is
+checked, PHD2 will react immediately to a large change of direction
+rather than waiting for three consecutive deflections in the new
+direction, which is the normal behavior. &nbsp;This can help to more quickly recover
+from large excursions in Dec, perhaps caused by wind, cable snags, or
+other mechanical shifts &nbsp;The definition of a "large deflection" is
+3x the minimum-move value. &nbsp;So if PHD2 is over-reacting to
+direction changes, you can tune the behavior with the min-move
+parameter or disable the "fast switch" option altogether. &nbsp;It is
+worth remembering that "less is usually better" when it comes to Dec
+guiding, so don't try to over-tune these parameters.<br><br>The <a name="LowPass"></a><span style="font-weight: bold;">LowPass </span>algorithms
+also employ a history of recent guiding corrections in order to compute
+the&nbsp;next correction. &nbsp;The starting point for the computed move
+is the median value of the guide star deflections&nbsp;that have
+occurred in recent history. &nbsp;This means that the star deflection
+seen in the current guide frame has relatively little impact on
+calculating the next move and the algorithm is very resistant to quick changes. &nbsp;But the history accumulation also
+includes a calculation to determine if deflections are trending in a
+consistent direction. &nbsp;The <span style="font-weight: bold;"><a name="slope_weight_"></a>slope weight</span>
+parameter, expressed as a percentage, determines how much influence
+this should have in calculating the actual guider movement - it is
+there to keep the algorithm from being overly sluggish. &nbsp;If you
+set a slope weight of zero, the guide pulse will always be just the
+median value of the recent history. &nbsp;If you set a non-zero slope
+weight, that median value will be adjusted either upward or downward
+based on the recent trend of guide star movements. &nbsp;Because
+the low-pass algorithm is so resistant to quick changes, it is probably
+most applicable to declination guiding.<br><br>The <span style="font-weight: bold;"><a name="LowPass2"></a>LowPass2</span>
+algorithm is a variation of the original LowPass algorithm with
+somewhat different behavior. &nbsp;It also maintains a history of
+guiding corrections, but the next correction is simply a linear
+extension of the commands that have come before it (i.e. a slope
+calculation). &nbsp;This continues until a significant change in
+direction is seen, at which point the history is cleared. &nbsp;The
+algorithm has two adjustable properties: minimum-move and
+aggressiveness. &nbsp;Minimum-move has the same effect as it does in the
+other guide algorithms, and aggressiveness (percentage) is a way of further
+dampening the size of the guide corrections. LowPass2 is a very
+conservative, high-impedance algorithm that may be a good choice for
+users with good seeing conditions and well-behaved mounts with little or no declination backlash.<br>
+<br>
+
+<p>The <a name="Z-filter"></a><span style="font-weight: bold;">Z-filter</span>
+algorithm is a variation on the LowPass algorithms but operates in the
+discrete frequency or "Z" domain. In terms of guiding it applies full
+correction to the low frequency components caused by mount periodic
+error. Higher frequencies are corrected with aggression progressively
+reducing down to zero.</p>
+
+<p>The Z-filter algorithm allows you to use shorter guide camera exposure
+times (e.g. 1s or 0.5s) without chasing the high frequency seeing.
+The advantages of shorter guide exposure time are reduced lag time for
+applying corrections and smaller corrrections.</p>
+
+<p>The Z-filter algorithm offers just two adjustments: Exposure Factor
+(XFac) and Minimum Movement (MinMo). The virtual guide exposure time
+is given by the actual exposure time multiplied by the Exposure
+Factor. A given virtual expsoure time will perform simiarly to an
+unfiltered algorithm using the same actual guide exposure time. For
+example, an exposure time of 1s with Exposure Factor of 4 gives a
+virtual expsoure time of 4s (4 x 1s) and performs similarly to
+Hysteresis with Agression 100% and Hysteresis 0.0 using an exposure
+time of 4s.  An exposure time of 2s with an Exposure Factor of 2 also
+has a virtual exxpsoure time of 4s (2 x 2s) and thus performs much the
+same.  The main difference is that the shorter actual exposures allow
+the corrections to be applied sooner and more frequently so they are
+smaller.</p>
+
+<p>This feature lets you adjust the guide exposure time to optimise the
+guide star SNR and guide latency. You can then adjust the Exposure
+factor to get the desired guiding response. A virtual exposure time of
+2s to 4s per the usual recommendation is a good starting point for the
+RA axis.  On the Dec axis, longer virtual exposures can be used and
+can help minimise reversals that can result in backlash.</p>
+
+<p>Note that when using short exposures the movement from seeing will be
+more visible on the guiding graph. This does not mean the guiding is
+worse.  Other algorithms rely on guide exposure time to filter out the
+movement from seeing. The Z-filter Exposure Factor performs the same
+function.</p>
+
+<p>The Z-filter also has a MinMo setting. The value should be chosen to
+match the ability of the mount to accurately make small
+corrections. With other algorithms MinMo is sometimes recommended to
+provide some filtering e.g. to prevent reversals of the Dec axis. With
+the Z-filter the recommended approach is to increase the Exposure
+factor.</p>
+
+<br>
+<br>
+
+<a name="Predictive_PEC"></a><b style="">PHD2 Predictive PEC Guide Algorithm (PPEC)</b>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b style="">Overview<o:p></o:p></b></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm is different from the others in PHD2 because
+of its modeling and predictive capabilities.<span style="">&nbsp;
+</span>The algorithm analyzes the tracking performance of the mount in
+real-time and once that analysis is complete, it will compute guiding
+corrections even before a repetitive error is actually seen.<span style="">&nbsp; </span>Issuing proactive guiding corrections reduces
+the time delay inherent in traditional guiding and can significantly improve
+performance.<span style="">&nbsp; </span>With the other algorithms,
+which are completely reactive, guide corrections are issued only after the
+error has been seen on the camera sensor.<span style="">&nbsp;&nbsp;
+</span></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Once guiding has begun, the algorithm analyzes the
+performance of the mount and looks for tracking errors that are repetitive and
+thus, predictable.<span style="">&nbsp; </span>The algorithm employs
+a sophisticated Gaussian process model developed by a research team at the Max
+Planck Institute in <st1:country-region w:st="on"><st1:place w:st="on">Germany</st1:place></st1:country-region>.<span style="">&nbsp; </span>The mathematical details can be found in a
+paper referenced here:</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><a href="http://ieeexplore.ieee.org/document/7105398/?reload=true">http://ieeexplore.ieee.org/document/7105398/?reload=true</a></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm will normally be used for RA, where
+residual periodic error and other gear-related errors often reduce tracking
+accuracy.<span style="">&nbsp; </span>The algorithm uses separate
+time-scales for characterizing the behavior of the system: </p>
+
+
+<p class="MsoListBullet"><o:p>&nbsp;</o:p><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Short-term: for high-frequency errors such as
+those caused by gear roughness or seeing<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Medium-term: <span style="">&nbsp;</span>for residual periodic errors, typically occurring
+at intervals less than or equal to the worm period<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Longer-term: for steady drift and for lower
+frequency (longer time interval) harmonics that can be caused by the
+interaction of multiple gears in the drive train</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The short-term behavior is used to identify the
+unpredictable noise in the system, which is essentially filtered out in order
+to identify components that are predictable.<span style="">&nbsp;
+</span>For most mounts, the medium-term component is likely to be the most
+important.<span style="">&nbsp; </span>If you&#8217;re following best
+practices, you will have programmed periodic error correction in your mount (assuming
+that feature is available to you).<span style="">&nbsp; </span>Doing
+this reduces the amount of work that needs to be done by PHD2, and the PEC
+correction in the mount is normally saved permanently.<span style="">&nbsp; </span>This approach is preferable to having to
+measure and infer the periodic error behavior every time you set up your
+equipment.<span style="">&nbsp; </span>That said, PEC in the mount
+is never perfect, and you will often see residual repetitive errors even when
+PEC is active.<span style="">&nbsp; </span>These often arise when
+the tracking errors occur with a frequency that is not a harmonic (integer
+fraction) of the mount&#8217;s worm period &#8211; most PEC implementations can&#8217;t deal with
+those.<span style="">&nbsp; </span>You can also get residual
+periodic errors if they are dependent on the mechanical loading of the mount or
+if the mount&#8217;s behavior has changed since the PEC was programmed.<span style="">&nbsp; </span>The PPEC algorithm can be quite effective at
+identifying and reducing these errors because it doesn&#8217;t depend on the worm
+period and is always doing a fresh analysis of the mount&#8217;s current behavior.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The PPEC algorithm will also detect and proactively correct
+for drift errors.<span style="">&nbsp; </span>Although drift is
+typically handled well by any of the guide algorithms, the corrections will
+always lag the error by some amount.<span style="">&nbsp; </span>For
+some use cases &#8211; perhaps spectroscopy, photometry or comet-tracking &#8211; this
+might be a problem, in which case PPEC may deliver better results.<span style="">&nbsp; </span></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Since PPEC employs a learning process, it will usually take about
+2 worm periods to model the mount and become fully effective.<span style="">&nbsp; </span>During this training period, the algorithm
+will behave more like the &#8216;hysteresis&#8217; algorithm, so you won&#8217;t normally see a
+performance penalty while the internal model is being built.<span style="">&nbsp; </span>Instead, you&#8217;re likely to see a steady
+improvement in tracking as the model is refined and the algorithm shifts seamlessly
+from hysteresis to predictive-mode.<span style=""> &nbsp; This improvement can usually be seen even before the medium-term mount behavior is fully modeled. </span></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Since the PPEC model is implicitly tied to the state of the
+gear train, it must be re-learned if the mount is slewed to a new target.<span style="">&nbsp; </span>For the same reason, it can&#8217;t be retained
+across different guiding sessions, which is why conventional PEC is
+important.<span style="">&nbsp; </span>However, the PPEC model will
+remain intact during dither operations and while guiding is paused (via
+automation) for activities like focusing.<span style="">&nbsp;
+</span>For the most common use-case, namely imaging the same target for
+multiple hours with periodic dithering, the PPEC model will remain valid.<span style="">&nbsp; </span>In any case, the learning process and
+transition from one mode to the other is handled automatically, so you won&#8217;t
+need to pay it any attention.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b style="">Algorithm Details<o:p></o:p></b></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Once the training period is completed, the PPEC algorithm
+computes the guide correction using two factors.<span style="">&nbsp; </span>One is reactive, based on the displacement of
+the guide star in the most recent exposure.<span style="">&nbsp;
+</span>The second is predictive, based on the output from the Gaussian process model
+constructed during the training period.<span style="">&nbsp;
+</span>Each of these terms includes a separate gain or aggressiveness factor,
+so the final guide pulse amount is a sum: </p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>&nbsp;&nbsp;&nbsp; Guide-correction = (predicted amount * predictive gain) +
+(recent displacement * reactive gain)</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The &#8216;<b style="">predictive</b> <b style="">gain&#8217;</b> and &#8216;<b style="">reactive</b> <b style="">gain&#8217;</b>
+parameters are exposed in the Advanced Dialog, and their default values for
+these parameters should work well for most mounts.<span style="">&nbsp; </span>You should be conservative about changing
+them because bad choices for these parameters can definitely make your guiding
+worse.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>During the training period, the algorithm needs to identify
+periodic errors in the observed guide star movement.<span style="">&nbsp; </span>For initial trials, you can use
+the worm period of your mount as the starting point for the &#8216;<b style="">period</b> <b style="">length&#8217;</b>.<span style="">&nbsp; </span>This gives the
+algorithm a good starting point, but you should also leave the &#8216;auto-adjust
+period&#8217; option checked.<span style="">&nbsp; </span>This
+tells the
+algorithm to adjust the period as needed to better control whatever
+periodic
+errors it finds. &nbsp;Once you have run the altorithm multiple times
+and are happy with the results, you can leave this field set to
+whatever value was computed in the previous sessions.</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>The &#8216;<b style="">min-move&#8217;</b>
+parameter affects only the reactive component of the algorithm.<span style="">&nbsp; </span>If the measured star displacement is less
+than this amount, the reactive component will be set to zero.<span style="">&nbsp; </span>However, the predictive component of the
+algorithm will still be computed and applied.</p>
+<br><br><br>&nbsp;&nbsp;</body></html>

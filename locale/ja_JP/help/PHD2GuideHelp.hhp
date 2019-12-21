@@ -1,0 +1,30 @@
+[OPTIONS]
+Binary Index=No
+Compatibility=1.1 or later
+Compiled file=PHD2GuideHelp.chm
+Contents file=PHD2GuideHelp.hhc
+Default Window=search
+Default topic=Introduction.html
+Display compile progress=No
+Language=0x411 “ú–{Œê (“ú–{)
+
+[WINDOWS]
+search=,"..\PHD2GuideHelp.hhc",,"..\Introduction.html",,,,,,0x2120,,0x3006,,,,,,,,0
+
+
+[FILES]
+Introduction.html
+Advanced_settings.html
+Basic_use.html
+Darks_BadPixel_Maps.html
+Guide_algorithms.html
+KeyboardShortcuts.html
+MainScreen.html
+Trouble_shooting.html
+Tutorials.html
+Visualization.html
+Tools.html
+Glossary.html
+
+[INFOTYPES]
+
