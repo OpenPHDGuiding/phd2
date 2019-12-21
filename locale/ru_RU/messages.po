@@ -331,7 +331,7 @@ msgstr "Последняя калибровка АО"
 
 #: calreview_dialog.cpp:206
 msgid "RA steps:"
-msgstr "Шаги по α:"
+msgstr "Шаги по оси α:"
 
 #: calreview_dialog.cpp:211
 msgid "Dec steps:"
