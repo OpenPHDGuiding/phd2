@@ -35,6 +35,7 @@
 #include "log_uploader.h"
 #include "phd.h"
 
+#include <algorithm>
 #include <curl/curl.h>
 #include <fstream>
 #include <sstream>
@@ -65,36 +66,62 @@ struct WindowUpdateLocker
     }
 };
 
+enum SummaryState
+{
+    ST_BEGIN,
+    ST_LOADING,
+    ST_LOADED,
+};
+
 struct Session
 {
     wxString timestamp;
     wxDateTime start;
-    bool has_guide;
-    bool has_debug;
-    Session() : has_guide(false), has_debug(false) { }
+    GuideLogSummaryInfo summary;
+    SummaryState summary_loaded = ST_BEGIN;
+    bool has_guide = false;
+    bool has_debug = false;
 };
 
 static std::vector<Session> s_session;
+// grid sort order defined by these maps between grid row and session index
+static std::vector<int> s_grid_row;    // map session index to grid row
+static std::vector<int> s_session_idx; // map grid row => session index
 
-// state machine to allow scanning huge debug logs during idle event processing
+enum
+{
+    COL_SELECT,
+    COL_NIGHTOF,
+    COL_GUIDE,
+    COL_CAL,
+    COL_GA,
+
+    NUM_COLUMNS
+};
+
+// state machine to allow scanning logs during idle event processing
 //
-struct DebugLogScanner
+struct LogScanner
 {
     wxGrid *m_grid;
-    size_t m_idx;           // current row
+    std::deque<int> m_q;  // indexes remaining to be checked
     std::ifstream m_ifs;
-    std::streampos m_size;
-    wxDateTime m_latest;    // latest time seen so far in the current file
+    wxDateTime m_guiding_starts;
     void Init(wxGrid *grid);
     void FindNextRow();
-    bool Done() const { return m_idx >= s_session.size(); }
     bool DoWork(unsigned int millis);
 };
 
-void DebugLogScanner::Init(wxGrid *grid)
+void LogScanner::Init(wxGrid *grid)
 {
     m_grid = grid;
-    m_idx = 0;
+    // load work queue in sorted order
+    for (auto idx : s_session_idx)
+    {
+        if (s_session[idx].summary_loaded != ST_LOADED)
+            m_q.push_back(idx);
+    }
+    m_guiding_starts = wxInvalidDateTime;
     FindNextRow();
 }
 
@@ -106,33 +133,6 @@ static wxString DebugLogName(const Session& session)
 static wxString GuideLogName(const Session& session)
 {
     return "PHD2_GuideLog_" + session.timestamp + ".txt";
-}
-
-void DebugLogScanner::FindNextRow()
-{
-    for (; m_idx < s_session.size(); ++m_idx)
-    {
-        const Session& session = s_session[m_idx];
-        if (!session.has_debug || session.has_guide)
-            continue;
-
-        wxFileName fn(Debug.GetLogDir(), DebugLogName(session));
-        m_ifs.open(fn.GetFullPath().fn_str());
-        if (!m_ifs)
-        {
-            m_grid->SetCellValue(m_idx, 1, _("Unknown"));
-            continue;
-        }
-
-        m_ifs.seekg(0, std::ios::end);
-        m_size = m_ifs.tellg();
-        m_ifs.seekg(0);
-
-        m_grid->SetCellValue(m_idx, 1, _("loading..."));
-
-        m_latest = session.start;
-        return;
-    }
 }
 
 static wxString FormatTimeSpan(const wxTimeSpan& dt)
@@ -155,14 +155,95 @@ static wxString FormatTimeSpan(const wxTimeSpan& dt)
     return wxString::Format(_("%dsec"), dt.GetSeconds());
 }
 
-bool DebugLogScanner::DoWork(unsigned int millis)
+static wxString FormatGuideFor(const Session& session)
+{
+    switch (session.summary_loaded) {
+        case ST_BEGIN: default:
+            return wxEmptyString;
+        case ST_LOADING:
+            return _("loading...");
+        case ST_LOADED:
+            if (session.summary.valid &&
+                session.summary.guide_cnt > 0)
+            {
+                // looks better in the grid with some padding
+                return "   " +
+                    FormatTimeSpan(wxTimeSpan(0 /* hrs */, 0 /* minutes */, session.summary.guide_dur)) +
+                    "   ";
+            }
+            else
+                return _("None");
+    }
+}
+
+static void FillActivity(wxGrid *grid, int row, const Session& session, bool resize)
+{
+    grid->SetCellValue(row, COL_GUIDE, FormatGuideFor(session));
+
+    if (session.summary.cal_cnt)
+        grid->SetCellValue(row, COL_CAL, "Y");
+
+    if (session.summary.ga_cnt)
+        grid->SetCellValue(row, COL_GA, "Y");
+
+    if (resize)
+    {
+        grid->AutoSizeColumn(COL_GUIDE);
+        grid->AutoSizeColumn(COL_CAL);
+        grid->AutoSizeColumn(COL_GA);
+    }
+}
+
+void LogScanner::FindNextRow()
+{
+    while (!m_q.empty())
+    {
+        auto idx = m_q.front();
+        Session& session = s_session[idx];
+
+        assert(session.has_guide);
+        assert(session.summary_loaded != ST_LOADED);
+
+        int row = s_grid_row[idx];
+
+        wxFileName fn(Debug.GetLogDir(), GuideLogName(session));
+        m_ifs.open(fn.GetFullPath().fn_str());
+        if (!m_ifs)
+        {
+            // should never get here since we have already scanned the list once
+            session.summary_loaded = ST_LOADED;
+            FillActivity(m_grid, row, session, true);
+            m_q.pop_front();
+            continue;
+        }
+
+        session.summary_loaded = ST_LOADING;
+        FillActivity(m_grid, row, session, true);
+
+        return;
+    }
+}
+
+static std::string GUIDING_BEGINS("Guiding Begins at ");
+static std::string GUIDING_ENDS("Guiding Ends at ");
+static std::string CALIBRATION_ENDS("Calibration complete");
+static std::string GA_COMPLETE("INFO: GA Result - Dec Drift Rate=");
+
+inline static bool StartsWith(const std::string& s, const std::string& pfx)
+{
+    return s.length() >= pfx.length() &&
+        s.compare(0, pfx.length(), pfx) == 0;
+}
+
+bool LogScanner::DoWork(unsigned int millis)
 {
     int n = 0;
     wxStopWatch swatch;
 
-    while (!Done())
+    while (!m_q.empty())
     {
-        // we need to scan the entire debug log to handle multi-day log files
+        auto idx = m_q.front();
+        Session& session = s_session[idx];
 
         std::string line;
         while (true)
@@ -176,41 +257,48 @@ bool DebugLogScanner::DoWork(unsigned int millis)
             if (!std::getline(m_ifs, line))
                 break;
 
-            if (line.size() < 12 || line[2] != ':')
-                continue;
-
-            int h, m, s;
-            if (sscanf(line.c_str(), "%d:%d:%d.", &h, &m, &s) != 3)
-                continue;
-
-            // skip forward. The date arithmetic below is horrendously slow and
-            // we only need to find the day boundaries.
-            auto pos = m_ifs.tellg();
-            auto lim = m_size - std::streamoff(1024);
-            if (pos < lim)
+            if (StartsWith(line, GUIDING_BEGINS))
             {
-                auto newpos = pos + std::streamoff(32768);
-                if (newpos > lim)
-                    newpos = lim;
-                m_ifs.seekg(newpos);
+                std::string datestr = line.substr(GUIDING_BEGINS.length());
+                m_guiding_starts.ParseISOCombined(datestr, ' ');
+                continue;
             }
 
-            wxDateTime cur(m_latest);
-            cur.SetHour(h);
-            cur.SetMinute(m);
-            cur.SetSecond(s);
+            if (StartsWith(line, GUIDING_ENDS) && m_guiding_starts.IsValid())
+            {
+                std::string datestr = line.substr(GUIDING_ENDS.length());
+                wxDateTime end;
+                end.ParseISOCombined(datestr, ' ');
+                if (end.IsValid() && end.IsLaterThan(m_guiding_starts))
+                {
+                    wxTimeSpan dt = end - m_guiding_starts;
+                    ++session.summary.guide_cnt;
+                    session.summary.guide_dur += dt.GetSeconds().GetValue();
+                }
+                m_guiding_starts = wxInvalidDateTime;
+                continue;
+            }
 
-            // did we roll-over to the next day?
-            if (cur < m_latest)
-                cur += wxDateSpan(0, 0, 0, 1); // 1 day
+            if (StartsWith(line, CALIBRATION_ENDS))
+            {
+                ++session.summary.cal_cnt;
+                continue;
+            }
 
-            m_latest = cur;
+            if (StartsWith(line, GA_COMPLETE))
+            {
+                ++session.summary.ga_cnt;
+                continue;
+            }
         }
 
-        m_grid->SetCellValue(m_idx, 1, FormatTimeSpan(m_latest - s_session[m_idx].start));
+        session.summary.valid = true;
+        session.summary_loaded = ST_LOADED;
+
+        FillActivity(m_grid, s_grid_row[idx], session, true);
 
         m_ifs.close();
-        ++m_idx;
+        m_q.pop_front();
         FindNextRow();
     }
 
@@ -228,9 +316,10 @@ public:
     wxHyperlinkCtrl *m_recent;
     wxButton *m_back;
     wxButton *m_upload;
-    DebugLogScanner m_scanner;
+    LogScanner m_scanner;
 
     void OnCellLeftClick(wxGridEvent& event);
+    void OnColSort(wxGridEvent& event);
     void OnRecentClicked(wxHyperlinkEvent& event);
     void OnBackClick(wxCommandEvent& event);
     void OnUploadClick(wxCommandEvent& event);
@@ -262,6 +351,11 @@ static wxDateTime SessionStart(const wxString& timestamp)
     return wxDateTime(day, month, year, hour, minute, second);
 }
 
+static wxString FormatNightOf(const wxDateTime& t)
+{
+    return t.Format("   %A %x   "); // looks better in the grid with some padding
+}
+
 static wxString FormatTimestamp(const wxDateTime& t)
 {
     return t.Format("%Y-%m-%d %H:%M:%S");
@@ -276,41 +370,6 @@ static bool ParseTime(wxDateTime *t, const char *str)
 
     *t = wxDateTime(d, static_cast<wxDateTime::Month>(wxDateTime::Jan + mon - 1), y, h, m, s);
     return true;
-}
-
-static bool GuideLogEndTimeFast(std::ifstream& ifs, wxDateTime *dt)
-{
-    // grab the timestamp from the end of the file
-
-    ifs.seekg(0, std::ios::end);
-    auto ofs = ifs.tellg();
-    if (ofs > 80)
-        ofs -= 80;
-    else
-        ofs = 0;
-    ifs.seekg(ofs);
-
-    wxDateTime end;
-    bool found = false;
-
-    std::string line;
-    while (std::getline(ifs, line))
-    {
-        if (strncasecmp(line.c_str(), "Guiding Ends at ", 16) == 0 && ParseTime(&end, line.c_str() + 16))
-            found = true;
-        else if (strncasecmp(line.c_str(), "Log closed at ", 14) == 0 && ParseTime(&end, line.c_str() + 14))
-            found = true;
-    }
-
-    if (found)
-        *dt = end;
-    else
-    {
-        ifs.clear();
-        ifs.seekg(0);
-    }
-
-    return found;
 }
 
 static bool GuideLogEndTimeSlow(std::ifstream& ifs, wxDateTime *dt)
@@ -356,29 +415,27 @@ static bool GuideLogEndTimeSlow(std::ifstream& ifs, wxDateTime *dt)
     return found;
 }
 
-static wxString GuideLogDuration(const Session& s)
+static void QuickInitSummary(Session& s)
 {
+    if (!s.has_guide)
+    {
+        s.summary_loaded = ST_LOADED;
+        return;
+    }
+
     const wxString& logDir = Debug.GetLogDir();
     wxFileName fn(logDir, GuideLogName(s));
 
-    std::ifstream ifs(fn.GetFullPath().fn_str());
-    if (!ifs)
-        return _("Unknown");
+    wxFFile file(fn.GetFullPath());
+    if (!file.IsOpened())
+    {
+        s.summary_loaded = ST_LOADED;
+        return;
+    }
 
-    wxDateTime end;
-
-    if (GuideLogEndTimeFast(ifs, &end) || GuideLogEndTimeSlow(ifs, &end))
-        return FormatTimeSpan(end - s.start);
-
-    return _("Unknown");
-}
-
-static wxString QuickSessionDuration(const Session& s)
-{
-    if (s.has_guide)
-        return GuideLogDuration(s);
-    else
-        return wxEmptyString;
+    s.summary.LoadSummaryInfo(file);
+    if (s.summary.valid)
+        s.summary_loaded = ST_LOADED;
 }
 
 static void ReallyFlush(const wxFFile& ffile)
@@ -395,6 +452,61 @@ static void FlushLogs()
 {
     ReallyFlush(Debug);
     ReallyFlush(GuideLog.File());
+}
+
+static int GetSortCol(wxGrid *grid)
+{
+    int col = -1;
+    for (int i = 0; i < grid->GetNumberCols(); i++)
+        if (grid->IsSortingBy(i)) {
+            col = i;
+            break;
+        }
+    return col;
+}
+
+struct SessionCompare
+{
+    bool asc;
+    SessionCompare(bool asc_) : asc(asc_) { }
+    bool operator()(int a, int b) const {
+        if (!asc) std::swap(a, b);
+        return s_session[a].start < s_session[b].start;
+    }
+};
+
+static void DoSort(wxGrid *grid)
+{
+    if (GetSortCol(grid) != COL_NIGHTOF)
+        return;
+
+    // grab the selections
+    std::vector<bool> selected(grid->GetNumberRows());
+    for (int r = 0; r < grid->GetNumberRows(); r++)
+        selected[s_session_idx[r]] = !grid->GetCellValue(r, COL_SELECT).IsEmpty();
+
+    // sort row indexes
+    std::sort(s_session_idx.begin(), s_session_idx.end(), SessionCompare(grid->IsSortOrderAscending()));
+
+    // rebuild mapping of indexes to rows
+    for (int r = 0; r < grid->GetNumberRows(); r++)
+        s_grid_row[s_session_idx[r]] = r;
+
+    // (re)load the grid
+    grid->ClearGrid();
+    for (int r = 0; r < grid->GetNumberRows(); r++)
+    {
+        const Session& session = s_session[s_session_idx[r]];
+        grid->SetCellValue(r, COL_NIGHTOF, FormatNightOf(wxGetApp().ImagingDay(session.start)));
+        FillActivity(grid, r, session, false);
+        if (session.has_guide || session.has_debug)
+        {
+            grid->SetCellRenderer(r, COL_SELECT, new wxGridCellBoolRenderer());
+            grid->SetCellValue(r, COL_SELECT, selected[s_session_idx[r]] ? "1" : "");
+        }
+        else
+            grid->SetCellRenderer(r, COL_SELECT, grid->GetDefaultRenderer());
+    }
 }
 
 static void LoadGrid(wxGrid *grid)
@@ -475,20 +587,22 @@ static void LoadGrid(wxGrid *grid)
     }
 
     s_session.clear();
+    s_session_idx.clear();
+    s_grid_row.clear();
 
     int r = 0;
     for (auto it = logs.begin(); it != logs.end(); ++it, ++r)
     {
-        const Session& session = it->second;
+        Session& session = it->second;
+        QuickInitSummary(session);
         s_session.push_back(session);
-        grid->AppendRows(1);
-        grid->SetCellValue(r, 0, FormatTimestamp(session.start));
-        grid->SetCellValue(r, 1, QuickSessionDuration(session));
-        if (it->second.has_guide)
-            grid->SetCellRenderer(r, 2, new wxGridCellBoolRenderer());
-        if (it->second.has_debug)
-            grid->SetCellRenderer(r, 3, new wxGridCellBoolRenderer());
+        s_session_idx.push_back(r);
+        s_grid_row.push_back(r);
     }
+
+    grid->AppendRows(r);
+
+    DoSort(grid); // loads grid
 }
 
 void LogUploadDialog::OnIdle(wxIdleEvent& event)
@@ -556,16 +670,14 @@ static void SaveUploadInfo(const wxString& url, const wxDateTime& time)
 #define STEP3_TITLE_FAIL _("Upload Log Files - Upload not completed")
 
 #define STEP1_MESSAGE _( \
-  "When asking for help in the PHD2 Forum it is important to include your PHD2 logs. This tool will\n" \
+  "When asking for help in the PHD2 Forum it is important to include your PHD2 logs. This tool will " \
   "help you upload your log files so they can be seen in the forum.\n" \
-  "First you'll need to select which files to upload.\n" \
-  "If you are looking for help with guiding, select the Guide Log for the session you need help with.\n" \
-  "For other issues like equipment connection problems or to report a bug in PHD2, select the Debug Log." \
+  "The first step is to select which files to upload.\n" \
 )
 
 LogUploadDialog::LogUploadDialog(wxWindow *parent)
     :
-    wxDialog(parent, wxID_ANY, STEP1_TITLE, wxDefaultPosition,  wxSize(580, 380), wxDEFAULT_DIALOG_STYLE),
+    wxDialog(parent, wxID_ANY, STEP1_TITLE, wxDefaultPosition, wxSize(580, 480), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
     m_step(1),
     m_nrSelected(0)
 {
@@ -578,53 +690,44 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_grid = new wxGrid(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
 
     // Grid
-    m_grid->CreateGrid(0, 4);
+    m_grid->CreateGrid(0, NUM_COLUMNS);
     m_grid->EnableEditing(false);
     m_grid->EnableGridLines(true);
     m_grid->EnableDragGridSize(false);
     m_grid->SetMargins(0, 0);
-
     m_grid->SetSelectionMode(wxGrid::wxGridSelectRows);
+    m_grid->SetDefaultCellAlignment(wxALIGN_CENTRE, wxALIGN_BOTTOM); // doesn't work?
 
     // Columns
-    m_grid->SetColSize(0, 200);
-    m_grid->SetColSize(1, 85);
-    m_grid->SetColSize(2, 85);
-    m_grid->SetColSize(3, 85);
+    m_grid->SetColSize(COL_SELECT, 40);
+    m_grid->SetColSize(COL_NIGHTOF, 200);
+    m_grid->SetColSize(COL_GUIDE, 85);
+    m_grid->SetColSize(COL_CAL, 40);
+    m_grid->SetColSize(COL_GA, 40);
     m_grid->EnableDragColMove(false);
     m_grid->EnableDragColSize(true);
     m_grid->SetColLabelSize(30);
-    m_grid->SetColLabelValue(0, _("Session Start"));
-    m_grid->SetColLabelValue(1, _("Duration"));
-    m_grid->SetColLabelValue(2, _("Guide Log"));
-    m_grid->SetColLabelValue(3, _("Debug Log"));
+    m_grid->SetColLabelValue(COL_SELECT, _("Select"));
+    m_grid->SetColLabelValue(COL_NIGHTOF, _("Night Of"));
+    m_grid->SetColLabelValue(COL_GUIDE, _("Guided"));
+    m_grid->SetColLabelValue(COL_CAL, _("Calibration"));
+    m_grid->SetColLabelValue(COL_GA, _("Guide Asst."));
     m_grid->SetColLabelAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-    m_grid->SetDefaultCellAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+
+    m_grid->SetSortingColumn(COL_NIGHTOF, false /* descending */);
+    m_grid->UseNativeColHeader(true);
 
     wxGridCellAttr *attr;
 
-    // session
+    // log selection
     attr = new wxGridCellAttr();
     attr->SetReadOnly(true);
-    m_grid->SetColAttr(0, attr);
-
-    // guide log
-    attr = new wxGridCellAttr();
-    attr->SetReadOnly(true);
-    m_grid->SetColAttr(1, attr);
-
-    // debug log
-    attr = new wxGridCellAttr();
-    attr->SetReadOnly(true);
-    m_grid->SetColAttr(2, attr);
+    m_grid->SetColAttr(COL_SELECT, attr);
 
     // Rows
     m_grid->EnableDragRowSize(true);
     m_grid->SetRowLabelSize(0);
     m_grid->SetRowLabelAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-
-    // Cell Defaults
-    m_grid->SetDefaultCellAlignment(wxALIGN_LEFT, wxALIGN_TOP);
 
     m_recent = new wxHyperlinkCtrl(this, wxID_ANY, _("Recent uploads"), wxEmptyString, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
 
@@ -664,6 +767,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_back->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Connect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
+    m_grid->Connect(wxEVT_GRID_COL_SORT, wxGridEventHandler(LogUploadDialog::OnColSort), nullptr, this);
     m_html->Connect(wxEVT_COMMAND_HTML_LINK_CLICKED, wxHtmlLinkEventHandler(LogUploadDialog::OnLinkClicked), nullptr, this);
     Connect(wxEVT_IDLE, wxIdleEventHandler(LogUploadDialog::OnIdle), nullptr, this);
 
@@ -681,6 +785,7 @@ LogUploadDialog::~LogUploadDialog()
     m_back->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Disconnect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
+    m_grid->Disconnect(wxEVT_GRID_COL_SORT, wxGridEventHandler(LogUploadDialog::OnColSort), nullptr, this);
     m_html->Disconnect(wxEVT_COMMAND_HTML_LINK_CLICKED, wxHtmlLinkEventHandler(LogUploadDialog::OnLinkClicked), nullptr, this);
     Disconnect(wxEVT_IDLE, wxIdleEventHandler(LogUploadDialog::OnIdle), nullptr, this);
 }
@@ -712,11 +817,36 @@ void LogUploadDialog::OnCellLeftClick(wxGridEvent& event)
 
     int r;
     if ((r = event.GetRow()) < s_session.size() &&
-        ((event.GetCol() == 2 /* guide log */ && s_session[r].has_guide) ||
-         (event.GetCol() == 3 /* debug log */ && s_session[r].has_debug)))
+        event.GetCol() == COL_SELECT &&
+        (s_session[s_session_idx[r]].has_guide ||
+         s_session[s_session_idx[r]].has_debug))
     {
         ToggleCellValue(this, r, event.GetCol());
     }
+
+    event.Skip();
+}
+
+void LogUploadDialog::OnColSort(wxGridEvent& event)
+{
+    int col = event.GetCol();
+
+    if (col != COL_NIGHTOF)
+    {
+        event.Veto();
+        return;
+    }
+
+    if (m_grid->IsSortingBy(col))
+        m_grid->SetSortingColumn(col, !m_grid->IsSortOrderAscending()); // toggle asc/desc
+    else
+        m_grid->SetSortingColumn(col, true);
+
+    m_grid->BeginBatch();
+
+    DoSort(m_grid);
+
+    m_grid->EndBatch();
 
     event.Skip();
 }
@@ -1050,24 +1180,23 @@ void LogUploadDialog::ConfirmUpload()
 
     for (int r = 0; r < m_grid->GetNumberRows(); r++)
     {
-        bool guide = !m_grid->GetCellValue(r, 2).IsEmpty();
-        bool debug = !m_grid->GetCellValue(r, 3).IsEmpty();
-        if (!guide && !debug)
+        bool selected = !m_grid->GetCellValue(r, COL_SELECT).IsEmpty();
+        if (!selected)
             continue;
 
-        // automatically include guide log along with debug log
-        if (debug && !guide && s_session[r].has_guide)
-            guide = true;
+        int idx = s_session_idx[r];
+        const Session& session = s_session[idx];
 
         wxString logs;
-        if (guide && debug)
+        if (session.has_guide && session.has_debug)
             logs = _("Guide and Debug logs");
-        else if (debug)
+        else if (session.has_debug)
             logs = _("Debug log");
         else
             logs = _("Guide log");
 
-        msg += wxString::Format("%-27s %s<br>", m_grid->GetCellValue(r, 0), logs);
+        msg += wxString::Format("%-20s %-27s %s<br>", m_grid->GetCellValue(r, COL_NIGHTOF),
+                                FormatTimestamp(session.start), logs);
     }
     msg += "</pre>";
 
@@ -1093,18 +1222,15 @@ void LogUploadDialog::ExecUpload()
 
     for (int r = 0; r < m_grid->GetNumberRows(); r++)
     {
-        const Session& session = s_session[r];
-        bool guide = !m_grid->GetCellValue(r, 2).IsEmpty();
-        bool debug = !m_grid->GetCellValue(r, 3).IsEmpty();
+        const Session& session = s_session[s_session_idx[r]];
+        bool selected = !m_grid->GetCellValue(r, COL_SELECT).IsEmpty();
 
-        // automatically include guide log along with debug log
-        if (debug && !guide && s_session[r].has_guide)
-            guide = true;
+        if (!selected)
+            continue;
 
-        // include the guide log along with the debug log even if it was not explicitly selected
-        if (guide)
+        if (session.has_guide)
             upload.m_input.push_back(FileData(GuideLogName(session), session.start));
-        if (debug)
+        if (session.has_debug)
             upload.m_input.push_back(FileData(DebugLogName(session), session.start));
     }
 

@@ -1451,6 +1451,7 @@ void GuidingAsstWin::MakeRecommendations()
         }
     }
 
+    GuideLog.NotifyGACompleted();
     SaveGAResults(&allRecommendations);
     m_recommend_group->Show(true);
 
@@ -1709,7 +1710,6 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         {
             // User hit stop during bl test
             m_gaStatus->SetLabelText(wxEmptyString);
-            MakeRecommendations();
             EndBacklashTest(false);
         }
     }
