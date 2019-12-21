@@ -8154,7 +8154,7 @@ msgstr " 99.99 (99.99'')"
 msgid "Total"
 msgstr "Всего"
 
-#: statswindow.cpp:96
+#: statswindow.cpp:1526
 msgid "RA Osc"
 msgstr "Колебания α"
 
@@ -8218,7 +8218,7 @@ msgstr "%.f%s, Выкл."
 
 #: statswindow.cpp:270
 msgid " arc-min"
-msgstr "угл. мин."
+msgstr "угл. мин. "
 
 #: statswindow.cpp:282
 #, c-format
