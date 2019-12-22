@@ -9,243 +9,243 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="‘O‘‚«">
+		<param name="Name" value="å‰æ›¸ã">
 		<param name="Local" value="Introduction.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒƒCƒ“ƒXƒNƒŠ[ƒ“">
+		<param name="Name" value="ãƒ¡ã‚¤ãƒ³ã‚¹ã‚¯ãƒªãƒ¼ãƒ³">
 		<param name="Local" value="MainScreen.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="PHD2 ƒKƒCƒh‚ÌŽg—p">
+		<param name="Name" value="PHD2 ã‚¬ã‚¤ãƒ‰ã®ä½¿ç”¨">
 		<param name="Local" value="Basic_use.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="‹@Ší‚ÌÚ‘±">
+			<param name="Name" value="æ©Ÿå™¨ã®æŽ¥ç¶š">
 			<param name="Local" value="Basic_use.html#Equipment_Connection">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="‹@Šíƒvƒƒtƒ@ƒCƒ‹">
+			<param name="Name" value="æ©Ÿå™¨ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«">
 			<param name="Local" value="Basic_use.html#Equipment_Profile">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="˜IoŽžŠÔ‚Æ¯‚Ì‘I‘ð">
+			<param name="Name" value="éœ²å‡ºæ™‚é–“ã¨æ˜Ÿã®é¸æŠž">
 			<param name="Local" value="Basic_use.html#Exposure_Time_and_Star_Selection">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“">
+			<param name="Name" value="ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³">
 			<param name="Local" value="Basic_use.html#Automatic_Calibration">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒKƒCƒh">
+			<param name="Name" value="ã‚¬ã‚¤ãƒ‰">
 			<param name="Local" value="Basic_use.html#Guiding">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒ_[ƒNƒtƒŒ[ƒ€‚Æ•s—ÇƒsƒNƒZƒ‹ƒ}ƒbƒv">
+		<param name="Name" value="ãƒ€ãƒ¼ã‚¯ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ä¸è‰¯ãƒ”ã‚¯ã‚»ãƒ«ãƒžãƒƒãƒ—">
 		<param name="Local" value="Darks_BadPixel_Maps.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Ž‹Šo‰»ƒc[ƒ‹">
+		<param name="Name" value="è¦–è¦šåŒ–ãƒ„ãƒ¼ãƒ«">
 		<param name="Local" value="Visualization.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒI[ƒo[ƒŒƒC">
+			<param name="Name" value="ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤">
 			<param name="Local" value="Visualization.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒKƒCƒh«”\ƒOƒ‰ƒt">
+			<param name="Name" value="ã‚¬ã‚¤ãƒ‰æ€§èƒ½ã‚°ãƒ©ãƒ•">
 			<param name="Local" value="Visualization.html#Graphical_Display">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒXƒ^[ƒvƒƒtƒ@ƒCƒ‹•\Ž¦">
+			<param name="Name" value="ã‚¹ã‚¿ãƒ¼ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«è¡¨ç¤º">
 			<param name="Local" value="Visualization.html#Star_Profile_and_Target_Displays">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒ^[ƒQƒbƒg•\Ž¦">
+			<param name="Name" value="ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè¡¨ç¤º">
 			<param name="Local" value="Visualization.html#Star_Profile_and_Target_Displays">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="AOƒOƒ‰ƒt">
+			<param name="Name" value="AOã‚°ãƒ©ãƒ•">
 			<param name="Local" value="Visualization.html#Adaptive_Optics_AO_Graph">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒhƒbƒLƒ“ƒO‰Â”\‚ÈƒEƒBƒ“ƒhƒE">
+			<param name="Name" value="ãƒ‰ãƒƒã‚­ãƒ³ã‚°å¯èƒ½ãªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦">
 			<param name="Local" value="Visualization.html#DockableMoveable_Graphical_Windows">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Ú×Ý’è">
+		<param name="Name" value="è©³ç´°è¨­å®š">
 		<param name="Local" value="Advanced_settings.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒOƒ[ƒoƒ‹ƒpƒ‰ƒ[ƒ^">
+			<param name="Name" value="ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿">
 			<param name="Local" value="Advanced_settings.html#Global_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒKƒCƒhƒpƒ‰ƒ[ƒ^[">
+			<param name="Name" value="ã‚¬ã‚¤ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼">
 			<param name="Local" value="Advanced_settings.html#Guiding_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒJƒƒ‰ƒpƒ‰ƒ[ƒ^[">
+			<param name="Name" value="ã‚«ãƒ¡ãƒ©ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼">
 			<param name="Local" value="Advanced_settings.html#Camera_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒAƒ‹ƒSƒŠƒYƒ€">
+			<param name="Name" value="ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ">
 			<param name="Local" value="Advanced_settings.html#Algorithms_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="AOƒpƒ‰ƒ[ƒ^">
+			<param name="Name" value="AOãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿">
 			<param name="Local" value="Advanced_settings.html#Other_Devices_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒ[ƒe[ƒ^[ƒpƒ‰ƒ[ƒ^[">
+			<param name="Name" value="ãƒ­ãƒ¼ãƒ†ãƒ¼ã‚¿ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼">
 			<param name="Local" value="Advanced_settings.html#Other_Devices_Tab">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒKƒCƒhƒAƒ‹ƒSƒŠƒYƒ€">
+		<param name="Name" value="ã‚¬ã‚¤ãƒ‰ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ">
 		<param name="Local" value="Guide_algorithms.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒc[ƒ‹‚Æƒ†[ƒeƒBƒŠƒeƒB">
+		<param name="Name" value="ãƒ„ãƒ¼ãƒ«ã¨ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£">
 		<param name="Local" value="Tools.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Žè“®ƒ}ƒEƒ“ƒg§Œä">
+			<param name="Name" value="æ‰‹å‹•ãƒžã‚¦ãƒ³ãƒˆåˆ¶å¾¡">
 			<param name="Local" value="Tools.html#Manual_Guide">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒXƒ^[Ž©“®‘I‘ð">
+			<param name="Name" value="ã‚¹ã‚¿ãƒ¼è‡ªå‹•é¸æŠž">
 			<param name="Local" value="Tools.html#Auto-Select_Star">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“Ú×">
+			<param name="Name" value="ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³è©³ç´°">
 			<param name="Local" value="Tools.html#Calibration_Details">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒT[ƒo[">
+			<param name="Name" value="ã‚µãƒ¼ãƒãƒ¼">
 			<param name="Local" value="Tools.html#PHD2_Server">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒƒO">
+			<param name="Name" value="ãƒ­ã‚°">
 			<param name="Local" value="Tools.html#Logging_and_Debug_Output">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="‹É®—ñƒc[ƒ‹">
+			<param name="Name" value="æ¥µæ•´åˆ—ãƒ„ãƒ¼ãƒ«">
 			<param name="Local" value="Tools.html#Polar_alignment_tools">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒƒbƒNˆÊ’u">
+			<param name="Name" value="ãƒ­ãƒƒã‚¯ä½ç½®">
 			<param name="Local" value="Tools.html#Lock_Positions">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="œa¯’ÇÕ">
+			<param name="Name" value="å½—æ˜Ÿè¿½è·¡">
 			<param name="Local" value="Tools.html#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒKƒCƒhƒAƒVƒXƒ^ƒ“ƒg">
+			<param name="Name" value="ã‚¬ã‚¤ãƒ‰ã‚¢ã‚·ã‚¹ã‚¿ãƒ³ãƒˆ">
 			<param name="Local" value="Tools.html#Guiding_Assistant">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒXƒ^[ƒNƒƒXƒeƒXƒgƒc[ƒ‹">
+			<param name="Name" value="ã‚¹ã‚¿ãƒ¼ã‚¯ãƒ­ã‚¹ãƒ†ã‚¹ãƒˆãƒ„ãƒ¼ãƒ«">
 			<param name="Local" value="Tools.html#Star_cross_tool">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒƒŠƒfƒBƒAƒ“ƒtƒŠƒbƒvƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“ƒc[ƒ‹">
+			<param name="Name" value="ãƒ¡ãƒªãƒ‡ã‚£ã‚¢ãƒ³ãƒ•ãƒªãƒƒãƒ—ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ„ãƒ¼ãƒ«">
 			<param name="Local" value="Tools.html#pierflip_cal_tool">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="‹@Šíƒvƒƒtƒ@ƒCƒ‹">
+			<param name="Name" value="æ©Ÿå™¨ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«">
 			<param name="Local" value="Tools.html#Managing_Equipment_Profiles">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒVƒ~ƒ…ƒŒ[ƒ^[§Œä">
+			<param name="Name" value="ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ãƒ¼åˆ¶å¾¡">
 			<param name="Local" value="Tools.html#Advanced_Settings_for_the_Simulators">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒL[ƒ{[ƒhƒVƒ‡[ƒgƒJƒbƒg">
+			<param name="Name" value="ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ">
 			<param name="Local" value="Tools.html#Keyboard_Shortcuts">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒ\ƒtƒgƒEƒFƒAXV">
+			<param name="Name" value="ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢æ›´æ–°">
 			<param name="Local" value="Tools.html#Software_Update">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒL[ƒ{[ƒhƒVƒ‡[ƒgƒJƒbƒg">
+		<param name="Name" value="ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ">
 		<param name="Local" value="KeyboardShortcuts.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒgƒ‰ƒuƒ‹ƒVƒ…[ƒeƒBƒ“ƒO‚Æ•ªÍ">
+		<param name="Name" value="ãƒˆãƒ©ãƒ–ãƒ«ã‚·ãƒ¥ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã¨åˆ†æž">
 		<param name="Local" value="Trouble_shooting.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“‚Ì–â‘è">
+			<param name="Name" value="ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®å•é¡Œ">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Mount_Control">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒ}ƒEƒ“ƒg“®ì‚Ì‘ª’è">
+			<param name="Name" value="ãƒžã‚¦ãƒ³ãƒˆå‹•ä½œã®æ¸¬å®š">
 			<param name="Local" value="Trouble_shooting.html#Measuring_Mount_Behavior">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="•\Ž¦ƒEƒBƒ“ƒhƒE‚Ì–â‘è">
+			<param name="Name" value="è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å•é¡Œ">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Display_Window">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒJƒƒ‰‚Ìƒ^ƒCƒ€ƒAƒEƒg‚Æƒ_ƒEƒ“ƒ[ƒh‚Ì–â‘è">
+			<param name="Name" value="ã‚«ãƒ¡ãƒ©ã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã¨ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã®å•é¡Œ">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Camera_Timeouts">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒzƒbƒgƒsƒNƒZƒ‹‚Ì–â‘è">
+			<param name="Name" value="ãƒ›ãƒƒãƒˆãƒ”ã‚¯ã‚»ãƒ«ã®å•é¡Œ">
 			<param name="Local" value="Trouble_shooting.html#Problems-Hot_Pixels">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒKƒCƒhƒpƒ‰ƒ[ƒ^•œŒ³‚Ì–â‘è">
+			<param name="Name" value="ã‚¬ã‚¤ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¾©å…ƒã®å•é¡Œ">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Poor_Guiding">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ˆ«‚¢ƒKƒCƒhƒpƒtƒH[ƒ}ƒ“ƒX">
+			<param name="Name" value="æ‚ªã„ã‚¬ã‚¤ãƒ‰ãƒ‘ãƒ•ã‚©ãƒ¼ãƒžãƒ³ã‚¹">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Poor_Guiding">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ŒxƒƒbƒZ[ƒW">
+			<param name="Name" value="è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸">
 			<param name="Local" value="Trouble_shooting.html#Problems-_Alerts">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒƒOƒtƒ@ƒCƒ‹‚ÌŽg—p">
+			<param name="Name" value="ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã®ä½¿ç”¨">
 			<param name="Local" value="Trouble_shooting.html#Log_analysis">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="–â‘è•ñ">
+			<param name="Name" value="å•é¡Œå ±å‘Š">
 			<param name="Local" value="Trouble_shooting.html#Problem_Reporting">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="ƒ`ƒ…[ƒgƒŠƒAƒ‹">
+		<param name="Name" value="ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«">
 		<param name="Local" value="Tutorials.html">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒhƒŠƒtƒgƒAƒ‰ƒCƒƒ“ƒg">
+			<param name="Name" value="ãƒ‰ãƒªãƒ•ãƒˆã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ">
 			<param name="Local" value="Tutorials.html#Drift_Align">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ã“I‹É”z’u">
+			<param name="Name" value="é™çš„æ¥µé…ç½®">
 			<param name="Local" value="Tutorials.html#Static_polar_alignment">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="ƒ|[ƒ‰[ƒhƒŠƒtƒgƒAƒ‰ƒCƒƒ“ƒg">
+			<param name="Name" value="ãƒãƒ¼ãƒ©ãƒ¼ãƒ‰ãƒªãƒ•ãƒˆã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ">
 			<param name="Local" value="Tutorials.html#Polar_Drift_Align">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="—pŒêW">
+		<param name="Name" value="ç”¨èªžé›†">
 		<param name="Local" value="Glossary.html">
 		</OBJECT>
 </UL>
