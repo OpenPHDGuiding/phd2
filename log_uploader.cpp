@@ -43,6 +43,7 @@
 #include <wx/dir.h>
 #include <wx/hyperlink.h>
 #include <wx/regex.h>
+#include <wx/richtooltip.h>
 #include <wx/tokenzr.h>
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
@@ -1390,6 +1391,11 @@ void LogUploadDialog::OnLinkClicked(wxHtmlLinkEvent& event)
             wxTheClipboard->SetData(new wxURLDataObject(s_recent[val].url));
             wxTheClipboard->Close();
         }
+
+        wxRichToolTip tip(_("Link copied to clipboard"), wxEmptyString);
+        tip.SetTipKind(wxTipKind_None);
+        tip.SetBackgroundColour(wxColor(0xe5, 0xdc, 0x62));
+        tip.ShowFor(m_html);
     }
     else if (href == "forum")
     {
