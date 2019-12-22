@@ -1338,7 +1338,7 @@ if(UNIX AND NOT APPLE)
 
       # be careful not to pick up any other qhy lib on the system
       find_library(qhylib
-                   NAMES qhy
+                   NAMES qhyccd
                    NO_DEFAULT_PATH
                    PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
       if(NOT qhylib)
@@ -1346,9 +1346,6 @@ if(UNIX AND NOT APPLE)
       endif()
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
     endif()
-
-    # temporarily disable qhy camera pending fix for link error on Ubuntu Trusty
-    remove_definitions(-DHAVE_QHY_CAMERA=1)
 
     set(LIBOPENSSAG openssag)
     set(libopenssag_dir ${thirdparty_dir}/${LIBOPENSSAG}/src)
