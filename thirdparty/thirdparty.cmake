@@ -1360,7 +1360,8 @@ if(UNIX AND NOT APPLE)
         ERROR_QUIET
         )
       # temporarily disable qhy camera pending fix for link error on Ubuntu Trusty
-      if((${LSB_RELEASE_ID} EQUAL "Ubuntu") AND (${LSB_RELEASE_RELEASE} EQUAL "14.04"))
+      if((${LSB_RELEASE_ID} STREQUAL "Ubuntu") AND (${LSB_RELEASE_RELEASE} STREQUAL "14.04"))
+        message(STATUS "Disabling QHY camera support on this platform")
         remove_definitions(-DHAVE_QHY_CAMERA=1)
       endif()
     endif()
