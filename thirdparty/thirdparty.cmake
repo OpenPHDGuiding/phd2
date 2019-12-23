@@ -1347,6 +1347,24 @@ if(UNIX AND NOT APPLE)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
     endif()
 
+    find_program(LSB_RELEASE_EXEC lsb_release)
+    if(LSB_RELEASE_EXEC)
+      execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
+        OUTPUT_VARIABLE LSB_RELEASE_ID
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        )
+      execute_process(COMMAND ${LSB_RELEASE_EXEC} -rs
+        OUTPUT_VARIABLE LSB_RELEASE_RELEASE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        )
+      # temporarily disable qhy camera pending fix for link error on Ubuntu Trusty
+      if((${LSB_RELEASE_ID} EQUAL "Ubuntu") AND (${LSB_RELEASE_RELEASE} EQUAL "14.04"))
+        remove_definitions(-DHAVE_QHY_CAMERA=1)
+      endif()
+    endif()
+
     set(LIBOPENSSAG openssag)
     set(libopenssag_dir ${thirdparty_dir}/${LIBOPENSSAG}/src)
     include_directories(${libopenssag_dir})

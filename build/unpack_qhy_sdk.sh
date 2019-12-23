@@ -101,6 +101,7 @@ for f in $*; do
         *zip)              unpack_win   $f ;;
         RPI*)              unpack_linux $f armv7 ;;
         LINUX_X64_qhyccd*) unpack_linux $f x86_64 ;;
+        LINUX_qhyccd*)     unpack_linux $f x86_32 ;;
         *) echo "TODO" >&2 ; exit 1 ;;
     esac
 done
