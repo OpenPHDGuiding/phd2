@@ -363,6 +363,18 @@ bool ScopeASCOM::Connect()
             m_abortSlewWhenGuidingStuck = true;
         }
 
+        m_checkForSyncPulseGuide = false;
+
+        if (m_Name.Find(_T("AstroPhysicsV2")) != wxNOT_FOUND)
+        {
+            // The Astro-Physics ASCOM driver can hang intermittently if its
+            // synchronous pulseguide option is enabled.  We will attempt to
+            // detect synchronous guide pulses and display an alert if sync
+            // pulses are enabled.
+            Debug.Write("ASCOM scope: enabling sync pulse guide check\n");
+            m_checkForSyncPulseGuide = true;
+        }
+
         // see if we can pulse guide
         m_canPulseGuide = true;
         if (!pScopeDriver.GetProp(&vRes, L"CanPulseGuide") || vRes.boolVal != VARIANT_TRUE)
@@ -480,6 +492,19 @@ static void SuppressPulseGuideFailedAlert(long)
     pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
 }
 
+static wxString SyncPulseGuideAlertEnabledKey()
+{
+    // we want the key to be under "/Confirm" so
+    // ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the
+    // setting to be per-profile
+    return wxString::Format("/Confirm/%d/SyncPulseGuideAlertEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressSyncPulseGuideAlert(long)
+{
+    pConfig->Global.SetBoolean(SyncPulseGuideAlertEnabledKey(), false);
+}
+
 Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -568,6 +593,26 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         }
 
         long elapsed = swatch.Time();
+
+        if (m_checkForSyncPulseGuide)
+        {
+            // check for a long pulse and an elapsed time close to or longer
+            // than the pulse duration
+            if (duration >= 250 && elapsed >= duration - 30)
+            {
+                Debug.Write(wxString::Format("SyncPulseGuide checking: sync pulse detected. "
+                                             "Duration = %d Elapsed = %ld\n", duration, elapsed));
+
+                pFrame->SuppressableAlert(SyncPulseGuideAlertEnabledKey(),
+                    _("Please disable the Synchronous PulseGuide option in the mount's ASCOM driver "
+                      "settings. Enabling the setting can cause unpredictable results."),
+                    SuppressSyncPulseGuideAlert, 0);
+
+                // only show the Alert once
+                m_checkForSyncPulseGuide = false;
+            }
+        }
+
         if (elapsed < (long)duration)
         {
             unsigned long rem = (unsigned long)((long)duration - elapsed);

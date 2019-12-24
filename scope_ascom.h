@@ -73,6 +73,7 @@ class ScopeASCOM : public Scope
     bool m_canPulseGuide;
 
     bool m_abortSlewWhenGuidingStuck;
+    bool m_checkForSyncPulseGuide;
 
     wxString m_choice; // name of chosen scope
 
