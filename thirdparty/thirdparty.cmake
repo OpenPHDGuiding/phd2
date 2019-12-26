@@ -194,21 +194,22 @@ if(USE_SYSTEM_CFITSIO)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CFITSIO_LIBRARIES})
   message(STATUS "Using system's CFITSIO.")
 else(USE_SYSTEM_CFITSIO)
-  set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio)
+
+  set(CFITSIO_MAJOR_VERSION 3)
+  set(CFITSIO_MINOR_VERSION 47)
+  set(CFITSIO_VERSION ${CFITSIO_MAJOR_VERSION}.${CFITSIO_MINOR_VERSION})
+
+  set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio-${CFITSIO_VERSION})
+
   if(NOT EXISTS ${libcfitsio_root})
     # untar the dependency
     message(STATUS "[thirdparty] untarring cfitsio")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3450-patched.tar.gz
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio-${CFITSIO_VERSION}-patched.tar.gz
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()
 
   # copied and adapted from the CMakeLists.txt of cftsio project. The sources of the project
   # are left untouched
-
-  # Define project version
-  set(CFITSIO_MAJOR_VERSION 3)
-  set(CFITSIO_MINOR_VERSION 45)
-  set(CFITSIO_VERSION ${CFITSIO_MAJOR_VERSION}.${CFITSIO_MINOR_VERSION})
 
   file(GLOB CFTSIO_H_FILES "${libcfitsio_root}/*.h")
 
