@@ -1216,7 +1216,7 @@ void Mount::AdjustCalibrationForScopePointing()
             double currRASpeed;
             double currDecSpeed;
             pPointingSource->GetGuideRates(&currRASpeed, &currDecSpeed);
-            if (fabs(1.0 - currRASpeed / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - currDecSpeed / calDetails.decGuideSpeed) > 0.5)
+            if (fabs(1.0 - currRASpeed / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - currDecSpeed / calDetails.decGuideSpeed) > 0.05)
             {
                 pFrame->Alert(_("Mount guide speeds are different from those used in last calibration.  Do a new calibration or reset mount guide speed settings to previous values. "));
                 Debug.Write(wxString::Format("Guide speeds have changed since calibration.  Orig RA = %0.1f, Orig Dec = %0.1f, "
