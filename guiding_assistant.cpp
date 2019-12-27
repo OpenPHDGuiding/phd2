@@ -710,26 +710,33 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                 qual = m_backlashTool->GetMeasurementQuality();
                 if (qual == BacklashTool::MEASUREMENT_VALID || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH)
                 {
-                    double bltSigmaPx;
-                    double bltGearAngle;
-                    double bltGearAngleSigma;
                     Debug.Write("GA-BLT: Wrap-up after normal completion\n");
                     // populate result variables
                     m_backlashPx = m_backlashTool->GetBacklashResultPx();
                     m_backlashMs = m_backlashTool->GetBacklashResultMs();
+                    double bltSigmaPx;
                     m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
-                    bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
-                    bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
+                    double bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
+                    double bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
                     wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
-                    wxString outStr;
+                    wxString outStr, outStrTr;  // untranslated and translated
                     if (qual == BacklashTool::MEASUREMENT_VALID)
-                        outStr = wxString::Format("%s %d %s %0.0f %s (%0.1f %s %0.1f %s)",
-                        preamble, wxMax(0, m_backlashMs), " +/- ", m_backlashSigmaMs, _("ms"),
-                        wxMax(0, bltGearAngle), " +/- ", bltGearAngleSigma, _("arc-sec"));
+                    {
+                        outStr = wxString::Format("%s %d  +/-  %0.0f ms (%0.1f  +/-  %0.1f arc-sec)",
+                                                  preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs,
+                                                  wxMax(0, bltGearAngle), bltGearAngleSigma);
+                        outStrTr = wxString::Format("%s %d  +/-  %0.0f %s (%0.1f  +/-  %0.1f %s)",
+                                                    preamble, wxMax(0, m_backlashMs), m_backlashSigmaMs, _("ms"),
+                                                    wxMax(0, bltGearAngle), bltGearAngleSigma, _("arc-sec"));
+                    }
                     else
-                        outStr = wxString::Format("%s %d %s %s",
-                        preamble, wxMax(0, m_backlashMs), " +/- ", _("ms (test impaired)"));
-                    m_othergrid->SetCellValue(m_backlash_loc, outStr);
+                    {
+                        outStr = wxString::Format("%s %d  +/-  ms (test impaired)",
+                                                  preamble, wxMax(0, m_backlashMs));
+                        outStrTr = wxString::Format("%s %d  +/-  %s",
+                                                    preamble, wxMax(0, m_backlashMs), _("ms (test impaired)"));
+                    }
+                    m_othergrid->SetCellValue(m_backlash_loc, outStrTr);
                     HighlightCell(m_othergrid, m_backlash_loc);
                     outStr += "\n";
                     GuideLog.NotifyGAResult("Backlash=" + outStr);
@@ -1072,11 +1079,10 @@ void GuidingAsstWin::LoadGAResults(const wxString& TimeStamp, GADetails* Details
     }
 }
 
-static wxString SizedMsg(wxString msg)
+static wxString SizedMsg(const wxString& msg)
 {
-    wxString padding = "                                        ";
     if (msg.length() < 70)
-        return msg += padding.SubString(0, 70 - msg.length());
+        return msg + wxString(' ', 70 - msg.length());
     else
         return msg;
 }
