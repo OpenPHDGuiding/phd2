@@ -157,34 +157,27 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     const double siderealSecondPerSec = 0.9973;
     const double siderealRate = 15.0 * siderealSecondPerSec;
 
-    Calibration calBaseline;
-    CalibrationDetails calDetails;
-
-    if (!pSecondaryMount)
-    {
-        pMount->GetCalibrationDetails(&calDetails);                              // Normal case, no AO
-        pMount->GetLastCalibration(&calBaseline);
-    }
+    Mount *mount;
+    if (!pSecondaryMount || AO)
+        // Normal case, no AO
+        // or AO tab, use AO details
+        mount = pMount;
     else
-    {
-        if (AO)
-        {
-            pMount->GetCalibrationDetails(&calDetails);                          // AO tab, use AO details
-            pMount->GetLastCalibration(&calBaseline);
-        }
-        else
-        {
-            pSecondaryMount->GetCalibrationDetails(&calDetails);                 // Mount tab, use mount details
-            pSecondaryMount->GetLastCalibration(&calBaseline);
-        }
-    }
+        // Mount tab, use mount details
+        mount = pSecondaryMount;
+
+    CalibrationDetails calDetails;
+    mount->GetCalibrationDetails(&calDetails);
+
+    Calibration calBaseline;
+    mount->GetLastCalibration(&calBaseline);
 
     wxBoxSizer* panelGridVSizer = new wxBoxSizer(wxVERTICAL);
     parentHSizer->Add(panelGridVSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     int row = 0;
     int col = 0;
-    bool validDetails = calDetails.raStepCount > 0;                              // true for non-AO with pointing source info and "recent" calibration
+    bool validDetails = calDetails.IsValid(); // true for non-AO with pointing source info and "recent" calibration
     bool validBaselineDeclination = calBaseline.declination != UNKNOWN_DECLINATION;
 
     // Build the upper frame and grid for data from the last calibration
@@ -383,7 +376,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         }
 
         cfgGrid->SetCellValue(row, col++, _("Declination"));
-        wxString decStr = Mount::DeclinationStr(dec, "%0.1f");
+        wxString decStr = Mount::DeclinationStrTr(dec, "%0.1f");
         if (decEstimated)
             decStr += _(" (est)");
         cfgGrid->SetCellValue(row, col++, decStr);

@@ -1762,6 +1762,7 @@ PierSide Scope::SideOfPier()
     return PIER_SIDE_UNKNOWN;
 }
 
+// unstranslated settings summary
 wxString Scope::GetSettingsSummary() const
 {
     Calibration calInfo;

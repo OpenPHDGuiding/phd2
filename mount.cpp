@@ -62,7 +62,16 @@ inline static bool IsOppositeSide(PierSide a, PierSide b)
         (a == PIER_SIDE_WEST && b == PIER_SIDE_EAST);
 }
 
-inline static wxString PierSideStr(PierSide p, const wxString& unknown = _("Unknown"))
+inline static wxString PierSideStr(PierSide p)
+{
+    switch (p) {
+    case PIER_SIDE_EAST: return "East";
+    case PIER_SIDE_WEST: return "West";
+    default:             return "Unknown";
+    }
+}
+
+inline static wxString PierSideStrTr(PierSide p, const wxString& unknown = _("Unknown"))
 {
     switch (p) {
     case PIER_SIDE_EAST: return _("East");
@@ -74,6 +83,11 @@ inline static wxString PierSideStr(PierSide p, const wxString& unknown = _("Unkn
 wxString Mount::PierSideStr(PierSide p)
 {
     return ::PierSideStr(p);
+}
+
+wxString Mount::PierSideStrTr(PierSide p)
+{
+    return ::PierSideStrTr(p);
 }
 
 inline static const char *ParityStr(GuideParity par)
@@ -96,6 +110,11 @@ inline static GuideParity OppositeParity(GuideParity p)
 }
 
 wxString Mount::DeclinationStr(double dec, const wxString& numFormatStr)
+{
+    return dec == UNKNOWN_DECLINATION ? "Unknown" : wxString::Format(numFormatStr, degrees(dec));
+}
+
+wxString Mount::DeclinationStrTr(double dec, const wxString& numFormatStr)
 {
     return dec == UNKNOWN_DECLINATION ? _("Unknown") : wxString::Format(numFormatStr, degrees(dec));
 }
@@ -806,21 +825,6 @@ Mount::~Mount()
     delete m_backlashComp;
 }
 
-double Mount::xRate() const
-{
-    return m_xRate;
-}
-
-double Mount::yRate() const
-{
-    return m_cal.yRate;
-}
-
-double Mount::xAngle() const
-{
-    return m_cal.xAngle;
-}
-
 double Mount::yAngle() const
 {
     return norm_angle(m_cal.xAngle - m_yAngleError + M_PI / 2.);
@@ -887,8 +891,8 @@ bool Mount::FlipCalibration()
         SetCalibration(cal);
 
         pFrame->StatusMsg(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            ::PierSideStr(priorPierSide, wxEmptyString), degrees(origX), degrees(origY),
-            ::PierSideStr(newPierSide, wxEmptyString), degrees(newX), degrees(newY)));
+            ::PierSideStrTr(priorPierSide, wxEmptyString), degrees(origX), degrees(origY),
+            ::PierSideStrTr(newPierSide, wxEmptyString), degrees(newX), degrees(newY)));
     }
     catch (const wxString& Msg)
     {
@@ -1655,8 +1659,8 @@ void Mount::NotifyDirectMove(const PHD_Point& dist)
 void Mount::GetLastCalibration(Calibration *cal) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
-    wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
-    if (sTimestamp.Length() > 0)
+    wxString timestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
+    if (!timestamp.empty())
     {
         cal->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
         cal->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
@@ -1668,7 +1672,7 @@ void Mount::GetLastCalibration(Calibration *cal) const
         cal->raGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "raGuideParity", GUIDE_PARITY_UNKNOWN));
         cal->decGuideParity = guide_parity(pConfig->Profile.GetInt(prefix + "decGuideParity", GUIDE_PARITY_UNKNOWN));
         cal->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
-        cal->timestamp = sTimestamp;
+        cal->timestamp = timestamp;
         cal->isValid = true;
     }
     else
@@ -1679,10 +1683,7 @@ void Mount::GetLastCalibration(Calibration *cal) const
 
 void Mount::GetCalibrationDetails(CalibrationDetails *details) const
 {
-    wxStringTokenizer tok;
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
-    wxString stepStr;
-    bool err = false;
 
     details->focalLength = pConfig->Profile.GetInt(prefix + "focal_length", 0);
     details->imageScale = pConfig->Profile.GetDouble(prefix + "image_scale", 1.0);
@@ -1695,10 +1696,13 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details) const
     details->lastIssue = (CalibrationIssueType) pConfig->Profile.GetInt(prefix + "last_issue", 0);
     details->origTimestamp = pConfig->Profile.GetString(prefix + "orig_timestamp", "Unknown");
     details->origPierSide = pier_side(pConfig->Profile.GetInt(prefix + "orig_pierside", PIER_SIDE_UNKNOWN));
+
     // Populate raSteps
-    stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
+    wxString stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
+    wxStringTokenizer tok;
     tok.SetString(stepStr, "},", wxTOKEN_STRTOK);
     details->raSteps.clear();
+    bool err = false;
     while (tok.HasMoreTokens() && !err)
     {
         wxString tk = (tok.GetNextToken()).Trim(false);           // looks like {x y, left-trimmed
@@ -1754,34 +1758,80 @@ bool Mount::Disconnect()
     return false;
 }
 
+inline static wxString OrthoErrorStr(const CalibrationDetails& det)
+{
+    return det.IsValid() ?
+        wxString::Format("%.1f deg", det.orthoError) : "unknown";
+}
+
 wxString Mount::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
 
-    wxString auxMountStr = wxEmptyString;
-    if (pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
+    wxString s =
+        wxString::Format("%s = %s,%s connected, guiding %s, ",
+                         IsStepGuider() ? "AO" : "Mount",
+                         m_Name,
+                         IsConnected() ? "" : " not",
+                         m_guidingEnabled ? "enabled" : "disabled");
+
+    if (pPointingSource && pPointingSource->IsConnected() &&
+        pPointingSource->CanReportPosition() &&
+        pPointingSource != TheScope())
     {
-        if (pPointingSource != TheScope())
-            auxMountStr = "AuxMount=" + pPointingSource->Name();
+        s += wxString::Format("AuxMount=%s, ", pPointingSource->Name());
     }
-    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s, %s\n",
-        IsStepGuider() ? "AO" : "Mount",
-        m_Name,
-        IsConnected() ? " " : " not",
-        m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ?
-            wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f, parity = %s/%s",
-                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0,
-                ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity)) :
-            "not calibrated",
-        auxMountStr
-    ) + wxString::Format("X guide algorithm = %s, %s",
-        GuideAlgorithmName(GetXGuideAlgorithmSelection()),
-        m_pXGuideAlgorithm->GetSettingsSummary()
-    ) + wxString::Format("Y guide algorithm = %s, %s",
-        GuideAlgorithmName(GetYGuideAlgorithmSelection()),
-        m_pYGuideAlgorithm->GetSettingsSummary()
-    );
+
+    if (IsCalibrated())
+    {
+        double xRatePx = xRate() * 1000.0;
+        double yRatePx = yRate() * 1000.0;
+
+        s += wxString::Format("xAngle = %.1f, xRate = %.3f, "
+                              "yAngle = %.1f, yRate = %.3f, "
+                              "parity = %s/%s\n",
+                              degrees(xAngle()), xRatePx,
+                              degrees(yAngle()), yRatePx,
+                              ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity));
+
+        CalibrationDetails det;
+        GetCalibrationDetails(&det);
+
+        double scale = det.IsValid() ? det.imageScale : 1.0;
+
+        if (IsStepGuider())
+        {
+            s += wxString::Format("Norm rates X = %.f mas/step, "
+                                  "Y = %.f mas/step; ortho.err. = %s\n",
+                                  m_cal.xRate * 1000. * scale,
+                                  m_cal.yRate * 1000. * scale,
+                                  OrthoErrorStr(det));
+        }
+        else
+        {
+            double xRateAsD0;
+            if (m_cal.declination != UNKNOWN_DECLINATION)
+                xRateAsD0 = m_cal.xRate * 1000. / cos(m_cal.declination) * scale;
+            else
+                xRateAsD0 = m_cal.xRate * 1000. * scale;
+            double yRateAs = yRatePx * scale;
+
+            s += wxString::Format("Norm rates RA = %.1f\"/s @ dec 0, "
+                                  "Dec = %.1f\"/s; ortho.err. = %s\n",
+                                  xRateAsD0,
+                                  yRateAs,
+                                  OrthoErrorStr(det));
+        }
+    }
+    else
+        s += "not calibrated\n";
+
+    s += wxString::Format("X guide algorithm = %s, %s",
+                          GuideAlgorithmName(GetXGuideAlgorithmSelection()),
+                          m_pXGuideAlgorithm->GetSettingsSummary()) +
+        wxString::Format("Y guide algorithm = %s, %s",
+                         GuideAlgorithmName(GetYGuideAlgorithmSelection()),
+                         m_pYGuideAlgorithm->GetSettingsSummary());
 
     if (m_backlashComp)
     {

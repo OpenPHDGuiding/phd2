@@ -258,11 +258,11 @@ void PierFlipCalToolWin::SetState(State state)
     case ST_CALIBRATE_1:
         s = _("Wait for the first calibration to complete.");
         m_status->SetStatusText(wxString::Format(_("Calibrating on the %s side of pier"),
-            Scope::PierSideStr(pPointingSource->SideOfPier())));
+            Scope::PierSideStrTr(pPointingSource->SideOfPier())));
         break;
     case ST_SLEW_2:
         s = wxString::Format(_("Flip to the other side of the pier, so the telescope is on the %s side of the pier."),
-            Scope::PierSideStr(m_firstCal.pierSide == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST)) +
+            Scope::PierSideStrTr(m_firstCal.pierSide == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST)) +
             _T("\n\n") +
             _("Point the telescope in the direction of the intersection of the meridian and the celestial "
             "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
@@ -271,7 +271,7 @@ void PierFlipCalToolWin::SetState(State state)
     case ST_CALIBRATE_2:
         s = _("Wait for the second calibration to complete.");
         m_status->SetStatusText(wxString::Format(_("Calibrating on the %s side of pier"),
-            Scope::PierSideStr(pPointingSource->SideOfPier())));
+            Scope::PierSideStrTr(pPointingSource->SideOfPier())));
         break;
     case ST_DONE:
         if (m_resultError.empty())
@@ -394,7 +394,7 @@ void PierFlipCalToolWin::OnTimer(wxTimerEvent& event)
         SetBg(m_ha, YELLOW);
 
     PierSide ps = pPointingSource ? pPointingSource->SideOfPier() : PIER_SIDE_UNKNOWN;
-    m_pierSide->SetValue(Scope::PierSideStr(ps));
+    m_pierSide->SetValue(Scope::PierSideStrTr(ps));
 
     int enable = -1;
     switch (m_state)

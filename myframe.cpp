@@ -2677,12 +2677,13 @@ wxString MyFrame::PixelScaleSummary() const
     if (pixelScale == 1.0)
         scaleStr = "unspecified";
     else
-        scaleStr = wxString::Format("%.2f ", pixelScale) + "arc-sec/px";
+        scaleStr = wxString::Format("%.2f arc-sec/px", pixelScale);
+
     wxString focalLengthStr;
     if (m_focalLength == 0)
         focalLengthStr = "unspecified";
     else
-        focalLengthStr = wxString::Format("%d", m_focalLength) + " mm";
+        focalLengthStr = wxString::Format("%d mm", m_focalLength);
 
     return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s",
         scaleStr, pCamera->Binning, focalLengthStr);

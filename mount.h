@@ -117,6 +117,9 @@ struct CalibrationDetails
     CalibrationIssueType lastIssue;
     wxString origTimestamp;
     PierSide origPierSide;
+
+    CalibrationDetails() : raStepCount(0) { }
+    bool IsValid() const { return raStepCount > 0; }
 };
 
 enum MountMoveOptionBits
@@ -282,8 +285,12 @@ public:
     virtual bool DecCompensationEnabled() const;
     virtual void AdjustCalibrationForScopePointing();
 
+    // untranslated strings for logging
     static wxString DeclinationStr(double dec, const wxString& numFormatStr = "%.1f");
     static wxString PierSideStr(PierSide side);
+    // translated strings for UI
+    static wxString DeclinationStrTr(double dec, const wxString& numFormatStr = "%.1f");
+    static wxString PierSideStrTr(PierSide side);
 
     bool IsBusy() const;
     void IncrementRequestCount();
@@ -365,6 +372,21 @@ public:
     bool MountIsCalibrated() const { return m_calibrated; }
     const Calibration& MountCal() const { return m_cal; }
 };
+
+inline double Mount::xRate() const
+{
+    return m_xRate;
+}
+
+inline double Mount::yRate() const
+{
+    return m_cal.yRate;
+}
+
+inline double Mount::xAngle() const
+{
+    return m_cal.xAngle;
+}
 
 inline bool Mount::GetGuidingEnabled() const
 {
