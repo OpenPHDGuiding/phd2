@@ -188,7 +188,6 @@ private:
     bool m_beepForLostStar;
     double m_sampling;
     bool m_autoLoadCalibration;
-    int m_instanceNumber;
 
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
@@ -197,7 +196,7 @@ private:
     SingleExposure m_singleExposure;
 
 public:
-    MyFrame(int instanceNumber, wxLocale *locale);
+    MyFrame();
     virtual ~MyFrame();
 
     Guider *pGuider;
@@ -249,7 +248,6 @@ public:
     bool CaptureActive; // Is camera looping captures?
     bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;
-    wxLocale *m_pLocale;
     unsigned int m_frameCounter;
     wxDateTime m_guidingStarted;
     wxStopWatch m_guidingElapsed;
@@ -365,7 +363,6 @@ public:
     bool GetAutoLoadCalibration() const;
     void SetAutoLoadCalibration(bool val);
     void LoadCalibration();
-    int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();
     static wxString GetDarksDir();
     bool DarkLibExists(int profileId, bool showAlert);

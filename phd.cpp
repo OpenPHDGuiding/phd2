@@ -622,7 +622,7 @@ bool PhdApp::OnInit()
     wxImage::AddHandler(new wxJPEGHandler);
     wxImage::AddHandler(new wxPNGHandler);
 
-    pFrame = new MyFrame(m_instanceNumber, &m_locale);
+    pFrame = new MyFrame();
 
     pFrame->Show(true);
 

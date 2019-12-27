@@ -90,8 +90,10 @@ bool MyFrame::StartServer(bool state)
 
         Debug.AddLine("starting server");
 
+        int instanceNumber = wxGetApp().GetInstanceNumber();
+
         // Create the SocketServer socket
-        unsigned int port = 4300 + m_instanceNumber - 1;
+        unsigned int port = 4300 + instanceNumber - 1;
         wxIPV4address sockServerAddr;
         sockServerAddr.Service(port);
         SocketServer = new wxSocketServer(sockServerAddr, wxSOCKET_REUSEADDR);
@@ -110,7 +112,7 @@ bool MyFrame::StartServer(bool state)
         SocketServer->Notify(true);
 
         // start the event server
-        if (EvtServer.EventServerStart(m_instanceNumber))
+        if (EvtServer.EventServerStart(instanceNumber))
         {
             delete SocketServer;
             SocketServer = nullptr;

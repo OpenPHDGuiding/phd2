@@ -795,7 +795,7 @@ void DefectMapDarks::BuildFilteredDark()
 
 static wxString DefectMapMasterPath(int profileId)
 {
-    int inst = pFrame->GetInstanceNumber();
+    int inst = wxGetApp().GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +
         wxString::Format("PHD2_defect_map_master%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
@@ -806,7 +806,7 @@ static wxString DefectMapMasterPath()
 
 static wxString DefectMapFilterPath(int profileId)
 {
-    int inst = pFrame->GetInstanceNumber();
+    int inst = wxGetApp().GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +
         wxString::Format("PHD2_defect_map_master_filt%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
@@ -1076,7 +1076,7 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
 
 wxString DefectMap::DefectMapFileName(int profileId)
 {
-    int inst = pFrame->GetInstanceNumber();
+    int inst = wxGetApp().GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +
         wxString::Format("PHD2_defect_map%s_%d.txt", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }

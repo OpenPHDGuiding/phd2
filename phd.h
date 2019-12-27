@@ -236,8 +236,10 @@ public:
     void ResetConfiguration();
     virtual bool Yield(bool onlyIfNeeded = false);
     static void ExecInMainThread(std::function<void()> func);
+    int GetInstanceNumber() const { return m_instanceNumber; }
     const wxString& GetPHDResourcesDir() const { return m_resourcesDir; }
     wxString GetLocalesDir() const;
+    const wxLocale& GetLocale() const { return m_locale; }
     const wxDateTime& GetLogFileTime() const { return m_logFileTime; }
     static wxDateTime ImagingDay(const wxDateTime& dt);
     static bool IsSameImagingDay(const wxDateTime& a, const wxDateTime& b);

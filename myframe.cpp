@@ -208,15 +208,13 @@ struct FileDropTarget : public wxFileDropTarget
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
-    : wxFrame(nullptr, wxID_ANY, wxEmptyString),
+MyFrame::MyFrame()
+    :
+    wxFrame(nullptr, wxID_ANY, wxEmptyString),
     m_showBookmarksAccel(0),
     m_bookmarkLockPosAccel(0),
-    pStatsWin(0)
+    pStatsWin(nullptr)
 {
-    m_instanceNumber = instanceNumber;
-    m_pLocale = locale;
-
     m_mgr.SetManagedWindow(this);
 
     m_frameCounter = 0;
@@ -478,14 +476,12 @@ MyFrame::~MyFrame()
 
 void MyFrame::UpdateTitle()
 {
-    wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
+    int inst = wxGetApp().GetInstanceNumber();
+    wxString prof = pConfig->GetCurrentProfile();
 
-    if (m_instanceNumber > 1)
-    {
-        title = wxString::Format(_T("%s(#%d) %s"), APPNAME, m_instanceNumber, FULLVER);
-    }
-
-    title += " - " + pConfig->GetCurrentProfile();
+    wxString title = inst > 1 ?
+        wxString::Format(_T("%s(#%d) %s - %s"), APPNAME, inst, FULLVER, prof) :
+        wxString::Format(_T("%s %s - %s"), APPNAME, FULLVER, prof);
 
     SetTitle(title);
 }
@@ -1025,22 +1021,29 @@ struct PHDHelpController : public wxHtmlHelpController
 void MyFrame::SetupHelpFile()
 {
     wxFileSystem::AddHandler(new wxZipFSHandler);
-    bool retval;
-    wxString filename;
+
+    int langid = wxGetApp().GetLocale().GetLanguage();
+
     // first try to find locale-specific help file
-    filename = wxGetApp().GetLocalesDir() + wxFILE_SEP_PATH
-        + wxLocale::GetLanguageCanonicalName(m_pLocale->GetLanguage()) + wxFILE_SEP_PATH
+    wxString filename = wxGetApp().GetLocalesDir() + wxFILE_SEP_PATH
+        + wxLocale::GetLanguageCanonicalName(langid) + wxFILE_SEP_PATH
         + _T("PHD2GuideHelp.zip");
+
+    Debug.Write(wxString::Format("SetupHelpFile: langid=%d, locale-specific help = %s\n", langid, filename));
+
     if (!wxFileExists(filename))
     {
         filename = wxGetApp().GetPHDResourcesDir() + wxFILE_SEP_PATH
             + _T("PHD2GuideHelp.zip");
+
+        Debug.Write(wxString::Format("SetupHelpFile: using default help %s\n", filename));
     }
+
     help = new PHDHelpController();
-    retval = help->AddBook(filename);
-    if (!retval)
+
+    if (!help->AddBook(filename))
     {
-        Alert(_("Could not find help file: ") + filename);
+        Alert(wxString::Format(_("Could not find help file %s"), filename));
     }
 }
 
@@ -2430,7 +2433,7 @@ wxString MyFrame::GetDarksDir()
 
 wxString MyFrame::DarkLibFileName(int profileId)
 {
-    int inst = pFrame->GetInstanceNumber();
+    int inst = wxGetApp().GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +
         wxString::Format("PHD2_dark_lib%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
@@ -2749,7 +2752,7 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
 }
 
 // Reset the guiding parameters and the various graphical displays when image scale is changed outside the AD UI.  Goal is to restore basic guiding behavior
-// until a fresh calibration is done.  Ratio of image scales is used because 1) info like mount guide speed may not be available and 2) the user may have already 
+// until a fresh calibration is done.  Ratio of image scales is used because 1) info like mount guide speed may not be available and 2) the user may have already
 // adjusted the calibration step-size in the profile to get the results he wants.
 void MyFrame::HandleImageScaleChange(double NewToOldRatio)
 {
@@ -2887,7 +2890,6 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
-    int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
     wxArrayString availableTranslations = pTrans->GetAvailableTranslations(PHD_MESSAGES_CATALOG);
     wxArrayString languages;
@@ -2921,6 +2923,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
         }
         m_LanguageIDs.Add(pLanguageInfo->Language);
     }
+    int currentLanguage = wxGetApp().GetLocale().GetLanguage();
     pTrans->SetLanguage((wxLanguage)currentLanguage);
 
     width = StringWidth(_("System default"));

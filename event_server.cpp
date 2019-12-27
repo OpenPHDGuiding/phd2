@@ -239,7 +239,7 @@ struct Ev : public JObj
         *this << NV("Event", event)
             << NV("Timestamp", now, 3)
             << NV("Host", wxGetHostName())
-            << NV("Inst", pFrame->GetInstanceNumber());
+            << NV("Inst", wxGetApp().GetInstanceNumber());
     }
 };
 
