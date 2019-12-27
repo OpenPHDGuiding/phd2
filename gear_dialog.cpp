@@ -495,6 +495,7 @@ int GearDialog::ShowGearDialog(bool autoConnect)
 
     if (callSuper)
     {
+        m_imageScaleRatio = 1.0;
         UpdateButtonState();
 
         GetSizer()->Fit(this);
@@ -528,17 +529,11 @@ void GearDialog::EndModal(int retCode)
         assert(pSecondaryMount == nullptr);
     }
 
-    if (fabs(m_imageScaleRatio - 1.0) >= 0.01)
-    {
-        Debug.Write("GearDialog::EndModal: imageScaleRatio changed\n");
-        pFrame->HandleImageScaleChange(m_imageScaleRatio);
-    }
-
     pFrame->UpdateButtonsStatus();
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
 
-    if (pFrame->GetAutoLoadCalibration() && !m_camChanged)
+    if (pFrame->GetAutoLoadCalibration() && !m_camChanged)              // ok to reload calibration
     {
         if (pMount && pMount->IsConnected() &&
             (!pSecondaryMount || pSecondaryMount->IsConnected()))
@@ -549,31 +544,34 @@ void GearDialog::EndModal(int retCode)
     }
     else
     {
-        // if user is loading/unloading the same profile, the calibration will hang around unless we clear it
+        // Force a recalibration if the camera has changed
         if (m_camChanged)
         {
             Debug.Write("Clearing calibration data because camera was changed\n");
-            m_camChanged = false;
-        }
-        else
-            Debug.Write("Clearing calibration data because auto-load is false\n");
-        if (m_pStepGuider)
-        {
-            if (m_pStepGuider->IsConnected())
-                m_pStepGuider->ClearCalibration();
-            if (pSecondaryMount && pSecondaryMount->IsConnected())
-                pSecondaryMount->ClearCalibration();
-        }
-        else
-        {
-            if (pMount && pMount->IsConnected())
-                pMount->ClearCalibration();
+            if (m_pStepGuider)
+            {
+                if (m_pStepGuider->IsConnected())
+                    m_pStepGuider->ClearCalibration();
+                if (pSecondaryMount && pSecondaryMount->IsConnected())
+                    pSecondaryMount->ClearCalibration();
+            }
+            else
+            {
+                if (pMount && pMount->IsConnected())
+                    pMount->ClearCalibration();
+            }
         }
     }
 
     wxDialog::EndModal(retCode);
 
     UpdateAdvancedDialog(true);
+
+    if (fabs(m_imageScaleRatio - 1.0) >= 0.01)
+    {
+        Debug.Write("GearDialog::EndModal: imageScaleRatio changed\n");
+        pFrame->HandleImageScaleChange(m_imageScaleRatio);                  // Must be done after preceding updates to AD pane
+    }
 
     if (m_showDarksDialog)
     {
@@ -1059,34 +1057,6 @@ bool GearDialog::DoConnectCamera()
 
         Debug.Write(wxString::Format(_T("gear_dialog: DoConnectCamera [%s]\n"), newCam));
 
-        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam))
-        {
-            int currProfileId = pConfig->GetCurrentProfileId();
-            wxString darkName = MyFrame::DarkLibFileName(currProfileId);
-            wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
-
-            // Can't use standard checks because we don't want to consider sensor-size
-            if (wxFileExists(darkName) || wxFileExists(bpmName))
-            {
-                wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
-                    " creating a new profile for this set-up.  Do you want to proceed with changes to this profile?");
-                if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
-                {
-                    m_camWarningIssued = true;
-                    m_camChanged = true;
-                    m_lastCamera = newCam;          // make consistent with what's in the UI
-                }
-                else
-                {
-                    SetMatchingSelection(m_pCameras, m_lastCamera);
-                    wxCommandEvent dummy;
-                    OnChoiceCamera(dummy);
-                    canceled = true;
-                    throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
-                }
-            }
-        }
-
         pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
         wxString cameraId = SelectedCameraId(m_lastCamera);
@@ -1098,14 +1068,48 @@ bool GearDialog::DoConnectCamera()
             throw THROW_INFO("DoConnectCamera: connect failed");
         }
 
-        // update camera pixel size from the driver
+        // update camera pixel size from the driver, cam must be connected for reliable results
         double profPixelSize = m_pCamera->GetProfilePixelSize();
         double pixelSize;
         bool err = m_pCamera->GetDevicePixelSize(&pixelSize);
         if (!err)
         {
             m_pCamera->SetCameraPixelSize(pixelSize);
-            m_imageScaleRatio *= pixelSize / profPixelSize;
+            m_imageScaleRatio *= (pixelSize / profPixelSize);
+        }
+
+        // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams from same mfr
+        // so do what we can here including consideration of image scale change
+        // Purpose is to warn user of potential loss of dark/bpm files and later, to adjust guide params as best we can
+        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam) ||
+            (fabs(m_imageScaleRatio - 1.0) >= 0.01))
+        {
+            int currProfileId = pConfig->GetCurrentProfileId();
+            wxString darkName = MyFrame::DarkLibFileName(currProfileId);
+            wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
+
+            m_camChanged = true;
+            // Can't use standard checks because we don't want to consider sensor-size
+            if (wxFileExists(darkName) || wxFileExists(bpmName))
+            {
+                wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
+                    " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
+                if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
+                {
+                    m_camWarningIssued = true;
+                    m_lastCamera = newCam;          // make consistent with what's in the UI
+                }
+                else
+                {
+                    m_pCamera->Disconnect();
+                    SetMatchingSelection(m_pCameras, m_lastCamera);
+                    wxCommandEvent dummy;
+                    OnChoiceCamera(dummy);
+                    canceled = true;
+                    m_camChanged = false;
+                    throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
+                }
+            }
         }
 
         // update default gain setting from the driver
