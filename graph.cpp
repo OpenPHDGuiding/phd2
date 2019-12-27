@@ -574,7 +574,8 @@ void GraphLogWindow::AppendData(const DitherInfo& info)
 
 void GraphLogWindow::UpdateControls()
 {
-    this->Freeze();
+    Freeze();
+
     if (m_pXControlPane)
     {
         m_pControlSizer->Detach(m_pXControlPane);
