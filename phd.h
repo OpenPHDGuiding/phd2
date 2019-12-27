@@ -137,12 +137,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define THROW_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Throw from", __FILE__, __LINE__) "->" s)))
 #define ERROR_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Error thrown from", __FILE__, __LINE__) "->" s)))
 
-#if defined (__APPLE__)
-#include "../cfitsio/fitsio.h"
-#else
-#include "fitsio.h"
-#endif
-
 #if defined (__WINDOWS__)
 #define PHD_MESSAGES_CATALOG "messages"
 #endif
