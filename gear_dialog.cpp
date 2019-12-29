@@ -464,6 +464,7 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     assert(pCamera == nullptr || pCamera == m_pCamera);
 
     m_camChanged = false;
+    m_camWarningIssued = false;
 
     if (m_pStepGuider)
     {
@@ -1081,33 +1082,36 @@ bool GearDialog::DoConnectCamera()
         // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams from same mfr
         // so do what we can here including consideration of image scale change
         // Purpose is to warn user of potential loss of dark/bpm files and later, to adjust guide params as best we can
-        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam) ||
-            (fabs(m_imageScaleRatio - 1.0) >= 0.01))
+        if (!m_camWarningIssued)
         {
-            int currProfileId = pConfig->GetCurrentProfileId();
-            wxString darkName = MyFrame::DarkLibFileName(currProfileId);
-            wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
-
-            m_camChanged = true;
-            // Can't use standard checks because we don't want to consider sensor-size
-            if (wxFileExists(darkName) || wxFileExists(bpmName))
+            if ((m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam)) ||
+                (fabs(m_imageScaleRatio - 1.0) >= 0.01))
             {
-                wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
-                    " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
-                if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
+                int currProfileId = pConfig->GetCurrentProfileId();
+                wxString darkName = MyFrame::DarkLibFileName(currProfileId);
+                wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
+
+                m_camChanged = true;
+                // Can't use standard checks because we don't want to consider sensor-size
+                if (wxFileExists(darkName) || wxFileExists(bpmName))
                 {
-                    m_camWarningIssued = true;
-                    m_lastCamera = newCam;          // make consistent with what's in the UI
-                }
-                else
-                {
-                    m_pCamera->Disconnect();
-                    SetMatchingSelection(m_pCameras, m_lastCamera);
-                    wxCommandEvent dummy;
-                    OnChoiceCamera(dummy);
-                    canceled = true;
-                    m_camChanged = false;
-                    throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
+                    wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
+                        " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
+                    if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
+                    {
+                        m_camWarningIssued = true;
+                        m_lastCamera = newCam;          // make consistent with what's in the UI
+                    }
+                    else
+                    {
+                        m_pCamera->Disconnect();
+                        SetMatchingSelection(m_pCameras, m_lastCamera);
+                        wxCommandEvent dummy;
+                        OnChoiceCamera(dummy);
+                        canceled = true;
+                        m_camChanged = false;
+                        throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
+                    }
                 }
             }
         }
