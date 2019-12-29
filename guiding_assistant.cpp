@@ -1107,7 +1107,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
     double pxscale = pFrame->GetCameraPixelScale();
     StarDisplacement val = m_decAxisStats.GetEntry(0);
     double tStart = val.DeltaTime;
-    double multiplier_ra = 1.0;   // 66% prediction interval
+    double multiplier_ra = 0.65;                                    // 65% of Dec recommendation, empirical value
     double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
 
     try
@@ -1182,20 +1182,18 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
         double const unit = 0.05;
         double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
         // Now apply a sanity check - there are still numerous things that could have gone wrong during the GA
-        if (pxscale * roundUpEst <= 1.25)           // Min-move above 1.25 arc-sec is probably bogus
+        if (pxscale * roundUpEst <= 1.25)           // Min-move below 1.25 arc-sec is credible
         {
             RecDec = roundUpEst;
-            RecRA = RecDec * multiplier_ra / multiplier_dec;
-            // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
-            RecRA = wxMin(wxMax(m_ra_minmove_rec, 0.8 * m_dec_minmove_rec), 1.2 * m_dec_minmove_rec);        // within 20% of dec recommendation
+            RecRA = wxMax(0.1, RecDec * multiplier_ra);
             Debug.Write(wxString::Format("GA Min-Move recommendations are seeing-based: Dec=%0.3f, RA=%0.3f\n", RecDec, RecRA));
         }
         else
         {
             // Just reiterate the estimates made in the new-profile-wiz
             RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
-            RecRA = RecDec * multiplier_ra / multiplier_dec;
-            Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, RA-HPF-Sigma=%0.3f\n", roundUpEst, m_hpfDecStats.GetSigma()));
+            RecRA = wxMax(0.1, RecDec * multiplier_ra);
+            Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, Dec-HPF-Sigma=%0.3f\n", roundUpEst, m_hpfDecStats.GetSigma()));
             Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
         }
     }
