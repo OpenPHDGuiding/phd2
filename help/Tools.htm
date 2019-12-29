@@ -57,13 +57,17 @@ north/south/east/west directions. &nbsp;The 'RA Only' checkbox will
 constrain the dither adjustments to only east or west. &nbsp;Obviously,
 if you are doing a manual dither in this way, you'll want to be sure
 your imaging camera is not in the middle of an exposure.<br>
-<h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>
-Clicking on 'Auto-select Star' under the 'Tools' menu, or using the keyboard
-shortcut of &lt;Alt&gt;S, tells <span style="font-style: italic;">PHD2</span>
+<h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>Automatic guide
+star selection can be accomplished in several ways. &nbsp;The simplest
+is to click&nbsp;on the 'Auto-Select Star' icon in the main window,
+next to the 'Guide' icon. But it can also be triggered by&nbsp;using
+the keyboard
+shortcut of &lt;Alt&gt;S or by clicking on the ' Auto-select star' item
+under the 'Tools' menu. &nbsp;Taking any of these actions tells <span style="font-style: italic;">PHD2</span>
 to scan the current guide image
-and identify a star suitable for guiding. &nbsp;PHD2 will try to select
+and identify a star most suitable for guiding. &nbsp;PHD2 will try to select
 a star of sufficient brightness that is not
-saturated, not near another star, and not too close to the edge of the
+saturated, has sufficient size, and is not too near another star nor&nbsp;too close to the edge of the
 frame. &nbsp;The
 selected star may appear fairly dim on the screen, but that's usually
 not important - just adjust the gamma slider on the main window.
@@ -75,7 +79,11 @@ to examine the properties of the selected star, however it was chosen.
 &nbsp;To get the best results from&nbsp;Auto-Select, you should
 definitely use either a bad-pixel map or dark library and specify a
 Min-HFD value (Advanced Dialog/Guiding tab) to reduce the
-likelihood of PHD2 mistakenly choosing a hot pixel.
+likelihood of PHD2 mistakenly choosing a hot pixel. &nbsp;It also works
+better if you set the option to measure saturation by Max-ADU value
+(Advanced Dialog/Camera tab), assuming you know or can determine the
+maximum ADU value of your camera. &nbsp;For example, a 16-bit guide
+camera will have maximum ADU values approaching 65000.
 <h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 763px; height: 421px;" alt="" src="Calib_Review.png"><br><br>The
 first thing to look at is the graph to the left, which shows what star
 movements resulted from the guide pulses that PHD2 sent during

@@ -19,13 +19,15 @@ display tools to see how things are going</li>
 <img style="width: 670px; height: 522px;" alt="" src="Main_Screen.png"><br>
 <p>The majority of the screen is taken up by the display of the star
 field from your guide camera. &nbsp;The display is automatically
-adjusted for size, brightness, and contrast so you can have a clear
-view of available stars. &nbsp;However, these adjustments are done only
+adjusted for size, brightness, and contrast so you can view
+the&nbsp;available stars. &nbsp;However, these adjustments are done
+only
 for display purposes. &nbsp;Internally, <span style="font-style: italic;">PHD2</span>
 operates on the raw,
 un-adjusted data in order to maximize guiding accuracy. &nbsp;This
-display is also used to select a guide star by simply clicking on it.
-&nbsp;You should definitely adjust the slider control so you can see
+display can also used to manually select a guide star by&nbsp; clicking
+on it although it's better to use the 'Auto-select star' feature..
+&nbsp;You can adjust the slider control to&nbsp;see
 even the faintest stars in the field.<br></p>
 <h3><a name="Basic_control"></a>Basic control</h3>Near the bottom of the screen are the main
 controls. &nbsp;<span style="font-style: italic;">PHD2</span> is largely controlled by these buttons and
@@ -35,7 +37,14 @@ window, the primary buttons are as follows: <br><ol><li>The USB connector icon -
 guide camera ("looping"), with each resultant image (guide frame) being
 displayed in the main window. &nbsp;If guiding is subsequently started,
 clicking on the 'loop' icon again will pause guiding while continuing
-to take guide exposures.</li><li>The PHD2/Guide icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The Stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
+to take guide exposures.</li><li>The
+Auto-Select Star icon - used to trigger an automatic selection of the
+best guide star candidate in the field of view. &nbsp;This selection is
+done quantitatively, taking many things into account - star saturation,
+minimum star size, signal-to-noise ratio, proximity to other stars,
+proximity to the edge of the field, etc. &nbsp;The technique will
+nearly always make a better choice than you can manually even though
+the selected star may appear quite faint.</li><li>The PHD2/Guide icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The Stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
 </ol>To the right of the stop icon is a pull-down list of exposure
 durations (0.01s - 15s). &nbsp;You use this control to quickly set the guide
 camera's exposure duration. &nbsp;If your camera does not support an
