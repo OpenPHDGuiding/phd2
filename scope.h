@@ -88,6 +88,7 @@ class Scope : public Mount
     DEC_GUIDE_MODE m_decGuideMode;
     DEC_GUIDE_MODE m_saveDecGuideMode;
 
+    time_t m_limitReachedDeferralTime;
     GUIDE_DIRECTION m_raLimitReachedDirection;
     int m_raLimitReachedCount;
     GUIDE_DIRECTION m_decLimitReachedDirection;
@@ -196,6 +197,7 @@ public:
     bool SetMaxDecDuration(int maxDecDuration);
     int GetMaxRaDuration() const;
     bool SetMaxRaDuration(int maxRaDuration);
+    void DeferPulseLimitAlertCheck() override;
     DEC_GUIDE_MODE GetDecGuideMode() const;
     bool SetDecGuideMode(int decGuideMode);
 

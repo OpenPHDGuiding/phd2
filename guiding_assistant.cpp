@@ -756,9 +756,9 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
             }
         }
     }
-    else
-    if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_ABORTED)
+    else if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_ABORTED)
         EndBacklashTest(false);
+
     inBLTWrapUp = false;
 }
 

@@ -77,6 +77,7 @@ Scope::Scope()
     m_decLimitReachedCount(0)
 {
     m_calibrationSteps = 0;
+    m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
     m_graphControlPane = nullptr;
 
     wxString prefix = "/" + GetMountClassName();
@@ -595,65 +596,78 @@ static void SuppressLimitReachedWarning(long axis)
     pConfig->Global.SetBoolean(LimitReachedWarningKey(axis), false);
 }
 
+void Scope::DeferPulseLimitAlertCheck()
+{
+    enum { LIMIT_REACHED_GRACE_PERIOD_SECONDS = 120 };
+
+    m_limitReachedDeferralTime =
+        wxDateTime::GetTimeNow() + LIMIT_REACHED_GRACE_PERIOD_SECONDS;
+}
+
 void Scope::AlertLimitReached(int duration, GuideAxis axis)
 {
     static time_t s_lastLogged;
+
     time_t now = wxDateTime::GetTimeNow();
-    if (s_lastLogged == 0 || now - s_lastLogged > 30)
+    if (s_lastLogged != 0 && now < s_lastLogged + 30)
+        return;
+
+    s_lastLogged = now;
+
+    if (now < m_limitReachedDeferralTime)
+        return;
+
+    if (duration < MAX_DURATION_MAX)
     {
-        s_lastLogged = now;
-        if (duration < MAX_DURATION_MAX)
+        int defaultVal = axis == GUIDE_RA ? DefaultMaxRaDuration : DefaultMaxDecDuration;
+        if (duration >= defaultVal)          // Max duration is probably ok, some other kind of problem
         {
-            int defaultVal = axis == GUIDE_RA ? DefaultMaxRaDuration : DefaultMaxDecDuration;
-            if (duration >= defaultVal)          // Max duration is probably ok, some other kind of problem
+            wxString msg;
+            if (axis == GUIDE_RA)
             {
-                wxString msg;
-                if (axis == GUIDE_RA)
+                if (CanPulseGuide())
                 {
-                    if (CanPulseGuide())
-                    {
-                        msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
+                    msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
                             "check for problems with the mount mechanics.");
-                    }
-                    else
-                    {
-                        msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
-                            "confirm the ST-4 cable is working properly.");
-                    }
                 }
-                else                          // Dec axis problems
+                else
                 {
-                    if (CanPulseGuide())
-                    {
-                        msg = _("PHD2 is not able to make sufficient corrections in Dec.  If you have just done a meridian flip, "
+                    msg = _("PHD2 is not able to make sufficient corrections in RA.  Check for cable snags, try re-doing your calibration, and "
+                            "confirm the ST-4 cable is working properly.");
+                }
+            }
+            else                          // Dec axis problems
+            {
+                if (CanPulseGuide())
+                {
+                    msg = _("PHD2 is not able to make sufficient corrections in Dec.  If you have just done a meridian flip, "
                             "check to see if the 'Reverse Dec output option' on the Advanced Dialog guiding tab is wrong.  Otherwise, "
                             "check for cable snags, try re-doing your calibration, and check for problems with the mount mechanics.");
-                    }
-                    else
-                    {
-                        msg = _("PHD2 is not able to make sufficient corrections in Dec.  Check for cable snags, try re-doing your calibration and "
-                            "confirm the ST-4 cable is working properly.");
-                    }
                 }
-                pFrame->SuppressableAlert(LimitReachedWarningKey(axis), msg, SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+                else
+                {
+                    msg = _("PHD2 is not able to make sufficient corrections in Dec.  Check for cable snags, try re-doing your calibration and "
+                            "confirm the ST-4 cable is working properly.");
+                }
             }
-            else                              // Max duration has been decreased by user, start by recommending use of default value
-            {
-                wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-                pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
-                    wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                    "Try restoring %s to its default value to allow PHD2 to make larger corrections."), s, s),
-                    SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
-            }
+            pFrame->SuppressableAlert(LimitReachedWarningKey(axis), msg, SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
         }
-        else                       // Already at maximum allowed value
+        else                              // Max duration has been decreased by user, start by recommending use of default value
         {
-            wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
+            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
             pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
-                wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
-                "Guiding will be impaired until you can eliminate the source of these problems."), which_axis),
-                SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
+                wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                                   "Try restoring %s to its default value to allow PHD2 to make larger corrections."), s, s),
+                    SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
         }
+    }
+    else                       // Already at maximum allowed value
+    {
+        wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
+        pFrame->SuppressableAlert(LimitReachedWarningKey(axis),
+            wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
+                "Guiding will be impaired until you can eliminate the source of these problems."), which_axis),
+            SuppressLimitReachedWarning, axis, false, wxICON_INFORMATION);
     }
 }
 

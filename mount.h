@@ -267,6 +267,7 @@ public:
     bool FlipCalibration();
     bool GetGuidingEnabled() const;
     void SetGuidingEnabled(bool guidingEnabled);
+    virtual void DeferPulseLimitAlertCheck();
 
     virtual MOVE_RESULT MoveOffset(GuiderOffset *guiderOffset, unsigned int moveOptions);
 

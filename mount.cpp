@@ -629,7 +629,17 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
         pFrame->NotifyGuidingParam(s, guidingEnabled);
         m_guidingEnabled = guidingEnabled;
         NotifyGuidingEnabled(m_pXGuideAlgorithm, m_pYGuideAlgorithm, guidingEnabled);
+        if (guidingEnabled)
+        {
+            // avoid sending false positive alerts after guiding is
+            // re-enabled
+            DeferPulseLimitAlertCheck();
+        }
     }
+}
+
+void Mount::DeferPulseLimitAlertCheck()
+{
 }
 
 GUIDE_ALGORITHM Mount::GetGuideAlgorithm(const GuideAlgorithm *pAlgorithm)
