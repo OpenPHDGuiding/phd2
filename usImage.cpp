@@ -440,17 +440,17 @@ bool usImage::Load(const wxString& fname)
             int nhdus = 0;
             fits_get_num_hdus(fptr, &nhdus, &status);
             if ((nhdus != 1) || (naxis != 2)) {
-                pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
+                pFrame->Alert(wxString::Format(_("Unsupported type or read error loading FITS file %s"), fname));
                 throw ERROR_INFO("unsupported type");
             }
             if (Init((int) fsize[0], (int) fsize[1]))
             {
-                pFrame->Alert(_("Memory allocation error loading FITS file ") + fname);
+                pFrame->Alert(wxString::Format(_("Memory allocation error loading FITS file %s"), fname));
                 throw ERROR_INFO("Memory Allocation failure");
             }
             long fpixel[3] = { 1, 1, 1 };
             if (fits_read_pix(fptr, TUSHORT, fpixel, (int)(fsize[0] * fsize[1]), nullptr, ImageData, nullptr, &status)) { // Read image
-                pFrame->Alert(_("Error reading data from FITS file ") + fname);
+                pFrame->Alert(wxString::Format(_("Error reading data from FITS file %s"), fname));
                 throw ERROR_INFO("Error reading");
             }
 
@@ -484,7 +484,7 @@ bool usImage::Load(const wxString& fname)
         }
         else
         {
-            pFrame->Alert(_("Error opening FITS file ") + fname);
+            pFrame->Alert(wxString::Format(_("Error opening FITS file %s"), fname));
             throw ERROR_INFO("error opening file");
         }
     }

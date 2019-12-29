@@ -123,8 +123,7 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice *m_pNoiseReduction;
     wxSpinCtrl *m_pTimeLapse;
     wxTextCtrl *m_pFocalLength;
-    wxChoice* m_pLanguage;
-    wxArrayInt m_LanguageIDs;
+    wxChoice *m_pLanguage;
     int m_oldLanguageChoice;
     wxTextCtrl *m_pLogDir;
     wxButton *m_pSelectDir;
@@ -168,8 +167,6 @@ protected:
     int GetTimeLapse() const;
 
     bool SetFocalLength(int focalLength);
-
-    bool SetLanguage(int language);
 
     friend class MyFrameConfigDialogPane;
     friend class MyFrameConfigDialogCtrlSet;
@@ -359,7 +356,6 @@ public:
     bool FlipCalibrationData();
     int RequestedExposureDuration();
     int GetFocalLength() const;
-    int GetLanguage() const;
     bool GetAutoLoadCalibration() const;
     void SetAutoLoadCalibration(bool val);
     void LoadCalibration();

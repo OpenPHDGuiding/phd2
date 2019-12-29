@@ -599,16 +599,22 @@ bool PhdApp::OnInit()
 #else
     m_resourcesDir = wxStandardPaths::Get().GetResourcesDir();
 #endif
+
     wxString ldir = GetLocalesDir();
-    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, wxDirExists(ldir)));
+    Debug.Write(wxString::Format("locale: using dir %s exists=%d\n", ldir, wxDirExists(ldir)));
     wxLocale::AddCatalogLookupPathPrefix(ldir);
 
-    m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
+    int langid = pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
+    bool ok = m_locale.Init(langid);
+    Debug.Write(wxString::Format("locale: initialized with lang id %d (r=%d)\n", langid, ok));
     if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
     {
-        Debug.AddLine("locale.AddCatalog failed");
+        Debug.Write(wxString::Format("locale: AddCatalog(%s) failed\n", PHD_MESSAGES_CATALOG));
     }
     wxSetlocale(LC_NUMERIC, "C");
+
+    wxTranslations::Get()->SetLanguage((wxLanguage)langid);
+    Debug.Write(wxString::Format("locale: wxTranslations language set to %d\n", langid));
 
     Debug.RemoveOldFiles();
     GuideLog.RemoveOldFiles();

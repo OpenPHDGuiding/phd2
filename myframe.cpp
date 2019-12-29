@@ -2339,7 +2339,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 fits_get_hdu_type(fptr, &hdutype, &status);
                 if (hdutype != IMAGE_HDU)
                 {
-                    pFrame->Alert(_("FITS file is not of an image: ") + fname);
+                    pFrame->Alert(wxString::Format(_("FITS file is not of an image: %s"), fname));
                     throw ERROR_INFO("FITS file is not an image");
                 }
 
@@ -2347,7 +2347,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 fits_get_img_dim(fptr, &naxis, &status);
                 if (naxis != 2)
                 {
-                    pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
+                    pFrame->Alert(wxString::Format(_("Unsupported type or read error loading FITS file %s"), fname));
                     throw ERROR_INFO("unsupported type");
                 }
 
@@ -2368,14 +2368,14 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
                 if (img->Init((int)fsize[0], (int)fsize[1]))
                 {
-                    pFrame->Alert(_("Memory allocation error reading FITS file ") + fname);
+                    pFrame->Alert(wxString::Format(_("Memory allocation error reading FITS file %s"), fname));
                     throw ERROR_INFO("Memory Allocation failure");
                 }
 
                 long fpixel[] = { 1, 1, 1 };
                 if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], nullptr, img->ImageData, nullptr, &status))
                 {
-                    pFrame->Alert(_("Error reading data from ") + fname);
+                    pFrame->Alert(wxString::Format(_("Error reading data from %s"), fname));
                     throw ERROR_INFO("Error reading");
                 }
 
@@ -2404,7 +2404,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
         }
         else
         {
-            pFrame->Alert(_("Error opening FITS file ") + fname);
+            pFrame->Alert(wxString::Format(_("Error opening FITS file %s"), fname));
             throw ERROR_INFO("error opening file");
         }
     }
@@ -2572,7 +2572,7 @@ void MyFrame::SaveDarkLibrary(const wxString& note)
 
     if (save_multi_darks(pCamera->Darks, filename, note))
     {
-        Alert(_("Error saving darks FITS file ") + filename);
+        Alert(wxString::Format(_("Error saving darks FITS file %s"), filename));
     }
 }
 
@@ -2718,32 +2718,6 @@ wxString MyFrame::GetSettingsSummary() const
     );
 }
 
-int MyFrame::GetLanguage() const
-{
-    int language = pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
-    return language;
-}
-
-bool MyFrame::SetLanguage(int language)
-{
-    bool bError = false;
-
-    if (language < 0)
-    {
-        language = wxLANGUAGE_DEFAULT;
-        bError = true;
-    }
-
-    //wxTranslations *pTrans = wxTranslations::Get();
-    //pTrans->SetLanguage((wxLanguage)language);
-    //if (!pTrans->IsLoaded(PHD_MESSAGES_CATALOG))
-    //    pTrans->AddCatalog(PHD_MESSAGES_CATALOG);
-
-    pConfig->Global.SetInt("/wxLanguage", language);
-
-    return bError;
-}
-
 void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
 {
     // Text controls gaining focus need to disable the Bookmarks Menu accelerators
@@ -2851,6 +2825,94 @@ struct FocalLengthValidator : public wxIntegerValidator<int>
     }
 };
 
+#ifdef __LINUX__
+// ugly workaround for Issue 83 - link error on Linux
+//  undefined reference to wxPluralFormsCalculatorPtr::~wxPluralFormsCalculatorPtr
+wxPluralFormsCalculatorPtr::~wxPluralFormsCalculatorPtr() { }
+#endif
+
+// slow and iniefficient translation of a string to a given language
+static wxString TranslateStrToLang(const wxString& s, int langid)
+{
+    if (langid == wxLANGUAGE_DEFAULT)
+        langid = wxLocale::GetSystemLanguage();
+    if (langid == wxLANGUAGE_ENGLISH_US)
+        return s;
+    for (const auto& tr : wxTranslations::Get()->GetAvailableTranslations(PHD_MESSAGES_CATALOG))
+    {
+        const wxLanguageInfo *info = wxLocale::FindLanguageInfo(tr);
+        if (info && info->Language == langid)
+        {
+            std::unique_ptr<wxFileTranslationsLoader> loader(new wxFileTranslationsLoader());
+            std::unique_ptr<wxMsgCatalog> msgcat(loader->LoadCatalog("messages", info->CanonicalName));
+            if (msgcat)
+            {
+                const wxString *p = msgcat->GetString(s);
+                if (p)
+                    return *p;
+            }
+            break;
+        }
+    }
+    return s;
+}
+
+class AvailableLanguages
+{
+    wxArrayString m_names;
+    wxArrayInt m_ids;
+
+    void Init()
+    {
+        wxArrayString availableTranslations =
+                wxTranslations::Get()->GetAvailableTranslations(PHD_MESSAGES_CATALOG);
+
+        availableTranslations.Sort();
+
+        m_names.Add(_("System default"));
+        m_names.Add("English");
+        m_ids.Add(wxLANGUAGE_DEFAULT);
+        m_ids.Add(wxLANGUAGE_ENGLISH_US);
+        for (const auto& s : availableTranslations)
+        {
+            const wxLanguageInfo *info = wxLocale::FindLanguageInfo(s);
+            const wxString *langDesc = &info->Description;
+            std::unique_ptr<wxFileTranslationsLoader> loader(new wxFileTranslationsLoader());
+            std::unique_ptr<wxMsgCatalog> msgcat(loader->LoadCatalog("messages", info->CanonicalName));
+            if (msgcat)
+            {
+                const wxString *p = msgcat->GetString(wxTRANSLATE("Language-Name"));
+                if (p)
+                    langDesc = p;
+            }
+            m_names.Add(*langDesc);
+            m_ids.Add(info->Language);
+        }
+    }
+
+public:
+
+    const wxArrayString& Names() {
+        if (m_names.empty())
+            Init();
+        return m_names;
+    }
+
+    int Index(int langid) {
+        if (m_names.empty())
+            Init();
+        return m_ids.Index(langid);
+    }
+
+    int LangId(int index) {
+        if (m_names.empty())
+            Init();
+        return index >= 0 && index < m_names.size() ?
+            m_ids[index] : wxLANGUAGE_DEFAULT;
+    }
+};
+static AvailableLanguages PhdLanguages;
+
 MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
 {
@@ -2890,46 +2952,10 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
-    wxTranslations *pTrans = wxTranslations::Get();
-    wxArrayString availableTranslations = pTrans->GetAvailableTranslations(PHD_MESSAGES_CATALOG);
-    wxArrayString languages;
-    languages.Add(_("System default"));
-    languages.Add("English");
-    m_LanguageIDs.Add(wxLANGUAGE_DEFAULT);
-    m_LanguageIDs.Add(wxLANGUAGE_ENGLISH_US);
-    for (wxArrayString::iterator s = availableTranslations.begin(); s != availableTranslations.end(); ++s)
-    {
-        bool bLanguageNameOk = false;
-        const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-#ifndef __linux__  // See issue 83
-        wxString catalogFile = wxGetApp().GetLocalesDir() +
-            PATHSEPSTR + pLanguageInfo->CanonicalName +
-            PATHSEPSTR "messages.mo";
-        wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
-        if (pCat)
-        {
-            const wxString *pLanguageName = pCat->GetString(wxTRANSLATE("Language-Name"));
-            if (pLanguageName)
-            {
-                languages.Add(*pLanguageName);
-                bLanguageNameOk = true;
-            }
-            delete pCat;
-        }
-#endif
-        if (!bLanguageNameOk)
-        {
-            languages.Add(pLanguageInfo->Description);
-        }
-        m_LanguageIDs.Add(pLanguageInfo->Language);
-    }
-    int currentLanguage = wxGetApp().GetLocale().GetLanguage();
-    pTrans->SetLanguage((wxLanguage)currentLanguage);
-
     width = StringWidth(_("System default"));
     parent = GetParentWindow(AD_szLanguage);
     m_pLanguage = new wxChoice(parent, wxID_ANY, wxPoint(-1, -1),
-        wxSize(width + 35, -1), languages);
+        wxSize(width + 35, -1), PhdLanguages.Names());
     AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
         wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
@@ -3089,8 +3115,8 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     SetFocalLength(m_pFrame->GetFocalLength());
     m_pFocalLength->Enable(!pFrame->CaptureActive);
 
-    int language = m_pFrame->GetLanguage();
-    m_oldLanguageChoice = m_LanguageIDs.Index(language);
+    int language = wxGetApp().GetLocale().GetLanguage();
+    m_oldLanguageChoice = PhdLanguages.Index(language);
     m_pLanguage->SetSelection(m_oldLanguageChoice);
     m_pLanguage->Enable(!pFrame->CaptureActive);
 
@@ -3176,12 +3202,15 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
             m_pFrame->pAdvancedDialog->MakeImageScaleAdjustments();
         m_pFrame->SetFocalLength(GetFocalLength());
 
-        int language = m_pLanguage->GetSelection();
-        pFrame->SetLanguage(m_LanguageIDs[language]);
-        if (m_oldLanguageChoice != language)
+        int idx = m_pLanguage->GetSelection();
+        int langid = PhdLanguages.LangId(idx);
+        pConfig->Global.SetInt("/wxLanguage", langid);
+        if (m_oldLanguageChoice != idx)
         {
-            int val = wxMessageBox(_("You must restart PHD2 for the language change to take effect.\n"
-                "Would you like to restart PHD2 now?"), _("Restart PHD2"), wxYES_NO | wxCENTRE);
+            wxString title = TranslateStrToLang(wxTRANSLATE("Restart PHD2"), langid);
+            wxString msg = TranslateStrToLang(wxTRANSLATE("You must restart PHD2 for the language change to take effect.\n"
+                "Would you like to restart PHD2 now?"), langid);
+            int val = wxMessageBox(msg, title, wxYES_NO | wxCENTRE);
             if (val == wxYES)
                 wxGetApp().RestartApp();
         }

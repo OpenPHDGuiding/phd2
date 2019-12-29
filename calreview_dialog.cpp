@@ -376,9 +376,9 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         }
 
         cfgGrid->SetCellValue(row, col++, _("Declination"));
-        wxString decStr = Mount::DeclinationStrTr(dec, "%0.1f");
-        if (decEstimated)
-            decStr += _(" (est)");
+        wxString decStr = decEstimated ?
+            Mount::DeclinationStrTr(dec, "%0.1f (est)") :
+            Mount::DeclinationStrTr(dec, "%0.1f");
         cfgGrid->SetCellValue(row, col++, decStr);
 
         cfgGrid->SetCellValue(row, col++, _("Rotator position:"));
