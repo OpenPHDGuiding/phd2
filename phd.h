@@ -83,15 +83,15 @@
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
-#pragma warning(disable:4189)
-#pragma warning(disable:4018)
-#pragma warning(disable:4305)
-#pragma warning(disable:4100)
-#pragma warning(disable:4996)
-
-#include <vld.h>
-
-#endif
+# pragma warning(disable:4189)
+# pragma warning(disable:4018)
+# pragma warning(disable:4305)
+# pragma warning(disable:4100)
+# pragma warning(disable:4996)
+# if HAVE_VLD
+#  include <vld.h>
+# endif
+#endif // __WINDOWS__
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);

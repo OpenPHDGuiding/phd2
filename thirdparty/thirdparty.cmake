@@ -861,14 +861,29 @@ endif()
 #############################################
 #
 # Windows specific dependencies
+# - Visual Leak Detector (optional)
 # - OpenCV
 # - Video For Windows (vfw)
 # - ASCOM camera stuff
 #############################################
 
-
-# OPENCV specific
 if(WIN32)
+
+  if(NOT DISABLE_VLD)
+    find_path(VLD_INCLUDE vld.h
+        HINTS "C:/Program Files (x86)/Visual Leak Detector" ENV VLD_DIR
+        PATH_SUFFIXES include
+    )
+    if (VLD_INCLUDE)
+      get_filename_component(VLD_ROOT ${VLD_INCLUDE} DIRECTORY)
+      add_definitions(-DHAVE_VLD=1)
+      message(STATUS "Enabling VLD (${VLD_ROOT})")
+    else()
+      message(STATUS "Disabling VLD: VLD not found")
+    endif()
+  else()
+    message(STATUS "Disabling VLD: DISABLE_VLD is set")
+  endif()
 
   # openCV
   # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and
