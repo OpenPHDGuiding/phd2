@@ -140,7 +140,7 @@ private:
     void OnMenuSelectCamera(wxCommandEvent& evt);
 
     void OnButtonSetupCamera(wxCommandEvent& event);
-    bool DoConnectCamera();
+    bool DoConnectCamera(bool autoReconnecting);
     void OnButtonConnectCamera(wxCommandEvent& event);
     void OnButtonDisconnectCamera(wxCommandEvent& event);
 

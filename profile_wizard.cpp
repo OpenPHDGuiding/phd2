@@ -38,6 +38,7 @@
 
 #include <memory>
 #include <wx/gbsizer.h>
+#include <wx/hyperlink.h>
 
 class ProfileWizard : public wxDialog
 {
@@ -94,6 +95,7 @@ private:
     wxCheckBox *m_pLaunchDarks;
     wxCheckBox *m_pAutoRestore;
     wxStatusBar *m_pStatusBar;
+    wxHyperlinkCtrl* m_EqLink;
 
     wxString m_SelectedCamera;
     wxString m_SelectedMount;
@@ -263,8 +265,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     // Focal length
     m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
         wxSize(StringWidth(this, _T("88888")), -1), wxSP_ARROW_KEYS,
-        AdvancedDialog::MIN_FOCAL_LENGTH, AdvancedDialog::MAX_FOCAL_LENGTH, 300.0, 50.0);
-    m_pFocalLength->SetValue(300);
+        0, AdvancedDialog::MAX_FOCAL_LENGTH, 0.0, 50.0);
+    m_pFocalLength->SetValue(0);
     m_pFocalLength->SetDigits(0);
     m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
         "an adaptive optics device.  You can use the up/down control or type in a value directly."));
@@ -438,7 +440,7 @@ void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
     else
         m_pStatusBar->SetStatusText(msg);
 }
-enum PoorChoiceResults
+enum ConfigSuggestionResults
 {
     eProceed,
     eBack,
@@ -446,61 +448,86 @@ enum PoorChoiceResults
 };
 enum ConfigWarningTypes
 {
-    eNoPointingInfo
+    eNoPointingInfo,
+    eEQModMount
     // Room for future warnings if needed
 };
 // Dialog for warning user about poor config choices
-struct PoorChoiceDlg : public wxDialog
+struct ConfigSuggestionDlg : public wxDialog
 {
-    PoorChoiceDlg(ConfigWarningTypes Type);
-    PoorChoiceResults UserChoice;
+    ConfigSuggestionDlg(ConfigWarningTypes Type, wxHyperlinkCtrl* m_EqLink);
+    ConfigSuggestionResults UserChoice;
     void OnBack(wxCommandEvent& evt);
     void OnProceed(wxCommandEvent& evt);
     void OnDontAsk(wxCommandEvent& evt);
+    void OnURLClicked(wxHyperlinkEvent& event);
 };
 
-PoorChoiceDlg::PoorChoiceDlg(ConfigWarningTypes Type) : wxDialog(pFrame, wxID_ANY, _("Questionable Configuration Choice"))
+ConfigSuggestionDlg::ConfigSuggestionDlg(ConfigWarningTypes Type, wxHyperlinkCtrl* m_EqLink) : wxDialog(pFrame, wxID_ANY, _("Configuration Suggestion"))
 {
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticText* explanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    wxStaticText* wikiLoc;
     wxString msg;
     if (Type == eNoPointingInfo)
         msg = _("This configuration doesn't provide PHD2 with any information about the scope's pointing position.  This means you will need to recalibrate\n"
         "whenever the scope is slewed, and some PHD2 features will be disabled.  You should choose an ASCOM or INDI mount connection\n"
         "for either 'mount' or 'aux-mount' unless there are no drivers available for your mount.\n"
         "Please review the Help guide on 'Equipment Connections' for more details.");
+    else if (Type == eEQModMount)
+    {
+        msg = wxString::Format(_("Please make sure the EQMOD ASCOM settings are configured for PHD2 according to this document: \n"), "");
+        wikiLoc = new wxStaticText (this, wxID_ANY, "https://github.com/OpenPHDGuiding/phd2/wiki/EQASCOM-Settings");
+        m_EqLink = new wxHyperlinkCtrl(this, wxID_ANY, _("Open EQMOD document..."), "https://github.com/OpenPHDGuiding/phd2/wiki/EQASCOM-Settings");
+        m_EqLink->Connect(wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler(ConfigSuggestionDlg::OnURLClicked), nullptr, this);
+    }
+
     explanation->SetLabelText(msg);
 
     wxButton* backBtn = new wxButton(this, wxID_ANY, _("Go Back"));
-    backBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnBack), NULL, this);
+    backBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConfigSuggestionDlg::OnBack), NULL, this);
     wxButton* proceedBtn = new wxButton(this, wxID_ANY, _("Proceed"));
-    proceedBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnProceed), NULL, this);
+    proceedBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConfigSuggestionDlg::OnProceed), NULL, this);
     wxButton* dontAskBtn = new wxButton(this, wxID_ANY, _("Don't Ask"));
-    dontAskBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PoorChoiceDlg::OnDontAsk), NULL, this);
+    dontAskBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ConfigSuggestionDlg::OnDontAsk), NULL, this);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(backBtn, wxSizerFlags(0).Border(wxALL, 8));
     btnSizer->Add(proceedBtn, wxSizerFlags(0).Border(wxALL, 8));
-    btnSizer->Add(dontAskBtn, wxSizerFlags(0).Border(wxALL, 8));
+    if (Type != eEQModMount)
+        btnSizer->Add(dontAskBtn, wxSizerFlags(0).Border(wxALL, 8));
 
     vSizer->Add(explanation, wxSizerFlags(0).Border(wxALL, 8).Center());
+    if (Type == eEQModMount)
+    {
+        vSizer->AddSpacer(10);
+        vSizer->Add(wikiLoc, wxSizerFlags(0).Center());
+        vSizer->AddSpacer(10);
+        vSizer->Add(m_EqLink, wxSizerFlags(0).Center());
+        vSizer->AddSpacer(20);
+        dontAskBtn->Enable(false);
+    }
     vSizer->Add(btnSizer, wxSizerFlags(0).Border(wxALL, 8).Center());
 
     SetAutoLayout(true);
     SetSizerAndFit(vSizer);
 }
 
-void PoorChoiceDlg::OnProceed(wxCommandEvent& evt)
+void ConfigSuggestionDlg::OnURLClicked(wxHyperlinkEvent& event)
+{
+    event.Skip();
+}
+void ConfigSuggestionDlg::OnProceed(wxCommandEvent& evt)
 {
     UserChoice = eProceed;
     EndDialog(wxOK);
 }
-void PoorChoiceDlg::OnBack(wxCommandEvent& evt)
+void ConfigSuggestionDlg::OnBack(wxCommandEvent& evt)
 {
     UserChoice = eBack;
     EndDialog(wxCANCEL);
 }
-void PoorChoiceDlg::OnDontAsk(wxCommandEvent& evt)
+void ConfigSuggestionDlg::OnDontAsk(wxCommandEvent& evt)
 {
     UserChoice = eDontAsk;
     EndDialog(wxOK);
@@ -541,7 +568,28 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             break;
         case STATE_MOUNT:
             bOk = (m_SelectedMount.Length() > 0 && m_SelectedMount != _("None"));
-            if (!bOk)
+            if (bOk)
+            {
+                // Check for absence of pointing info
+                if ((m_SelectedMount.Upper().Contains("EQMOD")))  //  && !m_PositionAware && WarningAllowed(eNoPointingInfo))
+                {
+                    ConfigSuggestionDlg userAlert(eEQModMount, m_EqLink);
+                    int userRspns = userAlert.ShowModal();
+                    if (userRspns == wxOK)
+                    {
+                        // Could be either 'proceed' or 'dontAsk'
+                        if (userAlert.UserChoice == eDontAsk)
+                        {
+                            BlockWarning(eNoPointingInfo);
+                        }
+                        bOk = true;
+                    }
+                    else
+                        bOk = false;
+                    this->SetFocus();
+                }
+            }
+            else
                 ShowStatus(_("Please select a mount type to handle guider commands"));
             break;
         case STATE_AUXMOUNT:
@@ -549,7 +597,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             // Check for absence of pointing info
             if (m_SelectedAuxMount == _("None") && !m_PositionAware && WarningAllowed(eNoPointingInfo))
                 {
-                    PoorChoiceDlg userAlert(eNoPointingInfo);
+                    ConfigSuggestionDlg userAlert(eNoPointingInfo, m_EqLink);
                     int userRspns = userAlert.ShowModal();
                     if (userRspns == wxOK)
                     {

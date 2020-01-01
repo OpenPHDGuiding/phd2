@@ -861,7 +861,7 @@ void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
 {
     Debug.Write("gear_dialog: OnButtonConnectAll\n");
 
-    bool canceled = DoConnectCamera();
+    bool canceled = DoConnectCamera(false);
     if (canceled)
         return;
     OnButtonConnectStepGuider(event);
@@ -1038,7 +1038,7 @@ void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
     SetMatchingSelection(m_pCameras, selection);
 }
 
-bool GearDialog::DoConnectCamera()
+bool GearDialog::DoConnectCamera(bool autoReconnecting)
 {
     bool canceled = false;
 
@@ -1082,7 +1082,7 @@ bool GearDialog::DoConnectCamera()
         // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams from same mfr
         // so do what we can here including consideration of image scale change
         // Purpose is to warn user of potential loss of dark/bpm files and later, to adjust guide params as best we can
-        if (!m_camWarningIssued)
+        if (!m_camWarningIssued && !autoReconnecting)
         {
             if ((m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam)) ||
                 (fabs(m_imageScaleRatio - 1.0) >= 0.01))
@@ -1158,12 +1158,15 @@ bool GearDialog::DoConnectCamera()
         Debug.Write(wxString::Format("HasSubFrames=%d\n", m_pCamera->HasSubframes));
         Debug.Write(wxString::Format("ST4HasGuideOutput=%d\n", m_pCamera->ST4HasGuideOutput()));
 
-        AutoLoadDefectMap();
-        if (!pCamera->CurrentDefectMap)
+        if (!autoReconnecting)            // On a reconnect, this stuff is already established
         {
-            AutoLoadDarks();
+            AutoLoadDefectMap();
+            if (!pCamera->CurrentDefectMap)
+            {
+                AutoLoadDarks();
+            }
+            pFrame->SetDarkMenuState();
         }
-        pFrame->SetDarkMenuState();
 
         pFrame->StatusMsg(_("Camera Connected"));
 
@@ -1185,13 +1188,13 @@ bool GearDialog::DoConnectCamera()
 void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 {
     Debug.Write("gear_dialog: OnButtonConnectCamera\n");
-    DoConnectCamera();
+    DoConnectCamera(false);
 }
 
 bool GearDialog::ReconnectCamera()
 {
     Debug.Write("gear_dialog: ReconnectCamera\n");
-    DoConnectCamera();
+    DoConnectCamera(true);
     bool err = !m_pCamera || !m_pCamera->Connected;
     return err;
 }
