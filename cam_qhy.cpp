@@ -95,6 +95,18 @@ static bool QHYSDKInit()
 
     Debug.Write(wxString::Format("QHYCCD: SDK Version %s\n", GetQHYSDKVersion()));
 
+    // setup log file (stdout), and log level (0..6) from
+    // QHY_LOG_LEVEL environment variable
+    uint8_t lvl = 0;
+    wxString s;
+    long ll;
+    if (wxGetEnv("QHY_LOG_LEVEL", &s) && s.ToLong(&ll))
+        lvl = static_cast<uint8_t>(std::min(std::max(ll, 0L), 6L));
+#if !defined(__WINDOWS__)
+    EnableQHYCCDLogFile(false);
+#endif
+    SetQHYCCDLogLevel(lvl);
+
     uint32_t ret;
 
     if ((ret = InitQHYCCDResource()) != 0)
