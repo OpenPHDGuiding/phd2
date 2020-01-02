@@ -8,7 +8,9 @@
 <span style="">The drift align tool in PHD2 can be used to quickly
 obtain a precise polar alignment of your equatorial mount. The process
 takes a little bit of practice, but after doing it a few times, you
-should be able to obtain an accurate polar alignment in minutes.<br></span>
+should be able to obtain an accurate polar alignment in minutes.
+&nbsp;You can use either a separate guide scope or the main scope for
+doing the alignment, whichever is more convenient.<br></span>
 <br><h2>Preparation</h2><ul><li>Make sure your mount is reasonably level.</li><li>Make sure your scope is balanced and ready for guiding.</li><li>Try
 to get your mount's polar axis roughly aligned by using your mount's
 polar alignment scope if it has one. Otherwise, make sure the mount's
@@ -16,7 +18,16 @@ polar axis is pointing towards the pole, and the altitude setting
 corresponds to your local latitude.</li><li>&nbsp;Make sure you can see your computer screen when you are standing at the mount.</li><li>&nbsp;Start PHD2 and connect your equipment.</li><li>&nbsp;&nbsp;You should be using an up-to-date version of PHD2..</li><li>&nbsp;&nbsp;These
 instructions assume you have an ASCOM connection to your mount so PHD2
 knows where your scope is pointing. You can still drift align without
-an ASCOM connection, see <a href="#Drift_Align_ASCOM">Note about ASCOM</a>.</li><li>&nbsp;Calibrate on any convenient guide star, preferably at a low declination.</li><li>&nbsp;Make
+an ASCOM connection, see <a href="#Drift_Align_ASCOM">Note about ASCOM</a>.</li><li>&nbsp;Calibrate
+on any convenient guide star, preferably at a declination within 20
+degrees of Dec=0, &nbsp;or reload an accurate calibration if you have
+an ASCOM or Indi mount connection. &nbsp;Be sure the calibration is
+correct for the side-of-pier where you plan to do the alignment.
+&nbsp;If you're using an 'on-camera' guiding interface, do a fresh
+calibration from the side-of-pier where you plan to do the alignment.
+&nbsp;If the calibration is not correct for the current side-of-pier,
+the direction of drift will change and any direction-related notes you
+made previously won't be correct.</li><li>&nbsp;Make
 sure your PHD2 settings have the correct values for your guide scope
 focal length and your guide camera pixel size. (Brain =&gt; Global tab
 for focal length, Camera tab for pixel size)</li></ul><br>Now you are ready for drift aligning.<br><br>
