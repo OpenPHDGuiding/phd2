@@ -269,7 +269,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_pFocalLength->SetValue(0);
     m_pFocalLength->SetDigits(0);
     m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
-        "an adaptive optics device.  You can use the up/down control or type in a value directly."));
+        "adaptive optics device (Focal length = aperture x f-ratio).  Typical finder scopes have a focal length of about 165mm."));
     m_FocalLength = (int)m_pFocalLength->GetValue();
     AddCellPair(this, m_pUserProperties, 2, _("Guide scope focal length (mm)"), m_pFocalLength);
 
