@@ -211,7 +211,7 @@ GuideCamera::GuideCamera()
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
     m_saturationADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/SaturationADU", 0), 65535);
-    m_saturationByADU = pConfig->Profile.GetBoolean("/camera/SaturationByADU", false);
+    m_saturationByADU = pConfig->Profile.GetBoolean("/camera/SaturationByADU", true);
     m_pixelSize = GetProfilePixelSize();
     MaxBinning = 1;
     Binning = pConfig->Profile.GetInt("/camera/binning", 1);
@@ -958,7 +958,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     m_camSaturationADU = new wxTextCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(1.5 * width, -1));
     m_camSaturationADU->SetToolTip(_("ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 for 8-bit cameras."));
     m_SaturationByADU = new wxRadioButton(parent, wxID_ANY, _("Saturation by Max-ADU value:"));
-    m_SaturationByADU->SetToolTip(_("Identify star saturation based on camera maximum-ADU value"));
+    m_SaturationByADU->SetToolTip(_("Identify star saturation based on camera maximum-ADU value (recommended)"));
     m_SaturationByADU->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
     wxStaticBoxSizer* szADUGroup = new wxStaticBoxSizer(wxHORIZONTAL, parent,
         wxEmptyString);
@@ -966,7 +966,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     szADUGroup->Add(m_camSaturationADU, wxSizerFlags().Border(wxLEFT, 6));
 
     m_SaturationByProfile = new wxRadioButton(parent, wxID_ANY, _("Saturation via star-profile"));
-    m_SaturationByProfile->SetToolTip(_("Identify star saturation based on flat-topped profile, regardless of brightness (default)"));
+    m_SaturationByProfile->SetToolTip(_("Identify star saturation based on flat-topped profile, regardless of brightness"));
     m_SaturationByProfile->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CameraConfigDialogCtrlSet::OnSaturationChoiceChanged, this);
     wxFlexGridSizer* szSaturationGroup = new wxFlexGridSizer(1, 2, 5, 15);
 
@@ -1029,7 +1029,9 @@ void CameraConfigDialogCtrlSet::LoadValues()
     else
     {
         // first time initialization
-        m_camSaturationADU->SetValue(wxString::Format("%d", SaturationValFromBPP(m_pCamera)));
+        int val = SaturationValFromBPP(m_pCamera);
+        Debug.Write(wxString::Format("initializing cam saturation ADU val to %d\n", val));
+        m_camSaturationADU->SetValue(wxString::Format("%d", val));
     }
     wxCommandEvent dummy;
     OnSaturationChoiceChanged(dummy);
