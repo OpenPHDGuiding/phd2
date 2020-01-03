@@ -1157,8 +1157,16 @@ inline static double round2(double x)
 void ProfileWizard::UpdatePixelScale()
 {
     int binning = m_pBinningLevel->GetSelection() + 1;
-    double scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
-    m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
+
+    double scale = 0.0;
+    if (m_FocalLength > 0)
+    {
+        scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+        m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
+    }
+    else
+        m_pixelScale->SetLabel(wxEmptyString);
+
     static const double MIN_SCALE = 0.50;
     if (scale != 0.0 && round2(scale) < MIN_SCALE)
     {
