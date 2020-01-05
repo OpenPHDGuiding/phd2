@@ -124,7 +124,9 @@ GearDialog::GearDialog(wxWindow *pParent) :
     m_rotatorUpdated(false),
     m_showDarksDialog(false),
     m_camWarningIssued(false),
-    m_imageScaleRatio(1.0)
+    m_imageScaleRatio(1.0),
+    m_camChanged(false)
+
 {
     m_pCamera              = nullptr;
     m_pScope               = nullptr;
