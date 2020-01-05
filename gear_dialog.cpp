@@ -124,9 +124,8 @@ GearDialog::GearDialog(wxWindow *pParent) :
     m_rotatorUpdated(false),
     m_showDarksDialog(false),
     m_camWarningIssued(false),
-    m_imageScaleRatio(1.0),
-    m_camChanged(false)
-
+    m_camChanged(false),
+    m_imageScaleRatio(1.0)
 {
     m_pCamera              = nullptr;
     m_pScope               = nullptr;
@@ -1065,6 +1064,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         wxString cameraId = SelectedCameraId(m_lastCamera);
 
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
+
         int profileBinning = m_pCamera->Binning;
         if (m_pCamera->Connect(cameraId))
         {
@@ -1081,6 +1081,9 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
             m_imageScaleRatio *= (pixelSize / profPixelSize);
         }
 
+        Debug.Write(wxString::Format("DoConnectCamera: reconnecting=%d warningIssued=%d lastCam=[%s] scaleRatio=%.3f\n",
+            autoReconnecting, m_camWarningIssued, m_lastCamera, m_imageScaleRatio));
+
         // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams from same mfr
         // so do what we can here including consideration of image scale change
         // Purpose is to warn user of potential loss of dark/bpm files and later, to adjust guide params as best we can
@@ -1094,9 +1097,12 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
                 wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
 
                 m_camChanged = true;
+
                 // Can't use standard checks because we don't want to consider sensor-size
                 if (wxFileExists(darkName) || wxFileExists(bpmName))
                 {
+                    Debug.Write("DoConnectCamera: displaying camera-change warning\n");
+
                     wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
                         " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
                     if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
@@ -1115,6 +1121,8 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
                         throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
                     }
                 }
+
+                Debug.Write("DoConnectCamera: camera changed\n");
             }
         }
 
@@ -1139,9 +1147,6 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
             m_pCamera->SetBinning(1);
             Debug.Write(wxString::Format("CamConfigDlg correcting bogus user binning value from %d to 1\n", profileBinning));
         }
-
-        Debug.Write(wxString::Format("m_camChanged bug: m_camChanged=%d, m_imageScaleRatio=%0.02f, m_LastCamera=%s, newCam=%s\n", m_camChanged, m_imageScaleRatio,
-            m_lastCamera, newCam));
 
         // force re-build of camera tab in case Connect updated any of
         // the camera properties that influence the camera tab. For
