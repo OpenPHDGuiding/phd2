@@ -410,6 +410,7 @@ public:
     double CurrentGuideError() const;
     double CurrentGuideErrorSmoothed() const;
 
+    void NotifyUpdateButtonsStatus(); // can be called from any thread
     void UpdateButtonsStatus();
 
     static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);

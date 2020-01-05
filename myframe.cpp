@@ -1061,6 +1061,8 @@ static bool cond_update_tool(wxAuiToolBar *tb, int toolId, wxMenuItem *mi, bool 
 
 void MyFrame::UpdateButtonsStatus()
 {
+    assert(wxThread::IsMain());
+
     bool need_update = false;
 
     bool const loop_enabled =
@@ -1385,6 +1387,7 @@ enum StatusBarThreadMsgType
     THR_SB_MSG_TEXT,
     THR_SB_STATE_LABELS,
     THR_SB_CALIBRATION,
+    THR_SB_BUTTON_STATE,
 };
 
 static void QueueStatusBarTextMsg(wxEvtHandler *frame, const wxString& text, bool withTimeout)
@@ -1441,6 +1444,9 @@ void MyFrame::OnStatusMsg(wxThreadEvent& event)
     case THR_SB_CALIBRATION:
         UpdateStatusBarCalibrationStatus();
         break;
+    case THR_SB_BUTTON_STATE:
+        UpdateButtonsStatus();
+        break;
     }
 }
 
@@ -1469,6 +1475,18 @@ void MyFrame::UpdateStatusBarCalibrationStatus()
     else
     {
         QueueStatusBarUpdateMsg(this, THR_SB_CALIBRATION);
+    }
+}
+
+void MyFrame::NotifyUpdateButtonsStatus()
+{
+    if (wxThread::IsMain())
+    {
+        UpdateButtonsStatus();
+    }
+    else
+    {
+        QueueStatusBarUpdateMsg(this, THR_SB_BUTTON_STATE);
     }
 }
 

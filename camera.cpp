@@ -1459,8 +1459,11 @@ void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconne
 {
     Disconnect();
 
+    // CAUTION: this function can be called from the worker thread, so
+    // care must be taken not to make any direct UI updates
+
     pFrame->UpdateStatusBarStateLabels();
-    pFrame->UpdateButtonsStatus(); // in case camera dialog button depends on connected state
+    pFrame->NotifyUpdateButtonsStatus(); // in case camera dialog button depends on connected state
 
     if (reconnect == RECONNECT)
     {
