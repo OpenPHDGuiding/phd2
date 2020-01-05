@@ -1140,6 +1140,9 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
             Debug.Write(wxString::Format("CamConfigDlg correcting bogus user binning value from %d to 1\n", profileBinning));
         }
 
+        Debug.Write(wxString::Format("m_camChanged bug: m_camChanged=%d, m_imageScaleRatio=%0.02f, m_LastCamera=%s, newCam=%s\n", m_camChanged, m_imageScaleRatio,
+            m_lastCamera, newCam));
+
         // force re-build of camera tab in case Connect updated any of
         // the camera properties that influence the camera tab. For
         // example, binning options.
