@@ -100,6 +100,13 @@ enum
     NUM_COLUMNS
 };
 
+enum
+{
+    // always show some rows, otherwise the grid looks weird surrounded by lots of empty space
+    // the grid needs at least 2 rows, otherwise the the bool cell editor and/or renderer do not work properly
+    MIN_ROWS = 16,
+};
+
 // state machine to allow scanning logs during idle event processing
 //
 struct LogScanner
@@ -481,32 +488,42 @@ static void DoSort(wxGrid *grid)
     if (GetSortCol(grid) != COL_NIGHTOF)
         return;
 
+    size_t const nr_sessions = s_session.size();
+
     // grab the selections
-    std::vector<bool> selected(grid->GetNumberRows());
-    for (int r = 0; r < grid->GetNumberRows(); r++)
+    std::vector<bool> selected(nr_sessions);
+    for (int r = 0; r < nr_sessions; r++)
         selected[s_session_idx[r]] = !grid->GetCellValue(r, COL_SELECT).IsEmpty();
 
     // sort row indexes
     std::sort(s_session_idx.begin(), s_session_idx.end(), SessionCompare(grid->IsSortOrderAscending()));
 
     // rebuild mapping of indexes to rows
-    for (int r = 0; r < grid->GetNumberRows(); r++)
+    for (int r = 0; r < nr_sessions; r++)
         s_grid_row[s_session_idx[r]] = r;
 
     // (re)load the grid
+
     grid->ClearGrid();
-    for (int r = 0; r < grid->GetNumberRows(); r++)
+
+    for (int r = 0; r < nr_sessions; r++)
     {
         const Session& session = s_session[s_session_idx[r]];
         grid->SetCellValue(r, COL_NIGHTOF, FormatNightOf(wxGetApp().ImagingDay(session.start)));
         FillActivity(grid, r, session, false);
         if (session.has_guide || session.has_debug)
         {
+            grid->SetCellEditor(r, COL_SELECT, new wxGridCellBoolEditor());
             grid->SetCellRenderer(r, COL_SELECT, new wxGridCellBoolRenderer());
             grid->SetCellValue(r, COL_SELECT, selected[s_session_idx[r]] ? "1" : "");
+            grid->SetReadOnly(r, COL_SELECT, false);
         }
         else
+        {
+            grid->SetCellEditor(r, COL_SELECT, grid->GetDefaultEditor());
             grid->SetCellRenderer(r, COL_SELECT, grid->GetDefaultRenderer());
+            grid->SetReadOnly(r, COL_SELECT, true);
+        }
     }
 }
 
@@ -601,7 +618,9 @@ static void LoadGrid(wxGrid *grid)
         s_grid_row.push_back(r);
     }
 
-    grid->AppendRows(r);
+    // resize grid to hold all sessions (though it may already be large enough)
+    if (grid->GetNumberRows() < s_session.size())
+        grid->AppendRows(s_session.size() - grid->GetNumberRows());
 
     DoSort(grid); // loads grid
 }
@@ -691,7 +710,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_grid = new wxGrid(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
 
     // Grid
-    m_grid->CreateGrid(0, NUM_COLUMNS);
+    m_grid->CreateGrid(MIN_ROWS, NUM_COLUMNS);
     m_grid->EnableEditing(false);
     m_grid->EnableGridLines(true);
     m_grid->EnableDragGridSize(false);
@@ -1179,7 +1198,7 @@ void LogUploadDialog::ConfirmUpload()
 
     wxString msg(_("The following log files will be uploaded:") + "<pre>");
 
-    for (int r = 0; r < m_grid->GetNumberRows(); r++)
+    for (int r = 0; r < s_session.size(); r++)
     {
         bool selected = !m_grid->GetCellValue(r, COL_SELECT).IsEmpty();
         if (!selected)
@@ -1221,7 +1240,7 @@ void LogUploadDialog::ExecUpload()
 
     BgUpload upload(this);
 
-    for (int r = 0; r < m_grid->GetNumberRows(); r++)
+    for (int r = 0; r < s_session.size(); r++)
     {
         const Session& session = s_session[s_session_idx[r]];
         bool selected = !m_grid->GetCellValue(r, COL_SELECT).IsEmpty();
