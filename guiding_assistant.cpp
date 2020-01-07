@@ -358,7 +358,6 @@ GuidingAsstWin::GuidingAsstWin()
         _(" -999.99 px/min (-999.99 arc-sec/min )")) + 6;
     double minRightCol = 1.25 * (StringWidth(this,
         _(" 9.99 px ( 9.99 arc-sec)")) + 6);
-    double statusMinLeftCol = StringWidth(this, wxDateTime::Now().FormatISOCombined(' '));
     // Start of status group
     wxStaticBoxSizer *status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
     m_statusgrid = new wxGrid(this, wxID_ANY);
@@ -1144,7 +1143,6 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
                             tStart, val.DeltaTime, simpleSigma, slope * 60, correctedRMS, rSquared));
                     }
                     // Move the start of the next window earlier by 1 minute
-                    int lastInx = inx;
                     double targetTime = val.DeltaTime - WINDOW_ADJUSTMENT;
                     while (m_decAxisStats.GetEntry(inx).DeltaTime > targetTime)
                         inx--;
@@ -1260,10 +1258,8 @@ void GuidingAsstWin::MakeRecommendations()
 {
     double pxscale = pFrame->GetCameraPixelScale();
     double rarms = m_hpfRAStats.GetSigma();
-    double decHPFRms = m_hpfDecStats.GetSigma();
 
     double multiplier_ra  = 1.0;   // 66% prediction interval
-    double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
     double ideal_min_exposure;
     double ideal_max_exposure;
     double min_rec_range = 2.0;
@@ -1612,8 +1608,7 @@ void GuidingAsstWin::OnReviewPrevious(wxCommandEvent& event)
 void GuidingAsstWin::OnGAReviewSelection(wxCommandEvent& evt)
 {
     int id = evt.GetId();
-    wxObject* which = evt.GetEventObject();
-    wxMenu* menu = (wxMenu*)evt.GetEventObject();
+    wxMenu *menu = static_cast<wxMenu *>(evt.GetEventObject());
     wxString timeStamp = menu->GetLabelText(id);
 
     reviewMode = true;

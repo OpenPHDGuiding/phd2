@@ -40,14 +40,10 @@
 #include <algorithm>
 #include <sstream>
 
-static const int DefMinExpTime = 1;
-static const int DefMaxExpTime = 10;
 static const int DefDarkCount = 5;
-static const bool DefCreateDarks = true;
 static const int DefDMExpTime = 15;
 static const int DefDMCount = 25;
 
-static const bool DefCreateDMap = true;
 static const int MaxNoteLength = 65;            // For now
 
 // Utility function to add the <label, input> pairs to a flexgrid

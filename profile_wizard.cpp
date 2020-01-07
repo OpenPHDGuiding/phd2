@@ -186,7 +186,7 @@ static void AddCellPair(wxWindow *parent, wxGridBagSizer *gbs, int row, const wx
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(true), m_useCamera(false), m_useMount(false), m_useAuxMount(false), m_autoRestore(false)
+    m_useCamera(false), m_useMount(false), m_useAuxMount(false), m_autoRestore(false), m_launchDarks(true)
 {
     TitlePrefix = _("New Profile Wizard - ");
 

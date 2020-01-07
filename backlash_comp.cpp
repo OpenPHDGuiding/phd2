@@ -38,7 +38,6 @@
 
 #include <algorithm>
 
-static const unsigned int HISTORY_SIZE = 10;
 static const unsigned int MIN_COMP_AMOUNT = 20;               // min pulse in ms, must be small enough to effectively disable blc
 static const unsigned int MAX_COMP_AMOUNT = 8000;             // max pulse in ms
 
@@ -802,7 +801,7 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
     double blPx = 0;
     double northDelta = 0;
     double driftPxPerFrame;
-    double nRate;
+    double nRate = 0.;
     BacklashTool::MeasurementResults rslt;
 
     *bltPx = 0;
@@ -1139,8 +1138,6 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     }
                     else
                     {
-                        double corr_factor = (target_delta / pulse_delta - 1.0) * 0.5 + 1.0;
-                        //m_backlashResultMs *= corr_factor;
                         Debug.Write(wxString::Format("BLT: Nominal backlash value under-shot by %0.2f X\n", target_delta / pulse_delta));
                     }
                 }

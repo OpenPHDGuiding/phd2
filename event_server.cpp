@@ -566,18 +566,6 @@ parse_request(const json_value *req, const json_value **pmethod, const json_valu
     }
 }
 
-static const json_value *at(const json_value *ary, unsigned int idx)
-{
-    unsigned int i = 0;
-    json_for_each (j, ary)
-    {
-        if (i == idx)
-            return j;
-        ++i;
-    }
-    return 0;
-}
-
 // paranoia
 #define VERIFY_GUIDER(response) do { \
     if (!pFrame || !pFrame->pGuider) \
@@ -1460,8 +1448,6 @@ static void get_star_image(JObj& response, const json_value *params)
         rect.Intersect(wxRect(img->Size));
     else
         rect.Intersect(img->Subframe);
-
-    int width = rect.GetWidth();
 
     B64Encode enc;
     for (int y = rect.GetTop(); y <= rect.GetBottom(); y++)

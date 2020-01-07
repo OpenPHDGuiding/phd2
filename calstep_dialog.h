@@ -41,7 +41,6 @@ class CalstepDialog : public wxDialog
 private:
 
     // wx UI controls
-    wxDialog *m_pParent;
     wxBoxSizer *m_pVSizer;
     wxFlexGridSizer *m_pInputTableSizer;
     wxFlexGridSizer *m_pOutputTableSizer;

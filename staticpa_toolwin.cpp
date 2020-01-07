@@ -169,7 +169,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_aligning = false;
 
     //Fairly convoluted way to get the camera size in pixels
-    usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
     double scalefactor = pFrame->pGuider->ScaleFactor();
     double xpx = pDispImg->GetWidth() / scalefactor;
@@ -742,7 +741,6 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_pxCentre.Y = cy;
     m_radius = cr;
 
-    usImage *pCurrImg = pFrame->pGuider->CurrentImage();
     wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
     double scalefactor = pFrame->pGuider->ScaleFactor();
     int xpx = pDispImg->GetWidth() / scalefactor;
@@ -763,7 +761,6 @@ void StaticPaToolWin::CalcRotationCentre(void)
     double cone_r = cor_r * cos(radians(cor_a - rarot));
     m_ConeCorr.X = cone_r * cos(radians(rarot));
     m_ConeCorr.Y = cone_r * sin(radians(rarot));
-    double decCorr_deg = dec_r * m_pxScale / 3600;
     SetState(0);
     FillPanel();
     return;
@@ -873,8 +870,6 @@ PHD_Point StaticPaToolWin::Radec2Px(const PHD_Point& radec)
 
 PHD_Point StaticPaToolWin::J2000Now(const PHD_Point& radec)
 {
-    const double JD2000 = 2451545.0;    // Julian day for J2000
-
     tm j2000_info;
     j2000_info.tm_year = 100;
     j2000_info.tm_mon = 0;  // January is month 0
@@ -1135,7 +1130,6 @@ bool StaticPaToolWin::RotateMount()
                 return RotateFail(wxString::Format(_("Star Pos#2 Mount did not move. Calculated polar offset=%.1f deg"), actoffsetdeg));
             }
             double prev_rotdg = m_reqRot;
-            int prev_nstep = m_reqStep;
             if (!SetParams(actoffsetdeg))
             {
                 Debug.AddLine(wxString::Format("StaticPA: Error from SetParams"));
@@ -1249,7 +1243,6 @@ bool StaticPaToolWin::SetParams(double newoffset)
 }
 bool StaticPaToolWin::MoveWestBy(double thetadeg)
 {
-    bool m_can_slew = pPointingSource && pPointingSource->CanSlew();
     double cur_ra, cur_dec, cur_st;
     if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {

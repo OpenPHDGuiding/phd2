@@ -1085,7 +1085,6 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
     pStarMass->Add(m_pEnableStarMassChangeThresh, wxSizerFlags(0).Border(wxTOP, 3));
     pStarMass->Add(pTolerance, wxSizerFlags(0).Border(wxLEFT, 40));
 
-    wxWindow *parent = GetParentWindow(AD_szStarTracking);
     width = StringWidth(_("65535"));
 
 

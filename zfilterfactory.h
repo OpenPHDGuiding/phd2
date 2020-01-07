@@ -61,7 +61,7 @@ private:
     const double EPS = 1e-10;
     FILTER_DESIGN filt;
     int m_order;
-    double raw_alpha1, raw_alpha2, raw_alphaz;
+    double raw_alpha1, raw_alpha2;
     bool isMzt;
 
     std::complex<double> dc_gain, fc_gain, hf_gain;

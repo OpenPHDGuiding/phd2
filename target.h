@@ -48,9 +48,6 @@ class TargetClient : public wxWindow
     unsigned int m_minLength;
     unsigned int m_maxLength;
 
-    unsigned int m_minHeight;
-    unsigned int m_maxHeight;
-
     struct
     {
         double ra;

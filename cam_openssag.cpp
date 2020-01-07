@@ -170,9 +170,6 @@ bool CameraOpenSSAG::Disconnect()
 
 bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-
     if (img.Init(FullSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);

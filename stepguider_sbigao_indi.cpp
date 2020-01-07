@@ -87,7 +87,6 @@ class StepGuiderSbigAoINDI : public StepGuider, public PhdIndiClient
         static const int DefaultMaxSteps = 45;
         wxString m_Name;
         int m_maxSteps;
-        int SbigAoVersion;
 
         bool Center() override;
         STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;

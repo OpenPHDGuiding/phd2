@@ -32,7 +32,7 @@ static unsigned char bootloader[] = { SSAG_BOOTLOADER };
 /* Firmware data */
 static unsigned char firmware[] = { SSAG_FIRMWARE };
 /* EEPROM data (shouldn't be needed) */
-static unsigned char eeprom[] = { SSAG_EEPROM };
+// static unsigned char eeprom[] = { SSAG_EEPROM };
 
 bool Loader::Connect()
 {
@@ -161,8 +161,6 @@ bool Loader::Upload(unsigned char *data)
 
 bool Loader::LoadFirmware()
 {
-    unsigned char *data = NULL;
-
     /* Load bootloader */
     this->EnterResetMode();
     this->EnterResetMode();

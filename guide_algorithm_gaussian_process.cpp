@@ -69,7 +69,6 @@ static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal nu
 static const int    DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
 static const double DefaultPredictionGain                  = 0.5; // amount of GP prediction to blend in
 
-static const double DefaultNoresetMaxRaDelta = 10.; // max RA delta in seconds to skip resetting the model when guiding is stopped and resumed
 static const double DefaultNoresetMaxPctPeriod = 40.; // max percent of worm period elapsed to skip resetting the model when guiding is stopped and resumed
 
 static const bool   DefaultComputePeriod                 = true;

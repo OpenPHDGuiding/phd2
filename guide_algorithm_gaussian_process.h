@@ -71,7 +71,6 @@ protected:
         wxSpinCtrlDouble *m_pPKSignalVariance;
         wxSpinCtrlDouble *m_pSE1KLengthScale;
         wxSpinCtrlDouble *m_pSE1KSignalVariance;
-        wxBoxSizer       *m_pExpertPage;
         void AddTableEntry(wxFlexGridSizer *Grid, const wxString& Label, wxWindow *Ctrl, const wxString& ToolTip);
 
     public:

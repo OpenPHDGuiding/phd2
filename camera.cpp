@@ -46,8 +46,6 @@ static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
-static const bool DefaultLoadDarks = true;
-static const bool DefaultLoadDMap = false;
 
 wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 

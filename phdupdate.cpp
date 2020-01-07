@@ -87,6 +87,7 @@ struct UpdaterDialog : public wxDialog
 
     void OnGoClicked(wxCommandEvent& event);
     void OnKeepOpenChecked(wxCommandEvent& event);
+    void DoOnTimer();
     void OnTimer(wxTimerEvent& event);
 };
 
@@ -831,8 +832,7 @@ UpdaterDialog::UpdaterDialog(Updater *updater, Mode mode, Interactive interactiv
 
         m_timeRemaining = DisplayTime;
 
-        wxTimerEvent dummy;
-        OnTimer(dummy);
+        DoOnTimer();
 
         m_timer.Start(1000);
 
@@ -885,18 +885,22 @@ void UpdaterDialog::OnKeepOpenChecked(wxCommandEvent& event)
     else
     {
         m_timeRemaining = DisplayTime;
-        wxTimerEvent dummy;
-        OnTimer(dummy);
+        DoOnTimer();
         m_timer.Start();
     }
 }
 
-void UpdaterDialog::OnTimer(wxTimerEvent& event)
+void UpdaterDialog::DoOnTimer()
 {
     if (m_timeRemaining < 10 || (m_timeRemaining % 10) == 0)
         m_closingMessage->SetLabel(wxString::Format(_("Closing in %d seconds"), m_timeRemaining));
     if (m_timeRemaining-- <= 0)
         Close();
+}
+
+void UpdaterDialog::OnTimer(wxTimerEvent&)
+{
+    DoOnTimer();
 }
 
 // ======= public interface ======

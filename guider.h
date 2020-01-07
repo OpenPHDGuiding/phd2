@@ -178,8 +178,6 @@ public:
     class GuiderConfigDialogPane : public ConfigDialogPane
     {
         Guider *m_pGuider;
-        wxCheckBox *m_pScaleImage;
-        wxCheckBox *m_pEnableFastRecenter;
 
     public:
         GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);

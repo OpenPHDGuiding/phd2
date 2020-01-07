@@ -689,7 +689,7 @@ if(APPLE)
     TARGET phd2
     POST_BUILD
     COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
-    COMMAND cp libusb_openphd.dylib $<TARGET_FILE_DIR:phd2>/../Frameworks/
+    COMMAND cp $<TARGET_FILE_DIR:usb_openphd>/libusb_openphd.dylib $<TARGET_FILE_DIR:phd2>/../Frameworks/
     COMMAND install_name_tool -change @rpath/libusb_openphd.dylib
                  @executable_path/../Frameworks/libusb_openphd.dylib $<TARGET_FILE:phd2>
   )

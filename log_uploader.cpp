@@ -369,60 +369,6 @@ static wxString FormatTimestamp(const wxDateTime& t)
     return t.Format("%Y-%m-%d %H:%M:%S");
 }
 
-static bool ParseTime(wxDateTime *t, const char *str)
-{
-    int y, mon, d, h, m, s;
-
-    if (sscanf(str, "%d-%d-%d %d:%d:%d", &y, &mon, &d, &h, &m, &s) != 6)
-        return false;
-
-    *t = wxDateTime(d, static_cast<wxDateTime::Month>(wxDateTime::Jan + mon - 1), y, h, m, s);
-    return true;
-}
-
-static bool GuideLogEndTimeSlow(std::ifstream& ifs, wxDateTime *dt)
-{
-    bool guiding = false;
-    wxDateTime start;
-    bool found = false;
-    wxDateTime latest;
-
-    std::string line;
-    while (std::getline(ifs, line))
-    {
-        if (guiding)
-        {
-            if (strncasecmp(line.c_str(), "Guiding Ends at ", 16) == 0)
-            {
-                guiding = false;
-                continue;
-            }
-            int n;
-            double dt;
-            if (sscanf(line.c_str(), "%d,%lf,", &n, &dt) == 2)
-            {
-                latest = start + wxTimeSpan(0, 0, (long) dt);
-                found = true;
-            }
-        }
-        else
-        {
-            if (strncasecmp(line.c_str(), "Guiding Begins at ", 18) == 0 &&
-                ParseTime(&start, line.c_str() + 18))
-            {
-                latest = start;
-                found = true;
-                guiding = true;
-            }
-        }
-    }
-
-    if (found)
-        *dt = latest;
-
-    return found;
-}
-
 static void QuickInitSummary(Session& s)
 {
     if (!s.has_guide)

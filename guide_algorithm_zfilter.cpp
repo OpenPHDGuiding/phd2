@@ -73,7 +73,6 @@ double GuideAlgorithmZFilter::result(double input)
     double dReturn=0;
 
 //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
-    int order = m_order;
     double gain = m_gain;
 
 // Shift readings and results

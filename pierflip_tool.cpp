@@ -65,6 +65,7 @@ struct PierFlipCalToolWin : public wxFrame
 
     void OnRestartClick(wxCommandEvent& event);
     void OnNextClick(wxCommandEvent& event);
+    void DoOnTimer();
     void OnTimer(wxTimerEvent& event);
     void SetState(State state);
     void OnGuidingStateUpdated();
@@ -353,14 +354,12 @@ void PierFlipCalToolWin::SetState(State state)
 
     if (m_state != ST_INTRO)
     {
-        wxTimerEvent dummy;
-        OnTimer(dummy);
-
+        DoOnTimer();
         m_timer.Start(1000);
     }
 }
 
-void PierFlipCalToolWin::OnTimer(wxTimerEvent& event)
+void PierFlipCalToolWin::DoOnTimer()
 {
     double ra, dec, lst, ha;
     bool err = pPointingSource ? pPointingSource->GetCoordinates(&ra, &dec, &lst) : true;
@@ -412,6 +411,11 @@ void PierFlipCalToolWin::OnTimer(wxTimerEvent& event)
     }
     if (enable != -1)
         m_next->Enable(enable ? true : false);
+}
+
+void PierFlipCalToolWin::OnTimer(wxTimerEvent&)
+{
+   DoOnTimer();
 }
 
 void PierFlipCalToolWin::OnGuidingStateUpdated()

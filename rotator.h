@@ -51,16 +51,13 @@ public:
 
 class RotatorConfigDialogPane : public ConfigDialogPane
 {
-    Rotator *m_rotator;
-    wxCheckBox *m_cbReverse;
-
 public:
-    RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator);
+    RotatorConfigDialogPane(wxWindow *parent);
     ~RotatorConfigDialogPane() {};
 
     void LoadValues() {};
     void UnloadValues() {};
-    virtual void LayoutControls(wxPanel* pParent, BrainCtrlIdMap& CtrlMap);
+    virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
 };
 
 class Rotator
@@ -86,7 +83,7 @@ public:
     virtual bool IsConnected() const;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual void ShowPropertyDialog();
 
     // get the display name of the rotator device

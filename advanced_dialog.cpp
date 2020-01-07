@@ -412,7 +412,7 @@ void AdvancedDialog::AddRotatorPage()
     if (pRotator)
     {
         // We have a rotator selected
-        m_pRotatorPane = new RotatorConfigDialogPane(m_pDevicesSettingsPanel, pRotator);
+        m_pRotatorPane = new RotatorConfigDialogPane(m_pDevicesSettingsPanel);
         m_pRotatorPane->LayoutControls(m_pDevicesSettingsPanel, m_brainCtrls);
         m_pRotatorPane->Layout();
 

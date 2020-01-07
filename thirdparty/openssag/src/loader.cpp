@@ -193,8 +193,6 @@ bool Loader::Upload(unsigned char *data)
 
 bool Loader::LoadFirmware()
 {
-    unsigned char *data = NULL;
-
     /* Load bootloader */
     this->EnterResetMode();
     this->EnterResetMode();

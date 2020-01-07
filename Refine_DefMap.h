@@ -73,7 +73,6 @@ class RefineDefMap : public wxDialog
     wxButton *pResetBtn;
     wxButton *pApplyBtn;
     wxButton *pAddDefectBtn;
-    wxButton *pCancelBtn;
     wxStatusBar *pStatusBar;
     wxCheckBox *pRebuildDarks;
     wxCheckBox *pShowDetails;

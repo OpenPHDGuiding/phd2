@@ -144,8 +144,8 @@ void Rotator::SetReversed(bool val)
     Debug.Write(wxString::Format("Rotator:SetReversed: isReversed = %d\n", m_isReversed));
 }
 
-RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
-    : ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
+RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent)
+    : ConfigDialogPane(_("Rotator Settings"), parent)
 {
 
 }
@@ -159,7 +159,7 @@ void RotatorConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& C
 
 ConfigDialogPane *Rotator::GetConfigDialogPane(wxWindow *parent)
 {
-    return new RotatorConfigDialogPane(parent, this);
+    return new RotatorConfigDialogPane(parent);
 }
 
 RotatorConfigDialogCtrlSet *Rotator::GetConfigDlgCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)

@@ -50,7 +50,6 @@ static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
 static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
 
-static const double DEC_BACKLASH_DISTANCE = 3.0;
 static const int MAX_CALIBRATION_STEPS = 60;
 static const int CAL_ALERT_MINSTEPS = 4;
 static const double CAL_ALERT_ORTHOGONALITY_TOLERANCE = 12.5;               // Degrees

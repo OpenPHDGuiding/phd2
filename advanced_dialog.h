@@ -57,8 +57,6 @@ class AdvancedDialog : public wxDialog
 {
     MyFrame *m_pFrame;
     wxBookCtrlBase *m_pNotebook;
-    wxWindow *m_aoPage;
-    wxWindow *m_rotatorPage;
     MyFrameConfigDialogPane *m_pGlobalPane;
     Guider::GuiderConfigDialogPane* m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;

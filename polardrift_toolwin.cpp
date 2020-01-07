@@ -115,12 +115,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_offset = m_alpha = 0.0;
     m_drifting = false;
 
-//Fairly convoluted way to get the camera size in pixels
-    usImage *pCurrImg = pFrame->pGuider->CurrentImage();
-    wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
-    double scalefactor = pFrame->pGuider->ScaleFactor();
-    double xpx = pDispImg->GetWidth() / scalefactor;
-    double ypx = pDispImg->GetHeight() / scalefactor;
     m_pxScale = pFrame->GetCameraPixelScale();
 // Fullsize is easier but the camera simulator does not set this.
 //    wxSize camsize = pCamera->FullSize;
