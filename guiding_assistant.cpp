@@ -1256,18 +1256,8 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
 // Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
 {
-    double pxscale = pFrame->GetCameraPixelScale();
-    double rarms = m_hpfRAStats.GetSigma();
-
-    double multiplier_ra  = 1.0;   // 66% prediction interval
-    double ideal_min_exposure;
-    double ideal_max_exposure;
-    double min_rec_range = 2.0;
     CalibrationDetails calDetails;
-    wxString logStr;
-    wxString allRecommendations = "";
-
-    TheScope()->GetCalibrationDetails(&calDetails);
+    TheScope()->LoadCalibrationDetails(&calDetails);
     m_suspectCalibration = calDetails.lastIssue != CI_None || m_backlashTool->GetBacklashExempted();
 
     GetMinMoveRecs(m_ra_minmove_rec, m_dec_minmove_rec);
@@ -1281,15 +1271,21 @@ void GuidingAsstWin::MakeRecommendations()
     // REMINDER: Any new recommendations must also be done in 'DisplayStaticRecommendations'
     // Clump the no-button messages at the top
     // ideal exposure ranges in general
-    ideal_min_exposure = 2.0;
-    ideal_max_exposure = 4.0;
+    double rarms = m_hpfRAStats.GetSigma();
+    double multiplier_ra  = 1.0;   // 66% prediction interval
+    double ideal_min_exposure = 2.0;
+    double ideal_max_exposure = 4.0;
     // adjust the min-exposure downward if drift limiting exposure is lower; then adjust range accordingly
     double drift_exp;
     if (maxRateRA > 0)
         drift_exp = ceil((multiplier_ra * rarms / maxRateRA) / 0.5) * 0.5;                       // Rounded up to nearest 0.5 sec
     else
         drift_exp = ideal_min_exposure;
+
+    double min_rec_range = 2.0;
+    double pxscale = pFrame->GetCameraPixelScale();
     m_min_exp_rec = std::max(1.0, std::min(drift_exp, ideal_min_exposure));                         // smaller of drift and ideal, never less than 1.0
+
     if (drift_exp > m_min_exp_rec)
     {
         if (drift_exp < ideal_max_exposure)
@@ -1301,6 +1297,10 @@ void GuidingAsstWin::MakeRecommendations()
         m_max_exp_rec = m_min_exp_rec + min_rec_range;
 
     m_recommendgrid->Clear(true);
+
+    wxString logStr;
+    wxString allRecommendations;
+
     // Always make a recommendation on exposure times
     wxString msg = wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
     allRecommendations += "Exp:" + msg + "\n";

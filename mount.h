@@ -353,8 +353,9 @@ public:
     virtual bool IsCalibrated() const;
     virtual void ClearCalibration();
     virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails);
-    void GetCalibrationDetails(CalibrationDetails *calDetails) const;
+
+    void SaveCalibrationDetails(const CalibrationDetails& calDetails) const;
+    void LoadCalibrationDetails(CalibrationDetails *calDetails) const;
 
     virtual bool IsConnected() const;
     virtual bool Connect();

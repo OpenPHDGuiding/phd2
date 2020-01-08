@@ -167,7 +167,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         mount = pSecondaryMount;
 
     CalibrationDetails calDetails;
-    mount->GetCalibrationDetails(&calDetails);
+    mount->LoadCalibrationDetails(&calDetails);
 
     Calibration calBaseline;
     mount->GetLastCalibration(&calBaseline);
@@ -400,21 +400,14 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
 {
     CalibrationDetails calDetails;
 
-    if (!pSecondaryMount)
-    {
-        pMount->GetCalibrationDetails(&calDetails);                              // Normal case, no AO
-    }
+    Mount *mount;
+
+    if (!pSecondaryMount || AO)
+        mount = pMount;
     else
-    {
-        if (AO)
-        {
-            pMount->GetCalibrationDetails(&calDetails);                          // AO tab, use AO details
-        }
-        else
-        {
-            pSecondaryMount->GetCalibrationDetails(&calDetails);                 // Mount tab, use mount details
-        }
-    }
+        mount = pSecondaryMount;                 // Mount tab, use mount details
+
+    mount->LoadCalibrationDetails(&calDetails);
 
     // Find the max excursion from the origin in order to scale the points to fit the bitmap
     double biggestVal = -100.0;
@@ -561,7 +554,7 @@ CalSanityDialog::CalSanityDialog(wxFrame *parent, const Calibration& oldParams, 
 {
     m_pScope = TheScope();
     m_pScope->GetLastCalibration(&m_newParams);
-    pMount->GetCalibrationDetails(&m_calDetails);
+    pMount->LoadCalibrationDetails(&m_calDetails);
     m_oldParams = oldParams;
     m_oldDetails = oldDetails;
     m_issue = issue;
@@ -815,6 +808,3 @@ void CalSanityDialog::SaveBlockingOptions()
     if (m_pBlockThis->IsChecked())
         m_pScope->SetCalibrationWarning(m_issue, false);
 }
-
-
-

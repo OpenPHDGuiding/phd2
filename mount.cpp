@@ -1224,7 +1224,8 @@ void Mount::AdjustCalibrationForScopePointing()
     if (pPointingSource->CanReportPosition())
     {
         CalibrationDetails calDetails;
-        GetCalibrationDetails(&calDetails);
+        LoadCalibrationDetails(&calDetails);
+
         if (calDetails.raGuideSpeed > 0 && calDetails.decGuideSpeed > 0)
         {
             double currRASpeed;
@@ -1529,7 +1530,7 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
-void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails)
+void Mount::SaveCalibrationDetails(const CalibrationDetails& calDetails) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString stepStr = "";
@@ -1691,7 +1692,7 @@ void Mount::GetLastCalibration(Calibration *cal) const
     }
 }
 
-void Mount::GetCalibrationDetails(CalibrationDetails *details) const
+void Mount::LoadCalibrationDetails(CalibrationDetails *details) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
 
@@ -1805,7 +1806,7 @@ wxString Mount::GetSettingsSummary() const
                               ParityStr(m_cal.raGuideParity), ParityStr(m_cal.decGuideParity));
 
         CalibrationDetails det;
-        GetCalibrationDetails(&det);
+        LoadCalibrationDetails(&det);
 
         double scale = det.IsValid() ? det.imageScale : 1.0;
 

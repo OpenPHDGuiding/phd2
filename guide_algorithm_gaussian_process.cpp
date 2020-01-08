@@ -1109,7 +1109,7 @@ void GuideAlgorithmGaussianProcess::GuidingEnabled()
 static double GetRAGuideRate(const Mount *mount)
 {
     CalibrationDetails calDetails;
-    mount->GetCalibrationDetails(&calDetails);
+    mount->LoadCalibrationDetails(&calDetails);
 
     double guide_speed = 1.0; // normalized to 15 a-s per second
                               // 1.0 means 15 a-s/sec,

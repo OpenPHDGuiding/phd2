@@ -521,7 +521,8 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, dou
     m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
     m_calibrationDetails.origBinning = binning;
     m_calibrationDetails.origTimestamp = wxDateTime::Now().Format();
-    Mount::SetCalibrationDetails(m_calibrationDetails);
+
+    SaveCalibrationDetails(m_calibrationDetails);
 }
 
 /*
@@ -1277,7 +1278,7 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
 wxString StepGuider::GetSettingsSummary() const
 {
     CalibrationDetails calDetail;
-    GetCalibrationDetails(&calDetail);
+    LoadCalibrationDetails(&calDetail);
 
     return Mount::GetSettingsSummary() +
            wxString::Format("Bump percentage = %d, Bump step = %.2f, Timestamp = %s\n",

@@ -503,7 +503,7 @@ void GuidingLog::CalibrationComplete(const Mount *pCalibrationMount)
     assert(m_file.IsOpened());
 
     CalibrationDetails calDetails;
-    pCalibrationMount->GetCalibrationDetails(&calDetails);
+    pCalibrationMount->LoadCalibrationDetails(&calDetails);
 
     if (calDetails.raGuideSpeed > 0)
         m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n",

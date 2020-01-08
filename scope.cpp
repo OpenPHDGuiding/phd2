@@ -840,7 +840,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
     GetLastCalibration(&newCal);
 
     CalibrationDetails newDetails;
-    GetCalibrationDetails(&newDetails);
+    LoadCalibrationDetails(&newDetails);
 
     m_lastCalibrationIssue = CI_None;
     int xSteps = newDetails.raStepCount;
@@ -958,7 +958,7 @@ void Scope::ClearCalibration()
 void Scope::CheckCalibrationDuration(int currDuration)
 {
     CalibrationDetails calDetails;
-    GetCalibrationDetails(&calDetails);
+    LoadCalibrationDetails(&calDetails);
 
     bool binningChange = pCamera->Binning != calDetails.origBinning;
 
@@ -1055,6 +1055,7 @@ void Scope::SetCalibration(const Calibration& cal)
 void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
 {
     m_calibrationDetails = calDetails;
+
     double ra_rate;
     double dec_rate;
     if (pPointingSource->GetGuideRates(&ra_rate, &dec_rate))        // true means error
@@ -1062,6 +1063,7 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
         ra_rate = -1.0;
         dec_rate = -1.0;
     }
+
     m_calibrationDetails.raGuideSpeed = ra_rate;
     m_calibrationDetails.decGuideSpeed = dec_rate;
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
@@ -1070,14 +1072,16 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     m_calibrationDetails.origBinning = binning;
     m_calibrationDetails.origTimestamp = wxDateTime::Now().Format();
     m_calibrationDetails.origPierSide = pPointingSource->SideOfPier();
-    Mount::SetCalibrationDetails(m_calibrationDetails);
+
+    SaveCalibrationDetails(m_calibrationDetails);
 }
 
 void Scope::FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue)
 {
     m_calibrationDetails = calDetails;
     m_calibrationDetails.lastIssue = issue;
-    Mount::SetCalibrationDetails(m_calibrationDetails);
+
+    SaveCalibrationDetails(m_calibrationDetails);
 }
 
 bool Scope::IsCalibrated() const
@@ -1666,7 +1670,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
             case CALIBRATION_STATE_COMPLETE:
                 GetLastCalibration(&m_prevCalibration);
-                GetCalibrationDetails(&m_prevCalibrationDetails);
+                LoadCalibrationDetails(&m_prevCalibrationDetails);
                 Calibration cal(m_calibration);
                 cal.declination = pPointingSource->GetDeclination();
                 cal.pierSide = pPointingSource->SideOfPier();
@@ -1782,7 +1786,7 @@ wxString Scope::GetSettingsSummary() const
     GetLastCalibration(&calInfo);
 
     CalibrationDetails calDetails;
-    GetCalibrationDetails(&calDetails);
+    LoadCalibrationDetails(&calDetails);
 
     // return a loggable summary of current mount settings
     wxString rtnVal = Mount::GetSettingsSummary() +
