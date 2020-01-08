@@ -223,8 +223,8 @@ public:
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
     bool IsCalibrated() const override;
-    bool BeginCalibration(const PHD_Point &currentLocation) override;
-    bool UpdateCalibrationState(const PHD_Point &currentLocation) override;
+    bool BeginCalibration(const PHD_Point& currentLocation) override;
+    bool UpdateCalibrationState(const PHD_Point& currentLocation) override;
 
     static const double DEC_COMP_LIMIT; // declination compensation limit
     static const double DEFAULT_MOUNT_GUIDE_SPEED;              // Presumptive mount guide speed if no usable mount connection
