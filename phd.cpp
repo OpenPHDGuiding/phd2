@@ -83,7 +83,7 @@ static wxString s_configPath;
 
 wxIMPLEMENT_APP(PhdApp);
 
-static void DisableOSXAppNap(void)
+static void DisableOSXAppNap()
 {
 #ifdef __APPLE__
 # define  APPKEY "org.openphdguiding.phd2"
@@ -116,7 +116,7 @@ struct ExecFuncThreadEvent : public wxThreadEvent
     { }
 };
 
-PhdApp::PhdApp(void)
+PhdApp::PhdApp()
 {
     m_resetConfig = false;
     m_instanceNumber = 1;
@@ -642,7 +642,7 @@ bool PhdApp::OnInit()
     return true;
 }
 
-int PhdApp::OnExit(void)
+int PhdApp::OnExit()
 {
     assert(!pMount);
     assert(!pSecondaryMount);
