@@ -114,7 +114,7 @@ SampleWait::SampleWait(int SecondsLeft, bool BltNeeded) : wxDialog(pFrame, wxID_
     amtSizer->Add(countDownLabel, wxSizerFlags(0).Border(wxALL, 8));
     amtSizer->Add(m_CountdownAmount, wxSizerFlags(0).Border(wxALL, 8));
     wxButton* cancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
-    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SampleWait::OnCancel), NULL, this);
+    cancelBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SampleWait::OnCancel), nullptr, this);
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(cancelBtn, wxSizerFlags(0).Border(wxALL, 8).Center());
 
@@ -125,7 +125,7 @@ SampleWait::SampleWait(int SecondsLeft, bool BltNeeded) : wxDialog(pFrame, wxID_
     SetAutoLayout(true);
     SetSizerAndFit(vSizer);
 
-    m_SecondsTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(SampleWait::OnTimer), NULL, this);
+    m_SecondsTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(SampleWait::OnTimer), nullptr, this);
     m_SecondsTimer.Start(1000);
 }
 
@@ -151,7 +151,6 @@ void SampleWait::OnCancel(wxCommandEvent& event)
         EndDialog(wxOK);
     else
         EndDialog(wxCANCEL);
-
 }
 
 // Encapsulated struct for implementing the dialog box
@@ -258,6 +257,7 @@ struct GuidingAsstWin : public wxDialog
     BacklashTool *m_backlashTool;
     bool reviewMode;
     GADetails gaDetails;
+    bool m_flushConfig;
 
     GuidingAsstWin();
     ~GuidingAsstWin();
@@ -277,9 +277,13 @@ struct GuidingAsstWin : public wxDialog
     void OnReviewPrevious(wxCommandEvent& event);
     void OnGAReviewSelection(wxCommandEvent& evt);
 
-    wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
-    wxStaticText *AddRecommendationEntry(const wxString& msg);
-    void FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, double pxVal, double asVal, const wxString& units1, const wxString& units2, const wxString& extraInfo = wxEmptyString);
+    wxStaticText *AddRecommendationBtn(const wxString& msg,
+                                       void (GuidingAsstWin::* handler)(wxCommandEvent&),
+                                       wxButton **ppButton);
+    wxStaticText *AddRecommendationMsg(const wxString& msg);
+    void FillResultCell(wxGrid *pGrid, const wxGridCellCoords& loc, double pxVal,
+                        double asVal, const wxString& units1, const wxString& units2,
+                        const wxString& extraInfo = wxEmptyString);
     void UpdateInfo(const GuideStepInfo& info);
     void DisplayStaticResults(const GADetails& details);
     void FillInstructions(DialogState eState);
@@ -337,7 +341,8 @@ GuidingAsstWin::GuidingAsstWin()
       m_guideOutputDisabled(false),
       m_measurementsTaken(false),
       m_origSubFrames(-1),
-      m_backlashTool(nullptr)
+      m_backlashTool(nullptr),
+      m_flushConfig(false)
 {
     // Sizer hierarchy:
     // m_vSizer has {instructions, vResultsSizer, m_gaStatus, btnSizer}
@@ -483,26 +488,26 @@ GuidingAsstWin::GuidingAsstWin()
     m_recommend_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Recommendations"));
     m_recommendgrid = new wxFlexGridSizer(2, 0, 0);
     m_recommendgrid->AddGrowableCol(0);
-    m_ra_msg = NULL;
-    m_dec_msg = NULL;
-    m_snr_msg = NULL;
-    m_backlash_msg = NULL;
-    m_pae_msg = NULL;
-    m_hfd_msg = NULL;
-    m_exposure_msg = NULL;
-    m_calibration_msg = NULL;
-    m_binning_msg = NULL;
+    m_ra_msg = nullptr;
+    m_dec_msg = nullptr;
+    m_snr_msg = nullptr;
+    m_backlash_msg = nullptr;
+    m_pae_msg = nullptr;
+    m_hfd_msg = nullptr;
+    m_exposure_msg = nullptr;
+    m_calibration_msg = nullptr;
+    m_binning_msg = nullptr;
 
     m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
     // Add buttons for viewing the Dec backlash graph or getting help
     wxBoxSizer* hBtnSizer = new wxBoxSizer(wxHORIZONTAL);
     m_graphBtn = new wxButton(this, wxID_ANY, _("Show Backlash Graph"));
     m_graphBtn->SetToolTip(_("Show graph of backlash measurement points"));
-    m_graphBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnGraph), NULL, this);
+    m_graphBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnGraph), nullptr, this);
     m_graphBtn->Enable(false);
     hBtnSizer->Add(m_graphBtn, wxSizerFlags(0).Border(wxALL, 5));
     wxButton* helpBtn = new wxButton(this, wxID_ANY, _("Help"));
-    helpBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnHelp), NULL, this);
+    helpBtn->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnHelp), nullptr, this);
     hBtnSizer->Add(50, 0);
     hBtnSizer->Add(helpBtn, wxSizerFlags(0).Border(wxALL, 5));
     m_recommend_group->Add(hBtnSizer, wxSizerFlags(0).Border(wxALL, 5));
@@ -559,8 +564,8 @@ GuidingAsstWin::GuidingAsstWin()
 
     Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(GuidingAsstWin::OnClose));
     Connect(APPSTATE_NOTIFY_EVENT, wxCommandEventHandler(GuidingAsstWin::OnAppStateNotify));
-    m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
-    m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
+    m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), nullptr, this);
+    m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), nullptr, this);
     Bind(wxEVT_BUTTON, &GuidingAsstWin::OnReviewPrevious, this, GA_REVIEW_BUTTON, GA_REVIEW_BUTTON);
     Bind(wxEVT_MENU, &GuidingAsstWin::OnGAReviewSelection, this, GA_REVIEW_ITEMS_BASE, GA_REVIEW_ITEMS_LIMIT);
 
@@ -782,6 +787,7 @@ void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
             pFrame->pGraphLog->UpdateControls();
             pFrame->NotifyGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_ra_minmove_rec);
             m_raMinMoveButton->Enable(false);
+            m_flushConfig = true;
         }
         else
             Debug.Write("GuideAssistant could not change RA_MinMove\n");
@@ -805,6 +811,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
             pFrame->pGraphLog->UpdateControls();
             pFrame->NotifyGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", m_dec_minmove_rec);
             m_decMinMoveButton->Enable(false);
+            m_flushConfig = true;
         }
         else
             Debug.Write("GuideAssistant could not change Dec_MinMove\n");
@@ -840,6 +847,8 @@ void GuidingAsstWin::OnDecAlgoChange(wxCommandEvent& event)
     pFrame->NotifyGuidingParam("Declination Lowpass2 MinMove", m_dec_minmove_rec);
 
     m_decAlgoButton->Enable(false);
+
+    m_flushConfig = true;
 }
 
 void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
@@ -849,7 +858,9 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
     pComp->SetBacklashPulseWidth(m_backlashRecommendedMs, 0. /* floor */, 0. /* ceiling */);
     pComp->EnableBacklashComp(!pMount->IsStepGuider());
     m_decBacklashButton->Enable(false);
+    m_flushConfig = true;
 }
+
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
     if (reviewMode)
@@ -863,12 +874,22 @@ void GuidingAsstWin::OnHelp(wxCommandEvent& event)
     pFrame->help->Display("Tools.htm#Guiding_Assistant");   // named anchors in help file are not subject to translation
 }
 
+static wxString SizedMsg(const wxString& msg)
+{
+    if (msg.length() < 70)
+        return msg + wxString(' ', 70 - msg.length());
+    else
+        return msg;
+}
+
 // Adds a recommendation string and a button bound to the passed event handler
-wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton)
+wxStaticText *GuidingAsstWin::AddRecommendationBtn(const wxString& msg,
+                                                   void (GuidingAsstWin::* handler)(wxCommandEvent&),
+                                                   wxButton **ppButton)
 {
     wxStaticText *rec_label;
 
-    rec_label = new wxStaticText(this, wxID_ANY, msg);
+    rec_label = new wxStaticText(this, wxID_ANY, SizedMsg(msg));
     rec_label->Wrap(250);
     m_recommendgrid->Add(rec_label, 1, wxALIGN_LEFT | wxALL, 5);
     if (handler)
@@ -878,7 +899,7 @@ wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObje
         this->GetTextExtent(_("Apply"), &min_w, &min_h);
         *ppButton = new wxButton(this, wxID_ANY, _("Apply"), wxDefaultPosition, wxSize(min_w + 8, min_h + 8), 0);
         m_recommendgrid->Add(*ppButton, 0, wxALIGN_RIGHT | wxALL, 5);
-        (*ppButton)->Connect(wxEVT_COMMAND_BUTTON_CLICKED, handler, NULL, this);
+        (*ppButton)->Connect(wxEVT_COMMAND_BUTTON_CLICKED, reinterpret_cast<wxObjectEventFunction>(handler), nullptr, this);
     }
     else
     {
@@ -889,9 +910,9 @@ wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObje
 }
 
 // Jacket for simple addition of a text-only recommendation
-wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg)
+wxStaticText *GuidingAsstWin::AddRecommendationMsg(const wxString& msg)
 {
-    return AddRecommendationEntry(msg, NULL, NULL);
+    return AddRecommendationBtn(msg, nullptr, nullptr);
 }
 
 void GuidingAsstWin::LogResults()
@@ -1076,14 +1097,6 @@ void GuidingAsstWin::LoadGAResults(const wxString& TimeStamp, GADetails* Details
             Details->BLTSouthMoves.push_back(ptVal);
         }
     }
-}
-
-static wxString SizedMsg(const wxString& msg)
-{
-    if (msg.length() < 70)
-        return msg + wxString(' ', 70 - msg.length());
-    else
-        return msg;
 }
 
 // Compute a drift-corrected value for Dec RMS and use that as a seeing estimate.  For long GA runs, compute values for overlapping
@@ -1304,14 +1317,14 @@ void GuidingAsstWin::MakeRecommendations()
     // Always make a recommendation on exposure times
     wxString msg = wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
     allRecommendations += "Exp:" + msg + "\n";
-    m_exposure_msg = AddRecommendationEntry(SizedMsg(msg));
+    m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
     if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxBinning > 1)
     {
         wxString msg = _("Try binning your guide camera");
         allRecommendations += "Bin:" + msg + "\n";
-        m_binning_msg = AddRecommendationEntry(SizedMsg(msg));
+        m_binning_msg = AddRecommendationMsg(msg);
         Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     }
     // Previous calibration alert
@@ -1323,7 +1336,7 @@ void GuidingAsstWin::MakeRecommendations()
         else
             msg += _("(Backlash clearing)");
         allRecommendations += "Cal:" + msg + "\n";
-        m_calibration_msg = AddRecommendationEntry(SizedMsg(msg));
+        m_calibration_msg = AddRecommendationMsg(msg);
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1333,7 +1346,7 @@ void GuidingAsstWin::MakeRecommendations()
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
         allRecommendations += "Star:" + msg + "\n";
-        m_snr_msg = AddRecommendationEntry(SizedMsg(msg));
+        m_snr_msg = AddRecommendationMsg(msg);
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1358,7 +1371,7 @@ void GuidingAsstWin::MakeRecommendations()
         if (msg != "")
         {
             allRecommendations += "PA:" + msg + "\n";
-            m_pae_msg = AddRecommendationEntry(SizedMsg(msg));
+            m_pae_msg = AddRecommendationMsg(msg);
             logStr = wxString::Format("Recommendation: %s\n", msg);
             Debug.Write(logStr);
             GuideLog.NotifyGAResult(logStr);
@@ -1370,7 +1383,7 @@ void GuidingAsstWin::MakeRecommendations()
     {
         wxString msg(_("Consider trying to improve focus on the guide camera"));
         allRecommendations += "StarHFD:" + msg + "\n";
-        m_hfd_msg = AddRecommendationEntry(SizedMsg(msg));
+        m_hfd_msg = AddRecommendationMsg(msg);
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1381,8 +1394,7 @@ void GuidingAsstWin::MakeRecommendations()
     {
         wxString msgText = wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_minmove_rec);
         allRecommendations += "RAMinMove:" + msgText + "\n";
-        m_ra_msg = AddRecommendationEntry(SizedMsg(msgText),
-            wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
+        m_ra_msg = AddRecommendationBtn(msgText, &GuidingAsstWin::OnRAMinMove, &m_raMinMoveButton);
         logStr = wxString::Format("Recommendation: %s\n", msgText);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1393,8 +1405,7 @@ void GuidingAsstWin::MakeRecommendations()
     {
         wxString msgText = wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_minmove_rec);
         allRecommendations += "DecMinMove:" + msgText + "\n";
-        m_dec_msg = AddRecommendationEntry(SizedMsg(msgText),
-                wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+        m_dec_msg = AddRecommendationBtn(msgText, &GuidingAsstWin::OnDecMinMove, &m_decMinMoveButton);
         logStr = wxString::Format("Recommendation: %s\n", msgText);
         Debug.Write(logStr);
         GuideLog.NotifyGAResult(logStr);
@@ -1427,7 +1438,7 @@ void GuidingAsstWin::MakeRecommendations()
                 decDriftPerMin >= 0 ? _("South") : _("North"));
         }
         allRecommendations += "BLT:" + msg + "\n";
-        m_backlash_msg = AddRecommendationEntry(SizedMsg(msg), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+        m_backlash_msg = AddRecommendationBtn(msg, &GuidingAsstWin::OnDecBacklash, &m_decBacklashButton);
         m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
         logStr = wxString::Format("Recommendation: %s\n", msg);
         Debug.Write(logStr);
@@ -1443,8 +1454,7 @@ void GuidingAsstWin::MakeRecommendations()
         {
             wxString msgText = _("Try using Lowpass2 for Dec guiding");
             allRecommendations += "DecAlgo:" + msgText + "\n";
-            m_decAlgo_msg = AddRecommendationEntry(SizedMsg(msgText),
-                wxCommandEventHandler(GuidingAsstWin::OnDecAlgoChange), &m_decAlgoButton);
+            m_decAlgo_msg = AddRecommendationBtn(msgText, &GuidingAsstWin::OnDecAlgoChange, &m_decAlgoButton);
             logStr = wxString::Format("Recommendation: %s\n", msgText);
             Debug.Write(logStr);
             GuideLog.NotifyGAResult(logStr);
@@ -1481,50 +1491,47 @@ void GuidingAsstWin::DisplayStaticRecommendations(const GADetails& details)
             wxString what = rec.SubString(colPos + 1, end);
             if (which == "Exp")
             {
-                m_exposure_msg = AddRecommendationEntry(SizedMsg(what));
+                m_exposure_msg = AddRecommendationMsg(what);
             }
             else if (which == "Bin")
             {
-                m_binning_msg = AddRecommendationEntry(SizedMsg(what));
+                m_binning_msg = AddRecommendationMsg(what);
             }
             else if (which == "Cal")
             {
-                m_calibration_msg = AddRecommendationEntry(SizedMsg(what));
+                m_calibration_msg = AddRecommendationMsg(what);
             }
             else if (which == "Star")
             {
-                m_snr_msg = AddRecommendationEntry(SizedMsg(what));
+                m_snr_msg = AddRecommendationMsg(what);
             }
             else if (which == "PA")
             {
-                m_pae_msg = AddRecommendationEntry(SizedMsg(what));
+                m_pae_msg = AddRecommendationMsg(what);
             }
             else if (which == "StarHFD")
             {
-                m_hfd_msg = AddRecommendationEntry(SizedMsg(what));
+                m_hfd_msg = AddRecommendationMsg(what);
             }
             else if (which == "RAMinMove")
             {
                 details.RecRAMinMove.ToDouble(&m_ra_minmove_rec);
-                m_ra_msg = AddRecommendationEntry(SizedMsg(what),
-                    wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
+                m_ra_msg = AddRecommendationBtn(what, &GuidingAsstWin::OnRAMinMove, &m_raMinMoveButton);
             }
             else if (which == "DecMinMove")
             {
                 details.RecDecMinMove.ToDouble(&m_dec_minmove_rec);
-                m_dec_msg = AddRecommendationEntry(SizedMsg(what),
-                        wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+                m_dec_msg = AddRecommendationBtn(what, &GuidingAsstWin::OnDecMinMove, &m_decMinMoveButton);
             }
             else if (which == "DecAlgo")
             {
-                m_decAlgo_msg = AddRecommendationEntry(SizedMsg(what),
-                    wxCommandEventHandler(GuidingAsstWin::OnDecAlgoChange), &m_decAlgoButton);
+                m_decAlgo_msg = AddRecommendationBtn(what, &GuidingAsstWin::OnDecAlgoChange, &m_decAlgoButton);
             }
             else if (which == "BLT")
             {
                 m_backlashMs = wxAtoi(details.BLTAmount);
                 bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
-                m_backlash_msg = AddRecommendationEntry(SizedMsg(what), wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+                m_backlash_msg = AddRecommendationBtn(what, &GuidingAsstWin::OnDecBacklash, &m_decBacklashButton);
                 m_decBacklashButton->Enable(!largeBL && m_backlashRecommendedMs > 100);
             }
             allRecs = allRecs.Mid(end + 1);
@@ -1751,6 +1758,12 @@ void GuidingAsstWin::OnClose(wxCloseEvent& evt)
     GetPosition(&x, &y);
     pConfig->Global.SetInt("/GuidingAssistant/pos.x", x);
     pConfig->Global.SetInt("/GuidingAssistant/pos.y", y);
+
+    if (m_flushConfig)
+    {
+        pConfig->Flush();
+        m_flushConfig = false;
+    }
 
     Destroy();
 }

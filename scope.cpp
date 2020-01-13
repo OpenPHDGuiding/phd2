@@ -1686,6 +1686,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);
                 Debug.Write("Calibration Complete\n");
+                pConfig->Flush();
                 break;
         }
     }

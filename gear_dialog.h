@@ -90,6 +90,8 @@ class GearDialog : public wxDialog
     wxButton *m_pConnectAllButton;
     wxButton *m_pDisconnectAllButton;
 
+    bool m_flushConfig;
+
 public:
     GearDialog(wxWindow *pParent);
     ~GearDialog();

@@ -121,6 +121,8 @@ public:
     bool SaveAll(const wxString& filename);
     bool RestoreAll(const wxString& filename);
 
+    bool Flush();
+
     void InitializeProfile();
     wxString GetCurrentProfile();
     int GetCurrentProfileId() { return m_currentProfileId; }

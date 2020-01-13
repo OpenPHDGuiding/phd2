@@ -301,7 +301,6 @@ void PhdConfig::InitializeProfile()
     m_currentProfileId = currentProfile;
     Profile.SelectProfile(currentProfile);
     Global.SetInt("/currentProfile", currentProfile); // in case we just created it
-    EvtServer.NotifyConfigurationChange();
 }
 
 void PhdConfig::DeleteAll()
@@ -340,8 +339,6 @@ bool PhdConfig::SetCurrentProfile(const wxString& name)
     m_currentProfileId = id;
     Profile.SelectProfile(id);
     Global.SetInt("/currentProfile", id);
-
-    EvtServer.NotifyConfigurationChange();
 
     return false;
 }
@@ -496,8 +493,6 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     // name was overwritten by copy
     Global.SetString(wxString::Format("/profile/%d/name", dstId), dest);
 
-    EvtServer.NotifyConfigurationChange();
-
     return false;
 }
 
@@ -522,6 +517,7 @@ void PhdConfig::DeleteProfile(const wxString& name)
         Profile.SelectProfile(m_currentProfileId);
         Global.SetInt("/currentProfile", m_currentProfileId);
     }
+
     EvtServer.NotifyConfigurationChange();
 }
 
@@ -823,6 +819,16 @@ bool PhdConfig::RestoreAll(const wxString& filename)
     EvtServer.NotifyConfigurationChange();
 
     return false;
+}
+
+bool PhdConfig::Flush()
+{
+    Debug.Write("PhdConfig flush\n");
+
+    // On Linux and Mac, this will write the config file if it is dirty
+    // (no-op if it is not dirty).  Always a no-op on Windows.
+    bool ok = Global.m_pConfig->Flush();
+    return ok;
 }
 
 wxArrayString PhdConfig::ProfileNames()

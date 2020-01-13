@@ -934,6 +934,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
         pAdvancedDialog->UnloadValues();
         pGraphLog->UpdateControls();
         TestGuide::ManualGuideUpdateControls();
+        pConfig->Flush();
     }
     else
     {

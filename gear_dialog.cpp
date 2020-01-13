@@ -125,7 +125,8 @@ GearDialog::GearDialog(wxWindow *pParent) :
     m_showDarksDialog(false),
     m_camWarningIssued(false),
     m_camChanged(false),
-    m_imageScaleRatio(1.0)
+    m_imageScaleRatio(1.0),
+    m_flushConfig(false)
 {
     m_pCamera              = nullptr;
     m_pScope               = nullptr;
@@ -513,6 +514,12 @@ int GearDialog::ShowGearDialog(bool autoConnect)
         EndModal(ret);
     }
 
+    if (m_flushConfig)
+    {
+        pConfig->Flush();
+        m_flushConfig = false;
+    }
+
     return ret;
 }
 
@@ -550,6 +557,7 @@ void GearDialog::EndModal(int retCode)
         if (m_camChanged)
         {
             Debug.Write("Clearing calibration data because camera was changed\n");
+
             if (m_pStepGuider)
             {
                 if (m_pStepGuider->IsConnected())
@@ -925,7 +933,11 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 
         Debug.AddLine(wxString::Format("Created new camera of type %s = %p", choice, m_pCamera));
 
-        pConfig->Profile.SetString("/camera/LastMenuChoice", choice);
+        if (pConfig->Profile.GetString("/camera/LastMenuChoice", wxEmptyString) != choice)
+        {
+            pConfig->Profile.SetString("/camera/LastMenuChoice", choice);
+            m_flushConfig = true;
+        }
 
         m_selectCameraButton->Enable(m_pCamera && m_pCamera->CanSelectCamera());
 
@@ -1025,7 +1037,12 @@ void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
     if (idx < m_cameraIds.size())
     {
         wxString key = CameraSelectionKey(m_lastCamera);
-        pConfig->Profile.SetString(key, m_cameraIds[idx]);
+        const wxString& id = m_cameraIds[idx];
+        if (pConfig->Profile.GetString(key, wxEmptyString) != id)
+        {
+            pConfig->Profile.SetString(key, id);
+            m_flushConfig = true;
+        }
     }
 }
 
@@ -1280,7 +1297,11 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
         m_pScope = Scope::Factory(choice);
         Debug.AddLine(wxString::Format("Created new scope of type %s = %p", choice, m_pScope));
 
-        pConfig->Profile.SetString("/scope/LastMenuChoice", choice);
+        if (pConfig->Profile.GetString("/scope/LastMenuChoice", wxEmptyString) != choice)
+        {
+            pConfig->Profile.SetString("/scope/LastMenuChoice", choice);
+            m_flushConfig = true;
+        }
 
         if (!m_pScope)
         {
@@ -1313,7 +1334,11 @@ void GearDialog::OnChoiceAuxScope(wxCommandEvent& event)
         m_pAuxScope = Scope::Factory(choice);
         Debug.AddLine(wxString::Format("Created new aux scope of type %s = %p", choice, m_pAuxScope));
 
-        pConfig->Profile.SetString("/scope/LastAuxMenuChoice", choice);
+        if (pConfig->Profile.GetString("/scope/LastAuxMenuChoice", wxEmptyString) != choice)
+        {
+            pConfig->Profile.SetString("/scope/LastAuxMenuChoice", choice);
+            m_flushConfig = true;
+        }
 
         if (!m_pAuxScope)
         {
@@ -1535,7 +1560,11 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
         m_pStepGuider = StepGuider::Factory(choice);
         Debug.AddLine(wxString::Format("Created new stepguider of type %s = %p", choice, m_pStepGuider));
 
-        pConfig->Profile.SetString("/stepguider/LastMenuChoice", choice);
+        if (pConfig->Profile.GetString("/stepguider/LastMenuChoice", wxEmptyString) != choice)
+        {
+            pConfig->Profile.SetString("/stepguider/LastMenuChoice", choice);
+            m_flushConfig = true;
+        }
 
         if (!m_pStepGuider)
         {
@@ -1669,7 +1698,11 @@ void GearDialog::OnChoiceRotator(wxCommandEvent& event)
         m_pRotator = Rotator::Factory(choice);
         Debug.AddLine(wxString::Format("Created new Rotator of type %s = %p", choice, m_pRotator));
 
-        pConfig->Profile.SetString("/rotator/LastMenuChoice", choice);
+        if (pConfig->Profile.GetString("/rotator/LastMenuChoice", wxEmptyString) != choice)
+        {
+            pConfig->Profile.SetString("/rotator/LastMenuChoice", choice);
+            m_flushConfig = true;
+        }
 
         if (!m_pRotator)
         {
@@ -1846,7 +1879,10 @@ bool GearDialog::IsEmptyProfile()
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)
 {
+    wxString prev = pConfig->GetCurrentProfile();
     wxString selection = m_profiles->GetStringSelection();
+    if (selection != prev)
+        m_flushConfig = true;
     pConfig->SetCurrentProfile(selection);
     LoadGearChoices();
     pFrame->LoadProfileSettings();
