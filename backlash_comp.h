@@ -71,7 +71,8 @@ class BacklashTool
     PHD_Point m_startingPoint;
     PHD_Point m_markerPoint;
     PHD_Point m_endSouth;
-    wxString m_lastStatus;
+    wxString m_lastStatus;                          // Translated for UI
+    wxString m_lastStatusDebug;                     // Always English for debug log
     Scope *m_scope;
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;

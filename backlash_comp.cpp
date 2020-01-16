@@ -925,6 +925,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 pFrame->ScheduleAxisMove(m_scope, NORTH, m_pulseWidth, MOVEOPTS_CALIBRATION_MOVE);
                 m_stepCount = 1;
                 m_lastStatus = wxString::Format(_("Clearing North backlash, step %d"), m_stepCount);
+                m_lastStatusDebug = wxString::Format("Clearing North backlash, step %d", m_stepCount);
                 break;
             }
             if (fabs(decDelta) >= BACKLASH_EXPECTED_DISTANCE)
@@ -962,7 +963,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                             m_markerPoint = currMountLocation;
                             m_lastClearRslt = decDelta;
                             m_lastStatus = wxString::Format(_("Clearing North backlash, step %d (up to limit of %d)"), m_stepCount, MAX_CLEARING_STEPS);
-                            Debug.Write(wxString::Format("BLT: %s, LastDecDelta = %0.2f px\n", m_lastStatus, decDelta));
+                            m_lastStatusDebug = wxString::Format("Clearing North backlash, step %d (up to limit of %d)", m_stepCount, MAX_CLEARING_STEPS);
+                            Debug.Write(wxString::Format("BLT: %s, LastDecDelta = %0.2f px\n", m_lastStatusDebug, decDelta));
                             break;
                         }
                     }
@@ -997,6 +999,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             if (m_stepCount < m_northPulseCount && !OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))
             {
                 m_lastStatus = wxString::Format(_("Moving North for %d ms, step %d / %d"), m_pulseWidth, m_stepCount + 1, m_northPulseCount);
+                m_lastStatusDebug = wxString::Format("Moving North for %d ms, step %d / %d", m_pulseWidth, m_stepCount + 1, m_northPulseCount);
                 double deltaN;
                 if (m_stepCount >= 1)
                 {
@@ -1008,7 +1011,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     deltaN = 0;
                     m_markerPoint = currMountLocation;            // Marker point at start of Dec moves North
                 }
-                Debug.Write(wxString::Format("BLT: %s, DecLoc = %0.2f, DeltaDec = %0.2f\n", m_lastStatus, currMountLocation.Y, deltaN));
+                Debug.Write(wxString::Format("BLT: %s, DecLoc = %0.2f, DeltaDec = %0.2f\n", m_lastStatusDebug, currMountLocation.Y, deltaN));
                 m_northBLSteps.push_back(currMountLocation.Y);
                 pFrame->ScheduleAxisMove(m_scope, NORTH, m_pulseWidth, MOVEOPTS_CALIBRATION_MOVE);
                 m_stepCount++;
@@ -1046,7 +1049,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             if (m_stepCount < m_northPulseCount)
             {
                 m_lastStatus = wxString::Format(_("Moving South for %d ms, step %d / %d"), m_pulseWidth, m_stepCount + 1, m_northPulseCount);
-                Debug.Write(wxString::Format("BLT: %s, DecLoc = %0.2f\n", m_lastStatus, currMountLocation.Y));
+                m_lastStatusDebug = wxString::Format("Moving South for %d ms, step %d / %d", m_pulseWidth, m_stepCount + 1, m_northPulseCount);
+                Debug.Write(wxString::Format("BLT: %s, DecLoc = %0.2f\n", m_lastStatusDebug, currMountLocation.Y));
                 m_southBLSteps.push_back(currMountLocation.Y);
                 pFrame->ScheduleAxisMove(m_scope, SOUTH, m_pulseWidth, MOVEOPTS_CALIBRATION_MOVE);
                 m_stepCount++;
