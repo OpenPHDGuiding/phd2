@@ -170,10 +170,10 @@ static wxString PointingInfo()
 static void GuidingHeader(wxFFile& file)
 // output guiding header to log file
 {
+    file.Write("Equipment Profile = " + pConfig->GetCurrentProfile() + "\n");
+
     file.Write(pFrame->GetSettingsSummary());
     file.Write(pFrame->pGuider->GetSettingsSummary());
-
-    file.Write("Equipment Profile = " + pConfig->GetCurrentProfile() + "\n");
 
     if (pCamera)
     {
@@ -187,7 +187,8 @@ static void GuidingHeader(wxFFile& file)
     if (pSecondaryMount)
         file.Write(pSecondaryMount->GetSettingsSummary());
 
-    file.Write(wxString::Format("%s\n", PointingInfo()));
+    file.Write(PointingInfo());
+    file.Write("\n");
 
     file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
         pFrame->pGuider->LockPosition().X,
@@ -416,15 +417,16 @@ void GuidingLog::StartCalibration(const Mount *pCalibrationMount)
     m_file.Write("Calibration Begins at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
     m_file.Write("Equipment Profile = " + pConfig->GetCurrentProfile() + "\n");
 
-    assert(pCalibrationMount && pCalibrationMount->IsConnected());
+    m_file.Write(pFrame->GetSettingsSummary());
+    m_file.Write(pFrame->pGuider->GetSettingsSummary());
 
     if (pCamera)
     {
-        // phdlab v0.5.3 expects camera name on a line by itself
-        m_file.Write(wxString::Format("Camera = %s\nExposure = %s\n",
-            pCamera->Name, pFrame->ExposureDurationSummary()));
+        m_file.Write(pCamera->GetSettingsSummary());
+        m_file.Write("Exposure = " + pFrame->ExposureDurationSummary() + "\n");
     }
-    m_file.Write(pFrame->PixelScaleSummary() + "\n");
+
+    assert(pCalibrationMount && pCalibrationMount->IsConnected());
 
     m_file.Write("Mount = " + pCalibrationMount->Name());
     wxString calSettings = pCalibrationMount->CalibrationSettingsSummary();
@@ -432,7 +434,8 @@ void GuidingLog::StartCalibration(const Mount *pCalibrationMount)
         m_file.Write(", " + calSettings);
     m_file.Write("\n");
 
-    m_file.Write(wxString::Format("%s\n", PointingInfo()));
+    m_file.Write(PointingInfo());
+    m_file.Write("\n");
 
     m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
                 pFrame->pGuider->LockPosition().X,
@@ -501,15 +504,6 @@ void GuidingLog::CalibrationComplete(const Mount *pCalibrationMount)
     ++m_summary.cal_cnt;
 
     assert(m_file.IsOpened());
-
-    CalibrationDetails calDetails;
-    pCalibrationMount->LoadCalibrationDetails(&calDetails);
-
-    if (calDetails.raGuideSpeed > 0)
-        m_file.Write(wxString::Format("Calibration guide speeds: RA = %0.1f a-s/s, Dec = %0.1f a-s/s\n",
-                                      3600. * calDetails.raGuideSpeed, 3600. * calDetails.decGuideSpeed));
-    else
-        m_file.Write("Calibration guide speeds: RA = Unknown, Dec = Unknown\n");
 
     m_file.Write(wxString::Format("Calibration complete, mount = %s.\n", pCalibrationMount->Name()));
 

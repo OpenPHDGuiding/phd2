@@ -1780,6 +1780,23 @@ PierSide Scope::SideOfPier()
     return PIER_SIDE_UNKNOWN;
 }
 
+static wxString GuideSpeedSummary()
+{
+    // use the pointing source's guide speeds on the assumption that
+    // the ASCOM/INDI reported guide rate will be the same as the ST4
+    // guide rate
+    Scope *scope = pPointingSource;
+
+    double raSpeed, decSpeed;
+    if (!scope->GetGuideRates(&raSpeed, &decSpeed))
+    {
+        return wxString::Format("RA Guide Speed = %0.1f a-s/s, Dec Guide Speed = %0.1f a-s/s",
+            3600.0 * raSpeed, 3600.0 * decSpeed);
+    }
+    else
+        return "RA Guide Speed = Unknown, Dec Guide Speed = Unknown";
+}
+
 // unstranslated settings summary
 wxString Scope::GetSettingsSummary() const
 {
@@ -1790,34 +1807,29 @@ wxString Scope::GetSettingsSummary() const
     LoadCalibrationDetails(&calDetails);
 
     // return a loggable summary of current mount settings
-    wxString rtnVal = Mount::GetSettingsSummary() +
+    wxString ret = Mount::GetSettingsSummary() +
         wxString::Format(
             "Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetMaxRaDuration(),
             GetMaxDecDuration(),
             DecGuideModeStr(GetDecGuideMode()));
 
-    double raSpeed;
-    double decSpeed;
-    if (!pPointingSource->GetGuideRates(&raSpeed, &decSpeed))
-    {
-        rtnVal += wxString::Format("RA Guide Speed = %0.1f a-s/s, Dec Guide Speed = %0.1f a-s/s, ",
-            3600.0 * raSpeed, 3600.0 * decSpeed);
-    }
-    else
-        rtnVal += "RA Guide Speed = Unknown, Dec Guide Speed = Unknown, ";
+    ret += GuideSpeedSummary() + ", ";
 
-    rtnVal += wxString::Format("Cal Dec = %s, Last Cal Issue = %s, Timestamp = %s\n",
+    ret += wxString::Format("Cal Dec = %s, Last Cal Issue = %s, Timestamp = %s\n",
         DeclinationStr(calInfo.declination, "%0.1f"), Mount::GetIssueString(calDetails.lastIssue),
         calDetails.origTimestamp);
 
-    return rtnVal;
+    return ret;
 }
 
 wxString Scope::CalibrationSettingsSummary() const
 {
-    return wxString::Format("Calibration Step = %d ms, Calibration Distance = %d px, Assume orthogonal axes = %s",
-        GetCalibrationDuration(), GetCalibrationDistance(), IsAssumeOrthogonal() ? "yes" : "no");
+    return wxString::Format("Calibration Step = %d ms, Calibration Distance = %d px, "
+                            "Assume orthogonal axes = %s\n",
+                            GetCalibrationDuration(), GetCalibrationDistance(),
+                            IsAssumeOrthogonal() ? "yes" : "no") +
+            GuideSpeedSummary();
 }
 
 wxString Scope::GetMountClassName() const
