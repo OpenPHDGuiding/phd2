@@ -737,9 +737,22 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     FloatImg conv(smoothed);
 
     // downsample the source image
-    const int downsample = 1;
+    int downsample = pFrame->pGuider->GetAutoSelDownsample();
+    if (downsample == 0 /* "Auto" */)
+    {
+        double const DOWNSAMPLE_SCALE_THRESH = 0.6;
+        double scale = pFrame->GetCameraPixelScale();
+
+        if (scale > DOWNSAMPLE_SCALE_THRESH)
+            downsample = 1;
+        else
+            downsample = 2;
+
+        Debug.Write(wxString::Format("AutoFind: auto downsample for scale %.2f => %dx\n", scale, downsample));
+    }
     if (downsample > 1)
     {
+        Debug.Write(wxString::Format("AutoFind: downsample %dx\n", downsample));
         FloatImg tmp;
         Downsample(tmp, conv, downsample);
         conv.Swap(tmp);

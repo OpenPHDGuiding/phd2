@@ -1087,7 +1087,6 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
 
     width = StringWidth(_("65535"));
 
-
     m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 10.0, 2.0, 0.5);
     m_MinHFD->SetDigits(1);
@@ -1097,14 +1096,21 @@ GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pPa
           "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
           "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
 
+    wxString ary[] = { _("Auto"), _T("1"), _T("2"), _T("3") };
+    m_autoSelDownsample = new wxChoice(pParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
+    wxSizer *dsamp = MakeLabeledControl(AD_szStarTracking, _("Auto-selection frame downsample"), m_autoSelDownsample,
+        _("Downsampling factor for star auto-selection camera frames. Choose a value greater than 1 if star "
+          "auto-selection is failing to recognize misshapen guide stars."));
+
     m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
-    pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));
+    pTrackingParams->Add(pStarMass, wxSizerFlags(0).Border(wxLEFT, 75));
     pTrackingParams->Add(pHFD, wxSizerFlags().Border(wxTOP, 3));
-    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxLEFT, 75));
+    pTrackingParams->Add(dsamp, wxSizerFlags().Border(wxTOP, 3).Right());
+    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxTOP, 3));
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 }
@@ -1122,6 +1128,7 @@ void GuiderOneStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderOneStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
     m_MinHFD->SetValue(m_pGuiderOneStar->GetMinStarHFD());
+    m_autoSelDownsample->SetSelection(m_pGuiderOneStar->GetAutoSelDownsample());
     m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
 
     GuiderConfigDialogCtrlSet::LoadValues();
@@ -1133,6 +1140,7 @@ void GuiderOneStarConfigDialogCtrlSet::UnloadValues()
     m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
     m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
     m_pGuiderOneStar->SetMinStarHFD(m_MinHFD->GetValue());
+    m_pGuiderOneStar->SetAutoSelDownsample(m_autoSelDownsample->GetSelection());
     if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
         pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();

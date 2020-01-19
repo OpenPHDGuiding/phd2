@@ -165,6 +165,7 @@ class Guider : public wxWindow
     LockPosShiftParams m_lockPosShift;
     bool m_measurementMode;
     double m_minStarHFD;
+    unsigned int m_autoSelDownsample;  // downsample factor for star auto-selection, 0=Auto
 
 protected:
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
@@ -265,6 +266,8 @@ public:
     void EnableMeasurementMode(bool enabled);
     void SetMinStarHFD(double val);
     double GetMinStarHFD() const;
+    void SetAutoSelDownsample(unsigned int val);
+    unsigned int GetAutoSelDownsample() const;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
@@ -399,6 +402,11 @@ inline bool Guider::GetBookmarksShown() const
 inline double Guider::GetMinStarHFD() const
 {
     return m_minStarHFD;
+}
+
+inline unsigned int Guider::GetAutoSelDownsample() const
+{
+    return m_autoSelDownsample;
 }
 
 #endif /* GUIDER_H_INCLUDED */

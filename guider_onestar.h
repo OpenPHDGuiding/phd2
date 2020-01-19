@@ -46,7 +46,6 @@ class GuiderConfigDialogCtrlSet;
 
 class GuiderOneStarConfigDialogCtrlSet : public GuiderConfigDialogCtrlSet
 {
-
 public:
     GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderOneStarConfigDialogCtrlSet();
@@ -56,6 +55,7 @@ public:
     wxCheckBox *m_pEnableStarMassChangeThresh;
     wxSpinCtrlDouble *m_pMassChangeThreshold;
     wxSpinCtrlDouble *m_MinHFD;
+    wxChoice *m_autoSelDownsample;
     wxCheckBox *m_pBeepForLostStarCtrl;
 
     virtual void LoadValues();
