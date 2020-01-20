@@ -651,6 +651,8 @@ static void Downsample(FloatImg& dst, const FloatImg& src, int downsample)
 
     dst.Init(wxSize(dw, dh));
 
+    float const d2 = downsample * downsample;
+
     for (int yy = 0; yy < dh; yy++)
     {
         for (int xx = 0; xx < dw; xx++)
@@ -659,7 +661,7 @@ static void Downsample(FloatImg& dst, const FloatImg& src, int downsample)
             for (int j = 0; j < downsample; j++)
                 for (int i = 0; i < downsample; i++)
                     sum += src.px[(yy * downsample + j) * width + xx * downsample + i];
-            float val = sum / (downsample * downsample);
+            float val = sum / d2;
             dst.px[yy * dw + xx] = val;
         }
     }
