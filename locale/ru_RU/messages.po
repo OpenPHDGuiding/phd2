@@ -43,8 +43,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 2.2.4\n"
 
 #: about_dialog.cpp:45 myframe.cpp:576
@@ -491,9 +491,9 @@ msgid ""
 msgstr ""
 "Вычисленные во время калибровки направления прямого восхождения и склонения "
 "сомнительны. Обычно они почти перпендикулярны, когда 'ошибка "
-"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет %"
-"s градусов, что часто вызвано недостаточным выравниванием полюса или большой "
-"периодической ошибкой по прямому восхождению."
+"ортогональности' составляет менее 10 градусов. Сейчас же ошибка составляет "
+"%s градусов, что часто вызвано недостаточным выравниванием полюса или "
+"большой периодической ошибкой по прямому восхождению."
 
 #: calreview_dialog.cpp:604
 #, c-format
@@ -519,8 +519,8 @@ msgid ""
 msgstr ""
 "Скорости гидирования по прямому восхождению и склонению отличаются на "
 "непредвиденное значение. Для склонения %0.0f градусов скорость по α должна "
-"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет %"
-"0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
+"быть примерно %0.0f%% от скорости по склонению, но сейчас она составляет "
+"%0.0f%%. Это обычно означает, что калибровка по одной из осей неточна, что "
 "может привести к ошибкам гидирования."
 
 #: calreview_dialog.cpp:651
@@ -771,7 +771,7 @@ msgstr "Отсутствует параметр %s, необходимый др�
 #: cam_ascom.cpp:473
 msgid ""
 "Could not create ASCOM camera object. See the debug log for more information."
-msgstr "Невозможно создать объект ASCOM camera, см. лог отладки"
+msgstr "Невозможно создать объект ASCOM camera, см. лог отладки."
 
 #: cam_ascom.cpp:496 rotator_ascom.cpp:176
 msgid "ASCOM driver problem: Connect"
@@ -902,10 +902,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Фатальная ошибка на шаге %d при подсоединении камеры TIS"
 
-#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:547
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
 msgstr "Ошибка выделения памяти"
 
@@ -982,7 +981,7 @@ msgstr "Выбор камеры INDI"
 
 #: cam_indi.cpp:686 cam_indi.cpp:706 gear_simulator.cpp:691
 msgid "Unsupported type or read error loading FITS file"
-msgstr "Неподдерживаемый тип или ошибка чтения файла FITS"
+msgstr "Неизвестный тип или ошибка чтения файла FITS"
 
 #: cam_indi.cpp:692 gear_simulator.cpp:680 gear_simulator.cpp:1527
 msgid "FITS file is not of an image"
@@ -1541,13 +1540,13 @@ msgstr ""
 #: gear_dialog.cpp:451 gear_dialog.cpp:455 gear_dialog.cpp:687
 #: gear_dialog.cpp:1092 gear_dialog.cpp:1842 gear_dialog.cpp:1843
 #: gear_dialog.cpp:1844 log_uploader.cpp:183 mount.cpp:144 mount.cpp:168
-#: mount.cpp:846 myframe.cpp:2948 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:328 scope.cpp:370 scope.cpp:413 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:846 myframe.cpp:2948 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
+#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
+#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:328
+#: scope.cpp:370 scope.cpp:413 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "Нет"
 
@@ -1735,6 +1734,8 @@ msgstr "Засветка по максимальной величине ADU:"
 msgid ""
 "Identify star saturation based on camera maximum-ADU value (recommended)"
 msgstr ""
+"Определить степень засветки звезды по максимальному значению ADU камеры "
+"(рекомендуется)"
 
 #: camera.cpp:968
 msgid "Saturation via star-profile"
@@ -1745,6 +1746,8 @@ msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
 msgstr ""
+"Определить степень засветки звезды по плоскому верху графика вне зависимости "
+"от яркости"
 
 #: camera.cpp:979
 msgid ""
@@ -1864,8 +1867,7 @@ msgid "Tracking rate axes"
 msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:541
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339 starcross_test.cpp:161
 msgid "Start"
 msgstr "Начать"
 
@@ -2250,7 +2252,7 @@ msgstr "Темновые кадры готовы"
 #: debuglog.cpp:125
 #, c-format
 msgid "unable to open file %s"
-msgstr ""
+msgstr "невозможно открыть файл %s"
 
 #: drift_tool.cpp:136
 msgid "Drift Align"
@@ -2420,7 +2422,7 @@ msgstr "Координаты сохранены."
 #: drift_tool.cpp:821 eegg.cpp:267 myframe_events.cpp:767
 #: polardrift_toolwin.cpp:55 staticpa_toolwin.cpp:100
 msgid "Please connect a camera first."
-msgstr "Сначала подключите камеру"
+msgstr "Сначала подключите камеру."
 
 #: drift_tool.cpp:830
 msgid ""
@@ -2447,7 +2449,7 @@ msgstr "Калибровочные данные не найдены."
 
 #: eegg.cpp:69 eegg.cpp:272 myframe_events.cpp:1050 myframe_events.cpp:1067
 msgid "Please connect a mount first."
-msgstr "Пожалуйста, сначала подключите камеру"
+msgstr "Сначала подключите монтировку."
 
 #: eegg.cpp:132
 msgid ", Mount"
@@ -2531,7 +2533,7 @@ msgstr ""
 
 #: gear_dialog.cpp:222
 msgid "New using Wizard..."
-msgstr "Новый с Помощником"
+msgstr "Новый с Помощником..."
 
 #: gear_dialog.cpp:222
 msgid "Run the first-light wizard to create a new profile"
@@ -2732,6 +2734,9 @@ msgid ""
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to connect to this camera anyway?"
 msgstr ""
+"После изменения камеры в профиле вы не сможете использовать существующие "
+"темновую библиотеку или карты плохих пикселей. Следует создать новый "
+"профиль. Хотите, несмотря на это, всё-таки поменять камеру?"
 
 #: gear_dialog.cpp:1108
 msgid "Camera Change Warning"
@@ -2941,7 +2946,7 @@ msgstr "Невозможно загрузить искусственное из�
 #: gear_simulator.cpp:1539
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
-msgstr "Неизвестная ошибка чтения файла FITS %d %d"
+msgstr "Неизвестный тип или ошибка чтения файла FITS %d %d"
 
 #: gear_simulator.cpp:1712
 msgid "PE amplitude and period must be > 0"
@@ -3434,8 +3439,8 @@ msgstr "Вес Предск."
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент обратной поправки. По умолчанию %.f%% , можно изменить при слишком "
 "быстром или слишком медленном реагировании"
@@ -3567,8 +3572,8 @@ msgstr "Агресcивность"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -3593,8 +3598,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Процент вычисленной поправки. По умолчанию %.f%% , можно изменить при "
 "слишком быстром или слишком медленном реагировании"
@@ -4494,22 +4499,26 @@ msgid ""
 "the forum.\n"
 "The first step is to select which files to upload.\n"
 msgstr ""
+"Для получения помощи на форуме PHD2 важно предъявить логи PHD2. Здесь вы "
+"можете загрузить логи на форум.\n"
+"Первый шаг - выбор файлов для загрузки.\n"
+"\v\n"
 
 #: log_uploader.cpp:730
 msgid "Select"
-msgstr ""
+msgstr "Выбрать"
 
 #: log_uploader.cpp:731
 msgid "Night Of"
-msgstr ""
+msgstr "Ночью"
 
 #: log_uploader.cpp:732
 msgid "Guided"
-msgstr ""
+msgstr "Гидировано"
 
 #: log_uploader.cpp:734
 msgid "Guide Asst."
-msgstr ""
+msgstr "Пом. Гид."
 
 #: log_uploader.cpp:752 log_uploader.cpp:1361
 msgid "Recent uploads"
@@ -4622,7 +4631,7 @@ msgstr ""
 
 #: log_uploader.cpp:1414
 msgid "Link copied to clipboard"
-msgstr ""
+msgstr "Ссылка скопирована в буфер обмена"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -5341,7 +5350,7 @@ msgstr "Яркость экрана"
 #: myframe.cpp:1046
 #, c-format
 msgid "Could not find help file %s"
-msgstr ""
+msgstr "Файл справки %s не найден"
 
 #: myframe.cpp:1215
 msgid "Trouble-shooting and Analysis"
@@ -5395,12 +5404,12 @@ msgstr "Подтвердить выход"
 #: myframe.cpp:2360
 #, c-format
 msgid "FITS file is not of an image: %s"
-msgstr ""
+msgstr "Файл FITS не содержит изображения: %s"
 
 #: myframe.cpp:2368 usImage.cpp:443
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
-msgstr ""
+msgstr "Неизвестный тип или ошибка чтения файла FITS %s "
 
 #: myframe.cpp:2378
 msgid ""
@@ -5413,17 +5422,17 @@ msgstr ""
 #: myframe.cpp:2389
 #, c-format
 msgid "Memory allocation error reading FITS file %s"
-msgstr ""
+msgstr "Ошибка выделения памяти при чтении файла FITS %s"
 
 #: myframe.cpp:2396
 #, c-format
 msgid "Error reading data from %s"
-msgstr ""
+msgstr "Ошибка чтения данных из %s"
 
 #: myframe.cpp:2425 usImage.cpp:487
 #, c-format
 msgid "Error opening FITS file %s"
-msgstr ""
+msgstr "Ошибка при открытии файла FITS %s"
 
 #: myframe.cpp:2489
 msgid ""
@@ -5457,7 +5466,7 @@ msgstr "Темновые кадры загружены"
 #: myframe.cpp:2593
 #, c-format
 msgid "Error saving darks FITS file %s"
-msgstr ""
+msgstr "Ошибка записи темнового файла FITS %s"
 
 #: myframe.cpp:2781
 msgid ""
@@ -5478,7 +5487,7 @@ msgid ""
 "Enter a focal length in millimeters, between %.f and %.f,\n"
 "or enter 0 if the focal length is not known"
 msgstr ""
-"Введите фокусное расстояние в миллиметрах между %.f и %.fили 0, если "
+"Введите фокусное расстояние в миллиметрах между %.f и %.f\vили 0, если "
 "фокусное расстояние неизвестно"
 
 #: myframe.cpp:2890 myframe.cpp:2973
@@ -6508,7 +6517,7 @@ msgstr "Новый помощник профилей"
 
 #: profile_wizard.cpp:191
 msgid "New Profile Wizard - "
-msgstr "Помощник нового профиля"
+msgstr "Помощник нового профиля "
 
 #: profile_wizard.cpp:222
 msgid "More Info"
@@ -6556,6 +6565,9 @@ msgid ""
 "aperture x f-ratio).  Typical finder scopes have a focal length of about "
 "165mm."
 msgstr ""
+"Фокуснное расстояние гида (или телескопа, если вы используете внеосевик или "
+"устройство адаптивной оптики).  Типичное фокусное расстояние гида примерно "
+"равно 165 мм. "
 
 #: profile_wizard.cpp:274
 msgid "Guide scope focal length (mm)"
@@ -6755,7 +6767,7 @@ msgstr ""
 
 #: profile_wizard.cpp:466
 msgid "Configuration Suggestion"
-msgstr ""
+msgstr "Предлагаемая конфигурация"
 
 #: profile_wizard.cpp:473
 msgid ""
@@ -6778,10 +6790,12 @@ msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
 msgstr ""
+"Убедитесь, что настройки EQMOD ASCOM заданы в соответствии с этим "
+"документом:\n"
 
 #: profile_wizard.cpp:481
 msgid "Open EQMOD document..."
-msgstr ""
+msgstr "Открыть документ EQMOD..."
 
 #: profile_wizard.cpp:487
 msgid "Go Back"
@@ -7625,6 +7639,8 @@ msgid ""
 "Please disable the Synchronous PulseGuide option in the mount's ASCOM driver "
 "settings. Enabling the setting can cause unpredictable results."
 msgstr ""
+"Отключите синхронное импульсное гидирование в настройках ASCOM драйвера "
+"монтировки. Включение может привести к непредсказуемым последствиям."
 
 #: scope_ascom.cpp:687
 msgid ""
@@ -8579,12 +8595,12 @@ msgstr "Файл FITS не содержит изображение:"
 #: usImage.cpp:448
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
-msgstr ""
+msgstr "Ошибка выделения памяти при загрузке файла FITS %s"
 
 #: usImage.cpp:453
 #, c-format
 msgid "Error reading data from FITS file %s"
-msgstr ""
+msgstr "Ошибка чтения данных из файла FITS %s"
 
 #: calreview_dialog.h:48
 msgid "Review Calibration"
