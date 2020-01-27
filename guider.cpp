@@ -212,6 +212,9 @@ void Guider::LoadProfileSettings()
     double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", 0.);
     SetMinStarHFD(minHFD);
 
+    unsigned int autoSelDownsample = wxMax(0, pConfig->Profile.GetInt("/guider/AutoSelDownsample", 0));
+    SetAutoSelDownsample(autoSelDownsample);
+
     LoadBookmarks(&m_bookmarks);
 
     // clear the display
@@ -1783,6 +1786,13 @@ void Guider::SetMinStarHFD(double val)
     Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
     pConfig->Profile.SetDouble("/guider/StarMinHFD", val);
     m_minStarHFD = val;
+}
+
+void Guider::SetAutoSelDownsample(unsigned int val)
+{
+    Debug.Write(wxString::Format("Setting AutoSelDownsample = %u\n", val));
+    pConfig->Profile.SetInt("/guider/AutoSelDownsample", val);
+    m_autoSelDownsample = val;
 }
 
 void Guider::SetBookmarksShown(bool show)
