@@ -139,7 +139,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     m_pDecBox = nullptr;
 }
 
-GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
+static GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
 {
     if (s == _("None"))
         return GUIDE_ALGORITHM_IDENTITY;
@@ -158,27 +158,33 @@ GUIDE_ALGORITHM GuideAlgorithmFromName(const wxString& s)
     return GUIDE_ALGORITHM_NONE;
 }
 
-wxString GuideAlgorithmName(int algo)
+// returns the untranslated name
+static wxString GuideAlgorithmName(int algo)
 {
     switch (algo)
     {
     case GUIDE_ALGORITHM_NONE:
     case GUIDE_ALGORITHM_IDENTITY:
     default:
-        return _("None");
+        return wxTRANSLATE("None");
     case GUIDE_ALGORITHM_HYSTERESIS:
-        return _("Hysteresis");
+        return wxTRANSLATE("Hysteresis");
     case GUIDE_ALGORITHM_LOWPASS:
-        return _("Lowpass");
+        return wxTRANSLATE("Lowpass");
     case GUIDE_ALGORITHM_LOWPASS2:
-        return _("Lowpass2");
+        return wxTRANSLATE("Lowpass2");
     case GUIDE_ALGORITHM_RESIST_SWITCH:
-        return _("Resist Switch");
+        return wxTRANSLATE("Resist Switch");
     case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-        return _("Predictive PEC");
+        return wxTRANSLATE("Predictive PEC");
     case GUIDE_ALGORITHM_ZFILTER:
-        return _("ZFilter");
+        return wxTRANSLATE("ZFilter");
     }
+}
+
+static wxString GuideAlgorithmNameTr(int algo)
+{
+    return wxGetTranslation(GuideAlgorithmName(algo));
 }
 
 // Lots of dynamic controls on this pane - keep the creation/management in ConfigDialogPane
@@ -226,12 +232,12 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (stepGuider)
         {
             for (int i = 0; i < WXSIZEOF(AO_ALGORITHMS); i++)
-                xAlgorithms.push_back(GuideAlgorithmName(AO_ALGORITHMS[i]));
+                xAlgorithms.push_back(GuideAlgorithmNameTr(AO_ALGORITHMS[i]));
         }
         else
         {
             for (int i = 0; i < WXSIZEOF(RA_ALGORITHMS); i++)
-                xAlgorithms.push_back(GuideAlgorithmName(RA_ALGORITHMS[i]));
+                xAlgorithms.push_back(GuideAlgorithmNameTr(RA_ALGORITHMS[i]));
         }
 
         width = StringArrayWidth(&xAlgorithms[0], xAlgorithms.size());
@@ -274,12 +280,12 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdM
         if (stepGuider)
         {
             for (int i = 0; i < WXSIZEOF(AO_ALGORITHMS); i++)
-                yAlgorithms.push_back(GuideAlgorithmName(AO_ALGORITHMS[i]));
+                yAlgorithms.push_back(GuideAlgorithmNameTr(AO_ALGORITHMS[i]));
         }
         else
         {
             for (int i = 0; i < WXSIZEOF(DEC_ALGORITHMS); i++)
-                yAlgorithms.push_back(GuideAlgorithmName(DEC_ALGORITHMS[i]));
+                yAlgorithms.push_back(GuideAlgorithmNameTr(DEC_ALGORITHMS[i]));
         }
 
         width = StringArrayWidth(&yAlgorithms[0], yAlgorithms.size());
@@ -439,10 +445,10 @@ void Mount::MountConfigDialogPane::ChangeYAlgorithm(const wxString& algoName)
 void Mount::MountConfigDialogPane::LoadValues()
 {
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
-    m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initXGuideAlgorithmSelection));
+    m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmNameTr(m_initXGuideAlgorithmSelection));
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
-    m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initYGuideAlgorithmSelection));
+    m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmNameTr(m_initYGuideAlgorithmSelection));
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
 
     if (m_pXGuideAlgorithmConfigDialogPane)
@@ -491,11 +497,11 @@ void Mount::MountConfigDialogPane::Undo()
             m_pYGuideAlgorithmConfigDialogPane->Undo();
         }
         m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
-        m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initXGuideAlgorithmSelection));
+        m_pXGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmNameTr(m_initXGuideAlgorithmSelection));
         wxCommandEvent dummy;
         OnXAlgorithmSelected(dummy);
         m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
-        m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmName(m_initYGuideAlgorithmSelection));
+        m_pYGuideAlgorithmChoice->SetStringSelection(GuideAlgorithmNameTr(m_initYGuideAlgorithmSelection));
         OnYAlgorithmSelected(dummy);
     }
 }
