@@ -187,22 +187,21 @@ static bool SelectInterfaceAndDevice()
 
     switch (resp) {
     case 0:
-        //          wxMessageBox("2: USB selected");
         odp.deviceType = DEV_USB;
         QueryUSBResults2 usbp;
-        //          wxMessageBox("3: Sending Query USB");
         err = SBIGUnivDrvCommand(CC_QUERY_USB2, 0, &usbp);
-        //          wxMessageBox("4: Query sent");
-        //          wxMessageBox(wxString::Format("5: %u cams found",usbp.camerasFound));
         Debug.Write(wxString::Format("SBIG: CC_QUERY_USB2 returns %hd, camerasFound = %hu\n", err, usbp.camerasFound));
         if (usbp.camerasFound > 1)
         {
-            //              wxMessageBox("5a: Enumerating cams");
             wxArrayString USBNames;
             int i;
-            for (i = 0; i<usbp.camerasFound; i++)
+            for (i = 0; i < usbp.camerasFound; i++)
+            {
+                Debug.Write(wxString::Format("SBIG: [%d] %s\n", i, usbp.usbInfo[i].name));
                 USBNames.Add(usbp.usbInfo[i].name);
+            }
             i = wxGetSingleChoiceIndex(_("Select USB camera"), _("Camera name"), USBNames);
+            Debug.Write(wxString::Format("SBIG: selected index %d\n", i));
             if (i == -1)
                 return true;
             odp.deviceType = DEV_USB1 + i;
@@ -212,10 +211,9 @@ static bool SelectInterfaceAndDevice()
         odp.deviceType = DEV_ETH;
         wxString IPstr = wxGetTextFromUser(_("IP address"), _("Enter IP address"),
             pConfig->Profile.GetString("/camera/sbig/ipaddr", _T("")));
+        Debug.Write(wxString::Format("SBIG: selected ipaddr %s\n", IPstr));
         if (IPstr.length() == 0)
-        {
             return true;
-        }
         pConfig->Profile.SetString("/camera/sbig/ipaddr", IPstr);
         wxString tmpstr = IPstr.BeforeFirst('.');
         unsigned long tmp;
@@ -238,25 +236,31 @@ static bool SelectInterfaceAndDevice()
     }
 #ifdef __WINDOWS__
     case 2:
+        Debug.Write("SBIG: selected LPT1\n");
         odp.deviceType = DEV_LPT1;
         odp.lptBaseAddress = 0x378;
         break;
     case 3:
+        Debug.Write("SBIG: selected LPT2\n");
         odp.deviceType = DEV_LPT2;
         odp.lptBaseAddress = 0x278;
         break;
     case 4:
+        Debug.Write("SBIG: selected LPT3\n");
         odp.deviceType = DEV_LPT3;
         odp.lptBaseAddress = 0x3BC;
         break;
 #else
     case 2:
+        Debug.Write("SBIG: selected USB1\n");
         odp.deviceType = DEV_USB1;
         break;
     case 3:
+        Debug.Write("SBIG: selected USB2\n");
         odp.deviceType = DEV_USB2;
         break;
     case 4:
+        Debug.Write("SBIG: selected USB3\n");
         odp.deviceType = DEV_USB3;
         break;
 #endif
@@ -316,7 +320,8 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox(wxString::Format(_("Cannot open SBIG camera: Code %d"),err), _("Error"));
+        Debug.Write(wxString::Format("SBIG: CC_OPEN_DEVICE err %d\n", err));
+        wxMessageBox(wxString::Format(_("Cannot open SBIG camera: Code %d"), err), _("Error"));
         Disconnect();
         return true;
     }
@@ -326,7 +331,8 @@ bool CameraSBIG::Connect(const wxString& camId)
     err = SBIGUnivDrvCommand(CC_ESTABLISH_LINK, NULL, &elr);
     if (err != CE_NO_ERROR)
     {
-        wxMessageBox (wxString::Format(_("Link to SBIG camera failed: Code %d"),err), _("Error"));
+        Debug.Write(wxString::Format("SBIG: CC_ESTABLISH_LINK err %d\n", err));
+        wxMessageBox(wxString::Format(_("Link to SBIG camera failed: Code %d"), err), _("Error"));
         Disconnect();
         return true;
     }
@@ -349,6 +355,7 @@ bool CameraSBIG::Connect(const wxString& camId)
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
         if (err != CE_NO_ERROR)
         {
+            Debug.Write(wxString::Format("SBIG: CC_GET_CCD_INFO err %d\n", err));
             wxMessageBox(_("Error getting info on main CCD"), _("Error"));
             Disconnect();
             return true;
