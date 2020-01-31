@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-06 23:19+0000\n"
-"PO-Revision-Date: 2019-09-25 12:25+0800\n"
+"PO-Revision-Date: 2020-01-31 14:25+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -508,8 +508,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:651
 msgid "Explanation"
@@ -878,10 +878,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:547
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1511,13 +1510,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:451 gear_dialog.cpp:455 gear_dialog.cpp:687
 #: gear_dialog.cpp:1092 gear_dialog.cpp:1842 gear_dialog.cpp:1843
 #: gear_dialog.cpp:1844 log_uploader.cpp:183 mount.cpp:144 mount.cpp:168
-#: mount.cpp:846 myframe.cpp:2948 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:328 scope.cpp:370 scope.cpp:413 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:846 myframe.cpp:2948 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
+#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
+#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:328
+#: scope.cpp:370 scope.cpp:413 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1692,7 +1691,7 @@ msgstr "星點飽和度 (以 Max-ADU 值來評量):"
 #: camera.cpp:961
 msgid ""
 "Identify star saturation based on camera maximum-ADU value (recommended)"
-msgstr ""
+msgstr "根據相機最大 ADU 值來判定星點飽和度 (建議)"
 
 #: camera.cpp:968
 msgid "Saturation via star-profile"
@@ -1702,7 +1701,7 @@ msgstr "星點飽和度 (透過 star-profile 來評量)"
 msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
-msgstr ""
+msgstr "不以亮度 (預設方式) 而是根據 flat-topped profile 來判別星點的飽和度"
 
 #: camera.cpp:979
 msgid ""
@@ -1822,8 +1821,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:210 guiding_assistant.cpp:541
-#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:200 polardrift_toolwin.cpp:339 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -2195,7 +2193,7 @@ msgstr "暗場影像完成"
 #: debuglog.cpp:125
 #, c-format
 msgid "unable to open file %s"
-msgstr ""
+msgstr "無法開啟 %s 檔案"
 
 #: drift_tool.cpp:136
 msgid "Drift Align"
@@ -2660,6 +2658,8 @@ msgid ""
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to connect to this camera anyway?"
 msgstr ""
+"更改此配置文件中的相機設定後您將無法使用現有的暗場影像庫或壞點影像庫, 您應該"
+"考慮為此設置建立新的配置文件, 是否要連接到此相機？"
 
 #: gear_dialog.cpp:1108
 msgid "Camera Change Warning"
@@ -3349,8 +3349,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:319
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3474,8 +3474,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3498,8 +3498,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4362,22 +4362,25 @@ msgid ""
 "the forum.\n"
 "The first step is to select which files to upload.\n"
 msgstr ""
+"在PHD2論壇中尋求幫助時, 請務必提供您的PHD2日誌, 這個工具將幫您上載日誌文件, "
+"以便大家可以在論壇中檢視它\n"
+"第一步是選擇要上傳的文件\n"
 
 #: log_uploader.cpp:730
 msgid "Select"
-msgstr ""
+msgstr "選取"
 
 #: log_uploader.cpp:731
 msgid "Night Of"
-msgstr ""
+msgstr "Night Of"
 
 #: log_uploader.cpp:732
 msgid "Guided"
-msgstr ""
+msgstr "已導星"
 
 #: log_uploader.cpp:734
 msgid "Guide Asst."
-msgstr ""
+msgstr "導星輔助."
 
 #: log_uploader.cpp:752 log_uploader.cpp:1361
 msgid "Recent uploads"
@@ -4484,7 +4487,7 @@ msgstr ""
 
 #: log_uploader.cpp:1414
 msgid "Link copied to clipboard"
-msgstr ""
+msgstr "連結已拷貝到剪貼簿"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -4626,7 +4629,7 @@ msgstr ""
 msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
-msgstr ""
+msgstr "設定檔中的像素大小與相機所回報的不同，重新校準以恢復正確的導星動作"
 
 #: mount.cpp:1303
 msgid "Calibration was too far from equator, recalibration is needed."
@@ -5184,7 +5187,7 @@ msgstr "Gamma"
 #: myframe.cpp:1046
 #, c-format
 msgid "Could not find help file %s"
-msgstr ""
+msgstr "找不到 %s 輔助檔案"
 
 #: myframe.cpp:1215
 msgid "Trouble-shooting and Analysis"
@@ -5234,12 +5237,12 @@ msgstr "確認關閉"
 #: myframe.cpp:2360
 #, c-format
 msgid "FITS file is not of an image: %s"
-msgstr ""
+msgstr "FITS 檔案: %s 不是一個正確的影像檔"
 
 #: myframe.cpp:2368 usImage.cpp:443
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
-msgstr ""
+msgstr "不支援的檔案格式或載入 %s FITS 檔案時發生讀取錯誤"
 
 #: myframe.cpp:2378
 msgid ""
@@ -5250,17 +5253,17 @@ msgstr "目前的暗場影像庫係以不相容格式建立, 請重建暗場影�
 #: myframe.cpp:2389
 #, c-format
 msgid "Memory allocation error reading FITS file %s"
-msgstr ""
+msgstr "讀取 FITS 檔案 %s 時發生記憶體配置錯誤"
 
 #: myframe.cpp:2396
 #, c-format
 msgid "Error reading data from %s"
-msgstr ""
+msgstr "讀取 %s 資料時發生錯誤"
 
 #: myframe.cpp:2425 usImage.cpp:487
 #, c-format
 msgid "Error opening FITS file %s"
-msgstr ""
+msgstr "開啟 FITS 檔案 %s 時發生錯誤"
 
 #: myframe.cpp:2489
 msgid ""
@@ -5289,13 +5292,15 @@ msgstr "載入暗場影像"
 #: myframe.cpp:2593
 #, c-format
 msgid "Error saving darks FITS file %s"
-msgstr ""
+msgstr "儲存暗場 FITS 檔案 %s 時發生錯誤"
 
 #: myframe.cpp:2781
 msgid ""
 "Guiding parameters have been reset because the binning or pixel size changed "
 "unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
+"導星參數因非預期的影像併合或像素大小改變而重置, 不同影像比例需使用個別的設置"
+"檔"
 
 #: myframe.cpp:2791
 msgid "Global Settings"
@@ -6349,6 +6354,8 @@ msgid ""
 "aperture x f-ratio).  Typical finder scopes have a focal length of about "
 "165mm."
 msgstr ""
+"這是導星鏡的焦長, 於使用離軸導星或調適應光學設備則是成像範圍 (焦長=口徑x焦"
+"比), 一般尋星鏡的焦距約為165mm"
 
 #: profile_wizard.cpp:274
 msgid "Guide scope focal length (mm)"
@@ -6533,7 +6540,7 @@ msgstr ""
 
 #: profile_wizard.cpp:466
 msgid "Configuration Suggestion"
-msgstr ""
+msgstr "設定建議值"
 
 #: profile_wizard.cpp:473
 msgid ""
@@ -6556,11 +6563,11 @@ msgstr ""
 msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
-msgstr ""
+msgstr "請確認 EQMOD ASCOM 設定有按照此文件的指示來設置供 PHD2\n"
 
 #: profile_wizard.cpp:481
 msgid "Open EQMOD document..."
-msgstr ""
+msgstr "開啟 EQMOD 文件..."
 
 #: profile_wizard.cpp:487
 msgid "Go Back"
@@ -7360,6 +7367,8 @@ msgid ""
 "Please disable the Synchronous PulseGuide option in the mount's ASCOM driver "
 "settings. Enabling the setting can cause unpredictable results."
 msgstr ""
+"請關閉赤道儀 ASCOM 驅動程式設定裡的 Synchronous PulseGuide 選項, 啟用這個選項"
+"會導致無法預測的結果"
 
 #: scope_ascom.cpp:687
 msgid ""
@@ -8287,12 +8296,12 @@ msgstr "該 FITS 檔案不是一個影像檔 "
 #: usImage.cpp:448
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
-msgstr ""
+msgstr "載入 FTIS 檔案 %s 時發生記憶體配置錯誤"
 
 #: usImage.cpp:453
 #, c-format
 msgid "Error reading data from FITS file %s"
-msgstr ""
+msgstr "讀取 FTIS 檔案 %s 資料時發生錯誤"
 
 #: calreview_dialog.h:48
 msgid "Review Calibration"
