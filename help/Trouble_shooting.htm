@@ -314,8 +314,7 @@ fainter stars to fine-tune the focus position using the PHD2 Star
 Profile tool to measure the size of the guide star. &nbsp;Good results
 can also be obtained using a Bahtinov focusing mask or focusing tools
 in other applications. &nbsp;It doesn't matter what you use so long as
-you reach a good focus position.<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel Problems</h3>Even
-with some high-quality guide cameras, you may encounter problems where
+you reach a good focus position.<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel and Star-Selection Problems</h3>With most guide cameras, you can encounter problems where
 clumps of hot pixels are mistaken by PHD2 as guide stars. &nbsp;This
 can be especially annoying if you're using automation tools and&nbsp;
 the 'auto-select' guide star selection is mistakenly choosing hot pixels. &nbsp;For many cameras, a
@@ -330,10 +329,33 @@ be found in the&nbsp;<a href="Darks_BadPixel_Maps.htm#Bad-pixel_Maps">Bad-pixel 
 chapter of this document. &nbsp;These problems are different from
 transient hot pixels, which can be caused by cosmic ray strikes on the
 sensor. &nbsp;Although cosmic ray hits can disrupt guiding, there's
-really little you can do about them. &nbsp;You should also make use of
-the Minimum-HFD property on the Guiding tab of the Advanced Dialog -
-that is probably the most effective single tool for avoiding these
-hot-pixel problems.<br><br><h3><a name="Problems-Restore_Guiding_Parameters"></a>Restoring a Working Baseline</h3>Despite&nbsp;advice to the contrary, you may have made rapid, uninformed
+really little you can do about them. &nbsp;<br><br>Since
+the recommended practice is to let PHD2 choose the guide star
+("auto-select"), you should use the available UI controls to help PHD2
+do the best possible job. &nbsp;The Minimum-HFD property on the Guiding
+tab of the Advanced Dialog is probably the most effective&nbsp;tool for
+avoiding&nbsp;hot-pixel selection. &nbsp;You should set its value to
+allow use of the smallest and faintest real star your setup can
+produce. &nbsp;You should use the Star Profile tool to measure a
+reasonable sample of legitimate guide stars for your system. &nbsp;Then
+set the Minimum-HFD value to accept those stars while rejecting smaller
+bright spots that are really just sensor defects. &nbsp;At the other
+end of the &nbsp;scale, you should also specify&nbsp;the brightest
+pixel value your system will deliver - the ADU value that represents
+saturation. &nbsp;By doing this, you will prevent PHD2 from rejecting
+stars that have a flattened profile but aren't really saturated. The
+saturation control resides on the Camera tab of the Advanced Dialog and
+is part of a control group labeled 'Star Saturation Detection'.
+&nbsp;Choose the option for 'Saturation by Max-ADU value', then set the
+value for your system. &nbsp;If you have an 8-bit camera, saturation
+will be around 255, while a 16-bit camera will saturate around 65000
+ADUs. &nbsp;If you don't know the correct value, you can just point the
+scope at a bright star, use a multi-second guide camera exposure, and
+again look at the Star Profile window. &nbsp;One of the things you'll
+see in that window is the 'Peak Value' - that's the ADU value for the
+brightest pixel &nbsp;and the one to use for setting the saturation
+point. &nbsp;Using both of these controls is likely to produce much
+better results for PHD2 guide star selection.<br><br><h3><a name="Problems-Restore_Guiding_Parameters"></a>Restoring a Working Baseline</h3>Despite&nbsp;advice to the contrary, you may have made rapid, uninformed
 changes to your guiding parameters only to find the performance stayed
 the same or even got worse. &nbsp;Before proceeding, you should restore the
 settings to their default values. &nbsp;If you used the
