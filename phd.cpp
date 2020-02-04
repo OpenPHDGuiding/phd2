@@ -86,6 +86,9 @@ wxIMPLEMENT_APP(PhdApp);
 static void DisableOSXAppNap()
 {
 #ifdef __APPLE__
+    // this is obsolete (2020-02-04) now that we disable AppNap in a
+    // launcher script (run_phd2_macos), but it is harmless so we can
+    // leave it in for a release or two
 # define  APPKEY "org.openphdguiding.phd2"
     int major = wxPlatformInfo::Get().GetOSMajorVersion();
     int minor = wxPlatformInfo::Get().GetOSMinorVersion();

@@ -556,11 +556,11 @@ if(APPLE)
   set(MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
   set(MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
   set(MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2019 openphdguiding.org" )
+  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2020 openphdguiding.org" )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
   set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set(MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2019 openphdguiding.org" )
+  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2020 openphdguiding.org" )
 
   # main target
   add_executable(
@@ -576,6 +576,8 @@ if(APPLE)
 
     # extra frameworks
     ${phd2_OSX_FRAMEWORKS}
+
+    ${phd_src_dir}/run_phd2_macos
   )
   set_target_properties(
     phd2
@@ -592,6 +594,12 @@ if(APPLE)
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
       PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
+  )
+
+  set_source_files_properties(
+    ${phd_src_dir}/run_phd2_macos
+    PROPERTIES
+      MACOSX_PACKAGE_LOCATION MacOS
   )
 
   # this is a workaround to what looks like a bug on cmake for Makefile generators
