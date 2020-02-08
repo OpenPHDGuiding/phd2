@@ -208,7 +208,7 @@ AltairCamera::AltairCamera(AltairCamType type)
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = false;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will frash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
 }
 
@@ -232,13 +232,13 @@ inline static int gain_pct(int minval, int maxval, int val)
     return (val - minval) * 100 / (maxval - minval);
 }
 
-static unsigned int Enum(const SDKLib& sdk, AltaircamInstV2 inst[ALTAIRCAM_MAX])
+static unsigned int Enum(const SDKLib& sdk, AltaircamDeviceV2 inst[ALTAIRCAM_MAX])
 {
     if (sdk.EnumV2)
         return sdk.EnumV2(inst);
 
     static AltaircamModelV2 s_model[ALTAIRCAM_MAX];
-    static AltaircamInst s_inst1[ALTAIRCAM_MAX];
+    static AltaircamDevice s_inst1[ALTAIRCAM_MAX];
 
     unsigned int count = sdk.Enum(s_inst1);
     for (unsigned int i = 0; i < count; i++)
@@ -279,7 +279,7 @@ bool AltairCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
     if (!LoadSDK())
         return true;
 
-    AltaircamInstV2 ai[ALTAIRCAM_MAX];
+    AltaircamDeviceV2 ai[ALTAIRCAM_MAX];
     unsigned numCameras = Enum(m_sdk, ai);
 
     for (int i = 0; i < numCameras; i++)
@@ -296,7 +296,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     if (!LoadSDK())
         return true;
 
-    AltaircamInstV2 ainst[ALTAIRCAM_MAX];
+    AltaircamDeviceV2 ainst[ALTAIRCAM_MAX];
     unsigned int numCameras = Enum(m_sdk, ainst);
 
     if (numCameras == 0)
@@ -308,7 +308,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     if (camId == DEFAULT_CAMERA_ID)
         camId = ainst[0].id;
 
-    const AltaircamInstV2 *pai = nullptr;
+    const AltaircamDeviceV2 *pai = nullptr;
     for (unsigned int i = 0; i < numCameras; i++)
     {
         if (camId == ainst[i].id)

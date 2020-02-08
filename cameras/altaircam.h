@@ -1,7 +1,7 @@
 #ifndef __altaircam_h__
 #define __altaircam_h__
 
-/* Version: 38.15031.2019.0706 */
+/* Version: 39.15529.2019.0906 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -248,10 +248,10 @@ typedef struct {
     char                  id[64];             /* unique and opaque id of a connected camera, for Altaircam_Open */
 #endif
     const AltaircamModelV2* model;
-}AltaircamInstV2; /* camera instance for enumerating */
+}AltaircamDeviceV2, AltaircamInstV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 38.15031.2019.0706
+    get the version of this dll/so/dylib, which is: 39.15529.2019.0906
 */
 #ifdef _WIN32
 ALTAIRCAM_API(const wchar_t*)   Altaircam_Version();
@@ -262,7 +262,7 @@ ALTAIRCAM_API(const char*)      Altaircam_Version();
 /*
     enumerate the cameras connected to the computer, return the number of enumerated.
 
-    AltaircamInstV2 arr[ALTAIRCAM_MAX];
+    AltaircamDeviceV2 arr[ALTAIRCAM_MAX];
     unsigned cnt = Altaircam_EnumV2(arr);
     for (unsigned i = 0; i < cnt; ++i)
         ...
@@ -270,9 +270,9 @@ ALTAIRCAM_API(const char*)      Altaircam_Version();
     if pti == NULL, then, only the number is returned.
     Altaircam_Enum is obsolete.
 */
-ALTAIRCAM_API(unsigned) Altaircam_EnumV2(AltaircamInstV2 pti[ALTAIRCAM_MAX]);
+ALTAIRCAM_API(unsigned) Altaircam_EnumV2(AltaircamDeviceV2 pti[ALTAIRCAM_MAX]);
 
-/* use the id of AltaircamInstV2, which is enumerated by Altaircam_EnumV2.
+/* use the id of AltaircamDeviceV2, which is enumerated by Altaircam_EnumV2.
     if id is NULL, Altaircam_Open will open the first camera.
 */
 #ifdef _WIN32
@@ -749,6 +749,18 @@ ALTAIRCAM_API(HRESULT)  Altaircam_get_Option(HAltaircam h, unsigned iOption, int
 ALTAIRCAM_API(HRESULT)  Altaircam_put_Roi(HAltaircam h, unsigned xOffset, unsigned yOffset, unsigned xWidth, unsigned yHeight);
 ALTAIRCAM_API(HRESULT)  Altaircam_get_Roi(HAltaircam h, unsigned* pxOffset, unsigned* pyOffset, unsigned* pxWidth, unsigned* pyHeight);
 
+/*  simulate replug:
+    return > 0, the number of device has been replug
+    return = 0, no device found
+    return E_ACCESSDENIED if without UAC Administrator privileges
+    for each device found, it will take about 3 seconds
+*/
+#ifdef _WIN32
+ALTAIRCAM_API(HRESULT) Altaircam_Replug(const wchar_t* id);
+#else
+ALTAIRCAM_API(HRESULT) Altaircam_Replug(const char* id);
+#endif
+
 #ifndef __ALTAIRCAMAFPARAM_DEFINED__
 #define __ALTAIRCAMAFPARAM_DEFINED__
 typedef struct {
@@ -898,7 +910,7 @@ typedef struct {
 }AltaircamModel; /* camera model */
 
 /*
-    obsolete, please use AltaircamInstV2
+    obsolete, please use AltaircamDeviceV2
 */
 typedef struct {
 #ifdef _WIN32
@@ -909,13 +921,13 @@ typedef struct {
     char                id[64];             /* unique and opaque id of a connected camera, for Altaircam_Open */
 #endif
     const AltaircamModel* model;
-}AltaircamInst; /* camera instance for enumerating */
+}AltaircamDevice; /* camera instance for enumerating */
 
 /*
     obsolete, please use Altaircam_EnumV2
 */
 ALTAIRCAM_DEPRECATED
-ALTAIRCAM_API(unsigned) Altaircam_Enum(AltaircamInst pti[ALTAIRCAM_MAX]);
+ALTAIRCAM_API(unsigned) Altaircam_Enum(AltaircamDevice pti[ALTAIRCAM_MAX]);
 
 typedef PALTAIRCAM_DATA_CALLBACK_V3 PALTAIRCAM_DATA_CALLBACK_V2;
 ALTAIRCAM_DEPRECATED
