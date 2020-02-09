@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#if defined (__linux__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__)
 
 #include <termios.h>
 #include <unistd.h>

@@ -39,7 +39,7 @@
  
  \***************************************************************************/
 
-#if defined (__APPLE__) || defined (__linux__)
+#if defined (__APPLE__) || defined (__linux__) || defined (__FreeBSD__)
 
 #include "SXMacLib.h"
 
@@ -720,7 +720,7 @@ UInt32 sxOpen(void** sxHandles)
             ret = libusb_open(device[i], &handle);
             if (0 == ret) {
 
-#if defined (__linux__)
+#if defined (__linux__) || defined (__FreeBSD__)
                 if (libusb_kernel_driver_active(handle, 0) == 1) {
                     ret = libusb_detach_kernel_driver(handle, 0);
                     if (ret == 0) {

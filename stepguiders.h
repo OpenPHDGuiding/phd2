@@ -41,7 +41,7 @@
 #define STEPGUIDER_SXAO
 #endif
 
-#if defined (__linux__)
+#if defined (__linux__) || defined (__FreeBSD__)
 #define STEPGUIDER_SXAO
 #endif
 

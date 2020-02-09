@@ -79,37 +79,43 @@ set_property(TARGET GPGuider PROPERTY FOLDER "Contributions/")
 # Unit tests
 #
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+    set(gtest_link GTest::GTest)
+else()
+    set(gtest_link gtest)
+endif()
+
 
 # Test for the GP
 add_executable(GaussianProcessTest ${gaussian_process_root_dir}/tests/gaussian_process/gaussian_process_test.cpp)
-target_link_libraries(GaussianProcessTest MPIIS_GP gtest)
+target_link_libraries(GaussianProcessTest MPIIS_GP ${gtest_link})
 target_include_directories(GaussianProcessTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS})
 set_property(TARGET GaussianProcessTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GaussianProcessTest COMMAND GaussianProcessTest)
 
 # Test for the math tools
 add_executable(MathToolboxTest ${gaussian_process_root_dir}/tests/gaussian_process/math_tools_test.cpp)
-target_link_libraries(MathToolboxTest MPIIS_GP_TOOLS gtest)
+target_link_libraries(MathToolboxTest MPIIS_GP_TOOLS ${gtest_link})
 target_include_directories(MathToolboxTest  PRIVATE ${gaussian_process_root_dir}/src ${GTEST_HEADERS} ${EIGEN_SRC})
 set_property(TARGET MathToolboxTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME MathToolboxTest COMMAND MathToolboxTest)
 
 # Test for the GP Guider
 add_executable(GPGuiderTest ${gaussian_process_root_dir}/tests/gaussian_process/gp_guider_test.cpp)
-target_link_libraries(GPGuiderTest MPIIS_GP gtest GPGuider)
+target_link_libraries(GPGuiderTest MPIIS_GP ${gtest_link} GPGuider)
 target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
 set_property(TARGET GPGuiderTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPGuiderTest COMMAND GPGuiderTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
 # Performance Test for the GP Guider
 add_executable(GuidePerformanceTest ${gaussian_process_root_dir}/tests/gaussian_process/guide_performance_test.cpp)
-target_link_libraries(GuidePerformanceTest MPIIS_GP gtest GPGuider)
+target_link_libraries(GuidePerformanceTest MPIIS_GP ${gtest_link} GPGuider)
 target_include_directories(GuidePerformanceTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
 set_property(TARGET GuidePerformanceTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GuidePerformanceTest COMMAND GuidePerformanceTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
 # Performance Evaluation for the GP Guider
 add_executable(GuidePerformanceEval ${gaussian_process_root_dir}/tests/gaussian_process/evaluate_performance.cpp)
-target_link_libraries(GuidePerformanceEval MPIIS_GP gtest GPGuider)
+target_link_libraries(GuidePerformanceEval MPIIS_GP ${gtest_link} GPGuider)
 target_include_directories(GuidePerformanceEval  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
 set_property(TARGET GuidePerformanceEval PROPERTY FOLDER "Unit tests/Contribution")

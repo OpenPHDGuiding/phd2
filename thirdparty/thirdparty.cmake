@@ -586,7 +586,29 @@ if(WIN32)
   include(${wxWidgets_USE_FILE})
   #message(${wxWidgets_USE_FILE})
 
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+  if(NOT DEFINED wxWidgets_PREFIX_DIRECTORY)
+    set(wxWidgets_PREFIX_DIRECTORY "/usr/local")
+  endif()
+  set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
 
+  find_program(wxWidgets_CONFIG_EXECUTABLE
+    NAMES "wxgtk3u-3.1-config"
+    PATHS ${wxWidgets_PREFIX_DIRECTORY}/bin NO_DEFAULT_PATH)
+  if(NOT wxWidgets_CONFIG_EXECUTABLE)
+    message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE from the given directory ${wxWidgets_PREFIX_DIRECTORY}")
+  endif()
+
+  set(wxRequiredLibs aui core base adv html net)
+  execute_process(COMMAND ${wxWidgets_CONFIG_EXECUTABLE} --libs ${wxRequiredLibs}
+	  OUTPUT_VARIABLE wxWidgets_LIBRARIES
+	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(${wxWidgets_LIBRARIES})
+  execute_process(COMMAND ${wxWidgets_CONFIG_EXECUTABLE} --cflags ${wxRwxRequiredLibs}
+	  OUTPUT_VARIABLE wxWidgets_CXXFLAGS
+	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(wxWidgets_CXX_FLAGS UNIX_COMMAND "${wxWidgets_CXXFLAGS}")
+  separate_arguments(wxWidgets_LDFLAGS UNIX_COMMAND "${wxWidgets_LDFLAGS}")
 else()
   if(wxWidgets_PREFIX_DIRECTORY)
     set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
@@ -1324,44 +1346,48 @@ if(UNIX AND NOT APPLE)
       PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
     )
 
-    find_library(asiCamera2
-                 NAMES ASICamera2
-                 NO_DEFAULT_PATHS
-                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${zwoarch})
+    # The binary libraries below do not support FreeBSD, ignore them
+    # when building for FreeBSD.
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+      find_library(asiCamera2
+             NAMES ASICamera2
+             NO_DEFAULT_PATHS
+             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${zwoarch})
 
-    if(NOT asiCamera2)
-      message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
-    endif()
-    message(STATUS "Found ASICamera2 lib ${asiCamera2}")
-    add_definitions(-DHAVE_ZWO_CAMERA=1)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
-
-    find_library(toupcam
-                 NAMES toupcam
-                 NO_DEFAULT_PATHS
-                 NO_CMAKE_SYSTEM_PATH
-                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/linux/${toupcam_arch})
-    if(NOT toupcam)
-      message(FATAL_ERROR "Cannot find the toupcam drivers")
-    endif()
-    message(STATUS "Found toupcam lib ${toupcam}")
-    add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
-    set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
-
-    if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
-      add_definitions(-DHAVE_QHY_CAMERA=1)
-
-      # be careful not to pick up any other qhy lib on the system
-      find_library(qhylib
-                   NAMES qhyccd
-                   NO_DEFAULT_PATH
-                   PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
-      if(NOT qhylib)
-        message(FATAL_ERROR "Cannot find the qhy SDK libs")
+      if(NOT asiCamera2)
+        message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
       endif()
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
-    endif()
+      message(STATUS "Found ASICamera2 lib ${asiCamera2}")
+      add_definitions(-DHAVE_ZWO_CAMERA=1)
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
+
+      find_library(toupcam
+             NAMES toupcam
+             NO_DEFAULT_PATHS
+             NO_CMAKE_SYSTEM_PATH
+             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/linux/${toupcam_arch})
+      if(NOT toupcam)
+        message(FATAL_ERROR "Cannot find the toupcam drivers")
+      endif()
+      message(STATUS "Found toupcam lib ${toupcam}")
+      add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
+
+      if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
+        add_definitions(-DHAVE_QHY_CAMERA=1)
+
+        # be careful not to pick up any other qhy lib on the system
+        find_library(qhylib
+               NAMES qhyccd
+               NO_DEFAULT_PATH
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
+        if(NOT qhylib)
+          message(FATAL_ERROR "Cannot find the qhy SDK libs")
+        endif()
+          set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
+      endif()
+    endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 
     find_program(LSB_RELEASE_EXEC lsb_release)
     if(LSB_RELEASE_EXEC)

@@ -114,7 +114,7 @@
 # define ZWO_ASI
 #endif
 
-#elif defined (__linux__)
+#elif defined (__linux__) || defined (__FreeBSD__)
 
 # define SIMULATOR
 # define CAM_QHY5
