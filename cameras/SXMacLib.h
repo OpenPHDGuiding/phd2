@@ -31,7 +31,7 @@
  
  \***************************************************************************/
 
-#if defined (__APPLE__) || defined (__linux__)
+#if defined (__APPLE__) || defined (__linux__) || defined (__FreeBSD__)
 
 typedef unsigned short UInt16;
 typedef unsigned char Boolean;

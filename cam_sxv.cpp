@@ -290,7 +290,7 @@ bool CameraSXV::Connect(const wxString& camId)
 {
     // returns true on error
 
-#if defined (__APPLE__) || defined (__linux__)
+#if defined (__APPLE__) || defined (__linux__) || defined (__FreeBSD__)
     sxSetTimeoutMS(m_timeoutMs);
 #endif
 

@@ -145,7 +145,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PHD_MESSAGES_CATALOG "messages"
 #endif
 
-#if defined (__linux__)
+#if defined (__linux__) || defined (__FreeBSD__)
 // On Linux the messages catalogs for all the applications are in the same directory
 // in /usr/share/locale, so the catalog name must be the application name.
 #define PHD_MESSAGES_CATALOG "phd2"

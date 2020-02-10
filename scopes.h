@@ -56,7 +56,7 @@
     //#define GUIDE_NEB
     #define GUIDE_EQMAC
 
-#elif defined (__linux__)
+#elif defined (__linux__) || defined (__FreeBSD__)
 
     #define GUIDE_ONCAMERA
     #define GUIDE_ONSTEPGUIDER
