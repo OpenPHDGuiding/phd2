@@ -620,14 +620,11 @@ if(WIN32)
   set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
   set(indiclient_root ${thirdparties_deflate_directory})
   set(indiclient_dir ${indiclient_root}/indiclient)
-  add_custom_target(unzip_indi ALL)
-  add_custom_command(TARGET unzip_indi PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${indiclient_dir}
-    COMMAND ${CMAKE_COMMAND} -E tar xvf ${indi_zip} --format=zip
-    WORKING_DIRECTORY ${indiclient_root}
-    DEPENDS ${indi_zip}
-    COMMENT "Unpacking INDI Client sources"
-    VERBATIM)
+  if(NOT EXISTS ${indiclient_dir})
+    message(STATUS "[thirdparty] untarring indiclient")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
+                    WORKING_DIRECTORY ${indiclient_root})
+  endif()
   include_directories(${indiclient_dir}/include)
   set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
   set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
