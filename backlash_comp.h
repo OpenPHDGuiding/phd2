@@ -129,13 +129,14 @@ public:
     void CleanUp();
     BLT_STATE GetBltState() const { return m_bltState; }
     MeasurementResults GetMeasurementQuality() const { return m_Rslt; }
+    int GetBLTMsmtPulseSize() const { return m_pulseWidth; }
     double GetBacklashResultPx() const { return m_backlashResultPx; }
     int GetBacklashResultMs() const { return m_backlashResultMs; }
     void GetBacklashSigma(double* SigmaPx, double* SigmaMs);
     bool GetBacklashExempted() const { return m_backlashExemption; }
     wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt);
-    void ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps);
+    void ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize);
     bool IsGraphable();
     const std::vector<double>& GetNorthSteps() const { return m_northBLSteps; }
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }

@@ -67,6 +67,7 @@ struct GADetails
     wxString RecDecMinMove;
     std::vector<double> BLTNorthMoves;
     std::vector<double> BLTSouthMoves;
+    int BLTMsmtPulse;
     wxString BLTAmount;
     wxString Recommendations;
 };
@@ -864,9 +865,9 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
     if (reviewMode)
-        m_backlashTool->ShowGraph(this, gaDetails.BLTNorthMoves, gaDetails.BLTSouthMoves);
+        m_backlashTool->ShowGraph(this, gaDetails.BLTNorthMoves, gaDetails.BLTSouthMoves, gaDetails.BLTMsmtPulse);
     else
-        m_backlashTool->ShowGraph(this, m_backlashTool->GetNorthSteps(), m_backlashTool->GetSouthSteps());
+        m_backlashTool->ShowGraph(this, m_backlashTool->GetNorthSteps(), m_backlashTool->GetSouthSteps(), m_backlashTool->GetBLTMsmtPulseSize());
 }
 
 void GuidingAsstWin::OnHelp(wxCommandEvent& event)
@@ -1022,6 +1023,7 @@ void GuidingAsstWin::SaveGAResults(const wxString* AllRecommendations)
     bool freshBLT = m_backlashTool && m_backlashTool->IsGraphable();        // Just did a BLT that is viewable
     if (freshBLT)
     {
+        pConfig->Profile.SetInt(prefix + "/BLT_MsmtPulse", m_backlashTool->GetBLTMsmtPulseSize());
         std::vector<double> northSteps = m_backlashTool->GetNorthSteps();
         std::vector<double> southSteps = m_backlashTool->GetSouthSteps();
         wxString stepStr = "";
@@ -1076,6 +1078,7 @@ void GuidingAsstWin::LoadGAResults(const wxString& TimeStamp, GADetails* Details
     Details->Recommendations = pConfig->Profile.GetString(prefix + "/recommendations", wxEmptyString);
     wxString northBLT = pConfig->Profile.GetString(prefix + "/BLT_North", wxEmptyString);
     wxString southBLT = pConfig->Profile.GetString(prefix + "/BLT_South", wxEmptyString);
+    Details->BLTMsmtPulse = pConfig->Profile.GetInt(prefix + "/BLT_MsmtPulse", -1);
     if (northBLT.Length() > 0 && southBLT.Length() > 0)
     {
         wxStringTokenizer tok;
@@ -1661,7 +1664,7 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
     if (!completed)
     {
         m_backlashTool->StopMeasurement();
-        m_othergrid->SetCellValue(m_backlash_loc, _("Backlash test aborted..."));
+        m_othergrid->SetCellValue(m_backlash_loc, _("Backlash test aborted, see graph..."));
         m_graphBtn->Enable(m_backlashTool->IsGraphable());
     }
 

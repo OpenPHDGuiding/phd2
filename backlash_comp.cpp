@@ -598,17 +598,17 @@ void BacklashComp::ApplyBacklashComp(unsigned int moveOptions, double yGuideDist
 class BacklashGraph : public wxDialog
 {
 public:
-    BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps);
-    wxBitmap CreateGraph(int graphicWidth, int graphicHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps);
+    BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize);
+    wxBitmap CreateGraph(int graphicWidth, int graphicHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize);
 };
 
-BacklashGraph::BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
+BacklashGraph::BacklashGraph(wxDialog *parent, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize)
     : wxDialog(parent, wxID_ANY, wxGetTranslation(_("Backlash Results")), wxDefaultPosition, wxSize(500, 400))
 {
     // Just but a big button area for the graph with a button below it
     wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
     // Use a bitmap button so we don't waste cycles in paint events
-    wxBitmap graph_bitmap = CreateGraph(450, 300, northSteps, southSteps);
+    wxBitmap graph_bitmap = CreateGraph(450, 300, northSteps, southSteps, PulseSize);
     wxStaticBitmap *graph = new wxStaticBitmap(this, wxID_ANY, graph_bitmap, wxDefaultPosition, wxDefaultSize, 0);
     vSizer->Add(graph, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxFIXED_MINSIZE, 5);
 
@@ -620,7 +620,7 @@ BacklashGraph::BacklashGraph(wxDialog *parent, const std::vector<double> &northS
     SetSizerAndFit(vSizer);
 }
 
-wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
+wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize)
 {
     wxMemoryDC dc;
     wxBitmap bmp(bmpWidth, bmpHeight, -1);
@@ -675,16 +675,24 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight, const std::vect
     dc.Clear();
 
     // Bottom and top labels
+    xOrigin = graphWindowWidth / 2;
+    yOrigin = graphWindowHeight + 40;           // Leave room at the top for labels and such
     dc.SetTextForeground(idealColor);
     dc.DrawText(_("Ideal"), 0.7 * graphWindowWidth, bmpHeight - 25);
     dc.SetTextForeground(decColor);
     dc.DrawText(_("Measured"), 0.2 * graphWindowWidth, bmpHeight - 25);
     dc.DrawText(_("North"), 0.1 * graphWindowWidth, 10);
     dc.DrawText(_("South"), 0.8 * graphWindowWidth, 10);
+    if (PulseSize > 0)
+    {
+        wxString pulseSzTxt = wxString::Format(_("Pulse size = %d ms"), PulseSize);
+        int w, h;
+        GetTextExtent(pulseSzTxt, &w, &h);
+
+        dc.DrawText(pulseSzTxt, wxMax(0, graphWindowWidth / 2 - w / 2 - 10), yOrigin - (h + 10));
+    }
     // Draw the axes
     dc.SetPen(axisPen);
-    xOrigin = graphWindowWidth / 2;
-    yOrigin = graphWindowHeight + 40;           // Leave room at the top for labels and such
     dc.DrawLine(0, yOrigin, graphWindowWidth, yOrigin);    // x
     dc.DrawLine(xOrigin, yOrigin, xOrigin, 0);             // y
 
@@ -1228,10 +1236,10 @@ void BacklashTool::GetBacklashSigma(double* SigmaPx, double* SigmaMs)
     }
 }
 
-// Launch odal dlg to show backlash test
-void BacklashTool::ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps)
+// Launch modal dlg to show backlash test
+void BacklashTool::ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize)
 {
-    BacklashGraph dlg(pGA, northSteps, southSteps);
+    BacklashGraph dlg(pGA, northSteps, southSteps, PulseSize);
     dlg.ShowModal();
 }
 
