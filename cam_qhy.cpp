@@ -54,6 +54,7 @@ class Camera_QHY : public GuideCamera
     unsigned short m_curBin;
     wxRect m_roi;
     bool Color;
+    wxByte m_bpp;
 
 public:
 
@@ -167,7 +168,7 @@ Camera_QHY::~Camera_QHY()
 
 wxByte Camera_QHY::BitsPerPixel()
 {
-    return 8;
+    return m_bpp;
 }
 
 bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
@@ -295,6 +296,9 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_camhandle = 0;
         return CamConnectFailed(_("Failed to get camera chip info"));
     }
+
+    Debug.Write(wxString::Format("QHY: cam reports BPP = %u\n", bpp));
+    m_bpp = bpp <= 8 ? 8 : 16;
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
