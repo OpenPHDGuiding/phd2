@@ -156,6 +156,7 @@ Camera_QHY::Camera_QHY()
     HasGainControl = true;
     RawBuffer = 0;
     Color = false;
+    m_bpp = 8; // actual value will be determined when camera is connected
     HasSubframes = true;
     m_camhandle = 0;
 }
