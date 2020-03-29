@@ -428,6 +428,9 @@ inline static int round_up(int v, int m)
     return round_down(v + m - 1, m);
 }
 
+// stopping capture causes problems on some cameras on Windows, disable it for now until we can test with a newer SDK
+//#define CAN_STOP_CAPTURE
+
 bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
@@ -538,11 +541,13 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
+#ifdef CAN_STOP_CAPTURE
     if (WorkerThread::InterruptRequested())
     {
         StopCapture(m_camhandle);
         return true;
     }
+#endif
     if (ret == QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY: 200ms delay needed\n"));
@@ -558,18 +563,22 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ret != QHYCCD_SUCCESS || (bpp != 8 && bpp != 16))
     {
         Debug.Write(wxString::Format("QHY get single frame ret %d bpp %u\n", ret, bpp));
+#ifdef CAN_STOP_CAPTURE
         StopCapture(m_camhandle);
+#endif
         // users report that reconnecting the camera after this failure allows
         // them to resume guiding so we'll try to reconnect automatically
         DisconnectWithAlert(_("QHY get frame failed"), RECONNECT);
         return true;
     }
 
+#ifdef CAN_STOP_CAPTURE
     if (WorkerThread::InterruptRequested())
     {
         StopCapture(m_camhandle);
         return true;
     }
+#endif
 
     if (useSubframe)
     {
