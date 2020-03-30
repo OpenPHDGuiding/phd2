@@ -980,10 +980,23 @@ void Scope::CheckCalibrationDuration(int currDuration)
 
     double raSpd;
     double decSpd;
-    bool haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);
+    bool haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);          // units of degrees/sec as in ASCOM
 
-    // Don't check the step size on very first calibration - mount guide speeds might be buggy or
-    // user might have some legit reason for his own calibration stepsize
+    double currSpd = 0.0021;           // 0.5x sidereal, eliminate compiler warning
+    if (haveRates)
+    {
+        double const siderealSecsPerSec = 0.9973;
+        currSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);          // fractional multiple of sidereal rate
+        if (currSpd >= 0.1 && currSpd <= 1.2)                                           // allow for rounding on 1x sidereal
+            haveRates = true;
+        else
+        {
+            Debug.Write("Mount driver is reporting bogus guide speeds\n");
+            haveRates = false;
+        }
+    }
+
+    // Don't check the step size on very first calibration and don't adjust if the reported mount guide speeds are bogus
     if (!haveRates || calDetails.raGuideSpeed <= 0)
         return;
 
@@ -991,11 +1004,9 @@ void Scope::CheckCalibrationDuration(int currDuration)
     if (!refineStepSize)
         return;
 
-    double const siderealSecsPerSec = 0.9973;
-    double tmpSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);
-    int rslt = currDuration;
+    int rslt;
     CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-        pCamera->Binning, tmpSpd, CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
+        pCamera->Binning, currSpd, CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
 
     if (rslt == currDuration)
         return;
