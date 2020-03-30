@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-04 22:29+0000\n"
+"POT-Creation-Date: 2020-03-30 05:52+0100\n"
 "PO-Revision-Date: 2019-10-27 22:40+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -79,7 +79,7 @@ msgstr "Autres Appareils"
 msgid "Advanced setup"
 msgstr "Configuration avancée"
 
-#: advanced_dialog.cpp:224 guiding_assistant.cpp:509 myframe.cpp:1248
+#: advanced_dialog.cpp:224 guiding_assistant.cpp:510 myframe.cpp:1248
 #: profile_wizard.cpp:330
 msgid "Help"
 msgstr "Aide"
@@ -94,7 +94,7 @@ msgstr "Monture"
 msgid "No mount specified"
 msgstr "Aucune monture renseignée"
 
-#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:384
+#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:385
 msgid "SNR"
 msgstr "RSB"
 
@@ -214,57 +214,62 @@ msgstr "Étoile sélectionnée à (999,9, 999,9)"
 msgid "Backlash Results"
 msgstr "Résultats du Jeu"
 
-#: backlash_comp.cpp:679
+#: backlash_comp.cpp:681
 msgid "Ideal"
 msgstr "Idéal"
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:683
 msgid "Measured"
 msgstr "Mesuré"
 
-#: backlash_comp.cpp:682 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:188
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:188
 #: scope.cpp:259 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "North"
 msgstr "Nord"
 
-#: backlash_comp.cpp:683 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:189
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:189
 #: scope.cpp:260 staticpa_toolwin.cpp:351 testguide.cpp:152
 msgid "South"
 msgstr "Sud"
 
-#: backlash_comp.cpp:734
+#: backlash_comp.cpp:688
+#, c-format
+msgid "Pulse size = %d ms"
+msgstr ""
+
+#: backlash_comp.cpp:742
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 "La mesure du jeu ne peut pas être faite. - Veuillez refaire la calibration "
 "de votre monture"
 
-#: backlash_comp.cpp:913
+#: backlash_comp.cpp:921
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 "La mesure du jeu ne peut pas être faite. - le taux de guidage Dec n'est pas "
 "disponible"
 
-#: backlash_comp.cpp:927
+#: backlash_comp.cpp:935
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "Élimination du jeu Nord, pas %d"
 
-#: backlash_comp.cpp:965
+#: backlash_comp.cpp:973
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "Élimination du jeu Nord, pas %d (jusqu'à la limite de %d)"
 
-#: backlash_comp.cpp:974
+#: backlash_comp.cpp:982
 msgid "Could not clear North backlash - test failed"
 msgstr "Impossible d'éliminer le jeu Nord - le test a échoué"
 
-#: backlash_comp.cpp:1001
+#: backlash_comp.cpp:1009
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "Déplacement vers le Nord pour %d ms, pas %d / %d"
 
-#: backlash_comp.cpp:1036
+#: backlash_comp.cpp:1044
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -272,34 +277,34 @@ msgstr ""
 "Étoile trop proche du bord pour une mesure précise du jeu. Choisissez une "
 "étoile plus loin du bord."
 
-#: backlash_comp.cpp:1051
+#: backlash_comp.cpp:1059
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "Déplacement vers le Sud pour %d ms, pas %d / %d"
 
-#: backlash_comp.cpp:1078
+#: backlash_comp.cpp:1086
 msgid "Dec movements too erratic - test failed"
 msgstr "Les mouvements Dec sont trop erratiques - le test a échoué"
 
-#: backlash_comp.cpp:1085
+#: backlash_comp.cpp:1093
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 "Le mont n'a jamais établi de mouvements sud cohérents - le test a échoué"
 
-#: backlash_comp.cpp:1103
+#: backlash_comp.cpp:1111
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "Produit une correction test du jeu de %d ms"
 
-#: backlash_comp.cpp:1178
+#: backlash_comp.cpp:1186
 msgid "Restoring star position"
 msgstr "Restaurer la position de l'étoile"
 
-#: backlash_comp.cpp:1187
+#: backlash_comp.cpp:1195
 msgid "Measurement complete"
 msgstr "Mesure complète"
 
-#: backlash_comp.cpp:1196
+#: backlash_comp.cpp:1204
 msgid "Measurement halted"
 msgstr "Mesure arrêtée"
 
@@ -353,8 +358,8 @@ msgstr "Erreur d'orthogonalité :"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1785
-#: guiding_assistant.cpp:1870
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1788
+#: guiding_assistant.cpp:1873
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -1189,55 +1194,55 @@ msgstr "Impossible de démarrer la pose"
 msgid "No camera"
 msgstr "Pas de caméra"
 
-#: cam_qhy.cpp:227
+#: cam_qhy.cpp:229
 msgid "Failed to initialize QHY SDK"
 msgstr "Impossible d'initialiser le SDK QHY"
 
-#: cam_qhy.cpp:239
+#: cam_qhy.cpp:241
 msgid "No compatible QHY cameras found"
 msgstr "Aucune caméra QHY compatible n'a été trouvée"
 
-#: cam_qhy.cpp:260
+#: cam_qhy.cpp:262
 msgid "Failed to connect to camera"
 msgstr "Impossible de se connecter à la caméra"
 
-#: cam_qhy.cpp:270
+#: cam_qhy.cpp:272
 msgid "SetQHYCCDStreamMode failed"
 msgstr "Échec de SetQHYCCDStreamMode"
 
-#: cam_qhy.cpp:278 cam_qhy.cpp:368
+#: cam_qhy.cpp:280 cam_qhy.cpp:373
 msgid "Init camera failed"
 msgstr "Échec de l'initialisation de la caméra"
 
-#: cam_qhy.cpp:286
+#: cam_qhy.cpp:288
 msgid "Failed to get gain range"
 msgstr "Impossible d'obtenir la gamme du gain"
 
-#: cam_qhy.cpp:296
+#: cam_qhy.cpp:298
 msgid "Failed to get camera chip info"
 msgstr "Impossible d'obtenir des informations sur la puce de la caméra"
 
-#: cam_qhy.cpp:326
+#: cam_qhy.cpp:331
 msgid "Failed to get camera bin info"
 msgstr "Impossible d'obtenir des informations sur la caméra"
 
-#: cam_qhy.cpp:345
+#: cam_qhy.cpp:350
 msgid "Failed to set camera binning"
 msgstr "Impossible de définir le binning de la caméra"
 
-#: cam_qhy.cpp:508
+#: cam_qhy.cpp:516
 msgid "Failed to set camera exposure"
 msgstr "Impossible de définir le temps d'exposition de la caméra"
 
-#: cam_qhy.cpp:525
+#: cam_qhy.cpp:533
 msgid "Failed to set camera gain"
 msgstr "Impossible de définir le gain de la caméra"
 
-#: cam_qhy.cpp:533
+#: cam_qhy.cpp:541
 msgid "QHY exposure failed"
 msgstr "Échec du temps d'exposition de la QHY"
 
-#: cam_qhy.cpp:559
+#: cam_qhy.cpp:571
 msgid "QHY get frame failed"
 msgstr "Échec dans la capture d'image de la QHY"
 
@@ -1614,7 +1619,7 @@ msgid "OK"
 msgstr "OK"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
-#: gear_simulator.cpp:1842 guiding_assistant.cpp:116 phdupdate.cpp:800
+#: gear_simulator.cpp:1842 guiding_assistant.cpp:117 phdupdate.cpp:800
 #: profile_wizard.cpp:1274
 msgid "Cancel"
 msgstr "Abandon"
@@ -1852,7 +1857,7 @@ msgstr "Suivi de Comète - Apprentissage Actif"
 msgid "Comet Tracking - Active"
 msgstr "Suivi de Comète - Actif"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1932
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1943
 msgid "Enable"
 msgstr "Activer"
 
@@ -1896,7 +1901,7 @@ msgstr "Axes"
 msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:545
+#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
 #: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333
 #: starcross_test.cpp:161
 msgid "Start"
@@ -1906,7 +1911,7 @@ msgstr "Démarrer"
 msgid "Start training the tracking rate."
 msgstr "Commencer l'apprentissage de la vitesse de guidage."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:555
+#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:556
 #: polardrift_toolwin.cpp:335 starcross_test.cpp:163 staticpa_toolwin.cpp:642
 msgid "Stop"
 msgstr "Arrêter"
@@ -2075,7 +2080,7 @@ msgstr "Ne plus demander"
 msgid "Confirm"
 msgstr "Confirmation"
 
-#: darks_dialog.cpp:60 guiding_assistant.cpp:380
+#: darks_dialog.cpp:60 guiding_assistant.cpp:381
 msgid "Exposure time"
 msgstr "Temps de pose"
 
@@ -4071,11 +4076,11 @@ msgstr "Biper à la perte de l'étoile"
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "Émettre une alarme sonore chaque fois que l'étoile guide est perdue"
 
-#: guiding_assistant.cpp:99
+#: guiding_assistant.cpp:100
 msgid "Extended Sampling"
 msgstr "Échantillonnage étendu"
 
-#: guiding_assistant.cpp:106
+#: guiding_assistant.cpp:107
 msgid ""
 "Additional data sampling is being done to better meaure Dec drift. Backlash "
 "testing \n"
@@ -4085,7 +4090,7 @@ msgstr ""
 "mesurer la dérive en déclinaison. \n"
 "Le test du jeu démarre automatiquement lorsque l'échantillonnage est terminé."
 
-#: guiding_assistant.cpp:108
+#: guiding_assistant.cpp:109
 msgid ""
 "Additional sampling is being done for accurate measurements.  Results will "
 "be shown when sampling is complete."
@@ -4093,115 +4098,115 @@ msgstr ""
 "Un échantillonnage supplémentaire est en cours pour des mesures précises. "
 "Les résultats seront affichés une fois l'échantillonnage terminé."
 
-#: guiding_assistant.cpp:111
+#: guiding_assistant.cpp:112
 msgid "Seconds remaining: "
 msgstr "Secondes restantes : "
 
-#: guiding_assistant.cpp:339
+#: guiding_assistant.cpp:340
 msgid "Guiding Assistant"
 msgstr "Assistant de Guidage"
 
-#: guiding_assistant.cpp:363
+#: guiding_assistant.cpp:364
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr " -999.99 px/min (-999.99 arc-sec/min )"
 
-#: guiding_assistant.cpp:365
+#: guiding_assistant.cpp:366
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr " 9.99 px ( 9.99 arc-sec)"
 
-#: guiding_assistant.cpp:367
+#: guiding_assistant.cpp:368
 msgid "Measurement Status"
 msgstr "État des mesures"
 
-#: guiding_assistant.cpp:378
+#: guiding_assistant.cpp:379
 msgid "Start time"
 msgstr "Démarrer"
 
-#: guiding_assistant.cpp:386
+#: guiding_assistant.cpp:387
 msgid "Star mass"
 msgstr "Masse Etoile"
 
-#: guiding_assistant.cpp:390
+#: guiding_assistant.cpp:391
 msgid "Elapsed time"
 msgstr "Temps écoulé"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:393
 msgid "Sample count"
 msgstr "Nombre d'échantillons"
 
-#: guiding_assistant.cpp:404
+#: guiding_assistant.cpp:405
 msgid "High-frequency Star Motion"
 msgstr "Mouvement des Étoiles à Haute Fréquence"
 
-#: guiding_assistant.cpp:415
+#: guiding_assistant.cpp:416
 msgid "Right ascension, RMS"
 msgstr "Ascension droite, RMS"
 
-#: guiding_assistant.cpp:419
+#: guiding_assistant.cpp:420
 msgid "Declination, RMS"
 msgstr "Déclinaison, RMS"
 
-#: guiding_assistant.cpp:423
+#: guiding_assistant.cpp:424
 msgid "Total, RMS"
 msgstr "Total, RMS"
 
-#: guiding_assistant.cpp:432
+#: guiding_assistant.cpp:433
 msgid "Other Star Motion"
 msgstr "Autre Mouvement d'Étoile"
 
-#: guiding_assistant.cpp:445
+#: guiding_assistant.cpp:446
 msgid "Right ascension, Peak"
 msgstr "Ascension droite, Pic"
 
-#: guiding_assistant.cpp:449
+#: guiding_assistant.cpp:450
 msgid "Declination, Peak"
 msgstr "Déclinaison, Pic"
 
-#: guiding_assistant.cpp:453
+#: guiding_assistant.cpp:454
 msgid "Right ascension, Peak-Peak"
 msgstr "Ascension droite, Pic-Pic"
 
-#: guiding_assistant.cpp:457
+#: guiding_assistant.cpp:458
 msgid "Right ascension Drift Rate"
 msgstr "Ascension droite Taux de Dérive"
 
-#: guiding_assistant.cpp:461
+#: guiding_assistant.cpp:462
 msgid "Right ascension Max Drift Rate"
 msgstr "Ascension droite Taux de Dérive Max"
 
-#: guiding_assistant.cpp:465
+#: guiding_assistant.cpp:466
 msgid "Drift-limiting exposure"
 msgstr "Exposition limitant la dérive"
 
-#: guiding_assistant.cpp:469
+#: guiding_assistant.cpp:470
 msgid "Declination Drift Rate"
 msgstr "Déclinaison Taux de Dérive"
 
-#: guiding_assistant.cpp:473
+#: guiding_assistant.cpp:474
 msgid "Declination Backlash"
 msgstr "Jeu de Déclinaison"
 
-#: guiding_assistant.cpp:477
+#: guiding_assistant.cpp:478
 msgid "Polar Alignment Error"
 msgstr "Erreur de l'Alignement Polaire"
 
-#: guiding_assistant.cpp:488
+#: guiding_assistant.cpp:489
 msgid "Recommendations"
 msgstr "Recommandations"
 
-#: guiding_assistant.cpp:504
+#: guiding_assistant.cpp:505
 msgid "Show Backlash Graph"
 msgstr "Montrer le Graphique du Jeu"
 
-#: guiding_assistant.cpp:505
+#: guiding_assistant.cpp:506
 msgid "Show graph of backlash measurement points"
 msgstr "Montrer les points de mesure du graphique du jeu"
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:523
 msgid "Measure Declination Backlash"
 msgstr "Mesurer le Jeu de Déclinaison"
 
-#: guiding_assistant.cpp:523
+#: guiding_assistant.cpp:524
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -4214,23 +4219,23 @@ msgstr ""
 "guide est perdue, augmentez la taille de la zone de recherche à au moins 20 "
 "px"
 
-#: guiding_assistant.cpp:546
+#: guiding_assistant.cpp:547
 msgid "Start measuring (disables guiding)"
 msgstr "Commencer les mesures (désactive le guidage)"
 
-#: guiding_assistant.cpp:550
+#: guiding_assistant.cpp:551
 msgid "Review previous"
 msgstr "Voir précédents"
 
-#: guiding_assistant.cpp:551
+#: guiding_assistant.cpp:552
 msgid "Review previous Guiding Assistant results"
 msgstr "Examiner les résultats précédents de l'Assistant de Guidage"
 
-#: guiding_assistant.cpp:556
+#: guiding_assistant.cpp:557
 msgid "Stop measuring and re-enable guiding"
 msgstr "Arrêter les mesures et réactiver le guidage"
 
-#: guiding_assistant.cpp:622
+#: guiding_assistant.cpp:623
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
@@ -4238,7 +4243,7 @@ msgstr ""
 "Rapport signal sur bruit; Une mesure de la façon dont PHD2 peut isoler "
 "l'étoile du ciel / bruit de fond"
 
-#: guiding_assistant.cpp:624
+#: guiding_assistant.cpp:625
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
@@ -4246,7 +4251,7 @@ msgstr ""
 "Mesure de la luminosité générale des étoiles. Pensez à utiliser 'Sélection "
 "Auto d'Étoile' (Alt-S) pour choisir l'étoile."
 
-#: guiding_assistant.cpp:629
+#: guiding_assistant.cpp:630
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -4255,7 +4260,7 @@ msgstr ""
 "droite ; Le guidage ne permet généralement pas de corriger les fluctuations "
 "aussi petites."
 
-#: guiding_assistant.cpp:630
+#: guiding_assistant.cpp:631
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -4264,44 +4269,44 @@ msgstr ""
 "Le guidage ne permet généralement pas de corriger les fluctuations aussi "
 "petites."
 
-#: guiding_assistant.cpp:633
+#: guiding_assistant.cpp:634
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr ""
 "Déviation maximale échantillon-échantillon observée en ascension droite."
 
-#: guiding_assistant.cpp:634
+#: guiding_assistant.cpp:635
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "Déviation maximale échantillon-échantillon observée en déclinaison."
 
-#: guiding_assistant.cpp:635
+#: guiding_assistant.cpp:636
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr ""
 "La déviation maximum pic à pic observée en ascension droite pendant la "
 "période d'échantillonnage."
 
-#: guiding_assistant.cpp:636
+#: guiding_assistant.cpp:637
 msgid "Estimated overall drift rate in right ascension."
 msgstr "Estimation du taux global de dérive en ascension droite."
 
-#: guiding_assistant.cpp:637
+#: guiding_assistant.cpp:638
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr ""
 "Taux de dérive maximal en ascension droite pendant la période "
 "d'échantillonnage."
 
-#: guiding_assistant.cpp:638
+#: guiding_assistant.cpp:639
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr ""
 "Temps de pose pour maintenir la dérive maximale en AD en dessous du niveau "
 "de déplacement minimal recommandé."
 
-#: guiding_assistant.cpp:639
+#: guiding_assistant.cpp:640
 msgid "Estimated overall drift rate in declination."
 msgstr "Estimation du taux général de dérive en déclinaison."
 
-#: guiding_assistant.cpp:640
+#: guiding_assistant.cpp:641
 msgid ""
 "Estimated declination backlash if test was completed. Results are time to "
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
@@ -4312,7 +4317,7 @@ msgstr ""
 "correspondant (arc-sec). L'estimation de l'incertitude est une unité d'écart-"
 "type"
 
-#: guiding_assistant.cpp:641
+#: guiding_assistant.cpp:642
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -4321,13 +4326,13 @@ msgstr ""
 "télescope est inconnue, la valeur affichée est une borne inférieure et "
 "l'erreur réelle peut être plus grande."
 
-#: guiding_assistant.cpp:672
+#: guiding_assistant.cpp:673
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 "Choisissez une étoile non saturée avec un bon RSB (>= 8) et commencez à "
 "guider"
 
-#: guiding_assistant.cpp:676
+#: guiding_assistant.cpp:677
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -4335,7 +4340,7 @@ msgstr ""
 "Cliquez sur Démarrer pour commencer les mesures. Le guidage sera désactivé "
 "pendant ce temps, de sorte que l'étoile se déplace autour."
 
-#: guiding_assistant.cpp:681
+#: guiding_assistant.cpp:682
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
@@ -4344,7 +4349,7 @@ msgstr ""
 "Cliquez sur Arrêter lorsque les valeurs d'alignement RMS et polaire sont "
 "stabilisées (au moins 2 minutes)."
 
-#: guiding_assistant.cpp:684
+#: guiding_assistant.cpp:685
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -4354,66 +4359,66 @@ msgstr ""
 "modifications souhaitées. Cliquez sur Démarrer pour répéter les mesures, ou "
 "fermez la fenêtre pour continuer à guider."
 
-#: guiding_assistant.cpp:696 guiding_assistant.cpp:700
+#: guiding_assistant.cpp:697 guiding_assistant.cpp:701
 msgid "Measuring backlash: "
 msgstr "Mesure du jeu : "
 
-#: guiding_assistant.cpp:733 guiding_assistant.cpp:1780
-#: guiding_assistant.cpp:1865
+#: guiding_assistant.cpp:734 guiding_assistant.cpp:1783
+#: guiding_assistant.cpp:1868
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:734 guiding_assistant.cpp:1782
-#: guiding_assistant.cpp:1867
+#: guiding_assistant.cpp:735 guiding_assistant.cpp:1785
+#: guiding_assistant.cpp:1870
 msgid "arc-sec"
 msgstr "arc-sec"
 
-#: guiding_assistant.cpp:741
+#: guiding_assistant.cpp:742
 msgid "ms (test impaired)"
 msgstr "ms (test altéré)"
 
-#: guiding_assistant.cpp:899 guiding_assistant.cpp:900 pierflip_tool.cpp:294
+#: guiding_assistant.cpp:900 guiding_assistant.cpp:901 pierflip_tool.cpp:294
 msgid "Apply"
 msgstr "Appliquer"
 
-#: guiding_assistant.cpp:1279 guiding_assistant.cpp:1916 myframe.cpp:3027
+#: guiding_assistant.cpp:1282 guiding_assistant.cpp:1919 myframe.cpp:3027
 #: myframe.cpp:3037
 msgid " "
 msgstr " "
 
-#: guiding_assistant.cpp:1280 guiding_assistant.cpp:1779
-#: guiding_assistant.cpp:1864
+#: guiding_assistant.cpp:1283 guiding_assistant.cpp:1782
+#: guiding_assistant.cpp:1867
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1318
+#: guiding_assistant.cpp:1321
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr "Essayez de maintenir vos temps de pose dans la plage de %.1fs à %.1fs"
 
-#: guiding_assistant.cpp:1325
+#: guiding_assistant.cpp:1328
 msgid "Try binning your guide camera"
 msgstr "Essayez le binning sur votre caméra de guidage"
 
-#: guiding_assistant.cpp:1333
+#: guiding_assistant.cpp:1336
 msgid "Consider re-doing your calibration "
 msgstr "Veuillez envisager de ré-effectuer votre étalonnage "
 
-#: guiding_assistant.cpp:1335
+#: guiding_assistant.cpp:1338
 msgid "(Prior alert)"
 msgstr "(Alerte préalable)"
 
-#: guiding_assistant.cpp:1337
+#: guiding_assistant.cpp:1340
 msgid "(Backlash clearing)"
 msgstr "(Élimination du jeu)"
 
-#: guiding_assistant.cpp:1347
+#: guiding_assistant.cpp:1350
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 "Veuillez utiliser une étoile plus brillante ou augmenter le temps de pose"
 
-#: guiding_assistant.cpp:1363 guiding_assistant.cpp:1369
+#: guiding_assistant.cpp:1366 guiding_assistant.cpp:1372
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
@@ -4421,37 +4426,37 @@ msgstr ""
 "Erreur de l'alignement polaire > 10 arc-min; Essayez d'utiliser l'outil "
 "'Alignement par la Dérive' pour améliorer l'alignement."
 
-#: guiding_assistant.cpp:1368
+#: guiding_assistant.cpp:1371
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr ""
 "Erreur de l'alignement polaire > 5 arc-min; Cela pourrait probablement être "
 "amélioré."
 
-#: guiding_assistant.cpp:1384
+#: guiding_assistant.cpp:1387
 msgid "Consider trying to improve focus on the guide camera"
 msgstr ""
 "Envisagez d'essayer d'améliorer la mise au point sur la caméra de guidage"
 
-#: guiding_assistant.cpp:1395
+#: guiding_assistant.cpp:1398
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "Essaye de définir un mouvement minimal en AD de %0.2f"
 
-#: guiding_assistant.cpp:1406
+#: guiding_assistant.cpp:1409
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Essaye de définir un mouvement minimal en Dec de %0.2f"
 
-#: guiding_assistant.cpp:1430
+#: guiding_assistant.cpp:1433
 msgid "Backlash is small, no compensation needed"
 msgstr "Le jeu est négligeable, aucune compensation nécessaire"
 
-#: guiding_assistant.cpp:1434
+#: guiding_assistant.cpp:1437
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "Essayez de commencer avec une compensation de jeu en Dec de %d ms"
 
-#: guiding_assistant.cpp:1437
+#: guiding_assistant.cpp:1440
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
@@ -4460,44 +4465,44 @@ msgstr ""
 "Le jeu est >= %d ms; vous devrez peut-être guider dans la seule direction "
 "Dec (actuellement %s)"
 
-#: guiding_assistant.cpp:1455
+#: guiding_assistant.cpp:1458
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "Essayez d'utiliser Lowpass2 pour le guidage Dec"
 
-#: guiding_assistant.cpp:1570
+#: guiding_assistant.cpp:1573
 msgid "Measuring..."
 msgstr "Mesure..."
 
-#: guiding_assistant.cpp:1664
-msgid "Backlash test aborted..."
-msgstr "Test du jeu interrompu..."
+#: guiding_assistant.cpp:1667
+msgid "Backlash test aborted, see graph..."
+msgstr ""
 
-#: guiding_assistant.cpp:1707 guiding_assistant.cpp:1713
+#: guiding_assistant.cpp:1710 guiding_assistant.cpp:1716
 msgid "Measuring backlash... "
 msgstr "Mesure du jeu... "
 
-#: guiding_assistant.cpp:1737
+#: guiding_assistant.cpp:1740
 msgid "Guiding stopped"
 msgstr "Guidage arrêté"
 
-#: guiding_assistant.cpp:1781 guiding_assistant.cpp:1866 statswindow.cpp:279
+#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1783 guiding_assistant.cpp:1868 statswindow.cpp:270
+#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871 statswindow.cpp:270
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869
+#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871
+#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874
 msgid "arc-sec/min"
 msgstr "arc-sec/min"
 
-#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:1790 guiding_assistant.cpp:1875
 msgid "arc-sec/sec"
 msgstr "arc-sec/sec"
 
@@ -5858,7 +5863,7 @@ msgstr ""
 "Pour ce profil d'équipement, rétabli automatiquement les données du dernier "
 "calibrage réussi après la connexion de l'équipement."
 
-#: myframe.cpp:3109 scope.cpp:1956
+#: myframe.cpp:3109 scope.cpp:1967
 msgid "Min"
 msgstr "Min"
 
@@ -5866,7 +5871,7 @@ msgstr "Min"
 msgid "Auto exposure minimum duration"
 msgstr "Temps minimum pose auto"
 
-#: myframe.cpp:3110 scope.cpp:1958
+#: myframe.cpp:3110 scope.cpp:1969
 msgid "Max"
 msgstr "Max"
 
@@ -7568,21 +7573,21 @@ msgstr ""
 msgid "Details..."
 msgstr "Détails..."
 
-#: scope.cpp:1209
+#: scope.cpp:1220
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "Échec Calibration AD : l'étoile n'a pas assez bougé"
 
-#: scope.cpp:1216
+#: scope.cpp:1227
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "Pas vers l'Ouest %3d, dist=%4.1f"
 
-#: scope.cpp:1286
+#: scope.cpp:1297
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "Pas vers l'Est %3d, dist=%4.1f"
 
-#: scope.cpp:1305
+#: scope.cpp:1316
 msgid ""
 "Advisory: Little or no east movement was measured, so guiding will probably "
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
@@ -7592,34 +7597,34 @@ msgstr ""
 "probablement altéré. Vérifiez le câble de guidage et utilisez l'outil Guide "
 "manuel pour confirmer le fonctionnement de base du support."
 
-#: scope.cpp:1366
+#: scope.cpp:1377
 msgid "Clearing backlash step 1"
 msgstr "Élimination de jeu étape 1"
 
-#: scope.cpp:1404
+#: scope.cpp:1415
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "Élimination de jeu étape %3d"
 
-#: scope.cpp:1423
+#: scope.cpp:1434
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "Échec Compensation du jeu : l'étoile n'a pas assez bougé"
 
-#: scope.cpp:1471
+#: scope.cpp:1482
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "Échec Calibration DEC : l'étoile n'a pas assez bougé"
 
-#: scope.cpp:1478
+#: scope.cpp:1489
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "Pas vers le Nord %3d, dist=%4.1f"
 
-#: scope.cpp:1564
+#: scope.cpp:1575
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "Pas vers le Sud %3d, dist=%4.1f"
 
-#: scope.cpp:1584
+#: scope.cpp:1595
 msgid ""
 "Advisory: Calibration succeessful but little or no south movement was "
 "measured, so guiding will probably be impaired.\n"
@@ -7635,7 +7640,7 @@ msgstr ""
 "Vérifiez le câble du guide et lisez l’aide en ligne pour savoir comment "
 "identifier ces types de problèmes (Guide manuel, Déclinaison)."
 
-#: scope.cpp:1588
+#: scope.cpp:1599
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding will probably be impaired. \n"
@@ -7651,7 +7656,7 @@ msgstr ""
 "Lisez l’aide en ligne pour savoir comment identifier ces types de problèmes "
 "(Manuel, Déclinaison)."
 
-#: scope.cpp:1593
+#: scope.cpp:1604
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding may be impaired.\n"
@@ -7667,24 +7672,24 @@ msgstr ""
 "Lisez l'aide en ligne pour savoir comment traiter ce type de problème (jeu "
 "de déclinaison)."
 
-#: scope.cpp:1653
+#: scope.cpp:1664
 #, c-format
 msgid "Nudge South %3d"
 msgstr "Incrément final vers le sud %3d"
 
-#: scope.cpp:1685 stepguider.cpp:755
+#: scope.cpp:1696 stepguider.cpp:755
 msgid "Calibration complete"
 msgstr "Calibration complete"
 
-#: scope.cpp:1846
+#: scope.cpp:1857
 msgid "Mount Guide Algorithms"
 msgstr "Algorithmes de Guidage de la Monture"
 
-#: scope.cpp:1884
+#: scope.cpp:1895
 msgid "Calibration step (ms)"
 msgstr "Pas de Calibration (ms)"
 
-#: scope.cpp:1885
+#: scope.cpp:1896
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -7692,11 +7697,11 @@ msgstr ""
 "Combien de temps doit durer une impulsion de guidage pendant la "
 "calibration ? Cliquez \"Calculer\" pour déterminer une valeur appropriée."
 
-#: scope.cpp:1889
+#: scope.cpp:1900
 msgid "Advanced..."
 msgstr "Avancé..."
 
-#: scope.cpp:1890
+#: scope.cpp:1901
 msgid ""
 "Click to open the Calibration Parameters Dialog to review or change all "
 "calibration parameters"
@@ -7704,11 +7709,11 @@ msgstr ""
 "Cliquez pour ouvrir la boîte de dialogue Paramètres de Calibration pour "
 "examiner ou modifier tous les paramètres de calibration"
 
-#: scope.cpp:1902
+#: scope.cpp:1913
 msgid "Reverse Dec output after meridian flip"
 msgstr "Inverser la sortie Dec après retournement au méridien"
 
-#: scope.cpp:1904
+#: scope.cpp:1915
 msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
@@ -7717,21 +7722,21 @@ msgstr ""
 "basculement de méridien. Changer ce réglage effacera les données "
 "d'étalonnage existantes"
 
-#: scope.cpp:1910
+#: scope.cpp:1921
 msgid "Stop guiding when mount slews"
 msgstr "Arrêter le guidage lorsque la monture bouge"
 
-#: scope.cpp:1912
+#: scope.cpp:1923
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 "Si vous cochez cette case, PHD arrêtera le guidage si la monture commence à "
 "bouger"
 
-#: scope.cpp:1918
+#: scope.cpp:1929
 msgid "Assume Dec orthogonal to RA"
 msgstr "Supposer Dec orthogonale à AD"
 
-#: scope.cpp:1921
+#: scope.cpp:1932
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -7741,7 +7746,7 @@ msgstr ""
 "calibration. Empêche l'erreur périodique en AD d'affecter la calibration en "
 "Dec. Cette option prend effet lors de la calibration en Dec."
 
-#: scope.cpp:1933
+#: scope.cpp:1944
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -7749,45 +7754,45 @@ msgstr ""
 "Cochez cette case si vous souhaitez appliquer une impulsion de guidage de "
 "compensation de jeu lorsque le sens de déclinaison est inversé."
 
-#: scope.cpp:1941
+#: scope.cpp:1952
 msgid "Amount"
 msgstr "Quantité"
 
-#: scope.cpp:1942
+#: scope.cpp:1953
 msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr "Taille de l'impulsion de guidage de la compensation du jeu (mSec)"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Mount Backlash Compensation"
 msgstr "Compensation du jeu de la Monture"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Backlash Compensation"
 msgstr "Compensation du jeu"
 
-#: scope.cpp:1957
+#: scope.cpp:1968
 msgid "Minimum length of backlash compensation pulse (mSec)."
 msgstr "Longueur minimale de l'impulsion de compensation du jeu (mSec)."
 
-#: scope.cpp:1959
+#: scope.cpp:1970
 msgid "Maximum length of backlash compensation pulse (mSec)."
 msgstr "Longueur maximale de l'impulsion de compensation du jeu (mSec)."
 
-#: scope.cpp:1965
+#: scope.cpp:1976
 msgid "Use Dec compensation"
 msgstr "Utiliser la compensation de la Dec"
 
-#: scope.cpp:1968
+#: scope.cpp:1979
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 "Ajuste automatiquement le taux de guidage en AD en ce basant sur la "
 "déclinaison du télescope"
 
-#: scope.cpp:1974
+#: scope.cpp:1985
 msgid "Max RA duration"
 msgstr "Durée Max AD"
 
-#: scope.cpp:1975 scope.cpp:2177
+#: scope.cpp:1986 scope.cpp:2188
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -7795,11 +7800,11 @@ msgstr ""
 "La plus longue impulsion à envoyer en AD\n"
 "Par défaut = 2500 ms."
 
-#: scope.cpp:1980
+#: scope.cpp:1991
 msgid "Max Dec duration"
 msgstr "Durée Max Dec"
 
-#: scope.cpp:1981 scope.cpp:2184
+#: scope.cpp:1992 scope.cpp:2195
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -7807,21 +7812,21 @@ msgstr ""
 "La plus longue impulsion à envoyer en déclinaison\n"
 "Par défaut = 2500 ms. Augmentez cette valeur si la dérive est rapide."
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Dec guide mode"
 msgstr "Mode de guidage Dec"
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 "Les directions selon lesquelles les instructions de guidage en déclinaison "
 "seront émises"
 
-#: scope.cpp:2179
+#: scope.cpp:2190
 msgid "Mx RA"
 msgstr "Mx AD"
 
-#: scope.cpp:2186
+#: scope.cpp:2197
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -8866,6 +8871,9 @@ msgstr "Connexion à la caméra..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Connexion au rotateur..."
+
+#~ msgid "Backlash test aborted..."
+#~ msgstr "Test du jeu interrompu..."
 
 #~ msgid " (est)"
 #~ msgstr " (est)"

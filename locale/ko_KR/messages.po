@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-04 22:29+0000\n"
+"POT-Creation-Date: 2020-03-30 05:52+0100\n"
 "PO-Revision-Date: 2020-01-19 14:09+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -77,7 +77,7 @@ msgstr "기타장치"
 msgid "Advanced setup"
 msgstr "고급설정"
 
-#: advanced_dialog.cpp:224 guiding_assistant.cpp:509 myframe.cpp:1248
+#: advanced_dialog.cpp:224 guiding_assistant.cpp:510 myframe.cpp:1248
 #: profile_wizard.cpp:330
 msgid "Help"
 msgstr "도움말"
@@ -92,7 +92,7 @@ msgstr "마운트"
 msgid "No mount specified"
 msgstr "마운트가 지정되지 않음"
 
-#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:384
+#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:385
 msgid "SNR"
 msgstr ""
 
@@ -210,53 +210,58 @@ msgstr "선택된 별 위치 (999.9, 999.9)"
 msgid "Backlash Results"
 msgstr "백래시 결과"
 
-#: backlash_comp.cpp:679
+#: backlash_comp.cpp:681
 msgid "Ideal"
 msgstr "완벽한"
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:683
 msgid "Measured"
 msgstr "측정된"
 
-#: backlash_comp.cpp:682 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:188
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:188
 #: scope.cpp:259 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "North"
 msgstr "북쪽"
 
-#: backlash_comp.cpp:683 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:189
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:189
 #: scope.cpp:260 staticpa_toolwin.cpp:351 testguide.cpp:152
 msgid "South"
 msgstr "남쪽"
 
-#: backlash_comp.cpp:734
+#: backlash_comp.cpp:688
+#, c-format
+msgid "Pulse size = %d ms"
+msgstr ""
+
+#: backlash_comp.cpp:742
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "백래시 측정을 실행할 수 없음. 적도의 교정을 새로 실행하십시오"
 
-#: backlash_comp.cpp:913
+#: backlash_comp.cpp:921
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr "백래시 측정을 실행할 수 없음. 적위 가이딩 속도를 사용할 수 없음"
 
-#: backlash_comp.cpp:927
+#: backlash_comp.cpp:935
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "북쪽 백래시 제거중, 단계 %d"
 
-#: backlash_comp.cpp:965
+#: backlash_comp.cpp:973
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "북쪽 백래시 제거중, 단계 %d (최대한도 %d)"
 
-#: backlash_comp.cpp:974
+#: backlash_comp.cpp:982
 msgid "Could not clear North backlash - test failed"
 msgstr "북쪽 백래시를 제거하지 못함-테스트 실패"
 
-#: backlash_comp.cpp:1001
+#: backlash_comp.cpp:1009
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "북쪽으로 이동 %d ms, 단계  %d / %d"
 
-#: backlash_comp.cpp:1036
+#: backlash_comp.cpp:1044
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
@@ -264,33 +269,33 @@ msgstr ""
 "선택한 별이 가장자리에 너무 가까이 있어 백래시를 정확하게 측정하기 어려움. 가"
 "장자리에서 더 멀리 떨어져있는 별을 선택하십시오."
 
-#: backlash_comp.cpp:1051
+#: backlash_comp.cpp:1059
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "남쪽으로 이동 %d ms, 단계 %d / %d"
 
-#: backlash_comp.cpp:1078
+#: backlash_comp.cpp:1086
 msgid "Dec movements too erratic - test failed"
 msgstr "적위 움직임이 너무 불규칙 함-테스트 실패"
 
-#: backlash_comp.cpp:1085
+#: backlash_comp.cpp:1093
 msgid "Mount never established consistent south moves - test failed"
 msgstr "남쪽으로 일관된 움직임이 없음-테스트 실패"
 
-#: backlash_comp.cpp:1103
+#: backlash_comp.cpp:1111
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "%d 밀리초 테스트 백래시 교정"
 
-#: backlash_comp.cpp:1178
+#: backlash_comp.cpp:1186
 msgid "Restoring star position"
 msgstr "별 위치복원"
 
-#: backlash_comp.cpp:1187
+#: backlash_comp.cpp:1195
 msgid "Measurement complete"
 msgstr "측정완료"
 
-#: backlash_comp.cpp:1196
+#: backlash_comp.cpp:1204
 msgid "Measurement halted"
 msgstr "측정이 중단됨"
 
@@ -344,8 +349,8 @@ msgstr "직교오차:"
 msgid "a-s/sec"
 msgstr "아크초/초"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1785
-#: guiding_assistant.cpp:1870
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1788
+#: guiding_assistant.cpp:1873
 msgid "px/sec"
 msgstr "픽셀/초"
 
@@ -1156,55 +1161,55 @@ msgstr "노출을 시작할 수 없음"
 msgid "No camera"
 msgstr "카메라 없음"
 
-#: cam_qhy.cpp:227
+#: cam_qhy.cpp:229
 msgid "Failed to initialize QHY SDK"
 msgstr "QHY SDK 초기화 실패"
 
-#: cam_qhy.cpp:239
+#: cam_qhy.cpp:241
 msgid "No compatible QHY cameras found"
 msgstr "호환 가능한 QHY 카메라를 찾을 수 없음"
 
-#: cam_qhy.cpp:260
+#: cam_qhy.cpp:262
 msgid "Failed to connect to camera"
 msgstr "카메라 연결 실패"
 
-#: cam_qhy.cpp:270
+#: cam_qhy.cpp:272
 msgid "SetQHYCCDStreamMode failed"
 msgstr "SetQHYCCDStreamMode 실패"
 
-#: cam_qhy.cpp:278 cam_qhy.cpp:368
+#: cam_qhy.cpp:280 cam_qhy.cpp:373
 msgid "Init camera failed"
 msgstr "카메라 초기화 실패"
 
-#: cam_qhy.cpp:286
+#: cam_qhy.cpp:288
 msgid "Failed to get gain range"
 msgstr "게인 범위를 가져오지 못함"
 
-#: cam_qhy.cpp:296
+#: cam_qhy.cpp:298
 msgid "Failed to get camera chip info"
 msgstr "카메라 칩 정보를 가져오지 못함"
 
-#: cam_qhy.cpp:326
+#: cam_qhy.cpp:331
 msgid "Failed to get camera bin info"
 msgstr "카메라 비닝 정보를 가져오지 못함"
 
-#: cam_qhy.cpp:345
+#: cam_qhy.cpp:350
 msgid "Failed to set camera binning"
 msgstr "카메라 비닝 설정 실패"
 
-#: cam_qhy.cpp:508
+#: cam_qhy.cpp:516
 msgid "Failed to set camera exposure"
 msgstr "카메라 노출 설정 실패"
 
-#: cam_qhy.cpp:525
+#: cam_qhy.cpp:533
 msgid "Failed to set camera gain"
 msgstr "카메라 게인 설정 실패"
 
-#: cam_qhy.cpp:533
+#: cam_qhy.cpp:541
 msgid "QHY exposure failed"
 msgstr "QHY 노출 실패"
 
-#: cam_qhy.cpp:559
+#: cam_qhy.cpp:571
 msgid "QHY get frame failed"
 msgstr "QHY 프레임 져오기 실패"
 
@@ -1576,7 +1581,7 @@ msgid "OK"
 msgstr "확인"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
-#: gear_simulator.cpp:1842 guiding_assistant.cpp:116 phdupdate.cpp:800
+#: gear_simulator.cpp:1842 guiding_assistant.cpp:117 phdupdate.cpp:800
 #: profile_wizard.cpp:1274
 msgid "Cancel"
 msgstr "취소"
@@ -1800,7 +1805,7 @@ msgstr "혜성 추적-훈련 활성"
 msgid "Comet Tracking - Active"
 msgstr "혜성 추적-활성"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1932
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1943
 msgid "Enable"
 msgstr "사용가능"
 
@@ -1844,7 +1849,7 @@ msgstr "축"
 msgid "Tracking rate axes"
 msgstr "추적 속도 축"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:545
+#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
 #: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333
 #: starcross_test.cpp:161
 msgid "Start"
@@ -1854,7 +1859,7 @@ msgstr "시작"
 msgid "Start training the tracking rate."
 msgstr "추적 속도 훈련 시작."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:555
+#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:556
 #: polardrift_toolwin.cpp:335 starcross_test.cpp:163 staticpa_toolwin.cpp:642
 msgid "Stop"
 msgstr "중지"
@@ -2017,7 +2022,7 @@ msgstr "다시 묻지 않음"
 msgid "Confirm"
 msgstr "확인"
 
-#: darks_dialog.cpp:60 guiding_assistant.cpp:380
+#: darks_dialog.cpp:60 guiding_assistant.cpp:381
 msgid "Exposure time"
 msgstr "노출시간"
 
@@ -3935,11 +3940,11 @@ msgstr "별을 잃어버린 경우 경고음"
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "가이드 별을 잃어버린 경우 언제든지 알람을 울림"
 
-#: guiding_assistant.cpp:99
+#: guiding_assistant.cpp:100
 msgid "Extended Sampling"
 msgstr "확장 샘플링"
 
-#: guiding_assistant.cpp:106
+#: guiding_assistant.cpp:107
 msgid ""
 "Additional data sampling is being done to better meaure Dec drift. Backlash "
 "testing \n"
@@ -3948,7 +3953,7 @@ msgstr ""
 "적위 표류를 더 잘 측정하기 위해 추가 데이터 샘플링이 수행됩니다. \n"
 "샘플링이 완료되면 백래시 테스트가 자동으로 시작됩니다."
 
-#: guiding_assistant.cpp:108
+#: guiding_assistant.cpp:109
 msgid ""
 "Additional sampling is being done for accurate measurements.  Results will "
 "be shown when sampling is complete."
@@ -3956,115 +3961,115 @@ msgstr ""
 "정확한 측정하기 위해 추가 데이터 샘플링이 수행됩니다. 샘플링이 완료되면 결과"
 "를 보여줍니다."
 
-#: guiding_assistant.cpp:111
+#: guiding_assistant.cpp:112
 msgid "Seconds remaining: "
 msgstr "남은 시간: "
 
-#: guiding_assistant.cpp:339
+#: guiding_assistant.cpp:340
 msgid "Guiding Assistant"
 msgstr "가이딩 길잡이"
 
-#: guiding_assistant.cpp:363
+#: guiding_assistant.cpp:364
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr " -999.99 픽셀/분 (-999.99 아크초/분 )"
 
-#: guiding_assistant.cpp:365
+#: guiding_assistant.cpp:366
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr " 9.99 픽셀 ( 9.99 아크초 )"
 
-#: guiding_assistant.cpp:367
+#: guiding_assistant.cpp:368
 msgid "Measurement Status"
 msgstr "측정 상태"
 
-#: guiding_assistant.cpp:378
+#: guiding_assistant.cpp:379
 msgid "Start time"
 msgstr "시작 시간"
 
-#: guiding_assistant.cpp:386
+#: guiding_assistant.cpp:387
 msgid "Star mass"
 msgstr "별의 질량"
 
-#: guiding_assistant.cpp:390
+#: guiding_assistant.cpp:391
 msgid "Elapsed time"
 msgstr "경과 시간"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:393
 msgid "Sample count"
 msgstr "샘플 수"
 
-#: guiding_assistant.cpp:404
+#: guiding_assistant.cpp:405
 msgid "High-frequency Star Motion"
 msgstr "고주파 별 움직임"
 
-#: guiding_assistant.cpp:415
+#: guiding_assistant.cpp:416
 msgid "Right ascension, RMS"
 msgstr "적경, RMS"
 
-#: guiding_assistant.cpp:419
+#: guiding_assistant.cpp:420
 msgid "Declination, RMS"
 msgstr "적위, RMS"
 
-#: guiding_assistant.cpp:423
+#: guiding_assistant.cpp:424
 msgid "Total, RMS"
 msgstr "전체, RMS"
 
-#: guiding_assistant.cpp:432
+#: guiding_assistant.cpp:433
 msgid "Other Star Motion"
 msgstr "기타 별 움직임"
 
-#: guiding_assistant.cpp:445
+#: guiding_assistant.cpp:446
 msgid "Right ascension, Peak"
 msgstr "적경, 피크"
 
-#: guiding_assistant.cpp:449
+#: guiding_assistant.cpp:450
 msgid "Declination, Peak"
 msgstr "적위, 피크"
 
-#: guiding_assistant.cpp:453
+#: guiding_assistant.cpp:454
 msgid "Right ascension, Peak-Peak"
 msgstr "적경, 피크-피크"
 
-#: guiding_assistant.cpp:457
+#: guiding_assistant.cpp:458
 msgid "Right ascension Drift Rate"
 msgstr "적경 표류 속도"
 
-#: guiding_assistant.cpp:461
+#: guiding_assistant.cpp:462
 msgid "Right ascension Max Drift Rate"
 msgstr "적경 최대 표류 속도"
 
-#: guiding_assistant.cpp:465
+#: guiding_assistant.cpp:466
 msgid "Drift-limiting exposure"
 msgstr "표류-제한 노출"
 
-#: guiding_assistant.cpp:469
+#: guiding_assistant.cpp:470
 msgid "Declination Drift Rate"
 msgstr "적위 표류 속도"
 
-#: guiding_assistant.cpp:473
+#: guiding_assistant.cpp:474
 msgid "Declination Backlash"
 msgstr "적위 백래시"
 
-#: guiding_assistant.cpp:477
+#: guiding_assistant.cpp:478
 msgid "Polar Alignment Error"
 msgstr "극축정렬 오류"
 
-#: guiding_assistant.cpp:488
+#: guiding_assistant.cpp:489
 msgid "Recommendations"
 msgstr "추천"
 
-#: guiding_assistant.cpp:504
+#: guiding_assistant.cpp:505
 msgid "Show Backlash Graph"
 msgstr "백래시 그래프 보기"
 
-#: guiding_assistant.cpp:505
+#: guiding_assistant.cpp:506
 msgid "Show graph of backlash measurement points"
 msgstr "백래시 측정 지점의 그래프 보기"
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:523
 msgid "Measure Declination Backlash"
 msgstr "적위 백래시 측정"
 
-#: guiding_assistant.cpp:523
+#: guiding_assistant.cpp:524
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -4075,36 +4080,36 @@ msgstr ""
 "래시를 측정합니다. 선택한 별이 북쪽으로 이동할 공간이 충분한지 확인하십시오."
 "가이드 별을 잏어버린 경우 검색 영역의 크기를 20픽셀 이상으로 늘리십시오"
 
-#: guiding_assistant.cpp:546
+#: guiding_assistant.cpp:547
 msgid "Start measuring (disables guiding)"
 msgstr "측정 시작(가이딩 불활성화)"
 
-#: guiding_assistant.cpp:550
+#: guiding_assistant.cpp:551
 msgid "Review previous"
 msgstr "이전 리뷰"
 
-#: guiding_assistant.cpp:551
+#: guiding_assistant.cpp:552
 msgid "Review previous Guiding Assistant results"
 msgstr "이전 가이딩 길잡이 결과 리뷰"
 
-#: guiding_assistant.cpp:556
+#: guiding_assistant.cpp:557
 msgid "Stop measuring and re-enable guiding"
 msgstr "측정 중지와 가이딩 재시작"
 
-#: guiding_assistant.cpp:622
+#: guiding_assistant.cpp:623
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
 msgstr "신호대 잡음 비; PHD2가 배경에서 별을 얼마나 잘 인식하는지를 측정합니다"
 
-#: guiding_assistant.cpp:624
+#: guiding_assistant.cpp:625
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
 msgstr ""
 "전체적인 별 밝기 측정. 별을 선택하려면 '별 자동 선택'(Alt-S)을 사용하십시오."
 
-#: guiding_assistant.cpp:629
+#: guiding_assistant.cpp:630
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -4112,7 +4117,7 @@ msgstr ""
 "전형적인 고주파 적경 별 이동 측정; 가이드는 일반적으로 이러한 작은 변동은 교"
 "정 할 수 없습니다."
 
-#: guiding_assistant.cpp:630
+#: guiding_assistant.cpp:631
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
@@ -4120,37 +4125,37 @@ msgstr ""
 "전형적인 고주파 적위 별 이동 측정; 가이드는 일반적으로 이러한 작은 변동은 교"
 "정 할 수 없습니다."
 
-#: guiding_assistant.cpp:633
+#: guiding_assistant.cpp:634
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "적경에서 보이는 최대 샘플-샘플 꺽임."
 
-#: guiding_assistant.cpp:634
+#: guiding_assistant.cpp:635
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "적위에서 보이는 최대 샘플-샘플 꺽임."
 
-#: guiding_assistant.cpp:635
+#: guiding_assistant.cpp:636
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr "샘플링 동안 적경의 최대 피크-피크 꺽임."
 
-#: guiding_assistant.cpp:636
+#: guiding_assistant.cpp:637
 msgid "Estimated overall drift rate in right ascension."
 msgstr "적경의 추정 표류 속도."
 
-#: guiding_assistant.cpp:637
+#: guiding_assistant.cpp:638
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr "샘플링 동안 적경의 최대 표류 속도."
 
-#: guiding_assistant.cpp:638
+#: guiding_assistant.cpp:639
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr "권장 최소 이동 레벨 아래로 최대 적경 표류를 유지하기위한 노출 시간."
 
-#: guiding_assistant.cpp:639
+#: guiding_assistant.cpp:640
 msgid "Estimated overall drift rate in declination."
 msgstr "적위의 추정 표류 속도."
 
-#: guiding_assistant.cpp:640
+#: guiding_assistant.cpp:641
 msgid ""
 "Estimated declination backlash if test was completed. Results are time to "
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
@@ -4160,7 +4165,7 @@ msgstr ""
 "(아크초)를 제거하는 시간입니다. 불확실한  추정치 값으로 표준 편차의 1 단위입"
 "니다"
 
-#: guiding_assistant.cpp:641
+#: guiding_assistant.cpp:642
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -4168,12 +4173,12 @@ msgstr ""
 "극축 정렬 오차 추정. 망원경의 적위를 알 수없는 경우, 하한 값이 표시되며 실제 "
 "오류는 더 클 수 있습니다."
 
-#: guiding_assistant.cpp:672
+#: guiding_assistant.cpp:673
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
 "좋은 SNR(>= 8)을 가지는 포화되지 않은 별을 선택한 후 가이딩을 시작 하십시오"
 
-#: guiding_assistant.cpp:676
+#: guiding_assistant.cpp:677
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
@@ -4181,7 +4186,7 @@ msgstr ""
 "시작을 클릭하여 측정을 시작하십시오. 측정 시간 동안 가이딩이 중지되기 때문에 "
 "가이드 별이 주변으로 이동 될 것입니다."
 
-#: guiding_assistant.cpp:681
+#: guiding_assistant.cpp:682
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
@@ -4189,7 +4194,7 @@ msgstr ""
 "가이드 출력이 비활성화되고 별의 이동이 측정됩니다. RMS 및 극축 정렬 값이 안정"
 "화되면 중지를 클릭합니다 (최소 2 분)"
 
-#: guiding_assistant.cpp:684
+#: guiding_assistant.cpp:685
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -4198,99 +4203,99 @@ msgstr ""
 "가이딩이 재개되었습니다. 권장 사항을보고 원하는대로 변경하십시오. 시작을 클릭"
 "하여 측정을 반복하거나 창을 닫고 가이딩을 계속하십시오."
 
-#: guiding_assistant.cpp:696 guiding_assistant.cpp:700
+#: guiding_assistant.cpp:697 guiding_assistant.cpp:701
 msgid "Measuring backlash: "
 msgstr "백래시 측정: "
 
-#: guiding_assistant.cpp:733 guiding_assistant.cpp:1780
-#: guiding_assistant.cpp:1865
+#: guiding_assistant.cpp:734 guiding_assistant.cpp:1783
+#: guiding_assistant.cpp:1868
 msgid "ms"
 msgstr "밀리초"
 
-#: guiding_assistant.cpp:734 guiding_assistant.cpp:1782
-#: guiding_assistant.cpp:1867
+#: guiding_assistant.cpp:735 guiding_assistant.cpp:1785
+#: guiding_assistant.cpp:1870
 msgid "arc-sec"
 msgstr "아크초"
 
-#: guiding_assistant.cpp:741
+#: guiding_assistant.cpp:742
 msgid "ms (test impaired)"
 msgstr "밀리초(테스트 장애)"
 
-#: guiding_assistant.cpp:899 guiding_assistant.cpp:900 pierflip_tool.cpp:294
+#: guiding_assistant.cpp:900 guiding_assistant.cpp:901 pierflip_tool.cpp:294
 msgid "Apply"
 msgstr "적용"
 
-#: guiding_assistant.cpp:1279 guiding_assistant.cpp:1916 myframe.cpp:3027
+#: guiding_assistant.cpp:1282 guiding_assistant.cpp:1919 myframe.cpp:3027
 #: myframe.cpp:3037
 msgid " "
 msgstr ""
 
-#: guiding_assistant.cpp:1280 guiding_assistant.cpp:1779
-#: guiding_assistant.cpp:1864
+#: guiding_assistant.cpp:1283 guiding_assistant.cpp:1782
+#: guiding_assistant.cpp:1867
 msgid "s"
 msgstr "초"
 
-#: guiding_assistant.cpp:1318
+#: guiding_assistant.cpp:1321
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr "노축시간을 다음 범위에서 유지하십시오 %.1fs to %.1fs"
 
-#: guiding_assistant.cpp:1325
+#: guiding_assistant.cpp:1328
 msgid "Try binning your guide camera"
 msgstr "가이드 카메라 비닝을 시도해 보십시오"
 
-#: guiding_assistant.cpp:1333
+#: guiding_assistant.cpp:1336
 msgid "Consider re-doing your calibration "
 msgstr "교정 재실행을 고려하십시오 "
 
-#: guiding_assistant.cpp:1335
+#: guiding_assistant.cpp:1338
 msgid "(Prior alert)"
 msgstr "(이전 경고)"
 
-#: guiding_assistant.cpp:1337
+#: guiding_assistant.cpp:1340
 msgid "(Backlash clearing)"
 msgstr "(백래시 제거)"
 
-#: guiding_assistant.cpp:1347
+#: guiding_assistant.cpp:1350
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "테스트를 위해 밝은별을 고려하거나 또는 노출시간을 늘려보세요"
 
-#: guiding_assistant.cpp:1363 guiding_assistant.cpp:1369
+#: guiding_assistant.cpp:1366 guiding_assistant.cpp:1372
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr ""
 "극축 정렬 오차 > 10 아크분; 표류 정렬 도구를 사용하여 정렬을 향상시켜 보세요."
 
-#: guiding_assistant.cpp:1368
+#: guiding_assistant.cpp:1371
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "극축 정렬 오차 > 5 아크분; 아마 향상 될 수 있습니다."
 
-#: guiding_assistant.cpp:1384
+#: guiding_assistant.cpp:1387
 msgid "Consider trying to improve focus on the guide camera"
 msgstr "가이드 카메라의 초점을 더 정밀하게 조절해 보세요"
 
-#: guiding_assistant.cpp:1395
+#: guiding_assistant.cpp:1398
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "적경의 최소이동을 다음 값으로 조절해 보세요. %0.2f"
 
-#: guiding_assistant.cpp:1406
+#: guiding_assistant.cpp:1409
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "적위의 최소이동을 다음 값으로 조절해 보세요. %0.2f"
 
-#: guiding_assistant.cpp:1430
+#: guiding_assistant.cpp:1433
 msgid "Backlash is small, no compensation needed"
 msgstr "백래시가 작아 보상이 필요하지 않습니다"
 
-#: guiding_assistant.cpp:1434
+#: guiding_assistant.cpp:1437
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "적위 백래시 보상을 %d ms로 설정해 보십시오"
 
-#: guiding_assistant.cpp:1437
+#: guiding_assistant.cpp:1440
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
@@ -4299,44 +4304,44 @@ msgstr ""
 "백래시가 >= %d ms 입니다; 적위 방향으로만 가이드 해야 할 수도 있습니다(현재 %"
 "s)"
 
-#: guiding_assistant.cpp:1455
+#: guiding_assistant.cpp:1458
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "적위 가이딩에 로패스2 를 사용해보세요"
 
-#: guiding_assistant.cpp:1570
+#: guiding_assistant.cpp:1573
 msgid "Measuring..."
 msgstr "측정중..."
 
-#: guiding_assistant.cpp:1664
-msgid "Backlash test aborted..."
-msgstr "백래시 테스트 중단...."
+#: guiding_assistant.cpp:1667
+msgid "Backlash test aborted, see graph..."
+msgstr ""
 
-#: guiding_assistant.cpp:1707 guiding_assistant.cpp:1713
+#: guiding_assistant.cpp:1710 guiding_assistant.cpp:1716
 msgid "Measuring backlash... "
 msgstr "백래시 측정중... "
 
-#: guiding_assistant.cpp:1737
+#: guiding_assistant.cpp:1740
 msgid "Guiding stopped"
 msgstr "가이딩 중지 됨"
 
-#: guiding_assistant.cpp:1781 guiding_assistant.cpp:1866 statswindow.cpp:279
+#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "픽셀"
 
-#: guiding_assistant.cpp:1783 guiding_assistant.cpp:1868 statswindow.cpp:270
+#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871 statswindow.cpp:270
 msgid "arc-min"
 msgstr "아크분"
 
-#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869
+#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
 msgid "px/min"
 msgstr "픽셀/분"
 
-#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871
+#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874
 msgid "arc-sec/min"
 msgstr "아크초/분"
 
-#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:1790 guiding_assistant.cpp:1875
 msgid "arc-sec/sec"
 msgstr "아크초/초"
 
@@ -5649,7 +5654,7 @@ msgstr ""
 "이 장비 프로필의 경우 장비가 연결된 후 마지막으로 성공한 교정에서 데이터를 자"
 "동으로 복원합니다."
 
-#: myframe.cpp:3109 scope.cpp:1956
+#: myframe.cpp:3109 scope.cpp:1967
 msgid "Min"
 msgstr "최소"
 
@@ -5657,7 +5662,7 @@ msgstr "최소"
 msgid "Auto exposure minimum duration"
 msgstr "자동 노출 최소 기간"
 
-#: myframe.cpp:3110 scope.cpp:1958
+#: myframe.cpp:3110 scope.cpp:1969
 msgid "Max"
 msgstr "최대"
 
@@ -7257,21 +7262,21 @@ msgstr ""
 msgid "Details..."
 msgstr "세부 사항..."
 
-#: scope.cpp:1209
+#: scope.cpp:1220
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "적경 교정 실패 : 별이 충분히 움직이지 않았습니다"
 
-#: scope.cpp:1216
+#: scope.cpp:1227
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "서쪽 단계 %3d, 거리=%4.1f"
 
-#: scope.cpp:1286
+#: scope.cpp:1297
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "동쪽 단계 %3d, 거리=%4.1f"
 
-#: scope.cpp:1305
+#: scope.cpp:1316
 msgid ""
 "Advisory: Little or no east movement was measured, so guiding will probably "
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
@@ -7281,34 +7286,34 @@ msgstr ""
 "하지 않을 것 입니다. 가이드 케이블을 확인하고 수동 가이드 도구를 사용하여 마"
 "운트의 기본 작동을 확인하십시오."
 
-#: scope.cpp:1366
+#: scope.cpp:1377
 msgid "Clearing backlash step 1"
 msgstr "백래시 제거 단계 1"
 
-#: scope.cpp:1404
+#: scope.cpp:1415
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "백래시 제거 단계 %3d"
 
-#: scope.cpp:1423
+#: scope.cpp:1434
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "백래시 지우기 실패: 별이 충분히 움직이지 않았습니다"
 
-#: scope.cpp:1471
+#: scope.cpp:1482
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "적위 교정 실패 : 별이 충분히 움직이지 않았습니다"
 
-#: scope.cpp:1478
+#: scope.cpp:1489
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "북쪽 단계 %3d, 거리=%4.1f"
 
-#: scope.cpp:1564
+#: scope.cpp:1575
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "남쪽 단계 %3d, 거리=%4.1f"
 
-#: scope.cpp:1584
+#: scope.cpp:1595
 msgid ""
 "Advisory: Calibration succeessful but little or no south movement was "
 "measured, so guiding will probably be impaired.\n"
@@ -7324,7 +7329,7 @@ msgstr ""
 "이러한 유형의 문제를 식별하는 방법에 대해서는 가이드 케이블을 확인하고 온라"
 "인 도움말을 참조 하십시오(수동 가이드, 적위 백래시)."
 
-#: scope.cpp:1588
+#: scope.cpp:1599
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding will probably be impaired. \n"
@@ -7340,7 +7345,7 @@ msgstr ""
 "이러한 유형의 문제를 식별하는 방법에 대한 온라인 도움말을 참고 하십시오(수도 "
 "가이드, 적위 백래시)."
 
-#: scope.cpp:1593
+#: scope.cpp:1604
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding may be impaired.\n"
@@ -7356,24 +7361,24 @@ msgstr ""
 "이러한 유형의 문제를 처리하는 방법에 대한 온라인 도움말을 참고 하십시오 (적"
 "위 백래시)."
 
-#: scope.cpp:1653
+#: scope.cpp:1664
 #, c-format
 msgid "Nudge South %3d"
 msgstr "남쪽으로 조금씩 움직임 %3d"
 
-#: scope.cpp:1685 stepguider.cpp:755
+#: scope.cpp:1696 stepguider.cpp:755
 msgid "Calibration complete"
 msgstr "교정 완료"
 
-#: scope.cpp:1846
+#: scope.cpp:1857
 msgid "Mount Guide Algorithms"
 msgstr "마운트 가이드 알고리즘"
 
-#: scope.cpp:1884
+#: scope.cpp:1895
 msgid "Calibration step (ms)"
 msgstr "교정 단계(밀리초)"
 
-#: scope.cpp:1885
+#: scope.cpp:1896
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -7381,11 +7386,11 @@ msgstr ""
 "교정 중에 가이드 펄스를 얼마나 오래 사용해야합니까? \"계산\"을 클릭하여 적절"
 "한 값을 계산하십시오."
 
-#: scope.cpp:1889
+#: scope.cpp:1900
 msgid "Advanced..."
 msgstr "고급..."
 
-#: scope.cpp:1890
+#: scope.cpp:1901
 msgid ""
 "Click to open the Calibration Parameters Dialog to review or change all "
 "calibration parameters"
@@ -7393,11 +7398,11 @@ msgstr ""
 "모든 교정 매개변수를 검토하거나 변경하려면 교정 매개변수 대화상자를 클릭하십"
 "시오"
 
-#: scope.cpp:1902
+#: scope.cpp:1913
 msgid "Reverse Dec output after meridian flip"
 msgstr "자오선 플립 후 역방향 적위 출력"
 
-#: scope.cpp:1904
+#: scope.cpp:1915
 msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
@@ -7405,19 +7410,19 @@ msgstr ""
 "자오선 플립 후 역방향 적위 출력이 필요한지 확인하십시오. 이 설정을 변경하면 "
 "기존 교정 데이터가 삭제됩니다"
 
-#: scope.cpp:1910
+#: scope.cpp:1921
 msgid "Stop guiding when mount slews"
 msgstr "마운트가 이동 중에는 가이딩이 중지됩니다"
 
-#: scope.cpp:1912
+#: scope.cpp:1923
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "이 옵션을 선택하면, 마운트가 이동을 시작하면 PHD는 가이딩을 중지합니다"
 
-#: scope.cpp:1918
+#: scope.cpp:1929
 msgid "Assume Dec orthogonal to RA"
 msgstr "적위는 적경과 수직이라 가정"
 
-#: scope.cpp:1921
+#: scope.cpp:1932
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -7426,7 +7431,7 @@ msgstr ""
 "교정에 관계없이 적위 축이 적영 축에 수직이라고 가정합니다. 적경 주기 오차가 "
 "적위 교정에 영향을 미치지 않도록 방지합니다. 옵션은 적위 교정시 적용됩니다."
 
-#: scope.cpp:1933
+#: scope.cpp:1944
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -7434,43 +7439,43 @@ msgstr ""
 "적위 방향이 바뀔 때 백래시 보상 가이드 펄스를 적용하려면 이 옵션을 선택하십시"
 "오."
 
-#: scope.cpp:1941
+#: scope.cpp:1952
 msgid "Amount"
 msgstr "양"
 
-#: scope.cpp:1942
+#: scope.cpp:1953
 msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr "백래시 보상 가이드 펄스 크기 (밀리초)"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Mount Backlash Compensation"
 msgstr "마운트 백래시 보상"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Backlash Compensation"
 msgstr "백래시 보상"
 
-#: scope.cpp:1957
+#: scope.cpp:1968
 msgid "Minimum length of backlash compensation pulse (mSec)."
 msgstr "백래시 보상 펄스의 최소 길이 (밀리초)."
 
-#: scope.cpp:1959
+#: scope.cpp:1970
 msgid "Maximum length of backlash compensation pulse (mSec)."
 msgstr "백래시 보상 펄스의 최대 길이 (밀리초)."
 
-#: scope.cpp:1965
+#: scope.cpp:1976
 msgid "Use Dec compensation"
 msgstr "적위 보상 사용"
 
-#: scope.cpp:1968
+#: scope.cpp:1979
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr "망원겨 적위에 따라 적경 가이드 속도를 자동으로 조정 합니다"
 
-#: scope.cpp:1974
+#: scope.cpp:1985
 msgid "Max RA duration"
 msgstr "최대 적경 기간"
 
-#: scope.cpp:1975 scope.cpp:2177
+#: scope.cpp:1986 scope.cpp:2188
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -7478,11 +7483,11 @@ msgstr ""
 "적경으로 보낼 가장 긴 펄스 길이\n"
 "기본값 = 2500밀리초."
 
-#: scope.cpp:1980
+#: scope.cpp:1991
 msgid "Max Dec duration"
 msgstr "최대 적위 기간"
 
-#: scope.cpp:1981 scope.cpp:2184
+#: scope.cpp:1992 scope.cpp:2195
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -7490,19 +7495,19 @@ msgstr ""
 "적위로 보낼 가장 긴 펄스 길이\n"
 "기본값 = 2500밀리초. 빠른 표류가 있으면 증가 시키십시오."
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Dec guide mode"
 msgstr "적위 가이드 모드"
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "적위 가이드 명령의 방향"
 
-#: scope.cpp:2179
+#: scope.cpp:2190
 msgid "Mx RA"
 msgstr "최대 적경"
 
-#: scope.cpp:2186
+#: scope.cpp:2197
 msgid "Mx DEC"
 msgstr "최대 적위"
 
@@ -8512,6 +8517,9 @@ msgstr "카메라 연결중..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Rotator 연결중..."
+
+#~ msgid "Backlash test aborted..."
+#~ msgstr "백래시 테스트 중단...."
 
 #~ msgid "Identify star saturation based on camera maximum-ADU value"
 #~ msgstr "카메라 최대 ADU 값을 기반으로 별의 포화 식별"

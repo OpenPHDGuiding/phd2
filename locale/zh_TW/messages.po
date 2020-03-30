@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-04 22:29+0000\n"
+"POT-Creation-Date: 2020-03-30 05:52+0100\n"
 "PO-Revision-Date: 2020-01-31 14:25+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -78,7 +78,7 @@ msgstr "其他裝置"
 msgid "Advanced setup"
 msgstr "進階設定"
 
-#: advanced_dialog.cpp:224 guiding_assistant.cpp:509 myframe.cpp:1248
+#: advanced_dialog.cpp:224 guiding_assistant.cpp:510 myframe.cpp:1248
 #: profile_wizard.cpp:330
 msgid "Help"
 msgstr "幫助"
@@ -93,7 +93,7 @@ msgstr "赤道儀"
 msgid "No mount specified"
 msgstr "沒有指定赤道儀"
 
-#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:384
+#: aui_controls.cpp:378 aui_controls.cpp:390 guiding_assistant.cpp:385
 msgid "SNR"
 msgstr "SNR"
 
@@ -211,85 +211,90 @@ msgstr "選擇在 (999.9, 999.9) 位置的星體"
 msgid "Backlash Results"
 msgstr "回差結果"
 
-#: backlash_comp.cpp:679
+#: backlash_comp.cpp:681
 msgid "Ideal"
 msgstr "理想值"
 
-#: backlash_comp.cpp:681
+#: backlash_comp.cpp:683
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:682 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:188
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:188
 #: scope.cpp:259 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:683 guiding_assistant.cpp:1438 polardrift_toolwin.cpp:189
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:189
 #: scope.cpp:260 staticpa_toolwin.cpp:351 testguide.cpp:152
 msgid "South"
 msgstr "南向"
 
-#: backlash_comp.cpp:734
+#: backlash_comp.cpp:688
+#, c-format
+msgid "Pulse size = %d ms"
+msgstr ""
+
+#: backlash_comp.cpp:742
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr "無法執行回差測量, 請重新校准赤道儀"
 
-#: backlash_comp.cpp:913
+#: backlash_comp.cpp:921
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr "無法執行回差量測 - 赤緯導星速率不存在"
 
-#: backlash_comp.cpp:927
+#: backlash_comp.cpp:935
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr "清除北向回差, 步數 %d"
 
-#: backlash_comp.cpp:965
+#: backlash_comp.cpp:973
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr "清除北向回差, 步數 %d (到達 %d 的限制)"
 
-#: backlash_comp.cpp:974
+#: backlash_comp.cpp:982
 msgid "Could not clear North backlash - test failed"
 msgstr "無法清除北向回差, 測試失敗"
 
-#: backlash_comp.cpp:1001
+#: backlash_comp.cpp:1009
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr "往北移動 %d ms, 步數 %d /%d"
 
-#: backlash_comp.cpp:1036
+#: backlash_comp.cpp:1044
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr "導星星體太靠近邊緣以致於無法準確地測量回差, 請選擇離邊緣遠一點的星體."
 
-#: backlash_comp.cpp:1051
+#: backlash_comp.cpp:1059
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr "往南移動 %d ms, 步數 %d /%d"
 
-#: backlash_comp.cpp:1078
+#: backlash_comp.cpp:1086
 msgid "Dec movements too erratic - test failed"
 msgstr "赤緯移動錯得太離譜, 測試錯誤"
 
-#: backlash_comp.cpp:1085
+#: backlash_comp.cpp:1093
 msgid "Mount never established consistent south moves - test failed"
 msgstr "赤道儀從未建立一致的南向移動 - 測試錯誤"
 
-#: backlash_comp.cpp:1103
+#: backlash_comp.cpp:1111
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr "開始測試 %d ms 的回差修正"
 
-#: backlash_comp.cpp:1178
+#: backlash_comp.cpp:1186
 msgid "Restoring star position"
 msgstr "回復星點位置"
 
-#: backlash_comp.cpp:1187
+#: backlash_comp.cpp:1195
 msgid "Measurement complete"
 msgstr "測量完成"
 
-#: backlash_comp.cpp:1196
+#: backlash_comp.cpp:1204
 msgid "Measurement halted"
 msgstr "測量中斷"
 
@@ -343,8 +348,8 @@ msgstr "正交誤差:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1785
-#: guiding_assistant.cpp:1870
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1788
+#: guiding_assistant.cpp:1873
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -1139,55 +1144,55 @@ msgstr "無法開始曝光"
 msgid "No camera"
 msgstr "無相機"
 
-#: cam_qhy.cpp:227
+#: cam_qhy.cpp:229
 msgid "Failed to initialize QHY SDK"
 msgstr "無法啟用 QHY SDK"
 
-#: cam_qhy.cpp:239
+#: cam_qhy.cpp:241
 msgid "No compatible QHY cameras found"
 msgstr "找不到相容的 QHY 相機"
 
-#: cam_qhy.cpp:260
+#: cam_qhy.cpp:262
 msgid "Failed to connect to camera"
 msgstr "無法連接相機"
 
-#: cam_qhy.cpp:270
+#: cam_qhy.cpp:272
 msgid "SetQHYCCDStreamMode failed"
 msgstr "SetQHYCCDStreamMode 失敗"
 
-#: cam_qhy.cpp:278 cam_qhy.cpp:368
+#: cam_qhy.cpp:280 cam_qhy.cpp:373
 msgid "Init camera failed"
 msgstr "無法啟用相機"
 
-#: cam_qhy.cpp:286
+#: cam_qhy.cpp:288
 msgid "Failed to get gain range"
 msgstr "無法取得增益範圍"
 
-#: cam_qhy.cpp:296
+#: cam_qhy.cpp:298
 msgid "Failed to get camera chip info"
 msgstr "無法取得相機晶片資訊"
 
-#: cam_qhy.cpp:326
+#: cam_qhy.cpp:331
 msgid "Failed to get camera bin info"
 msgstr "無法取得相機影像併合資訊"
 
-#: cam_qhy.cpp:345
+#: cam_qhy.cpp:350
 msgid "Failed to set camera binning"
 msgstr "無法設定相機影像併合"
 
-#: cam_qhy.cpp:508
+#: cam_qhy.cpp:516
 msgid "Failed to set camera exposure"
 msgstr "無法設定相機曝光時間"
 
-#: cam_qhy.cpp:525
+#: cam_qhy.cpp:533
 msgid "Failed to set camera gain"
 msgstr "無法設定增益範圍"
 
-#: cam_qhy.cpp:533
+#: cam_qhy.cpp:541
 msgid "QHY exposure failed"
 msgstr "QHY 曝光失敗"
 
-#: cam_qhy.cpp:559
+#: cam_qhy.cpp:571
 msgid "QHY get frame failed"
 msgstr "由 QHY 相機讀取影像失敗"
 
@@ -1558,7 +1563,7 @@ msgid "OK"
 msgstr "確認"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
-#: gear_simulator.cpp:1842 guiding_assistant.cpp:116 phdupdate.cpp:800
+#: gear_simulator.cpp:1842 guiding_assistant.cpp:117 phdupdate.cpp:800
 #: profile_wizard.cpp:1274
 msgid "Cancel"
 msgstr "取消"
@@ -1777,7 +1782,7 @@ msgstr "彗星追蹤 - Training Active"
 msgid "Comet Tracking - Active"
 msgstr "彗星追蹤 - Active"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1932
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_onestar.cpp:1071 scope.cpp:1943
 msgid "Enable"
 msgstr "啟用"
 
@@ -1821,7 +1826,7 @@ msgstr "軸"
 msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
-#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:545
+#: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
 #: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333
 #: starcross_test.cpp:161
 msgid "Start"
@@ -1831,7 +1836,7 @@ msgstr "開始"
 msgid "Start training the tracking rate."
 msgstr "開始調校追蹤速率."
 
-#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:555
+#: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:556
 #: polardrift_toolwin.cpp:335 starcross_test.cpp:163 staticpa_toolwin.cpp:642
 msgid "Stop"
 msgstr "停止"
@@ -1992,7 +1997,7 @@ msgstr "不再詢問"
 msgid "Confirm"
 msgstr "確認"
 
-#: darks_dialog.cpp:60 guiding_assistant.cpp:380
+#: darks_dialog.cpp:60 guiding_assistant.cpp:381
 msgid "Exposure time"
 msgstr "曝光時間"
 
@@ -3889,11 +3894,11 @@ msgstr "在星點遺失時發出嗶聲"
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "當導星星體遺失時都發出告警聲"
 
-#: guiding_assistant.cpp:99
+#: guiding_assistant.cpp:100
 msgid "Extended Sampling"
 msgstr "擴增取樣"
 
-#: guiding_assistant.cpp:106
+#: guiding_assistant.cpp:107
 msgid ""
 "Additional data sampling is being done to better meaure Dec drift. Backlash "
 "testing \n"
@@ -3902,121 +3907,121 @@ msgstr ""
 "用以量測赤緯飄移的額外資料取樣在進行中, 完成後會\n"
 "自動測量回差."
 
-#: guiding_assistant.cpp:108
+#: guiding_assistant.cpp:109
 msgid ""
 "Additional sampling is being done for accurate measurements.  Results will "
 "be shown when sampling is complete."
 msgstr "正進行擴增取樣樣以利精確測量, 結果會在取樣完成後顯示"
 
-#: guiding_assistant.cpp:111
+#: guiding_assistant.cpp:112
 msgid "Seconds remaining: "
 msgstr "剩餘秒數: "
 
-#: guiding_assistant.cpp:339
+#: guiding_assistant.cpp:340
 msgid "Guiding Assistant"
 msgstr "導星小幫手"
 
-#: guiding_assistant.cpp:363
+#: guiding_assistant.cpp:364
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
 msgstr " -999.99 像素/分 (-999.99 秒弧/分 )"
 
-#: guiding_assistant.cpp:365
+#: guiding_assistant.cpp:366
 msgid " 9.99 px ( 9.99 arc-sec)"
 msgstr " 9,99 px (9.99 角秒)"
 
-#: guiding_assistant.cpp:367
+#: guiding_assistant.cpp:368
 msgid "Measurement Status"
 msgstr "評量的狀態"
 
-#: guiding_assistant.cpp:378
+#: guiding_assistant.cpp:379
 msgid "Start time"
 msgstr "開始時間"
 
-#: guiding_assistant.cpp:386
+#: guiding_assistant.cpp:387
 msgid "Star mass"
 msgstr "星體質心"
 
-#: guiding_assistant.cpp:390
+#: guiding_assistant.cpp:391
 msgid "Elapsed time"
 msgstr "延遲時間"
 
-#: guiding_assistant.cpp:392
+#: guiding_assistant.cpp:393
 msgid "Sample count"
 msgstr "簡易計數"
 
-#: guiding_assistant.cpp:404
+#: guiding_assistant.cpp:405
 msgid "High-frequency Star Motion"
 msgstr "高頻率的星點位移"
 
-#: guiding_assistant.cpp:415
+#: guiding_assistant.cpp:416
 msgid "Right ascension, RMS"
 msgstr "赤經, RMS"
 
-#: guiding_assistant.cpp:419
+#: guiding_assistant.cpp:420
 msgid "Declination, RMS"
 msgstr "赤緯, RMS"
 
-#: guiding_assistant.cpp:423
+#: guiding_assistant.cpp:424
 msgid "Total, RMS"
 msgstr "總和, RMS"
 
-#: guiding_assistant.cpp:432
+#: guiding_assistant.cpp:433
 msgid "Other Star Motion"
 msgstr "其他的星點位移"
 
-#: guiding_assistant.cpp:445
+#: guiding_assistant.cpp:446
 msgid "Right ascension, Peak"
 msgstr "赤經, 峰值"
 
-#: guiding_assistant.cpp:449
+#: guiding_assistant.cpp:450
 msgid "Declination, Peak"
 msgstr "赤緯, 峰值"
 
-#: guiding_assistant.cpp:453
+#: guiding_assistant.cpp:454
 msgid "Right ascension, Peak-Peak"
 msgstr "赤經, Peak-Peak"
 
-#: guiding_assistant.cpp:457
+#: guiding_assistant.cpp:458
 msgid "Right ascension Drift Rate"
 msgstr "赤經飄移率"
 
-#: guiding_assistant.cpp:461
+#: guiding_assistant.cpp:462
 msgid "Right ascension Max Drift Rate"
 msgstr "赤經最大飄移率"
 
-#: guiding_assistant.cpp:465
+#: guiding_assistant.cpp:466
 msgid "Drift-limiting exposure"
 msgstr "飄移限制曝光"
 
-#: guiding_assistant.cpp:469
+#: guiding_assistant.cpp:470
 msgid "Declination Drift Rate"
 msgstr "赤緯飄移率"
 
-#: guiding_assistant.cpp:473
+#: guiding_assistant.cpp:474
 msgid "Declination Backlash"
 msgstr "赤緯軸齒輪回差"
 
-#: guiding_assistant.cpp:477
+#: guiding_assistant.cpp:478
 msgid "Polar Alignment Error"
 msgstr "極軸校準誤差"
 
-#: guiding_assistant.cpp:488
+#: guiding_assistant.cpp:489
 msgid "Recommendations"
 msgstr "建議值"
 
-#: guiding_assistant.cpp:504
+#: guiding_assistant.cpp:505
 msgid "Show Backlash Graph"
 msgstr "顯示回差圖表"
 
-#: guiding_assistant.cpp:505
+#: guiding_assistant.cpp:506
 msgid "Show graph of backlash measurement points"
 msgstr "顯示回差測量點的圖形"
 
-#: guiding_assistant.cpp:522
+#: guiding_assistant.cpp:523
 msgid "Measure Declination Backlash"
 msgstr "測量赤緯軸齒輪回差"
 
-#: guiding_assistant.cpp:523
+#: guiding_assistant.cpp:524
 msgid ""
 "PHD2 will move the guide star a considerable distance north, then south to "
 "measure backlash. Be sure the selected star has plenty of room to move in "
@@ -4027,81 +4032,81 @@ msgstr ""
 "體在北向有足夠的移動空間(不要移出影像範圍), 如果有發生星點遺失狀況, 請增加星"
 "點搜尋範圍到  20 個像素以上"
 
-#: guiding_assistant.cpp:546
+#: guiding_assistant.cpp:547
 msgid "Start measuring (disables guiding)"
 msgstr "開始測量 (停用導星)"
 
-#: guiding_assistant.cpp:550
+#: guiding_assistant.cpp:551
 msgid "Review previous"
 msgstr "檢視之前的"
 
-#: guiding_assistant.cpp:551
+#: guiding_assistant.cpp:552
 msgid "Review previous Guiding Assistant results"
 msgstr "檢視之前導星小幫手的結果"
 
-#: guiding_assistant.cpp:556
+#: guiding_assistant.cpp:557
 msgid "Stop measuring and re-enable guiding"
 msgstr "結束測量並重新導星"
 
-#: guiding_assistant.cpp:622
+#: guiding_assistant.cpp:623
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
 msgstr ""
 "訊號相對於訊噪的比率(SNR); PHD2 依照此數值來評量星點與天空或背景訊噪辨識率"
 
-#: guiding_assistant.cpp:624
+#: guiding_assistant.cpp:625
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
 msgstr ""
 "評估導星星體的總亮度, 請使用「自動選擇導星星體 (Alt-S)」來選擇導星星體."
 
-#: guiding_assistant.cpp:629
+#: guiding_assistant.cpp:630
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
 "評估典型的高頻率赤經方向星體位移量；導星通常無法修正這類極小的擾動現象。"
 
-#: guiding_assistant.cpp:630
+#: guiding_assistant.cpp:631
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
 "評估典型的高頻率赤緯方向星體位移量；導星通常無法修正這類極小的擾動現象。"
 
-#: guiding_assistant.cpp:633
+#: guiding_assistant.cpp:634
 msgid "Maximum sample-sample deflection seen in right ascension."
 msgstr "赤經方向的最大取樣間偏差值。"
 
-#: guiding_assistant.cpp:634
+#: guiding_assistant.cpp:635
 msgid "Maximum sample-sample deflection seen in declination."
 msgstr "赤緯方向的最大取樣間偏差值。"
 
-#: guiding_assistant.cpp:635
+#: guiding_assistant.cpp:636
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
 msgstr "在取樣週期內, 赤經方向的最大 Peak-Peak 偏差值。"
 
-#: guiding_assistant.cpp:636
+#: guiding_assistant.cpp:637
 msgid "Estimated overall drift rate in right ascension."
 msgstr "評估在赤經方向的總飄移量."
 
-#: guiding_assistant.cpp:637
+#: guiding_assistant.cpp:638
 msgid "Maximum drift rate in right ascension during sampling period."
 msgstr "在取樣週期內, 赤經方向的最大飄移量。此數值對設定曝光時間會有所幫助。"
 
-#: guiding_assistant.cpp:638
+#: guiding_assistant.cpp:639
 msgid ""
 "Exposure time to keep maximum RA drift below the recommended min-move level."
 msgstr "曝光時間維持在建議最小移動層度以下的最大 RA 飄移值。"
 
-#: guiding_assistant.cpp:639
+#: guiding_assistant.cpp:640
 msgid "Estimated overall drift rate in declination."
 msgstr "評估在赤緯方向的總飄移量."
 
-#: guiding_assistant.cpp:640
+#: guiding_assistant.cpp:641
 msgid ""
 "Estimated declination backlash if test was completed. Results are time to "
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
@@ -4110,7 +4115,7 @@ msgstr ""
 "如測試完成就會估算赤緯回差, 其結果為清除回差厎時間 (ms) 及像對應的齒輪轉動角"
 "度 (arc-sec), 未確定的估算值為一個單位的標準偏差"
 
-#: guiding_assistant.cpp:641
+#: guiding_assistant.cpp:642
 msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
@@ -4118,17 +4123,17 @@ msgstr ""
 "評估極軸校準誤差, 如果不知道赤道儀偏差值的話, 所顯示的數值只是下限值而已, 實"
 "際的誤差可能更大。"
 
-#: guiding_assistant.cpp:672
+#: guiding_assistant.cpp:673
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並開始進行導星"
 
-#: guiding_assistant.cpp:676
+#: guiding_assistant.cpp:677
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
 msgstr "點擊【開始】進行評量，這段時間導星動作會暫停，因此星體會發生偏移。"
 
-#: guiding_assistant.cpp:681
+#: guiding_assistant.cpp:682
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS and polar alignment values have stabilized (at least 2 minutes)."
@@ -4136,7 +4141,7 @@ msgstr ""
 "導星輸出暫時關閉並開始量測星點移動量, 在 RMS 和極軸校準值穩定後 (至少兩分鐘) "
 "點擊「停止」"
 
-#: guiding_assistant.cpp:684
+#: guiding_assistant.cpp:685
 msgid ""
 "Guiding has been resumed. Look at the recommendations and make any desired "
 "changes.  Click Start to repeat the measurements, or close the window to "
@@ -4145,142 +4150,142 @@ msgstr ""
 "重新開始導星，請檢視建議值並依你的需求更改數值。點擊【開始】以重複評量動作或"
 "者關閉本視窗繼續導星動作。"
 
-#: guiding_assistant.cpp:696 guiding_assistant.cpp:700
+#: guiding_assistant.cpp:697 guiding_assistant.cpp:701
 msgid "Measuring backlash: "
 msgstr "測量回差當中: "
 
-#: guiding_assistant.cpp:733 guiding_assistant.cpp:1780
-#: guiding_assistant.cpp:1865
+#: guiding_assistant.cpp:734 guiding_assistant.cpp:1783
+#: guiding_assistant.cpp:1868
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:734 guiding_assistant.cpp:1782
-#: guiding_assistant.cpp:1867
+#: guiding_assistant.cpp:735 guiding_assistant.cpp:1785
+#: guiding_assistant.cpp:1870
 msgid "arc-sec"
 msgstr "角秒"
 
-#: guiding_assistant.cpp:741
+#: guiding_assistant.cpp:742
 msgid "ms (test impaired)"
 msgstr "ms (測試失敗)"
 
-#: guiding_assistant.cpp:899 guiding_assistant.cpp:900 pierflip_tool.cpp:294
+#: guiding_assistant.cpp:900 guiding_assistant.cpp:901 pierflip_tool.cpp:294
 msgid "Apply"
 msgstr "套用"
 
-#: guiding_assistant.cpp:1279 guiding_assistant.cpp:1916 myframe.cpp:3027
+#: guiding_assistant.cpp:1282 guiding_assistant.cpp:1919 myframe.cpp:3027
 #: myframe.cpp:3037
 msgid " "
 msgstr " "
 
-#: guiding_assistant.cpp:1280 guiding_assistant.cpp:1779
-#: guiding_assistant.cpp:1864
+#: guiding_assistant.cpp:1283 guiding_assistant.cpp:1782
+#: guiding_assistant.cpp:1867
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1318
+#: guiding_assistant.cpp:1321
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr "請將曝光時間維持在 %.1fs 至 %.1fs 範圍"
 
-#: guiding_assistant.cpp:1325
+#: guiding_assistant.cpp:1328
 msgid "Try binning your guide camera"
 msgstr "嘗試導星相機影像併合"
 
-#: guiding_assistant.cpp:1333
+#: guiding_assistant.cpp:1336
 msgid "Consider re-doing your calibration "
 msgstr "請考慮重作校準 "
 
-#: guiding_assistant.cpp:1335
+#: guiding_assistant.cpp:1338
 msgid "(Prior alert)"
 msgstr "(之前的告警)"
 
-#: guiding_assistant.cpp:1337
+#: guiding_assistant.cpp:1340
 msgid "(Backlash clearing)"
 msgstr "(清除回差當中)"
 
-#: guiding_assistant.cpp:1347
+#: guiding_assistant.cpp:1350
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "請選用一顆較亮的星體來做測試, 或者延長曝光時間"
 
-#: guiding_assistant.cpp:1363 guiding_assistant.cpp:1369
+#: guiding_assistant.cpp:1366 guiding_assistant.cpp:1372
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準。"
 
-#: guiding_assistant.cpp:1368
+#: guiding_assistant.cpp:1371
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
 
-#: guiding_assistant.cpp:1384
+#: guiding_assistant.cpp:1387
 msgid "Consider trying to improve focus on the guide camera"
 msgstr "請考慮加強導星相機的對焦"
 
-#: guiding_assistant.cpp:1395
+#: guiding_assistant.cpp:1398
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "嘗試設定 RA min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1406
+#: guiding_assistant.cpp:1409
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1430
+#: guiding_assistant.cpp:1433
 msgid "Backlash is small, no compensation needed"
 msgstr "回差極小, 不需要做回差補償"
 
-#: guiding_assistant.cpp:1434
+#: guiding_assistant.cpp:1437
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "試著開始 %d ms 的赤緯回差補償"
 
-#: guiding_assistant.cpp:1437
+#: guiding_assistant.cpp:1440
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
 "(currently %s)"
 msgstr "回差 >= %d ms; 你可能必須僅在單一赤緯方向導星 (目前為 %s)"
 
-#: guiding_assistant.cpp:1455
+#: guiding_assistant.cpp:1458
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "嘗試使用 Lowpass2 進行赤緯導星"
 
-#: guiding_assistant.cpp:1570
+#: guiding_assistant.cpp:1573
 msgid "Measuring..."
 msgstr "測量中..."
 
-#: guiding_assistant.cpp:1664
-msgid "Backlash test aborted..."
-msgstr "回差測試終止..."
+#: guiding_assistant.cpp:1667
+msgid "Backlash test aborted, see graph..."
+msgstr ""
 
-#: guiding_assistant.cpp:1707 guiding_assistant.cpp:1713
+#: guiding_assistant.cpp:1710 guiding_assistant.cpp:1716
 msgid "Measuring backlash... "
 msgstr "回差測量當中... "
 
-#: guiding_assistant.cpp:1737
+#: guiding_assistant.cpp:1740
 msgid "Guiding stopped"
 msgstr "導星終止"
 
-#: guiding_assistant.cpp:1781 guiding_assistant.cpp:1866 statswindow.cpp:279
+#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1783 guiding_assistant.cpp:1868 statswindow.cpp:270
+#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871 statswindow.cpp:270
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1784 guiding_assistant.cpp:1869
+#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1786 guiding_assistant.cpp:1871
+#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874
 msgid "arc-sec/min"
 msgstr "角秒/分鐘"
 
-#: guiding_assistant.cpp:1787 guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:1790 guiding_assistant.cpp:1875
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
@@ -5563,7 +5568,7 @@ msgid ""
 msgstr ""
 "針對此設備組態腳本，當連接赤道儀後會自動恢復最近一次成功校準所得的資料。"
 
-#: myframe.cpp:3109 scope.cpp:1956
+#: myframe.cpp:3109 scope.cpp:1967
 msgid "Min"
 msgstr "最短"
 
@@ -5571,7 +5576,7 @@ msgstr "最短"
 msgid "Auto exposure minimum duration"
 msgstr "自動曝光的最短時間"
 
-#: myframe.cpp:3110 scope.cpp:1958
+#: myframe.cpp:3110 scope.cpp:1969
 msgid "Max"
 msgstr "最長"
 
@@ -7126,21 +7131,21 @@ msgstr ""
 msgid "Details..."
 msgstr "詳細..."
 
-#: scope.cpp:1209
+#: scope.cpp:1220
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "赤經校準失敗: 星點移動距離不足"
 
-#: scope.cpp:1216
+#: scope.cpp:1227
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr "往西 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1286
+#: scope.cpp:1297
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr "往東 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1305
+#: scope.cpp:1316
 msgid ""
 "Advisory: Little or no east movement was measured, so guiding will probably "
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
@@ -7149,34 +7154,34 @@ msgstr ""
 "提示: 幾乎或完全沒有東向位移, 導星工作會因此受到到影響, 請檢查導星線並利用手"
 "動導星工具來檢查赤道儀的基本運作是否正常."
 
-#: scope.cpp:1366
+#: scope.cpp:1377
 msgid "Clearing backlash step 1"
 msgstr "清除回差步數1"
 
-#: scope.cpp:1404
+#: scope.cpp:1415
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr "清除回差步數 %3d"
 
-#: scope.cpp:1423
+#: scope.cpp:1434
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "回差消除失敗: 星點移動距離不足"
 
-#: scope.cpp:1471
+#: scope.cpp:1482
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤緯校準失敗: 星點移動距離不足"
 
-#: scope.cpp:1478
+#: scope.cpp:1489
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr "往北 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1564
+#: scope.cpp:1575
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr "往南 %3d 步, 距離 = %4.1f"
 
-#: scope.cpp:1584
+#: scope.cpp:1595
 msgid ""
 "Advisory: Calibration succeessful but little or no south movement was "
 "measured, so guiding will probably be impaired.\n"
@@ -7191,7 +7196,7 @@ msgstr ""
 "請檢查導星線, 並閱讀線上輔助文件, 以了解如何識別這些類型的問題 (手冊指南, 赤"
 "緯回差)"
 
-#: scope.cpp:1588
+#: scope.cpp:1599
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding will probably be impaired. \n"
@@ -7205,7 +7210,7 @@ msgstr ""
 "這通常是因為有非常大的赤緯軸回差或相關於赤道儀機械方面問題所引起的\n"
 "請閱讀線上輔助文件, 以了解如何識別這些類型的問題 (手冊指南, 赤緯回差)"
 
-#: scope.cpp:1593
+#: scope.cpp:1604
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding may be impaired.\n"
@@ -7219,45 +7224,45 @@ msgstr ""
 "這通常是因為有非常大的赤緯軸回差或相關於赤道儀機械方面問題所引起的\n"
 "請閱讀線上輔助文件, 以了解如何識別這些類型的問題 (赤緯回差)"
 
-#: scope.cpp:1653
+#: scope.cpp:1664
 #, c-format
 msgid "Nudge South %3d"
 msgstr "南向微調 %3d"
 
-#: scope.cpp:1685 stepguider.cpp:755
+#: scope.cpp:1696 stepguider.cpp:755
 msgid "Calibration complete"
 msgstr "校準完成"
 
-#: scope.cpp:1846
+#: scope.cpp:1857
 msgid "Mount Guide Algorithms"
 msgstr "赤道儀導星演算法"
 
-#: scope.cpp:1884
+#: scope.cpp:1895
 msgid "Calibration step (ms)"
 msgstr "校準步數 (ms)"
 
-#: scope.cpp:1885
+#: scope.cpp:1896
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 "導星校準過程中導星訊號送出的週期長度為何? 點擊【計算】來計算出恰當的數值。"
 
-#: scope.cpp:1889
+#: scope.cpp:1900
 msgid "Advanced..."
 msgstr "進階的..."
 
-#: scope.cpp:1890
+#: scope.cpp:1901
 msgid ""
 "Click to open the Calibration Parameters Dialog to review or change all "
 "calibration parameters"
 msgstr "點擊以打開“校準參數”對話框以檢視或更改所有校準參數"
 
-#: scope.cpp:1902
+#: scope.cpp:1913
 msgid "Reverse Dec output after meridian flip"
 msgstr "過中天翻轉後同時反轉赤緯輸出"
 
-#: scope.cpp:1904
+#: scope.cpp:1915
 msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
@@ -7265,19 +7270,19 @@ msgstr ""
 "如所用的赤道儀需要在過中天翻轉後做赤緯反向輸出, 請勾選這個選項, 改動後會清除"
 "目前的校準結果"
 
-#: scope.cpp:1910
+#: scope.cpp:1921
 msgid "Stop guiding when mount slews"
 msgstr "赤道儀轉動時停止導星"
 
-#: scope.cpp:1912
+#: scope.cpp:1923
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "當選用時, 假如赤道儀開始轉動, PHD 將會停止導星動作"
 
-#: scope.cpp:1918
+#: scope.cpp:1929
 msgid "Assume Dec orthogonal to RA"
 msgstr "假設赤緯軸與赤經軸完全垂直"
 
-#: scope.cpp:1921
+#: scope.cpp:1932
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -7286,49 +7291,49 @@ msgstr ""
 "假設赤緯軸正直於赤經軸，想避免赤經軸的週期性誤差影響赤緯校準，在校準赤委實可"
 "以檢核該選項."
 
-#: scope.cpp:1933
+#: scope.cpp:1944
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
 msgstr "如果你想在赤緯軸方向翻轉時發送出回差補償導星訊號時, 請核選此選項。"
 
-#: scope.cpp:1941
+#: scope.cpp:1952
 msgid "Amount"
 msgstr "數量"
 
-#: scope.cpp:1942
+#: scope.cpp:1953
 msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr "回差補償導星脈衝長度 (mSec)"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Mount Backlash Compensation"
 msgstr "赤道儀回差補償"
 
-#: scope.cpp:1946
+#: scope.cpp:1957
 msgid "Backlash Compensation"
 msgstr "回差補償"
 
-#: scope.cpp:1957
+#: scope.cpp:1968
 msgid "Minimum length of backlash compensation pulse (mSec)."
 msgstr "回差補償脈衝最小長度 (mSec)."
 
-#: scope.cpp:1959
+#: scope.cpp:1970
 msgid "Maximum length of backlash compensation pulse (mSec)."
 msgstr "回差補償脈衝最大長度 (mSec)."
 
-#: scope.cpp:1965
+#: scope.cpp:1976
 msgid "Use Dec compensation"
 msgstr "使用赤緯補償"
 
-#: scope.cpp:1968
+#: scope.cpp:1979
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr "依據赤道儀所指向的赤緯值自動調整赤經軸導星速率"
 
-#: scope.cpp:1974
+#: scope.cpp:1985
 msgid "Max RA duration"
 msgstr "最長的赤經週期時間"
 
-#: scope.cpp:1975 scope.cpp:2177
+#: scope.cpp:1986 scope.cpp:2188
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -7336,11 +7341,11 @@ msgstr ""
 "赤經方向送出導星訊號的最長時間\n"
 "預設 = 2500ms。"
 
-#: scope.cpp:1980
+#: scope.cpp:1991
 msgid "Max Dec duration"
 msgstr "最大赤緯週期"
 
-#: scope.cpp:1981 scope.cpp:2184
+#: scope.cpp:1992 scope.cpp:2195
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -7348,19 +7353,19 @@ msgstr ""
 "赤緯方向導星訊號傳送的最長時間\n"
 "預設值 = 2500ms, 如果偏移量過大, 請增加該數值。"
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Dec guide mode"
 msgstr "赤緯導星模式"
 
-#: scope.cpp:1993
+#: scope.cpp:2004
 msgid "Directions in which Dec guide commands will be issued"
 msgstr "送出赤緯導星命令的方向"
 
-#: scope.cpp:2179
+#: scope.cpp:2190
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:2186
+#: scope.cpp:2197
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
@@ -8339,6 +8344,9 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid "Backlash test aborted..."
+#~ msgstr "回差測試終止..."
 
 #~ msgid " (est)"
 #~ msgstr " (est)"
