@@ -12,7 +12,7 @@ zip=$(cd $(dirname "$zip"); /bin/pwd)/$(basename "$zip")
 SRC=$(cd $(dirname "$0")/..; /bin/pwd)
 
 TMP=/tmp/altaircamsdk.$$
-#trap "rm -rf $TMP" INT TERM QUIT EXIT
+trap "rm -rf $TMP" INT TERM QUIT EXIT
 
 mkdir -p $TMP
 cd $TMP
