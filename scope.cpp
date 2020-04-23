@@ -1605,12 +1605,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         "This is usually caused by very large Dec backlash or other problems with the mount mechanics. \n"
                         "Read the online help for how to deal with this type of problem (Declination backlash).");
 
-                    if (!m_eastAlertShown)
-                    {
-                        const wxString& translated(wxGetTranslation(msg));
-                        pFrame->SuppressableAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
-                    }
-                    Debug.Write("Calibration alert: " + msg + "\n");
+                    //if (!m_eastAlertShown)
+                    //{
+                    //    const wxString& translated(wxGetTranslation(msg));
+                    //    pFrame->SuppressableAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
+                    //}
+                    Debug.Write("Omitted calibration alert: " + msg + "\n");
                 }
 
                 m_lastLocation = currentLocation;
