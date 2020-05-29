@@ -37,7 +37,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-03 23:43+0100\n"
-"PO-Revision-Date: 2019-10-27 22:40+0100\n"
+"PO-Revision-Date: 2020-05-29 21:36+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: about_dialog.cpp:45 myframe.cpp:574
 #, c-format
@@ -235,7 +235,7 @@ msgstr "Sud"
 #: backlash_comp.cpp:688
 #, c-format
 msgid "Pulse size = %d ms"
-msgstr ""
+msgstr "Taille d'impulsion = %d ms"
 
 #: backlash_comp.cpp:742
 msgid ""
@@ -336,7 +336,7 @@ msgstr "Précédente calibration de la monture"
 
 #: calreview_dialog.cpp:186
 msgid "Last AO Calibration"
-msgstr "Dernière Calibration de l'OA"
+msgstr "Dernier étalonnage de l'OA"
 
 #: calreview_dialog.cpp:199
 msgid "RA steps:"
@@ -924,10 +924,9 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "Erreur fatale à l'étape %d de la connexion à la caméra TIS"
 
-#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:547
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
 msgstr "Erreur d'allocation mémoire"
 
@@ -1570,13 +1569,13 @@ msgstr ""
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1109 gear_dialog.cpp:1875 gear_dialog.cpp:1876
 #: gear_dialog.cpp:1877 log_uploader.cpp:183 mount.cpp:144 mount.cpp:169
-#: mount.cpp:852 myframe.cpp:2946 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:327 scope.cpp:369 scope.cpp:412 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:852 myframe.cpp:2946 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
+#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
+#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:327
+#: scope.cpp:369 scope.cpp:412 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "Aucun"
 
@@ -1766,6 +1765,8 @@ msgstr "Saturation par valeur Max-ADU :"
 msgid ""
 "Identify star saturation based on camera maximum-ADU value (recommended)"
 msgstr ""
+"Identifie la saturation des étoiles en fonction de la valeur ADU maximale de "
+"la caméra (recommandée)"
 
 #: camera.cpp:966
 msgid "Saturation via star-profile"
@@ -1776,6 +1777,8 @@ msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
 msgstr ""
+"Identifie la saturation des étoiles en fonction du profil à sommet plat, "
+"quelle que soit la luminosité"
 
 #: camera.cpp:977
 msgid ""
@@ -1902,8 +1905,7 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
-#: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333 starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -2167,8 +2169,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
-"g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
+"%g s à %g s"
 
 #: darks_dialog.cpp:150
 msgid ""
@@ -2293,7 +2295,7 @@ msgstr "Images dark terminées"
 #: debuglog.cpp:125
 #, c-format
 msgid "unable to open file %s"
-msgstr ""
+msgstr "impossible d'ouvrir le fichier %s"
 
 #: drift_tool.cpp:136
 msgid "Drift Align"
@@ -2701,7 +2703,7 @@ msgstr "Configuration Monture Aux"
 
 #: gear_dialog.cpp:318
 msgid "AO Setup"
-msgstr "Réglages OA"
+msgstr "Réglages de l'OA"
 
 #: gear_dialog.cpp:328
 msgid "Rotator Setup"
@@ -2783,6 +2785,10 @@ msgid ""
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to connect to this camera anyway?"
 msgstr ""
+"En changeant les caméras dans ce profil, vous ne pourrez pas utiliser la "
+"bibliothèque de darks existante ou les cartes de mauvais pixels. Vous "
+"devriez envisager de créer un nouveau profil pour cette configuration. "
+"Voulez-vous quand même vous connecter à cet appareil photo?"
 
 #: gear_dialog.cpp:1125
 msgid "Camera Change Warning"
@@ -3499,8 +3505,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3633,8 +3639,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3659,8 +3665,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3877,7 +3883,7 @@ msgstr "Dérive Polaire : Échec de la dérive"
 
 #: guider.cpp:1386
 msgid "AO calibration failed"
-msgstr "Échec calibration de l'OA"
+msgstr "Échec étalonnage de l'OA"
 
 #: guider.cpp:1386 guider.cpp:1419
 msgid "calibration failed"
@@ -4059,7 +4065,7 @@ msgstr ""
 
 #: guider_onestar.cpp:1101
 msgid "Auto-selection frame downsample"
-msgstr ""
+msgstr "Sélection automatique du sous échantillonnage de l'image"
 
 #: guider_onestar.cpp:1102
 msgid ""
@@ -4067,6 +4073,10 @@ msgid ""
 "greater than 1 if star auto-selection is failing to recognize misshapen "
 "guide stars."
 msgstr ""
+"Facteur de sous-échantillonnage pour les image de caméra de la sélection "
+"automatique d'étoiles. Choisissez une valeur supérieure à 1 si la sélection "
+"automatique des étoiles ne parvient pas à reconnaître les étoiles guides "
+"déformées."
 
 #: guider_onestar.cpp:1105
 msgid "Beep on lost star"
@@ -4475,7 +4485,7 @@ msgstr "Mesure..."
 
 #: guiding_assistant.cpp:1667
 msgid "Backlash test aborted, see graph..."
-msgstr ""
+msgstr "Test de jeu annulé, voir graphique ..."
 
 #: guiding_assistant.cpp:1710 guiding_assistant.cpp:1716
 msgid "Measuring backlash... "
@@ -4605,22 +4615,26 @@ msgid ""
 "the forum.\n"
 "The first step is to select which files to upload.\n"
 msgstr ""
+"Lorsque vous demandez de l'aide sur le forum PHD2, il est important "
+"d'inclure vos logs PHD2. Cet outil vous aidera à télécharger vos fichiers "
+"logs afin qu'ils puissent être vus dans le forum.\n"
+"La première étape consiste à sélectionner les fichiers à télécharger.\n"
 
 #: log_uploader.cpp:676
 msgid "Select"
-msgstr ""
+msgstr "Selectionnez"
 
 #: log_uploader.cpp:677
 msgid "Night Of"
-msgstr ""
+msgstr "Nuit de"
 
 #: log_uploader.cpp:678
 msgid "Guided"
-msgstr ""
+msgstr "Guidée"
 
 #: log_uploader.cpp:680
 msgid "Guide Asst."
-msgstr ""
+msgstr "Guide Asst."
 
 #: log_uploader.cpp:698 log_uploader.cpp:1307
 msgid "Recent uploads"
@@ -4736,7 +4750,7 @@ msgstr ""
 
 #: log_uploader.cpp:1360
 msgid "Link copied to clipboard"
-msgstr ""
+msgstr "Lien copié dans le presse-papiers"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -4887,6 +4901,8 @@ msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
 msgstr ""
+"La taille des pixels du profil ne correspond pas à la taille des pixels "
+"signalés par la caméra. Ré-étalonnez pour restaurer un guidage correct."
 
 #: mount.cpp:1310
 msgid "Calibration was too far from equator, recalibration is needed."
@@ -5460,7 +5476,7 @@ msgstr "Gamma"
 #: myframe.cpp:1044
 #, c-format
 msgid "Could not find help file %s"
-msgstr ""
+msgstr "Impossible de trouver le fichier d'aide %s"
 
 #: myframe.cpp:1213
 msgid "Trouble-shooting and Analysis"
@@ -5514,12 +5530,14 @@ msgstr "Confirmer"
 #: myframe.cpp:2358
 #, c-format
 msgid "FITS file is not of an image: %s"
-msgstr ""
+msgstr "Le fichier FITS ne correspond pas à une image: %s"
 
 #: myframe.cpp:2366 usImage.cpp:443
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr ""
+"Type non pris en charge ou erreur de lecture lors du chargement du fichier "
+"FITS %s"
 
 #: myframe.cpp:2376
 msgid ""
@@ -5533,17 +5551,17 @@ msgstr ""
 #: myframe.cpp:2387
 #, c-format
 msgid "Memory allocation error reading FITS file %s"
-msgstr ""
+msgstr "Erreur d'allocation de mémoire lors de la lecture du fichier FITS %s"
 
 #: myframe.cpp:2394
 #, c-format
 msgid "Error reading data from %s"
-msgstr ""
+msgstr "Erreur lors de la lecture des données de %s"
 
 #: myframe.cpp:2423 usImage.cpp:487
 #, c-format
 msgid "Error opening FITS file %s"
-msgstr ""
+msgstr "Erreur lors de l'ouverture du fichier %s"
 
 #: myframe.cpp:2487
 msgid ""
@@ -5576,13 +5594,16 @@ msgstr "Darks chargés"
 #: myframe.cpp:2591
 #, c-format
 msgid "Error saving darks FITS file %s"
-msgstr ""
+msgstr "Erreur lors de l'enregistrement du fichier dark %s"
 
 #: myframe.cpp:2779
 msgid ""
 "Guiding parameters have been reset because the binning or pixel size changed "
 "unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
+"Les paramètres de guidage ont été réinitialisés car le binning ou la taille "
+"des pixels ont changé de façon inattendue. Vous devez utiliser des profils "
+"distincts pour différentes échelles d'image."
 
 #: myframe.cpp:2789
 msgid "Global Settings"
@@ -6718,6 +6739,10 @@ msgid ""
 "aperture x f-ratio).  Typical finder scopes have a focal length of about "
 "165mm."
 msgstr ""
+"Il s'agit de la distance focale de la lunette de guidage - ou de la lunette "
+"d'imagerie selon que vous utilisez un appareil de guidage hors axe ou un "
+"appareil d'optique adaptative (distance focale = ouverture x rapport f). Les "
+"lunettes guide typiques ont une distance focale d'environ 165 mm."
 
 #: profile_wizard.cpp:274
 msgid "Guide scope focal length (mm)"
@@ -6914,11 +6939,11 @@ msgid ""
 "mount interface you chose earlier will be used for larger ('bump') "
 "corrections. Calibration of both interfaces will be handled automatically."
 msgstr ""
-"Si vous avez un système d'Optique Adaptative (OA), vous pouvez le "
-"sélectionner ici. Le système AO sera utilisé pour les petites corrections de "
-"guidage à grande vitesse, tandis que l'interface de monture que vous avez "
-"choisi sera plutôt utilisé pour les grandes corrections ('saut'). La "
-"calibration des deux interfaces sera traitée automatiquement."
+"Si vous avez un Optique Adaptative (OA), vous pouvez le sélectionner ici. Le "
+"système OA sera utilisé pour les petites corrections de guidage à grande "
+"vitesse, tandis que l'interface de monture que vous avez choisi sera plutôt "
+"utilisé pour les grandes corrections ('saut'). La calibration des deux "
+"interfaces sera traitée automatiquement."
 
 #: profile_wizard.cpp:420
 msgid ""
@@ -6939,7 +6964,7 @@ msgstr ""
 
 #: profile_wizard.cpp:466
 msgid "Configuration Suggestion"
-msgstr ""
+msgstr "Suggestion de configuration"
 
 #: profile_wizard.cpp:473
 msgid ""
@@ -6965,10 +6990,12 @@ msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
 msgstr ""
+"Veuillez vous assurer que les paramètres EQMOD ASCOM sont configurés pour "
+"PHD2 conformément à ce document : \n"
 
 #: profile_wizard.cpp:481
 msgid "Open EQMOD document..."
-msgstr ""
+msgstr "Ouvrir le document EQMOD..."
 
 #: profile_wizard.cpp:487
 msgid "Go Back"
@@ -7062,7 +7089,7 @@ msgstr ""
 
 #: profile_wizard.cpp:729
 msgid "Choose an Adaptive Optics Device (optional)"
-msgstr "Choisir un Système d'Optique Adaptative (optionnel)"
+msgstr "Choisir un Système Diviseur Optique (optionnel)"
 
 #: profile_wizard.cpp:730
 msgid "AO:"
@@ -7849,6 +7876,9 @@ msgid ""
 "Please disable the Synchronous PulseGuide option in the mount's ASCOM driver "
 "settings. Enabling the setting can cause unpredictable results."
 msgstr ""
+"Veuillez désactiver l'option Synchrone de PulseGuide dans les paramètres du "
+"pilote ASCOM de la monture. L'activation du paramètre peut entraîner des "
+"résultats imprévisibles."
 
 #: scope_ascom.cpp:687
 msgid ""
@@ -8599,7 +8629,7 @@ msgid ""
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
 "Jusqu'où un saut de monture doit déplacer la monture entre les images (en "
-"pas d'OA). Par défaut = %.2f, diminuez si les sauts de monture provoque des "
+"pas de OA). Par défaut = %.2f, diminuez si les sauts de monture provoque des "
 "pics sur le graphique"
 
 #: stepguider.cpp:1472
@@ -8636,19 +8666,19 @@ msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
 msgstr ""
-"Gardez cette case cochée pour le guidage de l'OA. Décochez pour désactiver "
-"les corrections d'OA et seulement utiliser le guidage de la monture"
+"Gardez cette case cochée pour le guidage de l'OA Décochez pour désactiver "
+"les corrections de l'OA et seulement utiliser le guidage de la monture"
 
 #: stepguider_sbigao_indi.cpp:189
 #, c-format
 msgid "We need at least INDI driver %s version 2.1 to get AO support."
 msgstr ""
 "Nous avons besoin d’au moins la version 2.1 du pilote INDI %s pour obtenir "
-"le support de l'AO."
+"le support de l'OA."
 
 #: stepguider_sbigao_indi.cpp:334 stepguider_sxao_indi.cpp:352
 msgid "INDI AO Selection"
-msgstr "Sélection des OA INDI"
+msgstr "Sélection de l'OA INDI"
 
 #: stepguider_sxao.cpp:146
 #, c-format
@@ -8841,12 +8871,12 @@ msgstr "Le fichier FITS n'est pas une image : "
 #: usImage.cpp:448
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
-msgstr ""
+msgstr "Erreur d'allocation de mémoire lors du chargement du fichier FITS %s"
 
 #: usImage.cpp:453
 #, c-format
 msgid "Error reading data from FITS file %s"
-msgstr ""
+msgstr "Erreur de lecture des données du fichier FITS %s"
 
 #: calreview_dialog.h:48
 msgid "Review Calibration"
@@ -10048,8 +10078,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
-#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
+#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
