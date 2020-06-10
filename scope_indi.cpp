@@ -95,7 +95,6 @@ private:
     long     INDIport;
     wxString INDIhost;
     wxString INDIMountName;
-    wxString INDIMountPort;
     bool     m_modal;
     bool     m_ready;
     bool     eod_coord;
@@ -158,7 +157,6 @@ ScopeINDI::ScopeINDI()
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIMountName = pConfig->Profile.GetString("/indi/INDImount", _T("INDI Mount"));
-    INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
     m_Name = wxString::Format("INDI Mount [%s]", INDIMountName);
 }
 
@@ -258,7 +256,6 @@ void ScopeINDI::SetupDialog()
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDIMountName;
-    indiDlg.INDIDevPort = INDIMountPort;
     // initialize with actual values
     indiDlg.SetSettings();
     // try to connect to server
@@ -271,11 +268,9 @@ void ScopeINDI::SetupDialog()
         INDIhost = indiDlg.INDIhost;
         INDIport = indiDlg.INDIport;
         INDIMountName = indiDlg.INDIDevName;
-        INDIMountPort = indiDlg.INDIDevPort;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
-        pConfig->Profile.SetString("/indi/INDImount_port",INDIMountPort);
         m_Name = wxString::Format("INDI Mount [%s]", INDIMountName);
     }
 
@@ -339,32 +334,6 @@ bool ScopeINDI::ConnectToDriver(RunInBg *r)
     // wait for the device port property
 
     wxLongLong msec = wxGetUTCTimeMillis();
-
-    if (INDIMountPort.Length())    // the mount port is optional
-    {
-        while (!scope_port && wxGetUTCTimeMillis() - msec < 15 * 1000)
-        {
-            if (r->IsCanceled())
-            {
-                m_modal = false;
-                return false;
-            }
-
-            wxMilliSleep(20);
-        }
-        if (!scope_port)
-        {
-            r->SetErrorMsg(_("Connection timed-out"));
-            m_modal = false;
-            return false;
-        }
-
-        // Set the port before to try to connect the device
-
-        char *porttext = strdup(INDIMountPort.mb_str());
-        scope_port->tp->text = porttext;
-        sendNewText(scope_port);
-    }
 
     // Connect the mount device
     while (!connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000)

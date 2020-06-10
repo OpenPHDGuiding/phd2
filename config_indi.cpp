@@ -136,15 +136,6 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
         gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
     }
 
-    ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Device port")),
-             POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
-    devport = new wxTextCtrl(this, wxID_ANY);
-    devport->SetToolTip(_("Device connection port. Additional driver-specific device "
-                          "connection options may be available in the INDI Options "
-                          "window (click Other options)."));
-    gbs->Add(devport, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
-
     forcevideo = nullptr;
     forceexposure = nullptr;
     if (dev_type == INDI_TYPE_CAMERA)
@@ -202,9 +193,6 @@ void INDIConfig::UpdateControlStates()
         // device gets selected when driver property arrives
         dev->Enable(true);
 
-        devport->SetValue(INDIDevPort);
-        devport->Enable(true);
-
         if (dev_type == INDI_TYPE_CAMERA)
         {
             ccd->Append(_("Main"));
@@ -229,8 +217,6 @@ void INDIConfig::UpdateControlStates()
 
         dev->Clear();
         dev->Enable(false);
-        devport->Clear();
-        devport->Enable(false);
 
         if (dev_type == INDI_TYPE_CAMERA)
         {
@@ -458,7 +444,6 @@ void INDIConfig::SaveSettings()
     INDIhost = host->GetLineText(0);
     port->GetLineText(0).ToLong(&INDIport);
     INDIDevName = dev->GetValue();
-    INDIDevPort = devport->GetValue();
     if (dev_type == INDI_TYPE_CAMERA)
     {
         INDIForceVideo = forcevideo->GetValue();

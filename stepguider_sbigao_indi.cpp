@@ -56,7 +56,6 @@ class StepGuiderSbigAoINDI : public StepGuider, public PhdIndiClient
         long     INDIport;
         wxString INDIhost;
         wxString INDIaoDeviceName;
-        wxString INDIaoDevicePort;
         bool     modal;
         bool     ready;
         void     ClearStatus();
@@ -139,7 +138,6 @@ StepGuiderSbigAoINDI::StepGuiderSbigAoINDI()
     INDIhost   = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport   = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIaoDeviceName = pConfig->Profile.GetString("/indi/INDIao", _T("SBIG CCD"));
-    INDIaoDevicePort = pConfig->Profile.GetString("/indi/INDIao_port", _T("No Port"));
 
     m_Name = INDIaoDeviceName;
     m_maxSteps = pConfig->Profile.GetInt("/stepguider/sbigao/MaxSteps", DefaultMaxSteps);
@@ -335,7 +333,6 @@ void StepGuiderSbigAoINDI::SetupDialog()
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDIaoDeviceName;
-    indiDlg.INDIDevPort = INDIaoDevicePort;
     // initialize with actual values
     indiDlg.SetSettings();
     // try to connect to server
@@ -347,11 +344,9 @@ void StepGuiderSbigAoINDI::SetupDialog()
         INDIhost = indiDlg.INDIhost;
         INDIport = indiDlg.INDIport;
         INDIaoDeviceName = indiDlg.INDIDevName;
-        INDIaoDevicePort = indiDlg.INDIDevPort;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIao", INDIaoDeviceName);
-        pConfig->Profile.SetString("/indi/INDIao_port", INDIaoDevicePort);
         m_Name = INDIaoDeviceName;
     }
 

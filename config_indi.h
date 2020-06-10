@@ -67,7 +67,6 @@ class INDIConfig : public wxDialog, public PhdIndiClient
     wxStaticText *connect_status;
     wxStaticText *devlabel;
     wxComboBox *dev;
-    wxTextCtrl *devport;
     wxComboBox *ccd;
     wxCheckBox *forcevideo;
     wxCheckBox *forceexposure;
@@ -85,7 +84,6 @@ public:
     long     INDIport;
     wxString INDIhost;
     wxString INDIDevName;
-    wxString INDIDevPort;
     long     INDIDevCCD;
     bool     INDIForceVideo;
     bool     INDIForceExposure;

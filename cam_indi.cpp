@@ -60,7 +60,6 @@ CameraINDI::CameraINDI()
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
-    INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
     INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo",false);
     INDICameraForceExposure = pConfig->Profile.GetBoolean("/indi/INDIcam_forceexposure",false);
     Name = wxString::Format("INDI Camera [%s]", INDICameraName);
@@ -468,32 +467,6 @@ bool CameraINDI::ConnectToDriver(RunInBg *r)
 
     wxLongLong msec = wxGetUTCTimeMillis();
 
-    if (INDICameraPort.Length())   // the camera port is optional
-    {
-        while (!camera_port && wxGetUTCTimeMillis() - msec < 15 * 1000)
-        {
-            if (r->IsCanceled())
-            {
-                modal = false;
-                return false;
-            }
-
-            wxMilliSleep(20);
-        }
-        if (!camera_port)
-        {
-            r->SetErrorMsg(_("Connection timed-out"));
-            modal = false;
-            return false;
-        }
-
-        // Set the port before to trying to connect the device
-
-        char *porttext = strdup(INDICameraPort.mb_str());
-        camera_port->tp->text = porttext;
-        sendNewText(camera_port);
-    }
-
     // Connect the camera device
     while (!connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000)
     {
@@ -617,7 +590,6 @@ void CameraINDI::CameraSetup()
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDICameraName;
     indiDlg.INDIDevCCD = INDICameraCCD;
-    indiDlg.INDIDevPort = INDICameraPort;
     indiDlg.INDIForceVideo = INDICameraForceVideo;
     indiDlg.INDIForceExposure = INDICameraForceExposure;
     // initialize with actual values
@@ -632,7 +604,6 @@ void CameraINDI::CameraSetup()
         INDIport = indiDlg.INDIport;
         INDICameraName = indiDlg.INDIDevName;
         INDICameraCCD = indiDlg.INDIDevCCD;
-        INDICameraPort = indiDlg.INDIDevPort;
         INDICameraForceVideo = indiDlg.INDIForceVideo;
         INDICameraForceExposure = indiDlg.INDIForceExposure;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
@@ -641,7 +612,6 @@ void CameraINDI::CameraSetup()
         pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
         pConfig->Profile.SetBoolean("/indi/INDIcam_forcevideo",INDICameraForceVideo);
         pConfig->Profile.SetBoolean("/indi/INDIcam_forceexposure",INDICameraForceExposure);
-        pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
         Name = INDICameraName;
         SetCCDdevice();
     }

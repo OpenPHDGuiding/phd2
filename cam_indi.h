@@ -98,7 +98,6 @@ private:
     long     INDICameraCCD;
     wxString INDICameraCCDCmd;
     wxString INDICameraBlobName;
-    wxString INDICameraPort;
     bool     INDICameraForceVideo;
     bool     INDICameraForceExposure;
     wxRect   m_roi;

@@ -52,7 +52,6 @@ private:
     long     INDIport;
     wxString INDIhost;
     wxString INDIaoDeviceName;
-    wxString INDIaoDevicePort;
     bool     modal;
     bool     ready;
     void     ClearStatus();
@@ -147,7 +146,6 @@ StepGuiderSxAoINDI::StepGuiderSxAoINDI()
     INDIhost   = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport   = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIaoDeviceName = pConfig->Profile.GetString("/indi/INDIao", _T("INDI SXV-AO-LF"));
-    INDIaoDevicePort = pConfig->Profile.GetString("/indi/INDIao_port",_T("/dev/sx-ao-lf"));
 
     m_Name = INDIaoDeviceName;
     m_maxSteps = pConfig->Profile.GetInt("/stepguider/sxao/MaxSteps", DefaultMaxSteps);
@@ -353,7 +351,6 @@ void StepGuiderSxAoINDI::SetupDialog()
     indiDlg.INDIhost = INDIhost;
     indiDlg.INDIport = INDIport;
     indiDlg.INDIDevName = INDIaoDeviceName;
-    indiDlg.INDIDevPort = INDIaoDevicePort;
     // initialize with actual values
     indiDlg.SetSettings();
     // try to connect to server
@@ -365,11 +362,9 @@ void StepGuiderSxAoINDI::SetupDialog()
         INDIhost = indiDlg.INDIhost;
         INDIport = indiDlg.INDIport;
         INDIaoDeviceName = indiDlg.INDIDevName;
-        INDIaoDevicePort = indiDlg.INDIDevPort;
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIao", INDIaoDeviceName);
-        pConfig->Profile.SetString("/indi/INDIao_port",INDIaoDevicePort);
         m_Name = INDIaoDeviceName;
     }
 
@@ -392,12 +387,7 @@ void StepGuiderSxAoINDI::serverConnected()
         wxMilliSleep(20);
         ::wxSafeYield();
     }
-    // connect to the device, first set its port
-    if (ao_port && INDIaoDevicePort.Length()) {
-        char *porttext = strdup(INDIaoDevicePort.mb_str());
-        ao_port->tp->text = porttext;
-        sendNewText(ao_port);
-    }
+    // connect to the device
     connectDevice(INDIaoDeviceName.mb_str(wxConvUTF8));
 
     // wait for all defined properties in CheckState
