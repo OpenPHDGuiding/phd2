@@ -287,7 +287,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     }
 
     // Start window definition
-    SetBackgroundColour(wxColor(0xcccccc));
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     // a vertical sizer holding everything

@@ -141,7 +141,6 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
         SetStatusText(_("Start Looping..."));
         pFrame->StartLoopingInteractive(_T("PolarDrift:start"));
     }
-    SetBackgroundColour(wxColor(0xcccccc));
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     // a vertical sizer holding everything

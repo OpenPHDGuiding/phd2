@@ -138,8 +138,6 @@ DriftToolWin::DriftToolWin()
         m_need_end_dec_drift(false),
         m_slewing(false)
 {
-    SetBackgroundColour(wxColor(0xcccccc));
-
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     // a vertical sizer holding everything
