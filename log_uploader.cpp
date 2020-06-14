@@ -82,12 +82,20 @@ struct Session
     SummaryState summary_loaded = ST_BEGIN;
     bool has_guide = false;
     bool has_debug = false;
+
+    bool HasGuiding() const
+    {
+        assert(summary_loaded == ST_LOADED);
+        return summary.valid && summary.guide_cnt > 0;
+    }
 };
 
 static std::vector<Session> s_session;
 // grid sort order defined by these maps between grid row and session index
 static std::vector<int> s_grid_row;    // map session index to grid row
 static std::vector<int> s_session_idx; // map grid row => session index
+
+static bool s_include_empty;
 
 enum
 {
@@ -171,8 +179,7 @@ static wxString FormatGuideFor(const Session& session)
         case ST_LOADING:
             return _("loading...");
         case ST_LOADED:
-            if (session.summary.valid &&
-                session.summary.guide_cnt > 0)
+            if (session.HasGuiding())
             {
                 // looks better in the grid with some padding
                 return "   " +
@@ -193,6 +200,11 @@ static void FillActivity(wxGrid *grid, int row, const Session& session, bool res
 
     if (session.summary.ga_cnt)
         grid->SetCellValue(row, COL_GA, "Y");
+
+    if (session.summary_loaded != ST_LOADED || session.HasGuiding() || s_include_empty)
+        grid->ShowRow(row);
+    else
+        grid->HideRow(row);
 
     if (resize)
     {
@@ -322,6 +334,7 @@ public:
     wxHtmlWindow *m_html;
     wxGrid *m_grid;
     wxHyperlinkCtrl *m_recent;
+    wxCheckBox *m_includeEmpty;
     wxButton *m_back;
     wxButton *m_upload;
     LogScanner m_scanner;
@@ -333,6 +346,7 @@ public:
     void OnUploadClick(wxCommandEvent& event);
     void OnLinkClicked(wxHtmlLinkEvent& event);
     void OnIdle(wxIdleEvent& event);
+    void OnIncludeEmpty(wxCommandEvent& ev);
 
     void ConfirmUpload();
     void ExecUpload();
@@ -577,6 +591,13 @@ void LogUploadDialog::OnIdle(wxIdleEvent& event)
     event.RequestMore(more);
 }
 
+void LogUploadDialog::OnIncludeEmpty(wxCommandEvent& ev)
+{
+    s_include_empty = ev.IsChecked();
+    wxGridUpdateLocker noUpdates(m_grid);
+    DoSort(m_grid);
+}
+
 struct Uploaded
 {
     wxString url;
@@ -707,13 +728,22 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_upload = new wxButton(this, wxID_ANY, _("Next >"), wxDefaultPosition, wxDefaultSize, 0);
     m_upload->Enable(false);
 
+    s_include_empty = false;
+    m_includeEmpty = new wxCheckBox(this, wxID_ANY, _("Show logs with no guiding"));
+    m_includeEmpty->SetToolTip(_("Show all available logs, including logs from nights when there was no guiding"));
+
     wxBoxSizer *sizer0 = new wxBoxSizer(wxVERTICAL);   // top-level sizer
     wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL);   // sizer containing the grid
     wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);  // sizer containing the buttons below the grid
+    wxBoxSizer *sizer3 = new wxBoxSizer(wxHORIZONTAL);  // sizer containing Recent uploads and Include empty checkbox
 
     sizer1->Add(m_grid, 0, wxALL | wxEXPAND, 5);
 
-    sizer2->Add(m_recent, 0, wxALL, 5);
+    sizer3->Add(m_recent, 3, wxALL, 5);
+    sizer3->Add(0, 0, 1, wxEXPAND, 5);
+    sizer3->Add(m_includeEmpty, 0, wxALL, 5);
+
+    sizer2->Add(sizer3, 0, wxALL, 5);
     sizer2->Add(0, 0, 1, wxEXPAND, 5);
     sizer2->Add(m_back, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
     sizer2->Add(m_upload, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
@@ -730,6 +760,7 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
 
     // Connect Events
     m_recent->Connect(wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler(LogUploadDialog::OnRecentClicked), nullptr, this);
+    m_includeEmpty->Connect(wxEVT_CHECKBOX, wxCommandEventHandler(LogUploadDialog::OnIncludeEmpty), nullptr, this);
     m_back->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Connect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
@@ -748,6 +779,7 @@ LogUploadDialog::~LogUploadDialog()
 {
     // Disconnect Events
     m_recent->Disconnect(wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler(LogUploadDialog::OnRecentClicked), nullptr, this);
+    m_includeEmpty->Disconnect(wxEVT_CHECKBOX, wxCommandEventHandler(LogUploadDialog::OnIncludeEmpty), nullptr, this);
     m_back->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnBackClick), nullptr, this);
     m_upload->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(LogUploadDialog::OnUploadClick), nullptr, this);
     m_grid->Disconnect(wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler(LogUploadDialog::OnCellLeftClick), nullptr, this);
@@ -783,11 +815,13 @@ void LogUploadDialog::OnCellLeftClick(wxGridEvent& event)
 
     int r;
     if ((r = event.GetRow()) < s_session.size() &&
-        event.GetCol() == COL_SELECT &&
-        (s_session[s_session_idx[r]].has_guide ||
-         s_session[s_session_idx[r]].has_debug))
+        event.GetCol() == COL_SELECT)
     {
-        ToggleCellValue(this, r, event.GetCol());
+        const Session& session = s_session[s_session_idx[r]];
+        if (session.has_guide || session.has_debug)
+        {
+            ToggleCellValue(this, r, event.GetCol());
+        }
     }
 
     event.Skip();
@@ -1173,6 +1207,7 @@ void LogUploadDialog::ConfirmUpload()
     m_html->Show();
     m_grid->Hide();
     m_recent->Hide();
+    m_includeEmpty->Hide();
     m_back->Show();
     m_upload->Show();
     m_upload->SetLabel(_("Upload"));
@@ -1310,6 +1345,7 @@ void LogUploadDialog::OnRecentClicked(wxHyperlinkEvent& event)
     m_html->SetPage(os.str());
     m_html->Show();
     m_recent->Hide();
+    m_includeEmpty->Hide();
     m_upload->Hide();
     Layout();
 }
@@ -1325,6 +1361,7 @@ void LogUploadDialog::OnBackClick(wxCommandEvent& event)
         m_html->Hide();
         m_grid->Show();
         m_recent->Show(!s_recent.empty());
+        m_includeEmpty->Show();
         m_back->Hide();
         m_upload->SetLabel(_("Next >"));
         Layout();
