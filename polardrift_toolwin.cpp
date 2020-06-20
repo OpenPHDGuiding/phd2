@@ -43,6 +43,7 @@
 //==================================
 BEGIN_EVENT_TABLE(PolarDriftToolWin, wxFrame)
 EVT_CHOICE(ID_HEMI, PolarDriftToolWin::OnHemi)
+EVT_CHECKBOX(ID_MIRROR, PolarDriftToolWin::OnMirror)
 EVT_BUTTON(ID_START, PolarDriftToolWin::OnStart)
 EVT_BUTTON(ID_CLOSE, PolarDriftToolWin::OnCloseBtn)
 EVT_CLOSE(PolarDriftToolWin::OnClose)
@@ -135,6 +136,7 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
             m_hemi = lat >= 0 ? 1 : -1;
         }
     }
+    m_mirror = pConfig->Profile.GetInt("/PolarDriftTool/Mirror", 1);
     if (!pFrame->CaptureActive)
     {
         // loop exposures
@@ -189,6 +191,13 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     m_hemiChoice = new wxChoice(this, ID_HEMI, wxDefaultPosition, wxDefaultSize, hemi);
     m_hemiChoice->SetToolTip(_("Select your hemisphere"));
     gbSizer->Add(m_hemiChoice, wxGBPosition(gridRow, 1), wxGBSpan(1, 1), wxALL, 5);
+
+    // Next row of grid
+    gridRow++;
+    m_mirrorCheck = new wxCheckBox(this, ID_MIRROR, _("Mirror image"));
+    gbSizer->Add(m_mirrorCheck, wxGBPosition(gridRow, 0), wxGBSpan(1, 1), wxALL | wxALIGN_BOTTOM, 5);
+    m_mirrorCheck->SetValue(m_mirror==-1?true:false);
+    m_mirrorCheck->SetToolTip(_("The image is mirrored e.g. from OAG"));
 
     m_startButton = new wxButton(this, ID_START, _("Start"), wxDefaultPosition, wxDefaultSize, 0);
     gbSizer->Add(m_startButton, wxGBPosition(gridRow, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
@@ -246,6 +255,17 @@ void PolarDriftToolWin::OnHemi(wxCommandEvent& evt)
     if (i_hemi != m_hemi)
     {
         m_hemi = i_hemi;
+    }
+    FillPanel();
+}
+
+void PolarDriftToolWin::OnMirror(wxCommandEvent& evt)
+{
+    int i_mirror = m_mirrorCheck->IsChecked()? -1: 1;
+    pConfig->Profile.SetInt("/PolarDriftTool/Mirror", i_mirror);
+    if (i_mirror != m_mirror)
+    {
+        m_mirror =  i_mirror;
     }
     FillPanel();
 }
@@ -399,11 +419,11 @@ bool PolarDriftToolWin::WatchDrift()
     // In NH the pole is to the right of the drift vector (-90 degrees) however in pixel terms (Y +ve down) it is to the left (+90 degrees)
     // So we multiply by m_hemi to get the correct direction
 
-    m_alpha = theta + m_hemi * 90; // direction to the pole
+    m_alpha = theta + m_hemi * 90 * m_mirror; // direction to the pole
     m_offset = hypot(xslope, yslope)*factor;  //polar alignment error in pixels
     m_target = PHD_Point(m_current.X + m_offset*cos(radians(m_alpha)), m_current.Y + m_offset*(sin(radians(m_alpha))));
 
-    Debug.AddLine(wxString::Format("Polar Drift: m_hemi %d m_pxScale %.1f", m_hemi, m_pxScale));
+    Debug.AddLine(wxString::Format("Polar Drift: m_hemi %d m_mirror %d m_pxScale %.1f", m_hemi, m_mirror, m_pxScale));
     Debug.AddLine(wxString::Format("Polar Drift: m_num %d m_t0 %.1f tnow %.1f m_current(X,Y): %.1f,%.1f", m_num, m_t0, tnow,
         m_current.X, m_current.Y));
     Debug.AddLine(wxString::Format("Polar Drift: slope(X,Y) %.4f,%.4f m_offset %.1f theta %.1f m_alpha %.1f", xslope, yslope, m_offset, theta, m_alpha));
