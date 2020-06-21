@@ -152,12 +152,13 @@ wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxF
     wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
     c_instr = _(
         "Slew to near the Celestial Pole.\n"
+        "Make sure tracking is ON.\n"
         "Select a guide star on the main display.\n"
-        "Click Start\n"
-        "Wait for the display to stabilise\n"
-        "Click Stop\n"
+        "Click Start.\n"
+        "Wait for the display to stabilise.\n"
+        "Click Stop.\n"
         "Adjust your mount's altitude and azimuth to place "
-        "the guide star in its target circle\n"
+        "the guide star in its target circle.\n"
         );
 
     m_instructionsText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(280, 240), wxALIGN_LEFT);
