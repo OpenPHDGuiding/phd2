@@ -849,7 +849,7 @@ bool CameraASCOM::GetSensorTemperature(double *temperature)
     return false;
 }
 
-void CameraASCOM::ShowPropertyDialog(void)
+void CameraASCOM::ShowPropertyDialog()
 {
     DispatchObj camera;
 
@@ -863,7 +863,7 @@ void CameraASCOM::ShowPropertyDialog(void)
     }
 }
 
-bool CameraASCOM::AbortExposure(void)
+bool CameraASCOM::AbortExposure()
 {
     if (!(m_canAbortExposure || m_canStopExposure))
         return false;
@@ -1052,12 +1052,12 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool CameraASCOM::HasNonGuiCapture(void)
+bool CameraASCOM::HasNonGuiCapture()
 {
     return true;
 }
 
-bool CameraASCOM::ST4HasNonGuiMove(void)
+bool CameraASCOM::ST4HasNonGuiMove()
 {
     return true;
 }
