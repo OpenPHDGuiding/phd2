@@ -55,6 +55,7 @@ struct PolarDriftToolWin : public wxFrame
     wxButton *m_closeButton;      // Close button
     wxStatusBar *m_statusBar;
     wxChoice *m_hemiChoice;     // Listbox for manual hemisphere choice 
+    wxCheckBox *m_mirrorCheck;     // Checkbox for mirrored camera
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_guideOutputDisabled;
@@ -67,16 +68,15 @@ struct PolarDriftToolWin : public wxFrame
     enum PolarDriftCtrlIds
     {
         ID_HEMI = 10001,
+        ID_MIRROR,
         ID_START,
         ID_CLOSE,
     };
 
-//    bool g_canSlew;     // Mount can slew
     double m_pxScale;   // Camera pixel scale
-//    double g_camAngle;  // Camera angle to RA
-//    double g_camWidth;  // Camera width
 
     int m_hemi;         // Hemisphere of the observer
+    int m_mirror;       // -1 if the image is mirrored e.g. due to OAG
 
     bool m_drifting;        // Indicates that alignment points are being collected
     double m_t0;
@@ -85,11 +85,10 @@ struct PolarDriftToolWin : public wxFrame
     double m_offset, m_alpha;
     PHD_Point m_current, m_target;
 
-//    double g_dispSz[2];     // Display size (dynamic)
-
     void FillPanel();
 
     void OnHemi(wxCommandEvent& evt);
+    void OnMirror(wxCommandEvent& evt);
     void OnStart(wxCommandEvent& evt);
     void OnCloseBtn(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);

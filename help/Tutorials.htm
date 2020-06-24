@@ -309,7 +309,7 @@ re-calibrate. <br>
 <br>
 <h1><a name="Polar_Drift_Align"></a>PHD2 Polar Drift Alignment Tool</h1>
 The Polar Drift Alignment tool operates on a similar principle to the
-regular Drift Alignment tool.
+original Drift Alignment tool.
 The difference is that the drift is measured near the celestial pole to
 calculate the adjustments needed
 in both Azimuth and Altitude at the same time. However, it&nbsp;becomes
@@ -317,16 +317,17 @@ less accurate as the distance of the
 drift star from the pole increases. Also, it may take some time for the
 adjustment to settle so Static
 Polar Alignment can be faster. The main advantages of Polar Drift
-Alignment are that any star can be chosen and&nbsp;the tool only needs
-to know which hemisphere you're in.<br>
+Alignment are that any star can be chosen, the tool only needs
+to know which hemisphere you're in and&nbsp;it does not need PHD2 to be calibrated
+first.<br>
 To get started, perform the following steps:<br>
 <ul>
 <li>Connect PHD2 to your camera</li>
-<li>Be sure that PHD2 has already done a calibration for this set-up</li>
 <li>Manually adjust the mount&#8217;s RA axis to point within 5 degrees of the apparent pole, then
 slew the telescope to point to Dec = +90 or -90. On a German equatorial mount, it&#8217;s best to start with
 the mount in the counterweight-down orientation, pointing at the pole.</li>
 <li>Check that your hemisphere is correctly identified and adjust if necessary</li>
+<li>If your camera image is mirrored e.g guide camera on an OAG, tick Mirror image 
 <li>Select a suitable guide star on the main display</li>
 </ul>
 Click the &#8216;Start&#8217; button to start the drift.<br><br>
