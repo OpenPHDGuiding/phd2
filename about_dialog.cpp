@@ -162,7 +162,7 @@ AboutDialog::AboutDialog()
         "</tr>"
         "<tr>"
         "<td>Philip Peake</td>"
-        "<td></td>"
+        "<td>Manuel Rosales</td>"
         "<td></td>"
         "<td></td>"
         "</tr>"
@@ -173,8 +173,8 @@ AboutDialog::AboutDialog()
         "Copyright 2009 Geoffrey Hausheer<br>"
         "Copyright 2012-2013 Bret McKee<br>"
         "Copyright 2013 Sylvain Girard<br>"
-        "Copyright 2013-2019 Andy Galasso<br>"
-        "Copyright 2013-2019 Bruce Waddington<br>"
+        "Copyright 2013-2020 Andy Galasso<br>"
+        "Copyright 2013-2020 Bruce Waddington<br>"
         "Copyright 2014 Hans Lambermont<br>"
         "Copyright 2014 Robin Glover<br>"
         "Copyright 2014-2017 Max Planck Society<br>"
@@ -187,7 +187,7 @@ AboutDialog::AboutDialog()
         "</font>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(580, 520), wxHW_SCROLLBAR_AUTO);
+    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(580, 500), wxHW_SCROLLBAR_AUTO);
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
