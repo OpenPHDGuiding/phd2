@@ -826,21 +826,27 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
         Debug.Write(wxString::Format("BLT: Drift correction of %0.2f px applied to total north moves of %0.2f px, %0.3f px/frame\n", driftAmtPx, northDelta, driftPxPerFrame));
         Debug.Write(wxString::Format("BLT: Empirical north rate = %.2f px/s \n", nRate * 1000));
 
-        // Compute an expected movement of 90% of the median delta north moves (px).  Use the 90% tolerance to avoid situations where the south rate
-        // never matches the north rate yet the mount is moving consistently
+        // Compute an expected movement of 90% of the median delta north moves (px).  Use the 90% tolerance to accept situations where the south rate
+        // never matches the north rate yet the mount is moving consistently. Allow smoothing for odd mounts that produce sequences of short-long-short-long...
         expectedAmount = 0.9 * m_northStats.GetMedian();
         expectedMagnitude = fabs(expectedAmount);
         int goodSouthMoves = 0;
+        double lastSouthMove = 0;
+        bool smoothing = false;
         for (int step = 1; step < m_southBLSteps.size(); step++)
         {
             double southMove = m_southBLSteps[step] - m_southBLSteps[step-1];
             earlySouthMoves += southMove;
-            if (fabs(southMove) >= expectedMagnitude && southMove < 0)     // Big enough move and in the correct (south) direction
+            if (southMove < 0 && (fabs(southMove) >= expectedMagnitude || fabs(southMove + lastSouthMove / 2.0) > expectedMagnitude))     // Big enough move and in the correct (south) direction
             {
+                if (fabs(southMove) < expectedMagnitude)
+                    smoothing = true;
                 goodSouthMoves++;
                 // We want two consecutive south moves that meet or exceed the expected magnitude.  This sidesteps situations where the mount shows a "false start" south
                 if (goodSouthMoves == 2)
                 {
+                    if (smoothing)
+                        Debug.Write("BLT: Smoothing applied to south data points\n");
                     // bl = sum(expected moves) - sum(actual moves) - (drift correction for that period)
                     blPx = step * expectedMagnitude - fabs(earlySouthMoves - step * driftPxPerFrame);               // drift-corrected backlash amount
                     if (blPx * nRate < -200)
@@ -859,8 +865,11 @@ BacklashTool::MeasurementResults BacklashTool::ComputeBacklashPx(double* bltPx, 
                 }
             }
             else
-            if (goodSouthMoves > 0)
-                goodSouthMoves--;
+            {
+                if (goodSouthMoves > 0)
+                    goodSouthMoves--;
+            }
+            lastSouthMove = southMove;
         }
         if (goodSouthMoves < 2)
             rslt = MEASUREMENT_TOO_FEW_SOUTH;

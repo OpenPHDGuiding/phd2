@@ -2069,6 +2069,7 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     int newBC = m_pBacklashPulse->GetValue();
     int newFloor;
     int newCeiling;
+    // Is using an AO, don't adjust the blc pulse size
     if (!usingAO)
     {
         newFloor = m_pBacklashFloor->GetValue();
