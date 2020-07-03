@@ -267,7 +267,14 @@ edit field. &nbsp;In order to prevent excessive accumulation of log
 files, PHD2 automatically removes debug logs that are more than 30 days
 old and guide logs that are more than 60 days old. &nbsp;If you want to
 retain the files for longer periods, you should move or copy them to a
-different folder location, one not used by PHD2.<br>
+different folder location, one not used by PHD2.<br><br>To
+simplify the automatic log upload process (see below), log data is
+grouped by "imaging day", defined to be a 24-hour period beginning at
+09:00 am local time.&nbsp; This means that all the PHD2 executions on
+the same imaging day will write guiding and debug log data into the two
+log files for that imaging day. &nbsp;Logging is always active
+regardless of&nbsp;what was done (or not done) during the time that
+PHD2 was running. <br>
 <br>
 In some unusual cases, you may need to capture guide
 camera images, usually to support debugging and problem resolution.
