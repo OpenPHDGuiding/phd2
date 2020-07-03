@@ -2205,6 +2205,7 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
     };
     m_pDecMode = new wxChoice(this, wxID_ANY,
         wxDefaultPosition,wxDefaultSize, WXSIZEOF(dec_choices), dec_choices );
+    m_pDecMode->SetToolTip(_("Directions in which Dec guide commands will be issued"));
     m_pDecMode->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &Scope::ScopeGraphControlPane::OnDecModeChoice, this);
     m_pControlSizer->Add(m_pDecMode);
 
