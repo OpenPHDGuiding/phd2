@@ -498,7 +498,7 @@ void MyFrame::SetupMenuBar()
     m_guideMenuItem->Enable(false);
     m_stopMenuItem = guide_menu->Append(MENU_STOP, _("&Stop\tCtrl-S"), _("Stop looping and guiding"));
     m_stopMenuItem->Enable(false);
-    m_brainMenuItem = guide_menu->Append(MENU_BRAIN, _("&Advanced Settings\tCtrl-A"), _("Advanced parameters"));
+    m_brainMenuItem = guide_menu->Append(MENU_BRAIN, _("&Advanced Settings\tCtrl-A"), _("Advanced Settings"));
     m_cameraMenuItem = guide_menu->Append(MENU_CAM_SETTINGS, _("&Camera Settings"), _("Camera settings"));
     m_cameraMenuItem->Enable(false);
 
@@ -971,7 +971,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
     MainToolbar->AddSeparator();
-    MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
+    MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced Settings"), brain_bmp, _("Advanced Settings"));
     MainToolbar->AddTool(BUTTON_CAM_PROPERTIES, cam_setup_bmp, cam_setup_bmp_disabled, false, 0, _("Camera settings"));
     MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     MainToolbar->EnableTool(BUTTON_LOOP, false);

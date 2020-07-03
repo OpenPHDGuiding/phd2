@@ -1893,12 +1893,12 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
     m_pCalibrationDuration = pFrame->MakeSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0, 10000, 1000, _T("Cal_Dur"));
     pCalibSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value.")));
+        _("How long a guide pulse should be used during calibration? Click \"Advanced...\" to compute a suitable value.")));
     m_pCalibrationDuration->Enable(enableCtrls);
 
     // create the 'auto' button and bind it to the associated event-handler
     wxButton *pAutoDuration = new wxButton(GetParentWindow(AD_szCalibrationDuration), wxID_OK, _("Advanced...") );
-    pAutoDuration->SetToolTip(_("Click to open the Calibration Parameters Dialog to review or change all calibration parameters"));
+    pAutoDuration->SetToolTip(_("Click to open the Calibration Calculator Dialog to review or change all calibration parameters"));
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &ScopeConfigDialogCtrlSet::OnCalcCalibrationStep, this);
     pAutoDuration->Enable(enableCtrls);
 

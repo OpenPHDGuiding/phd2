@@ -28,7 +28,7 @@ adaptive optics device attached, you'll see separate move buttons for
 both the AO and the secondary mount. &nbsp;Each time you press the button, a pulse of the&nbsp;duration
 specified in the 'Guide Pulse Duration' field will
 be sent. &nbsp;The default value is the 'calibration step-sze' set in
-the Advanced Options dialog. &nbsp;If you are debugging mount/calibration
+the Advanced Settings dialog. &nbsp;If you are debugging mount/calibration
 problems in the daytime, listen to (rather than watch) your mount to determine if it is getting
 the commands from <span style="font-style: italic;">PHD2</span>. The idea here is just to figure out if the
 mount is responding
@@ -78,10 +78,10 @@ sub-par results. &nbsp;You can use the&nbsp;<a href="Visualization.htm#Star_Prof
 to examine the properties of the selected star, however it was chosen.
 &nbsp;To get the best results from&nbsp;Auto-Select, you should
 definitely use either a bad-pixel map or dark library and specify a
-Min-HFD value (Advanced Dialog/Guiding tab) to reduce the
+Min-HFD value (Advanced Settings/Guiding tab) to reduce the
 likelihood of PHD2 mistakenly choosing a hot pixel. &nbsp;It also works
 better if you set the option to measure saturation by Max-ADU value
-(Advanced Dialog/Camera tab), assuming you know or can determine the
+(Advanced Settings/Camera tab), assuming you know or can determine the
 maximum ADU value of your camera. &nbsp;For example, a 16-bit guide
 camera will have maximum ADU values approaching 65000.
 <h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 763px; height: 421px;" alt="" src="Calib_Review.png"><br><br>The
@@ -125,7 +125,7 @@ functions using the 'Modify Calibration' sub-menu under the 'Tools' menu. &nbsp;
 calibration-related items are&nbsp; shown there, namely the options to
 clear the current data or to enter calibration data manually. &nbsp;The
 "clear" option accomplishes the same thing as the 'Clear calibration'
-checkbox in the Advanced Dialog - it will force a recalibration
+checkbox in the Advanced Settings dialog - it will force a recalibration
 whenever guiding is resumed. &nbsp;The 'Enter calibration data'
 option&nbsp;should be used&nbsp;only under
 very unusual circumstances and only if you're sure you know what you're
@@ -186,7 +186,7 @@ dithering, you
 can't specify the maximum amount directly - you are perhaps limited to
 choices like small/medium/large and the max dither amounts will have
 preset values.&nbsp; For that reason, PHD2 has a dither scaling
-parameter in the 'Global' tab of the Brain dialog.&nbsp; It is
+parameter in the 'Global' tab of the Advanced Settings dialog.&nbsp; It is
 basically a multiplier term that lets you adjust the range of dither
 amounts that are possible.&nbsp; So a scale factor of 1 doesn't change
 the
@@ -232,7 +232,7 @@ directions until the dither and settling are completed. &nbsp;It will
 then revert to the original north/south-only guiding mode. &nbsp;If you
 don't want this behavior, you should restrict dithering to 'RA-only'.
 &nbsp;All of the PHD2 dither controls are contained on the 'Global' tab
-of the Advanced Dialog.</p><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
+of the Advanced Settings dialog.</p><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
 <span style="font-style: italic;">PHD2</span> automatically creates two types of log files: a debug log and a
 guiding log. &nbsp;Both are very useful for different reasons.
 &nbsp;The guide log is intentionally formatted to
@@ -461,7 +461,7 @@ position to track the comet until you disable comet tracking by
 toggling the Enable/Disable button.<br>
 <br>
 You can practice the comet training technique using the built-in
-camera simulator. Check the "Comet" option in the Cam Dialog, and the
+camera simulator. Check the "Comet" option in the Camera Settings dialog, and the
 simulator will display a comet. Use a bookmark to mark the comet's
 starting location, and use the Adjust Lock Position controls to move
 the comet back to the bookmark location.
@@ -676,7 +676,7 @@ generic defaults or from an existing profile. &nbsp;You can also use the
 your equipment configuration. &nbsp;To
 edit the settings in an existing profile, you first select it in the
 equipment profile drop-down list, then click on 'Settings' under the
-'<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the 'Brain'
+'<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the Advanced Settings
 dialog, where you can make whatever changes you want. &nbsp;Remember
 than profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span> session. Finally, you can import and export
@@ -717,12 +717,14 @@ responsible for having the correct values in place, and you should
 remember that significantly wrong values can result in poor guiding
 results.<br><br><h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>
 The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
-section as useful tools&nbsp;for experimenting with <span style="font-style: italic;">PHD2</span> and becoming
+section as useful tools&nbsp;for experimenting with <span style="font-style: italic;">PHD2</span>
+and becoming
 famliar with its features. &nbsp;Remember that you must choose
 'Simulator' as the camera type and 'On-camera' as the mount type in
 order to get the benefits of simulation. &nbsp;As you become more
-interested in the details of the simulation, you can use the 'Cam
-Dialog' button on the main display to adjust the simulation parameters:<br>
+interested in the details of the simulation, you can use the 'Camera
+Settings'&nbsp;button on the main display to adjust the simulation
+parameters:<br>
 <br>
 <img style="width: 775px; height: 428px;" alt="" src="Tools_simulator.png"><br>
 <br>

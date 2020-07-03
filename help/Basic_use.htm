@@ -443,7 +443,9 @@ difficulty distinguishing "seeing jitter" from actual guide star
 displacements that need to be corrected. This is particularly
 noticeable if you are guiding with a long focal length setup.&nbsp;
 Of course, the convenience of using longer exposures must be traded off
-against the need for the mount to get frequent corrections.</li>
+against the need for the mount to get frequent corrections. &nbsp;For
+mounts that have too many high-frequency errors in RA, you may need to
+work with 1-second exposures.</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
 of one to three seconds. &nbsp;If you want to de-select a star without
@@ -451,7 +453,9 @@ choosing another one, you can do a shift-click anywhere on the image display win
 starting with this
 equipment set-up, you'll probably need to focus the guide camera -
 doing so is important for good guiding. &nbsp;You can use&nbsp;the <a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile tool</a>
-to help with that process. &nbsp; If you're using a small guide scope,
+to help with that process or whatever other focusing tool you are
+comfortable - a focusing mask, a camera app like SharpCap, etc.. &nbsp;
+If you're using a small guide scope,
 like a finder-scope, the focus may react strongly to small adjustments.
 &nbsp;It's important to spend the time to get a good focus because a
 poorly focused guide star can lead to many other problems. &nbsp;The
@@ -473,17 +477,18 @@ while working within the exposure limits you choose.
 This is a specialized measurement used by PHD2 to determine how well
 the star can be distinguished from the background - it is similar but
 not identical to the signal-to-noise ratio used in photometry.
-&nbsp;The Auto setting is primarily intended for AO users who
+&nbsp;The Auto setting is&nbsp;intended for AO users who
 want to
-minimize exposure time without losing the guide star. It is also useful
-for automated operations where a meridian flip will force the selection
-of a new guide star, and failure to find a bright-enough star will
+minimize exposure time without losing the guide star or for use in
+automated imaging operations. &nbsp; Automation &nbsp;involves slewing
+and subsequent unattended guide star selection,&nbsp;and failure to
+find a bright-enough star will
 cause the automated session to fail. &nbsp;In such cases, a "long"
 exposure time may be preferable to finding no guide star at all.
 &nbsp;The settings to
 control
 Auto-exposure are on the <a href="Advanced_settings.htm#Camera_Tab">Camera Tab</a>
-of the Advanced Dialog. &nbsp;
+of the Advanced Settings dialog. &nbsp;
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
@@ -570,7 +575,7 @@ degrees or make other major changes to the hardware configuration.
 about +/- 20 degrees of the celestrial equator and high enough in the
 sky to avoid major seeing (turbulence) problems. &nbsp;If you chose
 'auto-restore calibration' when you built your profile or chose that
-option in the Guiding tab of the Advanced Dialog, you can simply
+option in the Guiding tab of the Advanced Settings dialog, you can simply
 connect to your
 gear,&nbsp;choose a guide star, then begin guiding immediately.
 &nbsp;Beginners will probably have better success if they do a fresh
