@@ -34,7 +34,10 @@ used in the <span style="font-style: italic;">PHD2</span> user interface, subjec
     initial values as if <span style="font-style: italic;">PHD2</span> had been freshly installed</li><li>'<a name="Reset_Dont_Ask"></a>Reset Don't Show Again messages' - restores the display of alert messages if you have previously chosen to not show them</li>
   <li><a name="Check_for_updates"></a>Software Update</li>
   <ul>
-    <li><a name="Automatically_check_for_updates"></a>Automatically check for updates - allow <span style="font-style: italic;">PHD2</span> to check for software updates when the program starts up</li>
+    <li><a name="Automatically_check_for_updates"></a>Automatically check for updates - allow <span style="font-style: italic;">PHD2</span>
+to check for software updates when the program starts up. If no
+internet connection is available, checking will be deferred until the
+next time PHD2 is run.</li>
     <li><a name="Only_check_for_major_releases"></a>Only check for major releases - indicates whether to include development builds when checking for software updates.</li>
   </ul>
 See the <a href="Tools.htm#Software_Update">Software Update</a> section for more information about <span style="font-style: italic;">PHD2</span> software updates.
@@ -323,7 +326,7 @@ good to calibrate within about 30 degrees of the celestial equator
 (declination = 0), and to use a calibration step size that will result
 in 8-14&nbsp;steps in each direction. &nbsp; The 'Advanced...' button
 to
-the right of this control will launch a dialog that can help you
+the right of this control will launch a calculator dialog that can help you
 compute an appropriate value (see below)&nbsp;</li><li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
 <span style="font-style: italic;">PHD2</span> to automatically reload
 the most recent calibration data as soon
@@ -425,7 +428,7 @@ has this problem (highly unlikely). &nbsp; Also,&nbsp; it will
 generally not detect&nbsp;slews that are initiated by the
 hand-controller. &nbsp;In any case, PHD2 will continue to try to track
 the guide star, so slews will typically result in lost-star
-notifications - beeping and flashing of the PHD2 image window.</li></ul><a name="Calculator_auto-step-size"></a>Advanced Calibration Parameters<br><br><img style="width: 592px; height: 426px;" alt="" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
+notifications - beeping and flashing of the PHD2 image window.</li></ul><a name="Calculator_auto-step-size"></a>Advanced Calibration Calculator<br><br><img style="width: 600px; height: 441px;" alt="" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
 To review or change&nbsp;calibration parameters,
 be sure the topmost four edit controls are
 correctly filled in. &nbsp;If you have already specified the focal
@@ -473,7 +476,7 @@ the automatically computed values will usually work well. &nbsp;As long
 as you are getting successful calibrations without alert messages, the
 calibration parameters should be left alone. &nbsp;If you've used the
 new-profile-wizard to build your equipment profile, there's rarely any
-reason to use the 'Advanced" button and the Calibration Parameters
+reason to use the 'Advanced" button and the Calibration Calculator
 dialog.<h3><a name="Algorithms_Tab"></a>Algorithms Tab</h3>
 <span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 633px; height: 610px;" alt="" src="Advanced_algorithms.png"><br><br>
 The algorithms tab can be used to select the guiding algorithms you

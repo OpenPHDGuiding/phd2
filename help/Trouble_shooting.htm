@@ -89,7 +89,7 @@ and you are convinced the
 hardware is working properly, you can avoid further alerts of this type
 by setting the
 option to 'Assume Dec orthogonal to RA' in the 'Guiding' tab of the
-Advanced Setup dialog. But you should do this only if the error is
+Advanced Settings dialog. But you should do this only if the error is
 fairly small - otherwise, you are simply ignoring a serious problem.
 &nbsp; </li><li><span style="font-weight: bold;">Questionable RA and Dec rates</span> - assuming the guide speeds reported by the mount are
 accurate, the measured guide rate for right ascension should be
@@ -190,7 +190,7 @@ it to manageable levels, you should consider choosing uni-directional
 guiding&nbsp;for declination. To do this, you&nbsp;determine
 which way the mount drifts due to polar alignment error and tell PHD2
 to guide only in the opposite direction (see &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a>). This is controlled by the 'Dec
-guide mode' control on the'Algorithms' tab of the Advanced Dialog.
+guide mode' control on the'Algorithms' tab of the Advanced Settings dialog.
 &nbsp;For example, if the
 mount tends to drift north overall, restrict guide commands to
 south-only. This is not an ideal solution, obviously, but you can
@@ -333,7 +333,7 @@ really little you can do about them. &nbsp;<br><br>Since
 the recommended practice is to let PHD2 choose the guide star
 ("auto-select"), you should use the available UI controls to help PHD2
 do the best possible job. &nbsp;The Minimum-HFD property on the Guiding
-tab of the Advanced Dialog is probably the most effective&nbsp;tool for
+tab of the Advanced Settings dialog is probably the most effective&nbsp;tool for
 avoiding&nbsp;hot-pixel selection. &nbsp;You should set its value to
 allow use of the smallest and faintest real star your setup can
 produce. &nbsp;You should use the Star Profile tool to measure a
@@ -344,7 +344,7 @@ end of the &nbsp;scale, you should also specify&nbsp;the brightest
 pixel value your system will deliver - the ADU value that represents
 saturation. &nbsp;By doing this, you will prevent PHD2 from rejecting
 stars that have a flattened profile but aren't really saturated. The
-saturation control resides on the Camera tab of the Advanced Dialog and
+saturation control resides on the Camera tab of the Advanced Settings dialog and
 is part of a control group labeled 'Star Saturation Detection'.
 &nbsp;Choose the option for 'Saturation by Max-ADU value', then set the
 value for your system. &nbsp;If you have an 8-bit camera, saturation
@@ -367,7 +367,7 @@ issues with the mount or other hardware. Blindly changing guiding
 parameters almost never solves these problems and quite often makes
 things worse. &nbsp;You have several options for restoring the settings
 to their default values: <br><ol><li>On the 'Algorithm' tab of the
-Advanced Dialog, you can individually reset parameters by looking at
+Advanced Settings dialog, you can individually reset parameters by looking at
 the tool-tip for each field. &nbsp;Hover your mouse cursor over the
 field and the default value will be displayed. &nbsp;Note that this is
 not accurate for the min-move settings, which depend on your image
@@ -403,9 +403,9 @@ the problem. &nbsp;It's worth remembering that we work in
 a&nbsp;hostile
 environment while doing our imaging, and many of the components we use
 are not designed for cold, outdoor conditions. So something that worked
-just last week or last month may no longer be reliable.<br><br>Starting
-with the 2.3 release, PHD2 uses a camera timeout property to protect
-against&nbsp;hang conditions. &nbsp;This property is set in the Camera tab
+just last week or last month may no longer be reliable.<br><br>To
+help detect and work around these kinds of problems, PHD2 uses a camera
+timeout mechanism. &nbsp;This timeout value is set in the Camera tab
 of&nbsp;<a href="Advanced_settings.htm">Advanced Settings</a>. and uses a default value of &nbsp;15 seconds. &nbsp;This means that PHD2 will wait up to 15 seconds <span style="font-style: italic;">after the completion of the exposure</span>
 to receive the image from the camera. &nbsp;This is a very generous
 amount of time and should work well for most cameras.
@@ -417,8 +417,7 @@ high number - even 1000 seconds or more - so that timeout errors are never shown
 vulnerable to apparent hangs in the user interface and erratic guiding
 behavior, but it is a choice you can make for yourself. &nbsp;A larger
 value for the timeout will not create extra delays during normal camera
-operations - once the image is downloaded from the camera, the timer is cancelled and guiding will proceed immediately.<br><br>Here are some diagnostic steps that can help you isolate these kinds of problems, as posted on the PHD2 support forum:<br><br><font style="color: rgb(0, 0, 3);" color="navy" face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Camera timeouts are invariably caused by
-problems at the lowest levels of the system: the USB subsystem on the host
+operations - once the image is downloaded from the camera, the timer is cancelled and guiding will proceed immediately.<br><br>Here are some diagnostic steps that can help you isolate these kinds of problems:<br><br><font class="" style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;">Common sources of camera timeout problems are the USB subsystem on the host
 computer, incompatible USB3/USB2 connections, damaged or low-quality USB
 cables, or flakey camera drivers. <span>&nbsp;</span>You
 will probably need to work through a number of scenarios to see what your
@@ -441,15 +440,15 @@ try:</span></font>
 
 
 
-<ol style="margin-top: 0in; color: rgb(0, 0, 3);" start="1" type="1"><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Make
+<ol class="" style="margin-top: 0in; color: rgb(0, 0, 3);" start="1" type="1"><li class="MsoNormal"><span style="font-size: 10pt;">Make
 sure your computer is running from AC power and that the OS
 can't&nbsp;disable the USB ports for power conservation. Don't run
-other resource-intensive applications while trying to image.</span></font></li><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Bin the guide camera to reduce the size of the downloaded guider images</span></font></li><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Adjust the USB usage limit of the camera if the camera driver supports
-     that option</span></font></li><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Use sub-frames in PHD2</span></font></li><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">If you&#8217;re running Windows, you can use a Microsoft tool to
+other resource-intensive applications while trying to image.</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Bin the guide camera to reduce the size of the downloaded guider images</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Adjust the USB usage limit of the camera if the camera driver supports
+     that option</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Use sub-frames in PHD2</span></li><li class="MsoNormal"><span style="font-size: 10pt;">If you&#8217;re running Windows, you can use a Microsoft tool to
      map out how the various USB ports are tied to the USB controllers in the
      computer. <span>&nbsp;</span>Then you can try to
-     isolate the two cameras on separate USB buses. <span>&nbsp;</span></span></font></li><li class="MsoNormal"><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Try using a different camera driver (e.g. an ASCOM driver) if one
-     is available</span></font></li></ol><h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance&nbsp;</h3>Once
+     isolate the two cameras on separate USB buses. <span>&nbsp;</span></span></li><li class="MsoNormal"><span style="font-size: 10pt;">Try using a different camera driver (e.g. an ASCOM driver) if one
+     is available</span></li></ol><h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance&nbsp;</h3>Once
 you've gotten everything running, you will probably get reasonably good
 guiding results almost immediately. You will have to decide what
 "good enough" means, and everyone's standard is likely to be different.
@@ -530,7 +529,7 @@ was actually slewing isn't known to PHD2. &nbsp;Assuming you didn't
 mistakenly slew the scope with guiding active, there is probably a
 timing problem in the driver. &nbsp;If you want to sidestep the problem
 temporarily, you can disable the logic to check for slewing - go into
-the 'Guiding' tab of the brain dialog, and un-check the box that says
+the 'Guiding' tab of the Advanced Settings dialog, and un-check the box that says
 "Stop guiding when mount slews." &nbsp;This will let you continue
 guiding, but the results might be suspect. &nbsp;The debug log should
 provide the details needed to describe the problem to the author of the
@@ -553,7 +552,7 @@ all.
 north or south directions, the cumulative uncorrected error will
 eventually reach a point that triggers the alert. &nbsp;Or you may be
 encountering "runaway" Dec guiding because the setting for 'reverse Dec
-output after meridian flip' (Advanced Dialog/Guiding tab) is incorrect.
+output after meridian flip' (Advanced Settings/Guiding tab) is incorrect.
 These sorts of
 problems will require some diagnosis and simply
 increasing the maximum-duration limits will not help.<br><h3><a name="Log_analysis"></a>Log Analysis</h3>Any

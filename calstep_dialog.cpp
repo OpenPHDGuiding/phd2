@@ -58,7 +58,7 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
 }
 
 CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning) :
-    wxDialog(parent, wxID_ANY, _("Detailed Calibration Parameters"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("Calibration Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning

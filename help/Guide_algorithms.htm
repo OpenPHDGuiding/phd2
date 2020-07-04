@@ -7,7 +7,7 @@ users. &nbsp;Unless you already have some experience with guiding and
 understand the basics, you should&nbsp;be somewhat cautious about changing
 algorithms. &nbsp;However, you may have some special circumstances that
 require changes or you may simply want to experiment with the different
-algorithm choices. &nbsp;The Advanced Dialog settings in <span style="font-style: italic;">PHD2</span> make it
+algorithm choices. &nbsp;The Advanced Settings dialog&nbsp;in <span style="font-style: italic;">PHD2</span> makes it
 easy to do that. &nbsp;Each algorithm has a set of parameters that
 controls how observed changes in guide star position (star deflections)
 are translated into guiding commands that are&nbsp;most likely to restore
@@ -241,11 +241,11 @@ accuracy.<span style="">&nbsp; </span>The algorithm uses separate
 time-scales for characterizing the behavior of the system: </p>
 
 
-<p class="MsoListBullet"><o:p>&nbsp;</o:p><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Short-term: for high-frequency errors such as
-those caused by gear roughness or seeing<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Medium-term: <span style="">&nbsp;</span>for residual periodic errors, typically occurring
-at intervals less than or equal to the worm period<br><span style="font-family: Symbol;"><span style="">·<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span>Longer-term: for steady drift and for lower
+<ul><li><o:p></o:p><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>Short-term: for high-frequency errors such as
+those caused by gear roughness or seeing</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>Medium-term: <span style="">&nbsp;</span>for residual periodic errors, typically occurring
+at intervals less than or equal to the worm period</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>Longer-term: for steady drift and for lower
 frequency (longer time interval) harmonics that can be caused by the
-interaction of multiple gears in the drive train</p>
+interaction of multiple gears in the drive train</li></ul>
 
 
 
@@ -323,7 +323,7 @@ so the final guide pulse amount is a sum: </p>
 
 
 <p class="MsoNormal"><o:p>&nbsp;</o:p>The &#8216;<b style="">predictive</b> <b style="">gain&#8217;</b> and &#8216;<b style="">reactive</b> <b style="">gain&#8217;</b>
-parameters are exposed in the Advanced Dialog, and their default values for
+parameters are exposed in the Advanced Settings dialog, and their default values for
 these parameters should work well for most mounts.<span style="">&nbsp; </span>You should be conservative about changing
 them because bad choices for these parameters can definitely make your guiding
 worse.</p>

@@ -570,7 +570,7 @@ bool PhdApp::OnInit()
         return false;
     }
 
-    m_logFileTime = DebugLog::GetLogFileTime();
+    m_logFileTime = DebugLog::GetLogFileTime();     // GetLogFileTime implements grouping by imaging-day, the 24-hour period starting at 09:00 am local time
     OpenLogs(false /* not for rollover */);
 
     logger.Close(); // writes any deferrred error messages to the debug log

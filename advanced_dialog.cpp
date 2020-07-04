@@ -117,7 +117,7 @@ static void EnableValidators(wxWindow *win)
 }
 
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
-    wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
+    wxDialog(pFrame, wxID_ANY, _("Advanced Settings"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
     m_tip(nullptr),
     m_tipTimer(nullptr)
 {
