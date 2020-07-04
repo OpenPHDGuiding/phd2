@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-03 23:43+0100\n"
+"POT-Creation-Date: 2020-07-04 20:38+0100\n"
 "PO-Revision-Date: 2014-12-23 17:30+0100\n"
 "Last-Translator: Oleh Malyi <astroclubzp@gmail.com>\n"
 "Language-Team: UA\n"
@@ -70,9 +70,9 @@ msgstr ""
 msgid "Other Devices"
 msgstr ""
 
-#: advanced_dialog.cpp:120
-msgid "Advanced setup"
-msgstr "Розширені налаштування"
+#: advanced_dialog.cpp:120 myframe.cpp:501 myframe.cpp:974
+msgid "Advanced Settings"
+msgstr ""
 
 #: advanced_dialog.cpp:224 guiding_assistant.cpp:510 myframe.cpp:1248
 #: profile_wizard.cpp:330
@@ -211,13 +211,13 @@ msgstr ""
 msgid "Measured"
 msgstr ""
 
-#: backlash_comp.cpp:684 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:188
-#: scope.cpp:259 staticpa_toolwin.cpp:350 testguide.cpp:152
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:190
+#: scope.cpp:259 staticpa_toolwin.cpp:349 testguide.cpp:152
 msgid "North"
 msgstr "Північ"
 
-#: backlash_comp.cpp:685 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:189
-#: scope.cpp:260 staticpa_toolwin.cpp:351 testguide.cpp:152
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1441 polardrift_toolwin.cpp:191
+#: scope.cpp:260 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "South"
 msgstr "Південь"
 
@@ -231,62 +231,62 @@ msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
 msgstr ""
 
-#: backlash_comp.cpp:921
+#: backlash_comp.cpp:930
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
 msgstr ""
 
-#: backlash_comp.cpp:935
+#: backlash_comp.cpp:944
 #, c-format
 msgid "Clearing North backlash, step %d"
 msgstr ""
 
-#: backlash_comp.cpp:973
+#: backlash_comp.cpp:982
 #, c-format
 msgid "Clearing North backlash, step %d (up to limit of %d)"
 msgstr ""
 
-#: backlash_comp.cpp:982
+#: backlash_comp.cpp:991
 msgid "Could not clear North backlash - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:1009
+#: backlash_comp.cpp:1018
 #, c-format
 msgid "Moving North for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:1044
+#: backlash_comp.cpp:1053
 msgid ""
 "Star too close to edge for accurate measurement of backlash. Choose a star "
 "farther from the edge."
 msgstr ""
 
-#: backlash_comp.cpp:1059
+#: backlash_comp.cpp:1068
 #, c-format
 msgid "Moving South for %d ms, step %d / %d"
 msgstr ""
 
-#: backlash_comp.cpp:1086
+#: backlash_comp.cpp:1095
 msgid "Dec movements too erratic - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:1093
+#: backlash_comp.cpp:1102
 msgid "Mount never established consistent south moves - test failed"
 msgstr ""
 
-#: backlash_comp.cpp:1111
+#: backlash_comp.cpp:1120
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
 msgstr ""
 
-#: backlash_comp.cpp:1186
+#: backlash_comp.cpp:1195
 msgid "Restoring star position"
 msgstr ""
 
-#: backlash_comp.cpp:1195
+#: backlash_comp.cpp:1204
 msgid "Measurement complete"
 msgstr ""
 
-#: backlash_comp.cpp:1204
+#: backlash_comp.cpp:1213
 msgid "Measurement halted"
 msgstr ""
 
@@ -602,7 +602,7 @@ msgid "Previous calibration restored"
 msgstr "Калібрування схилення, градуси"
 
 #: calstep_dialog.cpp:61
-msgid "Detailed Calibration Parameters"
+msgid "Calibration Calculator"
 msgstr ""
 
 #: calstep_dialog.cpp:104
@@ -878,7 +878,7 @@ msgstr ""
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr ""
 
-#: cam_firewire_IC.cpp:288 cam_indi.cpp:715 cam_indi.cpp:747
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:685 cam_indi.cpp:717
 #: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
 #: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
 #: image_math.cpp:547
@@ -930,93 +930,92 @@ msgstr ""
 msgid "Cannot get a frame from the queue"
 msgstr ""
 
-#: cam_indi.cpp:159 cam_indi.cpp:582
+#: cam_indi.cpp:158 cam_indi.cpp:555
 msgid "INDI camera disconnected"
 msgstr ""
 
-#: cam_indi.cpp:485 cam_indi.cpp:530 scope_indi.cpp:357 scope_indi.cpp:382
-#: scope_indi.cpp:403
-msgid "Connection timed-out"
-msgstr ""
-
-#: cam_indi.cpp:510
+#: cam_indi.cpp:483
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_indi.cpp:555
+#: cam_indi.cpp:503 scope_indi.cpp:351 scope_indi.cpp:372
+msgid "Connection timed-out"
+msgstr ""
+
+#: cam_indi.cpp:528
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr ""
 
-#: cam_indi.cpp:575 scope_indi.cpp:448
+#: cam_indi.cpp:548 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr ""
 
-#: cam_indi.cpp:615
+#: cam_indi.cpp:588
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_indi.cpp:686 cam_indi.cpp:706 gear_simulator.cpp:691
+#: cam_indi.cpp:656 cam_indi.cpp:676 gear_simulator.cpp:691
 msgid "Unsupported type or read error loading FITS file"
 msgstr "НЕпідтримуваний тип, або помилка завантаження FITS файлу"
 
-#: cam_indi.cpp:692 gear_simulator.cpp:680 gear_simulator.cpp:1527
+#: cam_indi.cpp:662 gear_simulator.cpp:680 gear_simulator.cpp:1527
 msgid "FITS file is not of an image"
 msgstr "FITS файл не містить зображення"
 
-#: cam_indi.cpp:727 cam_indi.cpp:755 gear_simulator.cpp:721
+#: cam_indi.cpp:697 cam_indi.cpp:725 gear_simulator.cpp:721
 #: gear_simulator.cpp:1549
 msgid "Error reading data"
 msgstr "Помилка читання даних"
 
-#: cam_indi.cpp:773
+#: cam_indi.cpp:743
 #, fuzzy
 msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "Збій визначення параметрів зображень"
 
-#: cam_indi.cpp:779
+#: cam_indi.cpp:749
 #, fuzzy
 msgid "No WIDTH value, failed to determine image dimensions"
 msgstr "Збій визначення параметрів зображень"
 
-#: cam_indi.cpp:786
+#: cam_indi.cpp:756
 #, fuzzy
 msgid "No HEIGHT value, failed to determine image dimensions"
 msgstr "Збій визначення параметрів зображень"
 
-#: cam_indi.cpp:794
+#: cam_indi.cpp:764
 #, fuzzy
 msgid "CCD stream: memory allocation error"
 msgstr "Помилка виділення пам’яті"
 
-#: cam_indi.cpp:925
+#: cam_indi.cpp:895
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr ""
 
-#: cam_indi.cpp:968
+#: cam_indi.cpp:938
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_indi.cpp:1046 cam_wdm.cpp:483
+#: cam_indi.cpp:1016 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr ""
 
-#: cam_indi.cpp:1057
+#: cam_indi.cpp:1027
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
 
-#: cam_indi.cpp:1059
+#: cam_indi.cpp:1029
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr ""
 
-#: cam_indi.cpp:1061
+#: cam_indi.cpp:1031
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr ""
 
@@ -1036,20 +1035,20 @@ msgstr "Помилка налаштування чутливості"
 #: cam_ioptron.cpp:105 cam_ioptron.cpp:112 cam_ioptron.cpp:147
 #: cam_LESerialWebcam.cpp:314 cam_qhy5.cpp:117 cam_qhy5.cpp:124
 #: cam_sbig.cpp:324 cam_sbig.cpp:335 cam_sbig.cpp:359 cam_skyraider.cpp:150
-#: cam_skyraider.cpp:159 cam_wdm.cpp:177 cam_wdm.cpp:186 cam_wdm.cpp:226
-#: cam_wdm.cpp:303 cam_wdm.cpp:326 cam_wdm.cpp:332 cam_wdm.cpp:340
-#: cam_wdm.cpp:357 cam_wdm.cpp:365 cam_zwo.cpp:277 gear_dialog.cpp:1403
-#: gear_dialog.cpp:2122 gear_dialog.cpp:2131 gear_dialog.cpp:2138
-#: gear_dialog.cpp:2183 gear_dialog.cpp:2189 scope_ascom.cpp:190
-#: scope_ascom.cpp:210 scope_ascom.cpp:218 scope_ascom.cpp:227
-#: scope_ascom.cpp:243 scope_ascom.cpp:250 scope_ascom.cpp:338
-#: scope_ascom.cpp:346 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_equinox.cpp:138 scope_equinox.cpp:142 scope_GC_USBST4.cpp:142
-#: scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173 scope_GC_USBST4.cpp:183
-#: scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232 scope_GC_USBST4.cpp:242
-#: stepguider_sbigao_indi.cpp:190 stepguider_sxao.cpp:150
-#: stepguider_sxao.cpp:189 stepguider_sxao_indi.cpp:206
-#: stepguider_sxao_indi.cpp:217
+#: cam_skyraider.cpp:159 cam_svb.cpp:196 cam_wdm.cpp:177 cam_wdm.cpp:186
+#: cam_wdm.cpp:226 cam_wdm.cpp:303 cam_wdm.cpp:326 cam_wdm.cpp:332
+#: cam_wdm.cpp:340 cam_wdm.cpp:357 cam_wdm.cpp:365 cam_zwo.cpp:277
+#: gear_dialog.cpp:1403 gear_dialog.cpp:2122 gear_dialog.cpp:2131
+#: gear_dialog.cpp:2138 gear_dialog.cpp:2183 gear_dialog.cpp:2189
+#: scope_ascom.cpp:190 scope_ascom.cpp:210 scope_ascom.cpp:218
+#: scope_ascom.cpp:227 scope_ascom.cpp:243 scope_ascom.cpp:250
+#: scope_ascom.cpp:338 scope_ascom.cpp:346 scope_eqmac.cpp:135
+#: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
+#: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
+#: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
+#: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
+#: stepguider_sxao.cpp:150 stepguider_sxao.cpp:189
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "Помилка"
 
@@ -1351,6 +1350,59 @@ msgstr ""
 msgid "Error starting exposure"
 msgstr "Помилка запуску експозиції"
 
+#: cam_svb.cpp:125
+msgid "Svbony Camera Properties"
+msgstr ""
+
+#: cam_svb.cpp:130 cam_touptek.cpp:886 cam_zwo.cpp:143
+msgid "Camera Mode"
+msgstr ""
+
+#: cam_svb.cpp:132 cam_svb.cpp:340 cam_svb.cpp:341 cam_touptek.cpp:888
+#: cam_zwo.cpp:145
+msgid "8-bit"
+msgstr ""
+
+#: cam_svb.cpp:133 cam_svb.cpp:340 cam_svb.cpp:341 cam_touptek.cpp:889
+#: cam_zwo.cpp:146
+msgid "16-bit"
+msgstr ""
+
+#: cam_svb.cpp:227
+msgid "No Svbony cameras detected."
+msgstr ""
+
+#: cam_svb.cpp:254 cam_zwo.cpp:379
+#, c-format
+msgid "Camera %s not found"
+msgstr ""
+
+#: cam_svb.cpp:289
+msgid "Failed to get camera info for Svbony camera."
+msgstr ""
+
+#: cam_svb.cpp:297
+msgid "Failed to open Svbony camera."
+msgstr ""
+
+#: cam_svb.cpp:305 cam_svb.cpp:426
+msgid "Failed to get camera properties for Svbony camera."
+msgstr ""
+
+#: cam_svb.cpp:339
+#, c-format
+msgid "The camera does not support %s mode, try selecting %s mode"
+msgstr ""
+
+#: cam_svb.cpp:380
+msgid "Unable to initialize camera."
+msgstr ""
+
+#: cam_svb.cpp:730 cam_sxv.cpp:822 cam_zwo.cpp:842 cam_zwo.cpp:873
+#: cam_zwo.cpp:881
+msgid "Lost connection to camera"
+msgstr ""
+
 #: cam_sxv.cpp:200
 #, fuzzy
 msgid "SX Camera Settings"
@@ -1362,10 +1414,6 @@ msgstr ""
 
 #: cam_sxv.cpp:331
 msgid "Connect failed: could not retrieve camera parameters."
-msgstr ""
-
-#: cam_sxv.cpp:822 cam_zwo.cpp:842 cam_zwo.cpp:873 cam_zwo.cpp:881
-msgid "Lost connection to camera"
 msgstr ""
 
 #: cam_touptek.cpp:416
@@ -1410,18 +1458,6 @@ msgstr ""
 
 #: cam_touptek.cpp:881
 msgid "ToupTek Camera Properties"
-msgstr ""
-
-#: cam_touptek.cpp:886 cam_zwo.cpp:143
-msgid "Camera Mode"
-msgstr ""
-
-#: cam_touptek.cpp:888 cam_zwo.cpp:145
-msgid "8-bit"
-msgstr ""
-
-#: cam_touptek.cpp:889 cam_zwo.cpp:146
-msgid "16-bit"
 msgstr ""
 
 #: cam_vfw.cpp:91
@@ -1474,11 +1510,6 @@ msgstr ""
 msgid "ZWO camera #%d not found"
 msgstr ""
 
-#: cam_zwo.cpp:379
-#, c-format
-msgid "Camera %s not found"
-msgstr ""
-
 #: cam_zwo.cpp:402 cam_zwo.cpp:482
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr ""
@@ -1510,7 +1541,7 @@ msgstr ""
 #: camera.cpp:399 gear_dialog.cpp:440 gear_dialog.cpp:444 gear_dialog.cpp:448
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1109 gear_dialog.cpp:1875 gear_dialog.cpp:1876
-#: gear_dialog.cpp:1877 log_uploader.cpp:183 mount.cpp:144 mount.cpp:169
+#: gear_dialog.cpp:1877 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:852 myframe.cpp:2946 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
 #: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
@@ -1813,7 +1844,7 @@ msgid "Tracking rate axes"
 msgstr ""
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
-#: polardrift_toolwin.cpp:194 polardrift_toolwin.cpp:333
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
 #: starcross_test.cpp:161
 msgid "Start"
 msgstr "Старт"
@@ -1823,7 +1854,7 @@ msgid "Start training the tracking rate."
 msgstr ""
 
 #: comet_tool.cpp:117 darks_dialog.cpp:244 guiding_assistant.cpp:556
-#: polardrift_toolwin.cpp:335 starcross_test.cpp:163 staticpa_toolwin.cpp:642
+#: polardrift_toolwin.cpp:355 starcross_test.cpp:163 staticpa_toolwin.cpp:641
 msgid "Stop"
 msgstr "Стоп"
 
@@ -1880,11 +1911,11 @@ msgstr ""
 msgid "Port"
 msgstr ""
 
-#: config_indi.cpp:102 config_indi.cpp:227
+#: config_indi.cpp:102 config_indi.cpp:215
 msgid "Disconnected"
 msgstr ""
 
-#: config_indi.cpp:104 config_indi.cpp:228 gear_dialog.cpp:605
+#: config_indi.cpp:104 config_indi.cpp:216 gear_dialog.cpp:605
 #: gear_dialog.cpp:631 gear_dialog.cpp:647 gear_dialog.cpp:668
 #: gear_dialog.cpp:712 gear_dialog.cpp:733 gear_dialog.cpp:750
 #: gear_dialog.cpp:771 gear_dialog.cpp:788 gear_dialog.cpp:809 runinbg.h:85
@@ -1904,66 +1935,56 @@ msgstr ""
 msgid "Dual CCD"
 msgstr ""
 
-#: config_indi.cpp:140
-msgid "Device port"
-msgstr ""
-
-#: config_indi.cpp:143
-msgid ""
-"Device connection port. Additional driver-specific device connection options "
-"may be available in the INDI Options window (click Other options)."
-msgstr ""
-
-#: config_indi.cpp:153
+#: config_indi.cpp:144
 msgid "Camera does not support exposure time"
 msgstr ""
 
-#: config_indi.cpp:154
+#: config_indi.cpp:145
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
 
-#: config_indi.cpp:158
+#: config_indi.cpp:149
 msgid "Camera does not support streaming"
 msgstr ""
 
-#: config_indi.cpp:159
+#: config_indi.cpp:150
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
 msgstr ""
 
-#: config_indi.cpp:164
+#: config_indi.cpp:155
 msgid "Other options"
 msgstr ""
 
-#: config_indi.cpp:166 indi_gui.cpp:786 scope.cpp:409
+#: config_indi.cpp:157 indi_gui.cpp:786 scope.cpp:409
 msgid "INDI"
 msgstr ""
 
-#: config_indi.cpp:170
+#: config_indi.cpp:161
 msgid "Verbose logging"
 msgstr ""
 
-#: config_indi.cpp:171
+#: config_indi.cpp:162
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
 
-#: config_indi.cpp:199
+#: config_indi.cpp:190
 msgid "Connected"
 msgstr ""
 
-#: config_indi.cpp:200 gear_dialog.cpp:188 gear_dialog.cpp:622
+#: config_indi.cpp:191 gear_dialog.cpp:188 gear_dialog.cpp:622
 #: gear_dialog.cpp:660 gear_dialog.cpp:725 gear_dialog.cpp:762
 #: gear_dialog.cpp:800
 msgid "Disconnect"
 msgstr "Від’єднати"
 
-#: config_indi.cpp:210
+#: config_indi.cpp:198
 msgid "Main"
 msgstr ""
 
-#: config_indi.cpp:211
+#: config_indi.cpp:199
 msgid "Secondary"
 msgstr ""
 
@@ -2175,63 +2196,63 @@ msgstr ""
 msgid "Drift Align"
 msgstr "Виставлення полярної осі"
 
-#: drift_tool.cpp:169 scope_manual_pointing.cpp:54
+#: drift_tool.cpp:167 scope_manual_pointing.cpp:54
 msgid "Scope Pointing"
 msgstr ""
 
-#: drift_tool.cpp:178
+#: drift_tool.cpp:176
 #, c-format
 msgid "Meridian Offset (%s)"
 msgstr ""
 
-#: drift_tool.cpp:182 scope_manual_pointing.cpp:75
+#: drift_tool.cpp:180 scope_manual_pointing.cpp:75
 #, c-format
 msgid "Declination (%s)"
 msgstr ""
 
-#: drift_tool.cpp:186
+#: drift_tool.cpp:184
 msgid "Current"
 msgstr "Поточне"
 
-#: drift_tool.cpp:196
+#: drift_tool.cpp:194
 msgid "Slew To"
 msgstr "Навестись на"
 
-#: drift_tool.cpp:206 drift_tool.cpp:557
+#: drift_tool.cpp:204 drift_tool.cpp:555
 msgid "Slew"
 msgstr "Навестись"
 
-#: drift_tool.cpp:207
+#: drift_tool.cpp:205
 msgid "Click to slew to given coordinates."
 msgstr ""
 
-#: drift_tool.cpp:210 nudge_lock.cpp:180 nudge_lock.cpp:189
+#: drift_tool.cpp:208 nudge_lock.cpp:180 nudge_lock.cpp:189
 msgid "Save"
 msgstr "Зберегти"
 
-#: drift_tool.cpp:215
+#: drift_tool.cpp:213
 msgid ""
 "Click to save these coordinates as the default location for this axis "
 "adjustment."
 msgstr ""
 
-#: drift_tool.cpp:227 drift_tool.cpp:397
+#: drift_tool.cpp:225 drift_tool.cpp:395
 msgid "Altitude adjustment notes"
 msgstr ""
 
-#: drift_tool.cpp:242
+#: drift_tool.cpp:240
 msgid "Drift"
 msgstr ""
 
-#: drift_tool.cpp:248
+#: drift_tool.cpp:246
 msgid "Adjust"
 msgstr ""
 
-#: drift_tool.cpp:375
+#: drift_tool.cpp:373
 msgid "Drift Align - Azimuth Adjustment"
 msgstr ""
 
-#: drift_tool.cpp:378
+#: drift_tool.cpp:376
 msgid ""
 "Slew to near the Meridian and the Equator.\n"
 "Press Drift to measure drift, watch the Dec trend line.\n"
@@ -2240,19 +2261,19 @@ msgid ""
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
 
-#: drift_tool.cpp:383
+#: drift_tool.cpp:381
 msgid "Azimuth adjustment notes"
 msgstr ""
 
-#: drift_tool.cpp:385
+#: drift_tool.cpp:383
 msgid "> Altitude"
 msgstr "> Висота"
 
-#: drift_tool.cpp:389
+#: drift_tool.cpp:387
 msgid "Drift Align - Altitude Adjustment"
 msgstr ""
 
-#: drift_tool.cpp:392
+#: drift_tool.cpp:390
 msgid ""
 "Slew to a location near the Equator and the Eastern or Western horizon.\n"
 "Press Drift to measure drift, watch the Dec trend line.\n"
@@ -2261,72 +2282,72 @@ msgid ""
 "Click Azimuth to repeat Azimuth adjustment."
 msgstr ""
 
-#: drift_tool.cpp:399
+#: drift_tool.cpp:397
 msgid "< Azimuth"
 msgstr "< Азимут"
 
-#: drift_tool.cpp:426
+#: drift_tool.cpp:424
 msgid "Please connect a camera and a mount"
 msgstr ""
 
-#: drift_tool.cpp:433
+#: drift_tool.cpp:431
 msgid "Please calibrate before starting drift alignment"
 msgstr ""
 
-#: drift_tool.cpp:441 polardrift_toolwin.cpp:141 staticpa_toolwin.cpp:250
+#: drift_tool.cpp:439 polardrift_toolwin.cpp:143 staticpa_toolwin.cpp:250
 msgid "Start Looping..."
 msgstr ""
 
-#: drift_tool.cpp:454
+#: drift_tool.cpp:452
 msgid "Auto-selecting a star"
 msgstr ""
 
-#: drift_tool.cpp:462
+#: drift_tool.cpp:460
 msgid "Waiting for calibration to complete..."
 msgstr ""
 
-#: drift_tool.cpp:465
+#: drift_tool.cpp:463
 msgid "Start guiding..."
 msgstr ""
 
-#: drift_tool.cpp:476
+#: drift_tool.cpp:474
 msgid "Drifting... click Adjust when done drifting"
 msgstr ""
 
-#: drift_tool.cpp:494
+#: drift_tool.cpp:492
 msgid "Adjust azimuth, click Drift when done"
 msgstr ""
 
-#: drift_tool.cpp:495
+#: drift_tool.cpp:493
 msgid "Adjust altitude, click Drift when done"
 msgstr ""
 
-#: drift_tool.cpp:557
+#: drift_tool.cpp:555
 msgid "Slewing..."
 msgstr ""
 
-#: drift_tool.cpp:566
+#: drift_tool.cpp:564
 msgid "Slew failed!"
 msgstr ""
 
-#: drift_tool.cpp:575
+#: drift_tool.cpp:573
 msgid "Slew was canceled"
 msgstr ""
 
-#: drift_tool.cpp:593
+#: drift_tool.cpp:591
 msgid "Slewing ..."
 msgstr ""
 
-#: drift_tool.cpp:612
+#: drift_tool.cpp:610
 msgid "Coordinates saved."
 msgstr ""
 
-#: drift_tool.cpp:821 eegg.cpp:267 myframe_events.cpp:767
-#: polardrift_toolwin.cpp:55 staticpa_toolwin.cpp:100
+#: drift_tool.cpp:819 eegg.cpp:267 myframe_events.cpp:767
+#: polardrift_toolwin.cpp:56 staticpa_toolwin.cpp:100
 msgid "Please connect a camera first."
 msgstr ""
 
-#: drift_tool.cpp:830
+#: drift_tool.cpp:828
 msgid ""
 "The Drift Align tool is most effective when PHD2 knows your guide\n"
 "scope focal length and camera pixel size.\n"
@@ -2544,8 +2565,8 @@ msgstr "Від’єднати все"
 msgid "Disconnect all equipment"
 msgstr "Від’єднати все обладнання"
 
-#: gear_dialog.cpp:344 myframe.cpp:1243 polardrift_toolwin.cpp:199
-#: staticpa_toolwin.cpp:424
+#: gear_dialog.cpp:344 myframe.cpp:1243 polardrift_toolwin.cpp:208
+#: staticpa_toolwin.cpp:423
 msgid "Close"
 msgstr "Закрити"
 
@@ -3001,7 +3022,7 @@ msgstr "Положення АО"
 msgid "Select the number of frames of history to display"
 msgstr ""
 
-#: graph-stepguider.cpp:104 graph.cpp:130 staticpa_toolwin.cpp:421
+#: graph-stepguider.cpp:104 graph.cpp:130 staticpa_toolwin.cpp:420
 #: statswindow.cpp:134 target.cpp:79
 msgid "Clear"
 msgstr "Очистити"
@@ -3622,7 +3643,7 @@ msgstr ""
 msgid "Guide star tracking"
 msgstr ""
 
-#: guider.cpp:1663 log_uploader.cpp:679
+#: guider.cpp:1663 log_uploader.cpp:700
 msgid "Calibration"
 msgstr ""
 
@@ -4216,52 +4237,52 @@ msgstr ""
 msgid "INDI Options"
 msgstr ""
 
-#: log_uploader.cpp:150
+#: log_uploader.cpp:158
 #, c-format
 msgid "%dd"
 msgstr ""
 
-#: log_uploader.cpp:153
+#: log_uploader.cpp:161
 #, c-format
 msgid "%dhr"
 msgstr ""
 
-#: log_uploader.cpp:158
+#: log_uploader.cpp:166
 #, c-format
 msgid "%dhr%dmin"
 msgstr ""
 
-#: log_uploader.cpp:161
+#: log_uploader.cpp:169
 #, c-format
 msgid "%dmin"
 msgstr ""
 
-#: log_uploader.cpp:163
+#: log_uploader.cpp:171
 #, c-format
 msgid "%dsec"
 msgstr ""
 
-#: log_uploader.cpp:172
+#: log_uploader.cpp:180
 msgid "loading..."
 msgstr ""
 
-#: log_uploader.cpp:633
+#: log_uploader.cpp:654
 msgid "Upload Log Files - Select logs"
 msgstr ""
 
-#: log_uploader.cpp:634
+#: log_uploader.cpp:655
 msgid "Upload Log Files - Confirm upload"
 msgstr ""
 
-#: log_uploader.cpp:635
+#: log_uploader.cpp:656
 msgid "Upload Log Files - Upload complete"
 msgstr ""
 
-#: log_uploader.cpp:636
+#: log_uploader.cpp:657
 msgid "Upload Log Files - Upload not completed"
 msgstr ""
 
-#: log_uploader.cpp:639
+#: log_uploader.cpp:660
 msgid ""
 "When asking for help in the PHD2 Forum it is important to include your PHD2 "
 "logs. This tool will help you upload your log files so they can be seen in "
@@ -4269,120 +4290,129 @@ msgid ""
 "The first step is to select which files to upload.\n"
 msgstr ""
 
-#: log_uploader.cpp:676
+#: log_uploader.cpp:697
 msgid "Select"
 msgstr ""
 
-#: log_uploader.cpp:677
+#: log_uploader.cpp:698
 msgid "Night Of"
 msgstr ""
 
-#: log_uploader.cpp:678
+#: log_uploader.cpp:699
 msgid "Guided"
 msgstr ""
 
-#: log_uploader.cpp:680
+#: log_uploader.cpp:701
 msgid "Guide Asst."
 msgstr ""
 
-#: log_uploader.cpp:698 log_uploader.cpp:1307
+#: log_uploader.cpp:719 log_uploader.cpp:1342
 msgid "Recent uploads"
 msgstr ""
 
-#: log_uploader.cpp:704 profile_wizard.cpp:327
+#: log_uploader.cpp:725 profile_wizard.cpp:327
 msgid "< Back"
 msgstr "< Назад"
 
-#: log_uploader.cpp:707 log_uploader.cpp:1329 profile_wizard.cpp:332
+#: log_uploader.cpp:728 log_uploader.cpp:1366 profile_wizard.cpp:332
 #: profile_wizard.cpp:739
 msgid "Next >"
 msgstr "Вперед >"
 
-#: log_uploader.cpp:858 log_uploader.cpp:1178
+#: log_uploader.cpp:732
+msgid "Show logs with no guiding"
+msgstr ""
+
+#: log_uploader.cpp:733
+msgid ""
+"Show all available logs, including logs from nights when there was no guiding"
+msgstr ""
+
+#: log_uploader.cpp:892 log_uploader.cpp:1213
 msgid "Upload"
 msgstr ""
 
-#: log_uploader.cpp:858
+#: log_uploader.cpp:892
 msgid "Uploading log files ..."
 msgstr ""
 
-#: log_uploader.cpp:887
+#: log_uploader.cpp:921
 #, c-format
 msgid "Uploading ... %.f%%"
 msgstr ""
 
-#: log_uploader.cpp:940
+#: log_uploader.cpp:974
 msgid "Connecting ..."
 msgstr ""
 
-#: log_uploader.cpp:956
+#: log_uploader.cpp:990
 #, c-format
 msgid "Connection failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1112
+#: log_uploader.cpp:1146
 #, c-format
 msgid "Upload failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1145
+#: log_uploader.cpp:1179
 msgid "The following log files will be uploaded:"
 msgstr ""
 
-#: log_uploader.cpp:1158
+#: log_uploader.cpp:1192
 msgid "Guide and Debug logs"
 msgstr ""
 
-#: log_uploader.cpp:1160
+#: log_uploader.cpp:1194
 msgid "Debug log"
 msgstr ""
 
-#: log_uploader.cpp:1162
+#: log_uploader.cpp:1196
 msgid "Guide log"
 msgstr ""
 
-#: log_uploader.cpp:1247
+#: log_uploader.cpp:1282
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
 
-#: log_uploader.cpp:1250
+#: log_uploader.cpp:1285
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
 
-#: log_uploader.cpp:1252
+#: log_uploader.cpp:1287
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: log_uploader.cpp:1268
+#: log_uploader.cpp:1303
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
 
-#: log_uploader.cpp:1271
+#: log_uploader.cpp:1306
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1275
+#: log_uploader.cpp:1310
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
 
-#: log_uploader.cpp:1279
+#: log_uploader.cpp:1314
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1360
+#: log_uploader.cpp:1397
 msgid "Link copied to clipboard"
 msgstr ""
 
@@ -4597,10 +4627,6 @@ msgstr ""
 
 #: myframe.cpp:501
 msgid "&Advanced Settings\tCtrl-A"
-msgstr ""
-
-#: myframe.cpp:501 myframe.cpp:974
-msgid "Advanced parameters"
 msgstr ""
 
 #: myframe.cpp:502
@@ -5522,7 +5548,7 @@ msgid ""
 " problems, read the 'Best Practices' document and the help files! "
 msgstr ""
 
-#: myframe_events.cpp:188 staticpa_toolwin.cpp:311 staticpa_toolwin.cpp:627
+#: myframe_events.cpp:188 staticpa_toolwin.cpp:310 staticpa_toolwin.cpp:626
 msgid "Instructions"
 msgstr "Інструкції"
 
@@ -5936,7 +5962,7 @@ msgstr ""
 msgid "Unable to check updates"
 msgstr ""
 
-#: pierflip_tool.cpp:103 staticpa_toolwin.cpp:329
+#: pierflip_tool.cpp:103 staticpa_toolwin.cpp:328
 msgid "Hour Angle"
 msgstr ""
 
@@ -6054,7 +6080,7 @@ msgid ""
 "Auto and try again."
 msgstr ""
 
-#: polardrift_toolwin.cpp:64
+#: polardrift_toolwin.cpp:65
 msgid ""
 "The Polar Drift Align tool is most effective when PHD2 knows your guide\n"
 "scope focal length and camera pixel size.\n"
@@ -6065,69 +6091,78 @@ msgid ""
 "Would you like to run the tool anyway?"
 msgstr ""
 
-#: polardrift_toolwin.cpp:80 staticpa_toolwin.cpp:124
+#: polardrift_toolwin.cpp:81 staticpa_toolwin.cpp:124
 msgid "Please wait till Calibration is done and stop guiding"
 msgstr ""
 
-#: polardrift_toolwin.cpp:109
+#: polardrift_toolwin.cpp:110
 msgid "Polar Drift Alignment"
 msgstr ""
 
-#: polardrift_toolwin.cpp:153
+#: polardrift_toolwin.cpp:154
 msgid ""
 "Slew to near the Celestial Pole.\n"
+"Make sure tracking is ON.\n"
 "Select a guide star on the main display.\n"
-"Click Start\n"
-"Wait for the display to stabilise\n"
-"Click Stop\n"
+"Click Start.\n"
+"Wait for the display to stabilise.\n"
+"Click Stop.\n"
 "Adjust your mount's altitude and azimuth to place the guide star in its "
-"target circle\n"
+"target circle.\n"
 msgstr ""
 
-#: polardrift_toolwin.cpp:172 staticpa_toolwin.cpp:317
+#: polardrift_toolwin.cpp:174 staticpa_toolwin.cpp:316
 msgid "Alignment Parameters"
 msgstr ""
 
-#: polardrift_toolwin.cpp:183 staticpa_toolwin.cpp:333
+#: polardrift_toolwin.cpp:185 staticpa_toolwin.cpp:332
 msgid "Hemisphere"
 msgstr ""
 
-#: polardrift_toolwin.cpp:191 staticpa_toolwin.cpp:353
+#: polardrift_toolwin.cpp:193 staticpa_toolwin.cpp:352
 msgid "Select your hemisphere"
 msgstr ""
 
-#: polardrift_toolwin.cpp:211 staticpa_toolwin.cpp:436
+#: polardrift_toolwin.cpp:198
+msgid "Mirror image"
+msgstr ""
+
+#: polardrift_toolwin.cpp:201
+msgid "The image is mirrored e.g. from OAG"
+msgstr ""
+
+#: polardrift_toolwin.cpp:220 staticpa_toolwin.cpp:435
 msgid "Adjustment notes"
 msgstr ""
 
-#: polardrift_toolwin.cpp:258
+#: polardrift_toolwin.cpp:278
 msgid "Polar Drift alignment stopped"
 msgstr ""
 
-#: polardrift_toolwin.cpp:260
+#: polardrift_toolwin.cpp:280
 #, c-format
 msgid "PA err(arcmin): %.1f Angle (deg): %.1f"
 msgstr ""
 
-#: polardrift_toolwin.cpp:275 staticpa_toolwin.cpp:539
+#: polardrift_toolwin.cpp:295 staticpa_toolwin.cpp:538
 msgid "Please wait till Calibration is done and/or stop guiding"
 msgstr ""
 
-#: polardrift_toolwin.cpp:280 staticpa_toolwin.cpp:544
+#: polardrift_toolwin.cpp:300 staticpa_toolwin.cpp:543
 msgid "Please select a star"
 msgstr ""
 
-#: polardrift_toolwin.cpp:412
+#: polardrift_toolwin.cpp:432
 #, c-format
 msgid "Time %.fs"
 msgstr ""
 
-#: polardrift_toolwin.cpp:413
+#: polardrift_toolwin.cpp:433
 #, c-format
 msgid "PA Err: %.f min"
 msgstr ""
 
-#: polardrift_toolwin.cpp:414
+#: polardrift_toolwin.cpp:434
 #, c-format
 msgid "Angle: %.f deg"
 msgstr ""
@@ -6960,7 +6995,7 @@ msgstr "Крок калібрування (мс)"
 
 #: scope.cpp:1896
 msgid ""
-"How long a guide pulse should be used during calibration? Click \"Calculate"
+"How long a guide pulse should be used during calibration? Click \"Advanced..."
 "\" to compute a suitable value."
 msgstr ""
 
@@ -6970,7 +7005,7 @@ msgstr ""
 
 #: scope.cpp:1901
 msgid ""
-"Click to open the Calibration Parameters Dialog to review or change all "
+"Click to open the Calibration Calculator Dialog to review or change all "
 "calibration parameters"
 msgstr ""
 
@@ -7045,7 +7080,7 @@ msgstr ""
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1986 scope.cpp:2188
+#: scope.cpp:1986 scope.cpp:2189
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
@@ -7055,7 +7090,7 @@ msgstr ""
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1992 scope.cpp:2195
+#: scope.cpp:1992 scope.cpp:2196
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
@@ -7065,15 +7100,15 @@ msgstr ""
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:2004
+#: scope.cpp:2004 scope.cpp:2208
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:2190
+#: scope.cpp:2191
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:2197
+#: scope.cpp:2198
 msgid "Mx DEC"
 msgstr ""
 
@@ -7132,20 +7167,20 @@ msgstr ""
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr ""
 
-#: scope_indi.cpp:247
+#: scope_indi.cpp:245
 msgid "INDI Aux Mount Selection"
 msgstr ""
 
-#: scope_indi.cpp:252
+#: scope_indi.cpp:250
 msgid "INDI Mount Selection"
 msgstr ""
 
-#: scope_indi.cpp:428
+#: scope_indi.cpp:397
 #, c-format
 msgid "Cannot connect to mount %s: %s"
 msgstr ""
 
-#: scope_indi.cpp:492
+#: scope_indi.cpp:461
 msgid "INDI mount was disconnected"
 msgstr ""
 
@@ -7469,123 +7504,123 @@ msgid ""
 "to place three reference stars on their orbits\n"
 msgstr ""
 
-#: staticpa_toolwin.cpp:338
+#: staticpa_toolwin.cpp:337
 msgid "Reference Star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:345
+#: staticpa_toolwin.cpp:344
 msgid "Set your scope hour angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:359
+#: staticpa_toolwin.cpp:358
 msgid "Select the star used for checking alignment."
 msgstr ""
 
-#: staticpa_toolwin.cpp:362
+#: staticpa_toolwin.cpp:361
 msgid ">"
 msgstr ""
 
-#: staticpa_toolwin.cpp:369
+#: staticpa_toolwin.cpp:368
 msgid "Camera Angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:373
+#: staticpa_toolwin.cpp:372
 msgid "Arcsec/pixel"
 msgstr ""
 
-#: staticpa_toolwin.cpp:377
+#: staticpa_toolwin.cpp:376
 msgid "Manual Slew"
 msgstr ""
 
-#: staticpa_toolwin.cpp:380
+#: staticpa_toolwin.cpp:379
 msgid "Manually slew the mount to three alignment positions"
 msgstr ""
 
-#: staticpa_toolwin.cpp:393 staticpa_toolwin.cpp:640
+#: staticpa_toolwin.cpp:392 staticpa_toolwin.cpp:639
 msgid "Rotate"
 msgstr ""
 
-#: staticpa_toolwin.cpp:399
+#: staticpa_toolwin.cpp:398
 msgid "Flip camera"
 msgstr ""
 
-#: staticpa_toolwin.cpp:402
+#: staticpa_toolwin.cpp:401
 msgid "Invert the camera angle"
 msgstr ""
 
-#: staticpa_toolwin.cpp:404
+#: staticpa_toolwin.cpp:403
 msgid "Get second position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:410
+#: staticpa_toolwin.cpp:409
 msgid "Show Orbits"
 msgstr ""
 
-#: staticpa_toolwin.cpp:413
+#: staticpa_toolwin.cpp:412
 msgid "Show or hide the star orbits"
 msgstr ""
 
-#: staticpa_toolwin.cpp:415
+#: staticpa_toolwin.cpp:414
 msgid "Get third position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:532
+#: staticpa_toolwin.cpp:531
 msgid "Static alignment stopped"
 msgstr ""
 
-#: staticpa_toolwin.cpp:587
+#: staticpa_toolwin.cpp:586
 msgid "Static Polar alignment display cleared"
 msgstr ""
 
-#: staticpa_toolwin.cpp:621
+#: staticpa_toolwin.cpp:620
 msgid "Star Map"
 msgstr ""
 
-#: staticpa_toolwin.cpp:650
+#: staticpa_toolwin.cpp:649
 msgid "Get first position"
 msgstr ""
 
-#: staticpa_toolwin.cpp:818
+#: staticpa_toolwin.cpp:817
 #, c-format
 msgid "Polar Alignment Error (arcmin): Alt %.1f; Az %.1f Tot %.1f"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1045
+#: staticpa_toolwin.cpp:1044
 #, c-format
 msgid "Reading Star Position #%d"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1053 staticpa_toolwin.cpp:1136
+#: staticpa_toolwin.cpp:1052 staticpa_toolwin.cpp:1135
 msgid "Error setting rotation parameters: Stopping"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1059 staticpa_toolwin.cpp:1083
-#: staticpa_toolwin.cpp:1113 staticpa_toolwin.cpp:1166
+#: staticpa_toolwin.cpp:1058 staticpa_toolwin.cpp:1082
+#: staticpa_toolwin.cpp:1112 staticpa_toolwin.cpp:1165
 #, c-format
 msgid "Error reading star position #%d: Stopping"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1092
+#: staticpa_toolwin.cpp:1091
 #, c-format
 msgid "Star Pos#2 Step=%d / %d Rotated=%.1f / %.1f deg"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1104
+#: staticpa_toolwin.cpp:1103
 #, c-format
 msgid "Error moving west step %d: Stopping"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1130
+#: staticpa_toolwin.cpp:1129
 #, c-format
 msgid "Star Pos#2 Mount did not move. Calculated polar offset=%.1f deg"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1149
+#: staticpa_toolwin.cpp:1148
 #, c-format
 msgid "Star is too close to CoR (%.1f deg) - try another reference star"
 msgstr ""
 
-#: staticpa_toolwin.cpp:1217
+#: staticpa_toolwin.cpp:1216
 #, c-format
 msgid "Read Position #%d: %.0f, %.0f"
 msgstr ""
@@ -7809,12 +7844,12 @@ msgid ""
 "only mount guiding"
 msgstr ""
 
-#: stepguider_sbigao_indi.cpp:189
+#: stepguider_sbigao_indi.cpp:187
 #, c-format
 msgid "We need at least INDI driver %s version 2.1 to get AO support."
 msgstr ""
 
-#: stepguider_sbigao_indi.cpp:334 stepguider_sxao_indi.cpp:352
+#: stepguider_sbigao_indi.cpp:332 stepguider_sxao_indi.cpp:350
 msgid "INDI AO Selection"
 msgstr ""
 
@@ -7853,14 +7888,14 @@ msgstr "Вибрати серійний порт"
 msgid "Serial Port"
 msgstr "Серійний порт"
 
-#: stepguider_sxao_indi.cpp:205
+#: stepguider_sxao_indi.cpp:203
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
 "the Limit switch states."
 msgstr ""
 
-#: stepguider_sxao_indi.cpp:214
+#: stepguider_sxao_indi.cpp:212
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -8009,6 +8044,9 @@ msgstr "Під’єднання камери..."
 #, fuzzy
 msgid "Connecting to Rotator..."
 msgstr "Під’єднання монтування..."
+
+#~ msgid "Advanced setup"
+#~ msgstr "Розширені налаштування"
 
 #~ msgid "Error opening FITS file "
 #~ msgstr "Помилка відкриття FITS файла"
