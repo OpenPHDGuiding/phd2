@@ -216,6 +216,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_starfish.h
   ${phd_src_dir}/cam_StarShootDSCI.cpp
   ${phd_src_dir}/cam_StarShootDSCI.h
+  ${phd_src_dir}/cam_svb.cpp
+  ${phd_src_dir}/cam_svb.h
   ${phd_src_dir}/cam_sxv.cpp
   ${phd_src_dir}/cam_sxv.h
   ${SXV_PLATFORM_SRC}
