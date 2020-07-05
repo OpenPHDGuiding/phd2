@@ -572,6 +572,75 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
     return false;
 }
 
+struct ImageStatsWork
+{
+    ImageStats stats;
+    usImage temp;
+};
+
+static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& win, bool ComputeMad)
+{
+    w.temp.Init(img.Size);
+
+    // Compute basic descriptive stats: min, max, mean, median, std-deviation
+    double a = 0.0;
+    double q = 0.0;
+    double k = 1.0;
+    double km1 = 0.0;
+    unsigned short maxVal = 0;
+    unsigned short minVal = 65535;
+
+    const unsigned short *p0 = &img.Pixel(win.GetLeft(), win.GetTop());
+    unsigned short *dst = &w.temp.ImageData[0];
+    for (int y = 0; y < win.GetHeight(); y++)
+    {
+        const unsigned short *end = p0 + win.GetWidth();
+        for (const unsigned short *p = p0; p < end; p++)
+        {
+            *dst++ = *p;
+            if (*p > maxVal)
+                maxVal = *p;
+            if (*p < minVal)
+                minVal = *p;
+            double const x = (double)*p;
+            double const a0 = a;
+            a += (x - a) / k;
+            q += (x - a0) * (x - a);
+            km1 = k;
+            k += 1.0;
+        }
+        p0 += img.Size.GetWidth();
+    }
+
+    w.stats.mean = a;
+    w.stats.stdev = sqrt(q / km1);
+    w.stats.max = maxVal;
+    w.stats.min = minVal;
+
+    int winPixels = win.GetWidth() * win.GetHeight();
+    unsigned short *tmp = &w.temp.ImageData[0];
+    std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
+
+    w.stats.median = tmp[winPixels / 2];
+
+    if (ComputeMad)
+    {
+        // replace each pixel with the absolute deviation from the median
+        unsigned short *p = tmp;
+        for (int i = 0; i < winPixels; i++)
+        {
+            unsigned short ad = (unsigned short)std::abs((int)*p - (int)w.stats.median);
+            *p++ = ad;
+        }
+        std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
+        w.stats.mad = tmp[winPixels / 2];
+    }
+}
+
+// Dark subtraction algorithm:
+//     Pedestal = max(median(dark_frame) - median(light_frame), 0) - handles overall gain/gradient differences
+//     Dark_corrected(i) = min(max(light(i) + pedestal - dark(i), 0), 65335
+//     Original algorithm with outdated dark frame would elevate bright star ADUs above 16-bit ceiling making them appear saturated
 bool Subtract(usImage& light, const usImage& dark)
 {
     if (!light.ImageData || !dark.ImageData)
@@ -595,28 +664,17 @@ bool Subtract(usImage& light, const usImage& dark)
     }
 
     int mindiff = 65535;
-
     unsigned short *pl0 = &light.Pixel(left, top);
     const unsigned short *pd0 = &dark.Pixel(left, top);
-    for (unsigned int r = 0; r < height;
-         r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
-    {
-        unsigned short *const endl = pl0 + width;
-        unsigned short *pl;
-        const unsigned short *pd;
-        for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
-        {
-            int diff = (int) *pl - (int) *pd;
-            if (diff < mindiff)
-                mindiff = diff;
-        }
-    }
 
-    int offset = 0;
-    if (mindiff < 0) // dark was lighter than light
+    ImageStatsWork darkStats;
+    ImageStatsWork lightStats;
+    GetImageStats(darkStats, dark, wxRect(left, top, width, height), false);
+    GetImageStats(lightStats, light, wxRect(left, top, width, height), false);
+    int offset = wxMax(darkStats.stats.median - lightStats.stats.median, 0);
+    if (offset > 0) // dark was brighter than light
     {
-        offset = -mindiff;
-        light.Pedestal = (unsigned short) offset;
+        light.Pedestal = (unsigned short) offset;           // Needed for saturation detection in find-star
     }
 
     pl0 = &light.Pixel(left, top);
@@ -630,8 +688,9 @@ bool Subtract(usImage& light, const usImage& dark)
         for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
         {
             int newval = (int) *pl - (int) *pd + offset;
-            if (newval < 0) newval = 0; // shouldn't hit this...
+            if (newval < 0) newval = 0; // can happen if hot pixel in dark frame isn't present in light frame
             else if (newval > 65535) newval = 65535;
+
             *pl = (unsigned short) newval;
         }
     }
@@ -732,59 +791,7 @@ static void MedianFilter(usImage& dst, const usImage& src, int halfWidth)
     }
 }
 
-struct ImageStatsWork
-{
-    ImageStats stats;
-    usImage temp;
-};
 
-static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& win)
-{
-    w.temp.Init(img.Size);
-
-    // Determine the mean and standard deviation
-    double a = 0.0;
-    double q = 0.0;
-    double k = 1.0;
-    double km1 = 0.0;
-
-    const unsigned short *p0 = &img.Pixel(win.GetLeft(), win.GetTop());
-    unsigned short *dst = &w.temp.ImageData[0];
-    for (int y = 0; y < win.GetHeight(); y++)
-    {
-        const unsigned short *end = p0 + win.GetWidth();
-        for (const unsigned short *p = p0; p < end; p++)
-        {
-            *dst++ = *p;
-            double const x = (double) *p;
-            double const a0 = a;
-            a += (x - a) / k;
-            q += (x - a0) * (x - a);
-            km1 = k;
-            k += 1.0;
-        }
-        p0 += img.Size.GetWidth();
-    }
-
-    w.stats.mean = a;
-    w.stats.stdev = sqrt(q / km1);
-
-    int winPixels = win.GetWidth() * win.GetHeight();
-    unsigned short *tmp = &w.temp.ImageData[0];
-    std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
-
-    w.stats.median = tmp[winPixels / 2];
-
-    // replace each pixel with the absolute deviation from the median
-    unsigned short *p = tmp;
-    for (int i = 0; i < winPixels; i++)
-    {
-        unsigned short ad = (unsigned short) std::abs((int) *p - (int) w.stats.median);
-        *p++ = ad;
-    }
-    std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
-    w.stats.mad = tmp[winPixels / 2];
-}
 
 void DefectMapDarks::BuildFilteredDark()
 {
@@ -887,7 +894,7 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
     Debug.AddLine("DefectMapBuilder: Init");
 
     ::GetImageStats(m_impl->w, darks.masterDark,
-        wxRect(0, 0, darks.masterDark.Size.GetWidth(), darks.masterDark.Size.GetHeight()));
+        wxRect(0, 0, darks.masterDark.Size.GetWidth(), darks.masterDark.Size.GetHeight()), true);
 
     const ImageStats& stats = m_impl->w.stats;
 

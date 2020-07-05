@@ -80,6 +80,8 @@ struct ImageStats
     double stdev;
     unsigned short median;
     unsigned short mad;
+    unsigned short max;
+    unsigned short min;
 };
 
 class DefectMapBuilder
