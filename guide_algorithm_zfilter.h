@@ -58,18 +58,18 @@ protected:
 
     public:
         GuideAlgorithmZFilterConfigDialogPane(wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm);
-        virtual ~GuideAlgorithmZFilterConfigDialogPane(void);
+        virtual ~GuideAlgorithmZFilterConfigDialogPane();
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-        virtual void OnImageScaleChange();
+        void LoadValues() override;
+        void UnloadValues() override;
+        void OnImageScaleChange() override;
     };
 
     class GuideAlgorithmZFilterGraphControlPane : public GraphControlPane
     {
     public:
         GuideAlgorithmZFilterGraphControlPane(wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm, const wxString& label);
-        ~GuideAlgorithmZFilterGraphControlPane(void);
+        ~GuideAlgorithmZFilterGraphControlPane();
 
     private:
         GuideAlgorithmZFilter *m_pGuideAlgorithm;
@@ -81,35 +81,35 @@ protected:
     };
 
     bool BuildFilter();
-    virtual double GetMinMove(void) const;
-    virtual bool SetMinMove(double minMove);
-    virtual double GetExpFactor(void) const;
-    virtual bool SetExpFactor(double expfactor);
+    double GetMinMove() const override;
+    bool SetMinMove(double minMove) override;
+    double GetExpFactor() const;
+    bool SetExpFactor(double expfactor);
 
     friend class GuideAlgorithmZFilterConfigDialogPane;
 
 public:
     GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis);
-    virtual ~GuideAlgorithmZFilter(void);
-    virtual GUIDE_ALGORITHM Algorithm(void) const;
+    virtual ~GuideAlgorithmZFilter();
+    GUIDE_ALGORITHM Algorithm() const override;
 
-    virtual void reset(void);
-    virtual double result(double input);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
-    virtual wxString GetSettingsSummary() const;
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "ZFilter"; }
-    virtual void GetParamNames(wxArrayString& names) const;
-    virtual bool GetParam(const wxString& name, double *val) const;
-    virtual bool SetParam(const wxString& name, double val);
+    void reset() override;
+    double result(double input) override;
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
+    GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
+    wxString GetSettingsSummary() const override;
+    wxString GetGuideAlgorithmClassName() const override { return "ZFilter"; }
+    void GetParamNames(wxArrayString& names) const override;
+    bool GetParam(const wxString& name, double *val) const override;
+    bool SetParam(const wxString& name, double val) override;
 };
 
-inline double GuideAlgorithmZFilter::GetMinMove(void) const
+inline double GuideAlgorithmZFilter::GetMinMove() const
 {
     return m_minMove;
 }
 
-inline double GuideAlgorithmZFilter::GetExpFactor(void) const
+inline double GuideAlgorithmZFilter::GetExpFactor() const
 {
     return m_expFactor;
 }

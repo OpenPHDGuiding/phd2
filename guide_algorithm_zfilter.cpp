@@ -37,7 +37,8 @@ static const double DefaultMinMove = 0.1;
 static const double DefaultExpFactor = 2.0;
 
 GuideAlgorithmZFilter::GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis)
+    : GuideAlgorithm(pMount, axis),
+      m_pFactory(nullptr)
 {
     m_expFactor = DefaultExpFactor;
     m_design = BESSEL;
@@ -50,16 +51,17 @@ GuideAlgorithmZFilter::GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis)
     reset();
 }
 
-GuideAlgorithmZFilter::~GuideAlgorithmZFilter(void)
+GuideAlgorithmZFilter::~GuideAlgorithmZFilter()
 {
+    delete m_pFactory;
 }
 
-GUIDE_ALGORITHM GuideAlgorithmZFilter::Algorithm(void) const
+GUIDE_ALGORITHM GuideAlgorithmZFilter::Algorithm() const
 {
     return GUIDE_ALGORITHM_ZFILTER;
 }
 
-void GuideAlgorithmZFilter::reset(void)
+void GuideAlgorithmZFilter::reset()
 {
     m_xv.clear();
     m_yv.clear();
@@ -134,6 +136,7 @@ bool GuideAlgorithmZFilter::BuildFilter()
 
         m_xcoeff.clear();
         m_ycoeff.clear();
+        delete m_pFactory;
         m_pFactory = new ZFilterFactory(design, m_order, corner);
         m_order = m_pFactory->order();
         m_gain = m_pFactory->gain();
@@ -293,13 +296,13 @@ GuideAlgorithmZFilter::
 
 GuideAlgorithmZFilter::
     GuideAlgorithmZFilterConfigDialogPane::
-    ~GuideAlgorithmZFilterConfigDialogPane(void)
+    ~GuideAlgorithmZFilterConfigDialogPane()
 {
 }
 
 void GuideAlgorithmZFilter::
     GuideAlgorithmZFilterConfigDialogPane::
-    LoadValues(void)
+    LoadValues()
 {
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
     m_pExpFactor->SetValue(m_pGuideAlgorithm->GetExpFactor());
@@ -307,7 +310,7 @@ void GuideAlgorithmZFilter::
 
 void GuideAlgorithmZFilter::
     GuideAlgorithmZFilterConfigDialogPane::
-    UnloadValues(void)
+    UnloadValues()
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     m_pGuideAlgorithm->SetExpFactor(m_pExpFactor->GetValue());
@@ -360,7 +363,7 @@ GuideAlgorithmZFilter::
 
 GuideAlgorithmZFilter::
     GuideAlgorithmZFilterGraphControlPane::
-    ~GuideAlgorithmZFilterGraphControlPane(void)
+    ~GuideAlgorithmZFilterGraphControlPane()
 {
 }
 

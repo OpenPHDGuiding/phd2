@@ -43,7 +43,7 @@ enum FILTER_DESIGN
 {
     BESSEL,
     BUTTERWORTH,
-    CHEBYCHEV,    
+    CHEBYCHEV,
 };
 
 class ZFilterFactory
