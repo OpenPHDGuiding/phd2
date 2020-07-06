@@ -2407,7 +2407,9 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
                 img->CalcStats();
 
-                Debug.Write(wxString::Format("loaded dark frame exposure = %d\n", img->ImgExpDur));
+                Debug.Write(wxString::Format("loaded dark frame exposure = %d, med = %u\n",
+                                             img->ImgExpDur, img->MedianADU));
+
                 camera->AddDark(img.release());
 
                 // if this is the last hdu, we are done
