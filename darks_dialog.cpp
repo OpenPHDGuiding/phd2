@@ -512,7 +512,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
 
         darkFrame.CalcStats();
         Debug.Write(wxString::Format("dark frame stats: bpp %u min %u max %u filtmin %u filtmax %u\n",
-            darkFrame.BitsPerPixel, darkFrame.Min, darkFrame.Max, darkFrame.FiltMin, darkFrame.FiltMax));
+            darkFrame.BitsPerPixel, darkFrame.MinADU, darkFrame.MaxADU, darkFrame.FiltMin, darkFrame.FiltMax));
         Histogram h(darkFrame);
         h.Dump();
         wxYield();

@@ -719,7 +719,7 @@ void Guider::UpdateImageDisplay(usImage *pImage)
     }
 
     Debug.Write(wxString::Format("UpdateImageDisplay: Size=(%d,%d) min=%d, max=%d, FiltMin=%d, FiltMax=%d, Gamma=%.3f\n",
-        pImage->Size.x, pImage->Size.y, pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax, pFrame->Stretch_gamma));
+        pImage->Size.x, pImage->Size.y, pImage->MinADU, pImage->MaxADU, pImage->FiltMin, pImage->FiltMax, pFrame->Stretch_gamma));
 
     Refresh();
     Update();
