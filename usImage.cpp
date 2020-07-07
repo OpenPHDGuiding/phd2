@@ -35,6 +35,8 @@
 #include "phd.h"
 #include "image_math.h"
 
+#include <algorithm>
+
 bool usImage::Init(const wxSize& size)
 {
     // Allocates space for image and sets params up
@@ -73,7 +75,6 @@ void usImage::SwapImageData(usImage& other)
     other.ImageData = t;
 }
 
-#include <algorithm>
 void usImage::CalcStats()
 {
     if (!ImageData || !NPixels)
