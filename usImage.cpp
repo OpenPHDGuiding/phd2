@@ -35,6 +35,8 @@
 #include "phd.h"
 #include "image_math.h"
 
+#include <algorithm>
+
 bool usImage::Init(const wxSize& size)
 {
     // Allocates space for image and sets params up
@@ -44,7 +46,7 @@ bool usImage::Init(const wxSize& size)
     NPixels = size.GetWidth() * size.GetHeight();
     Size = size;
     Subframe = wxRect(0, 0, 0, 0);
-    Min = Max = 0;
+    MinADU = MaxADU = MedianADU = 0;
 
     if (NPixels != prev)
     {
@@ -78,34 +80,35 @@ void usImage::CalcStats()
     if (!ImageData || !NPixels)
         return;
 
-    Min = 65535; Max = 0;
+    MinADU = 65535; MaxADU = 0;
     FiltMin = 65535; FiltMax = 0;
 
     if (Subframe.IsEmpty())
     {
         // full frame, no subframe
 
-        const unsigned short *src;
-
-        src = ImageData;
         for (unsigned int i = 0; i < NPixels; i++)
         {
-            int d = (int) *src++;
-            if (d < Min) Min = d;
-            if (d > Max) Max = d;
+            unsigned short d = ImageData[i];
+            if (d < MinADU) MinADU = d;
+            if (d > MaxADU) MaxADU = d;
         }
 
         unsigned short *tmpdata = new unsigned short[NPixels];
 
         Median3(tmpdata, ImageData, Size, wxRect(Size));
 
-        src = tmpdata;
+        const unsigned short *src = tmpdata;
         for (unsigned int i = 0; i < NPixels; i++)
         {
-            int d = (int) *src++;
+            unsigned short d = *src++;
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
+
+        memcpy(tmpdata, ImageData, NPixels * sizeof(unsigned short));
+        std::nth_element(tmpdata, tmpdata + NPixels / 2, tmpdata + NPixels);
+        MedianADU = tmpdata[NPixels / 2];
 
         delete[] tmpdata;
     }
@@ -124,10 +127,10 @@ void usImage::CalcStats()
             const unsigned short *src = ImageData + Subframe.x + (Subframe.y + y) * Size.GetWidth();
             for (int x = 0; x < Subframe.width; x++)
             {
-               int d = (int) *src;
-               if (d < Min) Min = d;
-               if (d > Max) Max = d;
-               *dst++ = *src++;
+                unsigned short d = *src;
+                if (d < MinADU) MinADU = d;
+                if (d > MaxADU) MaxADU = d;
+                *dst++ = *src++;
             }
         }
 
@@ -138,10 +141,14 @@ void usImage::CalcStats()
         const unsigned short *src = dst;
         for (unsigned int i = 0; i < pixcnt; i++)
         {
-            int d = (int) *src++;
+            unsigned short d = *src++;
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
+
+        memcpy(dst, tmpdata, pixcnt * sizeof(unsigned short));
+        std::nth_element(dst, dst + pixcnt / 2, dst + pixcnt);
+        MedianADU = dst[pixcnt / 2];
 
         delete[] dst;
         delete[] tmpdata;
@@ -481,6 +488,8 @@ bool usImage::Load(const wxString& fname)
             if (ok) Subframe = subf;
 
             PHD_fits_close_file(fptr);
+
+            CalcStats();
         }
         else
         {
@@ -511,7 +520,7 @@ bool usImage::Rotate(double theta, bool mirror)
 
     CalcStats();
 
-    CopyToImage(&pImg, Min, Max, 1.0);
+    CopyToImage(&pImg, MinADU, MaxADU, 1.0);
 
     wxImage mirrored = *pImg;
 
