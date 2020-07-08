@@ -1214,6 +1214,7 @@ static void LoopingCheckSlewing(Guider *guider)
     if (guider->CurrentPosition().IsValid() &&
         pPointingSource &&
         pPointingSource->IsConnected() &&
+        pPointingSource->IsStopGuidingWhenSlewingEnabled() &&
         pPointingSource->CanCheckSlewing() &&
         pPointingSource->Slewing())
     {
