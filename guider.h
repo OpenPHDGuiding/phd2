@@ -280,8 +280,8 @@ public:
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
-private:
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
+private:
     virtual bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) = 0;
     virtual bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) = 0;
 
