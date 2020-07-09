@@ -42,12 +42,13 @@ public:
     wxSize              Size;           // Dimensions of image
     wxRect              Subframe;       // were the valid data is
     unsigned int        NPixels;
-    int                 Min;
-    int                 Max;
-    int                 FiltMin;
-    int                 FiltMax;
+    unsigned short      MinADU;
+    unsigned short      MaxADU;
+    unsigned short      MedianADU;
+    unsigned short      FiltMin;
+    unsigned short      FiltMax;
     wxDateTime          ImgStartTime;
-    int                 ImgExpDur;
+    int                 ImgExpDur;      // milli-seconds
     int                 ImgStackCnt;
     wxByte              BitsPerPixel;
     unsigned short      Pedestal;
@@ -55,10 +56,11 @@ public:
 
     usImage()
         :
-        ImageData(0),
+        ImageData(nullptr),
         NPixels(0),
-        Min(0),
-        Max(0),
+        MinADU(0),
+        MaxADU(0),
+        MedianADU(0),
         FiltMin(0),
         FiltMax(0),
         ImgExpDur(0),

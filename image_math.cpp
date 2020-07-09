@@ -572,6 +572,9 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
     return false;
 }
 
+// Dark subtraction algorithm:
+//     Pedestal = max(median(dark_frame) - median(light_frame), 0) - handles overall gain/gradient differences
+//     Dark_corrected(i) = min(max(light(i) + pedestal - dark(i), 0), 65335)
 bool Subtract(usImage& light, const usImage& dark)
 {
     if (!light.ImageData || !dark.ImageData)
@@ -580,21 +583,44 @@ bool Subtract(usImage& light, const usImage& dark)
         return true;
 
     unsigned int left, top, width, height;
+    unsigned short median_light, median_dark;
+    median_light = light.MedianADU;    // median of frame or subframe
+
     if (!light.Subframe.IsEmpty())
     {
         left = light.Subframe.GetLeft();
         width = light.Subframe.GetWidth();
         top = light.Subframe.GetTop();
         height = light.Subframe.GetHeight();
+
+        // compute the dark's median ADU within the subframe region
+        unsigned int pixcnt = width * height;
+        unsigned short *tmp = new unsigned short[pixcnt];
+        const unsigned short *src = dark.ImageData + left + top * light.Size.GetWidth();
+        unsigned short *dst = tmp;
+        for (int y = 0; y < height; y++)
+        {
+            memcpy(dst, src, width * sizeof(unsigned short));
+            src += light.Size.GetWidth();
+            dst += width;
+        }
+        std::nth_element(tmp, tmp + pixcnt / 2, tmp + pixcnt);
+        median_dark = tmp[pixcnt / 2];
+        delete[] tmp;
     }
     else
     {
         left = top = 0;
         width = light.Size.GetWidth();
         height = light.Size.GetHeight();
+        median_dark = dark.MedianADU; // use the pre-computed full frame median ADU
     }
 
-    int mindiff = 65535;
+    if (median_dark > median_light)
+    {
+        // dark was brighter than light
+        light.Pedestal = median_dark - median_light;   // Needed for saturation detection in find-star
+    }
 
     unsigned short *pl0 = &light.Pixel(left, top);
     const unsigned short *pd0 = &dark.Pixel(left, top);
@@ -606,31 +632,8 @@ bool Subtract(usImage& light, const usImage& dark)
         const unsigned short *pd;
         for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
         {
-            int diff = (int) *pl - (int) *pd;
-            if (diff < mindiff)
-                mindiff = diff;
-        }
-    }
-
-    int offset = 0;
-    if (mindiff < 0) // dark was lighter than light
-    {
-        offset = -mindiff;
-        light.Pedestal = (unsigned short) offset;
-    }
-
-    pl0 = &light.Pixel(left, top);
-    pd0 = &dark.Pixel(left, top);
-    for (unsigned int r = 0; r < height;
-         r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
-    {
-        unsigned short *const endl = pl0 + width;
-        unsigned short *pl;
-        const unsigned short *pd;
-        for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
-        {
-            int newval = (int) *pl - (int) *pd + offset;
-            if (newval < 0) newval = 0; // shouldn't hit this...
+            int newval = (int) *pl + light.Pedestal - (int) *pd;
+            if (newval < 0) newval = 0; // hot pixel in dark frame isn't present in light frame
             else if (newval > 65535) newval = 65535;
             *pl = (unsigned short) newval;
         }
@@ -810,6 +813,7 @@ static wxString DefectMapFilterPath(int profileId)
     return MyFrame::GetDarksDir() + PATHSEPSTR +
         wxString::Format("PHD2_defect_map_master_filt%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
+
 static wxString DefectMapFilterPath()
 {
     return DefectMapFilterPath(pConfig->GetCurrentProfileId());
