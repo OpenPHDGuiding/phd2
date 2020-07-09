@@ -27,7 +27,7 @@ trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
 # windows
 if [ -n "$WIN" ]; then
     unzip -q -d "$TMP" "$WIN"
-    cp "$TMP/SV305-Pro-Windows-SDK/SVBCameraSDK/include/SVBCameraSDK.h" "$TOP"/cameras/
-    cp "$TMP/SV305-Pro-Windows-SDK/SVBCameraSDK/lib/x86/SVBCameraSDK.lib" "$TOP"/cameras/
-    cp "$TMP/SV305-Pro-Windows-SDK/SVBCameraSDK/lib/x86/SVBCameraSDK.dll" "$TOP"/WinLibs/
+    cp "$TMP/SVBCameraSDK/include/SVBCameraSDK.h" "$TOP"/cameras/
+    cp "$TMP/SVBCameraSDK/lib/x86/SVBCameraSDK.lib" "$TOP"/cameras/
+    cp "$TMP/SVBCameraSDK/lib/x86/SVBCameraSDK.dll" "$TOP"/WinLibs/
 fi

@@ -123,6 +123,8 @@ typedef enum SVB_ERROR_CODE{ //SVB ERROR CODE
 	SVB_ERROR_EXPOSURE_IN_PROGRESS,
 	SVB_ERROR_GENERAL_ERROR,//general error, eg: value is out of valid range
 	SVB_ERROR_INVALID_MODE,//the current mode is wrong
+	SVB_ERROR_INVALID_DIRECTION,//invalid guide direction
+	SVB_ERROR_UNKNOW_SENSOR_TYPE,//unknow sensor type
 	SVB_ERROR_END
 }SVB_ERROR_CODE;
 
@@ -206,12 +208,6 @@ typedef struct _SVB_SUPPORTED_MODE{
 	SVB_CAMERA_MODE SupportedCameraMode[16];// this array will content with the support camera mode type.SVB_MODE_END is the end of supported camera mode
 }SVB_SUPPORTED_MODE;
 
-typedef enum _SVB_PULSE_GUIDE_DIRECTION {
-	PULSE_GUIDE_EAST = 0,
-	PULSE_GUIDE_NORTH = 1,
-	PULSE_GUIDE_SOUTH = 2,
-	PULSE_GUIDE_WEST = 3,
-}SVB_PULSE_GUIDE_DIRECTION;
 
 
 #ifndef __cplusplus
@@ -691,15 +687,30 @@ Description:
 Send a PulseGuide command to camera to control the telescope
 Paras:
 int CameraID: this is get from the camera property use the API SVBGetCameraInfo.
-SVB_PULSE_GUIDE_DIRECTION direction: the direction
+SVB_GUIDE_DIRECTION direction: the direction
 int duration: the duration of pulse, unit is milliseconds
 
 return:
 SVB_SUCCESS : Operation is successful
 SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
 SVB_ERROR_GENERAL_ERROR : the parameter is not right
+SVB_ERROR_INVALID_DIRECTION : invalid guide direction
 ***************************************************************************/
-SVBCAMERA_API SVB_ERROR_CODE  SVBPulseGuide(int iCameraID, SVB_PULSE_GUIDE_DIRECTION direction, int duration);
+SVBCAMERA_API SVB_ERROR_CODE  SVBPulseGuide(int iCameraID, SVB_GUIDE_DIRECTION direction, int duration);
+
+/***************************************************************************
+Description:
+Get sensor pixel size in microns
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo.
+float *fPixelSize: sensor pixel size in microns
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+SVB_ERROR_UNKNOW_SENSOR_TYPE : unknow sensor type
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE  SVBGetSensorPixelSize(int iCameraID, float *fPixelSize);
 
 #ifdef __cplusplus
 }
