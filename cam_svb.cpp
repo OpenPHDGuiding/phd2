@@ -413,7 +413,11 @@ bool SVBCamera::Connect(const wxString& camId)
     m_buffer_size = props.MaxWidth * props.MaxHeight * (m_bpp == 8 ? 1 : 2);
     m_buffer = ::malloc(m_buffer_size);
 
-    m_devicePixelSize = 2.9; // FIXME - ask SVB to add this to SDK
+    float pxsize;
+    if ((r = SVBGetSensorPixelSize(m_cameraId, &pxsize)) == SVB_SUCCESS)
+        m_devicePixelSize = pxsize;
+    else
+        Debug.Write(wxString::Format("SVBGetSensorPixelSize ret %d\n", r));
 
     SVBStopVideoCapture(m_cameraId);
     m_capturing = false;
