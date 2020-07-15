@@ -1,7 +1,7 @@
 #ifndef __altaircam_h__
 #define __altaircam_h__
 
-/* Version: 46.16909.2020.0404 */
+/* Version: 46.17427.2020.0704 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -123,6 +123,16 @@ typedef struct {
 /*    | E_GEN_FAILURE  |   device not functioning              | 0x8007001F |   */
 /*    |----------------|---------------------------------------|------------|   */
 /********************************************************************************/
+/*                                                                              */
+/* Please note that the return value >= 0 means success                         */
+/* (especially S_FALSE is also successful, indicating that the internal value and the value set by the user is equivalent, which means "no operation"). */
+/* Therefore, the SUCCEEDEDand FAILED macros should generally be used to determine whether the return value is successful or failed. */
+/* (Unless there are special needs, do not use "==S_OK" or "==0" to judge the return value) */
+/*                                                                              */
+/* #define SUCCEEDED(hr)   (((HRESULT)(hr)) >= 0)                               */
+/* #define FAILED(hr)      (((HRESULT)(hr)) < 0)                                */
+/*                                                                              */
+/********************************************************************************/
 
 /* handle */
 typedef struct AltaircamT { int unused; } *HAltaircam, *HAltairCam;
@@ -169,6 +179,7 @@ typedef struct AltaircamT { int unused; } *HAltaircam, *HAltairCam;
 #define ALTAIRCAM_FLAG_FOCUSMOTOR          0x0000002000000000  /* support focus motor */
 #define ALTAIRCAM_FLAG_PRECISE_FRAMERATE   0x0000004000000000  /* support precise framerate & bandwidth, see ALTAIRCAM_OPTION_PRECISE_FRAMERATE & ALTAIRCAM_OPTION_BANDWIDTH */
 #define ALTAIRCAM_FLAG_HEAT                0x0000008000000000  /* heat to prevent fogging up */
+#define ALTAIRCAM_FLAG_LOW_NOISE           0x0000010000000000  /* low noise mode */
 
 #define ALTAIRCAM_TEMP_DEF                 6503    /* temp, default */
 #define ALTAIRCAM_TEMP_MIN                 2000    /* temp, minimum */
@@ -259,7 +270,7 @@ typedef struct {
 }AltaircamDeviceV2, AltaircamInstV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 46.16909.2020.0404
+    get the version of this dll/so/dylib, which is: 46.17427.2020.0704
 */
 #ifdef _WIN32
 ALTAIRCAM_API(const wchar_t*)   Altaircam_Version();
@@ -299,7 +310,7 @@ ALTAIRCAM_API(HAltaircam) Altaircam_OpenByIndex(unsigned index);
 
 ALTAIRCAM_API(void)     Altaircam_Close(HAltaircam h); /* close the handle */
 
-#define ALTAIRCAM_EVENT_EXPOSURE          0x0001    /* exposure time changed */
+#define ALTAIRCAM_EVENT_EXPOSURE          0x0001    /* exposure time or gain changed */
 #define ALTAIRCAM_EVENT_TEMPTINT          0x0002    /* white balance changed, Temp/Tint mode */
 #define ALTAIRCAM_EVENT_IMAGE             0x0004    /* live image arrived, use Altaircam_PullImage to get this image */
 #define ALTAIRCAM_EVENT_STILLIMAGE        0x0005    /* snap (still) frame arrived, use Altaircam_PullStillImage to get this frame */
@@ -778,6 +789,7 @@ ALTAIRCAM_API(HRESULT)  Altaircam_feed_Pipe(HAltaircam h, unsigned pipeNum);
 #define ALTAIRCAM_OPTION_DENOISE               0x35       /* denoise, strength range: [0, 100], 0 means disable */
 #define ALTAIRCAM_OPTION_HEAT_MAX              0x36       /* maximum level: heat to prevent fogging up */
 #define ALTAIRCAM_OPTION_HEAT                  0x37       /* heat to prevent fogging up */
+#define ALTAIRCAM_OPTION_LOW_NOISE             0x38       /* low noise mode: 1 => enable */
 
 /* pixel format */
 #define ALTAIRCAM_PIXELFORMAT_RAW8             0x00
