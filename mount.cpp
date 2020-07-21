@@ -438,6 +438,7 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
         DEC_GUIDE_MODE whichMode = pScopeCtrlSet->GetDecGuideModeUI();
         EnableDecControls(whichMode != DEC_NONE);
     }
+
     // we can probably get rid of this when we reduce the number of GP algo settings
     wxWindow *adv = pFrame->pAdvancedDialog;
     adv->GetSizer()->Fit(adv);
