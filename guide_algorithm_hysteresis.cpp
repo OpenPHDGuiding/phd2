@@ -362,6 +362,7 @@ GuideAlgorithmHysteresisGraphControlPane::EnableDecControls(bool enable)
     m_pHysteresis->Enable(enable);
     m_pMinMove->Enable(enable);
 }
+
 void GuideAlgorithmHysteresis::
     GuideAlgorithmHysteresisGraphControlPane::
     OnAggressionSpinCtrl(wxSpinEvent& WXUNUSED(evt))
