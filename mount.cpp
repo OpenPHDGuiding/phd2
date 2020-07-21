@@ -383,6 +383,14 @@ void Mount::MountConfigDialogPane::ResetDecGuidingParams()
     }
 }
 
+void Mount::MountConfigDialogPane::EnableDecControls(bool enable)
+{
+    if (m_pYGuideAlgorithmConfigDialogPane)
+    {
+        m_pYGuideAlgorithmConfigDialogPane->EnableDecControls(enable);
+    }
+}
+
 void Mount::MountConfigDialogPane::OnResetDecParams(wxCommandEvent& evt)
 {
     ResetDecGuidingParams();
@@ -423,6 +431,13 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     m_pParent->Update();
     m_pParent->Refresh();
 
+    // For Dec algo change, enable algo controls based on current UI setting for Dec guide mode
+    if (!m_pMount->IsStepGuider())
+    {
+        ScopeConfigDialogCtrlSet* pScopeCtrlSet = (ScopeConfigDialogCtrlSet*) m_pMount->currConfigDialogCtrlSet;
+        DEC_GUIDE_MODE whichMode = pScopeCtrlSet->GetDecGuideModeUI();
+        EnableDecControls(whichMode != DEC_NONE);
+    }
     // we can probably get rid of this when we reduce the number of GP algo settings
     wxWindow *adv = pFrame->pAdvancedDialog;
     adv->GetSizer()->Fit(adv);

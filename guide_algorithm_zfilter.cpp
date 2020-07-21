@@ -322,6 +322,13 @@ GuideAlgorithmZFilterConfigDialogPane::OnImageScaleChange()
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
+void GuideAlgorithmZFilter::
+GuideAlgorithmZFilterConfigDialogPane::EnableDecControls(bool enable)
+{
+    m_pExpFactor->Enable(enable);
+    m_pMinMove->Enable(enable);
+}
+
 GraphControlPane *GuideAlgorithmZFilter::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmZFilterGraphControlPane(pParent, this, label);
@@ -358,6 +365,12 @@ GuideAlgorithmZFilter::
     DoAdd(m_pMinMove, _("MnMo"));
 
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+    if (TheScope() && pGuideAlgorithm->GetAxis() == "DEC")
+    {
+        DEC_GUIDE_MODE currDecGuideMode = TheScope()->GetDecGuideMode();
+        m_pExpFactor->Enable(currDecGuideMode != DEC_NONE);
+        m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
+    }
 
 }
 
@@ -365,6 +378,13 @@ GuideAlgorithmZFilter::
     GuideAlgorithmZFilterGraphControlPane::
     ~GuideAlgorithmZFilterGraphControlPane()
 {
+}
+
+void GuideAlgorithmZFilter::
+GuideAlgorithmZFilterGraphControlPane::EnableDecControls(bool enable)
+{
+    m_pMinMove->Enable(enable);
+    m_pExpFactor->Enable(enable);
 }
 
 void GuideAlgorithmZFilter::

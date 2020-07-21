@@ -280,6 +280,13 @@ GuideAlgorithmLowpass2ConfigDialogPane::OnImageScaleChange()
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
+void GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2ConfigDialogPane::EnableDecControls(bool enable)
+{
+    m_pAggressiveness->Enable(enable);
+    m_pMinMove->Enable(enable);
+}
+
 GraphControlPane *GuideAlgorithmLowpass2::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmLowpass2GraphControlPane(pParent, this, label);
@@ -312,12 +319,26 @@ GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2
 
     m_pAggressiveness->SetValue(m_pGuideAlgorithm->GetAggressiveness());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+
+    if (TheScope() && pGuideAlgorithm->GetAxis() == "DEC")
+    {
+        DEC_GUIDE_MODE currDecGuideMode = TheScope()->GetDecGuideMode();
+        m_pAggressiveness->Enable(currDecGuideMode != DEC_NONE);
+        m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
+    }
 }
 
 GuideAlgorithmLowpass2::
 GuideAlgorithmLowpass2GraphControlPane::
 ~GuideAlgorithmLowpass2GraphControlPane(void)
 {
+}
+
+void GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2GraphControlPane::EnableDecControls(bool enable)
+{
+    m_pAggressiveness->Enable(enable);
+    m_pMinMove->Enable(enable);
 }
 
 void GuideAlgorithmLowpass2::

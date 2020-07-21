@@ -145,6 +145,7 @@ public:
     wxSizer *GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
     void CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags = 0);
     virtual void OnImageScaleChange();         // Only for adjustments made within the AD panels
+    virtual void EnableDecControls(bool enable);        // Needed for guide algo ConfigDialogPanes which inherit directly from this class
 
 protected:
     wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = nullptr);

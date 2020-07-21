@@ -262,6 +262,13 @@ GuideAlgorithmLowpassConfigDialogPane::OnImageScaleChange()
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
+void GuideAlgorithmLowpass::
+GuideAlgorithmLowpassConfigDialogPane::EnableDecControls(bool enable)
+{
+    m_pMinMove->Enable(enable);
+    m_pSlopeWeight->Enable(enable);
+}
+
 GraphControlPane *GuideAlgorithmLowpass::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmLowpassGraphControlPane(pParent, this, label);
@@ -295,12 +302,26 @@ GuideAlgorithmLowpass::
 
     m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+
+    if (TheScope() && pGuideAlgorithm->GetAxis() == "DEC")
+    {
+        DEC_GUIDE_MODE currDecGuideMode = TheScope()->GetDecGuideMode();
+        m_pSlopeWeight->Enable(currDecGuideMode != DEC_NONE);
+        m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
+    }
 }
 
 GuideAlgorithmLowpass::
     GuideAlgorithmLowpassGraphControlPane::
     ~GuideAlgorithmLowpassGraphControlPane(void)
 {
+}
+
+void GuideAlgorithmLowpass::
+GuideAlgorithmLowpassGraphControlPane::EnableDecControls(bool enable)
+{
+    m_pSlopeWeight->Enable(enable);
+    m_pMinMove->Enable(enable);
 }
 
 void GuideAlgorithmLowpass::

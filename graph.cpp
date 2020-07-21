@@ -627,6 +627,15 @@ void GraphLogWindow::UpdateControls()
     Refresh();
 }
 
+void GraphLogWindow::EnableDecControls(bool enable)
+{
+    if (m_pYControlPane)
+    {
+        m_pYControlPane->EnableDecControls(enable);
+        m_pYControlPane->Refresh();
+    }
+}
+
 void GraphLogWindow::ResetData()
 {
     m_pClient->ResetData();
@@ -1586,6 +1595,11 @@ GraphControlPane::~GraphControlPane()
 
 void GraphControlPane::UpdateControls()
 {
+}
+
+void GraphControlPane::EnableDecControls(bool enable)
+{
+
 }
 
 int GraphControlPane::StringWidth(const wxString& string)
