@@ -222,6 +222,7 @@ public:
         void ChangeYAlgorithm(const wxString& algoName);
         void ResetRAGuidingParams();
         void ResetDecGuidingParams();
+        void EnableDecControls(bool enable);
     };
 
     GUIDE_ALGORITHM GetXGuideAlgorithmSelection() const;

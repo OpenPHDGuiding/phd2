@@ -351,6 +351,13 @@ GuideAlgorithmResistSwitchConfigDialogPane::OnImageScaleChange()
 {
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
+void GuideAlgorithmResistSwitch::
+GuideAlgorithmResistSwitchConfigDialogPane::EnableDecControls(bool enable)
+{
+    m_pAggression->Enable(enable);
+    m_pMinMove->Enable(enable);
+    m_pFastSwitch->Enable(enable);
+}
 
 GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
@@ -386,12 +393,26 @@ GuideAlgorithmResistSwitch::
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+
+    if (TheScope() != nullptr && pGuideAlgorithm->GetAxis() == "DEC")
+    {
+        DEC_GUIDE_MODE currDecGuideMode = TheScope()->GetDecGuideMode();
+        m_pAggression->Enable(currDecGuideMode != DEC_NONE);
+        m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
+    }
 }
 
 GuideAlgorithmResistSwitch::
     GuideAlgorithmResistSwitchGraphControlPane::
     ~GuideAlgorithmResistSwitchGraphControlPane(void)
 {
+}
+
+void GuideAlgorithmResistSwitch::
+GuideAlgorithmResistSwitchGraphControlPane::EnableDecControls(bool enable)
+{
+    m_pAggression->Enable(enable);
+    m_pMinMove->Enable(enable);
 }
 
 void GuideAlgorithmResistSwitch::

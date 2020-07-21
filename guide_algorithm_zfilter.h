@@ -63,6 +63,7 @@ protected:
         void LoadValues() override;
         void UnloadValues() override;
         void OnImageScaleChange() override;
+        void EnableDecControls(bool enable) override;
     };
 
     class GuideAlgorithmZFilterGraphControlPane : public GraphControlPane
@@ -70,6 +71,7 @@ protected:
     public:
         GuideAlgorithmZFilterGraphControlPane(wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmZFilterGraphControlPane();
+        void EnableDecControls(bool enable) override;
 
     private:
         GuideAlgorithmZFilter *m_pGuideAlgorithm;

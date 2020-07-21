@@ -147,6 +147,11 @@ void ConfigDialogPane::OnImageScaleChange()
     // Do nothing by default - subclasses will override if needed
 }
 
+void ConfigDialogPane::EnableDecControls(bool enable)
+{
+    // Do nothing by default - subclasses will override if needed
+}
+
 ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     m_pParent = pParent;

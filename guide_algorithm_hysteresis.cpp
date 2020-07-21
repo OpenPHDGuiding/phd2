@@ -288,6 +288,14 @@ GuideAlgorithmHysteresisConfigDialogPane::OnImageScaleChange()
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
+void GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::EnableDecControls(bool enable)
+{
+    m_pAggression->Enable(enable);
+    m_pMinMove->Enable(enable);
+    m_pHysteresis->Enable(enable);
+}
+
 GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmHysteresisGraphControlPane(pParent, this, label);
@@ -331,12 +339,28 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     m_pHysteresis->SetValue(100.0 * m_pGuideAlgorithm->GetHysteresis());
     m_pAggression->SetValue(100.0 * m_pGuideAlgorithm->GetAggression());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+
+    if (TheScope() && pGuideAlgorithm->GetAxis() == "DEC")
+    {
+        DEC_GUIDE_MODE currDecGuideMode = TheScope()->GetDecGuideMode();
+        m_pAggression->Enable(currDecGuideMode != DEC_NONE);
+        m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
+        m_pHysteresis->Enable(currDecGuideMode != DEC_NONE);
+    }
 }
 
 GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisGraphControlPane::
 ~GuideAlgorithmHysteresisGraphControlPane(void)
 {
+}
+
+void GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisGraphControlPane::EnableDecControls(bool enable)
+{
+    m_pAggression->Enable(enable);
+    m_pHysteresis->Enable(enable);
+    m_pMinMove->Enable(enable);
 }
 
 void GuideAlgorithmHysteresis::
