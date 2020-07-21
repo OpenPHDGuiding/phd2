@@ -2151,7 +2151,6 @@ void ScopeConfigDialogCtrlSet::OnDecModeChoice(wxCommandEvent& evt)
         m_pUseBacklashComp->SetValue(m_origBLCEnabled);
         m_pUseBacklashComp->Enable(true);
     }
-
 }
 
 void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
