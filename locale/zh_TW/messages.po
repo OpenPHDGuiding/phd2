@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-04 20:38+0100\n"
-"PO-Revision-Date: 2020-04-01 12:02+0800\n"
+"PO-Revision-Date: 2020-08-01 23:44+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "其他裝置"
 
 #: advanced_dialog.cpp:120 myframe.cpp:501 myframe.cpp:974
 msgid "Advanced Settings"
-msgstr ""
+msgstr "進階設定"
 
 #: advanced_dialog.cpp:224 guiding_assistant.cpp:510 myframe.cpp:1248
 #: profile_wizard.cpp:330
@@ -128,17 +128,17 @@ msgstr "已校準"
 
 #: aui_controls.cpp:607
 msgid "Calibrated, scope pointing information not available"
-msgstr "以校準, 無導星鏡指向相關資訊"
+msgstr "已校準, 無導星鏡指向相關資訊"
 
 #: aui_controls.cpp:613
 msgid "Calibrated, declination compensation disabled"
-msgstr "以校準, 取消赤緯補償"
+msgstr "已校準, 取消赤緯補償"
 
 #: aui_controls.cpp:619
 msgid ""
 "Calibrated, but a new calibration is required to activate declination "
 "compensation"
-msgstr "以校準, 但執行一回校準以啟用赤緯補償"
+msgstr "已校準, 但執行一回校準以啟用赤緯補償"
 
 #: aui_controls.cpp:623
 msgid "Calibrated, scope pointing info in use"
@@ -232,7 +232,7 @@ msgstr "南向"
 #: backlash_comp.cpp:688
 #, c-format
 msgid "Pulse size = %d ms"
-msgstr "訊號脈衝長度 = %d ms"
+msgstr "導星脈衝長度 = %d ms"
 
 #: backlash_comp.cpp:742
 msgid ""
@@ -241,7 +241,7 @@ msgstr "無法執行回差測量, 請重新校准赤道儀"
 
 #: backlash_comp.cpp:930
 msgid "Backlash measurement cannot be run - Dec guide rate not available"
-msgstr "無法執行回差量測 - 赤緯導星速率不存在"
+msgstr "無法執行回差測量 - 赤緯導星速率不存在"
 
 #: backlash_comp.cpp:944
 #, c-format
@@ -375,11 +375,11 @@ msgstr "Y 速率:"
 
 #: calreview_dialog.cpp:266
 msgid "Expected RA rate:"
-msgstr "預期赤經速率:"
+msgstr "預期的赤經速率:"
 
 #: calreview_dialog.cpp:276
 msgid "Expected Dec rate:"
-msgstr "預期赤緯速率:"
+msgstr "預期的赤緯速率:"
 
 #: calreview_dialog.cpp:288
 msgid "Binning:"
@@ -461,7 +461,7 @@ msgstr "恢復"
 
 #: calreview_dialog.cpp:547
 msgid "Calibration restored"
-msgstr "校準被恢復"
+msgstr "校準已恢復"
 
 #: calreview_dialog.cpp:564
 msgid "Calibration Sanity Check"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -604,7 +604,7 @@ msgstr "先前恢復的校準"
 
 #: calstep_dialog.cpp:61
 msgid "Calibration Calculator"
-msgstr ""
+msgstr "校準計算器"
 
 #: calstep_dialog.cpp:104
 msgid "Input Parameters"
@@ -883,10 +883,9 @@ msgstr "警告 - 不能直接控制曝光時間 - 目前以自動曝光模式執
 msgid "Fatal error at step %d connecting to TIS camera"
 msgstr "連接到 TIS 相機實在第 %d 步發生嚴重錯誤"
 
-#: cam_firewire_IC.cpp:288 cam_indi.cpp:685 cam_indi.cpp:717
-#: cam_opencv.cpp:145 gear_simulator.cpp:703 gear_simulator.cpp:1288
-#: gear_simulator.cpp:1363 gear_simulator.cpp:1544 image_math.cpp:85
-#: image_math.cpp:547
+#: cam_firewire_IC.cpp:288 cam_indi.cpp:685 cam_indi.cpp:717 cam_opencv.cpp:145
+#: gear_simulator.cpp:703 gear_simulator.cpp:1288 gear_simulator.cpp:1363
+#: gear_simulator.cpp:1544 image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
 msgstr "記憶體配置錯誤"
 
@@ -1048,8 +1047,8 @@ msgstr "設定增益發生錯誤"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:150 stepguider_sxao.cpp:189
-#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:150 stepguider_sxao.cpp:189 stepguider_sxao_indi.cpp:204
+#: stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "錯誤"
 
@@ -1356,7 +1355,7 @@ msgstr "開始曝光時發生錯誤"
 
 #: cam_svb.cpp:125
 msgid "Svbony Camera Properties"
-msgstr ""
+msgstr "SvBony 相機屬性"
 
 #: cam_svb.cpp:130 cam_touptek.cpp:886 cam_zwo.cpp:143
 msgid "Camera Mode"
@@ -1374,7 +1373,7 @@ msgstr "16 位元"
 
 #: cam_svb.cpp:227
 msgid "No Svbony cameras detected."
-msgstr ""
+msgstr "未偵測到 SvBony 相機"
 
 #: cam_svb.cpp:254 cam_zwo.cpp:379
 #, c-format
@@ -1383,24 +1382,24 @@ msgstr "找不到相機 %s"
 
 #: cam_svb.cpp:289
 msgid "Failed to get camera info for Svbony camera."
-msgstr ""
+msgstr "無法由 SvBony 相機取得相機資訊"
 
 #: cam_svb.cpp:297
 msgid "Failed to open Svbony camera."
-msgstr ""
+msgstr "無法開啟 SvBony 相機"
 
 #: cam_svb.cpp:305 cam_svb.cpp:426
 msgid "Failed to get camera properties for Svbony camera."
-msgstr ""
+msgstr "無法由 SvBony 相機取得相機屬性"
 
 #: cam_svb.cpp:339
 #, c-format
 msgid "The camera does not support %s mode, try selecting %s mode"
-msgstr ""
+msgstr "相機不支援 %s 模式, 請選擇 %s 模式"
 
 #: cam_svb.cpp:380
 msgid "Unable to initialize camera."
-msgstr ""
+msgstr "無法啟用相機"
 
 #: cam_svb.cpp:730 cam_sxv.cpp:822 cam_zwo.cpp:842 cam_zwo.cpp:873
 #: cam_zwo.cpp:881
@@ -1547,13 +1546,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1109 gear_dialog.cpp:1875 gear_dialog.cpp:1876
 #: gear_dialog.cpp:1877 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:852 myframe.cpp:2946 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:327 scope.cpp:369 scope.cpp:412 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:852 myframe.cpp:2946 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
+#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
+#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:327
+#: scope.cpp:369 scope.cpp:412 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1858,8 +1857,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:546
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3375,8 +3373,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3500,8 +3498,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3524,8 +3522,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:309
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4436,12 +4434,12 @@ msgstr "下個 >"
 
 #: log_uploader.cpp:732
 msgid "Show logs with no guiding"
-msgstr ""
+msgstr "顯示無導星時的日誌"
 
 #: log_uploader.cpp:733
 msgid ""
 "Show all available logs, including logs from nights when there was no guiding"
-msgstr ""
+msgstr "顯示所有日誌, 包含沒有進行導星之夜的所有日誌"
 
 #: log_uploader.cpp:892 log_uploader.cpp:1213
 msgid "Upload"
@@ -4721,7 +4719,7 @@ msgstr "離開本程式"
 
 #: myframe.cpp:494
 msgid "&Connect Equipment\tCtrl-C"
-msgstr "&C連接裝置\tCtrl-C"
+msgstr "連接裝置\tCtrl-C"
 
 #: myframe.cpp:494
 msgid "Connect or disconnect equipment"
@@ -4729,7 +4727,7 @@ msgstr "連接或斷開裝置"
 
 #: myframe.cpp:495
 msgid "&Loop Exposures\tCtrl-L"
-msgstr "&L連續曝光\tCtrl-L"
+msgstr "連續曝光\tCtrl-L"
 
 #: myframe.cpp:495
 msgid "Begin looping exposures"
@@ -4737,7 +4735,7 @@ msgstr "開始連續曝光"
 
 #: myframe.cpp:497
 msgid "&Guide\tCtrl-G"
-msgstr "&G導星\tCtrl-G"
+msgstr "導星\tCtrl-G"
 
 #: myframe.cpp:497
 msgid "Begin guiding"
@@ -4745,7 +4743,7 @@ msgstr "開始導星"
 
 #: myframe.cpp:499
 msgid "&Stop\tCtrl-S"
-msgstr "&S停止導星\tCtrl-S"
+msgstr "停止導星\tCtrl-S"
 
 #: myframe.cpp:499 myframe.cpp:969
 msgid "Stop looping and guiding"
@@ -4753,11 +4751,11 @@ msgstr "停止曝光及導星"
 
 #: myframe.cpp:501
 msgid "&Advanced Settings\tCtrl-A"
-msgstr "&A進階設定\tCtrl-A"
+msgstr "進階設定\tCtrl-A"
 
 #: myframe.cpp:502
 msgid "&Camera Settings"
-msgstr "&C設定相機"
+msgstr "設定相機"
 
 #: myframe.cpp:502 myframe.cpp:975
 msgid "Camera settings"
@@ -6287,6 +6285,13 @@ msgid ""
 "Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle.\n"
 msgstr ""
+"轉向天極附近的位置.\n"
+"確認有開啟追蹤.\n"
+"在主顯示畫面中選擇一顆導星星體.\n"
+"點擊開始.\n"
+"等待顯示穩定下來.\n"
+"點擊停止.\n"
+"調整赤道儀方位腳及仰角以將導星星體擺在目標圈內.\n"
 
 #: polardrift_toolwin.cpp:174 staticpa_toolwin.cpp:316
 msgid "Alignment Parameters"
@@ -6302,11 +6307,11 @@ msgstr "選擇你所在的半球"
 
 #: polardrift_toolwin.cpp:198
 msgid "Mirror image"
-msgstr ""
+msgstr "鏡像影像"
 
 #: polardrift_toolwin.cpp:201
 msgid "The image is mirrored e.g. from OAG"
-msgstr ""
+msgstr "影像已成鏡像 (例如, 來自 OAG)"
 
 #: polardrift_toolwin.cpp:220 staticpa_toolwin.cpp:435
 msgid "Adjustment notes"
@@ -7274,7 +7279,7 @@ msgstr "校準步數 (ms)"
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Advanced..."
 "\" to compute a suitable value."
-msgstr ""
+msgstr "在校準時所用的導星脈衝長度? 點擊 “進階...”以計算適當的值"
 
 #: scope.cpp:1900
 msgid "Advanced..."
@@ -7284,7 +7289,7 @@ msgstr "進階的..."
 msgid ""
 "Click to open the Calibration Calculator Dialog to review or change all "
 "calibration parameters"
-msgstr ""
+msgstr "點擊已開啟校準計算器交談框以檢視或更改所有的校準參數"
 
 #: scope.cpp:1913
 msgid "Reverse Dec output after meridian flip"

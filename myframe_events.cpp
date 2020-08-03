@@ -622,7 +622,10 @@ void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnButtonAutoStar(wxCommandEvent& WXUNUSED(event))
 {
-    AutoSelectStar();
+    if (!wxGetKeyState(WXK_SHIFT))
+        AutoSelectStar();
+    else
+        pGuider->InvalidateCurrentPosition(true);
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))

@@ -229,6 +229,7 @@ public:
     void SetHeight(int height);
     wxMenu *GetLengthMenu();
     unsigned int GetHistoryItemCount() const;
+    void EnableDecControls(bool enable);        // For changes to Dec mode made outside of graph pane (e.g. AD)
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
@@ -266,6 +267,7 @@ public:
     GraphControlPane(wxWindow *pParent, const wxString& label);
     ~GraphControlPane();
     virtual void UpdateControls();
+    virtual void EnableDecControls(bool enable);
 protected:
     wxBoxSizer *m_pControlSizer;
 

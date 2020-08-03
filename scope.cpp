@@ -283,6 +283,8 @@ bool Scope::SetDecGuideMode(int decGuideMode)
         if (m_decGuideMode != decGuideMode)
         {
             m_decGuideMode = (DEC_GUIDE_MODE) decGuideMode;
+            if (pFrame && pFrame->pGraphLog)
+                pFrame->pGraphLog->EnableDecControls(decGuideMode != DEC_NONE);
 
             wxString s = DecGuideModeStr(m_decGuideMode);
             Debug.Write(wxString::Format("DecGuideMode set to %s (%d)\n", s, decGuideMode));
@@ -2033,6 +2035,8 @@ void ScopeConfigDialogCtrlSet::LoadValues()
         m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
         int whichDecMode = m_pScope->GetDecGuideMode();
         m_pDecMode->SetSelection(whichDecMode);
+        Mount::MountConfigDialogPane* pCurrMountPane = pFrame->pAdvancedDialog->GetCurrentMountPane();
+        pCurrMountPane->EnableDecControls(whichDecMode != DEC_NONE);
         m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
         m_origBLCEnabled = m_pScope->m_backlashComp->IsEnabled();
         if (whichDecMode == DEC_AUTO)
@@ -2115,6 +2119,11 @@ void ScopeConfigDialogCtrlSet::ResetDecParameterUI()
     m_pUseBacklashComp->SetValue(false);
 }
 
+DEC_GUIDE_MODE ScopeConfigDialogCtrlSet::GetDecGuideModeUI()
+{
+    return (DEC_GUIDE_MODE)m_pDecMode->GetSelection();
+}
+
 int ScopeConfigDialogCtrlSet::GetCalStepSizeCtrlValue()
 {
     return m_pCalibrationDuration->GetValue();
@@ -2128,6 +2137,10 @@ void ScopeConfigDialogCtrlSet::SetCalStepSizeCtrlValue(int newStep)
 void ScopeConfigDialogCtrlSet::OnDecModeChoice(wxCommandEvent& evt)
 {
     int which = m_pDecMode->GetSelection();
+    // User choice of 'none' will disable Dec algo params in UI
+    Mount::MountConfigDialogPane* pCurrMountPane = pFrame->pAdvancedDialog->GetCurrentMountPane();
+    pCurrMountPane->EnableDecControls(which != DEC_NONE);
+    m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
     if (which != DEC_AUTO)
     {
         m_pUseBacklashComp->SetValue(false);

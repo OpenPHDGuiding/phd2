@@ -65,6 +65,7 @@ protected:
         void LoadValues() override;
         void UnloadValues() override;
         void OnImageScaleChange() override;
+        void EnableDecControls(bool enable) override;
     };
 
     class GuideAlgorithmLowpassGraphControlPane : public GraphControlPane
@@ -72,6 +73,7 @@ protected:
     public:
         GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmLowpassGraphControlPane();
+        void EnableDecControls(bool enable) override;
 
     private:
         GuideAlgorithmLowpass *m_pGuideAlgorithm;

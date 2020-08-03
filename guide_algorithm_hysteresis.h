@@ -64,6 +64,7 @@ protected:
         void LoadValues() override;
         void UnloadValues() override;
         void OnImageScaleChange() override;
+        void EnableDecControls(bool enable) override;
     };
 
     class GuideAlgorithmHysteresisGraphControlPane : public GraphControlPane
@@ -71,6 +72,7 @@ protected:
     public:
         GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmHysteresisGraphControlPane();
+        void EnableDecControls(bool enable) override;
 
     private:
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;

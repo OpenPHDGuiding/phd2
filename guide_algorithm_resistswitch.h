@@ -66,6 +66,7 @@ protected:
         void LoadValues() override;
         void UnloadValues() override;
         void OnImageScaleChange() override;
+        void EnableDecControls(bool enable) override;
     };
 
     class GuideAlgorithmResistSwitchGraphControlPane : public GraphControlPane
@@ -73,6 +74,7 @@ protected:
     public:
         GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmResistSwitchGraphControlPane();
+        void EnableDecControls(bool enable) override;
 
     private:
         GuideAlgorithmResistSwitch *m_pGuideAlgorithm;

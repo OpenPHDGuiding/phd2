@@ -78,6 +78,7 @@ public:
     void ResetDecParameterUI();
     int GetCalStepSizeCtrlValue();
     void SetCalStepSizeCtrlValue(int newStep);
+    DEC_GUIDE_MODE GetDecGuideModeUI();
 };
 
 class Scope : public Mount
