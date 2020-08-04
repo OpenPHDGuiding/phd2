@@ -74,6 +74,7 @@ struct SimCamParams
     static PierSide pier_side;
     static bool reverse_dec_pulse_on_west_side;
     static unsigned int clouds_inten;
+    static double clouds_opacity;                   // UI has percentage, internally 0-1.0
     static double image_scale; // arc-sec per pixel
     static bool use_pe;
     static bool use_stiction;
@@ -101,7 +102,8 @@ double SimCamParams::cam_angle;                  // simulated camera angle (degr
 double SimCamParams::guide_rate;                 // guide rate, pixels per second
 PierSide SimCamParams::pier_side;                // side of pier
 bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial mounts
-unsigned int SimCamParams::clouds_inten;         // clouds intensity blocking out stars
+unsigned int SimCamParams::clouds_inten = 50;           // seed brightness for cloud contribution
+double SimCamParams::clouds_opacity;
 double SimCamParams::image_scale;                // arc-sec per pixel
 bool SimCamParams::use_pe;
 bool SimCamParams::use_stiction;
@@ -131,7 +133,7 @@ unsigned int SimCamParams::frame_download_ms;    // frame download time, ms
 #define GUIDE_RATE_MAX (1.0 * 15.0)
 #define PIER_SIDE_DEFAULT PIER_SIDE_EAST
 #define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
-#define CLOUDS_INTEN_DEFAULT 10
+#define CLOUDS_OPACITY_DEFAULT 0
 #define USE_PE_DEFAULT true
 #define USE_STICTION_DEFAULT false
 #define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
@@ -172,6 +174,7 @@ static void load_sim_params()
 
     SimCamParams::seeing_scale = range_check(pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT), 0, SEEING_MAX);       // FWHM a-s
     SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
+    SimCamParams::clouds_opacity = pConfig->Profile.GetDouble("/SimCam/clouds_opacity", CLOUDS_OPACITY_DEFAULT);
     SimCamParams::guide_rate = range_check(pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT), 0, GUIDE_RATE_MAX);
     SimCamParams::pier_side = (PierSide) pConfig->Profile.GetInt("/SimCam/pier_side", PIER_SIDE_DEFAULT);
     SimCamParams::reverse_dec_pulse_on_west_side = pConfig->Profile.GetBoolean("/SimCam/reverse_dec_pulse_on_west_side", REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
@@ -197,6 +200,7 @@ static void save_sim_params()
     pConfig->Profile.SetDouble("/SimCam/pe_cust_period", SimCamParams::custom_pe_period);
     pConfig->Profile.SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate * 60.0 * SimCamParams::image_scale);
     pConfig->Profile.SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
+    pConfig->Profile.SetDouble("/SimCam/clouds_opacity", SimCamParams::clouds_opacity);
     pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
     pConfig->Profile.SetInt("/SimCam/pier_side", (int) SimCamParams::pier_side);
@@ -898,12 +902,18 @@ static void render_star(usImage& img, int binning, const wxRect& subframe, const
 
 static void render_clouds(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
+    unsigned short cloud_amt;
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
     for (int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
     {
         unsigned short *const end = p0 + subframe.GetWidth();
         for (unsigned short *p = p0; p < end; p++)
-            *p = (unsigned short) (SimCamParams::clouds_inten * ((double) gain / 10.0 * offset * exptime / 100.0 + ((rand() % (gain * 100)) / 30.0)));
+        {
+            // Compute a randomized brightness contribution from clouds, then overlay that on the guide frame
+             cloud_amt = (unsigned short)(SimCamParams::clouds_inten * ((double)gain / 10.0 * offset * exptime / 100.0 + ((rand() % (gain * 100)) / 30.0)));
+             *p = (unsigned short) (SimCamParams::clouds_opacity * cloud_amt + (1 - SimCamParams::clouds_opacity) * *p);
+
+        }
     }
 }
 
@@ -1160,7 +1170,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif
     }
 
-    if (SimCamParams::clouds_inten)
+    if (SimCamParams::clouds_opacity > 0)
         render_clouds(img, subframe, exptime, gain, offset);
 
     // render hot pixels
@@ -1572,13 +1582,13 @@ struct SimCamDialog : public wxDialog
     wxSlider *pStarsSlider;
     wxSlider *pHotpxSlider;
     wxSlider *pNoiseSlider;
+    wxSlider *pCloudSlider;
     wxSpinCtrlDouble *pBacklashSpin;
     wxSpinCtrlDouble *pDriftSpin;
     wxSpinCtrlDouble *pGuideRateSpin;
     wxSpinCtrlDouble *pCameraAngleSpin;
     wxSpinCtrlDouble *pSeeingSpin;
     wxCheckBox* showComet;
-    wxCheckBox* pCloudsCbx;
     wxCheckBox *pUsePECbx;
     wxCheckBox *pUseStiction;
     wxCheckBox *pReverseDecPulseCbx;
@@ -1808,18 +1818,17 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
 
     // Session group controls
     wxStaticBoxSizer *pSessionGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Session"));
-    wxFlexGridSizer *pSessionTable = new wxFlexGridSizer(1, 5, 15, 15);
+    wxFlexGridSizer *pSessionTable = new wxFlexGridSizer(1, 6, 15, 15);
     pCameraAngleSpin = NewSpinner(this, SimCamParams::cam_angle, 0, CAM_ANGLE_MAX, 10, _("Camera angle, degrees"));
     AddTableEntryPair(this, pSessionTable, _("Camera angle"), pCameraAngleSpin);
     pSeeingSpin = NewSpinner(this, SimCamParams::seeing_scale, 0, SEEING_MAX, 0.5, _("Seeing, FWHM arc-sec"));
     AddTableEntryPair(this, pSessionTable, _("Seeing"), pSeeingSpin);
+    pCloudSlider = NewSlider(this, (int)(100 * SimCamParams::clouds_opacity), 0, 100, _("% cloud opacity"));
+    AddTableEntryPair(this, pSessionTable, _("Cloud %"), pCloudSlider);
     showComet = new wxCheckBox(this, wxID_ANY, _("Comet"));
     showComet->SetValue(SimCamParams::show_comet);
-    pCloudsCbx = new wxCheckBox(this, wxID_ANY, _("Star fading due to clouds"));
-    pCloudsCbx->SetValue(SimCamParams::clouds_inten > 0);
     pSessionGroup->Add(pSessionTable);
     pSessionGroup->Add(showComet);
-    pSessionGroup->Add(pCloudsCbx);
 
     pVSizer->Add(pCamGroup, wxSizerFlags().Border(wxALL, 10).Expand());
     pVSizer->Add(pMountGroup, wxSizerFlags().Border(wxRIGHT | wxLEFT, 10));
@@ -1860,6 +1869,7 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     pHotpxSlider->SetValue(NR_HOT_PIXELS_DEFAULT);
     pNoiseSlider->SetValue((int)floor(NOISE_DEFAULT * 100.0 / NOISE_MAX));
     pBacklashSpin->SetValue(DEC_BACKLASH_DEFAULT);
+    pCloudSlider->SetValue(0);
 
     pDriftSpin->SetValue(DEC_DRIFT_DEFAULT);
     pSeeingSpin->SetValue(SEEING_DEFAULT);
@@ -1877,7 +1887,6 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     SetRBState( this, USE_PE_DEFAULT_PARAMS);
     UpdatePierSideLabel();
     showComet->SetValue(SHOW_COMET_DEFAULT);
-    pCloudsCbx->SetValue(false);
 }
 
 void SimCamDialog::OnPierFlip(wxCommandEvent& event)
@@ -1945,7 +1954,7 @@ void CameraSimulator::ShowPropertyDialog()
         SimCamParams::pier_side = dlg.pPierSide;
         SimCamParams::reverse_dec_pulse_on_west_side = dlg.pReverseDecPulseCbx->GetValue();
         SimCamParams::show_comet = dlg.showComet->GetValue();
-        SimCamParams::clouds_inten = dlg.pCloudsCbx->GetValue() ? CLOUDS_INTEN_DEFAULT : 0;
+        SimCamParams::clouds_opacity = dlg.pCloudSlider->GetValue() / 100.0;
         save_sim_params();
 
         if (upd.WasModified())
