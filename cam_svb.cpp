@@ -96,7 +96,7 @@ SVBCamera::SVBCamera()
     Name = _T("Svbony Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
-    m_hasGuideOutput = true;
+    m_hasGuideOutput = false; // updated when connected
     HasSubframes = true;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
@@ -358,8 +358,7 @@ bool SVBCamera::Connect(const wxString& camId)
             }
         }
     }
-// fixme - remove - testing
-//m_mode = CM_VIDEO;
+
     if (m_mode == CM_SNAP)
     {
         Debug.Write("SVB: selecting trigger mode\n");
@@ -428,6 +427,17 @@ bool SVBCamera::Connect(const wxString& camId)
         Debug.Write(wxString::Format("SVBGetNumOfControls ret %d\n", r));
         Disconnect();
         return CamConnectFailed(_("Failed to get camera properties for Svbony camera."));
+    }
+
+    SVB_BOOL cpg;
+    if ((r = SVBCanPulseGuide(m_cameraId, &cpg)) == SVB_SUCCESS)
+    {
+        m_hasGuideOutput = cpg != SVB_FALSE;
+        Debug.Write(wxString::Format("SVBCanPulseGuide: %s\n", m_hasGuideOutput ? "yes" : "no"));
+    }
+    else
+    {
+        Debug.Write(wxString::Format("SVBCanPulseGuide ret %d, assuming no ST4 output\n", r));
     }
 
     HasGainControl = false;
@@ -789,13 +799,26 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
         SubtractDark(img);
     if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
        QuickLRecon(img);
-// fixme - remove -testing subframes
+// fixme - remove - testing ROI
 {
-    int X = 250;
-    int Y = 150;
-    for (int x = -5; x <= 5; x++)
-        for (int y = -5; y <= 5; y++)
-            img.ImageData[X + x + (Y + y)*img.Size.x] = 255 - (x*x + y*y)*5;
+    static int ddx = 1, ddy = 1;
+    static int dx, dy;
+    int X = 250 + dx;
+    int Y = 150 + dy;
+    if ((double)rand() / RAND_MAX > 0.05)
+    {
+        for (int x = -4; x <= 4; x++)
+            for (int y = -4; y <= 4; y++)
+                img.ImageData[X + x + (Y + y)*img.Size.x] = 255 - (x*x + y*y) * 5;
+    }
+    dx += ddx;
+    if (dx < 0 || dx >= 48)
+    {
+        ddx = -ddx;
+        dy += ddy;
+        if (dy < 0 || dy >= 48)
+            ddy = -ddy;
+    }
 }
 
     return false;

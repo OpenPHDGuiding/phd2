@@ -712,6 +712,20 @@ SVB_ERROR_UNKNOW_SENSOR_TYPE : unknow sensor type
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE  SVBGetSensorPixelSize(int iCameraID, float *fPixelSize);
 
+/***************************************************************************
+Description:
+Get whether to support pulse guide
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo.
+SVB_BOOL *pIsSupportPulseGuide: if SVB_TRUE then support pulse guide
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBCanPulseGuide(int iCameraID, SVB_BOOL *pCanPulseGuide);
+
+
 #ifdef __cplusplus
 }
 #endif
