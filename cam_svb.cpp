@@ -711,7 +711,8 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
             SVBSendSoftTrigger(m_cameraId);
 
-            CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
+            enum { GRACE_PERIOD_MS = 250 };
+            CameraWatchdog watchdog(duration, duration + GRACE_PERIOD_MS);
 
             if (duration > 100)
             {
@@ -799,27 +800,6 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
         SubtractDark(img);
     if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
        QuickLRecon(img);
-// fixme - remove - testing ROI
-{
-    static int ddx = 1, ddy = 1;
-    static int dx, dy;
-    int X = 250 + dx;
-    int Y = 150 + dy;
-    if ((double)rand() / RAND_MAX > 0.05)
-    {
-        for (int x = -4; x <= 4; x++)
-            for (int y = -4; y <= 4; y++)
-                img.ImageData[X + x + (Y + y)*img.Size.x] = 255 - (x*x + y*y) * 5;
-    }
-    dx += ddx;
-    if (dx < 0 || dx >= 48)
-    {
-        ddx = -ddx;
-        dy += ddy;
-        if (dy < 0 || dy >= 48)
-            ddy = -ddy;
-    }
-}
 
     return false;
 }
