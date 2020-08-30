@@ -64,6 +64,7 @@
 # define SSAG
 # define SSPIAG
 # define STARFISH_CAMERA
+# define SVB_CAMERA
 # define SXV
 # define TOUPTEK_CAMERA
 # define WDM_CAMERA

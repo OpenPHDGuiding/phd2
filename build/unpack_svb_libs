@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -x
+
+# usage: unpack_zwo_libs SV305-Pro-Windows-SDK.zip
+
+usage () {
+    echo 'usage: unpack_zwo_libs SV305-Pro-Windows-SDK.zip' >&2
+    exit 1
+}
+
+# === main ===
+
+WIN=$1
+if [ -n "$WIN" -a ! -f "$WIN" ]; then
+    usage
+fi
+
+set -e
+
+TOP=$(cd $(dirname "$0")/..; /bin/pwd)
+
+TMP=$TOP/tmp/svbsdk
+mkdir -p "$TMP"
+trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
+
+#F=SVBCameraSDK
+F=SVBONY
+
+# windows
+if [ -n "$WIN" ]; then
+    unzip -q -d "$TMP" "$WIN"
+    cp "$TMP/$F/include/SVBCameraSDK.h" "$TOP"/cameras/
+    cp "$TMP/$F/lib/x86/SVBCameraSDK.lib" "$TOP"/cameras/
+    cp "$TMP/$F/lib/x86/SVBCameraSDK.dll" "$TOP"/WinLibs/
+fi
