@@ -141,9 +141,9 @@ void WorkerThread::SetSkipExposeComplete()
 static void
 CameraROITest(usImage *img)
 {
-    // overlay a simulated star that wanders around and periodically disappears.
-    // this is used during development for test new cameras to ensure that the
-    // cameras properly deal with dynamically changing subframes
+    // Overlay a simulated star that wanders around and periodically disappears.
+    // This is used for testing new cameras to ensure that they deal properly with
+    // dynamically changing subframes.
     static int ddx = 1, ddy = 1;
     static int dx, dy;
     int X = 250 + dx;
