@@ -115,6 +115,8 @@ public:
     double SNR() override;
     double HFD() override;
     int StarError() override;
+    bool GetMultiStarMode() override { return false; }
+    void SetMultiStarMode(bool On) override {}
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;

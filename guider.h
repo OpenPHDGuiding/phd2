@@ -220,7 +220,7 @@ public:
     void UpdateImageDisplay(usImage *pImage = nullptr);
 
     bool MoveLockPosition(const PHD_Point& mountDelta);
-    bool SetLockPosition(const PHD_Point& position);
+    virtual bool SetLockPosition(const PHD_Point& position);
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
     bool ShiftLockPosition();
     void EnableLockPosShift(bool enable);
@@ -299,6 +299,9 @@ public:
     virtual double SNR() = 0;
     virtual double HFD() = 0;
     virtual int StarError() = 0;
+    virtual bool GetMultiStarMode() = 0;
+    virtual void SetMultiStarMode(bool On) = 0;
+    virtual wxString GetStarCount() { return wxEmptyString; }
 
     usImage *CurrentImage() const;
     wxImage *DisplayedImage() const;

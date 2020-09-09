@@ -253,6 +253,7 @@ struct GuidingAsstWin : public wxDialog
     int  m_origSubFrames;
     bool m_suspectCalibration;
     bool inBLTWrapUp = false;
+    bool origMultistarMode;
 
     bool m_measuringBacklash;
     BacklashTool *m_backlashTool;
@@ -1669,6 +1670,8 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
     }
 
     m_measuringBacklash = false;
+    pFrame->pGuider->SetMultiStarMode(origMultistarMode);
+
     m_backlashCB->Enable(true);
     Layout();
     GetSizer()->Fit(this);
@@ -1702,7 +1705,8 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
-
+            origMultistarMode = pFrame->pGuider->GetMultiStarMode();
+            pFrame->pGuider->SetMultiStarMode(false);
             if (m_origSubFrames == -1)
                 m_origSubFrames = pCamera->UseSubframes ? 1 : 0;
             pCamera->UseSubframes = false;
