@@ -44,8 +44,9 @@
 static const int DefaultGuideCameraGain = 95;
 static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
-static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
+
+const double GuideCamera::UnknownPixelSize = 0.0;
 
 wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
@@ -192,7 +193,7 @@ const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
 double GuideCamera::GetProfilePixelSize()
 {
-    return pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
+    return pConfig->Profile.GetDouble("/camera/pixelsize", UnknownPixelSize);
 }
 
 GuideCamera::GuideCamera()
@@ -735,7 +736,7 @@ bool GuideCamera::SetCameraPixelSize(double pixel_size)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_pixelSize = DefaultPixelSize;
+        m_pixelSize = UnknownPixelSize;
     }
 
     pConfig->Profile.SetDouble("/camera/pixelsize", m_pixelSize);
@@ -1302,7 +1303,7 @@ wxString GuideCamera::GetSettingsSummary()
 
     // return a loggable summary of current camera settings
     wxString pixelSizeStr;
-    if (m_pixelSize == DefaultPixelSize)
+    if (m_pixelSize == UnknownPixelSize)
         pixelSizeStr = _("unspecified");
     else
         pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
