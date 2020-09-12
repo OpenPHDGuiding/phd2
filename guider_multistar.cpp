@@ -216,13 +216,38 @@ bool GuiderMultiStar::GetMultiStarMode()
 {
     return m_multiStarMode;
 }
+
 void GuiderMultiStar::SetMultiStarMode(bool val)
 {
+    bool oldVal = m_multiStarMode;
+    bool autoFindForced = false;
     m_multiStarMode = val;
+    if (val && !oldVal)
+    {
+        m_primaryDistStats->ClearAll();
+        if (GetState() >= STATE_SELECTED)           // If we have a single star, need to force an auto-find to be sure we have the right secondary stars
+        {
+            StopGuiding();
+            InvalidateCurrentPosition(true);
+            if (!AutoSelect(wxRect(0, 0, 0, 0)))
+            {
+                StartGuiding();
+                autoFindForced = true;
+            }
+        }
+    }
+    if (!val)
+        m_stabilizing = false;
     pConfig->Profile.SetBoolean("/guider/multistar/enabled", m_multiStarMode);
-    Debug.Write(wxString::Format("MultiStar mode %s\n", (val ? "enabled" : "disabled")));
+    wxString msg = wxString::Format("MultiStar mode %s", (val ? "enabled" : "disabled"));
+    if (autoFindForced)
+        msg += ", AutoFind forced\n";
+    else
+        msg += "\n";
+    Debug.Write(msg);
     GuideLog.SetGuidingParam("MultiStar", m_multiStarMode);
 }
+
 void GuiderMultiStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -795,7 +820,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                     }
                     else if (m_stabilizing)
                     {
-                        if (primaryDistance <= primarySigma)
+                        if (primaryDistance <= 2 * primarySigma)
                         {
                             m_stabilizing = false;
                             Debug.Write("MultiStar: exiting stabilization period\n");
@@ -1061,9 +1086,12 @@ bool GuiderMultiStar::SetLockPosition(const PHD_Point& position)
 {
     if (!Guider::SetLockPosition(position))
     {
-        m_lockPositionMoved = true;
-        m_stabilizing = true;
-        Debug.Write("MultiStar: stabilizing after lock position change\n");
+        if (m_multiStarMode)
+        {
+            m_lockPositionMoved = true;
+            m_stabilizing = true;
+            Debug.Write("MultiStar: stabilizing after lock position change\n");
+        }
         return false;
     }
     else
