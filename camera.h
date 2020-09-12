@@ -117,6 +117,9 @@ protected:
     unsigned short  m_saturationADU;
 
 public:
+
+    static const double UnknownPixelSize;
+
     int             GuideCameraGain;
     wxString        Name;                   // User-friendly name
     wxSize          FullSize;           // Size of current image

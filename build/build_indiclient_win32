@@ -3,7 +3,7 @@
 # this script builds the indi client libraries for Windows
 
 CMD="/c/Windows/System32/cmd.exe"
-CMAKE=$(cygpath -w '/c/Program Files (x86)/CMake/bin/cmake.exe')
+CMAKE=$(cygpath -w '/c/Program Files/CMake/bin/cmake.exe')
 
 # zlib
 #

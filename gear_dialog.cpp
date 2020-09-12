@@ -1089,13 +1089,14 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         }
 
         // update camera pixel size from the driver, cam must be connected for reliable results
-        double profPixelSize = m_pCamera->GetProfilePixelSize();
+        double prevPixelSize = m_pCamera->GetProfilePixelSize();
         double pixelSize;
         bool err = m_pCamera->GetDevicePixelSize(&pixelSize);
         if (!err)
         {
             m_pCamera->SetCameraPixelSize(pixelSize);
-            m_imageScaleRatio *= (pixelSize / profPixelSize);
+            if (prevPixelSize != GuideCamera::UnknownPixelSize)
+                m_imageScaleRatio *= pixelSize / prevPixelSize;
         }
 
         Debug.Write(wxString::Format("DoConnectCamera: reconnecting=%d warningIssued=%d lastCam=[%s] scaleRatio=%.3f\n",

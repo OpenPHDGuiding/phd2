@@ -340,7 +340,9 @@ Mount::MountConfigDialogPane::~MountConfigDialogPane()
 void Mount::MountConfigDialogPane::ResetRAGuidingParams()
 {
     // Re-initialize the algorithm params
-    GuideAlgorithm* currRAAlgo = m_pMount->m_pXGuideAlgorithm;
+    if (!m_pMount)
+        return;
+    GuideAlgorithm *currRAAlgo = m_pMount->m_pXGuideAlgorithm;
     currRAAlgo->ResetParams();                  // Default is to remove the Registry entries below the "X" or "Y" guide algo name
     delete m_pMount->m_pXGuideAlgorithm;        // force creation of a new algo instance
     m_pMount->m_pXGuideAlgorithm = nullptr;
@@ -349,7 +351,7 @@ void Mount::MountConfigDialogPane::ResetRAGuidingParams()
     // Re-initialize any other RA guiding parameters not part of algos
     if (!m_pMount->IsStepGuider())
     {
-        ScopeConfigDialogCtrlSet* scopeCtrlSet = (ScopeConfigDialogCtrlSet*) m_pMount->currConfigDialogCtrlSet;
+        ScopeConfigDialogCtrlSet *scopeCtrlSet = (ScopeConfigDialogCtrlSet *) m_pMount->currConfigDialogCtrlSet;
         scopeCtrlSet->ResetRAParameterUI();
     }
 }
@@ -369,7 +371,9 @@ void Mount::MountConfigDialogPane::OnResetRAParams(wxCommandEvent& evt)
 void Mount::MountConfigDialogPane::ResetDecGuidingParams()
 {
     // Re-initialize the algorithm params
-    GuideAlgorithm* currDecAlgo = m_pMount->m_pYGuideAlgorithm;
+    if (!m_pMount)
+        return;
+    GuideAlgorithm *currDecAlgo = m_pMount->m_pYGuideAlgorithm;
     currDecAlgo->ResetParams();
     delete m_pMount->m_pYGuideAlgorithm;
     m_pMount->m_pYGuideAlgorithm = nullptr;
@@ -378,7 +382,7 @@ void Mount::MountConfigDialogPane::ResetDecGuidingParams()
     // Re-initialize any other Dec guiding parameters not part of algos
     if (!m_pMount->IsStepGuider())
     {
-        ScopeConfigDialogCtrlSet* scopeCtrlSet = (ScopeConfigDialogCtrlSet*)m_pMount->currConfigDialogCtrlSet;
+        ScopeConfigDialogCtrlSet *scopeCtrlSet = (ScopeConfigDialogCtrlSet *) m_pMount->currConfigDialogCtrlSet;
         scopeCtrlSet->ResetDecParameterUI();
     }
 }

@@ -136,6 +136,39 @@ void WorkerThread::SetSkipExposeComplete()
     m_skipSendExposeComplete = true;
 }
 
+//#define ENABLE_CAMERA_TEST
+#ifdef ENABLE_CAMERA_TEST
+static void
+CameraROITest(usImage *img)
+{
+    // Overlay a simulated star that wanders around and periodically disappears.
+    // This is used for testing new cameras to ensure that they deal properly with
+    // dynamically changing subframes.
+    static int ddx = 1, ddy = 1;
+    static int dx, dy;
+    int X = 250 + dx;
+    int Y = 150 + dy;
+    unsigned short base = (img->BitsPerPixel == 8 ? 255 : 60000);
+    int scale = img->BitsPerPixel == 8 ? 5 : 5 * 256;
+    if ((double)rand() / RAND_MAX > 0.05)
+    {
+        for (int x = -4; x <= 4; x++)
+            for (int y = -4; y <= 4; y++)
+                img->ImageData[X + x + (Y + y)*img->Size.x] = base - (x * x + y * y) * scale;
+    }
+    dx += ddx;
+    if (dx < 0 || dx >= 48)
+    {
+        ddx = -ddx;
+        dy += ddy;
+        if (dy < 0 || dy >= 48)
+            ddy = -ddy;
+    }
+}
+#else
+# define CameraROITest(img) do { } while (false)
+#endif
+
 bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
 {
     bool bError = false;
@@ -180,6 +213,8 @@ bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
 
         if (!bError)
         {
+            CameraROITest(req->pImage);
+
             switch (m_pFrame->GetNoiseReductionMethod())
             {
                 case NR_NONE:
