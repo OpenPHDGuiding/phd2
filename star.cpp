@@ -1352,7 +1352,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     {
         GuideStar tmp;
         tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU());
-        if (tmp.WasFound() && tmp.SNR >= 10)
+        if (tmp.WasFound())
         {
             tmp.referencePoint.X = tmp.X;
             tmp.referencePoint.Y = tmp.Y;
