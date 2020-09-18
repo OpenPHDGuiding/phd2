@@ -931,7 +931,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                         refined = true;
                     }
                     Debug.Write(wxString::Format("%s, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n", (refined ? "refined" : "single-star"),
-                        pOffset->cameraOfs.X, pOffset->cameraOfs.Y,
+                        sumX, sumY,
                         origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
                 }
             }
