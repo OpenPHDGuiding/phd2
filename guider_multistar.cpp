@@ -186,7 +186,7 @@ enum {
     MIN_SEARCH_REGION = 7,
     DEFAULT_SEARCH_REGION = 15,
     MAX_SEARCH_REGION = 50,
-    MAX_STAR_COUNT = 5,
+    MAX_STAR_COUNT = 7,
     MAX_LIST_SIZE = 12
 };
 
@@ -761,6 +761,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
     bool averaged = false;
     GuiderOffset origOffset = *pOffset;
     m_starsUsed = 1;
+    bool erasures = false;
 
     try
     {
@@ -780,24 +781,19 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                 m_lockPositionMoved = false;
                 Debug.Write("MultiStar: updating star positions after lock position change\n");
 
-                for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end(); pGS++)
+                for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
                 {
                     if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
                         GetMinStarHFD(), pCamera->GetSaturationADU()))
                     {
                         pGS->referencePoint.X = pGS->X;
                         pGS->referencePoint.Y = pGS->Y;
+                        pGS++;
                     }
                     else
                     {
                         Debug.Write(wxString::Format("MultiStar: #%d removed after lock position change\n", Iter_Inx(pGS)));
-                        if (pGS != m_guideStars.begin() + 1)
-                            m_guideStars.erase(pGS--);
-                        else
-                        {
-                            m_guideStars.erase(pGS);
-                            pGS = m_guideStars.begin() + 1;
-                        }
+                        pGS = m_guideStars.erase(pGS);
                     }
                 }
                 if (m_guideStars.size() > 1)
@@ -835,7 +831,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
 
             if (!m_stabilizing && m_guideStars.size() > 1 && (sumX != 0 || sumY != 0))
             {
-                for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end(); pGS++)
+                for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
                 {
                     if (m_starsUsed >= MAX_STAR_COUNT || m_guideStars.size() == 1)
                         break;
@@ -854,13 +850,8 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                             if (pGS->zeroCount == 5)
                             {
                                 Debug.Write(wxString::Format("MultiStar: #%d dropped for zero-counts\n", Iter_Inx(pGS)));
-                                if (pGS != m_guideStars.begin() + 1)
-                                    m_guideStars.erase(pGS--);
-                                else
-                                {
-                                    m_guideStars.erase(pGS);
-                                    pGS = m_guideStars.begin() + 1;
-                                }
+                                pGS = m_guideStars.erase(pGS);
+                                erasures = true;
                                 continue;
                             }
                             m_starsUsed++;              // "used" means "looked at"
@@ -877,6 +868,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                                     pGS->missCount = 0;
                                     Debug.Write(wxString::Format("MultiStar: #%d reset after large misses\n", Iter_Inx(pGS)));
                                 }
+                                pGS++;
                                 continue;
                             }
                             else
@@ -895,27 +887,20 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                         else                                          // exactly zero on both axes, probably a hot pixel, drop it
                         {
                             Debug.Write(wxString::Format("MultiStar: #%d dropped as hot pixel\n", Iter_Inx(pGS)));
-                            if (pGS != m_guideStars.begin() + 1)
-                                m_guideStars.erase(pGS--);
-                            else
-                            {
-                                m_guideStars.erase(pGS);
-                                pGS = m_guideStars.begin() + 1;
-                            }
-
+                            pGS = m_guideStars.erase(pGS);
+                            erasures = true;
                         }
                     }
                     else                                              //this star no longer findable in its search region
                     {
                         Debug.Write(wxString::Format("MultiStar: #%d dropped, not found\n", Iter_Inx(pGS)));
-                        if (pGS != m_guideStars.begin() + 1)
-                            m_guideStars.erase(pGS--);
-                        else
-                        {
-                            m_guideStars.erase(pGS);
-                            pGS = m_guideStars.begin() + 1;
-                        }
+                        pGS = m_guideStars.erase(pGS);
+                        erasures = true;
                     }
+                    if (!erasures)
+                        pGS++;
+                    else
+                        erasures = false;
 
                 }                                   // End of looping through secondary stars
                 if (averaged)
@@ -1345,7 +1330,7 @@ wxString GuiderMultiStar::GetSettingsSummary() const
     if (m_multiStarMode)
         s += wxString::Format(_T(", Multi-star mode, list size = %d\n "), m_guideStars.size());
     else
-        s += "Single-star mode\n";
+        s += ", Single-star mode\n";
     return s;
 }
 
