@@ -36,27 +36,33 @@ set -e
 TOP=$(cd $(dirname "$0")/..; /bin/pwd)
 
 TMP=$TOP/tmp/zwosdk
-mkdir -p "$TMP"
+mkdir -p "$TMP"/win "$TMP"/mac
 trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
 
 # windows
 if [ -n "$WIN" ]; then
-    unzip -q -d "$TMP" "$WIN"
-    cp "$TMP/ASI SDK/include/ASICamera2.h" "$TOP"/cameras/
-    cp "$TMP/ASI SDK/lib/x86/ASICamera2.lib" "$TOP"/cameras/
-    cp "$TMP/ASI SDK/lib/x86/ASICamera2.dll" "$TOP"/WinLibs/
+    unzip -q -d "$TMP"/win "$WIN"
+    cp "$TMP/win/ASI SDK/include/ASICamera2.h" "$TOP"/cameras/
+    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.lib" "$TOP"/cameras/
+    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.dll" "$TOP"/WinLibs/
 fi
 
 # osx and linux
 if [ -n "$MAC" ]; then
-    tar xfj "$MAC" -C "$TMP"
+    tar xfj "$MAC" -C "$TMP"/mac
+    # newer packages have a top-level directory, older versions do not
+    if [[ -d $TMP/mac/include ]]; then
+        root="."
+    else
+        root=$(cd "$TMP"/mac && ls | head -1)/.
+    fi
     # linux: use static libs
     for d in armv6 armv7 armv8 x64 x86; do
-        cp "$TMP"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
+        cp "$TMP"/mac/"$root"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
     done
     # mac: use dynamic libs
     for d in mac; do
         # follow symbolic link
-        cp "$TMP"/lib/$d/libASICamera2.dylib "$TOP"/cameras/zwolibs/$d/
+        cp "$TMP"/mac/"$root"/lib/$d/libASICamera2.dylib "$TOP"/cameras/zwolibs/$d/
     done
 fi
