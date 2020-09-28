@@ -1357,8 +1357,6 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
             tmp.referencePoint.X = tmp.X;
             tmp.referencePoint.Y = tmp.Y;
             foundStars.push_back(tmp);
-            if (foundStars.size() >= maxStars)
-                break;
         }
     }
 
@@ -1399,6 +1397,43 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 // star accepted
                 SetXY(it->x, it->y);
                 Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                if (maxStars > 1 && foundStars.size() > 1)
+                {
+                    // Prune the guideStars - drop anything before the primary star
+                    // Start by finding the chosen star in the list
+                    int primaryLoc = -1;
+                    for (auto pGS = foundStars.begin(); pGS != foundStars.end(); pGS++)
+                    {
+                        if (pGS->X == tmp.X && pGS->Y == tmp.Y)
+                        {
+                            primaryLoc = pGS - foundStars.begin();
+                            break;
+                        }
+                    }
+
+                    if (primaryLoc >= 0)
+                    {
+                        foundStars.erase(foundStars.begin(), foundStars.begin() + primaryLoc);            // Delete saturated stars ahead of chosen star
+                        if (foundStars.size() > maxStars)
+                            foundStars.erase(foundStars.begin() + maxStars, foundStars.end());                   // Prune total list size to match maxStars parameter
+                    }
+                    else
+                    if (primaryLoc == -1)
+                    {
+                        // Safety harness
+                        foundStars.clear();
+                        GuideStar tmp;
+                        tmp.X = X;
+                        tmp.Y = Y;
+                        tmp.SNR = SNR;
+                        tmp.referencePoint.X = X;
+                        tmp.referencePoint.Y = Y;
+                        tmp.missCount = 0;
+                        tmp.zeroCount = 0;
+                        foundStars.push_back(tmp);
+                        Debug.Write("MultiStar: primary star forcibly inserted in list\n");
+                    }
+                }
                 return true;
             }
         }

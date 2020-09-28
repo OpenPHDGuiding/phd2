@@ -467,55 +467,12 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
             throw ERROR_INFO("Unable to find");
         }
 
-        //// DEBUG
-        //Debug.Write("MultiStar: star list\n");
-        //Debug.Write(wxString::Format("MultiStar: primary at {%0.1f, %0.1f}, SNR: %0.1f\n", m_primaryStar.X, m_primaryStar.Y, m_primaryStar.SNR));
-        //for (int inx = 0; inx < m_guideStars.size(); inx++)
-        //{
-        //    GuideStar gs = m_guideStars[inx];
-        //    Debug.Write(wxString::Format("MultiStar: secondary at {%0.1f, %0.1f}, SNR: %0.1f\n", gs.X, gs.Y, gs.SNR));
-        //}
-        //// END DEBUG
-        // Prune the guideStars - drop anything before the primary star
-        int primaryLoc = -1;
-        for (auto pGS = m_guideStars.begin(); pGS != m_guideStars.end(); pGS++)
-        {
-            if (pGS->X == m_primaryStar.X && pGS->Y == m_primaryStar.Y)
-            {
-                primaryLoc = pGS - m_guideStars.begin();
-                break;
-            }
-        }
-
-        if (primaryLoc > 0)
-        {
-            m_guideStars.erase(m_guideStars.begin(), m_guideStars.begin() + primaryLoc);            // Leaves primary star in slot 0
-        }
-        else
-        if (primaryLoc == -1)
-        {
-            // With a list of marginal stars, we didn't find the primary star.  So insert it and force a list size of 1
-            m_guideStars.clear();
-            GuideStar tmp;
-            tmp.X = m_primaryStar.X;
-            tmp.Y = m_primaryStar.Y;
-            tmp.SNR = m_primaryStar.SNR;
-            tmp.referencePoint.X = m_primaryStar.X;
-            tmp.referencePoint.Y = m_primaryStar.Y;
-            tmp.missCount = 0;
-            tmp.zeroCount = 0;
-            m_guideStars.push_back(tmp);
-            Debug.Write("MultiStar: primary star forcibly inserted in list\n");
-        }
-
-        //// DEBUG OUTPUT
+        // DEBUG OUTPUT
         wxString buff = "";
         buff = wxString::Format("MultiStar: List (%d): ", m_guideStars.size());
         for (auto pGS = m_guideStars.begin(); pGS != m_guideStars.end(); pGS++)
         {
             buff += wxString::Format("{%0.2f, %0.2f}(%0.1f), ", pGS->X, pGS->Y, pGS->SNR);
-            if (pGS - m_guideStars.begin() >= (int)MAX_STAR_COUNT)
-                break;
         }
         Debug.Write(buff + "\n");
         m_primaryDistStats->ClearAll();
