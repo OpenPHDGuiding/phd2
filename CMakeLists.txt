@@ -151,6 +151,7 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 # Global include directories
 # WxWidgets inclusion narrowed to PHD2 project only
 # include_directories(${wxWidgets_INCLUDE_DIRS})
+include_directories(${phd_src_dir}/cameras/qhyccd)
 include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
 

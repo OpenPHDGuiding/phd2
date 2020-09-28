@@ -5,6 +5,17 @@
 #define QHYCCD_READ_DIRECTLY            0x2001
 
 #define QHYCCD_DELAY_200MS              0x2000
+
+/**
+ * It means the camera using PCIE transfer data */
+#define QHYCCD_PCIE						 9
+
+
+/**
+ * It means the camera using WINPCAP transfer data */
+#define QHYCCD_WINPCAP                   8
+
+
 /**
  * It means the camera using GiGaE transfer data */
 #define QHYCCD_QGIGAE                   7
