@@ -441,6 +441,7 @@ public:
     void NotifyGuidingParam(const wxString& name, int val);
     void NotifyGuidingParam(const wxString& name, bool val);
     void NotifyGuidingParam(const wxString& name, const wxString& val);
+    void NotifyGuidingParam(const wxString& name, const wxString& val, bool ForceLog);
 
     void NotifyExposureChanged();
 

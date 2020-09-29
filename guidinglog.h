@@ -166,6 +166,7 @@ public:
     void SetGuidingParam(const wxString& name, int val);
     void SetGuidingParam(const wxString& name, bool val);
     void SetGuidingParam(const wxString& name, const wxString& val);
+    void SetGuidingParam(const wxString& name, const wxString& val, bool AlwaysLog);
 
     bool ChangeDirLog(const wxString& newdir);
     void RemoveOldFiles();

@@ -245,7 +245,7 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     else
         msg += "\n";
     Debug.Write(msg);
-    GuideLog.SetGuidingParam("MultiStar", m_multiStarMode);
+    pFrame->NotifyGuidingParam("MultiStar", m_multiStarMode ? "true" : "false", true);
 }
 
 void GuiderMultiStar::LoadProfileSettings()
@@ -738,7 +738,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
 
     try
     {
-        if (IsGuiding() && m_guideStars.size() > 1)
+        if (IsGuiding() && m_guideStars.size() > 1 && pMount->GetGuidingEnabled())
         {
             double sumWeights = 1;
             double sumX = origOffset.cameraOfs.X;
@@ -780,24 +780,19 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
             if (m_primaryDistStats->GetCount() > 5)
             {
                 primarySigma = m_primaryDistStats->GetSigma();
-                if (pMount->GetGuidingEnabled())
+                if (!m_stabilizing && primaryDistance > 3 * primarySigma)
                 {
-                    if (!m_stabilizing && primaryDistance > 3 * primarySigma)
+                    m_stabilizing = true;
+                    Debug.Write("MultiStar: large primary error, entering stabilization period\n");
+                }
+                else if (m_stabilizing)
+                {
+                    if (primaryDistance <= 2 * primarySigma)
                     {
-                        m_stabilizing = true;
-                        Debug.Write("MultiStar: large primary error, entering stabilization period\n");
-                    }
-                    else if (m_stabilizing)
-                    {
-                        if (primaryDistance <= 2 * primarySigma)
-                        {
-                            m_stabilizing = false;
-                            Debug.Write("MultiStar: exiting stabilization period\n");
-                        }
+                        m_stabilizing = false;
+                        Debug.Write("MultiStar: exiting stabilization period\n");
                     }
                 }
-                else
-                    m_stabilizing = false;
             }
             else
                 m_stabilizing = true;                       // get some data for primary star movement
@@ -1011,7 +1006,7 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         if (lockPos.IsValid())
         {
             ofs->cameraOfs = m_primaryStar - lockPos;
-            if (m_multiStarMode && m_guideStars.size() > 1)
+            if (m_multiStarMode && m_guideStars.size() > 1 && pMount->GetGuidingEnabled())
             {
                 RefineOffset(pImage, ofs);
             }

@@ -575,6 +575,7 @@ GuidingAsstWin::GuidingAsstWin()
         m_backlashTool = new BacklashTool();
 
     m_measuringBacklash = false;
+    origMultistarMode = pFrame->pGuider->GetMultiStarMode();
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/GuidingAssistant/pos.y", -1);
@@ -1558,6 +1559,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     double lp_cutoff = wxMax(6.0, 3.0 * exposure);
     double hp_cutoff = 1.0;
 
+    pFrame->pGuider->SetMultiStarMode(false);
     StatsReset();
     m_raHPF = HighPassFilter(hp_cutoff, exposure);
     m_raLPF = LowPassFilter(lp_cutoff, exposure);
@@ -1647,6 +1649,7 @@ void GuidingAsstWin::DoStop(const wxString& status)
             pSecondaryMount->SetGuidingEnabled(m_saveSecondaryMountEnabled);
 
         m_guideOutputDisabled = false;
+        pFrame->pGuider->SetMultiStarMode(origMultistarMode);           // may force an auto-find to refresh secondary star data
     }
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
@@ -1670,8 +1673,6 @@ void GuidingAsstWin::EndBacklashTest(bool completed)
     }
 
     m_measuringBacklash = false;
-    pFrame->pGuider->SetMultiStarMode(origMultistarMode);
-
     m_backlashCB->Enable(true);
     Layout();
     GetSizer()->Fit(this);
@@ -1705,8 +1706,6 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
-            origMultistarMode = pFrame->pGuider->GetMultiStarMode();
-            pFrame->pGuider->SetMultiStarMode(false);
             if (m_origSubFrames == -1)
                 m_origSubFrames = pCamera->UseSubframes ? 1 : 0;
             pCamera->UseSubframes = false;

@@ -3390,3 +3390,10 @@ void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val)
 {
     ::NotifyGuidingParam(name, val);
 }
+
+// Interface to force logging if guiding is not active
+void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val, bool ForceLog)
+{
+    GuideLog.SetGuidingParam(name, val, true);
+    EvtServer.NotifyGuidingParam(name, val);
+}
