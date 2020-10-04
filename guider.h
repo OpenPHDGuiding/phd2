@@ -299,8 +299,12 @@ public:
     virtual double SNR() = 0;
     virtual double HFD() = 0;
     virtual int StarError() = 0;
-    virtual bool GetMultiStarMode() = 0;
-    virtual void SetMultiStarMode(bool On) = 0;
+    virtual bool GetMultiStarMode() { return false; }
+    virtual int GetMaxStars() const { return 1; }
+    virtual double GetStabilityThresh() const { return 0; }
+    virtual void SetMultiStarMode(bool On) {};
+    virtual void SetMaxStars(int val) {};
+    virtual void SetStabilityThresh(double val) {};
     virtual wxString GetStarCount() { return wxEmptyString; }
 
     usImage *CurrentImage() const;

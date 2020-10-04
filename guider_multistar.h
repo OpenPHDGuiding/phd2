@@ -53,10 +53,13 @@ public:
     wxChoice *m_autoSelDownsample;
     wxCheckBox *m_pBeepForLostStarCtrl;
     wxCheckBox *m_pUseMultiStars;
+    wxSpinCtrl *m_pMaxStars;
+    wxSpinCtrlDouble *m_pStabilityThresh;
 
     virtual void LoadValues();
     virtual void UnloadValues();
     void OnStarMassEnableChecked(wxCommandEvent& event);
+    void OnMultiStarChecked(wxCommandEvent& evt);
 };
 
 class GuiderMultiStar : public Guider
@@ -77,7 +80,8 @@ private:
     double m_massChangeThreshold;
     bool m_tolerateJumpsEnabled;
     double m_tolerateJumpsThreshold;
-
+    int m_maxStars;
+    double m_stabilitySigmaX;
 
 public:
     class GuiderMultiStarConfigDialogPane : public GuiderConfigDialogPane
@@ -122,8 +126,12 @@ public:
     double HFD() override;
     int StarError() override;
     bool GetMultiStarMode() override;
+    int GetMaxStars() const override;
+    double GetStabilityThresh() const override;
     wxString GetStarCount() override;
     void SetMultiStarMode(bool val) override;
+    void SetMaxStars(int val) override;
+    void SetStabilityThresh(double val) override;
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;

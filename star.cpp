@@ -1352,11 +1352,16 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     {
         GuideStar tmp;
         tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU());
+        // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
         if (tmp.WasFound())
         {
-            tmp.referencePoint.X = tmp.X;
-            tmp.referencePoint.Y = tmp.Y;
-            foundStars.push_back(tmp);
+            bool duplicate = (std::find(foundStars.begin(), foundStars.end(), tmp)) != foundStars.end();
+            if (!duplicate)
+            {
+                tmp.referencePoint.X = tmp.X;
+                tmp.referencePoint.Y = tmp.Y;
+                foundStars.push_back(tmp);
+            }
         }
     }
 

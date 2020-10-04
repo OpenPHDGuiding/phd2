@@ -1193,10 +1193,11 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
                     simpleSigma, slope * 60, bestEstimate, rSquared));
             }
         }
-
-        // round up to next multiple of .05, but do not go below 0.10 pixel
+        if (origMultistarMode)
+            bestEstimate *= 0.9;
+        // round up to next multiple of .05, but do not go below 0.05 pixel
         double const unit = 0.05;
-        double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
+        double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.05);
         // Now apply a sanity check - there are still numerous things that could have gone wrong during the GA
         if (pxscale * roundUpEst <= 1.25)           // Min-move below 1.25 arc-sec is credible
         {

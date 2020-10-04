@@ -186,7 +186,9 @@ enum {
     MIN_SEARCH_REGION = 7,
     DEFAULT_SEARCH_REGION = 15,
     MAX_SEARCH_REGION = 50,
-    MAX_STAR_COUNT = 7,
+    DEFAULT_MAX_STAR_COUNT = 7,
+    DEFAULT_STABILITY_SIGMAX = 3,
+    MAX_STABILITY_SIGMAX = 7,
     MAX_LIST_SIZE = 12
 };
 
@@ -248,6 +250,29 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     pFrame->NotifyGuidingParam("MultiStar", m_multiStarMode ? "true" : "false", true);
 }
 
+int GuiderMultiStar::GetMaxStars() const
+{
+    return m_maxStars;
+}
+void GuiderMultiStar::SetMaxStars(int val)
+{
+    m_maxStars = wxMax(1, wxMin(val, 12));
+    pConfig->Profile.SetInt("/guider/multistar/MaxStars", m_maxStars);
+    wxString msg = wxString::Format("MultiStar MaxStars set to %d\n", m_maxStars);
+    Debug.Write(msg);
+    pFrame->NotifyGuidingParam("MaxStars", std::to_string(m_maxStars));
+}
+double GuiderMultiStar::GetStabilityThresh() const
+{
+    return m_stabilitySigmaX;
+}
+void GuiderMultiStar::SetStabilityThresh(double val)
+{
+    m_stabilitySigmaX = wxMax(2.0, wxMin(val, (double)MAX_STABILITY_SIGMAX));
+    pConfig->Profile.SetDouble("/guider/multistar/StabilityThresh", m_stabilitySigmaX);
+    wxString msg = wxString::Format("MultiStar stability threshold set to %0.1fX\n", m_stabilitySigmaX);
+    Debug.Write(msg);
+}
 void GuiderMultiStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -267,6 +292,8 @@ void GuiderMultiStar::LoadProfileSettings()
     SetSearchRegion(searchRegion);
 
     SetMultiStarMode(pConfig->Profile.GetBoolean("/guider/multistar/enabled", false));
+    SetMaxStars(pConfig->Profile.GetInt("/guider/multistar/MaxStars", 7));
+    SetStabilityThresh(pConfig->Profile.GetDouble("/guider/multistar/StabilityThresh", 3.0));
 }
 
 bool GuiderMultiStar::GetMassChangeThresholdEnabled() const
@@ -722,9 +749,14 @@ struct DistanceChecker
 
 wxString GuiderMultiStar::GetStarCount()
 {
-    return wxString::Format("%d/%d", m_starsUsed, m_guideStars.size());
+    return wxString::Format("%d/%d", wxMin(m_starsUsed, (int)m_guideStars.size()), (int)m_guideStars.size());  // no weird displays if stars are being removed from list
 }
 
+// Private method to build compact logging string for how secondary stars were used
+static void AppendStarUse(wxString& secondaryInfo, int starNum, double dX, double dY, double weight, wxString flag)
+{
+    secondaryInfo += wxString::Format("[#%d %0.2f,%0.2f,%0.2f,%s] ", starNum, dX, dY, weight, flag);
+}
 // Use secondary stars to refine Offset value - single star offset must be valid
 void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
 {
@@ -732,6 +764,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
     double secondaryDistance;
     double primarySigma = 0;
     bool averaged = false;
+    int validStars = 0;
     GuiderOffset origOffset = *pOffset;
     m_starsUsed = 1;
     bool erasures = false;
@@ -780,7 +813,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
             if (m_primaryDistStats->GetCount() > 5)
             {
                 primarySigma = m_primaryDistStats->GetSigma();
-                if (!m_stabilizing && primaryDistance > 3 * primarySigma)
+                if (!m_stabilizing && primaryDistance > m_stabilitySigmaX * primarySigma)
                 {
                     m_stabilizing = true;
                     Debug.Write("MultiStar: large primary error, entering stabilization period\n");
@@ -799,10 +832,12 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
 
             if (!m_stabilizing && m_guideStars.size() > 1 && (sumX != 0 || sumY != 0))
             {
+                wxString secondaryInfo = "MultiStar: ";
                 for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
                 {
-                    if (m_starsUsed >= MAX_STAR_COUNT || m_guideStars.size() == 1)
+                    if (m_starsUsed >= m_maxStars || m_guideStars.size() == 1)
                         break;
+                    m_starsUsed++;              // "used" means "looked at" for purposes of UI
                     if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
                         GetMinStarHFD(), pCamera->GetSaturationADU()))
                     {
@@ -817,25 +852,26 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                                 pGS->zeroCount = wxMax(pGS->zeroCount - 1, 0);
                             if (pGS->zeroCount == 5)
                             {
-                                Debug.Write(wxString::Format("MultiStar: #%d dropped for zero-counts\n", Iter_Inx(pGS)));
+                                AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DZ");
                                 pGS = m_guideStars.erase(pGS);
                                 erasures = true;
                                 continue;
                             }
-                            m_starsUsed++;              // "used" means "looked at"
+
                             // Handle suspicious excursions - counted as "misses"
                             secondaryDistance = hypot(dX, dY);
                             if (secondaryDistance > 2.5 * primarySigma)
                             {
                                 pGS->missCount++;
-                                Debug.Write(wxString::Format("MultiStar: #%d flagged for large miss(%0.2f vs. %0.2f), count=%d\n", Iter_Inx(pGS), secondaryDistance, primaryDistance, pGS->missCount));
                                 if (pGS->missCount > 10)                              // Reset the reference point to wherever it is now
                                 {
                                     pGS->referencePoint.X = pGS->X;
                                     pGS->referencePoint.Y = pGS->Y;
                                     pGS->missCount = 0;
-                                    Debug.Write(wxString::Format("MultiStar: #%d reset after large misses\n", Iter_Inx(pGS)));
+                                    AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, 0, "R");
                                 }
+                                else
+                                    AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, 0, "M" + std::to_string(pGS->missCount));
                                 pGS++;
                                 continue;
                             }
@@ -850,18 +886,20 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                             sumY += wt * dY;
                             sumWeights += wt;
                             averaged = true;
-                            Debug.Write(wxString::Format("MultiStar: #%d added {%0.1f, %0.1f}, weight %0.2f\n", Iter_Inx(pGS), dX, dY, wt));
+                            validStars++;
+
+                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, wt, "U");
                         }
                         else                                          // exactly zero on both axes, probably a hot pixel, drop it
                         {
-                            Debug.Write(wxString::Format("MultiStar: #%d dropped as hot pixel\n", Iter_Inx(pGS)));
+                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DZ");
                             pGS = m_guideStars.erase(pGS);
                             erasures = true;
                         }
                     }
                     else                                              //this star no longer findable in its search region
                     {
-                        Debug.Write(wxString::Format("MultiStar: #%d dropped, not found\n", Iter_Inx(pGS)));
+                        AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DNF");
                         pGS = m_guideStars.erase(pGS);
                         erasures = true;
                     }
@@ -869,8 +907,9 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                         pGS++;
                     else
                         erasures = false;
-
                 }                                   // End of looping through secondary stars
+                Debug.Write(secondaryInfo + "\n");
+
                 if (averaged)
                 {
                     sumX = sumX / sumWeights;
@@ -882,8 +921,8 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
                         pOffset->cameraOfs.Y = sumY;
                         refined = true;
                     }
-                    Debug.Write(wxString::Format("%s, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n", (refined ? "refined" : "single-star"),
-                        sumX, sumY,
+                    Debug.Write(wxString::Format("%s, %d included, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n", (refined ? "refined" : "single-star"),
+                        validStars, sumX, sumY,
                         origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
                 }
             }
@@ -1006,7 +1045,7 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         if (lockPos.IsValid())
         {
             ofs->cameraOfs = m_primaryStar - lockPos;
-            if (m_multiStarMode && m_guideStars.size() > 1 && pMount->GetGuidingEnabled())
+            if (m_multiStarMode && m_guideStars.size() > 1 && IsGuiding() && pMount->GetGuidingEnabled())
             {
                 RefineOffset(pImage, ofs);
             }
@@ -1184,12 +1223,15 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         {
             dc.SetPen(wxPen(wxColour(0, 255, 0), 1, wxPENSTYLE_SOLID));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
-            int lim = wxMin(m_starsUsed, m_guideStars.size());
+            int starsPlotted = 1;
             for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1;
-                it < m_guideStars.begin() + lim; ++it)
+                it != m_guideStars.end(); it++)
             {
                 wxPoint pt((int)it->referencePoint.X * m_scaleFactor, (int)it->referencePoint.Y * m_scaleFactor);
                 dc.DrawCircle(pt, 6);
+                starsPlotted++;
+                if (starsPlotted == m_starsUsed)
+                    break;
             }
         }
 
@@ -1375,8 +1417,23 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
-    m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_cbUseMultiStars), wxID_ANY, _("Use multiple stars"));
+    wxStaticBoxSizer *pMultiStar = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Multi-star guiding"));
+    m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), wxID_ANY, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
+    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, wxID_ANY);
+    width = StringWidth(_T("100.0"));
+    m_pMaxStars = pFrame->MakeSpinCtrl(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1, 12, DEFAULT_MAX_STAR_COUNT, _T("Max stars"));
+    wxSizer *pStars = MakeLabeledControl(AD_szStarTracking, _("Max stars"), m_pMaxStars,
+        _("Max stars to use for guiding subject to availability in field"));
+    m_pStabilityThresh = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, (double)MAX_STABILITY_SIGMAX, (double)DEFAULT_STABILITY_SIGMAX, 0.5);
+    m_pStabilityThresh->SetDigits(1);
+    wxSizer *pStableSigma = MakeLabeledControl(AD_szStarTracking, _("Instability threshold"), m_pStabilityThresh,
+        _("Deviation from mean to trigger stabilization (multiple of sigma)"));
+    pMultiStar->Add(m_pUseMultiStars, wxSizerFlags(0).Border(wxTOP, 3));
+    pMultiStar->Add(pStars, wxSizerFlags(0).Border(wxLEFT, 10));
+    pMultiStar->Add(pStableSigma, wxSizerFlags(0).Border(wxLEFT, 10));
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
@@ -1384,7 +1441,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     pTrackingParams->Add(pHFD, wxSizerFlags().Border(wxTOP, 3));
     pTrackingParams->Add(dsamp, wxSizerFlags().Border(wxTOP, 3).Right());
     pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxTOP, 3));
-    pTrackingParams->Add(m_pUseMultiStars, wxSizerFlags().Border(wxTOP, 3));
+    pTrackingParams->Add(pMultiStar, wxSizerFlags(0).Border(wxTop, 3));
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 }
@@ -1405,6 +1462,8 @@ void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
     m_autoSelDownsample->SetSelection(m_pGuiderMultiStar->GetAutoSelDownsample());
     m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
     m_pUseMultiStars->SetValue(m_pGuiderMultiStar->GetMultiStarMode());
+    m_pMaxStars->SetValue(m_pGuiderMultiStar->GetMaxStars());
+    m_pStabilityThresh->SetValue(m_pGuiderMultiStar->GetStabilityThresh());
 
     GuiderConfigDialogCtrlSet::LoadValues();
 }
@@ -1419,9 +1478,16 @@ void GuiderMultiStarConfigDialogCtrlSet::UnloadValues()
     if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
         pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
     m_pGuiderMultiStar->SetMultiStarMode(m_pUseMultiStars->GetValue());
+    m_pGuiderMultiStar->SetMaxStars(m_pMaxStars->GetValue());
+    m_pGuiderMultiStar->SetStabilityThresh(m_pStabilityThresh->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
 
+void GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked(wxCommandEvent& evt)
+{
+    m_pMaxStars->Enable(evt.IsChecked());
+    m_pStabilityThresh->Enable(evt.IsChecked());
+}
 void GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked(wxCommandEvent& event)
 {
     m_pMassChangeThreshold->Enable(event.IsChecked());
