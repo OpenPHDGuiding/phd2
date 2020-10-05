@@ -138,7 +138,7 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
 
     if (strcmp(svp->name, "CONNECTION") == 0)
     {
-        ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
+        ISwitch *connectswitch = IUFindSwitch(svp, "CONNECT");
         if (connectswitch->s == ISS_ON)
         {
             Connected = true;
@@ -194,16 +194,18 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
                 return;
             s_lastval = nvp->np->value;
         }
-        Debug.Write(wxString::Format("INDI Camera Receive Number: %s = %g state = %s\n", nvp->name, nvp->np->value, StateStr(nvp->s)));
+
+        Debug.Write(wxString::Format("INDI Camera Received Number: %s = %g state = %s\n",
+                                     nvp->name, nvp->np->value, StateStr(nvp->s)));
     }
 
     if (nvp == ccdinfo_prop)
     {
-        PixSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
-        PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
-        PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
-        m_maxSize.x = IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value;
-        m_maxSize.y = IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value;
+        PixSize = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE")->value;
+        PixSizeX = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_X")->value;
+        PixSizeY = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_Y")->value;
+        m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
+        m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
     }
@@ -222,7 +224,8 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
         {
             wxMutexLocker lck(sync_lock);
             if (guide_active && nvp->s != IPS_BUSY &&
-                ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) || (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
+                ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) ||
+                 (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
             {
                 guide_active = false;
                 notify = true;
@@ -313,10 +316,10 @@ void CameraINDI::newProperty(INDI::Property *property)
             Debug.Write(wxString::Format("INDI Camera Found CCD_FRAME for %s %s\n", property->getDeviceName(), PropName));
 
         frame_prop = property->getNumber();
-        frame_x = IUFindNumber(frame_prop,"X");
-        frame_y = IUFindNumber(frame_prop,"Y");
-        frame_width = IUFindNumber(frame_prop,"WIDTH");
-        frame_height = IUFindNumber(frame_prop,"HEIGHT");
+        frame_x = IUFindNumber(frame_prop, "X");
+        frame_y = IUFindNumber(frame_prop, "Y");
+        frame_width = IUFindNumber(frame_prop, "WIDTH");
+        frame_height = IUFindNumber(frame_prop, "HEIGHT");
     }
     else if (PropName == INDICameraCCDCmd + "FRAME_TYPE" && Proptype == INDI_SWITCH)
     {
@@ -331,8 +334,8 @@ void CameraINDI::newProperty(INDI::Property *property)
             Debug.Write(wxString::Format("INDI Camera Found CCD_BINNING for %s %s\n", property->getDeviceName(), PropName));
 
         binning_prop = property->getNumber();
-        binning_x = IUFindNumber(binning_prop,"HOR_BIN");
-        binning_y = IUFindNumber(binning_prop,"VER_BIN");
+        binning_x = IUFindNumber(binning_prop, "HOR_BIN");
+        binning_y = IUFindNumber(binning_prop, "VER_BIN");
         newNumber(binning_prop);
     }
     else if (PropName == INDICameraCCDCmd + "CFA" && Proptype == INDI_TEXT)
@@ -380,7 +383,7 @@ void CameraINDI::newProperty(INDI::Property *property)
 
         // Check the value here in case the device is already connected
         connection_prop = property->getSwitch();
-        ISwitch *connectswitch = IUFindSwitch(connection_prop,"CONNECT");
+        ISwitch *connectswitch = IUFindSwitch(connection_prop, "CONNECT");
         Connected = (connectswitch->s == ISS_ON);
     }
     else if (PropName == "DRIVER_INFO" && Proptype == INDI_TEXT)
@@ -391,14 +394,14 @@ void CameraINDI::newProperty(INDI::Property *property)
     else if (PropName == "TELESCOPE_TIMED_GUIDE_NS" && Proptype == INDI_NUMBER)
     {
         pulseGuideNS_prop = property->getNumber();
-        pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
-        pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
+        pulseN_prop = IUFindNumber(pulseGuideNS_prop, "TIMED_GUIDE_N");
+        pulseS_prop = IUFindNumber(pulseGuideNS_prop, "TIMED_GUIDE_S");
     }
     else if (PropName == "TELESCOPE_TIMED_GUIDE_WE" && Proptype == INDI_NUMBER)
     {
         pulseGuideEW_prop = property->getNumber();
-        pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
-        pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
+        pulseW_prop = IUFindNumber(pulseGuideEW_prop, "TIMED_GUIDE_W");
+        pulseE_prop = IUFindNumber(pulseGuideEW_prop, "TIMED_GUIDE_E");
     }
     else if (PropName == INDICameraCCDCmd + "INFO" && Proptype == INDI_NUMBER)
     {
@@ -671,7 +674,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     ysize = (int) fits_size[1];
     fits_get_num_hdus(fptr,&nhdus,&status);
 
-    if ((nhdus != 1) || (naxis != 2))
+    if (nhdus != 1 || naxis != 2)
     {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         PHD_fits_close_file(fptr);
@@ -692,7 +695,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
 
         unsigned short *rawdata = new unsigned short[xsize*ysize];
 
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, nullptr, rawdata, nullptr, &status))
+        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize * ysize, nullptr, rawdata, nullptr, &status))
         {
             pFrame->Alert(_("Error reading data"));
             PHD_fits_close_file(fptr);
@@ -712,7 +715,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     }
     else
     {
-        if (img.Init(xsize,ysize))
+        if (img.Init(xsize, ysize))
         {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
@@ -720,7 +723,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
         }
 
         // Read image
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, nullptr, img.ImageData, nullptr, &status))
+        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize * ysize, nullptr, img.ImageData, nullptr, &status))
         {
             pFrame->Alert(_("Error reading data"));
             PHD_fits_close_file(fptr);
@@ -759,7 +762,7 @@ bool CameraINDI::ReadStream(usImage& img)
     ysize = frame_height->value;
 
     // allocate image
-    if (img.Init(xsize,ysize))
+    if (img.Init(xsize, ysize))
     {
         pFrame->Alert(_("CCD stream: memory allocation error"));
         return true;
@@ -811,7 +814,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
     // we can set the exposure time directly in the camera
     if (expose_prop && !INDICameraForceVideo)
     {
-        if (binning_prop && (Binning != m_curBinning))
+        if (binning_prop && Binning != m_curBinning)
         {
             FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
             binning_x->value = Binning;
@@ -832,12 +835,12 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
         }
 
-        if (frame_prop && (subframe != m_roi))
+        if (frame_prop && subframe != m_roi)
         {
-            frame_x->value = subframe.x*Binning;
-            frame_y->value = subframe.y*Binning;
-            frame_width->value = subframe.width*Binning;
-            frame_height->value = subframe.height*Binning;
+            frame_x->value = subframe.x * Binning;
+            frame_y->value = subframe.y * Binning;
+            frame_width->value = subframe.width * Binning;
+            frame_height->value = subframe.height * Binning;
             sendNewNumber(frame_prop);
             m_roi = subframe;
         }
@@ -870,7 +873,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
 
         // set the exposure time, this immediately start the exposure
-        expose_prop->np->value = (double)duration/1000;
+        expose_prop->np->value = (double) duration / 1000;
         sendNewNumber(expose_prop);
 
         modal = true;  // will be reset when the image blob is received
@@ -892,7 +895,8 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                     // try to use video stream instead of exposure
                     // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
                     // TODO : check if an updated INDI v4l2 driver offer a better solution
-                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
+                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."),
+                                                   INDICameraName));
                     INDICameraForceVideo = true;
                     first_frame = false;
                     return Capture(duration, img,  options, subframeArg);
@@ -958,13 +962,13 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         ISwitch *v_off;
         if (has_old_videoprop)
         {
-            v_on = IUFindSwitch(video_prop,"ON");
-            v_off = IUFindSwitch(video_prop,"OFF");
+            v_on = IUFindSwitch(video_prop, "ON");
+            v_off = IUFindSwitch(video_prop, "OFF");
         }
         else
         {
-            v_on = IUFindSwitch(video_prop,"STREAM_ON");
-            v_off = IUFindSwitch(video_prop,"STREAM_OFF");
+            v_on = IUFindSwitch(video_prop, "STREAM_ON");
+            v_off = IUFindSwitch(video_prop, "STREAM_OFF");
         }
 
         // start streaming if not already active, every video frame is received as a blob
@@ -988,7 +992,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         {
             wxMilliSleep(loopwait);
             // test exposure complete
-            if ((swatch.Time() >= duration) && (StackFrames > 2))
+            if (swatch.Time() >= duration && StackFrames > 2)
                 modal = false;
             // test termination request, stop streaming before to return
             if (WorkerThread::TerminateRequested())
@@ -1015,7 +1019,8 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
 
         pFrame->StatusMsg(wxString::Format(_("%d frames"), StackFrames));
 
-        if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+        if (options & CAPTURE_SUBTRACT_DARK)
+            SubtractDark(img);
 
         return false;
     }
