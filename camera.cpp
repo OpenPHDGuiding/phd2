@@ -397,7 +397,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (INDI_CAMERA)
         else if (choice.Contains(_T("INDI"))) {
-            pReturn = new CameraINDI();
+            pReturn = INDICameraFactory::MakeINDICamera();
         }
 #endif
 #if defined (IOPTRON_CAMERA)

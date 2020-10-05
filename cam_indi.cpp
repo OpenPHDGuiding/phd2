@@ -3,11 +3,9 @@
  *  PHD Guiding
  *
  *  Created by Geoffrey Hausheer.
- *  Copyright (c) 2009 Geoffrey Hausheer.
- *  All rights reserved.
- *
- *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2009 Geoffrey Hausheer
  *  Copyright (c) 2014 Patrick Chevalley
+ *  Copyright (c) 2020 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -40,14 +38,113 @@
 
 #ifdef INDI_CAMERA
 
-#include <iostream>
-#include <fstream>
-
-#include "config_indi.h"
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
 #include "cam_indi.h"
+#include "camera.h"
+#include "config_indi.h"
+#include "image_math.h"
+#include "indi_gui.h"
+#include "phdindiclient.h"
+
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
+
+class CameraINDI : public GuideCamera, public PhdIndiClient
+{
+private:
+    ISwitchVectorProperty *connection_prop;
+    INumberVectorProperty *expose_prop;
+    INumberVectorProperty *frame_prop;
+    INumber               *frame_x;
+    INumber               *frame_y;
+    INumber               *frame_width;
+    INumber               *frame_height;
+    ISwitchVectorProperty *frame_type_prop;
+    INumberVectorProperty *ccdinfo_prop;
+    INumberVectorProperty *binning_prop;
+    INumber               *binning_x;
+    INumber               *binning_y;
+    ISwitchVectorProperty *video_prop;
+    ITextVectorProperty   *camera_port;
+    INDI::BaseDevice      *camera_device;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber               *pulseN_prop;
+    INumber               *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber               *pulseE_prop;
+    INumber               *pulseW_prop;
+
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
+
+    IndiGui  *m_gui;
+    IBLOB    *cam_bp;
+    usImage  *StackImg;
+    int      StackFrames;
+    volatile bool stacking; // TODO: use a wxCondition to signal completion
+    bool     has_blob;
+    bool     has_old_videoprop;
+    bool     first_frame;
+    volatile bool modal;
+    bool     ready;
+    wxByte   m_bitsPerPixel;
+    double   PixSize;
+    double   PixSizeX;
+    double   PixSizeY;
+    wxRect   m_maxSize;
+    wxByte   m_curBinning;
+    bool     HasBayer;
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDICameraName;
+    long     INDICameraCCD;
+    wxString INDICameraCCDCmd;
+    wxString INDICameraBlobName;
+    bool     INDICameraForceVideo;
+    bool     INDICameraForceExposure;
+    wxRect   m_roi;
+
+    bool     ConnectToDriver(RunInBg *ctx);
+    void     SetCCDdevice();
+    void     ClearStatus();
+    void     CheckState();
+    void     CameraDialog();
+    void     CameraSetup();
+    bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
+    bool     StackStream();
+
+protected:
+    void newDevice(INDI::BaseDevice *dp) override;
+#ifndef INDI_PRE_1_0_0
+    void removeDevice(INDI::BaseDevice *dp) override;
+#endif
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {}
+    void newBLOB(IBLOB *bp) override;
+    void newSwitch(ISwitchVectorProperty *svp) override;
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override;
+    void newLight(ILightVectorProperty *lvp) override {}
+    void serverConnected() override;
+    void IndiServerDisconnected(int exit_code) override;
+
+public:
+    CameraINDI();
+    ~CameraINDI();
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    bool    HasNonGuiCapture() override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double *pixSize) override;
+    void    ShowPropertyDialog() override;
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    bool    ST4HasNonGuiMove() override;
+};
 
 CameraINDI::CameraINDI()
     :
@@ -60,12 +157,11 @@ CameraINDI::CameraINDI()
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
-    INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo",false);
-    INDICameraForceExposure = pConfig->Profile.GetBoolean("/indi/INDIcam_forceexposure",false);
+    INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo", false);
+    INDICameraForceExposure = pConfig->Profile.GetBoolean("/indi/INDIcam_forceexposure", false);
     Name = wxString::Format("INDI Camera [%s]", INDICameraName);
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
-    FullSize = wxSize(640,480);
     HasSubframes = true;
     m_bitsPerPixel = 0;
     HasBayer = false;
@@ -206,7 +302,8 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
         PixSizeY = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_Y")->value;
         m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
         m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
-        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        // defer defining FullSize since it is not simply derivable from max size and binning
+        // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
     }
     else if (nvp == binning_prop)
@@ -216,7 +313,8 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
         if (Binning > MaxBinning)
             Binning = MaxBinning;
         m_curBinning = Binning;
-        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        // defer defining FullSize since it is not simply derivable from max size and binning
+        // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
     }
     else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
     {
@@ -249,7 +347,7 @@ void CameraINDI::newText(ITextVectorProperty *tvp)
         Debug.Write(wxString::Format("INDI Camera Receive Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
-void  CameraINDI::newBLOB(IBLOB *bp)
+void CameraINDI::newBLOB(IBLOB *bp)
 {
     // we go here every time a new blob is available
     // this is normally the image from the camera
@@ -353,7 +451,7 @@ void CameraINDI::newProperty(INDI::Property *property)
             HasBayer = true;
         }
     }
-    else if (((PropName == INDICameraCCDCmd + "VIDEO_STREAM")) && Proptype == INDI_SWITCH)
+    else if (PropName == INDICameraCCDCmd + "VIDEO_STREAM" && Proptype == INDI_SWITCH)
     {
         if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName));
@@ -361,7 +459,7 @@ void CameraINDI::newProperty(INDI::Property *property)
         video_prop = property->getSwitch();
         has_old_videoprop = false;
     }
-    else if (((PropName == "VIDEO_STREAM") ) && Proptype == INDI_SWITCH)
+    else if (PropName == "VIDEO_STREAM" && Proptype == INDI_SWITCH)
     {
         if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Found Video %s %s\n", property->getDeviceName(), PropName));
@@ -612,9 +710,9 @@ void CameraINDI::CameraSetup()
         pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
         pConfig->Profile.SetLong("/indi/INDIport", INDIport);
         pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
-        pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
-        pConfig->Profile.SetBoolean("/indi/INDIcam_forcevideo",INDICameraForceVideo);
-        pConfig->Profile.SetBoolean("/indi/INDIcam_forceexposure",INDICameraForceExposure);
+        pConfig->Profile.SetLong("/indi/INDIcam_ccd", INDICameraCCD);
+        pConfig->Profile.SetBoolean("/indi/INDIcam_forcevideo", INDICameraForceVideo);
+        pConfig->Profile.SetBoolean("/indi/INDIcam_forceexposure", INDICameraForceExposure);
         Name = INDICameraName;
         SetCCDdevice();
     }
@@ -637,20 +735,15 @@ void CameraINDI::SetCCDdevice()
 
 bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe)
 {
-    int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
-    int hdutype, naxis;
-    int nhdus = 0;
-    long fits_size[2];
-    long fpixel[3] = {1,1,1};
     size_t bsize = static_cast<size_t>(cam_bp->bloblen);
 
     // load blob to CFITSIO
     if (fits_open_memfile(&fptr,
             "",
             READONLY,
-            &(cam_bp->blob),
+            &cam_bp->blob,
             &bsize,
             0,
             nullptr,
@@ -660,6 +753,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
         return true;
     }
 
+    int hdutype;
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
     {
         pFrame->Alert(_("FITS file is not of an image"));
@@ -668,11 +762,16 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     }
 
     // Get HDUs and size
+    int naxis;
     fits_get_img_dim(fptr, &naxis, &status);
+
+    long fits_size[2];
     fits_get_img_size(fptr, 2, fits_size, &status);
-    xsize = (int) fits_size[0];
-    ysize = (int) fits_size[1];
-    fits_get_num_hdus(fptr,&nhdus,&status);
+    int xsize = (int) fits_size[0];
+    int ysize = (int) fits_size[1];
+
+    int nhdus = 0;
+    fits_get_num_hdus(fptr, &nhdus, &status);
 
     if (nhdus != 1 || naxis != 2)
     {
@@ -681,8 +780,18 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
         return true;
     }
 
+    long fpixel[3] = {1, 1, 1};
+
     if (takeSubframe)
     {
+        if (FullSize == UNDEFINED_FRAME_SIZE)
+        {
+            // should never happen since we arranged not to take a subframe
+            // unless full frame size is known
+            Debug.Write("internal error: taking subframe before full frame\n");
+            PHD_fits_close_file(fptr);
+            return true;
+        }
         if (img.Init(FullSize))
         {
             pFrame->Alert(_("Memory allocation error"));
@@ -693,7 +802,7 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
         img.Clear();
         img.Subframe = subframe;
 
-        unsigned short *rawdata = new unsigned short[xsize*ysize];
+        unsigned short *rawdata = new unsigned short[xsize * ysize];
 
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize * ysize, nullptr, rawdata, nullptr, &status))
         {
@@ -715,7 +824,9 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     }
     else
     {
-        if (img.Init(xsize, ysize))
+        FullSize.Set(xsize, ysize);
+
+        if (img.Init(FullSize))
         {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
@@ -735,64 +846,20 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     return false;
 }
 
-bool CameraINDI::ReadStream(usImage& img)
-{
-    int xsize, ysize;
-    unsigned char *inptr;
-    unsigned short *outptr;
-
-    if (!frame_prop)
-    {
-        pFrame->Alert(_("No CCD_FRAME property, failed to determine image dimensions"));
-        return true;
-    }
-
-    if (!frame_width)
-    {
-        pFrame->Alert(_("No WIDTH value, failed to determine image dimensions"));
-        return true;
-    }
-    xsize = frame_width->value;
-
-    if (!frame_height)
-    {
-        pFrame->Alert(_("No HEIGHT value, failed to determine image dimensions"));
-        return true;
-    }
-    ysize = frame_height->value;
-
-    // allocate image
-    if (img.Init(xsize, ysize))
-    {
-        pFrame->Alert(_("CCD stream: memory allocation error"));
-        return true;
-    }
-
-    // copy image
-    outptr = img.ImageData;
-    inptr = (unsigned char *) cam_bp->blob;
-    for (int i = 0; i < xsize * ysize; i++)
-        *outptr ++ = *inptr++;
-
-    return false;
-}
-
 bool CameraINDI::StackStream()
 {
-    unsigned char *inptr;
-    unsigned short *outptr;
-
     if (StackImg)
     {
         // Add new blob to stacked image
         stacking = true;
-        outptr = StackImg->ImageData;
-        inptr = (unsigned char *) cam_bp->blob;
 
-        for (int i = 0; i < StackImg->NPixels; i++, outptr++, inptr++)
-            *outptr = *outptr + (unsigned short) (*inptr);
+        unsigned short *outptr = StackImg->ImageData;
+        const unsigned char *inptr = (unsigned char *) cam_bp->blob;
 
-        StackFrames++;
+        for (int i = 0; i < StackImg->NPixels; i++)
+            *outptr++ += (unsigned short) *inptr++;
+
+        ++StackFrames;
 
         stacking = false;
         return false;
@@ -816,12 +883,15 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         if (binning_prop && Binning != m_curBinning)
         {
-            FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
             binning_x->value = Binning;
             binning_y->value = Binning;
             sendNewNumber(binning_prop);
             m_curBinning = Binning;
             takeSubframe = false; // subframe may be out of bounds now
+            if (Binning == 1)
+                FullSize.Set(m_maxSize.x, m_maxSize.y);
+            else
+                FullSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
         }
 
         if (!frame_prop || subframe.width <= 0 || subframe.height <= 0)
@@ -829,10 +899,30 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             takeSubframe = false;
         }
 
+        if (takeSubframe && FullSize == UNDEFINED_FRAME_SIZE)
+        {
+            // if we do not know the full frame size, we cannot take a
+            // subframe until we receive a full frame and get the frame size
+            takeSubframe = false;
+        }
+
         // Program the size
         if (!takeSubframe)
         {
-            subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+            wxSize sz;
+            if (FullSize != UNDEFINED_FRAME_SIZE)
+            {
+                // we know the actual frame size
+                sz = FullSize;
+            }
+            else
+            {
+                // the max size divided by the binning may be larger than
+                // the actual frame, but setting a larger size should
+                // request the full binned frame which we want
+                sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            }
+            subframe = wxRect(sz);
         }
 
         if (frame_prop && subframe != m_roi)
@@ -882,6 +972,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
 
         CameraWatchdog watchdog(duration, GetTimeoutMs());
 
+        // TODO: convert to a condition variable instead of polling modal
         while (modal)
         {
             wxMilliSleep(loopwait);
@@ -942,11 +1033,25 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(cam_bp->format)));
         return true;
     }
-    // for video camera without exposure time setting we stack frames for duration of the exposure
     else if (video_prop)
     {
-        takeSubframe = false;
+        // for a video camera without an exposure time setting we stack
+        // frames for duration of the exposure
+
         first_frame = false;
+
+        if (binning_prop && Binning != m_curBinning)
+        {
+            binning_x->value = Binning;
+            binning_y->value = Binning;
+            sendNewNumber(binning_prop);
+            m_curBinning = Binning;
+        }
+
+        // for video streaming we do not get the frame size so we have to
+        // derive it from the full frame size and the binning
+
+        FullSize.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
 
         if (img.Init(FullSize))
         {
@@ -1140,6 +1245,11 @@ bool CameraINDI::GetDevicePixelSize(double *devPixelSize)
 
     *devPixelSize = PixSize;
     return false;
+}
+
+GuideCamera *INDICameraFactory::MakeINDICamera()
+{
+    return new CameraINDI();
 }
 
 #endif
