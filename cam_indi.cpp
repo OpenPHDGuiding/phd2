@@ -230,7 +230,7 @@ void CameraINDI::newSwitch(ISwitchVectorProperty *svp)
     // we go here every time a Switch state change
 
     if (INDIConfig::Verbose())
-        Debug.Write(wxString::Format("INDI Camera Receive Switch: %s = %i\n", svp->name, svp->sp->s));
+        Debug.Write(wxString::Format("INDI Camera Received Switch: %s = %i\n", svp->name, svp->sp->s));
 
     if (strcmp(svp->name, "CONNECTION") == 0)
     {
@@ -263,7 +263,7 @@ void CameraINDI::newMessage(INDI::BaseDevice *dp, int messageID)
     // we go here every time the camera driver send a message
 
     if (INDIConfig::Verbose())
-        Debug.Write(wxString::Format("INDI Camera Receive message: %s\n", dp->messageQueue(messageID)));
+        Debug.Write(wxString::Format("INDI Camera Received message: %s\n", dp->messageQueue(messageID)));
 }
 
 inline static const char *StateStr(IPState st)
@@ -290,9 +290,13 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
                 return;
             s_lastval = nvp->np->value;
         }
-
-        Debug.Write(wxString::Format("INDI Camera Received Number: %s = %g state = %s\n",
-                                     nvp->name, nvp->np->value, StateStr(nvp->s)));
+        std::ostringstream os;
+        for (int i = 0; i < nvp->nnp; i++)
+        {
+            if (i) os << ',';
+            os << nvp->np[i].name << ':' << nvp->np[i].value;
+        }
+        Debug.Write(wxString::Format("INDI Camera Received Number: %s = %s state = %s\n", nvp->name, os.str().c_str(), StateStr(nvp->s)));
     }
 
     if (nvp == ccdinfo_prop)
@@ -344,7 +348,7 @@ void CameraINDI::newText(ITextVectorProperty *tvp)
     // we go here every time a Text value change
 
     if (INDIConfig::Verbose())
-        Debug.Write(wxString::Format("INDI Camera Receive Text: %s = %s\n", tvp->name, tvp->tp->text));
+        Debug.Write(wxString::Format("INDI Camera Received Text: %s = %s\n", tvp->name, tvp->tp->text));
 }
 
 void CameraINDI::newBLOB(IBLOB *bp)
@@ -353,7 +357,7 @@ void CameraINDI::newBLOB(IBLOB *bp)
     // this is normally the image from the camera
 
     if (INDIConfig::Verbose())
-        Debug.Write(wxString::Format("INDI Camera Got camera blob %s\n", bp->name));
+        Debug.Write(wxString::Format("INDI Camera Received BLOB %s len=%d size=%d\n", bp->name, bp->bloblen, bp->size));
 
     if (expose_prop && !INDICameraForceVideo)
     {
