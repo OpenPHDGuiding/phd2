@@ -707,7 +707,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     bool useSubframe = UseSubframes;
 
-    if (subframe.width <= 0 || subframe.height <= 0)
+    if (useSubframe && (subframe.width <= 0 || subframe.height <= 0 || binning_change))
         useSubframe = false;
 
     if (useSubframe)
