@@ -100,6 +100,8 @@ public:
 private:
     void StopCapture();
     bool StopExposure();
+
+    wxSize BinnedFrameSize(unsigned int binning);
 };
 
 Camera_ZWO::Camera_ZWO()
@@ -125,6 +127,14 @@ Camera_ZWO::~Camera_ZWO()
 wxByte Camera_ZWO::BitsPerPixel()
 {
     return m_bpp;
+}
+
+inline wxSize Camera_ZWO::BinnedFrameSize(unsigned int binning)
+{
+    // ASI cameras require width % 8 == 0 and height % 2 == 0
+    return wxSize(
+        (m_maxSize.x / binning) & ~(8U - 1),
+        (m_maxSize.y / binning) & ~(2U - 1));
 }
 
 struct ZWOCameraDlg : public wxDialog
@@ -462,8 +472,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     m_maxSize.x = info.MaxWidth;
     m_maxSize.y = info.MaxHeight;
 
-    FullSize.x = m_maxSize.x / Binning;
-    FullSize.y = m_maxSize.y / Binning;
+    FullSize = BinnedFrameSize(Binning);
     m_prevBinning = Binning;
 
     ::free(m_buffer);
@@ -682,8 +691,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {
-        FullSize.x = m_maxSize.x / Binning;
-        FullSize.y = m_maxSize.y / Binning;
+        FullSize = BinnedFrameSize(Binning);
         m_prevBinning = Binning;
         binning_change = true;
     }
