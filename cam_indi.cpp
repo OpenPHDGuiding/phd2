@@ -113,6 +113,7 @@ private:
     void     CameraSetup();
     bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
     bool     StackStream();
+    void     SendBinning();
 
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
@@ -852,26 +853,38 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
 
 bool CameraINDI::StackStream()
 {
-    if (StackImg)
+    if (!StackImg)
+        return true;
+
+    if (cam_bp->size != StackImg->NPixels)
     {
-        // Add new blob to stacked image
-        stacking = true;
-
-        unsigned short *outptr = StackImg->ImageData;
-        const unsigned char *inptr = (unsigned char *) cam_bp->blob;
-
-        for (int i = 0; i < StackImg->NPixels; i++)
-            *outptr++ += (unsigned short) *inptr++;
-
-        ++StackFrames;
-
-        stacking = false;
-        return false;
-    }
-    else
-    {
+        Debug.Write(wxString::Format("INDI Camera: discarding blob with size %d, expected %u\n", cam_bp->size, StackImg->NPixels));
         return true;
     }
+
+    // Add new blob to stacked image
+    stacking = true;
+
+    unsigned short *outptr = StackImg->ImageData;
+    const unsigned char *inptr = (unsigned char *) cam_bp->blob;
+
+    for (int i = 0; i < StackImg->NPixels; i++)
+        *outptr++ += (unsigned short) *inptr++;
+
+    ++StackFrames;
+
+    stacking = false;
+
+    return false;
+}
+
+void CameraINDI::SendBinning()
+{
+    binning_x->value = Binning;
+    binning_y->value = Binning;
+    Debug.Write(wxString::Format("INDI Camera: send binning %u\n", Binning));
+    sendNewNumber(binning_prop);
+    m_curBinning = Binning;
 }
 
 bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
@@ -887,10 +900,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         if (binning_prop && Binning != m_curBinning)
         {
-            binning_x->value = Binning;
-            binning_y->value = Binning;
-            sendNewNumber(binning_prop);
-            m_curBinning = Binning;
+            SendBinning();
             takeSubframe = false; // subframe may be out of bounds now
             if (Binning == 1)
                 FullSize.Set(m_maxSize.x, m_maxSize.y);
@@ -1046,10 +1056,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
 
         if (binning_prop && Binning != m_curBinning)
         {
-            binning_x->value = Binning;
-            binning_y->value = Binning;
-            sendNewNumber(binning_prop);
-            m_curBinning = Binning;
+            SendBinning();
         }
 
         // for video streaming we do not get the frame size so we have to
