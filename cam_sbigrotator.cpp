@@ -88,7 +88,7 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
             throw ERROR_INFO("invalid raAngle");
         }
 
-        m_raAngle = temp/180.0*M_PI;
+        m_raAngle = radians(temp);
 
         wxArrayString choices;
 
@@ -97,6 +97,8 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
 
         int idx = wxGetSingleChoiceIndex(_("Choose Dec Angle"), _("Dec Angle"),
                                               choices);
+        if (idx == -1)
+            return true;
 
         m_mirror = (idx == 1);
 
