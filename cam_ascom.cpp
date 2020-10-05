@@ -4,7 +4,7 @@
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2010 Craig Stark
- *  Copyright (c) 2013-2017 Andy Galasso
+ *  Copyright (c) 2013-2020 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -47,8 +47,53 @@
 #include <wx/stdpaths.h>
 
 #include "cam_ascom.h"
+
 #include <wx/msw/ole/oleutils.h>
 #include <comdef.h>
+
+class CameraASCOM : public GuideCamera
+{
+    GITEntry m_gitEntry;
+    int DriverVersion;
+    wxString m_choice; // name of chosen camera
+    wxRect m_roi;
+    wxSize m_maxSize;
+    bool m_canAbortExposure;
+    bool m_canStopExposure;
+    bool m_canSetCoolerTemperature;
+    bool m_canGetCoolerPower;
+    wxByte m_bitsPerPixel;
+    wxByte m_curBin;
+    double m_driverPixelSize;
+
+public:
+
+    bool Color;
+
+    CameraASCOM(const wxString& choice);
+    ~CameraASCOM();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    HasNonGuiCapture() override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double* devPixelSize) override;
+    bool    SetCoolerOn(bool on) override;
+    bool    SetCoolerSetpoint(double temperature) override;
+    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool    GetSensorTemperature(double *temperature) override;
+
+private:
+
+    bool Create(DispatchObj *obj, DispatchClass *cls);
+
+    bool AbortExposure();
+
+    bool ST4HasNonGuiMove() override;
+};
 
 // Frequently used IDs
 static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
@@ -379,7 +424,7 @@ static wxString displayName(const wxString& ascomName)
 // map descriptive name to progid
 static std::map<wxString, wxString> s_progid;
 
-wxArrayString CameraASCOM::EnumAscomCameras()
+wxArrayString ASCOMCameraFactory::EnumAscomCameras()
 {
     wxArrayString list;
 
@@ -1060,6 +1105,11 @@ bool CameraASCOM::HasNonGuiCapture()
 bool CameraASCOM::ST4HasNonGuiMove()
 {
     return true;
+}
+
+GuideCamera *ASCOMCameraFactory::MakeASCOMCamera(const wxString& name)
+{
+    return new CameraASCOM(name);
 }
 
 #endif

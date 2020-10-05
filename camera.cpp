@@ -245,7 +245,7 @@ wxArrayString GuideCamera::GuideCameraList()
 
     CameraList.Add(_("None"));
 #if defined (ASCOM_CAMERA)
-    wxArrayString ascomCameras = CameraASCOM::EnumAscomCameras();
+    wxArrayString ascomCameras = ASCOMCameraFactory::EnumAscomCameras();
     for (unsigned int i = 0; i < ascomCameras.Count(); i++)
         CameraList.Add(ascomCameras[i]);
 #endif
@@ -392,7 +392,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         // Chack ASCOM and INDI first since those choices may match match other choices below (like Simulator)
 #if defined (ASCOM_CAMERA)
         else if (choice.Contains(_T("ASCOM"))) {
-            pReturn = new CameraASCOM(choice);
+            pReturn = ASCOMCameraFactory::MakeASCOMCamera(choice);
         }
 #endif
 #if defined (INDI_CAMERA)
