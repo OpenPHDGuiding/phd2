@@ -4,7 +4,7 @@
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2010 Craig Stark
- *  Copyright (c) 2013-2017 Andy Galasso
+ *  Copyright (c) 2013-2020 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -47,8 +47,54 @@
 #include <wx/stdpaths.h>
 
 #include "cam_ascom.h"
+
 #include <wx/msw/ole/oleutils.h>
 #include <comdef.h>
+
+class CameraASCOM : public GuideCamera
+{
+    GITEntry m_gitEntry;
+    int DriverVersion;
+    wxString m_choice; // name of chosen camera
+    wxRect m_roi;
+    wxSize m_maxSize;
+    bool m_swapAxes;
+    bool m_canAbortExposure;
+    bool m_canStopExposure;
+    bool m_canSetCoolerTemperature;
+    bool m_canGetCoolerPower;
+    wxByte m_bitsPerPixel;
+    wxByte m_curBin;
+    double m_driverPixelSize;
+
+public:
+
+    bool Color;
+
+    CameraASCOM(const wxString& choice);
+    ~CameraASCOM();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    HasNonGuiCapture() override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    ShowPropertyDialog() override;
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    wxByte  BitsPerPixel() override;
+    bool    GetDevicePixelSize(double* devPixelSize) override;
+    bool    SetCoolerOn(bool on) override;
+    bool    SetCoolerSetpoint(double temperature) override;
+    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool    GetSensorTemperature(double *temperature) override;
+
+private:
+
+    bool Create(DispatchObj *obj, DispatchClass *cls);
+
+    bool AbortExposure();
+
+    bool ST4HasNonGuiMove() override;
+};
 
 // Frequently used IDs
 static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
@@ -86,13 +132,13 @@ static bool ASCOM_SetBin(IDispatch *cam, int binning, EXCEPINFO *excep)
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke setxbin", *excep);
         return true;
     }
     if (FAILED(hr = cam->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke setybin", *excep);
         return true;
@@ -120,7 +166,7 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
 
     rgvarg[0].lVal = roi.GetLeft();
     if (FAILED(hr = cam->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "set startx", *excep);
         return true;
@@ -128,7 +174,7 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
 
     rgvarg[0].lVal = roi.GetTop();
     if (FAILED(hr = cam->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "set starty", *excep);
         return true;
@@ -136,7 +182,7 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
 
     rgvarg[0].lVal = roi.GetWidth();
     if (FAILED(hr = cam->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "set numx", *excep);
         return true;
@@ -144,7 +190,7 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
 
     rgvarg[0].lVal = roi.GetHeight();
     if (FAILED(hr = cam->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "set numy", *excep);
         return true;
@@ -159,15 +205,15 @@ static bool ASCOM_AbortExposure(IDispatch *cam, EXCEPINFO *excep)
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
+    dispParms.rgvarg = nullptr;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_abortexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke abortexposure", *excep);
         return true;
@@ -182,15 +228,15 @@ static bool ASCOM_StopExposure(IDispatch *cam, EXCEPINFO *excep)
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
+    dispParms.rgvarg = nullptr;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke stopexposure", *excep);
         return true;
@@ -213,13 +259,13 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
     dispParms.cArgs = 2;
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_startexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke startexposure", *excep);
         return true;
@@ -234,15 +280,15 @@ static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
+    dispParms.rgvarg = nullptr;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_imageready, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke imageready", *excep);
         return true;
@@ -252,21 +298,22 @@ static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
     return false;
 }
 
-static bool ASCOM_Image(IDispatch *cam, usImage& Image, bool takeSubframe, const wxRect& subframe, EXCEPINFO *excep)
+static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wxRect& roi,
+                        wxSize *size, const wxSize& max_size, bool *swap_axes, EXCEPINFO *excep)
 {
     // returns true on error, false if OK
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
+    dispParms.rgvarg = nullptr;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, NULL)))
+        &dispParms, &vRes, excep, nullptr)))
     {
         LogExcep(hr, "invoke imagearray", *excep);
         return true;
@@ -290,30 +337,63 @@ static bool ASCOM_Image(IDispatch *cam, usImage& Image, bool takeSubframe, const
 
     long xsize = ubound1 - lbound1 + 1;
     long ysize = ubound2 - lbound2 + 1;
-    if ((xsize < ysize) && (Image.Size.GetWidth() > Image.Size.GetHeight())) // array has dim #'s switched, Tom..
+
+    if (!is_subframe && !*swap_axes && xsize < ysize && max_size.x > max_size.y)
     {
-        std::swap(xsize, ysize);
+        Debug.Write(wxString::Format("ASCOM camera: array axes are flipped (%dx%d) vs (%dx%d)\n",
+            xsize, ysize, max_size.x, max_size.y));
+
+        *swap_axes = true;
     }
 
-    if (takeSubframe)
-    {
-        Image.Subframe = subframe;
+    if (*swap_axes)
+        std::swap(xsize, ysize);
 
-        // Clear out the image
-        Image.Clear();
+    if (is_subframe)
+    {
+        if (*size == UNDEFINED_FRAME_SIZE)
+        {
+            // should never happen since we arranged not to take a subframe
+            // unless full frame size is known
+            Debug.Write("internal error: taking subframe before full frame\n");
+            hr = SafeArrayUnaccessData(rawarray);
+            hr = SafeArrayDestroyData(rawarray);
+            return true;
+        }
+
+        if (img.Init(*size))
+        {
+            pFrame->Alert(_("Memory allocation error"));
+            hr = SafeArrayUnaccessData(rawarray);
+            hr = SafeArrayDestroyData(rawarray);
+            return true;
+        }
+
+        img.Clear();
+        img.Subframe = roi;
 
         int i = 0;
-        for (int y = 0; y < subframe.height; y++)
+        for (int y = 0; y < roi.height; y++)
         {
-            unsigned short *dataptr = Image.ImageData + (y + subframe.y) * Image.Size.GetWidth() + subframe.x;
-            for (int x = 0; x < subframe.width; x++, i++)
+            unsigned short *dataptr = img.ImageData + (y + roi.y) * img.Size.GetWidth() + roi.x;
+            for (int x = 0; x < roi.width; x++, i++)
                 *dataptr++ = (unsigned short) rawdata[i];
         }
     }
     else
     {
-        for (unsigned int i = 0; i < Image.NPixels; i++)
-            Image.ImageData[i] = (unsigned short) rawdata[i];
+        size->Set(xsize, ysize);
+
+        if (img.Init(*size))
+        {
+            pFrame->Alert(_("Memory allocation error"));
+            hr = SafeArrayUnaccessData(rawarray);
+            hr = SafeArrayDestroyData(rawarray);
+            return true;
+        }
+
+        for (unsigned int i = 0; i < img.NPixels; i++)
+            img.ImageData[i] = (unsigned short) rawdata[i];
     }
 
     hr = SafeArrayUnaccessData(rawarray);
@@ -326,15 +406,15 @@ static bool ASCOM_IsMoving(IDispatch *cam)
 {
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
+    dispParms.rgvarg = nullptr;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     HRESULT hr;
     ExcepInfo excep;
     Variant vRes;
 
-    if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+    if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, nullptr)))
     {
         LogExcep(hr, "invoke ispulseguiding", excep);
         pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."), excep));
@@ -350,7 +430,6 @@ CameraASCOM::CameraASCOM(const wxString& choice)
 
     Connected = false;
     Name = choice;
-    FullSize = wxSize(100,100);
     m_hasGuideOutput = false;
     HasGainControl = false;
     HasSubframes = true;
@@ -379,7 +458,7 @@ static wxString displayName(const wxString& ascomName)
 // map descriptive name to progid
 static std::map<wxString, wxString> s_progid;
 
-wxArrayString CameraASCOM::EnumAscomCameras()
+wxArrayString ASCOMCameraFactory::EnumAscomCameras()
 {
     wxArrayString list;
 
@@ -548,6 +627,8 @@ bool CameraASCOM::Connect(const wxString& camId)
     }
     m_maxSize.SetHeight((int) vRes.lVal);
 
+    m_swapAxes = false;
+
     if (!driver.GetProp(&vRes, L"MaxADU"))
     {
         Debug.AddLine(ExcepMsg("MaxADU", driver.Excep()));
@@ -691,9 +772,9 @@ bool CameraASCOM::Connect(const wxString& camId)
             return CamConnectFailed(_("The ASCOM camera failed to set binning. See the debug log for more information."));
         }
     }
-    FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-    m_roi = FullSize;
-    ASCOM_SetROI(driver.IDisp(), FullSize, &excep);
+
+    // defer defining FullSize since it is not simply derivable from max size and binning
+    // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
 
     Connected = true;
 
@@ -853,7 +934,7 @@ void CameraASCOM::ShowPropertyDialog()
 {
     DispatchObj camera;
 
-    if (Create(&camera, NULL))
+    if (Create(&camera, nullptr))
     {
         Variant res;
         if (!camera.InvokeMethod(&res, L"SetupDialog"))
@@ -889,9 +970,9 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
 {
     bool retval = false;
     bool takeSubframe = UseSubframes;
-    wxRect subframe(subframeArg);
+    wxRect roi(subframeArg);
 
-    if (subframe.width <= 0 || subframe.height <= 0)
+    if (roi.width <= 0 || roi.height <= 0)
     {
         takeSubframe = false;
     }
@@ -899,21 +980,38 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     bool binning_changed = false;
     if (Binning != m_curBin)
     {
-        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         binning_changed = true;
         takeSubframe = false; // subframe may be out of bounds now
+        if (Binning == 1)
+            FullSize.Set(m_maxSize.x, m_maxSize.y);
+        else
+            FullSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
+    }
+
+    if (takeSubframe && FullSize == UNDEFINED_FRAME_SIZE)
+    {
+        // if we do not know the full frame size, we cannot take a
+        // subframe until we receive a full frame and get the frame size
+        takeSubframe = false;
     }
 
     // Program the size
     if (!takeSubframe)
     {
-        subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
-    }
-
-    if (img.Init(FullSize))
-    {
-        pFrame->Alert(_("Cannot allocate memory to download image from camera"));
-        return true;
+        wxSize sz;
+        if (FullSize != UNDEFINED_FRAME_SIZE)
+        {
+            // we know the actual frame size
+            sz = FullSize;
+        }
+        else
+        {
+            // the max size divided by the binning may be larger than
+            // the actual frame, but setting a larger size should
+            // request the full binned frame which we want
+            sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        }
+        roi = wxRect(sz);
     }
 
     GITObjRef cam(m_gitEntry);
@@ -930,10 +1028,10 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
         m_curBin = Binning;
     }
 
-    if (subframe != m_roi)
+    if (roi != m_roi)
     {
-        ASCOM_SetROI(cam.IDisp(), subframe, &excep);
-        m_roi = subframe;
+        ASCOM_SetROI(cam.IDisp(), roi, &excep);
+        m_roi = roi;
     }
 
     bool takeDark = HasShutter && ShutterClosed;
@@ -984,7 +1082,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     }
 
     // Get the image
-    if (ASCOM_Image(cam.IDisp(), img, takeSubframe, subframe, &excep))
+    if (ASCOM_Image(cam.IDisp(), img, takeSubframe, roi, &FullSize, m_maxSize, &m_swapAxes, &excep))
     {
         Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
         pFrame->Alert(ExcepMsg(_("Error reading image"), excep));
@@ -1019,7 +1117,7 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
     dispParms.cArgs = 2;
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs =NULL;
+    dispParms.rgdispidNamedArgs = nullptr;
 
     MountWatchdog watchdog(duration, 5000);
 
@@ -1028,7 +1126,7 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
     HRESULT hr;
 
     if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms,&vRes,&excep,NULL)))
+        &dispParms, &vRes, &excep, nullptr)))
     {
         LogExcep(hr, "invoke pulseguide", excep);
         return true;
@@ -1060,6 +1158,11 @@ bool CameraASCOM::HasNonGuiCapture()
 bool CameraASCOM::ST4HasNonGuiMove()
 {
     return true;
+}
+
+GuideCamera *ASCOMCameraFactory::MakeASCOMCamera(const wxString& name)
+{
+    return new CameraASCOM(name);
 }
 
 #endif

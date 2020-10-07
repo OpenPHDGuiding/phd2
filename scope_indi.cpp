@@ -631,7 +631,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
         case SOUTH:
             break;
         default:
-            Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
+            Debug.Write("INDI Mount error ScopeINDI::Guide NONE\n");
             return MOVE_ERROR;
         }
 
