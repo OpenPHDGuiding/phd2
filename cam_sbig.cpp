@@ -53,7 +53,7 @@
 
 class CameraSBIG : public GuideCamera
 {
-    bool UseTrackingCCD;
+    bool m_useTrackingCCD;
     bool m_driverLoaded;
     wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
     double m_devicePixelSize;
@@ -102,7 +102,7 @@ CameraSBIG::CameraSBIG()
     //FullSize = wxSize(1280,1024);
     //HasGainControl = true;
     m_hasGuideOutput = true;
-    UseTrackingCCD = false;
+    m_useTrackingCCD = false;
     HasShutter = true;
     HasSubframes = true;
     IsColor = false;
@@ -269,6 +269,7 @@ static bool SelectInterfaceAndDevice()
     pConfig->Profile.SetInt("/camera/sbig/deviceType", odp.deviceType);
     pConfig->Profile.SetInt("/camera/sbig/ipAddress", odp.ipAddress);
     pConfig->Profile.SetInt("/camera/sbig/lptBaseAddress", odp.lptBaseAddress);
+    pConfig->Profile.SetInt("/camera/sbig/useTrackingCCD", -1); // force prompt for tracking CCD
 
     return false;
 }
@@ -296,7 +297,6 @@ bool CameraSBIG::HandleSelectCameraButtonClick(wxCommandEvent& evt)
 bool CameraSBIG::Connect(const wxString& camId)
 {
     // DEAL WITH PIXEL ASPECT RATIO
-    // DEAL WITH ASKING ABOUT WHICH INTERFACE
 
     if (!LoadDriver())
         return true;
@@ -338,18 +338,29 @@ bool CameraSBIG::Connect(const wxString& camId)
     }
 
     // Determine if there is a tracking CCD
-    UseTrackingCCD = false;
+    m_useTrackingCCD = false;
     GetCCDInfoParams gcip;
     GetCCDInfoResults0 gcir0;
     gcip.request = CCD_INFO_TRACKING;
     err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
     if (err == CE_NO_ERROR)
     {
-        int resp = wxMessageBox(wxString::Format(_("Tracking CCD found, use it?\n\nNo = use main image CCD")), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
-        if (resp == wxYES)
-            UseTrackingCCD = true;
+        int val = pConfig->Profile.GetInt("/camera/sbig/useTrackingCCD", -1);
+        if (val == -1)
+        {
+            int resp = wxMessageBox(wxString::Format(_("Tracking CCD found, use it?\n\nNo = use main image CCD")),
+                _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
+            if (resp == wxYES)
+                m_useTrackingCCD = true;
+            pConfig->Profile.SetInt("/camera/sbig/useTrackingCCD", m_useTrackingCCD ? 1 : 0);
+        }
+        else
+        {
+            m_useTrackingCCD = !!val;
+            Debug.Write(wxString::Format("SBIG: using saved val m_useTrackingCCD = %d\n", m_useTrackingCCD));
+        }
     }
-    if (!UseTrackingCCD)
+    if (!m_useTrackingCCD)
     {
         gcip.request = CCD_INFO_IMAGING;
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
@@ -388,7 +399,7 @@ bool CameraSBIG::Connect(const wxString& camId)
 
     IsColor = false;
 
-    if (!UseTrackingCCD)
+    if (!m_useTrackingCCD)
     {
         GetCCDInfoResults6 gcir6;
         gcip.request = CCD_INFO_EXTENDED3;
@@ -406,7 +417,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     }
 
     Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
-        gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y,
+        gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y,
         IsColor));
 
     Connected = true;
@@ -460,7 +471,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
     ReadoutLineParams rlp;
     DumpLinesParams dlp;
 
-    if (UseTrackingCCD)
+    if (m_useTrackingCCD)
     {
         sep.ccd      = CCD_TRACKING;
         sep.abgState = ABG_CLK_LOW7;
@@ -536,7 +547,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
             DisconnectWithAlert(_("Cannot poll exposure"), NO_RECONNECT);
             return true;
         }
-        if (UseTrackingCCD)
+        if (m_useTrackingCCD)
             qcsr.status = qcsr.status >> 2;
         if (qcsr.status == CS_INTEGRATION_COMPLETE)
             break;
