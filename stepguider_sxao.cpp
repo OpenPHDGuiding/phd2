@@ -113,6 +113,8 @@ bool StepGuiderSxAO::Connect()
         if (m_serialPortName.IsEmpty())
         {
             ShowPropertyDialog();
+            if (m_serialPortName.IsEmpty())
+                throw ERROR_INFO("StepGuiderSxAO::Connect: no serial port selected");
         }
 
         Debug.Write(wxString::Format("Connecting to SX AO on port %s\n", m_serialPortName));
@@ -195,6 +197,11 @@ void StepGuiderSxAO::ShowPropertyDialog()
         resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
                 NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
                 resp);
+        if (resp == -1)
+        {
+            Debug.Write("Serial port selection canceled\n");
+            return;
+        }
 
         m_serialPortName = serialPorts[resp];
     }
