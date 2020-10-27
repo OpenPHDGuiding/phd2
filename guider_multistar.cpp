@@ -1,7 +1,16 @@
 /*
- *  guider_onestar.cpp
+ *  guider_multistar.cpp
  *  PHD Guiding
 
+ *  Original guider_onestar Created by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  All rights reserved.
+ *
+ *  guider_onestar refactoring by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
+ *  All rights reserved.
+ *
+ *  guider_multistar extensions created by Bruce Waddington
  *  Copyright (c) 2020 Bruce Waddington
  *  All rights reserved.
  *
