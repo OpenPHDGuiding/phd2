@@ -6,7 +6,7 @@
  *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
- *  guider_onestar refactoring by Bret McKee
+ *  guider_onestar completely refactored by Bret McKee
  *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
@@ -161,4 +161,4 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif /* GUIDER_ONESTAR_H_INCLUDED */
+#endif /* GUIDER_MULTISTAR_H_INCLUDED */
