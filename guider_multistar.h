@@ -62,8 +62,7 @@ public:
     wxChoice *m_autoSelDownsample;
     wxCheckBox *m_pBeepForLostStarCtrl;
     wxCheckBox *m_pUseMultiStars;
-    wxSpinCtrl *m_pMaxStars;
-    wxSpinCtrlDouble *m_pStabilityThresh;
+    wxSpinCtrlDouble *m_MinSNR;
 
     virtual void LoadValues();
     virtual void UnloadValues();
@@ -135,12 +134,8 @@ public:
     double HFD() override;
     int StarError() override;
     bool GetMultiStarMode() override;
-    int GetMaxStars() const override;
-    double GetStabilityThresh() const override;
     wxString GetStarCount() override;
     void SetMultiStarMode(bool val) override;
-    void SetMaxStars(int val) override;
-    void SetStabilityThresh(double val) override;
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;

@@ -195,9 +195,8 @@ enum {
     MIN_SEARCH_REGION = 7,
     DEFAULT_SEARCH_REGION = 15,
     MAX_SEARCH_REGION = 50,
-    DEFAULT_MAX_STAR_COUNT = 7,
-    DEFAULT_STABILITY_SIGMAX = 3,
-    MAX_STABILITY_SIGMAX = 7,
+    DEFAULT_MAX_STAR_COUNT = 9,
+    DEFAULT_STABILITY_SIGMAX = 5,
     MAX_LIST_SIZE = 12
 };
 
@@ -211,7 +210,9 @@ GuiderMultiStar::GuiderMultiStar(wxWindow *parent)
     : Guider(parent, XWinSize, YWinSize),
       m_massChecker(new MassChecker()),
       m_stabilizing(false), m_multiStarMode(true), m_lastPrimaryDistance(0),
-      m_lockPositionMoved(false)
+      m_lockPositionMoved(false),
+      m_maxStars(DEFAULT_MAX_STAR_COUNT),
+      m_stabilitySigmaX(DEFAULT_STABILITY_SIGMAX)
 {
     SetState(STATE_UNINITIALIZED);
     m_primaryDistStats = new DescriptiveStats();
@@ -259,29 +260,6 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     pFrame->NotifyGuidingParam("MultiStar", m_multiStarMode ? "true" : "false", true);
 }
 
-int GuiderMultiStar::GetMaxStars() const
-{
-    return m_maxStars;
-}
-void GuiderMultiStar::SetMaxStars(int val)
-{
-    m_maxStars = wxMax(1, wxMin(val, 12));
-    pConfig->Profile.SetInt("/guider/multistar/MaxStars", m_maxStars);
-    wxString msg = wxString::Format("MultiStar MaxStars set to %d\n", m_maxStars);
-    Debug.Write(msg);
-    pFrame->NotifyGuidingParam("MaxStars", std::to_string(m_maxStars));
-}
-double GuiderMultiStar::GetStabilityThresh() const
-{
-    return m_stabilitySigmaX;
-}
-void GuiderMultiStar::SetStabilityThresh(double val)
-{
-    m_stabilitySigmaX = wxMax(2.0, wxMin(val, (double)MAX_STABILITY_SIGMAX));
-    pConfig->Profile.SetDouble("/guider/multistar/StabilityThresh", m_stabilitySigmaX);
-    wxString msg = wxString::Format("MultiStar stability threshold set to %0.1fX\n", m_stabilitySigmaX);
-    Debug.Write(msg);
-}
 void GuiderMultiStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -301,8 +279,6 @@ void GuiderMultiStar::LoadProfileSettings()
     SetSearchRegion(searchRegion);
 
     SetMultiStarMode(pConfig->Profile.GetBoolean("/guider/multistar/enabled", false));
-    SetMaxStars(pConfig->Profile.GetInt("/guider/multistar/MaxStars", 7));
-    SetStabilityThresh(pConfig->Profile.GetDouble("/guider/multistar/StabilityThresh", 3.0));
 }
 
 bool GuiderMultiStar::GetMassChangeThresholdEnabled() const
@@ -1426,31 +1402,29 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
-    wxStaticBoxSizer *pMultiStar = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Multi-star guiding"));
     m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), wxID_ANY, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
     GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, wxID_ANY);
     width = StringWidth(_T("100.0"));
-    m_pMaxStars = pFrame->MakeSpinCtrl(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1, 12, DEFAULT_MAX_STAR_COUNT, _T("Max stars"));
-    wxSizer *pStars = MakeLabeledControl(AD_szStarTracking, _("Max stars"), m_pMaxStars,
-        _("Max stars to use for guiding subject to availability in field"));
-    m_pStabilityThresh = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, (double)MAX_STABILITY_SIGMAX, (double)DEFAULT_STABILITY_SIGMAX, 0.5);
-    m_pStabilityThresh->SetDigits(1);
-    wxSizer *pStableSigma = MakeLabeledControl(AD_szStarTracking, _("Instability threshold"), m_pStabilityThresh,
-        _("Deviation from mean to trigger stabilization (multiple of sigma)"));
-    pMultiStar->Add(m_pUseMultiStars, wxSizerFlags(0).Border(wxTOP, 3));
-    pMultiStar->Add(pStars, wxSizerFlags(0).Border(wxLEFT, 10));
-    pMultiStar->Add(pStableSigma, wxSizerFlags(0).Border(wxLEFT, 10));
+
+    m_MinSNR = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width, -1), wxSP_ARROW_KEYS, 6.0, 200.0, 6.0, 2.0);
+    m_MinSNR->SetDigits(0);
+    wxSizer *pSNR = MakeLabeledControl(AD_szStarTracking, _("Minimum star SNR for AutoFind"), m_MinSNR,
+        _("The minimum star SNR that will be used for auto-selecting guide stars. "
+        "This setting can be used to prevent PHD2 from choosing a guide star you know will be too faint for sustained guiding. "
+        "This setting applies to both the primary guide star and candidate secondary stars in multi-star guiding. "
+        "If no un-saturated guide stars are found to meet this constraint, a saturated star may be selected."));
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
     pTrackingParams->Add(pStarMass, wxSizerFlags(0).Border(wxLEFT, 75));
     pTrackingParams->Add(pHFD, wxSizerFlags().Border(wxTOP, 3));
+    pTrackingParams->Add(pSNR, wxSizerFlags().Border(wxLEFT, 75));
+    pTrackingParams->Add(m_pUseMultiStars, wxSizerFlags(0).Border(wxTop, 3));
+    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxLEFT, 75));
     pTrackingParams->Add(dsamp, wxSizerFlags().Border(wxTOP, 3).Right());
-    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxTOP, 3));
-    pTrackingParams->Add(pMultiStar, wxSizerFlags(0).Border(wxTop, 3));
+
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 }
@@ -1468,12 +1442,10 @@ void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderMultiStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderMultiStar->GetSearchRegion());
     m_MinHFD->SetValue(m_pGuiderMultiStar->GetMinStarHFD());
+    m_MinSNR->SetValue(m_pGuiderMultiStar->getMinStarSNR());
     m_autoSelDownsample->SetSelection(m_pGuiderMultiStar->GetAutoSelDownsample());
     m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
     m_pUseMultiStars->SetValue(m_pGuiderMultiStar->GetMultiStarMode());
-    m_pMaxStars->SetValue(m_pGuiderMultiStar->GetMaxStars());
-    m_pStabilityThresh->SetValue(m_pGuiderMultiStar->GetStabilityThresh());
-
     GuiderConfigDialogCtrlSet::LoadValues();
 }
 
@@ -1483,19 +1455,17 @@ void GuiderMultiStarConfigDialogCtrlSet::UnloadValues()
     m_pGuiderMultiStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
     m_pGuiderMultiStar->SetSearchRegion(m_pSearchRegion->GetValue());
     m_pGuiderMultiStar->SetMinStarHFD(m_MinHFD->GetValue());
+    m_pGuiderMultiStar->SetMinStarSNR(m_MinSNR->GetValue());
     m_pGuiderMultiStar->SetAutoSelDownsample(m_autoSelDownsample->GetSelection());
     if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
         pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
     m_pGuiderMultiStar->SetMultiStarMode(m_pUseMultiStars->GetValue());
-    m_pGuiderMultiStar->SetMaxStars(m_pMaxStars->GetValue());
-    m_pGuiderMultiStar->SetStabilityThresh(m_pStabilityThresh->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
 
 void GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked(wxCommandEvent& evt)
 {
-    m_pMaxStars->Enable(evt.IsChecked());
-    m_pStabilityThresh->Enable(evt.IsChecked());
+
 }
 void GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked(wxCommandEvent& event)
 {
