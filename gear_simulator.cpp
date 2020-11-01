@@ -578,7 +578,10 @@ void SimCamState::Initialize()
         stars[i].pos.x = (double)(rand() % (width - 2 * border)) - 0.5 * width;
         stars[i].pos.y = (double)(rand() % (height - 2 * border)) - 0.5 * height;
         double r = (double) (rand() % 90) / 3.0; // 0..30
-        stars[i].inten = 0.1 + (double) (r * r * r) / 9000.0;
+        if (i == 10)
+            stars[i].inten = 30.1;                              // Always have one saturated star
+        else
+            stars[i].inten = 0.1 + (double) (r * r * r) / 9000.0;
 
         // force a couple stars to be close together. This is a useful test for Star::AutoFind
         if (i == 3)

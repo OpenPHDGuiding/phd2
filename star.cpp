@@ -1000,14 +1000,15 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     Debug.Write(wxString::Format("AutoFind: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
         image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
 
-    // Before sifting for the best star, collect all the candidates
+    // Before sifting for the best star, collect all the viable candidates
+    double minSNR = pFrame->pGuider->getMinStarSNR();
     foundStars.clear();
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         GuideStar tmp;
         tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU());
         // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
-        if (tmp.WasFound())
+        if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
             bool duplicate = (std::find(foundStars.begin(), foundStars.end(), tmp)) != foundStars.end();
             if (!duplicate)
@@ -1020,10 +1021,11 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     }
 
     // Final star selection - either the only star or the primary one for multi-star mode
-    //   pass 1: find brightest star with peak value < 90% saturation AND SNR > 6
+    //   pass 1: find brightest star with peak value < 90% saturation AND SNR >= MinSNR (defaults to 6)
     //       this pass will reject saturated and nearly-saturated stars
-    //   pass 2: find brightest non-saturated star
-    //   pass 3: find brightest star, even if saturated
+    //   pass 2: find brightest non-saturated star with SNR >= MinSNR
+    //   pass 3: find brightest star, even if saturated or below MinSNR
+
     for (int pass = 1; pass <= 3; pass++)
     {
         Debug.Write(wxString::Format("AutoFind: finding best star pass %d\n", pass));
@@ -1041,14 +1043,14 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                         Debug.Write(wxString::Format("AutoFind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
                         continue;
                     }
-                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < 6.0)
+                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
                         continue;
                 }
                 else if (pass == 2)
                 {
-                    if (tmp.GetError() == STAR_SATURATED)
+                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
                     {
-                        Debug.Write(wxString::Format("AutoFind: star saturated [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                        Debug.Write(wxString::Format("AutoFind: star saturated or too dim [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                         continue;
                     }
                 }
@@ -1056,7 +1058,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 // star accepted
                 SetXY(it->x, it->y);
                 Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
-                if (maxStars > 1 && foundStars.size() > 1)
+                if (maxStars > 1)
                 {
                     // Prune the guideStars - drop anything before the primary star
                     // Start by finding the chosen star in the list

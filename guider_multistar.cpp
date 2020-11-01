@@ -1412,9 +1412,9 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     m_MinSNR->SetDigits(0);
     wxSizer *pSNR = MakeLabeledControl(AD_szStarTracking, _("Minimum star SNR for AutoFind"), m_MinSNR,
         _("The minimum star SNR that will be used for auto-selecting guide stars. "
-        "This setting can be used to prevent PHD2 from choosing a guide star you know will be too faint for sustained guiding. "
+        "This setting can be used to discourage PHD2 from choosing a guide star you know will be too faint for sustained guiding. "
         "This setting applies to both the primary guide star and candidate secondary stars in multi-star guiding. "
-        "If no un-saturated guide stars are found to meet this constraint, a saturated star may be selected."));
+        "If this constraint cannot be met, a saturated or near-saturated star may be selected."));
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
