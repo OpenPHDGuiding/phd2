@@ -82,6 +82,7 @@ private:
     bool m_stabilizing;
     bool m_lockPositionMoved;
     int m_starsUsed;
+    int m_lastStarsUsed;
 
     // parameters
     bool m_massChangeThresholdEnabled;

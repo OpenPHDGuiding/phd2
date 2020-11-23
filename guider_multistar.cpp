@@ -212,7 +212,8 @@ GuiderMultiStar::GuiderMultiStar(wxWindow *parent)
       m_stabilizing(false), m_multiStarMode(true), m_lastPrimaryDistance(0),
       m_lockPositionMoved(false),
       m_maxStars(DEFAULT_MAX_STAR_COUNT),
-      m_stabilitySigmaX(DEFAULT_STABILITY_SIGMAX)
+      m_stabilitySigmaX(DEFAULT_STABILITY_SIGMAX),
+      m_lastStarsUsed(0)
 {
     SetState(STATE_UNINITIALIZED);
     m_primaryDistStats = new DescriptiveStats();
@@ -754,6 +755,7 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset* pOffset)
     m_starsUsed = 1;
     bool erasures = false;
 
+    // Primary star is in position 0 of the list
     try
     {
         if (IsGuiding() && m_guideStars.size() > 1 && pMount->GetGuidingEnabled())
@@ -1204,20 +1206,31 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         }
 
         // show in-use secondary stars
-        if (m_multiStarMode && m_guideStars.size() > 1 && !m_stabilizing)
+        if (m_multiStarMode && m_guideStars.size() > 1)
         {
             dc.SetPen(wxPen(wxColour(0, 255, 0), 1, wxPENSTYLE_SOLID));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             int starsPlotted = 1;
+            int limit;
+            if (m_stabilizing)
+            {
+                if (m_lastStarsUsed == 0)
+                    m_lastStarsUsed = wxMin((int)m_guideStars.size(), (int)DEFAULT_MAX_STAR_COUNT);
+                limit = m_lastStarsUsed;
+            }
+            else
+                limit = m_starsUsed;
             for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1;
                 it != m_guideStars.end(); it++)
             {
                 wxPoint pt((int)it->referencePoint.X * m_scaleFactor, (int)it->referencePoint.Y * m_scaleFactor);
                 dc.DrawCircle(pt, 6);
                 starsPlotted++;
-                if (starsPlotted == m_starsUsed)
+                if (starsPlotted == limit)
                     break;
             }
+            if (!m_stabilizing)
+                m_lastStarsUsed = m_starsUsed;
         }
 
         GUIDER_STATE state = GetState();
