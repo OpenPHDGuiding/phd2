@@ -109,6 +109,7 @@ public:
     bool IsEmptyProfile();
     bool ReconnectCamera();
     Scope *AuxScope() const;
+    wxString SelectedCameraId() const;
 
 private:
     void LoadGearChoices();
