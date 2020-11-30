@@ -288,6 +288,42 @@ struct MCam
             ok = gXusb::GetImageExposure16b(m_cam, exp, false, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(),
                 size, buf);
         }
+        if (!ok)
+            Debug.Write(wxString::Format("MVN: CaptureSync: %s\n", LastError()));
+        return ok ? true : false;
+    }
+
+    bool BeginExposure()
+    {
+        gXusb::BOOLEAN use_shutter = false;
+        gXusb::BOOLEAN ok = gXusb::BeginExposure(m_cam, use_shutter);
+        if (!ok)
+            Debug.Write(wxString::Format("MVN: BeginExposure: %s\n", LastError()));
+        return ok ? true : false;
+    }
+
+    bool EndExposure(bool abort)
+    {
+        gXusb::BOOLEAN use_shutter = false;
+        gXusb::BOOLEAN ok = gXusb::EndExposure(m_cam, use_shutter, abort);
+        if (!ok)
+            Debug.Write(wxString::Format("MVN: EndExposure: %s\n", LastError()));
+        return ok ? true : false;
+    }
+
+    bool GetImage(void *buf, unsigned int size, wxByte bpp, const wxRect& frame)
+    {
+        gXusb::BOOLEAN ok;
+        if (bpp == 8)
+        {
+            ok = gXusb::GetImage8b(m_cam, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), size, buf);
+        }
+        else
+        {
+            ok = gXusb::GetImage16b(m_cam, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), size, buf);
+        }
+        if (!ok)
+            Debug.Write(wxString::Format("MVN: GetImage: %s\n", LastError()));
         return ok ? true : false;
     }
 };
@@ -791,11 +827,30 @@ bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRe
         }
     }
 
-    bool ok = m_cam.CaptureSync(buf, bufsz, duration, m_bpp, frame);
-    if (!ok)
+    if (duration <= 1000)
     {
-        Debug.Write(wxString::Format("MVN: sync capture failed: %s", m_cam.LastError()));
-        return true;
+        // short exposure -- use synchronous API
+        if (!m_cam.CaptureSync(buf, bufsz, duration, m_bpp, frame))
+            return true;
+    }
+    else
+    {
+        // long exposure -- use async API so it can be interrupted
+        if (!m_cam.BeginExposure())
+            return true;
+        if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY))
+        {
+            // interrupted
+            m_cam.EndExposure(true);
+            return true;
+        }
+        if (!m_cam.EndExposure(false))
+        {
+            m_cam.EndExposure(true);
+            return true;
+        }
+        if (!m_cam.GetImage(buf, bufsz, m_bpp, frame))
+            return true;
     }
 
     if (useSubframe)
