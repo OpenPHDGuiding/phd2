@@ -150,6 +150,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_MeadeDSI.h"
 #endif
 
+#if defined (MORAVIAN_CAMERA)
+# include "cam_moravian.h"
+#endif
+
 #if defined (SSAG)
 # include "cam_ssag.h"
 #endif
@@ -293,6 +297,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #endif
 #if defined (MEADE_DSI_CAMERA)
     CameraList.Add(_T("Meade DSI I, II, or III"));
+#endif
+#if defined (MORAVIAN_CAMERA)
+    CameraList.Add(_T("Moravian Camera"));
 #endif
 #if defined (CAM_QHY5)
     CameraList.Add(_T("QHY 5"));
@@ -479,7 +486,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #endif
 #if defined (SSAG)
         else if (choice.Contains(_T("StarShoot Autoguider")))
-            pReturn = new CameraSSAG();
+            pReturn = SSAGCameraFactory::MakeSSAGCamera();
 #endif
 #if defined (SSPIAG)
         else if (choice.Contains(_T("StarShoot Planetary Imager & Autoguider")))
@@ -527,6 +534,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined (MEADE_DSI_CAMERA)
         else if (choice.Contains(_T("Meade DSI I, II, or III")))
             pReturn = DSICameraFactory::MakeDSICamera();
+#endif
+#if defined(MORAVIAN_CAMERA)
+        else if (choice == _T("Moravian Camera"))
+            pReturn = MoravianCameraFactory::MakeMoravianCamera();
 #endif
 #if defined (STARFISH_CAMERA)
         else if (choice.Contains(_T("Fishcamp Starfish")))

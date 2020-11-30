@@ -45,6 +45,25 @@
 
 #include "cam_ssag.h"
 
+class CameraSSAG : public GuideCamera
+{
+public:
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool    Connect(const wxString& camId) override;
+    bool    Disconnect() override;
+    void    InitCapture() override;
+
+    bool    ST4PulseGuideScope(int direction, int duration) override;
+    void    ClearGuidePort();
+
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
+    bool    GetDevicePixelSize(double *devPixelSize) override;
+
+    CameraSSAG();
+};
+
 // QHY CMOS guide camera version
 // Tom's driver
 
@@ -281,7 +300,7 @@ CameraSSAG::CameraSSAG()
     HasGainControl = true;
 }
 
-bool CameraSSAG::GetDevicePixelSize(double* devPixelSize)
+bool CameraSSAG::GetDevicePixelSize(double *devPixelSize)
 {
     *devPixelSize = 5.2;
     return false;
@@ -437,40 +456,9 @@ bool CameraSSAG::Capture(int duration, usImage& img, int options, const wxRect& 
     return false;
 }
 
-void CameraSSAG::RemoveLines(usImage& img)
+GuideCamera *SSAGCameraFactory::MakeSSAGCamera()
 {
-    int i, j, val;
-    unsigned short data[21];
-    unsigned short *ptr1, *ptr2;
-    unsigned short med[1024];
-    int offset;
-    double mean;
-    int h = img.Size.GetHeight();
-    int w = img.Size.GetWidth();
-    size_t sz = sizeof(unsigned short);
-    mean = 0.0;
-
-    for (i=0; i<h; i++) {
-        ptr1 = data;
-        ptr2 = img.ImageData + i*w;
-        for (j=0; j<21; j++, ptr1++, ptr2++)
-            *ptr1 = *ptr2;
-        qsort(data,21,sz,ushort_compare);
-        med[i] = data[10];
-        mean = mean + (double) (med[i]);
-    }
-    mean = mean / (double) h;
-    for (i=0; i<h; i++) {
-        offset = (int) mean - (int) med[i];
-        ptr2 = img.ImageData + i*w;
-        for (j=0; j<w; j++, ptr2++) {
-            val = (int) *ptr2 + offset;
-            if (val < 0) val = 0;
-            else if (val > 65535) val = 65535;
-            *ptr2 = (unsigned short) val;
-        }
-
-    }
+    return new CameraSSAG();
 }
 
 #endif
