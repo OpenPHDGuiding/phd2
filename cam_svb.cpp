@@ -81,7 +81,7 @@ public:
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
-    bool GetDevicePixelSize(double* devPixelSize) override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
     int GetDefaultCameraGain() override;
 
 private:
@@ -527,7 +527,7 @@ bool SVBCamera::StopExposure()
     return true;
 }
 
-bool SVBCamera::GetDevicePixelSize(double* devPixelSize)
+bool SVBCamera::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;

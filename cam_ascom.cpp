@@ -81,7 +81,7 @@ public:
     void    ShowPropertyDialog() override;
     bool    ST4PulseGuideScope(int direction, int duration) override;
     wxByte  BitsPerPixel() override;
-    bool    GetDevicePixelSize(double* devPixelSize) override;
+    bool    GetDevicePixelSize(double *devPixelSize) override;
     bool    SetCoolerOn(bool on) override;
     bool    SetCoolerSetpoint(double temperature) override;
     bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;

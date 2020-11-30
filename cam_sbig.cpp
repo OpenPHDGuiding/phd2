@@ -433,7 +433,7 @@ bool CameraSBIG::Disconnect()
     return false;
 }
 
-bool CameraSBIG::GetDevicePixelSize(double* devPixelSize)
+bool CameraSBIG::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;

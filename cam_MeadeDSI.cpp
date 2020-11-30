@@ -64,7 +64,7 @@ public:
     wxByte BitsPerPixel() override;
     bool   Connect(const wxString& camId) override;
     bool   Disconnect() override;
-    bool   GetDevicePixelSize(double* devPixelSize) override;
+    bool   GetDevicePixelSize(double *devPixelSize) override;
 };
 
 CameraDSI::CameraDSI()
@@ -162,7 +162,7 @@ bool CameraDSI::Disconnect()
     return false;
 }
 
-bool CameraDSI::GetDevicePixelSize(double* devPixelSize)
+bool CameraDSI::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;
