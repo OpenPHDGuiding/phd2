@@ -186,6 +186,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_LEwebcam.cpp
   ${phd_src_dir}/cam_MeadeDSI.cpp
   ${phd_src_dir}/cam_MeadeDSI.h
+  ${phd_src_dir}/cam_moravian.cpp
+  ${phd_src_dir}/cam_moravian.h
   ${phd_src_dir}/cam_NebSBIG.cpp
   ${phd_src_dir}/cam_NebSBIG.h
   ${phd_src_dir}/cam_opencv.cpp
