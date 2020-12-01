@@ -429,12 +429,12 @@ MoravianCameraDlg::MoravianCameraDlg()
 
     wxBoxSizer *sizer5 = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *staticText1 = new wxStaticText(sizer2->GetStaticBox(), wxID_ANY, wxT("Read Mode"),
+    wxStaticText *staticText1 = new wxStaticText(sizer2->GetStaticBox(), wxID_ANY, _("Read Mode"),
         wxDefaultPosition, wxDefaultSize, 0);
     staticText1->Wrap(-1);
     sizer5->Add(staticText1, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxTOP, 5);
 
-    m_refresh = new wxButton(sizer2->GetStaticBox(), wxID_ANY, wxT("Refresh"), wxDefaultPosition, wxDefaultSize, 0);
+    m_refresh = new wxButton(sizer2->GetStaticBox(), wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0);
     sizer5->Add(m_refresh, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     sizer2->Add(sizer5, 0, wxEXPAND, 5);
