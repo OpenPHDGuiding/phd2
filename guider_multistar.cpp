@@ -1220,11 +1220,13 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
                 limit = m_lastStarsUsed;
             }
             else
+            {
                 limit = m_starsUsed;
+            }
             for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1;
                  it != m_guideStars.end(); ++it)
             {
-                wxPoint pt((int)it->referencePoint.X * m_scaleFactor, (int)it->referencePoint.Y * m_scaleFactor);
+                wxPoint pt((int)(it->referencePoint.X * m_scaleFactor), (int)(it->referencePoint.Y * m_scaleFactor));
                 dc.DrawCircle(pt, 6);
                 starsPlotted++;
                 if (starsPlotted == limit)
