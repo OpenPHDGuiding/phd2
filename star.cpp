@@ -1063,7 +1063,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                     // Prune the guideStars - drop anything before the primary star
                     // Start by finding the chosen star in the list
                     int primaryLoc = -1;
-                    for (auto pGS = foundStars.begin(); pGS != foundStars.end(); pGS++)
+                    for (auto pGS = foundStars.begin(); pGS != foundStars.end(); ++pGS)
                     {
                         if (pGS->X == tmp.X && pGS->Y == tmp.Y)
                         {
@@ -1074,12 +1074,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
 
                     if (primaryLoc >= 0)
                     {
-                        foundStars.erase(foundStars.begin(), foundStars.begin() + primaryLoc);            // Delete saturated stars ahead of chosen star
+                        // Delete saturated stars ahead of chosen star
+                        foundStars.erase(foundStars.begin(), foundStars.begin() + primaryLoc);
+                        // Prune total list size to match maxStars parameter
                         if (foundStars.size() > maxStars)
-                            foundStars.erase(foundStars.begin() + maxStars, foundStars.end());                   // Prune total list size to match maxStars parameter
+                            foundStars.erase(foundStars.begin() + maxStars, foundStars.end());
                     }
-                    else
-                    if (primaryLoc == -1)
+                    else if (primaryLoc == -1)
                     {
                         // Safety harness
                         foundStars.clear();

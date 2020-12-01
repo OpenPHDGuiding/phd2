@@ -729,6 +729,7 @@ void GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)
 
     m_keepFile = true;
 }
+
 void GuidingLog::SetGuidingParam(const wxString& name, const wxString& val, bool AlwaysLog)
 {
     m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %s\n", name, val));

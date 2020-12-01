@@ -414,6 +414,7 @@ inline double Guider::getMinStarSNR() const
 {
     return m_minStarSNR;
 }
+
 inline unsigned int Guider::GetAutoSelDownsample() const
 {
     return m_autoSelDownsample;
