@@ -93,4 +93,21 @@ inline Star::FindResult Star::GetError(void) const
     return m_lastFindResult;
 }
 
+class GuideStar : public Star
+{
+public:
+    PHD_Point referencePoint;
+    int missCount;
+    int zeroCount;
+
+    bool operator==(const GuideStar& other)
+    {
+        return (int)referencePoint.X == (int)other.X && (int)referencePoint.Y == (int)other.Y;
+    }
+
+public:
+    GuideStar();
+    bool AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi, std::vector<GuideStar>& foundStars, int maxStars);
+};
+
 #endif /* STAR_H_INCLUDED */

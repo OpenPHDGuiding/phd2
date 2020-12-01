@@ -257,7 +257,7 @@ for
 each of those profiles. &nbsp;When you want to change binning factors,
 just switch to the profile that has the setting you want, and a dark
 library and/or bad-pixel map will be available. &nbsp; If you want to
-check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a> window to confirm the frame size and current on-camera bin settings.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 630px; height: 605px;" alt="" src="Advanced_guiding.png"><br><br>The
+check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a> window to confirm the frame size and current on-camera bin settings.<h3><a name="Guiding_Tab"></a>Guiding Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 632px; height: 572px;" alt="" src="Advanced_guiding.png"><br><br>The
 guiding tab shows the&nbsp; parameters used for calibration,
 star-tracking, and guiding behavior shared by all of the guide algorithms..<br><br>Guide Star Tracking<br><ul><li>'<a name="Search_region"></a>Search
 region' - specifies the size of the "tracking rectangle", in units of
@@ -299,7 +299,16 @@ the star-profile tool to see the HFD values of those stars.
 &nbsp;You'll want to specify a minimum HFD value that allows selection
 of legitimate faint stars but not hot pixels. &nbsp;If you encounter
 situations where PHD2 is trying to guide on a hot pixel, be sure to set
-this parameter.</li><li>'Auto-selection frame downsample' - can
+this parameter.</li><li>'Minimum
+star SNR for AutoFind': specifes the minimum SNR value that will be
+accepted by the auto-select function for non-saturated stars.
+&nbsp;This should only be adjusted by experts because a value that is
+too large can result in no stars being selected. &nbsp;It can be used
+&nbsp;in situations where you would rather use a saturated star instead
+of a faint star that you know from experieince will prove to be
+unusable. &nbsp;However, many of these situations can be avoided by
+getting better guide camera focus, refreshing the dark library, or
+slightly increasing the exposure times.</li><li>'<a name="Multi-Star_Option"></a>Use multiple stars' - determines whether PHD2 will use more than one star for guiding. &nbsp;See&nbsp;<a href="Basic_use.htm#Multi-star_guiding"></a><a href="Basic_use.htm#Multi-star_Guiding">Multi-star Guiding</a> for details.</li><li>'Auto-selection frame downsample' - can
 be used in unusual situations where PHD2 guide star auto-selection is
 not recognizing misshapen stars. &nbsp;If this happens, you can try
 values greater than 1 to improve the chances of recognizing such stars.

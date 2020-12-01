@@ -488,7 +488,36 @@ exposure time may be preferable to finding no guide star at all.
 &nbsp;The settings to
 control
 Auto-exposure are on the <a href="Advanced_settings.htm#Camera_Tab">Camera Tab</a>
-of the Advanced Settings dialog. &nbsp;
+of the Advanced Settings dialog. &nbsp;<br><h3><a name="Multi-star_Guiding"></a>Multi-Star Guiding</h3>Some
+guiding configurations can benefit from guiding on multiple stars
+rather than just one. &nbsp;This results in using a
+weighted average centroid position of multiple stars rather than just the
+centroid of a single star. &nbsp;Multi-star guiding is enabled using a
+check-box on the&nbsp;<a href="Advanced_settings.htm#Guiding_Tab">Guiding Tab</a> of the Advanced Settings dialog. &nbsp;When this option is enabled, the <a href="Tools.htm#Auto-Select_Star">Auto-select</a>
+function will identify up to 12 stars in the field of view that have
+adequate SNR. &nbsp;No more than
+9 of these will be used at any one time, but the remainder will be used
+to replace secondary stars that are lost or rejected for some reason.
+&nbsp;The "primary" star is the single best candidate, the same one
+that will be selected if multi-star guiding is disabled. &nbsp;As
+guiding proceeds, some of the secondary stars may be rejected because
+they are too dim or have drifted outside the field of view. &nbsp;This
+is of no concern, the multi-star guiding algorithm handles the
+secondary list automatically. &nbsp;When multi-star guiding is active,
+the PHD2 image display will show the usual rectangle around the primary
+star and circles around the secondary stars. &nbsp;All other UI
+features associated with a guide star - brightness properties, SNR,
+FWHM, etc - relate to the primary star, not the entire list.
+&nbsp;Multi-star guiding can be enabled or disabled while guiding is
+active. &nbsp;However, enabling the feature will force another
+'auto-select' procedure. The multi-star algorithm uses the secondary
+stars to refine the centroid position and reduce its volatilty, so
+there is essentially no way for it to degrade guiding performance.
+&nbsp;Whether it produces a material benefit to your overall guiding
+will depend on many factors including image scale, star and background
+sky brightness, star size, focus, and camera noise. &nbsp;Because of the way the
+algorithm is implemented, your best option will be to try it and decide
+for yourself.<br>
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>

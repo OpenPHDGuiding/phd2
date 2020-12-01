@@ -696,7 +696,17 @@ static void RemoveItems(std::set<Peak>& stars, const std::set<int>& to_erase)
     }
 }
 
-bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi)
+// GuideStar section
+GuideStar::GuideStar() : Star()
+{
+    referencePoint.X = X;
+    referencePoint.Y = Y;
+    missCount = 0;
+    zeroCount = 0;
+}
+
+// Multi-star version of AutoFind.  Single-star mode is forced by setting maxStars = 1
+bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi, std::vector<GuideStar>& foundStars, int maxStars)
 {
     if (!image.Subframe.IsEmpty())
     {
@@ -707,9 +717,9 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     wxBusyCursor busy;
 
     Debug.Write(wxString::Format("Star::AutoFind called with edgeAllowance = %d "
-                                 "searchRegion = %d roi = %dx%d@%d,%d\n",
-                                 extraEdgeAllowance, searchRegion, roi.width, roi.height,
-                                 roi.x, roi.y));
+        "searchRegion = %d roi = %dx%d@%d,%d\n",
+        extraEdgeAllowance, searchRegion, roi.width, roi.height,
+        roi.x, roi.y));
 
     // run a 3x3 median first to eliminate hot pixels
     usImage smoothed;
@@ -722,15 +732,15 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         smoothed.Subframe.Intersect(wxRect(smoothed.Size));
 
         Debug.Write(wxString::Format("AutoFind: using ROI %dx%d@%d,%d\n",
-                                     smoothed.Subframe.width, smoothed.Subframe.height,
-                                     smoothed.Subframe.x, smoothed.Subframe.y));
+            smoothed.Subframe.width, smoothed.Subframe.height,
+            smoothed.Subframe.x, smoothed.Subframe.y));
 
         if (smoothed.Subframe.width < searchRegion ||
             smoothed.Subframe.height < searchRegion)
         {
             Debug.Write(wxString::Format("AutoFind: bad ROI %dx%d\n",
-                                         smoothed.Subframe.width,
-                                         smoothed.Subframe.height));
+                smoothed.Subframe.width,
+                smoothed.Subframe.height));
             return false;
         }
     }
@@ -939,8 +949,8 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
         //  first, find the peak pixel overall
         unsigned short maxVal = 0;
         for (unsigned int i = 0; i < image.NPixels; i++)
-            if (image.ImageData[i] > maxVal)
-                maxVal = image.ImageData[i];
+        if (image.ImageData[i] > maxVal)
+            maxVal = image.ImageData[i];
 
         // next see if any of the stars has a flat-top
         bool foundSaturated = false;
@@ -983,18 +993,38 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     unsigned int range = sat_level > image.Pedestal ? sat_level - image.Pedestal : 0U;
     // "near-saturation" threshold at 90% saturation
-    unsigned int tmp = (unsigned int) image.Pedestal + 9 * range / 10;
+    unsigned int tmp = (unsigned int)image.Pedestal + 9 * range / 10;
     if (tmp > 65535) tmp = 65535;
-    unsigned short sat_thresh = (unsigned short) tmp;
+    unsigned short sat_thresh = (unsigned short)tmp;
 
     Debug.Write(wxString::Format("AutoFind: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
         image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
 
-    // Final star selection
-    //   pass 1: find brightest star with peak value < 90% saturation AND SNR > 6
+    // Before sifting for the best star, collect all the viable candidates
+    double minSNR = pFrame->pGuider->getMinStarSNR();
+    foundStars.clear();
+    for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
+    {
+        GuideStar tmp;
+        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU());
+        // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
+        if (tmp.WasFound() && tmp.SNR >= minSNR)
+        {
+            bool duplicate = (std::find(foundStars.begin(), foundStars.end(), tmp)) != foundStars.end();
+            if (!duplicate)
+            {
+                tmp.referencePoint.X = tmp.X;
+                tmp.referencePoint.Y = tmp.Y;
+                foundStars.push_back(tmp);
+            }
+        }
+    }
+
+    // Final star selection - either the only star or the primary one for multi-star mode
+    //   pass 1: find brightest star with peak value < 90% saturation AND SNR >= MinSNR (defaults to 6)
     //       this pass will reject saturated and nearly-saturated stars
-    //   pass 2: find brightest non-saturated star
-    //   pass 3: find brightest star, even if saturated
+    //   pass 2: find brightest non-saturated star with SNR >= MinSNR
+    //   pass 3: find brightest star, even if saturated or below MinSNR
 
     for (int pass = 1; pass <= 3; pass++)
     {
@@ -1002,7 +1032,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
-            Star tmp;
+            GuideStar tmp;
             tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU());
             if (tmp.WasFound())
             {
@@ -1013,14 +1043,14 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                         Debug.Write(wxString::Format("AutoFind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
                         continue;
                     }
-                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < 6.0)
+                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
                         continue;
                 }
                 else if (pass == 2)
                 {
-                    if (tmp.GetError() == STAR_SATURATED)
+                    if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
                     {
-                        Debug.Write(wxString::Format("AutoFind: star saturated [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                        Debug.Write(wxString::Format("AutoFind: star saturated or too dim [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                         continue;
                     }
                 }
@@ -1028,6 +1058,43 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                 // star accepted
                 SetXY(it->x, it->y);
                 Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                if (maxStars > 1)
+                {
+                    // Prune the guideStars - drop anything before the primary star
+                    // Start by finding the chosen star in the list
+                    int primaryLoc = -1;
+                    for (auto pGS = foundStars.begin(); pGS != foundStars.end(); pGS++)
+                    {
+                        if (pGS->X == tmp.X && pGS->Y == tmp.Y)
+                        {
+                            primaryLoc = pGS - foundStars.begin();
+                            break;
+                        }
+                    }
+
+                    if (primaryLoc >= 0)
+                    {
+                        foundStars.erase(foundStars.begin(), foundStars.begin() + primaryLoc);            // Delete saturated stars ahead of chosen star
+                        if (foundStars.size() > maxStars)
+                            foundStars.erase(foundStars.begin() + maxStars, foundStars.end());                   // Prune total list size to match maxStars parameter
+                    }
+                    else
+                    if (primaryLoc == -1)
+                    {
+                        // Safety harness
+                        foundStars.clear();
+                        GuideStar tmp;
+                        tmp.X = X;
+                        tmp.Y = Y;
+                        tmp.SNR = SNR;
+                        tmp.referencePoint.X = X;
+                        tmp.referencePoint.Y = Y;
+                        tmp.missCount = 0;
+                        tmp.zeroCount = 0;
+                        foundStars.push_back(tmp);
+                        Debug.Write("MultiStar: primary star forcibly inserted in list\n");
+                    }
+                }
                 return true;
             }
         }

@@ -266,7 +266,7 @@ MyFrame::MyFrame()
 
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
-    pGuider = new GuiderOneStar(guiderWin);
+    pGuider = new GuiderMultiStar(guiderWin);
     sizer->Add(pGuider, wxSizerFlags().Proportion(1).Expand());
 
     guiderWin->SetSizer(sizer);
@@ -3388,4 +3388,11 @@ void MyFrame::NotifyGuidingParam(const wxString& name, bool val)
 void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val)
 {
     ::NotifyGuidingParam(name, val);
+}
+
+// Interface to force logging if guiding is not active
+void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val, bool ForceLog)
+{
+    GuideLog.SetGuidingParam(name, val, true);
+    EvtServer.NotifyGuidingParam(name, val);
 }

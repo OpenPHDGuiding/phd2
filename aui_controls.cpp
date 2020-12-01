@@ -176,7 +176,7 @@ class SBStarIndicators
 {
     wxStaticText *txtSNRLabel;
     wxStaticText *txtSNRValue;
-    wxStaticText *txtSaturated;
+    wxStaticText *txtStarInfo;
     int snrLabelWidth;
     SBPanel *m_parentPanel;
 
@@ -382,10 +382,9 @@ SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths)
     fldWidths.push_back(snrLabelWidth + snrValueWidth + 2 * panel->emWidth);
 
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
-    txtSaturated = new wxStaticText(panel, wxID_ANY, _("SAT"), wxDefaultPosition, wxSize(satWidth, -1));
-    txtSaturated->SetBackgroundColour(*wxBLACK);
-    txtSaturated->SetForegroundColour(*wxRED);
-    txtSaturated->Show(false);
+    txtStarInfo = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(satWidth, -1));
+    txtStarInfo->SetBackgroundColour(*wxBLACK);
+    txtStarInfo->SetForegroundColour(*wxWHITE);
     // Label and value fields separated to allow different foreground colors for each
     txtSNRLabel = new wxStaticText(panel, wxID_ANY, _("SNR"), wxDefaultPosition, wxDefaultSize);
     txtSNRValue = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(snrValueWidth, 3), wxALIGN_RIGHT);
@@ -406,7 +405,7 @@ void SBStarIndicators::PositionControls()
     wxPoint satPos;
 
     satPos = m_parentPanel->FieldLoc(fieldNum++);
-    txtSaturated->SetPosition(wxPoint(satPos.x + 1, satPos.y));
+    txtStarInfo->SetPosition(wxPoint(satPos.x + 1, satPos.y));
     snrPos = m_parentPanel->FieldLoc(fieldNum++);
     txtSNRLabel->SetPosition(wxPoint(snrPos.x + 3, snrPos.y));
     txtSNRValue->SetPosition(wxPoint(snrPos.x + 3 + snrLabelWidth + 6, snrPos.y));
@@ -427,14 +426,26 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
         }
         m_parentPanel->ShowControl(txtSNRLabel, true);
         txtSNRValue->SetLabelText(wxString::Format("%3.1f", SNR));
+        m_parentPanel->ShowControl(txtStarInfo, true);
         m_parentPanel->ShowControl(txtSNRValue, true);
-        m_parentPanel->ShowControl(txtSaturated, Saturated);
+        if (pFrame->pGuider->GetMultiStarMode())
+        {
+            wxString txtCount = pFrame->pGuider->GetStarCount();
+            txtStarInfo->SetLabelText(txtCount);
+        }
+        else
+        {
+            if (Saturated)
+                txtStarInfo->SetLabelText("SAT");
+            else
+                txtStarInfo->SetLabelText(wxEmptyString);
+        }
     }
     else
     {
         m_parentPanel->ShowControl(txtSNRLabel, false);
         m_parentPanel->ShowControl(txtSNRValue, false);
-        m_parentPanel->ShowControl(txtSaturated, false);
+        m_parentPanel->ShowControl(txtStarInfo, false);
     }
 }
 
