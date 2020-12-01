@@ -913,7 +913,7 @@ bool MoravianCamera::ST4PulseGuideScope(int direction, int duration)
 {
     while (duration > 0)
     {
-        unsigned int dur = std::min(duration, m_maxMoveMs);
+        int dur = std::min(duration, m_maxMoveMs);
 
         gXusb::INT16 radur, decdur;
 
