@@ -400,13 +400,16 @@ struct MoravianCameraDlg : public wxDialog
     wxRadioButton *m_bpp16;
     wxButton *m_refresh;
     wxListBox *m_modeNames;
+    wxCheckBox *m_fan;
     std::vector<int> m_modes;
 
     MoravianCameraDlg();
     ~MoravianCameraDlg();
-    void OnRadio(wxCommandEvent& event) { LoadReadModes(); }
-    void OnRefresh(wxCommandEvent& event) { LoadReadModes(); }
-    void LoadReadModes();
+
+    void OnBpp(wxCommandEvent& event) { LoadCamInfo(); }
+    void OnRefresh(wxCommandEvent& event) { LoadCamInfo(); }
+
+    void LoadCamInfo();
 };
 
 MoravianCameraDlg::MoravianCameraDlg()
@@ -442,6 +445,9 @@ MoravianCameraDlg::MoravianCameraDlg()
     m_modeNames = new wxListBox(sizer2->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_SINGLE);
     sizer2->Add(m_modeNames, 1, wxALL | wxEXPAND, 5);
 
+    m_fan = new wxCheckBox(sizer2->GetStaticBox(), wxID_ANY, _("Fan On"), wxDefaultPosition, wxDefaultSize, 0);
+    sizer2->Add(m_fan, 0, wxALL, 5);
+
     sizer1->Add(sizer2, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sizer3 = new wxStdDialogButtonSizer();
@@ -458,24 +464,27 @@ MoravianCameraDlg::MoravianCameraDlg()
 
     Centre(wxBOTH);
 
-    m_bpp8->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnRadio), nullptr, this);
-    m_bpp16->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnRadio), nullptr, this);
+    m_bpp8->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnBpp), nullptr, this);
+    m_bpp16->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnBpp), nullptr, this);
     m_refresh->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MoravianCameraDlg::OnRefresh), nullptr, this);
 }
 
 MoravianCameraDlg::~MoravianCameraDlg()
 {
-    m_bpp8->Disconnect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnRadio), nullptr, this);
-    m_bpp16->Disconnect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnRadio), nullptr, this);
+    m_bpp8->Disconnect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnBpp), nullptr, this);
+    m_bpp16->Disconnect(wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(MoravianCameraDlg::OnBpp), nullptr, this);
     m_refresh->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MoravianCameraDlg::OnRefresh), nullptr, this);
 }
 
-void MoravianCameraDlg::LoadReadModes()
+void MoravianCameraDlg::LoadCamInfo()
 {
     wxBusyCursor _busy;
 
     m_modeNames->Clear();
     m_modes.clear();
+    m_fan->SetValue(false);
+    m_fan->Enable(false);
+
     wxString camId = pFrame->pGearDialog->SelectedCameraId();
 
     MCam cam;
@@ -531,6 +540,12 @@ void MoravianCameraDlg::LoadReadModes()
         sel_idx = 0;
 
     m_modeNames->SetSelection(sel_idx);
+
+    if (cam.BoolParam(gbpFan) && cam.IntParam(gipMaxFan) == 1)
+    {
+        m_fan->Enable();
+        m_fan->SetValue(pConfig->Profile.GetInt("/camera/moravian/fan_speed", 1) ? true : false);
+    }
 }
 
 void MoravianCamera::ShowPropertyDialog()
@@ -541,7 +556,7 @@ void MoravianCamera::ShowPropertyDialog()
         dlg.m_bpp8->SetValue(true);
     else
         dlg.m_bpp16->SetValue(true);
-    dlg.LoadReadModes();
+    dlg.LoadCamInfo();
     if (dlg.ShowModal() == wxID_OK)
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
@@ -552,6 +567,9 @@ void MoravianCamera::ShowPropertyDialog()
             mode = dlg.m_modes[dlg.m_modeNames->GetSelection()];
 
         pConfig->Profile.SetInt("/camera/moravian/read_mode", mode);
+
+        if (dlg.m_fan->IsEnabled())
+            pConfig->Profile.SetInt("/camera/moravian/fan_speed", dlg.m_fan->GetValue() ? 1 : 0);
     }
 }
 
@@ -629,6 +647,19 @@ bool MoravianCamera::Connect(const wxString& camId)
 
     Debug.Write(wxString::Format("MVN: HasShutter: %d HasCooler: %d HasFan: %d\n", has_shutter, HasCooler, has_fan));
 
+    if (has_fan)
+    {
+        int max_fan = m_cam.IntParam(gipMaxFan);
+
+        int speed = pConfig->Profile.GetInt("/camera/moravian/fan_speed", 1);
+        if (speed > max_fan)
+            speed = max_fan;
+
+        m_cam.SetFan(speed);
+
+        Debug.Write(wxString::Format("MVN: set fan speed %u / %u\n", speed, max_fan));
+    }
+
     m_hasGuideOutput = m_cam.BoolParam(gbpGuide);
     m_maxMoveMs = m_hasGuideOutput ? m_cam.IntParam(gipMaximalMoveTime) : 0;
 
@@ -675,8 +706,6 @@ bool MoravianCamera::Connect(const wxString& camId)
     int nr_read_modes = m_cam.IntParam(gipReadModes);
     int dflt_read_mode = m_cam.IntParam(gipDefaultReadMode);
 
-    int max_fan = m_cam.IntParam(gipMaxFan);
-
     bool can_get_gain = m_cam.BoolParam(gbpGain);
     if (can_get_gain)
         Debug.Write(wxString::Format("MVN: GetGain: %.3f\n", m_cam.GetValue(gvADCGain)));
@@ -708,9 +737,6 @@ bool MoravianCamera::Connect(const wxString& camId)
         Disconnect();
         return CamConnectFailed(err);
     }
-
-    // TODO: fan control
-//    m_cam.SetFan(0);
 
     Connected = true;
 
