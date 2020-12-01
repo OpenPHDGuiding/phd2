@@ -789,8 +789,12 @@ bool MoravianCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, 
 
 bool MoravianCamera::GetSensorTemperature(double *temperature)
 {
-    // TODO
-    return true;
+    double const BAD_TEMP = -99999.;
+    double val = m_cam.GetValue(gvChipTemperature, BAD_TEMP);
+    if (val == BAD_TEMP)
+        return true;
+    *temperature = val;
+    return false;
 }
 
 bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
