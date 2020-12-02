@@ -705,8 +705,21 @@ GuideStar::GuideStar() : Star()
     zeroCount = 0;
 }
 
+static bool CloseToReference(const GuideStar& referencePoint, const GuideStar& other)
+{
+    // test whether star is close to the reference star for purposes of detecting duplicates
+
+    // FIXME: it would be better to check the actual distance between the two points
+    // rather than comparing the truncated integer values for equality
+    // perhaps:
+    //     return other.Distance(referencePoint) < some_threshold;
+
+    return (int)referencePoint.X == (int)other.X && (int)referencePoint.Y == (int)other.Y;
+}
+
 // Multi-star version of AutoFind.  Single-star mode is forced by setting maxStars = 1
-bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi, std::vector<GuideStar>& foundStars, int maxStars)
+bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
+    std::vector<GuideStar>& foundStars, int maxStars)
 {
     if (!image.Subframe.IsEmpty())
     {
@@ -1010,7 +1023,9 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
         if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
-            bool duplicate = (std::find(foundStars.begin(), foundStars.end(), tmp)) != foundStars.end();
+            bool duplicate = std::find_if(foundStars.begin(), foundStars.end(),
+                std::bind(std::ptr_fun(CloseToReference), tmp, std::placeholders::_1)) != foundStars.end();
+
             if (!duplicate)
             {
                 tmp.referencePoint.X = tmp.X;
