@@ -112,7 +112,7 @@ public:
     bool SetMassChangeThreshold(double starMassChangeThreshold);
     bool SetTolerateJumps(bool enable, double threshold);
     bool SetSearchRegion(int searchRegion);
-    void RefineOffset(const usImage *pImage, GuiderOffset* pOffset);
+    bool RefineOffset(const usImage *pImage, GuiderOffset* pOffset);
 
     friend class GuiderMultiStarConfigDialogPane;
     friend class GuiderMultiStarConfigDialogCtrlSet;
@@ -137,6 +137,7 @@ public:
     bool GetMultiStarMode() override;
     wxString GetStarCount() override;
     void SetMultiStarMode(bool val) override;
+    void ClearSecondaryStars();
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;

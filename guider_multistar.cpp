@@ -261,6 +261,14 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     pFrame->NotifyGuidingParam("MultiStar", m_multiStarMode ? "true" : "false", true);
 }
 
+void GuiderMultiStar::ClearSecondaryStars()
+{
+    if (m_guideStars.size() > 1)
+    {
+        m_guideStars.erase(m_guideStars.begin() + 1, m_guideStars.end());
+        Debug.Write("MultiStar: secondary guide stars cleared");
+    }
+}
 void GuiderMultiStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -744,8 +752,8 @@ static void AppendStarUse(wxString& secondaryInfo, int starNum, double dX, doubl
     secondaryInfo += wxString::Format("[#%d %0.2f,%0.2f,%0.2f,%s] ", starNum, dX, dY, weight, flag);
 }
 
-// Use secondary stars to refine Offset value - single star offset must be valid
-void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
+// Use secondary stars to refine Offset value if appropriate.  Return of true means offset has been adjusted
+bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
 {
     double primaryDistance;
     double secondaryDistance;
@@ -755,11 +763,12 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
     GuiderOffset origOffset = *pOffset;
     m_starsUsed = 1;
     bool erasures = false;
+    bool refined = false;
 
     // Primary star is in position 0 of the list
     try
     {
-        if (IsGuiding() && m_guideStars.size() > 1 && pMount->GetGuidingEnabled())
+        if (IsGuiding() && m_guideStars.size() > 1 && pMount->GetGuidingEnabled() && !PhdController::IsSettling())
         {
             double sumWeights = 1;
             double sumX = origOffset.cameraOfs.X;
@@ -770,34 +779,6 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
 
 #define Iter_Inx(p) (p - m_guideStars.begin())
 
-            if (m_lockPositionMoved && !m_stabilizing)
-            {
-                m_lockPositionMoved = false;
-                Debug.Write("MultiStar: updating star positions after lock position change\n");
-
-                for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
-                {
-                    if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                        GetMinStarHFD(), pCamera->GetSaturationADU()))
-                    {
-                        pGS->referencePoint.X = pGS->X;
-                        pGS->referencePoint.Y = pGS->Y;
-                        ++pGS;
-                    }
-                    else
-                    {
-                        Debug.Write(wxString::Format("MultiStar: #%d removed after lock position change\n", Iter_Inx(pGS)));
-                        pGS = m_guideStars.erase(pGS);
-                    }
-                }
-                if (m_guideStars.size() > 1)
-                    Debug.Write(wxString::Format("MultiStar: %d stars in list after lock position change\n", m_guideStars.size()));
-                else
-                {
-                    Debug.Write("MultiStar: no secondary stars found after lock position change\n");
-                }
-                return;                 // All the secondary stars are now at new reference points
-            }
             if (m_primaryDistStats->GetCount() > 5)
             {
                 primarySigma = m_primaryDistStats->GetSigma();
@@ -812,6 +793,34 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                     {
                         m_stabilizing = false;
                         Debug.Write("MultiStar: exiting stabilization period\n");
+                        if (m_lockPositionMoved)
+                        {
+                            m_lockPositionMoved = false;
+                            Debug.Write("MultiStar: updating star positions after lock position change\n");
+
+                            for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
+                            {
+                                if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
+                                    GetMinStarHFD(), pCamera->GetSaturationADU()))
+                                {
+                                    pGS->referencePoint.X = pGS->X;
+                                    pGS->referencePoint.Y = pGS->Y;
+                                    ++pGS;
+                                }
+                                else
+                                {
+                                    Debug.Write(wxString::Format("MultiStar: #%d removed after lock position change\n", Iter_Inx(pGS)));
+                                    pGS = m_guideStars.erase(pGS);
+                                }
+                            }
+                            if (m_guideStars.size() > 1)
+                                Debug.Write(wxString::Format("MultiStar: %d stars in list after lock position change\n", m_guideStars.size()));
+                            else
+                            {
+                                Debug.Write("MultiStar: no secondary stars found after lock position change\n");
+                            }
+                            return false;                 // All the secondary stars are now at new reference points with zero offsets
+                        }
                     }
                 }
             }
@@ -902,7 +911,6 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                 {
                     sumX = sumX / sumWeights;
                     sumY = sumY / sumWeights;
-                    bool refined = false;
                     if (hypot(sumX, sumY) < primaryDistance)                                   // Apply average only if its smaller than single-star delta
                     {
                         pOffset->cameraOfs.X = sumX;
@@ -920,8 +928,9 @@ void GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
     {
         Debug.Write(wxString::Format("MultiStar fault: exception at %d, %s, reverting to single-star mode\n", __LINE__, msg));
         m_multiStarMode = false;
-        return;
     }
+
+    return refined;
 #undef Iter_Inx
 }
 
@@ -1033,9 +1042,10 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         if (lockPos.IsValid())
         {
             ofs->cameraOfs = m_primaryStar - lockPos;
-            if (m_multiStarMode && m_guideStars.size() > 1 && IsGuiding() && pMount->GetGuidingEnabled())
+            if (m_multiStarMode && m_guideStars.size() > 1)
             {
-                RefineOffset(pImage, ofs);
+                if (RefineOffset(pImage, ofs))
+                    distance = hypot(ofs->cameraOfs.X, ofs->cameraOfs.Y);       // Distance is reported to server clients
             }
             else
                 m_starsUsed = 1;
@@ -1148,8 +1158,21 @@ void GuiderMultiStar::OnLClick(wxMouseEvent &mevent)
             else
             {
                 SetLockPosition(m_primaryStar);
-                SetMultiStarMode(false);
-                Debug.Write("MultiStar: single-star mode forced by user star selection\n");
+                if (m_guideStars.size() > 1)
+                    ClearSecondaryStars();
+                if (m_guideStars.size() == 0)
+                {
+                    GuideStar tmp;
+                    tmp.X = m_primaryStar.X;
+                    tmp.Y = m_primaryStar.Y;
+                    tmp.SNR = m_primaryStar.SNR;
+                    tmp.referencePoint.X = m_primaryStar.X;
+                    tmp.referencePoint.Y = m_primaryStar.Y;
+                    tmp.missCount = 0;
+                    tmp.zeroCount = 0;
+                    m_guideStars.push_back(tmp);
+                }
+                Debug.Write("MultiStar: single-star usage forced by user star selection\n");
                 pFrame->StatusMsg(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_primaryStar.X, m_primaryStar.Y));
                 pFrame->UpdateStatusBarStarInfo(m_primaryStar.SNR, m_primaryStar.GetError() == Star::STAR_SATURATED);
                 EvtServer.NotifyStarSelected(CurrentPosition());
