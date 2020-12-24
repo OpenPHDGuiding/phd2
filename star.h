@@ -76,7 +76,6 @@ public:
      */
     bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation);
     bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation);
-    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion, const wxRect& roi);
 
     bool WasFound(FindResult result);
     bool WasFound(void);
@@ -101,6 +100,7 @@ public:
     int zeroCount;
 
     GuideStar();
+    GuideStar(const Star* star);
 
     bool AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
         std::vector<GuideStar>& foundStars, int maxStars);

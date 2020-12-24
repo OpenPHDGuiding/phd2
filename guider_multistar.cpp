@@ -1162,14 +1162,7 @@ void GuiderMultiStar::OnLClick(wxMouseEvent &mevent)
                     ClearSecondaryStars();
                 if (m_guideStars.size() == 0)
                 {
-                    GuideStar tmp;
-                    tmp.X = m_primaryStar.X;
-                    tmp.Y = m_primaryStar.Y;
-                    tmp.SNR = m_primaryStar.SNR;
-                    tmp.referencePoint.X = m_primaryStar.X;
-                    tmp.referencePoint.Y = m_primaryStar.Y;
-                    tmp.missCount = 0;
-                    tmp.zeroCount = 0;
+                    GuideStar tmp(&m_primaryStar);
                     m_guideStars.push_back(tmp);
                 }
                 Debug.Write("MultiStar: single-star usage forced by user star selection\n");

@@ -704,20 +704,28 @@ GuideStar::GuideStar() : Star()
     missCount = 0;
     zeroCount = 0;
 }
+GuideStar::GuideStar(const Star* star)
+{
+    X = star->X;
+    Y = star->Y;
+    Mass = star->Mass;
+    HFD = star->HFD;
+    SNR = star->SNR;
+    missCount = 0;
+    zeroCount = 0;
+    referencePoint.X = star->X;
+    referencePoint.Y = star->Y;
+
+}
 
 static bool CloseToReference(const GuideStar& referencePoint, const GuideStar& other)
 {
     // test whether star is close to the reference star for purposes of detecting duplicates
-
-    // FIXME: it would be better to check the actual distance between the two points
-    // rather than comparing the truncated integer values for equality
-    // perhaps:
-    //     return other.Distance(referencePoint) < some_threshold;
-
-    return (int)referencePoint.X == (int)other.X && (int)referencePoint.Y == (int)other.Y;
+    const int minLimitSq = 5 * 5;
+    return other.Distance(referencePoint) < minLimitSq;
 }
 
-// Multi-star version of AutoFind.  Single-star mode is forced by setting maxStars = 1
+// Multi-star version of AutoFind.
 bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
     std::vector<GuideStar>& foundStars, int maxStars)
 {
@@ -1075,8 +1083,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                 if (maxStars > 1)
                 {
-                    // Prune the guideStars - drop anything before the primary star
-                    // Start by finding the chosen star in the list
+                    // Find the chosen star in the list
                     int primaryLoc = -1;
                     for (auto pGS = foundStars.begin(); pGS != foundStars.end(); ++pGS)
                     {
@@ -1089,7 +1096,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
 
                     if (primaryLoc >= 0)
                     {
-                        // Delete saturated stars ahead of chosen star
+                        // Delete saturated stars ahead of chosen star, likely saturated or otherwise flawed
                         foundStars.erase(foundStars.begin(), foundStars.begin() + primaryLoc);
                         // Prune total list size to match maxStars parameter
                         if (foundStars.size() > maxStars)
@@ -1097,16 +1104,10 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                     }
                     else if (primaryLoc == -1)
                     {
-                        // Safety harness
+                        // Secondary stars are presumably degraded, just put primary star at head of list
                         foundStars.clear();
-                        GuideStar tmp;
-                        tmp.X = X;
-                        tmp.Y = Y;
-                        tmp.SNR = SNR;
-                        tmp.referencePoint.X = X;
-                        tmp.referencePoint.Y = Y;
-                        tmp.missCount = 0;
-                        tmp.zeroCount = 0;
+                        tmp.referencePoint.X = tmp.X;
+                        tmp.referencePoint.Y = tmp.Y;
                         foundStars.push_back(tmp);
                         Debug.Write("MultiStar: primary star forcibly inserted in list\n");
                     }
