@@ -36,6 +36,7 @@
 #define GRAPHCLASS
 
 #include <deque>
+#include "guiding_stats.h"
 
 class GraphControlPane;
 
@@ -124,6 +125,9 @@ private:
 
     circular_buffer<S_HISTORY> m_history;
     std::deque<DitherInfo> m_dithers;
+    WindowedAxisStats m_noDitherDec;
+    WindowedAxisStats m_noDitherRA;
+    wxLongLong_t m_timeBase;
 
     wxPoint *m_line1;
     wxPoint *m_line2;

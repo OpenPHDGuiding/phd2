@@ -65,6 +65,7 @@ public:
     double GetMaximum();                // Returns the max value
     double GetVariance();               // Variance for those who need it
     double GetSigma();                  // Returns the standard deviation
+    double GetPopulationSigma();        // Population sigma ('n' vs 'n-1')
     double GetMaxDelta();               // Returns max of absolute delta(new - previous) values
 };
 
@@ -162,6 +163,7 @@ public:
     double GetMean();
     double GetVariance();
     double GetSigma();
+    double GetPopulationSigma();
     double GetMedian();
     double GetMaxDelta();
     // Count of moves or reversals in current dataset

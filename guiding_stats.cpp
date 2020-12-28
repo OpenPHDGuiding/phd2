@@ -129,6 +129,16 @@ double DescriptiveStats::GetSigma()
     else
         return 0;
 }
+// Return standard deviation of the population
+double DescriptiveStats::GetPopulationSigma()
+{
+    assert(count > 0);
+
+    if (count > 0)
+        return (sqrt(runningS / count));
+    else
+        return 0;
+}
 
 // Return mean of data values. Caller must insure count > 0.
 double DescriptiveStats::GetMean()
@@ -441,7 +451,7 @@ double AxisStats::GetVariance()
     return rslt;
 }
 
-// Return standard deviation of dataset. Caller must insure count > 1
+// Return standard deviation of sample dataset.
 double AxisStats::GetSigma()
 {
     double rslt;
@@ -459,7 +469,24 @@ double AxisStats::GetSigma()
         rslt = 0;
     return rslt;
 }
+// Return standard deviation of population.
+double AxisStats::GetPopulationSigma()
+{
+    double rslt;
+    int sz = guidingEntries.size();
 
+    if (sz > 1)
+    {
+        double variance = (sz * sumYSq - sumY * sumY) / (sz * sz);
+        if (variance >= 0)
+            rslt = sqrt(variance);
+        else
+            rslt = 0;
+    }
+    else
+        rslt = 0;
+    return rslt;
+}
 // Return median guidestar displacement. Caller must insure count > 0
 double AxisStats::GetMedian()
 {
@@ -472,9 +499,9 @@ double AxisStats::GetMedian()
         // Need a copy of guidingEntries to do a sort
         std::vector <double> sortedEntries;
 
-        for (unsigned int inx = 0; inx < guidingEntries.size(); inx++)
+        for (auto pGS = guidingEntries.begin(); pGS != guidingEntries.end(); ++pGS)
         {
-            sortedEntries.push_back(guidingEntries[inx].StarPos);
+            sortedEntries.push_back(pGS->StarPos);
         }
         std::sort(sortedEntries.begin(), sortedEntries.end());
         int ctr = (int)(sortedEntries.size() / 2);
@@ -642,17 +669,17 @@ void WindowedAxisStats::AdjustMinMaxValues()
 
     if (recalNeeded)
     {
-        for (unsigned int inx = 1; inx < guidingEntries.size(); inx++)          // Dont start at zero, that will be removed
+        for (auto pGS = guidingEntries.begin() + 1; pGS != guidingEntries.end(); ++pGS)  // Dont start at zero, that will be removed
         {
-            StarDisplacement entry = guidingEntries[inx];
+            StarDisplacement entry = *pGS;
             minDisplacement = std::min(minDisplacement, entry.StarPos);
             maxDisplacement = std::max(maxDisplacement, entry.StarPos);
-            if (inx > 1)
+            if (pGS - guidingEntries.begin() > 1)
             {
                 if (fabs(entry.StarPos - prev) > maxDelta)
                 {
                     maxDelta = fabs(entry.StarPos - prev);
-                    maxDeltaInx = inx;
+                    maxDeltaInx = pGS - guidingEntries.begin();
                 }
             }
             prev = entry.StarPos;
@@ -688,7 +715,7 @@ void WindowedAxisStats::RemoveOldestEntry()
     }
 }
 
-// DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day
+// DeltaT should be a small number, on the order of a guide exposure time, not a full time-of-day
 void WindowedAxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
 {
     AxisStats::AddGuideInfo(DeltaT, StarPos, GuideAmt);

@@ -233,6 +233,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
+    m_pClient->m_timeBase = ::wxGetUTCTimeMillis().GetValue();
 }
 
 GraphLogWindow::~GraphLogWindow()
@@ -480,6 +481,8 @@ void GraphLogWindow::SetLength(int length)
     if (length < (int) m_pClient->m_minLength)
         length = m_pClient->m_minLength;
     m_pClient->m_length = length;
+    m_pClient->m_noDitherDec.ChangeWindowSize(length);
+    m_pClient->m_noDitherRA.ChangeWindowSize(length);
     m_pClient->RecalculateTrendLines();
     m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), length));
     pConfig->Global.SetInt("/graph/length", length);
@@ -812,6 +815,8 @@ void GraphLogClientWindow::ResetData()
 {
     m_history.clear();
     reset_trend_accums(m_trendLineAccum);
+    m_noDitherDec.ClearAll();
+    m_noDitherRA.ClearAll();
     m_raSameSides = 0;
     UpdateStats(0, 0);
     m_stats.ra_peak = m_stats.dec_peak = 0.0;
@@ -864,6 +869,8 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
     }
 
     m_history.resize(maxLength);
+    m_noDitherDec.ChangeWindowSize(maxLength);
+    m_noDitherRA.ChangeWindowSize(maxLength);
 
     delete [] m_line1;
     m_line1 = new wxPoint[maxLength];
@@ -961,8 +968,8 @@ static double rms(unsigned int nr, const TrendLineAccum *accum)
 void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
 {
     m_stats.nr = nr;
-    m_stats.rms_ra = rms(nr, &m_trendLineAccum[2]);
-    m_stats.rms_dec = rms(nr, &m_trendLineAccum[3]);
+    m_stats.rms_ra = m_noDitherRA.GetPopulationSigma();
+    m_stats.rms_dec = m_noDitherDec.GetPopulationSigma();
     m_stats.rms_tot = hypot(m_stats.rms_ra, m_stats.rms_dec);
 
     if (nr >= 2)
@@ -1041,6 +1048,12 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 
     S_HISTORY cur(step);
     m_history.push_front(cur);
+    if (!PhdController::IsSettling())
+    {
+        long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
+        m_noDitherDec.AddGuideInfo(dt, cur.dec, cur.decDur);
+        m_noDitherRA.AddGuideInfo(dt, cur.ra, cur.raDur);
+    }
 
     // remove any dither history entries older than the first guide step history entry
     wxLongLong_t t0 = m_history[0].timestamp;
@@ -1560,7 +1573,38 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
             unsigned int i = start_item + (unsigned int) floor((double)(evt.GetX() - xorig) / xmag + 0.5);
             if (i < m_history.size())
             {
+                wxLongLong deltaT = m_history[m_history.size() - 1].timestamp - m_history[i].timestamp;
                 m_history.pop_back(i);
+
+                // Some items removed from m_history may not be resident in the "noDither" collections
+                int numDeletes = wxMin(m_noDitherDec.GetCount(), i);
+                long newStart = m_noDitherDec.GetLastEntry().DeltaTime - deltaT.ToLong();       // mSec for new starting point in noDither collections
+
+                while (numDeletes > 0)
+                {
+                    if (m_noDitherDec.GetEntry(0).DeltaTime <= newStart)
+                    {
+                        m_noDitherDec.RemoveOldestEntry();
+                        numDeletes--;
+                    }
+                    else
+                        break;
+                    if (m_noDitherDec.GetCount() == 0)
+                        break;
+                }
+                numDeletes = wxMin(m_noDitherRA.GetCount(), i);
+                while (numDeletes > 0)
+                {
+                    if (m_noDitherRA.GetEntry(0).DeltaTime <= newStart)
+                    {
+                        m_noDitherRA.RemoveOldestEntry();
+                        numDeletes--;
+                    }
+                    else
+                        break;
+                    if (m_noDitherRA.GetCount() == 0)
+                        break;
+                }
                 RecalculateTrendLines();
                 Refresh();
             }
