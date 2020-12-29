@@ -848,7 +848,9 @@ CVRES CVVidCaptureDSWin32::Connect( int devIndex)
          if (mt->formattype == FORMAT_VideoInfo) 
          {
             VIDEOINFOHEADER *pvi = (VIDEOINFOHEADER *)mt->pbFormat;
-            newMode.EstFrameRate = (int)(10000000 / pvi->AvgTimePerFrame);            
+            if (pvi->AvgTimePerFrame != 0) {
+                newMode.EstFrameRate = (int)(10000000 / pvi->AvgTimePerFrame);
+            }
          }
 		 else 
 		 {
