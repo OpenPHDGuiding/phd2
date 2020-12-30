@@ -112,7 +112,7 @@ no need for PHD2 to be connected to any of the hardware. &nbsp;You can
 adjust the gamma slider, select a star (manually or automatically), and
 use the Star Profile tool to view the HFD and profile of the selected
 star.</div><h3><a name="Camera_Tab"></a>Camera Tab</h3>
-<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 605px; height: 480px;" alt="" src="Advanced_camera.png"><br>
+<span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 630px; height: 579px;" alt="" src="Advanced_camera.png"><br>
 <br>
 The controls on the 'Camera' tab are used as follows: <br>
 <ul><li>'<a name="Noise_reduction"></a>Noise
@@ -151,7 +151,21 @@ should provide enough of a cushion to prevent fluctuations from causing
 the SNR to
 go below 3.0 but a higher value is desirable. &nbsp;As mentioned in the 'Basic Use' section, SNR is
 similar but not identical to the signal-to-noise ratio used in
-photometry.</li></ul><li>'<a name="Pixel_size"></a>Pixel
+photometry.</li></ul><li><a name="Star_saturation_detection"></a>'Star Saturation Detection'
+- &nbsp;when identifying candidate guide stars, PHD2 tries to avoid
+saturated stars in order to get the most accurate calculations of their positions. &nbsp;You can assist this process by specifying how the assessment of saturation should be done:</li><ul><li>Saturation
+by ADU value - this is the preferred option because it relies on the
+brightness levels&nbsp;measured by the guide camera sensor. &nbsp;Most
+guide camera drivers return image data in either 8-bit or 16-bit
+formats even if the camera electronics natively work in 12-bit or
+14-bit modes. &nbsp;An 8-bit camera will saturate at a brightness level
+of 255 while a 16-bit camera will saturate at levels above 65000.
+&nbsp;If you are uncertain about your camera's behavior, you can use
+the Star Profile tool to measure the brightest pixel level when taking
+exposures of a very bright star.</li><li>Saturation via star-profile -
+this relies on a less accurate judgment of saturation based on whether
+the star profile has a flat top. &nbsp;It is not recommended for normal
+applications.</li></ul><li>'<a name="Pixel_size"></a>Pixel
 size' - The guide camera pixel size in microns. This is the second of two parameters needed by <span style="font-style: italic;">PHD2</span>
 to compute the
 guider image scale and thus report guider statistics in units of
@@ -221,7 +235,10 @@ frame is downloaded, but once a star is selected, only this small
 subframe is downloaded. &nbsp; If you are using subframes but want to
 see the full frame to select a different star, just shift-click
 anywhere in the image display window or shift-click on the 'Auto-select
-star' button.</li></ul><span style="font-weight: bold;"><a name="Binning_usage"></a>Use of Binning</span><br>Some
+star' button.</li><li><a name="Camera_cooler"></a>Cooler
+controls - a few guide cameras support sensor cooling. &nbsp;These
+controls let you specify whether the cooler is on and what the cooler
+set-point should be.</li></ul><span style="font-weight: bold;"><a name="Binning_usage"></a>Use of Binning</span><br>Some
 of the guide cameras available in PHD2 support hardware-level binning,
 and this may be helpful in&nbsp;situations where you are guiding at
 long focal lengths or have a guide camera with very small pixels. These
