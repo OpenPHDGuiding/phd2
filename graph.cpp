@@ -1048,6 +1048,7 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 
     S_HISTORY cur(step);
     m_history.push_front(cur);
+
     if (!PhdController::IsSettling())
     {
         long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
@@ -1573,12 +1574,13 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
             unsigned int i = start_item + (unsigned int) floor((double)(evt.GetX() - xorig) / xmag + 0.5);
             if (i < m_history.size())
             {
-                wxLongLong deltaT = m_history[m_history.size() - 1].timestamp - m_history[i].timestamp;
+                wxLongLong_t deltaT = m_history[m_history.size() - 1].timestamp - m_history[i].timestamp;
+
                 m_history.pop_back(i);
 
                 // Some items removed from m_history may not be resident in the "noDither" collections
                 int numDeletes = wxMin(m_noDitherDec.GetCount(), i);
-                long newStart = m_noDitherDec.GetLastEntry().DeltaTime - deltaT.ToLong();       // mSec for new starting point in noDither collections
+                long newStart = m_noDitherDec.GetLastEntry().DeltaTime - deltaT;       // mSec for new starting point in noDither collections
 
                 while (numDeletes > 0)
                 {
