@@ -129,13 +129,14 @@ double DescriptiveStats::GetSigma()
     else
         return 0;
 }
+
 // Return standard deviation of the population
 double DescriptiveStats::GetPopulationSigma()
 {
     assert(count > 0);
 
     if (count > 0)
-        return (sqrt(runningS / count));
+        return sqrt(runningS / count);
     else
         return 0;
 }
@@ -314,19 +315,19 @@ void AxisStats::InitializeScalars()
 }
 
 // Return number of guide steps where GuideAmount was non-zero
-unsigned int AxisStats::GetMoveCount()
+unsigned int AxisStats::GetMoveCount() const
 {
     return axisMoves;
 }
 
 // Return number of times when consecutive non-zero guide amounts changed direction
-unsigned int AxisStats::GetReversalCount()
+unsigned int AxisStats::GetReversalCount() const
 {
     return axisReversals;
 }
 
 // Returns the guiding entry at index = 'inx';  Caller must insure inx is within bounds of data-set
-StarDisplacement AxisStats::GetEntry(unsigned int inx)
+StarDisplacement AxisStats::GetEntry(unsigned int inx) const
 {
     assert(inx < guidingEntries.size());
 
@@ -375,9 +376,9 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
 }
 
 // Get the last entry added - makes it easier for clients to use delta() operations on data values. Caller must insure count > 0
-StarDisplacement AxisStats::GetLastEntry()
+StarDisplacement AxisStats::GetLastEntry() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
     if (sz > 0)
@@ -387,9 +388,9 @@ StarDisplacement AxisStats::GetLastEntry()
 }
 
 // Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.  Caller must insure count > 1
-double AxisStats::GetMaxDelta()
+double AxisStats::GetMaxDelta() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 1);
 
     if (sz > 1)
@@ -401,29 +402,21 @@ double AxisStats::GetMaxDelta()
 }
 
 // Return count of entries currently in window
-unsigned int AxisStats::GetCount()
+unsigned int AxisStats::GetCount() const
 {
     return guidingEntries.size();
 }
 
 // Return sum.  Caller must insure count > 0
-double AxisStats::GetSum()
+double AxisStats::GetSum() const
 {
-    int sz = guidingEntries.size();
-    assert(sz > 0);
-
-    if (sz > 0)
-    {
-        return sumY;
-    }
-    else
-        return 0;
+    return sumY;
 }
 
 // Return mean of dataset. Caller must insure count > 0
-double AxisStats::GetMean()
+double AxisStats::GetMean() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
     if (sz > 0)
@@ -431,71 +424,77 @@ double AxisStats::GetMean()
         return sumY / sz;
     }
     else
-        return 0;
+        return 0.;
 }
 
 // Return raw variance for clients who need it. Caller must insure count > 1
-double AxisStats::GetVariance()
+double AxisStats::GetVariance() const
 {
     double rslt;
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 1);
 
     if (sz > 1)
     {
-        double entryCount = guidingEntries.size();
-        rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1));
+        double entryCount = sz;
+        rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1.));
     }
     else
-        rslt = 0;
+        rslt = 0.;
+
     return rslt;
 }
 
 // Return standard deviation of sample dataset.
-double AxisStats::GetSigma()
+double AxisStats::GetSigma() const
 {
     double rslt;
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
 
     if (sz > 1)
     {
         double variance = (sz * sumYSq - sumY * sumY) / (sz * (sz - 1));
-        if (variance >= 0)
+        if (variance >= 0.)
             rslt = sqrt(variance);
         else
-            rslt = 0;
+            rslt = 0.;
     }
     else
-        rslt = 0;
+        rslt = 0.;
+
     return rslt;
 }
+
 // Return standard deviation of population.
-double AxisStats::GetPopulationSigma()
+double AxisStats::GetPopulationSigma() const
 {
     double rslt;
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
 
     if (sz > 1)
     {
         double variance = (sz * sumYSq - sumY * sumY) / (sz * sz);
-        if (variance >= 0)
+        if (variance >= 0.)
             rslt = sqrt(variance);
         else
-            rslt = 0;
+            rslt = 0.;
     }
     else
-        rslt = 0;
+        rslt = 0.;
+
     return rslt;
 }
+
 // Return median guidestar displacement. Caller must insure count > 0
-double AxisStats::GetMedian()
+double AxisStats::GetMedian() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
-    if (sz> 1)
+    if (sz > 1)
     {
-        double rslt = 0;
+        double rslt = 0.;
+
         // Need a copy of guidingEntries to do a sort
         std::vector <double> sortedEntries;
 
@@ -504,7 +503,7 @@ double AxisStats::GetMedian()
             sortedEntries.push_back(pGS->StarPos);
         }
         std::sort(sortedEntries.begin(), sortedEntries.end());
-        int ctr = (int)(sortedEntries.size() / 2);
+        size_t ctr = sortedEntries.size() / 2;
         if (sortedEntries.size() % 2 == 1)
         {
             rslt = sortedEntries[ctr];
@@ -516,19 +515,16 @@ double AxisStats::GetMedian()
         }
         return rslt;
     }
+    else if (sz == 1)
+        return guidingEntries[0].StarPos;
     else
-    {
-        if (sz == 1)
-            return guidingEntries[0].StarPos;
-        else
-            return 0;
-    }
+        return 0.;
 }
 
 // Return the minimum (signed) guidestar displacement. Caller must insure count > 0
-double AxisStats::GetMinDisplacement()
+double AxisStats::GetMinDisplacement() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
     if (sz > 0)
@@ -536,13 +532,13 @@ double AxisStats::GetMinDisplacement()
         return minDisplacement;
     }
     else
-        return 0;
+        return 0.;
 }
 
 // Return the maximum (signed) guidestar displacement. Caller must insure count > 0
-double AxisStats::GetMaxDisplacement()
+double AxisStats::GetMaxDisplacement() const
 {
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
     if (sz > 0)
@@ -550,21 +546,21 @@ double AxisStats::GetMaxDisplacement()
         return maxDisplacement;
     }
     else
-        return 0;
+        return 0.;
 }
 
 // Return linear fit results for dataset, windowed or not.  This is inexpensive unless Sigma is needed
 // (Optional) Sigma is standard deviation of dataset after linear fit (drift) has been removed
 // Caller must insure count > 1
 // Returns R-Squared, a measure of correlation between the linear fit and the original data set
-double AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* Sigma)
+double AxisStats::GetLinearFitResults(double *Slope, double *Intercept, double *Sigma) const
 {
     size_t const numVals = guidingEntries.size();
 
     if (numVals <= 1)
     {
-        *Slope = 0;
-        *Intercept = 0;
+        *Slope = 0.;
+        *Intercept = 0.;
         if (Sigma)
             *Sigma = 0.;
         return 0.;
@@ -598,12 +594,14 @@ double AxisStats::GetLinearFitResults(double* Slope, double* Intercept, double* 
 
     *Slope = slope;
     *Intercept = intcpt;
+
     // Compute R-Squared coefficient of determination
     double Syy = sumYSq - (sumY * sumY) / numVals;
     double Sxy = sumXY - (sumX * sumY) / numVals;
     double Sxx = sumXSq - (sumX * sumX) / numVals;
     double SSE = Syy - (Sxy * Sxy) / Sxx;
     double rSquared = (Syy - SSE) / Syy;
+
     return rSquared;
 }
 
@@ -690,16 +688,14 @@ void WindowedAxisStats::AdjustMinMaxValues()
 // Remove oldest entry in the list, update stats accordingly. Caller must insure count > 0
 void WindowedAxisStats::RemoveOldestEntry()
 {
-    double val;
-    double deltaT;
-    int sz = guidingEntries.size();
+    size_t sz = guidingEntries.size();
     assert(sz > 0);
 
     if (sz > 0)
     {
         StarDisplacement target = guidingEntries.front();
-        val = target.StarPos;
-        deltaT = target.DeltaTime;
+        double val = target.StarPos;
+        double deltaT = target.DeltaTime;
         sumY -= val;
         sumYSq -= val * val;
         sumX -= deltaT;
