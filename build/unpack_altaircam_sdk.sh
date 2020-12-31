@@ -24,6 +24,8 @@ elif [ -d altairsdk.* ]; then
     cd altairsdk.*
 elif [ -d *SDK_ALTAIR* ]; then
     cd *SDK_ALTAIR*
+elif [ -f ./inc/altaircam.h ]; then
+    : no sub-folder
 else
     echo "unexpected zip contents" >&2
     exit 1
