@@ -163,7 +163,7 @@ AboutDialog::AboutDialog()
         "<tr>"
         "<td>Philip Peake</td>"
         "<td>Manuel Rosales</td>"
-        "<td></td>"
+        "<td>Marcel Greter</td>"
         "<td></td>"
         "</tr>"
         "</table><br>"
