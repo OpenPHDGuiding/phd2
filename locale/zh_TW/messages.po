@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 06:18+0000\n"
+"POT-Creation-Date: 2021-01-03 07:37+0000\n"
 "PO-Revision-Date: 2020-09-22 15:43+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -718,27 +718,27 @@ msgstr "焦長值需大於 50"
 msgid "Please enter a pixel size greater than zero."
 msgstr "像素大小需大於 0."
 
-#: cam_altair.cpp:170
+#: cam_altair.cpp:171
 msgid "Altair Camera Settings"
 msgstr "Altair 相機設定"
 
-#: cam_altair.cpp:181 cam_sxv.cpp:211 graph.cpp:126
+#: cam_altair.cpp:182 cam_sxv.cpp:211 graph.cpp:126
 msgid "Settings"
 msgstr "設定"
 
-#: cam_altair.cpp:304
+#: cam_altair.cpp:305
 msgid "No Altair cameras detected"
 msgstr "找不到 Altair 相機"
 
-#: cam_altair.cpp:322
+#: cam_altair.cpp:323
 msgid "Specified Altair Camera not found."
 msgstr "找不到所指定的 Altair 相機。"
 
-#: cam_altair.cpp:328
+#: cam_altair.cpp:329
 msgid "Failed to open Altair Camera."
 msgstr "開啟 Altair 相機失敗。"
 
-#: cam_altair.cpp:341
+#: cam_altair.cpp:346
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
@@ -1821,7 +1821,7 @@ msgstr "彗星追蹤 - Training Active"
 msgid "Comet Tracking - Active"
 msgstr "彗星追蹤 - Active"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1384
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1400
 #: scope.cpp:1945
 msgid "Enable"
 msgstr "啟用"
@@ -1918,12 +1918,12 @@ msgstr ""
 "選擇導星星體並開始導星。\n"
 "然後, 點選【開始】按鈕開始調校。"
 
-#: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:326
+#: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:327
 #: guide_algorithm.cpp:50 scope.cpp:667 statswindow.cpp:73 target.cpp:339
 msgid "RA"
 msgstr "赤經"
 
-#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:327 scope.cpp:667
+#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:667
 #: statswindow.cpp:77 target.cpp:340
 msgid "Dec"
 msgstr "赤緯"
@@ -3114,7 +3114,7 @@ msgstr "%.1f Hz"
 msgid "AO not connected"
 msgstr "AO 未連接"
 
-#: graph.cpp:88 graph.cpp:601
+#: graph.cpp:88 graph.cpp:604
 msgid "Scope:"
 msgstr "赤道儀:"
 
@@ -3161,91 +3161,91 @@ msgstr "總和"
 msgid "RA Osc: 0.00"
 msgstr "赤經震盪: 0.00"
 
-#: graph.cpp:268
+#: graph.cpp:269
 msgid "Plot mode"
 msgstr "描繪模式"
 
-#: graph.cpp:270
+#: graph.cpp:271
 msgid "RA / Dec"
 msgstr "赤經 / 赤緯"
 
-#: graph.cpp:271
+#: graph.cpp:272
 msgid "dx / dy"
 msgstr "dx /dy"
 
-#: graph.cpp:279
+#: graph.cpp:280
 msgid "Y-axis units"
 msgstr "Y 軸單位"
 
-#: graph.cpp:281
+#: graph.cpp:282
 msgid "Arc-seconds"
 msgstr "角秒"
 
-#: graph.cpp:285
+#: graph.cpp:286
 msgid "Pixels"
 msgstr "像素"
 
-#: graph.cpp:293
+#: graph.cpp:294
 msgid "Corrections to Scale"
 msgstr "縮放比例"
 
-#: graph.cpp:297
+#: graph.cpp:298
 msgid "Star Mass"
 msgstr "星點質心"
 
-#: graph.cpp:299
+#: graph.cpp:300
 msgid "Star SNR"
 msgstr "星點訊噪比"
 
-#: graph.cpp:306
+#: graph.cpp:307
 msgid "RA Color..."
 msgstr "赤經顏色.."
 
-#: graph.cpp:307
+#: graph.cpp:308
 msgid "Dec Color..."
 msgstr "赤緯顏色..."
 
-#: graph.cpp:311
+#: graph.cpp:312
 msgid "dx Color..."
 msgstr "dx 顏色..."
 
-#: graph.cpp:312
+#: graph.cpp:313
 msgid "dy Color..."
 msgstr "dy 顏色..."
 
-#: graph.cpp:330
+#: graph.cpp:331
 msgid "dx"
 msgstr "dx"
 
-#: graph.cpp:331
+#: graph.cpp:332
 msgid "dy"
 msgstr "dy"
 
-#: graph.cpp:403
+#: graph.cpp:404
 msgid "RA or dx Color"
 msgstr "赤經或 dx 顏色"
 
-#: graph.cpp:419
+#: graph.cpp:420
 msgid "Dec or dy Color"
 msgstr "赤緯或 dy 顏色"
 
-#: graph.cpp:735
+#: graph.cpp:738
 msgid "Select the Y-axis scale, pixels per Y division"
 msgstr "選擇 Y-軸比例, 像素/Y軸間格"
 
-#: graph.cpp:740
+#: graph.cpp:743
 msgid "Select the Y-axis scale, arc-seconds per Y division"
 msgstr "選擇 Y-軸比例, 角秒/Y軸間格"
 
-#: graph.cpp:1299
+#: graph.cpp:1313
 msgid "GuideNorth"
 msgstr "往北導星"
 
-#: graph.cpp:1300
+#: graph.cpp:1314
 msgid "GuideEast"
 msgstr "往東導星"
 
-#: graph.cpp:1432 testguide.cpp:107 testguide.cpp:132
+#: graph.cpp:1446 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
 
@@ -3615,7 +3615,7 @@ msgid ""
 msgstr "該使用多少百分比的回應式導星修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1412 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1428 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "自動"
 
@@ -3783,87 +3783,87 @@ msgstr ""
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "你是否要將所有書籤刪除?"
 
-#: guider_multistar.cpp:408 guider_multistar.cpp:939
+#: guider_multistar.cpp:416 guider_multistar.cpp:948
 msgid "No star selected"
 msgstr "未選擇任何星點"
 
-#: guider_multistar.cpp:412
+#: guider_multistar.cpp:420
 msgid "Star lost - low SNR"
 msgstr "星點遺失 - 低訊噪比"
 
-#: guider_multistar.cpp:413
+#: guider_multistar.cpp:421
 msgid "Star lost - low mass"
 msgstr "星點遺失 - 低星點質心"
 
-#: guider_multistar.cpp:414
+#: guider_multistar.cpp:422
 msgid "Star lost - low HFD"
 msgstr "星點遺失 - 低 HFD"
 
-#: guider_multistar.cpp:415
+#: guider_multistar.cpp:423
 msgid "Star too near edge"
 msgstr "星點太接近影像邊緣"
 
-#: guider_multistar.cpp:416
+#: guider_multistar.cpp:424
 msgid "Star lost - mass changed"
 msgstr "星點遺失 - 質心改變"
 
-#: guider_multistar.cpp:417 guider_multistar.cpp:1146
+#: guider_multistar.cpp:425 guider_multistar.cpp:1156
 msgid "No star found"
 msgstr "未找到可用星點"
 
-#: guider_multistar.cpp:423
+#: guider_multistar.cpp:431
 #, c-format
 msgid "m=%.0f SNR=%.1f"
 msgstr "m=%.0f SNR=%.1f"
 
-#: guider_multistar.cpp:426
+#: guider_multistar.cpp:434
 msgid "Saturated"
 msgstr "亮度太高"
 
-#: guider_multistar.cpp:436
+#: guider_multistar.cpp:444
 #, c-format
 msgid "Exp=%0.1f s"
 msgstr "曝光=%0.1f s"
 
-#: guider_multistar.cpp:438
+#: guider_multistar.cpp:446
 #, c-format
 msgid "Exp=%d ms"
 msgstr "曝光=%d ms"
 
-#: guider_multistar.cpp:510
+#: guider_multistar.cpp:518
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "自動選擇在 (%.1f, %.1f) 的星體"
 
-#: guider_multistar.cpp:983
+#: guider_multistar.cpp:992
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr "質心：%.f vs %.f"
 
-#: guider_multistar.cpp:1020
+#: guider_multistar.cpp:1029
 msgid "Recovering"
 msgstr "回復中"
 
-#: guider_multistar.cpp:1153
+#: guider_multistar.cpp:1169
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "選擇星點在 (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1380
+#: guider_multistar.cpp:1396
 msgid "Search region (pixels)"
 msgstr "搜尋區域 (像素)"
 
-#: guider_multistar.cpp:1381
+#: guider_multistar.cpp:1397
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr "在 (上/下/左/右)各多少像素內搜尋被導星體的移動? 預設值 = 15 像素"
 
-#: guider_multistar.cpp:1383
+#: guider_multistar.cpp:1399
 msgid "Star Mass Detection"
 msgstr "星點值心變化偵測"
 
-#: guider_multistar.cpp:1385
+#: guider_multistar.cpp:1401
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -3872,11 +3872,11 @@ msgstr ""
 "點選以啟用心點質心變化偵測, 啟用後, 若導星星體的質心變化大於『質心變化容許"
 "量』設定值時, PHD 會忽略該擷取的影像."
 
-#: guider_multistar.cpp:1394
+#: guider_multistar.cpp:1410
 msgid "Tolerance"
 msgstr "質心變化容許量"
 
-#: guider_multistar.cpp:1395
+#: guider_multistar.cpp:1411
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -3888,15 +3888,15 @@ msgstr ""
 "靈敏), 此數值有效範圍為 10-100, 預設質為 50，如果沒有啟用星點質心變化偵測，這"
 "個參數會被忽略。"
 
-#: guider_multistar.cpp:1401
+#: guider_multistar.cpp:1417
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1406
+#: guider_multistar.cpp:1422
 msgid "Minimum star HFD (pixels)"
 msgstr "最小星點 HFD (像素) 值"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1423
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -3908,11 +3908,11 @@ msgstr ""
 "星星體。利用星點工具測量熱噪的 HFD，並將最小 HFD 門檻值設置得彼此數值高一些。"
 "當 HFD 低於該數值時，熱噪就會被忽略。"
 
-#: guider_multistar.cpp:1414
+#: guider_multistar.cpp:1430
 msgid "Auto-selection frame downsample"
 msgstr "自動選擇影像禎降低採樣頻率"
 
-#: guider_multistar.cpp:1415
+#: guider_multistar.cpp:1431
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -3921,27 +3921,27 @@ msgstr ""
 "自動選星時使用的相機禎降低採樣頻率參數, 如果自動選星無法判別畸形的導星星體, "
 "請選擇大於 1 的數值"
 
-#: guider_multistar.cpp:1418
+#: guider_multistar.cpp:1434
 msgid "Beep on lost star"
 msgstr "在星點遺失時發出嗶聲"
 
-#: guider_multistar.cpp:1419
+#: guider_multistar.cpp:1435
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "當導星星體遺失時都發出告警聲"
 
-#: guider_multistar.cpp:1421
+#: guider_multistar.cpp:1437
 msgid "Use multiple stars"
 msgstr ""
 
-#: guider_multistar.cpp:1422
+#: guider_multistar.cpp:1438
 msgid "Use multiple guide stars if they are available"
 msgstr ""
 
-#: guider_multistar.cpp:1429
+#: guider_multistar.cpp:1445
 msgid "Minimum star SNR for AutoFind"
 msgstr ""
 
-#: guider_multistar.cpp:1430
+#: guider_multistar.cpp:1446
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "

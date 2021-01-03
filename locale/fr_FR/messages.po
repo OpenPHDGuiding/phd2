@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 06:18+0000\n"
+"POT-Creation-Date: 2021-01-03 07:37+0000\n"
 "PO-Revision-Date: 2020-12-14 12:13+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -746,32 +746,32 @@ msgstr "Veuillez entrer une longueur focale d'au moins 50"
 msgid "Please enter a pixel size greater than zero."
 msgstr "Veuillez entrer une taille de pixels supérieure à zéro."
 
-#: cam_altair.cpp:170
+#: cam_altair.cpp:171
 msgid "Altair Camera Settings"
 msgstr "Paramètres de la Caméra Altair"
 
-#: cam_altair.cpp:181 cam_sxv.cpp:211 graph.cpp:126
+#: cam_altair.cpp:182 cam_sxv.cpp:211 graph.cpp:126
 msgid "Settings"
 msgstr "Réglages"
 
-#: cam_altair.cpp:304
+#: cam_altair.cpp:305
 msgid "No Altair cameras detected"
 msgstr "Aucune caméra Altair détectée"
 
-#: cam_altair.cpp:322
+#: cam_altair.cpp:323
 msgid "Specified Altair Camera not found."
 msgstr "Caméra Altair spécifiée non trouvée."
 
-#: cam_altair.cpp:328
+#: cam_altair.cpp:329
 msgid "Failed to open Altair Camera."
 msgstr "Impossible de connecter la caméra Altair."
 
-#: cam_altair.cpp:341
+#: cam_altair.cpp:346
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Impossible d'obtenir la résolution de la caméra Altair Camera."
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:802
-#: cam_indi.cpp:836 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
+#: cam_indi.cpp:802 cam_indi.cpp:836 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1073,8 +1073,8 @@ msgstr "Erreur en fixant le gain"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
-#: stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "Erreur"
 
@@ -1607,13 +1607,13 @@ msgstr ""
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354 profile_wizard.cpp:355
-#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
-#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
-#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
-#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:329
-#: scope.cpp:371 scope.cpp:414 statswindow.cpp:262 stepguider.cpp:105
-#: stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
+#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
+#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
+#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
+#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
+#: stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "Aucun"
 
@@ -1898,7 +1898,7 @@ msgstr "Suivi de Comète - Apprentissage Actif"
 msgid "Comet Tracking - Active"
 msgstr "Suivi de Comète - Actif"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1384
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1400
 #: scope.cpp:1945
 msgid "Enable"
 msgstr "Activer"
@@ -1944,7 +1944,8 @@ msgid "Tracking rate axes"
 msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:547
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Démarrer"
 
@@ -1995,12 +1996,12 @@ msgstr ""
 "Sélectionnez une étoile guide et commencez le guidage. \n"
 "Ensuite, cliquez sur Démarrer pour commencer l'apprentissage."
 
-#: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:326
+#: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:327
 #: guide_algorithm.cpp:50 scope.cpp:667 statswindow.cpp:73 target.cpp:339
 msgid "RA"
 msgstr "AD"
 
-#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:327 scope.cpp:667
+#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:667
 #: statswindow.cpp:77 target.cpp:340
 msgid "Dec"
 msgstr "Dec"
@@ -2195,8 +2196,8 @@ msgstr ""
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
 msgstr ""
-"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de "
-"%g s à %g s"
+"La bibliothèque de dark existante couvre %d temps de pose dans la gamme de %"
+"g s à %g s"
 
 #: darks_dialog.cpp:150
 msgid ""
@@ -3199,6 +3200,7 @@ msgid "Seeing"
 msgstr "Seeing"
 
 #: gear_simulator.cpp:1829
+#, fuzzy, c-format
 msgid "% cloud opacity"
 msgstr "% d'opacité de nuage"
 
@@ -3246,7 +3248,7 @@ msgstr "%.1f Hz"
 msgid "AO not connected"
 msgstr "OA non connectée"
 
-#: graph.cpp:88 graph.cpp:601
+#: graph.cpp:88 graph.cpp:604
 msgid "Scope:"
 msgstr "Scope :"
 
@@ -3295,91 +3297,91 @@ msgstr "Tot"
 msgid "RA Osc: 0.00"
 msgstr "Osc AD: 0.00"
 
-#: graph.cpp:268
+#: graph.cpp:269
 msgid "Plot mode"
 msgstr "Mode Plot"
 
-#: graph.cpp:270
+#: graph.cpp:271
 msgid "RA / Dec"
 msgstr "AD / Dec"
 
-#: graph.cpp:271
+#: graph.cpp:272
 msgid "dx / dy"
 msgstr "dx / dy"
 
-#: graph.cpp:279
+#: graph.cpp:280
 msgid "Y-axis units"
 msgstr "Unités axe-Y"
 
-#: graph.cpp:281
+#: graph.cpp:282
 msgid "Arc-seconds"
 msgstr "Secondes d'arc"
 
-#: graph.cpp:285
+#: graph.cpp:286
 msgid "Pixels"
 msgstr "Pixels"
 
-#: graph.cpp:293
+#: graph.cpp:294
 msgid "Corrections to Scale"
 msgstr "Corrections à l'Échelle"
 
-#: graph.cpp:297
+#: graph.cpp:298
 msgid "Star Mass"
 msgstr "Masse Etoile"
 
-#: graph.cpp:299
+#: graph.cpp:300
 msgid "Star SNR"
 msgstr "RSB Etoile"
 
-#: graph.cpp:306
+#: graph.cpp:307
 msgid "RA Color..."
 msgstr "Couleur AD..."
 
-#: graph.cpp:307
+#: graph.cpp:308
 msgid "Dec Color..."
 msgstr "Couleur Dec..."
 
-#: graph.cpp:311
+#: graph.cpp:312
 msgid "dx Color..."
 msgstr "Couleur dx..."
 
-#: graph.cpp:312
+#: graph.cpp:313
 msgid "dy Color..."
 msgstr "Couleur dy..."
 
-#: graph.cpp:330
+#: graph.cpp:331
 msgid "dx"
 msgstr "dx"
 
-#: graph.cpp:331
+#: graph.cpp:332
 msgid "dy"
 msgstr "dy"
 
-#: graph.cpp:403
+#: graph.cpp:404
 msgid "RA or dx Color"
 msgstr "Couleur AD ou dx"
 
-#: graph.cpp:419
+#: graph.cpp:420
 msgid "Dec or dy Color"
 msgstr "Couleur Dec ou dy"
 
-#: graph.cpp:735
+#: graph.cpp:738
 msgid "Select the Y-axis scale, pixels per Y division"
 msgstr "Sélectionne l'échelle de l'axe Y, en pixels par division"
 
-#: graph.cpp:740
+#: graph.cpp:743
 msgid "Select the Y-axis scale, arc-seconds per Y division"
 msgstr "Sélectionne l'échelle de l'axe Y, en secondes d'arc par division"
 
-#: graph.cpp:1299
+#: graph.cpp:1313
 msgid "GuideNorth"
 msgstr "Guidage Nord"
 
-#: graph.cpp:1300
+#: graph.cpp:1314
 msgid "GuideEast"
 msgstr "Guidage Est"
 
-#: graph.cpp:1432 testguide.cpp:107 testguide.cpp:132
+#: graph.cpp:1446 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dithering"
 
@@ -3535,8 +3537,8 @@ msgstr "PredPd"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction du guide réactif devrait être appliqué ? "
 "Par défaut = %.f%%, ajustez si elle répond trop ou trop lentement"
@@ -3669,8 +3671,8 @@ msgstr "Agressivité"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ? Par défaut = "
 "%.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3695,8 +3697,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Quel pourcentage de la correction calculée doit être appliqué ?? Par défaut "
 "= %.f%%, veuillez ajuster si la réponse est trop forte ou trop lente"
@@ -3780,7 +3782,7 @@ msgstr ""
 "Par défaut = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1412 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1428 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "Auto"
 
@@ -3961,77 +3963,77 @@ msgstr ""
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "Êtes-vous sûr de vouloir supprimer tous les Signets ?"
 
-#: guider_multistar.cpp:408 guider_multistar.cpp:939
+#: guider_multistar.cpp:416 guider_multistar.cpp:948
 msgid "No star selected"
 msgstr "Aucune étoile selectionnée"
 
-#: guider_multistar.cpp:412
+#: guider_multistar.cpp:420
 msgid "Star lost - low SNR"
 msgstr "Étoile perdue - faible RSB"
 
-#: guider_multistar.cpp:413
+#: guider_multistar.cpp:421
 msgid "Star lost - low mass"
 msgstr "Étoile perdue - faible masse"
 
-#: guider_multistar.cpp:414
+#: guider_multistar.cpp:422
 msgid "Star lost - low HFD"
 msgstr "Étoile perdue - HFD bas"
 
-#: guider_multistar.cpp:415
+#: guider_multistar.cpp:423
 msgid "Star too near edge"
 msgstr "Étoile trop près du bord"
 
-#: guider_multistar.cpp:416
+#: guider_multistar.cpp:424
 msgid "Star lost - mass changed"
 msgstr "Étoile perdue - sa masse a changé"
 
-#: guider_multistar.cpp:417 guider_multistar.cpp:1146
+#: guider_multistar.cpp:425 guider_multistar.cpp:1156
 msgid "No star found"
 msgstr "Étoile non trouvée"
 
-#: guider_multistar.cpp:423
+#: guider_multistar.cpp:431
 #, c-format
 msgid "m=%.0f SNR=%.1f"
 msgstr "m=%.0f RSB=%.1f"
 
-#: guider_multistar.cpp:426
+#: guider_multistar.cpp:434
 msgid "Saturated"
 msgstr "Saturée"
 
-#: guider_multistar.cpp:436
+#: guider_multistar.cpp:444
 #, c-format
 msgid "Exp=%0.1f s"
 msgstr "Exp=%0.1f s"
 
-#: guider_multistar.cpp:438
+#: guider_multistar.cpp:446
 #, c-format
 msgid "Exp=%d ms"
 msgstr "Exp=%d ms"
 
-#: guider_multistar.cpp:510
+#: guider_multistar.cpp:518
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "Étoile sélectionnée automatiquement à (%.1f, %.1f)"
 
-#: guider_multistar.cpp:983
+#: guider_multistar.cpp:992
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr "Masse : %.f vs %.f"
 
-#: guider_multistar.cpp:1020
+#: guider_multistar.cpp:1029
 msgid "Recovering"
 msgstr "Récupération"
 
-#: guider_multistar.cpp:1153
+#: guider_multistar.cpp:1169
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "Étoile sélectionnée à (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1380
+#: guider_multistar.cpp:1396
 msgid "Search region (pixels)"
 msgstr "Région de recherche (pixels)"
 
-#: guider_multistar.cpp:1381
+#: guider_multistar.cpp:1397
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
@@ -4039,11 +4041,11 @@ msgstr ""
 "Combien de pixels (haut/bas/gauche/droite) doit-on examiner pour trouver une "
 "étoile ? Par défaut = 15"
 
-#: guider_multistar.cpp:1383
+#: guider_multistar.cpp:1399
 msgid "Star Mass Detection"
 msgstr "Détection de la masse de l'étoile"
 
-#: guider_multistar.cpp:1385
+#: guider_multistar.cpp:1401
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -4053,11 +4055,11 @@ msgstr ""
 "cette option est activée, PHD saute les images lorsque la masse de l'étoile "
 "guide change d'un montant supérieur au paramètre de 'tolérance'."
 
-#: guider_multistar.cpp:1394
+#: guider_multistar.cpp:1410
 msgid "Tolerance"
 msgstr "Tolérance"
 
-#: guider_multistar.cpp:1395
+#: guider_multistar.cpp:1411
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -4071,15 +4073,15 @@ msgstr ""
 "est 50. Si la détection de changement de masse de l'étoile n'est pas activé "
 "ce paramètre est ignoré."
 
-#: guider_multistar.cpp:1401
+#: guider_multistar.cpp:1417
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1406
+#: guider_multistar.cpp:1422
 msgid "Minimum star HFD (pixels)"
 msgstr "HFD minimum de l'étoile (pixels)"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1423
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -4093,11 +4095,11 @@ msgstr ""
 "HFD sur un pixel chaud et définir un seuil de HFD minimal un peu plus haut. "
 "Quand le HFD tombe en dessous de ce niveau, le pixel chaud est ignoré."
 
-#: guider_multistar.cpp:1414
+#: guider_multistar.cpp:1430
 msgid "Auto-selection frame downsample"
 msgstr "Sélection automatique du sous échantillonnage de l'image"
 
-#: guider_multistar.cpp:1415
+#: guider_multistar.cpp:1431
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -4108,27 +4110,27 @@ msgstr ""
 "automatique des étoiles ne parvient pas à reconnaître les étoiles guides "
 "déformées."
 
-#: guider_multistar.cpp:1418
+#: guider_multistar.cpp:1434
 msgid "Beep on lost star"
 msgstr "Biper à la perte de l'étoile"
 
-#: guider_multistar.cpp:1419
+#: guider_multistar.cpp:1435
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "Émettre une alarme sonore chaque fois que l'étoile guide est perdue"
 
-#: guider_multistar.cpp:1421
+#: guider_multistar.cpp:1437
 msgid "Use multiple stars"
 msgstr "Utilisez plusieurs étoiles"
 
-#: guider_multistar.cpp:1422
+#: guider_multistar.cpp:1438
 msgid "Use multiple guide stars if they are available"
 msgstr "Utilisez plusieurs étoiles guides si elles sont disponibles"
 
-#: guider_multistar.cpp:1429
+#: guider_multistar.cpp:1445
 msgid "Minimum star SNR for AutoFind"
 msgstr "SNR minimum des étoiles pour la recherche automatique"
 
-#: guider_multistar.cpp:1430
+#: guider_multistar.cpp:1446
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -10232,8 +10234,8 @@ msgstr "Connexion au rotateur..."
 #~ msgstr ""
 #~ "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. "
 #~ "Pour la déclinaison de %0.0f degrés, la vitesse en AD devrait être "
-#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de "
-#~ "%0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
+#~ "d'environ %0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %"
+#~ "0.0f %% de celle en Dec. Cela peut indiquer que la calibration est "
 #~ "inexacte, peut-être en raison de mouvement erratique de l'étoile lors de "
 #~ "la calibration."
 
