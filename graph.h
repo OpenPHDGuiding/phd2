@@ -128,6 +128,7 @@ private:
     WindowedAxisStats m_noDitherDec;
     WindowedAxisStats m_noDitherRA;
     wxLongLong_t m_timeBase;
+    bool m_ditherStarted;
 
     wxPoint *m_line1;
     wxPoint *m_line2;

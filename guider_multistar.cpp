@@ -1225,7 +1225,10 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         // show in-use secondary stars
         if (m_multiStarMode && m_guideStars.size() > 1)
         {
-            dc.SetPen(wxPen(wxColour(0, 255, 0), 1, wxPENSTYLE_SOLID));
+            if (m_primaryStar.WasFound())
+                dc.SetPen(wxPen(wxColour(0, 255, 0), 1, wxPENSTYLE_SOLID));
+            else
+                dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             int starsPlotted = 1;
             int limit;

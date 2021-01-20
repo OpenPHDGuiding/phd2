@@ -818,6 +818,7 @@ void GraphLogClientWindow::ResetData()
     m_noDitherDec.ClearAll();
     m_noDitherRA.ClearAll();
     m_raSameSides = 0;
+    m_ditherStarted = false;
     UpdateStats(0, 0);
     m_stats.ra_peak = m_stats.dec_peak = 0.0;
     m_stats.star_lost_cnt = 0;
@@ -971,6 +972,8 @@ void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
     m_stats.rms_ra = m_noDitherRA.GetPopulationSigma();
     m_stats.rms_dec = m_noDitherDec.GetPopulationSigma();
     m_stats.rms_tot = hypot(m_stats.rms_ra, m_stats.rms_dec);
+    m_stats.ra_peak = std::max(fabs(m_noDitherRA.GetMaxDisplacement()), fabs(m_noDitherRA.GetMinDisplacement()));
+    m_stats.dec_peak = std::max(fabs(m_noDitherDec.GetMaxDisplacement()), fabs(m_noDitherDec.GetMinDisplacement()));
 
     if (nr >= 2)
     {
@@ -1049,12 +1052,15 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     S_HISTORY cur(step);
     m_history.push_front(cur);
 
-    if (!PhdController::IsSettling())
-    {
-        long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
-        m_noDitherDec.AddGuideInfo(dt, cur.dec, cur.decDur);
-        m_noDitherRA.AddGuideInfo(dt, cur.ra, cur.raDur);
-    }
+    if (m_ditherStarted)
+        m_ditherStarted = false;
+    else
+        if (!PhdController::IsSettling())
+        {
+            long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
+            m_noDitherDec.AddGuideInfo(dt, cur.dec, cur.decDur);
+            m_noDitherRA.AddGuideInfo(dt, cur.ra, cur.raDur);
+        }
 
     // remove any dither history entries older than the first guide step history entry
     wxLongLong_t t0 = m_history[0].timestamp;
@@ -1070,18 +1076,6 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     unsigned int new_nr = GetItemCount();
     UpdateStats(new_nr, &cur);
 
-    double ax = fabs(step.mountOffset.X);
-    if (ax > m_stats.ra_peak)
-        m_stats.ra_peak = ax;
-    else if (fabs(oldest.ra) == m_stats.ra_peak)
-        m_stats.ra_peak = peak_ra(m_history, new_nr);
-
-    double ay = fabs(step.mountOffset.Y);
-    if (ay > m_stats.dec_peak)
-        m_stats.dec_peak = ay;
-    else if (fabs(oldest.dec) == m_stats.dec_peak)
-        m_stats.dec_peak = peak_dec(m_history, new_nr);
-
     pFrame->pStatsWin->UpdateStats();
 }
 
@@ -1094,6 +1088,7 @@ void GraphLogClientWindow::AppendData(const FrameDroppedInfo& info)
 void GraphLogClientWindow::AppendData(const DitherInfo& info)
 {
     m_dithers.push_back(info);
+    m_ditherStarted = true;
 }
 
 void GraphLogClientWindow::RecalculateTrendLines()

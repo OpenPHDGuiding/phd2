@@ -111,19 +111,18 @@ unsigned int DescriptiveStats::GetCount()
     return count;
 }
 
-// Raw variance for those who need it. Caller must insure count > 1
+// Raw variance for those who need it.
 double DescriptiveStats::GetVariance()
 {
-    assert(count > 1);
-
-    return runningS;
+    if (count > 1)
+        return runningS;
+    else
+        return 0;
 }
 
-// Return standard deviation of data values. Caller must insure count > 1.
+// Return standard deviation of data values.
 double DescriptiveStats::GetSigma()
 {
-    assert(count > 1);
-
     if (count > 0)
         return sqrt(runningS / (count - 1));
     else
@@ -133,30 +132,24 @@ double DescriptiveStats::GetSigma()
 // Return standard deviation of the population
 double DescriptiveStats::GetPopulationSigma()
 {
-    assert(count > 0);
-
     if (count > 0)
         return sqrt(runningS / count);
     else
         return 0;
 }
 
-// Return mean of data values. Caller must insure count > 0.
+// Return mean of data values.
 double DescriptiveStats::GetMean()
 {
-    assert(count > 0);
-
     if (count > 0)
         return runningMean;
     else
         return 0;
 }
 
-// Compute/return the sum of all values; Caller must insure count > 0
+// Compute/return the sum of all values;
 double DescriptiveStats::GetSum()
 {
-    assert(count > 0);
-
     if (count > 0)
     {
         return runningMean * count;
@@ -165,33 +158,27 @@ double DescriptiveStats::GetSum()
         return 0;
 }
 
-// Return minimum of data values. Caller must insure count > 0
+// Return minimum of data values.
 double DescriptiveStats::GetMinimum()
 {
-    assert(count > 0);
-
     if (count > 0)
         return minValue;
     else
         return 0;
 }
 
-// Return maximum of data values. Caller must insure count > 0
+// Return maximum of data values.
 double DescriptiveStats::GetMaximum()
 {
-    assert(count > 0);
-
     if (count > 0)
         return maxValue;
     else
         return 0;
 }
 
-// Returns maximum of absolute value of sample-to-sample differences. Caller must insure count > 1
+// Returns maximum of absolute value of sample-to-sample differences.
 double DescriptiveStats::GetMaxDelta()
 {
-    assert(count > 1);
-
     if (count > 1)
         return maxDelta;
     else
@@ -326,11 +313,9 @@ unsigned int AxisStats::GetReversalCount() const
     return axisReversals;
 }
 
-// Returns the guiding entry at index = 'inx';  Caller must insure inx is within bounds of data-set
+// Returns the guiding entry at index = 'inx';  Caller should insure inx is within bounds of data-set
 StarDisplacement AxisStats::GetEntry(unsigned int inx) const
 {
-    assert(inx < guidingEntries.size());
-
     if (inx < guidingEntries.size())
         return guidingEntries[inx];
     else
@@ -375,11 +360,10 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
     prevPosition = StarPos;
 }
 
-// Get the last entry added - makes it easier for clients to use delta() operations on data values. Caller must insure count > 0
+// Get the last entry added - makes it easier for clients to use delta() operations on data values.
 StarDisplacement AxisStats::GetLastEntry() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 0)
         return guidingEntries[sz - 1];
@@ -387,11 +371,10 @@ StarDisplacement AxisStats::GetLastEntry() const
         return StarDisplacement(0, 0);
 }
 
-// Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.  Caller must insure count > 1
+// Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.
 double AxisStats::GetMaxDelta() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 1);
 
     if (sz > 1)
     {
@@ -407,32 +390,30 @@ unsigned int AxisStats::GetCount() const
     return guidingEntries.size();
 }
 
-// Return sum.  Caller must insure count > 0
+// Return sum.
 double AxisStats::GetSum() const
 {
     return sumY;
 }
 
-// Return mean of dataset. Caller must insure count > 0
+// Return mean of dataset. Caller should insure count > 0
 double AxisStats::GetMean() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 0)
     {
         return sumY / sz;
     }
     else
-        return 0.;
+        return 0;
 }
 
-// Return raw variance for clients who need it. Caller must insure count > 1
+// Return raw variance for clients who need it. Caller should insure count > 1
 double AxisStats::GetVariance() const
 {
     double rslt;
     size_t sz = guidingEntries.size();
-    assert(sz > 1);
 
     if (sz > 1)
     {
@@ -440,7 +421,7 @@ double AxisStats::GetVariance() const
         rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1.));
     }
     else
-        rslt = 0.;
+        rslt = 0;
 
     return rslt;
 }
@@ -457,10 +438,10 @@ double AxisStats::GetSigma() const
         if (variance >= 0.)
             rslt = sqrt(variance);
         else
-            rslt = 0.;
+            rslt = 0;
     }
     else
-        rslt = 0.;
+        rslt = 0;
 
     return rslt;
 }
@@ -474,26 +455,25 @@ double AxisStats::GetPopulationSigma() const
     if (sz > 1)
     {
         double variance = (sz * sumYSq - sumY * sumY) / (sz * sz);
-        if (variance >= 0.)
+        if (variance >= 0)
             rslt = sqrt(variance);
         else
-            rslt = 0.;
+            rslt = 0;
     }
     else
-        rslt = 0.;
+        rslt = 0;
 
     return rslt;
 }
 
-// Return median guidestar displacement. Caller must insure count > 0
+// Return median guidestar displacement. Caller should insure count > 0
 double AxisStats::GetMedian() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 1)
     {
-        double rslt = 0.;
+        double rslt = 0;
 
         // Need a copy of guidingEntries to do a sort
         std::vector <double> sortedEntries;
@@ -518,40 +498,38 @@ double AxisStats::GetMedian() const
     else if (sz == 1)
         return guidingEntries[0].StarPos;
     else
-        return 0.;
+        return 0;
 }
 
-// Return the minimum (signed) guidestar displacement. Caller must insure count > 0
+// Return the minimum (signed) guidestar displacement. Caller should insure count > 0
 double AxisStats::GetMinDisplacement() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 0)
     {
         return minDisplacement;
     }
     else
-        return 0.;
+        return 0;
 }
 
-// Return the maximum (signed) guidestar displacement. Caller must insure count > 0
+// Return the maximum (signed) guidestar displacement. Caller should insure count > 0
 double AxisStats::GetMaxDisplacement() const
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 0)
     {
         return maxDisplacement;
     }
     else
-        return 0.;
+        return 0;
 }
 
 // Return linear fit results for dataset, windowed or not.  This is inexpensive unless Sigma is needed
 // (Optional) Sigma is standard deviation of dataset after linear fit (drift) has been removed
-// Caller must insure count > 1
+// Caller should insure count > 1
 // Returns R-Squared, a measure of correlation between the linear fit and the original data set
 double AxisStats::GetLinearFitResults(double *Slope, double *Intercept, double *Sigma) const
 {
@@ -560,10 +538,10 @@ double AxisStats::GetLinearFitResults(double *Slope, double *Intercept, double *
     if (numVals <= 1)
     {
         *Slope = 0.;
-        *Intercept = 0.;
+        *Intercept = 0;
         if (Sigma)
-            *Sigma = 0.;
-        return 0.;
+            *Sigma = 0;
+        return 0;
     }
 
     double currentVariance = 0;
@@ -685,11 +663,10 @@ void WindowedAxisStats::AdjustMinMaxValues()
     }
 }
 
-// Remove oldest entry in the list, update stats accordingly. Caller must insure count > 0
+// Remove oldest entry in the list, update stats accordingly.
 void WindowedAxisStats::RemoveOldestEntry()
 {
     size_t sz = guidingEntries.size();
-    assert(sz > 0);
 
     if (sz > 0)
     {
