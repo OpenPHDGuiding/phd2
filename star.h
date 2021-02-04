@@ -98,6 +98,7 @@ public:
     PHD_Point referencePoint;
     int missCount;
     int zeroCount;
+    int lostCount;
 
     GuideStar();
     GuideStar(const Star* star);

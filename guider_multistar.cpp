@@ -834,12 +834,13 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                 {
                     if (m_starsUsed >= m_maxStars || m_guideStars.size() == 1)
                         break;
-                    m_starsUsed++;              // "used" means "looked at" for purposes of UI
+                    m_starsUsed++;              // "used" means "considered" for purposes of UI
                     if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
                         GetMinStarHFD(), pCamera->GetSaturationADU()))
                     {
                         double dX = pGS->X - pGS->referencePoint.X;
                         double dY = pGS->Y - pGS->referencePoint.Y;
+                        pGS->lostCount = wxMax(0, pGS->lostCount - 1);
                         if (dX != 0 || dY != 0)
                         {
                             // Handle zero-counting - suspect results of exactly zero movement
@@ -894,11 +895,17 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                             erasures = true;
                         }
                     }
-                    else                                              //this star no longer findable in its search region
+                    else                                              //star not found in its search region
                     {
-                        AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DNF");
-                        pGS = m_guideStars.erase(pGS);
-                        erasures = true;
+                        pGS->lostCount++;
+                        if (pGS->lostCount < 5)
+                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "NF" + std::to_string(pGS->lostCount));
+                        else
+                        {
+                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DNF");
+                            pGS = m_guideStars.erase(pGS);
+                            erasures = true;
+                        }
                     }
                     if (!erasures)
                         ++pGS;

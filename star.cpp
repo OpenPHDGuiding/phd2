@@ -703,6 +703,7 @@ GuideStar::GuideStar() : Star()
     referencePoint.Y = Y;
     missCount = 0;
     zeroCount = 0;
+    lostCount = 0;
 }
 GuideStar::GuideStar(const Star* star)
 {
@@ -713,6 +714,7 @@ GuideStar::GuideStar(const Star* star)
     SNR = star->SNR;
     missCount = 0;
     zeroCount = 0;
+    lostCount = 0;
     referencePoint.X = star->X;
     referencePoint.Y = star->Y;
 
