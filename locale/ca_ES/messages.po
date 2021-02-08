@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-03 07:37+0000\n"
-"PO-Revision-Date: 2021-02-07 19:57+0100\n"
+"PO-Revision-Date: 2021-02-07 22:28+0100\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5655,7 +5655,7 @@ msgstr "Sistema per defecte"
 
 #: myframe.cpp:2904
 msgid "Language-Name"
-msgstr "Nom-Idioma"
+msgstr "Català"
 
 #: myframe.cpp:2943
 msgid "Reset Configuration"
