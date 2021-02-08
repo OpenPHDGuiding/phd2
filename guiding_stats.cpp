@@ -67,7 +67,7 @@ void DescriptiveStats::AddValue(double Val)
         newMean = Val;
         minValue = Val;
         maxValue = Val;
-        maxDelta = 0;
+        maxDelta = 0.;
     }
     else
     {
@@ -87,14 +87,14 @@ void DescriptiveStats::AddValue(double Val)
 void DescriptiveStats::ClearAll()
 {
     count = 0;
-    runningS = 0;
-    newS = 0;
-    runningMean = 0;
-    newMean = 0;
-    lastValue = 0;
+    runningS = 0.;
+    newS = 0.;
+    runningMean = 0.;
+    newMean = 0.;
+    lastValue = 0.;
     minValue = std::numeric_limits<double>::max();
     maxValue = std::numeric_limits<double>::min();
-    maxDelta = 0;
+    maxDelta = 0.;
 }
 
 // Get the previous value added. Caller must insure count > 0
@@ -117,7 +117,7 @@ double DescriptiveStats::GetVariance()
     if (count > 1)
         return runningS;
     else
-        return 0;
+        return 0.;
 }
 
 // Return standard deviation of data values.
@@ -126,7 +126,7 @@ double DescriptiveStats::GetSigma()
     if (count > 0)
         return sqrt(runningS / (count - 1));
     else
-        return 0;
+        return 0.;
 }
 
 // Return standard deviation of the population
@@ -135,7 +135,7 @@ double DescriptiveStats::GetPopulationSigma()
     if (count > 0)
         return sqrt(runningS / count);
     else
-        return 0;
+        return 0.;
 }
 
 // Return mean of data values.
@@ -144,18 +144,16 @@ double DescriptiveStats::GetMean()
     if (count > 0)
         return runningMean;
     else
-        return 0;
+        return 0.;
 }
 
 // Compute/return the sum of all values;
 double DescriptiveStats::GetSum()
 {
     if (count > 0)
-    {
         return runningMean * count;
-    }
     else
-        return 0;
+        return 0.;
 }
 
 // Return minimum of data values.
@@ -164,7 +162,7 @@ double DescriptiveStats::GetMinimum()
     if (count > 0)
         return minValue;
     else
-        return 0;
+        return 0.;
 }
 
 // Return maximum of data values.
@@ -173,7 +171,7 @@ double DescriptiveStats::GetMaximum()
     if (count > 0)
         return maxValue;
     else
-        return 0;
+        return 0.;
 }
 
 // Returns maximum of absolute value of sample-to-sample differences.
@@ -182,7 +180,7 @@ double DescriptiveStats::GetMaxDelta()
     if (count > 1)
         return maxDelta;
     else
-        return 0;
+        return 0.;
 }
 
 // Applies a high-pass filter to a stream of data, one sample point at a time.  Samples are not retained, client can use DescriptiveStats or AxisStats
@@ -206,7 +204,7 @@ double HighPassFilter::AddValue(double NewVal)
         hpfResult = alphaCutoff * (hpfResult + NewVal - prevVal);
     }
     prevVal = NewVal;
-    count++;
+    ++count;
     return hpfResult;
 }
 
@@ -218,12 +216,13 @@ double HighPassFilter::GetCurrentHPF()
 void HighPassFilter::Reset()
 {
     count = 0;
-    prevVal = 0;
-    hpfResult = 0;
+    prevVal = 0.;
+    hpfResult = 0.;
 }
 
-// Applies a low-pass filter to a stream of data, one sample point at a time.  Samples are not retained, client can use DescriptiveStats or AxisStats
-// on the filtered data values
+// Applies a low-pass filter to a stream of data, one sample point at a
+// time.  Samples are not retained, client can use DescriptiveStats or
+// AxisStats on the filtered data values
 LowPassFilter::LowPassFilter(double CutoffPeriod, double SamplePeriod)
 {
     // following is alg. equiv of alpha = Exposure / (CutoffPeriod / Exposure)
@@ -243,7 +242,7 @@ double LowPassFilter::AddValue(double NewVal)
     {
         lpfResult += alphaCutoff * (NewVal - lpfResult);
     }
-    count++;
+    ++count;
     return lpfResult;
 }
 
@@ -255,12 +254,15 @@ double LowPassFilter::GetCurrentLPF()
 void LowPassFilter::Reset()
 {
     count = 0;
-    lpfResult = 0;
+    lpfResult = 0.;
 }
 
-// AxisStats, WindowedAxisStats, and the StarDisplacement classes can be used to collect and evaluate typical guiding data.
-// Windowed datasets will be automatically trimmed if AutoWindowSize > 0 or can be manually trimmed by client via RemoveOldestEntry()
-// Timestamps are intended to be incremental, i.e seconds since start of guiding, and are used only for linear fit operations
+// AxisStats, WindowedAxisStats, and the StarDisplacement classes can be
+// used to collect and evaluate typical guiding data.  Windowed datasets
+// will be automatically trimmed if AutoWindowSize > 0 or can be manually
+// trimmed by client via RemoveOldestEntry() Timestamps are intended to be
+// incremental, i.e seconds since start of guiding, and are used only for
+// linear fit operations
 StarDisplacement::StarDisplacement(double When, double Where)
 {
     StarPos = Where;
@@ -276,7 +278,6 @@ AxisStats::AxisStats()
 
 AxisStats::~AxisStats()
 {
-
 }
 
 void AxisStats::ClearAll()
@@ -289,16 +290,16 @@ void AxisStats::InitializeScalars()
 {
     axisMoves = 0;
     axisReversals = 0;
-    sumY = 0;
-    sumYSq = 0;
-    sumX = 0;
-    sumXY = 0;
-    sumXSq = 0;
-    prevPosition = 0;
-    prevMove = 0;
+    sumY = 0.;
+    sumYSq = 0.;
+    sumX = 0.;
+    sumXY = 0.;
+    sumXSq = 0.;
+    prevPosition = 0.;
+    prevMove = 0.;
     minDisplacement = std::numeric_limits<double>::max();
     maxDisplacement = std::numeric_limits<double>::min();
-    maxDelta = 0;
+    maxDelta = 0.;
 }
 
 // Return number of guide steps where GuideAmount was non-zero
@@ -319,7 +320,7 @@ StarDisplacement AxisStats::GetEntry(unsigned int inx) const
     if (inx < guidingEntries.size())
         return guidingEntries[inx];
     else
-        return StarDisplacement(0, 0);
+        return StarDisplacement(0., 0.);
 }
 
 // DeltaT needs to be a small number, on the order of a guide exposure time, not a full time-of-day
@@ -336,17 +337,18 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
     sumYSq += StarPos * StarPos;
     sumY += StarPos;
 
-    if (abs(GuideAmt) > 0)
+    if (GuideAmt != 0.)
     {
         starInfo.Guided = true;
-        axisMoves++;
-        if (GuideAmt * prevMove < 0)
+        ++axisMoves;
+        if (GuideAmt * prevMove < 0.)
         {
-            axisReversals++;
+            ++axisReversals;
             starInfo.Reversal = true;
         }
         prevMove = GuideAmt;
     }
+
     if (guidingEntries.size() > 1)
     {
         double newDelta = fabs(starInfo.StarPos - prevPosition);
@@ -356,6 +358,7 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
             maxDeltaInx = guidingEntries.size();      // where the entry is going to go - furthest down in list among equals
         }
     }
+
     guidingEntries.push_back(starInfo);
     prevPosition = StarPos;
 }
@@ -368,7 +371,7 @@ StarDisplacement AxisStats::GetLastEntry() const
     if (sz > 0)
         return guidingEntries[sz - 1];
     else
-        return StarDisplacement(0, 0);
+        return StarDisplacement(0., 0.);
 }
 
 // Return the maximum absolute value of differential star positions - the maximum difference of entry-n and entry-n-1.
@@ -377,11 +380,9 @@ double AxisStats::GetMaxDelta() const
     size_t sz = guidingEntries.size();
 
     if (sz > 1)
-    {
         return maxDelta;
-    }
     else
-        return 0;
+        return 0.;
 }
 
 // Return count of entries currently in window
@@ -402,11 +403,9 @@ double AxisStats::GetMean() const
     size_t sz = guidingEntries.size();
 
     if (sz > 0)
-    {
         return sumY / sz;
-    }
     else
-        return 0;
+        return 0.;
 }
 
 // Return raw variance for clients who need it. Caller should insure count > 1
@@ -421,7 +420,7 @@ double AxisStats::GetVariance() const
         rslt = (entryCount * sumYSq - sumY * sumY) / (entryCount * (entryCount - 1.));
     }
     else
-        rslt = 0;
+        rslt = 0.;
 
     return rslt;
 }
@@ -438,10 +437,10 @@ double AxisStats::GetSigma() const
         if (variance >= 0.)
             rslt = sqrt(variance);
         else
-            rslt = 0;
+            rslt = 0.;
     }
     else
-        rslt = 0;
+        rslt = 0.;
 
     return rslt;
 }
@@ -455,13 +454,13 @@ double AxisStats::GetPopulationSigma() const
     if (sz > 1)
     {
         double variance = (sz * sumYSq - sumY * sumY) / (sz * sz);
-        if (variance >= 0)
+        if (variance >= 0.)
             rslt = sqrt(variance);
         else
-            rslt = 0;
+            rslt = 0.;
     }
     else
-        rslt = 0;
+        rslt = 0.;
 
     return rslt;
 }
@@ -473,7 +472,7 @@ double AxisStats::GetMedian() const
 
     if (sz > 1)
     {
-        double rslt = 0;
+        double rslt = 0.;
 
         // Need a copy of guidingEntries to do a sort
         std::vector <double> sortedEntries;
@@ -498,7 +497,7 @@ double AxisStats::GetMedian() const
     else if (sz == 1)
         return guidingEntries[0].StarPos;
     else
-        return 0;
+        return 0.;
 }
 
 // Return the minimum (signed) guidestar displacement. Caller should insure count > 0
@@ -507,11 +506,9 @@ double AxisStats::GetMinDisplacement() const
     size_t sz = guidingEntries.size();
 
     if (sz > 0)
-    {
         return minDisplacement;
-    }
     else
-        return 0;
+        return 0.;
 }
 
 // Return the maximum (signed) guidestar displacement. Caller should insure count > 0
@@ -520,11 +517,9 @@ double AxisStats::GetMaxDisplacement() const
     size_t sz = guidingEntries.size();
 
     if (sz > 0)
-    {
         return maxDisplacement;
-    }
     else
-        return 0;
+        return 0.;
 }
 
 // Return linear fit results for dataset, windowed or not.  This is inexpensive unless Sigma is needed
@@ -538,14 +533,14 @@ double AxisStats::GetLinearFitResults(double *Slope, double *Intercept, double *
     if (numVals <= 1)
     {
         *Slope = 0.;
-        *Intercept = 0;
+        *Intercept = 0.;
         if (Sigma)
-            *Sigma = 0;
-        return 0;
+            *Sigma = 0.;
+        return 0.;
     }
 
-    double currentVariance = 0;
-    double currentMean = 0;
+    double currentVariance = 0.;
+    double currentMean = 0.;
 
     double slope = ((numVals * sumXY) - (sumX * sumY)) / ((numVals * sumXSq) - (sumX * sumX));
     //double constrainedSlope = sumXY / sumXSq;          // Possible future use, slope value if intercept is constrained to be zero
@@ -622,9 +617,12 @@ bool WindowedAxisStats::ChangeWindowSize(unsigned int NewSize)
     return success;
 }
 
-// Private function to re-compute min, max, and maxDelta values when a guide entry is going to be removed.  With an auto-windowed instance of AxisStats, an entry
-// removal can happen for every addition, so we avoid iterating through the entire collection unless it's required because of the entry
-// that's being aged out.  This function must be called before entry[0] (the oldest) is actually removed.
+// Private function to re-compute min, max, and maxDelta values when a guide
+// entry is going to be removed.  With an auto-windowed instance of
+// AxisStats, an entry removal can happen for every addition, so we avoid
+// iterating through the entire collection unless it's required because of
+// the entry that's being aged out.  This function must be called before
+// entry[0] (the oldest) is actually removed.
 void WindowedAxisStats::AdjustMinMaxValues()
 {
     StarDisplacement target = guidingEntries.front();           // Entry that's about to be removed
@@ -639,7 +637,7 @@ void WindowedAxisStats::AdjustMinMaxValues()
         {
             minDisplacement = std::numeric_limits<double>::max();
             maxDisplacement = std::numeric_limits<double>::min();
-            maxDelta = 0;
+            maxDelta = 0.;
         }
     }
 
@@ -692,6 +690,7 @@ void WindowedAxisStats::RemoveOldestEntry()
 void WindowedAxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
 {
     AxisStats::AddGuideInfo(DeltaT, StarPos, GuideAmt);
+
     if (autoWindowing && guidingEntries.size() > windowSize)
     {
         RemoveOldestEntry();

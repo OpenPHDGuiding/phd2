@@ -1054,13 +1054,12 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 
     if (m_ditherStarted)
         m_ditherStarted = false;
-    else
-        if (!PhdController::IsSettling())
-        {
-            long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
-            m_noDitherDec.AddGuideInfo(dt, cur.dec, cur.decDur);
-            m_noDitherRA.AddGuideInfo(dt, cur.ra, cur.raDur);
-        }
+    else if (!PhdController::IsSettling())
+    {
+        long dt = ::wxGetUTCTimeMillis().GetValue() - m_timeBase;
+        m_noDitherDec.AddGuideInfo(dt, cur.dec, cur.decDur);
+        m_noDitherRA.AddGuideInfo(dt, cur.ra, cur.raDur);
+    }
 
     // remove any dither history entries older than the first guide step history entry
     wxLongLong_t t0 = m_history[0].timestamp;
