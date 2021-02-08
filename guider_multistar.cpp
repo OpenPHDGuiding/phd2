@@ -898,7 +898,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                     else                                              //star not found in its search region
                     {
                         pGS->lostCount++;
-                        if (pGS->lostCount < 5)
+                        if (pGS->lostCount < 3)
                             AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "NF" + std::to_string(pGS->lostCount));
                         else
                         {
