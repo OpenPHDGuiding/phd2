@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 07:37+0000\n"
+"POT-Creation-Date: 2021-02-08 05:48+0000\n"
 "PO-Revision-Date: 2016-04-15 21:31+0100\n"
 "Last-Translator: Giorgio Mazzacurati <pkorama@gmail.com>\n"
 "Language-Team: GrAG <info@grag.org>\n"
@@ -1836,7 +1836,7 @@ msgstr "Inseguimento comete - addestramento attivo"
 msgid "Comet Tracking - Active"
 msgstr "Inseguimento comete - attivo"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1400
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1410
 #: scope.cpp:1945
 msgid "Enable"
 msgstr "Abilitato"
@@ -3283,15 +3283,15 @@ msgstr "Seleziona la scala per l'asse Y, pixel per divisione Y"
 msgid "Select the Y-axis scale, arc-seconds per Y division"
 msgstr "Seleziona la scala per l'asse Y, arc/secondi per divisione Y"
 
-#: graph.cpp:1313
+#: graph.cpp:1307
 msgid "GuideNorth"
 msgstr "GuidaNord"
 
-#: graph.cpp:1314
+#: graph.cpp:1308
 msgid "GuideEast"
 msgstr "GuidaEst"
 
-#: graph.cpp:1446 testguide.cpp:107 testguide.cpp:132
+#: graph.cpp:1440 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
 
@@ -3636,7 +3636,7 @@ msgid ""
 msgstr ""
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1428 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1438 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "Automatico"
 
@@ -3807,7 +3807,7 @@ msgstr ""
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "Sei sicuro di voler cancellare tutti i preferiti?"
 
-#: guider_multistar.cpp:416 guider_multistar.cpp:948
+#: guider_multistar.cpp:416 guider_multistar.cpp:955
 msgid "No star selected"
 msgstr "Nessuna stella selezionata"
 
@@ -3831,7 +3831,7 @@ msgstr "Stella troppo vicina al bordo"
 msgid "Star lost - mass changed"
 msgstr "Stella per per cambiamento di massa"
 
-#: guider_multistar.cpp:425 guider_multistar.cpp:1156
+#: guider_multistar.cpp:425 guider_multistar.cpp:1163
 msgid "No star found"
 msgstr "Nessuna stella trovata"
 
@@ -3859,25 +3859,25 @@ msgstr "Esp=%d ms"
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "Selezione automatica della stella a (%.1f, %.1f)"
 
-#: guider_multistar.cpp:992
+#: guider_multistar.cpp:999
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr ""
 
-#: guider_multistar.cpp:1029
+#: guider_multistar.cpp:1036
 msgid "Recovering"
 msgstr ""
 
-#: guider_multistar.cpp:1169
+#: guider_multistar.cpp:1176
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "Stella selezionata a (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1396
+#: guider_multistar.cpp:1406
 msgid "Search region (pixels)"
 msgstr "Regione di ricerca (pixel)"
 
-#: guider_multistar.cpp:1397
+#: guider_multistar.cpp:1407
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
@@ -3885,11 +3885,11 @@ msgstr ""
 "Quanti pixel (su/giù/sinistra/destra) vuoi controllare per cercare una "
 "stella? Valore predefinito = 15"
 
-#: guider_multistar.cpp:1399
+#: guider_multistar.cpp:1409
 msgid "Star Mass Detection"
 msgstr "Rilevamento massa della stella"
 
-#: guider_multistar.cpp:1401
+#: guider_multistar.cpp:1411
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -3900,11 +3900,11 @@ msgstr ""
 "della stella di guida cambierà di un valore maggiore di quello di tolleranza "
 "impostato."
 
-#: guider_multistar.cpp:1410
+#: guider_multistar.cpp:1420
 msgid "Tolerance"
 msgstr "Tolleranza"
 
-#: guider_multistar.cpp:1411
+#: guider_multistar.cpp:1421
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -3918,15 +3918,15 @@ msgstr ""
 "con un valore predefinito di 50. Se l'impostazione del cambiamento della "
 "massa della stella non è attivato allora questo parametro è ignorato. "
 
-#: guider_multistar.cpp:1417
+#: guider_multistar.cpp:1427
 msgid "65535"
 msgstr ""
 
-#: guider_multistar.cpp:1422
+#: guider_multistar.cpp:1432
 msgid "Minimum star HFD (pixels)"
 msgstr ""
 
-#: guider_multistar.cpp:1423
+#: guider_multistar.cpp:1433
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -3935,38 +3935,38 @@ msgid ""
 "will be ignored."
 msgstr ""
 
-#: guider_multistar.cpp:1430
+#: guider_multistar.cpp:1440
 msgid "Auto-selection frame downsample"
 msgstr ""
 
-#: guider_multistar.cpp:1431
+#: guider_multistar.cpp:1441
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
 "guide stars."
 msgstr ""
 
-#: guider_multistar.cpp:1434
+#: guider_multistar.cpp:1444
 msgid "Beep on lost star"
 msgstr ""
 
-#: guider_multistar.cpp:1435
+#: guider_multistar.cpp:1445
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr ""
 
-#: guider_multistar.cpp:1437
+#: guider_multistar.cpp:1447
 msgid "Use multiple stars"
 msgstr ""
 
-#: guider_multistar.cpp:1438
+#: guider_multistar.cpp:1448
 msgid "Use multiple guide stars if they are available"
 msgstr ""
 
-#: guider_multistar.cpp:1445
+#: guider_multistar.cpp:1455
 msgid "Minimum star SNR for AutoFind"
 msgstr ""
 
-#: guider_multistar.cpp:1446
+#: guider_multistar.cpp:1456
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
