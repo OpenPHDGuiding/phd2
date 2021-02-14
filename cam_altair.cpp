@@ -376,10 +376,37 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         HasGainControl = max > min;
     }
 
-    m_sdk.put_AutoExpoEnable(m_handle, FALSE);
-
     m_sdk.put_Speed(m_handle, 0);
     m_sdk.put_RealTime(m_handle, TRUE);
+
+    if (hasSkip)
+        m_sdk.put_Mode(m_handle, 0);
+
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
+
+#if 0
+    // TODO: this is the initiailization code copied from cam_touptek.cpp
+    // I was hoping this one of these might help with the problem of the first
+    // frame exposure being very low, but it had no effect. Leaving these
+    // disabled for now rather than risk introducing a change that is
+    // incompatible with one of the camera models I am unable to test with.
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_PROCESSMODE, 0);
+    //m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_LINEAR, 0);
+    //m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_COLORMATIX, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_WBGAIN, 0);
+    //m_sdk.put_Option(ALTAIRCAM_OPTION_TRIGGER, 1);  // software trigger
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_AUTOEXP_POLICY, 0); // 0="Exposure Only" 1="Exposure Preferred"
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_ROTATE, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_UPSIDE_DOWN, 0);
+    //m_cam.SetOption(m_handle, ALTAIRCAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_FFC, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_DFC, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_SHARPENING, 0);
+#endif
+
+    m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     m_frame = wxRect(FullSize);
 
@@ -390,12 +417,6 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     {
         m_sdk.put_Roi(m_handle, 0, 0, width, height);
     }
-
-    if (hasSkip)
-        m_sdk.put_Mode(m_handle, 0);
-
-    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
-    m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     return false;
 }
