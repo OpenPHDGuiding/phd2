@@ -137,7 +137,7 @@ struct AltairCamera : public GuideCamera
     double m_devicePixelSize;
     HAltaircam m_handle;
     volatile bool m_frameReady;
-    bool ReduceResolution;
+    bool m_reduceResolution;
 
     AltairCamera(AltairCamType type);
     ~AltairCamera();
@@ -349,8 +349,8 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     delete[] m_buffer;
     m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
 
-    ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
-    if (hasROI && ReduceResolution)
+    m_reduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    if (hasROI && m_reduceResolution)
     {
         width *= 0.8;
         height *= 0.8;
@@ -413,7 +413,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n",
         m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
-    if (hasROI && ReduceResolution)
+    if (hasROI && m_reduceResolution)
     {
         m_sdk.put_Roi(m_handle, 0, 0, width, height);
     }
@@ -447,8 +447,8 @@ void AltairCamera::ShowPropertyDialog()
     dlg.m_reduceRes->SetValue(value);
     if (dlg.ShowModal() == wxID_OK)
     {
-        ReduceResolution = dlg.m_reduceRes->GetValue();
-        pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", ReduceResolution);
+        m_reduceResolution = dlg.m_reduceRes->GetValue();
+        pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", m_reduceResolution);
     }
 }
 
