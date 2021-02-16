@@ -1031,6 +1031,13 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SVBCameraSDK.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SVBCameraSDK.dll)
 
+  # Moravian gX-driver cameras
+#  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.lib)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.lib)
+#  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
+
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${libcurl_dir}/lib/LIBCURL.DLL)
 
   # ASCOM

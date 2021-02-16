@@ -65,6 +65,7 @@ public:
     double GetMaximum();                // Returns the max value
     double GetVariance();               // Variance for those who need it
     double GetSigma();                  // Returns the standard deviation
+    double GetPopulationSigma();        // Population sigma ('n' vs 'n-1')
     double GetMaxDelta();               // Returns max of absolute delta(new - previous) values
 };
 
@@ -117,7 +118,7 @@ struct StarDisplacement
 };
 
 // AxisStats and the StarDisplacement class can be used to collect and evaluate typical guiding data.  Datasets can be windowed or not.
-// Windowing means the data collection is limited to the most recent <n> entries.  
+// Windowing means the data collection is limited to the most recent <n> entries.
 // Windowed datasets will be automatically trimmed if AutoWindowSize > 0 or can be manually trimmed by client using RemoveOldestEntry()
 class AxisStats
 {
@@ -125,12 +126,12 @@ protected:
     std::deque <StarDisplacement> guidingEntries;               // queue of elements in dataset
     unsigned int axisMoves;                                     // number of times in window when guide pulse was non-zero
     unsigned int axisReversals;                                 // number of times in window when guide pulse caused a direction reversal
-    double prevMove;                                            // value of guide pulse in next-to-last entry                                           
+    double prevMove;                                            // value of guide pulse in next-to-last entry
     double prevPosition;                                        // value of guide star location in next-to-last entry
     // Variables used to compute stats in windowed AxisStats
-    double sumX;                                                // Sum of the x values (deltaT values)     
+    double sumX;                                                // Sum of the x values (deltaT values)
     double sumY;                                                // Sum of the y values (star position)
-    double sumXY;                                               // Sum of (x * y)                                              
+    double sumXY;                                               // Sum of (x * y)
     double sumXSq;                                              // Sum of (x squared)
     double sumYSq;                                              // Sum of (y squared)
     // Variables needed for windowed or non-windowed versions
@@ -144,37 +145,46 @@ public:
     // Constructor for 3 types of instance: non-windowed, windowed with automatic trimming of size, windowed but with client controlling actual window size
     AxisStats();
     ~AxisStats();
+
     // Add a guiding info element of relative time, guide star position, guide pulse amount
     void AddGuideInfo(double DeltaT, double StarPos, double GuideAmt);
-    // Return a particular element from the current dataset
-    StarDisplacement GetEntry(unsigned int index);
-    void ClearAll();
-    // Return the count of elements in the dataset
-    unsigned int GetCount();
-    // Get the last entry added to the dataset - useful if client needs to do difference operations for time, star position, or guide amount
-    StarDisplacement GetLastEntry();
-    // Get the maximum y value in the dataset
-    double GetMaxDisplacement();
-    // Get the minimum y value in the dataset
-    double GetMinDisplacement();
-    // Return stats for current dataset - min, max, sum, mean, variance, standard deviation (sigma) 
-    double GetSum();
-    double GetMean();
-    double GetVariance();
-    double GetSigma();
-    double GetMedian();
-    double GetMaxDelta();
-    // Count of moves or reversals in current dataset
-    unsigned int GetMoveCount();
-    unsigned int GetReversalCount();
 
-    // Perform a linear fit on the star position values in the dataset.  Return usual slope and y-intercept values along with "constrained slope" - 
-    // the slope when the y-intercept is forced to zero.  Optionally, apply the fit to the original data values and computed the 
+    // Return a particular element from the current dataset
+    StarDisplacement GetEntry(unsigned int index) const;
+
+    void ClearAll();
+
+    // Return the count of elements in the dataset
+    unsigned int GetCount() const;
+
+    // Get the last entry added to the dataset - useful if client needs to do difference operations for time, star position, or guide amount
+    StarDisplacement GetLastEntry() const;
+
+    // Get the maximum y value in the dataset
+    double GetMaxDisplacement() const;
+
+    // Get the minimum y value in the dataset
+    double GetMinDisplacement() const;
+
+    // Return stats for current dataset - min, max, sum, mean, variance, standard deviation (sigma)
+    double GetSum() const;
+    double GetMean() const;
+    double GetVariance() const;
+    double GetSigma() const;
+    double GetPopulationSigma() const;
+    double GetMedian() const;
+    double GetMaxDelta() const;
+    // Count of moves or reversals in current dataset
+    unsigned int GetMoveCount() const;
+    unsigned int GetReversalCount() const;
+
+    // Perform a linear fit on the star position values in the dataset.  Return usual slope and y-intercept values along with "constrained slope" -
+    // the slope when the y-intercept is forced to zero.  Optionally, apply the fit to the original data values and computed the
     // standard deviation (Sigma) of the resulting drift-removed dataset.  Drift-removed data values are discarded, original data elements are unmodified
     // Example 1: do a linear fit during calibration to compute an angle - "Sigma" is not needed
     // Example 2: do a linear fit on Dec values during a GA run - use the slope to compute a polar alignment error, use Sigma to estimate seeing of drift-corrected Dec values
     // Returns a coefficient of determination, R-Squared, a form of correlation assessment
-    double GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL);
+    double GetLinearFitResults(double* Slope, double* Intercept, double* Sigma = NULL) const;
 
 };
 

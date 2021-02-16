@@ -90,7 +90,7 @@ public:
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
-    bool GetDevicePixelSize(double* devPixelSize) override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
     int GetDefaultCameraGain() override;
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;
@@ -583,7 +583,7 @@ bool Camera_ZWO::Disconnect()
     return false;
 }
 
-bool Camera_ZWO::GetDevicePixelSize(double* devPixelSize)
+bool Camera_ZWO::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;

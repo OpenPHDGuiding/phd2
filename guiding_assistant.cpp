@@ -253,6 +253,7 @@ struct GuidingAsstWin : public wxDialog
     int  m_origSubFrames;
     bool m_suspectCalibration;
     bool inBLTWrapUp = false;
+    bool origMultistarMode;
 
     bool m_measuringBacklash;
     BacklashTool *m_backlashTool;
@@ -574,6 +575,7 @@ GuidingAsstWin::GuidingAsstWin()
         m_backlashTool = new BacklashTool();
 
     m_measuringBacklash = false;
+    origMultistarMode = pFrame->pGuider->GetMultiStarMode();
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/GuidingAssistant/pos.y", -1);
@@ -1191,10 +1193,11 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
                     simpleSigma, slope * 60, bestEstimate, rSquared));
             }
         }
-
-        // round up to next multiple of .05, but do not go below 0.10 pixel
+        if (origMultistarMode)
+            bestEstimate *= 0.9;
+        // round up to next multiple of .05, but do not go below 0.05 pixel
         double const unit = 0.05;
-        double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.10);
+        double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.05);
         // Now apply a sanity check - there are still numerous things that could have gone wrong during the GA
         if (pxscale * roundUpEst <= 1.25)           // Min-move below 1.25 arc-sec is credible
         {
@@ -1557,6 +1560,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     double lp_cutoff = wxMax(6.0, 3.0 * exposure);
     double hp_cutoff = 1.0;
 
+    pFrame->pGuider->SetMultiStarMode(false);
     StatsReset();
     m_raHPF = HighPassFilter(hp_cutoff, exposure);
     m_raLPF = LowPassFilter(lp_cutoff, exposure);
@@ -1646,6 +1650,7 @@ void GuidingAsstWin::DoStop(const wxString& status)
             pSecondaryMount->SetGuidingEnabled(m_saveSecondaryMountEnabled);
 
         m_guideOutputDisabled = false;
+        pFrame->pGuider->SetMultiStarMode(origMultistarMode);           // may force an auto-find to refresh secondary star data
     }
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
@@ -1702,7 +1707,6 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
-
             if (m_origSubFrames == -1)
                 m_origSubFrames = pCamera->UseSubframes ? 1 : 0;
             pCamera->UseSubframes = false;

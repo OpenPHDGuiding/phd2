@@ -987,6 +987,11 @@ static wxString SelectedCameraId(const wxString& camName)
     return pConfig->Profile.GetString(key, GuideCamera::DEFAULT_CAMERA_ID);
 }
 
+wxString GearDialog::SelectedCameraId() const
+{
+    return ::SelectedCameraId(m_lastCamera);
+}
+
 void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
 {
     if (!m_pCamera || !m_pCamera->CanSelectCamera())
@@ -1005,7 +1010,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
         m_cameraIds.clear();
     }
 
-    wxString selectedId = SelectedCameraId(m_lastCamera);
+    wxString selectedId = ::SelectedCameraId(m_lastCamera);
 
     wxMenu *menu = new wxMenu();
     int id = MENU_SELECT_CAMERA_BEGIN;
@@ -1078,7 +1083,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
 
         pFrame->StatusMsgNoTimeout(_("Connecting to Camera ..."));
 
-        wxString cameraId = SelectedCameraId(m_lastCamera);
+        wxString cameraId = ::SelectedCameraId(m_lastCamera);
 
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
 

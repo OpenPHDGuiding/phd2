@@ -165,6 +165,7 @@ class Guider : public wxWindow
     LockPosShiftParams m_lockPosShift;
     bool m_measurementMode;
     double m_minStarHFD;
+    double m_minStarSNR;
     unsigned int m_autoSelDownsample;  // downsample factor for star auto-selection, 0=Auto
 
 protected:
@@ -220,7 +221,7 @@ public:
     void UpdateImageDisplay(usImage *pImage = nullptr);
 
     bool MoveLockPosition(const PHD_Point& mountDelta);
-    bool SetLockPosition(const PHD_Point& position);
+    virtual bool SetLockPosition(const PHD_Point& position);
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
     bool ShiftLockPosition();
     void EnableLockPosShift(bool enable);
@@ -266,6 +267,8 @@ public:
     void EnableMeasurementMode(bool enabled);
     void SetMinStarHFD(double val);
     double GetMinStarHFD() const;
+    void SetMinStarSNR(double val);
+    double getMinStarSNR() const;
     void SetAutoSelDownsample(unsigned int val);
     unsigned int GetAutoSelDownsample() const;
 
@@ -299,6 +302,9 @@ public:
     virtual double SNR() = 0;
     virtual double HFD() = 0;
     virtual int StarError() = 0;
+    virtual bool GetMultiStarMode() { return false; }
+    virtual void SetMultiStarMode(bool On) {};
+    virtual wxString GetStarCount() { return wxEmptyString; }
 
     usImage *CurrentImage() const;
     wxImage *DisplayedImage() const;
@@ -402,6 +408,11 @@ inline bool Guider::GetBookmarksShown() const
 inline double Guider::GetMinStarHFD() const
 {
     return m_minStarHFD;
+}
+
+inline double Guider::getMinStarSNR() const
+{
+    return m_minStarSNR;
 }
 
 inline unsigned int Guider::GetAutoSelDownsample() const

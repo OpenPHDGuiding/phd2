@@ -187,6 +187,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_LEwebcam.cpp
   ${phd_src_dir}/cam_MeadeDSI.cpp
   ${phd_src_dir}/cam_MeadeDSI.h
+  ${phd_src_dir}/cam_moravian.cpp
+  ${phd_src_dir}/cam_moravian.h
   ${phd_src_dir}/cam_NebSBIG.cpp
   ${phd_src_dir}/cam_NebSBIG.h
   ${phd_src_dir}/cam_opencv.cpp
@@ -330,8 +332,8 @@ set(guiding_SRC
   ${phd_src_dir}/guide_algorithm.cpp
   ${phd_src_dir}/guide_algorithm.h
   ${phd_src_dir}/guide_algorithms.h
-  ${phd_src_dir}/guider_onestar.cpp
-  ${phd_src_dir}/guider_onestar.h
+  ${phd_src_dir}/guider_multistar.cpp
+  ${phd_src_dir}/guider_multistar.h
   ${phd_src_dir}/guider.cpp
   ${phd_src_dir}/guider.h
   ${phd_src_dir}/guiders.h

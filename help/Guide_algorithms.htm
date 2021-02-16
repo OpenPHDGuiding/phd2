@@ -70,9 +70,9 @@ also adjust these values based on its measurement of high-frequency
 seeing disturbances. &nbsp;If you are seeing a high rate of declination guider
 corrections and lots of direction reversals, you may be "chasing the
 seeing" and adjusting the min-move values upward can be a simple way to
-reduce that. &nbsp;Of all the detailed guiding parameters discussed
+reduce that. &nbsp;<span style="font-weight: bold;">Of all the detailed guiding parameters discussed
 here, the two min-move values are the most likely to warrant adjustment
-on a nightly basis depending on seeing conditions.<br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
+on a nightly basis depending on seeing conditions.</span><br><br>The&nbsp;<a name="hysteresis"></a><span style="font-weight: bold;">hysteresis</span>
 algorithms keep a history of the guiding corrections that have been
 made in the recent past, and these are used to help compute the next
 guide correction. &nbsp;The <span style="font-weight: bold;">hysteresis</span>
@@ -87,17 +87,19 @@ out the corrections at the risk of being too slow to react to a
 legitimate change in direction. &nbsp;The hysteresis algorithms also
 include an <a name="aggressiveness"></a><span style="font-weight: bold;">aggressiveness </span>parameter,
 again expressed as a percentage,&nbsp; that is&nbsp;used to reduce
-over-correcting. &nbsp; On each frame, <span style="font-style: italic;">PHD2</span> computes how far it thinks the mount
+over-correcting. &nbsp; On each frame, <span style="font-style: italic;">PHD2</span>
+computes how far it thinks the mount
 should move and in what direction(s) it should move. The aggressiveness
-parameter scales this. For example, take a case where the star deflection
+parameter scales this. For example, take a case where the star
+deflection
 has been evaluated and a corrective move of 0.5 pixels is warranted.
 &nbsp;If the aggressiveness is set to 100%, a guider command will be
 issued to move the mount the full 0.5 pixels. &nbsp;But if the
 aggressiveness is set to 60%, the mount will be asked to move only 60%
-of that amount, or 0.3 pixels. If you find your mount is always overshooting
-the star, decrease this value slightly (say, by 10% steps). If you find <span style="font-style: italic;">PHD2</span> always seems to be lagging
-behind the star's motion, increase this by a little bit. A little can
-go a long way here. &nbsp;<br><br>The&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">ResistSwitch</span>
+of that amount, or 0.3 pixels. &nbsp;If you've done a reasonable job of
+setting Min-Move values, there is generally no need to modify these
+parameters., and any modifications you attempt should be based on a
+careful analysis of your guiding history using the PHD2 LogViewer tool.<br><br>The&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">ResistSwitch</span>
 algorithm behaves much as its name implies. &nbsp;Like the hysteresis
 algorithms, it also maintains a
 history of past guide corrections, and any change of direction must be
@@ -139,7 +141,9 @@ median value of the recent history. &nbsp;If you set a non-zero slope
 weight, that median value will be adjusted either upward or downward
 based on the recent trend of guide star movements. &nbsp;Because
 the low-pass algorithm is so resistant to quick changes, it is probably
-most applicable to declination guiding.<br><br>The <span style="font-weight: bold;"><a name="LowPass2"></a>LowPass2</span>
+most applicable to declination guiding or to mounts with absolute
+encoders. &nbsp;Use of this algorithm has been deprecated in favor of
+the LowPass2 algorithm.<br><br>The <span style="font-weight: bold;"><a name="LowPass2"></a>LowPass2</span>
 algorithm is a variation of the original LowPass algorithm with
 somewhat different behavior. &nbsp;It also maintains a history of
 guiding corrections, but the next correction is simply a linear
@@ -340,7 +344,13 @@ algorithm to adjust the period as needed to better control whatever
 periodic
 errors it finds. &nbsp;Once you have run the altorithm multiple times
 and are happy with the results, you can leave this field set to
-whatever value was computed in the previous sessions.</p><p class="MsoNormal">The '<span style="font-weight: bold;">Retain model (% period)</span>'
+whatever value was computed in the previous sessions. &nbsp;If you have
+a mount with a recurring tracking error that occurs on a non-harmonic
+frequency, &nbsp;you may want to disable "auto-adjust period' and
+"lock" the PPEC algorithm on the particular frequency you are trying to
+control. &nbsp;Obviously, knowing this requires an FFT analysis of your
+native tracking performance, a capability that's part of the PHD
+LogViewer tool.</p><p class="MsoNormal">The '<span style="font-weight: bold;">Retain model (% period)</span>'
 parameter specifies how long the mount can track unguided before the
 PPEC algorithm will be reset. &nbsp;This is computed as a percentage of
 the current period length. &nbsp;This is useful in situations such as

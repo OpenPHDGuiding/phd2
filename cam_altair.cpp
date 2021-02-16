@@ -130,6 +130,7 @@ struct AltairCamera : public GuideCamera
     SDKLib m_sdk;
     wxRect m_frame;
     unsigned char *m_buffer;
+    bool m_isColor;
     bool m_capturing;
     int m_minGain;
     int m_maxGain;
@@ -333,6 +334,10 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     Name = pai->displayname;
     bool hasROI = (pai->model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
     bool hasSkip = (pai->model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
+    m_isColor = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
+
+    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n",
+                                 m_isColor, hasROI, hasSkip));
 
     int width, height;
     if (FAILED(m_sdk.get_Resolution(m_handle, 0, &width, &height)))
@@ -389,7 +394,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     if (hasSkip)
         m_sdk.put_Mode(m_handle, 0);
 
-    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
     m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     return false;
@@ -567,7 +572,10 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
     for (unsigned int i = 0; i < img.NPixels; i++)
         img.ImageData[i] = m_buffer[i];
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
+    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+        QuickLRecon(img);
 
     return false;
 }
