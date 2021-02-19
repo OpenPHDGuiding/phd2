@@ -35,14 +35,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-08 05:48+0000\n"
-"PO-Revision-Date: 2021-02-07 22:28+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2021-01-03 07:37+0000\n"
+"PO-Revision-Date: 2021-02-19 13:44+0100\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.2\n"
+"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: ca_ES\n"
 
@@ -347,7 +347,7 @@ msgstr "Passos Dec:"
 
 #: calreview_dialog.cpp:211
 msgid "Camera angle:"
-msgstr "Àngle la Càmera:"
+msgstr "Àngle de la Càmera:"
 
 #: calreview_dialog.cpp:214 calreview_dialog.cpp:678
 msgid "Orthogonality error:"
@@ -405,7 +405,7 @@ msgstr "Desconegut"
 
 #: calreview_dialog.cpp:297
 msgid "Side of pier:"
-msgstr "Posició de Columna:"
+msgstr "Posició de la Columna:"
 
 #: calreview_dialog.cpp:298 calreview_dialog.cpp:339 gear_simulator.cpp:1908
 #: mount.cpp:77 testguide.cpp:152
@@ -770,8 +770,8 @@ msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
 "No s'ha pogut obtenir la resolució de la càmera per a la càmera Altair."
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:802 cam_indi.cpp:836 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:802
+#: cam_indi.cpp:836 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -992,7 +992,7 @@ msgstr "El servidor INDI s'ha desconnectat"
 
 #: cam_indi.cpp:694
 msgid "INDI Camera Selection"
-msgstr "Selecció de Cmera INDI"
+msgstr "Selecció de Càmera INDI"
 
 #: cam_indi.cpp:757 cam_indi.cpp:783 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
@@ -1072,8 +1072,8 @@ msgstr "Error en establir el guany"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
-#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
+#: stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "Error"
 
@@ -1604,13 +1604,13 @@ msgstr "Trieu el perfil amb la biblioteca de Darks que vulgueu utilitzar:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
+#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
+#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:329
+#: scope.cpp:371 scope.cpp:414 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "No"
 
@@ -1772,7 +1772,7 @@ msgstr "Connectar el Refrigerador"
 
 #: camera.cpp:968
 msgid "Turn camera cooler on or off"
-msgstr "Activa o apaga el refrigerador de la càmera"
+msgstr "Connecta o desconnecta el refrigerador de la càmera"
 
 #: camera.cpp:971
 msgid "Set Temperature"
@@ -1892,10 +1892,10 @@ msgstr "Seguiment de cometes: entrenament actiu"
 msgid "Comet Tracking - Active"
 msgstr "Seguiment de cometes: actiu"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1410
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1400
 #: scope.cpp:1945
 msgid "Enable"
-msgstr "Activa"
+msgstr "Activar"
 
 #: comet_tool.cpp:91
 msgid "Toggle comet tracking on or off."
@@ -1938,8 +1938,7 @@ msgid "Tracking rate axes"
 msgstr "Eixos de velocitat de seguiment"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:547
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
 msgid "Start"
 msgstr "Començar"
 
@@ -2319,7 +2318,7 @@ msgstr "no es pot obrir el fitxer %s"
 
 #: drift_tool.cpp:136
 msgid "Drift Align"
-msgstr "Alineació a la Deriva"
+msgstr "Alineació per la Deriva"
 
 #: drift_tool.cpp:167 scope_manual_pointing.cpp:54
 msgid "Scope Pointing"
@@ -2345,7 +2344,7 @@ msgstr "Gira a"
 
 #: drift_tool.cpp:204 drift_tool.cpp:555
 msgid "Slew"
-msgstr "Gira"
+msgstr "Girar"
 
 #: drift_tool.cpp:205
 msgid "Click to slew to given coordinates."
@@ -2377,7 +2376,7 @@ msgstr "Ajustament"
 
 #: drift_tool.cpp:373
 msgid "Drift Align - Azimuth Adjustment"
-msgstr "Alineació per Deriva - Ajust d'Azimut"
+msgstr "Alineació per la Deriva - Ajust d'Azimut"
 
 #: drift_tool.cpp:376
 msgid ""
@@ -2387,7 +2386,7 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
-"Gira a prop del meridià i de l’equador.\n"
+"Gira i apunta el Telescopi a prop del meridià i de l’equador.\n"
 "Premeu Deriva per mesurar la deriva, mireu la línia de tendència de Dec.\n"
 "Premeu Ajustament i ajusteu l'azimut de la vostra muntura.\n"
 "Repetiu Deriva/Ajustament fins que l'alineació s'hagi completat.\n"
@@ -2403,7 +2402,7 @@ msgstr "> Altitud"
 
 #: drift_tool.cpp:387
 msgid "Drift Align - Altitude Adjustment"
-msgstr "Alineació per Deriva - Ajustament d'Altitud"
+msgstr "Alineació per la Deriva - Ajustament d'Altitud"
 
 #: drift_tool.cpp:390
 msgid ""
@@ -2413,7 +2412,8 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Click Azimuth to repeat Azimuth adjustment."
 msgstr ""
-"Gira ​​cap a una ubicació propera a l'equador i l'horitzó Est o Oest.\n"
+"Gira i apunta el Telescopi ​cap a una ubicació propera a l'equador i "
+"l'horitzó Est o Oest.\n"
 "Premeu Deriva per mesurar la deriva, mireu la línia de tendència de Dec.\n"
 "Premeu Ajusta i ajusteu l'altitud de la vostra muntura.\n"
 "Repetiu Deriva/Ajustament fins que l'alineació s'hagi completat.\n"
@@ -2449,7 +2449,7 @@ msgstr "Iniciant guiatge..."
 
 #: drift_tool.cpp:474
 msgid "Drifting... click Adjust when done drifting"
-msgstr "A la deriva ... feu clic a Ajusta quan hàgiu acabat la deriva"
+msgstr "A la deriva ... feu clic a Ajusta quan hagueu acabat la deriva"
 
 #: drift_tool.cpp:492
 msgid "Adjust azimuth, click Drift when done"
@@ -2578,7 +2578,7 @@ msgstr "Confirma Desactivar Guiatge"
 
 #: gear_dialog.cpp:120
 msgid "Connect Equipment"
-msgstr "Connecta Equipament"
+msgstr "Connexió de l'Equipament"
 
 #: gear_dialog.cpp:215
 msgid "Equipment profile"
@@ -2596,7 +2596,7 @@ msgstr ""
 
 #: gear_dialog.cpp:223
 msgid "New using Wizard..."
-msgstr "Nou utilitzant l'assistent..."
+msgstr "Nou, utilitzant l'assistent..."
 
 #: gear_dialog.cpp:223
 msgid "Run the first-light wizard to create a new profile"
@@ -2628,7 +2628,7 @@ msgstr "Renombra el perfil seleccionat"
 
 #: gear_dialog.cpp:227
 msgid "Import..."
-msgstr "Importa..."
+msgstr "Importar..."
 
 #: gear_dialog.cpp:227
 msgid "Load a profile from a file"
@@ -2636,7 +2636,7 @@ msgstr "Carrega un perfil des d'un fitxer"
 
 #: gear_dialog.cpp:228
 msgid "Export..."
-msgstr "Exporta..."
+msgstr "Exportar..."
 
 #: gear_dialog.cpp:228
 msgid "Save the selected profile to a file"
@@ -2669,9 +2669,9 @@ msgid ""
 "equipment items by clicking the button next to the item."
 msgstr ""
 "Selecciona l'equip i a continuació fes clic a Connectar tot per connectar-ho "
-"o fes clic a Desconnectar tot per desconnectar-ho. També pot connectar o "
-"desconnectar elements d'equip individualment fent clic al botó que hi ha al "
-"costat de l'element."
+"o fes clic a Desconnectar tot per desconnectar-ho. També pots connectar o "
+"desconnectar elements de l'equip individualment fent clic al botó que hi ha "
+"al costat de cada element."
 
 #: gear_dialog.cpp:264
 msgid ""
@@ -3158,7 +3158,7 @@ msgstr ""
 
 #: gear_simulator.cpp:1814
 msgid "Side of Pier: MMMMM"
-msgstr "Posició de Columna: MMMMM"
+msgstr "Posició de la Columna: MMMMM"
 
 #: gear_simulator.cpp:1816
 msgid "Pier Flip"
@@ -3204,7 +3204,7 @@ msgstr "Restableix tots els valors als valors predeterminats de l'aplicació"
 #: gear_simulator.cpp:1908
 #, c-format
 msgid "Side of pier: %s"
-msgstr "Posició de columna: %s"
+msgstr "Posició de la columna: %s"
 
 #: graph-stepguider.cpp:86 myframe.cpp:338 myframe.cpp:408
 msgid "AO Position"
@@ -3212,7 +3212,9 @@ msgstr "Posició OA"
 
 #: graph-stepguider.cpp:101 target.cpp:66
 msgid "Select the number of frames of history to display"
-msgstr "Seleccioneu el nombre de fotogrames de la història que es mostraran"
+msgstr ""
+"Seleccioneu el nombre de fotogrames de les dades del històric que es "
+"mostraran"
 
 #: graph-stepguider.cpp:104 graph.cpp:130 staticpa_toolwin.cpp:420
 #: statswindow.cpp:134 target.cpp:79
@@ -3239,7 +3241,8 @@ msgstr "Telescopi:"
 #: graph.cpp:117
 msgid "Select the number of frames of history to display on the X-axis"
 msgstr ""
-"Seleccioneu el nombre de fotogrames de la història que es mostraran a l'eix X"
+"Seleccioneu el nombre de fotogrames de les dades del històric que es "
+"mostraran a l'eix X"
 
 #: graph.cpp:127
 msgid "Graph settings"
@@ -3250,9 +3253,9 @@ msgid ""
 "Clear graph data. You can also partially clear the graph by holding down the "
 "Ctrl key and clicking on the graph where you want the data to start."
 msgstr ""
-"Esborreu les dades del gràfic. També podeu esborrar parcialment el gràfic "
-"mantenint premuda la tecla Ctrl i fent clic al gràfic on voleu que comencin "
-"les dades."
+"Esborrar les dades del gràfic. També podeu esborrar parcialment, dades del "
+"gràfic, mantenint pressionada la tecla Ctrl i fent clic al gràfic on voleu "
+"que comencin les dades."
 
 #: graph.cpp:135
 msgid "Trendlines"
@@ -3260,7 +3263,7 @@ msgstr "Línies de tendència"
 
 #: graph.cpp:142
 msgid "Plot trend lines"
-msgstr "Representar línies de tendència"
+msgstr "Representa les línies de tendència"
 
 #: graph.cpp:145
 msgid "Corrections"
@@ -3268,7 +3271,7 @@ msgstr "Correccions"
 
 #: graph.cpp:152
 msgid "Display mount corrections"
-msgstr "Mostra les correccions de muntura"
+msgstr "Mostra les correccions de la muntura"
 
 #: graph.cpp:176
 msgid "RMS Error [px]:"
@@ -3352,21 +3355,21 @@ msgstr "Color Dec o dy"
 
 #: graph.cpp:738
 msgid "Select the Y-axis scale, pixels per Y division"
-msgstr "Seleccioneu l'escala de l'eix Y, píxels per divisió Y"
+msgstr "Seleccioneu l'escala de l'eix Y, en píxels per la divisió Y"
 
 #: graph.cpp:743
 msgid "Select the Y-axis scale, arc-seconds per Y division"
-msgstr "Seleccioneu l'escala de l'eix Y, segons d'arc per divisió Y"
+msgstr "Seleccioneu l'escala de l'eix Y, en segons d'arc per la divisió Y"
 
-#: graph.cpp:1307
+#: graph.cpp:1313
 msgid "GuideNorth"
 msgstr "GuiatgeNord"
 
-#: graph.cpp:1308
+#: graph.cpp:1314
 msgid "GuideEast"
 msgstr "GuiatgeEst"
 
-#: graph.cpp:1440 testguide.cpp:107 testguide.cpp:132
+#: graph.cpp:1446 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
 
@@ -3525,11 +3528,11 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Quin percentatge de la correcció de la guia reactiva s’ha d’aplicar? Per "
-"defecte =%.f%%, ajusteu-lo si respon massa o massa lentament"
+"defecte =%.f%%, ajusteu-lo si respon massa o molt lentament"
 
 #: guide_algorithm_gaussian_process.cpp:237 guide_algorithm_pdrift.cpp:727
 msgid "ReactWt"
@@ -3544,7 +3547,7 @@ msgid ""
 "size. Note this has no effect on the predictive guide correction. Default = "
 "%.2f"
 msgstr ""
-"Quants píxels (fraccionats) ha de moure l'estrella per provocar una "
+"Quants píxels (fraccionats) s'ha de moure l'estrella per provocar una "
 "correcció reactiva de la guia? Si la càmera està compartida, aquesta és una "
 "fracció de la mida del píxel que es troba compartida. Tingueu en compte que "
 "això no té cap efecte sobre la correcció de la guia predictiva. Per defecte ="
@@ -3648,7 +3651,7 @@ msgid ""
 "How much history of previous guide pulses should be applied\n"
 "Default = %.f%%, increase to smooth out guiding commands"
 msgstr ""
-"Quanta història de polsos de guia anteriors s’hauria d’aplicar\n"
+"Quina quantitat d'impulsos de guia anteriors s’hauria d’aplicar\n"
 "Per defecte =%.f%%, augmenta per suavitzar les ordres de guia"
 
 #: guide_algorithm_hysteresis.cpp:248 guide_algorithm_lowpass2.cpp:241
@@ -3659,11 +3662,11 @@ msgstr "Agressivitat"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
-"Quin percentatge de la correcció calculada s'ha d'aplicar? Per defecte =%.f%"
-"%, ajusteu-lo si respon massa o massa lentament"
+"Quin percentatge de la correcció calculada s'ha d'aplicar? Per defecte =%.f"
+"%%, ajusteu-lo si respon massa o molt lentament"
 
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:334
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass.cpp:298
@@ -3677,19 +3680,19 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
-"Quants píxels (fraccionats) ha de moure l'estrella per provocar un impuls de "
-"guia?\n"
+"Quants píxels (fraccionats) s'ha de moure l'estrella per provocar un impuls "
+"de guia?\n"
 "Si la càmera està compartida, aquesta és una fracció de la mida del píxel "
 "que es troba compartida. Per defecte =%.2f"
 
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
-"Quin percentatge de la correcció calculada s'ha d'aplicar?? Per defecte =%.f%"
-"%, ajusteu-lo si respon massa o massa lentament"
+"Quin percentatge de la correcció calculada s'ha d'aplicar?? Per defecte =%.f"
+"%%, ajusteu-lo si respon massa o molt lentament"
 
 #: guide_algorithm_hysteresis.cpp:319
 msgid "Agr"
@@ -3768,7 +3771,7 @@ msgstr ""
 "per defecte =%.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1438 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1428 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "Auto"
 
@@ -3949,7 +3952,7 @@ msgstr ""
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "Està segur que vol eliminar tots els marcadors?"
 
-#: guider_multistar.cpp:416 guider_multistar.cpp:955
+#: guider_multistar.cpp:416 guider_multistar.cpp:948
 msgid "No star selected"
 msgstr "No hi ha estrelles selccionades"
 
@@ -3973,7 +3976,7 @@ msgstr "Estrella massa a prop de la vora"
 msgid "Star lost - mass changed"
 msgstr "Estrella perduda - Ha canviat de massa"
 
-#: guider_multistar.cpp:425 guider_multistar.cpp:1163
+#: guider_multistar.cpp:425 guider_multistar.cpp:1156
 msgid "No star found"
 msgstr "No s'han trobat estrelles"
 
@@ -4001,25 +4004,25 @@ msgstr "Exp=%d ms"
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "Estrella auto-seleccionada en (%.1f,%.1f)"
 
-#: guider_multistar.cpp:999
+#: guider_multistar.cpp:992
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr "Massa: %.f vs %.f"
 
-#: guider_multistar.cpp:1036
+#: guider_multistar.cpp:1029
 msgid "Recovering"
 msgstr "Recuperant"
 
-#: guider_multistar.cpp:1176
+#: guider_multistar.cpp:1169
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "Estrella seleccionada en (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1406
+#: guider_multistar.cpp:1396
 msgid "Search region (pixels)"
 msgstr "Regió de recerca (píxels)"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1397
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
@@ -4027,11 +4030,11 @@ msgstr ""
 "Quants píxels (amunt/avall/esquerra/dreta) s'ha d'examinar per trobar "
 "l'estrella? Per defecte = 15"
 
-#: guider_multistar.cpp:1409
+#: guider_multistar.cpp:1399
 msgid "Star Mass Detection"
 msgstr "Detecció de la massa de l'estrella"
 
-#: guider_multistar.cpp:1411
+#: guider_multistar.cpp:1401
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -4041,11 +4044,11 @@ msgstr ""
 "està connectat, PHD evitarà prendre fotogrames quan la massa de l'estrella "
 "guia canvia a un valor superior al configurat en la \"tolerància\"."
 
-#: guider_multistar.cpp:1420
+#: guider_multistar.cpp:1410
 msgid "Tolerance"
 msgstr "Tolerància"
 
-#: guider_multistar.cpp:1421
+#: guider_multistar.cpp:1411
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -4054,19 +4057,19 @@ msgid ""
 msgstr ""
 "Quan s'habilita la detecció de canvis de massa, es configura la tolerància "
 "de canvis de massa entre fotogrames, en percentatge. Valors grans són mes "
-"tolerant (menys sensible) als canvis de massa. El rang vàlid està entre 10-"
-"100, i per defecte és 50. Si la detecció de canvi de massa no està "
+"tolerant (menys sensible) als canvis de massa. El rang vàlid està entre "
+"10-100, i per defecte és 50. Si la detecció de canvi de massa no està "
 "habilitada, aquesta configuració s'ignorarà."
 
-#: guider_multistar.cpp:1427
+#: guider_multistar.cpp:1417
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1432
+#: guider_multistar.cpp:1422
 msgid "Minimum star HFD (pixels)"
 msgstr "Mínim HFD per a l'estrella (píxels)"
 
-#: guider_multistar.cpp:1433
+#: guider_multistar.cpp:1423
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -4076,16 +4079,16 @@ msgid ""
 msgstr ""
 "Mínim HFD per a l'estrella (tamany) que s'utilitzarà per identificar "
 "l'estrella guia. Aquesta configuració pot ser utilitzada per prevenir que "
-"PHD2 facia un guiatge en un píxel calent. Utilitzi l'eina de Perfíl "
+"PHD2 faci un guiatge en un píxel calent. Utilitzi l'eina de Perfil "
 "d'Estrella per a mesurar el HFD d'un píxel calent i configura un llindar "
 "mínim del HFD una mica superior. Quan l'HFD caigui per sota d'aquest valor, "
 "el píxel calent serà ignorat."
 
-#: guider_multistar.cpp:1440
+#: guider_multistar.cpp:1430
 msgid "Auto-selection frame downsample"
 msgstr "Selecció automàtica del fotograma de mostreig reduït"
 
-#: guider_multistar.cpp:1441
+#: guider_multistar.cpp:1431
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -4095,27 +4098,27 @@ msgstr ""
 "fotogrames de la càmera. Trieu un valor superior a 1 si la selecció "
 "automàtica d'estrelles no reconeix les estrelles guia deformades."
 
-#: guider_multistar.cpp:1444
+#: guider_multistar.cpp:1434
 msgid "Beep on lost star"
 msgstr "Beep si es perd l'estrella"
 
-#: guider_multistar.cpp:1445
+#: guider_multistar.cpp:1435
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "Emet una alarma sonora cada vegada que es perdi l'estrella guia"
 
-#: guider_multistar.cpp:1447
+#: guider_multistar.cpp:1437
 msgid "Use multiple stars"
 msgstr "Utilitzar múltiples estrelles"
 
-#: guider_multistar.cpp:1448
+#: guider_multistar.cpp:1438
 msgid "Use multiple guide stars if they are available"
 msgstr "Utilitza diverses estrelles guia si estan disponibles"
 
-#: guider_multistar.cpp:1455
+#: guider_multistar.cpp:1445
 msgid "Minimum star SNR for AutoFind"
 msgstr "Mínim SNR per la Recerca Automàtica de l'estrella"
 
-#: guider_multistar.cpp:1456
+#: guider_multistar.cpp:1446
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -4184,7 +4187,7 @@ msgstr "Massa de la Estrella"
 
 #: guiding_assistant.cpp:392
 msgid "Elapsed time"
-msgstr "Temps transcorregut"
+msgstr "Temps messurant"
 
 #: guiding_assistant.cpp:394
 msgid "Sample count"
@@ -4252,11 +4255,11 @@ msgstr "Recomanacions"
 
 #: guiding_assistant.cpp:506
 msgid "Show Backlash Graph"
-msgstr "Mostra gràfica del Backlash"
+msgstr "Mostrar gràfica del Backlash"
 
 #: guiding_assistant.cpp:507
 msgid "Show graph of backlash measurement points"
-msgstr "Mostrar la gràfica de punts de mesura de backlash"
+msgstr "Mostrar la gràfica dels punts de la mesura de backlash"
 
 #: guiding_assistant.cpp:524
 msgid "Measure Declination Backlash"
@@ -4303,7 +4306,7 @@ msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
 msgstr ""
-"Mesura de la lluminositattotal de l'estrella. Consideri utilitzar 'Auto "
+"Mesura de la lluminositat total de l'estrella. Consideri utilitzar 'Auto "
 "Seleccionar Estrella' (Alt-S) per triar l'estrella."
 
 #: guiding_assistant.cpp:632
@@ -4363,8 +4366,8 @@ msgid ""
 "clear backlash (ms) and corresponding gear angle (arc-sec). Uncertainty "
 "estimate is one unit of standard deviation"
 msgstr ""
-"Backlash estimat de declinació si s'ha completat la prova. Es el moment "
-"d'esborrar el backlash (ms) segons els resultats i l’angle d’engranatge "
+"Backlash estimat de declinació si s'ha completat la prova. Es el moment de "
+"corregir el backlash (ms) segons els resultats i l’angle d’engranatge "
 "corresponent (arc-seg). L’estimació de la incertesa és una unitat de "
 "desviació estàndard"
 
@@ -4380,7 +4383,7 @@ msgstr ""
 #: guiding_assistant.cpp:675
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 msgstr ""
-"Tria una estrella no saturada amb un bon valor SNR (>=8) i comenci a guiar"
+"Tria una estrella no saturada amb un bon valor SNR (>=8) i comença a guiar"
 
 #: guiding_assistant.cpp:679
 msgid ""
@@ -4632,7 +4635,7 @@ msgstr "carregant..."
 
 #: log_uploader.cpp:654
 msgid "Upload Log Files - Select logs"
-msgstr "Carrega fitxers de registre: seleccioneu registres"
+msgstr "Carregar fitxers de registre: seleccioneu els registres"
 
 #: log_uploader.cpp:655
 msgid "Upload Log Files - Confirm upload"
@@ -4689,7 +4692,7 @@ msgstr "Següent >"
 
 #: log_uploader.cpp:732
 msgid "Show logs with no guiding"
-msgstr "Mostra els registres sense guia"
+msgstr "Mostrar els registres sense guia"
 
 #: log_uploader.cpp:733
 msgid ""
@@ -4727,7 +4730,7 @@ msgstr "La càrrega ha fallat; es tornarà a intentar d'aquí a %ds"
 
 #: log_uploader.cpp:1179
 msgid "The following log files will be uploaded:"
-msgstr "Es carregaran els fitxers de registre següents:"
+msgstr "Es carregaran els fitxers dels següents registres:"
 
 #: log_uploader.cpp:1192
 msgid "Guide and Debug logs"
@@ -4898,7 +4901,7 @@ msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
-"Esborreu les dades de calibratge de la muntura actuals: es tornarà a fer el "
+"Esborrar les dades de calibratge de la muntura actuals: es tornarà a fer el "
 "calibratge quan s'iniciï la guia"
 
 #: mount.cpp:548
@@ -4964,7 +4967,7 @@ msgstr "El calibratge estava massa lluny de l’equador, cal una re-calibratge."
 
 #: myframe.cpp:328 myframe.cpp:406
 msgid "History"
-msgstr "Història"
+msgstr "Gràfic historial"
 
 #: myframe.cpp:333 myframe.cpp:407
 msgid "Guide Stats"
@@ -4972,7 +4975,7 @@ msgstr "Estadístiques de guiatge"
 
 #: myframe.cpp:343 myframe.cpp:409
 msgid "Star Profile"
-msgstr "Perfil d'estrella"
+msgstr "Perfil de l'estrella"
 
 #: myframe.cpp:348 myframe.cpp:410 target.cpp:51
 msgid "Target"
@@ -5024,7 +5027,7 @@ msgstr "&Stop\tCtrl-S"
 
 #: myframe.cpp:499 myframe.cpp:969
 msgid "Stop looping and guiding"
-msgstr "Parar el bucle i guiatge"
+msgstr "Parar el bucle i el guiatge"
 
 #: myframe.cpp:501
 msgid "&Advanced Settings\tCtrl-A"
@@ -5040,7 +5043,7 @@ msgstr "Configuracions de la Càmera"
 
 #: myframe.cpp:506
 msgid "&Manual Guide"
-msgstr "&Manual de Guiatge"
+msgstr "&Guiatge Manual"
 
 #: myframe.cpp:506
 msgid "Manual / test guide dialog"
@@ -5048,15 +5051,15 @@ msgstr "Manual / quadre prova de guiatge"
 
 #: myframe.cpp:507
 msgid "&Auto-select Star\tAlt-S"
-msgstr "Selecciona &Automàticament l'Estrella\tAlt-S"
+msgstr "Seleccionar &L'Estrella Automàticament\tAlt-S"
 
 #: myframe.cpp:507
 msgid "Automatically select star"
-msgstr "Selecciona automàticament l'estrella"
+msgstr "Seleccionar automàticament l'estrella"
 
 #: myframe.cpp:508
 msgid "&Review Calibration Data\tAlt-C"
-msgstr "&Revisa les dades de calibratge\\Alt-C"
+msgstr "&Revisar les dades de calibratge\\Alt-C"
 
 #: myframe.cpp:508
 msgid "Review calibration data from last successful calibration"
@@ -5064,11 +5067,11 @@ msgstr "Reviseu les dades de calibratge de l'últim calibratge reeixit"
 
 #: myframe.cpp:511
 msgid "Restore Calibration Data..."
-msgstr "Restaura les dades de calibratge ..."
+msgstr "Restaurar les dades de calibratge ..."
 
 #: myframe.cpp:511
 msgid "Restore calibration data from last successful calibration"
-msgstr "Restaura les dades de calibratge de l'últim calibratge reeixit"
+msgstr "Restaurar les dades de calibratge de l'últim calibratge reeixit"
 
 #: myframe.cpp:512
 msgid "Enter Calibration Data..."
@@ -5088,23 +5091,23 @@ msgstr "Invertiu les dades de calibratge ara"
 
 #: myframe.cpp:514
 msgid "Clear Calibration Data..."
-msgstr "Esborra les dades de calibratge ..."
+msgstr "Esborrar les dades de calibratge ..."
 
 #: myframe.cpp:514
 msgid "Clear calibration data currently in use"
-msgstr "Esborreu les dades de calibratge que s’utilitzen actualment"
+msgstr "Esborrar les dades de calibratge que s'estan utilitzant actualment"
 
 #: myframe.cpp:515
 msgid "Modify Calibration"
-msgstr "Modifica el calibratge"
+msgstr "Modificar el calibratge"
 
 #: myframe.cpp:518
 msgid "Adjust &Lock Position"
-msgstr "Ajusta  &Bloqueig Posició"
+msgstr "Ajustar  &la Posició de bloqueig"
 
 #: myframe.cpp:518
 msgid "Adjust the lock position"
-msgstr "Ajusta la posició de bloqueig"
+msgstr "Ajustar la posició de bloqueig"
 
 #: myframe.cpp:519
 msgid "&Comet Tracking"
@@ -5133,7 +5136,7 @@ msgstr ""
 
 #: myframe.cpp:522
 msgid "&Guiding Assistant"
-msgstr "Assistent &Guiatge"
+msgstr "Assistent de &Guiatge"
 
 #: myframe.cpp:522
 msgid "Run the Guiding Assistant"
@@ -5141,7 +5144,7 @@ msgstr "Executa l'Assistent de Guiatge"
 
 #: myframe.cpp:523
 msgid "&Drift Align"
-msgstr "Alineació a la &Deriva"
+msgstr "Alineació per la &Deriva"
 
 #: myframe.cpp:523
 msgid "Align by analysing star drift near the celestial equator (Accurate)"
@@ -5150,7 +5153,7 @@ msgstr ""
 
 #: myframe.cpp:524
 msgid "&Polar Drift Align"
-msgstr "&Alineació de la deriva polar"
+msgstr "&Alineació per la Deriva Polar"
 
 #: myframe.cpp:524
 msgid "Align by analysing star drift near the celestial pole (Simple)"
@@ -5182,15 +5185,15 @@ msgstr "Mantenir la mateixa posició de bloqueig quan comenci el guiatge"
 
 #: myframe.cpp:531
 msgid "Display Toolbar"
-msgstr "Mostra la barra d'eines"
+msgstr "Mostrar la barra d'eines"
 
 #: myframe.cpp:531
 msgid "Enable / disable tool bar"
-msgstr "Activar / desactivar la barra d'eines"
+msgstr "Activar / Desactivar la barra d'eines"
 
 #: myframe.cpp:532
 msgid "Display &Graph"
-msgstr "Mostra &Gràfica"
+msgstr "Mostrar la &Gràfica"
 
 #: myframe.cpp:532
 msgid "Enable / disable graph"
@@ -5202,7 +5205,7 @@ msgstr "Mostrar Estadístiques"
 
 #: myframe.cpp:533
 msgid "Enable / disable guide stats"
-msgstr "Activar / desactivar estadístiques de guiatge"
+msgstr "Activar / Desactivar estadístiques de guiatge"
 
 #: myframe.cpp:534
 msgid "Display &AO Graph"
@@ -5210,7 +5213,7 @@ msgstr "Mostrar Gràfica &OA"
 
 #: myframe.cpp:534
 msgid "Enable / disable AO graph"
-msgstr "Activar / desactivar gràfica OA"
+msgstr "Activar / Desactivar gràfica OA"
 
 #: myframe.cpp:535
 msgid "Display &Target"
@@ -5218,15 +5221,15 @@ msgstr "Mostrar &Objectiu"
 
 #: myframe.cpp:535
 msgid "Enable / disable target"
-msgstr "Activar / desactivar Objectiu"
+msgstr "Activar / Desactivar Objectiu"
 
 #: myframe.cpp:536
 msgid "Display Star &Profile"
-msgstr "Mostra &Perfil d'Estrella"
+msgstr "Mostrar &Perfil d'Estrella"
 
 #: myframe.cpp:536
 msgid "Enable / disable star profile view"
-msgstr "Activa / desactiva vista perfil d'estrella"
+msgstr "Activa / Desactiva vista perfil d'estrella"
 
 #: myframe.cpp:538
 msgid "&No Overlay"
@@ -5250,7 +5253,7 @@ msgstr "&Reixa fina"
 
 #: myframe.cpp:540 myframe.cpp:541
 msgid "Grid overlay"
-msgstr "Sobreposar Graella"
+msgstr "Sobreposar Reixa"
 
 #: myframe.cpp:541
 msgid "&Coarse Grid"
@@ -5270,11 +5273,11 @@ msgstr "Reixa per Espectrografia"
 
 #: myframe.cpp:543
 msgid "Spectrograph slit overlay"
-msgstr "Sobreposar reixa per a Espectrografia"
+msgstr "Sobreposar reixa Espectrografia"
 
 #: myframe.cpp:545
 msgid "Slit Position..."
-msgstr "Posició de la Graella."
+msgstr "Posició de la Reixa."
 
 #: myframe.cpp:547
 msgid "Restore Window Positions"
@@ -5404,7 +5407,7 @@ msgstr "Obrir la carpeta de registre"
 
 #: myframe.cpp:578
 msgid "Upload Log Files..."
-msgstr "Carrega fitxers de registre..."
+msgstr "Carregar fitxers de registre..."
 
 #: myframe.cpp:578
 msgid "Upload log files for review"
@@ -5420,11 +5423,11 @@ msgstr "Ajuda completa"
 
 #: myframe.cpp:580
 msgid "&Impatient Instructions"
-msgstr "&Instruccions bàsiques per impacients"
+msgstr "&Instruccions bàsiques"
 
 #: myframe.cpp:580
 msgid "Quick instructions for the impatient"
-msgstr "Instruccions ràpides per impacients"
+msgstr "Instruccions ràpides"
 
 #: myframe.cpp:583
 msgid "&File"
@@ -5479,7 +5482,7 @@ msgstr "Durada de l'exposició de la càmera"
 
 #: myframe.cpp:963
 msgid "Screen gamma (brightness)"
-msgstr "Gamma en Pantalla (brillantor)"
+msgstr "Brillantor de la Pantalla (Gamma)"
 
 #: myframe.cpp:965
 msgid ""
@@ -5494,7 +5497,7 @@ msgstr "Començar exposicions continues per enquadrar i enfocar"
 
 #: myframe.cpp:967
 msgid "Auto-select Star. Shift-click to de-select star."
-msgstr "Selecció automàtica. Shift-click per de-seleccionar l'estrella."
+msgstr "Selecció automàtica. Shift-click per no seleccionar l'estrella."
 
 #: myframe.cpp:968
 msgid "Begin guiding (PHD). Shift-click to force calibration."
@@ -5634,7 +5637,7 @@ msgid ""
 "unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
 "Els paràmetres de guiatge s'han restablert perquè la mida de píxel o de "
-"binning ha canviat inesperadament. Heu d'utilitzar perfils separats per a "
+"binning han canviat inesperadament. Heu d'utilitzar perfils separats per a "
 "diferents escales d'imatges."
 
 #: myframe.cpp:2793
@@ -5706,8 +5709,8 @@ msgid ""
 "using very short exposures (e.g., using a video camera) but wanting to send "
 "guide commands less frequently"
 msgstr ""
-"Quan temps PHD2 ha d'esperar entre fotogrames de guiatge? Per defectes= 9ms, "
-"és útil quan s'utilitzen exposicions curtes (p.e. utilitzant una vídeo "
+"Quan temps PHD2 ha d'esperar entre fotogrames de guiatge? Per defectes= 9 "
+"ms, és útil quan s'utilitzen exposicions curtes (p.e. utilitzant una vídeo "
 "càmera) però es vol enviar paràmetres de guiatge menys freqüentment"
 
 #: myframe.cpp:2972
@@ -5733,7 +5736,7 @@ msgstr "%s Idioma. Es necessari reiniciar PHD per que el canvi tingui efecte."
 
 #: myframe.cpp:2986
 msgid "Automatically check for updates"
-msgstr "Comproveu automàticament si hi ha actualitzacions"
+msgstr "Comprovar automàticament si hi ha actualitzacions"
 
 #: myframe.cpp:2987
 msgid "Check for software updates when PHD2 starts (recommended)"
@@ -5743,7 +5746,7 @@ msgstr ""
 
 #: myframe.cpp:2989
 msgid "Only check for major releases"
-msgstr "Comproveu només si hi ha versions principals"
+msgstr "Comprovar només si hi ha versions principals"
 
 #: myframe.cpp:2990
 msgid "Ignore minor (development) releases when checking for updates"
@@ -5767,7 +5770,7 @@ msgstr "Explorar..."
 
 #: myframe.cpp:3014
 msgid "Enable diagnostic image logging"
-msgstr "Connectar registres de diagnòstic d'imatge"
+msgstr "Connectar registres de diagnòstic d'imatges"
 
 #: myframe.cpp:3015
 msgid "Save guider images based on options below"
@@ -5920,7 +5923,7 @@ msgstr "Durada mínima de Auto Exposició"
 
 #: myframe.cpp:3114 scope.cpp:1971
 msgid "Max"
-msgstr "Max"
+msgstr "Màx"
 
 #: myframe.cpp:3114
 msgid "Auto exposure maximum duration"
@@ -6026,7 +6029,7 @@ msgstr "Introducció"
 
 #: myframe_events.cpp:242
 msgid "Spectrograph Slit Overlay"
-msgstr "Sobreposar CAPA de graella per Espectrografia"
+msgstr "Sobreposar CAPA Reixa Espectrografia"
 
 #: myframe_events.cpp:252
 msgid "Position (Center)"
@@ -6046,7 +6049,7 @@ msgstr "Alt"
 
 #: myframe_events.cpp:295
 msgid "Angle (degrees)"
-msgstr "Angel (graus)"
+msgstr "Angle (graus)"
 
 #: myframe_events.cpp:356
 msgid "Save FITS Image"
@@ -6197,8 +6200,8 @@ msgid ""
 "new configuration.\n"
 "Would you like to use the Setup Wizard now?"
 msgstr ""
-"Sembla que es tracta d’una connexió per primera vegada amb aquesta càmera i "
-"aquesta muntura. L’assistent de configuració us pot ajudar\n"
+"Sembla que es tracta d’una connexió, per primera vegada, amb aquesta càmera "
+"i aquesta muntura. L’assistent de configuració us pot ajudar\n"
 "amb això i també podreu establir paràmetres de guiatge de base per a la "
 "vostra nova configuració.\n"
 "Voleu utilitzar l'Assistent de configuració ara?"
@@ -6469,7 +6472,7 @@ msgstr "Angle Horari"
 
 #: pierflip_tool.cpp:109 statswindow.cpp:106
 msgid "Pier Side"
-msgstr "Posició de Columna"
+msgstr "Posició de la Columna"
 
 #: pierflip_tool.cpp:121
 msgid "Start over"
@@ -6631,7 +6634,7 @@ msgstr "Espereu fins que es faci el calibratge i deixeu de guiar"
 
 #: polardrift_toolwin.cpp:110
 msgid "Polar Drift Alignment"
-msgstr "Alineació de la Deriva Polar"
+msgstr "Alineació per la Deriva Polar"
 
 #: polardrift_toolwin.cpp:154
 msgid ""
@@ -6644,10 +6647,10 @@ msgid ""
 "Adjust your mount's altitude and azimuth to place the guide star in its "
 "target circle.\n"
 msgstr ""
-"Molt a prop del Pol Celeste.\n"
+"Dirigir el Telescopi molt a prop del Pol Celeste.\n"
 "Assegureu-vos que el seguiment estigui activat.\n"
 "Seleccioneu una estrella guia a la pantalla principal.\n"
-"Feu clic a Inicia.\n"
+"Feu clic a Començar.\n"
 "Espereu a que la pantalla s'estabilitzi.\n"
 "Feu clic a Atura.\n"
 "Ajusteu l’altitud i l’azimut de la vostra muntura per situar l’estrella guia "
@@ -6912,16 +6915,17 @@ msgid ""
 "choose a  mount, you'll usually be given the option to connect to it "
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
-"Seleccioneu la vostra interfície de la  muntura de la llista. Això determina "
-"com PHD2 enviarà ordres de guiatge a la muntura. Per a la majoria de "
-"muntures modernes, la interfície ASCOM és una bona opció si utilitzeu MS "
-"Windows. La resta d’interfícies estan disponibles per a casos en què ASCOM "
-"no està disponible o bé no és compatible amb el firmware de la muntura. Si "
-"coneixeu la velocitat de guiatge de la muntura, podeu especificar-la perquè "
-"PHD2 es pugui calibrar de manera més eficient. Si no coneixeu la velocitat "
-"del guiatge de la muntura, només podeu utilitzar el valor per defecte de %"
-"0.1fx. Quan trieu una muntura, normalment us donarà l’opció de connectar-vos-"
-"hi immediatament perquè PHD2 pugui llegir la velocitat de guiatge."
+"Seleccioneu la interfície de la vostra muntura de la llista. Això "
+"determinarà com PHD2 enviarà les ordres de guiatge a la muntura. Per a la "
+"majoria de les muntures modernes, la interfície ASCOM és una bona opció si "
+"utilitzeu MS Windows. La resta d’interfícies estan disponibles per a casos "
+"en què ASCOM no està disponible o bé no és compatible amb el firmware de la "
+"muntura. Si coneixeu la velocitat de guiatge de la muntura, podeu "
+"especificar-la perquè PHD2 es pugui calibrar de manera més eficient. Si no "
+"coneixeu la velocitat del guiatge de la muntura, només podeu utilitzar el "
+"valor per defecte de %0.1fx. Quan trieu una muntura, normalment us donarà "
+"l’opció de connectar-vos-hi immediatament perquè PHD2 pugui llegir la "
+"velocitat de guiatge."
 
 #: profile_wizard.cpp:402 profile_wizard.cpp:690
 msgid "Simulator"
@@ -7298,7 +7302,7 @@ msgstr ""
 
 #: Refine_DefMap.cpp:84
 msgid "Show defect pixels"
-msgstr "Mostra els píxels defectuosos"
+msgstr "Mostrar els píxels defectuosos"
 
 #: Refine_DefMap.cpp:85
 msgid "Check to show hot/cold pixels in the main image window."
@@ -7525,8 +7529,8 @@ msgid ""
 "properly."
 msgstr ""
 "PHD2 no pot fer les correccions suficients a AR. Comproveu si hi ha embussos "
-"de cables, proveu de tornar a fer el calibratge i confirmeu que el cable ST-"
-"4 funciona correctament."
+"de cables, proveu de tornar a fer el calibratge i confirmeu que el cable "
+"ST-4 funciona correctament."
 
 #: scope.cpp:644
 msgid ""
@@ -8002,12 +8006,12 @@ msgid ""
 "Select Unspecified if you do not want PHD2 to flip your calibration data for "
 "side of pier changes"
 msgstr ""
-"Seleccioni \"no especificat\" si no vol que PHD2 canviï les dades de "
+"Seleccioni \"no especificat\" si no es vol que PHD2 canviï les dades de "
 "calibratge per ambdós costats de la columna"
 
 #: scope_manual_pointing.cpp:116
 msgid "Drift Alignment"
-msgstr "Alineació per Deriva"
+msgstr "Alineació per la Deriva"
 
 #: scope_manual_pointing.cpp:125
 msgid "hr"
@@ -8157,7 +8161,7 @@ msgstr "Durada total del test (s)"
 
 #: starcross_test.cpp:129 starcross_test.cpp:461
 msgid "Show Details"
-msgstr "Mostra els detalls"
+msgstr "Mostrar els detalls"
 
 #: starcross_test.cpp:135
 msgid "Test Details"
@@ -8297,9 +8301,9 @@ msgstr ""
 "de la llista. <br/> Utilitzeu el mapa d’estrelles per identificar una "
 "estrella de referència. <br/> Seleccioneu-la com a estrella guia a la "
 "pantalla principal. < br /> Feu clic a Gira per iniciar l'alineació. <br/> "
-"Espereu que es mostrin els ajustos. <br/> Ajusteu l'altitud i l'azimut de la "
-"vostra muntura tal com es mostra. <br/> Vermell = Altitud; Blau = Azimut <br/"
-">"
+"Espereu que es mostrin els ajustaments. <br/> Ajusteu l'altitud i l'azimut "
+"de la vostra muntura tal com es mostra. <br/> Vermell = Altitud; Blau = "
+"Azimut <br/>"
 
 #: staticpa_toolwin.cpp:265
 msgid ""
@@ -8355,7 +8359,7 @@ msgstr "Mou manualment la muntura a tres posicions d'alineació"
 
 #: staticpa_toolwin.cpp:392 staticpa_toolwin.cpp:639
 msgid "Rotate"
-msgstr "Rota"
+msgstr "Gira"
 
 #: staticpa_toolwin.cpp:398
 msgid "Flip camera"
@@ -8375,7 +8379,7 @@ msgstr "Mostra Orbites"
 
 #: staticpa_toolwin.cpp:412
 msgid "Show or hide the star orbits"
-msgstr "Mostra o amaga la orbita de les estrelles"
+msgstr "Mostra o amaga l'orbita de les estrelles"
 
 #: staticpa_toolwin.cpp:414
 msgid "Get third position"
@@ -8391,7 +8395,7 @@ msgstr "S'ha esborrat la visualització d'alineació estàtica Polar"
 
 #: staticpa_toolwin.cpp:620
 msgid "Star Map"
-msgstr "Mapa d'Estrelles"
+msgstr "Mapa Estrelles"
 
 #: staticpa_toolwin.cpp:649
 msgid "Get first position"
@@ -8499,7 +8503,7 @@ msgstr "nnn.n x nnn.n arc-min"
 
 #: statswindow.cpp:123
 msgid "Camera cooler"
-msgstr "Regrigerador de la càmera"
+msgstr "Refrigerador de la càmera"
 
 #: statswindow.cpp:135
 msgid "Clear graph data and stats"
@@ -8508,8 +8512,8 @@ msgstr "Esborrar les dades i les estadístiques del gràfic"
 #: statswindow.cpp:140
 msgid "Select the number of frames of history for stats and the graph"
 msgstr ""
-"Seleccioneu el nombre de fotogrames de històric per a les estadístiques i el "
-"gràfic"
+"Seleccioneu el nombre de fotogrames de les dades del històric per a les "
+"estadístiques i per al gràfic"
 
 #: statswindow.cpp:238
 msgid "Camera error"
@@ -8606,8 +8610,8 @@ msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 msgstr ""
-"Quants passos s’han d’emetre per cicle de calibratge. Valor per defecte = %"
-"d, augmenta per a telescopis amb relació focal f/l curts i disminueix per a "
+"Quants passos s’han d’emetre per cicle de calibratge. Valor per defecte = "
+"%d, augmenta per a telescopis amb relació focal f/l curts i disminueix per a "
 "telescopis f/l més llargs"
 
 #: stepguider.cpp:1444
