@@ -126,18 +126,22 @@ struct SDKLib
 
 struct AltairCamera : public GuideCamera
 {
+    enum { MAX_DISCARD_FRAMES = 5 };
+
     AltairCamType m_type;
     SDKLib m_sdk;
     wxRect m_frame;
     unsigned char *m_buffer;
     bool m_isColor;
     bool m_capturing;
+    unsigned int m_discardCnt;
     int m_minGain;
     int m_maxGain;
     double m_devicePixelSize;
     HAltaircam m_handle;
     volatile bool m_frameReady;
-    bool ReduceResolution;
+    bool m_reduceResolution;
+    unsigned int m_framesToDiscard;
 
     AltairCamera(AltairCamType type);
     ~AltairCamera();
@@ -166,37 +170,62 @@ struct AltairCamera : public GuideCamera
 class AltairCameraDlg : public wxDialog
 {
 public:
+    wxCheckBox *m_reduceRes;
+    wxSpinCtrl *m_framesToDiscard;
 
-    wxCheckBox* m_reduceRes;
-    AltairCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Altair Camera Settings"),
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
+    AltairCameraDlg(wxWindow *parent);
     ~AltairCameraDlg() { }
 };
 
-AltairCameraDlg::AltairCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
-    : wxDialog(parent, id, title, pos, size, style)
+AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
+    : wxDialog(parent, wxID_ANY, _("Altair Camera Settings"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxHORIZONTAL);
+    wxBoxSizer *top_sizer = new wxBoxSizer(wxVERTICAL);
 
-    m_reduceRes = new wxCheckBox(this, wxID_ANY, wxT("Reduced Resolution (by ~20%)"), wxDefaultPosition, wxDefaultSize, 0);
-    sbSizer3->Add(m_reduceRes, 0, wxALL, 5);
-    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxVERTICAL);
 
-    wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
+    wxBoxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
+    m_reduceRes = new wxCheckBox(this, wxID_ANY,
+            wxString::Format(_("Reduced Resolution (by ~%d%%)"), 20),
+            wxDefaultPosition, wxDefaultSize, 0);
+    sizer1->Add(m_reduceRes, 0, wxALL, 5);
+    sbSizer3->Add(sizer1);
+
+    wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *txt1 = new wxStaticText(this, wxID_ANY, _("Discard Frames"));
+    sizer2->Add(txt1, 0, wxALL, 5);
+    int width = StringWidth(this, _T("00"));
+    m_framesToDiscard = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
+        wxSP_ARROW_KEYS, 0, AltairCamera::MAX_DISCARD_FRAMES, 0);
+    m_framesToDiscard->SetToolTip(_("Discard this many frames whan capturing starts. "
+        "Useful for preventing initial under-exposed frames interfering with automatic star selection."));
+    sizer2->Add(m_framesToDiscard, 0, wxALL, 5);
+    sbSizer3->Add(sizer2);
+
+    top_sizer->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
-    bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
 
-    SetSizer(bSizer12);
+    top_sizer->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+
+    SetSizer(top_sizer);
     Layout();
+    Fit();
 
     Centre(wxBOTH);
+}
+
+static int GetConfigDiscardFrames()
+{
+    int n = pConfig->Profile.GetInt("/camera/Altair/DiscardFrames", 0);
+    return wxMax(0, wxMin((int) AltairCamera::MAX_DISCARD_FRAMES, n));
 }
 
 AltairCamera::AltairCamera(AltairCamType type)
@@ -211,6 +240,8 @@ AltairCamera::AltairCamera(AltairCamType type)
     HasSubframes = false;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
+
+    this->m_framesToDiscard = GetConfigDiscardFrames();
 }
 
 AltairCamera::~AltairCamera()
@@ -349,8 +380,8 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     delete[] m_buffer;
     m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
 
-    ReduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
-    if (hasROI && ReduceResolution)
+    m_reduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    if (hasROI && m_reduceResolution)
     {
         width *= 0.8;
         height *= 0.8;
@@ -376,26 +407,47 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         HasGainControl = max > min;
     }
 
-    m_sdk.put_AutoExpoEnable(m_handle, FALSE);
-
     m_sdk.put_Speed(m_handle, 0);
     m_sdk.put_RealTime(m_handle, TRUE);
+
+    if (hasSkip)
+        m_sdk.put_Mode(m_handle, 0);
+
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
+
+#if 0
+    // TODO: this is the initiailization code copied from cam_touptek.cpp
+    // I was hoping this one of these might help with the problem of the first
+    // frame exposure being very low, but it had no effect. Leaving these
+    // disabled for now rather than risk introducing a change that is
+    // incompatible with one of the camera models I am unable to test with.
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_PROCESSMODE, 0);
+    //m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_LINEAR, 0);
+    //m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_COLORMATIX, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_WBGAIN, 0);
+    //m_sdk.put_Option(ALTAIRCAM_OPTION_TRIGGER, 1);  // software trigger
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_AUTOEXP_POLICY, 0); // 0="Exposure Only" 1="Exposure Preferred"
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_ROTATE, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_UPSIDE_DOWN, 0);
+    //m_cam.SetOption(m_handle, ALTAIRCAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_FFC, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_DFC, 0);
+    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_SHARPENING, 0);
+#endif
+
+    m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     m_frame = wxRect(FullSize);
 
     Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n",
         m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
-    if (hasROI && ReduceResolution)
+    if (hasROI && m_reduceResolution)
     {
         m_sdk.put_Roi(m_handle, 0, 0, width, height);
     }
-
-    if (hasSkip)
-        m_sdk.put_Mode(m_handle, 0);
-
-    m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
-    m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     return false;
 }
@@ -422,12 +474,20 @@ bool AltairCamera::GetDevicePixelSize(double *devPixelSize)
 void AltairCamera::ShowPropertyDialog()
 {
     AltairCameraDlg dlg(wxGetApp().GetTopWindow());
+
     bool value = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
     dlg.m_reduceRes->SetValue(value);
+
+    int n = GetConfigDiscardFrames();
+    dlg.m_framesToDiscard->SetValue(n);
+
     if (dlg.ShowModal() == wxID_OK)
     {
-        ReduceResolution = dlg.m_reduceRes->GetValue();
-        pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", ReduceResolution);
+        m_reduceResolution = dlg.m_reduceRes->GetValue();
+        pConfig->Profile.SetBoolean("/camera/Altair/ReduceResolution", m_reduceResolution);
+
+        m_framesToDiscard = dlg.m_framesToDiscard->GetValue();
+        pConfig->Profile.SetInt("/camera/Altair/DiscardFrames", m_framesToDiscard);
     }
 }
 
@@ -530,44 +590,56 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
             return true;
         }
         m_capturing = true;
+        m_discardCnt = m_framesToDiscard;
     }
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
 
     int poll = wxMin(duration, 100);
 
-    CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
-
-// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
-//    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-//        (WorkerThread::TerminateRequested() || StopCapture()))
-//    {
-//        return true;
-//    }
-
-    while (true)
+    while (true) // frame discard loop
     {
-        if (m_frameReady)
-        {
-            m_frameReady = false;
+        CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-            if (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
-                break;
-        }
-        WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
-        if (WorkerThread::InterruptRequested())
+        // do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
+//        if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+//            (WorkerThread::TerminateRequested() || StopCapture()))
+//        {
+//            return true;
+//        }
+
+        while (true) // PullImage retry loop
         {
-            StopCapture();
-            return true;
+            if (m_frameReady)
+            {
+                m_frameReady = false;
+
+                if (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
+                    break;
+            }
+            WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
+            if (WorkerThread::InterruptRequested())
+            {
+                StopCapture();
+                return true;
+            }
+            if (watchdog.Expired())
+            {
+                Debug.AddLine("Altair: getimagedata failed");
+                StopCapture();
+                DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+                return true;
+            }
         }
-        if (watchdog.Expired())
-        {
-            Debug.AddLine("Altair: getimagedata failed");
-            StopCapture();
-            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
-            return true;
-        }
-    }
+
+        if (!m_discardCnt)
+            break;
+
+        Debug.Write(wxString::Format("Altair: discard frame %u\n", m_discardCnt));
+
+        --m_discardCnt;
+
+    } // discard loop
 
     for (unsigned int i = 0; i < img.NPixels; i++)
         img.ImageData[i] = m_buffer[i];
