@@ -775,6 +775,8 @@ bool CameraASCOM::Connect(const wxString& camId)
 
     // defer defining FullSize since it is not simply derivable from max size and binning
     // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    FullSize = UNDEFINED_FRAME_SIZE;
+    m_roi = wxRect(); // reset ROI state in case we're reconnecting
 
     Connected = true;
 
