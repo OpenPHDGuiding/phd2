@@ -10,10 +10,11 @@
 #define	IMAGEQUEUE_ORIG_MODE		1
 
 
-#define version_year                20
-#define version_month               8
-#define version_day                 26
-#define version_subday              3
+#define version_year                21
+#define version_month               2
+#define version_day                 19
+#define version_subday              19
+#define SDK_SVN_REVISION            10653
 
 #if defined (_WIN32)
 #define QHYCCD_OPENCV_SUPPORT

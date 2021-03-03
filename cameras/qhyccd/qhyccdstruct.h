@@ -231,6 +231,8 @@ enum CONTROL_ID
 /*61*/  CONTROL_MAX_ID_Error, //** No Use , last max index */
 /*62*/  CAM_HUMIDITY,			//!<check if camera has	 humidity sensor  20191021 LYL Unified humidity function
 /*63*/  CAM_PRESSURE,             //check if camera has pressure sensor
+/*64*/  CONTROL_VACUUM_PUMP,        /// if camera has VACUUM PUMP
+/*65*/  CONTROL_SensorChamberCycle_PUMP,
 
 
 /* Do not Put Item after  CONTROL_MAX_ID !! This should be the max index of the list */
@@ -276,7 +278,23 @@ typedef struct _QHYGetImageParam
   bool HaveImgData;
 }
 QHYGetImageParam;
-
+typedef struct HistCoordinates
+{
+  int x[3000];
+  int y[3000];
+}HistCoordinates;
+typedef struct StarRough
+{
+  int x;
+  int y;
+  int starLevel;//unsigned char
+}StarRough;
+typedef struct StarData{
+  double x;
+  double y;
+  double snr;
+  int brightness;//unsigned char
+}StarData;
 
 #if CALLBACK_MODE_SUPPORT
 typedef QHYDWORD  (*QHYCCDProcCallBack) (void *handle,

@@ -214,7 +214,7 @@
 
 /**
  * Type define for QHY5III290*/
-#define DEVICETYPE_QHY5III290   4024
+#define DEVICETYPE_QHY5III290    4024
 
 /**
  * Type define for QHY5III290C*/
@@ -364,7 +364,17 @@
 #define DEVICETYPE_QHY461M     	    4081
 #define DEVICETYPE_QHY461C     	    4082
 
+#define DEVICETYPE_QHY492MT      	4083
+#define DEVICETYPE_QHY5III485       4084
+#define DEVICETYPE_QHY294PRO        4085
+#define DEVICETYPE_QHY294MPRO        4086
+#define DEVICETYPE_QHY294CPRO        4087
 
+#define DEVICETYPE_QHY4040PRO_F 	4088
+#define DEVICETYPE_QHY4040PRO_B 	4089
+#define DEVICETYPE_QHY268M      	4090
+#define DEVICETYPE_QHY4040PRO_FN 	4091
+#define DEVICETYPE_QHY4040PRO_BN 	4092
 /**
  * Type define for QHY5IIIEND*/
 #define DEVICETYPE_QHY5IIIEND   	4999
@@ -947,8 +957,8 @@
 
 /**
  * Type define for QHY-DevelopDev*/
-#define QHY5IIICOMMON_MAX_WIDTH        		9000
-#define QHY5IIICOMMON_MAX_HEIGHT        	7000
+#define QHY5IIICOMMON_MAX_WIDTH        3864	//8432  	
+#define QHY5IIICOMMON_MAX_HEIGHT       2180    //5648	  
 
 /**
  * Type define for QHY247*/
@@ -992,6 +1002,14 @@
 
 #define QHY294_MAX_WIDTH        	4212
 #define QHY294_MAX_HEIGHT        	2850
+// FixME fix  number
+#define QHY294_M_C_PRO_MAX_WIDTH_Mod_14_11M        4212
+#define QHY294_M_C_PRO_MAX_HEIGHT_Mod_14_11M       2850
+#define QHY294_M_C_PRO_MAX_WIDTH_Mod_12_47M        8432
+#define QHY294_M_C_PRO_MAX_HEIGHT_Mod_12_47M       5648
+
+#define QHY492_MAX_WIDTH        	4212
+#define QHY492_MAX_HEIGHT        	2850
 
 #define QHY2020_MAX_WIDTH        	4096
 #define QHY2020_MAX_HEIGHT        	2048
@@ -1238,7 +1256,7 @@
 
 #define		MAX_CAMERA_NUMBER		200
 #define		CAMERA_ID_LENGTH		64
-#define   	MAXDEVICES 				8
+#define   	MAXDEVICES 				10
 
 
 #define		MAX_READMODE_NAME			256
@@ -1283,6 +1301,10 @@
 
 #define   SINGLE_MODE 								0
 #define   LIVE_MODE 								1
+
+#define   FPGA_MODE_DEFAULT 						99
+#define   FPGA_MODE_12_47M 								12     //14bit rigister= 11M  12bit rigister = 47M
+#define   FPGA_MODE_14_11M 								14         //14bit rigister= 11M  12bit rigister = 47M
 
 #define   GET_IMAGE_TIMEOUT							60000     //QHY09000 DRIFT SCAN MOD  600000  
 //#define   GET_IMAGE_TIMEOUT							900000     //QHY09000 DRIFT SCAN MOD  600000  
@@ -1347,9 +1369,14 @@
 
 #define	PCIE_DWORD				(4)
 
+//TODO try to find out what this stand for
 #define	FRAME_BUFF_NUM	3
 
 #define IS_WRITE  1
 #define IS_READ	  2
+
+#define CAM_CONN_STATUS_TO_NOTHING    1
+#define CAM_CONN_STATUS_TO_PC         2
+#define CAM_CONN_STATUS_TO_SDK        3
 
 #endif

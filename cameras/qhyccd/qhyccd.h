@@ -11,10 +11,6 @@
 
 
 
-#if defined (_WIN32)
-
-#endif
-
 #ifndef __QHYCCD_H__
 #define __QHYCCD_H__
 
@@ -229,6 +225,7 @@ EXPORTC uint32_t STDCALL GetQHYCCDSingleFrame(qhyccd_handle *handle,uint32_t *w,
 
 /**
   @fn uint32_t CancelQHYCCDExposing(qhyccd_handle *handle)
+  @brief force stop the camera long exposure. But host software must readout the image data. Please note not all camera can use this method.
   @param handle camera control handle
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -238,7 +235,7 @@ EXPORTC uint32_t STDCALL CancelQHYCCDExposing(qhyccd_handle *handle);
 
 /**
   @fn uint32_t CancelQHYCCDExposingAndReadout(qhyccd_handle *handle)
-  @brief stop the camera exposing and readout
+  @brief force stop the camera long exposure. And also camera does not send back the image data. Host software must not readout the data. All camera support this mode. 
   @param handle camera control handle
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -246,24 +243,25 @@ EXPORTC uint32_t STDCALL CancelQHYCCDExposing(qhyccd_handle *handle);
   */
 EXPORTC uint32_t STDCALL CancelQHYCCDExposingAndReadout(qhyccd_handle *handle);
 
-/** \fn uint32_t BeginQHYCCDLive(qhyccd_handle *handle)
-      \brief start continue exposing
-	  \param handle camera control handle
-	  \return
-	  on success,return QHYCCD_SUCCESS \n
-	  another QHYCCD_ERROR code on other failures
+/** 
+  @fn uint32_t BeginQHYCCDLive(qhyccd_handle *handle)
+  @brief in live video mode, start continue exposing. Only need to start once before StopQHYCCDLive.
+	@param handle camera control handle
+  @return
+	on success,return QHYCCD_SUCCESS \n
+	another QHYCCD_ERROR code on other failures
   */
 EXPORTC uint32_t STDCALL BeginQHYCCDLive(qhyccd_handle *handle);
 
 /**
-      @fn uint32_t GetQHYCCDLiveFrame(qhyccd_handle *handle,uint32_t *w,uint32_t *h,uint32_t *bpp,uint32_t *channels,uint8_t *imgdata)
-      @brief get live frame data from camera
+    @fn uint32_t GetQHYCCDLiveFrame(qhyccd_handle *handle,uint32_t *w,uint32_t *h,uint32_t *bpp,uint32_t *channels,uint8_t *imgdata)
+    @brief get live frame data from camera
 	  @param handle camera control handle
 	  @param *w pointer to width of ouput image
 	  @param *h pointer to height of ouput image
-      @param *bpp pointer to depth of ouput image
-      @param *channels pointer to channels of ouput image
-      @param *imgdata image data buffer
+    @param *bpp pointer to depth of ouput image
+    @param *channels pointer to channels of ouput image
+    @param *imgdata image data buffer
 	  @return
 	  on success,return QHYCCD_SUCCESS \n
 	  QHYCCD_ERROR_GETTINGFAILED,if get data failed \n
@@ -877,3 +875,9 @@ EXPORTC void STDCALL QHYCCD_fpga_reset();
 #endif
 
 #endif
+
+/// ----------------------------------
+
+void call_pnp_event();
+void call_data_event_live(char *id, uint8_t *imgdata);
+void call_transfer_event_error();
