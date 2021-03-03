@@ -314,10 +314,9 @@ void CameraINDI::newNumber(INumberVectorProperty *nvp)
     else if (nvp == binning_prop)
     {
         MaxBinning = wxMin(binning_x->max, binning_y->max);
-        Binning = wxMin(binning_x->value, binning_y->value);
+        m_curBinning = wxMin(binning_x->value, binning_y->value);
         if (Binning > MaxBinning)
             Binning = MaxBinning;
-        m_curBinning = Binning;
         // defer defining FullSize since it is not simply derivable from max size and binning
         // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
     }
