@@ -233,7 +233,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawText(wxString::Format("%u", star.PeakVal), 3, 3 + smallFontHeight);
     }
 
-    float hfd = pFrame->pGuider->PrimaryStar().HFD;
+    float hfd = star.HFD;
     if (hfd != 0.f) {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
         if (inFocusingMode) {
