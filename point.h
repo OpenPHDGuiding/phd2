@@ -47,7 +47,7 @@ public:
 
     PHD_Point(double x, double y)
     {
-        SetXY(x,y);
+        SetXY(x, y);
     }
 
     PHD_Point(const PHD_Point& p)

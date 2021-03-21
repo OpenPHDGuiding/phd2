@@ -176,6 +176,7 @@ struct NV
     NV(const wxString& n_, const char *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
     NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
+    NV(const wxString& n_, unsigned int v_) : n(n_), v(wxString::Format("%u", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
     NV(const wxString& n_, bool v_) : n(n_), v(v_ ? literal_true : literal_false) { }
@@ -1461,7 +1462,7 @@ static void get_star_image(JObj& response, const json_value *params)
     pos.Y -= rect.GetTop();
 
     JObj rslt;
-    rslt << NV("frame", (int) img->FrameNum)
+    rslt << NV("frame", img->FrameNum)
         << NV("width", rect.GetWidth())
         << NV("height", rect.GetHeight())
         << NV("star_pos", pos)
@@ -2479,13 +2480,49 @@ void EventServer::NotifyCalibrationDataFlipped(const Mount *mount)
     do_notify(m_eventServerClients, ev);
 }
 
-void EventServer::NotifyLooping(unsigned int exposure)
+void EventServer::NotifyLooping(unsigned int exposure, const Star *star, const FrameDroppedInfo *info)
 {
     if (m_eventServerClients.empty())
         return;
 
     Ev ev("LoopingExposures");
-    ev << NV("Frame", (int) exposure);
+    ev << NV("Frame", exposure);
+
+    double mass = 0., snr, hfd;
+    int err = 0;
+    wxString status;
+
+    if (star)
+    {
+        mass = star->Mass;
+        snr = star->SNR;
+        hfd = star->HFD;
+        err = star->GetError();
+    }
+    else if (info)
+    {
+        if (Star::WasFound(static_cast<Star::FindResult>(info->starError)))
+        {
+            mass = info->starMass;
+            snr = info->starSNR;
+            hfd = info->starHFD;
+        }
+        err = info->starError;
+        status = info->status;
+    }
+
+    if (mass)
+    {
+        ev << NV("StarMass", mass, 0)
+           << NV("SNR", snr, 2)
+           << NV("HFD", hfd, 2);
+    }
+
+    if (err)
+        ev << NV("ErrorCode", err);
+
+    if (!status.IsEmpty())
+        ev << NV("Status", status);
 
     do_notify(m_eventServerClients, ev);
 }

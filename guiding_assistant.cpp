@@ -1385,7 +1385,8 @@ void GuidingAsstWin::MakeRecommendations()
     }
 
     // Star HFD
-    if (pxscale > 1.0 && pFrame->pGuider->HFD() > 4.5)
+    const Star& star = pFrame->pGuider->PrimaryStar();
+    if (pxscale > 1.0 && star.HFD > 4.5)
     {
         wxString msg(_("Consider trying to improve focus on the guide camera"));
         allRecommendations += "StarHFD:" + msg + "\n";

@@ -953,7 +953,8 @@ double GuideAlgorithmGaussianProcess::result(double input)
     }
 
     // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
-    double control_signal = GPG->result(input, pFrame->pGuider->SNR(), (double) pFrame->RequestedExposureDuration()/1000.0);
+    const Star& star = pFrame->pGuider->PrimaryStar();
+    double control_signal = GPG->result(input, star.SNR, (double) pFrame->RequestedExposureDuration() / 1000.0);
 
     Debug.Write(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d\n",
         input, control_signal, pFrame->RequestedExposureDuration()));

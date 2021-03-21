@@ -38,36 +38,24 @@
 #include "phd.h"
 #include <algorithm>
 
-Star::Star(void)
+Star::Star()
 {
     Invalidate();
     // Star is a bit quirky in that we use X and Y after the star is Invalidate()ed.
     X = Y = 0.0;
 }
 
-Star::~Star(void)
-{
-}
-
 bool Star::WasFound(FindResult result)
 {
-    bool bReturn = false;
-
-    if (IsValid() &&
-        (result == STAR_OK || result == STAR_SATURATED))
-    {
-        bReturn = true;
-    }
-
-    return bReturn;
+    return result == STAR_OK || result == STAR_SATURATED;
 }
 
-bool Star::WasFound(void)
+bool Star::WasFound() const
 {
-    return WasFound(m_lastFindResult);
+    return IsValid() && WasFound(m_lastFindResult);
 }
 
-void Star::Invalidate(void)
+void Star::Invalidate()
 {
     Mass = 0.0;
     SNR = 0.0;
@@ -694,30 +682,6 @@ static void RemoveItems(std::set<Peak>& stars, const std::set<int>& to_erase)
         else
             ++it;
     }
-}
-
-// GuideStar section
-GuideStar::GuideStar() : Star()
-{
-    referencePoint.X = X;
-    referencePoint.Y = Y;
-    missCount = 0;
-    zeroCount = 0;
-    lostCount = 0;
-}
-GuideStar::GuideStar(const Star* star)
-{
-    X = star->X;
-    Y = star->Y;
-    Mass = star->Mass;
-    HFD = star->HFD;
-    SNR = star->SNR;
-    missCount = 0;
-    zeroCount = 0;
-    lostCount = 0;
-    referencePoint.X = star->X;
-    referencePoint.Y = star->Y;
-
 }
 
 static bool CloseToReference(const GuideStar& referencePoint, const GuideStar& other)
