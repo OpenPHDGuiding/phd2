@@ -1212,6 +1212,28 @@ void Guider::DisplayImage(usImage *img)
     UpdateImageDisplay();
 }
 
+inline static bool
+IsLoopingState(GUIDER_STATE state)
+{
+    // returns true for looping, but non-guiding states
+    switch (state)
+    {
+    case STATE_UNINITIALIZED:
+    case STATE_SELECTING:
+    case STATE_SELECTED:
+        return true;
+
+    case STATE_CALIBRATING_PRIMARY:
+    case STATE_CALIBRATING_SECONDARY:
+    case STATE_CALIBRATED:
+    case STATE_GUIDING:
+    case STATE_STOP:
+        return false;
+    }
+
+    return false;
+}
+
 /*************  A new image is ready ************************/
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
@@ -1239,21 +1261,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (pFrame && pFrame->pStatsWin)
             pFrame->pStatsWin->UpdateImageSize(pImage->Size);
-
-        switch (m_state)
-        {
-        case STATE_UNINITIALIZED:
-        case STATE_SELECTING:
-        case STATE_SELECTED:
-            EvtServer.NotifyLooping(pImage->FrameNum);
-            break;
-        case STATE_CALIBRATING_PRIMARY:
-        case STATE_CALIBRATING_SECONDARY:
-        case STATE_CALIBRATED:
-        case STATE_GUIDING:
-        case STATE_STOP:
-            break;
-        }
 
         if (bStopping)
         {
@@ -1289,9 +1296,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
+                    EvtServer.NotifyLooping(pImage->FrameNum, nullptr, &info);
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
+                    EvtServer.NotifyLooping(pImage->FrameNum, nullptr, &info);
                     if (!m_ignoreLostStarLooping)
                     {
                         SetState(STATE_UNINITIALIZED);
@@ -1335,8 +1344,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             statusMessage = info.status;
             throw THROW_INFO("unable to update current position");
         }
-        else
-            statusMessage = info.status;
+
+        statusMessage = info.status;
+
+        if (IsLoopingState(m_state))
+            EvtServer.NotifyLooping(pImage->FrameNum, &PrimaryStar(), nullptr);
 
         // we have a star selected, so re-enable subframes
         if (m_forceFullFrame)

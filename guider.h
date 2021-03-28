@@ -291,20 +291,18 @@ private:
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
 
-    virtual bool IsLocked() = 0;
+    virtual bool IsLocked() const = 0;
     virtual bool AutoSelect(const wxRect& roi = wxRect()) = 0;
 
-    virtual const PHD_Point& CurrentPosition() = 0;
-    virtual wxRect GetBoundingBox() = 0;
-    virtual int GetMaxMovePixels() = 0;
-    virtual double StarMass() = 0;
-    virtual unsigned int StarPeakADU() = 0;
-    virtual double SNR() = 0;
-    virtual double HFD() = 0;
-    virtual int StarError() = 0;
-    virtual bool GetMultiStarMode() { return false; }
+    virtual const PHD_Point& CurrentPosition() const = 0;
+    virtual wxRect GetBoundingBox() const = 0;
+    virtual int GetMaxMovePixels() const = 0;
+
+    virtual const Star& PrimaryStar() const = 0;
+
+    virtual bool GetMultiStarMode() const { return false; }
     virtual void SetMultiStarMode(bool On) {};
-    virtual wxString GetStarCount() { return wxEmptyString; }
+    virtual wxString GetStarCount() const { return wxEmptyString; }
 
     usImage *CurrentImage() const;
     wxImage *DisplayedImage() const;

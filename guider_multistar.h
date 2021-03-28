@@ -72,7 +72,6 @@ public:
 
 class GuiderMultiStar : public Guider
 {
-private:
     Star m_primaryStar;
     std::vector<GuideStar> m_guideStars;
     DescriptiveStats *m_primaryDistStats;
@@ -81,15 +80,15 @@ private:
     bool m_multiStarMode;
     bool m_stabilizing;
     bool m_lockPositionMoved;
-    int m_starsUsed;
-    int m_lastStarsUsed;
+    unsigned int m_starsUsed;
+    unsigned int m_lastStarsUsed;
 
     // parameters
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
     bool m_tolerateJumpsEnabled;
     double m_tolerateJumpsThreshold;
-    int m_maxStars;
+    unsigned int m_maxStars;
     double m_stabilitySigmaX;
 
 public:
@@ -124,18 +123,14 @@ public:
     void OnPaint(wxPaintEvent& evt) override;
 
     virtual bool SetLockPosition(const PHD_Point& position) override;
-    bool IsLocked() override;
+    bool IsLocked() const override;
     bool AutoSelect(const wxRect& roi) override;
-    const PHD_Point& CurrentPosition() override;
-    wxRect GetBoundingBox() override;
-    int GetMaxMovePixels() override;
-    double StarMass() override;
-    unsigned int StarPeakADU() override;
-    double SNR() override;
-    double HFD() override;
-    int StarError() override;
-    bool GetMultiStarMode() override;
-    wxString GetStarCount() override;
+    const PHD_Point& CurrentPosition() const override;
+    wxRect GetBoundingBox() const override;
+    int GetMaxMovePixels() const override;
+    const Star& PrimaryStar() const override;
+    bool GetMultiStarMode() const override;
+    wxString GetStarCount() const override;
     void SetMultiStarMode(bool val) override;
     void ClearSecondaryStars();
     wxString GetSettingsSummary() const override;
@@ -157,5 +152,35 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+inline int
+GuiderMultiStar::GetMaxMovePixels() const
+{
+    return m_searchRegion;
+}
+
+inline const Star&
+GuiderMultiStar::PrimaryStar() const
+{
+    return m_primaryStar;
+}
+
+inline bool
+GuiderMultiStar::GetMultiStarMode() const
+{
+    return m_multiStarMode;
+}
+
+inline bool
+GuiderMultiStar::IsLocked() const
+{
+    return m_primaryStar.WasFound();
+}
+
+inline const PHD_Point&
+GuiderMultiStar::CurrentPosition() const
+{
+    return m_primaryStar;
+}
 
 #endif /* GUIDER_MULTISTAR_H_INCLUDED */

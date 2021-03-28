@@ -190,14 +190,17 @@ static void GuidingHeader(wxFFile& file)
     file.Write(PointingInfo());
     file.Write("\n");
 
-    file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
-        pFrame->pGuider->LockPosition().X,
-        pFrame->pGuider->LockPosition().Y,
-        pFrame->pGuider->CurrentPosition().X,
-        pFrame->pGuider->CurrentPosition().Y,
-        pFrame->pGuider->HFD()));
+    const Star& star = pFrame->pGuider->PrimaryStar();
 
-    file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
+    file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
+                                pFrame->pGuider->LockPosition().X,
+                                pFrame->pGuider->LockPosition().Y,
+                                pFrame->pGuider->CurrentPosition().X,
+                                pFrame->pGuider->CurrentPosition().Y,
+                                star.HFD));
+
+    file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,"
+               "RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 }
 
 static void WriteSummaryInfo(wxFFile& file, const GuideLogSummaryInfo& summary)
@@ -437,12 +440,15 @@ void GuidingLog::StartCalibration(const Mount *pCalibrationMount)
     m_file.Write(PointingInfo());
     m_file.Write("\n");
 
+    const Star& star = pFrame->pGuider->PrimaryStar();
+
     m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
                 pFrame->pGuider->CurrentPosition().Y,
-                pFrame->pGuider->HFD()));
+                star.HFD));
+
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
 
     Flush();

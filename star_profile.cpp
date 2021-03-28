@@ -111,11 +111,11 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
     wxAutoBufferedPaintDC dc(this);
 
-    wxPoint Prof[FULLW];
-
-    dc.SetBackground(wxColour(10,30,30));
+    dc.SetBackground(wxColour(10, 30, 30));
     dc.Clear();
-    if (!pFrame || !pFrame->pGuider || pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
+
+    if (!pFrame || !pFrame->pGuider || pFrame->pGuider->GetState() == STATE_UNINITIALIZED)
+        return;
 
     const int xsize = this->GetSize().GetX();
     const int ysize = this->GetSize().GetY();
@@ -148,10 +148,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         labelTextHeight = 5 + smallFontHeight + 5;
     }
 
-    wxPen RedPen;
+    wxPen RedPen(wxColour(255,0,0));
     //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
     //  BluePen = wxPen(wxColour(100,100,255));
-    RedPen = wxPen(wxColour(255,0,0));
 
     int i;
     int *profptr;
@@ -172,7 +171,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         break;
     }
 
-    float fwhm = 0;
+    float fwhm = 0.f;
 
     // Figure max and min
     int Prof_Min, Prof_Max, Prof_Mid;
@@ -184,6 +183,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         else if (*(profptr + i) > Prof_Max)
             Prof_Max = *(profptr + i);
     }
+
+    wxPoint Prof[FULLW];
+
     if (Prof_Min < Prof_Max)
     {
         Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
@@ -225,13 +227,13 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 
-    unsigned int peak = pFrame->pGuider->StarPeakADU();
-    if (peak) {
+    const Star& star = pFrame->pGuider->PrimaryStar();
+    if (star.IsValid()) {
         dc.DrawText(_("Peak"), 3, 3);
-        dc.DrawText(wxString::Format("%u", peak), 3, 3 + smallFontHeight);
+        dc.DrawText(wxString::Format("%u", star.PeakVal), 3, 3 + smallFontHeight);
     }
 
-    float hfd = pFrame->pGuider->HFD();
+    float hfd = star.HFD;
     if (hfd != 0.f) {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
         if (inFocusingMode) {

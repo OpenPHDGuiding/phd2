@@ -51,7 +51,7 @@ public:
 
     enum FindResult
     {
-        STAR_OK=0,
+        STAR_OK = 0,
         STAR_SATURATED,
         STAR_LOWSNR,
         STAR_LOWMASS,
@@ -66,8 +66,7 @@ public:
     double HFD;
     unsigned short PeakVal;
 
-    Star(void);
-    ~Star();
+    Star();
 
     /*
      * Note: contrary to most boolean PHD functions, the star find functions return
@@ -77,17 +76,17 @@ public:
     bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation);
     bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation);
 
-    bool WasFound(FindResult result);
-    bool WasFound(void);
-    void Invalidate(void);
+    static bool WasFound(FindResult result);
+    bool WasFound() const;
+    void Invalidate();
     void SetError(FindResult error);
-    FindResult GetError(void) const;
+    FindResult GetError() const;
 
 private:
     FindResult m_lastFindResult;
 };
 
-inline Star::FindResult Star::GetError(void) const
+inline Star::FindResult Star::GetError() const
 {
     return m_lastFindResult;
 }
@@ -96,12 +95,28 @@ class GuideStar : public Star
 {
 public:
     PHD_Point referencePoint;
-    int missCount;
-    int zeroCount;
-    int lostCount;
+    unsigned int missCount;
+    unsigned int zeroCount;
+    unsigned int lostCount;
 
-    GuideStar();
-    GuideStar(const Star* star);
+    GuideStar()
+        :
+        referencePoint(0., 0.),
+        missCount(0),
+        zeroCount(0),
+        lostCount(0)
+    {
+    }
+
+    GuideStar(const Star& star)
+        :
+        Star(star),
+        referencePoint(star),
+        missCount(0),
+        zeroCount(0),
+        lostCount(0)
+    {
+    }
 
     bool AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
         std::vector<GuideStar>& foundStars, int maxStars);

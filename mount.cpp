@@ -1053,11 +1053,12 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
         info.raLimited = xMoveResult.limited;
         info.decLimited = yMoveResult.limited;
         info.aoPos = GetAoPos();
-        info.starMass = pFrame->pGuider->StarMass();
-        info.starSNR = pFrame->pGuider->SNR();
-        info.starHFD = pFrame->pGuider->HFD();
+        const Star& star = pFrame->pGuider->PrimaryStar();
+        info.starMass = star.Mass;
+        info.starSNR = star.SNR;
+        info.starHFD = star.HFD;
         info.avgDist = pFrame->CurrentGuideError();
-        info.starError = pFrame->pGuider->StarError();
+        info.starError = star.GetError();
     }
     catch (const wxString& errMsg)
     {
