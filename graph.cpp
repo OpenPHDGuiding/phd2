@@ -483,6 +483,7 @@ void GraphLogWindow::SetLength(int length)
     m_pClient->m_length = length;
     m_pClient->m_noDitherDec.ChangeWindowSize(length);
     m_pClient->m_noDitherRA.ChangeWindowSize(length);
+    Debug.Write(wxString::Format("GraphStats window size = %d\n", length));
     m_pClient->RecalculateTrendLines();
     m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), length));
     pConfig->Global.SetInt("/graph/length", length);
@@ -785,6 +786,9 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     SetMaxHeight(maxHeight);
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
+    m_noDitherDec.ChangeWindowSize(m_length);
+    m_noDitherRA.ChangeWindowSize(m_length);
+    Debug.Write(wxString::Format("GraphStats window size = %d\n", (int)m_length));
     m_height = pConfig->Global.GetInt("/graph/height", m_minHeight * 2 * 2); // match PHD1 4-pixel scale for new users
     m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt("graph/HeightUnits", (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
 
@@ -870,8 +874,6 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
     }
 
     m_history.resize(maxLength);
-    m_noDitherDec.ChangeWindowSize(maxLength);
-    m_noDitherRA.ChangeWindowSize(maxLength);
 
     delete [] m_line1;
     m_line1 = new wxPoint[maxLength];
