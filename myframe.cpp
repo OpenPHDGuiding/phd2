@@ -1857,7 +1857,7 @@ void MyFrame::SetPaused(PauseType pause)
     if (pause != PAUSE_NONE && !isPaused)
     {
         pGuider->SetPaused(pause);
-        StatusMsg(_("Paused"));
+        StatusMsgNoTimeout(_("Paused") + (pause == PAUSE_FULL ? _("/full") : _("/looping")));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }

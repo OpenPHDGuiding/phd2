@@ -1366,7 +1366,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVEOPTS_DEDUCED_MOVE);
             }
 
-            statusMessage = _("Paused");
+            statusMessage = _("Paused") + (GetPauseType() == PAUSE_FULL ? _("/full") : _("/looping"));
             throw THROW_INFO("Skipping frame - guider is paused");
         }
 
