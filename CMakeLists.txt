@@ -151,6 +151,7 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 # Global include directories
 # WxWidgets inclusion narrowed to PHD2 project only
 # include_directories(${wxWidgets_INCLUDE_DIRS})
+include_directories(${phd_src_dir}/cameras/qhyccd)
 include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
 
@@ -677,6 +678,8 @@ if(APPLE)
       COMMAND install_name_tool -change @rpath/libqhyccd.5.dylib
                    @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @rpath/libqhyccd.6.dylib
+                   @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
+      COMMAND install_name_tool -change @rpath/libqhyccd.20.dylib
                    @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change /usr/local/lib/libusb-1.0.0.dylib
                    @executable_path/../Frameworks/libusb_openphd.dylib
