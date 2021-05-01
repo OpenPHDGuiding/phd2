@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-08 05:48+0000\n"
+"POT-Creation-Date: 2021-05-01 23:10+0100\n"
 "PO-Revision-Date: 2021-01-21 16:46+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -219,12 +219,12 @@ msgstr "理想值"
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:684 guiding_assistant.cpp:1444 polardrift_toolwin.cpp:190
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:190
 #: scope.cpp:259 staticpa_toolwin.cpp:349 testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:685 guiding_assistant.cpp:1444 polardrift_toolwin.cpp:191
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:191
 #: scope.cpp:260 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "South"
 msgstr "南向"
@@ -348,8 +348,8 @@ msgstr "正交誤差:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1792
-#: guiding_assistant.cpp:1877
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1793
+#: guiding_assistant.cpp:1878
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -718,32 +718,47 @@ msgstr "焦長值需大於 50"
 msgid "Please enter a pixel size greater than zero."
 msgstr "像素大小需大於 0."
 
-#: cam_altair.cpp:171
+#: cam_altair.cpp:181
 msgid "Altair Camera Settings"
 msgstr "Altair 相機設定"
 
-#: cam_altair.cpp:182 cam_sxv.cpp:211 graph.cpp:126
+#: cam_altair.cpp:187 cam_sxv.cpp:211 graph.cpp:126
 msgid "Settings"
 msgstr "設定"
 
-#: cam_altair.cpp:305
+#: cam_altair.cpp:191
+#, c-format
+msgid "Reduced Resolution (by ~%d%%)"
+msgstr ""
+
+#: cam_altair.cpp:197
+msgid "Discard Frames"
+msgstr ""
+
+#: cam_altair.cpp:202
+msgid ""
+"Discard this many frames whan capturing starts. Useful for preventing "
+"initial under-exposed frames interfering with automatic star selection."
+msgstr ""
+
+#: cam_altair.cpp:336
 msgid "No Altair cameras detected"
 msgstr "找不到 Altair 相機"
 
-#: cam_altair.cpp:323
+#: cam_altair.cpp:354
 msgid "Specified Altair Camera not found."
 msgstr "找不到所指定的 Altair 相機。"
 
-#: cam_altair.cpp:329
+#: cam_altair.cpp:360
 msgid "Failed to open Altair Camera."
 msgstr "開啟 Altair 相機失敗。"
 
-#: cam_altair.cpp:346
+#: cam_altair.cpp:377
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
 #: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:802 cam_indi.cpp:836 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -778,38 +793,38 @@ msgid ""
 "driver provider."
 msgstr "ASCOM 驅動程式缺少 %s 屬性, 請將此錯誤回報給提供 ASCOM 驅動程式的廠商."
 
-#: cam_ascom.cpp:772 cam_ascom.cpp:1025
+#: cam_ascom.cpp:772 cam_ascom.cpp:1027
 msgid ""
 "The ASCOM camera failed to set binning. See the debug log for more "
 "information."
 msgstr "ASCOM 相機無法設定影像併合, 請參考除錯日誌中的詳細資訊."
 
-#: cam_ascom.cpp:798
+#: cam_ascom.cpp:800
 msgid "ASCOM driver problem -- cannot disconnect"
 msgstr "ASCOM 驅動程式異常: 無法切斷"
 
-#: cam_ascom.cpp:837
+#: cam_ascom.cpp:839
 #, c-format
 msgid "ASCOM error turning camera cooler %s"
 msgstr "微調相機冷卻器 %s 時發生錯誤"
 
-#: cam_ascom.cpp:837
+#: cam_ascom.cpp:839
 msgid "on"
 msgstr "開啟"
 
-#: cam_ascom.cpp:837
+#: cam_ascom.cpp:839
 msgid "off"
 msgstr "關閉"
 
-#: cam_ascom.cpp:1043
+#: cam_ascom.cpp:1045
 msgid "ASCOM error -- Cannot start exposure with given parameters"
 msgstr "ASCOM 錯誤 -- 無法使用所設定的參數開始曝光"
 
-#: cam_ascom.cpp:1067
+#: cam_ascom.cpp:1069
 msgid "Exception thrown polling camera"
 msgstr "對相機送出異常訊號"
 
-#: cam_ascom.cpp:1088
+#: cam_ascom.cpp:1090
 msgid "Error reading image"
 msgstr "影像讀取錯誤"
 
@@ -931,72 +946,72 @@ msgstr "傳輸無法開始"
 msgid "Cannot get a frame from the queue"
 msgstr "無法由佇列中取得影像"
 
-#: cam_indi.cpp:255 cam_indi.cpp:661
+#: cam_indi.cpp:255 cam_indi.cpp:660
 msgid "INDI camera disconnected"
 msgstr "INDI 相機連線中斷"
 
-#: cam_indi.cpp:589
+#: cam_indi.cpp:588
 msgid "connection timed-out"
 msgstr "連線逾時"
 
-#: cam_indi.cpp:609 scope_indi.cpp:351 scope_indi.cpp:372
+#: cam_indi.cpp:608 scope_indi.cpp:351 scope_indi.cpp:372
 msgid "Connection timed-out"
 msgstr "連線逾時"
 
-#: cam_indi.cpp:634
+#: cam_indi.cpp:633
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr "無法連接相機  %s: %s"
 
-#: cam_indi.cpp:654 scope_indi.cpp:417
+#: cam_indi.cpp:653 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr "INDI 伺服器連接中斷"
 
-#: cam_indi.cpp:694
+#: cam_indi.cpp:693
 msgid "INDI Camera Selection"
 msgstr "選用 INDI 相機"
 
-#: cam_indi.cpp:757 cam_indi.cpp:783 gear_simulator.cpp:698
+#: cam_indi.cpp:756 cam_indi.cpp:782 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
 
-#: cam_indi.cpp:764 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:763 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "該 FITS 檔案不是影像檔"
 
-#: cam_indi.cpp:814 cam_indi.cpp:844 gear_simulator.cpp:728
+#: cam_indi.cpp:813 cam_indi.cpp:843 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "讀取資料錯誤"
 
-#: cam_indi.cpp:1003
+#: cam_indi.cpp:1002
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "相機 %s, 曝光錯誤. 請以串流取代之."
 
-#: cam_indi.cpp:1047
+#: cam_indi.cpp:1046
 #, c-format
 msgid "Unknown image format: %s"
 msgstr "未知的影像格式: %s"
 
-#: cam_indi.cpp:1136 cam_wdm.cpp:483
+#: cam_indi.cpp:1135 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr "%d 禎幅"
 
-#: cam_indi.cpp:1148
+#: cam_indi.cpp:1147
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr "相機不支援 VIDEO_STREAM 功能, 請反選這個選項: 相機不支援曝光時間."
 
-#: cam_indi.cpp:1150
+#: cam_indi.cpp:1149
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr "相機不具備 CCD_EXPOSURE 屬性參數, 請反選「相機不支援串流」選項."
 
-#: cam_indi.cpp:1152
+#: cam_indi.cpp:1151
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "相機不支援 CCD_EXPOSURE 或 VIDEO_STREAM 功能"
 
@@ -1821,7 +1836,7 @@ msgstr "彗星追蹤 - Training Active"
 msgid "Comet Tracking - Active"
 msgstr "彗星追蹤 - Active"
 
-#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1410
+#: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1370
 #: scope.cpp:1945
 msgid "Enable"
 msgstr "啟用"
@@ -3114,7 +3129,7 @@ msgstr "%.1f Hz"
 msgid "AO not connected"
 msgstr "AO 未連接"
 
-#: graph.cpp:88 graph.cpp:604
+#: graph.cpp:88 graph.cpp:605
 msgid "Scope:"
 msgstr "赤道儀:"
 
@@ -3229,23 +3244,23 @@ msgstr "赤經或 dx 顏色"
 msgid "Dec or dy Color"
 msgstr "赤緯或 dy 顏色"
 
-#: graph.cpp:738
+#: graph.cpp:739
 msgid "Select the Y-axis scale, pixels per Y division"
 msgstr "選擇 Y-軸比例, 像素/Y軸間格"
 
-#: graph.cpp:743
+#: graph.cpp:744
 msgid "Select the Y-axis scale, arc-seconds per Y division"
 msgstr "選擇 Y-軸比例, 角秒/Y軸間格"
 
-#: graph.cpp:1307
+#: graph.cpp:1309
 msgid "GuideNorth"
 msgstr "往北導星"
 
-#: graph.cpp:1308
+#: graph.cpp:1310
 msgid "GuideEast"
 msgstr "往東導星"
 
-#: graph.cpp:1440 testguide.cpp:107 testguide.cpp:132
+#: graph.cpp:1442 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
 
@@ -3615,7 +3630,7 @@ msgid ""
 msgstr "該使用多少百分比的回應式導星修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1438 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1398 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "自動"
 
@@ -3707,70 +3722,78 @@ msgid ""
 "is used?"
 msgstr "不論是否使用設定組態檔時, 你真的都要自動回復校準資料?"
 
-#: guider.cpp:1261
+#: guider.cpp:1268
 msgid "Stopped Guiding"
 msgstr "導星已停止"
 
-#: guider.cpp:1273
+#: guider.cpp:1280
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "偏移鎖定位置所容許的範圍，關閉鎖定位置偏移 (Shifted lock position outside "
 "allowable area. Lock Position Shift disabled.)"
 
-#: guider.cpp:1307
+#: guider.cpp:1316
 msgid "star lost"
 msgstr "星點遺失"
 
-#: guider.cpp:1357 myframe.cpp:1860
+#: guider.cpp:1369 myframe.cpp:1860
 msgid "Paused"
 msgstr "暫停"
 
-#: guider.cpp:1374
+#: guider.cpp:1369 myframe.cpp:1860
+msgid "/full"
+msgstr ""
+
+#: guider.cpp:1369 myframe.cpp:1860
+msgid "/looping"
+msgstr ""
+
+#: guider.cpp:1386
 msgid "Static PA rotation failed"
 msgstr "靜態 PA 旋轉失敗"
 
-#: guider.cpp:1380
+#: guider.cpp:1392
 msgid "Polar Drift PA drift failed"
 msgstr "極點飄移 PA 飄移失敗"
 
-#: guider.cpp:1390
+#: guider.cpp:1402
 msgid "AO calibration failed"
 msgstr "AO 校準失敗"
 
-#: guider.cpp:1390 guider.cpp:1423
+#: guider.cpp:1402 guider.cpp:1435
 msgid "calibration failed"
 msgstr "校準失敗"
 
-#: guider.cpp:1657
+#: guider.cpp:1669
 msgid "Guider Settings"
 msgstr "導星設定"
 
-#: guider.cpp:1666
+#: guider.cpp:1678
 msgid "Guide star tracking"
 msgstr "導星星體追蹤"
 
-#: guider.cpp:1667 log_uploader.cpp:700
+#: guider.cpp:1679 log_uploader.cpp:700
 msgid "Calibration"
 msgstr "校準"
 
-#: guider.cpp:1668
+#: guider.cpp:1680
 msgid "Shared Parameters"
 msgstr "共用的參數"
 
-#: guider.cpp:1712
+#: guider.cpp:1724
 msgid "Always scale images"
 msgstr "總是調整影像大小"
 
-#: guider.cpp:1713
+#: guider.cpp:1725
 msgid "Always scale images to fill window"
 msgstr "自動縮放影像以填滿視窗"
 
-#: guider.cpp:1715
+#: guider.cpp:1727
 msgid "Fast recenter after calibration or dither"
 msgstr "校準或在 dither 後快速將星點歸正"
 
-#: guider.cpp:1716
+#: guider.cpp:1728
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -3779,91 +3802,91 @@ msgstr ""
 "使用較長的導星訊號脈衝來加速校準及 dither 後星點回歸中心位置的時間，不點選該"
 "項則會維持使用舊有較慢的方法, 星點在校準或 dither 後回歸中心位置速度會較慢。"
 
-#: guider.cpp:1829
+#: guider.cpp:1841
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "你是否要將所有書籤刪除?"
 
-#: guider_multistar.cpp:416 guider_multistar.cpp:955
+#: guider_multistar.cpp:411 guider_multistar.cpp:916
 msgid "No star selected"
 msgstr "未選擇任何星點"
 
-#: guider_multistar.cpp:420
+#: guider_multistar.cpp:415
 msgid "Star lost - low SNR"
 msgstr "星點遺失 - 低訊噪比"
 
-#: guider_multistar.cpp:421
+#: guider_multistar.cpp:416
 msgid "Star lost - low mass"
 msgstr "星點遺失 - 低星點質心"
 
-#: guider_multistar.cpp:422
+#: guider_multistar.cpp:417
 msgid "Star lost - low HFD"
 msgstr "星點遺失 - 低 HFD"
 
-#: guider_multistar.cpp:423
+#: guider_multistar.cpp:418
 msgid "Star too near edge"
 msgstr "星點太接近影像邊緣"
 
-#: guider_multistar.cpp:424
+#: guider_multistar.cpp:419
 msgid "Star lost - mass changed"
 msgstr "星點遺失 - 質心改變"
 
-#: guider_multistar.cpp:425 guider_multistar.cpp:1163
+#: guider_multistar.cpp:420 guider_multistar.cpp:1124
 msgid "No star found"
 msgstr "未找到可用星點"
 
-#: guider_multistar.cpp:431
+#: guider_multistar.cpp:426
 #, c-format
 msgid "m=%.0f SNR=%.1f"
 msgstr "m=%.0f SNR=%.1f"
 
-#: guider_multistar.cpp:434
+#: guider_multistar.cpp:429
 msgid "Saturated"
 msgstr "亮度太高"
 
-#: guider_multistar.cpp:444
+#: guider_multistar.cpp:439
 #, c-format
 msgid "Exp=%0.1f s"
 msgstr "曝光=%0.1f s"
 
-#: guider_multistar.cpp:446
+#: guider_multistar.cpp:441
 #, c-format
 msgid "Exp=%d ms"
 msgstr "曝光=%d ms"
 
-#: guider_multistar.cpp:518
+#: guider_multistar.cpp:513
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "自動選擇在 (%.1f, %.1f) 的星體"
 
-#: guider_multistar.cpp:999
+#: guider_multistar.cpp:960
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr "質心：%.f vs %.f"
 
-#: guider_multistar.cpp:1036
+#: guider_multistar.cpp:997
 msgid "Recovering"
 msgstr "回復中"
 
-#: guider_multistar.cpp:1176
+#: guider_multistar.cpp:1136
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "選擇星點在 (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1406
+#: guider_multistar.cpp:1366
 msgid "Search region (pixels)"
 msgstr "搜尋區域 (像素)"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1367
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr "在 (上/下/左/右)各多少像素內搜尋被導星體的移動? 預設值 = 15 像素"
 
-#: guider_multistar.cpp:1409
+#: guider_multistar.cpp:1369
 msgid "Star Mass Detection"
 msgstr "星點值心變化偵測"
 
-#: guider_multistar.cpp:1411
+#: guider_multistar.cpp:1371
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -3872,11 +3895,11 @@ msgstr ""
 "點選以啟用心點質心變化偵測, 啟用後, 若導星星體的質心變化大於『質心變化容許"
 "量』設定值時, PHD 會忽略該擷取的影像."
 
-#: guider_multistar.cpp:1420
+#: guider_multistar.cpp:1380
 msgid "Tolerance"
 msgstr "質心變化容許量"
 
-#: guider_multistar.cpp:1421
+#: guider_multistar.cpp:1381
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -3888,15 +3911,15 @@ msgstr ""
 "靈敏), 此數值有效範圍為 10-100, 預設質為 50，如果沒有啟用星點質心變化偵測，這"
 "個參數會被忽略。"
 
-#: guider_multistar.cpp:1427
+#: guider_multistar.cpp:1387
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1432
+#: guider_multistar.cpp:1392
 msgid "Minimum star HFD (pixels)"
 msgstr "最小星點 HFD (像素) 值"
 
-#: guider_multistar.cpp:1433
+#: guider_multistar.cpp:1393
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -3908,11 +3931,11 @@ msgstr ""
 "星星體。利用星點工具測量熱噪的 HFD，並將最小 HFD 門檻值設置得彼此數值高一些。"
 "當 HFD 低於該數值時，熱噪就會被忽略。"
 
-#: guider_multistar.cpp:1440
+#: guider_multistar.cpp:1400
 msgid "Auto-selection frame downsample"
 msgstr "自動選擇影像禎降低採樣頻率"
 
-#: guider_multistar.cpp:1441
+#: guider_multistar.cpp:1401
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -3921,27 +3944,27 @@ msgstr ""
 "自動選星時使用的相機禎降低採樣頻率參數, 如果自動選星無法判別畸形的導星星體, "
 "請選擇大於 1 的數值"
 
-#: guider_multistar.cpp:1444
+#: guider_multistar.cpp:1404
 msgid "Beep on lost star"
 msgstr "在星點遺失時發出嗶聲"
 
-#: guider_multistar.cpp:1445
+#: guider_multistar.cpp:1405
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "當導星星體遺失時都發出告警聲"
 
-#: guider_multistar.cpp:1447
+#: guider_multistar.cpp:1407
 msgid "Use multiple stars"
 msgstr "使用多星點導星"
 
-#: guider_multistar.cpp:1448
+#: guider_multistar.cpp:1408
 msgid "Use multiple guide stars if they are available"
 msgstr "如果可以的話, 使用多星點導星"
 
-#: guider_multistar.cpp:1455
+#: guider_multistar.cpp:1415
 msgid "Minimum star SNR for AutoFind"
 msgstr "使用 AutoFind 時所需的最低星點訊躁比"
 
-#: guider_multistar.cpp:1456
+#: guider_multistar.cpp:1416
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -4190,16 +4213,15 @@ msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並�
 #: guiding_assistant.cpp:679
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
-"time, so the star will move around."
-msgstr "點擊【開始】進行評量，這段時間導星動作會暫停，因此星體會發生偏移。"
+"time so the star will move around."
+msgstr ""
 
 #: guiding_assistant.cpp:684
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
-"when the RMS and polar alignment values have stabilized (at least 2 minutes)."
+"after 2 minutes (longer if you're measuring RA tracking accuracy of the "
+"mount)."
 msgstr ""
-"導星輸出暫時關閉並開始量測星點移動量, 在 RMS 和極軸校準值穩定後 (至少兩分鐘) "
-"點擊「停止」"
 
 #: guiding_assistant.cpp:687
 msgid ""
@@ -4214,13 +4236,13 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "測量回差當中: "
 
-#: guiding_assistant.cpp:736 guiding_assistant.cpp:1787
-#: guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:736 guiding_assistant.cpp:1788
+#: guiding_assistant.cpp:1873
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:737 guiding_assistant.cpp:1789
-#: guiding_assistant.cpp:1874
+#: guiding_assistant.cpp:737 guiding_assistant.cpp:1790
+#: guiding_assistant.cpp:1875
 msgid "arc-sec"
 msgstr "角秒"
 
@@ -4232,13 +4254,13 @@ msgstr "ms (測試失敗)"
 msgid "Apply"
 msgstr "套用"
 
-#: guiding_assistant.cpp:1285 guiding_assistant.cpp:1923 myframe.cpp:3031
+#: guiding_assistant.cpp:1285 guiding_assistant.cpp:1924 myframe.cpp:3031
 #: myframe.cpp:3041
 msgid " "
 msgstr " "
 
-#: guiding_assistant.cpp:1286 guiding_assistant.cpp:1786
-#: guiding_assistant.cpp:1871
+#: guiding_assistant.cpp:1286 guiding_assistant.cpp:1787
+#: guiding_assistant.cpp:1872
 msgid "s"
 msgstr "s"
 
@@ -4278,74 +4300,74 @@ msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準�
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
 
-#: guiding_assistant.cpp:1390
+#: guiding_assistant.cpp:1391
 msgid "Consider trying to improve focus on the guide camera"
 msgstr "請考慮加強導星相機的對焦"
 
-#: guiding_assistant.cpp:1401
+#: guiding_assistant.cpp:1402
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "嘗試設定 RA min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1412
+#: guiding_assistant.cpp:1413
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1436
+#: guiding_assistant.cpp:1437
 msgid "Backlash is small, no compensation needed"
 msgstr "回差極小, 不需要做回差補償"
 
-#: guiding_assistant.cpp:1440
+#: guiding_assistant.cpp:1441
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "試著開始 %d ms 的赤緯回差補償"
 
-#: guiding_assistant.cpp:1443
+#: guiding_assistant.cpp:1444
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
 "(currently %s)"
 msgstr "回差 >= %d ms; 你可能必須僅在單一赤緯方向導星 (目前為 %s)"
 
-#: guiding_assistant.cpp:1461
+#: guiding_assistant.cpp:1462
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "嘗試使用 Lowpass2 進行赤緯導星"
 
-#: guiding_assistant.cpp:1577
+#: guiding_assistant.cpp:1578
 msgid "Measuring..."
 msgstr "測量中..."
 
-#: guiding_assistant.cpp:1672
+#: guiding_assistant.cpp:1673
 msgid "Backlash test aborted, see graph..."
 msgstr "回差測試中斷, 請檢查結果圖表..."
 
-#: guiding_assistant.cpp:1714 guiding_assistant.cpp:1720
+#: guiding_assistant.cpp:1715 guiding_assistant.cpp:1721
 msgid "Measuring backlash... "
 msgstr "回差測量當中... "
 
-#: guiding_assistant.cpp:1744
+#: guiding_assistant.cpp:1745
 msgid "Guiding stopped"
 msgstr "導星終止"
 
-#: guiding_assistant.cpp:1788 guiding_assistant.cpp:1873 statswindow.cpp:279
+#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1790 guiding_assistant.cpp:1875 statswindow.cpp:270
+#: guiding_assistant.cpp:1791 guiding_assistant.cpp:1876 statswindow.cpp:270
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1791 guiding_assistant.cpp:1876
+#: guiding_assistant.cpp:1792 guiding_assistant.cpp:1877
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1793 guiding_assistant.cpp:1878
+#: guiding_assistant.cpp:1794 guiding_assistant.cpp:1879
 msgid "arc-sec/min"
 msgstr "角秒/分鐘"
 
-#: guiding_assistant.cpp:1794 guiding_assistant.cpp:1879
+#: guiding_assistant.cpp:1795 guiding_assistant.cpp:1880
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
@@ -4687,15 +4709,15 @@ msgstr ""
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 
-#: mount.cpp:1212
+#: mount.cpp:1213
 msgid "RA:"
 msgstr "赤經:"
 
-#: mount.cpp:1217
+#: mount.cpp:1218
 msgid "DEC:"
 msgstr "赤緯:"
 
-#: mount.cpp:1262
+#: mount.cpp:1263
 msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
@@ -4703,7 +4725,7 @@ msgstr ""
 "赤道儀導星速率與最近一次進行校準所用的不同. 請重新做一次校準或將赤道儀導星速"
 "率設成與前次校準所用的數值. "
 
-#: mount.cpp:1272
+#: mount.cpp:1273
 msgid ""
 "Current calibration did not have side-of-pier information, so PHD2 can't "
 "automatically correct for meridian flips. You should do a fresh calibration "
@@ -4712,17 +4734,17 @@ msgstr ""
 "目前的校準資料沒有 side-of-pier 相關資訊, 因此 PHD2 無法自動地修正過中天翻面"
 "的問題, 你得重新做校準來解決這個問題."
 
-#: mount.cpp:1282
+#: mount.cpp:1283
 msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
 msgstr "設定檔中的像素大小與相機所回報的不同，重新校準以恢復正確的導星動作"
 
-#: mount.cpp:1330
+#: mount.cpp:1331
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "因為相場旋轉器位置改變, 必須要重新校準。"
 
-#: mount.cpp:1366
+#: mount.cpp:1367
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr "校準參考區遠離天球赤道，需重做校準。"
 
@@ -7628,32 +7650,32 @@ msgstr "鎖定設定為 %d,%d"
 msgid "Profile"
 msgstr "配置檔案"
 
-#: star_profile.cpp:163
+#: star_profile.cpp:162
 msgid "Mid row"
 msgstr "Mid row"
 
-#: star_profile.cpp:167
+#: star_profile.cpp:166
 msgid "Avg row"
 msgstr "Avg row"
 
-#: star_profile.cpp:171
+#: star_profile.cpp:170
 msgid "Avg col"
 msgstr "Avg col"
 
-#: star_profile.cpp:230
+#: star_profile.cpp:232
 msgid "Peak"
 msgstr "峰值"
 
-#: star_profile.cpp:238 star_profile.cpp:258
+#: star_profile.cpp:240 star_profile.cpp:260
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr "%s FWHM: %.2f"
 
-#: star_profile.cpp:240
+#: star_profile.cpp:242
 msgid "HFD: "
 msgstr "HFD: "
 
-#: star_profile.cpp:254
+#: star_profile.cpp:256
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f”)"
@@ -8418,6 +8440,19 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid ""
+#~ "Click Start to begin measurements.  Guiding will be disabled during this "
+#~ "time, so the star will move around."
+#~ msgstr "點擊【開始】進行評量，這段時間導星動作會暫停，因此星體會發生偏移。"
+
+#~ msgid ""
+#~ "Guiding output is disabled and star movement is being measured.  Click "
+#~ "Stop when the RMS and polar alignment values have stabilized (at least 2 "
+#~ "minutes)."
+#~ msgstr ""
+#~ "導星輸出暫時關閉並開始量測星點移動量, 在 RMS 和極軸校準值穩定後 (至少兩分"
+#~ "鐘) 點擊「停止」"
 
 #~ msgid "Cannot allocate memory to download image from camera"
 #~ msgstr "無法配置記憶體將影像由相機下載下來"
