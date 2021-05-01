@@ -676,12 +676,12 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
         break;
     case STATE_START_READY:
         if (!m_measurementsTaken)
-            instr = _("Click Start to begin measurements.  Guiding will be disabled during this time, so the star will move around.");
+            instr = _("Click Start to begin measurements.  Guiding will be disabled during this time so the star will move around.");
         else
             instr = m_instructions->GetLabel();
         break;
     case STATE_MEASURING:
-        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS and polar alignment values have stabilized (at least 2 minutes).");
+        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop after 2 minutes (longer if you're measuring RA tracking accuracy of the mount).");
         break;
     case STATE_STOPPED:
         instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click Start to repeat the measurements, or close the window to continue guiding.");

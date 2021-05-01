@@ -10,7 +10,7 @@
   <a href="#Comet_Tracking">Comet Tracking</a><br><a href="#Guiding_Assistant">Guiding Assistant</a><br>
   <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br><a href="#Ask_for_coordinates_aux_mount">Ask for Coordinates Aux Mount</a><br>
   <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br><a href="#Multiple_Executions">Multiple Program Instances</a><br><a href="#Keyboard_Shortcuts">Keyboard Shortcuts</a><br>
-  
+
   <a href="#Software_Update">Software Update</a><br>
 <h3><a name="Manual_Guide"></a>Manual Guide</h3><br>
 <img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png">&nbsp;&nbsp;&nbsp; <br>
@@ -27,7 +27,7 @@ direction. If you have an
 adaptive optics device attached, you'll see separate move buttons for
 both the AO and the secondary mount. &nbsp;Each time you press the button, a pulse of the&nbsp;duration
 specified in the 'Guide Pulse Duration' field will
-be sent. &nbsp;The default value is the 'calibration step-sze' set in
+be sent. &nbsp;The default value is the 'calibration step-size' set in
 the Advanced Settings dialog. &nbsp;If you are debugging mount/calibration
 problems in the daytime, listen to (rather than watch) your mount to determine if it is getting
 the commands from <span style="font-style: italic;">PHD2</span>. The idea here is just to figure out if the
@@ -342,7 +342,7 @@ and the telescope will need to slew over a fairly wide area.<span style="">&nbsp
 of the celestial equator/meridian intersection and an area around 30 degrees
 above either the eastern or western horizon (azimuth 90 or 270 degrees).<span style="">&nbsp;&nbsp; </span>For imagers who are rushing to set up each
 night or have a limited view of the sky, these requirements may be
-unattractive. 
+unattractive.
 
 <p class="MsoNormal"><o:p>&nbsp;</o:p>The second alignment option, static polar alignment,
 addresses these concerns by taking a different approach.<span style="">&nbsp; </span>It specifically trades off some&nbsp;accuracy
@@ -502,7 +502,7 @@ Assistant can also measure the declination backlash in your system if
 you select that option in the user interface.<br><br>When
 you start the Guiding Assistant (GA), its behavior depends on whether
 you are already guiding. &nbsp;If guiding is active, the initial screen
-will look like this (with different data values of course):<br><br><img style="width: 776px; height: 517px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
+will look like this (with different data values of course):<br><br><img style="width: 779px; height: 520px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
 topmost field in the form always shows what the GA is doing and what
 action you should take, so you should always look there first if you
 don't know what's happening. &nbsp;In this case, the measurement
@@ -514,20 +514,25 @@ this case, 'Start' is disabled because the measurement is already
 underway.<br><br>If you launch the GA when guiding is inactive, the initial form will look different:<br><br><img style="width: 780px; height: 521px;" alt="" src="Guiding_Assistant_Start_a.png"><br><br>In
 this case, you'll need to first start guiding in PHD2 - start looping,
 select a star, and guide. &nbsp;Once that's done, the 'Start' button in
-the GA will be enabled and you can begin measurement.<br><br>When GA measurement is active, guiding commands will be disabled, so the star
+the GA will be enabled and you can begin measurement.<br><br>When
+GA measurement is active, guiding commands will be disabled, so the
+star
 will appear to wander around on the display - this is entirely normal.
 &nbsp;As guider images are acquired, statistics are computed and
-displayed in real-time in the user interface. Of particular interest
-are the table entries for&nbsp;"High-frequency Star Motion" and "Polar
-Alignment Error". &nbsp;After about two
-minutes of data collection, these numbers will usually stabilize and
-you'll have&nbsp;reasonable measurements. &nbsp;If you want to get a
+displayed in real-time in the user interface.&nbsp;&nbsp;After about
+two
+minutes of data collection, the more volatile measurements like
+High-frequency Star Motion and Polar Alignemt Error will usually
+stabilize and
+you will probably have reasonable overall measurements. &nbsp;If you
+want to get a
 more accurate measure of your polar alignment error
 and any uncorrected periodic error in RA, you'll need to let the
 Guiding Assistant run for up to 10 minutes. Also, the computed polar
 alignment error is sensitive to the current scope declination. &nbsp;To
 get the most accurate measurement, you should point the scope to within
-a few degrees of the celestial meridian. &nbsp;When you finally click
+a few degrees of the celestial equator, the same area you should use
+for calibration.. &nbsp;When you finally click
 the 'Stop'
 button, this phase of the measurement process will stop. &nbsp;
 &nbsp;If
@@ -588,7 +593,7 @@ estimate of&nbsp;the backlash amount, corrected for Declination drift.
 rate of south movement that was at least 90% of the measured rate
 moving north &nbsp;That situation usually indicates&nbsp;binding in the
 Dec axis or substantial imbalance, in which case&nbsp;a simple estimate
-of backlash will be inaccurate and probably irrelvant.&nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;"><span style="">&nbsp;</span></span>You
+of backlash will be inaccurate and probably irrelevant.&nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;"><span style="">&nbsp;</span></span>You
 can always use the 'Show graph' button to see what happened during the
 test even if no estimate is produced. &nbsp;When the test is completed,
 the GA will&nbsp;try to move the star back close to its
@@ -689,7 +694,7 @@ edit the settings in an existing profile, you first select it in the
 equipment profile drop-down list, then click on 'Settings' under the
 '<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the Advanced Settings
 dialog, where you can make whatever changes you want. &nbsp;Remember
-than profiles are automatically updated anytime settings are changed
+that profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span> session. Finally, you can import and export
 profiles for purposes of debugging, backup, or&nbsp;exchange between computers.<br>
 <br><h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount Connection using "Ask for coordinates"</h3>If
@@ -730,7 +735,7 @@ results.<br><br><h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced 
 The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
 section as useful tools&nbsp;for experimenting with <span style="font-style: italic;">PHD2</span>
 and becoming
-famliar with its features. &nbsp;Remember that you must choose
+familiar with its features. &nbsp;Remember that you must choose
 'Simulator' as the camera type and 'On-camera' as the mount type in
 order to get the benefits of simulation. &nbsp;As you become more
 interested in the details of the simulation, you can use the 'Camera

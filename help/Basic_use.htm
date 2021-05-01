@@ -85,14 +85,14 @@ PHD2 distribution does include the additional application libraries
 needed by PHD2 to use the camera. &nbsp;In some cases, the camera may
 have both ASCOM and proprietary interfaces and you're free to choose
 whichever you prefer. &nbsp;In some cases, the two different versions
-may operate the camera in a slightly different way or expose diffeent
+may operate the camera in a slightly different way or expose different
 sets of camera properties.<br><br>It
 is not practical to provide an exhaustive list of cameras that are
 supported by PHD2. &nbsp;In many cases, camera vendors extend their
 product lines by updating their lower-level drivers without having to
 change the application libraries used by PHD2. &nbsp;In those cases, we
 aren't aware of the changes unless a user reports problems. &nbsp;The
-list shown below should be interpeted as follows:<br>1. &nbsp;If the
+list shown below should be interpreted as follows:<br>1. &nbsp;If the
 camera vendor is completely absent, it is unlikely that the camera is
 supported, or it may only be supported using a web-cam interface<br>2.
 &nbsp;If the camera model is shown in the list, it is supported unless
@@ -145,7 +145,7 @@ mount over a serial cable (or more commonly, &nbsp;a USB/Serial
 connection)</li>
 <li>Use
 the ST-4 compatible guide port interface on the mount with a
-specialized cable and an intermdiate device like a camera or a
+specialized cable and an intermediate device like a camera or a
 Shoestring box</li>
 </ol>
 The
@@ -326,7 +326,7 @@ able to get the <span style="font-style: italic;">unbinned</span>
 pixel size from the camera spec sheet or the manufacturer's web site.
 &nbsp;If the pixels aren't square, just specify the larger dimension or
 the average value if you prefer. &nbsp;This won't have any
-effect on your actual guidng results, but it will allow PHD2 to know
+effect on your actual guiding results, but it will allow PHD2 to know
 the image-scale for your set-up. &nbsp;This is used for setting
 baseline guiding parameters, doing sanity-checks on calibrations,
 reporting guiding performance, and getting support on our forum..<br>3. <span style="font-weight: bold;">Camera connection pane: binning level. &nbsp;</span>If
@@ -344,11 +344,11 @@ aperture of the
 guide scope, it is the <span style="font-style: italic;">focal length</span>.
 &nbsp;So, for example,&nbsp; if you're guiding with a 50mm finder
 scope, the
-focal length willl not be 50mm - it will probably be something closer
+focal length will not be 50mm - it will probably be something closer
 to 150-175mm. &nbsp; A 60-80mm refractor guide scope will probably have
 a focal
 length in the range of 240-500mm, not 60-80mm. &nbsp;Similarly, if
-you're guidng with an OAG on your main imaging scope, the focal length
+you're guiding with an OAG on your main imaging scope, the focal length
 will be that of the main scope. &nbsp;In some cases, you may be using a
 small threaded focal reducer on the guide camera, so that must also be
 taken into account. &nbsp;Like the pixel-size entry, the focal length
@@ -495,7 +495,7 @@ weighted average centroid position of multiple stars rather than just the
 centroid of a single star. &nbsp;Multi-star guiding is enabled using a
 check-box on the&nbsp;<a href="Advanced_settings.htm#Guiding_Tab">Guiding Tab</a> of the Advanced Settings dialog. &nbsp;When this option is enabled, the <a href="Tools.htm#Auto-Select_Star">Auto-select</a>
 function will identify up to 12 stars in the field of view that have
-adequate SNR. &nbsp;No more than
+adequate SNR. &nbsp;<span style="font-weight: bold;"></span>No more than
 9 of these will be used at any one time, but the remainder will be used
 to replace secondary stars that are lost or rejected for some reason.
 &nbsp;The "primary" star is the single best candidate, the same one
@@ -511,13 +511,13 @@ FWHM, etc - relate to the primary star, not the entire list.
 &nbsp;Multi-star guiding can be enabled or disabled while guiding is
 active. &nbsp;However, enabling the feature will force another
 'auto-select' procedure. The multi-star algorithm uses the secondary
-stars to refine the centroid position and reduce its volatilty, so
+stars to refine the centroid position and reduce its volatility, so
 there is essentially no way for it to degrade guiding performance.
 &nbsp;Whether it produces a material benefit to your overall guiding
 will depend on many factors including image scale, star and background
 sky brightness, star size, focus, and camera noise. &nbsp;Because of the way the
 algorithm is implemented, your best option will be to try it and decide
-for yourself.<br>
+for yourself. &nbsp;<span style="font-weight: bold;">Note: if you don't use the auto-select function and instead choose a guide star manually, multi-star guiding will be inactive.</span>
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
@@ -580,7 +580,7 @@ In
 most cases, calibration will complete automatically without any user
 involvement. &nbsp;If the mount doesn't move sufficiently in the west
 or north directions, you will get an alert saying the calibration has <span style="font-weight: bold;">"failed"</span>.
-&nbsp;Failures of ths type are pretty uncommon but they can occur if
+&nbsp;Failures of this type are pretty uncommon but they can occur if
 some part of the hardware is simply not working (e.g. a bad guide
 cable). &nbsp;Unless you see a "failed" message, the calibration
 actually completed. &nbsp;You may see other alert messages advising you
@@ -601,7 +601,7 @@ is a thing of the past so long as PHD2 has pointing information.
 you rotate the position of the guide camera by more than a few
 degrees or make other major changes to the hardware configuration.
 &nbsp;In general, the best practice is to get a good calibration within
-about +/- 20 degrees of the celestrial equator and high enough in the
+about +/- 20 degrees of the celestial equator and high enough in the
 sky to avoid major seeing (turbulence) problems. &nbsp;If you chose
 'auto-restore calibration' when you built your profile or chose that
 option in the Guiding tab of the Advanced Settings dialog, you can simply
@@ -653,7 +653,7 @@ corrections that can be achieved with the AO alone.
 <h3><a name="Guiding"></a>Guiding</h3>
 Once guiding has begun,
 diagnostic messages will be displayed in the status bar to show what
-guide commanda are being sent to the mount. <span style="font-style: italic;">PHD2</span>
+guide commands are being sent to the mount. <span style="font-style: italic;">PHD2</span>
 will continue guiding until you click on the 'Stop' icon. &nbsp;To
 resume guiding, simply start looping exposures again, auto-select your star,
 and click on the 'Guide' button. &nbsp;You will not need to repeat
