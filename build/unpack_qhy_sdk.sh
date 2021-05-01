@@ -4,19 +4,14 @@ set -ex
 
 SRC=$(cd $(dirname "$0")/..; /bin/pwd)
 
-TMP=/tmp/qhysdk.$$
-trap "rm -rf $TMP" INT TERM QUIT EXIT
+TMP=$(mktemp -d --tmpdir -t qhysdk.XXXXXXXX)
+trap "rm -rf '$TMP'" INT TERM QUIT EXIT
 
-mkdir -p $TMP
-cd $TMP
+cd "$TMP"
 
-unpack_win () {
-    zip=$1
-    zip=$(cd $(dirname "$zip"); /bin/pwd)/$(basename "$zip")
-
-    unzip "$zip"
-
-    sdk=$TMP/$(ls $TMP | head -1)
+_unpack_win_dir () {
+    sdk=$1
+    shift
 
     (
         cd "$sdk"/include
@@ -46,6 +41,24 @@ unpack_win () {
         cp "$sdk"/x86/tbb.dll "$SRC"/WinLibs/
         cp "$sdk"/x86/qhyccd.lib "$SRC"/Cameras/
     fi
+}
+
+unpack_win () {
+    zip=$1
+    zip=$(cd $(dirname "$zip"); /bin/pwd)/$(basename "$zip")
+
+    unzip "$zip"
+
+    sdk=$TMP/$(ls "$TMP" | head -1)
+    _unpack_win_dir "$sdk"
+}
+
+unpack_win_dir () {
+    dir=$1
+    shift
+    # make a copy of the source dir since the sdk will be modified in place
+    tar cf - -C "$dir" . | (cd "$TMP" && tar xf -)
+    _unpack_win_dir "$TMP"
 }
 
 unpack_mac () {
@@ -90,18 +103,22 @@ unpack_linux () {
 
 # === main ===
 
-for f in $*; do
-    if [ ! -f "$f" ]; then
+for f in "$@"; do
+    if [[ -d $f ]]; then
+        unpack_win_dir "$f"
+        continue
+    fi
+    if [[ ! -f $f ]]; then
         echo "usage: $0 FILE..." >&2
         exit 1
     fi
-    case $(basename $f) in
-        MAC*64*tgz)        unpack_mac   $f x86_64 ;;
-        MAC*tgz)           unpack_mac   $f x86_32 ;;
-        *zip)              unpack_win   $f ;;
-        RPI*)              unpack_linux $f armv7 ;;
-        LINUX_X64_qhyccd*) unpack_linux $f x86_64 ;;
-        LINUX_qhyccd*)     unpack_linux $f x86_32 ;;
+    case $(basename "$f") in
+        MAC*64*tgz)        unpack_mac   "$f" x86_64 ;;
+        MAC*tgz)           unpack_mac   "$f" x86_32 ;;
+        *zip)              unpack_win   "$f" ;;
+        RPI*)              unpack_linux "$f" armv7 ;;
+        LINUX_X64_qhyccd*) unpack_linux "$f" x86_64 ;;
+        LINUX_qhyccd*)     unpack_linux "$f" x86_32 ;;
         *) echo "TODO" >&2 ; exit 1 ;;
     esac
 done
