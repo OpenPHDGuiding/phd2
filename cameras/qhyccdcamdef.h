@@ -214,7 +214,7 @@
 
 /**
  * Type define for QHY5III290*/
-#define DEVICETYPE_QHY5III290   4024
+#define DEVICETYPE_QHY5III290    4024
 
 /**
  * Type define for QHY5III290C*/
@@ -335,19 +335,49 @@
 #define DEVICETYPE_QHY6060      4059
 #define DEVICETYPE_QHY411        4060
 
-#define DEVICETYPE_QHY600        4061
-#define DEVICETYPE_QHY600C      4062
-#define DEVICETYPE_QHY600M     4063
-#define DEVICETYPE_QHY0204      4064
+#define DEVICETYPE_QHY600        	4061
+#define DEVICETYPE_QHY600C      	4062
+#define DEVICETYPE_QHY600M     		4063
+#define DEVICETYPE_QHY0204      	4064
 
-#define DEVICETYPE_QHY411ERIS  4065
+#define DEVICETYPE_QHY411ERIS  		4065
+#define DEVICETYPE_QHY411MERIS  	4066
+#define DEVICETYPE_QHY411CERIS  	4067
 
-#define DEVICETYPE_QHY367PROC  4066
+#define DEVICETYPE_QHY367PROC  		4068
 
+#define DEVICETYPE_QHY268C      	4069
+#define DEVICETYPE_QHY410C      	4070
+#define DEVICETYPE_QHY432        	4071
+#define DEVICETYPE_QHY342        	4072
+#define DEVICETYPE_QHY4040PRO 		4073
+#define DEVICETYPE_QHY128PROC       4074
 
+#define DEVICETYPE_QHY5III462       4075
+#define DEVICETYPE_QHY5III462C      4076
+#define DEVICETYPE_QHY5III462M      4077
+
+#define DEVICETYPE_QHY533C      	4078
+#define DEVICETYPE_QHY492M      	4079
+
+#define DEVICETYPE_QHY461     	    4080
+#define DEVICETYPE_QHY461M     	    4081
+#define DEVICETYPE_QHY461C     	    4082
+
+#define DEVICETYPE_QHY492MT      	4083
+#define DEVICETYPE_QHY5III485       4084
+#define DEVICETYPE_QHY294PRO        4085
+#define DEVICETYPE_QHY294MPRO        4086
+#define DEVICETYPE_QHY294CPRO        4087
+
+#define DEVICETYPE_QHY4040PRO_F 	4088
+#define DEVICETYPE_QHY4040PRO_B 	4089
+#define DEVICETYPE_QHY268M      	4090
+#define DEVICETYPE_QHY4040PRO_FN 	4091
+#define DEVICETYPE_QHY4040PRO_BN 	4092
 /**
  * Type define for QHY5IIIEND*/
-#define DEVICETYPE_QHY5IIIEND   4999
+#define DEVICETYPE_QHY5IIIEND   	4999
 
 /**
  * Type define for QHY16 */
@@ -500,6 +530,19 @@
 
 #define DEVICETYPE_QHY50GX      9013
 
+
+/**
+ * Type define for QHYPCIEBEGIN*/
+#define DEVICETYPE_QHYPCIEBEGIN   		0X66180000
+
+#define DEVICETYPE_QHY4040PROPCIE  		0X66184043
+#define DEVICETYPE_QHY411ERISPCIE  		0X6618c414
+#define DEVICETYPE_QHY600PCIE      		0X6618c603
+#define DEVICETYPE_QHY268PCIE      		0X6618c269
+
+
+
+#define DEVICETYPE_QHYPCIEEND	   		0X6618ffff
 
 
 /* IMG series */
@@ -915,8 +958,8 @@
 
 /**
  * Type define for QHY-DevelopDev*/
-#define QHY5IIICOMMON_MAX_WIDTH        		20000
-#define QHY5IIICOMMON_MAX_HEIGHT        	15000
+#define QHY5IIICOMMON_MAX_WIDTH        3864	//8432  	
+#define QHY5IIICOMMON_MAX_HEIGHT       2180    //5648	  
 
 /**
  * Type define for QHY247*/
@@ -960,12 +1003,24 @@
 
 #define QHY294_MAX_WIDTH        	4212
 #define QHY294_MAX_HEIGHT        	2850
+// FixME fix  number
+#define QHY294_M_C_PRO_MAX_WIDTH_Mod_14_11M        4212
+#define QHY294_M_C_PRO_MAX_HEIGHT_Mod_14_11M       2850
+#define QHY294_M_C_PRO_MAX_WIDTH_Mod_12_47M        8432
+#define QHY294_M_C_PRO_MAX_HEIGHT_Mod_12_47M       5648
+
+#define QHY492_MAX_WIDTH        	4212
+#define QHY492_MAX_HEIGHT        	2850
 
 #define QHY2020_MAX_WIDTH        	4096
 #define QHY2020_MAX_HEIGHT        	2048
 
 #define QHY4040_MAX_WIDTH        	4096
 #define QHY4040_MAX_HEIGHT        	4118
+
+#define QHY4040PRO_MAX_WIDTH        	4096
+#define QHY4040PRO_MAX_HEIGHT        	4118
+
 
 #define QHY550_MAX_WIDTH        	2496
 #define QHY550_MAX_HEIGHT        	2080
@@ -986,8 +1041,20 @@
 #define QHY600_MAX_HEIGHT        	6422
 
 
+#define QHY461_MAX_WIDTH		   11760
+#define QHY461_MAX_HEIGHT		   8842
 
+#define QHY268C_MAX_WIDTH        6280
+#define QHY268C_MAX_HEIGHT       4210
 
+#define QHY410C_MAX_WIDTH        6112
+#define QHY410C_MAX_HEIGHT       4140-100
+
+#define QHY432_MAX_WIDTH        1624
+#define QHY432_MAX_HEIGHT       1136
+
+#define QHY342_MAX_WIDTH        6512
+#define QHY342_MAX_HEIGHT       4870
 /**
  * Type define for QHY16 */
 #define QHY16_MAX_WIDTH        	4144
@@ -1064,10 +1131,7 @@
 #define QHY21_MAX_WIDTH        	2048
 #define QHY21_MAX_HEIGHT        1500
 
-/**
- * Type define for QHY22 */
-#define QHY22_MAX_WIDTH        	3072
-#define QHY22_MAX_HEIGHT        2240
+
 
 /**
  * Type define for QHY23 */
@@ -1193,7 +1257,7 @@
 
 #define		MAX_CAMERA_NUMBER		200
 #define		CAMERA_ID_LENGTH		64
-#define   	MAXDEVICES 				8
+#define   	MAXDEVICES 				10
 
 
 #define		MAX_READMODE_NAME			256
@@ -1236,11 +1300,15 @@
 #define	SEND_MSG_PART				2
 
 
-
 #define   SINGLE_MODE 								0
 #define   LIVE_MODE 								1
 
-#define   GET_IMAGE_TIMEOUT							60000
+#define   FPGA_MODE_DEFAULT 						99
+#define   FPGA_MODE_12_47M 								12     //14bit rigister= 11M  12bit rigister = 47M
+#define   FPGA_MODE_14_11M 								14         //14bit rigister= 11M  12bit rigister = 47M
+
+#define   GET_IMAGE_TIMEOUT							60000     //QHY09000 DRIFT SCAN MOD  600000  
+//#define   GET_IMAGE_TIMEOUT							900000     //QHY09000 DRIFT SCAN MOD  600000  
 
 #define   IS_OPERATOR_NONE						0
 #define   IS_CAMARA_INIT				1
@@ -1273,5 +1341,43 @@
 
 #define RESET_USB_PIPE		1
 #define ABORT_USB_PIPE		2
+
+
+
+#define MAX_PCIE_CHANNEL		4
+
+#define	FPGA_CAMARA_LENGTH		256
+
+#define	CAM_SCAN_INTERVAL 		1000
+
+#define CRC32_POLY  			(0x04C11DB7)
+
+
+
+#define	PCIE_CARD_HEAD			(0x55EEAACC)
+
+#define	PCIE_CARD_READ_C		(0x00005555)
+#define	PCIE_CARD_WRITE_C		(0x00003333)
+
+#define	PCIE_COMMAND_HEAD		(0xAAEE3322)
+
+#define	PCIE_FPGA_WRITE_C		(0x00008881)
+#define	PCIE_NIOS_READ_C		(0x00007770)
+#define	PCIE_NIOS_WRITE_C		(0x00007771)
+
+#define	PCIE_CAPTURE_WRITE_C	(0x66666665)
+
+
+#define	PCIE_DWORD				(4)
+
+//TODO try to find out what this stand for
+#define	FRAME_BUFF_NUM	3
+
+#define IS_WRITE  1
+#define IS_READ	  2
+
+#define CAM_CONN_STATUS_TO_NOTHING    1
+#define CAM_CONN_STATUS_TO_PC         2
+#define CAM_CONN_STATUS_TO_SDK        3
 
 #endif

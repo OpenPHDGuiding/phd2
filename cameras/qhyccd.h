@@ -5,6 +5,7 @@
 #include "stdint.h"
 #include "qhyccd_config.h"
 #include <functional>
+#include <string>
 
 
 
@@ -17,17 +18,14 @@
 #ifndef __QHYCCD_H__
 #define __QHYCCD_H__
 
-#if defined (_WIN32)
-typedef CCyUSBDevice qhyccd_handle;
-#endif
-#if (defined(__linux__ )&&!defined (__ANDROID__)) ||(defined (__APPLE__)&&defined( __MACH__)) ||(defined(__linux__ )&&defined (__ANDROID__))
-typedef struct libusb_device_handle qhyccd_handle;
-#endif
+typedef void qhyccd_handle;
 
+
+EXPORTC void STDCALL SetQHYCCDAutoDetectCamera(bool enable);
 
 EXPORTC void STDCALL SetQHYCCDLogLevel(uint8_t logLevel);
 
-#if defined(__linux__ )&&!defined (__ANDROID__)
+#if (defined(__linux__ )&&!defined (__ANDROID__)) ||(defined (__APPLE__)&&defined( __MACH__)) ||(defined(__linux__ )&&defined (__ANDROID__))
 
 EXPORTC void STDCALL SetQHYCCDLogFunction(std::function<void(const std::string &message)> logFunction);
 EXPORTC void STDCALL SetQHYCCDBufferNumber(uint32_t BufNumber);
@@ -36,6 +34,9 @@ EXPORTC void STDCALL SetQHYCCDBufferNumber(uint32_t BufNumber);
 
 EXPORTC void STDCALL EnableQHYCCDMessage(bool enable);
 EXPORTC void STDCALL EnableQHYCCDLogFile(bool enable);
+
+EXPORTC uint32_t STDCALL SetQHYCCDSingleFrameTimeOut(qhyccd_handle *h,uint32_t time);  
+
 
 EXPORTC const char* STDCALL GetTimeStamp();
 
@@ -228,6 +229,7 @@ EXPORTC uint32_t STDCALL GetQHYCCDSingleFrame(qhyccd_handle *handle,uint32_t *w,
 
 /**
   @fn uint32_t CancelQHYCCDExposing(qhyccd_handle *handle)
+  @brief force stop the camera long exposure. But host software must readout the image data. Please note not all camera can use this method.
   @param handle camera control handle
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -237,7 +239,7 @@ EXPORTC uint32_t STDCALL CancelQHYCCDExposing(qhyccd_handle *handle);
 
 /**
   @fn uint32_t CancelQHYCCDExposingAndReadout(qhyccd_handle *handle)
-  @brief stop the camera exposing and readout
+  @brief force stop the camera long exposure. And also camera does not send back the image data. Host software must not readout the data. All camera support this mode. 
   @param handle camera control handle
   @return
   on success,return QHYCCD_SUCCESS \n
@@ -245,24 +247,25 @@ EXPORTC uint32_t STDCALL CancelQHYCCDExposing(qhyccd_handle *handle);
   */
 EXPORTC uint32_t STDCALL CancelQHYCCDExposingAndReadout(qhyccd_handle *handle);
 
-/** \fn uint32_t BeginQHYCCDLive(qhyccd_handle *handle)
-      \brief start continue exposing
-	  \param handle camera control handle
-	  \return
-	  on success,return QHYCCD_SUCCESS \n
-	  another QHYCCD_ERROR code on other failures
+/** 
+  @fn uint32_t BeginQHYCCDLive(qhyccd_handle *handle)
+  @brief in live video mode, start continue exposing. Only need to start once before StopQHYCCDLive.
+	@param handle camera control handle
+  @return
+	on success,return QHYCCD_SUCCESS \n
+	another QHYCCD_ERROR code on other failures
   */
 EXPORTC uint32_t STDCALL BeginQHYCCDLive(qhyccd_handle *handle);
 
 /**
-      @fn uint32_t GetQHYCCDLiveFrame(qhyccd_handle *handle,uint32_t *w,uint32_t *h,uint32_t *bpp,uint32_t *channels,uint8_t *imgdata)
-      @brief get live frame data from camera
+    @fn uint32_t GetQHYCCDLiveFrame(qhyccd_handle *handle,uint32_t *w,uint32_t *h,uint32_t *bpp,uint32_t *channels,uint8_t *imgdata)
+    @brief get live frame data from camera
 	  @param handle camera control handle
 	  @param *w pointer to width of ouput image
 	  @param *h pointer to height of ouput image
-      @param *bpp pointer to depth of ouput image
-      @param *channels pointer to channels of ouput image
-      @param *imgdata image data buffer
+    @param *bpp pointer to depth of ouput image
+    @param *channels pointer to channels of ouput image
+    @param *imgdata image data buffer
 	  @return
 	  on success,return QHYCCD_SUCCESS \n
 	  QHYCCD_ERROR_GETTINGFAILED,if get data failed \n
@@ -413,7 +416,7 @@ EXPORTC uint32_t STDCALL OSXInitQHYCCDFirmwareArray();
 
 
 EXPORTC uint32_t STDCALL OSXInitQHYCCDAndroidFirmwareArray(int idVendor,int idProduct,
-    qhyccd_handle *h);
+    qhyccd_handle *handle);
 
 
 
@@ -488,6 +491,7 @@ EXPORTC uint32_t STDCALL GetQHYCCDExposureRemaining(qhyccd_handle *h);
 	  another QHYCCD_ERROR code on other failures
  */
 EXPORTC uint32_t STDCALL GetQHYCCDFWVersion(qhyccd_handle *h,uint8_t *buf);
+EXPORTC uint32_t STDCALL GetQHYCCDFPGAVersion(qhyccd_handle *h, uint8_t fpga_index, uint8_t *buf);
 
 /** @fn uint32_t SetQHYCCDInterCamSerialParam(qhyccd_handle *h,uint32_t opt)
       @brief Set InterCam serial2 params
@@ -639,7 +643,19 @@ EXPORTC uint32_t STDCALL ControlQHYCCDShutter(qhyccd_handle *handle,uint8_t stat
   on success,return QHYCCD_SUCCESS \n
   another QHYCCD_ERROR code on other failures
 */
+EXPORTC uint32_t STDCALL GetQHYCCDPressure(qhyccd_handle *handle,double *pressure);
+/**
+  @fn uint32_t GetQHYCCDPressure(qhyccd_handle *handle,double *pressure)
+  @get the pressure of sensor chamber
+  @param handle control handle
+  @param pressure : the sensor chamber pressure . unit is mbar  range 0.0-2000.0
+  @return
+  on success,return QHYCCD_SUCCESS \n
+  another QHYCCD_ERROR code on other failures
+*/
+
 EXPORTC uint32_t STDCALL GetQHYCCDHumidity(qhyccd_handle *handle,double *hd);
+
 
 /**
   @fn uint32_t QHYCCDI2CTwoWrite(qhyccd_handle *handle,uint16_t addr,uint16_t value)
@@ -700,7 +716,7 @@ EXPORTC uint32_t STDCALL SetQHYCCDGPSMasterSlave(qhyccd_handle *handle,uint8_t i
 
 EXPORTC void STDCALL SetQHYCCDGPSSlaveModeParameter(qhyccd_handle *handle,uint32_t target_sec,uint32_t target_us,uint32_t deltaT_sec,uint32_t deltaT_us,uint32_t expTime);
 
-EXPORTFUNC void STDCALL SetQHYCCDQuit();
+EXPORTC void STDCALL SetQHYCCDQuit();
 
 EXPORTC uint32_t STDCALL QHYCCDVendRequestWrite(qhyccd_handle *h,uint8_t req,uint16_t value,uint16_t index1,uint32_t length,uint8_t *data);
 
@@ -732,27 +748,72 @@ EXPORTC uint32_t STDCALL GetQHYCCDReadMode(qhyccd_handle *h,uint32_t* modeNumber
 EXPORTC uint32_t STDCALL GetQHYCCDBeforeOpenParam(
   QHYCamMinMaxStepValue *p,
   CONTROL_ID controlId);
-
+/*
 EXPORTC uint32_t STDCALL GetQHYCCDBeforeOpenReadMode(QHYCamReadModeInfo *p);
-
-
-EXPORTC uint32_t STDCALL  SetQHYCCDBurstModeStartEnd(
-  qhyccd_handle *h,unsigned short start,
-  unsigned short end);
-EXPORTC uint32_t STDCALL EnableQHYCCDBurstCountFun(
-  qhyccd_handle *h,bool i);
-EXPORTC uint32_t STDCALL EnableQHYCCDBurstMode(
-  qhyccd_handle *h,bool i);
+*/
+EXPORTC uint32_t STDCALL EnableQHYCCDBurstMode(qhyccd_handle *h,bool i);
+EXPORTC uint32_t STDCALL SetQHYCCDBurstModeStartEnd(qhyccd_handle *h,unsigned short start,unsigned short end);
+EXPORTC uint32_t STDCALL EnableQHYCCDBurstCountFun(qhyccd_handle *h,bool i);
 EXPORTC uint32_t STDCALL ResetQHYCCDFrameCounter(qhyccd_handle *h);
 EXPORTC uint32_t STDCALL SetQHYCCDBurstIDLE(qhyccd_handle *h);
 EXPORTC uint32_t STDCALL ReleaseQHYCCDBurstIDLE(qhyccd_handle *h);
+EXPORTC uint32_t STDCALL SetQHYCCDBurstModePatchNumber(qhyccd_handle *h,uint32_t value);
+EXPORTC uint32_t STDCALL SetQHYCCDEnableLiveModeAntiRBI(qhyccd_handle *h,uint32_t value);
+EXPORTC uint32_t STDCALL SetQHYCCDWriteFPGA(qhyccd_handle *h,uint8_t number,uint8_t regindex,uint8_t regvalue);
+/**
+  @fn uint32_t SetQHYCCDWriteFPGA(qhyccd_handle *h,uint8_t number,uint8_t regindex,uint8_t regvalue);
+  @brief Write FPGA register of the camera directly for advanced control
+  @param handle camera control handle
+  @param number:  if there is multiple FPGA, this is the sequence number . default is 0. 
+  @param regindex:  register index. It is 8bit.
+  @param regindex:  register value. It is 8bit.
+  @return QHYCCD_SUCCESS or QHYCCD_ERROR. If it is QHYCCD_ERROR, it means (1) this model may have not support this function or (2) the API failur to run.
+*/
+
+
+EXPORTC uint32_t STDCALL SetQHYCCDWriteCMOS(qhyccd_handle *h,uint8_t number,uint16_t regindex,uint16_t regvalue);
+/**
+  @fn uint32_t SetQHYCCDWriteCMOS(qhyccd_handle *h,uint8_t number,uint16_t regindex,uint16_t regvalue);
+  @brief Write CMOS register of the camera directly for advanced control
+  @param handle camera control handle
+  @param number:  if there is multiple CMOS, this is the sequence number . default is 0. 
+  @param regindex:  register index. It is 16bit.
+  @param regindex:  register value. It is 16bit.
+  @return QHYCCD_SUCCESS or QHYCCD_ERROR. If it is QHYCCD_ERROR, it means (1) this model may have not support this function or (2) the API failur to run.
+*/
+
+
+EXPORTC uint32_t STDCALL SetQHYCCDTwoChannelCombineParameter(qhyccd_handle *handle, double x,double ah,double bh,double al,double bl);
+/**
+  @fn uint32_t SetQHYCCDTwoChannelCombineParameter(qhyccd_handle *handle, double x,double ah,double bh,double al,double bl);
+  @brief For the camera with high gain low gain two channel combine to 16bit function, this API can set the combination parameters
+  @param handle camera control handle
+  @param x:  High gain low gain channel data switch point. (based on the high gain channel data)
+  @param ah: High gain channel ratio   (y=ax+b)
+  @param bh: High gain channel offset  (y=ax+b)
+  @param al: Low gain channel ratio    (y=ax+b)
+  @param bl: Low gain channel offset   (y=ax+b)
+  @return QHYCCD_SUCCESS or QHYCCD_ERROR. If it is QHYCCD_ERROR, it means (1) this model may have not support this function or (2) the API failur to run.
+*/
+
+EXPORTC uint32_t STDCALL EnableQHYCCDImageOSD(qhyccd_handle *h,uint32_t i);
+
+EXPORTC uint32_t STDCALL GetQHYCCDPreciseExposureInfo(qhyccd_handle *h,
+                                                         uint32_t *PixelPeriod_ps,
+                                                         uint32_t *LinePeriod_ns,
+                                                         uint32_t *FramePeriod_us,
+                                                         uint32_t *ClocksPerLine,
+                                                         uint32_t *LinesPerFrame,
+                                                         uint32_t *ActualExposureTime,
+                                                         uint8_t  *isLongExposureMode);
+
 
 EXPORTC void STDCALL QHYCCDQuit();
 
 EXPORTC QHYDWORD STDCALL SetQHYCCDCallBack(QHYCCDProcCallBack ProcCallBack,
     int32_t Flag);
 
-#if QHYCCD_PCIE_SUPPORT
+#if 0//PCIE_MODE_TEST
 
 #include "riffa.h"
 
@@ -761,7 +822,7 @@ EXPORTC QHYDWORD STDCALL SetQHYCCDCallBack(QHYCCDProcCallBack ProcCallBack,
  * Populates the fpga_info_list pointer with all FPGAs registered in the system.
  * Returns 0 on success, non-zero on error.
  */
-EXPORTC int STDCALL QHYCCD_fpga_list(fpga_info_list * list);
+EXPORTC int STDCALL QHYCCD_fpga_list(struct fpga_info_list &list);
 
 /**
  * Initializes the FPGA specified by id. On success, returns a pointer to a
@@ -769,12 +830,12 @@ EXPORTC int STDCALL QHYCCD_fpga_list(fpga_info_list * list);
  * channels can be accessed. Once opened, any number of threads can use the
  * fpga_t struct.
  */
-EXPORTC fpga_t * STDCALL QHYCCD_fpga_open(int id);
+EXPORTC uint32_t STDCALL QHYCCD_fpga_open(int id);
 
 /**
  * Cleans up memory/resources for the FPGA specified by the fd descriptor.
  */
-EXPORTC void STDCALL QHYCCD_fpga_close(fpga_t * fpga);
+EXPORTC void STDCALL QHYCCD_fpga_close();
 
 /**
  * Sends len words (4 byte words) from data to FPGA channel chnl using the
@@ -788,8 +849,8 @@ EXPORTC void STDCALL QHYCCD_fpga_close(fpga_t * fpga);
  * corrupt data or error. This function is thread safe across channels.
  * Returns the number of words sent.
  */
-EXPORTC int STDCALL QHYCCD_fpga_send(fpga_t * fpga, int chnl, void * data, int len,
-                                     int destoff, int last, long long timeout);
+EXPORTC int STDCALL QHYCCD_fpga_send(int chnl, void * data, int len,
+                                     int destoff, int last, uint64_t timeout);
 
 /**
  * Receives data from the FPGA channel chnl to the data pointer, using the
@@ -805,8 +866,8 @@ EXPORTC int STDCALL QHYCCD_fpga_send(fpga_t * fpga, int chnl, void * data, int l
  * corrupt data or error. This function is thread safe across channels.
  * Returns the number of words received to the data array.
  */
-EXPORTC int STDCALL QHYCCD_fpga_recv(fpga_t * fpga, int chnl, void * data, int len,
-                                     long long timeout);
+EXPORTC int STDCALL QHYCCD_fpga_recv( int chnl, void * data, int len,
+                                     uint64_t timeout);
 
 /**
  * Resets the state of the FPGA and all transfers across all channels. This is
@@ -814,7 +875,13 @@ EXPORTC int STDCALL QHYCCD_fpga_recv(fpga_t * fpga, int chnl, void * data, int l
  * sending/receiving. Calling this function while other threads are sending or
  * receiving will result in unexpected behavior.
  */
-EXPORTC void STDCALL QHYCCD_fpga_reset(fpga_t * fpga);
+EXPORTC void STDCALL QHYCCD_fpga_reset();
 #endif
 
 #endif
+
+/// ----------------------------------
+
+void call_pnp_event();
+void call_data_event_live(char *id, uint8_t *imgdata);
+void call_transfer_event_error();
