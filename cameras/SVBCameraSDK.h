@@ -725,6 +725,18 @@ SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of b
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE SVBCanPulseGuide(int iCameraID, SVB_BOOL *pCanPulseGuide);
 
+/***************************************************************************
+Description:
+Whether to save the parameter file automatically
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo.
+SVB_BOOL enable: if SVB_TRUE then save the parameter file automatically.
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBSetAutoSaveParam(int iCameraID, SVB_BOOL enable);
 
 #ifdef __cplusplus
 }
