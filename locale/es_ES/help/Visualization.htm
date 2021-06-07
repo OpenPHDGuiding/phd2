@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Herramientas de Visualizaci&oacute;n</title></head>
+<body>
+<h2>Herramientas de Visualizaci&oacute;n</h2>
+<span style="font-style: italic;">PHD2</span> provee numerosas herramientas de visualizaci&oacute;n para
+ayudarlo a ver c&oacute;mo est&aacute; funcionando el guiado.
+&nbsp;Estas herramientas se acceden en el men&uacute; desplegable 'Vista' y son descritas a continuaci&oacute;n.
+<br><ul><li><a href="#Overlays">Superposiciones</a></li>
+<li><a href="#Graphical_Display">Muestra Gr&aacute;fica</a></li>
+<li><a href="#Stats_Display">Mostrar Estad&iacute;sticas</a></li>
+<li><a href="#Star_Profile_and_Target_Displays">Muestra de perfil de Estrella y Objetivo</a></li>
+<li><a href="#Adaptive_Optics_AO_Graph">Gr&aacute;fico de OA</a></li>
+<li><a href="#DockableMoveable_Graphical_Windows">ventanas Acoplables</a></li></ul>
+<h3><a name="Overlays"></a>Superposiciones</h3>
+Las herramientas de visualizaci&oacute;n m&aacute;s simples son grillas superpuestas sobre la ventana
+de guiado principal. &nbsp;Son sencillas e incluyen las siguientes opciones:
+<br>
+<ul>
+<li>Objetivo Diana</li>
+<li>Grilla Fina</li>
+<li>Grilla Gruesa</li>
+<li>RA/Dec - Esto muestra como est&aacute;n alineados los ejes del telescopio relativos a los ejes
+del sensor de la c&aacute;mara</li>
+<li>Apertura de Espectr&oacute;grafo/Posici&oacute;n de la Apertura - para usuarios de espectrograf&iacute;a,
+esto superpondr&aacute; un gr&aacute;fico espectrogr&aacute;fico sobre la ventana principal. El tama&ntilde;o, posici&oacute;n,
+y &aacute;ngulo del gr&aacute;fico puede ser ajustado para igualar la configuraci&oacute;n &oacute;ptica.</li>
+<li>Nada</li>
+</ul>
+Puede hacer click en las varias opciones de superposici&oacute;n bajo el men&uacute; desplegable 'Vista'
+y elegir la que m&aacute;s le convenga.
+<h3><a name="Graphical_Display"></a>Muestra Gr&aacute;fica</h3>
+La ventana de muestra gr&aacute;fica es una de las herramientas m&aacute;s poderosas para juzgar el funcionamiento
+del guiado, y ud deber&iacute;a aprender a confiar en ella.
+&nbsp;Un ejemplo t&iacute;pico se muestra abajo:
+<br><br><img style="width: 1101px; height: 281px;" alt="" src="Guider_Graph.png">
+<br><br><br>La porci&oacute;n mayor de la ventana muestra los desplazamientos detallados de la estrella
+gu&iacute;a en cada exposici&oacute;n, graficados de izquierda a derecha.
+&nbsp;Normalmente, una l&iacute;nea muestra los desplazamientos en ascensi&oacute;n recta, mientras que la segunda
+l&iacute;nea muestra los desplazamientos en declinaci&oacute;n. &nbsp;Sin embargo, ud puede utilizar el bot&oacute;n 'Configuraciones'
+a la izquierda del gr&aacute;fico para cambiar a los ejes de la c&aacute;mara (X/Y) si lo desea (no recomendado).
+&nbsp;ud tambi&eacute;n puede utilizar el bot&oacute;n 'Configuraciones' para cambiar las unidades que se muestran,
+de arco-segundos vs pixeles de c&aacute;mara o cambiar los colores de las dos l&iacute;neas del gr&aacute;fico.
+&nbsp;El rango del eje vertical es controlado por el segundo bot&oacute;n desde arriba, llamado "y:+/-4"
+en este ejemplo. El rango del eje horizontal - el n&uacute;mero de exposiciones gu&iacute;a siendo graficado - es controlado
+por el bot&oacute;n de m&aacute;s arriba, llamado "X:50" en este ejemplo. Esta escala tambi&eacute;n controla el tama&ntilde;o
+de muestra utilizado para calcular las <a name="statistics"></a>estad&iacute;sticas que se ven en la parte
+inferior izquierda de la ventana de gr&aacute;fico.
+&nbsp;Estos valores muestran la media cuadr&aacute;tica (RMS o desviaci&oacute;n est&aacute;ndard) de los movimientos
+en cada eje, as&iacute; com otambi&eacute;n el total para ambos ejes&nbsp;Est&oacute;s son sus mejores estimadores
+del funcionamiento del guiado porque puede ser comparados en forma directa con los tama&ntilde;os de
+estrellas y condiciones de seeing.&nbsp;El valor '<a name="RA_Osc"></a>RA Osc'
+muestra las posibilidades de que el movimiento actual en RA sea en la direcci&oacute;n opuesta al
+&uacute;ltimo movimiento de RA.
+&nbsp;Esta es una estad&iacute;stica que se remonta al software PHD original y su utilidad es limitada.
+Si consistentemente se muestra por sobre 0.5, ud podr&iacute;a estar "peleando" contra el seeing
+porque el valor de Movimiento-min sea demasiado bajo.&nbsp;Hay otros dos casillas a la izquierda
+que le pueden ayudar a evaluar el funcionamiento del guiado. Haciendo click en la caja
+'<a name="Corrections"></a>Correcciones' resulta en una superposici&oacute;n mostrando cu&aacute;ndo se env&iacute;an
+comandos gu&iacute;a a la montura, junto con su direcci&oacute;n y magnitud. En este ejemplo, &eacute;stos se muestran
+como las l&iacute;neas verticales roja y verde apareciendo a intervalos irregulares a lo largo del 
+eje horizontal. Esto le muestra que tan "ocupado" est&aacute; el guiado - bajo condiciones &oacute;ptimas, se deber&iacute;a esperar
+intervalos extensos sin comandos de guiado en Declinaci&oacute;n. La otra caja, llamada '<a name="Trendlines"></a>L&iacute;neas de Tendencia',
+mostrar&aacute; l&iacute;neas de tendencia en ambos ejes, para mostrar si existe una deriva general consistente
+en la posici&oacute;n de la estrella. Esto es &uacute;til fundamentalmente &para alinear por m&eacute;todo de deriva,
+donde la linea de tendencia en declinaci&oacute;n es m&aacute;s utilizada. Pero la l&iacute;nea de tendencia de RA
+le puede mostrar si su montura est&aacute; siguiendo lento o r&aacute;pido en forma sistem&aacute;tica
+(o son los efectos de flexiones) y le puede ayudar a ajustar la velocidad de seguimiento.
+la l&iacute;nea de tendencia en Dec tambi&eacute;n es &uacute;til si est&aacute; intentando elegir la direcci&oacute;n correcta
+para guiado en una direcci&oacute;n en Dec. Si se env&iacute;an comandos de Dithering, usualmente
+por una aplicaci&oacute;n de captura externa, una etiqueta de 'dithering' aparecer&aacute; superpuesta en el gr&aacute;fico
+en el intervalo de tiempo apropiado. Esto le dir&aacute; que los desplazamientos de la estrella
+que se est&aacute;n graficando est&aacute;n influenciados por la operaci&oacute;n de dithering. La estad&iacute;stica de RMS no incluye
+los movimientos asociados a dithering.
+<br><br>
+El gr&aacute;fico de guiado tambi&eacute;n muestra las direcciones (Gu&iacute;aNorte, Gu&iacute;a Este) asociados con los comandos
+de gu&iacute;a, como se muestran en el ejemplo m&aacute;s arriba. Esto puede ser &uacute;til si est&aacute; buscando la deriva general
+y quiere determinar como fijar el guiado uni-direccional para declinaci&oacute;n. Estas direcciones muestran como
+se mueve la estrella gu&iacute;a desde la posici&oacute;n fijada. Por ejemplo, si la posici&oacute;n Dec de la estrella gu&iacute;a
+se mueve hacia arriba en el gr&aacute;fico, la estrella gu&iacute;a parece haberse movido al "norte" en el sensor
+de la c&aacute;mara. Esto significa que se necesitan pulsos de guiado al sur para volver la estrella a la
+pposici&oacute;n fijada. En forma similar, un movimiento hacia abajo en RA significa que la estrella gu&iacute;a
+se est&aacute; moviendo al "este" en el sensor de la c&aacute;mra y que se enviar&aacute;n pulsos de guiado al oeste.
+Para configurar el guiado Dec uni-direccional, aplican estas reglas:
+<br>
+  Deriva Dec hacia arriba =&gt; seleccionar modo gu&iacute;a Dec = Sur
+<br>
+  Deriva Dec hacia abajo =&gt; seleccionar modo gu&iacute;a Dec = Norte
+<br>
+Por varios motivos, estas direcciones podr&iacute;an no corresponder con la direcci&oacute;n real en el cielo,
+particularmente para Dec, pero esto no tiene importancia.
+<br><br>
+La forma recomendada de mirar al funcionamiento del guiado es utilizar arc-segundos en lugar de pixeles.
+Hacerlo as&iacute; permite una evaluaci&oacute;n independiente del equipo por trasciende cuestiones como longitud
+focal y escala de imagen. Para hacer esto, ud necesita proveer a <span style="font-style: italic;">PHD2</span>
+con informaci&oacute;n suficiente para determinar la imagen de escala de su equipo gu&iacute;a:
+espec&iacute;ficamnete, la longitud focal de su telescopio gu&iacute;a, el tama&ntilde;o de los p&iacute;xeles de su c&aacute;mara gu&iacute;a y
+que nivel de binnnig est&aacute; utilizando.
+ Estos par&aacute;metros se cargan en la ventana 'Cerebro' en las pesta&ntilde;as 'Global' y 'Camara', respecitvamente.
+ Si no se especifican estos valores, <span style="font-style: italic;">PHD2</span>
+ utilizar&aacute; una escala de imagen por defecto de 1 arc-seg/px, y los n&uacute;meros de funcionamiento del 
+ guiado se mostrar&aacute;n en pixeles. Como se menciona en la sessi&oacute;n Uso B&aacute;sico, lo mejor es utilizar el
+ asistente de nuevo perfil cuando crea su perfil, en cuyo caso todos estos par&aacute;metros se completar&aacute;n
+ por ud.
+<br><br>
+En la parte baja de la ventana del gr&aacute;fico, hay controles para ajustar los par&aacute;metros de guiado en el 
+momento. La selecci&oacute;n del algoritmo de guiado que ud haya realizado determinar&aacute;n que controles se muestran.
+ Estos controles tienen el mismo efecto que aquellos en la ventana 'Cerebro' y eliminan la necesidad de
+ detener el guiado para ajustar los par&aacute;metros. A pesar que tenga estos controles disponibles, 
+no es recomendable modificarlos mucho para mejorar el guiado. Las mejoras de guiado normalmente 
+necesitan de intervalos de guiado largos y an&aacute;lisis meticuloso en la herramienta LogViewer de PHD2 -
+ la mayor&iacute;a de los problemas de guiado se generan en errores del usuario o de la montura y del 
+equipamiento puesto en ella y no en el algoritmo de guiado.
+<br><h3>
+<a name="Stats_Display"></a>Estad&iacute;sticas</h3>
+<img style="width: 326px; height: 448px;" alt="" src="StatsWindow.png">
+<br><br>
+Si ud desea monitorear el funcionamiento del guiado sin necesariamente tener abierta la 
+ventana de gr&aacute;fico abierta, puede hacer click en el men&uacute; "Estad&iacute;sticas". Aqu&iacute; podr&aacute; ver
+estad&iacute;sticas sobresalientes con controles para borrar los datos o cambiar el n&uacute;mero de
+exposiciones gu&iacute;a utilizadas para calcular las estad&iacute;sticas. Las estad&iacute;sticas de seguimiento 
+son las mismas que aquellas en la herramienta Grafico, y como esas, no incluyen los efectos
+de dithering y asentado. Esta ventana tambi&eacute;n es &uacute;til para confirmar el binning de la c&aacute;mara,
+monitorear la temperatura de la c&aacute;mara de guiado y obtener un c&aacute;lculo r&aacute;pido del campo de
+ visi&oacute;n de la c&aacute;mara gu&iacute;a.
+<h3><a name="Star_Profile_and_Target_Displays"></a>Ventana de Perfil de Estrella y Objetivo</h3>
+<img style="width: 297px; height: 305px;" alt="" src="Star_profile.png">
+<br><br>
+La ventana de perfil de estrella muestra una secci&oacute;n de la estrella gu&iacute;a junto a
+ mediciones de su ancho-de-media-altura (<a name="FWHM"></a>FWHM)
+ y di&aacute;metro-de-medio-flujo (HFD).
+ Usualmente, HFD es una medici&oacute;n m&aacute;s estable del tama&ntilde;o de la estrella, ya que no 
+requiere curvas o alguna suposici&oacute;n acerca de la forma general de la imagen de la estrella.
+ Es por esto que aplicaciones de enfocado autom&aacute;tico como FocusMax lo usan. Si ud ve
+ fluctuaciones notables en este par&aacute;metro o perfiles de estrellas con mucha variaci&oacute;n, 
+puede ser un indicativo de que la estrella es demasiado d&eacute;bil, el tiempo de exposici&oacute;n muy
+corto, o que la c&aacute;mara est&aacute; fuera de foco. <a name="Focusing"></a>Esta herramienta puede
+ ayudarlo con el foco de la c&aacute;mara gu&iacute;a, un procedimiento que puede resultar un poco tedioso
+ si est&aacute; utilizando un guiado-fuera-de-eje con una longitud focal relativamente larga. Para 
+este prop&oacute;sito, el valor de FHD se muestra en una letra grande para que lo puede ver desde 
+lejos, mientras enfoca su c&aacute;mara/telescopio gu&iacute;a. S&oacute;lo desacople la ventana de Perfil de Estrella
+ y agr&aacute;ndela hasta que pueda ver el n&uacute;mero FHD f&aacute;cilmente. Si est&aacute; comenzando muy fuera de foco,
+probablemente s&oacute;lo ver&aacute; estrellas difusas, elija la m&aacute;s chica que sea claramente visible.
+ Utilice tiempos de exposici&oacute;n de al menos 2 segundos si es posible, para evitar
+ los movimientos de la turbulencia. Al mismo tiempo, no deje que la estrella se 
+sature, mostrando un superficie plana distintiva. Ahora ajuste el foco hasta que el HFD 
+se muestre bajo en forma consistente - pero det&eacute;ngase apenas el HFD cambie de direcci&oacute;n 
+o parezca aplanarse. En este punto, la estrella probablemente estar&aacute; saturada, cambie 
+a otra estrella en el campo de visi&oacute;n. Como ya mejor&oacute; su foco, seguramente podr&aacute; ver 
+alguna estrella m&aacute;s d&eacute;bil. Continue de esta forma hasta que haya logrado el foco que muestra 
+un m&iacute;nimo nivel de HFD para la estrella m&aacute;s d&eacute;bil que pueda usar. En cada punto del 
+proceso de enfocado, probablemente querr&aacute; ver los valores de HFD durante algunos cuadros,
+y hacer un promedio mental para promediar los efectos de la turbulencia. Un foco mal 
+logrado es un problema com&uacute;n al iniciar, llevando a problemas en la calibraci&oacute;n o 
+resultados de guiado malos. Use la herramienta de Perfil de Estrella para asegurarse 
+que la estrella no tenga una superficie plana (saturaci&oacute;n) y que muestre una forma 
+afilada como se muestra en el ejemplo arriba.
+<br><br><br>
+<img style="width: 622px; height: 489px;" alt="" src="Target_display.png">
+<br><br>
+La ventana de Objetivos es otra forma &uacute;til de visualizar el funcionamiento del guiado.
+ La 'X' roja muestra el movimiento de la estrella para la &uacute;ltima exposici&oacute;n de guiado, 
+mientras que los puntos azules muestran la historia reciente. Ud puede acercar o alejar
+ con los controles en la parte superior izquierda de la ventana, as&iacute; como cambiar el n&uacute;mero
+ de puntos que se muestran en la historia. Si est&aacute; utilizando una conexi&oacute;n ASCOM, tanto para
+ la 'montura' como para 'montura-aux', PHD2 tambi&eacute;n mostrar&aacute; las direcciones (CieloNorte, CieloEste)
+ asociado con el movimiento de la estrella, como se muestra en el ejemplo arriba.
+ Esto puede ser &uacute;til si est&aacute; buscando la deriva general y quuiere determinar como
+ configurar el guiado uni-direccional para la declinaci&oacute;n. La convenci&oacute;n arriba/abajo
+ utilizada en estr gr&aacute;fico no tiene relaci&oacute;n con la orientaci&oacute;n de la c&aacute;mara o movimientos
+ N-S-E-O en el campo de visi&oacute;n.
+<h3><a name="Adaptive_Optics_AO_Graph"></a>Gr&aacute;fico Opticas Adaptativas (OA)</h3>
+<img style="width: 426px; height: 354px;" alt="AO Graph Image" src="AO_graph.png">
+<br><br>
+El gr&aacute;fico OA es equivalente a la ventana 'objetivo', pero muestra la historia de correcciones
+ relativas a los ejes del dispositivo de &oacute;ptica adaptativa. El rect&aacute;ngulo rojo indica
+ los bordes externos del dispoitivo OA, mientras que el rect&aacute;ngulo interior amarillo
+ muestra la regi&oacute;n "bump". Si la estrella se mueve fuera del rect&aacute;ngulo amarillo, 
+<span style="font-style: italic;">PHD2</span> enviar&aacute; una secuencia de comandos de
+ movimiento a la montura - el "golpe" - para reubicar suavemente la estrella gu&iacute;a
+ cerca de la posici&oacute;n central. Cuando esto ocurre, se mostrar&aacute;n los golpes
+incrementales en l&iacute;neas verdes y el remanente en l&iacute;neas azules.
+ El punto blanco en el display muestra la posici&oacute;n actual de la OA,
+y el c&iacute;rculo verde (rojo cuando un golpe est&aacute; en progreso) muestra la
+posici&oacute;n promedio de la OA. El bot&oacute;n en la izquierda arriba, controla cuantos
+puntos se mostrar&aacute;n en la historia.
+<h3><a name="DockableMoveable_Graphical_Windows"></a>Ventanas Gr&aacute;ficas Acoplables/Libres</h3>
+Cuando varias ventanas de performance son mostradas, inician "acopladas"
+a la ventana principal. Esto significa que su tama&ntilde;o es particular y que
+est&aacute;n alineadas con los dos bordes de la ventana - est&aacute;n contenidas en su
+totalidad dentro de la ventana principal de <span style="font-style: italic;">PHD2</span>.
+Pero ud puede moverlas y cambiar su tama&ntilde;o haciendo click y arrastr&aacute;ndolas desde la barra de t&iacute;tulo
+de la ventana que quiera revisar. Esto le permitir&aacute; una mejor vista de los detalles que se
+muestran en los gr&aacute;ficos. Pueden ser acopladas nuevamente arrastrando la barra
+de t&iacute;tulo a la regi&oacute;n general en la que desee acoplarla - abajo, derecha, etc.
+Con un poco de pr&aacute;ctica, es f&aacute;cil ubicarlas donde sea m&aacute;s conveniente.
+<br><br>
+Tambi&eacute;n hay un &iacute;tem bajo el men&uacute; desplegable "Vista", llamada <a name="Restore_window_positions"></a>
+'Restaurar posiciones de ventanas.' haciendo click en ese &iacute;tem de men&uacute;, restarurar&aacute;
+autom&aacute;ticamente todas las ventanas a su lugar acoplado por defecto.
+Esto puede ser &uacute;til, por ejemplo si est&aacute; cambiando entre pantallas con diferentes
+resoluciones y una o m&aacute;s de las ventanas acoplables se han "perdido" Esta funci&oacute;n
+tambi&eacute;n vuelva la pantalla principal de PHD2 a su tama&ntilde;o original, con una
+posici&oacute;n cerca de la esquina superior izquierda de la pantalla.
+</body></html>

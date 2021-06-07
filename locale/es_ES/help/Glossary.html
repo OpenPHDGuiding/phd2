@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Glosario de T&eacute;rminos</title></head>
+<body><h2>Glosario de T&eacute;rminos T&eacute;cnicos</h2>
+<br>
+A pesar que PHD2 intenta ser f&aacute;cil de usar, las tareas de guiado de un
+telescopio son bastante complicadas. Si est&aacute; intentando resolver problemas
+relacionados con su equipo, o realizar correcciones finas a su guiado,
+se encontrar&aacute; con temas poco familiares y terminolog&iacute;a de estad&iacute;stica,
+astronom&iacute;a e ingenier&iacute;a mec&aacute;nica. Algunos de estos t&eacute;rminos aparecen en
+la interfaz de usuario de PHD2 como tambi&eacute;n en los foros de soporte y en
+los grupos de discusi&oacute;n, por lo que es bueno tener un conocimiento b&aacute;sico
+de qu&eacute; significan. Algunos de los t&eacute;rminos que probablemente se encuentre,
+est&aacute;n desarrollados a continuaci&oacute;n.
+<br><br>
+<span style="font-weight: bold;"><a name="RMS"></a>RMS</span> - es un
+acr&oacute;nimo de "root-mean-square" o media cuadr&aacute;tica, una cantidad estad&iacute;stica
+utilizada para caracterizar un conjunto de datos. En el contexto de PHD2,
+es lo mismo que la desviaci&oacute;n est&aacute;ndard. Es una cantidad &uacute;til para describir
+la dispersi&oacute;n de los puntos de datos acerca de un valor pormedio. Si nos
+concentramos en la tarea de guiado, estamos interesados en conocer que tanto
+se mueve la estrella gu&iacute;a en los ejes RA y Dec. Consideremos una secuencia
+de desplazamientos de la estrella gu&iacute;a que se vea as&iacute;: 1.0, -1.2, 1.5, -1.3, 1.0
+-1.6, 1.4,-2.1, 1.2, -2.4, 1.2, -2.1 -1.1, 2.1, 0, 2.4, -1.2, 1.6, -1.5, 1.3,
+-1.0, 1.2 -1.6, 1.2. C&oacute;mo deber&iacute;amos caracterizar qu&eacute; tanto movimiento estamos
+viendo alrededor del punto cero? Podemos tomar un enfoque simple y calcular el
+promedio de estas deflexiones - y el resultado es cero! Esto no nos aporta
+nada, obviamente cero no es una buena caracterizaci&oacute;n. La raz&oacute;n para este
+resultado es que tenemos desplazamientos iguales en las direcciones + y -,
+entonces los desplazamientos se cancelan entre s&iacute;. Esta es la raz&oacute;n para
+utilizar el c&aacute;lculo de desviaci&oacute;n RMS (desviaci&oacute;n est&aacute;ndard), algo m&aacute;s complicado,
+que factoriza los signos de los desplazamientos. El valor RMS para esta
+secuencia es 1.5, que nos dice mucho mas. Durante un per&iacute;odo de tiempo
+suficientemente largo (algo mayor que los 25 puntos de este ejemplo), las
+matem&aacute;ticas subyacentes nos dicen que deber&iacute;amos esperar que un 68% de las
+excursiones sean menores que +- 1.5 pixeles. Obviamente, esto nos dice mucho
+m&aacute;s sobre el desempe&ntilde;o del guiado, y es por esto que PHD2 utiliza RMS en
+las herramientas de visualizaci&oacute;n.
+<br><br>
+<span style="font-weight: bold;"><a name="Backlash"></a>Backlash</span> -
+es un defecto t&iacute;pico de la mayor&iacute;a de las monturas que utilizan engranajes
+para mover los dos ejes (la mayor&iacute;a de las monturas amateur usan engranajes,
+aunque no todas). Es causado por una cantidad variable de holgura donde
+los dos engranajes se encuentren. Alg&uacute;n tipo de holgura es necesario o
+los engranajes no podr&iacute;an cambiar de direcci&oacute;n, simplemente se trabar&iacute;an.
+Esta cantidad de holgura necesaria en los engranajes (con suerte peque&ntilde;a)
+significa que un cambio de direcci&oacute;n mover&aacute; brevemente a los engranajes
+a una peque&ntilde;a zona muerta donde los engranajes no estar&aacute;n engranados. En
+este lugar, el motor continuar&aacute; girando, pero el eje de la montura no se
+mover&aacute;. Esto continura&aacute; hasta que el motor haya girado lo suficiente como
+para reconectar los engranajes en la direcci&oacute;n inversa. Monturas con 
+engranajes de alta calidad tienen muy poco backlash, tan bajo que usualmente
+no afecta el guiado. Pero monturas de menor calidad pueden tener cantidades
+importantes de backlash, y los cambios de direcci&oacute;n pueden experimentar
+largas demoras antes que el eje comience a moverse en la direcci&oacute;n
+deseada. Backlash no es un problema en RA en tanto la velocidad de guiado
+sea menor o igual a 1X sideral. En esos casos, el motor RA nunca cambia
+de direcci&oacute;n durante el guiado, por lo que los engranajes est&aacute;n siempre
+vien conectados y el backlash no se percibe. De todos modos, el backlash
+es tipicamente un problema en declinaci&oacute;n ya que el motor y los engranajes
+usalmente est&aacute;n detenidos, salvo por comandos intermitentes para mover
+al norte o sur y seguir la estrella. Estos cambios de direcci&oacute;n en Dec
+podr&iacute;an generar demoras por backlash. El Asistente de Guiado de PHD2 puede
+medir esto, y ud ver&aacute; frecuentemente discusiones sobre backlash en los
+foros de soporte. Como regla general, el backlash en declinaci&oacute;n se ataca
+engranando mejor o mejorando los engranajes del eje. NO utilice la
+compensaci&oacute;n o correcciones de backlash en su montura, &eacute;stos resultar&aacute;n
+inevitablemente en guiados inestables.
+<br><br>
+<span style="font-weight: bold;"><a name="Periodic_Error"></a>Error Peri&oacute;dico</span> -
+es otra caracter&iacute;stica t&iacute;pica de monturas con engranajes, esta vez
+afectando s&oacute;lo al eje RA. El error peri&oacute;dico es causado generalmente
+por peque&ntilde;as irregularidades en el sinfin que mueve el engranaje de RA.
+Es peri&oacute;dico porque cualquier irregularidad que se presente, aparecer&aacute;
+cada vez que el sinf&iacute;n de una vuelta completa (el per&iacute;odo del sinfin).
+Las irregularidades se manifiestan por peque&ntilde;os errores en el seguimiento
+en RA que aparecen de una forma consistente y predecible. El error
+peri&oacute;dico puede ser m&aacute;s complicado que esto cuando se presentan otros
+defectos en el mecanismo RA, pero el principio es el mismo. Las monturas
+que se anuncian como aptas para astrofotograf&iacute;a deber&iacute;an tener una forma
+de corregir esto, aplicando correcciones proactivas a medida que el sinfin
+alcanza varios puntos en su ciclo. Este mecanismo de correcci&oacute;n se llama
+Correcci&oacute;n de Error Peri&oacute;dico, usualmente abreviado como PEC. El PEC
+usualmente se programa en el firmware de la montura, utilizando una aplicaci&oacute;n
+separada (por ej PecPrep). Dado que las correcciones de Error Peri&oacute;dico
+son aplicadas por el firmware de la montura proactivamente, no interfieren
+con el guiado de PHD2. De hecho, ayudan sustancialmente - usualmente
+quedar&aacute; un rango de movimiento menor para que PHD2 corrija.
+<br><br>
+<span style="font-weight: bold;"><a name="Image_Scale"></a>Escala de Imagen</span> -
+es una propiedad simple del sistema de captura o guiado, aunque no es
+algo que la mayor&iacute;a de los usuarios deseen calcular. Est&aacute; expresado en
+unidades de segundos de arco/p&iacute;xel y b&aacute;sicamente describe como se traslada
+la distancia angular en el cielo (segundos de arco) a distancias lineales
+en el sensor de la c&aacute;mara (p&iacute;xeles). Para aplicar este concepto al guiado,
+considere un sistema telescopio/montura que tiene alguna cantidad error de
+seguimiento. Estos errores de seguimiento crean peque&ntilde;os movimientos
+angulares en el apuntado, por lo que pueden ser medidos y expresados en
+unidades de segundos de arco. Por ejemplo, la montura podr&iacute;a tener un 
+error peri&oacute;dico de 10 segundos de arco, por lo que una estrella gu&iacute;a podr&iacute;a
+parecer moverse 10 segundos de arco durante el per&iacute;odo del sinfin. Pero
+cu&aacute;nto movimiento se mostrar&aacute; en el sensor de la c&aacute;mara? Esto es lo que
+determina como reaccionar&aacute; el software de guiado. Si el guiado est&aacute; siendo
+realizado con un telescopio de gran longitud focal, la imagen de escala
+ser&aacute; baja, ya que cada p&iacute;xel de la c&aacute;mara estar&aacute; mirando a una distancia
+angular menor en el cielo. Una deflexi&oacute;n angular dada (en segundos de arco)
+resultar&aacute; en un movimiento comparativamente mayor en el sensor. Si la misma
+c&aacute;mara gu&iacute;a se usa en un telescopio de menor distancia focal, la imagen de
+escala ser&aacute; mayor y las deflexiones de la estrella ser&aacute;n menores - cada
+p&iacute;xel est&aacute; mirando a una regi&oacute;n mayor del cielo. PHD2 calcula la escala
+de imagen por ud si ingresa correctamente la longitud focal de su telescopio
+y el tama&ntilde;o de p&iacute;xel de su c&aacute;mara gu&iacute;a. Una vez conocidos estos valores, el
+desempe&ntilde;o de guiado se mostrar&aacute; en unidades de segundos de arco. Estas son
+las unidades que deber&iacute;a utilizar para medir, mejorar y comentar su
+desempe&ntilde;o de guiado porque atacan el comportamiento real, f&iacute;sico de su
+sistema de guiado y no son dependientes de las especificaciones de su
+configuraci&oacute;n &oacute;ptica.
+<br><br>
+<span style="font-weight: bold;"><a name="SNR"></a>SNR </span> - es
+el acr&oacute;nimo utilizado para relaci&oacute;n se&ntilde;al/ruido. Es una medida
+especializada, utilizada por PHD2 para determinar que tan bien se
+puede distinguir la estrella del findo. Es similar pero no igual a
+la relaci&oacute;n se&ntilde;al/ruido utilizada en fotometr&iacute;a. El c&aacute;lculo para una
+posici&oacute;n precida de la estrella gu&iacute;a de PHD2 puede verse afectado por
+el SNR, pero los efectos son normalmente desestimables si el SNR es
+de 15 o m&aacute;s. En ese punto, los errores de c&aacute;lculo de la posici&oacute;n de
+la estrella ser&aacute;n mucho menores que las otras incertidumbres en la
+medici&oacute;n inherentes al guiado.
+<br><br>
+<span style="font-weight: bold;"><a name="Saturation"></a>Saturaci&oacute;n</span> -
+ocurre cuando las partes m&aacute;s brillantes de la imagen de la estrella
+gu&iacute;a exceden la capacidad m&aacute;xima de los sensores en su c&aacute;mara gu&iacute;a.
+Cuando esto sucede, el perfil de estrella ya no tiene un pico central
+pronunciado, ya que los valores de los pixeles son truncados al valor
+m&aacute;ximo del sensor. El perfil de estrella tiene entonces un techo plano,
+y los c&aacute;lculos de posici&oacute;n de la estrella se ven degradados. Ud puede
+ver esto utilizando la herramienta de Perfil de Estrella, y deber&iacute;a
+intentar evitar esta situaci&oacute;n de ser posible.
+<br><br>
+<span style="font-weight: bold;"><a name="Star_Mass"></a>Masa de Estrella</span> -
+es una m&eacute;trica interna de PHD2 que indica el brillo general y tama&ntilde;o
+aparente de la estrella gu&iacute;a. Puede ser un indicador aproximado
+de eventos que opaquen la estrella, como nubes pasando o niebla,
+y es utilizado principalmente para el control de "detecci&oacute;n de masa
+de estrella" en la pesta&ntilde;a Guiado de la ventana Avanzado.
+<br><br><br><br><br><br><br><br><br>
+</body></html>

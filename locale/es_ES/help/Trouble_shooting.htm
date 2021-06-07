@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Soluci&oacute;n de Problemas</title></head>
+<body>
+<h2>Soluci&oacute;n de problemas y An&aacute;lisis</h2>
+<h3><a name="Problems-_Mount_Control"></a>Problemas de Calibraci&oacute;n y Control de Montura</h3>
+Si reci&eacute;n est&aacute; comenzando a utilizar <span style="font-style: italic;">PHD2</span> o est&aacute;
+conectando equipamiento nuevo por primera vez, puede tener dificultades durante
+la calibraci&oacute;n Estos problemas usualmente toman una o dos formas, y cada una
+necesita de respuestas diferentes:
+<br>
+<ol>
+<li>La estrella se mueve durante la calibraci&oacute;n pero se mueve "demasiado lejos" o "muy poco",
+Si utiliz&oacute; el asistente de nuevo perfil y ha provisto los valores correctos para la
+longitud focal, tama&ntilde;o de p&iacute;xel de c&aacute;mara y velocidad de guiado de su montura, el
+"tama&ntilde;o de paso" utilizado en la calibraci&oacute;n deber&iacute;a ser el correcto. Pero si ha configurado
+su perfil a mano o ha cambiado los par&aacute;metros de velocidad de guiado en la montura, podr&iacute;a
+necesitar ajustar el par&aacute;metro "tama&ntilde;o de paso de calibraci&oacute;n" en la pesta&ntilde;a 'Guiado' de
+<a href="Advanced_settings.htm">Configuraci&oacute;n Avanzada</a>. El contenido de ayuda ah&iacute;
+describr como se utiliza este par&aacute;metro, y deber&iacute;a permitirle resolver el problema
+r&aacute;pidamente. Pero si ha utilizado el asistente de nuevo perfil y est&aacute; viendo problemas
+con movimientos de estrella "demasiado lejos" o "demasiado poco", el problema seguramente
+est&eacute; en otro lugar.</li>
+<li>La estrella no se mueve lo suficiente durante la calibraci&oacute;n de RA, declinaci&oacute;n ('Dec'),
+limpiado de backlash, o calibraci&oacute;n Dec. Estos problemas se anuncian como
+<span style="font-weight: bold;">mensajes de alerta</span> en la parte superior de la ventana.
+Con longitudes focales largas, peque&ntilde;os movimientos pueden ser el resultado de deflexiones
+por seeing y la montura en realidad no se est&aacute; moviendo. A continuaci&oacute;n se describr c&oacute;mo
+tratar este tipo de problemas.</li>
+</ol>
+En casi todos los casos, el problema "sin movimiento" es causado por problemas en la montura
+o en el cableado y conexiones. La mejor herramienta para solucionar estos problemas es la
+opci&oacute;n 'Guiado Manual' en el men&uacute; 'Herramientas', descrito en la secci&oacute;n <a href="Tools.htm">Herramientas</a>
+de esta ayuda. Simplemente utilice los controles direccionales en la ventana 'Guiado Manual'
+para enviar comandos directamente a la montura mientras mira la estrella en la ventana
+principal. Utilice pulsos de guiado grandes - al menos de varios segundos - para que pueda
+ver claramente si la montura se est&aacute; moviendo. Intente mover la montura en las cuatro
+direcciones y verifique que la estrella objetivo se est&eacute; moviendo cantidad aproximadamente
+iguales. Si la montura no responde, tiene un problema en su equipo o en la conectividad para
+resolver - el problema no est&aacute; en <span style="font-style: italic;">PHD2</span>. Si est&aacute;
+utilizando un dispositivo Shoestring para conectar la montura, mire sus luces indicadoras
+para ver si los comandos est&aacute;n llegando a &eacute;l. De igual forma, su c&aacute;mara comaptible con ST-4
+podr&iacute;a tener luces indicadores para mostrar cuando se est&aacute;n recibiendo los comandos de guiado.
+Si est&aacute; utilizando una conexi&oacute;n ASCOM a la montura, aseg&uacute;rese que las asignaciones de puerto
+COM son correctas. Tambi&eacute;n puede utilizar alguna de las herramientas propias de ASCOM, tales
+como POTH para asegurarse que el driver ASCOM se est&aacute; comunicando correctamente con la
+montura. Es mejor utilizar la &uacute;ltima versi&oacute;n del driver ASCOM para su montura, ya que
+verisones anteriores podr&iacute;an tener bugs asociados con el guiado por pulsos.
+<br><br>
+<a name="Calibration_sanity_check"></a>
+<span style="font-weight: bold;">Comprobaci&oacute;n de salud de Calibraci&oacute;n</span>
+<span style="font-weight: bold;">y Alertas</span>
+<br>
+Tambi&eacute;n es posible que el proceso de calibraci&oacute;n se complete, pero que PHD2 emita alg&uacute;n
+mensaje de alerta posterior avisando que algunos de los resultados podr&iacute;an ser cuestionables.
+Este mensaje <span style="font-weight: bold;">NO</span> significa que la calibraci&oacute;n fall&oacute;
+o que no se puede utilizar, pero est&aacute; avisando que algunos de los resultados no se ven del
+todo bien. Esta "Comprobaci&oacute;n de salud" le mostrar&aacute; una explicaci&oacute;n y algunos detalles de los
+resultados de la calibraci&oacute;n:
+<br><br>
+<img style="width: 797px; height: 426px;" alt="" src="Calib_Sanity.png">
+<br><br>
+Hay 5 cosas que PHD2 controla como parte de la calibraci&oacute;n:
+<br>
+<ul>
+<li><span style="font-weight: bold;">Muy pocos pasos</span> (mostrado arriba) - resolver
+esto puede ser simple, asumiendo que la montura funciona correctamente. S&oacute;lo baje el valor
+del tama&ntilde;o de paso hasta que obtenga al menos 8 pasos en las calibraciones tanto hacia
+el Oeste como al Norte. Si utiliz&oacute; el asistente de nuevo perfil para su configuraci&oacute;n, los
+valores iniciales ya estar&aacute;n completos. Si encuentra que el n&uacute;mero de pasos en RA y
+Declinaci&oacute;n es muy diferente, probablemente est&eacute; viendo evidencia de backlash en
+declinaci&oacute;n, a menos que est&eacute; utilizando una velocidad de guiado diferente en los dos
+ejes.</li>
+<li><span style="font-weight: bold;">Error de Ortogonalidad</span> - los ejes de la
+c&aacute;mara normalmente se calculan independientemente a pesar de que
+<span style="font-style: italic;">deber&iacute;an</span> ser perpendiculares. El &aacute;ngulo de
+c&aacute;culo no requiere gran precisi&oacute;n, pero si est&aacute;n muy lejos de la ortogonalidad,
+deber&iacute;a repetir la calibraci&oacute;n. Si ve alertas repetitivas de este tipo y los ejes
+est&aacute;n siempre lejos de ser ortogonales, deber&iacute;a identificar el problema y resolverlo.
+Problemas comunes son un alineado polar malo, backlash en declinaci&oacute;n grande o errores
+peri&oacute;dicos grandes en RA. Cualquiera de estos problemas puede causar que la estrella gu&iacute;a
+se mueva significativamente en uno de los ejes mientras PHD2 intenta medir su movimiento
+en el otro eje. Si sospecha de estos problemas, acepte la calibraci&oacute;n y ejecute el
+Asistente de Guiado para medir su error de alineaci&oacute;n polar, backlash en declinaci&oacute;n
+y error de seguimiento en RA. En otros casos, la montura puede directamente no estar
+movi&eacute;ndose y los desplazamientos medidos sean causados por el seeing. Este tipo de
+problemas deber&iacute;a ser obvio en el gr&aacute;fico de calibraci&oacute;n a la izquierda. Si el error
+del eje es relativamente bajo y ud est&aacute; convencido que la montura funciona correctamente,
+peude evitar nuevas alertas de este tipo activando la opci&oacute;n 'Asumir Dec Ortogonal a RA'
+en la pesta&ntilde;a 'Guiado' de la ventana Configuraci&oacute;n Avanzada. Pero deber&iacute;a hacer esto
+s&oacute;lo si el error es bajo - de otra forma, simplemente estar&aacute; ignorando un problema
+serio.</li>
+<li><span style="font-weight: bold;">Ratios cuestionables en RA y Dec</span> - asumiendo
+que las velocidades de guiado reportadas por la montura son precisas, la velocidad de
+guiado medida para ascenci&oacute;n recta deber&iacute;a estar relacionada a la velocidad de
+declinaci&oacute;n por aproximadamente un factor de coseno (Declinaci&oacute;n). En otras palabras,
+la velocidad aparente en RA se hace menor cuanto m&aacute;s cerca del polo est&eacute;. PHD2 no
+intentar&aacute; identificar que velocidad es incorrecta - simplemente alerta que algo
+no parece estar bien con las velocidades. Puede hacer una validaci&oacute;n de la salud
+de estas velocidades muy simplemente. Si est&aacute; guiando a una velocidad sideral 1X,
+su velocidad de declinaci&oacute;n deber&iacute;a ser de aproximadamente 15 segundos de arco;
+con una velocidad de guiado de 0.5X, la velocidad en declinaci&oacute;n deber&iacute;a ser de
+7.5 segundos de arco, etc. <span style="font-weight: bold;">Una velocidad de declinaci&oacute;n que sea
+significativamente menor que la de RA es usualmente una indicaci&oacute;n de backlash
+significativo en declinaci&oacute;n.</span> Utilizando una calibraci&oacute;n que emita esta alerta
+puede llevar a sobrepasarse en el guiado en Dec porque la velocidad de guiado real
+es probablemente mayor que la medida. Para resolver este problema, deber&iacute;a
+limpiar manualmente el backlash en Dec antes de comenzar la calibraci&oacute;n. Puede
+hacer esto de dos maneras: 1) aseg&uacute;rese que el &uacute;ltimo movimiento de la montura
+haya sido al <span style="font-weight: bold;">norte</span> o 2) utilice el controlador
+de mano para mover la montura manualmente al <span style="font-weight: bold;">norte</span>
+a velocidad de guiado por 10-20 segundos.</li>
+<li><span style="font-weight: bold;">Resultados inconsistentes</span> - si los
+resultados de la calibraci&oacute;n son significativamente diferentes de los de la &uacute;ltima
+calibraci&oacute;n utilizada, se generar&aacute; un mensaje de alerta. Esto puede suceder porque
+ha realizado alg&uacute;n cambio en su configuraci&oacute;n. Esto no implica un problema real,
+pero deber&iacute;a considerar crear un perfil separado para la nueva configuraci&oacute;n.
+Al hacer esto, PHD2 recordar&aacute; la parametrizaci&oacute;n para cada uno de sus perfiles,
+permiti&eacute;ndole cambiar entre ellos f&aacute;cilmente. Si no ha realizado cambios de
+configuraci&oacute;n, probablemente querr&aacute; determinar porqu&eacute; los resultados son tan
+diferentes.</li>
+<li><span style="font-weight: bold;">Muy poco movimiento al este o sur</span>
+ - El proceso de calibraci&oacute;n s&oacute;lo usa movimientos al oeste o norte para
+calcular el &aacute;ngulo de la c&aacute;mara y las velocidades de seguimiento.
+Los movimientos al este y sur son principalmente para regresar la
+estrella gu&iacute;a a alg&uacute;n lugar cerca de su posici&oacute;n inicial. Si se ve poco
+o ning&uacute;n movimiento al este o sur, probablemente vea un mensaje de alerta
+avisando de la situaci&oacute;n. La calibraci&oacute;n no ha fallado, pero el guiado
+seguramente no sea el mejor. Las causas m&aacute;s comunes son un cable ST-4
+defectuoso o mucho backlash en Declinaci&oacute;n si la alerta est&aacute; relacionada
+al movimiento al sur.</li>
+</ul>
+Con cualquiera de estas alertas, el campo de dato relevante ser&aacute; destacado
+basado en el tipo de mensaje. Puede elgir ignorar la advertencia ('Aceptar
+calibraci&oacute;n'), reejecutar la calibraci&oacute;n ('Descartar calibraci&oacute;n') o
+regresar a su &uacute;ltima calibraci&oacute;n buena ('Restaurar datos de calibraci&oacute;n anterior').
+Con la tercera opci&oacute;n, puede retrasar la calibraci&oacute;n para m&aacute;s tarde y comenzar
+a guiar con los &uacute;ltimos datos buenos de calibraci&oacute;n. Si ve alertas repetidas
+del mismo tipo y est&aacute; convencido de que no hay un problema real, puede
+utilizar la marca 'No mostrar de nuevo' para bloquear futuras alertas de
+ese tipo. Pero deber&iacute;a ser consciente que la comprobaci&oacute;n de salud utilizada
+por PHD2 funciona bien para un gran rango de equipamiento, y la mayor&iacute;a
+de los usuarios no ven errores de calibraci&oacute;n de ning&uacute;n tipo.
+<br><br>
+<span style="font-weight: bold;"><a name="Declination_backlash"></a>Backlash de Declinaci&oacute;n</span>
+<br>
+Por lejos, la mayor&iacute;a de los problemas de calibraci&oacute;n est&aacute; en el backlash
+de declinaci&oacute;n, que est&aacute; presente en alg&uacute;n grado en la mayor&iacute;a de las
+monturas con engranajes. Con muchas monturas econ&oacute;micas, el problema
+puede ser severo y puede ocasionar una calibraci&oacute;n pobre y malos
+resultados de guiado. Considere el ejemplo siguiente de una revisi&oacute;n
+de calibraci&oacute;n:
+<br><br>
+<img style="width: 767px; height: 399px;" alt="" src="Calib_Review_Backlash.png">
+<br><br>
+La primera pista del problema se encuentra al comparar los n&uacute;meros de pasos
+requeridos para clibrar en los dos ejes - 10 para RA pero 42 para Dec. Esto
+muestra que la montura no se ha movido consistentemente en declinaci&oacute;n,
+probablemente porque el backlash no ha sido compensado. Esto tambi&eacute;n explica
+el comportamiento "err&aacute;tico" en los puntos de declinaci&oacute;n (verde claro) cuando los
+comandos de guiado se invirtieron de norte a sur. Finalmente, la velocidad
+calcuilada de declinaci&oacute;n es m&aacute;s baja que la de RA, a pesar de que la velocidad
+de guiado en los dos ejes son id&eacute;nticos. Esto podr&iacute;a haber disparado una alerta
+de calibraci&oacute;n. Aqu&iacute; hay dos problemas a enfrentar. Primero, el resultado de
+la calibraci&oacute;n no es bueno y deber&iacute;a repetirse para obtener mediciones
+m&aacute;s precisas de la velocidad de guiado en declinaci&oacute;n. Segundo, es probable
+que la montura se comporte mal durante los cambios de direcci&oacute;n en declinaci&oacute;n
+incluso si la velocidad de guiado en dec es correcta. La calibraci&oacute;n puede
+mejorarse al mover primero la montura manualmente al norte, a velocidad de
+guiado durante 10-20 segundos, hasta que se vea un movimiento consistente de
+la estrella en la ventana principal. Puede hacer esto con la herramienta
+'Guiado Manual' o utilizando el controlado de mano de su montura. Una vez
+haya realizado esto, la mayor&iacute;a del backlash de declinaci&oacute;n deber&iacute;a haber
+sido superado. Puede entonces repetir el proceso de calibraci&oacute;n y probablemente
+obtendr&aacute; una velocidad de guiado en declinaci&oacute;n que sea m&aacute;s razonable.
+El problema subyacente de backlash generalmente requiere de alg&uacute;n
+ajuste mec&aacute;nico en la montura. Si la montura no utiliza una velocidad
+de guiado cercana a 1X sideral, probablemente obtendr&aacute; una mejora
+inmediata incrementando la velocidad de guiado de su montura. Puede
+intentar tambi&eacute;n utilizar una configuraci&oacute;n de compensaci&oacute;n de backlash
+en PHD2, pero esto probablemente no funione bien si el backlash es
+grande - m&aacute;s de 3 segundos, por ejemplo. Si no puede corregir el backlash
+o reducirlo a nieveles manejables, deber&iacute;a considerar elegir un guiado
+unidireccional para declinaci&oacute;n. Para hacer esto, determine hacia d&oacute;nde
+se mueve la montura por error de alineaci&oacute;n polar e indique a PHD2 para 
+guiar s&oacute;lo en la direcci&oacute;n opuesta (ver <a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Guiado Unidireccional</a>).
+Esto es controlado por el control 'Modo de guiado Dec' en la pesta&ntilde;a
+'Algoritmos' de la ventana Configuraci&oacute;n Avanzada. Por ejemplo, si la
+montura tiende a derivar al norte, restrinja los comandos de guiado
+s&oacute;lo al sur. Esta no es la soluci&oacute;n ideal, obviamente, pero todav&iacute;a
+puede utilizar tiempos de exposici&oacute;n razonables y lograr buenos
+resultados de guiado - muchos eligen esta forma. Si tiene alguna
+circunstancia inusual, como una montura que no tiene control de
+declinaci&oacute;n, puede seleccionar la opci&oacute;n 'Modo de guiado en Dec' a
+'Apagado'.
+<br><br>
+<span style="font-weight: bold;"><a name="Star_cross_test"></a>Validando Control B&aacute;sico de Montura - el Test de Cruz de Estrella
+<br></span>
+Si est&aacute; experimentando repetidos problemas impidiendo completar una
+calibraci&oacute;n sin mensajes de alerta, podr&iacute;a ejecutar un test simple
+para determinar si la montura est&aacute; respondiendo a los comandos de
+guiado. Este test b&aacute;sicamente replica lo que se hace durante la calibraci&oacute;n,
+pero es m&aacute;s directo y le puede dar mejor idea de qu&eacute; est&aacute; sucediendo.
+Lo llamamos el test de 'Cruz de Estrella'. La idea es abrir el
+obturador de la c&aacute;mara, para despu&eacute;s enviar comandos de guiado que
+causen que las estrellas en el campo tracen un patr&oacute;n en cruz. En
+otras palabras, deber&iacute;a ver una imagen parecida a la siguiente:
+<br><br>
+<img style="width: 360px; height: 382px;" alt="" src="Star_cross_1.png">
+<br><br>
+La orientaci&oacute;n del &aacute;ngulo no importa, es s&oacute;lo una funci&oacute;n de c&oacute;mo est&eacute;
+rotada la c&aacute;mara guia. Lo que es importante es que las l&iacute;neas de las
+cruces deben ser perpendiculares y tener aproximadamente la misma longitud.
+en cada una de las cuatro direcciones relativas al punto de incio en
+el centro. Si la imagen que obtiene no tiene aproximadamente esta
+apariencia, el guiado ser&aacute; probablemente dif&iacute;cil o incluso imposible.
+Por ejemplo, considere los siguientes resultados:
+<br><br>
+<img style="width: 360px; height: 347px;" alt="" src="Bad_Star_Cross_1.png">
+<br><br>
+Puede ver que las estrellas se han movido s&oacute;lo en un eje - s&oacute;lo en RA
+en este ejemplo. Los comandos gu&iacute;a de declinaci&oacute;n no han hacho nada.
+Hasta que se haya resuelto esto en la montura, no podr&aacute; guiar en
+declinaci&oacute;n y tendr&aacute; que deshabilitar el guiado en declinaci&oacute;n para
+incluso completar la calibraci&oacute;n. Hay otras formas de malos resultados,
+cada una sugiriendo un problema particular en la montura, el cable
+de guiado o, menos probable, en el driver ASCOM de la montura. Puede
+asumir que no tiene que ver con PHD2.<br><br>
+A continuaci&oacute;n los pasos para ejecutar el test:
+<br>
+<ol>
+<li>Fije la velocidad de seguimiento de la montura a 1X sideral. Inicie
+la herramienta 'Guiado Manual' en PHD2 y elija un tama&ntilde;o de pulso inicial -
+comience con 5 segundos, por ejemplo.</li>
+<li>Comience una exposici&oacute;n de 60 segundos en la c&aacute;mara principal.</li>
+<li>Env&iacute;e un pulso de 5 segundos al oeste, luego dos de 5 segundos al este,
+finalmente un pulso de 5 segundos al oeste. Esto deber&iacute;a regresar la estrella
+a su posici&oacute;n inicial. Deber&iacute;a esperar cerca de 5 segundos despu&eacute;s de
+enviar cada pulso de guiado para darle tiempo al comando a completar
+antes de enviar el pr&oacute;ximo pulso.</li>
+<li>Ahora env&iacute;e un pulso de 5 segundos al norte, luego dos de 5 segundos al sur,
+para finalizar con 5 segundos al norte. Esto nuevamente deber&iacute;a regresar la estrella
+a su posici&oacute;n inicial.<br></li>
+<li><span style="font-size: 10pt; font-family: Arial;">
+Espere que la c&aacute;mara principal descargue la imagen y vea que obtiene.</span></li>
+</ol>
+Puede utilizar diferentes longitudes de pulso si lo desea, quiz&aacute;s utilizar
+valores menores para confirmar que la montura responda a ellos. S&oacute;lo
+aseg&uacute;rese que el tiempo total de exposici&oacute;n de la c&aacute;mara principal es mayor que
+el total de duraciones de guiados m&aacute;s un margen de error. En la mayor&iacute;a
+de las monturas, la estrella no regresar&aacute; a su exacto centro, por alg&uacute;n
+backlash en declinaci&oacute;n - puede ver esto en la primera imagen de ejemplo.
+pero deber&iacute;a estar bastante cerca o tendr&aacute; que revisar con m&aacute;s profundidad
+cuanto backlash en declinaci&oacute;n tiene su montura. PHD2 tambi&eacute;n posee una
+herramienta de cruz de estrella, descripta aqu&iacute;: <a href="Tools.htm#Star_cross_tool">Herramienta de Cruz de Estrella</a>.
+Puede utilizarla para realizar los pasos anteriormente descriptos autom&aacute;ticamente.
+<br><br>
+Un beneficio de utilizar este test es que reduce las cosas a lo b&aacute;sico: si
+la montura se mover&aacute; como se le indica o no. No tiene nada que ver con la
+parametrizaci&oacute;n de guiado de PHD2, ya que no participan de este test. Podr&iacute;a
+encontrar &uacute;til utilizar los resultados del test para comunicarse con el
+fabricante de la montura u otros usuarios que entiendan su tipo de montura
+y sus problemas habituales.
+<br><br>
+<span style="font-weight: bold;"><a name="Measuring_Mount_Behavior"></a>Midiendo el Comportamiento de la Montura</span>
+<br>
+Si est&aacute; teniendo problemas con los resultados de guiado, su primer instinto
+probablemente sea hacer cambios audaces a los par&aacute;metros de guiado, con la
+esperanza de encontrar una soluci&oacute;n m&aacute;gica. Esto casi nunca funciona, y
+probablemente termine empeorando las cosas. Si los par&aacute;metros por defecto
+del asistente de nuevo perfile no producen resultados razonables, el problema
+probablemente est&eacute; en la montura y necesitar&aacute; determinar la causa subyacente.
+Una vez haya comprendido la causa, probablemente podr&aacute; mejorar los resultados
+de guiado incluso si no se pueden hacer reparaciones - pero entender el problema
+es importante. Para comprender lo que est&aacute; haciendo la montura, siga los
+siguientes pasos:
+<br><br>
+<div style="margin-left: 40px;">
+1. Utilice el asistente de nuevo perfile para crear
+un perfile de equipamiento nuevo para la prueba, asegur&aacute;ndose que los valores de
+la longitud focal del <span style="font-style: italic;">telescopio gu&iacute;a</span>
+y el tama&ntilde;o del pixel de la c&aacute;mara son correctos.
+No los adivine, b&uacute;squelos si no est&aacute; seguro.
+<br>
+2. Utilice una conexi&oacute;n ASCOM a la montura si est&aacute; disponible y configure
+la velocidad de guiado de la montura entre 0.5 - 1X sideral. Deshabilite
+cualquier compensaci&oacute;n de backlash que tenga en su montura.
+<br>
+3. Utilice exposiciones de entre 1-2 segundos y deje que PHD2 auto seleccione
+la estrella gu&iacute;a cerca de Dec=0 con el telescopio apuntando al menos a 45 grados
+sobre el horizonte para minimizar los efectos del seeing.
+<br>
+4. Ejecute el Asistente de Guiado por 10-15 minutos y aplique las recomendaciones
+que le haga, particularmente con respecto a los valores de m&iacute;nimo movimiento.
+Deje que mida el backlash en declinaci&oacute;n. Puede necesitar una regi&oacute;n de
+seguimiento grande para evitar perder la estrella gu&iacute;a durante esta parte del
+proceso - s&oacute;lo aseg&uacute;rese que no haya m&uacute;ltiples estrellas en el rect&aacute;ngulo de
+guiado. El test de backlash mover&aacute; la estrella a una distancia grande al norte,
+elija una estrella gu&iacute;a que est&eacute; cerca del borde sur de su c&aacute;mara para darle
+espacio suficiente.
+<br>
+5. Vea como van las cosas durante la sessi&oacute;n del AG. Si golpea la montura o
+sucede algo inusual, detenga la prueba y comience de cero. El objetivo es
+medir el desempe&ntilde;o cuando las cosas son normales.
+<br>
+6. No cambie ninguno de los par&aacute;metros de guiado m&aacute;s de lo que le recomienda
+el Asistente de Guiado.
+<br>
+7. Revise cuidadosamente los resultados que muestra la tabla del Asistente de
+Guiado. Cada entrada en la tabla le indica algo &uacute;til sobre el desempe&ntilde;o de
+su montura. Estos resultados tambi&eacute;n se escriben al log de guiado, por lo que
+est&aacute;n disponibles para un an&aacute;lisis posterior.
+<br>
+8. Si recibe mensajes de alerta de calibraci&oacute;n en el paso 3, deber&iacute;a solucionar
+esos problemas antes de proseguir. Guiar con una mala calibraci&oacute;n seguramente no
+produzca buenos resultados. Tambi&eacute;n, si su error de alineaci&oacute;n polar es de 10
+minutos de arco o m&aacute;s, deber&iacute;a mejorarlo y luego repetir los pasos anteriores.
+<br>
+9. Deje que PHD2 gu&iacute;e por otros 10-15 minutos. dej&aacute;ndolo correr en tanto no
+haya errores grandes por viento u otros "errores".
+<span style="font-weight: bold;">NO</span> cambie ninguno de los par&aacute;metros de
+guiado mientras se est&aacute; ejecutando el test.
+<br>
+</div>
+<br>
+Si desea analizar los resultados por ud mismo, utilice la herramienta PHDLogView
+y el tutorial Analizando los Resultados de Guiado de PHD2. Deber&iacute;a tambi&eacute;n
+consultar el documento sobre las mejores pr&aacute;cticas con PHD2. Todas estas
+referencias est&aacute;n disponibles en el sitio web OpenPHDGuiding.org bajo la
+pesta&ntilde;a 'Novedades'. Si desea alguna ayuda para comprender los resultados,
+posteetanto los archivos de guiado como logs de depuraci&oacute;n en el foro de Google
+OpenPHD2 y estaremos felices de ayudarlo.
+<br>
+<br>
+<h3><a name="Problems-_Display_Window"></a>Ventana de Problemas de Display</h3>
+Los nuevos usuarios frecuentemente reclaman que la imagen mostrada en la ventana
+principal tiene mucho ruido o que casi toda blanca o negra. Asumiendo que la
+c&aacute;mara funciona y descarga correctamente las im&aacute;genes, los problemas de display
+son causados frecuentemente por la ausencia de estrellas &uacute;tiles en el cuadro.
+Por ejemplo, intentar probar la c&aacute;mara en el interior de su casa o a plena luz
+del d&iacute;a lo que seguramente crear&aacute;n estas condiciones. La apariencia de la imagen
+en la ventana en estas situaciones no provee informaci&oacute;n util y deber&iacute;a descartarse.
+PHD2 utiliza una funci&oacute;n de estirado autom&aacute;tico que intenta ayudar a ver estrellas
+reales contra un cielo nocturno. Cunado no hay estrellas presentes, la imagen
+se estirar&aacute; para mostrar el rengo de valores de brillo m&iacute;nimo a m&aacute;ximo de lo
+que haya en el cuadro - que frecuentemente no es nada. Esta es la causa m&aacute;s
+habitual de im&aacute;genes con ruido/todas blancas/todas negras. Una buena t&eacute;cnica
+es comenzar con una estrella brillante, <span style="font-style: italic;">pero no saturada</span>
+e intentar alcanzar el foco con eso. Entonces pase a estrellas menos brillantes
+para ajustar la posici&oacute;n del foco utilizando la herramiente Perfil de Estrella
+de PHD2 para medir el tama&ntilde;o de la estrella gu&iacute;a. Se pueden obtener tambi&eacute;n
+buenos resultados utilizando una m&aacute;scara Bahtinov o herramientas de enfoque
+de otras aplicaciones. No importa lo que use en tanto haya alcanzado un
+buen foco.
+<br>
+<h3><a name="Problems-Hot_Pixels"></a>Problemas con P&iacute;xeles Calientes y Selecci&oacute;n de Estrellas</h3>
+En la mayor&iacute;a de las c&aacute;maras gu&iacute;a, puede encontrar problemas donde agrupaciones
+de p&iacute;xeles calientes pueden ser confundidas por estrellas gu&iacute;a por PHD2.
+Esto puede ser especialmente molesto si est&aacute; utilizando herramientas automatizadas y
+la 'auto-selecci&oacute;n' de estrella gu&iacute;a est&aacute; eligiendo por error un pixel caliente. Para muchas
+c&aacute;maras, un simple cuadro dark alcanzar&aacute; para reducir o eliminar problemas de p&iacute;xeles
+calientes, y los cuadros dark deber&iacute;an ser siempre por donde comenzar. Pero para otras
+c&aacute;maras, necesitar&aacute; construir un mapa de p&iacute;xeles malos y actualizarlo como sea necesario
+cuando vea cambios en las ubicaciones y tama&ntilde;os de los p&iacute;xeles defectuosos. Los sensores
+de las c&aacute;maras cambian con el tiempo y pueden reaccionar a cambios de temperatura, por lo que
+el mantenimiento del mapa es una peque&ntilde;a tarea que deber&iacute;a realizar. Las instrucciones
+paso a paso pueden encontrarse en el cap&iacute;tulo <a href="Darks_BadPixel_Maps.htm#Bad-pixel_Maps">Bad-pixel map</a>
+de este documento. Estos problemas son diferentes de p&iacute;xeles calientes moment&aacute;neos,
+que pueden ser causados por rayos c&oacute;smicos llegando al sensor. A pesar que los golpes
+de rayos c&oacute;smicos pueden interrumpir el guiado, es poco lo que puede hacer con ellos.
+<br><br>
+Ya que la pr&aacute;ctica recomendada es dejar que PHD2 elija la estrella gu&iacute;a ("auto-selecci&oacute;n"),
+deber&iacute;a utilizar los controles de usuario para ayudar a PHD2 a realizar el mejor
+trabajo posible. La propiedad M&iacute;nimo-HFD en la pesta&ntilde;a Guiado de la ventana Configuraci&oacute;n
+Avanzada es probablemente la herramienta m&aacute;s efectiva para evitar la selecci&oacute;n de p&iacute;xeles
+calientes. Deber&iacute;a fijar su valor de forma tal que permita utilizar las estrellas reales
+m&aacute;s peque&ntilde;as y d&eacute;biles que puedan ser observadas por su equipo. Deber&iacute;a utilizar la herramienta
+Perfil de Estrella para medir un conjunto razonable de estrellas gu&iacute;a leg&iacute;timas para su sistema.
+Entonces fijar el valor de HFD-M&iacute;nimo para aceptar esas estrellas, mientras rechaza puntos
+m&aacute;s brillantes y de menor tama&ntilde;o que son s&oacute;lo defectos del sensor. En la otra punta de la
+escala, deber&iacute;a tambi&eacute;n especificar el valor de p&iacute;xel m&aacute;s brillantes que su equipo
+puede entregar - El valor ADU que representa saturaci&oacute;n. Al hacer esto, va a prevenir que
+PHD2 rechace estrellas que tengan un perfil achatado, pero que no est&eacute;n realmente saturadas.
+El control de saturaci&oacute;n est&aacute; en la pesta&ntilde;a C&aacute;mara de la ventana Configuraci&oacute;n Avanzada y
+es parte de un grupo de controles llamado 'Detecci&oacute;n de Saturaci&oacute;n de Estrellas'.
+Seleccione la opci&oacute;n para 'Valor ADU M&aacute;ximo para saturaci&oacute;n', y selecciones el valor
+para su equipo. Si tiene una c&aacute;mara de 8 bits, la saturaci&oacute;n estar&aacute; cerca de 255, mientras
+que una c&aacute;mara de 16 bits saturar&aacute; cerca de los 65000 ADUs. Si no conoce el valor correcto,
+puede apuntar el telescopio a una estrella brillante, utilizar una exposici&oacute;n de varios
+segundos y mira nuevamente la ventana de Perfil de Estrella. Una de las cosas que ver&aacute;
+en esa ventana es el 'Valor Pico' - ese es el valor ADU para el p&iacute;xel m&aacute;s brillante y el
+que deber&iacute;a utilizar para configurar el punto de saturaci&oacute;n. Al utilizar ambos controles
+mejora la posibilidad de conseguir mejores resultados en la selecci&oacute;n autom&aacute;tica de estrella
+por parte de PHD2.
+<br><br>
+<h3><a name="Problems-Restore_Guiding_Parameters"></a>Regresando a una Base que funcione</h3>
+A pesar de nuestra advertencia, ud podr&iacute;a haber realizado cambios r&aacute;pidos, sin informaci&oacute;n
+a sus par&aacute;metros de guiado s&oacute;lo para encontrar que el desempe&ntilde;o sigue igual o incluso
+peor. Antes de continuar, deber&iacute;a regresar esos par&aacute;metros a sus valores por defecto. Si
+ud utiliza el asistente de nuevo perfil para construir su perfil, los par&aacute;metros se habr&aacute;n
+completado basados en su configuraci&oacute;n espec&iacute;fica, y seguramente estar&aacute;n bastante acertados.
+Si se encuentra con problemas de guiado significativos utilizando estos valores, probablemente
+se est&eacute; encontrando con problemas con la montura u otro equipo. Cambiar a ciegas los par&aacute;metros
+seguramente no resolver&aacute; estos problemas y casi siempre los empeorar&aacute;. Tiene varias opciones
+para regresar la configuraci&oacute;n a sus valores por defecto:
+<br>
+<ol>
+<li>En la pesta&ntilde;a 'Algoritmos' de la ventana Configuraci&oacute;n Avanzada, puede reiniciar par&aacute;metros
+individualmente mirando la ayuda flotante (tooltip) en cada campo. Pare su cursor sobre el campo
+se mostrar&aacute; el valor por defecto. Note que esto no es preciso para los valores de m&iacute;nimo-movimiento,
+que depende de su escala de imagen. Este acercamiento es mejor cuando desea cambiar s&oacute;lo algunos
+de los par&aacute;metros.</li>
+<li>Click en los botones 'reiniciar' en la pesta&ntilde;a 'Algoritmos' para los algoritmos de guiado
+seleccionados para RA y Dec. Esto es lo recomendado para reiniciar todos los par&aacute;metros de
+guiado. La configuraci&oacute;n de movimiento-m&iacute;nimo reiniciar&aacute;n a los valores calculados originalmente
+por el asistente de nuevo perfil. Si luego ajust&oacute; esos valores ejecutando el Asistente de
+Guiado, deber&iacute;a repetir ese proceso.</li>
+<li>Ejecute el asistente de nuevo perfil, haciendo click en el bot&oacute;n 'Gestionar Perfiles' en
+la ventana 'Conexi&oacute;n'. Utilice las mismas elecciones de c&aacute;mara y montura que ya tenga y
+elija un nombre para el perfil. Si desea reutilizar la librer&iacute;a dark y el mapa de p&iacute;xeles malos
+del perfile anterior, conecte al nuevo perfil y utilice el men&uacute; 'Darks' para importar esos
+archivos del perfile anterior. Una vez est&eacute; satisfecho con los valores del nuevo
+perfil, puede eliminar el anterior.</li>
+</ol>
+<h3><a name="Problems-_Camera_Timeouts"></a>Timeout de C&aacute;mara y Problemas de Descarga</h3>
+En algunos casos, puede experimentar problemas donde las im&aacute;genes de guiado no se
+descargan o muestra. En casos extremos, esto puede incluso causar que
+<span style="font-style: italic;">PHD2</span> u otra aplicaci&oacute;n relacionada a la c&aacute;mara
+no respondan (se "cuelguen"). Nuevamente, eso casi siempre es por el hardware, driver o
+problemas de conectividad, siendo el mas com&uacute;n un cable USB o dispositivo defectuoso.
+Es muy poco probable que sea causado por una aplicaci&oacute;n como <span style="font-style: italic;">PHD2</span>,
+por lo que deber&iacute;a comenzar su investigaci&oacute;n en los niveles m&aacute;s bajos de su sistema.
+Puede comenzar confirmando que la c&aacute;mara gu&iacute;a est&aacute; funcionando - intente utilizar un
+cable corto, directo entre la c&aacute;mara y la computadora y tomando exposiciones con el
+software que vino con la c&aacute;mara. Si la c&aacute;mara funciona, puede comenzar a mirar al
+Hub USB y cables, cambi&aacute;ndolos uno por vez para ver si puede aislar el problema. vale
+recordar que trabajamos en un entorno hostil mientras tomamos nuestras im&aacute;genes, y muchos
+de los componentes que utilizamos no est&aacute;n dise&ntilde;ados para trabajar en el exterior y
+con fr&iacute;o. Por lo tanto, algo que funcionaba la semana pasada o el mes pasado, podr&iacute;a
+no funcionar ahora.
+<br><br>
+Para ayudar a detectar y resolver este tipo de problemas, PHD2 utiliza un mecanismo
+de tiempo de espera (timeout) para la c&aacute;mara. Este valor de timeout se fija en la
+pesta&ntilde;a C&aacute;mara de <a href="Advanced_settings.htm">Configuraci&oacute;n Avanzada</a>, y utiliza
+un valor por defecto de 15 segundos. Esto significa que PHD2 esperar&aacute; hasta 15 segundos
+<span style="font-style: italic;">despu&eacute;s de completar la exposici&oacute;n</span> para recibir
+la imagen desde la c&aacute;mara. Esto es un tiempo m&aacute;s que generoso y deber&iacute;a funcionar bien
+para la mayor&iacute;a de las c&aacute;maras. De todos modos, algunas c&aacute;maras son conocidas por crear
+problemas, generando mucho uso de la capacidad o energ&iacute;a del subsistema USB. Si tiene
+timeouts de este tipo y est&aacute; convencido que su c&aacute;mara funciona correctamente, puede
+incrementar el valor de este timeout. Incluso puede cambiarlo a un valor muy alto -
+incluso 1000 segundos o m&aacute;s - para que estos erroes no vuelvan a ocurrir. Al hacerlo,
+queda vulnerable a aparentes "colgadas" en la interfaz de usuario y comportamiento
+err&aacute;tico en el guiado, pero es una decisi&oacute;n que puede tomar. Un valor grande para
+timeout no crear&aacute; demoras extras durante operaciones normales de la c&aacute;mara - una vez
+la imagen se haya descargado, el tiempo se cancela y el guiado contin&uacute;a inmediatamente.
+<br><br>
+Aqu&iacute; hay algunos pasos de diagn&oacute;stico que pueden ayudar a aislar este tipo de problemas:
+<br><br>
+<font class="" style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;">
+Lugares habituales de problemas de timeout son subsistemas de USB en la computadora host,
+conexiones USB3/USB2 no compatibles, cables USB da&ntilde;ados o de baja calidad, o drivers de
+c&aacute;mara con fallos. Probablemente necesitar&aacute; trabajar con algunos escenarios para ver cu&aacute;l
+es su problema. Afortunadamente, esto se puede hacer usualmente de d&iacute;a, dejando sus c&aacute;maras
+corriendo en modo de exposici&oacute;n continua. Comience conectando s&oacute;lo la c&aacute;mara principal y 
+la c&aacute;mra gu&iacute;a, ya que &eacute;stas ser&aacute;n las que m&aacute;s consuman en su subsistema USB. Para comenzar,
+suele haber problemas cuando una c&aacute;mara USB-2 se conecta a un puerto USB-3 en su compuatadora.
+Estos supuestamente tienen compatibilidad hacia atr&aacute;s, pero eso es s&oacute;lo a nivel hardware. Las
+implementaciones de los drivers se pueden ver afectadas. Hay dos lugares donde mirar:
+1) Tr&aacute;fico USB y ancho de banda y 2) energ&iacute;a entregada a la c&aacute;mara. Su c&aacute;mara de imagen
+principal probablemente tenga su propia fuente de energ&iacute;a, pero otros dispositivos como su
+c&aacute;mara gu&iacute;a podr&iacute;an estar energizados v&iacute;a el cable USB. Si ese es el caso, podr&iacute;a intentar
+utilizar un hub USB alimentado para entregar energ&iacute;a a la c&aacute;mara. Tambi&eacute;n es mejor utilizar
+cables USB de buena calidad con conductores de energ&iacute;a 24AWG y eliminar cables USB largos
+y extensores. Si su problema parece tener que ver con el tr&aacute;fico USB, hay otras cosas
+que podr&iacute;a probar:</span></font>
+
+<ol class="" style="margin-top: 0in; color: rgb(0, 0, 3);" start="1" type="1">
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">Aseg&uacute;rese que su computadora est&eacute; conectada a la energ&iacute;a y
+que el SO no pueda deshabilitar los puertos USB para conservar energ&iacute;a. No ejecute otras
+aplicaciones de uso intensivo de recursos mientras intenta fotografiar.</span></li>
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">Habilite binning en la c&aacute;mara gu&iacute;a para reducir el tama&ntilde;o 
+de descarga de las im&aacute;genes.</span></li>
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">Ajuste el l&iacute;mite de uso de USB de la c&aacute;mara si el driver
+lo permite.</span></li>
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">utilice subframes en PHD2</span></li>
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">Si est&aacute; ejecutando Windows, puede utilizar una herramienta
+de Microsoft para ver a qu&eacute; controlador USB est&aacute; conectado cada puerto USB en la computadora.
+Entonces puede intentar aislar las dos c&aacute;maras en distintos buses USB.</span></li>
+<li class="MsoNormal">
+  <span style="font-size: 10pt;">Intente utilizar drivers de c&aacute;mara diferentes (p. ej. un driver ASCOM)
+si lo hay disponible.</span></li>
+</ol>
+
+<h3><a name="Problems-_Poor_Guiding"></a>Bajo Desempe&ntilde;o de Guiado</h3>
+Una vez que tenga todo funcionando, proablemente querr&aacute; obtener resultados de guiado
+razonables casi inmediatamente. Tendr&aacute; que decidir qu&eacute; significa "suficientemente bueno", y cada
+uno tiene su propio est&aacute;ndar en eso. Pero si encuentra que los resultados de sus im&aacute;genes no
+son aceptables ya que las estrellas aparecen como trazos o elongadas, probablemente tendr&aacute; que
+utilizar un acercamiento sistem&aacute;tico a resolver el problema. Es muy tentador comenzar a
+realizar ajustes a ciegas en los par&aacute;metros de guiado. No hay nada malo en ajustar los 
+par&aacute;metros - para eso est&aacute;n - pero deber&iacute;a hacerse con cuidado, bas&aacute;bdose en un entendimiento
+de lo que hacen y que problema est&aacute; intentando resolver. Los par&aacute;metros por defecto de PHD2
+se eligen cuidadosamente para producir resultados razonables para la mayor&iacute;a del
+equipamiento amateur y ubicaciones. Los par&aacute;metros &oacute;ptimos son muy dependientes de la
+escala de imagen, condiciones de seeing y comportamiento de su montura. En otras
+palabras, son &uacute;nicos para su situaci&oacute;n - no hay un "libro rojo" m&aacute;gico de par&aacute;metros
+de guiado correctos, y parametrizaciones de otros usuarios podr&iacute;an ser completamente
+irrelevantes para su situaci&oacute;n. Si inici&oacute; con el asistente de nuevo perfil, los
+par&aacute;metros por defecto ya estar&aacute;n bastante bien para su escala de imagen. Al utilizar
+el Asistente de Guiado, puede obtener datos m&aacute;s espec&iacute;ficos de su situaci&oacute;n - c&oacute;mo
+se ven las condiciones de seeing y c&oacute;mo podr&iacute;a ajustar el movimiento m&iacute;nimo para
+evitar perseguir el seeing. Tambi&eacute;n puede utilizar tanto el Asistente de Guiado
+o la herramienta de Guiado Manual para ver que tanto backlash presenta su montura,
+algo que puede ser importante para entender sus resultados de guiado en declinaci&oacute;n.
+<br><br>
+Lograr el mejor desempe&ntilde;o de guiado posile puede ser una tarea compleja y no es algo
+que se pueda cubrir aqu&iacute;. De todos modos, puede obtener ayuda en la web de una gran
+variedad de fuentes, siendo el documento de Craig Stark un buen lugar para comenzar (en ingles):
+<br>
+<span style="font-weight: bold;">http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677</span>.
+<h3><a name="Problems-_Alerts"></a>Mensajes de Alerta</h3>
+PHD2 mostrar&aacute; algunas veces mensajes de alerta en la parte superior de la ventana principal.
+Estos generalmente muestran errores o informaci&oacute;n de diagn&oacute;stico que necesiten su
+atenci&oacute;n. Durante la operaci&oacute;n normal, probablemente no vea ninguno, pero si los ve,
+esta secci&oacute;n le puede ayudar a decidir que hacer con ellos.
+<br><br>
+<span style="font-weight: bold;">Alertas de Librer&iacute;a de Darks y P&iacute;xeles Malos</span>
+<br><br>
+<span style="font-weight: bold;">"Utilice una Librer&iacute;a de Darks o un Mapa de P&iacute;xeles Malos"</span>
+ - utilizar una librer&iacute;a de darks o mapa de p&iacute;xeles malos reduce la posibilidad que PHD2
+identifique err&oacute;neamente p&iacute;xeles calientes u otros defectos en la imagen como una estrella.
+Si elije ignorar este mensaje, podr&iacute;a encontrarse en situaciones donde PHD2 cambie de
+una estrella gu&iacute;a a un p&iacute;xel caliente y deje de guiar correctamente.
+<br><br>
+<span style="font-weight: bold;">Desajustes de Formato/Geometr&iacute;a</span>
+ - los cuadros darks y mapa de p&iacute;xeles malos deben coincidir con el formato del sensor en
+la c&aacute;mara que se est&eacute; utilizando. Si cambi&oacute; la c&aacute;mara en un perfil existente, los archivos
+dark/mpm no podr&aacute;n utilizarse y ver&aacute; este mensaje de alerta. Para evitar ver el mensaje,
+deber&iacute;a crear un nuevo perfil cuando cambie de c&aacute;mara. Necesitar&aacute; generar nuevos cuadros
+dark y mapa de p&iacute;xeles malos, pero puede guardar los archivos viejos para utilizar con la
+c&aacute;mara original. En circunstancias muy poco usuales, podr&iacute;a ver este mensaje cuando el
+driver o el c&oacute;digo de PHD2 para manejar la c&aacute;mara haya cambiado. Tambi&eacute;n podr&iacute;a ver un
+mensaje de alerta de incompatibilidad de formato si posee una librer&iacute;a dark vieja que
+de alguna manera ha acumulado cuadros de diferentes formatos de sensores.
+<br><br>
+En estos casos, deber&iacute;a reconstruir la librer&iacute;a dark o el mapa de p&iacute;xeles malos
+desde cero - aqu&iacute; puede encontrar m&aacute;s informaci&oacute;n:
+<a href="Darks_BadPixel_Maps.htm">Cuadros Dark y Mapas de P&iacute;xeles Malos</a>
+<br>
+<span style="font-weight: bold;">
+<br>
+Alertas ASCOM</span>
+<br>
+La primera vez que conecte una montura, c&aacute;mara y otro dispositivo controlado por
+ASCOM, podr&iacute;a ver un mensaje de alerta diciendo que una caracter&iacute;stica requerida no 
+est&aacute; soportada por el driver. Un ejemplo podr&iacute;a ser la falta de soporte para
+guiado por pulsos de un driver ASCOM de una montura, algo que puede ocurrir con
+drivers viejos. En estas situaciones, su &uacute;nica salida es actualizar el driver ASCOM.
+Estos drivers generalmente est&aacute;n disponibles en el sitio web ASCOM o, en algunos casos,
+del fabricante del dispositivo. Como regla, la mejor pr&aacute;ctica es utilizar la &uacute;ltima
+versi&oacute;n de esos drivers para no encontrarse con problemas que ya hayan sido
+corregidos.
+<br><br>
+Tambi&eacute;n podr&iacute;a ver otros mensajes de alerta asociados con el driver ASCOM para la
+montura:
+<br>
+<div style="margin-left: 40px;">1."Comando PulseGuide a la montura ha fallado - el
+guiado probablemente no ser&aacute; efectivo." Esto es causado usualmente por un bug o
+por la sensibilidad en sincronizaci&oacute;n del driver ASCOM, y generalmente no hay forma de
+saber si el comando de guiado fue ejecutado correctamente o no. Si ve esta alerta
+raramente y sus resultados de guiado son aceptables, probablemente lo podr&aacute; ignorar.
+A pesar de la condici&oacute;n de alerta, PHD2 continuar&aacute; enviando comandos de guiado, por
+lo que no necesitar&aacute; tomar acci&oacute;n inmediata. Si ve esta alerta frecuentemente, deber&iacute;a
+enviarnos el log de depuraci&oacute;n para que podamos entender los detalles del problema
+y posiblemente ayudarlo a describirlo al creador del driver ASCOM.
+<br>
+2."Guiado detenido: el telescopio inici&oacute; un movimiento." Esto se explica bastante bien
+solo, pero la determinaci&oacute;n de que el telescopio se estaba moviendo es algo que el
+driver ASCOM reporta a PHD2. Si realmente se estaba moviendo o no, PHD2 no lo puede
+saber. Asumiendo que no haya realizado un goto sin querer mientras PHD2 estaba guiando,
+podr&iacute;a haber un problema de sincronizaci&oacute;n con el driver. Si desea esquivar el problema
+temporalmente, puede deshabilitar la l&oacute;gica para detectar el movimiento - vaya a la
+pesta&ntilde;a 'Guiado' de la ventana Configuraci&oacute;n Avanzada, y destilde la opci&oacute;n que dice
+"Detener guiado cuando la montura se mueva.". Esto le permitir&aacute; continuar con el guiado,
+pero los resultados podr&iacute;an no ser buenos. El log de depuraci&oacute;n deber&iacute;a proveer
+los detalles necesarios para describir el problema al creador del driver ASCOM.
+<br>
+</div>
+<span style="font-weight: bold;"><span style="font-weight: bold;">
+<br>
+Alertas de Timeout de C&aacute;mara
+<br>
+</span></span>
+A continuaci&oacute;n se discuten mensajes de alerta asociados con problemas de
+sincronizaci&oacute;n/timeout con la c&aacute;mara:
+<span style="font-weight: bold;"><span style="font-weight: bold;">
+<a href="#Problems-_Camera_Timeouts">Timeouts de C&aacute;mara</a>
+<br><br>
+Alertas de Calibraci&oacute;n
+<br></span></span>
+Algunas alertas podr&iacute;an aparecer durante el proceso de calibraci&oacute;n de la montura. Estos
+se describen a continuaci&oacute;n:<a href="#Problems-_Mount_Control">Alertas de Calibraci&oacute;n</a>
+<br>
+<span style="font-weight: bold;">
+<br>Alertas de L&iacute;mite de M&aacute;xima Duraci&oacute;n
+<br>
+</span>
+Durante el guiado normal, podr&iacute;a ver mensajes de alerta diciendo que la configuraci&oacute;n de
+l&iacute;mites de m&aacute;xima duraci&oacute;n en RA o Dec est&aacute;n impidiendo que PHD2 mantenga la estrella gu&iacute;a
+fija. Si ha bajado esos par&aacute;metros de sus valores por defecto, deber&iacute;a regresarlos a esos
+valores iniciales. De todos modos, si los l&iacute;mites est&aacute;n bien por sobre un segundo, esta
+alerta probablemente indique que ha encontrado un problema mec&aacute;nico que necesita ser
+corregido. En los casos m&aacute;s simples, podr&iacute;a haber encontrado un cable enganchado, una
+r&aacute;faga de viento, un empuj&oacute;n a la montura u otro evento externo que caus&oacute; que la estrella
+gu&iacute;a se moviera bastante. En esos casos, simplemente corrija el problema (si puede) y
+contin&uacute;e con el guiado. En otros casos, la alerta podr&iacute;a haber sido disparada por un 
+desplazamiento cada vez mayor de la estrella gu&iacute;a y que no haya podido ser corregido.
+Por ejemplo, si PHD2 no puede mover la montura correctamente en las direcciones sur
+o norte, el error acumulado sin corregir llegar&aacute; eventualmente a un punto en el que
+dispare la alerta. O podr&iacute;a haber encontrado un guiado en Dec que se "dispar&oacute;"
+porque las configuraciones de 'Invertir salida Dec despu&eacute;s de cambio de meridiano'
+(Pesta&ntilde;a Guiado/Configuraci&oacute;n Avanzada) son incorrectas. Este tipo de problemas
+requerir&aacute;n de alg&uacute;n diagn&oacute;stico y simplemente aumentar los l&iacute;mites de duraci&oacute;n
+m&aacute;xima no ayudar&aacute;.
+<br>
+<h3><a name="Log_analysis"></a>An&aacute;lisis de Log</h3>
+Al aislar un problema o mejora invariablemente requerir&aacute; utilizar los archivos de
+log de PHD2. Ambos est&aacute;n formateados para una interpretaci&oacute;n f&aacute;cil por un humano,
+y el log de guiado est&aacute; construido para permitir la importaci&oacute;n simple en otras
+aplicaciones. Como se mencion&oacute; en la secci&oacute;n 'Herramientas', aplicaciones como
+PHDLogViewer o Excel puede ser utilizadas para visualizar el desempe&ntilde;o general,
+calcular estad&iacute;sticas de desempe&ntilde;o y examinar per&iacute;odos de tiempo cuando el
+guiado fue problem&aacute;tico. Con aplicaciones como Excel o similares, simplemente
+especifique que el log de guiado utiliza coma como separador de columnas.
+<br>
+<h4>Contenido del Log de Guiado</h4>
+Los contenidos del log de guiado continuar&aacute;n evolucionando a medida que se
+agreguen nuevas funcionalidades. Pero el contenido b&aacute;sico es estable, y
+se ha tenido considerable cuidado para no "romper" aplicaciones que lo
+utilicen. Si desea analizar el log por su cuenta, la siguiente informaci&oacute;n
+podr&iacute;a resultarle &uacute;til.
+<br><br>
+
+<p class="MsoNormal">El log de guiado de PHD2 contendr&aacute; cero o m&aacute;s secuencias
+de calibraci&oacute;n y cero o m&aacute;s secuencias de guiado. Cada una de esas secciones
+tiene una cabecera que provee la mayor parte de la informaci&oacute;n acerca del
+algoritmo de guiado y de los par&aacute;metros internos utilizados por PHD2 para el
+guiado. Al inicio de tanto una calibraci&oacute;n o una secuencia de guiado, la &uacute;ltima
+l&iacute;nea de la informaci&oacute;n en la cabecera define un conjunto de encabezados de
+columna. El significado de esas columnas se muestra a continuaci&oacute;n:</p>
+
+
+
+<p class="MsoNormal"><b style="">Columnas de Calibraci&oacute;n:</b></p>
+<ul><li>dx, dy son distancias desde la posici&oacute;n de inicio, en p&iacute;xeles, en el
+sistema de coordenadas de la c&aacute;mara.</li>
+<li>x, y son las coordenadas x/y en la c&aacute;mara de la estrella gu&iacute;a al final de
+cada paso de calibraci&oacute;n.</li>
+<li>Dist es la distancia total desplazada en el sistema de coordenadas de la
+c&aacute;mara (dist = sqrt(dx*dx + dy*dy). Este es el valor utiliado por PHD2 para
+calcular los par&aacute;metros de calibraci&oacute;n.</li>
+</ul>
+
+<b style="">Columnas de Guiado:</b>
+<ul>
+<li>dx, dy son lo mismo que para calibraci&oacute;n - distancias desde la posici&oacute;n
+"fija" de la estrella gu&iacute;a en el sistema de coordenadas de la c&aacute;mara.</li>
+<li>RARawDistance y DECRawDistance - estas son las transformaciones de dx y dy
+a coordenadas en la montura - en otras palabras, utilizan el &aacute;ngulo arbitario
+de la c&aacute;mara gu&iacute;a para mapear desde el X/Y de la c&aacute;mara a RA/Dec en la montura.</li>
+<li>RAGuideDistance y DECGuideDistance - estas son las salidas de los distinos
+algoritmos de guiado. Los algoritmos de guiado operan en distancias "crudas" y
+deciden que tan lejos se deber&iacute;a ajustar la posici&oacute;n del telescopio en cada eje,
+de ser necesario. Por ejemplo, con un valor de "movimiento m&iacute;nimo", las
+distancias de "guiado" puede ser cero incluso cuando las distancias "crudas" no
+sean cero.</li>
+<li>RADuration, RADirection, DECDuration, DECDirection - estos son los valores
+determinados por las dos distancias "guia" anteriores. Las "duraciones" son las
+longitudes de los pulsos de guiado, en milisegundos, necesarios para mover la
+montura la distancias especificadas por RAGuideDistance y DECGuideDistance.</li>
+<li>XStep, YStep - duraciones de ajustes de pasos para el dispositivo de &oacute;ptica
+adaptativa si se utiliza uno.</li>
+<li>StarMass - una medida del brillo de la imagen de la estrella gu&iacute;a.</li>
+<li>SNR - un "ratio de detecci&oacute;n de estrella" interno utilizado por PHD2 -
+esencialmente una medida de que tan bien se puede distinguir la estrella del
+fondo del cielo.</li>
+<li>ErrorCode - un valor entero representando la calidad de la medida de la
+estrella gu&iacute;a:</li>
+<ul>
+<li>0 - sin error</li>
+<li>1 - estrella saturada</li>
+<li>2 - estrella con SNR bajo</li>
+<li>3 - masa de estrella demasiado bajo para una medici&oacute;n precisa</li>
+<li>4 - la estrella se ha movido demasiado cerca del borde del cuadro</li>
+<li>5 - la masa de la estrella ha cambiado m&aacute;s que la cantidad especificada</li>
+<li>6 - error inesperado</li>
+</ul>
+</ul>
+
+
+<p class="MsoNormal">Todas las distancias est&aacute;n en unidades de p&iacute;xeles. La cabecera de
+la secci&oacute;n guiado mostrar&aacute; la escala de imagen como la conoce PHD2, y que utilizar&aacute; para
+escalar los valores de distancia de p&iacute;xeles a unidades de segundos de arco si se
+desea.</p>
+
+<h3><a name="Problem_Reporting"></a>Reportando un Problema</h3>
+Si encuentra problemas con la aplicaci&oacute;n que son espec&iacute;ficas a <span style="font-style: italic;">PHD2</span>,
+le pedimos que lo reporte al grupo de Google de open-phd-guiding:
+<span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.
+ Obviamente, mientras m&aacute;s informaci&oacute;n nos provea, m&aacute;s probablemente podamos ayudarlo
+a resolver su problema. Utilice la siguiente gu&iacute;a como ayuda:
+<br>
+<ol>
+<li>
+Intente reproducir el problema - si tenemos un conjunto claro de pasos a seguir, tenemos
+m&aacute;s probabilidades de poder encontrar una soluci&oacute;n r&aacute;pidamente. Si lo puede reproducir,
+intente reducir las cosas a un m&iacute;nimo n&uacute;mero de pasos. Recuerde, no tendremos su
+hardware cuando intentemos reproducirlo por nuestra cuenta.</li>
+<li>Intente ser detallado al describir su configuraci&oacute;n - sistema operativo, tipo de
+equipamiento, versi&oacute;n de <span style="font-style: italic;">PHD2</span>, etc.</li>
+<li>Adjunte el log de depuraci&oacute;n de <span style="font-style: italic;">PHD2</span> de
+la sesi&oacute;n en la que encontr&oacute; el problema. Puede encontrar el log de depuraci&oacute;n en la
+carpeta PHD2 en la carpeta Documentos. Si no puede reproducir el problema, intente
+estimar la hora del d&iacute;a en que lo vi&oacute; por primera vez - esto nos pdor&iacute;a ayudar a
+encontrar evidencia en el log de depuraci&oacute;n sin tener que recorrer cientos de l&iacute;neas
+de salida. La funci&oacute;n 'Subir archivos de log' en el men&uacute; 'Ayuda' lo pueden ayudar a
+encontrar y subir los archivos de los.</li>
+</ol>
+<br>
+</body></html>

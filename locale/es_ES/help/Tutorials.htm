@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Tutoriales</title></head>
+<body>
+<h1><br>
+</h1>
+<h1><a name="Drift_Align"></a>Herramienta Alineaci&oacute;n por Deriva de PHD2</h1>
+<span style="">
+La herramienta de alineaci&oacute;n por deriva en PHD2 puede ser utilizada para
+obtener r&aacute;pidamente una alineaci&oacute;n polar precisa en su montura ecuatorial.
+El proceso necesita de algo de pr&aacute;ctica, pero luega de haberlo realizado algunas
+veces podr&aacute; obtener una alinaci&oacute;n polar correcta en minutos.
+Puede utilizar un telescopio gu&iacute;a separado o el telescopio principal
+para el alineado, el que ud crea m&aacute;s conveniente.
+<br></span>
+<br>
+<h2>Preparaci&oacute;n</h2>
+<ul><li>Aseg&uacute;rese que su montura est&aacute; razonablemente nivelada.</li>
+<li>Aseg&uacute;rese que su telescopio est&aacute; balanceado y listo para guiar.</li>
+<li>Intente que su montura est&eacute; aproximadamente alineada utilizando
+el buscador de la polar si lo tiene. De otra forma, aseg&uacute;rese que el eje
+de su montura est&eacute; apuntando al polo, y que la altitud se corresponda con su
+latitud.</li>
+<li>Aseg&uacute;rese que puede ver la pantalla de su computadora cuando est&eacute; con la montura.</li>
+<li>Inice PHD2 y conecte su equipamiento.</li>
+<li>Deber&iacute;a utilizar la &uacute;ltima versi&oacute;n de PHD2..</li>
+<li>Estas instrucciones asumen que tiene una conexi&oacute;n ASCOM a su montura, de
+tal forma que PHD2 sepa a donde apunta su telescopio. Igualmente puede alinear a la
+deriva sin una conexi&oacute;n ASCOM, vea <a href="#Drift_Align_ASCOM">Nota acerca de ASCOM</a>.</li>
+<li>Calibre en cualquier estrella gu&iacute;a adecuada, preferentemente a una declinaci&oacute;n
+entre 20 grados de Dec=0, o recargue una calibraci&oacute;n v&aacute;lida si tiene una conexi&oacute;n
+ASCOM o INDI a su montura. Aseg&uacute;rese que la calibraci&oacute;n sea correcta para el
+lado del pie a donde planea realizar el alineado. Si est&aacute; utilizando una
+interfaz de guiado 'En-c&aacute;mara', realice una calibraci&oacute;n nueva del lado
+del pie donde planea hacer la alineaci&oacute;n. Si la calibraci&oacute;n no es correcta
+para el lado del pie actual, la direcci&oacute;n de deriva cambiar&aacute; y cualquier
+nota relacionada a la direcci&oacute;n que haya realizado previamente no ser&aacute;n
+correctas.</li>
+<li>Aseg&uacute;rese que las configuraciones de PHD2 tengan los valores correctos
+para la longitud focal de su telecopio gu&iacute;a y el tama&ntilde;o de pixel de su
+c&aacute;mara gu&iacute;a. (Cerebro => Pesta&ntilde;a Global para longitud focal, pesta&ntilde;a
+C&aacute;mara para tama&ntilde;o de pixel)</li></ul>
+<br>Ahora est&aacute; listo para alinear por deriva.
+<br><br>
+<h2>Alineaci&oacute;n de Azimut</h2>
+Abra la Herramienta de Alineado por Deriva:
+<br><br><img style="width: 608px; height: 554px;" alt="" src="da_IMG01.png"><br><br>
+Ver&aacute; una ventana similar a esta:
+<br><br><img style="width: 403px; height: 358px;" alt="" src="da_IMG02.png"><br><br>
+Posicione su telescopio para el ajuste del eje de Azimuth. Apunte cerca del
+Meridiano y el ecuador celeste. Puede hacer click en el bot&oacute;n 'Desplazar' o
+mueva la montura manualmente. Su telescopio deber&iacute;a estar apuntando
+aproximadamente as&iacute;:
+<br><br><img style="width: 362px; height: 478px;" alt="" src="da_IMG03.png"><br><br>
+Y la ventana de Alineado por Deriva se ver&aacute; asi:
+<br><br><img style="width: 458px; height: 409px;" alt="" src="da_IMG04.png"><br><br>
+Note que estamos a unos pocos grados del Meridiano ("Distancia a Meridiano"),
+y cerca del ecuador (valor bajo en Declinaci&oacute;n).
+<br><br>
+A continuaci&oacute;n ud alternar&aacute; entre medir el error ('Deriva'), y ajustar
+la montura ('Ajustar'). la tasa de deriva en declinaci&oacute;n le dir&aacute; la
+cantidad de error en alineaci&oacute;n. Cada ajuste reducir&aacute; este error, y
+deber&aacute; repetir el proceso tantas veces como necesite para que el error
+se acerque a cero.
+<br><br>
+haga click en 'Deriva' para comenzar a medir la deriva en declinaci&oacute;n.
+PHD2 seleccionar&aacute; una estrella gu&iacute;a y comenzar&aacute; el guiado. Luego de un
+tiempo, ud ver&aacute; algo similar a esto:
+<br><br><img style="width: 607px; height: 645px;" alt="" src="da_IMG05.png"><br><br>
+preste especial atenci&oacute;n a la l&iacute;nea de tendencia de Declinacion (Rojo). Al iniciar,
+la l&iacute;nea saltar&aacute; arriba y abajo, pero a medida que se promedie el error de ruido,
+se ir&aacute; estabilizando. Cuando esto suceda, est&aacute; listo para ajustar el
+Azimuth de la montura.
+<br><br>
+El objetivo es lograr que la l&iacute;nea de tendencia en Dec est&eacute; horizontal -- sin
+tendencia a ir hacia arriba o abajo. Al ajustar el azimuth de la montura,
+ud cambiar&aacute; la pendiente de la l&iacute;nea de tendencia en Dec.
+<br><br>
+Si es la primera vez que ajusta Azimuth, no sabr&aacute; en qu&eacute; direcci&oacute;n ir--
+Este u Oeste? PHD2 tampoco lo sabe, por lo que deber&aacute; probar, tiene un 
+50% de probabilidades de hacerlo bien. Si eligi&oacute; correctalmente, la nueva
+l&iacute;nea de tendencia de la deriva ser&aacute; m&aacute;s plana (menos empinada, m&aacute;s cercana
+a la horizontal). Si eligi&oacute; incorrectamente, se incrementar&aacute; (m&aacute;s empinada
+hacia abajo en el ejemplo de arriba)
+<br><br>
+Click en el bot&oacute;n 'Ajustar'. PHD2 dejar&aacute; de guiar, y podr&aacute; hacer el ajuste.
+Ver&aacute; algo similar a esto:
+<br><br><img style="width: 606px; height: 642px;" alt="" src="da_IMG06.png"><br><br>
+Lentamente mueva el ajuste en Azimuth de la montura, mirando la pantalla y 
+moviendo la estrella gu&iacute;a hacie el c&iacute;rculo magenta. El c&iacute;rculo magenta muestra
+que tanto hay que mover la estrella gu&iacute;a. Es m&aacute;s grande cuando la l&iacute;nea
+de tendencia es m&aacute;s empinada, e incicialmente puede ser tan grande que no 
+sea visible en la pantalla. Si no es visible, mueva la estrella gu&iacute;a aproximadamente
+el ancho de la pantalla. Si el c&iacute;rculo magenta s&iacute; est&aacute; visible, deber&iacute;a mover
+la estrella gu&iacute;a hacia el c&iacute;rculo, algo as&iacute;:
+<br><br><img style="width: 608px; height: 645px;" alt="" src="da_IMG07.png"><br><br>
+Luego de mover la estrella gu&iacute;a, haga click en 'Deriva' para tomar otra
+medici&oacute;n.
+Antes de presionar 'Deriva', se puede mover la montura para recentrar
+la estrella, o para buscar una diferente, o para volver cerca del meridiano.
+Tambi&eacute;n puede elegir su propia estrella haciendo click en ella, o dejar
+que PHD2 elija.
+<br><br>
+Despu&eacute;s de un corto per&iacute;odo de deriva, va a ver una nueva l&iacute;nea de tendencia
+en Dec. Mejor&oacute; (cerca de horizontal) o empeor&oacute; (lejos de horizontal)?
+Anote en le &aacute;rea "Notas sobre el ajuste en Azimuth" hacia d&oacute;nde movi&oacute;
+el azimuth y en qu&eacute; direcci&oacute;n se movi&oacute; la l&iacute;nea Dec. Puede utilizar esta
+informaci&oacute;n la pr&oacute;xima vez que realice la alineaci&oacute;n para que no tenga
+que averiguar cada vez hacia d&oacute;nde ajustar. Por ejemplo, en mi equipo,
+mover el eje de azimuth en sentido horario, mueve hacia abajo la pendiente.
+Tener la nota me recuerda que necesito mover el eje en sentido anit-
+horario para subir la pendiente.
+<br><br>
+Repita la medici&oacute;n y ajuste de la montura hasta que logre una l&iacute;nea
+de tendencia horizontal, como esta:
+<br><br><img style="width: 606px; height: 645px;" alt="" src="da_IMG08.png"><br><br>
+<h2>Alineado de Altitud</h2>
+Ahora necesita repetir el proceso para el ajuste de Altitud en su 
+montura. Click en el bot&oacute;n Altitud; la herramienta Deriva ahora se
+ver&aacute; as&iacute;:<br><br><img style="width: 459px; height: 413px;" alt="" src="da_IMG09.png"><br><br>
+Haga click en 'Desplazar' o mueva la montura manualmente hacia el horizonte
+(este u oeste):
+<br><br><img style="width: 348px; height: 475px;" alt="" src="da_IMG10.png"><br><br>
+La posici&oacute;n exacta no es importante, pero entre 25 y 35 grados sobre el horizonte
+funcionan bien.
+<br><br>
+haga click en 'Desplazar' para comenzar la deriva
+<br><br><img style="width: 603px; height: 642px;" alt="" src="da_IMG11.png"><br><br>
+Espere hasta obtener una pendiente Dec estable. Haga click en Ajustar,
+y mueva los ajustes de Altitud en su montura. Use sus notas almacenadas en
+"Notas sobre el ajuste de altitud" de una sesi&oacute;n previa para determinar
+en qu&eacute; direcci&oacute;n mover el ajuste para que la pendiente vaya en la
+direcci&oacute;n deseada. por ejemplo, en mi equipo muevo el ajuste de
+altitud en sentido horario para que "baje".
+<br><br>
+Al igual que con el ajuste de Azimuth, repita ciclos de Deriva y Ajuste
+tomando mediciones y moviendo la estrella gu&iacute;a al c&iacute;rculo magenta.
+Nuevamente, el objetivo es lograr una l&iacute;nea de deriva en Dec horizontal.
+<br><br><h3>Utilizando Marcadores</h3>
+Hasta que tenga experiencia con el alineado por deriva de su montura,
+la parte de 'ajuste' puede ser un poco tediosa. Al principio, deber&aacute;
+determinar c&oacute;mo ajustar su montura para lograr el efecto deseado:
+"cu&aacute;nto" y "en qu&eacute; direcci&oacute;n". Para ayudarlo con esto, la herramienta
+de alineado por deriva de <span style="font-style: italic;">PHD2</span>
+soporta "marcadores". &eacute;stos son una forma simple de grabar las posiciones
+de la estrella gu&iacute;a antes y despu&eacute;s de que ha realizado el ajuste.
+<a name="Bookmarks"></a>Los marcadores son accedidos utilizando
+el men&uacute; Marcadores, o atajos de teclado, como sigue:
+<br>
+<ul>
+<li>b : cambia mostrar marcadores</li>
+<li>Shift-b : deja un marcador en la posici&oacute;n actual de la estrella gu&iacute;a (la "posici&oacute;n de bloqueo")</li>
+<li>Ctrl-b : limpiar todos los marcadores</li>
+<li>Ctrl-click en alg&uacute;n lugar de la imagen: fijar un marcador en esa posici&oacute;n, o quitar el que ya estaba all&iacute;.</li></ul>
+Al fijar un marcador antes de ajustar la montura, puede obtener una
+vista clara de c&oacute;mo ha movido el ajuste la estrella en el cuadro gu&iacute;a.
+<h3><a name="Drift_Align_ASCOM"></a>Notas sobre ASCOM</h3>
+Las instrucciones y prints de pantallas se corresponden con lo que
+se ve en PHD2 con una conexi&oacute;n de montura v&iacute;a ASCOM o INDI. Hay
+algunas diferencias si no tiene alguna de estas conexiones.
+<br><br>
+<ul><li>Datos de posici&oacute;n y funciones de deslizado de la montura
+no estar&aacute;n disponibles - Tendr&aacute; que mover el telescopio por su cuenta.
+Tenga presente, las posiciones objetivo de Altitud/azimuth son aproximadas - no
+necesita estar particularmente preocupado por su precisi&oacute;n - s&oacute;lo
+acercarse razonablemente cerca con una buena estrella gu&iacute;a en el campo de visi&oacute;n.</li>
+<li>El c&iacute;rculo magenta s&oacute;lido se transforma en un c&iacute;rculo de l&iacute;nea discont&iacute;nua.
+Esto representa un l&iacute;mite de que tan lejos necesita mover la estrella gu&iacute;a,
+no la distancia exacta. S&oacute;lo conocemos que la estrella no deber&iacute;a
+moverse mas all&aacute; del c&iacute;rculo. En lugar de mover la estrella hasta el
+c&iacute;rculo, deber&iacute;a moverla s&oacute;lo hasta la mitad de la distancia como
+una estimaci&oacute;n inicial. Puede utilizar Marcadores para llevar el
+control de d&oacute;nde estaba la estrella gu&iacute;a antes de cada iteraci&oacute;n
+Deriva/Ajuste.</li>
+</ul>
+<h1><a name="Static_polar_alignment"></a>Herramienta de Alineaci&oacute;n Polar Est&aacute;tico de PHD2 (SPA)</h1>
+La herramienta de Alineaci&oacute;n Polar Est&aacute;tica provee s&oacute;lo dos modos
+de operaci&oacute;n. El modo Automatizado necesita una montura que se pueda
+mover bajo el control de la computadora y que reporte su posici&oacute;n.
+El modo manual est&aacute; disponible para guiado con ST-4 ('En C&aacute;mara', GPUSB, etc)
+o para monturas que son controladas manualmente. La herramienta SPA
+selecciona el modo m&aacute;s apropiado de acuerdo a las posibilidades
+de su montura.
+<br>
+<h2>Modo Automatizado</h2>
+En el modo automatizado, PHD2 mover&aacute; el telescopio como sea necesario para
+realizar el procedimiento de alineado. Para hacer esto, PHD2 debe estar
+conectado a la montura a trav&eacute;s de una interfaz ASCOM o INDI y la montura
+debe estar inicializada y lista para realizar operaciones go-to. Para comenzar,
+siga los siguientes pasos:<br>
+<ul>
+<li>Conecte PHD2 a su c&aacute;mara y a su montura con driver ASCOM o INDI.</li>
+<li>Aseg&uacute;rese que PHD2 ya ha realziado la calibraci&oacute;n para este equipo.</li>
+<li>Ajuste el eje RA de la montura manualmente para que apunte dentro de los
+5 grados del polo aparente, y entonces muevala para que apunte a Dec = +90 o
+-90. En una montura ecuatorial alemana, es mejor comenzar con la montura con
+las pesas abajo, apuntando al polo. Utilice alineado con estrellas o plate
+solving para quedar lo m&aacute;s cerca posible a Dec = +90 o -90 grados.</li>
+<li>Durante el proceso de alineado la montura se deslizar&aacute; 10 grados al Oeste,
+aseg&uacute;rese que nada obstruya la vista o interfiera con la rotaci&oacute;n del telescopio.</li>
+</ul>
+<br>
+Ahora abra la herramienta SPA v&iacute;a 'Herramientas'/'Alineaci&oacute;n Polar Est&aacute;tica' y
+se abrir&aacute; la primera ventana:<br><br>
+<br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG01.png"><br>
+<br>
+La ventana principal de PHD2 se ver&aacute; as&iacute; (ejemplo de polo sur):<br><br>
+<br>
+<img style="width: 757px; height: 469px;" alt="" src="spa_IMG01a.png"><br>
+<br>
+El mapa de estrellas en la parte superior de la ventana SPA muestra la
+posici&oacute;n aproximada de las estrellas polares orientadas de acuerdo a la
+calibraci&oacute;n de PHD2 y la posici&oacute;n de la montura. Ud puede ajustar el
+control de '&aacute;ngulo Horario' o utilizar la opci&oacute;n 'Voltear C&aacute;mara'
+para orientar el mapa en el display principal. Para moverse en el mapa
+de estrellas puede hacer doble click en el punto en el que desee centrarlo;
+o hacer click en el bot&oacute;n '>' para centrar la estrella
+seleccionada.<br>
+El bot&oacute;n a la derecha del mapa de estrellas le permite cambiar entre
+mostrar el mapa de estrellas o instrucciones sobre c&oacute;mo utilizar la herramienta
+SPA.<br>
+Tiene la opci&oacute;n de utilizar el control manual marcando la casilla
+'Movimiento Manual'. Refi&eacute;rase a las instrucciones debajo para
+alineaci&oacute;n en modo manual.<br>
+Utilice el mapa de estrellas para seleccionar la 'Estrella de Referencia'
+en la ventana principal de PHD2.
+Identifique que estrella ha seleccionado en la lista desplegable. No se 
+preocupe si no la ha identificado bien; se puede corregir despu&eacute;s.<br>
+Cuando est&eacute; listo para comenzar el alineado, haga click en 'Rotar'.
+La posici&oacute;n actual est&aacute; indicada con un c&iacute;rculo azul peque&ntilde;o en la
+pantalla principal, y las coordinadas se muestran en la barra de estado.
+Note que el bot&oacute;n 'Rotar' ha cambiado a 'Detener'. Si desea terminar o
+detener el movimiento d ela montura, haga click en el bot&oacute;n 'Detener'.<br><br>
+<br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG02.png"><br><br>
+<br>
+<img style="width: 747px; height: 411px;" alt="" src="spa_IMG02a.png"><br>
+<br>
+Despu&eacute;s de hacer click en 'Rotar', la montura se mover&aacute; al Oeste en RA en peque&ntilde;os pasos,
+tal como se indica en la barra de estado. Una vez se hayan grabado los dos puntos, el
+gr&aacute;fico de alineaci&oacute;n se superpondr&aacute; en la ventana principal de PHD2.
+<br><br><br>
+<img style="width: 758px; height: 573px;" alt="" src="spa_IMG03.png"><br>
+<br>
+Si se equivoc&oacute; al elegir la 'Estrella de Referencia', seleccione la correcta en la lista
+desplegable.
+<br>
+Ahora siga las instrucciones en <span style="font-weight: bold;">Utilizando la
+Gr&aacute;fica del Alineado Polar</span> para ajustar el alineado de su montura.
+<br><br>
+<h2>Modo Manual</h2>
+Si no posee una montura que soporte gotos o desea mantener control manual del 
+movimiento, ud puede utilizar el modo de operaci&oacute;n manual. Para comenzar, realice
+los siguientes pasos:
+<br>
+<ul>
+<li>Conecte PHD2 a su c&aacute;mara y a la interface de guiado de su montura (ej. ST-4)</li>
+<li>Aseg&uacute;rese que PHD2 ya haya realizado la calibraci&oacute;n para el equipo.</li>
+<li>Ajuste manualmente el eje RA para apuntar a 5 grados del polo aparente, entonces mueva
+manualmente el telescopio para apuntar a Dec = +90 o -90. En una montura ecuatorial alemana,
+es mejor comenzar con la montura con las pesas hacia abajo, apuntando al polo. Utilice la
+alineaci&oacute;n de estrellas o plate solving para acercarse lo m&aacute;s posible a Dec = +90 o -90 grados.</li>
+<li>Durante el proceso de alineaci&oacute;n, necesitar&aacute; mover la montura hasta 15 grados al Oeste,
+aseg&uacute;rese que nada obstruya la vista o interfiera con la rotaci&oacute;n del telescopio.</li>
+</ul>
+<br>
+Ahora abra la herramienta SPA en 'Herramientas'/'Alineado Polar Est&aacute;tico', y se abrir&aacute;
+la primera ventana:
+<br><br><br>
+<img style="width: 431px; height: 673px;" alt="" src="spa_IMG04.png">
+<br><br>
+El mapa de estrellas en la parte superior de la ventana SPA muestra la ubicaci&oacute;n
+aproximada de las estrellas polares orientadas seg&uacute;n su calibraci&oacute;n de PHD2 y posici&oacute;n
+de la montura. Puede ajustar el 'Angulo Horario' o utilizar la opci&oacute;n 'Voltear c&aacute;mara'
+para orientar el mapa en la pantalla principal. Para moverse por el mapa de estrellas,
+puede hacer doble click en el punto que desea centrar; o hacer click en el bot&oacute;n
+&#8216;&gt;&#8217; para centrar la estrella de referencia seleccionada.
+<br>
+El bot&oacute;n a la derecha del mapa de estrellas le permite cambiar entre mostrar el mapa o
+las instrucciones para utilizar la herramienta SPA.
+<br>
+Tiene la opci&oacute;n de utilizar el control manual marcando la caja 'Movimiento Manual'.
+Lea las instrucciones anteriores sobre alineaci&oacute;n en modo manual.
+<br>
+Utilice el mapa de estrellas para seleccionar una 'Estrella de Referencia' en el 
+display principal de PHD2.
+Identifique que estrella seleccion&oacute; en la lista desplegable. No se preocupe si no
+es la correcta, lo puede solucionar m&aacute;s adelante.
+<br><br>
+Cuando est&eacute; listo, haga click en 'Obtener Primera Posici&oacute;n'. La posici&oacute;n actual se
+indica con un c&iacute;rculo azul en la ventana principal, y las coordenadas se muestran en 
+la barra de estado.
+<br><br><br>
+<img style="width: 540px; height: 415px;" alt="" src="spa_IMG04a.png">
+<br><br><br>
+Mueva la montura al menos 20 minutos al Oeste en RA (RA disminuye al mover al Oeste).
+<br>
+Seleccione la misma estrella de referencia en la ventana principal.
+<br>
+Click en 'Obtener Segunda Posici&oacute;n'. La posici&oacute;n se marca con otro c&iacute;rculo azul y
+las coordenadas se muestran en la barra de estado.
+<br><br><br>
+<img style="width: 543px; height: 391px;" alt="" src="spa_IMG05.png">
+<br><br>
+Mueva al Oeste durante otros 20 minutos en RA y seleccione nuevamente la misma estrella.
+<br>
+Click en 'Obtener Tercera Posici&oacute;n'.
+<br><br>
+Despu&eacute;s de unos minutos el gr&aacute;fico de alineaci&oacute;n se superpone en la ventana principal.
+Si se equivoc&oacute;, seleccione la 'Estrella de Referencia' correcta. De igual modo, si alguno
+de los puntos de alineaci&oacute;n no es correcto, mueva la montua al punto haga click en el 
+bot&oacute;n adecuado para reemplazar las coordenadas. Si ha movido al Este, entonces es mejor
+pasarse y hacer su movimiento final al Oeste, para "limpiar" el backlash. Tambi&eacute;n puede
+moverse al Oeste a una nueva posici&oacute;n y reemplazar el punto malo. Los puntos no necesitan
+de un orden. 
+<br><br>
+Los gr&aacute;ficos de alineaci&oacute;n corregidos se actualizan autom&aacute;ticamente.
+<br><br>
+<img style="width: 539px; height: 456px;" alt="" src="spa_IMG06.png"><br>
+<br>
+<br>
+Siga las instrucciones en la siguiente ecci&oacute;n para ajustar la alineaci&oacute;n polar de su montura.
+<br><br>
+<h2>Utilizando la Gr&aacute;fica del Alineado Polar</h2>
+El Gr&aacute;fico de Alineado Polar se muestra en la pantalla principal una vez que los puntos de
+alineaci&oacute;n se han marcado.
+<br><br><br>
+<img style="width: 628px; height: 497px;" alt="" src="spa_IMG07.png"><br>
+<br>
+<ul>
+<li>El centro del display se indica con un + gris.</li>
+<li>El Centro de Rotaci&oacute;n se indica con un + rojo. </li>
+<li>Un c&iacute;rculo violeta indica la &oacute;rbita trazada por la estrella de referencia.</li>
+<li>Un c&iacute;rculo verde indica la &oacute;rbita deseada para la estrella de referencia si el alineado fuera
+preciso. </li>
+<li>C&iacute;rculos amarillos indican las &oacute;rbitas de las otras estrellas de referencia.</li>
+</ul>
+<br>
+En cada &oacute;rbita verde y amarilla, un c&iacute;rculo indica d&oacute;nde deber&iacute;a estar ubicada la estrella.
+Una l&iacute;nea gris conecta su estrella de referencia al c&iacute;rculo objetivo en la &oacute;rbita verde. Estas
+posiciones dependen de que la estrella gu&iacute;a haya sido correctamente identificada.
+<br>
+Una l&iacute;nea azul muestra la correci&oacute;n en azimut necesaria para mover la estrella de referencia
+y una l&iacute;nea roja muestra la correcci&oacute;n en altitud requerida.
+<br><br>
+Para hacer que las l&iacute;neas de ajuste sean m&aacute;s f&aacute;ciles de ver, las &oacute;rbitas se pueden
+ocultar con la opci&oacute;n 'Mostrar &oacute;rbitas'.
+<br>
+Ajuste su altitud y azimut para mover la estrella de referencia a su c&iacute;rculo objetivo.
+Ajustando la altitud mueve la estrella de referencia sobre la l&iacute;nea roja. Ajustando el
+azimut mueve la estrella de referencia sobre la l&iacute;nea azul. Como alternativa, puede
+posicionar las tres estrellas de referencia en sus respectivas &oacute;rbitas.
+Esto es importante al utilizar el modo manual.
+<br>
+Para obtener la alineaci&oacute;n m&aacute;s precisa, ajusta el 'Angulo Horario' hasta que las estrellas
+en la ventana principal est&eacute;n todas a la misma distancia y direcci&oacute;n de sus c&iacute;rculos objetivo.
+Reci&eacute;n entonces realice los ajustes.
+<br>
+Para confirmar, puede volver a realizar el proceso. Puede necesitar ajustar su declinaci&oacute;n
+para mantener la regi&oacute;n polar centrada si ha realizado ajustes grandes. Tambi&eacute;n puede
+necesitar volver la montura a la posici&oacute;n de inicio si tiene visibilidad limitada.
+Cuando termine, haga click en &#8216;Cerrar&#8217;. Si ha realizado ajustes grandes, puede
+necesitar recalibrar.
+<br><br><br>
+<h1><a name="Polar_Drift_Align"></a>Herramienta de Alineado Polar por Deriva de PHD2</h1>
+Laherramienta de Alineado Polar por Deriva opera con un principio similar al del Alineado
+por Deriva.
+La diferencia radica en que la deriva se mide cerca del polo celeste para calular los ajustes
+necesarios tanto en Azimut como en Altitud al mismo tiempo. Esto la hace menos precisa a medida
+que aumenta la distancia de la estrella del polo. Tambi&eacute;n, puede tomar alg&uacute;n tiempo para que el
+ajuste se equilibre, por lo que el Alineado Polar Est&aacute;tico puede ser m&aacute;s r&aacute;pido. La principal
+ventaja del Alineado Polar por Deriva es que se puede elegir cualquier estrella, la herramienta
+s&oacute;lo ncesita saber en que hemisferio est&aacute; y no necesita calibraci&oacute;n previa.
+<br>
+Para comenzar, realice los siguientes pasos:
+<br>
+<ul>
+<li>Conecte PHD2 a su c&aacute;mara.</li>
+<li>Ajuste manualmente el eje RA de s montura para que apunte dentro de los 5 grados del polo aparente,
+entonces mueva el telescopio para aputnar a Dec = +90 o -90. En una montura Ecuatorial Alemana, es mejor
+comenzar con la montura con las pesas hacia abajo, apuntando al polo.</li>
+<li>Revise que su hemisferio est&aacute; correctamente identificado y ajuste si fuera necesario.</li>
+<li>Si la imagen de su c&aacute;mara est&aacute; dada vuelta ej. c&aacute;mara gu&iacute;a en un OAG, marque 'Imagen Espejo'.</li>
+<li>Seleccione una estrella gu&iacute;a en la ventana principal.</li>
+</ul>
+Haga click en el boton 'Iniciar' para comenzar la deriva.
+<br><br>
+<img style="width: 262px; height: 491px;" alt="" src="pd_IMG01.png">
+<br><br>
+Pronto ver&aacute; una l&iacute;nea roja en la ventana principal. Esta l&iacute;nea muestra el ajuste necesario en la estrella
+gu&iacute;a para minimizar la deriva. Primero se mover&aacute; mucho, hasta que se asiente en un ajuste estable.
+<br>
+Cuando se haya asentado, haga click en 'Detener'. El ajuste permanecer&aacute; en la ventana principal.
+<br>
+Ajuste la altitud y azimut para mover la estrella gu&iacute;a al c&iacute;rculo al final de la l&iacute;nea roja.
+<br><br><br>
+<img style="width: 587px; height: 500px;" alt="" src="pd_IMG02.png">
+<br>
+Repita las veces que sea necesario hasta que la &iacute;nea roja y su c&iacute;rculo queden lo m&aacute;s cerca posible de la
+estrella gu&iacute;a seleccionada.
+<br><br>
+</body></html>

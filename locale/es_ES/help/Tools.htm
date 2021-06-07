@@ -1,0 +1,929 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Herramientas y Utilidades</title></head>
+<body>
+  <h2>Herramientas y Utilidades</h2>
+  <a href="#Manual_Guide">Guiado Manual</a><br>
+  <a href="#Auto-Select_Star">Auto-Seleccionar Estrella</a><br>
+  <a href="#Calibration_Details">Detalles de Calibraci&oacute;n</a><br>
+  <a href="#PHD2_Server">Server PHD2</a><br>
+  <a href="#Dithering_Ops">Operaciones Dithering</a><br>
+  <a href="#Logging_and_Debug_Output">Salidas de Log y Depuraci&oacute;n</a><br>
+  <a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;">Herramientas de Alineado Polar</span></a><br>
+  <a href="#Lock_Positions">Posiciones de Lock</a><br>
+  <a href="#Comet_Tracking">Seguimiento de Cometa</a><br>
+  <a href="#Guiding_Assistant">Asistente de Guiado</a><br>
+  <a href="#Managing_Equipment_Profiles">Perfiles de Equipamiento</a><br>
+  <a href="#Ask_for_coordinates_aux_mount">Pedir Coordenadas de Montura Auxiliar</a><br>
+  <a href="#Advanced_Settings_for_the_Simulators">Par&aacute;metros de Simulaci&oacute;n</a><br>
+  <a href="#Multiple_Executions">M&uacute;ltiples Instancias de Programa</a><br>
+  <a href="#Keyboard_Shortcuts">Atajos de Teclado</a><br>
+  <a href="#Software_Update">Actualizaci&oacute;n de Software</a><br>
+
+<h3><a name="Manual_Guide"></a>Guiado Manual</h3>
+<br>
+<img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png">
+<br><br>
+Si est&aacute; encontrando problemas de calibraci&oacute;n, probablemente querr&aacute; asegurarse que los
+comandos de <span style="font-style: italic;">PHD2</span> realmente est&aacute;n llegando a la
+montura. O podr&iacute;a querer "empujar" la montura o experimentar con dithering manual.
+En el men&uacute; 'Herramientas', haga click en 'Guiado Manual' y una aparecer&aacute; una ventana
+que le permitir&aacute; mover la montura a velocidad de guiado en cualquier direcci&oacute;n. Si tiene
+un dispositivo de &oacute;ptica adaptativa, podr&aacute; separar los botones de movimiento tanto para
+la OA como para la montura secundaria. Cada vez que presiones el bot&oacute;n, se enviar&aacute; un
+pulso de la duraci&oacute;n especificada en 'Duraci&oacute;n de Pulso de Guiado'. El valor por defecto
+es el 'tamaño de paso de calibraci&oacute;n' fijado en la ventana Configuraci&oacute;n Avanzada. Si est&aacute;
+resolviendo problemas con la montura/calibraci&oacute;n durante el d&iacute;a, escuche (m&aacute;s que mirar) su
+montura para determinar si est&aacute; recibiendo los comandos desde <span style="font-style: italic;">PHD2</span>.
+La idea aqu&iacute; es s&oacute;lo saber si la montura responde a las señales de <span style="font-style: italic;">PHD2</span>.
+No podr&aacute; ver moverse la montura (se mueve a velocidad de guiado) pero podr&aacute; escuchar
+los motores. Otras opciones incluyen mirar los motores y engranajes o fijar un puntero
+laser a su telescopio y apuntarlo a algo que est&eacute; lo suficientemente lejos (para
+amplificar los movimientos). Un mejor acercamiento para pruebas nocturnas es ejecutar
+la prueba "cruz de estrella" descripta <a href="Trouble_shooting.htm#Star_cross_test">aqu&iacute;</a>.
+<br><br>
+<a name="Dithering_Manual"></a>Dithering se utiliza principalmente con aplicaciones de
+captura de im&aacute;genes o automatizaci&oacute;n utilizando la interfaz server de PHD2. De todos modos,
+puede hacer dithering manual o experimentar con configuraciones de dither utilizando los
+controles en la parte baja de la ventana. El campo cantidad de 'dither' a la izquierda
+controla la cantidad que se mover&aacute; la montura, en unidades de p&iacute;xeles. Puede escalar esta
+cantidad - esto es, multiplicarla por una constante - utilizando el control 'escala' a
+la derecha. Estos dos controles establecen la cantidad m&aacute;xima de movimiento que ser&aacute;
+utilizada para dithering - el producto de 'escalar' X 'dither'. Cuando haga click en el
+bot&oacute;n 'Dither', PHD2 mover&aacute; la montura por una cantidad aleatoria que es menor o igual
+al l&iacute;mite que ha fijado, en alguna de las direcciones norte/sur/este/oeste. La marca
+'S&oacute;lo RA' limitar&aacute; los ajustes de dither s&oacute;lo al este u oeste. Obviamente, si est&aacute;
+haciendo dither manual de esta anera, querr&aacute; asegurarse que la c&aacute;mara principal no
+est&eacute; a mitad de una exposici&oacute;n.
+<br>
+<h3>
+<a name="Auto-Select_Star"></a>Auto-Seleccionar Estrella</h3>
+La selecci&oacute;n autom&aacute;tica de la estrella gu&iacute;a se puede realizar de varias maneras.
+La m&aacute;s simple es hacer click en el &iacute;cono 'Auto-seleccionar Estrella' en la ventana
+principal, al lado del &iacute;cono 'Guiar'. Pero tambi&eacute;n se puede ejecutar al utilizar
+el atajo de teclado &lt;Alt&gt;S ohaciendo click en el item 'Auto-seleccionar estrella'
+en el men&uacute; 'Herramientas'. Cualquiera de estas acciones le indican a <span style="font-style: italic;">PHD2</span>
+que busque en la imagen gu&iacute;a actual e identifique la estrella m&aacute;s apropiada para guiado.
+PHD2 intentar&aacute; seleccionar una estrella lo suficientemente brillante que no est&eacute; saturada,
+que tenga el suficiente tamaño y que no est&eacute; muy cerca de otra estrella ni muy cerca del
+borde del cuadro. La estrella seleccionada puede parecer d&eacute;bil en la pantalla, pero
+usualmente eso no es importante - s&oacute;lo ajuste el delizador gama en la ventana principal.
+La funciona auto-seleccionar casi siempre har&aacute; un mejor trabajo que ud s&oacute;lo mirando
+la pantalla. En muchos casos, la estrella seleccionada por ud est&aacute;
+cerca de o ya saturada y producir&aacute; malos resultados. Puede utilizar la herramienta
+<a href="Visualization.htm#Star_Profile_and_Target_Displays">Perfil de Estrella</a>
+para examinar las propiedades de la estrella seleccionada.
+Para obtener los mejores resultados de Auto-Seleccionar, deber&iacute;a
+usar o el mapa de p&iacute;xeles malos o una librer&iacute;a dark y especificar un valor
+Min-HFD (Configuraci&oacute;n Avanzada/Pestaña Guiado) para reducir la posibilidad de
+que PHD2 elija un pixel caliente por equivocaci&oacute;n. Tambi&eacute;n funciona mejor si
+ha fijado la opci&oacute;n de medir saturaci&oacute;n con el valor Max-ADU
+(Configuraci&oacute;n Avanzada/Pestaña Guiado), asumiendo que conoce o ha podido
+determinar el valor m&aacute;ximo ADU para su c&aacute;mara. Por ejemplo, una c&aacute;mara
+gu&iacute;a de 16-bit tendr&aacute; un valor m&aacute;ximo ADU cercano a 65000.
+<br><br>
+Para de-seleccionar la estrella y continuar con el bucle de exposiciones,
+s&oacute;lo haga shift-click en el &iacute;cono 'Auto-seleccionar Estrella' o shift-click
+en cualquier lugar de la imagen de la ventana. Esto puede ser &uacute;til si est&aacute;
+utiliando sub-cuadros y desea volver a la vista de cuadro completo de las
+im&aacute;genes de guiado.
+<h3><a name="Calibration_Details"></a>Detalles de Calibraci&oacute;n</h3>
+La mayor&iacute;a de las ventanas relacionadas con la calibraci&oacute;n, incluyendo la de
+control de la "salud" de la calibraci&oacute;n, abrir&aacute;n una ventana que se parece a la
+siguiente:
+<br><br>
+<img style="width: 763px; height: 421px;" alt="" src="Calib_Review.png">
+<br><br>
+Lo primero a mirar es el gr&aacute;fico de la izquierda, que muestra qu&eacute; movimientos
+de la estrella resultaron de los pulsos de guiado que PHD2 envi&oacute; durante la
+calibraci&oacute;n. Las l&iacute;neas representan los ratios de guiado de RA y Dec que fueron
+calculados como resultado de la calibraci&oacute;n, y estas l&iacute;neas deber&iacute;an ser
+bastante perpendiculares. Los puntos de datos nunca van a estar perfectamente
+alineados, pero no deber&iacute;an tener mayores curvas, cambios agudos, o cambios
+de direcci&oacute;n. Particularmente con telescopios de longitud focal larga, los
+puntos van a tener cierta dispersi&oacute;n alrededor de las l&iacute;neas, pero esto es
+normal. Los puntos s&oacute;lidos (pulsos al oeste y norte) son utilizados para
+calcular los ratios de RA y declinaci&oacute;n, mientras que los puntos huecos
+muestran los caminos de "retorno" de los movimientos al este y sur. Estos
+pueden ayudarlo a ver cuanta fluctuaci&oacute;n ocurri&oacute; debido a mal seeing y
+tambi&eacute;n si hay una cantidad significativa de backlash. Si est&aacute; utilizando
+la opci&oacute;n de "recentrado r&aacute;pido" en Configuraci&oacute;n Avanzada, podr&iacute;a haber
+menos puntos en los caminos este y norte. La informaci&oacute;n tabulada a la
+derecha muestra lo conocido sobre la posici&oacute;n de apuntado del telescopio
+y los distintos ajustes ASCOM relacionados a guiado. Si no est&aacute; utilizando
+una montura ASCOM y no especific&oacute; una "Montura Auxiliar", podr&iacute;a faltar
+algo de esta informaci&oacute;n. La tabla mostrar&aacute; los ratios esperados de guiado
+para una calibraci&oacute;n "perfecta" utilizando la misma posici&oacute;n del cielo y
+velocidad de guiado que ud utiliza. Casi nunca lograr&aacute; alcanzar estos
+valoes ideales, y no deber&iacute;a preocuparse por ellos a menos que los valores
+sean muy diferentes. Si no vio un mensaje de alerta cuando se complet&oacute; la
+calibraci&oacute;n, sus resultados seguramente sean lo suficientemente buenos.
+Si desea reutilizar una calibraci&oacute;n por un per&iacute;odo extenso de tiempo, lo
+mejor ser&aacute; invertir unos minutos en revisar esta informaci&oacute;n y confirmar
+que la calibraci&oacute;n fue razonablemente buen y produjo buenos resultados.
+Malas calibraciones pueden ocurrir incluso a fot&oacute;grafos experimentados
+utilizando monturas de gran calidad, por lo que es bueno revisar.
+<br><br>
+Si consistentemente no est&aacute; logrando una calibraci&oacute;n sin alertas, deber&iacute;a
+revisar el material en la secci&oacute;n <a href="Trouble_shooting.htm#Problems-_Mount_Control">soluci&oacute;n de problemas</a>.
+<br><br>
+<span style="font-weight: bold;">Otras Opciones de Men&uacute; Relacionadas a la Calibraci&oacute;n</span>
+<br>
+Los datos de calibraci&oacute;n se guardan autom&aacute;ticamente cada vez que una secuencia
+de calibraci&oacute;n se completa satisfactoriamente. El uso de estos datos de calibraci&oacute;n
+se trata en otra secci&oacute;n (<a href="Basic_use.htm">Utilizando Guiado de PHD</a>),
+incluyendo opciones para restaurar datos de calibraci&oacute;n anteriores o
+"volte&aacute;ndolas" luego de un cambio de meridiano. Accede a estas funciones
+utilizando el submen&uacute; 'Modificar Calibraci&oacute;n' bajo el men&uacute; 'Herramientas'.
+Otras dos funciones relacionadas con calibraci&oacute;n se muestran aqu&iacute;, las
+opciones para elimitar los datos actuales o para ingresar datos de
+calibraci&oacute;n manualmente. La opci&oacute;n "Limpiar" hace lo mismo que el marcador
+'Limpiar Calibraci&oacute;n' en la ventana Configuraci&oacute;n Avanzada - forzar&aacute; una
+recalibraci&oacute;n cuando el guiado se reinicie. La opci&oacute;n 'Ingrtesar datos de
+calibraci&oacute;n' deber&iacute;a utilizarse s&oacute;lo bajo circunstancias muy excepcionales
+y s&oacute;lo si est&aacute; seguro de conocer lo que est&aacute; haciendo; pero est&aacute; disponible
+para utilizar. Si hace click en el item 'Ingrese datos de calibraci&oacute;n',
+ver&aacute; una ventana que le permite ingresar datos de calibraci&oacute;n de bajo nivel.
+Estos datos pueden provenir de una sesi&oacute;n anterior, quiz&aacute;s extra&iacute;dos de un
+archivo de log de guiado de <span style="font-style: italic;">PHD2</span>.
+Recuerde, si est&aacute; utilizando un driver ASCOM para las conexiones tanto de 'Montura'
+como de 'Montura Auxiliar', deber&iacute;a tener muy poca necesidad de utilizar
+estos controles de datos de calibraci&oacute;n.
+<br>
+<h3><a name="PHD2_Server"></a>Servidor <span style="font-style: italic;">PHD2</span></h3>
+<span style="font-style: italic;">PHD2</span> soporta otras aplicaciones de
+toma de im&aacute;genes y automatizaci&oacute;n que necesitan controlar el proceso de
+guiado. Sequence Generator Pro es probablemente el m&aacute;s popular de estos
+programas, pero hay muchos otros. Al utilizar el proceso servidor de
+<span style="font-style: italic;">PHD2</span>, los programas de captura de
+im&aacute;genes pueden controlar el dithering entre exposiciones o suspender
+exposiciones de guiado mientras se descargan las im&aacute;genes de la c&aacute;mara
+principal. Para utilizar estas caracter&iacute;sticas con una aplicaci&oacute;n compatible,
+debe hacer click en la opci&oacute;n '<a name="Enable_Server"></a>Habilitar Server'
+bajo el men&uacute; 'Herramientas'. La interface de server de <span style="font-style: italic;">PHD2</span>
+es bastante extensa, y es posible para una aplicaci&oacute;n controlar muchos aspectos
+de las operaciones de guiado de <span style="font-style: italic;">PHD2</span>.
+La documentaci&oacute;n de las APIs del server est&aacute; disponible en la 
+<a href="https://github.com/OpenPHDGuiding/phd2/wiki">Wiki de PHD2</a>.
+<br>
+<br>
+<h3><a name="Dithering_Ops"></a>Dithering</h3>
+<p>El prop&oacute;sito principal de dithering es hacer m&aacute;s simple el post-procesamiento
+removiendo algunos tipos de ruido con patrones fijo de las im&aacute;genes,
+especialmente p&iacute;xeles calientes. Esta es principalmente una funci&oacute;n de la c&aacute;mara
+que est&eacute; utilizando y en menor medida, la sofisticaci&oacute;n del software de
+post-procesamiento. Para astrofot&oacute;grafos con c&aacute;maras con temperatura
+regulada y de bajo ruido, dithering es la manera m&aacute;s conveniente de eliminar
+p&iacute;xeles calientes que no son removidos por cuadros dark. Las posiciones de
+p&iacute;xeles calientes cambian a medida que los sensores envejecen, por lo que
+las librer&iacute;as dark no siempre los corrigen a todos. Esos p&iacute;xeles tambi&eacute;n
+pueden ser eliminados en post-procesamiento, pero se hace tedioso si
+hay muchos de ellos. Dithering puede ayudar con otro tipo de comportamiento
+del sensor como defectos de columna, y es particularmente &uacute;til si no tiene
+regulaci&oacute;n de temperatura en el sensor y por lo tanto, no posee una buena
+forma de utilizar una librer&iacute;a dark. Quienes usen DSLR usualmente utilizan
+dithering agresivo para manejar el alto ruido de patrones fijos usualmente
+presente en esos sensores. En la implementaci&oacute;n de PHD2, el dithering automatizado
+se logra a trav&eacute;s de la interfaz server, por lo tanto aseg&uacute;rese de tener
+marcado 'Habilitar Server' en el men&uacute; 'Herramientas'. Primero especifique
+el tamaño m&aacute;ximo de dither que desea utilizar durante la sesi&oacute;n de guiado
+ - esto lo har&aacute; en la aplicaci&oacute;n de toma de im&aacute;genes. Cuando la aplicaci&oacute;n
+ env&iacute;e un comando de dither, PHD2 utiliza un n&uacute;mero aleatorio para decidir
+que tan grande ser&aacute; el dither para ese comando. La cantidad real de dither
+ser&aacute; &gt; 0 y &lt;= el valor m&aacute;ximo permitido. Cantidades de dither aleatorias
+como esta se utilizan para asegurarse que el dithering no siga un patr&oacute;n
+simple de adelante-atr&aacute;s o mueva el cuadro nuevamente a una ubicaci&oacute;n
+donde se encontraba previamente. Pero para alguna de las aplicaciones que
+PHD2 hace de dithering, no puede especificar la cantidad m&aacute;xima directamente
+ - usted podr&iacute;a estar limitado a elecciones como bajo/medio/grande y la
+cantidad m&aacute;xima de dither tendr&aacute; un valor prefijado. Por esta raz&oacute;n, PHD2
+tiene un par&aacute;metro de escala de dither en la pestaña 'Global' de la ventana
+Configuraci&oacute;n Avanzada. Es b&aacute;sicamente un multiplicador que le permite
+ajustar el rango de dither posible. Por lo tanto, un caftor de escala de 1
+no cambia el valor prefijado, mientras un valor de 10 lo multiplica 10X y as&iacute;.
+Si est&aacute; utilizando una aplicaic&oacute;n que le permite especificar la cantidad
+m&aacute;xima directamente (por ej. PHD_dither), deber&iacute;a dejar la escala de dither
+en 1.0. De otra forma, puede ajustar el factor de escala si no est&aacute;
+satisfecho con el rango general de dithering que est&aacute; obteniendo.</p>
+<p>tipicamente hay dos costos asociados al dithering: 1) el tiempo extra y
+la incertidumbre necesaria para "asentar" y 2) la necesidad de recortar la
+imagen final apilada para quitar los m&aacute;rgenes con poca señal. Asentar es el
+t&eacute;rmino utilizado para un per&iacute;odo de esstabilizaci&oacute;n luego que la montura ha
+sido movida por un comando dither. La aplicaci&oacute;n de toma de imagen que
+comienza el dither tambi&eacute;n decidir&aacute; cuando el guiado se ha estabilizado lo
+suficiente para continuar con la pr&oacute;xima toma. La aplicaci&oacute;n puede permitir
+que PHD2 decida esto, especificando par&aacute;metros de asentamiento o puede hacer
+el c&aacute;lculo por su cuenta. Deber&aacute; revisar su aplicaci&oacute;n de toma de
+im&aacute;genes/dithering para ver que control tiene en el proceso. Si la aplicaci&oacute;n
+utiliza la &uacute;ltima interfaz server de PHD2, puede especificar un requerimiento
+de asentado que podr&iacute;a verse como "errores de guiado deben ser menores a 1.5
+pixeles por un per&iacute;odo de al menos 10 segundos." Este es un proceso que puede
+consumir alg&uacute;n tiempo, dependiendo que tan ajustados est&eacute;n los par&aacute;metros de
+asentado. Es probable que tome m&aacute;s tiempo si est&aacute; haciendo dithering en
+declinaci&oacute;n y la declinaci&oacute;n fuerce un cambio en la direcci&oacute;n. La mayor&iacute;a de
+las monturas tienen alg&uacute;n backlash en declinaci&oacute;n, por lo que puede tomar
+algunos comandos de guiado volver la montura a moverse en la direcci&oacute;n
+correcta, y luego m&aacute;s tiempo para volver a centrar la estrella gu&iacute;a. Es por
+eso que PHD2 tambi&eacute;n ofrece la opci&oacute;n de dither s&oacute;lo en ascenci&oacute;n recta.
+Nuevamente, esta es una opci&oacute;n en la pestaña 'Global', al lado del par&aacute;metro
+de escala de dither. Las monturas con mucho backlash en Dec o equipos que
+necesitan una cantidad grande de dithering se pueden beneficiar utilizando
+el "modo espiral". Con esteacercamiento, ni el tamaño ni la direcci&oacute;n de
+dither son aleatorios. En su lugar, PHD2 en v&iacute;a tamaños de dither fijos
+mientras fuerza la direcci&oacute;n a una espiral en expaci&oacute;n alrededor del
+centro original.</p>
+<p>Si su montura tiene una cantidad sustancial de backlash en declinaci&oacute;n,
+ud podr&iacute;a estar guiando s&oacute;lo en la direcci&oacute;n dec norte o sur. Si PHD2
+recibe un comando de dither en declinaci&oacute;n mientras est&aacute; operando en
+este modo, permitir&aacute; el guiado en ambas direcciones Dec temporalmente,
+hasta que el dither y su asentamiento se haya completado. Luego
+volver&aacute; al modo de guiado s&oacute;lo norte/sur original. Si no desea este
+comportamiento, deber&iacute;a restringir el dithering 'S&oacute;lo a RA'. Todos los
+controles de dither de PHD2 est&aacute;n contenidos en la pestaña 'Global' de
+la ventana Configuraci&oacute;n Avanzada.</p>
+<h3><a name="Logging_and_Debug_Output"></a>Salida de Logueo y Depuraci&oacute;n</h3>
+<span style="font-style: italic;">PHD2</span> crea autom&aacute;ticamente dos tipos
+de archivos de los: uno de depuraci&oacute;n y otro de guiado.
+Ambos con muy &uacute;tiles por diferentes razones. El log de guiado est&aacute; formateado
+intencionalmente para permitir una f&aacute;cil interpretaci&oacute;n tanto por un humano
+como por una aplicaci&oacute;n externa. Por ejemplo, la aplicaci&oacute;n PHDLogView
+(que no es parte de la distribuci&oacute;n de PHD2) puede producir una variedad de
+gr&aacute;ficos y estad&iacute;sticas basadas en los datos del log de guiado de PHD2. Pero
+el log tambi&eacute;n puede ser f&aacute;cilmente importado en Excel u otras aplicaciones
+para an&aacute;lisis y gr&aacute;ficas. Al importarlo en Excel, s&oacute;lo especifique la coma
+como separador de columnas. El log de depuraci&oacute;n tiene un registro completo de
+todo lo que se ha realizado en la sesi&oacute;n de guiado de <span style="font-style: italic;">PHD2</span>,
+por lo que es muy &uacute;til para aislar problemas. Tambi&eacute;n emplea un formato de
+texto comprensible por humanos, para que no sea dif&iacute;cil examinarlo para
+ver que pas&oacute;. Si necesita reportar un problema con el software, seguramente
+se le pedir&aacute; proveer el archivo de depuraci&oacute;n. Si no posee ning&uacute;n
+archivo de log, es poco probable que lo obtenga alguna ayuda.
+<br>
+<br>
+La ubicaci&oacute;n de los archivos es controlada por el campo 'Ubicaci&oacute;n de 
+Archivos Log' en la pestaña 'Global' de la ventana 'Configuraci&oacute;n Avanzada'.
+Por defecto, los archivos log se guardan en el directorio de documentos de
+usuario, espec&iacute;fico de cada SO. En Windows, por ejemplo, los archivos se
+guardaran en una subcarpeta '<span style="font-style: italic;">PHD2</span>'
+en el directorio "Documentos". Esta puede no ser la ubicaci&oacute;n m&aacute;s conveniente,
+por lo que puede especificar una carpeta diferente utilizando este campo.
+Para prevenir una acumulaci&oacute;n excesiva de archivos de log, PHD2 borra autom&aacute;ticamente
+archivos de depuraci&oacute;n que tengan m&aacute;s de 30 d&iacute;as de antiguedad y archivos
+de guiado que tengan m&aacute;s de 60 d&iacute;as. Si desea guardar estos archivos por
+un per&iacute;odo de tiempo mayor, deber&iacute;a mover o copiarlos a una ubicaci&oacute;n
+diferente, una no utilizada por PHD2.
+<br><br>
+Para simplificar la subida autom&aacute;tica de archivos log (ver m&aacute;s abajo),
+los datos de log se agrupan por "d&iacute;a de imagen", definida como un
+per&iacute;odo de 24 horas comenzando a las 09:00 AM, hora local. Esto significa
+que todas las ejecuciones de PHD2 en el mismo d&iacute;a de toma de im&aacute;genes
+escribir&aacute;n datos de log de guiado y depuraci&oacute;n en los dos archivos de
+log de ese d&iacute;a particular. El logueo est&aacute; siempre activo, sin importar lo
+que se haya hecho (o no) durante el tiempo que PHD2 estuvo en ejecuci&oacute;n.
+<br>
+<br>
+En algunos casos poco habituales, podr&iacute;a necesitar capturar im&aacute;genes de
+la c&aacute;mara guia, usualmente para soporte a depuraci&oacute;n y resoluci&oacute;n de
+problemas. Eso se puede realizar haciendo click en el item de men&uacute;
+'Permitir Log de Im&aacute;genes de Estrellas', bajo el men&uacute; 'Herramientas'.
+Los archivos de imagen resultantes se almacenan en la misma ubicaci&oacute;n que
+los otros archivos de log. El formato de estos archivos de imagen es
+controlado en la pestaña 'Global' de la ventana 'Configuraci&oacute;n Avanzada'.
+Si est&aacute; intentando documentar un problema, deber&iacute;a elegir el formato
+'Raw Fits' para mayor flexibilidad.
+<br><br>
+<span style="font-weight: bold;"><a name="Logging-Automatic_Upload"></a>Subida Autom&aacute;tica de Archivos Log</span>
+<br><br>
+Si necesita ayuda con PHD2 o mejorar sus resultados de guiado, podr&iacute;a
+publicar un requerimiento en el Open<span style="font-weight: bold;">-</span>PHD-Guiding
+forum (https://groups.google.com/forum/#!forum/open-phd-guiding).
+Su pregunta deber&iacute;a estar acompañada de los logs de PHD2 asociados con
+la sesi&oacute;n de guiado de la que est&eacute; hablando. Por favor no edite, corte
+o cambie el nombre de los archivos log. Para hacer m&aacute;s simple subirlos,
+PHD2 tiene una funci&oacute;n incorporada para seleccionar, comprimir y subir
+autom&aacute;ticamente los archivos de depuraci&oacute;n relevantes. Esta funci&oacute;n se
+encuentra en el men&uacute; 'Ayuda'. Ver&aacute; un cuadro de di&aacute;logo que le muestra
+todos los archivos disponibles, incluyendo sus marcas de tiempo y
+duraci&oacute;n:
+<br><br>
+<img style="width: 579px; height: 378px;" alt="" src="Log_Upload_1.png">
+<br><br>
+S&oacute;lo seleccione los archivos que desea y comience con el proceso de subida
+haciendo click en 'Siguiente'. Por favor revise cuidadoseamente que las
+columnas 'Inicio de Sesi&oacute;n' y 'Duraci&oacute;n' cubran el per&iacute;odo de tiempo en
+el que est&aacute; interesado. PHD2 crea archivos de log de guiado y depuraci&oacute;n
+cada vez que se ejecuta, por lo que algunos de los archivos de log
+estar&aacute;n casi vac&iacute;os - no los suba. Si PHD2 generalmente funciona bien pero 
+ud no est&aacute; seguro de interpretar el rendimiento del guiado o desea mejorarlo,
+puede comenzar por subir s&oacute;lo los archivos de guiado. Pero si est&aacute; teniendo
+problemas con las conexiones a la c&aacute;mara o montura o no puede hacer que PHD2
+ejecute, tambi&eacute;n deber&iacute;a incluir los archivos de depuraci&oacute;n. Sea selectivo con
+los archivos que elige - s&oacute;lo los archivos para la sesi&oacute;n con la que est&aacute;
+teniendo inconvenientes. Cuando el proceso de subida se complete, ver&aacute; otra
+ventana que le dar&aacute; un enlace a los archivos:
+<br><br>
+<img style="width: 573px; height: 192px;" alt="" src="Log_Upload_2.png">
+<br><br>
+Necesita capturar o registrar ese enlace para que pueda ser incluido con 
+la pregunta que va a dejar en el foro. Los arhivos de log ser&aacute;n eliminados
+autom&aacute;ticamente del server luego de una cantidad razonable de tiempo, por lo
+que no necesita preocuparse por ello. Cuando publique su requerimiento de
+soporte, por favor incluya una descripci&oacute;n completa de lo que est&aacute;
+haciendo, que problema est&aacute; viendo, y aproximadamente en qu&eacute; per&iacute;odo de
+tiempo desea que nos enfoquemos.
+<br><br>
+<h3><a name="Polar_alignment_tools"></a>Herramientas de Alineado Polar</h3>
+PHD2 ofrece tres herramientas para el alineado polar. Las tres comparten el
+mismo objetivo b&aacute;sico: ayudarlo a alinear f&iacute;sicamente el eje RA de su montura al
+polo celeste. Estas herramientas de alineado polar son diferentes de los
+procedimientos de alineado de &#8220;dos estrellas&#8221; o &#8220;tres estrellas&#8221;
+que forman parte de muchas monturas goto populares. Las rutinas del software de
+las monturas generalmente est&aacute; focalizado en optimizar las operaciones de goto,
+corrigiendo las operaciones de movimiento/apuntado por una variedad de errores
+en la montura, incluyengo el error de alineado polar. Generalmente no involucran
+ajustes f&iacute;sicos de la montura en los controles de asimuth y altitud, que es lo
+que es necesario para fotograf&iacute;a exitosa y guiado.
+<br><br>
+Las tres herramientas de alineado polar tienen diferentes requerimientos y
+comportamientos como se muestra en la tabla a continuaci&oacute;n. Las columnas precisi&oacute;n y
+velocidad muestran valores en el rango de 1 a 3, donde 1 es la m&aacute;s lenta y 3
+la m&aacute;s r&aacute;pida.
+<br>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="font-weight: bold;">M&eacute;todo</td>
+<td><span style="font-weight: bold;">Precisi&oacute;n</span></td>
+<td><span style="font-weight: bold;">Velocidad</span></td>
+<td><span style="font-weight: bold;">Vista del Cielo</span></td>
+<td><span style="font-weight: bold;">Otros</span></td>
+</tr>
+<tr>
+<td>Alineado Polar Est&aacute;tico</td>
+<td>1</td>
+<td>3</td>
+<td>Regi&oacute;n Polar</td>
+<td>Requiere identificar las estrellas de la regi&oacute;n polar<br>M&iacute;nimo desplazamiento</td>
+</tr>
+<tr>
+<td>Alineado Polar por Deriva</td>
+<td>2</td>
+<td>2</td>
+<td>Regi&oacute;n Polar</td>
+<td>M&iacute;nimo desplazamiento</td>
+</tr>
+<tr>
+<td>Alineado por Deriva Tradicional</td>
+<td>3</td>
+<td>1</td>
+<td>Horizonte Este y Oeste<br>Meridiano/Ecuador Celeste</td>
+<td>Mayor desplazamiento<br>Ejes medidos/ajustados por separado</td>
+</tr>
+</tbody>
+</table>
+<br>
+La rutina de alineado polar original, alineaci&oacute;n por deriva, todav&iacute;a es considerada
+por la mayor&iacute;a como lo mejor para precisi&oacute;n. Parcialmente, esto es porque mide
+directamente eso en lo que ud est&aacute; interesado: la cantidad de deriva que ser&aacute;
+causada por mal alineado del eje RA con el polo celeste. La herramienta de alineado
+por deriva requiere el uso de s&oacute;lo una estrella por vez, y la identificaci&oacute;n de la
+estrella no es necesaria. Pero el procedimiento puede llevar mucho tiempo, especialmente
+para principiantes, porque cada jee de la montura debe ser ajustado en forma separada
+y el telescopio necesitar&aacute; desplazarse en un &aacute;rea relativamente grande. Tambi&eacute;n,
+trabaja mejor si tiene una visi&oacute;n clara de la intersecci&oacute;n del ecuador y meridiano
+celeste y un &aacute;rea alrededor de 30 grados sobre el horizonte este y oeste
+(asimuth 90 o 270 grados). Para fot&oacute;grafos que tengan poco tiempo cada noche o
+tengan una visi&oacute;n limitada del cielo, estos requerimientos pueden ser poco atractivos.
+
+<p class="MsoNormal">La segunda opci&oacute;n, alineado polar est&aacute;tico, cubre estos problemas
+tomando un enfoque diferente. Espec&iacute;ficamente cambia algo de precisi&oacute;n para optimizar
+la velocidad del proceso. S&oacute;lo necesita una visi&oacute;n clara de la regi&oacute;n polar norte o sur, y
+facilita el ajuste de ambos ejes al mismo tiempo. Por esto, es algo m&aacute;s intuitiva y
+seguramente m&aacute;s r&aacute;pida de completar. S&iacute; requiere visibilidad e identificar algunas estrellas
+cerca del polo, pero la herramienta lo hace razonablemente simple asumiendo las condiciones
+de su cielo sean lo suficientemente buenas para ver las estrellas.</p>
+
+<p>La tercer opci&oacute;n, alineado polar por deriva, es probablemente la m&aacute;s simple de ejecutar,
+resignando algo de precisi&oacute;n y velocidad.
+Requiere una visi&oacute;n limpia de la regi&oacute;n polar sur o norte, y facilita el ajuste de los dos
+ejes de la montura al mismo tiempo. Se necesita un m&iacute;nimo uso por parte del usuario, por
+lo que es muy simple de utilizar.</p>
+<p class="MsoNormal">Las tres t&eacute;cnicas se describen en detalle en las siguientes secciones.
+Probablemente deber&iacute;a experimentar con ellas y elegir la que m&aacute;s le convenga a sus
+necesidades. La importancia de la precisi&oacute;n en la alineaci&oacute;n frecuentemente est&aacute;
+sobre enfatizada, por lo que los usuarios necesitan mantener las cosas en perspectiva.
+La mayor deriva en declinaci&oacute;n puede ser manejada sin inconvenientes por PHD2 asumiendo que
+su montura se comporte vien y no tenga mucho backlash en declinaci&oacute;n. De todos modos, en alg&uacute;n
+punto, la cantidad de error de alineado polar puede crear rotaci&oacute;n de campo en las im&aacute;genes,
+algo que no puede ser corregido. Cuanto m&aacute;s grande sea el sensor de la c&aacute;mara y m&aacute;s cerca
+del polo se encuentre el objetivo, m&aacute;s probabilidades que la rotaci&oacute;n de campo se transforme
+en un problema. Puede calcular la rotaci&oacute;n de campo esperada utilizando una calculadora
+online como la siguiente:</p>
+<p class="MsoNormal"><a href="http://celestialwonders.com/tools/rotationMaxErrorCalc.html">http://celestialwonders.com/tools/rotationMaxErrorCalc.html</a></p>
+
+<p class="MsoNormal">La calculadora puede ayudarlo a decidir cuanta precisi&oacute;n es
+&#8220;suficientemente buena&#8221; para su situaci&oacute;n. Tambi&eacute;n es importante recordar que
+cualquiera de los procedimientos puede estar limitado por la precisi&oacute;n de los mecanismos de
+ajuste de la montura.
+<br></p>
+
+<h3><a href="Tutorials.htm#Drift_Align">Herramienta de Alineado por Deriva</a></h3>
+<h3><a href="Tutorials.htm#Static_polar_alignment">Herramienta de Alineado Polar Est&aacute;tico</a></h3>
+<h3><a href="Tutorials.htm#Polar_Drift_Align">Herramienta de Alineado Polar por Deriva</a></h3>
+<h3><a name="Lock_Positions"></a>Posiciones de Bloqueo</h3>
+<span style="font-style: italic;">PHD2</span> normalmente fija una 'posici&oacute;n de bloqueo'
+donde la estrella gu&iacute;a est&aacute; ubicada al final de una calibraci&oacute;n. Dependiendo de los detalles
+de la secuencia de calibraci&oacute;n, esta puede no estar exactamente donde la estrella estaba
+ubicada al inicio de la calibraci&oacute;n - podr&iacute;a estar desviada por unos pocos p&iacute;xeles. Si
+est&aacute; intentando centrar precisamente su objetivo, podr&iacute;a querer utilizar una
+'posici&oacute;n de bloqueo marcada'. Puede realizarlo haciendo click en su estrella gu&iacute;a
+<span style="font-style: italic;">antes de la calibraci&oacute;n</span>, para luego fijar
+la 'Marca de Posici&oacute;n de Bloqueo' en el men&uacute; 'Herramientas'. Luego de completar
+la calibraci&oacute;n, <span style="font-style: italic;">PHD2</span> continuar&aacute; el movimiento de
+la montura hasta que la estrella se ubique en la posici&oacute;n de bloqueo marcada.
+Por esto podr&iacute;a notar una demora adicional luego de la calibraci&oacute;n mientras
+<span style="font-style: italic;">PHD2</span> reposiciona el telescopio a velocidad de
+guiado. La posici&oacute;n de bloqueo marcada continuar&aacute; siendo utilizada incluso si se detiene
+el guiado y se reinicia posteriormente. Nuevamente, esto asegura una posici&oacute;n rigurosa
+de la estrella gu&iacute;a (y presumiblemente de un objetivo) a la expensa de las demoras necesarias
+para que <span style="font-style: italic;">PHD2</span> reposiciones la montura.
+<br><br>
+Si necesita ajustes finos en la posici&oacute;n de la estrella gu&iacute;a en el sensor de la c&aacute;mara luego
+de comenzado el guiado, puede utilizar la funci&oacute;n 'Ajuste de Posici&oacute;n de Bloqueo' en el men&uacute;
+'Herramientas':
+<br><br>
+<img style="width: 354px; height: 190px;" alt="" src="Adjust_Lock_Position.png">
+<br><br>
+Puede mover su estrella gu&iacute;a en pequeños incrementos (a velocidad de guiado) o la puede mover
+bastante marcando una nueva posici&oacute;n de bloqueo y haciendo click en 'Fijar'. Al hacer
+click en los botones arriba/abajo/izquierda/derecha, la posici&oacute;n de bloqueo se mover&aacute;
+en la correspondiente direcci&oacute;n por la cantidad mostrada en 'Paso', y la nueva posici&oacute;n de
+bloqueo se mostrar&aacute;. Si incresa una nueva posici&oacute;n de bloqueo, corre el riesgo de perder
+la estrella gu&iacute;a si la nueva posici&oacute;n est&aacute; fuera de la regi&oacute;n de b&uacute;squeda actual. Esta
+herramienta es &uacute;til si necesita un posicionamiento preciso tando de la estrella gu&iacute;a o de
+su objetivo, por ejemplo ara espectroscop&iacute;a.
+
+<h3><a name="Comet_Tracking"></a>Seguimiento de Cometa</h3>
+Una forma de tomar una imagen de un cometa es que PHD2 utilice al cometa como la "estrella
+gu&iacute;a", pero esto no siempre funciona. Por ejemplo, la cabeza del cometa puede no presentar
+un centro parecido a una estrella que sea adecuado para seguimiento. O, utilizando una gu&iacute;a
+fuera de eje, el cometa puede no ser visible en la c&aacute;mara gu&iacute;a.
+<br>
+<br>
+PHD2 provee una herramienta de Seguimiento de Cometa para utilizar cuando el guiado en el
+cometa en s&iacute; no es posible. La idea es guiar en una estrella normal, pero mover la posici&oacute;n
+de bloqueo gradualmente, para igualar el movimiento del cometa o <i>ratio de seguimiento</i>.
+<br>
+<br>
+Hay tres formas posibles para darle el ratio de seguimiento del cometa a PHD2.
+<br>
+<br>
+<ul>
+  <li>Algunas aplicaciones de planetario, como Cartes du Ciel, pueden enviarlo directamente a;</li>
+  <li>Ud puede ingresar el ratio de seguimiento manualmente o,</li>
+  <li>Puede entrenar el ratio en PHD2 al seguir el cometa por un per&iacute;odo de tiempo en la c&aacute;mara principal.</li>
+</ul>
+<br>
+<br>
+<img style="width: 426px; height: 408px;" alt="" src="CometTrackingTool.png"><br>
+<br>
+<br>
+Para ingresar los ratios manualmente, deber&iacute;a seleccionar unidades de
+"Segundos de arco/hr" y "RA/DEC" para ejes, para entonces ingresar los ratios de las
+efem&eacute;rides del cometa. Si est&aacute; obteniendo los ratios del sitio web del MinorPlanetCenter,
+deber&iacute;a seleccionar la opci&oacute;n para 'Separar movimientos de coordenadas en RA y Declinacion'.
+PHD2 ajustar&aacute; autom&aacute;ticamente los ratios para calcular el movimiento aparente en el cielo.
+<br>
+<br>
+El entrenamiento del ratio del cometa trabaja as&iacute;:
+<br>
+<br>
+Primero, centre el cometa en su c&aacute;mara principal. Si su aplicaci&oacute;n de toma de im&aacute;genes
+tiene alg&uacute;n tipo de display reticulado, lo deber&iacute;a utilizar para notar la posici&oacute;n
+precisa del cometa en el sensor. Una vez que est&eacute; listo, seleccione una estrella gu&iacute;a en
+PHD2 y comience a guiar. Luego presione "Iniciar" en la herramienta de Seguimiento de
+Cometas para comenzar el entrenamiento.
+<br>
+<br>
+Tome una serie continua de exposiciones cortas en su c&aacute;mara principal
+utilizando su aplicaci&oacute;n de toma de im&aacute;genes. Con el tiempo, el cometa
+comenzar&aacute; a desplazarse de la posici&oacute;n inicial. Utilice los controles
+"Ajustar Posici&oacute;n de Bloqueo" de PHD2 para mover el cometa a la posici&oacute;n
+inicial. Puede tener que experimentar un poco para determinar de que
+forma se mueve el cometa en el sensor en respuesta a los controles
+arriba/abajo/izquierda/derecha de PHD2. Puede encontrar &uacute;til habilitar
+el bot&oacute;n "Siempre arriba" en la ventana Ajustar Posici&oacute;n de Bloqueo para
+que los controles permanezan visibles sobre su aplicaci&oacute;n de toma de im&aacute;genes.
+<br>
+<br>
+PHD2 aprender&aacute; r&aacute;pidamente el ratio de seguimiento del cometa a medida que ud lo
+re-centre. Una vez que est&eacute; satisfecho como PHD2 sigue al cometa, puede hacer
+click en Detener para finalizar el entrenamiento. PHD2 continuar&aacute; moviendo
+la posici&oacute;n de bloqueo para seguir al cometa hasta que ud deshabilite
+el seguimiento de cometa con el bot&oacute;n Habilitar/Deshabilitar.
+<br>
+<br>
+Puede practicar la t&eacute;cnica de entrenamiento utilizando el
+simulador de c&aacute;mara incluido. marque la opci&oacute;n "Cometa" en la
+ventana Configuraci&oacute;n de C&aacute;mara, y el simulador le mostrar&aacute; un cometa.
+Utilice un marcador para marcar la posici&oacute;n inicial del cometa, y utilice
+los controles de Ajustar Posici&oacute;n de Bloqueo para mover el cometa
+a la posici&oacute;n del marcador.
+<br>
+<h3><a name="Guiding_Assistant"></a>Asistente de Guiado</h3>
+El Asistente de Guiado es una herramienta instructiva que lo ayuda
+a medir las condiciones de seeing actuales y el comportamiento general
+de su montura y del sistema de guiado. Cuando se ejecuta, deshabilita
+temporalmente el guiado y mide el movimiento de la estrella gu&iacute;a. Esto
+lo puede ayudar a ver movimientos de alta frecuencia ocasionados por
+las condiciones atmosf&eacute;ricas (seeing). Estas no pueden ser corregidas
+por el guiado convencional porque ocurren a una frecuencia mucho mayor
+de lo que t&iacute;picamente se mide. Intentar corregirlas con guiado convencional
+se llama normalmente "perseguir el seeing" y usualmente termina en
+resultados pobres. Para evitarlo, lo mejor es fijar un nivel de
+movimiento m&iacute;nimo que cause que PHD2 ignore la mayor&iacute;a de este
+comportamiento de alta frecuencia. El Asistente de Guiado tambi&eacute;n
+puede mostrarle otro comportamiento de su sistema como ratios de
+deriva en ascensi&oacute;n recta y declinaci&oacute;n como tambi&eacute;n mediciones de
+pico-a-pico ratio-m&aacute;ximo-de-cambio en ascensi&oacute;n recta. Mientras estas
+cosas pueden usualmente ser corregidas con guiado, medirlas puede ser
+una ayuda si desea mejorar el desempeño de la montura - por ejemplo,
+mejorando su alineaci&oacute;n polar si la deriva en declinaci&oacute;n es alta. El
+Asistente de Guiado tambi&eacute;n puede medir el backlash de declinaci&oacute;n en
+su sistema si selecciona esa opci&oacute;n en la interfaz de usuario.
+<br><br>
+Cuando inicie el Asistente de Guiado (AG), su comportamiento depende
+de si ud ya est&aacute; guiando. Si el guaido est&aacute; activo, la pantalla inicial
+se ver&aacute; algo as&iacute; (con valores de datos diferentes por supuesto):
+<br><br>
+<img style="width: 776px; height: 517px;" alt="" src="Guiding_Assistant_Start.png">
+<br><br>
+El campo superior en el formulario siempre muestra lo que est&aacute; haciendo
+AG y que acci&oacute;n deber&iacute;a tomar, por lo que siempre deber&iacute;a mirar ah&iacute;
+primero si no sabe qu&eacute; est&aacute; pasando. En este caso, el proceso de
+medici&oacute;n se ha iniciado autom&aacute;ticamente y ud simplemente deber&iacute;a
+dejarlo correr por al menos dos minutos. El campo de texto inmediatamente
+sobre de los botones tambi&eacute;n sumzriza qu&eacute; est&aacute; sucedienco. Los tres
+botones se habilitan o deshabilitan basado en el estado de operaci&oacute;n
+del AG. En este caso, 'Iniciar' est&aacute; deshabilitado porque la medici&oacute;n
+ya est&aacute; en curso.
+<br><br>
+Si desea iniciar el AG cuando el guiado est&eacute; inactivo, el formulario
+inicial se ver&aacute; distinto:
+<br><br>
+<img style="width: 780px; height: 521px;" alt="" src="Guiding_Assistant_Start_a.png">
+<br><br>
+En este caso, primero necesitar&aacute; iniciar el guiado en PHD2 - inicie
+el bucle, seleccione una estrella y gu&iacute;e. Una vez haya realizado esto,
+el bot&oacute;n 'Iniciar' en el AG se habilitar&aacute; y podr&aacute; iniciar la medici&oacute;n.
+<br><br>
+Cuando la medici&oacute;n del AG est&eacute; activa, los comandos de guiado se
+deshabilitar&aacute;n, por lo que la estrella parecer&aacute; "deambular" en la
+pantalla - esto es totalmente normal. A medida se vayan tomando las
+im&aacute;genes de guiado, se calcular&aacute;n las estad&iacute;sticas y se mostrar&aacute;n en
+tiempo real en la interfaz de usuario. Las entradas de la tabla para
+"Movimiento de Estrella de Alta Frecuencia" y "Error de Alineaci&oacute;n Polar"
+son de particular inter&eacute;s. Luego de dos minutos de colectar datos, estos
+n&uacute;meros usualmente se estabilizar&aacute;n y tendr&aacute; mediciones razonables. Si
+desea obtener mediciones m&aacute;s precisas de su error de alineaci&oacute;n polar y
+de error peri&oacute;dico sin corregir en RA, deber&aacute; dejar correr al AG por
+hasta 10 minutos. Tambi&eacute;n, el error de alineaci&oacute;n polar calculado es
+sensible a la declinaci&oacute;n actual del telescopio. Para obtener la
+medici&oacute;n m&aacute;s precisa, deber&iacute;a apuntar el telescopio dentro de unos grados
+del meridiano celeste. Cuando finalice, haga click en el bot&oacute;n
+'Detener' y esta fase del proceso de medici&oacute;n terminar&aacute;. Si marc&oacute;
+la opci&oacute;n 'Medir Backlash en Declinaci&oacute;n', comenzar&aacute; ese proceso (ver
+m&aacute;s abajo). Si no lo hizo, lso comandos de guiado se re-habilitar&aacute;n
+y el proceso de colecci&oacute;n de informaci&oacute;n terminar&aacute;. Se mostrar&aacute;n
+otros resultados calculados en la parte baja de la tabla, mostrando
+los ratios de deriva general y varias otras mediciones. Todos estos
+valores se muestran en unidades tanto de segundos de arco como
+p&iacute;xeles. La ventana se ver&aacute; algo parecida a esto:
+<br><br>
+<img style="width: 780px; height: 540px;" alt="" src="Guiding_Assistant_Finish_NoBL.png">
+<br><br>
+Los contenidos del grupo 'Recomendaciones' a la derecha de la ventana
+reflejan los resultados de las mediciones estad&iacute;sticas. Asumiendo
+que haya seleccionado algoritmos de guiado que soporten la propiedad
+'movimiento m&iacute;nimo', tiene la opci&oacute;n de fijar autom&aacute;ticamente estos
+par&aacute;metros, basado en los resultados. Tambi&eacute;n puede decidir volver a
+ejecutar las mediciones o cerrar la ventana si desea proceder con las
+operaciones de guiado normal.
+<br><br>
+<span style="font-weight: bold;">Measuring Declination Backlash</span>
+<br>
+Si ha marcado la opci&oacute;n 'Medir Backlash en Declinaci&oacute;n', ese proceso
+comenzar&aacute; cuando se hayan completado las mediciones de los movimientos
+de alta frecuencia. En otras palabras, al hacer click en el bot&oacute;n
+'Detener' detiene las mediciones de alta frecuencia y comienza con la
+medici&oacute;n de backlash en declinaci&oacute;n. De todos modos, si el per&iacute;odo
+de muestreo fue menor a 2 minutos, una advertencia aparecer&aacute; y el test
+de backlash continuar&aacute; midiendo hasta que el per&iacute;odo de 2 minutos haya
+terminado. Un nuevo grupo de mensajes de status se mostrar&aacute;n inmediatamente
+sobre los botones de 'Iniciar' y 'Detener' para que pueda ver que est&aacute;
+sucediendo:
+<br><br>
+<img style="width: 772px; height: 511px;" alt="" src="Guiding_Assistant_MeasuringBL.png">
+<br><br>
+Para medir el backlash, PHD2 mover&aacute; la estrella con movimientos grandes,
+primero en la direcci&oacute;n norte, luego de nuevo al sur. Hay alg&uacute;n
+riesgo de que la estrella se pueda perder durante este proceso o que
+la estrella ya est&eacute; muy cerca del borde del sensor. Deber&iacute;a elegir
+una estrella gu&iacute;a que tenga espacio suficiente para moverse al norte
+para tener la mayor precisi&oacute;n. Si la estrella se pierde porque se
+movi&oacute; fuera de la regi&oacute;n de b&uacute;squeda, puede incrementar temporalmente
+el tamaño de esa regi&oacute;n desde la pestaña '<a href="Advanced_settings.htm#Guiding_Tab">Guiado</a>'
+de la ventanta Configuraci&oacute;n Avanzada. Una regi&oacute;n de b&uacute;squeda de 20
+p&iacute;xeles deber&iacute;a funcionar bien para la mayor&iacute;a de las configuraciones
+- s&oacute;lo aseg&uacute;rese que no haya varias estrellas dentro de la regi&oacute;n de
+b&uacute;squeda. La priemra fase de la medici&oacute;n de backlash involucra un
+intento inicial de limpiar el backlash que pudiera estar presente en la
+direcci&oacute;n norte. El Asistente de Guiado (AG) continuar&aacute; con estos
+comandos de limpieza hasta que vea un movimiento significativo y
+consistente de la estrella gu&iacute;a en una direcci&oacute;n. Una vez que esto se
+haya realizado, el AG enviar&aacute; otra secuencia de comandos para continuar
+moviendo la estrella al norte. Esto durar&aacute; al menos 16 segundos y podr&iacute;a
+tomar m&aacute;s seg&uacute;n la configuraci&oacute;n - puede ver el status para comprender
+que se est&aacute; haciendo. Cuando los pasos al norte se hayan finalizado,
+el AG enviar&aacute; un n&uacute;mero igual de pasos en la direcci&oacute;n sur. Si hay
+backlash significativo en la montura, puede tomar un per&iacute;odo largo
+de tiempo hasta que la estrella comience a moverse al sur, pero
+eventualmente se har&aacute;. Una vez que los pasos al sur finalicen, el AG
+intentar&aacute; calcular un estimado preciso de la cantidad de backlash,
+corregido para deriva en Declinaci&oacute;n. Esto no ser&aacute; realizado si la
+montura nunca establece un movimiento consistente al sur que sea al
+menos 90% del movimiento medido al norte. Esta situaci&oacute;n usualmente
+indica mucho roce en el eje Dec o desbalanceo sustancial, en cuyo
+caso un estimado simple de backlash ser&aacute; incorrecto y probablemente
+irrelevante. Ud podr&aacute; utilizar el bot&oacute;n 'Mostrar Gr&aacute;fico' para ver
+que sucedi&oacute; durante el test, incluso si no se gener&oacute; un estimado.
+Cuando el test finalice, el AG intentar&aacute; mover la estrella cerca
+de su posici&oacute;n inicial y continuar&aacute; con el guiado. Nuevamente, hay
+alg&uacute;n riesgo de que la estrella se pierda, pero esto no afectar&aacute;
+los c&aacute;lculos - ud puede detener y continuar el guiado normalmente.
+A diferencia del primer proceso para medir los movimientos de 
+alta frecuencia de la estrella, no necesita hacer click en el bot&oacute;n
+'Detener' una vez que la medici&oacute;n de backlash haya iniciado. El
+proceso de medici&oacute;n terminar&aacute; cuando se hayan completado todos los
+pasos, y el guiado normal se retomar&aacute;. De todos modos, puede hacer
+click en el bot&oacute;n 'Detener' si algo ha ido mal - como perder la
+estrella - y reiniciar cuando est&eacute; listo. Cuando terminen los
+test de backlash, ver&aacute; los resultados como antes, con el agregado
+de entradas para el backlash en declinaci&oacute;n y medici&oacute;n de
+incertidumbre (o una l&iacute;nea de estado que diga que el test fall&oacute;):
+<br><br>
+<img style="width: 776px; height: 622px;" alt="" src="Guiding_Assistant_Finish.png">
+<br><br>
+Dependiendo de la cantidad de backlash, podr&iacute;a ver una recomendaci&oacute;n
+para fijar el factor de compensaci&oacute;n de backlash - 230 ms en el ejemplo
+anterior. Este tipo de compensaci&oacute;n de backlash es diferente de
+la caracter&iacute;stica ofrecida en muchas monturas y se describe aqu&iacute;:
+<a href="Advanced_settings.htm#Declination_backlash_comp">Compensaci&oacute;n de backlash de PHD2</a>
+Si la cantidad medida es menor a 100 ms, no se har&aacute; una recomendaci&oacute;n
+ya que una cantidad tan baja probablemente no garantice alguna
+correcci&oacute;n. Si el backlash es muy grande, por encima de 3 segundos,
+ver&aacute; una recomendaci&oacute;n diferente, utilizar guiado uni-direccionarl
+en declinaci&oacute;n. Esto es porque intentar compensar un valor tan
+grande probablemente no trabaje bien, y la montura probablemente
+no podr&aacute; reversar la direcci&oacute;n lo suficientemente r&aacute;pidamente para
+soportar el guiado bi-direccional. Obviamente, puede arribar a
+sus propias conclusiones basado en su experiencia con el comportamiento
+de su montura. Si no hace esto, las mediciones e intentos posteriores
+de compensaci&oacute;n por PHD2 ser&aacute;n inv&aacute;lidos. Si ud desea intentar
+el guiado uni-direccional, podr&aacute; encontrar las instrucciones aqu&iacute;:
+<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Guiado Uni-direccional</a>
+<br><br>
+Puede mirar el gr&aacute;fico de los resultados de la medici&oacute;n de backlash
+para comprender mejor como se comport&oacute; la montura incluso si 
+fall&oacute; el test. Haga click en el bot&oacute;n 'Mostrar Gr&aacute;fico' para ver
+un gr&aacute;fico que ser&aacute; parecido al siguiente:
+<br><br>
+<img style="width: 472px; height: 391px;" alt="" src="Guiding_Assistant_BL_Small.png">
+<br><br>
+Los puntos verdes muestran las posiciones medidas en declinaci&oacute;n,
+de izquierda a derecha, iniciando con los movimientos al norte y
+terminando con los movimientos al sur (regreso). Los puntos blancos
+muestran el comportamiento del regreso al sur de una montura perfecta,
+sin backlash. En este ejemplo, hay una pequeña cantidad de backlash
+como se muestra por la parte superior aplanada de los puntos verdes.
+De todos modos, la parte superior aplanada ser&aacute; m&aacute;s pronunciada cuando
+haya m&aacute;s backlash de declinaci&oacute;n en la montura, como en el
+siguiente ejemplo:
+<br><br><img style="width: 471px; height: 393px;" alt="" src="Guiding_Assistant_BL_Large.png">
+<br><br>
+El bot&oacute;n 'Revisar Previo' en la parte baja de la ventana le permite
+revisar los &uacute;ltimos tres resultados de AG. Si hay ejecutado tests
+de backlash en otros momentos, por lo menos una de las tres sesiones
+incluir&aacute;n el resultado de la medici&oacute;n de backlash. Al hacer click en
+el bot&oacute;n 'Revisar' se muestra una lista de fechas donde el AG se
+ejecut&oacute; para el perfil actual, para que pueda seleccionar la fecha/hora
+que desee. Todos los valores de la grilla y recomendaciones se
+completar&aacute;n con los resultados de la ejecuci&oacute;n de AG seleccionada,
+incluyendo botones activos para aplicar estas recomendaciones.
+<br>
+<br>
+<h3><a name="Star_cross_tool"></a>Test de Cruz de Estrella</h3>
+La herramienta de Test de Cruz de Estrella le ayuda a comprobar
+la respuesta de su montura a los comandos de guiado como est&aacute;
+descrito en la secci&oacute;n <a href="Trouble_shooting.htm#Star_cross_test">Soluci&oacute;n de Problemas</a>.
+A pesar de que el test es f&aacute;cil de hacer manualmente, podr&iacute;a
+preferir utilizar esta herramienta. La herramienta de Cruz de
+Estrella le mostrar&aacute; la siguiente ventana:
+<br><br>
+<img style="width: 603px; height: 309px;" alt="" src="Star_cross_tool.png">
+<br><br>
+<span style="font-weight: bold;">Este test asume que ud est&aacute; utilizando
+la c&aacute;mara principal para tomar la imagen</span>, por lo que PHD2 no
+sabe la escala de imagen que se utiliza para esto. Deber&aacute; asegurarse que
+la configuraci&oacute;n pueda generar un patr&oacute;n distintivo en la c&aacute;mara
+principal pero no tan grande que las estrellas se muevan fuera
+del campo de visi&oacute;n. La configuraci&oacute;n por defecto deber&iacute;a funcionar
+bien para la mayor&iacute;a de los equipos, pero las puede ajustar como
+necesite. Lo importante es obtener un registro claro del movimiento de
+las estrellas en la imagen de la c&aacute;mara principal y guardar esa imagen
+en un formato sin comprimir (por ej. FITS o TIF sin compresi&oacute;n). Durante
+el test, se activar&aacute; el bucle, pero no se seleccionar&aacute; una estrella
+gu&iacute;a, y no importa si estrellas individuales se mueven fuera del cuadro
+de la c&aacute;mara gu&iacute;a. El bucle se activa para que pueda obtener un registro
+visual r&aacute;pido de si la montura se est&aacute; moviendo.
+<h3><a name="pierflip_cal_tool"></a>Herramienta de Calibraci&oacute;n de Cambio de Meridiano</h3>
+
+La herramienta de calibraci&oacute;n de cambio de meridiano (asistente) se utiliza
+para determinar autom&aacute;ticamente el valor correcto para el par&aacute;metro
+<a href="Advanced_settings.htm#Reverse_Dec_output_after_meridian_flip">Reversar Salida Dec luego de un cambio de meridiano</a>.
+Ejecutar la herramienta involucra dos calibraciones -- una con el
+telescopio del lado Este del pie, y la otra en el Oeste. Se le indicar&aacute;
+mover (cambio de meridiano) el telescopio cuando sea necesario. Esto
+s&oacute;lo se necesita hacer una vez por cada tipo de montura que utilice.
+
+<h3><a name="Managing_Equipment_Profiles"></a>Utilizar Perfiles de Equipamiento</h3>
+Los perfiles de equipo se revisaron en la secci&oacute;n <a href="Basic_use.htm">Uso B&aacute;sico</a>
+Donde se utilizaron como parte de la ventana 'Conectar Equipo'. Si desea
+manejar m&uacute;ltiples perfiles, probablemente querr&aacute; utilizar el bot&oacute;n
+'Administrar Perfiles' en la ventana 'Conectar Equipo'. Utilizando los
+items de men&uacute; disponibles, podr&aacute; crear un nuevo perfil o editar/renombrar/eliminar
+uno existente. Cada perfil contiene toda la configuraci&oacute;n que estuvo activa
+al momento del &uacute;ltimo uso del perfil. Si crea un nuevo perfil, puede importar
+esas configuraciones tanto de valores por defecto gen&eacute;ricos de <span style="font-style: italic;">PHD2</span>
+como de un perfil existente. Tambi&eacute;n puede utilizar la opci&oacute;n 'Asistente'
+para que PHD2 establezca los par&aacute;metros que son espec&iacute;ficos de la configuraci&oacute;n
+de su equipamiento. Para editar las configuraciones de un perfil existente,
+primero debe seleccionarlo en la lista desplegable de perfiles, luego
+hacer click en 'Configuraciones' bajo '<a name="Manage_Profiles"></a>Administrar Perfiles'.
+Esto le llevar&aacute; a la ventana de Configuraci&oacute;n Avanzada, donde podr&aacute; hacer
+los cambios que considere necesarios. Recuerde que los perfiles se
+actualizan autom&aacute;ticamente cada vez que se cambian configuraciones durante
+una sesi&oacute;n con <span style="font-style: italic;">PHD2</span>. Finalmente, puede
+importar y esportar los perfiles para depuraci&oacute;n, copia de seguridad o
+cambiarlo entre computadoras.
+<br>
+<br>
+<h3><a name="Ask_for_coordinates_aux_mount"></a>Conexi&oacute;n de Montura Auxiliar utilizando "Preguntar coordenadas"</h3>
+Si no puede conectar su montura utilizando drivers ASCOM o INDI, todav&iacute;a
+tiene una opci&oacute;n mejor-que-nada, utilizando una conexi&oacute;n de montura
+auxiliar "Preguntar coordenadas". Con esta opci&oacute;n, se le pedir&aacute; ingresar
+o confirmar la posici&oacute;n del telescopio cada vez que comience el guiado:
+<br><br>
+<img style="width: 212px; height: 248px;" alt="" src="Manual_mount.png">
+<br><br>
+Si ingresa la declinaci&oacute;n y lado del pie actual de su telecopio, PHD2
+autom&aacute;ticamente ajustar&aacute; la calibraci&oacute;n para igualar esa posici&oacute;n de
+apuntado. No necesita ser preciso, un valor de Declinaci&oacute;n que est&eacute;
+dentro de unos pocos grados funcionar&aacute;. Esto significa que no necesitar&aacute;
+recalibrar a medida que se mueva entre diferentes objetivos en tanto
+actualice estos valores cada vez. Por ejemplo, puede realizar una calibraci&oacute;n
+cerca de Declinaci&oacute;n=0 para luego ingresar valores de posici&oacute;n nuevos
+cuando se haya movido a una declinaci&oacute;n mayor apuntando a otro objeto.
+Esto seguramente producir&aacute; mejores resultados que intentar calibrar
+cerca del polo. Esta ventana no se mostrar&aacute; si el inicio del guiado
+es el resultado de una operaci&oacute;n de dither o un comando server de una
+aplicaci&oacute;n de toma de im&aacute;genes. Para que el ajuste de calibraci&oacute;n
+funcione correctamente, su calibraci&oacute;n previa <span style="font-weight: bold;">debe </span>
+haberse completado con datos de posici&oacute;n correctos.
+<br><br>
+Si est&aacute; utilizando esta opci&oacute;n con la herramienta de Alineado por Deriva,
+la ventana se ver&aacute; un poco diferente:
+<br><br>
+<img style="width: 327px; height: 350px;" alt="" src="Manual_mount_drift.png">
+<br><br>
+Si ud ingresa la informaci&oacute;n adicional para Ascensi&oacute;n Recta, latitud y
+longitud, la herramienta de Alineado por Deriva puede ajustar en forma
+m&aacute;s precisa el c&iacute;rculo objetivo color violeta. De otra manera, el c&iacute;rculo
+s&oacute;lo mostrar&aacute; el estimado superior del error de apuntado durante las
+fases de 'ajuste'.
+<br><br>
+Puede conectar o desconectar la montura auxiliar "Preguntar por coordenadas"
+sin afectar las conexiones con la c&aacute;mara o la montura. Por lo que puede
+decidir utilizar esta opci&oacute;n para alineado por deriva o para un 
+movimiento inicial a su objetivo de imagen, para luego desconectarla
+para evitar las ventanas emergentes repetitivas. Sin importar c&oacute;mo
+elija utilizarlo, ud ser&aacute; el responsable de tener los valores correctos,
+y deber&iacute;a recordar que valores significativamente equivocados
+podr&iacute;an resultar en un guiado malo.
+<br><br>
+<h3><a name="Advanced_Settings_for_the_Simulators"></a>Configuraci&oacute;n Avanzada para los Simuladores</h3>
+Los simuladores de dispositivos fueron introducidos en la secci&oacute;n
+<a href="Basic_use.htm">Uso B&aacute;sico</a> como herramientas &uacute;tiles para
+experimentar con <span style="font-style: italic;">PHD2</span> y
+familiarizarse con sus caracter&iacute;sticas. Recuerde que ud debe
+elegir 'Simulador' como el tipo de c&aacute;mara y 'En-C&aacute;mara' como el
+tipo de montura para obtener todos los beneficios de la simulaci&oacute;n.
+A medida que se interese m&aacute;s en los beneficios de la simulaci&oacute;n,
+puede utilizar el bot&oacute;n 'Configuraciones de C&aacute;mara' en la ventana
+principal para ajustar los par&aacute;metros de la simulaci&oacute;n:
+<br>
+<br>
+<img style="width: 775px; height: 428px;" alt="" src="Tools_simulator.png"><br>
+<br>
+<br>
+Puede ajustar los comportamientos de la montura simulada en backlash
+en declinaci&oacute;n, deriva por errores en alinaci&oacute;n polar y error peri&oacute;dico.
+Tambi&eacute;n puede ajustar el nivel de 'seeing', lo que le permitir&aacute; crear
+movimientos de estrella muy real&iacute;sticos, que se ven como efecto del
+seeing. Si ajusta estos par&aacute;metros uno a uno, ver&aacute; como afectan a los
+movimientos de la estrella y como reaccionan los diferentes algoritmos
+de guiado a esos movimientos. Por supuesto, ud est&aacute; tratando con una
+montura 'casi perfecta' en estos escenarios (excepto por backlash), por
+lo que la simulaci&oacute;n no puede ser enteramente real&iacute;stica.
+<br><h3>
+<a name="Multiple_Executions"></a>Ejecuciones de Programa M&uacute;ltiples</h3>
+En algunas circunstancias, podr&iacute;a querer ejecutar varias instancias de
+PHD2 en forma simult&aacute;nea. Para iniciar una segunda instancia de PHD2,
+necesitar&aacute; utilizar un par&aacute;metro de l&iacute;nea de comando de -i 2; la tercera
+instancia se iniciar&aacute; con -i 3 y as&iacute;. Puede lograr esto en Windows
+ejecutando PHD2 desde l&iacute;nea de comando, utilizando la utilidad de cmd.exe.
+O puede crear un acceso directo en el escritorio haciendo lo siguiente:
+<br><br>
+<div style="margin-left: 40px;">Click-bot&oacute;n derecho en el escritorio
+<br>
+Seleccionar: Nuevo Acceso Directo
+<br>
+Ingrese lo siguiente para identificar la ubicaci&oacute;n del programa: "C:\Program File (x86)\PHDBuiding2\PHD2.exe" -i2
+<br>
+Click en Siguiente
+<br>
+Ingrese el nombre para este acceso directo, por ej. PHD2 #2
+<br>
+Click en Finalizar
+<br></div>
+<br>
+Note que las comillas en el nombre en la tercera l&iacute;nea son requeridas
+por Windows ya que hay espacios en el nombre del directorio.
+<br>
+<h3><a name="Keyboard_Shortcuts"></a>Atajos de Teclado</h3>
+Los atajos de teclado est&aacute;n disponibles para las herramientas mas
+utilizadas y para funciones de PHD2. Estos est&aacute;n enumerados en la
+secci&oacute;n <a href="KeyboardShortcuts.htm">Atajos de Teclado</a>.
+
+<h3><a name="Software_Update"></a>Actualizaci&oacute;n de Software</h3>
+
+<p>Una de las respuestas m&aacute;s comunes a un requerimiento de soporte en el
+foro de PHD2 es: por favor, actualice a la &uacute;ltima versi&oacute;n y compruebe
+si el problema a&uacute;n contin&uacute;a. Si est&aacute; teniendo un problema con una
+versi&oacute;n vieja de PHD2 es muy probable que no sea la primera persona
+en encontrarse con &eacute;l, y que ese problema ya haya sido reportado y 
+corregido en una versi&oacute;n m&aacute;s nueva de PHD2. Por esta raz&oacute;n, los
+desarrolladores de PHD2 pensamos que es muy importante que ud est&eacute;
+ejecutando la &uacute;ltima versi&oacute;n disponible del programa.</p>
+
+<p>Actualizar el programa en el que conf&iacute;a para toma de im&aacute;genes
+en forma aut&oacute;noma en nuestro limitado tiempo de cielo limpio y despejado
+se percibe muchas veces como una proposici&oacute;n riesgosa. Los desarrolladores
+de PHD2 reconoces este sentimiento - tambi&eacute;n somos astrofot&oacute;grafos!
+Es un equilibrio entre mantener una instalaci&oacute;n de un software estable
+y mantenerse actualizado con las &uacute;ltimas correcciones a bugs y otras
+mejoras.</p>
+
+<p>PHD2 logra este balance al publicar dos series de versiones de
+software. La de desarrollo contiene las &uacute;ltimas correcciones de errores
+y mejoras en la funcionalidad y son probadas por los desarrolladores -
+usualmente durante tomas de im&aacute;genes reales - antes de ser lanzadas.
+Quienes elijan ejecutar la versi&oacute;n de desarrollo obtendr&aacute;n las &uacute;ltimas
+correcciones de errores y las &uacute;ltimas funcionalidades. Estas versiones
+tienen nombre como "2.6.3dev6" indicando, por ejemplo, que es la 6ta
+versi&oacute;n de desarrollo luego de la publicaci&oacute;n de la versi&oacute;n 2.6.3.</p>
+
+<p>Peri&oacute;dicamente, luego que la versi&oacute;n de desarrollo haya tenido
+suficiente tiempo de prueba, ser&aacute; publicada como una versi&oacute;n mayor. Por
+ejemplo, 2.6.3dev6 se podr&iacute;a publicar como una versi&oacute;n mayor 2.6.4.</p>
+
+<h4>Comprobando actualizaciones</h4>
+
+<p>PHD2 tiene la opci&oacute;n de comprobar actualizaciones de software en forma
+autom&aacute;tica. Le recomendamos habilitar esta opci&oacute;n para ayudarlo a mantener
+su versi&oacute;n de PHD2 al d&iacute;a. Cuando esta opci&oacute;n de comprobaci&oacute;n autom&aacute;tica
+est&aacute; habilitada, PHD2 comprobar&aacute; si hay actualizaciones en forma "silenciosa"
+al iniciarse. Si hay nuevas versiones, PHD2 le dar&aacute; la opci&oacute;n de instalar
+la nueva versi&oacute;n. Habilitando la comprobaci&oacute;n autom&aacute;tica de actualizaciones
+no interfiere en la operaci&oacute;n normal de PHD2, incluyendo la operaci&oacute;n
+automatizada. Tambi&eacute;n es seguro dejar esta opci&oacute;n habilitada si est&aacute;
+en el campo sin una conexi&oacute;n de internet. Si PHD2 no puede comprobar
+las actualizaciones, esperar&aacute; hasta la pr&oacute;xima vez que se lo inicie para
+volver a comprobar.</p>
+
+<p>Sin importar si ud le permite a PHD2 comprobar autom&aacute;ticamente las
+actualizaciones al inicio, ud siempre puede comprobar las actualizaciones
+en forma manual haciendo click "Comprobar Actualizaciones" del men&uacute; de
+ayuda.</p>
+
+</body></html>

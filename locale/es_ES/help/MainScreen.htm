@@ -1,0 +1,108 @@
+﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html><head>
+<meta name="GENERATOR" content="Microsoft� HTML Help Workshop 4.1"><title>Pantalla Principal</title></head>
+<body>
+<h2>Pantalla Principal</h2>
+La pantalla principal de <span style="font-style: italic;">PHD2</span> est&aacute; dise&ntilde;ada para su facilidad de uso y claridad.
+&nbsp;Su intenci&oacute;n es soportar una secuencia r&aacute;pida y natural de interacciones para comenzar y controlar el guiado.
+Los pasos b&aacute;sicos para hacerlo son los siguientes:
+<br>
+<ol>
+<li>Conectar la montura y c&aacute;mara gu&iacute;a</li>
+<li>Comenzar una secuencia de exposiciones gu&iacute;a para determinar que estrellas est&aacute;n disponibles en el campo de visi&oacute;n</li>
+<li>Dejar que PHD2 auto-seleccione una estrella adecuada y calibre el guiado</li>
+<li>Contin&uacute;e guiando la estrella objetivo mientras utiliza varias herramientas visuales para mostrar como funciona el guiado</li>
+<li>Detener y recomenzar el guiado si fuera necesario</li>
+</ol>
+<img style="width: 670px; height: 522px;" alt="" src="Main_Screen.png"><br>
+<p>La mayor&iacute;a de la pantalla se la lleva el campo de estrellas de su c&aacute;mara gu&iacute;a. La pantalla se actualiza autom&aacute;ticamente para
+tama&ntilde;o, luminosidad y contraste para que pueda visualizar las estrellas disponibles. De todos modos, estos ajustes se hacen s&oacute;lo
+para prop&oacute;sitos visuales. Internamente, <span style="font-style: italic;">PHD2</span> opera sobre los datos crudos, sin ajustar
+para maximizar la precisi&oacute;n del guiado. Este display se puede utilizar tambi&eacute;n para seleccionar la estrella gu&iacute;a en forma manual,
+ haciendo click en la caracter&iacute;stica 'Auto selecci&oacute;n de estrella'...
+ Ud puede ajustar el control para ver incluso las estrellas m&aacute;s d&eacute;biles en el campo.
+<br></p>
+<h3><a name="Basic_control"></a>Control B&aacute;sico</h3>
+En la parte baja de la pantalla est&aacute;n los controles principales. &nbsp;<span style="font-style: italic;">PHD2</span> 
+se controla fundamentalmente con estos botones y deslizadores, con men&uacute;s desplegables adicionales en la parte de arriba de la
+ventana para funciones con m&aacute;s detalle. De izquierda a derecha en a ventana, los botones principales son los siguientes:
+<br><ol>
+<li>El &iacute;cono de conexi&oacute;n USB - utilizado para conectar su c&aacute;mara y montura</li>
+<li>El &iacute;cono de Loop - utilizado para iniciar una secuenca de exposiciones repetidas con la c&aacute;mara gu&iacute;a ("looping"), en la que
+cada imagen resultante (cuadro gu&iacute;a) se muestra en la ventana principal. Si el guiado comienza, hacer click en el &iacute;cono 'loop'
+nuevamente pausar&aacute; el guiado, pero continuar&aacute; tomando exposici&oacute;nes gu&iacute;a.</li>
+<li>El &iacute;cono de Autoselecci&oacute;n de estrella - utilizado para iniciar una selecci&oacute;n autom&aacute;tica de la mejor estrella gu&iacute;a en el campo
+de visi&oacute;n. Esta selecci&oacute;n se realiza cuantitativamente, teniendo en cuenta varias cosas - saturaci&oacute;n de la estrella, tama&ntilde;o m&iacute;nimo,
+ratio se&ntilde;al a ruido, proximidad con otras estrellas, proximidad al borde del campo, etc. La t&eacute;cnica casi siempre elegir&aacute; una mejor
+opci&oacute;n que la que ud pueda hacer manualmente, incluso si la estrella seleccionada parece muy d&eacute;bil.</li>
+<li>El &iacute;cono PHD2/Guiar - utilizado para iniciar la calibraci&oacute;n, si es necesaria y entonces comenzar el guiado con la 
+estrella seleccionada.</li>
+<li>El &iacute;cono Detener - utiliado para detener tanto el guiado como la toma de cuadros gu&iacute;a.</li></ol>
+<ol type="1">
+</ol>A la derecha del &iacute;cono Detener hay una lista desplegable de tiempos de exposici&oacute;n (0.01s - 15s). &nbsp;
+Puede utilizar este control para configurar r&aacute;pidamente la duraci&oacute;n de la exposici&oacute;n de su c&aacute;mara. &nbsp;
+Si su c&aacute;mara no soporta una duraci&oacute;n de exposici&oacute;n, <span style="font-style: italic;">PHD2</span> har&aacute; lo mejor para
+simular esa duraci&oacute;n.&nbsp;Por ejemplo, si utiliza una webcam de corta exposici&oacute;n, su exposici&oacute;n m&aacute;xima verdadera podr&iacute;a ser
+de s&oacute;lo 1/30 de segundo. Si ud selecciona1 segundo como el tiempo de exposici&oacute;n deseado, <span style="font-style: italic;">PHD2</span>
+ autom&aacute;ticamente tomar&aacute; im&aacute;genes durante un segundo y las apilar&aacute; para crear una imagen compuesta para guiar.
+<p>El pr&oacute;ximo controla a la derecha es un deslizador para ajustar el constraste, esencialmente un ajuste de "gama".
+ &nbsp;<span style="font-style: italic;">PHD2</span> ajusta autom&aacute;ticamente teniendo en cuenta los p&iacute;xeles m&aacute;s oscuros y los
+ m&aacute;s claros en la imagen, y el slider se usa para afinar la muestra para ver mejor las estrellas en el campo de visi&oacute;n.
+&nbsp;Esto puede ser &uacute;til, por ejemplo si est&aacute; intentando enfocar la c&aacute;mara gu&iacute;a por primera vez y necesita ver las
+estrellas grandes, desenfocadas. Mover el deslizador gama s&oacute;lo hace que la muestra en la pantalla sea m&aacute;s brillante u oscura para
+su visualizaci&oacute;n. <span style="font-style: italic;">PHD2</span> siempre utiliza los pixeles directos de la c&aacute;mara para guiar, y
+mover este deslizador no tiene efecto alguno en el guiado. Una muestra "totalmente blanca" o "totalmente oscura" usualmente indica
+ que no hay estrellas disponibles en el campo de visi&oacute;n. &nbsp;La correci&oacute;n gama autom&aacute;tica de la imagen es una fuente usual
+ de confusi&oacute;n para los usuarios porque no lo ajustan apropiadamente para ver estrellas d&eacute;biles en el display.
+&nbsp;Las estrellas que PHD2 auto selecciona pueden parecer m&aacute;s d&eacute;biles e inferiores a estrellas m&aacute;s brillantes que ud vea en la 
+ventana. &nbsp;Estos resultados no son tales, ya que PHD2 usualmente realiza un mejor trabajo al elegir la estrella gu&iacute;a del que
+puede hacer ud a simple vista. &nbsp;Como regla, si ud ha seleccionado una estrella cuyo nombre es conocido para ud, seguramente
+sea demasiado brillante para ser una buena elecci&oacute;n como estrella gu&iacute;a.
+</p>
+<p>A continuaci&oacute;n del deslizador est&aacute; el "bot&oacute;n cerebro". Este bot&oacute;n abre la ventana <a href="Advanced_settings.htm">Ajustes Avanzados </a>
+para realizar ajustes finos al guiado de <span style="font-style: italic;">PHD2</span>. &nbsp;Un objetivo importante de dise&ntilde;o
+del programa es minimizar su necesidad de cambiar estos par&aacute;metros, pero el "cerebro" no debe ser temido - ah&iacute; hay ajustes que
+pueden mejorar los resultados del guiado y hacer su vida m&aacute;s f&aacute;cil. &nbsp;T&oacute;mese su tiempo para darle una mirada a esta ventana
+y aprenda lo que puede hacer por ud.
+</p>El control m&aacute;s a la derecha en esta fila es el bot&oacute;n "propiedades de c&aacute;mara".
+&nbsp; Dependiendo de su c&aacute;mara en particular, este bot&oacute;n puede estar habilitado para darle acceso a la ventana de configuraci&oacute;n
+espec&iacute;fica de su c&aacute;mara.
+&nbsp;De todos modos, las propiedades comunes a todas las c&aacute;maras como ganancia y binning normalmente estar&aacute;n en la solapa
+'C&aacute;mara' de la ventana Ajustes Avanzados de PHD2.&nbsp;
+Si el bot&oacute;n est&aacute; deshabilitado, todas las propiedades se pueden modificar desde la ventana Configuraci&oacute;n Avanzada de PHD2.
+ &nbsp;Con las c&aacute;maras gu&iacute;a modernas, este bot&oacute;n puede estar deshabilitado porque no agrega capacidades m&aacute;s all&aacute; de lo disponible
+en la ventana COnfiguraci&oacute;n Avanzada.
+<br>
+<h3><a name="Menus"></a>Menues</h3>Los men&uacute;es desplegables arriba de la ventana de guiado son utilizados para acceder a una
+variedad de funciones. &nbsp;Estas est&aacute;n descriptas en las secciones <a href="Darks_BadPixel_Maps.htm">Darks</a>,
+ <a href="Tools.htm">Herramientas y Utilidades</a><big><big><span style="font-weight: bold;">, </span></big></big>y
+  <a href="Visualization.htm">Visualizaci&oacute;n&nbsp;</a><span style="font-weight: bold;"></span> de este documento de ayuda.
+<h3><a name="Status_Bar"></a>Barra de Estado</h3><img style="width: 704px; height: 30px;" alt="" src="Main_Status.png">
+<br><br>La barra de estado en la parte baja de la ventana principal es utilizada para mostrar mensajes e informaci&oacute;n de estado
+ que le ayude a estar al tanto de las operaciones de guiado. &nbsp;
+<br><br>Cerca del centro de la barra de estado hay campos que muestran el estado actual de la estrella gu&iacute;a.
+&nbsp;Si el valor SNR baja a menos de 10, su valor se mostrar&aacute; color amarillo como advertencia de que puede encontrar algunos
+eventos de 'estrella perdida'. &nbsp;Si la estrella gu&iacute;a est&aacute; saturada, el campo a la izquierda de SNR mostrar&aacute; 'Saturada'
+en color rojo.
+<br><br>A la derecha de los campos de status de la estrella hay dos campos de texto que muestran el &uacute;ltimo comando de guiado de
+RA y Dec. &nbsp;Muestran el tama&ntilde;o del pulso de guiado, el tama&ntilde;o del desplazamiento de la estrella en p&iacute;xeles y una flecha
+mostrando la direcci&oacute;n.
+&nbsp;Las flechas siguen las convenciones normales de un compas: Dec arriba/abajo se corresponde a norte/sur, RA izquierda/derecha
+ se corresponde con oeste/este.
+&nbsp;toda esta informaci&oacute;n se captura en los archivos log y muestra en las distintas herramientas gr&aacute;ficas, y &eacute;stas son las que debe
+utilizar para visualizar la calidad del guiado. &nbsp;Pero estos campos de estado le pueden dar una referencia visual r&aacute;pida
+cuando algo se est&aacute; comportando en forma inusual.
+<br><br>El panel m&aacute;s a la derecha en la barra de estado muestra &iacute;conos que le dan referencias visuales acerca del estado actual de
+PHD2:. &nbsp;Estos &iacute;conos est&aacute;n codificados en colores para darle un tablero de estado actual y tienen los siguientes significados:
+<br><br>'Dark'- rojo significa que no se est&aacute; utilizando una librer&iacute;a de darks ni mapa de pixeles malos, verde significa que uno
+de los dos se est&aacute; utilizando. &nbsp;Si est&aacute; utilizando un mapa de p&iacute;xeles malos, el texto dir&aacute; 'BPM' en lugar de 'Dark'.
+<br><br>'Cal' - muestra el estado de la calibraci&oacute;n. &nbsp;Rojo significa que la montura est&aacute; sin calibrar, mientras que amarillo
+significa que hay calibraci&oacute;n pero que no se est&aacute; ajustando autom&aacute;ticamente para acompa&ntilde;ar a la posici&oacute;n donde apunta el 
+telescopio. &nbsp;Esto suceder&aacute; cuando no est&eacute; utilizando una conexi&oacute;n ASCOM o montura 'aux en PHD2. &nbsp;Si el &iacute;cono est&aacute;
+amarillo, normalmente necesitar&aacute; recalibrar cuando mueva el telescopio a una posici&oacute;n de declinaci&oacute;n diferente.
+<br><br>"La Pelota" - indica si el equipamiento en su perfil se ha conectado correctamente. &nbsp;Si la pelota es de color
+amarillo, algunos componentes no est&aacute;n conectados, mientras que verde significa que todo est&aacute; conectado.
+<br><br>Pasando el cursor del mouse sobre alguno de estos &iacute;conos de estado, ver&aacute; detalles del estado actual.
+<br><br>
+<p></p>
+</body></html>

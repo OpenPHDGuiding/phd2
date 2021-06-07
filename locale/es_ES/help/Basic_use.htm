@@ -1,0 +1,634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html><head><title>Utilizando Guiado con PHD</title></head>
+<body>
+<h2>Utilizando Guiado con <span style="font-style: italic;">PHD2</span></h2>
+Para comenzar a guiar son necesarios cinco pasos b&aacute;sicos.
+<ol type="1">
+<li>Presione el bot&oacute;n con el &iacute;cono USB y conecte su montura y c&aacute;mara gu&iacute;a.</li>
+<li>Elija una duraci&oacute;n de exposici&oacute;n de la lista.</li>
+<li>Toca el bot&oacute;n loop y vea las estrellas disponibles, ajustando el foco si es necesario.
+ Mueva la montura o ajuste la duraci&oacute;n de exposici&oacute;n como sea necesario para encontrar
+ una estrella gu&iacute;a adecudad.</li>
+<li>Click&nbsp;el &iacute;cono 'Auto-Seleccionar Estrella' para elegir la mejor estrella gu&iacute;a.</li>
+<li>Presione el bot&oacute;n <span style="font-style: italic;">PHD2</span>
+Gu&iacute;ado.</li>
+</ol>
+En las siguientes secciones se describen en m&aacute;s detalle estas operaciones.<br>
+<ul>
+<li><a href="#Equipment_Connection">Conectar Equipamiento</a></li>
+<li><a href="#Exposure_Time_and_Star_Selection">Tiempo de Exposici&oacute;n y Selecci&oacute;n de Estrella</a></li>
+<li><a href="#Automatic_Calibration">Calibraci&oacute;n</a></li>
+<li><a href="#Guiding">Guiando</a></li>
+</ul>
+<br>
+<h3><a name="Equipment_Connection"></a>Conectando Equipamiento</h3>
+Para comenzar el guiado, <span style="font-style: italic;">PHD2</span>
+primero tiene que conectarse a su equipo:
+c&aacute;mara gu&iacute;a, montura y, opcionalmente, una montura 'auxiliar', un dispositivo de &oacute;ptica Adaptativa
+(OA), o un rotador. &nbsp;Cuando haga click en el &iacute;cono USB,
+ ver&aacute; una ventana como esta - todas las opciones en esta ventana se revisan a continuaci&oacute;n.<br>
+<br>
+<img style="width: 503px; height: 308px;" alt="" src="GearDialog_Basic.png"><br>
+<br><h4><a name="Equipment_Profile"></a>Perfiles de Equipo</h4>
+En la parte mas alta de la ventana 'Conectar Equipo' hay controles para manejar
+los perfiles de equipo. &nbsp;Todos los par&aacute;metros de guiado de <span style="font-style: italic;">PHD2</span>,
+por defecto u otro, se guardan autom&aacute;ticamente como parte de un perfil de equipo.
+ &nbsp;Si ud posee un solo equipo gu&iacute;a - utiliza la misma combinaci&oacute;n de c&aacute;mara
+ y telescopio gu&iacute;a cada vez - s&oacute;lo necesitar&aacute; un perfil. &nbsp;Pero ud puede
+tener m&uacute;ltiples configuraciones de equipo - por ejemplo, seguimiento off-axis
+para un telescopio de focarl larga y una configuraci&oacute;n de telescopio/c&aacute;mara gu&iacute;a
+para un telescopio de menor longitud focal.
+ &nbsp;Los par&aacute;metros de gu&iacute;a de <span style="font-style: italic;">PHD2</span>
+para esas configuraciones seguramente ser&aacute;n diferentes, por lo que ud seguramente
+ querr&aacute; utilizar diferentes perfiles de equipo
+ &nbsp;Los controles en la parte mas alta de la ventana 'Conectar Equipo'
+le permite elegir el perfil que desea utilizar y crear/editar/borrar perfiles a su conveniencia.
+ &nbsp;Cuando seleccione un perfil y se conecta a su equipo asociado, todos los par&aacute;metros
+ &nbsp;utilizados en la &uacute;ltima sesi&oacute;n con ese perfil, son cargadas autom&aacute;ticamente.
+&nbsp;una vez que haya establecido el perfil que necesita - podr&iacute;a ser
+&uacute;nicamente el por defecto - ud puede simplemente hacer click en el bot&oacute;n
+ 'Conectar Todo' y ya est&aacute; listo para continuar
+ &nbsp;Si ud ya tiene un perfil por defecto adecuado para su equipo y
+ simplemente desea conectar al equipo&nbsp;como antes, puede hacer
+&lt;shift&gt;-click en el bot&oacute;n 'USB' de la pantalla principal y <span style="font-style: italic;">PHD2</span> 
+reconectar&aacute; autom&aacute;ticamente a su equipo.<br><br>Para nuevos usuarios en particular, la opci&oacute;n m&aacute;s importante
+en la lista de 'Gestionar Perfiles' es &nbsp; <a href="Basic_use.htm#New_profile_wizard">Asistente de Nuevo Perfil</a>.
+&nbsp;Utilizar este asistente es la forma m&aacute;s f&aacute;cil de asegurarse haber especificado todos los par&aacute;metros
+ requeridos y tener una definici&oacute;n de perfil coherente para su equipo.<br>
+<h4><a name="Camera_Selection"></a>Seleccionar C&aacute;mara</h4>
+La lista desplegable C&aacute;mara muestra todos los tipos de c&aacute;maras soportadas actualmente por
+<span style="font-style: italic;">PHD2</span>.
+&nbsp;En todos los casos, los drivers de Sistema Operativo para la c&aacute;mara deben estar correctamente instalados
+para que PHD2 se conecte al dispositivo.
+&nbsp;Si la c&aacute;mara usa una interfaz ASCOM, ud tambi&eacute;n necesitar&aacute; instalar
+el driver ASCOM correspondiente a su c&aacute;mara. &nbsp; Si ud no ve su c&aacute;mara compatible con ASCOM en la lista desplegable,
+ probablemente no tenga el driver ASCOM instalado. Con PHD2 no se incluyen ni dirvers ASCOM, ni drivers de SO,
+ por lo que deben ser buscados, descargados e instalados por separado. &nbsp; Para c&aacute;maras no-ASCOM, PHD2
+incluye las librer&iacute;as adicionales necesarias para utilizar la c&aacute;mara. &nbsp;En algunos casos, la c&aacute;mara
+puede ofrecer tanto ASCOM como interfaces propietarias. Ud puede elegir la de su preferencia. &nbsp;
+En algunos casos, las dos versiones diferentes podr&iacute;an operar la c&aacute;mara en formas ligeramente diferentes o
+mostrar distintas opciones o propiedades.
+<br><br>No es pr&aacute;ctico proveer una lista completa de las c&aacute;maras
+que son soportadas por PHD2. &nbsp;En muchos casos, los proveedores de c&aacute;maras extienden sus l&iacute;neas
+de productos actualizando sus drivers sin necesidad de cambiar las librer&iacute;as utilizadas por PHD2.
+ &nbsp;En esos casos, no nos enteraremos de estos cambios a menos que un usuario reporte
+ inconvenientes. &nbsp;La lista mostrada m&aacute;s abajo debe ser interpretada como sigue:
+<br>1. &nbsp;Si el proveedor de la c&aacute;mara est&aacute; totalmente ausente, es poco probable que la c&aacute;mara
+ est&eacute; soportada, o puede estar soportada utilizando la interface web-cam.
+<br>2. &nbsp;Si el modelo de c&aacute;mara se muestra en la lista, SI est&aacute; soportada a menos que haya problemas
+sin soluci&oacute;n con los drivers del proveedor
+<br>3. &nbsp;Si el modelo espec&iacute;fico de c&aacute;mara no est&aacute;, pero hay modelos m&aacute;s antigüos, es muy probable
+ que la c&aacute;mara SI est&eacute; soportada
+<br>4. &nbsp;Si la c&aacute;mara utiliza una interfaz ASCOM, SI est&aacute; soportada
+
+<br><br>Al ser PHD2 una descarga gratuita, la forma m&aacute;s simple de validar es &nbsp;
+instalar el programa y ver si su c&aacute;mara se muestra en la lista desplegable de PHD2.
+&nbsp;Alternativamente, puede revisar la informaci&oacute;n de c&aacute;maras soportadas en la Wiki del Foro Google de PHD2:
+ &nbsp;<a href="https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport">https://github.com/OpenPHDGuiding/phd2/wiki/CameraSupport</a>
+<br><br>Finalmente, siempre puede publicar un mensaje en el&nbsp;<a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a>
+ preguntando si alguien tiene experiencia con esa c&aacute;mara. &nbsp;<br><br>
+Lista b&aacute;sica de c&aacute;maras soportadas:
+<br><br>Windows:<br><ul class="circle"><li>C&aacute;maras compatibles con ASCOM v5/6</li><li>Altair</li><li>Serie Atik 16, color o monocromo</li><li>Atik Gen 3 color o monocromo</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color y monocromo</li><li>OpenCV</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>Rotador SBIG</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>ToupTek</li><li>Webcams (LXUSB, paralelo, serie, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color y monocromo</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><h4><a name="SBIG_dual_chip_cameras"></a>
+Soporte para C&aacute;maras Dual-Chip SBIG</h4>
+Muchas c&aacute;maras de Santa Barbara Instrument Group (SBIG) tienen dos
+&nbsp;sensores - uno principal para fotograf&iacute;a y un secundario, m&aacute;s peque&ntilde;o para guiado.
+ &nbsp;Mientras los dos sensores est&aacute;n f&iacute;sicamente separados, comparten
+ &nbsp;electr&oacute;nica dentro de la c&aacute;mara y, m&aacute;s importante, comparten una &uacute;nica conexi&oacute;n USB a la computadora.
+ &nbsp;Esto significa que&nbsp;la descarga de datos de los dos sensores debe ser coordinada - no se puede
+bajar una imagen de gu&iacute;a mientras se descarga una imagen del sensor principal.
+ &nbsp;Adem&aacute;s de esto, Windows permite que s&oacute;lo una aplicaci&oacute;n se conecte a la c&aacute;mara en un momento dado
+ por una misma conexi&oacute;n.
+ &nbsp;Estas son restricciones f&iacute;sicas y de arquitectura que no pueden ser evitadas por PHD2.
+ &nbsp;De todos modos, es posible para la aplicaci&oacute;n que controla la c&aacute;mara (captura de imagen),
+ implementar una interface para PHD2&nbsp;para obtener datos del chip gu&iacute;a - esencialmente,
+un mecanismo de "puerta de acceso" que cumple con las reglas anteriores.
+&nbsp;Con esta configuraci&oacute;n, la aplicaci&oacute;n de captura de imagen act&uacute;a como
+un polic&iacute;a de tr&aacute;nsito que coordina el acceso a los dos sensores de la c&aacute;mara. &nbsp;
+Al momento de escribir este art&uacute;clo (2019), la &uacute;nica aplicaci&oacute;n que hace esto es Sequence Generator Pro (SGP).
+ &nbsp;Si ud usa SGP como su aplicaci&oacute;n principal, puede utilizar su m&oacute;dulo "SGP API Guider", que le permite
+acceso a PHD2 al chip gu&iacute;a en la c&aacute;mara SBIG.
+<br><h4>Propiedades de C&aacute;mara ASCOM</h4>
+Si ud elige una c&aacute;mara ASCOM, tambi&eacute;n necesitar&aacute; acceder a la ventana de configuraci&oacute;n de ASCOM para su c&aacute;mara
+ haciendo click en el bot&oacute;n de propiedades ubicado inmediatamente a la izquierda del bot&oacute;n 'Conectar':
+<br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_AscomProps.png">
+<br><br>Dependiendo de la c&aacute;mara, esto le permitir&aacute; tener acceso a propiedades que no son controlados por.
+<br><h4>M&uacute;ltiples C&aacute;maras del Mismo Tipo</h4>
+Si su computadora est&aacute; conectada a m&uacute;ltiples c&aacute;maras del mismo fabricante, necesitar&aacute; indicar cu&aacute;l de las c&aacute;maras
+ deber&iacute;a ser utilizada por PHD2.
+ &nbsp;Esto se hace con un click en el bot&oacute;n 'tenedor' a la derecha de la lista desplegable de c&aacute;maras:
+ <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_Camera2.png">
+<br><br>Haciendo click en este bot&oacute;n mostrar&aacute; una lista de todas las c&aacute;maras disponibles y le permitir&aacute;
+elegir la deseada. &nbsp;PHD2 recordar&aacute; la elecci&oacute;n y la guardar&aacute; como parte del perfile de equipo,
+por lo que s&oacute;lo necesitar&aacute; hacer esto una vez. &nbsp;Otra alternativa es simplemente conectar una de las c&aacute;maraas,
+la que utilice como gu&iacute;a, al momento de completar el perfil de equipo.
+<h4><a name="Mount_Selection"></a>Selecci&oacute;n de Montura</h4>
+La lista desplegable Montura muestra&nbsp;opciones para conectar su montura. &nbsp;Normalmente hay dos formas de
+ realizar esto:<br>
+<ol>
+<li>Utilice un driver compatible con ASCOM (o INDI) que env&iacute;e commandos gu&iacute;a por un cable serie (o m&aacute;s com&uacute;n,
+ &nbsp;una conexi&oacute;n USB/Serie)</li>
+<li>Utilice un puerto gu&iacute;a compatible con ST-4 en la montura con un cable especializado y un dispositivo intermedio
+como una c&aacute;mara o una caja Shoestring</li>
+</ol>
+La interfaz
+<a name="ASCOM"></a>depende de driver de terceros para comunicarse con la montura. &nbsp;
+Estos drivers est&aacute;n disponibles en el sitio web de ASCOM (<a href="http://www.ascom-standards.org/">ASCOM Standards</a>)
+o del fabricante de la montura - no son distribu&iacute;dos junto a <span style="font-style: italic;">PHD2</span>. Por lo tanto,
+la lista desplegable ser&aacute; poblada s&oacute;lo por los drivers ASCOM que ud haya instalado previamente en su computadora.
+ &nbsp;El driver ASCOM debe soportar la interface 'PulseGuide', que es un requerimiento para cumplir con el est&aacute;ndar
+ ASCOM desde hace muchos a&ntilde;os y est&aacute; soportado ampliamente.&nbsp;
+Con este tipo de control de la montura, los comandos gu&iacute;a son enviados desde <span style="font-style: italic;">PHD2</span>
+ a la montura por la interfaz serie. &nbsp;Los comandos gu&iacute;a de alto nivel que <span style="font-style: italic;">PHD2</span> env&iacute;a
+(p.ej. "Mover al Este 500 mSeg") son traducidos por el firmware de la montura a las se&ntilde;ales apropiadas para que los motores
+ejecuten el comando. &nbsp;Con la interfaz ASCOM, <span style="font-style: italic;">PHD2</span> tambi&eacute;n puede obtener la
+posici&oacute;n a donde apunta la montura, especialmente la declianci&oacute;n y el lado de la columna, que pueden ser utilizados como
+&nbsp;factores para calibraci&oacute;n de gu&iacute;a y mejorar la facilidad de uso.<br>
+<p>La interfaz "Puerto-Gu&iacute;a" utiliza un puerto de control especializado a nivel de hardware disponible en la mayor&iacute;a de
+ monturas. &nbsp;Para utilizar este tipo de interfaz, tiene que haber otro dispositivo
+en la conexi&oacute;n entre <span style="font-style: italic;">PHD2</span> y la montura:</p>
+<ol>
+<li>Cualquier c&aacute;mara gu&iacute;a que tenga una interfaz gu&iacute;a "en-c&aacute;mara". Utilice la opci&oacute;n de montura 'en c&aacute;mara' para esta configuraci&oacute;n.</li>
+<li>Cualquier dispositivo Shoestring GP-xxx</li>
+<li>Un dispositivo OA con una interfaz de guiado</li>
+</ol>
+Con este estilo de interfaz, los comandos gu&iacute;a de &nbsp; <span style="font-style: italic;">PHD2</span>
+como "Mover al Oeste 500 mSeg" son traducidos por el dispositivo intermedio (c&aacute;mera, caja Shoestring, OA) a
+&nbsp;se&ntilde;ales el&eacute;ctricas necesarias para mover el motor de la montura la cantidad de tiempo necesaria. &nbsp;
+<br><h4><a name="Aux_mount_selection"></a>Seleccionar Montura Auxiliar</h4>
+Si ud ha seleccionado un tipo de gu&iacute;a ST-4 en la secci&oacute;n 'Montura',&nbsp;esa interfaz no puede ser utilizada para
+obtener la posici&oacute;n a donde apunta el telescopio. &nbsp;Como consecuencia, &nbsp;la calibraci&oacute;n de guiado no
+se podr&aacute; ajustar autom&aacute;ticamente para declinaci&oacute;n, ni podr&aacute; hacer cambios autom&aacute;ticos al cambiar de lado del pie.
+ &nbsp;ud puede regresar estas caracter&iacute;sticas especificando una conexi&oacute;n a una montura "Aux" que ser&aacute; utilizada
+&nbsp;para obtener la informaci&oacute;n de a d&oacute;nde apunta el telescopio. &nbsp;A continuaci&oacute;n, un ejemplo:
+ <br><br><img style="width: 503px; height: 308px;" alt="" src="GearDialog_AuxMount.png">
+ <br><br>Para usuarios de Windows, la montura "Aux" puede utilizar cualquiera de los drivers de montura compatibles
+ con ASCOM, mientras los usuarios de Linux pueden utilizar drivers INDI.
+&nbsp;La opci&oacute;n de montura "Aux" ser&aacute; utilizada s&oacute;lo si la interfaz de montura primaria no devuelve
+informaci&oacute;n de apuntado - de otra forma, ser&aacute; ignorada. &nbsp;Nota: algunas monturas
+ (p.ej. Celestron e iOptron) tienen un puerto f&iacute;sico separado tambi&eacute;n nombrado 'Aux' - NO USE ESE PUERTO&nbsp;
+ para guiado - no est&aacute; relacionado con la conexi&oacute;n 'Aux' de PHD2. &nbsp;La &uacute;ltima entrada en la lista de conexiones
+ de 'Montura Aux' es "Preguntar por coordenadas". &nbsp;Esto puede proveedr una facilidad de montura aux rudimentaria
+si no puede utilizar una conexi&oacute;n ASCOM o INDI con su montura. &nbsp;Si necesita utilizar esta opci&oacute;n, lea los detalles en 
+la secci&oacute;n&nbsp;<a href="Tools.htm#Ask_for_coordinates_aux_mount">Herramientas</a>.
+<br><br>La mayor&iacute;a de los drivers ASCOM utilizan una interfaz de puerto serie, entonces el driver espera utilizar
+uno de los puertos 'COM' de Windows. &nbsp;Dado que la mayor&iacute;a de las PCs actuales ya no tienen conexiones serie, ud puede
+utilizar uno de los puertos USB y un adaptador USB-Serie. El software que viene con el adaptador crear&aacute; un puerto COM virtual,
+y ese es el que utilizar&aacute; el driver ASCOM. La primera vez que conecte la montura con ASCOM (tanto sea 'Montura' como 'Aux'),
+deber&aacute; decirle al driver que puerto COM utilizar. &nbsp;Eso es parte de la ventana de configuraci&oacute;n del driver, y se puede
+abrir f&aacute;cilmente haciendo click en el &iacute;cono 'propiedades' justo a la izquierda del bot&oacute;n 'Conectar' en la imagen de arriba.
+ &nbsp;Una vez haya realizado esto, el puerto COM ser&aacute; guardado como parte del perfil de equipo.
+<br><h4><a name="ASCOM_Benefits"></a>Beneficios de utilizar conexiones ASCOM (o INDI)</h4>
+Si ud est&aacute; utilizando Windows, probablemente ser&aacute; mejor que utilice una conexi&oacute;n ASCOM para guiar su montura.
+&nbsp;En otros sistemas operativos, su mejor opci&oacute;n probablemente sea una conexi&oacute;n INDI si est&aacute; disponible.
+&nbsp;Esta sugerencia puede ser contraria a alguna experiencia previa o folklore de la Web y probablemente no sea lo que
+escuche del fabricante de la c&aacute;mara gu&iacute;a. &nbsp;Pero los beneficios de hacerlo de esta forma con PHD2 son sustanciales,
+ y deber&iacute;a utilizar esta alternativa a menos que tenga&nbsp;informaci&oacute;n espec&iacute;fica y cre&iacute;ble en su contra.
+ &nbsp;Estos son algunos de los beneficios principales:
+<br><ol><li>Una reducci&oacute;n dr&aacute;stica en el n&uacute;mero de recalibraciones que necesitar&aacute; realizar. &nbsp;Cambiar de objetivo
+ <span style="font-weight: bold;">no</span>
+necesita otra calibraci&oacute;n&nbsp;PHD2 conoce donde apunta el telescopio y puede realizar ajustes autom&aacute;ticos a la
+ calibraci&oacute;n gu&iacute;a. &nbsp;La mayor&iacute;a de usuarios realiza una buena calibraci&oacute;n y la reutiliza&nbsp;
+hasta que hace alg&uacute;n tipo de cambio en el equipo.</li>
+<li>Ajuste autom&aacute;tico de cambios de meridiano - no necesita recordar calibrar los datos del cambio en forma manual.</li>
+<li>Ajuste autom&aacute;tico de la calibraci&oacute;n de RA para encargarse de objetivos en diferentes partes del cielo (compensaci&oacute;n de declinaci&oacute;n)</li>
+<li>Eliminar el cable gu&iacute;a ST-4 como un punto de fallo - un problema sorprendentemente com&uacute;n son los cables&nbsp;
+se pueden da&ntilde;ar o confundir con otros cables similares (p.ej. cables de tel&eacute;fono)</li>
+<li>Eliminar un cable que se puede atorar, tirar o trabar mientras el telescopio se mueve.</li>
+<li>Habilidad mejorada en PHD2 para realizar verificaciones de los resultados de calibraci&oacute;n y advertir de
+posibles problemas antes que ud pierda horas de tiempo de exposici&oacute;n.</li>
+<li>Mejor informaci&oacute;n de diagn&oacute;stico y soluci&oacute;n de problemas, particularmente &uacute;til si necesita pedir asistencia</li>
+<li>Disponibilidad de opciones de movimiento de telescopio durante la alineaci&oacute;n por deriva, que puede acelerar
+el proceso de alineaci&oacute;n polar</li>
+</ol>Si posee una montura de antes de 2005 aproximadamente, puede no tener un soporte para guiado por pulsos con ASCOM
+ en el firmware de la montura. &nbsp;En esos casos, puede obtener mejores resultados con el guiado utilizando la interfaz ST-4.
+ &nbsp;Si est&aacute; en duda, revise la documentaci&oacute;n para su montura o pregunte en uno de los foros acerca del soporte de guiado por
+ pulsos. &nbsp;Incluso as&iacute;, puede utilizar ASCOM para la conexi&oacute;n de montura "aux" y obtener la mayor&iacute;a de los beneficios listados anteriormente.
+ &nbsp;Una equivocaci&oacute;n habitual, que se ve con frecuencia en los foros Web, es que el guiado ST-4, siendo f&iacute;sico, es m&aacute;s
+ eficiente o preciso. &nbsp;En casi cualquier montura moderna, esto ya no es cierto - siempre habr&aacute; software en cada punta del cable,
+ igual que con una gu&iacute;a por ASCOM. &nbsp;Resumiendo: si tiene disponible un driver ASCOM o INDI para su montura, deber&iacute;a utilizarlo.
+<h4><a name="AO_Selection"></a>Selecci&oacute;n de &oacute;ptica Adaptativa y <a name="Rotator_Selection"></a>Rotador</h4>
+Con <span style="font-style: italic;">PHD2</span>, tiene la opci&oacute;n de controlar una unidad de optica adaptativa de Starlight Xpress
+ y/o varias rotadores de c&aacute;mara compatibles con ASCOM &nbsp;Esto puede ser especificado haciendo click en el bot&oacute;n 'Mas Equipo..."
+ en la siguiente ventana:
+<br><br><img style="width: 505px; height: 387px;" alt="" src="GearDialog_Extended.png">
+<br><br>Si no tiene uno de esos dispositivos, s&oacute;lo deje la selecci&oacute;n en 'Ninguno.'
+&nbsp;Si estos dispositivos est&aacute;n conectados, ver&aacute; pesta&ntilde;as adicionales en la ventana 'Configuraciones Avanzadas' que provee
+ acceso a varias propiedades relacionadas con los dispositivos. &nbsp;PHD2 no controla el rotador, pero leer&aacute; el &aacute;ngulo actual
+ del rotador y&nbsp;ajustar&aacute; la calibraci&oacute;n de gu&iacute;a si fuera necesario.
+<br><h4><a name="Simulators"></a>Simuladores</h4>
+Todos los dispositivos en <span style="font-style: italic;">PHD2</span>
+ - c&aacute;mara, montura, OA, rotador - incluyen un simulador integrado. &nbsp;No los
+confunda con alguno de los simuladores ASCOM que puede estar instalados en su sistema
+ - esos tendr&aacute;n 'ASCOM' en sus nombres. &nbsp;A pesar que ud pueda conectarse
+a los simuladores ASCOM, &eacute;stos no proveen la retroalimentaci&oacute;n necesiara para que PHD2
+pueda guiar y calibrar. &nbsp;Como resultado, s&oacute;lo son &uacute;tiles para alg&uacute;n tipo limitado
+de pruebas y experimentaci&oacute;n. &nbsp;Pero puede utilizar los simuladores integrados para explorar
+como funciona <span style="font-style: italic;">PHD2</span>
+y decidir como quiere utilizar el programa.&nbsp; No hay motivo para desperdiciar el escaso
+tiempo bajo las estrellas aprendiendo a utilizar <span style="font-style: italic;">PHD2</span>!
+Virtualmente todas las caracter&iacute;sticas de&nbsp; <span style="font-style: italic;">PHD2</span>
+, incluyendo calibraci&oacute;n completa y todas las opciones de gr&aacute;ficas, trabajar&aacute;n sin problemas
+cuando use los simuladores integrados. &nbsp;Tambi&eacute;n podr&aacute; ver un seguimiento realista,
+para tener una idea de que le espera en el campo. &nbsp;Para utilizar los simuladores,
+elija 'Simulador' para la c&aacute;mara y 'En-c&aacute;mara' para la montura.
+<br><br>Dicho esto, los simuladores <span style="font-weight: bold;">no</span>
+son &uacute;tiles para diagnosticar fallas que encuentre con su montura real.
+&nbsp;Tanto la c&aacute;mara como la montura deben ser&nbsp;dispositivos reales
+para poder diagnosticar problemas o calibrar y hacer funcionar su equipo.
+ &nbsp;En este sentido, lo que ve cuando utiliza los simuladores es algo real&iacute;stico, pero
+no real. &nbsp;Los simuladores puede ser &uacute;tiles en algunos casos para reproducir problemas
+en la aplicaci&oacute;n PHD2, pero no para algo que tenga que ver con su equipo real.
+<br><br><h4><a name="New_profile_wizard"></a>Asistente de Perfil</h4>
+La mejor forma de crear un perfil nuevo es utilizando el "Asistente".
+ &nbsp;El asistente gu&iacute;a a trav&eacute;s de una secuencia de ventanas que
+&nbsp;explican los distintos par&aacute;metros y lo ayudan a decidir como completarlos.
+ &nbsp;Tambi&eacute;n calcula&nbsp;los par&aacute;metros&nbsp;base del algoritmo
+que funcionar&aacute;n razonablemente bien con su equipo.
+&nbsp; Crear un perfil es mas r&aacute;pido y con menos posibilidad de errores
+que haci&eacute;ndolo a mano en la ventana&nbsp;'Conectar Equipo'.
+&nbsp;Cuando ejecuta PHD2
+por primera vez en su sistema, este asistente se ejecutar&aacute; autom&aacute;ticamente.
+ &nbsp;M&aacute;s adelante, puede utilizar el asistente para crear un nuevo perfil haciendo click en
+el campo 'Gestionar Perfiles' en la ventana 'Conectar Equipo', despu&eacute;s &nbsp;
+elegir 'Nuevo usando el Asistente...'. &nbsp;
+<br><br>El Asistente le har&aacute; algunas preguntas que son importantes para poder
+construir su perfil correctamente. &nbsp; El texto de ayuda en cada panel del Asistente
+le deber&iacute;a ayudar a comprender que se le pregunta y que necesita hacerse. &nbsp;
+Pero hay algunos tips adiconales que lo pueden ayudar durante el proceso:
+<br><br><div style="margin-left: 40px;">1. <span style="font-weight: bold;">Opciones de Conexi&oacute;n: </span>
+A medida que va realizando selecciones para varios dispositivos, normalmente
+se le preguntar&aacute; si el dispositivo ya est&aacute; conectado y listo para comunicars
+con PHD2. &nbsp;Si responde 'Si', PHD2 intentar&aacute; conectarse y completar&aacute;
+algunos de los campos con informaci&oacute;n obtenida del dispositivo.
+&nbsp;Si responde 'No' ud deber&aacute; completar esa informaci&oacute;n a mano.
+&nbsp;Si PHD2 intenta conectarse con el dispoitivo y falla, igualmente podr&aacute; continuar&nbsp;
+ingresando los datos en forma manual. &nbsp;
+La conexi&oacute;n de dispositivos en el asistente es una caracter&iacute;stica conveniente
+que le har&aacute; m&aacute;s simple completar los campos con valores correctos. &nbsp;PHD2 no le preguntar&aacute;
+Si ya conoce que el dispositivo no le puede devolver informaci&oacute;n &uacute;til - por ejemplo si la monutra
+elegida es del tipo 'en-c&aacute;mara'
+<br><span style="font-weight: bold;">2. Panel de conexi&oacute;n de c&aacute;mara: tama&ntilde;o de pixel sin binning</span>.
+&nbsp;Si respondi&oacute; 'Si' a la pregunta de conexi&oacute;n,&nbsp; esta informaci&oacute;n normalmente se completar&aacute;
+autom&aacute;ticamente y el control se deshabilitar&aacute;. &nbsp; Si respondi&oacute; 'No' o si el dispositivo
+no reporta el tama&ntilde;o de pixel, deber&aacute; ingresar el valor a mano.&nbsp;
+Ud deber&iacute;a poder obtener el tama&ntilde;o de pixel <span style="font-style: italic;">sin binning</span>
+de las especificaciones de la c&aacute;mara o del sitio web del fabricante.
+&nbsp;Si los pixeles no son cuadrados, s&oacute;lo especifique la dimensi&oacute;n m&aacute;s larga
+o un valor promedio si lo prefiere. &nbsp;Esto no tendr&aacute; efecto alguno en los resultados de guiado,
+pero le permitir&aacute; a PHD2 conocer la escala de imagen de su equipamiento. &nbsp;
+Esto es utilizado para completar par&aacute;metros base de desempe&ntilde;o de guiado, y para obtener soporte
+en nuestro foro.
+<br>3. <span style="font-weight: bold;">Panel de conexi&oacute;n de c&aacute;mara: nivel de binning. &nbsp;</span>
+Si su c&aacute;mara gu&iacute;a permite binning (podr&iacute;a no permitirlo), ud puede especificar que nivel de binning
+desea utilizar para este perfil de equipo. &nbsp;Si desea utilizar el mismo equipo con diferentes
+niveles de binning, es mejor crear perfiles separados para cada valor de binning.
+&nbsp;Si su c&aacute;mra gu&iacute;a tiene p&iacute;xeles muy peque&ntilde;os y ud especific&oacute; una longitud focal larga,
+podr&iacute;a ver un &iacute;cono de 'advertencia' al lado del campo Escala de Pixel. &nbsp;
+Esto le est&aacute; avisando que la escala de imagen sea probablemente muy peque&ntilde;a y que deber&iacute;a habilitar
+alg&uacute;n nivel de binning en la c&aacute;mara de ser posible.
+<br>4.&nbsp;<span style="font-weight: bold;">Panel de conexi&oacute;n de c&aacute;mara: longitud focal de telescopio gu&iacute;a</span>.
+&nbsp;Esto parece dar lugar a errores normalmente, por lo que es necesario ser cuidados y hacerlo bien. &nbsp;
+El valor correcto no es el de la apertura del telescopio gu&iacute;a, es el de la <span style="font-style: italic;">longitud focal</span>.
+&nbsp;Entonces, por ejemplo,&nbsp; si ud est&aacute; guiando con un buscador de 50mm, la longitud focal
+no ser&aacute; 50mm - ser&aacute; probablemente alguna m&aacute;s cerca de los 150-175mm. &nbsp;
+ Un refractor gu&iacute;a de 60-80mm probablemente tenga una longitud focal en el rango de 240-500mm, no 60-80mm. &nbsp;
+De igual forma, si est&aacute; guiando con un OAG en su telescopio principal, la longitud focal ser&aacute; la del
+telescopio principal. &nbsp;En algunos casos, ud puede estar utilizando un reductor focal
+en la c&aacute;mara gu&iacute;a, por lo que esto tambi&eacute;n tiene que ser tenido en cuenta. &nbsp;
+Como el campo de tama&ntilde;o de pixel, la longitud focal no necesita de una alta precisi&oacute;n,
+pero el valor debe estar lo m&aacute;s cerca posible que ud pueda. &nbsp;De no ser as&iacute;, los valores
+de desempe&ntilde;o pueden no reflejar los resultados reales y los par&aacute;metros base de guiado podr&iacute;an no ser
+&oacute;ptimos.
+<br>5. <span style="font-weight: bold;">Panel de conexi&oacute;n de montura: &nbsp;velocidad de guiado de montura</span>. &nbsp;
+Esta es otra &aacute;rea que parece generar confusiones. &nbsp;La velocidad de guiado es un par&aacute;metro fijo
+<span style="font-style: italic;"> de la montura</span> o <span style="font-style: italic;">del</span>
+ <span style="font-style: italic;">driver de la montura</span>,
+es algo que no puede ser controlado por PHD2. &nbsp;PHD2 nunca cambia el valor de velocidad de
+ guiado de la montura, s&oacute;lo lo lee. &nbsp;Usualmente est&aacute; expresado como un m&uacute;ltiplo de la
+ velocidad sideral y t&iacute;picamente est&aacute; en el rango de 0.5x - 1x del valor sideral.
+&nbsp;A pesar de lo que pueda leer en otros lugares, usualmente es mejor utilizar valores
+en este rango antes que velocidades muy bajas. &nbsp; Velocidades de guiado altas
+ayudan a corregir backlash m&aacute;s r&aacute;pidamente y puede ayudar a superar problemas de
+fricci&oacute;n al arrancar. &nbsp;Si responde 'Si' a la opci&oacute;n de conexi&oacute;n, PHD2
+intentar&aacute; leer el valor de velocidad de guiado de la montura. &nbsp;Si esto falla, ud deber&aacute;
+ingresar el valor de velocidad manualmente. &nbsp;PHD2 utiliza este valor para establecer
+autom&aacute;ticamente la calibraci&oacute;n de tama&ntilde;o de paso y ayudar a revisar los resultados de calibraci&oacute;n;
+ pero la informaci&oacute;n de velocidad de guiado no es importante para el guiado en s&iacute;. &nbsp;
+Si ud est&aacute; utilizando diferentes velocidades de guiado en los ejes RA y Dec, ingrese el valor m&aacute;s grande.
+ &nbsp; Si ud no puede determinar que valor de velocidad de guiado posee su montura, deje el valor por
+ defecto de 0.5X. &nbsp;Este panel tambi&eacute;n tiene un tilde para indicar la presencia de encoders de
+ alta presici&oacute;n en la montura. &nbsp;Estos dispositivos son relativamente poco comunes, pero est&aacute; presentes
+a veces en monturas de gama alta, caras y de gran precisi&oacute;n y seguramente ud sabe si la suya los tiene. &nbsp;
+La mayor&iacute;a de los usuarios dejar&aacute;n esa opci&oacute;n sin tildar.
+<br></div><br>En el &uacute;ltimo panel del asistente, se le presentar&aacute;n dos opciones:
+ 1) Recuperar los valores de calibraci&oacute;n autom&aacute;ticamente al momento de cargar el perfil y
+ 2) construir inmediatamente una librer&iacute;a de darks cuando se grabe el perfil y termine el asistente. &nbsp;
+La primera opci&oacute;n s&oacute;lo est&aacute; presente si su perfil utiliza una montura ASCOM o INDI.
+&nbsp;Es una opci&oacute;n conveniente para usuarios con equipos estables. &nbsp;
+Tambi&eacute;n puede utilizar esta ocpi&oacute;n para si puede asegurarse que la orientaci&oacute;n de la c&aacute;mara
+gu&iacute;a en su adaptador permanece inalterada de una noche a la siguiente. &nbsp;
+Si tiene dudas o no quiere ocuparse de c&oacute;mo est&aacute; orientada la c&aacute;mara gu&iacute;a, deje la opci&oacute;n
+sin tildar.&nbsp;
+Ud siempre deber&iacute;a seleccionar la opci&oacute;n de construir una librer&iacute;a de darks a menos que
+ya tenga una librer&iacute;a compatible, que importar&aacute; desde otro perfil. &nbsp;
+Si est&aacute; cambiando c&aacute;maras y quiere guardar la librer&iacute;a de darks y pixeles malos
+asociados con la c&aacute;mara anterior, deber&iacute;a crear un perfil nuevo para la nueva c&aacute;mara. &nbsp;
+Cuando se cambia la c&aacute;mara seleccionada en un perfil existente, la librer&iacute;a de darks y pixeles malos anterior
+ya no podr&aacute; ser utilizada. &nbsp; Esto tambi&eacute;n aplica a utilizar la misma c&aacute;mara con niveles de binning
+diferentes. Equipos utilizando diferentes factores de binning deber&iacute;an mantenerse en perfiles separados
+ya que la librer&iacute;a de darks y pixeles alos depende del factor de binning.<br>
+<br>
+<h3><a name="Exposure_Time_and_Star_Selection"></a>Tiempo de Exposici&oacute;n y Selecci&oacute;n de Estrella</h3>
+La estrella gu&iacute;a permanece seleccionada&nbsp;mientras "bucle" est&aacute; activo. &nbsp;Lo mejor es&nbsp;dejar que PHD2&nbsp;<a href="Tools.htm#Auto-Select_Star">Autoseleccione</a>
+la estrella gu&iacute;a por uds haciendo click en el &iacute;cono 'Autoseleccionar estrella' en la ventana principal. &nbsp;En casi todos los casos,
+har&aacute; un mejor trabajo con la selecci&oacute;n que el que pueda ud realizar manualmente, dado que tiene en cuenta
+otras cosas - por ejemplo,&nbsp; falta de saturaci&oacute;n, calificar como una estrella "real",
+proximidad a otras estrellas y al borde del campo, etc. &nbsp;Si ud elige no utilizar
+la caracter&iacute;stica autoseleccionar, puede seleccionar una estrella gu&iacute;a haciendo click en ella.
+ &nbsp;Despu&eacute;s de haberlo hecho, aparecer&aacute; un cuadrado verde para encuadrar la estrella.
+ &nbsp;Si elige una estrella que sea muy brillante (saturada), la baara de estado mostrar&aacute; en rojo
+ &nbsp; 'SAT' &nbsp;&nbsp;y ud podr&aacute; elegir una estrella m&aacute;s d&eacute;bil.
+&nbsp;Ud deber&iacute;a ajustar el control gamma a la izquierda para ver estrellas m&aacute;s d&eacute;biles.
+ La mayor&iacute;a de los usuarios nuevos se enga&ntilde;an con esto y eligen la estrella m&aacute;s brillante
+que vean en el campo de visi&oacute;n. &nbsp;Pero esa elecci&oacute;n es normalmente una estrella saturada,
+ una elecci&oacute;n mala para auto guiado. &nbsp;La elecci&oacute;n de tiempo de exposici&oacute;n depender&aacute; enteramente de
+ su equipo, condiciones de cielo y las estrellas disponibles. &nbsp;El tiempo de exposici&oacute;n
+ que elija tiene varias consecuencias: <br>
+<ol>
+<li>Afecta la intensidad de la se&ntilde;al (brillo) de la estrella seleccionada - una estrella m&aacute;s brillante
+resaltar&aacute; m&aacute;s del fondo y generalmente producir&aacute; mejores resultados de guiado, en tanto
+no est&eacute; saturada.</li>
+<li>Tambi&eacute;n determina la frecuencia con la qu elos comandos gu&iacute;a se env&iacute;an a la montura
+ -&nbsp;los comandos gu&iacute;a no pueden ser enviados con m&aacute;s frecuencia que uno por cada
+ ciclo de exposici&oacute;n. &nbsp;Algunas monturas necesitan prque&ntilde;os ajustes de guiado frecuentes, mientras otras no
+ - ud deber&aacute; experimentar para comprender que funciona mejor para su situaci&oacute;n.
+&nbsp;</li>
+<li>Tiene un efecto importante sobre la sentitividad del algoritmo de guiado a
+las condiciones de seeing. &nbsp;Al incrementar el tempo de apertura hasta 2-4 segundos, los efectos
+del seeing se suavizan.
+&nbsp;Esencialmente, la c&aacute;mara est&aacute; promediando los movimientos m&aacute;s grandes y frecuentes,
+de tal forma que los algortimos de guiado tengan menos dificultad buscando "fluctuaciones de seeing"
+del movimiento real de la estrella gu&iacute;a que s&iacute; necesitan ser corregidos. Esto es particularmente
+notable si est&aacute; guiando con un equipo de longitud focal larga.&nbsp;
+Por supuesto, la conveniencia de utilizar mayores tiempos de exposici&oacute;n deben ser
+compensados contra la necesidad de la montura de correciones frecuentes. &nbsp;Para
+monturas que tienen errores muy frecuentes en RA, seguramente necesitar&aacute; trabajar con exposiciones
+por debajo de 1 segundo.</li>
+</ol>
+Como punto de inicio,&nbsp;intente utilizar exposiciones en el rango de uno a tres segundos. &nbsp;
+Si desea deseleccionar una estrella sin elegir una nueva, puede hacer shift-click en cualquier lugar
+de la imagen de la ventana. &nbsp; Si reci&eacute;n comienza con su equipo, probablemente necesite enfocar
+la c&aacute;mara gu&iacute;a - hacerlo es muy importante para un buen guiado. &nbsp;
+Puede utilizar la&nbsp; <a href="Visualization.htm#Star_Profile_and_Target_Displays">Herramienta de Perfil de Estrella</a>
+para ayudarlo con ese proceso o cualquier otra herramienta de enfocado con la que se sienta c&oacute;modo
+- una m&aacute;scara de enfoque, una aplicaci&oacute;n para c&aacute;maras como SharpCap, etc.. &nbsp;
+Si est&aacute; utilizando un telescopio gu&iacute;a peque&ntilde;o,
+como un buscador, el foco ser&aacute; muy sensible a peque&ntilde;os ajustes.
+&nbsp;Es importante tomarse el tiempo necesario para obtener un buen foco, ya que
+una estrella gu&iacute;a mal enfocada puede tener como consecuencia otros problemas. &nbsp;
+El control de exposici&oacute;n de c&aacute;mara muestra un amplio rango de tiempos de exposici&oacute;n
+pre-definidos. &nbsp;Tiempos de exposici&oacute;n menores a un segundo son necesarios para
+utilizar con dispositivos de &oacute;ptica adaptativa u otras situaciones especiales - generalmente
+no son apropiados para el uso con una c&aacute;mara gu&iacute;a t&iacute;pica. &nbsp;Tambi&eacute;n existe
+la opci&oacute;n de exposici&oacute;n 'personalizada' al final de la lista, que le permite especificar
+un valor que no est&eacute; en la misma. &nbsp;Nuevamente, esto est&aacute; disponible para
+aplicaciones especiales, por ejemplo cuando es necesario un tiempo de 
+exposici&oacute;n inusualmente alto.
+<br><br>
+Tambi&eacute;n est&aacute; disponible la selecci&oacute;n Autoexposici&oacute;n. Cuando la exposici&oacute;n se
+selecciona en Auto, PHD2 intentar&aacute; ajustar la exposici&oacute;n para mantener la estrella gu&iacute;a seleccionada
+en un valor de ratio se&ntilde;al-a-ruido constante (SNR) constante, trabajando
+dentro de los limites de exposici&oacute;n que ud haya elegido.
+Esta es una medici&oacute;n especializada, utilizada por PHD2 para determinar
+que tan bien se distingue la estrella contra el fondo - es similar, pero igual
+al ratio se&ntilde;al-a-ruido utilizado en fotometr&iacute;a.
+&nbsp;Auto est&aacute;&nbsp;destinado a usuarios de OA que deseen minimizar
+el tiempo de exposici&oacute;n sin perder la estrella gu&iacute;a o para utilizar
+durante operaciones automatizadas.
+ &nbsp; Automatizaci&oacute;n &nbsp;involucra apuntar al objetivo
+y seleccionar una estrella gu&iacute;a sin intervenci&oacute;n,&nbsp;y no poder encontrar una
+lo suficientemente brillante hace que falla toda la sesi&oacute;n automatizada.
+ &nbsp;En ese caso, un tiempo de exposici&oacute;n m&aacute;s largo es preferible a directamente
+ no poder encontrar una estrella..
+&nbsp;Los ajustes al control Autoexposici&oacute;n est&aacute;n en la solapa <a href="Advanced_settings.htm#Camera_Tab">C&aacute;mara</a>
+de la ventana Ajustes Avanzados. &nbsp;
+<br><h3><a name="Multi-star_Guiding"></a>Guiado con M&uacute;ltiples Estrellas</h3>
+Algunas configuraciones se pueden beneficiar guiando con m&uacute;ltiples estrellas en lugar de una.
+ &nbsp;Para esto se calcula una posici&oacute;n centrada en m&uacute;ltiples estrellas y no en
+ la posici&oacute;n de una &uacute;nica estrella. &nbsp;El guiado con M&uacute;ltiples Estrellas se habilita
+ tildando la opci&oacute;n en la solapa&nbsp;<a href="Advanced_settings.htm#Guiding_Tab">Guiado</a> de la ventana Ajustes Avanzados.
+  &nbsp;Cuando esta opci&oacute;n est&aacute; habilitada, la funci&oacute;n <a href="Tools.htm#Auto-Select_Star">Auto-selecci&oacute;n</a>
+identificar&aacute; hasta 12 estrellas en el campo de visi&oacute;n que tengan un SNR adecuado.
+ &nbsp;No m&aacute;s de 9 de esas ser&aacute;n utilizadas en un momento dado, pero las restantes se utilizar&aacute;n
+ para reemplazar estrellas secundarias que se pierdan o rechacen por alguna raz&oacute;n.
+&nbsp;La estrella "principal" es la mejor candidata, la misma que hubiera sido seleccionada
+si el guiado multi-estrella estuviera deshabilitado. &nbsp;A medida que progresa el
+guiado, alguna de las estrellas secundarias puede ser rechazada porque son muy d&eacute;biles
+o porque hayan salido del campo de visi&oacute;n. &nbsp;Esto no es motivo de preocupaci&oacute;n,
+el algoritmo de guiado multi-estrella maneja la lista de secundarias autom&aacute;ticamente.
+ &nbsp;Cuando el guiado multi-estrellas est&aacute; activo, el display de PHD2
+ mostrar&aacute; el rect&aacute;ngulo habitual en la estrella principal y c&iacute;rculos en las secundarias.
+ &nbsp;Todas las otras caracter&iacute;sticas asociadas a una estrella gu&iacute;a - propiedades de brillo,
+ SNR, FHWM, etc - pertenecen a la estrella principal, no a la lista entera.
+&nbsp;El guiado Multi-estrella puede ser habilitado o deshabilitado mientras el guiado est&aacute;
+activo. &nbsp;Sin embargo, habilitar esta caracter&iacute;stica forzar&aacute; a un nuevo
+'auto seleccionar' de estrella. El algoritmo multi-estrella usa las estrellas secundarias
+para refinar la posicion central y reducir su volatilidad, por lo que esencialmente
+no hay manera que la performance de guiado se vea degradada.
+&nbsp;Si utilizarlo produce un verdadero beneficio sobre el guiado en general
+depender&aacute; de muchos factores incluyendo escala de imagen, brillo de estrellas y del cielo,
+tama&ntilde;o de las estrellas, foco, y ruido de la c&aacute;mara. &nbsp;Por como est&aacute; implementar el 
+algoritmo, lo mejor es probarlo y decidir en base a los resultados.
+<br>
+<h3><a name="Automatic_Calibration"></a>Calibraci&oacute;n Autom&aacute;tica</h3>
+<h4>Monturas Convencionales</h4>
+<span style="font-style: italic;">PHD2</span> debe medir dos cosas como parte
+de la calibraci&oacute;n de guiado: <br>
+<ol>
+<li>El &aacute;ngulo de la c&aacute;mara relativo a los ejes del telescopio&nbsp;</li>
+<li>La longitud de los pulsos de guiado que se necesitan para mover un telescopio
+determinada distancia</li>
+</ol>
+<span style="font-style: italic;">PHD2</span>
+maneja estas mediciones autom&aacute;ticamente enviando pulsos de guiado a la montura y
+&nbsp;midiendo que tan lejos y en qu&eacute; direcci&oacute;n se movi&oacute; la estrella entre im&aacute;genes.
+&nbsp;Este proceso comienza luego de haber seleccionado la estrella y haber hecho
+click en el icono de PHD2/Guide.
+&nbsp;Una mira amarilla aparecer&aacute; sobre la ubicaci&oacute;n original de la estrella gu&iacute;a
+y PHD2 comenzar&aacute; a mover la montura en varias direcciones, 
+siguiendo como se mueve la estrella en funci&oacute;n de que comandos de movimiento
+han sido enviados a la montura. &nbsp;La barra de estado mostrar&aacute; los comandos
+mientras son enviados a la montura, junto a los movimientos incrementales de la
+estrella gu&iacute;a relativos a su posici&oacute;n inicial..
+&nbsp;<span style="font-style: italic;">PHD2</span>
+har&aacute; esto en los dos ejes, primero moviendo al este y oeste, luego al norte y sur.
+ &nbsp;<span style="font-style: italic;">PHD2</span>
+intenta mover la estrella 25 pixeles en cada direcci&oacute;n con el fin de obtener
+una calibraci&oacute;n precisa. &nbsp;Una vez se complete esto, la mira se volver&aacute; verde
+y comenzar&aacute; el guiado autom&aacute;ticamente.
+<br><br>A pesar que PHD2 mueve la estrella gu&iacute;a en las cuatro direcciones, s&oacute;lo los
+movimientos al oeste y norte se usan para computar las velocidades de guiado y el
+&aacute;ngulo de la c&aacute;mara. Los movimientos al este y sur se usan s&oacute;lo para volver la
+estrella a su posici&oacute;n de inicio. &nbsp;Antes de comenzar con los movimientos al
+norte, podr&aacute; observar una&nbsp;secuencia de pulsos cuya intenci&oacute;n es resolver
+el backlash. &nbsp;PHD2 tiene un acercamiento moderado a resolver el backlash,
+observando un patron claro de movimiento en una sola direcci&oacute;n, si retornos.
+ &nbsp;Si su montura tiene mucho backlash en Dec o est&aacute; guiando a una longitud
+focal alta en condiciones de seeing malo, esta fase de la calibraci&oacute;n puede
+no quitar todo el backlash. &nbsp;Su mejor opci&oacute;n para evitar este problema
+es asegurarse que el &uacute;ltimo movimiento de la montura antes de la calibraci&oacute;n
+es al <span style="font-weight: bold;">norte</span>.
+&nbsp; Puede realizar esto con un movimiento corto o utilizando el controlador
+para que la montura se mueva al norte, evidenciado por un movimiento perceptible
+de la estrella gu&iacute;a en el display de PHD2. &nbsp; Si el backlash no se resuelve
+adecuadamente, la velocidad de declinaci&oacute;n computada puede ser muy baja, una
+situaci&oacute;n que es revisada mas adelante en la secci&oacute;n 
+<a href="Tools.htm#Calibration_Details">Herramientas y Utilidades</a>.
+ &nbsp;tambi&eacute;n puede ver que los pulsos al sur dejan la estrella gu&iacute;a
+un poco antes que su posici&oacute;n de inicio - esta es otra indicaci&oacute;n visual de que
+su montura tiene un backlash significativo en declinaci&oacute;n. &nbsp;Si encuentra
+evidencia de un backlash notable, puede ejecutar el Asistente de Guiado y medirlo
+directamente.
+<br><br>
+En la mayor&iacute;a de los casos, la calibraci&oacute;n se completar&aacute; autom&aacute;ticamente sin intervenci&oacute;n del
+usuario. &nbsp;Si la montura no se mueve lo suficiente hacia el oeste o norte,
+recibir&aacute; una alerta avisando que la calibraci&oacute;n ha <span style="font-weight: bold;">"fallado"</span>.
+&nbsp;Fallos de este tipo son poco comunes, pero pueden ocurrir si alguna parte del
+equipo simplemente no est&aacute; funcionando (p.ej. un cable gu&iacute;a con fallos).
+ &nbsp;A menos que vea un mensaje de "fallado", la calibraci&oacute;n se ha completado.
+ &nbsp;Ud puede ver otros mensajes de alerta avisando que los resultados de
+ la calibraci&oacute;n son sospechosos o muestran un comportamiento de la montura
+ que probablemente cause problemas durante el guiado. &nbsp;Estos mensajes
+son s&oacute;lo avisos, no significa que la calibraci&oacute;n en s&iacute; haya fallado.
+&nbsp;Si ud recibe mensajes de este tipo frecuentemente durante la calibraci&oacute;n,
+deber&iacute;a consultar la secci&oacute;n&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">resolviendo problemasdel manual</a>.
+ &nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control"></a>
+<br><br>Si ud est&aacute; utilizando una conexi&oacute;n ASCOM (o INDI) tanto para la 'montura' o
+para la 'monutra auxiliar', una buena calibraci&oacute;n puede ser reutilizada por
+un largo &nbsp;per&iacute;odo, y es la forma preferida de operar.
+ &nbsp;Estas opciones &nbsp;de conexi&oacute;n le permiten a PHD2 conocer a d&oacute;nde
+apunta el telescopio, por lo que una calibraci&oacute;n realizada en un punto del 
+cielo ser&aacute; autom&aacute;ticamente ajustada a medida que se mueva entre diferentes
+objetivos. &nbsp;El viejo m&eacute;todo de tener que recalibrar cada vez que se mueve
+el telescopio o se cambia de lado del pie es cosa del pasado siempre y cuando
+PHD2 tenga informaci&oacute;n de d&oacute;nde apunta el telescopio.
+&nbsp;Con este tipo de equipo, s&oacute;lo necesitar&aacute; recalibrar si rota la posici&oacute;n
+de la c&aacute;mara gu&iacute;a m&aacute;s de un par de grados o hace otros cambios importantes
+en la configuraci&oacute;n f&iacute;sica de su equipo.
+&nbsp;En general, la mejor pr&aacute;ctica es obtener una buena calibraci&oacute;n cerca
+de entre +/- 20 grados del ecuador celeste y lo suficientemente alta en el cielo
+para evitar los problemas de sseing (turbulencia) lo m&aacute;s posible. &nbsp;
+Si ud elige 'auto-recuperar-calibracion' cuando construye su perfil o elige esa
+opci&oacute;n en la solapa Guiado de la ventana Ajustes Avanzados, ud puede simplemente
+conectar su equipo,&nbsp;elegir una estrella gu&iacute;a, y comenzar a guiar inmediatamente.
+&nbsp;Principiantes probablemente obtendr&aacute;n mejores resultados si hacen una calibraci&oacute;n
+nueva al inicio de cada sesi&oacute;n.&nbsp; Finalmente, si est&aacute; utilizando un rotador como
+parte de su perfil de equipo, PHD2 puede usar la conexi&oacute;n 'Rotador' para ajustar
+los datos de calibraci&oacute;n basados en la posici&oacute;n angular de la c&aacute;mara gu&iacute;a - una raz&oacute;n
+menos para rehacer una calibraci&oacute;n.
+<br><br>
+Ud puede revisar los resultados de su &uacute;ltima calibraci&oacute;n utilizando el men&uacute;
+'Herramientas' y haciendo click en 'Revisar Datos de Calibraci&oacute;n' &nbsp;Esto
+abrir&aacute; una ventana que mostrar&aacute; una representaci&oacute;n gr&aacute;fica de los movimientos
+de la montura junto a los valores que fueron computados para&nbsp;guiar su montura.
+&nbsp;Esta ventana se describe en la secci&oacute;n&nbsp;<a href="Tools.htm#Calibration_Details">Detalles de Calibraci&oacute;n</a>
+de la ayuda. &nbsp;Como una revisi&oacute;n de calidad r&aacute;pida, puede abrir esta
+ventana y confirmar que 1) las l&iacute;neas RA y Dec est&aacute;n relativamente perpendiculares
+ y 2)&nbsp; los puntos dibujados est&aacute; relativamente alineados sin curvas, saltos,
+agrupaci&oacute;n de puntos o retrocesos de direcci&oacute;n significativos. &nbsp;
+Si ud ve alguno de estos tipos de patrones extra&ntilde;os en el gr&aacute;fico, probablemente
+deber&iacute;a rehacer su calibraci&oacute;n. &nbsp;incluso con monturas de gama alta, las calibraci&oacute;nes
+puede, dar resultados extra&ntilde;os por condiciones ambientales, especialmente viento
+y seeing malo. &nbsp;
+<br><br>Despu&eacute;s de completada la calibraci&oacute;n, PHD2 realizar&aacute; un
+&nbsp;<a href="Trouble_shooting.htm#Calibration_sanity_check">"verificaci&oacute;n de la calibraci&oacute;n"</a>
+ de los resultados para asegurarse que los c&aacute;lculos al menos parecen razonables. &nbsp;
+Si no lo son, ud ver&aacute; un mensaje en la parte de arriba de la ventana principal
+que dice que el resultado de la calibraci&oacute;n parece sospechoso. &nbsp;
+Puede ignorar el alerta o hacer click en 'Detalles' para tener m&aacute;s informaci&oacute;n.
+&nbsp;Generalmente es bueno prestar atenci&oacute;n a estas alertas, ya que no tiene sentido
+intentar guiar utilizando una calibraci&oacute;n mala.
+<br>
+<h4><a name="Adaptive_Optics_Devices"></a>Dispositivos de &oacute;ptica Adaptativa</h4>
+Si est&aacute; utilizando un dispositivo de &oacute;ptica adaptativa, son dos los procesos de calibraci&oacute;n
+que se tienen que realizar. &nbsp;El primero maneja la calibraci&oacute;n de movimientos de 
+elementos en la OA y calcula la magnitud y direcci&oacute;n de los ajustes relacionados con
+los desplazamientos de la estrella gu&iacute;a. &nbsp;La segunda calibraci&oacute;n es la descrita
+anteriormente, enfocada en comandos gu&iacute;a que necesitan ser enviados a la montura. &nbsp;
+Conocidos como comandos "bump", &eacute;stos se enviar&aacute;n&nbsp;cuando la estrella gu&iacute;a se ha movido
+fuera del rango de correcciones que se pueden lograr con la OA sola.
+<br>
+<br>
+<h3><a name="Guiding"></a>Guiando</h3>
+Una vez que comenz&oacute; el guiado, se mostrar&aacute;n mensajes de diagn&oacute;stico en la barra de estado
+para mostrar que comandos gu&iacute;a se est&aacute;n enviando a la montura. <span style="font-style: italic;">PHD2</span>
+continuar&aacute; guiando hasta que ud haga click en el &iacute;cono 'Detener'.
+ &nbsp;Para retomar el guiado, simplemente comienze nuevamente el loop de exposiciones,
+autoseleccione la estrellga gu&iacute;a y haga click en el bot&oacute;n 'Guiar'. &nbsp;No necesita repetir
+la calibraci&oacute;n para retomar el guiado. &nbsp;En algunos casos, <span style="font-style: italic;">PHD2</span>
+ puede&nbsp;perder la estrella gu&iacute;a y ud ser&aacute; alertado por un beep sonoro y con la mira
+ parpadeando en color naranja.
+&nbsp;Hay varias razones por lo que puede ocurrir esto: <br>
+<ol>
+<li>Algo&nbsp;puede estar ocultando la estrella - nubes, el techo del observatorio,
+un &aacute;rbol, etc.</li>
+<li>La estrella puede haberse movido abruptamente fuera del rect&aacute;ngulo de seguimiento
+por alg&uacute;n cambio en la montura/c&aacute;mara/cables - cables enredados puede causar esto</li>
+<li>La estrella puede haber disminuido su brillo por otra raz&oacute;n, posiblemente por ya
+era muy d&eacute;bil o porque la c&aacute;mara no haya estado bien enfocada</li>
+</ol>
+Obviamente, necesita identificar la fuente del problema y solucionarlo.
+&nbsp;De todos modos, es importante entender que <span style="font-style: italic;">PHD2</span>
+ <span style="font-weight: bold;">no </span> comenzar&aacute; a mover el telescopio intentando
+ reubicar la estrella gu&iacute;a.
+&nbsp;Simplemente continuar&aacute; tomando im&aacute;genes y esperando que la estrella gu&iacute;a reaparezca
+dentro del rect&aacute;ngulo de seguimiento.
+&nbsp;Cuando reci&eacute;n comienza a guiar, puede aparecer una 'alerta' en la parte superior de
+la ventana si no se est&aacute;n utilizando una librer&iacute;a de darks o mapa de pixeles malos.
+ &nbsp;Puede elegir ignorar esta advertencia y continuar con el guiado, pero es probable
+ que obtenga mejores resultados si invierte unos pocos minutos en contruir la librer&iacute;a
+ de darks para su uso futuro.
+<br>
+<br>
+Si est&aacute; utilizando una <a name="German_equatorial_mount"></a>Montura Ecuatorial Alemana (GEM),
+ probablemente tenga que realizar un "<a name="meridian_flip"></a>cambio de meridiano" cerca del
+ momento en que su objetivo cruce el meridiano. &nbsp;Esto significa que deber&aacute; mover
+el telescopio al lado opuesto del pie y reci&eacute;n entonces continuar tomando im&aacute;genes.
+ &nbsp;Hacer esto invalida la calibraci&oacute;n original, tipicamente porque las direcciones
+de declinaci&oacute;n est&aacute;n invertidas en este momento. &nbsp;Si est&aacute; utilizando una interfaz
+de montura ASCOM (o 'aux'), su calibraci&oacute;n ser&aacute; ajustada autom&aacute;ticamente y podr&aacute; retomar
+el guiado (asumiendo que no ha rotado tambi&eacute;n la c&aacute;mara o el enfocador).
+&nbsp;Si no est&aacute; utilizando una interface que devuelva la posici&oacute;n de apuntado, necesitar&aacute;
+accionar y ajustar la calibraci&oacute;n de gu&iacute;a. &nbsp;Ud puede, por supuesto, simplemente realizar 
+una nueva calibraci&oacute;n en el otro lado del pie, un proceso que tipicamente le llevar&aacute; s&oacute;lo un
+par de minutos. &nbsp;O, ud puede utilizar el men&uacute; bajo 'Herramientas/modificar calibraci&oacute;n' para
+"<a name="flip_calibration_data"></a>calibraci&oacute;n de datos de cambio de meridiano" y retomar el
+guiado inmediatamente. &nbsp;<span style="font-weight: bold;">Nota</span>: 'calibraci&oacute;n de datos de cambio de meridiano'
+no tendr&aacute; efecto en PHD2 si est&aacute; utilizando una conexi&oacute;n ASCOM o 'montura-aux'.
+<br>
+<br>
+En algunos casos, puede necesitar forzar una recalibraci&oacute;n. Por ejemplo, ud puede
+haber rotado la c&aacute;mara gu&iacute;a como parte de resolver un problema con un cable.
+ &nbsp;Esto lo puede realizar haciendo click en el bot&oacute;n 'Cerebro',
+ &nbsp;ir a la solapa 'Guiado' y haciendo click en 'Borrar calibraci&oacute;n de montura'.
+ &nbsp;O, simplemente puede hacer &lt;shift&gt;click en el bot&oacute;n&nbsp; 'Guiado' en la
+pantalla principal y <span style="font-style: italic;">PHD2</span> comenzar&aacute; un ciclo de
+calibraci&oacute;n. &nbsp;
+<br>
+<br>
+Una vez haya  comenzado a guiar, seguramente querr&aacute; sbaer c&oacute;mo est&aacute;n funcionando las cosas.
+Por supuesto, puede ver la estrella gu&iacute;a en el display pero en la mayor&iacute;a de los casos
+no podr&aacute; ver todos los peque&ntilde;os ajustes que est&aacute;n sucediendo. &nbsp;
+Pero <span style="font-style: italic;">PHD2</span> le provee muchas herramientas para medir
+y graficar su rendimiento, como est&aacute; descrito en la secci&oacute;n <a href="Visualization.htm">Visualizaci&oacute;n</a>.
+&nbsp;Muchos de los algoritmos de guiado tienen configuraciones limites para la
+correcci&oacute;n m&aacute;xima que pueden enviar en un solo comando.
+&nbsp;Si estos valores son menores que los necesarios para corregir la posici&oacute;n de la montura,
+ver&aacute; una alerta en la parte superior de la ventana principal, advirtiendole de esta situaci&oacute;n.
+&nbsp;Si este problema es recurrente y no ha reducido los par&aacute;metros de movimientos m&aacute;ximos
+por debajo de sus valores por defecto, la fuente mas probable del problema seguramente
+est&eacute; en su montura. .<br>
+<br>
+&nbsp;<br>
+<br>
+</body></html>

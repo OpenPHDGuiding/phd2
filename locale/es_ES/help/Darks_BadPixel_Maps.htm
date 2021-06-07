@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Mapas de Darks y P&iacute;xeles Err&oacute;neos</title></head>
+<body><h2>Tomas Dark y Mapas de Pixeles Err&oacute;neos</h2>
+<br><h3>Introducci&oacute;n</h3>
+Las c&aacute;maras utilizadas para guiado, t&iacute;picamente no puede regular su temperatura y
+pueden producir im&aacute;genes que pueden tener bastante ruido. Como resultado,
+las exposiciones gu&iacute;a suelen mostrar defectos obvios en la forma de
+p&iacute;xeles "calientes" o regiones con niveles de brillo no real. Si hay muchos
+de estos defectos, puede tener inconvenientes identificando y seleccionando una
+estrella gu&iacute;a adecuada - intentar calibrar en un pixel caliente es un 
+problema com&uacute;n para los reci&eacute;n iniciados. Incluso despu&eacute;s que haya
+comenzado el guiado, un pixel caliente cercano a la estrella gu&iacute;a
+puede complicar los c&aacute;lculos necesarios para un guiado preciso y puede
+causar que el software "salte" entre la estrella real y el pixel defectuoso.
+Este tipo de problemas pueden ser mitigados utilizando alguno de estos dos
+enfoques en PHD2: tomas dark y mapas de p&iacute;xeles malos. Todas las funciones
+relacionadas a cuadros dark y mapas de p&iacute;xeles malos est&aacute;n localizadas bajo el 
+men&uacute; 'Darks'.
+<br><br>
+<h3><a name="Dark_Frames"></a>Cuadros Dark</h3>
+PHD2 construir&aacute; y utilizar&aacute; una librer&iacute;a de cuadros dark que coincida con el
+rango de exposiciones que utilizar&aacute; para guiado. Una vez que la librer&iacute;a se
+haya construido, se guardar&aacute; autom&aacute;ticamente y estar&aacute; disponible para ser
+utilizada en m&uacute;ltiples sesiones con PHD2. Como resultado, ud puede invertir
+alg&uacute;n tiempo en construir una buena librer&iacute;a dark y luego utilizar esa librer&iacute;a
+todo el tiempo. Una vez haya conectado la c&aacute;mara, puede construir su librer&iacute;a
+dark desde el item 'Librer&iacute;a Dark...' bajo el men&uacute; 'Darks'. Se mostrar&aacute;
+una ventana que se parece a esta:
+<br><br><span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<img style="width: 499px; height: 412px;" alt="" src="Dark_Lib.png">
+<br><br>Puede utilizar los dos controles en la parte superior para
+especificar los tiempos de exposici&oacute;n m&iacute;nimos y m&aacute;ximos que se utilizar&aacute;n
+para tomar los cuadros dark. Los valores de inicio, fin e intermedios se
+basan en los tiempos de exposici&oacute;n que se usan en la ventana PHD2 principal,
+para que pueda tomar los cuadros dark que igualen cualquier tiempo de 
+exposici&oacute;n que elija para guiado. El tercer control especifica el n&uacute;mero de
+cuadros dark que se tomar&aacute;n y promediar&aacute;n para cada tiempo de exposici&oacute;n.
+La imagen promediada se la denomina 'Cuadro dark maestro'. Hist&oacute;ricamente,
+PHD ha utilizado 5 cuadros dark para este prop&oacute;sito, pero ud puede incrementar
+este n&uacute;mero para mejorar la calidad del cuadro dark maestro. Tambi&eacute;n puede agregar
+una nota o comentario si lo desea - esto ser&aacute; embebido en la cabecera del 
+cuadro dark master para referencia futura.
+<br><br>
+Los dos botones de selecci&oacute;n sobre el campo Notas permiten especificar
+si quiere modificar/extender su librer&iacute;a actual o construir una nueva.
+Si ha recibido mensajes de alerta avisando que la librer&iacute;a debe ser 
+reconstruida, deber&iacute;a seleccionar la opci&oacute;n 'Crear una librer&iacute;a dark
+nueva'. Esto le asegura que todas las im&aacute;genes dark master coinciden
+con la c&aacute;mara que est&aacute; utilizando. Con la otra opci&oacute;n, simplemente
+refresca o expande la librer&iacute;a actual, tomando nuevos cuadros dark en
+los tiempos de exposici&oacute;n especificados.
+<br><br>
+Una vez fijados los par&aacute;metros, haciendo click en 'Inicio' comienza el proceso.
+Si su c&aacute;mara gu&iacute;a no tiene obturador - la mayor&iacute;a no lo tiene - PHD2 le
+pedir&aacute; que tapeel telescopio gu&iacute;a. Para obtener los mejores resultados,
+aseg&uacute;rese que no se filtre luz en la c&aacute;mara gu&iacute;a - hacer esto durante
+el d&iacute;a seguramente no sea lo mejor. PHD2 trabajar&aacute; sistem&aacute;ticamente
+sobre el rango de tiempo de exposici&oacute;n elegido, tomando el n&uacute;mero
+especificado de cuadro para cada tiempo de exposici&oacute;n. Se mostrar&aacute;
+el progreso en la barra de estado en la parte de abajo de la ventana, 
+para que pueda ver como avanza el proceso. Una vez iniciado el proceso,
+el bot&oacute;n 'Cancelar' cambiar&aacute; a 'Detener'. Puede hacer click en &eacute;l si algo
+sale mal o si desea cambiar alg&uacute;n par&aacute;metro antes de que termine la
+secuencia completa. Detener el proceso de esta manera, descartar&aacute;
+todos los datos recolectados, por lo que tendr&aacute; que hacer sus correcciones
+y reiniciar el proceso. Una vez que todos los cuadros se hayan realizado,
+PHD2 construir&aacute; los cuadros dark master, los almacenar&aacute; en la librer&iacute;a
+dark y mostrar&aacute; un mensaje sumarizando los resultados. Si su c&aacute;mara no
+posee obturador, se le pedir&aacute; tambi&eacute;n que destape el telescopio gu&iacute;a,
+para que pueda reiniciar el guiado normal.
+<br><br>
+Una vez se haya construido la librer&iacute;a dark, puede controlar su utilizaci&oacute;n
+con el item 'Utilizar Librer&iacute;a Dark' bajo el men&uacute; 'Darks'. El tilde en el 
+item del men&uacute; cambiar&aacute; cada vez que haga click en &eacute;l. La marca de este
+item perdurar&aacute; durante las ejecuciones del programa, por lo que si deja
+el tilde marcado, PHD2 cargar&aacute; la librer&iacute;a dark autom&aacute;ticamente y 
+retomar&aacute; su utilizaci&oacute;n la pr&oacute;xima vez que ejecute la aplicaci&oacute;n.
+La librer&iacute;a dark en s&iacute; misma se almacena en disco hasta que se construya
+una nueva, por lo que puede cambiar la configuraci&oacute;n en el item de men&uacute;
+'Utilizar Librer&iacute;a Dark' sin perder los datos. Si est&aacute; utilizando una
+librer&iacute;a dark y no hay un cuadro dark maestro igual al tiempo de 
+exposici&oacute;n de guiado, PHD2 utilizar&aacute; el m&aacute;s cercano. De todos modos,
+lo ideal es tener un dark maestro igual para mejores resultados.
+Si tiene una librer&iacute;a dark a la que le faltan tiempos de exposici&oacute;n,
+puede adquirir los datos faltantes y se agregar&aacute;n a la librer&iacute;a
+existente - no hace falta comenzar de cero. Al cambiar el item de menu 
+'Utilizar Librer&iacute;a Dark', podr&aacute; ver el efecto de utilizar la librer&iacute;a 
+y determinar si las im&aacute;genes de su gu&iacute;a mejoran lo suficiente.
+<br><br>
+Recuerde que la librer&iacute;a dark est&aacute; asociada a una c&aacute;mara y nivel de
+binning particular. PHD2 comprobar&aacute; para asegurarse que la librer&iacute;a dark
+concuerde con la c&aacute;mara que est&aacute; utilizando. Si no lo hace, ver&aacute; un
+mensaje de alerta avis&aacute;ndole que la librer&iacute;a dark no puede ser utilizada
+y que necesita ser reconstruida. Esto puede suceder cuando haya cambiado
+la c&aacute;mara en un perfil existente, algo que no deber&iacute;a hacer, a menos
+que haya cambiado la c&aacute;mara gu&iacute;a y no piense en volver a utilizar la
+anterior.
+<br><h3><a name="Bad-pixel_Maps"></a>Mapa de Pixeles Malos (<a name="Defect_Maps"></a>Mapa de Defectos)</h3>
+Para algunas c&aacute;maras gu&iacute;a, los cuadros dark no realizan un buen trabajo
+de quitar los pixeles defectuosos que se ven en el cuadro de guiado.
+En estas situaciones, probablemente obtenga mejores resultados
+construyendo y utilizando un mapa de pixeles malos, que mide y
+compensa en &aacute;reas espec&iacute;ficas del sensor que producen se&ntilde;ales
+falsas (pixeles calientes) o que no responden correctamente a la
+luz entrante (pixeles frios). Este "mapa" se crea al tomar una secuencia
+de exposiciones con exposici&oacute;n relativamente larga (por ej. 15 segundos),
+promedi&aacute;ndolas, para despu&eacute;s analizar estad&iacute;sticamente el cuadro
+resultante para identificar las ubicaciones de los pixeles defectuosos.
+Estas ubicaciones de pixeles son guardadas para futuro uso. Durante un
+guiado normal, estas ubicaciones en la imagen gu&iacute;a son reemplazadas por
+una muestra estad&iacute;stica de los p&iacute;xeles cercanos, eliminando de esta manera
+todo o la mayor&iacute;a del efecto de un pixel "erroneo". El resultado final
+es usualmente una imagen con un fondo m&aacute;s suave y menos defectos obvios.
+Por los defectos que pudieran permanecer, PHD2 tambi&eacute;n provee una forma
+en la que ud puede hacer click en forma manual en las ubicaciones de los
+pixeles defectuosos y agregarlos al mapa. Este proceso completo de obtener
+y analizar cuadros darke es resuelto por PHD2 para ud, para que sea f&aacute;cil
+construir el mapa de pixeles malos.
+<br><br>
+Para construir el mapa de pixeles malos, debe hacer click en el item
+'Mapa de Pixeles Malos...' en el men&uacute; 'Darks'. Si lo est&aacute; haciendo por
+primera vez, se le pedir&aacute; obtener una secuencia de cuadros dark para
+analizar el sensor de su c&aacute;mara y construir el mapa:
+<br><br><span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;">
+</span><img style="width: 489px; height: 270px;" alt="Defect_Darks" src="Defect_Darks.png">
+<br><br>Esta es una versi&oacute;n ligeramente diferente de la ventana utilizada
+para obtener cuadros dark, descripta en la secci&oacute;n anterior. Como el 
+an&aacute;lisis se basa en estad&iacute;sticas, ude deber&iacute;a utilizar tiempos de
+exposici&oacute;n relativamente largos (10 segs) y por al menos 10 tomas.
+Dado que el mapa de pixeles malos puede ser reutilizado por un per&iacute;odo
+de tiempo bastante largo, no necesitar&aacute; repetir esta operaci&oacute;n muy 
+seguido, y vale la pena invertir el tiempo para obtener datos de
+mejor calidad.
+<br><br>
+Una vez se hayan capturado los cuadros dark, PHD2 calcular&aacute; las estad&iacute;sticas
+e identificar&aacute; un conjunto inicial de ubicaciones de pixeles defectuosos
+o sospechosos. Luego de una espera corta, ver&aacute; una ventana que se parece a esta:
+<br><br><span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<span style="font-size: 10pt; font-family: Arial;"></span>
+<img style="width: 653px; height: 514px;" alt="Bad-pixel Map" src="DefectUI.png">
+<br><br>
+La secci&oacute;n 'Informaci&oacute;n General' muestra un resumen de las estad&iacute;sticas
+calculadas por PHD2 durante la identificaci&oacute;n de las ubicaciones de los 
+pixeles malos. Normalmente, no necesitar&aacute; mirar estos datos y puede ocultar 
+esta parte de la ventana destildando el cuadro 'Mostrar Detalles de Cuadro Master'.
+El grupo "Resultados" muestra las cantidades de pixeels calientes y frios
+basado en los par&aacute;metros actuales de los deslizadores "Agresividad".
+Si est&aacute; realizando esto por primera vez, los deslizadores "Agresividad"
+estar&aacute;n en sus valores por defecto, 75 entre el rango de 0 a 100. Deber&aacute;
+experimentar para comprender si la cuenta resulta lo suficientemente
+razonable basado en lo que ud ve en los cuadros de guiado normales.
+Si ajusta la agresividad a izquierda y derecha, ver&aacute; que la cuenta de
+pixeles calientes y frios cambia. El deslizador controla que tan "agresivo"
+es PHD2 al momento de identificar pixeles sospechosos y marcarlos como 
+defectuosos - valores m&aacute;s altos de agresividad resultar&aacute; en marcar mayor
+cantidad de pixeles. Una vez que los par&aacute;metros est&aacute;n correctos, haga click
+en el bot&oacute;n 'Generar' para calcular y cargar el nuevo mapa de defectos.
+<br><br>
+Llegado este punto, probablemente querr&aacute; revisar los resultados. La ventana
+principal de PHD2 todav&iacute;a est&aacute; activa, por lo que puede hacer una toma
+normal de guiado para analizar como se ve. Si desea ver r&aacute;pidamente el
+resultado de utilizar el mapa de defectos, s&oacute;lo tilde el item de menu
+'Utilizar Mapa de Pixeles Malos' en la secci&oacute;n 'Darks'. Recuerde que no
+necesita lograr un fondo perfectamente negro y parejo en la imagen gu&iacute;a
+- s&oacute;lo necesita tener un numero de pixeles calientes/frios lo suficientemente
+peque&ntilde;o para que ni ud ni los algoritmos de guiado de PHD2 se confundan
+un pixel malo con una estrella. Si ud ha sobre-corregido con una
+parametrizaci&oacute;n muy agresiva, puede crear tantas &aacute;reas de pixeles malos
+que interfieran con la detecci&oacute;n de estrellas de guiado &uacute;tiles. Es f&aacute;cil
+hacer ajustes con los deslizadores - s&oacute;lo cambie el par&aacute;metro del slider,
+haga click en 'Generar' nuevamente y ver los resultados en la ventana
+principal de PHD2.
+<br><br>
+Puede encontrar que este proceso todav&iacute;a deja algunos pixeles calientes que
+ud desear&iacute;a eliminar. Como este proceso se basa en estad&iacute;stica y se
+necesita aplicar a un rango amplio de c&aacute;maras, no es una operaci&oacute;n
+'dispare-y-olv&iacute;dese' - probablemente necesite hacer ajustes finos
+utilizando los pasos siguientes.
+<br><br>
+<h4>Gu&iacute;a Paso a Paso para Refinar el Mapa de Pixeles Malos</h4>
+Los siguientes pasos son recomendados para refinar el mapa de pixeles
+malos para controlar los artefactos a nivel pixel en su c&aacute;mara::
+<br>
+<ol>
+<li>Tape el telescopio gu&iacute;a y comience un bucle de exposiciones de 5 segundos</li>
+<li>Abra la ventana Refinar el Mapa de Pixeles Malos (Menu/Darks/Mapa de Pixeles Malos),
+ll&eacute;vela a un lado de su pantalla para que pueda ver las ventanas de
+BPM y guiado</li>
+<li>Ajuste el deslizador gamma en la ventana principal hasta que vea los
+pixeles calientes - esto puede requerir una imagen mas brillante de la
+que ud est&aacute; acostumbrado a ver</li>
+<li>Seleccione la opci&oacute;n "Mostrar pixeles defectuosos." Con la opci&oacute;n
+tildada, aparecer&aacute;n puntos rojos donde est&eacute;n los pixeles calientes conocidos.</li>
+<li>Mueva lentamente el deslizador de agresividad de pixeles calientes a
+izquierda o derecha hasta que la mayor&iacute;a de los pixeles calientes se
+hayan ocultado por un punto rojo, con un valor mucho menor (incluso cero)
+de pixeles calientes no cubiertos. Haga click en el bot&oacute;n 'Generar.</li>
+<li>A continuaci&oacute;n marque los pixeles remanentes agreg&aacute;ndolos en forma manual
+al mapa.</li></ol>
+<ul style="margin-left: 40px;">
+<li>Demarque la opci&oacute;n "Mostrar Pixeles Defectuosos".</li>
+<li>Seleccione un pixel caliente en la ventana gu&iacute;a haciendo click en &eacute;l.</li>
+<li>Haga click en 'Agregar pixel malo' en la ventana BPM.</li>
+<li>Repita como sea necesario hasta que est&eacute; satisfecho con el marcado de 
+pixeles malos.</li>
+<li>Cierre la ventana BPM - NO HAGA CLICK en 'Generar' ya que ese proceso
+reemplazar&aacute; a la selecci&oacute;n manual.</li></ul>
+<br>
+Una vez que su mapa de pixeles malos haya sido construido, su uso se controla
+con la opci&oacute;n 'Utilizar Mapa de Pixeles Malos' en el menu 'Darks'.
+Esta selecci&oacute;n se mantiene durante las ejecuciones del programa, por lo que,
+dejarlo marcado le dir&aacute; a PHD2 que cargue autom&aacute;ticamente el mapa de defectos y 
+lo utilizar&aacute; para las exposiciones de guiado. La opci&oacute;n de 'Utilizar Librer&iacute;a Dark'
+y 'Utilizar Mapa de Pixeles Malos' son mutualmente excluyentes - Ud puede usar
+una o ninguna, pero no las dos al mismo tiempo. Como con la librer&iacute;a dark,
+los datos del mapa de pixeles malos se guardan en forma permanente, por lo que
+puede deshabilitar su uso sin perder los datos. Amdas estructuras de datos
+pueden ser utilizadas por un per&iacute;odo largo de tiempo, pero es v&aacute;lido recordar
+que los sensores de las c&aacute;maras cambian con el tiempo. Como resultado, puede
+necesitar reconstruir la librer&iacute;a de darks o mapa de pixeles malos a intervalos
+peri&oacute;dicos o cuando note una degradaci&oacute;n en la apariencia de sus im&aacute;genes de
+guiado normales. En este caso, tambi&eacute;n se recomienda hacer click en la opci&oacute;n
+'Reconstruir Cuadro Dark Maestro', que le dir&aacute; a PHD2 que debe volver a tomar
+los cuadros dark iniciales y recomputar la linea base del mapa de pixeles malos.
+Ud tendr&aacute; que refinar el mapa tal como lo hizo anteriormente hasta que est&eacute;
+satisfecho con el resultado. No hay raz&oacute;n para utilizar los archivos de datos
+de la librer&iacute;a de darks o del mapa de pixeles erroneos, pero los puede
+encontrar en el directorio l&oacute;gico 'AppData\Local' utilizado por su 
+sistema operativo.
+<br><br>
+Como la librer&iacute;a de darks, el mapa de pixeles malos est&aacute; asociado a una
+c&aacute;mara y binning particular. PHD2 controlar&aacute; que el mapa se corresponda
+con la c&aacute;mara en uso. Si no lo hace, ver&aacute; un mensaje de alerta avisando
+que el mapa de pixeles malos no puede ser utilizado y que debe ser
+reconstruido. Esto sucede cuando ud cambia la c&aacute;mara o binning en un 
+perfil de equipamiento existente, algo que no deber&iacute;a hacer a menos que
+ya no necesite la parametrizaci&oacute;n anterior.
+<br><br>
+<h3><a name="reuse_dark_library"></a>Reutilizando Cuadros Dark y Mapas de Pixeles Malos</h3>
+Si est&aacute; utilizando la misma c&aacute;mara en m&uacute;ltiples perfiles, puede querer
+reutilizar las librer&iacute;as dark y el mapa de pixeles malos que construy&oacute;
+para esa c&aacute;mara. Esto se puede hacer importando archivos de datos
+relacionados a la c&aacute;mara en un perfil que a&uacute;n no tenga esos archivos.
+Por ejemplo, suponga que  ha construido un perfil nuevo - ll&aacute;mese
+Perfil1 - que utiliza su c&aacute;mara gu&iacute;a Lodestar, y ha construido una
+librer&iacute;a dark y un mapa de pixeles malos para ella. Alg&uacute;n tiempo despu&eacute;s,
+crea un nuevo perfil, Perfil2, que tiene una montura diferente o una
+longitud focal diferente pero que utiliza la misma c&aacute;mara Lodestar.
+En este caso, deber&iacute;a conectar su equipo utilizando Perfil2, entonces
+utilizar el item de menu 'Importar de Perfil...' bajo el menu 'Darks'.
+Ahi seleccionar&aacute; el Perfil1 como fuente para la funcion de importaci&oacute;n
+de la librer&iacute;a dark, mapa de pixeles malos o ambos. Se le mostrar&aacute; s&oacute;lo
+aquellos perfiles que tengan una c&aacute;mara con sensor compatible (tama&ntilde;o de sensor,
+tama&ntilde;o de pixel, binning). Haciendo click en 'Ok' copiar&aacute; los datos de dark y
+mapa de pixeles malos y los asociar&aacute; con su nuevo perfil, Perfil2.
+Como son copias, al cambiar los valores en un perfile no afectar&aacute; a 
+otros perfiles. Mantenerlos sincronizados, si es lo que desea, requerir&aacute;
+una nueva operaci&oacute;n de 'importaci&oacute;n'.<br></body></html>

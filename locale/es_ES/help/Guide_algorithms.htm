@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Algoritmos de Guiado</title></head>
+<body>
+<h2>Algoritmos de Guiado</h2>
+<a href="#Guiding_Theory">Teor&iacute;a de Guiado</a>
+<br>
+<a href="#Guide_Algorithm_Parameters">Par&aacute;metros de Algoritmo de Guiado</a>
+<br><br>
+<h3><a name="Guiding_Theory"></a>Teor&iacute;a de Guiado</h3>
+El algoritmo de guiado por defecto en <span style="font-style: italic;">PHD2</span>
+est&aacute;n bien establecidos y deber&iacute;an trabajar bien para la mayor&iacute;a de los usuarios.
+A menos que tenga alguna experiencia guiando y entienda los conceptos b&aacute;sicos,
+deber&iacute;a ser algo cauteloso al cambiar los algoritmos. De todos modos, ud puede tener
+algunas circunstancias especiales que requieran cambios o simplemente desea
+experimentar con las diferentes elecciones de algoritmos. La ventana Seteos
+Avanzados en <span style="font-style: italic;">PHD2</span> le permite hacer eso
+f&aacute;cilmente. Cada algortimo tiene un conjunto de par&aacute;metros que controlan
+como los cambios observados en la posici&oacute;n de la estrella gu&iacute;a (deflecciones de estrella)
+son traducidos en comandos de guiado que deber&iacute;an restablecer la estrella
+a su posici&oacute;n inicial.
+<br><br>
+Antes de revisar los detalles de esos par&aacute;metros, es necesario revisar un 
+poco de toer&iacute;a de guiado y ver que intentan lograr esos algoritmos.
+Dejando de lado los dispositivos de &oacute;ptica adaptativa, que son muy 
+diferentes, el guiado convencional enfrenta enormes desaf&iacute;os. El problema
+en cuesti&oacute;n es c&oacute;mo mover un equipo que pesa muchos kilos con un nivel
+de precisi&oacute;n que no cause l&iacute;neas o estrellas ovaladas. Muchas c&aacute;maras
+gu&iacute;a pueden registrar deflecciones de estrellas gu&iacute;a de s&oacute;lo unos
+micrones en el sensor (ej. 0.0002 pulgadas o 0.005 mil&iacute;metros), todav&iacute;a
+esperamos que la montura y el software de guiado muevan la c&aacute;mara a
+trav&eacute;s del cielo por horas con este nivel de precisi&oacute;n. Aplicaciones de
+guiado como PHD2 son m&aacute;s capaces de lidiar con errores de seguimiento que
+son "lentos y constantes", no "r&aacute;pidos y al azar". Fuentes de errores
+lentos y constantes (corregibles) incluyen los siguientes:
+<br>
+<ul>
+<li>Cierto tipo de imperfecciones mec&aacute;nicas en los engranajes de ascenci&oacute;n
+recta, incluyendo aquellos que causan errores per&iacute;odicos.</li>
+<li>Peque&ntilde;os errores en la velocidad de seguimiento sideral de la montura.</li>
+<li>Refracci&oacute;n atmosf&eacute;rica - estrellas que parece moverse m&aacute;s lentamente a medida
+que se acercan al horizonte.</li>
+<li>Flexiones mec&aacute;nicas limitadas - pero <span style="font-weight: bold;">no </span>flexiones diferenciales.</li>
+<li>Errores de alineaci&oacute;n del eje de Ascensi&oacute;n Recta con el polo celeste.</li>
+</ul>
+Entonces, ¿que no est&aacute; incluido en lo anterior y no es corregible por el
+guiado convencional?
+Desafortunadamente, es una lista muy larga, de la que algunos son:
+<br>
+<ul>
+<li>Seeing atmosf&eacute;rico ("turbulencia").</li>
+<li>Ruido de engranajes, asperezas y vibraciones.</li>
+<li>Flexiones diferenciales - movimiento relativo entre el telescopio principal y el gu&iacute;a.</li>
+<li>Rachas de viento, cables trabados, polvo en los engranajes.</li>
+<li>Y muchos mas...</li>
+</ul>
+El denominador com&uacute;n compartido en los algoritmos de guiado es la necesidad
+de reaccionar de alguna forma a las deflecciones lentas y continuas, ignorando
+el resto. Este es un problema dif&iacute;cil, ya que cualquier deflecci&oacute;n de una estrella gu&iacute;a
+es probable que tenga su origen en muchas de estas fuentes. Y por si esto no 
+fuera dif&iacute;cil de por s&iacute;, recuerde que las monturas no son perfectas - por lo
+que el comando de movimiento que se env&iacute;a no ser&aacute; exactamente el que se realice.
+Usualmente, el requerimiento m&aacute;s importante para cualquier algoritmo es evitar
+la sobre-correcci&oacute;n, ya que la montura se mover&iacute;a hacia adelante y atr&aacute;s y
+el guiado nunca se estabilizar&iacute;a. Un acercamiento t&iacute;pico en estos algoritmos
+es ignorar las deflecciones que sean causadas con mayor probabilidad por el
+seeing y aplicar "inercia" o "impedancia" a las correcciones de guiado que
+se env&iacute;an a la montura. Esto significa hacer correcciones que sigan un patr&oacute;n y
+que sean generalmente consistentes con correcciones que ya se hayan realizado antes,
+a la vez que evitar hacer correcciones que requieran cambios grandes en la
+direcci&oacute;n o amplitud.
+Resistencia a cambios en la direcci&oacute;n son particularmente importantes en declinaci&oacute;n,
+donde el backlash de los engranajes es un problema com&uacute;n. Ojal&aacute; esta teor&iacute;a
+le d&eacute; suficiente conocimiento de las bases de guiado para que varios de los
+par&aacute;metros utilizados en <span style="font-style: italic;">PHD2</span>
+le hagan sentido.
+<br>
+<h3><a name="Guide_Algorithm_Parameters"></a>Par&aacute;metros de Algortimo de Guiado</h3>
+En <span style="font-style: italic;">PHD2</span>, los distintos algoritmos de guiado
+pueden ser aplicados tanto al eje de ascensi&oacute;n recta como al de declinaci&oacute;n. La
+mayor&iacute;a de estos algoritmos incluyen un par&aacute;metro de <span style="font-weight: bold;">
+<a name="minimum_move"></a>movimiento m&iacute;nimo</span>. Este es utilizado para evitar hacer
+correcciones de guiado que sean demasiado chicas, poco probable que tengan alg&uacute;n 
+efecto en la forma de la estrella y que sean seguramente ocasionados moment&aacute;neamente
+por efectos de seeing pasajeros. Estos valores son ingresados en unidades de pixeles, 
+por lo que tiene que pensar en ellos en el contexto de su imagen de escala y del
+tama&ntilde;o t&iacute;pico de su estrellas gu&iacute;a. Si ha utilizado el asistente de nuevo perfil para
+configurar su sistema, los par&aacute;metros de menor movimiento han sido completados con valores
+que seguramente funcionar&aacute;n para la imagen de escala que est&eacute; utilizando. El Asistente
+de Guiado puede tambi&eacute;n ajustar estos valores basado en sus mediciones de 
+alteraciones de seeing frecuentes. Si ud est&aacute; viendo muchas correcciones en 
+declinaci&oacute;n junto a muchas correcciones de direcci&oacute;n, ud podr&iacute;a estar
+"persiguiendo el seeing" y ajustando los valores de movimiento m&iacute;nimo hacia arriba
+puede ser una forma simple de reducir eso. <span style="font-weight: bold;">
+De todos los par&aacute;metros de guiado detallados aqu&iacute;, los dos valores de movimiento
+m&iacute;nimo son los que m&aacute;s probablemente necesiten ajuste noche a noche dependiendo de
+las condiciones del seeing.</span>
+<br><br>
+Los algoritmos de <a name="hysteresis"></a><span style="font-weight: bold;">histeresis</span>
+mantienen una historia de las correcciones de guiado que se han realizado recienteente,
+y son utilizados para ayudar a calcular la pr&oacute;xima correcci&oacute;n. El par&aacute;metro
+<span style="font-weight: bold;">hysteresis</span>, expresado como un porcentaje, especifica
+el "peso" que se le dar&aacute; a esta historia, contra s&oacute;lo mirar la deflecci&oacute;n de la
+estrella en el cuadro de guiado actual. Considere un ejemplo donde el par&aacute;metro
+de hist&eacute;resis est&aacute; en 10%. En este caso, la pr&oacute;xima correcci&oacute;n de guiado estar&aacute;
+influenciada en un 90% por el movimiento de la estrella en el cuadro de guiado actual
+y 10% por las correcciones que se hayan realizado recientemente. Incrementando el valor
+de hist&eacute;resis va a suavizar las correcciones con el riesgo de ser demasiado lento para
+reaccionar a un cambio real de direcci&oacute;n. Los algoritmos de hist&eacute;resis tambi&eacute;n incluyen
+un par&aacute;metro de <a name="aggressiveness"></a><span style="font-weight: bold;">agresividad</span>,
+tambi&eacute;n expresado como un porcentaje, que es utilizado para reducir la sobre-correcci&oacute;n.
+En cada cuadro, <span style="font-style: italic;">PHD2</span> calcula que tan lejos
+piensa que se deber&iacute;a mover la montura y en que direcci&oacute;n/es. El par&aacute;metro de agresividad
+multiplica esto. Por ejemplo, tomemos un caso donde la deflecci&oacute;n de la estrella ha sido 
+evaluada y se necesita un movimiento de correcci&oacute;n de 0.5 p&iacute;xeles. Si la agresividad
+est&aacute; en 100%, se enviar&aacute; un comando de guiado para mover la montura los 0.5 p&iacute;xeles.
+Pero si la agresividad se ha puesto en 60%, se le pedir&aacute; a la montura que se mueva
+s&oacute;lo un 60% de lo calculado, o 0.3 p&iacute;xeles. Si ha realizado un trabajo razonable
+al completar los valores de m&iacute;nimo movimiento, generalmente no hay necesidad
+de modificar estos par&aacute;metros y cualquier modificaci&oacute;n que intente deber&iacute;a estar
+basada en un an&aacute;lisis minucioso de su historia de guiado utilizado la herramienta
+de PHD2 LogViewer.
+<br><br>
+El algoritmo <a name="ResistSwitch"></a><span style="font-weight: bold;">Resistencia a Cambio</span>
+se comporta como su nombre lo indica. Como los algoritmos de hist&eacute;resis,
+tambien mantiene una historia de las &uacute;ltimas correcciones, y cualquier cambio
+de direcci&oacute;n debe ser "convincente" para enviar un comando de revertir guiado.
+Esto es apropiado para guiado de declinaci&oacute;n, donde las reversiones en
+direcci&oacute;n son tanto sospechosas como tendientes a desencadenar backlash
+en los engranajes. Por esa raz&oacute;n, Resistencia a Cambio es el algoritmo por
+defecto para declinaci&oacute;n pero no para ascensi&oacute;n recta, donde se esperan reversiones de
+direcci&oacute;n v&aacute;lidas. Desde la versi&oacute;n 2.4.1, hay dos par&aacute;metros adicionales para
+ajuste fino del algoritmo de Resistencia a Cambio. El primero es "agresi&oacute;n",
+el porcentaje que controla cuando de la correci&oacute;n calculada se enviar&aacute;. Al
+reducir este par&aacute;metro se puede ayudar a evitar pasarse en monturas que
+tienen poco o ning&uacute;n backlash. El segundo par&aacute;metro es una marca etiquetada
+"Cambio r&aacute;pido para desviaciones grandes". Si est&aacute; marcado, PHD2 reaccionar&aacute;
+inmediatamente a cambios de direcci&oacute;n grandes en lugar de esperar tres desviaciones
+consecutivas en la nueva direcci&oacute;n, que es el comportamiento normal. Esto
+puede ayudar para recuperar antes de excursiones largas en Dec, ocasionadas
+por viento, cables trabados u otros problemas mec&aacute;nicos, por ejemplo. la
+definici&oacute;n de "desviaciones grandes" es 3X el valor de movimiento m&iacute;nimo. Entonces,
+si PHD2 est&aacute; sobre reaccionando a cambiios de direcci&oacute;n, ud puede ajustar el
+comportamiento con el par&aacute;metro movimiento m&iacute;nimo o deshabilitar la opci&oacute;n
+"cambio r&aacute;pido". hay que recordar que "normalmente, menos es m&aacute;s" cuando se
+refiere a guiado Dec, no se pase con estos par&aacute;metros.
+<br><br>
+Los algoritmos <a name="LowPass"></a><span style="font-weight: bold;">Paso Bajo </span>
+tambi&eacute;n emplean una historia de las correcciones recientes para calcular
+la pr&oacute;xima correcci&oacute;n. El punto de partida para el movimiento calculado
+es la mediana de las deflexiones de la estrella gu&iacute;a que han ocurrido recientemente.
+Esto significa que la deflexi&oacute;n observada en el cuadro gu&iacute;a actual tiene relativamente
+poco impacto en el c&aacute;lculo del pr&oacute;ximo movimiento y que el algoritmo es muy resistente
+a cambios r&aacute;pidos. Pero la acumulaci&oacute;n de historia tambi&eacute;n incluye c&aacute;lculos para
+determinar si las deflexiones est&aacute;n tendiendo en una direcci&oacute;n consistente.
+El par&aacute;metro <span style="font-weight: bold;"><a name="slope_weight_"></a>peso de inclinaci&oacute;n</span>,
+expresado como un porcentaje, determina cu&aacute;nta influencia tiene en calcular
+el verdadero movimiento de guiado - est&aacute; para prevenir que el algoritmo sea
+demasiado lento. Si el valor est&aacute; en cero, el pulso de guiado siempre ser&aacute;
+la mediana de la historia reciente. Si el valor es distinto de cero, el valor
+medio ser&aacute; ajustado para arriba o abajo basado en la tendencia de los movimientos
+de la estrella gu&iacute;a. Como el algoritmo de paso bajo es tan resistente a cambios
+r&aacute;pidos, probablemente sea mas aplicable a guiado de declinaci&oacute;n o a monturas
+con encoders absolutos. El uso de este algoritmo est&aacute; siendo obsoleto
+frente al algoritmo de Paso Bajo2.
+<br><br>
+El algoritmo <span style="font-weight: bold;"><a name="LowPass2"></a>PasoBajo2</span>
+es una variaci&oacute;n del algoritmo PasoBajo original, con cambios en su 
+comportamiento. Tambi&eacute;n mantiene una historia de correcciones de guiado,
+pero la pr&oacute;xima correcci&oacute;n es simplemente una extensi&oacute;n linear de los
+comandos previos a &eacute;l (esto es, un c&aacute;lculo de pendiente). Esto contin&uacute;a
+hasta que se note un cambio de direcci&oacute;n significativo, momento en que la
+historia se borra. El algoritmo tiene dos propiedades ajustables:
+movimiento m&iacute;nimo y agresividad. Movimiento m&iacute;nimo tiene el mismo efecto
+que en otros algoritmos de guiado y agresividad (porcentaje) es una forma de
+atenuar el tama&ntilde;o de las correcciones de guiado. PasoBajo2 es muy 
+conservador, puede ser una buena elecci&oacute;n para usuarios con buenas
+condiciones de cielo (seeing) y monturas de buen funcionamiento con 
+poco o ningun backlash en declinaci&oacute;n. Es el algoritmo recomendado
+para monturas que tienen encoders de alta precisi&oacute;n en los dos ejes.
+<br><br>
+
+<p>El algoritmo <a name="Z-filter"></a><span style="font-weight: bold;">Filtro-Z</span>
+es una variaci&oacute;n de los algoritmos PasoBajo pero opera en la frecuencia
+discreta o dominio "Z". En t&eacute;rminos de guiado aplica correcci&oacute;n completa
+a los componentes de baja frecuencia causados por el error peri&oacute;dico
+de la montura. Las frecuencias altas son corregidas con agresi&oacute;n,
+reduci&eacute;ndolas progresivamente a cero.</p>
+
+<p>El algoritmo de Filtro-Z le permite utilizar tiempos de exposici&oacute;n
+bajos en la c&aacute;mara gu&iacute;a (Ej. 1s o 0.5s) sin estar corriendo tras el seeing
+de alta frecuencia. las ventajas de tiempos de exposici&oacute;n m&aacute;s cortos
+son tiempos de retraso menores para aplicar correcciones y correcciones
+mas chicas.</p>
+
+<p>El algoritmo Filtro-Z ofrece s&oacute;lo dos ajustes: Factor de Exposici&oacute;n (XFac)
+y Movimiento M&iacute;nimo (MinMo). El tiempo de exposici&oacute;n de guiado virtual se
+calcula con el tiempo de exposici&oacute;n real multiplicado por el Factor de
+Exposici&oacute;n. Un tiempo de exposici&oacute;n virtual determinado funcionar&aacute;
+similarmenta a un algoritmo sin filtro utilizando el mismo tiempo de
+exposici&oacute;n. Por ejemplo, un tiempo de exposici&oacute;n de 1 segundo con 
+Factor de Exposici&oacute;n 4 da un tiempo de exposici&oacute;n virtual de 4s (4 x 1s)
+y funciona igual a Hist&eacute;resis con Agresi&oacute;n 100% e Hist&eacute;resis 0.0 utilizando
+un tiempo de exposici&oacute;n de 4 segundos. Un tiempo de exposici&oacute;n de 2s con
+Factor de Exposici&oacute;n 2 tambi&eacute;n tiene un tiempo de exposici&oacute;n virtual de 4s
+(2 x 2s), funcionando de esa forma igual. La principal diferencia es que
+los tiempos de exposici&oacute;n reales m&aacute;s cortos permiten que las correcciones
+sean aplicadas antes y m&aacute;s frecuentemente, lo que las hace menores.</p>
+
+<p>Esta caracter&iacute;stica le permite ajustar el tiempo de exposici&oacute;n de guiado
+para optimizar el SNR de la estrella gu&iacute;a y la latencia dle guiado. ud
+puede ajustar el Factor de Exposici&oacute;n para obtener la respuesta de guiado
+deseada. Un tiempo de exposici&oacute;n virtal de 2s a 4s es una recomendaci&oacute;n
+como un punto de inicio para el eje RA. En el eje Dec, se puede utilizar
+exposiciones virtuales mayores y pueden ayudar a minimizar inversiones
+que pueden resultar en backlash.</p>
+
+<p>Note que cuando utilice tiempos de exposici&oacute;n bajos el movimiento del
+seeing ser&aacute; m&aacute;s visible en el gr&aacute;fico de guiado. Esto no significa que el
+guiado est&eacute; peor. Otros algoritmos dependen en el tiempo de exposici&oacute;n para
+filtrar el movimiento por seeing. El Factor de Exposici&oacute;n de Filtro-Z realiza
+la misma funci&oacute;n.</p>
+
+<p>El Filtro-Z tambi&eacute;n tiene el par&aacute;metro MinMo. El valor deber&iacute;a elegirse
+para igualar la habilidad de la montura para realizar correcciones menores con
+precisi&oacute;n. Con otros algoritmos MinMo se recomienda a veces para proveer
+alg&uacute;n tipo de filtro, por ej. para prevenir inversiones en el eje Dec. Con
+el Filtro-Z lo recomendado es incremente el Factor de Exposici&oacute;n.</p>
+
+<br>
+<br>
+
+<a name="Predictive_PEC"></a><b style="">Algoritmo de Guiado con PEC Predictivo de PHD2</b>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b style="">Informaci&oacute;n general<o:p></o:p></b></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>El algoritmo PPEC es diferente de los otros en
+PHD2 grcaias a sus capacidades de modelado y predicci&oacute;n.
+El algoritmo analiza el desempe&ntilde;o del seguimiento de la montura en tiempo
+real y una vez que el an&aacute;lisis se completa, calcular&aacute; las correcciones de
+guiado incluso antes de que un error repetitivo se vea. Enviando correcciones
+de guiado proactivas, se reduce el tiempo de demora inherente a un guiado
+tradicional y puede mejorar significativamente el desempe&ntilde;o. Con los otros
+algoritmos, que son totalmente reactivos, las correcciones se env&iacute;an s&oacute;lo
+despu&eacute;s que el error se ve en el sensor de la c&aacute;mara.</p>
+
+<p class="MsoNormal">Una vez que el guiado comienza, el algoritmo analiza
+el rendimiento de la montura y busca errores de seguimiento que sean repetitivos
+y, de esa forma, predecibles. El algoritmo emplea un modelado de proceso Gaussiano
+sofisticado desarrollado por un equipo de investigaci&oacute;n en el Instituto
+Max Plank en <st1:country-region w:st="on"><st1:place w:st="on">Alemania</st1:place></st1:country-region>.
+Los detalles matem&aacute;ticos se pueden encontrar en la publicaci&oacute;n referenciada aqu&iacute;:</p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><a href="http://ieeexplore.ieee.org/document/7105398/?reload=true">http://ieeexplore.ieee.org/document/7105398/?reload=true</a></p>
+
+
+
+<p class="MsoNormal">El algoritmo PPEC ser&aacute; utilziando normalmente para RA,
+donde el error peri&oacute;dico residual y otros errores relacionados al mecanismo
+normalmente reducen la precisi&oacute;n del seguimiento. El Algoritmo utiliza
+escalas de tiempo separadas para caracterizar el comportamiento del sistema:</p>
+
+
+<ul>
+<li>Corto plazo: para errores de alta frecuencia como aquellos causados por asperezas
+en la mec&aacute;nica o por seeing.</li>
+<li>Medio Plazo: para errores peri&oacute;dicos residuales, t&iacute;picamente ocurriendo a intervalos
+menores o iguales al per&iacute;odo del sinfin.</li>
+<li>Largo Plazo: para deriva constante y para arm&oacute;nicos de baja frecuencia
+(intervalos de tiempo mas largos) que pueden ser causados por la interacci&oacute;n de
+los m&uacute;ltiples engranajes en la mec&aacute;nica.</li>
+</ul>
+
+
+<p class="MsoNormal">El comportamiento a corto plazo es utilizado para identificar
+el ruido no predecible en el sistema, que es esencialmente filtrado para identificar
+componentes que son predecibles. Para la mayor&iacute;a de las monturas, el componente de
+medio t&eacute;rmino ser&aacute; probablemente el m&aacute;s importante. Si ud est&aacute; siguiendo las 
+mejores pr&aacute;cticas, tendr&aacute; programada la correcci&oacute;n de error peri&oacute;dico en su montura
+(asumiendo que est&eacute; disponible). Al hacer esto, reduce el trabajo que necesita hacer
+PHD2, y la correci&oacute;n PEC de la montura usualmente se guarda en forma permanente.
+Esto es preferible a tener que medir e inferir el error peri&oacute;dico cada vez que
+use su equipo. DIcho esto, PEC en la montura nunca es perfecto, y ver&aacute; errores
+residuales repetitivos incluso con PEC activo. Esto suele surgie cuando los
+errores de segumuento ocurren con una frecuencia que no es arm&oacute;nica (fracci&oacute;n de
+un entero) del per&iacute;odo del sinf&iacute;n de la montura - la mayor&iacute;a de las implementaciones
+PEC no pueden resolver esto. Tambi&eacute;n puede tener errores peri&oacute;dicos residuales que
+dependan de la carga mec&aacute;nica de la montura o si el comportamiento de la montura
+cambi&oacute; desde la programaci&oacute;n del PEC. El algoritmo PPEC puede ser muy efectivo en
+identificar y reducir estos errores porque no depende del per&iacute;odo del sinfin y
+porque est&aacute; continuamente realizando nuevos an&aacute;lisis del comportamiento actual
+de la montura.</p>
+
+
+
+<p class="MsoNormal">El algoritmo PPEC tambi&eacute;n puede detectar y corregir proactivamente
+los errores de deriva. A pesar que la deriva es bien manejada por cualquiera de 
+los algoritmos de guiado, la correcci&oacute;n siempre vendr&aacute; despu&eacute;s del error por
+alguna cantidad. Para algunos tipos de usos, podr&iacute;a ser espectrograf&iacute;a,
+fotometr&iacute;a o seguimiento de cometas, eso podr&iacute;a ser un problema, en cuyo caso con
+PPEC podr&iacute;a obtener mejores resultados.</p>
+
+
+
+<p class="MsoNormal">Dado que PPEC emplea un proceso de aprendizaje, usualmente
+demora dos vueltas del sinf&iacute;n para modelar la montura y ser totalmente eficiente.
+Durante este per&iacute;odo de entrenamiento, el algoritmo se comporta m&aacute;s como el de
+hist&eacute;resis, por lo que normalmente no percibir&aacute; una penalidad mientras se construye
+el modelo. En su lugar, percibir&aacute; una mejora continua en el seguimiento a medida que
+el modelo es refinado y el algoritmo cambia suavemente de hist&eacute;resis a modo predictivo.
+Esta mejora se ve usualmente despu&eacute;s de haberse modelado el comportamiento de la montura
+a mediano plazo.</p>
+
+
+
+<p class="MsoNormal">Dado que el modelo PPEC esst&aacute; impl&iacute;citamente atado al estado de
+la mec&aacute;nica de los engranajes, debe ser re-entrenado si la montura se mueve una
+distancia considerable. Por la misma raz&oacute;n, no puede ser guardado entre diferentes
+sesiones de guiado, que es por lo que el PEC convencional es importante. De todos modos,
+el modelo PPEC permanecer&aacute; intacto durante operaiones de dither y mientras el guiado
+est&eacute; pausado (v&iacute;a automatizaci&oacute;n) para actividades como enfocar. Para el uso m&aacute;s com&uacute;n,
+como fotografiar el mismo objetivo por m&uacute;ltiples horas con dithering peri&oacute;dico, el 
+modelo PPEC continuar&aacute; siendo v&aacute;lido. En todo caso, el proceso de aprendizaje y transici&oacute;n
+de un modelo a otro se realiza autom&aacute;ticamente, por lo que no necesitar&aacute; de su atenci&oacute;n.</p>
+
+
+
+<p class="MsoNormal"><b style="">Detalles del Algoritmo</b></p>
+
+
+
+<p class="MsoNormal">Una vez haya concluido el per&iacute;odo de entrenamiento, el algoritmo PPEC
+calcular&aacute; la correci&oacute;n de guiado utilizando dos factores. Uno es reactivo, basado en el
+movimiento de la estrella gu&iacute;a en la &uacute;ltima exposici&oacute;n. El segundo es predictivo, basado
+en la salida del proceso de modelado Gausiano contruido durante el per&iacute;odo de entrenamiento.
+Cada una de estas condiciones incluye un factor separado de ganancia o agresividad, por lo 
+que el pulso final de guiado es la suma:</p>
+
+
+
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp; Correcci&oacute;n-de-guiado = (cantidad predecida * ganancia predecida) +
+(desplazamiento reciente * ganancia reactiva)</p>
+
+
+
+<p class="MsoNormal">Los par&aacute;metros <b>'Ganancia Predecida'</b> y <b>'Ganancia Reactiva'</b>
+est&aacute;n en la ventana 'Seteos Avanzados', y sus valores por defecto deber&iacute;an funcionar
+correctamente para la mayor&iacute;a de las monturas. Ud deber&iacute;a ser conservador acerca de cambiarlos
+porque malas decisiones en estos par&aacute;metros definitivamente van a empeorar su seguimiento.</p>
+
+
+
+<p class="MsoNormal">Durante el per&iacute;odo de entrenamiento, el algoritmo necesita identificar
+los errores peri&oacute;dicos en el movimiento de la estrella gu&iacute;a observada. Para pruebas iniciales,
+puede utilizar el per&iacute;odo del sinfin de su montura como valor de inicio para <b>'Longitud de Per&iacute;odo'</b>.
+Esto le dar&aacute; al algoritmo un buen punto de partida, pero deber&iacute;a dejar la opci&oacute;n auto-ajustar
+marcada. Esto hace que el algoritmo ajuste el per&iacute;odo como sea necesario para mejor control
+del error peri&oacute;dico que encuentre. Una vez haya corrido el algoritmo varias veces y est&eacute;
+contento con los resultados, puede dejar este campo con el valor que haya sido calculado
+en las sesiones previas. Si posee una montura con un error de seguimiento recurrente que
+ocurre en una frecuencia no-arm&oacute;nica, podr&iacute;a deshabilitar 'auto-ajustar-per&iacute;odo' y
+"trabar" el algoritmo PPEC en la frecuencia particular que est&aacute; intentando controlar.
+Obviamente, para esto nceesita un an&aacute;lisis FFT del rendimiento del seguimiento, algo
+que puede hacer en la herramienta LogViewer de PHD2.</p>
+<p class="MsoNormal">El par&aacute;metro <b>'Mantener Modelo'</b> especifica cuanto tiempo
+la montura puede hacer seguimiento sin guiar antes de que el algoritmo PPEC se
+reinicie. Esto se calcula como un porcentaje de la longitud de per&iacute;odo actual. Es &uacute;til
+en situaciones como auto-foco, donde la montura contin&uacute;a siguiendo a velocidad sideral
+para no se hace guiado. Tambi&eacute;n aplica a cambios hacia el Oeste en la posici&oacute;n RA
+por movimientos a un objetivo. Debe tener cuidado si ajusta el valor por defecto
+de 40% hacia arriba. Seguir por per&iacute;odos extendidos sin guiado puede causar que el
+modelo PPEC pierda precisi&oacute;n, en cuyo caso un reinicio ser&iacute;a la mejor opci&oacute;n.
+El punto donde esto ocurre es espec&iacute;fico de la montura y de las condiciones de
+seeing, por lo que tendr&aacute; que experimentar si dese ajustar este par&aacute;metro.</p>
+
+
+
+<p class="MsoNormal">El par&aacute;metro <b>'m&iacute;nimo-movimiento'</b> afecta s&oacute;lo al
+componente reactivo del algoritmo. Si el movimiento de la estrella medido es menor
+que este par&aacute;metro, el componente reactivo se pondr&aacute; en cero. De todos modos,
+el componente predictivo del algoritmo toav&iacute;a ser&aacute; calculado y aplicado.</p>
+<br><br><br>
+</body></html>
