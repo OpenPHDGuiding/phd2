@@ -1,10 +1,10 @@
 # -*- shell-script -*-
 
 # web server hostname for ssh commands (hostname or user@hostname)
-WWW_HOST="andy@openphdguiding.org"
+WWW_HOST="user@openphdguiding.org"
 
 # web server document root
-WWW_DIR="/var/www/phd2"
+WWW_DIR="/path/to/phd2"
 
 # mac 32-bit build host
 MAC_HOST32="mac32"
