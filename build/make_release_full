@@ -69,7 +69,7 @@ esac
 set -e
 
 # change to top-level phd2 dir
-cd $D/..
+cd "$D"/..
 
 git checkout -q master
 git pull -r
@@ -96,7 +96,7 @@ PAUSE
 #
 # update translation templates
 #
-if [ -n "$do_locales" ]; then
+if [[ $do_locales ]]; then
     ./build/locales_update_win.sh
     git status -uno --porcelain | awk '$1=="M"{print $2}' | xargs git commit -m "update translation templates"
     need_push=1
@@ -105,7 +105,7 @@ fi
 #
 # update version in phd.h
 #
-if [ -n "$do_phd_h" ]; then
+if [[ $do_phd_h ]]; then
     echo "updating rev to $REV"
     cp phd.h /tmp/
     awk -v q='"' -v REV=$REV '
@@ -123,7 +123,7 @@ fi
 #
 # update help file
 #
-if [ -n "$do_help" ]; then
+if [[ $do_help ]]; then
     echo "building help files"
     ./build/build_help.sh -w
     scp tmp/PHD2_User_Guide.pdf ${WWW_HOST}:${WWW_DIR}/PHD2-${REV}_User_Guide.pdf
@@ -135,21 +135,21 @@ fi
 #
 # push to repo if needed
 #
-if [ -n "$need_push" ]; then
+if [[ $need_push ]]; then
     echo "push to repo"
     PAUSE
     git push
     need_tag=1
 fi
 
-if [ -n "$do_build" ]; then
+if [[ $do_build ]]; then
 
     macpids=
 
     #
     # start OSX builds
     #
-    if [ -n "$do_upload" ]; then
+    if [[ $do_upload ]]; then
         OSX_UPLOAD="-u"
     fi
     scp "$D"/build.cfg ${MAC_HOST32}:${MAC_DIR32}/build/
@@ -162,7 +162,7 @@ if [ -n "$do_build" ]; then
     #
     # start win build
     #
-    if [ -n "$do_upload" ]; then
+    if [[ $do_upload ]]; then
         WIN_UPLOAD="-u"
     fi
     ./build/publish_win $WIN_UPLOAD
@@ -173,7 +173,7 @@ fi
 #
 # web site dev release page
 #
-if [ -n "$do_changelog_dev" ]; then
+if [[ $do_changelog_dev ]]; then
     echo "adding dev release web page. Change Log:"
     cat "$changelog_dev"
     PAUSE
@@ -186,7 +186,7 @@ fi
 #
 # web site major release page
 #
-if [ -n "$do_changelog_full" ]; then
+if [[ $do_changelog_full ]]; then
     echo "adding full release web page. Change Log:"
     cat "$changelog_full"
     PAUSE
@@ -197,13 +197,15 @@ if [ -n "$do_changelog_full" ]; then
 fi
 
 if [[ $need_static_update ]]; then
+    echo "generating static site"
+    PAUSE
     ssh $WWW_HOST "./bin/phd2_generate_static_site"
 fi
 
 #
 # tag the release
 #
-if [ -n "$need_tag" ]; then
+if [[ $need_tag ]]; then
     echo "tagging the release"
     PAUSE
     git tag -a -m "v${REV}" "v${REV}"
@@ -213,7 +215,7 @@ fi
 #
 # update auto-upgrade release files
 #
-if [ -n "$do_release" ]; then
+if [[ $do_release ]]; then
     echo "updating auto-upgrade release tags"
     PAUSE
     ./build/publish_win -r -d
