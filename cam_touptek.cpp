@@ -195,7 +195,8 @@ struct ToupCam
         case TOUPCAM_EVENT_IMAGE:
         case TOUPCAM_EVENT_ERROR:
         case TOUPCAM_EVENT_DISCONNECTED:
-        case TOUPCAM_EVENT_TIMEOUT:
+        case TOUPCAM_EVENT_NOFRAMETIMEOUT:
+        case TOUPCAM_EVENT_NOPACKETTIMEOUT:
         case TOUPCAM_EVENT_TRIGGERFAIL:
             //Debug.Write(wxString::Format("TOUPTEK: cam event 0x%x\n", event));
             {
@@ -390,7 +391,7 @@ CameraToupTek::~CameraToupTek()
 
 bool CameraToupTek::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-    ToupcamInstV2 ti[TOUPCAM_MAX];
+    ToupcamDeviceV2 ti[TOUPCAM_MAX];
     unsigned int numCameras = Toupcam_EnumV2(ti);
     Debug.Write(wxString::Format("TOUPTEK: found %u cameras\n", numCameras));
 
@@ -406,7 +407,7 @@ bool CameraToupTek::EnumCameras(wxArrayString& names, wxArrayString& ids)
 
 bool CameraToupTek::Connect(const wxString& camIdArg)
 {
-    ToupcamInstV2 ti[TOUPCAM_MAX];
+    ToupcamDeviceV2 ti[TOUPCAM_MAX];
     unsigned int numCameras = Toupcam_EnumV2(ti);
 
     Debug.Write(wxString::Format("TOUPTEK: connect: found %u cameras\n", numCameras));
@@ -420,7 +421,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     if (camId == DEFAULT_CAMERA_ID)
         camId = ti[0].id;
 
-    const ToupcamInstV2 *info = nullptr;
+    const ToupcamDeviceV2 *info = nullptr;
     for (unsigned int i = 0; i < numCameras; i++)
     {
         if (camId == ti[i].id)
@@ -716,8 +717,10 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
             case TOUPCAM_EVENT_DISCONNECTED:
                 err = _("Capture failed: the camera disconnected");
                 break;
-            case TOUPCAM_EVENT_TIMEOUT:
+            case TOUPCAM_EVENT_NOFRAMETIMEOUT:
+            case TOUPCAM_EVENT_NOPACKETTIMEOUT:
                 err = _("Capture failed: the camera reported a timeout");
+                break;
             case TOUPCAM_EVENT_ERROR:
             case TOUPCAM_EVENT_TRIGGERFAIL:
             default:
