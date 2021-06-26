@@ -1,0 +1,19 @@
+# -*- shell-script -*-
+
+# web server hostname for ssh commands (hostname or user@hostname)
+WWW_HOST="andy@openphdguiding.org"
+
+# web server document root
+WWW_DIR="/var/www/phd2"
+
+# mac 32-bit build host
+MAC_HOST32="mac32"
+
+# mac 32-bit host phd2 source tree directory
+MAC_DIR32="devel/phd2"
+
+# mac 64-bit build host
+MAC_HOST64="mac64"
+
+# mac 64-bit host phd2 source tree directory
+MAC_DIR64="devel/phd2"

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SCPDST=openphdguiding.org:/var/www/phd2
-
 do_build=1
 do_clean=1
 do_upload=
@@ -21,8 +19,8 @@ while getopts "Cnurd" o; do
             do_upload=1
             ;;
         r)
-	    do_build=
-	    do_clean=
+            do_build=
+            do_clean=
             do_upload=
             do_release=1
             ;;
@@ -38,9 +36,9 @@ case "$1" in
       # auto-detect: 64-bits on 10.14 mojave or later
       os=$(sysctl -n kern.osproductversion 2>/dev/null | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
       if [ "$os" \< "010014" ]; then
-	  bits=32
+          bits=32
       else
-	  bits=64
+          bits=64
       fi
       ;;
   32) bits=32 ;;
@@ -51,6 +49,14 @@ esac
 set -ex
 
 D=$(cd $(dirname "$0"); /bin/pwd)
+
+[[ -f $D/build.cfg ]] || {
+    echo "missing build.cfg" >&2
+    exit 1
+}
+. "$D"/build.cfg
+
+SCPDST=${WWW_HOST}:${WWW_DIR}
 
 # run from the top of the source tree (this script is in <top>/build/)
 cd $D/..
@@ -81,8 +87,8 @@ SCPFILES=
 
 if [ -n "$do_upload" ]; then
     case $bits in
-	32) Z=PHD2-${V}-OSX.zip ;;
-	64) Z=PHD2-${V}-OSX-64.zip ;;
+        32) Z=PHD2-${V}-OSX.zip ;;
+        64) Z=PHD2-${V}-OSX-64.zip ;;
     esac
     zip -r "$Z" PHD2.app
     SCPFILES="$SCPFILES $Z"
