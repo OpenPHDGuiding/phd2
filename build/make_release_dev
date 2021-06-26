@@ -1,0 +1,217 @@
+#!/bin/bash
+
+INTERACTIVE=
+
+usage () {
+    echo "usage: $0 [-i] [-d devN] changelog_file" >&2
+    exit 1
+}
+
+PAUSE () {
+    if [ -n "$INTERACTIVE" ]; then
+        read -p "Hit Enter to continue"
+    fi
+}
+
+# === main ===
+
+if [[ $1 = "-i" ]]; then
+    INTERACTIVE=1
+    shift
+fi
+
+if [[ $1 = "-d" ]]; then
+    dev=$2
+    shift 2
+fi
+
+changelog=$1
+shift
+
+case "$dev" in
+    "") ;;
+    dev*) ;;
+    *) usage ;;
+esac
+
+[ -f "$changelog" ] || {
+    echo "$changelog: file not found" >&2
+    usage
+}
+
+D=$(cd $(dirname "$0"); /bin/pwd)
+
+[[ -f $D/build.cfg ]] || {
+    echo "missing build.cfg" >&2
+    exit 1
+}
+. "$D"/build.cfg
+
+# sanity check config
+for v in WWW_{HOST,DIR} MAC_{HOST,DIR}{32,64}; do
+    [[ -v $v ]] || {
+        echo "missing build.cfg variable $v!" >&2
+        exit 1
+    }
+done
+
+# convert changelog path to an absolute path
+case $changelog in
+    /*) ;;
+    *) changelog=$(/bin/pwd)/$changelog ;;
+esac
+
+set -e
+
+# copy build cfg to macs
+scp "$D"/build.cfg ${MAC_HOST32}:${MAC_DIR32}/build/
+scp "$D"/build.cfg ${MAC_HOST64}:${MAC_DIR64}/build/
+
+# change to top-level phd2 dir
+cd "$D"/..
+
+git checkout -q master
+git pull -r -q
+
+V=$(perl -ne '/^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { print $1; exit }' phd.h)
+PREV_DEV=$(perl -ne '/^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { print $1; exit }' phd.h)
+
+if [[ ! $dev ]]; then
+    [[ $PREV_DEV =~ ^([^0-9]*)([0-9]+)$ ]] || {
+        echo "could not parse previous sub-version '$PREV_DEV'" >&2
+        exit 1
+    }
+    dev=${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))
+fi
+
+REV="$V$dev"
+
+do_locales=1
+do_phd_h=1
+do_help=1
+do_build=1
+do_upload=1
+do_changelog=1
+do_release=1
+
+# these will be set automatically
+need_push=
+need_tag=
+need_static_update=
+
+PAUSE
+
+#
+# update translation templates
+#
+if [[ $do_locales ]]; then
+    ./build/locales_update_win.sh
+    git status -uno --porcelain | awk '$1=="M"{print $2}' | xargs git commit -m "update translation templates"
+    need_push=1
+fi
+
+#
+# update version in phd.h
+#
+if [[ $do_phd_h && $dev != $PREV_DEV ]]; then
+    cp phd.h /tmp/
+    if [ -n "$PREV_DEV" ]; then
+        echo "updating rev from $PREV_DEV to $dev"
+        sed -e "s/$PREV_DEV/$dev/" /tmp/phd.h > phd.h
+    else
+        echo "updating rev to $dev"
+        awk '/define[[:space:]]+PHDSUBVER/{print "#define PHDSUBVER _T(\042'$dev'\042)";next}{print}' /tmp/phd.h > phd.h
+        dos2unix phd.h
+        unix2dos phd.h
+    fi
+    git commit -m "bump rev to $REV" phd.h
+    need_push=1
+fi
+
+#
+# update help file
+#
+if [[ $do_help ]]; then
+    echo "building help files"
+    ./build/build_help.sh -w
+    scp tmp/PHD2_User_Guide.pdf ${WWW_HOST}:${WWW_DIR}/PHD2-${REV}_User_Guide.pdf
+    scp tmp/man.tar.gz ${WWW_HOST}:${WWW_DIR}/man-${REV}.tar.gz
+    ssh $WWW_HOST "cd $WWW_DIR && mkdir man-${REV} && tar xfz man-${REV}.tar.gz -C man-${REV} && ln -sfn man-${REV} man-dev"
+    ssh $WWW_HOST "chmod -R o+rX ${WWW_DIR}/PHD2-${REV}_User_Guide.pdf ${WWW_DIR}/man-${REV}.tar.gz ${WWW_DIR}/man-${REV}"
+fi
+
+#
+# push to repo if needed
+#
+if [[ $need_push ]]; then
+    echo "push to repo"
+    PAUSE
+    git push
+    need_tag=1
+fi
+
+if [[ $do_build ]]; then
+
+    macpids=
+
+    #
+    # start OSX builds
+    #
+    if [[ $do_upload ]]; then
+        OSX_UPLOAD="-u"
+    fi
+    ssh $MAC_HOST32 "cd $MAC_DIR32 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 32" &
+    macpids="$macpids $!"
+    ssh $MAC_HOST64 "cd $MAC_DIR64 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 64" &
+    macpids="$macpids $!"
+
+    #
+    # start win build
+    #
+    if [[ $do_upload ]]; then
+        WIN_UPLOAD="-u"
+    fi
+    ./build/publish_win $WIN_UPLOAD
+
+    wait $macpids
+fi
+
+#
+# web site dev release page
+#
+if [[ $do_changelog ]]; then
+    echo "adding release web page. Change Log:"
+    cat "$changelog"
+    PAUSE
+    #changelog_test="-t"
+    scp "$changelog" "${WWW_HOST}:/tmp/phd2changelog"
+    ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV $changelog_test /tmp/phd2changelog"
+    need_static_update=1
+fi
+
+if [[ $need_static_update ]]; then
+    echo "generating static site"
+    PAUSE
+    ssh $WWW_HOST "./bin/phd2_generate_static_site"
+fi
+
+#
+# tag the release
+#
+if [[ $need_tag ]]; then
+    echo "tagging the release"
+    PAUSE
+    git tag -a -m "v${REV}" "v${REV}"
+    git push --tags
+fi
+
+#
+# update auto-upgrade release files
+#
+if [[ $do_release ]]; then
+    echo "updating auto-upgrade release tags"
+    PAUSE
+    ./build/publish_win -r -d
+    ssh $MAC_HOST64 "cd $MAC_DIR64 && ./build/publish_osx -r"
+    ssh $WWW_HOST "cd $WWW_DIR && cp release-dev-osx.txt release-dev-linux.txt && chmod o+r release-dev-linux.txt"
+fi

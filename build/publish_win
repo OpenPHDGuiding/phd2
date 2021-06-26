@@ -1,0 +1,171 @@
+#!/bin/bash
+
+D=$(cd $(dirname "$0"); /bin/pwd)
+
+usage () {
+    cat <<EOF
+usage: publish_win [OPTIONS]
+Options:
+  -u      upload installer to web site
+  -i      run the installer on the local machine
+  -b      incremental build (default: full rebuild)
+  -r      update release version info for auto-update checker
+  -d      update dev release version info even if version number looks like a main rev
+  -s      skip version check
+  -S      version check only
+  -h      display this help
+EOF
+    exit
+}
+
+do_versioncheck=1
+do_build=1
+do_rebuild=1
+do_upload=
+do_install=
+do_release=
+series=
+
+while getopts "uibrdsSh" o; do
+    case "${o}" in
+        u)
+            do_upload=1
+            ;;
+        i)
+            do_install=1
+            ;;
+        b)
+            do_rebuild=
+            ;;
+        r)
+            do_release=1
+            do_build=
+            do_upload=
+            do_install=
+            ;;
+        d)
+            series="dev"
+            ;;
+        s)
+            do_versioncheck=
+            ;;
+        S)
+            do_versioncheck=1
+            do_build=
+            do_upload=
+            do_install=
+            ;;
+        h)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+set -ex
+
+CMD="/c/Windows/System32/cmd.exe"
+CMAKE='/c/Program Files/CMake/bin/cmake.exe'
+ISCC="/c/Program Files (x86)/Inno Setup 5/ISCC.exe"
+
+[[ -f $D/build.cfg ]] || {
+    echo "missing build.cfg" >&2
+    exit 1
+}
+. "$D"/build.cfg
+
+SCPDST="${WWW_HOST}:${WWW_DIR}"
+
+CMAKE_W=$(cygpath -w "$CMAKE")
+
+V=$(perl -ne '
+ /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
+ /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
+
+F=phd2-${V}-installer
+
+uptodate=1
+if git status | grep -q "Your branch is up to date with 'origin/master'"; then
+    echo "branch is up to date with origin/master"
+else
+    echo "need git pull" >&2
+    uptodate=
+fi
+modified=$(git status | grep "modified:" || :)
+if [[ $modified ]]; then
+    echo "**files are modified" >&2
+    uptodate=
+else
+    echo "no files are modified"
+fi
+staged=$(git diff --stat --staged)
+if [[ $staged ]]; then
+    echo "**changes are staged" >&2
+    uptodate=
+else
+    echo "no changes are staged"
+fi
+cached=$(git diff --stat --cached origin/master)
+if [[ $cached ]]; then
+    echo "changes are cached" >&2
+    uptodate=
+else
+    echo "no changes are cached"
+fi
+[[ $uptodate || ! $do_versioncheck ]] || \
+    exit 1
+
+cd "$D"/..
+
+rebuild=
+if [[ $do_rebuild ]]; then
+    rebuild="--clean-first"
+fi
+
+if [[ $do_build ]]; then
+    mkdir -p tmp
+    (
+        cd tmp
+
+        cat >run_cmake.bat <<EOF
+"$CMAKE_W" -Wno-dev -G "Visual Studio 12" "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" "-DOpenCVRoot=%OPENCV_DIR%" ..
+EOF
+
+        "$CMD" /c run_cmake.bat
+    )
+
+    # generate phd2.iss and README.txt in tmp, one level up from Release/
+    sed -e "s/@VERSION@/$V/g" phd2.iss.in >tmp/phd2.iss
+    sed -e "s/@VERSION@/$V/g" README-PHD2.txt.in >tmp/README-PHD2.txt
+
+    (
+        cd tmp
+        #"$MSBUILD" phd2.sln $rebuild /property:Configuration=Release
+        "$CMAKE" --build . --target phd2 --config Release $rebuild
+
+        "$ISCC" phd2.iss /F$F
+    )
+fi
+
+if [[ $do_install ]]; then
+    ./tmp/${F}.exe
+fi
+
+if [[ $do_upload ]]; then
+    scp ./tmp/${F}.exe $SCPDST/phd2-${V}-installer.exe
+    ssh $WWW_HOST chmod o+rX $WWW_DIR/phd2-${V}-installer.exe
+fi
+
+if [[ $do_release ]]; then
+    if [[ ! $series ]]; then
+        case $V in
+            *dev*) series="dev" ;;
+            *) series="main" ;;
+        esac
+    fi
+    sha1=$(sha1sum ./tmp/${F}.exe | cut -d' ' -f 1)
+    R="./tmp/release-${series}-win.txt"
+    echo "${V} https://openphdguiding.org/phd2-${V}-installer.exe $sha1" > $R
+    scp $R $SCPDST/
+    ssh $WWW_HOST "chmod o+r $WWW_DIR/release-${series}-win.txt"
+fi
