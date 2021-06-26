@@ -8,7 +8,7 @@ usage: publish_win [OPTIONS]
 Options:
   -u      upload installer to web site
   -i      run the installer on the local machine
-  -b      incremental build (deafult: full rebuild)
+  -b      incremental build (default: full rebuild)
   -r      update release version info for auto-update checker
   -d      update dev release version info even if version number looks like a main rev
   -s      skip version check
@@ -92,36 +92,37 @@ else
     uptodate=
 fi
 modified=$(git status | grep "modified:" || :)
-if [ -z "$modified" ]; then
-    echo "no files are modified"
-else
+if [[ $modified ]]; then
     echo "**files are modified" >&2
     uptodate=
+else
+    echo "no files are modified"
 fi
 staged=$(git diff --stat --staged)
-if [ -z "$staged" ]; then
-    echo "no changes are staged"
-else
+if [[ $staged ]]; then
     echo "**changes are staged" >&2
     uptodate=
+else
+    echo "no changes are staged"
 fi
 cached=$(git diff --stat --cached origin/master)
-if [ -z "$cached" ]; then
-    echo "no changes are cached"
-else
+if [[ $cached ]]; then
     echo "changes are cached" >&2
     uptodate=
+else
+    echo "no changes are cached"
 fi
-[ -n "$do_versioncheck" -a -z "$uptodate" ] && exit 1
+[[ $uptodate || ! $do_versioncheck ]] || \
+    exit 1
 
 cd "$D"/..
 
 rebuild=
-if [ -n "$do_rebuild" ]; then
+if [[ $do_rebuild ]]; then
     rebuild="--clean-first"
 fi
 
-if [ -n "$do_build" ]; then
+if [[ $do_build ]]; then
     mkdir -p tmp
     (
         cd tmp
@@ -146,17 +147,17 @@ EOF
     )
 fi
 
-if [ -n "$do_install" ]; then
+if [[ $do_install ]]; then
     ./tmp/${F}.exe
 fi
 
-if [ -n "$do_upload" ]; then
+if [[ $do_upload ]]; then
     scp ./tmp/${F}.exe $SCPDST/phd2-${V}-installer.exe
     ssh $WWW_HOST chmod o+rX $WWW_DIR/phd2-${V}-installer.exe
 fi
 
-if [ -n "$do_release" ]; then
-    if [ -z "$series" ]; then
+if [[ $do_release ]]; then
+    if [[ ! $series ]]; then
         case $V in
             *dev*) series="dev" ;;
             *) series="main" ;;
