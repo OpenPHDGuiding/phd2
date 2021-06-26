@@ -3,7 +3,7 @@
 INTERACTIVE=
 
 usage () {
-    echo "usage: $0 rev changelog_dev changelog_full" >&2
+    echo "usage: $0 [-i] rev changelog_dev changelog_full" >&2
     exit 1
 }
 
@@ -14,6 +14,11 @@ PAUSE () {
 }
 
 # === main ===
+
+if [[ $1 = "-i" ]]; then
+    INTERACTIVE=1
+    shift
+fi
 
 rev=$1
 shift
