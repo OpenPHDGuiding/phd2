@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-01 23:10+0100\n"
+"POT-Creation-Date: 2021-06-26 20:07+0100\n"
 "PO-Revision-Date: 2019-03-01 14:10+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
@@ -1103,17 +1103,17 @@ msgstr "无法找到 %s 相机"
 msgid "Moravian Camera Properties"
 msgstr ""
 
-#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:886 cam_zwo.cpp:153
+#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:889 cam_zwo.cpp:153
 msgid "Camera Mode"
 msgstr "相机模式"
 
 #: cam_moravian.cpp:425 cam_svb.cpp:132 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:888 cam_zwo.cpp:155
+#: cam_touptek.cpp:891 cam_zwo.cpp:155
 msgid "8-bit"
 msgstr ""
 
 #: cam_moravian.cpp:428 cam_svb.cpp:133 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:889 cam_zwo.cpp:156
+#: cam_touptek.cpp:892 cam_zwo.cpp:156
 msgid "16-bit"
 msgstr ""
 
@@ -1440,47 +1440,47 @@ msgstr "未找到SX相机"
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "连接失败：不能获取相机参数。"
 
-#: cam_touptek.cpp:416
+#: cam_touptek.cpp:417
 msgid "No ToupTek cameras detected"
 msgstr "未检测到ToupTek相机"
 
-#: cam_touptek.cpp:436
+#: cam_touptek.cpp:437
 msgid "Selected ToupTek camera not found."
 msgstr "为找到指定的ToupTek相机。"
 
-#: cam_touptek.cpp:441
+#: cam_touptek.cpp:442
 msgid "Camera does not support software trigger"
 msgstr "相机不支持软触发"
 
-#: cam_touptek.cpp:447
+#: cam_touptek.cpp:448
 msgid "Failed to open ToupTek camera."
 msgstr "无法打开ToupTek相机"
 
-#: cam_touptek.cpp:470
+#: cam_touptek.cpp:471
 msgid "Failed to get camera resolution for ToupTek camera."
 msgstr "无法获取ToupTek相机的分辨率"
 
-#: cam_touptek.cpp:478 cam_touptek.cpp:491
+#: cam_touptek.cpp:479 cam_touptek.cpp:492
 msgid "Failed to initialize camera binning."
 msgstr "无法初始化相机像素合并"
 
-#: cam_touptek.cpp:717
+#: cam_touptek.cpp:718
 msgid "Capture failed: the camera disconnected"
 msgstr "曝光失败：相机已断开"
 
-#: cam_touptek.cpp:720
+#: cam_touptek.cpp:722
 msgid "Capture failed: the camera reported a timeout"
 msgstr "曝光失败：相机反馈超时"
 
-#: cam_touptek.cpp:724
+#: cam_touptek.cpp:727
 msgid "Capture failed: the camera repoted an error"
 msgstr "曝光失败：相机反馈错误"
 
-#: cam_touptek.cpp:755
+#: cam_touptek.cpp:758
 msgid "Capture failed, unable to pull image data from camera"
 msgstr "曝光失败：不能从相机读取图像"
 
-#: cam_touptek.cpp:881
+#: cam_touptek.cpp:884
 msgid "ToupTek Camera Properties"
 msgstr "ToupTek 相机参数"
 

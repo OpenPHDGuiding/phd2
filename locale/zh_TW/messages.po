@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-01 23:10+0100\n"
+"POT-Creation-Date: 2021-06-26 20:07+0100\n"
 "PO-Revision-Date: 2021-05-17 11:58+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
-"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
+"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -758,8 +758,8 @@ msgstr "開啟 Altair 相機失敗。"
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:801
-#: cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
+#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1044,8 +1044,8 @@ msgstr "設定增益發生錯誤"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
-#: stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "錯誤"
 
@@ -1106,17 +1106,17 @@ msgstr "找不到相機 %s"
 msgid "Moravian Camera Properties"
 msgstr "Moravian 相機屬性"
 
-#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:886 cam_zwo.cpp:153
+#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:889 cam_zwo.cpp:153
 msgid "Camera Mode"
 msgstr "相機型號"
 
 #: cam_moravian.cpp:425 cam_svb.cpp:132 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:888 cam_zwo.cpp:155
+#: cam_touptek.cpp:891 cam_zwo.cpp:155
 msgid "8-bit"
 msgstr "8 位元"
 
 #: cam_moravian.cpp:428 cam_svb.cpp:133 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:889 cam_zwo.cpp:156
+#: cam_touptek.cpp:892 cam_zwo.cpp:156
 msgid "16-bit"
 msgstr "16 位元"
 
@@ -1443,47 +1443,47 @@ msgstr "找不到 SX 相機"
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr "連接錯誤: 無法讀取相機參數."
 
-#: cam_touptek.cpp:416
+#: cam_touptek.cpp:417
 msgid "No ToupTek cameras detected"
 msgstr "偵測不到 ToupTek 相機"
 
-#: cam_touptek.cpp:436
+#: cam_touptek.cpp:437
 msgid "Selected ToupTek camera not found."
 msgstr "找不到所選用的 ToupTek 相機"
 
-#: cam_touptek.cpp:441
+#: cam_touptek.cpp:442
 msgid "Camera does not support software trigger"
 msgstr "相機不支援軟體觸發"
 
-#: cam_touptek.cpp:447
+#: cam_touptek.cpp:448
 msgid "Failed to open ToupTek camera."
 msgstr "開啟 ToupTek 相激失敗"
 
-#: cam_touptek.cpp:470
+#: cam_touptek.cpp:471
 msgid "Failed to get camera resolution for ToupTek camera."
 msgstr "無法取得 ToupTek 相機解析度資訊"
 
-#: cam_touptek.cpp:478 cam_touptek.cpp:491
+#: cam_touptek.cpp:479 cam_touptek.cpp:492
 msgid "Failed to initialize camera binning."
 msgstr "啟用相機併合功能失敗"
 
-#: cam_touptek.cpp:717
+#: cam_touptek.cpp:718
 msgid "Capture failed: the camera disconnected"
 msgstr "無法拍攝: 相機失聯"
 
-#: cam_touptek.cpp:720
+#: cam_touptek.cpp:722
 msgid "Capture failed: the camera reported a timeout"
 msgstr "無法拍攝: 相機回報逾時"
 
-#: cam_touptek.cpp:724
+#: cam_touptek.cpp:727
 msgid "Capture failed: the camera repoted an error"
 msgstr "無法拍攝: 相機回報錯誤"
 
-#: cam_touptek.cpp:755
+#: cam_touptek.cpp:758
 msgid "Capture failed, unable to pull image data from camera"
 msgstr "無法拍攝: 無法由相機取得影像"
 
-#: cam_touptek.cpp:881
+#: cam_touptek.cpp:884
 msgid "ToupTek Camera Properties"
 msgstr "ToupTek 相機屬性"
 
@@ -1571,13 +1571,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354 profile_wizard.cpp:355
-#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
-#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
-#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
-#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:329
-#: scope.cpp:371 scope.cpp:414 statswindow.cpp:262 stepguider.cpp:105
-#: stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
+#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
+#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
+#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
+#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
+#: stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1883,7 +1883,8 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:547
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3404,8 +3405,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3529,8 +3530,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3553,8 +3554,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"

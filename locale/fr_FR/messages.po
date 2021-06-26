@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-01 23:10+0100\n"
+"POT-Creation-Date: 2021-06-26 20:07+0100\n"
 "PO-Revision-Date: 2020-12-14 12:13+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -1150,17 +1150,17 @@ msgstr "Camera %s introuvable"
 msgid "Moravian Camera Properties"
 msgstr "Propriétés de la caméra Moravian"
 
-#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:886 cam_zwo.cpp:153
+#: cam_moravian.cpp:421 cam_svb.cpp:130 cam_touptek.cpp:889 cam_zwo.cpp:153
 msgid "Camera Mode"
 msgstr "Mode de la Caméra"
 
 #: cam_moravian.cpp:425 cam_svb.cpp:132 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:888 cam_zwo.cpp:155
+#: cam_touptek.cpp:891 cam_zwo.cpp:155
 msgid "8-bit"
 msgstr "8 bits"
 
 #: cam_moravian.cpp:428 cam_svb.cpp:133 cam_svb.cpp:340 cam_svb.cpp:341
-#: cam_touptek.cpp:889 cam_zwo.cpp:156
+#: cam_touptek.cpp:892 cam_zwo.cpp:156
 msgid "16-bit"
 msgstr "16 bits"
 
@@ -1491,48 +1491,48 @@ msgid "Connect failed: could not retrieve camera parameters."
 msgstr ""
 "Erreur de connexion :  impossible de récupérer les paramètres de la caméra."
 
-#: cam_touptek.cpp:416
+#: cam_touptek.cpp:417
 msgid "No ToupTek cameras detected"
 msgstr "Aucune caméra ToupTek détectée"
 
-#: cam_touptek.cpp:436
+#: cam_touptek.cpp:437
 msgid "Selected ToupTek camera not found."
 msgstr "La caméra ToupTek sélectionnée est introuvable."
 
-#: cam_touptek.cpp:441
+#: cam_touptek.cpp:442
 msgid "Camera does not support software trigger"
 msgstr "La caméra ne supporte pas le logiciel de déclencehement"
 
-#: cam_touptek.cpp:447
+#: cam_touptek.cpp:448
 msgid "Failed to open ToupTek camera."
 msgstr "Impossible d'ouvrir la caméra ToupTek."
 
-#: cam_touptek.cpp:470
+#: cam_touptek.cpp:471
 msgid "Failed to get camera resolution for ToupTek camera."
 msgstr "Impossible d'obtenir la résolution de la caméra ToupTek."
 
-#: cam_touptek.cpp:478 cam_touptek.cpp:491
+#: cam_touptek.cpp:479 cam_touptek.cpp:492
 msgid "Failed to initialize camera binning."
 msgstr "Échec d'initialisation du binning de la caméra."
 
-#: cam_touptek.cpp:717
+#: cam_touptek.cpp:718
 msgid "Capture failed: the camera disconnected"
 msgstr "La capture a échoué: la caméra est déconnectée"
 
-#: cam_touptek.cpp:720
+#: cam_touptek.cpp:722
 msgid "Capture failed: the camera reported a timeout"
 msgstr "La capture a échoué: la caméra a signalé un dépassement du délai"
 
-#: cam_touptek.cpp:724
+#: cam_touptek.cpp:727
 msgid "Capture failed: the camera repoted an error"
 msgstr "Échec de la capture: la caméra a reporté une erreur"
 
-#: cam_touptek.cpp:755
+#: cam_touptek.cpp:758
 msgid "Capture failed, unable to pull image data from camera"
 msgstr ""
 "Échec de la capture, impossible d'extraire les données d'image de la caméra"
 
-#: cam_touptek.cpp:881
+#: cam_touptek.cpp:884
 msgid "ToupTek Camera Properties"
 msgstr "Propriétés de la caméra ToupTek"
 
