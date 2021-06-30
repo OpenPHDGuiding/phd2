@@ -691,7 +691,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
-      COMMAND install_name_tool -change toupcam_mac/touptek/libtoupcam.dylib
+      COMMAND install_name_tool -change @rpath/libtoupcam.dylib
                    @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libtoupcam.dylib"
     )
