@@ -258,12 +258,23 @@ static int FindCamera(const wxString& camId, wxString *err)
 inline static int ImgTypeBits(SVB_IMG_TYPE t)
 {
     switch (t) {
-    case SVB_IMG_RAW8: return 8;
-    case SVB_IMG_RAW10: return 10;
-    case SVB_IMG_RAW12: return 12;
-    case SVB_IMG_RAW14: return 14;
-    case SVB_IMG_RAW16: return 16;
-    default: return -1;
+    case SVB_IMG_RAW8:
+    case SVB_IMG_Y8:
+        return 8;
+    case SVB_IMG_RAW10:
+    case SVB_IMG_Y10:
+        return 10;
+    case SVB_IMG_RAW12:
+    case SVB_IMG_Y12:
+        return 12;
+    case SVB_IMG_RAW14:
+    case SVB_IMG_Y14:
+        return 14;
+    case SVB_IMG_RAW16:
+    case SVB_IMG_Y16:
+        return 16;
+    default:
+        return -1;
     }
 }
 
@@ -310,23 +321,26 @@ bool SVBCamera::Connect(const wxString& camId)
     // find the best image type matching our bpp selection
     SVB_IMG_TYPE img_type = SVB_IMG_END;
     int maxbits = -1;
-    for (int i = 0; i < sizeof(props.SupportedVideoFormat) / sizeof(props.SupportedVideoFormat[0]); i++)
+    for (int i = 0; i < WXSIZEOF(props.SupportedVideoFormat); i++)
     {
+        SVB_IMG_TYPE fmt = props.SupportedVideoFormat[i];
+        if (fmt == SVB_IMG_END)
+            break;
+        int bits = ImgTypeBits(fmt);
         if (m_bpp == 8)
         {
-            if (props.SupportedVideoFormat[i] == SVB_IMG_RAW8)
+            if (bits == 8)
             {
-                img_type = props.SupportedVideoFormat[i];
+                img_type = fmt;
                 break;
             }
         }
         else
         {
-            int bits = ImgTypeBits(props.SupportedVideoFormat[i]);
             if (bits > 8 && bits <= 16 && bits > maxbits)
             {
                 maxbits = bits;
-                img_type = props.SupportedVideoFormat[i];
+                img_type = fmt;
             }
         }
     }
