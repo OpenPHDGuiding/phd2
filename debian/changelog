@@ -1,5 +1,2217 @@
-phd2 (2.4.1-0ppa1~trusty1) trusty; urgency=low
+phd2 (2.6.10dev1) unstable; urgency=low
 
-  * Initial release 2.4.1
+  * bump rev to 2.6.10dev1
+  * update translation templates
+  * SVB cameras: update SDK to version v1.4.2 (#940)
+  * Update French translation
+  * OSX: fix touptek dylib path (#931)
 
- -- Patrick Chevalley <pch@ap-i.net>  Wed, 10 Dec 2014 18:11:25 +0100
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 22 Aug 2021 19:09:55 -0400
+
+phd2 (2.6.10) stable; urgency=low
+
+  * bump rev to 2.6.10
+  * update translation templates
+  * add build/deploy scripts to repo (#930)
+  * ZWO ASI cameras: update to SDK 1.19 (Windows, Mac, Linux) (#929)
+  * ToupTek cameras: update to SDK version 48.18081.2020.1205 - Windows, Mac, Linux (#928)
+  * SVB cameras: update SDK to version 1.3.7 (Windows) (#926)
+  * svb cameras: update SDK to version v1.3.6 (#925)
+  * remove generated .mo files from source tree (#924)
+  * Updated Tradition Chinese Translation
+  * Merge pull request #922 from OpenPHDGuiding/andy/es_translation_mario
+  * updated Spanish translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 26 Jun 2021 15:07:31 -0400
+
+phd2 (2.6.9dev5) unstable; urgency=low
+
+  * bump rev to 2.6.9dev5
+  * update translation templates
+  * update copyright message to 2021
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Change to GA sampling instruction; Help updates and addition of Gerry Roberts to contributor list
+  * Merge pull request #921 from OpenPHDGuiding/andy/qhysdk-2021-03-13
+  * QHY: update to SDK version 20210313_17 (Windows)
+  * qhy: update unpack script to handle QHY's new AllInOne packaging
+  * Clarify 'paused' status message. Fixes #919
+  * Bug fix - graph stats window size not being initialized to profile value
+  * event server: add star info to the LoopingExposures event (#915)
+  * Ignore the BIN value read from INDI driver on startup. Fix #910 (#911)
+  * ASCOM cameras: fix an error from some cameras about invalid frame size after disconnecting and re-connecting the camera (#909)
+  * add Philippe's French user guide (#908)
+  * updated Catalan translation from Miquel (#907)
+  * updated Spanish translation (#905)
+  * Altair cameras: add an option to discard initial camera frames (#906)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 1 May 2021 18:10:20 -0400
+
+phd2 (2.6.9dev4) unstable; urgency=low
+
+  * bump rev to 2.6.9dev4
+  * update translation templates
+  * fix unintended implicit conversion from double to int in AxisStats::AddGuideInfo; use explicit double constants to make code intent clearer
+  * Reduce consecutive NF tolerance for secondary stars in MultiStar
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * new Catalan translation (#903)
+  * Implement "lost-counts" in MultiStar, reduce aggressiveness of dropping lost secondary stars
+  * Revise help for algorithms and visualization
+  * Update Traditional Chinese Translation
+  * Fix stats problem w/ max guiding deflections; change multi-star painting when primary star is lost; remove debugging code and ease constraints in GuidingStats
+  * remove obsolete README pointing to google code (#898)
+  * Windows install: use 32-bit version of vcruntime140.dll
+  * ZWO: update SDK to V1.16.3 (Windows, Mac, Linux) (#897)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 8 Feb 2021 00:48:34 -0500
+
+phd2 (2.6.9dev3) unstable; urgency=low
+
+  * bump rev to 2.6.9dev3
+  * update translation templates
+  * about_dialog: add Marcel (#896)
+  * minor cleanups anround new stats code (#895)
+  * Merge pull request #894 from OpenPHDGuiding/altairsdk20201223
+  * Altair: update SDK to version 48.18195.2020.1222
+  * Altair: use raw camera mode and let PHD2 do the de-Bayering
+  * Merge branch 'master' into GraphStats
+  * Add missing help re star-saturation controls and camera cooler
+  * Merge branch 'master' into GraphStats
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Initial commit for revised GraphStats. Matches LogViewer results for all scenarios
+  * Code clean-up for MultiStar feature
+  * Fix bug with mis-reporting of guide star deltas to SGP.  Change UI behavior to not automatically reset the 'Use MultiStar' option.
+  * Fix crash when wdm camera does not report AvgTimePerFrame (#893)
+  * Update French translation
+  * Windows: add vcruntime140.dll to set of installed dlls (#891)
+  * bump rev to 2.6.9dev2
+  * update translation templates
+  * Merge pull request #889 from OpenPHDGuiding/andy/close_star_refactor
+  * Merge pull request #888 from OpenPHDGuiding/andy/multistar_circlepos
+  * multistar: minor code refactor to clarify intent of star proximity checker
+  * multistar: minor fix to secondary circle render location
+  * minor cleanup
+  * Final merge of MultiStar into Master
+  * Merge branch 'MultiStar'
+  * Moravian: implelemt sensor temperature readout
+  * Moravian: add option to control fan
+  * Moravian: mark strings for translation
+  * Moravian: fix compile warning
+  * moravian: use async api for longer exposures
+  * initial native support for Moravian cameras (Windows)
+  * gear dialog: add method exposing the id of the currently selected camera
+  * minor cleanup
+  * cosmetic
+  * ZWO: update ZWO ASI SDK to version 1.16 - Windows, Linux, and Mac
+  * Add Help for Multi-star guiding feature
+  * Eliminate winking secondary stars during multi-star stabilization
+  * Merge branch 'master' into MultiStar
+  * Fix bug where Dec comp is not applied with a concurrent meridian flip and change in Dec position; Fixes #886
+  * Merge pull request #885 from PawelPleskaczynski/master
+  * updated Polish translation
+  * Commit for Beta4 version - minor cleanup, revision to AutoFind selection process re minSNR
+  * Remove unneeded multi-star UI controls in AD; add control for stellar min-SNR
+  * Remove redundant auto-find code in star.cpp
+  * Remove all references to Guider_OneStar
+  * Merge branch 'master' into MultiStar prior to refactoring/renaming
+  * Copyright updates
+  * Update French translation
+  * SBIG cameras: remember choice of whether to use the tracking CCD
+  * Merge pull request #880 from OpenPHDGuiding/indi_binned_frame_size
+  * remove branch-specific version suffix
+  * ASCOM cameras: do not assume binned subframe size is proportional to full frame
+  * update PHD sub-version number
+  * ZWO camera: fix possible crash when changing binning
+  * ASCOM cameras: move implementation details out of .h file into .cpp file
+  * INDI camera: discard stale video frames when switching binning
+  * INDI cameras: improved verbose INDI logging
+  * INDI camera: do not assume binned frame size
+  * fix incorrect debug log message
+  * whitespace cleanup
+  * ZWO: honor ASI frame size constraints for binned frames
+  * fix app crash when cancelling AO port selection
+  * Updates for Beta 3 testing
+  * Changes for beta 3, primarily to disable multiStar for GA runs
+  * Changes made during beta test through Beta2a
+  * ZWO Cameras: update to SDK version V1.15.0915 (Windows, Linux, and Mac)
+  * Update Traditional Chinese translations
+  * Part of beta v2; log multi-star offsets even if not used
+  * Included in beta v2; handle various problems with AutoFind on set of marginal stars
+  * Beta v. 2; fix erasing problems on guide star vector; increase star limit to 7
+  * Merged master with MultiStar branch
+  * Commit for start of multi-star beta
+  * fix incorrect display of pixel size change warning when new profile is created
+  * fix application crash when new profile created with mount = None
+  * Proof-of-concept MultiStar baseline
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 3 Jan 2021 02:37:44 -0500
+
+phd2 (2.6.9dev1) unstable; urgency=low
+
+  * bump rev to 2.6.9dev1
+  * update translation templates
+  * update build script
+  * Merge pull request #875 from OpenPHDGuiding/svb_camera
+  * cleanup comment
+  * add camera ROI testing code (disabled)
+  * SVB: quickly retry when software-triggered frame retrieval times-out
+  * fix display of uninitialized variable in debug log
+  * SVB: update to SDK version 1.2.2
+  * updated svb camera SDK
+  * Merge pull request #872 from OpenPHDGuiding/CloudSim
+  * Merge remote-tracking branch 'origin/master' into svb_camera
+  * Altair cameras: update to SDK 46.17427.2020.0704
+  * Update Traditional Chinese translations
+  * Change simulator cloud feature to use slider-controlled opacity level. Fixes #772
+  * Disable Dec guide params if Dec guide mode is none. fixes #816 (#871)
+  * Altair cameras: update to SDK 46.17427.2020.0704
+  * Expand help for de-selecting a star and returning to full-frame view
+  * Merge pull request #869 from OpenPHDGuiding/UI_Deselect_Star
+  * Add means to de-select star and restore full-frame image display
+  * SVB: use new API to get camera pixel size
+  * initial checkin
+  * Merge branch 'master' into svb_camera
+  * SVB: update to SDK v1.1.0  - enable soft trigger mode  - temporary debug: render a fake star to enable testing subframes
+  * Revise dark-subtraction algorithm to fix problem with star auto-selection due to invalid pedestal value (#866)
+  * fix mem leak in zfilter guide algo. Fixes #865
+  * ZWO cameras: update SDK to version V1.15.0617
+  * Merge branch 'master' into svb_camera
+  * SVB cameras, work in progress
+  * add SVB camera SDK files
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 30 Aug 2020 23:49:49 -0400
+
+phd2 (2.6.9) stable; urgency=low
+
+  * bump rev to 2.6.9
+  * update translation templates
+  * Add help text re lack of internet connection, fixes #840
+  * Help addition re log file organization, fixes #843
+  * Add missing tool-tip, fixes #853
+  * Help revisions and textual changes to some UI controls to get better consistency. Fixes #863
+  * Add smoothing capability in backlash measurement
+  * remove obsolete files
+  * Merge pull request #862 from ken-self/polardrift
+  * new Galician translation
+  * add Manuel to about dialog
+  * cosmetic
+  * Update help screenshot
+  * Update on screen instructions
+  * Update help and messages
+  * Add Mirror option to PDA for OAG users
+  * Merge pull request #859 from OpenPHDGuiding/uploader_hide_empty
+  * log uploader: do not display empty logs by default
+  * Do not force background color, fix #855
+  * Remove INDI device port option because now every driver handle that internally so this option only add a possible source of error. See https://www.indilib.org/forum/development/7127-connecting-modified-eqmod-to-phd2.html#55311
+  * Update French translation
+  * updated pt_BR translation from Wagner
+  * Merge pull request #856 from gionkunz/master
+  * Renamed qhylibrary for armv6 to be discoverable by cmake
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 4 Jul 2020 15:38:28 -0400
+
+phd2 (2.6.8) stable; urgency=low
+
+  * bump rev to 2.6.8
+  * update translation templates
+  * Disable display of the calibration alert for < 25% south movement
+  * altair: revert debug hack in sdk unpack script
+  * Altair cameras: update to SDK version 46.16909.2020.0404
+  * Update Traditional Chinese translations
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 3 May 2020 18:43:29 -0400
+
+phd2 (2.6.7dev1) unstable; urgency=low
+
+  * bump rev to 2.6.7dev1
+  * update translation templates
+  * Handle bogus mount guide speeds in CheckCalibrationDuration. Fixes #851
+  * qhy: revert recent change to interrupt exposures when the stop button is clicked
+  * Merge pull request #844 from OpenPHDGuiding/qhy_bpp
+  * initialize qhy bpp value to 8bb before camera is connected
+  * QHY: fix incorrectly-reported bits-per-pixel value for 16-bit cameras
+  * Add size of test-pulse to BLT graph in GA
+  * Merge pull request #837 from andkem/freebsd-12.1-compilation-support
+  * FreeBSD 12.1: Add compilation support
+  * fix sporadic build error on Win10 by unpacking the indi libs at cmake-time rather than at build time
+  * Altair cameras: update SDK to 39.15529.2019.0906 (Windows)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 30 Mar 2020 00:52:04 -0400
+
+phd2 (2.6.7) stable; urgency=low
+
+  * bump rev to 2.6.7
+  * update translation templates
+  * Mac: eliminate need for restarting PHD2 on first launch to disable AppNap. Fixes #836
+  * Help file additions prior to 2.6.7 release
+  * Update Traditional Chinese translations
+  * sbig: add some debug logging for camera enumeration and connection
+  * guide log: do not translate the guide algorithm name
+  * Merge pull request #833 from OpenPHDGuiding/andy_autosel_downsample
+  * Update Russian translations.
+  * minor optimization
+  * star auto-selection: add option for downsampling the camera frame
+  * guide log: do not omit logging of mount guide speed when calibration fails
+  * updated Korean translation
+  * Insure English language debug log entries for backlash test
+  * Linux/Mac: flush config file after significant config changes, like when calibration completes
+  * cosmetic
+  * whitespace
+  * fix more Xcode warnings
+  * fix Xcode build warnings
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 4 Feb 2020 17:30:03 -0500
+
+phd2 (2.6.6dev4) unstable; urgency=low
+
+  * bump rev to 2.6.6dev4
+  * update translation templates
+  * updated Korean translation
+  * debug logging tweak
+  * Add debug logging in GearDialog to investigate handling of m_cameraChanged
+  * fix a case of a ui update being made from the worker thread when a camera times-out and disconnects
+  * log uploader: fix display when only one log set is present
+  * Fix uninitialized variable in GearDialog that could cause unwanted clearing of calibration for automated operations
+  * Saturation detection by max ADU value is now the default setting for new equipment profiles
+  * GA: do not show bogus pixel scale when focal length is zero
+  * Add explanations to drift alignment tutorials section of Help.  Fixes #720
+  * Refine tooltip for focal length entry in new profile wizard.
+  * Refine tool-tip text for focal length entry in profile-wizard
+  * fix windows build error
+  * Linux/Mac: QHY cameras: reduce QHY debug spew.
+  * Add EqMod config page in new-profile-wiz, fix repetitive dark/bpm alerts for auto reconnect
+  * Windows: do not require VLD (but use it if it is found)
+  * do not issue pulse guide limit alert after long GA run.  Fixes #803
+  * Simplify and reduce RA min-move recommendation, just 65% of Dec min-move
+  * Eliminate compiler warning, further restrict warning msg for changing cameras in GearDialog
+  * Help upgrades relating to addition of auto-select star icon
+  * some translation cleanup
+  * Fix checking of image scale change in GearDialog to avoid errors if cam properties are different
+  * add some logging to help diagnose #820; also move some locale-related members from MyFrame class to PHDApp class
+  * fix macOS build error
+  * GA: log untranslated versions of some messages (partial fix for #826)
+  * whitespace
+  * guide log: add a line for normalized (dec 0) guide rate and orto error; do not translate various items in guide log
+  * update bundled cfitsio package to version 3.47
+  * Fix issue 824 (guide speed change detection). Fix annoying flicker in graph controls
+  * Add check for AP ASCOM driver sync guide pulses. Fixes #822
+  * Add Philip to Help/About
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian help files translations.
+  * QHY/Linux - fix linux version check
+  * update linux x86_64 and i386 qhy SDK to V2019.11.15.0
+  * update qhy sdk unpacker script to unpack linux stuff too
+  * Merge pull request #823 from PhilipPeake/master
+  * R-PI4 with latest QHYCCD libs for newer cameras
+  * log upload: show visual feedback when copy link clicked
+  * convert Japanese help file table of contents (.hhc) to utf-8 encoding so that it gets displayed properly
+  * add nabePla to About dialog
+  * Update Russian Help files translation.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian help files translations.
+  * added Japanese translation of help file
+  * write summary info to the end of the guide log and display the info in the log uploader tool
+  * Update Russian help translation.
+  * Update some Russian help pages translations.
+  * iOptron camera: get camera pixel size
+  * Update Russian translation of "Basic use" help page.
+  * Only create a single set of debug/guide logs per night
+  * rename a memmber variable
+  * trivial cleanup
+  * wrap long comments; make logger base class dtor virtual
+  * rename initTime to logFileTime
+  * cleanup gitignore patterns
+  * Update screenshots for Russian "Advanced_settings" help page.
+  * Update Russian translation of "Advanced settings" help page.
+  * event server: add an optional ROI argument to find_star and guide methods
+  * event server: add LockPositionShiftLimitReached notification
+  * event server: add option to get_lock_shift_params method to ask for x/y shift rate
+  * cosmetic
+  * iOptron iGuider camera support (Windows only)
+  * VidCapture: fix compile errors
+  * fix VidCapture file permissions
+  * remove VidCapture zip file and add VidCapture source files (VidCapture 1.0 / 2016-10-30)
+  * Update Russian translations.
+  * Update Russian translations.
+  * cleanup debug logging around ascom camera cooler presence check
+  * bump rev to 2.6.6dev3
+  * update translation templates
+  * avoid referencing uninitialized varaible
+  * Merge pull request #818 from OpenPHDGuiding/mac_qhy_sdk
+  * Merge branch 'master' into mac_qhy_sdk
+  * QHY: fix windows build error
+  * QHY: use OSXInitQHYCCDFirmwareArray and not OSXInitQHYCCDFirmware (per myq at QHY)
+  * QHY: fix link error with old SDK
+  * qhy: revert disabling firmware upload
+  * qhy: revert disabling firmware upload
+  * QHY: update macOS SDK to version V20191115_0 (32-bit and 64-bit)
+  * mac: prevent make error when build directory is not empty
+  * QHY: log the QHY SDK version in the debug log
+  * Mac: address ZWO ASI camera SDK compatibility issues by using the dynamic library and not the static library
+  * ZWO: use libASICamera2.a from latest ZWO SDK (V1.14.1108) - SDK bundle was updated on ZWO web site but same rev
+  * ZWO cameras: update to SDK version V1.14.1108
+  * macOS: fix compile warnings related to wxWidgets-3.1
+  * fix unlikely crash if imaging app tells phd2 to start guiding just as user closes app
+  * Update French translation
+  * ZWO: update to SDK version V1.14.0715 (windows, mac, linux)
+  * workaround for imaging apps which fail to un-pause PHD2: stop button clears the paused state. Fixes #804
+  * fix warning in osx build script
+  * add osx build scripts
+  * Mac64: add ToupTek and OmegonPro camera support
+  * fix problem with image scale alert being displayed incorrectly due to pixel size rounding errors
+  * fix compile warning on 64-bit macos
+  * fix windows compile error
+  * fix windows compile error
+  * Mac: enable buiding app as x86_64 (still builds as i386 by default)
+  * fix clang++ deprecated function warning
+  * fix clang++ compile warnings by adding override specifier
+  * Update Traditional Chinese translation
+  * do not allow AO graph to be updated in threads other than the main UI thread. Fixes #799
+  * Merge pull request #797 from OpenPHDGuiding/imagescale
+  * More source code cleanup
+  * Correctly handle cal step adjustment for AO-related profiles
+  * Source clean-up in previous commit
+  * Extend auto-adjustment of guiding params for image scale changes due to px-size, binning, focal length
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 6 Jan 2020 18:19:10 -0500
+
+phd2 (2.6.6dev2) unstable; urgency=low
+
+  * bump rev to 2.6.6dev2
+  * update translation templates
+  * server: add star HFD value to guide step event. Fixes #762
+  * remove superfluous null check for call to operator delete
+  * add Pawel to About dialog
+  * Merge pull request #793 from PawelPleskaczynski/master
+  * Add AD option to disable/enable "beep" for lost-star events
+  * moved button for automatic star selection, now it's being disabled while guiding is on
+  * added button for auto selecting a star #770
+  * Merge pull request #791 from tstibor/master
+  * Merge remote-tracking branch 'upstream/master'
+  * Set 'suggests' field in DEB package to "indi-bin (>= 0.9.7)"
+  * Merge pull request #790 from tstibor/master
+  * Remove indi-bin depend and add Debian Buster libwx*v5 package names
+  * Fix prev Help update - contents file had some case-sensitivity problems
+  * Full review/update of Help content
+  * Fix AO-related problems in GA - fixes 788
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Revert "Fix AO-related problems with GA"
+  * Fix AO-related problems with GA
+  * fix debug output. Fixes #785
+  * Remove redundant function from prior commit
+  * Clear calib when user manually changes 'Dec-Flip' option. Add debug log entry when change is done interactively
+  * Refine GA recommendation regarding polar mis-alignment to deal with 'NONE' guide mode
+  * Add auto-restore checkbox in new-profile-wizard; misc cleanup in wizard code
+  * Updating French translation
+  * (cosmetic) use nullptr rather than NULL
+  * Merge pull request #782 from pludov/cam_indi_no_stream
+  * Merge pull request #783 from pludov/event_server_config_change
+  * EventMonitoring: emit ConfigurationChange event
+  * cam_indi: add an option to prevent fallback on stream
+  * fix windows compile error
+  * whitespace
+  * Merge pull request #780 from pludov/rpc_overlap
+  * Merge pull request #781 from pludov/rpc_overlap_advertize
+  * Advertise overlapped rpc support in version message
+  * add Ludovic to About dialog
+  * Merge pull request #779 from pludov/master
+  * Ensure handle_cli_input is fully reentrant
+  * INDI camera hang fix: do not start exposure while previous is still busy
+  * make sure INDI/ASCOM mount and camera names include "INDI" or "ASCOM". Fixes #775
+  * event server: allow multiple overlapping RPC requests; allow leading whitespace in requests. Fixes #777
+  * Loosen GA polar alignment standards for mounts with large Dec backlash
+  * Altair cameras: update to SDK version 38.15031.2019.0706 (Windows)
+  * fix typo in guide log (noise reduction setting)
+  * Rework min-move recommendations in GA to handle long sequences
+  * Merge pull request #774 from tstibor/master
+  * Save polardrift window size across sessions
+  * Allow to resize polardrift window for better reading status bar msg
+  * Remove residual code previously used in debug version of BLT
+  * Apply ceiling to recommended min-moves in GA to avoid impact of mount/measurement problems
+  * Eliminate re-entrancy window in GA/BLT. Streamline BLT wrap-up code
+  * Soften some calibration alert messages to be more advisory in nature
+  * Altair cameras: update to SDK Version 38.14891.2019.0616
+  * Eliminate GA display weirdness with "+/=" symbol
+  * cosmetic
+  * Update Traditional Chinese translation
+  * ASCOM camera: fix crash attempting to set camera cooler after camera is disconnected
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 9 Sep 2019 23:35:45 -0400
+
+phd2 (2.6.6dev1) unstable; urgency=low
+
+  * bump rev to 2.6.6dev1
+  * update translation templates
+  * fix crash in connect equipment or advanced dialog when AO is selected but mount is None
+  * Clear calibration if camera is changed and GearDialog is closed
+  * add Thomas Stibor to contributors list
+  * Merge pull request #767 from tstibor/master
+  * Update French translation
+  * Fix crash due to nullptr access of pPointingsource in simulator
+  * Change GA and new-profile-wiz to recommend/use Lowpass2 Dec guiding for mounts w/ high-res encoders or near-zero backlash
+  * guide log: ensure monotonically increasing timestamps regardless of changes to the system clock
+  * minor debug logging cleanup
+  * add Omegon Pro camera selection alias for ToupTek
+  * add missing newlines to debug log entries
+  * INDI: fix incorrect LST fallback calculation for mounts that do not provide LST
+  * PPEC: enable the model retaining option by default for new profiles
+  * ZWO: update to SDK version 1.14.0227 (Windows, Mac, and Linux)
+  * INDI: clarify meaning of device port connection option in the INDI device connection window. Fixes #757
+  * Merge pull request #758 from mattiaverga/openssag
+  * OpenSSag should be used only if not OPENSOURCE_ONLY
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Thu, 23 May 2019 16:23:56 -0400
+
+phd2 (2.6.6) stable; urgency=low
+
+  * fix DOS line endings
+  * bump rev to 2.6.6
+  * update translation templates
+  * do not hard-code PHD2 version number in inno setup file or readme file
+  * use explicit UTF8 encoding when exporting/importing profiles. Fixes #756
+  * drift aling tool: auto-select a new star if star was lost in the Adjust phase; add options to save and resore the full set of config settings. Fixes #755
+  * show an error message when an invalid focal length is entered n the advanced settings window
+  * Fix problem in AD Guide tab where trash chars can be entered into FocalLength field
+  * updated Traditional Chinese translation from linkage
+  * Update Traditional Chinese Translation
+  * about window: make sure everyone fits on one page
+  * tweak AO names to be more consistent with how we name other devices (cameras and mounts)
+  * add Jasem to About window; use factories for AO object construction
+  * Merge pull request #753 from knro/master
+  * Adding INDI SBIG AO driver support
+  * fix windows cfitsio compile error
+  * update to cfitsio version 3.45
+  * add sources for OSX Mallincam dylib
+  * OSX MallinCam SkyRaider camera support
+  * add some debug loggging around looping/guiding stops and starts
+  * fix newlines
+  * fix newlines
+  * fix newlines
+  * cosmetic
+  * cosmetic changes
+  * server api: include calibration declination in get_calibration_data response message
+  * gear dialog: need to re-enable the camera selection button after the disconnect button is clicked
+  * update tool-tip text
+  * update copyright year in LICENSE.txt
+  * Update French Translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 24 Mar 2019 14:50:39 -0400
+
+phd2 (2.6.5dev7) unstable; urgency=low
+
+  * bump rev to 2.6.5dev7
+  * update translation templates
+  * cosmetic (whitespace)
+  * fix status bar menu tips not clearing when using the keybord to navigate the menus
+  * Add menu items for button functions. Fixes #730
+  * ZWO cameras: use snap mode for USB3 cameras and the newer USB2-mini cameras.  Fixes #741
+  * Linux: package camera SDK shared libraries; re-enable touptek cameras. Fixes #745
+  * linux: temporarily disable touptek cameras pending resolution of #745
+  * fix linux build error
+  * ToupTek cameras: update to SDK version 33.13814.2019.0120; use bundled toupcam SDK on linux, not system version
+  * Merge pull request #744 from ken-self/touptek
+  * revert to trigger mode
+  * Trailing spaces
+  * Change to video mode
+  * Enable touptek on Linux
+  * fix incorrect rounding of exposure duration when loading dark lib. Fixes #743
+  * fix compile warning (not all paths return a value)
+  * Make BLC adjustment more sensitive to stiction, minor code cleanup in BLC
+  * Fix crash when Indi free the text property
+  * Fix missing data element in GA review; update GA-related help
+  * Streamline recommendation code in GA; add recommendation for binning at image scale <= 0.5aps
+  * Fix problem in GA review for handling changing recommendation entries
+  * Merge GA changes for too-large min-moves and guide cam focus recommendation
+  * Protect against wild min-move calcs in GA due to ortho error; add recommendation for large HFD
+  * fix OSX compile error
+  * only enable the camera selection button for camera models that support camera selection
+  * ASCOM scopes: better handling for ASCOM drivers that terminate outside of phd2 after PHD2 has called SetupDialog
+  * Updates French Translation File
+  * Add original side-of-pier to calibration review
+  * Linux: fix logic error in serial port utility class used by SX AO. Fixes #735
+  * Merge changes for GA History review
+  * Don't show 'Review Previous' in GA if no history entries exist; Fix bug in SaveGAResults
+  * Save a history of up to 3 GA sessions, let user choose which one to review via OptionsButton in GA dialog; Add group enumeration function in phdconfig
+  * Initlal commit of GA review mechanism.  Basic machinery working
+  * cleanup curl after version check so socket is not left in CLOSE_WAIT state
+  * fix osx compile warning
+  * manual guide tool should queue moves to worker thread. Fixes #733
+  * Merge pull request #732 from tstibor/master
+  * Extend DEB package build dependency of libnova
+  * Altair cameras: update to SDK version 30.13270.2018.1102
+  * Update Trandition Chinese Translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 29 Jan 2019 03:20:47 -0500
+
+phd2 (2.6.5dev6) unstable; urgency=low
+
+  * bump rev to 2.6.5dev6
+  * update translation templates
+  * simulator: add simulation of camera frame download delay
+  * event server: send calibration step events. Fixes #632
+  * Altair cameras: update to SDK version 30.13010.2018.0926; add option to use older SDK for 2015/2016 era cameras also included: some cosmetic refactoring and a latent feature to ignore sporadic jumps of the guide star
+  * INDI: fix problem connecting Aux Mount that does not provide guiding properties
+  * ToupTek cameras: update to SDK version 30.13059.2018.1003 (Windows)
+  * meridian flip tool ui cleanup
+  * Fix bug in ProfileWiz - cam properties were being displayed on AuxMount tab if cam was 'simulator'
+  * Fix problems in prior commit - missing file update, DecComp control init stepped on
+  * Ensure BLC is enabled only for Guide_Mode = auto; Adjust AD UI to reflect this rule
+  * Meridian flip calibration tool
+  * new profile wizard: center the dialog on the screen, not on the gear dialog
+  * profile wizard: warn when pixel scale too low
+  * add a button to reset camera gain to camera's default value
+  * ToupTek cameras: use software binning for color cameras
+  * Windows: fix PHD2 crash when opening the mount setup dialog after the RPC server has been terminated
+  * fix compile warning on Mac
+  * Additional CPP grooming in Stats-related areas
+  * EOL cleanup in LowPass.h
+  * Merge Stats into Master
+  * CPP clean-up per Andy; improve organization of GA
+  * add touptek dll to windows installer
+  * ToupTek cameras: use average binning option; always debayer even when binning > 1
+  * show pixel scale in stats window
+  * ToupTek camera support for Windows; using ToupTek SDK v20180905
+  * new profile wizard: use a drop-down list for binning selections; show pixel scale
+  * cosmetic
+  * fix glitchy display when changing profiles by clearing the displayed image
+  * minor code cleanup (cosmetic)
+  * minor cleanup - change some Debug.AddLine to Debug.Write
+  * Altair cameras: prevent connecting to the wrong camera when reconnecting after a disconnect
+  * Add help for too-little east/south moves in calibration; fix broken link re focusing with Star Profile tool
+  * Merge dev5 into Stats
+  * Remove debug/comment lines re Stats
+  * Insure LowPass2 never computes a guide pulse in the "wrong" direction; log slope value
+  * Update Trandition Chinese Translation
+  * Adjust min-move recommendations in GA
+  * bump rev to 2.6.5dev5
+  * ZWO cameras: fix problem introduced in 2.6.5dev4 connecting to camera when zwo camera index changes
+  * help file: fix text formatting in guide algo section
+  * In GA, convert BLT_Status label to general purpose GA status field.  Some users get confused when the GA has automatically started measurement and the 'Start' button is disabled
+  * Merge branch 'master' into Stats
+  * Allow viewing of BLT graph even if test failed
+  * Increase GA Dec min-move recommendation, target a 10% Dec activity level
+  * Remove Windows unit-testing defines. Try to fix repo build problem w/ ERROR_INFO
+  * Merge branch 'master' into Stats
+  * Remove use of DescriptiveStats in AxisStats
+  * Stats replacement complete in GA, BLT, LowPass, and LowPass2. Unit testing done
+  * Streamline calc of std deviation for AxisStats
+  * Stats functions appear to be working in GA
+  * Straighten out cmake problems for guiding stats
+  * Initial commit, guiding stats
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Thu, 25 Oct 2018 20:52:31 -0400
+
+phd2 (2.6.5dev4) unstable; urgency=low
+
+  * bump rev to 2.6.5dev4
+  * update translation templates
+  * ZFilter: remove Experimental label
+  * ZWO cameras: update SDK to version v1.13.0821 (Window, Linux, Mac)
+  * Updated Traditional Chinese translation
+  * ZWO cameras: provide an option to operate camera in 8-bit or 16-bit mode
+  * Merge pull request #722 from ken-self/butterworth
+  * Help description
+  * Simplified Z filter interface
+  * New filters
+  * ZWO cameras: use camera model name to decide which camera to connect to. Fixes #686
+  * fix linux compile error on newer gcc versions
+  * more detailed tooltip for status bar calibration indicator. Fixes #718
+  * Update the Flip Calibration menu item and tooltip to make it more explicit that it flips the calibration now
+  * event server: return an error response when JSON RPC params is not an array or an object
+  * Win: change error to warning when building with wxWidgets 3.1.0
+  * Windows: better Windows version reporting in the debug log fow Windows 10. Fixes #631
+  * bookmarks persistence: load bookmarks for profile when a new profile is selected
+  * make bookmarks persistent across phd2 sessions. Fixes #714
+  * fix incorrect log message from last commit
+  * better handling of wxWidgets errors during app initialization. Fixes #716, #620
+  * INDI Aux Mount selection should not exclude mounts that do not have the GUIDER interface. Fixes #715
+  * event server: alert events should escape any newline characters embedded in the alert message
+  * Modify new-profile-wizard to use an 'on-camera' mount if camera = 'simulator'; Add warning dialog if config has no pointing info
+  * remove None (aka Identity) guide algorithm selection. Fixes #713
+  * SBIG cameras: do not rely on camera name to distinguish color vs mono cameras. Fixes #563
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 4 Sep 2018 19:25:18 -0400
+
+phd2 (2.6.5dev3) unstable; urgency=low
+
+  * bump rev to 2.6.5dev3
+  * update translation templates
+  * Change CalStepDialog to use optimum distance for 'reset' function
+  * Fix CalStepDialog to use optimum distance for 'reset' function
+  * fix typo in help file
+  * minor cleanup - remove default parameter
+  * Help doc mods needed for 2.6.5dev3
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Move calibration distance to CalStepDialog; change layout of CalStepDialog; Add 'reset' button; fix scaling bug in distance calculation
+  * allow cameras to specify a default gain; ZWO Cameras: use default gain setting reported by the driver. Fixes #699
+  * Don't sanity check rates if UseDecComp is false; temporarily flag ZFilter as experimental-only
+  * Enforce minimum sampling time in GA
+  * Guiding Assistant: fix problem with invalid min-move recommendations when GA is stopped and re-started. Fixes #711
+  * fix display of backlash comp graph on wxGTK by using a wxStaticBitmap, not a disabled wxBitmapButton
+  * event server: remove excessive debug log output when client is calling get_star_image
+  * INDI: fix phd2 crash when another app sets the camera or mount Connected property to false. Fixes #707
+  * fix linux compile error; zfilter: omit unnecessary vector copying by passing vectors by reference, not by value
+  * when graph corrections are shown to scale, show tha actual guide duration, not the guide distance
+  * Merge pull request #708 from ken-self/butterworth
+  * Zfilter - code improvements
+  * Updated Traditional Chinese translation
+  * Corrections to scale false by default
+  * Remove unnecessary code
+  * Option to show corrections to scale
+  * Rename butterworth to zfilter
+  * Rename from Butter worth to ZFilter
+  * Fix comments
+  * Butterworth: Filter choices
+  * Better log messages
+  * Refine algo and add to dec axis
+  * revert changes
+  * simplify mount.cpp
+  * Simplify code, reset on change of filter
+  * Align butterworth with master
+  * Workinng version of butterworth filter
+  * Add filter factory
+  * new filter
+  * Butterworth filter
+  * fix problem with star profile not being displayed when search region is less than 15 pixels and star is close to the edge of the frame
+  * calibration review: use a wxStaticBitmap rather than a disabled wxBitmapButton to display the bitmap. Fixes #705
+  * fix compile error on OpenSuse Tumbleweed
+  * log file uploader: fix problem with displayed log file timestamps being garbled on some combinations of timezone and Windows OS version
+  * Remove bogus range checks on aggressiveness in hysteresis and resist-switch algos
+  * fix garbage debug log entry
+  * update calibration distance when binning changes; new profile wiz: compute calibration step size based on actual calibration distance computed from pixel scale, not from the default calibration distance
+  * add Alex Helms to list of contributors
+  * fix south nudge end check broken in prior commit; pass calibration distance around consistently as int not double; remove unused variables from Scope
+  * Merge pull request #702 from alexhelms/calibparameters
+  * Replace hard tabs with spaces to match PHD code style. Compute and store a default calibration distance in the new profile wizard. Change UI from arc-sec to px for calibration distance. Fix string format issue logging the calibration distance.
+  * Add feature to change the distance, in arc-sec, that calibration is allowed to move.
+  * bump rev to 2.6.5dev2
+  * update translation templates
+  * log results of ASIGetGainOffset in debug log
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 23 Jul 2018 00:35:48 -0400
+
+phd2 (2.6.5dev2) unstable; urgency=low
+
+  * ZWO ASI Cameras: update SDK to v1.13.0523 (Windows) and v0.7.0503 (Linux & Mac)
+  * Mac: SSAG: fix possible crash after connecting camera (buffer overruns and memory leaks); allow entering arbitrary USB VID/PID values for SSAGs with corrupted firmware
+  * Fix GA/BLT handling of very large backlash to always show recommendations
+  * SBIG cameras: fix problem not recognizing multiple SBIG cameras
+  * OpenSSAG camera (mac/linux): handle cameras with USB PID 0xba11
+  * fix OSX build warning
+  * fix OSX build warning and incorrect debug entry
+  * PPEC: updates to retaining the PPEC model after guiding stops
+  * simulator: simulate PE worm phase changing with RA slew
+  * fix windows compile error
+  * PPEC: model reset check should include pier side
+  * PPEC: allow stopping/starting guiding without resetting the model (disabled temporarily pending live testing)
+  * add a guiding started notification for guide algorithms
+  * restore lost commit 0b0797348b3046998171a3748b6e28777152db5e (appears to have been lost by merge commit ce8c754318cb1cb827882d155b6d6ed12916c020)
+  * fix mixed DOS/Unix line endings in source files
+  * manual guide tool: allow manual guide when normal guiding is disabled; better logging for manual guide in debbug and guide logs; Fixes #696
+  * SX AO: fix debug logging of response characters received from the AO
+  * Update Russian translation.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian translation.
+  * windows build: extract indi client sources when zip file is newer
+  * Updates French translation file
+  * Updated Traditional Chinese translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 2 Jul 2018 13:22:50 -0400
+
+phd2 (2.6.5dev1) unstable; urgency=low
+
+  * fix OSX crash in INDI setup dialog introduced in recent commits
+  * fix broken rotator list
+  * add new QHY SDK DLL dependency
+  * bump rev to 2.6.5dev1
+  * update translation templates
+  * INDI: update to latest linux indi client (also fixes linux compile error)
+  * rename files
+  * minor cleanup - rename some files
+  * update translation templates -- recently added calibration alert messages
+  * tweak message text
+  * INDI: allow GUI to safely handle server disconnects; add a cancellable progress window when loading properties from the INDI server
+  * Add help content for using drag-and-drop to display saved FITs images
+  * Add non-fatal calibration alerts for obviously bad east/south moves (e.g. bad ST-4 cable)
+  * Improve alerts re runaway guiding (max-duration), use of flip-calibration menu item, fix minor bug in blc re adjustment of max-move
+  * Merge pull request #694 from OpenPHDGuiding/indi_sync_guide
+  * INDI: add option to enable/disable verbose INDI logging
+  * merge from master
+  * INDI device connection improvements: show device names in the connect equipment window; allow canceling long-running connection attempts; more logging of connection progress
+  * Help file: fix broken link in table of contents
+  * INDI: fix problem with INDI device selection dialogs sometimes being hidden behind another window
+  * whitespace cleanup
+  * INDI: do not allow a new guide pulse to start before notification of completion of preceding pulse
+  * INDI cameras: automatically de-bayer color cameras
+  * INDI: only show drivers with the matching device inerface type in driver selections (no longer shows all drivers)
+  * Update Russian translation.
+  * updated Korean translation
+  * update indi client - fixes a crash in the indi client lib when camera disconnects; add some indi camera debug logging
+  * updated Korean translation
+  * Clarify read-only nature of guide speed setting in CalStep dialog
+  * change status message for server connection; make sure all status messages are tagged for translation
+  * whitespace changes
+  * additional debug logging for INDI mount
+  * minor debug log changes -- show gamma slider setting and remove unnecessary repetitive entry about resizing the image
+  * Linux: add option to exclude binary drivers from build (ZWO and QHY)
+  * Merge pull request #691 from OpenPHDGuiding/HL-fix-manual-guide-window-size
+  * make bottom manual guide buttons visible
+  * Specify guide direction in GA when uni-directional Dec guiding is recommended
+  * Help file revision to better explain guide directions in graph display
+  * Remove irrelevant guide algo choices for AOs; fix layout bug in BLC controls
+  * Windows: add new QHY SDK DLL missing from prior commit
+  * QHY cameras: update Windows SDK to V20180502_0 from QHY - removes dependency on pssdk.dll
+  * QHY cameras: update Windows SDK to 2018-05-02 version from QHY
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Wed, 23 May 2018 16:15:46 -0400
+
+phd2 (2.6.5) stable; urgency=low
+
+  * bump rev to 2.6.5
+  * update translations
+  * Update Traditional Chinese translation
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * BLC: don't reset baseline unless 'enabled' state has actually changed in AD
+  * Update Russian help and remove color profiles from png files.
+  * Use a much smaller default floor value for blc to avoid oscillation. Adjust UI controls to match
+  * Avoid div-by-zero in GA if hot pixel selected
+  * Help updates for 2.6.5; Minor clean-up of exp range recommendation in GA; "min motion" -> "min move" in ResistSwitch GetParam()
+  * modify error message text
+  * tag some strings for translation
+  * Do not try to disconnect from INDI server when a device is disconnected
+  * Add event-server get/set params for PPEC algo; Confined to "non-expert" params
+  * event server: allow clients to get the name of the axis guide algorithm
+  * Update Russian help (Tutorials)
+  * Update Russian message & help translations.
+  * fix stings missing translation tags or incorrectly tagged and update translation templates
+  * better notifications in guide log and event server when exposure duration setting changes
+  * Update Russian help (Trouble_shooting)
+  * Update Russian help (Tools)
+  * Update Russian help images.
+  * fix crash when phd2 is shutdown via the server API when there is an open modal window (Advanced settings, New profile wizard, etc.) Fixes #679
+  * Update Russian translation.
+  * Updated Traditional Chinese translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 30 Apr 2018 16:45:18 -0400
+
+phd2 (2.6.4dev10) unstable; urgency=low
+
+  * bump rev to 2.6.4dev10
+  * update translation templates
+  * Merge pull request #682 from OpenPHDGuiding/blc_work
+  * Update Russian help (Tools page)
+  * Update Russian help.
+  * Merge branch 'blc_work' of https://github.com/OpenPHDGuiding/phd2 into blc_work
+  * Fix bug where BLC adjust didn't honor min-value; remove min/max blc UI controls for AO
+  * Merge pull request #681 from ken-self/polardrift
+  * Polardrift: restore guiding on close
+  * Polar drift status line fix
+  * log file uploader: fix layout of grid for non-English tranlsations
+  * Update Russian help (Tools page)
+  * Update Russian translation (resources and Introduction help file).
+  * Merge branch 'master' into blc_work
+  * Add UI controls to support BLC for AO mount bumps
+  * update translation templates
+  * fix resource leaks; fix missing translation tag for a UI message
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian help (Guide algorithms)
+  * update translation templates
+  * Windows: fix problem with log file uploader not seeing the full log file contents when uploading the logs from the current session
+  * Update Russian help (Glossary).
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian help (Basic_use page).
+  * RU help file: fix color profile errors by remove ICC color profiles from images
+  * Update Russian help (advanced settings).
+  * Update Russian help.
+  * Remove redundant check in BLC
+  * Avoid small timing windows in BLC event tracking
+  * fix linux compile errors; fix a memory leak; eliminate deep copy accessing temp object (currEvent) from container (blcEvents)
+  * Handle BLC for dithering ops
+  * Merge new BLC_Adjustment algo with Andy's MoveType changes, resolve conflicts
+  * Baseline commit, new blc adjustment algo
+  * cleanup
+  * finer-grained control over mount move types
+  * Update Russian translation.
+  * Updated Traditional Chinese translation
+  * simulator: fix lag in resposne to manual guide motions during long exposures
+  * Fix crash in INDI mount selection
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 31 Mar 2018 13:32:22 -0400
+
+phd2 (2.6.4dev9) unstable; urgency=low
+
+  * fix osx build warning
+  * fix boroken OSX build
+  * bump rev to 2.6.4dev9
+  * update translation templates
+  * allow guide algorithms to update the controls on the graph
+  * finer increment for min move spin controls in brain
+  * graph min motion spin controls finer increment
+  * event server: minor cleanup: return 0 from set_exposure as the doc says
+  * Add backlash comp UI controls for ceiling and fixed-size option
+  * fix problem with automatically re-connecting cameras that change their name after they are connected
+  * ZWO cameras: update SDK versions to V0.7.0118 (Linux/Mac) and V1.13.1.12 (Windows)
+  * allow guide algorithms to interact properly with the Fast Recovery after dither code
+  * fix some const-correctness
+  * Release issued to AP for diagnostics on "Zac's" Mach 1 mount
+  * simulator: do not reset backlash state unless backlash setting is changed
+  * Add INDI camera option to force the use of video streaming
+  * code cleanup: remove more duplication of guide algorithm names
+  * code cleanup: remove duplicate enumeration of guide algorithm names
+  * Use libnova if present on the system to help compute the sidereal time
+  * fix line endings
+  * Do not stop streaming after every capture
+  * code cleanup: remove restriction on per-axis guide algo selections; fix some const-correctness; use c++-11 idioms in a few more places
+  * fix problem with the graph sometimes displaying the guide correction in the wrong direction when the PPEC guide algorithm is in use
+  * event server: avoid problem with clients that flush stream between CR ad LF line ending
+  * Stack Indi webcam images for the duration of the exposure
+  * For Indi webcam try with video streaming if absolute exposure fail
+  * Merge branch 'raffi/check-phdwin-ressource-compilation-error'
+  * Avoiding compiling the ressources with the same options as other source files
+  * Merge pull request #680 from ken-self/polardrift
+  * Polardrift restore guiding enable status
+  * INDI change video property name
+  * Update Chinese Tranditional translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Thu, 1 Mar 2018 21:07:12 -0500
+
+phd2 (2.6.4dev8) unstable; urgency=low
+
+  * bump rev to 2.6.4dev8
+  * set a user agent in http requests
+  * Update French Translation
+  * Merge pull request #678 from PatchworkBoy/master
+  * Force bundled ZWO lib use
+  * Help updates for the 2.6.4dev8 release
+  * Rework backlash test in GA.
+  * update translation templates
+  * Remove ppa dependency on INDI ppa, use included indi client
+  * Fix building armv7 version on a arm64 processor
+  * Updated French translation
+  * Update Altair SDK to latest version (20_12_2017). Use new method of enumerating cameras which avoids sometimes getting incorrect flags if two cameras are connected.
+  * log file uploader: show recent upload URLs
+  * fix reporting of log file upload size limit exceeded
+  * fix window refresh glitch
+  * nit
+  * add feature to upload log files to openphdguiding.org
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 12 Feb 2018 18:46:55 -0500
+
+phd2 (2.6.4dev7) unstable; urgency=low
+
+  * bump rev to 2.6.4dev7
+  * update translation templates
+  * fix bug causing a new equipment profile to replace an existing profile
+  * Updated help content, fix spacing issue in polar-drift-align dialog.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Backlash test revisions - correct for drift, add uncertainty estimates, enforce reasonable sample time
+  * Small update of French translation
+  * Fix build on arm64
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Wed, 17 Jan 2018 02:22:01 -0500
+
+phd2 (2.6.4dev6) unstable; urgency=low
+
+  * bump rev to 2.6.4dev6
+  * update translation templates
+  * ZWO Cameras: update Windows SDK to V1.13.1.9
+  * SX Camera: fix pixel size value being reported incorrectly when square pixels option is enabled
+  * Update Chinese Tranditional translation
+  * Updaded last sentence for French translation
+  * Updated French translation
+  * updated German translation from Günter
+  * fix OSX compile error
+  * dither settling ignores dec distance when dec guide mode is None. Fixes #548
+  * move the small amount of polar align code in guider.cpp out and into polar align source files
+  * statusbar fixes
+  * OSX status bar fix
+  * minor cleanup
+  * remove commented-out code
+  * show help info in status bar as menu items are highlighted
+  * drift align tool: fix problem with alignment circle sometimes following the guide star in Adjust mode when it is supposed to remain stationary
+  * camera simulator: do not reinitialize field of view when not needed, like when clouds are toggled on/off
+  * Improve AltAz methods.  Fix bug when guiding is initiated at the pole
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 19 Dec 2017 15:09:22 -0500
+
+phd2 (2.6.4dev5) unstable; urgency=low
+
+  * win installer: fix typo
+  * win installer: keep the same install wizard pages when building with newer versions of Inno Setup
+  * bump rev to 2.6.4dev5
+  * update translation templates
+  * new profile wiz: create profile at start of wiz, not at completion so parameters updated during connection (INDI) are properly saved
+  * fix compiler warning
+  * Combine Alt/Az calcs into single function
+  * Revert "Combine AltAz calcs into single function"
+  * Combine AltAz calcs into single function
+  * Add log info for scope alt/az, log actual guide speeds when available
+  * Fix INDI mount disconnection
+  * Make INDI mount return a default of true for CanReportPosition()
+  * More revisions to new-profile-wiz; Add auto-adjust to calib step-size for binning or guide-speed changes
+  * Merge pull request #663 from ken-self/polardrift
+  * Polar Drift: update tutorial
+  * PolarDrift Help edits
+  * PolarDrift Add to Tutorials
+  * Merge pull request #662 from ken-self/staticpa
+  * Merge branch 'master' into staticpa
+  * fix compiler warnings
+  * clarify firewire camera connect failure message
+  * fix compiler warnings
+  * fix compiler warning
+  * more signed/unsigned cleanups to address compiler warnings
+  * Merge pull request #659 from mattiaverga/master
+  * Fix some compiler warnings
+  * StaticPA - stop if star lost
+  * Revise flow of new-profile-wizard to ask about connections whenever a device selection changes.
+  * Help updates for revised new profile wizard.
+  * StatisPa Minor edits to help tutorial
+  * Merge branch 'master' into staticpa
+  * Changes to new-profile-wiz to expand prompts and explanations; revise meaning of 'cancel', intercept device alerts earlier
+  * Merge pull request #658 from mattiaverga/master
+  * Correct appdata file location
+  * Static PA update help
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * In new-profile-wiz, replace spin ctrl SetMax calls with SetRange to eliminate broken Unix builds
+  * Merge pull request #656 from ken-self/staticpa
+  * Merge branch 'master' into staticpa
+  * StaticPa reduce window size. Toggle instructions
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Refinements to new-profile-wizard. Centralize logic to change cal_stepsize when binning or mount guide speeds change. Add alert when guide speed change is detected at start of guiding
+  * Merge pull request #655 from ken-self/polardrift
+  * StaticPa use hypot function
+  * PolarDrift code cleanup
+  * StaticPA stop alignment when closing
+  * StaticPA call OnClose from Close button
+  * StaticPA fix variable names and flag text for translation
+  * Add alert when guide speeds are different from those used for calibration
+  * Merge pull request #652 from ken-self/polardrift
+  * Merge pull request #653 from OpenPHDGuiding/raffi/indi-integration
+  * update bundled INDI to a07680cf4ea5d4ffbd1b2851732e9ee3a9fd6e65 (Oct 27, 2017)
+  * Enhance new-profile-wizard: add binning support, get mount guide speeds if available
+  * Merge pull request #651 from ken-self/staticpa
+  * Making shipped libindi optional though USE_SYSTEM_LIBINDI
+  * Libindi integration to phd2
+  * StaticPa updates to tutorial
+  * StaticPa remember window position
+  * Polar Drift prototype
+  * PolarDrift first working revision
+  * Add to menu
+  * Merge branch 'master' into polardrift
+  * StaticPA: Maintain position on display flip
+  * Merge branch 'master' into staticpa
+  * Allow centering on ref star
+  * fix typo in tool-tip
+  * Updated French translation
+  * Update Traditional Chinese translation
+  * SPA tool revised tutorial
+  * clean compile
+  * Basics
+  * Polar Drift tool
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Thu, 30 Nov 2017 01:04:42 -0500
+
+phd2 (2.6.4dev4) unstable; urgency=low
+
+  * bump rev to 2.6.4dev4
+  * update translation templates
+  * star auto-selection remove artifical 40-pixel edge distance restriction
+  * INDI: better handling for when camera device is not specified
+  * fix gcc-7 compile errors. Fixes #648
+  * Merge pull request #647 from ken-self/staticpa
+  * Tidy up comments
+  * more explicit labeling of pixels vs arc-seconds units in graph window and stats window
+  * Add Clear button
+  * make some SBIG error messages translatable
+  * remove modal dialog boxes from most camera connect functions. Fixes #644
+  * Clean up obsolete code
+  * Merge branch 'master' into staticpa
+  * Fix camera flip based on calibration pier side
+  * Enhanced JNOW calculation
+  * Calculate JNOW coords for reference stars
+  * Update Traditional Chinese translation
+  * Merge pull request #643 from ken-self/staticpa
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2 into staticpa
+  * Fix 4x rotation bug
+  * add RA to guide log guide section heading
+  * fix debug log entry missing newline
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2 into staticpa
+  * Fix for side of pier adjustment
+  * updated French traslation from Cyril
+  * bump rev to 2.6.4dev3
+  * update translation templates
+  * Merge pull request #642 from ken-self/staticpa
+  * Tidy up code and comments
+  * Remove Calculate button
+  * fix compiler warning
+  * fix broken preprocessor definition
+  * change new server api method 'get_ccd_temperature' to 'get_sensor_temperature'
+  * Correction to LST calculation
+  * Improved error handling
+  * Merge remote-tracking branch 'upstream/master' into staticpa
+  * Manual setting Hour Angle plus cosmetic changes
+  * Rotate HA for manual mounts
+  * ZWO Cameras: update to ASI SDK V0.6.0921 (Linux/Mac) and V1.13.1.4 (Windows)
+  * fix linux build error
+  * Merge branch 'master' into staticpa
+  * Navigation on helper display
+  * remove extraneous "Class" suffix from camera class names, e.g., class Camera_SBIGClass => class CameraSBIG
+  * add server methods to get camera cooler status and camera temperature
+  * Binning support for Atik cameras
+  * bump rev to 2.6.4dev2
+  * update translation templates
+  * update translation templates
+  * Merge pull request #641 from ken-self/staticpa
+  * Bug fix negative radius
+  * Overhaul Help content re polar alignment tutorials
+  * Add scrollbars to instructions
+  * Fix typeface problem SPA help
+  * Edit SPA help
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add help content for static polar alignment tool
+  * Merge pull request #640 from ken-self/staticpa
+  * Adjust brightness of overlay
+  * Update Traditional Chinese translation
+  * minor fixes
+  * Dimmer graphics
+  * Fix instructions
+  * Enable saving notes and fix instructions
+  * more 4k screen spin ctrl size fixes
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Disable two PPEC UI controls while guiding is active
+  * fix problem with spin control width being too small on 4K hi-res screens
+  * fix a couple uninitialized variables
+  * fix a minor mem leak
+  * fix Mac build error
+  * bump rev to 2.6.4dev1
+  * Merge pull request #639 from ken-self/staticpa
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2 into staticpa
+  * Async slew and fix comments
+  * Add Ken to About dialog
+  * Merge pull request #638 from ken-self/staticpa
+  * minor cleanup - add a norm_ra function
+  * More clean up post review
+  * Clean up bad edits
+  * Improved modulus calcs
+  * Fixes post review
+  * reduct devpx to 5 pixels
+  * Misc fixes
+  * Tidy up guider.cpp
+  * Tidy up redundant code
+  * Fix naming, remove tabs
+  * Fix RaDec2Px
+  * Manual align
+  * Clean up
+  * Two point align
+  * Missed files
+  * New Static PA tool
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 20 Oct 2017 15:31:18 -0400
+
+phd2 (2.6.4) stable; urgency=low
+
+  * bump rev to 2.6.4
+  * update translations
+  * Add protection in CalReview against previous bug that puts invalid data in CalibrationDetails for Dec mode = Off
+  * Fix bugs in calibration review and calibration sanity check when Dec guiding is disabled
+  * Fix bug in CalReviewDialog, binned cameras were showing incorrect arc-sec/px rates. Fix bug in CameraSimulator re computation of binned distances.  Allow lower periodic lengths in PPEC for purposes of further testing.
+  * debug log: add some missing logging for thrown exceptions
+  * Merge pull request #629 from deix/master
+  * Clean the "import's"
+  * Use "enumerate" for "for" loop
+  * Chained comparisons are faster than using the "and" operator
+  * fix windows build error
+  * Linux: use system-installed SBIG SDK libs (#623)
+  * ZWO Cameras: Update to latest ZWO ASI SDK versions (Windows: V1.13.1.2; Mac/Linux: 0.6.0901)
+  * bump rev to 2.6.3dev8
+  * update translations
+  * Update Altair SDK to new version (2017-09-01) to support upcoming new models and fix issues.
+  * Protect again Indi baseclient deleting empty properties
+  * Add missing help for min-HFD setting in AD Guiding tab
+  * Add missing return value
+  * Fix crash if INDI server is stopped
+  * Better way to check camera capabilities
+  * Debug Log: log when drift tool sets the dec guide mode
+  * Add a delay to receive all optional properties
+  * updated French translation from Cyril
+  * guide log: only show gain value when PHD2 is controlling the gain. Fixes #621
+  * AO: better handling of step failures: show an alert and suggest AO travel setting
+  * update Windows INDI client libs
+  * don't allow hystereiss >= 1.0. Fixes #627
+  * record OS name in guide log
+  * make os version more obvious in debug log
+  * AO: fix missing null check from prior commit
+  * prevent AO bump instability when guide star is far from lock position (e.g. when Sticky Lock Pos is enabled) by falling back to an ordinary guide correction
+  * Merge pull request #618 from pludov/github_master
+  * Use REUSEADDR so that event/socket server start does not fail on phd restart
+  * allow cam simulator to simulate async ST4 guiding
+  * wait for async AO move to complete before centering AO
+  * AO: make sure calibration covers full travel range; more explicit logging of AO position
+  * Linux: fix build error on systems with very old INDI library installed
+  * do not tie up main UI thread for mount and AO moves (INDI, GPINT, GPUSB, SXAO, SXAO-INDI)
+  * c++ cleanup
+  * debug log: more explicit logging about what devices are being connected
+  * C++ cleanup : catch wxString objects by const reference
+  * C++ cleanup : catch wxString objects by const reference
+  * include milliseconds in FITS header timestamps
+  * bump rev to 2.6.3dev7 and update translations
+  * Add image for Adjust Lock Position
+  * Minor help updates for simlators and 'Adjust Lock Position'
+  * fix Linux/Mac cmake error
+  * INDI support ofr PHD2 on Windows
+  * INDI support for PHD2 on Windows
+  * Enable INDI support on OSX. Fixes #348
+  * fix compile warning
+  * server api: add method to capture single camera exposure
+  * disable Auto-select star menu item when calibrating or guiding
+  * bump CMake minimum to 3.4, needed by zip compression scheme and included CMakeParseArguments
+  * stop annoying status bar message
+  * minor claeanup
+  * prevent windows firewall warning message
+  * set OSX deployment target to 10.7 to support deployment on older Macs
+  * fix compiler warnings
+  * Update Traditional Chinese translation
+  * minor help file fix
+  * Add curl build requirement
+  * fix xgettex:no-c-format tags and update translation templates
+  * Updated French translation from Cyril; add xgettext:no-c-format tags where appropriate
+  * event server: send a SettleBegin event when settling starts
+  * reset graph when gear profiles changes
+  * fix Windows compile warning
+  * add a cancel button to the 'updates rady to install' window
+  * updated Spanish translation
+  * updated Traditional Chinese translation
+  * update translations
+  * updated Spanish translation from Ivan Z
+  * bump rev to 2.6.3dev6
+  * help file edits
+  * Merge pull request #614 from mattiaverga/appdata
+  * Fix some appdata info
+  * add help file sections for automatic update feature
+  * fix Windows compile warning
+  * show result of "check for updates" in a message box, not the status bar, when updates are not availble
+  * add software update settings to advanced dialog
+  * select dev/main release series default setting based on the currently running build
+  * Add appdata file
+  * Restart PHD2 automatically when Reset Configuration option is selected
+  * show ChangeLog in update notification
+  * simplify some code
+  * add missing file
+  * Software update notification infrastructure
+  * fix file permission
+  * QHY ST4: fix incorrect guide directions
+  * Minor help updates = custom exposure time, clarifications re pixel-size setting and star/exposure selection
+  * restart phd2 when language changes. Fixes #417
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 25 Sep 2017 18:21:15 -0400
+
+phd2 (2.6.3dev5) unstable; urgency=low
+
+  * fix Auto exposure setting persistence broken in commit 58ddb70702378fde667b635a8e6e8a4b287f7f0f
+  * bump rev to 2.6.3dev5
+  * remove reference to obsolete keyboard shortcut
+  * allow custom camera exposure duration, and allow exposure duration labels to be translated. Fixes #411 and #424
+  * Add async slew and abort motion function
+  * Wait for CONNECTION property before to connect the device
+  * Change SpinControlDouble to SpinControl (int) for all ConfigDialogPane and GraphControlPane params that display percentage values; Replicate ConfigDialogPane tooltips in GraphControlPanes
+  * Merge pull request #607 from mattiaverga/fix_linux_locales
+  * display AO correction rate in AO graph window. Fixes #610
+  * Improve behavior of 'auto-restore calibration'; get related help content into synch
+  * Update help content for revised image-logging features.
+  * Use all_locales list on Linux also
+  * Add Italian translation to the list of available languages
+  * Fix locales installation under linux
+  * Fix bug in PPEC - GetMinMove() was not overriding virtual method in Mount()
+  * Merge pull request #606 from mattiaverga/use_system_libs
+  * Use GTest module provided by cmake
+  * add Mattia Verga to About dialog
+  * Adjust min-move, cal_stepsize params when user changes camera binning
+  * Add option to use system's Eigen3
+  * Add option to use system's Gtest
+  * Move new options to compiler_options.cmake
+  * Merge pull request #605 from mattiaverga/use_system_libs
+  * Typo fix
+  * Add options for using system's cfitsio and libUSB
+  * Mac: fix crash when disconnecting GPUSB
+  * fix text truncation with some translations in spctrograph slit position window. Fixes #601
+  * windows: do not run VC redist installer when installing phd2
+  * updated Portuguese translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Wed, 31 May 2017 23:24:17 -0400
+
+phd2 (2.6.3dev4) unstable; urgency=low
+
+  * bump rev to 2.6.3dev4
+  * updated French translation
+  * update translation templates
+  * linux: fix truncated text in connect buttons in gear dialog
+  * linux: only include QHY camera support on system architectures that are included in the SDK (e.g., exclude armv7 which is not present in the SDK)
+  * update help file builder scripts - help .zip files are now built automatically
+  * update locales update scripts to invoke the appropriate cmake targets
+  * Merge branch 'issues/MPGUID-167-cmake-improvements-rebased'
+  * Removing old and unneeded files
+  * Linux: looking for resources in the build tree first, otherwise use the system location
+  * windows: get the translations and the help file from the new locations
+  * Windows debug environment - pick up help file and translations from new location (and remove the old hack for finding them)
+  * Copying all generated/merged/extracted next to the binary and back to the source tree + various improvements
+  * Removing the warning emitted by msgmerge and due a bug in xgettext
+  * Updating the messages.po[t] in the ./locale and making the extraction from the sources a manual step.
+  * Adding the extraction of the strings from the sources and the merge with the .pot file All additional translation targets are creating a new, merged .po (with the previous .pot), prior to compiling to .mo
+  * Generating / merging of the message.po
+  * Generating the ZIP files from CMake
+  * Getting the version number from the sources
+  * linux: temporarily disable qhy camera until we can fix the Ubuntu/Trusty link error
+  * Revise previous commit for better consistency with other notification functions
+  * linux: prevent cmake from picking up a libqhy.so installed on the system - fixes #597
+  * Notify guiding algos when guiding is enabled/disabled; protect GP params when guiding is disabled
+  * update ZWO Linux/Mac SDK to V0.6.0328; add armv7 and armv8 ASI libs to build - fixes #559
+  * update to QHY SDK V7.4.16 - adds Linux/armv6 (for RPi) and should fix Debian link error
+  * fix crash when stats window is updated and Camera = None
+  * Update Altair SDK to latest 1.1.4 version to support new camera models
+  * remove unused file
+  * re-enable QHY camera support on Linux
+  * update QHY camera SDK to V7.4.16.4
+  * Try to clarify dual ccd selection
+  * Let more time for INDI device connection
+  * minor debug log tweak
+  * remove duplicate computation of GetGPHyperparameters()[PKPeriodLength]; minor debug logging tweaks
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add debug output in GP algorithm; Updates to Help for PPEC
+  * default gain on QHY cameras should be 40, not 95. fixes #449
+  * new Portuguese (Brazilian) translation from Wagner Trindade
+  * add method for logging to the PHD2 Debug log from the GP code (without introducing wx or PHD2 dependencies into the GP code)
+  * fix error in last commit
+  * wrap text labels in guiding assistant when translations need more space
+  * add new server methods get_calibration_data and guide_pulse
+  * bugfix: RA/Dec overlay should display RA/Dec from mount, not AO calibration angles when AO is connected
+  * bump rev to 2.6.3dev3
+  * temporarily disable new QHY SDK on Linux - temporaary workaround for Issue #591
+  * Linux/ARM: disable qhy camera pending SDK update from QHY
+  * tag some strings for translation and update translation templates
+  * Russian translation update.
+  * Merge pull request #589 from agalasso/master
+  * save profile name in FITS header when saving an image
+  * add a fits header for side of pier when saving an image
+  * Small textual mods to GP expert dialog and tooltips
+  * Fix GPExpert Dialog bug, must be modal
+  * Revised UI for GP guide algorithm parameters
+  * Add comment re lifetime of GPExpert dialog
+  * Change scope/lifetime of GP Expert Dialog; Add graph control functions; Remove debug ctrl;Improve layout of RA params in Mount pane
+  * Baseline commit for changes to GP expert options. Mostly working
+  * stricter protection against placing window off screen at app start after screen size change
+  * Update zh_TW translation
+  * bump rev to 2.6.3dev3
+  * update locales
+  * comet tracking: adjust RA/Dec shift rates for scope declination and guide parity
+  * Merge pull request #588 from OpenPHDGuiding/hotfix/double-free-eigen-upgrade
+  * Fixup Windows builds
+  * camera gain control should not accept zero
+  * Merge remote-tracking branch 'upstream/master'
+  * fix uninitialized variable in debug log
+  * Merge remote-tracking branch 'upstream/master'
+  * add QHY firmware to OSX bundle; load firmware from bundle at runtime
+  * add QHY firmware zip file
+  * update QHY SDK to V7.4.16.3
+  * made code compatible to -Weffc++ to prevent future bugs
+  * got rid of some warnings
+  * prevented squareDistance from producing negative results
+  * update SDK files to V7.4.16.2
+  * add missing call to OSXInitQHYCCDFirmware
+  * Eigen upgrade
+  * Merge pull request #587 from simonct/master
+  * #586: Remove hard-coded USB interface number from Mac build
+  * fix windows comiple warnings
+  * CMake fixup
+  * Merge pull request #585 from OpenPHDGuiding/GPGuide
+  * improvements from code review
+  * removed GP-beta3 from version string
+  * removed guards around GPGuiding
+  * Added developer documentation for Predictive PEC
+  * minor changes in analysis and optimization tool
+  * updated README.md of the GP Guiding feature
+  * Removed the Predictive Drift guider for now
+  * made PPEC look more like Hysteresis
+  * minor change in data analysis script
+  * removed the unused noise hyperparameter from the GP Guider
+  * changed default parameters
+  * reworked performance test and parameter optimization
+  * filtering for the analyzation tool
+  * Got parameter optimization to work with GPyOpt
+  * bugfix: reading the registy / config file of Predictive PEC
+  * fixed version string
+  * version bump to beta3
+  * implemented time-based blending of hysteresis and GPGuide
+  * moved safeguards so that the GPGuider can continue working
+  * changed a variable name
+  * Changed period length handling to be more useful:
+  * Code review
+  * refactored the GP prediction to return only the mean vector, covariances are calculated by handing a pointer
+  * refactored saving the GP data to a file
+  * changed period length interpolation to frequency interpolation
+  * Changes from code review
+  * Added failure case, fixed bugs and added safeguards
+  * version bump to beta2
+  * updated parameters
+  * Added more tests and a way to optimize parameters
+  * changed minMove to the same behavior Hysteresis uses
+  * updated the data analyzation tool
+  * Refactoring
+  * added a buffer size for the regularized data
+  * added functionality to UpdateGP() to define the prediction point
+  * Fixed failing data regularization test
+  * Implemented gear time correction from dithering
+  * Tuned tests, tuned Kalman filter, logged the identified parameter
+  * reworked the grid interpolation / averaging
+  * Implemented Kalman filtering for the period length parameter
+  * added the quadratic interpolation for the period length around the max
+  * added a frequency identification test for the interpolation
+  * Added a performance test to the automatic regression testing
+  * Saved about 10 % computation time in the GP implementation
+  * changed buffer size and added timing output
+  * added a python script to analyze measurement data from others
+  * added "GPGuide beta1" to the FULLVER string
+  * Prepared the GPGuider for beta release:
+  * Improvements from code review
+  * Improved the timer behaviour of the first step after startup / reset
+  * enabled pause and dither framework
+  * updated README.md
+  * removed the sandbox
+  * adjusted tests due to new parameters, added test for period identification
+  * updated the config window of the GPGuider
+  * Code cleanup
+  * implemented new tests for the GPGuider functionality
+  * Refactored the timers to use std::chrono
+  * Refactored so that we are able to test the guide algorithm independently.
+  * added the minimal move functionality
+  * adjusted sanity checks for the prediction gain
+  * made variable names consistent between GP and TM guiders
+  * Implemented an expert mode to hide unneccesary configuration elements
+  * Tidying up, documentation
+  * Implemented the dithering functionality in the GP guider
+  * Implemented the pausing functionality for the GP guider.
+  * Documentation and refactoring
+  * Added an explicit dark tracking mode to make debugging easier.
+  * Changed the handling of the dark guiding episodes. Now new data points are generated to not disrupt the FFT.
+  * Modified GP and MW guider to predict using the actual time difference
+  * Changed method and variable names, GUI changes
+  * Reduced the number of data points in the dec guider, added plotting
+  * Changed the handling of the dark phases: no new datapoints are created, but the applied control is stored.
+  * Bugfixes
+  * implemented the median window guider for dec
+  * Renamed the linear regression guider to median window guider
+  * Renamed the linear regression guider to median window guider
+  * implemented a Kalman filter instead of a GP filter
+  * The guide algorithm now has separate infer, filter and predict functions
+  * Implemented support for heteroscedastic noise, added noise estimation
+  * Removed the optimization
+  * Made magic numbers configurable or definable
+  * swapped short and long SE kernels.
+  * Implemented the output projection for the GP
+  * Implemented the subset of data approximation
+  * Tidied up the GP guide algorithm
+  * Cleanup and and refactoring
+  * Added the explicit features for the linear trend in the GP.
+  * Switched from BFGS to FFT for estimation of the period length
+  * Small changes to the control algorithm. Fixed white space bugs.
+  * Changed the covariance function
+  * Changed the covariance function and changed from UDP to CSV for debugging.
+  * Restructured the GP guider for the use of the deduceResult method.
+  * Implemented the linear regression guider that just predicts the drift.
+  * Changed the guiding algorithm to guide in control space.
+  * - Added mixing parameter and optimization checkboxes. - Tidied up and commented more on the guiding algorithm. - Reworked the GUI
+  * Integration of the preliminary Gaussian Process code
+  * fix Linux build errors
+  * Merge remote-tracking branch 'upstream/master'
+  * for Bohai: temporary (for debugging): look for firmware in $HOME/qhyfirmware/firmware/
+  * OSX: use new QHY SDK
+  * Merge pull request #6 from qhyccd-zbh/master
+  * updated qhy OSX lib
+  * updated qhy OSX lib
+  * avoid changing ROI by fitting the movable subframe inside a larger stationary ROI
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * Merge branch 'master' of github.com:agalasso/phd2_qhy
+  * merge pull request from BoHai
+  * Merge pull request #4 from qhyccd-zbh/patch-2
+  * solve the bug the input is not equal to output resolution
+  * solve the bug the input is not equal to output resolution
+  * solve 16bit subframe problem
+  * Merge branch 'qhyccd-zbh-patch-1'
+  * convert tabs to spaces
+  * fixed 16bit and closecamera problem.
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * updated sdk 2016-06-11 from qhy
+  * fix potential crash when looping exposures with subframes enabled and switching from bin1 to bin2
+  * revert change of spaces to tabs close camera handles after opening them when enumerating cameras use memcpy for 16-bit cameras
+  * Merge branch 'qhyccd-zbh-master'
+  * Revert "Revert "Revert "add 16bit and  other qhy cameras supported"""
+  * Revert "Revert "add 16bit and  other qhy cameras supported""
+  * Revert "add 16bit and  other qhy cameras supported"
+  * add 16bit and  other qhy cameras supported
+  * update to qhy sdk 0.1.8
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * fix compile errors
+  * minor cleanup (whitespace and wording of comments and messages)
+  * Merge branch 'qhyccd-zbh-master'
+  * Merge branch 'master' of git://github.com/qhyccd-zbh/phd2_qhy into qhyccd-zbh-master
+  * sync to upstream
+  * set camera name to value reported by driver
+  * remove TAB
+  * remove TAB
+  * replace TAB with SPACE
+  * cancel a lot of comment
+  * add new QHYCCD camera
+  * sync to upstream v2.6.1
+  * attempt to reconnect camera after GetQHYCCDSingleFrame failure
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * updated SDK from QHY, fixes error return from GetQHYCCDSingleFrame()
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * update to qhy SDK 11/11/2015
+  * consolidate source files for new QHY SDK
+  * merge from upstream
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * update QHY DLL
+  * fix subframes
+  * fix detection of color cameras; make sure subframe width is always a multiple of 4 (per lzr of QHY)
+  * updated windows SDK lib from QHY. Enables subframes and binning
+  * more merging from upstream
+  * merge from upstream
+  * add binning support for QHY cameras
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * sync fork with upstream
+  * Merge remote-tracking branch 'OpenPHDGuiding/master'
+  * fix camera initialization for Mac
+  * Allow selecting the camera if there is more than one QHY camera present. Closes #432
+  * sync from upstream
+  * Merge upstream branch 'OpenPHDGuiding/master'
+  * update windows installer to use new qhy sdk dll
+  * disable subframe debug code
+  * updated QHYCCD SDK from QHY
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 29 Apr 2017 01:58:08 -0400
+
+phd2 (2.6.3dev1) unstable; urgency=low
+
+  * bump rev to 2.6.3dev1
+  * add better info to debug log when event server write fails
+  * Merge pull request #584 from OpenPHDGuiding/andy/starstuff
+  * fix bug storing image logger setting
+  * Adjust layout on global tab of AD
+  * more image logging options
+  * Straighten out the conflict mess w/ Andy's changes
+  * Revised UI controls for new image logging and star saturation detection
+  * fix a typo in a tooltip; fix compile warning; add const qualifier to some guider accessors
+  * Add AD controls for diagnostic logging; put debug images in subdirs of logging root; add retention control for logged images; add text box in AD if camera isn't connected
+  * apply enhancement #578
+  * guard against possible null pointer
+  * guard against divide by zero (unlikely)
+  * - improved background calcuation (iterative method) for improved low-SNR star detection - Star saturation detection option to use a fixed ADU value and bypass the "flat-top" detection heuristic - improved star mass change detection - after a frame is dropped reject additional frames with large offsets - better image logging trigger - avoids many false positives - option to trigger when both absolute and relative error exceed threshold - minor imptovement to debug info related to image logging - fix a problem with min-HFD interfering with adding a hot pixel to the bad-pixel map
+  * INDI 0.9 works again, trigger a build for Patrick's PPA system
+  * return support for old INDI version 0.9
+  * Merge pull request #582 from knro/master
+  * Update PHD2 so that it builds with latest libindiv1.4  while still capable of compiling with older versions
+  * event server: add get_settling method
+  * fix a small memory leak
+  * AO: fix bug with AO bump continuing after server received Pause command
+  * fix problem with initialization of min star HFD
+  * add more info to fits hdr when saving image
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 20 Mar 2017 21:03:15 -0400
+
+phd2 (2.6.3) stable; urgency=low
+
+  * bump rev to 2.6.3
+  * update help zip to get latest changes
+  * Minor help updates for 2.6.3
+  * support for image logging based on various triggers
+  * Change PPA dependency for Ubuntu 17.04 zesty
+  * update fix to comet tool
+  * bump rev to 2.6.2dev10
+  * get Comet Tool working again. Fixes #581
+  * (for Edgar's GP branch) do not log frames on graph for deduced moves
+  * update star mass change detection to work when exposure is set to Auto
+  * AO: display RA and Dec directions on the AO graph; increase bump step size when settling after dither
+  * bump rev to 2.6.2dev9
+  * update help zip to get recent html changes
+  * ZWO: update SDK to Win V1.13.0.10, Linux-Mac V0.6.0110
+  * Help file updates since Nov. 2016
+  * change camera selection icon to not look like a checkbox control
+  * update ru help zip
+  * update translations
+  * bump rev to 2.6.2dev8
+  * do not display new dec mode dither alert if primary mount is AO
+  * Remove checkbox for N/S dithering behavior; add one-time, per-profile alert re changed dithering behavior.
+  * Based on UI control, allow Dec dither when Dec guide mode is north or south only; mode is temporarily set to 'Auto', then restored
+  * more code cleanup for dither raOnly - never override raOnly if using an AO
+  * fix link error on Linux machines with older versions of libusb by always linking against the bundled version of libusb
+  * code cleanup - use raOnly passed by caller in MyFrame::Dither, do not override it
+  * fix windows libusb build error
+  * fix osx build error: latest zwo SDK library requires libusb-1.0.16 or later so update to latest libusb, 1.0.21
+  * OSX: fix compile warning
+  * server api: add methods to set/get dec guide mode; also, fix duplicate logging of some guide param changes in guide log
+  * update ZWO libs to V0.6.0103 (Mac/Linux)
+  * Star-cross test: boost main cam exposure time to allow for device overhead
+  * Update Russian help translation.
+  * Update Russian translation.
+  * for Edgar: dark guiding while paused
+  * fix gcc5 compile warning
+  * update ZWO libs to V1.13.0.7 (Windows) and V0.4.0929 (OSX/Linux)
+  * Updated  zh_TW translation
+  * bump rev to 2.6.2dev7
+  * bump rev to 2.6.2dev7; update translations
+  * move new menu item; allow non-integer guide speeds in star-cross test
+  * change method to static function
+  * Initial implementation of star-cross test
+  * Updated  zh_TW translation
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Restore more user control over auto-load of calibrations.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Update Russian help translation.
+  * Merge pull request #570 from markus-k/mac-info-plist
+  * Properly use Info.plist with cmake, enables Retina support
+  * Update Russian help translation.
+  * Russian help translation update.
+  * updated Korean translation
+  * Update Russian translation.
+  * update help zip
+  * bump rev to dev6
+  * update translations
+  * new Korean translation from norma
+  * for dev testing: allow override of min edge distance for star auto-find
+  * add Matteo to about
+  * Rework previous commit to avoid breaking log analyzer apps
+  * Add guide log entry when star is lost during calibration.
+  * Merge branch 'astrovr-master'
+  * remove commented-out line
+  * Merge branch 'master' of git://github.com/astrovr/phd2 into astrovr-master
+  * Add guide speed 'detect' and contextual help in new-profile-wizard; UI clean-up
+  * Bug fixed as issue #565 - cam_qhy5.cpp file
+  * Automatically manage setting of 'auto-restore calibration' based on pointing info availability. Improve various tooltips, update help content re auto-load option
+  * Add help button in Guiding Assistant recommendations
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Updates to Help content
+  * Update Russian translation.
+  * OSX: disable AppNap on OSX versions >= 10.9 (not just on version 10.9)
+  * fix AO bump on dither setting not being saved across sessions
+  * Rework layout in GA to accommodate smaller screens
+  * bump rev to dev5
+  * fix Windows build error
+  * now building VidCapture from source; VidCapture modifications to support latest Win10 updates; add Dave Partidge to About dialog
+  * C++ cleanup on Stats window
+  * Fix INDI siderealTime
+  * Fix a localized string error in StatsWindow
+  * Add image size and guider fov to stats window
+  * Update Altair SDK to latest version (12 Oct 2016) to support new models and bug fixes
+  * Increase width of spinner controls for Win10 and high dpi monitors
+  * fix SBIG camera binning
+  * fix linux/osx build error
+  * add server methods for setting/getting guide algorithm parameters
+  * Make sure Aux mount setting is placed in guide log for all applicable cases
+  * Update Altair SDK to support new camera models
+  * server: indicate dropped frames in settling progress messages
+  * Fix backlash test for case of new profile, never calibrated; put GA log entries in GuideLog
+  * ZWO cameras: update SDKs to Windows V1.12.0.1 and Mac/Linux V0.4.0920
+  * bump rev to 2.6.2dev4
+  * update ZWO SDK to Windows V1.11.0.39 / Linux & Mac V0.3.0908
+  * Allow main window to shrink to dimensions of 300x300 px.
+  * whitespace
+  * update translation template
+  * new Arabic translation from Khalefa Algadi
+  * Eliminate possibility of repetitive "pixel size changed" alerts
+  * event server: update GuideParamChange event
+  * event server: send notifications when guide params change
+  * display status message on main window when guide output is disabled
+  * bump rev to 2.6.2dev3
+  * fix erroneous alert about pixel size changes
+  * bump rev to 2.6.2dev2
+  * ZWO camera: fix spurious delays reading camera frames
+  * Fix bugs in cam_Altair - ensure auto exposure disabled and avoid missing frames due to MilliSleep delay
+  * Update to newest (8/2016) Altair SDK
+  * Improve handling of on-the-fly changes to camera binning within a single profile. Detect out-of-band changes to pixel size.
+  * bump version to 2.6.2dev1
+  * updated zh_TW translation
+  * updated help file
+  * SX Cameras: reconnect camera after ReadPixels failure
+  * possible fix for opensuse build error
+  * Commit out-of-date help content file; trivial adjustment in trouble-shooting section
+  * Chinese Traditional update.
+  * merge from RayGralak-master
+  * renamed new guide enable method names, replaced tas with spaces, remnoved unneccary call to VERIFY_GUIDER
+  * fix Linux/OSX build error
+  * add new server method get_current_equipment to show the devices selected in the current equipment profile
+  * Added new eventmonitoring methods: get_mount_guiding_enabled and set_mount_guiding_enabled
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 12 Feb 2017 22:51:03 -0500
+
+phd2 (2.6.2) stable; urgency=low
+
+  * bump rev to 2.6.2
+  * bump rev to 2.6.2 and update translations and help files
+  * Help file updates for 2.6.2 release
+  * minor cleanup
+  * Make sure Refine_DefMap dark stats are current after user has forced a rebuild.
+  * display star peak ADU value in star profile window. Fixes #488
+  * server api: add method to get camera binning
+  * remove ascom chooser selections. Fixes #547
+  * update gitignore
+  * fix uninitialized variable causing dither to settle prematurely (recent regression)
+  * when saving an image, write a FITS header value continaing the gain setting
+  * add some debug logging for ZWO cooler ops; fix whitespace (remove hard tabs)
+  * Standardize, streamline suppressable alert dialogs, add log entry when user has blocked dialog
+  * Fix alert handling for ASCOM CheckSlewing; drop alert when DecComp=false
+  * PIERSIDE INDI property change to TELESCOPE_PIER_SIDE
+  * Use smart (image-scale dependent) values for min-moves in algo 'Reset'
+  * Add comments to algorithm 'reset' mods
+  * Add UI buttons in AD/Algo tab to reset guide parameters to default values
+  * Fix bug with camera selection when there are multiple cameras of the same type - camera Ids always being appended to, not cleared.
+  * Add cooler support for ZWO cameras
+  * Update Altair SDK for new models, ignore incorrect camId passed to ::Connect if we only have one camera
+  * always send a SettleDone notification, even for manual dither or phd1-style dither
+  * rotator settings in AD were broken
+  * bump rev to 2.6.1dev11, update help file and translations
+  * camera cooler control   - implmented for camera simulator and ASCOM cameras
+  * fix Linux build error
+  * AO: add configuration setting to set AO max travel
+  * add settling done notification for guide algorithms
+  * event server: make sure app terminates in response to shutdown method without requiring any external windows events
+  * prevent possible crash when switching from bin1 to bin2 with subframes enabled while looping exposures
+  * Ensure that GuideStep events (guide log and event server notifications) do not come after the GuidingStopped notification. This could occasionally happen when an AO is in use and guiding was stopped while a mount bump was in progress.
+  * High-dec calibration warning: improved text, make sure warning happens only with valid Dec position
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add warning dialog when calibration is done interactively at > 60 deg Dec; add alerts when dec compensation is disabled and scope has moved significantly; expand calibration details message for orthogonality; same for help content
+  * bump rev to 2.6.1dev10
+  * fix crash when event server client disconnects unexpectedly
+  * AO: fail calibration when there are multiple AO move errors during calibration; Fixes #539
+  * bump rev to 2.6.1dev9; update translations and help files
+  * add debug logging and error checking for dark frame capture
+  * Debug.AddLine(format, ...) produces incorrect output in the log file, not sure why. Replace calls with Debug.Write(wxString::Format(...)).
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Fix ceiling handling in backlash comp; rework debug log commands in backlash_comp.cpp
+  * fix some more bad debug output lines
+  * fix some debug log entries
+  * Update Russian translation of help files.
+  * Russian translation update.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Help file updates; minor change to alert dialog behavior, bug fixes in CalReview rendering, debug logging in scope_ascom
+  * Russian messages/help translations update.
+  * updated German translation from Günter Scholz
+  * update translations files
+  * enable SX-AO on OSX
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * tag strings for translation
+  * fix some debug log entries
+  * Remove numeric format change as INDI rev2739 fix the problem
+  * Reset numeric format to C after using the INDI library
+  * Update Russian translation.
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add INDI SideOfPier as implemeted in indi_eqmod_telescope
+  * Add backlash comp limits; Keep max_dec_duration >= blc; Add debug logging in Manual Guide
+  * work around unsigned long cast to int reference which broke on Linux
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Merge pull request #535 from simonct/sct_costar
+  * SXMacLib: Isolate linux changes to the Linux build for now, add prefix to log messages
+  * Update Russian translation.
+  * Update Russian translation.
+  * mark strings for translation and update translation files
+  * update help file
+  * bump rev to 2.6.1dev8 and update translations
+  * Merge pull request #533 from simonct/sct_costar
+  * SXMacLib: Add CoStar PID
+  * Make backlash graph more consistent w/ other graphs - user-defined Dec color, black background
+  * Use user-defined colors in Calib Review Dialog; make consistent with GraphLog
+  * do not ship our own FindwxWidgets.cmake, use the one that is distributed with cmake since the standard version will find wxWidgets 3.1.0 and this version fails to find wx 3.1.0 on Windows
+  * Update Russian Help translation: Basic_use page.
+  * - port from wx3.0.x to wx3.1.0
+  * updated it_IT translation from Giorgio
+  * Fix compile on openSUSE leap 42.1
+  * Update 'Tools' Russian translation.
+  * Update Russian translation.
+  * allow AO manual control without a mount, or mount-on-camera
+  * bugfix: use a real interface in libusb_claim_interface. LodeStar now works in Linux
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * add SXV cameras to Linux, replace __LINUX__ with __linux__
+  * bump rev to 2.6.1dev7; update help files and transaltions
+  * do not restore window position off the screen at startup if screen size has changed
+  * server api: allow named JSON RPC params
+  * fix some debug logging
+  * fix a small memory leak when event server client disconnects
+  * fix occasional garbage in debug log lines
+  * fix typo, thanks groz :)
+  * implement StepGuiderSxAoINDI::IsAtLimit and check indi_sx_ao driver version
+  * "Waiting for devices..." message should not revert to "Looping"
+  * implement StepGuiderSxAoINDI::FirmwareVersion
+  * update SX AO version check per Terry (do not issue warning for newer firmware versions)
+  * SX-AO-LF support via INDI
+  * Minor textual tweaks to new_profile wizard
+  * Add 'Help' option for calibration sanity-check alerts
+  * Don't show 'Help' button for basic alerts
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add 'Help' button in alerts for calibration sanity checks; fix old bug when PHD2 exits with Help window active
+  * Merge pull request #525 from simonct/sct_sxao
+  * Improve serial port read error message
+  * Switch off SX AO on Mac pending hardware testing
+  * Merge Posix and Mac serial port code
+  * Merge branch 'master' into sct_sxao
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * SX-AO-LF support for Linux. V000 firmware warning.
+  * Merge pull request #524 from simonct/sct_sxmaclib_v2
+  * First cut at a SerialPortMac implementation, enable SX AO on Mac
+  * Russian help update (Trouble_shooting page).
+  * SXMacLib: Adopt timeout from Camera settings, report read pixels errors to caller and disconnect camera, tidy up code to get camera params
+  * Russian translation update.
+  * fix bugus debug log entries related to coordinate transforms
+  * event server: debug log entry when writes to client fail
+  * event server: ensure that the LoopingStopped notification is always sent when looping stops
+  * fix opensuse compile errors
+  * update translations, bump rev to 2.6.1dev6
+  * fix OSX build errors; update osx-only cameras for new camera pixel size interface
+  * fix Linux build error; more work on pixel size
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Rework handling of camera pixel size, including profile-wizard behavior when 'Detect' doesn't work
+  * new Italian translation from Giorgio Mazzacurati
+  * event server: make sure json rpc response precedes notification messages
+  * Clean up various tooltip strings; log AuxMount id when guiding starts; EOL clean-up
+  * fix display of index file for Traditional Chinese help file
+  * updated zh_TW translation from Thomas, including a new translated help file!
+  * AO: do not show north/east mount guide labels on graph for AO
+  * Linux: fix possible assert when connecting an INDI mount
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Russian translation update.
+  * more fine-grained event notifications for guide algorithms to manage their state
+  * Russian translation update.
+  * bump rev to 2.6.1dev5
+  * fix dec trendlines being plotted incorrectly, broken in 2.6.1dev2
+  * bump version to dev4
+  * Fix BLC bugs impacting AO support
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * refinements to spiral dither: consolidate dither controls in the brain; allow ra-only dither when spiral is selected
+  * Resize explanation in calibration review to accommodate larger fonts.
+  * Merge branch 'sakauchi-spiral_dither'
+  * Merge branch 'spiral_dither' of https://github.com/sakauchi/phd2 into sakauchi-spiral_dither
+  * fix crashes when camera is 'None'
+  * Delete myframe.h.1~
+  * Delete myframe.cpp.1~
+  * Delete configdialog.h.1~
+  * add Spiral Dither Pattern
+  * bump version to 2.6.1dev3
+  * fix target display crash when Mount = None
+  * bump rev to 2.6.1dev2; update help files and translations
+  * Rework adjustment algorithm for backlash compensation
+  * New Altair SDK - fixes issues with GPCAM mk2 not being detected or not showing any images
+  * label sky coordinate directions on the target
+  * allow status bar status indicators to be updated from worker threads
+  * whitespace
+  * use Refresh() to repaint control
+  * tweak new labels on graph
+  * do not display stale guide step info during calibration
+  * show guide correction direction labels on graph
+  * a few tweaks to new status bar code
+  * fix linux build error
+  * eliminate flickering when an overlay is displayed
+  * rename a function
+  * Finish implem of statusbar message timeout logic
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Control timeouts on status messages; minor improvements to GearDialog status displays
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * Detect guide pulse polarity: whether a Guide(NORTH) actually moves the scope north or south. Display N/E true sky direction labels on RA/Dec overlay
+  * Help files for manual-mount aux connection
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Restore SNR display when not looping; remove obsolete use of 'panel#' in SetStatusText calls; remove old commented calls
+  * add png files for status bar bitmaps
+  * mark strings for translation
+  * fix linux build error
+  * fix OSX build errors; fix a merge problem; center the gear connected icon
+  * New StatusBar implementation
+  * Merge branch 'master' into sb-merge
+  * Re-do timer logic around statusbar text messages
+  * add a new Aux Scope type "Ask for coordinates" to allow users to opt to be prompted for scope coordinates
+  * Add new files to CMakeLists.txt
+  * Convert arrays to vectors; force MinSize on parent frame; other clean-up
+  * Use png files for file-based testing of arrows; other clean-up
+  * Remove old icon files
+  * Updated icons now in .h format; Adjustments to sb field positions
+  * Commit icons
+  * Dynamic loading of icons
+  * Working version with correct painting behavior
+  * Snapshot - no flicker and correct background rendering; other tweaks
+  * Rename phd_statusbar.* to aui_controls.*
+  * Add custom toolbar painting; fix bugs unrelated to statusbar work; minor statusbar UI refinements
+  * Switch to custom panel on statubar to control rendering; other clean-up
+  * All basic functions working
+  * Baseline commit - working version
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 29 Jul 2016 15:19:05 -0400
+
+phd2 (2.6.1dev1) unstable; urgency=low
+
+  * bump rev to 2.6.1dev1
+  * fix some debug messages
+  * use SetAppName() to ensure the local data directory is found even if the name of the executable is changed
+  * display PAUSED in guider frame when paused
+  * add a mechanism to prevent mis-behaving clients from causing unneeded calibrations
+  * improve text of some alert messages
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * update copyright date
+  * Russian translation update.
+  * ascom scope: provide option to suppress alert about pulse guide failures
+  * fix a problem where dark subtraction could cause stars to be incorrectly marked as saturated and excluded from Star::AutoFind
+  * fix file permissions
+  * ZWO: log color camera attribute to debug log
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 5 Feb 2016 01:46:49 -0500
+
+phd2 (2.6.1) stable; urgency=low
+
+  * bump rev to v2.6.1; update help files and translations
+  * log starting point for dec calibration
+  * check for binning and framing property (fix #498)
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Help file updates for 2.6.0 baseline; add px/sec label to guide log calibration rates
+  * Textual corrections/improvements in tooltips, GA, and CalReview
+  * fix file permissions
+  * update pdf builder script
+  * automate buiding of PDF user manual when building under Cygwin
+  * update help zip files
+  * update web link in help files
+  * make sure setting dec guide mode to None is recorded in the debug log
+  * update zh_TW translation from Thomas
+  * updated zh_CN translation from Linkage
+  * fix incorrect Serlial LE webcam RTS label
+  * fix problem connecting to camera when more than one ZWO camera present
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 26 Jan 2016 20:04:47 -0500
+
+phd2 (2.6.0) stable; urgency=low
+
+  * update help files and translations for 2.6.0
+  * bump version to 2.6.0
+  * remove unused file
+  * server api: if requested settle time is 0, only require a singe frame to settle
+  * do not make UI calls from worker thread. Closes #493
+  * fix OSX crash calling wxTranslate in static initializer
+  * update ZWO ASI SDK to V1.11.0.13 (Windows) / V0.2.1210 (Linux/OSX)
+  * updated fr_FR help file from Laurent Schmitz
+  * Add guidelog entries for any brain dialog changes made to max durations, backlash params, dec guide mode
+  * fix osx build error
+  * bump version to dev9
+  * fix race condition when multiple threads concurrently write event server output
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * record additional information in FITS headers when saving a FITS image
+  * fix spelling error in comment
+  * Fix tool-tip in GA; Adjust drift-limited exp time upward to match min-move recommendation
+  * Update Altair SDK, Make use of new GetPixelSize function in cam_Altair.cpp
+  * update translations and bump version to dev8
+  * updated help file
+  * do not reject very low SNR stars
+  * Add HFD entry to guide log headers
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Help doc updates
+  * add a bit more debug output when camera is connected
+  * add star Saturation indication to the status bar
+  * add some debug logging to make more explicit why capturing was stopped
+  * fix a small SNR inaccuracy: the background was being calculated based on the mouse click position or the previous star position; it should be based on the aperture around the current peak pixel
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * update status bar when star is auto-selected but not looping exposures
+  * rename enum
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * GA backlash clearing: tolerate poor calibration data, avoid loss of star; Add GA recommendation to re-do calibration when needed
+  * allow spaces in WXWIN path
+  * Add calibration history info to GuideLog header entry
+  * Merge branch 'hholi-480_HFD'
+  * tweaked HFD output to display both pixels and arc-seconds
+  * Showing FWHM i addition to HFD
+  * Showing FWHM i addition to HFD
+  * Showing FWHM i addition to HFD
+  * Replaced FWHM with HFD and using more of the screen showing the value
+  * Merge remote-tracking branch 'upstream/master' into 480_HFD
+  * First part translated
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Wed, 6 Jan 2016 03:00:05 -0500
+
+phd2 (2.5.0dev7) unstable; urgency=low
+
+  * this time for sure?!
+  * fix OSX build error
+  * fix Linux build error
+  * build updated help zip
+  * bump sub-version to dev7
+  * fix possible phd2 hang when dithering with lock position near edge of frame; also add HFD calculation to star finder
+  * Merge pull request #477 from hholi/master
+  * Add back wxString after code review
+  * Add back translation after code review
+  * Star profile view show FWHM in larger font when the view is higher than half the systems screen
+  * Merge branch 'hholi-master'
+  * add Hallgeir to About dialog
+  * mark strings for translation
+  * Merge branch 'master' of https://github.com/hholi/phd2 into hholi-master
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * fix binning control sometimes missing. Closes #474
+  * Resizable and not to compressed INDI configuration
+  * Help file updates
+  * update ZWO SDK to version V1.11.0.0 2015.10.26
+  * ZWO: display camera number when there are multiple ZWO cameras
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * update translations
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 30 Oct 2015 03:12:09 -0400
+
+phd2 (2.5.0dev6) unstable; urgency=low
+
+  * fix OSX build errors
+  * fix OSX build error
+  * bump sub-version to dev6
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * allow aborting slew in drift align tool. Closes #470
+  * Add guide speed setting to new-profile-wizard
+  * Restore dropped fix to profile_wizard for 125% font scaling
+  * partial fix for geometry check alerts -- do not initialize simulator and SXV cameras with fake initial frame sizes
+  * fix windows build error
+  * Add Simon Taylor to About window
+  * Merge pull request #473 from simonct/sct_sxmaclib_v2
+  * Merge branch 'master' into sct_sxmaclib_v2
+  * Fix dialog boxes to support Windows option of 125% font sizes
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Rework layout of Guiding Assistant; Add exposure range recommendation based on max ra drift
+  * fix project page URL in about dialog
+  * OSX: fix crash with SSAG
+  * Remove commented out Altiar Subframe code, set pixel size, try to be more up-to-date on frames, allow 20% resolution reduction for problem USB systems
+  * Update Altair Camera SDK to latest version - support new camera models and rev2 of existing models
+  * fix debug log messages
+  * do not allow confirmation dialog when close event cannot be vetoed
+  * move log file cleanup from app shutdown to app startup
+  * server api: add method to shutdown phd2
+  * fix linux build error
+  * fix OSX build error
+  * attempt to re-connect camera after capture timeout disconnect. Closes #467
+  * Add SXMacLib files to CMakeLists.txt
+  * Ensure SxMacLib only compiles on Mac builds
+  * calibration step calculator: disable binning choice control when there is only one binning option
+  * Increase calibration backlash clearing time limit to 60 seconds
+  * Remove unused camera attached and removed functions
+  * Add Ultrastar display name, rename CMOS Guider to CoStar
+  * General code tidy
+  * First version of SXMacLib.c
+  * better detection of saturated stars. Closes #466. Closes #451.
+  * drift tool: only auto-select a star if a star is not already selected
+  * fix a debug log message
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Add pier-flip detection in cam_simulator; add "don't show again" option in alert for ASCOM slewing during guiding
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 26 Oct 2015 23:57:55 -0400
+
+phd2 (2.5.0dev5) unstable; urgency=low
+
+  * bump sub-version to dev5
+  * minor cleanup, removes some extraneous float-double conversions and replaces some hard-coded constants with a symbolic name
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * ZWO ASI cameras: updated sdk libraries for Mac and Liunx
+  * cleanup package after upload
+  * Add build date to package name, fix windows package
+  * Fix get latest file
+  * Use a putty saved session instead of pageant
+  * only de-bayer color camera images when binning is 1x1
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * ZWO cameras: remove bayer patern for color cameras
+  * Check upload success
+  * Add Windows upload script
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * ZWO: update Windows SDK libraries, fixes subframe problem for Windows
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Set more debian package informations
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * do not issue warning about PulseGuide failing if the cause was the user stopping guiding. Closes #462
+  * display backlash comp settings in guide log guide section heading
+  * unmark debug log message for translation
+  * updated translation from Thomas
+  * add binning support for INDI cameras
+  * fix bug in dev3 with flipping calibration data; bump subver to dev4
+  * bump sub-version to dev3
+  * fix crash when guiding with AO but no Mount
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Protect against nudges that take the star further away from the target point; Reduce likelihood of fast E/S calib moves running out of tracking box
+  * fix a debug log message; disable SquarePixels if pixels are already square
+  * SX AO: do not issue firmware version warning for version 111
+  * restore camera mode when user cancels build bad-pixel map master frame
+  * add binning support for SX cameras
+  * siwtch to full frames when te Refine Bad-pixel Map window is open
+  * prevent possible crash opening brain dialog
+  * add binning support for SBIG cameras
+  * display camera binning in stats window
+  * Restore label on AO calibration review
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * UI changes for binning; minor clean-up on calib-related structs
+  * add binning support for ASCOM cameras
+  * adjust AO calibration when binning changes
+  * fix problem with calibration adjustment for binning
+  * add binning support for ZWO ASI cameras
+  * add extra check for dark frame compatibility in case of binning change
+  * add insfrastructure for camera binning; allow binning the camera simulator
+  * simplify std::map declarations by using a typedef
+  * rebuild help .zip
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Change help content to reflect new AO presentation in Advanced Dialog
+  * bump version to 2.5.0dev2; update translations and rebuild help files
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * Rewrite of AO handling in AdvDlg; Other code clean-up
+  * Rewrite of AO-related parts of AdvDlg; Baseline commit, all tabs working
+  * fix OSX build error
+  * cam_SXV: check return status from camera api calls
+  * Fix botched merge conflict
+  * Fix conflict in Advanced_dialog.cpp
+  * cleanup some mem leaks
+  * simplify code a little bit by using TheAO() function
+  * remove duplicate function RealMount() in favor of existing function TheScope()
+  * Restore checkbox for auto-scale images; fix memory leaks on CtrlDialogSets
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * updated Japanese translation from Katsuhiro Kojima
+  * fix OSX compile warnings
+  * fix OSX compile warning
+  * updated Japanese translation from Katsuhiro Kojima
+  * Fix forward declaration of enum BRAIN_CTRL_IDS for Linux and OSX. Fix extra qualification BrainCtrlInfo:: on member for Linux and maybe OSX.
+  * Merge branch 'Brain_Dlg'
+  * AD UI clean-up; Help file updates for new AD UI
+  * Minor clean-up, comments
+  * Minor control re-order on guiding tab
+  * Merge pull request #457 from knro/master
+  * INDI main library is obsolete
+  * remove unused #define
+  * gear dialog: fix problem with 'More Equipment' button not showing; change button color to grean when gear is connected
+  * fix OSX build error
+  * update SX camera lib SXUSB.dll to remote dependency on VC++2008 runtime
+  * Finish non-UI parts of UseDecCompensation
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * fix event server get_profiles method
+  * fix problem with commas as decimal separators in log files on OSX (Close Issue 453)
+  * workaround build error on OSX
+  * Add control for enable/disable of declination compensation on RA guide rate
+  * attempt fix Linux build error
+  * Remove modal dialogs from nearly all camera connect methods. There is now a separate button in the connect equipment window to allow camera selection. Connect All no longer requires manual intervention from the user. Also, fix the issue with the ASCOM camera retaining an ASCOM driver reference. Also,  SXV now uses internal timer for exposure durations less than 1.0 sec.
+  * release reference on ASCOM mount driver when disconnecting; also, do not set Disconnected property to falseo since that will disconnect the mount from other ascom clients, like the planetarium app
+  * More source clean-up
+  * Fix typos
+  * More clean-up, sanity check of control layout
+  * Change BrainCtrl_IDs with AD_ prefix
+  * Source clean-up; Preload option for UI elements
+  * Starting source clean-up phase
+  * update ZWO libs for Linux and Mac to V0.1.0803 from Sam
+  * Devices Pane now working w/ AO and rotator; more clean-up; ready for hard testing
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * fix broken AO simulator
+  * put stepguider source file into the correct category
+  * AO working; Poly-M restored for GetConfigDialogCtr...;much clean-up, good snapshot
+  * Fix Focal length, Pixel-size handling in advanced dialog
+  * Merge branch 'Brain_Dlg' of //HOME-DESKTOP/bwdev/OpenPHD2_GH/phd2 into Brain_Dlg
+  * Clean-up of Load/Unload in AdvDialog; Removal of big comment blocks elsewhere; AO/Rotator broken
+  * Centralized retrieval of mapped controls; removal of large comment blocks; good snapshot
+  * Mapped control retrieval centralized in ConfigDialog; remove large
+  * Optimized handling of modify camera or mount w.r.t. RebuildPanels. Many bug fixes
+  * Update of Altair Camera dlls to support final production cameras, along with bug fixes
+  * All major panels working, minus extra devices
+  * Add the Visual Leak Detector include/lib path to the config in CMakeLists.txt, so that the generated Visual Studio sln/vcxproj builds without further modification
+  * Merge pull request #448 from rwg0/altiar
+  * Non-stupid layout in Guiding tab; basic source clean-up, tabs working
+  * Mount panel basically working; also fixed bug in baseline when dec algo is changed, then dlg is cancelled.
+  * Restore correct inheritance behavior for GuiderConfigDialogPane
+  * Fix Guider/GuiderOneStar ConfigCtrlDialogSet code to correctly handle inheritane
+  * Guide tab working w/ Guider and GuiderOneStar
+  * Add support for Altair Astro guiding/planetary cameras for Windows build
+  * fix issue where guiding asst could inadertently disable guide output. Closes #447
+  * Global/camera tabs with reasonable layouts - all working ok.
+  * Global and camera tabs working w/ trivial layout
+  * Merge branch 'master' of github.com:OpenPHDGuiding/phd2
+  * update ZWO camera libs to V1.10 (Win) / V0.1.0723 (Linux & Mac)
+  * Barely working global/camera tabs
+  * Up on blocks commit
+  * Merge branch 'fix/xcode_locale_files_copy'
+  * Zip and DragNDrop installer creating a DMG file
+  * Fixing the broken framework support within bundles of cmake for Makefile generator
+  * Adding the locales to the final bundle
+  *  use ZIP on OSX for now. cpack Bundles can be used later
+  * - This script is in use by the Linux and OSX buildslaves to upload the package to openphdguiding.org
+  * - use cpack to create packages. tested on linux and mac. wip.
+  * Baseline commit for brain dialog changes
+  * event server: get_star_image method: client can specify size
+  * updated RO translation from sabin
+  * updated zh_TW translation from Thomas
+  * Limit backlash clearing steps in calibration
+  * make windows installer work with new cmake directory scheme
+  * update translations
+  * bump rev to 2.5.0-dev1
+  * rebuild help zip with latest update from Bruce
+  * Add mixing screenshot to help updates.
+  * build help .zip with Bruce's latest changes
+  * Add missing .hhc file to earlier help file updates.
+  * fix problem with SX CMOS camera reporting incompatible dark library. Closes #444
+  * Merge branch 'master' of https://github.com/OpenPHDGuiding/phd2
+  * 2.5.x updates to help files covering backlash compensation, new dark lib construction, and better coverage of alert messages; minor adjustments to associated UI's
+  * add some infrastructure for guide algos to move the mount when star is lost. Fixes #438
+  * minor cleanup: pass point by reference
+  * update drift tool message text - fixes issue #442
+  * update obsolete readme file
+  * fix OSX build warning
+  * fix OSX build error
+  * merge from andy branch: Dec backlash measurement and adaptive compensation
+  * minor cleanup
+  * Expand darks dialog to support either updates or build-from-scratch options; Extend dark lib compatibility checks to be sure all frames in a dark lib have the same format.
+  * Make it work on Raspberry Pi 2. Add ZWO ARM driver from ASI SDK V0.1.320 (untested)
+  * Add debug output in geometry checks for dark libraries and BPM files
+  * event server: added a method to get the star image pixels (Fixes Issue 436)
+  * fix min search region to match updated Star::Find
+  * small cleanups left over from new build system merge
+  * "Gaussian Process" guide algorithm selections should not be visible
+  * Update help subsystem for 2.5
+  * Merged revision(s) 1739-1740 from branches/fix_cmake_win32:
+  * updated graphics from Dylan
+  * Windows build: copy cfitsio.dll to phd2 executable directory to allow running phd2 from the Visual Studio debugger when cfitsio.dll is not on PATH
+  * send wrong file in previous commit :(
+  * Suppress cfitsio compilation warning on Linux. Selectively add option -Wno-unused-result to cfitsio CMakeLists.txt
+  * fix icon install on Linux
+  * move obsolete OSX and Win project files to obsolete directory. these can be deleted later
+  * merge ^/branches/new_build_system  builds are now managed through CMake :)
+  * fix max aggression value for hysteresis algo
+  * Show actual exposure time in status bar when auto-exposure is set; Closes user request 397
+  * Fix LP/HP filter behavior in GuidingAssistant; constrain GA recommendations for min-moves; larger PE/backlash limits in simulator
+  * Fix install of the (very nice) new icon on Linux.
+  * updated fr_FR translation from Michel (Fixes Issue 434)
+  * refined SNR calculation to give similar result whether or not darks are in use [Fixes Issue 418]
+  * update OSX icon
+  * new button images from Dylan
+  * monr tweak to camera timeout alert message
+  * remove unwanted debug statements
+  * add a "Don't show again" button for the AO slow bump warning
+  * Support non-square pixel
+  * updated German translation from Carsten
+  * fix problem with subframes with Atik cameras reported by Chris R   apparently the cameras require subframe width and height values to be even
+  * Fix compilation for INDI r2248.
+  * Improve guider alert message when max_duration is pegged but is still too small to track guide star
+  * fix max ra/dec duration limits
+  * Add alert message when ASCOM PulseGuide command fails
+  * Increase default value of camera timeout to 15sec; improve alert message
+  * update Romanian translation from Sabin
+  * Correctly handle a disconnection from the INDI device
+  * fix problem with AO calibration incorrectly being updated when Rotator angle changes.
+  * updated Romanian translation from Sabin
+  * remove some obsolete debug code; whitespace cleanup
+  * whitespace fix
+  * new Romanian translation from Sabin Fota
+  * Fix INDI properties without label.
+  * Remove redundant 'log active' string in title bar
+  * Make logging mandatory; remove UI controls for disabling guide and debug logs.
+  * Enforce automatic retention period for log files.  Guide logs are kept for 60 days, debug logs for 30 days.  Files older than this are removed.
+  * Add subframe option to INDI driver
+  * Fix Indi gui delete property and window resize.
+  * Allow to set any INDI option from "Connect Equipment", "Camera/Telescope setup".
+  * Bug fix by Chris Johnson:    wrong text format.    do not clear input field.
+  * updated Spanish translation from Javier
+  * Handle different axis guide speed settings in calibration sanity check
+  * updated Spanish translation from Javier
+  * updated Spanish translation from Javier
+  * Fix compilation with INDI 1.1.0 r2194
+  * update translation templates
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 21 Sep 2015 19:42:02 -0400
+
+phd2 (2.5.0) stable; urgency=low
+
+  * Initial tagging
+
+ -- andy.galasso <andy.galasso@gmail.com>  Sat, 11 Apr 2015 20:03:33 +0000
+
