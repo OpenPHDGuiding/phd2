@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-23 00:09+0100\n"
+"POT-Creation-Date: 2021-09-20 03:50+0100\n"
 "PO-Revision-Date: 2021-02-19 13:44+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1153,12 +1153,12 @@ msgstr "Propietats de la càmera de Moràvia"
 msgid "Camera Mode"
 msgstr "Mode de càmera"
 
-#: cam_moravian.cpp:425 cam_svb.cpp:132 cam_svb.cpp:340 cam_svb.cpp:341
+#: cam_moravian.cpp:425 cam_svb.cpp:132 cam_svb.cpp:354 cam_svb.cpp:355
 #: cam_touptek.cpp:891 cam_zwo.cpp:155
 msgid "8-bit"
 msgstr "8-bit"
 
-#: cam_moravian.cpp:428 cam_svb.cpp:133 cam_svb.cpp:340 cam_svb.cpp:341
+#: cam_moravian.cpp:428 cam_svb.cpp:133 cam_svb.cpp:354 cam_svb.cpp:355
 #: cam_touptek.cpp:892 cam_zwo.cpp:156
 msgid "16-bit"
 msgstr "16-bit"
@@ -1449,28 +1449,28 @@ msgstr "Propietats de la càmera Svbony"
 msgid "No Svbony cameras detected."
 msgstr "No s'ha detectat cap càmera Svbony."
 
-#: cam_svb.cpp:289
+#: cam_svb.cpp:300
 msgid "Failed to get camera info for Svbony camera."
 msgstr "No s'ha pogut obtenir la informació de la càmera Svbony."
 
-#: cam_svb.cpp:297
+#: cam_svb.cpp:308
 msgid "Failed to open Svbony camera."
 msgstr "No s'ha pogut obrir la càmera Svbony."
 
-#: cam_svb.cpp:305 cam_svb.cpp:429
+#: cam_svb.cpp:316 cam_svb.cpp:443
 msgid "Failed to get camera properties for Svbony camera."
 msgstr "No s'han pogut obtenir les propietats de la càmera Svbony."
 
-#: cam_svb.cpp:339
+#: cam_svb.cpp:353
 #, c-format
 msgid "The camera does not support %s mode, try selecting %s mode"
 msgstr "La càmera no admet el mode %s, proveu de seleccionar el mode %s"
 
-#: cam_svb.cpp:379
+#: cam_svb.cpp:393
 msgid "Unable to initialize camera."
 msgstr "No es pot inicialitzar la càmera."
 
-#: cam_svb.cpp:753 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "S'ha perdut la connexió amb la càmera"
