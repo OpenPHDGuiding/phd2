@@ -156,6 +156,13 @@ typedef struct SVB_CAMERA_PROPERTY
 	SVB_BOOL IsTriggerCam;
 }SVB_CAMERA_PROPERTY;
 
+typedef struct SVB_CAMERA_PROPERTY_EX
+{
+	SVB_BOOL bSupportPulseGuide;
+	SVB_BOOL bSupportControlTemp;
+	int Unused[64];
+}SVB_CAMERA_PROPERTY_EX;
+
 #define SVB_BRIGHTNESS SVB_OFFSET
 #define SVB_AUTO_MAX_BRIGHTNESS SVB_AUTO_TARGET_BRIGHTNESS
 
@@ -175,6 +182,10 @@ typedef enum SVB_CONTROL_TYPE{ //Control type//
 
 	SVB_AUTO_TARGET_BRIGHTNESS,
 	SVB_BLACK_LEVEL, //black level offset
+	SVB_COOLER_ENABLE,  //0:disable, 1:enable
+	SVB_TARGET_TEMPERATURE,  //unit is 0.1C
+	SVB_CURRENT_TEMPERATURE, //unit is 0.1C
+	SVB_COOLER_POWER,  //range: 0-100
 }SVB_CONTROL_TYPE;
 
 typedef struct _SVB_CONTROL_CAPS
@@ -277,6 +288,22 @@ SVB_ERROR_INVALID_INDEX  :no camera connected or index value out of boundary
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE SVBGetCameraProperty(int iCameraID, SVB_CAMERA_PROPERTY *pCameraProperty);
 
+/***************************************************************************
+Descriptions:
+get the property of the connected cameras
+here is the sample code:
+
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraProperty
+SVB_CAMERA_PROPERTY_EX *pCameraPorpertyEx: Pointer to structure containing the property of camera
+user need to malloc the buffer
+
+return:
+SVB_SUCCESS: Operation is successful
+SVB_ERROR_INVALID_INDEX  :no camera connected or index value out of boundary
+
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBGetCameraPropertyEx(int iCameraID, SVB_CAMERA_PROPERTY_EX *pCameraPorpertyEx);
 
 /***************************************************************************
 Descriptions:
