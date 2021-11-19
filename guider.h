@@ -64,7 +64,7 @@ enum EXPOSED_STATE
     EXPOSED_STATE_LOOPING,
 };
 
-enum DEC_GUDING_ALGORITHM
+enum DEC_GUIDING_ALGORITHM
 {
     DEC_LOWPASS = 0,
     DEC_RESISTSWITCH,
@@ -267,6 +267,8 @@ public:
     void EnableMeasurementMode(bool enabled);
     void SetMinStarHFD(double val);
     double GetMinStarHFD() const;
+    double GetMinStarHfdFloor() const;
+    double GetMinStarHfdDefault() const;
     void SetMinStarSNR(double val);
     double getMinStarSNR() const;
     void SetAutoSelDownsample(unsigned int val);
@@ -406,6 +408,15 @@ inline bool Guider::GetBookmarksShown() const
 inline double Guider::GetMinStarHFD() const
 {
     return m_minStarHFD;
+}
+
+inline double Guider::GetMinStarHfdFloor() const
+{
+    return 1.0;
+}
+inline double Guider::GetMinStarHfdDefault() const
+{
+    return 1.5;
 }
 
 inline double Guider::getMinStarSNR() const

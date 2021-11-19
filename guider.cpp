@@ -209,7 +209,9 @@ void Guider::LoadProfileSettings()
     bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
     SetScaleImage(scaleImage);
 
-    double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", 0.);
+    double minHFD = pConfig->Profile.GetDouble("/guider/StarMinHFD", GetMinStarHfdDefault());
+    if (minHFD < GetMinStarHfdFloor())
+        minHFD = GetMinStarHfdDefault();
     SetMinStarHFD(minHFD);
 
     double minSNR = pConfig->Profile.GetDouble("/guider/StarMinSNR", 6.0);
