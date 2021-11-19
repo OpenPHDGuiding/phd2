@@ -1690,7 +1690,7 @@ static void SetControlStates(SimCamDialog *dlg, bool captureActive)
     dlg->pPECustomPeriod->Enable(enable);
     dlg->pPECustomRb->Enable(enable);
     dlg->pUsePECbx->Enable(enable);
-    dlg->pUseStiction->Enable(false);                           // no good for end-users
+    dlg->pUseStiction->Show(false);                          // no good for end-users
     dlg->pPierFlip->Enable(enable);
     dlg->pReverseDecPulseCbx->Enable(enable);
     dlg->pResetBtn->Enable(enable);

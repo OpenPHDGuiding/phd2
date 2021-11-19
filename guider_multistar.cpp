@@ -1375,7 +1375,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
 
     width = StringWidth(_T("100.0"));
     m_pMassChangeThreshold = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
+        wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
     wxSizer *pTolerance = MakeLabeledControl(AD_szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
         _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
@@ -1404,9 +1404,9 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
-    m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), wxID_ANY, _("Use multiple stars"));
+    m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), MULTI_STAR_ENABLE, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
-    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, wxID_ANY);
+    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, MULTI_STAR_ENABLE);
     width = StringWidth(_T("100.0"));
 
     m_MinSNR = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,

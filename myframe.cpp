@@ -3081,7 +3081,7 @@ MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, Advanced
     m_ditherScaleFactor = pFrame->MakeSpinCtrlDouble(parent, wxID_ANY, _T(" "), wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0);
     m_ditherScaleFactor->SetDigits(1);
-    m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
+    m_ditherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.1-100.0)"));
 
     sz = new wxBoxSizer(wxHORIZONTAL);
     sz->Add(m_ditherRaOnly, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 8));

@@ -262,7 +262,7 @@ void PierFlipCalToolWin::SetState(State state)
             Scope::PierSideStrTr(pPointingSource->SideOfPier())));
         break;
     case ST_SLEW_2:
-        s = wxString::Format(_("Flip to the other side of the pier, so the telescope is on the %s side of the pier."),
+        s = wxString::Format(_("Slew the telescope to force a meridian flip - the scope should move to the %s side of the pier, still pointing near Dec = 0."),
             Scope::PierSideStrTr(m_firstCal.pierSide == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST)) +
             _T("\n\n") +
             _("Point the telescope in the direction of the intersection of the meridian and the celestial "
