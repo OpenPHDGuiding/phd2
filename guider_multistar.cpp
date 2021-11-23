@@ -1444,10 +1444,7 @@ void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->Enable(starMassEnabled);
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderMultiStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderMultiStar->GetSearchRegion());
-    double minHFD = m_pGuiderMultiStar->GetMinStarHFD();
-    if (minHFD < 1.0)
-        minHFD = 1.5;
-    m_MinHFD->SetValue(minHFD);
+    m_MinHFD->SetValue(m_pGuiderMultiStar->GetMinStarHFD());
     m_MinSNR->SetValue(m_pGuiderMultiStar->getMinStarSNR());
     m_autoSelDownsample->SetSelection(m_pGuiderMultiStar->GetAutoSelDownsample());
     m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
