@@ -55,6 +55,16 @@ for v in WWW_{HOST,DIR} MAC_{HOST,DIR}{32,64}; do
     }
 done
 
+# make sure hosts are reachable
+for h in $WWW_HOST $MAC_HOST32 $MAC_HOST64; do
+    printf "checking $h ..."
+    ssh -q -oBatchMode=yes $h exit || {
+        echo "Error: host $h is not ssh-accessible" >&2
+        exit 1
+    }
+    printf " ok\n"
+done
+
 # convert changelog path to an absolute path
 case $changelog in
     /*) ;;

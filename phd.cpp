@@ -560,6 +560,14 @@ bool PhdApp::OnInit()
     if (s_configOp == CONFIG_OP_LOAD)
     {
         bool err = pConfig->RestoreAll(s_configPath);
+
+        // the config is ordinarily flushed to disk when we exit
+        // gracefully and the pConfig object is destroyed, but the
+        // following call to exit() bypasses ordinary cleanup and we
+        // need to explicitly flush the config to disk before exiting
+        if (!err)
+            err = !pConfig->Flush();
+
         ::exit(err ? 1 : 0);
         return false;
     }
