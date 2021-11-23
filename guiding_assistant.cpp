@@ -672,7 +672,7 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
     switch (eState)
     {
     case STATE_NO_STAR:
-        instr = _("Choose a non-saturated star with a good SNR (>= 8) and begin guiding");
+        instr = _("Choose a non-saturated star with a good SNR (>= 10) and begin guiding");
         break;
     case STATE_START_READY:
         if (!m_measurementsTaken)
@@ -1126,6 +1126,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
     double tStart = val.DeltaTime;
     double multiplier_ra = 0.65;                                    // 65% of Dec recommendation, empirical value
     double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
+    double minMoveFloor = 0.1;
 
     try
     {
@@ -1194,22 +1195,25 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
             }
         }
         if (origMultistarMode)
+        {
             bestEstimate *= 0.9;
-        // round up to next multiple of .05, but do not go below 0.05 pixel
+            minMoveFloor = 0.05;
+        }
+        // round up to next multiple of .05, but do not go below 0.05 pixel for multi-star, 0.1 for single-star
         double const unit = 0.05;
         double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.05);
         // Now apply a sanity check - there are still numerous things that could have gone wrong during the GA
         if (pxscale * roundUpEst <= 1.25)           // Min-move below 1.25 arc-sec is credible
         {
             RecDec = roundUpEst;
-            RecRA = wxMax(0.1, RecDec * multiplier_ra);
+            RecRA = wxMax(minMoveFloor, RecDec * multiplier_ra);
             Debug.Write(wxString::Format("GA Min-Move recommendations are seeing-based: Dec=%0.3f, RA=%0.3f\n", RecDec, RecRA));
         }
         else
         {
             // Just reiterate the estimates made in the new-profile-wiz
             RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
-            RecRA = wxMax(0.1, RecDec * multiplier_ra);
+            RecRA = wxMax(minMoveFloor, RecDec * multiplier_ra);
             Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, Dec-HPF-Sigma=%0.3f\n", roundUpEst, m_hpfDecStats.GetSigma()));
             Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
         }
@@ -1348,7 +1352,7 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
     // SNR
-    if ((sumSNR / (double)m_lpfRAStats.GetCount()) < 5.0)
+    if ((sumSNR / (double)m_lpfRAStats.GetCount()) < 10.0)
     {
         wxString msg(_("Consider using a brighter star for the test or increasing the exposure time"));
         allRecommendations += "Star:" + msg + "\n";
