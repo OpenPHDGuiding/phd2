@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-20 03:50+0100\n"
+"POT-Creation-Date: 2021-11-29 04:32+0000\n"
 "PO-Revision-Date: 2021-11-17 12:52-0300\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team: <LL@li.org>\n"
@@ -222,12 +222,12 @@ msgstr "Ideal"
 msgid "Measured"
 msgstr "Medido"
 
-#: backlash_comp.cpp:684 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:190
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1449 polardrift_toolwin.cpp:190
 #: scope.cpp:259 staticpa_toolwin.cpp:349 testguide.cpp:152
 msgid "North"
 msgstr "Norte"
 
-#: backlash_comp.cpp:685 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:191
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1449 polardrift_toolwin.cpp:191
 #: scope.cpp:260 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "South"
 msgstr "Sur"
@@ -356,8 +356,8 @@ msgstr "Error de Ortogonalidad:"
 msgid "a-s/sec"
 msgstr "a-s/seg"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1793
-#: guiding_assistant.cpp:1878
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1797
+#: guiding_assistant.cpp:1882
 msgid "px/sec"
 msgstr "px/seg"
 
@@ -463,7 +463,7 @@ msgstr "Velocidad de Guiado Dec:"
 msgid "Rotator position:"
 msgstr "Posición del rotador:"
 
-#: calreview_dialog.cpp:532 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:532 nudge_lock.cpp:180 nudge_lock.cpp:191
 msgid "Restore"
 msgstr "Recuperar"
 
@@ -784,8 +784,8 @@ msgstr "Fallo al abrir cámara Altair."
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Fallo al adquirir resolución de cámara Altair."
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:801
-#: cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
+#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1086,8 +1086,8 @@ msgstr "Error configurando la ganancia"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
-#: stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "Error"
 
@@ -1614,13 +1614,13 @@ msgstr "Seleccionar el perfil con biblioteca de Darks que quiere usar:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354 profile_wizard.cpp:355
-#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
-#: profile_wizard.cpp:752 profile_wizard.cpp:908 profile_wizard.cpp:923
-#: profile_wizard.cpp:954 profile_wizard.cpp:959 profile_wizard.cpp:984
-#: profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84 scope.cpp:329
-#: scope.cpp:371 scope.cpp:414 statswindow.cpp:262 stepguider.cpp:105
-#: stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
+#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
+#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
+#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
+#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
+#: stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "Ninguno"
 
@@ -1945,7 +1945,8 @@ msgid "Tracking rate axes"
 msgstr "Ejes de tasa de seguimiento"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:547
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Iniciar"
 
@@ -2355,7 +2356,7 @@ msgstr "Desplazar"
 msgid "Click to slew to given coordinates."
 msgstr "Hacer click para desplazarse a las coordenadas dadas."
 
-#: drift_tool.cpp:208 nudge_lock.cpp:180 nudge_lock.cpp:189
+#: drift_tool.cpp:208 nudge_lock.cpp:179 nudge_lock.cpp:188
 msgid "Save"
 msgstr "Guardar"
 
@@ -3523,8 +3524,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "¿Qué porcentaje de corrección de guiado reactivo debe ser aplicado? Default "
 "= %.f%%, ajustar si la respuesta tarda demasiado o es muy lenta"
@@ -3656,11 +3657,11 @@ msgstr "Agresividad"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
-"¿Que porcentaje de las correcciones calculadas se deben aplicar? Defecto = "
-"%.f%%, ajustar si responde muy rápido o muy despacio"
+"¿Que porcentaje de las correcciones calculadas se deben aplicar? Defecto = %."
+"f%%, ajustar si responde muy rápido o muy despacio"
 
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:334
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass.cpp:298
@@ -3682,11 +3683,11 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
-"¿Que porcentaje de la corrección calculada se debe aplicar?? Defecto = %.f"
-"%%, ajustar si responde muy rápido o muy despacio"
+"¿Que porcentaje de la corrección calculada se debe aplicar?? Defecto = %.f%"
+"%, ajustar si responde muy rápido o muy despacio"
 
 #: guide_algorithm_hysteresis.cpp:319
 msgid "Agr"
@@ -3764,7 +3765,7 @@ msgstr ""
 "%f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1398 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1399 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "Auto"
 
@@ -3774,8 +3775,8 @@ msgid ""
 "What percentage of the predictive correction should be applied? Default = %.f"
 "%%"
 msgstr ""
-"¿Que porcentaje de predicción de corrección se debería aplicar? Defecto = %f"
-"%%"
+"¿Que porcentaje de predicción de corrección se debería aplicar? Defecto = %f%"
+"%"
 
 #: guide_algorithm_pdrift.cpp:725
 #, c-format
@@ -3840,105 +3841,105 @@ msgstr ""
 msgid "XFac"
 msgstr "XFac"
 
-#: guider.cpp:561
+#: guider.cpp:568
 msgid "E"
 msgstr "E"
 
-#: guider.cpp:582
+#: guider.cpp:589
 msgid "N"
 msgstr "N"
 
-#: guider.cpp:700
+#: guider.cpp:707
 msgid "PAUSED"
 msgstr "PAUSADO"
 
-#: guider.cpp:705
+#: guider.cpp:712
 msgid "Guide output DISABLED"
 msgstr "Salida de guiado DESCONECTADA"
 
-#: guider.cpp:1140
+#: guider.cpp:1147
 msgid "Calibration manually stopped"
 msgstr "Calibración parada manualmente"
 
-#: guider.cpp:1194
+#: guider.cpp:1201
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr ""
 "¿Desea restaurar automáticamente esta calibración cuando el perfil sea usado?"
 
-#: guider.cpp:1268
+#: guider.cpp:1275
 msgid "Stopped Guiding"
 msgstr "Guiado Parado"
 
-#: guider.cpp:1280
+#: guider.cpp:1287
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "La posición de bloqueo está desplazada fuera del área permitida. Posición de "
 "bloqueo de desplazamiento deshabilitada."
 
-#: guider.cpp:1316
+#: guider.cpp:1323
 msgid "star lost"
 msgstr "estrella perdida"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "Paused"
 msgstr "Pausado"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "/full"
 msgstr "/full"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "/looping"
 msgstr "/looping"
 
-#: guider.cpp:1386
+#: guider.cpp:1393
 msgid "Static PA rotation failed"
 msgstr "Rotación estática PA fallida"
 
-#: guider.cpp:1392
+#: guider.cpp:1399
 msgid "Polar Drift PA drift failed"
 msgstr "Deriva Polar PA fallida"
 
-#: guider.cpp:1402
+#: guider.cpp:1409
 msgid "AO calibration failed"
 msgstr "Calibración Óptica Activa fallida"
 
-#: guider.cpp:1402 guider.cpp:1435
+#: guider.cpp:1409 guider.cpp:1442
 msgid "calibration failed"
 msgstr "calibración fallida"
 
-#: guider.cpp:1669
+#: guider.cpp:1676
 msgid "Guider Settings"
 msgstr "Configuración de Guiado"
 
-#: guider.cpp:1678
+#: guider.cpp:1685
 msgid "Guide star tracking"
 msgstr "Seguimiento de estrella guía"
 
-#: guider.cpp:1679 log_uploader.cpp:700
+#: guider.cpp:1686 log_uploader.cpp:700
 msgid "Calibration"
 msgstr "Calibración"
 
-#: guider.cpp:1680
+#: guider.cpp:1687
 msgid "Shared Parameters"
 msgstr "Parámetros compartidos"
 
-#: guider.cpp:1724
+#: guider.cpp:1731
 msgid "Always scale images"
 msgstr "Escalar siempre las imágenes"
 
-#: guider.cpp:1725
+#: guider.cpp:1732
 msgid "Always scale images to fill window"
 msgstr "Siempre escalar las imágenes ocupando la ventana"
 
-#: guider.cpp:1727
+#: guider.cpp:1734
 msgid "Fast recenter after calibration or dither"
 msgstr "Recentrar rápidamente después de la calibración o dither"
 
-#: guider.cpp:1728
+#: guider.cpp:1735
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -3948,7 +3949,7 @@ msgstr ""
 "devolver la estrella a la posición central. Quitar el check para usar el "
 "antiguo método, más lento, de recentrado tras la calibración o dither."
 
-#: guider.cpp:1841
+#: guider.cpp:1848
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "¿Está seguro de querer borrar todos los Marcadores?"
 
@@ -4065,11 +4066,11 @@ msgstr ""
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1392
+#: guider_multistar.cpp:1393
 msgid "Minimum star HFD (pixels)"
 msgstr "Mínimo HFD para la estrella (pixels)"
 
-#: guider_multistar.cpp:1393
+#: guider_multistar.cpp:1394
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -4084,11 +4085,11 @@ msgstr ""
 "poco superior. Cuando el HFD caiga por debajo de ese valor, el hot pixel "
 "será ignorado."
 
-#: guider_multistar.cpp:1400
+#: guider_multistar.cpp:1401
 msgid "Auto-selection frame downsample"
 msgstr "Autoseleccionar cuadro para submuestreo"
 
-#: guider_multistar.cpp:1401
+#: guider_multistar.cpp:1402
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -4098,27 +4099,27 @@ msgstr ""
 "Elija un valor mayor a 1 si la autoselección no está pudiendo reconocer "
 "estrellas guía deformadas."
 
-#: guider_multistar.cpp:1404
+#: guider_multistar.cpp:1405
 msgid "Beep on lost star"
 msgstr "Bip al perder estrella"
 
-#: guider_multistar.cpp:1405
+#: guider_multistar.cpp:1406
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "Emitir alarma auditiva al perder la estrella guía"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1408
 msgid "Use multiple stars"
 msgstr "Usar múltiples estrellas"
 
-#: guider_multistar.cpp:1408
+#: guider_multistar.cpp:1409
 msgid "Use multiple guide stars if they are available"
 msgstr "Usar múltiples estrellas si están disponibles"
 
-#: guider_multistar.cpp:1415
+#: guider_multistar.cpp:1416
 msgid "Minimum star SNR for AutoFind"
 msgstr "SNR mínimo para Autoencontrar estrella"
 
-#: guider_multistar.cpp:1416
+#: guider_multistar.cpp:1417
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -4380,9 +4381,8 @@ msgstr ""
 "ser mucho mayor."
 
 #: guiding_assistant.cpp:675
-msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
+msgid "Choose a non-saturated star with a good SNR (>= 10) and begin guiding"
 msgstr ""
-"Elija una estrella no saturada con buen valor SNR (>= 8) y empiece a guiar"
 
 #: guiding_assistant.cpp:679
 msgid ""
@@ -4416,13 +4416,13 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "Midiendo backlash: "
 
-#: guiding_assistant.cpp:736 guiding_assistant.cpp:1788
-#: guiding_assistant.cpp:1873
+#: guiding_assistant.cpp:736 guiding_assistant.cpp:1792
+#: guiding_assistant.cpp:1877
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:737 guiding_assistant.cpp:1790
-#: guiding_assistant.cpp:1875
+#: guiding_assistant.cpp:737 guiding_assistant.cpp:1794
+#: guiding_assistant.cpp:1879
 msgid "arc-sec"
 msgstr "arc-seg"
 
@@ -4434,46 +4434,46 @@ msgstr "ms (testeo defectuoso)"
 msgid "Apply"
 msgstr "Aplicar"
 
-#: guiding_assistant.cpp:1285 guiding_assistant.cpp:1924 myframe.cpp:3031
+#: guiding_assistant.cpp:1289 guiding_assistant.cpp:1928 myframe.cpp:3031
 #: myframe.cpp:3041
 msgid " "
 msgstr " "
 
-#: guiding_assistant.cpp:1286 guiding_assistant.cpp:1787
-#: guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:1290 guiding_assistant.cpp:1791
+#: guiding_assistant.cpp:1876
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1324
+#: guiding_assistant.cpp:1328
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr ""
 "Intente mantener los tiempos de exposición en los rangos de %.1fs to %.1fs"
 
-#: guiding_assistant.cpp:1331
+#: guiding_assistant.cpp:1335
 msgid "Try binning your guide camera"
 msgstr "Intente binning para su cámara guía"
 
-#: guiding_assistant.cpp:1339
+#: guiding_assistant.cpp:1343
 msgid "Consider re-doing your calibration "
 msgstr "Considere rehacer su calibración "
 
-#: guiding_assistant.cpp:1341
+#: guiding_assistant.cpp:1345
 msgid "(Prior alert)"
 msgstr "(Alerta previa)"
 
-#: guiding_assistant.cpp:1343
+#: guiding_assistant.cpp:1347
 msgid "(Backlash clearing)"
 msgstr "(Limpiando backlash)"
 
-#: guiding_assistant.cpp:1353
+#: guiding_assistant.cpp:1357
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr ""
 "Considere usar una estrella más brillante para el test o incremente el "
 "tiempo de exposición"
 
-#: guiding_assistant.cpp:1369 guiding_assistant.cpp:1375
+#: guiding_assistant.cpp:1373 guiding_assistant.cpp:1379
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
@@ -4481,34 +4481,34 @@ msgstr ""
 "Error de alineado polar > 10 arc-min; intente usar la herramienta de "
 "Alineado por Deriva para mejorar la alineación."
 
-#: guiding_assistant.cpp:1374
+#: guiding_assistant.cpp:1378
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "Error de alineado polar > 5 arc-min; probablemente se pueda mejorar."
 
-#: guiding_assistant.cpp:1391
+#: guiding_assistant.cpp:1395
 msgid "Consider trying to improve focus on the guide camera"
 msgstr "Considere intentar mejorar el foco de la cámara guía"
 
-#: guiding_assistant.cpp:1402
+#: guiding_assistant.cpp:1406
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "Pruebe a configurar el mínimo movimiento de RA  a %0.2f"
 
-#: guiding_assistant.cpp:1413
+#: guiding_assistant.cpp:1417
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "Pruebe a configurar el mínimo movimiento de Dec  a %0.2f"
 
-#: guiding_assistant.cpp:1437
+#: guiding_assistant.cpp:1441
 msgid "Backlash is small, no compensation needed"
 msgstr "El Backlash es pequeño, no se necesita compensación"
 
-#: guiding_assistant.cpp:1441
+#: guiding_assistant.cpp:1445
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "Intente comenzar con una compensación de backlash para Dec de %d ms"
 
-#: guiding_assistant.cpp:1444
+#: guiding_assistant.cpp:1448
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
@@ -4517,44 +4517,44 @@ msgstr ""
 "Backlash es >= %d ms; puede necesitar guiar sólo en una dirección Dec "
 "(actualmente %s)"
 
-#: guiding_assistant.cpp:1462
+#: guiding_assistant.cpp:1466
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "Intente utilizar Pasabajos2 para el guiado Dec"
 
-#: guiding_assistant.cpp:1578
+#: guiding_assistant.cpp:1582
 msgid "Measuring..."
 msgstr "Midiendo..."
 
-#: guiding_assistant.cpp:1673
+#: guiding_assistant.cpp:1677
 msgid "Backlash test aborted, see graph..."
 msgstr "Testeo de Backlash abortado, ver gráfico..."
 
-#: guiding_assistant.cpp:1715 guiding_assistant.cpp:1721
+#: guiding_assistant.cpp:1719 guiding_assistant.cpp:1725
 msgid "Measuring backlash... "
 msgstr "Midiendo backlash... "
 
-#: guiding_assistant.cpp:1745
+#: guiding_assistant.cpp:1749
 msgid "Guiding stopped"
 msgstr "Guiado Parado"
 
-#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874 statswindow.cpp:279
+#: guiding_assistant.cpp:1793 guiding_assistant.cpp:1878 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1791 guiding_assistant.cpp:1876 statswindow.cpp:270
+#: guiding_assistant.cpp:1795 guiding_assistant.cpp:1880 statswindow.cpp:270
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1792 guiding_assistant.cpp:1877
+#: guiding_assistant.cpp:1796 guiding_assistant.cpp:1881
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1794 guiding_assistant.cpp:1879
+#: guiding_assistant.cpp:1798 guiding_assistant.cpp:1883
 msgid "arc-sec/min"
 msgstr "arc-segs/min"
 
-#: guiding_assistant.cpp:1795 guiding_assistant.cpp:1880
+#: guiding_assistant.cpp:1799 guiding_assistant.cpp:1884
 msgid "arc-sec/sec"
 msgstr "arc-segs/seg"
 
@@ -4591,7 +4591,7 @@ msgstr ""
 "El mapa de píxeles erróneos no coincide con la cámara de este perfil - Es "
 "necesario reemplazarlo."
 
-#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:178 nudge_lock.cpp:185
 msgid "Set"
 msgstr "Configurar"
 
@@ -5173,7 +5173,7 @@ msgstr "Habilitar Servidor"
 msgid "Enable PHD2 server capability"
 msgstr "Habilitar el servidor de PHD2"
 
-#: myframe.cpp:528 nudge_lock.cpp:159
+#: myframe.cpp:528 nudge_lock.cpp:158
 msgid "Sticky Lock Position"
 msgstr "Marcar posición de bloqueo"
 
@@ -5889,8 +5889,8 @@ msgid "Constrain dither to RA only"
 msgstr "Restringir dither sólo a RA"
 
 #: myframe.cpp:3084
-msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
-msgstr "Escalando para comandos de Dither. Por defecto= 1.0 (0.01-100.0)"
+msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
+msgstr ""
 
 #: myframe.cpp:3088 testguide.cpp:119
 msgid "Scale"
@@ -6088,8 +6088,8 @@ msgid ""
 "calibration cannot proceed. Try reducing the AO Travel setting to %d or "
 "lower and try again."
 msgstr ""
-"La Óptica Activa excede su límite de movimiento desde (%d, %d) hacia (%d, "
-"%d) y la calibración no puede continuar. Intente reduciendo el seteo de "
+"La Óptica Activa excede su límite de movimiento desde (%d, %d) hacia (%d, %"
+"d) y la calibración no puede continuar. Intente reduciendo el seteo de "
 "movimiento a %d o menos y reintente."
 
 #: myframe_events.cpp:593
@@ -6213,9 +6213,13 @@ msgstr "Recomendaciones del Asistente de Configuración"
 msgid "Adjust Lock Position"
 msgstr "Ajustar Posición de Bloqueo"
 
-#: nudge_lock.cpp:120
+#: nudge_lock.cpp:119
 msgid "Always on top"
 msgstr "Siempre sobre todo"
+
+#: nudge_lock.cpp:120
+msgid "Keep this window on top of all others"
+msgstr ""
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -6233,11 +6237,11 @@ msgstr "Izquierda"
 msgid "Right"
 msgstr "Derecha"
 
-#: nudge_lock.cpp:148
+#: nudge_lock.cpp:147
 msgid "Step"
 msgstr "Paso"
 
-#: nudge_lock.cpp:153
+#: nudge_lock.cpp:152
 msgid ""
 "Adjust how far the lock position moves when you click the Up/Down/Left/Right "
 "buttons"
@@ -6245,7 +6249,7 @@ msgstr ""
 "Ajustar cuánto debe moverse de la posición de bloqueo cuando haga click en "
 "los botones Arriba/Abajo/Derecha/Izquierda"
 
-#: nudge_lock.cpp:160
+#: nudge_lock.cpp:159
 msgid ""
 "Sticky lock position will not follow the star when guiding is stopped and "
 "restarted, or after calibration completes"
@@ -6253,37 +6257,37 @@ msgstr ""
 "La posición de bloqueo superpuesta no seguirá a la estrella si el guiado se "
 "para y se reinicia, cuando la calibración se finaliza"
 
-#: nudge_lock.cpp:165
+#: nudge_lock.cpp:164
 msgid "Lock Pos:"
 msgstr "Fijar Posición:"
 
-#: nudge_lock.cpp:170
+#: nudge_lock.cpp:169
 msgid "Lock position X coordinate"
 msgstr "Fijar posición de coordenada X"
 
-#: nudge_lock.cpp:176
+#: nudge_lock.cpp:175
 msgid "Lock position Y coordinate"
 msgstr "Fijar posición de coordenada Y"
 
-#: nudge_lock.cpp:187
+#: nudge_lock.cpp:186
 msgid "Set the lock position to the entered coordinates"
 msgstr "Configurar la posición de bloqueo en la coordenadas introducidas"
 
-#: nudge_lock.cpp:190
+#: nudge_lock.cpp:189
 msgid "Save the current lock position so it can be restored later"
 msgstr ""
 "Guardar la actual posición de bloqueo para poder restaurarla posteriormente"
 
-#: nudge_lock.cpp:193
+#: nudge_lock.cpp:192
 msgid "Restore the saved lock position"
 msgstr "Restaurar la posición de bloqueo guardada"
 
-#: nudge_lock.cpp:345
+#: nudge_lock.cpp:346
 #, c-format
 msgid "Set lock position to saved value (%.2f,%.2f)?"
 msgstr "¿Guardar la posición de bloqueo (%.2f,%.2f)?"
 
-#: nudge_lock.cpp:346
+#: nudge_lock.cpp:347
 msgid "Restore saved Lock Pos"
 msgstr "Restaurar posición de bloqueo"
 
@@ -6521,11 +6525,9 @@ msgstr "Calibrando en el lado %s de la columna"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Flip to the other side of the pier, so the telescope is on the %s side of "
-"the pier."
+"Slew the telescope to force a meridian flip - the scope should move to the %"
+"s side of the pier, still pointing near Dec = 0."
 msgstr ""
-"Cambie al otro lado de la columna, para que el telescopio esté en el lado %s "
-"de la columna."
 
 #: pierflip_tool.cpp:273
 msgid "Wait for the second calibration to complete."
@@ -7175,8 +7177,8 @@ msgid ""
 msgstr ""
 "PHD2 no se puede conectar a la montura, ud lo podrá resolver después.  "
 "Mientras tanto, si conoce la velocidad guía de su montura, ingrésela "
-"manualmente.  Caso contrario, la puede dejar en el valor por defecto de "
-"%0.1fx"
+"manualmente.  Caso contrario, la puede dejar en el valor por defecto de %"
+"0.1fx"
 
 #: profile_wizard.cpp:1107
 #, c-format
@@ -8910,6 +8912,20 @@ msgstr "Conectando con la Cámara..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Conectando con el Rotador..."
+
+#~ msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
+#~ msgstr ""
+#~ "Elija una estrella no saturada con buen valor SNR (>= 8) y empiece a guiar"
+
+#~ msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
+#~ msgstr "Escalando para comandos de Dither. Por defecto= 1.0 (0.01-100.0)"
+
+#~ msgid ""
+#~ "Flip to the other side of the pier, so the telescope is on the %s side of "
+#~ "the pier."
+#~ msgstr ""
+#~ "Cambie al otro lado de la columna, para que el telescopio esté en el lado "
+#~ "%s de la columna."
 
 #~ msgid ""
 #~ "Click Start to begin measurements.  Guiding will be disabled during this "

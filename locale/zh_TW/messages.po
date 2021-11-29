@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-20 03:50+0100\n"
+"POT-Creation-Date: 2021-11-29 04:32+0000\n"
 "PO-Revision-Date: 2021-05-17 11:58+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -219,12 +219,12 @@ msgstr "理想值"
 msgid "Measured"
 msgstr "實際測量值"
 
-#: backlash_comp.cpp:684 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:190
+#: backlash_comp.cpp:684 guiding_assistant.cpp:1449 polardrift_toolwin.cpp:190
 #: scope.cpp:259 staticpa_toolwin.cpp:349 testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: backlash_comp.cpp:685 guiding_assistant.cpp:1445 polardrift_toolwin.cpp:191
+#: backlash_comp.cpp:685 guiding_assistant.cpp:1449 polardrift_toolwin.cpp:191
 #: scope.cpp:260 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "South"
 msgstr "南向"
@@ -348,8 +348,8 @@ msgstr "正交誤差:"
 msgid "a-s/sec"
 msgstr "a-s/sec"
 
-#: calreview_dialog.cpp:233 guiding_assistant.cpp:1793
-#: guiding_assistant.cpp:1878
+#: calreview_dialog.cpp:233 guiding_assistant.cpp:1797
+#: guiding_assistant.cpp:1882
 msgid "px/sec"
 msgstr "px/sec"
 
@@ -455,7 +455,7 @@ msgstr "赤緯導星速率:"
 msgid "Rotator position:"
 msgstr "相場旋轉器位置:"
 
-#: calreview_dialog.cpp:532 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:532 nudge_lock.cpp:180 nudge_lock.cpp:191
 msgid "Restore"
 msgstr "恢復"
 
@@ -2280,7 +2280,7 @@ msgstr "轉向"
 msgid "Click to slew to given coordinates."
 msgstr "點選以轉向指定的座標."
 
-#: drift_tool.cpp:208 nudge_lock.cpp:180 nudge_lock.cpp:189
+#: drift_tool.cpp:208 nudge_lock.cpp:179 nudge_lock.cpp:188
 msgid "Save"
 msgstr "儲存"
 
@@ -3631,7 +3631,7 @@ msgid ""
 msgstr "該使用多少百分比的回應式導星修正？ 預設 = %.f%%"
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1398 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
+#: guider_multistar.cpp:1399 myframe.cpp:879 myframe.cpp:950 scope.cpp:258
 msgid "Auto"
 msgstr "自動"
 
@@ -3697,104 +3697,104 @@ msgstr "乘以曝光時間得出加上濾鏡後的等效曝光時間. 默認值 
 msgid "XFac"
 msgstr "XFac"
 
-#: guider.cpp:561
+#: guider.cpp:568
 msgid "E"
 msgstr "E"
 
-#: guider.cpp:582
+#: guider.cpp:589
 msgid "N"
 msgstr "N"
 
-#: guider.cpp:700
+#: guider.cpp:707
 msgid "PAUSED"
 msgstr "已暫停"
 
-#: guider.cpp:705
+#: guider.cpp:712
 msgid "Guide output DISABLED"
 msgstr "導星訊號輸出被關閉掉了"
 
-#: guider.cpp:1140
+#: guider.cpp:1147
 msgid "Calibration manually stopped"
 msgstr "手動停止校準"
 
-#: guider.cpp:1194
+#: guider.cpp:1201
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr "不論是否使用設定組態檔時, 你真的都要自動回復校準資料?"
 
-#: guider.cpp:1268
+#: guider.cpp:1275
 msgid "Stopped Guiding"
 msgstr "導星已停止"
 
-#: guider.cpp:1280
+#: guider.cpp:1287
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "偏移鎖定位置所容許的範圍，關閉鎖定位置偏移 (Shifted lock position outside "
 "allowable area. Lock Position Shift disabled.)"
 
-#: guider.cpp:1316
+#: guider.cpp:1323
 msgid "star lost"
 msgstr "星點遺失"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "Paused"
 msgstr "暫停"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "/full"
 msgstr "/full"
 
-#: guider.cpp:1369 myframe.cpp:1860
+#: guider.cpp:1376 myframe.cpp:1860
 msgid "/looping"
 msgstr "/迴圈"
 
-#: guider.cpp:1386
+#: guider.cpp:1393
 msgid "Static PA rotation failed"
 msgstr "靜態 PA 旋轉失敗"
 
-#: guider.cpp:1392
+#: guider.cpp:1399
 msgid "Polar Drift PA drift failed"
 msgstr "極點飄移 PA 飄移失敗"
 
-#: guider.cpp:1402
+#: guider.cpp:1409
 msgid "AO calibration failed"
 msgstr "AO 校準失敗"
 
-#: guider.cpp:1402 guider.cpp:1435
+#: guider.cpp:1409 guider.cpp:1442
 msgid "calibration failed"
 msgstr "校準失敗"
 
-#: guider.cpp:1669
+#: guider.cpp:1676
 msgid "Guider Settings"
 msgstr "導星設定"
 
-#: guider.cpp:1678
+#: guider.cpp:1685
 msgid "Guide star tracking"
 msgstr "導星星體追蹤"
 
-#: guider.cpp:1679 log_uploader.cpp:700
+#: guider.cpp:1686 log_uploader.cpp:700
 msgid "Calibration"
 msgstr "校準"
 
-#: guider.cpp:1680
+#: guider.cpp:1687
 msgid "Shared Parameters"
 msgstr "共用的參數"
 
-#: guider.cpp:1724
+#: guider.cpp:1731
 msgid "Always scale images"
 msgstr "總是調整影像大小"
 
-#: guider.cpp:1725
+#: guider.cpp:1732
 msgid "Always scale images to fill window"
 msgstr "自動縮放影像以填滿視窗"
 
-#: guider.cpp:1727
+#: guider.cpp:1734
 msgid "Fast recenter after calibration or dither"
 msgstr "校準或在 dither 後快速將星點歸正"
 
-#: guider.cpp:1728
+#: guider.cpp:1735
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -3803,7 +3803,7 @@ msgstr ""
 "使用較長的導星訊號脈衝來加速校準及 dither 後星點回歸中心位置的時間，不點選該"
 "項則會維持使用舊有較慢的方法, 星點在校準或 dither 後回歸中心位置速度會較慢。"
 
-#: guider.cpp:1841
+#: guider.cpp:1848
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "你是否要將所有書籤刪除?"
 
@@ -3916,11 +3916,11 @@ msgstr ""
 msgid "65535"
 msgstr "65535"
 
-#: guider_multistar.cpp:1392
+#: guider_multistar.cpp:1393
 msgid "Minimum star HFD (pixels)"
 msgstr "最小星點 HFD (像素) 值"
 
-#: guider_multistar.cpp:1393
+#: guider_multistar.cpp:1394
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -3932,11 +3932,11 @@ msgstr ""
 "星星體。利用星點工具測量熱噪的 HFD，並將最小 HFD 門檻值設置得彼此數值高一些。"
 "當 HFD 低於該數值時，熱噪就會被忽略。"
 
-#: guider_multistar.cpp:1400
+#: guider_multistar.cpp:1401
 msgid "Auto-selection frame downsample"
 msgstr "自動選擇影像禎降低採樣頻率"
 
-#: guider_multistar.cpp:1401
+#: guider_multistar.cpp:1402
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -3945,27 +3945,27 @@ msgstr ""
 "自動選星時使用的相機禎降低採樣頻率參數, 如果自動選星無法判別畸形的導星星體, "
 "請選擇大於 1 的數值"
 
-#: guider_multistar.cpp:1404
+#: guider_multistar.cpp:1405
 msgid "Beep on lost star"
 msgstr "在星點遺失時發出嗶聲"
 
-#: guider_multistar.cpp:1405
+#: guider_multistar.cpp:1406
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "當導星星體遺失時都發出告警聲"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1408
 msgid "Use multiple stars"
 msgstr "使用多星點導星"
 
-#: guider_multistar.cpp:1408
+#: guider_multistar.cpp:1409
 msgid "Use multiple guide stars if they are available"
 msgstr "如果可以的話, 使用多星點導星"
 
-#: guider_multistar.cpp:1415
+#: guider_multistar.cpp:1416
 msgid "Minimum star SNR for AutoFind"
 msgstr "使用 AutoFind 時所需的最低星點訊躁比"
 
-#: guider_multistar.cpp:1416
+#: guider_multistar.cpp:1417
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -4208,8 +4208,8 @@ msgstr ""
 "際的誤差可能更大。"
 
 #: guiding_assistant.cpp:675
-msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
-msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並開始進行導星"
+msgid "Choose a non-saturated star with a good SNR (>= 10) and begin guiding"
+msgstr ""
 
 #: guiding_assistant.cpp:679
 msgid ""
@@ -4239,13 +4239,13 @@ msgstr ""
 msgid "Measuring backlash: "
 msgstr "測量回差當中: "
 
-#: guiding_assistant.cpp:736 guiding_assistant.cpp:1788
-#: guiding_assistant.cpp:1873
+#: guiding_assistant.cpp:736 guiding_assistant.cpp:1792
+#: guiding_assistant.cpp:1877
 msgid "ms"
 msgstr "ms"
 
-#: guiding_assistant.cpp:737 guiding_assistant.cpp:1790
-#: guiding_assistant.cpp:1875
+#: guiding_assistant.cpp:737 guiding_assistant.cpp:1794
+#: guiding_assistant.cpp:1879
 msgid "arc-sec"
 msgstr "角秒"
 
@@ -4257,120 +4257,120 @@ msgstr "ms (測試失敗)"
 msgid "Apply"
 msgstr "套用"
 
-#: guiding_assistant.cpp:1285 guiding_assistant.cpp:1924 myframe.cpp:3031
+#: guiding_assistant.cpp:1289 guiding_assistant.cpp:1928 myframe.cpp:3031
 #: myframe.cpp:3041
 msgid " "
 msgstr " "
 
-#: guiding_assistant.cpp:1286 guiding_assistant.cpp:1787
-#: guiding_assistant.cpp:1872
+#: guiding_assistant.cpp:1290 guiding_assistant.cpp:1791
+#: guiding_assistant.cpp:1876
 msgid "s"
 msgstr "s"
 
-#: guiding_assistant.cpp:1324
+#: guiding_assistant.cpp:1328
 #, c-format
 msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
 msgstr "請將曝光時間維持在 %.1fs 至 %.1fs 範圍"
 
-#: guiding_assistant.cpp:1331
+#: guiding_assistant.cpp:1335
 msgid "Try binning your guide camera"
 msgstr "嘗試導星相機影像併合"
 
-#: guiding_assistant.cpp:1339
+#: guiding_assistant.cpp:1343
 msgid "Consider re-doing your calibration "
 msgstr "請考慮重作校準 "
 
-#: guiding_assistant.cpp:1341
+#: guiding_assistant.cpp:1345
 msgid "(Prior alert)"
 msgstr "(之前的告警)"
 
-#: guiding_assistant.cpp:1343
+#: guiding_assistant.cpp:1347
 msgid "(Backlash clearing)"
 msgstr "(清除回差當中)"
 
-#: guiding_assistant.cpp:1353
+#: guiding_assistant.cpp:1357
 msgid ""
 "Consider using a brighter star for the test or increasing the exposure time"
 msgstr "請選用一顆較亮的星體來做測試, 或者延長曝光時間"
 
-#: guiding_assistant.cpp:1369 guiding_assistant.cpp:1375
+#: guiding_assistant.cpp:1373 guiding_assistant.cpp:1379
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
 msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準。"
 
-#: guiding_assistant.cpp:1374
+#: guiding_assistant.cpp:1378
 msgid "Polar alignment error > 5 arc-min; that could probably be improved."
 msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
 
-#: guiding_assistant.cpp:1391
+#: guiding_assistant.cpp:1395
 msgid "Consider trying to improve focus on the guide camera"
 msgstr "請考慮加強導星相機的對焦"
 
-#: guiding_assistant.cpp:1402
+#: guiding_assistant.cpp:1406
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr "嘗試設定 RA min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1413
+#: guiding_assistant.cpp:1417
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
 msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
-#: guiding_assistant.cpp:1437
+#: guiding_assistant.cpp:1441
 msgid "Backlash is small, no compensation needed"
 msgstr "回差極小, 不需要做回差補償"
 
-#: guiding_assistant.cpp:1441
+#: guiding_assistant.cpp:1445
 #, c-format
 msgid "Try starting with a Dec backlash compensation of %d ms"
 msgstr "試著開始 %d ms 的赤緯回差補償"
 
-#: guiding_assistant.cpp:1444
+#: guiding_assistant.cpp:1448
 #, c-format
 msgid ""
 "Backlash is >= %d ms; you may need to guide in only one Dec direction "
 "(currently %s)"
 msgstr "回差 >= %d ms; 你可能必須僅在單一赤緯方向導星 (目前為 %s)"
 
-#: guiding_assistant.cpp:1462
+#: guiding_assistant.cpp:1466
 msgid "Try using Lowpass2 for Dec guiding"
 msgstr "嘗試使用 Lowpass2 進行赤緯導星"
 
-#: guiding_assistant.cpp:1578
+#: guiding_assistant.cpp:1582
 msgid "Measuring..."
 msgstr "測量中..."
 
-#: guiding_assistant.cpp:1673
+#: guiding_assistant.cpp:1677
 msgid "Backlash test aborted, see graph..."
 msgstr "回差測試中斷, 請檢查結果圖表..."
 
-#: guiding_assistant.cpp:1715 guiding_assistant.cpp:1721
+#: guiding_assistant.cpp:1719 guiding_assistant.cpp:1725
 msgid "Measuring backlash... "
 msgstr "回差測量當中... "
 
-#: guiding_assistant.cpp:1745
+#: guiding_assistant.cpp:1749
 msgid "Guiding stopped"
 msgstr "導星終止"
 
-#: guiding_assistant.cpp:1789 guiding_assistant.cpp:1874 statswindow.cpp:279
+#: guiding_assistant.cpp:1793 guiding_assistant.cpp:1878 statswindow.cpp:279
 #: statswindow.cpp:282
 msgid "px"
 msgstr "px"
 
-#: guiding_assistant.cpp:1791 guiding_assistant.cpp:1876 statswindow.cpp:270
+#: guiding_assistant.cpp:1795 guiding_assistant.cpp:1880 statswindow.cpp:270
 msgid "arc-min"
 msgstr "arc-min"
 
-#: guiding_assistant.cpp:1792 guiding_assistant.cpp:1877
+#: guiding_assistant.cpp:1796 guiding_assistant.cpp:1881
 msgid "px/min"
 msgstr "px/min"
 
-#: guiding_assistant.cpp:1794 guiding_assistant.cpp:1879
+#: guiding_assistant.cpp:1798 guiding_assistant.cpp:1883
 msgid "arc-sec/min"
 msgstr "角秒/分鐘"
 
-#: guiding_assistant.cpp:1795 guiding_assistant.cpp:1880
+#: guiding_assistant.cpp:1799 guiding_assistant.cpp:1884
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
 
@@ -4401,7 +4401,7 @@ msgid ""
 "replaced."
 msgstr "壞點影像與設備組態檔中的相機不符, 必需重新建立壞點影像。"
 
-#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:179 nudge_lock.cpp:186
+#: indi_gui.cpp:458 indi_gui.cpp:489 nudge_lock.cpp:178 nudge_lock.cpp:185
 msgid "Set"
 msgstr "Set"
 
@@ -4959,7 +4959,7 @@ msgstr "啟用伺服器"
 msgid "Enable PHD2 server capability"
 msgstr "啟用 PHD2 伺服器功能"
 
-#: myframe.cpp:528 nudge_lock.cpp:159
+#: myframe.cpp:528 nudge_lock.cpp:158
 msgid "Sticky Lock Position"
 msgstr "標定鎖定位置"
 
@@ -5640,8 +5640,8 @@ msgid "Constrain dither to RA only"
 msgstr "Dither 將僅在赤經方向進行"
 
 #: myframe.cpp:3084
-msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
-msgstr "抖動命令的大小. 預設值 = 1.0 (0.01-100.0)"
+msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
+msgstr ""
 
 #: myframe.cpp:3088 testguide.cpp:119
 msgid "Scale"
@@ -5948,9 +5948,13 @@ msgstr "設定精靈建議值"
 msgid "Adjust Lock Position"
 msgstr "調整鎖定位置"
 
-#: nudge_lock.cpp:120
+#: nudge_lock.cpp:119
 msgid "Always on top"
 msgstr "總是在最上方"
+
+#: nudge_lock.cpp:120
+msgid "Keep this window on top of all others"
+msgstr ""
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -5968,52 +5972,52 @@ msgstr "左"
 msgid "Right"
 msgstr "右"
 
-#: nudge_lock.cpp:148
+#: nudge_lock.cpp:147
 msgid "Step"
 msgstr "步數"
 
-#: nudge_lock.cpp:153
+#: nudge_lock.cpp:152
 msgid ""
 "Adjust how far the lock position moves when you click the Up/Down/Left/Right "
 "buttons"
 msgstr "調整當你點擊上下左右按鈕時，鎖定位置移動的距離"
 
-#: nudge_lock.cpp:160
+#: nudge_lock.cpp:159
 msgid ""
 "Sticky lock position will not follow the star when guiding is stopped and "
 "restarted, or after calibration completes"
 msgstr "標定鎖定位置在停止/恢復導星或者校準完成後不會跟隨被導星移動"
 
-#: nudge_lock.cpp:165
+#: nudge_lock.cpp:164
 msgid "Lock Pos:"
 msgstr "鎖定位置:"
 
-#: nudge_lock.cpp:170
+#: nudge_lock.cpp:169
 msgid "Lock position X coordinate"
 msgstr "鎖定位置的 X 軸座標"
 
-#: nudge_lock.cpp:176
+#: nudge_lock.cpp:175
 msgid "Lock position Y coordinate"
 msgstr "鎖定位置的 Y 軸座標"
 
-#: nudge_lock.cpp:187
+#: nudge_lock.cpp:186
 msgid "Set the lock position to the entered coordinates"
 msgstr "設定鎖定位置為所輸入的座標"
 
-#: nudge_lock.cpp:190
+#: nudge_lock.cpp:189
 msgid "Save the current lock position so it can be restored later"
 msgstr "儲存當前的鎖定位置以利將來回復使用"
 
-#: nudge_lock.cpp:193
+#: nudge_lock.cpp:192
 msgid "Restore the saved lock position"
 msgstr "恢復先前儲存的鎖定位置"
 
-#: nudge_lock.cpp:345
+#: nudge_lock.cpp:346
 #, c-format
 msgid "Set lock position to saved value (%.2f,%.2f)?"
 msgstr "設定鎖定位置為儲存的數值 (%.2f,%.2f)?"
 
-#: nudge_lock.cpp:346
+#: nudge_lock.cpp:347
 msgid "Restore saved Lock Pos"
 msgstr "恢復先前儲存的鎖定位置"
 
@@ -6246,9 +6250,9 @@ msgstr "於赤道儀架台的 %s 面進行校準"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Flip to the other side of the pier, so the telescope is on the %s side of "
-"the pier."
-msgstr "翻轉到另一面, 因此望遠鏡位於赤道儀架台的 %s 面"
+"Slew the telescope to force a meridian flip - the scope should move to the %"
+"s side of the pier, still pointing near Dec = 0."
+msgstr ""
 
 #: pierflip_tool.cpp:273
 msgid "Wait for the second calibration to complete."
@@ -8443,6 +8447,17 @@ msgstr "正在連接相機 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在連接相場旋轉器 ..."
+
+#~ msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
+#~ msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並開始進行導星"
+
+#~ msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
+#~ msgstr "抖動命令的大小. 預設值 = 1.0 (0.01-100.0)"
+
+#~ msgid ""
+#~ "Flip to the other side of the pier, so the telescope is on the %s side of "
+#~ "the pier."
+#~ msgstr "翻轉到另一面, 因此望遠鏡位於赤道儀架台的 %s 面"
 
 #~ msgid ""
 #~ "Click Start to begin measurements.  Guiding will be disabled during this "
