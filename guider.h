@@ -267,8 +267,8 @@ public:
     void EnableMeasurementMode(bool enabled);
     void SetMinStarHFD(double val);
     double GetMinStarHFD() const;
-    double GetMinStarHfdFloor() const;
-    double GetMinStarHfdDefault() const;
+    double GetMinStarHFDFloor() const;
+    double GetMinStarHFDDefault() const;
     void SetMinStarSNR(double val);
     double getMinStarSNR() const;
     void SetAutoSelDownsample(unsigned int val);
@@ -410,11 +410,12 @@ inline double Guider::GetMinStarHFD() const
     return m_minStarHFD;
 }
 
-inline double Guider::GetMinStarHfdFloor() const
+inline double Guider::GetMinStarHFDFloor() const
 {
     return 1.0;
 }
-inline double Guider::GetMinStarHfdDefault() const
+
+inline double Guider::GetMinStarHFDDefault() const
 {
     return 1.5;
 }
