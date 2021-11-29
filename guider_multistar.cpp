@@ -1386,9 +1386,9 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
 
     width = StringWidth(_("65535"));
 
-    double minHfd = pGuider->GetMinStarHfdFloor();
+    double minHFD = pGuider->GetMinStarHFDFloor();
     m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, pGuider->GetMinStarHfdFloor(), 10.0, pGuider->GetMinStarHfdDefault(), 0.5);
+        wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDDefault(), 0.5);
     m_MinHFD->SetDigits(1);
     wxSizer *pHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum star HFD (pixels)"), m_MinHFD,
         _("The minimum star HFD (size) that will be used for identifying a guide star. "
