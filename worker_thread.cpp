@@ -175,7 +175,7 @@ bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
 
     try
     {
-        if (WorkerThread::MilliSleep(m_pFrame->GetTimeLapse(), INT_ANY))
+        if (WorkerThread::MilliSleep(m_pFrame->GetExposureDelay(), INT_ANY))
         {
             throw ERROR_INFO("Time lapse interrupted");
         }
