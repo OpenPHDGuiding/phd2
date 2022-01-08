@@ -100,6 +100,12 @@ bool PhdController::IsSettling()
     return ctrl.state == STATE_SETTLE_BEGIN || ctrl.state == STATE_SETTLE_WAIT;
 }
 
+// Idle means controller is not in transitional states of starting/calibrating/stopping/settling
+bool PhdController::IsIdle()
+{
+    return ctrl.state == STATE_IDLE;
+}
+
 #define SETSTATE(newstate) do { \
     Debug.AddLine("PhdController: newstate " #newstate); \
     ctrl.state = newstate; \
