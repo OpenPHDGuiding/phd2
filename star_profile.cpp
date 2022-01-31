@@ -155,7 +155,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int i;
     int *profptr;
     wxString profileLabel;
-    switch (this->mode) {  // Figure which profile to use
+    switch (this->mode)
+    {  // Figure which profile to use
     case 0: // mid-row
     default:
         profptr = midrow_profile;
@@ -177,7 +178,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int Prof_Min, Prof_Max, Prof_Mid;
     Prof_Min = Prof_Max = *profptr;
 
-    for (i = 1; i < FULLW; i++) {
+    for (i = 1; i < FULLW; i++)
+    {
         if (*(profptr + i) < Prof_Min)
             Prof_Min = *(profptr + i);
         else if (*(profptr + i) > Prof_Max)
@@ -228,16 +230,25 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetTextForeground(wxColour(255,0,0));
 
     const Star& star = pFrame->pGuider->PrimaryStar();
-    if (star.IsValid()) {
+    if (star.IsValid())
+    {
         dc.DrawText(_("Peak"), 3, 3);
         dc.DrawText(wxString::Format("%u", star.PeakVal), 3, 3 + smallFontHeight);
     }
 
     float hfd = star.HFD;
-    if (hfd != 0.f) {
+    int imageLeftMargin = (xsize - 15) / 2;
+    if (hfd != 0.f)
+    {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
-        if (inFocusingMode) {
-            dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - labelTextHeight + 5);
+        if (inFocusingMode)
+        {
+            wxString fwhmLine = wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm);
+            int fwhmLineWidth = dc.GetTextExtent(fwhmLine).GetWidth();
+            dc.DrawText(fwhmLine, 5, ysize - labelTextHeight + 5);
+            // Show X/Y of centroid if there's room
+            if (imageLeftMargin > fwhmLineWidth + 20)
+                dc.DrawText(wxString::Format("X: %0.2f, Y: %0.2f", pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y), imageLeftMargin, ysize - labelTextHeight + 5);
             int x = 5;
             wxString s(_("HFD: "));
             dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
@@ -252,20 +263,22 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             s = wxString::Format(_T("  %.2f\""), hfdArcSec);
             dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
         }
-        else {
+        else
+        {
             dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
         }
     }
-    else {
+    else
+    {
         dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
     }
 
     // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
-    if (img) {
-        int xoffset = (xsize - 15) / 2;
-        int width = xsize - xoffset - 5;
+    if (img)
+    {
+        int width = xsize - imageLeftMargin - 5;
         if (width > ysize + 5) width = ysize - 5;
         int midwidth = width / 2;
         // grab width(30) px box around lock pos, scale by 2 & display next to profile
@@ -292,16 +305,17 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         wxMemoryDC tmpMdc;
         tmpMdc.SelectObject(zoomedDBmp);
         // blit into profile DC
-        dc.Blit(xoffset, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
+        dc.Blit(imageLeftMargin, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
         // lines for the lock pos + red dot at star centroid
         dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxPENSTYLE_DOT));
-        dc.DrawLine(xoffset, midwidth, xoffset + width, midwidth);
-        dc.DrawLine(xoffset + midwidth, 0, xoffset + midwidth, width);
+        dc.DrawLine(imageLeftMargin, midwidth, imageLeftMargin + width, midwidth);
+        dc.DrawLine(imageLeftMargin + midwidth, 0, imageLeftMargin + midwidth, width);
         if (sz > 0)
         {
             // and a small cross at the centroid
-            double starX = xoffset + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1;
-            if (starX >= xoffset) {
+            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1;
+            if (starX >= imageLeftMargin)
+            {
                 dc.SetPen(RedPen);
                 dc.DrawLine(starX - 3, starY, starX + 3, starY);
                 dc.DrawLine(starX, starY - 3, starX, starY + 3);
