@@ -61,6 +61,12 @@ public:
         STAR_ERROR,
     };
 
+    enum StarFindLogType
+    {
+        FIND_LOGGING_MINIMAL,
+        FIND_LOGGING_VERBOSE,
+    };
+
     double Mass;
     double SNR;
     double HFD;
@@ -73,8 +79,8 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation);
-    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation, StarFindLogType loggingControl);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation, StarFindLogType loggingControl);
 
     static bool WasFound(FindResult result);
     bool WasFound() const;

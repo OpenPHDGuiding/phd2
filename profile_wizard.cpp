@@ -264,7 +264,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
 
     // Focal length
     m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(this, _T("88888")), -1), wxSP_ARROW_KEYS,
+        wxSize(StringWidth(this, _T("888888")), -1), wxSP_ARROW_KEYS,
         0, AdvancedDialog::MAX_FOCAL_LENGTH, 0.0, 50.0);
     m_pFocalLength->SetValue(0);
     m_pFocalLength->SetDigits(0);
@@ -875,6 +875,10 @@ void ProfileWizard::WrapUp()
         pConfig->Profile.SetInt("/scope/YGuideAlgorithm", GUIDE_ALGORITHM_LOWPASS2);
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoRestore);
+    pConfig->Profile.SetBoolean("/guider/multistar/enabled", true);
+    double ImageScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+    if (ImageScale < 2.0)
+        pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", false);
 
     GuideLog.EnableLogging(true);       // Especially for newbies
 
