@@ -516,7 +516,9 @@ void SVBCamera::StopCapture()
     if (m_capturing)
     {
         Debug.Write("SVB: stopcapture\n");
-        SVBStopVideoCapture(m_cameraId);
+        // we used to call SVBStopVideoCapture() at this point, but we found in testing that
+        // the call can occasionally hang, and also that it is not necessary, even when ROI
+        // or binning changes.
         m_capturing = false;
     }
 }
