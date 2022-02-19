@@ -725,7 +725,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
             SVBSendSoftTrigger(m_cameraId);
 
-            enum { GRACE_PERIOD_MS = 250 };
+            enum { GRACE_PERIOD_MS = 500 }; // recommended by Svbony
             CameraWatchdog watchdog(duration, duration + GRACE_PERIOD_MS);
 
             if (duration > 100)
