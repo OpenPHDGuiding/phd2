@@ -356,8 +356,8 @@ public:
     void ResetAutoExposure();
     void AdjustAutoExposure(double curSNR);
     static wxString ExposureDurationLabel(int exposure);
-    const VarDelayCfg& GetVariableDelayInfo() const { return m_varDelayConfig; }
-    void SetVariableDelayInfo(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS);
+    const VarDelayCfg& GetVariableDelayConfig() const { return m_varDelayConfig; }
+    void SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS);
     double GetDitherScaleFactor() const;
     bool SetDitherScaleFactor(double ditherScaleFactor);
     bool GetDitherRaOnly() const;

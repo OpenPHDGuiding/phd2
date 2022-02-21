@@ -610,20 +610,18 @@ int MyFrame::GetTextWidth(wxControl *pControl, const wxString& string)
 // Get either timelapse value or state-dependent variable-exposure-delay
 int MyFrame::GetExposureDelay()
 {
-    int rslt = 0;
-    if (m_varDelayConfig.enabled)
-    {
-        if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() && pMount->GetGuidingEnabled())   // pMount will be valid in any state of guiding
-            rslt = m_varDelayConfig.longDelay;
-        else
-            rslt = m_varDelayConfig.shortDelay;
-        if (rslt != m_varLastExpDelay)
-            Debug.Write(wxString::Format("Exposure delay set to %d\n", rslt));
-        m_varLastExpDelay = rslt;
-        return rslt;
-    }
-    else
+    if (!m_varDelayConfig.enabled)
         return m_timeLapse;
+
+    int rslt = 0;
+    if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() && pMount->GetGuidingEnabled())   // pMount will be valid in any state of guiding
+        rslt = m_varDelayConfig.longDelay;
+    else
+        rslt = m_varDelayConfig.shortDelay;
+    if (rslt != m_varLastExpDelay)
+        Debug.Write(wxString::Format("Exposure delay set to %d\n", rslt));
+    m_varLastExpDelay = rslt;
+    return rslt;
 }
 
 void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
@@ -732,10 +730,14 @@ bool MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
 
 wxString MyFrame::ExposureDurationSummary() const
 {
+    wxString rslt;
     if (m_autoExp.enabled)
-        return wxString::Format("Auto (min = %d ms, max = %d ms, SNR = %.2f)", m_autoExp.minExposure, m_autoExp.maxExposure, m_autoExp.targetSNR);
+        rslt = wxString::Format("Auto (min = %d ms, max = %d ms, SNR = %.2f)", m_autoExp.minExposure, m_autoExp.maxExposure, m_autoExp.targetSNR);
     else
-        return wxString::Format("%d ms", m_exposureDuration);
+        rslt = wxString::Format("%d ms", m_exposureDuration);
+    if (m_varDelayConfig.enabled)
+        rslt += wxString::Format(", VarDelay (short = %d ms, long = %d ms)", m_varDelayConfig.shortDelay, m_varDelayConfig.longDelay);
+    return rslt;
 }
 
 void MyFrame::ResetAutoExposure()
@@ -857,7 +859,7 @@ void MyFrame::LoadProfileSettings()
     int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
 
-    SetVariableDelayInfo(pConfig->Profile.GetBoolean("/frame/var_delay/enabled", false),
+    SetVariableDelayConfig(pConfig->Profile.GetBoolean("/frame/var_delay/enabled", false),
         pConfig->Profile.GetInt("/frame/var_delay/short_delay", 1000),
         pConfig->Profile.GetInt("/frame/var_delay/long_delay", 10000));
 
@@ -2696,7 +2698,7 @@ bool MyFrame::SetFocalLength(int focalLength)
     return bError;
 }
 
-void MyFrame::SetVariableDelayInfo(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS)
+void MyFrame::SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS)
 {
     Debug.Write(wxString::Format("Variable delay: %s, Short = %d ms, Long = %d ms\n", (varDelayEnabled ? "Enabled" : "Disabled"), ShortDelayMS, LongDelayMS));
 
@@ -3182,7 +3184,7 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_ditherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_ditherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
-    VarDelayCfg delayCfg = m_pFrame->GetVariableDelayInfo();
+    VarDelayCfg delayCfg = m_pFrame->GetVariableDelayConfig();
     m_varExposureDelayEnabled->SetValue(delayCfg.enabled);
     m_varExpDelayShort->SetValue((int)delayCfg.shortDelay / 1000.);
     m_varExpDelayLong->SetValue((int)delayCfg.longDelay / 1000.);
@@ -3274,7 +3276,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         m_pFrame->SetDitherRaOnly(m_ditherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_ditherScaleFactor->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
-        pFrame->SetVariableDelayInfo(m_varExposureDelayEnabled->GetValue(), m_varExpDelayShort->GetValue() * 1000, m_varExpDelayLong->GetValue() * 1000);
+        pFrame->SetVariableDelayConfig(m_varExposureDelayEnabled->GetValue(), m_varExpDelayShort->GetValue() * 1000, m_varExpDelayLong->GetValue() * 1000);
         int oldFL = m_pFrame->GetFocalLength();
         int newFL = GetFocalLength();               // From UI control
         if (oldFL != newFL)
