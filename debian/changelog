@@ -1,3 +1,53 @@
+phd2 (2.6.11) stable; urgency=low
+
+  * bump rev to 2.6.11
+  * update translation templates
+  * SVB cameras: improved stability when changing ROI or binning (#970)
+  * Svbony Cameras: update SDK to v1.6.4 (#965)
+  * Merge pull request #968 from OpenPHDGuiding/SmallDev4_Changes
+  * Fix missing file in previous commit
+  * Per AG suggestion, clarify meaning of logging level parameter in Star::Find
+  * In profile wizard: enable multi-star guiding, disable star mass checking for image scales < 2.0
+  * Add support for observatory-class focal lengths (10m)
+  * Reduce volume of debug logging for MultiStar guiding
+  * Add X/Y centroid location in Profile window, fix formatting issues. #Fixes 967
+  * Svbony Cameras: update SDK to v1.6.2 (#960)
+  * ZWO ASI cameras: update SDK to version v1.20.3 (#957)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 22 Feb 2022 01:27:57 -0500
+
+phd2 (2.6.10dev3) unstable; urgency=low
+
+  * bump rev to 2.6.10dev3
+  * update translation templates
+  * use uniform captialization for "HFD" (#956)
+  * Remove unneeded code in initialization of MinHFD UI control
+  * Minor GA adjustments, MinMove floor, SNR checking
+  * Minor adjustments to GA, minMove floor, SNR checking
+  * fix config not getting saved to disk on linux/mac with phd -l (#954)
+  * update release scripts to check build servers up front (#955)
+  * Add comments about upgrade action for revised MinHFD code
+  * Force non-zero MinHFD values
+  * Miscellaneous UI clean-up from Help review process
+  * Updated Spanish translation from Mario (#952)
+  * Svbony cameras: update to SDK v1.6.1 (#951)
+  * add Radek to About dialog
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 28 Nov 2021 23:32:10 -0500
+
+phd2 (2.6.10dev2) unstable; urgency=low
+
+  * bump rev to 2.6.10dev2
+  * update translation templates
+  * add Anthony to About dialog
+  * ZWO ASI cameras: update SDK to version V1.20 - Windows, Mac, and Linux (#948)
+  * Debian changelog recompiled (#943)
+  * Update phd2.desktop (#947)
+  * Svbony cameras: update SDK to version 1.4.4 (#946)
+  * Svbony cameras: add support for SV305M PRO camera (#942)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 19 Sep 2021 22:50:08 -0400
+
 phd2 (2.6.10dev1) unstable; urgency=low
 
   * bump rev to 2.6.10dev1
