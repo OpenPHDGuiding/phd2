@@ -216,7 +216,7 @@ void Guider::LoadProfileSettings()
     // configuration - so leave them alone.  Any values >= default are also acceptable and will be
     // left alone
     if (minHFD < GetMinStarHFDFloor())
-        minHFD = GetMinStarHFDDefault();
+        minHFD = GetMinStarHFDFloor();
     SetMinStarHFD(minHFD);
 
     double minSNR = pConfig->Profile.GetDouble("/guider/StarMinSNR", 6.0);
