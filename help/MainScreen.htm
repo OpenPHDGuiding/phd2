@@ -8,17 +8,19 @@ The <span style="font-style: italic;">PHD2</span> main window is designed for ea
 interactions to start and control guiding. &nbsp;The basic steps
 for doing this are as follows:<br>
 <ol>
-<li>Connect to your guide camera and mount</li>
+<li>Connect to the PHD2 configuration profile that establishes your guide camera and mount connections</li>
 <li>Start a sequence of guide exposures to see what stars are
 available in the field of view</li>
-<li>Let PHD2 auto-select a suitable star and calibrate the guider</li>
+<li>Let PHD2 auto-select&nbsp;suitable stars and calibrate the guider</li>
 <li>Continue guiding on the target star while using various
 display tools to see how things are going</li>
 <li>Stop and resume guiding as necessary</li>
 </ol>
 <img style="width: 670px; height: 522px;" alt="" src="Main_Screen.png"><br>
-<p>The majority of the screen is taken up by the display of the star
-field from your guide camera. &nbsp;The display is automatically
+<p>The majority of the screen is taken up by the display of the image
+from your guide camera - under normal nighttime conditions, that will
+show the stars available for guiding. &nbsp;The display is
+automatically
 adjusted for size, brightness, and contrast so you can view
 the&nbsp;available stars. &nbsp;However, these adjustments are done
 only
@@ -32,19 +34,20 @@ even the faintest stars in the field.<br></p>
 <h3><a name="Basic_control"></a>Basic control</h3>Near the bottom of the screen are the main
 controls. &nbsp;<span style="font-style: italic;">PHD2</span> is largely controlled by these buttons and
 sliders, with additional pull-down menus at the top of the window for
-more detailed functions. &nbsp;Moving from left to right in the
-window, the primary buttons are as follows: <br><ol><li>The USB connector icon - used to connect to your camera and mount devices</li><li>The Loop icon - used to start a sequence of repeated exposures with the
+more detailed functions. Moving from left to right in the
+window, the primary buttons are as follows: <br><ol><li>The USB connector icon - used to connect to the PHD2 profile that defines your equipment connecttions</li><li>The Loop icon - used to start a sequence of repeated exposures with the
 guide camera ("looping"), with each resultant image (guide frame) being
 displayed in the main window. &nbsp;If guiding is subsequently started,
 clicking on the 'loop' icon again will pause guiding while continuing
 to take guide exposures.</li><li>The
 Auto-Select Star icon - used to trigger an automatic selection of the
-best guide star candidate in the field of view. &nbsp;This selection is
+best guide star candidates in the field of view. &nbsp;This selection
+is
 done quantitatively, taking many things into account - star saturation,
 minimum star size, signal-to-noise ratio, proximity to other stars,
-proximity to the edge of the field, etc. &nbsp;The technique will
-nearly always make a better choice than you can manually even though
-the selected star may appear quite faint.</li><li>The PHD2/Guide icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The Stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
+proximity to the edge of the field, etc. &nbsp;Auto-selection is the
+recommended method for choosing guide stars and is the only way to use
+multi-star guiding.</li><li>The PHD2/Guide icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The Stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
 </ol>To the right of the stop icon is a pull-down list of exposure
 durations (0.01s - 15s). &nbsp;You use this control to quickly set the guide
 camera's exposure duration. &nbsp;If your camera does not support an
@@ -67,7 +70,7 @@ always uses the raw pixels from the camera for guiding, and moving the
 gamma slider has no effect on guiding. &nbsp;A display of "completely
 white" or "completely black" is usually an indication that no stars are
 available in the field of view. &nbsp;The automatic gamma-stretching of
-the image is a very common source of confusion for users because they
+the image is a&nbsp;common source of confusion for users because they
 don't adjust the gamma slider properly to see faint stars on the
 display. &nbsp;The stars that PHD2 auto-selects may appear to be overly
 faint and inferior to bright stars you see in the display. &nbsp;These
@@ -80,11 +83,12 @@ guiding operations. &nbsp;An important
 design goal of the program is to minimize your need to change these
 parameters, but "the brain" is&nbsp;nothing to be feared - there are
 adjustments available there that can&nbsp;improve your guiding
-results and make your life easier. &nbsp;Over a period of time, you
-should take a look at this
-dialog and learn what it can do for you.
+results and make your life easier. &nbsp;That said, you should have a
+clear understanding of what these parameters mean, and it is unwise to
+simply change things in a blind attempt to improve your guiding - it
+won't..
 </p>The rightmost control in this row is a "camera properties" button.
-&nbsp; Depending on the particular camera, this button may be enabled
+&nbsp; Depending on your guide camera, this button may be enabled
 to provide access to a configuration dialog&nbsp;unique to the camera.
 &nbsp;However, common camera properties such as gain and binning will
 normally be set in the 'Camera' tab of the PHD2 Advanced Settings dialog.&nbsp;
