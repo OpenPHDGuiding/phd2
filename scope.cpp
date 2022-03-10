@@ -110,7 +110,10 @@ Scope::Scope()
     val = pConfig->Profile.GetBoolean(prefix + "/UseDecComp", true);
     EnableDecCompensation(val);
 
-    m_backlashComp = new BacklashComp(this);
+	val = pConfig->Profile.GetBoolean(prefix + "/DelayBetweenCorrections", true);
+	EnableDelayBetweenCorrections(val);
+
+	m_backlashComp = new BacklashComp(this);
 }
 
 Scope::~Scope()
@@ -521,6 +524,17 @@ void Scope::EnableStopGuidingWhenSlewing(bool enable)
 
     pConfig->Profile.SetBoolean("/scope/StopGuidingWhenSlewing", enable);
     m_stopGuidingWhenSlewing = enable;
+}
+
+void Scope::EnableDelayBetweenCorrections(bool enable)
+{
+	if (enable)
+		Debug.Write("Scope: enabling Delay between RA and Dec corrections\n");
+	else
+		Debug.Write("Scope: disabling Delay between RA and Dec corrections\n");
+
+	pConfig->Profile.SetBoolean("/scope/DelayBetweenCorrections", enable);
+	m_delayBetweenCorrections = enable;
 }
 
 void Scope::StartDecDrift()
@@ -1917,7 +1931,12 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
         _("Check if your mount needs Dec output reversed after a meridian flip. Changing this setting will clear the existing calibration data"));
     m_pNeedFlipDec->Enable(enableCtrls);
 
-    bool usingAO = TheAO() != nullptr;
+	m_pDelayBetweenCorrections = new wxCheckBox(GetParentWindow(AD_cbDelayBetweenCorrections), wxID_ANY, _("Delay between RA && Dec correction"));
+	AddCtrl(CtrlMap, AD_cbDelayBetweenCorrections, m_pDelayBetweenCorrections,
+		_("When checked, PHD will delay 1/4 secs between the RA correction and the Dec correction. Avoids erratic behavior on some older mounts with slower processors."));
+	m_pDelayBetweenCorrections->Enable(enableCtrls);
+
+	bool usingAO = TheAO() != nullptr;
     if (pScope && pScope->CanCheckSlewing())
     {
         m_pStopGuidingWhenSlewing = new wxCheckBox(GetParentWindow(AD_cbSlewDetection), wxID_ANY, _("Stop guiding when mount slews"));
@@ -2017,7 +2036,8 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     m_pCalibrationDuration->SetValue(stepSize);
     m_calibrationDistance = m_pScope->GetCalibrationDistance();
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
-    if (m_pStopGuidingWhenSlewing)
+	m_pDelayBetweenCorrections->SetValue(m_pScope->IsDelayBetweenCorrectionsEnabled());
+	if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
     int pulseSize;
@@ -2067,7 +2087,9 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
         m_pScope->ClearCalibration();
         Debug.Write(wxString::Format("User changed 'Dec-Flip' setting from %d to %d, calibration cleared\n", oldFlip, newFlip));
     }
-    if (m_pStopGuidingWhenSlewing)
+	bool doDelay = m_pDelayBetweenCorrections->GetValue();
+	m_pScope->EnableDelayBetweenCorrections(doDelay);
+	if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
     int newBC = m_pBacklashPulse->GetValue();

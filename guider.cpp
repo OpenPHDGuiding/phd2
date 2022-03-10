@@ -1705,8 +1705,9 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, BrainCtrlId
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 35));
     CondAddCtrl(pSharedSizer, CtrlMap, AD_cbReverseDecOnFlip);
     CondAddCtrl(pSharedSizer, CtrlMap, AD_cbEnableGuiding, wxSizerFlags(0).Border(wxLEFT, 35));
-    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbSlewDetection);
-    pShared->Add(pSharedSizer, def_flags);
+	CondAddCtrl(pSharedSizer, CtrlMap, AD_cbDelayBetweenCorrections);
+	CondAddCtrl(pSharedSizer, CtrlMap, AD_cbSlewDetection, wxSizerFlags(0).Border(wxLEFT, 35));
+	pShared->Add(pSharedSizer, def_flags);
     pShared->Layout();
 
     this->Add(pStarTrack, def_flags);

@@ -63,7 +63,8 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxSpinCtrlDouble *m_pBacklashFloor;
     wxSpinCtrlDouble *m_pBacklashCeiling;
     wxCheckBox *m_pUseDecComp;
-    int m_calibrationDistance;
+	wxCheckBox *m_pDelayBetweenCorrections;
+	int m_calibrationDistance;
     bool m_origBLCEnabled;
 
     void OnCalcCalibrationStep(wxCommandEvent& evt);
@@ -128,7 +129,8 @@ class Scope : public Mount
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
-    Calibration m_prevCalibration;
+	bool m_delayBetweenCorrections;
+	Calibration m_prevCalibration;
     CalibrationDetails m_prevCalibrationDetails;
     CalibrationIssueType m_lastCalibrationIssue;
 
@@ -239,7 +241,9 @@ public:
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled() const;
-    void SetAssumeOrthogonal(bool val);
+	void EnableDelayBetweenCorrections(bool enable);
+	bool IsDelayBetweenCorrectionsEnabled() const;
+	void SetAssumeOrthogonal(bool val);
     bool IsAssumeOrthogonal() const;
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
@@ -289,6 +293,11 @@ private:
 inline bool Scope::IsStopGuidingWhenSlewingEnabled() const
 {
     return m_stopGuidingWhenSlewing;
+}
+
+inline bool Scope::IsDelayBetweenCorrectionsEnabled() const
+{
+	return m_delayBetweenCorrections;
 }
 
 inline bool Scope::IsAssumeOrthogonal() const

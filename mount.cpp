@@ -1030,7 +1030,11 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
             if (m_backlashComp)
                 m_backlashComp->ApplyBacklashComp(moveOptions, yDistance, &requestedYAmount);
 
-            result = MoveAxis(yDirection, requestedYAmount, moveOptions, &yMoveResult);
+			// delay between corrections
+			if (TheScope()->IsDelayBetweenCorrectionsEnabled() == true && requestedXAmount > 0 && requestedYAmount > 0)
+				Sleep(250);
+
+			result = MoveAxis(yDirection, requestedYAmount, moveOptions, &yMoveResult);
         }
 
         // Record the info about the guide step. The info will be picked up back in the main UI thread.
