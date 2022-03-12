@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 04:32+0000\n"
+"POT-Creation-Date: 2022-02-22 06:27+0000\n"
 "PO-Revision-Date: 2019-03-01 14:10+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
@@ -1423,7 +1423,7 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr ""
 
-#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "相机的连接丢失"
@@ -1570,11 +1570,11 @@ msgstr "选择你希望使用的暗场库文件:"
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:912
+#: profile_wizard.cpp:927 profile_wizard.cpp:958 profile_wizard.cpp:963
+#: profile_wizard.cpp:988 profile_wizard.cpp:1002 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:329 scope.cpp:371 scope.cpp:414
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "无"
 
@@ -1616,7 +1616,7 @@ msgstr "确定"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1274
+#: profile_wizard.cpp:1278
 msgid "Cancel"
 msgstr "取消"
 
@@ -5879,11 +5879,11 @@ msgstr ""
 "您还可以为新配置建立基线导星参数。\n"
 "您想立即使用安装向导吗？"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1270
+#: myframe_events.cpp:1173 profile_wizard.cpp:1274
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1272
+#: myframe_events.cpp:1173 profile_wizard.cpp:1276
 msgid "No"
 msgstr "否"
 
@@ -6419,7 +6419,7 @@ msgstr ""
 msgid "Guide scope focal length (mm)"
 msgstr "导星镜焦距(毫米)"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1165
+#: profile_wizard.cpp:282 profile_wizard.cpp:1169
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "像素分辨率: %8.2f”/px"
@@ -6729,26 +6729,26 @@ msgstr ""
 "PHD2无法连接到相机，因此您可能希望稍后处理。 在此期间，您可以手动输入像素大小"
 "以及焦距和像素合并级别。"
 
-#: profile_wizard.cpp:984
+#: profile_wizard.cpp:988
 msgid "Ask"
 msgstr "询问"
 
-#: profile_wizard.cpp:1014
+#: profile_wizard.cpp:1018
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "导星速率调整范围从 %0.1f 至 %0.1fx"
 
-#: profile_wizard.cpp:1037
+#: profile_wizard.cpp:1041
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr "这个相机驱动不能提供像素尺寸信息，您需要手工输入。"
 
-#: profile_wizard.cpp:1088
+#: profile_wizard.cpp:1092
 msgid "Connecting to mount..."
 msgstr "正在连接赤道仪 …"
 
-#: profile_wizard.cpp:1094
+#: profile_wizard.cpp:1098
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6759,7 +6759,7 @@ msgstr ""
 "PHD2无法连接到赤道仪，因此您可能希望稍后处理。 同时，如果您知道赤道仪的导星速"
 "率设置，则可以手动输入。 否则，您可以将其保留为默认值%0.1fx"
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1111
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6769,7 +6769,7 @@ msgstr ""
 "显然，此赤道仪驱动程序无法提供导星速率。 如果您知道赤道仪的导星速率设置，可以"
 "手动输入。 否则，您可以将其保留为默认值 %0.1fx"
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1183
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
@@ -6777,15 +6777,15 @@ msgstr ""
 "当像素分辨率高于 0.5角秒/像素 时，被导星的识别效果最佳。选择像素合并等级2"
 "(Bin2x2)以增加像素分辨率。"
 
-#: profile_wizard.cpp:1186
+#: profile_wizard.cpp:1190
 msgid "Low pixel scale"
 msgstr ""
 
-#: profile_wizard.cpp:1227
+#: profile_wizard.cpp:1231
 msgid "Ask About Connection"
 msgstr "询问关于连接设备"
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1244
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6796,11 +6796,11 @@ msgstr ""
 "未连接相机或其驱动程序未提供像素大小，您可以查找相机手册或使用网络搜索后，自"
 "行输入正确的数值。"
 
-#: profile_wizard.cpp:1243
+#: profile_wizard.cpp:1247
 msgid "Camera Already Connected?"
 msgstr "相机已经连接？"
 
-#: profile_wizard.cpp:1247
+#: profile_wizard.cpp:1251
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6812,11 +6812,11 @@ msgstr ""
 "率。 如果没有，您可以手动输入导星速率。 如果您不知道它是什么，只需将设置保留"
 "为默认值 %0.1fx。"
 
-#: profile_wizard.cpp:1250
+#: profile_wizard.cpp:1254
 msgid "Mount Already Connected?"
 msgstr "赤道仪是否已连接？"
 
-#: profile_wizard.cpp:1254
+#: profile_wizard.cpp:1258
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6830,7 +6830,7 @@ msgstr ""
 "认值 %0.1fx。 如果上一页上的导星速率与从赤道仪中读取的内容不匹配，则将使用赤"
 "道仪的值。"
 
-#: profile_wizard.cpp:1258
+#: profile_wizard.cpp:1262
 msgid "Aux-mount Already Connected?"
 msgstr "Aux赤道仪已经连接？"
 
@@ -7551,32 +7551,32 @@ msgstr ""
 msgid "Profile"
 msgstr "配置文件"
 
-#: star_profile.cpp:162
+#: star_profile.cpp:163
 msgid "Mid row"
 msgstr ""
 
-#: star_profile.cpp:166
+#: star_profile.cpp:167
 msgid "Avg row"
 msgstr ""
 
-#: star_profile.cpp:170
+#: star_profile.cpp:171
 msgid "Avg col"
 msgstr ""
 
-#: star_profile.cpp:232
+#: star_profile.cpp:235
 msgid "Peak"
 msgstr "峰值"
 
-#: star_profile.cpp:240 star_profile.cpp:260
+#: star_profile.cpp:246 star_profile.cpp:273
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr ""
 
-#: star_profile.cpp:242
+#: star_profile.cpp:253
 msgid "HFD: "
 msgstr ""
 
-#: star_profile.cpp:256
+#: star_profile.cpp:268
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr ""

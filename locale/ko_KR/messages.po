@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 04:32+0000\n"
+"POT-Creation-Date: 2022-02-22 06:27+0000\n"
 "PO-Revision-Date: 2020-01-19 14:09+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1442,7 +1442,7 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr ""
 
-#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "카메라 연결이 끊어졌습니다"
@@ -1590,11 +1590,11 @@ msgstr "사용하려는 다크 라이브러리가있는 프로필을 선택하�
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:912
+#: profile_wizard.cpp:927 profile_wizard.cpp:958 profile_wizard.cpp:963
+#: profile_wizard.cpp:988 profile_wizard.cpp:1002 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:329 scope.cpp:371 scope.cpp:414
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "없음"
 
@@ -1636,7 +1636,7 @@ msgstr "확인"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1274
+#: profile_wizard.cpp:1278
 msgid "Cancel"
 msgstr "취소"
 
@@ -6007,11 +6007,11 @@ msgstr ""
 "가이딩 매개 변수 설정을 도와줄 수 있습니다.\n"
 "지금 설정 마법사를 사용 하시겠습니까?"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1270
+#: myframe_events.cpp:1173 profile_wizard.cpp:1274
 msgid "Yes"
 msgstr "예"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1272
+#: myframe_events.cpp:1173 profile_wizard.cpp:1276
 msgid "No"
 msgstr "아니오"
 
@@ -6560,7 +6560,7 @@ msgstr ""
 msgid "Guide scope focal length (mm)"
 msgstr "가이드 망원경 초점거리 (mm)"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1165
+#: profile_wizard.cpp:282 profile_wizard.cpp:1169
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "픽셀 스케일:  %8.2f\"/픽셀"
@@ -6903,16 +6903,16 @@ msgstr ""
 "카메라를 연결할 수 없으므로 나중에 처리 하십시오. 초점 길이, 비닝 수준, 픽셀 "
 "크기를 수동으로 입력하기만 하면 됩니다."
 
-#: profile_wizard.cpp:984
+#: profile_wizard.cpp:988
 msgid "Ask"
 msgstr "물어보기"
 
-#: profile_wizard.cpp:1014
+#: profile_wizard.cpp:1018
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "가이드 속도 설정이 %0.1f 에서 %0.1fx로 조정되었습니다"
 
-#: profile_wizard.cpp:1037
+#: profile_wizard.cpp:1041
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -6920,11 +6920,11 @@ msgstr ""
 "이 카메라는 픽셀 크기를 자동으로 가져올 수 없기 때문에 값을 수동으로 입력해야"
 "합니다"
 
-#: profile_wizard.cpp:1088
+#: profile_wizard.cpp:1092
 msgid "Connecting to mount..."
 msgstr "마운트 연결 중..."
 
-#: profile_wizard.cpp:1094
+#: profile_wizard.cpp:1098
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6936,7 +6936,7 @@ msgstr ""
 "알고 있으면 수동으로 입력 할 수 있습니다. 그렇지 않으면 기본값  %0.1fx 를 사"
 "용합니다"
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1111
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6947,7 +6947,7 @@ msgstr ""
 "으면 수동으로 입력 할 수 있습니다. 그렇지 않으면 기본값  %0.1fx 을 사용하십시"
 "오"
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1183
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
@@ -6955,15 +6955,15 @@ msgstr ""
 "가이드 별 식별은 픽셀 스케일이 0.5아크초/픽셀 이상일 때 가장 잘 작동합니다. "
 "비닝 레벨 2를 선택하면 픽셀 스케일이 증가합니다."
 
-#: profile_wizard.cpp:1186
+#: profile_wizard.cpp:1190
 msgid "Low pixel scale"
 msgstr "낮은 픽셀 스케일"
 
-#: profile_wizard.cpp:1227
+#: profile_wizard.cpp:1231
 msgid "Ask About Connection"
 msgstr "연결에 대해 물어보기"
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1244
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6975,11 +6975,11 @@ msgstr ""
 "픽셀 크기를 보고하지 않는 경우 카메라 설명서 또는 온라인의 카메라 정보를 이용"
 "하여 직접 값을 입력 할 수 있습니다. "
 
-#: profile_wizard.cpp:1243
+#: profile_wizard.cpp:1247
 msgid "Camera Already Connected?"
 msgstr "카메라가 이미 연결되어 있습니까?"
 
-#: profile_wizard.cpp:1247
+#: profile_wizard.cpp:1251
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6992,11 +6992,11 @@ msgstr ""
 "드 속도를 수동으로 입력 할 수 있습니다. 마운트의 가이드 속도를 모른다면, 설정"
 "을 기본값 %0.1fx을 사용합니다."
 
-#: profile_wizard.cpp:1250
+#: profile_wizard.cpp:1254
 msgid "Mount Already Connected?"
 msgstr "마운트가 이미 연결되어 있습니까?"
 
-#: profile_wizard.cpp:1254
+#: profile_wizard.cpp:1258
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -7011,7 +7011,7 @@ msgstr ""
 "%0.1fx로 두십시오. 이전 페이지에서 설정한 가이드 속도가 마운트에서 읽은 속도"
 "와 일치하지 않으면 마운트에서 읽은 값이 사용됩니다."
 
-#: profile_wizard.cpp:1258
+#: profile_wizard.cpp:1262
 msgid "Aux-mount Already Connected?"
 msgstr "Aux 마운트가 이미 연결되어 있습니까?"
 
@@ -7791,32 +7791,32 @@ msgstr "잠금을 %d,%d 로 설정"
 msgid "Profile"
 msgstr "프로필"
 
-#: star_profile.cpp:162
+#: star_profile.cpp:163
 msgid "Mid row"
 msgstr "중간 행"
 
-#: star_profile.cpp:166
+#: star_profile.cpp:167
 msgid "Avg row"
 msgstr ""
 
-#: star_profile.cpp:170
+#: star_profile.cpp:171
 msgid "Avg col"
 msgstr ""
 
-#: star_profile.cpp:232
+#: star_profile.cpp:235
 msgid "Peak"
 msgstr "피크"
 
-#: star_profile.cpp:240 star_profile.cpp:260
+#: star_profile.cpp:246 star_profile.cpp:273
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr ""
 
-#: star_profile.cpp:242
+#: star_profile.cpp:253
 msgid "HFD: "
 msgstr ""
 
-#: star_profile.cpp:256
+#: star_profile.cpp:268
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr ""

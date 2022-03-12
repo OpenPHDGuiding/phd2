@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 04:32+0000\n"
+"POT-Creation-Date: 2022-02-22 06:27+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -1453,7 +1453,7 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr ""
 
-#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "Соединение с камерой утеряно"
@@ -1602,11 +1602,11 @@ msgstr ""
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:912
+#: profile_wizard.cpp:927 profile_wizard.cpp:958 profile_wizard.cpp:963
+#: profile_wizard.cpp:988 profile_wizard.cpp:1002 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:329 scope.cpp:371 scope.cpp:414
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "Нет"
 
@@ -1648,7 +1648,7 @@ msgstr "Принять"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1274
+#: profile_wizard.cpp:1278
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -6118,11 +6118,11 @@ msgstr ""
 " может помочь установить основные параметры новой конфигурации.\n"
 "Запустить его?"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1270
+#: myframe_events.cpp:1173 profile_wizard.cpp:1274
 msgid "Yes"
 msgstr "Да"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1272
+#: myframe_events.cpp:1173 profile_wizard.cpp:1276
 msgid "No"
 msgstr "Нет"
 
@@ -6675,7 +6675,7 @@ msgstr ""
 msgid "Guide scope focal length (mm)"
 msgstr "Фокусное расстояние гида в мм"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1165
+#: profile_wizard.cpp:282 profile_wizard.cpp:1169
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "Масштаб пикселей %8.2f\"/пикс"
@@ -7025,27 +7025,27 @@ msgstr ""
 "PHD2 не удалось подключиться к камере. Пока эта проблема не решена, размер "
 "пикселя, фокусное расстояние и уровень биннинга можно задать вручную."
 
-#: profile_wizard.cpp:984
+#: profile_wizard.cpp:988
 msgid "Ask"
 msgstr "Спросить"
 
-#: profile_wizard.cpp:1014
+#: profile_wizard.cpp:1018
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "Скорость гидирования изменена с %0.1f на %0.1fx"
 
-#: profile_wizard.cpp:1037
+#: profile_wizard.cpp:1041
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
 "Камера не может сообщить размер пикселя, придётся установить его вручную "
 
-#: profile_wizard.cpp:1088
+#: profile_wizard.cpp:1092
 msgid "Connecting to mount..."
 msgstr "Подключение монтировки.."
 
-#: profile_wizard.cpp:1094
+#: profile_wizard.cpp:1098
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -7057,7 +7057,7 @@ msgstr ""
 "гидирования, то, можете ввести её вручную. В противном случае можно оставить "
 "значение по умолчанию %0.1fx"
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1111
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -7067,7 +7067,7 @@ msgstr ""
 "Видимо, этот драйвер монтировки не передаёт скорость гидирования. Введите её "
 "вручную, если знаете, если же нет, оставьте значение по умолчанию %0.1fx"
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1183
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
@@ -7075,15 +7075,15 @@ msgstr ""
 "Опорная звезда лучше опознаётся при масштабе пикселей больше 0.5\"/пикс. Для "
 "увеличения масштаба пикселей выберите биннинг 2го уровня."
 
-#: profile_wizard.cpp:1186
+#: profile_wizard.cpp:1190
 msgid "Low pixel scale"
 msgstr "Мелкий масштаб калибровки"
 
-#: profile_wizard.cpp:1227
+#: profile_wizard.cpp:1231
 msgid "Ask About Connection"
 msgstr "Запрос соединения"
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1244
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -7094,11 +7094,11 @@ msgstr ""
 "автоматически. Если камера не подключена или драйвер не распознаёт размер "
 "пикселя, его можно ввести вручную, взяв из руководства камеры или онлайн."
 
-#: profile_wizard.cpp:1243
+#: profile_wizard.cpp:1247
 msgid "Camera Already Connected?"
 msgstr "Камера уже подключена?"
 
-#: profile_wizard.cpp:1247
+#: profile_wizard.cpp:1251
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -7111,11 +7111,11 @@ msgstr ""
 "гидирования можно ввести вручную. Если вы не знаете, что это такое, оставьте "
 "значение по умолчанию %0.1fx."
 
-#: profile_wizard.cpp:1250
+#: profile_wizard.cpp:1254
 msgid "Mount Already Connected?"
 msgstr "Монтировка уже подключена?"
 
-#: profile_wizard.cpp:1254
+#: profile_wizard.cpp:1258
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -7130,7 +7130,7 @@ msgstr ""
 "гидирования на предыдущей странице не совпадает с тем, что прочитано из "
 "монтировки, будет использоваться значение  монтировки."
 
-#: profile_wizard.cpp:1258
+#: profile_wizard.cpp:1262
 msgid "Aux-mount Already Connected?"
 msgstr "Дополнительная монтировка уже подключена?"
 
@@ -7911,32 +7911,32 @@ msgstr "Задать выбор %d %d"
 msgid "Profile"
 msgstr "Профиль"
 
-#: star_profile.cpp:162
+#: star_profile.cpp:163
 msgid "Mid row"
 msgstr "Средн."
 
-#: star_profile.cpp:166
+#: star_profile.cpp:167
 msgid "Avg row"
 msgstr "Ср. строка"
 
-#: star_profile.cpp:170
+#: star_profile.cpp:171
 msgid "Avg col"
 msgstr "Ср. столбец"
 
-#: star_profile.cpp:232
+#: star_profile.cpp:235
 msgid "Peak"
 msgstr "Пик"
 
-#: star_profile.cpp:240 star_profile.cpp:260
+#: star_profile.cpp:246 star_profile.cpp:273
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr "%s полуширина: %2f"
 
-#: star_profile.cpp:242
+#: star_profile.cpp:253
 msgid "HFD: "
 msgstr "HFD:"
 
-#: star_profile.cpp:256
+#: star_profile.cpp:268
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f\")"

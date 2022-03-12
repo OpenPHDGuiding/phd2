@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 04:32+0000\n"
+"POT-Creation-Date: 2022-02-22 06:27+0000\n"
 "PO-Revision-Date: 2021-05-17 11:58+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -1426,7 +1426,7 @@ msgstr "相機不支援 %s 模式, 請選擇 %s 模式"
 msgid "Unable to initialize camera."
 msgstr "無法啟用相機"
 
-#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "與相機連接中斷"
@@ -1573,11 +1573,11 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:912
+#: profile_wizard.cpp:927 profile_wizard.cpp:958 profile_wizard.cpp:963
+#: profile_wizard.cpp:988 profile_wizard.cpp:1002 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:329 scope.cpp:371 scope.cpp:414
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1619,7 +1619,7 @@ msgstr "確認"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1274
+#: profile_wizard.cpp:1278
 msgid "Cancel"
 msgstr "取消"
 
@@ -5932,11 +5932,11 @@ msgstr ""
 "似乎這是第一次連接到你的相機和赤道儀, 設定精靈將會幫助你為你所使用設備\n"
 "設定導星所需的基本參數。是否要使用設定精靈呢?"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1270
+#: myframe_events.cpp:1173 profile_wizard.cpp:1274
 msgid "Yes"
 msgstr "是"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1272
+#: myframe_events.cpp:1173 profile_wizard.cpp:1276
 msgid "No"
 msgstr "否"
 
@@ -6483,7 +6483,7 @@ msgstr ""
 msgid "Guide scope focal length (mm)"
 msgstr "導星鏡焦長 (mm)"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1165
+#: profile_wizard.cpp:282 profile_wizard.cpp:1169
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "像素比例: %8.2f\"/px"
@@ -6812,26 +6812,26 @@ msgstr ""
 "PHD2 無法連接相機, 你可能想要稍後再予處理, 現在你只要手動輸入像素大小、導星鏡"
 "焦長及影像併合值即可."
 
-#: profile_wizard.cpp:984
+#: profile_wizard.cpp:988
 msgid "Ask"
 msgstr "詢問"
 
-#: profile_wizard.cpp:1014
+#: profile_wizard.cpp:1018
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "導星速率設定由 %0.1f 調整為 %0.1fx"
 
-#: profile_wizard.cpp:1037
+#: profile_wizard.cpp:1041
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr "導星相機驅動程式無法回報像素大小數值, 你必須手動設定此參數"
 
-#: profile_wizard.cpp:1088
+#: profile_wizard.cpp:1092
 msgid "Connecting to mount..."
 msgstr "連接赤道儀中..."
 
-#: profile_wizard.cpp:1094
+#: profile_wizard.cpp:1098
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6842,7 +6842,7 @@ msgstr ""
 "PHD2 無法連接該赤道儀, 你可能得在之後進行調整, 此時, 假如你知道赤道儀的導星速"
 "率為何, 你可以手動輸入此參數; 否則就維持為預設值 %0.1fx 即可"
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1111
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6852,7 +6852,7 @@ msgstr ""
 "很明顯地, 赤道儀驅動程式不會回報導星速率數值, 如果你知道的話, 請手動輸入該數"
 "值, 否則就維持預設值 %0.1fx"
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1183
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
@@ -6860,15 +6860,15 @@ msgstr ""
 "當像素比例高於 0.5“/ px 時, 導星識別效果最佳, 請選擇 2 的影像併合值以增加像素"
 "比例"
 
-#: profile_wizard.cpp:1186
+#: profile_wizard.cpp:1190
 msgid "Low pixel scale"
 msgstr "低像素比例"
 
-#: profile_wizard.cpp:1227
+#: profile_wizard.cpp:1231
 msgid "Ask About Connection"
 msgstr "詢問關於連接狀態"
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1244
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6879,11 +6879,11 @@ msgstr ""
 "數值, 未連接或驅動程式無法回報像素大小時, 你可以根據相機手冊或網路上文件的資"
 "料手動設定. "
 
-#: profile_wizard.cpp:1243
+#: profile_wizard.cpp:1247
 msgid "Camera Already Connected?"
 msgstr "已連接相機?"
 
-#: profile_wizard.cpp:1247
+#: profile_wizard.cpp:1251
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6894,11 +6894,11 @@ msgstr ""
 "赤道儀是否已連接並可與 PHD2 溝通? 如果已經連好,  PHD2 可以自動讀取導星速率數"
 "值, 未連接時, 你可以手動設定該參數, 如果不清楚的話, 維持預設數值 %0.1fx 即可."
 
-#: profile_wizard.cpp:1250
+#: profile_wizard.cpp:1254
 msgid "Mount Already Connected?"
 msgstr "已經連接赤道儀?"
 
-#: profile_wizard.cpp:1254
+#: profile_wizard.cpp:1258
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6912,7 +6912,7 @@ msgstr ""
 "即可; 如果前一頁設定的導星速率與由赤道儀讀取到的數值不批配的話, 會採用赤道儀"
 "的數值."
 
-#: profile_wizard.cpp:1258
+#: profile_wizard.cpp:1262
 msgid "Aux-mount Already Connected?"
 msgstr "已連接輔助赤道儀?"
 
@@ -7657,32 +7657,32 @@ msgstr "鎖定設定為 %d,%d"
 msgid "Profile"
 msgstr "配置檔案"
 
-#: star_profile.cpp:162
+#: star_profile.cpp:163
 msgid "Mid row"
 msgstr "Mid row"
 
-#: star_profile.cpp:166
+#: star_profile.cpp:167
 msgid "Avg row"
 msgstr "Avg row"
 
-#: star_profile.cpp:170
+#: star_profile.cpp:171
 msgid "Avg col"
 msgstr "Avg col"
 
-#: star_profile.cpp:232
+#: star_profile.cpp:235
 msgid "Peak"
 msgstr "峰值"
 
-#: star_profile.cpp:240 star_profile.cpp:260
+#: star_profile.cpp:246 star_profile.cpp:273
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr "%s FWHM: %.2f"
 
-#: star_profile.cpp:242
+#: star_profile.cpp:253
 msgid "HFD: "
 msgstr "HFD: "
 
-#: star_profile.cpp:256
+#: star_profile.cpp:268
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f”)"

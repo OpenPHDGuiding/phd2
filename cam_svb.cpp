@@ -516,7 +516,9 @@ void SVBCamera::StopCapture()
     if (m_capturing)
     {
         Debug.Write("SVB: stopcapture\n");
-        SVBStopVideoCapture(m_cameraId);
+        // we used to call SVBStopVideoCapture() at this point, but we found in testing that
+        // the call can occasionally hang, and also that it is not necessary, even when ROI
+        // or binning changes.
         m_capturing = false;
     }
 }
@@ -725,7 +727,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
             SVBSendSoftTrigger(m_cameraId);
 
-            enum { GRACE_PERIOD_MS = 250 };
+            enum { GRACE_PERIOD_MS = 500 }; // recommended by Svbony
             CameraWatchdog watchdog(duration, duration + GRACE_PERIOD_MS);
 
             if (duration > 100)

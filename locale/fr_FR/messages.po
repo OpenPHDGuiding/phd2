@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 04:32+0000\n"
+"POT-Creation-Date: 2022-02-22 06:27+0000\n"
 "PO-Revision-Date: 2021-07-05 23:03+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -1476,7 +1476,7 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr "Impossible d'initialiser la caméra."
 
-#: cam_svb.cpp:767 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
 #: cam_zwo.cpp:889
 msgid "Lost connection to camera"
 msgstr "Connexion à la caméra perdue"
@@ -1627,11 +1627,11 @@ msgstr ""
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
 #: mount.cpp:872 myframe.cpp:2950 profile_wizard.cpp:354
 #: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:908
-#: profile_wizard.cpp:923 profile_wizard.cpp:954 profile_wizard.cpp:959
-#: profile_wizard.cpp:984 profile_wizard.cpp:998 rotator.cpp:49 rotator.cpp:84
-#: scope.cpp:329 scope.cpp:371 scope.cpp:414 statswindow.cpp:262
-#: stepguider.cpp:105 stepguider.cpp:126
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:912
+#: profile_wizard.cpp:927 profile_wizard.cpp:958 profile_wizard.cpp:963
+#: profile_wizard.cpp:988 profile_wizard.cpp:1002 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:329 scope.cpp:371 scope.cpp:414
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "Aucun"
 
@@ -1675,7 +1675,7 @@ msgstr "OK"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1274
+#: profile_wizard.cpp:1278
 msgid "Cancel"
 msgstr "Abandon"
 
@@ -6270,11 +6270,11 @@ msgstr ""
 "et paramétrer un guidage de base pour votre nouvelle configuration.\n"
 "Voulez-vous utiliser l'assistant de configuration maintenant?"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1270
+#: myframe_events.cpp:1173 profile_wizard.cpp:1274
 msgid "Yes"
 msgstr "Oui"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1272
+#: myframe_events.cpp:1173 profile_wizard.cpp:1276
 msgid "No"
 msgstr "Non"
 
@@ -6853,7 +6853,7 @@ msgstr ""
 msgid "Guide scope focal length (mm)"
 msgstr "Longueur focale de la lunette guide (mm)"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1165
+#: profile_wizard.cpp:282 profile_wizard.cpp:1169
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "Échelle du pixel : %8.2f\"/px"
@@ -7234,16 +7234,16 @@ msgstr ""
 "occuper plus tard. En attendant, vous pouvez simplement entrer la taille de "
 "pixel manuellement avec la longueur focale et les niveaux de binning."
 
-#: profile_wizard.cpp:984
+#: profile_wizard.cpp:988
 msgid "Ask"
 msgstr "Questionner"
 
-#: profile_wizard.cpp:1014
+#: profile_wizard.cpp:1018
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "Réglage de la vitesse de guidage ajusté à partir %0.1f to %0.1fx"
 
-#: profile_wizard.cpp:1037
+#: profile_wizard.cpp:1041
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -7251,11 +7251,11 @@ msgstr ""
 "Ce pilote de caméra ne signale pas la taille de pixel, vous devez donc "
 "entrer la valeur manuellement"
 
-#: profile_wizard.cpp:1088
+#: profile_wizard.cpp:1092
 msgid "Connecting to mount..."
 msgstr "Connexion à la monture..."
 
-#: profile_wizard.cpp:1094
+#: profile_wizard.cpp:1098
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -7268,7 +7268,7 @@ msgstr ""
 "vitesse de guidage de la monture, vous pouvez le saisir manuellement. Sinon, "
 "vous pouvez simplement le laisser à la valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1111
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -7280,7 +7280,7 @@ msgstr ""
 "pouvez le saisir manuellement. Sinon, vous pouvez simplement le laisser à la "
 "valeur par défaut de %0.1fx"
 
-#: profile_wizard.cpp:1179
+#: profile_wizard.cpp:1183
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
@@ -7289,15 +7289,15 @@ msgstr ""
 "pixel est supérieure à 0,5\"/ px. Sélectionnez le niveau de binning 2 pour "
 "augmenter l’échelle de pixel."
 
-#: profile_wizard.cpp:1186
+#: profile_wizard.cpp:1190
 msgid "Low pixel scale"
 msgstr "Échelle de pixel basse"
 
-#: profile_wizard.cpp:1227
+#: profile_wizard.cpp:1231
 msgid "Ask About Connection"
 msgstr "Questionner à Propos de la Connexion"
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1244
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -7310,11 +7310,11 @@ msgstr ""
 "pixels, vous pouvez saisir la valeur vous-même à l'aide des informations du "
 "manuel de la caméra ou en ligne. "
 
-#: profile_wizard.cpp:1243
+#: profile_wizard.cpp:1247
 msgid "Camera Already Connected?"
 msgstr "Caméra Déjà Connectée ?"
 
-#: profile_wizard.cpp:1247
+#: profile_wizard.cpp:1251
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -7328,11 +7328,11 @@ msgstr ""
 "savez pas ce que c'est, laissez simplement le paramètre à la valeur par "
 "défaut de %0.1fx."
 
-#: profile_wizard.cpp:1250
+#: profile_wizard.cpp:1254
 msgid "Mount Already Connected?"
 msgstr "Monture Déjà Connectée ?"
 
-#: profile_wizard.cpp:1254
+#: profile_wizard.cpp:1258
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -7349,7 +7349,7 @@ msgstr ""
 "correspond pas à ce qui est lu sur la monture, la valeur de la monture sera "
 "utilisée."
 
-#: profile_wizard.cpp:1258
+#: profile_wizard.cpp:1262
 msgid "Aux-mount Already Connected?"
 msgstr "Monture Auxiliaire Déjà Montée ?"
 
@@ -8166,32 +8166,32 @@ msgstr "Verrouillage défini à %d, %d"
 msgid "Profile"
 msgstr "Profil"
 
-#: star_profile.cpp:162
+#: star_profile.cpp:163
 msgid "Mid row"
 msgstr "Rangée du Milieu"
 
-#: star_profile.cpp:166
+#: star_profile.cpp:167
 msgid "Avg row"
 msgstr "Moy. rangée"
 
-#: star_profile.cpp:170
+#: star_profile.cpp:171
 msgid "Avg col"
 msgstr "Moy. col"
 
-#: star_profile.cpp:232
+#: star_profile.cpp:235
 msgid "Peak"
 msgstr "Pic"
 
-#: star_profile.cpp:240 star_profile.cpp:260
+#: star_profile.cpp:246 star_profile.cpp:273
 #, c-format
 msgid "%s FWHM: %.2f"
 msgstr "%s FWHM : %.2f"
 
-#: star_profile.cpp:242
+#: star_profile.cpp:253
 msgid "HFD: "
 msgstr "HFD : "
 
-#: star_profile.cpp:256
+#: star_profile.cpp:268
 #, c-format
 msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
 msgstr "%s FWHM : %.2f, HFD : %.2f (%.2f\")"

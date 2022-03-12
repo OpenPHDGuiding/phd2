@@ -395,7 +395,7 @@ bool GuiderMultiStar::SetCurrentPosition(const usImage *pImage, const PHD_Point&
 
         m_massChecker->Reset();
         bError = !m_primaryStar.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(),
-                              GetMinStarHFD(), pCamera->GetSaturationADU());
+                              GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
     }
     catch (const wxString& Msg)
     {
@@ -478,7 +478,7 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
         m_massChecker->Reset();
 
         if (!m_primaryStar.Find(image, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
-                         pCamera->GetSaturationADU()))
+                         pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -758,7 +758,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                             for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
                             {
                                 if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                                    GetMinStarHFD(), pCamera->GetSaturationADU()))
+                                    GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
                                 {
                                     pGS->referencePoint.X = pGS->X;
                                     pGS->referencePoint.Y = pGS->Y;
@@ -793,7 +793,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         break;
                     m_starsUsed++;              // "used" means "considered" for purposes of UI
                     if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                        GetMinStarHFD(), pCamera->GetSaturationADU()))
+                        GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL))
                     {
                         double dX = pGS->X - pGS->referencePoint.X;
                         double dY = pGS->Y - pGS->referencePoint.Y;
@@ -925,7 +925,7 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         Star newStar(m_primaryStar);
 
         if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), GetMinStarHFD(),
-                          pCamera->GetSaturationADU()))
+            pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
@@ -1388,7 +1388,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
 
     double minHFD = pGuider->GetMinStarHFDFloor();
     m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDDefault(), 0.5);
+        wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDFloor(), 0.5);
     m_MinHFD->SetDigits(1);
     wxSizer *pHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum star HFD (pixels)"), m_MinHFD,
         _("The minimum star HFD (size) that will be used for identifying a guide star. "
