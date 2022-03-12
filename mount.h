@@ -366,7 +366,7 @@ public:
     virtual wxString CalibrationSettingsSummary() const { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip();
-    virtual bool HasHPDecEncoder() { return false; }
+    virtual bool HasHPEncoders() { return false; }
 
     virtual void StartDecDrift();
     virtual void EndDecDrift();

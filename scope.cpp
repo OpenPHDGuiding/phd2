@@ -495,7 +495,7 @@ bool Scope::CalibrationFlipRequiresDecFlip()
     return m_calibrationFlipRequiresDecFlip;
 }
 
-bool Scope::HasHPDecEncoder()
+bool Scope::HasHPEncoders()
 {
     return pConfig->Profile.GetBoolean("/scope/HiResEncoders", false);
 }

@@ -1199,7 +1199,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
             bestEstimate *= 0.9;
             minMoveFloor = 0.05;
         }
-        if (pMount->HasHPDecEncoder())
+        if (pMount->HasHPEncoders())
             multiplier_ra = 1.0;
         else
             multiplier_ra = 0.65;
@@ -1460,7 +1460,7 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
-    bool hasEncoders = pMount->HasHPDecEncoder();
+    bool hasEncoders = pMount->HasHPEncoders();
     if (hasEncoders || smallBacklash)               // Uses encoders or has zero backlash
     {
         GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();
