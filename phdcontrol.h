@@ -58,6 +58,7 @@ public:
     static void OnAppExit();
 
     static bool IsSettling();
+    static bool IsIdle();               // Not currently working through various transitions in guiding state
 };
 
 #endif

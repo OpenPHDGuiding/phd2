@@ -72,6 +72,13 @@ struct AutoExposureCfg
     double targetSNR;
 };
 
+struct VarDelayCfg
+{
+    bool enabled;
+    int shortDelay;     // times in milliseconds
+    int longDelay;
+};
+
 typedef void alert_fn(long);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
@@ -141,8 +148,12 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxComboBox *m_autoExpDurationMin;
     wxComboBox *m_autoExpDurationMax;
     wxSpinCtrlDouble *m_autoExpSNR;
+    wxCheckBox *m_varExposureDelayEnabled;
+    wxSpinCtrl *m_varExpDelayShort;
+    wxSpinCtrl *m_varExpDelayLong;
     void OnDirSelect(wxCommandEvent& evt);
     void OnImageLogEnableChecked(wxCommandEvent& event);
+    void OnVariableDelayChecked(wxCommandEvent& evt);
 
 public:
     MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -165,6 +176,7 @@ protected:
 
     bool SetTimeLapse(int timeLapse);
     int GetTimeLapse() const;
+    int GetExposureDelay();
 
     bool SetFocalLength(int focalLength);
 
@@ -181,6 +193,7 @@ private:
     DitherSpiral m_ditherSpiral;
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
+    VarDelayCfg m_varDelayConfig;
     int  m_focalLength;
     bool m_beepForLostStar;
     double m_sampling;
@@ -342,6 +355,8 @@ public:
     void ResetAutoExposure();
     void AdjustAutoExposure(double curSNR);
     static wxString ExposureDurationLabel(int exposure);
+    const VarDelayCfg& GetVariableDelayConfig() const { return m_varDelayConfig; }
+    void SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS);
     double GetDitherScaleFactor() const;
     bool SetDitherScaleFactor(double ditherScaleFactor);
     bool GetDitherRaOnly() const;

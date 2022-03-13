@@ -215,6 +215,7 @@ public:
     static EXPOSED_STATE GetExposedState();
     bool IsCalibratingOrGuiding() const;
     bool IsCalibrating() const;
+    bool IsRecentering() const { return m_ditherRecenterRemaining.IsValid(); }
     bool IsGuiding() const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
@@ -412,7 +413,7 @@ inline double Guider::GetMinStarHFD() const
 
 inline double Guider::GetMinStarHFDFloor() const
 {
-    return 1.0;
+    return 0.1;
 }
 
 inline double Guider::GetMinStarHFDDefault() const
