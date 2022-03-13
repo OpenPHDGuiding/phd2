@@ -194,7 +194,6 @@ private:
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     VarDelayCfg m_varDelayConfig;
-    int m_varLastExpDelay;
     int  m_focalLength;
     bool m_beepForLostStar;
     double m_sampling;

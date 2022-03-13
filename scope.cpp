@@ -110,6 +110,8 @@ Scope::Scope()
     val = pConfig->Profile.GetBoolean(prefix + "/UseDecComp", true);
     EnableDecCompensation(val);
 
+    m_hasHPEncoders = pConfig->Profile.GetBoolean("/scope/HiResEncoders", false);
+
     m_backlashComp = new BacklashComp(this);
 }
 
@@ -495,9 +497,10 @@ bool Scope::CalibrationFlipRequiresDecFlip()
     return m_calibrationFlipRequiresDecFlip;
 }
 
-bool Scope::HasHPEncoders()
+// No 'Set' function, property is set via profile in new-profile-wizard
+bool Scope::HasHPEncoders() const
 {
-    return pConfig->Profile.GetBoolean("/scope/HiResEncoders", false);
+    return m_hasHPEncoders;
 }
 
 void Scope::SetCalibrationFlipRequiresDecFlip(bool val)

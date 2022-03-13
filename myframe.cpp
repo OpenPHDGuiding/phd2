@@ -610,17 +610,25 @@ int MyFrame::GetTextWidth(wxControl *pControl, const wxString& string)
 // Get either timelapse value or state-dependent variable-exposure-delay
 int MyFrame::GetExposureDelay()
 {
-    if (!m_varDelayConfig.enabled)
-        return m_timeLapse;
+    int rslt;
 
-    int rslt = 0;
-    if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() && pMount->GetGuidingEnabled())   // pMount will be valid in any state of guiding
+    if (!m_varDelayConfig.enabled)
+        rslt = m_timeLapse;
+    else if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() &&
+        pMount->GetGuidingEnabled())
+    {
         rslt = m_varDelayConfig.longDelay;
+    }
     else
         rslt = m_varDelayConfig.shortDelay;
-    if (rslt != m_varLastExpDelay)
+
+    static int s_lastExposureDelay = -1;
+    if (rslt != s_lastExposureDelay)
+    {
         Debug.Write(wxString::Format("Exposure delay set to %d\n", rslt));
-    m_varLastExpDelay = rslt;
+        s_lastExposureDelay = rslt;
+    }
+
     return rslt;
 }
 

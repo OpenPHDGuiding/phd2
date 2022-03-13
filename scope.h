@@ -133,6 +133,7 @@ class Scope : public Mount
     CalibrationIssueType m_lastCalibrationIssue;
 
     bool m_useDecCompensation;
+    bool m_hasHPEncoders;
 
     enum CALIBRATION_STATE
     {
@@ -235,7 +236,7 @@ public:
     virtual bool RequiresCamera();
     virtual bool RequiresStepGuider();
     bool CalibrationFlipRequiresDecFlip() override;
-    bool HasHPEncoders() override;
+    bool HasHPEncoders() const override;
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled() const;
