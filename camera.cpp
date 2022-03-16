@@ -814,12 +814,13 @@ static void MakeBold(wxControl *ctrl)
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
-    wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 10, 10);
+    wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 5, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szNoiseReduction));
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
     pGenGroup->Add(pTopline, def_flags);
+    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
     pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
     pGenGroup->Layout();
 

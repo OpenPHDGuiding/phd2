@@ -82,7 +82,7 @@ private:
     wxChoice *m_pBinningLevel;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
-    wxCheckBox *m_pDecEncoder;
+    wxCheckBox *m_pHPEncoders;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
     wxStaticBoxSizer *m_pHelpGroup;
@@ -298,11 +298,11 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     mtSizer->Add(m_pGuideSpeed, 1);
     AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
 
-    m_pDecEncoder = new wxCheckBox(this, wxID_ANY, _("Declination axis has high-precision encoder (a few high-end mounts)"));
-    m_pDecEncoder->SetToolTip(_("Mount has high-precision encoders on both axes with little or no Dec backlash (e.g. 10Micron, Astro-Physics AE, iOptron EC2 or other high-end mounts"));
-    m_pDecEncoder->SetValue(false);
+    m_pHPEncoders = new wxCheckBox(this, wxID_ANY, _("Mount has high-precision encoders"));
+    m_pHPEncoders->SetToolTip(_("Mount has high-precision encoders on both axes with little or no Dec backlash (e.g. 10Micron, Astro-Physics AE, Planewave, iOptron EC2 or other high-end mounts"));
+    m_pHPEncoders->SetValue(false);
 
-    m_pMountProperties->Add(m_pDecEncoder);
+    m_pMountProperties->Add(m_pHPEncoders);
 
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
     m_pvSizer->Add(m_pMountProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -776,12 +776,18 @@ static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning, b
 {
     double minMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
 
-    // Typically Min moves for hysteresis guiding in RA and resist switch in Dec, but Dec Lowpass2 for mounts with high-end encoders
-    pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Hysteresis/minMove", minMove);
+    // Typically Min moves for hysteresis guiding in RA and resist switch in Dec, but Lowpass2 for mounts with high-end encoders
+
     if (!highResEncoders)
+    {
         pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
+        pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Hysteresis/minMove", minMove);
+    }
     else
+    {
         pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/Lowpass2/minMove", minMove);
+        pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Lowpass2/minMove", minMove);
+    }
 }
 
 struct AutoConnectCamera
@@ -849,7 +855,7 @@ void ProfileWizard::WrapUp()
 
     Debug.Write(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, High-res encoders=%s, AuxMount=%s, "
         "AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, CalDist=%d, LaunchDarks=%d\n",
-        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_pDecEncoder->GetValue() ? "True" : "False", m_SelectedAuxMount, m_SelectedAO,
+        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_pHPEncoders->GetValue() ? "True" : "False", m_SelectedAuxMount, m_SelectedAO,
         m_PixelSize, m_FocalLength, calibrationStepSize, calibrationDistance, m_launchDarks));
 
     // create the new profile
@@ -869,10 +875,13 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/camera/binning", binning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     pConfig->Profile.SetInt("/scope/CalibrationDistance", calibrationDistance);
-    bool highResEncoders = m_pDecEncoder->GetValue();
+    bool highResEncoders = m_pHPEncoders->GetValue();
     pConfig->Profile.SetBoolean("/scope/HiResEncoders", highResEncoders);
     if (highResEncoders)
+    {
         pConfig->Profile.SetInt("/scope/YGuideAlgorithm", GUIDE_ALGORITHM_LOWPASS2);
+        pConfig->Profile.SetInt("/scope/XGuideAlgorithm", GUIDE_ALGORITHM_LOWPASS2);
+    }
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoRestore);
     pConfig->Profile.SetBoolean("/guider/multistar/enabled", true);
@@ -883,7 +892,7 @@ void ProfileWizard::WrapUp()
     GuideLog.EnableLogging(true);       // Especially for newbies
 
     // Construct a good baseline set of guiding parameters based on image scale
-    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning, m_pDecEncoder->GetValue());
+    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning, m_pHPEncoders->GetValue());
 
     EndModal(wxOK);
 }

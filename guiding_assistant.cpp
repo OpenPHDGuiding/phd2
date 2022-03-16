@@ -1124,7 +1124,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
     double pxscale = pFrame->GetCameraPixelScale();
     StarDisplacement val = m_decAxisStats.GetEntry(0);
     double tStart = val.DeltaTime;
-    double multiplier_ra = 0.65;                                    // 65% of Dec recommendation, empirical value
+    double multiplier_ra;                                           // 65% of Dec recommendation, but 100% for encoder mounts
     double multiplier_dec = (pxscale < 1.5) ? 1.28 : 1.65;          // 20% or 10% activity target based on normal distribution
     double minMoveFloor = 0.1;
 
@@ -1199,6 +1199,10 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double&RecDec)
             bestEstimate *= 0.9;
             minMoveFloor = 0.05;
         }
+        if (pMount->HasHPEncoders())
+            multiplier_ra = 1.0;
+        else
+            multiplier_ra = 0.65;
         // round up to next multiple of .05, but do not go below 0.05 pixel for multi-star, 0.1 for single-star
         double const unit = 0.05;
         double roundUpEst = std::max(round(bestEstimate * multiplier_dec / unit + 0.5) * unit, 0.05);
@@ -1456,7 +1460,7 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
-    bool hasEncoders = pMount->HasHPDecEncoder();
+    bool hasEncoders = pMount->HasHPEncoders();
     if (hasEncoders || smallBacklash)               // Uses encoders or has zero backlash
     {
         GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();

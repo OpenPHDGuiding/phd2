@@ -62,6 +62,7 @@ enum BRAIN_CTRL_IDS
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
     AD_szAutoExposure,
+    AD_szVariableExposureDelay,
     AD_szSaturationOptions,
     AD_szCameraTimeout,
     AD_szTimeLapse,

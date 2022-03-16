@@ -215,6 +215,7 @@ public:
     static EXPOSED_STATE GetExposedState();
     bool IsCalibratingOrGuiding() const;
     bool IsCalibrating() const;
+    bool IsRecentering() const { return m_ditherRecenterRemaining.IsValid(); }
     bool IsGuiding() const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
