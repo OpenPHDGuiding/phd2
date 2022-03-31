@@ -254,6 +254,7 @@ struct GuidingAsstWin : public wxDialog
     bool m_suspectCalibration;
     bool inBLTWrapUp = false;
     bool origMultistarMode;
+    VarDelayCfg origVarDelayConfig;
 
     bool m_measuringBacklash;
     BacklashTool *m_backlashTool;
@@ -526,7 +527,7 @@ GuidingAsstWin::GuidingAsstWin()
         "plenty of room to move in the north direction.  If the guide star is lost, increase the size of the search region to at least 20 px"));
     if (TheScope())
     {
-        m_backlashCB->SetValue(true);
+        m_backlashCB->SetValue(!pMount->HasHPEncoders());
         m_backlashCB->Enable(true);
     }
     else
@@ -576,6 +577,8 @@ GuidingAsstWin::GuidingAsstWin()
 
     m_measuringBacklash = false;
     origMultistarMode = pFrame->pGuider->GetMultiStarMode();
+    origVarDelayConfig = pFrame->GetVariableDelayConfig();
+    pFrame->SetVariableDelayConfig(false, origVarDelayConfig.shortDelay, origVarDelayConfig.longDelay);
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/GuidingAssistant/pos.y", -1);
@@ -1440,9 +1443,12 @@ void GuidingAsstWin::MakeRecommendations()
         else
             m_backlashRecommendedMs = 0;
         bool largeBL = m_backlashMs > MAX_BACKLASH_COMP;
-        if (m_backlashMs < 100)
+        if (m_backlashMs < 100 || pMount->HasHPEncoders())
         {
-            msg = _("Backlash is small, no compensation needed");              // assume it was a small measurement error
+            if (pMount->HasHPEncoders())
+                msg = _("Mount has absolute encoders, no compensation needed");
+            else
+                msg = _("Backlash is small, no compensation needed");              // assume it was a small measurement error
             smallBacklash = true;
         }
         else if (m_backlashMs <= MAX_BACKLASH_COMP)
@@ -1660,6 +1666,7 @@ void GuidingAsstWin::DoStop(const wxString& status)
 
         m_guideOutputDisabled = false;
         pFrame->pGuider->SetMultiStarMode(origMultistarMode);           // may force an auto-find to refresh secondary star data
+        pFrame->SetVariableDelayConfig(origVarDelayConfig.enabled, origVarDelayConfig.shortDelay, origVarDelayConfig.longDelay);
     }
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
