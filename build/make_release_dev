@@ -87,11 +87,15 @@ V=$(perl -ne '/^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { print $1; exit 
 PREV_DEV=$(perl -ne '/^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { print $1; exit }' phd.h)
 
 if [[ ! $dev ]]; then
-    [[ $PREV_DEV =~ ^([^0-9]*)([0-9]+)$ ]] || {
-        echo "could not parse previous sub-version '$PREV_DEV'" >&2
-        exit 1
-    }
-    dev=${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))
+    if [[ ! $PREV_DEV ]]; then
+        dev="dev1"
+    else
+        [[ $PREV_DEV =~ ^([^0-9]*)([0-9]+)$ ]] || {
+            echo "could not parse previous sub-version '$PREV_DEV'" >&2
+            exit 1
+        }
+        dev=${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))
+    fi
 fi
 
 REV="$V$dev"
