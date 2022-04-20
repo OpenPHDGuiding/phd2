@@ -193,8 +193,8 @@ if [[ $do_changelog_dev ]]; then
     cat "$changelog_dev"
     PAUSE
     #changelog_test="-t"
-    scp "$changelog_dev" "${WWW_HOST}:/tmp/phd2changelog"
-    ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV $changelog_test /tmp/phd2changelog"
+    scp "$changelog_dev" "${WWW_HOST}:/tmp/phd2changelog-dev"
+    ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV $changelog_test /tmp/phd2changelog-dev"
     need_static_update=1
 fi
 
@@ -206,8 +206,8 @@ if [[ $do_changelog_full ]]; then
     cat "$changelog_full"
     PAUSE
     #changelog_test="-t"
-    scp "$changelog_full" "${WWW_HOST}:/tmp/phd2changelog"
-    ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV -R $changelog_test /tmp/phd2changelog"
+    scp "$changelog_full" "${WWW_HOST}:/tmp/phd2changelog-full"
+    ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV -R $changelog_test /tmp/phd2changelog-full"
     need_static_update=1
 fi
 
