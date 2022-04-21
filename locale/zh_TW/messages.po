@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-20 04:20+0100\n"
-"PO-Revision-Date: 2021-05-17 11:58+0800\n"
+"PO-Revision-Date: 2022-04-21 10:18+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
+"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -758,8 +758,8 @@ msgstr "開啟 Altair 相機失敗。"
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:801
+#: cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1044,8 +1044,8 @@ msgstr "設定增益發生錯誤"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
-#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
+#: stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "錯誤"
 
@@ -1571,13 +1571,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:921
-#: profile_wizard.cpp:936 profile_wizard.cpp:967 profile_wizard.cpp:972
-#: profile_wizard.cpp:997 profile_wizard.cpp:1011 rotator.cpp:49
-#: rotator.cpp:84 scope.cpp:331 scope.cpp:373 scope.cpp:416
-#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354 profile_wizard.cpp:355
+#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
+#: profile_wizard.cpp:752 profile_wizard.cpp:921 profile_wizard.cpp:936
+#: profile_wizard.cpp:967 profile_wizard.cpp:972 profile_wizard.cpp:997
+#: profile_wizard.cpp:1011 rotator.cpp:49 rotator.cpp:84 scope.cpp:331
+#: scope.cpp:373 scope.cpp:416 statswindow.cpp:262 stepguider.cpp:105
+#: stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1883,8 +1883,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:548
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3405,8 +3404,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3530,8 +3529,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3554,8 +3553,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f"
+"%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4209,7 +4208,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:678
 msgid "Choose a non-saturated star with a good SNR (>= 10) and begin guiding"
-msgstr ""
+msgstr "選擇具有良好 SNR (>= 10) 的非飽和恆星並開始導星"
 
 #: guiding_assistant.cpp:682
 msgid ""
@@ -4319,7 +4318,7 @@ msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
 #: guiding_assistant.cpp:1449
 msgid "Mount has absolute encoders, no compensation needed"
-msgstr ""
+msgstr "赤道儀有絕對編碼器，不需要做回差修正"
 
 #: guiding_assistant.cpp:1451
 msgid "Backlash is small, no compensation needed"
@@ -5645,7 +5644,7 @@ msgstr "Dither 將僅在赤經方向進行"
 
 #: myframe.cpp:3130
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
-msgstr ""
+msgstr "抖動命令的尺度。 預設值 = 1.0 (0.1-100.0)"
 
 #: myframe.cpp:3134 testguide.cpp:119
 msgid "Scale"
@@ -5692,33 +5691,33 @@ msgstr "自動曝光"
 
 #: myframe.cpp:3169
 msgid "Use Variable Exposure Delays"
-msgstr ""
+msgstr "使用可變動的曝光延遲"
 
 #: myframe.cpp:3170
 msgid ""
 "Use \"short\" delay for calibration, looping, dithering, GA, \"long\" delay "
 "for normal guiding"
-msgstr ""
+msgstr "使用“短”延遲進行校準、循環曝光、抖動、GA，使用“長”延遲進行導星"
 
 #: myframe.cpp:3175
 msgid "Short delay (sec)"
-msgstr ""
+msgstr "短延遲 (秒)"
 
 #: myframe.cpp:3175
 msgid "Short delay for calibration, looping, dithering, GA"
-msgstr ""
+msgstr "供校準、循環、抖動、GA 使用的短延遲"
 
 #: myframe.cpp:3176
 msgid "Long delay (sec)"
-msgstr ""
+msgstr "長延遲 (秒)"
 
 #: myframe.cpp:3176
 msgid "Long delay for normal guiding"
-msgstr ""
+msgstr "供導星用的長時間延遲"
 
 #: myframe.cpp:3177
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
-msgstr ""
+msgstr "可變曝光延遲（高精度編碼器的赤道儀）"
 
 #: myframe.cpp:3268
 msgid ""
@@ -5988,7 +5987,7 @@ msgstr "總是在最上方"
 
 #: nudge_lock.cpp:120
 msgid "Keep this window on top of all others"
-msgstr ""
+msgstr "將此視窗置於所有其他視窗之上"
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -6284,9 +6283,11 @@ msgstr "於赤道儀架台的 %s 面進行校準"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Slew the telescope to force a meridian flip - the scope should move to the %"
-"s side of the pier, still pointing near Dec = 0."
+"Slew the telescope to force a meridian flip - the scope should move to the "
+"%s side of the pier, still pointing near Dec = 0."
 msgstr ""
+"轉動望遠鏡以強制過中天翻轉 - 望遠鏡應移動到赤道儀的%s 側，仍指向 Dec = 0 附"
+"近。"
 
 #: pierflip_tool.cpp:273
 msgid "Wait for the second calibration to complete."
@@ -6543,7 +6544,7 @@ msgstr "赤道儀導星速率 (n.n x 恆星時)"
 
 #: profile_wizard.cpp:301
 msgid "Mount has high-precision encoders"
-msgstr ""
+msgstr "赤道儀具備高精度編碼器"
 
 #: profile_wizard.cpp:302
 msgid ""
@@ -6551,6 +6552,8 @@ msgid ""
 "backlash (e.g. 10Micron, Astro-Physics AE, Planewave, iOptron EC2 or other "
 "high-end mounts"
 msgstr ""
+"赤道儀兩軸上都有高精度編碼器，幾乎沒有或沒有赤緯回差間隙 (例如 10Micron、"
+"Astro-Physics AE、Planewave、iOptron EC2 或其他高階赤道儀)"
 
 #: profile_wizard.cpp:313
 msgid "Build dark library"
