@@ -493,6 +493,8 @@ bool Camera_ZWO::Connect(const wxString& camId)
 
     HasGainControl = false;
     HasCooler = false;
+    bool canSetWB_R = false;
+    bool canSetWB_B = false;
 
     for (int i = 0; i < numControls; i++)
     {
@@ -524,6 +526,12 @@ bool Camera_ZWO::Connect(const wxString& camId)
                     HasCooler = true;
                 }
                 break;
+            case ASI_WB_B:
+                canSetWB_B = caps.IsWritable;
+                break;
+            case ASI_WB_R:
+                canSetWB_R = caps.IsWritable;
+                break;
             default:
                 break;
             }
@@ -538,6 +546,19 @@ bool Camera_ZWO::Connect(const wxString& camId)
         ASIGetGainOffset(m_cameraId, &Offset_HighestDR, &Offset_UnityGain, &Gain_LowestRN, &Offset_LowestRN);
         m_defaultGainPct = gain_pct(m_minGain, m_maxGain, Gain_LowestRN);
         Debug.Write(wxString::Format("ZWO: lowest RN gain = %d (%d%%)\n", Gain_LowestRN, m_defaultGainPct));
+    }
+
+    const int UNIT_BALANCE = 50;
+    if (canSetWB_B)
+    {
+        ASISetControlValue(m_cameraId, ASI_WB_B, UNIT_BALANCE, ASI_FALSE);
+        Debug.Write(wxString::Format("ZWO: set color balance WB_B = %d\n", UNIT_BALANCE));
+    }
+
+    if (canSetWB_R)
+    {
+        ASISetControlValue(m_cameraId, ASI_WB_R, UNIT_BALANCE, ASI_FALSE);
+        Debug.Write(wxString::Format("ZWO: set color balance WB_R = %d\n", UNIT_BALANCE));
     }
 
     m_frame = wxRect(FullSize);
