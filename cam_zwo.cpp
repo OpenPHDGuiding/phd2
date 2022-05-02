@@ -527,10 +527,10 @@ bool Camera_ZWO::Connect(const wxString& camId)
                 }
                 break;
             case ASI_WB_B:
-                canSetWB_B = caps.IsWritable;
+                canSetWB_B = caps.IsWritable != ASI_FALSE;
                 break;
             case ASI_WB_R:
-                canSetWB_R = caps.IsWritable;
+                canSetWB_R = caps.IsWritable != ASI_FALSE;
                 break;
             default:
                 break;
