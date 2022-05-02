@@ -5598,7 +5598,7 @@ msgstr "Výchozí nastavení systém"
 
 #: myframe.cpp:2950
 msgid "Language-Name"
-msgstr "Název jazyku"
+msgstr "čeština"
 
 #: myframe.cpp:2989
 msgid "Reset Configuration"
