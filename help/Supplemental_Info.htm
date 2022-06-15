@@ -1,0 +1,833 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Supplemental Information</title></head>
+<body>
+<h2>Supplemental Information</h2><a href="#Binning_usage">Use of Binning</a>
+<br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Common_mount_problems">Common Mount Problems</a><br><a href="#Declination-Uni-directional_guiding">Uni-directional Dec Guiding</a><br><a href="#Variable_delay_guiding">Variable-Delay Guiding</a><br>
+<a href="#Logging_and_Debug_Output">Logging and Debug
+Output</a><br>
+<a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;"></span></a><a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
+<a href="#Ask_for_coordinates_aux_mount">Ask for
+Coordinates Aux Mount</a><br>
+<a href="#Advanced_Settings_for_the_Simulators">Simulator
+Parameters</a><br>
+<a href="#Multiple_Executions">Multiple Program Instances</a><br>
+<a href="#Keyboard_Shortcuts">Keyboard Shortcuts</a><br>
+<a href="#Software_Update">Software Update</a><br>
+<br><h3><a name="Astronomical_seeing"></a>Astronomical Seeing and Guiding</h3><o:p></o:p><p class="MsoNormal">It&#8217;s difficult to get far in imaging and guiding without
+coming to grips with astronomical seeing.<span style="">&nbsp;
+</span>This is a complex subject so only the bare minimum can be covered here.<span style="">&nbsp; </span>&#8220;Seeing&#8221; is the term given to the positional jitter
+and sudden brightness changes of stars we see (or photograph) through a
+telescope.<span style="">&nbsp; </span>With the naked eye, we see
+this as &#8220;twinkling&#8221; because our eye can&#8217;t resolve the tiny positional movements
+of the star. <span style="">&nbsp;</span>It is atmospheric
+turbulence, caused by the movement of thermal cells at various levels in the
+Earth&#8217;s atmosphere. Light is refracted as it passes through each atmospheric
+cell, so when you look at a star, you&#8217;re really looking up through a column of
+air that is behaving like a column of little lenses.<span style="">&nbsp; </span>The refraction of the light by each cell
+depends on its temperature, and the cells generally have different
+temperatures.<span style="">&nbsp; </span>And because the atmosphere
+is very dynamic, these elements are all moving around at various speeds, coming
+into and then leaving the column of air you&#8217;re looking through.<span style="">&nbsp; </span>Particularly with longer focal lengths, this
+atmospheric seeing is the single biggest source of the guide star movement we
+see with a properly working mount, and it can&#8217;t be &#8220;guided out&#8221;.<span style="">&nbsp; </span>The movement of the atmospheric cells means
+the guide star position is changing at rates of 10&#8217;s to 1000&#8217;s of times per
+second, and amateur-grade equipment, even adaptive optics devices, can&#8217;t react
+quickly enough to correct for it. Professional observatories are able to do it
+to a large extent by employing very expensive measurement devices, artificial
+stars, and mechanisms that can both deform the mirror and shift the image at
+very high frequencies.<o:p></o:p></p>
+
+
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><br>From a guiding perspective, we are &#8220;under-sampling&#8221; the
+seeing behavior.<span style="">&nbsp; </span>By the time we&#8217;ve taken
+an exposure, downloaded the image, computed the location of the guide stars,
+and then transmitted a guide command, the star position on the sensor has moved
+&#8211; probably 100&#8217;s of times.<span style="">&nbsp; </span>Basically,
+we&#8217;re always dealing with outdated information about the actual guide star position &#8211; and that doesn&#8217;t even take into
+account whatever shortcomings the mount has in precisely executing the guide
+commands it receives.<span style="">&nbsp; </span>Essentially, the
+star movements we <i style="">can</i> correct for -
+drift, periodic error, atmospheric refraction, mechanical deflections, etc - are hiding in a sea of
+noise created by the seeing conditions.<span style="">
+One of the major objectives of the PHD2 guide algorithms is to identify
+and react to the tracking errors that can be corrected while ignoring
+the spurious effects of seeing that can't be corrected. </span>&nbsp; Your choice of &nbsp;guide camera exposure times can make this job easier.<o:p></o:p></p>
+
+<h3><span style="font-size: 12pt;"><big>Seeing and
+Exposure Times</big><o:p></o:p></span></h3>
+
+<p class="MsoNormal">The high-frequency, seeing-induced star motion seen by the
+guide camera is strongly affected by the length of your guide exposure.<span style="">&nbsp; </span>Look at the following plot to see how the observed range
+of guide star motion decreases as the exposure time is increased:<o:p></o:p></p>
+<img style="width: 717px; height: 447px;" alt="" src="Supplemental_Graph_Seeing.png"><br>
+
+<p class="MsoNormal">Essentially, the camera sensor is averaging the changing
+light pattern of the star and smoothing the result.<span style="">&nbsp; </span>These measurements are still inaccurate
+because of under-sampling, but the longer exposures make it easier for PHD2 to
+isolate and identify the lower frequency errors that really can be improved
+through guiding.<span style="">&nbsp; </span>Obviously, there is a
+practical upper limit to the exposure time.<span style="">&nbsp;
+</span>Typically, it will be limited by the length of time your mount can run
+on its own without needing a correction.<span style="">&nbsp;
+</span>Small errors from periodic error, drift, flexure and other sources need
+to be corrected before they become large enough to ruin an image.<span style="">&nbsp; </span>Finding the right balance will always depend
+on both the seeing conditions and the quality of the equipment.<span style="">&nbsp; </span>As a starting point in PHD2, we typically
+recommend using exposure times of around 2 seconds but not less than 1
+second.<o:p></o:p></p>
+
+<h3><span style="font-weight: bold;"><a name="Binning_usage"></a>Use
+of Binning</span></h3>
+Many of the guide cameras available in PHD2 support hardware-level
+binning, which may be helpful in&nbsp;situations where you are guiding
+at
+long focal lengths or have a guide camera with very small pixels. These
+scenarios often result in having to use&nbsp;faint guide stars, and
+the
+guider images may be substantially over-sampled.
+&nbsp;Over-sampling
+provides no real benefit, and the projection of a faint star disk onto
+many small pixels can result in a low signal-to-noise ratio (SNR).
+&nbsp;By binning the image, you can reduce the impact of camera
+read
+noise and thus improve the SNR; and if you are over-sampled,
+&nbsp;you
+won't degrade the accuracy of computing the&nbsp;guide star
+location.
+&nbsp;Choosing a binning factor greater than one will have the
+following effects:<br>
+<ol>
+<li>Star images will have a higher SNR and
+will be easier to detect above the background noise level.
+&nbsp;This
+is especially helpful if you are limited to using faint stars
+(i.e. with SNR values below about 10).</li>
+<li>The amount of
+data downloaded from the camera will&nbsp;be reduced by the square
+of
+the binning factor. &nbsp;This can be helpful if you are using a
+camera
+that&nbsp;makes heavy use of USB resources even if star brightness
+and
+SNR are already reasonable with un-binned images. &nbsp;Of course,
+using sub-frames can achieve the same result once a star has been
+selected.</li>
+<li>The resolution (image scale) of your guider image
+will be reduced by the binning factor. &nbsp;This is not likely to
+be a
+problem if the un-binned image scale is below 1 arc-sec/pixel, but your
+guiding results may suffer if the un-binned image scale
+is&nbsp;above 2.5
+arc-sec/pixel. &nbsp;You may need to experiment because the results
+will also depend on the image scale of your main camera system.</li>
+</ol>
+Each
+binning level requires its own&nbsp;dark frames and bad-pixel map -
+they are not interchangeable, nor can a transform be done
+automatically. &nbsp;If you want the flexibility of switching back
+and forth
+between binning settings, you should create separate profiles for each
+binning value. &nbsp;Then build&nbsp;a dark library and a
+bad-pixel map
+for
+each of those profiles. &nbsp;When you want to change binning
+factors,
+just switch to the profile that has the setting you want, and a dark
+library and/or bad-pixel map will be available. &nbsp; If you want
+to
+check that the camera is binning correctly, you can use the <a href="Visualization.htm#Stats_Display">Stats</a>
+window to confirm the frame size and current on-camera bin settings.
+&nbsp;Even if you've made a firm decision to change the binning, you
+should create a new profile using the new-profile-wizard - that will
+automatically adjust all of the guiding parameters that depend on image
+scale. &nbsp;From a guiding perspective, a change in binning is
+essentially the same as switching to a different camera.<br>
+<h3><a name="Dithering_Ops"></a>Dithering</h3>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">In order to reduce fixed-pattern noise
+and hot pixels, imagers often move the telescope by very small amounts between
+exposures &#8211; this is called dithering. Dithering is always controlled by the imaging
+app because it is the only one that can suspend exposures with the main camera
+while the pointing position is being shifted.&nbsp; PHD2&#8217;s only role in this is
+to issue guide commands that will accomplish the requested shift in position &#8211;
+it is simply doing that it&#8217;s told. The small shift in pointing position is accomplished&nbsp; by PHD2 in two steps:<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">1.</span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Change</span><span style=""> the lock-point of the primary guide star by the
+amount requested by the imaging app.<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">2.</span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style="">Use the normal guiding routines to move the primary
+guide star to the new lock-point<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">The size of the dither is&nbsp;controlled by the imaging
+app, at least indirectly.<span style="">&nbsp; </span>The app may
+let you specify the maximum size of a dither, typically in units of
+pixels.<span style="">&nbsp; </span>In that case, PHD2 interprets this
+as the upper range of random values between zero and this limit.<span style="">&nbsp; </span>The randomizing process is done </span><span style="">to insure
+that dithering doesn't follow a simplistic back-and-forth pattern or shift the
+frame back to a location where it has previously been.<span style="">&nbsp; </span></span>For some&nbsp;applications that do
+PHD2 dithering, you can't specify the maximum amount directly - you are perhaps
+limited to choices like small/medium/large and the max dither amounts will have
+preset values.&nbsp; For that reason, PHD2 has a dither scaling parameter in
+the 'Global' tab of the Advanced Settings dialog.&nbsp; It is basically a
+multiplier term that lets you adjust the range of dither amounts that are
+possible.&nbsp; So a scale factor of 1 doesn't change the preset value at all,
+a value of 10 multiplies it by 10X, etc.&nbsp; If you're using an app that lets
+you specify the maximum amount directly (e.g. PHD_Dither), you should leave the
+dither scale set to 1.0.&nbsp; Otherwise, you can adjust the scale factor if
+you aren't happy with the overall range of dithering you're getting with one of
+the small/medium/large choices..<span style=""><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">It&#8217;s
+up to the imaging app to determine
+when the guiding has settled down and it&#8217;s time to start the next
+exposure with the&nbsp; main camera.&nbsp; To make this easier for
+authors of the imaging apps, PHD2 provides
+some extra measurement information on how the settling process is
+proceeding.&nbsp; This information doesn&#8217;t need to be used by the
+imaging app,
+it is entirely optional.&nbsp; In order to take advantage of this help,
+the
+imaging app specifies what level of stability it wants to see in order
+to
+decide that the dithering activity has settled down.&nbsp; There are
+three
+settling parameters for doing this:<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">1.</span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style="">&nbsp;The maximum amount of guide star
+position error that is considered acceptable &#8211; call that position tolerance, <b>PT</b><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">2.</span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style="">The length&nbsp; of time that must elapse during
+which the guide star position error stays below the position tolerance &#8211; call
+that the evaluation time, <b>ET</b><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">3.</span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style="">The maximum amount of time that can be tolerated
+before the measurement process is terminated and the dither is declared to be
+&#8220;done&#8221; regardless of the guiding stability &#8211; call that the time-out period, <b>TO</b><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">To state this in a sentence, the
+settling process is &#8220;done&#8221; when the guiding error is &lt;= <b>PT</b> for <b>ET</b>
+seconds or, if that condition is never satisfied, after <b>TO</b> seconds have
+expired.&nbsp; When this evaluation process is complete, PHD2 sends a message
+to the imaging app saying settling is done.&nbsp; This is all just extra credit
+for PHD2, normal guiding is being done from the time the lock-point is moved.<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">Of course, the specification of these
+parameters, <b>PT</b>, <b>ET</b>, and <b>TO</b>,
+is up to you and the values
+have to be chosen intelligently. Your imaging app may not expose all of
+these parameters in its user interface or it may give them different
+names.&nbsp; If you&#8217;re dithering by large amounts
+with a low-performance mount, you have to expect it will take a long
+time to
+settle down.&nbsp; If you specify a <b>PT</b> value that is too large or an <b>ET</b>
+value that is too small (overly lax parameters), the imaging app may start the
+next exposure too soon and you could get streaked stars in the image.&nbsp; The same problem could occur if you specify a <b>TO</b>
+value that is too short.&nbsp; Conversely, if you specify a <b>PT</b> value
+that is too small or an <b>ET</b> value that is too long (overly demanding
+parameters), then all of your dithers will incur a delay of <b>TO</b>
+seconds&nbsp;and settling will "fail" &#8211; you are asking too much from
+your mount.&nbsp; A sensible approach is to look at your past performance to
+see how well your mount responds under typical seeing conditions with the size
+of dithering you want to use.&nbsp; If your mount has a lot of Dec backlash,
+you should see how long it takes for guiding to settle down when the direction
+of the Dec guide command is reversed.&nbsp; The <b>ET</b> and <b>PT</b> values
+should reflect the guiding performance you normally get with your setup with a
+little bit of slack to avoid wasting time.<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;"><span style="">PHD2 also supports different choices
+for how the star is moved in RA and Dec.<span style="">
+With the default settings, the mount will be shifted in RA and Dec by
+different&nbsp; random amounts as described earlier.&nbsp;
+</span>If you choose &#8220;spiral mode&#8221;, the guide star will be moved in a pattern
+that eventually produces a spiral pattern around the original lock-point.<span style="">&nbsp; </span>This automatically reduces the number of Dec
+reversals and can be a good choice if your mount has substantial backlash. In
+this mode, there is no randomizing process involved, each dither has the size
+specified by the imaging app.<span style="">&nbsp; </span>Alternatively,
+you can choose the RA-only option and eliminate Dec reversals altogether, but
+this may not be a good choice if your imaging camera has a lot of fixed-pattern
+noise.<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="line-height: normal;">If your mount has a substantial amount of declination
+backlash in the mount, you may be guiding in only the north or south Dec
+direction. &nbsp;If PHD2 receives a command to dither in declination while you're
+operating in this mode, it will temporarily allow guiding in both Dec
+directions until the dither and settling are completed. &nbsp;It will then
+revert to the original north/south-only guiding mode. &nbsp;If you don't want
+this behavior, you should restrict dithering to 'RA-only'. &nbsp;All of the
+PHD2 dither controls are contained on the 'Global' tab of the Advanced Settings
+dialog.</p><h3><a name="Common_mount_problems"></a>Common Mount Mechanical Problems<o:p></o:p></h3>
+
+<h3>Periodic Error in Right Ascension (PE)<o:p></o:p></h3>
+
+<p class="MsoNormal">Periodic error is most often caused by very small machining
+errors in the various components of the RA drive system.<span style="">&nbsp; </span>One part of a typical drive system is shown
+here:</p><p class="MsoNormal"><img style="width: 489px; height: 313px;" alt="" src="Supplement_RA_Gears.png"></p><p class="MsoNormal">Credit: Mathis Instruments</p><p class="MsoNormal">
+
+</p><p class="MsoNormal">A high-precision worm gear (arrow 1) is used to drive the
+much larger worm wheel (arrow 2).<span style="">&nbsp; </span>The
+latter is attached to the RA shaft and when the mount is tracking at the
+sidereal rate, the worm wheel will complete a rotation in one sidereal day
+(23.934 hours).<span style="">&nbsp; </span>In order for this
+tracking to be perfect, all&nbsp;the following conditions must be met:<o:p></o:p></p>
+
+<p style="margin-left: 40px;" class="MsoNormal">Identical&nbsp;pitch and spacing for every thread in the worm gear<o:p></o:p></p>
+
+<p style="margin-left: 40px;" class="MsoNormal">Rigid attachment of the worm gear to the mounting plate with
+no flexure or movement of the gear or the mounting blocks<o:p></o:p></p>
+
+<p style="margin-left: 40px;" class="MsoNormal">Identical shape and spacing of every tooth in the worm wheel<o:p></o:p></p>
+
+<p style="margin-left: 40px;" class="MsoNormal">Worm wheel perfectly round and perfectly centered on its
+axis of rotation<o:p></o:p></p>
+
+<p class="MsoNormal">These are actually just a few of the necessary conditions,
+but it&#8217;s obvious that this level of precision is not likely to be present in most
+amateur mounts.<span style="">&nbsp; </span>The machining of the
+worm gear is usually the biggest challenge so tracking errors often originate
+there.<span style="">&nbsp; </span>The worm gear turns at a constant
+rate during sidereal tracking and the time it takes to make one full revolution
+is called the &#8220;worm period&#8221;. Worm periods vary among different mounts but
+generally fall in the range of 4 to 10 minutes.<span style="">&nbsp;
+</span>A machining inaccuracy on one of the worm threads will therefore make
+its presence known once in every worm period. Of course, many of the worm gear
+threads are likely to have some inaccuracies and each will make its own
+contribution to tracking error once during the worm period.<span style="">&nbsp; </span>When the tracking error is graphed over a
+single worm period, the result is usually a curve that is roughly sinusoidal
+with varying slopes, peaks, and valleys &#8211; this is what is known as periodic
+error. <span style="">&nbsp;</span>Here&#8217;s an example:</p><p class="MsoNormal"><img style="width: 765px; height: 484px;" alt="" src="Supplement_Example_PE.png"><o:p></o:p></p>
+<p class="MsoNormal">
+
+</p><p class="MsoNormal">Notice the high-frequency movements caused by seeing that
+are not part of the mechanical periodic error.<o:p></o:p></p>
+
+<p class="MsoNormal">There are other gears in the RA system, often a series of
+gears that lie between the motor and the worm gear.<span style="">&nbsp; </span>These are required to convert from the native
+speed of the motor to the slower rotation speed of the worm gear and also to
+generate the torque needed to drive the worm gear.<span style="">&nbsp; </span>Each of these components will have machining
+inaccuracies of its own and will contribute to cumulative tracking errors of
+the mount.<span style="">&nbsp; </span>Many of these components will
+introduce errors on shorter time periods than the worm period.<span style="">&nbsp; </span>Some mounts use drive belts to sidestep some
+of these &#8220;upstream&#8221; gear inaccuracies but those can introduce errors of their
+own &#8211; incorrect tensioning, lateral movement of the belt on spindles, etc.<span style="">&nbsp; </span><o:p></o:p></p>
+
+<h3>RA Periodic Error Correction<o:p></o:p></h3>
+
+<p class="MsoNormal">Periodic error correction (PEC) in the mount firmware is
+beneficial to auto-guiding if the feature is implemented correctly.<span style="">&nbsp; </span>Unfortunately, this isn&#8217;t always the
+case.<span style="">&nbsp; </span>But when done correctly, periodic
+error correction handles some tracking errors before they are seen in the guide
+camera image.<span style="">&nbsp; These corrections</span> are predictive, based
+on a model of the mount&#8217;s PE, as opposed to being reactive like normal
+auto-guiding.<span style="">&nbsp; </span>The net result is that
+PHD2 has less work to do to keep the RA axis on-target.<span style="">&nbsp; </span>Even when the implementation in the mount is done well,
+calculation of a high-quality PEC curve must be done carefully using an
+application specific to the purpose.<span style="">&nbsp;
+</span>During the measurement process, the app must filter out
+seeing-induced
+guide star movements to produce a smooth correction curve that
+represents
+samples across multiple worm periods. It must also be aware of the worm
+period
+and the various harmonics in the mount drive system in order to apply
+corrections only for those tracking errors that are harmonic - i.e.
+errors with frequencies that are integer multiples of the worm
+frequency.<span style=""> &nbsp; If the PE correction curve is poorly constructed, the RA tracking can be worse than using no PEC at all.</span></p><p class="MsoNormal">If PEC isn't available for your mount or is badly implemented, you can use the PPEC guide algorithm in PHD2. <span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;"></span><a href="Guide_algorithms.htm#Predictive_PEC">PHD2 Predictive PEC</a><span style=""> </span><o:p></o:p></p>
+
+<h3><o:p></o:p>Declination Backlash and Stiction</h3><p class="MsoNormal">Backlash
+can occur when the direction of motion on an axis is reversed. The
+telescope may not immediately start moving in the reverse direction
+even though the motor is turning. The usual cause is loose meshing of
+the gears in the drive train. &nbsp;For auto-guiding, this problem
+doesn't affect guiding in RA because the RA drive system is
+continuously moving the axis west as it tracks the sky - it never reverses direction because of guiding. &nbsp;But it is
+a common source of trouble for Declination because the Dec axis is
+mostly idle during guiding, running only in short bursts in response to
+guide commands to move the scope north or south.. &nbsp;A simple
+picture of what causes backlash is shown here:</p><p class="MsoNormal"><img style="width: 336px; height: 219px;" alt="" src="Supplement_Backlash.png"></p><p class="MsoNormal">This
+diagram shows two spur gears, but the basic principle also applies to
+worm gear and worm wheel pairs. &nbsp;In the diagram above, assume the
+bottom gear is the <span style="font-style: italic;">drive</span> gear&nbsp;currently rotating counter-clockwise. &nbsp;The teeth on the drive gear are in contact with the teeth on the <span style="font-style: italic;">driven</span>
+gear
+above it and the latter is being driven clockwise. &nbsp;But the arrows
+show that the&nbsp;surface on the trailing edge of the drive gear tooth
+is not touching the matching tooth on the driven gear - there is a
+small gap. &nbsp;So when the drive gear reverses direction, there will
+be a short period of time before the gears are fully meshed and the
+driven gear starts turning in the opposite direction. &nbsp;The
+"reversal delay" in this case is caused by simple backlash. &nbsp;Some
+amount of gap is generally required to avoid binding in the gear system
+and to allow room for lubricant and thermal expansion. &nbsp;When the
+mesh is too tight, the axis may exhibit stiction (static friction), a
+situation where the axis will not move smoothly and freely or is
+difficult to get moving from a stationary state. &nbsp;</p><p class="MsoNormal">The Guiding Assistant will
+measure how the Dec axis behaves when it is forced to reverse
+direction. &nbsp;It is only capable of measuring the "reversal delay",
+the amount of time it takes to change direction and get the axis
+rotating at the expected rate. &nbsp;It isn't always possible to
+distinguish whether the problem is backlash, stiction, or both; but the
+graph produced by the GA can often provide clues. &nbsp;This behavior
+can also be seen during normal guiding sessions that don't employ the
+large guide pulses used by the GA. If the reversal delay is large, say
+above 3 seconds, it's probably best to try adjusting the Dec drive
+system. &nbsp;If the delay is less than that, the PHD2 Dec Backlash
+Compensation feature will probably be able to handle Dec reversals
+fairly well. &nbsp;Note that the amount of delay is inversely
+proportional to the guide speed in the mount - as the guide speed is
+increased, the reversal delay decreases. &nbsp;This is one of the
+reasons we recommend using guide speeds of at least 0.5x sidereal.</p><p class="MsoNormal">The
+reversal delay is usually not a constant value for the mount.
+&nbsp;Instead, it often depends on the pointing position of the scope
+and the balance of the scope on the Dec axis. &nbsp;As mounts age, the
+gears wear and for Dec, the wear will be greatest where the scope
+spends most of its time during imaging. &nbsp;For northern observers,
+that is probably in the Dec range of 0 to 40 degrees. &nbsp;With older
+mounts especially, the reversal delay can be quite different in those
+pointing positions than, for example, regions closer to the pole.
+&nbsp;This is another reason why the PHD2 Backlash Compensation feature
+is a better choice than any fixed-size compensation that is programmed
+in the mount controller.</p>
+<h3><a name="Declination-Uni-directional_guiding"></a><span style="font-weight: bold;">Uni-directional
+Declination Guiding</span></h3>
+As
+discussed above, some mounts may have too much reveral delay in Dec to
+support guiding in both&nbsp;north and south directions.
+&nbsp;This
+situation can be mitigated by configuring PHD2 to guide in only
+one&nbsp;direction, what we call uni-directional Dec guiding.
+&nbsp;This is
+a viable option because declination guiding is only intended to
+correct for slow drift - errors caused by polar misalignment and to a
+lesser extent, mechanical flexure. &nbsp;Ironically, you might want
+to
+de-tune your polar alignment a bit to make it easier to see the drift
+direction and to reduce the likelihood that seeing will interfere with
+uni-directional guiding. &nbsp;Remember that polar mis-alignment,
+within
+reason, doesn't usually degrade guiding performance. &nbsp;Instead,
+it
+may introduce field rotation if you're imaging near the pole and have a
+large camera sensor. &nbsp;A good first step would be to polar
+align to
+within 5-10 arc-min of the pole before setting up for
+uni-directional
+guiding. &nbsp;You can always go back later and check for field
+rotation. &nbsp;Just take a sample image with your main camera at
+the
+highest declination you would expect for imaging - perhaps 70 degrees
+north. &nbsp;If you don't see field rotation there, you can leave
+the
+polar alignment where it is. &nbsp;With any amount of polar
+mis-alignment, the direction of&nbsp; Dec corrections will change
+at
+some point in the sky. &nbsp;(Technically, it will reverse
+directions
+at two points in the sky but one of those is usually below the
+horizon.) &nbsp;The sky location for the reversal
+depends&nbsp;on
+how you are mis-aligned on the pole - the relative amounts of azimuth
+and altitude alignment errors. &nbsp;If most of &nbsp;the
+polar
+alignment error is in altitude, the point of direction reversal should
+be near the celestial meridian, about the time a meridian flip is
+required.<br>
+<br>
+To set up for uni-directional guiding, you can follow these steps:<br>
+<ol>
+<li>Move
+to a field with a good guide star and run the Guiding Assistant for
+several minutes. &nbsp;Look at the guiding graph and note whether
+the
+guide star is drifting&nbsp;north or
+south. &nbsp;Once you see this, reset the Dec guide mode to issue
+corrections in the <span style="font-weight: bold;">opposite</span>
+direction. &nbsp;For example, if the
+star is
+drifting north, set the Guide mode to 'south.'</li>
+<li>Try
+using the&nbsp;'LowPass2' guiding algorithm for declination and
+start
+with a fairly low aggressiveness factor, say 50%. &nbsp;If the
+aggressiveness is too high, the correction may push the star to the
+"wrong" side of the lock position, where it will remain until the slow
+drift rate moves it back. &nbsp;It's better to issue a
+few&nbsp;small
+corrections rather than one larger one in order to minimize this
+type of over-shoot.</li>
+<li>Watch the guiding graph to be sure the
+corrections are being issued in the right direction and the star isn't
+just steadily drifting&nbsp;off-target. &nbsp;Over the course
+of
+minutes or hours, you may notice the amount of drift is decreasing.
+&nbsp;This means you are slowly approaching the point of
+declination reversal and you should be prepared to change the Dec guide
+mode accordingly.</li>
+<li>If you are dithering, you may want to set the dithering
+parameters to "RA-only" to avoid disrupting the Dec guiding.</li>
+</ol>
+<h3><a name="Variable_delay_guiding"></a>High-precision Mounts and Variable-delay Guiding</h3>
+
+<p class="xxxmsonormal">Mounts with very accurate absolute encoders and detailed
+pointing models often allow imaging without any guiding at all.<span style="">&nbsp; </span>But there are limitations to how long this
+can be done without needing some guiding corrections.<span style="">&nbsp; </span>The goal in this scenario is to provide a &#8220;backup&#8221;
+guiding mechanism that won&#8217;t conflict with the inputs from encoders and
+pointing models and will still improve the overall result.<span style="">&nbsp; </span>The recommended strategy for accomplishing
+this is as follows:<o:p></o:p></p>
+
+<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">1.<span style="font-size: 7pt; font-family: &quot;Times New Roman&quot;,serif;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>Keep the frequency of guide commands as low as possible.&nbsp;
+These mounts can actually be quite &#8220;busy&#8221; with corrections coming from encoders
+and fine-grained pointing models, none of which are visible to ASCOM applications.&nbsp;
+A slow guiding frequency will minimze the potential for creating instabilities in
+these functions from external guide commands.<o:p></o:p></p>
+
+<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">2.<span style="font-size: 7pt; font-family: &quot;Times New Roman&quot;,serif;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>Be especially carefully to avoid chasing the seeing &#8211; this is most easily
+done by using moderate-length or long guide camera exposures and generous
+min-move settings.<o:p></o:p></p>
+
+
+
+<p class="xxxmsonormal">In previous PHD2 releases, users have been able to approximate
+this approach by using exposures in the 4-8 second range, coupled with a
+non-zero &#8220;time lapse&#8221; delay.&nbsp; The latter simply imposes a fixed delay
+between the completion of the last guide command and the start of the next
+guide camera exposure.&nbsp; The downside of this approach is that operations
+other than steady-state guiding &#8211; things like looping, star selection,
+calibrating, dithering and settling, etc. &#8211; are unnecessarily slowed by the
+time-lapse value.&nbsp; The &#8220;variable delay&#8221; feature eliminates this problem by
+letting the user specify two different delay values:<o:p></o:p></p>
+
+<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">1.<span style="font-size: 7pt; font-family: &quot;Times New Roman&quot;,serif;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>&nbsp;A &#8220;short&#8221; delay that will be used for any activity other
+than
+steady-state guiding.&nbsp; This might be zero but at least for some
+mounts, it should be non-zero to allow time for the encoders to finish
+their
+corrections.&nbsp; Values above 1 second are probably unnecessary.<o:p></o:p></p>
+
+<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">2.<span style="font-size: 7pt; font-family: &quot;Times New Roman&quot;,serif;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>A &#8220;long&#8221; delay that will be used for the normal frame-frame guiding that
+is typical of steady-state,&nbsp; long-exposure imaging.&nbsp; This is the value, in addition to
+the camera exposure time, that controls the &#8220;cadence&#8221; of the guiding.<o:p></o:p></p>
+
+
+
+<p class="xxxmsonormal">&nbsp;To give an example, you might use camera exposures of 4
+seconds, a &#8220;short&#8221; delay of 1 second, and&nbsp;a &#8220;long&#8221; delay of 4
+seconds.&nbsp; The 4-second exposure time will provide good suppression of
+seeing-related effects and the sum of (4+4) seconds results in a steady
+8-second guiding cadence for most of the imaging session.&nbsp; At the same
+time, the dither settling times will benefit from the short (4+1) second delays between
+camera exposures.<o:p></o:p></p>
+
+<h3><a name="Logging_and_Debug_Output"></a>Logging
+and Debug Output</h3>
+<span style="font-style: italic;">PHD2</span>
+automatically creates two types of log files: a debug log and a
+guiding log. &nbsp;Both are very useful for different reasons.
+&nbsp;The guide log is intentionally formatted to
+allow easy interpretation by either a human reader or an external
+application.<span style="">&nbsp; </span>For
+example, the&nbsp;PHDLogView application (not
+part of the PHD2 release) can produce a variety of graphs and summary
+statistics based on data in the PHD2 guide log.<span style="">&nbsp;&nbsp;
+</span>But the log can also be easily imported into
+Excel or other applications for analysis and graphing.<span style="">&nbsp;
+</span>When importing into Excel, just specify&nbsp;a
+comma&nbsp;as a
+column separator. &nbsp;The
+debug log
+has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
+session, &nbsp;so it is very helpful in isolating any problems
+you&nbsp; have. &nbsp;It also employs a human-friendly (albeit
+verbose)
+text format, so it's
+not
+difficult to examine the debug log to see what happened. &nbsp;If
+you
+need to report a problem with the software, you will almost certainly
+be asked to provide both log files. &nbsp;If you have neither
+log
+file available, you are unlikely to get any&nbsp;help. &nbsp;Note that log files are always created when PHD2 is run,
+regardless of&nbsp;what was done (or not done) during the time that
+PHD2 was running so you <span style="font-weight: bold;">will</span> have log files to support a request for help.<br>
+<br>
+The location for the files is controlled by the 'Log
+File
+Location' field in the 'Global' tab of the 'Advanced Settings' dialog.
+&nbsp;By default, log
+files
+are stored in the OS-specific default directory for user documents.
+&nbsp;In Windows, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
+sub-folder in the "Documents" directory. &nbsp;This may not be a
+convenient location, so you can specify a different folder using this
+edit field. &nbsp;In order to prevent excessive accumulation of log
+files, PHD2 automatically removes debug logs that are more than 30 days
+old and guide logs that are more than 60 days old. &nbsp;If you
+want to
+retain the files for longer periods, you should move or copy them to a
+different folder location, one not used by PHD2.<br>
+<br>
+To
+simplify the automatic log upload process (see below), log data is
+grouped by "imaging day", defined to be a 24-hour period beginning at
+09:00 am local time.&nbsp; This means that all the PHD2 executions
+on
+the same imaging day will write guiding and debug log data into the two
+log files for that imaging day. &nbsp; <br>
+<br>In some unusual cases, you may need to capture guide
+camera images, usually to support debugging and problem resolution.
+&nbsp;This can be done by clicking the 'Enable Star Imaging
+Logging'
+menu item under the 'Tools' menu. &nbsp;The resultant image files
+will
+be stored in the same location as the other log files and will be
+written in the 'Fits' format for maximum fidelity. &nbsp;If you want to
+capture a single guide camera frame, you can simply use the File/Save
+Image... menu item.<br>
+<br>
+<span style="font-weight: bold;"><a name="Logging-Automatic_Upload"></a>Automatic Log File
+Upload<br>
+<br>
+</span>If you need help using PHD2 or improving your guiding
+results, you can post a request on the Open<span style="font-weight: bold;">-</span>PHD-Guiding
+forum (https://groups.google.com/forum/#!forum/open-phd-guiding).
+&nbsp;Your question should be accompanied by the PHD log files
+associated with the guiding session you're talking about.
+The debug log files are usually very large so you can't post them as
+attachments - you should use the Upload tool described
+below.&nbsp;Please
+do not edit, trim, or rename the log files. To make uploading easier,
+PHD2 has a built-in function to select, compress, and
+automatically upload the relevant log files. That function is
+located on the 'Help' menu. &nbsp;You'll see a dialog box that
+shows
+all the available log files, including their timestamps and duration:<br>
+<br>
+<img style="width: 557px; height: 467px;" alt="" src="Log_Upload_1.png"><br>
+<br>
+Just
+select the files you want and start the upload process by clicking on
+'Next'. &nbsp;Please be careful to look at the 'Night Of' column&nbsp;to be sure the log covers the time period you're
+interested in. &nbsp;PHD2 creates guide and debug log files every
+time
+it's run, so some of the log files will be nearly empty - don't upload
+those. &nbsp; Be
+selective about the files you choose - just the files for the session
+you were having trouble with. &nbsp;When the upload process is
+complete, you'll see another window that gives you a link to the files:<br>
+<br>
+<img style="width: 573px; height: 192px;" alt="" src="Log_Upload_2.png"><br>
+You
+need to capture or record that link so it can be included with the
+question you'll post on the forum. &nbsp; Log files will be
+automatically removed on the server after a reasonable amount of time
+has elapsed, so you won't need to worry about that. &nbsp;When you
+post
+your request for support, please include a full description of what you
+were doing, whatever problem you saw, and roughly what time period you
+want us to focus on.<br>
+<br>
+<h3><a name="Managing_Equipment_Profiles"></a>Managing
+Equipment Profiles</h3>
+Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
+where they are used as part of the 'Connect Equipment' dialog.
+&nbsp;If
+you want to manage multiple profiles, you should use the
+'Manage Profiles' button in the 'Connect Equipment' dialog.
+&nbsp;Using
+the menu items there, you can create a new profile
+or&nbsp;edit/rename/delete an existing one. &nbsp;Each profile
+holds
+all the settings that were active at the time the profile was last
+used. &nbsp;You should use the
+'Wizard' option to create new profiles and have PHD2 establish settings that are specific to
+your equipment configuration. &nbsp;To
+edit the settings in an existing profile, you first select it in the
+equipment profile drop-down list, then click on 'Settings' under the
+'<a name="Manage_Profiles"></a>Manage Profiles'
+pull-down. &nbsp;This will take you to the Advanced Settings
+dialog, where you can make whatever changes you want.
+&nbsp;Remember
+that profiles are automatically updated anytime settings are changed
+during a <span style="font-style: italic;">PHD2</span>
+session. Finally, you can import and export
+profiles for purposes of debugging, backup, or&nbsp;exchange
+between computers.<br>
+<br>
+<h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount
+Connection using "Ask for coordinates"</h3>
+If
+you can't connect to your mount using either ASCOM or INDI drivers, you
+still have a better-than-nothing alternative by using the&nbsp;"Ask
+for
+coordinates" aux-mount connection. &nbsp;With this option, you'll
+be asked
+to enter or confirm the scope position each time&nbsp;guiding is
+going
+to begin:: <br>
+<br>
+<img style="width: 212px; height: 248px;" alt="" src="Manual_mount.png"><br>
+<br>
+If
+you enter your scope's current declination and side-of-pier values,
+&nbsp;PHD2 will automatically adjust the calibration to
+match&nbsp;that
+pointing position. &nbsp;You don't need to be&nbsp;precise, a
+Declination value that's within a few degrees will work. &nbsp;This
+means you won't need to recalibrate as you slew to different targets
+so long as you update these values each time. &nbsp;For
+example,&nbsp; you can do a calibration near Declination=0 then
+enter
+new position values when you've slewed to a high declination imaging
+target.
+&nbsp;This is likely to produce a better result than trying to
+calibrate at a near-pole position. &nbsp;This dialog will not be
+displayed if the start of guiding is the result of a dither operation
+or a server command from an imaging application. &nbsp;In order for
+the
+calibration adjustment to work correctly, your previous calibration <span style="font-weight: bold;">must </span>have been
+completed&nbsp;with correct positioning data available. &nbsp;<br>
+<br>
+If you're using this option with the Drift Alignment tool, the dialog
+will look a bit different: <br>
+<br>
+<img style="width: 327px; height: 350px;" alt="" src="Manual_mount_drift.png"><br>
+<br>
+If
+you enter the additional information for Right Ascension, latitude, and
+longitude, the Drift Alignment tool can more accurately adjust its
+magenta target circle. &nbsp;Otherwise, the circle will show only
+an
+upper-bound estimate of the pointing error during the 'adjustment'
+phases. &nbsp;<br>
+<br>
+You
+can connect or disconnect&nbsp;the "Ask for
+coordinates" aux-mount&nbsp;without affecting the camera or mount
+connections. &nbsp;So you might decide to use the option for drift
+alignment or for an initial slew to your imaging target, then
+disconnect from it in order to avoid
+the repetitive dialog displays. &nbsp;Regardless of how you choose
+to
+use it, you're
+responsible for having the correct values in place, and you should
+remember that significantly wrong values can result in poor guiding
+results.<br>
+<br>
+<h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced
+Settings for the Simulators</h3>
+The device simulators were introduced in the <a href="Basic_use.htm">Basic
+Use</a>
+section as useful tools&nbsp;for experimenting with <span style="font-style: italic;">PHD2</span>
+and becoming
+familiar with its features. &nbsp;Remember that you must choose
+'Simulator' as the camera type and 'On-camera' as the mount type in
+order to do useful simulation. &nbsp;As you become more
+interested in the details of the simulation, you can use the 'Camera
+Settings'&nbsp;button on the main display to adjust the simulation
+parameters:<br>
+<br>
+<img style="width: 659px; height: 543px;" alt="" src="Tools_simulator.png"><br>
+<br>
+<br>
+You can adjust simulated mount behaviors for declination backlash,
+drift
+due to polar mis-alignment, and periodic error. &nbsp;You can also
+adjust the 'seeing' level, which will create fairly realistic guide
+star deflections that look like seeing effects. &nbsp;If you adjust
+these parameters one-by-one, you'll see how they affect star
+deflections and how the different guide algorithms react to those
+movements. &nbsp;Of course, you're dealing with a "nearly perfect"
+mount in
+these scenarios (except for backlash), so the simulation can't be
+entirely realistic. &nbsp;The simulation dialog is primarily used for
+development purposes so UI controls may change without corresponding
+changes to tool tips or documentation.<br>
+<h3><a name="Multiple_Executions"></a>Multiple
+Program Executions</h3>
+In
+some situations, you may want to run multiple instances of PHD2 at the
+same time. &nbsp;To start the second instance of PHD2, you need to
+supply a command-line parameter of -i 2; the third instance would be
+started with -i 3, etc. &nbsp;You can accomplish this in Windows by
+running PHD2 from a command line using the Windows cmd.exe utility.
+&nbsp;Or you can create a Windows desktop shortcut by doing the
+following: <br>
+<br>
+<div style="margin-left: 40px;">Right-click on your desktop<br>
+Select: New/Shortcut<br>
+Enter the following string to identify the location of the program:
+"C:\Program File (x86)\PHDBuiding2\PHD2.exe" -i2<br>
+Click Next<br>
+Enter a name for the shortcut, e.g.&nbsp;PHD2 #2<br>
+Click Finish<br>
+</div>
+<br>
+Note the quotes around the name in the 3rd line are required by Windows
+because there are blanks embedded in the directory name.<br>
+<h3><a name="Keyboard_Shortcuts"></a>Keyboard
+Shortcuts</h3>
+Keyboard
+shortcuts are available for many of the more commonly used tools and
+functions in PHD2. &nbsp;These are enumerated in the <a href="KeyboardShortcuts.htm">Keyboard Shortcuts</a>
+section.
+<h3><a name="Software_Update"></a>Software
+Update</h3>
+<p>
+One of the most common responses to a request for support in the PHD2
+Forum is: please upgrade to the latest version and see if the problem
+still exists. If you are seeing an issue in an older version of PHD2
+it is quite likely that you are not the first person to encounter it,
+and&nbsp;it has already been discovered and fixed in a newer version of
+PHD2. For this reason, the developers of PHD2 feel that it is
+important to be running the most up-to-date version of the program.
+</p>
+<p>Updating a program that you rely on for unattended imaging can
+sometimes be perceived as a risky
+proposition. The developers of PHD2 recognize this sentiment--we are
+imagers too! There is a necessary trade-off between maintaining a
+stable software installation and staying current with the latest
+bug fixes and other improvements. &nbsp;In some cases, camera vendors
+will issue "breaking" changes to their software drivers and SDKs, often
+because they have introduced a new camera model. &nbsp;This poses a
+problem for us because we are forced to update the camera SDK in order
+to support the new camera. &nbsp;But this also means that current users
+may encounter problems with a camera and drivers that have been working
+well, something that can only be corrected by upgrading to the latest
+camera drivers and the latest version of PHD2.</p>
+<p>PHD2 achieves a balance between these two opposing needs by
+publishing two series of software releases. The development releases
+contain the latest ongoing bug fixes and feature improvements and are
+tested by the developers--usually during actual imaging time--before
+being released. Users who choose to run the development releases will
+get the latest bug fixes and newest features. Development releases
+have names like "2.6.3dev6" indicating, for example, the 6th
+development release after the 2.6.3 major release.</p>
+<p>Periodically, after a development release has received more
+test
+time, it will be published as a major release. For example, 2.6.3dev6
+could be published as major release 2.6.4.</p>
+<h4>Checking for updates</h4>
+<p>PHD2 has an option to automatically check for software
+updates. We
+recommend enabling this option to help keep your version of
+PHD2 up to date. When the automatic check option is enabled, PHD2
+will&nbsp;check for updates in the background when PHD2 starts. If new
+updates are available, PHD2 will give you the option to install the
+new version. Enabling the automatic check for updates will not
+interfere with the ordinary operation of PHD2, including automated
+operation. It is also safe to leave the option enabled if you are
+imaging in the field without internet connectivity. If PHD2 cannot
+check for updates, it will wait until the next time it is started
+before
+trying to check again.</p>
+<p>Regardless of whether you allow PHD2 to automatically check
+for
+updates at startup, you can always manually check for updates by
+clicking "Check for updates" from the Help menu.</p>
+</body></html>

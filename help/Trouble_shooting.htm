@@ -1,36 +1,123 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Trouble-shooting</title></head>
 <body>
-<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_Mount_Control"></a>Calibration and Mount Control Problems</h3>If
-you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
+<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>
+
+<p class="MsoNormal" style="margin-bottom: 0.0001pt; line-height: normal;"><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">In some cases, you may experience
+problems where guider images aren't downloaded or displayed. &nbsp;In extreme
+cases, this may even cause <i>PHD2</i> or other camera-related applications to
+be non-responsive (i.e. to "hang"). &nbsp;This is nearly always due
+to hardware, camera driver, or&nbsp;connectivity issues, with one of the most
+common culprits being a faulty USB cable or device. &nbsp;It is highly unlikely
+to be caused by an application like <i>PHD2</i>, so you should begin your
+investigation at the lower levels of the system. <o:p></o:p></span></p>
+
+
+
+<p class="MsoNormal" style="margin-bottom: 0.0001pt; line-height: normal;"><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">To help detect these problems and
+avoid &#8220;hangs&#8221;, PHD2 uses a camera timeout/retry mechanism. &nbsp;This timeout
+value is set in the Camera tab of&nbsp;<u><span style="color: blue;"><a href="file:///C:%5Cbwdev%5Copenphd2_gh%5Cphd2%5Chelp%5CAdvanced_settings.htm"><span style="color: blue;">Advanced Settings</span></a></span></u> and uses a default
+value of 15 seconds. &nbsp;This means that PHD2 will wait up to 15 seconds <i>after
+the expected completion of the exposure</i> to receive the image from the
+camera. &nbsp;This is a very generous amount of time and should work well for
+most cameras. When the timeout occurs, PHD2 will automatically disconnect the
+camera and try to re-connect.<span style="">&nbsp; </span>An alert
+message at the top of the screen will advise you of the timeout event and
+whether the reconnection attempt was successful.<span style="">&nbsp; </span>Regardless of whether the reconnection
+succeeded, you have a hardware problem of some kind that needs attention.<o:p></o:p></span></p>
+
+
+
+
+
+<p class="MsoNormal" style="margin-bottom: 0.0001pt; line-height: normal;"><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><o:p>&nbsp;</o:p>Here is an approach you can use to
+reproduce and then identify the problem:<o:p>&nbsp;</o:p></span></p>
+
+<ol><li><p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Make sure you are running the latest
+version of PHD2 &#8211; often a development version &#8211; and the latest versions of the
+camera drivers.<span style="">&nbsp; </span>Some of the camera
+vendors issue frequent software changes that must be matched by corresponding
+changes in the software libraries used by PHD2.<span style="">&nbsp;
+</span>When these updates aren&#8217;t backward compatible, you have no choice but to
+run the latest versions of everything.<o:p></o:p></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span></p></li><li><p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Confirm that the guide camera is basically
+functional - try using a short, direct cable from the camera to the computer
+and taking exposures with the&nbsp;native&nbsp;or test application that came
+with the camera. <o:p></o:p></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span></p></li><li><p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Repeat step 2 but use PHD2 as the
+application.<span style="">&nbsp; </span>You can do this in the
+daytime by just connecting to the camera and looping 1-2 second exposures for a
+reasonably long time.<span style="">&nbsp; </span>The PHD2 display
+will often be all-white in daytime operation, but as long as the looping
+continues with no error messages, things are going ok.<span style="">&nbsp; </span>If you see problems in this step, it doesn&#8217;t
+mean it&#8217;s a PHD2 problem &#8211; it isn&#8217;t.<span style="">&nbsp; </span>The
+difference is that PHD2 is using the camera in single-exposure mode whereas
+most other apps use it in video streaming mode.<span style="">&nbsp;
+</span>The single-exposure mode involves more back-and-forth data traffic with
+the camera and can expose timing problems in the drivers.<o:p></o:p></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span></p></li><li><p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">If you can&#8217;t trigger a failure in
+step 3, add the imaging camera into the mix.<span style="">&nbsp;
+</span>Use your imaging application to loop exposures in parallel with what
+PHD2 is doing.<span style="">&nbsp; </span>This will help expose
+traffic and bandwidth problems in the USB system.<o:p></o:p></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span></p></li><li><p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">If no problems occur in step 4 over
+extended time periods, use the same USB cables and host computer that you were
+using when you first encountered problems.<span style="">&nbsp;
+</span>If you&#8217;re already doing this, you need to consider other possibilities:<span style=""></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span></p></li></ol><ul><ul><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">The problem may be
+temperature-related &#8211; perhaps it occurs in colder nighttime conditions but not
+during the daytime.</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">The OS may be suspending one or more
+of the USB ports for power-conservation.<span style="">&nbsp;
+</span>This has become a more common problem with Windows 10 and later releases.<span style="">&nbsp; </span>Use the Windows device manager and find all
+the entries that refer to a USB &#8220;hub&#8221; or a USB controller.<span style="">&nbsp; </span>For each of these entries, open their properties
+dialog and click on the &#8216;power management&#8217; tab.<span style="">&nbsp;
+</span>Disable any permissions that allow the OS to suspend the device for
+power management reasons.</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Make sure the power source on your
+test computer matches that of the computer you use for imaging.<span style="">&nbsp; </span>Both should be running on A/C power at this
+point.</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">The problem may be triggered by
+loose cable connections on either end &#8211; the cables should not lose connectivity
+if the cable is moved around as it will be during imaging.</span></li></ul></ul><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><o:p></o:p></span>
+<p><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span>When you can replicate the timeout
+problem, the first place to look is the USB cable followed by the other USB
+components on your system.<span style="">&nbsp; </span>Sources of
+USB-related problems include the following:<o:p></o:p></p>
+
+<div style="margin-left: 40px;"><ul><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><o:p>&nbsp;</o:p></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Low-quality or slightly damaged USB
+cables - in recent years, some of the camera vendors have started shipping
+low-quality USB cables with their cameras so you shouldn't assume the one you
+got with the camera will work.&nbsp;It&#8217;s also important to remember that we
+work in a&nbsp;hostile environment while imaging, and many of the components we
+use were not designed for cold, outdoor conditions. If you regularly tear down
+and reassemble your gear, the flexing of the cables can damage low-quality
+conductors. So something that worked just last week or last month may no longer
+be reliable.<span style="">&nbsp; </span>High-quality USB cables
+with 24AWG conductors and lengths no greater than 15 feet are recommended.</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">USB-2 cameras and cables plugged in
+to USB-3 ports - t<span style="color: rgb(0, 0, 3);">hose combinations are supposed to
+be backward-compatible but that&#8217;s only at the hardware level, the driver
+implementations can be adversely affected.</span></span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">USB port suspension by the OS (step
+5b above)</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Marginal power delivery to the guide
+camera - y<span style="color: rgb(0, 0, 3);">our main imaging camera probably has its
+own power supply but other devices like the guide camera are typically powered
+via the USB cable. &nbsp;Particularly with laptops and inexpensive computers,
+you may want to try using a powered USB hub to deliver power to the camera.<span style="">&nbsp; </span>This approach may also be required when
+operating in cold conditions or when using cables of maximum length.</span></span></li></ul></div><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><br>If you can&#8217;t isolate the problem at
+this point, there are a few other places to look:</span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><br><br></span><div style="margin-left: 40px;"><ul><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Use a Microsoft tool (USB View) for mapping the
+tree structure of USB ports and USB controllers.<span style="">&nbsp; </span></span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Try choosing ports that will keep your
+imaging and guide cameras on separate USB buses.</span></li><li><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Try using a different camera
+driver.<span style="">&nbsp; </span>Many vendors supply both an
+ASCOM and a native driver, so try the one you haven&#8217;t been using.<span style="">&nbsp; </span>It&#8217;s not uncommon for some of the ASCOM
+drivers to lag the native drivers in terms of bug fixes and compatibility</span></li><li>See if the problem is related to
+overall USB bandwidth and try to reduce the total USB usage:</li></ul><div style="margin-left: 80px;"><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style="">a.<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Throttle the USB usage limit of the
+imaging camera if possible &#8211; many of the drivers allow that.</span><br><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style="">b.<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Bin the guiding camera unless that
+will result in an image scale greater than 6 arc-sec/px.</span><br><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;"><span style="">c.<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Use sub-frames in PHD2 if the camera
+driver supports that.</span><br><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">d. &nbsp;</span><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">Don&#8217;t run other processor-intensive
+applications while imaging and don&#8217;t allow any of the planetarium applications
+to poll devices and other applications at high rates.</span><br></div></div><h3><a name="Problems-_Mount_Control"></a>Calibration and Mount Control Problems</h3>If
+you are just starting to use <span style="font-style: italic;">PHD2</span>
+or are connecting to new equipment
 for the first time, you may have trouble getting&nbsp;calibration
-done. &nbsp;This problem usually takes one of two forms, each requiring
-different responses: <br><ol><li>The
-star moves during calibration but
-it moves "too far" or "too little." &nbsp;If you've used the
-new-profile wizard and have provided correct values for focal length,
-camera pixel-size, and mount guide speed setting, the "step-size" used
-in calibration should
-already be correct. &nbsp;But if you've configured your profile by hand
-or have changed guide speed settings in the mount, you may need
-to&nbsp;adjust the 'calibration step-size' parameter in the 'Guiding'
-tab of <a href="Advanced_settings.htm">Advanced Settings</a>.
-The help content there describes how this parameter is used, and you
-should be able to resolve the problem quickly. &nbsp;But if you've used
-the new profile wizard and are seeing problems with "too far" or "too
-little" guide star movement, the problem probably lies elsewhere.</li><li>The
-star doesn't move enough during&nbsp;RA calibration,&nbsp;declination ('Dec')
-backlash clearing, or Dec calibration. &nbsp;These problems
-are announced by<span style="font-weight: bold;"> alert messages </span>at
-the top of the display window. &nbsp;With longer focal
-lengths,&nbsp;small movements&nbsp;may even be the result of seeing
-deflections, and the mount isn't
-really moving at all. &nbsp;Dealing with this sort of problem is
-described next.</li></ol>In
-nearly all cases, the "no movement" problem is caused by failures in
-the mount or&nbsp;in the cabling and
-connections. &nbsp;The best tool for trouble-shooting this is the
-'Manual Guide' option under the 'Tools' menu, as described in the <a href="Tools.htm">Tools</a>
+done. &nbsp;This problem&nbsp;takes one of two forms: 1) outright
+failures of the calibration because the mount didn't move far enough in
+RA and Declination or 2) cases where calibration completes but the
+results are suspect. &nbsp;Both types of results are shown by Alert
+messages at the top of the PHD2 window. &nbsp;For the situation where
+the calibration fails, there are, again, two likely reasons:<br><ol><li><span style="font-weight: bold;">Mount/connectivity problems or operational mistakes:</span>&nbsp;These are the most common sources of the problem. &nbsp;The best tools for trouble-shooting them are the
+'Manual Guide' dialog or the Star-Cross test, both under the 'Tools' menu and described in the <a href="Tools.htm">Tools</a>
 section of this help document. &nbsp;Simply use the directional
 controls in the 'Manual Guide' window to send commands directly to the
 mount while watching a star in the image display window. &nbsp;Use
@@ -40,31 +127,54 @@ in all four directions and verify the target star is moving by roughly
 equal amounts. &nbsp;If the mount does not respond, you know you have
 either
 hardware or connectivity problems to resolve - nothing to do with <span style="font-style: italic;">PHD2</span>.
-&nbsp;If you're using a Shoestring device to connect to the mount,
+Operationally, you cannot complete a calibration if you're pointing
+close to the celestial pole or if the mount isn't properly initialized,
+un-parked, and tracking at the sidereal rate.&nbsp; If you're using a
+Shoestring device to connect to
+the mount,
 watch its indicator lights to see if the commands are reaching it.
 &nbsp;Similarly, your ST-4 compatible guide camera may have indicator
 lights to show when guide commands are being received. &nbsp;If you're
 using an ASCOM connection to the mount, be sure the COM port
-assignments are correct. &nbsp;You can also use some of the
+assignments are correct and you've selected the correct ASCOM mount
+driver for your equipment. &nbsp;You can use some of the
 ASCOM-supplied tools like POTH to be sure the ASCOM driver is
 communicating correctly with the mount. &nbsp;It is best to use the
-latest version of the ASCOM driver for your mount because older
-versions of these drivers might have bugs associated with pulse-guiding.<br><br><a name="Calibration_sanity_check"></a><span style="font-weight: bold;">Calibration Sanity-Checks</span> <span style="font-weight: bold;">and Alerts</span><br>It
+latest version of the ASCOM driver for your mount&nbsp;to insure
+pulse-guiding support is complete.<span style="font-weight: bold;"></span></li><li><span style="font-weight: bold;">Incorrect calibration step-size:</span>&nbsp;
+If you've used the
+new-profile wizard and have provided correct values for focal length,
+camera pixel-size, and mount guide speed, the "step-size" used
+in calibration should
+already be correct. You should confirm this, however, because beginners
+frequently enter incorrect values for these parameters.&nbsp; If you've
+defined or modified your profile by hand (a bad idea)
+or have changed guide speed settings in the mount, you may need
+to&nbsp;adjust the 'calibration step-size' parameter in the 'Guiding'
+tab of <a href="Advanced_settings.htm">Advanced Settings</a>.
+The help content there describes how this parameter is used, and you
+should be able to resolve the problem quickly. &nbsp;But if you've used
+the new profile wizard carefully and are seeing problems with too
+little or no guide star movement, the problem probably lies elsewhere.</li></ol><br><a name="Calibration_sanity_check"></a><span style="font-weight: bold;">Calibration Sanity-Checks</span> <span style="font-weight: bold;">and Alerts</span><br>It
 is also possible that the calibration process will complete but PHD2
 will post a calibration alert message saying that some of the results
 are
-questionable. These message <span style="font-weight: bold;">do not </span>mean
+questionable. These messages <span style="font-weight: bold;">do not </span>mean
 that the calibration failed or is unusable, but they are warning you
 that some of the results don't look quite right. Such a "sanity check"
 dialog will show an explanation
-of the issue and some details of the calibration results: <br><br><img style="width: 797px; height: 426px;" alt="" src="Calib_Sanity.png"><br><br>There are currently 5 things checked by PHD2 as part of calibration:: <br><ul><li><span style="font-weight: bold;">Too
-few steps</span> (shown above) - resolving this issue can be easy assuming the
+of the issue and some details of the calibration results: <br><br><img style="width: 797px; height: 426px;" alt="" src="Calib_Sanity.png"><br><br>There are currently 4 things checked by PHD2 as part of calibration:<br><ul><li><span style="font-weight: bold;">Too
+few steps</span>
+(shown above) - resolving this issue can be easy assuming the
 mount is actually working correctly.
 &nbsp;Just adjust the calibration step-size downward until you get at
 least 8 steps in both the west and north calibrations. &nbsp;If you
 used the new profile wizard to set up your configuration, a good
-starting value for calibration step-size will already be set. &nbsp;If
-you find that the number of steps in RA and Declination is
+starting value for calibration step-size will already be set. In that
+case, the alert suggests you entered parameters incorrectly in the
+new-profile-wizard or the mount guide speed has changed. &nbsp;You
+should check these things and make sure they're right.&nbsp; If
+you find that the number of steps in RA and Declination are
 substantially different, &nbsp;you are probably seeing evidence of
 declination backlash&nbsp;unless you are using different guide speed
 settings on
@@ -73,7 +183,7 @@ though they&nbsp;<span style="font-style: italic;">should</span>
 be perpendicular. &nbsp;The angle calculations do not require
 great precision, but if they are significantly non-orthogonal, you
 should repeat the calibration. &nbsp;If you see repetitive alerts of
-this type and the axes are significantly non-orthogonal, you'll need to
+this type and the axes are significantly non-orthogonal, you need to
 identify the&nbsp;problem and fix it. &nbsp;Common causes are
 bad polar alignment, large declination backlash, or large periodic error in RA. &nbsp;Any of
 these problems can cause the guide star to move significantly on one
@@ -113,24 +223,14 @@ larger than the measured one. &nbsp;To work around this problem, you
 should manually clear the Dec backlash before starting calibration.
 &nbsp;You can do this in either of two ways: 1) make sure the mount's
 last slew direction was <span style="font-weight: bold;">north</span> or 2) use the hand controller to manually
-move the mount <span style="font-weight: bold;">north</span> at guide speed for 10-20 seconds. &nbsp;</li><li><span style="font-weight: bold;">Inconsistent results</span> - if the calibration results are
+move the mount <span style="font-weight: bold;">north</span> ('up' arrow) at guide speed for 10-20 seconds. &nbsp;</li><li><span style="font-weight: bold;">Inconsistent results</span> - if the calibration results are
 significantly different from your last-used calibration, an alert
 message will be generated. &nbsp;This may happen because you've made a
 change in your configuration. &nbsp;That doesn't imply a real problem,
 but you should probably consider creating a separate profile for the
 new configuration. &nbsp;By doing so,&nbsp; PHD2 will remember settings
 for each of your profiles, letting you switch between them easily.
-&nbsp;If you haven't made a configuration change, you will probably
-want to determine why the results are so different.</li><li><span style="font-weight: bold;">Too
-little east or south movement</span> - The calibration process only uses the
-west and north moves to compute the camera angle and rates of movement.
-&nbsp;The east and south moves are done primarily to restore the guide
-star somewhere close to its starting position. &nbsp;If little or no
-east or south movement is seen, you may see an alert message advising
-you of the situation. &nbsp;The calibration hasn't failed, but guiding
-is likely to be impaired. &nbsp;The most common causes are a defective
-guide cable if using ST-4 guiding or very large Declination backlash if
-the alert is related to south moves.</li></ul>With
+&nbsp;If you haven't made a configuration change, you should determine why the results are so different.<span style="font-weight: bold;"></span></li></ul>With
 any
 of these alerts, the relevant data field will be highlighted based on
 the
@@ -143,12 +243,16 @@ repeated alerts on the same topic and are convinced there really
 isn't&nbsp;a problem, you can use the 'don't show' checkbox to block
 future alerts of that type. &nbsp;But you should be aware that the
 sanity-checking used by PHD2 works well for a wide range of equipment,
-and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;"><a name="Declination_backlash"></a>Declination Backlash</span><span style="font-weight: bold;"></span><br>By
-far the most common source of calibration problems&nbsp;is declination
+and most users don't see these calibration alerts at all.<br><br><span style="font-weight: bold;"><a name="Declination_backlash"></a>Declination Backlash</span><span style="font-weight: bold;"></span><br>The
+most common source of calibration problems&nbsp;is declination
 backlash, which is present to some degree in most geared mounts.
-&nbsp;With many less-expensive mounts, however, the problem can
-be&nbsp;severe and
-can lead to poor calibration and guiding results. &nbsp;Consider the
+&nbsp;Backlash can occur when the direction of motion on the axis is
+reversed. The telescope may not immediately start moving in the reverse
+direction, even though the motor is turning. The usual cause is loose
+meshing of the gears in the drive train. With many less-expensive
+mounts, it may take several seconds for the axis to start moving in the
+correct direction and this can lead&nbsp;to poor calibration and
+guiding results. &nbsp;Consider the
 following
 example of a calibration review dialog: <br><br><img style="width: 767px; height: 399px;" alt="" src="Calib_Review_Backlash.png"><br><br>The
 first clue to the problem is found by comparing the number of steps
@@ -165,17 +269,13 @@ actually two problems to be addressed here. &nbsp;First, the
 calibration result is poor and should be repeated in order to get a
 more accurate measure of the declination guide rate. &nbsp;Second, the
 mount is likely to behave badly during direction reversals in
-declination even if the dec guide rate is correct. &nbsp;The
-calibration can be improved by first manually moving the mount&nbsp;
-north at
-guide speed for&nbsp;10-20 seconds&nbsp;until consistent star
-movement is seen&nbsp;in the main window. &nbsp;You can do this with
-the 'Manual Guide'
-tool or by using the hand-controller on your mount. &nbsp;Once this is
+declination even if the dec guide rate is correct. &nbsp;<span style="font-weight: bold;">The
+calibration can be improved by taking these steps:<br></span><div style="margin-left: 40px;">Start
+looping guide camera exposures on a field with usable stars, preferably
+near Dec=0 and within 15 degrees of the celestial meridian<br>Using the hand-controller, move the mount north ('up' arrow) until you see the stars in the display moving<br>Start the calibration</div>Once
+this is
 done, most of the declination backlash in your mount should have been
-overcome. &nbsp;You can then repeat the calibration procedure
-and&nbsp;probably get a declination guiding rate that is more
-reasonable.
+cleared and you will probably get better results from the calibration.
 &nbsp;The underlying backlash problem generally requires some
 mechanical adjustment
 to the mount. &nbsp;If the mount isn't using a guide speed close to
@@ -195,10 +295,7 @@ guide mode' control on the'Algorithms' tab of the Advanced Settings dialog.
 mount tends to drift north overall, restrict guide commands to
 south-only. This is not an ideal solution, obviously, but you can
 still use reasonably long exposures and achieve good guiding results
-- many imagers choose to use this approach.<font style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;"></span></font>
-&nbsp;If you have an unusual circumstance, such as a mount with no
-declination control at all, you can set the 'Dec guide mode' choice to
-'Off'. &nbsp;<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
+- many imagers choose to use this approach.<font style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;"></span></font>&nbsp; &nbsp;<br><br><span style="font-weight: bold;"><a name="Star_cross_test"></a>Validating Basic Mount Control - the Star-Cross Test<br></span>If you are having<span style="font-weight: bold;"> </span>repeated
 problems getting calibration to complete without alert messages, you
 should run a very simple test to see if the mount is responding to
 guide commands. &nbsp;This test basically mimics what is done during
@@ -260,8 +357,8 @@ understand what the mount is doing, perform the following steps:<br><br><div sty
 Use an ASCOM connection to the mount if one is available and set the
 mount guide speed to 0.5x - 1x sidereal. &nbsp;Disable any backlash
 compensation you have in the mount.<br>3.
-Use 1-2 second exposures and let PHD2 auto-select a guide star near Dec=0 with the scope pointing at least
-45 degrees above the horizon to minimize seeing effects. <br>4. Run the
+Use&nbsp;2-second exposures and let PHD2 auto-select a guide star near Dec=0 with the scope pointing at least
+45 degrees above the east and west horizons to minimize seeing effects. <br>4. Run the
 Guiding Assistant for 10-15 minutes and apply whatever recommendations
 it makes, particularly with respect to min-move values. &nbsp;Let it
 measure your declination backlash. &nbsp;You may need to use a large
@@ -286,12 +383,92 @@ and then repeat the above steps.<br>9. Let PHD2 guide for another 10-15
 minutes, just letting it run as long as there aren't gross errors from
 wind or other "mistakes." &nbsp;<span style="font-weight: bold;">Do NOT</span> change any of the guiding parameters while this is being done.<br></div><br>If
 you want to analyze the results yourself, use the PHDLogView tool and
-the tutorial on Analyzing PHD2 Guiding Results. &nbsp;You should also
+the tutorial on "Analyzing PHD2 Guiding Results". &nbsp;You should also
 consult the document on PHD2 Best Practices. &nbsp;All of these
 references are available on the OpenPHDGuiding.org web site under the
 'News' tab. &nbsp;If you'd like some help understanding the results,
 post both the guiding and debug log files on the OpenPHD2 Google forum
-and we'll be glad to help you out.<br><span style="font-weight: bold;"><br><span style="font-weight: bold;"></span></span><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+and we'll be glad to help you out.<br><span style="font-weight: bold;"><br></span><h3><a name="Problems-_Alerts"></a>Alert Messages</h3>PHD2
+will sometimes display alert messages at the top of the main display
+window. &nbsp;These generally show error or diagnostic information that
+warrant your attention. &nbsp;During normal operation, you probably
+won't see any of these, but if you do, this section can help you decide
+what to do about them.<br><br><span style="font-weight: bold;">Dark-library and Bad-pixel Map Alerts</span><br><br><span style="font-weight: bold;">"Use a Dark Library or a Bad-pixel Map"</span>
+- using a dark library or bad-pixel map reduces the likelihood that
+PHD2 will mistakenly identify hot pixels or other sensor noise as
+a star. &nbsp;If you choose to ignore this message, you'll be
+vulnerable to situations where PHD2 inadvertently switches from the
+guide star to a hot pixel and no longer guides correctly.<br><br><span style="font-weight: bold;">Format/geometry mismatches</span>
+- dark frames and bad-pixel maps must match the format of the sensor in
+the camera being used. &nbsp;If you've changed the camera in an
+existing profile, the existing dark/bpm files will not be usable and
+you'll&nbsp;see this alert message. &nbsp;To avoid seeing the message,
+you should
+instead create a new profile when you change cameras. You'll still need
+to shoot new darks or bpms, but you can keep the old files for use with
+the original camera.&nbsp; You might
+also
+see&nbsp;a
+format-incompatibility alert message if you have mistakenly connected
+PHD2 to the wrong camera - this is a particular risk when your guiding
+and imaging cameras come from the same vendor. You can completely
+specify the camera you are using for guiding in the Connection
+Dialog&nbsp;<a href="Basic_use.htm#Camera_id_specification">Specifying camera ids</a> &nbsp;. Unless you're
+connected to the wrong camera,, you should rebuild the dark library or
+bad-pixel
+map from scratch - more information can be found here: &nbsp;<span style="font-weight: bold;"></span><a href="Darks_BadPixel_Maps.htm">Dark Frames and Bad-pixel Maps</a><br><span style="font-weight: bold;"><br>ASCOM Alerts</span><br>When
+you first connect to a mount, camera, or other ASCOM-controlled device,
+you may see an alert message saying that a required capability is not
+supported by the driver. &nbsp;One example would be lack of support for
+pulse-guiding by an ASCOM telescope/mount driver, something that can
+occur with outdated drivers. &nbsp;In these situations, your only
+recourse is to update the ASCOM driver. &nbsp;These drivers are
+generally available from the ASCOM web site or, in some cases, from the
+device manufacturer. <span style="font-weight: bold;">&nbsp;</span>As
+a rule, the best practice is to use the latest versions of these
+drivers so you don't encounter problems that have already been&nbsp;fixed.<br><br>You might also see other alert messages associated with the ASCOM driver for the mount: <br><div style="margin-left: 40px;">1.
+"PulseGuide command to mount has failed - guiding is likely to be
+ineffective." &nbsp;This is usually caused by a bug or timing
+sensitivity in the ASCOM mount driver, and there is generally no way to
+know if the guide command was executed properly or not. &nbsp;If
+you&nbsp;rarely see the alert and your guiding results are acceptable,
+you can probably ignore it. &nbsp;Despite the alert condition, PHD2
+will continue to issue guide commands, so you don't need to take any
+immediate action. &nbsp;If you see the alert frequently, you should
+send us your debug log so we can help you communicate the problem&nbsp; to the author of the ASCOM driver.<br>2.
+"Guiding stopped: the scope started slewing." &nbsp;This is pretty
+self-explanatory, but the determination that the scope was slewing is
+something reported to PHD2 by the ASCOM mount driver. &nbsp;Whether it
+was actually slewing isn't known to PHD2. &nbsp;Assuming you didn't
+mistakenly slew the scope with guiding active, there is probably a
+timing problem in the driver. &nbsp;If you want to sidestep the problem
+temporarily, you can disable the logic to check for slewing - go into
+the 'Guiding' tab of the Advanced Settings dialog, and un-check the box that says
+"Stop guiding when mount slews." &nbsp;This will let you continue
+guiding, but the results might be suspect. &nbsp;The debug log should
+provide the details needed to describe the problem to the author of the
+ASCOM driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="Trouble_shooting.htm#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="Trouble_shooting.htm#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
+normal guiding, you may see an alert message saying that your settings
+for maximum-duration limits in RA or Dec&nbsp;are preventing
+PHD2 from keeping the guide star locked. &nbsp;If you've decreased
+these parameters from their default values, you should restore them. &nbsp;However, if the limits are well above one
+second,
+this alert probably indicates you've encountered a mechanical problem
+that needs to be corrected. &nbsp;In the simplest cases, you may have
+suffered a cable snag, wind gust, mount bump, or other external event
+that caused the guide star to move by a large amount. &nbsp;In such
+cases, you simply need to correct the problem if you can and proceed
+with guiding. &nbsp;But in other cases, the alert may be triggered by a
+steadily growing guide star displacement that is not being corrected at
+all.
+&nbsp;For example, if PHD2 can't move the mount correctly in either the
+north or south directions, the cumulative uncorrected error will
+eventually reach a point that triggers the alert. &nbsp;Or you may be
+encountering "runaway" Dec guiding because the setting for 'reverse Dec
+output after meridian flip' (Advanced Settings/Guiding tab) is incorrect.
+These sorts of
+problems will require some diagnosis and simply
+increasing the maximum-duration limits will not help.<br><h3><a name="Problems-_Display_Window"></a>Display Window Problems</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
 that the image displayed in the main window is extremely noisy or is
 almost all-white or all-black. &nbsp;Assuming the camera is
 functioning and actually downloading images, the display issues are
@@ -313,10 +490,11 @@ star and try to reach focus with that. &nbsp;Then move to successively
 fainter stars to fine-tune the focus position using the PHD2 Star
 Profile tool to measure the size of the guide star. &nbsp;Good results
 can also be obtained using a Bahtinov focusing mask or focusing tools
-in other applications. &nbsp;It doesn't matter what you use so long as
-you reach a good focus position.<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel and Star-Selection Problems</h3>With most guide cameras, you can encounter problems where
+in other applications. &nbsp;It doesn't matter what you use, but just
+trying to judge focus by looking at the display is not likely to
+produce a good result.<br><h3><a name="Problems-Hot_Pixels"></a>Hot-pixel and Star-Selection Problems</h3>With most guide cameras, you can encounter problems where
 clumps of hot pixels are mistaken by PHD2 as guide stars. &nbsp;This
-can be especially annoying if you're using automation tools and&nbsp;
+can be especially troublesome&nbsp; if you're using automation tools and&nbsp;
 the 'auto-select' guide star selection is mistakenly choosing hot pixels. &nbsp;For many cameras, a
 simple dark frame will suffice for reducing or eliminating hot-pixel
 problems, and dark frames should always be used as a starting-point.
@@ -333,9 +511,10 @@ really little you can do about them. &nbsp;<br><br>Since
 the recommended practice is to let PHD2 choose the guide star
 ("auto-select"), you should use the available UI controls to help PHD2
 do the best possible job. &nbsp;The Minimum-HFD property on the Guiding
-tab of the Advanced Settings dialog is probably the most effective&nbsp;tool for
+tab of the Advanced Settings dialog is probably the most
+effective&nbsp;tool for
 avoiding&nbsp;hot-pixel selection. &nbsp;You should set its value to
-allow use of the smallest and faintest real star your setup can
+allow use of the smallest and faintest real stars your setup can
 produce. &nbsp;You should use the Star Profile tool to measure a
 reasonable sample of legitimate guide stars for your system. &nbsp;Then
 set the Minimum-HFD value to accept those stars while rejecting smaller
@@ -344,7 +523,8 @@ end of the &nbsp;scale, you should also specify&nbsp;the brightest
 pixel value your system will deliver - the ADU value that represents
 saturation. &nbsp;By doing this, you will prevent PHD2 from rejecting
 stars that have a flattened profile but aren't really saturated. The
-saturation control resides on the Camera tab of the Advanced Settings dialog and
+saturation control resides on the Camera tab of the Advanced Settings
+dialog and
 is part of a control group labeled 'Star Saturation Detection'.
 &nbsp;Choose the option for 'Saturation by Max-ADU value', then set the
 value for your system. &nbsp;If you have an 8-bit camera, saturation
@@ -353,8 +533,9 @@ ADUs. &nbsp;If you don't know the correct value, you can just point the
 scope at a bright star, use a multi-second guide camera exposure, and
 again look at the Star Profile window. &nbsp;One of the things you'll
 see in that window is the 'Peak Value' - that's the ADU value for the
-brightest pixel &nbsp;and the one to use for setting the saturation
-point. &nbsp;Using both of these controls is likely to produce much
+brightest pixel &nbsp;and will tell you whether your images are 8-bit
+or 16-bit.. &nbsp;Using both of these controls is likely to produce
+much
 better results for PHD2 guide star selection.<br><br><h3><a name="Problems-Restore_Guiding_Parameters"></a>Restoring a Working Baseline</h3>Despite&nbsp;advice to the contrary, you may have made rapid, uninformed
 changes to your guiding parameters only to find the performance stayed
 the same or even got worse. &nbsp;Before proceeding, you should restore the
@@ -383,72 +564,7 @@ the profile a new name. &nbsp;If you want to re-use the dark library
 and bad-pixel map from the old profile, connect to the new profile and
 use the 'Darks' menu to import those files from the old profile.
 &nbsp;Once you are satisfied with the new profile settings, you can
-delete the old one.</li></ol> <h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>In
-some cases, you may experience problems where guider images aren't
-downloaded or displayed. &nbsp;In extreme cases, this may even cause
-<span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to
-"hang"). &nbsp;Again, this is almost always due to hardware, camera
-driver, or&nbsp;connectivity issues, with one of the most common
-culprits being a faulty USB cable or device. &nbsp;It is highly
-unlikely to be caused by an application like <span style="font-style: italic;">PHD2</span>,
-so you should begin
-your investigation at the lower levels of the system. You can start by
-confirming that the guide camera is working - try using a short, direct
-cable from the camera to the computer and taking exposures with
-the&nbsp;native&nbsp;or test application that came with the camera.
-&nbsp;If the
-camera is functional, you can start looking at&nbsp;USB
-hubs and cables, swapping them one at a time to see if you can isolate
-the problem. &nbsp;It's worth remembering that we work in
-a&nbsp;hostile
-environment while doing our imaging, and many of the components we use
-are not designed for cold, outdoor conditions. So something that worked
-just last week or last month may no longer be reliable.<br><br>To
-help detect and work around these kinds of problems, PHD2 uses a camera
-timeout mechanism. &nbsp;This timeout value is set in the Camera tab
-of&nbsp;<a href="Advanced_settings.htm">Advanced Settings</a>. and uses a default value of &nbsp;15 seconds. &nbsp;This means that PHD2 will wait up to 15 seconds <span style="font-style: italic;">after the completion of the exposure</span>
-to receive the image from the camera. &nbsp;This is a very generous
-amount of time and should work well for most cameras.
-&nbsp;However, some cameras are known to create problems&nbsp;by
-making&nbsp;large bandwidth or power demands on the USB subsystem.
-&nbsp;If you are getting timeouts of this sort and are convinced the
-camera is working properly, you can increase this timeout value. &nbsp;You can even change it&nbsp;to a very
-high number - even 1000 seconds or more - so that timeout errors are never shown. &nbsp;Doing so leaves you
-vulnerable to apparent hangs in the user interface and erratic guiding
-behavior, but it is a choice you can make for yourself. &nbsp;A larger
-value for the timeout will not create extra delays during normal camera
-operations - once the image is downloaded from the camera, the timer is cancelled and guiding will proceed immediately.<br><br>Here are some diagnostic steps that can help you isolate these kinds of problems:<br><br><font class="" style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;">Common sources of camera timeout problems are the USB subsystem on the host
-computer, incompatible USB3/USB2 connections, damaged or low-quality USB
-cables, or flakey camera drivers. <span>&nbsp;</span>You
-will probably need to work through a number of scenarios to see what your
-problem is. <span>&nbsp;</span>Fortunately, this can usually
-be done in the daytime by putting the cameras in continuous-exposure mode and
-letting them run. <span>&nbsp;</span>Start by connecting just the imaging camera and the guiding camera because
-these will be the two heaviest users of the USB subsystem. <span>&nbsp;</span>To start, there are often problems when a
-USB-2 camera is connected to a USB-3 port on your computer. <span>&nbsp;</span>Those things are supposed to be
-backward-compatible but that&#8217;s only at the hardware level &#8211; the driver
-implementations can be adversely affected. <span>&nbsp;</span>There are two areas to look at: 1) USB
-traffic and bandwidth and 2) power delivery to the cameras. <span>&nbsp;</span>Your main imaging camera probably has its own
-power supply but other devices like the guide camera may be powered via the USB
-cable. <span>&nbsp;</span>If that&#8217;s the case for
-you, you may want to try using a powered USB hub to deliver power to the
-camera. <span>&nbsp;</span>It&#8217;s also best to use
-high-quality USB cable with a 24AWG power conductor and eliminate long USB
-cable runs and USB extenders. <span>&nbsp;</span>If
-your problem seems to be with USB traffic, there may be other things you can
-try:</span></font>
-
-
-
-<ol class="" style="margin-top: 0in; color: rgb(0, 0, 3);" start="1" type="1"><li class="MsoNormal"><span style="font-size: 10pt;">Make
-sure your computer is running from AC power and that the OS
-can't&nbsp;disable the USB ports for power conservation. Don't run
-other resource-intensive applications while trying to image.</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Bin the guide camera to reduce the size of the downloaded guider images</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Adjust the USB usage limit of the camera if the camera driver supports
-     that option</span></li><li class="MsoNormal"><span style="font-size: 10pt;">Use sub-frames in PHD2</span></li><li class="MsoNormal"><span style="font-size: 10pt;">If you&#8217;re running Windows, you can use a Microsoft tool to
-     map out how the various USB ports are tied to the USB controllers in the
-     computer. <span>&nbsp;</span>Then you can try to
-     isolate the two cameras on separate USB buses. <span>&nbsp;</span></span></li><li class="MsoNormal"><span style="font-size: 10pt;">Try using a different camera driver (e.g. an ASCOM driver) if one
-     is available</span></li></ol><h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance&nbsp;</h3>Once
+delete the old one.</li></ol><br><h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance&nbsp;</h3>Once
 you've gotten everything running, you will probably get reasonably good
 guiding results almost immediately. You will have to decide what
 "good enough" means, and everyone's standard is likely to be different.
@@ -472,90 +588,7 @@ Assistant, you can get more specifics about your situation - how the
 seeing conditions look and how you might adjust the minimum-move
 settings to avoid chasing the seeing. &nbsp;You can also use either the
 Guiding Assistant or the Manual Guiding tool to see how much backlash
-is present in your mount, something that can be important to understanding your declination guiding results.<br><br>Achieving the best possible guiding performance can be a
-complex task and not something that can be covered here. However, you
-can get help on the web from a variety of sources, with the document by
-Craig Stark being a very good place to start: &nbsp;<br><span style="font-weight: bold;">http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677</span>.<span style="font-weight: bold;"></span><h3><a name="Problems-_Alerts"></a>Alert Messages</h3>PHD2
-will sometimes display alert messages at the top of the main display
-window. &nbsp;These generally show error or diagnostic information that
-warrant your attention. &nbsp;During normal operation, you probably
-won't see any of these, but if you do, this section can help you decide
-what to do about them.<br><br><span style="font-weight: bold;">Dark-library and Bad-pixel Map Alerts</span><br><br><span style="font-weight: bold;">"Use a Dark Library or a Bad-pixel Map"</span>
-- using a dark library or bad-pixel map reduces the likelihood that
-PHD2 will mistakenly identify hot pixels or some other image defect as
-a star. &nbsp;If you choose to ignore this message, you'll be
-vulnerable to situations where PHD2 inadvertently switches from the
-guide star to a hot pixel and no longer guides correctly.<br><br><span style="font-weight: bold;">Format/geometry mismatches</span>
-- dark frames and bad-pixel maps must match the format of the sensor in
-the camera being used. &nbsp;If you've changed the camera in an
-existing profile, the existing dark/bpm files will not be usable and
-you'll&nbsp;see this alert message. &nbsp;To avoid seeing the message,
-you should
-instead create a new profile when you change cameras. You'll still need
-to shoot new darks or bpms, but you can keep the old files for use with
-the original camera. In very unusual
-circumstances, you may&nbsp;see this message&nbsp;when either the
-driver or&nbsp;PHD2 code for handling the camera has changed. You might
-also
-see&nbsp;a
-format-incompatibility alert message if you have an old dark library
-that has somehow accumulated frames with different sensor formats. <br><br>In
-any of these cases, you should rebuild the dark library or bad-pixel
-map from scratch - more information can be found here: &nbsp;<span style="font-weight: bold;"></span><a href="Darks_BadPixel_Maps.htm">Dark Frames and Bad-pixel Maps</a><br><span style="font-weight: bold;"><br>ASCOM Alerts</span><br>When
-you first connect to a mount, camera, or other ASCOM-controlled device,
-you may see an alert message saying that a required capability is not
-supported by the driver. &nbsp;One example would be lack of support for
-pulse-guiding by an ASCOM telescope/mount driver, something that can
-occur with outdated drivers. &nbsp;In these situations, your only
-recourse is to update the ASCOM driver. &nbsp;These drivers are
-generally available from the ASCOM web site or, in some cases, from the
-device manufacturer. <span style="font-weight: bold;">&nbsp;</span>As
-a rule, the best practice is to use the latest versions of these
-drivers so you don't encounter problems that have already been&nbsp;fixed.<br><br>You might also see other alert messages associated with the ASCOM driver for the mount: <br><div style="margin-left: 40px;">1.
-"PulseGuide command to mount has failed - guiding is likely to be
-ineffective." &nbsp;This is usually caused by a bug or timing
-sensitivity in the ASCOM mount driver, and there is generally no way to
-know if the guide command was executed properly or not. &nbsp;If
-you&nbsp;rarely see the alert and your guiding results are acceptable,
-you can probably ignore it. &nbsp;Despite the alert condition, PHD2
-will continue to issue guide commands, so you don't need to take any
-immediate action. &nbsp;If you see the alert frequently, you should
-send us your debug log so we can understand the details of the problem
-and possibly help you describe it to the author of the ASCOM driver.<br>2.
-"Guiding stopped: the scope started slewing." &nbsp;This is pretty
-self-explanatory, but the determination that the scope was slewing is
-something reported to PHD2 by the ASCOM mount driver. &nbsp;Whether it
-was actually slewing isn't known to PHD2. &nbsp;Assuming you didn't
-mistakenly slew the scope with guiding active, there is probably a
-timing problem in the driver. &nbsp;If you want to sidestep the problem
-temporarily, you can disable the logic to check for slewing - go into
-the 'Guiding' tab of the Advanced Settings dialog, and un-check the box that says
-"Stop guiding when mount slews." &nbsp;This will let you continue
-guiding, but the results might be suspect. &nbsp;The debug log should
-provide the details needed to describe the problem to the author of the
-ASCOM driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
-normal guiding, you may see an alert message saying that your settings
-for maximum-duration limits in RA or Dec&nbsp;are preventing
-PHD2 from keeping the guide star locked. &nbsp;If you've decreased
-these parameters from their default values, you should restore them to
-their default values. &nbsp;However, if the limits are well above one
-second,
-this alert probably indicates you've encountered a mechanical problem
-that needs to be corrected. &nbsp;In the simplest cases, you may have
-suffered a cable snag, wind gust, mount bump, or other external event
-that caused the guide star to move by a large amount. &nbsp;In such
-cases, you simply need to correct the problem if you can and proceed
-with guiding. &nbsp;But in other cases, the alert may be triggered by a
-steadily growing guide star displacement that is not being corrected at
-all.
-&nbsp;For example, if PHD2 can't move the mount correctly in either the
-north or south directions, the cumulative uncorrected error will
-eventually reach a point that triggers the alert. &nbsp;Or you may be
-encountering "runaway" Dec guiding because the setting for 'reverse Dec
-output after meridian flip' (Advanced Settings/Guiding tab) is incorrect.
-These sorts of
-problems will require some diagnosis and simply
-increasing the maximum-duration limits will not help.<br><h3><a name="Log_analysis"></a>Log Analysis</h3>Any
+is present in your mount, something that can be important to understanding your declination guiding results.<br><br><span style="font-weight: bold;"></span><br><h3><a name="Log_analysis"></a>Log Analysis</h3>Any
 sort of problem isolation or&nbsp;tuning will invariably require use of
 the PHD2 log files. &nbsp;Both are formatted for straightforward
 interpretation by a human reader, and the guide log is constructed to
@@ -565,7 +598,9 @@ can
 be used to visualize overall&nbsp;performance, compute performance
 statistics, and examine time periods when guiding was problematic.
 &nbsp;With Excel or similar applications, simply specify that the guide
-log uses a comma as a column separator.<br><h4>Guiding Log Contents</h4>The
+log uses a comma as a column separator. &nbsp;That said, PHDLogViewer
+is strongly recommended for log analysis and is the tool used by the
+developers to provide support on the PHD2 Google forum.<br><h4>Guiding Log Contents</h4>The
 contents of the guiding log will continue to evolve as new capabilities
 are added. &nbsp;But the basic content is stable, and considerable care
 is taken to not "break" applications that parse it. &nbsp;If you wish

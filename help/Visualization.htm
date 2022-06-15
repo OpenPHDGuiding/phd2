@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Visualization Tools</title></head>
 <body>
-<h2>Visualization Tools</h2>
-<span style="font-style: italic;">PHD2</span> provides numerous&nbsp;visualization and
+<h2>Monitoring Tools</h2>
+<span style="font-style: italic;">PHD2</span> provides numerous monitoring and
 display tools to help you see how your guider is performing.
 &nbsp;All
 of these tools are accessed under the 'View' pull-down menu and are described below.<br><ul><li><a href="#Overlays">Overlays</a></li><li><a href="#Graphical_Display">Graphical Display</a></li><li><a href="#Stats_Display">Stats Display</a></li><li><a href="#Star_Profile_and_Target_Displays">Star Profile and Target Displays</a></li><li><a href="#Adaptive_Optics_AO_Graph">AO Graph</a></li><li><a href="#DockableMoveable_Graphical_Windows">Dockable Windows</a></li></ul>
@@ -17,7 +17,9 @@ include the following choices:<br>
 <li>Fine grid</li>
 <li>Coarse grid</li>
 <li>RA/Dec - this shows how the telescope axes are aligned
-relative to the axes of the camera sensor</li><li>Spectrograph
+relative to the axes of the camera sensor. This is a visual
+confirmation that there is no need&nbsp;or benefit to worrying about
+trying to align the camera axes with RA and Dec.</li><li>Spectrograph
 slit/slit position - for spectroscopy users, this will overlay a
 spectrograph slit graphic on the main display window. &nbsp;The size,
 position, and&nbsp;angle of the graphic can be adjusted to match the
@@ -133,9 +135,9 @@ dithering and settling. This window is also useful for
 confirming&nbsp;camera binning, monitoring the guide camera
 temperature, and getting a quick calculation of your guide camera's
 field of view.
-<h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 297px; height: 305px;" alt="" src="Star_profile.png"><br><br>The
+<h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 346px; height: 376px;" alt="" src="Star_profile.png"><br><br>The
 star profile display shows the cross-section of the guide star along
-with measurements for its full-width-half-maximum (<a name="FWHM"></a>FWHM)
+with measurements of its full-width-half-maximum (<a name="FWHM"></a>FWHM)
 and half-flux-diameter (HFD).
 &nbsp;HFD is generally a more stable measure of the star size since
 it doesn't require curve fitting or any assumption about the overall
@@ -143,11 +145,12 @@ shape of the star image. &nbsp;That's why automated focusing
 applications like FocusMax use it. &nbsp;If you
 see substantial fluctuations in this parameter or wildly varying star
 profiles, it may be an indication
-that the star is too faint,&nbsp;the exposure time is too short, or the camera is out-of-focus.
-&nbsp;<a name="Focusing"></a>This tool can&nbsp; help with focusing the
+that the star is too faint,&nbsp;the exposure time is too short,&nbsp;the camera is out-of-focus, or the seeing is poor.
+&nbsp;<a name="Focusing"></a>This
+tool can&nbsp; help with focusing the
 guide camera, a
-procedure that can be a bit tedious if you're using an off-axis-guider
-at a fairly long focal length. &nbsp;For that purpose, the HFD number
+procedure that can be a bit tedious if you're using a fairly long focal
+length. &nbsp;For that purpose, the HFD number
 is shown in a large font so you can see it from a distance while
 focusing your guide scope/camera. &nbsp;Just un-dock the Star Profile
 window and expand it until you can see the HFD number easily. &nbsp;If
@@ -168,7 +171,9 @@ so&nbsp;you can mentally average out the effects of seeing. &nbsp;Bad
 focus is a common issue for beginners, leading to problems in
 calibration or generally poor guiding results. &nbsp;Use the Star
 Profile tool to be sure the star doesn't have a flat top (saturation)
-and shows a tapered shape like the example shown above.<br><br><br><img style="width: 622px; height: 489px;" alt="" src="Target_display.png"><br><br>The
+and shows a tapered shape like the example shown above. &nbsp;If the
+star profile window is large enough, it will also show the decimal X/Y
+coordinates of the star centroid.<br><br><br><img style="width: 622px; height: 489px;" alt="" src="Target_display.png"><br><br>The
 target display is another useful way to visualize overall guider
 performance. &nbsp;The red 'X' shows the star displacement for the most
 recent guide exposure, while the blue dots show the recent history.
