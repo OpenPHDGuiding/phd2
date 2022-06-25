@@ -403,6 +403,11 @@ void CameraINDI::newProperty(INDI::Property *property)
             has_blob = 1;
             // set option to receive blob and messages for the selected CCD
             setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
+
+#ifdef INDI_SHARED_BLOB_SUPPORT
+            // Allow faster mode provided we don't modify the blob content or free/realloc it
+            enableDirectBlobAccess(INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
+#endif
         }
     }
     else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER)
