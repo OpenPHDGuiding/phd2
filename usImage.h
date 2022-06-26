@@ -79,7 +79,6 @@ public:
     void                InitImgStartTime();
     bool                CopyFrom(const usImage& src);
     bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
-    bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
     bool                CopyFromImage(const wxImage& img);
     bool                Load(const wxString& fname);
     bool                Save(const wxString& fname, const wxString& hdrComment = wxEmptyString) const;
