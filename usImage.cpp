@@ -155,6 +155,32 @@ void usImage::CalcStats()
     }
 }
 
+static unsigned char * buildGammaLookupTable(int blevel, int wlevel, double power)
+{
+    unsigned char * result = new unsigned char[0x10000];
+
+    if (blevel < 0) blevel = 0;
+    if (wlevel < 0) wlevel = 0;
+    if (blevel > 0xffff) blevel = 0xffff;
+    if (wlevel > 0xffff) blevel = 0xffff;
+
+    for(int i = 0; i <= blevel; ++i) {
+        result[i] = 0;
+    }
+
+    float range = wlevel - blevel;
+    for(int i = blevel + 1; i < wlevel; ++i) {
+        float d = (i - blevel) / range;
+        result[i] = pow(d, (float) power) * 255.0;
+    }
+
+    for(int i = wlevel; i < 0x10000; ++i) {
+        result[i] = 255;
+    }
+
+    return result;
+}
+
 bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
 {
     wxImage *img = *rawimg;
@@ -168,42 +194,18 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     unsigned char *ImgPtr = img->GetData();
     unsigned short *RawPtr = ImageData;
 
-    if (power == 1.0 || blevel >= wlevel)
-    {
-        float range = (float) wxMax(1, wlevel);  // Go 0-max
-        for (unsigned int i = 0; i < NPixels; i++, RawPtr++)
-        {
-            float d;
-            if (*RawPtr >= range)
-                d = 255.0;
-            else
-                d = ((float) (*RawPtr) / range) * 255.0;
+    unsigned char * lutTable = buildGammaLookupTable(blevel, wlevel, power);
 
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-        }
-    }
-    else
+    for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
     {
-        float range = (float) (wlevel - blevel);
-        for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
-        {
-            float d;
-            if (*RawPtr <= blevel)
-                d = 0.0;
-            else if (*RawPtr >= wlevel)
-                d = 255.0;
-            else
-            {
-                d = ((float) (*RawPtr) - (float) blevel) / range;
-                d = pow(d, (float) power) * 255.0;
-            }
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-        }
+        unsigned short v = *RawPtr;
+        unsigned char d = lutTable[v];
+        *ImgPtr++ = d;
+        *ImgPtr++ = d;
+        *ImgPtr++ = d;
     }
+
+    delete(lutTable);
 
     *rawimg = img;
     return false;
@@ -235,46 +237,22 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double
     }
     ImgPtr = img->GetData();
     RawPtr = ImageData;
-//  s_factor = (((float) Max - (float) Min) / 255.0);
-    float range = (float) (wlevel - blevel);
 
-    if ((power == 1.0) || (range == 0.0)) {
-        range = wlevel;  // Go 0-max
-        if (range == 0.0) range = 0.001;
-        for (y=0; y<use_ysize; y+=2) {
-            for (x=0; x<use_xsize; x+=2) {
-                RawPtr = ImageData + x + y*full_xsize;
-                d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
-                d = (d / range) * 255.0;
-                if (d < 0.0) d = 0.0;
-                else if (d > 255.0) d = 255.0;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-            }
+    unsigned char * lutTable = buildGammaLookupTable(blevel, wlevel, power);
+
+    for (y=0; y<use_ysize; y+=2) {
+        for (x=0; x<use_xsize; x+=2) {
+            RawPtr = ImageData + x + y*full_xsize;
+            int v = (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4;
+
+            unsigned char d = lutTable[v];
+            *ImgPtr++ = d;
+            *ImgPtr++ = d;
+            *ImgPtr++ = d;
         }
     }
-    else {
-        for (y=0; y<use_ysize; y+=2) {
-            for (x=0; x<use_xsize; x+=2) {
-                RawPtr = ImageData + x + y*full_xsize;
-                d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
-                d = (d - (float) blevel) / range ;
-                if (d < 0.0) d= 0.0;
-                else if (d > 1.0) d = 1.0;
-                d = pow(d, (float) power) * 255.0;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-            }
-        }
-    }
+
+    delete lutTable;
     *rawimg = img;
     return false;
 }
