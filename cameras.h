@@ -141,7 +141,7 @@
 # endif
 # ifdef HAVE_SVB_CAMERA
 #   define SVB_CAMERA
-# endif 
+# endif
 // this should work ... needs testing
 //# define OPENSSAG
 
