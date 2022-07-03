@@ -140,7 +140,7 @@
 #   define SBIG
 # endif
 # ifdef HAVE_SVB_CAMERA
-# define SVB_CAMERA
+#   define SVB_CAMERA
 # endif 
 // this should work ... needs testing
 //# define OPENSSAG
