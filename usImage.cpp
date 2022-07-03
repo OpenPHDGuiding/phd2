@@ -37,6 +37,68 @@
 
 #include <algorithm>
 
+class HistogramBuilder {
+    public:
+        int *histo;
+        unsigned short MinADU, MaxADU;
+        int pixCount;
+
+        HistogramBuilder() {
+            histo = new int[65536];
+            MinADU = 0;
+            MaxADU = 0;
+            pixCount = 0;
+        }
+
+        ~HistogramBuilder() {
+            delete histo;
+        }
+
+        unsigned short median() const
+        {
+            int pixelLeft = pixCount / 2;
+
+            for (int i = MinADU; i < MaxADU; ++i) {
+                if (histo[i] > pixelLeft) {
+                    return i;
+                }
+                pixelLeft -= histo[i];
+            }
+            return MaxADU;
+        }
+
+
+        void scan(const unsigned short *t, int len)
+        {
+            if (pixCount == 0) {
+                unsigned short v = t[0];
+                // Initialization
+                MinADU = t[0];
+                MaxADU = t[0];
+                histo[t[0]] = 0;
+            }
+
+            for (int i = 0; i < len; ++i) {
+                unsigned short v = t[i];
+                if (v < MinADU) {
+                    for (int k = v; k < MinADU; ++k) {
+                        histo[k] = 0;
+                    }
+                    MinADU = v;
+                }
+                if (v > MaxADU) {
+                    for (int k = MaxADU + 1; k <= v; ++k) {
+                        histo[k] = 0;
+                    }
+                    MaxADU = v;
+                }
+                histo[v]++;
+            }
+
+            pixCount += len;
+        }
+};
+
 bool usImage::Init(const wxSize& size)
 {
     // Allocates space for image and sets params up
@@ -87,12 +149,11 @@ void usImage::CalcStats()
     {
         // full frame, no subframe
 
-        for (unsigned int i = 0; i < NPixels; i++)
-        {
-            unsigned short d = ImageData[i];
-            if (d < MinADU) MinADU = d;
-            if (d > MaxADU) MaxADU = d;
-        }
+        HistogramBuilder hb;
+        hb.scan(ImageData, NPixels);
+        MinADU = hb.MinADU;
+        MaxADU = hb.MaxADU;
+        MedianADU = hb.median();
 
         unsigned short *tmpdata = new unsigned short[NPixels];
 
@@ -105,10 +166,6 @@ void usImage::CalcStats()
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
-
-        memcpy(tmpdata, ImageData, NPixels * sizeof(unsigned short));
-        std::nth_element(tmpdata, tmpdata + NPixels / 2, tmpdata + NPixels);
-        MedianADU = tmpdata[NPixels / 2];
 
         delete[] tmpdata;
     }
@@ -128,11 +185,15 @@ void usImage::CalcStats()
             for (int x = 0; x < Subframe.width; x++)
             {
                 unsigned short d = *src;
-                if (d < MinADU) MinADU = d;
-                if (d > MaxADU) MaxADU = d;
                 *dst++ = *src++;
             }
         }
+
+        HistogramBuilder hb;
+        hb.scan(tmpdata, pixcnt);
+        MinADU = hb.MinADU;
+        MaxADU = hb.MaxADU;
+        MedianADU = hb.median();
 
         dst = new unsigned short[pixcnt];
 
@@ -145,10 +206,6 @@ void usImage::CalcStats()
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
-
-        memcpy(dst, tmpdata, pixcnt * sizeof(unsigned short));
-        std::nth_element(dst, dst + pixcnt / 2, dst + pixcnt);
-        MedianADU = dst[pixcnt / 2];
 
         delete[] dst;
         delete[] tmpdata;
@@ -164,17 +221,17 @@ static unsigned char * buildGammaLookupTable(int blevel, int wlevel, double powe
     if (blevel > 0xffff) blevel = 0xffff;
     if (wlevel > 0xffff) blevel = 0xffff;
 
-    for(int i = 0; i <= blevel; ++i) {
+    for (int i = 0; i <= blevel; ++i) {
         result[i] = 0;
     }
 
     float range = wlevel - blevel;
-    for(int i = blevel + 1; i < wlevel; ++i) {
+    for (int i = blevel + 1; i < wlevel; ++i) {
         float d = (i - blevel) / range;
         result[i] = pow(d, (float) power) * 255.0;
     }
 
-    for(int i = wlevel; i < 0x10000; ++i) {
+    for (int i = wlevel; i < 0x10000; ++i) {
         result[i] = 255;
     }
 
