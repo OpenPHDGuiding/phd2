@@ -115,9 +115,9 @@
 #ifdef HAVE_ZWO_CAMERA
 # define ZWO_ASI
 #endif
-# ifdef HAVE_SVB_CAMERA
+#ifdef HAVE_SVB_CAMERA
 # define SVB_CAMERA
-# endif 
+#endif
 
 #elif defined (__linux__) || defined (__FreeBSD__)
 
