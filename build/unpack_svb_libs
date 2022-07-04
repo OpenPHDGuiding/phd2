@@ -2,19 +2,31 @@
 
 set -x
 
-# usage: unpack_zwo_libs SV305-Pro-Windows-SDK.zip
+# usage: unpack_svb_libs windows_SVBCameraSDK_v1.7.3.zip linux_SVBCameraSDK_v1.7.3.tar.gz macos_SVBCameraSDK_v1.7.3.tar.gz
 
 usage () {
-    echo 'usage: unpack_zwo_libs SV305-Pro-Windows-SDK.zip' >&2
+    echo 'usage: unpack_svb_libs windows_SVBCameraSDK_v1.7.3.zip linux_SVBCameraSDK_v1.7.3.tar.gz macos_SVBCameraSDK_v1.7.3.tar.gz' >&2
     exit 1
 }
 
 # === main ===
 
-WIN=$1
-if [ -n "$WIN" -a ! -f "$WIN" ]; then
-    usage
-fi
+WIN=
+LINUX=
+MACOS=
+for f in "$@"; do
+    case "${f##*/}" in
+        windows*.zip) WIN=$f ;;
+        linux*.tar.gz) LINUX=$f ;;
+        macos*.tar.gz) MACOS=$f ;;
+        *) usage ;;
+    esac
+done
+
+for f in "$WIN" "$LINUX" "$MACOS"; do
+    [[ ! $f || -f $f ]] || \
+        usage
+done
 
 set -e
 
@@ -23,19 +35,33 @@ TOP=$(cd $(dirname "$0")/..; /bin/pwd)
 TMP=$(mktemp -d --tmpdir)
 trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
 
-#F=SVBCameraSDK
-F=SVBONY
-
 # windows
 if [[ $WIN ]]; then
+    F=SVBONY
     unzip -q -d "$TMP" "$WIN"
-    # check for zip-within-zip
-    inner_zip=$(ls "$TMP"/*/windows_SVBCameraSDK_*.zip 2>/dev/null | head -1)
-    if [[ -f $inner_zip ]]; then
-        "$0" "$inner_zip"
-        exit
-    fi
     cp "$TMP/$F/include/SVBCameraSDK.h" "$TOP"/cameras/
     cp "$TMP/$F/lib/x86/SVBCameraSDK.lib" "$TOP"/cameras/
     cp "$TMP/$F/lib/x86/SVBCameraSDK.dll" "$TOP"/WinLibs/
+fi
+
+# linux
+if [[ $LINUX ]]; then
+    mkdir "$TMP/linux"
+    tar xfz "$LINUX" -C "$TMP/linux/"
+    (
+        cd "$TMP/linux/SVBCameraSDK/lib"
+        find . -name '*.so' | cpio --quiet -pdmuv "$TOP"/cameras/svblibs/linux
+        cp "../include/SVBCameraSDK.h" "$TOP"/cameras/
+    )
+fi
+
+# MacOS
+if [[ $MACOS ]]; then
+    mkdir "$TMP/mac"
+    tar xfz "$MACOS" -C "$TMP/mac/"
+    (
+        cd "$TMP/mac/SVBCameraSDK/lib"
+        find . -name '*.dylib' | cpio --quiet -pdmuv "$TOP"/cameras/svblibs/mac
+        cp "../include/SVBCameraSDK.h" "$TOP"/cameras/
+    )
 fi
