@@ -260,11 +260,19 @@
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Uni-directional Dec Guiding">
-			<param name="Local" value="Supplemental_Info.htm#Declination_Uni_directional_guiding">
+			<param name="Local" value="Supplemental_Info.htm#Declination-Uni-directional_guiding">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Variable Delay Guiding">
 			<param name="Local" value="Supplemental_Info.htm#Variable_delay_guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Differential_flexure">
+			<param name="Local" value="Supplemental_Info.htm#Differential_flexure">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Adaptive Optics Guiding">
+			<param name="Local" value="Supplemental_Info.htm#AO_Devices">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Logging">

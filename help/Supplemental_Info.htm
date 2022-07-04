@@ -2,7 +2,7 @@
 <html><head><title>Supplemental Information</title></head>
 <body>
 <h2>Supplemental Information</h2><a href="#Binning_usage">Use of Binning</a>
-<br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Common_mount_problems">Common Mount Problems</a><br><a href="#Declination-Uni-directional_guiding">Uni-directional Dec Guiding</a><br><a href="#Variable_delay_guiding">Variable-Delay Guiding</a><br>
+<br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Common_mount_problems">Common Mount Problems</a><br><a href="#Declination-Uni-directional_guiding">Uni-directional Dec Guiding</a><br><a href="#Variable_delay_guiding">Variable-Delay Guiding</a><br><a href="Differential_flexure">Differential Flexure</a><br><a href="#AO_Devices">AO Devices</a><br>
 <a href="#Logging_and_Debug_Output">Logging and Debug
 Output</a><br>
 <a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;"></span></a><a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
@@ -522,7 +522,93 @@ seconds.&nbsp; The 4-second exposure time will provide good suppression of
 seeing-related effects and the sum of (4+4) seconds results in a steady
 8-second guiding cadence for most of the imaging session.&nbsp; At the same
 time, the dither settling times will benefit from the short (4+1) second delays between
-camera exposures.<o:p></o:p></p>
+camera exposures.</p><h3><a name="Differential_flexure"></a>Differential Flexure<o:p></o:p></h3>
+
+<p class="MsoNormal">Any telescope/camera combination is going to flex and sag in
+various ways as it tracks an object in the sky &#8211; that&#8217;s just a consequence of
+gravity and physics.<span style="">&nbsp; </span>In fact, each
+individual component is going to exhibit its own unique behavior in this regard
+depending on its mass and how it&#8217;s attached to its neighboring components. <span style="">&nbsp;</span>Especially with larger scopes and heavier
+cameras, the amount of flexure can be significant, keeping in mind that guiding
+is dealing in units of a small number of microns.<span style="">&nbsp; </span>Since we aren&#8217;t generally familiar with
+dimensions this small, it&#8217;s useful to remember that a human hair is roughly 50
+microns thick, roughly 10x larger than most guiding corrections.<o:p></o:p></p>
+
+<p class="MsoNormal">When a separate guide scope is being used in addition to the
+imaging scope, each unit will flex and shift independently &#8211; this is called
+differential flexure.<span style="">&nbsp; </span>If PHD2 is using
+the separate guide scope, it will only see and correct for the movements of the
+guide scope/camera, the differential movements of the imaging scope/camera are
+invisible. <span style="">&nbsp;</span>This can lead to a fairly
+common and frustrating problem where the guiding results are excellent but the
+stars taken through the main camera are elongated.<span style="">&nbsp; </span><o:p></o:p></p>
+
+<p class="MsoNormal">There will <b>always </b>be some amount of differential flexure
+in a dual-scope system, it&#8217;s only a question of how large it is and whether it
+is large enough to degrade your images.<span style="">&nbsp;
+</span>For imaging scopes with focal lengths of 1800mm or greater, differential
+flexure is usually a problem unless the main-camera exposures are kept fairly short.<span style="">&nbsp; </span>There&#8217;s no way to predict this because there
+are simply too many mechanical interface points that can move around &#8211; movable
+SCT mirrors, all the connectors between the cameras and their focusers, the
+focusers themselves, all the thumb-screw fasteners in the system, the mounting
+ring arrangement for the guide scope, etc. <span style="">&nbsp;&nbsp;</span>The typical solution is to eliminate the
+dual-scope setup and use an off-axis-guider (OAG) on the imaging scope.<span style="">&nbsp; </span>This allows PHD2 to &#8220;see&#8221; all the movements,
+mechanical or otherwise, that will affect the main-camera images. <span style="">&nbsp;</span>In the early days, OAGs were often difficult
+to use because their fields of view were small and usable guide stars were hard
+to find.<span style="">&nbsp; </span>With the current generation of
+guide cameras and their large, highly sensitive sensors, most of these problems
+are a thing of the past.<o:p></o:p></p>
+
+<p class="MsoNormal">If you have a situation where you frequently have elongated
+stars but the guiding results show reasonably similar results for both Dec and
+RA, you should suspect differential flexure. <span style="">&nbsp;</span>You can usually verify this fairly easily with
+a simple test.<span style="">&nbsp; </span>Using the main camera,
+with guiding active, find the largest exposure time that still has acceptably
+round stars.<span style="">&nbsp; </span>Then capture a sequence of perhaps
+10-20 images at that exposure time. Using an app that is capable of displaying that
+image set, &#8220;blink&#8221; through the images in the order they were captured.<span style="">&nbsp; </span>You will usually see a consistent offset of
+the stars in each image relative to the previous image &#8211; the stars will appear
+to &#8220;march&#8221; in a particular direction as you cycle through the image set. <span style="">&nbsp;</span>Alternatively, you can simply stack all the
+images without first aligning them to see the star elongation emerge.</p><h3><a name="AO_Devices"></a>Adaptive/Active Optics Devices</h3><p class="MsoNormal">Generally
+speaking, amateur-grade adaptive/active optics (AO) devices can only
+deal with some of the problems that create imperfect guiding.&nbsp;
+AO&#8217;s can usually mask or at least improve the behavior of an
+under-performing mount because most of the guiding adjustments are
+accomplished by moving a small tip-tilt optical element &#8211; not 70 pounds
+of telescope gear.&nbsp; Basically, the mount is rarely asked to do
+anything beyond basic sidereal tracking.&nbsp; Problems with backlash,
+stiction, and periodic error are mostly masked with AO use.&nbsp; In
+addition, because an AO is inherently an off-axis-guider, it also
+eliminates differential flexure problems.&nbsp; These are significant
+benefits and explain why many serious imagers use AO&#8217;s. <br><br>What
+an AO can&#8217;t eliminate is guide star movement due to seeing, at least
+not under normal conditions.&nbsp; Guide star movement due to upper
+atmosphere seeing occurs at frequencies of at least 100s/sec and it
+isn&#8217;t usually practical to find guide stars that can be measured that
+rapidly. If you attempt to run the AO at such high rates you will have
+two problems: 1) Any available guide stars will probably have low SNR
+values, and the calculation of their positions will degrade
+proportionately; and 2) you will under-sample the seeing
+deflections.&nbsp; The latter situation results in &#8220;aliasing&#8221;,
+resulting in guide commands that are invariably incorrect and likely to
+make things even worse.&nbsp; For these reasons, AO users are still
+advised to use exposure times of no less than 0.5 second to avoid
+chasing the seeing.&nbsp; The goal with AO guiding is really to make
+the mount &#8220;look&#8221; better than it really is in terms of tracking accuracy
+and responsiveness. &nbsp;If your imaging isn't limited by mount
+performance, an AO is not likely to provide much benefit.<br><br>AO
+guiding usually involves guide commands being directed, at times, to
+both the AO and the mount.&nbsp; The commands are sent only to the AO
+so long as the guide corrections don&#8217;t exceed the physical limits of
+the tip-tilt element.&nbsp; As this limit is approached, &#8220;bump&#8221; guide
+commands are sent to the mount to help restore the primary guide star
+to a more central position of the tip-tilt element.&nbsp; This can
+happen to correct for polar alignment drift, large guiding excursions
+arising from external problems (e.g. cable snags) or for large
+dithers.&nbsp; An explanation of how these guide commands are &#8220;blended&#8221;
+is provided in the Advanced Settings/AO Parameters section of the
+manual. &nbsp;<a href="Advanced_settings.htm#Other_Devices_Tab">AO Parameters</a><br><o:p></o:p></p>
+
 
 <h3><a name="Logging_and_Debug_Output"></a>Logging
 and Debug Output</h3>
