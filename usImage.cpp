@@ -212,28 +212,27 @@ void usImage::CalcStats()
     }
 }
 
-static unsigned char * buildGammaLookupTable(int blevel, int wlevel, double power)
+static unsigned char *buildGammaLookupTable(int blevel, int wlevel, double power)
 {
-    unsigned char * result = new unsigned char[0x10000];
+    unsigned char *result = new unsigned char[0x10000];
 
     if (blevel < 0) blevel = 0;
     if (wlevel < 0) wlevel = 0;
     if (blevel > 0xffff) blevel = 0xffff;
     if (wlevel > 0xffff) blevel = 0xffff;
 
-    for (int i = 0; i <= blevel; ++i) {
+    for (int i = 0; i <= blevel; ++i)
         result[i] = 0;
-    }
 
     float range = wlevel - blevel;
-    for (int i = blevel + 1; i < wlevel; ++i) {
+    for (int i = blevel + 1; i < wlevel; ++i)
+    {
         float d = (i - blevel) / range;
         result[i] = pow(d, (float) power) * 255.0;
     }
 
-    for (int i = wlevel; i < 0x10000; ++i) {
+    for (int i = wlevel; i < 0x10000; ++i)
         result[i] = 255;
-    }
 
     return result;
 }
@@ -251,7 +250,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     unsigned char *ImgPtr = img->GetData();
     unsigned short *RawPtr = ImageData;
 
-    unsigned char * lutTable = buildGammaLookupTable(blevel, wlevel, power);
+    unsigned char *lutTable = buildGammaLookupTable(blevel, wlevel, power);
 
     for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
     {
@@ -262,54 +261,8 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
         *ImgPtr++ = d;
     }
 
-    delete(lutTable);
+    delete[] lutTable;
 
-    *rawimg = img;
-    return false;
-}
-
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
-{
-    wxImage *img;
-    unsigned char *ImgPtr;
-    unsigned short *RawPtr;
-    int x,y;
-    float d;
-    //, s_factor;
-    int full_xsize, full_ysize;
-    int use_xsize, use_ysize;
-
-    full_xsize = Size.GetWidth();
-    full_ysize = Size.GetHeight();
-    use_xsize = full_xsize;
-    use_ysize = full_ysize;
-    if (use_xsize % 2) use_xsize--;
-    if (use_ysize % 2) use_ysize--;
-//  Binsize = 2;
-
-    img = *rawimg;
-    if ((!img->Ok()) || (img->GetWidth() != (full_xsize/2)) || (img->GetHeight() != (full_ysize/2)) ) {  // can't reuse bitmap
-        delete img;  // Clear out current image if it exists
-        img = new wxImage(full_xsize/2, full_ysize/2, false);
-    }
-    ImgPtr = img->GetData();
-    RawPtr = ImageData;
-
-    unsigned char * lutTable = buildGammaLookupTable(blevel, wlevel, power);
-
-    for (y=0; y<use_ysize; y+=2) {
-        for (x=0; x<use_xsize; x+=2) {
-            RawPtr = ImageData + x + y*full_xsize;
-            int v = (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4;
-
-            unsigned char d = lutTable[v];
-            *ImgPtr++ = d;
-            *ImgPtr++ = d;
-            *ImgPtr++ = d;
-        }
-    }
-
-    delete lutTable;
     *rawimg = img;
     return false;
 }
