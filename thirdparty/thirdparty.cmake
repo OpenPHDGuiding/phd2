@@ -1141,11 +1141,11 @@ if(APPLE)
   if(APPLE32)
     find_library( SVBCameraSDK
                   NAMES SVBCameraSDK
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svbonylibs/mac/x86)
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x86)
   else()
     find_library( SVBCameraSDK
                   NAMES SVBCameraSDK
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svbonylibs/mac/x64)
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
   endif()
 
   if(NOT SVBCameraSDK)
@@ -1409,7 +1409,7 @@ if(UNIX AND NOT APPLE)
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK
             NO_DEFAULT_PATHS
-            PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svbonylibs/linux/${svbony_arch})
+            PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/linux/${svbony_arch})
 
       if(NOT SVBCameraSDK)
         message(FATAL_ERROR "Cannot find the SVBCameraSDK drivers")

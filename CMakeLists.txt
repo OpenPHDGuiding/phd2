@@ -697,6 +697,17 @@ if(APPLE)
     )
   endif()
 
+  if(SVBCameraSDK)
+    set_source_files_properties(${SVBCameraSDK} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change SVBCameraSDK/lib/x64//libSVBCameraSDK.dylib
+                   @executable_path/../Frameworks/libSVBCameraSDK.dylib $<TARGET_FILE:phd2>
+      COMMENT "Updating dylib path for libSVBCameraSDK.dylib"
+    )
+  endif()
+
   add_custom_command(
     TARGET phd2
     POST_BUILD
