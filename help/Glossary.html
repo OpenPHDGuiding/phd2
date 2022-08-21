@@ -124,11 +124,11 @@ is the acronym used for signal-to-noise-ratio. &nbsp;This is a
 specialized measurement used by PHD2 to determine how well
 the star can be distinguished from the background. It is similar but
 not identical to the signal-to-noise ratio used in photometry.
-&nbsp;PHD2's calculation of an accurate position for the guide star can
-be affected by the SNR, but the effects typically become unimportant
-when the SNR is at 15 or higher. &nbsp;At that point, errors in
-computing the star position will be much smaller than the other
-measurement uncertainties inherent to guiding.<br><br><span style="font-weight: bold;"><a name="Saturation"></a>Saturation - </span>occurs
+In the absence of other factors, the accuracy of determining the
+centroid location of a star is proportional to the SNR of that star.
+&nbsp;But&nbsp;these measurement uncertainties are usually small
+compared to the tracking errors contributed by seeing and mechanical
+imperfections in the mount.<br><br><span style="font-weight: bold;"><a name="Saturation"></a>Saturation - </span>occurs
 when the brightest parts of the guide star image exceed the maximum
 capacity of the sensors in your guide camera. &nbsp;When this happens,
 the star profile no longer has a sharp central peak because the pixel

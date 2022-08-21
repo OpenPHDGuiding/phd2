@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Supplemental Information</title></head>
 <body>
-<h2>Supplemental Information</h2><a href="#Binning_usage">Use of Binning</a>
+<h2>Supplemental Information</h2><a href="#Astronomical_seeing">Astronomical Seeing</a><br><a href="#Binning_usage">Use of Binning</a>
 <br><a href="#Dithering_Ops">Dithering Operations</a><br><a href="#Common_mount_problems">Common Mount Problems</a><br><a href="#Declination-Uni-directional_guiding">Uni-directional Dec Guiding</a><br><a href="#Variable_delay_guiding">Variable-Delay Guiding</a><br><a href="Differential_flexure">Differential Flexure</a><br><a href="#AO_Devices">AO Devices</a><br>
 <a href="#Logging_and_Debug_Output">Logging and Debug
 Output</a><br>
@@ -29,24 +29,52 @@ temperatures.<span style="">&nbsp; </span>And because the atmosphere
 is very dynamic, these elements are all moving around at various speeds, coming
 into and then leaving the column of air you&#8217;re looking through.<span style="">&nbsp; </span>Particularly with longer focal lengths, this
 atmospheric seeing is the single biggest source of the guide star movement we
-see with a properly working mount, and it can&#8217;t be &#8220;guided out&#8221;.<span style="">&nbsp; </span>The movement of the atmospheric cells means
-the guide star position is changing at rates of 10&#8217;s to 1000&#8217;s of times per
-second, and amateur-grade equipment, even adaptive optics devices, can&#8217;t react
-quickly enough to correct for it. Professional observatories are able to do it
-to a large extent by employing very expensive measurement devices, artificial
-stars, and mechanisms that can both deform the mirror and shift the image at
-very high frequencies.<o:p></o:p></p>
+see with a properly working mount, and it can&#8217;t be &#8220;guided out&#8221;.<span style="">&nbsp; </span>The
+movement of the atmospheric cells means
+the guide star position is changing at rates of 10&#8217;s to 1000&#8217;s of times
+per
+second, and amateur-grade equipment, even adaptive optics devices,
+can&#8217;t react
+quickly enough to correct for it. Professional observatories are able
+to do it
+to a large extent by employing very expensive measurement devices,
+artificial
+stars, and mechanisms that can both deform the mirror and shift the
+image at
+very high frequencies. &nbsp;For these observatories, most
+of the seeing disturbances originate in the upper layers of the
+atmosphere and those are&nbsp;the layers that are used for seeing
+models and most seeing forecasts. &nbsp;For amateurs and
+especially for those who image from urban or backyard locations, seeing
+problems also arise from sources close to the telescope. &nbsp;Heat
+convection from hard ground surfaces or neighboring rooftops create
+lower frequency "boiling" behavior that degrade guiding and imaging
+performance. &nbsp;Ground-level heat can also create tube currents and
+uneven layers of hot air inside the telescope tube - these also can
+masquerade as low-frequency seeing effects. &nbsp;Users should do what
+they can to avoid or mitigate these situations and, when working in
+locations with high daytime temperatures, should expect it will take
+many hours after sunset for the equipment temperatures to equilibrate. <o:p></o:p></p>
 
 
 
-<p class="MsoNormal"><o:p>&nbsp;</o:p><br>From a guiding perspective, we are &#8220;under-sampling&#8221; the
+<p class="MsoNormal"><o:p></o:p>From a guiding perspective, we are always &#8220;under-sampling&#8221; the
 seeing behavior.<span style="">&nbsp; </span>By the time we&#8217;ve taken
 an exposure, downloaded the image, computed the location of the guide stars,
 and then transmitted a guide command, the star position on the sensor has moved
-&#8211; probably 100&#8217;s of times.<span style="">&nbsp; </span>Basically,
+&#8211; probably 100&#8217;s of times.<span style="">&nbsp;
+As the exposure time decreases, these measurement errors become even
+larger, a phenomenon known as "aliasing". You're exposed to aliasing
+any time you watch a TV show or a film that has rapidly spinning
+objects like automobile wheels. &nbsp;Over the years, you've been
+conditioned to ignore it but, really, are those car wheels actually
+spinning backwards during the chase scene? &nbsp;This aliasing effect
+happens because the exposure rate of the film equipment - e.g. 60
+frames/sec - is too slow to accurately meaure the movement of the
+spinning objects. &nbsp; Getting back to auto-guiding</span>,
 we&#8217;re always dealing with outdated information about the actual guide star position &#8211; and that doesn&#8217;t even take into
 account whatever shortcomings the mount has in precisely executing the guide
-commands it receives.<span style="">&nbsp; </span>Essentially, the
+commands it receives.<span style="">&nbsp; </span>The
 star movements we <i style="">can</i> correct for -
 drift, periodic error, atmospheric refraction, mechanical deflections, etc - are hiding in a sea of
 noise created by the seeing conditions.<span style="">
@@ -63,7 +91,7 @@ of guide star motion decreases as the exposure time is increased:<o:p></o:p></p>
 <img style="width: 717px; height: 447px;" alt="" src="Supplemental_Graph_Seeing.png"><br>
 
 <p class="MsoNormal">Essentially, the camera sensor is averaging the changing
-light pattern of the star and smoothing the result.<span style="">&nbsp; </span>These measurements are still inaccurate
+light pattern of the star and smoothing the result.<span style="">&nbsp; </span>Measurement uncertainty is still present
 because of under-sampling, but the longer exposures make it easier for PHD2 to
 isolate and identify the lower frequency errors that really can be improved
 through guiding.<span style="">&nbsp; </span>Obviously, there is a
@@ -72,9 +100,11 @@ practical upper limit to the exposure time.<span style="">&nbsp;
 on its own without needing a correction.<span style="">&nbsp;
 </span>Small errors from periodic error, drift, flexure and other sources need
 to be corrected before they become large enough to ruin an image.<span style="">&nbsp; </span>Finding the right balance will always depend
-on both the seeing conditions and the quality of the equipment.<span style="">&nbsp; </span>As a starting point in PHD2, we typically
-recommend using exposure times of around 2 seconds but not less than 1
-second.<o:p></o:p></p>
+on both the seeing conditions and the quality of the equipment.<span style="">&nbsp; </span>As
+a starting point in PHD2, we typically
+recommend using exposure times of around 2 seconds and lower exposures
+of at least 0.5 sec only if the mount requires it and then only if
+guiding is active on multiple stars.</p><p class="MsoNormal"><o:p></o:p></p>
 
 <h3><span style="font-weight: bold;"><a name="Binning_usage"></a>Use
 of Binning</span></h3>
@@ -314,7 +344,7 @@ introduce errors on shorter time periods than the worm period.<span style="">&nb
 of these &#8220;upstream&#8221; gear inaccuracies but those can introduce errors of their
 own &#8211; incorrect tensioning, lateral movement of the belt on spindles, etc.<span style="">&nbsp; </span><o:p></o:p></p>
 
-<h3>RA Periodic Error Correction<o:p></o:p></h3>
+<h3><a name="RA_periodic_error"></a>RA Periodic Error Correction<o:p></o:p></h3>
 
 <p class="MsoNormal">Periodic error correction (PEC) in the mount firmware is
 beneficial to auto-guiding if the feature is implemented correctly.<span style="">&nbsp; </span>Unfortunately, this isn&#8217;t always the
@@ -337,7 +367,7 @@ corrections only for those tracking errors that are harmonic - i.e.
 errors with frequencies that are integer multiples of the worm
 frequency.<span style=""> &nbsp; If the PE correction curve is poorly constructed, the RA tracking can be worse than using no PEC at all.</span></p><p class="MsoNormal">If PEC isn't available for your mount or is badly implemented, you can use the PPEC guide algorithm in PHD2. <span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;"></span><a href="Guide_algorithms.htm#Predictive_PEC">PHD2 Predictive PEC</a><span style=""> </span><o:p></o:p></p>
 
-<h3><o:p></o:p>Declination Backlash and Stiction</h3><p class="MsoNormal">Backlash
+<h3><o:p></o:p><a name="Dec_backlash"></a>Declination Backlash and Stiction</h3><p class="MsoNormal">Backlash
 can occur when the direction of motion on an axis is reversed. The
 telescope may not immediately start moving in the reverse direction
 even though the motor is turning. The usual cause is loose meshing of
@@ -727,12 +757,14 @@ you want to manage multiple profiles, you should use the
 'Manage Profiles' button in the 'Connect Equipment' dialog.
 &nbsp;Using
 the menu items there, you can create a new profile
-or&nbsp;edit/rename/delete an existing one. &nbsp;Each profile
+or&nbsp;edit/rename/delete an existing one. &nbsp;The most important
+option and the one you are most likely to use is to launch the
+New-Profile-Wizard, described in the Basic Use section of the manual.
+This is the function that will configure the PHD2 settings that are
+specific to your equipment configuration.&nbsp; Each profile
 holds
 all the settings that were active at the time the profile was last
-used. &nbsp;You should use the
-'Wizard' option to create new profiles and have PHD2 establish settings that are specific to
-your equipment configuration. &nbsp;To
+used except for the dark and bad-pixel map files. &nbsp;To
 edit the settings in an existing profile, you first select it in the
 equipment profile drop-down list, then click on 'Settings' under the
 '<a name="Manage_Profiles"></a>Manage Profiles'

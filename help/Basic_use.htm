@@ -56,7 +56,7 @@ off-axis-guiding arrangement for a long focal length scope and a
 separate guide scope/camera configuration for a shorter focal length
 imaging scope. &nbsp;The <span style="font-style: italic;">PHD2</span>
 guide settings for those configurations will be different, so you should use separate equipment
-profiles - see: <a href="Supplemental_info.htm#Managing_Equipment_Profiles">Managing Equipment Profiles</a>. &nbsp;The controls at the top of the 'Connect Equipment'
+profiles<a href="Supplemental_info.htm#Managing_Equipment_Profiles"></a>. &nbsp;The controls at the top of the 'Connect Equipment'
 dialog let you choose the profile you want to use and to
 create/edit/remove profiles as you see fit. &nbsp;When you select a
 profile and connect to its associated equipment, all of the
@@ -75,7 +75,7 @@ automatically re-connect to your hardware. &nbsp;Your profile
 information will be retained when you install new releases of PHD2 so
 long as you don't first un-install. &nbsp;Un-installing PHD2 is almost
 never necessary and will simply create complications - it is not a
-useful trouble-shooting step.<br><br><h4><a name="New_profile_wizard"></a>New-Profile-Wizard</h4>The
+useful trouble-shooting step. &nbsp;More information about managing profiles can be found here:  -&nbsp; <a href="Supplemental_info.htm#Managing_Equipment_Profiles">Managing Equipment Profiles</a><br><br><h4><a name="New_profile_wizard"></a>New-Profile-Wizard</h4>The
 best way to create a new profile is to use the "Wizard"
 capability, and for new users, this is a critical first step. &nbsp;The wizard takes you through a sequence of windows
 that&nbsp;explain the various settings and help you decide how to set
@@ -188,8 +188,8 @@ profiles because
 the dark library and bad-pixel maps depend on the binning factor.<br><br>
 <h4><a name="Camera_Selection"></a>Camera Selection</h4>
 The
-Camera drop-down list shows all the camera types currently supported by
-<span style="font-style: italic;">PHD2</span>.
+Camera drop-down list shows all the camera types natively supported by
+<span style="font-style: italic;">PHD2 </span>in addition to all the ASCOM cameras&nbsp;you have already installed.
 &nbsp;In all cases, the OS-level drivers for the camera must be
 installed correctly in order for PHD2 to connect to the device.
 &nbsp;If the camera uses an ASCOM interface, you'll also need to
@@ -288,7 +288,7 @@ mount. &nbsp;These drivers are available from the ASCOM web site (<a href="http:
 or
 from the mount manufacturer - they are <span style="font-weight: bold;">not</span> distributed with <span style="font-style: italic;">PHD2</span>. So
 the drop-down list will be populated by only those ASCOM drivers you
-already have installed on your system. &nbsp;The ASCOM driver must
+already have installed on your system. <span style="font-weight: bold;">If you can't find your mount in the list, you either haven't installed its driver correctly or it only supports ST-4 guiding</span>.&nbsp; The ASCOM driver must
 support the 'PulseGuide' interface, which has been a requirement for
 ASCOM compliance for many years and is widely supported.&nbsp;
 With this type of mount control, guide commands are sent from <span style="font-style: italic;">PHD2</span> to
@@ -336,10 +336,12 @@ guiding - it is completely unrelated to the 'Aux' connection in PHD2. &nbsp;The
 last entry in the list of 'Aux mount' connections is labeled "Ask for
 coordinates." &nbsp;This can provide a rudimentary aux-mount facility
 if you can't use an ASCOM or INDI connection to your mount. &nbsp;If
-you need to pursue this option, you can read about the details here: <a href="Supplemental_info#Ask_for_coordinates_aux_mount">Ask-for-coordinates</a>.<br><br>Most ASCOM mount drivers use a serial port interface, so the driver
+you need to pursue this option, you can read about the details here: <a href="Supplemental_info.htm#Ask_for_coordinates_aux_mount">Ask-for-coordinates</a>.<br><br>Most
+ASCOM mount drivers use a serial port interface, so the driver
 expects to use one of the Windows 'COM' ports. &nbsp;Since most
 personal computers no longer have serial port connectors, you can use
-one of the USB ports and a USB-serial adapter. The software that comes
+one of the USB ports and a USB-serial adapter. Newer mounts may include
+such an adapter or have one built in. The software that comes
 with the USB-serial adapter will create a software COM port, and that's
 the one you'll use with the ASCOM driver. The first time you connect to
 the mount with ASCOM (either as 'mount' or 'aux-mount'), you'll need to
@@ -379,7 +381,10 @@ Equipment..." button in the above dialog: <br><br><img style="width: 584px; heig
 you don't have these devices, just leave the selections at 'None.'
 &nbsp;If these devices are connected, you'll see additional tabs in
 the 'Advanced Settings' dialog that provide access to various
-device-related properties. &nbsp;PHD2 does not control a rotator, but
+device-related properties. Adaptive optics (AO) devices generally
+require some study before use and you should familiarize yourself with
+their operation before trying to use them. &nbsp;Some background
+information can be found here:&nbsp;<a href="Supplemental_Info.htm#AO_Devices">Using an AO</a> .&nbsp; PHD2 does not control a rotator, but
 it will read the current angle setting from the rotator and&nbsp;adjust
 the guiding calibration if needed. &nbsp;Rotators are used to control
 the orientation of the imaging camera with respect to the sky - perhaps
@@ -408,8 +413,8 @@ calibration and all the graphical display options, will work properly
 when the built-in device simulators are used. &nbsp;You'll even
 see fairly realistic guiding performance to give you some idea of what
 to expect in the field. &nbsp;To get started using the simulators,
-choose 'Simulator' for the camera type and 'On-camera' for the Mount
-type.<br><br>That said, the simulators are <span style="font-weight: bold;">not</span>
+use the new-profile-wizard, choosing 'Simulator' for the camera type and 'On-camera' for the Mount
+type.<br><br>Remember, the simulators are <span style="font-weight: bold;">not</span>
 useful for trouble-shooting any problems you encounter with your real
 mount and they can't be used for testing your actual hardware. &nbsp;Both the camera and the mount must be&nbsp;real devices in
 order to diagnose problems or otherwise get your gear calibrated and
@@ -439,7 +444,9 @@ should choose a fainter star.
 &nbsp;You should adjust the gamma slider to the left to see fainter
 stars. Most new users are fooled by this and often choose the brightest
 star they happen to see in the field of view. &nbsp;But that choice is
-often a saturated star, not a good choice for auto-guiding. &nbsp;All
+often a saturated star, not a good choice for auto-guiding. In other
+words, if you know the name of the star, it's almost certainly too
+bright to be used for effective guiding.&nbsp; All
 of these pitfalls can be avoided by using the auto-select feature. The
 choice of exposure time will
 depend entirely on your equipment, sky conditions, and the available
@@ -466,7 +473,7 @@ Of course, the convenience of using longer exposures must be traded off
 against the need for the mount to get sufficiently frequent
 corrections. &nbsp;For
 mounts that have too many high-frequency errors in RA, you may need to
-work with 1-second exposures in which case using multi-star guiding
+work with 1-sec or even 0.5-sec exposures in which case using multi-star guiding
 becomes even more important. &nbsp;If you're not familiar with the
 concept of astronomical seeing, you can get more info here:&nbsp;<a href="Supplemental_Info.htm#Astronomical_seeing">Astronomical Seeing</a></li>
 </ol>
@@ -486,7 +493,7 @@ because&nbsp;poorly focused guide stars can lead to poor guiding
 results. &nbsp;<br><br>The
 camera exposure control displays
 a wide range of pre-set exposure times. &nbsp;Exposure
-times smaller than one second are intended for use with adaptive
+times smaller than 0.5 second are intended for use with adaptive
 optics devices or in other special situations - they are not
 recommended for use with typical guide camera set-ups. &nbsp;There is
 also a
@@ -539,7 +546,7 @@ stars to refine the measurements of guide star movement and lower their volatili
 there is essentially no way for it to degrade guiding performance compared to single-star guiding.
 &nbsp;The benefit it provides to your overall guiding
 will depend on many factors including image scale, star and background
-sky brightness, star size, focus, and camera noise. &nbsp;Because of the way the
+sky brightness, star size, focus, tube currents, and camera noise. &nbsp;Because of the way the
 algorithm is implemented, your best option will be to try it and decide
 for yourself. &nbsp;<span style="font-weight: bold;">Note: if you don't use the auto-select function and instead choose a guide star manually, multi-star guiding will be inactive.</span>
 <h3><a name="Automatic_Calibration"></a>Automatic

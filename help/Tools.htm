@@ -22,7 +22,7 @@ guiding.<br><br>The
 three polar alignment tools have different requirements and behaviors,
 as summarized in the table below. &nbsp;The accuracy and speed columns
 show values in the range of 1-3, where 1 is lowest and 3 is highest.<br>
-<br><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="font-weight: bold;">Method</td><td><span style="font-weight: bold;">Accuracy</span></td><td><span style="font-weight: bold;">Speed</span></td><td><span style="font-weight: bold;">Sky View</span></td><td><span style="font-weight: bold;">Other</span> </td></tr><tr><td>Static polar alignment</td><td>1</td><td>3</td><td>Polar region</td><td>Requires identification of polar region stars<br>Minimal slewing</td></tr><tr><td>Polar drift alignment</td><td>2</td><td>2</td><td>Polar region</td><td>Minimal slewing</td></tr><tr><td>Traditional drift alignment</td><td>3</td><td>1</td><td>East or west horizon<br>Meridian/celestial equator</td><td>Most slewing<br>Axes measured/adjusted separately</td></tr></tbody></table><br>The original polar alignment routine, drift alignment, is
+<br><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="font-weight: bold;">Method</td><td><span style="font-weight: bold;">Accuracy</span></td><td><span style="font-weight: bold;">Speed</span></td><td><span style="font-weight: bold;">Sky View</span></td><td><span style="font-weight: bold;">Other</span> </td></tr><tr><td>Traditional drift alignment</td><td>3</td><td>1</td><td>East or west horizon<br>Meridian/celestial equator</td><td>Most slewing<br>Axes measured/adjusted separately</td></tr><tr><td>Static polar alignment</td><td>1</td><td>3</td><td>Polar region</td><td>Requires identification of polar region stars<br>Minimal slewing</td></tr><tr><td>Polar drift alignment<br></td><td>2<br></td><td>2</td><td>Polar region<br></td><td>Minimal slewing<br></td></tr></tbody></table><br>The original polar alignment routine, drift alignment, is
 still considered by most to be the &#8220;gold standard&#8221; for accuracy.<span style="">&nbsp; </span>Partly, this is because it directly measures
 the thing you&#8217;re interested in: the amount of drift that will be caused by
 mis-alignment of the RA axis on the celestial pole.<span style="">&nbsp; </span>The drift alignment tool requires use of only
@@ -72,13 +72,13 @@ precision of the adjustment mechanisms on the mount and your ability to
 tighten them sufficiently to keep things from moving around as you slew
 to various parts of the sky.<br></p>
 
-<h3><a href="Tutorials.htm#Drift_Align">Drift Alignment Tool</a></h3>
-<h3><a href="Tutorials.htm#Static_polar_alignment">Static Polar Alignment Tool</a></h3>
-<h3><a href="Tutorials.htm#Polar_Drift_Align">Polar Drift Alignment Tool</a></h3><br>
+<h3><a href="Tutorials.htm#Drift_Align">Drift Alignment Tutorial</a></h3>
+<h3><a href="Tutorials.htm#Static_polar_alignment">Static Polar Alignment Tutorial</a></h3>
+<h3><a href="Tutorials.htm#Polar_Drift_Align">Polar Drift Alignment Tutorial</a></h3><br>
 <h3><a name="Auto-Select_Star"></a>Auto-Select Stars</h3>Automatic guide
 star selection can be accomplished in several ways. &nbsp;The simplest way
 is to click&nbsp;on the 'Auto-Select Stars' icon in the main window,
-next to the 'Guide' icon. But selection can also be triggered by&nbsp;using
+next to the 'Guide' icon.&nbsp; Auto-selection can also be triggered by&nbsp;using
 the keyboard
 shortcut of &lt;Alt&gt;S or by clicking on the 'Auto-select stars' item
 under the 'Tools' menu. &nbsp;Taking any of these actions tells <span style="font-style: italic;">PHD2</span>
@@ -122,8 +122,8 @@ and measures the ensuing motion of the guide star. This&nbsp;can help
 you
 see the high-frequency motions&nbsp;caused by seeing (atmospheric)
 conditions. &nbsp;These cannot&nbsp;be corrected by conventional
-guiding because they occur at a much higher frequency than you can
-typically even measure. Trying to correct for them with conventional
+guiding because they occur at a much higher frequency than you
+can&nbsp;measure. Trying to correct for them with conventional
 guiding&nbsp;is often called "chasing the seeing" and usually leads to
 poor results. &nbsp;Avoiding it is best accomplished by
 setting a minimum-move level that will cause PHD2 to ignore most of
@@ -136,7 +136,8 @@ measuring them can be helpful if you want to improve the underlying
 performance of the mount - for example, by applying periodic error
 correction in RA. &nbsp;The&nbsp;GA can also measure the declination
 backlash in your system if
-you select that option in the user interface.<br><br>When
+you select that option in the user interface. &nbsp;If you're not
+familiar with these terms, you can find a short discussion here: &nbsp;<a href="Supplemental_Info.htm#Common_mount_problems">Common Mount Problems</a><br><br>When
 you start the Guiding Assistant, its behavior depends on whether
 you are already guiding. &nbsp;If guiding is active, the initial screen
 will look like this (with different data values of course):<br><br><img style="width: 779px; height: 520px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
@@ -167,7 +168,7 @@ more accurate measure of your polar alignment error
 and any uncorrected periodic error in RA, you'll need to let the GA run for up to 10 minutes. Also, the computed polar
 alignment error is sensitive to the current scope declination. &nbsp;To
 get the most accurate measurement, you should point the scope to within
-a few degrees of the celestial equator, the same area you should use
+a few degrees of the celestial equator and near the celestial meridian, the same area you should use
 for calibration.. &nbsp;When you finally click
 the 'Stop'
 button, this phase of the measurement process will stop. If
@@ -262,7 +263,7 @@ enabled in the mount software. &nbsp;If this isn't done, the
 measurements and
 any subsequent attempts at compensation by PHD2 will be invalid.
 &nbsp;If you want to try uni-directional guiding, you can find
-instructions here: &nbsp;<a href="Advanced_settings.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a><br><br>You
+instructions here: &nbsp;<a href="Supplemental_Info.htm#Declination-Uni-directional_guiding">Uni-directional guiding</a><br><br>You
 can look at a graphical display of the backlash measurement results to
 get a better understanding of how the mount performed even if the test failed. &nbsp;Just click
 on the 'Show Graph' button to see a graph that might look something like
@@ -318,7 +319,7 @@ time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
 information and confirm that the calibration went
 reasonably well and produced sensible results. &nbsp;Bad calibrations
 can occur even for&nbsp;experienced imagers and high-end mounts, so
-it is good to check.<br><br><span style="font-weight: bold;"></span>If you are having consistent problems getting alert-free calibrations, you should review the material in the&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section</a> . <br><br><big><span style="font-weight: bold;">Other Calibration-Related Menu Options</span></big><br>
+it is good to check.<br><br><span style="font-weight: bold;"></span>If you are having consistent problems getting alert-free calibrations, you should review the material in the <a href="Trouble_shooting.htm#Problems-_Mount_Control">Trouble-shooting</a> section . <br><br><big><span style="font-weight: bold;">Other Calibration-Related Menu Options</span></big><br>
 Calibration data are saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
@@ -385,7 +386,7 @@ constrain the dither adjustments to only east or west. &nbsp;Obviously,
 if you are doing a manual dither in this way, you'll want to be sure
 your imaging camera is not in the middle of an exposure.<br>
 <h3><a name="Star_cross_tool"></a>Star-Cross Tool</h3>
-The star-cross tool can help you test the mount's response to guide commands as described in this <a href="Trouble_shooting.htm#Star_cross_test">trouble-shooting</a>
+The Star-Cross tool can help you test the mount's response to guide commands as described in this&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">Trouble-shooting</a>
 section. Although the test is easy to perform manually, you may prefer
 to use this tool. &nbsp;The star-cross tool will show the following
 dialog: <br><br><img style="width: 603px; height: 309px;" alt="" src="Star_cross_tool.png"><br><br><span style="font-weight: bold;">This test presumes you're using the main image camera to expose the image</span>, and PHD2 doesn't know what image scale is being used for that.

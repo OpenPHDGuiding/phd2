@@ -1,7 +1,145 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Trouble-shooting</title></head>
 <body>
-<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>
+<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_General_trouble-shooting"></a>General Guide to Resolving Problems</h3>The
+field experience with PHD2 since its initial release in 2013, involving
+thousands of users worldwide,&nbsp; has shown that 99% of what people
+think of as "guiding problems" are not really that at all.
+&nbsp;Instead, they
+usually&nbsp;come from two sources:<br><div style="margin-left: 40px;">1) Operational errors made by the user<br>2) &nbsp;Mechanical problems with the mount or the physical equipment riding on the mount<br></div><br>It's
+important to remember this when you encounter difficulties and can't
+get the results you want.&nbsp; Operational
+mistakes can be avoided by carefully studying the documentation on the
+PHD2 web site (or in this built-in Help),&nbsp;following the steps described in the "Best
+Practices" document, and using the 'search' tools on the PHD2 support
+forum. YouTube videos, unless done by someone close to the PHD2
+project, have wildly variable quality, often reflecting misunderstandings and&nbsp;sometimes producing a witches'
+brew of good and bad advice - so be careful what you watch.&nbsp; One
+of the most common mistakes is to
+wildly change the PHD2 guiding parameters in a futile attempt to
+correct for&nbsp;mechanical problems that exist in your setup.
+&nbsp;This only makes things worse. The default guiding parameters
+calculated by PHD2 reflect the parameters you entered in the
+new-profile-wizard, so they are already adjusted for your setup. You
+should be able to get reasonable results
+out-of-the-box if the equipment behaves and if you don't, you are
+probably dealing with operational mistakes or mechanical
+problems.&nbsp; Although it is
+frustrating to
+be confronted with mechanical problems, it is important to isolate,
+identify, and understand them before trying to fix&nbsp;them or
+mitigate their effects. &nbsp;Mechanical problems won't simply go away.
+&nbsp;Even if they temporarily subside, they will inevitably come back to bite you. &nbsp;And
+something that worked fine just last week or even last night may no
+longer work - that is the nature of hardware.<br><br>PHD2 or any
+guiding software is often the messenger of bad news because of the
+incredible level of accuracy required for guiding. &nbsp;Modern guide
+cameras are capable of measuring movement on scales of just a few
+microns - as a comparison, a human hair is about 50 microns thick.
+&nbsp;Until you have tried guiding, your equipment setup has probably
+never been
+tested or measured at this level of accuracy even by the manufacturers.
+&nbsp;Beginners are often in denial about mechanical problems because
+the
+scope and mount apparently slew well enough, they seem to track the sky
+reasonably well, various planetarium applications can move them without
+complaint, and they look and feel well-made. Even worse, they were
+expensive!&nbsp; But none of this matters when you're trying to get the
+full assembly of equipment to track the sky, hour after hour, horizon
+to horizon, with
+sub-arc-second accuracy. &nbsp;Fortunately, most mechanical problems
+can be eliminated or reduced fairly easily or at least without great
+financial expense. &nbsp;Most vendors are willing to help with the
+problems so long as they have been carefully documented and
+demonstrated - and PHD2 is an excellent tool for doing that. &nbsp;For
+most people, the cost of eliminating problems comes from time spent
+doing trouble-shooting,&nbsp;lost imaging opportunities, and general
+frustration; but these problems are&nbsp;part of the hobby
+and&nbsp;most successful imagers have&nbsp;learned how to work
+through them.<br><br>If
+you're unfamiliar with the kinds of mechanical problems commonly found
+with telescope mounts, you can get a quick introduction here: <a href="Supplemental_Info.htm#Common_mount_problems">Common Mount Problems</a>
+&nbsp; &nbsp;Also, many problems can arise from the way&nbsp;the imaging-related gear
+is attached to the main scope and mount - guide scopes, camera
+attachments, cable routing schemes, etc. &nbsp;When these components sag,
+drag, or move around on their own, they create unwanted guide star
+movements that masquerade as tracking problems in the mount. &nbsp;If you're
+unhappy with your overall guiding results, you should proceed in a
+careful and systematic way to identify the sources - flailing around in
+the dark is a recipe for failure. &nbsp;Here is a quick blueprint for
+trouble-shooting:<br><br>1. &nbsp;Be sure the parameters you entered in the
+new-profile-wizard were accurate - guide scope focal length, mount
+guide speed, and the camera pixel size if you had to enter it manually.
+&nbsp;If you find mistakes, don't try to fix them manually - just re-run the
+new-profile-wizard.<br>2. &nbsp;Be sure you have reliable camera operations
+that deliver consistent, reasonable-looking images of the sky. &nbsp;If you
+have problems in this area, follow the procedures in the <a href="Problems-_Camera_Timeouts">Camera Timeout and Connection Problems</a>.<br>3.
+&nbsp;Be sure the guide camera is well-focused and you aren't getting
+frequent lost-star messages when using 2-second guide camera exposures.
+&nbsp;Tips for getting a good focus are discussed here: &nbsp;<a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile Tool</a> . &nbsp;If you're using imaging and guide cameras from the same manufacturere, be sure PHD2 is connected to the right one.<br>4.
+Get a reasonable mechanical polar alignment, one that is within about
+10 arc-min of the celestial pole. &nbsp;Doing this requires mechanical
+adjustments of your mount or wedge - you will be loosening fasteners
+and cranking knobs to get this done, it can't be done by software
+alone. &nbsp;You can use a polar alignment scope, a high-powered eyepiece,
+another app that assists with polar alignment,&nbsp; or one of the polar
+alignment tools in PHD2. &nbsp;Great precision isn't required, "close
+enough" is "good enough".<br>5. &nbsp;Concentrate on getting a usable
+calibration in PHD2, one that doesn't generate error messages or
+"alert" warnings. &nbsp;If site conditions allow it, calibrate with the
+scope pointing in a declination range of -20 to +20 degrees and a right
+ascension (hour angle) that keeps&nbsp;the scope pointing well above the
+east and west horizons. &nbsp; If you have visibility restrictions at your
+site, come as close as you can to the above goals. &nbsp;If you get error
+messages (failed calibrations) or you see alert messages at the top of
+the display, follow the advice shown here: <a href="Problems-_Mount_Control">Calibration Problems</a>.
+&nbsp;It's important to get workable results in this step because the
+calibration is fundamental to all the guiding activity that will follow.<br>6. &nbsp;Use the <a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a>
+tool to examine how your mount tracks and behaves working on its own,
+without guiding. &nbsp;Use the GA to measure the declination backlash and
+once the measurement session has finished, apply the recommendations
+you'll be given. &nbsp;If you see &nbsp;large, abrupt guide star excursions or
+other inexplicable results during the GA session, resolve those
+problems first.<br>7. Perform a series of 15-20 minute guiding sessions, still in the same region of the sky. &nbsp;Do <span style="font-weight: bold;">NOT</span> modify any of the guiding parameters attempting to make things better. &nbsp;<br>8.
+&nbsp;Use the PHD2 LogViewer tool to analyze your results and develop a
+strategy for fixing the problems that have been revealed. &nbsp;You can get
+help doing this on the PHD2 support forum.<h3><a name="Problems-_Guide_star_deflections"></a>Large/Abrupt Guide Star Deflections</h3>Most
+users eventually encounter situations where the guide star appears to
+make a large, abrupt excursion away from the lock-point. &nbsp;The
+great majority of these problems&nbsp;arise from neither the mount
+nor&nbsp;PHD2's guide commands. &nbsp;Instead, they usually come
+from&nbsp;unwanted mechanical movement in the gear that is riding on
+top of the mount, especially the guide camera/guide scope assembly.
+&nbsp;This is especially true if the large deflections occur in
+declination because the Dec motor is normally idle except for executing
+the very short, relatively infrequent guide commands it receives.
+&nbsp;The unwanted mechanical movement usually comes from several
+sources: <br><ol><li>Tiny movements of the various components in the
+guiding assembly as a result of the changing gravitational forces while
+the mount tracks the target object</li><li>Dragging, binding, or snagging of cables, especially those that are connected to the guide camera</li><li>Wind gusts or less commonly, effects from camera filter changes, auto-focusing, or mirror movement</li><li>Use of mount features for backlash compensation - these should not be used with PHD2 guiding</li></ol>Before
+rejecting these things as likely sources of&nbsp; problems, think again
+about the tiny measurement scales and tolerances described in the
+previous section. &nbsp;With many guiding set-ups, a movement of only 5
+microns can create an apparent tracking error (guide star deflection)
+of over 6 arc-sec, the equivalent of many star diameters. Every
+mechanical interface, every set-screw, every movable element has the
+potential to shift or move on its own by these tiny amounts. &nbsp;Even
+when cables have been routed in a purposeful way, they may bind or pull
+in certain sky positions or after a meridian flip. &nbsp;Cable ties or
+ribbed plastic cable guides hare small protrusions that can briefly
+catch on stationary parts of the mount. &nbsp;For large Dec
+deflections, it's easy to determine if these things are coming into
+play. &nbsp;Just use the PHDLogViewer tool to zoom in on the time of
+interest and see if the deflection was immediately preceded by a
+correspondingly large guide command in the direction of movement.
+&nbsp;In most cases, you will find this didn't happen. &nbsp;It can
+sometimes happen at the beginning of a guide session if you're using
+PHD2 Dec backlash compensation, but those events should disappear
+quickly. &nbsp;If the abrupt deflections occur in RA, the analysis is
+less straightforward because the RA motor runs continuously. &nbsp;But
+even then, unusually large, randomly space deflections are more likely
+to arise from the sorts of mechanical problems described here than from
+errors in the RA drive system.<h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>
 
 <p class="MsoNormal" style="margin-bottom: 0.0001pt; line-height: normal;"><span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;,serif;">In some cases, you may experience
 problems where guider images aren't downloaded or displayed. &nbsp;In extreme
@@ -388,7 +526,44 @@ consult the document on PHD2 Best Practices. &nbsp;All of these
 references are available on the OpenPHDGuiding.org web site under the
 'News' tab. &nbsp;If you'd like some help understanding the results,
 post both the guiding and debug log files on the OpenPHD2 Google forum
-and we'll be glad to help you out.<br><span style="font-weight: bold;"><br></span><h3><a name="Problems-_Alerts"></a>Alert Messages</h3>PHD2
+and we'll be glad to help you out.<br><span style="font-weight: bold;"><br></span><span style="font-weight: bold;"></span><h3><a name="Problems-_Lost_stars"></a>Lost-Star Events</h3>When PHD2 can't locate the primary guide star in a camera frame, several things happen:<br><ol><li>The
+screen will flash and a "beep" tone will sound. &nbsp;The sound can be
+disabled if you wish (Advanced Settings/Guide tab) but the screen will
+always flash</li><li>No guide commands will be issued and the next guide camera exposure will be started</li><li>Lost-star event messages will be sent to any imaging applications that are connected to PHD2</li><li>Lost-star
+messages will be displayed in the status bar including the reason for
+the loss - low SNR, low HFD, low-mass, or mass-change</li></ol>Lost-star
+events occur when the object in the search region no longer meets the
+criteria for identification as a star. &nbsp;It may no longer be bright
+enough, meaning that its SNR or its total brightness ("mass") are too
+low. &nbsp;Or it may look too much like camera sensor noise, meaning
+that its size (HFD) is lower than your setting for Min-HFD. &nbsp;If
+you are using "star-mass-detection" as a way to discriminate between
+mutliple similar stars in the search region, a lost-star event will be
+triggered if the star mass value changes by more than the allowed
+amount. &nbsp;This feature is generally unnecessary for current
+versions of PHD2 and can be disabled. &nbsp;In any case, the first
+steps in trouble-shooting will be to understand the reason for the
+lost-star events and whether they happened because of degraded sky
+conditions, mechanical tracking errors, or inappropriate star selection
+parameters. &nbsp;For beginners, a common cause of lost-star events is
+poor focus of the guide camera, and you should insure that your guide
+camera remains well-focused using the procedures described in the Star
+Profile tool section. &nbsp;<a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile Tool</a><br><br>PHD2 doesn't invoke any sort of extended
+guide star recovery process - it simply keeps taking exposures and
+looking to see if the guide star reappears within the current search
+region. &nbsp;This works well for brief or intermittent problems like
+clouds, wind gusts, or sporadic mechanical problems but it assumes that
+the tracking accuracy of the mount is sufficient to keep a guide star
+within the search region for a reasonable length of time. &nbsp;As the
+elapsed time of the lost-star events grows, the mount will slowly drift
+off-target and a star that re-appears in the search region at a much
+later time is probably a different star. &nbsp;In this case, PHD2 will
+resume guiding but the original astronomical target will no longer be
+centered and may not even be in the field of view. &nbsp;Recovery from
+extended lost-star periods is the responsibility of the end-user or the
+imaging automation application, not PHD2. &nbsp;Doing the recovery
+properly requires re-slewing the scope to its original sky pointing
+position, a procedure that PHD2 is not equipped to do.<br><br><h3><a name="Problems-_Alerts"></a>Alert Messages</h3>PHD2
 will sometimes display alert messages at the top of the main display
 window. &nbsp;These generally show error or diagnostic information that
 warrant your attention. &nbsp;During normal operation, you probably

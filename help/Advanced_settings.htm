@@ -140,7 +140,7 @@ medium-long exposure times (4+ seconds) and an additional delay between
 guide camera exposures. &nbsp;The goal is to create a slow guiding
 "cadence" that is only reacting to tracking changes that aren't already
 being handled&nbsp;by the mount encoders or by its pointing model.
-&nbsp;Details of the approach can be found here:&nbsp;<a href="Supplemental_info.htm#Variable_delay_guiding">Encoder mount guiding</a>
+&nbsp;Details of the approach can be found here: &nbsp;<a href="Supplemental_info.htm#Variable_delay_guiding">Variable Delay Guiding</a>
 &nbsp;The variable exposure delay controls provide a way to achieve
 these goals while avoiding unnecessary delays when the system is engaged in
 actions other than "steady-state" guiding for imaging/science
@@ -156,14 +156,18 @@ the last guide command, if any, and the start of the next camera
 exposure.</li><li>For both the long and short delay scenarios, the interval
 between successive guide camera exposures (and guide commands) will be
 exposure_time + guide_pulse_times + delay_value.</li></ul><li><a name="Auto_exposure_settings"></a>'Auto Exposure' - these are the settings that control Auto exposure time:, useful for automated imaging or AO guiding:</li><ul><li>Min
-Exposure - the minimum exposure time - PHD2 will not set the exposure
+Exposure - the minimum exposure time.&nbsp; PHD2 will not set the
+exposure
 time
 less than this value, even if the guide star SNR is higher than the
 target SNR value.
-If the minimum exposure time is set too low, you are likely to chase seeing
+If the minimum exposure time is set too low, you are likely to chase
+seeing
 effects and thereby get poor guiding results. Users of adaptive optics
 units might set this to a lower value since rapid small
-corrections are more manageable with an AO.</li><li>Max
+corrections are more manageable with an AO. &nbsp;Lower values, down to
+0.5-sec, can also be tried if multiple guide stars are normally
+available in the field of view.</li><li>Max
 Exposure - the maximum exposure time. Before a guide star is selected,
 PHD2
 will set the exposure time to the maximum value. After selection is completed, PHD2
@@ -176,10 +180,9 @@ even with a
 fixed exposure duration, so be sure to account for that when choosing a
 target SNR
 value. PHD2 will always reject frames when SNR drops below 3.0. The default
-value of 6.0
-should provide enough of a cushion to prevent fluctuations from causing
+value of 6.0 may provide enough of a cushion to prevent fluctuations from causing
 the SNR to
-go below 3.0 - but a higher value is desirable. &nbsp;As mentioned in the 'Basic Use' section, SNR is
+go below 3.0 - but double-digit values are recommended. &nbsp;As mentioned in the 'Basic Use' section, SNR is
 similar but not identical to the signal-to-noise ratio used in
 photometry.</li></ul><li><a name="Star_saturation_detection"></a>'Star
 Saturation Detection'
@@ -195,7 +198,9 @@ formats even if the camera electronics natively work in 12-bit or
 of 255 while a 16-bit camera will saturate at levels above 65000.
 &nbsp;If you are uncertain about your camera's behavior, you can use
 the Star Profile tool to measure the brightest pixel level when taking
-exposures of a very bright star. You should temporarily disable use of the dark library if you need to do this assessment.</li><li>Saturation via star-profile -
+exposures of a very bright star. This will quickly tell you if the
+camera is returning values in the range of 0-255 or 0-65K and you can
+set the saturation value accordingly.</li><li>Saturation via star-profile -
 this relies on a less accurate judgment of saturation based on whether
 the star profile has a flat top. &nbsp;It is not recommended for normal
 applications.</li></ul><li>'<a name="Pixel_size"></a>Pixel
@@ -247,8 +252,7 @@ actions. &nbsp;Also, if you are using a guide camera that shares
 electronics with the main imaging camera, you should set this timeout
 to a large
 value, well above the maximum expected time for a full-frame download
-from the main imager. This is a consideration for users of
-the&nbsp;SBIG driver that is packaged with Sequence Generator Pro.
+from the main imager. This is a consideration for users of some of the SBIG dual-chip cameras.
 &nbsp;Regardless of whether PHD2 is able to handle the situation
 gracefully, the underlying problem is almost certainly in&nbsp;the
 hardware or the camera driver and will need to be resolved before
@@ -339,7 +343,7 @@ values greater than 1 to improve the chances of recognizing such stars.
 of 'Auto'.</li><li>'Beep on lost star' - specifies whether PHD2 will produce an audible 'beep' sound when the guide star is lost during guiding.</li></ul>Calibration<br><ul><li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
 two parameters needed by <span style="font-style: italic;">PHD2</span>
 to compute the image scale and thus
-report guiding performance in units of arc-seconds.&nbsp;If the focal length value is wrong,, some
+report guiding performance in units of arc-seconds.&nbsp;If the focal length value is wrong, some
 of the default guiding parameters will not be set correctly, and we
 won't be able to help
 you assess performance and resolve problems. &nbsp;You should use the
@@ -354,9 +358,8 @@ adjust
 the value depending on whether the guide star is moving&nbsp;too
 quickly
 or&nbsp;too slowly during calibration. &nbsp;As a general guideline, it
-is
-good to calibrate within about 20 degrees of the celestial equator
-(declination = 0), and to use a calibration step size that will result
+is best to calibrate within about 20 degrees of the celestial equator
+(declination = 0), well above the east and west horizons; and to use a calibration step size that will result
 in 8-14&nbsp;steps in each direction. &nbsp; The 'Advanced...' button
 to
 the right of this control will launch a calculator dialog that can help
@@ -377,9 +380,9 @@ option.
 profile,&nbsp;and it only has an effect when you load the profile and
 connect to the equipment. &nbsp;If you want to force a recalibration
 before an individual guiding session begins, there are multiple ways to do that - doing a Shift-Click on
-the PHD2/guiding 'Guide' button is the easiest. &nbsp;If you have set the auto-restore
+the PHD2/guiding 'Guide' button is the easiest. <span style="font-weight: bold;">&nbsp;If you have set the auto-restore
 option, you must be sure that the guide camera is not rotated with
-respect to the guide scope or the sky.</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
+respect to the guide scope or the sky.</span></li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
 Dec orthogonal to RA' - Normally, the calibration process independently
 computes the camera angles for both right ascension and declination.
 &nbsp;There is no need for great precision on these values, and the
@@ -395,9 +398,9 @@ re-calibrate
 before
 guiding is restarted. &nbsp;You might do this for a variety of
 reasons
-- rotating the guide camera or changing the mount guide speed, for example.
-&nbsp;You can also accomplish the same result by doing a Shift-Click on
-the PHD2/guiding icon on the main page, which will force a re-calibration.</li><li>'<a name="Declination_compensation"></a>Use
+- rotating the guide camera or seeing that guiding results are substantially worse than normal, for example.
+&nbsp;You can&nbsp;accomplish the same result by doing a Shift-Click on
+the PHD2 guiding icon on the main page, which will force a re-calibration.</li><li>'<a name="Declination_compensation"></a>Use
 Declination Compensation' - if PHD2 can get pointing information from
 the mount via an ASCOM/Indi connection ('Mount' or 'Aux'), it will
 automatically adjust the RA guide rate based on the current
@@ -445,8 +448,8 @@ and then start guiding.</li>
       <li>if you see guiding run-away <span style="font-weight: bold; font-style: italic;">in
           declination</span>, check the box and repeat the entire procedure, including calibration. &nbsp;You <span style="font-weight: bold;">must repeat the procedure</span>, simply checking the box doesn't "fix" anything.</li>
     </ul>&nbsp;<span style="font-weight: bold;">Note</span>:
-this procedure must be following in its entirety&nbsp;until you
-determine the correct setting. &nbsp;Changing the 'Reverse Dec' setting
+<span style="font-weight: bold;">this procedure must be following in its entirety&nbsp;until you
+determine the correct setting</span>. &nbsp;Changing the 'Reverse Dec' setting
 only determines what will happen <span style="font-weight: bold;">in the future</span>, at the next calibration.&nbsp;
   </li>
 
@@ -456,11 +459,7 @@ to send guide
 commands&nbsp;to the mount. There are some
 circumstances
 where you might want to disable this, usually because you want to
-observe the uncorrected behavior of the mount. &nbsp;For example,
-you
-can disable guider output in order to see the general shape and
-amplitude of your mount's periodic error or to check the amount of
-drift from polar mis-alignment. &nbsp;In most cases, you will be better
+observe the uncorrected behavior of the mount. &nbsp;In most cases, you will be better
 off running the Guiding Assistant for these purposes, which
 automatically handles this setting for you.</li><li>'<a name="Stop_guiding_on_slew"></a>Stop
 guiding when mount slews' - prevents PHD2 from trying to continue
@@ -532,23 +531,22 @@ below the default value if you want to avoid&nbsp;chasing a large
 deflection that could be caused by a spurious event (e.g. wind gust,
 hot pixel, etc.) .' &nbsp;However, there is rarely any reason for
 changing it if you have protected yourself against hot pixels (Minimum
-star HFD).</li><li>'Use
-backlash comp' - this
+star HFD).</li><li>'Enable' PHD2 Backlash Compensation - this
 controls whether PHD2 will apply a compensation factor when the
 direction of declination guiding needs to be reversed.
-&nbsp;See section below.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
+<span style="font-weight: bold;">&nbsp;See section below</span>.</li><li>'<a name="Max_Duration_Declination"></a>Max Dec. duration' - specifies the
 maximum allowed guide pulse duration for declination (same as above but
 for declination).</li><li>'<a name="Dec_guide_mode"></a>Declination
 guide mode' -&nbsp;gives you additional control over declination
 guiding. &nbsp;Declination guiding is not like RA guiding because the
 tracking errors are not caused
 by imperfections in your mount's drive system - the Dec motor is idle
-during normal sidereal tracking. &nbsp;Instead, tracking errote in
-declination are primarily the result of imperfect polar
-alignment,&nbsp;flexure, wind, binding or dragging of cables, or
+during normal sidereal tracking, running only in response to short Dec guide commands. &nbsp;Instead, tracking errors in
+declination are caused by polar
+alignment error, mechanical flexure, wind, binding or dragging of cables, or
 unwanted movement of the guiding assembly.
 &nbsp;Absent these mechanical&nbsp;problems, declination
-tracking&nbsp;should be smooth and mostly uni-directional, assuming
+tracking&nbsp;should be smooth and mostly uni-directional assuming
 there is no&nbsp;over-shoot from an
 earlier correction. &nbsp;The default value of 'auto' tells <span style="font-style: italic;">PHD2</span>
 that
@@ -574,7 +572,9 @@ same algorithm employed in the new-profile-wizard. &nbsp;If you
 previously used the Guiding Assistant to adjust the min-move settings,
 you should&nbsp;repeat that procedure.</li></ul><h4><a name="Declination_backlash_comp"></a>Declination Backlash Compensation</h4>Most
 commonly-used mounts have some&nbsp;backlash in declination.
-&nbsp;This causes a delay whenever there is a change in direction of
+&nbsp;You can find a brief discussion of backlash mechanics here: &nbsp;<a href="Supplemental_Info.htm#Dec_backlash">Dec Backlash</a>
+&nbsp;Backlash causes a delay whenever there is a change in direction
+of
 the Dec guide commands. &nbsp;During this interval, the declination
 gears aren't fully engaged and the axis doesn't move in response to the
 guide commands. &nbsp;Many mounts have settings for backlash
@@ -583,7 +583,9 @@ typically intended for visual use only.
 &nbsp;Because the actual amount of compensation needed at any given
 time depends on the pointing position and the mechanical load on the
 system, a fixed value will usually result in oscillations that never
-stabilize. &nbsp;The backlash compensation implemented by PHD2 is
+stabilize. &nbsp;Reasons for the positional dependency&nbsp;include
+uneven gear wear&nbsp;or&nbsp;significant imbalance of the scope in
+declination.&nbsp; The backlash compensation implemented by PHD2 is
 adaptive, meaning that the compensation amount is adjusted up or down
 depending on the measured results. &nbsp;Before enabling this feature,
 you should run the Guiding Assistant and measure the declination
@@ -608,12 +610,9 @@ because the initial state of the Dec gear system is unknown - just let
 it stabilize before you actually start imaging. &nbsp;If you see
 recurring periods of Dec oscillation or the axis won't settle down,
 disable the compensation feature and submit your debug log file to the
-PHD2 support forum. &nbsp;It's important to note that the correct
-amount of Dec backlash compensation will often change depending on the
-scope pointing position. &nbsp;This can be caused by uneven gear wear
-on the Dec axis or by significant imbalance of the scope in declination.<h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>If
+PHD2 support forum.&nbsp;<h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
-Devices" tab will be shown. &nbsp;The upper section deals with the AO
+Devices" tab will be shown. &nbsp;A general discussion of using an AO for guiding can be found here: <a href="Supplemental_Info.htm#AO_Devices">AO Guiding</a>&nbsp;&nbsp; The upper section deals with the AO
 device if one is being used. &nbsp;You
 can use these parameters&nbsp;to control the
 calibration process and the manner in which 'bump' operations are done.
