@@ -5,9 +5,8 @@ used for guiding are typically not temperature-regulated and may
 produce&nbsp;images that appear quite&nbsp;noisy. &nbsp;As a result, guide
 exposures frequently show obvious&nbsp;defects in the form of &nbsp;hot
 (or "warm") pixels or regions with spurious brightness levels. &nbsp;If
-there are too many of these defects, you may have trouble identifying
-and selecting a good guide star - trying to calibrate on a hot pixel is
-a common problem for beginners. &nbsp;Even after guiding has begun, a
+there are too many of these defects, PHD2 may have trouble identifying
+and selecting&nbsp;guide stars. &nbsp;Even after guiding has begun, a
 spurious hot pixel close to the guide star can disrupt the calculations
 needed for smooth guiding and may cause the software to "jump" between
 the real star and the hot pixel. &nbsp;These sorts of problems can be
@@ -50,8 +49,7 @@ there is no light leakage into the guide camera - doing this in
 daylight is not likely to work well. &nbsp;PHD2 will systematically
 work through the range of exposure times you've chosen, taking the
 specified number of frames for each exposure time. &nbsp;Progress will
-be displayed on the status bar at the bottom of the window, so you can
-see where you are in the overall process. &nbsp;Once you've started the
+be displayed on the status bar at the bottom of the window. &nbsp;Once you've started the
 process, the 'Cancel' button above will change to a 'Stop' button.
 &nbsp;You can click on this if something goes wrong or you want to
 change the parameters before the entire sequence completes.
@@ -73,19 +71,24 @@ library, so you can freely change the setting on the 'Use Dark Library'
 menu item without loss of any data. &nbsp;If you are using a dark
 library and there is no master dark frame that exactly matches your
 guide exposure time, PHD2 will use the&nbsp;nearest fit. &nbsp;However,
-you are encouraged to obtain matching master dark frames for best
+you should use matching master dark frames for best
 results. &nbsp;If you have a dark library that has&nbsp;missing exposure
 times, you can simply acquire the missing data and it will be added to
 the existing dark library - there is no need to start over. &nbsp;By
 changing the setting of the 'Use Dark Library' menu item, you'll be
 able to see the effect of using the dark library and determine whether your guider images are sufficiently improved.<br><br>Remember
-that a dark library is associated with a particular camera and binning level. &nbsp;PHD2
+that a dark library is associated with a particular camera and binning
+level. &nbsp;PHD2
 will check to be sure that the dark library matches the camera you are
 currently using. &nbsp;If it does not, you will see an alert message
 telling you the dark library can't be used and must be rebuilt.
 &nbsp;This can happen when you've changed cameras inside an existing
 equipment profile, something you shouldn't do unless you have upgraded
-your guide camera and have no plan to return to using the old camera.<br><h3><a name="Bad-pixel_Maps"></a>Bad-pixel Maps (<a name="Defect_Maps"></a>Defect Maps)</h3>For
+your guide camera and have no plan to return to using the old camera.
+&nbsp;The dark library also depends implicitly on the camera gain
+level, so you should rebuild the dark library if you've made a
+significant change in camera gain - also something you really shouldn't
+do once you've gotten familiar with the camera behavior.<br><h3><a name="Bad-pixel_Maps"></a>Bad-pixel Maps (<a name="Defect_Maps"></a>Defect Maps)</h3>For
 some guide cameras, dark frames don't do an adequate job of removing
 the defective pixels that are visible in the guide frame. &nbsp;In
 those situations, you can probably get better results by building and
@@ -101,14 +104,14 @@ locations on the guide image is replaced by a statistical sample of the
 surrounding pixels, thus eliminating all or most of the effect of the
 "bad" pixel. &nbsp;The final result is usually an image with a smoother
 background and fewer obvious defects. &nbsp;For any defects that
-remain, PHD2 also provides a way for you to manually click on
+remain, PHD2 also provides a way&nbsp;to manually click on
 bad pixel locations and add them to the map. &nbsp;This entire process
 of obtaining and analyzing dark frames&nbsp;is handled for
 you by&nbsp;PHD2, so it's easy to build a bad-pixel map.<br><br>Building
 a bad-pixel map is done by clicking on the 'Bad Pixel Map...' item
 under the top-level 'Darks' menu. &nbsp;If you are doing this for the
 first time, you will be prompted to obtain a sequence of dark frames
-for analyzing your camera sensor and building the map: <br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 489px; height: 270px;" alt="Defect_Darks" src="Defect_Darks.png"><br><br>This
+for analyzing your camera sensor and building the map: <br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 571px; height: 321px;" alt="" src="Defect_Darks.png"><br><br>This
 is a slightly different version of the dialog used for obtaining dark
 frames, described in the previous section. &nbsp;Because the analysis
 is based on statistics, you should use relatively long exposure times
