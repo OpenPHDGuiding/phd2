@@ -30,6 +30,6 @@ for f in gxeth.h gxusb.h; do
 done
 
 # libs
-for f in gXeth.{dll,lib} gxUsb.{dll,lib}; do
+for f in gXeth.{dll,lib} gXusb.{dll,lib}; do
     cp -p x86/$f "$SRC"/cameras/moravian/win/lib/
 done
