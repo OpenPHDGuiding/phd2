@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-20 04:20+0100\n"
+"POT-Creation-Date: 2022-08-31 00:02+0100\n"
 "PO-Revision-Date: 2016-09-14 23:15+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -746,7 +746,7 @@ msgid "Failed to get camera resolution for Altair Camera."
 msgstr ""
 
 #: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_indi.cpp:890 cam_indi.cpp:924 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -934,72 +934,72 @@ msgstr ""
 msgid "Cannot get a frame from the queue"
 msgstr "لا يمكن الخصول على الإطار من الطابور"
 
-#: cam_indi.cpp:255 cam_indi.cpp:660
+#: cam_indi.cpp:340 cam_indi.cpp:750
 msgid "INDI camera disconnected"
 msgstr ""
 
-#: cam_indi.cpp:588
+#: cam_indi.cpp:678
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_indi.cpp:608 scope_indi.cpp:351 scope_indi.cpp:372
+#: cam_indi.cpp:698 scope_indi.cpp:351 scope_indi.cpp:372
 msgid "Connection timed-out"
 msgstr ""
 
-#: cam_indi.cpp:633
+#: cam_indi.cpp:723
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr ""
 
-#: cam_indi.cpp:653 scope_indi.cpp:417
+#: cam_indi.cpp:743 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr ""
 
-#: cam_indi.cpp:693
+#: cam_indi.cpp:783
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_indi.cpp:756 cam_indi.cpp:782 gear_simulator.cpp:698
+#: cam_indi.cpp:845 cam_indi.cpp:871 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "نوع غير مدعوم أ خطأ في قراءة ملفات FITS "
 
-#: cam_indi.cpp:763 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:852 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "ملفات FITS ليست صورة"
 
-#: cam_indi.cpp:813 cam_indi.cpp:843 gear_simulator.cpp:728
+#: cam_indi.cpp:902 cam_indi.cpp:932 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "خطأ في قراءة البيانات"
 
-#: cam_indi.cpp:1002
+#: cam_indi.cpp:1092
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr ""
 
-#: cam_indi.cpp:1046
+#: cam_indi.cpp:1137
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_indi.cpp:1135 cam_wdm.cpp:483
+#: cam_indi.cpp:1227 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr ""
 
-#: cam_indi.cpp:1147
+#: cam_indi.cpp:1239
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
 
-#: cam_indi.cpp:1149
+#: cam_indi.cpp:1241
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr ""
 
-#: cam_indi.cpp:1151
+#: cam_indi.cpp:1243
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr ""
 
@@ -1410,8 +1410,8 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr ""
 
-#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
-#: cam_zwo.cpp:889
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:871 cam_zwo.cpp:902
+#: cam_zwo.cpp:910
 msgid "Lost connection to camera"
 msgstr "فقد الاتصال بالكاميرا"
 
@@ -5225,7 +5225,7 @@ msgstr "تأكيد الخروج"
 msgid "FITS file is not of an image: %s"
 msgstr ""
 
-#: myframe.cpp:2399 usImage.cpp:450
+#: myframe.cpp:2399 usImage.cpp:438
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr ""
@@ -5248,7 +5248,7 @@ msgstr ""
 msgid "Error reading data from %s"
 msgstr ""
 
-#: myframe.cpp:2460 usImage.cpp:496
+#: myframe.cpp:2460 usImage.cpp:484
 #, c-format
 msgid "Error opening FITS file %s"
 msgstr ""
@@ -8118,20 +8118,20 @@ msgstr ""
 "حرك موقع تثبيت الموجه بمقدر عشوائي في كلى المحورين بحيث لا يكون المقدار "
 "كبيرا جدا"
 
-#: usImage.cpp:427
+#: usImage.cpp:415
 msgid "File does not exist - cannot load "
 msgstr "الملف غير موجود، لا يمكن التحميل"
 
-#: usImage.cpp:438
+#: usImage.cpp:426
 msgid "FITS file is not of an image: "
 msgstr "ملف FITS ليس عبارة صورة:"
 
-#: usImage.cpp:455
+#: usImage.cpp:443
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
 msgstr ""
 
-#: usImage.cpp:460
+#: usImage.cpp:448
 #, c-format
 msgid "Error reading data from FITS file %s"
 msgstr ""

@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-20 04:20+0100\n"
+"POT-Creation-Date: 2022-08-31 00:02+0100\n"
 "PO-Revision-Date: 2020-01-19 14:09+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -763,7 +763,7 @@ msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Altair 카메라의 해상도를 가져오지 못했습니다."
 
 #: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:801 cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_indi.cpp:890 cam_indi.cpp:924 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -959,60 +959,60 @@ msgstr "전송시작 실패"
 msgid "Cannot get a frame from the queue"
 msgstr "대기열에서 프레임을 가져올 수 없음"
 
-#: cam_indi.cpp:255 cam_indi.cpp:660
+#: cam_indi.cpp:340 cam_indi.cpp:750
 msgid "INDI camera disconnected"
 msgstr "INDI 카메라 연결 끊음"
 
-#: cam_indi.cpp:588
+#: cam_indi.cpp:678
 msgid "connection timed-out"
 msgstr "연결시간 초과"
 
-#: cam_indi.cpp:608 scope_indi.cpp:351 scope_indi.cpp:372
+#: cam_indi.cpp:698 scope_indi.cpp:351 scope_indi.cpp:372
 msgid "Connection timed-out"
 msgstr "연결시간 초과"
 
-#: cam_indi.cpp:633
+#: cam_indi.cpp:723
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr "카메라를 연결할 수 없음 %s: %s"
 
-#: cam_indi.cpp:653 scope_indi.cpp:417
+#: cam_indi.cpp:743 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr "INDI 서버 연결 끊김"
 
-#: cam_indi.cpp:693
+#: cam_indi.cpp:783
 msgid "INDI Camera Selection"
 msgstr "INDI 카메라 선택"
 
-#: cam_indi.cpp:756 cam_indi.cpp:782 gear_simulator.cpp:698
+#: cam_indi.cpp:845 cam_indi.cpp:871 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "FITS 파일을 로드할때 지원되지않는 형식 또는 읽기 오류"
 
-#: cam_indi.cpp:763 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:852 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "FITS 파일이 이미지가 아닙니다"
 
-#: cam_indi.cpp:813 cam_indi.cpp:843 gear_simulator.cpp:728
+#: cam_indi.cpp:902 cam_indi.cpp:932 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "데이타 읽기 오류"
 
-#: cam_indi.cpp:1002
+#: cam_indi.cpp:1092
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "카메라 %s, 노출 오류. 스트리밍을 사용하려 합니다."
 
-#: cam_indi.cpp:1046
+#: cam_indi.cpp:1137
 #, c-format
 msgid "Unknown image format: %s"
 msgstr "알수없는 이미지 형식: %s"
 
-#: cam_indi.cpp:1135 cam_wdm.cpp:483
+#: cam_indi.cpp:1227 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr "%d 프레임"
 
-#: cam_indi.cpp:1147
+#: cam_indi.cpp:1239
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
@@ -1020,7 +1020,7 @@ msgstr ""
 "카메라에 VIDEO_STREAM 속성이 없으므로, 다음 옵션의 선택을 취소하십시오: 카메"
 "라는 노출 시간을 지원하지 않음."
 
-#: cam_indi.cpp:1149
+#: cam_indi.cpp:1241
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
@@ -1028,7 +1028,7 @@ msgstr ""
 "카메라에 CCD_EXPOSURE 속성이 없으므로, 다음 옵션의 선택을 취소하십시오: 카메"
 "라는 스트림을 지원하지 않음."
 
-#: cam_indi.cpp:1151
+#: cam_indi.cpp:1243
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "카메라에 CCD_EXPOSURE 또는 VIDEO_STREAM 속성이 없음"
 
@@ -1442,8 +1442,8 @@ msgstr ""
 msgid "Unable to initialize camera."
 msgstr ""
 
-#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
-#: cam_zwo.cpp:889
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:871 cam_zwo.cpp:902
+#: cam_zwo.cpp:910
 msgid "Lost connection to camera"
 msgstr "카메라 연결이 끊어졌습니다"
 
@@ -5411,7 +5411,7 @@ msgstr "종료 확인"
 msgid "FITS file is not of an image: %s"
 msgstr ""
 
-#: myframe.cpp:2399 usImage.cpp:450
+#: myframe.cpp:2399 usImage.cpp:438
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr ""
@@ -5434,7 +5434,7 @@ msgstr ""
 msgid "Error reading data from %s"
 msgstr ""
 
-#: myframe.cpp:2460 usImage.cpp:496
+#: myframe.cpp:2460 usImage.cpp:484
 #, c-format
 msgid "Error opening FITS file %s"
 msgstr ""
@@ -8590,20 +8590,20 @@ msgstr ""
 "각 축에 있는 가이드 잠금 위치를 디더 유형과 디더 스케일 팩터에 의해 결정된 최"
 "대값까지 무작위 양으로 이동시킨다."
 
-#: usImage.cpp:427
+#: usImage.cpp:415
 msgid "File does not exist - cannot load "
 msgstr "파일이 없습니다-로드할 수 없습니다 "
 
-#: usImage.cpp:438
+#: usImage.cpp:426
 msgid "FITS file is not of an image: "
 msgstr "FITS 파일이 이미지가 아닙니다: "
 
-#: usImage.cpp:455
+#: usImage.cpp:443
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
 msgstr ""
 
-#: usImage.cpp:460
+#: usImage.cpp:448
 #, c-format
 msgid "Error reading data from FITS file %s"
 msgstr ""

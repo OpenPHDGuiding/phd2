@@ -35,14 +35,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD_2_6_11dev1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-20 04:20+0100\n"
+"POT-Creation-Date: 2022-08-31 00:02+0100\n"
 "PO-Revision-Date: 2022-05-01 10:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: Stanislav Holub\n"
-"Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs_CZ\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 "X-Generator: Poedit 3.0.1\n"
 
@@ -508,8 +508,8 @@ msgid ""
 "you to switch back and forth between configurations and still retain earlier "
 "settings and calibration results."
 msgstr ""
-"Poslední kalibrace ukázala výsledky, které se od předchozí kalibrace liší o "
-"%s%%.  Pokud je to způsobeno změnou konfigurace zařízení, možná budete muset "
+"Poslední kalibrace ukázala výsledky, které se od předchozí kalibrace liší o %"
+"s%%.  Pokud je to způsobeno změnou konfigurace zařízení, možná budete muset "
 "použít jiné profily.  To vám umožní přepínat mezi jednotlivými konfiguracemi "
 "a přitom zachovat dřívější nastavení a výsledky kalibrace."
 
@@ -522,8 +522,8 @@ msgid ""
 "means one of the axis calibrations is incorrect and may result in poor "
 "guiding."
 msgstr ""
-"Pointační rychlosti RA a Dec se liší o nečekanou hodnotu.  Pro vaši Dec "
-"%0.0f ° by měla být rychlost RA přibližně %0.0f%% rychlosti Dec.  Ale vaše "
+"Pointační rychlosti RA a Dec se liší o nečekanou hodnotu.  Pro vaši Dec %"
+"0.0f ° by měla být rychlost RA přibližně %0.0f%% rychlosti Dec.  Ale vaše "
 "rychlost RA je %0.0f%% rychlosti Dec.  To většinou znamená, že jedna z "
 "kalibračních os je chybná a může mít za následek špatnou pointaci."
 
@@ -779,8 +779,8 @@ msgstr "Kamer Altair nespuštěna."
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Rozlišení Altair Kamery nezjištěno."
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:801
-#: cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
+#: cam_indi.cpp:890 cam_indi.cpp:924 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -978,60 +978,60 @@ msgstr "Spuštění přenosu selhalo"
 msgid "Cannot get a frame from the queue"
 msgstr "Nelze získat snímek z fronty"
 
-#: cam_indi.cpp:255 cam_indi.cpp:660
+#: cam_indi.cpp:340 cam_indi.cpp:750
 msgid "INDI camera disconnected"
 msgstr "Kamera INDI odpojena"
 
-#: cam_indi.cpp:588
+#: cam_indi.cpp:678
 msgid "connection timed-out"
 msgstr "připojení vypršelo"
 
-#: cam_indi.cpp:608 scope_indi.cpp:351 scope_indi.cpp:372
+#: cam_indi.cpp:698 scope_indi.cpp:351 scope_indi.cpp:372
 msgid "Connection timed-out"
 msgstr "Připojení vypršelo"
 
-#: cam_indi.cpp:633
+#: cam_indi.cpp:723
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr "Nepřipojeno ke kameře %s: %s"
 
-#: cam_indi.cpp:653 scope_indi.cpp:417
+#: cam_indi.cpp:743 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr "Server INDI odpojen"
 
-#: cam_indi.cpp:693
+#: cam_indi.cpp:783
 msgid "INDI Camera Selection"
 msgstr "Výběr Kamery INDI"
 
-#: cam_indi.cpp:756 cam_indi.cpp:782 gear_simulator.cpp:698
+#: cam_indi.cpp:845 cam_indi.cpp:871 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Nepodporovaný typ nebo chyba při čtení souboru FITS"
 
-#: cam_indi.cpp:763 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:852 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "Soubor FITS není obrázek"
 
-#: cam_indi.cpp:813 cam_indi.cpp:843 gear_simulator.cpp:728
+#: cam_indi.cpp:902 cam_indi.cpp:932 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "Chyba při čtení dat"
 
-#: cam_indi.cpp:1002
+#: cam_indi.cpp:1092
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "Kamera  %s, chyba expozice. Místo toho se pokouší použít streamování."
 
-#: cam_indi.cpp:1046
+#: cam_indi.cpp:1137
 #, c-format
 msgid "Unknown image format: %s"
 msgstr "Neznámý formát obrázku: %s"
 
-#: cam_indi.cpp:1135 cam_wdm.cpp:483
+#: cam_indi.cpp:1227 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr "%d rámců"
 
-#: cam_indi.cpp:1147
+#: cam_indi.cpp:1239
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
@@ -1039,7 +1039,7 @@ msgstr ""
 "Kamera nemá vlastnost VIDEO_STREAM, zrušte zaškrtnutí možnosti: Kamera "
 "nepodporuje expoziční čas."
 
-#: cam_indi.cpp:1149
+#: cam_indi.cpp:1241
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
@@ -1047,7 +1047,7 @@ msgstr ""
 "Kamera nemá vlastnost CCD_EXPOSURE, zrušte zaškrtnutí možnosti: Kamera "
 "nepodporuje stream."
 
-#: cam_indi.cpp:1151
+#: cam_indi.cpp:1243
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "Kamera nemá vlastnost CCD_EXPOSURE nebo VIDEO_STREAM"
 
@@ -1079,8 +1079,8 @@ msgstr "Nesprávně nastavené parametru zisku"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
-#: stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "Chyba"
 
@@ -1461,8 +1461,8 @@ msgstr "Kamera nepodporuje režim %s, zkuste vybrat režim %s"
 msgid "Unable to initialize camera."
 msgstr "Kameru nelze spustit."
 
-#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
-#: cam_zwo.cpp:889
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:871 cam_zwo.cpp:902
+#: cam_zwo.cpp:910
 msgid "Lost connection to camera"
 msgstr "Ztráta spojení s kamerou"
 
@@ -1607,13 +1607,13 @@ msgstr "Vyberte profil dark snímků, kterou chcete použít:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354 profile_wizard.cpp:355
-#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
-#: profile_wizard.cpp:752 profile_wizard.cpp:921 profile_wizard.cpp:936
-#: profile_wizard.cpp:967 profile_wizard.cpp:972 profile_wizard.cpp:997
-#: profile_wizard.cpp:1011 rotator.cpp:49 rotator.cpp:84 scope.cpp:331
-#: scope.cpp:373 scope.cpp:416 statswindow.cpp:262 stepguider.cpp:105
-#: stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354
+#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:921
+#: profile_wizard.cpp:936 profile_wizard.cpp:967 profile_wizard.cpp:972
+#: profile_wizard.cpp:997 profile_wizard.cpp:1011 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:331 scope.cpp:373 scope.cpp:416
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "Žádný"
 
@@ -1927,7 +1927,8 @@ msgid "Tracking rate axes"
 msgstr "Osy rychlosti sledování"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:548
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "Start"
 
@@ -2689,8 +2690,8 @@ msgstr ""
 "Pokud k pointaci používáte rozhraní s pointačním portem (On-camera nebo "
 "GPXXX), můžete také použít připojení \"aux\" k montáži kompatibilní s %s. To "
 "slouží k automatickému nastavení kalibrace na základě deklinace a polohy "
-"dalekohledu na pilíři.  Pokud jste již pro svoji \"montáž\" vybrali ovladač "
-"%s, parametr \"aux\" montáže se nepoužije."
+"dalekohledu na pilíři.  Pokud jste již pro svoji \"montáž\" vybrali ovladač %"
+"s, parametr \"aux\" montáže se nepoužije."
 
 #: gear_dialog.cpp:304
 msgid "Aux Mount Setup"
@@ -3485,8 +3486,8 @@ msgstr "PředvíWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "Jaké procento opravné korekce pointace by mělo být použito? Výchozí hodnota "
 "= %.f%%, upravte, pokud reaguje příliš silně nebo příliš slabě"
@@ -3618,8 +3619,8 @@ msgstr "Agresivita"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "Jaké procento vypočtené opravy by mělo být použito? Výchozí hodnota = %.f%%, "
 "upravte, pokud reaguje příliš silně nebo příliš slabě"
@@ -3644,11 +3645,11 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
-"Jaké procento vypočtené opravy by mělo být použito?? Výchozí hodnota = %.f"
-"%%, upravte, pokud reaguje příliš silně nebo příliš slabě"
+"Jaké procento vypočtené opravy by mělo být použito?? Výchozí hodnota = %.f%"
+"%, upravte, pokud reaguje příliš silně nebo příliš slabě"
 
 #: guide_algorithm_hysteresis.cpp:319
 msgid "Agr"
@@ -5509,7 +5510,7 @@ msgstr "Potvrdit Konec"
 msgid "FITS file is not of an image: %s"
 msgstr "Soubor FITS není obrázek: %s"
 
-#: myframe.cpp:2399 usImage.cpp:450
+#: myframe.cpp:2399 usImage.cpp:438
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr "Nepodporovaný typ nebo chyba při nahrávání souboru FITS %s"
@@ -5532,7 +5533,7 @@ msgstr "Chyba přidělení paměti při čtení souboru FITS %s"
 msgid "Error reading data from %s"
 msgstr "Chyba při čtení dat z %s"
 
-#: myframe.cpp:2460 usImage.cpp:496
+#: myframe.cpp:2460 usImage.cpp:484
 #, c-format
 msgid "Error opening FITS file %s"
 msgstr "Chyba při otevírání souboru FITS %s"
@@ -6483,8 +6484,8 @@ msgstr "Kalibrace, strana pilíře %s"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Slew the telescope to force a meridian flip - the scope should move to the "
-"%s side of the pier, still pointing near Dec = 0."
+"Slew the telescope to force a meridian flip - the scope should move to the %"
+"s side of the pier, still pointing near Dec = 0."
 msgstr ""
 "Přeložte dalekohled, abyste si vynutili překlopení poledníku - dalekohled by "
 "se měl přesunout na %s stranu pilíře, stále směřující poblíž Dec = 0."
@@ -7191,8 +7192,8 @@ msgid ""
 msgstr ""
 "Je aux-montáž již připojena a nastavena pro komunikaci s PHD2?   Pokud ano, "
 "PHD2 může automaticky nastavit rychlost pointování montáže.  Pokud tomu tak "
-"není, můžete jej zadat ručně. Jestli ji neznáte. nechte výchozí hodnotu"
-"% 0.1fx.  Pokud rychlost pointace neodpovídá hodnotě, která je načtena "
+"není, můžete jej zadat ručně. Jestli ji neznáte. nechte výchozí hodnotu% "
+"0.1fx.  Pokud rychlost pointace neodpovídá hodnotě, která je načtena "
 "montáží, použije se hodnota připojení."
 
 #: profile_wizard.cpp:1271
@@ -7475,8 +7476,8 @@ msgid ""
 "properly."
 msgstr ""
 "PHD2 není schopen provést dostatečné opravy v Dec.  Zkontrolujte, zda nejsou "
-"zachyceny kabely, zkuste znovu provést kalibraci a ujistěte se, že kabel "
-"ST-4 funguje správně."
+"zachyceny kabely, zkuste znovu provést kalibraci a ujistěte se, že kabel ST-"
+"4 funguje správně."
 
 #: scope.cpp:661
 msgid "Max RA Duration setting"
@@ -8776,20 +8777,20 @@ msgstr ""
 "Posuňte polohu zámku pointace o náhodné množství na každé ose až do "
 "maximální hodnoty určené typem ditheru a faktorem měřítka ditheru."
 
-#: usImage.cpp:427
+#: usImage.cpp:415
 msgid "File does not exist - cannot load "
 msgstr "Soubor neexistuje - načtení není možné "
 
-#: usImage.cpp:438
+#: usImage.cpp:426
 msgid "FITS file is not of an image: "
 msgstr "Tento FITS soubor nemá žádný obrázek: "
 
-#: usImage.cpp:455
+#: usImage.cpp:443
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
 msgstr "Chyba při dělení paměti při čtení souboru FITS file %s"
 
-#: usImage.cpp:460
+#: usImage.cpp:448
 #, c-format
 msgid "Error reading data from FITS file %s"
 msgstr "Chyba při čtení dat ze souboru FITS file %s"

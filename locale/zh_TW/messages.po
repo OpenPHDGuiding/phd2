@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-20 04:20+0100\n"
+"POT-Creation-Date: 2022-08-31 00:02+0100\n"
 "PO-Revision-Date: 2022-04-21 10:18+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
@@ -513,8 +513,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f"
-"%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
+"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -758,8 +758,8 @@ msgstr "開啟 Altair 相機失敗。"
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:801
-#: cam_indi.cpp:835 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
+#: cam_indi.cpp:890 cam_indi.cpp:924 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -947,72 +947,72 @@ msgstr "傳輸無法開始"
 msgid "Cannot get a frame from the queue"
 msgstr "無法由佇列中取得影像"
 
-#: cam_indi.cpp:255 cam_indi.cpp:660
+#: cam_indi.cpp:340 cam_indi.cpp:750
 msgid "INDI camera disconnected"
 msgstr "INDI 相機連線中斷"
 
-#: cam_indi.cpp:588
+#: cam_indi.cpp:678
 msgid "connection timed-out"
 msgstr "連線逾時"
 
-#: cam_indi.cpp:608 scope_indi.cpp:351 scope_indi.cpp:372
+#: cam_indi.cpp:698 scope_indi.cpp:351 scope_indi.cpp:372
 msgid "Connection timed-out"
 msgstr "連線逾時"
 
-#: cam_indi.cpp:633
+#: cam_indi.cpp:723
 #, c-format
 msgid "Cannot connect to camera %s: %s"
 msgstr "無法連接相機  %s: %s"
 
-#: cam_indi.cpp:653 scope_indi.cpp:417
+#: cam_indi.cpp:743 scope_indi.cpp:417
 msgid "INDI server disconnected"
 msgstr "INDI 伺服器連接中斷"
 
-#: cam_indi.cpp:693
+#: cam_indi.cpp:783
 msgid "INDI Camera Selection"
 msgstr "選用 INDI 相機"
 
-#: cam_indi.cpp:756 cam_indi.cpp:782 gear_simulator.cpp:698
+#: cam_indi.cpp:845 cam_indi.cpp:871 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "不支援的檔案型態或讀取 FITS 檔案發生錯誤"
 
-#: cam_indi.cpp:763 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:852 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "該 FITS 檔案不是影像檔"
 
-#: cam_indi.cpp:813 cam_indi.cpp:843 gear_simulator.cpp:728
+#: cam_indi.cpp:902 cam_indi.cpp:932 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "讀取資料錯誤"
 
-#: cam_indi.cpp:1002
+#: cam_indi.cpp:1092
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr "相機 %s, 曝光錯誤. 請以串流取代之."
 
-#: cam_indi.cpp:1046
+#: cam_indi.cpp:1137
 #, c-format
 msgid "Unknown image format: %s"
 msgstr "未知的影像格式: %s"
 
-#: cam_indi.cpp:1135 cam_wdm.cpp:483
+#: cam_indi.cpp:1227 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr "%d 禎幅"
 
-#: cam_indi.cpp:1147
+#: cam_indi.cpp:1239
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr "相機不支援 VIDEO_STREAM 功能, 請反選這個選項: 相機不支援曝光時間."
 
-#: cam_indi.cpp:1149
+#: cam_indi.cpp:1241
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr "相機不具備 CCD_EXPOSURE 屬性參數, 請反選「相機不支援串流」選項."
 
-#: cam_indi.cpp:1151
+#: cam_indi.cpp:1243
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr "相機不支援 CCD_EXPOSURE 或 VIDEO_STREAM 功能"
 
@@ -1044,8 +1044,8 @@ msgstr "設定增益發生錯誤"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:188
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:204
-#: stepguider_sxao_indi.cpp:215
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
+#: stepguider_sxao_indi.cpp:204 stepguider_sxao_indi.cpp:215
 msgid "Error"
 msgstr "錯誤"
 
@@ -1426,8 +1426,8 @@ msgstr "相機不支援 %s 模式, 請選擇 %s 模式"
 msgid "Unable to initialize camera."
 msgstr "無法啟用相機"
 
-#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:850 cam_zwo.cpp:881
-#: cam_zwo.cpp:889
+#: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:871 cam_zwo.cpp:902
+#: cam_zwo.cpp:910
 msgid "Lost connection to camera"
 msgstr "與相機連接中斷"
 
@@ -1571,13 +1571,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354 profile_wizard.cpp:355
-#: profile_wizard.cpp:565 profile_wizard.cpp:570 profile_wizard.cpp:598
-#: profile_wizard.cpp:752 profile_wizard.cpp:921 profile_wizard.cpp:936
-#: profile_wizard.cpp:967 profile_wizard.cpp:972 profile_wizard.cpp:997
-#: profile_wizard.cpp:1011 rotator.cpp:49 rotator.cpp:84 scope.cpp:331
-#: scope.cpp:373 scope.cpp:416 statswindow.cpp:262 stepguider.cpp:105
-#: stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354
+#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
+#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:921
+#: profile_wizard.cpp:936 profile_wizard.cpp:967 profile_wizard.cpp:972
+#: profile_wizard.cpp:997 profile_wizard.cpp:1011 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:331 scope.cpp:373 scope.cpp:416
+#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -1883,7 +1883,8 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:548
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
+#: starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -3404,8 +3405,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = "
-"%.f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = %."
+"f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3529,8 +3530,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3553,8 +3554,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f"
-"%%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = %.f%"
+"%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -5350,7 +5351,7 @@ msgstr "確認關閉"
 msgid "FITS file is not of an image: %s"
 msgstr "FITS 檔案: %s 不是一個正確的影像檔"
 
-#: myframe.cpp:2399 usImage.cpp:450
+#: myframe.cpp:2399 usImage.cpp:438
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr "不支援的檔案格式或載入 %s FITS 檔案時發生讀取錯誤"
@@ -5371,7 +5372,7 @@ msgstr "讀取 FITS 檔案 %s 時發生記憶體配置錯誤"
 msgid "Error reading data from %s"
 msgstr "讀取 %s 資料時發生錯誤"
 
-#: myframe.cpp:2460 usImage.cpp:496
+#: myframe.cpp:2460 usImage.cpp:484
 #, c-format
 msgid "Error opening FITS file %s"
 msgstr "開啟 FITS 檔案 %s 時發生錯誤"
@@ -6283,8 +6284,8 @@ msgstr "於赤道儀架台的 %s 面進行校準"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Slew the telescope to force a meridian flip - the scope should move to the "
-"%s side of the pier, still pointing near Dec = 0."
+"Slew the telescope to force a meridian flip - the scope should move to the %"
+"s side of the pier, still pointing near Dec = 0."
 msgstr ""
 "轉動望遠鏡以強制過中天翻轉 - 望遠鏡應移動到赤道儀的%s 側，仍指向 Dec = 0 附"
 "近。"
@@ -8441,20 +8442,20 @@ msgstr ""
 "隨機移動每個軸向的導星鏡鎖定位置一段距離到達由抖動型態和大小參數所決定出的一"
 "段距離."
 
-#: usImage.cpp:427
+#: usImage.cpp:415
 msgid "File does not exist - cannot load "
 msgstr "檔案不存在 - 無法載入 "
 
-#: usImage.cpp:438
+#: usImage.cpp:426
 msgid "FITS file is not of an image: "
 msgstr "該 FITS 檔案不是一個影像檔 "
 
-#: usImage.cpp:455
+#: usImage.cpp:443
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
 msgstr "載入 FTIS 檔案 %s 時發生記憶體配置錯誤"
 
-#: usImage.cpp:460
+#: usImage.cpp:448
 #, c-format
 msgid "Error reading data from FITS file %s"
 msgstr "讀取 FTIS 檔案 %s 資料時發生錯誤"
