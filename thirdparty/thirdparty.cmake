@@ -252,6 +252,10 @@ else(USE_SYSTEM_CFITSIO)
     # Raffi: use target_compile_options ?
   endif()
 
+  if(APPLE)
+    set_target_properties(cfitsio PROPERTIES COMPILE_FLAGS "-DHAVE_UNISTD_H")
+  endif()
+
   if(WIN32)
     target_compile_definitions(
       cfitsio
