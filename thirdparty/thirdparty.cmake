@@ -252,6 +252,10 @@ else(USE_SYSTEM_CFITSIO)
     # Raffi: use target_compile_options ?
   endif()
 
+  if(APPLE)
+    set_target_properties(cfitsio PROPERTIES COMPILE_FLAGS "-DHAVE_UNISTD_H")
+  endif()
+
   if(WIN32)
     target_compile_definitions(
       cfitsio
@@ -1137,6 +1141,25 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
+
+  if(APPLE32)
+    find_library( SVBCameraSDK
+                  NAMES SVBCameraSDK
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x86)
+  else()
+    find_library( SVBCameraSDK
+                  NAMES SVBCameraSDK
+                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
+  endif()
+
+  if(NOT SVBCameraSDK)
+    message(FATAL_ERROR "Cannot find the Svbony SDK libs")
+  endif()
+  add_definitions(-DHAVE_SVB_CAMERA=1)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${SVBCameraSDK})
+
+
   if(APPLE32)
     find_library( qhylib
                   NAMES qhyccd
@@ -1325,25 +1348,30 @@ if(UNIX AND NOT APPLE)
       set(zwoarch "armv6")
       set(qhyarch "armv6")
       set(toupcam_arch "armel")
+      set(svbony_arch "armv6")
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv7(.*)|arm64|aarch64|^armv8(.*)")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(zwoarch "armv8")
         set(qhyarch "armv8")
         set(toupcam_arch "arm64")
+        set(svbony_arch "armv8")
       else()
         set(zwoarch "armv7")
         set(qhyarch "armv7")
         set(toupcam_arch "armhf")
+        set(svbony_arch "armv7")
       endif()
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86|X86|amd64|AMD64|i.86")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(zwoarch "x64")
         set(qhyarch "x86_64")
         set(toupcam_arch "x64")
+        set(svbony_arch "x64")
       else()
         set(zwoarch "x86")
         set(qhyarch "x86_32")
         set(toupcam_arch "x86")
+        set(svbony_arch "x86")
       endif()
     else()
       message(FATAL_ERROR "unknown system architecture")
@@ -1381,6 +1409,18 @@ if(UNIX AND NOT APPLE)
       add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
       set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
+
+      find_library(SVBCameraSDK
+            NAMES SVBCameraSDK
+            NO_DEFAULT_PATHS
+            PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/linux/${svbony_arch})
+
+      if(NOT SVBCameraSDK)
+        message(FATAL_ERROR "Cannot find the SVBCameraSDK drivers")
+      endif()
+      message(STATUS "Found SVBCameraSDK lib ${SVBCameraSDK}")
+      add_definitions(-DHAVE_SVB_CAMERA=1)
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
 
       if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
         add_definitions(-DHAVE_QHY_CAMERA=1)

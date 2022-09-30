@@ -115,6 +115,9 @@
 #ifdef HAVE_ZWO_CAMERA
 # define ZWO_ASI
 #endif
+#ifdef HAVE_SVB_CAMERA
+# define SVB_CAMERA
+#endif
 
 #elif defined (__linux__) || defined (__FreeBSD__)
 
@@ -135,6 +138,9 @@
 # endif
 # ifdef HAVE_SBIG_CAMERA
 #   define SBIG
+# endif
+# ifdef HAVE_SVB_CAMERA
+#   define SVB_CAMERA
 # endif
 // this should work ... needs testing
 //# define OPENSSAG

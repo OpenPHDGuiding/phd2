@@ -23,6 +23,7 @@
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Connection">
+			<param name="Local" value="Basic_use.htm#Equipment_Connection">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
@@ -81,7 +82,7 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Visualization Tools">
+		<param name="Name" value="MonitoringTools">
 		<param name="Local" value="Visualization.htm">
 		</OBJECT>
 	<UL>
@@ -166,10 +167,6 @@
 			<param name="Local" value="Tools.htm#PHD2_Server">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Logging">
-			<param name="Local" value="Tools.htm#Logging_and_Debug_Output">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Polar Alignment Tools">
 			<param name="Local" value="Tools.htm#Polar_alignment_tools">
 			</OBJECT>
@@ -193,32 +190,24 @@
 			<param name="Name" value="Meridian flip calibration Tool">
 			<param name="Local" value="Tools.htm#pierflip_cal_tool">
 			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Equipment Profiles">
-			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Simulator Controls">
-			<param name="Local" value="Tools.htm#Advanced_Settings_for_the_Simulators">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Keyboard Shortcuts">
-			<param name="Local" value="Tools.htm#Keyboard_Shortcuts">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Software Update">
-			<param name="Local" value="Tools.htm#Software_Update">
-			</OBJECT>
 	</UL>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Keyboard Shortcuts">
-		<param name="Local" value="KeyboardShortcuts.htm">
-		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Trouble-shooting and Analysis">
 		<param name="Local" value="Trouble_shooting.htm">
 		</OBJECT>
 	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="General Trouble-Shooting">
+			<param name="Local" value="Trouble_shooting.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Large Guide Star Deflections">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Guide_star_deflections">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Camera Timeouts and Download Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Camera_Timeouts">
+			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Calibration Problems">
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Mount_Control">
@@ -228,12 +217,16 @@
 			<param name="Local" value="Trouble_shooting.htm#Measuring_Mount_Behavior">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Display Window Problems">
-			<param name="Local" value="Trouble_shooting.htm#Problems-_Display_Window">
+			<param name="Name" value="Lost stars">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Lost_stars">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Camera Timeouts and Download Problems">
-			<param name="Local" value="Trouble_shooting.htm#Problems-_Camera_Timeouts">
+			<param name="Name" value="Alert Messages">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Alerts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Display Window Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Display_Window">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Hot Pixel and Auto-Select Star Problems">
@@ -248,16 +241,82 @@
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Poor_Guiding">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Alert Messages">
-			<param name="Local" value="Trouble_shooting.htm#Problems-_Alerts">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Using the Log Files">
 			<param name="Local" value="Trouble_shooting.htm#Log_analysis">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Problem Reporting">
 			<param name="Local" value="Trouble_shooting.htm#Problem_Reporting">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Supplemental Info">
+		<param name="Local" value="Supplemental_Info.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Astronomical Seeing">
+			<param name="Local" value="Supplemental_Info.htm#Astronomical_seeing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Use of binning">
+			<param name="Local" value="Supplemental_Info.htm#Binning_usage">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Dithering Operations">
+			<param name="Local" value="Supplemental_Info.htm#Dithering_Ops">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Common Mount Problems">
+			<param name="Local" value="Supplemental_Info.htm#Common_mount_problems">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Uni-directional Dec Guiding">
+			<param name="Local" value="Supplemental_Info.htm#Declination-Uni-directional_guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="High-precision Mounts">
+			<param name="Local" value="Supplemental_Info.htm#Variable_delay_guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Differential_flexure">
+			<param name="Local" value="Supplemental_Info.htm#Differential_flexure">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Adaptive Optics Guiding">
+			<param name="Local" value="Supplemental_Info.htm#AO_Devices">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Logging">
+			<param name="Local" value="Supplemental_Info.htm#Logging_and_Debug_Output">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Auto Log Upload">
+			<param name="Local" value="Supplemental_Info.htm#Logging-Automatic_Upload">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Equipment Profiles">
+			<param name="Local" value="Supplemental_info.htm#Managing_Equipment_Profiles">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Aux Mount Ask-for-Coordinates">
+			<param name="Local" value="Supplemental_Info.htm#Ask_for_coordinates_aux_mount">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Simulator Controls">
+			<param name="Local" value="Supplemental_info.htm#Advanced_Settings_for_the_Simulators">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Multiple PHD2 Instances">
+			<param name="Local" value="Supplemental_Info.htm#Multiple_Executions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Keyboard Shortcuts">
+			<param name="Local" value="Supplemental_info.htm#Keyboard_Shortcuts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Software Update">
+			<param name="Local" value="Supplemental_info.htm#Software_Update">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

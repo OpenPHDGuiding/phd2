@@ -37,6 +37,68 @@
 
 #include <algorithm>
 
+class HistogramBuilder {
+    public:
+        int *histo;
+        unsigned short MinADU, MaxADU;
+        int pixCount;
+
+        HistogramBuilder() {
+            histo = new int[65536];
+            MinADU = 0;
+            MaxADU = 0;
+            pixCount = 0;
+        }
+
+        ~HistogramBuilder() {
+            delete histo;
+        }
+
+        unsigned short median() const
+        {
+            int pixelLeft = pixCount / 2;
+
+            for (int i = MinADU; i < MaxADU; ++i) {
+                if (histo[i] > pixelLeft) {
+                    return i;
+                }
+                pixelLeft -= histo[i];
+            }
+            return MaxADU;
+        }
+
+
+        void scan(const unsigned short *t, int len)
+        {
+            if (pixCount == 0) {
+                unsigned short v = t[0];
+                // Initialization
+                MinADU = t[0];
+                MaxADU = t[0];
+                histo[t[0]] = 0;
+            }
+
+            for (int i = 0; i < len; ++i) {
+                unsigned short v = t[i];
+                if (v < MinADU) {
+                    for (int k = v; k < MinADU; ++k) {
+                        histo[k] = 0;
+                    }
+                    MinADU = v;
+                }
+                if (v > MaxADU) {
+                    for (int k = MaxADU + 1; k <= v; ++k) {
+                        histo[k] = 0;
+                    }
+                    MaxADU = v;
+                }
+                histo[v]++;
+            }
+
+            pixCount += len;
+        }
+};
+
 bool usImage::Init(const wxSize& size)
 {
     // Allocates space for image and sets params up
@@ -87,12 +149,11 @@ void usImage::CalcStats()
     {
         // full frame, no subframe
 
-        for (unsigned int i = 0; i < NPixels; i++)
-        {
-            unsigned short d = ImageData[i];
-            if (d < MinADU) MinADU = d;
-            if (d > MaxADU) MaxADU = d;
-        }
+        HistogramBuilder hb;
+        hb.scan(ImageData, NPixels);
+        MinADU = hb.MinADU;
+        MaxADU = hb.MaxADU;
+        MedianADU = hb.median();
 
         unsigned short *tmpdata = new unsigned short[NPixels];
 
@@ -105,10 +166,6 @@ void usImage::CalcStats()
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
-
-        memcpy(tmpdata, ImageData, NPixels * sizeof(unsigned short));
-        std::nth_element(tmpdata, tmpdata + NPixels / 2, tmpdata + NPixels);
-        MedianADU = tmpdata[NPixels / 2];
 
         delete[] tmpdata;
     }
@@ -128,11 +185,15 @@ void usImage::CalcStats()
             for (int x = 0; x < Subframe.width; x++)
             {
                 unsigned short d = *src;
-                if (d < MinADU) MinADU = d;
-                if (d > MaxADU) MaxADU = d;
                 *dst++ = *src++;
             }
         }
+
+        HistogramBuilder hb;
+        hb.scan(tmpdata, pixcnt);
+        MinADU = hb.MinADU;
+        MaxADU = hb.MaxADU;
+        MedianADU = hb.median();
 
         dst = new unsigned short[pixcnt];
 
@@ -146,13 +207,34 @@ void usImage::CalcStats()
             if (d > FiltMax) FiltMax = d;
         }
 
-        memcpy(dst, tmpdata, pixcnt * sizeof(unsigned short));
-        std::nth_element(dst, dst + pixcnt / 2, dst + pixcnt);
-        MedianADU = dst[pixcnt / 2];
-
         delete[] dst;
         delete[] tmpdata;
     }
+}
+
+static unsigned char *buildGammaLookupTable(int blevel, int wlevel, double power)
+{
+    unsigned char *result = new unsigned char[0x10000];
+
+    if (blevel < 0) blevel = 0;
+    if (wlevel < 0) wlevel = 0;
+    if (blevel > 0xffff) blevel = 0xffff;
+    if (wlevel > 0xffff) blevel = 0xffff;
+
+    for (int i = 0; i <= blevel; ++i)
+        result[i] = 0;
+
+    float range = wlevel - blevel;
+    for (int i = blevel + 1; i < wlevel; ++i)
+    {
+        float d = (i - blevel) / range;
+        result[i] = pow(d, (float) power) * 255.0;
+    }
+
+    for (int i = wlevel; i < 0x10000; ++i)
+        result[i] = 255;
+
+    return result;
 }
 
 bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
@@ -168,113 +250,19 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     unsigned char *ImgPtr = img->GetData();
     unsigned short *RawPtr = ImageData;
 
-    if (power == 1.0 || blevel >= wlevel)
+    unsigned char *lutTable = buildGammaLookupTable(blevel, wlevel, power);
+
+    for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
     {
-        float range = (float) wxMax(1, wlevel);  // Go 0-max
-        for (unsigned int i = 0; i < NPixels; i++, RawPtr++)
-        {
-            float d;
-            if (*RawPtr >= range)
-                d = 255.0;
-            else
-                d = ((float) (*RawPtr) / range) * 255.0;
-
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-        }
-    }
-    else
-    {
-        float range = (float) (wlevel - blevel);
-        for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
-        {
-            float d;
-            if (*RawPtr <= blevel)
-                d = 0.0;
-            else if (*RawPtr >= wlevel)
-                d = 255.0;
-            else
-            {
-                d = ((float) (*RawPtr) - (float) blevel) / range;
-                d = pow(d, (float) power) * 255.0;
-            }
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-            *ImgPtr++ = (unsigned char) d;
-        }
+        unsigned short v = *RawPtr;
+        unsigned char d = lutTable[v];
+        *ImgPtr++ = d;
+        *ImgPtr++ = d;
+        *ImgPtr++ = d;
     }
 
-    *rawimg = img;
-    return false;
-}
+    delete[] lutTable;
 
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
-{
-    wxImage *img;
-    unsigned char *ImgPtr;
-    unsigned short *RawPtr;
-    int x,y;
-    float d;
-    //, s_factor;
-    int full_xsize, full_ysize;
-    int use_xsize, use_ysize;
-
-    full_xsize = Size.GetWidth();
-    full_ysize = Size.GetHeight();
-    use_xsize = full_xsize;
-    use_ysize = full_ysize;
-    if (use_xsize % 2) use_xsize--;
-    if (use_ysize % 2) use_ysize--;
-//  Binsize = 2;
-
-    img = *rawimg;
-    if ((!img->Ok()) || (img->GetWidth() != (full_xsize/2)) || (img->GetHeight() != (full_ysize/2)) ) {  // can't reuse bitmap
-        delete img;  // Clear out current image if it exists
-        img = new wxImage(full_xsize/2, full_ysize/2, false);
-    }
-    ImgPtr = img->GetData();
-    RawPtr = ImageData;
-//  s_factor = (((float) Max - (float) Min) / 255.0);
-    float range = (float) (wlevel - blevel);
-
-    if ((power == 1.0) || (range == 0.0)) {
-        range = wlevel;  // Go 0-max
-        if (range == 0.0) range = 0.001;
-        for (y=0; y<use_ysize; y+=2) {
-            for (x=0; x<use_xsize; x+=2) {
-                RawPtr = ImageData + x + y*full_xsize;
-                d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
-                d = (d / range) * 255.0;
-                if (d < 0.0) d = 0.0;
-                else if (d > 255.0) d = 255.0;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-            }
-        }
-    }
-    else {
-        for (y=0; y<use_ysize; y+=2) {
-            for (x=0; x<use_xsize; x+=2) {
-                RawPtr = ImageData + x + y*full_xsize;
-                d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
-                d = (d - (float) blevel) / range ;
-                if (d < 0.0) d= 0.0;
-                else if (d > 1.0) d = 1.0;
-                d = pow(d, (float) power) * 255.0;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-                *ImgPtr = (unsigned char) d;
-                ImgPtr++;
-            }
-        }
-    }
     *rawimg = img;
     return false;
 }

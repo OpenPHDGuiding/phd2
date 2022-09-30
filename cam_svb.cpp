@@ -840,6 +840,7 @@ bool SVBCamera::ST4PulseGuideScope(int direction, int duration)
 {
     SVB_GUIDE_DIRECTION d = GetSVBDirection(direction);
     SVBPulseGuide(m_cameraId, d, duration);
+    WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     return false;
 }
 

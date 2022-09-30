@@ -48,6 +48,39 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
+
+class CapturedFrame
+{
+public:
+    void     *m_data;
+    size_t   m_size;
+    char     m_format[MAXINDIBLOBFMT];
+
+    CapturedFrame() {
+        m_data = nullptr;
+        m_size = 0;
+        m_format[0] = 0;
+    }
+
+    ~CapturedFrame() {
+#ifdef INDI_SHARED_BLOB_SUPPORT
+        IDSharedBlobFree(m_data);
+#else
+        free(m_data);
+#endif
+    }
+
+    // Take ownership of this blob's data, so INDI won't overwrite/free the memory
+    void steal(IBLOB *bp) {
+        m_data = bp->blob;
+        m_size = bp->size;
+        strncpy(m_format, bp->format, MAXINDIBLOBFMT);
+
+        bp->blob = nullptr;
+        bp->size = 0;
+    }
+};
+
 class CameraINDI : public GuideCamera, public PhdIndiClient
 {
 private:
@@ -79,7 +112,11 @@ private:
     GuideAxis guide_active_axis;
 
     IndiGui  *m_gui;
-    IBLOB    *cam_bp;
+
+    wxMutex  m_lastFrame_lock;
+    wxCondition m_lastFrame_cond;
+    CapturedFrame *m_lastFrame;
+
     usImage  *StackImg;
     int      StackFrames;
     volatile bool stacking; // TODO: use a wxCondition to signal completion
@@ -111,9 +148,16 @@ private:
     void     CheckState();
     void     CameraDialog();
     void     CameraSetup();
-    bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
-    bool     StackStream();
+    bool     ReadFITS(CapturedFrame *cf, usImage& img, bool takeSubframe, const wxRect& subframe);
+    bool     StackStream(CapturedFrame *cf);
     void     SendBinning();
+
+    // Update the last frame, discarding any missed frame
+    void updateLastFrame(IBLOB *bp);
+
+    // Wait until a frame was acquired, for limited amout of time.
+    // If non null is returned, caller is responsible for deletion
+    CapturedFrame *waitFrame(unsigned long waitTime);
 
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
@@ -150,8 +194,10 @@ public:
 CameraINDI::CameraINDI()
     :
     sync_cond(sync_lock),
+    m_lastFrame_cond(m_lastFrame_lock),
     m_gui(nullptr)
 {
+    m_lastFrame = nullptr;
     ClearStatus();
     // load the values from the current profile
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
@@ -196,9 +242,48 @@ void CameraINDI::ClearStatus()
     ready = false;
     m_hasGuideOutput = false;
     PixSize = PixSizeX = PixSizeY = 0.0;
-    cam_bp = nullptr;
+
+    updateLastFrame(nullptr);
+
     guide_active = false;
     sync_cond.Broadcast(); // just in case worker thread was blocked waiting for guide pulse to complete
+}
+
+CapturedFrame *CameraINDI::waitFrame(unsigned long waitTime)
+{
+    wxMutexLocker lck(m_lastFrame_lock);
+    if (!m_lastFrame) {
+        m_lastFrame_cond.WaitTimeout(waitTime);
+    }
+
+    if (m_lastFrame) {
+        auto ret = m_lastFrame;
+        m_lastFrame = nullptr;
+        return ret;
+    }
+
+    return nullptr;
+}
+
+void CameraINDI::updateLastFrame(IBLOB *blob)
+{
+    bool notify = false;
+    {
+        wxMutexLocker lck(m_lastFrame_lock);
+        if (m_lastFrame != nullptr) {
+            delete m_lastFrame;
+            m_lastFrame = nullptr;
+        }
+        if (blob) {
+            m_lastFrame = new CapturedFrame();
+            m_lastFrame->steal(blob);
+            notify = true;
+        }
+    }
+    if (notify) {
+        Debug.Write(wxString::Format("lastFrame signaled Camera is ready\n"));
+        m_lastFrame_cond.Broadcast();
+    }
 }
 
 void CameraINDI::CheckState()
@@ -363,16 +448,16 @@ void CameraINDI::newBLOB(IBLOB *bp)
     {
         if (bp->name == INDICameraBlobName)
         {
-            cam_bp = bp;
-            modal = false;
+            updateLastFrame(bp);
         }
     }
     else if (video_prop)
     {
-        cam_bp = bp;
         if (modal && !stacking)
         {
-            StackStream();
+            CapturedFrame cf;
+            cf.steal(bp);
+            StackStream(&cf);
         }
     }
 }
@@ -403,6 +488,11 @@ void CameraINDI::newProperty(INDI::Property *property)
             has_blob = 1;
             // set option to receive blob and messages for the selected CCD
             setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
+
+#ifdef INDI_SHARED_BLOB_SUPPORT
+            // Allow faster mode provided we don't modify the blob content or free/realloc it
+            enableDirectBlobAccess(INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
+#endif
         }
     }
     else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER)
@@ -737,18 +827,17 @@ void CameraINDI::SetCCDdevice()
     }
 }
 
-bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe)
+bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe, const wxRect& subframe)
 {
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
-    size_t bsize = static_cast<size_t>(cam_bp->bloblen);
 
     // load blob to CFITSIO
     if (fits_open_memfile(&fptr,
             "",
             READONLY,
-            &cam_bp->blob,
-            &bsize,
+            &frame->m_data,
+            &frame->m_size,
             0,
             nullptr,
             &status))
@@ -850,14 +939,14 @@ bool CameraINDI::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subfram
     return false;
 }
 
-bool CameraINDI::StackStream()
+bool CameraINDI::StackStream(CapturedFrame *cf)
 {
     if (!StackImg)
         return true;
 
-    if (cam_bp->size != StackImg->NPixels)
+    if (cf->m_size != StackImg->NPixels)
     {
-        Debug.Write(wxString::Format("INDI Camera: discarding blob with size %d, expected %u\n", cam_bp->size, StackImg->NPixels));
+        Debug.Write(wxString::Format("INDI Camera: discarding blob with size %d, expected %u\n", cf->m_size, StackImg->NPixels));
         return true;
     }
 
@@ -865,7 +954,7 @@ bool CameraINDI::StackStream()
     stacking = true;
 
     unsigned short *outptr = StackImg->ImageData;
-    const unsigned char *inptr = (unsigned char *) cam_bp->blob;
+    const unsigned char *inptr = (unsigned char *) cf->m_data;
 
     for (int i = 0; i < StackImg->NPixels; i++)
         *outptr++ += (unsigned short) *inptr++;
@@ -975,20 +1064,21 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Exposing for %dms\n", duration));
 
+        // Discard any "in between" frames...
+        updateLastFrame(nullptr);
+
         // set the exposure time, this immediately start the exposure
         expose_prop->np->value = (double) duration / 1000;
         sendNewNumber(expose_prop);
 
-        modal = true;  // will be reset when the image blob is received
-
-        unsigned long loopwait = duration > 100 ? 10 : 1;
+        // responsiveness for ui. Frame availability will be notified immediately
+        unsigned long loopwait = 100;
 
         CameraWatchdog watchdog(duration, GetTimeoutMs());
 
-        // TODO: convert to a condition variable instead of polling modal
-        while (modal)
+        CapturedFrame *frame = nullptr;
+        while (!(frame = waitFrame(loopwait)))
         {
-            wxMilliSleep(loopwait);
             if (WorkerThread::TerminateRequested())
                 return true;
             if (watchdog.Expired())
@@ -1020,14 +1110,15 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         first_frame = false;
 
         // exposure complete, process the file
-        if (strcmp(cam_bp->format, ".fits") == 0)
+        if (strcmp(frame->m_format, ".fits") == 0)
         {
             if (INDIConfig::Verbose())
                 Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
 
             // for CCD camera
-            if (!ReadFITS(img, takeSubframe, subframe))
+            if (!ReadFITS(frame, img, takeSubframe, subframe))
             {
+                delete frame;
                 if (options & CAPTURE_SUBTRACT_DARK)
                     SubtractDark(img);
                 if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
@@ -1039,11 +1130,12 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 }
                 return false;
             }
-
+            delete frame;
             return true;
         }
 
-        pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(cam_bp->format)));
+        pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(frame->m_format)));
+        delete frame;
         return true;
     }
     else if (video_prop)
