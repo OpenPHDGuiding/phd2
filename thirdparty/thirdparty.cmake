@@ -1421,6 +1421,7 @@ if(UNIX AND NOT APPLE)
       message(STATUS "Found SVBCameraSDK lib ${SVBCameraSDK}")
       add_definitions(-DHAVE_SVB_CAMERA=1)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
+      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${SVBCameraSDK})
 
       if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
         add_definitions(-DHAVE_QHY_CAMERA=1)
