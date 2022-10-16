@@ -244,6 +244,9 @@ public:
     bool IsAssumeOrthogonal() const;
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
+    bool ValidGuideRates(double RAGuideRate, double DecGuideRate);
+    bool m_CalDetailsValidated;
+    bool m_bogusGuideRatesFlagged;
 
     virtual double GetDeclination(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);

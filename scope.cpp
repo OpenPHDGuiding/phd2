@@ -73,11 +73,13 @@ Scope::Scope()
     m_raLimitReachedDirection(NONE),
     m_raLimitReachedCount(0),
     m_decLimitReachedDirection(NONE),
-    m_decLimitReachedCount(0)
+    m_decLimitReachedCount(0),
+    m_bogusGuideRatesFlagged(0)
 {
     m_calibrationSteps = 0;
     m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
     m_graphControlPane = nullptr;
+    m_CalDetailsValidated = false;
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -987,19 +989,7 @@ void Scope::CheckCalibrationDuration(int currDuration)
     double decSpd;
     bool haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);          // units of degrees/sec as in ASCOM
 
-    double currSpd = 0.0021;           // 0.5x sidereal, eliminate compiler warning
-    if (haveRates)
-    {
-        double const siderealSecsPerSec = 0.9973;
-        currSpd = wxMax(raSpd, decSpd) * 3600.0 / (15.0 * siderealSecsPerSec);          // fractional multiple of sidereal rate
-        if (currSpd >= 0.1 && currSpd <= 1.2)                                           // allow for rounding on 1x sidereal
-            haveRates = true;
-        else
-        {
-            Debug.Write("Mount driver is reporting bogus guide speeds\n");
-            haveRates = false;
-        }
-    }
+    double currSpd = 0.0021;           // 0.5x sidereal, default value
 
     // Don't check the step size on very first calibration and don't adjust if the reported mount guide speeds are bogus
     if (!haveRates || calDetails.raGuideSpeed <= 0)
@@ -1794,6 +1784,34 @@ bool Scope::Slewing()
 PierSide Scope::SideOfPier()
 {
     return PIER_SIDE_UNKNOWN;
+}
+
+// Sanity check that guide speeds reported by mount are sensible
+bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
+{
+    double const siderealSecsPerSec = 0.9973;
+    double spd;
+    bool err = false;
+
+    spd = RAGuideRate * 3600.0 / (15.0 * siderealSecsPerSec);
+    if (spd > 0.1 && spd < 1.2)
+    {
+        spd = DecGuideRate * 3600.0 / (15.0 * siderealSecsPerSec);
+        if (spd != -1.0)                        // RA-only tracking devices
+            if (spd < 0.1 || spd > 1.2)
+                err = true;
+    }
+    else
+        err = true;
+    m_CalDetailsValidated = true;
+
+    if (err)
+    {
+        Debug.Write(wxString::Format("Invalid mount guide speeds: RA: %0.4f, Dec: %0.4f\n", RAGuideRate, DecGuideRate));
+        return false;
+    }
+    else
+        return true;
 }
 
 static wxString GuideSpeedSummary()

@@ -794,7 +794,17 @@ bool ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
             gdec *= (15.0 * dSiderealSecondPerSec) / 3600.;  // Degrees/sec
             *pRAGuideRate =  gra;
             *pDecGuideRate = gdec;
-            err = false;
+
+            if (ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
+                err = false;
+            else
+            {
+                if (!m_bogusGuideRatesFlagged)
+                {
+                    pFrame->Alert(_("Mount is reporting invalid guide speeds, some guiding functions including PPEC will be impaired. Contact vendor for support."));
+                    m_bogusGuideRatesFlagged = true;
+                }
+            }
         }
     }
 

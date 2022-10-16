@@ -1257,13 +1257,15 @@ void Mount::AdjustCalibrationForScopePointing()
         {
             double currRASpeed;
             double currDecSpeed;
-            pPointingSource->GetGuideRates(&currRASpeed, &currDecSpeed);
-            if (fabs(1.0 - currRASpeed / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - currDecSpeed / calDetails.decGuideSpeed) > 0.05)
+            if (!pPointingSource->GetGuideRates(&currRASpeed, &currDecSpeed))
             {
-                pFrame->Alert(_("Mount guide speeds are different from those used in last calibration.  Do a new calibration or reset mount guide speed settings to previous values. "));
-                Debug.Write(wxString::Format("Guide speeds have changed since calibration.  Orig RA = %0.1f, Orig Dec = %0.1f, "
-                    "Curr RA = %0.1f, Curr Dec = %0.1f, Units are arc-sec/sec\n", calDetails.raGuideSpeed * 3600.0, calDetails.decGuideSpeed * 3600.0,
-                    currRASpeed * 3600.0, currDecSpeed * 3600.0));
+                if (fabs(1.0 - currRASpeed / calDetails.raGuideSpeed) > 0.05 || fabs(1.0 - currDecSpeed / calDetails.decGuideSpeed) > 0.05)
+                {
+                    pFrame->Alert(_("Mount guide speeds are different from those used in last calibration.  Do a new calibration or reset mount guide speed settings to previous values. "));
+                    Debug.Write(wxString::Format("Guide speeds have changed since calibration.  Orig RA = %0.1f, Orig Dec = %0.1f, "
+                        "Curr RA = %0.1f, Curr Dec = %0.1f, Units are arc-sec/sec\n", calDetails.raGuideSpeed * 3600.0, calDetails.decGuideSpeed * 3600.0,
+                        currRASpeed * 3600.0, currDecSpeed * 3600.0));
+                }
             }
         }
     }
@@ -1562,11 +1564,31 @@ void Mount::SaveCalibrationDetails(const CalibrationDetails& calDetails) const
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString stepStr = "";
+    bool guideSpeedsOk = true;
 
     pConfig->Profile.SetInt(prefix + "focal_length", calDetails.focalLength);
     pConfig->Profile.SetDouble(prefix + "image_scale", calDetails.imageScale);
-    pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideSpeed);
-    pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideSpeed);
+    if (pPointingSource)
+    {
+        if (!(calDetails.raGuideSpeed == -1.0 && calDetails.decGuideSpeed == -1.0))
+        {
+            if (!pPointingSource->ValidGuideRates(calDetails.raGuideSpeed, calDetails.decGuideSpeed))
+            {
+                guideSpeedsOk = false;
+            }
+        }
+    }
+    if (guideSpeedsOk)
+    {
+        pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideSpeed);
+        pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideSpeed);
+    }
+    else
+    {
+        pConfig->Profile.SetDouble(prefix + "ra_guide_rate", -1.0);
+        pConfig->Profile.SetDouble(prefix + "dec_guide_rate", -1.0);
+        Debug.Write("Bogus guide speeds over-written in SaveCalibrationDetails\n");
+    }
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
     pConfig->Profile.SetDouble(prefix + "orig_binning", calDetails.origBinning);
     pConfig->Profile.SetString(prefix + "orig_timestamp", calDetails.origTimestamp);
@@ -1735,6 +1757,21 @@ void Mount::LoadCalibrationDetails(CalibrationDetails *details) const
     details->lastIssue = (CalibrationIssueType) pConfig->Profile.GetInt(prefix + "last_issue", 0);
     details->origTimestamp = pConfig->Profile.GetString(prefix + "orig_timestamp", "Unknown");
     details->origPierSide = pier_side(pConfig->Profile.GetInt(prefix + "orig_pierside", PIER_SIDE_UNKNOWN));
+    if (pPointingSource && !pPointingSource->m_CalDetailsValidated)
+    {
+        if (!(details->raGuideSpeed == -1.0 || details->decGuideSpeed == -1.0))
+        {
+            if (!pPointingSource->ValidGuideRates(details->raGuideSpeed, details->decGuideSpeed))
+            {
+                details->raGuideSpeed = -1.0;
+                details->decGuideSpeed = -1.0;
+                pConfig->Profile.SetDouble(prefix + "ra_guide_rate", -1.0);
+                pConfig->Profile.SetDouble(prefix + "dec_guide_rate", -1.0);
+                // Need to prevent old bogus values in registry from being propagated
+                Debug.Write("Bogus guide speeds cleared in LoadCalibrationDetails\n");
+            }
+        }
+    }
 
     // Populate raSteps
     wxString stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");

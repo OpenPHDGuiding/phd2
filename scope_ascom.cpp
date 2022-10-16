@@ -866,6 +866,17 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
         }
 
         *pRAGuideRate = vRes.dblVal;
+
+        if (!ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
+        {
+            if (!m_bogusGuideRatesFlagged)
+            {
+                pFrame->Alert(_("Mount is reporting invalid guide speeds, some guiding functions including PPEC will be impaired. Contact vendor for support."));
+                m_bogusGuideRatesFlagged = true;
+            }
+            throw THROW_INFO("ASCOM Scope: mount reporting invalid guide speeds");
+        }
+
     }
     catch (const wxString& Msg)
     {
