@@ -801,7 +801,7 @@ bool ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
             {
                 if (!m_bogusGuideRatesFlagged)
                 {
-                    pFrame->Alert(_("Mount is reporting invalid guide speeds, some guiding functions including PPEC will be impaired. Contact vendor for support."));
+                    pFrame->Alert(_("The mount's INDI driver is reporting invalid guide speeds. Some guiding functions including PPEC will be impaired. Contact the INDI driver provider or mount vendor for support."));
                     m_bogusGuideRatesFlagged = true;
                 }
             }
