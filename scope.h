@@ -147,6 +147,9 @@ class Scope : public Mount
         CALIBRATION_STATE_COMPLETE
     };
     CALIBRATION_STATE m_calibrationState;
+public:
+    bool m_CalDetailsValidated;
+    bool m_bogusGuideRatesFlagged;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -244,6 +247,7 @@ public:
     bool IsAssumeOrthogonal() const;
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
+    bool ValidGuideRates(double RAGuideRate, double DecGuideRate);
 
     virtual double GetDeclination(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);

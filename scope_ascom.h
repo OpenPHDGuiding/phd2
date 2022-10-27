@@ -64,7 +64,7 @@ class ScopeASCOM : public Scope
     DISPID dispid_sideofpier;
     DISPID dispid_abortslew;
 
-    // other private varialbles
+    // other private variables
     bool m_canCheckPulseGuiding;
     bool m_canGetCoordinates;
     bool m_canGetGuideRates;

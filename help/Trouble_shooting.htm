@@ -622,7 +622,15 @@ the 'Guiding' tab of the Advanced Settings dialog, and un-check the box that say
 "Stop guiding when mount slews." &nbsp;This will let you continue
 guiding, but the results might be suspect. &nbsp;The debug log should
 provide the details needed to describe the problem to the author of the
-ASCOM driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="Trouble_shooting.htm#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="Trouble_shooting.htm#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
+ASCOM driver.<br>3.
+"Mount is reporting invalid guide speeds." &nbsp;Some new drivers don't
+follow the standards and report &nbsp;nonsense guide speeds, often
+because they aren't using the correct units of degrees/sec. When this
+occurs, PHD2 will treat the reported guide speeds as "unknown" and will
+ignore them. &nbsp;This degrades the accuracy of the PHD2 PPEC guide
+algorithm and otherwise reduces the effectiveness of calibration review
+and other diagnostic tools. &nbsp;This is not a PHD2 problem, it must
+be fixed by the author of the driver.<br></div><span style="font-weight: bold;"><span style="font-weight: bold;"><br>Camera Timeout Alerts<br><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span></span>Alert messages associated with camera timing/timeout problems are discussed above: <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span><a href="Trouble_shooting.htm#Problems-_Camera_Timeouts">Camera Timeouts</a><br><br>Calibration Alerts<br></span></span>A number of alerts<span style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>may appear during the mount calibration process. &nbsp;These are described here: <a href="Trouble_shooting.htm#Problems-_Mount_Control">Calibration Alerts</a><br><span style="font-weight: bold;"><br>Maximum-Duration Limit Alerts<br><span style="font-weight: bold;"></span></span>During
 normal guiding, you may see an alert message saying that your settings
 for maximum-duration limits in RA or Dec&nbsp;are preventing
 PHD2 from keeping the guide star locked. &nbsp;If you've decreased
