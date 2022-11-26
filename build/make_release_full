@@ -145,6 +145,7 @@ if [[ $do_help ]]; then
     scp tmp/man.tar.gz ${WWW_HOST}:${WWW_DIR}/man-${REV}.tar.gz
     ssh $WWW_HOST "cd $WWW_DIR && mkdir man-${REV} && tar xfz man-${REV}.tar.gz -C man-${REV} && ln -sfn man-${REV} man-dev && ln -sfn man-${REV} man && ln -sfn PHD2-${REV}_User_Guide.pdf PHD2_User_Guide.pdf"
     ssh $WWW_HOST "chmod -R o+rX ${WWW_DIR}/PHD2-${REV}_User_Guide.pdf ${WWW_DIR}/man-${REV}.tar.gz ${WWW_DIR}/man-${REV}"
+    need_static_update=1
 fi
 
 #
@@ -211,12 +212,6 @@ if [[ $do_changelog_full ]]; then
     need_static_update=1
 fi
 
-if [[ $need_static_update ]]; then
-    echo "generating static site"
-    PAUSE
-    ssh $WWW_HOST "./bin/phd2_generate_static_site"
-fi
-
 #
 # tag the release
 #
@@ -239,4 +234,13 @@ if [[ $do_release ]]; then
     ssh $MAC_HOST64 "cd $MAC_DIR64 && ./build/publish_osx -r"
     ssh $WWW_HOST "cd $WWW_DIR && cp release-dev-osx.txt release-dev-linux.txt && chmod o+r release-dev-linux.txt"
     ssh $WWW_HOST "cd $WWW_DIR && cp release-main-osx.txt release-main-linux.txt && chmod o+r release-main-linux.txt"
+fi
+
+#
+# generate the static site and deploy it to the production web host
+#
+if [[ $need_static_update ]]; then
+    echo "generating static site"
+    PAUSE
+    ssh $WWW_HOST "./bin/phd2_generate_static_site"
 fi
