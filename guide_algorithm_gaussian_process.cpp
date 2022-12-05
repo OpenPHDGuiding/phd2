@@ -944,8 +944,6 @@ GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm() const
 
 double GuideAlgorithmGaussianProcess::result(double input)
 {
-    double control_signal;
-
     if (block_updates_)
         return(0);
 
@@ -954,21 +952,12 @@ double GuideAlgorithmGaussianProcess::result(double input)
         return deduceResult();
     }
 
-    try
-    {
-        // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
-        const Star& star = pFrame->pGuider->PrimaryStar();
-        control_signal = GPG->result(input, star.SNR, (double)pFrame->RequestedExposureDuration() / 1000.0);
-        Debug.Write(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d\n",
-            input, control_signal, pFrame->RequestedExposureDuration()));
-    }
-    catch (const wxString& Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        Debug.Write(wxString::Format("Exception thrown in PPEC Result: %s - model reset\n", Msg));
-        control_signal = input * DefaultControlGain;
-        reset();
-    }
+    // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
+    const Star& star = pFrame->pGuider->PrimaryStar();
+    double control_signal = GPG->result(input, star.SNR, (double) pFrame->RequestedExposureDuration() / 1000.0);
+
+    Debug.Write(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d\n",
+        input, control_signal, pFrame->RequestedExposureDuration()));
 
     return control_signal;
 }
