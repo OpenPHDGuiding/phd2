@@ -393,7 +393,12 @@ amount of gap is generally required to avoid binding in the gear system
 and to allow room for lubricant and thermal expansion. &nbsp;When the
 mesh is too tight, the axis may exhibit stiction (static friction), a
 situation where the axis will not move smoothly and freely or is
-difficult to get moving from a stationary state. &nbsp;</p><p class="MsoNormal">The Guiding Assistant will
+difficult to get moving from a stationary state. &nbsp;Stiction on the
+Dec axis can result in a pattern of an initial reversal delay that
+looks like backlash followed by a large over-shoot once the axis
+finally starts moving. &nbsp;Other than mistakenly having backlash
+compensation enabled in the mount software, stiction is the most common
+cause of oscillations in Dec guiding. &nbsp;</p><p class="MsoNormal">The Guiding Assistant will
 measure how the Dec axis behaves when it is forced to reverse
 direction. &nbsp;It is only capable of measuring the "reversal delay",
 the amount of time it takes to change direction and get the axis
@@ -496,8 +501,15 @@ minutes or hours, you may notice the amount of drift is decreasing.
 declination reversal and you should be prepared to change the Dec guide
 mode accordingly.</li>
 <li>If you are dithering, you may want to set the dithering
-parameters to "RA-only" to avoid disrupting the Dec guiding.</li>
-</ol>
+parameters to "RA-only" to avoid disrupting the Dec guiding. &nbsp;</li>
+</ol>If dithering is being done through the PHD2 server interface,
+uni-directional Dec guiding will be temporarily switched to 'Auto' in
+order to execute dithers. &nbsp;This may result in extended settling
+times but it allows the kind of dithering that is required for cameras
+with fixed-pattern noise. Once settling is completed, the Dec guide
+mode will be restored to its original setting. &nbsp;This only works
+via the server interface,&nbsp;dithering done using the 'Manual Guide'
+tool will not suspend uni-directional guiding in this way.. &nbsp;
 <h3><a name="Variable_delay_guiding"></a>High-precision Mounts and Variable-delay Guiding</h3>
 
 <p class="xxxmsonormal">Mounts with very accurate absolute encoders and detailed

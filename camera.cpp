@@ -1464,12 +1464,16 @@ void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 
     case CAPT_FAIL_TIMEOUT:
         {
-            wxString msg(wxString::Format(_("After %.1f sec the camera has not completed a %.1f sec exposure, so "
-                "it has been disconnected to prevent other problems. "
-                "If you think the hardware is working correctly, you can increase the "
-                "timeout period on the Camera tab of the Advanced Settings Dialog."),
+            wxString msg;
+            // Dark library exposure times won't match the selected exposure time in the pull-down menu of the main window
+            if (!ShutterClosed)
+                msg = (wxString::Format(_("After %.1f sec the camera has not completed a %.1f sec exposure, so "
+                "it has been disconnected to prevent other problems. Refer to Trouble-shooting section of Help."),
                 (pFrame->RequestedExposureDuration() + m_timeoutMs) / 1000.,
                 pFrame->RequestedExposureDuration() / 1000.));
+            else
+                msg = _("The camera has not completed an exposure in at least 15 seconds, so "
+                "it has been disconnected to prevent other problems. Refer to Trouble-shooting section of Help.");
 
             DisconnectWithAlert(msg, RECONNECT);
         }
