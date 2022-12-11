@@ -50,6 +50,7 @@ public:
         STATE_MOUNT,
         STATE_AUXMOUNT,
         STATE_AO,
+        STATE_ROTATOR,
         STATE_WRAPUP,
         STATE_DONE, NUM_PAGES = STATE_DONE
     };
@@ -102,6 +103,7 @@ private:
     bool m_PositionAware;
     wxString m_SelectedAuxMount;
     wxString m_SelectedAO;
+    wxString m_SelectedRotator;
     int m_FocalLength;
     double m_GuideSpeed;
     double m_PixelSize;
@@ -204,6 +206,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_bitmaps[STATE_AUXMOUNT] = new wxBitmap(scope_icon);
 #   include "icons/ao.xpm"
     m_bitmaps[STATE_AO] = new wxBitmap(ao_xpm);
+    m_bitmaps[STATE_ROTATOR] = new wxBitmap(phd2);
 
     // Build the superset of UI controls, minus state-specific labels and data
     // User instructions at top
@@ -353,6 +356,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     // Special cases - neither AuxMount nor AO requires an explicit user choice
     m_SelectedAuxMount = _("None");
     m_SelectedAO = _("None");
+    m_SelectedRotator = _("None");
     if (showGreeting)
         m_State = STATE_GREETINGS;
     else
@@ -415,6 +419,10 @@ void ProfileWizard::ShowHelp(DialogState state)
     case STATE_AO:
         hText = _("If you have an adaptive optics (AO) device, you can select it here.  The AO device will be used for high speed, small guiding corrections, "
             "while the mount interface you chose earlier will be used for larger ('bump') corrections. Calibration of both interfaces will be handled automatically.");
+        break;
+    case STATE_ROTATOR:
+        hText = _("If you have an ASCOM or INDI-compatible rotator device, you can select it here.  This will allow PHD2 to automatically adjust calibration when the rotator "
+                  "is moved. Otherwise, any change in rotator position will require a re-calibration in PHD2");
         break;
     case STATE_WRAPUP:
         hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it. This is strongly "
@@ -615,6 +623,8 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             break;
         case STATE_AO:
             break;
+        case STATE_ROTATOR:
+            break;
         case STATE_WRAPUP:
             m_ProfileName = m_pProfileName->GetValue();
             bOk = m_ProfileName.length() > 0;
@@ -732,6 +742,22 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearChoice->Append(StepGuider::AOList());
             m_pGearChoice->SetStringSelection(m_SelectedAO);            // SelectedAO is never null
             m_pInstructions->SetLabel(_("Specify your adaptive optics device if desired"));
+            if (change == -1)                   // User is backing up in wizard dialog
+            {
+                // Assert UI state for gear selection
+                m_pGearGrid->Show(true);
+                m_pNextBtn->SetLabel(_("Next >"));
+                m_pNextBtn->SetToolTip(_("Move forward to next screen"));
+                m_pWrapUp->Show(false);
+            }
+            break;
+        case STATE_ROTATOR:
+            SetTitle(TitlePrefix + _("Choose a Rotator Device (optional)"));
+            m_pGearLabel->SetLabel(_("Rotator:"));
+            m_pGearChoice->Clear();
+            m_pGearChoice->Append(Rotator::RotatorList());
+            m_pGearChoice->SetStringSelection(m_SelectedRotator);            // SelectedRotator is never null
+            m_pInstructions->SetLabel(_("Specify your rotator device if desired"));
             if (change == -1)                   // User is backing up in wizard dialog
             {
                 // Assert UI state for gear selection
@@ -870,6 +896,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetString("/scope/LastMenuChoice", m_SelectedMount);
     pConfig->Profile.SetString("/scope/LastAuxMenuChoice", m_SelectedAuxMount);
     pConfig->Profile.SetString("/stepguider/LastMenuChoice", m_SelectedAO);
+    pConfig->Profile.SetString("/rotator/LastMenuChoice", m_SelectedRotator);
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/camera/binning", binning);
@@ -1034,6 +1061,9 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
+        break;
+    case STATE_ROTATOR:
+        m_SelectedRotator = m_pGearChoice->GetStringSelection();
         break;
     case STATE_GREETINGS:
     case STATE_WRAPUP:
