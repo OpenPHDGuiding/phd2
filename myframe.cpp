@@ -2521,7 +2521,8 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
                         " dark dimensions = {%d,%d}\n", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
 
                     if (showAlert)
-                        Alert(_("Dark library does not match the camera in this profile - it needs to be replaced."));
+                        Alert(_("Dark library does not match the camera in this profile. Check that you are "
+                        "connected to the camera you want to use for guiding."));
                 }
 
                 PHD_fits_close_file(fptr);
@@ -2567,7 +2568,8 @@ void MyFrame::CheckDarkFrameGeometry()
             m_useDarksMenuItem->Enable(false);
             Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found\n");
             if (!defectMapOk)
-                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
+                pFrame->Alert(_("Dark library and bad-pixel maps don't match the current camera. "
+                "Check that you are connected to the camera you want to use for guiding."));
         }
     }
     else if (haveDarkLib)
