@@ -1141,24 +1141,26 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
-
   if(APPLE32)
     find_library( SVBCameraSDK
                   NAMES SVBCameraSDK
                   PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x86)
+    # SVB SDK v1.10 crashes when the dylib loads on APPLE32 -- disable for now
+    unset(SVBCameraSDK CACHE)
   else()
     find_library( SVBCameraSDK
                   NAMES SVBCameraSDK
                   PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
+    if(NOT SVBCameraSDK)
+      message(FATAL_ERROR "Cannot find the Svbony SDK libs")
+    endif()
   endif()
 
-  if(NOT SVBCameraSDK)
-    message(FATAL_ERROR "Cannot find the Svbony SDK libs")
+  if(SVBCameraSDK)
+    add_definitions(-DHAVE_SVB_CAMERA=1)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
+    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${SVBCameraSDK})
   endif()
-  add_definitions(-DHAVE_SVB_CAMERA=1)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${SVBCameraSDK})
-
 
   if(APPLE32)
     find_library( qhylib
