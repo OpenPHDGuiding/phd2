@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-31 00:02+0100\n"
+"POT-Creation-Date: 2022-12-30 04:56+0000\n"
 "PO-Revision-Date: 2016-09-14 23:15+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -80,7 +80,7 @@ msgid "Advanced Settings"
 msgstr ""
 
 #: advanced_dialog.cpp:224 guiding_assistant.cpp:512 myframe.cpp:1281
-#: profile_wizard.cpp:330
+#: profile_wizard.cpp:333
 msgid "Help"
 msgstr "مساعدة"
 
@@ -221,12 +221,12 @@ msgid "Measured"
 msgstr "تم القياس"
 
 #: backlash_comp.cpp:684 guiding_assistant.cpp:1459 polardrift_toolwin.cpp:190
-#: scope.cpp:261 staticpa_toolwin.cpp:349 testguide.cpp:152
+#: scope.cpp:263 staticpa_toolwin.cpp:349 testguide.cpp:152
 msgid "North"
 msgstr "شمال"
 
 #: backlash_comp.cpp:685 guiding_assistant.cpp:1459 polardrift_toolwin.cpp:191
-#: scope.cpp:262 staticpa_toolwin.cpp:350 testguide.cpp:152
+#: scope.cpp:264 staticpa_toolwin.cpp:350 testguide.cpp:152
 msgid "South"
 msgstr "جنوب"
 
@@ -1553,12 +1553,12 @@ msgstr "اختر الملف الرئيسي مع ملف المعتمات التي
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:354
-#: profile_wizard.cpp:355 profile_wizard.cpp:565 profile_wizard.cpp:570
-#: profile_wizard.cpp:598 profile_wizard.cpp:752 profile_wizard.cpp:921
-#: profile_wizard.cpp:936 profile_wizard.cpp:967 profile_wizard.cpp:972
-#: profile_wizard.cpp:997 profile_wizard.cpp:1011 rotator.cpp:49
-#: rotator.cpp:84 scope.cpp:331 scope.cpp:373 scope.cpp:416
+#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:357
+#: profile_wizard.cpp:358 profile_wizard.cpp:359 profile_wizard.cpp:573
+#: profile_wizard.cpp:578 profile_wizard.cpp:606 profile_wizard.cpp:778
+#: profile_wizard.cpp:948 profile_wizard.cpp:963 profile_wizard.cpp:994
+#: profile_wizard.cpp:999 profile_wizard.cpp:1024 profile_wizard.cpp:1038
+#: rotator.cpp:49 rotator.cpp:84 scope.cpp:333 scope.cpp:375 scope.cpp:418
 #: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "لا شيء"
@@ -1601,7 +1601,7 @@ msgstr "حسنا"
 
 #: camcal_import_dialog.cpp:124 darks_dialog.cpp:210 darks_dialog.cpp:366
 #: gear_simulator.cpp:1854 guiding_assistant.cpp:117 phdupdate.cpp:800
-#: profile_wizard.cpp:1287
+#: profile_wizard.cpp:1317
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -1772,23 +1772,26 @@ msgstr ""
 msgid "Memory allocation error during capture"
 msgstr "خطأ في تحديد الذاكرة عند التصوير"
 
-#: camera.cpp:1467
+#: camera.cpp:1470
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
-"been disconnected to prevent other problems. If you think the hardware is "
-"working correctly, you can increase the timeout period on the Camera tab of "
-"the Advanced Settings Dialog."
+"been disconnected to prevent other problems. Refer to Trouble-shooting "
+"section of Help."
 msgstr ""
-"بعد زمن %.1f ثانية لم تكمل %.1f ثانية تعريض، ولهذا تم فصل اتصالها لمنع مشاكل "
-"أخرى، إذا كنت تعتقد أن الأجهزة تعمل جيدا يمكنك زيادة زمن الانتظار عبر قائمة "
-"(الكاميرا) في الاعدادات المتقدمة."
 
-#: camera.cpp:1492
+#: camera.cpp:1475
+msgid ""
+"The camera has not completed an exposure in at least 15 seconds, so it has "
+"been disconnected to prevent other problems. Refer to Trouble-shooting "
+"section of Help."
+msgstr ""
+
+#: camera.cpp:1496
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr "PHD سيقوم بعدة محاولات لإعادة توصيل الكاميرا"
 
-#: camera.cpp:1497
+#: camera.cpp:1501
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1816,7 +1819,7 @@ msgid "Comet Tracking - Active"
 msgstr "تتبع المذنب- فعال"
 
 #: comet_tool.cpp:90 comet_tool.cpp:201 guider_multistar.cpp:1370
-#: scope.cpp:1948
+#: scope.cpp:1966
 msgid "Enable"
 msgstr "تفعيل"
 
@@ -1909,11 +1912,11 @@ msgstr ""
 "التدريب"
 
 #: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:327
-#: guide_algorithm.cpp:50 scope.cpp:670 statswindow.cpp:73 target.cpp:339
+#: guide_algorithm.cpp:50 scope.cpp:672 statswindow.cpp:73 target.cpp:339
 msgid "RA"
 msgstr ""
 
-#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:670
+#: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:672
 #: statswindow.cpp:77 target.cpp:340
 msgid "Dec"
 msgstr ""
@@ -1977,7 +1980,7 @@ msgstr ""
 msgid "Other options"
 msgstr "خيارات أخرى"
 
-#: config_indi.cpp:157 indi_gui.cpp:786 scope.cpp:413
+#: config_indi.cpp:157 indi_gui.cpp:786 scope.cpp:415
 msgid "INDI"
 msgstr ""
 
@@ -2789,7 +2792,7 @@ msgstr ""
 msgid "Could not create profile %s from profile %s"
 msgstr ""
 
-#: gear_dialog.cpp:2144 profile_wizard.cpp:864
+#: gear_dialog.cpp:2144 profile_wizard.cpp:890
 #, c-format
 msgid "Could not create profile %s"
 msgstr ""
@@ -3390,7 +3393,7 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-#: guide_algorithm_gaussian_process.cpp:336 scope.cpp:259
+#: guide_algorithm_gaussian_process.cpp:336 scope.cpp:261
 msgid "Off"
 msgstr "توقف"
 
@@ -3543,7 +3546,7 @@ msgid ""
 msgstr ""
 
 #: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1399 myframe.cpp:912 myframe.cpp:983 scope.cpp:260
+#: guider_multistar.cpp:1399 myframe.cpp:912 myframe.cpp:983 scope.cpp:262
 msgid "Auto"
 msgstr "ذاتي"
 
@@ -4375,12 +4378,12 @@ msgstr ""
 msgid "Recent uploads"
 msgstr ""
 
-#: log_uploader.cpp:725 profile_wizard.cpp:327
+#: log_uploader.cpp:725 profile_wizard.cpp:330
 msgid "< Back"
 msgstr "للخلف <"
 
-#: log_uploader.cpp:728 log_uploader.cpp:1366 profile_wizard.cpp:332
-#: profile_wizard.cpp:739
+#: log_uploader.cpp:728 log_uploader.cpp:1366 profile_wizard.cpp:335
+#: profile_wizard.cpp:749 profile_wizard.cpp:765
 msgid "Next >"
 msgstr "التالي>"
 
@@ -4600,30 +4603,30 @@ msgstr ""
 msgid "DEC:"
 msgstr ""
 
-#: mount.cpp:1263
+#: mount.cpp:1264
 msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
 
-#: mount.cpp:1273
+#: mount.cpp:1275
 msgid ""
 "Current calibration did not have side-of-pier information, so PHD2 can't "
 "automatically correct for meridian flips. You should do a fresh calibration "
 "to correct this problem."
 msgstr ""
 
-#: mount.cpp:1283
+#: mount.cpp:1285
 msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
 msgstr ""
 
-#: mount.cpp:1331
+#: mount.cpp:1333
 msgid "Rotator position has changed, recalibration is needed."
 msgstr ""
 
-#: mount.cpp:1367
+#: mount.cpp:1369
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
@@ -5523,7 +5526,7 @@ msgstr ""
 msgid "Scale"
 msgstr "قياس"
 
-#: myframe.cpp:3141 profile_wizard.cpp:316
+#: myframe.cpp:3141 profile_wizard.cpp:319
 msgid "Auto restore calibration"
 msgstr "استعادة المعايرة تلقائيا"
 
@@ -5533,7 +5536,7 @@ msgid ""
 "calibration after gear is connected."
 msgstr ""
 
-#: myframe.cpp:3159 scope.cpp:1972
+#: myframe.cpp:3159 scope.cpp:1990
 msgid "Min"
 msgstr "الأقل"
 
@@ -5541,7 +5544,7 @@ msgstr "الأقل"
 msgid "Auto exposure minimum duration"
 msgstr "أقل زمن تعريض ذاتي"
 
-#: myframe.cpp:3160 scope.cpp:1974
+#: myframe.cpp:3160 scope.cpp:1992
 msgid "Max"
 msgstr "الأقصى"
 
@@ -5646,7 +5649,7 @@ msgstr ""
 msgid "Instructions"
 msgstr "تعليمات"
 
-#: myframe_events.cpp:194 profile_wizard.cpp:660
+#: myframe_events.cpp:194 profile_wizard.cpp:670
 msgid "Introduction"
 msgstr "مقدمة"
 
@@ -5803,11 +5806,11 @@ msgid ""
 "Would you like to use the Setup Wizard now?"
 msgstr "يبدو أنها المرة الأولى التي يتم فيها توصيل الكاميرا والقاعدة. "
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1283
+#: myframe_events.cpp:1173 profile_wizard.cpp:1313
 msgid "Yes"
 msgstr "نعم"
 
-#: myframe_events.cpp:1173 profile_wizard.cpp:1285
+#: myframe_events.cpp:1173 profile_wizard.cpp:1315
 msgid "No"
 msgstr "لا"
 
@@ -6263,40 +6266,40 @@ msgstr ""
 msgid "Angle: %.f deg"
 msgstr ""
 
-#: profile_wizard.cpp:165
+#: profile_wizard.cpp:167
 #, c-format
 msgid "%s:"
 msgstr ""
 
-#: profile_wizard.cpp:188
+#: profile_wizard.cpp:190
 msgid "New Profile Wizard"
 msgstr "معالج ملف شخصي جديد"
 
-#: profile_wizard.cpp:191
+#: profile_wizard.cpp:193
 msgid "New Profile Wizard - "
 msgstr "معالج ملف شخصي جديد - "
 
-#: profile_wizard.cpp:222
+#: profile_wizard.cpp:225
 msgid "More Info"
 msgstr "المزيد من المعلومات"
 
-#: profile_wizard.cpp:236
+#: profile_wizard.cpp:239
 msgid "Gear"
 msgstr "المعدات"
 
-#: profile_wizard.cpp:248
+#: profile_wizard.cpp:251
 msgid ""
 "Get this value from your camera documentation or from an online source.  You "
 "can use the up/down control or type in a value directly. If the pixels "
 "aren't square, just enter the larger of the X/Y dimensions."
 msgstr ""
 
-#: profile_wizard.cpp:250
+#: profile_wizard.cpp:253
 #, c-format
 msgid "Guide camera un-binned pixel size (%s)"
 msgstr ""
 
-#: profile_wizard.cpp:256
+#: profile_wizard.cpp:259
 msgid ""
 "If your camera supports binning (many do not), you can choose a binning "
 "value > 1.  With long focal length guide scopes and OAGs, binning can allow "
@@ -6304,11 +6307,11 @@ msgid ""
 "binning at 1."
 msgstr ""
 
-#: profile_wizard.cpp:261
+#: profile_wizard.cpp:264
 msgid "Binning level"
 msgstr ""
 
-#: profile_wizard.cpp:271
+#: profile_wizard.cpp:274
 msgid ""
 "This is the focal length of the guide scope - or the imaging scope if you "
 "are using an off-axis-guider or adaptive optics device (Focal length = "
@@ -6316,20 +6319,20 @@ msgid ""
 "165mm."
 msgstr ""
 
-#: profile_wizard.cpp:274
+#: profile_wizard.cpp:277
 msgid "Guide scope focal length (mm)"
 msgstr "الطول البوري لمنظار التوجيه (ملم)"
 
-#: profile_wizard.cpp:282 profile_wizard.cpp:1178
+#: profile_wizard.cpp:285 profile_wizard.cpp:1208
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr ""
 
-#: profile_wizard.cpp:283
+#: profile_wizard.cpp:286
 msgid "The pixel scale of your guide configuration, arc-seconds per pixel"
 msgstr ""
 
-#: profile_wizard.cpp:296
+#: profile_wizard.cpp:299
 #, c-format
 msgid ""
 "The mount guide speed you will use for calibration and guiding, expressed as "
@@ -6338,32 +6341,32 @@ msgid ""
 "most cases"
 msgstr ""
 
-#: profile_wizard.cpp:299
+#: profile_wizard.cpp:302
 msgid "Mount guide speed (n.n x sidereal)"
 msgstr ""
 
-#: profile_wizard.cpp:301
+#: profile_wizard.cpp:304
 msgid "Mount has high-precision encoders"
 msgstr ""
 
-#: profile_wizard.cpp:302
+#: profile_wizard.cpp:305
 msgid ""
 "Mount has high-precision encoders on both axes with little or no Dec "
 "backlash (e.g. 10Micron, Astro-Physics AE, Planewave, iOptron EC2 or other "
 "high-end mounts"
 msgstr ""
 
-#: profile_wizard.cpp:313
+#: profile_wizard.cpp:316
 msgid "Build dark library"
 msgstr "إنشاء مكتبة معتمات dark"
 
-#: profile_wizard.cpp:315
+#: profile_wizard.cpp:318
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
 msgstr "اختر هذا لبدء عملية بناء مكتبة المعتمات dark ذاتيا لهذا الملف الشخصي"
 
-#: profile_wizard.cpp:318
+#: profile_wizard.cpp:321
 msgid ""
 "Check this to automatically re-use the last calibration when the profile is "
 "loaded. For this to work, the rotational orientation of the guide camera and "
@@ -6371,19 +6374,19 @@ msgid ""
 "between imaging sessions."
 msgstr ""
 
-#: profile_wizard.cpp:320
+#: profile_wizard.cpp:323
 msgid "Profile Name"
 msgstr "اسم الملف الشخصي"
 
-#: profile_wizard.cpp:328
+#: profile_wizard.cpp:331
 msgid "Back up to the previous screen"
 msgstr "العودة للشاشة السابقة"
 
-#: profile_wizard.cpp:333 profile_wizard.cpp:740
+#: profile_wizard.cpp:336 profile_wizard.cpp:750 profile_wizard.cpp:766
 msgid "Move forward to next screen"
 msgstr "الانتقال للشاشة التالية"
 
-#: profile_wizard.cpp:381
+#: profile_wizard.cpp:385
 msgid ""
 "This short sequence of steps will help you identify the equipment you want "
 "to use for guiding and will associate it with a profile name of your choice. "
@@ -6396,7 +6399,7 @@ msgid ""
 "dialog has finished."
 msgstr ""
 
-#: profile_wizard.cpp:388
+#: profile_wizard.cpp:392
 msgid ""
 "Select your guide camera from the list.  All cameras supported by PHD2 and "
 "all installed ASCOM cameras are shown. If your camera is not shown, it is "
@@ -6408,7 +6411,7 @@ msgid ""
 "binning."
 msgstr ""
 
-#: profile_wizard.cpp:395
+#: profile_wizard.cpp:399
 #, c-format
 msgid ""
 "Select your mount interface from the list.  This determines how PHD2 will "
@@ -6422,11 +6425,11 @@ msgid ""
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
 
-#: profile_wizard.cpp:402 profile_wizard.cpp:690
+#: profile_wizard.cpp:406 profile_wizard.cpp:700
 msgid "Simulator"
 msgstr ""
 
-#: profile_wizard.cpp:404
+#: profile_wizard.cpp:408
 msgid ""
 "The 'simulator' camera/mount interface doesn't provide pointing information, "
 "so PHD2 will not be able to automatically adjust guiding for side-of-pier "
@@ -6434,7 +6437,7 @@ msgid ""
 "connection that does provide pointing information."
 msgstr ""
 
-#: profile_wizard.cpp:410
+#: profile_wizard.cpp:414
 msgid ""
 "The mount interface you chose in the previous step doesn't provide pointing "
 "information, so PHD2 will not be able to automatically adjust guiding for "
@@ -6444,7 +6447,7 @@ msgid ""
 "commands."
 msgstr ""
 
-#: profile_wizard.cpp:416
+#: profile_wizard.cpp:420
 msgid ""
 "If you have an adaptive optics (AO) device, you can select it here.  The AO "
 "device will be used for high speed, small guiding corrections, while the "
@@ -6452,7 +6455,15 @@ msgid ""
 "corrections. Calibration of both interfaces will be handled automatically."
 msgstr ""
 
-#: profile_wizard.cpp:420
+#: profile_wizard.cpp:424
+msgid ""
+"If you have an ASCOM or INDI-compatible rotator device, you can select it "
+"here.  This will allow PHD2 to automatically adjust calibration when the "
+"rotator is moved. Otherwise, any change in rotator position will require a "
+"re-calibration in PHD2"
+msgstr ""
+
+#: profile_wizard.cpp:428
 msgid ""
 "Your profile is complete and ready to save.  Give it a name and, optionally, "
 "build a dark-frame library for it. This is strongly recommended for best "
@@ -6462,11 +6473,11 @@ msgid ""
 "for assistance."
 msgstr ""
 
-#: profile_wizard.cpp:466
+#: profile_wizard.cpp:474
 msgid "Configuration Suggestion"
 msgstr ""
 
-#: profile_wizard.cpp:473
+#: profile_wizard.cpp:481
 msgid ""
 "This configuration doesn't provide PHD2 with any information about the "
 "scope's pointing position.  This means you will need to recalibrate\n"
@@ -6477,155 +6488,167 @@ msgid ""
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
 
-#: profile_wizard.cpp:479
+#: profile_wizard.cpp:487
 msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
 msgstr ""
 
-#: profile_wizard.cpp:481
+#: profile_wizard.cpp:489
 msgid "Open EQMOD document..."
 msgstr ""
 
-#: profile_wizard.cpp:487
+#: profile_wizard.cpp:495
 msgid "Go Back"
 msgstr ""
 
-#: profile_wizard.cpp:489
+#: profile_wizard.cpp:497
 msgid "Proceed"
 msgstr ""
 
-#: profile_wizard.cpp:491
+#: profile_wizard.cpp:499
 msgid "Don't Ask"
 msgstr ""
 
-#: profile_wizard.cpp:567
+#: profile_wizard.cpp:575
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
 msgstr ""
 "الرجاء تحديد نوع الكاميرا، الطول البؤري لمنظار التوجيه حجم بكسل كاميرا "
 "التوجيه"
 
-#: profile_wizard.cpp:593
+#: profile_wizard.cpp:601
 msgid "Please select a mount type to handle guider commands"
 msgstr "الرجاء اختيار نوع القاعدة للتعامل أوامر التوجيه"
 
-#: profile_wizard.cpp:622
+#: profile_wizard.cpp:632
 msgid "Please specify a name for the profile."
 msgstr "الرجاء اختيار اسم للملف الرئيسي."
 
-#: profile_wizard.cpp:626
+#: profile_wizard.cpp:636
 msgid ""
 "There is already a profile with that name. Please choose a different name."
 msgstr "هناك بالفعل ملف أساسي بهذا الاسم. الرجاء اختيار اسم مختلف."
 
-#: profile_wizard.cpp:667
+#: profile_wizard.cpp:677
 msgid "Welcome to the PHD2 'first light' wizard"
 msgstr "مرجبا في معالج PHD2 المرة الأولى"
 
-#: profile_wizard.cpp:672
+#: profile_wizard.cpp:682
 msgid "Choose a Guide Camera"
 msgstr "اختيار كاميرا التوجيه"
 
-#: profile_wizard.cpp:674
+#: profile_wizard.cpp:684
 msgid "Guide Camera:"
 msgstr "كاميرا التوجيه:"
 
-#: profile_wizard.cpp:686
+#: profile_wizard.cpp:696
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
 msgstr ""
 
-#: profile_wizard.cpp:694
+#: profile_wizard.cpp:704
 msgid "On-camera"
 msgstr ""
 
-#: profile_wizard.cpp:700
+#: profile_wizard.cpp:710
 msgid "Choose a Mount Connection"
 msgstr "اختر اتصال القاعدة"
 
-#: profile_wizard.cpp:702
+#: profile_wizard.cpp:712
 msgid "Mount:"
 msgstr "القاعدة:"
 
-#: profile_wizard.cpp:709
+#: profile_wizard.cpp:719
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
 msgstr "اختر اتصال قاعدتك، هذا سوف يتحدد كيف سيتم ارسال إشارات التوجيه"
 
-#: profile_wizard.cpp:720
+#: profile_wizard.cpp:730
 msgid "Choose an Auxiliary Mount Connection (optional)"
 msgstr ""
 
-#: profile_wizard.cpp:721
+#: profile_wizard.cpp:731
 msgid "Aux Mount:"
 msgstr ""
 
-#: profile_wizard.cpp:725
+#: profile_wizard.cpp:735
 msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
 msgstr ""
 
-#: profile_wizard.cpp:729
+#: profile_wizard.cpp:739
 msgid "Choose an Adaptive Optics Device (optional)"
 msgstr ""
 
-#: profile_wizard.cpp:730
+#: profile_wizard.cpp:740
 msgid "AO:"
 msgstr ""
 
-#: profile_wizard.cpp:734
+#: profile_wizard.cpp:744
 msgid "Specify your adaptive optics device if desired"
 msgstr ""
 
-#: profile_wizard.cpp:745
+#: profile_wizard.cpp:755
+msgid "Choose a Rotator Device (optional)"
+msgstr ""
+
+#: profile_wizard.cpp:756
+msgid "Rotator:"
+msgstr ""
+
+#: profile_wizard.cpp:760
+msgid "Specify your rotator device if desired"
+msgstr ""
+
+#: profile_wizard.cpp:771
 msgid "Finish Creating Your New Profile"
 msgstr "انتهاء إنشاء ملفك الرئيسي الجديد"
 
-#: profile_wizard.cpp:748
+#: profile_wizard.cpp:774
 msgid "Finish"
 msgstr "انتهاء"
 
-#: profile_wizard.cpp:749
+#: profile_wizard.cpp:775
 msgid "Finish creating the equipment profile"
 msgstr "انتهاء بناء ملف المعدات الرئيسي"
 
-#: profile_wizard.cpp:751
+#: profile_wizard.cpp:777
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
 msgstr "أذكر اسم ملفك الرئيسي وشغل اختياريا عملية بناء مكتبة المعتمات"
 
-#: profile_wizard.cpp:811
+#: profile_wizard.cpp:837
 msgid ""
 "PHD2 could not connect to the camera so you may want to deal with that "
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
 
-#: profile_wizard.cpp:997
+#: profile_wizard.cpp:1024
 msgid "Ask"
 msgstr ""
 
-#: profile_wizard.cpp:1027
+#: profile_wizard.cpp:1054
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:1050
+#: profile_wizard.cpp:1080
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
 
-#: profile_wizard.cpp:1101
+#: profile_wizard.cpp:1131
 msgid "Connecting to mount..."
 msgstr ""
 
-#: profile_wizard.cpp:1107
+#: profile_wizard.cpp:1137
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -6634,7 +6657,7 @@ msgid ""
 "value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:1120
+#: profile_wizard.cpp:1150
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -6642,21 +6665,21 @@ msgid ""
 "just leave it at the default value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:1192
+#: profile_wizard.cpp:1222
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
 
-#: profile_wizard.cpp:1199
+#: profile_wizard.cpp:1229
 msgid "Low pixel scale"
 msgstr ""
 
-#: profile_wizard.cpp:1240
+#: profile_wizard.cpp:1270
 msgid "Ask About Connection"
 msgstr ""
 
-#: profile_wizard.cpp:1253
+#: profile_wizard.cpp:1283
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -6664,11 +6687,11 @@ msgid ""
 "value yourself using information in the camera manual or online. "
 msgstr ""
 
-#: profile_wizard.cpp:1256
+#: profile_wizard.cpp:1286
 msgid "Camera Already Connected?"
 msgstr ""
 
-#: profile_wizard.cpp:1260
+#: profile_wizard.cpp:1290
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -6677,11 +6700,11 @@ msgid ""
 "the setting at the default value of %0.1fx."
 msgstr ""
 
-#: profile_wizard.cpp:1263
+#: profile_wizard.cpp:1293
 msgid "Mount Already Connected?"
 msgstr ""
 
-#: profile_wizard.cpp:1267
+#: profile_wizard.cpp:1297
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -6691,7 +6714,7 @@ msgid ""
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
 
-#: profile_wizard.cpp:1271
+#: profile_wizard.cpp:1301
 msgid "Aux-mount Already Connected?"
 msgstr ""
 
@@ -6911,34 +6934,34 @@ msgstr "مشكلة في تعريف آسكوم Ascom-- لا يمكن تحديد �
 msgid "The operation was canceled"
 msgstr "تم إلغاء العملية"
 
-#: scope.cpp:263
+#: scope.cpp:265
 msgid "Invalid"
 msgstr ""
 
-#: scope.cpp:324
+#: scope.cpp:326
 msgid "INDI Mount"
 msgstr ""
 
-#: scope.cpp:324
+#: scope.cpp:326
 #, c-format
 msgid "INDI Mount [%s]"
 msgstr ""
 
-#: scope.cpp:634
+#: scope.cpp:636
 msgid ""
 "PHD2 is not able to make sufficient corrections in RA.  Check for cable "
 "snags, try re-doing your calibration, and check for problems with the mount "
 "mechanics."
 msgstr ""
 
-#: scope.cpp:639
+#: scope.cpp:641
 msgid ""
 "PHD2 is not able to make sufficient corrections in RA.  Check for cable "
 "snags, try re-doing your calibration, and confirm the ST-4 cable is working "
 "properly."
 msgstr ""
 
-#: scope.cpp:647
+#: scope.cpp:649
 msgid ""
 "PHD2 is not able to make sufficient corrections in Dec.  If you have just "
 "done a meridian flip, check to see if the 'Reverse Dec output option' on the "
@@ -6946,22 +6969,22 @@ msgid ""
 "re-doing your calibration, and check for problems with the mount mechanics."
 msgstr ""
 
-#: scope.cpp:653
+#: scope.cpp:655
 msgid ""
 "PHD2 is not able to make sufficient corrections in Dec.  Check for cable "
 "snags, try re-doing your calibration and confirm the ST-4 cable is working "
 "properly."
 msgstr ""
 
-#: scope.cpp:661
+#: scope.cpp:663
 msgid "Max RA Duration setting"
 msgstr ""
 
-#: scope.cpp:661
+#: scope.cpp:663
 msgid "Max Dec Duration setting"
 msgstr ""
 
-#: scope.cpp:663
+#: scope.cpp:665
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
@@ -6969,7 +6992,7 @@ msgid ""
 "larger corrections."
 msgstr ""
 
-#: scope.cpp:672
+#: scope.cpp:674
 #, c-format
 msgid ""
 "Even using the maximum moves, PHD2 can't properly correct for the large "
@@ -6977,83 +7000,83 @@ msgid ""
 "the source of these problems."
 msgstr ""
 
-#: scope.cpp:921
+#: scope.cpp:923
 msgid ""
 "Advisory: Calibration completed but few guide steps were used, so accuracy "
 "is questionable"
 msgstr ""
 
-#: scope.cpp:924
+#: scope.cpp:926
 msgid ""
 "Advisory: Calibration completed but RA/Dec axis angles are questionable and "
 "guiding may be impaired"
 msgstr ""
 
-#: scope.cpp:927
+#: scope.cpp:929
 msgid ""
 "Advisory: This calibration is substantially different from the previous one "
 "- have you changed configurations?"
 msgstr ""
 
-#: scope.cpp:930
+#: scope.cpp:932
 msgid ""
 "Advisory: Calibration completed but RA and Dec rates vary by an unexpected "
 "amount (often caused by large Dec backlash)"
 msgstr ""
 
-#: scope.cpp:940
+#: scope.cpp:942
 msgid "Details..."
 msgstr "تفاصيل"
 
-#: scope.cpp:1225
+#: scope.cpp:1215
 msgid "RA Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:1232
+#: scope.cpp:1222
 #, c-format
 msgid "West step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1302
+#: scope.cpp:1292
 #, c-format
 msgid "East step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1321
+#: scope.cpp:1311
 msgid ""
 "Advisory: Little or no east movement was measured, so guiding will probably "
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
 
-#: scope.cpp:1382
+#: scope.cpp:1372
 msgid "Clearing backlash step 1"
 msgstr "إزالة الحركة الارتجاعية backlash خطوة 1"
 
-#: scope.cpp:1420
+#: scope.cpp:1410
 #, c-format
 msgid "Clearing backlash step %3d"
 msgstr ""
 
-#: scope.cpp:1439
+#: scope.cpp:1429
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "فشل إزالة الحركة الارتجاعية backlash: النجم لم يتحرك بشكل كاف"
 
-#: scope.cpp:1487
+#: scope.cpp:1477
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:1494
+#: scope.cpp:1484
 #, c-format
 msgid "North step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1580
+#: scope.cpp:1570
 #, c-format
 msgid "South step %3d, dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1600
+#: scope.cpp:1590
 msgid ""
 "Advisory: Calibration succeessful but little or no south movement was "
 "measured, so guiding will probably be impaired.\n"
@@ -7063,7 +7086,7 @@ msgid ""
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
 
-#: scope.cpp:1604
+#: scope.cpp:1594
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding will probably be impaired. \n"
@@ -7073,7 +7096,7 @@ msgid ""
 "Guide, Declination backlash)."
 msgstr ""
 
-#: scope.cpp:1609
+#: scope.cpp:1599
 msgid ""
 "Advisory: Calibration successful but little south movement was measured, so "
 "guiding may be impaired.\n"
@@ -7083,69 +7106,69 @@ msgid ""
 "backlash)."
 msgstr ""
 
-#: scope.cpp:1669
+#: scope.cpp:1659
 #, c-format
 msgid "Nudge South %3d"
 msgstr ""
 
-#: scope.cpp:1701 stepguider.cpp:755
+#: scope.cpp:1691 stepguider.cpp:755
 msgid "Calibration complete"
 msgstr "انتهاء المعايرة"
 
-#: scope.cpp:1862
+#: scope.cpp:1880
 msgid "Mount Guide Algorithms"
 msgstr "خوارزميات توجيه القاعدة"
 
-#: scope.cpp:1900
+#: scope.cpp:1918
 msgid "Calibration step (ms)"
 msgstr "خطوات المعايرة (ملي ثانية)"
 
-#: scope.cpp:1901
+#: scope.cpp:1919
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Advanced..."
 "\" to compute a suitable value."
 msgstr ""
 
-#: scope.cpp:1905
+#: scope.cpp:1923
 msgid "Advanced..."
 msgstr ""
 
-#: scope.cpp:1906
+#: scope.cpp:1924
 msgid ""
 "Click to open the Calibration Calculator Dialog to review or change all "
 "calibration parameters"
 msgstr ""
 
-#: scope.cpp:1918
+#: scope.cpp:1936
 msgid "Reverse Dec output after meridian flip"
 msgstr ""
 
-#: scope.cpp:1920
+#: scope.cpp:1938
 msgid ""
 "Check if your mount needs Dec output reversed after a meridian flip. "
 "Changing this setting will clear the existing calibration data"
 msgstr ""
 
-#: scope.cpp:1926
+#: scope.cpp:1944
 msgid "Stop guiding when mount slews"
 msgstr "أوقف التوجيه إذا بدأ المنظار بالتحرك"
 
-#: scope.cpp:1928
+#: scope.cpp:1946
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "عنما يتم اختيارها، PHD سيتوقف عن التوجيه إذا بدأ المنظار بالتحرك"
 
-#: scope.cpp:1934
+#: scope.cpp:1952
 msgid "Assume Dec orthogonal to RA"
 msgstr ""
 
-#: scope.cpp:1937
+#: scope.cpp:1955
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
 
-#: scope.cpp:1949
+#: scope.cpp:1967
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
@@ -7153,71 +7176,71 @@ msgstr ""
 "حدد هذا الخيار إذا كنت تريد تطبيق تعويضات نبضات التوجيه لللحركة الارتجاعية "
 "(backlash) عندما يتم عكس الاتجاه الانحراف declination ."
 
-#: scope.cpp:1957
+#: scope.cpp:1975
 msgid "Amount"
 msgstr "مقدار"
 
-#: scope.cpp:1958
+#: scope.cpp:1976
 msgid "Size of backlash compensation guide pulse (mSec)"
 msgstr ""
 
-#: scope.cpp:1962
+#: scope.cpp:1980
 msgid "Mount Backlash Compensation"
 msgstr ""
 
-#: scope.cpp:1962
+#: scope.cpp:1980
 msgid "Backlash Compensation"
 msgstr ""
 
-#: scope.cpp:1973
+#: scope.cpp:1991
 msgid "Minimum length of backlash compensation pulse (mSec)."
 msgstr ""
 
-#: scope.cpp:1975
+#: scope.cpp:1993
 msgid "Maximum length of backlash compensation pulse (mSec)."
 msgstr ""
 
-#: scope.cpp:1981
+#: scope.cpp:1999
 msgid "Use Dec compensation"
 msgstr ""
 
-#: scope.cpp:1984
+#: scope.cpp:2002
 msgid "Automatically adjust RA guide rate based on scope declination"
 msgstr ""
 
-#: scope.cpp:1990
+#: scope.cpp:2008
 msgid "Max RA duration"
 msgstr ""
 
-#: scope.cpp:1991 scope.cpp:2205
+#: scope.cpp:2009 scope.cpp:2223
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
 
-#: scope.cpp:1996
+#: scope.cpp:2014
 msgid "Max Dec duration"
 msgstr ""
 
-#: scope.cpp:1997 scope.cpp:2212
+#: scope.cpp:2015 scope.cpp:2230
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:2009
+#: scope.cpp:2027
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:2009 scope.cpp:2224
+#: scope.cpp:2027 scope.cpp:2242
 msgid "Directions in which Dec guide commands will be issued"
 msgstr ""
 
-#: scope.cpp:2207
+#: scope.cpp:2225
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:2214
+#: scope.cpp:2232
 msgid "Mx DEC"
 msgstr ""
 
@@ -7260,6 +7283,13 @@ msgid ""
 "information."
 msgstr "تعريف آسكوم Ascom فشل في إجهاض التوجه."
 
+#: scope_ascom.cpp:874
+msgid ""
+"The mount's ASCOM driver is reporting invalid guide speeds. Some guiding "
+"functions including PPEC will be impaired. Contact the ASCOM driver provider "
+"or mount vendor for support."
+msgstr ""
+
 #: scope_eqmac.cpp:172 scope_equinox.cpp:177
 msgid " responded it's not connected to a mount"
 msgstr "الاستجابة غير متصلة بالقاعدة"
@@ -7292,6 +7322,13 @@ msgstr ""
 
 #: scope_indi.cpp:461
 msgid "INDI mount was disconnected"
+msgstr ""
+
+#: scope_indi.cpp:804
+msgid ""
+"The mount's INDI driver is reporting invalid guide speeds. Some guiding "
+"functions including PPEC will be impaired. Contact the INDI driver provider "
+"or mount vendor for support."
 msgstr ""
 
 #: scope_manual_pointing.cpp:81
@@ -8159,6 +8196,16 @@ msgstr "التوصيل بالكاميرا"
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "التوصيل بالمدور"
+
+#~ msgid ""
+#~ "After %.1f sec the camera has not completed a %.1f sec exposure, so it "
+#~ "has been disconnected to prevent other problems. If you think the "
+#~ "hardware is working correctly, you can increase the timeout period on the "
+#~ "Camera tab of the Advanced Settings Dialog."
+#~ msgstr ""
+#~ "بعد زمن %.1f ثانية لم تكمل %.1f ثانية تعريض، ولهذا تم فصل اتصالها لمنع "
+#~ "مشاكل أخرى، إذا كنت تعتقد أن الأجهزة تعمل جيدا يمكنك زيادة زمن الانتظار "
+#~ "عبر قائمة (الكاميرا) في الاعدادات المتقدمة."
 
 #~ msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
 #~ msgstr ""
