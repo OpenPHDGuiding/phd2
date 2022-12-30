@@ -578,8 +578,8 @@ SVBCAMERA_API  SVB_ERROR_CODE SVBGetVideoData(int iCameraID, unsigned char* pBuf
 /***************************************************************************
 Descriptions:
 White balance once time. If success(return SVB_SUCCESS), please get SVB_WB_R, SVB_WB_G and SVB_WB_B values to update UI display.
-Paras:
 
+Paras:
 int CameraID: this is get from the camera property use the API SVBGetCameraInfo
 
 return:
@@ -589,6 +589,22 @@ SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of b
 SVB_ERROR_GENERAL_ERROR : white balance failed
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE SVBWhiteBalanceOnce(int iCameraID);
+
+
+/***************************************************************************
+Descriptions:
+Gets the camera firmware version number
+
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo
+char *pCameraFirmwareVersion: A Buffer to store the version number, which needs to be at least 64 bytes in size
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_CAMERA_CLOSED : camera didn't open
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBGetCameraFirmwareVersion(int iCameraID, char *pCameraFirmwareVersion);
 
 /***************************************************************************
 Descriptions:
@@ -764,6 +780,22 @@ SVB_SUCCESS : Operation is successful
 SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE SVBSetAutoSaveParam(int iCameraID, SVB_BOOL enable);
+
+/***************************************************************************
+Descriptions:
+Detect if the camera firmware needs to be upgraded
+
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo
+SVB_BOOL *pIsNeedToUpgrade: Return to whether the camera needs to be upgraded
+char *pNeedToUpgradeMinVersion: A Buffer to store the version number, which needs to be at least 64 bytes in size
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_CAMERA_CLOSED : camera didn't open
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBIsCameraNeedToUpgrade(int iCameraID, SVB_BOOL *pIsNeedToUpgrade, char *pNeedToUpgradeMinVersion);
 
 #ifdef __cplusplus
 }
