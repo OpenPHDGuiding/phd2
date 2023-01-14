@@ -43,6 +43,7 @@
 #include "pierflip_tool.h"
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
+#include "calslew_dialog.h"
 
 #include <algorithm>
 #include <memory>
@@ -999,40 +1000,55 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 
         ValidateDarksLoaded();
 
+        bool proceed = true;
         if (wxGetKeyState(WXK_SHIFT))
         {
-            bool recalibrate = true;
+            // Only if user did shift-click; calib may have been cleared by other means
             if (pMount->IsCalibrated() || (pSecondaryMount && pSecondaryMount->IsCalibrated()))
             {
-                recalibrate = ConfirmDialog::Confirm(_("Are you sure you want force recalibration?"),
+                proceed = ConfirmDialog::Confirm(_("Are you sure you want force recalibration?"),
                     "/force_recalibration_ok", _("Force Recalibration"));
             }
-            if (recalibrate)
+            if (!proceed)
             {
-                pMount->ClearCalibration();
-                if (pSecondaryMount)
-                    pSecondaryMount->ClearCalibration();
+                return;
             }
         }
 
         if (interactive && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
         {
-            bool proceed = true;
+
             bool error = pPointingSource->PreparePositionInteractive();
-
-            if (!error && fabs(pPointingSource->GetDeclination()) > Scope::DEC_COMP_LIMIT && !TheScope()->IsCalibrated() )
-            {
-                proceed = ConfirmDialog::Confirm(
-                    _("Calibration this far from the celestial equator will be error-prone.  For best results, calibrate at a declination of -20 to +20."),
-                    "/highdec_calibration_ok", _("Confirm Calibration at Large Declination")
-                    );
-            }
-            if (error || !proceed)
+            if (error)
                 return;
-        }
+            double dec = fabs(pPointingSource->GetDeclination());
+            bool useDlg = false;
+            if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
+                useDlg = ConfirmDialog::Confirm(
+                _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
+                "/highdec_calibration_ok", _("Confirm Calibration at Large Declination")
+                );
+            else if (dec > 60)
+                useDlg = true;
 
-        StartGuiding();
+            if (useDlg)
+            {
+                proceed = false;
+                if (!pCalSlewDlg)
+                    pCalSlewDlg = new CalSlewDialog();
+                if (pCalSlewDlg)
+                    pCalSlewDlg->Show();
+            }
+        }
+        if (proceed)
+        {
+            pMount->ClearCalibration();
+            if (pSecondaryMount)
+                pSecondaryMount->ClearCalibration();
+            StartGuiding();
+        }
     }
+
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);

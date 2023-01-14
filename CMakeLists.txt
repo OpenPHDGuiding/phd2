@@ -354,6 +354,8 @@ set(phd2_SRC
 
   ${phd_src_dir}/calreview_dialog.cpp
   ${phd_src_dir}/calreview_dialog.h
+  ${phd_src_dir}/calslew_dialog.cpp
+  ${phd_src_dir}/calslew_dialog.h
 
   ${phd_src_dir}/calstep_dialog.cpp
   ${phd_src_dir}/calstep_dialog.h

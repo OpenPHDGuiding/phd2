@@ -87,6 +87,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
+    EVT_MENU(MENU_CALIBRATIONSLEW, MyFrame::OnCalSlewTool)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPCAL, MyFrame::OnEEGG)
@@ -363,6 +364,7 @@ MyFrame::MyFrame()
     pRefineDefMap = nullptr;
     pCalSanityCheckDlg = nullptr;
     pCalReviewDlg = nullptr;
+    pCalSlewDlg = nullptr;
     pierFlipToolWin = nullptr;
     m_starFindMode = Star::FIND_CENTROID;
     m_rawImageMode = false;
@@ -505,6 +507,7 @@ void MyFrame::SetupMenuBar()
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     m_autoSelectStarMenuItem = tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
+    tools_menu->Append(MENU_CALIBRATIONSLEW, _("Calibration Slew..."), _("Slew to preferred calibration position"));
     tools_menu->Append(EEGG_REVIEWCAL, _("&Review Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
 
     wxMenu *calib_menu = new wxMenu;
