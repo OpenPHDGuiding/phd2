@@ -192,6 +192,16 @@ if [[ $do_build ]]; then
 fi
 
 #
+# tag the release
+#
+if [[ $need_tag ]]; then
+    echo "tagging the release"
+    PAUSE
+    git tag -a -m "v${REV}" "v${REV}"
+    git push --tags
+fi
+
+#
 # web site dev release page
 #
 if [[ $do_changelog ]]; then
@@ -202,16 +212,6 @@ if [[ $do_changelog ]]; then
     scp "$changelog" "${WWW_HOST}:/tmp/phd2changelog"
     ssh $WWW_HOST "./bin/phd2_add_release_page -r $REV $changelog_test /tmp/phd2changelog"
     need_static_update=1
-fi
-
-#
-# tag the release
-#
-if [[ $need_tag ]]; then
-    echo "tagging the release"
-    PAUSE
-    git tag -a -m "v${REV}" "v${REV}"
-    git push --tags
 fi
 
 #
