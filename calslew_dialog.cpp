@@ -62,7 +62,7 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
-void CalSlewDialog::GetCalSlewPrefs(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults)
+void CalSlewDialog::GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const
 {
     *PrefHA = pConfig->Profile.GetInt ("/scope/CalSlew/TgtHA", defBestOffset);
     *PrefDec = pConfig->Profile.GetInt("/scope/CalSlew/TgtDec", defBestDec);
@@ -105,8 +105,10 @@ CalSlewDialog::CalSlewDialog()
 
     wxStaticBoxSizer* sizerTargetSOP = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Pointing"));
     m_pTargetWest = new wxRadioButton(this, wxID_ANY, _("West"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    m_pTargetWest->SetToolTip(_("Scope on the east side of pier, pointing west"));
     m_pTargetWest->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CalSlewDialog::OnTargetWest, this);
     m_pTargetEast = new wxRadioButton(this, wxID_ANY, _("East"));
+    m_pTargetEast->SetToolTip(_("Scope on west side of pier, pointing east"));
     m_pTargetEast->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CalSlewDialog::OnTargetEast, this);
     sizerTargetSOP->Add(m_pTargetWest);
     sizerTargetSOP->Add(m_pTargetEast);
@@ -115,13 +117,13 @@ CalSlewDialog::CalSlewDialog()
 
     wxBoxSizer* midBtnSizer = new wxBoxSizer(wxHORIZONTAL);
     wxButton *pCustomBtn = new wxButton(this, wxID_ANY, _("Save custom values..."));
-    pCustomBtn->SetToolTip(_("Use this to save a custom sky location if your site has restricted sky visibility and you can't calibrate at a recommended location"));
+    pCustomBtn->SetToolTip(_("Saves a custom sky location if your site has restricted sky visibility and you can't calibrate at the recommended location"));
     pCustomBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnCustom, this);
     wxButton *pLoadBtn = new wxButton(this, wxID_ANY, _("Load custom values"));
-    pLoadBtn->SetToolTip(_("If you have saved a custom sky location, use this to reload those values into the user interface"));
+    pLoadBtn->SetToolTip(_("Reloads a previously saved custom location and displays its values in the 'Target Position' fields"));
     pLoadBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnLoadCustom, this);
     wxButton* pRestoreBtn = new wxButton(this, wxID_ANY, _("Restore defaults"));
-    pRestoreBtn->SetToolTip(_("Use this to restore the user interface to show the recommended pointing location"));
+    pRestoreBtn->SetToolTip(_("Restores the 'Target Position' fields to show the recommended pointing location"));
     pRestoreBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnRestore, this);
     midBtnSizer->Add(pLoadBtn, wxSizerFlags().Center().Border(wxALL, 20));
     midBtnSizer->Add(pCustomBtn, wxSizerFlags().Center().Border(wxALL, 20));
@@ -134,13 +136,13 @@ CalSlewDialog::CalSlewDialog()
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pSlewBtn = new wxButton(this, wxID_ANY,_("Slew"));
-    m_pSlewBtn->SetToolTip(_("Use this to start a slew to the target sky location. BE SURE the scope can be safely slewed"));
+    m_pSlewBtn->SetToolTip(_("Starts a slew to the target sky location. BE SURE the scope can be safely slewed"));
     m_pSlewBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnSlew, this);
     m_pCalibrateBtn = new wxButton(this, wxID_ANY, _("Calibrate"));
-    m_pCalibrateBtn->SetToolTip(_("Use this to start the PHD2 calibration. This dialog window will close once the calibration has begun."));
+    m_pCalibrateBtn->SetToolTip(_("Starts the PHD2 calibration. This dialog window will close once the calibration has begun."));
     m_pCalibrateBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnCalibrate, this);
     wxButton* pCancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
-    pCancelBtn->SetToolTip(_("Use this to close the dialog window. Any existing calibration will still be valid."));
+    pCancelBtn->SetToolTip(_("Closes the dialog window without re-calibrating"));
     pCancelBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalSlewDialog::OnCancel, this);
     btnSizer->Add(m_pSlewBtn, wxSizerFlags().Border(wxALL, 20));
     btnSizer->Add(m_pCalibrateBtn, wxSizerFlags().Border(wxALL, 20));
@@ -155,7 +157,7 @@ CalSlewDialog::CalSlewDialog()
     vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 15));
 
-    m_pTimer = new wxTimer(this, wxID_ANY);
+    m_pTimer = new wxTimer(this, wxID_ANY);     // asynch updates to current position fields
     m_pTimer->SetOwner(this);
     this->Connect(wxEVT_TIMER, wxTimerEventHandler(CalSlewDialog::OnTimer), NULL, this);
     this->Bind(wxEVT_CLOSE_WINDOW, &CalSlewDialog::OnClose, this);
@@ -168,30 +170,33 @@ CalSlewDialog::CalSlewDialog()
     SetSizerAndFit(vSizer);
 }
 
-void CalSlewDialog::ShowError(wxString msg, bool fatal)
+void CalSlewDialog::ShowError(const wxString& msg, bool fatal)
 {
-    m_pMessage->SetLabelText(_("Error: ") + msg);
+    m_pMessage->SetLabelText(msg);
     if (fatal)
     {
         m_pSlewBtn->Enable(false);
         m_pCalibrateBtn->Enable(false);
+
     }
 }
 
-void CalSlewDialog::ShowStatus(wxString msg)
+void CalSlewDialog::ShowStatus(const wxString& msg)
 {
     m_pMessage->SetLabelText(msg);
 }
 
 void CalSlewDialog::OnTimer(wxTimerEvent& evt)
 {
-    UpdateCurrentPosition();
+    UpdateCurrentPosition(true);
 }
 
-void CalSlewDialog::UpdateCurrentPosition()
+void CalSlewDialog::UpdateCurrentPosition(bool fromTimer)
 {
     double ra, dec, lst;
     double hourAngle;
+    const int INVALID_DEC = 100;
+    static double lastDec = INVALID_DEC;
 
     if (!pPointingSource->GetCoordinates(&ra, &dec, &lst))
     {
@@ -206,6 +211,17 @@ void CalSlewDialog::UpdateCurrentPosition()
             m_pWarning->SetLabelText(wxEmptyString);
         m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
         m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
+        if (fromTimer)
+        {
+            if (fabs(lastDec - dec) > 10)
+            {
+                if (lastDec != INVALID_DEC)
+                    ShowExplanationMsg(dec);
+                lastDec = dec;
+            }
+        }
+        else
+            ShowExplanationMsg(dec);
     }
     else
     {
@@ -215,7 +231,7 @@ void CalSlewDialog::UpdateCurrentPosition()
     }
 }
 // Return of 'true' means error occurred
-bool CalSlewDialog::GetCalibPositionRecommendations(int* HA, int* Dec)
+bool CalSlewDialog::GetCalibPositionRecommendations(int* HA, int* Dec) const
 {
     double hourAngle;
     int bestDec;
@@ -231,7 +247,7 @@ bool CalSlewDialog::GetCalibPositionRecommendations(int* HA, int* Dec)
     bestOffset = defBestOffset;
     try
     {
-        if (pPointingSource && pPointingSource->CanSlew() && pPointingSource->CanReportPosition())
+        if (pPointingSource && pPointingSource->CanReportPosition())
         {
             if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
             {
@@ -258,10 +274,11 @@ bool CalSlewDialog::GetCalibPositionRecommendations(int* HA, int* Dec)
             }
             *HA = bestOffset;
             *Dec = bestDec;
+            m_pSlewBtn->Enable(pPointingSource->CanSlew());
         }
         else
         {
-            throw ERROR_INFO("CalPositionRecommendations: mount not connected, can't be slewed or not reporting pointing info");
+            throw ERROR_INFO("CalPositionRecommendations: mount not connected or not reporting pointing info");
         }
     }
     catch (const wxString& msg)
@@ -276,46 +293,46 @@ bool CalSlewDialog::GetCalibPositionRecommendations(int* HA, int* Dec)
 
 void CalSlewDialog::ShowExplanationMsg(double dec)
 {
+    wxString slewCond;
+    if (pPointingSource->CanSlew())
+        slewCond = _("Use the 'slew' button to move the scope to a preferred position. ");
+    else
+        slewCond = _("Move the scope to a preferred position. ");
     if (fabs(dec) > 80)
     {
-        m_pExplanation->SetLabelText(_("Calibration shouldn't be done this close to the pole. \n Use the 'slew' button to move the scope to a preferred position."));
-        m_pCalibrateBtn->Enable(false);
+        m_pExplanation->SetLabelText(_("Calibration is likely to fail this close to the pole.\n") + slewCond);
     }
     else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
     {
-        m_pExplanation->SetLabelText(_("Declination compensation will not be effective if you calibrate within 30 degrees of the pole. \n Use the 'slew' button to move the scope to a preferred position."));
+        m_pExplanation->SetLabelText(_("Declination compensation will not be effective if you calibrate within 30 degrees of the pole.\n") + slewCond);
     }
     else if (fabs(dec) > 20)
-        m_pExplanation->SetLabelText(_("Calibration will get the best results with the scope pointing closer to Dec = 0. \n Use the 'slew' button to move the scope to a preferred position."));
+        m_pExplanation->SetLabelText(_("Calibration will be most accurate with the scope pointing closer to Dec = 0.\n") + slewCond);
     else
         m_pExplanation->SetLabelText(wxEmptyString);
 }
 
 void CalSlewDialog::InitializeUI(bool forceDefaults)
 {
-    if (pPointingSource && pPointingSource->CanSlew() && pPointingSource->CanReportPosition())
+    if (pPointingSource && pPointingSource->CanReportPosition())
     {
         int bestDec;
         int bestOffset;
-        bool singleSide;
+        bool singleSide = false;
         bool usingDefaults;
         double hourAngle;
         double ra;
         double dec;
         double lst;
-        double eqAltitude;
         bool pointingEast = false;
         bool noLocationInfo = false;
 
         if (forceDefaults)
         {
-            bestOffset = defBestOffset;
-            bestDec = defBestDec;
-            singleSide = false;
             usingDefaults = true;
         }
         else
-            CalSlewDialog::GetCalSlewPrefs(&bestOffset,&bestDec, &singleSide, &usingDefaults);    // Get any custom preferences if present
+            CalSlewDialog::GetCustomLocation(&bestOffset,&bestDec, &singleSide, &usingDefaults);    // Get any custom preferences if present
 
         if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
         {
@@ -350,7 +367,7 @@ void CalSlewDialog::InitializeUI(bool forceDefaults)
         {
             if (!GetCalibPositionRecommendations(&bestOffset, &bestDec))
             {
-                pointingEast = bestOffset <= 0;
+                pointingEast = (bestOffset <= 0);
 
                 m_pTargetOffset->SetValue(wxString::Format("%d", abs(bestOffset)));
                 m_pTargetDec->SetValue(wxString::Format("%d", bestDec));
@@ -361,7 +378,7 @@ void CalSlewDialog::InitializeUI(bool forceDefaults)
             }
             else
             {
-                ShowError(_("Mount can't be slewed or can't report its pointing position"), true);
+                ShowError(_("Mount can't report its pointing position"), true);
                 return;
             }
         }           // end of default handling
@@ -377,15 +394,17 @@ void CalSlewDialog::InitializeUI(bool forceDefaults)
 
         m_pTimer->Stop();
         m_pTimer->Start(1500, false /* continuous */);
-        ShowStatus(_("Adjust 'Target Position' values if needed for your location, then click 'Slew'"));
-
+        if (pPointingSource->CanSlew())
+            ShowStatus(_("Adjust 'Target Position' values if needed for your location, then click 'Slew'"));
+        else
+            ShowStatus(_("Manually move the telescope to a Dec location near ") + std::to_string(bestDec));
     }
     else
     {
         if (!pPointingSource || !pPointingSource->IsConnected())
             ShowError(_("Mount is not connected"), true);
         else
-            ShowError(_("Mount can't be slewed or can't report its pointing position"), true);
+            ShowError(_("Mount can't report its pointing position"), true);
     }
 
 }
@@ -409,8 +428,9 @@ void CalSlewDialog::UpdateTargetPosition(int CustHA, int CustDec)
     }
 }
 
-void CalSlewDialog::PerformSlew(double ra, double dec)
+bool CalSlewDialog::PerformSlew(double ra, double dec)
 {
+    bool completed = false;
     if (pFrame->CaptureActive)
         pFrame->StopCapturing();
 
@@ -424,7 +444,7 @@ void CalSlewDialog::PerformSlew(double ra, double dec)
             {
                 SetPopupDelay(100);
             }
-            bool Entry()
+            bool Entry()        //wxWidgets background thread method
             {
                 bool err = pPointingSource->SlewToCoordinatesAsync(ra, dec);
                 if (err)
@@ -439,7 +459,7 @@ void CalSlewDialog::PerformSlew(double ra, double dec)
                     {
                         pPointingSource->AbortSlew();
                         SetErrorMsg(_("Slew was cancelled"));
-                        break;
+                        return true;
                     }
                 }
                 return false;
@@ -452,9 +472,9 @@ void CalSlewDialog::PerformSlew(double ra, double dec)
         }
         else
         {
-            UpdateCurrentPosition();
+            UpdateCurrentPosition(false);
             ShowExplanationMsg(dec);
-            ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
+            completed = true;
         }
     }
     else
@@ -465,6 +485,7 @@ void CalSlewDialog::PerformSlew(double ra, double dec)
         {
             ShowExplanationMsg(dec);
             ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
+            completed = true;
         }
         else
         {
@@ -473,6 +494,7 @@ void CalSlewDialog::PerformSlew(double ra, double dec)
             Debug.Write("Cal-slew: slew failed\n");
         }
     }
+    return !completed;
 }
 
 void CalSlewDialog::OnSlew(wxCommandEvent& evt)
@@ -500,16 +522,20 @@ void CalSlewDialog::OnSlew(wxCommandEvent& evt)
         cur_ra, cur_dec, slew_ra, decSlew));
     if (decSlew < cur_dec)         // scope will slew south regardless of north or south hemisphere
     {
-        ShowStatus(_("Slewing to approximate position"));
-        PerformSlew(slew_ra, decSlew - 1.0);
-        wxMilliSleep(500);
-        ShowStatus(_("Slewing north to pre-clear Dec backlash"));
-        PerformSlew(slew_ra, decSlew);
+        ShowStatus(_("Initial slew to approximate position"));
+        if (!PerformSlew(slew_ra, decSlew - 1.0))
+        {
+            wxMilliSleep(500);
+            ShowStatus(_("Final slew north to pre-clear Dec backlash"));
+            if (!PerformSlew(slew_ra, decSlew))
+                ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
+        }
     }
     else
     {
         ShowStatus(_("Slewing to target position"));
-        PerformSlew(slew_ra, decSlew);
+        if (!PerformSlew(slew_ra, decSlew))
+            ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
     }
 
 }
@@ -523,6 +549,8 @@ void CalSlewDialog::OnCalibrate(wxCommandEvent& evt)
     settle.timeoutSec = 1;
     settle.frames = 1;
 
+    if (pPointingSource->PreparePositionInteractive())
+        return;
     if (PhdController::Guide(true, settle, wxRect(), &msg))
     {
         ShowStatus("Calibration started");
@@ -576,7 +604,7 @@ void CalSlewDialog::OnCustom(wxCommandEvent& evt)
     if (sideEast)
         ha = -ha;
     CalCustomDialog custDlg(this, ha, dec);
-    custDlg.ShowModal();
+    custDlg.ShowModal();            // Dialog handles the UI updates
 }
 
 CalSlewDialog::~CalSlewDialog(void)
@@ -590,7 +618,6 @@ CalCustomDialog::CalCustomDialog(CalSlewDialog* Parent, int DefaultHA, int Defau
     wxDefaultPosition, wxSize(474, -1), wxCAPTION | wxCLOSE_BOX)
 {
     m_Parent = Parent;
-    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticBoxSizer* tgtSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Target Position"));
     wxFlexGridSizer* targetPosSizer = new wxFlexGridSizer(1, 5, 5, 15);
 
@@ -602,8 +629,10 @@ CalCustomDialog::CalCustomDialog(CalSlewDialog* Parent, int DefaultHA, int Defau
 
     wxStaticBoxSizer* sizerTargetSOP = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Pointing"));
     m_pTargetWest = new wxRadioButton(this, wxID_ANY, _("West"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    m_pTargetWest->SetToolTip(_("Scope on the east side of pier, pointing west"));
     m_pTargetWest->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CalCustomDialog::OnTargetWest, this);
     m_pTargetEast = new wxRadioButton(this, wxID_ANY, _("East"));
+    m_pTargetEast->SetToolTip(_("Scope on the west side of pier, pointing east"));
     m_pTargetEast->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &CalCustomDialog::OnTargetEast, this);
     if (DefaultHA <= 0)
         m_pTargetEast->SetValue(true);
@@ -615,13 +644,14 @@ CalCustomDialog::CalCustomDialog(CalSlewDialog* Parent, int DefaultHA, int Defau
     tgtSizer->Add(targetPosSizer);
 
     m_pEastWestOnly = new wxCheckBox(this, wxID_ANY, wxEmptyString);
+    m_pEastWestOnly->SetToolTip(_("Check this if calibration can only be done on a particular side of the meridian because of nearby obstructions"));
     if (m_pTargetWest->GetValue())
         m_pEastWestOnly->SetLabelText(_("Western sky only"));
     else
         m_pEastWestOnly->SetLabelText(_("Eastern sky only"));
 
     wxStaticText* pMessage = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
-    pMessage->SetLabelText(_("If your site location requires a unique position for calibration, \n") + 
+    pMessage->SetLabelText(_("If your site location requires a unique sky position for calibration, \n") + 
         _("you can specify it here."));
     MakeBold(pMessage);
 
@@ -633,6 +663,7 @@ CalCustomDialog::CalCustomDialog(CalSlewDialog* Parent, int DefaultHA, int Defau
     btnSizer->Add(OkBtn, wxSizerFlags().Border(wxALL, 20));
     btnSizer->Add(cancelBtn, wxSizerFlags().Border(wxALL, 20));
 
+    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
     vSizer->Add(m_pEastWestOnly, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
@@ -648,8 +679,6 @@ void CalCustomDialog::OnOk(wxCommandEvent& evt)
     int cHA = m_pTargetOffset->GetValue();
     if (m_pTargetEast->GetValue())
         cHA = -cHA;
-    wxString debugMsg = wxString::Format("Offset=%d, Dec=%d, SingleSide=%d", cHA, cDec, m_pEastWestOnly->GetValue());
-    wxMessageBox(debugMsg);
     pConfig->Profile.SetInt("/scope/CalSlew/TgtHA", cHA);
     pConfig->Profile.SetInt("/scope/CalSlew/TgtDec", cDec);
     pConfig->Profile.SetBoolean("/scope/CalSlew/SingleSide", m_pEastWestOnly->GetValue());

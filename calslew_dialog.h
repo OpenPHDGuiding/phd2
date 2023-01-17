@@ -64,9 +64,9 @@ public:
 private:
     void ShowExplanationMsg(double dec);
     void InitializeUI(bool forceDefaults);
-    void UpdateCurrentPosition();
-    void ShowError(wxString msg, bool fatal);
-    void ShowStatus(wxString msg);
+    void UpdateCurrentPosition(bool fromTimer);
+    void ShowError(const wxString& msg, bool fatal);
+    void ShowStatus(const wxString& msg);
     void OnSlew(wxCommandEvent& evt);
     void OnCancel(wxCommandEvent& evt);
     void OnTimer(wxTimerEvent& evt);
@@ -75,11 +75,11 @@ private:
     void OnRestore(wxCommandEvent& evt);
     void OnTargetWest(wxCommandEvent& evt);
     void OnTargetEast(wxCommandEvent& evt);
-    void PerformSlew(double ra, double dec);
+    bool PerformSlew(double ra, double dec);
     void OnClose(wxCloseEvent& evt);
     void OnCalibrate(wxCommandEvent& evt);
-    bool GetCalibPositionRecommendations(int* HA, int* Dec);
-    void GetCalSlewPrefs(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults);
+    bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
+    void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
 };
 
 class CalCustomDialog : public wxDialog

@@ -1004,47 +1004,62 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
         if (wxGetKeyState(WXK_SHIFT))
         {
             // Only if user did shift-click; calib may have been cleared by other means
+            bool recalibrate = true;
             if (pMount->IsCalibrated() || (pSecondaryMount && pSecondaryMount->IsCalibrated()))
             {
-                proceed = ConfirmDialog::Confirm(_("Are you sure you want force recalibration?"),
+                recalibrate = ConfirmDialog::Confirm(_("Are you sure you want to force recalibration?"),
                     "/force_recalibration_ok", _("Force Recalibration"));
             }
-            if (!proceed)
+            if (recalibrate)
             {
-                return;
+                pMount->ClearCalibration();
+                if (pSecondaryMount)
+                    pSecondaryMount->ClearCalibration();
             }
+            else
+                return;
         }
 
-        if (interactive && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
+        if (interactive && pPointingSource && pPointingSource->IsConnected() &&
+            pPointingSource->CanReportPosition())
         {
 
-            bool error = pPointingSource->PreparePositionInteractive();
-            if (error)
+            if (pPointingSource->PreparePositionInteractive())
                 return;
-            double dec = fabs(pPointingSource->GetDeclination());
-            bool useDlg = false;
-            if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
-                useDlg = ConfirmDialog::Confirm(
-                _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
-                "/highdec_calibration_ok", _("Confirm Calibration at Large Declination")
-                );
-            else if (dec > 60)
-                useDlg = true;
 
-            if (useDlg)
+            if (!TheScope()->IsCalibrated())
             {
-                proceed = false;
-                if (!pCalSlewDlg)
-                    pCalSlewDlg = new CalSlewDialog();
-                if (pCalSlewDlg)
-                    pCalSlewDlg->Show();
+                double dec = fabs(pPointingSource->GetDeclination());
+                bool calHere = true;
+                wxString adjustLabel;
+                if (pPointingSource->CanSlew())
+                    adjustLabel = _("Adjust position");
+                else
+                    adjustLabel = _("Manually adjust position");
+                if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
+                    calHere = ConfirmDialog::Confirm(
+                    _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
+                    "/v2_highdec_calibration_ok", _("Calibrate here"), adjustLabel
+                    );
+                else if (dec > radians(60))
+                    calHere = ConfirmDialog::Confirm(
+                    _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
+                    "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
+                    "/v2_very_highdec_calibration_ok", _("Calibrate here"), adjustLabel
+                    );
+
+                if (!calHere)
+                {
+                    proceed = false;
+                    if (!pCalSlewDlg)
+                        pCalSlewDlg = new CalSlewDialog();
+                    if (pCalSlewDlg)
+                        pCalSlewDlg->Show();
+                }
             }
         }
         if (proceed)
         {
-            pMount->ClearCalibration();
-            if (pSecondaryMount)
-                pSecondaryMount->ClearCalibration();
             StartGuiding();
         }
     }
