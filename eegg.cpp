@@ -41,7 +41,7 @@
 #include "nudge_lock.h"
 #include "comet_tool.h"
 #include "guiding_assistant.h"
-#include "calslew_dialog.h"
+#include "calibration_assistant.h"
 
 static wxString FlipCalEnabledKey()
 {

@@ -34,7 +34,7 @@
 */
 
 #include "phd.h"
-#include "calslew_dialog.h"
+#include "calibration_assistant.h"
 
 enum {defBestDec = 0, defBestOffset = 5};
 

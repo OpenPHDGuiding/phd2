@@ -43,7 +43,7 @@
 #include "pierflip_tool.h"
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
-#include "calslew_dialog.h"
+#include "calibration_assistant.h"
 
 #include <algorithm>
 #include <memory>
