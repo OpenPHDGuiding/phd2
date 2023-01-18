@@ -1032,29 +1032,25 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
                 double dec = fabs(pPointingSource->GetDeclination());
                 bool calHere = true;
                 wxString adjustLabel;
-                if (pPointingSource->CanSlew())
-                    adjustLabel = _("Adjust position");
-                else
-                    adjustLabel = _("Manually adjust position");
                 if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
                     calHere = ConfirmDialog::Confirm(
                     _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
-                    "/v2_highdec_calibration_ok", _("Calibrate here"), adjustLabel
+                    "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
                     );
                 else if (dec > radians(60))
                     calHere = ConfirmDialog::Confirm(
                     _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
                     "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
-                    "/v2_very_highdec_calibration_ok", _("Calibrate here"), adjustLabel
+                    "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
                     );
 
                 if (!calHere)
                 {
                     proceed = false;
-                    if (!pCalSlewDlg)
-                        pCalSlewDlg = new CalSlewDialog();
-                    if (pCalSlewDlg)
-                        pCalSlewDlg->Show();
+                    if (!pCalibrationAssistant)
+                        pCalibrationAssistant = new CalibrationAssistant();
+                    if (pCalibrationAssistant)
+                        pCalibrationAssistant->Show();
                 }
             }
         }

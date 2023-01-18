@@ -235,12 +235,12 @@ void MyFrame::OnPolarDriftTool(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-void MyFrame::OnCalSlewTool(wxCommandEvent& WXUNUSED(evt))
+void MyFrame::OnCalibrationAssistant(wxCommandEvent& WXUNUSED(evt))
 {
-    if (!pCalSlewDlg)
-        pCalSlewDlg = new CalSlewDialog();
-    if (pCalSlewDlg)
-        pCalSlewDlg->Show();
+    if (!pCalibrationAssistant)
+        pCalibrationAssistant = new CalibrationAssistant();
+    if (pCalibrationAssistant)
+        pCalibrationAssistant->Show();
 }
 
 void MyFrame::OnStaticPaTool(wxCommandEvent& WXUNUSED(evt))

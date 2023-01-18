@@ -1,5 +1,5 @@
 /*
-*  calslew_dialog.h
+*  calibration_assistant.h
 *  PHD Guiding
 *
 *  Created by Bruce Waddington
@@ -33,10 +33,10 @@
 *
 */
 
-#ifndef CalSlew_dialog_h_included
-#define CalSlew_dialog_h_included
+#ifndef Calilbration_Assistant_h_included
+#define Calilbration_Assistant_h_included
 
-class CalSlewDialog : public wxDialog
+class CalibrationAssistant : public wxDialog
 {
 private:
     // wx UI controls
@@ -57,8 +57,8 @@ private:
 
 
 public:
-    CalSlewDialog();
-    ~CalSlewDialog(void);
+    CalibrationAssistant();
+    ~CalibrationAssistant(void);
     void UpdateTargetPosition(int CustHA, int CustDec);
 
 private:
@@ -85,9 +85,9 @@ private:
 class CalCustomDialog : public wxDialog
 {
 public:
-    CalCustomDialog(CalSlewDialog* Parent, int DefaultHA, int DefaultDec);
+    CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, int DefaultDec);
 private:
-    CalSlewDialog* m_Parent;
+    CalibrationAssistant* m_Parent;
     wxSpinCtrl* m_pTargetDec;
     wxSpinCtrl* m_pTargetOffset;
     wxRadioButton* m_pTargetWest;

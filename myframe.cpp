@@ -87,7 +87,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
-    EVT_MENU(MENU_CALIBRATIONASSIST, MyFrame::OnCalSlewTool)
+    EVT_MENU(MENU_CALIBRATIONASSIST, MyFrame::OnCalibrationAssistant)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPCAL, MyFrame::OnEEGG)
@@ -364,7 +364,7 @@ MyFrame::MyFrame()
     pRefineDefMap = nullptr;
     pCalSanityCheckDlg = nullptr;
     pCalReviewDlg = nullptr;
-    pCalSlewDlg = nullptr;
+    pCalibrationAssistant = nullptr;
     pierFlipToolWin = nullptr;
     m_starFindMode = Star::FIND_CENTROID;
     m_rawImageMode = false;
