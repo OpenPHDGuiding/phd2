@@ -71,7 +71,7 @@ void CalSlewDialog::GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSid
 }
 
 CalSlewDialog::CalSlewDialog()
-    : wxDialog(pFrame, wxID_ANY, _("Calibration Slew"),
+    : wxDialog(pFrame, wxID_ANY, _("Calibration Assistant"),
     wxDefaultPosition, wxSize(600, -1), wxCAPTION | wxCLOSE_BOX)
 {
     wxStaticBoxSizer* currSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Current Position"));
@@ -480,7 +480,7 @@ bool CalSlewDialog::PerformSlew(double ra, double dec)
     else
     {
         wxBusyCursor busy;
-        m_pSlewBtn->Enable(false);
+
         if (!pPointingSource->SlewToCoordinates(ra, dec))
         {
             ShowExplanationMsg(dec);
@@ -489,7 +489,6 @@ bool CalSlewDialog::PerformSlew(double ra, double dec)
         }
         else
         {
-            m_pSlewBtn->Enable(true);
             ShowError(_("Slew failed! Make sure scope is tracking at sidereal rate"), false);
             Debug.Write("Cal-slew: slew failed\n");
         }
@@ -520,12 +519,15 @@ void CalSlewDialog::OnSlew(wxCommandEvent& evt)
 
     Debug.Write(wxString::Format("Cal-slew: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f\n",
         cur_ra, cur_dec, slew_ra, decSlew));
+    m_pSlewBtn->Enable(false);
+    m_pCalibrateBtn->Enable(false);
     if (decSlew < cur_dec)         // scope will slew south regardless of north or south hemisphere
     {
         ShowStatus(_("Initial slew to approximate position"));
         if (!PerformSlew(slew_ra, decSlew - 1.0))
         {
-            wxMilliSleep(500);
+            ShowStatus("Pausing");
+            wxMilliSleep(1000);
             ShowStatus(_("Final slew north to pre-clear Dec backlash"));
             if (!PerformSlew(slew_ra, decSlew))
                 ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
@@ -537,6 +539,8 @@ void CalSlewDialog::OnSlew(wxCommandEvent& evt)
         if (!PerformSlew(slew_ra, decSlew))
             ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
     }
+    m_pSlewBtn->Enable(true);
+    m_pCalibrateBtn->Enable(true);
 
 }
 
@@ -545,13 +549,13 @@ void CalSlewDialog::OnCalibrate(wxCommandEvent& evt)
     SettleParams settle;
     wxString msg;
     settle.tolerancePx = 99.;
-    settle.settleTimeSec = 1;
-    settle.timeoutSec = 1;
-    settle.frames = 1;
+    settle.settleTimeSec = 9999;
+    settle.timeoutSec = 9999;
+    settle.frames = 5;
 
     if (pPointingSource->PreparePositionInteractive())
         return;
-    if (PhdController::Guide(true, settle, wxRect(), &msg))
+    if (PhdController::Guide(true, settle, wxRect(), true, &msg))
     {
         ShowStatus("Calibration started");
         wxDialog::Destroy();

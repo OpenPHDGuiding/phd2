@@ -1570,7 +1570,7 @@ static void guide(JObj& response, const json_value *params)
 
     if (!PhdController::CanGuide(&err))
         response << jrpc_error(1, err);
-    else if (PhdController::Guide(recalibrate, settle, roi, &err))
+    else if (PhdController::Guide(recalibrate, settle, roi, false,  &err))
         response << jrpc_result(0);
     else
         response << jrpc_error(1, err);
