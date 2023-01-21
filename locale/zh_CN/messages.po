@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-15 21:51+0000\n"
-"PO-Revision-Date: 2023-01-14 12:16+0800\n"
+"PO-Revision-Date: 2023-01-16 21:52+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
 "MIME-Version: 1.0\n"
@@ -4744,7 +4744,7 @@ msgstr "高级设置\tCtrl-A"
 
 #: myframe.cpp:502
 msgid "&Camera Settings"
-msgstr "&C相机设置"
+msgstr "相机设置"
 
 #: myframe.cpp:502 myframe.cpp:1008
 msgid "Camera settings"
@@ -7412,7 +7412,7 @@ msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 2500 ms."
 msgstr ""
-"发送至赤经的最长脉冲时长\n"
+"发送至赤经的最大脉冲时长\n"
 "默认值 = 2500 毫秒。"
 
 #: scope.cpp:2014
@@ -7424,7 +7424,7 @@ msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 2500 ms.  Increase if drift is fast."
 msgstr ""
-"发送至赤纬的最长脉冲时长\n"
+"发送至赤纬的最大脉冲时长\n"
 "默认值 = 2500 毫秒。加大这个值可以让漂移的速度更快。"
 
 #: scope.cpp:2027
@@ -7437,11 +7437,11 @@ msgstr "将发布赤纬导星命令的方向"
 
 #: scope.cpp:2225
 msgid "Mx RA"
-msgstr "最大赤经"
+msgstr "赤经限长"
 
 #: scope.cpp:2232
 msgid "Mx DEC"
-msgstr "最大赤纬"
+msgstr "赤纬限长"
 
 #: scope_ascom.cpp:443
 msgid ""
