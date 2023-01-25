@@ -60,6 +60,8 @@ public:
     CalibrationAssistant();
     ~CalibrationAssistant(void);
     void UpdateTargetPosition(int CustHA, int CustDec);
+    double m_currentRA;
+    double m_currentDec;
 
 private:
     void ShowExplanationMsg(double dec);
@@ -80,12 +82,20 @@ private:
     void OnCalibrate(wxCommandEvent& evt);
     bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
     void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
+    bool m_sanityCheckDone;
+    bool m_justSlewed;
+    void PerformSanityChecks();
+    GUIDER_STATE m_guiderState;
+    bool m_watchingCalibration;
+    void TrackCalibration(GUIDER_STATE state);
+    void EvaluateCalibration();
 };
 
 class CalCustomDialog : public wxDialog
 {
 public:
     CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, int DefaultDec);
+
 private:
     CalibrationAssistant* m_Parent;
     wxSpinCtrl* m_pTargetDec;
@@ -97,5 +107,16 @@ private:
     void OnCancel(wxCommandEvent& evt);
     void OnTargetWest(wxCommandEvent& evt);
     void OnTargetEast(wxCommandEvent& evt);
+};
+
+class CalAssistSanityDialog : public wxDialog
+{
+public:
+    CalAssistSanityDialog(CalibrationAssistant* Parent, const wxString& msg);
+
+private:
+    CalibrationAssistant* m_parent;
+    void OnRecal(wxCommandEvent& evt);
+    void OnCancel(wxCommandEvent& evt);
 };
 #endif
