@@ -131,8 +131,9 @@ CalibrationAssistant::CalibrationAssistant()
     : wxDialog(pFrame, wxID_ANY, _("Calibration Assistant"),
     wxDefaultPosition, wxSize(600, -1), wxCAPTION | wxCLOSE_BOX) ,
     m_sanityCheckDone(0),
-    m_watchingCalibration(0),
-    m_justSlewed(0)
+    m_justSlewed(0),
+    m_monitoringCalibration(0),
+    m_calibrationActive(0)
 
 {
     wxStaticBoxSizer* currSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Current Position"));
@@ -254,13 +255,24 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
     switch (state)
     {
     case STATE_UNINITIALIZED:
-        ShowStatus(_("Calibration not active"));
-        m_watchingCalibration = false;
+    case STATE_SELECTING:
+    case STATE_SELECTED:
+        if (m_calibrationActive)
+        {
+            ShowStatus(_("Calibration failed or was cancelled"));
+            m_calibrationActive = false;
+            m_monitoringCalibration = false;
+            break;
+        }
+    case STATE_CALIBRATING_PRIMARY:
+    case STATE_CALIBRATING_SECONDARY:
+        m_calibrationActive = true;
         break;
     case STATE_CALIBRATED:
     case STATE_GUIDING:
     {
-        m_watchingCalibration = false;
+        m_calibrationActive = false;
+        m_monitoringCalibration = false;
         EvaluateCalibration();
     }
 
@@ -269,7 +281,7 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
 
 void CalibrationAssistant::OnTimer(wxTimerEvent& evt)
 {
-    if (!m_watchingCalibration)
+    if (!m_monitoringCalibration)
         UpdateCurrentPosition(true);
     else
         TrackCalibration(pFrame->pGuider->GetState());
@@ -304,6 +316,7 @@ void CalibrationAssistant::UpdateCurrentPosition(bool fromTimer)
                 if (lastDec != INVALID_DEC)
                     ShowExplanationMsg(dec);
                 lastDec = dec;
+                m_pCalibrateBtn->Enable(fabs(lastDec) < 80);
             }
         }
         else
@@ -477,6 +490,8 @@ void CalibrationAssistant::InitializeUI(bool forceDefaults)
         m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
         m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
         m_pCurrEast->SetValue(hourAngle <= 0);
+        if (fabs(dec) > 80)
+            m_pCalibrateBtn->Enable(false);
         if (m_pCurrEast->GetValue() != m_pTargetEast->GetValue())
             m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
         else
@@ -632,7 +647,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
     }
     m_pSlewBtn->Enable(true);
     if (TheScope())
-        m_pCalibrateBtn->Enable(true);
+        m_pCalibrateBtn->Enable(m_currentDec < 80);
 
 }
 
@@ -775,7 +790,7 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
     if (PhdController::Guide(true, settle, wxRect(), true, &msg))
     {
         ShowStatus(_("Waiting for calibration to complete"));
-        m_watchingCalibration = true;
+        m_monitoringCalibration = true;
     }
     else
         ShowError(_("Calibration could not start - suspend any imaging automation apps"), false);

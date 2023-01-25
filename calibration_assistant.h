@@ -80,13 +80,15 @@ private:
     bool PerformSlew(double ra, double dec);
     void OnClose(wxCloseEvent& evt);
     void OnCalibrate(wxCommandEvent& evt);
+    bool m_monitoringCalibration;
+    bool m_calibrationActive;
     bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
     void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
     bool m_sanityCheckDone;
     bool m_justSlewed;
+
     void PerformSanityChecks();
     GUIDER_STATE m_guiderState;
-    bool m_watchingCalibration;
     void TrackCalibration(GUIDER_STATE state);
     void EvaluateCalibration();
 };
