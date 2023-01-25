@@ -41,6 +41,7 @@
 #include "nudge_lock.h"
 #include "comet_tool.h"
 #include "guiding_assistant.h"
+#include "calibration_assistant.h"
 
 static wxString FlipCalEnabledKey()
 {
@@ -119,7 +120,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
     {
         wxString devicestr = "";
         if (!(pGuider && pGuider->IsCalibratingOrGuiding()))
-	{
+	    {
             if (pMount)
             {
                 if (pMount->IsStepGuider())
@@ -143,7 +144,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                     Debug.AddLine("User cleared calibration on " + devicestr);
                 }
             }
-	}
+	    }
     }
     else if (evt.GetId() == EEGG_FLIPCAL)
     {
@@ -232,6 +233,14 @@ void MyFrame::OnPolarDriftTool(wxCommandEvent& WXUNUSED(evt))
     {
         pPolarDriftTool->Show();
     }
+}
+
+void MyFrame::OnCalibrationAssistant(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pCalibrationAssistant)
+        pCalibrationAssistant = new CalibrationAssistant();
+    if (pCalibrationAssistant)
+        pCalibrationAssistant->Show();
 }
 
 void MyFrame::OnStaticPaTool(wxCommandEvent& WXUNUSED(evt))

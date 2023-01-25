@@ -49,7 +49,6 @@ enum { MAX_DURATION_MIN = 50, MAX_DURATION_MAX = 8000, };
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
 static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
-
 static const int MAX_CALIBRATION_STEPS = 60;
 static const int CAL_ALERT_MINSTEPS = 4;
 static const double CAL_ALERT_ORTHOGONALITY_TOLERANCE = 12.5;               // Degrees
@@ -987,9 +986,10 @@ void Scope::CheckCalibrationDuration(int currDuration)
 
     double raSpd;
     double decSpd;
+    double const siderealSecsPerSec = 0.9973;
     bool haveRates = !pPointingSource->GetGuideRates(&raSpd, &decSpd);          // units of degrees/sec as in ASCOM
 
-    double currSpd = 0.0021;           // 0.5x sidereal, default value
+    double currSpdX = raSpd * 3600.0 / (15.0 * siderealSecsPerSec);             // multiple of sidereal
 
     // Don't check the step size on very first calibration and don't adjust if the reported mount guide speeds are bogus
     if (!haveRates || calDetails.raGuideSpeed <= 0)
@@ -1001,9 +1001,9 @@ void Scope::CheckCalibrationDuration(int currDuration)
 
     int rslt;
     CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-        pCamera->Binning, currSpd, CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
+        pCamera->Binning, currSpdX, CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
 
-    if (rslt == currDuration)
+    if (fabs(1.0 - (double)rslt/(double)currDuration) <=  0.20)
         return;
 
     wxString why = binningChange ? " binning " : " mount guide speed ";

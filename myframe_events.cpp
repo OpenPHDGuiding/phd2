@@ -43,6 +43,7 @@
 #include "pierflip_tool.h"
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
+#include "calibration_assistant.h"
 
 #include <algorithm>
 #include <memory>
@@ -999,12 +1000,14 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 
         ValidateDarksLoaded();
 
+        bool proceed = true;
         if (wxGetKeyState(WXK_SHIFT))
         {
+            // Only if user did shift-click; calib may have been cleared by other means
             bool recalibrate = true;
             if (pMount->IsCalibrated() || (pSecondaryMount && pSecondaryMount->IsCalibrated()))
             {
-                recalibrate = ConfirmDialog::Confirm(_("Are you sure you want force recalibration?"),
+                recalibrate = ConfirmDialog::Confirm(_("Are you sure you want to force recalibration?"),
                     "/force_recalibration_ok", _("Force Recalibration"));
             }
             if (recalibrate)
@@ -1013,26 +1016,50 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
                 if (pSecondaryMount)
                     pSecondaryMount->ClearCalibration();
             }
-        }
-
-        if (interactive && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
-        {
-            bool proceed = true;
-            bool error = pPointingSource->PreparePositionInteractive();
-
-            if (!error && fabs(pPointingSource->GetDeclination()) > Scope::DEC_COMP_LIMIT && !TheScope()->IsCalibrated() )
-            {
-                proceed = ConfirmDialog::Confirm(
-                    _("Calibration this far from the celestial equator will be error-prone.  For best results, calibrate at a declination of -20 to +20."),
-                    "/highdec_calibration_ok", _("Confirm Calibration at Large Declination")
-                    );
-            }
-            if (error || !proceed)
+            else
                 return;
         }
 
-        StartGuiding();
+        if (interactive && pPointingSource && pPointingSource->IsConnected() &&
+            pPointingSource->CanReportPosition())
+        {
+
+            if (pPointingSource->PreparePositionInteractive())
+                return;
+
+            if (!TheScope()->IsCalibrated())
+            {
+                double dec = fabs(pPointingSource->GetDeclination());
+                bool calHere = true;
+                wxString adjustLabel;
+                if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
+                    calHere = ConfirmDialog::Confirm(
+                    _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
+                    "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                    );
+                else if (dec > radians(60))
+                    calHere = ConfirmDialog::Confirm(
+                    _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
+                    "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
+                    "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                    );
+
+                if (!calHere)
+                {
+                    proceed = false;
+                    if (!pCalibrationAssistant)
+                        pCalibrationAssistant = new CalibrationAssistant();
+                    if (pCalibrationAssistant)
+                        pCalibrationAssistant->Show();
+                }
+            }
+        }
+        if (proceed)
+        {
+            StartGuiding();
+        }
     }
+
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
