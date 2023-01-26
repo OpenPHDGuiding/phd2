@@ -34,8 +34,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 04:56+0000\n"
-"PO-Revision-Date: 2023-01-25 23:05+0800\n"
+"POT-Creation-Date: 2023-01-15 21:51+0000\n"
+"PO-Revision-Date: 2023-01-26 10:13+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
 "Language: zh_CN\n"
@@ -705,7 +705,7 @@ msgstr "校准时长, 毫秒"
 #: calstep_dialog.cpp:196 camcal_import_dialog.cpp:47 camera.cpp:913
 #: configdialog.cpp:61 configdialog.cpp:236 darks_dialog.cpp:52
 #: gear_simulator.cpp:1655 guide_algorithm_gaussian_process.cpp:179
-#: myframe.cpp:3134 Refine_DefMap.cpp:59 starcross_test.cpp:52
+#: myframe.cpp:3136 Refine_DefMap.cpp:59 starcross_test.cpp:52
 msgid ": "
 msgstr ": "
 
@@ -750,11 +750,11 @@ msgstr "未找到指定的Alltair相机。"
 
 #: cam_altair.cpp:360
 msgid "Failed to open Altair Camera."
-msgstr "无法打开Altair相机"
+msgstr "无法打开Altair相机。"
 
 #: cam_altair.cpp:377
 msgid "Failed to get camera resolution for Altair Camera."
-msgstr "无法获取Altair相机的分辨率"
+msgstr "无法获取Altair相机的分辨率。"
 
 #: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:890
 #: cam_indi.cpp:924 cam_opencv.cpp:145 gear_simulator.cpp:710
@@ -782,7 +782,7 @@ msgstr "无法创建ASCOM相机对象。 更多信息请参阅调试日志。"
 
 #: cam_ascom.cpp:575 rotator_ascom.cpp:176
 msgid "ASCOM driver problem: Connect"
-msgstr "ASCOM驱动问题：连接。"
+msgstr "ASCOM驱动问题：连接"
 
 #: cam_ascom.cpp:590 cam_ascom.cpp:597 cam_ascom.cpp:604 cam_ascom.cpp:619
 #: cam_ascom.cpp:626 cam_ascom.cpp:662 cam_ascom.cpp:669 cam_ascom.cpp:693
@@ -1336,7 +1336,7 @@ msgstr "无法检查SBIG的反馈状态"
 
 #: cam_sbig.cpp:662
 msgid "Timeout expired waiting for guide pulse to complete."
-msgstr "导星脉冲超时"
+msgstr "导星脉冲超时。"
 
 #: cam_sbigrotator.cpp:83
 msgid "Enter RA Angle (in degrees)"
@@ -1356,11 +1356,11 @@ msgstr "赤纬角度"
 
 #: cam_skyraider.cpp:150
 msgid "Failed to open SkyRaider Camera."
-msgstr "无法打开SkyRaider相机"
+msgstr "无法打开SkyRaider相机。"
 
 #: cam_skyraider.cpp:159
 msgid "Failed to get camera resolution for SkyRaider Camera."
-msgstr "无法获取SkyRaider相机分辨率"
+msgstr "无法获取SkyRaider相机分辨率。"
 
 #: cam_sspiag.cpp:132
 msgid "Cannot load astroDLLsspiag.dll"
@@ -1406,15 +1406,15 @@ msgstr "未找到Svbony相机"
 
 #: cam_svb.cpp:300
 msgid "Failed to get camera info for Svbony camera."
-msgstr "无法获取Svbony相机信息"
+msgstr "无法获取Svbony相机信息。"
 
 #: cam_svb.cpp:308
 msgid "Failed to open Svbony camera."
-msgstr "无法打开Svbony相机"
+msgstr "无法打开Svbony相机。"
 
 #: cam_svb.cpp:316 cam_svb.cpp:443
 msgid "Failed to get camera properties for Svbony camera."
-msgstr "无法获取Svbony相机属性"
+msgstr "无法获取Svbony相机属性。"
 
 #: cam_svb.cpp:353
 #, c-format
@@ -1456,15 +1456,15 @@ msgstr "相机不支持软触发"
 
 #: cam_touptek.cpp:448
 msgid "Failed to open ToupTek camera."
-msgstr "无法打开ToupTek相机"
+msgstr "无法打开ToupTek相机。"
 
 #: cam_touptek.cpp:471
 msgid "Failed to get camera resolution for ToupTek camera."
-msgstr "无法获取ToupTek相机的分辨率"
+msgstr "无法获取ToupTek相机的分辨率。"
 
 #: cam_touptek.cpp:479 cam_touptek.cpp:492
 msgid "Failed to initialize camera binning."
-msgstr "无法初始化相机像素合并"
+msgstr "无法初始化相机像素合并。"
 
 #: cam_touptek.cpp:718
 msgid "Capture failed: the camera disconnected"
@@ -1544,11 +1544,11 @@ msgstr "不能获取ZWO ASI相机参数。"
 
 #: cam_zwo.cpp:418
 msgid "Failed to open ZWO ASI Camera."
-msgstr "打开振旺ASI相机失败"
+msgstr "打开振旺ASI相机失败。"
 
 #: cam_zwo.cpp:425
 msgid "Failed to initizlize ZWO ASI Camera."
-msgstr "无法初始化振旺ASI相机"
+msgstr "无法初始化振旺ASI相机。"
 
 #: camcal_import_dialog.cpp:57
 #, c-format
@@ -1570,7 +1570,7 @@ msgstr "选择你希望使用的暗场库文件:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:2996 profile_wizard.cpp:357 profile_wizard.cpp:358
+#: mount.cpp:872 myframe.cpp:2998 profile_wizard.cpp:357 profile_wizard.cpp:358
 #: profile_wizard.cpp:359 profile_wizard.cpp:573 profile_wizard.cpp:578
 #: profile_wizard.cpp:606 profile_wizard.cpp:778 profile_wizard.cpp:948
 #: profile_wizard.cpp:963 profile_wizard.cpp:994 profile_wizard.cpp:999
@@ -1702,7 +1702,7 @@ msgstr "将增益重置为相机的默认值（未连接相机时禁用）"
 
 #: camera.cpp:939
 msgid "Binning"
-msgstr "像素合并:"
+msgstr "像素合并"
 
 #: camera.cpp:939
 msgid "Camera pixel binning"
@@ -2129,7 +2129,7 @@ msgstr "现有的暗场库包含合计 %d 曝光时间，从 %g 秒至 %g 秒范
 msgid ""
 "Existing dark library contains incompatible frames - it must be rebuilt from "
 "scratch"
-msgstr "现有的暗场库含有不兼容格式的图片 - 必须从头开始重建暗场库。"
+msgstr "现有的暗场库含有不兼容格式的图片 - 必须从头开始重建暗场库"
 
 #: darks_dialog.cpp:157
 msgid "No compatible dark library is available"
@@ -2225,7 +2225,7 @@ msgstr "操作完成: %s"
 
 #: darks_dialog.cpp:385
 msgid "Cancelling..."
-msgstr "正在取消"
+msgstr "正在取消…"
 
 #: darks_dialog.cpp:499
 #, c-format
@@ -2278,7 +2278,7 @@ msgstr "指向"
 
 #: drift_tool.cpp:205
 msgid "Click to slew to given coordinates."
-msgstr "Goto至给定的坐标"
+msgstr "Goto至给定的坐标。"
 
 #: drift_tool.cpp:208 nudge_lock.cpp:179 nudge_lock.cpp:188
 msgid "Save"
@@ -2404,7 +2404,7 @@ msgstr "指向中 ..."
 
 #: drift_tool.cpp:610
 msgid "Coordinates saved."
-msgstr "坐标已保存"
+msgstr "坐标已保存。"
 
 #: drift_tool.cpp:819 eegg.cpp:267 myframe_events.cpp:770
 #: polardrift_toolwin.cpp:56 staticpa_toolwin.cpp:100
@@ -2524,7 +2524,7 @@ msgstr "新建"
 
 #: gear_dialog.cpp:224
 msgid "Create a new profile, optionally copying from another profile"
-msgstr "新建一个设备配置文件，可以选择从其他设备配置文件复制。"
+msgstr "新建一个设备配置文件，可以选择从其他设备配置文件复制"
 
 #: gear_dialog.cpp:225
 msgid "Delete"
@@ -3012,7 +3012,7 @@ msgstr "使用一个有尖峰和平滑的内置周期误差曲线。"
 
 #: gear_simulator.cpp:1784
 msgid "Amplitude: "
-msgstr "振幅:"
+msgstr "振幅: "
 
 #: gear_simulator.cpp:1785
 msgid "PE Amplitude, arc-secs"
@@ -3391,9 +3391,9 @@ msgstr "信号方差的短期变化（以像素为单位）。 默认=%.2f"
 msgid ""
 "What percent of the predictive guide correction should be applied? Default = "
 "%.f%%, increase to rely more on the predictions"
-msgstr "预测性导星修正强度百分比。默认值 = %.f%%，请根据实际情况调增或调减。"
+msgstr "预测性导星修正强度百分比。默认值 = %.f%%，请根据实际情况调增或调减"
 
-#: guide_algorithm_gaussian_process.cpp:228 guide_algorithm_pdrift.cpp:718
+#: guide_algorithm_gaussian_process.cpp:228
 msgid "PredWt"
 msgstr "PredWt"
 
@@ -3405,7 +3405,7 @@ msgid ""
 "%.f%%, adjust if responding too much or too slowly"
 msgstr "适应性导星修正强度百分比。默认值 = %.f%%，请根据实际情况调增或调减。"
 
-#: guide_algorithm_gaussian_process.cpp:237 guide_algorithm_pdrift.cpp:727
+#: guide_algorithm_gaussian_process.cpp:237
 msgid "ReactWt"
 msgstr "ReactWt"
 
@@ -3423,8 +3423,7 @@ msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:248 guide_algorithm_hysteresis.cpp:337
 #: guide_algorithm_lowpass.cpp:301 guide_algorithm_lowpass2.cpp:318
-#: guide_algorithm_pdrift.cpp:739 guide_algorithm_resistswitch.cpp:394
-#: guide_algorithm_zfilter.cpp:365
+#: guide_algorithm_resistswitch.cpp:394 guide_algorithm_zfilter.cpp:365
 msgid "MnMo"
 msgstr "侦"
 
@@ -3436,14 +3435,13 @@ msgstr "预测PEC导星算法"
 msgid "Predictive Weight"
 msgstr "预测强度"
 
-#: guide_algorithm_gaussian_process.cpp:317 guide_algorithm_pdrift.cpp:653
+#: guide_algorithm_gaussian_process.cpp:317
 msgid "Reactive Weight"
 msgstr "反应强度"
 
 #: guide_algorithm_gaussian_process.cpp:325 guide_algorithm_hysteresis.cpp:256
 #: guide_algorithm_lowpass.cpp:230 guide_algorithm_lowpass2.cpp:249
-#: guide_algorithm_pdrift.cpp:662 guide_algorithm_resistswitch.cpp:317
-#: guide_algorithm_zfilter.cpp:291
+#: guide_algorithm_resistswitch.cpp:317 guide_algorithm_zfilter.cpp:291
 msgid "Minimum Move (pixels)"
 msgstr "星点最小移动单位 (像素)"
 
@@ -3530,7 +3528,6 @@ msgstr "修正强度百分比。默认值 = %.f%%，请根据实际情况调增�
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:334
 #: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass.cpp:298
 #: guide_algorithm_lowpass2.cpp:250 guide_algorithm_lowpass2.cpp:315
-#: guide_algorithm_pdrift.cpp:663 guide_algorithm_pdrift.cpp:736
 #: guide_algorithm_resistswitch.cpp:318 guide_algorithm_resistswitch.cpp:391
 #: guide_algorithm_zfilter.cpp:292 guide_algorithm_zfilter.cpp:362
 #, c-format
@@ -3596,50 +3593,6 @@ msgstr "修正强度百分比。默认值 = %.f%%"
 #: guide_algorithm_lowpass2.cpp:309
 msgid "Agg"
 msgstr "修"
-
-#: guide_algorithm_pdrift.cpp:639
-msgid "Predictive Drift Guide Algorithm"
-msgstr "预测漂移导星算法"
-
-#: guide_algorithm_pdrift.cpp:646
-msgid "Prediction Weight"
-msgstr "预测强度"
-
-#: guide_algorithm_pdrift.cpp:647
-#, c-format
-msgid ""
-"What percentage of the predictive guide correction should be applied? "
-"Default = %.f%%"
-msgstr "预测性导星修正强度百分比。默认值 = %.f%%"
-
-#: guide_algorithm_pdrift.cpp:654
-#, c-format
-msgid ""
-"What percentage of the reactive guide correction should be applied? Default "
-"= %.f%%"
-msgstr "适应性导星修正强度百分比。默认值 = %.f%%"
-
-#: guide_algorithm_pdrift.cpp:666 guide_algorithm_pdrift.cpp:744
-#: guider_multistar.cpp:1399 myframe.cpp:912 myframe.cpp:983 scope.cpp:262
-msgid "Auto"
-msgstr "自动"
-
-#: guide_algorithm_pdrift.cpp:716
-#, c-format
-msgid ""
-"What percentage of the predictive correction should be applied? Default = "
-"%.f%%"
-msgstr "预测性修正强度百分比。默认值 = %.f%%"
-
-#: guide_algorithm_pdrift.cpp:725
-#, c-format
-msgid ""
-"What percentage of the reactive correction should be applied? Default = %.f%%"
-msgstr "适应性修正强度百分比。默认值 = %.f%%"
-
-#: guide_algorithm_pdrift.cpp:746
-msgid "Let PHD2 adjust the min move automatically"
-msgstr "让PHD2自动调整最小移动"
 
 #: guide_algorithm_resistswitch.cpp:299
 msgid "ResistSwitch Guide Algorithm"
@@ -3918,6 +3871,10 @@ msgstr ""
 "星。使用星点侦测工具测量热噪点的HFD并将最小HFD阈值设置得更高。当HFD低于此数值"
 "时，热噪点将被忽略。"
 
+#: guider_multistar.cpp:1399 myframe.cpp:912 myframe.cpp:983 scope.cpp:262
+msgid "Auto"
+msgstr "自动"
+
 #: guider_multistar.cpp:1401
 msgid "Auto-selection frame downsample"
 msgstr "自动选择帧采样率"
@@ -4144,7 +4101,7 @@ msgstr "测量典型的高频星点赤纬的运动；导星通常不能纠正这
 
 #: guiding_assistant.cpp:639
 msgid "Maximum sample-sample deflection seen in right ascension."
-msgstr "赤经中最大的 样本-样本 偏转"
+msgstr "赤经中最大的 样本-样本 偏转。"
 
 #: guiding_assistant.cpp:640
 msgid "Maximum sample-sample deflection seen in declination."
@@ -4153,7 +4110,7 @@ msgstr "赤纬中最大的 样本-样本 偏转"
 #: guiding_assistant.cpp:641
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
-msgstr "赤经采样周期的峰峰值"
+msgstr "赤经采样周期的峰-峰值。"
 
 #: guiding_assistant.cpp:642
 msgid "Estimated overall drift rate in right ascension."
@@ -4218,7 +4175,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:702 guiding_assistant.cpp:706
 msgid "Measuring backlash: "
-msgstr "测量回差："
+msgstr "测量回差： "
 
 #: guiding_assistant.cpp:739 guiding_assistant.cpp:1803
 #: guiding_assistant.cpp:1888
@@ -4238,8 +4195,8 @@ msgstr "ms (测试失败)"
 msgid "Apply"
 msgstr "应用"
 
-#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3077
-#: myframe.cpp:3087
+#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3079
+#: myframe.cpp:3089
 msgid " "
 msgstr " "
 
@@ -4300,7 +4257,7 @@ msgstr "设置赤纬最小移动为%0.2f"
 
 #: guiding_assistant.cpp:1449
 msgid "Mount has absolute encoders, no compensation needed"
-msgstr "赤道仪有绝对编码器，不需要做回差校正。"
+msgstr "赤道仪有绝对编码器，不需要做回差校正"
 
 #: guiding_assistant.cpp:1451
 msgid "Backlash is small, no compensation needed"
@@ -4332,7 +4289,7 @@ msgstr "回差测试终止，请看图形……"
 
 #: guiding_assistant.cpp:1730 guiding_assistant.cpp:1736
 msgid "Measuring backlash... "
-msgstr "测量回差中…"
+msgstr "测量回差中… "
 
 #: guiding_assistant.cpp:1760
 msgid "Guiding stopped"
@@ -4358,28 +4315,6 @@ msgstr "角秒/分钟"
 #: guiding_assistant.cpp:1810 guiding_assistant.cpp:1895
 msgid "arc-sec/sec"
 msgstr "角秒/秒"
-
-#: htmlmsgbox.cpp:29
-msgid "You currently have the latest development version of PHD2"
-msgstr "您当前使用的是最新的PHD2开发版。"
-
-#: htmlmsgbox.cpp:33
-msgid ""
-"You are currently running a development release but have opted to only check "
-"for major releases, and there are no new major releases available."
-msgstr ""
-"您当前正在运行的是开发版，但自动更新仅检查主版本，目前没有可用的新主版本。"
-
-#: htmlmsgbox.cpp:35
-#, c-format
-msgid ""
-"You currently have the latest major release version of PHD2. There may be "
-"newer development release versions at %s"
-msgstr "您当前使用的是最新的PHD2主版本，有更新的开发版本(%s)，可供尝鲜。"
-
-#: htmlmsgbox.cpp:38 myframe.cpp:3031 phdupdate.cpp:947 phdupdate.cpp:953
-msgid "Software Update"
-msgstr "软件更新"
 
 #: image_math.cpp:1150
 msgid ""
@@ -4712,7 +4647,7 @@ msgid ""
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
 "赤道仪导星速率与上次校准时使用的速率不同。 需要执行新校准或将赤道仪导星速率设"
-"置为先前的值。"
+"置为先前的值。 "
 
 #: mount.cpp:1275
 msgid ""
@@ -4952,7 +4887,7 @@ msgstr "固定锁定框"
 
 #: myframe.cpp:528
 msgid "Keep the same lock position when guiding starts"
-msgstr "导星时保持锁定框位置不变。"
+msgstr "导星时保持锁定框位置不变"
 
 #: myframe.cpp:531
 msgid "Display Toolbar"
@@ -5188,7 +5123,7 @@ msgstr "帮助文档…\tF1"
 
 #: myframe.cpp:579
 msgid "Full help"
-msgstr "*Full help"
+msgstr "完整帮助文件"
 
 #: myframe.cpp:580
 msgid "&Impatient Instructions"
@@ -5364,34 +5299,36 @@ msgstr "打开FITS文件 %s 错误"
 
 #: myframe.cpp:2524
 msgid ""
-"Dark library does not match the camera in this profile - it needs to be "
-"replaced."
-msgstr "暗图库与此配置文件中的相机不匹配 - 需要更换。"
+"Dark library does not match the camera in this profile. Check that you are "
+"connected to the camera you want to use for guiding."
+msgstr "暗场库与此配置文件中的相机不匹配。 请检查是否已连接到正确的导星相机。"
 
-#: myframe.cpp:2570
+#: myframe.cpp:2571
 msgid ""
-"Dark library and bad-pixel maps are incompatible with the current camera - "
-"both need to be replaced"
-msgstr "暗场库和坏点映射图与当前相机不兼容，两者都需要重新生成"
+"Dark library and bad-pixel maps don't match the current camera. Check that "
+"you are connected to the camera you want to use for guiding."
+msgstr ""
+"暗场库和坏点映射表与此配置文件中的相机不匹配。 请检查是否已连接到正确的导星相"
+"机。"
 
-#: myframe.cpp:2601
+#: myframe.cpp:2603
 msgid "You must connect a camera before loading dark frames"
 msgstr "读取暗场之间必须先连接相机"
 
-#: myframe.cpp:2608
+#: myframe.cpp:2610
 msgid "Darks not loaded"
 msgstr "暗场未能读取"
 
-#: myframe.cpp:2615
+#: myframe.cpp:2617
 msgid "Darks loaded"
 msgstr "暗场已读取"
 
-#: myframe.cpp:2628
+#: myframe.cpp:2630
 #, c-format
 msgid "Error saving darks FITS file %s"
 msgstr "保存暗场FITS文件 %s 错误"
 
-#: myframe.cpp:2829
+#: myframe.cpp:2831
 msgid ""
 "Guiding parameters have been reset because the binning or pixel size changed "
 "unexpectedly. You should use separate profiles for different image scales."
@@ -5399,11 +5336,11 @@ msgstr ""
 "由于像素合并或像素大小意外更改，导星参数已重置。 您应该为不同的图像比例使用单"
 "独的配置文件。"
 
-#: myframe.cpp:2839
+#: myframe.cpp:2841
 msgid "Global Settings"
 msgstr "全局设置"
 
-#: myframe.cpp:2886
+#: myframe.cpp:2888
 #, c-format
 msgid ""
 "Enter a focal length in millimeters, between %.f and %.f,\n"
@@ -5412,55 +5349,55 @@ msgstr ""
 "在 %.f 和 %.f 之间输入以毫米为单位的焦距，\n"
 "如果焦距未知，则输入 0"
 
-#: myframe.cpp:2938 myframe.cpp:3021
+#: myframe.cpp:2940 myframe.cpp:3023
 msgid "System default"
 msgstr "系统默认"
 
-#: myframe.cpp:2950
+#: myframe.cpp:2952
 msgid "Language-Name"
 msgstr "语言名称"
 
-#: myframe.cpp:2989
+#: myframe.cpp:2991
 msgid "Reset Configuration"
 msgstr "重置所有设置"
 
-#: myframe.cpp:2990
+#: myframe.cpp:2992
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
 msgstr "将所有配置和参数重置为全新安装状态。 这将需要重新启动PHD2"
 
-#: myframe.cpp:2991
+#: myframe.cpp:2993
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "重置“不再显示”的消息"
 
-#: myframe.cpp:2992
+#: myframe.cpp:2994
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr "恢复所有选中“不再显示”时隐藏的消息。"
 
-#: myframe.cpp:2996
+#: myframe.cpp:2998
 msgid "2x2 mean"
 msgstr "2x2平均"
 
-#: myframe.cpp:2996
+#: myframe.cpp:2998
 msgid "3x3 median"
 msgstr "3x3中位数"
 
-#: myframe.cpp:3003
+#: myframe.cpp:3005
 msgid "Noise Reduction"
 msgstr "降噪"
 
-#: myframe.cpp:3004
+#: myframe.cpp:3006
 msgid "Technique to reduce noise in images"
 msgstr "减少图像噪音技术"
 
-#: myframe.cpp:3010
+#: myframe.cpp:3012
 msgid "Time Lapse (ms)"
 msgstr "延时 (毫秒)"
 
-#: myframe.cpp:3011
+#: myframe.cpp:3013
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -5469,79 +5406,83 @@ msgstr ""
 "PHD 应该在导星帧之间等待多长时间？ 默认值 = 0 毫秒，在使用非常短曝光的相机"
 "（例如，使用视频像机）但希望发送导星命令的频率较低时很有用"
 
-#: myframe.cpp:3018
+#: myframe.cpp:3020
 msgid "Focal length (mm)"
 msgstr "焦距 (毫米)"
 
-#: myframe.cpp:3019
+#: myframe.cpp:3021
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
 msgstr "导镜焦距与相机像素尺寸一起使用，用以角秒显示导星误差。"
 
-#: myframe.cpp:3025
+#: myframe.cpp:3027
 msgid "Language"
 msgstr "语言"
 
-#: myframe.cpp:3026
+#: myframe.cpp:3028
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
-msgstr "*%s 语言。 你需要重启PHD来生效该选项。"
+msgstr "%s 语言。 你需要重启PHD，用于生效该选项。"
 
-#: myframe.cpp:3032
+#: myframe.cpp:3033 phdupdate.cpp:947 phdupdate.cpp:953
+msgid "Software Update"
+msgstr "软件更新"
+
+#: myframe.cpp:3034
 msgid "Automatically check for updates"
 msgstr "自动检查更新"
 
-#: myframe.cpp:3033
+#: myframe.cpp:3035
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr "当PHD2启动时检查更新（推荐）"
 
-#: myframe.cpp:3035
+#: myframe.cpp:3037
 msgid "Only check for major releases"
 msgstr "仅检查主版本更新"
 
-#: myframe.cpp:3036
+#: myframe.cpp:3038
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr "选中该项时，检查更新时将忽略次要（开发版）版本。"
 
-#: myframe.cpp:3043
+#: myframe.cpp:3045
 msgid "Log File Location"
 msgstr "日志文件位置"
 
-#: myframe.cpp:3046
+#: myframe.cpp:3048
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "存放导星和调试日志的文件目录。如果为空，将使用系统缺省目录。"
 
-#: myframe.cpp:3047
+#: myframe.cpp:3049
 msgid "Browse..."
 msgstr "浏览..."
 
-#: myframe.cpp:3060
+#: myframe.cpp:3062
 msgid "Enable diagnostic image logging"
 msgstr "启用诊断图像记录"
 
-#: myframe.cpp:3061
+#: myframe.cpp:3063
 msgid "Save guider images based on options below"
 msgstr "根据以下选项保存导星图像"
 
-#: myframe.cpp:3064
+#: myframe.cpp:3066
 msgid "Save Guider Images"
 msgstr "保存导星图像"
 
-#: myframe.cpp:3067
+#: myframe.cpp:3069
 msgid "For all lost-star frames"
 msgstr "星点丢失时"
 
-#: myframe.cpp:3068
+#: myframe.cpp:3070
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr "每当发生被导星丢失时，保存导星图像"
 
-#: myframe.cpp:3070
+#: myframe.cpp:3072
 msgid "For all Auto-select Star frames"
 msgstr "自动选星时"
 
-#: myframe.cpp:3071
+#: myframe.cpp:3073
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
@@ -5549,11 +5490,11 @@ msgstr ""
 "保存所有“自动选星”时的导星图像。 注意：无论此设置是否选中，当星标自动选择失败"
 "时，图像始终会被保存。"
 
-#: myframe.cpp:3074
+#: myframe.cpp:3076
 msgid "When relative error exceeds"
 msgstr "当相对误差超出"
 
-#: myframe.cpp:3075
+#: myframe.cpp:3077
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
@@ -5562,163 +5503,163 @@ msgstr ""
 "当前帧图像的错误超过此因子的平均误差时，保存导星图像。 例如，如果平均（RMS）"
 "误差为0.5像素，并且当前帧的误差为1.5像素，则相对误差为3"
 
-#: myframe.cpp:3079
+#: myframe.cpp:3081
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr "相对误差阈值。 相对误差是当前帧的误差与平均误差之间的比率"
 
-#: myframe.cpp:3084
+#: myframe.cpp:3086
 msgid "When absolute error exceeds (pixels)"
 msgstr "绝对误差超过（像素）"
 
-#: myframe.cpp:3085
+#: myframe.cpp:3087
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
 msgstr "当被导星和锁定框位置之间的距离超过这么多像素时，保存导星图像"
 
-#: myframe.cpp:3089
+#: myframe.cpp:3091
 msgid "Absolute error threshold in pixels"
 msgstr "绝对误差阈值，以像素为单位"
 
-#: myframe.cpp:3094
+#: myframe.cpp:3096
 msgid "Until this count is reached"
-msgstr "直到达到此计数。"
+msgstr "直到达到此计数"
 
-#: myframe.cpp:3095
+#: myframe.cpp:3097
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr "保存每帧导星图像，直到保存指定数量的图像"
 
-#: myframe.cpp:3097
+#: myframe.cpp:3099
 msgid "Number of images to save"
 msgstr "图像保存数"
 
-#: myframe.cpp:3112
+#: myframe.cpp:3114
 msgid "Dither Settings"
 msgstr "抖动设置"
 
-#: myframe.cpp:3113
+#: myframe.cpp:3115
 msgid "Random"
 msgstr "随机"
 
-#: myframe.cpp:3114
+#: myframe.cpp:3116
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "每个抖动指令在每个轴上移动随机距离"
 
-#: myframe.cpp:3115
+#: myframe.cpp:3117
 msgid "Spiral"
 msgstr "螺旋"
 
-#: myframe.cpp:3116
+#: myframe.cpp:3118
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "每个抖动指令沿着螺旋路径移动"
 
-#: myframe.cpp:3118
+#: myframe.cpp:3120
 msgid "Mode: "
-msgstr "模式："
+msgstr "模式： "
 
-#: myframe.cpp:3123
+#: myframe.cpp:3125
 msgid "RA only"
 msgstr "仅赤经"
 
-#: myframe.cpp:3124
+#: myframe.cpp:3126
 msgid "Constrain dither to RA only"
 msgstr "抖动仅限赤经轴"
 
-#: myframe.cpp:3130
+#: myframe.cpp:3132
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
 msgstr "抖动命令的范围。缺省 = 1.0 (0.1-100.0)"
 
-#: myframe.cpp:3134 testguide.cpp:119
+#: myframe.cpp:3136 testguide.cpp:119
 msgid "Scale"
 msgstr "缩放"
 
-#: myframe.cpp:3141 profile_wizard.cpp:319
+#: myframe.cpp:3143 profile_wizard.cpp:319
 msgid "Auto restore calibration"
 msgstr "自动使用上一次校准数据"
 
-#: myframe.cpp:3142
+#: myframe.cpp:3144
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr "对于此设备配置文件，在连接设备后将自动恢复为上次成功校准的数据。"
 
-#: myframe.cpp:3159 scope.cpp:1990
+#: myframe.cpp:3161 scope.cpp:1990
 msgid "Min"
 msgstr "最小"
 
-#: myframe.cpp:3159
+#: myframe.cpp:3161
 msgid "Auto exposure minimum duration"
 msgstr "自动曝光最小时间"
 
-#: myframe.cpp:3160 scope.cpp:1992
+#: myframe.cpp:3162 scope.cpp:1992
 msgid "Max"
 msgstr "最大"
 
-#: myframe.cpp:3160
+#: myframe.cpp:3162
 msgid "Auto exposure maximum duration"
 msgstr "自动曝光最大时间"
 
-#: myframe.cpp:3161
+#: myframe.cpp:3163
 msgid "Target SNR"
 msgstr "信噪比"
 
-#: myframe.cpp:3161
+#: myframe.cpp:3163
 msgid "Auto exposure target SNR value"
 msgstr "自动曝光SNR值"
 
-#: myframe.cpp:3162
+#: myframe.cpp:3164
 msgid "Auto Exposure"
 msgstr "自动曝光"
 
-#: myframe.cpp:3169
+#: myframe.cpp:3171
 msgid "Use Variable Exposure Delays"
 msgstr "使用可变的曝光延迟"
 
-#: myframe.cpp:3170
+#: myframe.cpp:3172
 msgid ""
 "Use \"short\" delay for calibration, looping, dithering, GA, \"long\" delay "
 "for normal guiding"
 msgstr "为校准，连续曝光，抖动，GA，使用“短延迟”。为普通导星使用“长延迟”"
 
-#: myframe.cpp:3175
+#: myframe.cpp:3177
 msgid "Short delay (sec)"
 msgstr "短延迟(秒)"
 
-#: myframe.cpp:3175
+#: myframe.cpp:3177
 msgid "Short delay for calibration, looping, dithering, GA"
 msgstr "供校准，连续曝光，抖动，GA使用的短延迟"
 
-#: myframe.cpp:3176
+#: myframe.cpp:3178
 msgid "Long delay (sec)"
 msgstr "最长延迟(秒)"
 
-#: myframe.cpp:3176
+#: myframe.cpp:3178
 msgid "Long delay for normal guiding"
 msgstr "正常导星时的最长延迟"
 
-#: myframe.cpp:3177
+#: myframe.cpp:3179
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
-msgstr "可变曝光延迟（仅适用带高精度编码器的赤道仪）"
+msgstr "可变曝光延迟（仅限带高精度编码器的赤道仪）"
 
-#: myframe.cpp:3268
+#: myframe.cpp:3270
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr "本操作将重置PHD2的配置参数并将重新启动PHD2。是否确定？"
 
-#: myframe.cpp:3268
+#: myframe.cpp:3270
 msgid "Confirmation"
 msgstr "确认"
 
-#: myframe.cpp:3299
+#: myframe.cpp:3301
 msgid "Restart PHD2"
 msgstr "重启PHD2"
 
-#: myframe.cpp:3300
+#: myframe.cpp:3302
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
@@ -6166,7 +6107,7 @@ msgstr "PHD2版本 %s 已准备好被安装。 是否立即更新并重启PHD2�
 #: phdupdate.cpp:728
 #, c-format
 msgid "Downloading PHD2 version %s"
-msgstr "正在下载 PHD2 的版本：%s "
+msgstr "正在下载 PHD2 的版本：%s"
 
 #: phdupdate.cpp:748
 msgid "PHD2 Update"
@@ -6277,7 +6218,7 @@ msgstr "等待第二次校准完成。"
 
 #: pierflip_tool.cpp:280
 msgid "Meridian flip calibration completed sucessfully."
-msgstr "中天翻转校准成功"
+msgstr "中天翻转校准成功。"
 
 #: pierflip_tool.cpp:282
 #, c-format
@@ -6300,7 +6241,7 @@ msgstr "点击”应用“保存设置"
 
 #: pierflip_tool.cpp:290
 msgid "Meridian flip calibration failed."
-msgstr "中天翻转校准失败"
+msgstr "中天翻转校准失败。"
 
 #: pierflip_tool.cpp:292
 msgid "Resolve any calibration issues and try again"
@@ -6318,7 +6259,7 @@ msgstr "赤纬校准角度的变化超乎寻常。"
 msgid ""
 "The meridian flip calibration tool requires an equipment profile without an "
 "AO"
-msgstr "中天翻转校准工具需要一个不包含AO的设备配置。"
+msgstr "中天翻转校准工具需要一个不包含AO的设备配置"
 
 #: pierflip_tool.cpp:502
 msgid ""
@@ -6447,7 +6388,7 @@ msgstr "配置文件新建向导"
 
 #: profile_wizard.cpp:193
 msgid "New Profile Wizard - "
-msgstr "新配置文件向导 -"
+msgstr "新配置文件向导 - "
 
 #: profile_wizard.cpp:225
 msgid "More Info"
@@ -6859,7 +6800,7 @@ msgstr "导星速率调整范围从 %0.1f 至 %0.1fx"
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
-msgstr "这个相机驱动不能提供像素尺寸信息，您需要手工输入。"
+msgstr "这个相机驱动不能提供像素尺寸信息，您需要手工输入"
 
 #: profile_wizard.cpp:1131
 msgid "Connecting to mount..."
@@ -6911,7 +6852,7 @@ msgid ""
 msgstr ""
 "相机是否已连接到电脑？ 如果是这样，PHD2通常可以自动确定相机的像素大小。 如果"
 "未连接相机或其驱动程序未提供像素大小，您可以查找相机手册或使用网络搜索后，自"
-"行输入正确的数值。"
+"行输入正确的数值。 "
 
 #: profile_wizard.cpp:1286
 msgid "Camera Already Connected?"
@@ -7406,7 +7347,7 @@ msgstr ""
 
 #: scope.cpp:1944
 msgid "Stop guiding when mount slews"
-msgstr "当赤道仪Goto时自动停止导星。"
+msgstr "当赤道仪Goto时自动停止导星"
 
 #: scope.cpp:1946
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
@@ -7507,7 +7448,7 @@ msgstr "赤纬限长"
 msgid ""
 "ASCOM driver problem during disconnect, check the debug log for more "
 "information"
-msgstr "ASCOM驱动在断开连接是发生错误，请检查调试日志获取更多信息。"
+msgstr "ASCOM驱动在断开连接是发生错误，请检查调试日志获取更多信息"
 
 #: scope_ascom.cpp:524
 msgid ""
@@ -8223,7 +8164,7 @@ msgid ""
 "increase for worse seeing and small imaging scales"
 msgstr ""
 "校准时应选择多少样品数据进行平均分析。默认值=%d，对于更差的视宁度和更小的成像"
-"圈，应当增加比例。"
+"圈，应当增加比例"
 
 #: stepguider.cpp:1453
 msgid "Samples to average"
@@ -8279,7 +8220,7 @@ msgstr "启用AO修正"
 msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
-msgstr "在AO导星时保持这个被选中。 取消选中将禁用AO修正，仅用于赤道仪导星。"
+msgstr "在AO导星时保持这个被选中。 取消选中将禁用AO修正，将仅用于赤道仪导星"
 
 #: stepguider_sbigao_indi.cpp:187
 #, c-format
@@ -8458,7 +8399,7 @@ msgstr "文件不存在 - 不能读取"
 
 #: usImage.cpp:426
 msgid "FITS file is not of an image: "
-msgstr "FITS文件不是一个图像:"
+msgstr "FITS文件不是一个图像: "
 
 #: usImage.cpp:443
 #, c-format
@@ -8493,6 +8434,59 @@ msgstr "正在连接相机 ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "正在连接旋转器 ..."
+
+#~ msgid "Predictive Drift Guide Algorithm"
+#~ msgstr "预测漂移导星算法"
+
+#~ msgid "Prediction Weight"
+#~ msgstr "预测强度"
+
+#~ msgid ""
+#~ "What percentage of the predictive guide correction should be applied? "
+#~ "Default = %.f%%"
+#~ msgstr "预测性导星修正强度百分比。默认值 = %.f%%"
+
+#~ msgid ""
+#~ "What percentage of the reactive guide correction should be applied? "
+#~ "Default = %.f%%"
+#~ msgstr "适应性导星修正强度百分比。默认值 = %.f%%"
+
+#~ msgid ""
+#~ "What percentage of the predictive correction should be applied? Default = "
+#~ "%.f%%"
+#~ msgstr "预测性修正强度百分比。默认值 = %.f%%"
+
+#~ msgid ""
+#~ "What percentage of the reactive correction should be applied? Default = %."
+#~ "f%%"
+#~ msgstr "适应性修正强度百分比。默认值 = %.f%%"
+
+#~ msgid "Let PHD2 adjust the min move automatically"
+#~ msgstr "让PHD2自动调整最小移动"
+
+#~ msgid "You currently have the latest development version of PHD2"
+#~ msgstr "您当前使用的是最新的PHD2开发版。"
+
+#~ msgid ""
+#~ "You are currently running a development release but have opted to only "
+#~ "check for major releases, and there are no new major releases available."
+#~ msgstr ""
+#~ "您当前正在运行的是开发版，但自动更新仅检查主版本，目前没有可用的新主版本。"
+
+#~ msgid ""
+#~ "You currently have the latest major release version of PHD2. There may be "
+#~ "newer development release versions at %s"
+#~ msgstr "您当前使用的是最新的PHD2主版本，有更新的开发版本(%s)，可供尝鲜。"
+
+#~ msgid ""
+#~ "Dark library does not match the camera in this profile - it needs to be "
+#~ "replaced."
+#~ msgstr "暗图库与此配置文件中的相机不匹配 - 需要更换。"
+
+#~ msgid ""
+#~ "Dark library and bad-pixel maps are incompatible with the current camera "
+#~ "- both need to be replaced"
+#~ msgstr "暗场库和坏点映射图与当前相机不兼容，两者都需要重新生成"
 
 #~ msgid ""
 #~ "After %.1f sec the camera has not completed a %.1f sec exposure, so it "
