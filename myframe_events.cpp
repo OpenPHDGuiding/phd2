@@ -1029,28 +1029,38 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 
             if (!TheScope()->IsCalibrated())
             {
-                double dec = fabs(pPointingSource->GetDeclination());
-                bool calHere = true;
-                wxString adjustLabel;
-                if (dec > radians(20) && dec < Scope::DEC_COMP_LIMIT)
-                    calHere = ConfirmDialog::Confirm(
-                    _("Scope isn't pointing in recommended sky area - do you want to re-position for better results?"),
-                    "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-                    );
-                else if (dec > radians(60))
-                    calHere = ConfirmDialog::Confirm(
-                    _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
-                    "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
-                    "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-                    );
-
-                if (!calHere)
+                double ra;
+                double dec;
+                double lst;
+                if (!pPointingSource->GetCoordinates(&ra, &dec, &lst))
                 {
-                    proceed = false;
-                    if (!pCalibrationAssistant)
-                        pCalibrationAssistant = new CalibrationAssistant();
-                    if (pCalibrationAssistant)
-                        pCalibrationAssistant->Show();
+                    bool calHere = true;
+                    double ha = norm(lst - ra, -12.0, 12.0);
+                    if ((fabs(dec) > 20 && dec < degrees(Scope::DEC_COMP_LIMIT)) || fabs(ha) > 3)
+                        calHere = ConfirmDialog::Confirm(
+                        _("Scope isn't pointing in recommended sky area - run the Calibration Assistant to improve results"),
+                        "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                        );
+                    else if (dec > 60)
+                        calHere = ConfirmDialog::Confirm(
+                        _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
+                        "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
+                        "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                        );
+
+                    if (!calHere)
+                    {
+                        proceed = false;
+                        if (!pCalibrationAssistant)
+                            pCalibrationAssistant = new CalibrationAssistant();
+                        if (pCalibrationAssistant)
+                            pCalibrationAssistant->Show();
+                    }
+                }
+                else
+                {
+                    Debug.Write("Interactive calibration - scope did not return position info\n");
+                    proceed = true;
                 }
             }
         }

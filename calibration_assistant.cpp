@@ -113,7 +113,7 @@ void CalibrationAssistant::PerformSanityChecks()
                         CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0, &recStepSize);
                     if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)
                     {
-                        msg = _("Your current calibration parameters can be adjusted for better results. \n"
+                        msg = _("Your current calibration parameters can be adjusted for more accurate results. \n"
                             "Click on the 'Recal' button to restore them to the default values.");
                     }
                 }
@@ -262,8 +262,8 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
             ShowStatus(_("Calibration failed or was cancelled"));
             m_calibrationActive = false;
             m_monitoringCalibration = false;
-            break;
         }
+        break;
     case STATE_CALIBRATING_PRIMARY:
     case STATE_CALIBRATING_SECONDARY:
         m_calibrationActive = true;
@@ -274,6 +274,7 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
         m_calibrationActive = false;
         m_monitoringCalibration = false;
         EvaluateCalibration();
+        break;
     }
 
     }
@@ -309,18 +310,20 @@ void CalibrationAssistant::UpdateCurrentPosition(bool fromTimer)
             m_pWarning->SetLabelText(wxEmptyString);
         m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
         m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
-        if (fromTimer)
+        if (!m_meridianFlipping)
         {
-            if (fabs(lastDec - dec) > 10)
+            if (fromTimer)
             {
-                if (lastDec != INVALID_DEC)
-                    ShowExplanationMsg(dec);
-                lastDec = dec;
-                m_pCalibrateBtn->Enable(fabs(lastDec) < 80);
+                if (fabs(lastDec - dec) > 10)
+                {
+                    if (lastDec != INVALID_DEC)
+                        ShowExplanationMsg(dec);
+                    lastDec = dec;
+                }
             }
+            else
+                ShowExplanationMsg(dec);
         }
-        else
-            ShowExplanationMsg(dec);
     }
     else
     {
@@ -348,6 +351,8 @@ bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) co
     {
         if (pPointingSource && pPointingSource->CanReportPosition())
         {
+            if (pPointingSource->PreparePositionInteractive())
+                return true;
             if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
             {
                 throw ERROR_INFO("CalPositionRecommendations: Mount not reporting pointing position");
@@ -382,7 +387,6 @@ bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) co
     }
     catch (const wxString& msg)
     {
-        POSSIBLY_UNUSED(msg);
         *HA = defBestOffset;
         *Dec = defBestDec;
         errorSeen = true;
@@ -394,19 +398,19 @@ void CalibrationAssistant::ShowExplanationMsg(double dec)
 {
     wxString slewCond;
     if (pPointingSource->CanSlew())
-        slewCond = _("Use the 'slew' button to move the scope to a better position. ");
+        slewCond = _("Use the 'slew' button to move the scope as close as possible to Dec = 0. ");
     else
-        slewCond = _("Slew the scope as close as possible to Dec = 0 ");
+        slewCond = _("Slew the scope as close as possible to Dec = 0. ");
     if (fabs(dec) > 80)
     {
         m_pExplanation->SetLabelText(_("Calibration is likely to fail this close to the pole.\n") + slewCond);
     }
     else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
     {
-        m_pExplanation->SetLabelText(_("Declination compensation will not be effective if you calibrate within 30 degrees of the pole.\n") + slewCond);
+        m_pExplanation->SetLabelText(_("Declination compensation will not work if you calibrate within 30 degrees of the pole.\n") + slewCond);
     }
     else if (fabs(dec) > 20)
-        m_pExplanation->SetLabelText(_("Calibration will be more accurate with the scope pointing closer to Dec = 0.\n") + slewCond);
+        m_pExplanation->SetLabelText(_("Calibration will be more accurate with the scope pointing closer to celestial equator (Dec=0).\n") + slewCond);
     else
         m_pExplanation->SetLabelText(wxEmptyString);
 }
@@ -490,8 +494,6 @@ void CalibrationAssistant::InitializeUI(bool forceDefaults)
         m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
         m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
         m_pCurrEast->SetValue(hourAngle <= 0);
-        if (fabs(dec) > 80)
-            m_pCalibrateBtn->Enable(false);
         if (m_pCurrEast->GetValue() != m_pTargetEast->GetValue())
             m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
         else
@@ -614,7 +616,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
     if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
         Debug.Write("Cal-slew: slew failed to get scope coordinates\n");
-        ShowError("Could not get coordinates from mount!", true);
+        ShowError("Could not get coordinates from mount", true);
         return;
     }
 
@@ -627,6 +629,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
         cur_ra, cur_dec, slew_ra, decSlew));
     m_pSlewBtn->Enable(false);
     m_pCalibrateBtn->Enable(false);
+    m_meridianFlipping = (m_pWarning->GetLabelText().Length() > 0);
     if (decSlew < cur_dec)         // scope will slew sky-south regardless of north or south hemisphere
     {
         ShowStatus(_("Initial slew to approximate position"));
@@ -647,7 +650,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
     }
     m_pSlewBtn->Enable(true);
     if (TheScope())
-        m_pCalibrateBtn->Enable(m_currentDec < 80);
+        m_pCalibrateBtn->Enable(true);
 
 }
 
@@ -771,13 +774,24 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
     if (pPointingSource->PreparePositionInteractive())
         return;
 
+    double lst;
+    if (pPointingSource->GetCoordinates(&m_currentRA, &m_currentDec, &lst))
+    {
+        ShowError(_("Scope isn't reporting current position"), true);
+        return;
+    }
     if (!m_sanityCheckDone)
     {
         m_sanityCheckDone = true;
         PerformSanityChecks();
     }
 
-    if (!m_justSlewed)
+    if (m_currentDec >= 80)
+    {
+        ShowStatus(_("Slew the scope closer to Dec = 0"));
+        return;
+    }
+    if (!m_justSlewed && pPointingSource->CanSlew())
     {
         m_justSlewed = true;
         if (pFrame->CaptureActive)
@@ -786,7 +800,8 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
         if (PerformSlew(m_currentRA, m_currentDec + 1.0 / 60.))        // Status messages generated are handled by PerformSlew
             return;
     }
-    pFrame->StartCapturing();
+    if (!pFrame->CaptureActive)
+        pFrame->StartCapturing();
     if (PhdController::Guide(true, settle, wxRect(), true, &msg))
     {
         ShowStatus(_("Waiting for calibration to complete"));
@@ -801,7 +816,7 @@ void CalibrationAssistant::OnTargetWest(wxCommandEvent& evt)
     if (m_pCurrEast->GetValue())
         m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
     else
-        m_pWarning->SetLabelText("");
+        m_pWarning->SetLabelText(wxEmptyString);
 }
 
 void CalibrationAssistant::OnTargetEast(wxCommandEvent& evt)
@@ -809,7 +824,7 @@ void CalibrationAssistant::OnTargetEast(wxCommandEvent& evt)
     if (m_pCurrWest->GetValue())
         m_pWarning->SetLabelText("MERIDIAN FLIP!");
     else
-        m_pWarning->SetLabelText("");
+        m_pWarning->SetLabelText(wxEmptyString);
 }
 
 void CalibrationAssistant::OnCancel(wxCommandEvent& evt)

@@ -85,6 +85,7 @@ private:
     bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
     void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
     bool m_sanityCheckDone;
+    bool m_meridianFlipping;
     bool m_justSlewed;
 
     void PerformSanityChecks();
