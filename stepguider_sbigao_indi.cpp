@@ -101,9 +101,7 @@ class StepGuiderSbigAoINDI : public StepGuider, public PhdIndiClient
     protected:
         // INDI parts
         void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
         void removeDevice(INDI::BaseDevice *dp) override;
-#endif
         void newProperty(INDI::Property *property) override;
         void removeProperty(INDI::Property *property) override {};
         void newBLOB(IBLOB *bp) override {};
@@ -209,11 +207,7 @@ void StepGuiderSbigAoINDI::newDevice(INDI::BaseDevice *dp)
 void StepGuiderSbigAoINDI::newProperty(INDI::Property *property)
 {
     const char* PropName = property->getName();
-#ifdef INDI_PRE_1_1_0
-    INDI_TYPE Proptype = property->getType();
-#else
     INDI_PROPERTY_TYPE Proptype = property->getType();
-#endif
 
     /*
     printf("SBIGAO PropName: %s Proptype: %d\n", PropName, Proptype);
@@ -411,14 +405,12 @@ void StepGuiderSbigAoINDI::IndiServerDisconnected(int exit_code)
     }
 }
 
-#ifndef INDI_PRE_1_0_0
 void StepGuiderSbigAoINDI::removeDevice(INDI::BaseDevice *dp)
 {
     ClearStatus();
     Disconnect();
     StepGuider::Disconnect();
 }
-#endif
 
 StepGuider::STEP_RESULT StepGuiderSbigAoINDI::Step(GUIDE_DIRECTION direction, int steps)
 {

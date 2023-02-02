@@ -28,7 +28,7 @@
 
 # File created by Raffi Enficiaud
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.16)
 
 # this must come before any enable_language() or project()
 if(APPLE)

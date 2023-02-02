@@ -46,10 +46,6 @@
 # include <libnova/julian_day.h>
 #endif
 
-#ifdef INDI_PRE_1_1_0
-typedef INDI_TYPE INDI_PROPERTY_TYPE;
-#endif
-
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
@@ -105,9 +101,7 @@ private:
 
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
     void removeDevice(INDI::BaseDevice *dp) override;
-#endif
     void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {}
     void newBLOB(IBLOB *bp) override {}
@@ -419,13 +413,11 @@ void ScopeINDI::IndiServerDisconnected(int exit_code)
     }
 }
 
-#ifndef INDI_PRE_1_0_0
 void ScopeINDI::removeDevice(INDI::BaseDevice *dp)
 {
     ClearStatus();
     Disconnect();
 }
-#endif
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {

@@ -161,9 +161,7 @@ private:
 
 protected:
     void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
     void removeDevice(INDI::BaseDevice *dp) override;
-#endif
     void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {}
     void newBLOB(IBLOB *bp) override;
@@ -462,9 +460,6 @@ void CameraINDI::newBLOB(IBLOB *bp)
     }
 }
 
-#ifdef INDI_PRE_1_1_0
-typedef INDI_PROPERTY_TYPE INDI_TYPE;
-#endif
 
 void CameraINDI::newProperty(INDI::Property *property)
 {
@@ -743,13 +738,11 @@ void CameraINDI::IndiServerDisconnected(int exit_code)
         DisconnectWithAlert(_("INDI server disconnected"), NO_RECONNECT);
 }
 
-#ifndef INDI_PRE_1_0_0
 void CameraINDI::removeDevice(INDI::BaseDevice *dp)
 {
    ClearStatus();
    DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
 }
-#endif
 
 void CameraINDI::ShowPropertyDialog()
 {

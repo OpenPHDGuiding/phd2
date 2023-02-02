@@ -43,9 +43,7 @@
 #include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
-#ifndef INDI_PRE_1_1_0
 # include <libindi/indibasetypes.h>
-#endif
 
 #include "indi_gui.h"
 
@@ -102,9 +100,7 @@ public:
 protected:
 
     void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
     void removeDevice(INDI::BaseDevice *dp) override {};
-#endif
     void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {}
     void newBLOB(IBLOB *bp) override {}

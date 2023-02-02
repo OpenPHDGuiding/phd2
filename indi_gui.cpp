@@ -296,11 +296,8 @@ void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiPro
     wxString propname =  wxString::FromAscii(property->getName());
     wxString proplbl =  wxString::FromAscii(property->getLabel());
     if (! proplbl) proplbl = propname;
-#ifdef INDI_PRE_1_1_0
-    INDI_TYPE proptype = property->getType();
-#else
+
     INDI_PROPERTY_TYPE proptype = property->getType();
-#endif
 
     indiProp->page = parent;
     indiProp->panel = new wxPanel(parent);
