@@ -652,7 +652,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
     m_meridianFlipping = (m_pWarning->GetLabelText().Length() > 0);
     Debug.Write(wxString::Format("CalAsst: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f, M/F = %d\n",
         cur_ra, cur_dec, slew_ra, decSlew, m_meridianFlipping));
-    if (decSlew < cur_dec || m_meridianFlipping)         // scope will slew sky-south regardless of north or south hemisphere
+    if (decSlew <= cur_dec || m_meridianFlipping)         // scope will slew sky-south regardless of north or south hemisphere
     {
         ShowStatus(_("Initial slew to approximate position"));
         if (!PerformSlew(slew_ra, decSlew - 1.0))
