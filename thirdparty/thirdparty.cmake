@@ -656,32 +656,18 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
 else()
   # Linux or OSX
-
   if(USE_SYSTEM_LIBINDI)
     message(STATUS "Using system's libindi")
     # INDI
-    # some features for indi >= 0.9 are used apparently
-    find_package(INDI 0.9 REQUIRED)
+    find_package(INDI 1.7 REQUIRED)
     # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
     get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
     include_directories(${INDI_INCLUDE_PARENT_DIR})
-    if(INDI_VERSION VERSION_LESS "1.4")
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-    else(INDI_VERSION VERSION_LESS "1.4")
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
-    endif(INDI_VERSION VERSION_LESS "1.4")
-    if(INDI_VERSION VERSION_LESS "1.1")
-      add_definitions("-DINDI_PRE_1_1_0")
-    endif()
-    if(INDI_VERSION VERSION_LESS "1.0")
-      add_definitions("-DINDI_PRE_1_0_0")
-    endif()
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
 
-    # INDI depends on libz
     find_package(ZLIB REQUIRED)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
   else()
-
     if(APPLE)
       # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
       find_library(ZLIB_LIBRARIES
@@ -696,15 +682,9 @@ else()
     endif()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
 
-    # to recreate a package of libindi:
-    # cd /tmp
-    # git clone https://github.com/indilib/indi.git
-    # cd indi
-    # git archive --format=tar.gz --prefix=libindi/ --output=libindi-`git rev-parse HEAD`.tar.gz HEAD
-
-    set(indi_zip ${thirdparty_dir}/libindi-58b26c584049e1b9ecd55aa5f4a225677a417898.tar.gz)
+    set(indi_zip ${thirdparty_dir}/indi-1.8.7.tar.gz)
     message(STATUS "Using project provided libindi '${indi_zip}'")
-    set(libindi_root "${thirdparties_deflate_directory}/libindi")
+    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.7")
 
     # this does not work because of the configure_file commands below
     # that want to run at camke time, but this woudl extract the
@@ -742,8 +722,8 @@ else()
     # those variables should be defined before the configure_files
     set(INDI_SOVERSION "1")
     set(CMAKE_INDI_VERSION_MAJOR 1)
-    set(CMAKE_INDI_VERSION_MINOR 5)
-    set(CMAKE_INDI_VERSION_RELEASE 0)
+    set(CMAKE_INDI_VERSION_MINOR 8)
+    set(CMAKE_INDI_VERSION_RELEASE 7)
     set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
     set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
 
@@ -751,7 +731,7 @@ else()
 
     set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
 
-    set(LIBINDI_DIRECTORY "${libindi_root}/libindi")
+    set(LIBINDI_DIRECTORY "${libindi_root}/")
 
     # separate folder for the configurations
     set(libindi_root_config "${thirdparties_deflate_directory}/libindi_configuration")

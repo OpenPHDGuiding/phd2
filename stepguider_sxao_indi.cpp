@@ -109,9 +109,7 @@ private:
 protected:
     // INDI parts
     void newDevice(INDI::BaseDevice *dp) override;
-#ifndef INDI_PRE_1_0_0
     void removeDevice(INDI::BaseDevice *dp) override;
-#endif
     void newProperty(INDI::Property *property) override;
     void removeProperty(INDI::Property *property) override {};
     void newBLOB(IBLOB *bp) override {};
@@ -235,11 +233,8 @@ void StepGuiderSxAoINDI::newDevice(INDI::BaseDevice *dp)
 void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
 {
     const char* PropName = property->getName();
-    #ifdef INDI_PRE_1_1_0
-      INDI_TYPE Proptype = property->getType();
-    #else
-      INDI_PROPERTY_TYPE Proptype = property->getType();
-    #endif
+
+    INDI_PROPERTY_TYPE Proptype = property->getType();
 
     /*
     printf("SXAO PropName: %s Proptype: %d\n", PropName, Proptype);
@@ -423,14 +418,12 @@ void StepGuiderSxAoINDI::IndiServerDisconnected(int exit_code)
     }
 }
 
-#ifndef INDI_PRE_1_0_0
 void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice *dp)
 {
    ClearStatus();
    Disconnect();
    StepGuider::Disconnect();
 }
-#endif
 
 StepGuider::STEP_RESULT StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
 {
