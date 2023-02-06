@@ -129,9 +129,10 @@ void CalibrationAssistant::PerformSanityChecks()
 
 CalibrationAssistant::CalibrationAssistant()
     : wxDialog(pFrame, wxID_ANY, _("Calibration Assistant"),
-    wxDefaultPosition, wxSize(600, -1), wxCAPTION | wxCLOSE_BOX) ,
+    wxDefaultPosition, wxSize(700, -1), wxCAPTION | wxCLOSE_BOX) ,
     m_sanityCheckDone(0),
     m_justSlewed(0),
+    m_isSlewing(0),
     m_monitoringCalibration(0),
     m_calibrationActive(0)
 
@@ -141,7 +142,7 @@ CalibrationAssistant::CalibrationAssistant()
     wxFlexGridSizer* currPosSizer = new wxFlexGridSizer(1, 5, 5, 15);
     wxFlexGridSizer* targetPosSizer = new wxFlexGridSizer(1, 5, 5, 15);
 
-    m_pExplanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
+    m_pExplanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(680, -1), wxALIGN_CENTER_HORIZONTAL);
     MakeBold(m_pExplanation);
     int textWidth = StringWidth(this, "000000000");
     m_pCurrOffset = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(textWidth, -1));
@@ -191,9 +192,9 @@ CalibrationAssistant::CalibrationAssistant()
     midBtnSizer->Add(pCustomBtn, wxSizerFlags().Center().Border(wxALL, 20));
     midBtnSizer->Add(pRestoreBtn, wxSizerFlags().Center().Border(wxALL, 20));
 
-    m_pMessage = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
+    m_pMessage = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, 75), wxALIGN_CENTER_HORIZONTAL | wxST_NO_AUTORESIZE);
     MakeBold(m_pMessage);
-    m_pWarning = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, -1), wxALIGN_CENTER_HORIZONTAL);
+    m_pWarning = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
     MakeBold(m_pWarning);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -201,22 +202,26 @@ CalibrationAssistant::CalibrationAssistant()
     m_pSlewBtn->SetToolTip(_("Starts a slew to the target sky location. BE SURE the scope can be safely slewed"));
     m_pSlewBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnSlew, this);
     m_pCalibrateBtn = new wxButton(this, wxID_ANY, _("Calibrate"));
-    m_pCalibrateBtn->SetToolTip(_("Starts the PHD2 calibration. This dialog window will close once the calibration has begun."));
+    m_pCalibrateBtn->SetToolTip(_("Starts the PHD2 calibration.  Calibration Assistant window will remain open to monitor and assess results"));
     m_pCalibrateBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCalibrate, this);
     wxButton* pCancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
-    pCancelBtn->SetToolTip(_("Closes the dialog window without re-calibrating"));
+    pCancelBtn->SetToolTip(_("Closes the Calibration Assistant window.  Any calibration currently underway will continue."));
     pCancelBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCancel, this);
 
     btnSizer->Add(m_pSlewBtn, wxSizerFlags().Border(wxALL, 20));
     btnSizer->Add(m_pCalibrateBtn, wxSizerFlags().Border(wxALL, 20));
     btnSizer->Add(pCancelBtn, wxSizerFlags().Border(wxALL, 20));
 
+    m_pExplainBtn = new wxButton(this, wxID_ANY, _("Explain"));
+    m_pExplainBtn->SetToolTip(_("Shows additional information about any calibration result that is less than 'good'"));
+    m_pExplainBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnExplain, this);
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     vSizer->Add(m_pExplanation, wxSizerFlags().Center().Border(wxTop, 5));
     vSizer->Add(currSizer, wxSizerFlags().Center().Border(wxALL, 20));
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
     vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP,5));
     vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
+    vSizer->Add(m_pExplainBtn, wxSizerFlags().Center().Border(wxALL, 10));
     vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 15));
 
@@ -232,6 +237,7 @@ CalibrationAssistant::CalibrationAssistant()
     m_pCurrEast->Enable(false);
     SetAutoLayout(true);
     SetSizerAndFit(vSizer);
+    m_pExplainBtn->Enable(false);
 }
 
 void CalibrationAssistant::ShowError(const wxString& msg, bool fatal)
@@ -260,8 +266,12 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
         if (m_calibrationActive)
         {
             ShowStatus(_("Calibration failed or was cancelled"));
+            m_lastResult = "Incomplete";
             m_calibrationActive = false;
             m_monitoringCalibration = false;
+            m_pSlewBtn->Enable(true);
+            m_pCalibrateBtn->Enable(true);
+            m_pExplainBtn->Enable(true);
         }
         break;
     case STATE_CALIBRATING_PRIMARY:
@@ -274,6 +284,7 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
         m_calibrationActive = false;
         m_monitoringCalibration = false;
         EvaluateCalibration();
+        m_pCalibrateBtn->Enable(true);
         break;
     }
 
@@ -304,10 +315,15 @@ void CalibrationAssistant::UpdateCurrentPosition(bool fromTimer)
             m_pCurrEast->SetValue(true);
         else
             m_pCurrWest->SetValue(true);
-        if (m_pCurrWest->GetValue() != m_pTargetWest->GetValue())
-            m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
+        if (!m_isSlewing)
+        {
+            if (m_pCurrWest->GetValue() != m_pTargetWest->GetValue())
+                m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
+            else
+                m_pWarning->SetLabelText(wxEmptyString);
+        }
         else
-            m_pWarning->SetLabelText(wxEmptyString);
+            m_pWarning->SetLabelText(_("WATCH SCOPE DURING SLEWING TO INSURE SAFETY"));
         m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
         m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
         if (!m_meridianFlipping)
@@ -387,6 +403,7 @@ bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) co
     }
     catch (const wxString& msg)
     {
+        POSSIBLY_UNUSED(msg);
         *HA = defBestOffset;
         *Dec = defBestDec;
         errorSeen = true;
@@ -410,7 +427,7 @@ void CalibrationAssistant::ShowExplanationMsg(double dec)
         m_pExplanation->SetLabelText(_("Declination compensation will not work if you calibrate within 30 degrees of the pole.\n") + slewCond);
     }
     else if (fabs(dec) > 20)
-        m_pExplanation->SetLabelText(_("Calibration will be more accurate with the scope pointing closer to celestial equator (Dec=0).\n") + slewCond);
+        m_pExplanation->SetLabelText(_("Calibration will be more accurate with the scope pointing closer to celestial equator.\n") + slewCond);
     else
         m_pExplanation->SetLabelText(wxEmptyString);
 }
@@ -573,12 +590,15 @@ bool CalibrationAssistant::PerformSlew(double ra, double dec)
             }
         };
         SlewInBg bg(this, ra, dec);
+        m_isSlewing = true;
         if (bg.Run())
         {
+            m_isSlewing = false;
             ShowError(bg.GetErrorMsg(), false);
         }
         else
         {
+            m_isSlewing = false;
             UpdateCurrentPosition(false);
             ShowExplanationMsg(dec);
             completed = true;
@@ -587,20 +607,22 @@ bool CalibrationAssistant::PerformSlew(double ra, double dec)
     else
     {
         wxBusyCursor busy;
-
+        m_isSlewing = true;
         if (!pPointingSource->SlewToCoordinates(ra, dec))
         {
+            m_isSlewing = false;
             ShowExplanationMsg(dec);
             ShowStatus(_("Click on 'calibrate' to start calibration or 'Cancel' to exit"));
             completed = true;
         }
         else
         {
+            m_isSlewing = false;
             ShowError(_("Slew failed! Make sure scope is tracking at sidereal rate"), false);
             Debug.Write("Cal-slew: slew failed\n");
         }
     }
-    m_justSlewed = true;
+    m_justSlewed = completed;
     return !completed;
 }
 
@@ -625,12 +647,12 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
     else
         slew_ra = norm_ra(cur_st - (offsetSlew / 15.0));
 
-    Debug.Write(wxString::Format("Cal-slew: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f\n",
-        cur_ra, cur_dec, slew_ra, decSlew));
     m_pSlewBtn->Enable(false);
     m_pCalibrateBtn->Enable(false);
     m_meridianFlipping = (m_pWarning->GetLabelText().Length() > 0);
-    if (decSlew < cur_dec)         // scope will slew sky-south regardless of north or south hemisphere
+    Debug.Write(wxString::Format("CalAsst: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f, M/F = %d\n",
+        cur_ra, cur_dec, slew_ra, decSlew, m_meridianFlipping));
+    if (decSlew < cur_dec || m_meridianFlipping)         // scope will slew sky-south regardless of north or south hemisphere
     {
         ShowStatus(_("Initial slew to approximate position"));
         if (!PerformSlew(slew_ra, decSlew - 1.0))
@@ -734,6 +756,7 @@ void CalibrationAssistant::EvaluateCalibration()
         }
 
         evalWhy = "(" + evalWhy.Truncate(evalWhy.length() - 2) + ")";
+        m_lastResult = evalWhy;
         Debug.Write(debugVals + "\n");
 
         if (goodRslt)
@@ -759,7 +782,8 @@ void CalibrationAssistant::EvaluateCalibration()
         ShowStatus(_("Calibration failed - probably because the mount didn't move at all"));
         Debug.Write("CalAsst: calibration failed\n");
     }
-
+    m_pExplainBtn->Enable(!goodRslt);
+    m_pSlewBtn->Enable(true);
 }
 
 void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
@@ -800,6 +824,8 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
         if (PerformSlew(m_currentRA, m_currentDec + 1.0 / 60.))        // Status messages generated are handled by PerformSlew
             return;
     }
+    m_pSlewBtn->Enable(false);
+    m_pCalibrateBtn->Enable(false);
     if (!pFrame->CaptureActive)
         pFrame->StartCapturing();
     if (PhdController::Guide(true, settle, wxRect(), true, &msg))
@@ -808,7 +834,18 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
         m_monitoringCalibration = true;
     }
     else
+    {
         ShowError(_("Calibration could not start - suspend any imaging automation apps"), false);
+        m_pSlewBtn->Enable(true);
+        m_pCalibrateBtn->Enable(true);
+    }
+}
+
+void CalibrationAssistant::ExplainResults()
+{
+    CalAssistExplanationDialog* dlg = new CalAssistExplanationDialog(m_lastResult);
+
+    dlg->ShowModal();
 }
 
 void CalibrationAssistant::OnTargetWest(wxCommandEvent& evt)
@@ -832,6 +869,10 @@ void CalibrationAssistant::OnCancel(wxCommandEvent& evt)
     wxDialog::Destroy();
 }
 
+void CalibrationAssistant::OnExplain(wxCommandEvent& evt)
+{
+    ExplainResults();
+}
 void CalibrationAssistant::OnClose(wxCloseEvent& evt)
 {
     wxDialog::Destroy();
@@ -1008,5 +1049,92 @@ void CalAssistSanityDialog::OnRecal(wxCommandEvent& evt)
         }
     }
 
+}
+
+CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
+    : wxDialog(pFrame, wxID_ANY, _("Explanation of Results"),
+    wxDefaultPosition, wxSize(700, -1), wxCAPTION | wxCLOSE_BOX)
+{
+    const int wrapPoint = 550;
+    const int textHeight = 80;
+    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticText* pHeader = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(680, textHeight), wxALIGN_LEFT);
+    pHeader->SetLabelText(_( "Assuming you have followed all the recommendations of the Calibration Assistant, "
+        "the information below can help you identify any remaining problems."
+    ));
+    vSizer->Add(pHeader, wxSizerFlags().Center().Border(wxALL, 10));
+    if (Why.Contains("Steps"))
+    {
+        wxStaticBoxSizer* stepsGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Too Few Steps"));
+        wxStaticText* pSteps = new wxStaticText(stepsGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
+        pSteps->SetLabelText(_(
+            "Calibration was completed with fewer than the desired number of steps.  This is usually caused by "
+            "changes to binning, focal length, or mount guide speed without using the new-profile-wizard. "
+            "Run the wizard to restore the correct calibration parameters."
+            ));
+        pSteps->Wrap(wrapPoint);
+        stepsGrp->Add(pSteps, wxSizerFlags().Center().Border(wxALL, 5));
+        vSizer->Add(stepsGrp, wxSizerFlags().Center().Border(wxALL, 10));
+    }
+
+    if (Why.Contains("Rates"))
+    {
+        wxStaticBoxSizer* ratesGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Unexpected Rates"));
+        wxStaticText* pRates = new wxStaticText(ratesGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
+        pRates->SetLabelText(_(
+            "Measured RA and Dec movements on the camera sensor aren't related by the expected ratio (cos(dec)).  This can be caused "
+            "by sustantial weight imbalance in Dec or physical resistance to movement because of cables or over-tight gear mesh."
+            ));
+        pRates->Wrap(wrapPoint);
+        ratesGrp->Add(pRates, wxSizerFlags().Center().Border(wxALL, 5));
+        vSizer->Add(ratesGrp, wxSizerFlags().Center().Border(wxALL, 10));
+    }
+
+    if (Why.Contains("Orthogonality"))
+    {
+        wxStaticBoxSizer* orthGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Orthogonality"));
+        wxStaticText* pOrtho = new wxStaticText(orthGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
+        pOrtho->SetLabelText(_(
+            "The mount is wandering off-target on one axis while PHD2 is measuring movement on the other axis. "
+            "This can be caused by large periodic error in RA or polar alignment > 10 arc-min. If the orthogonality "
+            "error is very large, the mount is probably not guiding correctly."
+            ));
+        pOrtho->Wrap(wrapPoint);
+        orthGrp->Add(pOrtho, wxSizerFlags().Center().Border(wxALL, 5));
+        vSizer->Add(orthGrp, wxSizerFlags().Center().Border(wxALL, 10));
+    }
+
+    if (Why.Contains("Sky location"))
+    {
+        wxStaticBoxSizer* locationGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Sky Location"));
+        wxStaticText* pLocation = new wxStaticText(locationGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
+        pLocation->SetLabelText(_(
+            "Calibration wasn't done with Dec in the range of -20 to +20.  Outside that range, measurement errors may degrade the calibration accuracy. "
+            "If Dec is outside the range of -60 to +60, declination compensation will not work correctly."
+            ));
+        pLocation->Wrap(wrapPoint);
+        locationGrp->Add(pLocation, wxSizerFlags().Center().Border(wxALL, 5));
+        vSizer->Add(locationGrp, wxSizerFlags().Center().Border(wxALL, 10));
+    }
+
+    if (Why.Contains("Incomplete"))
+    {
+        wxStaticBoxSizer* failGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Not Enough Movement"));
+        wxStaticText* pFail = new wxStaticText(failGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
+        pFail->SetLabelText(_(
+            "If you saw an alert saying the guide star did not move enough, the mount is not receiving or not handling guide commands. "
+            "If you are using an ST-4 guide cable, try replacing it. Otherwise, use the Star-Cross and Manual Guide tools in PHD2 to help "
+            "isolate the mechanical problem."
+            ));
+        pFail->Wrap(wrapPoint);
+        failGrp->Add(pFail, wxSizerFlags().Center().Border(wxALL, 5));
+        vSizer->Add(failGrp, wxSizerFlags().Center().Border(wxALL, 5));
+    }
+
+    wxButton* okBtn = new wxButton(this, wxID_OK, _("Ok"));
+    vSizer->Add(okBtn, wxSizerFlags().Center().Border(wxALL, 20));
+
+    SetAutoLayout(true);
+    SetSizerAndFit(vSizer);
 }
 #undef RateX

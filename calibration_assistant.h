@@ -50,6 +50,7 @@ private:
     wxSpinCtrl *m_pTargetOffset;
     wxSpinCtrl *m_pTargetDec;
     wxStaticText *m_pMessage;
+    wxButton* m_pExplainBtn;
     wxStaticText *m_pWarning;
     wxButton *m_pSlewBtn;
     wxButton *m_pCalibrateBtn;
@@ -82,10 +83,14 @@ private:
     void OnCalibrate(wxCommandEvent& evt);
     bool m_monitoringCalibration;
     bool m_calibrationActive;
+    void OnExplain(wxCommandEvent& evt);
+    wxString m_lastResult;
+    void ExplainResults();
     bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
     void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
     bool m_sanityCheckDone;
     bool m_meridianFlipping;
+    bool m_isSlewing;
     bool m_justSlewed;
 
     void PerformSanityChecks();
@@ -121,5 +126,11 @@ private:
     CalibrationAssistant* m_parent;
     void OnRecal(wxCommandEvent& evt);
     void OnCancel(wxCommandEvent& evt);
+};
+
+class CalAssistExplanationDialog : public wxDialog
+{
+public:
+    CalAssistExplanationDialog(const wxString& Why);
 };
 #endif
