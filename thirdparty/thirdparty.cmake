@@ -658,8 +658,10 @@ else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
     message(STATUS "Using system's libindi")
-    # INDI
     find_package(INDI 1.7 REQUIRED)
+    if(INDI_VERSION_MAJOR EQUAL 2)
+      message(FATAL_ERROR "PHD2 is not compatible with INDI 2.0.0 and greater.")
+    endif()
     # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
     get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
     include_directories(${INDI_INCLUDE_PARENT_DIR})
