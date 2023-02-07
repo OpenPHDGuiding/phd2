@@ -45,15 +45,21 @@ public:
     PhdIndiClient();
     ~PhdIndiClient();
 
+public:
+    bool connectServer() override;
+
+protected:
+    void serverConnected() final;
     void serverDisconnected(int exit_code) final;
 
+    virtual void IndiServerConnected() = 0;
     virtual void IndiServerDisconnected(int exit_code) = 0;
 
     // must use this in PHD2 rather than BaseClient::disconnectServer()
     bool DisconnectIndiServer();
 
 #if INDI_VERSION_MAJOR >= 2
-public: // old deprecated interface INDI Version < 2.0.0
+protected: // old deprecated interface INDI Version < 2.0.0
     virtual void newDevice(INDI::BaseDevice *dp) = 0;
     virtual void removeDevice(INDI::BaseDevice *dp) = 0;
     virtual void newProperty(INDI::Property *property) = 0;
@@ -66,7 +72,7 @@ public: // old deprecated interface INDI Version < 2.0.0
     virtual void newText(ITextVectorProperty *tvp) = 0;
     virtual void newLight(ILightVectorProperty *lvp) = 0;
 
-public: // new interface INDI Version >= 2.0.0
+protected: // new interface INDI Version >= 2.0.0
     void newDevice(INDI::BaseDevice device) override
     {
         return newDevice((INDI::BaseDevice *)device);

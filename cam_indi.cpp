@@ -170,7 +170,7 @@ protected:
     void newMessage(INDI::BaseDevice *dp, int messageID) override;
     void newText(ITextVectorProperty *tvp) override;
     void newLight(ILightVectorProperty *lvp) override {}
-    void serverConnected() override;
+    void IndiServerConnected() override;
     void IndiServerDisconnected(int exit_code) override;
 
 public:
@@ -697,7 +697,7 @@ bool CameraINDI::ConnectToDriver(RunInBg *r)
     return ready;
 }
 
-void CameraINDI::serverConnected()
+void CameraINDI::IndiServerConnected()
 {
     // After connection to the server
 

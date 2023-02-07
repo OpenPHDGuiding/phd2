@@ -118,7 +118,7 @@ protected:
     void newMessage(INDI::BaseDevice *dp, int messageID) override;
     void newText(ITextVectorProperty *tvp) override {};
     void newLight(ILightVectorProperty *lvp) override {};
-    void serverConnected() override;
+    void IndiServerConnected() override;
     void IndiServerDisconnected(int exit_code) override;
 
 public:
@@ -371,7 +371,7 @@ void StepGuiderSxAoINDI::ShowPropertyDialog()
     SetupDialog();
 }
 
-void StepGuiderSxAoINDI::serverConnected()
+void StepGuiderSxAoINDI::IndiServerConnected()
 {
     // wait for the DEVICE_PORT property
     modal = true;

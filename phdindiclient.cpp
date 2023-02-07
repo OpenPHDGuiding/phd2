@@ -51,6 +51,33 @@ void PhdIndiClient::serverDisconnected(int exit_code)
     m_disconnecting = false;
 }
 
+void PhdIndiClient::serverConnected()
+{
+    // nothing to do yet
+    // for INDI Core 1.9.9, 2.0.0, the function is called before requesting to retrieve device information.
+    // If the function implementation waits for information, a deadlock occurs.
+    //
+    // see PhdIndiClient::connectServer override function below
+}
+
+bool PhdIndiClient::connectServer()
+{
+    // Call the original function.
+    bool ok = INDI::BaseClient::connectServer();
+
+    // After the original function was completed,
+    // the device information request was made in the INDI Core library.
+
+    // If connected, inform via the IndiServerConnected function,
+    // which replaces the serverConnected function.
+    if (ok)
+    {
+        IndiServerConnected();
+    }
+
+    return ok;
+}
+
 bool PhdIndiClient::DisconnectIndiServer()
 {
     // suppress any attempt to call disconnectServer from the

@@ -320,7 +320,7 @@ void INDIConfig::Disconnect()
     DisconnectIndiServer();
 }
 
-void INDIConfig::serverConnected()
+void INDIConfig::IndiServerConnected()
 {
     if (wxThread::IsMain())
     {
