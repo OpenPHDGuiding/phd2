@@ -40,7 +40,7 @@ class CalibrationAssistant : public wxDialog
 {
 private:
     // wx UI controls
-    wxStaticText* m_pExplanation;
+    wxStaticText *m_pExplanation;
     wxTextCtrl *m_pCurrOffset;
     wxTextCtrl *m_pCurrDec;
     wxRadioButton *m_pCurrEast;
@@ -50,7 +50,7 @@ private:
     wxSpinCtrl *m_pTargetOffset;
     wxSpinCtrl *m_pTargetDec;
     wxStaticText *m_pMessage;
-    wxButton* m_pExplainBtn;
+    wxButton *m_pExplainBtn;
     wxStaticText *m_pWarning;
     wxButton *m_pSlewBtn;
     wxButton *m_pCalibrateBtn;
@@ -59,8 +59,8 @@ private:
 
 public:
     CalibrationAssistant();
-    ~CalibrationAssistant(void);
-    void UpdateTargetPosition(int CustHA, int CustDec);
+    ~CalibrationAssistant();
+    void LoadCustomPosition(int CustHA, int CustDec);
     double m_currentRA;
     double m_currentDec;
 
@@ -85,7 +85,7 @@ private:
     bool m_calibrationActive;
     void OnExplain(wxCommandEvent& evt);
     wxString m_lastResult;
-    void ExplainResults();
+    void ExplainResults(void);
     bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
     void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
     bool m_sanityCheckDone;
@@ -93,10 +93,10 @@ private:
     bool m_isSlewing;
     bool m_justSlewed;
 
-    void PerformSanityChecks();
+    void PerformSanityChecks(void);
     GUIDER_STATE m_guiderState;
     void TrackCalibration(GUIDER_STATE state);
-    void EvaluateCalibration();
+    void EvaluateCalibration(void);
 };
 
 class CalCustomDialog : public wxDialog
@@ -105,12 +105,12 @@ public:
     CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, int DefaultDec);
 
 private:
-    CalibrationAssistant* m_Parent;
-    wxSpinCtrl* m_pTargetDec;
-    wxSpinCtrl* m_pTargetOffset;
-    wxRadioButton* m_pTargetWest;
-    wxRadioButton* m_pTargetEast;
-    wxCheckBox* m_pEastWestOnly;
+    CalibrationAssistant *m_Parent;
+    wxSpinCtrl *m_pTargetDec;
+    wxSpinCtrl *m_pTargetOffset;
+    wxRadioButton *m_pTargetWest;
+    wxRadioButton *m_pTargetEast;
+    wxCheckBox *m_pEastWestOnly;
     void OnOk(wxCommandEvent& evt);
     void OnCancel(wxCommandEvent& evt);
     void OnTargetWest(wxCommandEvent& evt);

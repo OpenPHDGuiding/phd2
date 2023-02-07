@@ -73,7 +73,7 @@ void CalibrationAssistant::GetCustomLocation(int* PrefHA, int* PrefDec, bool* Si
     *UsingDefaults = (*PrefDec == defBestDec && *PrefHA == defBestOffset && !*SingleSide);
 }
 
-void CalibrationAssistant::PerformSanityChecks()
+void CalibrationAssistant::PerformSanityChecks(void)
 {
     if (pPointingSource && pPointingSource->IsConnected())
     {
@@ -533,7 +533,7 @@ void CalibrationAssistant::InitializeUI(bool forceDefaults)
 
 }
 
-void CalibrationAssistant::UpdateTargetPosition(int CustHA, int CustDec)
+void CalibrationAssistant::LoadCustomPosition(int CustHA, int CustDec)
 {
     m_pTargetOffset->SetValue(abs(CustHA));
     m_pTargetDec->SetValue(CustDec);
@@ -676,7 +676,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
 
 }
 
-void CalibrationAssistant::EvaluateCalibration()
+void CalibrationAssistant::EvaluateCalibration(void)
 {
     static const int MAX_CALIBRATION_STEPS = 60;
     static const int CAL_ALERT_MINSTEPS = 4;
@@ -871,6 +871,7 @@ void CalibrationAssistant::OnCancel(wxCommandEvent& evt)
 
 void CalibrationAssistant::OnExplain(wxCommandEvent& evt)
 {
+    //m_lastResult = "Steps, Rates, Orthogonality, Sky location, Incomplete";
     ExplainResults();
 }
 void CalibrationAssistant::OnClose(wxCloseEvent& evt)
@@ -899,7 +900,7 @@ void CalibrationAssistant::OnCustom(wxCommandEvent& evt)
     custDlg.ShowModal();            // Dialog handles the UI updates
 }
 
-CalibrationAssistant::~CalibrationAssistant(void)
+CalibrationAssistant::~CalibrationAssistant()
 {
     delete m_pTimer;
     pFrame->pCalibrationAssistant = NULL;
@@ -974,7 +975,7 @@ void CalCustomDialog::OnOk(wxCommandEvent& evt)
     pConfig->Profile.SetInt("/scope/CalSlew/TgtHA", cHA);
     pConfig->Profile.SetInt("/scope/CalSlew/TgtDec", cDec);
     pConfig->Profile.SetBoolean("/scope/CalSlew/SingleSide", m_pEastWestOnly->GetValue());
-    m_Parent->UpdateTargetPosition(cHA, cDec);
+    m_Parent->LoadCustomPosition(cHA, cDec);
 
     EndDialog(wxOK);
 }
