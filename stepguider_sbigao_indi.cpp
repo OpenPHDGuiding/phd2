@@ -110,7 +110,7 @@ class StepGuiderSbigAoINDI : public StepGuider, public PhdIndiClient
         void newMessage(INDI::BaseDevice *dp, int messageID) override;
         void newText(ITextVectorProperty *tvp) override {};
         void newLight(ILightVectorProperty *lvp) override {};
-        void serverConnected() override;
+        void IndiServerConnected() override;
         void IndiServerDisconnected(int exit_code) override;
 
     public:
@@ -352,7 +352,7 @@ void StepGuiderSbigAoINDI::ShowPropertyDialog()
     SetupDialog();
 }
 
-void StepGuiderSbigAoINDI::serverConnected()
+void StepGuiderSbigAoINDI::IndiServerConnected()
 {
     modal = true;
     wxLongLong msec;

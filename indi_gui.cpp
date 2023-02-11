@@ -198,7 +198,7 @@ void IndiGui::ConnectServer(const wxString& INDIhost, long INDIport)
     connectServer();
 }
 
-void IndiGui::serverConnected()
+void IndiGui::IndiServerConnected()
 {
     setBLOBMode(B_NEVER, "", nullptr);
     m_lastUpdate = wxGetUTCTimeMillis();
