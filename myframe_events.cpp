@@ -970,6 +970,38 @@ static void ValidateDarksLoaded(void)
     }
 }
 
+static bool CalibrationAssistantRequested()
+{
+    bool calHere = true;
+    if (!TheScope()->IsCalibrated())
+    {
+        double ra;
+        double dec;
+        double lst;
+        if (!pPointingSource->GetCoordinates(&ra, &dec, &lst))
+        {
+            double ha = norm(lst - ra, -12.0, 12.0);
+            if ((fabs(dec) > 20 && dec < degrees(Scope::DEC_COMP_LIMIT)) || fabs(ha) > 3)
+                calHere = ConfirmDialog::Confirm(
+                _("Scope isn't pointing in recommended sky area - run the Calibration Assistant to improve results"),
+                "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                );
+            else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
+                calHere = ConfirmDialog::Confirm(
+                _("With the scope pointing this close to the pole, calibration accuracy will be degraded and calibration \n"
+                "may fail altogether.  Run the Calibration Assistant and follow the instructions to eliminate these risks, \n"
+                "including slewing the scope as close as possible to the recommended position."),
+                "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
+                );
+        }
+        else
+        {
+            Debug.Write("Interactive calibration - scope did not return position info\n");
+        }
+    }
+    return !calHere;
+}
+
 void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
 {
     Debug.Write(wxString::Format(_T("GuideButtonClick i=%d ctx=%s\n"), interactive, context));
@@ -1027,43 +1059,16 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
             if (pPointingSource->PreparePositionInteractive())
                 return;
 
-            if (!TheScope()->IsCalibrated())
+            if (CalibrationAssistantRequested())
             {
-                double ra;
-                double dec;
-                double lst;
-                if (!pPointingSource->GetCoordinates(&ra, &dec, &lst))
-                {
-                    bool calHere = true;
-                    double ha = norm(lst - ra, -12.0, 12.0);
-                    if ((fabs(dec) > 20 && dec < degrees(Scope::DEC_COMP_LIMIT)) || fabs(ha) > 3)
-                        calHere = ConfirmDialog::Confirm(
-                        _("Scope isn't pointing in recommended sky area - run the Calibration Assistant to improve results"),
-                        "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-                        );
-                    else if (dec > 60)
-                        calHere = ConfirmDialog::Confirm(
-                        _("With the scope pointing this close to the pole, calibration accuracy will be degraded and \n"
-                        "Dec compensation will be ineffective. Calibration within 10 degrees of the pole may fail altogether."),
-                        "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-                        );
-
-                    if (!calHere)
-                    {
-                        proceed = false;
-                        if (!pCalibrationAssistant)
-                            pCalibrationAssistant = new CalibrationAssistant();
-                        if (pCalibrationAssistant)
-                            pCalibrationAssistant->Show();
-                    }
-                }
-                else
-                {
-                    Debug.Write("Interactive calibration - scope did not return position info\n");
-                    proceed = true;
-                }
+                proceed = false;
+                if (!pCalibrationAssistant)
+                    pCalibrationAssistant = new CalibrationAssistant();
+                if (pCalibrationAssistant)
+                    pCalibrationAssistant->Show();
             }
         }
+
         if (proceed)
         {
             StartGuiding();

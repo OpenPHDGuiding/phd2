@@ -828,7 +828,7 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
     m_pCalibrateBtn->Enable(false);
     if (!pFrame->CaptureActive)
         pFrame->StartCapturing();
-    if (PhdController::Guide(true, settle, wxRect(), true, &msg))
+    if (PhdController::Guide(GUIDEOPT_FORCE_RECAL, settle, wxRect(), &msg))
     {
         ShowStatus(_("Waiting for calibration to complete"));
         m_monitoringCalibration = true;

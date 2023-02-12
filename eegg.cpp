@@ -120,7 +120,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
     {
         wxString devicestr = "";
         if (!(pGuider && pGuider->IsCalibratingOrGuiding()))
-	    {
+        {
             if (pMount)
             {
                 if (pMount->IsStepGuider())
@@ -144,7 +144,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                     Debug.AddLine("User cleared calibration on " + devicestr);
                 }
             }
-	    }
+        }
     }
     else if (evt.GetId() == EEGG_FLIPCAL)
     {

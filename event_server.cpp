@@ -1567,10 +1567,12 @@ static void guide(JObj& response, const json_value *params)
     }
 
     wxString err;
-
+    int ctrlOptions = GUIDEOPT_USE_STICKY_LOCK;
+    if (recalibrate)
+        ctrlOptions = ctrlOptions | GUIDEOPT_FORCE_RECAL;
     if (!PhdController::CanGuide(&err))
         response << jrpc_error(1, err);
-    else if (PhdController::Guide(recalibrate, settle, roi, false,  &err))
+    else if (PhdController::Guide(ctrlOptions, settle, roi, &err))
         response << jrpc_result(0);
     else
         response << jrpc_error(1, err);
