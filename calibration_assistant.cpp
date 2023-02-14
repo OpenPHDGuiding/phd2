@@ -41,6 +41,105 @@ enum {defBestDec = 0, defBestOffset = 5};
 double const siderealSecsPerSec = 0.9973;
 #define RateX(spd)  (spd * 3600.0 / (15.0 * siderealSecsPerSec))
 
+class CalibrationAssistant : public wxDialog
+{
+    // UI controls
+    wxStaticText *m_pExplanation;
+    wxTextCtrl *m_pCurrOffset;
+    wxTextCtrl *m_pCurrDec;
+    wxRadioButton *m_pCurrEast;
+    wxRadioButton *m_pTargetEast;
+    wxRadioButton *m_pCurrWest;
+    wxRadioButton *m_pTargetWest;
+    wxSpinCtrl *m_pTargetOffset;
+    wxSpinCtrl *m_pTargetDec;
+    wxStaticText *m_pMessage;
+    wxButton *m_pExplainBtn;
+    wxStaticText *m_pWarning;
+    wxButton *m_pSlewBtn;
+    wxButton *m_pCalibrateBtn;
+    wxTimer *m_pTimer;
+    // Member variables
+    bool m_monitoringCalibration;
+    bool m_calibrationActive;
+    wxString m_lastResult;
+    bool m_sanityCheckDone;
+    bool m_meridianFlipping;
+    bool m_isSlewing;
+    bool m_justSlewed;
+    double m_currentRA;
+    double m_currentDec;
+    // Methods
+    void ShowExplanationMsg(double dec);
+    void ExplainResults(void);
+    bool GetCalibPositionRecommendations(int* HA, int* Dec) const;
+    void GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const;
+    void InitializeUI(bool forceDefaults);
+    void UpdateCurrentPosition(bool fromTimer);
+    void ShowError(const wxString& msg, bool fatal);
+    void ShowStatus(const wxString& msg);
+
+    void OnSlew(wxCommandEvent& evt);
+    void OnCancel(wxCommandEvent& evt);
+    void OnTimer(wxTimerEvent& evt);
+    void OnCustom(wxCommandEvent& evt);
+    void OnLoadCustom(wxCommandEvent& evt);
+    void OnRestore(wxCommandEvent& evt);
+    void OnTargetWest(wxCommandEvent& evt);
+    void OnTargetEast(wxCommandEvent& evt);
+    bool PerformSlew(double ra, double dec);
+    void OnClose(wxCloseEvent& evt);
+    void OnCalibrate(wxCommandEvent& evt);
+    void OnExplain(wxCommandEvent& evt);
+
+public:
+    CalibrationAssistant();
+    ~CalibrationAssistant();
+    double GetCalibrationDec();
+    void LoadCustomPosition(int CustHA, int CustDec);
+private:
+    void PerformSanityChecks(void);
+    GUIDER_STATE m_guiderState;
+    void TrackCalibration(GUIDER_STATE state);
+    void EvaluateCalibration(void);
+};
+
+class CalAssistSanityDialog : public wxDialog
+{
+public:
+    CalAssistSanityDialog(CalibrationAssistant* Parent, const wxString& msg);
+
+private:
+    CalibrationAssistant* m_parent;
+    void OnRecal(wxCommandEvent& evt);
+    void OnCancel(wxCommandEvent& evt);
+};
+
+class CalAssistExplanationDialog : public wxDialog
+{
+public:
+    CalAssistExplanationDialog(const wxString& Why);
+};
+
+class CalCustomDialog : public wxDialog
+{
+public:
+    CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, int DefaultDec);
+
+private:
+    CalibrationAssistant *m_Parent;
+    wxSpinCtrl *m_pTargetDec;
+    wxSpinCtrl *m_pTargetOffset;
+    wxRadioButton *m_pTargetWest;
+    wxRadioButton *m_pTargetEast;
+    wxCheckBox *m_pEastWestOnly;
+    void OnOk(wxCommandEvent& evt);
+    void OnCancel(wxCommandEvent& evt);
+    void OnTargetWest(wxCommandEvent& evt);
+    void OnTargetEast(wxCommandEvent& evt);
+};
+
+
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
 {
@@ -65,71 +164,9 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
-void CalibrationAssistant::GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const
-{
-    *PrefHA = pConfig->Profile.GetInt ("/scope/CalSlew/TgtHA", defBestOffset);
-    *PrefDec = pConfig->Profile.GetInt("/scope/CalSlew/TgtDec", defBestDec);
-    *SingleSide = pConfig->Profile.GetBoolean("/scope/CalSlew/SingleSide", false);
-    *UsingDefaults = (*PrefDec == defBestDec && *PrefHA == defBestOffset && !*SingleSide);
-}
-
-void CalibrationAssistant::PerformSanityChecks(void)
-{
-    if (pPointingSource && pPointingSource->IsConnected())
-    {
-        double raSpd;
-        double decSpd;
-        wxString msg = wxEmptyString;
-
-        if (!pPointingSource->GetGuideRates(&raSpd, &decSpd))
-        {
-            if (pPointingSource->ValidGuideRates(raSpd, decSpd))
-            {
-                CalAssistSanityDialog* sanityDlg;
-                double minSpd;
-                double sidRate;
-                if (decSpd != -1)
-                    minSpd = wxMin(raSpd, decSpd);
-                else
-                    minSpd = raSpd;
-                sidRate = RateX(minSpd);
-                if (sidRate < 0.5)
-                {
-                    if (sidRate <= 0.2)
-                        msg = _("Your mount guide speed is too slow for effective calibration and guiding. \n"
-                            "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
-                            "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
-                    else
-                        msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal \n"
-                        "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
-                        "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
-                }
-                else
-                {
-                    int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
-                    int currStepSize = TheScope()->GetCalibrationDuration();
-                    int recStepSize;
-                    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, sidRate,
-                        CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0, &recStepSize);
-                    if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)
-                    {
-                        msg = _("Your current calibration parameters can be adjusted for more accurate results. \n"
-                            "Click on the 'Recal' button to restore them to the default values.");
-                    }
-                }
-                if (msg != wxEmptyString)
-                {
-                    sanityDlg = new CalAssistSanityDialog(this, msg);
-                    sanityDlg->ShowModal();
-                }
-            }
-        }
-    }
-}
-
 CalibrationAssistant::CalibrationAssistant()
     : wxDialog(pFrame, wxID_ANY, _("Calibration Assistant"),
-    wxDefaultPosition, wxSize(700, -1), wxCAPTION | wxCLOSE_BOX) ,
+    wxDefaultPosition, wxSize(700, -1), wxCAPTION | wxCLOSE_BOX),
     m_sanityCheckDone(0),
     m_justSlewed(0),
     m_isSlewing(0),
@@ -198,7 +235,7 @@ CalibrationAssistant::CalibrationAssistant()
     MakeBold(m_pWarning);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pSlewBtn = new wxButton(this, wxID_ANY,_("Slew"));
+    m_pSlewBtn = new wxButton(this, wxID_ANY, _("Slew"));
     m_pSlewBtn->SetToolTip(_("Starts a slew to the target sky location. BE SURE the scope can be safely slewed"));
     m_pSlewBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnSlew, this);
     m_pCalibrateBtn = new wxButton(this, wxID_ANY, _("Calibrate"));
@@ -219,7 +256,7 @@ CalibrationAssistant::CalibrationAssistant()
     vSizer->Add(m_pExplanation, wxSizerFlags().Center().Border(wxTop, 5));
     vSizer->Add(currSizer, wxSizerFlags().Center().Border(wxALL, 20));
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
-    vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP,5));
+    vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
     vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(m_pExplainBtn, wxSizerFlags().Center().Border(wxALL, 10));
     vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 15));
@@ -240,6 +277,74 @@ CalibrationAssistant::CalibrationAssistant()
     m_pExplainBtn->Enable(false);
 }
 
+CalibrationAssistant::~CalibrationAssistant()
+{
+    delete m_pTimer;
+    pFrame->pCalibrationAssistant = NULL;
+}
+
+void CalibrationAssistant::GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const
+{
+    *PrefHA = pConfig->Profile.GetInt ("/scope/CalSlew/TgtHA", defBestOffset);
+    *PrefDec = pConfig->Profile.GetInt("/scope/CalSlew/TgtDec", defBestDec);
+    *SingleSide = pConfig->Profile.GetBoolean("/scope/CalSlew/SingleSide", false);
+    *UsingDefaults = (*PrefDec == defBestDec && *PrefHA == defBestOffset && !*SingleSide);
+}
+
+void CalibrationAssistant::PerformSanityChecks(void)
+{
+    if (pPointingSource && pPointingSource->IsConnected())
+    {
+        double raSpd;
+        double decSpd;
+        wxString msg = wxEmptyString;
+
+        if (!pPointingSource->GetGuideRates(&raSpd, &decSpd))
+        {
+            if (pPointingSource->ValidGuideRates(raSpd, decSpd))
+            {
+                CalAssistSanityDialog* sanityDlg;
+                double minSpd;
+                double sidRate;
+                if (decSpd != -1)
+                    minSpd = wxMin(raSpd, decSpd);
+                else
+                    minSpd = raSpd;
+                sidRate = RateX(minSpd);
+                if (sidRate < 0.5)
+                {
+                    if (sidRate <= 0.2)
+                        msg = _("Your mount guide speed is too slow for effective calibration and guiding. \n"
+                            "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
+                            "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+                    else
+                        msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal \n"
+                        "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
+                        "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+                }
+                else
+                {
+                    int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+                    int currStepSize = TheScope()->GetCalibrationDuration();
+                    int recStepSize;
+                    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, sidRate,
+                        CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0, &recStepSize);
+                    if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)
+                    {
+                        msg = _("Your current calibration parameters can be adjusted for more accurate results. \n"
+                            "Click on the 'Recal' button to restore them to the default values.");
+                    }
+                }
+                if (msg != wxEmptyString)
+                {
+                    sanityDlg = new CalAssistSanityDialog(this, msg);
+                    sanityDlg->ShowModal();
+                }
+            }
+        }
+    }
+}
+
 void CalibrationAssistant::ShowError(const wxString& msg, bool fatal)
 {
     m_pMessage->SetLabelText(msg);
@@ -254,6 +359,11 @@ void CalibrationAssistant::ShowError(const wxString& msg, bool fatal)
 void CalibrationAssistant::ShowStatus(const wxString& msg)
 {
     m_pMessage->SetLabelText(msg);
+}
+
+double CalibrationAssistant::GetCalibrationDec()
+{
+    return m_currentDec;
 }
 
 void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
@@ -900,12 +1010,6 @@ void CalibrationAssistant::OnCustom(wxCommandEvent& evt)
     custDlg.ShowModal();            // Dialog handles the UI updates
 }
 
-CalibrationAssistant::~CalibrationAssistant()
-{
-    delete m_pTimer;
-    pFrame->pCalibrationAssistant = NULL;
-}
-
 CalCustomDialog::CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, int DefaultDec)
     : wxDialog(pFrame, wxID_ANY, _("Save Customized Calibration Position"),
     wxDefaultPosition, wxSize(474, -1), wxCAPTION | wxCLOSE_BOX)
@@ -1043,13 +1147,12 @@ void CalAssistSanityDialog::OnRecal(wxCommandEvent& evt)
                 int calibrationStep;
                 int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
                 CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, sidrate,
-                    CalstepDialog::DEFAULT_STEPS, m_parent->m_currentDec, recDistance, nullptr, &calibrationStep);
+                    CalstepDialog::DEFAULT_STEPS, m_parent->GetCalibrationDec(), recDistance, nullptr, &calibrationStep);
                 TheScope()->SetCalibrationDuration(calibrationStep);
                 EndDialog(wxOK);
             }
         }
     }
-
 }
 
 CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
@@ -1138,4 +1241,10 @@ CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
     SetAutoLayout(true);
     SetSizerAndFit(vSizer);
 }
+
+wxDialog *CalibrationAssistantFactory::MakeCalibrationAssistant()
+{
+    return new CalibrationAssistant();
+}
+
 #undef RateX

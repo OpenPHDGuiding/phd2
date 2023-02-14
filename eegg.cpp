@@ -238,7 +238,7 @@ void MyFrame::OnPolarDriftTool(wxCommandEvent& WXUNUSED(evt))
 void MyFrame::OnCalibrationAssistant(wxCommandEvent& WXUNUSED(evt))
 {
     if (!pCalibrationAssistant)
-        pCalibrationAssistant = new CalibrationAssistant();
+        pCalibrationAssistant = CalibrationAssistantFactory::MakeCalibrationAssistant();
     if (pCalibrationAssistant)
         pCalibrationAssistant->Show();
 }
