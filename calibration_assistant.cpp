@@ -1098,7 +1098,7 @@ void CalCustomDialog::OnTargetEast(wxCommandEvent& evt)
 }
 
 CalAssistSanityDialog::CalAssistSanityDialog(CalibrationAssistant* Parent, const wxString& msg)
-    : wxDialog(pFrame, wxID_ANY, _("Save Customized Calibration Position"),
+    : wxDialog(pFrame, wxID_ANY, _("Calibration Parameters Check"),
     wxDefaultPosition, wxSize(600, -1), wxCAPTION | wxCLOSE_BOX)
 {
     m_parent = Parent;
