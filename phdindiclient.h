@@ -46,7 +46,11 @@ public:
     ~PhdIndiClient();
 
 public:
-    bool connectServer() override;
+    bool connectServer()
+#if INDI_VERSION_MAJOR >= 2 || (INDI_VERSION_MINOR == 9 && INDI_VERSION_RELEASE == 9)
+    override // use override since 1.9.9
+#endif
+    ;
 
 protected:
     void serverConnected() final;
