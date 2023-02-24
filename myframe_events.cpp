@@ -1075,7 +1075,6 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
             StartGuiding();
         }
     }
-
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);

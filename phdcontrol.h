@@ -45,8 +45,8 @@ struct SettleParams
 
 enum ControlGuideOptions
 {
-    GUIDEOPT_FORCE_RECAL = (1 << 0),        // Always recalibrate
-    GUIDEOPT_USE_STICKY_LOCK = (1 << 1),    // Insure that recalibration returns star to initial position
+    GUIDEOPT_FORCE_RECAL = (1U << 0),        // Always recalibrate
+    GUIDEOPT_USE_STICKY_LOCK = (1U << 1),    // Insure that recalibration returns star to initial position
 };
 
 class PhdController

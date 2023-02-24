@@ -447,7 +447,7 @@ void PhdController::UpdateControllerState(void)
 
                 if (!start_guiding())
                 {
-                    if (ctrl.useStickyLock)
+                    if (ctrl.useStickyLock && ctrl.haveSaveSticky)
                         pFrame->pGuider->SetLockPosIsSticky(ctrl.saveSticky);
                     do_fail(_T("could not start calibration"));
                     break;

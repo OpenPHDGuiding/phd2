@@ -37,7 +37,7 @@
 #include "calibration_assistant.h"
 #include "calstep_dialog.h"
 
-enum {defBestDec = 0, defBestOffset = 5};
+enum {defBestDec = 0, defBestOffset = 5, textWrapPoint = 500};
 double const siderealSecsPerSec = 0.9973;
 #define RateX(spd)  (spd * 3600.0 / (15.0 * siderealSecsPerSec))
 
@@ -179,7 +179,7 @@ CalibrationAssistant::CalibrationAssistant()
     wxFlexGridSizer* currPosSizer = new wxFlexGridSizer(1, 5, 5, 15);
     wxFlexGridSizer* targetPosSizer = new wxFlexGridSizer(1, 5, 5, 15);
 
-    m_pExplanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(680, -1), wxALIGN_CENTER_HORIZONTAL);
+    m_pExplanation = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(680, -1), wxALIGN_LEFT);
     MakeBold(m_pExplanation);
     int textWidth = StringWidth(this, "000000000");
     m_pCurrOffset = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(textWidth, -1));
@@ -198,7 +198,7 @@ CalibrationAssistant::CalibrationAssistant()
     MakeBold(m_pCurrOffset);
 
     int spinnerWidth = StringWidth(this, "0000");
-    m_pTargetDec = NewSpinnerInt(this, wxSize(spinnerWidth, -1), 0, -50, 50, 5, _("Target declination for slew, as close to Dec = 0 as possible for your location \n(>=-20 and <= 20) recommended"));
+    m_pTargetDec = NewSpinnerInt(this, wxSize(spinnerWidth, -1), 0, -50, 50, 5, _("Target declination for slew, as close to Dec = 0 as possible for your location (>=-20 and <= 20) recommended"));
     AddTableEntryPair(this, targetPosSizer, _("Declination"), m_pTargetDec);
     m_pTargetOffset = NewSpinnerInt(this, wxSize(spinnerWidth, -1), 10, 5, 50, 5, _("Target offset from central meridian, in degrees; east or west based on 'Pointing' buttons (less than 15 degrees recommended)"));
     AddTableEntryPair(this, targetPosSizer, _("Meridian offset (degrees)"), m_pTargetOffset);
@@ -253,7 +253,7 @@ CalibrationAssistant::CalibrationAssistant()
     m_pExplainBtn->SetToolTip(_("Shows additional information about any calibration result that is less than 'good'"));
     m_pExplainBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnExplain, this);
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
-    vSizer->Add(m_pExplanation, wxSizerFlags().Center().Border(wxTop, 5));
+    vSizer->Add(m_pExplanation, wxSizerFlags().Center().Border(wxTop, 5).Border(wxLEFT, 20));
     vSizer->Add(currSizer, wxSizerFlags().Center().Border(wxALL, 20));
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
     vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
@@ -293,55 +293,55 @@ void CalibrationAssistant::GetCustomLocation(int* PrefHA, int* PrefDec, bool* Si
 
 void CalibrationAssistant::PerformSanityChecks(void)
 {
-    if (pPointingSource && pPointingSource->IsConnected())
-    {
-        double raSpd;
-        double decSpd;
-        wxString msg = wxEmptyString;
+    if (!pPointingSource || !pPointingSource->IsConnected())
+        return;
 
-        if (!pPointingSource->GetGuideRates(&raSpd, &decSpd))
+    double raSpd;
+    double decSpd;
+    wxString msg = wxEmptyString;
+
+    bool error = pPointingSource->GetGuideRates(&raSpd, &decSpd);
+    if (error)
+        return;
+    if (!pPointingSource->ValidGuideRates(raSpd, decSpd))
+        return;
+
+    CalAssistSanityDialog* sanityDlg;
+    double minSpd;
+    double sidRate;
+    if (decSpd != -1)
+        minSpd = wxMin(raSpd, decSpd);
+    else
+        minSpd = raSpd;
+    sidRate = RateX(minSpd);
+    if (sidRate < 0.5)
+    {
+        if (sidRate <= 0.2)
+            msg = _("Your mount guide speed is too slow for effective calibration and guiding."
+                " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sidereal."
+                " Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+        else
+            msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal."
+            " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral."
+            " Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+    }
+    else
+    {
+        int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        int currStepSize = TheScope()->GetCalibrationDuration();
+        int recStepSize;
+        CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, sidRate,
+            CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0, &recStepSize);
+        if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)           // Within 30% is good enough
         {
-            if (pPointingSource->ValidGuideRates(raSpd, decSpd))
-            {
-                CalAssistSanityDialog* sanityDlg;
-                double minSpd;
-                double sidRate;
-                if (decSpd != -1)
-                    minSpd = wxMin(raSpd, decSpd);
-                else
-                    minSpd = raSpd;
-                sidRate = RateX(minSpd);
-                if (sidRate < 0.5)
-                {
-                    if (sidRate <= 0.2)
-                        msg = _("Your mount guide speed is too slow for effective calibration and guiding. \n"
-                            "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
-                            "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
-                    else
-                        msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal \n"
-                        "Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral. \n"
-                        "Then click on the 'Recal' button so PHD2 can compute a correct calibration step-size.");
-                }
-                else
-                {
-                    int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
-                    int currStepSize = TheScope()->GetCalibrationDuration();
-                    int recStepSize;
-                    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, sidRate,
-                        CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0, &recStepSize);
-                    if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)
-                    {
-                        msg = _("Your current calibration parameters can be adjusted for more accurate results. \n"
-                            "Click on the 'Recal' button to restore them to the default values.");
-                    }
-                }
-                if (msg != wxEmptyString)
-                {
-                    sanityDlg = new CalAssistSanityDialog(this, msg);
-                    sanityDlg->ShowModal();
-                }
-            }
+            msg = _("Your current calibration parameters can be adjusted for more accurate results."
+                " Click on the 'Recal' button to restore them to the default values.");
         }
+    }
+    if (msg != wxEmptyString)
+    {
+        sanityDlg = new CalAssistSanityDialog(this, msg);
+        sanityDlg->ShowModal();
     }
 }
 
@@ -352,7 +352,6 @@ void CalibrationAssistant::ShowError(const wxString& msg, bool fatal)
     {
         m_pSlewBtn->Enable(false);
         m_pCalibrateBtn->Enable(false);
-
     }
 }
 
@@ -416,46 +415,46 @@ void CalibrationAssistant::UpdateCurrentPosition(bool fromTimer)
     const int INVALID_DEC = 100;
     static double lastDec = INVALID_DEC;
 
-    if (!pPointingSource->GetCoordinates(&ra, &dec, &lst))
-    {
-        m_currentRA = ra;
-        m_currentDec = dec;
-        hourAngle = norm(lst - ra, -12.0, 12.0);
-        if (hourAngle < 0)
-            m_pCurrEast->SetValue(true);
-        else
-            m_pCurrWest->SetValue(true);
-        if (!m_isSlewing)
-        {
-            if (m_pCurrWest->GetValue() != m_pTargetWest->GetValue())
-                m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
-            else
-                m_pWarning->SetLabelText(wxEmptyString);
-        }
-        else
-            m_pWarning->SetLabelText(_("WATCH SCOPE DURING SLEWING TO INSURE SAFETY"));
-        m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
-        m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
-        if (!m_meridianFlipping)
-        {
-            if (fromTimer)
-            {
-                if (fabs(lastDec - dec) > 10)
-                {
-                    if (lastDec != INVALID_DEC)
-                        ShowExplanationMsg(dec);
-                    lastDec = dec;
-                }
-            }
-            else
-                ShowExplanationMsg(dec);
-        }
-    }
-    else
+    bool error = pPointingSource->GetCoordinates(&ra, &dec, &lst);
+    if (error)
     {
         ShowError(_("Mount can't report its pointing position"), true);
         if (m_pTimer)
             m_pTimer->Stop();
+        return;
+    }
+
+    m_currentRA = ra;
+    m_currentDec = dec;
+    hourAngle = norm(lst - ra, -12.0, 12.0);
+    if (hourAngle < 0)
+        m_pCurrEast->SetValue(true);
+    else
+        m_pCurrWest->SetValue(true);
+    if (!m_isSlewing)
+    {
+        if (m_pCurrWest->GetValue() != m_pTargetWest->GetValue())
+            m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
+        else
+            m_pWarning->SetLabelText(wxEmptyString);
+    }
+    else
+        m_pWarning->SetLabelText(_("WATCH SCOPE DURING SLEWING TO INSURE SAFETY"));
+    m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
+    m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
+    if (!m_meridianFlipping)
+    {
+        if (fromTimer)
+        {
+            if (fabs(lastDec - dec) > 10.)
+            {
+                if (lastDec != INVALID_DEC)
+                    ShowExplanationMsg(dec);
+                lastDec = dec;
+            }
+        }
+        else
+            ShowExplanationMsg(dec);
     }
 }
 // Return of 'true' means error occurred
@@ -475,41 +474,37 @@ bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) co
     bestOffset = defBestOffset;
     try
     {
-        if (pPointingSource && pPointingSource->CanReportPosition())
+        if (!pPointingSource || !pPointingSource->CanReportPosition())
+            throw ERROR_INFO("CalPositionRecommendations: mount not connected or not reporting position");
+
+        if (pPointingSource->PreparePositionInteractive())
+            return true;
+        if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
         {
-            if (pPointingSource->PreparePositionInteractive())
-                return true;
-            if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
-            {
-                throw ERROR_INFO("CalPositionRecommendations: Mount not reporting pointing position");
-            }
-            hourAngle = norm(lst - ra, -12.0, 12.0);
-            if (hourAngle <= 0)
-                bestOffset = -bestOffset;
-            // Check that we aren't pointing down in the weeds at the default Dec location
-            double lat, lon;
-            if (pPointingSource->GetSiteLatLong(&lat, &lon))
-                bestDec = 0;
-            else if (lat >= 0)
-            {
-                eqAltitude = 90.0 - lat;
-                if (eqAltitude < 30)        // far north location
-                    bestDec += 30 - eqAltitude;
-            }
-            else
-            {
-                eqAltitude = 90 + lat;
-                if (eqAltitude < 30)        // far south location
-                    bestDec -= (30 - eqAltitude);
-            }
-            *HA = bestOffset;
-            *Dec = bestDec;
-            m_pSlewBtn->Enable(pPointingSource->CanSlew());
+            throw ERROR_INFO("CalPositionRecommendations: Mount not reporting pointing position");
+        }
+        hourAngle = norm(lst - ra, -12.0, 12.0);
+        if (hourAngle <= 0.)
+            bestOffset = -bestOffset;
+        // Check that we aren't pointing down in the weeds at the default Dec location
+        double lat, lon;
+        if (pPointingSource->GetSiteLatLong(&lat, &lon))
+            bestDec = 0;
+        else if (lat >= 0.)
+        {
+            eqAltitude = 90.0 - lat;
+            if (eqAltitude < 30.)        // far north location
+                bestDec += 30. - eqAltitude;
         }
         else
         {
-            throw ERROR_INFO("CalPositionRecommendations: mount not connected or not reporting pointing info");
+            eqAltitude = 90. + lat;
+            if (eqAltitude < 30.)        // far south location
+                bestDec -= (30. - eqAltitude);
         }
+        *HA = bestOffset;
+        *Dec = bestDec;
+        m_pSlewBtn->Enable(pPointingSource->CanSlew());
     }
     catch (const wxString& msg)
     {
@@ -524,123 +519,123 @@ bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) co
 void CalibrationAssistant::ShowExplanationMsg(double dec)
 {
     wxString slewCond;
+    wxString explanation = wxEmptyString;
     if (pPointingSource->CanSlew())
-        slewCond = _("Use the 'slew' button to move the scope as close as possible to Dec = 0. ");
+        slewCond = _("Use the 'slew' button to move the scope to within 20 degrees of Dec = 0 or as close to that as your site will allow.");
     else
-        slewCond = _("Slew the scope as close as possible to Dec = 0. ");
-    if (fabs(dec) > 80)
+        slewCond = _("Slew the scope to within 20 degrees of Dec = 0 or as close to that as your site will allow.");
+    if (fabs(dec) > 80.)
     {
-        m_pExplanation->SetLabelText(_("Calibration is likely to fail this close to the pole.\n") + slewCond);
+        explanation = _("Calibration is likely to fail this close to the pole.") + " " + slewCond;
     }
     else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
     {
-        m_pExplanation->SetLabelText(_("Declination compensation will not work if you calibrate within 30 degrees of the pole.\n") + slewCond);
+        explanation = _("If you calibrate within 30 degrees of the pole, you will need to recalibrate when you slew to a different target.")
+            + " " + slewCond;
     }
-    else if (fabs(dec) > 20)
-        m_pExplanation->SetLabelText(_("Calibration will be more accurate with the scope pointing closer to celestial equator.\n") + slewCond);
-    else
-        m_pExplanation->SetLabelText(wxEmptyString);
+    else if (fabs(dec) > 20.)
+        explanation = _("Calibration will be more accurate with the scope pointing closer to celestial equator.") + " " + slewCond;
+    m_pExplanation->SetLabelText(explanation);
+    m_pExplanation->Wrap(textWrapPoint);
 }
 
 void CalibrationAssistant::InitializeUI(bool forceDefaults)
 {
-    if (pPointingSource && pPointingSource->CanReportPosition())
-    {
-        int bestDec;
-        int bestOffset;
-        bool singleSide = false;
-        bool usingDefaults;
-        double hourAngle;
-        double ra;
-        double dec;
-        double lst;
-        bool pointingEast = false;
-        bool noLocationInfo = false;
-
-        if (forceDefaults)
-        {
-            usingDefaults = true;
-        }
-        else
-        {
-            CalibrationAssistant::GetCustomLocation(&bestOffset, &bestDec, &singleSide, &usingDefaults);    // Get any custom preferences if present
-        }
-
-        if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
-        {
-            ShowError(_("Mount can't report its pointing position"), true);
-            return;
-        }
-
-        ShowExplanationMsg(dec);
-        m_currentRA = ra;
-        m_currentDec = dec;
-        hourAngle = norm(lst - ra, -12.0, 12.0);
-
-        if (!usingDefaults)                                             // Custom pointing position
-        {
-            if (singleSide)                                             // Use specified E-W orientation
-            {
-                if (bestOffset <= 0)
-                    m_pTargetEast->SetValue(true);
-                else
-                    m_pTargetWest->SetValue(true);
-            }
-            else
-            {
-                if (hourAngle <= 0)                                     // Use same E-W orientation as current pointing position
-                    m_pTargetEast->SetValue(true);
-                else
-                    m_pTargetWest->SetValue(true);
-            }
-            bestOffset = abs(bestOffset);
-            m_pTargetOffset->SetValue(wxString::Format("%d", bestOffset));
-            m_pTargetDec->SetValue(wxString::Format("%d", bestDec));
-        }
-        else
-        {
-            if (!GetCalibPositionRecommendations(&bestOffset, &bestDec))
-            {
-                pointingEast = (bestOffset <= 0);
-
-                m_pTargetOffset->SetValue(wxString::Format("%d", abs(bestOffset)));
-                m_pTargetDec->SetValue(wxString::Format("%d", bestDec));
-                if (pointingEast)
-                    m_pTargetEast->SetValue(true);
-                else
-                    m_pTargetWest->SetValue(true);
-            }
-            else
-            {
-                ShowError(_("Mount can't report its pointing position"), true);
-                return;
-            }
-        }           // end of default handling
-
-        // Current position
-        m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
-        m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
-        m_pCurrEast->SetValue(hourAngle <= 0);
-        if (m_pCurrEast->GetValue() != m_pTargetEast->GetValue())
-            m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
-        else
-            m_pWarning->SetLabelText(wxEmptyString);
-
-        m_pTimer->Stop();
-        m_pTimer->Start(1500, false /* continuous */);
-        if (pPointingSource->CanSlew())
-            ShowStatus(_("Adjust 'Target Position' values if needed for your location, then click 'Slew'"));
-        else
-            ShowStatus(_("Manually move the telescope to a Dec location near ") + std::to_string(bestDec));
-    }
-    else
+    if (!pPointingSource || !pPointingSource->CanReportPosition())
     {
         if (!pPointingSource || !pPointingSource->IsConnected())
             ShowError(_("Mount is not connected"), true);
         else
             ShowError(_("Mount can't report its pointing position"), true);
+        return;
     }
 
+    int bestDec;
+    int bestOffset;
+    bool singleSide = false;
+    bool usingDefaults;
+    double hourAngle;
+    double ra;
+    double dec;
+    double lst;
+    bool pointingEast = false;
+    bool noLocationInfo = false;
+
+    if (pPointingSource->GetCoordinates(&ra, &dec, &lst))
+    {
+        ShowError(_("Mount can't report its pointing position"), true);
+        return;
+    }
+
+    if (forceDefaults)
+    {
+        usingDefaults = true;
+    }
+    else
+    {
+        CalibrationAssistant::GetCustomLocation(&bestOffset, &bestDec, &singleSide, &usingDefaults);    // Get any custom preferences if present
+    }
+
+    ShowExplanationMsg(dec);
+    m_currentRA = ra;
+    m_currentDec = dec;
+    hourAngle = norm(lst - ra, -12.0, 12.0);
+
+    if (!usingDefaults)                                             // Custom pointing position
+    {
+        if (singleSide)                                             // Use specified E-W orientation
+        {
+            if (bestOffset <= 0)
+                m_pTargetEast->SetValue(true);
+            else
+                m_pTargetWest->SetValue(true);
+        }
+        else
+        {
+            if (hourAngle <= 0)                                     // Use same E-W orientation as current pointing position
+                m_pTargetEast->SetValue(true);
+            else
+                m_pTargetWest->SetValue(true);
+        }
+        bestOffset = abs(bestOffset);
+        m_pTargetOffset->SetValue(wxString::Format("%d", bestOffset));
+        m_pTargetDec->SetValue(wxString::Format("%d", bestDec));
+    }
+    else
+    {
+        if (!GetCalibPositionRecommendations(&bestOffset, &bestDec))
+        {
+            pointingEast = (bestOffset <= 0);
+
+            m_pTargetOffset->SetValue(wxString::Format("%d", abs(bestOffset)));
+            m_pTargetDec->SetValue(wxString::Format("%d", bestDec));
+            if (pointingEast)
+                m_pTargetEast->SetValue(true);
+            else
+                m_pTargetWest->SetValue(true);
+        }
+        else
+        {
+            ShowError(_("Mount can't report its pointing position"), true);
+            return;
+        }
+    }           // end of default handling
+
+    // Current position
+    m_pCurrOffset->SetValue(wxString::Format("%.1f", abs(hourAngle * 15.0)));
+    m_pCurrDec->SetValue(wxString::Format("%+.1f", dec));
+    m_pCurrEast->SetValue(hourAngle <= 0);
+    if (m_pCurrEast->GetValue() != m_pTargetEast->GetValue())
+        m_pWarning->SetLabelText(_("MERIDIAN FLIP!"));
+    else
+        m_pWarning->SetLabelText(wxEmptyString);
+
+    m_pTimer->Stop();
+    m_pTimer->Start(1500, false /* continuous */);
+    if (pPointingSource->CanSlew())
+        ShowStatus(_("Adjust 'Target Position' values if needed for your location, then click 'Slew'"));
+    else
+        ShowStatus(_("Manually move the telescope to a Dec location near ") + std::to_string(bestDec));
 }
 
 void CalibrationAssistant::LoadCustomPosition(int CustHA, int CustDec)
@@ -877,13 +872,13 @@ void CalibrationAssistant::EvaluateCalibration(void)
         else if (acceptableRslt)
         {
             {
-                ShowStatus(_("Calibration produced an acceptable result \n") + evalWhy);
+                ShowStatus(_("Calibration produced an acceptable result") + "\n" + evalWhy);
                 Debug.Write("CalAsst: acceptable result, " + evalWhy + "\n");
             }
         }
         else
         {
-            ShowStatus(_("Calibration produced a poor result \n") + evalWhy);
+            ShowStatus(_("Calibration produced a poor result") + "\n" + evalWhy);
             Debug.Write("CalAsst: poor result, " + evalWhy + "\n");
         }
     }
@@ -1048,8 +1043,9 @@ CalCustomDialog::CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, in
         m_pEastWestOnly->SetLabelText(_("Eastern sky only"));
 
     wxStaticText* pMessage = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
-    pMessage->SetLabelText(_("If your site location requires a unique sky position for calibration, \n") + 
+    pMessage->SetLabelText(_("If your site location requires a unique sky position for calibration,") + 
         _("you can specify it here."));
+    pMessage->Wrap(textWrapPoint);
     MakeBold(pMessage);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -1102,7 +1098,8 @@ CalAssistSanityDialog::CalAssistSanityDialog(CalibrationAssistant* Parent, const
     wxDefaultPosition, wxSize(600, -1), wxCAPTION | wxCLOSE_BOX)
 {
     m_parent = Parent;
-    wxStaticText* pMessage = new wxStaticText(this, wxID_ANY, msg, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
+    wxStaticText* pMessage = new wxStaticText(this, wxID_ANY, msg, wxDefaultPosition, wxSize(600, -1), wxALIGN_LEFT);
+    pMessage->Wrap(textWrapPoint);
     MakeBold(pMessage);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -1114,7 +1111,7 @@ CalAssistSanityDialog::CalAssistSanityDialog(CalibrationAssistant* Parent, const
     btnSizer->Add(cancelBtn, wxSizerFlags().Border(wxALL, 20));
 
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
-    vSizer->Add(pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
+    vSizer->Add(pMessage, wxSizerFlags().Center().Border(wxTOP, 15).Border(wxLEFT, 20));
     vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 15));
 
     SetAutoLayout(true);
