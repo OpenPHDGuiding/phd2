@@ -239,8 +239,7 @@ void MyFrame::OnCalibrationAssistant(wxCommandEvent& WXUNUSED(evt))
 {
     if (!pCalibrationAssistant)
         pCalibrationAssistant = CalibrationAssistantFactory::MakeCalibrationAssistant();
-    if (pCalibrationAssistant)
-        pCalibrationAssistant->Show();
+    pCalibrationAssistant->Show();
 }
 
 void MyFrame::OnStaticPaTool(wxCommandEvent& WXUNUSED(evt))

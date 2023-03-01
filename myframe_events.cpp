@@ -981,14 +981,14 @@ static bool UseCalibrationAssistant()
         double ha = norm(lst - ra, -12.0, 12.0);
         if ((fabs(dec) > 20 && dec < degrees(Scope::DEC_COMP_LIMIT)) || fabs(ha) > 3)
             dontUse = ConfirmDialog::Confirm(
-            _("Scope isn't pointing in recommended sky area - run the Calibration Assistant to improve results."),
+            _("Scope isn't pointing in recommended sky area for calibration - run the Calibration Assistant to improve results."),
             "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
             );
         else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
             dontUse = ConfirmDialog::Confirm(
-            _("With the scope pointing this close to the pole, calibration can be degraded and may \n"
-            "fail altogether.  Run the Calibration Assistant and follow the instructions to eliminate these risks, \n"
-            "including slewing the scope as close as possible to the recommended position."),
+            _("With the scope pointing this close to the pole, calibration can be degraded and may ") + "\n" +
+            _("fail altogether.  Run the Calibration Assistant and follow the instructions to eliminate these risks, ") + "\n" +
+            _("including slewing the scope as close as practical to the recommended position."),
             "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
             );
     }
