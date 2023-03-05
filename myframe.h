@@ -255,6 +255,7 @@ public:
     RefineDefMap *pRefineDefMap;
     wxDialog *pCalSanityCheckDlg;
     wxDialog *pCalReviewDlg;
+    wxDialog *pCalibrationAssistant;
     bool CaptureActive; // Is camera looping captures?
     bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;
@@ -303,6 +304,7 @@ public:
     void OnDriftTool(wxCommandEvent& evt);
     void OnPolarDriftTool(wxCommandEvent& evt);
     void OnStaticPaTool(wxCommandEvent& evt);
+    void OnCalibrationAssistant(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
     void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
@@ -664,6 +666,7 @@ enum {
     BUTTON_GRAPH_ZOOMIN,
     BUTTON_GRAPH_ZOOMOUT,
     ABOUT_LINK,
+    MENU_CALIBRATIONASSIST,
     EEGG_RESTORECAL,
     EEGG_MANUALCAL,
     EEGG_CLEARCAL,

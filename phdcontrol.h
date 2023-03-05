@@ -43,11 +43,17 @@ struct SettleParams
     int frames;          // number of frames
 };
 
+enum ControlGuideOptions
+{
+    GUIDEOPT_FORCE_RECAL = (1U << 0),        // Always recalibrate
+    GUIDEOPT_USE_STICKY_LOCK = (1U << 1),    // Insure that recalibration returns star to initial position
+};
+
 class PhdController
 {
 public:
     static bool CanGuide(wxString *error);
-    static bool Guide(bool recalibrate, const SettleParams& settle, const wxRect& roi, wxString *error);
+    static bool Guide(unsigned int options, const SettleParams& settle, const wxRect& roi, wxString *error);
     static bool Dither(double pixels, bool forceRaOnly, const SettleParams& settle, wxString *error);
     static bool Dither(double pixels, int settleFrames, wxString *error);
     static bool DitherCompat(double pixels, wxString *error);

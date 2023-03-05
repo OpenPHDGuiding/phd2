@@ -65,6 +65,7 @@ struct ControllerState
     bool saveSticky;
     int autoFindAttemptsRemaining;
     int waitSelectedRemaining;
+    bool useStickyLock;
     SettleOp settleOp;
     SettleParams settle;
     wxRect roi;
@@ -116,7 +117,7 @@ static wxString ReentrancyError(const char *op)
     return wxString::Format("Cannot initiate %s while %s is in progress", op, ctrl.settleOp == OP_DITHER ? "dither" : "guide");
 }
 
-bool PhdController::Guide(bool recalibrate, const SettleParams& settle, const wxRect& roi, wxString *error)
+bool PhdController::Guide(unsigned int options, const SettleParams& settle, const wxRect& roi, wxString *error)
 {
     if (ctrl.state != STATE_IDLE)
     {
@@ -126,7 +127,8 @@ bool PhdController::Guide(bool recalibrate, const SettleParams& settle, const wx
     }
 
     Debug.AddLine("PhdController::Guide begins");
-    ctrl.forceCalibration = recalibrate;
+    ctrl.forceCalibration = options & GUIDEOPT_FORCE_RECAL;
+    ctrl.useStickyLock = options & GUIDEOPT_USE_STICKY_LOCK;
     ctrl.settleOp = OP_GUIDE;
     ctrl.settle = settle;
     ctrl.roi = roi;
@@ -436,13 +438,17 @@ void PhdController::UpdateControllerState(void)
             {
                 Debug.AddLine("PhdController: start calibration");
 
-                ctrl.saveSticky = pFrame->pGuider->LockPosIsSticky();
-                ctrl.haveSaveSticky = true;
-                pFrame->pGuider->SetLockPosIsSticky(true);
+                if (ctrl.useStickyLock)
+                {
+                    ctrl.saveSticky = pFrame->pGuider->LockPosIsSticky();
+                    ctrl.haveSaveSticky = true;
+                    pFrame->pGuider->SetLockPosIsSticky(true);
+                }
 
                 if (!start_guiding())
                 {
-                    pFrame->pGuider->SetLockPosIsSticky(ctrl.saveSticky);
+                    if (ctrl.useStickyLock && ctrl.haveSaveSticky)
+                        pFrame->pGuider->SetLockPosIsSticky(ctrl.saveSticky);
                     do_fail(_T("could not start calibration"));
                     break;
                 }
@@ -460,7 +466,7 @@ void PhdController::UpdateControllerState(void)
             if ((!pMount || pMount->IsCalibrated()) &&
                 (!pSecondaryMount || pSecondaryMount->IsCalibrated()))
             {
-                if (ctrl.haveSaveSticky)
+                if (ctrl.useStickyLock && ctrl.haveSaveSticky)
                     pFrame->pGuider->SetLockPosIsSticky(ctrl.saveSticky);
 
                 SETSTATE(STATE_SETTLE_BEGIN);
