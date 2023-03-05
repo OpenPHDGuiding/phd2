@@ -123,7 +123,6 @@ public:
 
 class CalCustomDialog : public wxDialog
 {
-private:
     CalibrationAssistant *m_Parent;
     wxSpinCtrl *m_pTargetDec;
     wxSpinCtrl *m_pTargetOffset;
@@ -217,13 +216,13 @@ CalibrationAssistant::CalibrationAssistant()
 
     wxBoxSizer* midBtnSizer = new wxBoxSizer(wxHORIZONTAL);
     wxButton *pCustomBtn = new wxButton(this, wxID_ANY, _("Save custom values..."));
-    pCustomBtn->SetToolTip(_("Saves a custom sky location if your site has restricted sky visibility and you can't calibrate at the recommended location"));
+    pCustomBtn->SetToolTip(_("Save a custom sky location if your site has restricted sky visibility and you can't calibrate at the recommended location"));
     pCustomBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCustom, this);
     wxButton *pLoadBtn = new wxButton(this, wxID_ANY, _("Load custom values"));
-    pLoadBtn->SetToolTip(_("Reloads a previously saved custom location and displays its values in the 'Calibration Location' fields"));
+    pLoadBtn->SetToolTip(_("Reload a previously saved custom location and displays its values in the 'Calibration Location' fields"));
     pLoadBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnLoadCustom, this);
     wxButton* pRestoreBtn = new wxButton(this, wxID_ANY, _("Restore defaults"));
-    pRestoreBtn->SetToolTip(_("Restores the 'Calibration Location' fields to show the recommended pointing location"));
+    pRestoreBtn->SetToolTip(_("Restore the 'Calibration Location' fields to show the recommended pointing location"));
     pRestoreBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnRestore, this);
     midBtnSizer->Add(pLoadBtn, wxSizerFlags().Center().Border(wxALL, 20));
     midBtnSizer->Add(pCustomBtn, wxSizerFlags().Center().Border(wxALL, 20));
@@ -236,13 +235,13 @@ CalibrationAssistant::CalibrationAssistant()
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pSlewBtn = new wxButton(this, wxID_ANY, _("Slew"));
-    m_pSlewBtn->SetToolTip(_("Starts a slew to the calibration location. BE SURE the scope can be safely slewed"));
+    m_pSlewBtn->SetToolTip(_("Start a slew to the calibration location. BE SURE the scope can be safely slewed"));
     m_pSlewBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnSlew, this);
     m_pCalibrateBtn = new wxButton(this, wxID_ANY, _("Calibrate"));
-    m_pCalibrateBtn->SetToolTip(_("Starts the PHD2 calibration.  Calibration Assistant window will remain open to monitor and assess results"));
+    m_pCalibrateBtn->SetToolTip(_("Start the PHD2 calibration.  The Calibration Assistant window will remain open to monitor and assess results"));
     m_pCalibrateBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCalibrate, this);
     wxButton* pCancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
-    pCancelBtn->SetToolTip(_("Closes the Calibration Assistant window.  Any calibration currently underway will continue."));
+    pCancelBtn->SetToolTip(_("Close the Calibration Assistant window.  Any calibration currently underway will continue."));
     pCancelBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCancel, this);
 
     btnSizer->Add(m_pSlewBtn, wxSizerFlags().Border(wxALL, 20));
@@ -250,7 +249,7 @@ CalibrationAssistant::CalibrationAssistant()
     btnSizer->Add(pCancelBtn, wxSizerFlags().Border(wxALL, 20));
 
     m_pExplainBtn = new wxButton(this, wxID_ANY, _("Explain"));
-    m_pExplainBtn->SetToolTip(_("Shows additional information about any calibration result that is less than 'good'"));
+    m_pExplainBtn->SetToolTip(_("Show additional information about any calibration result that is less than 'good'"));
     m_pExplainBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnExplain, this);
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     vSizer->Add(m_pExplanation, wxSizerFlags().Center().Border(wxTop, 5).Border(wxLEFT, 20));
@@ -285,7 +284,7 @@ CalibrationAssistant::~CalibrationAssistant()
 
 void CalibrationAssistant::GetCustomLocation(int* PrefHA, int* PrefDec, bool* SingleSide, bool* UsingDefaults) const
 {
-    *PrefHA = pConfig->Profile.GetInt ("/scope/CalSlew/TgtHA", defBestOffset);
+    *PrefHA = pConfig->Profile.GetInt("/scope/CalSlew/TgtHA", defBestOffset);
     *PrefDec = pConfig->Profile.GetInt("/scope/CalSlew/TgtDec", defBestDec);
     *SingleSide = pConfig->Profile.GetBoolean("/scope/CalSlew/SingleSide", false);
     *UsingDefaults = (*PrefDec == defBestDec && *PrefHA == defBestOffset && !*SingleSide);
@@ -322,7 +321,7 @@ void CalibrationAssistant::PerformSanityChecks(void)
                 " Then click the 'Recal' button so PHD2 can compute a correct calibration step-size.");
         else
             msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal."
-            " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sideral."
+            " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sidereal."
             " Then click the 'Recal' button so PHD2 can compute a correct calibration step-size.");
     }
     else
@@ -338,7 +337,7 @@ void CalibrationAssistant::PerformSanityChecks(void)
                 " Click the 'Recal' button to restore them to the default values.");
         }
     }
-    if (msg != wxEmptyString)
+    if (!msg.empty())
     {
         sanityDlg = new CalAssistSanityDialog(this, msg);
         sanityDlg->ShowModal();
@@ -457,6 +456,7 @@ void CalibrationAssistant::UpdateCurrentPosition(bool fromTimer)
             ShowExplanationMsg(dec);
     }
 }
+
 // Return of 'true' means error occurred
 bool CalibrationAssistant::GetCalibPositionRecommendations(int* HA, int* Dec) const
 {
@@ -782,7 +782,7 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
 
 static wxString VectorToString(const wxString& separator, const std::vector<wxString>& vec)
 {
-    if (vec.size() == 0)
+    if (vec.empty())
         return wxEmptyString;
 
     size_t l = 0;
@@ -1062,8 +1062,7 @@ CalCustomDialog::CalCustomDialog(CalibrationAssistant* Parent, int DefaultHA, in
         m_pEastWestOnly->SetLabelText(_("Eastern sky only"));
 
     wxStaticText* pMessage = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, -1), wxALIGN_CENTER_HORIZONTAL);
-    pMessage->SetLabelText(_("If your site location requires a unique sky position for calibration, ") +
-        _("you can specify it here."));
+    pMessage->SetLabelText(_("If your site location requires a unique sky position for calibration, you can specify it here."));
     pMessage->Wrap(textWrapPoint);
     MakeBold(pMessage);
 
@@ -1153,7 +1152,6 @@ void CalAssistSanityDialog::OnRecal(wxCommandEvent& evt)
         {
             if (pPointingSource->ValidGuideRates(raSpd, decSpd))
             {
-
                 double minSpd;
                 if (decSpd != -1)
                     minSpd = wxMin(raSpd, decSpd);
@@ -1179,7 +1177,7 @@ CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
     const int textHeight = 80;
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticText* pHeader = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(680, textHeight), wxALIGN_LEFT);
-    pHeader->SetLabelText(_( "Assuming you have followed all the recommendations of the Calibration Assistant, "
+    pHeader->SetLabelText(_("Assuming you have followed all the recommendations of the Calibration Assistant, "
         "the information below can help you identify any remaining problems."
     ));
     vSizer->Add(pHeader, wxSizerFlags().Center().Border(wxALL, 10));
@@ -1242,7 +1240,7 @@ CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
         wxStaticBoxSizer* failGrp = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Not Enough Movement"));
         wxStaticText* pFail = new wxStaticText(failGrp->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, textHeight), wxALIGN_LEFT);
         pFail->SetLabelText(_(
-            "If you saw an alert saying the guide star did not move enough, the mount is not receiving or not handling guide commands. "
+            "If you saw an alert saying the guide star did not move enough, the mount may not be receiving or handling guide commands. "
             "If you are using an ST-4 guide cable, try replacing it. Otherwise, use the Star-Cross and Manual Guide tools in PHD2 to help "
             "isolate the mechanical problem."
             ));

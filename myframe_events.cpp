@@ -1064,8 +1064,7 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
                     proceed = false;
                     if (!pCalibrationAssistant)
                         pCalibrationAssistant = CalibrationAssistantFactory::MakeCalibrationAssistant();
-                    if (pCalibrationAssistant)
-                        pCalibrationAssistant->Show();
+                    pCalibrationAssistant->Show();
                 }
             }
         }
