@@ -104,13 +104,15 @@ public:
     unsigned int missCount;
     unsigned int zeroCount;
     unsigned int lostCount;
+    PHD_Point offsetFromPrimary;
 
     GuideStar()
         :
         referencePoint(0., 0.),
         missCount(0),
         zeroCount(0),
-        lostCount(0)
+        lostCount(0),
+        offsetFromPrimary(0., 0.)
     {
     }
 
@@ -120,7 +122,8 @@ public:
         referencePoint(star),
         missCount(0),
         zeroCount(0),
-        lostCount(0)
+        lostCount(0),
+        offsetFromPrimary(0.,0.)
     {
     }
 

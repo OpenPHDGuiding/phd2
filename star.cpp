@@ -1051,14 +1051,18 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                 if (maxStars > 1)
                 {
-                    // Find the chosen star in the list
+                    // Find the chosen star in the list and compute the offsetFromPrimary for all secondary stars
                     int primaryLoc = -1;
+                    PHD_Point primaryRef(it->x, it->y);
                     for (auto pGS = foundStars.begin(); pGS != foundStars.end(); ++pGS)
                     {
                         if (pGS->X == tmp.X && pGS->Y == tmp.Y)
                         {
                             primaryLoc = pGS - foundStars.begin();
-                            break;
+                        }
+                        else
+                        {
+                            pGS->offsetFromPrimary = pGS->referencePoint - primaryRef;
                         }
                     }
 
